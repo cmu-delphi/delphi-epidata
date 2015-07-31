@@ -94,3 +94,41 @@ Require one of:
 
 Optional:
  - `hours`: a `range` of hours
+
+# Examples
+
+### FluView/GFT/Twitter on 2015w01 (national)
+ - http://delphi.midas.cs.cmu.edu/epidata/api.php?source=fluview&regions=nat&epiweeks=201501
+
+        {"result":1,"epidata":[{"release_date":"2015-07-31","region":"nat","issue":201529,"epiweek":201501,"lag":-28,"num_ili":31834,"num_patients":777188,"num_providers":1977,"num_age_0":7177,"num_age_1":9694,"num_age_2":0,"num_age_3":8221,"num_age_4":3670,"num_age_5":3072,"wili":4.2403781703231,"ili":4.0960488324575}],"message":"success"}
+
+ - http://delphi.midas.cs.cmu.edu/epidata/api.php?source=gft&locations=nat&epiweeks=201501
+
+        {"result":1,"epidata":[{"location":"nat","epiweek":201501,"num":4647}],"message":"success"}
+
+ - http://delphi.midas.cs.cmu.edu/epidata/api.php?source=twitter&auth=XXXXX&locations=nat&epiweeks=201501
+
+        {"result":1,"epidata":[ ... ],"message":"success"}
+
+### Wiki article "influenza" on 2015w01
+
+http://delphi.midas.cs.cmu.edu/epidata/api.php?source=wiki&articles=influenza&epiweeks=201501
+
+    {"result":1,"epidata":[{"article":"influenza","count":30819,"hour":-1,"epiweek":201501}],"message":"success"}
+
+### FluView in HHS Region 6 for the 2014/2015 flu season
+
+http://delphi.midas.cs.cmu.edu/epidata/api.php?source=fluview&regions=nat&epiweeks=201440-201520
+
+### Updates to FluView on 2014w53, reported from 2015w01 through 2015w10 (national)
+
+http://delphi.midas.cs.cmu.edu/epidata/api.php?source=fluview&regions=nat&epiweeks=201453&issues=201501-201510
+
+# References
+
+ - Cook, Samantha, et al. "Assessing Google flu trends performance in the United States during the 2009 influenza virus A (H1N1) pandemic." PloS one 6.8 (2011): e23610.
+ - Broniatowski, David A., Michael J. Paul, and Mark Dredze. "National and local influenza surveillance through Twitter: an analysis of the 2012-2013 influenza epidemic." (2013): e83672.
+ - Dredze, Mark, et al. "HealthTweets. org: A Platform for Public Health Surveillance using Twitter." AAAI Conference on Artificial Intelligence. 2014.
+ - Generous, Nicholas, et al. "Global disease monitoring and forecasting with Wikipedia." (2014): e1003892.
+ - Hickmann, Kyle S., et al. "Forecasting the 2013–2014 Influenza Season Using Wikipedia." (2015): e1004239.
+ - McIver, David J., and John S. Brownstein. "Wikipedia usage estimates prevalence of influenza-like illness in the United States in near real-time." PLoS Comput Biol 10.4 (2014): e1003581.
