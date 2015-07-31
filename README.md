@@ -9,7 +9,7 @@ This repo provides documentation and sample code for [DELPHI](http://delphi.mida
 Influenza-like illness (ILI) from U.S. Outpatient Influenza-like Illness Surveillance Network (ILINet).
  - Data source: [United States Centers for Disease Control and Prevention](http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html) (CDC)
  - Temporal Resolution: Weekly* from 1997w40
- - Spatial Resolution: National (1), and by HHS region (10)
+ - Spatial Resolution: By HHS region ([11](delphi-epidata/labels/regions.txt))
  - Open access
 
 *Data is usually released on Friday
