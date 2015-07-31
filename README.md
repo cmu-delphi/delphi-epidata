@@ -106,9 +106,9 @@ Optional:
 
         {"result":1,"epidata":[{"location":"nat","epiweek":201501,"num":4647}],"message":"success"}
 
- - http://delphi.midas.cs.cmu.edu/epidata/api.php?source=twitter&auth=XXXXX&locations=nat&epiweeks=201501
+ - http://delphi.midas.cs.cmu.edu/epidata/api.php?source=twitter&auth=...&locations=nat&epiweeks=201501
 
-        {"result":1,"epidata":[ ... ],"message":"success"}
+        {"result":1,"epidata":[...],"message":"success"}
 
 ### Wiki article "influenza" on 2015w01
 
@@ -116,9 +116,9 @@ http://delphi.midas.cs.cmu.edu/epidata/api.php?source=wiki&articles=influenza&ep
 
     {"result":1,"epidata":[{"article":"influenza","count":30819,"hour":-1,"epiweek":201501}],"message":"success"}
 
-### FluView in HHS Region 6 for the 2014/2015 flu season
+### FluView in HHS Regions 4 and 6 for the 2014/2015 flu season
 
-http://delphi.midas.cs.cmu.edu/epidata/api.php?source=fluview&regions=nat&epiweeks=201440-201520
+http://delphi.midas.cs.cmu.edu/epidata/api.php?source=fluview&regions=hhs4,hhs6&epiweeks=201440-201520
 
 ### Updates to FluView on 2014w53, reported from 2015w01 through 2015w10 (national)
 
