@@ -19,7 +19,7 @@ Influenza-like illness (ILI) from U.S. Outpatient Influenza-like Illness Surveil
 Estimate of influenza activity based on volume of certain search queries.
  - Data source: [Google](https://www.google.org/flutrends/)
  - Temporal Resolution: Weekly* from 2003w40
- - Spatial Resolution: National (1), by HHS region (10), by state/territory (51), and by city (97)
+ - Spatial Resolution: By HHS region ([11](labels/regions.txt)), by state/territory ([51](labels/states.txt)), and by city ([97](labels/cities.txt))
  - Open access
 
 *Data is reported by week, but values for the current week are revised daily
@@ -29,7 +29,7 @@ Estimate of influenza activity based on volume of certain search queries.
 Estimate of influenza activity based on analysis of language used in tweets.
  - Data source: [HealthTweets](http://www.healthtweets.org/)
  - Temporal Resolution: Daily and weekly from 2011-12-01 (2011w48)
- - Spatial Resolution: National (1), by HHS region (10), and by state/territory (51)
+ - Spatial Resolution: By HHS region ([11](labels/regions.txt)), and by state/territory ([51](labels/states.txt))
  - Restricted access: DELPHI doesn't have permission to share this dataset
 
 ### Wikipedia Access Logs
@@ -38,6 +38,7 @@ Number of page visits for selected English, Influenza-related wikipedia articles
  - Data source: [Wikimedia](https://dumps.wikimedia.org/other/pagecounts-raw/)
  - Temporal Resolution: Hourly, daily, and weekly from 2007-12-09 (2007w50)
  - Spatial Resolution: N/A
+ - Other resolution: By article ([55](labels/articles.txt))
  - Open access
 
 # The API
@@ -54,13 +55,13 @@ Epiweeks use the U.S. definition. That is, the first epiweek each year is the we
 
 ### Universal Parameters
 
-The only universally required parameter is `source`, which must be one of: `fluview`, `gft`, or `wiki`
+The only universally required parameter is `source`, which must be one of: `fluview`, `gft`, `twitter`, or `wiki`
 
 ### FluView Parameters
 
 Required:
  - `epiweeks`: a `range` of epiweeks
- - `regions`: a comma-separated list of region labels
+ - `regions`: a comma-separated list of [region](labels/regions.txt) labels
 
 Optional:
  - `issues`: a `range` of epiweeks
@@ -70,13 +71,13 @@ Optional:
 
 Required:
  - `epiweeks`: a `range` of epiweeks
- - `locations`: a comma-separated list of location labels
+ - `locations`: a comma-separated list of [region](labels/regions.txt)/[state](labels/states.txt)/[city](labels/cities.txt) labels
 
 ### Twitter Parameters
 
 Required:
  - `auth`: an authorization token
- - `locations`: a comma-separated list of location labels
+ - `locations`: a comma-separated list of [region](labels/regions.txt)/[state](labels/states.txt) labels
 
 Require one of:
  - `dates`: a `range` of dates
@@ -85,7 +86,7 @@ Require one of:
 ### Wiki Parameters
 
 Required:
- - `articles`: a comma-separated list of region labels
+ - `articles`: a comma-separated list of [article](labels/articles.txt) labels
 
 Require one of:
  - `dates`: a `range` of dates
