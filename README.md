@@ -2,6 +2,14 @@
 
 This repo provides documentation and sample code for [DELPHI](http://delphi.midas.cs.cmu.edu/)'s *real-time* epidemiological data API. The API currently only contains U.S. influenza data, but this may be expanded in the future to include additional locations and diseases.
 
+This document contains the following sections:
+
+ - [Explanation of Data Sources](#influenza-data)
+ - [Technical Description of the API](#the-api)
+ - [Sample URLs for Manual Access](#example-urls)
+ - [Sample code for Programatic Access](#code-samples)
+ - [References to Related Work](#references)
+
 # Influenza Data
 
 ### ILINet FluView
@@ -45,13 +53,16 @@ Number of page visits for selected English, Influenza-related wikipedia articles
 
 The base URL is: http://delphi.midas.cs.cmu.edu/epidata/api.php
 
-Epiweeks use the U.S. definition. That is, the first epiweek each year is the week, starting on a Sunday, containing January 4. See [this](http://www.cmmcp.org/epiweek.htm) page for more information.
+Epiweeks use the U.S. definition. That is, the first epiweek each year is the week, starting on a Sunday, containing January 4. See [this page](http://www.cmmcp.org/epiweek.htm) for more information.
 
-`range` parameters can be a single value, a comma-separated list of values, or a hyphenated range of values. Examples include:
- - `201530` *(A single epiweek)*
- - `201401,201501,201601` *(Several epiweeks)*
- - `200501-200552` *(A range of epiweeks)*
- - `20070101-20071231` *(A range of dates)*
+Formatting for epiweeks is YYYYWW and for dates is YYYYMMDD.
+
+`list` parameters consist of a comma-separated list of individual values or, for numeric parameters, a hyphenated range of values. Examples include:
+ - `param=201530` *(A single epiweek)*
+ - `param=201401,201501,201601` *(Several epiweeks)*
+ - `param=200501-200552` *(A range of epiweeks)*
+ - `param=201440,201501-201510` *(Several epiweeks, including a range)*
+ - `param=20070101-20071231` *(A range of dates)*
 
 ### Universal Parameters
 
@@ -60,42 +71,42 @@ The only universally required parameter is `source`, which must be one of: `fluv
 ### FluView Parameters
 
 Required:
- - `epiweeks`: a `range` of epiweeks
- - `regions`: a comma-separated list of [region](labels/regions.txt) labels
+ - `epiweeks`: a `list` of epiweeks
+ - `regions`: a `list` of [region](labels/regions.txt) labels
 
 Optional:
- - `issues`: a `range` of epiweeks
+ - `issues`: a `list` of epiweeks
  - `lag`: a number of weeks
 
 ### GFT Parameters
 
 Required:
- - `epiweeks`: a `range` of epiweeks
- - `locations`: a comma-separated list of [region](labels/regions.txt)/[state](labels/states.txt)/[city](labels/cities.txt) labels
+ - `epiweeks`: a `list` of epiweeks
+ - `locations`: a `list` of [region](labels/regions.txt)/[state](labels/states.txt)/[city](labels/cities.txt) labels
 
 ### Twitter Parameters
 
 Required:
  - `auth`: an authorization token
- - `locations`: a comma-separated list of [region](labels/regions.txt)/[state](labels/states.txt) labels
+ - `locations`: a `list` of [region](labels/regions.txt)/[state](labels/states.txt) labels
 
 Require one of:
- - `dates`: a `range` of dates
- - `epiweeks`: a `range` of epiweeks
+ - `dates`: a `list` of dates
+ - `epiweeks`: a `list` of epiweeks
 
 ### Wiki Parameters
 
 Required:
- - `articles`: a comma-separated list of [article](labels/articles.txt) labels
+ - `articles`: a `list` of [article](labels/articles.txt) labels
 
 Require one of:
- - `dates`: a `range` of dates
- - `epiweeks`: a `range` of epiweeks
+ - `dates`: a `list` of dates
+ - `epiweeks`: a `list` of epiweeks
 
 Optional:
- - `hours`: a `range` of hours
+ - `hours`: a `list` of hours
 
-# Examples
+# Example URLs
 
 ### FluView/GFT/Twitter on 2015w01 (national)
  - http://delphi.midas.cs.cmu.edu/epidata/api.php?source=fluview&regions=nat&epiweeks=201501
@@ -123,6 +134,56 @@ http://delphi.midas.cs.cmu.edu/epidata/api.php?source=fluview&regions=hhs4,hhs6&
 ### Updates to FluView on 2014w53, reported from 2015w01 through 2015w10 (national)
 
 http://delphi.midas.cs.cmu.edu/epidata/api.php?source=fluview&regions=nat&epiweeks=201453&issues=201501-201510
+
+# Code Samples
+
+Libraries are available for [CoffeeScript](code/delphi_epidata.coffee), [JavaScript](code/delphi_epidata.js), [Python](code/delphi_epidata.py), and [R](code/delphi_epidata.R). The following samples show how to import the library and fetch national FluView data for epiweeks `201440` and `201501-201510` (11 weeks total).
+
+### CoffeeScript (in Node.js)
+
+````coffeescript
+# Import
+{Epidata} = require('./delphi_epidata')
+# Fetch data
+callback = (result, message, epidata) ->
+  console.log(result, message, epidata?.length)
+Epidata.fluview(callback, ['nat'], [201440, Epidata.range(201501, 201510)])
+````
+
+### JavaScript (in a web browser)
+
+````html
+<!-- Imports -->
+<script src="jquery.js"></script>
+<script src="delphi_epidata.js"></script>
+<!-- Fetch data -->
+<script>
+  callback = function(result, message, epidata) {
+    console.log(result, message, epidata != null ? epidata.length : void 0);
+  };
+  Epidata.fluview(callback, ['nat'], [201440, Epidata.range(201501, 201510)]);
+</script>
+````
+
+### Python
+
+````python
+# Import
+from delphi_epidata import Epidata
+# Fetch data
+res = Epidata.fluview(['nat'], [201440, Epidata.range(201501, 201510)])
+print(res['result'], res['message'], len(res['epidata']))
+````
+
+### R
+
+````R
+# Import
+source('delphi_epidata.R')
+# Fetch data
+res <- Epidata$fluview(list('nat'), list(201440, Epidata$range(201501, 201510)))
+cat(paste(res$result, res$message, length(res$epidata), "\n"))
+````
 
 # References
 
