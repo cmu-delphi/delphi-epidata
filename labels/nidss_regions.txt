@@ -1,7 +1,7 @@
-Nationwide
-Central
-Eastern
-Kaoping
-Northern
-Southern
-Taipei
+nationwide
+central
+eastern
+kaoping
+northern
+southern
+taipei
