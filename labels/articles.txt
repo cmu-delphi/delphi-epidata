@@ -48,7 +48,6 @@ rimantadine
 shivering
 sore_throat
 swine_influenza
-total
 viral_neuraminidase
 viral_pneumonia
 vomiting
