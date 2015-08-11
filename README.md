@@ -17,7 +17,7 @@ This document contains the following sections:
 Influenza-like illness (ILI) from U.S. Outpatient Influenza-like Illness Surveillance Network (ILINet).
  - Data source: [United States Centers for Disease Control and Prevention](http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html) (CDC)
  - Temporal Resolution: Weekly* from 1997w40
- - Spatial Resolution: By [HHS region](http://www.hhs.gov/iea/regional/) ([11](labels/regions.txt))
+ - Spatial Resolution: By [HHS region](http://www.hhs.gov/iea/regional/) ([10+1](labels/regions.txt))
  - Open access
 
 *Data is usually released on Friday
@@ -27,7 +27,7 @@ Influenza-like illness (ILI) from U.S. Outpatient Influenza-like Illness Surveil
 Estimate of influenza activity based on volume of certain search queries.
  - Data source: [Google](https://www.google.org/flutrends/)
  - Temporal Resolution: Weekly* from 2003w40
- - Spatial Resolution: By [HHS region](http://www.hhs.gov/iea/regional/) ([11](labels/regions.txt)), by state/territory ([51](labels/states.txt)), and by city ([97](labels/cities.txt))
+ - Spatial Resolution: By [HHS region](http://www.hhs.gov/iea/regional/) ([10+1](labels/regions.txt)), by state/territory ([50+1](labels/states.txt)), and by city ([97](labels/cities.txt))
  - Open access
 
 *Data is reported by week, but values for the current week are revised daily
@@ -37,7 +37,7 @@ Estimate of influenza activity based on volume of certain search queries.
 Estimate of influenza activity based on analysis of language used in tweets.
  - Data source: [HealthTweets](http://www.healthtweets.org/)
  - Temporal Resolution: Daily and weekly from 2011-12-01 (2011w48)
- - Spatial Resolution: By [HHS region](http://www.hhs.gov/iea/regional/) ([11](labels/regions.txt)), and by state/territory ([51](labels/states.txt))
+ - Spatial Resolution: By [HHS region](http://www.hhs.gov/iea/regional/) ([10+1](labels/regions.txt)), and by state/territory ([50+1](labels/states.txt))
  - Restricted access: DELPHI doesn't have permission to share this dataset
 
 ### Wikipedia Access Logs
@@ -54,7 +54,7 @@ Number of page visits for selected English, Influenza-related wikipedia articles
 Outpatient ILI from Taiwan's National Infectious Disease Statistics System (NIDSS).
  - Data source: [Taiwan CDC](http://nidss.cdc.gov.tw/en/CDCWNH01.aspx?dc=wnh)
  - Temporal Resolution: Weekly* from 2008w14
- - Spatial Resolution: By [hexchotomy region](https://en.wikipedia.org/wiki/Regions_of_Taiwan#Hexchotomy) ([11](labels/nidss_regions.txt))
+ - Spatial Resolution: By [hexchotomy region](https://en.wikipedia.org/wiki/Regions_of_Taiwan#Hexchotomy) ([6+1](labels/nidss_regions.txt))
  - Open access
 
 *Data is usually released on Tuesday
