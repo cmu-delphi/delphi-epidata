@@ -46,7 +46,7 @@ Number of page visits for selected English, Influenza-related wikipedia articles
  - Data source: [Wikimedia](https://dumps.wikimedia.org/other/pagecounts-raw/)
  - Temporal Resolution: Hourly, daily, and weekly from 2007-12-09 (2007w50)
  - Spatial Resolution: N/A
- - Other resolution: By article ([55](labels/articles.txt))
+ - Other resolution: By article ([54](labels/articles.txt))
  - Open access
 
 ### NIDSS Flu
