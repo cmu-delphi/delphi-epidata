@@ -136,3 +136,25 @@ class Epidata:
       params['hours'] = Epidata._list(hours)
     # Make the API call
     return Epidata._request(params)
+
+  # Fetch NIDSS flu data
+  @staticmethod
+  def nidss(regions, epiweeks, issues=None, lag=None):
+    ''' Fetch NIDSS flu data '''
+    # Check parameters
+    if regions is None or epiweeks is None:
+      raise Exception('`regions` and `epiweeks` are both required')
+    if issues is not None and lag is not None:
+      raise Exception('`issues` and `lag` are mutually exclusive')
+    # Set up request
+    params = {
+      'source': 'nidss',
+      'regions': Epidata._list(regions),
+      'epiweeks': Epidata._list(epiweeks),
+    }
+    if issues is not None:
+      params['issues'] = Epidata._list(issues)
+    if lag is not None:
+      params['lag'] = lag
+    # Make the API call
+    return Epidata._request(params)

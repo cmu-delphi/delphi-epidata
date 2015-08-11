@@ -133,5 +133,25 @@ class Epidata
     # Make the API call
     _request(callback, params)
 
+  # Fetch NIDSS flu data
+  @nidss: (callback, regions, epiweeks, issues, lag) ->
+    # Check parameters
+    unless regions? and epiweeks?
+      throw { msg: '`regions` and `epiweeks` are both required' }
+    if issues? and lag?
+      throw { msg: '`issues` and `lag` are mutually exclusive' }
+    # Set up request
+    params =
+      'source': 'nidss'
+      'regions': _list(regions)
+      'epiweeks': _list(epiweeks)
+    if issues?
+      params.issues = _list(issues)
+    if lag?
+      params.lag = lag
+    # Make the API call
+    _request(callback, params)
+
+
 # Export the API to the global environment
 (exports ? window).Epidata = Epidata

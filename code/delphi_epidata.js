@@ -185,6 +185,32 @@ Notes:
       return _request(callback, params);
     };
 
+    Epidata.nidss = function(callback, regions, epiweeks, issues, lag) {
+      var params;
+      if (!((regions != null) && (epiweeks != null))) {
+        throw {
+          msg: '`regions` and `epiweeks` are both required'
+        };
+      }
+      if ((issues != null) && (lag != null)) {
+        throw {
+          msg: '`issues` and `lag` are mutually exclusive'
+        };
+      }
+      params = {
+        'source': 'nidss',
+        'regions': _list(regions),
+        'epiweeks': _list(epiweeks)
+      };
+      if (issues != null) {
+        params.issues = _list(issues);
+      }
+      if (lag != null) {
+        params.lag = lag;
+      }
+      return _request(callback, params);
+    };
+
     return Epidata;
 
   })();
