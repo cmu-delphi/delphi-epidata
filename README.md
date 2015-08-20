@@ -1,10 +1,11 @@
 # delphi-epidata
 
-This repo provides documentation and sample code for [DELPHI](http://delphi.midas.cs.cmu.edu/)'s *real-time* epidemiological data API. The API currently only contains influenza data, but this may be expanded in the future.
+This repo provides documentation and sample code for [DELPHI](http://delphi.midas.cs.cmu.edu/)'s *real-time* epidemiological data API. The API currently contains influenza and dengue data.
 
 This document contains the following sections:
 
- - [Explanation of Data Sources](#influenza-data)
+ - [Influenza Data Sources](#influenza-data)
+ - [Dengue Data Sources](#dengue-data)
  - [Technical Description of the API](#the-api)
  - [Sample URLs for Manual Access](#example-urls)
  - [Sample code for Programatic Access](#code-samples)
@@ -60,6 +61,17 @@ Outpatient ILI from Taiwan's National Infectious Disease Statistics System (NIDS
 *Data is usually released on Tuesday
 
 
+# Dengue Data
+
+### NIDSS Dengue
+
+Counts of confirmed dengue cases from Taiwan's NIDSS.
+ - Data source: [Taiwan CDC](http://nidss.cdc.gov.tw/en/SingleDisease.aspx?dc=1&dt=4&disease=061&position=1)
+ - Temporal Resolution: Weekly from 2003w01
+ - Spatial Resolution: By [hexchotomy region](https://en.wikipedia.org/wiki/Regions_of_Taiwan#Hexchotomy) ([6+1](labels/nidss_regions.txt)) and by [city/county](https://en.wikipedia.org/wiki/List_of_administrative_divisions_of_Taiwan) ([22](labels/nidss_locations.txt))
+ - Open access
+
+
 # The API
 
 The base URL is: http://delphi.midas.cs.cmu.edu/epidata/api.php
@@ -77,7 +89,7 @@ Formatting for epiweeks is YYYYWW and for dates is YYYYMMDD.
 
 ### Universal Parameters
 
-The only universally required parameter is `source`, which must be one of: `fluview`, `gft`, `twitter`, `wiki`, or `nidss`
+The only universally required parameter is `source`, which must be one of: `fluview`, `gft`, `twitter`, `wiki`, `nidss_flu`, or `nidss_dengue`
 
 ### FluView Parameters
 
@@ -117,7 +129,7 @@ Require one of:
 Optional:
  - `hours`: a `list` of hours
 
-### NIDSS Parameters
+### NIDSS-Flu Parameters
 
 Required:
  - `epiweeks`: a `list` of epiweeks
@@ -126,6 +138,12 @@ Required:
 Optional:
  - `issues`: a `list` of epiweeks
  - `lag`: a number of weeks
+
+### NIDSS-Dengue Parameters
+
+Required:
+ - `epiweeks`: a `list` of epiweeks
+ - `locations`: a `list` of [region](labels/nidss_regions.txt) and/or [location](labels/nidss_locations.txt) labels
 
 
 # Example URLs
@@ -157,10 +175,18 @@ http://delphi.midas.cs.cmu.edu/epidata/api.php?source=fluview&regions=hhs4,hhs6&
 
 http://delphi.midas.cs.cmu.edu/epidata/api.php?source=fluview&regions=nat&epiweeks=201453&issues=201501-201510
 
-### NIDSS on 2015w01 (national)
- - http://delphi.midas.cs.cmu.edu/epidata/api.php?source=nidss&regions=Nationwide&epiweeks=201501
+### NIDSS-Flu on 2015w01 (national)
 
-        {"result":1,"epidata":[{"release_date":"2015-08-04","region":"Nationwide","issue":201530,"epiweek":201501,"lag":29,"visits":65685,"ili":1.21}],"message":"success"}
+http://delphi.midas.cs.cmu.edu/epidata/api.php?source=nidss_flu&regions=Nationwide&epiweeks=201501
+
+    {"result":1,"epidata":[{"release_date":"2015-08-04","region":"Nationwide","issue":201530,"epiweek":201501,"lag":29,"visits":65685,"ili":1.21}],"message":"success"}
+
+### NIDSS-Dengue on 2015w01 (national)
+
+http://delphi.midas.cs.cmu.edu/epidata/api.php?source=nidss_dengue&locations=Nationwide&epiweeks=201501
+
+    {"result":1,"epidata":[{"location":"nationwide","epiweek":201501,"count":20}],"message":"success"}
+
 
 # Code Samples
 
