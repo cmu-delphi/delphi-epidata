@@ -142,7 +142,7 @@ Epidata <- (function() {
   }
 
   # Fetch NIDSS flu data
-  nidss <- function(regions, epiweeks, issues, lag) {
+  nidss.flu <- function(regions, epiweeks, issues, lag) {
     # Check parameters
     if(missing(regions) || missing(epiweeks)) {
       stop('`regions` and `epiweeks` are both required')
@@ -152,7 +152,7 @@ Epidata <- (function() {
     }
     # Set up request
     params <- list(
-      source = 'nidss',
+      source = 'nidss_flu',
       regions = .list(regions),
       epiweeks = .list(epiweeks)
     )
@@ -166,6 +166,22 @@ Epidata <- (function() {
     return(.request(params))
   }
 
+  # Fetch NIDSS dengue data
+  nidss.dengue <- function(locations, epiweeks) {
+    # Check parameters
+    if(missing(locations) || missing(epiweeks)) {
+      stop('`locations` and `epiweeks` are both required')
+    }
+    # Set up request
+    params <- list(
+      source = 'nidss_dengue',
+      locations = .list(locations),
+      epiweeks = .list(epiweeks)
+    )
+    # Make the API call
+    return(.request(params))
+  }
+
   # Export the public methods
   return(list(
     range = range,
@@ -173,6 +189,7 @@ Epidata <- (function() {
     gft = gft,
     twitter = twitter,
     wiki = wiki,
-    nidss = nidss
+    nidss.flu = nidss.flu,
+    nidss.dengue = nidss.dengue
   ))
 })()

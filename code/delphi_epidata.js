@@ -185,7 +185,7 @@ Notes:
       return _request(callback, params);
     };
 
-    Epidata.nidss = function(callback, regions, epiweeks, issues, lag) {
+    Epidata.nidss_flu = function(callback, regions, epiweeks, issues, lag) {
       var params;
       if (!((regions != null) && (epiweeks != null))) {
         throw {
@@ -198,7 +198,7 @@ Notes:
         };
       }
       params = {
-        'source': 'nidss',
+        'source': 'nidss_flu',
         'regions': _list(regions),
         'epiweeks': _list(epiweeks)
       };
@@ -208,6 +208,21 @@ Notes:
       if (lag != null) {
         params.lag = lag;
       }
+      return _request(callback, params);
+    };
+
+    Epidata.nidss_dengue = function(callback, locations, epiweeks) {
+      var params;
+      if (!((locations != null) && (epiweeks != null))) {
+        throw {
+          msg: '`locations` and `epiweeks` are both required'
+        };
+      }
+      params = {
+        'source': 'nidss_dengue',
+        'locations': _list(locations),
+        'epiweeks': _list(epiweeks)
+      };
       return _request(callback, params);
     };
 

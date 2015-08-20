@@ -134,7 +134,7 @@ class Epidata
     _request(callback, params)
 
   # Fetch NIDSS flu data
-  @nidss: (callback, regions, epiweeks, issues, lag) ->
+  @nidss_flu: (callback, regions, epiweeks, issues, lag) ->
     # Check parameters
     unless regions? and epiweeks?
       throw { msg: '`regions` and `epiweeks` are both required' }
@@ -142,13 +142,26 @@ class Epidata
       throw { msg: '`issues` and `lag` are mutually exclusive' }
     # Set up request
     params =
-      'source': 'nidss'
+      'source': 'nidss_flu'
       'regions': _list(regions)
       'epiweeks': _list(epiweeks)
     if issues?
       params.issues = _list(issues)
     if lag?
       params.lag = lag
+    # Make the API call
+    _request(callback, params)
+
+  # Fetch NIDSS dengue data
+  @nidss_dengue: (callback, locations, epiweeks) ->
+    # Check parameters
+    unless locations? and epiweeks?
+      throw { msg: '`locations` and `epiweeks` are both required' }
+    # Set up request
+    params =
+      'source': 'nidss_dengue'
+      'locations': _list(locations)
+      'epiweeks': _list(epiweeks)
     # Make the API call
     _request(callback, params)
 

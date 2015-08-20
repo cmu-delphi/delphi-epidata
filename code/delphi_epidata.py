@@ -139,7 +139,7 @@ class Epidata:
 
   # Fetch NIDSS flu data
   @staticmethod
-  def nidss(regions, epiweeks, issues=None, lag=None):
+  def nidss_flu(regions, epiweeks, issues=None, lag=None):
     ''' Fetch NIDSS flu data '''
     # Check parameters
     if regions is None or epiweeks is None:
@@ -148,7 +148,7 @@ class Epidata:
       raise Exception('`issues` and `lag` are mutually exclusive')
     # Set up request
     params = {
-      'source': 'nidss',
+      'source': 'nidss_flu',
       'regions': Epidata._list(regions),
       'epiweeks': Epidata._list(epiweeks),
     }
@@ -156,5 +156,21 @@ class Epidata:
       params['issues'] = Epidata._list(issues)
     if lag is not None:
       params['lag'] = lag
+    # Make the API call
+    return Epidata._request(params)
+
+  # Fetch NIDSS dengue data
+  @staticmethod
+  def nidss_dengue(locations, epiweeks):
+    ''' Fetch NIDSS dengue data '''
+    # Check parameters
+    if locations is None or epiweeks is None:
+      raise Exception('`locations` and `epiweeks` are both required')
+    # Set up request
+    params = {
+      'source': 'nidss_dengue',
+      'locations': Epidata._list(locations),
+      'epiweeks': Epidata._list(epiweeks),
+    }
     # Make the API call
     return Epidata._request(params)
