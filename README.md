@@ -1,6 +1,6 @@
 # delphi-epidata
 
-This repo provides documentation and sample code for [DELPHI](http://delphi.midas.cs.cmu.edu/)'s *real-time* epidemiological data API. The API currently contains influenza and dengue data.
+This repo provides documentation and sample code for [DELPHI](http://delphi.midas.cs.cmu.edu/)'s *real-time* epidemiological data API. The API currently contains influenza and dengue data for the United States and Taiwan.
 
 This document contains the following sections:
 
@@ -11,17 +11,28 @@ This document contains the following sections:
  - [Sample code for Programatic Access](#code-samples)
  - [References to Related Work](#references)
 
+
 # Influenza Data
 
-### ILINet FluView
+### FluView
 
-Influenza-like illness (ILI) from U.S. Outpatient Influenza-like Illness Surveillance Network (ILINet).
+Influenza-like illness (ILI) from U.S. Outpatient Influenza-like Illness Surveillance Network (ILINet), aggregated at the regional and national levels.
  - Data source: [United States Centers for Disease Control and Prevention](http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html) (CDC)
  - Temporal Resolution: Weekly* from 1997w40
  - Spatial Resolution: By [HHS region](http://www.hhs.gov/iea/regional/) ([10+1](labels/regions.txt))
  - Open access
 
 *Data is usually released on Friday
+
+
+### ILINet
+
+An *estimate* of state-level ILI as reported to ILINet. Most of the data was digitized from charts and other lossy sources, and is not necessarily accurate or up-to-date. This is a static data source, and will not be frequently updated.
+ - Data source: Several online sources, including each state's health department website (listed [here](http://www.cdc.gov/flu/weekly/))
+ - Temporal Resolution: Weekly, from 2010w40 (or later) until 2015w34 (or earlier)
+ - Spatial Resolution: By state/territory ([50+1](labels/states.txt))
+ - Open access
+
 
 ### Google Flu Trends
 
@@ -33,6 +44,7 @@ Estimate of influenza activity based on volume of certain search queries.
 
 *Data is reported by week, but values for the current week are revised daily
 
+
 ### Twitter Stream
 
 Estimate of influenza activity based on analysis of language used in tweets.
@@ -40,6 +52,7 @@ Estimate of influenza activity based on analysis of language used in tweets.
  - Temporal Resolution: Daily and weekly from 2011-12-01 (2011w48)
  - Spatial Resolution: By [HHS region](http://www.hhs.gov/iea/regional/) ([10+1](labels/regions.txt)), and by state/territory ([50+1](labels/states.txt))
  - Restricted access: DELPHI doesn't have permission to share this dataset
+
 
 ### Wikipedia Access Logs
 
@@ -49,6 +62,7 @@ Number of page visits for selected English, Influenza-related wikipedia articles
  - Spatial Resolution: N/A
  - Other resolution: By article ([54](labels/articles.txt))
  - Open access
+
 
 ### NIDSS Flu
 
@@ -89,7 +103,7 @@ Formatting for epiweeks is YYYYWW and for dates is YYYYMMDD.
 
 ### Universal Parameters
 
-The only universally required parameter is `source`, which must be one of: `fluview`, `gft`, `twitter`, `wiki`, `nidss_flu`, or `nidss_dengue`
+The only universally required parameter is `source`, which must be one of: `fluview`, `ilinet`, `gft`, `twitter`, `wiki`, `nidss_flu`, or `nidss_dengue`
 
 ### FluView Parameters
 
@@ -100,6 +114,14 @@ Required:
 Optional:
  - `issues`: a `list` of epiweeks
  - `lag`: a number of weeks
+
+### ILINet Parameters
+
+Required:
+ - `epiweeks`: a `list` of epiweeks
+ - `locations`: a `list` of [region](labels/regions.txt)/[state](labels/states.txt) labels
+
+Note: For convenience and consistency, the `ilinet` source provides national and regional ILI in addition to state-level ILI, transparently using the `fluview` data source when necessary.
 
 ### GFT Parameters
 
@@ -161,6 +183,12 @@ Required:
 
         {"result":1,"epidata":[...],"message":"success"}
 
+### ILINet on 2015w01 (state, regional, and national)
+
+http://delphi.midas.cs.cmu.edu/epidata/api.php?source=ilinet&epiweeks=201501&locations=tx,hhs6,nat
+
+    {"result":1,"epidata":[{"epiweek":201501,"location":"nat","ili":4.0936926847062,"wili":4.2379135658604},{"epiweek":201501,"location":"hhs6","ili":6.0084085989824,"wili":8.32554468951},{"location":"TX","epiweek":201501,"ili":11.18}],"message":"success"}
+
 ### Wiki article "influenza" on 2015w01
 
 http://delphi.midas.cs.cmu.edu/epidata/api.php?source=wiki&articles=influenza&epiweeks=201501
@@ -211,7 +239,7 @@ Epidata.fluview(callback, ['nat'], [201440, Epidata.range(201501, 201510)])
 <script src="delphi_epidata.js"></script>
 <!-- Fetch data -->
 <script>
-  callback = function(result, message, epidata) {
+  var callback = function(result, message, epidata) {
     console.log(result, message, epidata != null ? epidata.length : void 0);
   };
   Epidata.fluview(callback, ['nat'], [201440, Epidata.range(201501, 201510)]);
