@@ -58,7 +58,7 @@ class Epidata:
   # Fetch FluView data
   @staticmethod
   def fluview(regions, epiweeks, issues=None, lag=None):
-    ''' Fetch fluview data '''
+    ''' Fetch FluView data '''
     # Check parameters
     if regions is None or epiweeks is None:
       raise Exception('`regions` and `epiweeks` are both required')
@@ -74,6 +74,22 @@ class Epidata:
       params['issues'] = Epidata._list(issues)
     if lag is not None:
       params['lag'] = lag
+    # Make the API call
+    return Epidata._request(params)
+
+  # Fetch ILINet data
+  @staticmethod
+  def ilinet(locations, epiweeks):
+    ''' Fetch ILINet data '''
+    # Check parameters
+    if locations is None or epiweeks is None:
+      raise Exception('`locations` and `epiweeks` are both required')
+    # Set up request
+    params = {
+      'source': 'ilinet',
+      'locations': Epidata._list(locations),
+      'epiweeks': Epidata._list(epiweeks),
+    }
     # Make the API call
     return Epidata._request(params)
 
@@ -96,6 +112,7 @@ class Epidata:
   # Fetch HealthTweets data
   @staticmethod
   def twitter(auth, locations, dates=None, epiweeks=None):
+    ''' Fetch HealthTweets data '''
     # Check parameters
     if auth is None or locations is None:
       raise Exception('`auth` and `locations` are both required')

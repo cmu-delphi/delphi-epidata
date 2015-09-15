@@ -116,6 +116,21 @@ Notes:
       return _request(callback, params);
     };
 
+    Epidata.ilinet = function(callback, locations, epiweeks) {
+      var params;
+      if (!((locations != null) && (epiweeks != null))) {
+        throw {
+          msg: '`locations` and `epiweeks` are both required'
+        };
+      }
+      params = {
+        'source': 'ilinet',
+        'locations': _list(locations),
+        'epiweeks': _list(epiweeks)
+      };
+      return _request(callback, params);
+    };
+
     Epidata.gft = function(callback, locations, epiweeks) {
       var params;
       if (!((locations != null) && (epiweeks != null))) {
@@ -222,6 +237,17 @@ Notes:
         'source': 'nidss_dengue',
         'locations': _list(locations),
         'epiweeks': _list(epiweeks)
+      };
+      return _request(callback, params);
+    };
+
+    Epidata.delphi = function(callback, system, epiweek, location) {
+      var params;
+      params = {
+        'source': 'delphi',
+        'system': system,
+        'epiweek': epiweek,
+        'location': location
       };
       return _request(callback, params);
     };

@@ -73,6 +73,22 @@ Epidata <- (function() {
     return(.request(params))
   }
 
+  # Fetch ILINet data
+  ilinet <- function(locations, epiweeks) {
+    # Check parameters
+    if(missing(locations) || missing(epiweeks)) {
+      stop('`locations` and `epiweeks` are both required')
+    }
+    # Set up request
+    params <- list(
+      source = 'ilinet',
+      locations = .list(locations),
+      epiweeks = .list(epiweeks)
+    )
+    # Make the API call
+    return(.request(params))
+  }
+
   # Fetch Google Flu Trends data
   gft <- function(locations, epiweeks) {
     # Check parameters
@@ -186,6 +202,7 @@ Epidata <- (function() {
   return(list(
     range = range,
     fluview = fluview,
+    ilinet = ilinet,
     gft = gft,
     twitter = twitter,
     wiki = wiki,

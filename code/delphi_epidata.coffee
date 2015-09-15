@@ -81,6 +81,19 @@ class Epidata
     # Make the API call
     _request(callback, params)
 
+  # Fetch ILINet data
+  @ilinet: (callback, locations, epiweeks) ->
+    # Check parameters
+    unless locations? and epiweeks?
+      throw { msg: '`locations` and `epiweeks` are both required' }
+    # Set up request
+    params =
+      'source': 'ilinet'
+      'locations': _list(locations)
+      'epiweeks': _list(epiweeks)
+    # Make the API call
+    _request(callback, params)
+
   # Fetch Google Flu Trends data
   @gft: (callback, locations, epiweeks) ->
     # Check parameters
