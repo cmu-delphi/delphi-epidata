@@ -178,6 +178,20 @@ class Epidata
     # Make the API call
     _request(callback, params)
 
+  # Fetch Delphi's forecast
+  @delphi: (callback, system, location, epiweek) ->
+    # Check parameters
+    unless system? and location? and epiweek?
+      throw { msg: '`system`, `location`, and `epiweek` are all required' }
+    # Set up request
+    params =
+      'source': 'delphi'
+      'system': system
+      'location': location
+      'epiweek': epiweek
+    # Make the API call
+    _request(callback, params)
+
 
 # Export the API to the global environment
 (exports ? window).Epidata = Epidata

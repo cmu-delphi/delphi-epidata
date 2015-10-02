@@ -241,13 +241,18 @@ Notes:
       return _request(callback, params);
     };
 
-    Epidata.delphi = function(callback, system, epiweek, location) {
+    Epidata.delphi = function(callback, system, location, epiweek) {
       var params;
+      if (!((system != null) && (location != null) && (epiweek != null))) {
+        throw {
+          msg: '`system`, `location`, and `epiweek` are all required'
+        };
+      }
       params = {
         'source': 'delphi',
         'system': system,
-        'epiweek': epiweek,
-        'location': location
+        'location': location,
+        'epiweek': epiweek
       };
       return _request(callback, params);
     };

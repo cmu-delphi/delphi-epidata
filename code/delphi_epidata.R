@@ -198,6 +198,23 @@ Epidata <- (function() {
     return(.request(params))
   }
 
+  # Fetch Delphi's forecast
+  delphi <- function(system, location, epiweek) {
+    # Check parameters
+    if(missing(system) || missing(location) || missing(epiweek)) {
+      stop('`system`, `location`, and `epiweek` are all required')
+    }
+    # Set up request
+    params <- list(
+      source = 'delphi',
+      system = system,
+      location = location,
+      epiweek = epiweek
+    )
+    # Make the API call
+    return(.request(params))
+  }
+
   # Export the public methods
   return(list(
     range = range,
@@ -207,6 +224,7 @@ Epidata <- (function() {
     twitter = twitter,
     wiki = wiki,
     nidss.flu = nidss.flu,
-    nidss.dengue = nidss.dengue
+    nidss.dengue = nidss.dengue,
+    delphi = delphi
   ))
 })()
