@@ -199,16 +199,15 @@ Epidata <- (function() {
   }
 
   # Fetch Delphi's forecast
-  delphi <- function(system, location, epiweek) {
+  delphi <- function(system, epiweek) {
     # Check parameters
-    if(missing(system) || missing(location) || missing(epiweek)) {
-      stop('`system`, `location`, and `epiweek` are all required')
+    if(missing(system) || missing(epiweek)) {
+      stop('`system` and `epiweek` are both required')
     }
     # Set up request
     params <- list(
       source = 'delphi',
       system = system,
-      location = location,
       epiweek = epiweek
     )
     # Make the API call

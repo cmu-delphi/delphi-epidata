@@ -179,15 +179,14 @@ class Epidata
     _request(callback, params)
 
   # Fetch Delphi's forecast
-  @delphi: (callback, system, location, epiweek) ->
+  @delphi: (callback, system, epiweek) ->
     # Check parameters
-    unless system? and location? and epiweek?
-      throw { msg: '`system`, `location`, and `epiweek` are all required' }
+    unless system? and epiweek?
+      throw { msg: '`system` and `epiweek` are both required' }
     # Set up request
     params =
       'source': 'delphi'
       'system': system
-      'location': location
       'epiweek': epiweek
     # Make the API call
     _request(callback, params)

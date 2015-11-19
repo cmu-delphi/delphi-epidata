@@ -194,16 +194,15 @@ class Epidata:
 
   # Fetch Delphi's forecast
   @staticmethod
-  def delphi(system, location, epiweek):
+  def delphi(system, epiweek):
     ''' Fetch Delphi's forecast '''
     # Check parameters
-    if system is None or location is None or epiweek is None:
-      raise Exception('`system`, `location`, and `epiweek` are all required')
+    if system is None or epiweek is None:
+      raise Exception('`system` and `epiweek` are both required')
     # Set up request
     params = {
       'source': 'delphi',
       'system': system,
-      'location': location,
       'epiweek': epiweek,
     }
     # Make the API call
