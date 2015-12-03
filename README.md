@@ -36,13 +36,11 @@ An *estimate* of state-level ILI as reported to ILINet. Most of the data was dig
 
 ### Google Flu Trends
 
-Estimate of influenza activity based on volume of certain search queries.
+Estimate of influenza activity based on volume of certain search queries. Google has discontinued Flu Trends, and this is now a static data source.
  - Data source: [Google](https://www.google.org/flutrends/)
- - Temporal Resolution: Weekly* from 2003w40
+ - Temporal Resolution: Weekly from 2003w40 until 2015w32
  - Spatial Resolution: By [HHS region](http://www.hhs.gov/iea/regional/) ([10+1](labels/regions.txt)), by state/territory ([50+1](labels/states.txt)), and by city ([97](labels/cities.txt))
  - Open access
-
-*Data is reported by week, but values for the current week are revised daily
 
 
 ### Twitter Stream
