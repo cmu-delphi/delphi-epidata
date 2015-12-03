@@ -109,6 +109,24 @@ class Epidata:
     # Make the API call
     return Epidata._request(params)
 
+  # Fetch Google Health Trends data
+  @staticmethod
+  def ght(auth, locations, epiweeks, query):
+    ''' Fetch Google Health Trends data '''
+    # Check parameters
+    if auth is None or locations is None or epiweeks is None or query is None:
+      raise Exception('`auth`, `locations`, `epiweeks`, and `query` are all required')
+    # Set up request
+    params = {
+      'source': 'ght',
+      'auth': auth,
+      'locations': Epidata._list(locations),
+      'epiweeks': Epidata._list(epiweeks),
+      'query': query,
+    }
+    # Make the API call
+    return Epidata._request(params)
+
   # Fetch HealthTweets data
   @staticmethod
   def twitter(auth, locations, dates=None, epiweeks=None):

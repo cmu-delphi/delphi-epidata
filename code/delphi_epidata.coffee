@@ -107,6 +107,21 @@ class Epidata
     # Make the API call
     _request(callback, params)
 
+  # Fetch Google Health Trends data
+  @ght: (callback, auth, locations, epiweeks, query) ->
+    # Check parameters
+    unless auth? and locations? and epiweeks? and query?
+      throw { msg: '`auth`, `locations`, `epiweeks`, and `query` are all required' }
+    # Set up request
+    params =
+      'source': 'ght'
+      'auth': auth
+      'locations': _list(locations)
+      'epiweeks': _list(epiweeks)
+      'query': query
+    # Make the API call
+    _request(callback, params)
+
   # Fetch HealthTweets data
   @twitter: (callback, auth, locations, dates, epiweeks) ->
     # Check parameters

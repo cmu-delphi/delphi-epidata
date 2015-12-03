@@ -146,6 +146,23 @@ Notes:
       return _request(callback, params);
     };
 
+    Epidata.ght = function(callback, auth, locations, epiweeks, query) {
+      var params;
+      if (!((auth != null) && (locations != null) && (epiweeks != null) && (query != null))) {
+        throw {
+          msg: '`auth`, `locations`, `epiweeks`, and `query` are all required'
+        };
+      }
+      params = {
+        'source': 'ght',
+        'auth': auth,
+        'locations': _list(locations),
+        'epiweeks': _list(epiweeks),
+        'query': query
+      };
+      return _request(callback, params);
+    };
+
     Epidata.twitter = function(callback, auth, locations, dates, epiweeks) {
       var params;
       if (!((auth != null) && (locations != null))) {

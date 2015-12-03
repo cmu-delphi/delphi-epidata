@@ -105,6 +105,24 @@ Epidata <- (function() {
     return(.request(params))
   }
 
+  # Fetch Google Health Trends data
+  ght <- function(auth, locations, epiweeks, query) {
+    # Check parameters
+    if(missing(auth) || missing(locations) || missing(epiweeks) || missing(query)) {
+      stop('`auth`, `locations`, `epiweeks`, and `query` are all required')
+    }
+    # Set up request
+    params <- list(
+      source = 'ght',
+      auth = auth,
+      locations = .list(locations),
+      epiweeks = .list(epiweeks),
+      query = query
+    )
+    # Make the API call
+    return(.request(params))
+  }
+
   # Fetch HealthTweets data
   twitter <- function(auth, locations, dates, epiweeks) {
     # Check parameters
@@ -220,6 +238,7 @@ Epidata <- (function() {
     fluview = fluview,
     ilinet = ilinet,
     gft = gft,
+    ght = ght,
     twitter = twitter,
     wiki = wiki,
     nidss.flu = nidss.flu,
