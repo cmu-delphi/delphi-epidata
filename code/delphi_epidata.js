@@ -283,9 +283,9 @@ Notes:
       params = {
         'source': 'signals',
         'auth': auth,
-        'names': names,
-        'locations': locations,
-        'epiweeks': epiweeks
+        'names': _list(names),
+        'locations': _list(locations),
+        'epiweeks': _list(epiweeks)
       };
       return _request(callback, params);
     };

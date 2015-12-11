@@ -237,9 +237,9 @@ class Epidata:
     params = {
       'source': 'signals',
       'auth': auth,
-      'names': names,
-      'locations': locations,
-      'epiweeks': epiweeks,
+      'names': Epidata._list(names),
+      'locations': Epidata._list(locations),
+      'epiweeks': Epidata._list(epiweeks),
     }
     # Make the API call
     return Epidata._request(params)

@@ -215,9 +215,9 @@ class Epidata
     params =
       'source': 'signals'
       'auth': auth
-      'names': names
-      'locations': locations
-      'epiweeks': epiweeks
+      'names': _list(names)
+      'locations': _list(locations)
+      'epiweeks': _list(epiweeks)
     # Make the API call
     _request(callback, params)
 

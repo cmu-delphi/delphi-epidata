@@ -242,9 +242,9 @@ Epidata <- (function() {
     params <- list(
       source = 'signals',
       auth = auth,
-      names = names,
-      locations = locations,
-      epiweeks = epiweeks
+      names = .list(names),
+      locations = .list(locations),
+      epiweeks = .list(epiweeks)
     )
     # Make the API call
     return(.request(params))
