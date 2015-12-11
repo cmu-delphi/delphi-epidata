@@ -232,6 +232,24 @@ Epidata <- (function() {
     return(.request(params))
   }
 
+  # Fetch Delphi's digital surveillance signals
+  signals <- function(auth, names, locations, epiweeks) {
+    # Check parameters
+    if(missing(auth) || missing(names) || missing(locations) || missing(epiweeks)) {
+      stop('`auth`, `names`, `locations`, and `epiweeks` are all required')
+    }
+    # Set up request
+    params <- list(
+      source = 'signals',
+      auth = auth,
+      names = names,
+      locations = locations,
+      epiweeks = epiweeks
+    )
+    # Make the API call
+    return(.request(params))
+  }
+
   # Export the public methods
   return(list(
     range = range,
@@ -243,6 +261,7 @@ Epidata <- (function() {
     wiki = wiki,
     nidss.flu = nidss.flu,
     nidss.dengue = nidss.dengue,
-    delphi = delphi
+    delphi = delphi,
+    signals = signals
   ))
 })()

@@ -225,3 +225,21 @@ class Epidata:
     }
     # Make the API call
     return Epidata._request(params)
+
+  # Fetch Delphi's digital surveillance signals
+  @staticmethod
+  def signals(auth, names, locations, epiweeks):
+    ''' Fetch Delphi's digital surveillance signals '''
+    # Check parameters
+    if auth is None or names is None or locations is None or epiweeks is None:
+      raise Exception('`auth`, `names`, `locations`, and `epiweeks` are all required')
+    # Set up request
+    params = {
+      'source': 'signals',
+      'auth': auth,
+      'names': names,
+      'locations': locations,
+      'epiweeks': epiweeks,
+    }
+    # Make the API call
+    return Epidata._request(params)

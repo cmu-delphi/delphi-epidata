@@ -273,6 +273,23 @@ Notes:
       return _request(callback, params);
     };
 
+    Epidata.signals = function(callback, auth, names, locations, epiweeks) {
+      var params;
+      if (!((auth != null) && (names != null) && (locations != null) && (epiweeks != null))) {
+        throw {
+          msg: '`auth`, `names`, `locations`, and `epiweeks` are all required'
+        };
+      }
+      params = {
+        'source': 'signals',
+        'auth': auth,
+        'names': names,
+        'locations': locations,
+        'epiweeks': epiweeks
+      };
+      return _request(callback, params);
+    };
+
     return Epidata;
 
   })();

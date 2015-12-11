@@ -206,6 +206,21 @@ class Epidata
     # Make the API call
     _request(callback, params)
 
+  # Fetch Delphi's digital surveillance signals
+  @signals: (callback, auth, names, locations, epiweeks) ->
+    # Check parameters
+    unless auth? and names? and locations? and epiweeks?
+      throw { msg: '`auth`, `names`, `locations`, and `epiweeks` are all required' }
+    # Set up request
+    params =
+      'source': 'signals'
+      'auth': auth
+      'names': names
+      'locations': locations
+      'epiweeks': epiweeks
+    # Make the API call
+    _request(callback, params)
+
 
 # Export the API to the global environment
 (exports ? window).Epidata = Epidata
