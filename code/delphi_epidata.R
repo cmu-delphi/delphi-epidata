@@ -250,6 +250,22 @@ Epidata <- (function() {
     return(.request(params))
   }
 
+  # Fetch Delphi's wILI nowcast
+  nowcast <- function(locations, epiweeks) {
+    # Check parameters
+    if(missing(locations) || missing(epiweeks)) {
+      stop('`locations` and `epiweeks` are both required')
+    }
+    # Set up request
+    params <- list(
+      source = 'nowcast',
+      locations = .list(locations),
+      epiweeks = .list(epiweeks)
+    )
+    # Make the API call
+    return(.request(params))
+  }
+
   # Export the public methods
   return(list(
     range = range,
@@ -262,6 +278,7 @@ Epidata <- (function() {
     nidss.flu = nidss.flu,
     nidss.dengue = nidss.dengue,
     delphi = delphi,
-    signals = signals
+    signals = signals,
+    nowcast = nowcast
   ))
 })()

@@ -243,3 +243,19 @@ class Epidata:
     }
     # Make the API call
     return Epidata._request(params)
+
+  # Fetch Delphi's wILI nowcast
+  @staticmethod
+  def nowcast(locations, epiweeks):
+    ''' Fetch Delphi's wILI nowcast '''
+    # Check parameters
+    if locations is None or epiweeks is None:
+      raise Exception('`locations` and `epiweeks` are both required')
+    # Set up request
+    params = {
+      'source': 'nowcast',
+      'locations': Epidata._list(locations),
+      'epiweeks': Epidata._list(epiweeks),
+    }
+    # Make the API call
+    return Epidata._request(params)

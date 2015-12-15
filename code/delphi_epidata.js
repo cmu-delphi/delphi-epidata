@@ -290,6 +290,21 @@ Notes:
       return _request(callback, params);
     };
 
+    Epidata.nowcast = function(callback, locations, epiweeks) {
+      var params;
+      if (!((locations != null) && (epiweeks != null))) {
+        throw {
+          msg: '`locations` and `epiweeks` are both required'
+        };
+      }
+      params = {
+        'source': 'nowcast',
+        'locations': _list(locations),
+        'epiweeks': _list(epiweeks)
+      };
+      return _request(callback, params);
+    };
+
     return Epidata;
 
   })();

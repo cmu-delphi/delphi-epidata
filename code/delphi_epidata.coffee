@@ -221,6 +221,19 @@ class Epidata
     # Make the API call
     _request(callback, params)
 
+  # Fetch Delphi's wILI nowcast
+  @nowcast: (callback, locations, epiweeks) ->
+    # Check parameters
+    unless locations? and epiweeks?
+      throw { msg: '`locations` and `epiweeks` are both required' }
+    # Set up request
+    params =
+      'source': 'nowcast'
+      'locations': _list(locations)
+      'epiweeks': _list(epiweeks)
+    # Make the API call
+    _request(callback, params)
+
 
 # Export the API to the global environment
 (exports ? window).Epidata = Epidata
