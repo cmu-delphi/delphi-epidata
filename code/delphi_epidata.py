@@ -259,3 +259,9 @@ class Epidata:
     }
     # Make the API call
     return Epidata._request(params)
+
+  # Fetch API metadata
+  @staticmethod
+  def meta():
+    ''' Fetch API metadata '''
+    return Epidata._request({'source': 'meta'})

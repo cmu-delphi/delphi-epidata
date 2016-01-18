@@ -234,6 +234,10 @@ class Epidata
     # Make the API call
     _request(callback, params)
 
+  # Fetch API metadata
+  @meta: (callback) ->
+    _request(callback, {'source': 'meta'})
+
 
 # Export the API to the global environment
 (exports ? window).Epidata = Epidata

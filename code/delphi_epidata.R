@@ -266,6 +266,11 @@ Epidata <- (function() {
     return(.request(params))
   }
 
+  # Fetch API metadata
+  meta <- function() {
+    return(.request(list(source='meta')))
+  }
+
   # Export the public methods
   return(list(
     range = range,
@@ -279,6 +284,7 @@ Epidata <- (function() {
     nidss.dengue = nidss.dengue,
     delphi = delphi,
     signals = signals,
-    nowcast = nowcast
+    nowcast = nowcast,
+    meta = meta
   ))
 })()

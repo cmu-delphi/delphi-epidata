@@ -305,6 +305,12 @@ Notes:
       return _request(callback, params);
     };
 
+    Epidata.meta = function(callback) {
+      return _request(callback, {
+        'source': 'meta'
+      });
+    };
+
     return Epidata;
 
   })();
