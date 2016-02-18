@@ -82,7 +82,7 @@ class Epidata
     _request(callback, params)
 
   # Fetch ILINet data
-  @ilinet: (callback, locations, epiweeks) ->
+  @ilinet: (callback, locations, epiweeks, auth) ->
     # Check parameters
     unless locations? and epiweeks?
       throw { msg: '`locations` and `epiweeks` are both required' }
@@ -91,6 +91,8 @@ class Epidata
       'source': 'ilinet'
       'locations': _list(locations)
       'epiweeks': _list(epiweeks)
+    if auth?
+      params.auth = auth
     # Make the API call
     _request(callback, params)
 

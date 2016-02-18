@@ -74,7 +74,7 @@ Epidata <- (function() {
   }
 
   # Fetch ILINet data
-  ilinet <- function(locations, epiweeks) {
+  ilinet <- function(locations, epiweeks, auth) {
     # Check parameters
     if(missing(locations) || missing(epiweeks)) {
       stop('`locations` and `epiweeks` are both required')
@@ -85,6 +85,9 @@ Epidata <- (function() {
       locations = .list(locations),
       epiweeks = .list(epiweeks)
     )
+    if(!missing(auth)) {
+      params$auth <- auth
+    }
     # Make the API call
     return(.request(params))
   }

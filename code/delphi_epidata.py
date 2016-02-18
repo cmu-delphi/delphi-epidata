@@ -47,6 +47,15 @@ class Epidata:
       # Something broke
       return {'result': 0, 'message': 'error: ' + str(e)}
 
+  # Raise an Exception on error, otherwise return epidata
+  @staticmethod
+  def check(resp):
+    ''' Raise an Exception on error, otherwise return epidata '''
+    if resp['result'] != 1:
+      msg, code = resp['message'], resp['result']
+      raise Exception('Error fetching epidata: %s. (result=%d)' % (msg, code))
+    return resp['epidata']
+
   # Build a `range` object (ex: dates/epiweeks)
   @staticmethod
   def range(from_, to_):
@@ -79,7 +88,7 @@ class Epidata:
 
   # Fetch ILINet data
   @staticmethod
-  def ilinet(locations, epiweeks):
+  def ilinet(locations, epiweeks, auth=None):
     ''' Fetch ILINet data '''
     # Check parameters
     if locations is None or epiweeks is None:
@@ -90,6 +99,8 @@ class Epidata:
       'locations': Epidata._list(locations),
       'epiweeks': Epidata._list(epiweeks),
     }
+    if auth is not None:
+      params['auth'] = auth
     # Make the API call
     return Epidata._request(params)
 

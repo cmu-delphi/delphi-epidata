@@ -116,7 +116,7 @@ Notes:
       return _request(callback, params);
     };
 
-    Epidata.ilinet = function(callback, locations, epiweeks) {
+    Epidata.ilinet = function(callback, locations, epiweeks, auth) {
       var params;
       if (!((locations != null) && (epiweeks != null))) {
         throw {
@@ -128,6 +128,9 @@ Notes:
         'locations': _list(locations),
         'epiweeks': _list(epiweeks)
       };
+      if (auth != null) {
+        params.auth = auth;
+      }
       return _request(callback, params);
     };
 
