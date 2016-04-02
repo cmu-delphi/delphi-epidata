@@ -19,7 +19,7 @@ This document contains the following sections:
 Influenza-like illness (ILI) from U.S. Outpatient Influenza-like Illness Surveillance Network (ILINet), aggregated at the regional and national levels.
  - Data source: [United States Centers for Disease Control and Prevention](http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html) (CDC)
  - Temporal Resolution: Weekly* from 1997w40
- - Spatial Resolution: By [HHS region](http://www.hhs.gov/iea/regional/) ([10+1](labels/regions.txt))
+ - Spatial Resolution: National, [HHS regions](http://www.hhs.gov/iea/regional/), and [Census divisions](http://www.census.gov/econ/census/help/geography/regions_and_divisions.html) ([1+10+9](labels/regions.txt))
  - Open access
 
 *Data is usually released on Friday
@@ -30,7 +30,7 @@ Influenza-like illness (ILI) from U.S. Outpatient Influenza-like Illness Surveil
 An *estimate* of state-level ILI as reported to ILINet. Most of the data was digitized from charts and other lossy sources, and is not necessarily accurate or up-to-date. This is a static data source, and will not be frequently updated.
  - Data source: Several online sources, including each state's health department website (listed [here](http://www.cdc.gov/flu/weekly/))
  - Temporal Resolution: Weekly, from 2010w40 (or later) until 2015w34 (or earlier)
- - Spatial Resolution: By state/territory ([50+1](labels/states.txt))
+ - Spatial Resolution: By state/territory ([51](labels/states.txt))
  - Open access
 
 
@@ -39,7 +39,7 @@ An *estimate* of state-level ILI as reported to ILINet. Most of the data was dig
 Estimate of influenza activity based on volume of certain search queries. Google has discontinued Flu Trends, and this is now a static data source.
  - Data source: [Google](https://www.google.org/flutrends/)
  - Temporal Resolution: Weekly from 2003w40 until 2015w32
- - Spatial Resolution: By [HHS region](http://www.hhs.gov/iea/regional/) ([10+1](labels/regions.txt)), by state/territory ([50+1](labels/states.txt)), and by city ([97](labels/cities.txt))
+ - Spatial Resolution: National, [HHS regions](http://www.hhs.gov/iea/regional/) ([1+10](labels/regions.txt)); by state/territory ([50+1](labels/states.txt)); and by city ([97](labels/cities.txt))
  - Open access
 
 
@@ -48,7 +48,7 @@ Estimate of influenza activity based on volume of certain search queries. Google
 Estimate of influenza activity based on analysis of language used in tweets.
  - Data source: [HealthTweets](http://www.healthtweets.org/)
  - Temporal Resolution: Daily and weekly from 2011-12-01 (2011w48)
- - Spatial Resolution: By [HHS region](http://www.hhs.gov/iea/regional/) ([10+1](labels/regions.txt)), and by state/territory ([50+1](labels/states.txt))
+ - Spatial Resolution: National, [HHS regions](http://www.hhs.gov/iea/regional/), and [Census divisions](http://www.census.gov/econ/census/help/geography/regions_and_divisions.html) ([1+10+9](labels/regions.txt)); and by state/territory ([51](labels/states.txt))
  - Restricted access: DELPHI doesn't have permission to share this dataset
 
 
