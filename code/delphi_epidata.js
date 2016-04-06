@@ -134,6 +134,22 @@ Notes:
       return _request(callback, params);
     };
 
+    Epidata.stateili = function(callback, auth, states, epiweeks) {
+      var params;
+      if (!((auth != null) && (states != null) && (epiweeks != null))) {
+        throw {
+          msg: '`auth`, `states`, and `epiweeks` are all required'
+        };
+      }
+      params = {
+        'source': 'stateili',
+        'auth': auth,
+        'states': _list(states),
+        'epiweeks': _list(epiweeks)
+      };
+      return _request(callback, params);
+    };
+
     Epidata.gft = function(callback, locations, epiweeks) {
       var params;
       if (!((locations != null) && (epiweeks != null))) {

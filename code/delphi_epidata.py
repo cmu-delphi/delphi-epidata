@@ -104,6 +104,23 @@ class Epidata:
     # Make the API call
     return Epidata._request(params)
 
+  # Fetch Delphi's imputed state ILI
+  @staticmethod
+  def stateili(auth, states, epiweeks):
+    ''' Fetch Delphi's imputed state ILI '''
+    # Check parameters
+    if auth is None or states is None or epiweeks is None:
+      raise Exception('`auth`, `states`, and `epiweeks` are all required')
+    # Set up request
+    params = {
+      'source': 'stateili',
+      'auth': auth,
+      'states': Epidata._list(states),
+      'epiweeks': Epidata._list(epiweeks),
+    }
+    # Make the API call
+    return Epidata._request(params)
+
   # Fetch Google Flu Trends data
   @staticmethod
   def gft(locations, epiweeks):

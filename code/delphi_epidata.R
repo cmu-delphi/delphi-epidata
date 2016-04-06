@@ -92,6 +92,23 @@ Epidata <- (function() {
     return(.request(params))
   }
 
+  # Fetch Delphi's imputed state ILI
+  stateili <- function(auth, states, epiweeks) {
+    # Check parameters
+    if(missing(auth) || missing(states) || missing(epiweeks)) {
+      stop('`auth`, `states`, and `epiweeks` are all required')
+    }
+    # Set up request
+    params <- list(
+      source = 'stateili',
+      auth = auth,
+      states = .list(states),
+      epiweeks = .list(epiweeks)
+    )
+    # Make the API call
+    return(.request(params))
+  }
+
   # Fetch Google Flu Trends data
   gft <- function(locations, epiweeks) {
     # Check parameters
@@ -279,6 +296,7 @@ Epidata <- (function() {
     range = range,
     fluview = fluview,
     ilinet = ilinet,
+    stateili = stateili,
     gft = gft,
     ght = ght,
     twitter = twitter,

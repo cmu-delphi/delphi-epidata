@@ -96,6 +96,20 @@ class Epidata
     # Make the API call
     _request(callback, params)
 
+  # Fetch Delphi's imputed state ILI
+  @stateili: (callback, auth, states, epiweeks) ->
+    # Check parameters
+    unless auth? and states? and epiweeks?
+      throw { msg: '`auth`, `states`, and `epiweeks` are all required' }
+    # Set up request
+    params =
+      'source': 'stateili'
+      'auth': auth
+      'states': _list(states)
+      'epiweeks': _list(epiweeks)
+    # Make the API call
+    _request(callback, params)
+
   # Fetch Google Flu Trends data
   @gft: (callback, locations, epiweeks) ->
     # Check parameters
