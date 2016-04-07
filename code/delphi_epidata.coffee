@@ -237,6 +237,34 @@ class Epidata
     # Make the API call
     _request(callback, params)
 
+  # Fetch CDC page hits
+  @cdc: (callback, auth, epiweeks) ->
+    # Check parameters
+    unless auth? and epiweeks?
+      throw { msg: '`auth` and `epiweeks` are both required' }
+    # Set up request
+    params =
+      'source': 'cdc'
+      'auth': auth
+      'epiweeks': _list(epiweeks)
+    # Make the API call
+    _request(callback, params)
+
+  # Fetch Delphi's digital surveillance sensors
+  @sensors: (callback, auth, names, locations, epiweeks) ->
+    # Check parameters
+    unless auth? and names? and locations? and epiweeks?
+      throw { msg: '`auth`, `names`, `locations`, and `epiweeks` are all required' }
+    # Set up request
+    params =
+      'source': 'sensors'
+      'auth': auth
+      'names': _list(names)
+      'locations': _list(locations)
+      'epiweeks': _list(epiweeks)
+    # Make the API call
+    _request(callback, params)
+
   # Fetch Delphi's wILI nowcast
   @nowcast: (callback, locations, epiweeks) ->
     # Check parameters

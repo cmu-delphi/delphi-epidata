@@ -270,6 +270,40 @@ Epidata <- (function() {
     return(.request(params))
   }
 
+  # Fetch CDC page hits
+  cdc <- function(auth, epiweeks) {
+    # Check parameters
+    if(missing(auth) || missing(epiweeks)) {
+      stop('`auth` and `epiweeks` are both required')
+    }
+    # Set up request
+    params <- list(
+      source = 'cdc',
+      auth = auth,
+      epiweeks = .list(epiweeks)
+    )
+    # Make the API call
+    return(.request(params))
+  }
+
+  # Fetch Delphi's digital surveillance sensors
+  sensors <- function(auth, names, locations, epiweeks) {
+    # Check parameters
+    if(missing(auth) || missing(names) || missing(locations) || missing(epiweeks)) {
+      stop('`auth`, `names`, `locations`, and `epiweeks` are all required')
+    }
+    # Set up request
+    params <- list(
+      source = 'sensors',
+      auth = auth,
+      names = .list(names),
+      locations = .list(locations),
+      epiweeks = .list(epiweeks)
+    )
+    # Make the API call
+    return(.request(params))
+  }
+
   # Fetch Delphi's wILI nowcast
   nowcast <- function(locations, epiweeks) {
     # Check parameters
@@ -305,6 +339,8 @@ Epidata <- (function() {
     nidss.dengue = nidss.dengue,
     delphi = delphi,
     signals = signals,
+    cdc = cdc,
+    sensors = sensors,
     nowcast = nowcast,
     meta = meta
   ))

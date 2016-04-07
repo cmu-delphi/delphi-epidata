@@ -272,6 +272,40 @@ class Epidata:
     # Make the API call
     return Epidata._request(params)
 
+  # Fetch CDC page hits
+  @staticmethod
+  def cdc(auth, epiweeks):
+    ''' Fetch CDC page hits '''
+    # Check parameters
+    if auth is None or epiweeks is None:
+      raise Exception('`auth` and `epiweeks` are both required')
+    # Set up request
+    params = {
+      'source': 'cdc',
+      'auth': auth,
+      'epiweeks': Epidata._list(epiweeks),
+    }
+    # Make the API call
+    return Epidata._request(params)
+
+  # Fetch Delphi's digital surveillance sensors
+  @staticmethod
+  def sensors(auth, names, locations, epiweeks):
+    ''' Fetch Delphi's digital surveillance sensors '''
+    # Check parameters
+    if auth is None or names is None or locations is None or epiweeks is None:
+      raise Exception('`auth`, `names`, `locations`, and `epiweeks` are all required')
+    # Set up request
+    params = {
+      'source': 'sensors',
+      'auth': auth,
+      'names': Epidata._list(names),
+      'locations': Epidata._list(locations),
+      'epiweeks': Epidata._list(epiweeks),
+    }
+    # Make the API call
+    return Epidata._request(params)
+
   # Fetch Delphi's wILI nowcast
   @staticmethod
   def nowcast(locations, epiweeks):

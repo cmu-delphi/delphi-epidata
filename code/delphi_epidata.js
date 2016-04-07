@@ -309,6 +309,38 @@ Notes:
       return _request(callback, params);
     };
 
+    Epidata.cdc = function(callback, auth, epiweeks) {
+      var params;
+      if (!((auth != null) && (epiweeks != null))) {
+        throw {
+          msg: '`auth` and `epiweeks` are both required'
+        };
+      }
+      params = {
+        'source': 'cdc',
+        'auth': auth,
+        'epiweeks': _list(epiweeks)
+      };
+      return _request(callback, params);
+    };
+
+    Epidata.sensors = function(callback, auth, names, locations, epiweeks) {
+      var params;
+      if (!((auth != null) && (names != null) && (locations != null) && (epiweeks != null))) {
+        throw {
+          msg: '`auth`, `names`, `locations`, and `epiweeks` are all required'
+        };
+      }
+      params = {
+        'source': 'sensors',
+        'auth': auth,
+        'names': _list(names),
+        'locations': _list(locations),
+        'epiweeks': _list(epiweeks)
+      };
+      return _request(callback, params);
+    };
+
     Epidata.nowcast = function(callback, locations, epiweeks) {
       var params;
       if (!((locations != null) && (epiweeks != null))) {
