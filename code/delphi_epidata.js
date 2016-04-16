@@ -236,6 +236,22 @@ Notes:
       return _request(callback, params);
     };
 
+    Epidata.cdc = function(callback, auth, epiweeks, locations) {
+      var params;
+      if (!((auth != null) && (epiweeks != null) && (locations != null))) {
+        throw {
+          msg: '`auth`, `epiweeks`, and `locations` are all required'
+        };
+      }
+      params = {
+        'source': 'cdc',
+        'auth': auth,
+        'epiweeks': _list(epiweeks),
+        'locations': _list(locations)
+      };
+      return _request(callback, params);
+    };
+
     Epidata.nidss_flu = function(callback, regions, epiweeks, issues, lag) {
       var params;
       if (!((regions != null) && (epiweeks != null))) {
@@ -304,21 +320,6 @@ Notes:
         'auth': auth,
         'names': _list(names),
         'locations': _list(locations),
-        'epiweeks': _list(epiweeks)
-      };
-      return _request(callback, params);
-    };
-
-    Epidata.cdc = function(callback, auth, epiweeks) {
-      var params;
-      if (!((auth != null) && (epiweeks != null))) {
-        throw {
-          msg: '`auth` and `epiweeks` are both required'
-        };
-      }
-      params = {
-        'source': 'cdc',
-        'auth': auth,
         'epiweeks': _list(epiweeks)
       };
       return _request(callback, params);

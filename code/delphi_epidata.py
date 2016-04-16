@@ -200,6 +200,23 @@ class Epidata:
     # Make the API call
     return Epidata._request(params)
 
+  # Fetch CDC page hits
+  @staticmethod
+  def cdc(auth, epiweeks, locations):
+    ''' Fetch CDC page hits '''
+    # Check parameters
+    if auth is None or epiweeks is None or locations is None:
+      raise Exception('`auth`, `epiweeks`, and `locations` are all required')
+    # Set up request
+    params = {
+      'source': 'cdc',
+      'auth': auth,
+      'epiweeks': Epidata._list(epiweeks),
+      'locations': Epidata._list(locations),
+    }
+    # Make the API call
+    return Epidata._request(params)
+
   # Fetch NIDSS flu data
   @staticmethod
   def nidss_flu(regions, epiweeks, issues=None, lag=None):
@@ -267,22 +284,6 @@ class Epidata:
       'auth': auth,
       'names': Epidata._list(names),
       'locations': Epidata._list(locations),
-      'epiweeks': Epidata._list(epiweeks),
-    }
-    # Make the API call
-    return Epidata._request(params)
-
-  # Fetch CDC page hits
-  @staticmethod
-  def cdc(auth, epiweeks):
-    ''' Fetch CDC page hits '''
-    # Check parameters
-    if auth is None or epiweeks is None:
-      raise Exception('`auth` and `epiweeks` are both required')
-    # Set up request
-    params = {
-      'source': 'cdc',
-      'auth': auth,
       'epiweeks': Epidata._list(epiweeks),
     }
     # Make the API call

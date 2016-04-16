@@ -195,6 +195,23 @@ Epidata <- (function() {
     return(.request(params))
   }
 
+  # Fetch CDC page hits
+  cdc <- function(auth, epiweeks, locations) {
+    # Check parameters
+    if(missing(auth) || missing(epiweeks) || missing(locations)) {
+      stop('`auth`, `epiweeks`, and `locations` are all required')
+    }
+    # Set up request
+    params <- list(
+      source = 'cdc',
+      auth = auth,
+      epiweeks = .list(epiweeks),
+      locations = .list(locations)
+    )
+    # Make the API call
+    return(.request(params))
+  }
+
   # Fetch NIDSS flu data
   nidss.flu <- function(regions, epiweeks, issues, lag) {
     # Check parameters
@@ -270,22 +287,6 @@ Epidata <- (function() {
     return(.request(params))
   }
 
-  # Fetch CDC page hits
-  cdc <- function(auth, epiweeks) {
-    # Check parameters
-    if(missing(auth) || missing(epiweeks)) {
-      stop('`auth` and `epiweeks` are both required')
-    }
-    # Set up request
-    params <- list(
-      source = 'cdc',
-      auth = auth,
-      epiweeks = .list(epiweeks)
-    )
-    # Make the API call
-    return(.request(params))
-  }
-
   # Fetch Delphi's digital surveillance sensors
   sensors <- function(auth, names, locations, epiweeks) {
     # Check parameters
@@ -335,11 +336,11 @@ Epidata <- (function() {
     ght = ght,
     twitter = twitter,
     wiki = wiki,
+    cdc = cdc,
     nidss.flu = nidss.flu,
     nidss.dengue = nidss.dengue,
     delphi = delphi,
     signals = signals,
-    cdc = cdc,
     sensors = sensors,
     nowcast = nowcast,
     meta = meta

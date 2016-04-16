@@ -177,6 +177,20 @@ class Epidata
     # Make the API call
     _request(callback, params)
 
+  # Fetch CDC page hits
+  @cdc: (callback, auth, epiweeks, locations) ->
+    # Check parameters
+    unless auth? and epiweeks? and locations?
+      throw { msg: '`auth`, `epiweeks`, and `locations` are all required' }
+    # Set up request
+    params =
+      'source': 'cdc'
+      'auth': auth
+      'epiweeks': _list(epiweeks)
+      'locations': _list(locations)
+    # Make the API call
+    _request(callback, params)
+
   # Fetch NIDSS flu data
   @nidss_flu: (callback, regions, epiweeks, issues, lag) ->
     # Check parameters
@@ -233,19 +247,6 @@ class Epidata
       'auth': auth
       'names': _list(names)
       'locations': _list(locations)
-      'epiweeks': _list(epiweeks)
-    # Make the API call
-    _request(callback, params)
-
-  # Fetch CDC page hits
-  @cdc: (callback, auth, epiweeks) ->
-    # Check parameters
-    unless auth? and epiweeks?
-      throw { msg: '`auth` and `epiweeks` are both required' }
-    # Set up request
-    params =
-      'source': 'cdc'
-      'auth': auth
       'epiweeks': _list(epiweeks)
     # Make the API call
     _request(callback, params)
