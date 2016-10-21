@@ -1,4 +1,9 @@
-# delphi-epidata
+# Status
+
+[![Deploy Status](http://delphi.midas.cs.cmu.edu/~automation/github_repo_deploy.php?repo=cmu-delphi/delphi-epidata)](#)
+
+
+# About
 
 This repo provides documentation and sample code for [DELPHI](http://delphi.midas.cs.cmu.edu/)'s *real-time* epidemiological data API. The API currently contains influenza and dengue data for the United States and Taiwan.
 
