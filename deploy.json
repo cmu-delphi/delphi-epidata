@@ -2,40 +2,22 @@
   "type": "delphi deploy config",
   "version": 1,
   "actions": [
+    
+    "// minimize",
     {
       "type": "minimize-js",
       "src": "code/delphi_epidata.js",
       "dst": "code/delphi_epidata.min.js"
     },
+    
+    "// push",
     {
-      "type": "copy",
-      "src": "code/delphi_epidata.min.js",
-      "dst": "/var/www/html/epidata/lib/delphi_epidata.min.js",
-      "add-header-comment": true
-    },
-    {
-      "type": "copy",
-      "src": "code/delphi_epidata.js",
-      "dst": "/var/www/html/epidata/lib/delphi_epidata.js",
-      "add-header-comment": true
-    },
-    {
-      "type": "copy",
-      "src": "code/delphi_epidata.coffee",
-      "dst": "/var/www/html/epidata/lib/delphi_epidata.coffee",
-      "add-header-comment": true
-    },
-    {
-      "type": "copy",
-      "src": "code/delphi_epidata.py",
-      "dst": "/var/www/html/epidata/lib/delphi_epidata.py",
-      "add-header-comment": true
-    },
-    {
-      "type": "copy",
-      "src": "code/delphi_epidata.R",
-      "dst": "/var/www/html/epidata/lib/delphi_epidata.R",
+      "type": "move",
+      "src": "code/",
+      "dst": "/var/www/html/epidata/lib/",
+      "match": "^delphi_epidata.*\\.(js|py|coffee|R)$",
       "add-header-comment": true
     }
+    
   ]
 }
