@@ -2,22 +2,29 @@
   "type": "delphi deploy config",
   "version": 1,
   "actions": [
-    
+
     "// minimize",
     {
       "type": "minimize-js",
-      "src": "code/delphi_epidata.js",
-      "dst": "code/delphi_epidata.min.js"
+      "src": "code/client/delphi_epidata.js",
+      "dst": "code/client/delphi_epidata.min.js"
     },
-    
+
     "// push",
     {
       "type": "move",
-      "src": "code/",
+      "src": "code/client/",
       "dst": "/var/www/html/epidata/lib/",
       "match": "^delphi_epidata.*\\.(js|py|coffee|R)$",
       "add-header-comment": true
+    },
+    {
+      "type": "move",
+      "src": "code/server/",
+      "dst": "/var/www/html/epidata/",
+      "match": "^.*\\.(html|php)$",
+      "add-header-comment": true
     }
-    
+
   ]
 }

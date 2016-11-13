@@ -221,7 +221,7 @@ http://delphi.midas.cs.cmu.edu/epidata/api.php?source=nidss_dengue&locations=Nat
 
 # Code Samples
 
-Libraries are available for [CoffeeScript](code/delphi_epidata.coffee), [JavaScript](code/delphi_epidata.js), [Python](code/delphi_epidata.py), and [R](code/delphi_epidata.R). The following samples show how to import the library and fetch national FluView data for epiweeks `201440` and `201501-201510` (11 weeks total).
+Libraries are available for [CoffeeScript](code/client/delphi_epidata.coffee), [JavaScript](code/client/delphi_epidata.js), [Python](code/client/delphi_epidata.py), and [R](code/client/delphi_epidata.R). The following samples show how to import the library and fetch national FluView data for epiweeks `201440` and `201501-201510` (11 weeks total).
 
 ### CoffeeScript (in Node.js)
 
