@@ -1,7 +1,7 @@
 ###
 A module for DELPHI's Epidata API.
 
-https://github.com/undefx/delphi-epidata
+https://github.com/cmu-delphi/delphi-epidata
 
 Notes:
  - If running in node.js (or using browserify), there are no external
@@ -82,7 +82,7 @@ class Epidata
     _request(callback, params)
 
   # Fetch ILINet data
-  @ilinet: (callback, locations, epiweeks, auth) ->
+  @ilinet: (callback, locations, epiweeks, version, auth) ->
     # Check parameters
     unless locations? and epiweeks?
       throw { msg: '`locations` and `epiweeks` are both required' }
@@ -91,6 +91,8 @@ class Epidata
       'source': 'ilinet'
       'locations': _list(locations)
       'epiweeks': _list(epiweeks)
+    if version?
+      params.version = version
     if auth?
       params.auth = auth
     # Make the API call

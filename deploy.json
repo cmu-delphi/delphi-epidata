@@ -12,6 +12,12 @@
 
     "// push",
     {
+      "type": "copy",
+      "src": "code/client/delphi_epidata.py",
+      "dst": "../delphi_epidata.py",
+      "add-header-comment": true
+    },
+    {
       "type": "move",
       "src": "code/client/",
       "dst": "/var/www/html/epidata/lib/",

@@ -1,7 +1,7 @@
 '''
 A module for DELPHI's Epidata API.
 
-https://github.com/undefx/delphi-epidata
+https://github.com/cmu-delphi/delphi-epidata
 
 Notes:
  - Requires the `requests` module.
@@ -88,7 +88,7 @@ class Epidata:
 
   # Fetch ILINet data
   @staticmethod
-  def ilinet(locations, epiweeks, auth=None):
+  def ilinet(locations, epiweeks, version=None, auth=None):
     ''' Fetch ILINet data '''
     # Check parameters
     if locations is None or epiweeks is None:
@@ -99,6 +99,8 @@ class Epidata:
       'locations': Epidata._list(locations),
       'epiweeks': Epidata._list(epiweeks),
     }
+    if version is not None:
+      params['version'] = version
     if auth is not None:
       params['auth'] = auth
     # Make the API call

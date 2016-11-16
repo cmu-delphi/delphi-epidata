@@ -1,6 +1,6 @@
 # A module for DELPHI's Epidata API.
 #
-# https://github.com/undefx/delphi-epidata
+# https://github.com/cmu-delphi/delphi-epidata
 #
 # Notes:
 #  - Requires the `httr` library.
@@ -74,7 +74,7 @@ Epidata <- (function() {
   }
 
   # Fetch ILINet data
-  ilinet <- function(locations, epiweeks, auth) {
+  ilinet <- function(locations, epiweeks, version, auth) {
     # Check parameters
     if(missing(locations) || missing(epiweeks)) {
       stop('`locations` and `epiweeks` are both required')
@@ -85,6 +85,9 @@ Epidata <- (function() {
       locations = .list(locations),
       epiweeks = .list(epiweeks)
     )
+    if(!missing(version)) {
+      params$version <- version
+    }
     if(!missing(auth)) {
       params$auth <- auth
     }
