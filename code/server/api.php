@@ -29,6 +29,9 @@ See cdc_extract.py
 Unlike most of the other data sources, the state-level ILINet data isn't
 updated automatically. The data was obtained around 2015-09-10 from the various
 states' websites, linked here: http://www.cdc.gov/flu/weekly/
+This data was re-obtained around June 2016, and uploaded 2016-11-14. The
+process is lossy, and so the two version don't entirely agree. Because of this,
+we now also store a version tag with the data.
 The `state_ili` table stores this data:
 +---------+-------------+------+-----+---------+----------------+
 | Field   | Type        | Null | Key | Default | Extra          |
@@ -37,11 +40,13 @@ The `state_ili` table stores this data:
 | epiweek | int(11)     | NO   | MUL | NULL    |                |
 | state   | varchar(12) | NO   | MUL | NULL    |                |
 | ili     | double      | NO   |     | NULL    |                |
+| version | int(11)     | NO   | MUL | NULL    |                |
 +---------+-------------+------+-----+---------+----------------+
 id: unique identifier for each record
 epiweek: the epiweek during which the data was collected
 state: two-letter U.S. state abbreviation
 ili: percent ILI
+version: 1 => 2015-09; 2 => 2016-06
 
 Similarly, we received a one-time data dump from the CDC containing true
 state-level ILINet data. The data was received on 2016-02-17 and uploaded to
@@ -102,6 +107,8 @@ num: the value, roughly corresponding to ILI * 1000
 === Changelog ===
 =================
 
+2016-11-15
+  + support `version` for data from `ilinet_state`
 2016-11-12
   * remove hardcoded secrets
 2016-04-16
@@ -525,8 +532,9 @@ function get_fluview($epiweeks, $regions, $issues, $lag, $sort) {
 // queries the `fluview`, `fluview_state`, and `state_ili` tables
 //   $epiweeks (required): array of epiweek values/ranges
 //   $locations (required): array of region/state names
+//   $version (optional): specific version of `state_ili` rows to use (average by default)
 //   $authorized (optional): whether to include CDC-provided values
-function get_ilinet($epiweeks, $locations, $authorized) {
+function get_ilinet($epiweeks, $locations, $version, $authorized) {
   // possibly include protected data
   $fluview_state = $authorized === true;
   // pass national and regional locations to the fluview function
@@ -539,6 +547,10 @@ function get_ilinet($epiweeks, $locations, $authorized) {
     } else {
       array_push($ilinet_states, $location);
     }
+  }
+  // `state_ili` version specifier (will use average of all versions by default)
+  if($version !== null) {
+    $version = intval($version);
   }
   // initialize the data array
   $epidata = array();
@@ -575,32 +587,48 @@ function get_ilinet($epiweeks, $locations, $authorized) {
     $fields_float = array('ili', 'ili_estimate');
     $order = 'si.`epiweek` ASC, si.`state` ASC';
     if($fluview_state) {
+      // need a full outer join to combine `fluview_state` and `state_ili`
+      $common_fields = "
+        f.`ili` `fili`,
+        s.`ili` `sili`,
+        f.`num_ili`,
+        f.`num_patients`,
+        f.`num_providers`,
+        f.`num_age_0`,
+        f.`num_age_1`,
+        f.`num_age_2`,
+        f.`num_age_3`,
+        f.`num_age_4`,
+        f.`num_age_5`
+      ";
       // build the epiweek filters
       $left_epiweek = filter_integers('f.`epiweek`', $epiweeks);
       $right_epiweek = filter_integers('s.`epiweek`', $epiweeks);
       // build the state filters
       $left_state = filter_strings('f.`state`', $ilinet_states);
       $right_state = filter_strings('s.`state`', $ilinet_states);
+      // create a derived view of `state_ili` using the specified version
+      $condition_version = $version === null ? 'TRUE' : "s.`version` = {$version}";
+      $state_ili_versioned = "
+        SELECT
+          s.`epiweek`, s.`state`, avg(s.`ili`) `ili`
+        FROM
+          `state_ili` s
+        WHERE
+          ({$right_epiweek}) AND ({$right_state}) AND ({$condition_version})
+        GROUP BY
+          s.`epiweek`, s.`state`
+      ";
       // left join
       $left = "
         SELECT
           f.`epiweek`,
           f.`state`,
-          f.`ili` `fili`,
-          s.`ili` `sili`,
-          f.`num_ili`,
-          f.`num_patients`,
-          f.`num_providers`,
-          f.`num_age_0`,
-          f.`num_age_1`,
-          f.`num_age_2`,
-          f.`num_age_3`,
-          f.`num_age_4`,
-          f.`num_age_5`
+          {$common_fields}
         FROM
           `fluview_state` f
         LEFT JOIN
-          `state_ili` s
+          ({$state_ili_versioned}) s
         ON
           s.`state` = f.`state` AND s.`epiweek` = f.`epiweek`
         WHERE
@@ -611,27 +639,17 @@ function get_ilinet($epiweeks, $locations, $authorized) {
         SELECT
           s.`epiweek`,
           s.`state`,
-          f.`ili` `fili`,
-          s.`ili` `sili`,
-          f.`num_ili`,
-          f.`num_patients`,
-          f.`num_providers`,
-          f.`num_age_0`,
-          f.`num_age_1`,
-          f.`num_age_2`,
-          f.`num_age_3`,
-          f.`num_age_4`,
-          f.`num_age_5`
+          {$common_fields}
         FROM
           `fluview_state` f
         RIGHT JOIN
-          `state_ili` s
+          ({$state_ili_versioned}) s
         ON
           s.`state` = f.`state` AND s.`epiweek` = f.`epiweek`
         WHERE
           (f.`id` IS NULL) AND ({$right_epiweek}) AND ({$right_state})
       ";
-      // combine the `fluview_state` and `state_ili` tables
+      // emulate outer join with a union (mysql only does inner join)
       $table = "({$left} UNION ALL {$right}) si";
       $fields = 'si.`epiweek`, si.`state` `location`, coalesce(si.`fili`, si.`sili`) `ili`, si.`sili` `ili_estimate`, si.`num_ili`, si.`num_patients`, si.`num_providers`, si.`num_age_0`, si.`num_age_1`, si.`num_age_2`, si.`num_age_3`, si.`num_age_4`, si.`num_age_5`';
       // final query
@@ -639,13 +657,17 @@ function get_ilinet($epiweeks, $locations, $authorized) {
     } else {
       // only use the `state_ili` table
       $table = '`state_ili` si';
-      $fields = 'si.`epiweek`, si.`state` `location`, si.`ili`, si.`ili` `ili_estimate`';
+      $fields = 'si.`epiweek`, si.`state` `location`, avg(si.`ili`) `ili`, avg(si.`ili`) `ili_estimate`';
       // build the epiweek filter
       $condition_epiweek = filter_integers('si.`epiweek`', $epiweeks);
       // build the state filter
       $condition_state = filter_strings('si.`state`', $ilinet_states);
+      // build the version filter
+      $condition_version = $version === null ? 'TRUE' : "si.`version` = {$version}";
+      // group by fields
+      $group = "si.`epiweek`, si.`state`";
       // final query
-      $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_epiweek}) AND ({$condition_state}) ORDER BY {$order}";
+      $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_epiweek}) AND ({$condition_state}) AND ({$condition_version}) GROUP BY {$group} ORDER BY {$order}";
     }
     // get the data from the database
     execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
@@ -1154,9 +1176,10 @@ if(database_connect()) {
       // parse the request
       $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
       $locations = extract_values($_REQUEST['locations'], 'str');
+      $version = isset($_REQUEST['version']) ? intval($_REQUEST['version']) : null;
       $authorized = $_REQUEST['auth'] === $AUTH['ilinet'];
       // get the data
-      $epidata = get_ilinet($epiweeks, $locations, $authorized);
+      $epidata = get_ilinet($epiweeks, $locations, $version, $authorized);
       store_result($data, $epidata);
     }
   } else if($source === 'stateili') {
