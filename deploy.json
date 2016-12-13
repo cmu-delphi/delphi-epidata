@@ -12,9 +12,8 @@
 
     "// push",
     {
-      "type": "copy",
+      "type": "export",
       "src": "code/client/delphi_epidata.py",
-      "dst": "../delphi_epidata.py",
       "add-header-comment": true
     },
     {
