@@ -6,26 +6,26 @@
     "// minimize",
     {
       "type": "minimize-js",
-      "src": "code/client/delphi_epidata.js",
-      "dst": "code/client/delphi_epidata.min.js"
+      "src": "src/client/delphi_epidata.js",
+      "dst": "src/client/delphi_epidata.min.js"
     },
 
     "// push",
     {
       "type": "export",
-      "src": "code/client/delphi_epidata.py",
+      "src": "src/client/delphi_epidata.py",
       "add-header-comment": true
     },
     {
       "type": "move",
-      "src": "code/client/",
+      "src": "src/client/",
       "dst": "/var/www/html/epidata/lib/",
       "match": "^delphi_epidata.*\\.(js|py|coffee|R)$",
       "add-header-comment": true
     },
     {
       "type": "move",
-      "src": "code/server/",
+      "src": "src/server/",
       "dst": "/var/www/html/epidata/",
       "match": "^.*\\.(html|php)$",
       "add-header-comment": true
