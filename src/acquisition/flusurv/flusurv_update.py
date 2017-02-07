@@ -62,6 +62,8 @@ rate_overall: overall hospitalization rate
 # standard library
 import argparse
 import datetime
+import os
+import os.path
 # third party
 import mysql.connector
 # first party
@@ -150,6 +152,15 @@ if __name__ == '__main__':
     default=False, action='store_true', help='do not commit database changes'
   )
   args = parser.parse_args()
+
+  # The flusurv module makes a shell call to a local script, but this script
+  # is likely called by Automation from another directory. In order for the
+  # shell call to work, the working directory needs to be set to the location
+  # of flusurv.py, which is the same location as this file.
+  script_path = os.path.realpath(__file__)
+  script_dir = os.path.dirname(script_path)
+  os.chdir(script_dir)
+  print('working directory set to %s' % os.getcwd())
 
   # fetch flusurv data
   if args.location == 'all':
