@@ -1,6 +1,10 @@
 {
   "type": "delphi deploy config",
   "version": 1,
+  "paths": {
+    "web_files": "/var/www/html/epidata",
+    "flusurv": "../epidata/flusurv"
+  },
   "actions": [
 
     "// client - API",
@@ -17,7 +21,7 @@
     {
       "type": "move",
       "src": "src/client/",
-      "dst": "/var/www/html/epidata/lib/",
+      "dst": "[[web_files]]/lib/",
       "match": "^delphi_epidata.*\\.(js|py|coffee|R)$",
       "add-header-comment": true
     },
@@ -26,18 +30,18 @@
     {
       "type": "move",
       "src": "src/server/",
-      "dst": "/var/www/html/epidata/",
+      "dst": "[[web_files]]",
       "match": "^.*\\.(html|php)$",
       "add-header-comment": true
     },
 
     "// acquisition - flusurv",
-    {"type": "import", "dst": "../epidata/flusurv/epiweek.py"},
-    {"type": "import", "dst": "../epidata/flusurv/secrets.py"},
+    {"type": "import", "dst": "[[flusurv]]/epiweek.py"},
+    {"type": "import", "dst": "[[flusurv]]/secrets.py"},
     {
       "type": "move",
       "src": "src/acquisition/flusurv/",
-      "dst": "../epidata/flusurv/",
+      "dst": "[[flusurv]]",
       "match": "^.*\\.(py)$",
       "add-header-comment": true
     }
