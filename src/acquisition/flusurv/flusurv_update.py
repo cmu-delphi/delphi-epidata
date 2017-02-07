@@ -124,6 +124,11 @@ def main(location_name, test_mode=False):
   # insert/update each row of data (one per epiweek)
   for epiweek in epiweeks:
     lag = delta_epiweeks(epiweek, issue)
+    if lag > 52:
+      # Ignore values older than one year, as (1) they are assumed not to
+      # change, and (2) it would adversely affect database performance if all
+      # values (including duplicates) were stored on each run.
+      continue
     args_meta = [release_date, issue, epiweek, location, lag]
     args_insert = data[epiweek]
     args_update = [release_date] + data[epiweek]
