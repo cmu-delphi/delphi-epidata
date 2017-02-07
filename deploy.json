@@ -3,14 +3,12 @@
   "version": 1,
   "actions": [
 
-    "// minimize",
+    "// client - API",
     {
       "type": "minimize-js",
       "src": "src/client/delphi_epidata.js",
       "dst": "src/client/delphi_epidata.min.js"
     },
-
-    "// push",
     {
       "type": "export",
       "src": "src/client/delphi_epidata.py",
@@ -23,11 +21,24 @@
       "match": "^delphi_epidata.*\\.(js|py|coffee|R)$",
       "add-header-comment": true
     },
+
+    "// server - API",
     {
       "type": "move",
       "src": "src/server/",
       "dst": "/var/www/html/epidata/",
       "match": "^.*\\.(html|php)$",
+      "add-header-comment": true
+    },
+
+    "// acquisition - flusurv",
+    {"type": "import", "dst": "../epidata/flusurv/epiweek.py"},
+    {"type": "import", "dst": "../epidata/flusurv/secrets.py"},
+    {
+      "type": "move",
+      "src": "src/acquisition/flusurv/",
+      "dst": "../epidata/flusurv/",
+      "match": "^.*\\.(py)$",
       "add-header-comment": true
     }
 
