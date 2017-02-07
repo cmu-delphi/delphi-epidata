@@ -14,17 +14,19 @@ https://github.com/cmu-delphi/delphi-epidata
 === Data Dictionary ===
 =======================
 
-See load_epidata_fluview.py
-See old/gft_update.py
-See twitter_update.py
-See wiki.py
-See taiwan_update.py
-See submission_loader.py
-See ght_update.py
-See signal_update.py
-See sensor_update.py
-See nowcast.py
-See cdc_extract.py
+See also:
+  - load_epidata_fluview.py
+  - old/gft_update.py
+  - twitter_update.py
+  - wiki.py
+  - taiwan_update.py
+  - submission_loader.py
+  - ght_update.py
+  - signal_update.py
+  - sensor_update.py
+  - nowcast.py
+  - cdc_extract.py
+  - flusurv_update.py
 
 Unlike most of the other data sources, the state-level ILINet data isn't
 updated automatically. The data was obtained around 2015-09-10 from the various
@@ -107,6 +109,8 @@ num: the value, roughly corresponding to ILI * 1000
 === Changelog ===
 =================
 
+2017-02-07
+  + added source `flusurv`
 2016-11-15
   + support `version` for data from `ilinet_state`
 2016-11-12
@@ -524,6 +528,50 @@ function get_fluview($epiweeks, $regions, $issues, $lag, $sort) {
   $fields_string = array('release_date', 'region');
   $fields_int = array('issue', 'epiweek', 'lag', 'num_ili', 'num_patients', 'num_providers', 'num_age_0', 'num_age_1', 'num_age_2', 'num_age_3', 'num_age_4', 'num_age_5');
   $fields_float = array('wili', 'ili');
+  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
+  // return the data
+  return count($epidata) === 0 ? null : $epidata;
+}
+
+// queries the `flusurv` table
+//   $epiweeks (required): array of epiweek values/ranges
+//   $locations (required): array of locations names
+//   $issues (optional): array of epiweek values/ranges
+//     overrides $lag
+//     default: most recent issue
+//   $lag (optional): number of weeks between each epiweek and its issue
+//     overridden by $issues
+//     default: most recent issue
+function get_flusurv($epiweeks, $locations, $issues, $lag) {
+  // basic query info
+  $table = '`flusurv` fs';
+  $fields = "fs.`release_date`, fs.`issue`, fs.`epiweek`, fs.`location`, fs.`lag`, fs.`rate_age_0`, fs.`rate_age_1`, fs.`rate_age_2`, fs.`rate_age_3`, fs.`rate_age_4`, fs.`rate_overall`";
+  $order = "fs.`epiweek` ASC, fs.`location` ASC, fs.`issue` ASC";
+  // build the epiweek filter
+  $condition_epiweek = filter_integers('fs.`epiweek`', $epiweeks);
+  // build the location filter
+  $condition_location = filter_strings('fs.`location`', $locations);
+  if($issues !== null) {
+    // build the issue filter
+    $condition_issue = filter_integers('fs.`issue`', $issues);
+    // final query using specific issues
+    $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_epiweek}) AND ({$condition_location}) AND ({$condition_issue}) ORDER BY {$order}";
+  } else if($lag !== null) {
+    // build the lag filter
+    $condition_lag = "(fs.`lag` = {$lag})";
+    // final query using lagged issues
+    $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_epiweek}) AND ({$condition_location}) AND ({$condition_lag}) ORDER BY {$order}";
+  } else {
+    // final query using most recent issues
+    $subquery = "(SELECT max(`issue`) `max_issue`, `epiweek`, `location` FROM {$table} WHERE ({$condition_epiweek}) AND ({$condition_location}) GROUP BY `epiweek`, `location`) x";
+    $condition = "x.`max_issue` = fs.`issue` AND x.`epiweek` = fs.`epiweek` AND x.`location` = fs.`location`";
+    $query = "SELECT {$fields} FROM {$table} JOIN {$subquery} ON {$condition} ORDER BY {$order}";
+  }
+  // get the data from the database
+  $epidata = array();
+  $fields_string = array('release_date', 'location');
+  $fields_int = array('issue', 'epiweek', 'lag');
+  $fields_float = array('rate_age_0', 'rate_age_1', 'rate_age_2', 'rate_age_3', 'rate_age_4', 'rate_overall');
   execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
   // return the data
   return count($epidata) === 0 ? null : $epidata;
@@ -1169,6 +1217,17 @@ if(database_connect()) {
       $sort = isset($_REQUEST['sort']) ? $_REQUEST['sort'] : null;
       // get the data
       $epidata = get_fluview($epiweeks, $regions, $issues, $lag, $sort);
+      store_result($data, $epidata);
+    }
+  } else if($source === 'flusurv') {
+    if(require_all($data, array('epiweeks', 'locations'))) {
+      // parse the request
+      $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
+      $locations = extract_values($_REQUEST['locations'], 'str');
+      $issues = isset($_REQUEST['issues']) ? extract_values($_REQUEST['issues'], 'int') : null;
+      $lag = isset($_REQUEST['lag']) ? intval($_REQUEST['lag']) : null;
+      // get the data
+      $epidata = get_flusurv($epiweeks, $locations, $issues, $lag);
       store_result($data, $epidata);
     }
   } else if($source === 'ilinet') {
