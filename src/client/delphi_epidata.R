@@ -73,6 +73,31 @@ Epidata <- (function() {
     return(.request(params))
   }
 
+  # Fetch FluSurv data
+  flusurv <- function(locations, epiweeks, issues, lag) {
+    # Check parameters
+    if(missing(locations) || missing(epiweeks)) {
+      stop('`locations` and `epiweeks` are both required')
+    }
+    if(!missing(issues) && !missing(lag)) {
+      stop('`issues` and `lag` are mutually exclusive')
+    }
+    # Set up request
+    params <- list(
+      source = 'flusurv',
+      locations = .list(locations),
+      epiweeks = .list(epiweeks)
+    )
+    if(!missing(issues)) {
+      params$issues <- .list(issues)
+    }
+    if(!missing(lag)) {
+      params$lag <- lag
+    }
+    # Make the API call
+    return(.request(params))
+  }
+
   # Fetch ILINet data
   ilinet <- function(locations, epiweeks, version, auth) {
     # Check parameters
@@ -333,6 +358,7 @@ Epidata <- (function() {
   return(list(
     range = range,
     fluview = fluview,
+    flusurv = flusurv,
     ilinet = ilinet,
     stateili = stateili,
     gft = gft,

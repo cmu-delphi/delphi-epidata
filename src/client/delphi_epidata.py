@@ -86,6 +86,28 @@ class Epidata:
     # Make the API call
     return Epidata._request(params)
 
+  # Fetch FluSurv data
+  @staticmethod
+  def flusurv(locations, epiweeks, issues=None, lag=None):
+    ''' Fetch FluSurv data '''
+    # Check parameters
+    if locations is None or epiweeks is None:
+      raise Exception('`locations` and `epiweeks` are both required')
+    if issues is not None and lag is not None:
+      raise Exception('`issues` and `lag` are mutually exclusive')
+    # Set up request
+    params = {
+      'source': 'flusurv',
+      'locations': Epidata._list(locations),
+      'epiweeks': Epidata._list(epiweeks),
+    }
+    if issues is not None:
+      params['issues'] = Epidata._list(issues)
+    if lag is not None:
+      params['lag'] = lag
+    # Make the API call
+    return Epidata._request(params)
+
   # Fetch ILINet data
   @staticmethod
   def ilinet(locations, epiweeks, version=None, auth=None):

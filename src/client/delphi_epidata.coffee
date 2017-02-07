@@ -81,6 +81,25 @@ class Epidata
     # Make the API call
     _request(callback, params)
 
+  # Fetch FluSurv data
+  @flusurv: (callback, locations, epiweeks, issues, lag) ->
+    # Check parameters
+    unless locations? and epiweeks?
+      throw { msg: '`locations` and `epiweeks` are both required' }
+    if issues? and lag?
+      throw { msg: '`issues` and `lag` are mutually exclusive' }
+    # Set up request
+    params =
+      'source': 'flusurv'
+      'locations': _list(locations)
+      'epiweeks': _list(epiweeks)
+    if issues?
+      params.issues = _list(issues)
+    if lag?
+      params.lag = lag
+    # Make the API call
+    _request(callback, params)
+
   # Fetch ILINet data
   @ilinet: (callback, locations, epiweeks, version, auth) ->
     # Check parameters
