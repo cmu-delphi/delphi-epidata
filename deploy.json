@@ -3,6 +3,7 @@
   "version": 1,
   "paths": {
     "web_files": "/var/www/html/epidata",
+    "nidss": "../epidata/nidss",
     "flusurv": "../epidata/flusurv"
   },
   "actions": [
@@ -32,6 +33,17 @@
       "src": "src/server/",
       "dst": "[[web_files]]",
       "match": "^.*\\.(html|php)$",
+      "add-header-comment": true
+    },
+
+    "// acquisition - nidss",
+    {"type": "import", "dst": "[[nidss]]/epiweek.py"},
+    {"type": "import", "dst": "[[nidss]]/secrets.py"},
+    {
+      "type": "move",
+      "src": "src/acquisition/nids/",
+      "dst": "[[nidss]]",
+      "match": "^.*\\.(py)$",
       "add-header-comment": true
     },
 
