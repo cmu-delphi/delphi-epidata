@@ -41,7 +41,7 @@
     {"type": "import", "dst": "[[nidss]]/secrets.py"},
     {
       "type": "move",
-      "src": "src/acquisition/nids/",
+      "src": "src/acquisition/nidss/",
       "dst": "[[nidss]]",
       "match": "^.*\\.(py)$",
       "add-header-comment": true
