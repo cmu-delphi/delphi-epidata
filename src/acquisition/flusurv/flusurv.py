@@ -8,6 +8,14 @@ CDC-hosted datasets (e.g. FluView), FluSurv is not available as a direct
 download. Instead, this program emulates the web-based flash app and extracts
 values from the response. Theses communications use the AMF data format.
 
+For unknown reasons, the server appears to provide two separate rates for any
+given location, epiweek, and age group. These rates are usually identical--but
+not always. Each rate comes along with an increasing identifier which is
+ostensibly a counter representing the week of publication. In other words, the
+data appears to be versioned. When two given rates differ, the one with the
+highest version number is kept. An Exception will be raised if two different
+rates are found for the same version number.
+
 See also:
   - flusurv_update.py
   - amf_to_json.py
@@ -22,6 +30,8 @@ See also:
 === Changelog ===
 =================
 
+2017-02-17
+  * handle discrepancies by prefering more recent values
 2017-02-03
   + initial version
 """
@@ -144,7 +154,7 @@ def convert_amf_to_json(amf_file, json_file):
 
 
 def extract_row(node, location_code):
-  """Return a tuple of (epiweek, age, rate), if present."""
+  """Return a tuple of (epiweek, age, version, rate), if present."""
 
   # use weekly rate field to identify nodes containing flu data
   rate = node.get('WeeklyRate', None)
@@ -172,8 +182,11 @@ def extract_row(node, location_code):
   age_id = node['AgeID']
   age = age_id - 1
 
+  # presumably, an identifier for the week of publication (higher is newer)
+  version = node['PublishYearID']
+
   # the result
-  return (epiweek, age, rate)
+  return (epiweek, age, version, rate)
 
 
 def extract_values(data_in, data_out, location_code):
@@ -190,14 +203,26 @@ def extract_values(data_in, data_out, location_code):
     row = extract_row(data_in, location_code)
     if row is not None:
       # add the data from this node to the result object
-      epiweek, age, rate = row
+      epiweek, age, version, rate = row
+      value = version, rate
       if epiweek not in data_out:
         data_out[epiweek] = [None] * 6  # weekly rate of six age groups
-      if data_out[epiweek][age] not in (None, rate):
-        # a rate was already found for this epiweek/age, and it doesn't match
-        params = [epiweek, age, data_out[epiweek][age], rate]
-        raise Exception(['found different rates'] + params)
-      data_out[epiweek][age] = rate
+      if data_out[epiweek][age] is None:
+        # this is the first time to see a rate for this epiweek/age
+        data_out[epiweek][age] = value
+      elif data_out[epiweek][age] != value:
+        # a different rate was already found for this epiweek/age
+        stored_version, stored_rate = data_out[epiweek][age]
+        if version > stored_version:
+          # use the newer version instead
+          if rate != stored_rate:
+            params = (epiweek, age, str(data_out[epiweek][age]), str(value))
+            print('warning: at %d/%d, replace %s with %s' % params)
+          data_out[epiweek][age] = value
+        elif version == stored_version and rate != stored_rate:
+          # no way to know which version is correct
+          params = [epiweek, age, data_out[epiweek][age], value]
+          raise Exception(['found different rates'] + params)
     else:
       # this node doesn't have flu data, so check each of its members
       for k in data_in.keys():
@@ -225,6 +250,14 @@ def extract_from_json(location_code, filename):
   # sanity check the result
   if len(data_out) == 0:
     raise Exception('file contains no recognizable data')
+
+  # remove version codes since only the rates are needed
+  for epiweek in data_out:
+    for age in range(len(data_out[epiweek])):
+      if data_out[epiweek][age] is None:
+        continue
+      version, rate = data_out[epiweek][age]
+      data_out[epiweek][age] = rate
 
   # print the result and return flu data
   print('found data for %d weeks' % len(data_out))
