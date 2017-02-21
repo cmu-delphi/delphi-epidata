@@ -126,7 +126,7 @@ def update(test_mode=False):
   '''
 
   # Scrape flu data
-  current_week, release_date, data = api.get_flu_data()
+  current_week, release_date, data = NIDSS.get_flu_data()
   for epiweek in sorted(list(data.keys())):
     lag = delta_epiweeks(epiweek, current_week)
     for region in data[epiweek].keys():
@@ -136,7 +136,7 @@ def update(test_mode=False):
       insert.execute(sql_flu, tuple(params1 + params2))
 
   # Scrape dengue data from the past year
-  data = api.get_dengue_data(add_epiweeks(current_week, -51), current_week)
+  data = NIDSS.get_dengue_data(add_epiweeks(current_week, -51), current_week)
   for epiweek in sorted(list(data.keys())):
     for location in sorted(list(data[epiweek].keys())):
       region = NIDSS.LOCATION_TO_REGION[location]
