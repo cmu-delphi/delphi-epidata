@@ -61,18 +61,23 @@ count: the number of dengue cases
 === Changelog ===
 =================
 
+2017-02-20
+  + test mode
+  * API updated
+  * better organization
 2017-02-16
- * use secrets
+  * use secrets
 2015-08-20
- + Also storing dengue data
+  + Also storing dengue data
 2015-08-10
- * Original version, inspired by load_epidata_fluview.py
+  * Original version, inspired by load_epidata_fluview.py
 """
 
-# built-in libraries
-# external libraries
+# standard library
+import argparse
+# third party
 import mysql.connector
-# local libraries
+# first party
 from epiweek import *
 from taiwan_nidss import NIDSS
 import secrets
@@ -90,58 +95,82 @@ def get_rows(cnx):
   select.close()
   return (rows_flu, rows_dengue)
 
-# API initialization
-api = NIDSS()
-current_week = api.get_latest_week()
-release_date = api.get_release_date()
 
-# Database connection
-u, p = secrets.db.epi
-cnx = mysql.connector.connect(user=u, password=p, database='epidata')
-rows1 = get_rows(cnx)
-print('rows before (flu): %d' % (rows1[0]))
-print('rows before (dengue): %d' % (rows1[1]))
-insert = cnx.cursor()
-sql_flu = '''
-INSERT INTO
-  `nidss_flu` (`release_date`, `issue`, `epiweek`, `region`, `lag`, `visits`, `ili`)
-VALUES
-  (%s, %s, %s, %s, %s, %s, %s)
-ON DUPLICATE KEY UPDATE
-  `release_date` = least(`release_date`, %s), `visits` = %s, `ili` = %s
-'''
-sql_dengue = '''
-INSERT INTO
-  `nidss_dengue` (`epiweek`, `location`, `region`, `count`)
-VALUES
-  (%s, %s, %s, %s)
-ON DUPLICATE KEY UPDATE
-  `count` =  %s
-'''
+def update(test_mode=False):
+  # test mode
+  if test_mode:
+    print('test mode enabled: changes will not be saved')
 
-# Scrape the flu data from the past year
-data = api.get_flu_data(add_epiweeks(current_week, -51), current_week)
-for epiweek in sorted(list(data.keys())):
-  lag = delta_epiweeks(epiweek, current_week)
-  for region in data[epiweek].keys():
-    visits, ili = data[epiweek][region]['visits'], data[epiweek][region]['ili']
-    params1 = [release_date, current_week, epiweek, region, lag, visits, ili]
-    params2 = [release_date, visits, ili]
-    insert.execute(sql_flu, tuple(params1 + params2))
+  # Database connection
+  u, p = secrets.db.epi
+  cnx = mysql.connector.connect(user=u, password=p, database='epidata')
+  rows1 = get_rows(cnx)
+  print('rows before (flu): %d' % (rows1[0]))
+  print('rows before (dengue): %d' % (rows1[1]))
+  insert = cnx.cursor()
+  sql_flu = '''
+  INSERT INTO
+    `nidss_flu` (`release_date`, `issue`, `epiweek`, `region`, `lag`, `visits`, `ili`)
+  VALUES
+    (%s, %s, %s, %s, %s, %s, %s)
+  ON DUPLICATE KEY UPDATE
+    `release_date` = least(`release_date`, %s), `visits` = %s, `ili` = %s
+  '''
+  sql_dengue = '''
+  INSERT INTO
+    `nidss_dengue` (`epiweek`, `location`, `region`, `count`)
+  VALUES
+    (%s, %s, %s, %s)
+  ON DUPLICATE KEY UPDATE
+    `count` =  %s
+  '''
 
-# Scrape the dengue data from the past year
-data = api.get_dengue_data(add_epiweeks(current_week, -51), current_week)
-for epiweek in sorted(list(data.keys())):
-  for location in sorted(list(data[epiweek].keys())):
-    region = NIDSS.LOCATION_TO_REGION[location]
-    count = data[epiweek][location]
-    params = (epiweek, location, region, count, count)
-    insert.execute(sql_dengue, params)
+  # Scrape flu data
+  current_week, release_date, data = api.get_flu_data()
+  for epiweek in sorted(list(data.keys())):
+    lag = delta_epiweeks(epiweek, current_week)
+    for region in data[epiweek].keys():
+      visits, ili = data[epiweek][region]['visits'], data[epiweek][region]['ili']
+      params1 = [release_date, current_week, epiweek, region, lag, visits, ili]
+      params2 = [release_date, visits, ili]
+      insert.execute(sql_flu, tuple(params1 + params2))
 
-# Cleanup
-insert.close()
-cnx.commit()
-rows2 = get_rows(cnx)
-print('rows after (flu): %d (added %d)' % (rows2[0], rows2[0] - rows1[0]))
-print('rows after (dengue): %d (added %d)' % (rows2[1], rows2[1] - rows1[1]))
-cnx.close()
+  # Scrape dengue data from the past year
+  data = api.get_dengue_data(add_epiweeks(current_week, -51), current_week)
+  for epiweek in sorted(list(data.keys())):
+    for location in sorted(list(data[epiweek].keys())):
+      region = NIDSS.LOCATION_TO_REGION[location]
+      count = data[epiweek][location]
+      params = (epiweek, location, region, count, count)
+      insert.execute(sql_dengue, params)
+
+  # Cleanup
+  insert.close()
+  rows2 = get_rows(cnx)
+  print('rows after (flu): %d (added %d)' % (rows2[0], rows2[0] - rows1[0]))
+  print('rows after (dengue): %d (added %d)' % (rows2[1], rows2[1] - rows1[1]))
+  if test_mode:
+    print('test mode: changes not commited')
+  else:
+    cnx.commit()
+  cnx.close()
+
+
+def main():
+  # args and usage
+  parser = argparse.ArgumentParser()
+  parser.add_argument(
+    '--test',
+    '-t',
+    action='store_true',
+    default=False,
+    help='test mode, do not commit changes'
+  )
+  args = parser.parse_args()
+
+  # fetch and store NIDSS data
+  update(args.test)
+
+
+if __name__ == '__main__':
+  main()
