@@ -116,7 +116,7 @@ import re
 # third party
 import mysql.connector
 # first party
-import epiweek
+from epiweek import delta_epiweeks
 import secrets
 
 # args and usage
@@ -230,7 +230,7 @@ print(fname)
 data = parse_fluview('%s/%s'%(path, fname))
 for row in data:
   issue, epiweek, region, num_ili, num_patients, num_providers, wili, ili, num_age_0, num_age_1, num_age_2, num_age_3, num_age_4, num_age_5 = to_string([data[-1][0]] + row)
-  lag = epiweek.delta_epiweeks(int(epiweek), int(issue))
+  lag = delta_epiweeks(int(epiweek), int(issue))
   date_string = "'%04d-%02d-%02d'"%(fyear, fmonth, fday)
   sql = '''
   INSERT INTO `fluview` (`release_date`, `issue`, `epiweek`, `region`, `lag`, `num_ili`, `num_patients`, `num_providers`, `wili`, `ili`, `num_age_0`, `num_age_1`, `num_age_2`, `num_age_3`, `num_age_4`, `num_age_5`)
