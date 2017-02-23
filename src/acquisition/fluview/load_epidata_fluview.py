@@ -108,14 +108,14 @@ what I did:
 > update fluview set num_age_2 = null where release_date >= '2015-10-09';
 """
 
-# built-in libraries
+# standard library
 import argparse
 import csv
 import os
 import re
-# external libraries
+# third party
 import mysql.connector
-# local libraries
+# first party
 import epiweek
 import secrets
 

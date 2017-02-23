@@ -21,11 +21,12 @@ the automation flow 'New FluView Available'. This will cause, at least:
   + Initial version
 """
 
-# built-in
+# standard library
 import argparse
-# external
+# third party
 import mysql.connector
-# local
+# first party
+import secrets
 
 if __name__ == '__main__':
   # Args and usage
