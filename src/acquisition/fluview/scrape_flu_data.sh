@@ -5,7 +5,7 @@
 URL=https://gis.cdc.gov/grasp/fluview/FluViewPhase2CustomDownload.ashx
 ALL_SEASONS="64%2C63%2C62%2C61%2C60%2C59%2C58%2C57%2C56%2C55%2C54%2C53%2C52%2C51%2C50%2C49%2C48%2C47%2C46%2C45%2C44%2C43%2C42%2C41%2C40%2C39%2C38%2C37"
 TIMESTAMP=`date "+%Y-%m-%d-%H"`
-DATADIR=../flu_data
+DATADIR=flu_data
 
 #National
 curl --data "SubRegionsList=&RegionID=3&SeasonsList=$ALL_SEASONS&DataSources=ILINet" $URL > data.zip
