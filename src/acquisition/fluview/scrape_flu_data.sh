@@ -29,6 +29,6 @@ cat ILINet.csv | tail -468 > $FV_CEN # save only the most recent 52 weeks
 rm data.zip ILINet.csv
 
 #Database loader: epidata.fluview
-python3 load_epidata_fluview.py $FV_NAT
-python3 load_epidata_fluview.py $FV_HHS
-python3 load_epidata_fluview.py $FV_CEN
+python3 epidata/fluview/load_epidata_fluview.py $FV_NAT
+python3 epidata/fluview/load_epidata_fluview.py $FV_HHS
+python3 epidata/fluview/load_epidata_fluview.py $FV_CEN
