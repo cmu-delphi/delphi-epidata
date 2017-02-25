@@ -109,7 +109,7 @@
     {
       "type": "copy",
       "src": "src/acquisition/wiki/wiki_download.py",
-      "dst": "[[wiki_web]]",
+      "dst": "[[wiki_web]]/",
       "add-header-comment": true
     },{
       "type": "move",
@@ -120,7 +120,7 @@
     },{
       "type": "move",
       "src": "src/acquisition/wiki/master.php",
-      "dst": "[[wiki_web]]",
+      "dst": "[[wiki_web]]/",
       "add-header-comment": true
     },{
       "type": "move",
