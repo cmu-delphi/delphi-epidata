@@ -8,7 +8,9 @@
     "cdcp": "../epidata/cdcp",
     "twtr": "../epidata/twtr",
     "ght": "../epidata/ght",
-    "flusurv": "../epidata/flusurv"
+    "wiki": "../epidata/wiki",
+    "flusurv": "../epidata/flusurv",
+    "wiki_web": "/home/automation/public_html/public/wiki"
   },
   "actions": [
 
@@ -99,6 +101,31 @@
       "src": "src/acquisition/twtr/",
       "dst": "[[twtr]]",
       "match": "^.*\\.(py)$",
+      "add-header-comment": true
+    },
+
+    "// acquisition - wiki",
+    {"type": "import", "dst": "[[wiki]]/secrets.py"},
+    {
+      "type": "copy",
+      "src": "src/acquisition/wiki/wiki_download.py",
+      "dst": "[[wiki_web]]",
+      "add-header-comment": true
+    },{
+      "type": "move",
+      "src": "src/acquisition/wiki/",
+      "dst": "[[wiki]]",
+      "match": "^.*\\.(py)$",
+      "add-header-comment": true
+    },{
+      "type": "move",
+      "src": "src/acquisition/wiki/master.php",
+      "dst": "[[wiki_web]]",
+      "add-header-comment": true
+    },{
+      "type": "move",
+      "src": "src/acquisition/wiki/dashboard.php",
+      "dst": "[[wiki_web]]/index.php",
       "add-header-comment": true
     },
 
