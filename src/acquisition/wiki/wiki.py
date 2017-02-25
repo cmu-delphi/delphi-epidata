@@ -1,4 +1,4 @@
-'''
+"""
 ===============
 === Purpose ===
 ===============
@@ -91,42 +91,55 @@ total: total number of English article hits in the hour
 === Changelog ===
 =================
 
+2017-02-24
+  * secrets and small improvements
 2016-08-14
- * Increased job limit (6 -> 12) (pageviews files are ~2x smaller)
+  * Increased job limit (6 -> 12) (pageviews files are ~2x smaller)
 2015-08-26
- * Reduced job limit (8 -> 6)
+  * Reduced job limit (8 -> 6)
 2015-08-14
- * Reduced job limit (10 -> 8)
+  * Reduced job limit (10 -> 8)
 2015-08-11
- + New table `wiki_meta`
+  + New table `wiki_meta`
 2015-05-22
- * Updated status codes for `wiki_raw` table
+  * Updated status codes for `wiki_raw` table
 2015-05-21
- * Original version
-'''
+  * Original version
+"""
 
-# local files
+# first party
 import wiki_update
 import wiki_download
 import wiki_extract
+import secrets
 
-# step 1: find new access logs (aka "jobs")
-print('looking for new jobs...')
-try:
-  wiki_update.run()
-except:
-  print('wiki_update failed')
 
-# step 2: run a few jobs
-print('running jobs...')
-try:
-  wiki_download.run(download_limit=1000000000, job_limit=12)
-except:
-  print('wiki_download failed')
+def main():
+  # step 1: find new access logs (aka "jobs")
+  print('looking for new jobs...')
+  try:
+    wiki_update.run()
+  except:
+    print('wiki_update failed')
 
-# step 3: extract counts from the staging data
-print('extracting counts...')
-try:
-  wiki_extract.run(job_limit=100)
-except:
-  print('wiki_extract failed')
+  # step 2: run a few jobs
+  print('running jobs...')
+  try:
+    wiki_download.run(
+      secrets.wiki.hmac,
+      download_limit=1024 * 1024 * 1024,
+      job_limit=12
+    )
+  except:
+    print('wiki_download failed')
+
+  # step 3: extract counts from the staging data
+  print('extracting counts...')
+  try:
+    wiki_extract.run(job_limit=100)
+  except:
+    print('wiki_extract failed')
+
+
+if __name__ == '__main__':
+  main()
