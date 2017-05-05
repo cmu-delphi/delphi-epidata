@@ -68,9 +68,9 @@ import sys
 import mysql.connector
 import numpy as np
 # first party
+import cdc_upload
 from epidate import EpiDate
 import epiweek as flu
-from state_info import StateInfo
 import secrets
 
 
@@ -151,7 +151,7 @@ def extract(first_week=None, last_week=None, test_mode=False):
   ]
 
   # location information
-  states = StateInfo().sta
+  states = sorted(cdc_upload.STATES.values())
 
   # connect
   u, p = secrets.db.epi

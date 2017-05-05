@@ -83,7 +83,6 @@ from zipfile import ZipFile
 import mysql.connector
 # first party
 import epiweek as flu
-from state_info import StateInfo
 import secrets
 
 
