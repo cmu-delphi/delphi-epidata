@@ -162,7 +162,7 @@ sql_cdc_meta = '''
 '''
 
 
-def main(test_mode):
+def upload(test_mode):
   # connect
   u, p = secrets.db.epi
   cnx = mysql.connector.connect(user=u, password=p, database='epidata')
@@ -270,7 +270,7 @@ def main():
   args = parser.parse_args()
 
   # make it happen
-  main(args.test)
+  upload(args.test)
 
 
 if __name__ == '__main__':
