@@ -130,6 +130,7 @@
     },
 
     "// acquisition - flusurv",
+    {"type": "import", "dst": "[[flusurv]]/epidate.py"},
     {"type": "import", "dst": "[[flusurv]]/epiweek.py"},
     {"type": "import", "dst": "[[flusurv]]/secrets.py"},
     {

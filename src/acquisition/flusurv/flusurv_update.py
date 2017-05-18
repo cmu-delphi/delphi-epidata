@@ -5,8 +5,8 @@
 
 Stores FluSurv-NET data (flu hospitaliation rates) from CDC.
 
-Note that the flusurv age groups are, in general, not the same as the fluview
-age groups. However, the following groups are equivalent:
+Note that the flusurv age groups are, in general, not the same as the ILINet
+(fluview) age groups. However, the following groups are equivalent:
   - flusurv age_0 == fluview age_0  (0-4 years)
   - flusurv age_3 == fluview age_4  (50-64 years)
   - flusurv age_4 == fluview age_5  (65+ years)
@@ -55,25 +55,27 @@ rate_overall: overall hospitalization rate
 === Changelog ===
 =================
 
+2017-05-17
+  * infer field `issue` from current date
 2017-02-03
   + initial version
 """
 
 # standard library
 import argparse
-import datetime
 import os
 import os.path
 # third party
 import mysql.connector
 # first party
+from epidate import EpiDate
 from epiweek import delta_epiweeks
 import flusurv
 import secrets
 
 
 def get_rows(cur):
-  """Return the number of rows in the FluSUrv table."""
+  """Return the number of rows in the flusurv table."""
 
   # count all rows
   cur.execute('SELECT count(1) `num` FROM `flusurv`')
@@ -81,8 +83,8 @@ def get_rows(cur):
     return num
 
 
-def main(location_name, test_mode=False):
-  """Fetch and store the currently avialble weekly FluSurv dataset."""
+def update(location_name, test_mode=False):
+  """Fetch and store the currently avialble weekly flusurv dataset."""
 
   # fetch data
   location_code = flusurv.location_codes[location_name]
@@ -91,9 +93,26 @@ def main(location_name, test_mode=False):
 
   # metadata
   epiweeks = sorted(data.keys())
-  release_date = datetime.datetime.now().strftime('%Y-%m-%d')
-  issue = epiweeks[-1]
+  today = EpiDate.today()
+  release_date = str(today)
   location = location_name
+
+  # There is some ambiguity about what value issue should take. In general,
+  # "issue" refers to the previous whole epiweek as of publication time. For
+  # example, the issue 201717 was published on Friday of 201718. For ILINet
+  # that's always equal to the largest value of "epiweek" in the dataset. But
+  # here, for FluSurv, summer epiweeks are omitted. So it's not always the case
+  # that issue = max(epiweek). Since new data is usually published on the first
+  # Friday following the issue week (otherwise, later), we assume that issue
+  # increments on Friday of each week. This assumuption is violated from 00:00
+  # ET Friday morning until the point in time at which data is made available.
+  # During this time, the database will store last week's values in duplicate
+  # for both the current issue and the previous issue. Once data is available
+  # and has been fetched, the database rows for the current issue will be
+  # updated with the new values, correct for the current issue. In practice,
+  # this means that sometimes (e.g. some part of Friday morning) the last value
+  # of any given flusurv timeseries will be duplicated.
+  issue = max(epiweek[-1], today.add_days(-12).get_ew())
 
   # connect to the database
   u, p = secrets.db.epi
@@ -145,7 +164,7 @@ def main(location_name, test_mode=False):
   cnx.close()
 
 
-if __name__ == '__main__':
+def main():
   # args and usage
   parser = argparse.ArgumentParser()
   parser.add_argument(
@@ -171,7 +190,11 @@ if __name__ == '__main__':
   if args.location == 'all':
     # all locations
     for location in flusurv.location_codes.keys():
-      main(location, args.test)
+      update(location, args.test)
   else:
     # single location
-    main(args.location, args.test)
+    update(args.location, args.test)
+
+
+if __name__ == '__main__':
+  main()
