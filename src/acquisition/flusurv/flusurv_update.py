@@ -112,7 +112,7 @@ def update(location_name, test_mode=False):
   # updated with the new values, correct for the current issue. In practice,
   # this means that sometimes (e.g. some part of Friday morning) the last value
   # of any given flusurv timeseries will be duplicated.
-  issue = max(epiweek[-1], today.add_days(-12).get_ew())
+  issue = max(epiweeks[-1], today.add_days(-12).get_ew())
 
   # connect to the database
   u, p = secrets.db.epi
