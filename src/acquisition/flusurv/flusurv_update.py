@@ -55,6 +55,8 @@ rate_overall: overall hospitalization rate
 === Changelog ===
 =================
 
+2017-05-22
+  * update for new data source
 2017-05-17
   * infer field `issue` from current date
 2017-02-03
@@ -63,8 +65,6 @@ rate_overall: overall hospitalization rate
 
 # standard library
 import argparse
-import os
-import os.path
 # third party
 import mysql.connector
 # first party
@@ -75,7 +75,7 @@ import secrets
 
 
 def get_rows(cur):
-  """Return the number of rows in the flusurv table."""
+  """Return the number of rows in the `flusurv` table."""
 
   # count all rows
   cur.execute('SELECT count(1) `num` FROM `flusurv`')
@@ -83,8 +83,8 @@ def get_rows(cur):
     return num
 
 
-def update(location_name, test_mode=False):
-  """Fetch and store the currently avialble weekly flusurv dataset."""
+def update(issue, location_name, test_mode=False):
+  """Fetch and store the currently avialble weekly FluSurv dataset."""
 
   # fetch data
   location_code = flusurv.location_codes[location_name]
@@ -93,26 +93,8 @@ def update(location_name, test_mode=False):
 
   # metadata
   epiweeks = sorted(data.keys())
-  today = EpiDate.today()
-  release_date = str(today)
   location = location_name
-
-  # There is some ambiguity about what value issue should take. In general,
-  # "issue" refers to the previous whole epiweek as of publication time. For
-  # example, the issue 201717 was published on Friday of 201718. For ILINet
-  # that's always equal to the largest value of "epiweek" in the dataset. But
-  # here, for FluSurv, summer epiweeks are omitted. So it's not always the case
-  # that issue = max(epiweek). Since new data is usually published on the first
-  # Friday following the issue week (otherwise, later), we assume that issue
-  # increments on Friday of each week. This assumuption is violated from 00:00
-  # ET Friday morning until the point in time at which data is made available.
-  # During this time, the database will store last week's values in duplicate
-  # for both the current issue and the previous issue. Once data is available
-  # and has been fetched, the database rows for the current issue will be
-  # updated with the new values, correct for the current issue. In practice,
-  # this means that sometimes (e.g. some part of Friday morning) the last value
-  # of any given flusurv timeseries will be duplicated.
-  issue = max(epiweeks[-1], today.add_days(-12).get_ew())
+  release_date = str(EpiDate.today())
 
   # connect to the database
   u, p = secrets.db.epi
@@ -177,23 +159,18 @@ def main():
   )
   args = parser.parse_args()
 
-  # The flusurv module makes a shell call to a local script, but this script
-  # is likely called by Automation from another directory. In order for the
-  # shell call to work, the working directory needs to be set to the location
-  # of flusurv.py, which is the same location as this file.
-  script_path = os.path.realpath(__file__)
-  script_dir = os.path.dirname(script_path)
-  os.chdir(script_dir)
-  print('working directory set to %s' % os.getcwd())
+  # scrape current issue from the main page
+  issue = flusurv.get_current_issue()
+  print('current issue: %d' % issue)
 
   # fetch flusurv data
   if args.location == 'all':
     # all locations
     for location in flusurv.location_codes.keys():
-      update(location, args.test)
+      update(issue, location, args.test)
   else:
     # single location
-    update(args.location, args.test)
+    update(issue, args.location, args.test)
 
 
 if __name__ == '__main__':
