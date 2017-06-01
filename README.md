@@ -27,7 +27,7 @@ Influenza-like illness (ILI) from U.S. Outpatient Influenza-like Illness Surveil
  - Spatial Resolution: National, [HHS regions](http://www.hhs.gov/iea/regional/), and [Census divisions](http://www.census.gov/econ/census/help/geography/regions_and_divisions.html) ([1+10+9](labels/regions.txt))
  - Open access
 
-*Data is usually released on Friday
+\* Data is usually released on Friday
 
 
 ### ILINet
@@ -37,6 +37,17 @@ An *estimate* of state-level ILI as reported to ILINet. Most of the data was dig
  - Temporal Resolution: Weekly, from 2010w40 (or later) until 2015w34 (or earlier)
  - Spatial Resolution: By state/territory ([51](labels/states.txt))
  - Open access
+
+
+### ILI-Nearby
+
+A nowcast of U.S. national, regional, and state-level (weighted) %ILI, available seven days (regionally) or five days (state-level) before the first ILINet report for the corresponding week.
+ - Data source: [Delphi's ILI-Nearby system](http://delphi.midas.cs.cmu.edu/nowcast/)
+ - Temporal Resolution: Weekly, from 2010w30*
+ - Spatial Resolution: National, [HHS regions](http://www.hhs.gov/iea/regional/), [Census divisions](http://www.census.gov/econ/census/help/geography/regions_and_divisions.html) ([1+10+9](labels/regions.txt)), and by state/territory ([51](labels/states.txt))
+ - Open access
+
+\* Data is usually released on Friday and updated on Sunday and Monday
 
 
 ### Google Flu Trends
@@ -75,7 +86,7 @@ Outpatient ILI from Taiwan's National Infectious Disease Statistics System (NIDS
  - Spatial Resolution: By [hexchotomy region](https://en.wikipedia.org/wiki/Regions_of_Taiwan#Hexchotomy) ([6+1](labels/nidss_regions.txt))
  - Open access
 
-*Data is usually released on Tuesday
+\* Data is usually released on Tuesday
 
 
 # Dengue Data
@@ -106,7 +117,7 @@ Formatting for epiweeks is YYYYWW and for dates is YYYYMMDD.
 
 ### Universal Parameters
 
-The only universally required parameter is `source`, which must be one of: `fluview`, `ilinet`, `gft`, `twitter`, `wiki`, `nidss_flu`, or `nidss_dengue`
+The only universally required parameter is `source`, which must be one of: `fluview`, `ilinet`, `nowcast`, `gft`, `twitter`, `wiki`, `nidss_flu`, or `nidss_dengue`
 
 ### FluView Parameters
 
@@ -125,6 +136,12 @@ Required:
  - `locations`: a `list` of [region](labels/regions.txt)/[state](labels/states.txt) labels
 
 Note: For convenience and consistency, the `ilinet` source provides national and regional ILI in addition to state-level ILI, transparently using the `fluview` data source when necessary.
+
+### ILI-Nearby Parameters
+
+Required:
+ - `epiweeks`: a `list` of epiweeks
+ - `locations`: a `list` of [region](labels/regions.txt)/[state](labels/states.txt) labels
 
 ### GFT Parameters
 
