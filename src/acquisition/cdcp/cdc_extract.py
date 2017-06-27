@@ -115,6 +115,7 @@ def get_total_hits(cur, epiweek, state):
   else:
     return total
 
+
 def store_result(cur, epiweek, state, num1, num2, num3, num4, num5, num6, num7, num8, total):
   sql = '''
     INSERT INTO

@@ -9,7 +9,7 @@ See cdc_upload.py for many more details.
 */
 
 require_once('/var/www/html/secrets.php');
-$hmacSecret = Secrets::$flucontest['hmac'];
+$hmacSecret = Secrets::$cdcp['hmac'];
 $dbUser = Secrets::$db['epi'][0];
 $dbPass = Secrets::$db['epi'][1];
 $dbHost = 'localhost';
