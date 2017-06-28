@@ -60,10 +60,7 @@ if($dbh) {
               $target_dir = '/common/cdc_stage/';
               $target_file = $target_dir . time() . '_' . $fileName;
               if (move_uploaded_file($_FILES['zip_file']['tmp_name'], $target_file)) {
-                mysql_query('CALL automation.RunStep(39)'); // Upload CDC Page Stats
-                mysql_query('CALL automation.RunStep(40)'); // Extract CDC Page Stats
-                mysql_query('CALL automation.RunStep(41)'); // Update Sensor: cdc
-                mysql_query('CALL automation.RunStep(25)'); // Update Nowcast
+                mysql_query('CALL automation.RunStep(46)'); // Process CDCP Data
                 printf('Success, thanks!');
               } else {
                 printf('Error: something is wrong with file permissions.');
