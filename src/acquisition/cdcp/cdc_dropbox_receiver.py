@@ -13,6 +13,7 @@ This program:
 
 See also:
   - cdc_upload.py
+  - cdc_extract.py
 """
 
 # standard library
@@ -116,7 +117,7 @@ def fetch_data():
         raise Exception(info)
 
       # add the downloaded file to the zip file
-      zf.writestr(entry_name, filedata)
+      zf.writestr(name, filedata)
       print('  added')
 
   # At this point, all the data is stored and awaiting further processing on
