@@ -18,7 +18,7 @@ unless $?.getJSON?
 class Epidata
 
   # API base url
-  BASE_URL = 'http://delphi.midas.cs.cmu.edu/epidata/api.php'
+  BASE_URL = 'https://delphi.midas.cs.cmu.edu/epidata/api.php'
 
   # Helper function to cast values and/or ranges to strings
   _listitem = (value) ->

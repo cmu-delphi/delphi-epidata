@@ -23,7 +23,7 @@ Notes:
 
     function Epidata() {}
 
-    BASE_URL = 'http://delphi.midas.cs.cmu.edu/epidata/api.php';
+    BASE_URL = 'https://delphi.midas.cs.cmu.edu/epidata/api.php';
 
     _listitem = function(value) {
       if (value.hasOwnProperty('from') && value.hasOwnProperty('to')) {

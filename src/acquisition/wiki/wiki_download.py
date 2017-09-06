@@ -49,7 +49,7 @@ import time
 
 
 VERSION = 10
-MASTER_URL = 'http://delphi.midas.cs.cmu.edu/~automation/public/wiki/master.php'
+MASTER_URL = 'https://delphi.midas.cs.cmu.edu/~automation/public/wiki/master.php'
 
 
 def text(data_string):

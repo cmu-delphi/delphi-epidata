@@ -6,7 +6,7 @@
 Reads zip/csv files from CDC and stores page hit counts in the database.
 
 Files can be uploaded at:
-http://delphi.midas.cs.cmu.edu/~automation/public/cdc_upload/
+https://delphi.midas.cs.cmu.edu/~automation/public/cdc_upload/
 
 When someone uploads a new file, two things happen:
   1. the uploaded file is moved to /common/cdc_stage

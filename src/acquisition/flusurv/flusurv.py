@@ -76,7 +76,7 @@ def fetch_json(path, payload):
   """Send a request to the server and return the parsed JSON response."""
 
   # it's polite to self-identify this "bot"
-  delphi_url = 'http://delphi.midas.cs.cmu.edu/index.html'
+  delphi_url = 'https://delphi.midas.cs.cmu.edu/index.html'
   user_agent = 'Mozilla/5.0 (compatible; delphibot/1.0; +%s)' % delphi_url
 
   # the FluSurv AMF server
