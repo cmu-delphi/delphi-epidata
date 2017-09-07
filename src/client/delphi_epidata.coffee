@@ -10,7 +10,7 @@ Notes:
 
 # Use built-in node.js modules unless jQuery is available
 unless $?.getJSON?
-  http = require('http')
+  https = require('https')
   querystring = require('querystring')
 
 
@@ -54,7 +54,7 @@ class Epidata
         response.on('error', (e) -> error(e.message))
         response.on('end', () -> handler(JSON.parse(text)))
       # API call with Node
-      http.get("#{BASE_URL}?#{querystring.stringify(params)}", reader)
+      https.get("#{BASE_URL}?#{querystring.stringify(params)}", reader)
 
   # Build a `range` object (ex: dates/epiweeks)
   @range = (from, to) ->
