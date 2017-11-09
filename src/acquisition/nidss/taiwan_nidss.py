@@ -29,10 +29,12 @@ import argparse
 import base64
 import re
 import urllib.parse
+
 # third party
 import requests
+
 # first party
-from epiweek import range_epiweeks, add_epiweeks, delta_epiweeks, check_epiweek
+from delphi.utils.epiweek import range_epiweeks, add_epiweeks, delta_epiweeks, check_epiweek
 
 
 class NIDSS:

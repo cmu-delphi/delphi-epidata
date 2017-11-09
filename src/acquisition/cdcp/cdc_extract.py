@@ -64,14 +64,16 @@ total: total number of hits for all CDC pages
 # standard library
 import argparse
 import sys
+
 # third party
 import mysql.connector
 import numpy as np
+
 # first party
-import cdc_upload
-from epidate import EpiDate
-import epiweek as flu
-import secrets
+import .cdc_upload
+import delphi.operations.secrets as secrets
+from delphi.utils.epidate import EpiDate
+import delphi.utils.epiweek as flu
 
 
 def get_num_hits(cur, epiweek, state, page):

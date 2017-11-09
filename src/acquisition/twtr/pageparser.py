@@ -1,4 +1,8 @@
+"""A small library for parsing HTML."""
+
+# standard library
 from html.parser import HTMLParser
+
 
 class PageParser(HTMLParser):
   '''

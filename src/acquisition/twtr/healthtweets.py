@@ -22,14 +22,17 @@ Scrapes daily state values from healthtweets.org
  * Original version
 '''
 
-# built-in libraries
+# standard library
 import argparse
 from datetime import datetime, timedelta
 import json
-# external libraries
+
+# third party`
 import requests
-# local files
-from pageparser import PageParser
+
+# first party
+from .pageparser import PageParser
+
 
 class HealthTweets:
 

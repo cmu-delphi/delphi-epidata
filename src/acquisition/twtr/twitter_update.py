@@ -51,11 +51,12 @@ total: the total number of tweets (denominator)
   * Original version
 '''
 
-# external libraries
+# third party
 import mysql.connector
-# local files
-from healthtweets import HealthTweets
-import secrets
+
+# first party
+from .healthtweets import HealthTweets
+import delphi.operations.secrets as secrets
 
 
 def run():

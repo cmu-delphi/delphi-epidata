@@ -75,12 +75,14 @@ count: the number of dengue cases
 
 # standard library
 import argparse
+
 # third party
 import mysql.connector
+
 # first party
-from epiweek import *
-from taiwan_nidss import NIDSS
-import secrets
+from .taiwan_nidss import NIDSS
+import delphi.operations.secrets as secrets
+from delphi.utils.epiweek import *
 
 
 # Get a row count just to know how many new rows are inserted

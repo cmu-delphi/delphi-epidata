@@ -23,10 +23,13 @@ the automation flow 'New FluView Available'. This will cause, at least:
 
 # standard library
 import argparse
+
 # third party
 import mysql.connector
+
 # first party
-import secrets
+import delphi.operations.secrets as secrets
+
 
 if __name__ == '__main__':
   # Args and usage

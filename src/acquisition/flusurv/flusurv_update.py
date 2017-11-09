@@ -65,13 +65,15 @@ rate_overall: overall hospitalization rate
 
 # standard library
 import argparse
+
 # third party
 import mysql.connector
+
 # first party
-from epidate import EpiDate
-from epiweek import delta_epiweeks
-import flusurv
-import secrets
+import .flusurv
+import delphi.operations.secrets as secrets
+from delphi.utils.epidate import EpiDate
+from delphi.utils.epiweek import delta_epiweeks
 
 
 def get_rows(cur):

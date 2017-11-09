@@ -2,15 +2,9 @@
   "type": "delphi deploy config",
   "version": 1,
   "paths": {
-    "web_files": "/var/www/html/epidata",
-    "fluview": "../epidata/fluview",
-    "nidss": "../epidata/nidss",
-    "cdcp": "../epidata/cdcp",
-    "twtr": "../epidata/twtr",
-    "ght": "../epidata/ght",
-    "wiki": "../epidata/wiki",
-    "flusurv": "../epidata/flusurv",
-    "wiki_web": "/home/automation/public_html/public/wiki"
+    "root_web": "/var/www/html/epidata",
+    "auto_web": "/home/automation/public_html/public",
+    "package": "../delphi/epidata"
   },
   "actions": [
 
@@ -21,14 +15,15 @@
       "dst": "src/client/delphi_epidata.min.js"
     },
     {
-      "type": "export",
+      "type": "copy",
       "src": "src/client/delphi_epidata.py",
+      "dst": "[[package]]/client/delphi_epidata.py",
       "add-header-comment": true
     },
     {
       "type": "move",
       "src": "src/client/",
-      "dst": "[[web_files]]/lib/",
+      "dst": "[[root_web]]/lib/",
       "match": "^delphi_epidata.*\\.(js|py|coffee|R)$",
       "add-header-comment": true
     },
@@ -37,106 +32,90 @@
     {
       "type": "move",
       "src": "src/server/",
-      "dst": "[[web_files]]",
+      "dst": "[[root_web]]",
       "match": "^.*\\.(html|php)$",
       "add-header-comment": true
     },
 
     "// acquisition - fluview",
-    {"type": "import", "dst": "[[fluview]]/epiweek.py"},
-    {"type": "import", "dst": "[[fluview]]/secrets.py"},
     {
       "type": "move",
       "src": "src/acquisition/fluview/",
-      "dst": "[[fluview]]",
+      "dst": "[[package]]/acquisition/fluview/",
       "match": "^.*\\.(py)$",
       "add-header-comment": true
     },
 
     "// acquisition - nidss",
-    {"type": "import", "dst": "[[nidss]]/epiweek.py"},
-    {"type": "import", "dst": "[[nidss]]/secrets.py"},
     {
       "type": "move",
       "src": "src/acquisition/nidss/",
-      "dst": "[[nidss]]",
+      "dst": "[[package]]/acquisition/nidss/",
       "match": "^.*\\.(py)$",
       "add-header-comment": true
     },
 
     "// acquisition - cdcp",
-    {"type": "import", "dst": "[[cdcp]]/epidate.py"},
-    {"type": "import", "dst": "[[cdcp]]/epiweek.py"},
-    {"type": "import", "dst": "[[cdcp]]/secrets.py"},
-    {"type": "import", "dst": "[[cdcp]]/state_info.py"},
     {
       "type": "move",
       "src": "src/acquisition/cdcp/",
-      "dst": "[[cdcp]]",
+      "dst": "[[package]]/acquisition/cdcp/",
       "match": "^.*\\.(py)$",
       "add-header-comment": true
     },{
       "type": "move",
       "src": "src/acquisition/cdcp/cdc_upload.php",
-      "dst": "/home/automation/public_html/public/cdc_upload/index.php",
+      "dst": "[[auto_web]]/cdc_upload/index.php",
       "add-header-comment": true
     },
 
     "// acquisition - ght",
-    {"type": "import", "dst": "[[ght]]/epidate.py"},
-    {"type": "import", "dst": "[[ght]]/epiweek.py"},
-    {"type": "import", "dst": "[[ght]]/secrets.py"},
     {
       "type": "move",
       "src": "src/acquisition/ght/",
-      "dst": "[[ght]]",
+      "dst": "[[package]]/acquisition/ght/",
       "match": "^.*\\.(py)$",
       "add-header-comment": true
     },
 
     "// acquisition - twtr",
-    {"type": "import", "dst": "[[twtr]]/secrets.py"},
     {
       "type": "move",
       "src": "src/acquisition/twtr/",
-      "dst": "[[twtr]]",
+      "dst": "[[package]]/acquisition/twtr/",
       "match": "^.*\\.(py)$",
       "add-header-comment": true
     },
 
     "// acquisition - wiki",
-    {"type": "import", "dst": "[[wiki]]/secrets.py"},
     {
       "type": "copy",
       "src": "src/acquisition/wiki/wiki_download.py",
-      "dst": "[[wiki_web]]/wiki_download.py",
+      "dst": "[[auto_web]]/wiki/wiki_download.py",
       "add-header-comment": true
     },{
       "type": "move",
       "src": "src/acquisition/wiki/",
-      "dst": "[[wiki]]",
+      "dst": "[[package]]/acquisition/wiki/",
       "match": "^.*\\.(py)$",
       "add-header-comment": true
     },{
       "type": "move",
       "src": "src/acquisition/wiki/master.php",
-      "dst": "[[wiki_web]]/master.php",
+      "dst": "[[auto_web]]/wiki/master.php",
       "add-header-comment": true
     },{
       "type": "move",
       "src": "src/acquisition/wiki/dashboard.php",
-      "dst": "[[wiki_web]]/index.php",
+      "dst": "[[auto_web]]/wiki/index.php",
       "add-header-comment": true
     },
 
     "// acquisition - flusurv",
-    {"type": "import", "dst": "[[flusurv]]/epidate.py"},
-    {"type": "import", "dst": "[[flusurv]]/epiweek.py"},
-    {"type": "import", "dst": "[[flusurv]]/secrets.py"},
     {
       "type": "move",
       "src": "src/acquisition/flusurv/",
-      "dst": "[[flusurv]]",
+      "dst": "[[package]]/acquisition/flusurv/",
       "match": "^.*\\.(py)$",
       "add-header-comment": true
     }

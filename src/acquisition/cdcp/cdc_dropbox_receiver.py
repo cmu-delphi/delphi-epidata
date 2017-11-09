@@ -20,11 +20,13 @@ See also:
 import argparse
 import datetime
 from zipfile import ZIP_DEFLATED, ZipFile
+
 # third party
 import dropbox
 import mysql.connector
+
 # first party
-import secrets
+import delphi.operations.secrets as secrets
 
 
 # location constants

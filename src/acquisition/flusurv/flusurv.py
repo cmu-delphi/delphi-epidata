@@ -38,10 +38,12 @@ See also:
 # standard library
 from datetime import datetime
 import json
+
 # third party
 import requests
+
 # first party
-from epidate import EpiDate
+from delphi.utils.epidate import EpiDate
 
 
 # all currently available FluSurv locations and their associated codes

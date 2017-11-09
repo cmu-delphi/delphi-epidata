@@ -79,11 +79,13 @@ import os
 import shutil
 import sys
 from zipfile import ZipFile
+
 # third party
 import mysql.connector
+
 # first party
-import epiweek as flu
-import secrets
+import delphi.operations.secrets as secrets
+import delphi.utils.epiweek as flu
 
 
 STATES = {

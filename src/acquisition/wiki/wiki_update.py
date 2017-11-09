@@ -22,11 +22,13 @@ See also: wiki.py
 
 # standard library
 from datetime import datetime, timedelta
+
 # third party
 import mysql.connector
 import requests
+
 # first party
-import secrets
+import delphi.operations.secrets as secrets
 
 
 def floor_timestamp(timestamp):

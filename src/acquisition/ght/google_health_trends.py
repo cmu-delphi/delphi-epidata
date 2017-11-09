@@ -20,14 +20,16 @@ is currently private, experimental, and unstable.
   * separated GHT class from ght_update.py
 '''
 
-# built-in
+# standard library
 import argparse
 import time
-# external
+
+# third party
 from apiclient.discovery import build
-# local
-from epidate import EpiDate
-import epiweek as flu
+
+# first party
+from delphi.utils.epidate import EpiDate
+import delphi.utils.epiweek as flu
 
 
 class GHT:

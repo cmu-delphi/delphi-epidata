@@ -65,17 +65,19 @@ value: relative search volume; the exact definition is still unclear
   * Original version
 '''
 
-# built-in
+# standard library
 import argparse
 import time
-# external
+
+# third party
 import mysql.connector
 from apiclient.discovery import build
-# local
-from epidate import EpiDate
-import epiweek as flu
-from google_health_trends import GHT
-import secrets
+
+# first party
+from .google_health_trends import GHT
+import delphi.operations.secrets as secrets
+from delphi.utils.epidate import EpiDate
+import delphi.utils.epiweek as flu
 
 
 # secret key for accessing Google's health trends APIs
