@@ -70,7 +70,7 @@ import mysql.connector
 import numpy as np
 
 # first party
-import .cdc_upload
+from . import cdc_upload
 import delphi.operations.secrets as secrets
 from delphi.utils.epidate import EpiDate
 import delphi.utils.epiweek as flu

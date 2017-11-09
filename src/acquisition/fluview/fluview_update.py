@@ -77,8 +77,8 @@ import zipfile
 import mysql.connector
 
 # first party
-import .fluview
-import .fluview_locations
+from . import fluview
+from . import fluview_locations
 import delphi.operations.secrets as secrets
 from delphi.utils.epiweek import delta_epiweeks, join_epiweek
 

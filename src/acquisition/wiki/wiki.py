@@ -108,9 +108,9 @@ total: total number of English article hits in the hour
 """
 
 # first party
-import .wiki_update
-import .wiki_download
-import .wiki_extract
+from . import wiki_update
+from . import wiki_download
+from . import wiki_extract
 import delphi.operations.secrets as secrets
 
 
