@@ -89,7 +89,7 @@ def update(locations, terms, first=None, last=None):
 
   for location in locations:
 	if location not in qd_ts:
-		continue
+	  continue
 	ews = sorted(qd_ts[location].keys())
 	num_missing = 0
     for ew in ews:
