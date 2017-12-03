@@ -12,7 +12,7 @@ by quidel_update.py
 =================
 
 2017-12-02:
-	* original version
+    * original version
 '''
 
 # standard
@@ -186,8 +186,8 @@ class QuidelData:
         device_dict = {}
         for (date,daily_dict) in data_dict.items():
             time = time_map(date)
-			if time == -1:
-				continue
+            if time == -1:
+                continue
             if time not in device_dict:
                 device_dict[time]={}
                 for r in region_list:
@@ -204,8 +204,8 @@ class QuidelData:
         # second pass: prepare all measurements
         for (date,daily_dict) in data_dict.items():
             time = time_map(date)
-			if time == -1:
-				continue
+            if time == -1:
+                continue
             if time not in buffer_dict:
                 buffer_dict[time]={}
                 for r in region_list:
