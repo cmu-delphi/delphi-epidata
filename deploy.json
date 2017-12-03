@@ -118,7 +118,16 @@
       "dst": "[[package]]/acquisition/flusurv/",
       "match": "^.*\\.(py)$",
       "add-header-comment": true
-    }
+    },
+
+		"// acquisition - quidel",
+    {
+      "type": "move",
+      "src": "src/acquisition/quidel/",
+      "dst": "[[package]]/acquisition/quidel/",
+      "match": "^.*\\.(py)$",
+      "add-header-comment": true
+    },
 
   ]
 }
