@@ -88,12 +88,12 @@ def update(locations, terms, first=None, last=None):
   qd_ts = quidel.measurement_to_ts(qd_measurements,7,startweek=first,endweek=last)
 
   for location in locations:
-	if location not in qd_ts:
-	  continue
-	ews = sorted(qd_ts[location].keys())
-	num_missing = 0
+    if location not in qd_ts:
+      continue
+    ews = sorted(qd_ts[location].keys())
+    num_missing = 0
     for ew in ews:
-	  v = qd_ts[location][ew]
+      v = qd_ts[location][ew]
       sql_data = (location, ew, v, v)
       cur.execute(sql, sql_data)
       total_rows += 1
