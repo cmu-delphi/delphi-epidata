@@ -40,7 +40,7 @@ import argparse
 import mysql.connector
 
 # first party
-import quidel
+from . import quidel
 import delphi.operations.secrets as secrets
 from delphi.utils.epidate import EpiDate
 import delphi.utils.epiweek as flu

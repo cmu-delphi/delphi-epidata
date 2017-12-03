@@ -48,7 +48,7 @@ def dateToEpiweek(date, delimiter='-', shift=0):
         return -1
 
     if cy*10000+cm*100+cd<y*10000+m*100+d:
-		# mark records from future as invalid
+        # mark records from future as invalid
         return -1
     epidate = ED.EpiDate(y,m,d)
     epidate = epidate.add_days(shift)
