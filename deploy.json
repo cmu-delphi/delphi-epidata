@@ -127,7 +127,7 @@
       "dst": "[[package]]/acquisition/quidel/",
       "match": "^.*\\.(py)$",
       "add-header-comment": true
-    },
- 
+    }
+
   ]
 }
