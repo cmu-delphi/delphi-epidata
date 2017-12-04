@@ -120,7 +120,7 @@
       "add-header-comment": true
     },
 
-		"// acquisition - quidel",
+    "// acquisition - quidel",
     {
       "type": "move",
       "src": "src/acquisition/quidel/",

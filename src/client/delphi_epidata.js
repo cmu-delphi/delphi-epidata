@@ -281,6 +281,22 @@ Notes:
       return _request(callback, params);
     };
 
+    Epidata.quidel = function(callback, auth, epiweeks, locations) {
+      var params;
+      if (!((auth != null) && (epiweeks != null) && (locations != null))) {
+        throw {
+          msg: '`auth`, `epiweeks`, and `locations` are all required'
+        };
+      }
+      params = {
+        'source': 'quidel',
+        'auth': auth,
+        'epiweeks': _list(epiweeks),
+        'locations': _list(locations)
+      };
+      return _request(callback, params);
+    };
+
     Epidata.nidss_flu = function(callback, regions, epiweeks, issues, lag) {
       var params;
       if (!((regions != null) && (epiweeks != null))) {
