@@ -104,7 +104,7 @@ class QuidelData:
         # The emailids are ordered from past to now
         for emailid in items:
             resp, data = m.fetch(emailid, "(RFC822)") # fetching the mail, "`(RFC822)`" means "get the whole stuff", but you can ask for headers only, etc
-            email_body = data[0][1] # getting the mail content
+            email_body = data[0][1].decode('utf-8') # getting the mail content
             mail = email.message_from_string(email_body) # parsing the mail content to get a mail object
 
             #Check if any attachments at all
