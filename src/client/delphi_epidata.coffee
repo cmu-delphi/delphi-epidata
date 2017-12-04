@@ -212,6 +212,20 @@ class Epidata
     # Make the API call
     _request(callback, params)
 
+  # Fetch Quidel data
+  @quidel: (callback, auth, epiweeks, locations) ->
+    # Check parameters
+    unless auth? and epiweeks? and locations?
+      throw { msg: '`auth`, `epiweeks`, and `locations` are all required' }
+    # Set up request
+    params =
+      'source': 'quidel'
+      'auth': auth
+      'epiweeks': _list(epiweeks)
+      'locations': _list(locations)
+    # Make the API call
+    _request(callback, params)
+
   # Fetch NIDSS flu data
   @nidss_flu: (callback, regions, epiweeks, issues, lag) ->
     # Check parameters

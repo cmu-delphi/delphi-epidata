@@ -241,6 +241,23 @@ class Epidata:
     # Make the API call
     return Epidata._request(params)
 
+  # Fetch Quidel data
+  @staticmethod
+  def quidel(auth, epiweeks, locations):
+    """Fetch Quidel data."""
+    # Check parameters
+    if auth is None or epiweeks is None or locations is None:
+      raise Exception('`auth`, `epiweeks`, and `locations` are all required')
+    # Set up request
+    params = {
+      'source': 'quidel',
+      'auth': auth,
+      'epiweeks': Epidata._list(epiweeks),
+      'locations': Epidata._list(locations),
+    }
+    # Make the API call
+    return Epidata._request(params)
+
   # Fetch NIDSS flu data
   @staticmethod
   def nidss_flu(regions, epiweeks, issues=None, lag=None):
