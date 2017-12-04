@@ -46,7 +46,7 @@ from delphi.utils.epidate import EpiDate
 import delphi.utils.epiweek as flu
 
 LOCATIONS = ['hhs%d'%i for i in range(1,11)]
-DATAPATH = '/quidel_data'
+DATAPATH = '/home/automation/quidel_data'
 
 def update(locations, terms, first=None, last=None):
   # connect to the database
@@ -115,7 +115,7 @@ def update(locations, terms, first=None, last=None):
 def main():
   # args and usage
   parser = argparse.ArgumentParser()
-  parser.add_argument('location', action='store', type=str, default=None, help='location(s) (ex: all; any of hhs1-10)')
+  parser.add_argument('--location', action='store', type=str, default=None, help='location(s) (ex: all; any of hhs1-10)')
   parser.add_argument('--first', '-f', default=None, type=int, help='first epiweek override')
   parser.add_argument('--last', '-l', default=None, type=int, help='last epiweek override')
   args = parser.parse_args()
