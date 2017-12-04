@@ -57,7 +57,11 @@ def dateToEpiweek(date, delimiter='-', shift=0):
 
 # convert measurment to time series format
 # startweek and endweek are inclusive
-def measurement_to_ts(m,index,startweek=0,endweek=999999):
+def measurement_to_ts(m,index,startweek=None,endweek=None):
+    if startweek is None:
+        startweek = 0
+    if endweek is None:
+        endweek = 999999
     res = {}
     for r,rdict in m.items():
         res[r]={}
