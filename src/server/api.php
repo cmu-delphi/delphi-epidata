@@ -201,7 +201,8 @@ $AUTH = array(
   'ilinet'   => Secrets::$api['ilinet'],
   'stateili' => Secrets::$api['stateili'],
   'cdc'      => Secrets::$api['cdc'],
-  'sensors'  => Secrets::$api['sensors']
+  'sensors'  => Secrets::$api['sensors'],
+  'quidel'   => Secrets::$api['quidel']
 );
 
 // result limit, ~10 years of daily data
@@ -1343,7 +1344,20 @@ if(database_connect()) {
         store_result($data, $epidata);
       }
     }
-  } else if($source === 'nidss_flu') {
+} else if($source === 'quidel') {
+  if(require_all($data, array('auth', 'locations', 'epiweeks'))) {
+    if($_REQUEST['auth'] === $AUTH['quidel']) {
+      // parse the request
+      $locations = extract_values($_REQUEST['locations'], 'str');
+      $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
+      // get the data
+      $epidata = get_quidel($locations, $epiweeks);
+      store_result($data, $epidata);
+    } else {
+      $data['message'] = 'unauthenticated';
+    }
+  }
+} else if($source === 'nidss_flu') {
     if(require_all($data, array('epiweeks', 'regions'))) {
       // parse the request
       $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
