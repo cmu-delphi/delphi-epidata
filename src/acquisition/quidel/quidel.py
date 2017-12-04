@@ -174,7 +174,7 @@ class QuidelData:
 
     # hardcoded aggregation function
     # output: [#unique_device,fluA,fluB,fluAll,total]
-    def prepare_measurements(self,data_dict,use_epiweek=False,use_hhs=False,start_weekday=6):
+    def prepare_measurements(self,data_dict,use_epiweek=True,use_hhs=True,start_weekday=6):
         buffer_dict = {}
         SI = StateInfo()
         if use_hhs:
