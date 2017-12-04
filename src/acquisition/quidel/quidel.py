@@ -191,7 +191,7 @@ class QuidelData:
             if time not in device_dict:
                 device_dict[time]={}
                 for r in region_list:
-                    device_dict[time][r] = Set()
+                    device_dict[time][r] = set()
             for (state,rec_list) in daily_dict.items():
                 region = region_map(state)
                 # get rid of non-US regions
