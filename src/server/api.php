@@ -27,6 +27,7 @@ See also:
   - nowcast.py
   - cdc_extract.py
   - flusurv_update.py
+  - quidel_update.py
 
 Unlike most of the other data sources, the state-level ILINet data isn't
 updated automatically. The data was obtained around 2015-09-10 from the various
@@ -108,7 +109,8 @@ num: the value, roughly corresponding to ILI * 1000
 =================
 === Changelog ===
 =================
-
+2017-12-03
+  + added source `quidel`
 2017-02-07
   + added source `flusurv`
 2016-11-15
@@ -894,6 +896,31 @@ function get_wiki($articles, $dates, $resolution, $hours) {
     // final query, summing over all hours of the day
     $query = "SELECT {$fields}, -1 `hour` FROM {$table} WHERE ({$condition_date}) AND ({$condition_article}) GROUP BY {$date_field}, w.`article` ORDER BY {$date_field} ASC, w.`article` ASC";
   }
+  // get the data from the database
+  $epidata = array();
+  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
+  // return the data
+  return count($epidata) === 0 ? null : $epidata;
+}
+
+// queries the `quidel` table
+//   $locations (required): array of location names
+//   $epiweeks (required): array of epiweek values/ranges
+function get_quidel($locations, $epiweeks) {
+  // basic query info
+  $table = '`quidel` q';
+  $fields = "q.`location`, q.`epiweek`, q.`value`";
+  $order = "q.`epiweek` ASC, q.`location` ASC";
+  // data type of each field
+  $fields_string = array('location');
+  $fields_int = array('epiweek');
+  $fields_float = array('value');
+  // build the location filter
+  $condition_location = filter_strings('q.`location`', $locations);
+  // build the epiweek filter
+  $condition_epiweek = filter_integers('q.`epiweek`', $epiweeks);
+  // the query
+  $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_location}) AND ({$condition_epiweek}) ORDER BY {$order}";
   // get the data from the database
   $epidata = array();
   execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
