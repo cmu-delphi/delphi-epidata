@@ -56,6 +56,7 @@ def date_less_than(d1,d2,delimiter='-'):
 # shift>0: shifted to future
 def date_to_epiweek(date, delimiter='-', shift=0):
     y,m,d = [int(x) for x in date.split('-')]
+
     epidate = ED.EpiDate(y,m,d)
     epidate = epidate.add_days(shift)
     ew = epidate.get_ew()
@@ -154,13 +155,22 @@ class QuidelData:
             else:
                 need_update=True
 
+            date_regex = '\d{2}-\d{2}-\d{4}'
+            date_items = re.findall(date_regex,f)
+            if date_items:
+                end_date = '-'.join(date_items[-1].split('-')[x] for x in [2,0,1])
+            else:
+                print("End date not found in file name:"+f)
+                end_date = None
+
             df_dict = pd.read_excel(join(self.excel_path, f+'.xlsx'), sheet_name=None)
             for (_,df) in df_dict.items():
-                # re-format date if needed
-                df['TestDate'] = df['TestDate'].apply(lambda x: x if '/' not in str(x) else '-'.join([
-                    '0'+d if len(d)==1 else d for d in [str(x).split('/')[i] for i in [2,0,1]]
-                ]))
-                df.to_csv(join(self.csv_path, f+'.csv'), index=False, encoding='utf-8')
+                df = df.dropna(axis=0, how='all')
+                df['TestDate'] = df['TestDate'].apply(lambda x: x.strftime('%Y-%m-%d'))
+                df_filtered = df[df['TestDate']!='']
+                if end_date is not None:
+                    df_filtered = df_filtered[df.apply(lambda x: date_less_than(end_date,x['TestDate'])!=1, axis=1)]
+                df_filtered.to_csv(join(self.csv_path, f+'.csv'), index=False, encoding='utf-8')
         self.csv_list = [f[:-4] for f in listdir(self.csv_path) if isfile(join(self.csv_path, f)) and f[-4:]=='.csv']
         self.need_update = need_update
 
@@ -170,28 +180,17 @@ class QuidelData:
         parsed_dict = defaultdict(dict)
         for f in self.csv_list:
             rf = open(join(self.csv_path,f+'.csv'))
-            # recognize the end date from filename
-            date_regex = '\d{2}-\d{2}-\d{4}'
-            date_items = re.findall(date_regex,f)
-            if date_items:
-                end_date = '-'.join(date_items[-1].split('-')[x] for x in [2,0,1])
-            else:
-                end_date = None
-                print("End date not found in file name:"+f)
 
             lines = rf.readlines()
             for l in lines[1:]:
                 l = word_map(l,self.map_terms)
                 row = l.strip().split(',')
                 date = row[self.date_dim]
-                if end_date is not None and date_less_than(end_date,date)==1:
-                    continue
                 state = row[self.state_dim]
                 if state not in parsed_dict[date]:
                     parsed_dict[date][state] = []
                 parsed_dict[date][state].append([row[x] for x in dims])
 
-        dates = sorted(parsed_dict.keys())
         return parsed_dict
 
     # hardcoded aggregation function
@@ -215,6 +214,8 @@ class QuidelData:
         # first pass: prepare device_id set
         device_dict = {}
         for (date,daily_dict) in data_dict.items():
+            if not date:
+                continue
             ew = time_map(date)
             if ew == -1 or ew>end_epiweek:
                 continue
