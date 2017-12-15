@@ -127,7 +127,10 @@
       "dst": "[[package]]/acquisition/quidel/",
       "match": "^.*\\.(py)$",
       "add-header-comment": true
-    }
+    },
+
+    "// run unit and coverage tests",
+    {"type": "py3test"}
 
   ]
 }
