@@ -91,7 +91,7 @@ class QuidelData:
         ]
         self.fields_to_keep = ['fac_id','fluA','fluB','fluAll']
         self.dims_to_keep = [self.fields.index(x) for x in self.fields_to_keep]
-        #self.retrieve_excels()
+        self.retrieve_excels()
         self.prepare_csv()
 
     def retrieve_excels(self):
