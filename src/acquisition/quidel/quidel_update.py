@@ -28,8 +28,10 @@ value: number of total test records per facility, within each epiweek
 =================
 === Changelog ===
 =================
+2017-12-14:
+  * add "need update" check
 
-2017-12-02
+2017-12-02:
   * original version
 '''
 
@@ -49,6 +51,15 @@ LOCATIONS = ['hhs%d'%i for i in range(1,11)]
 DATAPATH = '/home/automation/quidel_data'
 
 def update(locations, terms, first=None, last=None):
+  # download and prepare data first
+  qd = quidel.QuidelData(DATAPATH)
+  if not qd.need_update:
+    print('Data not updated, nothing needs change.')
+    return
+
+  qd_data = qd.load_csv()
+  qd_measurements = qd.prepare_measurements(qd_data,start_weekday=4)
+  qd_ts = quidel.measurement_to_ts(qd_measurements,7,startweek=first,endweek=last)
   # connect to the database
   u, p = secrets.db.epi
   cnx = mysql.connector.connect(user=u, password=p, database='epidata')
@@ -82,10 +93,6 @@ def update(locations, terms, first=None, last=None):
   '''
 
   total_rows = 0
-  qd = quidel.QuidelData(DATAPATH)
-  qd_data = qd.load_csv()
-  qd_measurements = qd.prepare_measurements(qd_data,start_weekday=4)
-  qd_ts = quidel.measurement_to_ts(qd_measurements,7,startweek=first,endweek=last)
 
   for location in locations:
     if location not in qd_ts:

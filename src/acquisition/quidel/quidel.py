@@ -10,7 +10,9 @@ by quidel_update.py
 =================
 === Changelog ===
 =================
-
+2017-12-14:
+    * fix epiweek shift bug
+    * add end date, end week check
 2017-12-02:
     * original version
 '''
@@ -34,22 +36,20 @@ import delphi.utils.epiweek as EW
 from delphi.utils.state_info import *
 import delphi.operations.secrets as secrets
 
-def word_map(row,terms):
-    for (k,v) in terms.items():
-        row = row.replace(k,v)
-    return row
+def date_less_than(d1,d2,delimiter='-'):
+    y1,m1,d1 = [int(x) for x in d1.split('-')]
+    y2,m2,d2 = [int(x) for x in d2.split('-')]
 
-def dateToEpiweek(date, delimiter='-', shift=0):
-    curr_date = datetime.datetime.now().strftime('%Y-%m-%d')
-    cy,cm,cd = [int(x) for x in curr_date.split('-')]
-    try:
-        y,m,d = [int(x) for x in date.split(delimiter)]
-    except:
+    if y1*10000+m1*100+d1<y2*10000+m2*100+d2:
+        return 1
+    elif y1*10000+m1*100+d1==y2*10000+m2*100+d2:
+        return 0
+    else:
         return -1
 
-    if cy*10000+cm*100+cd<y*10000+m*100+d:
-        # mark records from future as invalid
-        return -1
+# shift>0: shifted to future
+def date_to_epiweek(date, delimiter='-', shift=0):
+    y,m,d = [int(x) for x in date.split('-')]
     epidate = ED.EpiDate(y,m,d)
     epidate = epidate.add_days(shift)
     ew = epidate.get_ew()
@@ -91,7 +91,7 @@ class QuidelData:
         ]
         self.fields_to_keep = ['fac_id','fluA','fluB','fluAll']
         self.dims_to_keep = [self.fields.index(x) for x in self.fields_to_keep]
-        self.retrieve_excels()
+        #self.retrieve_excels()
         self.prepare_csv()
 
     def retrieve_excels(self):
@@ -141,9 +141,13 @@ class QuidelData:
                     fp.close()
 
     def prepare_csv(self):
+        need_update=False
         for f in self.xlsx_list:
             if f in self.csv_list:
                 continue
+            else:
+                need_update=True
+
             df_dict = pd.read_excel(join(self.excel_path, f+'.xlsx'), sheetname=None)
             for (_,df) in df_dict.items():
                 # convert data type for saving
@@ -154,6 +158,7 @@ class QuidelData:
                 ]))
                 df.to_csv(join(self.csv_path, f+'.csv'), index=False, encoding='utf-8')
         self.csv_list = [f[:-4] for f in listdir(self.csv_path) if isfile(join(self.csv_path, f)) and f[-4:]=='.csv']
+        self.need_update = need_update
 
     def load_csv(self, dims=None):
         if dims is None:
@@ -161,20 +166,33 @@ class QuidelData:
         parsed_dict = defaultdict(dict)
         for f in self.csv_list:
             rf = open(join(self.csv_path,f+'.csv'))
+            # recognize the end date from filename
+            date_regex = '\d{2}-\d{2}-\d{4}'
+            date_items = re.findall(date_regex,f)
+            if date_items:
+                end_date = '-'.join(date_items[-1].split('-')[x] for x in [2,0,1])
+            else:
+                end_date = None
+                print("End date not found in file name:"+f)
+
             lines = rf.readlines()
             for l in lines[1:]:
                 l = word_map(l,self.map_terms)
                 row = l.strip().split(',')
                 date = row[self.date_dim]
+                if end_date is not None and date_less_than(end_date,date)==1:
+                    continue
                 state = row[self.state_dim]
                 if state not in parsed_dict[date]:
                     parsed_dict[date][state] = []
                 parsed_dict[date][state].append([row[x] for x in dims])
+
+        dates = sorted(parsed_dict.keys())
         return parsed_dict
 
     # hardcoded aggregation function
     # output: [#unique_device,fluA,fluB,fluAll,total]
-    def prepare_measurements(self,data_dict,use_epiweek=True,use_hhs=True,start_weekday=6):
+    def prepare_measurements(self,data_dict,use_hhs=True,start_weekday=6):
         buffer_dict = {}
         SI = StateInfo()
         if use_hhs:
@@ -182,20 +200,24 @@ class QuidelData:
         else:
             region_list = SI.sta
 
-        day_shift = start_weekday - 6
-        time_map = lambda x:dateToEpiweek(x,'-',shift=day_shift) if use_epiweek else x
+        day_shift = 6 - start_weekday
+        time_map = lambda x:date_to_epiweek(x,'-',shift=day_shift)
         region_map = lambda x:SI.state_regions[x]['hhs'] \
                     if use_hhs and x in SI.state_regions else x # a bit hacky
+
+        end_date = sorted(data_dict.keys())[-1]
+        # count the latest week in only if Thurs data is included
+        end_epiweek = date_to_epiweek(end_date,'-',shift=-4)
         # first pass: prepare device_id set
         device_dict = {}
         for (date,daily_dict) in data_dict.items():
-            time = time_map(date)
-            if time == -1:
+            ew = time_map(date)
+            if ew == -1 or ew>end_epiweek:
                 continue
-            if time not in device_dict:
-                device_dict[time]={}
+            if ew not in device_dict:
+                device_dict[ew]={}
                 for r in region_list:
-                    device_dict[time][r] = set()
+                    device_dict[ew][r] = set()
             for (state,rec_list) in daily_dict.items():
                 region = region_map(state)
                 # get rid of non-US regions
@@ -203,17 +225,17 @@ class QuidelData:
                     continue
                 for rec in rec_list:
                     fac = rec[0]
-                    device_dict[time][region].add(fac)
+                    device_dict[ew][region].add(fac)
 
         # second pass: prepare all measurements
         for (date,daily_dict) in data_dict.items():
-            time = time_map(date)
-            if time == -1:
+            ew = time_map(date)
+            if ew == -1 or ew>end_epiweek:
                 continue
-            if time not in buffer_dict:
-                buffer_dict[time]={}
+            if ew not in buffer_dict:
+                buffer_dict[ew]={}
                 for r in region_list:
-                    buffer_dict[time][r] = [0.0]*8
+                    buffer_dict[ew][r] = [0.0]*8
 
             for (state,rec_list) in daily_dict.items():
                 region = region_map(state)
@@ -221,9 +243,9 @@ class QuidelData:
                 if region not in region_list:
                     continue
                 for rec in rec_list:
-                    fac_num = float(len(device_dict[time][region]))
-                    buffer_dict[time][region]= np.add(
-                        buffer_dict[time][region],[
+                    fac_num = float(len(device_dict[ew][region]))
+                    buffer_dict[ew][region]= np.add(
+                        buffer_dict[ew][region],[
                             rec[1]=='positive',
                             rec[2]=='positive',
                             rec[3]=='positive',
