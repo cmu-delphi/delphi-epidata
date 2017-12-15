@@ -25,6 +25,7 @@ import email, getpass, imaplib, os
 import datetime
 import math
 from collections import defaultdict
+import re
 
 # third party
 import pandas as pd
