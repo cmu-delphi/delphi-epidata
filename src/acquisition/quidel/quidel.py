@@ -37,6 +37,11 @@ import delphi.utils.epiweek as EW
 from delphi.utils.state_info import *
 import delphi.operations.secrets as secrets
 
+def word_map(row,terms):
+    for (k,v) in terms.items():
+        row = row.replace(k,v)
+    return row
+
 def date_less_than(d1,d2,delimiter='-'):
     y1,m1,d1 = [int(x) for x in d1.split('-')]
     y2,m2,d2 = [int(x) for x in d2.split('-')]
@@ -149,10 +154,8 @@ class QuidelData:
             else:
                 need_update=True
 
-            df_dict = pd.read_excel(join(self.excel_path, f+'.xlsx'), sheetname=None)
+            df_dict = pd.read_excel(join(self.excel_path, f+'.xlsx'), sheet_name=None)
             for (_,df) in df_dict.items():
-                # convert data type for saving
-                types = df.apply(lambda x: pd.lib.infer_dtype(x.values))
                 # re-format date if needed
                 df['TestDate'] = df['TestDate'].apply(lambda x: x if '/' not in str(x) else '-'.join([
                     '0'+d if len(d)==1 else d for d in [str(x).split('/')[i] for i in [2,0,1]]
