@@ -305,7 +305,7 @@ function get_fluview($epiweeks, $regions, $issues, $lag, $authorized) {
   // public data
   $table = '`fluview` fv';
   $fields = "fv.`release_date`, fv.`issue`, fv.`epiweek`, fv.`region`, fv.`lag`, fv.`num_ili`, fv.`num_patients`, fv.`num_providers`, fv.`wili`, fv.`ili`, fv.`num_age_0`, fv.`num_age_1`, fv.`num_age_2`, fv.`num_age_3`, fv.`num_age_4`, fv.`num_age_5`";
-  _get_fluview_by_table($epidata, $epiweeks,g $regions, $issues, $lag, $table, $fields);
+  _get_fluview_by_table($epidata, $epiweeks, $regions, $issues, $lag, $table, $fields);
   if($authorized) {
     // private data (no release date, no age groups, and wili is equal to ili)
     $table = '`fluview_imputed` fv';
