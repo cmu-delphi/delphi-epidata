@@ -63,7 +63,7 @@ class Epidata
     return { from: from, to: to }
 
   # Fetch FluView data
-  @fluview: (callback, regions, epiweeks, issues, lag) ->
+  @fluview: (callback, regions, epiweeks, issues, lag, auth) ->
     # Check parameters
     unless regions? and epiweeks?
       throw { msg: '`regions` and `epiweeks` are both required' }
@@ -78,6 +78,8 @@ class Epidata
       params.issues = _list(issues)
     if lag?
       params.lag = lag
+    if auth?
+      params.auth = auth
     # Make the API call
     _request(callback, params)
 
@@ -97,37 +99,6 @@ class Epidata
       params.issues = _list(issues)
     if lag?
       params.lag = lag
-    # Make the API call
-    _request(callback, params)
-
-  # Fetch ILINet data
-  @ilinet: (callback, locations, epiweeks, version, auth) ->
-    # Check parameters
-    unless locations? and epiweeks?
-      throw { msg: '`locations` and `epiweeks` are both required' }
-    # Set up request
-    params =
-      'source': 'ilinet'
-      'locations': _list(locations)
-      'epiweeks': _list(epiweeks)
-    if version?
-      params.version = version
-    if auth?
-      params.auth = auth
-    # Make the API call
-    _request(callback, params)
-
-  # Fetch Delphi's imputed state ILI
-  @stateili: (callback, auth, states, epiweeks) ->
-    # Check parameters
-    unless auth? and states? and epiweeks?
-      throw { msg: '`auth`, `states`, and `epiweeks` are all required' }
-    # Set up request
-    params =
-      'source': 'stateili'
-      'auth': auth
-      'states': _list(states)
-      'epiweeks': _list(epiweeks)
     # Make the API call
     _request(callback, params)
 
@@ -268,21 +239,6 @@ class Epidata
       'source': 'delphi'
       'system': system
       'epiweek': epiweek
-    # Make the API call
-    _request(callback, params)
-
-  # Fetch Delphi's digital surveillance signals
-  @signals: (callback, auth, names, locations, epiweeks) ->
-    # Check parameters
-    unless auth? and names? and locations? and epiweeks?
-      throw { msg: '`auth`, `names`, `locations`, and `epiweeks` are all required' }
-    # Set up request
-    params =
-      'source': 'signals'
-      'auth': auth
-      'names': _list(names)
-      'locations': _list(locations)
-      'epiweeks': _list(epiweeks)
     # Make the API call
     _request(callback, params)
 

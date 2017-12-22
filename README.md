@@ -30,15 +30,6 @@ Influenza-like illness (ILI) from U.S. Outpatient Influenza-like Illness Surveil
 \* Data is usually released on Friday
 
 
-### ILINet
-
-An *estimate* of state-level ILI as reported to ILINet. Most of the data was digitized from charts and other lossy sources, and is not necessarily accurate or up-to-date. This is a static data source, and will not be frequently updated.
- - Data source: Several online sources, including each state's health department website (listed [here](http://www.cdc.gov/flu/weekly/))
- - Temporal Resolution: Weekly, from 2010w40 (or later) until 2015w34 (or earlier)
- - Spatial Resolution: By state/territory ([51](labels/states.txt))
- - Open access
-
-
 ### ILI-Nearby
 
 A nowcast of U.S. national, regional, and state-level (weighted) %ILI, available seven days (regionally) or five days (state-level) before the first ILINet report for the corresponding week.
@@ -128,14 +119,7 @@ Required:
 Optional:
  - `issues`: a `list` of epiweeks
  - `lag`: a number of weeks
-
-### ILINet Parameters
-
-Required:
- - `epiweeks`: a `list` of epiweeks
- - `locations`: a `list` of [region](labels/regions.txt)/[state](labels/states.txt) labels
-
-Note: For convenience and consistency, the `ilinet` source provides national and regional ILI in addition to state-level ILI, transparently using the `fluview` data source when necessary.
+ - `auth`: the password for private imputed data
 
 ### ILI-Nearby Parameters
 
@@ -202,12 +186,6 @@ Required:
  - https://delphi.midas.cs.cmu.edu/epidata/api.php?source=twitter&auth=...&locations=nat&epiweeks=201501
 
         {"result":1,"epidata":[...],"message":"success"}
-
-### ILINet on 2015w01 (state, regional, and national)
-
-https://delphi.midas.cs.cmu.edu/epidata/api.php?source=ilinet&epiweeks=201501&locations=tx,hhs6,nat
-
-    {"result":1,"epidata":[{"epiweek":201501,"location":"nat","ili":4.0936926847062,"wili":4.2379135658604},{"epiweek":201501,"location":"hhs6","ili":6.0084085989824,"wili":8.32554468951},{"location":"TX","epiweek":201501,"ili":11.18}],"message":"success"}
 
 ### Wiki article "influenza" on 2015w01
 

@@ -9,185 +9,20 @@ An API for DELPHI's epidemiological data.
 Documentation and sample code are on GitHub:
 https://github.com/cmu-delphi/delphi-epidata
 
-
-=======================
-=== Data Dictionary ===
-=======================
-
 See also:
-  - load_epidata_fluview.py
-  - old/gft_update.py
+  - fluview_update.py
+  - gft_update.py
   - twitter_update.py
   - wiki.py
   - taiwan_update.py
   - submission_loader.py
   - ght_update.py
-  - signal_update.py
   - sensor_update.py
   - nowcast.py
   - cdc_extract.py
   - flusurv_update.py
   - quidel_update.py
-
-Unlike most of the other data sources, the state-level ILINet data isn't
-updated automatically. The data was obtained around 2015-09-10 from the various
-states' websites, linked here: http://www.cdc.gov/flu/weekly/
-This data was re-obtained around June 2016, and uploaded 2016-11-14. The
-process is lossy, and so the two version don't entirely agree. Because of this,
-we now also store a version tag with the data.
-The `state_ili` table stores this data:
-+---------+-------------+------+-----+---------+----------------+
-| Field   | Type        | Null | Key | Default | Extra          |
-+---------+-------------+------+-----+---------+----------------+
-| id      | int(11)     | NO   | PRI | NULL    | auto_increment |
-| epiweek | int(11)     | NO   | MUL | NULL    |                |
-| state   | varchar(12) | NO   | MUL | NULL    |                |
-| ili     | double      | NO   |     | NULL    |                |
-| version | int(11)     | NO   | MUL | NULL    |                |
-+---------+-------------+------+-----+---------+----------------+
-id: unique identifier for each record
-epiweek: the epiweek during which the data was collected
-state: two-letter U.S. state abbreviation
-ili: percent ILI
-version: 1 => 2015-09; 2 => 2016-06
-
-Similarly, we received a one-time data dump from the CDC containing true
-state-level ILINet data. The data was received on 2016-02-17 and uploaded to
-the database on 2016-02-18. This data is not to be distributed outside of
-the DELPHI group---and maybe not even within the group---without prior
-discussion.
-The `fluview_state` table stores this data (similar to the `fluview` table):
-+---------------+---------+------+-----+---------+----------------+
-| Field         | Type    | Null | Key | Default | Extra          |
-+---------------+---------+------+-----+---------+----------------+
-| id            | int(11) | NO   | PRI | NULL    | auto_increment |
-| epiweek       | int(11) | NO   | MUL | NULL    |                |
-| state         | char(2) | NO   | MUL | NULL    |                |
-| num_ili       | int(11) | YES  |     | NULL    |                |
-| num_patients  | int(11) | YES  |     | NULL    |                |
-| num_providers | int(11) | YES  |     | NULL    |                |
-| ili           | double  | YES  |     | NULL    |                |
-| num_age_0     | int(11) | YES  |     | NULL    |                |
-| num_age_1     | int(11) | YES  |     | NULL    |                |
-| num_age_2     | int(11) | YES  |     | NULL    |                |
-| num_age_3     | int(11) | YES  |     | NULL    |                |
-| num_age_4     | int(11) | YES  |     | NULL    |                |
-| num_age_5     | int(11) | YES  |     | NULL    |                |
-+---------------+---------+------+-----+---------+----------------+
-id: unique identifier for each record
-epiweek: the epiweek during which the data was collected
-state: two-letter U.S. state abbreviation
-num_ili: the number of ILI cases (numerator)
-num_patients: the total number of patients (denominator)
-num_providers: the number of reporting healthcare providers
-ili: percent ILI
-num_age_0: number of cases in ages 0-4
-num_age_1: number of cases in ages 5-24
-num_age_2: number of cases in ages 25-64
-num_age_3: number of cases in ages 25-49
-num_age_4: number of cases in ages 50-64
-num_age_5: number of cases in ages 65+
-
-Google stopped producing GFT after 2015w32, so the table is no longer being
-updated. For convenience, the data dictionary from the GFT updater is copied
-here:
-`gft` is the table where the data is stored.
-+----------+-------------+------+-----+---------+----------------+
-| Field    | Type        | Null | Key | Default | Extra          |
-+----------+-------------+------+-----+---------+----------------+
-| id       | int(11)     | NO   | PRI | NULL    | auto_increment |
-| epiweek  | int(11)     | NO   | MUL | NULL    |                |
-| location | varchar(64) | NO   | MUL | NULL    |                |
-| num      | int(11)     | NO   |     | NULL    |                |
-+----------+-------------+------+-----+---------+----------------+
-id: unique identifier for each record
-epiweek: the epiweek during which the data was collected
-location: where the data was collected (region, state, or city)
-num: the value, roughly corresponding to ILI * 1000
-
-
-=================
-=== Changelog ===
-=================
-2017-12-03
-  + added source `quidel`
-2017-02-07
-  + added source `flusurv`
-2016-11-15
-  + support `version` for data from `ilinet_state`
-2016-11-12
-  * remove hardcoded secrets
-2016-04-16
-  * function `get_region_states` instead of hardcoded arrays
-  * use new cdc data from table `cdc_extract`
-2016-04-09
-  * filter out unreasonable twitter rows
-2016-04-07
-  + added sources `cdc` and `sensors`
-2016-04-06
-  + added source `stateili`
-2016-04-02
-  + census regions for source `twitter`
-2016-02-18
-  + include more fields from `fluview` in `ilinet`
-  + include optional `auth` parameter for CDC-provided state-level ILI
-  * properly handle (don't cast) SQL `NULL` in `execute_query`
-2016-01-18
-  + added source `meta`
-2015-12-15
-  + added source `nowcast`
-2015-12-11
-  + added source `signals`
-2015-12-03
-  * move passwords to $AUTH variable
-  + added source `ght`
-2015-11-19
-  * using the new `forecasts` table for source `delphi`
-2015-10-02
-  + source `delphi` uses the `forecasts` table
-2015-09-15
-  + static placeholder for source `delphi`
-2015-09-14
-  + storing basic analytics in table `api_analytics`
-  * patched SQL injection vulnerability in `get_nidss_dengue`
-  * fixed a collation problem with the `nidss_dengue` table (see https://stackoverflow.com/questions/1008287/illegal-mix-of-collations-mysql-error)
-2015-09-11
-  + added source `ilinet`
-2015-09-04
-  + in `wiki`, added field `value` (1e6 * count / total)
-2015-08-20
-  + added source `nidss_dengue`
-  * renamed source `nidss` to `nidss_flu`
-2015-08-12
-  * fixed SQL typo for daily wiki
-2015-08-11
-  + using `wiki_meta` for better performance and total hits
-2015-08-10
-  + added source `nidss`
-2015-08-04
-  + added message for invalid `auth`
-2015-07-31
-  + added `auth` parameter for twitter
-2015-06-24
-  + fully supporting twitter dataset
-  + fully supporting wiki dataset
-  + several utility methods to reduce duplicated code
-  * heavy refactoring, additional documentation
-2015-06-23
-  + query fluview by specific lag
-  + finished GFT support
-  * rearranged get_fluview parameters
-2015-06-08
-  + basic support for the GFT dataset
-2015-06-04
-  + enabled multiple values and ranges
-  + optional sort field
-  + more documentation
-2015-06-01
-  * changes to fluview parameter names
-  - removed all authentication code (most was commented out already)
-2014-??-??
-  * original version
+  - README.md
 */
 
 // secrets
@@ -197,9 +32,7 @@ require_once('/var/www/html/secrets.php');
 $AUTH = array(
   'twitter'  => Secrets::$api['twitter'],
   'ght'      => Secrets::$api['ght'],
-  'signals'  => Secrets::$api['signals'],
-  'ilinet'   => Secrets::$api['ilinet'],
-  'stateili' => Secrets::$api['stateili'],
+  'fluview'  => Secrets::$api['fluview'],
   'cdc'      => Secrets::$api['cdc'],
   'sensors'  => Secrets::$api['sensors'],
   'quidel'   => Secrets::$api['quidel']
@@ -456,7 +289,7 @@ function get_region_states($region) {
   return null;
 }
 
-// queries the `fluview` table
+// queries the `fluview` and `fluview_imputed` tables
 //   $epiweeks (required): array of epiweek values/ranges
 //   $regions (required): array of region names
 //   $issues (optional): array of epiweek values/ranges
@@ -465,47 +298,29 @@ function get_region_states($region) {
 //   $lag (optional): number of weeks between each epiweek and its issue
 //     overridden by $issues
 //     default: most recent issue
-//   $sort (optional): field order and direction
-//     default: sort is 'ERI'
-function get_fluview($epiweeks, $regions, $issues, $lag, $sort) {
-  // basic query info
+//   $authorized: determines whether private data (i.e. `fluview_imputed`) is
+//     included in the result
+function get_fluview($epiweeks, $regions, $issues, $lag, $authorized) {
+  $epidata = array();
+  // public data
   $table = '`fluview` fv';
   $fields = "fv.`release_date`, fv.`issue`, fv.`epiweek`, fv.`region`, fv.`lag`, fv.`num_ili`, fv.`num_patients`, fv.`num_providers`, fv.`wili`, fv.`ili`, fv.`num_age_0`, fv.`num_age_1`, fv.`num_age_2`, fv.`num_age_3`, fv.`num_age_4`, fv.`num_age_5`";
-  // sorting by region is tricky
-  // the natural sort order would be: nat, hhs1, hhs10, hhs2, ..., hhs9
-  // but it makes more sense to be: nat, hhs1, hhs2, ..., hhs9, hhs10
-  // this is one way to do that
-  $regionSort = "(substring(concat(fv.`region`, '0'), 4) + 0)";
-  $order = "fv.`epiweek` ASC, {$regionSort} ASC, fv.`issue` ASC";
-  if($sort !== null) {
-    // override the default sort
-    $order = null;
-    // make sure the three fields (issue, region, epiweek) are all present
-    $key = strtolower($sort);
-    $posIssue = strpos($key, 'i');
-    $posEpiweek = strpos($key, 'e');
-    $posRegion = strpos($key, 'r');
-    if($posIssue === False || $posEpiweek === False || $posRegion === False || strlen($key) !== 3) {
-      // unknown fields
-      return null;
-    }
-    // decode the sort string
-    for($i = 0; $i < strlen($key); $i++) {
-      if($order === null) {
-        $order = '';
-      } else {
-        $order .= ', ';
-      }
-      switch(substr($sort, $i, 1)) {
-        case 'i': $order .= 'fv.`issue` DESC'; break;
-        case 'I': $order .= 'fv.`issue` ASC'; break;
-        case 'e': $order .= 'fv.`epiweek` DESC'; break;
-        case 'E': $order .= 'fv.`epiweek` ASC'; break;
-        case 'r': $order .= "{$regionSort} DESC"; break;
-        case 'R': $order .= "{$regionSort} ASC"; break;
-      }
-    }
+  _get_fluview_by_table($epidata, $epiweeks,g $regions, $issues, $lag, $table, $fields);
+  if($authorized) {
+    // private data (no release date, no age groups, and wili is equal to ili)
+    $table = '`fluview_imputed` fv';
+    $fields = "NULL `release_date`, fv.`issue`, fv.`epiweek`, fv.`region`, fv.`lag`, fv.`num_ili`, fv.`num_patients`, fv.`num_providers`, fv.`ili` `wili`, fv.`ili`, NULL `num_age_0`, NULL `num_age_1`, NULL `num_age_2`, NULL `num_age_3`, NULL `num_age_4`, NULL `num_age_5`";
+    _get_fluview_by_table($epidata, $epiweeks, $regions, $issues, $lag, $table, $fields);
   }
+  // return the data
+  return count($epidata) === 0 ? null : $epidata;
+}
+
+// a helper function to query `fluview` and `fluview_imputed` individually
+// parameters
+function _get_fluview_by_table(&$epidata, $epiweeks, $regions, $issues, $lag, $table, $fields) {
+  // basic query info
+  $order = "fv.`epiweek` ASC, fv.`region` ASC, fv.`issue` ASC";
   // build the epiweek filter
   $condition_epiweek = filter_integers('fv.`epiweek`', $epiweeks);
   // build the region filter
@@ -527,13 +342,10 @@ function get_fluview($epiweeks, $regions, $issues, $lag, $sort) {
     $query = "SELECT {$fields} FROM {$table} JOIN {$subquery} ON {$condition} ORDER BY {$order}";
   }
   // get the data from the database
-  $epidata = array();
   $fields_string = array('release_date', 'region');
   $fields_int = array('issue', 'epiweek', 'lag', 'num_ili', 'num_patients', 'num_providers', 'num_age_0', 'num_age_1', 'num_age_2', 'num_age_3', 'num_age_4', 'num_age_5');
   $fields_float = array('wili', 'ili');
   execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
 }
 
 // queries the `flusurv` table
@@ -576,174 +388,6 @@ function get_flusurv($epiweeks, $locations, $issues, $lag) {
   $fields_int = array('issue', 'epiweek', 'lag');
   $fields_float = array('rate_age_0', 'rate_age_1', 'rate_age_2', 'rate_age_3', 'rate_age_4', 'rate_overall');
   execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
-}
-
-// queries the `fluview`, `fluview_state`, and `state_ili` tables
-//   $epiweeks (required): array of epiweek values/ranges
-//   $locations (required): array of region/state names
-//   $version (optional): specific version of `state_ili` rows to use (average by default)
-//   $authorized (optional): whether to include CDC-provided values
-function get_ilinet($epiweeks, $locations, $version, $authorized) {
-  // possibly include protected data
-  $fluview_state = $authorized === true;
-  // pass national and regional locations to the fluview function
-  $fluview_regions = array();
-  $ilinet_states = array();
-  foreach ($locations as $location) {
-    // if the location label is more than two characters, it can't be a state
-    if(strlen($location) > 2) {
-      array_push($fluview_regions, $location);
-    } else {
-      array_push($ilinet_states, $location);
-    }
-  }
-  // `state_ili` version specifier (will use average of all versions by default)
-  if($version !== null) {
-    $version = intval($version);
-  }
-  // initialize the data array
-  $epidata = array();
-  // get the national/regional data
-  if(count($fluview_regions) > 0) {
-    // use the most recent issue (most stable values)
-    $temp = get_fluview($epiweeks, $fluview_regions);
-    if($temp !== null) {
-      foreach($temp as $row) {
-        // map fluview fields to ilinet fields
-        array_push($epidata, array(
-          'location' => $row['region'],
-          'epiweek' => $row['epiweek'],
-          'num_ili' => $row['num_ili'],
-          'num_patients' => $row['num_patients'],
-          'num_providers' => $row['num_providers'],
-          'num_age_0' => $row['num_age_0'],
-          'num_age_1' => $row['num_age_1'],
-          'num_age_2' => $row['num_age_2'],
-          'num_age_3' => $row['num_age_3'],
-          'num_age_4' => $row['num_age_4'],
-          'num_age_5' => $row['num_age_5'],
-          'ili' => $row['ili'],
-          'wili' => $row['wili'],
-        ));
-      }
-    }
-  }
-  // get the state data
-  if(count($ilinet_states) > 0) {
-    // basic query info
-    $fields_string = array('location');
-    $fields_int = array('epiweek', 'num_ili', 'num_patients', 'num_providers', 'num_age_0', 'num_age_1', 'num_age_2', 'num_age_3', 'num_age_4', 'num_age_5');
-    $fields_float = array('ili', 'ili_estimate');
-    $order = 'si.`epiweek` ASC, si.`state` ASC';
-    if($fluview_state) {
-      // need a full outer join to combine `fluview_state` and `state_ili`
-      $common_fields = "
-        f.`ili` `fili`,
-        s.`ili` `sili`,
-        f.`num_ili`,
-        f.`num_patients`,
-        f.`num_providers`,
-        f.`num_age_0`,
-        f.`num_age_1`,
-        f.`num_age_2`,
-        f.`num_age_3`,
-        f.`num_age_4`,
-        f.`num_age_5`
-      ";
-      // build the epiweek filters
-      $left_epiweek = filter_integers('f.`epiweek`', $epiweeks);
-      $right_epiweek = filter_integers('s.`epiweek`', $epiweeks);
-      // build the state filters
-      $left_state = filter_strings('f.`state`', $ilinet_states);
-      $right_state = filter_strings('s.`state`', $ilinet_states);
-      // create a derived view of `state_ili` using the specified version
-      $condition_version = $version === null ? 'TRUE' : "s.`version` = {$version}";
-      $state_ili_versioned = "
-        SELECT
-          s.`epiweek`, s.`state`, avg(s.`ili`) `ili`
-        FROM
-          `state_ili` s
-        WHERE
-          ({$right_epiweek}) AND ({$right_state}) AND ({$condition_version})
-        GROUP BY
-          s.`epiweek`, s.`state`
-      ";
-      // left join
-      $left = "
-        SELECT
-          f.`epiweek`,
-          f.`state`,
-          {$common_fields}
-        FROM
-          `fluview_state` f
-        LEFT JOIN
-          ({$state_ili_versioned}) s
-        ON
-          s.`state` = f.`state` AND s.`epiweek` = f.`epiweek`
-        WHERE
-          ({$left_epiweek}) AND ({$left_state})
-      ";
-      // right join
-      $right = "
-        SELECT
-          s.`epiweek`,
-          s.`state`,
-          {$common_fields}
-        FROM
-          `fluview_state` f
-        RIGHT JOIN
-          ({$state_ili_versioned}) s
-        ON
-          s.`state` = f.`state` AND s.`epiweek` = f.`epiweek`
-        WHERE
-          (f.`id` IS NULL) AND ({$right_epiweek}) AND ({$right_state})
-      ";
-      // emulate outer join with a union (mysql only does inner join)
-      $table = "({$left} UNION ALL {$right}) si";
-      $fields = 'si.`epiweek`, si.`state` `location`, coalesce(si.`fili`, si.`sili`) `ili`, si.`sili` `ili_estimate`, si.`num_ili`, si.`num_patients`, si.`num_providers`, si.`num_age_0`, si.`num_age_1`, si.`num_age_2`, si.`num_age_3`, si.`num_age_4`, si.`num_age_5`';
-      // final query
-      $query = "SELECT {$fields} FROM {$table} ORDER BY {$order}";
-    } else {
-      // only use the `state_ili` table
-      $table = '`state_ili` si';
-      $fields = 'si.`epiweek`, si.`state` `location`, avg(si.`ili`) `ili`, avg(si.`ili`) `ili_estimate`';
-      // build the epiweek filter
-      $condition_epiweek = filter_integers('si.`epiweek`', $epiweeks);
-      // build the state filter
-      $condition_state = filter_strings('si.`state`', $ilinet_states);
-      // build the version filter
-      $condition_version = $version === null ? 'TRUE' : "si.`version` = {$version}";
-      // group by fields
-      $group = "si.`epiweek`, si.`state`";
-      // final query
-      $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_epiweek}) AND ({$condition_state}) AND ({$condition_version}) GROUP BY {$group} ORDER BY {$order}";
-    }
-    // get the data from the database
-    execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  }
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
-}
-
-// queries the `state_ili_imputed` table
-//   $epiweeks (required): array of epiweek values/ranges
-//   states (required): array of state abbreviations
-function get_stateili($epiweeks, $states) {
-  // basic query info
-  $table = '`state_ili_imputed` s';
-  $fields = "s.`state`, s.`epiweek`, s.`ili`";
-  $order = "s.`epiweek` ASC";
-  // build the epiweek filter
-  $condition_epiweek = filter_integers('s.`epiweek`', $epiweeks);
-  // build the location filter
-  $condition_state = filter_strings('s.`state`', $states);
-  // final query using specific issues
-  $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_epiweek}) AND ({$condition_state}) ORDER BY {$order}";
-  // get the data from the database
-  $epidata = array();
-  execute_query($query, $epidata, array('state'), array('epiweek'), array('ili'));
   // return the data
   return count($epidata) === 0 ? null : $epidata;
 }
@@ -1034,34 +678,6 @@ function get_forecast($system, $epiweek) {
   return count($epidata) === 0 ? null : $epidata;
 }
 
-// queries the `signals` table
-//   $names (required): array of signal names
-//   $locations (required): array of location names
-//   $epiweeks (required): array of epiweek values/ranges
-function get_signals($names, $locations, $epiweeks) {
-  // basic query info
-  $table = '`signals` s';
-  $fields = "s.`name`, s.`location`, s.`epiweek`, s.`value`";
-  $order = "s.`epiweek` ASC, s.`name` ASC, s.`location` ASC";
-  // data type of each field
-  $fields_string = array('name', 'location');
-  $fields_int = array('epiweek');
-  $fields_float = array('value');
-  // build the name filter
-  $condition_name = filter_strings('s.`name`', $names);
-  // build the location filter
-  $condition_location = filter_strings('s.`location`', $locations);
-  // build the epiweek filter
-  $condition_epiweek = filter_integers('s.`epiweek`', $epiweeks);
-  // the query
-  $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_name}) AND ({$condition_location}) AND ({$condition_epiweek}) ORDER BY {$order}";
-  // get the data from the database
-  $epidata = array();
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
-}
-
 // queries the `cdc_extract` table
 //   $epiweeks (required): array of epiweek values/ranges
 //   $locations (required): array of location names
@@ -1242,9 +858,9 @@ if(database_connect()) {
       $regions = extract_values($_REQUEST['regions'], 'str');
       $issues = isset($_REQUEST['issues']) ? extract_values($_REQUEST['issues'], 'int') : null;
       $lag = isset($_REQUEST['lag']) ? intval($_REQUEST['lag']) : null;
-      $sort = isset($_REQUEST['sort']) ? $_REQUEST['sort'] : null;
+      $authorized = $_REQUEST['auth'] === $AUTH['fluview'];
       // get the data
-      $epidata = get_fluview($epiweeks, $regions, $issues, $lag, $sort);
+      $epidata = get_fluview($epiweeks, $regions, $issues, $lag, $authorized);
       store_result($data, $epidata);
     }
   } else if($source === 'flusurv') {
@@ -1258,30 +874,9 @@ if(database_connect()) {
       $epidata = get_flusurv($epiweeks, $locations, $issues, $lag);
       store_result($data, $epidata);
     }
-  } else if($source === 'ilinet') {
-    if(require_all($data, array('epiweeks', 'locations'))) {
-      // parse the request
-      $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
-      $locations = extract_values($_REQUEST['locations'], 'str');
-      $version = isset($_REQUEST['version']) ? intval($_REQUEST['version']) : null;
-      $authorized = $_REQUEST['auth'] === $AUTH['ilinet'];
-      // get the data
-      $epidata = get_ilinet($epiweeks, $locations, $version, $authorized);
-      store_result($data, $epidata);
-    }
-  } else if($source === 'stateili') {
-    if(require_all($data, array('auth', 'epiweeks', 'states'))) {
-      if($_REQUEST['auth'] === $AUTH['stateili']) {
-        // parse the request
-        $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
-        $states = extract_values($_REQUEST['states'], 'str');
-        // get the data
-        $epidata = get_stateili($epiweeks, $states);
-        store_result($data, $epidata);
-      } else {
-        $data['message'] = 'unauthenticated';
-      }
-    }
+  } else if($source === 'ilinet' || $source === 'stateili') {
+    // these two sources are now combined into fluview
+    $data['message'] = 'use fluview instead';
   } else if($source === 'gft') {
     if(require_all($data, array('epiweeks', 'locations'))) {
       // parse the request
@@ -1387,19 +982,8 @@ if(database_connect()) {
       store_result($data, $epidata);
     }
   } else if($source === 'signals') {
-    if(require_all($data, array('auth', 'names', 'locations', 'epiweeks'))) {
-      if($_REQUEST['auth'] === $AUTH['signals']) {
-        // parse the request
-        $names = extract_values($_REQUEST['names'], 'str');
-        $locations = extract_values($_REQUEST['locations'], 'str');
-        $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
-        // get the data
-        $epidata = get_signals($names, $locations, $epiweeks);
-        store_result($data, $epidata);
-      } else {
-        $data['message'] = 'unauthenticated';
-      }
-    }
+    // this sources is now replaced by sensors
+    $data['message'] = 'use sensors instead';
   } else if($source === 'cdc') {
     if(require_all($data, array('auth', 'epiweeks', 'locations'))) {
       if($_REQUEST['auth'] === $AUTH['cdc']) {

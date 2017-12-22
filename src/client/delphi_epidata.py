@@ -66,7 +66,7 @@ class Epidata:
 
   # Fetch FluView data
   @staticmethod
-  def fluview(regions, epiweeks, issues=None, lag=None):
+  def fluview(regions, epiweeks, issues=None, lag=None, auth=None):
     """Fetch FluView data."""
     # Check parameters
     if regions is None or epiweeks is None:
@@ -83,6 +83,8 @@ class Epidata:
       params['issues'] = Epidata._list(issues)
     if lag is not None:
       params['lag'] = lag
+    if auth is not None:
+      params['auth'] = auth
     # Make the API call
     return Epidata._request(params)
 
@@ -105,43 +107,6 @@ class Epidata:
       params['issues'] = Epidata._list(issues)
     if lag is not None:
       params['lag'] = lag
-    # Make the API call
-    return Epidata._request(params)
-
-  # Fetch ILINet data
-  @staticmethod
-  def ilinet(locations, epiweeks, version=None, auth=None):
-    """Fetch ILINet data."""
-    # Check parameters
-    if locations is None or epiweeks is None:
-      raise Exception('`locations` and `epiweeks` are both required')
-    # Set up request
-    params = {
-      'source': 'ilinet',
-      'locations': Epidata._list(locations),
-      'epiweeks': Epidata._list(epiweeks),
-    }
-    if version is not None:
-      params['version'] = version
-    if auth is not None:
-      params['auth'] = auth
-    # Make the API call
-    return Epidata._request(params)
-
-  # Fetch Delphi's imputed state ILI
-  @staticmethod
-  def stateili(auth, states, epiweeks):
-    """Fetch Delphi's imputed state ILI."""
-    # Check parameters
-    if auth is None or states is None or epiweeks is None:
-      raise Exception('`auth`, `states`, and `epiweeks` are all required')
-    # Set up request
-    params = {
-      'source': 'stateili',
-      'auth': auth,
-      'states': Epidata._list(states),
-      'epiweeks': Epidata._list(epiweeks),
-    }
     # Make the API call
     return Epidata._request(params)
 
@@ -308,24 +273,6 @@ class Epidata:
       'source': 'delphi',
       'system': system,
       'epiweek': epiweek,
-    }
-    # Make the API call
-    return Epidata._request(params)
-
-  # Fetch Delphi's digital surveillance signals
-  @staticmethod
-  def signals(auth, names, locations, epiweeks):
-    """Fetch Delphi's digital surveillance signals."""
-    # Check parameters
-    if auth is None or names is None or locations is None or epiweeks is None:
-      raise Exception('`auth`, `names`, `locations`, and `epiweeks` are all required')
-    # Set up request
-    params = {
-      'source': 'signals',
-      'auth': auth,
-      'names': Epidata._list(names),
-      'locations': Epidata._list(locations),
-      'epiweeks': Epidata._list(epiweeks),
     }
     # Make the API call
     return Epidata._request(params)

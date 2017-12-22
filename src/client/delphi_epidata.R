@@ -49,7 +49,7 @@ Epidata <- (function() {
   }
 
   # Fetch FluView data
-  fluview <- function(regions, epiweeks, issues, lag) {
+  fluview <- function(regions, epiweeks, issues, lag, auth) {
     # Check parameters
     if(missing(regions) || missing(epiweeks)) {
       stop('`regions` and `epiweeks` are both required')
@@ -68,6 +68,9 @@ Epidata <- (function() {
     }
     if(!missing(lag)) {
       params$lag <- lag
+    }
+    if(!missing(auth)) {
+      params$auth <- auth
     }
     # Make the API call
     return(.request(params))
@@ -94,45 +97,6 @@ Epidata <- (function() {
     if(!missing(lag)) {
       params$lag <- lag
     }
-    # Make the API call
-    return(.request(params))
-  }
-
-  # Fetch ILINet data
-  ilinet <- function(locations, epiweeks, version, auth) {
-    # Check parameters
-    if(missing(locations) || missing(epiweeks)) {
-      stop('`locations` and `epiweeks` are both required')
-    }
-    # Set up request
-    params <- list(
-      source = 'ilinet',
-      locations = .list(locations),
-      epiweeks = .list(epiweeks)
-    )
-    if(!missing(version)) {
-      params$version <- version
-    }
-    if(!missing(auth)) {
-      params$auth <- auth
-    }
-    # Make the API call
-    return(.request(params))
-  }
-
-  # Fetch Delphi's imputed state ILI
-  stateili <- function(auth, states, epiweeks) {
-    # Check parameters
-    if(missing(auth) || missing(states) || missing(epiweeks)) {
-      stop('`auth`, `states`, and `epiweeks` are all required')
-    }
-    # Set up request
-    params <- list(
-      source = 'stateili',
-      auth = auth,
-      states = .list(states),
-      epiweeks = .list(epiweeks)
-    )
     # Make the API call
     return(.request(params))
   }
@@ -314,24 +278,6 @@ Epidata <- (function() {
     return(.request(params))
   }
 
-  # Fetch Delphi's digital surveillance signals
-  signals <- function(auth, names, locations, epiweeks) {
-    # Check parameters
-    if(missing(auth) || missing(names) || missing(locations) || missing(epiweeks)) {
-      stop('`auth`, `names`, `locations`, and `epiweeks` are all required')
-    }
-    # Set up request
-    params <- list(
-      source = 'signals',
-      auth = auth,
-      names = .list(names),
-      locations = .list(locations),
-      epiweeks = .list(epiweeks)
-    )
-    # Make the API call
-    return(.request(params))
-  }
-
   # Fetch Delphi's digital surveillance sensors
   sensors <- function(auth, names, locations, epiweeks) {
     # Check parameters
@@ -376,8 +322,6 @@ Epidata <- (function() {
     range = range,
     fluview = fluview,
     flusurv = flusurv,
-    ilinet = ilinet,
-    stateili = stateili,
     gft = gft,
     ght = ght,
     twitter = twitter,
@@ -387,7 +331,6 @@ Epidata <- (function() {
     nidss.flu = nidss.flu,
     nidss.dengue = nidss.dengue,
     delphi = delphi,
-    signals = signals,
     sensors = sensors,
     nowcast = nowcast,
     meta = meta
