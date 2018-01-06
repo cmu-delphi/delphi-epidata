@@ -50,10 +50,10 @@ import delphi.utils.epiweek as flu
 LOCATIONS = ['hhs%d'%i for i in range(1,11)]
 DATAPATH = '/home/automation/quidel_data'
 
-def update(locations, terms, first=None, last=None):
+def update(locations, terms, first=None, last=None, force_update=False):
   # download and prepare data first
   qd = quidel.QuidelData(DATAPATH)
-  if not qd.need_update:
+  if not qd.need_update and not force_update:
     print('Data not updated, nothing needs change.')
     return
 
@@ -125,10 +125,11 @@ def main():
   parser.add_argument('--location', action='store', type=str, default=None, help='location(s) (ex: all; any of hhs1-10)')
   parser.add_argument('--first', '-f', default=None, type=int, help='first epiweek override')
   parser.add_argument('--last', '-l', default=None, type=int, help='last epiweek override')
+  parser.add_argument('--force_update', '-f', action='store_true', type=bool, help='force update db values')
   args = parser.parse_args()
 
   # sanity check
-  first, last = args.first, args.last
+  first, last, force_update = args.first, args.last, args.force_update
   if first is not None:
     flu.check_epiweek(first)
   if last is not None:
@@ -143,7 +144,7 @@ def main():
     locations = args.location.lower().split(',')
 
   # run the update
-  update(locations, first, last)
+  update(locations, first, last, force_update)
 
 
 if __name__ == '__main__':
