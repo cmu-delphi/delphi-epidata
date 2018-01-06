@@ -82,9 +82,15 @@ def measurement_to_ts(m,index,startweek=None,endweek=None):
 class QuidelData:
     def __init__(self, raw_path):
         self.data_path = raw_path
-        self.excel_path = join(raw_path,'excel')
+        self.excel_uptodate_path = join(raw_path,'excel/uptodate')
+        self.excel_history_path = join(raw_path,'excel/history')
         self.csv_path = join(raw_path,'csv')
-        self.xlsx_list = [f[:-5] for f in listdir(self.excel_path) if isfile(join(self.excel_path, f)) and f[-5:]=='.xlsx']
+        self.xlsx_uptodate_list = [
+            f[:-5] for f in listdir(self.excel_uptodate_path) if isfile(join(self.excel_uptodate_path, f)) and f[-5:]=='.xlsx'
+        ]
+        self.xlsx_history_list = [
+            f[:-5] for f in listdir(self.excel_history_path) if isfile(join(self.excel_history_path, f)) and f[-5:]=='.xlsx'
+        ]
         self.csv_list = [f[:-4] for f in listdir(self.csv_path) if isfile(join(self.csv_path, f)) and f[-4:]=='.csv']
         self.map_terms = {
             ' FL  34637"':'FL',
@@ -102,7 +108,7 @@ class QuidelData:
         self.prepare_csv()
 
     def retrieve_excels(self):
-        detach_dir = self.excel_path # directory where to save attachments (default: current)
+        detach_dir = self.excel_uptodate_path # directory where to save attachments (default: current)
 
         # connecting to the gmail imap server
         m = imaplib.IMAP4_SSL("imap.gmail.com")
@@ -134,10 +140,10 @@ class QuidelData:
 
                 filename = part.get_filename()
                 # check duplicates
-                if filename[-5:]!='.xlsx' or filename[:-5] in self.xlsx_list:
+                if filename[-5:]!='.xlsx' or filename[:-5] in self.xlsx_uptodate_list+self.xlsx_history_list:
                     continue
 
-                self.xlsx_list.append(filename[:-5])
+                self.xlsx_uptodate_list.append(filename[:-5])
                 att_path = os.path.join(detach_dir, filename)
 
                 #Check if its already there
@@ -149,7 +155,7 @@ class QuidelData:
 
     def prepare_csv(self):
         need_update=False
-        for f in self.xlsx_list:
+        for f in self.xlsx_uptodate_list:
             if f in self.csv_list:
                 continue
             else:
@@ -163,7 +169,7 @@ class QuidelData:
                 print("End date not found in file name:"+f)
                 end_date = None
 
-            df_dict = pd.read_excel(join(self.excel_path, f+'.xlsx'), sheet_name=None)
+            df_dict = pd.read_excel(join(self.excel_uptodate_path, f+'.xlsx'), sheet_name=None)
             for (_,df) in df_dict.items():
                 df = df.dropna(axis=0, how='all')
                 df['TestDate'] = df['TestDate'].apply(lambda x: x.strftime('%Y-%m-%d'))
@@ -178,7 +184,7 @@ class QuidelData:
         if dims is None:
             dims = self.dims_to_keep
         parsed_dict = defaultdict(dict)
-        for f in self.csv_list:
+        for f in self.csv_list and f not in self.excel_history_path:
             rf = open(join(self.csv_path,f+'.csv'))
 
             lines = rf.readlines()
