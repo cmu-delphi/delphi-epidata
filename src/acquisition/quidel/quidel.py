@@ -181,13 +181,11 @@ class QuidelData:
         self.need_update = need_update
 
     def load_csv(self, dims=None):
-        print(self.excel_history_path)
         if dims is None:
             dims = self.dims_to_keep
         parsed_dict = defaultdict(dict)
         for f in self.csv_list:
-            print(f)
-            if f in self.excel_history_path:
+            if f in self.xlsx_history_list:
                 continue
             rf = open(join(self.csv_path,f+'.csv'))
 
