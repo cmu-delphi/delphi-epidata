@@ -50,7 +50,7 @@ import delphi.utils.epiweek as flu
 LOCATIONS = ['hhs%d'%i for i in range(1,11)]
 DATAPATH = '/home/automation/quidel_data'
 
-def update(locations, terms, first=None, last=None, force_update=False):
+def update(locations, first=None, last=None, force_update=False):
   # download and prepare data first
   qd = quidel.QuidelData(DATAPATH)
   if not qd.need_update and not force_update:
