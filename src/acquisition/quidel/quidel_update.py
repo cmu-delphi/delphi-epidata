@@ -125,7 +125,7 @@ def main():
   parser.add_argument('--location', action='store', type=str, default=None, help='location(s) (ex: all; any of hhs1-10)')
   parser.add_argument('--first', '-f', default=None, type=int, help='first epiweek override')
   parser.add_argument('--last', '-l', default=None, type=int, help='last epiweek override')
-  parser.add_argument('--force_update', '-f', action='store_true', type=bool, help='force update db values')
+  parser.add_argument('--force_update', '-f', action='store_true', help='force update db values')
   args = parser.parse_args()
 
   # sanity check
