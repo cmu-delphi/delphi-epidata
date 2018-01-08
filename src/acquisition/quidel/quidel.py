@@ -80,7 +80,7 @@ def measurement_to_ts(m,index,startweek=None,endweek=None):
     return res
 
 class QuidelData:
-    def __init__(self, raw_path):
+    def __init__(self, raw_path, load_email=True):
         self.data_path = raw_path
         self.excel_uptodate_path = join(raw_path,'excel/uptodate')
         self.excel_history_path = join(raw_path,'excel/history')
@@ -104,7 +104,8 @@ class QuidelData:
         ]
         self.fields_to_keep = ['fac_id','fluA','fluB','fluAll']
         self.dims_to_keep = [self.fields.index(x) for x in self.fields_to_keep]
-        self.retrieve_excels()
+        if load_email:
+            self.retrieve_excels()
         self.prepare_csv()
 
     def retrieve_excels(self):

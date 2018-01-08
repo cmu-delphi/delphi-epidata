@@ -50,9 +50,9 @@ import delphi.utils.epiweek as flu
 LOCATIONS = ['hhs%d'%i for i in range(1,11)]
 DATAPATH = '/home/automation/quidel_data'
 
-def update(locations, first=None, last=None, force_update=False):
+def update(locations, first=None, last=None, force_update=False, load_email=True):
   # download and prepare data first
-  qd = quidel.QuidelData(DATAPATH)
+  qd = quidel.QuidelData(DATAPATH,load_email)
   if not qd.need_update and not force_update:
     print('Data not updated, nothing needs change.')
     return
@@ -126,10 +126,12 @@ def main():
   parser.add_argument('--first', '-f', default=None, type=int, help='first epiweek override')
   parser.add_argument('--last', '-l', default=None, type=int, help='last epiweek override')
   parser.add_argument('--force_update', '-u', action='store_true', help='force update db values')
+  parser.add_argument('--skip_email', '-s', action='store_true', help='skip email downloading step')
   args = parser.parse_args()
 
   # sanity check
-  first, last, force_update = args.first, args.last, args.force_update
+  first, last, force_update, skip_email = args.first, args.last, args.force_update, args.skip_email
+  load_email = not skip_email
   if first is not None:
     flu.check_epiweek(first)
   if last is not None:
@@ -144,7 +146,7 @@ def main():
     locations = args.location.lower().split(',')
 
   # run the update
-  update(locations, first, last, force_update)
+  update(locations, first, last, force_update, load_email)
 
 
 if __name__ == '__main__':
