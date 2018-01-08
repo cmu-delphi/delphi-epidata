@@ -184,7 +184,9 @@ class QuidelData:
         if dims is None:
             dims = self.dims_to_keep
         parsed_dict = defaultdict(dict)
-        for f in self.csv_list and f not in self.excel_history_path:
+        for f in self.csv_list:
+            if f in self.excel_history_path:
+                continue
             rf = open(join(self.csv_path,f+'.csv'))
 
             lines = rf.readlines()
