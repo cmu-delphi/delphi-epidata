@@ -95,21 +95,21 @@ def get_issue_and_locations(data):
   location_ids[Key.TierType.hhs] = sorted(set(location_ids[Key.TierType.hhs]))
   num = len(location_ids[Key.TierType.hhs])
   if num != 10:
-    raise Exception('expected 10 hhs regions, found %s' % num)
+    raise Exception('expected 10 hhs regions, found %d' % num)
 
   for row in data[Key.TierListEntry.cen]:
     location_ids[Key.TierType.cen].append(row[Key.TierIdEntry.cen])
   location_ids[Key.TierType.cen] = sorted(set(location_ids[Key.TierType.cen]))
   num = len(location_ids[Key.TierType.cen])
   if num != 9:
-    raise Exception('expected 9 census divisions, found %s' % num)
+    raise Exception('expected 9 census divisions, found %d' % num)
 
   for row in data[Key.TierListEntry.sta]:
     location_ids[Key.TierType.sta].append(row[Key.TierIdEntry.sta])
   location_ids[Key.TierType.sta] = sorted(set(location_ids[Key.TierType.sta]))
   num = len(location_ids[Key.TierType.sta])
   if num != 57:
-    raise Exception('expected 57 states/territories/cities, found %s' % num)
+    raise Exception('expected 57 states/territories/cities, found %d' % num)
 
   # return a useful subset of the metatdata
   return {
