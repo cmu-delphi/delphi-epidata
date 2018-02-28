@@ -38,6 +38,7 @@ See also:
 # standard library
 from datetime import datetime
 import json
+import time
 
 # third party
 import requests
@@ -74,7 +75,7 @@ location_codes = {
 }
 
 
-def fetch_json(path, payload):
+def fetch_json(path, payload, call_count=1):
   """Send a request to the server and return the parsed JSON response."""
 
   # it's polite to self-identify this "bot"
@@ -102,7 +103,13 @@ def fetch_json(path, payload):
   resp = method(flusurv_url, headers=headers, data=data)
 
   # check the HTTP status code
-  if resp.status_code != 200:
+  if resp.status_code == 500 and call_count <= 2:
+    # the server often fails with this status, so wait and retry
+    delay = 10 * call_count
+    print('got status %d, will retry in %d sec...' % (resp.status_code, delay))
+    time.sleep(delay)
+    return fetch_json(path, payload, call_count=call_count + 1)
+  elif resp.status_code != 200:
     raise Exception(['status code != 200', resp.status_code])
 
   # check response mine type

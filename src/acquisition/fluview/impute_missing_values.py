@@ -291,7 +291,6 @@ class Locations:
     H = graph[is_known, :]
     W = graph[is_unknown, :]
     if np.linalg.matrix_rank(H) != len(atoms):
-      print(np.linalg.matrix_rank(H))
       raise Exception('system is underdetermined')
 
     HtH = np.dot(H.T, H)
