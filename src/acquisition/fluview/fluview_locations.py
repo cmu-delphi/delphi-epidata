@@ -74,7 +74,9 @@ cdc_to_delphi = {
     'new hampshire': 'nh',
     'new jersey': 'nj',
     'new mexico': 'nm',
-    'new york': 'ny',
+    # Even though it's called "New York", this location doesn't include New
+    # York City ("jfk"). New York ("ny") is actually this *plus* jfk.
+    'new york': 'ny_minus_jfk',
     'north carolina': 'nc',
     'north dakota': 'nd',
     'ohio': 'oh',

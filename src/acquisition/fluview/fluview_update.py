@@ -49,7 +49,7 @@ release_date: the date when this record was first published by the CDC
 issue: the epiweek of publication (e.g. issue 201453 includes epiweeks up to
   and including 2014w53, but not 2015w01 or following)
 epiweek: the epiweek during which the data was collected
-region: the name of the location (e.g. 'nat', 'hhs1', 'cen9', 'pa', 'nyc')
+region: the name of the location (e.g. 'nat', 'hhs1', 'cen9', 'pa', 'jfk')
 lag: number of weeks between `epiweek` and `issue`
 num_ili: the number of ILI cases (numerator)
 num_patients: the total number of patients (denominator)

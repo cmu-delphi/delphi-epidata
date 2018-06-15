@@ -37,7 +37,7 @@ id: unique identifier for each record
 issue: the epiweek of publication (e.g. issue 201453 includes epiweeks up to
   and including 2014w53, but not 2015w01 or following)
 epiweek: the epiweek during which the data was collected
-region: the name of the location (e.g. 'fl', 'la', 'ms', 'pr', 'vi')
+region: the name of the location (e.g. 'fl', 'la', 'ms', 'pr', 'vi', 'ny')
 lag: number of weeks between `epiweek` and `issue`
 num_ili: the number of ILI cases (numerator)
 num_patients: the total number of patients (denominator)
@@ -56,6 +56,7 @@ import numpy as np
 from delphi.epidata.acquisition.fluview import fluview_locations
 import delphi.operations.secrets as secrets
 from delphi.utils.epiweek import delta_epiweeks
+from delphi.utils.geo.locations import Locations
 
 
 class Database:
@@ -192,115 +193,69 @@ class Database:
       self.cur.execute(Database.Sql.add_imputed_values, args)
 
 
-class Locations:
+class StatespaceException(Exception):
+  """Used to indicate that imputation is not possible with the given inputs."""
+
+
+def get_location_graph():
   """
-  A class that encodes the hierarchy of US locations and provides utility
-  functions for imputing ILI in those locations.
+  Return a matrix where rows represent regions, columns represent atoms, and
+  each entry is a 1 if the region contains the atom, otherwise 0. The
+  corresponding lists of regions and atoms are also returned.
   """
 
-  # Atomic regions for ILINet data.
-  atoms = [
-    # entire states
-    'ak', 'al', 'ar', 'az', 'ca', 'co', 'ct', 'de', 'fl', 'ga', 'hi', 'ia',
-    'id', 'il', 'in', 'ks', 'ky', 'la', 'ma', 'md', 'me', 'mi', 'mn', 'mo',
-    'ms', 'mt', 'nc', 'nd', 'ne', 'nh', 'nj', 'nm', 'nv', 'oh', 'ok', 'or',
-    'pa', 'ri', 'sc', 'sd', 'tn', 'tx', 'ut', 'va', 'vt', 'wa', 'wi', 'wv',
-    'wy',
-    # partial states
-    'ny',
-    # territories
-    'dc', 'pr', 'vi',
-    # cities
-    'jfk',
-  ]
+  regions = sorted(Locations.region_list)
+  atoms = sorted(Locations.atom_list)
+  graph = np.zeros((len(regions), len(atoms)))
+  for i, r in enumerate(regions):
+    for a in Locations.region_map[r]:
+      j = atoms.index(a)
+      graph[i, j] = 1
+  return graph, regions, atoms
 
-  # National, HHS, and Census regions since we have ILINet data for those.
-  regions = {
-    'nat': atoms,
-    'hhs1': ['ct', 'ma', 'me', 'nh', 'ri', 'vt'],
-    'hhs2': ['jfk', 'nj', 'ny', 'pr', 'vi'],
-    'hhs3': ['dc', 'de', 'md', 'pa', 'va', 'wv'],
-    'hhs4': ['al', 'fl', 'ga', 'ky', 'ms', 'nc', 'sc', 'tn'],
-    'hhs5': ['il', 'in', 'mi', 'mn', 'oh', 'wi'],
-    'hhs6': ['ar', 'la', 'nm', 'ok', 'tx'],
-    'hhs7': ['ia', 'ks', 'mo', 'ne'],
-    'hhs8': ['co', 'mt', 'nd', 'sd', 'ut', 'wy'],
-    'hhs9': ['az', 'ca', 'hi', 'nv'],
-    'hhs10': ['ak', 'id', 'or', 'wa'],
-    'cen1': ['ct', 'ma', 'me', 'nh', 'ri', 'vt'],
-    'cen2': ['jfk', 'nj', 'ny', 'pa', 'pr', 'vi'],
-    'cen3': ['il', 'in', 'mi', 'oh', 'wi'],
-    'cen4': ['ia', 'ks', 'mn', 'mo', 'nd', 'ne', 'sd'],
-    'cen5': ['dc', 'de', 'fl', 'ga', 'md', 'nc', 'sc', 'va', 'wv'],
-    'cen6': ['al', 'ky', 'ms', 'tn'],
-    'cen7': ['ar', 'la', 'ok', 'tx'],
-    'cen8': ['az', 'co', 'id', 'mt', 'nm', 'nv', 'ut', 'wy'],
-    'cen9': ['ak', 'ca', 'hi', 'or', 'wa'],
-  }
 
-  # Atomic locations are like regions containing only themselves.
-  regions.update(dict([(a, [a]) for a in atoms]))
+def get_fusion_parameters(known_locations):
+  """
+  Return a matrix that fuses known ILI values into unknown ILI values. The
+  corresponding lists of known and unknown locations are also returned.
 
-  @staticmethod
-  def get_location_graph():
-    """
-    Return a matrix where rows represent regions, columns represent atoms, and
-    each entry is a 1 if the region contains the atom, otherwise 0. The
-    corresponding lists of regions and atoms are also returned.
-    """
+  The goal is to infer ILI data in all locations, given ILI data in some
+  partial set of locations. This function takes a sensor fusion approach.
 
-    regions = sorted(Locations.regions.keys())
-    atoms = sorted(Locations.atoms)
-    graph = np.zeros((len(regions), len(atoms)))
-    for i, r in enumerate(regions):
-      for a in Locations.regions[r]:
-        j = atoms.index(a)
-        graph[i, j] = 1
-    return graph, regions, atoms
+  Let $z$ be a column vector of values in reported locations. Let $y$ be the
+  desired column vector of values in unreported locations. With matrices $H$
+  (mapping from latent state to reported values), $W$ (mapping from latent
+  state to unreported values), and $R = I$ (covariance, which is identity):
 
-  @staticmethod
-  def get_fusion_parameters(known_locations):
-    """
-    Return a matrix that fuses known ILI values into unknown ILI values. The
-    corresponding lists of known and unknown locations are also returned.
+    $y = W (H^T R^{-1} H)^{-1} H^T R^{-1} z$
+    $y = W (H^T H)^{-1} H^T z$
 
-    The goal is to infer ILI data in all locations, given ILI data in some
-    partial set of locations. This function takes a sensor fusion approach.
+  This is equavalent to OLS regression with an added translation from atomic
+  locations to missing locations. Unknown values are computed as a linear
+  combination of known values.
+  """
 
-    Let $z$ be a column vector of values in reported locations. Let $y$ be the
-    desired column vector of values in unreported locations. With matrices $H$
-    (mapping from latent state to reported values), $W$ (mapping from latent
-    state to unreported values), and $R = I$ (covariance, which is identity):
+  graph, regions, atoms = get_location_graph()
+  is_known = np.array([r in known_locations for r in regions])
+  is_unknown = np.logical_not(is_known)
+  if not np.any(is_known):
+    raise StatespaceException('no values are known')
+  if not np.any(is_unknown):
+    raise StatespaceException('no values are unknown')
 
-      $y = W (H^T R^{-1} H)^{-1} H^T R^{-1} z$
-      $y = W (H^T H)^{-1} H^T z$
+  H = graph[is_known, :]
+  W = graph[is_unknown, :]
+  if np.linalg.matrix_rank(H) != len(atoms):
+    raise StatespaceException('system is underdetermined')
 
-    This is equavalent to OLS regression with an added translation from atomic
-    locations to missing locations. Unknown values are computed as a linear
-    combination of known values.
-    """
+  HtH = np.dot(H.T, H)
+  HtH_inv = np.linalg.inv(HtH)
+  H_pseudo_inv = np.dot(HtH_inv, H.T)
+  fuser = np.dot(W, H_pseudo_inv)
 
-    graph, regions, atoms = Locations.get_location_graph()
-    is_known = np.array([r in known_locations for r in regions])
-    is_unknown = np.logical_not(is_known)
-    if not np.any(is_known):
-      raise Exception('no values are known')
-    if not np.any(is_unknown):
-      raise Exception('no values are unknown')
-
-    H = graph[is_known, :]
-    W = graph[is_unknown, :]
-    if np.linalg.matrix_rank(H) != len(atoms):
-      raise Exception('system is underdetermined')
-
-    HtH = np.dot(H.T, H)
-    HtH_inv = np.linalg.inv(HtH)
-    H_pseudo_inv = np.dot(HtH_inv, H.T)
-    fuser = np.dot(W, H_pseudo_inv)
-
-    locations = np.array(regions)
-    filter_locations = lambda selected: list(map(str, locations[selected]))
-    return fuser, filter_locations(is_known), filter_locations(is_unknown)
+  locations = np.array(regions)
+  filter_locations = lambda selected: list(map(str, locations[selected]))
+  return fuser, filter_locations(is_known), filter_locations(is_unknown)
 
 
 def get_lag_and_ili(issue, epiweek, num_ili, num_patients):
@@ -344,7 +299,7 @@ def impute_missing_values(database, test_mode=False):
       known_values['pr'] = (0, 0, 0)
 
     # get the imputation matrix and lists of known and unknown locations
-    F, known, unknown = Locations.get_fusion_parameters(known_values.keys())
+    F, known, unknown = get_fusion_parameters(known_values.keys())
 
     # finally, impute the missing values
     z = np.array([known_values[k] for k in known])
