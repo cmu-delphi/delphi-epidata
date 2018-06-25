@@ -3,7 +3,7 @@
 === Purpose ===
 ===============
 
-A Python utility class to download and parse Quidel date, which is called
+A Python utility class to download and parse Quidel data, which is called
 by quidel_update.py
 
 
@@ -17,25 +17,27 @@ by quidel_update.py
     * original version
 '''
 
-# standard
+# standard library
+from collections import defaultdict
+import datetime
+import email
+import getpass
+import imaplib
+import os
 from os import listdir
 from os.path import isfile, join
-
-import email, getpass, imaplib, os
-import datetime
 import math
-from collections import defaultdict
 import re
 
 # third party
-import pandas as pd
 import numpy as np
+import pandas as pd
 
-# delphi
+# first party
+import delphi.operations.secrets as secrets
 import delphi.utils.epidate as ED
 import delphi.utils.epiweek as EW
-from delphi.utils.state_info import *
-import delphi.operations.secrets as secrets
+from delphi.utils.geo.locations import Locations
 
 def word_map(row,terms):
     for (k,v) in terms.items():
@@ -206,16 +208,23 @@ class QuidelData:
     # output: [#unique_device,fluA,fluB,fluAll,total]
     def prepare_measurements(self,data_dict,use_hhs=True,start_weekday=6):
         buffer_dict = {}
-        SI = StateInfo()
         if use_hhs:
-            region_list = SI.hhs
+            region_list = Locations.hhs_list
         else:
-            region_list = SI.sta
+            region_list = Locations.atom_list
+
+        def get_hhs_region(atom):
+          for region in Locations.hhs_list:
+            if atom.lower() in Locations.hhs_map[region]:
+              return region
+          if atom.lower() == 'ny':
+            return 'hhs2'
+          return atom
 
         day_shift = 6 - start_weekday
         time_map = lambda x:date_to_epiweek(x,'-',shift=day_shift)
-        region_map = lambda x:SI.state_regions[x]['hhs'] \
-                    if use_hhs and x in SI.state_regions else x # a bit hacky
+        region_map = lambda x:get_hhs_region(x) \
+                    if use_hhs and x not in Locations.hhs_list else x # a bit hacky
 
         end_date = sorted(data_dict.keys())[-1]
         # count the latest week in only if Thurs data is included

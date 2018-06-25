@@ -3,7 +3,7 @@
 === Purpose ===
 ===============
 
-Stores data provided by Quidel Corp., which contains flu lab test result.
+Stores data provided by Quidel Corp., which contains flu lab test results.
 See: quidel.py
 
 
@@ -42,12 +42,13 @@ import argparse
 import mysql.connector
 
 # first party
-from . import quidel
+from delphi.epidata.acquisition.quidel import quidel
 import delphi.operations.secrets as secrets
 from delphi.utils.epidate import EpiDate
 import delphi.utils.epiweek as flu
+from delphi.utils.geo.locations import Locations
 
-LOCATIONS = ['hhs%d'%i for i in range(1,11)]
+LOCATIONS = Locations.hhs_list
 DATAPATH = '/home/automation/quidel_data'
 
 def update(locations, first=None, last=None, force_update=False, load_email=True):
