@@ -39,7 +39,7 @@
     {
       "type": "move",
       "src": "src/server/.htaccess",
-      "dst": "[[root_web]]",
+      "dst": "[[root_web]]/.htaccess",
       "add-header-comment": true
     },
 
