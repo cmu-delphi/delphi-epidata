@@ -33,7 +33,7 @@
       "type": "move",
       "src": "src/server/",
       "dst": "[[root_web]]",
-      "match": "^.*\\.(html|php)$",
+      "match": "^.*\\.(html|php|htaccess)$",
       "add-header-comment": true
     },
 
