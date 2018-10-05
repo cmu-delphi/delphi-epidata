@@ -492,16 +492,6 @@ def main():
     type=int,
     help='issue of the file (e.g. 201740); used iff --file is given'
   )
-  parser.add_argument(
-    '--clinical',
-    action='store_true',
-    help='update data from clinical labs'
-  )
-  parser.add_argument(
-    '--public',
-    action='store_true',
-    help='update data from public health labs'
-  )
   args = parser.parse_args()
 
   if (args.file is None) != (args.issue is None):
