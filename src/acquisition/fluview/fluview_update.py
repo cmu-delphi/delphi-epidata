@@ -86,8 +86,9 @@ similar to fluview table. data taken right from the WHO_NREVSS dataset.
 | id              | int(11)     | NO   | PRI | NULL    | auto_increment |
 | release_date    | date        | NO   | MUL | NULL    |                |
 | issue           | int(11)     | NO   | MUL | NULL    |                |
-| season          | varchar(12) | NO   | MUL | NULL    |                |
+| epiweek         | int(11)     | NO   | MUL | NULL    |                |
 | region          | varchar(12) | NO   | MUL | NULL    |                |
+| lag             | int(11)     | YES  |     | NULL    |                |
 | total_specimens | int(11)     | NO   |     | NULL    |                |
 | total_a_h1n1    | int(11)     | YES  |     | NULL    |                |
 | total_a_h3      | int(11)     | YES  |     | NULL    |                |
@@ -95,9 +96,14 @@ similar to fluview table. data taken right from the WHO_NREVSS dataset.
 | total_b         | int(11)     | YES  |     | NULL    |                |
 | total_b_vic     | int(11)     | YES  |     | NULL    |                |
 | total_b_yam     | int(11)     | YES  |     | NULL    |                |
-| total_h3n2v     | int(11)     | YES  |     | NULL    |                |
+| total_b_h3n2v   | int(11)     | YES  |     | NULL    |                |
 +-----------------+-------------+------+-----+---------+----------------+
 similar to fluview table. data taken right from the WHO_NREVSS dataset.
+NOTE:
+  for state-wise data, public health labs do not report by epiweek, but
+  by season (e.g. season 2016/17). calculating the lag is difficult with 
+  this, so we set the lag to NULL for state-wise data. in addition, the 
+  epiweek field will be set to 201601 for season 2016/17, and so on.
 
 Changelog:
 - 10/05/18: add/modify functions to also process clinical lab and public 
@@ -209,7 +215,7 @@ def get_clinical_data(row):
   }
 
 def get_public_data(row):
-  if row[0] == 'REGION TYPE' and row != [
+  hrow1 = [
     'REGION TYPE', 
     'REGION', 
     'SEASON_DESCRIPTION', 
@@ -221,7 +227,22 @@ def get_public_data(row):
     'BVic',
     'BYam', 
     'H3N2v'
-  ]:
+  ]
+  hrow2 = [
+    'REGION TYPE', 
+    'REGION', 
+    'YEAR',
+    'WEEK'
+    'TOTAL SPECIMENS',
+    'A (2009 H1N1)', 
+    'A (H3)', 
+    'A (Subtyping not Performed)', 
+    'B', 
+    'BVic',
+    'BYam', 
+    'H3N2v'
+  ]
+  if row[0] == 'REGION TYPE' and row != hrow1 and row != hrow2:
     raise Exception('header row has changed for public health lab data.')
   if len(row) == 1 or row[0] == 'REGION TYPE':
     # header row
@@ -229,17 +250,26 @@ def get_public_data(row):
   if row[3] == 'X':
     # data is not reported, ignore this row
     return None 
+  # handle case where data is reported by season, not by epiweek
+  is_weekly = len(row) == len(hrow2)
+  # set epiweek
+  if is_weekly:
+    epiweek = join_epiweek(int(row[2]), int(row[3]))
+  else:
+    epiweek = int(row[2][7:11])*100+1
+  # row offset
+  offset = 1 if is_weekly else 0
   return {
     'location': fluview_locations.get_location_name(*row[:2]),
-    'season': row[2],
-    'total_specimens': int(row[3]),
-    'total_a_h1n1': optional_int(row[4]),
-    'total_a_h3': optional_int(row[5]),
-    'total_a_no_sub': optional_int(row[6]),
-    'total_b': optional_int(row[7]),
-    'total_b_vic': optional_int(row[8]),
-    'total_b_yam': optional_int(row[9]),
-    'total_h3n2v': optional_int(row[10])
+    'epiweek': epiweek,
+    'total_specimens': int(row[3 + offset]),
+    'total_a_h1n1': optional_int(row[4+ offset]),
+    'total_a_h3': optional_int(row[5 + offset]),
+    'total_a_no_sub': optional_int(row[6 + offset]),
+    'total_b': optional_int(row[7 + offset]),
+    'total_b_vic': optional_int(row[8 + offset]),
+    'total_b_yam': optional_int(row[9 + offset]),
+    'total_h3n2v': optional_int(row[10 + offset])
   }
 
 def load_zipped_csv(filename, sheetname='ILINet.csv'):
@@ -250,7 +280,9 @@ def load_zipped_csv(filename, sheetname='ILINet.csv'):
       return [row for row in csv.reader(io.StringIO(str(ff.read(), 'utf-8')))]
 
 def get_rows(cnx, table='fluview'):
-  """Count and return the number of rows in the `fluview` table."""
+  """Count and return the number of rows in the `fluview` table.
+  Looking at the fluview table by default, but may pass parameter
+  to look at public health or clinical lab data instead."""
   select = cnx.cursor()
   select.execute('SELECT count(1) num FROM %s' % table)
   for (num,) in select:
@@ -260,7 +292,7 @@ def get_rows(cnx, table='fluview'):
 
 def update_from_file_clinical(issue, date, filename, test_mode=False):
   """
-  Read ILINet data from a zipped CSV and insert into (or update) the database.
+  Read WHO/NREVSS data from a zipped CSV and insert into (or update) the database.
   """
 
   # database connection
@@ -315,7 +347,7 @@ def update_from_file_clinical(issue, date, filename, test_mode=False):
 
 def update_from_file_public(issue, date, filename, test_mode=False):
   """
-  Read ILINet data from a zipped CSV and insert into (or update) the database.
+  Read WHO/NREVSS data from a zipped CSV and insert into (or update) the database.
   """
 
   # database connection
@@ -335,7 +367,7 @@ def update_from_file_public(issue, date, filename, test_mode=False):
 
   sql = '''
   INSERT INTO
-    `fluview_public` (`release_date`, `issue`, `season`, `region`, 
+    `fluview_public` (`release_date`, `issue`, `epiweek`, `region`, `lag`,
     `total_specimens`, `total_a_h1n1`, `total_a_h3`, `total_a_no_sub`,
     `total_b`, `total_b_vic`, `total_b_yam`, `total_h3n2v`)
   VALUES
@@ -355,12 +387,13 @@ def update_from_file_public(issue, date, filename, test_mode=False):
   # insert each row
   insert = cnx.cursor()
   for row in entries:
+    lag = delta_epiweeks(row['epiweek'], issue)
     args = [
       row['total_specimens'], row['total_a_h1n1'], row['total_a_h3'],
       row['total_a_no_sub'], row['total_b'], row['total_b_vic'], 
       row['total_b_yam'], row['total_h3n2v']
     ]
-    ins_args = [date, issue, row['season'], row['location']] + args
+    ins_args = [date, issue, row['epiweek'], row['location'], lag] + args
     upd_args = [date] + args
     insert.execute(sql, ins_args + upd_args)
 
