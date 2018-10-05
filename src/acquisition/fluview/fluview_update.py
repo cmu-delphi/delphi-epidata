@@ -64,19 +64,22 @@ num_age_4: number of cases in ages 50-64
 num_age_5: number of cases in ages 65+
 
 `fluview_clinical` is the table that contains data from clinical labs.
-+-----------------+-------------+------+-----+---------+----------------+
-| Field           | Type        | Null | Key | Default | Extra          |
-+-----------------+-------------+------+-----+---------+----------------+
-| id              | int(11)     | NO   | PRI | NULL    | auto_increment |
-| release_date    | date        | NO   | MUL | NULL    |                |
-| issue           | int(11)     | NO   | MUL | NULL    |                |
-| epiweek         | int(11)     | NO   | MUL | NULL    |                |
-| region          | varchar(12) | NO   | MUL | NULL    |                |
-| lag             | int(11)     | NO   | MUL | NULL    |                |
-| total_specimens | int(11)     | NO   |     | NULL    |                |
-| total_a         | int(11)     | YES  |     | NULL    |                |
-| total_b         | int(11)     | YES  |     | NULL    |                |
-+-----------------+-------------+------+-----+---------+----------------+
++------------------+-------------+------+-----+---------+----------------+
+| Field            | Type        | Null | Key | Default | Extra          |
++------------------+-------------+------+-----+---------+----------------+
+| id               | int(11)     | NO   | PRI | NULL    | auto_increment |
+| release_date     | date        | NO   | MUL | NULL    |                |
+| issue            | int(11)     | NO   | MUL | NULL    |                |
+| epiweek          | int(11)     | NO   | MUL | NULL    |                |
+| region           | varchar(12) | NO   | MUL | NULL    |                |
+| lag              | int(11)     | NO   | MUL | NULL    |                |
+| total_specimens  | int(11)     | NO   |     | NULL    |                |
+| total_a          | int(11)     | YES  |     | NULL    |                |
+| total_b          | int(11)     | YES  |     | NULL    |                |
+| percent_positive | double      | YES  |     | NULL    |                |
+| percent_a        | double      | YES  |     | NULL    |                |
+| percent_b        | double      | YES  |     | NULL    |                |
++------------------+-------------+------+-----+---------+----------------+
 similar to fluview table. data taken right from the WHO_NREVSS dataset.
 
 `fluview_public` is the table that contains data from pubic health labs.
@@ -139,10 +142,11 @@ PHL_TABLE = 'fluview_public'
 def optional_int(i):
   return int(i) if i not in ('', 'X') else None
 
-
 def optional_float(i, j):
   return float(i) if i not in ('', 'X') else float(j)
 
+def nullable_float(i):
+  return float(i) if i not in ('', 'X') else None
 
 def get_ilinet_data(row):
   if row[0] == 'REGION TYPE' and row != [
@@ -211,7 +215,10 @@ def get_clinical_data(row):
     'epiweek': join_epiweek(int(row[2]), int(row[3])),
     'total_specimens': int(row[4]),
     'total_a': optional_int(row[5]),
-    'total_b': optional_int(row[6])
+    'total_b': optional_int(row[6]),
+    'percent_positive': nullable_float(row[7]),
+    'percent_a': nullable_float(row[8]),
+    'percent_b': nullable_float(row[9])
   }
 
 def get_public_data(row):
@@ -313,14 +320,18 @@ def update_from_file_clinical(issue, date, filename, test_mode=False):
   sql = '''
   INSERT INTO
     `fluview_clinical` (`release_date`, `issue`, `epiweek`, `region`, `lag`, 
-    `total_specimens`, `total_a`, `total_b`)
+    `total_specimens`, `total_a`, `total_b`, `percent_positive`, `percent_a`, 
+    `percent_b`)
   VALUES
-    (%s, %s, %s, %s, %s, %s, %s, %s)
+    (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
   ON DUPLICATE KEY UPDATE
   `release_date` = least(`release_date`, %s),
   `total_specimens` = %s,
   `total_a` = %s,
-  `total_b` = %s
+  `total_b` = %s,
+  `percent_positive` = %s,
+  `percent_a` = %s,
+  `percent_b` = %s
   '''
 
   # insert each row
@@ -328,7 +339,8 @@ def update_from_file_clinical(issue, date, filename, test_mode=False):
   for row in entries:
     lag = delta_epiweeks(row['epiweek'], issue)
     args = [
-      row['total_specimens'], row['total_a'], row['total_b']
+      row['total_specimens'], row['total_a'], row['total_b'],
+      row['percent_positive'], row['percent_a'], row['percent_b']
     ]
     ins_args = [date, issue, row['epiweek'], row['location'], lag] + args
     upd_args = [date] + args
