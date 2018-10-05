@@ -246,6 +246,13 @@ Epidata.fluview(callback, ['nat'], [201440, Epidata.range(201501, 201510)])
 
 ### Python
 
+Optionally install the package using pip(env):
+````bash
+pip install delphi-epidata
+````
+
+Otherwise, place `delphi_epidata.py` from this repo next to your python script.
+
 ````python
 # Import
 from delphi_epidata import Epidata
