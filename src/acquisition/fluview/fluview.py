@@ -4,7 +4,12 @@
 ===============
 
 Fetches ILINet data (surveillance of outpatient influenza-like illness) from
-CDC.
+CDC. 
+
+This script provides functions for first fetching metadata from Fluview which 
+are then used to build a request that will get all data for the different tier 
+types (national, hhs regions, census divisions and states). This data is 
+downloaded as one zip file per tier type (locally).
 
 This file replaces scrape_flu_data.sh, which performed a similar function for
 the old (pre 2017w40) FluView interface.
@@ -13,6 +18,10 @@ See also:
   - fluview_update.py
   - scrape_flu_data.sh
   - https://gis.cdc.gov/grasp/fluview/fluportaldashboard.html
+
+Changes:
+  - 10/03/18: added field for 'WHO_NREVSS' data to download data from clinical
+    labs as well as public health labs. 
 """
 
 # standard library
@@ -90,6 +99,7 @@ def get_issue_and_locations(data):
     Key.TierType.sta: [],
   }
 
+  # add location ids for HHS
   for row in data[Key.TierListEntry.hhs]:
     location_ids[Key.TierType.hhs].append(row[Key.TierIdEntry.hhs])
   location_ids[Key.TierType.hhs] = sorted(set(location_ids[Key.TierType.hhs]))
@@ -97,6 +107,7 @@ def get_issue_and_locations(data):
   if num != 10:
     raise Exception('expected 10 hhs regions, found %d' % num)
 
+  # add location ids for census divisions
   for row in data[Key.TierListEntry.cen]:
     location_ids[Key.TierType.cen].append(row[Key.TierIdEntry.cen])
   location_ids[Key.TierType.cen] = sorted(set(location_ids[Key.TierType.cen]))
@@ -104,6 +115,7 @@ def get_issue_and_locations(data):
   if num != 9:
     raise Exception('expected 9 census divisions, found %d' % num)
 
+  # add location ids for states
   for row in data[Key.TierListEntry.sta]:
     location_ids[Key.TierType.sta].append(row[Key.TierIdEntry.sta])
   location_ids[Key.TierType.sta] = sorted(set(location_ids[Key.TierType.sta]))
@@ -111,7 +123,8 @@ def get_issue_and_locations(data):
   if num != 57:
     raise Exception('expected 57 states/territories/cities, found %d' % num)
 
-  # return a useful subset of the metatdata
+  # return a useful subset of the metadata
+  # (latest epiweek, latest season, tier ids, location ids)
   return {
     'epiweek': data['mmwr'][-1]['yearweek'],
     'season_id': data['mmwr'][-1]['seasonid'],
@@ -130,7 +143,7 @@ def download_data(tier_id, location_ids, season_ids, filename):
   url = 'https://gis.cdc.gov/grasp/flu2/PostPhase02DataDownload'
   data = {
     'AppVersion': 'Public',
-    'DatasourceDT': [get_entry(1, 'ILINet')],
+    'DatasourceDT': [get_entry(1, 'ILINet'), get_entry(0, 'WHO_NREVSS')],
     'RegionTypeId': tier_id,
     'SubRegionsDT': [get_entry(loc) for loc in sorted(location_ids)],
     'SeasonsDT': [get_entry(season) for season in sorted(season_ids)],
