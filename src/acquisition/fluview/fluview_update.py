@@ -91,22 +91,22 @@ similar to fluview table. data taken right from the WHO_NREVSS dataset.
 | issue           | int(11)     | NO   | MUL | NULL    |                |
 | epiweek         | int(11)     | NO   | MUL | NULL    |                |
 | region          | varchar(12) | NO   | MUL | NULL    |                |
-| lag             | int(11)     | YES  |     | NULL    |                |
+| lag             | int(11)     | NO   |     | NULL    |                |
 | total_specimens | int(11)     | NO   |     | NULL    |                |
 | total_a_h1n1    | int(11)     | YES  |     | NULL    |                |
 | total_a_h3      | int(11)     | YES  |     | NULL    |                |
+| total_a_h3n2v   | int(11)     | YES  |     | NULL    |                |
 | total_a_no_sub  | int(11)     | YES  |     | NULL    |                |
 | total_b         | int(11)     | YES  |     | NULL    |                |
 | total_b_vic     | int(11)     | YES  |     | NULL    |                |
 | total_b_yam     | int(11)     | YES  |     | NULL    |                |
-| total_b_h3n2v   | int(11)     | YES  |     | NULL    |                |
 +-----------------+-------------+------+-----+---------+----------------+
 similar to fluview table. data taken right from the WHO_NREVSS dataset.
 NOTE:
   for state-wise data, public health labs do not report by epiweek, but
-  by season (e.g. season 2016/17). calculating the lag is difficult with 
-  this, so we set the lag to NULL for state-wise data. in addition, the 
-  epiweek field will be set to 201601 for season 2016/17, and so on.
+  by season (e.g. season 2016/17). calculating the lag is not very 
+  meaningful with this. in addition, the epiweek field will be set to 
+  201640 for season 2016/17, and so on.
 
 Changelog:
 - 10/05/18: add/modify functions to also process clinical lab and public 
@@ -263,7 +263,7 @@ def get_public_data(row):
   if is_weekly:
     epiweek = join_epiweek(int(row[2]), int(row[3]))
   else:
-    epiweek = int(row[2][7:11])*100+1
+    epiweek = int(row[2][7:11]) * 100 + 40
   # row offset
   offset = 1 if is_weekly else 0
   return {
@@ -272,11 +272,11 @@ def get_public_data(row):
     'total_specimens': int(row[3 + offset]),
     'total_a_h1n1': optional_int(row[4+ offset]),
     'total_a_h3': optional_int(row[5 + offset]),
+    'total_a_h3n2v': optional_int(row[10 + offset]),
     'total_a_no_sub': optional_int(row[6 + offset]),
     'total_b': optional_int(row[7 + offset]),
     'total_b_vic': optional_int(row[8 + offset]),
-    'total_b_yam': optional_int(row[9 + offset]),
-    'total_h3n2v': optional_int(row[10 + offset])
+    'total_b_yam': optional_int(row[9 + offset])
   }
 
 def load_zipped_csv(filename, sheetname='ILINet.csv'):
@@ -380,8 +380,8 @@ def update_from_file_public(issue, date, filename, test_mode=False):
   sql = '''
   INSERT INTO
     `fluview_public` (`release_date`, `issue`, `epiweek`, `region`, `lag`,
-    `total_specimens`, `total_a_h1n1`, `total_a_h3`, `total_a_no_sub`,
-    `total_b`, `total_b_vic`, `total_b_yam`, `total_h3n2v`)
+    `total_specimens`, `total_a_h1n1`, `total_a_h3`, `total_a_h3n2v`,
+    `total_a_no_sub`, `total_b`, `total_b_vic`, `total_b_yam`)
   VALUES
     (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
   ON DUPLICATE KEY UPDATE
@@ -389,11 +389,11 @@ def update_from_file_public(issue, date, filename, test_mode=False):
   `total_specimens` = %s,
   `total_a_h1n1` = %s,
   `total_a_h3` = %s,
+  `total_a_h3n2v` = %s,
   `total_a_no_sub` = %s,
   `total_b` = %s,
   `total_b_vic` = %s, 
-  `total_b_yam` = %s, 
-  `total_h3n2v` = %s
+  `total_b_yam` = %s
   '''
 
   # insert each row
@@ -402,8 +402,8 @@ def update_from_file_public(issue, date, filename, test_mode=False):
     lag = delta_epiweeks(row['epiweek'], issue)
     args = [
       row['total_specimens'], row['total_a_h1n1'], row['total_a_h3'],
-      row['total_a_no_sub'], row['total_b'], row['total_b_vic'], 
-      row['total_b_yam'], row['total_h3n2v']
+      row['total_a_h3n2v'], row['total_a_no_sub'], row['total_b'], 
+      row['total_b_vic'], row['total_b_yam']
     ]
     ins_args = [date, issue, row['epiweek'], row['location'], lag] + args
     upd_args = [date] + args
