@@ -135,6 +135,15 @@
       "add-header-comment": true
     },
 
+    "// acquisition - norostat",
+    {
+      "type": "move",
+      "src": "src/acquisition/norostat/",
+      "dst": "[[package]]/acquisition/norostat/",
+      "match": "^.*\\.(py)$",
+      "add-header-comment": true
+    },
+
     "// run unit and coverage tests",
     {"type": "py3test"}
 
