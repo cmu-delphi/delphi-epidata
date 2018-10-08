@@ -38,7 +38,7 @@ def season_db_to_epiweek(season_str, db_date_str, first_db_date_of_season_str="1
   year_strs = season_str.split("-")
   first_year = int(year_strs[0])
   second_year = first_year + 1
-  # fixme check/enforce locale
+  # FIXME check/enforce locale
   first_date_of_season = datetime.datetime.strptime(first_db_date_of_season_str+"-"+str(first_year), "%d-%b-%Y").date()
   date_using_first_year = datetime.datetime.strptime(db_date_str+"-"+str(first_year), "%d-%b-%Y").date()
   date_using_second_year = datetime.datetime.strptime(db_date_str+"-"+str(second_year), "%d-%b-%Y").date()

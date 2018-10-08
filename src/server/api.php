@@ -601,7 +601,7 @@ function get_norostat($location, $epiweeks) {
   $fields_int = array('epiweek', 'value');
   // fixme new_value -> value
   $query = "
-    SELECT `latest`.`release_date`, `latest`.`epiweek`, `latest`.`new_value`
+    SELECT `latest`.`release_date`, `latest`.`epiweek`, `latest`.`new_value` AS `value`
     FROM `norostat_point_diffs` AS `latest`
     LEFT JOIN `norostat_raw_datatable_location_pool` USING (`location_id`)
     LEFT JOIN (
