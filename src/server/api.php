@@ -1101,6 +1101,15 @@ if(database_connect()) {
     // get the data
     $epidata = get_meta();
     store_result($data, $epidata);
+  } else if($source === 'meta_norostat') {
+    if(require_all($data, array('auth'))) {
+      if($_REQUEST['auth'] === $AUTH['norostat']) {
+        $epidata = get_meta_norostat();
+        store_result($data, $epidata);
+      } else {
+          $data['message'] = 'unauthenticated';
+      }
+    }
   } else {
     $data['message'] = 'no data source specified';
   }
