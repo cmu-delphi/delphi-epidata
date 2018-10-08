@@ -5,7 +5,7 @@ import re
 import mysql.connector
 
 # first party
-from norostat_utils import *
+from .norostat_utils import *
 from delphi.utils.epidate import EpiDate
 import delphi.operations.secrets as secrets
 

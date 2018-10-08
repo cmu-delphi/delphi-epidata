@@ -20,7 +20,7 @@ import lxml.html
 import pandas as pd
 
 # first party
-from norostat_utils import *
+from .norostat_utils import *
 
 def fetch_content(norostat_datatable_url="https://www.cdc.gov/norovirus/reporting/norostat/data-table.html"):
   """Download NoroSTAT data-table.  Returns the html content."""
