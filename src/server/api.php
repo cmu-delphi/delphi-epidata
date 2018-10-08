@@ -35,7 +35,8 @@ $AUTH = array(
   'fluview'  => Secrets::$api['fluview'],
   'cdc'      => Secrets::$api['cdc'],
   'sensors'  => Secrets::$api['sensors'],
-  'quidel'   => Secrets::$api['quidel']
+  'quidel'   => Secrets::$api['quidel'],
+  'norostat' => Secrets::$api['norostat']
 );
 
 // result limit, ~10 years of daily data
@@ -582,6 +583,46 @@ function get_quidel($locations, $epiweeks) {
   return count($epidata) === 0 ? null : $epidata;
 }
 
+// queries the `norostat_point` table
+//   $locations (required): single location value (str listing included states)
+//   $epiweeks (required): array of epiweek values/ranges
+function get_norostat($location, $epiweeks) {
+  // todo add release/issue args
+  //
+  // build the filters:
+  $condition_location = filter_strings('`norostat_raw_datatable_location_pool`.`location`', [$location]);
+  $condition_epiweek = filter_integers('`latest`.`epiweek`', $epiweeks);
+  // get the data from the database
+  $epidata = array();
+  // (exclude "location" from output to reduce size & ugliness of result,
+  // transfer bandwidth required; it would just be a repeated echo of the input
+  // $location)
+  $fields_string = array('release_date');
+  $fields_int = array('epiweek', 'value');
+  // fixme new_value -> value
+  $query = "
+    SELECT `latest`.`release_date`, `latest`.`epiweek`, `latest`.`new_value`
+    FROM `norostat_point_diffs` AS `latest`
+    LEFT JOIN `norostat_raw_datatable_location_pool` USING (`location_id`)
+    LEFT JOIN (
+      SELECT * FROM `norostat_point_diffs`
+    ) `later`
+    ON `latest`.`location_id` = `later`.`location_id` AND
+       `latest`.`epiweek` = `later`.`epiweek` AND
+       (`latest`.`release_date`, `latest`.`parse_time`) <
+         (`later`.`release_date`, `later`.`parse_time`) AND
+       `later`.`new_value` IS NOT NULL
+    WHERE ({$condition_location}) AND
+          ({$condition_epiweek}) AND
+          `later`.`parse_time` IS NULL AND
+          `latest`.`new_value` IS NOT NULL
+    ";
+  // xxx may reorder epiweeks
+  execute_query($query, $epidata, $fields_string, $fields_int, null);
+  // return the data
+  return count($epidata) === 0 ? null : $epidata;
+}
+
 // queries the `nidss_flu` table
 //   $epiweeks (required): array of epiweek values/ranges
 //   $regions (required): array of region names
@@ -845,6 +886,20 @@ function meta_wiki() {
   execute_query($query, $epidata, $fields_string, $fields_int, null);
   return count($epidata) === 0 ? null : $epidata;
 }
+function get_meta_norostat() {
+  // put behind appropriate auth check
+  $epidata_releases = array();
+  $query = 'SELECT DISTINCT `release_date` FROM `norostat_raw_datatable_version_list`';
+  execute_query($query, $epidata_releases, array('release_date'), null, null);
+  $epidata_locations = array();
+  $query = 'SELECT DISTINCT `location` FROM `norostat_raw_datatable_location_pool`';
+  execute_query($query, $epidata_locations, array('location'), null, null);
+  $epidata = array(
+    "releases" => $epidata_releases,
+    "locations" => $epidata_locations
+  );
+  return $epidata;
+}
 function meta_delphi() {
   $epidata = array();
   $query = 'SELECT `system`, min(`epiweek`) `first_week`, max(`epiweek`) `last_week`, count(1) `num_weeks` FROM `forecasts` GROUP BY `system` ORDER BY `system` ASC';
@@ -948,20 +1003,33 @@ if(database_connect()) {
         store_result($data, $epidata);
       }
     }
-} else if($source === 'quidel') {
-  if(require_all($data, array('auth', 'locations', 'epiweeks'))) {
-    if($_REQUEST['auth'] === $AUTH['quidel']) {
-      // parse the request
-      $locations = extract_values($_REQUEST['locations'], 'str');
-      $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
-      // get the data
-      $epidata = get_quidel($locations, $epiweeks);
-      store_result($data, $epidata);
-    } else {
-      $data['message'] = 'unauthenticated';
+  } else if($source === 'quidel') {
+    if(require_all($data, array('auth', 'locations', 'epiweeks'))) {
+      if($_REQUEST['auth'] === $AUTH['quidel']) {
+        // parse the request
+        $locations = extract_values($_REQUEST['locations'], 'str');
+        $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
+        // get the data
+        $epidata = get_quidel($locations, $epiweeks);
+        store_result($data, $epidata);
+      } else {
+        $data['message'] = 'unauthenticated';
+      }
     }
-  }
-} else if($source === 'nidss_flu') {
+  } else if($source === 'norostat') {
+    if(require_all($data, array('auth', 'location', 'epiweeks'))) {
+      if($_REQUEST['auth'] === $AUTH['norostat']) {
+        // parse the request
+        $location = $_REQUEST['location'];
+        $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
+        // get the data
+        $epidata = get_norostat($location, $epiweeks);
+        store_result($data, $epidata);
+      } else {
+          $data['message'] = 'unauthenticated';
+      }
+    }
+  } else if($source === 'nidss_flu') {
     if(require_all($data, array('epiweeks', 'regions'))) {
       // parse the request
       $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
