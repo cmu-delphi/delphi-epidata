@@ -221,6 +221,38 @@ Epidata <- (function() {
     return(.request(params))
   }
 
+  # Fetch NoroSTAT data (point data, no min/max)
+  norostat <- function(auth, location, epiweeks) {
+    # Check parameters
+    if(missing(auth) || missing(location) || missing(epiweeks)) {
+      stop('`auth`, `location`, and `epiweeks` are all required')
+    }
+    # Set up request
+    params <- list(
+        source = 'norostat',
+        auth = auth,
+        location = location,
+        epiweeks = .list(epiweeks)
+    )
+    # Make the API call
+    return(.request(params))
+  }
+
+  # Fetch NoroSTAT metadata
+  meta_norostat <- function(auth) {
+    # Check parameters
+    if(missing(auth)) {
+      stop('`auth` is required')
+    }
+    # Set up request
+    params <- list(
+      source = 'meta_norostat',
+      auth = auth
+    )
+    # Make the API call
+    return(.request(params))
+  }
+
   # Fetch NIDSS flu data
   nidss.flu <- function(regions, epiweeks, issues, lag) {
     # Check parameters
@@ -328,6 +360,8 @@ Epidata <- (function() {
     wiki = wiki,
     cdc = cdc,
     quidel = quidel,
+    norostat = norostat,
+    meta_norostat = meta_norostat,
     nidss.flu = nidss.flu,
     nidss.dengue = nidss.dengue,
     delphi = delphi,

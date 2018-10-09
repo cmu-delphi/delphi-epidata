@@ -197,6 +197,32 @@ class Epidata
     # Make the API call
     _request(callback, params)
 
+  # Fetch NoroSTAT data (point data, no min/max)
+  @norostat: (callback, auth, location, epiweeks) ->
+    # Check parameters
+    unless auth? and location? and epiweeks?
+      throw { msg: '`auth`, `location`, and `epiweeks` are all required' }
+    # Set up request
+    params =
+      'source': 'norostat'
+      'auth': auth
+      'location': location
+      'epiweeks': _list(epiweeks)
+    # Make the API call
+    _request(callback, params)
+
+  # Fetch NoroSTAT metadata
+  @meta_norostat: (callback, auth) ->
+    # Check parameters
+    unless auth?
+      throw { msg: '`auth` is required' }
+    # Set up request
+    params =
+      'source': 'meta_norostat'
+      'auth': auth
+    # Make the API call
+    _request(callback, params)
+
   # Fetch NIDSS flu data
   @nidss_flu: (callback, regions, epiweeks, issues, lag) ->
     # Check parameters

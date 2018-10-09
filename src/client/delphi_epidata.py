@@ -223,6 +223,39 @@ class Epidata:
     # Make the API call
     return Epidata._request(params)
 
+  # Fetch NoroSTAT data (point data, no min/max)
+  @staticmethod
+  def norostat(auth, location, epiweeks):
+    """Fetch NoroSTAT data (point data, no min/max)."""
+    # Check parameters
+    if auth is None or location is None or epiweeks is None:
+      raise Exception('`auth`, `location`, and `epiweeks` are all required')
+    # Set up request
+    params = {
+      'source': 'norostat',
+      'auth': auth,
+      'location': location,
+      'epiweeks': Epidata._list(epiweeks),
+    }
+    # Make the API call
+    return Epidata._request(params)
+
+  # Fetch NoroSTAT metadata
+  @staticmethod
+  def meta_norostat(auth):
+    """Fetch NoroSTAT metadata."""
+    # Check parameters
+    if auth is None:
+      raise Exception('`auth` is required')
+    # Set up request
+    params = {
+      'source': 'meta_norostat',
+      'auth': auth,
+    }
+    # Make the API call
+    return Epidata._request(params)
+
+
   # Fetch NIDSS flu data
   @staticmethod
   def nidss_flu(regions, epiweeks, issues=None, lag=None):
