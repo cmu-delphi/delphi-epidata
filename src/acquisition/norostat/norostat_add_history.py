@@ -17,7 +17,9 @@ import collections
 from . import norostat_sql
 from . import norostat_raw
 
-if __name__ == '__main__':
+
+
+def main():
   norostat_sql.ensure_tables_exist()
   snapshot_dir = os.path.expanduser("~/norostat_history/wayback/websites/www.cdc.gov/norovirus/reporting/norostat/data-table.html/")
   snapshot_version_counter = collections.Counter()
@@ -38,3 +40,6 @@ if __name__ == '__main__':
           snapshot_version_counter[subdir] += 1
   print('Successfully uploaded the following snapshots, with the count indicating the number of data-table versions found inside each snapshot (expected to be 1, or maybe 2 if there was a change in capitalization; 0 indicates the NoroSTAT page was not found within a snapshot directory); just "Counter()" indicates no snapshot directories were found:', snapshot_version_counter)
   norostat_sql.update_point()
+
+if __name__ == '__main__':
+  main()

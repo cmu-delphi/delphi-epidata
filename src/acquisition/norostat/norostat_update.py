@@ -25,7 +25,9 @@ from . import norostat_raw
 from delphi.utils.epidate import EpiDate
 import delphi.operations.secrets as secrets
 
-if __name__ == '__main__':
+
+
+def main():
   # Download the data:
   # content = norostat_raw.load_sample_content()
   content = norostat_raw.fetch_content()
@@ -35,3 +37,6 @@ if __name__ == '__main__':
   norostat_sql.ensure_tables_exist()
   norostat_sql.record_long_raw(long_raw)
   norostat_sql.update_point()
+
+if __name__ == '__main__':
+  main()
