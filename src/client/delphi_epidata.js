@@ -263,6 +263,36 @@ Notes:
       return _request(callback, params);
     };
 
+    Epidata.norostat = function(callback, auth, location, epiweeks) {
+      var params;
+      if (!((auth != null) && (location != null) && (epiweeks != null))) {
+        throw {
+          msg: '`auth`, `location`, and `epiweeks` are all required'
+        };
+      }
+      params = {
+        'source': 'norostat',
+        'auth': auth,
+        'location': location,
+        'epiweeks': _list(epiweeks)
+      };
+      return _request(callback, params);
+    };
+
+    Epidata.meta_norostat = function(callback, auth) {
+      var params;
+      if (auth == null) {
+        throw {
+          msg: '`auth` is required'
+        };
+      }
+      params = {
+        'source': 'meta_norostat',
+        'auth': auth
+      };
+      return _request(callback, params);
+    };
+
     Epidata.nidss_flu = function(callback, regions, epiweeks, issues, lag) {
       var params;
       if (!((regions != null) && (epiweeks != null))) {
