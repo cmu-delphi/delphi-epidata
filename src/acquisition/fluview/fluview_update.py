@@ -515,13 +515,15 @@ def main():
   if args.file:
     update_from_file(args.issue, date, args.file, test_mode=args.test)
     update_from_file_clinical(args.issue, date, args.file, test_mode=args.test)
-    update_from_file_public(args.issue, date, args.file, test_mode=args.test)
+    # TODO: header row has changed for public health lab data
+    # update_from_file_public(args.issue, date, args.file, test_mode=args.test)
   else:
     issue, files = fluview.save_latest(path='flu_data')
     for filename in files:
       update_from_file(issue, date, filename, test_mode=args.test)
       update_from_file_clinical(issue, date, filename, test_mode=args.test)
-      update_from_file_public(issue, date, filename, test_mode=args.test)
+      # TODO: header row has changed for public health lab data
+      # update_from_file_public(issue, date, filename, test_mode=args.test)
 
 if __name__ == '__main__':
   main()
