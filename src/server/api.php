@@ -22,6 +22,7 @@ See also:
   - cdc_extract.py
   - flusurv_update.py
   - quidel_update.py
+  - norostat_update.py
   - README.md
 */
 
