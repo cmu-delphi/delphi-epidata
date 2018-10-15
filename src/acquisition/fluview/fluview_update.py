@@ -239,7 +239,7 @@ def get_public_data(row):
     'REGION TYPE', 
     'REGION', 
     'YEAR',
-    'WEEK'
+    'WEEK',
     'TOTAL SPECIMENS',
     'A (2009 H1N1)', 
     'A (H3)', 
