@@ -50,9 +50,11 @@ function database_connect() {
   $username = Secrets::$db['epi'][0];
   $password = Secrets::$db['epi'][1];
   $database = 'epidata';
-  $dbh = mysql_connect("{$host}:{$port}", $username, $password);
+  // bind database handle to global; could also pass around
+  global $dbh;
+  $dbh = mysqli_connect("{$host}:{$port}", $username, $password);
   if($dbh) {
-    mysql_select_db($database, $dbh);
+    mysqli_select_db($dbh, $database);
   }
   return $dbh;
 }
@@ -165,6 +167,7 @@ function filter_integers($field, $values) {
 //   $field: name of the field to filter
 //   $values: array of values
 function filter_strings($field, $values) {
+  global $dbh;
   $filter = null;
   foreach($values as $value) {
     if($filter === null) {
@@ -172,7 +175,7 @@ function filter_strings($field, $values) {
     } else {
       $filter .= ' OR ';
     }
-    $value = mysql_real_escape_string($value);
+    $value = mysqli_real_escape_string($dbh, $value);
     $filter .= "({$field} = '{$value}')";
   }
   return $filter;
@@ -186,9 +189,10 @@ function filter_strings($field, $values) {
 //   $fields_int (optional): an array of names of integer fields
 //   $fields_float (optional): an array of names of float fields
 function execute_query($query, &$epidata, $fields_string, $fields_int, $fields_float) {
+  global $dbh;
   global $MAX_RESULTS;
-  $result = mysql_query($query . " LIMIT {$MAX_RESULTS}");
-  while($row = mysql_fetch_array($result)) {
+  $result = mysqli_query($dbh, $query . " LIMIT {$MAX_RESULTS}");
+  while($row = mysqli_fetch_array($result)) {
     if(count($epidata) < $MAX_RESULTS) {
       $values = array();
       if($fields_string !== null) {
@@ -453,6 +457,7 @@ function get_ght($epiweeks, $locations, $query) {
 //   $dates (required): array of date or epiweek values/ranges
 //   $resolution (required): either 'daily' or 'weekly'
 function get_twitter($locations, $dates, $resolution) {
+  global $dbh;
   // basic query info
   $table = '`twitter` t';
   // build the date filter and set field names
@@ -488,7 +493,7 @@ function get_twitter($locations, $dates, $resolution) {
   $epidata = array();
   // query each region type individually (the data is stored by state, so getting regional data requires some extra processing)
   foreach($regions as $region) {
-    $region = mysql_real_escape_string($region);
+    $region = mysqli_real_escape_string($dbh, $region);
     if($region === 'nat') {
       // final query for U.S. National
       $query = "SELECT {$fields}, '{$region}' `location` FROM {$table} WHERE ({$condition_filter}) AND ({$condition_date}) GROUP BY {$date_field} ORDER BY {$date_field} ASC";
@@ -671,6 +676,7 @@ function get_nidss_flu($epiweeks, $regions, $issues, $lag) {
 //   $epiweeks (required): array of epiweek values/ranges
 //   $locations (required): array of region and/or location names
 function get_nidss_dengue($epiweeks, $locations) {
+  global $dbh;
   // build the epiweek filter
   $condition_epiweek = filter_integers('nd.`epiweek`', $epiweeks);
   // get the data from the database
@@ -678,7 +684,7 @@ function get_nidss_dengue($epiweeks, $locations) {
   $fields_string = array('location');
   $fields_int = array('epiweek', 'count');
   foreach($locations as $location) {
-    $location = mysql_real_escape_string($location);
+    $location = mysqli_real_escape_string($dbh, $location);
     $query = "
       SELECT
         nd2.`epiweek`, nd2.`location`, count(1) `num_locations`, sum(nd2.`count`) `count`
@@ -712,8 +718,9 @@ function get_nidss_dengue($epiweeks, $locations) {
 //   $system (required): system name
 //   $epiweek (required): epiweek on which the forecast was made
 function get_forecast($system, $epiweek) {
+  global $dbh;
   // get the data from the database
-  $system = mysql_real_escape_string($system);
+  $system = mysqli_real_escape_string($dbh, $system);
   $query = "SELECT `system`, `epiweek`, `json` FROM `forecasts` WHERE `system` = '{$system}' AND `epiweek` = {$epiweek}";
   $epidata = array();
   $fields_string = array('system', 'json');
@@ -732,6 +739,7 @@ function get_forecast($system, $epiweek) {
 //   $epiweeks (required): array of epiweek values/ranges
 //   $locations (required): array of location names
 function get_cdc($epiweeks, $locations) {
+  global $dbh;
   // basic query info
   $table = '`cdc_extract` c';
   $group = "c.`epiweek`";
@@ -755,7 +763,7 @@ function get_cdc($epiweeks, $locations) {
   $epidata = array();
   // query each region type individually (the data is stored by state, so getting regional data requires some extra processing)
   foreach($regions as $region) {
-    $region = mysql_real_escape_string($region);
+    $region = mysqli_real_escape_string($dbh, $region);
     $fields = "'{$region}' `location`, c.`epiweek`, sum(c.`num1`) `num1`, sum(c.`num2`) `num2`, sum(c.`num3`) `num3`, sum(c.`num4`) `num4`, sum(c.`num5`) `num5`, sum(c.`num6`) `num6`, sum(c.`num7`) `num7`, sum(c.`num8`) `num8`, sum(c.`total`) `total`";
     if($region === 'nat') {
       // final query for U.S. National
@@ -1114,12 +1122,12 @@ if(database_connect()) {
     $data['message'] = 'no data source specified';
   }
   // API analytics
-  $ip = mysql_real_escape_string(isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '');
-  $ua = mysql_real_escape_string(isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '');
-  $source = mysql_real_escape_string(isset($source) ? $source : '');
+  $ip = mysqli_real_escape_string($dbh, isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '');
+  $ua = mysqli_real_escape_string($dbh, isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '');
+  $source = mysqli_real_escape_string($dbh, isset($source) ? $source : '');
   $result = intval($data['result']);
   $num_rows = intval(isset($data['epidata']) ? count($data['epidata']) : 0);
-  mysql_query("INSERT INTO `api_analytics` (`datetime`, `ip`, `ua`, `source`, `result`, `num_rows`) VALUES (now(), '{$ip}', '{$ua}', '{$source}', {$result}, {$num_rows})");
+  mysqli_query($dbh, "INSERT INTO `api_analytics` (`datetime`, `ip`, `ua`, `source`, `result`, `num_rows`) VALUES (now(), '{$ip}', '{$ua}', '{$source}', {$result}, {$num_rows})");
 } else {
   $data['message'] = 'database error';
 }
