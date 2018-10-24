@@ -69,8 +69,8 @@ class GHT:
       'timelineResolution': resolution,
     }
     if country == 'US':
-      if location == 'US':
-        params['geoRestriction_country'] = location
+      if location == 'US' or location == NO_LOCATION_STR:
+        params['geoRestriction_country'] = 'US'
       else:
         params['geoRestriction_region'] = 'US-' + location
     else:
