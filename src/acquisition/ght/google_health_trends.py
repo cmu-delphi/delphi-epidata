@@ -31,6 +31,7 @@ from apiclient.discovery import build
 from delphi.utils.epidate import EpiDate
 import delphi.utils.epiweek as flu
 
+NO_LOCATION_STR = 'none'
 
 class GHT:
 
@@ -55,7 +56,7 @@ class GHT:
 
   # get data from Google APIs
   # see: https://developers.google.com/apis-explorer/#p/trends/v1beta/trends.getTimelinesForHealth
-  def get_data(self, start_week, end_week, location, term, resolution='week'):
+  def get_data(self, start_week, end_week, location, term, resolution='week', country='US'):
     start_date = GHT._ew2date(start_week)
     end_date = GHT._ew2date(end_week)
     num_weeks = flu.delta_epiweeks(start_week, end_week) + 1
@@ -67,10 +68,16 @@ class GHT:
       'time_endDate': end_date,
       'timelineResolution': resolution,
     }
-    if location == 'US':
-      params['geoRestriction_country'] = location
+    if country == 'US':
+      if location == 'US':
+        params['geoRestriction_country'] = location
+      else:
+        params['geoRestriction_region'] = 'US-' + location
     else:
-      params['geoRestriction_region'] = 'US-' + location
+      if location == NO_LOCATION_STR:
+        params['geoRestriction_country'] = country
+      else:
+        params['geoRestriction_region'] = country + '-' + location
 
     # make the API call
     data = self.service.getTimelinesForHealth(**params).execute()
@@ -90,6 +97,7 @@ class GHT:
       'end_week': end_week,
       'num_weeks': num_weeks,
       'location': location,
+      'country' : country,
       'term': term,
       'resolution': resolution,
       'data': data,
