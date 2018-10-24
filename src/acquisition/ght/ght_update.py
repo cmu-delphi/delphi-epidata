@@ -306,8 +306,14 @@ def update(locations, terms, first=None, last=None, country='US'):
         ew = result['start_week']
         num_missing = 0
         for v in values:
+          # Default SQL location value for US country for backwards compatibility
+          # i.e. California's location is still stored as 'CA',
+          # and having location == 'US' is still stored as 'US'
           sql_location = location if location != NO_LOCATION_STR else country
+
+          # Change SQL location for non-US countries
           if country != 'US':
+            # Underscore added to distinguish countries from 2-letter US states
             sql_location = country + "_"
             if location != NO_LOCATION_STR:
               sql_location = sql_location + location

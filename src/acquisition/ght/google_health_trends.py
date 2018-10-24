@@ -68,6 +68,9 @@ class GHT:
       'time_endDate': end_date,
       'timelineResolution': resolution,
     }
+    # We have a special check for the US for backwards compatibility.
+    # i.e. if the country is 'US' AND the location is 'US', just put the geo-restriction for country.
+    # In contrast, another country might have a sub-region with initials 'US' and we want the region restriction instead.
     if country == 'US':
       if location == 'US' or location == NO_LOCATION_STR:
         params['geoRestriction_country'] = 'US'
