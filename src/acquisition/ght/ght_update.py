@@ -75,6 +75,7 @@ from apiclient.discovery import build
 
 # first party
 from .google_health_trends import GHT
+from .google_health_trends import NO_LOCATION_STR
 import delphi.operations.secrets as secrets
 from delphi.utils.epidate import EpiDate
 import delphi.utils.epiweek as flu
@@ -248,7 +249,7 @@ LOCATIONS = [
 ]
 
 
-def update(locations, terms, first=None, last=None):
+def update(locations, terms, first=None, last=None, country='US'):
   # connect to the database
   u, p = secrets.db.epi
   cnx = mysql.connector.connect(user=u, password=p, database='epidata')
@@ -292,7 +293,7 @@ def update(locations, terms, first=None, last=None):
         while True:
           attempt += 1
           try:
-            result = ght.get_data(ew0, ew1, location, term2)
+            result = ght.get_data(ew0, ew1, location, term2, country)
             break
           except Exception as ex:
             if attempt >= 5:
@@ -305,7 +306,18 @@ def update(locations, terms, first=None, last=None):
         ew = result['start_week']
         num_missing = 0
         for v in values:
-          sql_data = (term, location, ew, v, v)
+          # Default SQL location value for US country for backwards compatibility
+          # i.e. California's location is still stored as 'CA',
+          # and having location == 'US' is still stored as 'US'
+          sql_location = location if location != NO_LOCATION_STR else country
+
+          # Change SQL location for non-US countries
+          if country != 'US':
+            # Underscore added to distinguish countries from 2-letter US states
+            sql_location = country + "_"
+            if location != NO_LOCATION_STR:
+              sql_location = sql_location + location
+          sql_data = (term, sql_location, ew, v, v)
           cur.execute(sql, sql_data)
           total_rows += 1
           if v == 0:
@@ -334,6 +346,7 @@ def main():
   parser.add_argument('term', action='store', type=str, default=None, help='term/query/topic (ex: all; /m/0cycc; "flu fever")')
   parser.add_argument('--first', '-f', default=None, type=int, help='first epiweek override')
   parser.add_argument('--last', '-l', default=None, type=int, help='last epiweek override')
+  parser.add_argument('--country', '-c', default='US', type=str, help='location country (ex: US; BR)')
   args = parser.parse_args()
 
   # sanity check
@@ -348,6 +361,8 @@ def main():
   # decide what to update
   if args.location.lower() == 'all':
     locations = LOCATIONS
+  elif args.location.lower() == 'none':
+    locations = [NO_LOCATION_STR]
   else:
     locations = args.location.upper().split(',')
   if args.term.lower() == 'all':
@@ -355,8 +370,15 @@ def main():
   else:
     terms = [args.term]
 
+  # country argument
+  # Check that country follows ISO 1366 Alpha-2 code. 
+  # See https://www.iso.org/obp/ui/#search.
+  if len(args.country) != 2:
+    raise Exception('country name must be two letters (ISO 1366 Alpha-2)')
+  country = args.country.upper()
+
   # run the update
-  update(locations, terms, first, last)
+  update(locations, terms, first, last, country)
 
 
 if __name__ == '__main__':
