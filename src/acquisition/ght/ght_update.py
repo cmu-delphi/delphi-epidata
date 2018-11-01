@@ -293,7 +293,7 @@ def update(locations, terms, first=None, last=None, country='US'):
         while True:
           attempt += 1
           try:
-            result = ght.get_data(ew0, ew1, location, term2, country)
+            result = ght.get_data(ew0, ew1, location, term2, country=country)
             break
           except Exception as ex:
             if attempt >= 5:
