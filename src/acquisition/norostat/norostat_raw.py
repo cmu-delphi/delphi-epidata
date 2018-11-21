@@ -54,12 +54,17 @@ def parse_content_to_wide_raw(content):
   # FIXME check/enforce locale
   release_date = datetime.datetime.strptime(dateModified_elt.text, "%B %d, %Y").date()
   # Check that table description still specifies suspected&confirmed norovirus
-  # outbreaks, then extract list of states from the description:
+  # outbreaks (insensitive to case of certain letters and allowing for both old
+  # "to the" and new "through the" text), then extract list of states from the
+  # description:
   [description_elt] = html_root.xpath('''//p[
-    starts-with(text(), "Suspected and Confirmed Norovirus Outbreaks Reported by State Health Departments in") and
-    contains(text(), "to the")
+    contains(translate(text(), "SCNORHD", "scnorhd"), "suspected and confirmed norovirus outbreaks reported by state health departments in") and
+    (
+      contains(text(), "to the") or
+      contains(text(), "through the")
+    )
   ]''')
-  location = re.match(".*?Departments in (.*?) to the.*$", description_elt.text).group(1)
+  location = re.match(".*?[Dd]epartments in (.*?) (?:to)|(?:through) the.*$", description_elt.text).group(1)
   # Attempt to find exactly 1 table (note: it would be nice to filter on the
   # associated caption, but no such caption is present in earlier versions):
   [table] = html_root.xpath('//table')
