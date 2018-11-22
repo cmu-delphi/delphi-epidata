@@ -147,7 +147,7 @@
     "// acquisition - paho",
     {
       "type": "move",
-      "src": "src/acquisition/paho/"
+      "src": "src/acquisition/paho/",
       "dst": "[[package]]/acquisition/paho/",
       "match": "^.*\\.(py)$",
       "add-header-comment": true
