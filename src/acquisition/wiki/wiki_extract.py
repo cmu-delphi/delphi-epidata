@@ -71,14 +71,17 @@ def run(job_limit=100):
   print('Processing data from %d jobs'%(len(jobs)))
 
   # get the counts from the json object and insert into (or update) the database
-  for (id, name, data) in jobs:
+  # Notice that data_collect contains data with different languages
+  for (id, name, data_collect) in jobs:
     print('processing job [%d|%s]...'%(id, name))
     timestamp = round_timestamp(get_timestamp(name))
-    for article in sorted(data.keys()):
-      count = data[article]
-      cur.execute('INSERT INTO `wiki` (`datetime`, `article`, `count`) VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE `count` = `count` + %s', (str(timestamp), article, count, count))
-      if article == 'total':
-        cur.execute('INSERT INTO `wiki_meta` (`datetime`, `date`, `epiweek`, `total`) VALUES (%s, date(%s), yearweek(%s, 6), %s) ON DUPLICATE KEY UPDATE `total` = `total` + %s', (str(timestamp), str(timestamp), str(timestamp), count, count))
+    for language in data_collect.keys():
+      data = data_collect[language]
+      for article in sorted(data.keys()):
+        count = data[article]
+        cur.execute('INSERT INTO `wiki` (`datetime`, `article`, `count`, `language`) VALUES (%s, %s, %s, %s) ON DUPLICATE KEY UPDATE `count` = `count` + %s', (str(timestamp), article, count, language, count))
+        if article == 'total':
+          cur.execute('INSERT INTO `wiki_meta` (`datetime`, `date`, `epiweek`, `total`, `language`) VALUES (%s, date(%s), yearweek(%s, 6), %s, %s) ON DUPLICATE KEY UPDATE `total` = `total` + %s', (str(timestamp), str(timestamp), str(timestamp), count, language, count))
     # update the job
     cur.execute('UPDATE `wiki_raw` SET `status` = 3 WHERE `id` = %s', (id,))
 
