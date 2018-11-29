@@ -87,6 +87,28 @@ class Epidata:
       params['auth'] = auth
     # Make the API call
     return Epidata._request(params)
+  
+  # Fetch FluView clinical data
+  @staticmethod
+  def fluview_clinical(regions, epiweeks, issues=None, lag=None):
+    """Fetch FluView clinical data."""
+    # Check parameters
+    if regions is None or epiweeks is None:
+      raise Exception('`regions` and `epiweeks` are both required')
+    if issues is not None and lag is not None:
+      raise Exception('`issues` and `lag` are mutually exclusive')
+    # Set up request
+    params = {
+      'source': 'fluview_clinical',
+      'regions': Epidata._list(regions),
+      'epiweeks': Epidata._list(epiweeks),
+    }
+    if issues is not None:
+      params['issues'] = Epidata._list(issues)
+    if lag is not None:
+      params['lag'] = lag
+    # Make the API call
+    return Epidata._request(params)
 
   # Fetch FluSurv data
   @staticmethod

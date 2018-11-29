@@ -82,6 +82,25 @@ class Epidata
       params.auth = auth
     # Make the API call
     _request(callback, params)
+  
+  # Fetch FluView clinical data
+  @fluview_clinical: (callback, regions, epiweeks, issues, lag) ->
+    # Check parameters
+    unless regions? and epiweeks?
+      throw { msg: '`regions` and `epiweeks` are both required' }
+    if issues? and lag?
+      throw { msg: '`issues` and `lag` are mutually exclusive' }
+    # Set up request
+    params =
+      'source': 'fluview_clinical'
+      'regions': _list(regions)
+      'epiweeks': _list(epiweeks)
+    if issues?
+      params.issues = _list(issues)
+    if lag?
+      params.lag = lag
+    # Make the API call
+    _request(callback, params)
 
   # Fetch FluSurv data
   @flusurv: (callback, locations, epiweeks, issues, lag) ->

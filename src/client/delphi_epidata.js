@@ -119,6 +119,32 @@ Notes:
       return _request(callback, params);
     };
 
+    Epidata.fluview_clinical = function(callback, regions, epiweeks, issues, lag) {
+      var params;
+      if (!((regions != null) && (epiweeks != null))) {
+        throw {
+          msg: '`regions` and `epiweeks` are both required'
+        };
+      }
+      if ((issues != null) && (lag != null)) {
+        throw {
+          msg: '`issues` and `lag` are mutually exclusive'
+        };
+      }
+      params = {
+        'source': 'fluview_clinical',
+        'regions': _list(regions),
+        'epiweeks': _list(epiweeks)
+      };
+      if (issues != null) {
+        params.issues = _list(issues);
+      }
+      if (lag != null) {
+        params.lag = lag;
+      }
+      return _request(callback, params);
+    };
+
     Epidata.flusurv = function(callback, locations, epiweeks, issues, lag) {
       var params;
       if (!((locations != null) && (epiweeks != null))) {

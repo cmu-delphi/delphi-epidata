@@ -76,6 +76,31 @@ Epidata <- (function() {
     return(.request(params))
   }
 
+  # Fetch FluView virological data
+  fluview_clinical <- function(regions, epiweeks, issues, lag) {
+    # Check parameters
+    if(missing(regions) || missing(epiweeks)) {
+      stop('`regions` and `epiweeks` are both required')
+    }
+    if(!missing(issues) && !missing(lag)) {
+      stop('`issues` and `lag` are mutually exclusive')
+    }
+    # Set up request
+    params <- list(
+      source = 'fluview_clinical',
+      regions = .list(regions),
+      epiweeks = .list(epiweeks)
+    )
+    if(!missing(issues)) {
+      params$issues <- .list(issues)
+    }
+    if(!missing(lag)) {
+      params$lag <- lag
+    }
+    # Make the API call
+    return(.request(params))
+  }
+
   # Fetch FluSurv data
   flusurv <- function(locations, epiweeks, issues, lag) {
     # Check parameters
@@ -353,6 +378,7 @@ Epidata <- (function() {
   return(list(
     range = range,
     fluview = fluview,
+    fluview_clinical = fluview_clinical,
     flusurv = flusurv,
     gft = gft,
     ght = ght,
