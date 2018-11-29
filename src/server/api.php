@@ -737,7 +737,7 @@ if(database_connect()) {
       $issues = isset($_REQUEST['issues']) ? extract_values($_REQUEST['issues'], 'int') : null;
       $lag = isset($_REQUEST['lag']) ? intval($_REQUEST['lag']) : null;
       // get the data
-      $epidata = get_fluview($epiweeks, $regions, $issues, $lag);
+      $epidata = get_fluview_clinical($epiweeks, $regions, $issues, $lag);
       store_result($data, $epidata);
     }
   } else if($source === 'flusurv') {
