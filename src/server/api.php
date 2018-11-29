@@ -127,26 +127,26 @@ function get_fluview_clinical($epiweeks, $regions, $issues, $lag) {
   // store the results in an array
   $epidata = array();
   // set up for query
-  $table = '`fluview_clinical` fvc';
+  $table = "`fluview_clinical` fvc";
   // $fields = 'fvc.`release_date`, fvc.`issue`, fvc.`epiweek`, fvc.`region`, fvc.`lag`, fvc.`total_specimens`, fvc.`total_a_h1n1`, fvc.`total_a_h3`, fvc.`total_a_h3n2v`, fvc.`total_a_no_sub`, fvc.`total_b`, fvc.`total_b_vic`, fvc.`total_b_yam`';
-  $fields = 'fvc.`release_date`, fvc.`issue`, fvc.`epiweek`, fvc.`region`, fvc.`lag`, fvc.`total_specimens`, fvc.`total_a`, fvc.`total_b`, fvc.`percent_positive`, fvc.`percent_a`, fvc.`percent_b`';
+  $fields = "fvc.`release_date`, fvc.`issue`, fvc.`epiweek`, fvc.`region`, fvc.`lag`, fvc.`total_specimens`, fvc.`total_a`, fvc.`total_b`, fvc.`percent_positive`, fvc.`percent_a`, fvc.`percent_b`";
   $order = "fvc.`epiweek` ASC, fvc.`region` ASC, fvc.`issue` ASC";
   // create conditions
-  $condition_epiweek = filter_integers('fvc.`epiweek`', $epiweeks);
-  $condition_region = filter_strings('fvc.`region`', $regions);
+  $condition_epiweek = filter_integers("fvc.`epiweek`", $epiweeks);
+  $condition_region = filter_strings("fvc.`region`", $regions);
   if ($issues !== null) {
     // using specific issues
-    $condition_issue = filter_integers('fvc.`issue`', $issues);
-    $query = 'SELECT {$fields} FROM {$table} WHERE ({$condition_epiweek}) AND ({$condition_region}) AND ({$condition_issue}) ORDER BY {$order}';
+    $condition_issue = filter_integers("fvc.`issue`", $issues);
+    $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_epiweek}) AND ({$condition_region}) AND ({$condition_issue}) ORDER BY {$order}";
   } else if ($lag !== null) {
     // using lagged issues
     $condition_lag = '(fvc.`lag` = {$lag})';
-    $query = 'SELECT {$fields} FROM {$table} WHERE ({$condition_epiweek}) AND ({$condition_region}) AND ({$condition_lag}) ORDER BY {$order}';
+    $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_epiweek}) AND ({$condition_region}) AND ({$condition_lag}) ORDER BY {$order}";
   } else {
     // using most recent issues
-    $subquery = '(SELECT max(`issue`) `max_issue`, `epiweek`, `region` FROM {$table} WHERE ({$condition_epiweek}) AND ({$condition_region}) GROUP BY `epiweek`, `region`) x';
-    $condition = 'x.`max_issue` = fvc.`issue` AND x.`epiweek` = fvc.`epiweek` AND x.`region` = fvc.`region`';
-    $query = 'SELECT {$fields} FROM {$table} JOIN {$subquery} ON {$condition} ORDER BY {$order}';
+    $subquery = "(SELECT max(`issue`) `max_issue`, `epiweek`, `region` FROM {$table} WHERE ({$condition_epiweek}) AND ({$condition_region}) GROUP BY `epiweek`, `region`) x";
+    $condition = "x.`max_issue` = fvc.`issue` AND x.`epiweek` = fvc.`epiweek` AND x.`region` = fvc.`region`";
+    $query = "SELECT {$fields} FROM {$table} JOIN {$subquery} ON {$condition} ORDER BY {$order}";
   }
   // get the data from the database
   $fields_string = array('release_date', 'region');
