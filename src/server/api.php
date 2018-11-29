@@ -729,6 +729,17 @@ if(database_connect()) {
       $epidata = get_fluview($epiweeks, $regions, $issues, $lag, $authorized);
       store_result($data, $epidata);
     }
+  } else if ($source === 'fluview_clinical') {
+    if(require_all($data, array('epiweeks', 'regions'))) {
+      // parse the request
+      $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
+      $regions = extract_values($_REQUEST['regions'], 'str');
+      $issues = isset($_REQUEST['issues']) ? extract_values($_REQUEST['issues'], 'int') : null;
+      $lag = isset($_REQUEST['lag']) ? intval($_REQUEST['lag']) : null;
+      // get the data
+      $epidata = get_fluview($epiweeks, $regions, $issues, $lag);
+      store_result($data, $epidata);
+    }
   } else if($source === 'flusurv') {
     if(require_all($data, array('epiweeks', 'locations'))) {
       // parse the request
