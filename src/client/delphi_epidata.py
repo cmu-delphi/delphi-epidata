@@ -190,7 +190,7 @@ class Epidata:
 
   # Fetch Wikipedia access data
   @staticmethod
-  def wiki(articles, dates=None, epiweeks=None, hours=None):
+  def wiki(articles, dates=None, epiweeks=None, hours=None, language='en'):
     """Fetch Wikipedia access data."""
     # Check parameters
     if articles is None:
@@ -201,6 +201,7 @@ class Epidata:
     params = {
       'source': 'wiki',
       'articles': Epidata._list(articles),
+      'language': language,
     }
     if dates is not None:
       params['dates'] = Epidata._list(dates)

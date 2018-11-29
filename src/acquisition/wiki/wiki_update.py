@@ -49,6 +49,10 @@ def round_timestamp(timestamp):
 
 
 def get_timestamp(name):
+  # If the program is cold start (there are no previous names in the table, and the name will be None)
+  if name is None:
+    curr = datetime.now()
+    return datetime(curr.year, curr.month, curr.day, curr.hour, curr.minute, curr.second)
   # new parsing for pageviews compared to pagecounts - maybe switch to regex in the future
   #return datetime(int(name[11:15]), int(name[15:17]), int(name[17:19]), int(name[20:22]), int(name[22:24]), int(name[24:26]))
   return datetime(int(name[10:14]), int(name[14:16]), int(name[16:18]), int(name[19:21]), int(name[21:23]), int(name[23:25]))
@@ -95,7 +99,7 @@ def run():
   # find access logs newer than the most recent job
   new_logs = {}
   for (hash, name) in manifest:
-    if name > max_name:
+    if max_name is None or name > max_name:
       new_logs[name] = hash
       print(' New job: %s [%s]'%(name, hash))
   print('Found %d new job(s)'%(len(new_logs)))

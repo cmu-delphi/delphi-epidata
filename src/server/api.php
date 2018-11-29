@@ -315,15 +315,18 @@ function get_twitter($locations, $dates, $resolution) {
 
 // queries the `wiki` table
 //   $articles (required): array of article titles
+//   $language (required): specify the language of articles we want to retrieve
 //   $dates (required): array of date or epiweek values/ranges
 //   $resolution (required): either 'daily' or 'weekly'
 //   $hours (optional): array of hour values/ranges
 // if present, $hours determines which counts are used within each day; otherwise all counts are used
 // for example, if hours=[4], then only the 4 AM (UTC) stream is returned
-function get_wiki($articles, $dates, $resolution, $hours) {
+function get_wiki($articles, $language, $dates, $resolution, $hours) {
   // basic query info
   // in a few rare instances (~6 total), `total` is unreasonably high; something glitched somewhere, just ignore it
-  $table = '`wiki` w JOIN (SELECT * FROM `wiki_meta` WHERE `total` < 100000000) m ON m.`datetime` = w.`datetime`';
+  // $table = '`wiki` w JOIN (SELECT * FROM `wiki_meta` WHERE `total` < 100000000) m ON m.`datetime` = w.`datetime`';
+  // We select rows by language and then the problem is converted to the original one, and the rest of code can be same
+  $table = "( SELECT * FROM `wiki` WHERE `language` = '$language' ) w JOIN (SELECT * FROM `wiki_meta` WHERE `total` < 100000000 AND `language` = '$language' ) m ON m.`datetime` = w.`datetime`";
   // build the date filter and set field names
   $fields_string = array('article');
   $fields_int = array('count', 'total', 'hour');
@@ -799,9 +802,10 @@ if(database_connect()) {
       }
     }
   } else if($source === 'wiki') {
-    if(require_all($data, array('articles'))) {
+    if(require_all($data, array('articles', 'language'))) {
       // parse the request
       $articles = extract_values($_REQUEST['articles'], 'str');
+      $language = $_REQUEST['language'];
       if(require_any($data, array('dates', 'epiweeks'))) {
         if(isset($_REQUEST['dates'])) {
           $resolution = 'daily';
@@ -812,7 +816,7 @@ if(database_connect()) {
         }
         $hours = isset($_REQUEST['hours']) ? extract_values($_REQUEST['hours'], 'int') : null;
         // get the data
-        $epidata = get_wiki($articles, $dates, $resolution, $hours);
+        $epidata = get_wiki($articles, $language, $dates, $resolution, $hours);
         store_result($data, $epidata);
       }
     }

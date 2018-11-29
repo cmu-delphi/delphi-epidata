@@ -46,11 +46,14 @@ import hmac
 import json
 import subprocess
 import time
+import os
+from sys import platform
+
+from wiki_util import Articles
 
 
 VERSION = 10
 MASTER_URL = 'https://delphi.midas.cs.cmu.edu/~automation/public/wiki/master.php'
-
 
 def text(data_string):
   return str(data_string.decode('utf-8'))
@@ -68,64 +71,79 @@ def get_hmac_sha256(key, msg):
   return hmac.new(key_bytes, msg_bytes, hashlib.sha256).hexdigest()
 
 
+def extract_article_counts(filename, language, articles, debug_mode):
+  """
+  Support multiple languages ('en' | 'es' | 'pt')
+  Running time optimized to O(M), which means only need to scan the whole file once
+  :param filename:
+  :param language: Different languages such as 'en', 'es', and 'pt'
+  :param articles:
+  :param debug_mode:
+  :return:
+  """
+  counts = {}
+  articles_set = set(map(lambda x: x.lower(), articles))
+  total = 0
+  with open(filename, "r", encoding="utf8") as f:
+    for line in f:
+      content = line.strip().split()
+      if len(content) != 4:
+        print('unexpected article format: {0}'.format(line))
+        continue
+      article_title = content[1].lower()
+      article_count = int(content[2])
+      if content[0] == language:
+        total += article_count
+      if content[0] == language and article_title in articles_set:
+        if(debug_mode):
+          print("Find article {0}: {1}".format(article_title, line))
+        counts[article_title] = article_count
+  if debug_mode:
+    print("Total number of counts for language {0} is {1}".format(language, total))
+  counts['total'] = total
+  return counts
+
+
+def extract_article_counts_orig(articles, debug_mode):
+  """
+  The original method which extracts article counts by shell command grep (only support en articles).
+  As it is difficult to deal with other languages (utf-8 encoding), we choose to use python read files.
+  Another things is that it is slower to go over the whole file once and once again, the time complexity is O(NM),
+  where N is the number of articles and M is the lines in the file
+  In our new implementation extract_article_counts(), the time complexity is O(M), and it can cope with utf8 encoding
+  :param articles:
+  :param debug_mode:
+  :return:
+  """
+  counts = {}
+  for article in articles:
+    if debug_mode:
+      print(' %s' % (article))
+    out = text(
+      subprocess.check_output('LC_ALL=C grep -a -i "^en %s " raw2 | cat' % (article.lower()), shell=True)).strip()
+    count = 0
+    if len(out) > 0:
+      for line in out.split('\n'):
+        fields = line.split()
+        if len(fields) != 4:
+          print('unexpected article format: [%s]' % (line))
+        else:
+          count += int(fields[2])
+    # print ' %4d %s'%(count, article)
+    counts[article.lower()] = count
+    if debug_mode:
+      print('  %d' % (count))
+  print('getting total count...')
+  out = text(subprocess.check_output(
+    'cat raw2 | LC_ALL=C grep -a -i "^en " | cut -d" " -f 3 | awk \'{s+=$1} END {printf "%.0f", s}\'', shell=True))
+  total = int(out)
+  if debug_mode:
+    print(total)
+  counts['total'] = total
+  return counts
+
+
 def run(secret, download_limit=None, job_limit=None, sleep_time=1, job_type=0, debug_mode=False):
-  articles = [
-    'Influenza_B_virus',
-    'Influenza_A_virus',
-    'Human_flu',
-    'Influenzavirus_C',
-    'Oseltamivir',
-    'Influenza',
-    'Influenzavirus_A',
-    'Influenza_A_virus_subtype_H1N1',
-    'Zanamivir',
-    'Influenza-like_illness',
-    'Common_cold',
-    'Sore_throat',
-    'Flu_season',
-    'Chills',
-    'Fever',
-    'Influenza_A_virus_subtype_H2N2',
-    'Swine_influenza',
-    'Shivering',
-    'Canine_influenza',
-    'Influenza_A_virus_subtype_H3N2',
-    'Neuraminidase_inhibitor',
-    'Influenza_pandemic',
-    'Viral_pneumonia',
-    'Influenza_prevention',
-    'Influenza_A_virus_subtype_H1N2',
-    'Rhinorrhea',
-    'Orthomyxoviridae',
-    'Nasal_congestion',
-    'Gastroenteritis',
-    'Rimantadine',
-    'Paracetamol',
-    'Amantadine',
-    'Viral_neuraminidase',
-    'Headache',
-    'Influenza_vaccine',
-    'Vomiting',
-    'Cough',
-    'Influenza_A_virus_subtype_H5N1',
-    'Nausea',
-    'Avian_influenza',
-    'Influenza_A_virus_subtype_H7N9',
-    'Influenza_A_virus_subtype_H10N7',
-    'Influenza_A_virus_subtype_H9N2',
-    'Hemagglutinin_(influenza)',
-    'Influenza_A_virus_subtype_H7N7',
-    'Fatigue_(medical)',
-    'Myalgia',
-    'Influenza_A_virus_subtype_H7N3',
-    'Malaise',
-    'Equine_influenza',
-    'Cat_flu',
-    'Influenza_A_virus_subtype_H3N8',
-    'Antiviral_drugs',
-    'Influenza_A_virus_subtype_H7N2',
-  ]
-  articles = sorted(articles)
 
   worker = text(subprocess.check_output("echo `whoami`@`hostname`", shell=True)).strip()
   print('this is [%s]'%(worker))
@@ -151,7 +169,20 @@ def run(secret, download_limit=None, job_limit=None, sleep_time=1, job_type=0, d
             return
         else:
           raise Exception('server response code (get) was %d'%(code))
-      job = json.loads(text(req.readlines()[0]))
+      # Make the code compatible with mac os system
+      if platform == "darwin":
+        job_content = text(req.readlines()[1])
+      else:
+        job_content = text(req.readlines()[0])
+      if job_content == 'no jobs':
+        print('no jobs available')
+        if download_limit is None and job_limit is None:
+          time.sleep(60)
+          continue
+        else:
+          print('nothing to do, exiting')
+          return
+      job = json.loads(job_content)
       print('received job [%d|%s]'%(job['id'], job['name']))
       # updated parsing for pageviews - maybe use a regex in the future
       #year, month = int(job['name'][11:15]), int(job['name'][15:17])
@@ -161,7 +192,9 @@ def run(secret, download_limit=None, job_limit=None, sleep_time=1, job_type=0, d
       print('downloading file [%s]...'%(url))
       subprocess.check_call('curl -s %s > raw.gz'%(url), shell=True)
       print('checking file size...')
-      size = int(text(subprocess.check_output('ls -l raw.gz | cut -d" " -f 5', shell=True)))
+      # Make the code cross-platfrom, so use python to get the size of the file
+      # size = int(text(subprocess.check_output('ls -l raw.gz | cut -d" " -f 5', shell=True)))
+      size = os.stat("raw.gz").st_size
       if debug_mode:
         print(size)
       total_download += size
@@ -180,29 +213,18 @@ def run(secret, download_limit=None, job_limit=None, sleep_time=1, job_type=0, d
       #subprocess.check_call('rm raw', shell=True)
       subprocess.check_call('mv raw raw2', shell=True)
       print('extracting article counts...')
+
+      # Use python to read the file and extract counts, if you want to use the original shell method, please use
       counts = {}
-      for article in articles:
+      for language in Articles.available_languages:
+        lang2articles = {'en': Articles.en_articles, 'es': Articles.es_articles, 'pt': Articles.pt_articles}
+        articles = lang2articles[language]
+        articles = sorted(articles)
         if debug_mode:
-          print(' %s'%(article))
-        out = text(subprocess.check_output('LC_ALL=C grep -a -i "^en %s " raw2 | cat'%(article.lower()), shell=True)).strip()
-        count = 0
-        if len(out) > 0:
-          for line in out.split('\n'):
-            fields = line.split()
-            if len(fields) != 4:
-              print('unexpected article format: [%s]'%(line))
-            else:
-              count += int(fields[2])
-        #print ' %4d %s'%(count, article)
-        counts[article.lower()] = count
-        if debug_mode:
-          print('  %d'%(count))
-      print('getting total count...')
-      out = text(subprocess.check_output('cat raw2 | LC_ALL=C grep -a -i "^en " | cut -d" " -f 3 | awk \'{s+=$1} END {printf "%.0f", s}\'', shell=True))
-      total = int(out)
-      if debug_mode:
-        print(total)
-      counts['total'] = total
+          print("Language is {0} and target articles are {1}".format(language, articles))
+        temp_counts = extract_article_counts("raw2", language, articles, debug_mode)
+        counts[language] = temp_counts
+
       if not debug_mode:
         print('deleting files...')
         subprocess.check_call('rm raw2', shell=True)
