@@ -100,6 +100,11 @@
       "dst": "[[auto_web]]/wiki/wiki_download.py",
       "add-header-comment": true
     },{
+      "type": "copy",
+      "src": "src/acquisition/wiki/wiki_util.py",
+      "dst": "[[auto_web]]/wiki/wiki_util.py",
+      "add-header-comment": true
+    },{
       "type": "move",
       "src": "src/acquisition/wiki/",
       "dst": "[[package]]/acquisition/wiki/",
