@@ -44,7 +44,7 @@ num_deaths: cumulative deaths in calendar year
 # TODO: small countries have names not recognized by pycountry
 #       could hardcode them
 # TODO: Obviously regions not recognized by pycountry
-        Should be aggregated and therefore redundant, maybe hardcode them
+#       Should be aggregated and therefore redundant, maybe hardcode them
 
 import argparse
 import csv
