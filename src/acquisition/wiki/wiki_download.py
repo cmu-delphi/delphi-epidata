@@ -49,7 +49,7 @@ import time
 import os
 from sys import platform
 
-from wiki_util import Articles
+from . import wiki_util
 
 
 VERSION = 10
@@ -216,8 +216,8 @@ def run(secret, download_limit=None, job_limit=None, sleep_time=1, job_type=0, d
 
       # Use python to read the file and extract counts, if you want to use the original shell method, please use
       counts = {}
-      for language in Articles.available_languages:
-        lang2articles = {'en': Articles.en_articles, 'es': Articles.es_articles, 'pt': Articles.pt_articles}
+      for language in wiki_util.Articles.available_languages:
+        lang2articles = {'en': wiki_util.Articles.en_articles, 'es': wiki_util.Articles.es_articles, 'pt': wiki_util.Articles.pt_articles}
         articles = lang2articles[language]
         articles = sorted(articles)
         if debug_mode:
