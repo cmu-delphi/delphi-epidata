@@ -61,6 +61,7 @@ import pycountry
 
 # first party
 import delphi.operations.secrets as secrets
+from delphi.epidata.acquisition.paho.paho_download import get_paho_data
 from delphi.utils.epiweek import delta_epiweeks, join_epiweek, check_epiweek
 from delphi.utils.epidate import EpiDate
 
