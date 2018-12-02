@@ -112,8 +112,8 @@ def get_rows(cnx, table='paho_dengue'):
   select.close()
   return num
 
-def get_paho_data(row):
-    if row[0] == "\ufeffIncidence Rate (c)" and row != "Incidence Rate (c),(SD/D) x100 (e),CFR (f),ID,Country or Subregion,Deaths,EW,Confirmed,Epidemiological Week (a),Pop (no usar),Serotype,Severe Dengue (d),Total of Dengue Cases (b),Year,Population x 1000".split(","):
+def get_paho_row(row):
+    if row[0] == "\ufeffIncidence Rate (c)" and row != "\ufeffIncidence Rate (c),(SD/D) x100 (e),CFR (f),ID,Country or Subregion,Deaths,EW,Confirmed,Epidemiological Week (a),Pop (no usar),Serotype,Severe Dengue (d),Total of Dengue Cases (b),Year,Population x 1000".split(","):
         raise Exception('PAHO header row has changed')
     if len(row) == 1 or row[0] == "Incidence Rate (c)":
         # this is a header row
@@ -168,7 +168,7 @@ def update_from_file(issue, date, filename, test_mode=False):
         c = f.read()
     rows = []
     for l in csv.reader(StringIO(c), delimiter=','):
-        rows.append(get_paho_data(l))
+        rows.append(get_paho_row(l))
     print(' loaded %d rows' % len(rows))
     entries = [obj for obj in rows if obj]
     print(' found %d entries' % len(entries))
