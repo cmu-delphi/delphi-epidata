@@ -132,6 +132,28 @@ class Epidata:
     # Make the API call
     return Epidata._request(params)
 
+  # Fetch PAHO Dengue data
+  @staticmethod
+  def paho_dengue(regions, epiweeks, issues=None, lag=None):
+    """Fetch PAHO Dengue data."""
+    # Check parameters
+    if regions is None or epiweeks is None:
+      raise Exception('`regions` and `epiweeks` are both required')
+    if issues is not None and lag is not None:
+      raise Exception('`issues` and `lag` are mutually exclusive')
+    # Set up request
+    params = {
+      'source': 'paho_dengue',
+      'regions': Epidata._list(regions),
+      'epiweeks': Epidata._list(epiweeks),
+    }
+    if issues is not None:
+      params['issues'] = Epidata._list(issues)
+    if lag is not None:
+      params['lag'] = lag
+    # Make the API call
+    return Epidata._request(params)
+
   # Fetch Google Flu Trends data
   @staticmethod
   def gft(locations, epiweeks):
