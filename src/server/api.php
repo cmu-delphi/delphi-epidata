@@ -201,6 +201,48 @@ function get_flusurv($epiweeks, $locations, $issues, $lag) {
   return count($epidata) === 0 ? null : $epidata;
 }
 
+// queries the `paho_dengue` table
+//   $epiweeks (required): array of epiweek values/ranges
+//   $regions (required): array of region names
+//   $issues (optional): array of epiweek values/ranges
+//     overrides $lag
+//     default: most recent issue
+//   $lag (optional): number of weeks between each epiweek and its issue
+//     overridden by $issues
+//     default: most recent issue
+function get_paho_dengue($epiweeks, $regions, $issues, $lag) {
+  // store the results in an array
+  $epidata = array();
+  // set up for query
+  $table = "`paho_dengue` pd";
+  $fields = "pd.`release_date`, pd.`issue`, pd.`epiweek`, pd.`region`, pd.`lag`, pd.`total_pop`, pd.`serotype`, pd.`num_dengue`, pd.`incidence_rate`, pd.`num_severe`, pd.`num_deaths`";
+  $order = "pd.`epiweek` ASC, pd.`region` ASC, pd.`issue` ASC";
+  // create conditions
+  $condition_epiweek = filter_integers("pd.`epiweek`", $epiweeks);
+  $condition_region = filter_strings("pd.`region`", $regions);
+  if ($issues !== null) {
+    // using specific issues
+    $condition_issue = filter_integers("pd.`issue`", $issues);
+    $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_epiweek}) AND ({$condition_region}) AND ({$condition_issue}) ORDER BY {$order}";
+  } else if ($lag !== null) {
+    // using lagged issues
+    $condition_lag = '(pd.`lag` = {$lag})';
+    $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_epiweek}) AND ({$condition_region}) AND ({$condition_lag}) ORDER BY {$order}";
+  } else {
+    // using most recent issues
+    $subquery = "(SELECT max(`issue`) `max_issue`, `epiweek`, `region` FROM {$table} WHERE ({$condition_epiweek}) AND ({$condition_region}) GROUP BY `epiweek`, `region`) x";
+    $condition = "x.`max_issue` = pd.`issue` AND x.`epiweek` = pd.`epiweek` AND x.`region` = pd.`region`";
+    $query = "SELECT {$fields} FROM {$table} JOIN {$subquery} ON {$condition} ORDER BY {$order}";
+  }
+  // get the data from the database
+  $fields_string = array('release_date', 'region', 'serotype');
+  $fields_float = array('incidence_rate');
+  $fields_int = array('issue', 'epiweek', 'lag', 'total_pop', 'num_dengue', 'num_severe', 'num_deaths');
+  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
+  // return the result, if any
+  return count($epidata) === 0 ? null : $epidata;
+}
+
 // queries the `gft` table
 //   $epiweeks (required): array of epiweek values/ranges
 //   $locations (required): array of location names
@@ -752,6 +794,28 @@ if(database_connect()) {
       $lag = isset($_REQUEST['lag']) ? intval($_REQUEST['lag']) : null;
       // get the data
       $epidata = get_flusurv($epiweeks, $locations, $issues, $lag);
+      store_result($data, $epidata);
+    }
+  } else if ($source === 'paho_dengue') {
+    if(require_all($data, array('epiweeks', 'regions'))) {
+      // parse the request
+      $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
+      $regions = extract_values($_REQUEST['regions'], 'str');
+      $issues = isset($_REQUEST['issues']) ? extract_values($_REQUEST['issues'], 'int') : null;
+      $lag = isset($_REQUEST['lag']) ? intval($_REQUEST['lag']) : null;
+      // get the data
+      $epidata = get_paho_dengue($epiweeks, $regions, $issues, $lag);
+      store_result($data, $epidata);
+    }
+  } else if ($source === 'paho_dengue') {
+    if(require_all($data, array('epiweeks', 'regions'))) {
+      // parse the request
+      $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
+      $regions = extract_values($_REQUEST['regions'], 'str');
+      $issues = isset($_REQUEST['issues']) ? extract_values($_REQUEST['issues'], 'int') : null;
+      $lag = isset($_REQUEST['lag']) ? intval($_REQUEST['lag']) : null;
+      // get the data
+      $epidata = get_paho_dengue($epiweeks, $regions, $issues, $lag);
       store_result($data, $epidata);
     }
   } else if($source === 'ilinet' || $source === 'stateili') {
