@@ -11,3 +11,7 @@ CREATE TABLE `wiki_raw` (
   UNIQUE KEY `name` (`name`),
   KEY `status` (`status`)
 );
+
+# Alter the column type because we need larger space as we extract more articles
+ALTER TABLE `wiki_raw` MODIFY COLUMN `data` varchar(4096);
+
