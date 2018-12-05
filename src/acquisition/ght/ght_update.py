@@ -249,7 +249,7 @@ LOCATIONS = [
 ]
 
 
-def update(locations, terms, first=None, last=None, country='US'):
+def update(locations, terms, first=None, last=None, countries=['US']):
   # connect to the database
   u, p = secrets.db.epi
   cnx = mysql.connector.connect(user=u, password=p, database='epidata')
@@ -285,7 +285,10 @@ def update(locations, terms, first=None, last=None, country='US'):
   ght = GHT(API_KEY)
   for term in terms:
     print(' [%s] using term' % term)
-    for location in locations:
+    ll, cl = len(locations), len(countries)
+    for i in range(max(ll,cl)):
+      location = locations[i] if i < ll else locations[0]
+      country = countries[i] if i < cl else countries[0]
       try:
         #term2 = ('"%s"' % term) if ' ' in term else term
         term2 = term
@@ -373,12 +376,16 @@ def main():
   # country argument
   # Check that country follows ISO 1366 Alpha-2 code. 
   # See https://www.iso.org/obp/ui/#search.
-  if len(args.country) != 2:
+  countries = args.country.upper().split(',')
+  if not all(map(lambda x: len(x) == 2, countries)):
     raise Exception('country name must be two letters (ISO 1366 Alpha-2)')
-  country = args.country.upper()
+
+  # if length of locations and countries is > 1, need to be the same
+  if len(locations) > 1 and len(countries) > 1 and len(locations) != len(countries):
+    raise Exception('locations and countries must be length 1, or same length')
 
   # run the update
-  update(locations, terms, first, last, country)
+  update(locations, terms, first, last, countries)
 
 
 if __name__ == '__main__':
