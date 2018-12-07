@@ -1022,6 +1022,20 @@ if(database_connect()) {
         $data['message'] = 'unauthenticated';
       }
     }
+  } else if($source === 'dengue_sensors') {
+    if(require_all($data, array('auth', 'names', 'locations', 'epiweeks'))) {
+      if($_REQUEST['auth'] === $AUTH['sensors']) {
+        // parse the request
+        $names = extract_values($_REQUEST['names'], 'str');
+        $locations = extract_values($_REQUEST['locations'], 'str');
+        $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
+        // get the data
+        $epidata = get_dengue_sensors($names, $locations, $epiweeks);
+        store_result($data, $epidata);
+      } else {
+        $data['message'] = 'unauthenticated';
+      }
+    }
   } else if($source === 'nowcast') {
     if(require_all($data, array('locations', 'epiweeks'))) {
       // parse the request
@@ -1029,6 +1043,15 @@ if(database_connect()) {
       $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
       // get the data
       $epidata = get_nowcast($locations, $epiweeks);
+      store_result($data, $epidata);
+    }
+  } else if($source === 'dengue_nowcast') {
+    if(require_all($data, array('locations', 'epiweeks'))) {
+      // parse the request
+      $locations = extract_values($_REQUEST['locations'], 'str');
+      $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
+      // get the data
+      $epidata = get_dengue_nowcast($locations, $epiweeks);
       store_result($data, $epidata);
     }
   } else if($source === 'meta') {
