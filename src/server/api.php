@@ -658,12 +658,65 @@ function get_sensors($names, $locations, $epiweeks) {
   return count($epidata) === 0 ? null : $epidata;
 }
 
+// queries the `dengue_sensors` table
+//   $names (required): array of sensor names
+//   $locations (required): array of location names
+//   $epiweeks (required): array of epiweek values/ranges
+function get_dengue_sensors($names, $locations, $epiweeks) {
+  // basic query info
+  $table = '`dengue_sensors` s';
+  $fields = "s.`name`, s.`location`, s.`epiweek`, s.`value`";
+  $order = "s.`epiweek` ASC, s.`name` ASC, s.`location` ASC";
+  // data type of each field
+  $fields_string = array('name', 'location');
+  $fields_int = array('epiweek');
+  $fields_float = array('value');
+  // build the name filter
+  $condition_name = filter_strings('s.`name`', $names);
+  // build the location filter
+  $condition_location = filter_strings('s.`location`', $locations);
+  // build the epiweek filter
+  $condition_epiweek = filter_integers('s.`epiweek`', $epiweeks);
+  // the query
+  $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_name}) AND ({$condition_location}) AND ({$condition_epiweek}) ORDER BY {$order}";
+  // get the data from the database
+  $epidata = array();
+  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
+  // return the data
+  return count($epidata) === 0 ? null : $epidata;
+}
+
 // queries the `nowcasts` table
 //   $locations (required): array of location names
 //   $epiweeks (required): array of epiweek values/ranges
 function get_nowcast($locations, $epiweeks) {
   // basic query info
   $table = '`nowcasts` n';
+  $fields = "n.`location`, n.`epiweek`, n.`value`, n.`std`";
+  $order = "n.`epiweek` ASC, n.`location` ASC";
+  // data type of each field
+  $fields_string = array('location');
+  $fields_int = array('epiweek');
+  $fields_float = array('value', 'std');
+  // build the location filter
+  $condition_location = filter_strings('n.`location`', $locations);
+  // build the epiweek filter
+  $condition_epiweek = filter_integers('n.`epiweek`', $epiweeks);
+  // the query
+  $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_location}) AND ({$condition_epiweek}) ORDER BY {$order}";
+  // get the data from the database
+  $epidata = array();
+  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
+  // return the data
+  return count($epidata) === 0 ? null : $epidata;
+}
+
+// queries the `dengue_nowcasts` table
+//   $locations (required): array of location names
+//   $epiweeks (required): array of epiweek values/ranges
+function get_dengue_nowcast($locations, $epiweeks) {
+  // basic query info
+  $table = '`dengue_nowcasts` n';
   $fields = "n.`location`, n.`epiweek`, n.`value`, n.`std`";
   $order = "n.`epiweek` ASC, n.`location` ASC";
   // data type of each field

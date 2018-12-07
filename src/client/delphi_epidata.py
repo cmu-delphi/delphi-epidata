@@ -373,6 +373,24 @@ class Epidata:
     # Make the API call
     return Epidata._request(params)
 
+  # Fetch Delphi's dengue digital surveillance sensors
+  @staticmethod
+  def dengue_sensors(auth, names, locations, epiweeks):
+    """Fetch Delphi's digital surveillance sensors."""
+    # Check parameters
+    if auth is None or names is None or locations is None or epiweeks is None:
+      raise Exception('`auth`, `names`, `locations`, and `epiweeks` are all required')
+    # Set up request
+    params = {
+      'source': 'dengue_sensors',
+      'auth': auth,
+      'names': Epidata._list(names),
+      'locations': Epidata._list(locations),
+      'epiweeks': Epidata._list(epiweeks),
+    }
+    # Make the API call
+    return Epidata._request(params)
+
   # Fetch Delphi's wILI nowcast
   @staticmethod
   def nowcast(locations, epiweeks):
@@ -383,6 +401,22 @@ class Epidata:
     # Set up request
     params = {
       'source': 'nowcast',
+      'locations': Epidata._list(locations),
+      'epiweeks': Epidata._list(epiweeks),
+    }
+    # Make the API call
+    return Epidata._request(params)
+
+  # Fetch Delphi's dengue nowcast
+  @staticmethod
+  def dengue_nowcast(locations, epiweeks):
+    """Fetch Delphi's dengue nowcast."""
+    # Check parameters
+    if locations is None or epiweeks is None:
+      raise Exception('`locations` and `epiweeks` are both required')
+    # Set up request
+    params = {
+      'source': 'dengue_nowcast',
       'locations': Epidata._list(locations),
       'epiweeks': Epidata._list(epiweeks),
     }
