@@ -353,6 +353,24 @@ Epidata <- (function() {
     return(.request(params))
   }
 
+  # Fetch Delphi's digital surveillance sensors
+  dengue_sensors <- function(auth, names, locations, epiweeks) {
+    # Check parameters
+    if(missing(auth) || missing(names) || missing(locations) || missing(epiweeks)) {
+      stop('`auth`, `names`, `locations`, and `epiweeks` are all required')
+    }
+    # Set up request
+    params <- list(
+      source = 'dengue_sensors',
+      auth = auth,
+      names = .list(names),
+      locations = .list(locations),
+      epiweeks = .list(epiweeks)
+    )
+    # Make the API call
+    return(.request(params))
+  }
+
   # Fetch Delphi's wILI nowcast
   nowcast <- function(locations, epiweeks) {
     # Check parameters
@@ -362,6 +380,22 @@ Epidata <- (function() {
     # Set up request
     params <- list(
       source = 'nowcast',
+      locations = .list(locations),
+      epiweeks = .list(epiweeks)
+    )
+    # Make the API call
+    return(.request(params))
+  }
+
+  # Fetch Delphi's PAHO Dengue nowcast
+  dengue_nowcast <- function(locations, epiweeks) {
+    # Check parameters
+    if(missing(locations) || missing(epiweeks)) {
+      stop('`locations` and `epiweeks` are both required')
+    }
+    # Set up request
+    params <- list(
+      source = 'dengue_nowcast',
       locations = .list(locations),
       epiweeks = .list(epiweeks)
     )
@@ -392,7 +426,9 @@ Epidata <- (function() {
     nidss.dengue = nidss.dengue,
     delphi = delphi,
     sensors = sensors,
+    dengue_sensors = dengue_sensors,
     nowcast = nowcast,
+    dengue_nowcast = dengue_nowcast,
     meta = meta
   ))
 })()
