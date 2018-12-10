@@ -62,6 +62,19 @@ def run(job_limit=100):
   u, p = secrets.db.epi
   cnx = mysql.connector.connect(user=u, password=p, database='epidata')
   cur = cnx.cursor()
+  
+  # Some preparation for utf-8, and it is a temporary trick solution. The real solution should change those char set and collation encoding to utf8 permanently
+  cur.execute("SET NAMES utf8;")
+  cur.execute("SET CHARACTER SET utf8;")
+  # I print SHOW SESSION VARIABLES LIKE 'character\_set\_%'; and SHOW SESSION VARIABLES LIKE 'collation\_%'; on my local computer
+  cur.execute("SET character_set_client=utf8mb4;")
+  cur.execute("SET character_set_connection=utf8mb4;")
+  cur.execute("SET character_set_database=utf8;")
+  cur.execute("SET character_set_results=utf8mb4;")
+  cur.execute("SET character_set_server=utf8;")
+  cur.execute("SET collation_connection=utf8mb4_general_ci;")
+  cur.execute("SET collation_database=utf8_general_ci;")
+  cur.execute("SET collation_server=utf8_general_ci;")
 
   # find jobs that are queued for extraction
   cur.execute('SELECT `id`, `name`, `data` FROM `wiki_raw` WHERE `status` = 2 ORDER BY `name` ASC LIMIT %s', (job_limit,))
