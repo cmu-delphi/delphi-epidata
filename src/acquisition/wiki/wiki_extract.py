@@ -63,18 +63,18 @@ def run(job_limit=100):
   cnx = mysql.connector.connect(user=u, password=p, database='epidata')
   cur = cnx.cursor()
   
-  # Some preparation for utf-8, and it is a temporary trick solution. The real solution should change those char set and collation encoding to utf8 permanently
-  cur.execute("SET NAMES utf8;")
-  cur.execute("SET CHARACTER SET utf8;")
-  # I print SHOW SESSION VARIABLES LIKE 'character\_set\_%'; and SHOW SESSION VARIABLES LIKE 'collation\_%'; on my local computer
-  cur.execute("SET character_set_client=utf8mb4;")
-  cur.execute("SET character_set_connection=utf8mb4;")
-  cur.execute("SET character_set_database=utf8;")
-  cur.execute("SET character_set_results=utf8mb4;")
-  cur.execute("SET character_set_server=utf8;")
-  cur.execute("SET collation_connection=utf8mb4_general_ci;")
-  cur.execute("SET collation_database=utf8_general_ci;")
-  cur.execute("SET collation_server=utf8_general_ci;")
+  # # Some preparation for utf-8, and it is a temporary trick solution. The real solution should change those char set and collation encoding to utf8 permanently
+  # cur.execute("SET NAMES utf8;")
+  # cur.execute("SET CHARACTER SET utf8;")
+  # # I print SHOW SESSION VARIABLES LIKE 'character\_set\_%'; and SHOW SESSION VARIABLES LIKE 'collation\_%'; on my local computer
+  # cur.execute("SET character_set_client=utf8mb4;")
+  # cur.execute("SET character_set_connection=utf8mb4;")
+  # cur.execute("SET character_set_database=utf8;")
+  # cur.execute("SET character_set_results=utf8mb4;")
+  # cur.execute("SET character_set_server=utf8;")
+  # cur.execute("SET collation_connection=utf8mb4_general_ci;")
+  # cur.execute("SET collation_database=utf8_general_ci;")
+  # cur.execute("SET collation_server=utf8_general_ci;")
 
   # find jobs that are queued for extraction
   cur.execute('SELECT `id`, `name`, `data` FROM `wiki_raw` WHERE `status` = 2 ORDER BY `name` ASC LIMIT %s', (job_limit,))
@@ -92,7 +92,7 @@ def run(job_limit=100):
       data = data_collect[language]
       for article in sorted(data.keys()):
         count = data[article]
-        cur.execute('INSERT INTO `wiki` (`datetime`, `article`, `count`, `language`) VALUES (%s, %s, %s, %s) ON DUPLICATE KEY UPDATE `count` = `count` + %s', (str(timestamp), article, count, language, count))
+        cur.execute('INSERT INTO `wiki` (`datetime`, `article`, `count`, `language`) VALUES (%s, %s, %s, %s) ON DUPLICATE KEY UPDATE `count` = `count` + %s', (str(timestamp), article.encode('utf-8').decode('latin-1'), count, language, count))
         if article == 'total':
           cur.execute('INSERT INTO `wiki_meta` (`datetime`, `date`, `epiweek`, `total`, `language`) VALUES (%s, date(%s), yearweek(%s, 6), %s, %s) ON DUPLICATE KEY UPDATE `total` = `total` + %s', (str(timestamp), str(timestamp), str(timestamp), count, language, count))
     # update the job
