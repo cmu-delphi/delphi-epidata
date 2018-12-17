@@ -49,10 +49,19 @@ def parse_content_to_wide_raw(content):
   """Convert the html content for the data-table into a wide data frame, then stick it in a tuple along with the release_date, parse_time, and (constant) location."""
   parse_time = datetime.datetime.now()
   html_root = lxml.html.fromstring(content)
-  # Extract the release date, a.k.a. dateModified, a.k.a. "Page last updated" date
-  [dateModified_elt] = html_root.xpath('//span[@itemprop="dateModified"]')
+  # Extract the release date, a.k.a. dateModified, a.k.a. "Page last updated" date; ~Dec 2018 this is only available in a meta tag; previously, it was available in a visible span
+  dateModified_meta_elts = html_root.xpath('//meta[@property="cdc:last_updated"]')
+  dateModified_span_elts = html_root.xpath('//span[@itemprop="dateModified"]')
+  if len(dateModified_meta_elts) == 1:
+    [dateModified_meta_elt] = dateModified_meta_elts
+    dateModified = dateModified_meta_elt.attrib['content']
+  elif len(dateModified_span_elts) == 1:
+    [dateModified_span_elt] = dateModified_span_elts
+    dateModified = dateModified_span_elt.text
+  else:
+    raise Exception("Could not find the expected number of dateModified meta or span tags.")
   # FIXME check/enforce locale
-  release_date = datetime.datetime.strptime(dateModified_elt.text, "%B %d, %Y").date()
+  release_date = datetime.datetime.strptime(dateModified, "%B %d, %Y").date()
   # Check that table description still specifies suspected&confirmed norovirus
   # outbreaks (insensitive to case of certain letters and allowing for both old
   # "to the" and new "through the" text), then extract list of states from the
