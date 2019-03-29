@@ -157,8 +157,8 @@ def extract_from_object(data_in):
     for mmwrid, week, overall, rate in obj['data']:
       epiweek = mmwrid_to_epiweek(mmwrid)
       if epiweek not in data_out:
-        # weekly rate of six age groups
-        data_out[epiweek] = [None] * 6
+        # weekly rate of nine age groups
+        data_out[epiweek] = [None] * 9
       prev_rate = data_out[epiweek][age]
       if prev_rate is None:
         # this is the first time to see a rate for this epiweek/age

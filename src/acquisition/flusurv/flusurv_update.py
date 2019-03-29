@@ -35,6 +35,9 @@ See also:
 | rate_age_3   | double      | YES  |     | NULL    |                |
 | rate_age_4   | double      | YES  |     | NULL    |                |
 | rate_overall | double      | YES  |     | NULL    |                |
+| rate_age_5   | double      | YES  |     | NULL    |                |
+| rate_age_6   | double      | YES  |     | NULL    |                |
+| rate_age_7   | double      | YES  |     | NULL    |                |
 +--------------+-------------+------+-----+---------+----------------+
 id: unique identifier for each record
 release_date: the date when this record was first published by the CDC
@@ -49,7 +52,9 @@ rate_age_2: hospitalization rate for ages 18-49
 rate_age_3: hospitalization rate for ages 50-64
 rate_age_4: hospitalization rate for ages 65+
 rate_overall: overall hospitalization rate
-
+rate_age_5: hospitalization rate for ages 65-74
+rate_age_6: hospitalization rate for ages 75-84
+rate_age_7: hospitalization rate for ages 85+
 
 =================
 === Changelog ===
@@ -109,10 +114,11 @@ def update(issue, location_name, test_mode=False):
   sql = '''
   INSERT INTO `flusurv` (
     `release_date`, `issue`, `epiweek`, `location`, `lag`, `rate_age_0`,
-    `rate_age_1`, `rate_age_2`, `rate_age_3`, `rate_age_4`, `rate_overall`
+    `rate_age_1`, `rate_age_2`, `rate_age_3`, `rate_age_4`, `rate_overall`,
+    `rate_age_5`, `rate_age_6`, `rate_age_7`
   )
   VALUES (
-    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
   )
   ON DUPLICATE KEY UPDATE
     `release_date` = least(`release_date`, %s),
@@ -121,7 +127,10 @@ def update(issue, location_name, test_mode=False):
     `rate_age_2` = coalesce(%s, `rate_age_2`),
     `rate_age_3` = coalesce(%s, `rate_age_3`),
     `rate_age_4` = coalesce(%s, `rate_age_4`),
-    `rate_overall` = coalesce(%s, `rate_overall`)
+    `rate_overall` = coalesce(%s, `rate_overall`),
+    `rate_age_5` = coalesce(%s, `rate_age_5`),
+    `rate_age_6` = coalesce(%s, `rate_age_6`),
+    `rate_age_7` = coalesce(%s, `rate_age_7`)
   '''
 
   # insert/update each row of data (one per epiweek)
