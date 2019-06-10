@@ -13,8 +13,13 @@ def dangerously_simulate_api_response(request_dict):
   Returns a tuple (returncode, stderr_bytes, stdout_bytes).
   """
   request_json = json.dumps(request_dict)
+  dev_cwd=os.path.join(os.path.dirname(os.path.realpath(__file__)),'..','..','src','server')
+  if os.path.exists(dev_cwd):
+    cwd=dev_cwd
+  else:
+    cwd='.'
   process = subprocess.Popen(
-    cwd=os.path.join(os.path.dirname(os.path.realpath(__file__)),'..','..','src','server'),
+    cwd=cwd,
     args=['php', '-r', '$_REQUEST = json_decode(file_get_contents("php://stdin"), true); require("api.php");'],
     stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE
   )
