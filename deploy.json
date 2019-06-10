@@ -43,6 +43,15 @@
       "add-header-comment": true
     },
 
+    "// server - API tests",
+    {
+      "type": "move",
+      "src": "src/server/",
+      "dst": "[[package]]/server/",
+      "match": "^.*\\.(py)$",
+      "add-header-comment": true
+    },
+
     "// acquisition - fluview",
     {
       "type": "move",
