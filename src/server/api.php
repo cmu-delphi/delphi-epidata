@@ -43,20 +43,29 @@ $AUTH = array(
   'quidel'         => Secrets::$api['quidel'],
   'norostat'       => Secrets::$api['norostat'],
 );
+// begin sensor query authentication configuration
+//   A multimap of sensor names to the "granular" auth tokens that can be used to access them; excludes the "global" sensor auth key that works for all sensors:
 $GRANULAR_SENSOR_AUTH_TOKENS = array(
   'twtr' => array($AUTH['sensor_subsets']['twtr_sensor']),
   'gft' => array($AUTH['sensor_subsets']['gft_sensor']),
   'ght' => array($AUTH['sensor_subsets']['ght_sensors']),
   'ghtj' => array($AUTH['sensor_subsets']['ght_sensors']),
   'cdc' => array($AUTH['sensor_subsets']['cdc_sensor']),
-  'quidel' => array($AUTH['sensor_subsets']['quidel_sensor']),
-  'arch' => array($AUTH['sensor_subsets']['arch_sensor']),
+  'quid' => array($AUTH['sensor_subsets']['quid_sensor']),
+  'wiki' => array($AUTH['sensor_subsets']['wiki_sensor']),
 );
+//   A set of sensors that do not require an auth key to access:
 $OPEN_SENSORS = array(
   'sar3',
   'epic',
+  'arch',
 );
-$MAX_AUTH_CHECKS_PER_SENSOR_QUERY = 30; // but imagine is much larger when constructing auth tokens for future-proofing
+//   Limits on the number of effective auth token equality checks performed per sensor query; generate auth tokens with appropriate levels of entropy according to the limits below:
+$MAX_GLOBAL_AUTH_CHECKS_PER_SENSOR_QUERY = 1; // (but imagine is larger to futureproof)
+$MAX_GRANULAR_AUTH_CHECKS_PER_SENSOR_QUERY = 30; // (but imagine is larger to futureproof)
+//   A (currently redundant) limit on the number of auth tokens that can be provided:
+$MAX_AUTH_KEYS_PROVIDED_PER_SENSOR_QUERY = 1;
+// end sensor query authentication configuration
 
 // result limit, ~10 years of daily data
 $MAX_RESULTS = 3650;
@@ -1033,27 +1042,32 @@ if(database_connect()) {
       $names = extract_values($_REQUEST['names'], 'str');
       $n_names = count($names);
       $n_auth_tokens_presented = count($auth_tokens_presented);
-      $max_valid_granular_tokens_per_name = max(array_map("count", $GRANULAR_SENSOR_AUTH_TOKENS));
-      // The number of valid granular tokens is related to the number of auth token checks that a single query could perform.  Use the max number of valid granular auth tokens per name in the check below as a way to prevent leakage of sensor names via this interface.  Treat all sensors as non-open for convenience of calculation.
+      $max_valid_granular_tokens_per_name = max(array_map('count', $GRANULAR_SENSOR_AUTH_TOKENS));
+      // The number of valid granular tokens is related to the number of auth token checks that a single query could perform.  Use the max number of valid granular auth tokens per name in the check below as a way to prevent leakage of sensor names (but revealing the number of sensor names) via this interface.  Treat all sensors as non-open for convenience of calculation.
       if($n_names === 0) {
-        // Check whether no names were provided to prevent edge-case issues if surrounding behavior changes in the future:
+        // Check whether no names were provided to prevent edge-case issues in error message below, and in case surrounding behavior changes in the future:
         $data['message'] = 'no sensor names provided';
-      } else if($n_auth_tokens_presented !== 1) {
+      } else if($n_auth_tokens_presented > 1) {
         $data['message'] = 'currently, only a single auth token is allowed to be presented at a time; please issue a separate query for each sensor name using only the corresponding token';
-      // // Alternative check requiring longer tokens:
-      // } else if(
-      //   // Check whether max number of presented-vs.-acceptable token (global or granular) comparisons that would be performed is over the limit, avoiding calculation of numbers > PHP_INT_MAX/100:
-      //   $n_names > (int)((PHP_INT_MAX/100-1)/max(1,$max_granular_tokens_per_name)) ||
-      //   $n_auth_tokens_presented > (int)(PHP_INT_MAX/100/($n_names*$max_granular_tokens_per_name+1)) ||
-      //   $n_auth_tokens_presented * ($n_names*$max_granular_tokens_per_name+1) > $MAX_AUTH_CHECKS_PER_SENSOR_QUERY
-      // ) {
-      //   $data['message'] = 'too many sensors requested and/or auth tokens presented; please divide into batches and/or use only the tokens needed for the sensors requested';
+      } else if(
+        // Check whether max number of presented-vs.-acceptable token comparisons that would be performed is over the set limits, avoiding calculation of numbers > PHP_INT_MAX/100:
+        //   Global auth token comparison limit check:
+        $n_auth_tokens_presented > $MAX_GLOBAL_AUTH_CHECKS_PER_SENSOR_QUERY ||
+        //   Granular auth token comparison limit check:
+        $n_names > (int)((PHP_INT_MAX/100-1)/max(1,$max_valid_granular_tokens_per_name)) ||
+        $n_auth_tokens_presented > (int)(PHP_INT_MAX/100/max(1,$n_names*$max_valid_granular_tokens_per_name)) ||
+        $n_auth_tokens_presented * $n_names * $max_valid_granular_tokens_per_name > $MAX_GRANULAR_AUTH_CHECKS_PER_SENSOR_QUERY
+      ) {
+        $data['message'] = 'too many sensors requested and/or auth tokens presented; please divide sensors into batches and/or use only the tokens needed for the sensors requested';
+      } else if(count($auth_tokens_presented) > $MAX_AUTH_KEYS_PROVIDED_PER_SENSOR_QUERY) {
+        // this check should be redundant with >1 check as well as global check above
+        $data['message'] = 'too many auth tokens presented';
       } else {
         $unauthenticated_or_nonexistent_sensors = array();
         foreach($names as $name) {
           $sensor_is_open = in_array($name, $OPEN_SENSORS);
-          // test whether they provided the "nongranular" auth token that works for all sensors:
-          $sensor_authenticated_nongranularly = in_array($AUTH['sensors'], $auth_tokens_presented);
+          // test whether they provided the "global" auth token that works for all sensors:
+          $sensor_authenticated_globally = in_array($AUTH['sensors'], $auth_tokens_presented);
           // test whether they provided a "granular" auth token for one of the
           // sensor_subsets containing this sensor (if any):
           $sensor_authenticated_granularly = false;
@@ -1069,16 +1083,16 @@ if(database_connect()) {
             }
           } // (else: there are no granular tokens for this sensor; can't authenticate granularly)
           if(! $sensor_is_open &&
-             ! $sensor_authenticated_nongranularly &&
+             ! $sensor_authenticated_globally &&
              ! $sensor_authenticated_granularly) {
             // authentication failed for this sensor; append to list:
             array_push($unauthenticated_or_nonexistent_sensors, $name);
           }
         }
         if (!empty($unauthenticated_or_nonexistent_sensors)) {
-          $data['message'] = 'some/all sensor requested were unauthenticated/nonexistent';
-          // // Alternative message requiring longer tokens:
-          // $data['message'] = 'unauthenticated/nonexistent sensors: ' . implode(',', $unauthenticated_or_nonexistent_sensors);
+          $data['message'] = 'unauthenticated/nonexistent sensor(s): ' . implode(',', $unauthenticated_or_nonexistent_sensors);
+          // // Alternative message that may enable shorter tokens:
+          // $data['message'] = 'some/all sensors requested were unauthenticated/nonexistent';
         } else {
           // parse the request
           $locations = extract_values($_REQUEST['locations'], 'str');
