@@ -65,7 +65,7 @@ Number of page visits for selected English, Influenza-related wikipedia articles
  - Data source: [Wikimedia](https://dumps.wikimedia.org/other/pagecounts-raw/)
  - Temporal Resolution: Hourly, daily, and weekly from 2007-12-09 (2007w50)
  - Spatial Resolution: N/A
- - Other resolution: By article ([54](labels/articles.txt))
+ - Other resolution: By article ([54](src/acquisition/wiki/wiki_util.py)), By language ([3](src/acquisition/wiki/wiki_util.py))
  - Open access
 
 
@@ -146,7 +146,7 @@ Require one of:
 ### Wiki Parameters
 
 Required:
- - `articles`: a `list` of [article](labels/articles.txt) labels
+ - `articles`: a `list` of [article](src/acquisition/wiki/wiki_util.py) labels
 
 Require one of:
  - `dates`: a `list` of dates
@@ -154,6 +154,7 @@ Require one of:
 
 Optional:
  - `hours`: a `list` of hours
+ - `language` : a single [two-letter language code](src/acquisition/wiki/wiki_util.py); defaults to `'en'`
 
 ### NIDSS-Flu Parameters
 
