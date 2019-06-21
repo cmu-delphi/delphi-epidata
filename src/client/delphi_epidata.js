@@ -229,8 +229,11 @@ Notes:
       return _request(callback, params);
     };
 
-    Epidata.wiki = function(callback, articles, dates, epiweeks, hours) {
+    Epidata.wiki = function(callback, articles, dates, epiweeks, hours, language) {
       var params;
+      if (language == null) {
+        language = 'en';
+      }
       if (articles == null) {
         throw {
           msg: '`articles` is required'
@@ -243,7 +246,8 @@ Notes:
       }
       params = {
         'source': 'wiki',
-        'articles': _list(articles)
+        'articles': _list(articles),
+        'language': language
       };
       if (dates != null) {
         params.dates = _list(dates);

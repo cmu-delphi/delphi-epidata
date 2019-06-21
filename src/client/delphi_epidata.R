@@ -186,7 +186,7 @@ Epidata <- (function() {
   }
 
   # Fetch Wikipedia access data
-  wiki <- function(articles, dates, epiweeks, hours) {
+  wiki <- function(articles, dates, epiweeks, hours, language='en') {
     # Check parameters
     if(missing(articles)) {
       stop('`articles` is required')
@@ -194,10 +194,19 @@ Epidata <- (function() {
     if(!xor(missing(dates), missing(epiweeks))) {
       stop('exactly one of `dates` and `epiweeks` is required')
     }
+    if(!missing(dates)) {
+      if(is.character(dates) && any(grepl(dates,"[0-9]{4}-[0-9]{2}-[0-9]{2}"))) {
+        stop('`dates` must use yyyymmdd format or Date class or POSIXlt class; hyphens are reserved for forming ranges.')
+      }
+      if(is.list(dates)) {
+        dates <- rapply(dates, format, format="%Y%m%d", classes=c("Date","POSIXlt"), how="replace")
+      }
+    }
     # Set up request
     params <- list(
       source = 'wiki',
-      articles = .list(articles)
+      articles = .list(articles),
+      language = language
     )
     if(!missing(dates)) {
       params$dates <- .list(dates)
