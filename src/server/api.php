@@ -495,87 +495,77 @@ function get_norostat($location, $epiweeks) {
 // queries the `afhsb_00to13` table
 //   $epiweeks (required): array of epiweek values/ranges
 //   $locations (required): array of location names
-//   $flu_type (optional): an integer of flu type (0, 1, 2, 3)
-//     -- 1, 2, 3 represents flu1, flu2, flu3 respectively. (flu1 is subset of flu2, flu2 is subset of flu3)
-//     -- 0: none of the three flu types.
-//     -- If not present, return records of all flu types.
-function get_afhsb($locations, $epiweeks, $flu_type) {
+//   $flu_types (required): array of flu types
+function get_afhsb($locations, $epiweeks, $flu_types) {
   global $dbh;
-
-  // basic query info
-  $table = '`afhsb_00to13_state`';
   $epidata = array();
-  if ($flu_type === NULL) {
-    $fields_string = array('location', 'flu_type');
-    $fields_int = array('epiweek', 'visit_sum');
-  } else {
-    $fields_string = array('location');
-    $fields_int = array('epiweek', 'flu_type', 'visit_sum');
-  }
-  $group = '`epiweek`';
-  $order = "`epiweek` ASC";
-  // build filters
-  $condition_epiweek = filter_integers('`epiweek`', $epiweeks);
-  $flu_severities = array();
-  if ($flu_type === NULL) {
-    $condition_flu = "true";
-    $flu_type = "all";
-  } elseif ($flu_type > 0) {
-    for ($i=1; $i <= $flu_type; $i++) array_push($flu_severities, $i);
-    $condition_flu = filter_integers('`flu_severity`', $flu_severities);
-  } else {
-    $condition_flu = "flu_severity = {$flu_type}";
-  }
   // split locations into national/regional/state
-  $regions = array();
-  $states = array();
+  $location_dict = array("hhs" => array(), "cen" => array(), 
+                "state" => array(), "country" => array());
   foreach($locations as $location) {
     $location = strtolower($location);
-    if(in_array($location, array('nat', 'hhs1', 'hhs2', 'hhs3', 'hhs4', 'hhs5', 'hhs6', 'hhs7', 'hhs8', 'hhs9', 'hhs10', 'cen1', 'cen2', 'cen3', 'cen4', 'cen5', 'cen6', 'cen7', 'cen8', 'cen9'))) {
-      array_push($regions, $location);
-    } else {
-      array_push($states, $location);
+    if(substr($location, 0, 3) === "hhs") {
+      array_push($location_dict["hhs"], $location);
+    } elseif (substr($location, 0, 3) === "cen") {
+      array_push($location_dict["cen"], $location);
+    } elseif (strlen($location) === 3) {
+      array_push($location_dict["country"], $location);
+    } elseif (strlen($location) === 2) {
+      array_push($location_dict["state"], $location);
+    } 
+  }
+  // split flu types into disjoint/subset
+  $disjoint_flus = array();
+  $subset_flus = array();
+  foreach($flu_types as $flu_type) {
+    if(in_array($flu_type, array('flu1','flu2-flu1','flu3-flu2','none'))) {
+      array_push($disjoint_flus, $flu_type);
+    } elseif(in_array($flu_type, array('flu2','flu3','all'))) {
+      array_push($subset_flus, $flu_type);
     }
   }
-  // initialize the epidata array
-  $epidata = array();
-  // query each region type individually (the data is stored by state, so getting regional data requires some extra processing)
-  foreach($regions as $region) {
-    $region = mysqli_real_escape_string($dbh, $region);
-    $fields = "'{$region}' `location`, `epiweek`, '{$flu_type}' `flu_type`, sum(`visit_sum`) `visit_sum`";
-    if($region === 'nat') {
-      // final query for U.S. National
-      $query = "SELECT {$fields} FROM {$table} 
-          WHERE ({$condition_epiweek} AND ({$condition_flu}) AND (country='US')) 
-          GROUP BY {$group} 
-          ORDER BY {$order}";
-    } else {
-      // build the location filter
-      $condition_location = "`state` IN (" . get_region_states($region) . ")";
-      // final query for HHS Regions
-      $query = "SELECT {$fields} FROM {$table} 
-        WHERE ({$condition_epiweek}) AND ({$condition_flu}) AND ({$condition_location}) 
-        GROUP BY {$group} 
-        ORDER BY {$order}";
+  foreach($location_dict as $location_type=>$locs) {
+    if(!empty($locs)) {
+      _get_afhsb_by_table($epidata, $location_type, $epiweeks, $locs, $disjoint_flus, $subset_flus);
     }
-    // append query results to the epidata array
-    execute_query($query, $epidata, $fields_string, $fields_int, null);
   }
-  // query all states together
-  if(count($states) !== 0) {
-    $fields = "`state` `location`, `epiweek`, '{$flu_type}' `flu_type`, sum(`visit_sum`) `visit_sum`";
-    // build the location filter
-    $condition_location = filter_strings('`state`', $states);
-    // final query for states
-    $query = "SELECT {$fields} FROM {$table}
-      WHERE ({$condition_epiweek}) AND ({$condition_flu}) AND ({$condition_location})  
-      GROUP BY {$group}, `state`
-      ORDER BY {$order}, `state` ASC";
-    // append query results to the epidata array
-    execute_query($query, $epidata, $fields_string, $fields_int, null);
-  }
-  // return the data
+  // return data
   return count($epidata) === 0 ? null : $epidata;
+}
+
+// A helper function to query afhsb tables
+function _get_afhsb_by_table(&$epidata, $location_type, $epiweeks, $locations, $disjoint_flus, $subset_flus) {
+  // basic query info
+  $table = (in_array($location_type, array("hhs", "cen"))) ? "afhsb_00to13_region" : "afhsb_00to13_state";
+  $fields = "`epiweek`, `{$location_type}` `location`, sum(`visit_sum`) `visit_sum`";
+  $group = '`epiweek`, `location`';
+  $order = "`epiweek` ASC, `location` ASC";
+  $fields_string = array('location', 'flu_type');
+  $fields_int = array('epiweek', 'visit_sum');
+  // build the epiweek filter
+  $condition_epiweek = filter_integers('`epiweek`', $epiweeks);
+  // build the location filter
+  $condition_location = filter_strings($location_type, $locations);
+
+  // subset flu types: flu2, flu3, all
+  $flu_mapping = array('flu2' => array('flu1','flu2-flu1'),
+    'flu3' => array('flu1','flu2-flu1','flu3-flu2'),
+    'all' => array('flu1','flu2-flu1','flu3-flu2','none'));
+  foreach($subset_flus as $subset_flu) {
+    $condition_flu = filter_strings('`flu_type`', $flu_mapping[$subset_flu]);
+    $query = "SELECT {$fields}, '{$subset_flu}' `flu_type` FROM {$table} 
+      WHERE ({$condition_epiweek}) AND ({$condition_location}) AND ({$condition_flu}) 
+      GROUP BY {$group} ORDER BY {$order}";
+      execute_query($query, $epidata, $fields_string, $fields_int, null);
+  }
+  // disjoint flu types: flu1, flu2-flu1, flu3-flu2, none
+  if(!empty($disjoint_flus)){
+    $condition_flu = filter_strings('`flu_type`', $disjoint_flus);
+    $query = "SELECT {$fields}, `flu_type` FROM {$table}
+    WHERE ({$condition_epiweek}) AND ({$condition_location}) AND ({$condition_flu}) 
+    GROUP BY {$group},`flu_type` ORDER BY {$order},`flu_type`";
+    execute_query($query, $epidata, $fields_string, $fields_int, null);
+  }
 }
 
 // queries the `nidss_flu` table
@@ -1086,14 +1076,14 @@ if(database_connect()) {
       }
     }
   } else if($source === 'afhsb') {
-    if(require_all($data, array('auth', 'locations', 'epiweeks'))) {
+    if(require_all($data, array('auth', 'locations', 'epiweeks', 'flu_types'))) {
       if($_REQUEST['auth'] === $AUTH['afhsb']) {
         // parse the request
         $locations = extract_values($_REQUEST['locations'], 'str');
         $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
-        $flu_type = isset($_REQUEST['flu_type']) ? intval($_REQUEST['flu_type']) : null;
+        $flu_types = extract_values($_REQUEST['flu_types'], 'str');
         // get the data
-        $epidata = get_afhsb($locations, $epiweeks, $flu_type);
+        $epidata = get_afhsb($locations, $epiweeks, $flu_types);
         store_result($data, $epidata);
       } else {
           $data['message'] = 'unauthenticated';
