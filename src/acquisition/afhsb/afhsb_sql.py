@@ -20,11 +20,11 @@ def init_dmisid_table(sourcefile):
         );
         '''.format(table_name)
     populate_table_cmd = '''
-        LOAD DATA INFILE '{}' 
+        LOAD DATA LOCAL INFILE '{}' 
         INTO TABLE {}
         FIELDS TERMINATED BY ',' 
         ENCLOSED BY '"'
-        LINES TERMINATED BY '\n'
+        LINES TERMINATED BY '\r\n'
         IGNORE 1 ROWS
         (@dmisid, @country, @state, @zip5)
         SET    
@@ -49,15 +49,15 @@ def init_region_table(sourcefile):
         CREATE TABLE `{}` (
         `state` CHAR(2) NOT NULL PRIMARY KEY,
         `hhs` CHAR(5) NOT NULL,
-        `cen` CHAR(5) NOT NULL
+        `cen` CHAR(4) NOT NULL
         );
         '''.format(table_name)
     populate_table_cmd = '''
-        LOAD DATA INFILE '{}' 
+        LOAD DATA LOCAL INFILE '{}' 
         INTO TABLE {}
         FIELDS TERMINATED BY ',' 
         ENCLOSED BY '"'
-        LINES TERMINATED BY '\n'
+        LINES TERMINATED BY '\r\n'
         IGNORE 1 ROWS
         (@state, @hhs, @cen)
         SET state=@state, hhs=@hhs, cen=@cen;
@@ -89,11 +89,11 @@ def init_raw_data(table_name, sourcefile):
         );
         '''.format(table_name)
     populate_table_cmd = '''
-        LOAD DATA INFILE '{}' 
+        LOAD DATA LOCAL INFILE '{}' 
         INTO TABLE {}
         FIELDS TERMINATED BY ',' 
         ENCLOSED BY '"'
-        LINES TERMINATED BY '\n'
+        LINES TERMINATED BY '\r\n'
         IGNORE 1 ROWS
         (@id, @epiweek, @dmisid, @flu, @visits)
         SET 
@@ -151,8 +151,8 @@ def agg_by_region(src_table, dest_table):
         cnx.close()
 
 def init_all_tables(datapath):
-    # init_dmisid_table(os.path.join(datapath, "simple_DMISID_FY2018.csv"))
-    # init_region_table(os.path.join(datapath, "state2region.csv"))
+    init_dmisid_table(os.path.join(datapath, "simple_DMISID_FY2018.csv"))
+    init_region_table(os.path.join(datapath, "state2region.csv"))
 
     periods = ["00to13", "13to17"]
     for period in periods:
@@ -160,7 +160,7 @@ def init_all_tables(datapath):
         state_table_name = 'afhsb_{}_state'.format(period)
         region_table_name = 'afhsb_{}_region'.format(period)
         
-        init_raw_data(raw_table_name, os.path.join(datapath, "{}.csv".format(period)))
+        init_raw_data(raw_table_name, os.path.join(datapath, "filled_{}.csv".format(period)))
         agg_by_state(raw_table_name, state_table_name)
         agg_by_region(state_table_name, region_table_name)
 

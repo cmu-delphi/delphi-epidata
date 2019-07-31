@@ -512,7 +512,11 @@ function get_afhsb($locations, $epiweeks, $flu_types) {
       array_push($location_dict["country"], $location);
     } elseif (strlen($location) === 2) {
       array_push($location_dict["state"], $location);
-    } 
+    } else {
+      $error = "The location parameter {$location} is invalid. "
+        . "Valid `location` parameters are: `hhs{1-10}`, `cen{1-9}`, 2-letter state code or 3-letter country code";
+      throw new Exception($error);
+    }
   }
   // split flu types into disjoint/subset
   $disjoint_flus = array();
@@ -522,6 +526,10 @@ function get_afhsb($locations, $epiweeks, $flu_types) {
       array_push($disjoint_flus, $flu_type);
     } elseif(in_array($flu_type, array('flu2','flu3','all'))) {
       array_push($subset_flus, $flu_type);
+    } else {
+      $error = "The flu type parameter {$flu_type} is invalid. "
+        . "Valid `flu_type` parameters are: `none`, `flu1`, `flu2`, `flu3`, `flu2-flu1`, `flu3-flu2`, `all`";
+        throw new Exception($error);
     }
   }
   foreach($location_dict as $location_type=>$locs) {
