@@ -512,25 +512,17 @@ function get_afhsb($locations, $epiweeks, $flu_types) {
       array_push($location_dict["country"], $location);
     } elseif (strlen($location) === 2) {
       array_push($location_dict["state"], $location);
-    } else {
-      $error = "The location parameter {$location} is invalid. "
-        . "Valid `location` parameters are: `hhs{1-10}`, `cen{1-9}`, 2-letter state code or 3-letter country code";
-      throw new Exception($error);
-    }
+    } 
   }
   // split flu types into disjoint/subset
   $disjoint_flus = array();
   $subset_flus = array();
   foreach($flu_types as $flu_type) {
-    if(in_array($flu_type, array('flu1','flu2-flu1','flu3-flu2','none'))) {
+    if(in_array($flu_type, array('flu1','flu2-flu1','flu3-flu2','ili-flu3'))) {
       array_push($disjoint_flus, $flu_type);
-    } elseif(in_array($flu_type, array('flu2','flu3','all'))) {
+    } elseif(in_array($flu_type, array('flu2','flu3','ili'))) {
       array_push($subset_flus, $flu_type);
-    } else {
-      $error = "The flu type parameter {$flu_type} is invalid. "
-        . "Valid `flu_type` parameters are: `none`, `flu1`, `flu2`, `flu3`, `flu2-flu1`, `flu3-flu2`, `all`";
-        throw new Exception($error);
-    }
+    } 
   }
   foreach($location_dict as $location_type=>$locs) {
     if(!empty($locs)) {
@@ -555,10 +547,10 @@ function _get_afhsb_by_table(&$epidata, $location_type, $epiweeks, $locations, $
   // build the location filter
   $condition_location = filter_strings($location_type, $locations);
 
-  // subset flu types: flu2, flu3, all
+  // subset flu types: flu2, flu3, ili
   $flu_mapping = array('flu2' => array('flu1','flu2-flu1'),
     'flu3' => array('flu1','flu2-flu1','flu3-flu2'),
-    'all' => array('flu1','flu2-flu1','flu3-flu2','none'));
+    'ili' => array('flu1','flu2-flu1','flu3-flu2','ili-flu3'));
   foreach($subset_flus as $subset_flu) {
     $condition_flu = filter_strings('`flu_type`', $flu_mapping[$subset_flu]);
     $query = "SELECT {$fields}, '{$subset_flu}' `flu_type` FROM {$table} 
@@ -566,7 +558,7 @@ function _get_afhsb_by_table(&$epidata, $location_type, $epiweeks, $locations, $
       GROUP BY {$group} ORDER BY {$order}";
       execute_query($query, $epidata, $fields_string, $fields_int, null);
   }
-  // disjoint flu types: flu1, flu2-flu1, flu3-flu2, none
+  // disjoint flu types: flu1, flu2-flu1, flu3-flu2, ili-flu3
   if(!empty($disjoint_flus)){
     $condition_flu = filter_strings('`flu_type`', $disjoint_flus);
     $query = "SELECT {$fields}, `flu_type` FROM {$table}
