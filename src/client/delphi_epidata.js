@@ -319,6 +319,37 @@ Notes:
       return _request(callback, params);
     };
 
+    Epidata.afhsb = function(callback, auth, locations, epiweeks, flu_types) {
+      var params;
+      if (!((auth != null) && (locations != null) && (epiweeks != null) && (flu_types != null))) {
+        throw {
+          msg: '`auth`, `locations`, `epiweeks` and `flu_types` are all required'
+        };
+      }
+      params = {
+        'source': 'afhsb',
+        'auth': auth,
+        'locations': _list(locations),
+        'epiweeks': _list(epiweeks),
+        'flu_types': _list(flu_types)
+      };
+      return _request(callback, params);
+    };
+
+    Epidata.meta_afhsb = function(callback, auth) {
+      var params;
+      if (auth == null) {
+        throw {
+          msg: '`auth` is required'
+        };
+      }
+      params = {
+        'source': 'meta_afhsb',
+        'auth': auth
+      };
+      return _request(callback, params);
+    };
+
     Epidata.nidss_flu = function(callback, regions, epiweeks, issues, lag) {
       var params;
       if (!((regions != null) && (epiweeks != null))) {

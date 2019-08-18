@@ -13,7 +13,8 @@ library(httr)
 Epidata <- (function() {
 
   # API base url
-  BASE_URL <- 'https://delphi.midas.cs.cmu.edu/epidata/api.php'
+  # BASE_URL <- 'https://delphi.midas.cs.cmu.edu/epidata/api.php'
+  BASE_URL = 'http://localhost:8080/api.php'
 
   # Helper function to cast values and/or ranges to strings
   .listitem <- function(value) {
@@ -278,6 +279,39 @@ Epidata <- (function() {
     return(.request(params))
   }
 
+  # Fetch AFHSB data (point data, no min/max)
+  afhsb <- function(auth, locations, epiweeks, flu_types) {
+    # Check parameters
+    if(missing(auth) || missing(locations) || missing(epiweeks) || missing(flu_types)) {
+      stop('`auth`, `locations`, `epiweeks` and `flu_types` are all required')
+    }
+    # Set up request
+    params <- list(
+        source = 'afhsb',
+        auth = auth,
+        locations = .list(locations),
+        epiweeks = .list(epiweeks),
+        flu_types = .list(flu_types)
+    )
+    # Make the API call
+    return(.request(params))
+  }
+
+  # Fetch AFHSB metadata
+  meta_afhsb <- function(auth) {
+    # Check parameters
+    if(missing(auth)) {
+      stop('`auth` is required')
+    }
+    # Set up request
+    params <- list(
+      source = 'meta_afhsb',
+      auth = auth
+    )
+    # Make the API call
+    return(.request(params))
+  }
+
   # Fetch NIDSS flu data
   nidss.flu <- function(regions, epiweeks, issues, lag) {
     # Check parameters
@@ -422,6 +456,8 @@ Epidata <- (function() {
     quidel = quidel,
     norostat = norostat,
     meta_norostat = meta_norostat,
+    afhsb = afhsb,
+    meta_afhsb = meta_afhsb,
     nidss.flu = nidss.flu,
     nidss.dengue = nidss.dengue,
     delphi = delphi,

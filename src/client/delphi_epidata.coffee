@@ -18,7 +18,8 @@ unless $?.getJSON?
 class Epidata
 
   # API base url
-  BASE_URL = 'https://delphi.midas.cs.cmu.edu/epidata/api.php'
+  # BASE_URL = 'https://delphi.midas.cs.cmu.edu/epidata/api.php'
+  BASE_URL = 'http://localhost:8080/epidata/api.php'
 
   # Helper function to cast values and/or ranges to strings
   _listitem = (value) ->
@@ -238,6 +239,33 @@ class Epidata
     # Set up request
     params =
       'source': 'meta_norostat'
+      'auth': auth
+    # Make the API call
+    _request(callback, params)
+
+  # Fetch AFHSB data (point data, no min/max)
+  @afhsb: (callback, auth, locations, epiweeks, flu_types) ->
+    # Check parameters
+    unless auth? and locations? and epiweeks? and flu_types?
+      throw { msg: '`auth`, `locations`, `epiweeks` and `flu_types` are all required' }
+    # Set up request
+    params =
+      'source': 'afhsb'
+      'auth': auth
+      'locations': _list(locations)
+      'epiweeks': _list(epiweeks)
+      'flu_types': _list(flu_types)
+    # Make the API call
+    _request(callback, params)
+
+  # Fetch AFHSB metadata
+  @meta_afhsb: (callback, auth) ->
+    # Check parameters
+    unless auth?
+      throw { msg: '`auth` is required' }
+    # Set up request
+    params =
+      'source': 'meta_afhsb'
       'auth': auth
     # Make the API call
     _request(callback, params)
