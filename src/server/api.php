@@ -500,8 +500,8 @@ function get_afhsb($locations, $epiweeks, $flu_types) {
   global $dbh;
   $epidata = array();
   // split locations into national/regional/state
-  $location_dict = array("hhs" => array(), "cen" => array(), 
-                "state" => array(), "country" => array());
+  $location_dict = array("hhs" => array(), "cen" => array(),
+                         "state" => array(), "country" => array());
   foreach($locations as $location) {
     $location = strtolower($location);
     if(substr($location, 0, 3) === "hhs") {
@@ -512,7 +512,7 @@ function get_afhsb($locations, $epiweeks, $flu_types) {
       array_push($location_dict["country"], $location);
     } elseif (strlen($location) === 2) {
       array_push($location_dict["state"], $location);
-    } 
+    }
   }
   // split flu types into disjoint/subset
   $disjoint_flus = array();
@@ -522,14 +522,13 @@ function get_afhsb($locations, $epiweeks, $flu_types) {
       array_push($disjoint_flus, $flu_type);
     } elseif(in_array($flu_type, array('flu2','flu3','ili'))) {
       array_push($subset_flus, $flu_type);
-    } 
+    }
   }
   foreach($location_dict as $location_type=>$locs) {
     if(!empty($locs)) {
       _get_afhsb_by_table($epidata, $location_type, $epiweeks, $locs, $disjoint_flus, $subset_flus);
     }
   }
-  // return data
   return count($epidata) === 0 ? null : $epidata;
 }
 
@@ -553,8 +552,8 @@ function _get_afhsb_by_table(&$epidata, $location_type, $epiweeks, $locations, $
     'ili' => array('flu1','flu2-flu1','flu3-flu2','ili-flu3'));
   foreach($subset_flus as $subset_flu) {
     $condition_flu = filter_strings('`flu_type`', $flu_mapping[$subset_flu]);
-    $query = "SELECT {$fields}, '{$subset_flu}' `flu_type` FROM {$table} 
-      WHERE ({$condition_epiweek}) AND ({$condition_location}) AND ({$condition_flu}) 
+    $query = "SELECT {$fields}, '{$subset_flu}' `flu_type` FROM {$table}
+      WHERE ({$condition_epiweek}) AND ({$condition_location}) AND ({$condition_flu})
       GROUP BY {$group} ORDER BY {$order}";
       execute_query($query, $epidata, $fields_string, $fields_int, null);
   }
@@ -562,7 +561,7 @@ function _get_afhsb_by_table(&$epidata, $location_type, $epiweeks, $locations, $
   if(!empty($disjoint_flus)){
     $condition_flu = filter_strings('`flu_type`', $disjoint_flus);
     $query = "SELECT {$fields}, `flu_type` FROM {$table}
-    WHERE ({$condition_epiweek}) AND ({$condition_location}) AND ({$condition_flu}) 
+    WHERE ({$condition_epiweek}) AND ({$condition_location}) AND ({$condition_flu})
     GROUP BY {$group},`flu_type` ORDER BY {$order},`flu_type`";
     execute_query($query, $epidata, $fields_string, $fields_int, null);
   }
