@@ -20,7 +20,7 @@ def init_dmisid_table(sourcefile):
         );
         '''.format(table_name)
     populate_table_cmd = '''
-        LOAD DATA LOCAL INFILE '{}' 
+        LOAD DATA INFILE '{}'
         INTO TABLE {}
         FIELDS TERMINATED BY ',' 
         ENCLOSED BY '"'
@@ -53,7 +53,7 @@ def init_region_table(sourcefile):
         );
         '''.format(table_name)
     populate_table_cmd = '''
-        LOAD DATA LOCAL INFILE '{}' 
+        LOAD DATA INFILE '{}'
         INTO TABLE {}
         FIELDS TERMINATED BY ',' 
         ENCLOSED BY '"'
@@ -89,7 +89,7 @@ def init_raw_data(table_name, sourcefile):
         );
         '''.format(table_name)
     populate_table_cmd = '''
-        LOAD DATA LOCAL INFILE '{}' 
+        LOAD DATA INFILE '{}'
         INTO TABLE {}
         FIELDS TERMINATED BY ',' 
         ENCLOSED BY '"'
