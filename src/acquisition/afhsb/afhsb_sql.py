@@ -164,6 +164,25 @@ def init_all_tables(datapath):
         agg_by_state(raw_table_name, state_table_name)
         agg_by_region(state_table_name, region_table_name)
 
+def dangerously_drop_all_afhsb_tables():
+    (u, p) = secrets.db.epi
+    cnx = connector.connect(user=u, passwd=p, database="epidata")
+    try:
+        cursor = cnx.cursor()
+        cursor.execute('''
+          DROP TABLE IF EXISTS `afhsb_00to13_raw`,
+                               `afhsb_00to13_region`,
+                               `afhsb_00to13_state`,
+                               `afhsb_13to17_raw`,
+                               `afhsb_13to17_region`,
+                               `afhsb_13to17_state`,
+                               `state2region_table`,
+                               `dmisid_table`;
+        ''')
+        cnx.commit() # (might do nothing; each DROP commits itself anyway)
+    finally:
+        cnx.close()
+
 def run_cmd(cmd):
     (u, p) = secrets.db.epi
     cnx = connector.connect(user=u, passwd=p, database="epidata")
@@ -173,6 +192,3 @@ def run_cmd(cmd):
         cnx.commit()
     finally:
         cnx.close()
-
-if __name__ == '__main__':
-    init_all_tables("/")
