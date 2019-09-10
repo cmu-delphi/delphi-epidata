@@ -1,91 +1,69 @@
 '''
-afhsb_csv.py creates CSV files filled_00to13.csv, filled_13to17.csv and  simple_DMISID_FY2018.csv
-which will be later used to create MYSQL data tables. 
+afhsb_csv.py creates CSV files 
+1) filled_00to13.csv
+2) filled_13to17.csv
+3) state2region.csv 
+4) simple_DMISID_FY2018.csv
+These files will be later used to create MYSQL data tables. 
 
 Several intermediate files will be created, including:
 00to13.pickle  13to17.pickle 00to13.csv 13to17.csv
 
-Required source files:
-ili_1_2000_5_2013_new.sas7bdat and ili_1_2013_11_2017_new.sas7bdat under SOURCE_DIR
-country_codes.csv and DMISID_FY2018.csv under TARGET_DIR
+Required source files under SOURCE_DIR:
+1) ili_1_2000_5_2013_new.sas7bdat 
+2) ili_1_2013_11_2017_new.sas7bdat
+3) country_codes.csv
+4) DMISID_FY2018.csv
 All intermediate files and final csv files will be stored in TARGET_DIR
 '''
-
+# standard library
 import csv
 import os
 
+# third party
 import sas7bdat
 import pickle
 import epiweeks as epi
 
+# first party
+from dx_fn import DXFN_DICT
+from afhsb_utils import *
 
-DATAPATH = '/home/automation/afhsb_data'
-SOURCE_DIR = DATAPATH 
-TARGET_DIR = DATAPATH 
+DX_FN = DXFN_DICT[FN_NAME]
+if (not os.path.exists(TARGET_DIR)): os.makedirs(TARGET_DIR)
 
-INVALID_DMISIDS = set()
+def row2epiweek(row, get_field):
+	date = get_field(row, 'd_event')
+	year, month, day = date.year, date.month, date.day
+	week_tuple = epi.Week.fromdate(year, month, day).weektuple()
+	year, week_num = week_tuple[0], week_tuple[1]
+	return year, week_num
 
-def get_flu_cat(dx):
-	# flu1 (influenza)
-	if (len(dx) == 0): return None
-	dx = dx.capitalize()
-	if (dx.isnumeric()):
-		for prefix in ["487", "488"]:
-			if (dx.startswith(prefix)): return 1
-		for i in range(0, 7):
-			prefix = str(480 + i)
-			if (dx.startswith(prefix)): return 2
-		for i in range(0, 7):
-			prefix = str(460 + i)
-			if (dx.startswith(prefix)): return 3
-		for prefix in ["07999", "3829", "7806", "7862"]:
-			if (dx.startswith(prefix)): return 3
-	elif (dx[0].isalpha() and dx[1:].isnumeric()):
-		for prefix in ["J09", "J10", "J11"]:
-			if (dx.startswith(prefix)): return 1
-		for i in range(12, 19):
-			prefix = "J{}".format(i)
-			if (dx.startswith(prefix)): return 2
-		for i in range(0, 7):
-			prefix = "J0{}".format(i)
-			if (dx.startswith(prefix)): return 3
-		for i in range(20, 23):
-			prefix = "J{}".format(i)
-			if (dx.startswith(prefix)): return 3
-		for prefix in ["J40", "R05", "H669", "R509", "B9789"]:
-			if (dx.startswith(prefix)): return 3
-	else:
-		return None
+def get_dx_list(row, get_field):
+	dx_list = []
+	for i in range(1, 9):
+		dx = get_field(row, "dx{}".format(i))
+		if (dx == ""): break
+		dx_list.append(dx)
+	return dx_list
 
 def aggregate_data(sourcefile, targetfile):
+	print("Aggregate {}".format(sourcefile))
 	reader = sas7bdat.SAS7BDAT(os.path.join(SOURCE_DIR, sourcefile), skip_header=True) 
 	# map column names to column indices
 	COL2IDX = {column.name.decode('utf-8'): column.col_id for column in reader.columns}
 	def get_field(row, column): return row[COL2IDX[column]]
 
-	def row2flu(row):
-		for i in range(1, 9):
-			dx = get_field(row, "dx{}".format(i))
-			flu_cat = get_flu_cat(dx)
-			if (flu_cat != None): return flu_cat
-		return 0
-
-	def row2epiweek(row):
-		date = get_field(row, 'd_event')
-		year, month, day = date.year, date.month, date.day
-		week_tuple = epi.Week.fromdate(year, month, day).weektuple()
-		year, week_num = week_tuple[0], week_tuple[1]
-		return year, week_num
-
 	results_dict = dict()
 	for r, row in enumerate(reader):
-		# if (r >= 1000000): break
 		if (get_field(row, 'type') != "Outpt"): continue
-		year, week_num = row2epiweek(row)
+		year, week_num = row2epiweek(row, get_field)
 		dmisid = get_field(row, 'DMISID')
-		flu_cat = row2flu(row)
+		
+		dx_list = get_dx_list(row, get_field)
+		dx_label = DX_FN(dx_list)
 
-		key_list = [year, week_num, dmisid, flu_cat]
+		key_list = [year, week_num, dmisid, dx_label]
 		curr_dict = results_dict
 		for i, key in enumerate(key_list):
 			if (i == len(key_list) - 1):
@@ -94,6 +72,7 @@ def aggregate_data(sourcefile, targetfile):
 			else:
 				if (not key in curr_dict): curr_dict[key] = dict()
 				curr_dict = curr_dict[key]
+		if (r >= 10000): break
 
 	results_path = os.path.join(TARGET_DIR, targetfile)
 	with open(results_path, 'wb') as f:
@@ -106,7 +85,7 @@ def aggregate_data(sourcefile, targetfile):
 def get_country_mapping():
 	filename = "country_codes.csv"
 	mapping = dict()
-	with open(os.path.join(TARGET_DIR, filename), "r") as csvfile:
+	with open(os.path.join(SOURCE_DIR, filename), "r") as csvfile:
 		reader = csv.DictReader(csvfile)
 		for row in reader:
 			print(row.keys())
@@ -117,7 +96,7 @@ def get_country_mapping():
 	return mapping
 
 def format_dmisid_csv(filename, target_name):
-	src_path = os.path.join(TARGET_DIR, "{}.csv".format(filename))
+	src_path = os.path.join(SOURCE_DIR, "{}.csv".format(filename))
 	dst_path = os.path.join(TARGET_DIR, target_name)
 
 	src_csv = open(src_path, "r", encoding='utf-8-sig')
@@ -185,7 +164,7 @@ def state2region_csv():
 	states = to_hhs.keys()
 	target_name = "state2region.csv"
 	fieldnames = ['state', 'hhs', 'cen']
-	with open(target_name, "w") as csvfile:
+	with open(os.path.join(TARGET_DIR, target_name), "w") as csvfile:
 		writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 		writer.writeheader()
 		for state in states:
@@ -308,7 +287,40 @@ def fillin_zero_to_csv(period, dmisid_start_record):
 
 ######################### Functions for AFHSB data ##########################
 
-def main():
+def explore(period):
+	total_count = 0
+	results_dict = pickle.load(open(os.path.join(TARGET_DIR, "{}.pickle".format(period)), 'rb'))
+	for year in results_dict:
+		year_dict = results_dict[year]
+		for week in year_dict:
+			week_dict = year_dict[week]
+			for dmisid in week_dict:
+				dmisid_dict = week_dict[dmisid]
+				for flu in dmisid_dict:
+					total_count += dmisid_dict[flu]
+	print("period {} has total observations={}".format(period, total_count))
+
+def check_target_files():
+	for filename in ['filled_00to13.csv', 'filled_13to17.csv', 
+		'state2region.csv', 'simple_DMISID_FY2018.csv']:
+		path = os.path.join(TARGET_DIR, filename)
+		if (not os.path.exists(path)): return False
+	return True
+
+def check_source_files():
+	for filename in ['ili_1_2000_5_2013_new.sas7bdat', 'ili_1_2013_11_2017_new.sas7bdat',
+		'country_codes.csv', 'DMISID_FY2018.csv']:
+		path = os.path.join(SOURCE_DIR, filename)
+		if (not os.path.exists(path)):
+			raise Exception("Source file {} doesn't exist. "
+			"Cannot create all target files.".format(path))
+
+def aggregate_and_process():
+	if (check_target_files): 
+		print("All target files have been created.")
+		return
+	check_source_files()
+
 	# Build tables containing geographical information
 	state2region_csv()
 	dmisid()
@@ -328,4 +340,5 @@ def main():
 
 
 if __name__ == '__main__':
-	main()
+	aggregate_and_process()
+	

@@ -338,6 +338,7 @@ class Epidata:
       'epiweeks': Epidata._list(epiweeks),
       'flu_types': Epidata._list(flu_types)
     }
+    print(params)
     # Make the API call
     return Epidata._request(params)
 

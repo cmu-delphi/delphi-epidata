@@ -27,7 +27,8 @@ See also:
 */
 
 // secrets
-require_once('/var/www/html/secrets.php');
+// require_once('/var/www/html/secrets.php');
+require_once('/Users/mengzeli/Desktop/mimicked_drive/delphi/operations/secrets.php');
 
 // helpers
 require_once(__DIR__.'/api_helpers.php');
@@ -492,11 +493,44 @@ function get_norostat($location, $epiweeks) {
   return count($epidata) === 0 ? null : $epidata;
 }
 
-// queries the `afhsb_00to13` table
+function _split_afhsb_epiweeks($epiweeks) {
+  // split epiweeks by the start of 2013
+  $earlier_epiweeks = array();
+  $later_epiweeks = array();
+  $prev_split_week = 201252;
+  $split_week = 201301;
+  foreach($epiweeks as $epiweek) {
+    if (is_array($epiweek)) {
+      $start_week = $epiweek[0];
+      $end_week = $epiweek[1];
+      if ($end_week < $split_week) {
+        array_push($earlier_epiweeks, $epiweek);
+      } elseif ($start_week >= $split_week) {
+        array_push($later_epiweeks, $epiweek);
+      } else {
+        array_push($earlier_epiweeks, array($start_week, $prev_split_week));
+        array_push($later_epiweeks, array($split_week, $end_week));
+      }
+    } else {
+      if ($epiweek < $split_week) {
+        array_push($earlier_epiweeks, $epiweek);
+      } else {
+        array_push($later_epiweeks, $epiweek);
+      }
+    }
+  }
+  $epiweek_dict = array(
+    "00to13" => $earlier_epiweeks,
+    "13to17" => $later_epiweeks 
+  );
+  return $epiweek_dict;
+}
+
+// queries `afhsb_state` or  `afhsb_region`
 //   $epiweeks (required): array of epiweek values/ranges
 //   $locations (required): array of location names
 //   $flu_types (required): array of flu types
-function get_afhsb($locations, $epiweeks, $flu_types) {
+function get_afhsb($locations, $epiweeks, $flu_types, $criterion) {
   global $dbh;
   $epidata = array();
   // split locations into national/regional/state
@@ -512,7 +546,7 @@ function get_afhsb($locations, $epiweeks, $flu_types) {
       array_push($location_dict["country"], $location);
     } elseif (strlen($location) === 2) {
       array_push($location_dict["state"], $location);
-    } 
+    }
   }
   // split flu types into disjoint/subset
   $disjoint_flus = array();
@@ -524,9 +558,15 @@ function get_afhsb($locations, $epiweeks, $flu_types) {
       array_push($subset_flus, $flu_type);
     } 
   }
+  $epiweek_dict = _split_afhsb_epiweeks($epiweeks);
   foreach($location_dict as $location_type=>$locs) {
     if(!empty($locs)) {
-      _get_afhsb_by_table($epidata, $location_type, $epiweeks, $locs, $disjoint_flus, $subset_flus);
+      foreach($epiweek_dict as $issue=>$epiweek_array) {
+        if (!empty($epiweek_array)) {
+          _get_afhsb_by_table($epidata, $location_type, $issue, $epiweek_array, 
+            $locs, $disjoint_flus, $subset_flus, $criterion);
+        }
+      }
     }
   }
   // return data
@@ -534,9 +574,10 @@ function get_afhsb($locations, $epiweeks, $flu_types) {
 }
 
 // A helper function to query afhsb tables
-function _get_afhsb_by_table(&$epidata, $location_type, $epiweeks, $locations, $disjoint_flus, $subset_flus) {
+function _get_afhsb_by_table(&$epidata, $location_type, $issue, $epiweeks, 
+    $locations, $disjoint_flus, $subset_flus, $criterion) {
   // basic query info
-  $table = (in_array($location_type, array("hhs", "cen"))) ? "afhsb_00to13_region" : "afhsb_00to13_state";
+  $table = (in_array($location_type, array("hhs", "cen"))) ? "afhsb_region_{$criterion}" : "afhsb_state_{$criterion}";
   $fields = "`epiweek`, `{$location_type}` `location`, sum(`visit_sum`) `visit_sum`";
   $group = '`epiweek`, `location`';
   $order = "`epiweek` ASC, `location` ASC";
@@ -546,6 +587,8 @@ function _get_afhsb_by_table(&$epidata, $location_type, $epiweeks, $locations, $
   $condition_epiweek = filter_integers('`epiweek`', $epiweeks);
   // build the location filter
   $condition_location = filter_strings($location_type, $locations);
+  // build the issue filter
+  $shared_conditions = "WHERE ({$condition_epiweek}) AND ({$condition_location}) AND (issue='{$issue}')";
 
   // subset flu types: flu2, flu3, ili
   $flu_mapping = array('flu2' => array('flu1','flu2-flu1'),
@@ -554,7 +597,7 @@ function _get_afhsb_by_table(&$epidata, $location_type, $epiweeks, $locations, $
   foreach($subset_flus as $subset_flu) {
     $condition_flu = filter_strings('`flu_type`', $flu_mapping[$subset_flu]);
     $query = "SELECT {$fields}, '{$subset_flu}' `flu_type` FROM {$table} 
-      WHERE ({$condition_epiweek}) AND ({$condition_location}) AND ({$condition_flu}) 
+      {$shared_conditions} AND ({$condition_flu}) 
       GROUP BY {$group} ORDER BY {$order}";
       execute_query($query, $epidata, $fields_string, $fields_int, null);
   }
@@ -562,7 +605,7 @@ function _get_afhsb_by_table(&$epidata, $location_type, $epiweeks, $locations, $
   if(!empty($disjoint_flus)){
     $condition_flu = filter_strings('`flu_type`', $disjoint_flus);
     $query = "SELECT {$fields}, `flu_type` FROM {$table}
-    WHERE ({$condition_epiweek}) AND ({$condition_location}) AND ({$condition_flu}) 
+    {$shared_conditions} AND ({$condition_flu})
     GROUP BY {$group},`flu_type` ORDER BY {$order},`flu_type`";
     execute_query($query, $epidata, $fields_string, $fields_int, null);
   }
@@ -901,23 +944,21 @@ function get_meta_norostat() {
   );
   return $epidata;
 }
-function get_meta_afhsb() {
+function get_meta_afhsb($criterion) {
   // put behind appropriate auth check
-  $table1 = 'afhsb_00to13_state';
-  $table2 = 'afhsb_13to17_state';
+  $table = "afhsb_state_{$criterion}";
   $epidata = array();
   $string_keys = array('state', 'country');
   $int_keys = array('flu_severity');
   foreach($string_keys as $key) {
     $epidata_key = array();
-    $query = "SELECT DISTINCT `{$key}` FROM (select `{$key}` from `{$table1}` union select `{$key}` from `{$table2}`) t";
+    $query = "SELECT DISTINCT `{$key}` FROM `{$table}`";
     execute_query($query, $epidata_key, array($key), null, null);
     $epidata[$key] = $epidata_key;
   }
   foreach($int_keys as $key) {
     $epidata_key = array();
-    $query = "SELECT DISTINCT `{$key}` FROM (select `{$key}` from `{$table1}` union select `{$key}` from `{$table2}`) t";
-
+    $query = "SELECT DISTINCT `{$key}` FROM `{$table}`";
     execute_query($query, $epidata_key, null, array($key), null);
     $epidata[$key] = $epidata_key;
   }
@@ -934,6 +975,14 @@ function meta_delphi() {
 
 // all responses will have a result field
 $data = array('result' => -1);
+$_REQUEST = array(
+  'source' => 'afhsb',
+  'auth' => 'af7f9b48b4d3aee0', 
+  'locations' => 'usa',
+  'epiweeks' => '201202-201210',
+  'flu_types' => 'ili,flu1',
+);
+// $_REQUEST = array('source' => 'meta_afhsb', 'auth' => 'af7f9b48b4d3aee0');
 // connect to the database
 if(database_connect()) {
   // select the data source
@@ -1082,8 +1131,9 @@ if(database_connect()) {
         $locations = extract_values($_REQUEST['locations'], 'str');
         $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
         $flu_types = extract_values($_REQUEST['flu_types'], 'str');
+        $criterion = isset($_REQUEST['criterion']) ? $_REQUEST['criterion'] : "flucat";
         // get the data
-        $epidata = get_afhsb($locations, $epiweeks, $flu_types);
+        $epidata = get_afhsb($locations, $epiweeks, $flu_types, $criterion);
         store_result($data, $epidata);
       } else {
           $data['message'] = 'unauthenticated';
@@ -1253,7 +1303,8 @@ if(database_connect()) {
   } else if($source === 'meta_afhsb') {
     if(require_all($data, array('auth'))) {
       if($_REQUEST['auth'] === $AUTH['afhsb']) {
-        $epidata = get_meta_afhsb();
+        $criterion = isset($_REQUEST['criterion']) ? $_REQUEST['criterion'] : "flucat";
+        $epidata = get_meta_afhsb($criterion);
         store_result($data, $epidata);
       } else {
           $data['message'] = 'unauthenticated';
