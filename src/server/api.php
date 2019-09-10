@@ -533,8 +533,8 @@ function get_afhsb($locations, $epiweeks, $flu_types, $criterion) {
   global $dbh;
   $epidata = array();
   // split locations into national/regional/state
-  $location_dict = array("hhs" => array(), "cen" => array(), 
-                "state" => array(), "country" => array());
+  $location_dict = array("hhs" => array(), "cen" => array(),
+                         "state" => array(), "country" => array());
   foreach($locations as $location) {
     $location = strtolower($location);
     if(substr($location, 0, 3) === "hhs") {
@@ -555,7 +555,7 @@ function get_afhsb($locations, $epiweeks, $flu_types, $criterion) {
       array_push($disjoint_flus, $flu_type);
     } elseif(in_array($flu_type, array('flu2','flu3','ili'))) {
       array_push($subset_flus, $flu_type);
-    } 
+    }
   }
   $epiweek_dict = _split_afhsb_epiweeks($epiweeks);
   foreach($location_dict as $location_type=>$locs) {
@@ -568,7 +568,6 @@ function get_afhsb($locations, $epiweeks, $flu_types, $criterion) {
       }
     }
   }
-  // return data
   return count($epidata) === 0 ? null : $epidata;
 }
 
