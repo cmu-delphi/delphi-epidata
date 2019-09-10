@@ -27,8 +27,7 @@ See also:
 */
 
 // secrets
-// require_once('/var/www/html/secrets.php');
-require_once('/Users/mengzeli/Desktop/mimicked_drive/delphi/operations/secrets.php');
+require_once('/var/www/html/secrets.php');
 
 // helpers
 require_once(__DIR__.'/api_helpers.php');
@@ -975,14 +974,6 @@ function meta_delphi() {
 
 // all responses will have a result field
 $data = array('result' => -1);
-$_REQUEST = array(
-  'source' => 'afhsb',
-  'auth' => 'af7f9b48b4d3aee0', 
-  'locations' => 'usa',
-  'epiweeks' => '201202-201210',
-  'flu_types' => 'ili,flu1',
-);
-// $_REQUEST = array('source' => 'meta_afhsb', 'auth' => 'af7f9b48b4d3aee0');
 // connect to the database
 if(database_connect()) {
   // select the data source
