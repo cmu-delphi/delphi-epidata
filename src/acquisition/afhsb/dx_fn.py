@@ -41,7 +41,7 @@ def dx2flu(dx_list):
 		if (flu_cat != None): return flu_cat
 	return 0
 
-def dx2ili(dx_list, get_field):
+def dx2ili(dx_list):
 	is_fever, respiratory = False, False
 	for dx in dx_list:
 		if (len(dx) == 0): continue
