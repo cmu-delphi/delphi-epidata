@@ -47,7 +47,7 @@ def get_dx_list(row, get_field):
 		dx_list.append(dx)
 	return dx_list
 
-def aggregate_data(sourcefile, targetfile):
+def aggregate_data(sourcefile, targetfile, max_rows=None):
 	print("Aggregate {}".format(sourcefile))
 	reader = sas7bdat.SAS7BDAT(os.path.join(SOURCE_DIR, sourcefile), skip_header=True) 
 	# map column names to column indices
@@ -56,7 +56,11 @@ def aggregate_data(sourcefile, targetfile):
 
 	results_dict = dict()
 	for r, row in enumerate(reader):
+		# Read a maximum of max_rows rows:
+		if (max_rows is not None and r >= max_rows): break
+		# Record only outpatient events:
 		if (get_field(row, 'type') != "Outpt"): continue
+		
 		year, week_num = row2epiweek(row, get_field)
 		dmisid = get_field(row, 'DMISID')
 		
@@ -72,7 +76,6 @@ def aggregate_data(sourcefile, targetfile):
 			else:
 				if (not key in curr_dict): curr_dict[key] = dict()
 				curr_dict = curr_dict[key]
-		if (r >= 10000): break
 
 	results_path = os.path.join(TARGET_DIR, targetfile)
 	with open(results_path, 'wb') as f:
@@ -315,7 +318,7 @@ def check_source_files():
 			raise Exception("Source file {} doesn't exist. "
 			"Cannot create all target files.".format(path))
 
-def aggregate_and_process():
+def aggregate_and_process(max_rows_per_file=None):
 	if (check_target_files): 
 		print("All target files have been created.")
 		return
@@ -326,14 +329,14 @@ def aggregate_and_process():
 	dmisid()
 
 	# Aggregate raw data into pickle files
-	aggregate_data("ili_1_2000_5_2013_new.sas7bdat", "00to13.pickle")
-	aggregate_data("ili_1_2013_11_2017_new.sas7bdat", "13to17.pickle")
+	aggregate_data("ili_1_2000_5_2013_new.sas7bdat", "00to13.pickle", max_rows=max_rows_per_file)
+	aggregate_data("ili_1_2013_11_2017_new.sas7bdat", "13to17.pickle", max_rows=max_rows_per_file)
 
-    # write pickle content to csv files
+	# write pickle content to csv files
 	write_afhsb_csv("00to13")
 	write_afhsb_csv("13to17")
 
-    # Fill in zero count records
+	# Fill in zero count records
 	dmisid_start_record = dmisid_start_time()
 	fillin_zero_to_csv("00to13", dmisid_start_record)
 	fillin_zero_to_csv("13to17", dmisid_start_record)
