@@ -231,13 +231,13 @@ def agg_by_region(src_table, dest_table):
     finally:
         cnx.close()
 
-def init_all_tables_with_issue(datapath, criterion):
-    init_dmisid_table(os.path.join(datapath, "simple_DMISID_FY2018.csv"))
-    init_region_table(os.path.join(datapath, "state2region.csv"))
+def init_all_tables_with_issue(metadatapath, datapath, criterion):
+    init_dmisid_table(os.path.join(metadatapath, "simple_DMISID_FY2018.csv"))
+    init_region_table(os.path.join(metadatapath, "state2region.csv"))
     
     sourcefile_dict = dict()
     for period in ["00to13", "13to17"]:
-        sourcefile_dict[period] = os.path.join("/", "filled_{}.csv".format(period))
+        sourcefile_dict[period] = os.path.join(datapath, "filled_{}.csv".format(period))
     init_raw_data_rowbyrow(sourcefile_dict, table_name="afhsb_raw_{}".format(criterion))
 
     agg_by_state("afhsb_raw_{}".format(criterion), "afhsb_state_{}".format(criterion))
@@ -254,5 +254,5 @@ def run_cmd(cmd):
         cnx.close()
 
 if __name__ == '__main__':
-    init_all_tables_with_issue(datapath="/", criterion="flucat")
+    init_all_tables_with_issue(metadatapath="/", datapath="/", criterion="flucat")
     # init_all_tables("/")
