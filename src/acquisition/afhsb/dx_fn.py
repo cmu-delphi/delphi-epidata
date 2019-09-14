@@ -36,10 +36,14 @@ def get_flu_cat(dx):
 		return None
 
 def dx2flu(dx_list):
+	narrowest_flu_cat = 4
 	for dx in dx_list:
 		flu_cat = get_flu_cat(dx)
-		if (flu_cat != None): return flu_cat
-	return 0
+		narrowest_flu_cat = min(narrowest_flu_cat, flu_cat)
+	if narrowest_flu_cat == 4:
+		return 0
+	else:
+		return narrowest_flu_cat
 
 def dx2ili(dx_list):
 	is_fever, respiratory = False, False
