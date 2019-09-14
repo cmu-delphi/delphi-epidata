@@ -14,7 +14,7 @@ Required source files under SOURCE_DIR:
 2) ili_1_2013_11_2017_new.sas7bdat
 3) country_codes.csv
 4) DMISID_FY2018.csv
-All intermediate files and final csv files will be stored in TARGET_DIR
+All intermediate files and final csv files will be stored in afhsb_utils.TARGET_DIR
 '''
 # standard library
 import csv
@@ -26,8 +26,8 @@ import pickle
 import epiweeks as epi
 
 # first party
-from dx_fn import DXFN_DICT
-from afhsb_utils import *
+from .dx_fn import DXFN_DICT
+from .afhsb_utils import FN_NAME, SOURCE_DIR, TARGET_DIR
 
 DX_FN = DXFN_DICT[FN_NAME]
 if (not os.path.exists(TARGET_DIR)): os.makedirs(TARGET_DIR)
