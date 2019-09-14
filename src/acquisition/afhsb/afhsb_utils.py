@@ -1,3 +1,6 @@
+# standard library
+import os.path
+
 DATAPATH = '/home/automation/afhsb_data'
 
 # SOURCE_DIR: the directory which contains raw data
