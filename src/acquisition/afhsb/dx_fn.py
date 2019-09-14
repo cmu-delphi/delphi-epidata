@@ -62,10 +62,8 @@ def dx2ili(dx_list):
 		# ICD-10 (using approximate conversions between ICD-9-CM and ICD-10-CM from https://www.icd10data.com/Convert/)
 		else:
 			# direct mention of influenza: 
-			if (dx.startswith("J1100") or dx.startswith("J129") or dx.startswith("J111")
-				or dx.startswith("J112") or dx.startswith("J1181") or dx.startswith("J1189")):
-				return True
 			if (dx.startswith("J09X") or dx.startswith("J1008") or dx.startswith("J101")):
+			if (dx.startswith("J09") or dx.startswith("J10") or dx.startswith("J11")):
 				return True
 			# febrile viral illness: B97.89
 			if (dx.startswith("B9789")): return True
