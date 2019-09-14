@@ -40,6 +40,12 @@ def row2epiweek(row, get_field):
 	return year, week_num
 
 def get_dx_list(row, get_field):
+	"""Get non-blank dx1..dx8 diagnosis codes from a row as a list.
+
+	Returns:
+		:obj:`list`: List of codes (expected to be strings) with length equal to
+		  the number of non-blank entries (max length of 8).
+	 """
 	dx_list = []
 	for i in range(1, 9):
 		dx = get_field(row, "dx{}".format(i))
