@@ -325,7 +325,7 @@ def check_source_files():
 			"Cannot create all target files.".format(path))
 
 def aggregate_and_process(max_rows_per_file=None):
-	if (check_target_files): 
+	if (check_target_files()):
 		print("All target files have been created.")
 		return
 	check_source_files()
