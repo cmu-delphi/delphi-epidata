@@ -70,7 +70,8 @@ def dx2flu(dx_list):
 	narrowest_flu_cat = 4
 	for dx in dx_list:
 		flu_cat = get_flu_cat(dx)
-		narrowest_flu_cat = min(narrowest_flu_cat, flu_cat)
+		if (flu_cat):
+			narrowest_flu_cat = min(narrowest_flu_cat, flu_cat)
 	if narrowest_flu_cat == 4:
 		return 0
 	else:
