@@ -59,8 +59,23 @@ def update(locations, first=None, last=None, force_update=False, load_email=True
     return
 
   qd_data = qd.load_csv()
-  qd_measurements = qd.prepare_measurements(qd_data,start_weekday=4)
-  qd_ts = quidel.measurement_to_ts(qd_measurements,7,startweek=first,endweek=last)
+
+  start_weekday = 4
+  # Get measurements for hhs regions
+  qd_measurements = qd.prepare_measurements(qd_data,use_hhs=True,start_weekday=start_weekday)
+  # Get measurements for states
+  qd_m_atoms = qd.prepare_measurements(qd_data,use_hhs=False,start_weekday=start_weekday)
+  for atom in qd_m_atoms:
+    # Copy state measurements over to complete measurement dict
+    qd_measurements[atom] = qd_m_atoms[atom]
+
+  # Get raw signal value: (# rows)/(# unique devices)
+  qd_ts_values = quidel.measurement_to_ts(qd_measurements,7,startweek=first,endweek=last)
+  # Get # rows
+  qd_ts_numrows = quidel.measurement_to_ts(qd_measurements, 3, startweek=first, endweek=last)
+  # Get # unique devices
+  qd_ts_numdevices = quidel.measurement_to_ts(qd_measurements, 8, startweek=first, endweek=last)
+
   # connect to the database
   u, p = secrets.db.epi
   cnx = mysql.connector.connect(user=u, password=p, database='epidata')
@@ -72,47 +87,72 @@ def update(locations, first=None, last=None, force_update=False, load_email=True
       pass
     return num
 
-  # check from 4 weeks preceeding the last week with data through this week
-  cur.execute('SELECT max(`epiweek`) `ew0`, yearweek(now(), 6) `ew1` FROM `quidel`')
-  for (ew0, ew1) in cur:
-    ew0 = 200401 if ew0 is None else flu.add_epiweeks(ew0, -4)
-  ew0 = ew0 if first is None else first
-  ew1 = ew1 if last is None else last
-  print('Checking epiweeks between %d and %d...' % (ew0, ew1))
+  def update_quid_db(qd_ts, update_field='value'):
+    # check from 4 weeks preceeding the last week with data through this week
+    cur.execute('SELECT max(`epiweek`) `ew0`, yearweek(now(), 6) `ew1` FROM `quidel`')
+    for (ew0, ew1) in cur:
+      ew0 = 200401 if ew0 is None else flu.add_epiweeks(ew0, -4)
+    ew0 = ew0 if first is None else first
+    ew1 = ew1 if last is None else last
+    print('Checking epiweeks between %d and %d...' % (ew0, ew1))
 
-  # keep track of how many rows were added
-  rows_before = get_num_rows()
+    # keep track of how many rows were added
+    rows_before = get_num_rows()
 
-  # check Quidel for new and/or revised data
-  sql = '''
-    INSERT INTO
-      `quidel` (`location`, `epiweek`, `value`)
-    VALUES
-      (%s, %s, %s)
-    ON DUPLICATE KEY UPDATE
-      `value` = %s
-  '''
+    # check Quidel for new and/or revised data
+    # Default update field is 'value'.
+    sql = '''
+      INSERT INTO
+        `quidel` (`location`, `epiweek`, `value`)
+      VALUES
+        (%s, %s, %s)
+      ON DUPLICATE KEY UPDATE
+        `value` = %s
+    '''
+    if update_field == 'num_rows':
+      sql = '''
+        INSERT INTO
+          `quidel` (`location`, `epiweek`, `num_rows`)
+        VALUES
+          (%s, %s, %s)
+        ON DUPLICATE KEY UPDATE
+          `num_rows` = %s
+      '''
+    elif update_field == 'num_devices':
+      sql = '''
+        INSERT INTO
+          `quidel` (`location`, `epiweek`, `num_devices`)
+        VALUES
+          (%s, %s, %s)
+        ON DUPLICATE KEY UPDATE
+          `num_devices` = %s
+      '''
 
-  total_rows = 0
+    total_rows = 0
 
-  for location in locations:
-    if location not in qd_ts:
-      continue
-    ews = sorted(qd_ts[location].keys())
-    num_missing = 0
-    for ew in ews:
-      v = qd_ts[location][ew]
-      sql_data = (location, ew, v, v)
-      cur.execute(sql, sql_data)
-      total_rows += 1
-      if v == 0:
-        num_missing += 1
-    if num_missing > 0:
-      print(' [%s] missing %d/%d value(s)' % (location, num_missing, len(ews)))
+    for location in locations:
+      if location not in qd_ts:
+        continue
+      ews = sorted(qd_ts[location].keys())
+      num_missing = 0
+      for ew in ews:
+        v = qd_ts[location][ew]
+        sql_data = (location, ew, v, v)
+        cur.execute(sql, sql_data)
+        total_rows += 1
+        if v == 0:
+          num_missing += 1
+      if num_missing > 0:
+        print(' [%s] missing %d/%d value(s)' % (location, num_missing, len(ews)))
 
-  # keep track of how many rows were added
-  rows_after = get_num_rows()
-  print('Inserted %d/%d row(s)'%(rows_after - rows_before, total_rows))
+    # keep track of how many rows were added
+    rows_after = get_num_rows()
+    print('Inserted %d/%d row(s)'%(rows_after - rows_before, total_rows))
+
+  # Do the update
+  update_quid_db(qd_ts_values, update_field='value')
+  update_quid_db(qd_ts_numrows, update_field='num_rows')
+  update_quid_db(qd_ts_numdevices, update_field='num_devices')
 
   # cleanup
   cur.close()
