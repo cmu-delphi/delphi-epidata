@@ -23,8 +23,7 @@ Notes:
 
     function Epidata() {}
 
-    // BASE_URL = 'https://delphi.midas.cs.cmu.edu/epidata/api.php';
-    BASE_URL = 'http://localhost:8080/epidata/api.php';
+    BASE_URL = 'https://delphi.midas.cs.cmu.edu/epidata/api.php';
 
     _listitem = function(value) {
       if (value.hasOwnProperty('from') && value.hasOwnProperty('to')) {
@@ -320,8 +319,11 @@ Notes:
       return _request(callback, params);
     };
 
-    Epidata.afhsb = function(callback, auth, locations, epiweeks, flu_types) {
+    Epidata.afhsb = function(callback, auth, locations, epiweeks, flu_types, criterion) {
       var params;
+      if (criterion == null) {
+        criterion = 'flucat';
+      }
       if (!((auth != null) && (locations != null) && (epiweeks != null) && (flu_types != null))) {
         throw {
           msg: '`auth`, `locations`, `epiweeks` and `flu_types` are all required'
@@ -332,13 +334,17 @@ Notes:
         'auth': auth,
         'locations': _list(locations),
         'epiweeks': _list(epiweeks),
-        'flu_types': _list(flu_types)
+        'flu_types': _list(flu_types),
+        'criterion': criterion
       };
       return _request(callback, params);
     };
 
-    Epidata.meta_afhsb = function(callback, auth) {
+    Epidata.meta_afhsb = function(callback, auth, criterion) {
       var params;
+      if (criterion == null) {
+        criterion = 'flucat';
+      }
       if (auth == null) {
         throw {
           msg: '`auth` is required'
@@ -346,7 +352,8 @@ Notes:
       }
       params = {
         'source': 'meta_afhsb',
-        'auth': auth
+        'auth': auth,
+        'criterion': criterion
       };
       return _request(callback, params);
     };

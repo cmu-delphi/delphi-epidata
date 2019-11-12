@@ -243,7 +243,7 @@ class Epidata
     _request(callback, params)
 
   # Fetch AFHSB data (point data, no min/max)
-  @afhsb: (callback, auth, locations, epiweeks, flu_types) ->
+  @afhsb: (callback, auth, locations, epiweeks, flu_types, criterion='flucat') ->
     # Check parameters
     unless auth? and locations? and epiweeks? and flu_types?
       throw { msg: '`auth`, `locations`, `epiweeks` and `flu_types` are all required' }
@@ -254,11 +254,12 @@ class Epidata
       'locations': _list(locations)
       'epiweeks': _list(epiweeks)
       'flu_types': _list(flu_types)
+      'criterion': criterion
     # Make the API call
     _request(callback, params)
 
   # Fetch AFHSB metadata
-  @meta_afhsb: (callback, auth) ->
+  @meta_afhsb: (callback, auth, criterion='flucat') ->
     # Check parameters
     unless auth?
       throw { msg: '`auth` is required' }
@@ -266,6 +267,7 @@ class Epidata
     params =
       'source': 'meta_afhsb'
       'auth': auth
+      'criterion': criterion
     # Make the API call
     _request(callback, params)
 

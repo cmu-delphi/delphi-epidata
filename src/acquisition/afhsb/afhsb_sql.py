@@ -8,6 +8,7 @@ import mysql.connector as connector
 
 # first party
 import delphi.operations.secrets as secrets
+from .afhsb_utils import FN_NAME
 
 ###################### old functions start ######################
 
@@ -254,5 +255,5 @@ def run_cmd(cmd):
         cnx.close()
 
 if __name__ == '__main__':
-    init_all_tables_with_issue(metadatapath="/", datapath="/", criterion="flucat")
+    init_all_tables_with_issue(metadatapath="/", datapath="/", criterion=FN_NAME)
     # init_all_tables("/")

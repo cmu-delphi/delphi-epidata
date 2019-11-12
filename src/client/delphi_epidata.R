@@ -279,10 +279,13 @@ Epidata <- (function() {
   }
 
   # Fetch AFHSB data (point data, no min/max)
-  afhsb <- function(auth, locations, epiweeks, flu_types) {
+  afhsb <- function(auth, locations, epiweeks, flu_types, criterion) {
     # Check parameters
     if(missing(auth) || missing(locations) || missing(epiweeks) || missing(flu_types)) {
       stop('`auth`, `locations`, `epiweeks` and `flu_types` are all required')
+    }
+    if (missing(criterion)) {
+      criterion <- 'flucat'
     }
     # Set up request
     params <- list(
@@ -290,23 +293,29 @@ Epidata <- (function() {
         auth = auth,
         locations = .list(locations),
         epiweeks = .list(epiweeks),
-        flu_types = .list(flu_types)
+        flu_types = .list(flu_types),
+        criterion = criterion
     )
     # Make the API call
     return(.request(params))
   }
 
   # Fetch AFHSB metadata
-  meta_afhsb <- function(auth) {
+  meta_afhsb <- function(auth, criterion) {
     # Check parameters
     if(missing(auth)) {
       stop('`auth` is required')
     }
+    if (missing(criterion)) {
+      criterion <- 'flucat'
+    }
     # Set up request
     params <- list(
       source = 'meta_afhsb',
-      auth = auth
+      auth = auth,
+      criterion = criterion
     )
+    print(params)
     # Make the API call
     return(.request(params))
   }

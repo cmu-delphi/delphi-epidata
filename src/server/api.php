@@ -946,18 +946,11 @@ function get_meta_afhsb($criterion) {
   // put behind appropriate auth check
   $table = "afhsb_state_{$criterion}";
   $epidata = array();
-  $string_keys = array('state', 'country');
-  $int_keys = array('flu_severity');
+  $string_keys = array('state', 'country', 'flu_type');
   foreach($string_keys as $key) {
     $epidata_key = array();
     $query = "SELECT DISTINCT `{$key}` FROM `{$table}`";
     execute_query($query, $epidata_key, array($key), null, null);
-    $epidata[$key] = $epidata_key;
-  }
-  foreach($int_keys as $key) {
-    $epidata_key = array();
-    $query = "SELECT DISTINCT `{$key}` FROM `{$table}`";
-    execute_query($query, $epidata_key, null, array($key), null);
     $epidata[$key] = $epidata_key;
   }
   return $epidata;
@@ -1294,6 +1287,7 @@ if(database_connect()) {
     if(require_all($data, array('auth'))) {
       if($_REQUEST['auth'] === $AUTH['afhsb']) {
         $criterion = isset($_REQUEST['criterion']) ? $_REQUEST['criterion'] : "flucat";
+        // echo $criterion;
         $epidata = get_meta_afhsb($criterion);
         store_result($data, $epidata);
       } else {

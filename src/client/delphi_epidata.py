@@ -302,7 +302,7 @@ class Epidata:
 
   # Fetch AFHSB data
   @staticmethod
-  def afhsb(auth, locations, epiweeks, flu_types):
+  def afhsb(auth, locations, epiweeks, flu_types, criterion=None):
     """Fetch AFHSB data (point data, no min/max)."""
     # Check parameters
     if auth is None or locations is None or epiweeks is None or flu_types is None:
@@ -336,15 +336,16 @@ class Epidata:
       'auth': auth,
       'locations': Epidata._list(locations),
       'epiweeks': Epidata._list(epiweeks),
-      'flu_types': Epidata._list(flu_types)
+      'flu_types': Epidata._list(flu_types),
     }
+    if (criterion != None): params['criterion'] = criterion
     print(params)
     # Make the API call
     return Epidata._request(params)
 
   # Fetch AFHSB metadata
   @staticmethod
-  def meta_afhsb(auth):
+  def meta_afhsb(auth, criterion=None):
     """Fetch AFHSB metadata."""
     # Check parameters
     if auth is None:
@@ -354,6 +355,7 @@ class Epidata:
       'source': 'meta_afhsb',
       'auth': auth,
     }
+    if (criterion != None): params['criterion'] = criterion
     # Make the API call
     return Epidata._request(params)
 
