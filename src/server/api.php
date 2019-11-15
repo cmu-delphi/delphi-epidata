@@ -61,6 +61,8 @@ $OPEN_SENSORS = array(
   'epic',
   'arch',
 );
+// List of valid AFHSB criteria
+$AFHSB_CRITERIA = array('flucat');
 //   Limits on the number of effective auth token equality checks performed per sensor query; generate auth tokens with appropriate levels of entropy according to the limits below:
 $MAX_GLOBAL_AUTH_CHECKS_PER_SENSOR_QUERY = 1; // (but imagine is larger to futureproof)
 $MAX_GRANULAR_AUTH_CHECKS_PER_SENSOR_QUERY = 30; // (but imagine is larger to futureproof)
@@ -1110,14 +1112,19 @@ if(database_connect()) {
   } else if($source === 'afhsb') {
     if(require_all($data, array('auth', 'locations', 'epiweeks', 'flu_types'))) {
       if($_REQUEST['auth'] === $AUTH['afhsb']) {
-        // parse the request
-        $locations = extract_values($_REQUEST['locations'], 'str');
-        $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
-        $flu_types = extract_values($_REQUEST['flu_types'], 'str');
         $criterion = isset($_REQUEST['criterion']) ? $_REQUEST['criterion'] : "flucat";
-        // get the data
-        $epidata = get_afhsb($locations, $epiweeks, $flu_types, $criterion);
-        store_result($data, $epidata);
+        if (in_array($criterion, $AFHSB_CRITERIA)) {
+          // parse the request
+          $locations = extract_values($_REQUEST['locations'], 'str');
+          $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
+          $flu_types = extract_values($_REQUEST['flu_types'], 'str');
+          
+          // get the data
+          $epidata = get_afhsb($locations, $epiweeks, $flu_types, $criterion);
+          store_result($data, $epidata);
+        } else {
+          $data['message'] = 'invalid criterion';
+        }
       } else {
           $data['message'] = 'unauthenticated';
       }
@@ -1287,9 +1294,12 @@ if(database_connect()) {
     if(require_all($data, array('auth'))) {
       if($_REQUEST['auth'] === $AUTH['afhsb']) {
         $criterion = isset($_REQUEST['criterion']) ? $_REQUEST['criterion'] : "flucat";
-        // echo $criterion;
-        $epidata = get_meta_afhsb($criterion);
-        store_result($data, $epidata);
+        if (in_array($criterion, $AFHSB_CRITERIA)) {
+          $epidata = get_meta_afhsb($criterion);
+          store_result($data, $epidata);
+        } else {
+          $data['message'] = 'invalid criterion';
+        }
       } else {
           $data['message'] = 'unauthenticated';
       }
