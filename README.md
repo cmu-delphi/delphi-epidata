@@ -8,8 +8,8 @@
 Important note: this repository was built to support modeling and forecasting
 efforts surrounding seasonal influenza (and dengue).  In the current COVID-19
 pandemic, syndromic surveillance data---like ILI data (influenza-like illness)
-through FluView---will likely prove very useful.  However, *we urge caution to 
-users examining the digital surveillance sensors*---like ILI Nearby, Google Flu 
+through FluView---will likely prove very useful.  However, **we urge caution to 
+users examining the digital surveillance sensors**---like ILI Nearby, Google Flu 
 Trends, etc.---during the COVID-19 pandemic, because these were designed to
 track ILI as driven by seasonal influenza, and were NOT designed to track ILI 
 during the COVID-19 pandemic.
