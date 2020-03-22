@@ -5,20 +5,20 @@
 
 # COVID-19
 
-Important note: this repository was built to support modeling and forecasting
-efforts surrounding seasonal influenza (and dengue).  In the current COVID-19
-pandemic, syndromic surveillance data---like ILI data (influenza-like illness)
-through FluView---will likely prove very useful.  However, **we urge caution to 
-users examining the digital surveillance sensors**---like ILI Nearby, Google Flu 
-Trends, etc.---during the COVID-19 pandemic, because these were designed to
-track ILI as driven by seasonal influenza, and were NOT designed to track ILI 
-during the COVID-19 pandemic.
+**Note:** this repository was built to support modeling and forecasting efforts
+surrounding seasonal influenza (and dengue).  In the current COVID-19 pandemic,
+syndromic surveillance data, like ILI data (influenza-like illness) through
+FluView, will likely prove very useful.  However, **we urge caution to users
+examining the digital surveillance sensors**, like ILI Nearby, Google Flu
+Trends, etc., during the COVID-19 pandemic, because these were designed to track
+ILI as driven by seasonal influenza, and were NOT designed to track ILI during
+the COVID-19 pandemic.
 
 We are working on collecting new ILI-related data sources may be useful to
 nowcasting and forecasting ILI during the COVID-19 pandemic, and will make these
-available as soon as possible.  
+available as soon as possible. 
 
-For COVID-19 case data, patient-level data, etc., we have compiled a simple 
+For COVID-19 case data, patient-level data, etc., we have compiled a simple
 [spreadsheet](https://docs.google.com/spreadsheets/d/16Nn_3ZvSLnpxRyA2DkoMMzyrd11-AlGJXasS0owln88/edit#gid=0)
 with links to various external sites.
 
