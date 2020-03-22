@@ -5,7 +5,7 @@
 
 # About
 
-This repo provides documentation and sample code for [DELPHI](https://delphi.midas.cs.cmu.edu/)'s *real-time* epidemiological data API. The API currently contains influenza and dengue data for the United States and Taiwan.
+This repo provides documentation and sample code for [Delphi](https://delphi.midas.cs.cmu.edu/)'s *real-time* epidemiological data API. The API currently contains influenza and dengue data for the United States and Taiwan.
 
 This document contains the following sections:
 
@@ -30,10 +30,10 @@ Influenza-like illness (ILI) from U.S. Outpatient Influenza-like Illness Surveil
 \* Data is usually released on Friday
 
 
-### ILI-Nearby
+### ILI Nearby
 
 A nowcast of U.S. national, regional, and state-level (weighted) %ILI, available seven days (regionally) or five days (state-level) before the first ILINet report for the corresponding week.
- - Data source: [Delphi's ILI-Nearby system](https://delphi.midas.cs.cmu.edu/nowcast/)
+ - Data source: [Delphi's ILI Nearby system](https://delphi.midas.cs.cmu.edu/nowcast/)
  - Temporal Resolution: Weekly, from 2010w30*
  - Spatial Resolution: National, [HHS regions](http://www.hhs.gov/iea/regional/), [Census divisions](http://www.census.gov/econ/census/help/geography/regions_and_divisions.html) ([1+10+9](labels/regions.txt)), and by state/territory ([51](labels/states.txt))
  - Open access
@@ -56,7 +56,7 @@ Estimate of influenza activity based on analysis of language used in tweets.
  - Data source: [HealthTweets](http://www.healthtweets.org/)
  - Temporal Resolution: Daily and weekly from 2011-12-01 (2011w48)
  - Spatial Resolution: National, [HHS regions](http://www.hhs.gov/iea/regional/), and [Census divisions](http://www.census.gov/econ/census/help/geography/regions_and_divisions.html) ([1+10+9](labels/regions.txt)); and by state/territory ([51](labels/states.txt))
- - Restricted access: DELPHI doesn't have permission to share this dataset
+ - Restricted access: Delphi doesn't have permission to share this dataset
 
 
 ### Wikipedia Access Logs
@@ -121,7 +121,7 @@ Optional:
  - `lag`: a number of weeks
  - `auth`: the password for private imputed data
 
-### ILI-Nearby Parameters
+### ILI Nearby Parameters
 
 Required:
  - `epiweeks`: a `list` of epiweeks
@@ -216,7 +216,7 @@ https://delphi.midas.cs.cmu.edu/epidata/api.php?source=nidss_dengue&locations=Na
 
 # Code Samples
 
-Libraries are available for [CoffeeScript](code/client/delphi_epidata.coffee), [JavaScript](code/client/delphi_epidata.js), [Python](code/client/delphi_epidata.py), and [R](code/client/delphi_epidata.R). The following samples show how to import the library and fetch national FluView data for epiweeks `201440` and `201501-201510` (11 weeks total).
+Libraries are available for [CoffeeScript](src/client/delphi_epidata.coffee), [JavaScript](src/client/delphi_epidata.js), [Python](src/client/delphi_epidata.py), and [R](src/client/delphi_epidata.R). The following samples show how to import the library and fetch national FluView data for epiweeks `201440` and `201501-201510` (11 weeks total).
 
 ### CoffeeScript (in Node.js)
 
