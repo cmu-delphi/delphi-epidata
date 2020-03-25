@@ -60,6 +60,7 @@ $OPEN_SENSORS = array(
   'sar3',
   'epic',
   'arch',
+  'ar3',
 );
 //   Limits on the number of effective auth token equality checks performed per sensor query; generate auth tokens with appropriate levels of entropy according to the limits below:
 $MAX_GLOBAL_AUTH_CHECKS_PER_SENSOR_QUERY = 1; // (but imagine is larger to futureproof)
