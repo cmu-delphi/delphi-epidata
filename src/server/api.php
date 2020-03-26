@@ -1025,6 +1025,17 @@ if(database_connect()) {
       $epidata = get_paho_dengue($epiweeks, $regions, $issues, $lag);
       store_result($data, $epidata);
     }
+  } else if ($source === 'ecdc_ili') {
+    if(require_all($data, array('epiweeks', 'regions'))) {
+      // parse the request
+      $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
+      $regions = extract_values($_REQUEST['regions'], 'str');
+      $issues = isset($_REQUEST['issues']) ? extract_values($_REQUEST['issues'], 'int') : null;
+      $lag = isset($_REQUEST['lag']) ? intval($_REQUEST['lag']) : null;
+      // get the data
+      $epidata = get_ecdc_ili($epiweeks, $regions, $issues, $lag);
+      store_result($data, $epidata);
+    }
   } else if($source === 'ilinet' || $source === 'stateili') {
     // these two sources are now combined into fluview
     $data['message'] = 'use fluview instead';
