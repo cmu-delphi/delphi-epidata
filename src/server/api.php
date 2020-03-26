@@ -268,6 +268,49 @@ function get_paho_dengue($epiweeks, $regions, $issues, $lag) {
   return count($epidata) === 0 ? null : $epidata;
 }
 
+// queries the `ecdc_ili` table
+//   $epiweeks (required): array of epiweek values/ranges
+//   $regions (required): array of region names
+//   $issues (optional): array of epiweek values/ranges
+//     overrides $lag
+//     default: most recent issue
+//   $lag (optional): number of weeks between each epiweek and its issue
+//     overridden by $issues
+//     default: most recent issue
+function get_ecdc_ili($epiweeks, $regions, $issues, $lag) {
+  // store the results in an array
+  $epidata = array();
+  // set up for query
+  $table = "`ecdc_ili` ec";
+  $fields = "ec.`release_date`, ec.`issue`, ec.`epiweek`, ec.`region`, ec.`lag`, ec.`incidence_rate`";
+  $order = "ec.`epiweek` ASC, ec.`region` ASC, ec.`issue` ASC";
+  // create conditions
+  $condition_epiweek = filter_integers("ec.`epiweek`", $epiweeks);
+  $condition_region = filter_strings("ec.`region`", $regions);
+  if ($issues !== null) {
+    // using specific issues
+    $condition_issue = filter_integers("ec.`issue`", $issues);
+    $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_epiweek}) AND ({$condition_region}) AND ({$condition_issue}) ORDER BY {$order}";
+  } else if ($lag !== null) {
+    // using lagged issues
+    $condition_lag = '(ec.`lag` = {$lag})';
+    $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_epiweek}) AND ({$condition_region}) AND ({$condition_lag}) ORDER BY {$order}";
+  } else {
+    // using most recent issues
+    $subquery = "(SELECT max(`issue`) `max_issue`, `epiweek`, `region` FROM {$table} WHERE ({$condition_epiweek}) AND ({$condition_region}) GROUP BY `epiweek`, `region`) x";
+    $condition = "x.`max_issue` = ec.`issue` AND x.`epiweek` = ec.`epiweek` AND x.`region` = ec.`region`";
+    $query = "SELECT {$fields} FROM {$table} JOIN {$subquery} ON {$condition} ORDER BY {$order}";
+  }
+  // get the data from the database
+  $fields_string = array('release_date', 'region');
+  $fields_float = array('incidence_rate');
+  $fields_int = array('issue', 'epiweek', 'lag');
+  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
+  // return the result, if any
+  return count($epidata) === 0 ? null : $epidata;
+}
+
+
 // queries the `gft` table
 //   $epiweeks (required): array of epiweek values/ranges
 //   $locations (required): array of location names

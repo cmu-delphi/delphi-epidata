@@ -167,6 +167,15 @@
       "add-header-comment": true
     },
 
+    "// acquisition - ecdc",
+    {
+      "type": "move",
+      "src": "src/acquisition/ecdc/",
+      "dst": "[[package]]/acquisition/ecdc/",
+      "match": "^.*\\.(py)$",
+      "add-header-comment": true
+    },
+
     "// acquisition - afhsb",
     {
       "type": "move",
