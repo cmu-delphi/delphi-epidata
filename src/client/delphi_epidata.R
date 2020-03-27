@@ -126,7 +126,7 @@ Epidata <- (function() {
     return(.request(params))
   }
 
-  # Fetch FluSurv data
+  # Fetch ECDC data
   ecdc_ili <- function(regions, epiweeks, issues, lag) {
     # Check parameters
     if(missing(regions) || missing(epiweeks)) {
@@ -150,6 +150,32 @@ Epidata <- (function() {
     # Make the API call
     return(.request(params))
   }
+
+  # Fetch KCDC data
+  kcdc_ili <- function(regions, epiweeks, issues, lag) {
+    # Check parameters
+    if(missing(regions) || missing(epiweeks)) {
+      stop('`regions` and `epiweeks` are both required')
+    }
+    if(!missing(issues) && !missing(lag)) {
+      stop('`issues` and `lag` are mutually exclusive')
+    }
+    # Set up request
+    params <- list(
+      source = 'kcdc_ili',
+      regions = .list(regions),
+      epiweeks = .list(epiweeks)
+    )
+    if(!missing(issues)) {
+      params$issues <- .list(issues)
+    }
+    if(!missing(lag)) {
+      params$lag <- lag
+    }
+    # Make the API call
+    return(.request(params))
+  }
+
 
   # Fetch Google Flu Trends data
   gft <- function(locations, epiweeks) {

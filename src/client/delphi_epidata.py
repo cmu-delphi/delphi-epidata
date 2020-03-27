@@ -176,6 +176,28 @@ class Epidata:
     # Make the API call
     return Epidata._request(params)
 
+  # Fetch KCDC ILI data
+  @staticmethod
+  def kcdc_ili(regions, epiweeks, issues=None, lag=None):
+    """Fetch KCDC ILI data."""
+    # Check parameters
+    if regions is None or epiweeks is None:
+      raise Exception('`regions` and `epiweeks` are both required')
+    if issues is not None and lag is not None:
+      raise Exception('`issues` and `lag` are mutually exclusive')
+    # Set up request
+    params = {
+      'source': 'kcdc_ili',
+      'regions': Epidata._list(regions),
+      'epiweeks': Epidata._list(epiweeks),
+    }
+    if issues is not None:
+      params['issues'] = Epidata._list(issues)
+    if lag is not None:
+      params['lag'] = lag
+    # Make the API call
+    return Epidata._request(params)
+
   # Fetch Google Flu Trends data
   @staticmethod
   def gft(locations, epiweeks):
