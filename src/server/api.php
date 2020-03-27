@@ -345,7 +345,7 @@ function get_kcdc_ili($epiweeks, $regions, $issues, $lag) {
   }
   // get the data from the database
   $fields_string = array('release_date', 'region');
-  $fields_float = array('incidence_rate');
+  $fields_float = array('ili');
   $fields_int = array('issue', 'epiweek', 'lag');
   execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
   // return the result, if any
