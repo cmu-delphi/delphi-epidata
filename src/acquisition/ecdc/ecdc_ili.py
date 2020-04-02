@@ -15,7 +15,17 @@ import time
 import os
 
 def download_ecdc_data(download_dir = "downloads"):
-    url = 'https://flunewseurope.org/WebForms/ViewReport.aspx?ReportName=dinfl06&SDId=2325&SUrl=https%3a%2f%2fflunewseurope.org%2fPrimaryCareData%2fIndex%2fshare%2fdinfl06%3fts%3d20200317232612783%23dinfl06'
+    url = 'https://flunewseurope.org/PrimaryCareData'
+    header = {'User-Agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36"}
+    resp = requests.get(url)
+    soup = BeautifulSoup(resp.content, 'lxml')
+    mydivs = soup.findAll('div')
+    for div in mydivs:
+        dic = div.attrs
+        if dic.get('class')== ['graph-container'] and dic.get('id')== 'dinfl06':
+            break
+    # get new url of the ILI chunck
+    url = div.contents[1].attrs['src']
     opts = webdriver.firefox.options.Options()
     opts.set_headless()
     fp = webdriver.FirefoxProfile()
