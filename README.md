@@ -64,6 +64,30 @@ like to cite it, we would gratefully recommend the following copy:
 > _Delphi Epidata API_.
 > https://github.com/cmu-delphi/delphi-epidata
 
+## Data licensing
+
+The majority of the data surfaced through this API is more or less just a
+carefully curated mirror of data acquired from various external parties. Such
+data is subject to its original licensing, where applicable.
+
+---
+
+Any data which is produced novelly by Delphi and is intentionally and openly
+surfaced by Delphi through this API is hereby licensed
+[CC-BY](https://creativecommons.org/licenses/by/4.0/). Endpoints, as specified
+by the `source` parameter, which are known to wholly or partially serve data
+under this license include:
+
+- `delphi`
+- `sensors`
+- `nowcast`
+- `covid_survey_hrr_daily`
+- `covid_survey_county_weekly`
+
+[![Creative Commons License](https://i.creativecommons.org/l/by/4.0/88x31.png)](https://creativecommons.org/licenses/by/4.0/)
+
+---
+
 
 # Influenza Data
 
