@@ -30,7 +30,7 @@ See also:
 require_once('/var/www/html/secrets.php');
 
 // helpers
-require_once(__DIR__.'/api_helpers.php');
+require_once(__DIR__ . '/api_helpers.php');
 
 // passwords
 $AUTH = array(
@@ -920,6 +920,64 @@ function get_dengue_nowcast($locations, $epiweeks) {
   return count($epidata) === 0 ? null : $epidata;
 }
 
+// queries the `covid_survey_hrr_daily` table. although the data is
+// pre-filtered, out of an abundance of caution, rows with `denominator` less
+// than 100 are omitted for privacy.
+//   $dates (required): array of date values/ranges
+//   $hrrs (required): array of HRR values/ranges
+function get_covid_survey_hrr_daily($dates, $hrrs) {
+  // basic query info
+  $table = '`covid_survey_hrr_daily` t';
+  $fields = "t.`date`, t.`hrr`, t.`ili`, t.`ili_stdev`, t.`cli`, t.`cli_stdev`, t.`denominator`";
+  $order = "t.`date` ASC, t.`hrr` ASC";
+  // data type of each field
+  $fields_string = array('date');
+  $fields_int = array('hrr');
+  $fields_float = array('ili', 'ili_stdev', 'cli', 'cli_stdev', 'denominator');
+  // build the date filter
+  $condition_date = filter_dates('t.`date`', $dates);
+  // build the HRR filter
+  $condition_hrr = filter_integers('t.`hrr`', $hrrs);
+  // build the denominator threshold filter
+  $condition_denominator = 't.`denominator` >= 100';
+  // the query
+  $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_date}) AND ({$condition_hrr}) AND ({$condition_denominator}) ORDER BY {$order}";
+  // get the data from the database
+  $epidata = array();
+  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
+  // return the data
+  return count($epidata) === 0 ? null : $epidata;
+}
+
+// queries the `covid_survey_county_weekly` table. although the data is
+// pre-filtered, out of an abundance of caution, rows with `denominator` less
+// than 100 are omitted for privacy.
+//   $epiweeks (required): array of epiweek values/ranges
+//   $counties (required): array of FIPS 6-4 county identifiers
+function get_covid_survey_county_weekly($epiweeks, $counties) {
+  // basic query info
+  $table = '`covid_survey_county_weekly` t';
+  $fields = "t.`epiweek`, t.`county`, t.`ili`, t.`ili_stdev`, t.`cli`, t.`cli_stdev`, t.`denominator`";
+  $order = "t.`epiweek` ASC, t.`county` ASC";
+  // data type of each field
+  $fields_string = array('county');
+  $fields_int = array('epiweek');
+  $fields_float = array('ili', 'ili_stdev', 'cli', 'cli_stdev', 'denominator');
+  // build the epiweek filter
+  $condition_epiweek = filter_integers('t.`epiweek`', $epiweeks);
+  // build the county filter
+  $condition_county = filter_strings('t.`county`', $counties);
+  // build the denominator threshold filter
+  $condition_denominator = 't.`denominator` >= 100';
+  // the query
+  $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_epiweek}) AND ({$condition_county}) AND ({$condition_denominator}) ORDER BY {$order}";
+  // get the data from the database
+  $epidata = array();
+  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
+  // return the data
+  return count($epidata) === 0 ? null : $epidata;
+}
+
 // queries a bunch of epidata tables
 function get_meta() {
   // query and return metadata
@@ -1363,6 +1421,24 @@ if(database_connect()) {
       } else {
           $data['message'] = 'unauthenticated';
       }
+    }
+  } else if($source === 'covid_survey_hrr_daily') {
+    if(require_all($data, array('dates', 'hrrs'))) {
+      // parse the request
+      $dates = extract_values($_REQUEST['dates'], 'int');
+      $hrrs = extract_values($_REQUEST['hrrs'], 'int');
+      // get the data
+      $epidata = get_covid_survey_hrr_daily($dates, $hrrs);
+      store_result($data, $epidata);
+    }
+  } else if($source === 'covid_survey_county_weekly') {
+    if(require_all($data, array('epiweeks', 'counties'))) {
+      // parse the request
+      $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
+      $counties = extract_values($_REQUEST['counties'], 'str');
+      // get the data
+      $epidata = get_covid_survey_county_weekly($epiweeks, $counties);
+      store_result($data, $epidata);
     }
   } else {
     $data['message'] = 'no data source specified';

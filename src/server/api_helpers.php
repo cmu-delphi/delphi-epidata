@@ -1,9 +1,12 @@
 <?php
+// load database connection parameters
+require_once(__DIR__ . '/database_config.php');
 
 // connects to the database
 function database_connect() {
-  $host = 'localhost';
-  $port = 3306;
+  global $DATABASE_CONFIG;
+  $host = $DATABASE_CONFIG['host'];
+  $port = $DATABASE_CONFIG['port'];
   $username = Secrets::$db['epi'][0];
   $password = Secrets::$db['epi'][1];
   $database = 'epidata';
