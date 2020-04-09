@@ -16,11 +16,11 @@ the COVID-19 pandemic.
 
 We are working on collecting new ILI-related data sources may be useful to
 nowcasting and forecasting ILI during the COVID-19 pandemic, and will make these
-available as soon as possible. 
+available as soon as possible.
 
 For a list of many data sources relevant to COVID-19 (case data, hospitalization
 data, data on interventions, etc.) we have compiled a simple
-[spreadsheet](https://docs.google.com/spreadsheets/d/16Nn_3ZvSLnpxRyA2DkoMMzyrd11-AlGJXasS0owln88/edit#gid=0) 
+[spreadsheet](https://docs.google.com/spreadsheets/d/16Nn_3ZvSLnpxRyA2DkoMMzyrd11-AlGJXasS0owln88/edit#gid=0)
 with links to various external sites.
 
 
@@ -36,6 +36,14 @@ This document contains the following sections:
  - [Sample URLs for Manual Access](#example-urls)
  - [Sample code for Programatic Access](#code-samples)
  - [References to Related Work](#references)
+
+If you are interested in contributing:
+
+- For development of the API itself, see the
+  [development guide](docs/epidata_development.md).
+- To suggest changes, additions, or other ways to improve,
+  [open an issue](https://github.com/cmu-delphi/delphi-epidata/issues/new)
+  describing your idea.
 
 
 # Influenza Data
