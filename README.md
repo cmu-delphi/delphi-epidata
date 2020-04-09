@@ -49,7 +49,7 @@ If you are interested in contributing:
   [open an issue](https://github.com/cmu-delphi/delphi-epidata/issues/new)
   describing your idea.
 
-## Citations
+## Citing
 
 We hope that this API is useful to others outside of our group, especially for
 epidemiological and other scientific research. If you use this API and would
