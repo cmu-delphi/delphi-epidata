@@ -16,17 +16,19 @@ the COVID-19 pandemic.
 
 We are working on collecting new ILI-related data sources may be useful to
 nowcasting and forecasting ILI during the COVID-19 pandemic, and will make these
-available as soon as possible. 
+available as soon as possible.
 
 For a list of many data sources relevant to COVID-19 (case data, hospitalization
 data, data on interventions, etc.) we have compiled a simple
-[spreadsheet](https://docs.google.com/spreadsheets/d/16Nn_3ZvSLnpxRyA2DkoMMzyrd11-AlGJXasS0owln88/edit#gid=0) 
+[spreadsheet](https://docs.google.com/spreadsheets/d/16Nn_3ZvSLnpxRyA2DkoMMzyrd11-AlGJXasS0owln88/edit#gid=0)
 with links to various external sites.
 
 
 # About
 
 This repo provides documentation and sample code for [Delphi](https://delphi.midas.cs.cmu.edu/)'s *real-time* epidemiological data API. The API currently contains influenza and dengue data for the United States and Taiwan.
+
+## Outline
 
 This document contains the following sections:
 
@@ -36,6 +38,55 @@ This document contains the following sections:
  - [Sample URLs for Manual Access](#example-urls)
  - [Sample code for Programatic Access](#code-samples)
  - [References to Related Work](#references)
+
+## Contributing
+
+If you are interested in contributing:
+
+- For development of the API itself, see the
+  [development guide](docs/epidata_development.md).
+- To suggest changes, additions, or other ways to improve,
+  [open an issue](https://github.com/cmu-delphi/delphi-epidata/issues/new)
+  describing your idea.
+
+## Citing
+
+We hope that this API is useful to others outside of our group, especially for
+epidemiological and other scientific research. If you use this API and would
+like to cite it, we would gratefully recommend the following copy:
+
+> David C. Farrow,
+> Logan C. Brooks,
+> Aaron Rumack,
+> Ryan J. Tibshirani,
+> Roni Rosenfeld
+> (2015).
+> _Delphi Epidata API_.
+> https://github.com/cmu-delphi/delphi-epidata
+
+## Data licensing
+
+The majority of the data surfaced through this API is more or less just a
+carefully curated mirror of data acquired from various external parties. Such
+data is subject to its original licensing, where applicable.
+
+---
+
+Any data which is produced novelly by Delphi and is intentionally and openly
+surfaced by Delphi through this API is hereby licensed
+[CC-BY](https://creativecommons.org/licenses/by/4.0/). Endpoints, as specified
+by the `source` parameter, which are known to wholly or partially serve data
+under this license include:
+
+- `delphi`
+- `sensors`
+- `nowcast`
+- `covid_survey_hrr_daily`
+- `covid_survey_county_weekly`
+
+[![Creative Commons License](https://i.creativecommons.org/l/by/4.0/88x31.png)](https://creativecommons.org/licenses/by/4.0/)
+
+---
 
 
 # Influenza Data
