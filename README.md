@@ -28,6 +28,8 @@ with links to various external sites.
 
 This repo provides documentation and sample code for [Delphi](https://delphi.midas.cs.cmu.edu/)'s *real-time* epidemiological data API. The API currently contains influenza and dengue data for the United States and Taiwan.
 
+## Outline
+
 This document contains the following sections:
 
  - [Influenza Data Sources](#influenza-data)
@@ -37,6 +39,8 @@ This document contains the following sections:
  - [Sample code for Programatic Access](#code-samples)
  - [References to Related Work](#references)
 
+## Contributing
+
 If you are interested in contributing:
 
 - For development of the API itself, see the
@@ -44,6 +48,21 @@ If you are interested in contributing:
 - To suggest changes, additions, or other ways to improve,
   [open an issue](https://github.com/cmu-delphi/delphi-epidata/issues/new)
   describing your idea.
+
+## Citations
+
+We hope that this API is useful to others outside of our group, especially for
+epidemiological and other scientific research. If you use this API and would
+like to cite it, we would gratefully recommend the following copy:
+
+> David C. Farrow,
+> Logan C. Brooks,
+> Aaron Rumack,
+> Ryan J. Tibshirani,
+> Roni Rosenfeld
+> (2015).
+> _Delphi Epidata API_.
+> https://github.com/cmu-delphi/delphi-epidata
 
 
 # Influenza Data
