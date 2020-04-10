@@ -1,6 +1,6 @@
 # Status
 
-[![Deploy Status](https://delphi.midas.cs.cmu.edu/~automation/public/github_deploy_repo/badge.php?repo=cmu-delphi/delphi-epidata)](#)
+[![Deploy Status](https://delphi.cmu.edu/~automation/public/github_deploy_repo/badge.php?repo=cmu-delphi/delphi-epidata)](#)
 
 
 # COVID-19
@@ -26,8 +26,8 @@ with links to various external sites.
 
 # About
 
-This is the home of [Delphi](https://delphi.midas.cs.cmu.edu/)'s
-epidemiological data API.
+This is the home of [Delphi](https://delphi.cmu.edu/)'s epidemiological data
+API.
 
 ## Contributing
 
@@ -95,7 +95,7 @@ Influenza-like illness (ILI) from U.S. Outpatient Influenza-like Illness Surveil
 ### ILI Nearby
 
 A nowcast of U.S. national, regional, and state-level (weighted) %ILI, available seven days (regionally) or five days (state-level) before the first ILINet report for the corresponding week.
- - Data source: [Delphi's ILI Nearby system](https://delphi.midas.cs.cmu.edu/nowcast/)
+ - Data source: [Delphi's ILI Nearby system](https://delphi.cmu.edu/nowcast/)
  - Temporal Resolution: Weekly, from 2010w30*
  - Spatial Resolution: National, [HHS regions](http://www.hhs.gov/iea/regional/), [Census divisions](http://www.census.gov/econ/census/help/geography/regions_and_divisions.html) ([1+10+9](labels/regions.txt)), and by state/territory ([51](labels/states.txt))
  - Open access
@@ -155,7 +155,7 @@ Counts of confirmed dengue cases from Taiwan's NIDSS.
 
 # The API
 
-The base URL is: https://delphi.midas.cs.cmu.edu/epidata/api.php
+The base URL is: https://delphi.cmu.edu/epidata/api.php
 
 Epiweeks use the U.S. definition. That is, the first epiweek each year is the week, starting on a Sunday, containing January 4. See [this page](http://www.cmmcp.org/epiweek.htm) for more information.
 
@@ -237,41 +237,41 @@ Required:
 # Example URLs
 
 ### FluView/GFT/Twitter on 2015w01 (national)
- - https://delphi.midas.cs.cmu.edu/epidata/api.php?source=fluview&regions=nat&epiweeks=201501
+ - https://delphi.cmu.edu/epidata/api.php?source=fluview&regions=nat&epiweeks=201501
 
         {"result":1,"epidata":[{"release_date":"2015-07-31","region":"nat","issue":201529,"epiweek":201501,"lag":-28,"num_ili":31834,"num_patients":777188,"num_providers":1977,"num_age_0":7177,"num_age_1":9694,"num_age_2":0,"num_age_3":8221,"num_age_4":3670,"num_age_5":3072,"wili":4.2403781703231,"ili":4.0960488324575}],"message":"success"}
 
- - https://delphi.midas.cs.cmu.edu/epidata/api.php?source=gft&locations=nat&epiweeks=201501
+ - https://delphi.cmu.edu/epidata/api.php?source=gft&locations=nat&epiweeks=201501
 
         {"result":1,"epidata":[{"location":"nat","epiweek":201501,"num":4647}],"message":"success"}
 
- - https://delphi.midas.cs.cmu.edu/epidata/api.php?source=twitter&auth=...&locations=nat&epiweeks=201501
+ - https://delphi.cmu.edu/epidata/api.php?source=twitter&auth=...&locations=nat&epiweeks=201501
 
         {"result":1,"epidata":[...],"message":"success"}
 
 ### Wiki article "influenza" on 2015w01
 
-https://delphi.midas.cs.cmu.edu/epidata/api.php?source=wiki&articles=influenza&epiweeks=201501
+https://delphi.cmu.edu/epidata/api.php?source=wiki&articles=influenza&epiweeks=201501
 
     {"result":1,"epidata":[{"article":"influenza","count":30819,"hour":-1,"epiweek":201501}],"message":"success"}
 
 ### FluView in HHS Regions 4 and 6 for the 2014/2015 flu season
 
-https://delphi.midas.cs.cmu.edu/epidata/api.php?source=fluview&regions=hhs4,hhs6&epiweeks=201440-201520
+https://delphi.cmu.edu/epidata/api.php?source=fluview&regions=hhs4,hhs6&epiweeks=201440-201520
 
 ### Updates to FluView on 2014w53, reported from 2015w01 through 2015w10 (national)
 
-https://delphi.midas.cs.cmu.edu/epidata/api.php?source=fluview&regions=nat&epiweeks=201453&issues=201501-201510
+https://delphi.cmu.edu/epidata/api.php?source=fluview&regions=nat&epiweeks=201453&issues=201501-201510
 
 ### NIDSS-Flu on 2015w01 (national)
 
-https://delphi.midas.cs.cmu.edu/epidata/api.php?source=nidss_flu&regions=Nationwide&epiweeks=201501
+https://delphi.cmu.edu/epidata/api.php?source=nidss_flu&regions=Nationwide&epiweeks=201501
 
     {"result":1,"epidata":[{"release_date":"2015-08-04","region":"Nationwide","issue":201530,"epiweek":201501,"lag":29,"visits":65685,"ili":1.21}],"message":"success"}
 
 ### NIDSS-Dengue on 2015w01 (national)
 
-https://delphi.midas.cs.cmu.edu/epidata/api.php?source=nidss_dengue&locations=Nationwide&epiweeks=201501
+https://delphi.cmu.edu/epidata/api.php?source=nidss_dengue&locations=Nationwide&epiweeks=201501
 
     {"result":1,"epidata":[{"location":"nationwide","epiweek":201501,"count":20}],"message":"success"}
 
