@@ -333,7 +333,7 @@ res <- Epidata$fluview(list('nat'), list(201440, Epidata$range(201501, 201510)))
 cat(paste(res$result, res$message, length(res$epidata), "\n"))
 ````
 
-# References
+# Related work
 
  - Cook, Samantha, et al. "Assessing Google flu trends performance in the United States during the 2009 influenza virus A (H1N1) pandemic." PloS one 6.8 (2011): e23610.
  - Broniatowski, David A., Michael J. Paul, and Mark Dredze. "National and local influenza surveillance through Twitter: an analysis of the 2012-2013 influenza epidemic." (2013): e83672.
