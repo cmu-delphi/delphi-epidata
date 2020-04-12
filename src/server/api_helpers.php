@@ -100,7 +100,7 @@ function filter_dates($field, $dates) {
 
 // builds a SQL expression to filter values/ranges of integers (ex: epiweeks)
 //   $field: name of the field to filter
-//   $epiweeks: array of integer values/ranges
+//   $values: array of integer values/ranges
 function filter_integers($field, $values) {
   $filter = null;
   foreach($values as $value) {
