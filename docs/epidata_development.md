@@ -217,7 +217,7 @@ More concretely, you can run Epidata API integration tests like this:
   above.
 
 3. Build the `delphi_python` image per the
-  [backend development guide](https://github.com/cmu-delphi/operations/blob/master/doc/backend_development.md#creating-an-image).
+  [backend development guide](https://github.com/cmu-delphi/operations/blob/master/docs/backend_development.md#creating-an-image).
   Your test sources will live in, and be executed from within, this image.
 
 4. Run integration tests in a container based on the `delphi_python` image:
