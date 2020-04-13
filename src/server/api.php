@@ -949,6 +949,35 @@ function get_covid_survey_hrr_daily($dates, $hrrs) {
   return count($epidata) === 0 ? null : $epidata;
 }
 
+// queries the `covid_survey_msa_daily` table. although the data is
+// pre-filtered, out of an abundance of caution, rows with `denominator` less
+// than 100 are omitted for privacy.
+//   $dates (required): array of date values/ranges
+//   $msas (required): array of MSA values/ranges
+function get_covid_survey_msa_daily($dates, $msas) {
+  // basic query info
+  $table = '`covid_survey_msa_daily` t';
+  $fields = "t.`date`, t.`msa`, t.`ili`, t.`ili_stdev`, t.`cli`, t.`cli_stdev`, t.`denominator`";
+  $order = "t.`date` ASC, t.`msa` ASC";
+  // data type of each field
+  $fields_string = array('date');
+  $fields_int = array('msa');
+  $fields_float = array('ili', 'ili_stdev', 'cli', 'cli_stdev', 'denominator');
+  // build the date filter
+  $condition_date = filter_dates('t.`date`', $dates);
+  // build the MSA filter
+  $condition_msa = filter_integers('t.`msa`', $msas);
+  // build the denominator threshold filter
+  $condition_denominator = 't.`denominator` >= 100';
+  // the query
+  $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_date}) AND ({$condition_msa}) AND ({$condition_denominator}) ORDER BY {$order}";
+  // get the data from the database
+  $epidata = array();
+  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
+  // return the data
+  return count($epidata) === 0 ? null : $epidata;
+}
+
 // queries the `covid_survey_county_weekly` table. although the data is
 // pre-filtered, out of an abundance of caution, rows with `denominator` less
 // than 100 are omitted for privacy.
@@ -1429,6 +1458,15 @@ if(database_connect()) {
       $hrrs = extract_values($_REQUEST['hrrs'], 'int');
       // get the data
       $epidata = get_covid_survey_hrr_daily($dates, $hrrs);
+      store_result($data, $epidata);
+    }
+  } else if($source === 'covid_survey_msa_daily') {
+    if(require_all($data, array('dates', 'msas'))) {
+      // parse the request
+      $dates = extract_values($_REQUEST['dates'], 'int');
+      $msas = extract_values($_REQUEST['msas'], 'int');
+      // get the data
+      $epidata = get_covid_survey_msa_daily($dates, $msas);
       store_result($data, $epidata);
     }
   } else if($source === 'covid_survey_county_weekly') {
