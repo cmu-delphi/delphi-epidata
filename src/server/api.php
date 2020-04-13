@@ -1473,7 +1473,7 @@ if(database_connect()) {
     if(require_all($data, array('epiweeks', 'counties'))) {
       // parse the request
       $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
-      $counties = extract_values($_REQUEST['counties'], 'str');
+      $counties = extract_values($_REQUEST['counties'], 'ordered_string');
       // get the data
       $epidata = get_covid_survey_county_weekly($epiweeks, $counties);
       store_result($data, $epidata);

@@ -132,8 +132,16 @@ function filter_strings($field, $values) {
     } else {
       $filter .= ' OR ';
     }
-    $value = mysqli_real_escape_string($dbh, $value);
-    $filter .= "({$field} = '{$value}')";
+    if(is_array($value)) {
+      // range of values
+      $value0 = mysqli_real_escape_string($dbh, $value[0]);
+      $value1 = mysqli_real_escape_string($dbh, $value[1]);
+      $filter .= "({$field} BETWEEN '{$value0}' AND '{$value1}')";
+    } else {
+      // single value
+      $value = mysqli_real_escape_string($dbh, $value);
+      $filter .= "({$field} = '{$value}')";
+    }
   }
   return $filter;
 }
@@ -182,23 +190,32 @@ function execute_query($query, &$epidata, $fields_string, $fields_int, $fields_f
 
 // extracts an array of values and/or ranges from a string
 //   $str: the string to parse
-//   $type: the data type ('int' for integers, otherwise assumes string)
+//   $type:
+//     - 'int': interpret dashes as ranges, cast values to integers
+//     - 'ordered_string': interpret dashes as ranges, keep values as strings
+//     - otherwise: ignore dashes, keep values as strings
 function extract_values($str, $type) {
   if($str === null || strlen($str) === 0) {
     // nothing to do
     return null;
   }
+  // whether to parse a value with a dash as a range of values
+  $shouldParseRange = $type === 'int' || $type === 'ordered_string';
   // maintain a list of values and/or ranges
   $values = array();
   // split on commas and loop over each entry, which could be either a single value or a range of values
   $parts = explode(',', $str);
   foreach($parts as $part) {
-    if($type === 'int' && strpos($part, '-') !== false) {
+    if($shouldParseRange && strpos($part, '-') !== false) {
       // split on the dash
       $range = explode('-', $part);
       // get the range endpoints
-      $first = intval($range[0]);
-      $last = intval($range[1]);
+      $first = $range[0];
+      $last = $range[1];
+      if ($type === 'int') {
+        $first = intval($first);
+        $last = intval($last);
+      }
       if($last === $first) {
         // the first and last numbers are the same, just treat it as a singe value
         array_push($values, $first);

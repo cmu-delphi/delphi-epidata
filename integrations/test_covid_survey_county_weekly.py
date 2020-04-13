@@ -60,8 +60,8 @@ class CovidSurveyCountyWeeklyTests(unittest.TestCase):
 
     # assert that the right data came back
     self.assertEqual(response, {
-      "result": 1,
-      "epidata": [{
+      'result': 1,
+      'epidata': [{
         'epiweek': 202014,
         'county': '42003',
         'ili': 1.5,
@@ -70,7 +70,54 @@ class CovidSurveyCountyWeeklyTests(unittest.TestCase):
         'cli_stdev': 4.5,
         'denominator': 5678.5,
        }],
-      "message": "success",
+      'message': 'success',
+    })
+
+  def test_county_range(self):
+    """Select multiple counties using range of FIPS 6-4 codes (strings)."""
+
+    # insert dummy data
+    self.cur.execute('''
+      insert into covid_survey_county_weekly values
+        (0, 202014, '00100', 100, 101, 102, 103, 10104),
+        (0, 202014, '00200', 200, 201, 202, 203, 10204),
+        (0, 202014, '00300', 300, 301, 302, 303, 10304),
+        (0, 202014, '00400', 400, 401, 402, 403, 10404)
+    ''')
+    self.cnx.commit()
+
+    # make the request
+    response = requests.get(BASE_URL, params={
+      'source': 'covid_survey_county_weekly',
+      'counties': '00111-00333',
+      'epiweeks': 202014,
+    })
+    response.raise_for_status()
+    response = response.json()
+
+    # assert that the right data came back
+    self.assertEqual(response, {
+      'result': 1,
+      'epidata': [
+        {
+          'epiweek': 202014,
+          'county': '00200',
+          'ili': 200,
+          'ili_stdev': 201,
+          'cli': 202,
+          'cli_stdev': 203,
+          'denominator': 10204,
+        }, {
+          'epiweek': 202014,
+          'county': '00300',
+          'ili': 300,
+          'ili_stdev': 301,
+          'cli': 302,
+          'cli_stdev': 303,
+          'denominator': 10304,
+        },
+      ],
+      'message': 'success',
     })
 
   def test_privacy_filtering(self):
@@ -99,8 +146,8 @@ class CovidSurveyCountyWeeklyTests(unittest.TestCase):
 
       # assert that no data came back
       self.assertEqual(response, {
-        "result": -2,
-        "message": "no results",
+        'result': -2,
+        'message': 'no results',
       })
 
     with self.subTest(name='unfiltered'):
@@ -118,8 +165,8 @@ class CovidSurveyCountyWeeklyTests(unittest.TestCase):
 
       # assert that the right data came back
       self.assertEqual(response, {
-        "result": 1,
-        "epidata": [{
+        'result': 1,
+        'epidata': [{
           'epiweek': 202014,
           'county': '42003',
           'ili': 1.5,
@@ -128,5 +175,5 @@ class CovidSurveyCountyWeeklyTests(unittest.TestCase):
           'cli_stdev': 4.5,
           'denominator': 100.5,
          }],
-        "message": "success",
+        'message': 'success',
       })

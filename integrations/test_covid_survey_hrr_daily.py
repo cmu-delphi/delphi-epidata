@@ -60,8 +60,8 @@ class CovidSurveyHrrDailyTests(unittest.TestCase):
 
     # assert that the right data came back
     self.assertEqual(response, {
-      "result": 1,
-      "epidata": [{
+      'result': 1,
+      'epidata': [{
         'date': '2020-04-08',
         'hrr': 123,
         'ili': 1.5,
@@ -70,7 +70,7 @@ class CovidSurveyHrrDailyTests(unittest.TestCase):
         'cli_stdev': 4.5,
         'denominator': 5678.5,
        }],
-      "message": "success",
+      'message': 'success',
     })
 
   def test_privacy_filtering(self):
@@ -99,8 +99,8 @@ class CovidSurveyHrrDailyTests(unittest.TestCase):
 
       # assert that no data came back
       self.assertEqual(response, {
-        "result": -2,
-        "message": "no results",
+        'result': -2,
+        'message': 'no results',
       })
 
     with self.subTest(name='unfiltered'):
@@ -118,8 +118,8 @@ class CovidSurveyHrrDailyTests(unittest.TestCase):
 
       # assert that the right data came back
       self.assertEqual(response, {
-        "result": 1,
-        "epidata": [{
+        'result': 1,
+        'epidata': [{
           'date': '2020-04-08',
           'hrr': 123,
           'ili': 1.5,
@@ -128,5 +128,5 @@ class CovidSurveyHrrDailyTests(unittest.TestCase):
           'cli_stdev': 4.5,
           'denominator': 100.5,
          }],
-        "message": "success",
+        'message': 'success',
       })
