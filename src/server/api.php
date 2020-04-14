@@ -920,28 +920,39 @@ function get_dengue_nowcast($locations, $epiweeks) {
   return count($epidata) === 0 ? null : $epidata;
 }
 
-// queries the `covid_survey_hrr_daily` table. although the data is
-// pre-filtered, out of an abundance of caution, rows with `denominator` less
-// than 100 are omitted for privacy.
+// queries the `covid_alert` table.
+//   $name (required): name of sensor, including subtype (e.g. sensor-type)
+//   $geo_type (required): geographic resolution (e.g. county, MSA, HRR)
+//   $geo_id (required): location identifier or `*` as a wildcard for all
+//     locations (specific to `$geo_type`)
 //   $dates (required): array of date values/ranges
-//   $hrrs (required): array of HRR values/ranges
-function get_covid_survey_hrr_daily($dates, $hrrs) {
+function get_covid_alert($name, $geo_type, $geo_id, $dates) {
+  // required for `mysqli_real_escape_string`
+  global $dbh;
+  $name = mysqli_real_escape_string($dbh, $name);
+  $geo_type = mysqli_real_escape_string($dbh, $geo_type);
+  $geo_id = mysqli_real_escape_string($dbh, $geo_id);
   // basic query info
-  $table = '`covid_survey_hrr_daily` t';
-  $fields = "t.`date`, t.`hrr`, t.`ili`, t.`ili_stdev`, t.`cli`, t.`cli_stdev`, t.`denominator`";
-  $order = "t.`date` ASC, t.`hrr` ASC";
+  $table = '`covid_alert` t';
+  $fields = "t.`date`, t.`geo_id`, t.`raw`, t.`scaled`, t.`direction`, t.`sample_size`";
+  $order = "t.`date` ASC, t.`geo_id` ASC";
   // data type of each field
-  $fields_string = array('date');
-  $fields_int = array('hrr');
-  $fields_float = array('ili', 'ili_stdev', 'cli', 'cli_stdev', 'denominator');
-  // build the date filter
+  $fields_string = array('date', 'geo_id');
+  $fields_int = array('direction');
+  $fields_float = array('raw', 'scaled', 'sample_size');
+  // build the name, date, and location (type and id) filters
+  $condition_name = "t.`name` = '{$name}'";
   $condition_date = filter_dates('t.`date`', $dates);
-  // build the HRR filter
-  $condition_hrr = filter_integers('t.`hrr`', $hrrs);
-  // build the denominator threshold filter
-  $condition_denominator = 't.`denominator` >= 100';
+  $condition_geo_type = "t.`geo_type` = '{$geo_type}'";
+  if ($geo_id === '*') {
+    // the wildcard query should return data for all locations in `geo_type`
+    $condition_geo_id = 'TRUE';
+  } else {
+    // return data for a particular location
+    $condition_geo_id = "t.`geo_id` = '{$geo_id}'";
+  }
   // the query
-  $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_date}) AND ({$condition_hrr}) AND ({$condition_denominator}) ORDER BY {$order}";
+  $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_name}) AND ({$condition_date}) AND ({$condition_geo_type}) AND ({$condition_geo_id}) ORDER BY {$order}";
   // get the data from the database
   $epidata = array();
   execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
@@ -949,57 +960,19 @@ function get_covid_survey_hrr_daily($dates, $hrrs) {
   return count($epidata) === 0 ? null : $epidata;
 }
 
-// queries the `covid_survey_msa_daily` table. although the data is
-// pre-filtered, out of an abundance of caution, rows with `denominator` less
-// than 100 are omitted for privacy.
-//   $dates (required): array of date values/ranges
-//   $msas (required): array of MSA values/ranges
-function get_covid_survey_msa_daily($dates, $msas) {
+// queries the `covid_alert` table for metadata only.
+function get_covid_alert_meta() {
   // basic query info
-  $table = '`covid_survey_msa_daily` t';
-  $fields = "t.`date`, t.`msa`, t.`ili`, t.`ili_stdev`, t.`cli`, t.`cli_stdev`, t.`denominator`";
-  $order = "t.`date` ASC, t.`msa` ASC";
+  $table = '`covid_alert` t';
+  $fields = "t.`name`, t.`geo_type`, MIN(t.`date`) AS `min_date`, MAX(t.`date`) AS `max_date`, COUNT(DISTINCT `geo_id`) AS `num_locations`";
+  $group = "t.`name`, t.`geo_type`";
+  $order = "t.`name` ASC, t.`geo_type` ASC";
   // data type of each field
-  $fields_string = array('date');
-  $fields_int = array('msa');
-  $fields_float = array('ili', 'ili_stdev', 'cli', 'cli_stdev', 'denominator');
-  // build the date filter
-  $condition_date = filter_dates('t.`date`', $dates);
-  // build the MSA filter
-  $condition_msa = filter_integers('t.`msa`', $msas);
-  // build the denominator threshold filter
-  $condition_denominator = 't.`denominator` >= 100';
+  $fields_string = array('name', 'geo_type', 'min_date', 'max_date');
+  $fields_int = array('num_locations');
+  $fields_float = null;
   // the query
-  $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_date}) AND ({$condition_msa}) AND ({$condition_denominator}) ORDER BY {$order}";
-  // get the data from the database
-  $epidata = array();
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
-}
-
-// queries the `covid_survey_county_weekly` table. although the data is
-// pre-filtered, out of an abundance of caution, rows with `denominator` less
-// than 100 are omitted for privacy.
-//   $epiweeks (required): array of epiweek values/ranges
-//   $counties (required): array of FIPS 6-4 county identifiers
-function get_covid_survey_county_weekly($epiweeks, $counties) {
-  // basic query info
-  $table = '`covid_survey_county_weekly` t';
-  $fields = "t.`epiweek`, t.`county`, t.`ili`, t.`ili_stdev`, t.`cli`, t.`cli_stdev`, t.`denominator`";
-  $order = "t.`epiweek` ASC, t.`county` ASC";
-  // data type of each field
-  $fields_string = array('county');
-  $fields_int = array('epiweek');
-  $fields_float = array('ili', 'ili_stdev', 'cli', 'cli_stdev', 'denominator');
-  // build the epiweek filter
-  $condition_epiweek = filter_integers('t.`epiweek`', $epiweeks);
-  // build the county filter
-  $condition_county = filter_strings('t.`county`', $counties);
-  // build the denominator threshold filter
-  $condition_denominator = 't.`denominator` >= 100';
-  // the query
-  $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_epiweek}) AND ({$condition_county}) AND ({$condition_denominator}) ORDER BY {$order}";
+  $query = "SELECT {$fields} FROM {$table} GROUP BY {$group} ORDER BY {$order}";
   // get the data from the database
   $epidata = array();
   execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
@@ -1451,33 +1424,18 @@ if(database_connect()) {
           $data['message'] = 'unauthenticated';
       }
     }
-  } else if($source === 'covid_survey_hrr_daily') {
-    if(require_all($data, array('dates', 'hrrs'))) {
+  } else if($source === 'covid_alert') {
+    if(require_all($data, array('name', 'geo_type', 'dates', 'geo_id'))) {
       // parse the request
       $dates = extract_values($_REQUEST['dates'], 'int');
-      $hrrs = extract_values($_REQUEST['hrrs'], 'int');
       // get the data
-      $epidata = get_covid_survey_hrr_daily($dates, $hrrs);
+      $epidata = get_covid_alert($_REQUEST['name'], $_REQUEST['geo_type'], $_REQUEST['geo_id'], $dates);
       store_result($data, $epidata);
     }
-  } else if($source === 'covid_survey_msa_daily') {
-    if(require_all($data, array('dates', 'msas'))) {
-      // parse the request
-      $dates = extract_values($_REQUEST['dates'], 'int');
-      $msas = extract_values($_REQUEST['msas'], 'int');
-      // get the data
-      $epidata = get_covid_survey_msa_daily($dates, $msas);
-      store_result($data, $epidata);
-    }
-  } else if($source === 'covid_survey_county_weekly') {
-    if(require_all($data, array('epiweeks', 'counties'))) {
-      // parse the request
-      $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
-      $counties = extract_values($_REQUEST['counties'], 'ordered_string');
-      // get the data
-      $epidata = get_covid_survey_county_weekly($epiweeks, $counties);
-      store_result($data, $epidata);
-    }
+  } else if($source === 'covid_alert_meta') {
+    // get the metadata
+    $epidata = get_covid_alert_meta();
+    store_result($data, $epidata);
   } else {
     $data['message'] = 'no data source specified';
   }
