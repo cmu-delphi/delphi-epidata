@@ -473,6 +473,9 @@ function get_twitter($locations, $dates, $resolution) {
 // if present, $hours determines which counts are used within each day; otherwise all counts are used
 // for example, if hours=[4], then only the 4 AM (UTC) stream is returned
 function get_wiki($articles, $language, $dates, $resolution, $hours) {
+  // required for `mysqli_real_escape_string`
+  global $dbh;
+  $language = mysqli_real_escape_string($dbh, $language);
   // basic query info
   // in a few rare instances (~6 total), `total` is unreasonably high; something glitched somewhere, just ignore it
   // $table = '`wiki` w JOIN (SELECT * FROM `wiki_meta` WHERE `total` < 100000000) m ON m.`datetime` = w.`datetime`';
