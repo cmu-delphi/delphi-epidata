@@ -44,7 +44,8 @@ class CovidAlertTests(unittest.TestCase):
     # insert dummy data
     self.cur.execute('''
       insert into covid_alert values
-        (0, 'sensor', 'county', '2020-04-14', '01234', 1.5, 2.5, -1, 3.5)
+        (0, 'sensor', 'county', '2020-04-14', '01234',
+          1.5, 2.5, 3, 4.5, 5.5, 6.5)
     ''')
     self.cnx.commit()
 
@@ -67,8 +68,10 @@ class CovidAlertTests(unittest.TestCase):
         'geo_id': '01234',
         'raw': 1.5,
         'scaled': 2.5,
-        'direction': -1,
-        'sample_size': 3.5,
+        'direction': 3,
+        'sample_size': 4.5,
+        'p_up': 5.5,
+        'p_down': 6.5,
        }],
       'message': 'success',
     })
@@ -79,12 +82,18 @@ class CovidAlertTests(unittest.TestCase):
     # insert dummy data
     self.cur.execute('''
       insert into covid_alert values
-        (0, 'sensor', 'county', '2020-04-14', '11111', 10, 11, -1, 12),
-        (0, 'sensor', 'county', '2020-04-14', '22222', 20, 21, 0, 22),
-        (0, 'sensor', 'county', '2020-04-14', '33333', 30, 31, 1, NULL),
-        (0, 'sensor', 'msa', '2020-04-14', '11111', 40, 41, -1, 42),
-        (0, 'sensor', 'msa', '2020-04-14', '22222', 50, 51, 0, 52),
-        (0, 'sensor', 'msa', '2020-04-14', '33333', 60, 61, 1, NULL)
+        (0, 'sensor', 'county', '2020-04-14', '11111',
+          10, 11, 12, 13, 14, 15),
+        (0, 'sensor', 'county', '2020-04-14', '22222',
+          20, 21, 22, 23, 24, 25),
+        (0, 'sensor', 'county', '2020-04-14', '33333',
+          30, 31, 32, 33, 34, 35),
+        (0, 'sensor', 'msa', '2020-04-14', '11111',
+          40, 41, 42, 43, 44, 45),
+        (0, 'sensor', 'msa', '2020-04-14', '22222',
+          50, 51, 52, 53, 54, 55),
+        (0, 'sensor', 'msa', '2020-04-14', '33333',
+          60, 61, 62, 63, 64, 65)
     ''')
     self.cnx.commit()
 
@@ -108,22 +117,28 @@ class CovidAlertTests(unittest.TestCase):
           'geo_id': '11111',
           'raw': 10,
           'scaled': 11,
-          'direction': -1,
-          'sample_size': 12,
+          'direction': 12,
+          'sample_size': 13,
+          'p_up': 14,
+          'p_down': 15,
         }, {
           'date': '2020-04-14',
           'geo_id': '22222',
           'raw': 20,
           'scaled': 21,
-          'direction': 0,
-          'sample_size': 22,
+          'direction': 22,
+          'sample_size': 23,
+          'p_up': 24,
+          'p_down': 25,
         }, {
           'date': '2020-04-14',
           'geo_id': '33333',
           'raw': 30,
           'scaled': 31,
-          'direction': 1,
-          'sample_size': None,
+          'direction': 32,
+          'sample_size': 33,
+          'p_up': 34,
+          'p_down': 35,
         },
        ],
       'message': 'success',
@@ -135,12 +150,18 @@ class CovidAlertTests(unittest.TestCase):
     # insert dummy data
     self.cur.execute('''
       insert into covid_alert values
-        (0, 'sensor', 'county', '2020-04-11', '01234', 10, 11, -1, 12),
-        (0, 'sensor', 'county', '2020-04-12', '01234', 20, 21, 0, 22),
-        (0, 'sensor', 'county', '2020-04-13', '01234', 30, 31, 1, NULL),
-        (0, 'sensor', 'county', '2020-04-11', '11111', 40, 41, -1, 42),
-        (0, 'sensor', 'county', '2020-04-12', '22222', 50, 51, 0, 52),
-        (0, 'sensor', 'county', '2020-04-13', '33333', 60, 61, 1, NULL)
+        (0, 'sensor', 'county', '2020-04-11', '01234',
+          10, 11, 12, 13, 14, 15),
+        (0, 'sensor', 'county', '2020-04-12', '01234',
+          20, 21, 22, 23, 24, 25),
+        (0, 'sensor', 'county', '2020-04-13', '01234',
+          30, 31, 32, 33, 34, 35),
+        (0, 'sensor', 'county', '2020-04-11', '11111',
+          40, 41, 42, 43, 44, 45),
+        (0, 'sensor', 'county', '2020-04-12', '22222',
+          50, 51, 52, 53, 54, 55),
+        (0, 'sensor', 'county', '2020-04-13', '33333',
+          60, 61, 62, 63, 64, 65)
     ''')
     self.cnx.commit()
 
@@ -164,22 +185,28 @@ class CovidAlertTests(unittest.TestCase):
           'geo_id': '01234',
           'raw': 10,
           'scaled': 11,
-          'direction': -1,
-          'sample_size': 12,
+          'direction': 12,
+          'sample_size': 13,
+          'p_up': 14,
+          'p_down': 15,
         }, {
           'date': '2020-04-12',
           'geo_id': '01234',
           'raw': 20,
           'scaled': 21,
-          'direction': 0,
-          'sample_size': 22,
+          'direction': 22,
+          'sample_size': 23,
+          'p_up': 24,
+          'p_down': 25,
         }, {
           'date': '2020-04-13',
           'geo_id': '01234',
           'raw': 30,
           'scaled': 31,
-          'direction': 1,
-          'sample_size': None,
+          'direction': 32,
+          'sample_size': 33,
+          'p_up': 34,
+          'p_down': 35,
         },
        ],
       'message': 'success',
@@ -191,7 +218,7 @@ class CovidAlertTests(unittest.TestCase):
     # insert dummy data
     self.cur.execute('''
       insert into covid_alert values
-        (0, 'sensor', 'county', '2020-04-14', '01234', 0, 0, 0, 0)
+        (0, 'sensor', 'county', '2020-04-14', '01234', 0, 0, 0, 0, 0, 0)
     ''')
     self.cnx.commit()
 
@@ -199,68 +226,43 @@ class CovidAlertTests(unittest.TestCase):
     with self.assertRaises(mysql.connector.errors.IntegrityError):
       self.cur.execute('''
         insert into covid_alert values
-          (0, 'sensor', 'county', '2020-04-14', '01234', 1, 1, 1, 1)
+          (0, 'sensor', 'county', '2020-04-14', '01234', 1, 1, 1, 1, 1, 1)
       ''')
 
-  def test_metadata(self):
-    """Fetch metadata over sensors, locations, and dates."""
+  def test_nullable_columns(self):
+    """Missing values should be surfaced as null."""
 
     # insert dummy data
     self.cur.execute('''
       insert into covid_alert values
-        (0, 'sensor1', 'msa', '2020-04-01', 'a', 0, 0, 0, 0),
-        (0, 'sensor1', 'msa', '2020-04-01', 'b', 0, 0, 0, 0),
-        (0, 'sensor1', 'msa', '2020-04-02', 'c', 0, 0, 0, 0),
-        (0, 'sensor1', 'msa', '2020-04-02', 'd', 0, 0, 0, 0),
-        (0, 'sensor1', 'hrr', '2020-04-01', 'd', 0, 0, 0, 0),
-        (0, 'sensor1', 'hrr', '2020-04-03', 'e', 0, 0, 0, 0),
-        (0, 'sensor1', 'hrr', '2020-04-03', 'd', 0, 0, 0, 0),
-        (0, 'sensor1', 'hrr', '2020-04-02', 'e', 0, 0, 0, 0),
-        (0, 'sensor2', 'msa', '2020-04-01', 'a', 0, 0, 0, 0),
-        (0, 'sensor2', 'msa', '2020-04-01', 'b', 0, 0, 0, 0),
-        (0, 'sensor2', 'msa', '2020-04-02', 'c', 0, 0, 0, 0),
-        (0, 'sensor2', 'msa', '2020-04-04', 'd', 0, 0, 0, 0),
-        (0, 'sensor2', 'hrr', '2020-04-11', 'e', 0, 0, 0, 0),
-        (0, 'sensor2', 'hrr', '2020-04-12', 'e', 0, 0, 0, 0),
-        (0, 'sensor2', 'hrr', '2020-04-13', 'e', 0, 0, 0, 0),
-        (0, 'sensor2', 'hrr', '2020-04-14', 'e', 0, 0, 0, 0)
+        (0, 'sensor', 'county', '2020-04-14', '01234',
+          NULL, NULL, NULL, NULL, NULL, NULL)
     ''')
     self.cnx.commit()
 
     # make the request
-    response = requests.get(BASE_URL, params={'source': 'covid_alert_meta'})
+    response = requests.get(BASE_URL, params={
+      'source': 'covid_alert',
+      'name': 'sensor',
+      'geo_type': 'county',
+      'dates': 20200414,
+      'geo_id': '01234',
+    })
     response.raise_for_status()
     response = response.json()
 
     # assert that the right data came back
     self.assertEqual(response, {
       'result': 1,
-      'epidata': [
-        {
-          'name': 'sensor1',
-          'geo_type': 'hrr',
-          'min_date': '2020-04-01',
-          'max_date': '2020-04-03',
-          'num_locations': 2,
-        }, {
-          'name': 'sensor1',
-          'geo_type': 'msa',
-          'min_date': '2020-04-01',
-          'max_date': '2020-04-02',
-          'num_locations': 4,
-        }, {
-          'name': 'sensor2',
-          'geo_type': 'hrr',
-          'min_date': '2020-04-11',
-          'max_date': '2020-04-14',
-          'num_locations': 1,
-        }, {
-          'name': 'sensor2',
-          'geo_type': 'msa',
-          'min_date': '2020-04-01',
-          'max_date': '2020-04-04',
-          'num_locations': 4,
-        },
-       ],
+      'epidata': [{
+        'date': '2020-04-14',
+        'geo_id': '01234',
+        'raw': None,
+        'scaled': None,
+        'direction': None,
+        'sample_size': None,
+        'p_up': None,
+        'p_down': None,
+       }],
       'message': 'success',
     })
