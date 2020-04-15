@@ -923,20 +923,20 @@ function get_dengue_nowcast($locations, $epiweeks) {
   return count($epidata) === 0 ? null : $epidata;
 }
 
-// queries the `covid_alert` table.
+// queries the `covidcast` table.
 //   $name (required): name of sensor, including subtype (e.g. sensor-type)
 //   $geo_type (required): geographic resolution (e.g. county, MSA, HRR)
 //   $geo_id (required): location identifier or `*` as a wildcard for all
 //     locations (specific to `$geo_type`)
 //   $dates (required): array of date values/ranges
-function get_covid_alert($name, $geo_type, $geo_id, $dates) {
+function get_covidcast($name, $geo_type, $geo_id, $dates) {
   // required for `mysqli_real_escape_string`
   global $dbh;
   $name = mysqli_real_escape_string($dbh, $name);
   $geo_type = mysqli_real_escape_string($dbh, $geo_type);
   $geo_id = mysqli_real_escape_string($dbh, $geo_id);
   // basic query info
-  $table = '`covid_alert` t';
+  $table = '`covidcast` t';
   $fields = "t.`date`, t.`geo_id`, t.`raw`, t.`scaled`, t.`direction`, t.`sample_size`, t.`p_up`, t.`p_down`";
   $order = "t.`date` ASC, t.`geo_id` ASC";
   // data type of each field
@@ -963,10 +963,10 @@ function get_covid_alert($name, $geo_type, $geo_id, $dates) {
   return count($epidata) === 0 ? null : $epidata;
 }
 
-// queries the `covid_alert` table for metadata only.
-function get_covid_alert_meta() {
+// queries the `covidcast` table for metadata only.
+function get_covidcast_meta() {
   // basic query info
-  $table = '`covid_alert` t';
+  $table = '`covidcast` t';
   $fields = "t.`name`, t.`geo_type`, MIN(t.`date`) AS `min_date`, MAX(t.`date`) AS `max_date`, COUNT(DISTINCT `geo_id`) AS `num_locations`";
   $group = "t.`name`, t.`geo_type`";
   $order = "t.`name` ASC, t.`geo_type` ASC";
@@ -1427,17 +1427,17 @@ if(database_connect()) {
           $data['message'] = 'unauthenticated';
       }
     }
-  } else if($source === 'covid_alert') {
+  } else if($source === 'covidcast') {
     if(require_all($data, array('name', 'geo_type', 'dates', 'geo_id'))) {
       // parse the request
       $dates = extract_values($_REQUEST['dates'], 'int');
       // get the data
-      $epidata = get_covid_alert($_REQUEST['name'], $_REQUEST['geo_type'], $_REQUEST['geo_id'], $dates);
+      $epidata = get_covidcast($_REQUEST['name'], $_REQUEST['geo_type'], $_REQUEST['geo_id'], $dates);
       store_result($data, $epidata);
     }
-  } else if($source === 'covid_alert_meta') {
+  } else if($source === 'covidcast_meta') {
     // get the metadata
-    $epidata = get_covid_alert_meta();
+    $epidata = get_covidcast_meta();
     store_result($data, $epidata);
   } else {
     $data['message'] = 'no data source specified';

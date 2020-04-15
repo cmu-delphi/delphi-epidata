@@ -1,4 +1,4 @@
-"""Integration tests for the `covid_alert_meta` endpoint."""
+"""Integration tests for the `covidcast_meta` endpoint."""
 
 # standard library
 import unittest
@@ -12,20 +12,20 @@ import requests
 BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
 
 
-class CovidAlertMetaTests(unittest.TestCase):
-  """Tests the `covid_alert_meta` endpoint."""
+class CovidcastMetaTests(unittest.TestCase):
+  """Tests the `covidcast_meta` endpoint."""
 
   def setUp(self):
     """Perform per-test setup."""
 
-    # connect to the `epidata` database and clear the `covid_alert` table
+    # connect to the `epidata` database and clear the `covidcast` table
     cnx = mysql.connector.connect(
         user='user',
         password='pass',
         host='delphi_database_epidata',
         database='epidata')
     cur = cnx.cursor()
-    cur.execute('truncate table covid_alert')
+    cur.execute('truncate table covidcast')
     cnx.commit()
     cur.close()
 
@@ -43,7 +43,7 @@ class CovidAlertMetaTests(unittest.TestCase):
 
     # insert dummy data
     self.cur.execute('''
-      insert into covid_alert values
+      insert into covidcast values
         (0, 'sensor1', 'msa', '2020-04-01', 'a', 0, 0, 0, 0, 0, 0),
         (0, 'sensor1', 'msa', '2020-04-01', 'b', 0, 0, 0, 0, 0, 0),
         (0, 'sensor1', 'msa', '2020-04-02', 'c', 0, 0, 0, 0, 0, 0),
@@ -64,7 +64,7 @@ class CovidAlertMetaTests(unittest.TestCase):
     self.cnx.commit()
 
     # make the request
-    response = requests.get(BASE_URL, params={'source': 'covid_alert_meta'})
+    response = requests.get(BASE_URL, params={'source': 'covidcast_meta'})
     response.raise_for_status()
     response = response.json()
 

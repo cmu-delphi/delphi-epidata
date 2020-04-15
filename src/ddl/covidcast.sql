@@ -4,7 +4,7 @@ Delphi's COVID-19 surveillance streams.
 */
 
 /*
-`covid_alert` stores daily sensor readings at various geographic resolutions.
+`covidcast` stores daily sensor readings at various geographic resolutions.
 
 Data is public.
 
@@ -52,7 +52,7 @@ Data is public.
   known or applicable
 */
 
-CREATE TABLE `covid_alert` (
+CREATE TABLE `covidcast` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(32) NOT NULL,
   `geo_type` varchar(12) NOT NULL,
