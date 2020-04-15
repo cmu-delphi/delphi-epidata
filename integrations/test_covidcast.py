@@ -1,4 +1,4 @@
-"""Integration tests for the `covid_alert` endpoint."""
+"""Integration tests for the `covidcast` endpoint."""
 
 # standard library
 import unittest
@@ -12,20 +12,20 @@ import requests
 BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
 
 
-class CovidAlertTests(unittest.TestCase):
-  """Tests the `covid_alert` endpoint."""
+class CovidcastTests(unittest.TestCase):
+  """Tests the `covidcast` endpoint."""
 
   def setUp(self):
     """Perform per-test setup."""
 
-    # connect to the `epidata` database and clear the `covid_alert` table
+    # connect to the `epidata` database and clear the `covidcast` table
     cnx = mysql.connector.connect(
         user='user',
         password='pass',
         host='delphi_database_epidata',
         database='epidata')
     cur = cnx.cursor()
-    cur.execute('truncate table covid_alert')
+    cur.execute('truncate table covidcast')
     cnx.commit()
     cur.close()
 
@@ -43,7 +43,7 @@ class CovidAlertTests(unittest.TestCase):
 
     # insert dummy data
     self.cur.execute('''
-      insert into covid_alert values
+      insert into covidcast values
         (0, 'sensor', 'county', '2020-04-14', '01234',
           1.5, 2.5, 3, 4.5, 5.5, 6.5)
     ''')
@@ -51,7 +51,7 @@ class CovidAlertTests(unittest.TestCase):
 
     # make the request
     response = requests.get(BASE_URL, params={
-      'source': 'covid_alert',
+      'source': 'covidcast',
       'name': 'sensor',
       'geo_type': 'county',
       'dates': 20200414,
@@ -81,7 +81,7 @@ class CovidAlertTests(unittest.TestCase):
 
     # insert dummy data
     self.cur.execute('''
-      insert into covid_alert values
+      insert into covidcast values
         (0, 'sensor', 'county', '2020-04-14', '11111',
           10, 11, 12, 13, 14, 15),
         (0, 'sensor', 'county', '2020-04-14', '22222',
@@ -99,7 +99,7 @@ class CovidAlertTests(unittest.TestCase):
 
     # make the request
     response = requests.get(BASE_URL, params={
-      'source': 'covid_alert',
+      'source': 'covidcast',
       'name': 'sensor',
       'geo_type': 'county',
       'dates': 20200414,
@@ -149,7 +149,7 @@ class CovidAlertTests(unittest.TestCase):
 
     # insert dummy data
     self.cur.execute('''
-      insert into covid_alert values
+      insert into covidcast values
         (0, 'sensor', 'county', '2020-04-11', '01234',
           10, 11, 12, 13, 14, 15),
         (0, 'sensor', 'county', '2020-04-12', '01234',
@@ -167,7 +167,7 @@ class CovidAlertTests(unittest.TestCase):
 
     # make the request
     response = requests.get(BASE_URL, params={
-      'source': 'covid_alert',
+      'source': 'covidcast',
       'name': 'sensor',
       'geo_type': 'county',
       'dates': '20200411-20200413',
@@ -217,7 +217,7 @@ class CovidAlertTests(unittest.TestCase):
 
     # insert dummy data
     self.cur.execute('''
-      insert into covid_alert values
+      insert into covidcast values
         (0, 'sensor', 'county', '2020-04-14', '01234', 0, 0, 0, 0, 0, 0)
     ''')
     self.cnx.commit()
@@ -225,7 +225,7 @@ class CovidAlertTests(unittest.TestCase):
     # fail to insert different dummy data under the same key
     with self.assertRaises(mysql.connector.errors.IntegrityError):
       self.cur.execute('''
-        insert into covid_alert values
+        insert into covidcast values
           (0, 'sensor', 'county', '2020-04-14', '01234', 1, 1, 1, 1, 1, 1)
       ''')
 
@@ -234,7 +234,7 @@ class CovidAlertTests(unittest.TestCase):
 
     # insert dummy data
     self.cur.execute('''
-      insert into covid_alert values
+      insert into covidcast values
         (0, 'sensor', 'county', '2020-04-14', '01234',
           NULL, NULL, NULL, NULL, NULL, NULL)
     ''')
@@ -242,7 +242,7 @@ class CovidAlertTests(unittest.TestCase):
 
     # make the request
     response = requests.get(BASE_URL, params={
-      'source': 'covid_alert',
+      'source': 'covidcast',
       'name': 'sensor',
       'geo_type': 'county',
       'dates': 20200414,
