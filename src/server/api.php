@@ -937,12 +937,12 @@ function get_covid_alert($name, $geo_type, $geo_id, $dates) {
   $geo_id = mysqli_real_escape_string($dbh, $geo_id);
   // basic query info
   $table = '`covid_alert` t';
-  $fields = "t.`date`, t.`geo_id`, t.`raw`, t.`scaled`, t.`direction`, t.`sample_size`";
+  $fields = "t.`date`, t.`geo_id`, t.`raw`, t.`scaled`, t.`direction`, t.`sample_size`, t.`p_up`, t.`p_down`";
   $order = "t.`date` ASC, t.`geo_id` ASC";
   // data type of each field
   $fields_string = array('date', 'geo_id');
   $fields_int = array('direction');
-  $fields_float = array('raw', 'scaled', 'sample_size');
+  $fields_float = array('raw', 'scaled', 'sample_size', 'p_up', 'p_down');
   // build the name, date, and location (type and id) filters
   $condition_name = "t.`name` = '{$name}'";
   $condition_date = filter_dates('t.`date`', $dates);
