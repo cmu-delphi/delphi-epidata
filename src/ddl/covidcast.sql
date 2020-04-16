@@ -12,7 +12,8 @@ Data is public.
 | Field       | Type        | Null | Key | Default | Extra          |
 +-------------+-------------+------+-----+---------+----------------+
 | id          | int(11)     | NO   | PRI | NULL    | auto_increment |
-| name        | varchar(32) | NO   | MUL | NULL    |                |
+| source      | varchar(32) | NO   | MUL | NULL    |                |
+| signal      | varchar(32) | NO   |     | NULL    |                |
 | geo_type    | varchar(12) | NO   |     | NULL    |                |
 | date        | date        | NO   |     | NULL    |                |
 | geo_id      | varchar(12) | NO   |     | NULL    |                |
@@ -25,8 +26,10 @@ Data is public.
 
 - `id`
   unique identifier for each record
-- `name`
-  data souce, and subtype if applicable (e.g. fb_survey_cli, fb_survey_ili)
+- `source`
+  name of upstream data souce
+- `signal`
+  name of signal derived from upstream data
 - `geo_type`
   geographic resolution (e.g. county, HRR, MSA, DMA, state)
 - `date`
@@ -55,7 +58,8 @@ Data is public.
 
 CREATE TABLE `covidcast` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(32) NOT NULL,
+  `source` varchar(32) NOT NULL,
+  `signal` varchar(32) NOT NULL,
   `geo_type` varchar(12) NOT NULL,
   `date` date NOT NULL,
   `geo_id` varchar(12) NOT NULL,
@@ -66,7 +70,7 @@ CREATE TABLE `covidcast` (
   `prob` double,
   PRIMARY KEY (`id`),
   -- for uniqueness, and also fast lookup of all locations on a given date
-  UNIQUE KEY (`name`, `geo_type`, `date`, `geo_id`),
+  UNIQUE KEY (`source`, `signal`, `geo_type`, `date`, `geo_id`),
   -- for fast lookup of a time-series for a given location
-  KEY (`name`, `geo_type`, `geo_id`)
+  KEY (`source`, `signal`, `geo_type`, `geo_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
