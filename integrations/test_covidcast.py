@@ -44,14 +44,16 @@ class CovidcastTests(unittest.TestCase):
     # insert dummy data
     self.cur.execute('''
       insert into covidcast values
-        (0, 'sensor', 'county', '2020-04-14', '01234', 1.5, 2.5, 3.5, 4, 5.5)
+        (0, 'src', 'sig', 'county', '2020-04-14', '01234',
+          1.5, 2.5, 3.5, 4, 5.5)
     ''')
     self.cnx.commit()
 
     # make the request
     response = requests.get(BASE_URL, params={
       'source': 'covidcast',
-      'name': 'sensor',
+      'data_source': 'src',
+      'signal': 'sig',
       'geo_type': 'county',
       'dates': 20200414,
       'geo_id': '01234',
@@ -80,19 +82,20 @@ class CovidcastTests(unittest.TestCase):
     # insert dummy data
     self.cur.execute('''
       insert into covidcast values
-        (0, 'sensor', 'county', '2020-04-14', '11111', 10, 11, 12, 13, 14),
-        (0, 'sensor', 'county', '2020-04-14', '22222', 20, 21, 22, 23, 24),
-        (0, 'sensor', 'county', '2020-04-14', '33333', 30, 31, 32, 33, 34),
-        (0, 'sensor', 'msa', '2020-04-14', '11111', 40, 41, 42, 43, 44),
-        (0, 'sensor', 'msa', '2020-04-14', '22222', 50, 51, 52, 53, 54),
-        (0, 'sensor', 'msa', '2020-04-14', '33333', 60, 61, 62, 63, 64)
+        (0, 'src', 'sig', 'county', '2020-04-14', '11111', 10, 11, 12, 13, 14),
+        (0, 'src', 'sig', 'county', '2020-04-14', '22222', 20, 21, 22, 23, 24),
+        (0, 'src', 'sig', 'county', '2020-04-14', '33333', 30, 31, 32, 33, 34),
+        (0, 'src', 'sig', 'msa', '2020-04-14', '11111', 40, 41, 42, 43, 44),
+        (0, 'src', 'sig', 'msa', '2020-04-14', '22222', 50, 51, 52, 53, 54),
+        (0, 'src', 'sig', 'msa', '2020-04-14', '33333', 60, 61, 62, 63, 64)
     ''')
     self.cnx.commit()
 
     # make the request
     response = requests.get(BASE_URL, params={
       'source': 'covidcast',
-      'name': 'sensor',
+      'data_source': 'src',
+      'signal': 'sig',
       'geo_type': 'county',
       'dates': 20200414,
       'geo_id': '*',
@@ -139,19 +142,20 @@ class CovidcastTests(unittest.TestCase):
     # insert dummy data
     self.cur.execute('''
       insert into covidcast values
-        (0, 'sensor', 'county', '2020-04-11', '01234', 10, 11, 12, 13, 14),
-        (0, 'sensor', 'county', '2020-04-12', '01234', 20, 21, 22, 23, 24),
-        (0, 'sensor', 'county', '2020-04-13', '01234', 30, 31, 32, 33, 34),
-        (0, 'sensor', 'county', '2020-04-11', '11111', 40, 41, 42, 43, 44),
-        (0, 'sensor', 'county', '2020-04-12', '22222', 50, 51, 52, 53, 54),
-        (0, 'sensor', 'county', '2020-04-13', '33333', 60, 61, 62, 63, 64)
+        (0, 'src', 'sig', 'county', '2020-04-11', '01234', 10, 11, 12, 13, 14),
+        (0, 'src', 'sig', 'county', '2020-04-12', '01234', 20, 21, 22, 23, 24),
+        (0, 'src', 'sig', 'county', '2020-04-13', '01234', 30, 31, 32, 33, 34),
+        (0, 'src', 'sig', 'county', '2020-04-11', '11111', 40, 41, 42, 43, 44),
+        (0, 'src', 'sig', 'county', '2020-04-12', '22222', 50, 51, 52, 53, 54),
+        (0, 'src', 'sig', 'county', '2020-04-13', '33333', 60, 61, 62, 63, 64)
     ''')
     self.cnx.commit()
 
     # make the request
     response = requests.get(BASE_URL, params={
       'source': 'covidcast',
-      'name': 'sensor',
+      'data_source': 'src',
+      'signal': 'sig',
       'geo_type': 'county',
       'dates': '20200411-20200413',
       'geo_id': '01234',
@@ -198,7 +202,7 @@ class CovidcastTests(unittest.TestCase):
     # insert dummy data
     self.cur.execute('''
       insert into covidcast values
-        (0, 'sensor', 'county', '2020-04-14', '01234', 0, 0, 0, 0, 0)
+        (0, 'src', 'sig', 'county', '2020-04-14', '01234', 0, 0, 0, 0, 0)
     ''')
     self.cnx.commit()
 
@@ -206,7 +210,7 @@ class CovidcastTests(unittest.TestCase):
     with self.assertRaises(mysql.connector.errors.IntegrityError):
       self.cur.execute('''
         insert into covidcast values
-          (0, 'sensor', 'county', '2020-04-14', '01234', 1, 1, 1, 1, 1)
+          (0, 'src', 'sig', 'county', '2020-04-14', '01234', 1, 1, 1, 1, 1)
       ''')
 
   def test_nullable_columns(self):
@@ -215,7 +219,7 @@ class CovidcastTests(unittest.TestCase):
     # insert dummy data
     self.cur.execute('''
       insert into covidcast values
-        (0, 'sensor', 'county', '2020-04-14', '01234', 0.123,
+        (0, 'src', 'sig', 'county', '2020-04-14', '01234', 0.123,
           NULL, NULL, NULL, NULL)
     ''')
     self.cnx.commit()
@@ -223,7 +227,8 @@ class CovidcastTests(unittest.TestCase):
     # make the request
     response = requests.get(BASE_URL, params={
       'source': 'covidcast',
-      'name': 'sensor',
+      'data_source': 'src',
+      'signal': 'sig',
       'geo_type': 'county',
       'dates': 20200414,
       'geo_id': '01234',
