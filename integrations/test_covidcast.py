@@ -44,8 +44,7 @@ class CovidcastTests(unittest.TestCase):
     # insert dummy data
     self.cur.execute('''
       insert into covidcast values
-        (0, 'sensor', 'county', '2020-04-14', '01234',
-          1.5, 2.5, 3, 4.5, 5.5, 6.5)
+        (0, 'sensor', 'county', '2020-04-14', '01234', 1.5, 2.5, 3.5, 4, 5.5)
     ''')
     self.cnx.commit()
 
@@ -66,12 +65,11 @@ class CovidcastTests(unittest.TestCase):
       'epidata': [{
         'date': '2020-04-14',
         'geo_id': '01234',
-        'raw': 1.5,
-        'scaled': 2.5,
-        'direction': 3,
-        'sample_size': 4.5,
-        'p_up': 5.5,
-        'p_down': 6.5,
+        'value': 1.5,
+        'stderr': 2.5,
+        'sample_size': 3.5,
+        'direction': 4,
+        'prob': 5.5,
        }],
       'message': 'success',
     })
@@ -82,18 +80,12 @@ class CovidcastTests(unittest.TestCase):
     # insert dummy data
     self.cur.execute('''
       insert into covidcast values
-        (0, 'sensor', 'county', '2020-04-14', '11111',
-          10, 11, 12, 13, 14, 15),
-        (0, 'sensor', 'county', '2020-04-14', '22222',
-          20, 21, 22, 23, 24, 25),
-        (0, 'sensor', 'county', '2020-04-14', '33333',
-          30, 31, 32, 33, 34, 35),
-        (0, 'sensor', 'msa', '2020-04-14', '11111',
-          40, 41, 42, 43, 44, 45),
-        (0, 'sensor', 'msa', '2020-04-14', '22222',
-          50, 51, 52, 53, 54, 55),
-        (0, 'sensor', 'msa', '2020-04-14', '33333',
-          60, 61, 62, 63, 64, 65)
+        (0, 'sensor', 'county', '2020-04-14', '11111', 10, 11, 12, 13, 14),
+        (0, 'sensor', 'county', '2020-04-14', '22222', 20, 21, 22, 23, 24),
+        (0, 'sensor', 'county', '2020-04-14', '33333', 30, 31, 32, 33, 34),
+        (0, 'sensor', 'msa', '2020-04-14', '11111', 40, 41, 42, 43, 44),
+        (0, 'sensor', 'msa', '2020-04-14', '22222', 50, 51, 52, 53, 54),
+        (0, 'sensor', 'msa', '2020-04-14', '33333', 60, 61, 62, 63, 64)
     ''')
     self.cnx.commit()
 
@@ -115,30 +107,27 @@ class CovidcastTests(unittest.TestCase):
         {
           'date': '2020-04-14',
           'geo_id': '11111',
-          'raw': 10,
-          'scaled': 11,
-          'direction': 12,
-          'sample_size': 13,
-          'p_up': 14,
-          'p_down': 15,
+          'value': 10,
+          'stderr': 11,
+          'sample_size': 12,
+          'direction': 13,
+          'prob': 14,
         }, {
           'date': '2020-04-14',
           'geo_id': '22222',
-          'raw': 20,
-          'scaled': 21,
-          'direction': 22,
-          'sample_size': 23,
-          'p_up': 24,
-          'p_down': 25,
+          'value': 20,
+          'stderr': 21,
+          'sample_size': 22,
+          'direction': 23,
+          'prob': 24,
         }, {
           'date': '2020-04-14',
           'geo_id': '33333',
-          'raw': 30,
-          'scaled': 31,
-          'direction': 32,
-          'sample_size': 33,
-          'p_up': 34,
-          'p_down': 35,
+          'value': 30,
+          'stderr': 31,
+          'sample_size': 32,
+          'direction': 33,
+          'prob': 34,
         },
        ],
       'message': 'success',
@@ -150,18 +139,12 @@ class CovidcastTests(unittest.TestCase):
     # insert dummy data
     self.cur.execute('''
       insert into covidcast values
-        (0, 'sensor', 'county', '2020-04-11', '01234',
-          10, 11, 12, 13, 14, 15),
-        (0, 'sensor', 'county', '2020-04-12', '01234',
-          20, 21, 22, 23, 24, 25),
-        (0, 'sensor', 'county', '2020-04-13', '01234',
-          30, 31, 32, 33, 34, 35),
-        (0, 'sensor', 'county', '2020-04-11', '11111',
-          40, 41, 42, 43, 44, 45),
-        (0, 'sensor', 'county', '2020-04-12', '22222',
-          50, 51, 52, 53, 54, 55),
-        (0, 'sensor', 'county', '2020-04-13', '33333',
-          60, 61, 62, 63, 64, 65)
+        (0, 'sensor', 'county', '2020-04-11', '01234', 10, 11, 12, 13, 14),
+        (0, 'sensor', 'county', '2020-04-12', '01234', 20, 21, 22, 23, 24),
+        (0, 'sensor', 'county', '2020-04-13', '01234', 30, 31, 32, 33, 34),
+        (0, 'sensor', 'county', '2020-04-11', '11111', 40, 41, 42, 43, 44),
+        (0, 'sensor', 'county', '2020-04-12', '22222', 50, 51, 52, 53, 54),
+        (0, 'sensor', 'county', '2020-04-13', '33333', 60, 61, 62, 63, 64)
     ''')
     self.cnx.commit()
 
@@ -183,30 +166,27 @@ class CovidcastTests(unittest.TestCase):
         {
           'date': '2020-04-11',
           'geo_id': '01234',
-          'raw': 10,
-          'scaled': 11,
-          'direction': 12,
-          'sample_size': 13,
-          'p_up': 14,
-          'p_down': 15,
+          'value': 10,
+          'stderr': 11,
+          'sample_size': 12,
+          'direction': 13,
+          'prob': 14,
         }, {
           'date': '2020-04-12',
           'geo_id': '01234',
-          'raw': 20,
-          'scaled': 21,
-          'direction': 22,
-          'sample_size': 23,
-          'p_up': 24,
-          'p_down': 25,
+          'value': 20,
+          'stderr': 21,
+          'sample_size': 22,
+          'direction': 23,
+          'prob': 24,
         }, {
           'date': '2020-04-13',
           'geo_id': '01234',
-          'raw': 30,
-          'scaled': 31,
-          'direction': 32,
-          'sample_size': 33,
-          'p_up': 34,
-          'p_down': 35,
+          'value': 30,
+          'stderr': 31,
+          'sample_size': 32,
+          'direction': 33,
+          'prob': 34,
         },
        ],
       'message': 'success',
@@ -218,7 +198,7 @@ class CovidcastTests(unittest.TestCase):
     # insert dummy data
     self.cur.execute('''
       insert into covidcast values
-        (0, 'sensor', 'county', '2020-04-14', '01234', 0, 0, 0, 0, 0, 0)
+        (0, 'sensor', 'county', '2020-04-14', '01234', 0, 0, 0, 0, 0)
     ''')
     self.cnx.commit()
 
@@ -226,7 +206,7 @@ class CovidcastTests(unittest.TestCase):
     with self.assertRaises(mysql.connector.errors.IntegrityError):
       self.cur.execute('''
         insert into covidcast values
-          (0, 'sensor', 'county', '2020-04-14', '01234', 1, 1, 1, 1, 1, 1)
+          (0, 'sensor', 'county', '2020-04-14', '01234', 1, 1, 1, 1, 1)
       ''')
 
   def test_nullable_columns(self):
@@ -235,8 +215,8 @@ class CovidcastTests(unittest.TestCase):
     # insert dummy data
     self.cur.execute('''
       insert into covidcast values
-        (0, 'sensor', 'county', '2020-04-14', '01234',
-          NULL, NULL, NULL, NULL, NULL, NULL)
+        (0, 'sensor', 'county', '2020-04-14', '01234', 0.123,
+          NULL, NULL, NULL, NULL)
     ''')
     self.cnx.commit()
 
@@ -257,12 +237,11 @@ class CovidcastTests(unittest.TestCase):
       'epidata': [{
         'date': '2020-04-14',
         'geo_id': '01234',
-        'raw': None,
-        'scaled': None,
-        'direction': None,
+        'value': 0.123,
+        'stderr': None,
         'sample_size': None,
-        'p_up': None,
-        'p_down': None,
+        'direction': None,
+        'prob': None,
        }],
       'message': 'success',
     })

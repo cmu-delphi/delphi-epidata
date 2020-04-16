@@ -16,10 +16,11 @@ Data is public.
 | geo_type    | varchar(12) | NO   |     | NULL    |                |
 | date        | date        | NO   |     | NULL    |                |
 | geo_id      | varchar(12) | NO   |     | NULL    |                |
-| raw         | double      | NO   |     | NULL    |                |
-| scaled      | double      | NO   |     | NULL    |                |
-| direction   | int(11)     | NO   |     | NULL    |                |
-| sample_size | double      | NO   |     | NULL    |                |
+| value       | double      | NO   |     | NULL    |                |
+| stderr      | double      | YES  |     | NULL    |                |
+| sample_size | double      | YES  |     | NULL    |                |
+| direction   | int(11)     | YES  |     | NULL    |                |
+| prob        | double      | YES  |     | NULL    |                |
 +-------------+-------------+------+-----+---------+----------------+
 
 - `id`
@@ -37,19 +38,19 @@ Data is public.
   - HRR: HRR number
   - DMA: DMA code
   - state: two-letter state abbreviation
-- `raw`
-  raw view of the data (e.g. contrast with `scaled`)
-- `scaled`
-  view of the data which is centered and scaled relative to "normal" (mean
-  is zero, standard deviation is one)
-- `direction`
-  trend classifier:
-  - +1 means trend is increasing
-  - 0 means trend is steady, or not determined
-  - -1 means trend is decreasing
-- `sample_size`
-  number of "data points" used to produce the value in `raw`, or `NULL` if not
-  known or applicable
+- `value`
+  value (statistic) derived from the underlying data source
+- `stderr` (NULL when not applicable)
+  standard error of the statistic with respect to its sampling distribution
+- `sample_size` (NULL when not applicable)
+  number of "data points" used in computing the statistic
+- `direction` (NULL when not applicable)
+  trend classifier with possible values:
+  - +1: `value` is increasing
+  -  0: `value` is steady
+  - -1: `value` is decreasing
+- `prob` (NULL when not applicable)
+  p-value reflecting surprise at the indicated `direction`
 */
 
 CREATE TABLE `covidcast` (
@@ -58,12 +59,11 @@ CREATE TABLE `covidcast` (
   `geo_type` varchar(12) NOT NULL,
   `date` date NOT NULL,
   `geo_id` varchar(12) NOT NULL,
-  `raw` double,
-  `scaled` double,
-  `direction` int(11),
+  `value` double NOT NULL,
+  `stderr` double,
   `sample_size` double,
-  `p_up` double,
-  `p_down` double,
+  `direction` int(11),
+  `prob` double,
   PRIMARY KEY (`id`),
   -- for uniqueness, and also fast lookup of all locations on a given date
   UNIQUE KEY (`name`, `geo_type`, `date`, `geo_id`),
