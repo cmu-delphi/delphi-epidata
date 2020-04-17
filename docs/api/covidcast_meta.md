@@ -1,9 +1,9 @@
 # About
 
-This is the documentation of the API for accessing the COVIDCast Metadata (`covidcast_meta`)
+This is the documentation of the API for accessing the Delphi's COVID-19 Surveillance Streams Metadata (`covidcast_meta`)
 data source of the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 
-## COVIDCast Metadata
+## Delphi's COVID-19 Surveillance Streams Metadata
 
 ... <!-- TODO -->
 
@@ -58,10 +58,11 @@ None.
 | --- | --- | --- |
 | `result` | result code: 1 = success, 2 = too many results, -2 = no results | integer |
 | `epidata` | list of results, one per name/geo_type pair | array of objects |
-| `epidata[].name` | Data souce, and subtype if applicable (e.g. fb_survey_cli, fb_survey_ili) | string |
+| `epidata[].data_source` | data souce | string |
+| `epidata[].time_type` | temporal resolution of the signal (e.g., `day`, `week`) | string |
 | `epidata[].geo_type` | geographic resolution (e.g. `county`, `hrr`, `msa`, `dma`, `state`) | string |
-| `epidata[].min_date` | minimum date (yyyy-MM-dd) | string |
-| `epidata[].max_date` | maximum date (yyyy-MM-dd) | string |
+| `epidata[].min_time` | minimum time (e.g., 20200406) | integer |
+| `epidata[].max_time` | maximum time (e.g., 20200413) | integer |
 | `epidata[].num_locations` | number of locations | integer |
 | `message` | `success` or error message | string |
 
@@ -74,51 +75,17 @@ https://delphi.midas.cs.cmu.edu/epidata/api.php?source=covidcast_meta
   "result": 1,
   "epidata": [
     {
-      "name": "fb_survey-cli",
+      "data_source": "fb_survey",
+      "signal": "cli",
+      "time_type": "day",
       "geo_type": "county",
-      "min_date": "2020-04-06",
-      "max_date": "2020-04-13",
-      "num_locations": 555
-    },
-    {
-      "name": "fb_survey-cli",
-      "geo_type": "hrr",
-      "min_date": "2020-04-06",
-      "max_date": "2020-04-13",
-      "num_locations": 292
+      "min_time": 20200406,
+      "max_time": 20200413,
+      "num_locations": 555,
+      "min_value": 0,
+      "max_value": 5.0805650596568
     },
     ...
-    {
-      "name": "fb_survey-ili",
-      "geo_type": "county",
-      "min_date": "2020-04-06",
-      "max_date": "2020-04-13",
-      "num_locations": 555
-    },
-    ...
-    {
-      "name": "ght-raw_search",
-      "geo_type": "dma",
-      "min_date": "2020-02-20",
-      "max_date": "2020-04-12",
-      "num_locations": 210
-    },
-    ...
-    {
-      "name": "ght-smoothed_search",
-      "geo_type": "dma",
-      "min_date": "2020-02-20",
-      "max_date": "2020-04-12",
-      "num_locations": 210
-    },
-    ...
-    {
-      "name": "google-survey-cli",
-      "geo_type": "county",
-      "min_date": "2020-04-11",
-      "max_date": "2020-04-14",
-      "num_locations": 599
-    }
   ],
   "message": "success"
 }
