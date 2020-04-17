@@ -52,7 +52,7 @@ class CovidcastMetaTests(unittest.TestCase):
         for tt in ('day', 'week'):
           for gt in ('hrr', 'msa'):
             expected.append({
-              'source': src,
+              'data_source': src,
               'signal': sig,
               'time_type': tt,
               'geo_type': gt,
