@@ -44,7 +44,7 @@ class CovidcastMetaTests(unittest.TestCase):
     # insert dummy data and accumulate expected results (in sort order)
     template = '''
     insert into covidcast values
-    (0, "%s", "%s", "%s", "%s", %d, "%s", 0, 0, 0, 0)
+    (0, "%s", "%s", "%s", "%s", %d, "%s", %d, 0, 0, 0)
     '''
     expected = []
     for src in ('src1', 'src2'):
@@ -59,10 +59,12 @@ class CovidcastMetaTests(unittest.TestCase):
               'min_time': 1,
               'max_time': 2,
               'num_locations': 2,
+              'min_value': 10,
+              'max_value': 20,
             })
             for tv in (1, 2):
-              for gv in ('geo1', 'geo2'):
-                self.cur.execute(template % (src, sig, tt, gt, tv, gv))
+              for gv, v in zip(('geo1', 'geo2'), (10, 20)):
+                self.cur.execute(template % (src, sig, tt, gt, tv, gv, v))
     self.cnx.commit()
 
     # make the request
