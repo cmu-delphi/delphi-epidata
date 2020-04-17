@@ -41,7 +41,7 @@ It is subject to its original licensing, .... <!-- TODO -->
 
 # The API
 
-The base URL is: https://delphi.midas.cmu.edu/epidata/api.php
+The base URL is: https://delphi.midas.cs.cmu.edu/epidata/api.php
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -53,7 +53,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | --- | --- | --- |
 | `auth` | password | string |
 | `epiweeks` | epiweeks | `list` of epiweeks |
-| `locations` | locations | `list` of `hhs<#>` [region](labels/regions.txt) labels |
+| `locations` | locations | `list` of `hhs<#>` [region](../../labels/regions.txt) labels |
 
 ## Response
 

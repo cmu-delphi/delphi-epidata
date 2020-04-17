@@ -9,7 +9,7 @@ Number of page visits for selected English, Influenza-related wikipedia articles
  - Data source: [Wikimedia](https://dumps.wikimedia.org/other/pagecounts-raw/)
  - Temporal Resolution: Hourly, daily, and weekly from 2007-12-09 (2007w50)
  - Spatial Resolution: N/A
- - Other resolution: By article ([54](labels/articles.txt))
+ - Other resolution: By article ([54](../../labels/articles.txt))
  - Open access
 
 ## Contributing
@@ -44,7 +44,7 @@ It is subject to its original licensing, .... <!-- TODO -->
 
 # The API
 
-The base URL is: https://delphi.midas.cmu.edu/epidata/api.php
+The base URL is: https://delphi.midas.cs.cmu.edu/epidata/api.php
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -54,7 +54,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 | Parameter | Description | Type |
 | --- | --- | --- |
-| `articles` | articles | list of [articles](labels/articles.md) |
+| `articles` | articles | list of [articles](../../labels/articles.md) |
 | `language` | language (currently `en`, `es`, and `pt` supported) | string |
 | `dates` | dates | `list` of dates |
 | `epiweeks` | epiweeks | `list` of epiweeks |
@@ -127,7 +127,7 @@ https://delphi.midas.cs.cmu.edu/epidata/api.php?source=wiki&language=en&articles
 
 # Code Samples
 
-Libraries are available for [CoffeeScript](src/client/delphi_epidata.coffee), [JavaScript](src/client/delphi_epidata.js), [Python](src/client/delphi_epidata.py), and [R](src/client/delphi_epidata.R).
+Libraries are available for [CoffeeScript](../../src/client/delphi_epidata.coffee), [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
 The following samples show how to import the library and fetch national Wikipedia Access data for article "influenza" on
 epiweeks `201940` and `202001-202010` (11 weeks total) for hours 0 and 12 in English.
 

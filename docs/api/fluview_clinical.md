@@ -39,7 +39,7 @@ It is subject to its original licensing, .... <!-- TODO -->
 
 # The API
 
-The base URL is: https://delphi.midas.cmu.edu/epidata/api.php
+The base URL is: https://delphi.midas.cs.cmu.edu/epidata/api.php
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -50,7 +50,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `epiweeks` | epiweeks | `list` of epiweeks |
-| `regions` | regions | `list` of [region](labels/regions.txt) labels |
+| `regions` | regions | `list` of [region](../../labels/regions.txt) labels |
 
 ### Optional
 
@@ -113,7 +113,7 @@ https://delphi.midas.cs.cmu.edu/epidata/api.php?source=fluview_clinical&regions=
 
 # Code Samples
 
-Libraries are available for [CoffeeScript](src/client/delphi_epidata.coffee), [JavaScript](src/client/delphi_epidata.js), [Python](src/client/delphi_epidata.py), and [R](src/client/delphi_epidata.R).
+Libraries are available for [CoffeeScript](../../src/client/delphi_epidata.coffee), [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
 The following samples show how to import the library and fetch national FluView Clinical data for epiweeks `201940` and `202001-202010` (11 weeks total).
 
 ### CoffeeScript (in Node.js)

@@ -8,7 +8,7 @@ the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 Influenza-like illness (ILI) from U.S. Outpatient Influenza-like Illness Surveillance Network (ILINet).
  - Data source: [United States Centers for Disease Control and Prevention](http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html) (CDC)
  - Temporal Resolution: Weekly* from 1997w40
- - Spatial Resolution: National, [HHS regions](http://www.hhs.gov/iea/regional/), [Census divisions](http://www.census.gov/econ/census/help/geography/regions_and_divisions.html), most States and Territories, and some Cities (full list [here](src/acquisition/fluview/fluview_locations.py))
+ - Spatial Resolution: National, [HHS regions](http://www.hhs.gov/iea/regional/), [Census divisions](http://www.census.gov/econ/census/help/geography/regions_and_divisions.html), most States and Territories, and some Cities (full list [here](../../src/acquisition/fluview/fluview_locations.py))
  - Open access
 
 \* Data is usually released on Friday
@@ -46,7 +46,7 @@ It is subject to its original licensing, .... <!-- TODO -->
 
 # The API
 
-The base URL is: https://delphi.midas.cmu.edu/epidata/api.php
+The base URL is: https://delphi.midas.cs.cmu.edu/epidata/api.php
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -57,7 +57,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `epiweeks` | epiweeks | `list` of epiweeks |
-| `regions` | regions | `list` of [region](labels/regions.txt) labels |
+| `regions` | regions | `list` of [region](../../labels/regions.txt) labels |
 
 ### Optional
 
@@ -101,7 +101,7 @@ Notes:
 # Example URLs
 
 ### FluView on 2015w01 (national)
-https://delphi.midas.cmu.edu/epidata/api.php?source=fluview&regions=nat&epiweeks=201501
+https://delphi.midas.cs.cmu.edu/epidata/api.php?source=fluview&regions=nat&epiweeks=201501
 
 ```json
 {
@@ -132,16 +132,16 @@ https://delphi.midas.cmu.edu/epidata/api.php?source=fluview&regions=nat&epiweeks
 
 ### FluView in HHS Regions 4 and 6 for the 2014/2015 flu season
 
-https://delphi.midas.cmu.edu/epidata/api.php?source=fluview&regions=hhs4,hhs6&epiweeks=201440-201520
+https://delphi.midas.cs.cmu.edu/epidata/api.php?source=fluview&regions=hhs4,hhs6&epiweeks=201440-201520
 
 ### Updates to FluView on 2014w53, reported from 2015w01 through 2015w10 (national)
 
-https://delphi.midas.cmu.edu/epidata/api.php?source=fluview&regions=nat&epiweeks=201453&issues=201501-201510
+https://delphi.midas.cs.cmu.edu/epidata/api.php?source=fluview&regions=nat&epiweeks=201453&issues=201501-201510
 
 
 # Code Samples
 
-Libraries are available for [CoffeeScript](src/client/delphi_epidata.coffee), [JavaScript](src/client/delphi_epidata.js), [Python](src/client/delphi_epidata.py), and [R](src/client/delphi_epidata.R).
+Libraries are available for [CoffeeScript](../../src/client/delphi_epidata.coffee), [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
 The following samples show how to import the library and fetch national FluView data for epiweeks `201440` and `201501-201510` (11 weeks total).
 
 ### CoffeeScript (in Node.js)

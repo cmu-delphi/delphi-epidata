@@ -8,7 +8,7 @@ the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 Estimate of influenza activity based on volume of certain search queries. Google has discontinued Flu Trends, and this is now a static data source.
  - Data source: [Google](https://www.google.org/flutrends/)
  - Temporal Resolution: Weekly from 2003w40 until 2015w32
- - Spatial Resolution: National, [HHS regions](http://www.hhs.gov/iea/regional/) ([1+10](labels/regions.txt)); by state/territory ([50+1](labels/states.txt)); and by city ([97](labels/cities.txt))
+ - Spatial Resolution: National, [HHS regions](http://www.hhs.gov/iea/regional/) ([1+10](../../labels/regions.txt)); by state/territory ([50+1](../../labels/states.txt)); and by city ([97](../../labels/cities.txt))
  - Open access
 
 ## Contributing
@@ -43,7 +43,7 @@ It is subject to its original licensing, .... <!-- TODO -->
 
 # The API
 
-The base URL is: https://delphi.midas.cmu.edu/epidata/api.php
+The base URL is: https://delphi.midas.cs.cmu.edu/epidata/api.php
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -54,7 +54,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `epiweeks` | epiweeks | `list` of epiweeks |
-| `locations` | locations | `list` of [region](labels/regions.txt)/[state](labels/states.txt)/[city](labels/cities.txt) labels |
+| `locations` | locations | `list` of [region](../../labels/regions.txt)/[state](../../labels/states.txt)/[city](../../labels/cities.txt) labels |
 
 ## Response
 
@@ -89,7 +89,7 @@ https://delphi.midas.cs.cmu.edu/epidata/api.php?source=gft&locations=nat&epiweek
 
 # Code Samples
 
-Libraries are available for [CoffeeScript](src/client/delphi_epidata.coffee), [JavaScript](src/client/delphi_epidata.js), [Python](src/client/delphi_epidata.py), and [R](src/client/delphi_epidata.R).
+Libraries are available for [CoffeeScript](../../src/client/delphi_epidata.coffee), [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
 The following samples show how to import the library and fetch Google Flu Trends data for epiweeks `201440` and `201501-201510` (11 weeks total).
 
 ### CoffeeScript (in Node.js)

@@ -36,7 +36,7 @@ like to cite it, we would gratefully recommend the following copy:
 
 Any data which is produced novelly by Delphi and is intentionally and openly
 surfaced by Delphi through this API is hereby licensed
-[CC-BY](https://creativecommons.org/licenses/by/4.0/). The `covid_survey_county_weekly` endpoint
+[CC-BY](https://creativecommons.org/licenses/by/4.0/). The `covidcast` endpoint
 is known to wholly or partially serve data under this license.
 
 [![Creative Commons License](https://i.creativecommons.org/l/by/4.0/88x31.png)](https://creativecommons.org/licenses/by/4.0/)
@@ -44,7 +44,7 @@ is known to wholly or partially serve data under this license.
 
 # The API
 
-The base URL is: https://delphi.midas.cmu.edu/epidata/api.php
+The base URL is: https://delphi.midas.cs.cmu.edu/epidata/api.php
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -57,7 +57,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | `name` | Data souce, and subtype if applicable (e.g. fb_survey_cli, fb_survey_ili) | string |
 | `geo_type` | geographic resolution (e.g. `county`, `hrr`, `msa`, `dma`, `state`) | string |
 | `dates` | dates on which underlying events happened | `list` of dates |
-| `geo_id` | a unique code for each location, depending on `geo_type` (county -> FIPS code, HRR -> HRR number, MSA -> CBSA code, DMA -> DMA code, state -> two-letter [state](labels/states.txt) code), or `*` for all | string |
+| `geo_id` | a unique code for each location, depending on `geo_type` (county -> FIPS code, HRR -> HRR number, MSA -> CBSA code, DMA -> DMA code, state -> two-letter [state](../../labels/states.txt) code), or `*` for all | string |
 
 ## Response
 

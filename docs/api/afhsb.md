@@ -39,7 +39,7 @@ It is subject to its original licensing, .... <!-- TODO -->
 
 # The API
 
-The base URL is: https://delphi.midas.cmu.edu/epidata/api.php
+The base URL is: https://delphi.midas.cs.cmu.edu/epidata/api.php
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -51,7 +51,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | --- | --- | --- |
 | `auth` | password | string |
 | `epiweeks` | epiweeks | `list` of epiweeks |
-| `locations` | locations | `list` of [region](labels/regions.txt), [state](labels/states.txt), or 3-letter country code labels |
+| `locations` | locations | `list` of [region](../../labels/regions.txt), [state](../../labels/states.txt), or 3-letter country code labels |
 | `flu_types` | flu types | `list` of disjoint (`flu1`, `flu2-flu1`, `flu3-flu2`, `ili-flu3`) or subset (`flu2`, `flu3`, `ili`) flu type labels |
 
 ## Response

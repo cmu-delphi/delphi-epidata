@@ -8,7 +8,7 @@ the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 A nowcast of U.S. national, regional, and state-level (weighted) %ILI, available seven days (regionally) or five days (state-level) before the first ILINet report for the corresponding week.
  - Data source: [Delphi's ILI Nearby system](https://delphi.cmu.edu/nowcast/)
  - Temporal Resolution: Weekly, from 2010w30*
- - Spatial Resolution: National, [HHS regions](http://www.hhs.gov/iea/regional/), [Census divisions](http://www.census.gov/econ/census/help/geography/regions_and_divisions.html) ([1+10+9](labels/regions.txt)), and by state/territory ([51](labels/states.txt))
+ - Spatial Resolution: National, [HHS regions](http://www.hhs.gov/iea/regional/), [Census divisions](http://www.census.gov/econ/census/help/geography/regions_and_divisions.html) ([1+10+9](../../labels/regions.txt)), and by state/territory ([51](../../labels/states.txt))
  - Open access
 
 \* Data is usually released on Friday and updated on Sunday and Monday
@@ -50,7 +50,7 @@ under this license.
 
 # The API
 
-The base URL is: https://delphi.midas.cmu.edu/epidata/api.php
+The base URL is: https://delphi.midas.cs.cmu.edu/epidata/api.php
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -61,7 +61,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `epiweeks` | epiweeks | `list` of epiweeks |
-| `locations` | locations | `list` of [region](labels/regions.txt)/[state](labels/states.txt) labels |
+| `locations` | locations | `list` of [region](../../labels/regions.txt)/[state](../../labels/states.txt) labels |
 
 ## Response
 
@@ -98,7 +98,7 @@ https://delphi.midas.cs.cmu.edu/epidata/api.php?source=nowcast&locations=nat&epi
 
 # Code Samples
 
-Libraries are available for [CoffeeScript](src/client/delphi_epidata.coffee), [JavaScript](src/client/delphi_epidata.js), [Python](src/client/delphi_epidata.py), and [R](src/client/delphi_epidata.R).
+Libraries are available for [CoffeeScript](../../src/client/delphi_epidata.coffee), [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
 The following samples show how to import the library and fetch national ILI Nearby data for epiweeks `201940` and `202001-202010` (11 weeks total).
 
 ### CoffeeScript (in Node.js)

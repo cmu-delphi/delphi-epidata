@@ -8,7 +8,7 @@ the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 Estimate of influenza activity based on analysis of language used in tweets.
  - Data source: [HealthTweets](http://www.healthtweets.org/)
  - Temporal Resolution: Daily and weekly from 2011-12-01 (2011w48)
- - Spatial Resolution: National, [HHS regions](http://www.hhs.gov/iea/regional/), and [Census divisions](http://www.census.gov/econ/census/help/geography/regions_and_divisions.html) ([1+10+9](labels/regions.txt)); and by state/territory ([51](labels/states.txt))
+ - Spatial Resolution: National, [HHS regions](http://www.hhs.gov/iea/regional/), and [Census divisions](http://www.census.gov/econ/census/help/geography/regions_and_divisions.html) ([1+10+9](../../labels/regions.txt)); and by state/territory ([51](../../labels/states.txt))
  - Restricted access: Delphi doesn't have permission to share this dataset
 
 ## Contributing
@@ -43,7 +43,7 @@ It is subject to its original licensing, .... <!-- TODO -->
 
 # The API
 
-The base URL is: https://delphi.midas.cmu.edu/epidata/api.php
+The base URL is: https://delphi.midas.cs.cmu.edu/epidata/api.php
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -54,7 +54,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `auth` | password | string |
-| `locations` | locations | `list` of [region](labels/regions.txt)/[state](labels/states.txt) labels |
+| `locations` | locations | `list` of [region](../../labels/regions.txt)/[state](../../labels/states.txt) labels |
 | `dates` | dates | `list` of dates |
 | `epiweeks` | epiweeks | `list` of epiweeks |
 

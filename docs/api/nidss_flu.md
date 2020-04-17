@@ -3,12 +3,12 @@
 This is the documentation of the API for accessing the NIDSS Flu (`nidss_flu`) data source of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 
-## FluView Clinical Data
+## NIDSS Flu Data
 
 Outpatient ILI from Taiwan's National Infectious Disease Statistics System (NIDSS).
  - Data source: [Taiwan CDC](http://nidss.cdc.gov.tw/en/CDCWNH01.aspx?dc=wnh)
  - Temporal Resolution: Weekly* from 2008w14
- - Spatial Resolution: By [hexchotomy region](https://en.wikipedia.org/wiki/Regions_of_Taiwan#Hexchotomy) ([6+1](labels/nidss_regions.txt))
+ - Spatial Resolution: By [hexchotomy region](https://en.wikipedia.org/wiki/Regions_of_Taiwan#Hexchotomy) ([6+1](../../labels/nidss_regions.txt))
  - Open access
 
 \* Data is usually released on Tuesday
@@ -45,7 +45,7 @@ It is subject to its original licensing, .... <!-- TODO -->
 
 # The API
 
-The base URL is: https://delphi.midas.cmu.edu/epidata/api.php
+The base URL is: https://delphi.midas.cs.cmu.edu/epidata/api.php
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -56,7 +56,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `epiweeks` | epiweeks | `list` of epiweeks |
-| `regions` | regions | `list` of [region](labels/nidss_regions.txt) labels |
+| `regions` | regions | `list` of [region](../../labels/nidss_regions.txt) labels |
 
 ### Optional
 
@@ -110,7 +110,7 @@ https://delphi.midas.cs.cmu.edu/epidata/api.php?source=nidss_flu&regions=nationw
 
 # Code Samples
 
-Libraries are available for [CoffeeScript](src/client/delphi_epidata.coffee), [JavaScript](src/client/delphi_epidata.js), [Python](src/client/delphi_epidata.py), and [R](src/client/delphi_epidata.R).
+Libraries are available for [CoffeeScript](../../src/client/delphi_epidata.coffee), [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
 The following samples show how to import the library and fetch national NIDSS Flu data for epiweeks `201440` and `201501-201510` (11 weeks total).
 
 ### CoffeeScript (in Node.js)

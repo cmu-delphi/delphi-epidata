@@ -45,8 +45,9 @@ under this license include:
 - `delphi`
 - `sensors`
 - `nowcast`
-- `covid_survey_hrr_daily`
-- `covid_survey_county_weekly`
+- `covidcast`
+- `covidcast_meta`
+- `meta*`
 
 [![Creative Commons License](https://i.creativecommons.org/l/by/4.0/88x31.png)](https://creativecommons.org/licenses/by/4.0/)
 
@@ -54,7 +55,7 @@ under this license include:
 
 # The API
 
-The base URL is: https://delphi.midas.cmu.edu/epidata/api.php
+The base URL is: https://delphi.midas.cs.cmu.edu/epidata/api.php
 
 ## Specifying Epiweeks, Dates, and Lists
 
@@ -107,8 +108,8 @@ The parameters available for each source are documented in each linked source-sp
 | [`nowcast`](nowcast.md) | ILI Nearby | A nowcast of U.S. national, regional, and state-level (weighted) percent ILI, available seven days (regionally) or five days (state-level) before the first ILINet report for the corresponding week. | no |
 | [`quidel`](quidel.md) | Quidel | Data provided by Quidel Corp., which contains flu lab test results. | yes |
 | [`sensors`](sensors.md) | Delphi's Digital Surveillance Sensors | ... <!-- TODO --> | no |
-| [`twitter`](twitter.md) | Twitter Stream | Estimate of influenza activity based on analysis of language used in tweets. | yes |
-| [`wiki`](wiki.md) | Wikipedia Access Logs | Number of page visits for selected English, Influenza-related wikipedia articles. | ... <!-- TODO --> |
+| [`twitter`](twitter.md) | Twitter Stream | Estimate of influenza activity based on analysis of language used in tweets from [HealthTweets](http://HealthTweets.org/). | yes |
+| [`wiki`](wiki.md) | Wikipedia Access Logs | Number of page visits for selected English, Influenza-related wikipedia articles. | no |
 
 ### Dengue Data
 
@@ -134,20 +135,58 @@ The parameters available for each source are documented in each linked source-sp
 # Example URLs
 
 ### FluView on 2015w01 (national)
-https://delphi.midas.cmu.edu/epidata/api.php?source=fluview&regions=nat&epiweeks=201501
+https://delphi.midas.cs.cmu.edu/epidata/api.php?source=fluview&regions=nat&epiweeks=201501
 
-    {"result":1,"epidata":[{"release_date":"2015-07-31","region":"nat","issue":201529,"epiweek":201501,"lag":-28,"num_ili":31834,"num_patients":777188,"num_providers":1977,"num_age_0":7177,"num_age_1":9694,"num_age_2":0,"num_age_3":8221,"num_age_4":3670,"num_age_5":3072,"wili":4.2403781703231,"ili":4.0960488324575}],"message":"success"}
+```json
+{
+  "result": 1,
+  "epidata": [
+    {
+      "release_date": "2017-10-24",
+      "region": "nat",
+      "issue": 201740,
+      "epiweek": 201501,
+      "lag": 143,
+      "num_ili": 31483,
+      "num_patients": 771835,
+      "num_providers": 1958,
+      "num_age_0": 7160,
+      "num_age_1": 9589,
+      "num_age_2": null,
+      "num_age_3": 8072,
+      "num_age_4": 3614,
+      "num_age_5": 3048,
+      "wili": 4.21374,
+      "ili": 4.07898
+    }
+  ],
+  "message": "success"
+}
+```
 
-### Wiki article "influenza" on 2015w01
+### Wikipedia Access article "influenza" on 2020w01
+https://delphi.midas.cs.cmu.edu/epidata/api.php?source=wiki&language=en&articles=influenza&epiweeks=202001
 
-https://delphi.midas.cmu.edu/epidata/api.php?source=wiki&articles=influenza&epiweeks=201501
-
-    {"result":1,"epidata":[{"article":"influenza","count":30819,"hour":-1,"epiweek":201501}],"message":"success"}
-
+```json
+{
+  "result": 1,
+  "epidata": [
+    {
+      "article": "influenza",
+      "count": 6516,
+      "total": 663604044,
+      "hour": -1,
+      "epiweek": 202001,
+      "value": 9.81910834
+    }
+  ],
+  "message": "success"
+}
+```
 
 # Code Samples
 
-Libraries are available for [CoffeeScript](src/client/delphi_epidata.coffee), [JavaScript](src/client/delphi_epidata.js), [Python](src/client/delphi_epidata.py), and [R](src/client/delphi_epidata.R). The following samples show how to import the library and fetch national FluView data for epiweeks `201440` and `201501-201510` (11 weeks total).
+Libraries are available for [CoffeeScript](../../src/client/delphi_epidata.coffee), [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R). The following samples show how to import the library and fetch national FluView data for epiweeks `201440` and `201501-201510` (11 weeks total).
 
 ### CoffeeScript (in Node.js)
 

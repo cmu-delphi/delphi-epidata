@@ -36,7 +36,7 @@ like to cite it, we would gratefully recommend the following copy:
 
 Any data which is produced novelly by Delphi and is intentionally and openly
 surfaced by Delphi through this API is hereby licensed
-[CC-BY](https://creativecommons.org/licenses/by/4.0/). The `covid_survey_hrr_daily` endpoint
+[CC-BY](https://creativecommons.org/licenses/by/4.0/). The `covidcast_meta` endpoint
 is known to wholly or partially serve data under this license.
 
 [![Creative Commons License](https://i.creativecommons.org/l/by/4.0/88x31.png)](https://creativecommons.org/licenses/by/4.0/)
@@ -44,7 +44,7 @@ is known to wholly or partially serve data under this license.
 
 # The API
 
-The base URL is: https://delphi.midas.cmu.edu/epidata/api.php
+The base URL is: https://delphi.midas.cs.cmu.edu/epidata/api.php
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 

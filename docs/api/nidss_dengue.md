@@ -3,12 +3,12 @@
 This is the documentation of the API for accessing the NIDSS Dengue (`nidss_dengue`) data source of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 
-## FluView Clinical Data
+## NIDSS Dengue Data
 
 Counts of confirmed dengue cases from Taiwan's NIDSS.
  - Data source: [Taiwan CDC](http://nidss.cdc.gov.tw/en/SingleDisease.aspx?dc=1&dt=4&disease=061&position=1)
  - Temporal Resolution: Weekly from 2003w01
- - Spatial Resolution: By [hexchotomy region](https://en.wikipedia.org/wiki/Regions_of_Taiwan#Hexchotomy) ([6+1](labels/nidss_regions.txt)) and by [city/county](https://en.wikipedia.org/wiki/List_of_administrative_divisions_of_Taiwan) ([22](labels/nidss_locations.txt))
+ - Spatial Resolution: By [hexchotomy region](https://en.wikipedia.org/wiki/Regions_of_Taiwan#Hexchotomy) ([6+1](../../labels/nidss_regions.txt)) and by [city/county](https://en.wikipedia.org/wiki/List_of_administrative_divisions_of_Taiwan) ([22](../../labels/nidss_locations.txt))
  - Open access
 
 ## Contributing
@@ -43,7 +43,7 @@ It is subject to its original licensing, .... <!-- TODO -->
 
 # The API
 
-The base URL is: https://delphi.midas.cmu.edu/epidata/api.php
+The base URL is: https://delphi.midas.cs.cmu.edu/epidata/api.php
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -54,7 +54,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `epiweeks` | epiweeks | `list` of epiweeks |
-| `locations` | locations | `list` of [region](labels/nidss_regions.txt) and/or [location](labels/nidss_locations.txt) labels |
+| `locations` | locations | `list` of [region](../../labels/nidss_regions.txt) and/or [location](../../labels/nidss_locations.txt) labels |
 
 ## Response
 
@@ -89,7 +89,7 @@ https://delphi.midas.cs.cmu.edu/epidata/api.php?source=nidss_dengue&locations=na
 
 # Code Samples
 
-Libraries are available for [CoffeeScript](src/client/delphi_epidata.coffee), [JavaScript](src/client/delphi_epidata.js), [Python](src/client/delphi_epidata.py), and [R](src/client/delphi_epidata.R).
+Libraries are available for [CoffeeScript](../../src/client/delphi_epidata.coffee), [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
 The following samples show how to import the library and fetch national NIDSS Dengue data for epiweeks `201440` and `201501-201510` (11 weeks total).
 
 ### CoffeeScript (in Node.js)
