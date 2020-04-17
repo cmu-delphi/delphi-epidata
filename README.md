@@ -22,10 +22,10 @@ the COVID-19 pandemic.
 
 We are working on collecting new ILI-related data sources may be useful to
 nowcasting and forecasting ILI during the COVID-19 pandemic, and will make these
-available as soon as possible.
+available as soon as possible. 
 
-For a list of many data sources relevant to COVID-19 (case data, hospitalization
-data, data on interventions, etc.) we have compiled a simple
+For a list of many other data sources relevant to COVID-19 (case data,
+hospitalization data, data on interventions, etc.) we have compiled a simple 
 [spreadsheet](https://docs.google.com/spreadsheets/d/16Nn_3ZvSLnpxRyA2DkoMMzyrd11-AlGJXasS0owln88/edit#gid=0)
 with links to various external sites.
 
