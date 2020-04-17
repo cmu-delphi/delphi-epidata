@@ -346,6 +346,26 @@ class Epidata
   @meta: (callback) ->
     _request(callback, {'source': 'meta'})
 
+  # Fetch Delphi's COVID-19 Surveillance Streams
+  @covidcast: (callback, data_source, signal, time_type, geo_type, time_values, geo_value) ->
+    # Check parameters
+    unless data_source? and signal? and time_type? and geo_type? and time_values? and geo_values?
+      throw { msg: '`data_source`, `signal`, `time_type`, `geo_type`, `time_values`, and `geo_value` are all required' }
+    # Set up request
+    params =
+      'source': 'covidcast'
+      'data_source': data_source
+      'signal': signal
+      'time_type': time_type
+      'geo_type': geo_type
+      'time_values': _list(time_values)
+      'geo_values': geo_value
+    # Make the API call
+    _request(callback, params)
+
+  # Fetch Delphi's COVID-19 Surveillance Streams metadata
+  @covidcast_meta: (callback) ->
+    _request(callback, {'source': 'covidcast_meta'})
 
 # Export the API to the global environment
 (exports ? window).Epidata = Epidata

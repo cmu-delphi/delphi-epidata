@@ -444,6 +444,30 @@ Notes:
       });
     };
 
+    Epidata.covidcast = function(callback, data_source, signal, time_type, geo_type, time_values, geo_value) {
+      var params;
+      if (!((data_source != null) && (signal != null) && (time_type != null) && (geo_type != null) && (time_values != null) && (geo_value != null))) {
+        throw {
+          msg: '`data_source`, `signal`, `time_type`, `geo_type`, `time_values`, and `geo_value` are all required'
+        };
+      }
+      params = {
+        'source': 'covidcast',
+        'data_source': data_source,
+        'signal': signal,
+        'time_type': time_type,
+        'geo_type': geo_type,
+        'time_values': _list(time_values),
+        'geo_values': geo_value
+      };
+    };
+
+    Epidata.covidcast_meta = function(callback) {
+      return _request(callback, {
+        'source': 'covidcast_meta'
+      });
+    };
+
     return Epidata;
 
   })();

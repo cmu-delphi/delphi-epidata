@@ -492,6 +492,31 @@ Epidata <- (function() {
     return(.request(list(source='meta')))
   }
 
+  # Fetch Delphi's COVID-19 Surveillance Streams
+  covidcast <- function(data_source, signal, time_type, geo_type, time_values, geo_value) {
+    # Check parameters
+    if(missing(data_source) || missing(signal) || missing(time_type) || missing(geo_type) || missing(time_values) || missing(geo_value)) {
+      stop('`data_source`, `signal`, `time_type`, `geo_type`, `time_values`, and `geo_value` are all required')
+    }
+    # Set up request
+    params <- list(
+      source = 'covidcast',
+      data_source = data_source,
+      signal = signal,
+      time_type = time_type,
+      geo_type = geo_type,
+      time_values = .list(time_values),
+      geo_values = geo_value
+    )
+    # Make the API call
+    return(.request(params))
+  }
+
+  # Fetch Delphi's COVID-19 Surveillance Streams metadata
+  covidcast_meta <- function() {
+    return(.request(list(source='covidcast_meta')))
+  }
+
   # Export the public methods
   return(list(
     range = range,
@@ -515,6 +540,8 @@ Epidata <- (function() {
     dengue_sensors = dengue_sensors,
     nowcast = nowcast,
     dengue_nowcast = dengue_nowcast,
-    meta = meta
+    meta = meta,
+    covidcast = covidcast,
+    covidcast_meta = covidcast_meta
   ))
 })()

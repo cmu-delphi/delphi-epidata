@@ -527,3 +527,29 @@ class Epidata:
   def meta():
     """Fetch API metadata."""
     return Epidata._request({'source': 'meta'})
+
+  # Fetch Delphi's COVID-19 Surveillance Streams
+  @staticmethod
+  def covidcast(data_source, signal, time_type, geo_type, time_values, geo_value):
+    """Fetch Delphi's COVID-19 Surveillance Streams"""
+    # Check parameters
+    if data_source is None or signal is None or time_type is None or geo_type is None or time_values is None or geo_value is None:
+      raise Exception('`data_source`, `signal`, `time_type`, `geo_type`, `time_values`, and `geo_value` are all required')
+    # Set up request
+    params = {
+      'source': 'covidcast',
+      'data_source': data_source,
+      'signal': signal,
+      'time_type': time_type,
+      'geo_type': geo_type,
+      'time_values': Epidata._list(time_values),
+      'geo_values': geo_value,
+    }
+    # Make the API call
+    return Epidata._request(params)
+
+  # Fetch Delphi's COVID-19 Surveillance Streams metadata
+  @staticmethod
+  def covidcast_meta():
+    """Fetch Delphi's COVID-19 Surveillance Streams metadata"""
+    return Epidata._request({'source': 'covidcast_meta'})
