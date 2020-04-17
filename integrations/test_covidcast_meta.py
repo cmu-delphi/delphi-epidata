@@ -41,42 +41,28 @@ class CovidcastMetaTests(unittest.TestCase):
   def test_round_trip(self):
     """Make a simple round-trip with some sample data."""
 
-    # insert dummy data
-    self.cur.execute('''
-      insert into covidcast values
-        (0, 'src1', 'sig1', 'msa', '2020-04-01', 'a', 0, 0, 0, 0, 0),
-        (0, 'src1', 'sig1', 'msa', '2020-04-01', 'b', 0, 0, 0, 0, 0),
-        (0, 'src1', 'sig1', 'msa', '2020-04-02', 'c', 0, 0, 0, 0, 0),
-        (0, 'src1', 'sig1', 'msa', '2020-04-02', 'd', 0, 0, 0, 0, 0),
-        (0, 'src1', 'sig1', 'hrr', '2020-04-01', 'd', 0, 0, 0, 0, 0),
-        (0, 'src1', 'sig1', 'hrr', '2020-04-03', 'e', 0, 0, 0, 0, 0),
-        (0, 'src1', 'sig1', 'hrr', '2020-04-03', 'd', 0, 0, 0, 0, 0),
-        (0, 'src1', 'sig1', 'hrr', '2020-04-02', 'e', 0, 0, 0, 0, 0),
-        (0, 'src1', 'sig2', 'msa', '2020-04-01', 'a', 0, 0, 0, 0, 0),
-        (0, 'src1', 'sig2', 'msa', '2020-04-01', 'b', 0, 0, 0, 0, 0),
-        (0, 'src1', 'sig2', 'msa', '2020-04-02', 'c', 0, 0, 0, 0, 0),
-        (0, 'src1', 'sig2', 'msa', '2020-04-04', 'd', 0, 0, 0, 0, 0),
-        (0, 'src1', 'sig2', 'hrr', '2020-04-11', 'e', 0, 0, 0, 0, 0),
-        (0, 'src1', 'sig2', 'hrr', '2020-04-12', 'e', 0, 0, 0, 0, 0),
-        (0, 'src1', 'sig2', 'hrr', '2020-04-13', 'e', 0, 0, 0, 0, 0),
-        (0, 'src1', 'sig2', 'hrr', '2020-04-14', 'e', 0, 0, 0, 0, 0),
-        (0, 'src2', 'sig1', 'msa', '2020-04-01', 'a', 0, 0, 0, 0, 0),
-        (0, 'src2', 'sig1', 'msa', '2020-04-01', 'b', 0, 0, 0, 0, 0),
-        (0, 'src2', 'sig1', 'msa', '2020-04-02', 'c', 0, 0, 0, 0, 0),
-        (0, 'src2', 'sig1', 'msa', '2020-04-02', 'd', 0, 0, 0, 0, 0),
-        (0, 'src2', 'sig1', 'hrr', '2020-04-01', 'd', 0, 0, 0, 0, 0),
-        (0, 'src2', 'sig1', 'hrr', '2020-04-03', 'e', 0, 0, 0, 0, 0),
-        (0, 'src2', 'sig1', 'hrr', '2020-04-03', 'd', 0, 0, 0, 0, 0),
-        (0, 'src2', 'sig1', 'hrr', '2020-04-02', 'e', 0, 0, 0, 0, 0),
-        (0, 'src2', 'sig2', 'msa', '2020-04-01', 'a', 0, 0, 0, 0, 0),
-        (0, 'src2', 'sig2', 'msa', '2020-04-01', 'b', 0, 0, 0, 0, 0),
-        (0, 'src2', 'sig2', 'msa', '2020-04-02', 'c', 0, 0, 0, 0, 0),
-        (0, 'src2', 'sig2', 'msa', '2020-04-04', 'd', 0, 0, 0, 0, 0),
-        (0, 'src2', 'sig2', 'hrr', '2020-04-11', 'e', 0, 0, 0, 0, 0),
-        (0, 'src2', 'sig2', 'hrr', '2020-04-12', 'e', 0, 0, 0, 0, 0),
-        (0, 'src2', 'sig2', 'hrr', '2020-04-13', 'e', 0, 0, 0, 0, 0),
-        (0, 'src2', 'sig2', 'hrr', '2020-04-14', 'e', 0, 0, 0, 0, 0)
-    ''')
+    # insert dummy data and accumulate expected results (in sort order)
+    template = '''
+    insert into covidcast values
+    (0, "%s", "%s", "%s", "%s", %d, "%s", 0, 0, 0, 0)
+    '''
+    expected = []
+    for src in ('src1', 'src2'):
+      for sig in ('sig1', 'sig2'):
+        for tt in ('day', 'week'):
+          for gt in ('hrr', 'msa'):
+            expected.append({
+              'source': src,
+              'signal': sig,
+              'time_type': tt,
+              'geo_type': gt,
+              'min_time': 1,
+              'max_time': 2,
+              'num_locations': 2,
+            })
+            for tv in (1, 2):
+              for gv in ('geo1', 'geo2'):
+                self.cur.execute(template % (src, sig, tt, gt, tv, gv))
     self.cnx.commit()
 
     # make the request
@@ -87,64 +73,6 @@ class CovidcastMetaTests(unittest.TestCase):
     # assert that the right data came back
     self.assertEqual(response, {
       'result': 1,
-      'epidata': [
-        {
-          'source': 'src1',
-          'signal': 'sig1',
-          'geo_type': 'hrr',
-          'min_date': '2020-04-01',
-          'max_date': '2020-04-03',
-          'num_locations': 2,
-        }, {
-          'source': 'src1',
-          'signal': 'sig1',
-          'geo_type': 'msa',
-          'min_date': '2020-04-01',
-          'max_date': '2020-04-02',
-          'num_locations': 4,
-        }, {
-          'source': 'src1',
-          'signal': 'sig2',
-          'geo_type': 'hrr',
-          'min_date': '2020-04-11',
-          'max_date': '2020-04-14',
-          'num_locations': 1,
-        }, {
-          'source': 'src1',
-          'signal': 'sig2',
-          'geo_type': 'msa',
-          'min_date': '2020-04-01',
-          'max_date': '2020-04-04',
-          'num_locations': 4,
-        }, {
-          'source': 'src2',
-          'signal': 'sig1',
-          'geo_type': 'hrr',
-          'min_date': '2020-04-01',
-          'max_date': '2020-04-03',
-          'num_locations': 2,
-        }, {
-          'source': 'src2',
-          'signal': 'sig1',
-          'geo_type': 'msa',
-          'min_date': '2020-04-01',
-          'max_date': '2020-04-02',
-          'num_locations': 4,
-        }, {
-          'source': 'src2',
-          'signal': 'sig2',
-          'geo_type': 'hrr',
-          'min_date': '2020-04-11',
-          'max_date': '2020-04-14',
-          'num_locations': 1,
-        }, {
-          'source': 'src2',
-          'signal': 'sig2',
-          'geo_type': 'msa',
-          'min_date': '2020-04-01',
-          'max_date': '2020-04-04',
-          'num_locations': 4,
-        },
-       ],
+      'epidata': expected,
       'message': 'success',
     })
