@@ -14,14 +14,14 @@ Data is public.
 | id          | int(11)     | NO   | PRI | NULL    | auto_increment |
 | source      | varchar(32) | NO   | MUL | NULL    |                |
 | signal      | varchar(32) | NO   |     | NULL    |                |
+| time_type   | varchar(12) | NO   |     | NULL    |                |
 | geo_type    | varchar(12) | NO   |     | NULL    |                |
-| date        | date        | NO   |     | NULL    |                |
-| geo_id      | varchar(12) | NO   |     | NULL    |                |
+| time_value  | int(11)     | NO   |     | NULL    |                |
+| geo_value   | varchar(12) | NO   |     | NULL    |                |
 | value       | double      | NO   |     | NULL    |                |
 | stderr      | double      | YES  |     | NULL    |                |
 | sample_size | double      | YES  |     | NULL    |                |
 | direction   | int(11)     | YES  |     | NULL    |                |
-| prob        | double      | YES  |     | NULL    |                |
 +-------------+-------------+------+-----+---------+----------------+
 
 - `id`
@@ -30,16 +30,19 @@ Data is public.
   name of upstream data souce
 - `signal`
   name of signal derived from upstream data
+- `time_type`
+  temporal resolution of the signal (e.g. day, week)
 - `geo_type`
-  geographic resolution (e.g. county, HRR, MSA, DMA, state)
-- `date`
-  date on which underlying event happened
-- `geo_id`
+  spatial resolution of the signal (e.g. county, HRR, MSA, DMA, state)
+- `time_value`
+  time unit (e.g. date) over which underlying events happened
+- `geo_value`
   a unique code for each location, depending on `geo_type`
-  - county: use FIPS code
-  - MSA: use core based statistical area (CBSA) code
-  - HRR: HRR number
-  - DMA: DMA code
+  - county: FIPS 6-4 code
+  - MSA: core based statistical area (CBSA) code for metropolitan statistical
+    area (MSA)
+  - HRR: hospital referral region (HRR) number
+  - DMA: designated market area (DMA) code
   - state: two-letter state abbreviation
 - `value`
   value (statistic) derived from the underlying data source
@@ -52,25 +55,23 @@ Data is public.
   - +1: `value` is increasing
   -  0: `value` is steady
   - -1: `value` is decreasing
-- `prob` (NULL when not applicable)
-  p-value reflecting surprise at the indicated `direction`
 */
 
 CREATE TABLE `covidcast` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `source` varchar(32) NOT NULL,
   `signal` varchar(32) NOT NULL,
+  `time_type` varchar(12) NOT NULL,
   `geo_type` varchar(12) NOT NULL,
-  `date` date NOT NULL,
-  `geo_id` varchar(12) NOT NULL,
+  `time_value` int(11) NOT NULL,
+  `geo_value` varchar(12) NOT NULL,
   `value` double NOT NULL,
   `stderr` double,
   `sample_size` double,
   `direction` int(11),
-  `prob` double,
   PRIMARY KEY (`id`),
   -- for uniqueness, and also fast lookup of all locations on a given date
-  UNIQUE KEY (`source`, `signal`, `geo_type`, `date`, `geo_id`),
+  UNIQUE KEY (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`),
   -- for fast lookup of a time-series for a given location
-  KEY (`source`, `signal`, `geo_type`, `geo_id`)
+  KEY (`source`, `signal`, `time_type`, `geo_type`, `geo_value`, `time_value`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

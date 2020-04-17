@@ -926,39 +926,42 @@ function get_dengue_nowcast($locations, $epiweeks) {
 // queries the `covidcast` table.
 //   $source (required): name of upstream data souce
 //   $signal (required): name of signal derived from upstream data
-//   $geo_type (required): geographic resolution (e.g. county, MSA, HRR)
-//   $geo_id (required): location identifier or `*` as a wildcard for all
+//   $time_type (required): temporal resolution (e.g. day, week)
+//   $geo_type (required): spatial resolution (e.g. county, msa, state)
+//   $time_values (required): array of time values/ranges
+//   $geo_value (required): location identifier or `*` as a wildcard for all
 //     locations (specific to `$geo_type`)
-//   $dates (required): array of date values/ranges
-function get_covidcast($source, $signal, $geo_type, $geo_id, $dates) {
+function get_covidcast($source, $signal, $time_type, $geo_type, $time_values, $geo_value) {
   // required for `mysqli_real_escape_string`
   global $dbh;
   $source = mysqli_real_escape_string($dbh, $source);
   $signal = mysqli_real_escape_string($dbh, $signal);
+  $time_type = mysqli_real_escape_string($dbh, $time_type);
   $geo_type = mysqli_real_escape_string($dbh, $geo_type);
-  $geo_id = mysqli_real_escape_string($dbh, $geo_id);
+  $geo_value = mysqli_real_escape_string($dbh, $geo_value);
   // basic query info
   $table = '`covidcast` t';
-  $fields = "t.`date`, t.`geo_id`, t.`value`, t.`stderr`, t.`sample_size`, t.`direction`, t.`prob`";
-  $order = "t.`date` ASC, t.`geo_id` ASC";
+  $fields = "t.`time_value`, t.`geo_value`, t.`value`, t.`stderr`, t.`sample_size`, t.`direction`";
+  $order = "t.`time_value` ASC, t.`geo_value` ASC";
   // data type of each field
-  $fields_string = array('date', 'geo_id');
-  $fields_int = array('direction');
-  $fields_float = array('value', 'stderr', 'sample_size', 'prob');
-  // build the source, signal, date, and location (type and id) filters
+  $fields_string = array('geo_value');
+  $fields_int = array('time_value', 'direction');
+  $fields_float = array('value', 'stderr', 'sample_size');
+  // build the source, signal, time, and location (type and id) filters
   $condition_source = "t.`source` = '{$source}'";
   $condition_signal = "t.`signal` = '{$signal}'";
-  $condition_date = filter_dates('t.`date`', $dates);
+  $condition_time_type = "t.`time_type` = '{$time_type}'";
   $condition_geo_type = "t.`geo_type` = '{$geo_type}'";
-  if ($geo_id === '*') {
+  $condition_time_value = filter_integers('t.`time_value`', $time_values);
+  if ($geo_value === '*') {
     // the wildcard query should return data for all locations in `geo_type`
-    $condition_geo_id = 'TRUE';
+    $condition_geo_value = 'TRUE';
   } else {
     // return data for a particular location
-    $condition_geo_id = "t.`geo_id` = '{$geo_id}'";
+    $condition_geo_value = "t.`geo_value` = '{$geo_value}'";
   }
   // the query
-  $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_source}) AND ({$condition_signal}) AND ({$condition_date}) AND ({$condition_geo_type}) AND ({$condition_geo_id}) ORDER BY {$order}";
+  $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_source}) AND ({$condition_signal}) AND ({$condition_time_type}) AND ({$condition_geo_type}) AND ({$condition_time_value}) AND ({$condition_geo_value}) ORDER BY {$order}";
   // get the data from the database
   $epidata = array();
   execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
@@ -970,13 +973,13 @@ function get_covidcast($source, $signal, $geo_type, $geo_id, $dates) {
 function get_covidcast_meta() {
   // basic query info
   $table = '`covidcast` t';
-  $fields = "t.`source`, t.`signal`, t.`geo_type`, MIN(t.`date`) AS `min_date`, MAX(t.`date`) AS `max_date`, COUNT(DISTINCT `geo_id`) AS `num_locations`";
-  $group = "t.`source`, t.`signal`, t.`geo_type`";
-  $order = "t.`source` ASC, t.`signal` ASC, t.`geo_type` ASC";
+  $fields = "t.`source`, t.`signal`, t.`time_type`, t.`geo_type`, MIN(t.`time_value`) AS `min_time`, MAX(t.`time_value`) AS `max_time`, COUNT(DISTINCT `geo_value`) AS `num_locations`, min(`value`) AS `min_value`, max(`value`) AS `max_value`";
+  $group = "t.`source`, t.`signal`, t.`time_type`, t.`geo_type`";
+  $order = "t.`source` ASC, t.`signal` ASC, t.`time_type` ASC, t.`geo_type` ASC";
   // data type of each field
-  $fields_string = array('source', 'signal', 'geo_type', 'min_date', 'max_date');
-  $fields_int = array('num_locations');
-  $fields_float = null;
+  $fields_string = array('source', 'signal', 'time_type', 'geo_type');
+  $fields_int = array('min_time', 'max_time', 'num_locations');
+  $fields_float = array('min_value', 'max_value');
   // the query
   $query = "SELECT {$fields} FROM {$table} GROUP BY {$group} ORDER BY {$order}";
   // get the data from the database
@@ -1431,11 +1434,11 @@ if(database_connect()) {
       }
     }
   } else if($source === 'covidcast') {
-    if(require_all($data, array('data_source', 'signal', 'geo_type', 'dates', 'geo_id'))) {
+    if(require_all($data, array('data_source', 'signal', 'time_type', 'geo_type', 'time_values', 'geo_value'))) {
       // parse the request
-      $dates = extract_values($_REQUEST['dates'], 'int');
+      $time_values = extract_values($_REQUEST['time_values'], 'int');
       // get the data
-      $epidata = get_covidcast($_REQUEST['data_source'], $_REQUEST['signal'], $_REQUEST['geo_type'], $_REQUEST['geo_id'], $dates);
+      $epidata = get_covidcast($_REQUEST['data_source'], $_REQUEST['signal'], $_REQUEST['time_type'], $_REQUEST['geo_type'], $time_values, $_REQUEST['geo_value']);
       store_result($data, $epidata);
     }
   } else if($source === 'covidcast_meta') {
