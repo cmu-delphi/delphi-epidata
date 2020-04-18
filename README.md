@@ -13,7 +13,7 @@ available data sets, APIs, and clients.
 We are working on collecting several new data sources that may be useful for
 nowcasting and forecasting ILI during the COVID-19 pandemic.  Each of these will
 make these available as soon as individually possible, through our [covidcast
-endpoint][docs/api/covidcast/covidcast.md].
+endpoint](docs/api/covidcast/covidcast.md).
 
 For a list of many other data sources relevant to COVID-19, publicly available
 through external sites, we have compiled a simple
