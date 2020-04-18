@@ -8,7 +8,7 @@ API.
 If you are interested in contributing:
 
 - For development of the API itself, see the
-  [development guide](docs/epidata_development.md).
+  [development guide](../epidata_development.md).
 - To suggest changes, additions, or other ways to improve,
   [open an issue](https://github.com/cmu-delphi/delphi-epidata/issues/new)
   describing your idea.
