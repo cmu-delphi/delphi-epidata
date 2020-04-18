@@ -3,39 +3,14 @@
 This is the documentation of the API for accessing the FluView Clinical (`fluview_clinical`) data source of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 
+General topics not specific to any particular data source are discussed in the
+[API overview](README.md). Such topics include:
+[contributing](README.md#contributing), [citing](README.md#citing), and
+[data licensing](README.md#data-licensing).
+
 ## FluView Clinical Data
 
 ... <!-- TODO -->
-
-## Contributing
-
-If you are interested in contributing:
-
-- For development of the API itself, see the
-  [development guide](docs/epidata_development.md).
-- To suggest changes, additions, or other ways to improve,
-  [open an issue](https://github.com/cmu-delphi/delphi-epidata/issues/new)
-  describing your idea.
-
-## Citing
-
-We hope that this API is useful to others outside of our group, especially for
-epidemiological and other scientific research. If you use this API and would
-like to cite it, we would gratefully recommend the following copy:
-
-> David C. Farrow,
-> Logan C. Brooks,
-> Aaron Rumack,
-> Ryan J. Tibshirani,
-> Roni Rosenfeld
-> (2015).
-> _Delphi Epidata API_.
-> https://github.com/cmu-delphi/delphi-epidata
-
-## Data licensing
-
-The data surfaced through this API is just a carefully curated mirror of data acquired from .... <!-- TODO -->
-It is subject to its original licensing, .... <!-- TODO -->
 
 # The API
 

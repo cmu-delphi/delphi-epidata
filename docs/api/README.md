@@ -42,12 +42,14 @@ surfaced by Delphi through this API is hereby licensed
 by the `source` parameter, which are known to wholly or partially serve data
 under this license include:
 
-- `delphi`
-- `sensors`
-- `nowcast`
 - `covidcast`
 - `covidcast_meta`
+- `delphi`
+- `dengue_nowcast`
+- `dengue_sensors`
 - `meta*`
+- `nowcast`
+- `sensors`
 
 [![Creative Commons License](https://i.creativecommons.org/l/by/4.0/88x31.png)](https://creativecommons.org/licenses/by/4.0/)
 

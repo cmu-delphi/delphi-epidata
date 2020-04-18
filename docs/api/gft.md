@@ -3,6 +3,11 @@
 This is the documentation of the API for accessing the Google Flu Trends (`gft`) data source of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 
+General topics not specific to any particular data source are discussed in the
+[API overview](README.md). Such topics include:
+[contributing](README.md#contributing), [citing](README.md#citing), and
+[data licensing](README.md#data-licensing).
+
 ## Google Flu Trends Data
 
 Estimate of influenza activity based on volume of certain search queries. Google has discontinued Flu Trends, and this is now a static data source.
@@ -10,36 +15,6 @@ Estimate of influenza activity based on volume of certain search queries. Google
  - Temporal Resolution: Weekly from 2003w40 until 2015w32
  - Spatial Resolution: National, [HHS regions](http://www.hhs.gov/iea/regional/) ([1+10](../../labels/regions.txt)); by state/territory ([50+1](../../labels/states.txt)); and by city ([97](../../labels/cities.txt))
  - Open access
-
-## Contributing
-
-If you are interested in contributing:
-
-- For development of the API itself, see the
-  [development guide](docs/epidata_development.md).
-- To suggest changes, additions, or other ways to improve,
-  [open an issue](https://github.com/cmu-delphi/delphi-epidata/issues/new)
-  describing your idea.
-
-## Citing
-
-We hope that this API is useful to others outside of our group, especially for
-epidemiological and other scientific research. If you use this API and would
-like to cite it, we would gratefully recommend the following copy:
-
-> David C. Farrow,
-> Logan C. Brooks,
-> Aaron Rumack,
-> Ryan J. Tibshirani,
-> Roni Rosenfeld
-> (2015).
-> _Delphi Epidata API_.
-> https://github.com/cmu-delphi/delphi-epidata
-
-## Data licensing
-
-The data surfaced through this API is just a carefully curated mirror of data acquired from .... <!-- TODO -->
-It is subject to its original licensing, .... <!-- TODO -->
 
 # The API
 
@@ -63,7 +38,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | `result` | result code: 1 = success, 2 = too many results, -2 = no results | integer |
 | `epidata` | list of results | array of objects |
 | `epidata[].location` | location | string |
-| `epidata[].epiweek` | epiweek | epiweek | 
+| `epidata[].epiweek` | epiweek | epiweek |
 | `epidata[].num` | number | integer |
 | `message` | `success` or error message | string |
 

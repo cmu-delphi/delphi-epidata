@@ -3,6 +3,11 @@
 This is the documentation of the API for accessing the ILI Nearby (`nowcast`) data source of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 
+General topics not specific to any particular data source are discussed in the
+[API overview](README.md). Such topics include:
+[contributing](README.md#contributing), [citing](README.md#citing), and
+[data licensing](README.md#data-licensing).
+
 ## ILI Nearby Data
 
 A nowcast of U.S. national, regional, and state-level (weighted) %ILI, available seven days (regionally) or five days (state-level) before the first ILINet report for the corresponding week.
@@ -12,41 +17,6 @@ A nowcast of U.S. national, regional, and state-level (weighted) %ILI, available
  - Open access
 
 \* Data is usually released on Friday and updated on Sunday and Monday
-
-
-## Contributing
-
-If you are interested in contributing:
-
-- For development of the API itself, see the
-  [development guide](docs/epidata_development.md).
-- To suggest changes, additions, or other ways to improve,
-  [open an issue](https://github.com/cmu-delphi/delphi-epidata/issues/new)
-  describing your idea.
-
-## Citing
-
-We hope that this API is useful to others outside of our group, especially for
-epidemiological and other scientific research. If you use this API and would
-like to cite it, we would gratefully recommend the following copy:
-
-> David C. Farrow,
-> Logan C. Brooks,
-> Aaron Rumack,
-> Ryan J. Tibshirani,
-> Roni Rosenfeld
-> (2015).
-> _Delphi Epidata API_.
-> https://github.com/cmu-delphi/delphi-epidata
-
-## Data licensing
-
-Any data which is produced novelly by Delphi and is intentionally and openly
-surfaced by Delphi through this API is hereby licensed
-[CC-BY](https://creativecommons.org/licenses/by/4.0/). The `nowcast` endpoint is known to wholly or partially serve data
-under this license.
-
-[![Creative Commons License](https://i.creativecommons.org/l/by/4.0/88x31.png)](https://creativecommons.org/licenses/by/4.0/)
 
 # The API
 
