@@ -3,6 +3,11 @@
 This is the documentation of the API for accessing the NIDSS Dengue (`nidss_dengue`) data source of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 
+General topics not specific to any particular data source are discussed in the
+[API overview](README.md). Such topics include:
+[contributing](README.md#contributing), [citing](README.md#citing), and
+[data licensing](README.md#data-licensing).
+
 ## NIDSS Dengue Data
 
 Counts of confirmed dengue cases from Taiwan's NIDSS.
@@ -11,39 +16,9 @@ Counts of confirmed dengue cases from Taiwan's NIDSS.
  - Spatial Resolution: By [hexchotomy region](https://en.wikipedia.org/wiki/Regions_of_Taiwan#Hexchotomy) ([6+1](../../labels/nidss_regions.txt)) and by [city/county](https://en.wikipedia.org/wiki/List_of_administrative_divisions_of_Taiwan) ([22](../../labels/nidss_locations.txt))
  - Open access
 
-## Contributing
-
-If you are interested in contributing:
-
-- For development of the API itself, see the
-  [development guide](docs/epidata_development.md).
-- To suggest changes, additions, or other ways to improve,
-  [open an issue](https://github.com/cmu-delphi/delphi-epidata/issues/new)
-  describing your idea.
-
-## Citing
-
-We hope that this API is useful to others outside of our group, especially for
-epidemiological and other scientific research. If you use this API and would
-like to cite it, we would gratefully recommend the following copy:
-
-> David C. Farrow,
-> Logan C. Brooks,
-> Aaron Rumack,
-> Ryan J. Tibshirani,
-> Roni Rosenfeld
-> (2015).
-> _Delphi Epidata API_.
-> https://github.com/cmu-delphi/delphi-epidata
-
-## Data licensing
-
-The data surfaced through this API is just a carefully curated mirror of data acquired from .... <!-- TODO -->
-It is subject to its original licensing, .... <!-- TODO -->
-
 # The API
 
-The base URL is: https://delphi.midas.cs.cmu.edu/epidata/api.php
+The base URL is: https://delphi.cmu.edu/epidata/api.php
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -70,7 +45,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 # Example URLs
 
 ### NIDSS Dengue on 2015w01 (nationwide)
-https://delphi.midas.cs.cmu.edu/epidata/api.php?source=nidss_dengue&locations=nationwide&epiweeks=201501
+https://delphi.cmu.edu/epidata/api.php?source=nidss_dengue&locations=nationwide&epiweeks=201501
 
 ```json
 {

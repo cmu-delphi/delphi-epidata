@@ -3,6 +3,11 @@
 This is the documentation of the API for accessing the FluView (`fluview`) data source of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 
+General topics not specific to any particular data source are discussed in the
+[API overview](README.md). Such topics include:
+[contributing](README.md#contributing), [citing](README.md#citing), and
+[data licensing](README.md#data-licensing).
+
 ## FluView Data
 
 Influenza-like illness (ILI) from U.S. Outpatient Influenza-like Illness Surveillance Network (ILINet).
@@ -13,40 +18,9 @@ Influenza-like illness (ILI) from U.S. Outpatient Influenza-like Illness Surveil
 
 \* Data is usually released on Friday
 
-## Contributing
-
-If you are interested in contributing:
-
-- For development of the API itself, see the
-  [development guide](docs/epidata_development.md).
-- To suggest changes, additions, or other ways to improve,
-  [open an issue](https://github.com/cmu-delphi/delphi-epidata/issues/new)
-  describing your idea.
-
-## Citing
-
-We hope that this API is useful to others outside of our group, especially for
-epidemiological and other scientific research. If you use this API and would
-like to cite it, we would gratefully recommend the following copy:
-
-> David C. Farrow,
-> Logan C. Brooks,
-> Aaron Rumack,
-> Ryan J. Tibshirani,
-> Roni Rosenfeld
-> (2015).
-> _Delphi Epidata API_.
-> https://github.com/cmu-delphi/delphi-epidata
-
-## Data licensing
-
-The data surfaced through this API is just a carefully curated mirror of data acquired from .... <!-- TODO -->
-It is subject to its original licensing, .... <!-- TODO -->
-
-
 # The API
 
-The base URL is: https://delphi.midas.cs.cmu.edu/epidata/api.php
+The base URL is: https://delphi.cmu.edu/epidata/api.php
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -101,7 +75,7 @@ Notes:
 # Example URLs
 
 ### FluView on 2015w01 (national)
-https://delphi.midas.cs.cmu.edu/epidata/api.php?source=fluview&regions=nat&epiweeks=201501
+https://delphi.cmu.edu/epidata/api.php?source=fluview&regions=nat&epiweeks=201501
 
 ```json
 {
@@ -132,11 +106,11 @@ https://delphi.midas.cs.cmu.edu/epidata/api.php?source=fluview&regions=nat&epiwe
 
 ### FluView in HHS Regions 4 and 6 for the 2014/2015 flu season
 
-https://delphi.midas.cs.cmu.edu/epidata/api.php?source=fluview&regions=hhs4,hhs6&epiweeks=201440-201520
+https://delphi.cmu.edu/epidata/api.php?source=fluview&regions=hhs4,hhs6&epiweeks=201440-201520
 
 ### Updates to FluView on 2014w53, reported from 2015w01 through 2015w10 (national)
 
-https://delphi.midas.cs.cmu.edu/epidata/api.php?source=fluview&regions=nat&epiweeks=201453&issues=201501-201510
+https://delphi.cmu.edu/epidata/api.php?source=fluview&regions=nat&epiweeks=201453&issues=201501-201510
 
 
 # Code Samples

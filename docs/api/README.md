@@ -8,7 +8,7 @@ API.
 If you are interested in contributing:
 
 - For development of the API itself, see the
-  [development guide](docs/epidata_development.md).
+  [development guide](../epidata_development.md).
 - To suggest changes, additions, or other ways to improve,
   [open an issue](https://github.com/cmu-delphi/delphi-epidata/issues/new)
   describing your idea.
@@ -42,12 +42,14 @@ surfaced by Delphi through this API is hereby licensed
 by the `source` parameter, which are known to wholly or partially serve data
 under this license include:
 
-- `delphi`
-- `sensors`
-- `nowcast`
 - `covidcast`
 - `covidcast_meta`
+- `delphi`
+- `dengue_nowcast`
+- `dengue_sensors`
 - `meta*`
+- `nowcast`
+- `sensors`
 
 [![Creative Commons License](https://i.creativecommons.org/l/by/4.0/88x31.png)](https://creativecommons.org/licenses/by/4.0/)
 
@@ -55,7 +57,7 @@ under this license include:
 
 # The API
 
-The base URL is: https://delphi.midas.cs.cmu.edu/epidata/api.php
+The base URL is: https://delphi.cmu.edu/epidata/api.php
 
 ## Specifying Epiweeks, Dates, and Lists
 
@@ -135,7 +137,7 @@ The parameters available for each source are documented in each linked source-sp
 # Example URLs
 
 ### FluView on 2015w01 (national)
-https://delphi.midas.cs.cmu.edu/epidata/api.php?source=fluview&regions=nat&epiweeks=201501
+https://delphi.cmu.edu/epidata/api.php?source=fluview&regions=nat&epiweeks=201501
 
 ```json
 {
@@ -165,7 +167,7 @@ https://delphi.midas.cs.cmu.edu/epidata/api.php?source=fluview&regions=nat&epiwe
 ```
 
 ### Wikipedia Access article "influenza" on 2020w01
-https://delphi.midas.cs.cmu.edu/epidata/api.php?source=wiki&language=en&articles=influenza&epiweeks=202001
+https://delphi.cmu.edu/epidata/api.php?source=wiki&language=en&articles=influenza&epiweeks=202001
 
 ```json
 {
