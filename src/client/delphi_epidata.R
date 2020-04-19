@@ -506,7 +506,7 @@ Epidata <- (function() {
       time_type = time_type,
       geo_type = geo_type,
       time_values = .list(time_values),
-      geo_values = geo_value
+      geo_value = geo_value
     )
     # Make the API call
     return(.request(params))

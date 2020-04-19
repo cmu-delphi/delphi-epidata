@@ -543,7 +543,7 @@ class Epidata:
       'time_type': time_type,
       'geo_type': geo_type,
       'time_values': Epidata._list(time_values),
-      'geo_values': geo_value,
+      'geo_value': geo_value,
     }
     # Make the API call
     return Epidata._request(params)
