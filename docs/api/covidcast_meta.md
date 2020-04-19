@@ -63,4 +63,58 @@ https://delphi.cmu.edu/epidata/api.php?source=covidcast_meta
 
 # Code Samples
 
-<!-- TODO: fix -->
+Libraries are available for [CoffeeScript](../../src/client/delphi_epidata.coffee), [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
+The following samples show how to import the library and fetch Delphi's COVID-19 Surveillance Streams metadata.
+
+### CoffeeScript (in Node.js)
+
+````coffeescript
+# Import
+{Epidata} = require('./delphi_epidata')
+# Fetch data
+callback = (result, message, epidata) ->
+  console.log(result, message, epidata?.length)
+Epidata.covidcast_meta(callback)
+````
+
+### JavaScript (in a web browser)
+
+````html
+<!-- Imports -->
+<script src="jquery.js"></script>
+<script src="delphi_epidata.js"></script>
+<!-- Fetch data -->
+<script>
+  var callback = function(result, message, epidata) {
+    console.log(result, message, epidata != null ? epidata.length : void 0);
+  };
+  Epidata.covidcast_meta(callback);
+</script>
+````
+
+### Python
+
+Optionally install the package using pip(env):
+````bash
+pip install delphi-epidata
+````
+
+Otherwise, place `delphi_epidata.py` from this repo next to your python script.
+
+````python
+# Import
+from delphi_epidata import Epidata
+# Fetch data
+res = Epidata.covidcast_meta()
+print(res['result'], res['message'], len(res['epidata']))
+````
+
+### R
+
+````R
+# Import
+source('delphi_epidata.R')
+# Fetch data
+res <- Epidata$covidcast_meta()
+cat(paste(res$result, res$message, length(res$epidata), "\n"))
+````
