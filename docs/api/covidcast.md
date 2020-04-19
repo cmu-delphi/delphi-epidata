@@ -14,7 +14,7 @@ General topics not specific to any particular data source are discussed in the
 
 # The API
 
-The base URL is: https://delphi.midas.cs.cmu.edu/epidata/api.php
+The base URL is: https://delphi.cmu.edu/epidata/api.php
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -48,7 +48,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 # Example URLs
 
 ### Delphi's COVID-19 Surveillance Streams from Facebook Survey ILI on 2020-04-06 - 2010-04-10 (county 06001)
-https://delphi.midas.cs.cmu.edu/epidata/api.php?source=covidcast&data_source=fb_survey&signal=ili&time_type=day&geo_type=county&time_values=20200406-20200410&geo_value=06001
+https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb_survey&signal=ili&time_type=day&geo_type=county&time_values=20200406-20200410&geo_value=06001
 ```json
 {
   "result": 1,
@@ -68,7 +68,7 @@ https://delphi.midas.cs.cmu.edu/epidata/api.php?source=covidcast&data_source=fb_
 ```
 
 ## Delphi's COVID-19 Surveillance Streams from Facebook Survey ILI on 2020-04-06 (all counties)
-https://delphi.midas.cs.cmu.edu/epidata/api.php?source=covidcast&data_source=fb_survey&signal=ili&time_type=day&geo_type=county&time_values=20200406&geo_value=*
+https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb_survey&signal=ili&time_type=day&geo_type=county&time_values=20200406&geo_value=*
 
 # Code Samples
 

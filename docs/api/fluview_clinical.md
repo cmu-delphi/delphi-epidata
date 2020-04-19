@@ -14,7 +14,7 @@ General topics not specific to any particular data source are discussed in the
 
 # The API
 
-The base URL is: https://delphi.midas.cs.cmu.edu/epidata/api.php
+The base URL is: https://delphi.cmu.edu/epidata/api.php
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -60,7 +60,7 @@ If neither is specified, the current issues are used.
 # Example URLs
 
 ### FluView Clinical on 2020w01 (national)
-https://delphi.midas.cs.cmu.edu/epidata/api.php?source=fluview_clinical&regions=nat&epiweeks=202001
+https://delphi.cmu.edu/epidata/api.php?source=fluview_clinical&regions=nat&epiweeks=202001
 
 ```json
 {

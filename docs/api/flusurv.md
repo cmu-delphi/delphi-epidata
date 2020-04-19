@@ -21,7 +21,7 @@ See also:
 
 # The API
 
-The base URL is: https://delphi.midas.cs.cmu.edu/epidata/api.php
+The base URL is: https://delphi.cmu.edu/epidata/api.php
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -74,7 +74,7 @@ Notes:
 # Example URLs
 
 ### FluSurv on 2020w01 (CA)
-https://delphi.midas.cs.cmu.edu/epidata/api.php?source=flusurv&locations=ca&epiweeks=202001
+https://delphi.cmu.edu/epidata/api.php?source=flusurv&locations=ca&epiweeks=202001
 
 ```json
 {

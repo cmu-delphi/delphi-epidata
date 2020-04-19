@@ -20,7 +20,7 @@ Influenza-like illness (ILI) from U.S. Outpatient Influenza-like Illness Surveil
 
 # The API
 
-The base URL is: https://delphi.midas.cs.cmu.edu/epidata/api.php
+The base URL is: https://delphi.cmu.edu/epidata/api.php
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -75,7 +75,7 @@ Notes:
 # Example URLs
 
 ### FluView on 2015w01 (national)
-https://delphi.midas.cs.cmu.edu/epidata/api.php?source=fluview&regions=nat&epiweeks=201501
+https://delphi.cmu.edu/epidata/api.php?source=fluview&regions=nat&epiweeks=201501
 
 ```json
 {
@@ -106,11 +106,11 @@ https://delphi.midas.cs.cmu.edu/epidata/api.php?source=fluview&regions=nat&epiwe
 
 ### FluView in HHS Regions 4 and 6 for the 2014/2015 flu season
 
-https://delphi.midas.cs.cmu.edu/epidata/api.php?source=fluview&regions=hhs4,hhs6&epiweeks=201440-201520
+https://delphi.cmu.edu/epidata/api.php?source=fluview&regions=hhs4,hhs6&epiweeks=201440-201520
 
 ### Updates to FluView on 2014w53, reported from 2015w01 through 2015w10 (national)
 
-https://delphi.midas.cs.cmu.edu/epidata/api.php?source=fluview&regions=nat&epiweeks=201453&issues=201501-201510
+https://delphi.cmu.edu/epidata/api.php?source=fluview&regions=nat&epiweeks=201453&issues=201501-201510
 
 
 # Code Samples

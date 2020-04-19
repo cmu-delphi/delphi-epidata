@@ -18,7 +18,7 @@ Counts of confirmed dengue cases from Taiwan's NIDSS.
 
 # The API
 
-The base URL is: https://delphi.midas.cs.cmu.edu/epidata/api.php
+The base URL is: https://delphi.cmu.edu/epidata/api.php
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -45,7 +45,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 # Example URLs
 
 ### NIDSS Dengue on 2015w01 (nationwide)
-https://delphi.midas.cs.cmu.edu/epidata/api.php?source=nidss_dengue&locations=nationwide&epiweeks=201501
+https://delphi.cmu.edu/epidata/api.php?source=nidss_dengue&locations=nationwide&epiweeks=201501
 
 ```json
 {

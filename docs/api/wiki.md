@@ -19,7 +19,7 @@ Number of page visits for selected English, Influenza-related wikipedia articles
 
 # The API
 
-The base URL is: https://delphi.midas.cs.cmu.edu/epidata/api.php
+The base URL is: https://delphi.cmu.edu/epidata/api.php
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -61,7 +61,7 @@ Note:
 # Example URLs
 
 ### Wikipedia Access article "influenza" on 2020w01
-https://delphi.midas.cs.cmu.edu/epidata/api.php?source=wiki&language=en&articles=influenza&epiweeks=202001
+https://delphi.cmu.edu/epidata/api.php?source=wiki&language=en&articles=influenza&epiweeks=202001
 
 ```json
 {
@@ -81,7 +81,7 @@ https://delphi.midas.cs.cmu.edu/epidata/api.php?source=wiki&language=en&articles
 ```
 
 ### Wikipedia Access article "influenza" on date 2020-01-01
-https://delphi.midas.cs.cmu.edu/epidata/api.php?source=wiki&language=en&articles=influenza&dates=20200101
+https://delphi.cmu.edu/epidata/api.php?source=wiki&language=en&articles=influenza&dates=20200101
 
 ```json
 {

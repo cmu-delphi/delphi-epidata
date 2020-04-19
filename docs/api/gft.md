@@ -18,7 +18,7 @@ Estimate of influenza activity based on volume of certain search queries. Google
 
 # The API
 
-The base URL is: https://delphi.midas.cs.cmu.edu/epidata/api.php
+The base URL is: https://delphi.cmu.edu/epidata/api.php
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -45,7 +45,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 # Example URLs
 
 ### Google Flu Trends on 2015w01 (national)
-https://delphi.midas.cs.cmu.edu/epidata/api.php?source=gft&locations=nat&epiweeks=201501
+https://delphi.cmu.edu/epidata/api.php?source=gft&locations=nat&epiweeks=201501
 
 ```json
 {

@@ -14,7 +14,7 @@ General topics not specific to any particular data source are discussed in the
 
 # The API
 
-The base URL is: https://delphi.midas.cs.cmu.edu/epidata/api.php
+The base URL is: https://delphi.cmu.edu/epidata/api.php
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -53,7 +53,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 # Example URLs
 
 ### Delphi on 2020w01 (EC)
-https://delphi.midas.cs.cmu.edu/epidata/api.php?source=delphi&system=ec&epiweek=202001
+https://delphi.cmu.edu/epidata/api.php?source=delphi&system=ec&epiweek=202001
 
 ```json
 {

@@ -20,7 +20,7 @@ A nowcast of U.S. national, regional, and state-level (weighted) %ILI, available
 
 # The API
 
-The base URL is: https://delphi.midas.cs.cmu.edu/epidata/api.php
+The base URL is: https://delphi.cmu.edu/epidata/api.php
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -48,7 +48,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 # Example URLs
 
 ### ILI Nearby on 2020w01 (national)
-https://delphi.midas.cs.cmu.edu/epidata/api.php?source=nowcast&locations=nat&epiweeks=202001
+https://delphi.cmu.edu/epidata/api.php?source=nowcast&locations=nat&epiweeks=202001
 
 ```json
 {
