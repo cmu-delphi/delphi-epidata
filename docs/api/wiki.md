@@ -186,6 +186,6 @@ Note:
 # Import
 source('delphi_epidata.R')
 # Fetch data
-res <- Epidata$fluview_clinical(list('nat'), NULL, list(201940, Epidata$range(202001, 202010)), list(0, 12), 'en')
+res <- Epidata$wiki(list('nat'), NULL, list(201940, Epidata$range(202001, 202010)), list(0, 12), 'en')
 cat(paste(res$result, res$message, length(res$epidata), "\n"))
 ````
