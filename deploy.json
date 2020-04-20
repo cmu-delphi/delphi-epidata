@@ -194,6 +194,19 @@
       "add-header-comment": true
     },
 
+    "// acquisition - covidcast",
+    {
+      "type": "move",
+      "src": "src/acquisition/covidcast/",
+      "dst": "[[package]]/acquisition/covidcast/",
+      "match": "^.*\\.(py)$",
+      "add-header-comment": true
+    }, {
+      "type": "move",
+      "src": "src/acquisition/covidcast/data_dir_readme.md",
+      "dst": "/common/covidcast/README.md"
+    },
+
     "// run unit and coverage tests",
     {"type": "py3test"}
 
