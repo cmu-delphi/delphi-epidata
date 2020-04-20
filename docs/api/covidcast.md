@@ -63,8 +63,8 @@ Notes:
 
 # Example URLs
 
-### Delphi's COVID-19 Surveillance Streams from Facebook Survey ILI on 2020-04-06 - 2010-04-10 (county 06001)
-https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb_survey&signal=ili&time_type=day&geo_type=county&time_values=20200406-20200410&geo_value=06001
+### Delphi's COVID-19 Surveillance Streams from Facebook Survey CLI on 2020-04-06 - 2010-04-10 (county 06001)
+https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&signal=cli&time_type=day&geo_type=county&time_values=20200406-20200410&geo_value=06001
 
 ```json
 {
@@ -72,11 +72,11 @@ https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb_survey&si
   "epidata": [
     {
       "geo_value": "06001",
-      "time_value": 20200406,
-      "direction": 0,
-      "value": 0,
-      "stderr": null,
-      "sample_size": 417.2392
+      "time_value": 20200407,
+      "direction": null,
+      "value": 1.1293550689064,
+      "stderr": 0.53185454111042,
+      "sample_size": 281.0245
     },
     ...
   ],
@@ -84,13 +84,13 @@ https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb_survey&si
 }
 ```
 
-## Delphi's COVID-19 Surveillance Streams from Facebook Survey ILI on 2020-04-06 (all counties)
-https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb_survey&signal=ili&time_type=day&geo_type=county&time_values=20200406&geo_value=*
+## Delphi's COVID-19 Surveillance Streams from Facebook Survey CLI on 2020-04-06 (all counties)
+https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&signal=cli&time_type=day&geo_type=county&time_values=20200406&geo_value=*
 
 # Code Samples
 
 Libraries are available for [CoffeeScript](../../src/client/delphi_epidata.coffee), [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
-The following samples show how to import the library and fetch Delphi's COVID-19 Surveillance Streams from Facebook Survey ILI for county 06001 and days `20200401` and `20200405-20200414` (11 days total).
+The following samples show how to import the library and fetch Delphi's COVID-19 Surveillance Streams from Facebook Survey CLI for county 06001 and days `20200401` and `20200405-20200414` (11 days total).
 
 ### CoffeeScript (in Node.js)
 
@@ -100,7 +100,7 @@ The following samples show how to import the library and fetch Delphi's COVID-19
 # Fetch data
 callback = (result, message, epidata) ->
   console.log(result, message, epidata?.length)
-Epidata.covidcast(callback, 'fb_survey', 'ili', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001')
+Epidata.covidcast(callback, 'fb-survey', 'cli', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001')
 ````
 
 ### JavaScript (in a web browser)
@@ -114,7 +114,7 @@ Epidata.covidcast(callback, 'fb_survey', 'ili', 'day', 'county', [20200401, Epid
   var callback = function(result, message, epidata) {
     console.log(result, message, epidata != null ? epidata.length : void 0);
   };
-  Epidata.covidcast(callback, 'fb_survey', 'ili', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001');
+  Epidata.covidcast(callback, 'fb-survey', 'cli', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001');
 </script>
 ````
 
@@ -131,7 +131,7 @@ Otherwise, place `delphi_epidata.py` from this repo next to your python script.
 # Import
 from delphi_epidata import Epidata
 # Fetch data
-res = Epidata.covidcast('fb_survey', 'ili', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001')
+res = Epidata.covidcast('fb-survey', 'cli', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001')
 print(res['result'], res['message'], len(res['epidata']))
 ````
 
@@ -141,6 +141,6 @@ print(res['result'], res['message'], len(res['epidata']))
 # Import
 source('delphi_epidata.R')
 # Fetch data
-res <- Epidata$covidcast('fb_survey', 'ili', 'day', 'county', list(20200401, Epidata$range(20200405, 20200414)), '06001')
+res <- Epidata$covidcast('fb-survey', 'cli', 'day', 'county', list(20200401, Epidata$range(20200405, 20200414)), '06001')
 cat(paste(res$result, res$message, length(res$epidata), "\n"))
 ````
