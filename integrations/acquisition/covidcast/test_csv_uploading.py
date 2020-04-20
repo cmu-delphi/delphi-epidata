@@ -7,7 +7,6 @@ from unittest.mock import MagicMock
 
 # third party
 import mysql.connector
-import requests
 
 # first party
 from delphi.epidata.client.delphi_epidata import Epidata

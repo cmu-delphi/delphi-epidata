@@ -24,6 +24,14 @@ class CsvImporter:
   # set of required CSV columns
   REQUIRED_COLUMNS = {'geo_id', 'val', 'se', 'direction', 'sample_size'}
 
+  # reasonable time bounds for sanity checking time values
+  MIN_YEAR = 2019
+  MAX_YEAR = 2023
+
+  # reasonable lower bound for sanity checking sample size (if sample size is
+  # present, then, for privacy, it should definitely be larger than this value)
+  MIN_SAMPLE_SIZE = 5
+
   # NOTE: this should be a Python 3.7+ `dataclass`, but the server is on 3.4
   # See https://docs.python.org/3/library/dataclasses.html
   class RowValues:
@@ -42,7 +50,7 @@ class CsvImporter:
 
     year, month, day = value // 10000, (value % 10000) // 100, value % 100
 
-    nearby_year = 2014 <= year <= 2023
+    nearby_year = CsvImporter.MIN_YEAR <= year <= CsvImporter.MAX_YEAR
     valid_month = 1 <= month <= 12
     sensible_day = 1 <= day <= 31
 
@@ -54,7 +62,7 @@ class CsvImporter:
 
     year, week = value // 100, value % 100
 
-    nearby_year = 2014 <= year <= 2023
+    nearby_year = CsvImporter.MIN_YEAR <= year <= CsvImporter.MAX_YEAR
     sensible_week = 1 <= week <= 53
 
     return nearby_year and sensible_week
@@ -195,7 +203,7 @@ class CsvImporter:
 
     # optional not-too-small float
     sample_size = CsvImporter.maybe_apply(float, row.sample_size)
-    if sample_size is not None and sample_size < 5:
+    if sample_size is not None and sample_size < CsvImporter.MIN_SAMPLE_SIZE:
       return (None, 'sample_size')
 
     # optional int in (-1, 0, 1)
