@@ -1,5 +1,10 @@
 """Integration tests for delphi_epidata.py."""
+
+# standard library
 import unittest
+
+# third party
+import mysql.connector
 
 # first party
 from delphi.epidata.client.delphi_epidata import Epidata
@@ -7,47 +12,92 @@ from delphi.epidata.client.delphi_epidata import Epidata
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.client.delphi_epidata'
 
+
 class DelphiEpidataPythonClientTests(unittest.TestCase):
-    """Tests the Python client."""
+  """Tests the Python client."""
 
-    def test_covidcast_happy_path(self):
-        """Test that the covidcast endpoint returns expected data."""
+  def setUp(self):
+    """Perform per-test setup."""
 
-        # Fetch data
-        res = Epidata.covidcast('fb-survey', 'cli', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001')
-        # Check result
-        self.assertEqual(res['result'], 1)
-        self.assertEqual(res['message'], 'success')
-        self.assertGreater(len(res['epidata']), 0)
-        item = res['epidata'][0]
-        self.assertIn('geo_value', item)
-        self.assertIn('time_value', item)
-        self.assertIn('direction', item)
-        self.assertIn('value', item)
-        self.assertIn('stderr', item)
-        self.assertIn('sample_size', item)
+    # connect to the `epidata` database and clear relevant tables
+    cnx = mysql.connector.connect(
+        user='user',
+        password='pass',
+        host='delphi_database_epidata',
+        database='epidata')
+    cur = cnx.cursor()
+    cur.execute('truncate table covidcast')
+    cnx.commit()
+    cur.close()
 
+    # make connection and cursor available to test cases
+    self.cnx = cnx
+    self.cur = cnx.cursor()
 
-    def test_covidcast_meta(self):
-        """Test that the covidcast_meta endpoint returns expected data."""
+    # use the local instance of the Epidata API
+    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
 
-        # Fetch data
-        res = Epidata.covidcast_meta()
-        # Check result
-        self.assertEqual(res['result'], 1)
-        self.assertEqual(res['message'], 'success')
-        self.assertGreater(len(res['epidata']), 0)
-        item = res['epidata'][0]
-        self.assertIn('data_source', item)
-        self.assertIn('time_type', item)
-        self.assertIn('geo_type', item)
-        self.assertIn('min_time', item)
-        self.assertIn('max_time', item)
-        self.assertIn('num_locations', item)
-        self.assertIn('min_value', item)
-        self.assertIn('max_value', item)
-        self.assertIn('mean_value', item)
-        self.assertIn('stdev_value', item)
+  def tearDown(self):
+    """Perform per-test teardown."""
+    self.cur.close()
+    self.cnx.close()
 
-if __name__ == '__main__':
-    unittest.main()
+  def test_covidcast(self):
+    """Test that the covidcast endpoint returns expected data."""
+
+    # insert dummy data
+    self.cur.execute('''
+      insert into covidcast values
+        (0, 'src', 'sig', 'day', 'county', 20200414, '01234', 1.5, 2.5, 3.5, 4)
+    ''')
+    self.cnx.commit()
+
+    # fetch data
+    response = Epidata.covidcast(
+        'src', 'sig', 'day', 'county', 20200414, '01234')
+
+    # check result
+    self.assertEqual(response, {
+      'result': 1,
+      'epidata': [{
+        'time_value': 20200414,
+        'geo_value': '01234',
+        'value': 1.5,
+        'stderr': 2.5,
+        'sample_size': 3.5,
+        'direction': 4,
+       }],
+      'message': 'success',
+    })
+
+  def test_covidcast_meta(self):
+    """Test that the covidcast_meta endpoint returns expected data."""
+
+    # insert dummy data
+    self.cur.execute('''
+      insert into covidcast values
+        (0, 'src', 'sig', 'day', 'county', 20200414, '01234', 1.5, 2.5, 3.5, 4)
+    ''')
+    self.cnx.commit()
+
+    # fetch data
+    response = Epidata.covidcast_meta()
+
+    # check result
+    self.assertEqual(response, {
+      'result': 1,
+      'epidata': [{
+        'data_source': 'src',
+        'signal': 'sig',
+        'time_type': 'day',
+        'geo_type': 'county',
+        'min_time': 20200414,
+        'max_time': 20200414,
+        'num_locations': 1,
+        'min_value': 1.5,
+        'max_value': 1.5,
+        'mean_value': 1.5,
+        'stdev_value': 0,
+       }],
+      'message': 'success',
+    })

@@ -87,7 +87,7 @@ class Epidata:
       params['auth'] = auth
     # Make the API call
     return Epidata._request(params)
-  
+
   # Fetch FluView clinical data
   @staticmethod
   def fluview_clinical(regions, epiweeks, issues=None, lag=None):
