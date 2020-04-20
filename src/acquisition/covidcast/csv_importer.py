@@ -1,0 +1,242 @@
+"""Collects and reads covidcast data from a set of local CSV files."""
+
+# standard library
+import glob
+import os
+import re
+
+# third party
+import pandas
+
+
+class CsvImporter:
+  """Finds and parses covidcast CSV files."""
+
+  # .../source/yyyymmdd_geo_signal.csv
+  PATTERN_DAILY = re.compile(r'^.*/([^/]*)/(\d{8})_(\w+?)_(\w+)\.csv$')
+
+  # .../source/weekly_yyyyww_geo_signal.csv
+  PATTERN_WEEKLY = re.compile(r'^.*/([^/]*)/weekly_(\d{6})_(\w+?)_(\w+)\.csv$')
+
+  # set of allowed resolutions (aka "geo_type")
+  GEOGRAPHIC_RESOLUTIONS = {'county', 'hrr', 'msa', 'dma', 'state'}
+
+  # set of required CSV columns
+  REQUIRED_COLUMNS = {'geo_id', 'val', 'se', 'direction', 'sample_size'}
+
+  # NOTE: this should be a Python 3.7+ `dataclass`, but the server is on 3.4
+  # See https://docs.python.org/3/library/dataclasses.html
+  class RowValues:
+    """A container for the values of a single covidcast row."""
+
+    def __init__(self, geo_value, value, stderr, sample_size, direction):
+      self.geo_value = geo_value
+      self.value = value
+      self.stderr = stderr
+      self.sample_size = sample_size
+      self.direction = direction
+
+  @staticmethod
+  def is_sane_day(value):
+    """Return whether `value` is a sane (maybe not valid) YYYYMMDD date."""
+
+    year, month, day = value // 10000, (value % 10000) // 100, value % 100
+
+    nearby_year = 2014 <= year <= 2023
+    valid_month = 1 <= month <= 12
+    sensible_day = 1 <= day <= 31
+
+    return nearby_year and valid_month and sensible_day
+
+  @staticmethod
+  def is_sane_week(value):
+    """Return whether `value` is a sane (maybe not valid) YYYYWW epiweek."""
+
+    year, week = value // 100, value % 100
+
+    nearby_year = 2014 <= year <= 2023
+    sensible_week = 1 <= week <= 53
+
+    return nearby_year and sensible_week
+
+  @staticmethod
+  def find_csv_files(scan_dir, glob=glob):
+    """Recursively search for and yield covidcast-format CSV files.
+
+    scan_dir: the directory to scan (recursively)
+
+    The return value is a tuple of (path, details), where, if the path was
+    valid, details is a tuple of (source, signal, time_type, geo_type,
+    time_value) (otherwise None).
+    """
+
+    for path in glob.glob(os.path.join(scan_dir, '*', '*')):
+      if not path.lower().endswith('.csv'):
+        # safe to ignore this file
+        continue
+
+      print('file:', path)
+
+      # match a daily or weekly naming pattern
+      daily_match = CsvImporter.PATTERN_DAILY.match(path.lower())
+      weekly_match = CsvImporter.PATTERN_WEEKLY.match(path.lower())
+      if not daily_match and not weekly_match:
+        print(' invalid csv path/filename')
+        yield (path, None)
+        continue
+
+      # extract and validate time resolution
+      if daily_match:
+        time_type = 'day'
+        time_value = int(daily_match.group(2))
+        match = daily_match
+        if not CsvImporter.is_sane_day(time_value):
+          print(' invalid filename day')
+          yield (path, None)
+          continue
+      else:
+        time_type = 'week'
+        time_value = int(weekly_match.group(2))
+        match = weekly_match
+        if not CsvImporter.is_sane_week(time_value):
+          print(' invalid filename week')
+          yield (path, None)
+          continue
+
+      # # extract and validate geographic resolution
+      geo_type = match.group(3).lower()
+      if geo_type not in CsvImporter.GEOGRAPHIC_RESOLUTIONS:
+        print(' invalid geo_type')
+        yield (path, None)
+        continue
+
+      # extract additional values, lowercased for consistency
+      source = match.group(1).lower()
+      signal = match.group(4).lower()
+
+      yield (path, (source, signal, time_type, geo_type, time_value))
+
+  @staticmethod
+  def is_header_valid(columns):
+    """Return whether the given pandas columns contains the required fields."""
+
+    return set(columns) >= CsvImporter.REQUIRED_COLUMNS
+
+  @staticmethod
+  def floaty_int(value):
+    """Cast a string to an int, even if it looks like a float.
+
+    For example, "-1" and "-1.0" should both result in -1. Non-integer floats
+    will cause `ValueError` to be reaised.
+    """
+
+    float_value = float(value)
+    int_value = round(float_value)
+    if float_value != int_value:
+      raise ValueError('not an int: "%s"' % str(value))
+    return int_value
+
+  @staticmethod
+  def maybe_apply(func, value):
+    """Apply the given function to the given value if not null-ish."""
+
+    if str(value).lower() not in ('', 'na', 'nan', 'inf', '-inf', 'none'):
+      return func(value)
+
+  @staticmethod
+  def extract_and_check_row(row, geo_type):
+    """Extract and return `RowValues` from a CSV row, with sanity checks.
+
+    Also returns the name of the field which failed sanity check, or None.
+
+    row: the pandas table row to extract
+    geo_type: the geographic resolution of the file
+    """
+
+    # use consistent capitalization (e.g. for states)
+    geo_id = row.geo_id.lower()
+
+    if geo_type in ('hrr', 'msa', 'dma'):
+      # these particular ids are prone to be written as ints -- and floats
+      geo_id = str(CsvImporter.floaty_int(geo_id))
+
+    # sanity check geo_id with respect to geo_type
+    if geo_type == 'county':
+      if len(geo_id) != 5 or not '01000' <= geo_id <= '80000':
+        return (None, 'geo_id')
+
+    elif geo_type == 'hrr':
+      if not 1 <= int(geo_id) <= 500:
+        return (None, 'geo_id')
+
+    elif geo_type == 'msa':
+      if len(geo_id) != 5 or not '10000' <= geo_id <= '99999':
+        return (None, 'geo_id')
+
+    elif geo_type == 'dma':
+      if not 450 <= int(geo_id) <= 950:
+        return (None, 'geo_id')
+
+    elif geo_type == 'state':
+      # note that geo_id is lowercase
+      if len(geo_id) != 2 or not 'aa' <= geo_id <= 'zz':
+        return (None, 'geo_id')
+
+    else:
+      return (None, 'geo_type')
+
+    # required float
+    value = float(row.val)
+
+    # optional nonnegative float
+    stderr = CsvImporter.maybe_apply(float, row.se)
+    if stderr is not None and stderr < 0:
+      return (None, 'se')
+
+    # optional not-too-small float
+    sample_size = CsvImporter.maybe_apply(float, row.sample_size)
+    if sample_size is not None and sample_size < 5:
+      return (None, 'sample_size')
+
+    # optional int in (-1, 0, 1)
+    try:
+      direction = CsvImporter.maybe_apply(
+          CsvImporter.floaty_int, row.direction)
+    except ValueError as e:
+      return (None, 'direction')
+    if direction not in (None, -1, 0, 1):
+      return (None, 'direction')
+
+    # return extracted and validated row values
+    row_values = CsvImporter.RowValues(
+        geo_id, value, stderr, sample_size, direction)
+    return (row_values, None)
+
+  @staticmethod
+  def load_csv(filepath, geo_type, pandas=pandas):
+    """Load, validate, and yield data as `RowValues` from a CSV file.
+
+    filepath: the CSV file to be loaded
+    geo_type: the geographic resolution (e.g. county)
+
+    In case of a validation error, `None` is yielded for the offending row,
+    including the header.
+    """
+
+    # don't use type inference, just get strings
+    table = pandas.read_csv(filepath, dtype='str')
+
+    if not CsvImporter.is_header_valid(table.columns):
+      print(' invalid header')
+      yield None
+      return
+
+    for row in table.itertuples(index=False):
+
+      row_values, error = CsvImporter.extract_and_check_row(row, geo_type)
+      if error:
+        print(' invalid value for %s (%s)' % (str(row), error))
+        yield None
+        continue
+
+      yield row_values
