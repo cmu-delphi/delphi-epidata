@@ -34,6 +34,10 @@ None.
 | `epidata[].min_time` | minimum time (e.g., 20200406) | integer |
 | `epidata[].max_time` | maximum time (e.g., 20200413) | integer |
 | `epidata[].num_locations` | number of locations | integer |
+| `epidata[].min_value` | minimum value | float |
+| `epidata[].max_value` | maximum value | float |
+| `epidata[].mean_value` | mean of value | float |
+| `epidata[].stdev_value` | standard deviation of value | float |
 | `message` | `success` or error message | string |
 
 # Example URLs
@@ -45,15 +49,17 @@ https://delphi.cmu.edu/epidata/api.php?source=covidcast_meta
   "result": 1,
   "epidata": [
     {
-      "data_source": "fb_survey",
+      "data_source": "doctor-visits",
       "signal": "cli",
       "time_type": "day",
       "geo_type": "county",
-      "min_time": 20200406,
-      "max_time": 20200413,
-      "num_locations": 555,
+      "min_time": 20200201,
+      "max_time": 20200418,
+      "num_locations": 1411,
       "min_value": 0,
-      "max_value": 5.0805650596568
+      "max_value": 23.079023,
+      "mean_value": 0.42745842933726,
+      "stdev_value": 0.96461526722895
     },
     ...
   ],

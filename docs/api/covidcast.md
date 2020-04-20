@@ -10,7 +10,34 @@ General topics not specific to any particular data source are discussed in the
 
 ## Delphi's COVID-19 Surveillance Streams Data
 
-... <!-- TODO -->
+Delphi's COVID-19 Surveillance Streams data includes the following data sources:
+* `fb-survey`: Data signal based on CMU-run symptom surveys, advertised through Facebook.  These surveys are
+voluntary, and no individual survey responses are shared back to Facebook. Using this survey data, we estimate the
+percentage of people in a given location, on a given day that have CLI (covid-like illness = fever, along with cough,
+or shortness of breath, or difficulty breathing), and separately, that have ILI (influenza-like illness = fever,
+along with cough or sore throat).
+* `google-survey`: Data signal based on Google-run symptom surveys, through their Opinions Reward app (and similar
+applications).  These surveys are again voluntary.  They are just one question long, and ask "Do you know someone
+in your community who is sick (fever, along with cough, or shortness of breath, or difficulty breathing) right now?"
+Using this survey data, we estimate the percentage of people in a given location, on a given day, that know somebody
+who has CLI (covid-like illness = fever, along with cough, or shortness of breath, or difficulty breathing).
+Note that this is tracking a different quantity than the surveys through Facebook, and (unsurprisingly) the estimates
+here tend to be much larger.
+* `quidel`: Data signal based on flu lab tests, provided to us by Quidel, Inc.  When a patient (whether at a doctor’s
+office, clinic, or hospital) has covid-like symptoms, standard practice currently is to perform a flu test to rule
+out seasonal flu (influenza), because these two diseases have similar symptoms. Using this lab test data, we estimate
+the percentage of flu tests that came back negative among all those that were performed in a given geography (state,
+metro-area or county) and on a given day.  While many of these patients may not have covid, the fraction of tests
+negative for flu is positively correlated with the prevalence of covid.
+* `ght`: Data signal based on Google searches, provided to us by Google Health Trends.  Using this search data, we
+estimate the volume of covid-related searches in a given location, on a given day.   This signal is measured in
+arbitrary units (its scale is meaningless).
+* `doctor-visits`: Data based on outpatient visits, provided to us by a national health system.  Using this outpatient
+data, we estimate the percentage of covid-related doctor's visits in a given location, on a given day.
+
+The data is expected to be updated daily. You can use the [`covidcast_meta`](covidcast_meta.md) endpoint to get
+summary information about the ranges of the different attributes for the different data sources currently in the data.
+
 
 # The API
 
@@ -24,12 +51,19 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 | Parameter | Description | Type |
 | --- | --- | --- |
-| `data_source` | name of upstream data souce | string |
-| `signal` | name of signal derived from upstream data | string |
+| `data_source` | name of upstream data source (e.g., `fb-survey`, `google-survey`, `ght`, `quidel`, `doctor-visits`) | string |
+| `signal` | name of signal derived from upstream data (see notes below) | string |
 | `time_type` | temporal resolution of the signal (e.g., `day`, `week`) | string |
 | `geo_type` | spatial resolution of the signal (e.g., `county`, `hrr`, `msa`, `dma`, `state`) | string |
 | `time_values` | time unit (e.g., date) over which underlying events happened | `list` of time values (e.g., 20200401) |
 | `geo_value` | unique code for each location, depending on `geo_type` (county -> FIPS 6-4 code, HRR -> HRR number, MSA -> CBSA code, DMA -> DMA code, state -> two-letter [state](../../labels/states.txt) code), or `*` for all | string |
+
+Notes:
+* `fb-survey` `signal` values include `cli`, `ili`, and `wili`.
+* `google-survey` `signal` values include `cli`.
+* `ght` `signal` values include `rawsearch` and `smoothedsearch`.
+* `quidel` `signal` values include `raw_negativeprop` and `smooth_negativeprop`.
+* `doctor-visits` `signal` values include `cli`.
 
 ## Response
 
@@ -47,8 +81,8 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 # Example URLs
 
-### Delphi's COVID-19 Surveillance Streams from Facebook Survey ILI on 2020-04-06 - 2010-04-10 (county 06001)
-https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb_survey&signal=ili&time_type=day&geo_type=county&time_values=20200406-20200410&geo_value=06001
+### Delphi's COVID-19 Surveillance Streams from Facebook Survey CLI on 2020-04-06 - 2010-04-10 (county 06001)
+https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&signal=cli&time_type=day&geo_type=county&time_values=20200406-20200410&geo_value=06001
 
 ```json
 {
@@ -56,11 +90,11 @@ https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb_survey&si
   "epidata": [
     {
       "geo_value": "06001",
-      "time_value": 20200406,
-      "direction": 0,
-      "value": 0,
-      "stderr": null,
-      "sample_size": 417.2392
+      "time_value": 20200407,
+      "direction": null,
+      "value": 1.1293550689064,
+      "stderr": 0.53185454111042,
+      "sample_size": 281.0245
     },
     ...
   ],
@@ -68,13 +102,13 @@ https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb_survey&si
 }
 ```
 
-## Delphi's COVID-19 Surveillance Streams from Facebook Survey ILI on 2020-04-06 (all counties)
-https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb_survey&signal=ili&time_type=day&geo_type=county&time_values=20200406&geo_value=*
+## Delphi's COVID-19 Surveillance Streams from Facebook Survey CLI on 2020-04-06 (all counties)
+https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&signal=cli&time_type=day&geo_type=county&time_values=20200406&geo_value=*
 
 # Code Samples
 
 Libraries are available for [CoffeeScript](../../src/client/delphi_epidata.coffee), [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
-The following samples show how to import the library and fetch Delphi's COVID-19 Surveillance Streams from Facebook Survey ILI for county 06001 and days `20200401` and `20200405-20200414` (11 days total).
+The following samples show how to import the library and fetch Delphi's COVID-19 Surveillance Streams from Facebook Survey CLI for county 06001 and days `20200401` and `20200405-20200414` (11 days total).
 
 ### CoffeeScript (in Node.js)
 
@@ -84,7 +118,7 @@ The following samples show how to import the library and fetch Delphi's COVID-19
 # Fetch data
 callback = (result, message, epidata) ->
   console.log(result, message, epidata?.length)
-Epidata.covidcast(callback, 'fb_survey', 'ili', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001')
+Epidata.covidcast(callback, 'fb-survey', 'cli', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001')
 ````
 
 ### JavaScript (in a web browser)
@@ -98,7 +132,7 @@ Epidata.covidcast(callback, 'fb_survey', 'ili', 'day', 'county', [20200401, Epid
   var callback = function(result, message, epidata) {
     console.log(result, message, epidata != null ? epidata.length : void 0);
   };
-  Epidata.covidcast(callback, 'fb_survey', 'ili', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001');
+  Epidata.covidcast(callback, 'fb-survey', 'cli', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001');
 </script>
 ````
 
@@ -115,7 +149,7 @@ Otherwise, place `delphi_epidata.py` from this repo next to your python script.
 # Import
 from delphi_epidata import Epidata
 # Fetch data
-res = Epidata.covidcast('fb_survey', 'ili', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001')
+res = Epidata.covidcast('fb-survey', 'cli', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001')
 print(res['result'], res['message'], len(res['epidata']))
 ````
 
@@ -125,6 +159,6 @@ print(res['result'], res['message'], len(res['epidata']))
 # Import
 source('delphi_epidata.R')
 # Fetch data
-res <- Epidata$covidcast('fb_survey', 'ili', 'day', 'county', list(20200401, Epidata$range(20200405, 20200414)), '06001')
+res <- Epidata$covidcast('fb-survey', 'cli', 'day', 'county', list(20200401, Epidata$range(20200405, 20200414)), '06001')
 cat(paste(res$result, res$message, length(res$epidata), "\n"))
 ````

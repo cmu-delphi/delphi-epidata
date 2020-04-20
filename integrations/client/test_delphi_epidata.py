@@ -14,7 +14,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
         """Test that the covidcast endpoint returns expected data."""
 
         # Fetch data
-        res = Epidata.covidcast('fb_survey', 'ili', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001')
+        res = Epidata.covidcast('fb-survey', 'cli', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001')
         # Check result
         self.assertEqual(res['result'], 1)
         self.assertEqual(res['message'], 'success')
@@ -44,6 +44,10 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
         self.assertIn('min_time', item)
         self.assertIn('max_time', item)
         self.assertIn('num_locations', item)
+        self.assertIn('min_value', item)
+        self.assertIn('max_value', item)
+        self.assertIn('mean_value', item)
+        self.assertIn('stdev_value', item)
 
 if __name__ == '__main__':
     unittest.main()
