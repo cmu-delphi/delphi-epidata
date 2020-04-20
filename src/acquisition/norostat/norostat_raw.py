@@ -25,7 +25,7 @@ from .norostat_utils import *
 def fetch_content(norostat_datatable_url="https://www.cdc.gov/norovirus/reporting/norostat/data-table.html"):
   """Download NoroSTAT data-table.  Returns the html content."""
   headers = {
-    'User-Agent': 'delphibot/1.0 (+https://delphi.midas.cs.cmu.edu/)',
+    'User-Agent': 'delphibot/1.0 (+https://delphi.cmu.edu/)',
   }
   resp = requests.get(norostat_datatable_url, headers=headers)
   expect_value_eq(resp.status_code, 200,

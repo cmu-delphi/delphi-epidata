@@ -168,7 +168,7 @@ def save_latest(path=None):
   sess = requests.session()
   sess.headers.update({
     # it's polite to self-identify this "bot"
-    'User-Agent': 'delphibot/1.0 (+https://delphi.midas.cs.cmu.edu/)',
+    'User-Agent': 'delphibot/1.0 (+https://delphi.cmu.edu/)',
   })
 
   # get metatdata

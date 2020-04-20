@@ -4,7 +4,7 @@
 The job server for wiki scraping. Any number of clients (wiki_download.py
 instances) fetch jobs from, and upload results to, this server. A simple
 dashboard is available from dashboard.php, visible here:
-https://delphi.midas.cs.cmu.edu/~automation/public/wiki/
+https://delphi.cmu.edu/~automation/public/wiki/
 
 See wiki.py for many more details.
 */

@@ -53,7 +53,7 @@ from . import wiki_util
 
 
 VERSION = 10
-MASTER_URL = 'https://delphi.midas.cs.cmu.edu/~automation/public/wiki/master.php'
+MASTER_URL = 'https://delphi.cmu.edu/~automation/public/wiki/master.php'
 
 def text(data_string):
   return str(data_string.decode('utf-8'))
