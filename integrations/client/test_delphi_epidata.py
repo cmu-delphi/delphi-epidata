@@ -1,4 +1,6 @@
 """Integration tests for delphi_epidata.py."""
+
+# standard library
 import unittest
 
 # first party
@@ -7,6 +9,7 @@ from delphi.epidata.client.delphi_epidata import Epidata
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.client.delphi_epidata'
 
+
 class DelphiEpidataPythonClientTests(unittest.TestCase):
     """Tests the Python client."""
 
@@ -14,7 +17,14 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
         """Test that the covidcast endpoint returns expected data."""
 
         # Fetch data
-        res = Epidata.covidcast('fb_survey', 'ili', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001')
+        res = Epidata.covidcast(
+            'fb-survey',
+            'ili',
+            'day',
+            'county',
+            [20200401, Epidata.range(20200405, 20200414)],
+            '06001')
+
         # Check result
         self.assertEqual(res['result'], 1)
         self.assertEqual(res['message'], 'success')
@@ -27,12 +37,12 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
         self.assertIn('stderr', item)
         self.assertIn('sample_size', item)
 
-
     def test_covidcast_meta(self):
         """Test that the covidcast_meta endpoint returns expected data."""
 
         # Fetch data
         res = Epidata.covidcast_meta()
+
         # Check result
         self.assertEqual(res['result'], 1)
         self.assertEqual(res['message'], 'success')
@@ -44,6 +54,3 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
         self.assertIn('min_time', item)
         self.assertIn('max_time', item)
         self.assertIn('num_locations', item)
-
-if __name__ == '__main__':
-    unittest.main()
