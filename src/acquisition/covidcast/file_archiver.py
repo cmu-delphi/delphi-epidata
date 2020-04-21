@@ -41,6 +41,10 @@ class FileArchiver:
     # make sure the destination directory exists
     os.makedirs(path_dst, exist_ok=True)
 
+    if os.path.exists(dst):
+      # warn that destination is about to be overwritten
+      print('destination exists, will overwrite (%s)' % dst)
+
     if compress:
       # make a compressed copy
       with open_impl(src, 'rb') as f_in:

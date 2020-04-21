@@ -77,6 +77,14 @@ class UnitTests(unittest.TestCase):
     self.assertTrue(CsvImporter.is_header_valid(columns))
     self.assertTrue(CsvImporter.is_header_valid(columns | {'foo', 'bar'}))
 
+  def test_is_header_valid_does_not_depend_on_column_order(self):
+    """Allow columns to appear in any order."""
+
+    # sorting changes the order of the columns
+    columns = sorted(CsvImporter.REQUIRED_COLUMNS)
+
+    self.assertTrue(CsvImporter.is_header_valid(columns))
+
   def test_floaty_int(self):
     """Parse ints that may look like floats."""
 
@@ -129,6 +137,9 @@ class UnitTests(unittest.TestCase):
       (make_row(sample_size='3'), 'sample_size'),
       (make_row(direction='2'), 'direction'),
       (make_row(direction='0.5'), 'direction'),
+      (make_row(geo_type=None), 'geo_type'),
+      (make_row(geo_id=None), 'geo_id'),
+      (make_row(val=None), 'val'),
     ]
 
     for ((geo_type, row), field) in failure_cases:

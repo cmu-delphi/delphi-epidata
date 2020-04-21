@@ -21,8 +21,9 @@ class UnitTests(unittest.TestCase):
     compress = False
 
     mock_os = MagicMock()
-    # use the real `os.path`
-    mock_os.path = os.path
+    # use the real `os.path.join`
+    mock_os.path.join = os.path.join
+    mock_os.path.exists.return_value = False
     mock_shutil = MagicMock()
 
     result = FileArchiver.archive_file(
@@ -51,8 +52,9 @@ class UnitTests(unittest.TestCase):
     compress = True
 
     mock_os = MagicMock()
-    # use the real `os.path`
-    mock_os.path = os.path
+    # use the real `os.path.join`
+    mock_os.path.join = os.path.join
+    mock_os.path.exists.return_value = False
     mock_gzip = MagicMock()
     mock_shutil = MagicMock()
     mock_open_impl = MagicMock()
@@ -90,3 +92,26 @@ class UnitTests(unittest.TestCase):
     self.assertEqual(mock_os.stat.call_args[0][0], 'some/dst/path/data.csv.gz')
 
     self.assertEqual(result[0], 'some/dst/path/data.csv.gz')
+
+  def test_archive_overwrites_destination(self):
+    """Overwrite an existing file when archiving."""
+
+    path_src = 'some/src/path'
+    path_dst = 'some/dst/path'
+    filename = 'data.csv'
+    compress = False
+
+    mock_os = MagicMock()
+    # use the real `os.path.join`
+    mock_os.path.join = os.path.join
+    mock_os.path.exists.return_value = True
+    mock_gzip = MagicMock()
+    mock_shutil = MagicMock()
+
+    result = FileArchiver.archive_file(
+        path_src, path_dst, filename, compress, os=mock_os, shutil=mock_shutil)
+
+    self.assertTrue(mock_os.path.exists.called)
+    path = 'some/dst/path/data.csv'
+    self.assertEqual(mock_os.path.exists.call_args[0][0], path)
+    self.assertEqual(result[0], path)

@@ -26,7 +26,7 @@ class CsvImporter:
 
   # reasonable time bounds for sanity checking time values
   MIN_YEAR = 2019
-  MAX_YEAR = 2023
+  MAX_YEAR = 2030
 
   # reasonable lower bound for sanity checking sample size (if sample size is
   # present, then, for privacy, it should definitely be larger than this value)
@@ -89,7 +89,7 @@ class CsvImporter:
       daily_match = CsvImporter.PATTERN_DAILY.match(path.lower())
       weekly_match = CsvImporter.PATTERN_WEEKLY.match(path.lower())
       if not daily_match and not weekly_match:
-        print(' invalid csv path/filename')
+        print(' invalid csv path/filename', path)
         yield (path, None)
         continue
 
@@ -99,7 +99,7 @@ class CsvImporter:
         time_value = int(daily_match.group(2))
         match = daily_match
         if not CsvImporter.is_sane_day(time_value):
-          print(' invalid filename day')
+          print(' invalid filename day', time_value)
           yield (path, None)
           continue
       else:
@@ -107,14 +107,14 @@ class CsvImporter:
         time_value = int(weekly_match.group(2))
         match = weekly_match
         if not CsvImporter.is_sane_week(time_value):
-          print(' invalid filename week')
+          print(' invalid filename week', time_value)
           yield (path, None)
           continue
 
       # # extract and validate geographic resolution
       geo_type = match.group(3).lower()
       if geo_type not in CsvImporter.GEOGRAPHIC_RESOLUTIONS:
-        print(' invalid geo_type')
+        print(' invalid geo_type', geo_type)
         yield (path, None)
         continue
 
@@ -162,7 +162,11 @@ class CsvImporter:
     """
 
     # use consistent capitalization (e.g. for states)
-    geo_id = row.geo_id.lower()
+    try:
+      geo_id = row.geo_id.lower()
+    except AttributeError as e:
+      # geo_id was `None`
+      return (None, 'geo_id')
 
     if geo_type in ('hrr', 'msa', 'dma'):
       # these particular ids are prone to be written as ints -- and floats
@@ -194,7 +198,11 @@ class CsvImporter:
       return (None, 'geo_type')
 
     # required float
-    value = float(row.val)
+    try:
+      value = float(row.val)
+    except (TypeError, ValueError) as e:
+      # val was either `None` or not a float
+      return (None, 'val')
 
     # optional nonnegative float
     stderr = CsvImporter.maybe_apply(float, row.se)
