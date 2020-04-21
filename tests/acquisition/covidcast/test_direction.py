@@ -33,7 +33,8 @@ class UnitTests(unittest.TestCase):
   def test_get_direction_returns_none_for_small_samples(self):
     """Direction should be `None` with too few samples."""
 
-    self.assertIsNone(Direction.get_direction([1, 2], [3, 4]))
+    self.assertIsNone(Direction.get_direction([1], [1]))
+    self.assertIsNone(Direction.get_direction([1, 2], [1, 2]))
 
   def test_get_direction_validates_arguments(self):
     """Validate values passed to the function."""

@@ -36,13 +36,13 @@ class Direction:
     if n < 0:
       raise ValueError('n must be non-negative')
 
+    if len(x) < Direction.MIN_SAMPLE_SIZE:
+      return None
+
     # check for coincident values in a way that is robust to extremely small
     # differences
     if numpy.isclose(min(numpy.diff(sorted(x))), 0):
       raise ValueError('x contains coincident values')
-
-    if len(x) < Direction.MIN_SAMPLE_SIZE:
-      return None
 
     fit = scipy.stats.linregress(x, y)
 
