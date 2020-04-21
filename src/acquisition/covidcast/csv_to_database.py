@@ -124,4 +124,4 @@ def main(
 
 
 if __name__ == '__main__':
-  main(get_argument_parser.parse_args())
+  main(get_argument_parser().parse_args())
