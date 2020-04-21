@@ -100,6 +100,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
         'max_value': 1.5,
         'mean_value': 1.5,
         'stdev_value': 0,
+        'last_update': 123,
        }],
       'message': 'success',
     })
