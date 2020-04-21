@@ -15,7 +15,7 @@ class Direction:
   def get_direction(x, y, n=1):
     """Return the direction of the given time-series.
 
-    `x`: list of time offsets (e.g. 0, 1, 2, ...)
+    `x`: list of unique time offsets (e.g. 0, 1, 2, ...)
     `y`: list of signal values corresponding to time values in `x`
     `n`: multiplier of the standard error interval; must be non-negative
 
@@ -36,12 +36,17 @@ class Direction:
     if n < 0:
       raise ValueError('n must be non-negative')
 
+    # check for coincident values in a way that is robust to extremely small
+    # differences
+    if numpy.isclose(min(numpy.diff(sorted(x))), 0):
+      raise ValueError('x contains coincident values')
+
     if len(x) < Direction.MIN_SAMPLE_SIZE:
       return None
 
     fit = scipy.stats.linregress(x, y)
 
-    if numpy.abs(fit.slope) <= n * fit.stderr:
+    if abs(fit.slope) <= n * fit.stderr:
       return 0
     else:
       return numpy.sign(fit.slope)

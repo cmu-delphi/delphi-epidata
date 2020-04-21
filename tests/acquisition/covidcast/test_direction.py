@@ -47,3 +47,12 @@ class UnitTests(unittest.TestCase):
     x = y = list(range(5))
     with self.assertRaises(ValueError):
       Direction.get_direction(x, y, n=-1)
+
+    # x has effectively coincident points
+    y = [1, 2, 3]
+    x = [1, 1, 3]
+    with self.assertRaises(ValueError):
+      Direction.get_direction(x, y)
+    x = [1, 1 + 1e-9, 3]
+    with self.assertRaises(ValueError):
+      Direction.get_direction(x, y)
