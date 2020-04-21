@@ -52,7 +52,7 @@ class UnitTests(unittest.TestCase):
   def test_count_all_rows_query(self):
     """Query to count all rows is reasonable.
 
-    TODO: Actual behavior should be tested by integration test.
+    NOTE: Actual behavior is tested by integration test.
     """
 
     mock_connector = MagicMock()
@@ -74,7 +74,7 @@ class UnitTests(unittest.TestCase):
   def test_insert_or_update_query(self):
     """Query to insert/update a row is reasonable.
 
-    TODO: Actual behavior should be tested by integration test.
+    NOTE: Actual behavior is tested by integration test.
     """
 
     row = (
@@ -87,7 +87,6 @@ class UnitTests(unittest.TestCase):
       'value',
       'stderr',
       'sample_size',
-      'direction',
     )
     mock_connector = MagicMock()
     database = Database()

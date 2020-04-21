@@ -93,8 +93,7 @@ def scan_upload_archive(
           row_values.geo_value,
           row_values.value,
           row_values.stderr,
-          row_values.sample_size,
-          row_values.direction)
+          row_values.sample_size)
 
     # archive the current file based on validation results
     if all_rows_valid:

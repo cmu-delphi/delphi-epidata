@@ -44,7 +44,8 @@ class CovidcastTests(unittest.TestCase):
     # insert dummy data
     self.cur.execute('''
       insert into covidcast values
-        (0, 'src', 'sig', 'day', 'county', 20200414, '01234', 1.5, 2.5, 3.5, 4)
+        (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
+          123, 1.5, 2.5, 3.5, 456, 4)
     ''')
     self.cnx.commit()
 
@@ -81,12 +82,18 @@ class CovidcastTests(unittest.TestCase):
     # insert dummy data
     self.cur.execute('''
       insert into covidcast values
-        (0, 'src', 'sig', 'day', 'county', 20200414, '11111', 10, 11, 12, 13),
-        (0, 'src', 'sig', 'day', 'county', 20200414, '22222', 20, 21, 22, 23),
-        (0, 'src', 'sig', 'day', 'county', 20200414, '33333', 30, 31, 32, 33),
-        (0, 'src', 'sig', 'day', 'msa', 20200414, '11111', 40, 41, 42, 43),
-        (0, 'src', 'sig', 'day', 'msa', 20200414, '22222', 50, 51, 52, 53),
-        (0, 'src', 'sig', 'day', 'msa', 20200414, '33333', 60, 61, 62, 634)
+        (0, 'src', 'sig', 'day', 'county', 20200414, '11111',
+          123, 10, 11, 12, 456, 13),
+        (0, 'src', 'sig', 'day', 'county', 20200414, '22222',
+          123, 20, 21, 22, 456, 23),
+        (0, 'src', 'sig', 'day', 'county', 20200414, '33333',
+          123, 30, 31, 32, 456, 33),
+        (0, 'src', 'sig', 'day', 'msa', 20200414, '11111',
+          123, 40, 41, 42, 456, 43),
+        (0, 'src', 'sig', 'day', 'msa', 20200414, '22222',
+          123, 50, 51, 52, 456, 53),
+        (0, 'src', 'sig', 'day', 'msa', 20200414, '33333',
+          123, 60, 61, 62, 456, 634)
     ''')
     self.cnx.commit()
 
@@ -139,12 +146,18 @@ class CovidcastTests(unittest.TestCase):
     # insert dummy data
     self.cur.execute('''
       insert into covidcast values
-        (0, 'src', 'sig', 'day', 'county', 20200411, '01234', 10, 11, 12, 13),
-        (0, 'src', 'sig', 'day', 'county', 20200412, '01234', 20, 21, 22, 23),
-        (0, 'src', 'sig', 'day', 'county', 20200413, '01234', 30, 31, 32, 33),
-        (0, 'src', 'sig', 'day', 'county', 20200411, '11111', 40, 41, 42, 43),
-        (0, 'src', 'sig', 'day', 'county', 20200412, '22222', 50, 51, 52, 53),
-        (0, 'src', 'sig', 'day', 'county', 20200413, '33333', 60, 61, 62, 63)
+        (0, 'src', 'sig', 'day', 'county', 20200411, '01234',
+          123, 10, 11, 12, 456, 13),
+        (0, 'src', 'sig', 'day', 'county', 20200412, '01234',
+          123, 20, 21, 22, 456, 23),
+        (0, 'src', 'sig', 'day', 'county', 20200413, '01234',
+          123, 30, 31, 32, 456, 33),
+        (0, 'src', 'sig', 'day', 'county', 20200411, '11111',
+          123, 40, 41, 42, 456, 43),
+        (0, 'src', 'sig', 'day', 'county', 20200412, '22222',
+          123, 50, 51, 52, 456, 53),
+        (0, 'src', 'sig', 'day', 'county', 20200413, '33333',
+          123, 60, 61, 62, 456, 63)
     ''')
     self.cnx.commit()
 
@@ -197,7 +210,8 @@ class CovidcastTests(unittest.TestCase):
     # insert dummy data
     self.cur.execute('''
       insert into covidcast values
-        (0, 'src', 'sig', 'day', 'county', 20200414, '01234', 0, 0, 0, 0)
+        (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
+          0, 0, 0, 0, 0, 0)
     ''')
     self.cnx.commit()
 
@@ -205,7 +219,8 @@ class CovidcastTests(unittest.TestCase):
     with self.assertRaises(mysql.connector.errors.IntegrityError):
       self.cur.execute('''
         insert into covidcast values
-          (0, 'src', 'sig', 'day', 'county', 20200414, '01234', 1, 1, 1, 1)
+          (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
+            1, 1, 1, 1, 1, 1)
       ''')
 
   def test_nullable_columns(self):
@@ -214,8 +229,8 @@ class CovidcastTests(unittest.TestCase):
     # insert dummy data
     self.cur.execute('''
       insert into covidcast values
-        (0, 'src', 'sig', 'day', 'county', 20200414, '01234', 0.123,
-          NULL, NULL, NULL)
+        (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
+          123, 0.123, NULL, NULL, 456, NULL)
     ''')
     self.cnx.commit()
 
@@ -252,11 +267,16 @@ class CovidcastTests(unittest.TestCase):
     # insert dummy data
     self.cur.execute('''
       insert into covidcast values
-        (0, 'src', 'sig', 'hour', 'state', 2020041714, 'vi', 10, 11, 12, 13),
-        (0, 'src', 'sig', 'day', 'state', 20200417, 'vi', 20, 21, 22, 23),
-        (0, 'src', 'sig', 'week', 'state', 202016, 'vi', 30, 31, 32, 33),
-        (0, 'src', 'sig', 'month', 'state', 202004, 'vi', 40, 41, 42, 43),
-        (0, 'src', 'sig', 'year', 'state', 2020, 'vi', 50, 51, 52, 53)
+        (0, 'src', 'sig', 'hour', 'state', 2020041714, 'vi',
+          123, 10, 11, 12, 456, 13),
+        (0, 'src', 'sig', 'day', 'state', 20200417, 'vi',
+          123, 20, 21, 22, 456, 23),
+        (0, 'src', 'sig', 'week', 'state', 202016, 'vi',
+          123, 30, 31, 32, 456, 33),
+        (0, 'src', 'sig', 'month', 'state', 202004, 'vi',
+          123, 40, 41, 42, 456, 43),
+        (0, 'src', 'sig', 'year', 'state', 2020, 'vi',
+          123, 50, 51, 52, 456, 53)
     ''')
     self.cnx.commit()
 

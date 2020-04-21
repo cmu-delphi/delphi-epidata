@@ -52,8 +52,7 @@ class Database:
       geo_value,
       value,
       stderr,
-      sample_size,
-      direction):
+      sample_size):
     """Insert a new row, or update an existing row, in the `covidcast` table.
 
     See src/ddl/covidcast.sql for an explanation of each field.
@@ -61,12 +60,12 @@ class Database:
 
     sql = '''
       INSERT INTO `covidcast` VALUES
-        (0, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        (0, %s, %s, %s, %s, %s, %s, UNIX_TIMESTAMP(NOW()), %s, %s, %s, 0, NULL)
       ON DUPLICATE KEY UPDATE
+        `timestamp1` = VALUES(`timestamp1`),
         `value` = VALUES(`value`),
         `stderr` = VALUES(`stderr`),
-        `sample_size` = VALUES(`sample_size`),
-        `direction` = VALUES(`direction`)
+        `sample_size` = VALUES(`sample_size`)
     '''
 
     args = (
@@ -79,7 +78,6 @@ class Database:
       value,
       stderr,
       sample_size,
-      direction,
     )
 
     self._cursor.execute(sql, args)

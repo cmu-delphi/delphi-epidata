@@ -112,14 +112,12 @@ class UnitTests(unittest.TestCase):
         geo_id='vi',
         val='1.23',
         se='4.56',
-        sample_size='100.5',
-        direction='0'):
+        sample_size='100.5'):
       row = MagicMock(
           geo_id=geo_id,
           val=val,
           se=se,
-          sample_size=sample_size,
-          direction=direction)
+          sample_size=sample_size)
       return geo_type, row
 
     # cases to test each failure mode
@@ -135,8 +133,6 @@ class UnitTests(unittest.TestCase):
       (make_row(geo_type='country', geo_id='usa'), 'geo_type'),
       (make_row(se='-1'), 'se'),
       (make_row(sample_size='3'), 'sample_size'),
-      (make_row(direction='2'), 'direction'),
-      (make_row(direction='0.5'), 'direction'),
       (make_row(geo_type=None), 'geo_type'),
       (make_row(geo_id=None), 'geo_id'),
       (make_row(val=None), 'val'),
@@ -156,11 +152,10 @@ class UnitTests(unittest.TestCase):
     self.assertEqual(str(values.value), row.val)
     self.assertEqual(str(values.stderr), row.se)
     self.assertEqual(str(values.sample_size), row.sample_size)
-    self.assertEqual(str(values.direction), row.direction)
     self.assertIsNone(error)
 
     # a nominal case with missing values
-    geo_type, row = make_row(se='', sample_size='NA', direction='NaN')
+    geo_type, row = make_row(se='', sample_size='NA')
     values, error = CsvImporter.extract_and_check_row(row, geo_type)
 
     self.assertIsInstance(values, CsvImporter.RowValues)
@@ -168,7 +163,6 @@ class UnitTests(unittest.TestCase):
     self.assertEqual(str(values.value), row.val)
     self.assertIsNone(values.stderr)
     self.assertIsNone(values.sample_size)
-    self.assertIsNone(values.direction)
     self.assertIsNone(error)
 
   def test_load_csv_with_invalid_header(self):
@@ -195,7 +189,6 @@ class UnitTests(unittest.TestCase):
       'val': ['1.1', '1.2', '1.3', '1.4'],
       'se': ['2.1', '2.2', '2.3', '2.4'],
       'sample_size': ['301', '302', '303', '304'],
-      'direction': ['1', '0', '-1', '0'],
     }
     mock_pandas = MagicMock()
     mock_pandas.read_csv.return_value = pandas.DataFrame(data=data)
@@ -212,18 +205,15 @@ class UnitTests(unittest.TestCase):
     self.assertEqual(rows[0].value, 1.1)
     self.assertEqual(rows[0].stderr, 2.1)
     self.assertEqual(rows[0].sample_size, 301)
-    self.assertEqual(rows[0].direction, 1)
 
     self.assertEqual(rows[1].geo_value, 'tx')
     self.assertEqual(rows[1].value, 1.2)
     self.assertEqual(rows[1].stderr, 2.2)
     self.assertEqual(rows[1].sample_size, 302)
-    self.assertEqual(rows[1].direction, 0)
 
     self.assertEqual(rows[2].geo_value, 'fl')
     self.assertEqual(rows[2].value, 1.3)
     self.assertEqual(rows[2].stderr, 2.3)
     self.assertEqual(rows[2].sample_size, 303)
-    self.assertEqual(rows[2].direction, -1)
 
     self.assertIsNone(rows[3])
