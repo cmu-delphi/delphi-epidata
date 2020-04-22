@@ -1001,23 +1001,17 @@ function get_covidcast_meta_cached() {
 
   // get the data from the database
   global $dbh;
-  $fallback = true;
-  $epidata = array();
+  $epidata = null;
   $result = mysqli_query($dbh, $query);
   if($row = mysqli_fetch_array($result)) {
     if (intval($row['age']) < $max_age && strlen($row['epidata']) > 0) {
       // parse and use the cached response
-      $cached_rows = json_decode($row['epidata'], true);
-      foreach($cached_rows as $row) {
-        array_push($epidata, $row);
-      }
-      // no need to fallback
-      $fallback = false;
+      $epidata = json_decode($row['epidata'], true);
     }
   }
 
   // fallback to the real thing if necessary
-  if ($fallback) {
+  if ($epidata === null) {
     error_log('covidcast_meta cache miss');
     $epidata = get_covidcast_meta();
   }
