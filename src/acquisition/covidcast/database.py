@@ -321,3 +321,16 @@ class Database:
     )
 
     self._cursor.execute(sql, args)
+
+  def update_covidcast_meta_cache(self, epidata_json):
+    """Updates the `covidcast_meta_cache` table."""
+
+    sql = '''
+      UPDATE
+        `covidcast_meta_cache`
+      SET
+        `timestamp` = UNIX_TIMESTAMP(NOW()),
+        `epidata` = %s
+    '''
+
+    self._cursor.execute(sql, (epidata_json,))
