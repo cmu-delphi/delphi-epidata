@@ -212,3 +212,112 @@ class Database:
     )
 
     self._cursor.execute(sql, args)
+
+  def get_keys_with_potentially_stale_direction(self):
+    """
+    Return the `covidcast` table composite key for each unique time-series for
+    which all `direction` values can not be guaranteed to be fresh.
+
+    Note that this is limited to `time_type` of 'day' as direction is not yet
+    defined at other time scales.
+    """
+
+    sql = '''
+      SELECT
+        `source`,
+        `signal`,
+        `geo_type`,
+        `geo_value`,
+        MAX(`timestamp1`) AS `max_timestamp1`,
+        MIN(`timestamp2`) AS `min_timestamp2`,
+        MIN(`time_value`) AS `min_day`,
+        MAX(`time_value`) AS `max_day`,
+        COUNT(1) AS `series_length`
+      FROM
+        `covidcast`
+      WHERE
+        `time_type` = 'day'
+      GROUP BY
+        `source`,
+        `signal`,
+        `time_type`,
+        `geo_type`,
+        `geo_value`
+      HAVING
+        MAX(`timestamp1`) > MIN(`timestamp2`)
+    '''
+
+    self._cursor.execute(sql)
+    return list(self._cursor)
+
+  def get_daily_timeseries_for_direction_update(
+      self, source, signal, geo_type, geo_value, min_day, max_day):
+    """Return the indicated `covidcast` time-series, including timestamps."""
+
+    sql = '''
+      SELECT
+        DATEDIFF(`time_value`, %s) AS `offset`,
+        `time_value` AS `day`,
+        `value`,
+        `timestamp1`,
+        `timestamp2`
+      FROM
+        `covidcast`
+      WHERE
+        `source` = %s AND
+        `signal` = %s AND
+        `time_type` = 'day' AND
+        `geo_type` = %s AND
+        `geo_value` = %s AND
+        `time_value` BETWEEN %s AND %s
+      ORDER BY
+        `time_value` ASC
+    '''
+
+    args = (
+      min_day,
+      source,
+      signal,
+      geo_type,
+      geo_value,
+      min_day,
+      max_day,
+    )
+
+    self._cursor.execute(sql, args)
+    return list(self._cursor)
+
+  def update_timeseries_timestamp2(
+      self, source, signal, time_type, geo_type, geo_value):
+    """Update the `timestamp2` column for an entire time-series.
+
+    For daily time-series, this implies that all `direction` values in the
+    specified time-series are confirmed fresh as of the current time. Even if
+    they happened to be computed at an earlier time, this update indicates that
+    those values are still fresh.
+
+    This has no meaningful implication for non-daily time-series.
+    """
+
+    sql = '''
+      UPDATE
+        `covidcast`
+      SET
+        `timestamp2` = UNIX_TIMESTAMP(NOW())
+      WHERE
+        `source` = %s AND
+        `signal` = %s AND
+        `time_type` = %s AND
+        `geo_type` = %s AND
+        `geo_value` = %s
+    '''
+
+    args = (
+      source,
+      signal,
+      time_type,
+      geo_type,
+      geo_value,
+    )
+
+    self._cursor.execute(sql, args)

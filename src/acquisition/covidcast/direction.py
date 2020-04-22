@@ -1,7 +1,7 @@
 """Classifies the direction of a signal based on its recent trajectory."""
 
 # third party
-import numpy
+import numpy as np
 import scipy.stats
 
 
@@ -41,7 +41,7 @@ class Direction:
 
     # check for coincident values in a way that is robust to extremely small
     # differences
-    if numpy.isclose(min(numpy.diff(sorted(x))), 0):
+    if np.isclose(min(np.diff(sorted(x))), 0):
       raise ValueError('x contains coincident values')
 
     fit = scipy.stats.linregress(x, y)
@@ -50,4 +50,39 @@ class Direction:
       return 0
     else:
       # return an integer in {-1, +1}
-      return int(numpy.sign(fit.slope))
+      return int(np.sign(fit.slope))
+
+  @staticmethod
+  def scan_timeseries(offsets, row_days, values, timestamp1s, timestamp2s):
+    """Scan an entire time-series and return fresh direction updates.
+
+    All arrays must be, and are assumed to be, sorted by offset, ascending.
+    """
+
+    days, directions = [], []
+
+    # sliding window over the past week of data
+    start = 0
+    for end in range(len(offsets)):
+
+      # find the start of the window, which is up to 6 days ago. this is not a
+      # simple subtraction like `end - 6` because there could be missing rows.
+      while offsets[end] - offsets[start] >= 7:
+        # shrink the window
+        start += 1
+
+      # check whether this row needs an update
+      direction_time = timestamp2s[end]
+      value_time = np.max(timestamp1s[start:end + 1])
+      if direction_time > value_time:
+        # this row is fresh
+        continue
+
+      x = offsets[start:end + 1]
+      y = values[start:end + 1]
+
+      # record the direction update (return only pure python types)
+      days.append(int(row_days[end]))
+      directions.append(Direction.get_direction(x, y))
+
+    return days, directions
