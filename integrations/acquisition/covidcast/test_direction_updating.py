@@ -92,7 +92,6 @@ class DirectionUpdatingTests(unittest.TestCase):
         'src', 'sig', 'day', 'state', '20200101-20201231', '*')
 
     # verify data matches the CSV
-    print(response['epidata'])
     self.assertEqual(response, {
       'result': 1,
       'epidata': [
