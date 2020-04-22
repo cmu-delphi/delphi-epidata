@@ -85,3 +85,29 @@ CREATE TABLE `covidcast` (
   -- for fast lookup of a time-series for a given location
   KEY (`source`, `signal`, `time_type`, `geo_type`, `geo_value`, `time_value`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+/*
+`covidcast_meta_cache` stores a cache of the `covidcast_meta` endpoint
+response, e.g. for faster visualization load times.
+
+Data is public.
+
++-----------+----------+------+-----+---------+-------+
+| Field     | Type     | Null | Key | Default | Extra |
++-----------+----------+------+-----+---------+-------+
+| timestamp | int(11)  | NO   | PRI | NULL    |       |
+| epidata   | longtext | NO   |     | NULL    |       |
++-----------+----------+------+-----+---------+-------+
+
+- `timestamp`
+  unix time in seconds when the cache was updated
+- `response`
+  JSON string containing a successful API response for `covidcast_meta`
+*/
+
+CREATE TABLE `covidcast_meta_cache` (
+  `timestamp` int(11) NOT NULL,
+  `epidata` LONGTEXT NOT NULL,
+  PRIMARY KEY (`timestamp`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+INSERT INTO covidcast_meta_cache VALUES (0, '');
