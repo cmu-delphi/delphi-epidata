@@ -18,9 +18,11 @@ Data is public.
 | geo_type    | varchar(12) | NO   |     | NULL    |                |
 | time_value  | int(11)     | NO   |     | NULL    |                |
 | geo_value   | varchar(12) | NO   |     | NULL    |                |
+| timestamp1  | int(11)     | NO   |     | NULL    |                |
 | value       | double      | NO   |     | NULL    |                |
 | stderr      | double      | YES  |     | NULL    |                |
 | sample_size | double      | YES  |     | NULL    |                |
+| timestamp2  | int(11)     | NO   |     | NULL    |                |
 | direction   | int(11)     | YES  |     | NULL    |                |
 +-------------+-------------+------+-----+---------+----------------+
 
@@ -44,12 +46,16 @@ Data is public.
   - HRR: hospital referral region (HRR) number
   - DMA: designated market area (DMA) code
   - state: two-letter state abbreviation
+- `timestamp1`
+  time when primary data (e.g. `value`) was last updated
 - `value`
   value (statistic) derived from the underlying data source
 - `stderr` (NULL when not applicable)
   standard error of the statistic with respect to its sampling distribution
 - `sample_size` (NULL when not applicable)
   number of "data points" used in computing the statistic
+- `timestamp2`
+  time when secondary data (e.g. `direction`) was last updated
 - `direction` (NULL when not applicable)
   trend classifier with possible values:
   - +1: `value` is increasing
@@ -65,9 +71,13 @@ CREATE TABLE `covidcast` (
   `geo_type` varchar(12) NOT NULL,
   `time_value` int(11) NOT NULL,
   `geo_value` varchar(12) NOT NULL,
+  -- "primary" values are derived from the upstream data source
+  `timestamp1` int(11) NOT NULL,
   `value` double NOT NULL,
   `stderr` double,
   `sample_size` double,
+  -- "secondary" values are derived from data in this table
+  `timestamp2` int(11) NOT NULL,
   `direction` int(11),
   PRIMARY KEY (`id`),
   -- for uniqueness, and also fast lookup of all locations on a given date

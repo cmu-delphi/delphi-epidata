@@ -59,10 +59,10 @@ class CsvUploadingTests(unittest.TestCase):
 
     # valid
     with open(source_receiving_dir + '/20200419_state_test.csv', 'w') as f:
-      f.write('geo_id,val,se,sample_size,direction\n')
-      f.write('ca,1,0.1,10,1\n')
-      f.write('tx,2,0.2,20,NA\n')
-      f.write('fl,3,0.3,30,-1\n')
+      f.write('geo_id,val,se,sample_size\n')
+      f.write('ca,1,0.1,10\n')
+      f.write('tx,2,0.2,20\n')
+      f.write('fl,3,0.3,30\n')
 
     # invalid
     with open(source_receiving_dir + '/20200420_state_test.csv', 'w') as f:
@@ -90,7 +90,7 @@ class CsvUploadingTests(unittest.TestCase):
           'value': 1,
           'stderr': 0.1,
           'sample_size': 10,
-          'direction': 1,
+          'direction': None,
         },
         {
           'time_value': 20200419,
@@ -98,7 +98,7 @@ class CsvUploadingTests(unittest.TestCase):
           'value': 3,
           'stderr': 0.3,
           'sample_size': 30,
-          'direction': -1,
+          'direction': None,
         },
         {
           'time_value': 20200419,
@@ -111,6 +111,13 @@ class CsvUploadingTests(unittest.TestCase):
        ],
       'message': 'success',
     })
+
+    # verify timestamps and default values are reasonable
+    self.cur.execute('select timestamp1, timestamp2, direction from covidcast')
+    for timestamp1, timestamp2, direction in self.cur:
+      self.assertGreater(timestamp1, 0)
+      self.assertEqual(timestamp2, 0)
+      self.assertIsNone(direction)
 
     # verify that the CSVs were archived
     path = data_dir + '/archive/successful/src-name/20200419_state_test.csv.gz'

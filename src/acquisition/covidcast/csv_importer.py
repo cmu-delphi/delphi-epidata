@@ -22,7 +22,7 @@ class CsvImporter:
   GEOGRAPHIC_RESOLUTIONS = {'county', 'hrr', 'msa', 'dma', 'state'}
 
   # set of required CSV columns
-  REQUIRED_COLUMNS = {'geo_id', 'val', 'se', 'direction', 'sample_size'}
+  REQUIRED_COLUMNS = {'geo_id', 'val', 'se', 'sample_size'}
 
   # reasonable time bounds for sanity checking time values
   MIN_YEAR = 2019
@@ -37,12 +37,11 @@ class CsvImporter:
   class RowValues:
     """A container for the values of a single covidcast row."""
 
-    def __init__(self, geo_value, value, stderr, sample_size, direction):
+    def __init__(self, geo_value, value, stderr, sample_size):
       self.geo_value = geo_value
       self.value = value
       self.stderr = stderr
       self.sample_size = sample_size
-      self.direction = direction
 
   @staticmethod
   def is_sane_day(value):
@@ -214,18 +213,8 @@ class CsvImporter:
     if sample_size is not None and sample_size < CsvImporter.MIN_SAMPLE_SIZE:
       return (None, 'sample_size')
 
-    # optional int in (-1, 0, 1)
-    try:
-      direction = CsvImporter.maybe_apply(
-          CsvImporter.floaty_int, row.direction)
-    except ValueError as e:
-      return (None, 'direction')
-    if direction not in (None, -1, 0, 1):
-      return (None, 'direction')
-
     # return extracted and validated row values
-    row_values = CsvImporter.RowValues(
-        geo_id, value, stderr, sample_size, direction)
+    row_values = CsvImporter.RowValues(geo_id, value, stderr, sample_size)
     return (row_values, None)
 
   @staticmethod

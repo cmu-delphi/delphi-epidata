@@ -973,12 +973,12 @@ function get_covidcast($source, $signal, $time_type, $geo_type, $time_values, $g
 function get_covidcast_meta() {
   // basic query info
   $table = '`covidcast` t';
-  $fields = "t.`source` AS `data_source`, t.`signal`, t.`time_type`, t.`geo_type`, MIN(t.`time_value`) AS `min_time`, MAX(t.`time_value`) AS `max_time`, COUNT(DISTINCT `geo_value`) AS `num_locations`, min(`value`) AS `min_value`, max(`value`) AS `max_value`, avg(`value`) as `mean_value`, std(`value`) as `stdev_value`";
+  $fields = "t.`source` AS `data_source`, t.`signal`, t.`time_type`, t.`geo_type`, MIN(t.`time_value`) AS `min_time`, MAX(t.`time_value`) AS `max_time`, COUNT(DISTINCT `geo_value`) AS `num_locations`, MIN(`value`) AS `min_value`, MAX(`value`) AS `max_value`, AVG(`value`) as `mean_value`, STD(`value`) as `stdev_value`, MAX(`timestamp1`) AS `last_update`";
   $group = "t.`source`, t.`signal`, t.`time_type`, t.`geo_type`";
   $order = "t.`source` ASC, t.`signal` ASC, t.`time_type` ASC, t.`geo_type` ASC";
   // data type of each field
   $fields_string = array('data_source', 'signal', 'time_type', 'geo_type');
-  $fields_int = array('min_time', 'max_time', 'num_locations');
+  $fields_int = array('min_time', 'max_time', 'num_locations', 'last_update');
   $fields_float = array('min_value', 'max_value', 'mean_value', 'stdev_value');
   // the query
   $query = "SELECT {$fields} FROM {$table} GROUP BY {$group} ORDER BY {$order}";

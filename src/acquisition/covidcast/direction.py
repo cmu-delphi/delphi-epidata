@@ -49,4 +49,5 @@ class Direction:
     if abs(fit.slope) <= n * fit.stderr:
       return 0
     else:
-      return numpy.sign(fit.slope)
+      # return an integer in {-1, +1}
+      return int(numpy.sign(fit.slope))

@@ -25,8 +25,7 @@ class UnitTests(unittest.TestCase):
         geo_value=value,
         value=value,
         stderr=value,
-        sample_size=value,
-        direction=value)
+        sample_size=value)
 
     def load_csv_impl(path, *args):
       if path == 'path/a.csv':
@@ -66,11 +65,11 @@ class UnitTests(unittest.TestCase):
     call_args_list = mock_database.insert_or_update.call_args_list
     actual_args = [args for (args, kwargs) in call_args_list]
     expected_args = [
-      ('src_a', 'sig_a', 'day', 'hrr', 20200419, 'a1', 'a1', 'a1', 'a1', 'a1'),
-      ('src_a', 'sig_a', 'day', 'hrr', 20200419, 'a2', 'a2', 'a2', 'a2', 'a2'),
-      ('src_a', 'sig_a', 'day', 'hrr', 20200419, 'a3', 'a3', 'a3', 'a3', 'a3'),
-      ('src_b', 'sig_b', 'week', 'msa', 202016, 'b1', 'b1', 'b1', 'b1', 'b1'),
-      ('src_b', 'sig_b', 'week', 'msa', 202016, 'b3', 'b3', 'b3', 'b3', 'b3'),
+      ('src_a', 'sig_a', 'day', 'hrr', 20200419, 'a1', 'a1', 'a1', 'a1'),
+      ('src_a', 'sig_a', 'day', 'hrr', 20200419, 'a2', 'a2', 'a2', 'a2'),
+      ('src_a', 'sig_a', 'day', 'hrr', 20200419, 'a3', 'a3', 'a3', 'a3'),
+      ('src_b', 'sig_b', 'week', 'msa', 202016, 'b1', 'b1', 'b1', 'b1'),
+      ('src_b', 'sig_b', 'week', 'msa', 202016, 'b3', 'b3', 'b3', 'b3'),
     ]
     self.assertEqual(actual_args, expected_args)
 

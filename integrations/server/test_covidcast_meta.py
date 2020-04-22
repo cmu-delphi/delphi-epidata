@@ -44,7 +44,7 @@ class CovidcastMetaTests(unittest.TestCase):
     # insert dummy data and accumulate expected results (in sort order)
     template = '''
       insert into covidcast values
-        (0, "%s", "%s", "%s", "%s", %d, "%s", %d, 0, 0, 0)
+        (0, "%s", "%s", "%s", "%s", %d, "%s", 123, %d, 0, 0, 456, 0)
     '''
     expected = []
     for src in ('src1', 'src2'):
@@ -63,6 +63,7 @@ class CovidcastMetaTests(unittest.TestCase):
               'max_value': 20,
               'mean_value': 15,
               'stdev_value': 5,
+              'last_update': 123,
             })
             for tv in (1, 2):
               for gv, v in zip(('geo1', 'geo2'), (10, 20)):

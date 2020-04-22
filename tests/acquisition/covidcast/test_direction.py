@@ -10,6 +10,23 @@ __test_target__ = 'delphi.epidata.acquisition.covidcast.direction'
 class UnitTests(unittest.TestCase):
   """Basic unit tests."""
 
+  def test_get_direction_type(self):
+    """The returned direction should always be a built-in `int`."""
+
+    x = y = range(3)
+
+    direction = Direction.get_direction(x, y)
+    self.assertEqual(direction, 1)
+    self.assertIs(type(direction), int)
+
+    direction = Direction.get_direction(x, y[::-1])
+    self.assertEqual(direction, -1)
+    self.assertIs(type(direction), int)
+
+    direction = Direction.get_direction(x, [0, 0, 0])
+    self.assertEqual(direction, 0)
+    self.assertIs(type(direction), int)
+
   def test_get_direction_sanity_checks(self):
     """Validate direction computed for various timeseries."""
 

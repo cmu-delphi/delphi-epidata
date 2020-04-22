@@ -52,7 +52,7 @@ class UnitTests(unittest.TestCase):
   def test_count_all_rows_query(self):
     """Query to count all rows is reasonable.
 
-    TODO: Actual behavior should be tested by integration test.
+    NOTE: Actual behavior is tested by integration test.
     """
 
     mock_connector = MagicMock()
@@ -74,7 +74,7 @@ class UnitTests(unittest.TestCase):
   def test_insert_or_update_query(self):
     """Query to insert/update a row is reasonable.
 
-    TODO: Actual behavior should be tested by integration test.
+    NOTE: Actual behavior is tested by integration test.
     """
 
     row = (
@@ -87,7 +87,6 @@ class UnitTests(unittest.TestCase):
       'value',
       'stderr',
       'sample_size',
-      'direction',
     )
     mock_connector = MagicMock()
     database = Database()
@@ -100,7 +99,118 @@ class UnitTests(unittest.TestCase):
     self.assertTrue(cursor.execute.called)
 
     sql, args = cursor.execute.call_args[0]
-    sql = sql.lower()
-    self.assertIn('insert into `covidcast` values', sql)
-    self.assertIn('on duplicate key update', sql)
     self.assertEqual(args, row)
+
+    sql = sql.lower()
+    self.assertIn('insert into', sql)
+    self.assertIn('`covidcast`', sql)
+    self.assertIn('unix_timestamp', sql)
+    self.assertIn('on duplicate key update', sql)
+
+  def test_get_rows_with_stale_direction_query(self):
+    """Query to get rows with stale `direction` is reasonable.
+
+    NOTE: Actual behavior is tested by integration test.
+    """
+
+    mock_connector = MagicMock()
+    database = Database()
+    database.connect(connector_impl=mock_connector)
+
+    result = database.get_rows_with_stale_direction()
+
+    self.assertIsInstance(result, list)
+
+    connection = mock_connector.connect()
+    cursor = connection.cursor()
+    self.assertTrue(cursor.execute.called)
+
+    sql = cursor.execute.call_args[0][0].lower()
+    self.assertIn('select', sql)
+    self.assertIn('`covidcast`', sql)
+    self.assertIn('join', sql)
+    self.assertIn('datediff', sql)
+
+  def test_get_rows_to_compute_direction_query(self):
+    """Query to get rows needed to compute `direction` is reasonable.
+
+    NOTE: Actual behavior is tested by integration test.
+    """
+
+    args = (
+      'source',
+      'signal',
+      'geo_type',
+      'time_value',
+      'geo_value',
+    )
+    mock_connector = MagicMock()
+    database = Database()
+    database.connect(connector_impl=mock_connector)
+
+    result = database.get_rows_to_compute_direction(*args)
+
+    self.assertIsInstance(result, list)
+
+    connection = mock_connector.connect()
+    cursor = connection.cursor()
+    self.assertTrue(cursor.execute.called)
+
+    sql, args = cursor.execute.call_args[0]
+    expected_args = (
+      'time_value',
+      'source',
+      'signal',
+      'geo_type',
+      'geo_value',
+      'time_value',
+    )
+    self.assertEqual(args, expected_args)
+
+    sql = sql.lower()
+    self.assertIn('select', sql)
+    self.assertIn('`covidcast`', sql)
+    self.assertIn('datediff', sql)
+
+  def test_update_direction_query(self):
+    """Query to update a row's `direction` is reasonable.
+
+    NOTE: Actual behavior is tested by integration test.
+    """
+
+    args = (
+      'source',
+      'signal',
+      'time_type',
+      'geo_type',
+      'time_value',
+      'geo_value',
+      'direction',
+    )
+    mock_connector = MagicMock()
+    database = Database()
+    database.connect(connector_impl=mock_connector)
+
+    database.update_direction(*args)
+
+    connection = mock_connector.connect()
+    cursor = connection.cursor()
+    self.assertTrue(cursor.execute.called)
+
+    sql, args = cursor.execute.call_args[0]
+    expected_args = (
+      'direction',
+      'source',
+      'signal',
+      'time_type',
+      'geo_type',
+      'time_value',
+      'geo_value',
+    )
+    self.assertEqual(args, expected_args)
+
+    sql = sql.lower()
+    self.assertIn('update', sql)
+    self.assertIn('`covidcast`', sql)
+    self.assertIn('`timestamp2` = unix_timestamp', sql)
+    self.assertIn('`direction` = %s', sql)
