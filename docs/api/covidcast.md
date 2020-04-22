@@ -10,7 +10,9 @@ General topics not specific to any particular data source are discussed in the
 
 ## Delphi's COVID-19 Surveillance Streams Data
 
-Delphi's COVID-19 Surveillance Streams data includes the following data sources:
+Delphi's COVID-19 Surveillance Streams data includes the following data sources: 
+* `doctor-visits`: Data based on outpatient visits, provided to us by a national health system.  Using this outpatient
+data, we estimate the percentage of covid-related doctor's visits in a given location, on a given day.
 * `fb-survey`: Data signal based on CMU-run symptom surveys, advertised through Facebook.  These surveys are
 voluntary, and no individual survey responses are shared back to Facebook. Using this survey data, we estimate the
 percentage of people in a given location, on a given day that have CLI (covid-like illness = fever, along with cough,
@@ -23,17 +25,14 @@ Using this survey data, we estimate the percentage of people in a given location
 who has CLI (covid-like illness = fever, along with cough, or shortness of breath, or difficulty breathing).
 Note that this is tracking a different quantity than the surveys through Facebook, and (unsurprisingly) the estimates
 here tend to be much larger.
+* `ght`: Data signal based on Google searches, provided to us by Google Health Trends.  Using this search data, we
+estimate the volume of covid-related searches in a given location, on a given day.   This signal is measured in
+arbitrary units (its scale is meaningless). 
 * `quidel`: Data signal based on flu lab tests, provided to us by Quidel, Inc.  When a patient (whether at a doctor’s
 office, clinic, or hospital) has covid-like symptoms, standard practice currently is to perform a flu test to rule
 out seasonal flu (influenza), because these two diseases have similar symptoms. Using this lab test data, we estimate
-the percentage of flu tests that came back negative among all those that were performed in a given geography (state,
-metro-area or county) and on a given day.  While many of these patients may not have covid, the fraction of tests
-negative for flu is positively correlated with the prevalence of covid.
-* `ght`: Data signal based on Google searches, provided to us by Google Health Trends.  Using this search data, we
-estimate the volume of covid-related searches in a given location, on a given day.   This signal is measured in
-arbitrary units (its scale is meaningless).
-* `doctor-visits`: Data based on outpatient visits, provided to us by a national health system.  Using this outpatient
-data, we estimate the percentage of covid-related doctor's visits in a given location, on a given day.
+the percentage of flu tests that came back *negative* among all those that were performed in a given geography (state,
+metro-area or county) and on a given day. 
 
 The data is expected to be updated daily. You can use the [`covidcast_meta`](covidcast_meta.md) endpoint to get
 summary information about the ranges of the different attributes for the different data sources currently in the data.
