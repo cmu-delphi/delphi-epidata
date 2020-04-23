@@ -99,7 +99,8 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     self.assertEqual(epidata1, epidata2)
 
     # update the cache
-    main()
+    args = None
+    main(args)
 
     # fetch the cached version (manually)
     params = {'source': 'covidcast_meta', 'cached': 'true'}

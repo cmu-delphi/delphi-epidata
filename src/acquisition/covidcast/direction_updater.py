@@ -152,7 +152,7 @@ def main(
     update_loop_impl=update_loop):
   """Update the direction classification for covidcast signals.
 
-  `args` parsed command-line arguments
+  `args`: parsed command-line arguments
   """
 
   database = database_impl()

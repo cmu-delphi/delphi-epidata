@@ -90,12 +90,12 @@ class UnitTests(unittest.TestCase):
     args = MagicMock(data_dir='data')
     mock_database = MagicMock()
     mock_database.count_all_rows.return_value = 0
-    mock_database_impl = lambda: mock_database
+    fake_database_impl = lambda: mock_database
     mock_scan_upload_archive = MagicMock()
 
     main(
-        args=args,
-        database_impl=mock_database_impl,
+        args,
+        database_impl=fake_database_impl,
         scan_upload_archive_impl=mock_scan_upload_archive)
 
     self.assertTrue(mock_scan_upload_archive.called)
@@ -111,13 +111,13 @@ class UnitTests(unittest.TestCase):
     args = MagicMock(data_dir='data')
     mock_database = MagicMock()
     mock_database.count_all_rows.return_value = 0
-    mock_database_impl = lambda: mock_database
+    fake_database_impl = lambda: mock_database
     mock_scan_upload_archive = MagicMock(side_effect=Exception('testing'))
 
     with self.assertRaises(Exception):
       main(
-          args=args,
-          database_impl=mock_database_impl,
+          args,
+          database_impl=fake_database_impl,
           scan_upload_archive_impl=mock_scan_upload_archive)
 
     self.assertTrue(mock_scan_upload_archive.called)

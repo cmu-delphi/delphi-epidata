@@ -22,12 +22,12 @@ class UnitTests(unittest.TestCase):
 
     args = None
     mock_database = MagicMock()
-    mock_database_impl = lambda: mock_database
+    fake_database_impl = lambda: mock_database
     mock_update_loop = MagicMock()
 
     main(
         args,
-        database_impl=mock_database_impl,
+        database_impl=fake_database_impl,
         update_loop_impl=mock_update_loop)
 
     self.assertTrue(mock_update_loop.called)
@@ -40,13 +40,13 @@ class UnitTests(unittest.TestCase):
 
     args = None
     mock_database = MagicMock()
-    mock_database_impl = lambda: mock_database
+    fake_database_impl = lambda: mock_database
     mock_update_loop = MagicMock(side_effect=Exception('testing'))
 
     with self.assertRaises(Exception):
       main(
           args,
-          database_impl=mock_database_impl,
+          database_impl=fake_database_impl,
           update_loop_impl=mock_update_loop)
 
     self.assertTrue(mock_update_loop.called)
