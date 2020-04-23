@@ -136,6 +136,8 @@ class UnitTests(unittest.TestCase):
       (make_row(geo_type=None), 'geo_type'),
       (make_row(geo_id=None), 'geo_id'),
       (make_row(val=None), 'val'),
+      (make_row(val='nan'), 'val'),
+      (make_row(val='NaN'), 'val'),
     ]
 
     for ((geo_type, row), field) in failure_cases:
