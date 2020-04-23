@@ -39,6 +39,16 @@ def update_loop(database, direction_impl=Direction):
   msg = 'found %d time-series (%d rows) which may have stale direction'
   print(msg % (num_series, num_rows))
 
+  # get the scaling factor (data stdev) for all signals and resolutions
+  rows = database.get_data_stdev_across_locations()
+  data_stdevs = {}
+  for (source, signal, geo_type, aggregate_stdev) in rows:
+    if source not in data_stdevs:
+      data_stdevs[source] = {}
+    if signal not in data_stdevs:
+      data_stdevs[source][signal] = {}
+    data_stdevs[source][signal][geo_type] = aggregate_stdev
+
   for ts_index, row in enumerate(stale_series):
     (
       source,
@@ -53,9 +63,9 @@ def update_loop(database, direction_impl=Direction):
     ) = row
 
     # progress reporting for anyone debugging/watching the output
-    i = ts_index // 20
-    power_of_two = ((i + 1) & i) == 0
-    be_verbose = power_of_two or (ts_index == num_series - 1)
+    be_verbose = ts_index < 100
+    be_verbose = be_verbose or ts_index % 100 == 0
+    be_verbose = be_verbose or ts_index >= num_series - 100
 
     if be_verbose:
       msg = '[%d/%d] %s %s %s %s: span=%d--%d len=%d max_seconds_stale=%d'
@@ -86,8 +96,9 @@ def update_loop(database, direction_impl=Direction):
     timestamp2s = timestamp2s.astype(np.int64)
 
     # recompute any stale directions
+    data_stdev = data_stdevs[source][signal][geo_type]
     days, directions = direction_impl.scan_timeseries(
-      offsets, days, values, timestamp1s, timestamp2s)
+      offsets, days, values, timestamp1s, timestamp2s, data_stdev)
 
     if be_verbose:
       print(' computed %d direction updates' % len(directions))
