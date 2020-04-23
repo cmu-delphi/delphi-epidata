@@ -1,6 +1,7 @@
 """Collects and reads covidcast data from a set of local CSV files."""
 
 # standard library
+import math
 import glob
 import os
 import re
@@ -198,9 +199,9 @@ class CsvImporter:
 
     # required float
     try:
-      if value == 'nan':
-        raise ValueError('nan not valid for `value`')
       value = float(row.val)
+      if math.isnan(value):
+        raise ValueError('nan not valid for `value`')
     except (TypeError, ValueError) as e:
       # val was either `None` or not a float
       return (None, 'val')
