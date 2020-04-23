@@ -69,12 +69,17 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | `time_values` | time unit (e.g., date) over which underlying events happened | `list` of time values (e.g., 20200401) |
 | `geo_value` | unique code for each location, depending on `geo_type` (county -> FIPS 6-4 code, HRR -> HRR number, MSA -> CBSA code, DMA -> DMA code, state -> two-letter [state](../../labels/states.txt) code), or `*` for all | string |
 
-Notes:
-* `fb-survey` `signal` values include `cli`, `ili`, and `wili`.
-* `google-survey` `signal` values include `cli`.
-* `ght` `signal` values include `rawsearch` and `smoothedsearch`.
-* `quidel` `signal` values include `raw_negativeprop` and `smooth_negativeprop`.
-* `doctor-visits` `signal` values include `cli`.
+As of this writing, data sources have the following signals:
+* `fb-survey` `signal` values include `raw_cli`, `raw_ili`, `raw_wcli`,
+  `raw_wili`, and also four additional named with `raw_*` replaced by
+  `smoothed_*` (e.g. `smoothed_cli`, etc).
+* `google-survey` `signal` values include `raw_cli` and `smoothed_cli`.
+* `ght` `signal` values include `raw_search` and `smoothed_search`.
+* `quidel` `signal` values include `smoothed_pct_negative` and `smoothed_tests_per_device`.
+* `doctor-visits` `signal` values include `smoothed_cli`.
+
+More generally, the current set of signals available for each data source is
+returned by the [`covidcast_meta`](covidcast_meta.md) endpoint.
 
 ## Response
 
@@ -93,7 +98,7 @@ Notes:
 # Example URLs
 
 ### Delphi's COVID-19 Surveillance Streams from Facebook Survey CLI on 2020-04-06 - 2010-04-10 (county 06001)
-https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&signal=cli&time_type=day&geo_type=county&time_values=20200406-20200410&geo_value=06001
+https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&signal=raw_cli&time_type=day&geo_type=county&time_values=20200406-20200410&geo_value=06001
 
 ```json
 {
@@ -114,7 +119,7 @@ https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&si
 ```
 
 ## Delphi's COVID-19 Surveillance Streams from Facebook Survey CLI on 2020-04-06 (all counties)
-https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&signal=cli&time_type=day&geo_type=county&time_values=20200406&geo_value=*
+https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&signal=raw_cli&time_type=day&geo_type=county&time_values=20200406&geo_value=*
 
 # Code Samples
 
@@ -129,7 +134,7 @@ The following samples show how to import the library and fetch Delphi's COVID-19
 # Fetch data
 callback = (result, message, epidata) ->
   console.log(result, message, epidata?.length)
-Epidata.covidcast(callback, 'fb-survey', 'cli', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001')
+Epidata.covidcast(callback, 'fb-survey', 'raw_cli', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001')
 ````
 
 ### JavaScript (in a web browser)
@@ -143,7 +148,7 @@ Epidata.covidcast(callback, 'fb-survey', 'cli', 'day', 'county', [20200401, Epid
   var callback = function(result, message, epidata) {
     console.log(result, message, epidata != null ? epidata.length : void 0);
   };
-  Epidata.covidcast(callback, 'fb-survey', 'cli', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001');
+  Epidata.covidcast(callback, 'fb-survey', 'raw_cli', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001');
 </script>
 ````
 
@@ -160,7 +165,7 @@ Otherwise, place `delphi_epidata.py` from this repo next to your python script.
 # Import
 from delphi_epidata import Epidata
 # Fetch data
-res = Epidata.covidcast('fb-survey', 'cli', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001')
+res = Epidata.covidcast('fb-survey', 'raw_cli', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001')
 print(res['result'], res['message'], len(res['epidata']))
 ````
 
@@ -170,6 +175,6 @@ print(res['result'], res['message'], len(res['epidata']))
 # Import
 source('delphi_epidata.R')
 # Fetch data
-res <- Epidata$covidcast('fb-survey', 'cli', 'day', 'county', list(20200401, Epidata$range(20200405, 20200414)), '06001')
+res <- Epidata$covidcast('fb-survey', 'raw_cli', 'day', 'county', list(20200401, Epidata$range(20200405, 20200414)), '06001')
 cat(paste(res$result, res$message, length(res$epidata), "\n"))
 ````
