@@ -45,7 +45,7 @@ def update_loop(database, direction_impl=Direction):
   for (source, signal, geo_type, aggregate_stdev) in rows:
     if source not in data_stdevs:
       data_stdevs[source] = {}
-    if signal not in data_stdevs:
+    if signal not in data_stdevs[source]:
       data_stdevs[source][signal] = {}
     data_stdevs[source][signal][geo_type] = aggregate_stdev
 
