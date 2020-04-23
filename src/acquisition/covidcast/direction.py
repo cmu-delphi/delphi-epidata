@@ -12,12 +12,14 @@ class Direction:
   MIN_SAMPLE_SIZE = 3
 
   @staticmethod
-  def get_direction(x, y, n=1):
+  def get_direction(x, y, n=1, limit=0):
     """Return the direction of the given time-series.
 
     `x`: list of unique time offsets (e.g. 0, 1, 2, ...)
     `y`: list of signal values corresponding to time values in `x`
     `n`: multiplier of the standard error interval; must be non-negative
+    `limit`: additional threshold which slope must exceed to make a non-zero
+      direction call
 
     `x` and `y` must be the same length.
 
@@ -46,7 +48,7 @@ class Direction:
 
     fit = scipy.stats.linregress(x, y)
 
-    if abs(fit.slope) <= n * fit.stderr:
+    if abs(fit.slope) <= max(n * fit.stderr, limit):
       return 0
     else:
       # return an integer in {-1, +1}
@@ -60,6 +62,24 @@ class Direction:
     """
 
     days, directions = [], []
+
+    # TODO: summarize reasoning per meeting
+    # NOTE: gate non-zero direction when:
+    #   abs(slope) >= 20% * 6 / (7 days) * stdev(data thru 2020-04-22)
+    try:
+      max_idx = np.argmax((row_days <= 20200422) * row_days)
+      if max_idx < 3:
+        raise ValueError('too few points')
+      data_stdev = np.std(values[:max_idx])
+      percent_threshold = 0.2
+      num_days = 7
+      vis_stdev_width = 6
+      stdev_scale = vis_stdev_width * (percent_threshold / num_days)
+      slope_threshold = stdev_scale * data_stdev
+    except ValueError as e:
+      # not enough data to compute stdev (!)
+      print(e, 'assuming limit of 0')
+      slope_threshold = 0
 
     # sliding window over the past week of data
     start = 0
@@ -83,6 +103,6 @@ class Direction:
 
       # record the direction update (return only pure python types)
       days.append(int(row_days[end]))
-      directions.append(Direction.get_direction(x, y))
+      directions.append(Direction.get_direction(x, y, limit=slope_threshold))
 
     return days, directions
