@@ -85,9 +85,9 @@ class UnitTests(unittest.TestCase):
     self.assertEqual(actual_args, expected_args)
 
   def test_main_successful(self):
-    """Run the main program and successfully commit changes."""
+    """Run the main program successfully, then commit changes."""
 
-    args = MagicMock(data_dir='data', test=False)
+    args = MagicMock(data_dir='data')
     mock_database = MagicMock()
     mock_database.count_all_rows.return_value = 0
     mock_database_impl = lambda: mock_database
@@ -106,9 +106,9 @@ class UnitTests(unittest.TestCase):
     self.assertTrue(mock_database.disconnect.call_args[0][0])
 
   def test_main_unsuccessful(self):
-    """Run the main program but don't commit changes on failure."""
+    """Run the main program with failure, then commit changes."""
 
-    args = MagicMock(data_dir='data', test=False)
+    args = MagicMock(data_dir='data')
     mock_database = MagicMock()
     mock_database.count_all_rows.return_value = 0
     mock_database_impl = lambda: mock_database
@@ -125,26 +125,34 @@ class UnitTests(unittest.TestCase):
 
     self.assertTrue(mock_database.connect.called)
     self.assertTrue(mock_database.disconnect.called)
-    self.assertFalse(mock_database.disconnect.call_args[0][0])
+    self.assertTrue(mock_database.disconnect.call_args[0][0])
 
-  def test_main_testing(self):
-    """Run the main program but don't commit changes when testing."""
+  def test_database_exception_is_handled(self):
+    """Gracefully handle database exceptions."""
 
-    args = MagicMock(data_dir='data', test=True)
+    data_dir = 'data_dir'
     mock_database = MagicMock()
-    mock_database.count_all_rows.return_value = 0
-    mock_database_impl = lambda: mock_database
-    mock_scan_upload_archive = MagicMock()
+    mock_database.insert_or_update.side_effect = Exception('testing')
+    mock_csv_importer = MagicMock()
+    mock_csv_importer.find_csv_files.return_value = [
+      ('path/file.csv', ('src', 'sig', 'day', 'hrr', 20200423)),
+    ]
+    mock_csv_importer.load_csv.return_value = [
+      MagicMock(geo_value='geo', value=1, stderr=1, sample_size=1),
+    ]
+    mock_file_archiver = MagicMock()
 
-    main(
-        args=args,
-        database_impl=mock_database_impl,
-        scan_upload_archive_impl=mock_scan_upload_archive)
+    scan_upload_archive(
+        data_dir,
+        mock_database,
+        csv_importer_impl=mock_csv_importer,
+        file_archiver_impl=mock_file_archiver)
 
-    self.assertTrue(mock_scan_upload_archive.called)
-    self.assertEqual(mock_scan_upload_archive.call_args[0][0], 'data')
+    # verify that a row insertion was attempted
+    self.assertTrue(mock_database.insert_or_update.called)
 
-    self.assertTrue(mock_database.connect.called)
-    self.assertTrue(mock_database.disconnect.called)
-    actual_args = mock_database.disconnect.call_args[0]
-    self.assertFalse(mock_database.disconnect.call_args[0][0])
+    # verify that the file was archived as having failed
+    self.assertTrue(mock_file_archiver.archive_file.called)
+    actual_args = mock_file_archiver.archive_file.call_args[0]
+    expected_args = ('path', 'data_dir/archive/failed/src', 'file.csv', False)
+    self.assertEqual(actual_args, expected_args)
