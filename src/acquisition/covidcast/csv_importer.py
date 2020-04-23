@@ -198,6 +198,8 @@ class CsvImporter:
 
     # required float
     try:
+      if value == 'nan':
+        raise ValueError('nan not valid for `value`')
       value = float(row.val)
     except (TypeError, ValueError) as e:
       # val was either `None` or not a float
