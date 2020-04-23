@@ -17,10 +17,6 @@ def get_argument_parser():
   parser.add_argument(
     '--data_dir',
     help='top-level directory where CSVs are stored')
-  parser.add_argument(
-    '--test',
-    action='store_true',
-    help='do a dry run without committing changes')
   return parser
 
 
@@ -84,16 +80,20 @@ def scan_upload_archive(
         all_rows_valid = False
         continue
 
-      database.insert_or_update(
-          source,
-          signal,
-          time_type,
-          geo_type,
-          time_value,
-          row_values.geo_value,
-          row_values.value,
-          row_values.stderr,
-          row_values.sample_size)
+      try:
+        database.insert_or_update(
+            source,
+            signal,
+            time_type,
+            geo_type,
+            time_value,
+            row_values.geo_value,
+            row_values.value,
+            row_values.stderr,
+            row_values.sample_size)
+      except Exception as e:
+        all_rows_valid = False
+        print('exception while inserting row:', e, row_values)
 
     # archive the current file based on validation results
     if all_rows_valid:
@@ -111,15 +111,18 @@ def main(
   database = database_impl()
   database.connect()
   num_starting_rows = database.count_all_rows()
-  commit = False
 
   try:
     scan_upload_archive_impl(args.data_dir, database)
-    commit = not args.test
   finally:
-    num_inserted_rows = database.count_all_rows() - num_starting_rows
-    print('inserted=%d committed=%s' % (num_inserted_rows, str(commit)))
-    database.disconnect(commit)
+    # no catch block so that an exception above will cause the program to fail
+    # after the following cleanup
+    try:
+      num_inserted_rows = database.count_all_rows() - num_starting_rows
+      print('inserted/updated %d rows' % num_inserted_rows)
+    finally:
+      # unconditionally commit database changes since CSVs have been archived
+      database.disconnect(True)
 
 
 if __name__ == '__main__':

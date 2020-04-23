@@ -1,9 +1,7 @@
 """Integration tests for covidcast's direction updating."""
 
 # standard library
-import os
 import unittest
-from unittest.mock import MagicMock
 
 # third party
 import mysql.connector
@@ -84,7 +82,7 @@ class DirectionUpdatingTests(unittest.TestCase):
     self.cnx.commit()
 
     # update direction (only 20200417 has enough history)
-    args = MagicMock(test=False)
+    args = None
     main(args)
 
     # request data from the API

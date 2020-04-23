@@ -14,15 +14,35 @@ from delphi.epidata.acquisition.covidcast.database import Database
 from delphi.epidata.acquisition.covidcast.direction import Direction
 
 
+class Constants:
+  """Constants used for direction classification."""
+
+  # Display height is currently defined as 6 standard deviations of the
+  # historical values of a particular signal across all locations at a
+  # particular geographic resolution.
+  SIGNAL_STDEV_SCALE = 6
+
+  # Historical data is roughly defined to be all signal values up to, and
+  # including, but not after, 2020-04-22.
+  SIGNAL_STDEV_MAX_DAY = 20200422
+
+  # Direction is non-zero when the following two conditions are met, given a
+  # regression fit on a 7-day trend:
+  #   - slope is statistically significant (±1 standard error)
+  #   - slope is subjectively up or down (±10% of display height, per day)
+  TREND_NUM_DAYS = 7
+  SLOPE_STERR_SCALE = 1
+  SLOPE_PERCENT_CHANGE = 0.1
+  BASE_SLOPE_THRESHOLD = (
+      SIGNAL_STDEV_SCALE * (SLOPE_PERCENT_CHANGE / TREND_NUM_DAYS)
+  )
+
+
 def get_argument_parser():
   """Define command line arguments."""
 
-  parser = argparse.ArgumentParser()
-  parser.add_argument(
-    '--test',
-    action='store_true',
-    help='do a dry run without committing changes')
-  return parser
+  # there are no flags, but --help will still work
+  return argparse.ArgumentParser()
 
 
 def update_loop(database, direction_impl=Direction):
@@ -31,6 +51,7 @@ def update_loop(database, direction_impl=Direction):
   `database`: an open connection to the epidata database
   """
 
+  # get the keys for time-seres which may be stale
   stale_series = database.get_keys_with_potentially_stale_direction()
   num_series = len(stale_series)
   num_rows = 0
@@ -39,8 +60,9 @@ def update_loop(database, direction_impl=Direction):
   msg = 'found %d time-series (%d rows) which may have stale direction'
   print(msg % (num_series, num_rows))
 
-  # get the scaling factor (data stdev) for all signals and resolutions
-  rows = database.get_data_stdev_across_locations()
+  # get the historical standard deviation of all signals and resolutions
+  rows = database.get_data_stdev_across_locations(
+      Constants.SIGNAL_STDEV_MAX_DAY)
   data_stdevs = {}
   for (source, signal, geo_type, aggregate_stdev) in rows:
     if source not in data_stdevs:
@@ -49,6 +71,7 @@ def update_loop(database, direction_impl=Direction):
       data_stdevs[source][signal] = {}
     data_stdevs[source][signal][geo_type] = aggregate_stdev
 
+  # update direction for each time-series
   for ts_index, row in enumerate(stale_series):
     (
       source,
@@ -83,6 +106,7 @@ def update_loop(database, direction_impl=Direction):
       )
       print(msg % args)
 
+    # get the data for this time-series
     timeseries_rows = database.get_daily_timeseries_for_direction_update(
         source, signal, geo_type, geo_value, min_day, max_day)
 
@@ -95,20 +119,29 @@ def update_loop(database, direction_impl=Direction):
     timestamp1s = timestamp1s.astype(np.int64)
     timestamp2s = timestamp2s.astype(np.int64)
 
-    # recompute any stale directions
+    # create a direction classifier for this signal
     data_stdev = data_stdevs[source][signal][geo_type]
+    slope_threshold = data_stdev * Constants.BASE_SLOPE_THRESHOLD
+
+    def get_direction_impl(x, y):
+      return direction_impl.get_direction(
+          x, y, n=Constants.SLOPE_STERR_SCALE, limit=slope_threshold)
+
+    # recompute any stale directions
     days, directions = direction_impl.scan_timeseries(
-      offsets, days, values, timestamp1s, timestamp2s, data_stdev)
+        offsets, days, values, timestamp1s, timestamp2s, get_direction_impl)
 
     if be_verbose:
       print(' computed %d direction updates' % len(directions))
 
-    # update database
+    # update directions in the database
     for (day, direction) in zip(days, directions):
+      # the database can't handle numpy types, so use a python type
+      day = int(day)
       database.update_direction(
           source, signal, 'day', geo_type, day, geo_value, direction)
 
-    # mark entire time-series as fresh with respect to direction
+    # mark the entire time-series as fresh with respect to direction
     database.update_timeseries_timestamp2(
         source, signal, 'day', geo_type, geo_value)
 
@@ -119,7 +152,7 @@ def main(
     update_loop_impl=update_loop):
   """Update the direction classification for covidcast signals.
 
-  `args` parsed command-line arguments
+  `args`: parsed command-line arguments
   """
 
   database = database_impl()
@@ -128,10 +161,14 @@ def main(
 
   try:
     update_loop_impl(database)
-    commit = not args.test
+    # only commit on success so that directions are consistent with respect
+    # to methodology
+    commit = True
   finally:
-    print('committed=%s' % str(commit))
+    # no catch block so that an exception above will cause the program to
+    # fail after the following cleanup
     database.disconnect(commit)
+    print('committed=%s' % str(commit))
 
 
 if __name__ == '__main__':
