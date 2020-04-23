@@ -67,7 +67,7 @@ class Direction:
     # TODO: summarize reasoning per meeting
     # gate non-zero direction when:
     #   abs(slope) >= 20% * 6 / (7 days) * stdev(data thru 2020-04-22)
-    percent_threshold = 0.2
+    percent_threshold = 0.1
     num_days = 7
     vis_stdev_width = 6
     stdev_scale = vis_stdev_width * (percent_threshold / num_days)
