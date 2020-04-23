@@ -38,16 +38,21 @@ class Direction:
     if n < 0:
       raise ValueError('n must be non-negative')
 
+    if limit < 0:
+      raise ValueError('limit must be non-negative')
+
     if len(x) < Direction.MIN_SAMPLE_SIZE:
       return None
 
     # check for coincident values in a way that is robust to extremely small
-    # differences
+    # differences (requires at least two points, checked above)
     if np.isclose(min(np.diff(sorted(x))), 0):
       raise ValueError('x contains coincident values')
 
+    # compute regression fit
     fit = scipy.stats.linregress(x, y)
 
+    # classify the direction
     if abs(fit.slope) <= max(n * fit.stderr, limit):
       return 0
     else:
@@ -56,22 +61,33 @@ class Direction:
 
   @staticmethod
   def scan_timeseries(
-      offsets, row_days, values, timestamp1s, timestamp2s, data_stdev):
+      offsets,
+      days,
+      values,
+      timestamp1s,
+      timestamp2s,
+      get_direction_impl):
     """Scan an entire time-series and return fresh direction updates.
 
+    `offsets`: time offset, relative to any arbitrary fixed point in time, for
+      each day in `days`
+    `days`: day (YYYYMMDD) corresponding to each row in the other arrays
+    `values`: value of the signal on each day
+    `timestamp1s`: primary timestamp for each row (i.e. when `value` was
+      updated)
+    `timestamp2s`: secondary timestamp for each row (i.e. when `direction` was
+      last deemed to be fresh, relative to associated `value`s)
+    `get_direction_impl`: a function which takes two arrays (time and value)
+      and returns a classification of the direction (i.e. as -1, 0, +1)
+
     All arrays must be, and are assumed to be, sorted by offset, ascending.
+
+    Two arrays are returned which contain days and directions, respectively.
+    Directions are only computed when a particular day is stale, as determined
+    by timestamp comparison across relevent days.
     """
 
-    days, directions = [], []
-
-    # TODO: summarize reasoning per meeting
-    # gate non-zero direction when:
-    #   abs(slope) >= 20% * 6 / (7 days) * stdev(data thru 2020-04-22)
-    percent_threshold = 0.1
-    num_days = 7
-    vis_stdev_width = 6
-    stdev_scale = vis_stdev_width * (percent_threshold / num_days)
-    slope_threshold = stdev_scale * data_stdev
+    updated_days, directions = [], []
 
     # sliding window over the past week of data
     start = 0
@@ -92,9 +108,10 @@ class Direction:
 
       x = offsets[start:end + 1]
       y = values[start:end + 1]
+      direction = get_direction_impl(x, y)
 
-      # record the direction update (return only pure python types)
-      days.append(int(row_days[end]))
-      directions.append(Direction.get_direction(x, y, limit=slope_threshold))
+      # record the direction update
+      updated_days.append(days[end])
+      directions.append(direction)
 
-    return days, directions
+    return updated_days, directions

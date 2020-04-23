@@ -73,7 +73,7 @@ class CsvUploadingTests(unittest.TestCase):
       f.write('file name is wrong\n')
 
     # upload CSVs
-    args = MagicMock(data_dir=data_dir, test=False)
+    args = MagicMock(data_dir=data_dir)
     main(args)
 
     # request CSV data from the API
