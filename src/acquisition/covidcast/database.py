@@ -111,91 +111,6 @@ class Database:
     self._cursor.execute(sql)
     return list(self._cursor)
 
-  def get_rows_with_stale_direction(self):
-    """Return rows in the `covidcast` table where `direction` is stale.
-
-    Note that this is limited to `time_type` of 'day' as direction is not yet
-    defined at other time scales.
-
-    To avoid runaway resource usage, the result set is limited to 10,000 rows.
-    Rows are intentionally returned in random order promote update equity among
-    the various data sources and geographic locations.
-    """
-
-    sql = '''
-      SELECT
-        c.`source`,
-        c.`signal`,
-        c.`time_type`,
-        c.`geo_type`,
-        c.`time_value`,
-        c.`geo_value`,
-        c.`timestamp2`,
-        MAX(d.`timestamp1`) AS `max_timestamp1`,
-        count(1) AS `support`
-      FROM
-        `covidcast` c JOIN `covidcast` d
-      USING
-        (`source`, `signal`, `time_type`, `geo_type`, `geo_value`)
-      WHERE
-        c.`time_type` = 'day' AND
-        DATEDIFF(c.`time_value`, d.`time_value`) BETWEEN 0 AND 6
-      GROUP BY
-        c.`source`,
-        c.`signal`,
-        c.`time_type`,
-        c.`geo_type`,
-        c.`time_value`,
-        c.`geo_value`
-      HAVING
-        MAX(d.`timestamp1`) > c.`timestamp2`
-      ORDER BY
-        rand()
-      LIMIT
-        10000
-    '''
-
-    self._cursor.execute(sql)
-    return list(self._cursor)
-
-  def get_rows_to_compute_direction(
-      self,
-      source,
-      signal,
-      geo_type,
-      time_value,
-      geo_value):
-    """Return `covidcast` rows which can be used to compute `direction`."""
-
-    sql = '''
-      SELECT
-        DATEDIFF(`time_value`, %s) AS `time_offset`,
-        `value`
-      FROM
-        `covidcast`
-      WHERE
-        `source` = %s AND
-        `signal` = %s AND
-        `time_type` = 'day' AND
-        `geo_type` = %s AND
-        `geo_value` = %s AND
-        DATEDIFF(`time_value`, %s) BETWEEN -6 and 0
-      ORDER BY
-        `time_value` ASC
-    '''
-
-    args = (
-      time_value,
-      source,
-      signal,
-      geo_type,
-      geo_value,
-      time_value,
-    )
-
-    self._cursor.execute(sql, args)
-    return list(self._cursor)
-
   def update_direction(
       self,
       source,
@@ -299,16 +214,7 @@ class Database:
         `time_value` ASC
     '''
 
-    args = (
-      min_day,
-      source,
-      signal,
-      geo_type,
-      geo_value,
-      min_day,
-      max_day,
-    )
-
+    args = (min_day, source, signal, geo_type, geo_value, min_day, max_day)
     self._cursor.execute(sql, args)
     return list(self._cursor)
 
@@ -337,14 +243,7 @@ class Database:
         `geo_value` = %s
     '''
 
-    args = (
-      source,
-      signal,
-      time_type,
-      geo_type,
-      geo_value,
-    )
-
+    args = (source, signal, time_type, geo_type, geo_value)
     self._cursor.execute(sql, args)
 
   def update_covidcast_meta_cache(self, epidata_json):

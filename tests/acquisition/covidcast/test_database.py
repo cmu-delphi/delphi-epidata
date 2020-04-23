@@ -50,7 +50,7 @@ class UnitTests(unittest.TestCase):
     self.assertTrue(connection.close.called)
 
   def test_count_all_rows_query(self):
-    """Query to count all rows is reasonable.
+    """Query to count all rows looks sensible.
 
     NOTE: Actual behavior is tested by integration test.
     """
@@ -72,7 +72,7 @@ class UnitTests(unittest.TestCase):
     self.assertIn('from `covidcast`', sql)
 
   def test_insert_or_update_query(self):
-    """Query to insert/update a row is reasonable.
+    """Query to insert/update a row looks sensible.
 
     NOTE: Actual behavior is tested by integration test.
     """
@@ -107,73 +107,8 @@ class UnitTests(unittest.TestCase):
     self.assertIn('unix_timestamp', sql)
     self.assertIn('on duplicate key update', sql)
 
-  def test_get_rows_with_stale_direction_query(self):
-    """Query to get rows with stale `direction` is reasonable.
-
-    NOTE: Actual behavior is tested by integration test.
-    """
-
-    mock_connector = MagicMock()
-    database = Database()
-    database.connect(connector_impl=mock_connector)
-
-    result = database.get_rows_with_stale_direction()
-
-    self.assertIsInstance(result, list)
-
-    connection = mock_connector.connect()
-    cursor = connection.cursor()
-    self.assertTrue(cursor.execute.called)
-
-    sql = cursor.execute.call_args[0][0].lower()
-    self.assertIn('select', sql)
-    self.assertIn('`covidcast`', sql)
-    self.assertIn('join', sql)
-    self.assertIn('datediff', sql)
-
-  def test_get_rows_to_compute_direction_query(self):
-    """Query to get rows needed to compute `direction` is reasonable.
-
-    NOTE: Actual behavior is tested by integration test.
-    """
-
-    args = (
-      'source',
-      'signal',
-      'geo_type',
-      'time_value',
-      'geo_value',
-    )
-    mock_connector = MagicMock()
-    database = Database()
-    database.connect(connector_impl=mock_connector)
-
-    result = database.get_rows_to_compute_direction(*args)
-
-    self.assertIsInstance(result, list)
-
-    connection = mock_connector.connect()
-    cursor = connection.cursor()
-    self.assertTrue(cursor.execute.called)
-
-    sql, args = cursor.execute.call_args[0]
-    expected_args = (
-      'time_value',
-      'source',
-      'signal',
-      'geo_type',
-      'geo_value',
-      'time_value',
-    )
-    self.assertEqual(args, expected_args)
-
-    sql = sql.lower()
-    self.assertIn('select', sql)
-    self.assertIn('`covidcast`', sql)
-    self.assertIn('datediff', sql)
-
   def test_update_direction_query(self):
-    """Query to update a row's `direction` is reasonable.
+    """Query to update a row's `direction` looks sensible.
 
     NOTE: Actual behavior is tested by integration test.
     """
@@ -214,3 +149,135 @@ class UnitTests(unittest.TestCase):
     self.assertIn('`covidcast`', sql)
     self.assertIn('`timestamp2` = unix_timestamp', sql)
     self.assertIn('`direction` = %s', sql)
+
+  def test_get_data_stdev_across_locations_query(self):
+    """Query to get signal-level standard deviation looks sensible.
+
+    NOTE: Actual behavior is tested by integration test.
+    """
+
+    mock_connector = MagicMock()
+    database = Database()
+    database.connect(connector_impl=mock_connector)
+
+    database.get_data_stdev_across_locations()
+
+    connection = mock_connector.connect()
+    cursor = connection.cursor()
+    self.assertTrue(cursor.execute.called)
+
+    sql = cursor.execute.call_args[0][0].lower()
+    self.assertIn('select', sql)
+    self.assertIn('`covidcast`', sql)
+    self.assertIn('std(', sql)
+
+  def test_get_keys_with_potentially_stale_direction_query(self):
+    """Query to get time-series with stale `direction` looks sensible.
+
+    NOTE: Actual behavior is tested by integration test.
+    """
+
+    mock_connector = MagicMock()
+    database = Database()
+    database.connect(connector_impl=mock_connector)
+
+    database.get_keys_with_potentially_stale_direction()
+
+    connection = mock_connector.connect()
+    cursor = connection.cursor()
+    self.assertTrue(cursor.execute.called)
+
+    sql = cursor.execute.call_args[0][0].lower()
+    self.assertIn('select', sql)
+    self.assertIn('`covidcast`', sql)
+    self.assertIn('timestamp1', sql)
+    self.assertIn('timestamp2', sql)
+
+  def test_get_daily_timeseries_for_direction_update_query(self):
+    """Query to get a daily time-series looks sensible.
+
+    NOTE: Actual behavior is tested by integration test.
+    """
+
+    args = ('source', 'signal', 'geo_type', 'geo_value', 'min_day', 'max_day')
+    mock_connector = MagicMock()
+    database = Database()
+    database.connect(connector_impl=mock_connector)
+
+    database.get_daily_timeseries_for_direction_update(*args)
+
+    connection = mock_connector.connect()
+    cursor = connection.cursor()
+    self.assertTrue(cursor.execute.called)
+
+    sql, args = cursor.execute.call_args[0]
+    expected_args = (
+      'min_day',
+      'source',
+      'signal',
+      'geo_type',
+      'geo_value',
+      'min_day',
+      'max_day',
+    )
+    self.assertEqual(args, expected_args)
+
+    sql = sql.lower()
+    self.assertIn('select', sql)
+    self.assertIn('`covidcast`', sql)
+    self.assertIn('timestamp1', sql)
+    self.assertIn('timestamp2', sql)
+
+  def test_update_timeseries_timestamp2_query(self):
+    """Query to update the secondary timestamp of a time-series looks sensible.
+
+    NOTE: Actual behavior is tested by integration test.
+    """
+
+    args = ('source', 'signal', 'time_type', 'geo_type', 'geo_value')
+    mock_connector = MagicMock()
+    database = Database()
+    database.connect(connector_impl=mock_connector)
+
+    database.update_timeseries_timestamp2(*args)
+
+    connection = mock_connector.connect()
+    cursor = connection.cursor()
+    self.assertTrue(cursor.execute.called)
+
+    sql, args = cursor.execute.call_args[0]
+    expected_args = ('source', 'signal', 'time_type', 'geo_type', 'geo_value')
+    self.assertEqual(args, expected_args)
+
+    sql = sql.lower()
+    self.assertIn('update', sql)
+    self.assertIn('`covidcast`', sql)
+    self.assertIn('timestamp2', sql)
+    self.assertIn('unix_timestamp(now())', sql)
+
+  def test_update_covidcast_meta_cache_query(self):
+    """Query to update the metadata cache looks sensible.
+
+    NOTE: Actual behavior is tested by integration test.
+    """
+
+    args = ('epidata_json',)
+    mock_connector = MagicMock()
+    database = Database()
+    database.connect(connector_impl=mock_connector)
+
+    database.update_covidcast_meta_cache(*args)
+
+    connection = mock_connector.connect()
+    cursor = connection.cursor()
+    self.assertTrue(cursor.execute.called)
+
+    sql, args = cursor.execute.call_args[0]
+    expected_args = ('epidata_json',)
+    self.assertEqual(args, expected_args)
+
+    sql = sql.lower()
+    self.assertIn('update', sql)
+    self.assertIn('`covidcast_meta_cache`', sql)
+    self.assertIn('timestamp', sql)
+    self.assertIn('epidata', sql)
