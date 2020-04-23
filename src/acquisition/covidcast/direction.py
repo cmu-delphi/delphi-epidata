@@ -55,7 +55,8 @@ class Direction:
       return int(np.sign(fit.slope))
 
   @staticmethod
-  def scan_timeseries(offsets, row_days, values, timestamp1s, timestamp2s):
+  def scan_timeseries(
+      offsets, row_days, values, timestamp1s, timestamp2s, data_stdev):
     """Scan an entire time-series and return fresh direction updates.
 
     All arrays must be, and are assumed to be, sorted by offset, ascending.
@@ -64,22 +65,13 @@ class Direction:
     days, directions = [], []
 
     # TODO: summarize reasoning per meeting
-    # NOTE: gate non-zero direction when:
+    # gate non-zero direction when:
     #   abs(slope) >= 20% * 6 / (7 days) * stdev(data thru 2020-04-22)
-    try:
-      max_idx = np.argmax((row_days <= 20200422) * row_days)
-      if max_idx < 3:
-        raise ValueError('too few points')
-      data_stdev = np.std(values[:max_idx])
-      percent_threshold = 0.2
-      num_days = 7
-      vis_stdev_width = 6
-      stdev_scale = vis_stdev_width * (percent_threshold / num_days)
-      slope_threshold = stdev_scale * data_stdev
-    except ValueError as e:
-      # not enough data to compute stdev (!)
-      print(e, 'assuming limit of 0')
-      slope_threshold = 0
+    percent_threshold = 0.2
+    num_days = 7
+    vis_stdev_width = 6
+    stdev_scale = vis_stdev_width * (percent_threshold / num_days)
+    slope_threshold = stdev_scale * data_stdev
 
     # sliding window over the past week of data
     start = 0

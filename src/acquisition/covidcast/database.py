@@ -86,6 +86,31 @@ class Database:
 
     self._cursor.execute(sql, args)
 
+  def get_data_stdev_across_locations(self):
+    """
+    Return the standard deviation of the data over all locations, for all
+    (source, signal, geo_type) tuples.
+    """
+
+    sql = '''
+      SELECT
+        `source`,
+        `signal`,
+        `geo_type`,
+        COALESCE(STD(`value`), 0) AS `aggregate_stdev`
+      FROM
+        `covidcast`
+      WHERE
+        `time_type` = 'day'
+      GROUP BY
+        `source`,
+        `signal`,
+        `geo_type`
+    '''
+
+    self._cursor.execute(sql)
+    return list(self._cursor)
+
   def get_rows_with_stale_direction(self):
     """Return rows in the `covidcast` table where `direction` is stale.
 

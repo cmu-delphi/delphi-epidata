@@ -92,6 +92,8 @@ response, e.g. for faster visualization load times.
 
 Data is public.
 
+This table must always contain exactly one row.
+
 +-----------+----------+------+-----+---------+-------+
 | Field     | Type     | Null | Key | Default | Extra |
 +-----------+----------+------+-----+---------+-------+
