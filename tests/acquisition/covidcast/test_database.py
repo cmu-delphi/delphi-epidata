@@ -156,17 +156,22 @@ class UnitTests(unittest.TestCase):
     NOTE: Actual behavior is tested by integration test.
     """
 
+    args = ('max_day',)
     mock_connector = MagicMock()
     database = Database()
     database.connect(connector_impl=mock_connector)
 
-    database.get_data_stdev_across_locations()
+    database.get_data_stdev_across_locations(*args)
 
     connection = mock_connector.connect()
     cursor = connection.cursor()
     self.assertTrue(cursor.execute.called)
 
-    sql = cursor.execute.call_args[0][0].lower()
+    sql, args = cursor.execute.call_args[0]
+    expected_args = ('max_day',)
+    self.assertEqual(args, expected_args)
+
+    sql = sql.lower()
     self.assertIn('select', sql)
     self.assertIn('`covidcast`', sql)
     self.assertIn('std(', sql)

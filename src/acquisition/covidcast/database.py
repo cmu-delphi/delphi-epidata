@@ -86,10 +86,13 @@ class Database:
 
     self._cursor.execute(sql, args)
 
-  def get_data_stdev_across_locations(self):
+  def get_data_stdev_across_locations(self, max_day):
     """
-    Return the standard deviation of the data over all locations, for all
+    Return the standard deviation of daily data over all locations, for all
     (source, signal, geo_type) tuples.
+
+    `max_day`: base the standard deviation on data up to, and including, but
+      not after, this day (e.g. for a stable result over time)
     """
 
     sql = '''
@@ -101,14 +104,16 @@ class Database:
       FROM
         `covidcast`
       WHERE
-        `time_type` = 'day'
+        `time_type` = 'day' AND
+        `time_value` <= %s
       GROUP BY
         `source`,
         `signal`,
         `geo_type`
     '''
 
-    self._cursor.execute(sql)
+    args = (max_day,)
+    self._cursor.execute(sql, args)
     return list(self._cursor)
 
   def update_direction(
