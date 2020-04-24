@@ -1,6 +1,7 @@
 """Unit tests for covidcast_meta_cache_updater.py."""
 
 # standard library
+import argparse
 import json
 import unittest
 from unittest.mock import MagicMock
