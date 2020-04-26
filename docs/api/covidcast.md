@@ -1,7 +1,11 @@
 # About
 
-This is the documentation of the API for accessing the Delphi's COVID-19 Surveillance Streams (`covidcast`)
-data source of the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
+This is the documentation of the API for accessing the Delphi's COVID-19
+Surveillance Streams (`covidcast`) data source of the
+[Delphi](https://delphi.cmu.edu/)'s epidemiological data. 
+
+For an interactive visualization of many of these data aignals, visit our 
+[*COVIDcast site*](https://covidcast.cmu.edu).
 
 General topics not specific to any particular data source are discussed in the
 [API overview](README.md). Such topics include:
@@ -22,7 +26,7 @@ fever, along with cough, or shortness of breath, or difficulty breathing), and
 separately, that have ILI (influenza-like illness = fever, along with cough or
 sore throat).
 * `google-survey`: Data signal based on Google-run symptom surveys, through
-their Opinions Reward app (and similar applications).  These surveys are again
+their Opinions Reward app, and similar applications.  These surveys are again
 voluntary.  They are just one question long, and ask "Do you know someone in
 your community who is sick (fever, along with cough, or shortness of breath, or
 difficulty breathing) right now?"  Using this survey data, we estimate the
@@ -41,7 +45,7 @@ covid-like symptoms, standard practice currently is to perform a flu test to
 rule out seasonal flu (influenza), because these two diseases have similar
 symptoms. Using this lab test data, we estimate the total number of flu tests
 per medical device (a measure of testing frequency), and the percentage of flu
-tests that are *negative* (since ruling out a flu leaves open another
+tests that are *negative* (since ruling out flu leaves open another
 cause---possibly covid---for the patient's symptoms), in a given location, 
 on a given day. 
 
