@@ -101,7 +101,7 @@ returned by the [`covidcast_meta`](covidcast_meta.md) endpoint.
 
 # Example URLs
 
-### Delphi's COVID-19 Surveillance Streams from Facebook Survey CLI on 2020-04-06 - 2010-04-10 (county 06001)
+### Delphi's COVID-19 Surveillance Streams from Facebook Survey CLI on 2020-04-06 to 2010-04-10 (county 06001)
 https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&signal=raw_cli&time_type=day&geo_type=county&time_values=20200406-20200410&geo_value=06001
 
 ```json
@@ -122,7 +122,7 @@ https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&si
 }
 ```
 
-## Delphi's COVID-19 Surveillance Streams from Facebook Survey CLI on 2020-04-06 (all counties)
+### Delphi's COVID-19 Surveillance Streams from Facebook Survey CLI on 2020-04-06 (all counties)
 https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&signal=raw_cli&time_type=day&geo_type=county&time_values=20200406&geo_value=*
 
 # Code Samples
