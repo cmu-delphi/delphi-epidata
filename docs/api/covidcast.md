@@ -4,8 +4,8 @@ This is the documentation of the API for accessing the Delphi's COVID-19
 Surveillance Streams (`covidcast`) data source of the
 [Delphi](https://delphi.cmu.edu/)'s epidemiological data. 
 
-For an interactive visualization of many of these data aignals, visit our 
-[*COVIDcast site*](https://covidcast.cmu.edu).
+For an interactive visualization of many of these data signals, visit our 
+[**COVIDcast site**](https://covidcast.cmu.edu).
 
 General topics not specific to any particular data source are discussed in the
 [API overview](README.md). Such topics include:
