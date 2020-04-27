@@ -196,7 +196,8 @@ Here's a full example based on the `fluview` endpoint:
 Writing an integration test is outside of the scope of this document. However,
 a number of existing integration tests exist and can be used as a good starting
 point for additional tests. For example, see the tests for the
-[`fluview` endpoint](../integrations/test_fluview.py) and the [`covid_survey_hrr_daily` endpoint](../integrations/test_covid_survey_hrr_daily.py).
+[`fluview` API endpoint](../integrations/server/test_fluview.py) and the
+[`covidcast` ingestion pipeline](../integrations/acquisition/covidcast).
 
 To run the existing tests and any new tests that you write, you must
 follow the
