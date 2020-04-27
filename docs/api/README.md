@@ -61,8 +61,10 @@ The base URL is: https://delphi.cmu.edu/epidata/api.php
 
 ## Specifying Epiweeks, Dates, and Lists
 
-Epiweeks use the U.S. definition. That is, the first epiweek each year is the week, starting on a Sunday, containing January 4.
-See [this page](http://www.cmmcp.org/epiweek.htm) for more information.
+Epiweeks use the U.S. definition. That is, the first epiweek each year is the
+week, starting on a Sunday, containing January 4. See
+[this page](https://www.cmmcp.org/mosquito-surveillance-data/pages/epi-week-calendars-2008-2020)
+for more information.
 
 Formatting for epiweeks is YYYYWW and for dates is YYYYMMDD.
 
