@@ -1134,6 +1134,10 @@ if(database_connect()) {
       $epidata = get_fluview($epiweeks, $regions, $issues, $lag, $authorized);
       store_result($data, $epidata);
     }
+  } else if($source === 'fluview_meta') {
+    // get the data
+    $epidata = meta_fluview();
+    store_result($data, $epidata);
   } else if ($source === 'fluview_clinical') {
     if(require_all($data, array('epiweeks', 'regions'))) {
       // parse the request

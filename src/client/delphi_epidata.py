@@ -88,6 +88,17 @@ class Epidata:
     # Make the API call
     return Epidata._request(params)
 
+  # Fetch FluView metadata
+  @staticmethod
+  def fluview_meta():
+    """Fetch FluView metadata."""
+    # Set up request
+    params = {
+      'source': 'fluview_meta',
+    }
+    # Make the API call
+    return Epidata._request(params)
+
   # Fetch FluView clinical data
   @staticmethod
   def fluview_clinical(regions, epiweeks, issues=None, lag=None):
