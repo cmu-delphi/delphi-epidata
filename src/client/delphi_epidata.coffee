@@ -82,7 +82,16 @@ class Epidata
       params.auth = auth
     # Make the API call
     _request(callback, params)
-  
+
+
+  # Fetch FluView metadata
+  @fluview_meta: (callback) ->
+    # Set up request
+    params =
+      'source': 'fluview_meta'
+    # Make the API call
+    _request(callback, params)
+
   # Fetch FluView clinical data
   @fluview_clinical: (callback, regions, epiweeks, issues, lag) ->
     # Check parameters

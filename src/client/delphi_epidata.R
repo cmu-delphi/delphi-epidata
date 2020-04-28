@@ -76,6 +76,16 @@ Epidata <- (function() {
     return(.request(params))
   }
 
+  # Fetch FluView metadata
+  fluview_meta <- function() {
+    # Set up request
+    params <- list(
+      source = 'fluview_meta'
+    )
+    # Make the API call
+    return(.request(params))
+  }
+
   # Fetch FluView virological data
   fluview_clinical <- function(regions, epiweeks, issues, lag) {
     # Check parameters
@@ -521,6 +531,7 @@ Epidata <- (function() {
   return(list(
     range = range,
     fluview = fluview,
+    fluview_meta = fluview_meta,
     fluview_clinical = fluview_clinical,
     flusurv = flusurv,
     gft = gft,

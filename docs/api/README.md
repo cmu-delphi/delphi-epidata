@@ -102,6 +102,7 @@ The parameters available for each source are documented in each linked source-sp
 | [`ecdc_ili`](ecdc_ili.md) | ECDC ILI | ECDC ILI data from the ECDC website. | no |
 | [`flusurv`](flusurv.md) | FluSurv | FluSurv-NET data (flu hospitaliation rates) from CDC. | no |
 | [`fluview`](fluview.md) | FluView | Influenza-like illness (ILI) from U.S. Outpatient Influenza-like Illness Surveillance Network (ILINet). | no |
+| [`fluview_meta`](fluview_meta.md) | FluView Metadata | Summary data about [`fluview`](fluview.md). | no |
 | [`fluview_clinical`](fluview_clinical.md) | FluView Clinical | ... <!-- TODO --> | no |
 | [`gft`](gft.md) | Google Flu Trends | Estimate of influenza activity based on volume of certain search queries. Google has discontinued Flu Trends, and this is now a static data source. | no |
 | [`ght`](ght.md) | Google Health Trends | Estimate of influenza activity based on volume of certain search queries. | yes |

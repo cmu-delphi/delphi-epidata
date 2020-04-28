@@ -119,6 +119,14 @@ Notes:
       return _request(callback, params);
     };
 
+    Epidata.fluview_meta = function(callback) {
+      var params;
+      params = {
+        'source': 'fluview_meta'
+      };
+      return _request(callback, params);
+    };
+
     Epidata.fluview_clinical = function(callback, regions, epiweeks, issues, lag) {
       var params;
       if (!((regions != null) && (epiweeks != null))) {
