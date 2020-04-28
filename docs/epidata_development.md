@@ -7,6 +7,10 @@ This guide describes how to write and test code for the Epidata API. For
 preliminary steps,
 [install docker and create a virtual network](https://github.com/cmu-delphi/operations/blob/master/docs/frontend_development.md#setup).
 
+After reading this guide, you may want to visit
+[the `fluview_meta` tutorial](new_endpoint_tutorial.md) for an example of how
+to add a new endpoint to the API.
+
 # setup
 
 For working on the Epidata API, you'll need the following two Delphi
