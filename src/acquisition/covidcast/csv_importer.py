@@ -170,7 +170,11 @@ class CsvImporter:
 
     if geo_type in ('hrr', 'msa', 'dma'):
       # these particular ids are prone to be written as ints -- and floats
-      geo_id = str(CsvImporter.floaty_int(geo_id))
+      try:
+        geo_id = str(CsvImporter.floaty_int(geo_id))
+      except ValueError:
+        # expected a number, but got a string
+        return (None, 'geo_id')
 
     # sanity check geo_id with respect to geo_type
     if geo_type == 'county':
@@ -207,12 +211,20 @@ class CsvImporter:
       return (None, 'val')
 
     # optional nonnegative float
-    stderr = CsvImporter.maybe_apply(float, row.se)
+    try:
+      stderr = CsvImporter.maybe_apply(float, row.se)
+    except ValueError:
+      # expected a number, but got a string
+      return (None, 'se')
     if stderr is not None and stderr < 0:
       return (None, 'se')
 
     # optional not-too-small float
-    sample_size = CsvImporter.maybe_apply(float, row.sample_size)
+    try:
+      sample_size = CsvImporter.maybe_apply(float, row.sample_size)
+    except ValueError:
+      # expected a number, but got a string
+      return (None, 'sample_size')
     if sample_size is not None and sample_size < CsvImporter.MIN_SAMPLE_SIZE:
       return (None, 'sample_size')
 
