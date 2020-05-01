@@ -81,3 +81,48 @@ class CovidcastMetaTests(unittest.TestCase):
       'epidata': expected,
       'message': 'success',
     })
+
+  def test_suppress_work_in_progress(self):
+    """Don't surface signals that are a work-in-progress."""
+
+    # insert dummy data and accumulate expected results (in sort order)
+    template = '''
+      insert into covidcast values
+        (0, "%s", "%s", "%s", "%s", %d, "%s", 123, %d, 0, 0, 456, 0)
+    '''
+    expected = []
+    for src in ('src1', 'src2'):
+      for sig in ('sig1', 'sig2', 'wip-sig3'):
+        for tt in ('day', 'week'):
+          for gt in ('hrr', 'msa'):
+            if sig != 'wip-sig3':
+              expected.append({
+                'data_source': src,
+                'signal': sig,
+                'time_type': tt,
+                'geo_type': gt,
+                'min_time': 1,
+                'max_time': 2,
+                'num_locations': 2,
+                'min_value': 10,
+                'max_value': 20,
+                'mean_value': 15,
+                'stdev_value': 5,
+                'last_update': 123,
+              })
+            for tv in (1, 2):
+              for gv, v in zip(('geo1', 'geo2'), (10, 20)):
+                self.cur.execute(template % (src, sig, tt, gt, tv, gv, v))
+    self.cnx.commit()
+
+    # make the request
+    response = requests.get(BASE_URL, params={'source': 'covidcast_meta'})
+    response.raise_for_status()
+    response = response.json()
+
+    # assert that the right data came back
+    self.assertEqual(response, {
+      'result': 1,
+      'epidata': expected,
+      'message': 'success',
+    })
