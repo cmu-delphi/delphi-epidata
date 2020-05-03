@@ -52,6 +52,9 @@ class CsvUploadingTests(unittest.TestCase):
   def test_uploading(self):
     """Scan, parse, upload, archive, serve, and fetch a covidcast signal."""
 
+    # print full diff if something unexpected comes out
+    self.maxDiff=None
+
     # make some fake data files
     data_dir = 'covid/data'
     source_receiving_dir = data_dir + '/receiving/src-name'
@@ -63,6 +66,13 @@ class CsvUploadingTests(unittest.TestCase):
       f.write('ca,1,0.1,10\n')
       f.write('tx,2,0.2,20\n')
       f.write('fl,3,0.3,30\n')
+
+    # valid wip
+    with open(source_receiving_dir + '/20200419_state_wip_prototype.csv', 'w') as f:
+      f.write('geo_id,val,se,sample_size\n')
+      f.write('me,10,0.01,100\n')
+      f.write('nd,20,0.02,200\n')
+      f.write('wa,30,0.03,300\n')
 
     # invalid
     with open(source_receiving_dir + '/20200420_state_test.csv', 'w') as f:
@@ -81,6 +91,7 @@ class CsvUploadingTests(unittest.TestCase):
         'src-name', 'test', 'day', 'state', 20200419, '*')
 
     # verify data matches the CSV
+    # NB these are ordered by geo_value
     self.assertEqual(response, {
       'result': 1,
       'epidata': [
@@ -112,6 +123,44 @@ class CsvUploadingTests(unittest.TestCase):
       'message': 'success',
     })
 
+    # request CSV data from the API on WIP signal
+    response = Epidata.covidcast(
+      'src-name', 'wip_prototype', 'day', 'state', 20200419, '*')
+
+    # verify data matches the CSV
+    # NB these are ordered by geo_value
+    self.assertEqual(response, {
+      'result': 1,
+      'epidata': [
+        {
+          'time_value': 20200419,
+          'geo_value': 'me',
+          'value': 10,
+          'stderr': 0.01,
+          'sample_size': 100,
+          'direction': None,
+        },
+        {
+          'time_value': 20200419,
+          'geo_value': 'nd',
+          'value': 20,
+          'stderr': 0.02,
+          'sample_size': 200,
+          'direction': None,
+        },
+        {
+          'time_value': 20200419,
+          'geo_value': 'wa',
+          'value': 30,
+          'stderr': 0.03,
+          'sample_size': 300,
+          'direction': None,
+        },
+       ],
+      'message': 'success',
+    })
+
+
     # verify timestamps and default values are reasonable
     self.cur.execute('select timestamp1, timestamp2, direction from covidcast')
     for timestamp1, timestamp2, direction in self.cur:
@@ -120,8 +169,9 @@ class CsvUploadingTests(unittest.TestCase):
       self.assertIsNone(direction)
 
     # verify that the CSVs were archived
-    path = data_dir + '/archive/successful/src-name/20200419_state_test.csv.gz'
-    self.assertIsNotNone(os.stat(path))
+    for sig in ["test","wip_prototype"]:
+      path = data_dir + f'/archive/successful/src-name/20200419_state_{sig}.csv.gz'
+      self.assertIsNotNone(os.stat(path))
     path = data_dir + '/archive/failed/src-name/20200420_state_test.csv'
     self.assertIsNotNone(os.stat(path))
     path = data_dir + '/archive/failed/unknown/hello.csv'
