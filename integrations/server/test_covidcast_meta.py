@@ -92,10 +92,10 @@ class CovidcastMetaTests(unittest.TestCase):
     '''
     expected = []
     for src in ('src1', 'src2'):
-      for sig in ('sig1', 'sig2', 'wip-sig3'):
+      for sig in ('sig1', 'sig2', 'wip_sig3'):
         for tt in ('day', 'week'):
           for gt in ('hrr', 'msa'):
-            if sig != 'wip-sig3':
+            if sig != 'wip_sig3':
               expected.append({
                 'data_source': src,
                 'signal': sig,

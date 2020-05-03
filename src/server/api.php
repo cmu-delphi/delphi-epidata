@@ -974,7 +974,7 @@ function get_covidcast_meta() {
   // basic query info
   $table = '`covidcast` t';
   $fields = "t.`source` AS `data_source`, t.`signal`, t.`time_type`, t.`geo_type`, MIN(t.`time_value`) AS `min_time`, MAX(t.`time_value`) AS `max_time`, COUNT(DISTINCT `geo_value`) AS `num_locations`, MIN(`value`) AS `min_value`, MAX(`value`) AS `max_value`, AVG(`value`) AS `mean_value`, STD(`value`) AS `stdev_value`, MAX(`timestamp1`) AS `last_update`";
-  $condition_wip = "t.`signal` NOT LIKE 'wip-%'";
+  $condition_wip = "t.`signal` NOT LIKE 'wip_%'";
   $group = "t.`source`, t.`signal`, t.`time_type`, t.`geo_type`";
   $order = "t.`source` ASC, t.`signal` ASC, t.`time_type` ASC, t.`geo_type` ASC";
   // data type of each field
