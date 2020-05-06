@@ -148,7 +148,7 @@ TODO move FIPS mismatch documentation here
 | `epidata[].time_value` | time unit (e.g. date) over which underlying events happened | integer |
 | `epidata[].direction` | trend classifier (+1 -> increasing, 0 steady or not determined, -1 -> decreasing) | integer |
 | `epidata[].value` | value (statistic) derived from the underlying data source | float |
-| `epidata[].stderr` | standard error of the statistic with respect to its sampling distribution, `null` when not applicable | float |
+| `epidata[].stderr` | approximate standard error of the statistic with respect to its sampling distribution, `null` when not applicable | float |
 | `epidata[].sample_size` | number of "data points" used in computing the statistic, `null` when not applicable | float |
 | `message` | `success` or error message | string |
 
