@@ -120,6 +120,23 @@ average smoothing applied.
 
 TODO
 
+#### `jhu-cases`
+
+| Signal | Description |
+| --- | --- |
+| `confirmed_cumulative_counts` | Cumulative number of confirmed COVID-19 cases |
+| `confirmed_new_counts` | Number of new confirmed COVID-19 cases, daily |
+| `confirmed_incidence` | Number of new confirmed COVID-19 cases per 100,000 population, daily |
+| `deaths_cumulative_counts` | Cumulative number of confirmed deaths due to COVID-19 |
+| `deaths_new_counts` | Number of new confirmed deaths due to COVID-19, daily |
+| `deaths_incidence` | Number of new confirmed deaths due to COVID-19 per 100,000 population, daily |
+
+These signals are collected by the Center for Systems Science and Engineering at
+Johns Hopkins University, and our signals are taken directly from [their GitHub
+repository](https://github.com/CSSEGISandData/COVID-19) without filtering,
+smoothing, or changes.
+
+TODO move FIPS mismatch documentation here
 
 ## Response
 
