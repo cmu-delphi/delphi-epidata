@@ -14,45 +14,116 @@ General topics not specific to any particular data source are discussed in the
 
 ## Delphi's COVID-19 Surveillance Streams Data
 
-Delphi's COVID-19 Surveillance Streams data includes the following data sources:
-* `doctor-visits`: Data based on outpatient visits, provided to us by a national
-health system.  Using this outpatient data, we estimate the percentage of
-covid-related doctor's visits in a given location, on a given day.
-* `fb-survey`: Data signal based on CMU-run symptom surveys, advertised through
-Facebook.  These surveys are voluntary, and no individual survey responses are
-shared back to Facebook. Using this survey data, we estimate the percentage of
-people in a given location, on a given day that have CLI (covid-like illness =
-fever, along with cough, or shortness of breath, or difficulty breathing), and
-separately, that have ILI (influenza-like illness = fever, along with cough or
-sore throat).
-* `google-survey`: Data signal based on Google-run symptom surveys, through
-their Opinions Reward app, and similar applications.  These surveys are again
-voluntary.  They are just one question long, and ask "Do you know someone in
-your community who is sick (fever, along with cough, or shortness of breath, or
-difficulty breathing) right now?"  Using this survey data, we estimate the
-percentage of people in a given location, on a given day, that know somebody who
-has CLI (covid-like illness = fever, along with cough, or shortness of breath,
-or difficulty breathing).  Note that this is tracking a different quantity than
-the surveys through Facebook, and (unsurprisingly) the estimates here tend to be
-much larger.
-* `ght`: Data signal based on Google searches, provided to us by Google Health
-Trends.  Using this search data, we estimate the volume of covid-related
-searches in a given location, on a given day.  This signal is measured in
-arbitrary units (its scale is meaningless).
-* `quidel`: Data signal based on flu lab tests, provided to us by Quidel, Inc.
-When a patient (whether at a doctor’s office, clinic, or hospital) has
-covid-like symptoms, standard practice currently is to perform a flu test to
-rule out seasonal flu (influenza), because these two diseases have similar
-symptoms. Using this lab test data, we estimate the total number of flu tests
-per medical device (a measure of testing frequency), and the percentage of flu
-tests that are *negative* (since ruling out flu leaves open another
-cause---possibly covid---for the patient's symptoms), in a given location, 
-on a given day. 
-
-The data is expected to be updated daily. You can use the
+Delphi's COVID-19 Surveillance Streams data includes the following data sources.
+Data from these sources is expected to be updated daily. You can use the
 [`covidcast_meta`](covidcast_meta.md) endpoint to get summary information about
 the ranges of the different attributes for the different data sources currently
 in the data.
+
+#### `fb-survey`
+
+This indicator estimates the percentage of people who have a COVID-like illness
+(fever, along with cough, or shortness of breath, or difficulty breathing) or
+influenza-like illness (fever, along with cough or sore throat), based on
+symptom surveys run by Carnegie Mellon. Facebook directs a random sample of its
+users to these surveys, which are voluntary. Individual survey responses are
+held by CMU and are shareable with other health researchers under a data use
+agreement. No individual survey responses are shared back to Facebook.
+
+| Signal | Description |
+| --- | --- |
+| `raw_cli` | Estimated fraction of people with COVID-like illness, with no smoothing or survey weighting |
+| `raw_ili` | Estimated fraction of people with influenza-like illness, with no smoothing or survey weighting |
+| `raw_wcli` | Estimated fraction of people with COVID-like illness; adjusted using survey weights |
+| `raw_wili` | Estimated fraction of people with influenza-like illness; adjusted using survey weights |
+| `raw_community` | Estimated fraction of people who know someone in their community with COVID-like illness; adjusted using survey weights |
+
+The survey weights, provided by Facebook, are intended to make the sample
+representative of the US population, according to the state, age, and gender of
+the US population from the 2018 Census March Supplement.
+
+Along with the `raw_` signals, there are additional signals with names beginning
+with `smoothed_`. These are identical to the above signals, but with moving
+average smoothing applied.
+
+#### `google-survey`
+
+This indicator estimates the percentage of people who know someone in their
+community with a COVID-like illness (fever, along with cough, or shortness of
+breath, or difficulty breathing). The data is based on Google-run symptom
+surveys, through publisher websites, their Opinions Reward app, and similar
+applications. These surveys are voluntary.
+
+The surveys are just one question long, and ask "Do you know someone in your
+community who is sick (fever, along with cough, or shortness of breath, or
+difficulty breathing) right now?" Using this survey data, we estimate the
+percentage of people in a given location, on a given day, that know somebody who
+has a COVID-like illness. Note that this is tracking a different quantity than
+the surveys through Facebook, and (unsurprisingly) the estimates here tend to be
+much larger.
+
+| Signal | Description |
+| --- | --- |
+| `raw_cli` | Estimated fraction of people who know someone in their community with COVID-like illness |
+
+#### `ght`
+
+Data signal based on Google searches, provided to us by Google Health
+Trends.  Using this search data, we estimate the volume of COVID-related
+searches in a given location, on a given day.  This signal is measured in
+arbitrary units (its scale is meaningless); larger numbers represent higher
+numbers of COVID-related searches.
+
+| Signal | Description |
+| --- | --- |
+| `raw_search` | Google search volume for COVID-related searches, in arbitrary units; normalized by population |
+| `smoothed_search` | Google search volume for COVID-related searches, in arbitrary units and normalized by population, smoothed using a Gaussian linear smoother |
+
+#### `doctor-visits`
+
+Data based on outpatient visits, provided to us by a national health system.
+Using this outpatient data, we estimate the percentage of COVID-related doctor's
+visits in a given location, on a given day.
+
+| Signal | Description |
+| --- | --- |
+| `smoothed_cli` | Estimated fraction of outpatient doctor visits primarily about COVID-related symptoms, based on data from a national health system. Smoothed using a Gaussian linear smoother |
+
+#### `quidel`
+
+Data signal based on flu lab tests, provided to us by Quidel, Inc. When a
+patient (whether at a doctor’s office, clinic, or hospital) has COVID-like
+symptoms, doctors may perform a flu test to rule out seasonal flu (influenza),
+because these two diseases have similar symptoms. Using this lab test data, we
+estimate the total number of flu tests per medical device (a measure of testing
+frequency), and the percentage of flu tests that are *negative* (since ruling
+out flu leaves open another cause---possibly covid---for the patient's
+symptoms), in a given location, on a given day.
+
+| Signal | Description |
+| --- | --- |
+| `raw_pct_negative` | The fraction of flu tests that are negative, suggesting the patient's illness has another cause, possibly COVID-19 |
+| `smoothed_pct_negative` | Same as above, but smoothed over 7 days using a moving average |
+| `raw_tests_per_device` | The number of flu tests conducted by each testing device; measures volume of testing |
+| `smoothed_tests_per_device` | Same as above, but smoothed over 7 days using a moving average |
+
+#### `jhu-cases`
+
+| Signal | Description |
+| --- | --- |
+| `confirmed_cumulative_counts` | Cumulative number of confirmed COVID-19 cases |
+| `confirmed_new_counts` | Number of new confirmed COVID-19 cases, daily |
+| `confirmed_incidence` | Number of new confirmed COVID-19 cases per 100,000 population, daily |
+| `deaths_cumulative_counts` | Cumulative number of confirmed deaths due to COVID-19 |
+| `deaths_new_counts` | Number of new confirmed deaths due to COVID-19, daily |
+| `deaths_incidence` | Number of new confirmed deaths due to COVID-19 per 100,000 population, daily |
+
+These signals are collected by the Center for Systems Science and Engineering at
+Johns Hopkins University, and our signals are taken directly from [their GitHub
+repository](https://github.com/CSSEGISandData/COVID-19) without filtering,
+smoothing, or changes.
+
+TODO move FIPS mismatch documentation here
 
 # The API
 
@@ -75,68 +146,6 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 The current set of signals available for each data source is returned by the
 [`covidcast_meta`](covidcast_meta.md) endpoint.
-
-As of this writing, data sources have the following signals:
-
-#### `fb-survey`
-
-| Signal | Description |
-| --- | --- |
-| `raw_cli` | Estimated fraction of people with COVID-like illness, with no smoothing or survey weighting |
-| `raw_ili` | Estimated fraction of people with influenza-like illness, with no smoothing or survey weighting |
-| `raw_wcli` | Estimated fraction of people with COVID-like illness; adjusted using survey weights |
-| `raw_wili` | Estimated fraction of people with influenza-like illness; adjusted using survey weights |
-| `raw_community` | Estimated fraction of people who know someone in their community with COVID-like illness; adjusted using survey weights |
-
-The survey weights, provided by Facebook, are intended to make the sample
-representative of the US population, according to the state, age, and gender of
-the US population from the 2018 Census March Supplement.
-
-Along with the `raw_` signals, there are additional signals with names beginning
-with `smoothed_`. These are identical to the above signals, but with moving
-average smoothing applied.
-
-#### `google-survey`
-
-| Signal | Description |
-| --- | --- |
-| `raw_cli` | Estimated fraction of people who know someone in their community with COVID-like illness |
-
-
-#### `ght`
-
-| Signal | Description |
-| --- | --- |
-| `raw_search` | Google search volume for COVID-related searches, in arbitrary units; normalized by population |
-| `smoothed_search` | Google search volume for COVID-related searches, in arbitrary units and normalized by population, smoothed using a Gaussian linear smoother |
-
-#### `doctor-visits`
-
-| Signal | Description |
-| --- | --- |
-| `smoothed_cli` | Estimated fraction of outpatient doctor visits primarily about COVID-related symptoms, based on data from a national health system. Smoothed using a Gaussian linear smoother |
-
-#### `quidel`
-
-TODO
-
-#### `jhu-cases`
-
-| Signal | Description |
-| --- | --- |
-| `confirmed_cumulative_counts` | Cumulative number of confirmed COVID-19 cases |
-| `confirmed_new_counts` | Number of new confirmed COVID-19 cases, daily |
-| `confirmed_incidence` | Number of new confirmed COVID-19 cases per 100,000 population, daily |
-| `deaths_cumulative_counts` | Cumulative number of confirmed deaths due to COVID-19 |
-| `deaths_new_counts` | Number of new confirmed deaths due to COVID-19, daily |
-| `deaths_incidence` | Number of new confirmed deaths due to COVID-19 per 100,000 population, daily |
-
-These signals are collected by the Center for Systems Science and Engineering at
-Johns Hopkins University, and our signals are taken directly from [their GitHub
-repository](https://github.com/CSSEGISandData/COVID-19) without filtering,
-smoothing, or changes.
-
-TODO move FIPS mismatch documentation here
 
 ## Response
 
