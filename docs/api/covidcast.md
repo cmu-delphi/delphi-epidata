@@ -73,17 +73,53 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | `time_values` | time unit (e.g., date) over which underlying events happened | `list` of time values (e.g., 20200401) |
 | `geo_value` | unique code for each location, depending on `geo_type` (county -> FIPS 6-4 code, HRR -> HRR number, MSA -> CBSA code, DMA -> DMA code, state -> two-letter [state](../../labels/states.txt) code), or `*` for all | string |
 
-As of this writing, data sources have the following signals:
-* `fb-survey` `signal` values include `raw_cli`, `raw_ili`, `raw_wcli`,
-  `raw_wili`, and also four additional named with `raw_*` replaced by
-  `smoothed_*` (e.g. `smoothed_cli`, etc).
-* `google-survey` `signal` values include `raw_cli` and `smoothed_cli`.
-* `ght` `signal` values include `raw_search` and `smoothed_search`.
-* `quidel` `signal` values include `smoothed_pct_negative` and `smoothed_tests_per_device`.
-* `doctor-visits` `signal` values include `smoothed_cli`.
+The current set of signals available for each data source is returned by the
+[`covidcast_meta`](covidcast_meta.md) endpoint.
 
-More generally, the current set of signals available for each data source is
-returned by the [`covidcast_meta`](covidcast_meta.md) endpoint.
+As of this writing, data sources have the following signals:
+
+#### `fb-survey`
+
+| Signal | Description |
+| --- | --- |
+| `raw_cli` | Estimated fraction of people with COVID-like illness, with no smoothing or survey weighting |
+| `raw_ili` | Estimated fraction of people with influenza-like illness, with no smoothing or survey weighting |
+| `raw_wcli` | Estimated fraction of people with COVID-like illness; adjusted using survey weights |
+| `raw_wili` | Estimated fraction of people with influenza-like illness; adjusted using survey weights |
+| `raw_community` | Estimated fraction of people who know someone in their community with COVID-like illness; adjusted using survey weights |
+
+The survey weights, provided by Facebook, are intended to make the sample
+representative of the US population, according to the state, age, and gender of
+the US population from the 2018 Census March Supplement.
+
+Along with the `raw_` signals, there are additional signals with names beginning
+with `smoothed_`. These are identical to the above signals, but with moving
+average smoothing applied.
+
+#### `google-survey`
+
+| Signal | Description |
+| --- | --- |
+| `raw_cli` | Estimated fraction of people who know someone in their community with COVID-like illness |
+
+
+#### `ght`
+
+| Signal | Description |
+| --- | --- |
+| `raw_search` | Google search volume for COVID-related searches, in arbitrary units; normalized by population |
+| `smoothed_search` | Google search volume for COVID-related searches, in arbitrary units and normalized by population, smoothed using a Gaussian linear smoother |
+
+#### `doctor-visits`
+
+| Signal | Description |
+| --- | --- |
+| `smoothed_cli` | Estimated fraction of outpatient doctor visits primarily about COVID-related symptoms, based on data from a national health system. Smoothed using a Gaussian linear smoother |
+
+#### `quidel`
+
+TODO
+
 
 ## Response
 
