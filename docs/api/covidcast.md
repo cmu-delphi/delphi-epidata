@@ -65,6 +65,7 @@ much larger.
 | Signal | Description |
 | --- | --- |
 | `raw_cli` | Estimated fraction of people who know someone in their community with COVID-like illness |
+| `smoothed_cli` | Estimated fraction of people who know someone in their community with COVID-like illness, smoothed in time |
 
 #### `ght`
 
