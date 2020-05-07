@@ -36,7 +36,6 @@ agreement. No individual survey responses are shared back to Facebook.
 | `raw_ili` | Estimated fraction of people with influenza-like illness, with no smoothing or survey weighting |
 | `raw_wcli` | Estimated fraction of people with COVID-like illness; adjusted using survey weights |
 | `raw_wili` | Estimated fraction of people with influenza-like illness; adjusted using survey weights |
-| `raw_community` | Estimated fraction of people who know someone in their community with COVID-like illness; adjusted using survey weights |
 
 The survey weights, provided by Facebook, are intended to make the sample
 representative of the US population, according to the state, age, and gender of
