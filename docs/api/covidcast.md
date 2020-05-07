@@ -164,7 +164,7 @@ The current set of signals available for each data source is returned by the
 
 The `geo_value` field specifies the geographic location whose estimate is being
 reported. County-level estimates are reported by the county FIPS code. All FIPS
-codes are reported according to TODO year and source, *except* for FIPS codes
+codes are reported using pre-2015 FIPS code assignments, *except* for FIPS codes
 used by the `jhu-csse` source. These are reported exactly as JHU reports their
 data.
 
