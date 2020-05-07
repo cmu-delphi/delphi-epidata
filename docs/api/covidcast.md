@@ -43,8 +43,8 @@ representative of the US population, according to the state, age, and gender of
 the US population from the 2018 Census March Supplement.
 
 Along with the `raw_` signals, there are additional signals with names beginning
-with `smoothed_`. These are identical to the above signals, but with moving
-average smoothing applied.
+with `smoothed_`. These estimate the same quantities as the above signals, but
+smoothed in time to reduce day-to-day sampling noise.
 
 #### `google-survey`
 
@@ -77,7 +77,7 @@ numbers of COVID-related searches.
 | Signal | Description |
 | --- | --- |
 | `raw_search` | Google search volume for COVID-related searches, in arbitrary units; normalized by population |
-| `smoothed_search` | Google search volume for COVID-related searches, in arbitrary units and normalized by population, smoothed using a Gaussian linear smoother |
+| `smoothed_search` | Google search volume for COVID-related searches, in arbitrary units and normalized by population, smoothed in time using a Gaussian linear smoother |
 
 #### `doctor-visits`
 
@@ -87,7 +87,7 @@ visits in a given location, on a given day.
 
 | Signal | Description |
 | --- | --- |
-| `smoothed_cli` | Estimated fraction of outpatient doctor visits primarily about COVID-related symptoms, based on data from a national health system. Smoothed using a Gaussian linear smoother |
+| `smoothed_cli` | Estimated fraction of outpatient doctor visits primarily about COVID-related symptoms, based on data from a national health system. Smoothed in time using a Gaussian linear smoother |
 
 #### `quidel`
 
@@ -103,9 +103,9 @@ symptoms), in a given location, on a given day.
 | Signal | Description |
 | --- | --- |
 | `raw_pct_negative` | The fraction of flu tests that are negative, suggesting the patient's illness has another cause, possibly COVID-19 |
-| `smoothed_pct_negative` | Same as above, but smoothed over 7 days using a moving average |
+| `smoothed_pct_negative` | Same as above, but smoothed over 7 days |
 | `raw_tests_per_device` | The number of flu tests conducted by each testing device; measures volume of testing |
-| `smoothed_tests_per_device` | Same as above, but smoothed over 7 days using a moving average |
+| `smoothed_tests_per_device` | Same as above, but smoothed over 7 days |
 
 #### `jhu-csse`
 
