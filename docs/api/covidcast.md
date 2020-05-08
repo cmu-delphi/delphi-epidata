@@ -166,7 +166,24 @@ The `geo_value` field specifies the geographic location whose estimate is being
 reported. County-level estimates are reported by the county FIPS code. All FIPS
 codes are reported using pre-2015 FIPS code assignments, *except* for FIPS codes
 used by the `jhu-csse` source. These are reported exactly as JHU reports their
-data.
+data; see below.
+
+Other possible `geo_type`s include:
+
+* `hrr`: Hospital Referral Region, units designed to represent regional health
+  care markets. There are roughly 300 HRRs in the United States. a map is
+  available
+  [here](https://hub.arcgis.com/datasets/fedmaps::hospital-referral-regions).
+* `msa`: Metropolitan Statistical Area, as defined by the Office of Management
+  and Budget. The Census Bureau provides [detailed definitions of these
+  regions](https://www.census.gov/programs-surveys/metro-micro/about.html).
+* `dma`: Designated Market Areas represent geographic regions with their own
+  media markets, as [defined by
+  Nielsen](https://www.nielsen.com/us/en/intl-campaigns/dma-maps/).
+* `state`: The 50 states.
+
+Some signals are not available for all `geo_type`s, since they may be reported
+from their original sources with different levels of aggregation.
 
 ## FIPS Exceptions in JHU Data
 
