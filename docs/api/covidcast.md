@@ -171,7 +171,7 @@ data; see below.
 Other possible `geo_type`s include:
 
 * `hrr`: Hospital Referral Region, units designed to represent regional health
-  care markets. There are roughly 300 HRRs in the United States. a map is
+  care markets. There are roughly 300 HRRs in the United States. A map is
   available
   [here](https://hub.arcgis.com/datasets/fedmaps::hospital-referral-regions).
 * `msa`: Metropolitan Statistical Area, as defined by the Office of Management
@@ -206,11 +206,10 @@ New York City comprises of five boroughs:
 FIPS Code 36061.**  The other four boroughs are included in the dataset
 and show up in our API, but they should be uniformly zero.
 
-All NYC counts are mapped to the MSA with CBSA ID 35620, which encompasses
-all five boroughs.  All NYC counts are mapped to HRR 303, which intersects
-all five boroughs (297 also intersects the Bronx, 301 also intersects
-Brooklyn and Queens, but absent additional information, I am leaving all
-counts in 303).
+All NYC counts are mapped to the MSA with CBSA ID 35620, which encompasses all
+five boroughs. All NYC counts are mapped to HRR 303, which intersects all five
+boroughs (297 also intersects the Bronx, 301 also intersects Brooklyn and
+Queens, but absent additional information, we chose to leave all counts in 303).
 
 ### Kansas City, Missouri
 Kansas City intersects the following four counties, which themselves report
