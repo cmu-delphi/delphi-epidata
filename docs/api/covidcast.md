@@ -88,6 +88,14 @@ visits in a given location, on a given day.
 | Signal | Description |
 | --- | --- |
 | `smoothed_cli` | Estimated fraction of outpatient doctor visits primarily about COVID-related symptoms, based on data from a national health system. Smoothed in time using a Gaussian linear smoother |
+| `smoothed_adj_cli` | Same, but with systematic day-of-week effects removed |
+
+Day-of-week effects are removed by fitting a model to all data in the United
+States; the model includes a fixed effect for each day of the week. Once these
+effects are estimated, they are subtracted from each geographic area's time
+series. This removes day-to-day variation that arises solely from clinic
+schedules, work schedules, and other variation in doctor's visits that arise
+solely because of the day of week.
 
 #### `quidel`
 
