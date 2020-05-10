@@ -131,6 +131,20 @@ Johns Hopkins University, and our signals are taken directly from [their GitHub
 repository](https://github.com/CSSEGISandData/COVID-19) without filtering,
 smoothing, or changes.
 
+## COVIDcast Map Signals
+
+The following signals are currently displayed on [the public COVIDcast
+map](https://covidcast.cmu.edu/):
+
+| Name | Source | Signal |
+| --- | --- | --- |
+| Doctor's Visits | `doctor-visits` | `smoothed_adj_cli` |
+| Surveys (Facebook) | `fb-survey` | `smoothed_cli` |
+| Surveys (Google) | `google-survey` | `smoothed_cli` |
+| Search Trends (Google) | `ght` | `smoothed_search` |
+| Cases (JHU) | `jhu-csse` | `confirmed_incidence_prop` |
+| Deaths (JHU) | `jhu-csse` | `deaths_incidence_prop` |
+
 # The API
 
 The base URL is: https://delphi.cmu.edu/epidata/api.php
