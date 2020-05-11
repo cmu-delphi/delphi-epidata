@@ -109,10 +109,10 @@ symptoms), in a given location, on a given day.
 | Signal | Description |
 | --- | --- |
 | `confirmed_cumulative_num` | Cumulative number of confirmed COVID-19 cases |
-| `confirmed_new_num` | Number of new confirmed COVID-19 cases, daily |
+| `confirmed_incidence_num` | Number of new confirmed COVID-19 cases, daily |
 | `confirmed_incidence_prop` | Number of new confirmed COVID-19 cases per 100,000 population, daily |
 | `deaths_cumulative_num` | Cumulative number of confirmed deaths due to COVID-19 |
-| `deaths_new_num` | Number of new confirmed deaths due to COVID-19, daily |
+| `deaths_incidence_num` | Number of new confirmed deaths due to COVID-19, daily |
 | `deaths_incidence_prop` | Number of new confirmed deaths due to COVID-19 per 100,000 population, daily |
 
 These signals are collected by the Center for Systems Science and Engineering at
