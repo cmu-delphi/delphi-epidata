@@ -12,140 +12,6 @@ General topics not specific to any particular data source are discussed in the
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
 
-## Delphi's COVID-19 Surveillance Streams Data
-
-Delphi's COVID-19 Surveillance Streams data includes the following data sources.
-Data from these sources is expected to be updated daily. You can use the
-[`covidcast_meta`](covidcast_meta.md) endpoint to get summary information about
-the ranges of the different attributes for the different data sources currently
-in the data.
-
-#### `fb-survey`
-
-This indicator estimates the percentage of people who have a COVID-like illness
-(fever, along with cough, or shortness of breath, or difficulty breathing) or
-influenza-like illness (fever, along with cough or sore throat), based on
-symptom surveys run by Carnegie Mellon. Facebook directs a random sample of its
-users to these surveys, which are voluntary. Individual survey responses are
-held by CMU and are shareable with other health researchers under a data use
-agreement. No individual survey responses are shared back to Facebook.
-
-| Signal | Description |
-| --- | --- |
-| `raw_cli` | Estimated fraction of people with COVID-like illness, with no smoothing or survey weighting |
-| `raw_ili` | Estimated fraction of people with influenza-like illness, with no smoothing or survey weighting |
-| `raw_wcli` | Estimated fraction of people with COVID-like illness; adjusted using survey weights |
-| `raw_wili` | Estimated fraction of people with influenza-like illness; adjusted using survey weights |
-
-The survey weights, provided by Facebook, are intended to make the sample
-representative of the US population, according to the state, age, and gender of
-the US population from the 2018 Census March Supplement.
-
-Along with the `raw_` signals, there are additional signals with names beginning
-with `smoothed_`. These estimate the same quantities as the above signals, but
-smoothed in time to reduce day-to-day sampling noise.
-
-#### `google-survey`
-
-This indicator estimates the percentage of people who know someone in their
-community with a COVID-like illness (fever, along with cough, or shortness of
-breath, or difficulty breathing). The data is based on Google-run symptom
-surveys, through publisher websites, their Opinions Reward app, and similar
-applications. Respondents can opt to skip the survey and complete a different
-one if they prefer not to answer.
-
-The surveys are just one question long, and ask "Do you know someone in your
-community who is sick (fever, along with cough, or shortness of breath, or
-difficulty breathing) right now?" Using this survey data, we estimate the
-percentage of people in a given location, on a given day, that know somebody who
-has a COVID-like illness. Note that this is tracking a different quantity than
-the surveys through Facebook, and (unsurprisingly) the estimates here tend to be
-much larger.
-
-| Signal | Description |
-| --- | --- |
-| `raw_cli` | Estimated fraction of people who know someone in their community with COVID-like illness |
-| `smoothed_cli` | Estimated fraction of people who know someone in their community with COVID-like illness, smoothed in time |
-
-#### `ght`
-
-Data signal based on Google searches, provided to us by Google Health
-Trends.  Using this search data, we estimate the volume of COVID-related
-searches in a given location, on a given day.  This signal is measured in
-arbitrary units (its scale is meaningless); larger numbers represent higher
-numbers of COVID-related searches.
-
-| Signal | Description |
-| --- | --- |
-| `raw_search` | Google search volume for COVID-related searches, in arbitrary units; normalized by population |
-| `smoothed_search` | Google search volume for COVID-related searches, in arbitrary units and normalized by population, smoothed in time using a Gaussian linear smoother |
-
-#### `doctor-visits`
-
-Data based on outpatient visits, provided to us by a national health system.
-Using this outpatient data, we estimate the percentage of COVID-related doctor's
-visits in a given location, on a given day.
-
-| Signal | Description |
-| --- | --- |
-| `smoothed_cli` | Estimated fraction of outpatient doctor visits primarily about COVID-related symptoms, based on data from a national health system. Smoothed in time using a Gaussian linear smoother |
-| `smoothed_adj_cli` | Same, but with systematic day-of-week effects removed |
-
-Day-of-week effects are removed by fitting a model to all data in the United
-States; the model includes a fixed effect for each day of the week. Once these
-effects are estimated, they are subtracted from each geographic area's time
-series. This removes day-to-day variation that arises solely from clinic
-schedules, work schedules, and other variation in doctor's visits that arise
-solely because of the day of week.
-
-#### `quidel`
-
-Data signal based on flu lab tests, provided to us by Quidel, Inc. When a
-patient (whether at a doctor’s office, clinic, or hospital) has COVID-like
-symptoms, doctors may perform a flu test to rule out seasonal flu (influenza),
-because these two diseases have similar symptoms. Using this lab test data, we
-estimate the total number of flu tests per medical device (a measure of testing
-frequency), and the percentage of flu tests that are *negative* (since ruling
-out flu leaves open another cause---possibly covid---for the patient's
-symptoms), in a given location, on a given day.
-
-| Signal | Description |
-| --- | --- |
-| `raw_pct_negative` | The fraction of flu tests that are negative, suggesting the patient's illness has another cause, possibly COVID-19 |
-| `smoothed_pct_negative` | Same as above, but smoothed over 7 days |
-| `raw_tests_per_device` | The number of flu tests conducted by each testing device; measures volume of testing |
-| `smoothed_tests_per_device` | Same as above, but smoothed over 7 days |
-
-#### `jhu-csse`
-
-| Signal | Description |
-| --- | --- |
-| `confirmed_cumulative_num` | Cumulative number of confirmed COVID-19 cases |
-| `confirmed_new_num` | Number of new confirmed COVID-19 cases, daily |
-| `confirmed_incidence_prop` | Number of new confirmed COVID-19 cases per 100,000 population, daily |
-| `deaths_cumulative_num` | Cumulative number of confirmed deaths due to COVID-19 |
-| `deaths_new_num` | Number of new confirmed deaths due to COVID-19, daily |
-| `deaths_incidence_prop` | Number of new confirmed deaths due to COVID-19 per 100,000 population, daily |
-
-These signals are collected by the Center for Systems Science and Engineering at
-Johns Hopkins University, and our signals are taken directly from [their GitHub
-repository](https://github.com/CSSEGISandData/COVID-19) without filtering,
-smoothing, or changes.
-
-## COVIDcast Map Signals
-
-The following signals are currently displayed on [the public COVIDcast
-map](https://covidcast.cmu.edu/):
-
-| Name | Source | Signal |
-| --- | --- | --- |
-| Doctor's Visits | `doctor-visits` | `smoothed_adj_cli` |
-| Surveys (Facebook) | `fb-survey` | `smoothed_cli` |
-| Surveys (Google) | `google-survey` | `smoothed_cli` |
-| Search Trends (Google) | `ght` | `smoothed_search` |
-| Cases (JHU) | `jhu-csse` | `confirmed_incidence_prop` |
-| Deaths (JHU) | `jhu-csse` | `deaths_incidence_prop` |
-
 # The API
 
 The base URL is: https://delphi.cmu.edu/epidata/api.php
@@ -158,7 +24,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 | Parameter | Description | Type |
 | --- | --- | --- |
-| `data_source` | name of upstream data source (e.g., `fb-survey`, `google-survey`, `ght`, `quidel`, `doctor-visits`) | string |
+| `data_source` | name of upstream data source (e.g., `fb-survey` or `ght`; [see full list](covidcast_signals.md)) | string |
 | `signal` | name of signal derived from upstream data (see notes below) | string |
 | `time_type` | temporal resolution of the signal (e.g., `day`, `week`) | string |
 | `geo_type` | spatial resolution of the signal (e.g., `county`, `hrr`, `msa`, `dma`, `state`) | string |
@@ -166,7 +32,9 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | `geo_value` | unique code for each location, depending on `geo_type` (county -> FIPS 6-4 code, HRR -> HRR number, MSA -> CBSA code, DMA -> DMA code, state -> two-letter [state](../../labels/states.txt) code), or `*` for all | string |
 
 The current set of signals available for each data source is returned by the
-[`covidcast_meta`](covidcast_meta.md) endpoint.
+[`covidcast_meta`](covidcast_meta.md) endpoint. A separate [COVIDcast signals
+document](covidcast_signals.md) describes all available signals and sources in
+detail.
 
 ## Response
 
