@@ -70,13 +70,13 @@ numbers of COVID-related searches.
 
 ### `doctor-visits`
 
-Data based on outpatient visits, provided to us by a national health system.
-Using this outpatient data, we estimate the percentage of COVID-related doctor's
+Data based on outpatient visits, provided to us by healthcare partners. Using
+this outpatient data, we estimate the percentage of COVID-related doctor's
 visits in a given location, on a given day.
 
 | Signal | Description |
 | --- | --- |
-| `smoothed_cli` | Estimated fraction of outpatient doctor visits primarily about COVID-related symptoms, based on data from a national health system. Smoothed in time using a Gaussian linear smoother |
+| `smoothed_cli` | Estimated fraction of outpatient doctor visits primarily about COVID-related symptoms, based on data from healthcare partners. Smoothed in time using a Gaussian linear smoother |
 | `smoothed_adj_cli` | Same, but with systematic day-of-week effects removed |
 
 Day-of-week effects are removed by fitting a model to all data in the United
