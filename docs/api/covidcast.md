@@ -181,6 +181,13 @@ The current set of signals available for each data source is returned by the
 | `epidata[].sample_size` | number of "data points" used in computing the statistic, `null` when not applicable | float |
 | `message` | `success` or error message | string |
 
+**Note:** `result` code 2, "too many results", means that the number of results
+you requested was greater than the API's maximum results limit. Results will be
+returned, but not all of the results you requested. API clients should check the
+results code, and should consider breaking up their requests across multiple API
+calls, such as by breaking a request for a large time interval into multiple
+requests for smaller time intervals.
+
 
 # Geographic Coding
 
