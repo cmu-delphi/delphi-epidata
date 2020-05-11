@@ -65,8 +65,8 @@ numbers of COVID-related searches.
 
 | Signal | Description |
 | --- | --- |
-| `raw_search` | Google search volume for COVID-related searches, in arbitrary units; normalized by population |
-| `smoothed_search` | Google search volume for COVID-related searches, in arbitrary units and normalized by population, smoothed in time using a Gaussian linear smoother |
+ | `raw_search` | Google search volume for COVID-related searches, in arbitrary units that are normalized for population |
+| `smoothed_search` | Google search volume for COVID-related searches, in arbitrary units that are normalized for population, smoothed in time using a Gaussian linear smoother |
 
 ### `doctor-visits`
 
