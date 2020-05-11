@@ -86,6 +86,11 @@ series. This removes day-to-day variation that arises solely from clinic
 schedules, work schedules, and other variation in doctor's visits that arise
 solely because of the day of week.
 
+Note that because doctor's visits may be reported to our healthcare partners
+several days after they occur, these signals are typically available with
+several days of lag. This means that estimates for a specific day are only
+available several days later.
+
 ### `quidel`
 
 Data signal based on flu lab tests, provided to us by Quidel, Inc. When a
