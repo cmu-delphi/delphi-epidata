@@ -51,7 +51,8 @@ This indicator estimates the percentage of people who know someone in their
 community with a COVID-like illness (fever, along with cough, or shortness of
 breath, or difficulty breathing). The data is based on Google-run symptom
 surveys, through publisher websites, their Opinions Reward app, and similar
-applications. These surveys are voluntary.
+applications. Respondents can opt to skip the survey and complete a different
+one if they prefer not to answer.
 
 The surveys are just one question long, and ask "Do you know someone in your
 community who is sick (fever, along with cough, or shortness of breath, or
