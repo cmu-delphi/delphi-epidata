@@ -12,48 +12,6 @@ General topics not specific to any particular data source are discussed in the
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
 
-## Delphi's COVID-19 Surveillance Streams Data
-
-Delphi's COVID-19 Surveillance Streams data includes the following data sources:
-* `doctor-visits`: Data based on outpatient visits, provided to us by a national
-health system.  Using this outpatient data, we estimate the percentage of
-covid-related doctor's visits in a given location, on a given day.
-* `fb-survey`: Data signal based on CMU-run symptom surveys, advertised through
-Facebook.  These surveys are voluntary, and no individual survey responses are
-shared back to Facebook. Using this survey data, we estimate the percentage of
-people in a given location, on a given day that have CLI (covid-like illness =
-fever, along with cough, or shortness of breath, or difficulty breathing), and
-separately, that have ILI (influenza-like illness = fever, along with cough or
-sore throat).
-* `google-survey`: Data signal based on Google-run symptom surveys, through
-their Opinions Reward app, and similar applications.  These surveys are again
-voluntary.  They are just one question long, and ask "Do you know someone in
-your community who is sick (fever, along with cough, or shortness of breath, or
-difficulty breathing) right now?"  Using this survey data, we estimate the
-percentage of people in a given location, on a given day, that know somebody who
-has CLI (covid-like illness = fever, along with cough, or shortness of breath,
-or difficulty breathing).  Note that this is tracking a different quantity than
-the surveys through Facebook, and (unsurprisingly) the estimates here tend to be
-much larger.
-* `ght`: Data signal based on Google searches, provided to us by Google Health
-Trends.  Using this search data, we estimate the volume of covid-related
-searches in a given location, on a given day.  This signal is measured in
-arbitrary units (its scale is meaningless).
-* `quidel`: Data signal based on flu lab tests, provided to us by Quidel, Inc.
-When a patient (whether at a doctor’s office, clinic, or hospital) has
-covid-like symptoms, standard practice currently is to perform a flu test to
-rule out seasonal flu (influenza), because these two diseases have similar
-symptoms. Using this lab test data, we estimate the total number of flu tests
-per medical device (a measure of testing frequency), and the percentage of flu
-tests that are *negative* (since ruling out flu leaves open another
-cause---possibly covid---for the patient's symptoms), in a given location, 
-on a given day. 
-
-The data is expected to be updated daily. You can use the
-[`covidcast_meta`](covidcast_meta.md) endpoint to get summary information about
-the ranges of the different attributes for the different data sources currently
-in the data.
-
 # The API
 
 The base URL is: https://delphi.cmu.edu/epidata/api.php
@@ -66,24 +24,17 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 | Parameter | Description | Type |
 | --- | --- | --- |
-| `data_source` | name of upstream data source (e.g., `fb-survey`, `google-survey`, `ght`, `quidel`, `doctor-visits`) | string |
+| `data_source` | name of upstream data source (e.g., `fb-survey` or `ght`; [see full list](covidcast_signals.md)) | string |
 | `signal` | name of signal derived from upstream data (see notes below) | string |
 | `time_type` | temporal resolution of the signal (e.g., `day`, `week`) | string |
 | `geo_type` | spatial resolution of the signal (e.g., `county`, `hrr`, `msa`, `dma`, `state`) | string |
 | `time_values` | time unit (e.g., date) over which underlying events happened | `list` of time values (e.g., 20200401) |
 | `geo_value` | unique code for each location, depending on `geo_type` (county -> FIPS 6-4 code, HRR -> HRR number, MSA -> CBSA code, DMA -> DMA code, state -> two-letter [state](../../labels/states.txt) code), or `*` for all | string |
 
-As of this writing, data sources have the following signals:
-* `fb-survey` `signal` values include `raw_cli`, `raw_ili`, `raw_wcli`,
-  `raw_wili`, and also four additional named with `raw_*` replaced by
-  `smoothed_*` (e.g. `smoothed_cli`, etc).
-* `google-survey` `signal` values include `raw_cli` and `smoothed_cli`.
-* `ght` `signal` values include `raw_search` and `smoothed_search`.
-* `quidel` `signal` values include `smoothed_pct_negative` and `smoothed_tests_per_device`.
-* `doctor-visits` `signal` values include `smoothed_cli`.
-
-More generally, the current set of signals available for each data source is
-returned by the [`covidcast_meta`](covidcast_meta.md) endpoint.
+The current set of signals available for each data source is returned by the
+[`covidcast_meta`](covidcast_meta.md) endpoint. A separate [COVIDcast signals
+document](covidcast_signals.md) describes all available signals and sources in
+detail.
 
 ## Response
 
@@ -95,9 +46,115 @@ returned by the [`covidcast_meta`](covidcast_meta.md) endpoint.
 | `epidata[].time_value` | time unit (e.g. date) over which underlying events happened | integer |
 | `epidata[].direction` | trend classifier (+1 -> increasing, 0 steady or not determined, -1 -> decreasing) | integer |
 | `epidata[].value` | value (statistic) derived from the underlying data source | float |
-| `epidata[].stderr` | standard error of the statistic with respect to its sampling distribution, `null` when not applicable | float |
+| `epidata[].stderr` | approximate standard error of the statistic with respect to its sampling distribution, `null` when not applicable | float |
 | `epidata[].sample_size` | number of "data points" used in computing the statistic, `null` when not applicable | float |
 | `message` | `success` or error message | string |
+
+**Note:** `result` code 2, "too many results", means that the number of results
+you requested was greater than the API's maximum results limit. Results will be
+returned, but not all of the results you requested. API clients should check the
+results code, and should consider breaking up their requests across multiple API
+calls, such as by breaking a request for a large time interval into multiple
+requests for smaller time intervals.
+
+
+# Geographic Coding
+
+The `geo_value` field specifies the geographic location whose estimate is being
+reported. County-level estimates are reported by the county FIPS code. All FIPS
+codes are reported using pre-2015 FIPS code assignments, *except* for FIPS codes
+used by the `jhu-csse` source. These are reported exactly as JHU reports their
+data; see below.
+
+Other possible `geo_type`s include:
+
+* `hrr`: Hospital Referral Region, units designed to represent regional health
+  care markets. There are roughly 300 HRRs in the United States. A map is
+  available
+  [here](https://hub.arcgis.com/datasets/fedmaps::hospital-referral-regions).
+* `msa`: Metropolitan Statistical Area, as defined by the Office of Management
+  and Budget. The Census Bureau provides [detailed definitions of these
+  regions](https://www.census.gov/programs-surveys/metro-micro/about.html).
+* `dma`: Designated Market Areas represent geographic regions with their own
+  media markets, as [defined by
+  Nielsen](https://www.nielsen.com/us/en/intl-campaigns/dma-maps/).
+* `state`: The 50 states.
+
+Some signals are not available for all `geo_type`s, since they may be reported
+from their original sources with different levels of aggregation.
+
+## FIPS Exceptions in JHU Data
+
+At the County (FIPS) level, we report the data _exactly_ as JHU reports their
+data, to prevent confusing public consumers of the data. JHU FIPS reporting
+matches that used in the other signals, except for the following exceptions.
+
+### New York City
+New York City comprises of five boroughs:
+
+|Borough Name       |County Name        |FIPS Code      |
+|-------------------|-------------------|---------------|
+|Manhattan          |New York County    |36061          |
+|The Bronx          |Bronx County       |36005          |
+|Brooklyn           |Kings County       |36047          |
+|Queens             |Queens County      |36081          |
+|Staten Island      |Richmond County    |36085          |
+
+**Data from all five boroughs are reported under New York County,
+FIPS Code 36061.**  The other four boroughs are included in the dataset
+and show up in our API, but they should be uniformly zero.
+
+All NYC counts are mapped to the MSA with CBSA ID 35620, which encompasses all
+five boroughs. All NYC counts are mapped to HRR 303, which intersects all five
+boroughs (297 also intersects the Bronx, 301 also intersects Brooklyn and
+Queens, but absent additional information, we chose to leave all counts in 303).
+
+### Kansas City, Missouri
+Kansas City intersects the following four counties, which themselves report
+confirmed case and deaths data:
+
+|County Name        |FIPS Code      |
+|-------------------|---------------|
+|Jackson County     |29095          |
+|Platte County      |29165          |
+|Cass County        |29037          |
+|Clay County        |29047          |
+
+**Data from Kansas City is given its own dedicated line, with FIPS
+code 70003.**  This is how JHU encodes their data.  However, the data in
+the four counties that Kansas City intersects is not necessarily zero.
+
+For the mapping to HRR and MSA, the counts for Kansas City are dispersed to
+these four counties in equal proportions.
+
+### Dukes and Nantucket Counties, Massachusetts
+**The counties of Dukes and Nantucket report their figures together,
+and we (like JHU) list them under FIPS Code 70002.**  Here are the FIPS codes
+for the individual counties:
+
+|County Name        |FIPS Code      |
+|-------------------|---------------|
+|Dukes County       |25007          |
+|Nantucket County   |25019          |
+
+For the mapping to HRR and MSA, the counts for Dukes and Nantucket are
+dispersed to the two counties in equal proportions.
+
+The data in the individual counties is expected to be zero.
+
+### Mismatched FIPS Codes
+Finally, there are two FIPS codes that were changed in 2015 (see the [Census
+Bureau
+documentation](https://www.census.gov/programs-surveys/geography/technical-documentation/county-changes.html),
+leading to mismatch between us and JHU. We report the data using the FIPS code
+used by JHU, again to promote consistency and avoid confusion by external users
+of the dataset. For the mapping to MSA, HRR, these two counties are included
+properly.
+
+|County Name        |State          |"Our" FIPS         |JHU FIPS       |
+|-------------------|---------------|-------------------|---------------|
+|Oglala Lakota      |South Dakota   |46113              |46102          |
+|Kusilvak           |Alaska         |02270              |02158          |
 
 # Example URLs
 
