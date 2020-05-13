@@ -17,7 +17,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 ## Data Signals
 
-Currently, there are 6 data sources available in the API: `doctor-vists`, 
+Currently, there are 6 data sources available in the API: `doctor-visits`,
 `fb-survey`, `google-survey`, `ght`, `quidel`, and `jhu-csse`. Each of these
 data sources has several associated data signals: for example, for
 `doctor-visits`, includes `smoothed_cli` and `smoothed_adj_cli`.  A separate
@@ -50,7 +50,7 @@ The current set of signals available for each data source is returned by the
 | `epidata` | list of results, 1 per geo/time pair | array of objects |
 | `epidata[].geo_value` | location code, depending on `geo_type` | string |
 | `epidata[].time_value` | time unit (e.g. date) over which underlying events happened | integer |
-| `epidata[].direction` | trend classifier (+1 -> increasing, 0 steady or not determined, -1 -> decreasing) | integer |
+| `epidata[].direction` | trend classifier (+1 -> increasing, 0 -> steady or not determined, -1 -> decreasing) | integer |
 | `epidata[].value` | value (statistic) derived from the underlying data source | float |
 | `epidata[].stderr` | approximate standard error of the statistic with respect to its sampling distribution, `null` when not applicable | float |
 | `epidata[].sample_size` | number of "data points" used in computing the statistic, `null` when not applicable | float |
