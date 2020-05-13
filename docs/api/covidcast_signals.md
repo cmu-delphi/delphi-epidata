@@ -74,6 +74,10 @@ COVID-like illness*. Note that this is tracking a different quantity than the
 surveys through Facebook, and (unsurprisingly) the estimates here tend to be
 much larger.
 
+These surveys were run daily until May 15, 2020. After that date, new national
+data will not be collected regularly, although the surveys may be deployed in
+specific geographical areas as needed to support forecasting efforts.
+
 | Signal | Description |
 | --- | --- |
 | `raw_cli` | Estimated fraction of people who know someone in their community with COVID-like illness | 
@@ -85,7 +89,9 @@ Data source based on Google searches, provided to us by Google Health
 Trends.  Using this search data, we estimate the volume of COVID-related
 searches in a given location, on a given day.  This signal is measured in
 arbitrary units (its scale is meaningless); larger numbers represent higher
-numbers of COVID-related searches.
+numbers of COVID-related searches. Note that this source is not available for
+individual counties, as it is reported only for larger geographical areas, and
+so county estimates are not available from the API.
 
 | Signal | Description |
 | --- | --- |
@@ -102,6 +108,9 @@ estimate the total number of flu tests per medical device (a measure of testing
 frequency), and the percentage of flu tests that are *negative* (since ruling
 out flu leaves open another cause---possibly covid---for the patient's
 symptoms), in a given location, on a given day.
+
+The number of flu tests conducted in individual counties can be quite small, so
+we do not report these signals at the county level.
 
 | Signal | Description |
 | --- | --- |
@@ -128,6 +137,21 @@ University.
 Our signals here are taken directly from the JHU CSSE 
 [COVID-19 GitHub repository](https://github.com/CSSEGISandData/COVID-19) without 
 filtering, smoothing, or changes.
+
+### `combination`
+
+This source included signals created as statistical combinations of the other
+sources; it is not a primary data source, but instead is calculated using
+signals from the other sources above.
+
+* `nmf_day_doc_fbs_ght`: This signal uses a rank-1 approximation, from a
+  nonnegative matrix factorization approach, to identify an underlying signal
+  that best reconstructs the Doctor Visits, Surveys, and Search Trends
+  indicators. It does not include official reports (cases and deaths from the
+  `jhu-csse` source). Higher values of the combined signal correspond to higher
+  values of the other indicators, but the scale (units) of the combination is
+  arbitrary. Note that the Search Trends source is not available at the county
+  level, so county values of this signal do not use it.
 
 ## COVIDcast Map Signals
 
