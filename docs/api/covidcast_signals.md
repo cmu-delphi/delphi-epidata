@@ -74,6 +74,12 @@ COVID-like illness*. Note that this is tracking a different quantity than the
 surveys through Facebook, and (unsurprisingly) the estimates here tend to be
 much larger.
 
+The survey sampled from all counties with greater than 100,000 population, along
+with a separate random sample from each state. This means that the megacounties
+(discussed in the [COVIDcast API documentation](covidcast.md)) are always the
+counties with populations smaller than 100,000, and megacounty estimates are
+created by combining the state-level survey with the observed county surveys.
+
 These surveys were run daily until May 15, 2020. After that date, new national
 data will not be collected regularly, although the surveys may be deployed in
 specific geographical areas as needed to support forecasting efforts.

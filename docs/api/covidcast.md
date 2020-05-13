@@ -96,6 +96,8 @@ example, the survey sources rely on survey responses each day, and many counties
 may have comparatively few survey responses. We do not report individual county
 estimates when small sample sizes would make estimates unreliable or would allow
 identification of respondents, violating privacy and confidentiality agreements.
+Additional considerations for specific signals are discussed in the [source and
+signal documentation](covidcast_signals.md).
 
 In each state, we collect together the data from all counties with insufficient
 data to be individually reported. These counties are combined into a single
