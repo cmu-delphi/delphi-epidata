@@ -16,11 +16,8 @@ COVID-related doctor's visits in a given location, on a given day.
 
 | Signal | Description |
 | --- | --- |
-| `smoothed_cli` | Estimated fraction of outpatient doctor visits primarily
- about COVID-related symptoms, based on data from healthcare partners, smoothed 
- in time using a Gaussian linear smoother | 
-| `smoothed_adj_cli` | Same, but with systematic day-of-week effects removed (so
-that every day "looks like" a Monday) | 
+| `smoothed_cli` | Estimated fraction of outpatient doctor visits primarily about COVID-related symptoms, based on data from healthcare partners, smoothed in time using a Gaussian linear smoother | 
+| `smoothed_adj_cli` | Same, but with systematic day-of-week effects removed (so that every day "looks like" a Monday)| 
 
 Day-of-week effects are removed by fitting a model to all data in the United
 States; the model includes a fixed effect for each day of the week, except
@@ -49,14 +46,10 @@ day.
 
 | Signal | Description |
 | --- | --- |
-| `raw_cli` | Estimated fraction of people with COVID-like illness, with no
- smoothing or survey weighting | 
-| `raw_ili` | Estimated fraction of people with influenza-like illness, with no
- smoothing or survey weighting | 
-| `raw_wcli` | Estimated fraction of people with COVID-like illness; adjusted
- using survey weights | 
-| `raw_wili` | Estimated fraction of people with influenza-like illness;
- adjusted using survey weights | 
+| `raw_cli` | Estimated fraction of people with COVID-like illness, with no smoothing or survey weighting | 
+| `raw_ili` | Estimated fraction of people with influenza-like illness, with no smoothing or survey weighting | 
+| `raw_wcli` | Estimated fraction of people with COVID-like illness; adjusted using survey weights | 
+| `raw_wili` | Estimated fraction of people with influenza-like illness; adjusted using survey weights | 
 
 The survey weights, provided by Facebook, are intended to make the sample
 representative of the US population, according to the state, age, and gender of
@@ -84,10 +77,8 @@ much larger.
 
 | Signal | Description |
 | --- | --- |
-| `raw_cli` | Estimated fraction of people who know someone in their community
- with COVID-like illness | 
-| `smoothed_cli` | Estimated fraction of people who know someone in their
- community with COVID-like illness, smoothed in time | 
+| `raw_cli` | Estimated fraction of people who know someone in their community with COVID-like illness | 
+| `smoothed_cli` | Estimated fraction of people who know someone in their community with COVID-like illness, smoothed in time | 
 
 ### `ght`
 
@@ -99,11 +90,8 @@ numbers of COVID-related searches.
 
 | Signal | Description |
 | --- | --- |
-| `raw_search` | Google search volume for COVID-related searches, in arbitrary
- units that are normalized for population | 
-| `smoothed_search` | Google search volume for COVID-related searches, in
- arbitrary units that are normalized for population, smoothed in time using a
- local linear smoother with Gaussian kernel | 
+| `raw_search` | Google search volume for COVID-related searches, in arbitrary units that are normalized for population | 
+| `smoothed_search` | Google search volume for COVID-related searches, in arbitrary units that are normalized for population, smoothed in time using a local linear smoother with Gaussian kernel | 
 
 ### `quidel`
 
@@ -118,11 +106,9 @@ symptoms), in a given location, on a given day.
 
 | Signal | Description |
 | --- | --- |
-| `raw_pct_negative` | The fraction of flu tests that are negative, suggesting
- the patient's illness has another cause, possibly COVID-19 | 
+| `raw_pct_negative` | The fraction of flu tests that are negative, suggesting the patient's illness has another cause, possibly COVID-19 | 
 | `smoothed_pct_negative` | Same as above, but smoothed in time |
-| `raw_tests_per_device` | The number of flu tests conducted by each testing
- device; measures volume of testing | 
+| `raw_tests_per_device` | The number of flu tests conducted by each testing device; measures volume of testing | 
 | `smoothed_tests_per_device` | Same as above, but smoothed in time |
 
 ### `jhu-csse`
@@ -135,13 +121,10 @@ University.
 | --- | --- |
 | `confirmed_cumulative_num` | Cumulative number of confirmed COVID-19 cases | 
 | `confirmed_incidence_num` | Number of new confirmed COVID-19 cases, daily | 
-| `confirmed_incidence_prop` | Number of new confirmed COVID-19 cases per
- 100,000 population, daily | 
-| `deaths_cumulative_num` | Cumulative number of confirmed deaths due to
- COVID-19 | 
+| `confirmed_incidence_prop` | Number of new confirmed COVID-19 cases per 100,000 population, daily | 
+| `deaths_cumulative_num` | Cumulative number of confirmed deaths due to COVID-19 | 
 | `deaths_incidence_num` | Number of new confirmed deaths due to COVID-19, daily |
-| `deaths_incidence_prop` | Number of new confirmed deaths due to COVID-19 per
- 100,000 population, daily |
+| `deaths_incidence_prop` | Number of new confirmed deaths due to COVID-19 per 100,000 population, daily |
 
 Our signals here are taken directly from the JHU CSSE 
 [COVID-19 GitHub repository](https://github.com/CSSEGISandData/COVID-19) without 
