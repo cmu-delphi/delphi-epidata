@@ -3,8 +3,7 @@
 Delphi's COVID-19 Surveillance Streams data includes the following data sources.
 Data from these sources is expected to be updated daily. You can use the
 [`covidcast_meta`](covidcast_meta.md) API endpoint to get summary information
-about the ranges of the different attributes for the different data sources
-currently in the data.
+about the ranges of the different attributes for the different data sources.
 
 ## Sources and Signals
 
