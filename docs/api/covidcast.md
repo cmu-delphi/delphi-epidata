@@ -1,11 +1,8 @@
 # About
 
 This is the documentation of the API for accessing the Delphi's COVID-19
-Surveillance Streams (`covidcast`) data source of the
-[Delphi](https://delphi.cmu.edu/)'s epidemiological data. 
-
-For an interactive visualization of many of these data signals, visit our 
-[**COVIDcast site**](https://covidcast.cmu.edu).
+Surveillance Streams (`covidcast`) endpoint of
+[Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 
 General topics not specific to any particular data source are discussed in the
 [API overview](README.md). Such topics include:
@@ -18,13 +15,24 @@ The base URL is: https://delphi.cmu.edu/epidata/api.php
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
+## Data Signals
+
+Currently, there are 6 data sources available in the API: `doctor-vists`, 
+`fb-survey`, `google-survey`, `ght`, `quidel`, and `jhu-csse`. Each of these
+data sources has several associated data signals: for example, for
+`doctor-visits`, includes `smoothed_cli` and `smoothed_adj_cli`.  A separate
+[COVIDcast signals document](covidcast_signals.md) describes all available
+sources and signals. Furthermore, our
+[COVIDcast site](https://covidcast.cmu.edu) provides an interactive
+visualization of a select set of these data signals.
+
 ## Parameters
 
 ### Required
 
 | Parameter | Description | Type |
 | --- | --- | --- |
-| `data_source` | name of upstream data source (e.g., `fb-survey` or `ght`; [see full list](covidcast_signals.md)) | string |
+| `data_source` | name of upstream data source (e.g., `doctor-visits` or `fb-survey`; [see full list](covidcast_signals.md)) | string |
 | `signal` | name of signal derived from upstream data (see notes below) | string |
 | `time_type` | temporal resolution of the signal (e.g., `day`, `week`) | string |
 | `geo_type` | spatial resolution of the signal (e.g., `county`, `hrr`, `msa`, `dma`, `state`) | string |
@@ -32,9 +40,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | `geo_value` | unique code for each location, depending on `geo_type` (county -> FIPS 6-4 code, HRR -> HRR number, MSA -> CBSA code, DMA -> DMA code, state -> two-letter [state](../../labels/states.txt) code), or `*` for all | string |
 
 The current set of signals available for each data source is returned by the
-[`covidcast_meta`](covidcast_meta.md) endpoint. A separate [COVIDcast signals
-document](covidcast_signals.md) describes all available signals and sources in
-detail.
+[`covidcast_meta`](covidcast_meta.md) endpoint. 
 
 ## Response
 
@@ -110,6 +116,7 @@ boroughs (297 also intersects the Bronx, 301 also intersects Brooklyn and
 Queens, but absent additional information, we chose to leave all counts in 303).
 
 ### Kansas City, Missouri
+
 Kansas City intersects the following four counties, which themselves report
 confirmed case and deaths data:
 
@@ -128,6 +135,7 @@ For the mapping to HRR and MSA, the counts for Kansas City are dispersed to
 these four counties in equal proportions.
 
 ### Dukes and Nantucket Counties, Massachusetts
+
 **The counties of Dukes and Nantucket report their figures together,
 and we (like JHU) list them under FIPS Code 70002.**  Here are the FIPS codes
 for the individual counties:
@@ -143,6 +151,7 @@ dispersed to the two counties in equal proportions.
 The data in the individual counties is expected to be zero.
 
 ### Mismatched FIPS Codes
+
 Finally, there are two FIPS codes that were changed in 2015 (see the [Census
 Bureau
 documentation](https://www.census.gov/programs-surveys/geography/technical-documentation/county-changes.html),
@@ -159,6 +168,7 @@ properly.
 # Example URLs
 
 ### Delphi's COVID-19 Surveillance Streams from Facebook Survey CLI on 2020-04-06 to 2010-04-10 (county 06001)
+	
 https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&signal=raw_cli&time_type=day&geo_type=county&time_values=20200406-20200410&geo_value=06001
 
 ```json
@@ -180,6 +190,7 @@ https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&si
 ```
 
 ### Delphi's COVID-19 Surveillance Streams from Facebook Survey CLI on 2020-04-06 (all counties)
+	
 https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&signal=raw_cli&time_type=day&geo_type=county&time_values=20200406&geo_value=*
 
 # Code Samples
