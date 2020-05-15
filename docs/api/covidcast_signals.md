@@ -146,9 +146,8 @@ filtering, smoothing, or changes.
 
 ### `combination`
 
-This source included signals created as statistical combinations of the other
-sources; it is not a primary data source, but instead is calculated using
-signals from the other sources above.
+This source provides signals which are statistical combinations of the other
+sources above. It is not a primary data source.
 
 * `nmf_day_doc_fbs_ght`: This signal uses a rank-1 approximation, from a
   nonnegative matrix factorization approach, to identify an underlying signal
