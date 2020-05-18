@@ -89,6 +89,30 @@ Other possible `geo_type`s include:
 Some signals are not available for all `geo_type`s, since they may be reported
 from their original sources with different levels of aggregation.
 
+## Small Sample Sizes and "Megacounties"
+
+Most sources do not report the same amount of data for every county; for
+example, the survey sources rely on survey responses each day, and many counties
+may have comparatively few survey responses. We do not report individual county
+estimates when small sample sizes would make estimates unreliable or would allow
+identification of respondents, violating privacy and confidentiality agreements.
+Additional considerations for specific signals are discussed in the [source and
+signal documentation](covidcast_signals.md).
+
+In each state, we collect together the data from all counties with insufficient
+data to be individually reported. These counties are combined into a single
+"megacounty". For example, if only five counties in a state have sufficient data
+to be reported, the remaining counties will form one megacounty representing the
+rest of that state. As sample sizes vary from day to day, the counties composing
+the megacounty can vary daily; the geographic area covered by the megacounty is
+simply the state minus the counties reported for that day.
+
+Megacounty estimates are reported with a FIPS code ending with 000, which is
+never a FIPS code for a real county. For example, megacounty estimates for the
+state of New York are reported with FIPS code 36000, since 36 is the FIPS code
+prefix for New York.
+
+
 ## FIPS Exceptions in JHU Data
 
 At the County (FIPS) level, we report the data _exactly_ as JHU reports their
