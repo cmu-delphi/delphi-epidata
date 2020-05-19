@@ -103,6 +103,13 @@ frequency), and the percentage of flu tests that are *negative* (since ruling
 out flu leaves open another cause---possibly covid---for the patient's
 symptoms), in a given location, on a given day.
 
+The number of flu tests conducted in individual counties can be quite small, so
+we do not report these signals at the county level.
+
+The flu test data is no longer updated as of May 19, 2020, as the number of flu
+tests conducted during the summer (outside of the normal flu season) is quite
+small. The data may be updated again when the Winter 2020 flu season begins.
+
 | Signal | Description |
 | --- | --- |
 | `raw_pct_negative` | The fraction of flu tests that are negative, suggesting the patient's illness has another cause, possibly COVID-19 | 
