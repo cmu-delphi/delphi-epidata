@@ -17,14 +17,14 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 ## Data Signals
 
-Currently, there are 6 data sources available in the API: `doctor-visits`,
-`fb-survey`, `google-survey`, `ght`, `quidel`, and `jhu-csse`. Each of these
-data sources has several associated data signals: for example, for
-`doctor-visits`, includes `smoothed_cli` and `smoothed_adj_cli`.  A separate
-[COVIDcast signals document](covidcast_signals.md) describes all available
-sources and signals. Furthermore, our
-[COVIDcast site](https://covidcast.cmu.edu) provides an interactive
-visualization of a select set of these data signals.
+Currently, there are 7 data sources available in the API: `doctor-visits`,
+`fb-survey`, `google-survey`, `ght`, `quidel`, `indicator-combination`, and
+`jhu-csse`. Each of these data sources has several associated data signals: for
+example, for `doctor-visits`, includes `smoothed_cli` and `smoothed_adj_cli`.  A
+separate [COVIDcast signals document](covidcast_signals.md) describes all
+available sources and signals. Furthermore, our [COVIDcast
+site](https://covidcast.cmu.edu) provides an interactive visualization of a
+select set of these data signals.
 
 ## Parameters
 
