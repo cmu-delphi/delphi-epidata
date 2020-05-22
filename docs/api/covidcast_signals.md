@@ -71,7 +71,7 @@ counties (and MSAs) than the raw signals.
 Data source based on Google-run symptom surveys, through publisher websites,
 their Opinions Reward app, and similar applications. Respondents can opt to skip
 the survey and complete a different one if they prefer not to answer. The survey
-is just one question long, and aska "Do you know someone in your community who
+is just one question long, and asks "Do you know someone in your community who
 is sick (fever, along with cough, or shortness of breath, or difficulty
 breathing) right now?" Using this survey data, we estimate the percentage of
 people in a given location, on a given day, that *know somebody who has a 
