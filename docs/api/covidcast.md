@@ -1,4 +1,4 @@
-# About
+# Delphi's COVIDcast API
 
 This is the documentation of the API for accessing the Delphi's COVID-19
 Surveillance Streams (`covidcast`) endpoint of
@@ -9,13 +9,13 @@ General topics not specific to any particular data source are discussed in the
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
 
-# The API
+## The API
 
 The base URL is: https://delphi.cmu.edu/epidata/api.php
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
-## Data Signals
+### Data Signals
 
 Currently, there are 6 data sources available in the API: `doctor-visits`,
 `fb-survey`, `google-survey`, `ght`, `quidel`, and `jhu-csse`. Each of these
@@ -26,9 +26,9 @@ sources and signals. Furthermore, our
 [COVIDcast site](https://covidcast.cmu.edu) provides an interactive
 visualization of a select set of these data signals.
 
-## Parameters
+### Parameters
 
-### Required
+#### Required
 
 | Parameter | Description | Type |
 | --- | --- | --- |
@@ -42,7 +42,7 @@ visualization of a select set of these data signals.
 The current set of signals available for each data source is returned by the
 [`covidcast_meta`](covidcast_meta.md) endpoint. 
 
-## Response
+### Response
 
 | Field | Description | Type |
 | --- | --- | --- |
@@ -64,7 +64,7 @@ calls, such as by breaking a request for a large time interval into multiple
 requests for smaller time intervals.
 
 
-# Geographic Coding
+## Geographic Coding
 
 The `geo_value` field specifies the geographic location whose estimate is being
 reported. County-level estimates are reported by the county FIPS code. All FIPS
@@ -89,7 +89,7 @@ Other possible `geo_type`s include:
 Some signals are not available for all `geo_type`s, since they may be reported
 from their original sources with different levels of aggregation.
 
-## Small Sample Sizes and "Megacounties"
+### Small Sample Sizes and "Megacounties"
 
 Most sources do not report the same amount of data for every county; for
 example, the survey sources rely on survey responses each day, and many counties
@@ -113,13 +113,13 @@ state of New York are reported with FIPS code 36000, since 36 is the FIPS code
 prefix for New York.
 
 
-## FIPS Exceptions in JHU Data
+### FIPS Exceptions in JHU Data
 
 At the County (FIPS) level, we report the data _exactly_ as JHU reports their
 data, to prevent confusing public consumers of the data. JHU FIPS reporting
 matches that used in the other signals, except for the following exceptions.
 
-### New York City
+#### New York City
 New York City comprises of five boroughs:
 
 |Borough Name       |County Name        |FIPS Code      |
@@ -139,7 +139,7 @@ five boroughs. All NYC counts are mapped to HRR 303, which intersects all five
 boroughs (297 also intersects the Bronx, 301 also intersects Brooklyn and
 Queens, but absent additional information, we chose to leave all counts in 303).
 
-### Kansas City, Missouri
+#### Kansas City, Missouri
 
 Kansas City intersects the following four counties, which themselves report
 confirmed case and deaths data:
@@ -158,7 +158,7 @@ the four counties that Kansas City intersects is not necessarily zero.
 For the mapping to HRR and MSA, the counts for Kansas City are dispersed to
 these four counties in equal proportions.
 
-### Dukes and Nantucket Counties, Massachusetts
+#### Dukes and Nantucket Counties, Massachusetts
 
 **The counties of Dukes and Nantucket report their figures together,
 and we (like JHU) list them under FIPS Code 70002.**  Here are the FIPS codes
@@ -174,7 +174,7 @@ dispersed to the two counties in equal proportions.
 
 The data in the individual counties is expected to be zero.
 
-### Mismatched FIPS Codes
+#### Mismatched FIPS Codes
 
 Finally, there are two FIPS codes that were changed in 2015 (see the [Census
 Bureau
@@ -189,7 +189,7 @@ properly.
 |Oglala Lakota      |South Dakota   |46113              |46102          |
 |Kusilvak           |Alaska         |02270              |02158          |
 
-# Example URLs
+## Example URLs
 
 ### Delphi's COVID-19 Surveillance Streams from Facebook Survey CLI on 2020-04-06 to 2010-04-10 (county 06001)
 	
@@ -217,10 +217,11 @@ https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&si
 	
 https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&signal=raw_cli&time_type=day&geo_type=county&time_values=20200406&geo_value=*
 
-# Code Samples
 
 Libraries are available for [CoffeeScript](../../src/client/delphi_epidata.coffee), [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
 The following samples show how to import the library and fetch Delphi's COVID-19 Surveillance Streams from Facebook Survey CLI for county 06001 and days `20200401` and `20200405-20200414` (11 days total).
+## Code Samples
+
 
 ### CoffeeScript (in Node.js)
 
