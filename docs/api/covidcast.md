@@ -178,7 +178,7 @@ The data in the individual counties is expected to be zero.
 
 Finally, there are two FIPS codes that were changed in 2015 (see the [Census
 Bureau
-documentation](https://www.census.gov/programs-surveys/geography/technical-documentation/county-changes.html),
+documentation](https://www.census.gov/programs-surveys/geography/technical-documentation/county-changes.html)),
 leading to mismatch between us and JHU. We report the data using the FIPS code
 used by JHU, again to promote consistency and avoid confusion by external users
 of the dataset. For the mapping to MSA, HRR, these two counties are included
@@ -217,11 +217,17 @@ https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&si
 	
 https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&signal=raw_cli&time_type=day&geo_type=county&time_values=20200406&geo_value=*
 
-
-Libraries are available for [CoffeeScript](../../src/client/delphi_epidata.coffee), [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
-The following samples show how to import the library and fetch Delphi's COVID-19 Surveillance Streams from Facebook Survey CLI for county 06001 and days `20200401` and `20200405-20200414` (11 days total).
 ## Code Samples
 
+Libraries are available for
+[CoffeeScript](https://github.com/cmu-delphi/delphi-epidata/blob/master/src/client/delphi_epidata.coffee),
+[JavaScript](https://github.com/cmu-delphi/delphi-epidata/blob/master/src/client/delphi_epidata.js),
+[Python](https://github.com/cmu-delphi/delphi-epidata/blob/master/src/client/delphi_epidata.py),
+and
+[R](https://github.com/cmu-delphi/delphi-epidata/blob/master/src/client/delphi_epidata.R).
+The following samples show how to import the library and fetch Delphi's COVID-19
+Surveillance Streams from Facebook Survey CLI for county 06001 and days
+`20200401` and `20200405-20200414` (11 days total).
 
 ### CoffeeScript (in Node.js)
 
@@ -251,7 +257,7 @@ Epidata.covidcast(callback, 'fb-survey', 'raw_cli', 'day', 'county', [20200401, 
 
 ### Python
 
-Optionally install the package using pip(env):
+Optionally install the [package from PyPI](https://pypi.org/project/delphi-epidata/) using pip(env):
 ````bash
 pip install delphi-epidata
 ````
