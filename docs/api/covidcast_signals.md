@@ -5,8 +5,8 @@ Data from these sources is expected to be updated daily. You can use the
 [`covidcast_meta`](covidcast_meta.md) API endpoint to get summary information
 about the ranges of the different attributes for the different data sources.
 
-The API for retrieving data from these sources is described in the [COVIDcast
-API endpoint documentation](covidcast.md).
+The API for retrieving data from these sources is described in the
+[COVIDcast API endpoint documentation](covidcast.md).
 
 ## Sources and Signals
 
@@ -18,7 +18,7 @@ COVID-related doctor's visits in a given location, on a given day.
 
 | Signal | Description |
 | --- | --- |
-| `smoothed_cli` | Estimated fraction of outpatient doctor visits primarily about COVID-related symptoms, based on data from healthcare partners, smoothed in time using a Gaussian linear smoother | 
+| `smoothed_cli` | Estimated percentage of outpatient doctor visits primarily about COVID-related symptoms, based on data from healthcare partners, smoothed in time using a Gaussian linear smoother |
 | `smoothed_adj_cli` | Same, but with systematic day-of-week effects removed (so that every day "looks like" a Monday)| 
 
 Day-of-week effects are removed by fitting a model to all data in the United
@@ -48,12 +48,12 @@ day.
 
 | Signal | Description |
 | --- | --- |
-| `raw_cli` | Estimated fraction of people with COVID-like illness, with no smoothing or survey weighting | 
-| `raw_ili` | Estimated fraction of people with influenza-like illness, with no smoothing or survey weighting | 
-| `raw_wcli` | Estimated fraction of people with COVID-like illness; adjusted using survey weights | 
-| `raw_wili` | Estimated fraction of people with influenza-like illness; adjusted using survey weights | 
-| `raw_hh_cmnty_cli` | Estimated fraction of people reporting COVID-like illness in their local community, including their household, with no smoothing or survey weighting |
-| `raw_nohh_cmnty_cli` | Estimated fraction of people reporting COVID-like illness in their local community, not including their household, with no smoothing or survey weighting |
+| `raw_cli` | Estimated percentage of people with COVID-like illness, with no smoothing or survey weighting |
+| `raw_ili` | Estimated percentage of people with influenza-like illness, with no smoothing or survey weighting |
+| `raw_wcli` | Estimated percentage of people with COVID-like illness; adjusted using survey weights |
+| `raw_wili` | Estimated percentage of people with influenza-like illness; adjusted using survey weights |
+| `raw_hh_cmnty_cli` | Estimated percentage of people reporting COVID-like illness in their local community, including their household, with no smoothing or survey weighting |
+| `raw_nohh_cmnty_cli` | Estimated percentage of people reporting COVID-like illness in their local community, not including their household, with no smoothing or survey weighting |
 
 The survey weights, provided by Facebook, are intended to make the sample
 representative of the US population, according to the state, age, and gender of
@@ -91,8 +91,8 @@ specific geographical areas as needed to support forecasting efforts.
 
 | Signal | Description |
 | --- | --- |
-| `raw_cli` | Estimated fraction of people who know someone in their community with COVID-like illness | 
-| `smoothed_cli` | Estimated fraction of people who know someone in their community with COVID-like illness, smoothed in time | 
+| `raw_cli` | Estimated percentage of people who know someone in their community with COVID-like illness |
+| `smoothed_cli` | Estimated percentage of people who know someone in their community with COVID-like illness, smoothed in time |
 
 ### `ght`
 
@@ -129,7 +129,7 @@ small. The data may be updated again when the Winter 2020 flu season begins.
 
 | Signal | Description |
 | --- | --- |
-| `raw_pct_negative` | The fraction of flu tests that are negative, suggesting the patient's illness has another cause, possibly COVID-19 | 
+| `raw_pct_negative` | The percentage of flu tests that are negative, suggesting the patient's illness has another cause, possibly COVID-19 |
 | `smoothed_pct_negative` | Same as above, but smoothed in time |
 | `raw_tests_per_device` | The number of flu tests conducted by each testing device; measures volume of testing | 
 | `smoothed_tests_per_device` | Same as above, but smoothed in time |
