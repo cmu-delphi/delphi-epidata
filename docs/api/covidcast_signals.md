@@ -160,8 +160,8 @@ sources above. It is not a primary data source.
 
 * `nmf_day_doc_fbc_fbs_ght`: This signal uses a rank-1 approximation, from a
   nonnegative matrix factorization approach, to identify an underlying signal
-  that best reconstructs the Doctor Visits (`smoothed_cli`), Facebook Symptoms
-  surveys (`smoothed_cli`), Facebook Symptoms in Community surveys
+  that best reconstructs the Doctor Visits (`smoothed_adj_cli`), Facebook
+  Symptoms surveys (`smoothed_cli`), Facebook Symptoms in Community surveys
   (`smoothed_hh_cmnty_cli`), and Search Trends (`smoothed_search`) indicators.
   It does not include official reports (cases and deaths from the `jhu-csse`
   source). Higher values of the combined signal correspond to higher values of
@@ -171,7 +171,9 @@ sources above. It is not a primary data source.
 * `nmf_day_doc_fbs_ght`: This signal is calculated in the same way as
   `nmf_day_doc_fbc_fbs_ght`, but does *not* include the Symptoms in Community
   survey signal, which was not available at the time this signal was introduced.
-  This signal is deprecated and is no longer updated as of May 28, 2020.
+  It also uses `smoothed_cli` from the `doctor-visits` source instead of
+  `smoothed_adj_cli`. This signal is deprecated and is no longer updated as of
+  May 28, 2020.
 
 ## COVIDcast Map Signals
 
