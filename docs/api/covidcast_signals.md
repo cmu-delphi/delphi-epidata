@@ -33,6 +33,9 @@ several days after they occur, these signals are typically available with
 several days of lag. This means that estimates for a specific day are only
 available several days later.
 
+* Number of data revisions since 19 May 2020: 0
+* Date of last change: Never
+
 ### `fb-survey`
 
 Data source based on symptom surveys run by Carnegie Mellon. Facebook directs a 
@@ -66,6 +69,9 @@ the way in which our smoothing works, which is based on pooling data across
 successive days), these smoothed signals are generally available at many more
 counties (and MSAs) than the raw signals. 
 
+* Number of data revisions since 19 May 2020: 1
+* Date of last change: [19 May 2020](covidcast_changelog.md#fb-survey-v1.3)
+
 ### `google-survey`
 
 Data source based on Google-run symptom surveys, through publisher websites,
@@ -94,6 +100,9 @@ specific geographical areas as needed to support forecasting efforts.
 | `raw_cli` | Estimated percentage of people who know someone in their community with COVID-like illness |
 | `smoothed_cli` | Estimated percentage of people who know someone in their community with COVID-like illness, smoothed in time |
 
+* Number of data revisions since 19 May 2020: 0
+* Date of last change: Never
+
 ### `ght`
 
 Data source based on Google searches, provided to us by Google Health 
@@ -108,6 +117,9 @@ so county estimates are not available from the API.
 | --- | --- |
 | `raw_search` | Google search volume for COVID-related searches, in arbitrary units that are normalized for population | 
 | `smoothed_search` | Google search volume for COVID-related searches, in arbitrary units that are normalized for population, smoothed in time using a local linear smoother with Gaussian kernel | 
+
+* Number of data revisions since 19 May 2020: 0
+* Date of last change: Never
 
 ### `quidel`
 
@@ -134,6 +146,9 @@ small. The data may be updated again when the Winter 2020 flu season begins.
 | `raw_tests_per_device` | The number of flu tests conducted by each testing device; measures volume of testing | 
 | `smoothed_tests_per_device` | Same as above, but smoothed in time |
 
+* Number of data revisions since 19 May 2020: 0
+* Date of last change: Never
+
 ### `jhu-csse`
 
 Data source of confirmed COVID-19 cases and deaths, based on reports made
@@ -152,6 +167,9 @@ University.
 Our signals here are taken directly from the JHU CSSE 
 [COVID-19 GitHub repository](https://github.com/CSSEGISandData/COVID-19) without 
 filtering, smoothing, or changes.
+
+* Number of data revisions since 19 May 2020: 0
+* Date of last change: Never
 
 ### `indicator-combination`
 
@@ -174,6 +192,9 @@ sources above. It is not a primary data source.
   It also uses `smoothed_cli` from the `doctor-visits` source instead of
   `smoothed_adj_cli`. This signal is deprecated and is no longer updated as of
   May 28, 2020.
+
+* Number of data revisions since 19 May 2020: 0
+* Date of last change: Never
 
 ## COVIDcast Map Signals
 
