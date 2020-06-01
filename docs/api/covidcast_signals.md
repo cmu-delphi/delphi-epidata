@@ -142,10 +142,12 @@ University.
 
 | Signal | Description |
 | --- | --- |
-| `confirmed_cumulative_num` | Cumulative number of confirmed COVID-19 cases | 
+| `confirmed_cumulative_num` | Cumulative number of confirmed COVID-19 cases |
+| `confirmed_cumulative_prop` | Cumulative number of confirmed COVID-19 cases per 100,000 population |
 | `confirmed_incidence_num` | Number of new confirmed COVID-19 cases, daily | 
 | `confirmed_incidence_prop` | Number of new confirmed COVID-19 cases per 100,000 population, daily | 
-| `deaths_cumulative_num` | Cumulative number of confirmed deaths due to COVID-19 | 
+| `deaths_cumulative_num` | Cumulative number of confirmed deaths due to COVID-19 |
+| `deaths_cumulative_prop` | Cumulative number of confirmed due to COVID-19, per 100,000 population |
 | `deaths_incidence_num` | Number of new confirmed deaths due to COVID-19, daily |
 | `deaths_incidence_prop` | Number of new confirmed deaths due to COVID-19 per 100,000 population, daily |
 
