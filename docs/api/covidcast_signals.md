@@ -168,8 +168,8 @@ Our signals here are taken directly from the JHU CSSE
 [COVID-19 GitHub repository](https://github.com/CSSEGISandData/COVID-19) without 
 filtering, smoothing, or changes.
 
-* Number of data revisions since 19 May 2020: 0
-* Date of last change: Never
+* Number of data revisions since 19 May 2020: 1
+* Date of last change: [3 June 2020](covidcast_changelog.md#jhu-csse)
 
 ### `indicator-combination`
 
