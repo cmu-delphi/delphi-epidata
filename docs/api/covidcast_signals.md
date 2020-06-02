@@ -70,7 +70,7 @@ successive days), these smoothed signals are generally available at many more
 counties (and MSAs) than the raw signals. 
 
 * Number of data revisions since 19 May 2020: 1
-* Date of last change: [19 May 2020](covidcast_changelog.md#fb-survey-v1.3)
+* Date of last change: [3 June 2020](covidcast_changelog.md#fb-survey)
 
 ### `google-survey`
 
