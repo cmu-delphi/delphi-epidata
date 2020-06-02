@@ -193,8 +193,8 @@ sources above. It is not a primary data source.
   `smoothed_adj_cli`. This signal is deprecated and is no longer updated as of
   May 28, 2020.
 
-* Number of data revisions since 19 May 2020: 0
-* Date of last change: Never
+* Number of data revisions since 19 May 2020: 1
+* Date of last change: [3 June 2020](covidcast_changelog.md#indicator-combination)
 
 ## COVIDcast Map Signals
 
