@@ -151,9 +151,14 @@ University.
 | `deaths_incidence_num` | Number of new confirmed deaths due to COVID-19, daily |
 | `deaths_incidence_prop` | Number of new confirmed deaths due to COVID-19 per 100,000 population, daily |
 
-Our signals here are taken directly from the JHU CSSE 
-[COVID-19 GitHub repository](https://github.com/CSSEGISandData/COVID-19) without 
-filtering, smoothing, or changes.
+Our signals here are taken directly from the JHU CSSE [COVID-19 GitHub
+repository](https://github.com/CSSEGISandData/COVID-19) without filtering,
+smoothing, or changes. **Note:** JHU's data reports cumulative cases and deaths,
+so our incidence signals are calculated by subtracting each day's cumulative
+count from the previous day. Since cumulative figures are sometimes corrected or
+amended by health authorities, this can sometimes result in negative incidence.
+This should be interpreted purely as an artifact of data reporting and
+correction.
 
 ### `indicator-combination`
 
