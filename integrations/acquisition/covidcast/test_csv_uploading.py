@@ -82,6 +82,11 @@ class CsvUploadingTests(unittest.TestCase):
     with open(source_receiving_dir + '/hello.csv', 'w') as f:
       f.write('file name is wrong\n')
 
+    # invalid
+    with open(source_receiving_dir + '/20200419_state_wip_really_long_name_that_will_get_truncated.csv', 'w') as f:
+      f.write('geo_id,val,se,sample_size\n')
+      f.write('pa,100,5.4,624\n')
+
     # upload CSVs
     args = MagicMock(data_dir=data_dir)
     main(args)
@@ -160,6 +165,16 @@ class CsvUploadingTests(unittest.TestCase):
       'message': 'success',
     })
 
+    # request CSV data from the API on the long-named signal
+    response = Epidata.covidcast(
+      'src-name', 'wip_really_long_name_that_will_g', 'day', 'state', 20200419, '*')
+
+    # verify data matches the CSV
+    # if the CSV failed correctly there should be no results
+    self.assertEqual(response, {
+      'result': -2,
+      'message': 'no results',
+    })
 
     # verify timestamps and default values are reasonable
     self.cur.execute('select timestamp1, timestamp2, direction from covidcast')
