@@ -52,8 +52,14 @@ day.
 | `raw_ili` | Estimated percentage of people with influenza-like illness, with no smoothing or survey weighting |
 | `raw_wcli` | Estimated percentage of people with COVID-like illness; adjusted using survey weights |
 | `raw_wili` | Estimated percentage of people with influenza-like illness; adjusted using survey weights |
-| `raw_hh_cmnty_cli` | Estimated percentage of people reporting COVID-like illness in their local community, including their household, with no smoothing or survey weighting |
-| `raw_nohh_cmnty_cli` | Estimated percentage of people reporting COVID-like illness in their local community, not including their household, with no smoothing or survey weighting |
+| `raw_hh_cmnty_cli` | Estimated percentage of people reporting illness in their local community, including their household, with no smoothing or survey weighting |
+| `raw_nohh_cmnty_cli` | Estimated percentage of people reporting illness in their local community, not including their household, with no smoothing or survey weighting |
+
+Note that for `raw_hh_cmnty_cli` and `raw_nohh_cmnty_cli`, the illnesses
+included are broader: the survey asks if the respondent knows anyone with fever,
+along with sore throat, cough, shortness of breath, or difficulty breathing.
+This does not attempt to distinguish between COVID-like and influenza-like
+illness.
 
 The survey weights, provided by Facebook, are intended to make the sample
 representative of the US population, according to the state, age, and gender of
