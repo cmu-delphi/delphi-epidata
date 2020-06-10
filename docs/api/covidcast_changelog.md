@@ -6,7 +6,7 @@ When Delphi makes substantial changes to the computation of a signal, we will ty
 ### `doctor-visits`
 ### `fb-survey`
 
-#### 3 June 2020: v1.3
+#### 3 June 2020
 
 Duplicate survey weights had corrupted historical figures for the following signals and dates. The correct data has been restored to the API.
 * `raw_wcli`
