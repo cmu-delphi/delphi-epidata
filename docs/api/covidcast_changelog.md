@@ -25,13 +25,13 @@ Duplicate survey weights had corrupted historical figures for the following sign
 ### `quidel`
 ### `jhu-csse`
 
-#### 3 June 2020: v1.3
+#### 3 June 2020
 
 We now include figures on Puerto Rico for all `jhu-csse` signals at the state level.
 
 ### `indicator-combination`
 
-#### 3 June 2020: v1.3
+#### 3 June 2020
 
 Standard errors are now included in the `nmf_day_doc_fbc_fbs_ght` signal for all geo levels and dates, representing the estimated uncertainty in this signal. This uncertainty comes because the signal is a combination of the other signals which are based on survey estimates or other estimates with margins of error.
 
