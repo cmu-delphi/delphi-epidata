@@ -1,6 +1,6 @@
 # Delphi's COVID-19 Surveillance Streams Changelog
 
-When Delphi makes substantial changes to the computation of a signal, we will typically publish it under a new name rather than revising the existing signal. By contrast, the changes documented here are bug fixes and pipeline repairs.
+When Delphi makes substantial changes to the computation of a signal, we will typically publish it under a new name rather than revising the existing signal. By contrast, the changes documented here are bug fixes, pipeline repairs, and minor enhancements.
 
 ## Sources and Signals
 ### `doctor-visits`
@@ -24,4 +24,17 @@ Duplicate survey weights had corrupted historical figures for the following sign
 ### `ght`
 ### `quidel`
 ### `jhu-csse`
+
+#### 3 June 2020
+
+We now include figures on Puerto Rico for all `jhu-csse` signals at the state level.
+
 ### `indicator-combination`
+
+#### 3 June 2020
+
+Standard errors are now included in the `nmf_day_doc_fbc_fbs_ght` signal for all geo levels and dates, representing the estimated uncertainty in this signal. This uncertainty comes because the signal is a combination of the other signals which are based on survey estimates or other estimates with margins of error.
+
+* `nmf_day_doc_fbc_fbs_ght`
+  * all geo levels
+    * all dates
