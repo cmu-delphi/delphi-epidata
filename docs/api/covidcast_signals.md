@@ -55,8 +55,14 @@ day.
 | `raw_ili` | Estimated percentage of people with influenza-like illness, with no smoothing or survey weighting |
 | `raw_wcli` | Estimated percentage of people with COVID-like illness; adjusted using survey weights |
 | `raw_wili` | Estimated percentage of people with influenza-like illness; adjusted using survey weights |
-| `raw_hh_cmnty_cli` | Estimated percentage of people reporting COVID-like illness in their local community, including their household, with no smoothing or survey weighting |
-| `raw_nohh_cmnty_cli` | Estimated percentage of people reporting COVID-like illness in their local community, not including their household, with no smoothing or survey weighting |
+| `raw_hh_cmnty_cli` | Estimated percentage of people reporting illness in their local community, including their household, with no smoothing or survey weighting |
+| `raw_nohh_cmnty_cli` | Estimated percentage of people reporting illness in their local community, not including their household, with no smoothing or survey weighting |
+
+Note that for `raw_hh_cmnty_cli` and `raw_nohh_cmnty_cli`, the illnesses
+included are broader: a respondent is included if they know someone in their
+household (for `raw_hh_cmnty_cli`) or community with fever, along with sore
+throat, cough, shortness of breath, or difficulty breathing. This does not
+attempt to distinguish between COVID-like and influenza-like illness.
 
 The survey weights, provided by Facebook, are intended to make the sample
 representative of the US population, according to the state, age, and gender of
@@ -157,16 +163,23 @@ University.
 
 | Signal | Description |
 | --- | --- |
-| `confirmed_cumulative_num` | Cumulative number of confirmed COVID-19 cases | 
+| `confirmed_cumulative_num` | Cumulative number of confirmed COVID-19 cases |
+| `confirmed_cumulative_prop` | Cumulative number of confirmed COVID-19 cases per 100,000 population |
 | `confirmed_incidence_num` | Number of new confirmed COVID-19 cases, daily | 
 | `confirmed_incidence_prop` | Number of new confirmed COVID-19 cases per 100,000 population, daily | 
-| `deaths_cumulative_num` | Cumulative number of confirmed deaths due to COVID-19 | 
+| `deaths_cumulative_num` | Cumulative number of confirmed deaths due to COVID-19 |
+| `deaths_cumulative_prop` | Cumulative number of confirmed due to COVID-19, per 100,000 population |
 | `deaths_incidence_num` | Number of new confirmed deaths due to COVID-19, daily |
 | `deaths_incidence_prop` | Number of new confirmed deaths due to COVID-19 per 100,000 population, daily |
 
-Our signals here are taken directly from the JHU CSSE 
-[COVID-19 GitHub repository](https://github.com/CSSEGISandData/COVID-19) without 
-filtering, smoothing, or changes.
+Our signals here are taken directly from the JHU CSSE [COVID-19 GitHub
+repository](https://github.com/CSSEGISandData/COVID-19) without filtering,
+smoothing, or changes. **Note:** JHU's data reports cumulative cases and deaths,
+so our incidence signals are calculated by subtracting each day's cumulative
+count from the previous day. Since cumulative figures are sometimes corrected or
+amended by health authorities, this can sometimes result in negative incidence.
+This should be interpreted purely as an artifact of data reporting and
+correction.
 
 * Number of data revisions since 19 May 2020: 0
 * Date of last change: Never
