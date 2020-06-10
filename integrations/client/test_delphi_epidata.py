@@ -50,7 +50,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
     self.cur.execute('''
       insert into covidcast values
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          123, 1.5, 2.5, 3.5, 456, 4)
+          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0)
     ''')
     self.cnx.commit()
 
@@ -79,7 +79,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
     self.cur.execute('''
       insert into covidcast values
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          123, 1.5, 2.5, 3.5, 456, 4)
+          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0)
     ''')
     self.cnx.commit()
 

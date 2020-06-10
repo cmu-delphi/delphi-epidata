@@ -66,12 +66,12 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     self.cur.execute('''
       insert into covidcast values
         (0, 'src', 'sig', 'day', 'state', 20200422, 'pa',
-          123, 1, 2, 3, 456, 1)
+          123, 1, 2, 3, 456, 1, 20200422, 0)
     ''')
     self.cur.execute('''
       insert into covidcast values
         (100, 'src', 'wip_sig', 'day', 'state', 20200422, 'pa',
-          456, 4, 5, 6, 789, -1)
+          456, 4, 5, 6, 789, -1, 20200422, 0)
     ''')
 
     self.cnx.commit()

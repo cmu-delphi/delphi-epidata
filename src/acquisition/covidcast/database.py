@@ -55,7 +55,9 @@ class Database:
       geo_value,
       value,
       stderr,
-      sample_size):
+      sample_size,
+      issue,
+      lag):
     """
     Insert a new row, or update an existing row, in the `covidcast` table.
 
@@ -64,7 +66,7 @@ class Database:
 
     sql = '''
       INSERT INTO `covidcast` VALUES
-        (0, %s, %s, %s, %s, %s, %s, UNIX_TIMESTAMP(NOW()), %s, %s, %s, 0, NULL)
+        (0, %s, %s, %s, %s, %s, %s, UNIX_TIMESTAMP(NOW()), %s, %s, %s, 0, NULL, %s, %s)
       ON DUPLICATE KEY UPDATE
         `timestamp1` = VALUES(`timestamp1`),
         `value` = VALUES(`value`),
@@ -82,6 +84,8 @@ class Database:
       value,
       stderr,
       sample_size,
+      issue,
+      lag
     )
 
     self._cursor.execute(sql, args)
