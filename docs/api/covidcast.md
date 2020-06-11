@@ -28,7 +28,8 @@ The COVIDcast API is based on HTTP GET queries and returns data in JSON form.
 The base URL is https://delphi.cmu.edu/epidata/api.php.
 
 Several [API clients are available](#api-clients) for common programming
-languages, so you do not need to construct API calls yourself.
+languages, so you do not need to construct API calls yourself. Alternately, [see
+below](#example-urls) for example API URLs and query responses.
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -45,8 +46,6 @@ select set of these data signals.
 
 ### Parameters
 
-#### Required
-
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `data_source` | name of upstream data source (e.g., `doctor-visits` or `fb-survey`; [see full list](covidcast_signals.md)) | string |
@@ -57,7 +56,7 @@ select set of these data signals.
 | `geo_value` | unique code for each location, depending on `geo_type` (county -> FIPS 6-4 code, HRR -> HRR number, MSA -> CBSA code, DMA -> DMA code, state -> two-letter [state](../../labels/states.txt) code), or `*` for all | string |
 
 The current set of signals available for each data source is returned by the
-[`covidcast_meta`](covidcast_meta.md) endpoint. 
+[`covidcast_meta`](covidcast_meta.md) endpoint.
 
 ### Response
 
@@ -208,7 +207,7 @@ properly.
 
 ## Example URLs
 
-### Delphi's COVID-19 Surveillance Streams from Facebook Survey CLI on 2020-04-06 to 2010-04-10 (county 06001)
+### Facebook Survey CLI on 2020-04-06 to 2010-04-10 (county 06001)
 	
 https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&signal=raw_cli&time_type=day&geo_type=county&time_values=20200406-20200410&geo_value=06001
 
@@ -230,9 +229,28 @@ https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&si
 }
 ```
 
-### Delphi's COVID-19 Surveillance Streams from Facebook Survey CLI on 2020-04-06 (all counties)
+### Facebook Survey CLI on 2020-04-06 (all counties)
 	
 https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&signal=raw_cli&time_type=day&geo_type=county&time_values=20200406&geo_value=*
+
+```json
+{
+  "result": 1,
+  "epidata": [
+    {
+      "geo_value": "01000",
+      "time_value": 20200406,
+      "direction": null,
+      "value": 1.1693378,
+      "stderr": 0.1909232,
+      "sample_size": 1451.0327
+    },
+    ...
+  ],
+  "message": "success"
+}
+```
+
 
 ## API Clients
 
