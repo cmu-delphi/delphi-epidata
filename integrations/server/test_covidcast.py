@@ -230,7 +230,7 @@ class CovidcastTests(unittest.TestCase):
           1, 1, 1, 1, 1, 1, 20200415, 1)
     ''')
 
-    def test_nullable_columns(self):
+  def test_nullable_columns(self):
     """Missing values should be surfaced as null."""
 
     # insert dummy data

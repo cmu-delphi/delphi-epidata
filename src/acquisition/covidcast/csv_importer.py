@@ -1,16 +1,16 @@
 """Collects and reads covidcast data from a set of local CSV files."""
 
 # standard library
-import math
+from datetime import date
 import glob
+import math
 import os
 import re
-from datetime import date
 
 # third party
 import pandas
 
-# delphi
+# first party
 from delphi.utils.epiweek import delta_epiweeks
 
 class CsvImporter:
@@ -49,7 +49,9 @@ class CsvImporter:
 
   @staticmethod
   def is_sane_day(value):
-    """Return whether `value` is a sane (maybe not valid) YYYYMMDD date."""
+    """Return whether `value` is a sane (maybe not valid) YYYYMMDD date.
+
+    Truthy return is is a datetime.date object representing `value`."""
 
     year, month, day = value // 10000, (value % 10000) // 100, value % 100
 
@@ -57,30 +59,34 @@ class CsvImporter:
     valid_month = 1 <= month <= 12
     sensible_day = 1 <= day <= 31
 
-    if not (nearby_year and valid_month and sensible_day): return False
+    if not (nearby_year and valid_month and sensible_day):
+      return False
     return date(year=year,month=month,day=day)
 
   @staticmethod
   def is_sane_week(value):
-    """Return whether `value` is a sane (maybe not valid) YYYYWW epiweek."""
+    """Return whether `value` is a sane (maybe not valid) YYYYWW epiweek.
+
+    Truthy return is `value`."""
 
     year, week = value // 100, value % 100
 
     nearby_year = CsvImporter.MIN_YEAR <= year <= CsvImporter.MAX_YEAR
     sensible_week = 1 <= week <= 53
 
-    if not nearby_year and sensible_week: return False
+    if not nearby_year and sensible_week:
+      return False
     return value
 
   @staticmethod
-  def find_csv_files(scan_dir, issue=(date.today(),-1), glob=glob):
+  def find_csv_files(scan_dir, issue=(date.today(), -1), glob=glob):
     """Recursively search for and yield covidcast-format CSV files.
 
     scan_dir: the directory to scan (recursively)
 
     The return value is a tuple of (path, details), where, if the path was
     valid, details is a tuple of (source, signal, time_type, geo_type,
-    time_value) (otherwise None).
+    time_value, issue, lag) (otherwise None).
     """
 
     issue_day,issue_epiweek=issue
