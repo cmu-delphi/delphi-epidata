@@ -83,24 +83,27 @@ requests for smaller time intervals.
 ## Geographic Coding
 
 The `geo_value` field specifies the geographic location whose estimate is being
-reported. County-level estimates are reported by the county FIPS code. All FIPS
-codes are reported using pre-2015 FIPS code assignments, *except* for FIPS codes
-used by the `jhu-csse` source. These are reported exactly as JHU reports their
-data; see below.
+reported. Estimates are available for several possible `geo_type`s:
 
-Other possible `geo_type`s include:
-
+* `county`: County-level estimates are reported by the county's five-digit [FIPS
+  code](https://en.wikipedia.org/wiki/FIPS_county_code). All FIPS codes are
+  reported using pre-2015 FIPS code assignments, *except* for FIPS codes used by
+  the `jhu-csse` source. These are reported exactly as JHU reports their data;
+  [see below](#fips-exceptions-in-jhu-data).
 * `hrr`: Hospital Referral Region, units designed to represent regional health
   care markets. There are roughly 300 HRRs in the United States. A map is
   available
-  [here](https://hub.arcgis.com/datasets/fedmaps::hospital-referral-regions).
+  [here](https://hub.arcgis.com/datasets/fedmaps::hospital-referral-regions). We
+  report HRRs by their number (1 through 457).
 * `msa`: Metropolitan Statistical Area, as defined by the Office of Management
   and Budget. The Census Bureau provides [detailed definitions of these
-  regions](https://www.census.gov/programs-surveys/metro-micro/about.html).
+  regions](https://www.census.gov/programs-surveys/metro-micro/about.html). We
+  report MSAs by their CBSA ID number.
 * `dma`: Designated Market Areas represent geographic regions with their own
   media markets, as [defined by
   Nielsen](https://www.nielsen.com/us/en/intl-campaigns/dma-maps/).
-* `state`: The 50 states.
+* `state`: The 50 states, identified by their two-digit postal abbreviation (in
+  lower case). Estimates for Puerto Rico are available as state `pr`.
 
 Some signals are not available for all `geo_type`s, since they may be reported
 from their original sources with different levels of aggregation.
