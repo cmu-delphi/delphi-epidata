@@ -57,6 +57,7 @@ def scan_upload_archive(
     compress = True
     file_archiver_impl.archive_file(path_src, path_dst, filename, compress)
 
+
   # collect files
   results = list(csv_importer_impl.find_csv_files(receiving_dir))
   print('found %d files' % len(results))
@@ -71,7 +72,7 @@ def scan_upload_archive(
       archive_as_failed(path_src, filename, 'unknown')
       continue
 
-    (source, signal, time_type, geo_type, time_value) = details
+    (source, signal, time_type, geo_type, time_value, issue, lag) = details
 
     # iterate over rows and upload to the database
     all_rows_valid = True
@@ -90,7 +91,9 @@ def scan_upload_archive(
             row_values.geo_value,
             row_values.value,
             row_values.stderr,
-            row_values.sample_size)
+            row_values.sample_size,
+            issue,
+            lag)
       except Exception as e:
         all_rows_valid = False
         print('exception while inserting row:', e, row_values)

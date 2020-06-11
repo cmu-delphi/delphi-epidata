@@ -61,23 +61,23 @@ class DirectionUpdatingTests(unittest.TestCase):
     self.cur.execute('''
       insert into covidcast values
         (0, 'src', 'sig', 'day', 'state', 20200228, 'ca',
-          123, 2, 0, 0, 0, NULL),
+          123, 2, 0, 0, 0, NULL, 20200228, 0),
         (0, 'src', 'sig', 'day', 'state', 20200229, 'ca',
-          123, 6, 0, 0, 0, NULL),
+          123, 6, 0, 0, 0, NULL, 20200229, 0),
         (0, 'src', 'sig', 'day', 'state', 20200301, 'ca',
-          123, 5, 0, 0, 0, NULL),
+          123, 5, 0, 0, 0, NULL, 20200301, 0),
         (0, 'src', 'sig', 'day', 'state', 20200511, 'fl',
-          123, 1, 0, 0, 0, NULL),
+          123, 1, 0, 0, 0, NULL, 20200511, 0),
         (0, 'src', 'sig', 'day', 'state', 20200512, 'fl',
-          123, 2, 0, 0, 0, NULL),
+          123, 2, 0, 0, 0, NULL, 20200512, 0),
         (0, 'src', 'sig', 'day', 'state', 20200517, 'fl',
-          123, 2, 0, 0, 0, NULL),
+          123, 2, 0, 0, 0, NULL, 20200517, 0),
         (0, 'src', 'sig', 'day', 'state', 20200615, 'tx',
-          123, 9, 0, 0, 456, NULL),
+          123, 9, 0, 0, 456, NULL, 20200615, 0),
         (0, 'src', 'sig', 'day', 'state', 20200616, 'tx',
-          123, 5, 0, 0, 456, NULL),
+          123, 5, 0, 0, 456, NULL, 20200616, 0),
         (0, 'src', 'sig', 'day', 'state', 20200617, 'tx',
-          123, 1, 0, 0, 456, 1)
+          123, 1, 0, 0, 456, 1, 20200617, 0)
     ''')
     self.cnx.commit()
 

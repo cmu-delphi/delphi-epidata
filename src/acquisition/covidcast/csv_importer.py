@@ -1,14 +1,17 @@
 """Collects and reads covidcast data from a set of local CSV files."""
 
 # standard library
-import math
+from datetime import date
 import glob
+import math
 import os
 import re
 
 # third party
 import pandas
 
+# first party
+from delphi.utils.epiweek import delta_epiweeks
 
 class CsvImporter:
   """Finds and parses covidcast CSV files."""
@@ -46,7 +49,9 @@ class CsvImporter:
 
   @staticmethod
   def is_sane_day(value):
-    """Return whether `value` is a sane (maybe not valid) YYYYMMDD date."""
+    """Return whether `value` is a sane (maybe not valid) YYYYMMDD date.
+
+    Truthy return is is a datetime.date object representing `value`."""
 
     year, month, day = value // 10000, (value % 10000) // 100, value % 100
 
@@ -54,29 +59,41 @@ class CsvImporter:
     valid_month = 1 <= month <= 12
     sensible_day = 1 <= day <= 31
 
-    return nearby_year and valid_month and sensible_day
+    if not (nearby_year and valid_month and sensible_day):
+      return False
+    return date(year=year,month=month,day=day)
 
   @staticmethod
   def is_sane_week(value):
-    """Return whether `value` is a sane (maybe not valid) YYYYWW epiweek."""
+    """Return whether `value` is a sane (maybe not valid) YYYYWW epiweek.
+
+    Truthy return is `value`."""
 
     year, week = value // 100, value % 100
 
     nearby_year = CsvImporter.MIN_YEAR <= year <= CsvImporter.MAX_YEAR
     sensible_week = 1 <= week <= 53
 
-    return nearby_year and sensible_week
+    if not nearby_year and sensible_week:
+      return False
+    return value
 
   @staticmethod
-  def find_csv_files(scan_dir, glob=glob):
+  def find_csv_files(scan_dir, issue=(date.today(), -1), glob=glob):
     """Recursively search for and yield covidcast-format CSV files.
 
     scan_dir: the directory to scan (recursively)
 
     The return value is a tuple of (path, details), where, if the path was
     valid, details is a tuple of (source, signal, time_type, geo_type,
-    time_value) (otherwise None).
+    time_value, issue, lag) (otherwise None).
     """
+
+    issue_day,issue_epiweek=issue
+    issue_day_value=int(issue_day.strftime("%Y%m%d"))
+    issue_epiweek_value=issue_epiweek # TODO
+    issue_value=-1
+    lag_value=-1
 
     for path in glob.glob(os.path.join(scan_dir, '*', '*')):
       if not path.lower().endswith('.csv'):
@@ -98,18 +115,24 @@ class CsvImporter:
         time_type = 'day'
         time_value = int(daily_match.group(2))
         match = daily_match
-        if not CsvImporter.is_sane_day(time_value):
+        time_value_day = CsvImporter.is_sane_day(time_value)
+        if not time_value_day:
           print(' invalid filename day', time_value)
           yield (path, None)
           continue
+        issue_value=issue_day_value
+        lag_value=(issue_day-time_value_day).days
       else:
         time_type = 'week'
         time_value = int(weekly_match.group(2))
         match = weekly_match
-        if not CsvImporter.is_sane_week(time_value):
+        time_value_week=CsvImporter.is_sane_week(time_value)
+        if not time_value_week:
           print(' invalid filename week', time_value)
           yield (path, None)
           continue
+        issue_value=issue_week_value
+        lag_value=delta_epiweeks(time_value_week, issue_week)
 
       # # extract and validate geographic resolution
       geo_type = match.group(3).lower()
@@ -126,7 +149,7 @@ class CsvImporter:
         yield (path, None)
         continue
 
-      yield (path, (source, signal, time_type, geo_type, time_value))
+      yield (path, (source, signal, time_type, geo_type, time_value, issue_value, lag_value))
 
   @staticmethod
   def is_header_valid(columns):
