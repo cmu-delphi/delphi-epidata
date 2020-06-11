@@ -2,16 +2,33 @@
 
 This is the documentation of the API for accessing the Delphi's COVID-19
 Surveillance Streams (`covidcast`) endpoint of
-[Delphi](https://delphi.cmu.edu/)'s epidemiological data.
+[Delphi](https://delphi.cmu.edu/)'s epidemiological data. This API provides the
+data used in our public [COVIDcast map](https://covidcast.cmu.edu/), and
+includes other data sources and signals not currently shown on the map. The API
+allows users to select specific signals and download data for selected
+geographical areas---counties, states, metropolitan statistical areas, and other
+divisions.
 
-General topics not specific to any particular data source are discussed in the
-[API overview](README.md). Such topics include:
-[contributing](README.md#contributing), [citing](README.md#citing), and
-[data licensing](README.md#data-licensing).
+This data is freely available under our [data
+licensing](README.md#data-licensing) terms; we encourage academic users to
+[cite](README.md#citing) the data if they use it in any publications. Further
+documentation on Delphi's APIs is available in the [API overview](README.md).
+
+**For users:** Delphi operates a [mailing
+list](https://lists.andrew.cmu.edu/mailman/listinfo/delphi-covidcast-api) for
+users of the COVIDcast API. We will use the list to announce API changes,
+corrections to data, and new features; API users may also use the mailing list
+to ask general questions about its use. If you use the API, we strongly
+encourage you to
+[subscribe](https://lists.andrew.cmu.edu/mailman/listinfo/delphi-covidcast-api).
 
 ## The API
 
-The base URL is: https://delphi.cmu.edu/epidata/api.php
+The COVIDcast API is based on HTTP GET queries and returns data in JSON form.
+The base URL is https://delphi.cmu.edu/epidata/api.php.
+
+Several [API clients are available](#api-clients) for common programming
+languages, so you do not need to construct API calls yourself.
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -217,7 +234,7 @@ https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&si
 	
 https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&signal=raw_cli&time_type=day&geo_type=county&time_values=20200406&geo_value=*
 
-## Code Samples
+## API Clients
 
 Libraries are available for
 [CoffeeScript](https://github.com/cmu-delphi/delphi-epidata/blob/master/src/client/delphi_epidata.coffee),
@@ -262,7 +279,9 @@ Optionally install the [package from PyPI](https://pypi.org/project/delphi-epida
 pip install delphi-epidata
 ````
 
-Otherwise, place `delphi_epidata.py` from this repo next to your python script.
+Otherwise, place
+[`delphi_epidata.py`](https://github.com/cmu-delphi/delphi-epidata/blob/master/src/client/delphi_epidata.py)
+in the same directory as your Python script.
 
 ````python
 # Import

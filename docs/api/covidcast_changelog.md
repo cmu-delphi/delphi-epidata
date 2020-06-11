@@ -1,6 +1,15 @@
 # Delphi's COVID-19 Surveillance Streams Changelog
 
-When Delphi makes substantial changes to the computation of a signal, we will typically publish it under a new name rather than revising the existing signal. By contrast, the changes documented here are bug fixes, pipeline repairs, and minor enhancements.
+When Delphi makes substantial changes to the computation of a signal, we will
+typically publish it under a new name rather than revising the existing signal.
+By contrast, the changes documented here are bug fixes, pipeline repairs, and
+minor enhancements.
+
+Changes are also announced via the [COVIDcast API mailing
+list](https://lists.andrew.cmu.edu/mailman/listinfo/delphi-covidcast-api), and
+we strongly recommend that anyone using the API to regularly download data
+should subscribe to this list. The list will only be used to announce API
+changes, data corrections, and other information relevant to API users.
 
 ## Sources and Signals
 ### `doctor-visits`

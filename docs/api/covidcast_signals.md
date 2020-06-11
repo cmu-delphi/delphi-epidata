@@ -6,7 +6,8 @@ Data from these sources is expected to be updated daily. You can use the
 about the ranges of the different attributes for the different data sources.
 
 The API for retrieving data from these sources is described in the
-[COVIDcast API endpoint documentation](covidcast.md).
+[COVIDcast API endpoint documentation](covidcast.md). Changes and corrections to
+data in this API are listed in the [API changelog](covidcast_changelog.md).
 
 ## Sources and Signals
 
