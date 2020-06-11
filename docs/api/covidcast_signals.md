@@ -222,5 +222,7 @@ map](https://covidcast.cmu.edu/):
 | Symptoms in Community (Facebook) | `fb-survey` | `smoothed_hh_cmnty_cli` |
 | Search Trends (Google) | `ght` | `smoothed_search` |
 | Combined | `indicator-combination` | `nmf_day_doc_fbc_fbs_ght` |
-| Cases (JHU) | `jhu-csse` | `confirmed_incidence_prop` |
-| Deaths (JHU) | `jhu-csse` | `deaths_incidence_prop` |
+| Cases | `jhu-csse` | `confirmed_incidence_num` |
+| Cases per capita | `jhu-csse` | `confirmed_incidence_prop` |
+| Deaths | `jhu-csse` | `deaths_incidence_num` |
+| Deaths per capita | `jhu-csse` | `confirmed_incidence_prop` |
