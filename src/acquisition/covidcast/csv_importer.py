@@ -229,8 +229,6 @@ class CsvImporter:
     except ValueError:
       # expected a number, but got a string
       return (None, 'sample_size')
-    if sample_size is not None and sample_size < CsvImporter.MIN_SAMPLE_SIZE:
-      return (None, 'sample_size')
 
     # return extracted and validated row values
     row_values = CsvImporter.RowValues(geo_id, value, stderr, sample_size)
