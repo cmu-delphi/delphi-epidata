@@ -29,10 +29,6 @@ class CsvImporter:
   MIN_YEAR = 2019
   MAX_YEAR = 2030
 
-  # reasonable lower bound for sanity checking sample size (if sample size is
-  # present, then, for privacy, it should definitely be larger than this value)
-  MIN_SAMPLE_SIZE = 5
-
   # NOTE: this should be a Python 3.7+ `dataclass`, but the server is on 3.4
   # See https://docs.python.org/3/library/dataclasses.html
   class RowValues:
