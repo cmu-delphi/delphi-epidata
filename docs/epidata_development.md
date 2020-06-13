@@ -106,7 +106,29 @@ docker run --rm -p 10080:80 \
   delphi_web_epidata
 ```
 
-## manual
+## unit tests
+
+Once the server containers are running, you can run unit tests.
+
+First, build the `delphi_python` image per the
+  [backend development guide](https://github.com/cmu-delphi/operations/blob/master/docs/backend_development.md#creating-an-image).
+  Your test sources will live in, and be executed from within, this image.
+
+Then run the test container:
+
+  ```bash
+  docker run --rm --network delphi-net delphi_python \
+  python3 -m undefx.py3tester.py3tester \
+  repos/delphi/delphi-epidata/tests
+  ```
+  
+  The final line of output should be similar to the following:
+  
+  ```
+  All 48 tests passed! 68% (490/711) coverage.
+  ```
+
+## manual tests
 
 You can test your changes manually by:
 
@@ -195,7 +217,7 @@ Here's a full example based on the `fluview` endpoint:
   libraries are better candidates for automated integration tests (and unit
   tests, in the case of the python client) than one-off manual tests.
 
-## integration
+## integration tests
 
 Writing an integration test is outside of the scope of this document. However,
 a number of existing integration tests exist and can be used as a good starting
