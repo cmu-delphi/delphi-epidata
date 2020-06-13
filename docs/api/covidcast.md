@@ -94,7 +94,7 @@ reported. Estimates are available for several possible `geo_type`s:
   care markets. There are roughly 300 HRRs in the United States. A map is
   available
   [here](https://hub.arcgis.com/datasets/fedmaps::hospital-referral-regions). We
-  report HRRs by their number (1 through 457).
+  report HRRs by their number (non-consecutive, between 1 and 457).
 * `msa`: Metropolitan Statistical Area, as defined by the Office of Management
   and Budget. The Census Bureau provides [detailed definitions of these
   regions](https://www.census.gov/programs-surveys/metro-micro/about.html). We
@@ -103,7 +103,7 @@ reported. Estimates are available for several possible `geo_type`s:
   media markets, as [defined by
   Nielsen](https://www.nielsen.com/us/en/intl-campaigns/dma-maps/).
 * `state`: The 50 states, identified by their two-digit postal abbreviation (in
-  lower case). Estimates for Puerto Rico are available as state `pr`.
+  lower case). Estimates for Puerto Rico are available as state `pr`; Washington, D.C. is available as state `dc`.
 
 Some signals are not available for all `geo_type`s, since they may be reported
 from their original sources with different levels of aggregation.
