@@ -28,7 +28,8 @@ The COVIDcast API is based on HTTP GET queries and returns data in JSON form.
 The base URL is https://delphi.cmu.edu/epidata/api.php.
 
 Several [API clients are available](#api-clients) for common programming
-languages, so you do not need to construct API calls yourself.
+languages, so you do not need to construct API calls yourself. Alternately, [see
+below](#example-urls) for example API URLs and query responses.
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -45,8 +46,6 @@ select set of these data signals.
 
 ### Parameters
 
-#### Required
-
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `data_source` | name of upstream data source (e.g., `doctor-visits` or `fb-survey`; [see full list](covidcast_signals.md)) | string |
@@ -57,7 +56,7 @@ select set of these data signals.
 | `geo_value` | unique code for each location, depending on `geo_type` (county -> FIPS 6-4 code, HRR -> HRR number, MSA -> CBSA code, DMA -> DMA code, state -> two-letter [state](../../labels/states.txt) code), or `*` for all | string |
 
 The current set of signals available for each data source is returned by the
-[`covidcast_meta`](covidcast_meta.md) endpoint. 
+[`covidcast_meta`](covidcast_meta.md) endpoint.
 
 ### Response
 
@@ -84,24 +83,27 @@ requests for smaller time intervals.
 ## Geographic Coding
 
 The `geo_value` field specifies the geographic location whose estimate is being
-reported. County-level estimates are reported by the county FIPS code. All FIPS
-codes are reported using pre-2015 FIPS code assignments, *except* for FIPS codes
-used by the `jhu-csse` source. These are reported exactly as JHU reports their
-data; see below.
+reported. Estimates are available for several possible `geo_type`s:
 
-Other possible `geo_type`s include:
-
+* `county`: County-level estimates are reported by the county's five-digit [FIPS
+  code](https://en.wikipedia.org/wiki/FIPS_county_code). All FIPS codes are
+  reported using pre-2015 FIPS code assignments, *except* for FIPS codes used by
+  the `jhu-csse` source. These are reported exactly as JHU reports their data;
+  [see below](#fips-exceptions-in-jhu-data).
 * `hrr`: Hospital Referral Region, units designed to represent regional health
   care markets. There are roughly 300 HRRs in the United States. A map is
   available
-  [here](https://hub.arcgis.com/datasets/fedmaps::hospital-referral-regions).
+  [here](https://hub.arcgis.com/datasets/fedmaps::hospital-referral-regions). We
+  report HRRs by their number (non-consecutive, between 1 and 457).
 * `msa`: Metropolitan Statistical Area, as defined by the Office of Management
   and Budget. The Census Bureau provides [detailed definitions of these
-  regions](https://www.census.gov/programs-surveys/metro-micro/about.html).
+  regions](https://www.census.gov/programs-surveys/metro-micro/about.html). We
+  report MSAs by their CBSA ID number.
 * `dma`: Designated Market Areas represent geographic regions with their own
   media markets, as [defined by
   Nielsen](https://www.nielsen.com/us/en/intl-campaigns/dma-maps/).
-* `state`: The 50 states.
+* `state`: The 50 states, identified by their two-digit postal abbreviation (in
+  lower case). Estimates for Puerto Rico are available as state `pr`; Washington, D.C. is available as state `dc`.
 
 Some signals are not available for all `geo_type`s, since they may be reported
 from their original sources with different levels of aggregation.
@@ -208,7 +210,7 @@ properly.
 
 ## Example URLs
 
-### Delphi's COVID-19 Surveillance Streams from Facebook Survey CLI on 2020-04-06 to 2010-04-10 (county 06001)
+### Facebook Survey CLI on 2020-04-06 to 2010-04-10 (county 06001)
 	
 https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&signal=raw_cli&time_type=day&geo_type=county&time_values=20200406-20200410&geo_value=06001
 
@@ -230,9 +232,28 @@ https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&si
 }
 ```
 
-### Delphi's COVID-19 Surveillance Streams from Facebook Survey CLI on 2020-04-06 (all counties)
+### Facebook Survey CLI on 2020-04-06 (all counties)
 	
 https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&signal=raw_cli&time_type=day&geo_type=county&time_values=20200406&geo_value=*
+
+```json
+{
+  "result": 1,
+  "epidata": [
+    {
+      "geo_value": "01000",
+      "time_value": 20200406,
+      "direction": null,
+      "value": 1.1693378,
+      "stderr": 0.1909232,
+      "sample_size": 1451.0327
+    },
+    ...
+  ],
+  "message": "success"
+}
+```
+
 
 ## API Clients
 
