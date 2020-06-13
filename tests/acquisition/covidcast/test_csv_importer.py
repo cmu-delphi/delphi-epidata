@@ -132,7 +132,6 @@ class UnitTests(unittest.TestCase):
       (make_row(geo_type='state', geo_id='iowa'), 'geo_id'),
       (make_row(geo_type='country', geo_id='usa'), 'geo_type'),
       (make_row(se='-1'), 'se'),
-      (make_row(sample_size='3'), 'sample_size'),
       (make_row(geo_type=None), 'geo_type'),
       (make_row(geo_id=None), 'geo_id'),
       (make_row(val=None), 'val'),
