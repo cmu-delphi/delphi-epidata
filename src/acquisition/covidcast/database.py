@@ -167,7 +167,71 @@ class Database:
     [TODO]
     """
 
-    stale_ts_key_sql = '''
+    create_tmp_table_sql = f'''
+    CREATE TEMPORARY TABLE `{temporary_table}` (
+      `id` int(11) NOT NULL,
+      `source` varchar(32),
+      `signal` varchar(32),
+      `time_type` varchar(12),
+      `geo_type` varchar(12),
+      `geo_value` varchar(12),
+      `time_value` int(11),
+      `timestamp1` int(11),
+      `value` double,
+      `timestamp2` int(11),
+      `direction` int(11),
+      PRIMARY KEY(`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    '''
+
+    latest_issues_sql = f'''
+    SELECT 
+      SELECT
+    SELECT 
+      `id`,
+      `source`,
+      `signal`,
+      `time_type`,
+      `geo_type`,
+      `geo_value`,
+      `time_value`,
+      `timestamp1`,
+      `value`,
+      `timestamp2`,
+      `direction`
+    FROM
+    (
+      SELECT
+        `source`,
+        `signal`,
+        `time_type`,
+        `geo_type`,
+        `geo_value`,
+        `time_value`,
+        MAX(`issue`) AS `issue`
+      FROM `covidcast`
+      WHERE
+        `time_type` = 'day'
+      GROUP BY
+        `source`,
+        `signal`,
+        `time_type`,
+        `geo_type`,
+        `geo_value`,
+        `time_value`
+    ) b
+    LEFT JOIN `covidcast` a
+    USING (`source`, `signal`, `time_type`, `geo_type`, `geo_value`, `time_value`, `issue`)
+    '''
+
+    cte_definition = f'''
+    WITH `latest_issues` AS
+    (
+      {latest_issues_sql}
+    )
+    '''
+
+    stale_ts_key_sql = f'''
       SELECT
         `source`,
         `signal`,
@@ -175,9 +239,7 @@ class Database:
         `geo_type`,
         `geo_value`
       FROM
-        `covidcast`
-      WHERE
-        `time_type` = 'day'
+        `latest_issues` AS t1
       GROUP BY
         `source`,
         `signal`,
@@ -188,70 +250,36 @@ class Database:
         MAX(`timestamp1`) > MIN(`timestamp2`)
     '''
 
-    stale_ts_record_keys_with_latest_issues_sql = f'''
-      SELECT
-        `source`,
-        `signal`,
-        `time_type`,
-        `geo_type`,
-        `geo_value`,
-        `time_value`,
-        MAX(`issue`) AS `issue`
-      FROM ({stale_ts_key_sql}) AS a
-      LEFT JOIN `covidcast`
-      USING (`source`, `signal`, `time_type`, `geo_type`, `geo_value`)
-      GROUP BY
-        `source`,
-        `signal`,
-        `time_type`,
-        `geo_type`,
-        `geo_value`,
-        `time_value`
-    '''
-
-    stale_ts_record_vals_with_latest_issues_sql = f'''
+    stale_ts_records_with_latest_issues_sql = f'''
+    {cte_definition}
+    SELECT
       SELECT 
-        `id`,
-        `source`,
-        `signal`,
-        `time_type`,
-        `geo_type`,
-        `geo_value`,
-        `time_value`,
-        `timestamp1`,
-        `value`,
-        `timestamp2`,
-        `direction`
-      FROM `covidcast`
-      RIGHT JOIN ({stale_ts_record_keys_with_latest_issues_sql}) As b
-      USING (`source`, `signal`, `time_type`, `geo_type`, `geo_value`, `time_value`, `issue`)
-    '''
-
-    create_temp_table_sql = f'''
-    CREATE TEMPORARY TABLE `{temporary_table}` (
-      `id` int(11),
-      `source` varchar(32),
-      `signal` varchar(32),
-      `time_type` varchar(12),
-      `geo_type` varchar(12),
-      `geo_value` varchar(12),
-      `time_value` int(11),
-      `timestamp1` int(11),
-      `value` double,
-      `timestamp2` int(11),
-      `direction` int(11)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    SELECT
+      `id`,
+      `source`,
+      `signal`,
+      `time_type`,
+      `geo_type`,
+      `geo_value`,
+      `time_value`,
+      `timestamp1`,
+      `value`,
+      `timestamp2`,
+      `direction`
+    FROM ({stale_ts_key_sql}) AS t2
+    LEFT JOIN `latest_issues` AS t3
+    USING (`source`, `signal`, `time_type`, `geo_type`, `geo_value`)
     '''
 
     if temporary_table is None: 
-      self._cursor.execute(stale_ts_record_vals_with_latest_issues_sql)
+      self._cursor.execute(stale_ts_records_with_latest_issues_sql)
       return list(self._cursor)
     
-    self._cursor.execute(create_temp_table_sql)
+    self._cursor.execute(create_tmp_table_sql)
     final_sql = f'''
       INSERT INTO `{temporary_table}`
       SELECT *
-      FROM ({stale_ts_record_vals_with_latest_issues_sql}) AS c;
+      FROM ({stale_ts_records_with_latest_issues_sql}) AS c;
       '''
     self._cursor.execute(final_sql)
     self._cursor.execute(f"SELECT * FROM `{temporary_table}`;")
