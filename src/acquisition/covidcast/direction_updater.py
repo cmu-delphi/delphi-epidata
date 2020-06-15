@@ -146,10 +146,119 @@ def update_loop(database, direction_impl=Direction):
         source, signal, 'day', geo_type, geo_value)
 
 
+def optimized_update_loop(database, direction_impl):
+  """
+  [TODO]
+  """
+  tmp_table_name = 'tmp_ts_rows'
+
+  df_all = pd.DataFrame(columns=['id', 'source', 'signal', 'time_type', 'geo_type', 'geo_value', 'time_value',
+                                  'timestamp1', 'value', 'timestamp2', 'direction'],
+                        data=database.get_all_record_values_of_timeseries_with_potentially_stale_direction(
+                            tmp_table_name))
+  
+  df_all['time_value_datetime'] = pd.to_datetime(df_all.time_value, format="%Y%m%d")
+  df_all.direction = df_all.direction.astype(np.float64)
+
+  groupby_object = df_all.groupby(['source', 'signal', 'time_type', 'geo_type', 'geo_value'])
+
+  num_series = len(groupby_object)
+  num_rows = len(df_all)
+  msg = 'found %d time-series (%d rows) which may have stale direction'
+  print(msg % (num_series, num_rows))
+
+  # get the historical standard deviation of all signals and resolutions
+  rows = database.get_data_stdev_across_locations(
+      Constants.SIGNAL_STDEV_MAX_DAY)
+  data_stdevs = {}
+  for (source, signal, geo_type, aggregate_stdev) in rows:
+    if source not in data_stdevs:
+      data_stdevs[source] = {}
+    if signal not in data_stdevs[source]:
+      data_stdevs[source][signal] = {}
+    data_stdevs[source][signal][geo_type] = aggregate_stdev
+
+  changed_rows = {-1.0: [], 0.0: [], 1.0: [], np.nan: []}
+
+  for ts_index, ts_key in enumerate(groupby_object.groups):
+    (
+        source,
+        signal,
+        time_type,
+        geo_type,
+        geo_value,
+    ) = ts_key
+
+    ts_rows = groupby_object.get_group(ts_key).sort_values('time_value_datetime').reset_index(drop=True)
+    ts_rows['offsets'] = (ts_rows.time_value_datetime - ts_rows.time_value_datetime.min()).dt.days
+
+    # progress reporting for anyone debugging/watching the output
+    be_verbose = ts_index < 100
+    be_verbose = be_verbose or ts_index % 100 == 0
+    be_verbose = be_verbose or ts_index >= num_series - 100
+
+    if be_verbose:
+      msg = '[%d/%d] %s %s %s %s: span=%d--%d len=%d max_seconds_stale=%d'
+      args = (
+          ts_index + 1,
+          num_series,
+          source,
+          signal,
+          geo_type,
+          geo_value,
+          ts_rows.time_value.min(),
+          ts_rows.time_value.max(),
+          len(ts_rows),
+          ts_rows.timestamp1.max() - ts_rows.timestamp2.min()
+      )
+      print(msg % args)
+
+    offsets = ts_rows.offsets.values.astype(np.int64)
+    days = ts_rows.time_value.values.astype(np.int64)
+    values = ts_rows.value.values.astype(np.float64)
+    timestamp1s = ts_rows.timestamp1.values.astype(np.int64)
+    timestamp2s = ts_rows.timestamp2.values.astype(np.int64)
+
+    # create a direction classifier for this signal
+    data_stdev = data_stdevs[source][signal][geo_type]
+    slope_threshold = data_stdev * Constants.BASE_SLOPE_THRESHOLD
+
+    def get_direction_impl(x, y):
+      return direction_impl.get_direction(
+          x, y, n=Constants.SLOPE_STERR_SCALE, limit=slope_threshold)
+
+    # recompute any stale directions
+    days, directions = direction_impl.scan_timeseries(
+        offsets, days, values, timestamp1s, timestamp2s, get_direction_impl)
+
+    if be_verbose:
+      print(' computed %d direction updates' % len(directions))
+
+    ts_pot_changed = ts_rows.set_index('time_value').loc[days]
+    ts_pot_changed['new_direction'] = np.array(directions, np.float64)
+
+    is_eq_nan = ts_pot_changed.direction.isnull() & ts_pot_changed.new_direction.isnull()
+    is_eq_num = ts_pot_changed.direction == ts_pot_changed.new_direction
+    changed_mask = ~(is_eq_nan | is_eq_num)
+
+    ts_changed = ts_pot_changed[changed_mask]
+
+    for v in {-1.0, 0.0, 1.0}:
+      changed_rows[v] += ts_changed[ts_changed.new_direction == v].id.to_list()
+    changed_rows[np.nan] += ts_changed[ts_changed.new_direction.isnull()].id.to_list()
+
+  # Updating Direction
+  for v, id_list in changed_rows.items():
+    database.update_direction(v, id_list)
+
+  # Updating timestamp2
+  database.update_timestamp2(tmp_table_name)
+  database.drop_temporary_table(tmp_table_name)
+
 def main(
     args,
     database_impl=Database,
-    update_loop_impl=update_loop):
+    update_loop_impl=optimized_update_loop):
   """Update the direction classification for covidcast signals.
 
   `args`: parsed command-line arguments
