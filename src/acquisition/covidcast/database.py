@@ -256,7 +256,47 @@ class Database:
     self._cursor.execute(final_sql)
     self._cursor.execute(f"SELECT * FROM `{temporary_table}`;")
     return list(self._cursor)
-    
+
+  def update_direction(self, new_direction_value, id_list, batch_size=1024):
+    """
+    [TODO]
+    """
+    if np.isnan(new_direction_value):
+      new_direction_value = 'NULL'
+    for start in range(0, len(id_list), batch_size):
+      sql = f'''
+        UPDATE
+          `covidcast`
+        SET
+          `covidcast`.direction={str(new_direction_value)}
+        WHERE
+          `covidcast`.id IN ({','.join([str(x) for x in id_list[start:start+batch_size]])})
+        '''
+      self._cursor.execute(sql)
+
+  def drop_temporary_table(self, tmp_table_name):
+    """
+    [TODO]
+    """
+    sql = f'DROP TEMPORARY TABLE `{tmp_table_name}`;'
+    self._cursor.execute(sql)
+
+  def update_timestamp2_from_temporary_table(self, tmp_table_name):
+    """
+    [TODO]
+    """
+    sql = f'''
+      UPDATE
+        `covidcast`
+      RIGHT JOIN
+        `{tmp_table_name}` t
+      ON
+        `covidcast`.id=t.id
+      SET
+        `covidcast`.timestamp2=UNIX_TIMESTAMP(NOW())
+      '''
+    self._cursor.execute(sql)
+ 
 
   def get_keys_with_potentially_stale_direction(self):
     """
