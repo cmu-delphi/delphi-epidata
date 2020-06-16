@@ -8,6 +8,7 @@ import argparse
 
 # third party
 import numpy as np
+import pandas as pd
 
 # first party
 from delphi.epidata.acquisition.covidcast.database import Database
@@ -146,7 +147,7 @@ def update_loop(database, direction_impl=Direction):
         source, signal, 'day', geo_type, geo_value)
 
 
-def optimized_update_loop(database, direction_impl):
+def optimized_update_loop(database, direction_impl=Direction):
   """
   [TODO]
   """
@@ -156,11 +157,11 @@ def optimized_update_loop(database, direction_impl):
                                   'timestamp1', 'value', 'timestamp2', 'direction'],
                         data=database.get_all_record_values_of_timeseries_with_potentially_stale_direction(
                             tmp_table_name))
-  
+  df_all.drop(columns=['time_type'],inplace=True)
   df_all['time_value_datetime'] = pd.to_datetime(df_all.time_value, format="%Y%m%d")
   df_all.direction = df_all.direction.astype(np.float64)
 
-  groupby_object = df_all.groupby(['source', 'signal', 'time_type', 'geo_type', 'geo_value'])
+  groupby_object = df_all.groupby(['source', 'signal', 'geo_type', 'geo_value'])
 
   num_series = len(groupby_object)
   num_rows = len(df_all)
@@ -178,19 +179,18 @@ def optimized_update_loop(database, direction_impl):
       data_stdevs[source][signal] = {}
     data_stdevs[source][signal][geo_type] = aggregate_stdev
 
-  changed_rows = {-1.0: [], 0.0: [], 1.0: [], np.nan: []}
+  changed_rows = {-1.0: set(), 0.0: set(), 1.0: set(), np.nan: set()}
 
   for ts_index, ts_key in enumerate(groupby_object.groups):
     (
         source,
         signal,
-        time_type,
         geo_type,
         geo_value,
     ) = ts_key
 
-    ts_rows = groupby_object.get_group(ts_key).sort_values('time_value_datetime').reset_index(drop=True)
-    ts_rows['offsets'] = (ts_rows.time_value_datetime - ts_rows.time_value_datetime.min()).dt.days
+    ts_rows = groupby_object.get_group(ts_key).sort_values('time_value_datetime')
+    ts_rows['offsets'] = (ts_rows.time_value_datetime - ts_rows.time_value_datetime.iloc[0]).dt.days
 
     # progress reporting for anyone debugging/watching the output
     be_verbose = ts_index < 100
@@ -237,22 +237,23 @@ def optimized_update_loop(database, direction_impl):
     ts_pot_changed = ts_rows.set_index('time_value').loc[days]
     ts_pot_changed['new_direction'] = np.array(directions, np.float64)
 
-    is_eq_nan = ts_pot_changed.direction.isnull() & ts_pot_changed.new_direction.isnull()
-    is_eq_num = ts_pot_changed.direction == ts_pot_changed.new_direction
-    changed_mask = ~(is_eq_nan | is_eq_num)
+    # is_eq_nan = ts_pot_changed.direction.isnull() & ts_pot_changed.new_direction.isnull()
+    # is_eq_num = ts_pot_changed.direction == ts_pot_changed.new_direction
+    # changed_mask = ~(is_eq_nan | is_eq_num)
+    # ts_changed = ts_pot_changed[changed_mask]
 
-    ts_changed = ts_pot_changed[changed_mask]
-
-    for v in {-1.0, 0.0, 1.0}:
-      changed_rows[v] += ts_changed[ts_changed.new_direction == v].id.to_list()
-    changed_rows[np.nan] += ts_changed[ts_changed.new_direction.isnull()].id.to_list()
+    gb_o = ts_pot_changed.groupby('new_direction')
+    for v in gb_o.groups:
+      changed_rows[v] = changed_rows[v].union(set(gb_o.get_group(v).id))
+    changed_rows[np.nan]= changed_rows[np.nan].union(set(
+      ts_pot_changed[ts_pot_changed.new_direction.isnull()].id))
 
   # Updating Direction
-  for v, id_list in changed_rows.items():
-    database.update_direction(v, id_list)
+  for v, id_set in changed_rows.items():
+    database.batched_update_direction(v, list(id_set))
 
   # Updating timestamp2
-  database.update_timestamp2(tmp_table_name)
+  database.update_timestamp2_from_temporary_table(tmp_table_name)
   database.drop_temporary_table(tmp_table_name)
 
 def main(

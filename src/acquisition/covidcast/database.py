@@ -5,6 +5,7 @@ See src/ddl/covidcast.sql for an explanation of each field.
 
 # third party
 import mysql.connector
+import numpy as np
 
 # first party
 import delphi.operations.secrets as secrets
@@ -186,8 +187,6 @@ class Database:
 
     latest_issues_sql = f'''
     SELECT 
-      SELECT
-    SELECT 
       `id`,
       `source`,
       `signal`,
@@ -253,8 +252,6 @@ class Database:
     stale_ts_records_with_latest_issues_sql = f'''
     {cte_definition}
     SELECT
-      SELECT 
-    SELECT
       `id`,
       `source`,
       `signal`,
@@ -285,7 +282,7 @@ class Database:
     self._cursor.execute(f"SELECT * FROM `{temporary_table}`;")
     return list(self._cursor)
 
-  def update_direction(self, new_direction_value, id_list, batch_size=1024):
+  def batched_update_direction(self, new_direction_value, id_list, batch_size=1024):
     """
     [TODO]
     """
