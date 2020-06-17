@@ -35,7 +35,7 @@ class Constants:
   SLOPE_STERR_SCALE = 1
   SLOPE_PERCENT_CHANGE = 0.1
   BASE_SLOPE_THRESHOLD = (
-      SIGNAL_STDEV_SCALE * (SLOPE_PERCENT_CHANGE / TREND_NUM_DAYS)
+          SIGNAL_STDEV_SCALE * (SLOPE_PERCENT_CHANGE / TREND_NUM_DAYS)
   )
 
 
@@ -63,7 +63,7 @@ def update_loop(database, direction_impl=Direction):
 
   # get the historical standard deviation of all signals and resolutions
   rows = database.get_data_stdev_across_locations(
-      Constants.SIGNAL_STDEV_MAX_DAY)
+    Constants.SIGNAL_STDEV_MAX_DAY)
   data_stdevs = {}
   for (source, signal, geo_type, aggregate_stdev) in rows:
     if source not in data_stdevs:
@@ -109,7 +109,7 @@ def update_loop(database, direction_impl=Direction):
 
     # get the data for this time-series
     timeseries_rows = database.get_daily_timeseries_for_direction_update(
-        source, signal, geo_type, geo_value, min_day, max_day)
+      source, signal, geo_type, geo_value, min_day, max_day)
 
     # transpose result set and cast data types
     data = np.array(timeseries_rows)
@@ -126,11 +126,11 @@ def update_loop(database, direction_impl=Direction):
 
     def get_direction_impl(x, y):
       return direction_impl.get_direction(
-          x, y, n=Constants.SLOPE_STERR_SCALE, limit=slope_threshold)
+        x, y, n=Constants.SLOPE_STERR_SCALE, limit=slope_threshold)
 
     # recompute any stale directions
     days, directions = direction_impl.scan_timeseries(
-        offsets, days, values, timestamp1s, timestamp2s, get_direction_impl)
+      offsets, days, values, timestamp1s, timestamp2s, get_direction_impl)
 
     if be_verbose:
       print(' computed %d direction updates' % len(directions))
@@ -140,27 +140,31 @@ def update_loop(database, direction_impl=Direction):
       # the database can't handle numpy types, so use a python type
       day = int(day)
       database.update_direction(
-          source, signal, 'day', geo_type, day, geo_value, direction)
+        source, signal, 'day', geo_type, day, geo_value, direction)
 
     # mark the entire time-series as fresh with respect to direction
     database.update_timeseries_timestamp2(
-        source, signal, 'day', geo_type, geo_value)
+      source, signal, 'day', geo_type, geo_value)
 
 
 def optimized_update_loop(database, direction_impl=Direction):
+  """An optimized implementation of update_loop, finds and updates rows with a stale `direction` value.
+
+  `database`: an open connection to the epidata database
   """
-  [TODO]
-  """
+  # Name of temporary table, which will store all rows from potentially stale time-series
   tmp_table_name = 'tmp_ts_rows'
 
+  # A pandas DataFrame that will hold all rows from potentially stale time-series
   df_all = pd.DataFrame(columns=['id', 'source', 'signal', 'time_type', 'geo_type', 'geo_value', 'time_value',
-                                  'timestamp1', 'value', 'timestamp2', 'direction'],
+                                 'timestamp1', 'value', 'timestamp2', 'direction'],
                         data=database.get_all_record_values_of_timeseries_with_potentially_stale_direction(
-                            tmp_table_name))
-  df_all.drop(columns=['time_type'],inplace=True)
+                          tmp_table_name))
+  df_all.drop(columns=['time_type'], inplace=True)
   df_all['time_value_datetime'] = pd.to_datetime(df_all.time_value, format="%Y%m%d")
   df_all.direction = df_all.direction.astype(np.float64)
 
+  # Grouping by time-series key, 'time_type' as only time-series with value 'day' were retrieved.
   groupby_object = df_all.groupby(['source', 'signal', 'geo_type', 'geo_value'])
 
   num_series = len(groupby_object)
@@ -170,7 +174,7 @@ def optimized_update_loop(database, direction_impl=Direction):
 
   # get the historical standard deviation of all signals and resolutions
   rows = database.get_data_stdev_across_locations(
-      Constants.SIGNAL_STDEV_MAX_DAY)
+    Constants.SIGNAL_STDEV_MAX_DAY)
   data_stdevs = {}
   for (source, signal, geo_type, aggregate_stdev) in rows:
     if source not in data_stdevs:
@@ -179,8 +183,10 @@ def optimized_update_loop(database, direction_impl=Direction):
       data_stdevs[source][signal] = {}
     data_stdevs[source][signal][geo_type] = aggregate_stdev
 
+  # Dictionary to store the ids of rows with changed direction value
   changed_rows = {-1.0: set(), 0.0: set(), 1.0: set(), np.nan: set()}
 
+  # looping over time-series
   for ts_index, ts_key in enumerate(groupby_object.groups):
     (
         source,
@@ -225,15 +231,16 @@ def optimized_update_loop(database, direction_impl=Direction):
 
     def get_direction_impl(x, y):
       return direction_impl.get_direction(
-          x, y, n=Constants.SLOPE_STERR_SCALE, limit=slope_threshold)
+        x, y, n=Constants.SLOPE_STERR_SCALE, limit=slope_threshold)
 
     # recompute any stale directions
     days, directions = direction_impl.scan_timeseries(
-        offsets, days, values, timestamp1s, timestamp2s, get_direction_impl)
+      offsets, days, values, timestamp1s, timestamp2s, get_direction_impl)
 
     if be_verbose:
       print(' computed %d direction updates' % len(directions))
 
+    # A DataFrame holding rows that potentially changed direction value
     ts_pot_changed = ts_rows.set_index('time_value').loc[days]
     ts_pot_changed['new_direction'] = np.array(directions, np.float64)
 
@@ -242,19 +249,22 @@ def optimized_update_loop(database, direction_impl=Direction):
     # changed_mask = ~(is_eq_nan | is_eq_num)
     # ts_changed = ts_pot_changed[changed_mask]
 
+    # Adding changed values to the changed_rows dictionary
     gb_o = ts_pot_changed.groupby('new_direction')
     for v in gb_o.groups:
       changed_rows[v] = changed_rows[v].union(set(gb_o.get_group(v).id))
-    changed_rows[np.nan]= changed_rows[np.nan].union(set(
+    changed_rows[np.nan] = changed_rows[np.nan].union(set(
       ts_pot_changed[ts_pot_changed.new_direction.isnull()].id))
 
-  # Updating Direction
+  # Updating direction
   for v, id_set in changed_rows.items():
     database.batched_update_direction(v, list(id_set))
 
   # Updating timestamp2
   database.update_timestamp2_from_temporary_table(tmp_table_name)
+  # Dropping temporary table
   database.drop_temporary_table(tmp_table_name)
+
 
 def main(
     args,

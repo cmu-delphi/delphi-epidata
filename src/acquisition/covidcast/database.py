@@ -164,8 +164,11 @@ class Database:
     self._cursor.execute(sql, args)
 
   def get_all_record_values_of_timeseries_with_potentially_stale_direction(self, temporary_table=None):
-    """
-    [TODO]
+    """Return the rows of all daily time-series with potentially stale directions,
+    only rows corresponding to the most recent issue for each time_value is returned.
+
+    `temporary_table`: if provided, a temporary table with the name `temporary_table`
+                       is created and the result is also stored in that table.
     """
 
     create_tmp_table_sql = f'''
@@ -185,6 +188,8 @@ class Database:
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
     '''
 
+    # A query that selects all rows from `covidcast` that have latest issue-date
+    # for any (time-series-key, time_value) with time_type='day'.
     latest_issues_sql = f'''
     SELECT 
       `id`,
@@ -230,6 +235,7 @@ class Database:
     )
     '''
 
+    # A query that selects the keys of time-series with potentially stale directions.
     stale_ts_key_sql = f'''
       SELECT
         `source`,
@@ -249,6 +255,7 @@ class Database:
         MAX(`timestamp1`) > MIN(`timestamp2`)
     '''
 
+    # A query that selects rows of the time-series selected by stale_ts_key_sql query.
     stale_ts_records_with_latest_issues_sql = f'''
     {cte_definition}
     SELECT
@@ -268,10 +275,10 @@ class Database:
     USING (`source`, `signal`, `time_type`, `geo_type`, `geo_value`)
     '''
 
-    if temporary_table is None: 
+    if temporary_table is None:
       self._cursor.execute(stale_ts_records_with_latest_issues_sql)
       return list(self._cursor)
-    
+
     self._cursor.execute(create_tmp_table_sql)
     final_sql = f'''
       INSERT INTO `{temporary_table}`
@@ -283,8 +290,12 @@ class Database:
     return list(self._cursor)
 
   def batched_update_direction(self, new_direction_value, id_list, batch_size=1024):
-    """
-    [TODO]
+    """Updates the `direction` column of rows with ids in `id_list` to `new_direction_value`,
+    the update query is executed in batches of `bath_size` rows at a time.
+
+    `new_direction_value`: the new value to be stored in `direction` column.
+    `id_list`: a list of ids of rows that will change to `new_direction_value`.
+    `batch_size`: batch size of the update query.
     """
     if np.isnan(new_direction_value):
       new_direction_value = 'NULL'
@@ -300,15 +311,17 @@ class Database:
       self._cursor.execute(sql)
 
   def drop_temporary_table(self, tmp_table_name):
-    """
-    [TODO]
+    """Drops temporary table from the Database.
+
+    `tmp_table_name`: name of temporary table to be dropped.
     """
     sql = f'DROP TEMPORARY TABLE `{tmp_table_name}`;'
     self._cursor.execute(sql)
 
   def update_timestamp2_from_temporary_table(self, tmp_table_name):
-    """
-    [TODO]
+    """Updates the `timestamp2` column of `covidcast` table for all the rows with id value in `tmp_table_name`.
+
+    `tmp_table_name`: name of the temporary table.
     """
     sql = f'''
       UPDATE
@@ -321,7 +334,7 @@ class Database:
         `covidcast`.timestamp2=UNIX_TIMESTAMP(NOW())
       '''
     self._cursor.execute(sql)
- 
+
 
   def get_keys_with_potentially_stale_direction(self):
     """
