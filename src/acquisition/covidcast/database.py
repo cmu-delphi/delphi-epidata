@@ -291,7 +291,7 @@ class Database:
 
   def batched_update_direction(self, new_direction_value, id_list, batch_size=1024):
     """Updates the `direction` column of rows with ids in `id_list` to `new_direction_value`,
-    the update query is executed in batches of `bath_size` rows at a time.
+    the update query is executed in batches of `batch_size` rows at a time.
 
     `new_direction_value`: the new value to be stored in `direction` column.
     `id_list`: a list of ids of rows that will change to `new_direction_value`.
