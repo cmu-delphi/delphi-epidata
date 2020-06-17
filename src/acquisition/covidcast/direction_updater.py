@@ -184,7 +184,7 @@ def optimized_update_loop(database, direction_impl=Direction):
     data_stdevs[source][signal][geo_type] = aggregate_stdev
 
   # Dictionary to store the ids of rows with changed direction value
-  changed_rows = {-1.0: set(), 0.0: set(), 1.0: set(), np.nan: set()}
+  changed_rows = {-1.0: [], 0.0: [], 1.0: [], np.nan: []}
 
   # looping over time-series
   for ts_index, ts_key in enumerate(groupby_object.groups):
@@ -252,13 +252,12 @@ def optimized_update_loop(database, direction_impl=Direction):
     # Adding changed values to the changed_rows dictionary
     gb_o = ts_pot_changed.groupby('new_direction')
     for v in gb_o.groups:
-      changed_rows[v] = changed_rows[v].union(set(gb_o.get_group(v).id))
-    changed_rows[np.nan] = changed_rows[np.nan].union(set(
-      ts_pot_changed[ts_pot_changed.new_direction.isnull()].id))
+      changed_rows[v].extend(gb_o.get_group(v).id)
+    changed_rows[np.nan].extend(ts_pot_changed[ts_pot_changed.new_direction.isnull()].id)
 
   # Updating direction
-  for v, id_set in changed_rows.items():
-    database.batched_update_direction(v, list(id_set))
+  for v, id_list in changed_rows.items():
+    database.batched_update_direction(v, id_list)
 
   # Updating timestamp2
   database.update_timestamp2_from_temporary_table(tmp_table_name)
