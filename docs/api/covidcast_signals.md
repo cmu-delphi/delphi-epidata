@@ -9,7 +9,24 @@ The API for retrieving data from these sources is described in the
 [COVIDcast API endpoint documentation](covidcast.md). Changes and corrections to
 data in this API are listed in the [API changelog](covidcast_changelog.md).
 
-## Sources and Signals
+## COVIDcast Map Signals
+
+The following signals are currently displayed on [the public COVIDcast
+map](https://covidcast.cmu.edu/):
+
+| Name | Source | Signal |
+| --- | --- | --- |
+| Doctor's Visits | `doctor-visits` | `smoothed_adj_cli` |
+| Symptoms (Facebook) | `fb-survey` | `smoothed_cli` |
+| Symptoms in Community (Facebook) | `fb-survey` | `smoothed_hh_cmnty_cli` |
+| Search Trends (Google) | `ght` | `smoothed_search` |
+| Combined | `indicator-combination` | `nmf_day_doc_fbc_fbs_ght` |
+| Cases | `jhu-csse` | `confirmed_incidence_num` |
+| Cases per capita | `jhu-csse` | `confirmed_incidence_prop` |
+| Deaths | `jhu-csse` | `deaths_incidence_num` |
+| Deaths per capita | `jhu-csse` | `confirmed_incidence_prop` |
+
+## Active Sources and Signals
 
 ### `doctor-visits`
 
@@ -79,37 +96,6 @@ counties (and MSAs) than the raw signals.
 * Number of data revisions since 19 May 2020: 1
 * Date of last change: [3 June 2020](covidcast_changelog.md#fb-survey)
 
-### `google-survey`
-
-Data source based on Google-run symptom surveys, through publisher websites,
-their Opinions Reward app, and similar applications. Respondents can opt to skip
-the survey and complete a different one if they prefer not to answer. The survey
-is just one question long, and asks "Do you know someone in your community who
-is sick (fever, along with cough, or shortness of breath, or difficulty
-breathing) right now?" Using this survey data, we estimate the percentage of
-people in a given location, on a given day, that *know somebody who has a 
-COVID-like illness*. Note that this is tracking a different quantity than the
-surveys through Facebook, and (unsurprisingly) the estimates here tend to be
-much larger.
-
-The survey sampled from all counties with greater than 100,000 population, along
-with a separate random sample from each state. This means that the megacounties
-(discussed in the [COVIDcast API documentation](covidcast.md)) are always the
-counties with populations smaller than 100,000, and megacounty estimates are
-created by combining the state-level survey with the observed county surveys.
-
-These surveys were run daily until May 15, 2020. After that date, new national
-data will not be collected regularly, although the surveys may be deployed in
-specific geographical areas as needed to support forecasting efforts.
-
-| Signal | Description |
-| --- | --- |
-| `raw_cli` | Estimated percentage of people who know someone in their community with COVID-like illness |
-| `smoothed_cli` | Estimated percentage of people who know someone in their community with COVID-like illness, smoothed in time |
-
-* Number of data revisions since 19 May 2020: 0
-* Date of last change: Never
-
 ### `ght`
 
 Data source based on Google searches, provided to us by Google Health 
@@ -128,33 +114,36 @@ so county estimates are not available from the API.
 * Number of data revisions since 19 May 2020: 0
 * Date of last change: Never
 
-### `quidel`
+### `safegraph`
 
-Data source based on flu lab tests, provided to us by Quidel, Inc. When a
-patient (whether at a doctor’s office, clinic, or hospital) has COVID-like
-symptoms, doctors may perform a flu test to rule out seasonal flu (influenza),
-because these two diseases have similar symptoms. Using this lab test data, we
-estimate the total number of flu tests per medical device (a measure of testing
-frequency), and the percentage of flu tests that are *negative* (since ruling
-out flu leaves open another cause---possibly covid---for the patient's
-symptoms), in a given location, on a given day.
+This data source uses data reported by [SafeGraph](https://www.safegraph.com/)
+using anonymized location data from mobile phones. SafeGraph provides [social
+distancing metrics](https://docs.safegraph.com/docs/social-distancing-metrics)
+to eligible researchers who obtain an API key. SafeGraph provides this data for
+individual census block groups, using differential privacy to protect the
+privacy of individual people in the data.
 
-The number of flu tests conducted in individual counties can be quite small, so
-we do not report these signals at the county level.
+Delphi aggregates the SafeGraph data from census block groups to counties, and
+makes this aggregated data freely available through the COVIDcast API.
 
-The flu test data is no longer updated as of May 19, 2020, as the number of flu
-tests conducted during the summer (outside of the normal flu season) is quite
-small. The data may be updated again when the Winter 2020 flu season begins.
+For precise definitions of the quantities below, consult the [SafeGraph social
+distancing metric
+documentation](https://docs.safegraph.com/docs/social-distancing-metrics).
 
 | Signal | Description |
 | --- | --- |
-| `raw_pct_negative` | The percentage of flu tests that are negative, suggesting the patient's illness has another cause, possibly COVID-19 |
-| `smoothed_pct_negative` | Same as above, but smoothed in time |
-| `raw_tests_per_device` | The number of flu tests conducted by each testing device; measures volume of testing | 
-| `smoothed_tests_per_device` | Same as above, but smoothed in time |
+| `prop_completely_home` | The fraction of mobile devices that did not leave the immediate area of their home (SafeGraph's `completely_home_device_count / device_count`) |
+| `prop_full_time_work` | The fraction of mobile devices that spent more than 6 hours at a location other than their home during the daytime (SafeGraph's `full_time_work_behavior_devices / device_count`) |
+| `prop_part_time_work` | The fraction of devices that spent between 3 and 6 hours at a location other than their home during the daytime (SafeGraph's `part_time_work_behavior_devices / device_count`) |
+| `median_home_dwell_time` | The median time spent at home for all devices at this location for this time period, in minutes |
 
-* Number of data revisions since 19 May 2020: 0
-* Date of last change: Never
+After computing each metric on the census block group (CBG) level, we aggregate
+to the county-level by taking the mean over CBGs in a county to obtain the value
+and taking `sd / sqrt(n)` for the standard error, where `sd` is the standard
+deviation over the metric values and `n` is the number of CBGs in the county. In
+doing so, we make the simplifying assumption that each CBG contributes an iid
+observation to the county-level distribution. `n` also serves as the sample
+size. The same method is used for aggregation to states.
 
 ### `jhu-csse`
 
@@ -210,19 +199,68 @@ sources above. It is not a primary data source.
 * Number of data revisions since 19 May 2020: 1
 * Date of last change: [3 June 2020](covidcast_changelog.md#indicator-combination)
 
-## COVIDcast Map Signals
+## Inactive Sources and Signals
 
-The following signals are currently displayed on [the public COVIDcast
-map](https://covidcast.cmu.edu/):
+These signals are currently not updated, because the sources have become
+unavailable, they have been replaced by other sources, or because additional
+work is required for us to continue to update them. Some of these sources may
+return in the coming months.
 
-| Name | Source | Signal |
-| --- | --- | --- |
-| Doctor's Visits | `doctor-visits` | `smoothed_adj_cli` |
-| Symptoms (Facebook) | `fb-survey` | `smoothed_cli` |
-| Symptoms in Community (Facebook) | `fb-survey` | `smoothed_hh_cmnty_cli` |
-| Search Trends (Google) | `ght` | `smoothed_search` |
-| Combined | `indicator-combination` | `nmf_day_doc_fbc_fbs_ght` |
-| Cases | `jhu-csse` | `confirmed_incidence_num` |
-| Cases per capita | `jhu-csse` | `confirmed_incidence_prop` |
-| Deaths | `jhu-csse` | `deaths_incidence_num` |
-| Deaths per capita | `jhu-csse` | `confirmed_incidence_prop` |
+### `quidel`
+
+Data source based on flu lab tests, provided to us by Quidel, Inc. When a
+patient (whether at a doctor’s office, clinic, or hospital) has COVID-like
+symptoms, doctors may perform a flu test to rule out seasonal flu (influenza),
+because these two diseases have similar symptoms. Using this lab test data, we
+estimate the total number of flu tests per medical device (a measure of testing
+frequency), and the percentage of flu tests that are *negative* (since ruling
+out flu leaves open another cause---possibly covid---for the patient's
+symptoms), in a given location, on a given day.
+
+The number of flu tests conducted in individual counties can be quite small, so
+we do not report these signals at the county level.
+
+The flu test data is no longer updated as of May 19, 2020, as the number of flu
+tests conducted during the summer (outside of the normal flu season) is quite
+small. The data may be updated again when the Winter 2020 flu season begins.
+
+| Signal | Description |
+| --- | --- |
+| `raw_pct_negative` | The percentage of flu tests that are negative, suggesting the patient's illness has another cause, possibly COVID-19 |
+| `smoothed_pct_negative` | Same as above, but smoothed in time |
+| `raw_tests_per_device` | The number of flu tests conducted by each testing device; measures volume of testing |
+| `smoothed_tests_per_device` | Same as above, but smoothed in time |
+
+* Number of data revisions since 19 May 2020: 0
+* Date of last change: Never
+
+### `google-survey`
+
+Data source based on Google-run symptom surveys, through publisher websites,
+their Opinions Reward app, and similar applications. Respondents can opt to skip
+the survey and complete a different one if they prefer not to answer. The survey
+is just one question long, and asks "Do you know someone in your community who
+is sick (fever, along with cough, or shortness of breath, or difficulty
+breathing) right now?" Using this survey data, we estimate the percentage of
+people in a given location, on a given day, that *know somebody who has a
+COVID-like illness*. Note that this is tracking a different quantity than the
+surveys through Facebook, and (unsurprisingly) the estimates here tend to be
+much larger.
+
+The survey sampled from all counties with greater than 100,000 population, along
+with a separate random sample from each state. This means that the megacounties
+(discussed in the [COVIDcast API documentation](covidcast.md)) are always the
+counties with populations smaller than 100,000, and megacounty estimates are
+created by combining the state-level survey with the observed county surveys.
+
+These surveys were run daily until May 15, 2020. After that date, new national
+data will not be collected regularly, although the surveys may be deployed in
+specific geographical areas as needed to support forecasting efforts.
+
+| Signal | Description |
+| --- | --- |
+| `raw_cli` | Estimated percentage of people who know someone in their community with COVID-like illness |
+| `smoothed_cli` | Estimated percentage of people who know someone in their community with COVID-like illness, smoothed in time |
+
+* Number of data revisions since 19 May 2020: 0
+* Date of last change: Never
