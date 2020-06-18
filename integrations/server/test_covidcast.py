@@ -72,6 +72,8 @@ class CovidcastTests(unittest.TestCase):
         'stderr': 2.5,
         'sample_size': 3.5,
         'direction': 4,
+        'issue': 20200414,
+        'lag': 0
        }],
       'message': 'success',
     })
@@ -121,6 +123,8 @@ class CovidcastTests(unittest.TestCase):
           'stderr': 11,
           'sample_size': 12,
           'direction': 13,
+          'issue': 20200414,
+          'lag': 0,
         }, {
           'time_value': 20200414,
           'geo_value': '22222',
@@ -128,6 +132,8 @@ class CovidcastTests(unittest.TestCase):
           'stderr': 21,
           'sample_size': 22,
           'direction': 23,
+          'issue': 20200414,
+          'lag': 0,
         }, {
           'time_value': 20200414,
           'geo_value': '33333',
@@ -135,6 +141,8 @@ class CovidcastTests(unittest.TestCase):
           'stderr': 31,
           'sample_size': 32,
           'direction': 33,
+          'issue': 20200414,
+          'lag': 0
         },
        ],
       'message': 'success',
@@ -185,6 +193,8 @@ class CovidcastTests(unittest.TestCase):
           'stderr': 11,
           'sample_size': 12,
           'direction': 13,
+          'issue': 20200413,
+          'lag': 2,
         }, {
           'time_value': 20200412,
           'geo_value': '01234',
@@ -192,6 +202,8 @@ class CovidcastTests(unittest.TestCase):
           'stderr': 21,
           'sample_size': 22,
           'direction': 23,
+          'issue': 20200413,
+          'lag': 1,
         }, {
           'time_value': 20200413,
           'geo_value': '01234',
@@ -199,6 +211,8 @@ class CovidcastTests(unittest.TestCase):
           'stderr': 31,
           'sample_size': 32,
           'direction': 33,
+          'issue': 20200413,
+          'lag': 0,
         },
        ],
       'message': 'success',
@@ -264,6 +278,8 @@ class CovidcastTests(unittest.TestCase):
         'stderr': None,
         'sample_size': None,
         'direction': None,
+        'issue': 20200414,
+        'lag': 0,
        }],
       'message': 'success',
     })
@@ -310,6 +326,8 @@ class CovidcastTests(unittest.TestCase):
         'stderr': 31,
         'sample_size': 32,
         'direction': 33,
+        'issue': 202016,
+        'lag': 0
        }],
       'message': 'success',
     })

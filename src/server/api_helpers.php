@@ -157,6 +157,11 @@ function execute_query($query, &$epidata, $fields_string, $fields_int, $fields_f
   global $dbh;
   global $MAX_RESULTS;
   $result = mysqli_query($dbh, $query . " LIMIT {$MAX_RESULTS}");
+  error_log("Query: ".$query);
+  if (!$result) {
+    error_log(sprintf("Error: %s\n",mysqli_error($dbh)));
+    return;
+  }
   while($row = mysqli_fetch_array($result)) {
     if(count($epidata) < $MAX_RESULTS) {
       $values = array();

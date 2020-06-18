@@ -64,6 +64,9 @@ class CovidcastMetaTests(unittest.TestCase):
               'mean_value': 15,
               'stdev_value': 5,
               'last_update': 123,
+              'max_issue': 2,
+              'min_lag': 0,
+              'max_lag': 0,
             })
             for tv in (1, 2):
               for gv, v in zip(('geo1', 'geo2'), (10, 20)):
@@ -109,6 +112,9 @@ class CovidcastMetaTests(unittest.TestCase):
                 'mean_value': 15,
                 'stdev_value': 5,
                 'last_update': 123,
+                'max_issue': 2,
+                'min_lag': 0,
+                'max_lag': 0,
               })
             for tv in (1, 2):
               for gv, v in zip(('geo1', 'geo2'), (10, 20)):

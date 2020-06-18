@@ -67,6 +67,8 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
         'stderr': 2.5,
         'sample_size': 3.5,
         'direction': 4,
+        'issue': 20200414,
+        'lag': 0
        }],
       'message': 'success',
     })
@@ -101,6 +103,9 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
         'mean_value': 1.5,
         'stdev_value': 0,
         'last_update': 123,
+        'max_issue': 20200414,
+        'min_lag': 0,
+        'max_lag': 0
        }],
       'message': 'success',
     })
