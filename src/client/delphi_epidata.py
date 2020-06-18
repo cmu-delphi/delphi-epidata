@@ -563,4 +563,4 @@ class Epidata:
   @staticmethod
   def covidcast_meta():
     """Fetch Delphi's COVID-19 Surveillance Streams metadata"""
-    return Epidata._request({'source': 'covidcast_meta'})
+    return Epidata._request({'source': 'covidcast_meta', 'cached': 'true'})

@@ -524,7 +524,7 @@ Epidata <- (function() {
 
   # Fetch Delphi's COVID-19 Surveillance Streams metadata
   covidcast_meta <- function() {
-    return(.request(list(source='covidcast_meta')))
+    return(.request(list(source='covidcast_meta', cached='true')))
   }
 
   # Export the public methods
