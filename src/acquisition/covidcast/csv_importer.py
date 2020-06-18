@@ -9,6 +9,7 @@ import re
 
 # third party
 import pandas
+import epiweeks as epi
 
 # first party
 from delphi.utils.epiweek import delta_epiweeks
@@ -70,12 +71,12 @@ class CsvImporter:
     nearby_year = CsvImporter.MIN_YEAR <= year <= CsvImporter.MAX_YEAR
     sensible_week = 1 <= week <= 53
 
-    if not nearby_year and sensible_week:
+    if not (nearby_year and sensible_week):
       return False
     return value
 
   @staticmethod
-  def find_csv_files(scan_dir, issue=(date.today(), -1), glob=glob):
+  def find_csv_files(scan_dir, issue=(date.today(), epi.Week.fromdate(date.today())), glob=glob):
     """Recursively search for and yield covidcast-format CSV files.
 
     scan_dir: the directory to scan (recursively)
@@ -87,7 +88,7 @@ class CsvImporter:
 
     issue_day,issue_epiweek=issue
     issue_day_value=int(issue_day.strftime("%Y%m%d"))
-    issue_epiweek_value=issue_epiweek # TODO
+    issue_epiweek_value=int(str(issue_epiweek))
     issue_value=-1
     lag_value=-1
 
@@ -127,8 +128,8 @@ class CsvImporter:
           print(' invalid filename week', time_value)
           yield (path, None)
           continue
-        issue_value=issue_week_value
-        lag_value=delta_epiweeks(time_value_week, issue_week)
+        issue_value=issue_epiweek_value
+        lag_value=delta_epiweeks(time_value_week, issue_epiweek_value)
 
       # # extract and validate geographic resolution
       geo_type = match.group(3).lower()

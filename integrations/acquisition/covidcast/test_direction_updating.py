@@ -100,6 +100,8 @@ class DirectionUpdatingTests(unittest.TestCase):
           'stderr': 0,
           'sample_size': 0,
           'direction': None,
+          'issue': 20200228,
+          'lag': 0
         },
         {
           'time_value': 20200229,
@@ -108,6 +110,8 @@ class DirectionUpdatingTests(unittest.TestCase):
           'stderr': 0,
           'sample_size': 0,
           'direction': None,
+          'issue': 20200229,
+          'lag': 0
         },
         {
           'time_value': 20200301,
@@ -116,6 +120,8 @@ class DirectionUpdatingTests(unittest.TestCase):
           'stderr': 0,
           'sample_size': 0,
           'direction': 1,
+          'issue': 20200301,
+          'lag': 0
         },
         {
           'time_value': 20200511,
@@ -124,6 +130,8 @@ class DirectionUpdatingTests(unittest.TestCase):
           'stderr': 0,
           'sample_size': 0,
           'direction': None,
+          'issue': 20200511,
+          'lag': 0
         },
         {
           'time_value': 20200512,
@@ -132,6 +140,8 @@ class DirectionUpdatingTests(unittest.TestCase):
           'stderr': 0,
           'sample_size': 0,
           'direction': None,
+          'issue': 20200512,
+          'lag': 0
         },
         {
           'time_value': 20200517,
@@ -140,6 +150,8 @@ class DirectionUpdatingTests(unittest.TestCase):
           'stderr': 0,
           'sample_size': 0,
           'direction': 0,
+          'issue': 20200517,
+          'lag': 0
         },
         {
           'time_value': 20200615,
@@ -148,6 +160,8 @@ class DirectionUpdatingTests(unittest.TestCase):
           'stderr': 0,
           'sample_size': 0,
           'direction': None,
+          'issue': 20200615,
+          'lag': 0
         },
         {
           'time_value': 20200616,
@@ -156,6 +170,8 @@ class DirectionUpdatingTests(unittest.TestCase):
           'stderr': 0,
           'sample_size': 0,
           'direction': None,
+          'issue': 20200616,
+          'lag': 0
         },
         {
           'time_value': 20200617,
@@ -164,6 +180,8 @@ class DirectionUpdatingTests(unittest.TestCase):
           'stderr': 0,
           'sample_size': 0,
           'direction': 1,
+          'issue': 20200617,
+          'lag': 0
         },
        ],
       'message': 'success',

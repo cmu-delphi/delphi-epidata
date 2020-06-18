@@ -269,11 +269,42 @@ class Database:
         COUNT(DISTINCT t.`geo_value`) AS `num_locations`,
         MIN(`value`) AS `min_value`,
         MAX(`value`) AS `max_value`,
-        AVG(`value`) AS `mean_value`,
-        STD(`value`) AS `stdev_value`,
-        MAX(`timestamp1`) AS `last_update`
+        FORMAT(AVG(`value`),7) AS `mean_value`,
+        FORMAT(STD(`value`),7) AS `stdev_value`,
+        MAX(`timestamp1`) AS `last_update`,
+        MAX(`issue`) as `max_issue`,
+        MIN(`lag`) as `min_lag`,
+        MAX(`lag`) as `max_lag`
       FROM
         `covidcast` t
+        JOIN
+          (
+            SELECT
+              max(`issue`) `max_issue`,
+              `time_type`,
+              `time_value`,
+              `source`,
+              `signal`,
+              `geo_type`,
+              `geo_value`
+            FROM
+              `covidcast`
+            GROUP BY
+              `time_value`,
+              `time_type`,
+              `geo_type`,
+              `source`,
+              `signal`,
+              `geo_value`
+          ) x
+        ON
+          x.`max_issue` = t.`issue` AND
+          x.`time_type` = t.`time_type` AND
+          x.`time_value` = t.`time_value` AND
+          x.`source` = t.`source` AND
+          x.`signal` = t.`signal` AND
+          x.`geo_type` = t.`geo_type` AND
+          x.`geo_value` = t.`geo_value`
       WHERE
         t.`signal` NOT LIKE 'wip_%'
       GROUP BY
