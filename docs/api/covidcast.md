@@ -257,7 +257,18 @@ https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&si
 
 ## API Clients
 
-Libraries are available for
+Dedicated COVIDcast clients are available for several languages:
+
+* [covidcast-py](https://cmu-delphi.github.io/covidcast/covidcast-py/html/) for
+  Python users
+* [covidcastR](https://cmu-delphi.github.io/covidcast/covidcastR/) for R users
+
+These packages provide a convenient way to obtain COVIDcast data as a data frame
+ready to be used in further analyses. For installation instructions and
+examples, consult their respective webpages.
+
+More generic clients that support the entire Epidata API are available as well.
+Epidata clients are available for
 [CoffeeScript](https://github.com/cmu-delphi/delphi-epidata/blob/master/src/client/delphi_epidata.coffee),
 [JavaScript](https://github.com/cmu-delphi/delphi-epidata/blob/master/src/client/delphi_epidata.js),
 [Python](https://github.com/cmu-delphi/delphi-epidata/blob/master/src/client/delphi_epidata.py),
@@ -295,6 +306,10 @@ Epidata.covidcast(callback, 'fb-survey', 'raw_cli', 'day', 'county', [20200401, 
 
 ### Python
 
+**Note:** For COVIDcast usage, Python users should prefer the [covidcast-py
+package](https://cmu-delphi.github.io/covidcast/covidcast-py/html/); these
+instructions are for advanced users who want access to the entire Epidata API.
+
 Optionally install the [package from PyPI](https://pypi.org/project/delphi-epidata/) using pip(env):
 ````bash
 pip install delphi-epidata
@@ -313,6 +328,10 @@ print(res['result'], res['message'], len(res['epidata']))
 ````
 
 ### R
+
+**Note:** For COVIDcast usage, R users should prefer the [covidcastR
+package](https://cmu-delphi.github.io/covidcast/covidcastR/); these instructions
+are for advanced users who want access to the entire Epidata API.
 
 ````R
 # Import
