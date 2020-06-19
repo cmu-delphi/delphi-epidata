@@ -162,7 +162,7 @@ University.
 | `deaths_incidence_num` | Number of new confirmed deaths due to COVID-19, daily |
 | `deaths_incidence_prop` | Number of new confirmed deaths due to COVID-19 per 100,000 population, daily |
 
-Our signals here are taken directly from the JHU CSSE [COVID-19 GitHub
+These signals are taken directly from the JHU CSSE [COVID-19 GitHub
 repository](https://github.com/CSSEGISandData/COVID-19) without filtering,
 smoothing, or changes. **Note:** JHU's data reports cumulative cases and deaths,
 so our incidence signals are calculated by subtracting each day's cumulative
@@ -170,6 +170,13 @@ count from the previous day. Since cumulative figures are sometimes corrected or
 amended by health authorities, this can sometimes result in negative incidence.
 This should be interpreted purely as an artifact of data reporting and
 correction.
+
+Smoothed versions of all the signals above are available with the prefix
+`7dav_`, such as `7dav_confirmed_incidence_prop` and
+`7dav_deaths_incidence_num`. These signals use report moving averages of the
+preceding 7 days, so e.g. the signal for June 7 is the average of the underlying
+data for June 1 through 7, inclusive.
+
 
 * Number of data revisions since 19 May 2020: 1
 * Date of last change: [3 June 2020](covidcast_changelog.md#jhu-csse)
