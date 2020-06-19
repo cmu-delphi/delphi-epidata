@@ -123,8 +123,9 @@ to eligible researchers who obtain an API key. SafeGraph provides this data for
 individual census block groups, using differential privacy to protect the
 privacy of individual people in the data.
 
-Delphi aggregates the SafeGraph data from census block groups to counties, and
-makes this aggregated data freely available through the COVIDcast API.
+Delphi creates features of the Safegraph data at the census block group level,
+then aggregates these features to the county and state levels.  The aggregated
+data is freely available through the COVIDcast API.
 
 For precise definitions of the quantities below, consult the [SafeGraph social
 distancing metric
