@@ -29,6 +29,18 @@ plugins:
   - jekyll-relative-links
 
 remote_theme: pmarsceill/just-the-docs
+
+# Just the Docs config
+
+aux_links:
+  "CMU Delphi Research Group":
+    - "https://delphi.cmu.edu/"
+
+footer_content: "Copyright &copy; <a href='https://delphi.cmu.edu'>Delphi Research Group</a>, 2020"
+
+heading_anchors: true
+
+
 # Exclude from processing.
 # The following items will not be processed, by default. Create a custom list
 # to override the default setting.
