@@ -1,4 +1,9 @@
-# About
+---
+title: FluView
+parent: Delphi Epidata API
+---
+
+# FluView
 
 This is the documentation of the API for accessing the FluView (`fluview`) data source of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.

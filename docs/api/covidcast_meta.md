@@ -1,4 +1,9 @@
-# About
+---
+title: Metadata
+parent: COVIDcast API
+---
+
+# COVIDcast Metadata
 
 This is the documentation of the API for accessing the Delphi's COVID-19 Surveillance Streams Metadata (`covidcast_meta`)
 data source of the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
@@ -28,7 +33,7 @@ None.
 | --- | --- | --- |
 | `result` | result code: 1 = success, 2 = too many results, -2 = no results | integer |
 | `epidata` | list of results, one per name/geo_type pair | array of objects |
-| `epidata[].data_source` | data souce | string |
+| `epidata[].data_source` | data source | string |
 | `epidata[].time_type` | temporal resolution of the signal (e.g., `day`, `week`) | string |
 | `epidata[].geo_type` | geographic resolution (e.g. `county`, `hrr`, `msa`, `dma`, `state`) | string |
 | `epidata[].min_time` | minimum time (e.g., 20200406) | integer |

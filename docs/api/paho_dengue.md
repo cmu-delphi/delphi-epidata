@@ -1,4 +1,9 @@
-# About
+---
+title: PAHO Dengue
+parent: Delphi Epidata API
+---
+
+# PAHO Dengue
 
 This is the documentation of the API for accessing the PAHO Dengue (`paho_dengue`) data source of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.

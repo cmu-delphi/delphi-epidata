@@ -1,4 +1,9 @@
-# About
+---
+title: Wikipedia Access
+parent: Delphi Epidata API
+---
+
+# Wikipedia Access
 
 This is the documentation of the API for accessing the Wikipedia Access (`wiki`) data source of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.

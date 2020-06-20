@@ -1,3 +1,9 @@
+---
+title: Data Sources
+parent: COVIDcast API
+nav_order: 1
+---
+
 # Delphi's COVID-19 Surveillance Streams Data
 
 Delphi's COVID-19 Surveillance Streams data includes the following data sources.

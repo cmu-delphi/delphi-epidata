@@ -1,4 +1,9 @@
-# About
+---
+title: Dengue Nowcast
+parent: Delphi Epidata API
+---
+
+# Delphi's Dengue Nowcast
 
 This is the documentation of the API for accessing the Delphi's Dengue Nowcast (`dengue_nowcast`) data source of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.

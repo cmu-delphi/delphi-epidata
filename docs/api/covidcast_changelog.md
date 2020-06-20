@@ -1,4 +1,10 @@
-# Delphi's COVID-19 Surveillance Streams Changelog
+---
+title: Changelog
+parent: COVIDcast API
+nav_order: 4
+---
+
+# COVIDcast API Changelog
 
 When Delphi makes substantial changes to the computation of a signal, we will
 typically publish it under a new name rather than revising the existing signal.

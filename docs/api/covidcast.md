@@ -1,3 +1,9 @@
+---
+title: COVIDcast API
+has_children: true
+nav_order: 1
+---
+
 # Delphi's COVIDcast API
 
 This is the documentation of the API for accessing the Delphi's COVID-19

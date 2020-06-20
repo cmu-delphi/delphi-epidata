@@ -1,4 +1,9 @@
-# About
+---
+title: AFHSB Metadata
+parent: Delphi Epidata API
+---
+
+# AFHSB Metadata
 
 This is the documentation of the API for accessing the AFHSB Metadata (`meta_afhsb`) data source of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.

@@ -1,4 +1,9 @@
-# About
+---
+title: Dengue Digital Surveillance
+parent: Delphi Epidata API
+---
+
+# Dengue Digital Surveillance Sensors
 
 This is the documentation of the API for accessing the Delphi's Dengue Digital Surveillance Sensors (`dengue_sensors`) data source of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.

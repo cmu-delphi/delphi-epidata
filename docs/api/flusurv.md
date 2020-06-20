@@ -1,4 +1,9 @@
-# About
+---
+title: Flusurv
+parent: Delphi Epidata API
+---
+
+# FluSurv
 
 This is the documentation of the API for accessing the FluSurv (`flusurv`) data source of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.

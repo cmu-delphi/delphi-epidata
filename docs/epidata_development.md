@@ -1,3 +1,8 @@
+---
+title: Epidata API Development Guide
+nav_order: 3
+---
+
 # Epidata API Development Guide
 
 **Prerequisite:** this guide assumes that you have read the
