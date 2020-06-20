@@ -37,6 +37,7 @@ class UnitTests(unittest.TestCase):
     mock_epidata_impl = MagicMock()
     mock_epidata_impl.covidcast_meta.return_value = api_response
     mock_database = MagicMock()
+    mock_database.get_covidcast_meta.return_value=api_response['epidata']
     fake_database_impl = lambda: mock_database
 
     main(
@@ -55,7 +56,7 @@ class UnitTests(unittest.TestCase):
     self.assertTrue(mock_database.disconnect.call_args[0][0])
 
   def test_main_failure(self):
-    """Run the main program with API failure."""
+    """Run the main program with a query failure."""
 
     api_response = {
       'result': -123,
@@ -63,9 +64,10 @@ class UnitTests(unittest.TestCase):
     }
 
     args = None
-    mock_epidata_impl = MagicMock()
-    mock_epidata_impl.covidcast_meta.return_value = api_response
+    mock_database = MagicMock()
+    mock_database.get_covidcast_meta.return_value = list()
+    fake_database_impl = lambda: mock_database
 
-    main(args, epidata_impl=mock_epidata_impl, database_impl=None)
+    main(args, epidata_impl=None, database_impl=fake_database_impl)
 
-    self.assertTrue(mock_epidata_impl.covidcast_meta.called)
+    self.assertTrue(mock_database.get_covidcast_meta.called)
