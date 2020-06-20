@@ -970,6 +970,9 @@ function get_covidcast($source, $signal, $time_type, $geo_type, $time_values, $g
 }
 
 // queries the `covidcast` table for metadata only.
+// MAINTAINER WARNING: this query is duplicated in
+// acquisition/covidcast/database.py as a workaround for Gateway Timeout Error
+// during cache update jobs. If you make changes here, make changes there, too.
 function get_covidcast_meta() {
   // basic query info
   $table = '`covidcast` t';

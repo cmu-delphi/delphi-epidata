@@ -251,6 +251,42 @@ class Database:
     args = (source, signal, time_type, geo_type, geo_value)
     self._cursor.execute(sql, args)
 
+  def get_covidcast_meta(self):
+    """Compute and return metadata on all non-WIP COVIDcast signals."""
+
+    sql = '''
+      SELECT
+        t.`source` AS `data_source`,
+        t.`signal`,
+        t.`time_type`,
+        t.`geo_type`,
+        MIN(t.`time_value`) AS `min_time`,
+        MAX(t.`time_value`) AS `max_time`,
+        COUNT(DISTINCT t.`geo_value`) AS `num_locations`,
+        MIN(`value`) AS `min_value`,
+        MAX(`value`) AS `max_value`,
+        AVG(`value`) AS `mean_value`,
+        STD(`value`) AS `stdev_value`,
+        MAX(`timestamp1`) AS `last_update`
+      FROM
+        `covidcast` t
+      WHERE
+        t.`signal` NOT LIKE 'wip_%'
+      GROUP BY
+        t.`source`,
+        t.`signal`,
+        t.`time_type`,
+        t.`geo_type`
+      ORDER BY
+        t.`source` ASC,
+        t.`signal` ASC,
+        t.`time_type` ASC,
+        t.`geo_type` ASC
+'''
+    FIELDS="data_source signal time_type geo_type min_time max_time num_locations min_value max_value mean_value stdev_value last_update".split()
+    self._cursor.execute(sql)
+    return list(dict(zip(FIELDS,x)) for x in self._cursor)
+
   def update_covidcast_meta_cache(self, epidata_json):
     """Updates the `covidcast_meta_cache` table."""
 

@@ -3,6 +3,7 @@
 # standard library
 import argparse
 import json
+import sys
 
 # first party
 from delphi.epidata.acquisition.covidcast.database import Database
@@ -21,22 +22,31 @@ def main(args, epidata_impl=Epidata, database_impl=Database):
 
   `args`: parsed command-line arguments
   """
-
-  # fetch live (not cached) metadata
-  response = epidata_impl.covidcast_meta()
-  args = (response['message'], response['result'])
-  print('covidcast_meta result: %s (code %d)' % args)
-
-  if response['result'] != 1:
-    print('unable to cache epidata')
-    return
-
-  # serialize the data
-  epidata_json = json.dumps(response['epidata'])
-
-  # update the cache
   database = database_impl()
   database.connect()
+
+  # fetch metadata
+  try:
+    metadata = database.get_covidcast_meta()
+  except:
+    # clean up before failing
+    database.disconnect(True)
+    raise
+
+  args = ("success",1)
+  if len(metadata)==0:
+    args = ("no results",-2)
+
+  print('covidcast_meta result: %s (code %d)' % args)
+
+  if args[-1] != 1:
+    print('unable to cache epidata')
+    return False
+
+  # serialize the data
+  epidata_json = json.dumps(metadata)
+
+  # update the cache
   try:
     database.update_covidcast_meta_cache(epidata_json)
     print('successfully cached epidata')
@@ -45,6 +55,9 @@ def main(args, epidata_impl=Epidata, database_impl=Database):
     # fail after the following cleanup
     database.disconnect(True)
 
+  return True
+
 
 if __name__ == '__main__':
-  main(get_argument_parser().parse_args())
+  if not main(get_argument_parser().parse_args()):
+    sys.exit(1)
