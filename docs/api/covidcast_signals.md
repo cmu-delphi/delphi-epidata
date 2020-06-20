@@ -1,10 +1,10 @@
 ---
-title: Data Sources
+title: Data Sources and Signals
 parent: COVIDcast API
 nav_order: 1
 ---
 
-# Delphi's COVID-19 Surveillance Streams Data
+# Delphi's COVID-19 Data Sources and Signals
 
 Delphi's COVID-19 Surveillance Streams data includes the following data sources.
 Data from these sources is expected to be updated daily. You can use the
@@ -14,6 +14,9 @@ about the ranges of the different attributes for the different data sources.
 The API for retrieving data from these sources is described in the
 [COVIDcast API endpoint documentation](covidcast.md). Changes and corrections to
 data in this API are listed in the [API changelog](covidcast_changelog.md).
+
+1. toc
+{:toc}
 
 ## COVIDcast Map Signals
 
@@ -34,7 +37,7 @@ map](https://covidcast.cmu.edu/):
 
 ## Active Sources and Signals
 
-### `doctor-visits`
+### doctor-visits
 
 Data source based on outpatient visits, provided to us by healthcare
 partners. Using this outpatient data, we estimate the percentage of
@@ -60,7 +63,7 @@ available several days later.
 * Number of data revisions since 19 May 2020: 0
 * Date of last change: Never
 
-### `fb-survey`
+### fb-survey
 
 Data source based on symptom surveys run by Carnegie Mellon. Facebook directs a 
 random sample of its users to these surveys, which are voluntary. Individual
@@ -102,7 +105,7 @@ counties (and MSAs) than the raw signals.
 * Number of data revisions since 19 May 2020: 1
 * Date of last change: [3 June 2020](covidcast_changelog.md#fb-survey)
 
-### `ght`
+### ght
 
 Data source based on Google searches, provided to us by Google Health 
 Trends.  Using this search data, we estimate the volume of COVID-related
@@ -120,7 +123,7 @@ so county estimates are not available from the API.
 * Number of data revisions since 19 May 2020: 0
 * Date of last change: Never
 
-### `safegraph`
+### safegraph
 
 This data source uses data reported by [SafeGraph](https://www.safegraph.com/)
 using anonymized location data from mobile phones. SafeGraph provides [social
@@ -152,7 +155,7 @@ doing so, we make the simplifying assumption that each CBG contributes an iid
 observation to the county-level distribution. `n` also serves as the sample
 size. The same method is used for aggregation to states.
 
-### `jhu-csse`
+### jhu-csse
 
 Data source of confirmed COVID-19 cases and deaths, based on reports made
 available by the Center for Systems Science and Engineering at Johns Hopkins
@@ -188,7 +191,7 @@ data for June 1 through 7, inclusive.
 * Number of data revisions since 19 May 2020: 1
 * Date of last change: [3 June 2020](covidcast_changelog.md#jhu-csse)
 
-### `indicator-combination`
+### indicator-combination
 
 This source provides signals which are statistical combinations of the other
 sources above. It is not a primary data source.
@@ -220,7 +223,7 @@ unavailable, they have been replaced by other sources, or because additional
 work is required for us to continue to update them. Some of these sources may
 return in the coming months.
 
-### `quidel`
+### quidel
 
 Data source based on flu lab tests, provided to us by Quidel, Inc. When a
 patient (whether at a doctor’s office, clinic, or hospital) has COVID-like
@@ -248,7 +251,7 @@ small. The data may be updated again when the Winter 2020 flu season begins.
 * Number of data revisions since 19 May 2020: 0
 * Date of last change: Never
 
-### `google-survey`
+### google-survey
 
 Data source based on Google-run symptom surveys, through publisher websites,
 their Opinions Reward app, and similar applications. Respondents can opt to skip

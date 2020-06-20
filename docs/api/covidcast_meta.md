@@ -5,29 +5,22 @@ parent: COVIDcast API
 
 # COVIDcast Metadata
 
-This is the documentation of the API for accessing the Delphi's COVID-19 Surveillance Streams Metadata (`covidcast_meta`)
-data source of the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
+The COVIDcast metadata endpoint (source `covidcast_meta`) provides a list of all
+sources and signals available in the API, along with basic summary statistics
+such as the dates they are available, their minimum and maximum values, and the
+geographic levels at which they are reported.
 
-General topics not specific to any particular data source are discussed in the
-[API overview](README.md). Such topics include:
-[contributing](README.md#contributing), [citing](README.md#citing), and
-[data licensing](README.md#data-licensing).
-
-## Delphi's COVID-19 Surveillance Streams Metadata
-
-... <!-- TODO -->
-
-# The API
+## The API
 
 The base URL is: https://delphi.cmu.edu/epidata/api.php
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
-## Parameters
+### Parameters
 
 None.
 
-## Response
+### Response
 
 | Field | Description | Type |
 | --- | --- | --- |
@@ -45,7 +38,7 @@ None.
 | `epidata[].stdev_value` | standard deviation of value | float |
 | `message` | `success` or error message | string |
 
-# Example URLs
+## Example URLs
 
 https://delphi.cmu.edu/epidata/api.php?source=covidcast_meta
 
@@ -72,7 +65,7 @@ https://delphi.cmu.edu/epidata/api.php?source=covidcast_meta
 }
 ```
 
-# Code Samples
+## Code Samples
 
 Libraries are available for [CoffeeScript](../../src/client/delphi_epidata.coffee), [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
 The following samples show how to import the library and fetch Delphi's COVID-19 Surveillance Streams metadata.
@@ -105,6 +98,9 @@ Epidata.covidcast_meta(callback)
 
 ### Python
 
+Python users seeking to use the COVIDcast API to fetch data should instead
+consider using the [dedicated API client](covidcast_clients.md).
+
 Optionally install the package using pip(env):
 ````bash
 pip install delphi-epidata
@@ -121,6 +117,9 @@ print(res['result'], res['message'], len(res['epidata']))
 ````
 
 ### R
+
+R users seeking to use the COVIDcast API to fetch data should instead consider
+using the [dedicated API client](covidcast_clients.md).
 
 ````R
 # Import
