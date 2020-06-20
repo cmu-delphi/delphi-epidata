@@ -990,12 +990,8 @@ function get_covidcast_meta() {
   return count($epidata) === 0 ? null : $epidata;
 }
 
-// queries the `covidcast` table for metadata only. attempts to used the cached
-// version, falling back to `get_covidcast_meta` otherwise.
+// queries the `covidcast` table for cached metadata only. 
 function get_covidcast_meta_cached() {
-  // only use the cache if it's less than ~1 hour old (75 minutes max to allow
-  // for some wiggle room)
-  $max_age = 75 * 60;
 
   // basic query info
   $query = 'SELECT UNIX_TIMESTAMP(NOW()) - `timestamp` AS `age`, `epidata` FROM `covidcast_meta_cache` LIMIT 1';
@@ -1005,16 +1001,12 @@ function get_covidcast_meta_cached() {
   $epidata = null;
   $result = mysqli_query($dbh, $query);
   if($row = mysqli_fetch_array($result)) {
-    if (intval($row['age']) < $max_age && strlen($row['epidata']) > 0) {
-      // parse and use the cached response
-      $epidata = json_decode($row['epidata'], true);
-    }
-  }
+    // parse and use the cached response
+    $epidata = json_decode($row['epidata'], true);
 
-  // fallback to the real thing if necessary
-  if ($epidata === null) {
-    error_log('covidcast_meta cache miss');
-    $epidata = get_covidcast_meta();
+    if (intval($row['age']) < $max_age && strlen($row['epidata']) > 0) {
+      error_log('covidcast_meta cache is stale: '.$row['age']);
+    }
   }
 
   // return the data
