@@ -26,7 +26,7 @@ github_username:  jekyll
 # Build settings
 markdown: kramdown
 plugins:
-  - jekyll-feed
+  - jekyll-relative-links
 
 remote_theme: pmarsceill/just-the-docs
 # Exclude from processing.
