@@ -1,6 +1,7 @@
 ---
 title: Geographic Coding
 parent: COVIDcast API
+nav_order: 4
 ---
 
 # COVIDcast Geographic Coding
@@ -30,7 +31,10 @@ reported. Estimates are available for several possible `geo_type`s:
 Some signals are not available for all `geo_type`s, since they may be reported
 from their original sources with different levels of aggregation.
 
-### Small Sample Sizes and "Megacounties"
+1. toc
+{:toc}
+
+## Small Sample Sizes and "Megacounties"
 
 Most sources do not report the same amount of data for every county; for
 example, the survey sources rely on survey responses each day, and many counties
@@ -54,13 +58,13 @@ state of New York are reported with FIPS code 36000, since 36 is the FIPS code
 prefix for New York.
 
 
-### FIPS Exceptions in JHU Data
+## FIPS Exceptions in JHU Data
 
 At the County (FIPS) level, we report the data _exactly_ as JHU reports their
 data, to prevent confusing public consumers of the data. JHU FIPS reporting
 matches that used in the other signals, except for the following exceptions.
 
-#### New York City
+### New York City
 New York City comprises of five boroughs:
 
 |Borough Name       |County Name        |FIPS Code      |
@@ -80,7 +84,7 @@ five boroughs. All NYC counts are mapped to HRR 303, which intersects all five
 boroughs (297 also intersects the Bronx, 301 also intersects Brooklyn and
 Queens, but absent additional information, we chose to leave all counts in 303).
 
-#### Kansas City, Missouri
+### Kansas City, Missouri
 
 Kansas City intersects the following four counties, which themselves report
 confirmed case and deaths data:
@@ -99,7 +103,7 @@ the four counties that Kansas City intersects is not necessarily zero.
 For the mapping to HRR and MSA, the counts for Kansas City are dispersed to
 these four counties in equal proportions.
 
-#### Dukes and Nantucket Counties, Massachusetts
+### Dukes and Nantucket Counties, Massachusetts
 
 **The counties of Dukes and Nantucket report their figures together,
 and we (like JHU) list them under FIPS Code 70002.**  Here are the FIPS codes
@@ -115,7 +119,7 @@ dispersed to the two counties in equal proportions.
 
 The data in the individual counties is expected to be zero.
 
-#### Mismatched FIPS Codes
+### Mismatched FIPS Codes
 
 Finally, there are two FIPS codes that were changed in 2015 (see the [Census
 Bureau

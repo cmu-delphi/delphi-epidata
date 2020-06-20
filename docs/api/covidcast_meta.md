@@ -1,6 +1,7 @@
 ---
 title: Metadata
 parent: COVIDcast API
+nav_order: 5
 ---
 
 # COVIDcast Metadata

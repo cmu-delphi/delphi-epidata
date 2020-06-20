@@ -41,14 +41,18 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 ### Data Signals
 
-Currently, there are 8 data sources available in the API: `doctor-visits`,
-`fb-survey`, `safegraph`, `google-survey`, `ght`, `quidel`,
-`indicator-combination`, and `jhu-csse`. Each of these data sources has several
-associated data signals: for example, for `doctor-visits`, includes
-`smoothed_cli` and `smoothed_adj_cli`. A separate [COVIDcast signals
-document](covidcast_signals.md) describes all available sources and signals.
-Furthermore, our [COVIDcast site](https://covidcast.cmu.edu) provides an
-interactive visualization of a select set of these data signals.
+The API provides multiple data sources, each with several signals. Each source
+represents one provider of data, such as a medical testing provider or a symptom
+survey, and each signal represents one quantity computed from data provided by
+that source. Our sources provide detailed data about COVID-related topics,
+including confirmed cases, symptom-related search queries, hospitalizations,
+outpatient doctor's visits, and other sources. Many of these are publicly
+available *only* through the COVIDcast API.
+
+The [signals documentation](covidcast_signals.md) describes all available
+sources and signals. Furthermore, our [COVIDcast
+site](https://covidcast.cmu.edu) provides an interactive visualization of a
+select set of these data signals.
 
 ### Parameters
 
@@ -59,7 +63,7 @@ interactive visualization of a select set of these data signals.
 | `time_type` | temporal resolution of the signal (e.g., `day`, `week`) | string |
 | `geo_type` | spatial resolution of the signal (e.g., `county`, `hrr`, `msa`, `dma`, `state`) | string |
 | `time_values` | time unit (e.g., date) over which underlying events happened | `list` of time values (e.g., 20200401) |
-| `geo_value` | unique code for each location, depending on `geo_type` (county -> FIPS 6-4 code, HRR -> HRR number, MSA -> CBSA code, DMA -> DMA code, state -> two-letter [state](../../labels/states.txt) code), or `*` for all | string |
+| `geo_value` | unique code for each location, depending on `geo_type` (see [geographic coding details](covidcast_geography.md)), or `*` for all | string |
 
 The current set of signals available for each data source is returned by the
 [`covidcast_meta`](covidcast_meta.md) endpoint.

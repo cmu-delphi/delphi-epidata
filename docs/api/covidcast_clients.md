@@ -1,6 +1,7 @@
 ---
 title: API Clients
 parent: COVIDcast API
+nav_order: 1
 ---
 
 # COVIDcast API Clients

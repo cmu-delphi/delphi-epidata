@@ -1,10 +1,10 @@
 ---
-title: Changelog
+title: Signal Changelog
 parent: COVIDcast API
-nav_order: 4
+nav_order: 3
 ---
 
-# COVIDcast API Changelog
+# COVIDcast Signal Changelog
 
 When Delphi makes substantial changes to the computation of a signal, we will
 typically publish it under a new name rather than revising the existing signal.
