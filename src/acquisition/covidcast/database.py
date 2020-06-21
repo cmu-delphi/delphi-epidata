@@ -283,9 +283,8 @@ class Database:
         t.`time_type` ASC,
         t.`geo_type` ASC
 '''
-    FIELDS="data_source signal time_type geo_type min_time max_time num_locations min_value max_value mean_value stdev_value last_update".split()
     self._cursor.execute(sql)
-    return list(dict(zip(FIELDS,x)) for x in self._cursor)
+    return list(dict(zip(self._cursor.column_names,x)) for x in self._cursor)
 
   def update_covidcast_meta_cache(self, epidata_json):
     """Updates the `covidcast_meta_cache` table."""
