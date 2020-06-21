@@ -969,32 +969,10 @@ function get_covidcast($source, $signal, $time_type, $geo_type, $time_values, $g
   return count($epidata) === 0 ? null : $epidata;
 }
 
-// queries the `covidcast` table for metadata only.
-// MAINTAINER WARNING: this query is duplicated in
-// acquisition/covidcast/database.py as a workaround for Gateway Timeout Error
-// during cache update jobs. If you make changes here, make changes there, too.
+// queries the `covidcast_meta_cache` table for metadata
 function get_covidcast_meta() {
-  // basic query info
-  $table = '`covidcast` t';
-  $fields = "t.`source` AS `data_source`, t.`signal`, t.`time_type`, t.`geo_type`, MIN(t.`time_value`) AS `min_time`, MAX(t.`time_value`) AS `max_time`, COUNT(DISTINCT `geo_value`) AS `num_locations`, MIN(`value`) AS `min_value`, MAX(`value`) AS `max_value`, AVG(`value`) AS `mean_value`, STD(`value`) AS `stdev_value`, MAX(`timestamp1`) AS `last_update`";
-  $condition_wip = "t.`signal` NOT LIKE 'wip_%'";
-  $group = "t.`source`, t.`signal`, t.`time_type`, t.`geo_type`";
-  $order = "t.`source` ASC, t.`signal` ASC, t.`time_type` ASC, t.`geo_type` ASC";
-  // data type of each field
-  $fields_string = array('data_source', 'signal', 'time_type', 'geo_type');
-  $fields_int = array('min_time', 'max_time', 'num_locations', 'last_update');
-  $fields_float = array('min_value', 'max_value', 'mean_value', 'stdev_value');
-  // the query
-  $query = "SELECT {$fields} FROM {$table} WHERE {$condition_wip} GROUP BY {$group} ORDER BY {$order}";
-  // get the data from the database
-  $epidata = array();
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
-}
-
-// queries the `covidcast` table for cached metadata only. 
-function get_covidcast_meta_cached() {
+  // complain if the cache is more than 75 minutes old
+  $max_age = 75 * 60;
 
   // basic query info
   $query = 'SELECT UNIX_TIMESTAMP(NOW()) - `timestamp` AS `age`, `epidata` FROM `covidcast_meta_cache` LIMIT 1';
@@ -1007,7 +985,7 @@ function get_covidcast_meta_cached() {
     // parse and use the cached response
     $epidata = json_decode($row['epidata'], true);
 
-    if (intval($row['age']) < $max_age && strlen($row['epidata']) > 0) {
+    if (intval($row['age']) > $max_age && strlen($row['epidata']) > 0) {
       error_log('covidcast_meta cache is stale: '.$row['age']);
     }
   }
@@ -1475,11 +1453,7 @@ if(database_connect()) {
     }
   } else if($source === 'covidcast_meta') {
     // get the metadata
-    if (isset($_REQUEST['cached']) && $_REQUEST['cached'] === 'true') {
-      $epidata = get_covidcast_meta_cached();
-    } else {
-      $epidata = get_covidcast_meta();
-    }
+    $epidata = get_covidcast_meta();
     store_result($data, $epidata);
   } else {
     $data['message'] = 'no data source specified';
