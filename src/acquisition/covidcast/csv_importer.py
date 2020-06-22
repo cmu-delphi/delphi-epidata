@@ -75,7 +75,7 @@ class CsvImporter:
     nearby_year = CsvImporter.MIN_YEAR <= year <= CsvImporter.MAX_YEAR
     sensible_week = 1 <= week <= 53
 
-    if not nearby_year and sensible_week:
+    if not (nearby_year and sensible_week):
       return False
     return value
 
