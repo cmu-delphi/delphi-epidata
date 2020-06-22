@@ -7,7 +7,6 @@ grand_parent: COVIDcast API
 # Symptom Surveys
 
 * **Source name:** `fb-survey`
-* **First issued:** TODO
 * **Number of data revisions since 19 May 2020:** 1
 * **Date of last change:** [3 June 2020](../covidcast_changelog.md#fb-survey)
 

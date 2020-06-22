@@ -7,7 +7,6 @@ grand_parent: COVIDcast API
 # Google Symptom Surveys
 
 * **Source name:** `google-survey`
-* **First issued:** TODO
 * **Number of data revisions since 19 May 2020:** 0
 * **Date of last change:** Never
 

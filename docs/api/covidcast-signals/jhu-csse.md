@@ -7,7 +7,6 @@ grand_parent: COVIDcast API
 # JHU Cases and Deaths
 
 * **Source name:** `jhu-csse`
-* **First issued:** TODO
 * **Number of data revisions since 19 May 2020:** 1
 * **Date of last change:** [3 June 2020](../covidcast_changelog.md#jhu-csse)
 
@@ -35,9 +34,8 @@ amended by health authorities, this can sometimes result in negative incidence.
 This should be interpreted purely as an artifact of data reporting and
 correction.
 
-Smoothed versions of all the signals above are available with the prefix
-`7dav_`, such as `7dav_confirmed_incidence_prop` and
-`7dav_deaths_incidence_num`. These signals use report moving averages of the
-preceding 7 days, so e.g. the signal for June 7 is the average of the underlying
-data for June 1 through 7, inclusive.
-
+Smoothed versions of all the signals above are available with the infix `7dav_`,
+such as `confirmed_7dav_incidence_prop` and `deaths_7dav_incidence_num`. These
+signals use report moving averages of the preceding 7 days, so e.g. the signal
+for June 7 is the average of the underlying data for June 1 through 7,
+inclusive.

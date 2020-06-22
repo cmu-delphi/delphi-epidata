@@ -6,14 +6,16 @@ nav_order: 1
 
 # Delphi's COVIDcast API
 
-This is the documentation of the API for accessing the Delphi's COVID-19
-Surveillance Streams (`covidcast`) endpoint of
-[Delphi](https://delphi.cmu.edu/)'s epidemiological data. This API provides the
-data used in our public [COVIDcast map](https://covidcast.cmu.edu/), and
-includes other data sources and signals not currently shown on the map. The API
-allows users to select specific signals and download data for selected
-geographical areas---counties, states, metropolitan statistical areas, and other
-divisions.
+This is the documentation for accessing the Delphi's COVID-19 Surveillance
+Streams (`covidcast`) endpoint of [Delphi](https://delphi.cmu.edu/)'s
+epidemiological data API. This API provides data on the spread and impact of the
+COVID-19 pandemic across the United States, most of which is available at the
+county level and updated daily. This data powers our public [COVIDcast
+map](https://covidcast.cmu.edu/), and includes testing, cases, and death data,
+as well as unique healthcare and survey data Delphi acquires through its
+partners. The API allows users to select specific signals and download data for
+selected geographical areas---counties, states, metropolitan statistical areas,
+and other divisions.
 
 This data is freely available under our [licensing](README.md#data-licensing)
 terms; we encourage academic users to [cite](README.md#citing) the data if they
@@ -28,18 +30,34 @@ to ask general questions about its use. If you use the API, we strongly
 encourage you to
 [subscribe](https://lists.andrew.cmu.edu/mailman/listinfo/delphi-covidcast-api).
 
-## The API
+## Accessing the API
 
-The COVIDcast API is based on HTTP GET queries and returns data in JSON form.
-The base URL is https://delphi.cmu.edu/epidata/api.php.
+Several [API clients are available](covidcast_clients.md) for common programming
+languages, so you do not need to construct API calls yourself. Once you install
+the appropriate client for your programming language, accessing data is as easy
+as (in [R](https://www.r-project.org/)):
 
-Several [API clients are available](#api-clients) for common programming
-languages, so you do not need to construct API calls yourself. Alternately, [see
-below](#example-urls) for example API URLs and query responses.
+```r
+library(covidcastR)
 
-See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
+data <- covidcast_signal("fb-survey", "smoothed_cli", start_day = "20200501",
+                         end_day = "20200507")
+```
 
-### Data Signals
+or, in Python
+
+```python
+import covidcast
+from datetime import date
+
+data = covidcast.signal("fb-survey", "smoothed_cli", date(2020, 5, 1), date(2020, 5, 7),
+                        "county")
+```
+
+Alternately, for full API access, [see below](#constructing-api-queries) for
+details on how to construct URLs and parse responses to access data manually.
+
+## Data Sources and Signals
 
 The API provides multiple data sources, each with several signals. Each source
 represents one provider of data, such as a medical testing provider or a symptom
@@ -53,6 +71,14 @@ The [signals documentation](covidcast_signals.md) describes all available
 sources and signals. Furthermore, our [COVIDcast
 site](https://covidcast.cmu.edu) provides an interactive visualization of a
 select set of these data signals.
+
+## Constructing API Queries
+
+The COVIDcast API is based on HTTP GET queries and returns data in JSON form.
+The base URL is https://delphi.cmu.edu/epidata/api.php.
+
+See [this documentation](README.md) for details on specifying epiweeks, dates,
+and lists.
 
 ### Parameters
 

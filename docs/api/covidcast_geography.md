@@ -5,8 +5,10 @@ nav_order: 4
 ---
 
 # COVIDcast Geographic Coding
-The `geo_value` field specifies the geographic location whose estimate is being
-reported. Estimates are available for several possible `geo_type`s:
+
+The `geo_value` field returned by the API specifies the geographic location
+whose estimate is being reported. Estimates are available for several possible
+`geo_type`s:
 
 * `county`: County-level estimates are reported by the county's five-digit [FIPS
   code](https://en.wikipedia.org/wiki/FIPS_county_code). All FIPS codes are
