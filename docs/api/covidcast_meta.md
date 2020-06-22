@@ -19,7 +19,9 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 ### Parameters
 
-None.
+| Parameter | Description | Type |
+| --- | --- | --- |
+| `cached` | If `true`, return a cached copy of the metadata instead of recalculating from scratch; the cached copy should never be more than an hour out of date. Recalculation without the cache can be quite slow. *Note:* a future API version will always report the cached version, ignoring this parameter. | string |
 
 ### Response
 
@@ -28,11 +30,12 @@ None.
 | `result` | result code: 1 = success, 2 = too many results, -2 = no results | integer |
 | `epidata` | list of results, one per name/geo_type pair | array of objects |
 | `epidata[].data_source` | data source | string |
+| `epidata[].signal` | signal name | string |
 | `epidata[].time_type` | temporal resolution of the signal (e.g., `day`, `week`) | string |
 | `epidata[].geo_type` | geographic resolution (e.g. `county`, `hrr`, `msa`, `dma`, `state`) | string |
 | `epidata[].min_time` | minimum time (e.g., 20200406) | integer |
 | `epidata[].max_time` | maximum time (e.g., 20200413) | integer |
-| `epidata[].num_locations` | number of locations | integer |
+| `epidata[].num_locations` | number of distinct geographic locations with data | integer |
 | `epidata[].min_value` | minimum value | float |
 | `epidata[].max_value` | maximum value | float |
 | `epidata[].mean_value` | mean of value | float |
@@ -41,24 +44,25 @@ None.
 
 ## Example URLs
 
-https://delphi.cmu.edu/epidata/api.php?source=covidcast_meta
+https://delphi.cmu.edu/epidata/api.php?source=covidcast_meta&cached=true
 
 ```json
 {
   "result": 1,
   "epidata": [
-    {
+  {
       "data_source": "doctor-visits",
-      "signal": "cli",
+      "signal": "smoothed_adj_cli",
+      "last_update": 1592707979,
+      "stdev_value": 2.6647410028331,
+      "num_locations": 2500,
       "time_type": "day",
+      "max_value": 87.190476,
+      "mean_value": 1.4439366759191,
       "geo_type": "county",
-      "min_time": 20200201,
-      "max_time": 20200418,
-      "num_locations": 1411,
       "min_value": 0,
-      "max_value": 23.079023,
-      "mean_value": 0.42745842933726,
-      "stdev_value": 0.96461526722895
+      "max_time": 20200617,
+      "min_time": 20200201
     },
     ...
   ],
