@@ -541,11 +541,16 @@ class Epidata:
 
   # Fetch Delphi's COVID-19 Surveillance Streams
   @staticmethod
-  def covidcast(data_source, signal, time_type, geo_type, time_values, geo_value):
+  def covidcast(
+          data_source, signal, time_type, geo_type,
+          time_values, geo_value, issues=None, lag=None):
     """Fetch Delphi's COVID-19 Surveillance Streams"""
     # Check parameters
     if data_source is None or signal is None or time_type is None or geo_type is None or time_values is None or geo_value is None:
       raise Exception('`data_source`, `signal`, `time_type`, `geo_type`, `time_values`, and `geo_value` are all required')
+    if issues is not None and lag is not None:
+      raise Exception('`issues` and `lag` are mutually exclusive')
+
     # Set up request
     params = {
       'source': 'covidcast',
@@ -556,6 +561,12 @@ class Epidata:
       'time_values': Epidata._list(time_values),
       'geo_value': geo_value,
     }
+
+    if issues is not None:
+      params['issues'] = Epidata._list(issues)
+    if lag is not None:
+      params['lag'] = lag
+
     # Make the API call
     return Epidata._request(params)
 
