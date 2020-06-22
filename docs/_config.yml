@@ -36,7 +36,7 @@ aux_links:
   "CMU Delphi Research Group":
     - "https://delphi.cmu.edu/"
 
-footer_content: "Copyright &copy; <a href='https://delphi.cmu.edu'>Delphi Research Group</a>, 2020"
+footer_content: "Copyright &copy; 2020, <a href='https://delphi.cmu.edu'>Delphi Research Group</a> at Carnegie Mellon University"
 
 heading_anchors: true
 
