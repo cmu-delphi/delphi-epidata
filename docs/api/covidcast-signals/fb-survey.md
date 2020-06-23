@@ -9,6 +9,7 @@ grand_parent: COVIDcast API
 * **Source name:** `fb-survey`
 * **Number of data revisions since 19 May 2020:** 1
 * **Date of last change:** [3 June 2020](../covidcast_changelog.md#fb-survey)
+* **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 
 This data source is based on symptom surveys run by Carnegie Mellon. Facebook
 directs a random sample of its users to these surveys, which are voluntary.
