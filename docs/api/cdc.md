@@ -1,4 +1,9 @@
-# About
+---
+title: CDC
+parent: Delphi Epidata API
+---
+
+# CDC
 
 This is the documentation of the API for accessing the CDC (`cdc`) data source of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.

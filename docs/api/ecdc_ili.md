@@ -1,4 +1,9 @@
-# About
+---
+title: ECDC ILI
+parent: Delphi Epidata API
+---
+
+# ECDC ILI
 
 This is the documentation of the API for accessing the ECDC ILI (`ecdc_ili`) data source of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.

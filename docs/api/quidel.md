@@ -1,4 +1,9 @@
-# About
+---
+title: Quidel
+parent: Delphi Epidata API
+---
+
+# Quidel
 
 This is the documentation of the API for accessing the Quidel (`quidel`) data source of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.

@@ -1,4 +1,9 @@
-# About
+---
+title: NIDSS Flu
+parent: Delphi Epidata API
+---
+
+# NIDSS Flu
 
 This is the documentation of the API for accessing the NIDSS Flu (`nidss_flu`) data source of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.

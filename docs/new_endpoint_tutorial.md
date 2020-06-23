@@ -1,3 +1,8 @@
+---
+title: New Endpoint Tutorial
+nav_order: 4
+---
+
 # Tutorial: Adding a new API endpoint
 
 **Prerequisite:** this guide assumes that you have read the

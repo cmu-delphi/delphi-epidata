@@ -1,4 +1,10 @@
-# Delphi's COVID-19 Surveillance Streams Changelog
+---
+title: Signal Changelog
+parent: COVIDcast API
+nav_order: 3
+---
+
+# COVIDcast Signal Changelog
 
 When Delphi makes substantial changes to the computation of a signal, we will
 typically publish it under a new name rather than revising the existing signal.
@@ -7,7 +13,7 @@ minor enhancements.
 
 Changes are also announced via the [COVIDcast API mailing
 list](https://lists.andrew.cmu.edu/mailman/listinfo/delphi-covidcast-api), and
-we strongly recommend that anyone using the API to regularly download data
+we **strongly recommend** that anyone using the API to regularly download data
 should subscribe to this list. The list will only be used to announce API
 changes, data corrections, and other information relevant to API users.
 

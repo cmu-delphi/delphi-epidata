@@ -1,4 +1,9 @@
-# About
+---
+title: ILI Nearby Nowcast
+parent: Delphi Epidata API
+---
+
+# ILI Nearby Nowcast
 
 This is the documentation of the API for accessing the ILI Nearby (`nowcast`) data source of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.

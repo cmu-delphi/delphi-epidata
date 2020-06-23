@@ -1,65 +1,68 @@
-# About
+---
+title: Metadata
+parent: COVIDcast API
+nav_order: 5
+---
 
-This is the documentation of the API for accessing the Delphi's COVID-19 Surveillance Streams Metadata (`covidcast_meta`)
-data source of the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
+# COVIDcast Metadata
 
-General topics not specific to any particular data source are discussed in the
-[API overview](README.md). Such topics include:
-[contributing](README.md#contributing), [citing](README.md#citing), and
-[data licensing](README.md#data-licensing).
+The COVIDcast metadata endpoint (source `covidcast_meta`) provides a list of all
+sources and signals available in the API, along with basic summary statistics
+such as the dates they are available, their minimum and maximum values, and the
+geographic levels at which they are reported.
 
-## Delphi's COVID-19 Surveillance Streams Metadata
-
-... <!-- TODO -->
-
-# The API
+## The API
 
 The base URL is: https://delphi.cmu.edu/epidata/api.php
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
-## Parameters
+### Parameters
 
-None.
+| Parameter | Description | Type |
+| --- | --- | --- |
+| `cached` | If `true`, return a cached copy of the metadata instead of recalculating from scratch; the cached copy should never be more than an hour out of date. Recalculation without the cache can be quite slow. *Note:* a future API version will always report the cached version, ignoring this parameter. | string |
 
-## Response
+### Response
 
 | Field | Description | Type |
 | --- | --- | --- |
 | `result` | result code: 1 = success, 2 = too many results, -2 = no results | integer |
 | `epidata` | list of results, one per name/geo_type pair | array of objects |
-| `epidata[].data_source` | data souce | string |
+| `epidata[].data_source` | data source | string |
+| `epidata[].signal` | signal name | string |
 | `epidata[].time_type` | temporal resolution of the signal (e.g., `day`, `week`) | string |
 | `epidata[].geo_type` | geographic resolution (e.g. `county`, `hrr`, `msa`, `dma`, `state`) | string |
 | `epidata[].min_time` | minimum time (e.g., 20200406) | integer |
 | `epidata[].max_time` | maximum time (e.g., 20200413) | integer |
-| `epidata[].num_locations` | number of locations | integer |
+| `epidata[].num_locations` | number of distinct geographic locations with data | integer |
 | `epidata[].min_value` | minimum value | float |
 | `epidata[].max_value` | maximum value | float |
 | `epidata[].mean_value` | mean of value | float |
 | `epidata[].stdev_value` | standard deviation of value | float |
 | `message` | `success` or error message | string |
 
-# Example URLs
+## Example URLs
 
-https://delphi.cmu.edu/epidata/api.php?source=covidcast_meta
+https://delphi.cmu.edu/epidata/api.php?source=covidcast_meta&cached=true
 
 ```json
 {
   "result": 1,
   "epidata": [
-    {
+  {
       "data_source": "doctor-visits",
-      "signal": "cli",
+      "signal": "smoothed_adj_cli",
+      "last_update": 1592707979,
+      "stdev_value": 2.6647410028331,
+      "num_locations": 2500,
       "time_type": "day",
+      "max_value": 87.190476,
+      "mean_value": 1.4439366759191,
       "geo_type": "county",
-      "min_time": 20200201,
-      "max_time": 20200418,
-      "num_locations": 1411,
       "min_value": 0,
-      "max_value": 23.079023,
-      "mean_value": 0.42745842933726,
-      "stdev_value": 0.96461526722895
+      "max_time": 20200617,
+      "min_time": 20200201
     },
     ...
   ],
@@ -67,7 +70,7 @@ https://delphi.cmu.edu/epidata/api.php?source=covidcast_meta
 }
 ```
 
-# Code Samples
+## Code Samples
 
 Libraries are available for [CoffeeScript](../../src/client/delphi_epidata.coffee), [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
 The following samples show how to import the library and fetch Delphi's COVID-19 Surveillance Streams metadata.
@@ -100,6 +103,9 @@ Epidata.covidcast_meta(callback)
 
 ### Python
 
+Python users seeking to use the COVIDcast API to fetch data should instead
+consider using the [dedicated API client](covidcast_clients.md).
+
 Optionally install the package using pip(env):
 ````bash
 pip install delphi-epidata
@@ -116,6 +122,9 @@ print(res['result'], res['message'], len(res['epidata']))
 ````
 
 ### R
+
+R users seeking to use the COVIDcast API to fetch data should instead consider
+using the [dedicated API client](covidcast_clients.md).
 
 ````R
 # Import

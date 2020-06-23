@@ -1,4 +1,9 @@
-# About
+---
+title: NoroSTAT Metadata
+parent: Delphi Epidata API
+---
+
+# NoroSTAT Metadata
 
 This is the documentation of the API for accessing the NoroSTAT Metadata (`meta_norostat`) data source of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.

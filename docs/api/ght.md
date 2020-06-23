@@ -1,4 +1,9 @@
-# About
+---
+title: Google Health Trends
+parent: Delphi Epidata API
+---
+
+# Google Health Trends
 
 This is the documentation of the API for accessing the Google Health Trends (`ght`) data source of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.

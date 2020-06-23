@@ -1,4 +1,9 @@
-# About
+---
+title: KCDC ILI
+parent: Delphi Epidata API
+---
+
+# KCDC ILI
 
 This is the documentation of the API for accessing the KCDC ILI (`kcdc_ili`) data source of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.

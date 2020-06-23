@@ -1,4 +1,9 @@
-# About
+---
+title: FluView metadata
+parent: Delphi Epidata API
+---
+
+# FluView metadata
 
 This is the documentation of the API for accessing the FluView metadata
 (`fluview_meta`) data source of [Delphi](https://delphi.cmu.edu/)'s

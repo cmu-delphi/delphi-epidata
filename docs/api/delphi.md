@@ -1,4 +1,9 @@
-# About
+---
+title: Delphi Forecasts
+parent: Delphi Epidata API
+---
+
+# Delphi Forecasts
 
 This is the documentation of the API for accessing the Delphi Forecast (`delphi`) data source of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
