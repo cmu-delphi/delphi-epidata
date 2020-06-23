@@ -6,7 +6,7 @@ grand_parent: COVIDcast API
 
 # Doctor Visits
 
-* **Source name:** `indicator-combination`
+* **Source name:** `doctor-visits`
 * **Number of data revisions since 19 May 2020:** 0
 * **Date of last change:** Never
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
