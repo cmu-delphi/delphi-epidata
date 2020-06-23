@@ -59,7 +59,8 @@ Epidata.covidcast(callback, 'fb-survey', 'raw_cli', 'day', 'county', [20200401, 
 
 **Note:** For COVIDcast usage, Python users should prefer the [covidcast-py
 package](https://cmu-delphi.github.io/covidcast/covidcast-py/html/); these
-instructions are for advanced users who want access to the entire Epidata API.
+instructions are for advanced users who want access to the entire Epidata API,
+including data on influenza, dengue, and norovirus.
 
 Optionally install the [package from PyPI](https://pypi.org/project/delphi-epidata/) using pip(env):
 ````bash
@@ -82,7 +83,8 @@ print(res['result'], res['message'], len(res['epidata']))
 
 **Note:** For COVIDcast usage, R users should prefer the [covidcastR
 package](https://cmu-delphi.github.io/covidcast/covidcastR/); these instructions
-are for advanced users who want access to the entire Epidata API.
+are for advanced users who want access to the entire Epidata API, including data
+on influenza, dengue, and norovirus.
 
 ````R
 # Import

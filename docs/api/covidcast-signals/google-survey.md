@@ -17,13 +17,13 @@ is just one question long, and asks "Do you know someone in your community who
 is sick (fever, along with cough, or shortness of breath, or difficulty
 breathing) right now?" Using this survey data, we estimate the percentage of
 people in a given location, on a given day, that *know somebody who has a
-COVID-like illness*. Note that this is tracking a different quantity than the
-surveys through Facebook, and (unsurprisingly) the estimates here tend to be
-much larger.
+COVID-like illness*. This estimates a similar quantity to the `*_cmnty_cli`
+signals from the [Symptom Surveys](fb-survey.md) (`fb-survey`) source, but using
+a different survey population and recruitment method.
 
 The survey sampled from all counties with greater than 100,000 population, along
 with a separate random sample from each state. This means that the megacounties
-(discussed in the [COVIDcast API documentation](covidcast.md)) are always the
+(discussed in the [COVIDcast API documentation](../covidcast.md)) are always the
 counties with populations smaller than 100,000, and megacounty estimates are
 created by combining the state-level survey with the observed county surveys.
 

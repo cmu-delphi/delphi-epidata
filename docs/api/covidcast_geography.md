@@ -67,7 +67,7 @@ data, to prevent confusing public consumers of the data. JHU FIPS reporting
 matches that used in the other signals, except for the following exceptions.
 
 ### New York City
-New York City comprises of five boroughs:
+New York City comprises five boroughs:
 
 |Borough Name       |County Name        |FIPS Code      |
 |-------------------|-------------------|---------------|

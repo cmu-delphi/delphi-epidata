@@ -28,9 +28,9 @@ documentation](https://docs.safegraph.com/docs/social-distancing-metrics).
 
 | Signal | Description |
 | --- | --- |
-| `prop_completely_home` | The fraction of mobile devices that did not leave the immediate area of their home (SafeGraph's `completely_home_device_count / device_count`) |
-| `prop_full_time_work` | The fraction of mobile devices that spent more than 6 hours at a location other than their home during the daytime (SafeGraph's `full_time_work_behavior_devices / device_count`) |
-| `prop_part_time_work` | The fraction of devices that spent between 3 and 6 hours at a location other than their home during the daytime (SafeGraph's `part_time_work_behavior_devices / device_count`) |
+| `completely_home_prop` | The fraction of mobile devices that did not leave the immediate area of their home (SafeGraph's `completely_home_device_count / device_count`) |
+| `full_time_work_prop` | The fraction of mobile devices that spent more than 6 hours at a location other than their home during the daytime (SafeGraph's `full_time_work_behavior_devices / device_count`) |
+| `part_time_work_prop` | The fraction of devices that spent between 3 and 6 hours at a location other than their home during the daytime (SafeGraph's `part_time_work_behavior_devices / device_count`) |
 | `median_home_dwell_time` | The median time spent at home for all devices at this location for this time period, in minutes |
 
 After computing each metric on the census block group (CBG) level, we aggregate

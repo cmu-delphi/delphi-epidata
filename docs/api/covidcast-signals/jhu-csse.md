@@ -34,6 +34,6 @@ amended by health authorities, this can sometimes result in negative incidence.
 This should be interpreted purely as an artifact of data reporting and
 correction.
 
-Smoothed versions of all the signals above are available. These signals use
-report moving averages of the preceding 7 days, so e.g. the signal for June 7 is
-the average of the underlying data for June 1 through 7, inclusive.
+Smoothed versions of all the signals above are available. These signals report
+moving averages of the preceding 7 days, so e.g. the signal for June 7 is the
+average of the underlying data for June 1 through 7, inclusive.
