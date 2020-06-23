@@ -14,16 +14,16 @@ This data source of confirmed COVID-19 cases and deaths is based on reports made
 available by the Center for Systems Science and Engineering at Johns Hopkins
 University.
 
-| Signal | Description |
-| --- | --- |
-| `confirmed_cumulative_num` | Cumulative number of confirmed COVID-19 cases |
-| `confirmed_cumulative_prop` | Cumulative number of confirmed COVID-19 cases per 100,000 population |
-| `confirmed_incidence_num` | Number of new confirmed COVID-19 cases, daily |
-| `confirmed_incidence_prop` | Number of new confirmed COVID-19 cases per 100,000 population, daily |
-| `deaths_cumulative_num` | Cumulative number of confirmed deaths due to COVID-19 |
-| `deaths_cumulative_prop` | Cumulative number of confirmed due to COVID-19, per 100,000 population |
-| `deaths_incidence_num` | Number of new confirmed deaths due to COVID-19, daily |
-| `deaths_incidence_prop` | Number of new confirmed deaths due to COVID-19 per 100,000 population, daily |
+| Signal | 7-day average signal | Description |
+| --- | --- | --- |
+| `confirmed_cumulative_num` | `confirmed_7dav_cumul_num` | Cumulative number of confirmed COVID-19 cases |
+| `confirmed_cumulative_prop` | `confirmed_7dav_cumul_prop` | Cumulative number of confirmed COVID-19 cases per 100,000 population |
+| `confirmed_incidence_num` | `confirmed_7dav_incid_num` | Number of new confirmed COVID-19 cases, daily |
+| `confirmed_incidence_prop` | `confirmed_7dav_incid_prop` | Number of new confirmed COVID-19 cases per 100,000 population, daily |
+| `deaths_cumulative_num` | `deaths_7dav_cumul_num` | Cumulative number of confirmed deaths due to COVID-19 |
+| `deaths_cumulative_prop` | `deaths_7dav_cumul_prop` | Cumulative number of confirmed due to COVID-19, per 100,000 population |
+| `deaths_incidence_num` | `deaths_7dav_incid_num` | Number of new confirmed deaths due to COVID-19, daily |
+| `deaths_incidence_prop` | `deaths_7dav_incid_prop` | Number of new confirmed deaths due to COVID-19 per 100,000 population, daily |
 
 These signals are taken directly from the JHU CSSE [COVID-19 GitHub
 repository](https://github.com/CSSEGISandData/COVID-19) without filtering,
@@ -34,8 +34,6 @@ amended by health authorities, this can sometimes result in negative incidence.
 This should be interpreted purely as an artifact of data reporting and
 correction.
 
-Smoothed versions of all the signals above are available with the infix `7dav_`,
-such as `confirmed_7dav_incidence_prop` and `deaths_7dav_incidence_num`. These
-signals use report moving averages of the preceding 7 days, so e.g. the signal
-for June 7 is the average of the underlying data for June 1 through 7,
-inclusive.
+Smoothed versions of all the signals above are available. These signals use
+report moving averages of the preceding 7 days, so e.g. the signal for June 7 is
+the average of the underlying data for June 1 through 7, inclusive.
