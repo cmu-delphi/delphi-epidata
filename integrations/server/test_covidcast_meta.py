@@ -7,6 +7,8 @@ import unittest
 import mysql.connector
 import requests
 
+#first party
+from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import main as update_cache
 
 # use the local instance of the Epidata API
 BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
@@ -69,6 +71,7 @@ class CovidcastMetaTests(unittest.TestCase):
               for gv, v in zip(('geo1', 'geo2'), (10, 20)):
                 self.cur.execute(template % (src, sig, tt, gt, tv, gv, v))
     self.cnx.commit()
+    update_cache(args=None)
 
     # make the request
     response = requests.get(BASE_URL, params={'source': 'covidcast_meta'})
@@ -114,6 +117,7 @@ class CovidcastMetaTests(unittest.TestCase):
               for gv, v in zip(('geo1', 'geo2'), (10, 20)):
                 self.cur.execute(template % (src, sig, tt, gt, tv, gv, v))
     self.cnx.commit()
+    update_cache(args=None)
 
     # make the request
     response = requests.get(BASE_URL, params={'source': 'covidcast_meta'})

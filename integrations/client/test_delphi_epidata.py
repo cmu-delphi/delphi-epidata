@@ -8,6 +8,7 @@ import mysql.connector
 
 # first party
 from delphi.epidata.client.delphi_epidata import Epidata
+from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import main as update_covidcast_meta_cache
 
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.client.delphi_epidata'
@@ -81,6 +82,9 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
           123, 1.5, 2.5, 3.5, 456, 4)
     ''')
     self.cnx.commit()
+
+    # cache it
+    update_covidcast_meta_cache(args=None)
 
     # fetch data
     response = Epidata.covidcast_meta()
