@@ -10,6 +10,7 @@ grand_parent: COVIDcast API
 * **First issued:** 19 May 2020
 * **Number of data revisions since 19 May 2020:** 1
 * **Date of last change:** [3 June 2020](../covidcast_changelog.md#indicator-combination)
+* **Available for:** county, msa, state (see [geography coding docs](../covidcast_geography.md))
 
 This source provides signals which are statistical combinations of the other
 sources, calculated by Delphi. It is not a primary data source.

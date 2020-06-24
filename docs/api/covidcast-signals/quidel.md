@@ -9,6 +9,7 @@ grand_parent: COVIDcast API
 * **Source name:** `quidel`
 * **Number of data revisions since 19 May 2020:** 0
 * **Date of last change:** Never
+* **Available for:** msa, state (see [geography coding docs](../covidcast_geography.md))
 
 Data source based on flu lab tests, provided to us by Quidel, Inc. When a
 patient (whether at a doctor’s office, clinic, or hospital) has COVID-like

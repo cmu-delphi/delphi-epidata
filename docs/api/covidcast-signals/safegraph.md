@@ -10,6 +10,7 @@ grand_parent: COVIDcast API
 * **First issued:** 23 June 2020
 * **Number of data revisions since 23 June 2020:** 0
 * **Date of last change:** never
+* **Available for:** county, state (see [geography coding docs](../covidcast_geography.md))
 
 This data source uses data reported by [SafeGraph](https://www.safegraph.com/)
 using anonymized location data from mobile phones. SafeGraph provides [social

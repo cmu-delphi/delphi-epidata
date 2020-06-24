@@ -9,6 +9,7 @@ grand_parent: COVIDcast API
 * **Source name:** `ght`
 * **Number of data revisions since 19 May 2020:** 0
 * **Date of last change:** Never
+* **Available for:** dma, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 
 This data source (`ght`) is based on Google searches, provided to us by Google
 Health Trends. Using this search data, we estimate the volume of COVID-related
