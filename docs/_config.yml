@@ -30,7 +30,12 @@ plugins:
 
 remote_theme: pmarsceill/just-the-docs
 
-# Just the Docs config
+## Just the Docs config
+# The theme compresses HTML (remove newlines, whitespace) by default, but this
+# breaks KaTeX, since kramdown inserts % in some places in the output.
+compress_html:
+  ignore:
+    envs: "all"
 
 aux_links:
   "CMU Delphi Research Group":
