@@ -5,6 +5,7 @@ grand_parent: COVIDcast API
 ---
 
 # Doctor Visits
+{: .no_toc}
 
 * **Source name:** `doctor-visits`
 * **Number of data revisions since 19 May 2020:** 0
@@ -18,14 +19,13 @@ of COVID-related doctor's visits in a given location, on a given day.
 | Signal | Description |
 | --- | --- |
 | `smoothed_cli` | Estimated percentage of outpatient doctor visits primarily about COVID-related symptoms, based on data from healthcare partners, smoothed in time using a Gaussian linear smoother |
-| `smoothed_adj_cli` | Same, but with systematic day-of-week effects removed (so that every day "looks like" a Monday)|
+| `smoothed_adj_cli` | Same, but with systematic day-of-week effects removed; see [details below](#day-of-week-adjustment) |
 
-Day-of-week effects are removed by fitting a model to all data in the United
-States; the model includes a fixed effect for each day of the week, except
-Monday. Once these effects are estimated, they are subtracted from each
-geographic area's time series. This removes day-to-day variation that arises
-solely from clinic schedules, work schedules, and other variation in doctor's
-visits that arise solely because of the day of week.
+## Table of contents
+{: .no_toc .text-delta}
+
+1. TOC
+{:toc}
 
 ## Lag and Backfill
 
@@ -48,3 +48,120 @@ partners. Our partners can report on a portion of the United States healthcare
 market, but not all of it, and so this source only represents those visits known
 to our partners. Their coverage and market share may vary across the United
 States.
+
+## Qualifying Conditions
+
+Our healthcare partners provide data on the following five categories of counts:
+
+- Denominator: Daily count of all unique outpatient visits.
+- COVID-like: Daily count of all unique outpatient visits with primary ICD-10 code
+	of any of: {U071, U072, B9729, J1281, Z03818, B342, J1289}.
+- Flu-like: Daily count of all unique outpatient visits with primary ICD-10 code
+	of any of: {J22, B349}. The occurrence of these codes in an area is
+	correlated with that area's historical influenza activity, but are
+	diagnostic codes not specific to influenza and can appear in COVID-19 cases.
+- Mixed: Daily count of all unique outpatient visits with primary ICD-10 code of
+	any of: {Z20828, J129}. The occurance of these codes in an area is
+	correlated to a blend of that area's COVID-19 confirmed case counts and
+	influenza behavior, and are not diagnostic codes specific to either disease.
+- Flu: Daily count of all unique outpatient visits with primary ICD-10 code of
+	any of: {J09\*, J10\*, J11\*}. The asterisk `*` indicates inclusion of all
+	subcodes. This set of codes are assigned to influenza viruses.
+
+If a patient has multiple visits on the same date (and hence multiple primary
+ICD-10 codes), then we will only count one of and in descending order: *Flu*,
+*COVID-like*, *Flu-like*, *Mixed*. This ordering tries to account for the most
+definitive confirmation, e.g. the codes assigned to *Flu* are only used for
+confirmed influenza cases, which are unrelated to the COVID-19 coronavirus.
+
+## Estimation
+
+### COVID-Like Illness
+
+For a fixed location $$i$$ and time $$t$$, let $$Y_{it}^{\text{Covid-like}}$$,
+$$Y_{it}^{\text{Flu-like}}$$, $$Y_{it}^{\text{Mixed}}$$, $$Y_{it}^{\text{Flu}}$$
+denote the correspondingly named ICD-filtered counts and let $$N_{it}$$ be the
+total count of visits (the *Denominator*). Our estimate of the CLI percentage is
+given by
+
+$$
+\hat p_{it} = 100 \cdot  \frac{Y_{it}^{\text{Covid-like}} +
+	\left((Y_{it}^{\text{Flu-like}} + Y_{it}^{\text{Mixed}}) -
+	Y_{it}^{\text{Flu}}\right)}{N_{it}}
+$$
+
+The estimated standard error is:
+
+$$
+\widehat{\text{se}}(\hat{p}_{it}) =  \sqrt{\frac{\hat{p}_{it}(1-\hat{p}_{it})}{N_{it}}}.
+$$
+
+Note the quantity above is not going to be correct for multiple reasons: smoothing/day of
+week adjustments/etc.
+
+### Day-of-Week Adjustment
+
+The fraction of visits due to CLI is dependent on the day of the week. On
+weekends, doctors see a higher percentage of acute conditions, so the percentage
+of CLI is higher. Each day of the week has a different behavior, and if we do
+not adjust for this effect, we will not be able to meaningfully compare the
+doctor visits signal across different days of the week. We use a Poisson
+regression model to produce a signal adjusted for this effect.
+
+We assume that this weekday effect is multiplicative. For example, if the
+underlying rate of CLI on each Monday was the same as the previous Sunday, then
+the ratio between the doctor visit signals on Sunday and Monday would be a
+constant. Formally, we assume that
+
+$$
+\log \mu_t = \alpha_{wd(t)} + \phi_t
+$$
+
+where $$\mu_t$$ is the expected doctor visits percentage of CLI at time $$t$$,
+$$\alpha_{wd(t)}$$ is the weekday correction for the weekday of day $$t$$, and
+$$\phi_t$$ is the corrected doctor visits percentage of CLI at time $$t$$.
+
+For simplicity, we fit assume that the weekday parameters do not change over
+time or location. To fit the $$\alpha$$ parameters, we minimize the following
+convex objective function:
+
+$$
+f(\alpha, \phi | \mu) = -\log \ell (\alpha,\phi|\mu) + \lambda ||\Delta^3 \phi||_1
+$$
+
+where $$\ell$$ is the Poisson likelihood and $$\Delta^3 \phi$$ is the third
+differences of $$\phi$$. For identifiability, we constrain the sum of $$\alpha$$
+to be zero by setting Sunday's fixed effect to be the negative sum of the other
+weekdays. The penalty term encourages the $$\phi$$ curve to be smooth and
+produces meaningful $$\alpha$$ values.
+
+Once we have estimated values for $$\alpha$$ for each type of count $$k$$ in
+{*COVID-like*, *Flu-like*, *Mixed*, *Flu*}, we obtain the adjusted count
+
+$$\dot{Y}_{it}^k = Y_{it}^k / \alpha_{wd(t)}.$$
+
+We then use these adjusted counts to estimate the CLI percentage as described
+above.
+
+### Backfill
+
+To help with the reporting delay, we perform the following simple "backfill"
+correction on each location. At each time $$t$$, we consider the total visit
+count. If the value is less than a minimum sample threshold, we go back to the
+previous time $$t-1$$, and add this visit count to the previous total, again
+checking to see if the threshold has been met. If not, we continue to move
+backwards in time until we meet the threshold, and take the estimate at time
+$$t$$ to be the average over the smallest window that meets the threshold. We
+enforce a hard stop to consider only the past 7 days, if we have not yet met the
+threshold during that time bin, no estimate will be produced. If, for instance,
+at time $$t$$, the minimum sample threshold is already met, then the estimate
+only contains data from time $$t$$. This is a dynamic-length moving average,
+working backwards through time. The threshold is set at 500 observations.
+
+### Smoothing
+
+To help with variability, we also employ a local linear regression filter with a
+Gaussian kernel. The bandwidth is fixed to approximately cover a rolling 7 day
+window, with the highest weight placed on the right edge of the window (the most
+recent timepoint). Given this smoothing step, the standard error estimate shown
+above is not exactly correct, as the calculation is done post-smoothing.
