@@ -85,6 +85,11 @@ def update_loop(database, direction_impl=Direction):
       series_length,
     ) = row
 
+    if source not in data_stdevs or signal not in data_stdevs[source]:
+      msg = '%s.%s is too new a signal to have a historical stdev reference; skipping'
+      print(msg % (source,signal))
+      continue
+
     # progress reporting for anyone debugging/watching the output
     be_verbose = ts_index < 100
     be_verbose = be_verbose or ts_index % 100 == 0
