@@ -1,2 +1,0 @@
-# Open up the API to all origins.
-Header set Access-Control-Allow-Origin "*"
