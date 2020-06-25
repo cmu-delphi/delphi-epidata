@@ -16,19 +16,21 @@ This data source is based on symptom surveys run by Carnegie Mellon. Facebook
 directs a random sample of its users to these surveys, which are voluntary.
 Individual survey responses are held by CMU and are sharable with other health
 researchers under a data use agreement. No individual survey responses are
-shared back to Facebook. Of primary interest in these surveys are the symptoms
-defining a COVID-like illness (fever, along with cough, or shortness of breath,
-or difficulty breathing) or influenza-like illness (fever, along with cough or
-sore throat). Using this survey data, we estimate the percentage of people who
-have a COVID-like illness, or influenza-like illness, in a given location, on a
-given day.
+shared back to Facebook.
+
+Of primary interest in these surveys are the symptoms defining a COVID-like
+illness (fever, along with cough, or shortness of breath, or difficulty
+breathing) or influenza-like illness (fever, along with cough or sore throat).
+Using this survey data, we estimate the percentage of people who have a
+COVID-like illness, or influenza-like illness, in a given location, on a given
+day.
 
 | Signal | Description |
 | --- | --- |
 | `raw_cli` | Estimated percentage of people with COVID-like illness based on the [criteria below](#defining-household-ili-and-cli), with no smoothing or survey weighting |
 | `raw_ili` | Estimated percentage of people with influenza-like illness based on the [criteria below](#defining-household-ili-and-cli), with no smoothing or survey weighting |
-| `raw_wcli` | Estimated percentage of people with COVID-like illness; adjusted using survey weights |
-| `raw_wili` | Estimated percentage of people with influenza-like illness; adjusted using survey weights |
+| `raw_wcli` | Estimated percentage of people with COVID-like illness; adjusted using survey weights [as described below](#survey-weighting) |
+| `raw_wili` | Estimated percentage of people with influenza-like illness; adjusted using survey weights [as described below](#survey-weighting) |
 | `raw_hh_cmnty_cli` | Estimated percentage of people reporting illness in their local community, as [described below](#estimating-community-cli), including their household, with no smoothing or survey weighting |
 | `raw_nohh_cmnty_cli` | Estimated percentage of people reporting illness in their local community, as [described below](#estimating-community-cli), not including their household, with no smoothing or survey weighting |
 
@@ -256,8 +258,9 @@ percentage of inviduals with ILI and CLI, and individuals who know someone with
 CLI, with respect to the population of US Facebook users. (To be precise, the
 estimates above actually reflect the percentage inviduals with ILI and CLI, with
 respect to the population of US Facebook users *and* their households members).
-In reality, our estimates are even further skewed by the propensity of people in
-the population of US Facebook users to take our survey in the first place.
+In reality, our estimates are even further skewed by the varying propensity of
+people in the population of US Facebook users to take our survey in the first
+place.
 
 When Facebook sends a user to our survey, it generates a random ID number and
 sends this to us as well. Once the user completes the survey, we pass this ID
@@ -265,17 +268,16 @@ number back to Facebook to confirm completion, and in return receive a
 weight---call it $$w_i$$ for user $$i$$. (To be clear, the random ID number that
 is generated is completely meaningless for any other purpose than receiving said
 weight, and does not allow us to access any information about the user's
-Facebook profile, or anything else whatsoever.)
+Facebook profile.)
 
 We can use these weights to adjust our estimates of the true ILI and CLI
 proportions so that they are representative of the US population---adjusting
 both for the differences between the US population and US Facebook users
 (according to a state-by-age-gender stratification of the US population from the
-2018 Census March Supplement), and for the propensity of a Facebook user to
+2018 Census March Supplement) and for the propensity of a Facebook user to
 take our survey in the first  place.
 
-In more detail, we receive a participation
-weight
+In more detail, we receive a participation weight
 
 $$
 w^{\text{part}}_i = \frac{c^{\text{part}}}{\pi^{\text{part}}_i},
@@ -290,34 +292,36 @@ The adjustment we make follows a standard inverse probability weighting strategy
 ### Adjusting Household ILI and CLI
 
 As before, for a given temporal-spatial unit (for example, daily-county), let
-$$X_i$$ and $$Y_i$$ denote number of ILI and CLI cases in household $$i$$,
+$$X_i$$ and $$Y_i$$ denote the numbers of ILI and CLI cases in household $$i$$,
 respectively (computed according to the simple strategy above), and let $$N_i$$
-denote the total number of people in the household, out of the $$m$$ "relevant"
-surveys we collected. A survey is considered relevant if it was started during
-the time interval of interest and the respondent's ZIP code overlaps the spatial
-unit of interest. Each of these surveys is assigned two weights: the
-participation weight $$w^{\text{part}}_i$$, and a geographical-division weight
+denote the total number of people in the household. Let $$i = 1, \dots, m$$
+denote the surveys started during the time period of interest and reported in a
+ZIP code intersecting the spatial unit of interest.
+
+Each of these surveys is assigned two weights: the participation weight
+$$w^{\text{part}}_i$$, and a geographical-division weight
 $$w^{\text{geodiv}}_i$$ describing how much a participant's ZIP code "belongs"
 in the spatial unit of interest. (For example, a ZIP code may overlap with
 multiple counties, so the weight describes what proportion of the ZIP code's
 population is in each county.)
 
 Let $$w^{\text{init}}_i=w^{\text{part}}_i w^{\text{geodiv}}_i=c/\pi_i$$ denote
-the initial weight assigned to this survey, where $$c>0$$ is chosen so that
-$$\sum_{i=1}^m w_i=1$$.
+the initial weight assigned to this survey. This is simply the weight provided
+to us by Facebook, rescaled with $$c>0$$ chosen so that $$\sum_{i=1}^m w_i=1$$.
 
 First, the initial weights are adjusted to reduce sensitivity to any individual
 survey by "mixing" them with a uniform weighting across all relevant surveys.
+This prevents specific survey respondents with high survey weights having
+disproportionate influence on the weighted estimates.
 
-Specifically, we select
+Specifically, we select the smallest value of $$a \in [0.05, 1]$$ such that
 
 $$
-w_i=a\cdot\frac1m + (1-a)\cdot w^{\text{init}}_i
+w_i = a\cdot\frac1m + (1-a)\cdot w^{\text{init}}_i \leq 0.01
 $$
 
-using the smallest value of $$a\in[0.05,1]$$ such that $$w_i\le 0.01$$ for all
-$$i$$; if such a selection is impossible, then we have insufficient survey
-responses (less than 100), and do not produce an estimate for the given
+for all $$i$$. If such a selection is impossible, then we have insufficient
+survey responses (less than 100), and do not produce an estimate for the given
 temporal-spatial unit.
 
 Then our adjusted estimates of $$p$$ and $$q$$ are:
@@ -334,11 +338,11 @@ with estimated standard errors:
 $$
 \begin{aligned}
 \widehat{\mathrm{se}}(\hat{p}_w) &= 100 \cdot \sqrt{
-  \Big(\frac{1}{1 + n_e}\Big)^2 \Big(\frac12 - \hat{p}_w\Big)^2 +
+  \left(\frac{1}{1 + n_e}\right)^2 \left(\frac12 - \hat{p}_w\right)^2 +
   n_e \hat{s}_p^2
 }\\
 \widehat{\mathrm{se}}(\hat{q}_w) &= 100 \cdot \sqrt{
-  \Big(\frac{1}{1 + n_e}\Big)^2 \Big(\frac12 - \hat{q}_w\Big)^2 +
+  \left(\frac{1}{1 + n_e}\right)^2 \left(\frac12 - \hat{q}_w\right)^2 +
   n_e \hat{s}_q^2
 },
 \end{aligned}
@@ -348,13 +352,13 @@ where
 
 $$
 \begin{aligned}
-\hat{s}_p^2 &= \sum_{i=1}^m w_i^2 \Big(\frac{X_i}{N_i} - \hat{p}_w\Big)^2 \\
-\hat{s}_q^2 &= \sum_{i=1}^m w_i^2 \Big(\frac{Y_i}{N_i} - \hat{q}_w\Big)^2 \\
+\hat{s}_p^2 &= \sum_{i=1}^m w_i^2 \left(\frac{X_i}{N_i} - \hat{p}_w\right)^2 \\
+\hat{s}_q^2 &= \sum_{i=1}^m w_i^2 \left(\frac{Y_i}{N_i} - \hat{q}_w\right)^2 \\
 n_e &= \frac1{\sum_{i=1}^m w_i^2},
 \end{aligned}
 $$
 
-the delta method estimates of variance associated with self-normalized
+which are the delta method estimates of variance associated with self-normalized
 importance sampling estimators above, after combining with a pseudo-observation
 of 1/2 with weight assigned to appear like a single effective observation
 according to importance sampling diagnostics.
