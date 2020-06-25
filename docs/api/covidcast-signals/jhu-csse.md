@@ -28,13 +28,22 @@ University.
 
 These signals are taken directly from the JHU CSSE [COVID-19 GitHub
 repository](https://github.com/CSSEGISandData/COVID-19) without filtering,
-smoothing, or changes. **Note:** JHU's data reports cumulative cases and deaths,
-so our incidence signals are calculated by subtracting each day's cumulative
-count from the previous day. Since cumulative figures are sometimes corrected or
-amended by health authorities, this can sometimes result in negative incidence.
-This should be interpreted purely as an artifact of data reporting and
-correction.
+smoothing, or changes.
 
 Smoothed versions of all the signals above are available. These signals report
 moving averages of the preceding 7 days, so e.g. the signal for June 7 is the
 average of the underlying data for June 1 through 7, inclusive.
+
+## Limitations
+
+JHU's data reports cumulative cases and deaths, so our incidence signals are
+calculated by subtracting each day's cumulative count from the previous day.
+Since cumulative figures are sometimes corrected or amended by health
+authorities, this can sometimes result in negative incidence. This should be
+interpreted purely as an artifact of data reporting and correction.
+
+Due to differences in state reporting standards, certain counties are not
+reported in the JHU data or are reported combined with other counties. See the
+[geography coding
+documentation](../covidcast_geography.md#fips-exceptions-in-jhu-data) for
+details.
