@@ -13,12 +13,12 @@ grand_parent: COVIDcast API
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 
 This data source is based on information about outpatient visits, provided to us
-by healthcare partners. Using this outpatient data, we estimate the percentage
-of COVID-related doctor's visits in a given location, on a given day.
+by a national health system. Using this outpatient data, we estimate the
+percentage of COVID-related doctor's visits in a given location, on a given day.
 
 | Signal | Description |
 | --- | --- |
-| `smoothed_cli` | Estimated percentage of outpatient doctor visits primarily about COVID-related symptoms, based on data from healthcare partners, smoothed in time using a Gaussian linear smoother |
+| `smoothed_cli` | Estimated percentage of outpatient doctor visits primarily about COVID-related symptoms, based on data from a national health system, smoothed in time using a Gaussian linear smoother |
 | `smoothed_adj_cli` | Same, but with systematic day-of-week effects removed; see [details below](#day-of-week-adjustment) |
 
 ## Table of contents
@@ -29,10 +29,10 @@ of COVID-related doctor's visits in a given location, on a given day.
 
 ## Lag and Backfill
 
-Note that because doctor's visits may be reported to our healthcare partners
-several days after they occur, these signals are typically available with
-several days of lag. This means that estimates for a specific day are only
-available several days later.
+Note that because doctor's visits may be reported to the health system several
+days after they occur, these signals are typically available with several days
+of lag. This means that estimates for a specific day are only available several
+days later.
 
 The amount of lag in reporting can vary, and not all visits are reported with
 the same lag. After we first report estimates for a specific date, further data
@@ -43,15 +43,16 @@ June 16th.
 
 ## Limitations
 
-This data source is based on outpatient visit data provided to us by healthcare
-partners. Our partners can report on a portion of the United States healthcare
-market, but not all of it, and so this source only represents those visits known
-to our partners. Their coverage and market share may vary across the United
-States.
+This data source is based on outpatient visit data provided to us by a national
+health system. The system can report on a portion of United States outpatient
+doctor's visits, but not all of them, and so this source only represents those
+visits known to them. Their coverage may vary across the United States.
+
+Standard errors are not available for this data source.
 
 ## Qualifying Conditions
 
-Our healthcare partners provide data on the following five categories of counts:
+We receive data on the following five categories of counts:
 
 - Denominator: Daily count of all unique outpatient visits.
 - COVID-like: Daily count of all unique outpatient visits with primary ICD-10 code
