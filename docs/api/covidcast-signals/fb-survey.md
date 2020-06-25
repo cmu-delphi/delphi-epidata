@@ -25,12 +25,12 @@ given day.
 
 | Signal | Description |
 | --- | --- |
-| `raw_cli` | Estimated percentage of people with COVID-like illness, with no smoothing or survey weighting |
-| `raw_ili` | Estimated percentage of people with influenza-like illness, with no smoothing or survey weighting |
+| `raw_cli` | Estimated percentage of people with COVID-like illness based on the [criteria below](#defining-household-ili-and-cli), with no smoothing or survey weighting |
+| `raw_ili` | Estimated percentage of people with influenza-like illness based on the [criteria below](#defining-household-ili-and-cli), with no smoothing or survey weighting |
 | `raw_wcli` | Estimated percentage of people with COVID-like illness; adjusted using survey weights |
 | `raw_wili` | Estimated percentage of people with influenza-like illness; adjusted using survey weights |
-| `raw_hh_cmnty_cli` | Estimated percentage of people reporting illness in their local community, including their household, with no smoothing or survey weighting |
-| `raw_nohh_cmnty_cli` | Estimated percentage of people reporting illness in their local community, not including their household, with no smoothing or survey weighting |
+| `raw_hh_cmnty_cli` | Estimated percentage of people reporting illness in their local community, as [described below](#estimating-community-cli), including their household, with no smoothing or survey weighting |
+| `raw_nohh_cmnty_cli` | Estimated percentage of people reporting illness in their local community, as [described below](#estimating-community-cli), not including their household, with no smoothing or survey weighting |
 
 Note that for `raw_hh_cmnty_cli` and `raw_nohh_cmnty_cli`, the illnesses
 included are broader: a respondent is included if they know someone in their
@@ -40,10 +40,10 @@ attempt to distinguish between COVID-like and influenza-like illness.
 
 Along with the `raw_` signals, there are additional signals with names beginning
 with `smoothed_`. These estimate the same quantities as the above signals, but
-are smoothed in time to reduce day-to-day sampling noise; importantly (due to
-the way in which our smoothing works, which is based on pooling data across
-successive days), these smoothed signals are generally available at many more
-counties (and MSAs) than the raw signals.
+are smoothed in time to reduce day-to-day sampling noise; see [details
+below](#smoothing). Because the smoothed signals combine information across
+seven days, they have larger sample sizes and hence are available for more
+counties and MSAs than the raw signals.
 
 ## Table of contents
 {: .no_toc .text-delta}
@@ -72,8 +72,9 @@ The survey starts with the following 5 questions:
 
 Beyond these 5 questions, there are also many other questions that follow in the
 survey, which go into more detail on symptoms and demographics. These are
-primarily of interest to other researchers, but could still be useful for our
-purposes. The full survey can be found TODO.
+primarily of interest to researchers studying the social and economic effects of
+the pandemic, but could still be useful for forecasting purposes. The full
+survey can be found TODO. TODO Link to details on obtaining research access
 
 As of mid-June 2020, the median number of Facebook survey responses per day, is
 about 72,000.
@@ -143,11 +144,11 @@ We estimate $$p$$ and $$q$$ across 4 temporal-spatial aggregation schemes:
 
 Note that these spatial aggregations are possible as we have the ZIP code of the
 household from Q4 of the survey. Our current rule-of-thumb is to discard any
-estimate (whether at a county, MSA, HRR, or state level) that is comprised of
-less than 100 survey responses. When our geographical mapping data indicates
-that a ZIP code is part of multiple geographical units in a single aggregation,
-we assign weights to each of these units and proceed as described below, but
-with uniform participation weights ($$w^{\text{part}}_i=1$$ for all $$i$$).
+estimate (whether at a county, MSA, HRR, or state level) that is based on fewer
+than 100 survey responses. When our geographical mapping data indicates that a
+ZIP code is part of multiple geographical units in a single aggregation, we
+assign weights to each of these units and proceed as described below, but with
+uniform participation weights ($$w^{\text{part}}_i=1$$ for all $$i$$).
 
 In a given temporal-spatial unit (for example, daily-county), let $$X_i$$ and
 $$Y_i$$ denote number of ILI and CLI cases in the household, respectively
@@ -218,7 +219,8 @@ $$
 \hat{b} = 100 \cdot \frac{1}{m} \sum_{i=1}^m V_i.
 $$
 
-Their estimated standard errors are:
+Hence $$\hat{a}$$ is reported in the `hh_cmnty_cli` signals and $$\hat{b}$$ in
+the `nohh_cmnty_cli` signals. Their estimated standard errors are:
 
 $$
 \begin{aligned}
@@ -236,6 +238,16 @@ similarly for $$V$$. Hence $$\hat{a}$$ and $$\hat{b}$$ will generally
 overestimate $$a$$ and $$b$$. However, given the extremely high overlap between
 the definitions of ILI and CLI, we do not consider this to be practically very
 problematic.
+
+
+### Smoothing
+
+The smoothed versions of the signals described above (with `smoothed_` prefix)
+are calculated using seven day pooling. For example, the estimate reported for
+June 7 in a specific geographical area (such as county or MSA) is formed by
+collecting all surveys completed between June 1 and 7 (inclusive) and using that
+data in the estimation procedures described above.
+
 
 ## Survey Weighting
 
