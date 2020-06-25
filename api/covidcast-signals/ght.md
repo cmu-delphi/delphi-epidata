@@ -5,6 +5,7 @@ grand_parent: COVIDcast API
 ---
 
 # Google Health Trends
+{: .no_toc}
 
 * **Source name:** `ght`
 * **Number of data revisions since 19 May 2020:** 0
@@ -15,14 +16,42 @@ This data source (`ght`) is based on Google searches, provided to us by Google
 Health Trends. Using this search data, we estimate the volume of COVID-related
 searches in a given location, on a given day. This signal is measured in
 arbitrary units (its scale is meaningless); larger numbers represent higher
-numbers of COVID-related searches. Note that this source is not available for
-individual counties, as it is reported only for larger geographical areas, and
-so county estimates are not available from the API.
+numbers of COVID-related searches.
 
 | Signal | Description |
 | --- | --- |
 | `raw_search` | Google search volume for COVID-related searches, in arbitrary units that are normalized for population |
-| `smoothed_search` | Google search volume for COVID-related searches, in arbitrary units that are normalized for population, smoothed in time using a local linear smoother with Gaussian kernel |
+| `smoothed_search` | Google search volume for COVID-related searches, in arbitrary units that are normalized for population, smoothed in time as [described below](#smoothing) |
+
+## Table of contents
+{: .no_toc .text-delta}
+
+1. TOC
+{:toc}
+
+## Estimation
+
+We query the Google Health Trends API for overall searcher interest in a set of
+COVID-19 related terms which encompass the following topics: coronavirus
+symptoms; coronavirus help; coronavirus test-seeking; anosmia (lack of smell or
+taste). The API provides data at the Nielsen Designated Marketing Area (DMA)
+level and at the State level. This information reported by the API is unitless
+and pre-normalized for population size; i.e., the time series obtained for New
+York and Wyoming states are directly comparable. The public has access to a
+limited view of such information through [Google
+Trends](https://trends.google.com).
+
+DMA-level data are aggregated to the MSA and HRR level through
+population-weighted averaging.
+
+## Smoothing
+
+The smoothed signal is produced using the following strategy. For each date, we
+fit a local linear regression, using a Gaussian kernel, with only data on or
+before that date. (This is equivalent to using a negative half normal
+distribution as the kernel.) The bandwidth is chosen such that most of the
+kernel weight is placed on the preceding seven days. The estimate for the data
+is the local linear regression's prediction for that date.
 
 ## Limitations
 
