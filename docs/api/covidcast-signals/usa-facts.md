@@ -74,8 +74,9 @@ New York City comprises five boroughs, each of which is a county:
 |Staten Island      |Richmond County    |36085          |
 
 USAFacts reports cases and deaths for each of these counties, but *also* reports
-New York City unallocated numbers. We split unallocated cases and deaths evenly
-among the five NYC FIPS, which results in non-integer counts.
+New York City counts not allocated to a specific county. We split unallocated
+cases and deaths evenly among the five counties, which results in non-integer
+counts.
 
 All NYC counts are mapped to the MSA with CBSA ID 35620, which encompasses all
 five boroughs. All NYC counts are mapped to HRR 303, which intersects all five
