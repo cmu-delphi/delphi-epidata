@@ -115,16 +115,20 @@ the ratio between the doctor visit signals on Sunday and Monday would be a
 constant. Formally, we assume that
 
 $$
-\log \mu_t = \alpha_{wd(t)} + \phi_t
+\begin{aligned}
+\mathbb{E}[Y_{it}] &= \mu_t\\
+\log \mu_t &= \alpha_{\text{wd}(t)} + \phi_t,
+\end{aligned}
 $$
 
-where $$\mu_t$$ is the expected doctor visits percentage of CLI at time $$t$$,
-$$\alpha_{wd(t)}$$ is the weekday correction for the weekday of day $$t$$, and
+where $$Y_{it}$$ is the observed doctor visits percentage of CLI at time $$t$$,
+$$\text{wd}(t) \in \{0, \dots, 6\}$$ is the day-of-week of time $$t$$,
+$$\alpha_{\text{wd}(t)}$$ is the corresponding weekday correction, and
 $$\phi_t$$ is the corrected doctor visits percentage of CLI at time $$t$$.
 
-For simplicity, we fit assume that the weekday parameters do not change over
-time or location. To fit the $$\alpha$$ parameters, we minimize the following
-convex objective function:
+For simplicity, we assume that the weekday parameters do not change over time or
+location. To fit the $$\alpha$$ parameters, we minimize the following convex
+objective function:
 
 $$
 f(\alpha, \phi | \mu) = -\log \ell (\alpha,\phi|\mu) + \lambda ||\Delta^3 \phi||_1
