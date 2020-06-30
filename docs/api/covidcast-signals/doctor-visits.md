@@ -13,12 +13,12 @@ grand_parent: COVIDcast API
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 
 This data source is based on information about outpatient visits, provided to us
-by a national health system. Using this outpatient data, we estimate the
+by health system partners. Using this outpatient data, we estimate the
 percentage of COVID-related doctor's visits in a given location, on a given day.
 
 | Signal | Description |
 | --- | --- |
-| `smoothed_cli` | Estimated percentage of outpatient doctor visits primarily about COVID-related symptoms, based on data from a national health system, smoothed in time using a Gaussian linear smoother |
+| `smoothed_cli` | Estimated percentage of outpatient doctor visits primarily about COVID-related symptoms, based on data from health system partners, smoothed in time using a Gaussian linear smoother |
 | `smoothed_adj_cli` | Same, but with systematic day-of-week effects removed; see [details below](#day-of-week-adjustment) |
 
 ## Table of contents
@@ -29,10 +29,10 @@ percentage of COVID-related doctor's visits in a given location, on a given day.
 
 ## Lag and Backfill
 
-Note that because doctor's visits may be reported to the health system several
-days after they occur, these signals are typically available with several days
-of lag. This means that estimates for a specific day are only available several
-days later.
+Note that because doctor's visits may be reported to the health system partners
+several days after they occur, these signals are typically available with
+several days of lag. This means that estimates for a specific day are only
+available several days later.
 
 The amount of lag in reporting can vary, and not all visits are reported with
 the same lag. After we first report estimates for a specific date, further data
@@ -43,10 +43,11 @@ June 16th.
 
 ## Limitations
 
-This data source is based on outpatient visit data provided to us by a national
-health system. The system can report on a portion of United States outpatient
-doctor's visits, but not all of them, and so this source only represents those
-visits known to them. Their coverage may vary across the United States.
+This data source is based on outpatient visit data provided to us by health
+system partners. The partners can report on a portion of United States
+outpatient doctor's visits, but not all of them, and so this source only
+represents those visits known to them. Their coverage may vary across the United
+States.
 
 Standard errors are not available for this data source.
 
@@ -115,16 +116,20 @@ the ratio between the doctor visit signals on Sunday and Monday would be a
 constant. Formally, we assume that
 
 $$
-\log \mu_t = \alpha_{wd(t)} + \phi_t
+\begin{aligned}
+\mathbb{E}[Y_{it}] &= \mu_t\\
+\log \mu_t &= \alpha_{\text{wd}(t)} + \phi_t,
+\end{aligned}
 $$
 
-where $$\mu_t$$ is the expected doctor visits percentage of CLI at time $$t$$,
-$$\alpha_{wd(t)}$$ is the weekday correction for the weekday of day $$t$$, and
+where $$Y_{it}$$ is the observed doctor visits percentage of CLI at time $$t$$,
+$$\text{wd}(t) \in \{0, \dots, 6\}$$ is the day-of-week of time $$t$$,
+$$\alpha_{\text{wd}(t)}$$ is the corresponding weekday correction, and
 $$\phi_t$$ is the corrected doctor visits percentage of CLI at time $$t$$.
 
-For simplicity, we fit assume that the weekday parameters do not change over
-time or location. To fit the $$\alpha$$ parameters, we minimize the following
-convex objective function:
+For simplicity, we assume that the weekday parameters do not change over time or
+location. To fit the $$\alpha$$ parameters, we minimize the following convex
+objective function:
 
 $$
 f(\alpha, \phi | \mu) = -\log \ell (\alpha,\phi|\mu) + \lambda ||\Delta^3 \phi||_1

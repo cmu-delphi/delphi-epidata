@@ -5,6 +5,7 @@ nav_order: 4
 ---
 
 # COVIDcast Geographic Coding
+{: .no_toc}
 
 The `geo_value` field returned by the API specifies the geographic location
 whose estimate is being reported. Estimates are available for several possible
@@ -33,6 +34,9 @@ whose estimate is being reported. Estimates are available for several possible
 Some signals are not available for all `geo_type`s, since they may be reported
 from their original sources with different levels of aggregation.
 
+## Table of contents
+{: .no_toc .text-delta}
+
 1. toc
 {:toc}
 
@@ -59,79 +63,10 @@ never a FIPS code for a real county. For example, megacounty estimates for the
 state of New York are reported with FIPS code 36000, since 36 is the FIPS code
 prefix for New York.
 
+## Coding Exceptions
 
-## FIPS Exceptions in JHU Data
-
-At the County (FIPS) level, we report the data _exactly_ as JHU reports their
-data, to prevent confusing public consumers of the data. JHU FIPS reporting
-matches that used in the other signals, except for the following exceptions.
-
-### New York City
-New York City comprises five boroughs:
-
-|Borough Name       |County Name        |FIPS Code      |
-|-------------------|-------------------|---------------|
-|Manhattan          |New York County    |36061          |
-|The Bronx          |Bronx County       |36005          |
-|Brooklyn           |Kings County       |36047          |
-|Queens             |Queens County      |36081          |
-|Staten Island      |Richmond County    |36085          |
-
-**Data from all five boroughs are reported under New York County,
-FIPS Code 36061.**  The other four boroughs are included in the dataset
-and show up in our API, but they should be uniformly zero.
-
-All NYC counts are mapped to the MSA with CBSA ID 35620, which encompasses all
-five boroughs. All NYC counts are mapped to HRR 303, which intersects all five
-boroughs (297 also intersects the Bronx, 301 also intersects Brooklyn and
-Queens, but absent additional information, we chose to leave all counts in 303).
-
-### Kansas City, Missouri
-
-Kansas City intersects the following four counties, which themselves report
-confirmed case and deaths data:
-
-|County Name        |FIPS Code      |
-|-------------------|---------------|
-|Jackson County     |29095          |
-|Platte County      |29165          |
-|Cass County        |29037          |
-|Clay County        |29047          |
-
-**Data from Kansas City is given its own dedicated line, with FIPS
-code 70003.**  This is how JHU encodes their data.  However, the data in
-the four counties that Kansas City intersects is not necessarily zero.
-
-For the mapping to HRR and MSA, the counts for Kansas City are dispersed to
-these four counties in equal proportions.
-
-### Dukes and Nantucket Counties, Massachusetts
-
-**The counties of Dukes and Nantucket report their figures together,
-and we (like JHU) list them under FIPS Code 70002.**  Here are the FIPS codes
-for the individual counties:
-
-|County Name        |FIPS Code      |
-|-------------------|---------------|
-|Dukes County       |25007          |
-|Nantucket County   |25019          |
-
-For the mapping to HRR and MSA, the counts for Dukes and Nantucket are
-dispersed to the two counties in equal proportions.
-
-The data in the individual counties is expected to be zero.
-
-### Mismatched FIPS Codes
-
-Finally, there are two FIPS codes that were changed in 2015 (see the [Census
-Bureau
-documentation](https://www.census.gov/programs-surveys/geography/technical-documentation/county-changes.html)),
-leading to mismatch between us and JHU. We report the data using the FIPS code
-used by JHU, again to promote consistency and avoid confusion by external users
-of the dataset. For the mapping to MSA, HRR, these two counties are included
-properly.
-
-|County Name        |State          |"Our" FIPS         |JHU FIPS       |
-|-------------------|---------------|-------------------|---------------|
-|Oglala Lakota      |South Dakota   |46113              |46102          |
-|Kusilvak           |Alaska         |02270              |02158          |
+1. The cases and deaths data from JHU CSSE has some geographic exceptions in its
+   coding and reporting; see [its documentation](covidcast-signals/jhu-csse.md)
+   for more details.
+2. The cases and deaths data from USAFacts also has geographic exceptions; see
+   [its documentation](covidcast-signals/usa-facts.md) for details.

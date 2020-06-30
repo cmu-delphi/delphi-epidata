@@ -20,7 +20,7 @@ individual census block groups, using differential privacy to protect the
 privacy of individual people in the data.
 
 Delphi creates features of the Safegraph data at the census block group level,
-then aggregates these features to the county and state levels.  The aggregated
+then aggregates these features to the county and state levels. The aggregated
 data is freely available through the COVIDcast API.
 
 For precise definitions of the quantities below, consult the [SafeGraph social
@@ -42,3 +42,8 @@ doing so, we make the simplifying assumption that each CBG contributes an iid
 observation to the county-level distribution. `n` also serves as the sample
 size. The same method is used for aggregation to states.
 
+## Lag
+
+SafeGraph provides this data with a three-day lag, meaning estimates for a
+specific day are only available three days later. It may take up to an
+additional day for SafeGraph's data to be ingested into the COVIDcast API.
