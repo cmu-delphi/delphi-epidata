@@ -1,6 +1,7 @@
 """Integration tests for covidcast's metadata caching."""
 
 # standard library
+import json
 import unittest
 
 # third party
@@ -100,15 +101,15 @@ class CovidcastMetaCacheTests(unittest.TestCase):
         'stdev_value': 0,
         'max_issue': 20200423,
         'min_lag': 0,
-        'max_lag': 1
+        'max_lag': 1,
       }
     ])
-    epidata1={'result':1,'message':'success','epidata':epidata1}
+    epidata1={'result':1, 'message':'success', 'epidata':epidata1}
 
     # make sure the API covidcast_meta is still blank, since it only serves
     # the cached version and we haven't cached anything yet
     epidata2 = Epidata.covidcast_meta()
-    self.assertEqual(epidata2['result'], -2)
+    self.assertEqual(epidata2['result'], -2, json.dumps(epidata2))
 
     # update the cache
     args = None

@@ -356,17 +356,17 @@ class Epidata
     _request(callback, {'source': 'meta'})
 
   # Fetch Delphi's COVID-19 Surveillance Streams
-  @covidcast: (callback, data_source, signal, time_type, geo_type, time_values, geo_value, as_of, issues, lag) ->
+  @covidcast: (callback, data_source, signals, time_type, geo_type, time_values, geo_value, as_of, issues, lag, format) ->
     # Check parameters
-    unless data_source? and signal? and time_type? and geo_type? and time_values? and geo_value?
-      throw { msg: '`data_source`, `signal`, `time_type`, `geo_type`, `time_values`, and `geo_value` are all required' }
+    unless data_source? and signals? and time_type? and geo_type? and time_values? and geo_value?
+      throw { msg: '`data_source`, `signals`, `time_type`, `geo_type`, `time_values`, and `geo_value` are all required' }
     if issues? and lag?
       throw { msg: '`issues` and `lag` are mutually exclusive' }
     # Set up request
     params =
       'source': 'covidcast'
       'data_source': data_source
-      'signal': signal
+      'signals': signals
       'time_type': time_type
       'geo_type': geo_type
       'time_values': _list(time_values)
@@ -377,6 +377,8 @@ class Epidata
       params.issues = _list(issues)
     if lag?
       params.lag = lag
+    if format?
+      params.format = format
     # Make the API call
     _request(callback, params)
 

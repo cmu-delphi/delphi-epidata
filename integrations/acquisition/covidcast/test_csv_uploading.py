@@ -126,6 +126,7 @@ class CsvUploadingTests(unittest.TestCase):
           'stderr': 0.1,
           'sample_size': 10,
           'direction': None,
+          'signal': 'test',
         },
         {
           'time_value': 20200419,
@@ -134,6 +135,7 @@ class CsvUploadingTests(unittest.TestCase):
           'stderr': 0.3,
           'sample_size': 30,
           'direction': None,
+          'signal': 'test',
         },
         {
           'time_value': 20200419,
@@ -142,6 +144,7 @@ class CsvUploadingTests(unittest.TestCase):
           'stderr': 0.2,
           'sample_size': 20,
           'direction': None,
+          'signal': 'test',
         },
     ]),
       'message': 'success',
@@ -164,6 +167,7 @@ class CsvUploadingTests(unittest.TestCase):
           'stderr': 0.01,
           'sample_size': 100,
           'direction': None,
+          'signal': 'wip_prototype',
         },
         {
           'time_value': 20200419,
@@ -172,6 +176,7 @@ class CsvUploadingTests(unittest.TestCase):
           'stderr': 0.02,
           'sample_size': 200,
           'direction': None,
+          'signal': 'wip_prototype',
         },
         {
           'time_value': 20200419,
@@ -180,6 +185,7 @@ class CsvUploadingTests(unittest.TestCase):
           'stderr': 0.03,
           'sample_size': 300,
           'direction': None,
+          'signal': 'wip_prototype',
         },
        ]),
       'message': 'success',
@@ -202,6 +208,7 @@ class CsvUploadingTests(unittest.TestCase):
           'stderr': 5.4,
           'sample_size': 624,
           'direction': None,
+          'signal': 'wip_really_long_name_that_will_be_accepted',
         },
       ])
     })

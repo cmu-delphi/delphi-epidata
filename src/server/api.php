@@ -925,7 +925,7 @@ function get_dengue_nowcast($locations, $epiweeks) {
 
 // queries the `covidcast` table.
 //   $source (required): name of upstream data souce
-//   $signal (required): name of signal derived from upstream data
+//   $signals (required): array of names for signals derived from upstream data
 //   $time_type (required): temporal resolution (e.g. day, week)
 //   $geo_type (required): spatial resolution (e.g. county, msa, state)
 //   $time_values (required): array of time values/ranges
@@ -937,25 +937,24 @@ function get_dengue_nowcast($locations, $epiweeks) {
 //   $lag (optional): number of time units between each time value and its issue
 //     overridden by $issues
 //     default: most recent issue
-function get_covidcast($source, $signal, $time_type, $geo_type, $time_values, $geo_value, $as_of, $issues, $lag) {
+function get_covidcast($source, $signals, $time_type, $geo_type, $time_values, $geo_value, $as_of, $issues, $lag) {
   // required for `mysqli_real_escape_string`
   global $dbh;
   $source = mysqli_real_escape_string($dbh, $source);
-  $signal = mysqli_real_escape_string($dbh, $signal);
   $time_type = mysqli_real_escape_string($dbh, $time_type);
   $geo_type = mysqli_real_escape_string($dbh, $geo_type);
   $geo_value = mysqli_real_escape_string($dbh, $geo_value);
   // basic query info
   $table = '`covidcast` t';
-  $fields = "t.`time_value`, t.`geo_value`, t.`value`, t.`stderr`, t.`sample_size`, t.`direction`, t.`issue`, t.`lag`";
-  $order = "t.`time_value` ASC, t.`geo_value` ASC, t.`issue` ASC";
+  $fields = "t.`signal`, t.`time_value`, t.`geo_value`, t.`value`, t.`stderr`, t.`sample_size`, t.`direction`, t.`issue`, t.`lag`";
+  $order = "t.`signal` ASC, t.`time_value` ASC, t.`geo_value` ASC, t.`issue` ASC";
   // data type of each field
-  $fields_string = array('geo_value');
+  $fields_string = array('geo_value','signal');
   $fields_int = array('time_value', 'direction', 'issue', 'lag');
   $fields_float = array('value', 'stderr', 'sample_size');
   // build the source, signal, time, and location (type and id) filters
   $condition_source = "t.`source` = '{$source}'";
-  $condition_signal = "t.`signal` = '{$signal}'";
+  $condition_signal = filter_strings('t.`signal`', $signals);
   $condition_time_type = "t.`time_type` = '{$time_type}'";
   $condition_geo_type = "t.`geo_type` = '{$geo_type}'";
   $condition_time_value = filter_integers('t.`time_value`', $time_values);
@@ -1474,16 +1473,18 @@ if(database_connect()) {
       }
     }
   } else if($source === 'covidcast') {
-    if(require_all($data, array('data_source', 'signal', 'time_type', 'geo_type', 'time_values', 'geo_value'))) {
+    if(require_all($data, array('data_source', 'time_type', 'geo_type', 'time_values', 'geo_value'))
+       && require_any($data, array('signal', 'signals'))) {
       // parse the request
       $time_values = extract_values($_REQUEST['time_values'], 'int');
       $as_of = isset($_REQUEST['as_of']) ? intval($_REQUEST['as_of']) : null;
       $issues = isset($_REQUEST['issues']) ? extract_values($_REQUEST['issues'], 'int') : null;
       $lag = isset($_REQUEST['lag']) ? intval($_REQUEST['lag']) : null;
+      $signals = extract_values(isset($_REQUEST['signals']) ? $_REQUEST['signals'] : $_REQUEST['signal'], 'string');
       // get the data
       $epidata = get_covidcast(
           $_REQUEST['data_source'],
-          $_REQUEST['signal'],
+          $signals,
           $_REQUEST['time_type'],
           $_REQUEST['geo_type'],
           $time_values,
@@ -1491,6 +1492,20 @@ if(database_connect()) {
           $as_of,
           $issues,
           $lag);
+      if(isset($_REQUEST['format']) && $_REQUEST['format']=="tree") {
+        //organize results by signal
+        $epi_tree = array();
+        $key = -1;
+        foreach ($epidata as $row) {
+          if ($key != $row['signal']) {
+            $key = $row['signal'];
+            $epi_tree[$key] = array();
+          }
+          unset($row['signal']);
+          array_push($epi_tree[$key],$row);
+        }
+        $epidata = array($epi_tree);
+      }
       store_result($data, $epidata);
     }
   } else if($source === 'covidcast_meta') {
