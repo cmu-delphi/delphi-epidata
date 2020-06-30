@@ -14,13 +14,13 @@ grand_parent: COVIDcast API
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 
 This data source is based on electronic medical records and claims data about
-hospital admissions, provided to us by a national health system. We use this
+hospital admissions, provided to us by health system partners. We use this
 inpatient data to estimate the percentage of new hospital admissions with a
 COVID-associated diagnosis code in a given location, on a given day.
 
 | Signal | Description |
 | --- | --- |
-| `smoothed_covid19` | Estimated percentage of new hospital admissions with COVID-associated diagnoses, based on data from a national health system, smoothed in time using a Gaussian linear smoother |
+| `smoothed_covid19` | Estimated percentage of new hospital admissions with COVID-associated diagnoses, based on data from health system partners, smoothed in time using a Gaussian linear smoother |
 | `smoothed_adj_covid19` | Same, but with systematic day-of-week effects removed using [the same mechanism as in `doctor-visits`](doctor-visits.md#day-of-week-adjustment) |
 
 ## Table of contents
@@ -32,17 +32,17 @@ COVID-associated diagnosis code in a given location, on a given day.
 ## Limitations
 
 This data source is based on electronic medical records and claims data provided
-to us by a national health system. The system can report on a portion of
+to us by health system partners. The partners can report on a portion of
 hospitalizations, but not all of them, and so this source only represents those
 hospitalizations known to them. Their coverage may vary across the United
 States.
 
 ## Lag and Backfill
 
-Hospitalizations are reported and processed by the health system several days
-after they occur, so the signal is typically available within several days of
-lag. This means that estimates for a specific day are only available several
-days later.
+Hospitalizations are reported and processed by the health system partners
+several days after they occur, so the signal is typically available within
+several days of lag. This means that estimates for a specific day are only
+available several days later.
 
 The amount of lag in reporting can vary, particularly whether the data comes
 from electronic medical records or from processed claims. After we first report
@@ -55,8 +55,8 @@ may first be available in the API on June 14th and subsequently revised on June
 ## Qualifying Admissions
 
 We receive the daily count of new hospital admissions recorded by the health
-system at each location. Admissions are considered COVID-associated if they meet
-the following criteria:
+system partners at each location. Admissions are considered COVID-associated if
+they meet the following criteria:
 
 * If the admission has any ICD-10 code matching {U071, U072, B9729}, or
 * If the primary ICD-10 code is one of {R05, R060, R509, Z9911, R0902, R0603,
