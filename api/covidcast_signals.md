@@ -24,6 +24,7 @@ map](https://covidcast.cmu.edu/):
 | Name | Source | Signal |
 | --- | --- | --- |
 | Doctor's Visits | [`doctor-visits`](covidcast-signals/doctor-visits.md) | `smoothed_adj_cli` |
+| Hospital Admissions | [`hospital-admissions`](covidcast-signals/hospital-admissions.md) | `smoothed_adj_covid19` |
 | Symptoms (Facebook) | [`fb-survey`](covidcast-signals/fb-survey.md) | `smoothed_cli` |
 | Symptoms in Community (Facebook) | [`fb-survey`](covidcast-signals/fb-survey.md) | `smoothed_hh_cmnty_cli` |
 | Away from Home 6hr+ (SafeGraph) | [`safegraph`](covidcast-signals/safegraph.md) | `full_time_work_prop` |
