@@ -40,8 +40,8 @@ These signals combine the cases and deaths data from JHU and USA Facts. This is
 a straight composition: the signals below use the [JHU signal data](jhu-csse.md) for
 Puerto Rico, and the [USA Facts signal data](usa-facts.md) everywhere else.
 
-| Signal | 7-day average signal Description |
-| --- | --- |
+| Signal | 7-day average signal | Description |
+| --- | --- | --- |
 | `confirmed_cumulative_num` | `confirmed_7dav_cumulative_num` | Cumulative number of confirmed COVID-19 cases |
 | `confirmed_cumulative_prop` | `confirmed_7dav_cumulative_prop` | Cumulative number of confirmed COVID-19 cases per 100,000 population |
 | `confirmed_incidence_num` | `confirmed_7dav_incidence_num` | Number of new confirmed COVID-19 cases, daily |
