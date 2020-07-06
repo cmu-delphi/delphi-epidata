@@ -31,7 +31,7 @@ map](https://covidcast.cmu.edu/):
 | Away from Home 3-6hr (SafeGraph) | [`safegraph`](covidcast-signals/safegraph.md) | `part_time_work_prop` |
 | Search Trends (Google) | [`ght`](covidcast-signals/ght.md) | `smoothed_search` |
 | Combined | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `nmf_day_doc_fbc_fbs_ght` |
-| Cases | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `confirmed_incidence_num` |
-| Cases per 100,000 People | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `confirmed_incidence_prop` |
-| Deaths | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `deaths_incidence_num` |
-| Deaths per 100,000 People | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `confirmed_incidence_prop` |
+| Cases | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `confirmed_7dav_incidence_num` |
+| Cases per 100,000 People | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `confirmed_7dav_incidence_prop` |
+| Deaths | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `deaths_7dav_incidence_num` |
+| Deaths per 100,000 People | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `deaths_7dav_incidence_prop` |
