@@ -32,6 +32,6 @@ map](https://covidcast.cmu.edu/):
 | Search Trends (Google) | [`ght`](covidcast-signals/ght.md) | `smoothed_search` |
 | Combined | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `nmf_day_doc_fbc_fbs_ght` |
 | Cases | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `confirmed_incidence_num` |
-| Cases per capita | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `confirmed_incidence_prop` |
+| Cases per 100,000 People | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `confirmed_incidence_prop` |
 | Deaths | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `deaths_incidence_num` |
-| Deaths per capita | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `confirmed_incidence_prop` |
+| Deaths per 100,000 People | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `confirmed_incidence_prop` |
