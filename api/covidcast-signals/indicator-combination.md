@@ -132,13 +132,22 @@ sensor. This can be avoided with global column scaling.
 #### Lags and Sporadic Missingness
 
 The matrix $$X$$ is not necessarily complete and we may have entries missing.
-Several forms of missingness arise in our data. On certain days, all observations of a given sensor are missing due to release lag.  For example, Doctor Visits is released several days late. Also, for any given region and sensor, a sensor may be available on some days but not others due to sample size cutoffs. Additionally, on any given day, different sensors are observed in different regions.
+Several forms of missingness arise in our data. On certain days, all
+observations of a given sensor are missing due to release lag. For example,
+Doctor Visits is released several days late. Also, for any given region and
+sensor, a sensor may be available on some days but not others due to sample size
+cutoffs. Additionally, on any given day, different sensors are observed in
+different regions.
 
 To ensure that our combined indicator value has comparable scaling over time and
 is free from erratic jumps that are just due to missingness, we use the
 following imputation strategies:
-*lag imputation*, where if a sensor is missing for all regions on a given day, we copy all observations from the last day on which any observation was available for that sensor;
-*recent imputation*, where if a sensor value if missing on a given day is missing but at least one of past $T$ values is observed, we impute it with the most recent value. We limit $T$ to be 7 days.
+* *lag imputation*, where if a sensor is missing for all regions on a given day,
+  we copy all observations from the last day on which any observation was
+  available for that sensor;
+* *recent imputation*, where if a sensor value if missing on a given day is
+  missing but at least one of past $$T$$ values is observed, we impute it with
+  the most recent value. We limit $$T$$ to be 7 days.
 
 #### Persistent Missingness
 
