@@ -543,7 +543,7 @@ class Epidata:
   @staticmethod
   def covidcast(
           data_source, signal, time_type, geo_type,
-          time_values, geo_value, issues=None, lag=None):
+          time_values, geo_value, as_of=None, issues=None, lag=None):
     """Fetch Delphi's COVID-19 Surveillance Streams"""
     # Check parameters
     if data_source is None or signal is None or time_type is None or geo_type is None or time_values is None or geo_value is None:
@@ -562,6 +562,8 @@ class Epidata:
       'geo_value': geo_value,
     }
 
+    if as_of is not None:
+      params['as_of'] = as_of
     if issues is not None:
       params['issues'] = Epidata._list(issues)
     if lag is not None:
