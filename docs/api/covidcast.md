@@ -94,6 +94,38 @@ and lists.
 The current set of signals available for each data source is returned by the
 [`covidcast_meta`](covidcast_meta.md) endpoint.
 
+#### Optional
+
+The default API behavior is to return the most recently issued value for each `time_value` selected.
+
+We also provide access to previous versions of data using the optional parameters below.
+
+| Parameter | Description | Type |
+| --- | --- | --- |
+| `as_of` | maximum time unit (e.g., date) when the signal data were published (return most recent for each `time_value`) | time value (e.g., 20200401) |
+| `issues` | time unit (e.g., date) when the signal data were published (return all matching records for each `time_value`) | `list` of time values (e.g., 20200401) |
+| `lag` | time delta (e.g. days) between when the underlying events happened and when the data were published | integer |
+
+Use cases:
+
+* To pretend like you queried the API on June 1, such that the returned results
+  do not include any updates which became available after June 1, use
+  `as_of=20200601`.
+* To retrieve only data that was published or updated on June 1, and exclude
+  records whose most recent update occured earlier than June 1, use
+  `issues=20200601`.
+* To retrieve all data that was published between May 1 and June 1, and exclude
+  records whose most recent update occured earlier than May 1, use
+  `issues=20200501-20200601`. The results will include all matching issues for
+  each `time_value`, not just the most recent.
+* To retrieve only data that was published or updated exactly 3 days after the
+  underlying events occurred, use `lag=3`.
+
+NB: Each issue in the versioning system contains only the records that were
+added or updated during that time unit; we exclude records whose values remain
+the same as a previous issue. If you have a research problem that would require
+knowing when an unchanged value was last confirmed, please get in touch.
+
 ### Response
 
 | Field | Description | Type |
@@ -106,6 +138,8 @@ The current set of signals available for each data source is returned by the
 | `epidata[].value` | value (statistic) derived from the underlying data source | float |
 | `epidata[].stderr` | approximate standard error of the statistic with respect to its sampling distribution, `null` when not applicable | float |
 | `epidata[].sample_size` | number of "data points" used in computing the statistic, `null` when not applicable | float |
+| `epidata[].issue` | time unit (e.g. date) when this statistic was published | integer |
+| `epidata[].lag` | time delta (e.g. days) between when the underlying events happened and when this statistic was published | integer |
 | `message` | `success` or error message | string |
 
 **Note:** `result` code 2, "too many results", means that the number of results

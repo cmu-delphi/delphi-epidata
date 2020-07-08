@@ -472,7 +472,7 @@
       }
 
       // Fetch Delphi's COVID-19 Surveillance Streams
-      static covidcast(callback, data_source, signal, time_type, geo_type, time_values, geo_value, issues, lag) {
+      static covidcast(callback, data_source, signal, time_type, geo_type, time_values, geo_value, as_of, issues, lag) {
         var params;
         // Check parameters
         if (!((data_source != null) && (signal != null) && (time_type != null) && (geo_type != null) && (time_values != null) && (geo_value != null))) {
@@ -495,6 +495,9 @@
           'time_values': _list(time_values),
           'geo_value': geo_value
         };
+        if (as_of != null) {
+          params.as_of = as_of;
+        }
         if (issues != null) {
           params.issues = _list(issues);
         }

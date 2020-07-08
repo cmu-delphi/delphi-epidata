@@ -78,6 +78,27 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
       'message': 'success',
     })
 
+    # fetch data, specifying as_of
+    response_1a = Epidata.covidcast(
+        'src', 'sig', 'day', 'county', 20200414, '01234',
+      as_of=20200415)
+
+    # check result
+    self.assertEqual(response_1a, {
+      'result': 1,
+      'epidata': [{
+        'time_value': 20200414,
+        'geo_value': '01234',
+        'value': 5.5,
+        'stderr': 1.2,
+        'sample_size': 10.5,
+        'direction': 0,
+        'issue': 20200415,
+        'lag': 1
+       }],
+      'message': 'success',
+    })
+
     # fetch data, specifying issue range, not lag
     response_2 = Epidata.covidcast(
         'src', 'sig', 'day', 'county', 20200414, '01234',

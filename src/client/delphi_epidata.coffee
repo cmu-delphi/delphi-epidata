@@ -356,7 +356,7 @@ class Epidata
     _request(callback, {'source': 'meta'})
 
   # Fetch Delphi's COVID-19 Surveillance Streams
-  @covidcast: (callback, data_source, signal, time_type, geo_type, time_values, geo_value, issues, lag) ->
+  @covidcast: (callback, data_source, signal, time_type, geo_type, time_values, geo_value, as_of, issues, lag) ->
     # Check parameters
     unless data_source? and signal? and time_type? and geo_type? and time_values? and geo_value?
       throw { msg: '`data_source`, `signal`, `time_type`, `geo_type`, `time_values`, and `geo_value` are all required' }
@@ -371,6 +371,8 @@ class Epidata
       'geo_type': geo_type
       'time_values': _list(time_values)
       'geo_value': geo_value
+    if as_of?
+      params.as_of = as_of
     if issues?
       params.issues = _list(issues)
     if lag?
