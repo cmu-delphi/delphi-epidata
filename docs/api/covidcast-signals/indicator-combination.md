@@ -68,7 +68,7 @@ $$\mathcal{S}$$ of sensors (with total $$S$$ sensors) and a set $$\mathcal{R}$$
 of regions (with total $$R$$ regions), we aim to find a combined indicator that
 best reconstructs all sensor observations after being passed through a learned
 sensor-specific transformation $$g_{s}(\cdot)$$. That is, for each time $$t$$, we
-aim to minimize the sum of squared reconstruction error:
+minimize the sum of squared reconstruction error:
 
 $$
 \sum_{s \in \mathcal{S}} \sum_{r \in \mathcal{R}} (x_{rs} - g_{s}(z_{r}))^2,
@@ -81,7 +81,7 @@ specific ways as explained next.
 #### Optimization Constraints
 
 We constrain the sensor-specific transformation $$g_{s}$$ to be a linear
-function $$g_{s}(x) = a_{s} x$$. Then, the transformations $$g$$ are simply
+function such that $$g_{s}(x) = a_{s} x$$. Then, the transformations $$g$$ are simply
 various rescalings $$a = a_{1:S}$$, and the objective can be more succinctly
 written as
 
@@ -132,25 +132,13 @@ sensor. This can be avoided with global column scaling.
 #### Lags and Sporadic Missingness
 
 The matrix $$X$$ is not necessarily complete and we may have entries missing.
-Several forms of missingness arise in our data.
-
-* On certain days, all observations of a given sensor are missing due to release
-  lag. For example, Doctor Visits is released several days late.
-* On any given day, different sensors are observed in different regions.
-* For any given region and sensor, the sensor may be available on some days but
-  not others due to sample size cutoffs.
+Several forms of missingness arise in our data. On certain days, all observations of a given sensor are missing due to release lag.  For example, Doctor Visits is released several days late. Also, for any given region and sensor, a sensor may be available on some days but not others due to sample size cutoffs. Additionally, on any given day, different sensors are observed in different regions.
 
 To ensure that our combined indicator value has comparable scaling over time and
 is free from erratic jumps that are just due to missingness, we use the
-following strategies:
-
-* *Lag imputation*: If a sensor is missing for all regions on a given day, we
-  copy all observations from the last day on which any observation was available
-  for that sensor.
-* *Recent imputation*: If $$x_{rs}(t)$$ is missing but at least one of
-  $$x_{rs}(t-1), x_{rs}(t-2), \dots, x_{rs}(t-T)$$ is observed, impute
-  $$x_{rs}(t)$$ with the most recent of $$x_{rs}(t-1), x_{rs}(t-2), \dots,
-  x_{rs}(t-L)$$. We limit $$T$$ to be 7 days.
+following imputation strategies:
+*lag imputation*, where if a sensor is missing for all regions on a given day, we copy all observations from the last day on which any observation was available for that sensor;
+*recent imputation*, where if a sensor value if missing on a given day is missing but at least one of past $T$ values is observed, we impute it with the most recent value. We limit $T$ to be 7 days.
 
 #### Persistent Missingness
 
@@ -158,22 +146,20 @@ Even with the above imputation strategies, we still have issues that some
 sensors are never available in a given region. The result is that combined
 indicator values for that region that may be on a completely different scale
 from values in other regions with additional observed sensors. This can only be
-overcome by regularizing / pooling information across space. Note that a very
+overcome by regularizing or pooling information across space. Note that a very
 similar problem occurs when a sensor is unavailable for a very long period of
 time (so long that recent imputation is inadvisable and avoided by setting $$T =
 7$$ days).
 
-We deal with this problem by *geographic imputation* where we impute values from
-regions that share a higher level of aggregation (e.g., the mean observed score
-in an MSA / state), or by imputing values from megacounties (since the counties
+We deal with this problem by *geographic imputation*, where we impute values from
+regions that share a higher level of aggregation (e.g., the median observed score
+in an MSA or state), or by imputing values from megacounties (since the counties
 in question are missing and hence should be reflected in the rest of state
-estimate). The order in which we try to perform geographic imputations is first
-attempting to impute from observed values from megacounties, followed by median
-observed values in the geographic hierarchy (county, MSA, and state), followed
-finally by the median observed value over the entire country if all the previous
-imputation attempts fail. This imputation order is chosen among different
-options by evaluating their effectiveness to mimic the actual observed values in
-validation experiments.
+estimate). The order in which we look to perform geographic imputations is
+observed values from megacounties, followed by median
+observed values in the geographic hierarchy (county, MSA, state, or country).
+We chose this imputation sequence among different options by evaluating 
+their effectiveness to mimic the actual observed sensor values in validation experiments.
 
 ### Standard Errors
 
