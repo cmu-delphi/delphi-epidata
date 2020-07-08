@@ -26,7 +26,7 @@ calculated or composed by Delphi. It is not a primary data source.
 * **Available for:** county, msa, state (see [geography coding docs](../covidcast_geography.md))
 
 These signals combine Delphi's indicators---*not* including cases and deaths,
-but including other signals expected to be related to the underlying relate of
+but including other signals expected to be related to the underlying rate of
 coronavirus infection---to produce a single indicator.
 
 * `nmf_day_doc_fbc_fbs_ght`: This signal uses a rank-1 approximation, from a
@@ -69,4 +69,3 @@ backfill, and other limitations.
 | `deaths_cumulative_prop` | `deaths_7dav_cumulative_prop` | Cumulative number of confirmed due to COVID-19, per 100,000 population |
 | `deaths_incidence_num` | `deaths_7dav_incidence_num` | Number of new confirmed deaths due to COVID-19, daily |
 | `deaths_incidence_prop` | `deaths_7dav_incidence_prop` | Number of new confirmed deaths due to COVID-19 per 100,000 population, daily |
-
