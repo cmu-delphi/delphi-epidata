@@ -11,6 +11,19 @@ Notes:
 # External modules
 import requests
 
+from pkg_resources import get_distribution, DistributionNotFound
+
+# Obtain package version for the user-agent. Uses the installed version by
+# preference, even if you've installed it and then use this script independently
+# by accident.
+try:
+  _version = get_distribution('delphi-epidata').version
+except DistributionNotFound:
+  _version = "0.script"
+
+_HEADERS = {
+  "user-agent": "delphi_epidata/" + _version
+}
 
 # Because the API is stateless, the Epidata class only contains static methods
 class Epidata:
@@ -42,7 +55,7 @@ class Epidata:
     """Request and parse epidata."""
     try:
       # API call
-      return requests.get(Epidata.BASE_URL, params).json()
+      return requests.get(Epidata.BASE_URL, params, headers=_HEADERS).json()
     except Exception as e:
       # Something broke
       return {'result': 0, 'message': 'error: ' + str(e)}
