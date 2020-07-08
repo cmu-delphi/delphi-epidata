@@ -35,7 +35,8 @@ average of the underlying data for June 1 through 7, inclusive.
 This data is similar in intent to our [JHU Cases and Deaths](jhu-csse.md)
 source, but as USAFacts collects and aggregates its data in slightly different
 ways, the data is not identical. Users should evaluate which source better fits
-their needs.
+their needs. Users should evaluate which source better fits their needs, or use
+the [combination signal of both USAFacts and JHU data](indicator-combination.md).
 
 ## Table of contents
 {: .no_toc .text-delta}
