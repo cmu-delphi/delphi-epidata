@@ -9,6 +9,38 @@ import mysql.connector
 # first party
 import delphi.operations.secrets as secrets
 
+from math import ceil
+
+
+class CovidcastRow():
+  """A container for all the values of a single covidcast row."""
+
+  @staticmethod
+  def fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value):
+    return CovidcastRow(source, signal, time_type, geo_type, time_value,
+      row_value.geo_value,
+      row_value.value,
+      row_value.stderr,
+      row_value.sample_size)
+
+  @staticmethod
+  def fromCsvRows(row_values, source, signal, time_type, geo_type, time_value):
+    return [CovidcastRow.fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value) for row_value in row_values]
+
+  def __init__(self, source, signal, time_type, geo_type, time_value, geo_value, value, stderr, sample_size):
+    self.id = None
+    self.source = source
+    self.signal = signal
+    self.time_type = time_type
+    self.geo_type = geo_type
+    self.time_value = time_value
+    self.geo_value = geo_value      # from CSV row
+    self.value = value              # ...
+    self.stderr = stderr            # ...
+    self.sample_size = sample_size  # from CSV row
+    self.timestamp2 = 0
+    self.direction = None
+
 
 class Database:
   """A collection of covidcast database operations."""
@@ -25,6 +57,12 @@ class Database:
         password=p,
         database=Database.DATABASE_NAME)
     self._cursor = self._connection.cursor()
+
+  def commit(self):
+    self._connection.commit()
+
+  def rollback(self):
+    self._connection.rollback()
 
   def disconnect(self, commit):
     """Close the database connection.
@@ -44,6 +82,56 @@ class Database:
 
     for (num,) in self._cursor:
       return num
+
+  def insert_or_update_bulk(self, cc_rows):
+    return self.insert_or_update_batch(cc_rows)
+
+  def insert_or_update_batch(self, cc_rows, batch_size=0, commit_partial=False):
+    """
+    Insert new rows (or update existing) in the `covidcast` table.
+
+    This has the intentional side effect of updating the primary timestamp.
+    """
+    sql = '''
+      INSERT INTO `covidcast`
+        (`id`, `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`,
+        `timestamp1`, `value`, `stderr`, `sample_size`,
+        `timestamp2`, `direction`)
+      VALUES
+        (0, %s, %s, %s, %s, %s, %s,
+        UNIX_TIMESTAMP(NOW()), %s, %s, %s,
+        0, NULL)
+      ON DUPLICATE KEY UPDATE
+        `timestamp1` = VALUES(`timestamp1`),
+        `value` = VALUES(`value`),
+        `stderr` = VALUES(`stderr`),
+        `sample_size` = VALUES(`sample_size`)
+    '''
+    num_rows = len(cc_rows)
+    if not batch_size:
+      batch_size = num_rows
+    num_batches = ceil(num_rows/batch_size)
+    for batch_num in range(num_batches):
+      start = batch_num * batch_size
+      end = min(num_rows, start + batch_size)
+      length = end - start
+
+      args = [(
+        row.source,
+        row.signal,
+        row.time_type,
+        row.geo_type,
+        row.time_value,
+        row.geo_value,
+        row.value,
+        row.stderr,
+        row.sample_size,
+      ) for row in cc_rows[start:end]]
+
+      result = self._cursor.executemany(sql, args)
+      if commit_partial:
+        self._connection.commit()
+    return result
 
   def insert_or_update(
       self,
@@ -250,41 +338,6 @@ class Database:
 
     args = (source, signal, time_type, geo_type, geo_value)
     self._cursor.execute(sql, args)
-
-  def get_covidcast_meta(self):
-    """Compute and return metadata on all non-WIP COVIDcast signals."""
-
-    sql = '''
-      SELECT
-        t.`source` AS `data_source`,
-        t.`signal`,
-        t.`time_type`,
-        t.`geo_type`,
-        MIN(t.`time_value`) AS `min_time`,
-        MAX(t.`time_value`) AS `max_time`,
-        COUNT(DISTINCT t.`geo_value`) AS `num_locations`,
-        MIN(`value`) AS `min_value`,
-        MAX(`value`) AS `max_value`,
-        AVG(`value`) AS `mean_value`,
-        STD(`value`) AS `stdev_value`,
-        MAX(`timestamp1`) AS `last_update`
-      FROM
-        `covidcast` t
-      WHERE
-        t.`signal` NOT LIKE 'wip_%'
-      GROUP BY
-        t.`source`,
-        t.`signal`,
-        t.`time_type`,
-        t.`geo_type`
-      ORDER BY
-        t.`source` ASC,
-        t.`signal` ASC,
-        t.`time_type` ASC,
-        t.`geo_type` ASC
-'''
-    self._cursor.execute(sql)
-    return list(dict(zip(self._cursor.column_names,x)) for x in self._cursor)
 
   def update_covidcast_meta_cache(self, epidata_json):
     """Updates the `covidcast_meta_cache` table."""

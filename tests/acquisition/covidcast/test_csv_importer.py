@@ -57,16 +57,16 @@ class UnitTests(unittest.TestCase):
     mock_glob = MagicMock()
     mock_glob.glob.return_value = glob_paths
 
-    found = list(CsvImporter.find_csv_files(path_prefix, glob=mock_glob))
+    found = set(CsvImporter.find_csv_files(path_prefix, glob=mock_glob))
 
-    expected = [
+    expected = set([
       (glob_paths[0], ('fb_survey', 'cli', 'week', 'county', 202015)),
       (glob_paths[1], ('ght', 'rawsearch', 'day', 'state', 20200408)),
       (glob_paths[2], None),
       (glob_paths[3], None),
       (glob_paths[4], None),
       (glob_paths[5], None),
-    ]
+    ])
     self.assertEqual(found, expected)
 
   def test_is_header_valid_allows_extra_columns(self):
