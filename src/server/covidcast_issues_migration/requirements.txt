@@ -1,1 +1,2 @@
-csvdiff==0.3.3
+pandas==1.0.3
+multiprocessing-logging==0.3.1
