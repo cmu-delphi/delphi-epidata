@@ -12,8 +12,12 @@ have received SFTP credentials for a private server where the data are stored.
 This documentation describes the survey data available on that user.
 
 You should have signed a Data Use Agreement with Facebook and with CMU to gain
-access to these files. If you have not, aggregate data is available [through the
-COVIDcast API](../api/covidcast-signals/fb-survey.md).
+access to these files. If you have not, aggregate data is available
+[through the COVIDcast API](../api/covidcast-signals/fb-survey.md).
+
+Important updates for data users, including corrections to data or updates on
+data processing delays, are posted as `OUTAGES.txt` in the SFTP server directory
+where the data is accessible.
 
 ## Table of contents
 {: .no_toc .text-delta}
@@ -33,9 +37,9 @@ Incremental files:
 
 	cvid_responses_{for}_recordedby_{recorded}.csv
 
-`from`, `to`, and `for` refer to the day the survey response was started.
-`recorded` refers to the day survey data was retrieved; see the section on lag
-for more details.
+`from`, `to`, and `for` refer to the day the survey response was started, in the
+Pacific time zone (UTC - 7). `recorded` refers to the day survey data was
+retrieved; see the [lag policy](#lag-policy) for more details.
 
 ## Conditions Responses are Recorded
 
