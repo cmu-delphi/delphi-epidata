@@ -32,14 +32,20 @@ numbers of COVID-related searches.
 ## Estimation
 
 We query the Google Health Trends API for overall searcher interest in a set of
-COVID-19 related terms which encompass the following topics: coronavirus
-symptoms; coronavirus help; coronavirus test-seeking; anosmia (lack of smell or
-taste). The API provides data at the Nielsen Designated Marketing Area (DMA)
-level and at the State level. This information reported by the API is unitless
-and pre-normalized for population size; i.e., the time series obtained for New
-York and Wyoming states are directly comparable. The public has access to a
-limited view of such information through [Google
-Trends](https://trends.google.com).
+COVID-19 related terms about anosmia (lack of smell or taste), which emerged as
+a symptom of the coronavirus. The specific terms are:
+
+* "why cant i smell or taste"
+* "loss of smell"
+* "loss of taste"
+* Anosmia generally, by querying for topics linked by Google to the anosmia item
+  in the Freebase knowledge graph (ID `/m/0m7pl`)
+
+The API provides data at the Nielsen Designated Marketing Area (DMA) level and
+at the State level. This information reported by the API is unitless and
+pre-normalized for population size; i.e., the time series obtained for New York
+and Wyoming states are directly comparable. The public has access to a limited
+view of such information through [Google Trends](https://trends.google.com).
 
 DMA-level data are aggregated to the MSA and HRR level through
 population-weighted averaging.
