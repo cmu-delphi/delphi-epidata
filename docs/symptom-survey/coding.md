@@ -65,6 +65,22 @@ was deployed.
   coding](waves/Survey_of_COVID-Like_Illness_-_TODEPLOY__-_US_Expansion.docx)
   (Word)
 
+### Summary of Changes
+
+* Item A2 changed to specify "fever, along with at least one other symptom in
+  the above list" rather than simply "at least one symptom."
+* Item A3 changed from
+
+    > What is the ZIP Code of the city or town where you slept last night? [We
+    > mean the place where you are currently staying. This may be different from
+    > your usual residence.]
+
+    to
+
+    > What is your current ZIP code?
+* Item A4, asking about other sick in the local community, added.
+* Additional page breaks.
+
 ## Wave 3
 
 Wave 3 was first deployed on May 21, 2020. It is available in English, as well
@@ -86,3 +102,10 @@ Files:
 * [Survey text and
   coding](waves/Survey_of_COVID-Like_Illness_-_TODEPLOY-_US_Expansion_-_With_Translations.docx)
   (Word)
+
+### Summary of Changes
+
+* Consent text now mentions receiving "your language preference" from Facebook,
+  to allow Qualtrics to select the appropriate translation automatically.
+* Item B2 now includes eye pain as a symptom.
+* Item C5 moved to be asked before item C4.
