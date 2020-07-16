@@ -228,13 +228,6 @@ class Database:
     USING (`source`, `signal`, `time_type`, `geo_type`, `geo_value`, `time_value`, `issue`)
     '''
 
-    cte_definition = f'''
-    WITH `latest_issues` AS
-    (
-      {latest_issues_sql}
-    )
-    '''
-
     # A query that selects the keys of time-series with potentially stale directions.
     stale_ts_key_sql = f'''
       SELECT
@@ -244,7 +237,7 @@ class Database:
         `geo_type`,
         `geo_value`
       FROM
-        `latest_issues` AS t1
+        ({latest_issues_sql}) AS t1
       GROUP BY
         `source`,
         `signal`,
@@ -257,7 +250,6 @@ class Database:
 
     # A query that selects rows of the time-series selected by stale_ts_key_sql query.
     stale_ts_records_with_latest_issues_sql = f'''
-    {cte_definition}
     SELECT
       `id`,
       `source`,
@@ -271,7 +263,7 @@ class Database:
       `timestamp2`,
       `direction`
     FROM ({stale_ts_key_sql}) AS t2
-    LEFT JOIN `latest_issues` AS t3
+    LEFT JOIN ({latest_issues_sql}) AS t3
     USING (`source`, `signal`, `time_type`, `geo_type`, `geo_value`)
     '''
 
