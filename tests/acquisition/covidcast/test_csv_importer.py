@@ -59,9 +59,12 @@ class UnitTests(unittest.TestCase):
 
     found = list(CsvImporter.find_csv_files(path_prefix, glob=mock_glob))
 
+    expected_issue_day=int(date.today().strftime("%Y%m%d"))
+    expected_issue_week=int(str(epi.Week.fromdate(date.today())))
+    time_value_day = 20200408
     expected = [
-      (glob_paths[0], ('fb_survey', 'cli', 'week', 'county', 202015)),
-      (glob_paths[1], ('ght', 'rawsearch', 'day', 'state', 20200408)),
+      (glob_paths[0], ('fb_survey', 'cli', 'week', 'county', 202015, expected_issue_week, delta_epiweeks(202015, expected_issue_week))),
+      (glob_paths[1], ('ght', 'rawsearch', 'day', 'state', time_value_day, expected_issue_day, (date.today() - date(year=time_value_day // 10000, month=(time_value_day // 100) % 100, day=time_value_day % 100)).days)),
       (glob_paths[2], None),
       (glob_paths[3], None),
       (glob_paths[4], None),

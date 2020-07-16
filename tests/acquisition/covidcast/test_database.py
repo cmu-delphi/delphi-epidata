@@ -87,6 +87,8 @@ class UnitTests(unittest.TestCase):
       'value',
       'stderr',
       'sample_size',
+      'issue',
+      'lag',
     )
     mock_connector = MagicMock()
     database = Database()

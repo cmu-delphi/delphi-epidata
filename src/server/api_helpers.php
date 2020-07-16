@@ -156,7 +156,12 @@ function filter_strings($field, $values) {
 function execute_query($query, &$epidata, $fields_string, $fields_int, $fields_float) {
   global $dbh;
   global $MAX_RESULTS;
+  error_log($query);
   $result = mysqli_query($dbh, $query . " LIMIT {$MAX_RESULTS}");
+  if (!$result) {
+    error_log(sprintf("Error: %s\n",mysqli_error($dbh)));
+    return;
+  }
   while($row = mysqli_fetch_array($result)) {
     if(count($epidata) < $MAX_RESULTS) {
       $values = array();

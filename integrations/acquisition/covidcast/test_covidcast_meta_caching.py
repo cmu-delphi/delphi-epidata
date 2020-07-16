@@ -66,12 +66,14 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     self.cur.execute('''
       insert into covidcast values
         (0, 'src', 'sig', 'day', 'state', 20200422, 'pa',
-          123, 1, 2, 3, 456, 1)
+          123, 1, 2, 3, 456, 1, 20200422, 0),
+        (0, 'src', 'sig', 'day', 'state', 20200422, 'wa',
+          789, 1, 2, 3, 456, 1, 20200423, 1)
     ''')
     self.cur.execute('''
       insert into covidcast values
         (100, 'src', 'wip_sig', 'day', 'state', 20200422, 'pa',
-          456, 4, 5, 6, 789, -1)
+          456, 4, 5, 6, 789, -1, 20200422, 0)
     ''')
 
     self.cnx.commit()
@@ -90,12 +92,15 @@ class CovidcastMetaCacheTests(unittest.TestCase):
         'geo_type': 'state',
         'min_time': 20200422,
         'max_time': 20200422,
-        'num_locations': 1,
-        'last_update': 123,
-        'min_value': 1,
-        'max_value': 1,
-        'mean_value': 1,
-        'stdev_value': 0,
+        'num_locations': 2,
+        'last_update': 789,
+        'min_value': 1.0,
+        'max_value': 1.0,
+        'mean_value': '1.0000000',
+        'stdev_value': '0.0000000',
+        'max_issue': 20200423,
+        'min_lag': 0,
+        'max_lag': 1
       }
     ])
     epidata1={'result':1,'message':'success','epidata':epidata1}

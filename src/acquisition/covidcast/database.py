@@ -5,6 +5,7 @@ See src/ddl/covidcast.sql for an explanation of each field.
 
 # third party
 import mysql.connector
+import numpy as np
 
 # first party
 import delphi.operations.secrets as secrets
@@ -55,7 +56,9 @@ class Database:
       geo_value,
       value,
       stderr,
-      sample_size):
+      sample_size,
+      issue,
+      lag):
     """
     Insert a new row, or update an existing row, in the `covidcast` table.
 
@@ -64,7 +67,7 @@ class Database:
 
     sql = '''
       INSERT INTO `covidcast` VALUES
-        (0, %s, %s, %s, %s, %s, %s, UNIX_TIMESTAMP(NOW()), %s, %s, %s, 0, NULL)
+        (0, %s, %s, %s, %s, %s, %s, UNIX_TIMESTAMP(NOW()), %s, %s, %s, 0, NULL, %s, %s)
       ON DUPLICATE KEY UPDATE
         `timestamp1` = VALUES(`timestamp1`),
         `value` = VALUES(`value`),
@@ -82,6 +85,8 @@ class Database:
       value,
       stderr,
       sample_size,
+      issue,
+      lag
     )
 
     self._cursor.execute(sql, args)
@@ -157,6 +162,179 @@ class Database:
     )
 
     self._cursor.execute(sql, args)
+
+  def get_all_record_values_of_timeseries_with_potentially_stale_direction(self, temporary_table=None):
+    """Return the rows of all daily time-series with potentially stale directions,
+    only rows corresponding to the most recent issue for each time_value is returned.
+
+    `temporary_table`: if provided, a temporary table with the name `temporary_table`
+                       is created and the result is also stored in that table.
+    """
+
+    create_tmp_table_sql = f'''
+    CREATE TEMPORARY TABLE `{temporary_table}` (
+      `id` int(11) NOT NULL,
+      `source` varchar(32),
+      `signal` varchar(32),
+      `time_type` varchar(12),
+      `geo_type` varchar(12),
+      `geo_value` varchar(12),
+      `time_value` int(11),
+      `timestamp1` int(11),
+      `value` double,
+      `timestamp2` int(11),
+      `direction` int(11),
+      PRIMARY KEY(`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    '''
+
+    # A query that selects all rows from `covidcast` that have latest issue-date
+    # for any (time-series-key, time_value) with time_type='day'.
+    latest_issues_sql = f'''
+    SELECT 
+      `id`,
+      `source`,
+      `signal`,
+      `time_type`,
+      `geo_type`,
+      `geo_value`,
+      `time_value`,
+      `timestamp1`,
+      `value`,
+      `timestamp2`,
+      `direction`
+    FROM
+    (
+      SELECT
+        `source`,
+        `signal`,
+        `time_type`,
+        `geo_type`,
+        `geo_value`,
+        `time_value`,
+        MAX(`issue`) AS `issue`
+      FROM `covidcast`
+      WHERE
+        `time_type` = 'day'
+      GROUP BY
+        `source`,
+        `signal`,
+        `time_type`,
+        `geo_type`,
+        `geo_value`,
+        `time_value`
+    ) b
+    LEFT JOIN `covidcast` a
+    USING (`source`, `signal`, `time_type`, `geo_type`, `geo_value`, `time_value`, `issue`)
+    '''
+
+    cte_definition = f'''
+    WITH `latest_issues` AS
+    (
+      {latest_issues_sql}
+    )
+    '''
+
+    # A query that selects the keys of time-series with potentially stale directions.
+    stale_ts_key_sql = f'''
+      SELECT
+        `source`,
+        `signal`,
+        `time_type`,
+        `geo_type`,
+        `geo_value`
+      FROM
+        `latest_issues` AS t1
+      GROUP BY
+        `source`,
+        `signal`,
+        `time_type`,
+        `geo_type`,
+        `geo_value`
+      HAVING
+        MAX(`timestamp1`) > MIN(`timestamp2`)
+    '''
+
+    # A query that selects rows of the time-series selected by stale_ts_key_sql query.
+    stale_ts_records_with_latest_issues_sql = f'''
+    {cte_definition}
+    SELECT
+      `id`,
+      `source`,
+      `signal`,
+      `time_type`,
+      `geo_type`,
+      `geo_value`,
+      `time_value`,
+      `timestamp1`,
+      `value`,
+      `timestamp2`,
+      `direction`
+    FROM ({stale_ts_key_sql}) AS t2
+    LEFT JOIN `latest_issues` AS t3
+    USING (`source`, `signal`, `time_type`, `geo_type`, `geo_value`)
+    '''
+
+    if temporary_table is None:
+      self._cursor.execute(stale_ts_records_with_latest_issues_sql)
+      return list(self._cursor)
+
+    self._cursor.execute(create_tmp_table_sql)
+    final_sql = f'''
+      INSERT INTO `{temporary_table}`
+      SELECT *
+      FROM ({stale_ts_records_with_latest_issues_sql}) AS c;
+      '''
+    self._cursor.execute(final_sql)
+    self._cursor.execute(f"SELECT * FROM `{temporary_table}`;")
+    return list(self._cursor)
+
+  def batched_update_direction(self, new_direction_value, id_list, batch_size=1024):
+    """Updates the `direction` column of rows with ids in `id_list` to `new_direction_value`,
+    the update query is executed in batches of `batch_size` rows at a time.
+
+    `new_direction_value`: the new value to be stored in `direction` column.
+    `id_list`: a list of ids of rows that will change to `new_direction_value`.
+    `batch_size`: batch size of the update query.
+    """
+    if np.isnan(new_direction_value):
+      new_direction_value = 'NULL'
+    for start in range(0, len(id_list), batch_size):
+      sql = f'''
+        UPDATE
+          `covidcast`
+        SET
+          `covidcast`.direction={str(new_direction_value)}
+        WHERE
+          `covidcast`.id IN ({','.join([str(x) for x in id_list[start:start+batch_size]])})
+        '''
+      self._cursor.execute(sql)
+
+  def drop_temporary_table(self, tmp_table_name):
+    """Drops temporary table from the Database.
+
+    `tmp_table_name`: name of temporary table to be dropped.
+    """
+    sql = f'DROP TEMPORARY TABLE `{tmp_table_name}`;'
+    self._cursor.execute(sql)
+
+  def update_timestamp2_from_temporary_table(self, tmp_table_name):
+    """Updates the `timestamp2` column of `covidcast` table for all the rows with id value in `tmp_table_name`.
+
+    `tmp_table_name`: name of the temporary table.
+    """
+    sql = f'''
+      UPDATE
+        `covidcast`
+      RIGHT JOIN
+        `{tmp_table_name}` t
+      ON
+        `covidcast`.id=t.id
+      SET
+        `covidcast`.timestamp2=UNIX_TIMESTAMP(NOW())
+      '''
+    self._cursor.execute(sql)
+
 
   def get_keys_with_potentially_stale_direction(self):
     """
@@ -265,11 +443,42 @@ class Database:
         COUNT(DISTINCT t.`geo_value`) AS `num_locations`,
         MIN(`value`) AS `min_value`,
         MAX(`value`) AS `max_value`,
-        AVG(`value`) AS `mean_value`,
-        STD(`value`) AS `stdev_value`,
-        MAX(`timestamp1`) AS `last_update`
+        FORMAT(AVG(`value`),7) AS `mean_value`,
+        FORMAT(STD(`value`),7) AS `stdev_value`,
+        MAX(`timestamp1`) AS `last_update`,
+        MAX(`issue`) as `max_issue`,
+        MIN(`lag`) as `min_lag`,
+        MAX(`lag`) as `max_lag`
       FROM
         `covidcast` t
+        JOIN
+          (
+            SELECT
+              max(`issue`) `max_issue`,
+              `time_type`,
+              `time_value`,
+              `source`,
+              `signal`,
+              `geo_type`,
+              `geo_value`
+            FROM
+              `covidcast`
+            GROUP BY
+              `time_value`,
+              `time_type`,
+              `geo_type`,
+              `source`,
+              `signal`,
+              `geo_value`
+          ) x
+        ON
+          x.`max_issue` = t.`issue` AND
+          x.`time_type` = t.`time_type` AND
+          x.`time_value` = t.`time_value` AND
+          x.`source` = t.`source` AND
+          x.`signal` = t.`signal` AND
+          x.`geo_type` = t.`geo_type` AND
+          x.`geo_value` = t.`geo_value`
       WHERE
         t.`signal` NOT LIKE 'wip_%'
       GROUP BY
