@@ -79,7 +79,7 @@ class UnitTests(unittest.TestCase):
     ]
     self.assertEqual(actual_args, expected_args)
 
-    # verify that twi file were successful (a, d) and two failed (b, c)
+    # verify that two files were successful (a, d) and two failed (b, c)
     self.assertEqual(mock_file_archiver.archive_file.call_count, 4)
     call_args_list = mock_file_archiver.archive_file.call_args_list
     actual_args = [args for (args, kwargs) in call_args_list]
