@@ -25,7 +25,8 @@ class CovidcastRow():
 
   @staticmethod
   def fromCsvRows(row_values, source, signal, time_type, geo_type, time_value):
-    return [CovidcastRow.fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value) for row_value in row_values]
+    # NOTE: returns a generator, as row_values is expected to be a generator
+    return (CovidcastRow.fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value) for row_value in row_values)
 
   def __init__(self, source, signal, time_type, geo_type, time_value, geo_value, value, stderr, sample_size):
     self.id = None
@@ -107,7 +108,11 @@ class Database:
         `stderr` = VALUES(`stderr`),
         `sample_size` = VALUES(`sample_size`)
     '''
+    # TODO: ^ do we want to reset `timestamp2` and `direction` in the duplicate key case?
+
+    # TODO: consider handling cc_rows as a generator instead of a list
     num_rows = len(cc_rows)
+    total = 0
     if not batch_size:
       batch_size = num_rows
     num_batches = ceil(num_rows/batch_size)
@@ -129,9 +134,14 @@ class Database:
       ) for row in cc_rows[start:end]]
 
       result = self._cursor.executemany(sql, args)
+      if result is None:
+        # the SQL connector does not support returning number of rows affected
+        total = None
+      else:
+        total += result
       if commit_partial:
         self._connection.commit()
-    return result
+    return total
 
   def insert_or_update(
       self,
@@ -338,6 +348,42 @@ class Database:
 
     args = (source, signal, time_type, geo_type, geo_value)
     self._cursor.execute(sql, args)
+
+
+  def get_covidcast_meta(self):
+    """Compute and return metadata on all non-WIP COVIDcast signals."""
+
+    sql = '''
+      SELECT
+        t.`source` AS `data_source`,
+        t.`signal`,
+        t.`time_type`,
+        t.`geo_type`,
+        MIN(t.`time_value`) AS `min_time`,
+        MAX(t.`time_value`) AS `max_time`,
+        COUNT(DISTINCT t.`geo_value`) AS `num_locations`,
+        MIN(`value`) AS `min_value`,
+        MAX(`value`) AS `max_value`,
+        AVG(`value`) AS `mean_value`,
+        STD(`value`) AS `stdev_value`,
+        MAX(`timestamp1`) AS `last_update`
+      FROM
+        `covidcast` t
+      WHERE
+        t.`signal` NOT LIKE 'wip_%'
+      GROUP BY
+        t.`source`,
+        t.`signal`,
+        t.`time_type`,
+        t.`geo_type`
+      ORDER BY
+        t.`source` ASC,
+        t.`signal` ASC,
+        t.`time_type` ASC,
+        t.`geo_type` ASC
+    '''
+    self._cursor.execute(sql)
+    return list(dict(zip(self._cursor.column_names,x)) for x in self._cursor)
 
   def update_covidcast_meta_cache(self, epidata_json):
     """Updates the `covidcast_meta_cache` table."""
