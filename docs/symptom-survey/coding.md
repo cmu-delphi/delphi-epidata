@@ -30,10 +30,12 @@ Timestamps are provided in Pacific time (UTC-7). The following metadata columns
 describe each survey response:
 
 * `StartDatetime`: The time the respondent began the survey.
-* `EndDatetime`: The time the respondent's responses were recorded. This either
-  means the respondent finished the survey or their response was recorded
-  because they abandoned the survey; see the [response files](survey-files.md)
-  documentation for details.
+* `EndDatetime`: The time of the last activity by the respondent on the survey.
+  If they submitted the survey, this is the time it was submitted. If the user
+  did not complete the survey, their response may have been recorded
+  automatically after a timeout; this is the time of their last activity, not of
+  the recording. See the [response files](survey-files.md) documentation for
+  details on the automatic recording of responses.
 * `weight`: The survey weight calculated by Facebook, for demographically
   adjusting estimates. See the [weights documentation](weights.md) for details
   on how to use these weights.
@@ -67,6 +69,15 @@ was deployed.
 
 ### Summary of Changes
 
+* Item A1 changed from
+
+    > In the past 24 hours, **have you or anyone in your household** had any of
+    > the following:
+
+    to
+
+    > In the past 24 hours, have **you or anyone in your household** experienced
+    > any of the following:
 * Item A2 changed to specify "fever, along with at least one other symptom in
   the above list" rather than simply "at least one symptom."
 * Item A3 changed from
@@ -105,6 +116,9 @@ Files:
 
 ### Summary of Changes
 
+* Now available in languages besides English, listed above. The language shown
+  to the user defaults to the language they prefer on Facebook, if available,
+  but a drop-down allows the user to select other languages.
 * Consent text now mentions receiving "your language preference" from Facebook,
   to allow Qualtrics to select the appropriate translation automatically.
 * Item B2 now includes eye pain as a symptom.
