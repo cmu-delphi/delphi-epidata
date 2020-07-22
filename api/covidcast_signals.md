@@ -35,3 +35,8 @@ map](https://covidcast.cmu.edu/):
 | Cases per 100,000 People | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `confirmed_7dav_incidence_prop` |
 | Deaths | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `deaths_7dav_incidence_num` |
 | Deaths per 100,000 People | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `deaths_7dav_incidence_prop` |
+
+## All Available Sources and Signals
+
+Beyond the signals available on the COVIDcast map, numerous other signals are
+available directly through the API:
