@@ -121,5 +121,6 @@ Files:
   but a drop-down allows the user to select other languages.
 * Consent text now mentions receiving "your language preference" from Facebook,
   to allow Qualtrics to select the appropriate translation automatically.
+* Consent question now requires the respondent be located in the U.S.
 * Item B2 now includes eye pain as a symptom.
 * Item C5 moved to be asked before item C4.

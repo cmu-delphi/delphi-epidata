@@ -7,17 +7,17 @@ nav_order: 1
 # Response Files
 {: .no_toc}
 
-Users with access to the [COVID symptom survey](./index.md) aggregate data
+Users with access to the [COVID symptom survey](./index.md) individual response data
 should have received SFTP credentials for a private server where the data are
 stored. This documentation describes the survey data available on that server.
 
-You should have signed a Data Use Agreement with Facebook and with CMU to gain
-access to these files. If you have not, aggregate data is available
+You must sign a Data Use Agreement with Facebook and with CMU to gain
+access to the individual survey responses. If you have not done so, aggregate data is available
 [through the COVIDcast API](../api/covidcast-signals/fb-survey.md).
 
 Important updates for data users, including corrections to data or updates on
 data processing delays, are posted as `OUTAGES.txt` in the SFTP server directory
-where the data is accessible.
+where the data is hosted.
 
 ## Table of contents
 {: .no_toc .text-delta}
