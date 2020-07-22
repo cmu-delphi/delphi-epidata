@@ -78,7 +78,7 @@ was deployed.
     to
 
     > What is your current ZIP code?
-* Item A4, asking about other sick in the local community, added.
+* Item A4, asking about others who are sick in the local community, added.
 * Additional page breaks.
 
 ## Wave 3

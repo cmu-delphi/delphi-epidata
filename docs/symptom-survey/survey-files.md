@@ -7,9 +7,9 @@ nav_order: 1
 # Response Files
 {: .no_toc}
 
-Users with access to the [COVID symptom survey](index.md) aggregate data should
-have received SFTP credentials for a private server where the data are stored.
-This documentation describes the survey data available on that user.
+Users with access to the [COVID symptom survey](./index.md) aggregate data
+should have received SFTP credentials for a private server where the data are
+stored. This documentation describes the survey data available on that user.
 
 You should have signed a Data Use Agreement with Facebook and with CMU to gain
 access to these files. If you have not, aggregate data is available
@@ -41,6 +41,12 @@ Incremental files:
 Pacific time zone (UTC - 7). `recorded` refers to the day survey data was
 retrieved; see the [lag policy](#lag-policy) for more details.
 
+Every day, we write response files for *all* days of data, with today's
+`recorded` date. You need only load the most recent set of `recorded` files to
+obtain all survey responses; the older versions are available to track any
+changes in file formats or slight changes from late-arriving responses, as
+described in the lag policy.
+
 ## Conditions Responses are Recorded
 
 The survey was configured to record responses under two sets of circumstances:
@@ -52,7 +58,7 @@ An abandoned survey as in (2) is automatically closed and recorded, and the user
 is not permitted to reopen it.
 
 Responses qualify for inclusion in these files if they meet the following conditions:
-* answered age consent
+* answered "yes" to age consent
 * answered a minimum of 2 additional questions, where to “answer” a numeric
   open-ended question (A2, A2b, B2b, Q40, C10_1_1, C10_2_1, C10_3_1, C10_4_1,
   D3, D4, D5) means to provide any number (floats okay) and to “answer” a radio
