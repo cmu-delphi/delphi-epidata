@@ -9,7 +9,7 @@ nav_order: 1
 
 Users with access to the [COVID symptom survey](./index.md) aggregate data
 should have received SFTP credentials for a private server where the data are
-stored. This documentation describes the survey data available on that user.
+stored. This documentation describes the survey data available on that server.
 
 You should have signed a Data Use Agreement with Facebook and with CMU to gain
 access to these files. If you have not, aggregate data is available
