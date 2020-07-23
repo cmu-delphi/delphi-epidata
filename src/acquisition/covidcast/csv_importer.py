@@ -92,7 +92,8 @@ class CsvImporter:
     issue_value=-1
     lag_value=-1
 
-    for path in glob.glob(os.path.join(scan_dir, '*', '*')):
+    for path in sorted(glob.glob(os.path.join(scan_dir, '*', '*'))):
+
       if not path.lower().endswith('.csv'):
         # safe to ignore this file
         continue

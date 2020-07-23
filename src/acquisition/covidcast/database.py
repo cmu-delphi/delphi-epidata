@@ -10,6 +10,43 @@ import numpy as np
 # first party
 import delphi.operations.secrets as secrets
 
+from math import ceil
+
+
+class CovidcastRow():
+  """A container for all the values of a single covidcast row."""
+
+  @staticmethod
+  def fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag):
+    return CovidcastRow(source, signal, time_type, geo_type, time_value,
+                        row_value.geo_value,
+                        row_value.value,
+                        row_value.stderr,
+                        row_value.sample_size,
+                        issue, lag)
+
+  @staticmethod
+  def fromCsvRows(row_values, source, signal, time_type, geo_type, time_value, issue, lag):
+    # NOTE: returns a generator, as row_values is expected to be a generator
+    return (CovidcastRow.fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag)
+            for row_value in row_values)
+
+  def __init__(self, source, signal, time_type, geo_type, time_value, geo_value, value, stderr, sample_size, issue, lag):
+    self.id = None
+    self.source = source
+    self.signal = signal
+    self.time_type = time_type
+    self.geo_type = geo_type
+    self.time_value = time_value
+    self.geo_value = geo_value      # from CSV row
+    self.value = value              # ...
+    self.stderr = stderr            # ...
+    self.sample_size = sample_size  # from CSV row
+    self.timestamp2 = 0
+    self.direction = None
+    self.issue = issue
+    self.lag = lag
+
 
 class Database:
   """A collection of covidcast database operations."""
@@ -26,6 +63,12 @@ class Database:
         password=p,
         database=Database.DATABASE_NAME)
     self._cursor = self._connection.cursor()
+
+  def commit(self):
+    self._connection.commit()
+
+  def rollback(self):
+    self._connection.rollback()
 
   def disconnect(self, commit):
     """Close the database connection.
@@ -45,6 +88,69 @@ class Database:
 
     for (num,) in self._cursor:
       return num
+
+  def insert_or_update_bulk(self, cc_rows):
+    return self.insert_or_update_batch(cc_rows)
+
+  def insert_or_update_batch(self, cc_rows, batch_size=0, commit_partial=False):
+    """
+    Insert new rows (or update existing) in the `covidcast` table.
+
+    This has the intentional side effect of updating the primary timestamp.
+    """
+    sql = '''
+      INSERT INTO `covidcast`
+        (`id`, `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`,
+        `timestamp1`, `value`, `stderr`, `sample_size`,
+        `timestamp2`, `direction`,
+        `issue`, `lag`)
+      VALUES
+        (0, %s, %s, %s, %s, %s, %s,
+        UNIX_TIMESTAMP(NOW()), %s, %s, %s,
+        0, NULL,
+        %s, %s)
+      ON DUPLICATE KEY UPDATE
+        `timestamp1` = VALUES(`timestamp1`),
+        `value` = VALUES(`value`),
+        `stderr` = VALUES(`stderr`),
+        `sample_size` = VALUES(`sample_size`)
+    '''
+    # TODO: ^ do we want to reset `timestamp2` and `direction` in the duplicate key case?
+
+    # TODO: consider handling cc_rows as a generator instead of a list
+    num_rows = len(cc_rows)
+    total = 0
+    if not batch_size:
+      batch_size = num_rows
+    num_batches = ceil(num_rows/batch_size)
+    for batch_num in range(num_batches):
+      start = batch_num * batch_size
+      end = min(num_rows, start + batch_size)
+      length = end - start
+
+      args = [(
+        row.source,
+        row.signal,
+        row.time_type,
+        row.geo_type,
+        row.time_value,
+        row.geo_value,
+        row.value,
+        row.stderr,
+        row.sample_size,
+        row.issue,
+        row.lag
+      ) for row in cc_rows[start:end]]
+
+      result = self._cursor.executemany(sql, args)
+      if result is None:
+        # the SQL connector does not support returning number of rows affected
+        total = None
+      else:
+        total += result
+      if commit_partial:
+        self._connection.commit()
+    return total
 
   def insert_or_update(
       self,
@@ -429,6 +535,7 @@ class Database:
     args = (source, signal, time_type, geo_type, geo_value)
     self._cursor.execute(sql, args)
 
+
   def get_covidcast_meta(self):
     """Compute and return metadata on all non-WIP COVIDcast signals."""
 
@@ -491,7 +598,7 @@ class Database:
         t.`signal` ASC,
         t.`time_type` ASC,
         t.`geo_type` ASC
-'''
+    '''
     self._cursor.execute(sql)
     return list(dict(zip(self._cursor.column_names,x)) for x in self._cursor)
 

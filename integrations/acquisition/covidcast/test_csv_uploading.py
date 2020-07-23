@@ -76,17 +76,17 @@ class CsvUploadingTests(unittest.TestCase):
       f.write('wa,30,0.03,300\n')
 
     # invalid
+    with open(source_receiving_dir + '/20200419_state_wip_really_long_name_that_will_get_truncated.csv', 'w') as f:
+      f.write('geo_id,val,se,sample_size\n')
+      f.write('pa,100,5.4,624\n')
+
+    # invalid
     with open(source_receiving_dir + '/20200420_state_test.csv', 'w') as f:
       f.write('this,header,is,wrong\n')
 
     # invalid
     with open(source_receiving_dir + '/hello.csv', 'w') as f:
       f.write('file name is wrong\n')
-
-    # invalid
-    with open(source_receiving_dir + '/20200419_state_wip_really_long_name_that_will_get_truncated.csv', 'w') as f:
-      f.write('geo_id,val,se,sample_size\n')
-      f.write('pa,100,5.4,624\n')
 
     # upload CSVs
     args = MagicMock(data_dir=data_dir)

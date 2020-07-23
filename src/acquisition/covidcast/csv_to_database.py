@@ -6,7 +6,7 @@ import os
 
 # first party
 from delphi.epidata.acquisition.covidcast.csv_importer import CsvImporter
-from delphi.epidata.acquisition.covidcast.database import Database
+from delphi.epidata.acquisition.covidcast.database import Database, CovidcastRow
 from delphi.epidata.acquisition.covidcast.file_archiver import FileArchiver
 
 
@@ -45,7 +45,7 @@ def scan_upload_archive(
 
   # helper to archive a failed file without compression
   def archive_as_failed(path_src, filename, source):
-    print('archiving as failed')
+    print('archiving as failed - '+source)
     path_dst = os.path.join(archive_failed_dir, source)
     compress = False
     file_archiver_impl.archive_file(path_src, path_dst, filename, compress)
@@ -74,29 +74,22 @@ def scan_upload_archive(
 
     (source, signal, time_type, geo_type, time_value, issue, lag) = details
 
-    # iterate over rows and upload to the database
-    all_rows_valid = True
-    for row_values in csv_importer_impl.load_csv(path, geo_type):
-      if not row_values:
-        all_rows_valid = False
-        continue
+    csv_rows = csv_importer_impl.load_csv(path, geo_type)
 
-      try:
-        database.insert_or_update(
-            source,
-            signal,
-            time_type,
-            geo_type,
-            time_value,
-            row_values.geo_value,
-            row_values.value,
-            row_values.stderr,
-            row_values.sample_size,
-            issue,
-            lag)
-      except Exception as e:
-        all_rows_valid = False
-        print('exception while inserting row:', e, row_values)
+    all_rows_valid = False
+    try:
+      cc_rows = CovidcastRow.fromCsvRows(csv_rows, source, signal, time_type, geo_type, time_value, issue, lag)
+      rows_list = list(cc_rows)
+      if not rows_list:
+        raise ValueError("No data")
+      result = database.insert_or_update_bulk(rows_list)
+      if result is None or result: # else would indicate zero rows inserted
+        database.commit()
+        all_rows_valid = True
+    except Exception as e:
+      all_rows_valid = False
+      print('exception while inserting rows:', e)
+      database.rollback()
 
     # archive the current file based on validation results
     if all_rows_valid:
