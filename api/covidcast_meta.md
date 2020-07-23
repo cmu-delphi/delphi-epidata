@@ -33,13 +33,16 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | `epidata[].signal` | signal name | string |
 | `epidata[].time_type` | temporal resolution of the signal (e.g., `day`, `week`) | string |
 | `epidata[].geo_type` | geographic resolution (e.g. `county`, `hrr`, `msa`, `dma`, `state`) | string |
-| `epidata[].min_time` | minimum time (e.g., 20200406) | integer |
-| `epidata[].max_time` | maximum time (e.g., 20200413) | integer |
+| `epidata[].min_time` | minimum observation time (e.g., 20200406) | integer |
+| `epidata[].max_time` | maximum observation time (e.g., 20200413) | integer |
 | `epidata[].num_locations` | number of distinct geographic locations with data | integer |
 | `epidata[].min_value` | minimum value | float |
 | `epidata[].max_value` | maximum value | float |
 | `epidata[].mean_value` | mean of value | float |
 | `epidata[].stdev_value` | standard deviation of value | float |
+| `epidata[].max_issue` | most recent date data was issued (e.g., 20200710) | integer |
+| `epidata[].min_lag` | smallest lag from observation to issue, in `time_type` units | integer |
+| `epidata[].max_lag` | largest lag from observation to issue, in `time_type` units | integer |
 | `message` | `success` or error message | string |
 
 ## Example URLs

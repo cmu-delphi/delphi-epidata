@@ -82,6 +82,8 @@ and lists.
 
 ### Parameters
 
+#### Required
+
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `data_source` | name of upstream data source (e.g., `doctor-visits` or `fb-survey`; [see full list](covidcast_signals.md)) | string |
@@ -96,9 +98,16 @@ The current set of signals available for each data source is returned by the
 
 #### Optional
 
-The default API behavior is to return the most recently issued value for each `time_value` selected.
+Estimates for a specific `time_value` and `geo_value` are sometimes updated
+after they are first published. Many of our data sources issue corrections or
+backfill estimates as data arrives; see the [documentation for each
+source](covidcast_signals.md) for details.
 
-We also provide access to previous versions of data using the optional parameters below.
+The default API behavior is to return the most recently issued value for each
+`time_value` selected.
+
+We also provide access to previous versions of data using the optional query
+parameters below.
 
 | Parameter | Description | Type |
 | --- | --- | --- |
@@ -109,7 +118,7 @@ We also provide access to previous versions of data using the optional parameter
 Use cases:
 
 * To pretend like you queried the API on June 1, such that the returned results
-  do not include any updates which became available after June 1, use
+  do not include any updates that became available after June 1, use
   `as_of=20200601`.
 * To retrieve only data that was published or updated on June 1, and exclude
   records whose most recent update occured earlier than June 1, use
@@ -121,10 +130,12 @@ Use cases:
 * To retrieve only data that was published or updated exactly 3 days after the
   underlying events occurred, use `lag=3`.
 
-NB: Each issue in the versioning system contains only the records that were
-added or updated during that time unit; we exclude records whose values remain
-the same as a previous issue. If you have a research problem that would require
-knowing when an unchanged value was last confirmed, please get in touch.
+You should specify only one of these three parameters in any given query.
+
+**Note:** Each issue in the versioning system contains only the records that
+were added or updated during that time unit; we exclude records whose values
+remain the same as a previous issue. If you have a research problem that would
+require knowing when an unchanged value was last confirmed, please get in touch.
 
 ### Response
 
