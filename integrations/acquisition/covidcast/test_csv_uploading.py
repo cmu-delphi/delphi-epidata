@@ -192,10 +192,10 @@ class CsvUploadingTests(unittest.TestCase):
     })
 
     # verify timestamps and default values are reasonable
-    self.cur.execute('select timestamp1, timestamp2, direction from covidcast')
-    for timestamp1, timestamp2, direction in self.cur:
-      self.assertGreater(timestamp1, 0)
-      self.assertEqual(timestamp2, 0)
+    self.cur.execute('select value_updated_timestamp, direction_updated_timestamp, direction from covidcast')
+    for value_updated_timestamp, direction_updated_timestamp, direction in self.cur:
+      self.assertGreater(value_updated_timestamp, 0)
+      self.assertEqual(direction_updated_timestamp, 0)
       self.assertIsNone(direction)
 
     # verify that the CSVs were archived
