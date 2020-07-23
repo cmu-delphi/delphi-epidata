@@ -78,7 +78,7 @@ def scan_upload_archive(
 
     all_rows_valid = False
     try:
-      cc_rows = CovidcastRow.fromCsvRows(csv_rows, source, signal, time_type, geo_type, time_value)
+      cc_rows = CovidcastRow.fromCsvRows(csv_rows, source, signal, time_type, geo_type, time_value, issue, lag)
       rows_list = list(cc_rows)
       if not rows_list:
         raise ValueError("No data")

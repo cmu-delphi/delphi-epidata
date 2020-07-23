@@ -71,7 +71,8 @@ class UnitTests(unittest.TestCase):
     self.assertEqual(mock_database.insert_or_update_bulk.call_count, 2)
     call_args_list = mock_database.insert_or_update_bulk.call_args_list
     actual_args = [[(a.source, a.signal, a.time_type, a.geo_type, a.time_value,
-                     a.geo_value, a.value, a.stderr, a.sample_size) for a in call.args[0]] for call in call_args_list]
+                     a.geo_value, a.value, a.stderr, a.sample_size, a.issue, a.lag)
+                    for a in call.args[0]] for call in call_args_list]
     expected_args = [
       [('src_a', 'sig_a', 'day', 'hrr', 20200419, 'a1', 'a1', 'a1', 'a1', 20200420, 1),
        ('src_a', 'sig_a', 'day', 'hrr', 20200419, 'a2', 'a2', 'a2', 'a2', 20200420, 1),

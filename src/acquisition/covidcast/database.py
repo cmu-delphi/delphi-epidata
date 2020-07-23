@@ -17,19 +17,21 @@ class CovidcastRow():
   """A container for all the values of a single covidcast row."""
 
   @staticmethod
-  def fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value):
+  def fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag):
     return CovidcastRow(source, signal, time_type, geo_type, time_value,
-      row_value.geo_value,
-      row_value.value,
-      row_value.stderr,
-      row_value.sample_size)
+                        row_value.geo_value,
+                        row_value.value,
+                        row_value.stderr,
+                        row_value.sample_size,
+                        issue, lag)
 
   @staticmethod
-  def fromCsvRows(row_values, source, signal, time_type, geo_type, time_value):
+  def fromCsvRows(row_values, source, signal, time_type, geo_type, time_value, issue, lag):
     # NOTE: returns a generator, as row_values is expected to be a generator
-    return (CovidcastRow.fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value) for row_value in row_values)
+    return (CovidcastRow.fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag)
+            for row_value in row_values)
 
-  def __init__(self, source, signal, time_type, geo_type, time_value, geo_value, value, stderr, sample_size):
+  def __init__(self, source, signal, time_type, geo_type, time_value, geo_value, value, stderr, sample_size, issue, lag):
     self.id = None
     self.source = source
     self.signal = signal
@@ -42,6 +44,8 @@ class CovidcastRow():
     self.sample_size = sample_size  # from CSV row
     self.timestamp2 = 0
     self.direction = None
+    self.issue = issue
+    self.lag = lag
 
 
 class Database:
@@ -98,11 +102,13 @@ class Database:
       INSERT INTO `covidcast`
         (`id`, `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`,
         `timestamp1`, `value`, `stderr`, `sample_size`,
-        `timestamp2`, `direction`)
+        `timestamp2`, `direction`,
+        `issue`, `lag`)
       VALUES
         (0, %s, %s, %s, %s, %s, %s,
         UNIX_TIMESTAMP(NOW()), %s, %s, %s,
-        0, NULL)
+        0, NULL,
+        %s, %s)
       ON DUPLICATE KEY UPDATE
         `timestamp1` = VALUES(`timestamp1`),
         `value` = VALUES(`value`),
@@ -132,6 +138,8 @@ class Database:
         row.value,
         row.stderr,
         row.sample_size,
+        row.issue,
+        row.lag
       ) for row in cc_rows[start:end]]
 
       result = self._cursor.executemany(sql, args)
