@@ -24,13 +24,19 @@ map](https://covidcast.cmu.edu/):
 | Name | Source | Signal |
 | --- | --- | --- |
 | Doctor's Visits | [`doctor-visits`](covidcast-signals/doctor-visits.md) | `smoothed_adj_cli` |
+| Hospital Admissions | [`hospital-admissions`](covidcast-signals/hospital-admissions.md) | `smoothed_adj_covid19` |
 | Symptoms (Facebook) | [`fb-survey`](covidcast-signals/fb-survey.md) | `smoothed_cli` |
 | Symptoms in Community (Facebook) | [`fb-survey`](covidcast-signals/fb-survey.md) | `smoothed_hh_cmnty_cli` |
 | Away from Home 6hr+ (SafeGraph) | [`safegraph`](covidcast-signals/safegraph.md) | `full_time_work_prop` |
 | Away from Home 3-6hr (SafeGraph) | [`safegraph`](covidcast-signals/safegraph.md) | `part_time_work_prop` |
 | Search Trends (Google) | [`ght`](covidcast-signals/ght.md) | `smoothed_search` |
 | Combined | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `nmf_day_doc_fbc_fbs_ght` |
-| Cases | [`jhu-csse`](covidcast-signals/jhu-csse.md) | `confirmed_incidence_num` |
-| Cases per capita | [`jhu-csse`](covidcast-signals/jhu-csse.md) | `confirmed_incidence_prop` |
-| Deaths | [`jhu-csse`](covidcast-signals/jhu-csse.md) | `deaths_incidence_num` |
-| Deaths per capita | [`jhu-csse`](covidcast-signals/jhu-csse.md) | `confirmed_incidence_prop` |
+| Cases | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `confirmed_7dav_incidence_num` |
+| Cases per 100,000 People | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `confirmed_7dav_incidence_prop` |
+| Deaths | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `deaths_7dav_incidence_num` |
+| Deaths per 100,000 People | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `deaths_7dav_incidence_prop` |
+
+## All Available Sources and Signals
+
+Beyond the signals available on the COVIDcast map, numerous other signals are
+available directly through the API:

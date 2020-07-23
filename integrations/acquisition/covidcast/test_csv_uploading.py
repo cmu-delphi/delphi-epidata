@@ -1,6 +1,7 @@
 """Integration tests for covidcast's CSV-to-database uploading."""
 
 # standard library
+from datetime import date
 import os
 import unittest
 from unittest.mock import MagicMock
@@ -95,11 +96,24 @@ class CsvUploadingTests(unittest.TestCase):
     response = Epidata.covidcast(
         'src-name', 'test', 'day', 'state', 20200419, '*')
 
+
+    expected_issue_day=date.today()
+    expected_issue=expected_issue_day.strftime("%Y%m%d")
+    def apply_lag(expected_epidata):
+      for dct in expected_epidata:
+        dct['issue'] = int(expected_issue)
+        time_value_day = date(year=dct['time_value'] // 10000,
+                              month=dct['time_value'] % 10000 // 100,
+                              day= dct['time_value'] % 100)
+        expected_lag = (expected_issue_day - time_value_day).days
+        dct['lag'] = expected_lag
+      return expected_epidata
+    
     # verify data matches the CSV
     # NB these are ordered by geo_value
     self.assertEqual(response, {
       'result': 1,
-      'epidata': [
+      'epidata': apply_lag([
         {
           'time_value': 20200419,
           'geo_value': 'ca',
@@ -124,7 +138,7 @@ class CsvUploadingTests(unittest.TestCase):
           'sample_size': 20,
           'direction': None,
         },
-       ],
+    ]),
       'message': 'success',
     })
 
@@ -132,11 +146,12 @@ class CsvUploadingTests(unittest.TestCase):
     response = Epidata.covidcast(
       'src-name', 'wip_prototype', 'day', 'state', 20200419, '*')
 
+    
     # verify data matches the CSV
     # NB these are ordered by geo_value
     self.assertEqual(response, {
       'result': 1,
-      'epidata': [
+      'epidata': apply_lag([
         {
           'time_value': 20200419,
           'geo_value': 'me',
@@ -161,7 +176,7 @@ class CsvUploadingTests(unittest.TestCase):
           'sample_size': 300,
           'direction': None,
         },
-       ],
+       ]),
       'message': 'success',
     })
 

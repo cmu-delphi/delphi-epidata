@@ -27,8 +27,8 @@ day.
 
 | Signal | Description |
 | --- | --- |
-| `raw_cli` | Estimated percentage of people with COVID-like illness based on the [criteria below](#defining-household-ili-and-cli), with no smoothing or survey weighting |
-| `raw_ili` | Estimated percentage of people with influenza-like illness based on the [criteria below](#defining-household-ili-and-cli), with no smoothing or survey weighting |
+| `raw_cli` | Estimated percentage of people with COVID-like illness based on the [criteria below](#ili-and-cli-indicators), with no smoothing or survey weighting |
+| `raw_ili` | Estimated percentage of people with influenza-like illness based on the [criteria below](#ili-and-cli-indicators), with no smoothing or survey weighting |
 | `raw_wcli` | Estimated percentage of people with COVID-like illness; adjusted using survey weights [as described below](#survey-weighting) |
 | `raw_wili` | Estimated percentage of people with influenza-like illness; adjusted using survey weights [as described below](#survey-weighting) |
 | `raw_hh_cmnty_cli` | Estimated percentage of people reporting illness in their local community, as [described below](#estimating-community-cli), including their household, with no smoothing or survey weighting |
@@ -91,6 +91,14 @@ our survey, this means a and (b or c).
 COVID-like illness or CLI is not a standard indicator. Through our discussions
 with the CDC, we chose to define it as: fever along with cough or shortness of
 breath or difficulty breathing.
+
+Symptoms alone are not sufficient to diagnose influenza or coronavirus
+infections, and so these ILI and CLI indicators are *not* expected to be
+unbiased estimates of the true rate of influenza or coronavirus infections.
+These symptoms can be caused by many other conditions, and many true infections
+can be asymptomatic. Instead, we expect these indicators to be useful for
+comparison across the United States and across time, to determine where symptoms
+appear to be increasing.
 
 ### Defining Household ILI and CLI
 

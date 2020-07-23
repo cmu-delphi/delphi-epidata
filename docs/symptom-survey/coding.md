@@ -1,0 +1,126 @@
+---
+title: Questions and Coding
+parent: COVID Symptom Survey
+nav_order: 3
+---
+
+# Questions and Coding
+{: .no_toc}
+
+The symptom surveys have been deployed in several waves. We have tried to ensure
+the coding of waves is consistent. This page provides the full survey text and
+coding schemes.
+
+
+## Table of contents
+{: .no_toc .text-delta}
+
+1. TOC
+{:toc}
+
+## Basic Coding Rules
+
+All choice responses are recorded numerically starting from 1, in displayed
+order from left to right and top to bottom. When the respondent is allowed to
+select multiple responses, these are shown separated by commas, such as `2,4,6`.
+Questions left blank or with invalid responses are recorded in the CSV files as
+`NA`.
+
+Timestamps are provided in Pacific time (UTC-7). The following metadata columns
+describe each survey response:
+
+* `StartDatetime`: The time the respondent began the survey.
+* `EndDatetime`: The time of the last activity by the respondent on the survey.
+  If they submitted the survey, this is the time it was submitted. If the user
+  did not complete the survey, their response may have been recorded
+  automatically after a timeout; this is the time of their last activity, not of
+  the recording. See the [response files](survey-files.md) documentation for
+  details on the automatic recording of responses.
+* `weight`: The survey weight calculated by Facebook, for demographically
+  adjusting estimates. See the [weights documentation](weights.md) for details
+  on how to use these weights.
+
+Coding details for each survey wave follow.
+
+
+## Wave 1
+
+Wave 1 was first deployed on April 6, 2020. This was replaced by Wave 2, but
+some responses still arrive from respondents who received a link before Wave 2
+was deployed.
+
+* [Survey text and
+  coding](waves/Survey_of_COVID-Like_Illness_-_TODEPLOY_2020-04-06.pdf) (PDF)
+* [Survey text and
+  coding](waves/Survey_of_COVID-Like_Illness_-_TODEPLOY_2020-04-06.docx) (Word)
+
+## Wave 2
+
+Wave 2 was first deployed on April 15, 2020. This was replaced by Wave 3, but
+some responses still arrive from respondents who received a link before Wave 3
+was deployed.
+
+* [Survey text and
+  coding](waves/Survey_of_COVID-Like_Illness_-_TODEPLOY__-_US_Expansion.pdf)
+  (PDF)
+* [Survey text and
+  coding](waves/Survey_of_COVID-Like_Illness_-_TODEPLOY__-_US_Expansion.docx)
+  (Word)
+
+### Summary of Changes
+
+* Item A1 changed from
+
+    > In the past 24 hours, **have you or anyone in your household** had any of
+    > the following:
+
+    to
+
+    > In the past 24 hours, have **you or anyone in your household** experienced
+    > any of the following:
+* Item A2 changed to specify "fever, along with at least one other symptom in
+  the above list" rather than simply "at least one symptom."
+* Item A3 changed from
+
+    > What is the ZIP Code of the city or town where you slept last night? [We
+    > mean the place where you are currently staying. This may be different from
+    > your usual residence.]
+
+    to
+
+    > What is your current ZIP code?
+* Item A4, asking about others who are sick in the local community, added.
+* Additional page breaks.
+
+## Wave 3
+
+Wave 3 was first deployed on May 21, 2020. It is available in English, as well
+as
+
+* Simplified Chinese
+* English (UK)
+* Spanish (Latin America)
+* Spanish
+* French
+* Brazilian Portuguese
+* Vietnamese
+
+Files:
+
+* [Survey text and
+  coding](waves/Survey_of_COVID-Like_Illness_-_TODEPLOY-_US_Expansion_-_With_Translations.pdf)
+  (PDF)
+* [Survey text and
+  coding](waves/Survey_of_COVID-Like_Illness_-_TODEPLOY-_US_Expansion_-_With_Translations.docx)
+  (Word)
+
+### Summary of Changes
+
+* Now available in languages besides English, listed above. The language shown
+  to the user defaults to the language they prefer on Facebook, if available,
+  but a drop-down allows the user to select other languages.
+* Consent text now mentions receiving "your language preference" from Facebook,
+  to allow Qualtrics to select the appropriate translation automatically.
+* Consent question now requires the respondent be located in the U.S.
+* Item B2 now includes eye pain as a symptom.
+* Item C5 moved to be asked before item C4.

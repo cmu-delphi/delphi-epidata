@@ -24,6 +24,8 @@ Data is public.
 | sample_size | double      | YES  |     | NULL    |                |
 | timestamp2  | int(11)     | NO   |     | NULL    |                |
 | direction   | int(11)     | YES  |     | NULL    |                |
+| issue       | int(11)     | NO   |     | NULL    |                |
+| lag         | int(11)     | NO   |     | NULL    |                |
 +-------------+-------------+------+-----+---------+----------------+
 
 - `id`
@@ -61,6 +63,10 @@ Data is public.
   - +1: `value` is increasing
   -  0: `value` is steady
   - -1: `value` is decreasing
+- `issue`
+  the time_value of publication
+- `lag`
+  the number of time_type units between `time_value` and `issue`
 */
 
 CREATE TABLE `covidcast` (
@@ -79,11 +85,14 @@ CREATE TABLE `covidcast` (
   -- "secondary" values are derived from data in this table
   `timestamp2` int(11) NOT NULL,
   `direction` int(11),
+  `issue` int(11) NOT NULL,
+  `lag` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   -- for uniqueness, and also fast lookup of all locations on a given date
-  UNIQUE KEY (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`),
+  UNIQUE KEY (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`, `issue`),
   -- for fast lookup of a time-series for a given location
-  KEY (`source`, `signal`, `time_type`, `geo_type`, `geo_value`, `time_value`)
+  KEY `by_issue` (`source`, `signal`, `time_type`, `geo_type`, `geo_value`, `time_value`, `issue`),
+  KEY `by_lag` (`source`, `signal`, `time_type`, `geo_type`, `geo_value`, `time_value`, `lag`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*

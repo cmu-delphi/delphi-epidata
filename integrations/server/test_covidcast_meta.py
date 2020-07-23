@@ -46,7 +46,7 @@ class CovidcastMetaTests(unittest.TestCase):
     # insert dummy data and accumulate expected results (in sort order)
     template = '''
       insert into covidcast values
-        (0, "%s", "%s", "%s", "%s", %d, "%s", 123, %d, 0, 0, 456, 0)
+        (0, "%s", "%s", "%s", "%s", %d, "%s", 123, %d, 0, 0, 456, 0, %d, 0)
     '''
     expected = []
     for src in ('src1', 'src2'):
@@ -66,10 +66,13 @@ class CovidcastMetaTests(unittest.TestCase):
               'mean_value': 15,
               'stdev_value': 5,
               'last_update': 123,
+              'max_issue': 2,
+              'min_lag': 0,
+              'max_lag': 0,
             })
             for tv in (1, 2):
               for gv, v in zip(('geo1', 'geo2'), (10, 20)):
-                self.cur.execute(template % (src, sig, tt, gt, tv, gv, v))
+                self.cur.execute(template % (src, sig, tt, gt, tv, gv, v, tv))
     self.cnx.commit()
     update_cache(args=None)
 
@@ -91,7 +94,7 @@ class CovidcastMetaTests(unittest.TestCase):
     # insert dummy data and accumulate expected results (in sort order)
     template = '''
       insert into covidcast values
-        (0, "%s", "%s", "%s", "%s", %d, "%s", 123, %d, 0, 0, 456, 0)
+        (0, "%s", "%s", "%s", "%s", %d, "%s", 123, %d, 0, 0, 456, 0, %d, 0)
     '''
     expected = []
     for src in ('src1', 'src2'):
@@ -112,10 +115,13 @@ class CovidcastMetaTests(unittest.TestCase):
                 'mean_value': 15,
                 'stdev_value': 5,
                 'last_update': 123,
+                'max_issue': 2,
+                'min_lag': 0,
+                'max_lag': 0,
               })
             for tv in (1, 2):
               for gv, v in zip(('geo1', 'geo2'), (10, 20)):
-                self.cur.execute(template % (src, sig, tt, gt, tv, gv, v))
+                self.cur.execute(template % (src, sig, tt, gt, tv, gv, v, tv))
     self.cnx.commit()
     update_cache(args=None)
 

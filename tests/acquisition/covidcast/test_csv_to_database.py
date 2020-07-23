@@ -25,7 +25,8 @@ class UnitTests(unittest.TestCase):
         geo_value=value,
         value=value,
         stderr=value,
-        sample_size=value)
+        sample_size=value,
+      )
 
     def load_csv_impl(path, *args):
       if path == 'path/a.csv':
@@ -49,13 +50,13 @@ class UnitTests(unittest.TestCase):
     mock_csv_importer = MagicMock()
     mock_csv_importer.find_csv_files.return_value = [
       # a good file
-      ('path/a.csv', ('src_a', 'sig_a', 'day', 'hrr', 20200419)),
+      ('path/a.csv', ('src_a', 'sig_a', 'day', 'hrr', 20200419, 20200420, 1)),
       # a file with a data error
-      ('path/b.csv', ('src_b', 'sig_b', 'week', 'msa', 202016)),
+      ('path/b.csv', ('src_b', 'sig_b', 'week', 'msa', 202016, 202017, 1)),
       # emulate a file that's named incorrectly
       ('path/c.csv', None),
       # another good file
-      ('path/d.csv', ('src_d', 'sig_d', 'week', 'msa', 202016)),
+      ('path/d.csv', ('src_d', 'sig_d', 'week', 'msa', 202016, 202017, 1)),
     ]
     mock_csv_importer.load_csv = load_csv_impl
     mock_file_archiver = MagicMock()
@@ -72,10 +73,10 @@ class UnitTests(unittest.TestCase):
     actual_args = [[(a.source, a.signal, a.time_type, a.geo_type, a.time_value,
                      a.geo_value, a.value, a.stderr, a.sample_size) for a in call.args[0]] for call in call_args_list]
     expected_args = [
-      [('src_a', 'sig_a', 'day', 'hrr', 20200419, 'a1', 'a1', 'a1', 'a1'),
-       ('src_a', 'sig_a', 'day', 'hrr', 20200419, 'a2', 'a2', 'a2', 'a2'),
-       ('src_a', 'sig_a', 'day', 'hrr', 20200419, 'a3', 'a3', 'a3', 'a3')],
-      [('src_d', 'sig_d', 'week', 'msa', 202016, 'd1', 'd1', 'd1', 'd1')]
+      [('src_a', 'sig_a', 'day', 'hrr', 20200419, 'a1', 'a1', 'a1', 'a1', 20200420, 1),
+       ('src_a', 'sig_a', 'day', 'hrr', 20200419, 'a2', 'a2', 'a2', 'a2', 20200420, 1),
+       ('src_a', 'sig_a', 'day', 'hrr', 20200419, 'a3', 'a3', 'a3', 'a3', 20200420, 1)],
+      [('src_d', 'sig_d', 'week', 'msa', 202016, 'd1', 'd1', 'd1', 'd1', 202017, 1)]
     ]
     self.assertEqual(actual_args, expected_args)
 
@@ -142,7 +143,7 @@ class UnitTests(unittest.TestCase):
     mock_database.insert_or_update_bulk.side_effect = Exception('testing')
     mock_csv_importer = MagicMock()
     mock_csv_importer.find_csv_files.return_value = [
-      ('path/file.csv', ('src', 'sig', 'day', 'hrr', 20200423)),
+      ('path/file.csv', ('src', 'sig', 'day', 'hrr', 20200423, 20200424, 1)),
     ]
     mock_csv_importer.load_csv.return_value = [
       MagicMock(geo_value='geo', value=1, stderr=1, sample_size=1),

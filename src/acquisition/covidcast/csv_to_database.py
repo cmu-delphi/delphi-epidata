@@ -57,6 +57,7 @@ def scan_upload_archive(
     compress = True
     file_archiver_impl.archive_file(path_src, path_dst, filename, compress)
 
+
   # collect files
   results = list(csv_importer_impl.find_csv_files(receiving_dir))
   print('found %d files' % len(results))
@@ -71,7 +72,7 @@ def scan_upload_archive(
       archive_as_failed(path_src, filename, 'unknown')
       continue
 
-    (source, signal, time_type, geo_type, time_value) = details
+    (source, signal, time_type, geo_type, time_value, issue, lag) = details
 
     csv_rows = csv_importer_impl.load_csv(path, geo_type)
 
