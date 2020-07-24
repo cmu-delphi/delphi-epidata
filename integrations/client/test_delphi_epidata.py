@@ -50,11 +50,11 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
     self.cur.execute('''
       insert into covidcast values
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0),
+          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, False),
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          456, 5.5, 1.2, 10.5, 789, 0, 20200415, 1),
+          456, 5.5, 1.2, 10.5, 789, 0, 20200415, 1, False),
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          345, 6.5, 2.2, 11.5, 678, 0, 20200416, 2)
+          345, 6.5, 2.2, 11.5, 678, 0, 20200416, 2, False)
     ''')
     self.cnx.commit()
 
@@ -157,11 +157,11 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
     self.cur.execute('''
       insert into covidcast values
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0),
+          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, False),
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          345, 6.0, 2.2, 11.5, 678, 0, 20200416, 2),
+          345, 6.0, 2.2, 11.5, 678, 0, 20200416, 2, False),
         (0, 'src', 'sig', 'day', 'county', 20200415, '01234',
-          345, 7.0, 2.0, 12.5, 678, 0, 20200416, 1)
+          345, 7.0, 2.0, 12.5, 678, 0, 20200416, 1, False)
     ''')
     self.cnx.commit()
 

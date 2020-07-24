@@ -17,21 +17,21 @@ class CovidcastRow():
   """A container for all the values of a single covidcast row."""
 
   @staticmethod
-  def fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag):
+  def fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag, is_wip):
     return CovidcastRow(source, signal, time_type, geo_type, time_value,
                         row_value.geo_value,
                         row_value.value,
                         row_value.stderr,
                         row_value.sample_size,
-                        issue, lag)
+                        issue, lag, is_wip)
 
   @staticmethod
-  def fromCsvRows(row_values, source, signal, time_type, geo_type, time_value, issue, lag):
+  def fromCsvRows(row_values, source, signal, time_type, geo_type, time_value, issue, lag, is_wip):
     # NOTE: returns a generator, as row_values is expected to be a generator
-    return (CovidcastRow.fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag)
+    return (CovidcastRow.fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag, is_wip)
             for row_value in row_values)
 
-  def __init__(self, source, signal, time_type, geo_type, time_value, geo_value, value, stderr, sample_size, issue, lag):
+  def __init__(self, source, signal, time_type, geo_type, time_value, geo_value, value, stderr, sample_size, issue, lag, is_wip):
     self.id = None
     self.source = source
     self.signal = signal
@@ -46,6 +46,7 @@ class CovidcastRow():
     self.direction = None
     self.issue = issue
     self.lag = lag
+    self.is_wip = is_wip
 
 
 class Database:
@@ -103,12 +104,12 @@ class Database:
         (`id`, `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`,
         `value_updated_timestamp`, `value`, `stderr`, `sample_size`,
         `direction_updated_timestamp`, `direction`,
-        `issue`, `lag`)
+        `issue`, `lag`, `is_wip`)
       VALUES
         (0, %s, %s, %s, %s, %s, %s,
         UNIX_TIMESTAMP(NOW()), %s, %s, %s,
         0, NULL,
-        %s, %s)
+        %s, %s, %s)
       ON DUPLICATE KEY UPDATE
         `value_updated_timestamp` = VALUES(`value_updated_timestamp`),
         `value` = VALUES(`value`),
@@ -139,7 +140,8 @@ class Database:
         row.stderr,
         row.sample_size,
         row.issue,
-        row.lag
+        row.lag,
+        row.is_wip
       ) for row in cc_rows[start:end]]
 
       result = self._cursor.executemany(sql, args)
@@ -164,7 +166,8 @@ class Database:
       stderr,
       sample_size,
       issue,
-      lag):
+      lag,
+      is_wip):
     """
     Insert a new row, or update an existing row, in the `covidcast` table.
 
@@ -173,7 +176,7 @@ class Database:
 
     sql = '''
       INSERT INTO `covidcast` VALUES
-        (0, %s, %s, %s, %s, %s, %s, UNIX_TIMESTAMP(NOW()), %s, %s, %s, 0, NULL, %s, %s)
+        (0, %s, %s, %s, %s, %s, %s, UNIX_TIMESTAMP(NOW()), %s, %s, %s, 0, NULL, %s, %s, %s)
       ON DUPLICATE KEY UPDATE
         `value_updated_timestamp` = VALUES(`value_updated_timestamp`),
         `value` = VALUES(`value`),
@@ -192,7 +195,8 @@ class Database:
       stderr,
       sample_size,
       issue,
-      lag
+      lag,
+      is_wip
     )
 
     self._cursor.execute(sql, args)
@@ -587,7 +591,7 @@ class Database:
           x.`geo_type` = t.`geo_type` AND
           x.`geo_value` = t.`geo_value`
       WHERE
-        t.`signal` NOT LIKE 'wip_%'
+        NOT t.`is_wip`
       GROUP BY
         t.`source`,
         t.`signal`,
