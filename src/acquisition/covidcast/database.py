@@ -276,6 +276,7 @@ class Database:
 
     `temporary_table`: if provided, a temporary table with the name `temporary_table`
                        is created and the result is also stored in that table.
+    `partition_condition`: a condition that defines the partition to be processed.
     """
 
     create_tmp_table_sql = f'''
