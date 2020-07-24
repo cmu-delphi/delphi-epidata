@@ -39,11 +39,26 @@ class Constants:
   )
 
 
+# partition configuration
+PARTITION_VARIABLE = 'geo_value'
+PARTITION_SPLITS = ["'05101'", "'101'", "'13071'", "'15007'", "'17161'", "'19039'", "'20123'", "'21213'", "'24035'",
+                    "'27005'", "'28115'", "'29510'", "'31161'", "'35100'", "'37117'", "'39081'", "'41013'", "'44140'",
+                    "'47027'", "'48140'", "'48461'", "'51169'", "'55033'"]
+
+
+
 def get_argument_parser():
   """Define command line arguments."""
 
   # there are no flags, but --help will still work
-  return argparse.ArgumentParser()
+  parser = argparse.ArgumentParser()
+  parser.add_argument(
+    '--partitions',
+    type=int,
+    nargs='+',
+    default=list(range(len(PARTITION_SPLITS) + 1)),  # default is to process all partitions
+    help='a list of integers for indexes of partitions to be processed')
+  return parser
 
 
 def update_loop(database, direction_impl=Direction):
@@ -152,11 +167,19 @@ def update_loop(database, direction_impl=Direction):
       source, signal, 'day', geo_type, geo_value)
 
 
-def optimized_update_loop(database, direction_impl=Direction):
+def optimized_update_loop(database, partition_index, direction_impl=Direction):
   """An optimized implementation of update_loop, finds and updates rows with a stale `direction` value.
 
   `database`: an open connection to the epidata database
+  `partition_index`: the index of the partition to be processed
   """
+
+  # constructing the partitoin condition from partition index
+  ge_condition = 'TRUE' if partition_index == 0 else f'`{PARTITION_VARIABLE}` >= {PARTITION_SPLITS[partition_index-1]}'
+  l_condition = 'TRUE' if partition_index == len(PARTITION_SPLITS) else \
+                f'`{PARTITION_VARIABLE}` < {PARTITION_SPLITS[partition_index]}'
+  partition_condition = f'({ge_condition}) AND ({l_condition})'
+
   # Name of temporary table, which will store all rows from potentially stale time-series
   tmp_table_name = 'tmp_ts_rows'
 
@@ -164,7 +187,7 @@ def optimized_update_loop(database, direction_impl=Direction):
   df_all = pd.DataFrame(columns=['id', 'source', 'signal', 'time_type', 'geo_type', 'geo_value', 'time_value',
                                  'value_updated_timestamp', 'value', 'direction_updated_timestamp', 'direction'],
                         data=database.get_all_record_values_of_timeseries_with_potentially_stale_direction(
-                          tmp_table_name))
+                          tmp_table_name, partition_condition))
   df_all.drop(columns=['time_type'], inplace=True)
   df_all['time_value_datetime'] = pd.to_datetime(df_all.time_value, format="%Y%m%d")
   df_all.direction = df_all.direction.astype(np.float64)
@@ -249,11 +272,6 @@ def optimized_update_loop(database, direction_impl=Direction):
     ts_pot_changed = ts_rows.set_index('time_value').loc[days]
     ts_pot_changed['new_direction'] = np.array(directions, np.float64)
 
-    # is_eq_nan = ts_pot_changed.direction.isnull() & ts_pot_changed.new_direction.isnull()
-    # is_eq_num = ts_pot_changed.direction == ts_pot_changed.new_direction
-    # changed_mask = ~(is_eq_nan | is_eq_num)
-    # ts_changed = ts_pot_changed[changed_mask]
-
     # Adding changed values to the changed_rows dictionary
     gb_o = ts_pot_changed.groupby('new_direction')
     for v in gb_o.groups:
@@ -278,21 +296,20 @@ def main(
 
   `args`: parsed command-line arguments
   """
-
-  database = database_impl()
-  database.connect()
-  commit = False
-
-  try:
-    update_loop_impl(database)
-    # only commit on success so that directions are consistent with respect
-    # to methodology
-    commit = True
-  finally:
-    # no catch block so that an exception above will cause the program to
-    # fail after the following cleanup
-    database.disconnect(commit)
-    print('committed=%s' % str(commit))
+  for partition_index in args.partitions:
+    database = database_impl()
+    database.connect()
+    commit = False
+    try:
+      update_loop_impl(database, partition_index)
+      # only commit on success so that directions are consistent with respect
+      # to methodology
+      commit = True
+    finally:
+      # no catch block so that an exception above will cause the program to
+      # fail after the following cleanup
+      database.disconnect(commit)
+      print('partition %d committed=%s' % (partition_index, str(commit)))
 
 
 if __name__ == '__main__':

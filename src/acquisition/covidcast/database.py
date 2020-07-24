@@ -269,7 +269,8 @@ class Database:
 
     self._cursor.execute(sql, args)
 
-  def get_all_record_values_of_timeseries_with_potentially_stale_direction(self, temporary_table=None):
+  def get_all_record_values_of_timeseries_with_potentially_stale_direction(self, temporary_table=None,
+                                                                           partition_condition='(TRUE)'):
     """Return the rows of all daily time-series with potentially stale directions,
     only rows corresponding to the most recent issue for each time_value is returned.
 
@@ -321,7 +322,8 @@ class Database:
         MAX(`issue`) AS `issue`
       FROM `covidcast`
       WHERE
-        `time_type` = 'day'
+        `time_type` = 'day' AND
+        {partition_condition}
       GROUP BY
         `source`,
         `signal`,

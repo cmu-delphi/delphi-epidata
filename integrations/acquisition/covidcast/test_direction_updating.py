@@ -82,7 +82,7 @@ class DirectionUpdatingTests(unittest.TestCase):
     self.cnx.commit()
 
     # update direction (only 20200417 has enough history)
-    args = None
+    args = get_argument_parser().parse_args('')
     main(args)
 
     # request data from the API
