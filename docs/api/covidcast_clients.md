@@ -8,9 +8,8 @@ nav_order: 1
 
 Dedicated COVIDcast clients are available for several languages:
 
-* [covidcast-py](https://cmu-delphi.github.io/covidcast/covidcast-py/html/) for
-  Python users
-* [covidcastR](https://cmu-delphi.github.io/covidcast/covidcastR/) for R users
+* R: [covidcast](https://cmu-delphi.github.io/covidcast/covidcastR/)
+* Python: [covidcast](https://cmu-delphi.github.io/covidcast/covidcast-py/html/)
 
 These packages provide a convenient way to obtain COVIDcast data as a data frame
 ready to be used in further analyses. For installation instructions and
@@ -81,7 +80,7 @@ print(res['result'], res['message'], len(res['epidata']))
 
 ### R
 
-**Note:** For COVIDcast usage, R users should prefer the [covidcastR
+**Note:** For COVIDcast usage, R users should prefer the [covidcast
 package](https://cmu-delphi.github.io/covidcast/covidcastR/); these instructions
 are for advanced users who want access to the entire Epidata API, including data
 on influenza, dengue, and norovirus.
