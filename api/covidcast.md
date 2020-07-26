@@ -38,7 +38,7 @@ the appropriate client for your programming language, accessing data is as easy
 as (in [R](https://www.r-project.org/)):
 
 ```r
-library(covidcastR)
+library(covidcast)
 
 data <- covidcast_signal("fb-survey", "smoothed_cli", start_day = "20200501",
                          end_day = "20200507")
