@@ -18,11 +18,11 @@ Data is public.
 | geo_type                     | varchar(12) | NO   |     | NULL    |                |
 | time_value                   | int(11)     | NO   |     | NULL    |                |
 | geo_value                    | varchar(12) | NO   |     | NULL    |                |
-| value_updated_timestamp      | int(11)     | NO   |     | NULL    |                |
+| timestamp1      | int(11)     | NO   |     | NULL    |                |
 | value                        | double      | NO   |     | NULL    |                |
 | stderr                       | double      | YES  |     | NULL    |                |
 | sample_size                  | double      | YES  |     | NULL    |                |
-| direction_updated_timestamp  | int(11)     | NO   |     | NULL    |                |
+| timestamp2  | int(11)     | NO   |     | NULL    |                |
 | direction                    | int(11)     | YES  |     | NULL    |                |
 | issue                        | int(11)     | NO   |     | NULL    |                |
 | lag                          | int(11)     | NO   |     | NULL    |                |
@@ -48,7 +48,7 @@ Data is public.
   - HRR: hospital referral region (HRR) number
   - DMA: designated market area (DMA) code
   - state: two-letter state abbreviation
-- `value_updated_timestamp`
+- `timestamp1`
   time when primary data (e.g. `value`) was last updated
 - `value`
   value (statistic) derived from the underlying data source
@@ -56,7 +56,7 @@ Data is public.
   standard error of the statistic with respect to its sampling distribution
 - `sample_size` (NULL when not applicable)
   number of "data points" used in computing the statistic
-- `direction_updated_timestamp`
+- `timestamp2`
   time when secondary data (e.g. `direction`) was last updated
 - `direction` (NULL when not applicable)
   trend classifier with possible values:
@@ -78,12 +78,12 @@ CREATE TABLE `covidcast` (
   `time_value` int(11) NOT NULL,
   `geo_value` varchar(12) NOT NULL,
   -- "primary" values are derived from the upstream data source
-  `value_updated_timestamp` int(11) NOT NULL,
+  `timestamp1` int(11) NOT NULL,
   `value` double NOT NULL,
   `stderr` double,
   `sample_size` double,
   -- "secondary" values are derived from data in this table
-  `direction_updated_timestamp` int(11) NOT NULL,
+  `timestamp2` int(11) NOT NULL,
   `direction` int(11),
   `issue` int(11) NOT NULL,
   `lag` int(11) NOT NULL,

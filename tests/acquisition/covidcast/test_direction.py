@@ -87,7 +87,7 @@ class UnitTests(unittest.TestCase):
   def test_scan_timeseries(self):
     """Scan a time-series and update stale directions."""
 
-    offsets, days, values, value_updated_timestamps, direction_updated_timestamps = [
+    offsets, days, values, timestamp1s, timestamp2s = [
       # missing days '230', '240', and '250' (the gap helps test windowing)
       [100, 101, 102, 106, 107, 108],
       [200, 210, 220, 260, 270, 280],
@@ -104,8 +104,8 @@ class UnitTests(unittest.TestCase):
         offsets,
         days,
         values,
-        value_updated_timestamps,
-        direction_updated_timestamps,
+        timestamp1s,
+        timestamp2s,
         get_direction_impl)
 
     self.assertEqual(days, [210, 280])

@@ -94,8 +94,8 @@ def update_loop(database, direction_impl=Direction):
       signal,
       geo_type,
       geo_value,
-      max_value_updated_timestamp,
-      min_direction_updated_timestamp,
+      max_timestamp1,
+      min_timestamp2,
       min_day,
       max_day,
       series_length,
@@ -123,7 +123,7 @@ def update_loop(database, direction_impl=Direction):
         min_day,
         max_day,
         series_length,
-        max_value_updated_timestamp - min_direction_updated_timestamp,
+        max_timestamp1 - min_timestamp2,
       )
       print(msg % args)
 
@@ -133,12 +133,12 @@ def update_loop(database, direction_impl=Direction):
 
     # transpose result set and cast data types
     data = np.array(timeseries_rows)
-    offsets, days, values, value_updated_timestamps, direction_updated_timestamps = data.T
+    offsets, days, values, timestamp1s, timestamp2s = data.T
     offsets = offsets.astype(np.int64)
     days = days.astype(np.int64)
     values = values.astype(np.float64)
-    value_updated_timestamps = value_updated_timestamps.astype(np.int64)
-    direction_updated_timestamps = direction_updated_timestamps.astype(np.int64)
+    timestamp1s = timestamp1s.astype(np.int64)
+    timestamp2s = timestamp2s.astype(np.int64)
 
     # create a direction classifier for this signal
     data_stdev = data_stdevs[source][signal][geo_type]
@@ -150,7 +150,7 @@ def update_loop(database, direction_impl=Direction):
 
     # recompute any stale directions
     days, directions = direction_impl.scan_timeseries(
-      offsets, days, values, value_updated_timestamps, direction_updated_timestamps, get_direction_impl)
+      offsets, days, values, timestamp1s, timestamp2s, get_direction_impl)
 
     if be_verbose:
       print(' computed %d direction updates' % len(directions))
@@ -163,7 +163,7 @@ def update_loop(database, direction_impl=Direction):
         source, signal, 'day', geo_type, day, geo_value, direction)
 
     # mark the entire time-series as fresh with respect to direction
-    database.update_timeseries_direction_updated_timestamp(
+    database.update_timeseries_timestamp2(
       source, signal, 'day', geo_type, geo_value)
 
 
@@ -185,7 +185,7 @@ def optimized_update_loop(database, partition_index, direction_impl=Direction):
 
   # A pandas DataFrame that will hold all rows from potentially stale time-series
   df_all = pd.DataFrame(columns=['id', 'source', 'signal', 'time_type', 'geo_type', 'geo_value', 'time_value',
-                                 'value_updated_timestamp', 'value', 'direction_updated_timestamp', 'direction'],
+                                 'timestamp1', 'value', 'timestamp2', 'direction'],
                         data=database.get_all_record_values_of_timeseries_with_potentially_stale_direction(
                           tmp_table_name, partition_condition))
   df_all.drop(columns=['time_type'], inplace=True)
@@ -243,15 +243,15 @@ def optimized_update_loop(database, partition_index, direction_impl=Direction):
           ts_rows.time_value.min(),
           ts_rows.time_value.max(),
           len(ts_rows),
-          ts_rows.value_updated_timestamp.max() - ts_rows.direction_updated_timestamp.min()
+          ts_rows.timestamp1.max() - ts_rows.timestamp2.min()
       )
       print(msg % args)
 
     offsets = ts_rows.offsets.values.astype(np.int64)
     days = ts_rows.time_value.values.astype(np.int64)
     values = ts_rows.value.values.astype(np.float64)
-    value_updated_timestamps = ts_rows.value_updated_timestamp.values.astype(np.int64)
-    direction_updated_timestamps = ts_rows.direction_updated_timestamp.values.astype(np.int64)
+    timestamp1s = ts_rows.timestamp1.values.astype(np.int64)
+    timestamp2s = ts_rows.timestamp2.values.astype(np.int64)
 
     # create a direction classifier for this signal
     data_stdev = data_stdevs[source][signal][geo_type]
@@ -263,7 +263,7 @@ def optimized_update_loop(database, partition_index, direction_impl=Direction):
 
     # recompute any stale directions
     days, directions = direction_impl.scan_timeseries(
-      offsets, days, values, value_updated_timestamps, direction_updated_timestamps, get_direction_impl)
+      offsets, days, values, timestamp1s, timestamp2s, get_direction_impl)
 
     if be_verbose:
       print(' computed %d direction updates' % len(directions))
@@ -282,8 +282,8 @@ def optimized_update_loop(database, partition_index, direction_impl=Direction):
   for v, id_list in changed_rows.items():
     database.batched_update_direction(v, id_list)
 
-  # Updating direction_updated_timestamp
-  database.update_direction_updated_timestamp_from_temporary_table(tmp_table_name)
+  # Updating timestamp2
+  database.update_timestamp2_from_temporary_table(tmp_table_name)
   # Dropping temporary table
   database.drop_temporary_table(tmp_table_name)
 

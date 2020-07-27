@@ -25,7 +25,7 @@ COVIDCAST_INSERT_START = "INSERT INTO `covidcast` VALUES "
 
 # Column names
 INDEX_COLS = ["source", "signal", "time_type", "geo_type", "time_value", "geo_value"]
-VALUE_COLS = ["value_updated_timestamp", "value", "stderr", "sample_size", "direction_updated_timestamp", "direction"]
+VALUE_COLS = ["timestamp1", "value", "stderr", "sample_size", "timestamp2", "direction"]
 ALL_COLS = INDEX_COLS + VALUE_COLS
 ALL_COLS_WITH_PK = ["id"] + ALL_COLS
 
@@ -39,11 +39,11 @@ DTYPES = {
     # time_value as str, because we need this parsed as a datetime anyway
     "time_value": "str",
     "geo_value": "category",
-    "value_updated_timestamp": "int",
+    "timestamp1": "int",
     "value": "str",
     "stderr": "str",
     "sample_size": "str",
-    "direction_updated_timestamp": "int",
+    "timestamp2": "int",
     "direction": "category"
 }
 
@@ -432,8 +432,8 @@ def pd_csvdiff(
     # Since df_before is filled with NaN for new indices, new indices turn false in same_mask
     same_mask = (df_before.reindex(df_after.index) == df_after)
 
-    # Ignore direction_updated_timestamp in the diff
-    is_diff = ~(same_mask.loc[:, same_mask.columns != "direction_updated_timestamp"].all(axis=1))
+    # Ignore timestamp2 in the diff
+    is_diff = ~(same_mask.loc[:, same_mask.columns != "timestamp2"].all(axis=1))
 
     # Removed indices can be found via index difference, but is expensive
     if find_removals:
@@ -469,7 +469,7 @@ def generate_issues(
 
     row_fmt = "(" \
         "{id},{source},{signal},{time_type},{geo_type},{time_value},{geo_value}," \
-        "{row.value_updated_timestamp},{row.value},{row.stderr},{row.sample_size},{row.direction_updated_timestamp},{row.direction}," \
+        "{row.timestamp1},{row.value},{row.stderr},{row.sample_size},{row.timestamp2},{row.direction}," \
         "{issue},{row.lag})"
 
     try:
