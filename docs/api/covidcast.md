@@ -22,13 +22,15 @@ terms; we encourage academic users to [cite](README.md#citing) the data if they
 use it in any publications. Further documentation on Delphi's APIs is available
 in the [API overview](README.md).
 
-**For users:** Delphi operates a [mailing
-list](https://lists.andrew.cmu.edu/mailman/listinfo/delphi-covidcast-api) for
-users of the COVIDcast API. We will use the list to announce API changes,
-corrections to data, and new features; API users may also use the mailing list
-to ask general questions about its use. If you use the API, we strongly
-encourage you to
-[subscribe](https://lists.andrew.cmu.edu/mailman/listinfo/delphi-covidcast-api).
+<div style="background-color:#FCC; padding: 10px 30px;"><strong>For
+users:</strong> Delphi operates a <a
+href="https://lists.andrew.cmu.edu/mailman/listinfo/delphi-covidcast-api">mailing
+list</a> for users of the COVIDcast API. We will use the list to announce API
+changes, corrections to data, and new features; API users may also use the
+mailing list to ask general questions about its use. If you use the API, we
+strongly encourage you to <a
+href="https://lists.andrew.cmu.edu/mailman/listinfo/delphi-covidcast-api">subscribe</a>.
+</div>
 
 ## Accessing the API
 
