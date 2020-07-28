@@ -43,7 +43,9 @@ Criteria for a valid filename:
 - Minimum year: 2019
 - Maximum year: 2030
 - `geo` one of: county, hrr, msa, dma, state
-- `signal` must be matched by a `/\w+/` regex
+- `signal` must be matched by a `/\w+/` regex. If you do not want this signal to
+  be surfaced in the metadata information, the signal name should start with
+  `wip_`.
 
 If a filename is invalid, it does not get ingested, and will be listed in the
 failed archive.
@@ -71,3 +73,18 @@ ingested. The file will be listed in the failed archive.
 
 If a filename is valid and all data in the file is valid, it will be listed in
 the successful archive.
+
+## administrators guide
+
+To add a new source, create a directory in `receiving/` with permissions that
+exactly match the other directories there. The easiest way to do this is to `cp -a`
+a directory from an existing source that happens to be empty.
+
+You do not need to create a directory in `archive/successful` or
+`archive/failed`; one will be created automatically as soon as it is needed. Do
+not modify the permissions in the archive directories, as a permissions error
+will crash the data ingestion job.
+
+The reason for each failed file is logged by Automation in the ~automation
+directory. Off-cycle ingestions can be scheduled using the Automation web
+console.
