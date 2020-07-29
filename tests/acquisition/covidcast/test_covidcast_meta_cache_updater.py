@@ -2,7 +2,6 @@
 
 # standard library
 import argparse
-import json
 import unittest
 from unittest.mock import MagicMock
 
@@ -49,7 +48,7 @@ class UnitTests(unittest.TestCase):
 
     self.assertTrue(mock_database.update_covidcast_meta_cache.called)
     actual_args = mock_database.update_covidcast_meta_cache.call_args[0]
-    expected_args = (json.dumps(api_response['epidata']),)
+    expected_args = (api_response['epidata'],)
     self.assertEqual(actual_args, expected_args)
 
     self.assertTrue(mock_database.disconnect.called)

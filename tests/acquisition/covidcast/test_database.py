@@ -269,7 +269,7 @@ class UnitTests(unittest.TestCase):
     NOTE: Actual behavior is tested by integration test.
     """
 
-    args = ('epidata_json',)
+    args = ('epidata_json_str',)
     mock_connector = MagicMock()
     database = Database()
     database.connect(connector_impl=mock_connector)
@@ -281,7 +281,7 @@ class UnitTests(unittest.TestCase):
     self.assertTrue(cursor.execute.called)
 
     sql, args = cursor.execute.call_args[0]
-    expected_args = ('epidata_json',)
+    expected_args = ('"epidata_json_str"',)
     self.assertEqual(args, expected_args)
 
     sql = sql.lower()

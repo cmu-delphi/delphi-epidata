@@ -4,13 +4,14 @@ See src/ddl/covidcast.sql for an explanation of each field.
 """
 
 # third party
+import json
 import mysql.connector
 import numpy as np
+from math import ceil
 
 # first party
 import delphi.operations.secrets as secrets
 
-from math import ceil
 
 
 class CovidcastRow():
@@ -543,7 +544,13 @@ class Database:
   def get_covidcast_meta(self):
     """Compute and return metadata on all non-WIP COVIDcast signals."""
 
-    sql = '''
+    meta = []
+
+    sql = 'SELECT `source`, `signal` FROM covidcast GROUP BY `source`, `signal` ORDER BY `source` ASC, `signal` ASC;'
+    self._cursor.execute(sql)
+    for source, signal in  [ss for ss in self._cursor]: #NOTE: this obfuscation protects the integrity of the cursor; using the cursor as a generator will cause contention w/ subsequent queries
+
+      sql = '''
       SELECT
         t.`source` AS `data_source`,
         t.`signal`,
@@ -574,39 +581,38 @@ class Database:
               `geo_value`
             FROM
               `covidcast`
+            WHERE
+              `source` = %s AND
+              `signal` = %s
             GROUP BY
               `time_value`,
               `time_type`,
               `geo_type`,
-              `source`,
-              `signal`,
               `geo_value`
           ) x
         ON
           x.`max_issue` = t.`issue` AND
           x.`time_type` = t.`time_type` AND
           x.`time_value` = t.`time_value` AND
-          x.`source` = t.`source` AND
-          x.`signal` = t.`signal` AND
           x.`geo_type` = t.`geo_type` AND
           x.`geo_value` = t.`geo_value`
       WHERE
-        NOT t.`is_wip`
+        NOT t.`is_wip` AND
+        t.`source` = %s AND
+        t.`signal` = %s
       GROUP BY
-        t.`source`,
-        t.`signal`,
         t.`time_type`,
         t.`geo_type`
       ORDER BY
-        t.`source` ASC,
-        t.`signal` ASC,
         t.`time_type` ASC,
         t.`geo_type` ASC
-    '''
-    self._cursor.execute(sql)
-    return list(dict(zip(self._cursor.column_names,x)) for x in self._cursor)
+      '''
+      self._cursor.execute(sql, (source, signal, source, signal))
+      meta.extend(list(dict(zip(self._cursor.column_names,x)) for x in self._cursor))
 
-  def update_covidcast_meta_cache(self, epidata_json):
+    return meta
+  
+  def update_covidcast_meta_cache(self, metadata):
     """Updates the `covidcast_meta_cache` table."""
 
     sql = '''
@@ -616,5 +622,21 @@ class Database:
         `timestamp` = UNIX_TIMESTAMP(NOW()),
         `epidata` = %s
     '''
+    epidata_json = json.dumps(metadata)
 
     self._cursor.execute(sql, (epidata_json,))
+
+  def retrieve_covidcast_meta_cache(self):
+    sql = '''
+      SELECT `epidata`
+      FROM `covidcast_meta_cache`
+      ORDER BY `timestamp` DESC
+      LIMIT 1;
+    '''
+    self._cursor.execute(sql)
+    cache_json = self._cursor.fetchone()[0]
+    cache = json.loads(cache_json)
+    cache_hash = {}
+    for entry in cache:
+      cache_hash[(entry['data_source'], entry['signal'], entry['time_type'], entry['geo_type'])] = entry
+    return cache_hash
