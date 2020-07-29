@@ -253,24 +253,30 @@ def optimized_update_loop(database, partition_index, direction_impl=Direction):
     timestamp1s = ts_rows.timestamp1.values.astype(np.int64)
     timestamp2s = ts_rows.timestamp2.values.astype(np.int64)
 
-    # create a direction classifier for this signal
-    data_stdev = data_stdevs[source][signal][geo_type]
-    slope_threshold = data_stdev * Constants.BASE_SLOPE_THRESHOLD
+    if (source in data_stdevs) and (signal in data_stdevs[source]) and (geo_type in data_stdevs[source][signal]):
+      # create a direction classifier for this signal
+      data_stdev = data_stdevs[source][signal][geo_type]
+      slope_threshold = data_stdev * Constants.BASE_SLOPE_THRESHOLD
 
-    def get_direction_impl(x, y):
-      return direction_impl.get_direction(
-        x, y, n=Constants.SLOPE_STERR_SCALE, limit=slope_threshold)
+      def get_direction_impl(x, y):
+        return direction_impl.get_direction(
+          x, y, n=Constants.SLOPE_STERR_SCALE, limit=slope_threshold)
 
-    # recompute any stale directions
-    days, directions = direction_impl.scan_timeseries(
-      offsets, days, values, timestamp1s, timestamp2s, get_direction_impl)
+      # recompute any stale directions
+      days, directions = direction_impl.scan_timeseries(
+        offsets, days, values, timestamp1s, timestamp2s, get_direction_impl)
 
-    if be_verbose:
-      print(' computed %d direction updates' % len(directions))
+      if be_verbose:
+        print(' computed %d direction updates' % len(directions))
 
-    # A DataFrame holding rows that potentially changed direction value
-    ts_pot_changed = ts_rows.set_index('time_value').loc[days]
-    ts_pot_changed['new_direction'] = np.array(directions, np.float64)
+      # A DataFrame holding rows that potentially changed direction value
+      ts_pot_changed = ts_rows.set_index('time_value').loc[days]
+      ts_pot_changed['new_direction'] = np.array(directions, np.float64)
+
+    # This is a Quick-Fix [in case no data for (source, signal, geo_type) exists before Constants.SIGNAL_STDEV_MAX_DAY]
+    else:
+      ts_pot_changed = ts_rows.set_index('time_value')
+      ts_pot_changed['new_direction'] = np.nan
 
     # Adding changed values to the changed_rows dictionary
     gb_o = ts_pot_changed.groupby('new_direction')
@@ -305,6 +311,8 @@ def main(
       # only commit on success so that directions are consistent with respect
       # to methodology
       commit = True
+    except Exception as e:
+      raise e
     finally:
       # no catch block so that an exception above will cause the program to
       # fail after the following cleanup
