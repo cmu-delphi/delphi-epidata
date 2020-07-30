@@ -142,8 +142,8 @@ class CsvImporter:
       # extract additional values, lowercased for consistency
       source = match.group(1).lower()
       signal = match.group(4).lower()
-      if len(signal) > 32:
-        print(' invalid signal name (32 char limit)',signal)
+      if len(signal) > 64:
+        print(' invalid signal name (64 char limit)',signal)
         yield (path, None)
         continue
 
