@@ -21,20 +21,21 @@ data in this API are listed in the [API changelog](covidcast_changelog.md).
 The following signals are currently displayed on [the public COVIDcast
 map](https://covidcast.cmu.edu/):
 
-| Name | Source | Signal |
-| --- | --- | --- |
-| Doctor's Visits | [`doctor-visits`](covidcast-signals/doctor-visits.md) | `smoothed_adj_cli` |
-| Hospital Admissions | [`hospital-admissions`](covidcast-signals/hospital-admissions.md) | `smoothed_adj_covid19` |
-| Symptoms (Facebook) | [`fb-survey`](covidcast-signals/fb-survey.md) | `smoothed_cli` |
-| Symptoms in Community (Facebook) | [`fb-survey`](covidcast-signals/fb-survey.md) | `smoothed_hh_cmnty_cli` |
-| Away from Home 6hr+ (SafeGraph) | [`safegraph`](covidcast-signals/safegraph.md) | `full_time_work_prop` |
-| Away from Home 3-6hr (SafeGraph) | [`safegraph`](covidcast-signals/safegraph.md) | `part_time_work_prop` |
-| Search Trends (Google) | [`ght`](covidcast-signals/ght.md) | `smoothed_search` |
-| Combined | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `nmf_day_doc_fbc_fbs_ght` |
-| Cases | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `confirmed_7dav_incidence_num` |
-| Cases per 100,000 People | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `confirmed_7dav_incidence_prop` |
-| Deaths | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `deaths_7dav_incidence_num` |
-| Deaths per 100,000 People | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `deaths_7dav_incidence_prop` |
+| Kind             | Name                             | Source                                                                | Signal                           |
+| ----             | ----                             | ------                                                                | ------                           |
+| Public Behavior  | Away from Home 6hr+ (SafeGraph)  | [`safegraph`](covidcast-signals/safegraph.md)                         | `full_time_work_prop`            |
+| Public Behavior  | Away from Home 3-6hr (SafeGraph) | [`safegraph`](covidcast-signals/safegraph.md)                         | `part_time_work_prop`            |
+| Public Behavior  | Search Trends (Google)           | [`ght`](covidcast-signals/ght.md)                                     | `smoothed_search`                |
+| Early Indicators | Symptoms (Facebook)              | [`fb-survey`](covidcast-signals/fb-survey.md)                         | `smoothed_cli`                   |
+| Early Indicators | Symptoms in Community (Facebook) | [`fb-survey`](covidcast-signals/fb-survey.md)                         | `smoothed_hh_cmnty_cli`          |
+| Early Indicators | Doctor's Visits                  | [`doctor-visits`](covidcast-signals/doctor-visits.md)                 | `smoothed_adj_cli`               |
+| Early Indicators | Combined                         | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `nmf_day_doc_fbc_fbs_ght`        |
+| Late Indicators  | Test Positivity Rate             | [`quidel`](covidcast-signals/quidel.md)                               | `covid_ag_smoothed_pct_positive` |
+| Late Indicators  | Cases                            | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `confirmed_7dav_incidence_num`   |
+| Late Indicators  | Cases per 100,000 People         | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `confirmed_7dav_incidence_prop`  |
+| Late Indicators  | Deaths                           | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `deaths_7dav_incidence_num`      |
+| Late Indicators  | Deaths per 100,000 People        | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `deaths_7dav_incidence_prop`     |
+| Late Indicators  | Hospital Admissions              | [`hospital-admissions`](covidcast-signals/hospital-admissions.md)     | `smoothed_adj_covid19`           |
 
 ## All Available Sources and Signals
 
