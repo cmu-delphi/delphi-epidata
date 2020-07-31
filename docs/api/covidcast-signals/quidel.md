@@ -17,16 +17,19 @@ grand_parent: COVIDcast API
 
 ## COVID-19 Tests
 
-* **First issued:** 
+* **First issued:** 27 July 2020 
 * **Number of data revisions since 19 May 2020:** 0
 * **Date of last change:** Never
 * **Available for:** hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 
 Data source based on COVID-19 Antigen tests, provided to us by Quidel, Inc. When
 a patient (whether at a doctor’s office, clinic, or hospital) has COVID-like
-symptoms, doctors may order an antigen test to confirm the presence of the
-virus. Quidel began providing us with test data starting May 9, 2020, and data
-volume increased to statistically meaningful levels starting May 26, 2020.
+symptoms, doctors may order an antigen test. An antigen test can detect parts of
+the virus which are present during an active infection. This is in contrast with
+antibody tests, which detect parts of the immune system that react to the virus,
+but which persist long after the infection has passed. Quidel began providing us
+with test data starting May 9, 2020, and data volume increased to statistically
+meaningful levels starting May 26, 2020.
 
 | Signal | Description |
 | --- | --- |
