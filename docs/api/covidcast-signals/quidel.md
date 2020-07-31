@@ -15,7 +15,7 @@ grand_parent: COVIDcast API
 1. TOC
 {:toc}
 
-## COVID-19 tests
+## COVID-19 Tests
 
 * **First issued:** 
 * **Number of data revisions since 19 May 2020:** 0
@@ -41,8 +41,8 @@ StorageDate, patient age, and unique identifiers for the device on which the
 test was performed, the individual test, and the result. Multiple tests are
 stored on each device.
 
-Let n be the number of total COVID tests taken over a given time period and a
-given location (the test result can be negative/positive/invalid). Let x be the
+Let $$n$$ be the number of total COVID tests taken over a given time period and a
+given location (the test result can be negative, positive, or invalid). Let $$x$$ be the
 number of tests taken with positive results in this location over the given time
 period. We are interested in estimating the percentage of positive tests which
 is defined as:
@@ -56,9 +56,9 @@ We estimate p across 3 temporal-spatial aggregation schemes:
 - daily, at the HRR (hospital referral region) level;
 - daily, at the state level.
 
-**MSA and HRR levels**: In a given MSA or HRR, suppose N COVID tests are taken
-in a certain time period, X is the number of tests taken with positive
-results. If $$N >= 50$$, we simply use:
+**MSA and HRR levels**: In a given MSA or HRR, suppose $$N$$ COVID tests are taken
+in a certain time period, $$X$$ is the number of tests taken with positive
+results. If $$N \geq 50$$, we simply use:
 
 $$
 p = \frac{100 X}{N}
@@ -68,13 +68,13 @@ If $$N < 50$$, we lend $$50 - N$$ fake samples from its home state to shrink the
 estimate to the state's mean, which means:
 
 $$
-p = 100 \[ \frac{N}{50} * \frac{X}{N} + \frac{50 - N}{50}  * \frac{X_s}{N_s} \] 
+p = 100 \left( \frac{N}{50} \frac{X}{N} + \frac{50 - N}{50}  \frac{X_s}{N_s} \right) 
 $$
 
 where $$N_s, X_s$$ are the number of COVID tests and the number of COVID tests
 taken with positive results taken in its home state in the same time period.
 
-**State level**: the states with fewer than 50 samples are discarded. For the
+**State level**: the states with fewer than 50 tests are discarded. For the
 rest of the states with sufficient samples,
 
 $$
@@ -87,7 +87,7 @@ We assume the estimates for each time point follow a binomial distribution. The
 estimated standard error then is:
 
 $$
-se = \frac{1/100} sqrt{ \frac{p(1-p)}{N} } 
+\text{se} = \frac{1/100} \sqrt{ \frac{p(1-p)}{N} } 
 $$
 
 #### Smoothing
@@ -129,7 +129,7 @@ a reported estimate for, say, June 10th may first be available in the API on
 June 14th and subsequently revised on June 16th.
 
 
-## Flu tests
+## Flu Tests
 
 * **First issued:** 20 April 2020
 * **Last issued:** 19 May 2020
