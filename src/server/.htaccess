@@ -1,2 +1,6 @@
 # Open up the API to all origins.
 Header set Access-Control-Allow-Origin "*"
+
+# Compress API responses
+AddOutputFilterByType DEFLATE application/json
+AddOutputFilterByType BROTLI_COMPRESS application/json
