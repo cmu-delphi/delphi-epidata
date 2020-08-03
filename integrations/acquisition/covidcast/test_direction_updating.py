@@ -236,7 +236,7 @@ class DirectionUpdatingTests(unittest.TestCase):
     })
 
     # verify secondary timestamps were updated
-    self.cur.execute('select timestamp2 from covidcast order by id asc')
+    self.cur.execute('select direction_updated_timestamp from covidcast order by id asc')
     timestamps = [t for (t,) in self.cur]
     for t in timestamps[:9]:
       # first 9 rows had `direction` updated

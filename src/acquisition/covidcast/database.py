@@ -42,7 +42,7 @@ class CovidcastRow():
     self.value = value              # ...
     self.stderr = stderr            # ...
     self.sample_size = sample_size  # from CSV row
-    self.timestamp2 = 0
+    self.direction_updated_timestamp = 0
     self.direction = None
     self.issue = issue
     self.lag = lag
@@ -111,11 +111,11 @@ class Database:
         `geo_type` varchar(12) NOT NULL,
         `time_value` int(11) NOT NULL,
         `geo_value` varchar(12) NOT NULL,
-        `timestamp1` int(11) NOT NULL,
+        `value_updated_timestamp` int(11) NOT NULL,
         `value` double NOT NULL,
         `stderr` double,
         `sample_size` double,
-        `timestamp2` int(11) NOT NULL,
+        `direction_updated_timestamp` int(11) NOT NULL,
         `direction` int(11),
         `issue` int(11) NOT NULL,
         `lag` int(11) NOT NULL,
@@ -129,7 +129,7 @@ class Database:
     insert_into_tmp_sql = f'''
       INSERT INTO `{tmp_table_name}`
         (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`,
-        `timestamp1`, `value`, `stderr`, `sample_size`, `timestamp2`, `direction`,
+        `value_updated_timestamp`, `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, `direction`,
         `issue`, `lag`, `is_latest_issue`)
       VALUES
         (%s, %s, %s, %s, %s, %s, UNIX_TIMESTAMP(NOW()), %s, %s, %s, 0, NULL, %s, %s, 0)
@@ -138,11 +138,11 @@ class Database:
     insert_or_update_sql = f'''
       INSERT INTO `covidcast`
         (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`,
-        `timestamp1`, `value`, `stderr`, `sample_size`, `timestamp2`, `direction`,
+        `value_updated_timestamp`, `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, `direction`,
         `issue`, `lag`, `is_latest_issue`)
       SELECT * FROM `{tmp_table_name}`
       ON DUPLICATE KEY UPDATE
-        `timestamp1` = VALUES(`timestamp1`),
+        `value_updated_timestamp` = VALUES(`value_updated_timestamp`),
         `value` = VALUES(`value`),
         `stderr` = VALUES(`stderr`),
         `sample_size` = VALUES(`sample_size`)
@@ -175,7 +175,7 @@ class Database:
       SET `is_latest_issue`=1        
     '''
 
-    # TODO: ^ do we want to reset `timestamp2` and `direction` in the duplicate key case?
+    # TODO: ^ do we want to reset `direction_updated_timestamp` and `direction` in the duplicate key case?
 
     # TODO: consider handling cc_rows as a generator instead of a list
     self._cursor.execute(create_tmp_table_sql)
@@ -277,7 +277,7 @@ class Database:
       UPDATE
         `covidcast`
       SET
-        `timestamp2` = UNIX_TIMESTAMP(NOW()),
+        `direction_updated_timestamp` = UNIX_TIMESTAMP(NOW()),
         `direction` = %s
       WHERE
         `source` = %s AND
@@ -319,9 +319,9 @@ class Database:
       `geo_type` varchar(12),
       `geo_value` varchar(12),
       `time_value` int(11),
-      `timestamp1` int(11),
+      `value_updated_timestamp` int(11),
       `value` double,
-      `timestamp2` int(11),
+      `direction_updated_timestamp` int(11),
       `direction` int(11),
       PRIMARY KEY(`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -338,9 +338,9 @@ class Database:
       `geo_type`,
       `geo_value`,
       `time_value`,
-      `timestamp1`,
+      `value_updated_timestamp`,
       `value`,
-      `timestamp2`,
+      `direction_updated_timestamp`,
       `direction`
     FROM `covidcast`
     WHERE `is_latest_issue` = 1 AND
@@ -372,7 +372,7 @@ class Database:
         `geo_type`,
         `geo_value`
       HAVING
-        MAX(`timestamp1`) > MIN(`timestamp2`)
+        MAX(`value_updated_timestamp`) > MIN(`direction_updated_timestamp`)
     '''
 
     # A query that selects rows of the time-series selected by stale_ts_key_sql query.
@@ -386,9 +386,9 @@ class Database:
       `geo_type`,
       `geo_value`,
       `time_value`,
-      `timestamp1`,
+      `value_updated_timestamp`,
       `value`,
-      `timestamp2`,
+      `direction_updated_timestamp`,
       `direction`
     FROM ({stale_ts_key_sql}) AS t2
     LEFT JOIN `latest_issues` AS t3
@@ -438,8 +438,8 @@ class Database:
     sql = f'DROP TEMPORARY TABLE `{tmp_table_name}`;'
     self._cursor.execute(sql)
 
-  def update_timestamp2_from_temporary_table(self, tmp_table_name):
-    """Updates the `timestamp2` column of `covidcast` table for all the rows with id value in `tmp_table_name`.
+  def update_direction_updated_timestamp_from_temporary_table(self, tmp_table_name):
+    """Updates the `direction_updated_timestamp` column of `covidcast` table for all the rows with id value in `tmp_table_name`.
 
     `tmp_table_name`: name of the temporary table.
     """
@@ -451,7 +451,7 @@ class Database:
       ON
         `covidcast`.id=t.id
       SET
-        `covidcast`.timestamp2=UNIX_TIMESTAMP(NOW())
+        `covidcast`.direction_updated_timestamp=UNIX_TIMESTAMP(NOW())
       '''
     self._cursor.execute(sql)
 
@@ -471,8 +471,8 @@ class Database:
         `signal`,
         `geo_type`,
         `geo_value`,
-        MAX(`timestamp1`) AS `max_timestamp1`,
-        MIN(`timestamp2`) AS `min_timestamp2`,
+        MAX(`value_updated_timestamp`) AS `max_value_updated_timestamp`,
+        MIN(`direction_updated_timestamp`) AS `min_direction_updated_timestamp`,
         MIN(`time_value`) AS `min_day`,
         MAX(`time_value`) AS `max_day`,
         COUNT(1) AS `series_length`
@@ -487,7 +487,7 @@ class Database:
         `geo_type`,
         `geo_value`
       HAVING
-        MAX(`timestamp1`) > MIN(`timestamp2`)
+        MAX(`value_updated_timestamp`) > MIN(`direction_updated_timestamp`)
     '''
 
     self._cursor.execute(sql)
@@ -502,8 +502,8 @@ class Database:
         DATEDIFF(`time_value`, %s) AS `offset`,
         `time_value` AS `day`,
         `value`,
-        `timestamp1`,
-        `timestamp2`
+        `value_updated_timestamp`,
+        `direction_updated_timestamp`
       FROM
         `covidcast`
       WHERE
@@ -521,9 +521,9 @@ class Database:
     self._cursor.execute(sql, args)
     return list(self._cursor)
 
-  def update_timeseries_timestamp2(
+  def update_timeseries_direction_updated_timestamp(
       self, source, signal, time_type, geo_type, geo_value):
-    """Update the `timestamp2` column for an entire time-series.
+    """Update the `direction_updated_timestamp` column for an entire time-series.
 
     For daily time-series, this implies that all `direction` values in the
     specified time-series are confirmed fresh as of the current time. Even if
@@ -537,7 +537,7 @@ class Database:
       UPDATE
         `covidcast`
       SET
-        `timestamp2` = UNIX_TIMESTAMP(NOW())
+        `direction_updated_timestamp` = UNIX_TIMESTAMP(NOW())
       WHERE
         `source` = %s AND
         `signal` = %s AND
@@ -566,7 +566,7 @@ class Database:
         MAX(`value`) AS `max_value`,
         ROUND(AVG(`value`),7) AS `mean_value`,
         ROUND(STD(`value`),7) AS `stdev_value`,
-        MAX(`timestamp1`) AS `last_update`,
+        MAX(`value_updated_timestamp`) AS `last_update`,
         MAX(`issue`) as `max_issue`,
         MIN(`lag`) as `min_lag`,
         MAX(`lag`) as `max_lag`

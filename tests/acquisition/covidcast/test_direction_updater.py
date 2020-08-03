@@ -110,7 +110,7 @@ class UnitTests(unittest.TestCase):
     )
     self.assertEqual(call_args_list[1][0], expected_args)
 
-    self.assertTrue(mock_database.update_timeseries_timestamp2.called)
-    args = mock_database.update_timeseries_timestamp2.call_args[0]
+    self.assertTrue(mock_database.update_timeseries_direction_updated_timestamp.called)
+    args = mock_database.update_timeseries_direction_updated_timestamp.call_args[0]
     expected_args = ('source', 'signal', 'day', 'geo_type', 'geo_value')
     self.assertEqual(args, expected_args)
