@@ -46,7 +46,7 @@ class CovidcastMetaTests(unittest.TestCase):
     # insert dummy data and accumulate expected results (in sort order)
     template = '''
       insert into covidcast values
-        (0, "%s", "%s", "%s", "%s", %d, "%s", 123, %d, 0, 0, 456, 0, %d, 0)
+        (0, "%s", "%s", "%s", "%s", %d, "%s", 123, %d, 0, 0, 456, 0, %d, 0, 1)
     '''
     expected = []
     for src in ('src1', 'src2'):
@@ -94,7 +94,7 @@ class CovidcastMetaTests(unittest.TestCase):
     # insert dummy data and accumulate expected results (in sort order)
     template = '''
       insert into covidcast values
-        (0, "%s", "%s", "%s", "%s", %d, "%s", 123, %d, 0, 0, 456, 0, %d, 0)
+        (0, "%s", "%s", "%s", "%s", %d, "%s", 123, %d, 0, 0, 456, 0, %d, 0, 1)
     '''
     expected = []
     for src in ('src1', 'src2'):

@@ -18,14 +18,15 @@ Data is public.
 | geo_type                     | varchar(12) | NO   |     | NULL    |                |
 | time_value                   | int(11)     | NO   |     | NULL    |                |
 | geo_value                    | varchar(12) | NO   |     | NULL    |                |
-| timestamp1      | int(11)     | NO   |     | NULL    |                |
+| timestamp1                   | int(11)     | NO   |     | NULL    |                |
 | value                        | double      | NO   |     | NULL    |                |
 | stderr                       | double      | YES  |     | NULL    |                |
 | sample_size                  | double      | YES  |     | NULL    |                |
-| timestamp2  | int(11)     | NO   |     | NULL    |                |
+| timestamp2                   | int(11)     | NO   |     | NULL    |                |
 | direction                    | int(11)     | YES  |     | NULL    |                |
 | issue                        | int(11)     | NO   |     | NULL    |                |
 | lag                          | int(11)     | NO   |     | NULL    |                |
+| is_latest_issue              | boolean     | NO   |     | NULL    |                |
 +------------------------------+-------------+------+-----+---------+----------------+
 
 - `id`
@@ -67,6 +68,8 @@ Data is public.
   the time_value of publication
 - `lag`
   the number of time_type units between `time_value` and `issue`
+- `is_latest_issue`
+  a boolean flag which indicates whether or not the row corresponds to the latest issue for its key
 */
 
 CREATE TABLE `covidcast` (
@@ -87,6 +90,7 @@ CREATE TABLE `covidcast` (
   `direction` int(11),
   `issue` int(11) NOT NULL,
   `lag` int(11) NOT NULL,
+  `is_latest_issue` BINARY(1) NOT NULL,
   PRIMARY KEY (`id`),
   -- for uniqueness, and also fast lookup of all locations on a given date
   UNIQUE KEY (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`, `issue`),
