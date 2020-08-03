@@ -566,7 +566,7 @@ function get_norostat($location, $epiweeks) {
     ON `latest`.`location_id` = `later`.`location_id` AND
        `latest`.`epiweek` = `later`.`epiweek` AND
        (`latest`.`release_date`, `latest`.`parse_time`) <
-         (`later`.`release_date`, `later`.`parse_time`) ANDou z z
+         (`later`.`release_date`, `later`.`parse_time`) AND
        `later`.`new_value` IS NOT NULL
     WHERE ({$condition_location}) AND
           ({$condition_epiweek}) AND
