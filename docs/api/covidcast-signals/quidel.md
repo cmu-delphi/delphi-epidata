@@ -25,7 +25,7 @@ grand_parent: COVIDcast API
 Data source based on COVID-19 Antigen tests, provided to us by Quidel, Inc. When
 a patient (whether at a doctor’s office, clinic, or hospital) has COVID-like
 symptoms, doctors may order an antigen test. An antigen test can detect parts of
-the virus which are present during an active infection. This is in contrast with
+the virus that are present during an active infection. This is in contrast with
 antibody tests, which detect parts of the immune system that react to the virus,
 but which persist long after the infection has passed. Quidel began providing us
 with test data starting May 9, 2020, and data volume increased to statistically
