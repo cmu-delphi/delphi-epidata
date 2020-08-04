@@ -106,7 +106,7 @@ class Database:
     create_tmp_table_sql = f'''
       CREATE TEMPORARY TABLE `{tmp_table_name}` (
         `source` varchar(32) NOT NULL,
-        `signal` varchar(32) NOT NULL,
+        `signal` varchar(64) NOT NULL,
         `time_type` varchar(12) NOT NULL,
         `geo_type` varchar(12) NOT NULL,
         `time_value` int(11) NOT NULL,
@@ -314,7 +314,7 @@ class Database:
     CREATE TEMPORARY TABLE `{temporary_table}` (
       `id` int(11) NOT NULL,
       `source` varchar(32),
-      `signal` varchar(32),
+      `signal` varchar(64),
       `time_type` varchar(12),
       `geo_type` varchar(12),
       `geo_value` varchar(12),
