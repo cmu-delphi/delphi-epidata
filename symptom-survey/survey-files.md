@@ -27,19 +27,18 @@ where the data is hosted.
 
 ## Naming Conventions
 
-All dates in filenames are of the form `YYYY_mm_dd`.
-
 Cumulative files:
 
-	cvid_responses_{from}_-_{to}.csv.gz
+	{YYYY_mm}.tar
 
 Incremental files:
 
-	cvid_responses_{for}_recordedby_{recorded}.csv
+	cvid_responses_{for}_recordedby_{recorded}.csv.gz
 
-`from`, `to`, and `for` refer to the day the survey response was started, in the
-Pacific time zone (UTC - 7). `recorded` refers to the day survey data was
-retrieved; see the [lag policy](#lag-policy) for more details.
+Dates in incremental filenames are of the form `YYYY_mm_dd`. `for` refers to the
+day the survey response was started, in the Pacific time zone (UTC -
+7). `recorded` refers to the day survey data was retrieved; see the [lag
+policy](#lag-policy) for more details.
 
 Every day, we write response files for *all* days of data, with today's
 `recorded` date. You need only load the most recent set of `recorded` files to
