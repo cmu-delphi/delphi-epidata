@@ -546,7 +546,7 @@ class Database:
 
     meta = []
 
-    sql = 'SELECT `source`, `signal` FROM covidcast GROUP BY `source`, `signal` ORDER BY `source` ASC, `signal` ASC;'
+    sql = 'SELECT `source`, `signal` FROM covidcast WHERE NOT `is_wip` GROUP BY `source`, `signal` ORDER BY `source` ASC, `signal` ASC;'
     self._cursor.execute(sql)
     for source, signal in  [ss for ss in self._cursor]: #NOTE: this obfuscation protects the integrity of the cursor; using the cursor as a generator will cause contention w/ subsequent queries
 
@@ -594,12 +594,10 @@ class Database:
           x.`max_issue` = t.`issue` AND
           x.`time_type` = t.`time_type` AND
           x.`time_value` = t.`time_value` AND
+          x.`source` = t.`source` AND
+          x.`signal` = t.`signal` AND
           x.`geo_type` = t.`geo_type` AND
           x.`geo_value` = t.`geo_value`
-      WHERE
-        NOT t.`is_wip` AND
-        t.`source` = %s AND
-        t.`signal` = %s
       GROUP BY
         t.`time_type`,
         t.`geo_type`
@@ -607,7 +605,7 @@ class Database:
         t.`time_type` ASC,
         t.`geo_type` ASC
       '''
-      self._cursor.execute(sql, (source, signal, source, signal))
+      self._cursor.execute(sql, (source, signal))
       meta.extend(list(dict(zip(self._cursor.column_names,x)) for x in self._cursor))
 
     return meta
@@ -627,6 +625,8 @@ class Database:
     self._cursor.execute(sql, (epidata_json,))
 
   def retrieve_covidcast_meta_cache(self):
+    """Useful for viewing cache entries (was used in debugging)"""
+
     sql = '''
       SELECT `epidata`
       FROM `covidcast_meta_cache`
