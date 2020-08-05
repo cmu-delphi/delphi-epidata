@@ -4,34 +4,35 @@ See src/ddl/covidcast.sql for an explanation of each field.
 """
 
 # third party
+import json
 import mysql.connector
 import numpy as np
+from math import ceil
 
 # first party
 import delphi.operations.secrets as secrets
 
-from math import ceil
 
 
 class CovidcastRow():
   """A container for all the values of a single covidcast row."""
 
   @staticmethod
-  def fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag):
+  def fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag, is_wip):
     return CovidcastRow(source, signal, time_type, geo_type, time_value,
                         row_value.geo_value,
                         row_value.value,
                         row_value.stderr,
                         row_value.sample_size,
-                        issue, lag)
+                        issue, lag, is_wip)
 
   @staticmethod
-  def fromCsvRows(row_values, source, signal, time_type, geo_type, time_value, issue, lag):
+  def fromCsvRows(row_values, source, signal, time_type, geo_type, time_value, issue, lag, is_wip):
     # NOTE: returns a generator, as row_values is expected to be a generator
-    return (CovidcastRow.fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag)
+    return (CovidcastRow.fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag, is_wip)
             for row_value in row_values)
 
-  def __init__(self, source, signal, time_type, geo_type, time_value, geo_value, value, stderr, sample_size, issue, lag):
+  def __init__(self, source, signal, time_type, geo_type, time_value, geo_value, value, stderr, sample_size, issue, lag, is_wip):
     self.id = None
     self.source = source
     self.signal = signal
@@ -46,6 +47,7 @@ class CovidcastRow():
     self.direction = None
     self.issue = issue
     self.lag = lag
+    self.is_wip = is_wip
 
 
 class Database:
@@ -119,7 +121,8 @@ class Database:
         `direction` int(11),
         `issue` int(11) NOT NULL,
         `lag` int(11) NOT NULL,
-        `is_latest_issue` BINARY(1) NOT NULL
+        `is_latest_issue` BINARY(1) NOT NULL,
+        `is_wip` BINARY(1) NOT NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
     '''
 
@@ -130,16 +133,16 @@ class Database:
       INSERT INTO `{tmp_table_name}`
         (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`,
         `value_updated_timestamp`, `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, `direction`,
-        `issue`, `lag`, `is_latest_issue`)
+        `issue`, `lag`, `is_latest_issue`, `is_wip`)
       VALUES
-        (%s, %s, %s, %s, %s, %s, UNIX_TIMESTAMP(NOW()), %s, %s, %s, 0, NULL, %s, %s, 0)
+        (%s, %s, %s, %s, %s, %s, UNIX_TIMESTAMP(NOW()), %s, %s, %s, 0, NULL, %s, %s, 0, %s)
     '''
 
     insert_or_update_sql = f'''
       INSERT INTO `covidcast`
         (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`,
         `value_updated_timestamp`, `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, `direction`,
-        `issue`, `lag`, `is_latest_issue`)
+        `issue`, `lag`, `is_latest_issue`, `is_wip`)
       SELECT * FROM `{tmp_table_name}`
       ON DUPLICATE KEY UPDATE
         `value_updated_timestamp` = VALUES(`value_updated_timestamp`),
@@ -203,7 +206,8 @@ class Database:
           row.stderr,
           row.sample_size,
           row.issue,
-          row.lag
+          row.lag,
+          row.is_wip
         ) for row in cc_rows[start:end]]
 
 
@@ -551,7 +555,13 @@ class Database:
   def get_covidcast_meta(self):
     """Compute and return metadata on all non-WIP COVIDcast signals."""
 
-    sql = '''
+    meta = []
+
+    sql = 'SELECT `source`, `signal` FROM covidcast GROUP BY `source`, `signal` ORDER BY `source` ASC, `signal` ASC;'
+    self._cursor.execute(sql)
+    for source, signal in  [ss for ss in self._cursor]: #NOTE: this obfuscation protects the integrity of the cursor; using the cursor as a generator will cause contention w/ subsequent queries
+
+      sql = '''
       SELECT
         t.`source` AS `data_source`,
         t.`signal`,
@@ -582,39 +592,38 @@ class Database:
               `geo_value`
             FROM
               `covidcast`
+            WHERE
+              `source` = %s AND
+              `signal` = %s
             GROUP BY
               `time_value`,
               `time_type`,
               `geo_type`,
-              `source`,
-              `signal`,
               `geo_value`
           ) x
         ON
           x.`max_issue` = t.`issue` AND
           x.`time_type` = t.`time_type` AND
           x.`time_value` = t.`time_value` AND
-          x.`source` = t.`source` AND
-          x.`signal` = t.`signal` AND
           x.`geo_type` = t.`geo_type` AND
           x.`geo_value` = t.`geo_value`
       WHERE
-        t.`signal` NOT LIKE 'wip_%'
+        NOT t.`is_wip` AND
+        t.`source` = %s AND
+        t.`signal` = %s
       GROUP BY
-        t.`source`,
-        t.`signal`,
         t.`time_type`,
         t.`geo_type`
       ORDER BY
-        t.`source` ASC,
-        t.`signal` ASC,
         t.`time_type` ASC,
         t.`geo_type` ASC
-    '''
-    self._cursor.execute(sql)
-    return list(dict(zip(self._cursor.column_names,x)) for x in self._cursor)
+      '''
+      self._cursor.execute(sql, (source, signal, source, signal))
+      meta.extend(list(dict(zip(self._cursor.column_names,x)) for x in self._cursor))
 
-  def update_covidcast_meta_cache(self, epidata_json):
+    return meta
+  
+  def update_covidcast_meta_cache(self, metadata):
     """Updates the `covidcast_meta_cache` table."""
 
     sql = '''
@@ -624,5 +633,21 @@ class Database:
         `timestamp` = UNIX_TIMESTAMP(NOW()),
         `epidata` = %s
     '''
+    epidata_json = json.dumps(metadata)
 
     self._cursor.execute(sql, (epidata_json,))
+
+  def retrieve_covidcast_meta_cache(self):
+    sql = '''
+      SELECT `epidata`
+      FROM `covidcast_meta_cache`
+      ORDER BY `timestamp` DESC
+      LIMIT 1;
+    '''
+    self._cursor.execute(sql)
+    cache_json = self._cursor.fetchone()[0]
+    cache = json.loads(cache_json)
+    cache_hash = {}
+    for entry in cache:
+      cache_hash[(entry['data_source'], entry['signal'], entry['time_type'], entry['geo_type'])] = entry
+    return cache_hash
