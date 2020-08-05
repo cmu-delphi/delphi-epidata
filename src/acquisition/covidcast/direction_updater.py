@@ -50,7 +50,6 @@ PARTITION_SPLITS = ["'05101'", "'101'", "'13071'", "'15007'", "'17161'", "'19039
 def get_argument_parser():
   """Define command line arguments."""
 
-  # there are no flags, but --help will still work
   parser = argparse.ArgumentParser()
   parser.add_argument(
     '--partitions',
@@ -314,8 +313,6 @@ def main(
     except Exception as e:
       raise e
     finally:
-      # no catch block so that an exception above will cause the program to
-      # fail after the following cleanup
       database.disconnect(commit)
       print('partition %d committed=%s' % (partition_index, str(commit)))
 

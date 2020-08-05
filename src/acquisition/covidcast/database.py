@@ -221,8 +221,6 @@ class Database:
         if commit_partial:
           self._connection.commit()
     except Exception as e:
-      print('AAA')
-      print(e)
       raise e
     finally:
       self._cursor.execute(drop_tmp_table_sql)
