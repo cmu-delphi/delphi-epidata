@@ -8,12 +8,13 @@ Delphi's COVID-19 surveillance streams.
 
 Data is public.
 
+
 +------------------------------+-------------+------+-----+---------+----------------+
 | Field                        | Type        | Null | Key | Default | Extra          |
 +------------------------------+-------------+------+-----+---------+----------------+
 | id                           | int(11)     | NO   | PRI | NULL    | auto_increment |
 | source                       | varchar(32) | NO   | MUL | NULL    |                |
-| signal                       | varchar(32) | NO   |     | NULL    |                |
+| signal                       | varchar(64) | NO   |     | NULL    |                |
 | time_type                    | varchar(12) | NO   |     | NULL    |                |
 | geo_type                     | varchar(12) | NO   |     | NULL    |                |
 | time_value                   | int(11)     | NO   |     | NULL    |                |
@@ -87,7 +88,7 @@ Data is public.
 CREATE TABLE `covidcast` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `source` varchar(32) NOT NULL,
-  `signal` varchar(32) NOT NULL,
+  `signal` varchar(64) NOT NULL,
   `time_type` varchar(12) NOT NULL,
   `geo_type` varchar(12) NOT NULL,
   `time_value` int(11) NOT NULL,
