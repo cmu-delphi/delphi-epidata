@@ -53,19 +53,19 @@ class FillIsLatestIssueTests(unittest.TestCase):
     self.cur.execute('''
       insert into covidcast values
         (0, 'src', 'sig', 'day', 'state', 20200228, 'ca',
-          123, 2, 5, 5, 5, NULL, 20200228, 0, 1),
+          123, 2, 5, 5, 5, NULL, 20200228, 0, 1, False),
         (0, 'src', 'sig', 'day', 'state', 20200228, 'ca',
-          123, 2, 0, 0, 0, NULL, 20200229, 1, 1),
+          123, 2, 0, 0, 0, NULL, 20200229, 1, 1, False),
         (0, 'src', 'sig', 'day', 'state', 20200229, 'ca',
-          123, 6, 0, 0, 0, NULL, 20200301, 1, 1),
+          123, 6, 0, 0, 0, NULL, 20200301, 1, 1, False),
         (0, 'src', 'sig', 'day', 'state', 20200229, 'ca',
-          123, 6, 9, 9, 9, NULL, 20200229, 0, 1),
+          123, 6, 9, 9, 9, NULL, 20200229, 0, 1, False),
         (0, 'src', 'sig', 'day', 'state', 20200301, 'ca',
-          123, 5, 0, 0, 0, NULL, 20200303, 2, 1),
+          123, 5, 0, 0, 0, NULL, 20200303, 2, 1, False),
         (0, 'src', 'sig', 'day', 'state', 20200301, 'ca',
-          123, 5, 5, 5, 5, NULL, 20200302, 1, 1),
+          123, 5, 5, 5, 5, NULL, 20200302, 1, 1, False),
         (0, 'src', 'sig', 'day', 'state', 20200301, 'ca',
-          123, 5, 9, 8, 7, NULL, 20200301, 0, 1)
+          123, 5, 9, 8, 7, NULL, 20200301, 0, 1, False)
     ''')
     self.cnx.commit()
 
@@ -76,19 +76,19 @@ class FillIsLatestIssueTests(unittest.TestCase):
     result = list(self.cur)
     expected = [
         (1, 'src', 'sig', 'day', 'state', 20200228, 'ca',
-          123, 2, 5, 5, 5, None, 20200228, 0, bytearray(b'0')),
+          123, 2, 5, 5, 5, None, 20200228, 0, bytearray(b'0'), bytearray(b'0')),
         (2, 'src', 'sig', 'day', 'state', 20200228, 'ca',
-          123, 2, 0, 0, 0, None, 20200229, 1, bytearray(b'1')),
+          123, 2, 0, 0, 0, None, 20200229, 1, bytearray(b'1'), bytearray(b'0')),
         (3, 'src', 'sig', 'day', 'state', 20200229, 'ca',
-          123, 6, 0, 0, 0, None, 20200301, 1, bytearray(b'1')),
+          123, 6, 0, 0, 0, None, 20200301, 1, bytearray(b'1'), bytearray(b'0')),
         (4, 'src', 'sig', 'day', 'state', 20200229, 'ca',
-          123, 6, 9, 9, 9, None, 20200229, 0, bytearray(b'0')),
+          123, 6, 9, 9, 9, None, 20200229, 0, bytearray(b'0'), bytearray(b'0')),
         (5, 'src', 'sig', 'day', 'state', 20200301, 'ca',
-          123, 5, 0, 0, 0, None, 20200303, 2, bytearray(b'1')),
+          123, 5, 0, 0, 0, None, 20200303, 2, bytearray(b'1'), bytearray(b'0')),
         (6, 'src', 'sig', 'day', 'state', 20200301, 'ca',
-          123, 5, 5, 5, 5, None, 20200302, 1, bytearray(b'0')),
+          123, 5, 5, 5, 5, None, 20200302, 1, bytearray(b'0'), bytearray(b'0')),
         (7, 'src', 'sig', 'day', 'state', 20200301, 'ca',
-          123, 5, 9, 8, 7, None, 20200301, 0, bytearray(b'0'))
+          123, 5, 9, 8, 7, None, 20200301, 0, bytearray(b'0'), bytearray(b'0'))
     ]
 
     self.assertEqual(result, expected)

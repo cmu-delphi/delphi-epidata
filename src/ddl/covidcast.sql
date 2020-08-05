@@ -26,7 +26,11 @@ Data is public.
 | direction                    | int(11)     | YES  |     | NULL    |                |
 | issue                        | int(11)     | NO   |     | NULL    |                |
 | lag                          | int(11)     | NO   |     | NULL    |                |
-| is_latest_issue              | BINARY(1)   | NO   |     | NULL    |                |
+| is_latest_issue              | binary(1)   | NO   |     | NULL    |                |
+| is_wip                       | binary(1)   | YES  |     | NULL    |                |
+| missing_value                | int(11)     | YES  |     | NULL    |                |
+| missing_std                  | int(11)     | YES  |     | NULL    |                |
+| missing_sample_size          | int(11)     | YES  |     | NULL    |                |
 +------------------------------+-------------+------+-----+---------+----------------+
 
 - `id`
@@ -69,7 +73,15 @@ Data is public.
 - `lag`
   the number of time_type units between `time_value` and `issue`
 - `is_latest_issue`
-  a boolean flag which indicates whether or not the row corresponds to the latest issue for its key
+  flag which indicates whether or not the row corresponds to the latest issue for its key
+- `is_wip`
+  flag indicating that the signal is a 'work in progress'.  this should be True iff `signal` has a 'wip_' prefix.
+- `missing_value`
+  ~ENUM for the reason a `value` was deleted
+- `missing_std`
+  ~ENUM for the reason a `stderr` was deleted
+- `missing_sample_size`
+  ~ENUM for the reason a `sample_size` was deleted
 */
 
 CREATE TABLE `covidcast` (
@@ -90,7 +102,11 @@ CREATE TABLE `covidcast` (
   `direction` int(11),
   `issue` int(11) NOT NULL,
   `lag` int(11) NOT NULL,
-  `is_latest_issue` BINARY(1) NOT NULL,
+  `is_latest_issue` binary(1) NOT NULL,
+  `is_wip` binary(1) DEFAULT NULL,
+  -- TODO: `missing_value` int(11) DEFAULT NULL,
+  -- TODO: `missing_std` int(11) DEFAULT NULL,
+  -- TODO: `missing_sample_size` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   -- for uniqueness, and also fast lookup of all locations on a given date
   UNIQUE KEY (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`, `issue`),

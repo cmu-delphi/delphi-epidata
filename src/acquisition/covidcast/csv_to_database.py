@@ -74,11 +74,16 @@ def scan_upload_archive(
 
     (source, signal, time_type, geo_type, time_value, issue, lag) = details
 
+    is_wip = False
+    if signal[:4].lower() == "wip_":
+      is_wip = True
+    print(signal, is_wip)
+
     csv_rows = csv_importer_impl.load_csv(path, geo_type)
 
     all_rows_valid = False
     try:
-      cc_rows = CovidcastRow.fromCsvRows(csv_rows, source, signal, time_type, geo_type, time_value, issue, lag)
+      cc_rows = CovidcastRow.fromCsvRows(csv_rows, source, signal, time_type, geo_type, time_value, issue, lag, is_wip)
       rows_list = list(cc_rows)
       if not rows_list:
         raise ValueError("No data")

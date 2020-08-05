@@ -2,7 +2,6 @@
 
 # standard library
 import argparse
-import json
 import sys
 
 # first party
@@ -43,12 +42,9 @@ def main(args, epidata_impl=Epidata, database_impl=Database):
     print('unable to cache epidata')
     return False
 
-  # serialize the data
-  epidata_json = json.dumps(metadata)
-
   # update the cache
   try:
-    database.update_covidcast_meta_cache(epidata_json)
+    database.update_covidcast_meta_cache(metadata)
     print('successfully cached epidata')
   finally:
     # no catch block so that an exception above will cause the program to
