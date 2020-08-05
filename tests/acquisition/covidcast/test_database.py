@@ -71,44 +71,6 @@ class UnitTests(unittest.TestCase):
     self.assertIn('select count(1)', sql)
     self.assertIn('from `covidcast`', sql)
 
-  def test_insert_or_update_query(self):
-    """Query to insert/update a row looks sensible.
-
-    NOTE: Actual behavior is tested by integration test.
-    """
-
-    row = (
-      'source',
-      'signal',
-      'time_type',
-      'geo_type',
-      'time_value',
-      'geo_value',
-      'value',
-      'stderr',
-      'sample_size',
-      'issue',
-      'lag',
-    )
-    mock_connector = MagicMock()
-    database = Database()
-    database.connect(connector_impl=mock_connector)
-
-    database.insert_or_update(*row)
-
-    connection = mock_connector.connect()
-    cursor = connection.cursor()
-    self.assertTrue(cursor.execute.called)
-
-    sql, args = cursor.execute.call_args[0]
-    self.assertEqual(args, row)
-
-    sql = sql.lower()
-    self.assertIn('insert into', sql)
-    self.assertIn('`covidcast`', sql)
-    self.assertIn('unix_timestamp', sql)
-    self.assertIn('on duplicate key update', sql)
-
   def test_update_direction_query(self):
     """Query to update a row's `direction` looks sensible.
 
@@ -149,7 +111,7 @@ class UnitTests(unittest.TestCase):
     sql = sql.lower()
     self.assertIn('update', sql)
     self.assertIn('`covidcast`', sql)
-    self.assertIn('`timestamp2` = unix_timestamp', sql)
+    self.assertIn('`direction_updated_timestamp` = unix_timestamp', sql)
     self.assertIn('`direction` = %s', sql)
 
   def test_get_data_stdev_across_locations_query(self):
@@ -197,8 +159,8 @@ class UnitTests(unittest.TestCase):
     sql = cursor.execute.call_args[0][0].lower()
     self.assertIn('select', sql)
     self.assertIn('`covidcast`', sql)
-    self.assertIn('timestamp1', sql)
-    self.assertIn('timestamp2', sql)
+    self.assertIn('value_updated_timestamp', sql)
+    self.assertIn('direction_updated_timestamp', sql)
 
   def test_get_daily_timeseries_for_direction_update_query(self):
     """Query to get a daily time-series looks sensible.
@@ -232,10 +194,10 @@ class UnitTests(unittest.TestCase):
     sql = sql.lower()
     self.assertIn('select', sql)
     self.assertIn('`covidcast`', sql)
-    self.assertIn('timestamp1', sql)
-    self.assertIn('timestamp2', sql)
+    self.assertIn('value_updated_timestamp', sql)
+    self.assertIn('direction_updated_timestamp', sql)
 
-  def test_update_timeseries_timestamp2_query(self):
+  def test_update_timeseries_direction_updated_timestamp_query(self):
     """Query to update the secondary timestamp of a time-series looks sensible.
 
     NOTE: Actual behavior is tested by integration test.
@@ -246,7 +208,7 @@ class UnitTests(unittest.TestCase):
     database = Database()
     database.connect(connector_impl=mock_connector)
 
-    database.update_timeseries_timestamp2(*args)
+    database.update_timeseries_direction_updated_timestamp(*args)
 
     connection = mock_connector.connect()
     cursor = connection.cursor()
@@ -259,7 +221,7 @@ class UnitTests(unittest.TestCase):
     sql = sql.lower()
     self.assertIn('update', sql)
     self.assertIn('`covidcast`', sql)
-    self.assertIn('timestamp2', sql)
+    self.assertIn('direction_updated_timestamp', sql)
     self.assertIn('unix_timestamp(now())', sql)
 
   def test_update_covidcast_meta_cache_query(self):

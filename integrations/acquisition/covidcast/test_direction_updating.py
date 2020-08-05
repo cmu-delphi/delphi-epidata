@@ -51,6 +51,8 @@ class DirectionUpdatingTests(unittest.TestCase):
     """Update rows having a stale `direction` field and serve the results."""
 
     # insert some sample data
+    # src, sig1, 1111:
+    #   direction should be updated to None as there are no historical data for (src, sig1, state).
     # CA 20200301:
     #   timeline should be x=[-2, -1, 0], y=[2, 6, 5] with direction=1
     # FL 20200517:
@@ -60,30 +62,76 @@ class DirectionUpdatingTests(unittest.TestCase):
     #   wrong) is fresh
     self.cur.execute('''
       insert into covidcast values
+        (0, 'src', 'sig1', 'day', 'state', 20201028, '1111',
+          123, 2, 0, 0, 0, -1, 20201028, 0, 1),
+        (0, 'src', 'sig1', 'day', 'state', 20201029, '1111',
+          123, 6, 0, 0, 0, 0, 20201029, 0, 1),
+        (0, 'src', 'sig1', 'day', 'state', 20201030, '1111',
+          123, 5, 0, 0, 0, 1, 20201030, 0, 1),  
         (0, 'src', 'sig', 'day', 'state', 20200228, 'ca',
-          123, 2, 0, 0, 0, NULL, 20200228, 0),
+          123, 2, 0, 0, 0, NULL, 20200228, 0, 1),
         (0, 'src', 'sig', 'day', 'state', 20200229, 'ca',
-          123, 6, 0, 0, 0, NULL, 20200229, 0),
+          123, 6, 0, 0, 0, NULL, 20200229, 0, 1),
         (0, 'src', 'sig', 'day', 'state', 20200301, 'ca',
-          123, 5, 0, 0, 0, NULL, 20200301, 0),
+          123, 5, 0, 0, 0, NULL, 20200301, 0, 1),
         (0, 'src', 'sig', 'day', 'state', 20200511, 'fl',
-          123, 1, 0, 0, 0, NULL, 20200511, 0),
+          123, 1, 0, 0, 0, NULL, 20200511, 0, 1),
         (0, 'src', 'sig', 'day', 'state', 20200512, 'fl',
-          123, 2, 0, 0, 0, NULL, 20200512, 0),
+          123, 2, 0, 0, 0, NULL, 20200512, 0, 1),
         (0, 'src', 'sig', 'day', 'state', 20200517, 'fl',
-          123, 2, 0, 0, 0, NULL, 20200517, 0),
+          123, 2, 0, 0, 0, NULL, 20200517, 0, 1),
         (0, 'src', 'sig', 'day', 'state', 20200615, 'tx',
-          123, 9, 0, 0, 456, NULL, 20200615, 0),
+          123, 9, 0, 0, 456, NULL, 20200615, 0, 1),
         (0, 'src', 'sig', 'day', 'state', 20200616, 'tx',
-          123, 5, 0, 0, 456, NULL, 20200616, 0),
+          123, 5, 0, 0, 456, NULL, 20200616, 0, 1),
         (0, 'src', 'sig', 'day', 'state', 20200617, 'tx',
-          123, 1, 0, 0, 456, 1, 20200617, 0)
+          123, 1, 0, 0, 456, 1, 20200617, 0, 1)
     ''')
     self.cnx.commit()
 
     # update direction (only 20200417 has enough history)
-    args = None
+    args = get_argument_parser().parse_args('')
     main(args)
+
+    # The Quick-Fix is working
+    response = Epidata.covidcast(
+      'src', 'sig1', 'day', 'state', '20200101-20201231', '*')
+
+    self.assertEqual(response, {
+        'result': 1,
+        'epidata': [{
+        'time_value': 20201028,
+        'geo_value': '1111',
+        'value': 2,
+        'stderr': 0,
+        'sample_size': 0,
+        'direction': None,
+        'issue': 20201028,
+        'lag': 0
+      },
+      {
+        'time_value': 20201029,
+        'geo_value': '1111',
+        'value': 6,
+        'stderr': 0,
+        'sample_size': 0,
+        'direction': None,
+        'issue': 20201029,
+        'lag': 0
+      },
+      {
+        'time_value': 20201030,
+        'geo_value': '1111',
+        'value': 5,
+        'stderr': 0,
+        'sample_size': 0,
+        'direction': None,
+        'issue': 20201030,
+        'lag': 0
+      },
+    ],
+      'message': 'success',
+    })
 
     # request data from the API
     response = Epidata.covidcast(
@@ -188,11 +236,11 @@ class DirectionUpdatingTests(unittest.TestCase):
     })
 
     # verify secondary timestamps were updated
-    self.cur.execute('select timestamp2 from covidcast order by id asc')
+    self.cur.execute('select direction_updated_timestamp from covidcast order by id asc')
     timestamps = [t for (t,) in self.cur]
-    for t in timestamps[:6]:
-      # first 6 rows had `direction` updated
+    for t in timestamps[:9]:
+      # first 9 rows had `direction` updated
       self.assertGreater(t, 0)
-    for t in timestamps[6:]:
+    for t in timestamps[9:]:
       # last 3 rows were not updated
       self.assertEqual(t, 456)
