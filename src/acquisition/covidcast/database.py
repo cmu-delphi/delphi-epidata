@@ -94,113 +94,141 @@ class Database:
   def insert_or_update_bulk(self, cc_rows):
     return self.insert_or_update_batch(cc_rows)
 
-  def insert_or_update_batch(self, cc_rows, batch_size=0, commit_partial=False):
+  def insert_or_update_batch(self, cc_rows, batch_size=2**20, commit_partial=False):
     """
     Insert new rows (or update existing) in the `covidcast` table.
 
     This has the intentional side effect of updating the primary timestamp.
+
+
     """
-    sql = '''
-      INSERT INTO `covidcast`
-        (`id`, `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`,
-        `value_updated_timestamp`, `value`, `stderr`, `sample_size`,
-        `direction_updated_timestamp`, `direction`,
-        `issue`, `lag`, `is_wip`)
+
+    tmp_table_name = 'tmp_insert_update_table'
+
+    create_tmp_table_sql = f'''
+      CREATE TEMPORARY TABLE `{tmp_table_name}` (
+        `source` varchar(32) NOT NULL,
+        `signal` varchar(64) NOT NULL,
+        `time_type` varchar(12) NOT NULL,
+        `geo_type` varchar(12) NOT NULL,
+        `time_value` int(11) NOT NULL,
+        `geo_value` varchar(12) NOT NULL,
+        `value_updated_timestamp` int(11) NOT NULL,
+        `value` double NOT NULL,
+        `stderr` double,
+        `sample_size` double,
+        `direction_updated_timestamp` int(11) NOT NULL,
+        `direction` int(11),
+        `issue` int(11) NOT NULL,
+        `lag` int(11) NOT NULL,
+        `is_latest_issue` BINARY(1) NOT NULL,
+        `is_wip` BINARY(1) NOT NULL
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    '''
+
+    truncate_tmp_table_sql = f'TRUNCATE TABLE {tmp_table_name};'
+    drop_tmp_table_sql = f'DROP TEMPORARY TABLE {tmp_table_name}'
+
+    insert_into_tmp_sql = f'''
+      INSERT INTO `{tmp_table_name}`
+        (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`,
+        `value_updated_timestamp`, `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, `direction`,
+        `issue`, `lag`, `is_latest_issue`, `is_wip`)
       VALUES
-        (0, %s, %s, %s, %s, %s, %s,
-        UNIX_TIMESTAMP(NOW()), %s, %s, %s,
-        0, NULL,
-        %s, %s, %s)
+        (%s, %s, %s, %s, %s, %s, UNIX_TIMESTAMP(NOW()), %s, %s, %s, 0, NULL, %s, %s, 0, %s)
+    '''
+
+    insert_or_update_sql = f'''
+      INSERT INTO `covidcast`
+        (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`,
+        `value_updated_timestamp`, `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, `direction`,
+        `issue`, `lag`, `is_latest_issue`, `is_wip`)
+      SELECT * FROM `{tmp_table_name}`
       ON DUPLICATE KEY UPDATE
         `value_updated_timestamp` = VALUES(`value_updated_timestamp`),
         `value` = VALUES(`value`),
         `stderr` = VALUES(`stderr`),
         `sample_size` = VALUES(`sample_size`)
     '''
+    zero_is_latest_issue_sql = f'''
+      UPDATE
+      (
+        SELECT DISTINCT `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`
+        FROM `{tmp_table_name}`
+      ) AS TMP
+      LEFT JOIN `covidcast`
+      USING (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`)
+      SET `is_latest_issue`=0
+    '''
+    set_is_latest_issue_sql = f'''
+      UPDATE 
+      (
+        SELECT `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`, MAX(`issue`) AS `issue`
+        FROM
+        (
+          SELECT DISTINCT `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value` 
+          FROM `{tmp_table_name}`
+        ) AS TMP
+        LEFT JOIN `covidcast`
+        USING (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`)
+        GROUP BY `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`
+      ) AS TMP
+      LEFT JOIN `covidcast`
+      USING (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`, `issue`)
+      SET `is_latest_issue`=1        
+    '''
+
     # TODO: ^ do we want to reset `direction_updated_timestamp` and `direction` in the duplicate key case?
 
     # TODO: consider handling cc_rows as a generator instead of a list
-    num_rows = len(cc_rows)
-    total = 0
-    if not batch_size:
-      batch_size = num_rows
-    num_batches = ceil(num_rows/batch_size)
-    for batch_num in range(num_batches):
-      start = batch_num * batch_size
-      end = min(num_rows, start + batch_size)
-      length = end - start
+    self._cursor.execute(create_tmp_table_sql)
 
-      args = [(
-        row.source,
-        row.signal,
-        row.time_type,
-        row.geo_type,
-        row.time_value,
-        row.geo_value,
-        row.value,
-        row.stderr,
-        row.sample_size,
-        row.issue,
-        row.lag,
-        row.is_wip
-      ) for row in cc_rows[start:end]]
+    try:
 
-      result = self._cursor.executemany(sql, args)
-      if result is None:
-        # the SQL connector does not support returning number of rows affected
-        total = None
-      else:
-        total += result
-      if commit_partial:
-        self._connection.commit()
-    return total
+      num_rows = len(cc_rows)
+      total = 0
+      if not batch_size:
+        batch_size = num_rows
+      num_batches = ceil(num_rows/batch_size)
+      for batch_num in range(num_batches):
+        start = batch_num * batch_size
+        end = min(num_rows, start + batch_size)
+        length = end - start
 
-  def insert_or_update(
-      self,
-      source,
-      signal,
-      time_type,
-      geo_type,
-      time_value,
-      geo_value,
-      value,
-      stderr,
-      sample_size,
-      issue,
-      lag,
-      is_wip):
-    """
-    Insert a new row, or update an existing row, in the `covidcast` table.
+        args = [(
+          row.source,
+          row.signal,
+          row.time_type,
+          row.geo_type,
+          row.time_value,
+          row.geo_value,
+          row.value,
+          row.stderr,
+          row.sample_size,
+          row.issue,
+          row.lag,
+          row.is_wip
+        ) for row in cc_rows[start:end]]
 
-    This has the intentional side effect of updating the primary timestamp.
-    """
 
-    sql = '''
-      INSERT INTO `covidcast` VALUES
-        (0, %s, %s, %s, %s, %s, %s, UNIX_TIMESTAMP(NOW()), %s, %s, %s, 0, NULL, %s, %s, %s)
-      ON DUPLICATE KEY UPDATE
-        `value_updated_timestamp` = VALUES(`value_updated_timestamp`),
-        `value` = VALUES(`value`),
-        `stderr` = VALUES(`stderr`),
-        `sample_size` = VALUES(`sample_size`)
-    '''
+        result = self._cursor.executemany(insert_into_tmp_sql, args)
+        self._cursor.execute(insert_or_update_sql)
+        self._cursor.execute(zero_is_latest_issue_sql)
+        self._cursor.execute(set_is_latest_issue_sql)
+        self._cursor.execute(truncate_tmp_table_sql)
 
-    args = (
-      source,
-      signal,
-      time_type,
-      geo_type,
-      time_value,
-      geo_value,
-      value,
-      stderr,
-      sample_size,
-      issue,
-      lag,
-      is_wip
-    )
-
-    self._cursor.execute(sql, args)
+        if result is None:
+          # the SQL connector does not support returning number of rows affected
+          total = None
+        else:
+          total += result
+        if commit_partial:
+          self._connection.commit()
+    except Exception as e:
+      raise e
+    finally:
+      self._cursor.execute(drop_tmp_table_sql)
+      return total
 
   def get_data_stdev_across_locations(self, max_day):
     """
@@ -274,19 +302,21 @@ class Database:
 
     self._cursor.execute(sql, args)
 
-  def get_all_record_values_of_timeseries_with_potentially_stale_direction(self, temporary_table=None):
+  def get_all_record_values_of_timeseries_with_potentially_stale_direction(self, temporary_table=None,
+                                                                           partition_condition='(TRUE)'):
     """Return the rows of all daily time-series with potentially stale directions,
     only rows corresponding to the most recent issue for each time_value is returned.
 
     `temporary_table`: if provided, a temporary table with the name `temporary_table`
                        is created and the result is also stored in that table.
+    `partition_condition`: a condition that defines the partition to be processed.
     """
 
     create_tmp_table_sql = f'''
     CREATE TEMPORARY TABLE `{temporary_table}` (
       `id` int(11) NOT NULL,
       `source` varchar(32),
-      `signal` varchar(32),
+      `signal` varchar(64),
       `time_type` varchar(12),
       `geo_type` varchar(12),
       `geo_value` varchar(12),
@@ -314,29 +344,10 @@ class Database:
       `value`,
       `direction_updated_timestamp`,
       `direction`
-    FROM
-    (
-      SELECT
-        `source`,
-        `signal`,
-        `time_type`,
-        `geo_type`,
-        `geo_value`,
-        `time_value`,
-        MAX(`issue`) AS `issue`
-      FROM `covidcast`
-      WHERE
-        `time_type` = 'day'
-      GROUP BY
-        `source`,
-        `signal`,
-        `time_type`,
-        `geo_type`,
-        `geo_value`,
-        `time_value`
-    ) b
-    LEFT JOIN `covidcast` a
-    USING (`source`, `signal`, `time_type`, `geo_type`, `geo_value`, `time_value`, `issue`)
+    FROM `covidcast`
+    WHERE `is_latest_issue` = 1 AND
+        `time_type` = 'day' AND
+        {partition_condition}
     '''
 
     cte_definition = f'''

@@ -13,9 +13,8 @@ economic and health impacts they have experienced as a result of the pandemic. A
 high-level overview of the survey is posted [on the COVIDcast
 website](https://covidcast.cmu.edu/survey.html).
 
-Aggregate data from this survey is available through the [COVIDcast
-API](../api/covidcast.md) as the [`fb-survey` data
-source](../api/covidcast-signals/fb-survey.md).
+Aggregate data from this survey is available through the [COVIDcast API](../api/covidcast.md)
+as the [`fb-survey` data source](../api/covidcast-signals/fb-survey.md).
 
 This documentation is for users who have a signed Data Use Agreement to receive
 individual response data from the survey. It describes the survey items, data

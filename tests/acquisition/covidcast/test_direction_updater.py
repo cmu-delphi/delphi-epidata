@@ -20,7 +20,7 @@ class UnitTests(unittest.TestCase):
   def test_main_successful(self):
     """Run the main program, and successfully commit changes."""
 
-    args = None
+    args = MagicMock(partitions=[0, 1])
     mock_database = MagicMock()
     fake_database_impl = lambda: mock_database
     mock_update_loop = MagicMock()
@@ -38,7 +38,7 @@ class UnitTests(unittest.TestCase):
   def test_main_unsuccessful(self):
     """Run the main program, but don't commit changes on failure."""
 
-    args = None
+    args = MagicMock(partitions=[0, 1])
     mock_database = MagicMock()
     fake_database_impl = lambda: mock_database
     mock_update_loop = MagicMock(side_effect=Exception('testing'))

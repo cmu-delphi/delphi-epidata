@@ -5,15 +5,15 @@
 # About
 
 This is the home of [Delphi](https://delphi.cmu.edu/)'s epidemiological data
-API. See our [API documentation](docs/api/README.md) for details on the
-available data sets, APIs, and clients.
+API. See our [API documentation](https://cmu-delphi.github.io/delphi-epidata/)
+for details on the available data sets, APIs, and clients.
 
 # COVID-19 Notice
 
 We are working on collecting several new data sources that may be useful for
 nowcasting and forecasting ILI during the COVID-19 pandemic.  Each of these will
 make these available as soon as individually possible, through our [covidcast
-endpoint](docs/api/covidcast.md).
+endpoint](https://cmu-delphi.github.io/delphi-epidata/api/covidcast.html).
 
 For a list of many other data sources relevant to COVID-19, publicly available
 through external sites, we have compiled a simple

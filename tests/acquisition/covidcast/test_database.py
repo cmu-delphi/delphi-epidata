@@ -71,45 +71,6 @@ class UnitTests(unittest.TestCase):
     self.assertIn('select count(1)', sql)
     self.assertIn('from `covidcast`', sql)
 
-  def test_insert_or_update_query(self):
-    """Query to insert/update a row looks sensible.
-
-    NOTE: Actual behavior is tested by integration test.
-    """
-
-    row = (
-      'source',
-      'signal',
-      'time_type',
-      'geo_type',
-      'time_value',
-      'geo_value',
-      'value',
-      'stderr',
-      'sample_size',
-      'issue',
-      'lag',
-      'is_wip'
-    )
-    mock_connector = MagicMock()
-    database = Database()
-    database.connect(connector_impl=mock_connector)
-
-    database.insert_or_update(*row)
-
-    connection = mock_connector.connect()
-    cursor = connection.cursor()
-    self.assertTrue(cursor.execute.called)
-
-    sql, args = cursor.execute.call_args[0]
-    self.assertEqual(args, row)
-
-    sql = sql.lower()
-    self.assertIn('insert into', sql)
-    self.assertIn('`covidcast`', sql)
-    self.assertIn('unix_timestamp', sql)
-    self.assertIn('on duplicate key update', sql)
-
   def test_update_direction_query(self):
     """Query to update a row's `direction` looks sensible.
 

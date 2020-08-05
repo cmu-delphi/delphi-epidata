@@ -26,6 +26,7 @@ Data is public.
 | direction                    | int(11)     | YES  |     | NULL    |                |
 | issue                        | int(11)     | NO   |     | NULL    |                |
 | lag                          | int(11)     | NO   |     | NULL    |                |
+| is_latest_issue              | binary(1)   | NO   |     | NULL    |                |
 | is_wip                       | binary(1)   | YES  |     | NULL    |                |
 | missing_value                | int(11)     | YES  |     | NULL    |                |
 | missing_std                  | int(11)     | YES  |     | NULL    |                |
@@ -71,6 +72,8 @@ Data is public.
   the time_value of publication
 - `lag`
   the number of time_type units between `time_value` and `issue`
+- `is_latest_issue`
+  flag which indicates whether or not the row corresponds to the latest issue for its key
 - `is_wip`
   flag indicating that the signal is a 'work in progress'.  this should be True iff `signal` has a 'wip_' prefix.
 - `missing_value`
@@ -99,6 +102,7 @@ CREATE TABLE `covidcast` (
   `direction` int(11),
   `issue` int(11) NOT NULL,
   `lag` int(11) NOT NULL,
+  `is_latest_issue` binary(1) NOT NULL,
   `is_wip` binary(1) DEFAULT NULL,
   -- TODO: `missing_value` int(11) DEFAULT NULL,
   -- TODO: `missing_std` int(11) DEFAULT NULL,
