@@ -52,8 +52,8 @@ jobs:
       # start services
       - run: |
           docker network create --driver bridge delphi-net
-          docker run --rm -p 13306:3306 --network delphi-net --name delphi_database_epidata delphi_database_epidata
-          docker run --rm -p 10080:80 --network delphi-net --name delphi_web_epidata delphi_web_epidata
+          docker run --rm -d -p 13306:3306 --network delphi-net --name delphi_database_epidata delphi_database_epidata
+          docker run --rm -d -p 10080:80 --network delphi-net --name delphi_web_epidata delphi_web_epidata
       # run unit test
       - run: |
           docker run --rm delphi_python --network delphi-net python3 -m undefx.py3tester.py3tester repos/delphi/delphi-epidata/tests
