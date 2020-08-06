@@ -68,6 +68,7 @@ jobs:
           wget https://raw.githubusercontent.com/eficode/wait-for/master/wait-for
           chmod +x wait-for
           ./wait-for localhost:13306 -- echo 'ready'
+          sleep 10s
       - name: Run Unit Tests
         run: |
           docker run --rm --network delphi-net delphi_python python3 -m undefx.py3tester.py3tester repos/delphi/delphi-epidata/tests
