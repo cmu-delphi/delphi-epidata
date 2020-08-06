@@ -40,8 +40,8 @@ jobs:
           path: repos/delphi/nowcast
 
       # use delphi's timezome
-      - run:
-          ln -s -f /usr/share/zoneinfo/America/New_York /etc/localtime
+      # - run:
+      #     ln -s -f /usr/share/zoneinfo/America/New_York /etc/localtime
       # build image
       - run: |
           docker build -t delphi_web -f repos/delphi/operations/dev/docker/web/Dockerfile .
