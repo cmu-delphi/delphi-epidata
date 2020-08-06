@@ -64,6 +64,10 @@ jobs:
           docker run --rm -d -p 10080:80 --network delphi-net --name delphi_web_epidata delphi_web_epidata
           docker ps
 
+      - run: |
+          wget https://raw.githubusercontent.com/eficode/wait-for/master/wait-for
+          chmod +x wait-for
+          ./wait-for localhost:13306 -- echo 'ready'
       - name: Run Unit Tests
         run: |
           docker run --rm --network delphi-net delphi_python python3 -m undefx.py3tester.py3tester repos/delphi/delphi-epidata/tests
