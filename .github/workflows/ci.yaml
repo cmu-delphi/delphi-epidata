@@ -71,11 +71,11 @@ jobs:
           sleep 10s
       - name: Run Unit Tests
         run: |
-          docker run --rm --network delphi-net delphi_python python3 -m undefx.py3tester.py3tester repos/delphi/delphi-epidata/tests
+          docker run --rm --network delphi-net delphi_python python3 -m undefx.py3tester.py3tester --use-exit-code repos/delphi/delphi-epidata/tests
 
       - name: Run Integration Tests
         run: |
-          docker run --rm --network delphi-net delphi_python python3 -m undefx.py3tester.py3tester repos/delphi/delphi-epidata/integrations
+          docker run --rm --network delphi-net delphi_python python3 -m undefx.py3tester.py3tester --use-exit-code repos/delphi/delphi-epidata/integrations
 
       - name: Clean Up
         run: |
