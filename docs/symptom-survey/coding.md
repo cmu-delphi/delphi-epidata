@@ -130,21 +130,26 @@ Files:
 
 ## Wave 4
 
-Wave 4 will be deployed in late August. It will be available in English, as well
-as
+Wave 4 will be deployed in late August 2020. It will be available in English, as
+well as
 
 * *[translations to be completed]*
 
 Draft files [final versions to be posted when available]:
 
-* TODO (PDF)
-* TODO (Word)
+* [Survey text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_4.pdf)
+  (PDF)
+* [Survey text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_4.docx)
+  (Word)
 
 ### Summary of Changes
 
 Wave 4 is a **major change** to the survey instrument. Some items have been
 removed and several new items have been added. Please review the changes
 carefully when you use responses from both waves.
+
+Note that this changelog is a draft; as the survey instrument is finalized, this
+changelog will be updated to include all final changes.
 
 #### Consent Text
 
@@ -159,6 +164,9 @@ The survey consent text has been altered to more clearly indicate that
 This is broader than the prior text, which suggested the survey was only to
 understand "where the coronavirus pandemic is moving", and ensures we obtain
 consent for the full range of uses for the survey.
+
+You **may need to advise your IRB** about the new consent language, depending on
+your protocol.
 
 #### New Items
 
@@ -189,7 +197,7 @@ consent for the full range of uses for the survey.
   items Q64 - Q80 ask the respondent to identify their occupation in a form
   based on the [Standard Occupational Classification
   System](https://en.wikipedia.org/wiki/Standard_Occupational_Classification_System).
-  (Each respondent will only see 2 of these items; the first requests a broad
+  (Each respondent will only see two of these items; the first requests a broad
   category, the second a more detailed classification.)
 * Item D10 asks if any of the respondent's work for pay in the past 4 weeks was
   outside their home.
@@ -197,14 +205,14 @@ consent for the full range of uses for the survey.
 #### Changed Items
 
 * Item B2 now includes eye pain and chills as symptoms.
-* Item B2b now asks how long the respondent has had one *unusual* symptom, if
+* Item B2b now asks how long the respondent has had one **unusual** symptom, if
   they report having one in item B2c. It no longer asks how long the respondent
-  has had *any* reported symptom.
+  has had **any** reported symptom.
 * Item C1 now separates type 1 and type 2 diabetes, coded separately. The coding
-  for both is different from the original coding for "diabetes", so they should
-  be treated separately.
+  for both is different from the original coding for "diabetes", so they can be
+  analyzed separately.
 * Item C8 now asks how often the respondent has "felt isolated from others",
-  along with the prior items about anxiety and depression.
+  along with the existing items about anxiety and depression.
 
 #### Removed Items
 
