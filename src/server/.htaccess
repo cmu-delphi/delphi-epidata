@@ -4,3 +4,6 @@ Header set Access-Control-Allow-Origin "*"
 # Compress API responses
 AddOutputFilterByType DEFLATE application/json
 AddOutputFilterByType BROTLI_COMPRESS application/json
+
+# Allow brief caching of API responses
+ExpiresByType application/json "access plus 2 hours"
