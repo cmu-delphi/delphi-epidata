@@ -1,0 +1,83 @@
+name: CI
+on:
+  push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: mkdir -p repos/undefx
+      - name: Checkout undefx/py3tester
+        uses: actions/checkout@v2
+        with:
+          repository: undefx/py3tester
+          path: repos/undefx/py3tester
+      - name: Checkout undefx/undef-analysis
+        uses: actions/checkout@v2
+        with:
+          repository: undefx/undef-analysis
+          path: repos/undefx/undef-analysis
+
+      - run: mkdir -p repos/delphi
+
+      - name: Checkoutcmu-delphi/operations
+        uses: actions/checkout@v2
+        with:
+          repository: cmu-delphi/operations
+          path: repos/delphi/operations
+      - name: Checkout cmu-delphi/utils
+        uses: actions/checkout@v2
+        with:
+          repository: cmu-delphi/utils
+          path: repos/delphi/utils
+      - name: Checkout cmu-delphi/github-deploy-repo
+        uses: actions/checkout@v2
+        with:
+          repository: cmu-delphi/github-deploy-repo
+          path: repos/delphi/github-deploy-repo
+      - name: Checkout THIS REPO
+        uses: actions/checkout@v2
+        with:
+          path: repos/delphi/delphi-epidata
+      - name: Checkout cmu-delphi/flu-contest
+        uses: actions/checkout@v2
+        with:
+          repository: cmu-delphi/flu-contest
+          path: repos/delphi/flu-contest
+      - name: Checkout cmu-delphi/nowcast
+        uses: actions/checkout@v2
+        with:
+          repository: cmu-delphi/nowcast
+          path: repos/delphi/nowcast
+
+      - name: Build docker images
+        run: |
+          docker build -t delphi_web -f repos/delphi/operations/dev/docker/web/Dockerfile .
+          docker build -t delphi_database -f repos/delphi/operations/dev/docker/database/Dockerfile .
+          docker build -t delphi_python -f repos/delphi/operations/dev/docker/python/Dockerfile .
+          docker build -t delphi_web_epidata -f ./repos/delphi/delphi-epidata/dev/docker/web/epidata/Dockerfile .
+          docker build -t delphi_database_epidata -f ./repos/delphi/delphi-epidata/dev/docker/database/epidata/Dockerfile .
+
+      - name: Start services
+        run: |
+          docker network create --driver bridge delphi-net
+          docker run --rm -d -p 13306:3306 --network delphi-net --name delphi_database_epidata delphi_database_epidata
+          docker run --rm -d -p 10080:80 --network delphi-net --name delphi_web_epidata delphi_web_epidata
+          docker ps
+
+      - run: |
+          wget https://raw.githubusercontent.com/eficode/wait-for/master/wait-for
+          chmod +x wait-for
+          ./wait-for localhost:13306 -- echo 'ready'
+          sleep 10s
+      - name: Run Unit Tests
+        run: |
+          docker run --rm --network delphi-net delphi_python python3 -m undefx.py3tester.py3tester --use-exit-code repos/delphi/delphi-epidata/tests
+
+      - name: Run Integration Tests
+        run: |
+          docker run --rm --network delphi-net delphi_python python3 -m undefx.py3tester.py3tester --use-exit-code repos/delphi/delphi-epidata/integrations
+
+      - name: Clean Up
+        run: |
+          docker stop delphi_database_epidata delphi_web_epidata
+          docker network remove delphi-net
