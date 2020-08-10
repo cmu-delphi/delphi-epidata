@@ -60,6 +60,29 @@ class Epidata:
       # Something broke
       return {'result': 0, 'message': 'error: ' + str(e)}
 
+  # Helper function to request and parse epidata
+  @staticmethod
+  def _request_all(params):
+    """request epi data and handles pagination."""
+    r = Epidata._request(params)
+    if r.get('result', -1) < 0:
+      return r
+
+    if r.get('result', -1) in [1,2] and r.get('has_more'):
+      # has more pages
+      results = r.get('epidata', [])
+      while r.get('has_more'):
+        page_params = params.copy()
+        page_params['offset'] = len(results)
+        r = Epidata._request(page_params)
+        if r.get('result', -1) not in [1,2]:
+          break
+        page_results = r.get('epidata', [])
+        results.extend(page_results)
+      return dict(result=1, message='success', epidata=results)
+
+    return r
+
   # Raise an Exception on error, otherwise return epidata
   @staticmethod
   def check(resp):
@@ -99,7 +122,7 @@ class Epidata:
     if auth is not None:
       params['auth'] = auth
     # Make the API call
-    return Epidata._request(params)
+    return Epidata._request_all(params)
 
   # Fetch FluView metadata
   @staticmethod
@@ -110,7 +133,7 @@ class Epidata:
       'source': 'fluview_meta',
     }
     # Make the API call
-    return Epidata._request(params)
+    return Epidata._request_all(params)
 
   # Fetch FluView clinical data
   @staticmethod
@@ -132,7 +155,7 @@ class Epidata:
     if lag is not None:
       params['lag'] = lag
     # Make the API call
-    return Epidata._request(params)
+    return Epidata._request_all(params)
 
   # Fetch FluSurv data
   @staticmethod
@@ -154,7 +177,7 @@ class Epidata:
     if lag is not None:
       params['lag'] = lag
     # Make the API call
-    return Epidata._request(params)
+    return Epidata._request_all(params)
 
   # Fetch PAHO Dengue data
   @staticmethod
@@ -176,7 +199,7 @@ class Epidata:
     if lag is not None:
       params['lag'] = lag
     # Make the API call
-    return Epidata._request(params)
+    return Epidata._request_all(params)
 
   # Fetch ECDC ILI data
   @staticmethod
@@ -198,7 +221,7 @@ class Epidata:
     if lag is not None:
       params['lag'] = lag
     # Make the API call
-    return Epidata._request(params)
+    return Epidata._request_all(params)
 
   # Fetch KCDC ILI data
   @staticmethod
@@ -220,7 +243,7 @@ class Epidata:
     if lag is not None:
       params['lag'] = lag
     # Make the API call
-    return Epidata._request(params)
+    return Epidata._request_all(params)
 
   # Fetch Google Flu Trends data
   @staticmethod
@@ -236,7 +259,7 @@ class Epidata:
       'epiweeks': Epidata._list(epiweeks),
     }
     # Make the API call
-    return Epidata._request(params)
+    return Epidata._request_all(params)
 
   # Fetch Google Health Trends data
   @staticmethod
@@ -254,7 +277,7 @@ class Epidata:
       'query': query,
     }
     # Make the API call
-    return Epidata._request(params)
+    return Epidata._request_all(params)
 
   # Fetch HealthTweets data
   @staticmethod
@@ -276,7 +299,7 @@ class Epidata:
     if epiweeks is not None:
       params['epiweeks'] = Epidata._list(epiweeks)
     # Make the API call
-    return Epidata._request(params)
+    return Epidata._request_all(params)
 
   # Fetch Wikipedia access data
   @staticmethod
@@ -300,7 +323,7 @@ class Epidata:
     if hours is not None:
       params['hours'] = Epidata._list(hours)
     # Make the API call
-    return Epidata._request(params)
+    return Epidata._request_all(params)
 
   # Fetch CDC page hits
   @staticmethod
@@ -317,7 +340,7 @@ class Epidata:
       'locations': Epidata._list(locations),
     }
     # Make the API call
-    return Epidata._request(params)
+    return Epidata._request_all(params)
 
   # Fetch Quidel data
   @staticmethod
@@ -334,7 +357,7 @@ class Epidata:
       'locations': Epidata._list(locations),
     }
     # Make the API call
-    return Epidata._request(params)
+    return Epidata._request_all(params)
 
   # Fetch NoroSTAT data (point data, no min/max)
   @staticmethod
@@ -351,7 +374,7 @@ class Epidata:
       'epiweeks': Epidata._list(epiweeks),
     }
     # Make the API call
-    return Epidata._request(params)
+    return Epidata._request_all(params)
 
   # Fetch NoroSTAT metadata
   @staticmethod
@@ -366,7 +389,7 @@ class Epidata:
       'auth': auth,
     }
     # Make the API call
-    return Epidata._request(params)
+    return Epidata._request_all(params)
 
   # Fetch AFHSB data
   @staticmethod
@@ -407,7 +430,7 @@ class Epidata:
       'flu_types': Epidata._list(flu_types)
     }
     # Make the API call
-    return Epidata._request(params)
+    return Epidata._request_all(params)
 
   # Fetch AFHSB metadata
   @staticmethod
@@ -422,7 +445,7 @@ class Epidata:
       'auth': auth,
     }
     # Make the API call
-    return Epidata._request(params)
+    return Epidata._request_all(params)
 
   # Fetch NIDSS flu data
   @staticmethod
@@ -444,7 +467,7 @@ class Epidata:
     if lag is not None:
       params['lag'] = lag
     # Make the API call
-    return Epidata._request(params)
+    return Epidata._request_all(params)
 
   # Fetch NIDSS dengue data
   @staticmethod
@@ -460,7 +483,7 @@ class Epidata:
       'epiweeks': Epidata._list(epiweeks),
     }
     # Make the API call
-    return Epidata._request(params)
+    return Epidata._request_all(params)
 
   # Fetch Delphi's forecast
   @staticmethod
@@ -476,7 +499,7 @@ class Epidata:
       'epiweek': epiweek,
     }
     # Make the API call
-    return Epidata._request(params)
+    return Epidata._request_all(params)
 
   # Fetch Delphi's digital surveillance sensors
   @staticmethod
@@ -494,7 +517,7 @@ class Epidata:
       'epiweeks': Epidata._list(epiweeks),
     }
     # Make the API call
-    return Epidata._request(params)
+    return Epidata._request_all(params)
 
   # Fetch Delphi's dengue digital surveillance sensors
   @staticmethod
@@ -512,7 +535,7 @@ class Epidata:
       'epiweeks': Epidata._list(epiweeks),
     }
     # Make the API call
-    return Epidata._request(params)
+    return Epidata._request_all(params)
 
   # Fetch Delphi's wILI nowcast
   @staticmethod
@@ -528,7 +551,7 @@ class Epidata:
       'epiweeks': Epidata._list(epiweeks),
     }
     # Make the API call
-    return Epidata._request(params)
+    return Epidata._request_all(params)
 
   # Fetch Delphi's dengue nowcast
   @staticmethod
@@ -544,13 +567,13 @@ class Epidata:
       'epiweeks': Epidata._list(epiweeks),
     }
     # Make the API call
-    return Epidata._request(params)
+    return Epidata._request_all(params)
 
   # Fetch API metadata
   @staticmethod
   def meta():
     """Fetch API metadata."""
-    return Epidata._request({'source': 'meta'})
+    return Epidata._request_all({'source': 'meta'})
 
   # Fetch Delphi's COVID-19 Surveillance Streams
   @staticmethod
@@ -583,7 +606,7 @@ class Epidata:
       params['lag'] = lag
 
     # Make the API call
-    return Epidata._request(params)
+    return Epidata._request_all(params)
 
   # Fetch Delphi's COVID-19 Surveillance Streams metadata
   @staticmethod
