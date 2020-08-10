@@ -108,7 +108,7 @@ class CsvUploadingTests(unittest.TestCase):
         expected_lag = (expected_issue_day - time_value_day).days
         dct['lag'] = expected_lag
       return expected_epidata
-    
+
     # verify data matches the CSV
     # NB these are ordered by geo_value
     self.assertEqual(response, {
@@ -146,7 +146,7 @@ class CsvUploadingTests(unittest.TestCase):
     response = Epidata.covidcast(
       'src-name', 'wip_prototype', 'day', 'state', 20200419, '*')
 
-    
+
     # verify data matches the CSV
     # NB these are ordered by geo_value
     self.assertEqual(response, {
@@ -188,6 +188,7 @@ class CsvUploadingTests(unittest.TestCase):
     # if the CSV failed correctly there should be no results
     self.assertEqual(response, {
       'result': -2,
+      'epidata': [],
       'message': 'no results',
     })
 
