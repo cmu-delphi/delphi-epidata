@@ -103,8 +103,7 @@ function get_fluview($epiweeks, $regions, $issues, $lag, $authorized) {
     $fields = "NULL `release_date`, fv.`issue`, fv.`epiweek`, fv.`region`, fv.`lag`, fv.`num_ili`, fv.`num_patients`, fv.`num_providers`, fv.`ili` `wili`, fv.`ili`, NULL `num_age_0`, NULL `num_age_1`, NULL `num_age_2`, NULL `num_age_3`, NULL `num_age_4`, NULL `num_age_5`";
     _get_fluview_by_table($epidata, $epiweeks, $regions, $issues, $lag, $table, $fields);
   }
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  return $epidata;
 }
 
 // a helper function to query `fluview` and `fluview_imputed` individually
@@ -136,7 +135,7 @@ function _get_fluview_by_table(&$epidata, $epiweeks, $regions, $issues, $lag, $t
   $fields_string = array('release_date', 'region');
   $fields_int = array('issue', 'epiweek', 'lag', 'num_ili', 'num_patients', 'num_providers', 'num_age_0', 'num_age_1', 'num_age_2', 'num_age_3', 'num_age_4', 'num_age_5');
   $fields_float = array('wili', 'ili');
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
+  append_execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
 }
 
 // queries the `fluview_clinical` table
@@ -149,8 +148,6 @@ function _get_fluview_by_table(&$epidata, $epiweeks, $regions, $issues, $lag, $t
 //     overridden by $issues
 //     default: most recent issue
 function get_fluview_clinical($epiweeks, $regions, $issues, $lag) {
-  // store the results in an array
-  $epidata = array();
   // set up for query
   $table = "`fluview_clinical` fvc";
   // $fields = 'fvc.`release_date`, fvc.`issue`, fvc.`epiweek`, fvc.`region`, fvc.`lag`, fvc.`total_specimens`, fvc.`total_a_h1n1`, fvc.`total_a_h3`, fvc.`total_a_h3n2v`, fvc.`total_a_no_sub`, fvc.`total_b`, fvc.`total_b_vic`, fvc.`total_b_yam`';
@@ -177,9 +174,7 @@ function get_fluview_clinical($epiweeks, $regions, $issues, $lag) {
   $fields_string = array('release_date', 'region');
   $fields_float = array('percent_positive', 'percent_a', 'percent_b');
   $fields_int = array('issue', 'epiweek', 'lag', 'total_specimens', 'total_a', 'total_b');
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the result, if any
-  return count($epidata) === 0 ? null : $epidata;
+  return execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
 }
 
 // queries the `flusurv` table
@@ -221,9 +216,7 @@ function get_flusurv($epiweeks, $locations, $issues, $lag) {
   $fields_string = array('release_date', 'location');
   $fields_int = array('issue', 'epiweek', 'lag');
   $fields_float = array('rate_age_0', 'rate_age_1', 'rate_age_2', 'rate_age_3', 'rate_age_4', 'rate_overall');
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  return execute_query($query, $fields_string, $fields_int, $fields_float);
 }
 
 // queries the `paho_dengue` table
@@ -236,8 +229,6 @@ function get_flusurv($epiweeks, $locations, $issues, $lag) {
 //     overridden by $issues
 //     default: most recent issue
 function get_paho_dengue($epiweeks, $regions, $issues, $lag) {
-  // store the results in an array
-  $epidata = array();
   // set up for query
   $table = "`paho_dengue` pd";
   $fields = "pd.`release_date`, pd.`issue`, pd.`epiweek`, pd.`region`, pd.`lag`, pd.`total_pop`, pd.`serotype`, pd.`num_dengue`, pd.`incidence_rate`, pd.`num_severe`, pd.`num_deaths`";
@@ -263,9 +254,7 @@ function get_paho_dengue($epiweeks, $regions, $issues, $lag) {
   $fields_string = array('release_date', 'region', 'serotype');
   $fields_float = array('incidence_rate');
   $fields_int = array('issue', 'epiweek', 'lag', 'total_pop', 'num_dengue', 'num_severe', 'num_deaths');
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the result, if any
-  return count($epidata) === 0 ? null : $epidata;
+  return execute_query($query, $fields_string, $fields_int, $fields_float);
 }
 
 // queries the `ecdc_ili` table
@@ -278,8 +267,6 @@ function get_paho_dengue($epiweeks, $regions, $issues, $lag) {
 //     overridden by $issues
 //     default: most recent issue
 function get_ecdc_ili($epiweeks, $regions, $issues, $lag) {
-  // store the results in an array
-  $epidata = array();
   // set up for query
   $table = "`ecdc_ili` ec";
   $fields = "ec.`release_date`, ec.`issue`, ec.`epiweek`, ec.`region`, ec.`lag`, ec.`incidence_rate`";
@@ -305,9 +292,7 @@ function get_ecdc_ili($epiweeks, $regions, $issues, $lag) {
   $fields_string = array('release_date', 'region');
   $fields_float = array('incidence_rate');
   $fields_int = array('issue', 'epiweek', 'lag');
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the result, if any
-  return count($epidata) === 0 ? null : $epidata;
+  return execute_query($query, $fields_string, $fields_int, $fields_float);
 }
 
 // queries the `kcdc_ili` table
@@ -320,8 +305,6 @@ function get_ecdc_ili($epiweeks, $regions, $issues, $lag) {
 //     overridden by $issues
 //     default: most recent issue
 function get_kcdc_ili($epiweeks, $regions, $issues, $lag) {
-  // store the results in an array
-  $epidata = array();
   // set up for query
   $table = "`kcdc_ili` kc";
   $fields = "kc.`release_date`, kc.`issue`, kc.`epiweek`, kc.`region`, kc.`lag`, kc.`ili`";
@@ -347,9 +330,7 @@ function get_kcdc_ili($epiweeks, $regions, $issues, $lag) {
   $fields_string = array('release_date', 'region');
   $fields_float = array('ili');
   $fields_int = array('issue', 'epiweek', 'lag');
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the result, if any
-  return count($epidata) === 0 ? null : $epidata;
+  return execute_query($query, $fields_string, $fields_int, $fields_float);
 }
 
 // queries the `gft` table
@@ -366,11 +347,7 @@ function get_gft($epiweeks, $locations) {
   $condition_location = filter_strings('g.`location`', $locations);
   // final query using specific issues
   $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_epiweek}) AND ({$condition_location}) ORDER BY {$order}";
-  // get the data from the database
-  $epidata = array();
-  execute_query($query, $epidata, array('location'), array('epiweek', 'num'), null);
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  return execute_query($query, array('location'), array('epiweek', 'num'), null);
 }
 
 // queries the `ght` table
@@ -390,11 +367,7 @@ function get_ght($epiweeks, $locations, $query) {
   $condition_query = filter_strings('g.`query`', array($query));
   // final query using specific issues
   $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_epiweek}) AND ({$condition_location}) AND ({$condition_query}) ORDER BY {$order}";
-  // get the data from the database
-  $epidata = array();
-  execute_query($query, $epidata, array('location'), array('epiweek'), array('value'));
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  return execute_query($query, array('location'), array('epiweek'), array('value'));
 }
 
 // queries the `twitter` table
@@ -449,7 +422,7 @@ function get_twitter($locations, $dates, $resolution) {
       $query = "SELECT {$fields}, '{$region}' `location` FROM {$table} WHERE ({$condition_filter}) AND ({$condition_date}) AND ({$condition_location}) GROUP BY {$date_field} ORDER BY {$date_field} ASC";
     }
     // append query results to the epidata array
-    execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
+    append_execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
   }
   // query all states together
   if(count($states) !== 0) {
@@ -458,10 +431,10 @@ function get_twitter($locations, $dates, $resolution) {
     // final query for states
     $query = "SELECT {$fields}, t.`state` `location` FROM {$table} WHERE ({$condition_filter}) AND ({$condition_date}) AND ({$condition_location}) GROUP BY {$date_field}, t.`state` ORDER BY {$date_field} ASC, t.`state` ASC";
     // append query results to the epidata array
-    execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
+    append_execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
   }
   // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  return $epidata;
 }
 
 // queries the `wiki` table
@@ -508,11 +481,7 @@ function get_wiki($articles, $language, $dates, $resolution, $hours) {
     // final query, summing over all hours of the day
     $query = "SELECT {$fields}, -1 `hour` FROM {$table} WHERE ({$condition_date}) AND ({$condition_article}) GROUP BY {$date_field}, w.`article` ORDER BY {$date_field} ASC, w.`article` ASC";
   }
-  // get the data from the database
-  $epidata = array();
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  return execute_query($query, $fields_string, $fields_int, $fields_float);
 }
 
 // queries the `quidel` table
@@ -534,10 +503,7 @@ function get_quidel($locations, $epiweeks) {
   // the query
   $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_location}) AND ({$condition_epiweek}) ORDER BY {$order}";
   // get the data from the database
-  $epidata = array();
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  return execute_query($query, $fields_string, $fields_int, $fields_float);
 }
 
 // queries the `norostat_point` table
@@ -549,8 +515,6 @@ function get_norostat($location, $epiweeks) {
   // build the filters:
   $condition_location = filter_strings('`norostat_raw_datatable_location_pool`.`location`', [$location]);
   $condition_epiweek = filter_integers('`latest`.`epiweek`', $epiweeks);
-  // get the data from the database
-  $epidata = array();
   // (exclude "location" from output to reduce size & ugliness of result,
   // transfer bandwidth required; it would just be a repeated echo of the input
   // $location)
@@ -574,9 +538,7 @@ function get_norostat($location, $epiweeks) {
           `latest`.`new_value` IS NOT NULL
     ";
   // xxx may reorder epiweeks
-  execute_query($query, $epidata, $fields_string, $fields_int, null);
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  return execute_query($query, $fields_string, $fields_int, null);
 }
 
 // queries the `afhsb_00to13` table
@@ -616,7 +578,7 @@ function get_afhsb($locations, $epiweeks, $flu_types) {
       _get_afhsb_by_table($epidata, $location_type, $epiweeks, $locs, $disjoint_flus, $subset_flus);
     }
   }
-  return count($epidata) === 0 ? null : $epidata;
+  return $epidata;
 }
 
 // A helper function to query afhsb tables
@@ -642,7 +604,7 @@ function _get_afhsb_by_table(&$epidata, $location_type, $epiweeks, $locations, $
     $query = "SELECT {$fields}, '{$subset_flu}' `flu_type` FROM {$table}
       WHERE ({$condition_epiweek}) AND ({$condition_location}) AND ({$condition_flu})
       GROUP BY {$group} ORDER BY {$order}";
-      execute_query($query, $epidata, $fields_string, $fields_int, null);
+    append_execute_query($query, $epidata, $fields_string, $fields_int, null);
   }
   // disjoint flu types: flu1, flu2-flu1, flu3-flu2, ili-flu3
   if(!empty($disjoint_flus)){
@@ -650,7 +612,7 @@ function _get_afhsb_by_table(&$epidata, $location_type, $epiweeks, $locations, $
     $query = "SELECT {$fields}, `flu_type` FROM {$table}
     WHERE ({$condition_epiweek}) AND ({$condition_location}) AND ({$condition_flu})
     GROUP BY {$group},`flu_type` ORDER BY {$order},`flu_type`";
-    execute_query($query, $epidata, $fields_string, $fields_int, null);
+    append_execute_query($query, $epidata, $fields_string, $fields_int, null);
   }
 }
 
@@ -688,14 +650,10 @@ function get_nidss_flu($epiweeks, $regions, $issues, $lag) {
     $condition = "x.`max_issue` = nf.`issue` AND x.`epiweek` = nf.`epiweek` AND x.`region` = nf.`region`";
     $query = "SELECT {$fields} FROM {$table} JOIN {$subquery} ON {$condition} ORDER BY {$order}";
   }
-  // get the data from the database
-  $epidata = array();
   $fields_string = array('release_date', 'region');
   $fields_int = array('issue', 'epiweek', 'lag', 'visits');
   $fields_float = array('ili');
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  return execute_query($query, $fields_string, $fields_int, $fields_float);
 }
 
 // queries the `nidss_dengue` table
@@ -734,10 +692,9 @@ function get_nidss_dengue($epiweeks, $locations) {
       GROUP BY
         nd2.`epiweek`, nd2.`location`
       ";
-    execute_query($query, $epidata, $fields_string, $fields_int, null);
+    append_execute_query($query, $epidata, $fields_string, $fields_int, null);
   }
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  return $epidata;
 }
 
 // queries the `forecasts` table
@@ -748,17 +705,16 @@ function get_forecast($system, $epiweek) {
   // get the data from the database
   $system = mysqli_real_escape_string($dbh, $system);
   $query = "SELECT `system`, `epiweek`, `json` FROM `forecasts` WHERE `system` = '{$system}' AND `epiweek` = {$epiweek}";
-  $epidata = array();
   $fields_string = array('system', 'json');
   $fields_int = array('epiweek');
-  execute_query($query, $epidata, $fields_string, $fields_int, null);
+  $epidata = execute_query($query, $fields_string, $fields_int, null);
   // parse forecast data
   if(count($epidata) === 1 && array_key_exists('json', $epidata[0])) {
     $epidata[0]['forecast'] = json_decode($epidata[0]['json']);
     unset($epidata[0]['json']);
   }
   // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  return $epidata;
 }
 
 // queries the `cdc_extract` table
@@ -801,7 +757,7 @@ function get_cdc($epiweeks, $locations) {
       $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_epiweek}) AND ({$condition_location}) GROUP BY {$group} ORDER BY {$order}";
     }
     // append query results to the epidata array
-    execute_query($query, $epidata, $fields_string, $fields_int, null);
+    append_execute_query($query, $epidata, $fields_string, $fields_int, null);
   }
   // query all states together
   if(count($states) !== 0) {
@@ -811,10 +767,10 @@ function get_cdc($epiweeks, $locations) {
     // final query for states
     $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_epiweek}) AND ({$condition_location}) ORDER BY {$order}, c.`state` ASC";
     // append query results to the epidata array
-    execute_query($query, $epidata, $fields_string, $fields_int, null);
+    append_execute_query($query, $epidata, $fields_string, $fields_int, null);
   }
   // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  return $epidata;
 }
 
 // queries the `sensors` table
@@ -838,11 +794,7 @@ function get_sensors($names, $locations, $epiweeks) {
   $condition_epiweek = filter_integers('s.`epiweek`', $epiweeks);
   // the query
   $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_name}) AND ({$condition_location}) AND ({$condition_epiweek}) ORDER BY {$order}";
-  // get the data from the database
-  $epidata = array();
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  return execute_query($query, $fields_string, $fields_int, $fields_float);
 }
 
 // queries the `dengue_sensors` table
@@ -866,11 +818,7 @@ function get_dengue_sensors($names, $locations, $epiweeks) {
   $condition_epiweek = filter_integers('s.`epiweek`', $epiweeks);
   // the query
   $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_name}) AND ({$condition_location}) AND ({$condition_epiweek}) ORDER BY {$order}";
-  // get the data from the database
-  $epidata = array();
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  return execute_query($query, $fields_string, $fields_int, $fields_float);
 }
 
 // queries the `nowcasts` table
@@ -892,10 +840,7 @@ function get_nowcast($locations, $epiweeks) {
   // the query
   $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_location}) AND ({$condition_epiweek}) ORDER BY {$order}";
   // get the data from the database
-  $epidata = array();
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  return execute_query($query, $fields_string, $fields_int, $fields_float);
 }
 
 // queries the `dengue_nowcasts` table
@@ -916,11 +861,7 @@ function get_dengue_nowcast($locations, $epiweeks) {
   $condition_epiweek = filter_integers('n.`epiweek`', $epiweeks);
   // the query
   $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_location}) AND ({$condition_epiweek}) ORDER BY {$order}";
-  // get the data from the database
-  $epidata = array();
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  return execute_query($query, $fields_string, $fields_int, $fields_float);
 }
 
 // queries the `covidcast` table.
@@ -959,7 +900,7 @@ function get_covidcast($source, $signal, $time_type, $geo_type, $time_values, $g
   $condition_time_type = "t.`time_type` = '{$time_type}'";
   $condition_geo_type = "t.`geo_type` = '{$geo_type}'";
   $condition_time_value = filter_integers('t.`time_value`', $time_values);
-    
+
   if ($geo_value === '*') {
     // the wildcard query should return data for all locations in `geo_type`
     $condition_geo_value = 'TRUE';
@@ -992,11 +933,7 @@ function get_covidcast($source, $signal, $time_type, $geo_type, $time_values, $g
   }
   // the query
   $query = "SELECT {$fields} FROM {$table} {$subquery} WHERE {$conditions} AND ({$condition_version}) ORDER BY {$order}";
-  // get the data from the database
-  $epidata = array();
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  return execute_query($query, $fields_string, $fields_int, $fields_float);
 }
 
 // queries the `covidcast_meta_cache` table for metadata
@@ -1043,46 +980,38 @@ function get_meta() {
   ));
 }
 function meta_api($seconds) {
-  $epidata = array();
   $seconds = intval($seconds);
   $query = "SELECT count(1) `num_hits`, count(distinct `ip`) `unique_ips`, sum(`num_rows`) `rows_returned` FROM `api_analytics` WHERE `datetime` >= date_sub(now(), interval {$seconds} second)";
   $fields_int = array('num_hits', 'unique_ips', 'rows_returned');
-  execute_query($query, $epidata, null, $fields_int, null);
-  return count($epidata) === 0 ? null : $epidata;
+  return execute_query($query, null, $fields_int, null);
 }
 function meta_fluview() {
-  $epidata = array();
   $query = 'SELECT max(`release_date`) `latest_update`, max(`issue`) `latest_issue`, count(1) `table_rows` FROM `fluview`';
   $fields_string = array('latest_update');
   $fields_int = array('latest_issue', 'table_rows');
-  execute_query($query, $epidata, $fields_string, $fields_int, null);
-  return count($epidata) === 0 ? null : $epidata;
+  return execute_query($query, $fields_string, $fields_int, null);
 }
 function meta_twitter() {
-  $epidata = array();
   $query = 'SELECT x.`date` `latest_update`, x.`table_rows`, count(distinct t.`state`) `num_states` FROM (SELECT max(`date`) `date`, count(1) `table_rows` FROM `twitter`) x JOIN `twitter` t ON t.`date` = x.`date`';
   $fields_string = array('latest_update');
   $fields_int = array('num_states', 'table_rows');
-  execute_query($query, $epidata, $fields_string, $fields_int, null);
-  return count($epidata) === 0 ? null : $epidata;
+  return execute_query($query, $fields_string, $fields_int, null);
 }
 function meta_wiki() {
-  $epidata = array();
   //$query = 'SELECT date_sub(max(`datetime`), interval 5 hour) `latest_update`, count(1) `table_rows` FROM `wiki_meta`'; // GMT to EST
   $query = 'SELECT max(`datetime`) `latest_update`, count(1) `table_rows` FROM `wiki_meta`';
   $fields_string = array('latest_update');
   $fields_int = array('table_rows');
-  execute_query($query, $epidata, $fields_string, $fields_int, null);
-  return count($epidata) === 0 ? null : $epidata;
+  return execute_query($query, $fields_string, $fields_int, null);
 }
 function get_meta_norostat() {
   // put behind appropriate auth check
-  $epidata_releases = array();
   $query = 'SELECT DISTINCT `release_date` FROM `norostat_raw_datatable_version_list`';
-  execute_query($query, $epidata_releases, array('release_date'), null, null);
-  $epidata_locations = array();
+  $epidata_releases = execute_query($query, array('release_date'), null, null);
+
   $query = 'SELECT DISTINCT `location` FROM `norostat_raw_datatable_location_pool`';
-  execute_query($query, $epidata_locations, array('location'), null, null);
+  $epidata_locations = execute_query($query, array('location'), null, null);
+
   $epidata = array(
     "releases" => $epidata_releases,
     "locations" => $epidata_locations
@@ -1097,27 +1026,23 @@ function get_meta_afhsb() {
   $string_keys = array('state', 'country');
   $int_keys = array('flu_severity');
   foreach($string_keys as $key) {
-    $epidata_key = array();
     $query = "SELECT DISTINCT `{$key}` FROM (select `{$key}` from `{$table1}` union select `{$key}` from `{$table2}`) t";
-    execute_query($query, $epidata_key, array($key), null, null);
+    $epidata_key = execute_query($query, array($key), null, null);
     $epidata[$key] = $epidata_key;
   }
   foreach($int_keys as $key) {
-    $epidata_key = array();
     $query = "SELECT DISTINCT `{$key}` FROM (select `{$key}` from `{$table1}` union select `{$key}` from `{$table2}`) t";
 
-    execute_query($query, $epidata_key, null, array($key), null);
+    $epidata_key = execute_query($query, null, array($key), null);
     $epidata[$key] = $epidata_key;
   }
   return $epidata;
 }
 function meta_delphi() {
-  $epidata = array();
   $query = 'SELECT `system`, min(`epiweek`) `first_week`, max(`epiweek`) `last_week`, count(1) `num_weeks` FROM `forecasts` GROUP BY `system` ORDER BY `system` ASC';
   $fields_string = array('system');
   $fields_int = array('first_week', 'last_week', 'num_weeks');
-  execute_query($query, $epidata, $fields_string, $fields_int, null);
-  return count($epidata) === 0 ? null : $epidata;
+  return execute_query($query, $fields_string, $fields_int, null);
 }
 
 // all responses will have a result field

@@ -47,9 +47,10 @@ function require_any(&$output, $values) {
 //   $epidata: epidata fetched for the request
 function store_result(&$output, &$epidata) {
   global $MAX_RESULTS;
-  if($epidata !== null) {
+  if($epidata !== null && count($epidata) > 0) {
     // success!
     $output['epidata'] = $epidata;
+    // $output['has_more'] = $has_more
     if(count($epidata) < $MAX_RESULTS) {
       $output['result'] = 1;
       $output['message'] = 'success';
@@ -61,6 +62,8 @@ function store_result(&$output, &$epidata) {
     // failure
     $output['result'] = -2;
     $output['message'] = 'no results';
+    // store an empty array for easier error handling in clients
+    $output['epidata'] = array();
   }
 }
 
@@ -146,51 +149,78 @@ function filter_strings($field, $values) {
   return $filter;
 }
 
-// executes a query, casts the results, and returns an array of the data
-// the number of results is limited to $MAX_RESULTS
-//   $query (required): a SQL query string
-//   $epidata (required): an array for storing the data
-//   $fields_string (optional): an array of names of string fields
-//   $fields_int (optional): an array of names of integer fields
-//   $fields_float (optional): an array of names of float fields
-function execute_query($query, &$epidata, $fields_string, $fields_int, $fields_float) {
+
+/**
+ * processes and stores the given myssql result into the given array with at most MAX_RESULTS entries
+ * $result (required): mysql result set
+ * $epidata (required): an array for storing the data
+ * $fields_string (optional): an array of names of string fields
+ * $fields_int (optional): an array of names of integer fields
+ * $fields_float (optional): an array of names of float fields
+ */
+function _process_query($result, &$epidata, $fields_string, $fields_int, $fields_float) {
   global $dbh;
   global $MAX_RESULTS;
-  error_log($query);
-  $result = mysqli_query($dbh, $query . " LIMIT {$MAX_RESULTS}");
   if (!$result) {
     error_log(sprintf("Error: %s\n",mysqli_error($dbh)));
     return;
   }
   while($row = mysqli_fetch_array($result)) {
-    if(count($epidata) < $MAX_RESULTS) {
-      $values = array();
-      if($fields_string !== null) {
-        foreach($fields_string as $field) {
-          $values[$field] = $row[$field];
-        }
-      }
-      if($fields_int !== null) {
-        foreach($fields_int as $field) {
-          if($row[$field] === null) {
-            $values[$field] = null;
-          } else {
-            $values[$field] = intval($row[$field]);
-          }
-        }
-      }
-      if($fields_float !== null) {
-        foreach($fields_float as $field) {
-          if($row[$field] === null) {
-            $values[$field] = null;
-          } else {
-            $values[$field] = floatval($row[$field]);
-          }
-        }
-      }
-      array_push($epidata, $values);
+    if(count($epidata) >= $MAX_RESULTS) {
+      break;
     }
+    $values = array();
+    if($fields_string !== null) {
+      foreach($fields_string as $field) {
+        $values[$field] = $row[$field];
+      }
+    }
+    if($fields_int !== null) {
+      foreach($fields_int as $field) {
+        if($row[$field] === null) {
+          $values[$field] = null;
+        } else {
+          $values[$field] = intval($row[$field]);
+        }
+      }
+    }
+    if($fields_float !== null) {
+      foreach($fields_float as $field) {
+        if($row[$field] === null) {
+          $values[$field] = null;
+        } else {
+          $values[$field] = floatval($row[$field]);
+        }
+      }
+    }
+    array_push($epidata, $values);
   }
+  /* free result set */
+  mysqli_free_result($result);
+}
+
+function append_execute_query($query, &$epidata, $fields_string, $fields_int, $fields_float) {
+  global $dbh;
+  global $MAX_RESULTS;
+  error_log($query);
+  $result = mysqli_query($dbh, $query . " LIMIT {$MAX_RESULTS}");
+  _process_query($result, $epidata, $fields_string, $fields_int, $fields_float);
+}
+
+// executes a query, casts the results, and returns an array of the data
+// the number of results is limited to $MAX_RESULTS
+//   $query (required): a SQL query string
+//   $fields_string (optional): an array of names of string fields
+//   $fields_int (optional): an array of names of integer fields
+//   $fields_float (optional): an array of names of float fields
+function execute_query($query, $fields_string, $fields_int, $fields_float) {
+  global $dbh;
+  global $MAX_RESULTS;
+  error_log($query);
+  $result = mysqli_query($dbh, $query . " LIMIT {$MAX_RESULTS}");
+  $epidata = array();
+  _process_query($result, $epidata, $fields_string, $fields_int, $fields_float);
+  return $epidata;
 }
 
 // extracts an array of values and/or ranges from a string
