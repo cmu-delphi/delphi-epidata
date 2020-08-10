@@ -38,6 +38,26 @@ Epidata <- (function() {
     return(content(GET(BASE_URL, query=params), 'parsed'))
   }
 
+  .request_all <- function(params) {
+    r <- .request(params)
+    if (r$result < 0) {
+      return(r)
+    }
+    if ((r$result == 1 || r$result == 2) && (!is.null(r$has_more) && r$has_more == TRUE)) {
+      results <- r$epidata
+      while (!is.null(r$has_more) && r$has_more == TRUE) {
+        page_params <- c(params, list(offset=length(results)))
+        r <- .request(page_params)
+        if (r$result < 0) {
+          break
+        }
+        results <- c(results, r$epidata)
+      }
+      return(list(result=1, message='success', epidata=results))
+    }
+    return(r)
+  }
+
   # Build a `range` object (ex: dates/epiweeks)
   range <- function(from, to) {
     if(to <= from) {
@@ -73,7 +93,7 @@ Epidata <- (function() {
       params$auth <- auth
     }
     # Make the API call
-    return(.request(params))
+    return(.request_all(params))
   }
 
   # Fetch FluView metadata
@@ -83,7 +103,7 @@ Epidata <- (function() {
       source = 'fluview_meta'
     )
     # Make the API call
-    return(.request(params))
+    return(.request_all(params))
   }
 
   # Fetch FluView virological data
@@ -108,7 +128,7 @@ Epidata <- (function() {
       params$lag <- lag
     }
     # Make the API call
-    return(.request(params))
+    return(.request_all(params))
   }
 
   # Fetch FluSurv data
@@ -133,7 +153,7 @@ Epidata <- (function() {
       params$lag <- lag
     }
     # Make the API call
-    return(.request(params))
+    return(.request_all(params))
   }
 
   # Fetch ECDC data
@@ -158,7 +178,7 @@ Epidata <- (function() {
       params$lag <- lag
     }
     # Make the API call
-    return(.request(params))
+    return(.request_all(params))
   }
 
   # Fetch KCDC data
@@ -183,7 +203,7 @@ Epidata <- (function() {
       params$lag <- lag
     }
     # Make the API call
-    return(.request(params))
+    return(.request_all(params))
   }
 
 
@@ -200,7 +220,7 @@ Epidata <- (function() {
       epiweeks = .list(epiweeks)
     )
     # Make the API call
-    return(.request(params))
+    return(.request_all(params))
   }
 
   # Fetch Google Health Trends data
@@ -218,7 +238,7 @@ Epidata <- (function() {
       query = query
     )
     # Make the API call
-    return(.request(params))
+    return(.request_all(params))
   }
 
   # Fetch HealthTweets data
@@ -243,7 +263,7 @@ Epidata <- (function() {
       params$epiweeks <- .list(epiweeks)
     }
     # Make the API call
-    return(.request(params))
+    return(.request_all(params))
   }
 
   # Fetch Wikipedia access data
@@ -270,7 +290,7 @@ Epidata <- (function() {
       params$hours <- .list(hours)
     }
     # Make the API call
-    return(.request(params))
+    return(.request_all(params))
   }
 
   # Fetch CDC page hits
@@ -287,7 +307,7 @@ Epidata <- (function() {
       locations = .list(locations)
     )
     # Make the API call
-    return(.request(params))
+    return(.request_all(params))
   }
 
   # Fetch Quidel data
@@ -304,7 +324,7 @@ Epidata <- (function() {
       locations = .list(locations)
     )
     # Make the API call
-    return(.request(params))
+    return(.request_all(params))
   }
 
   # Fetch NoroSTAT data (point data, no min/max)
@@ -321,7 +341,7 @@ Epidata <- (function() {
         epiweeks = .list(epiweeks)
     )
     # Make the API call
-    return(.request(params))
+    return(.request_all(params))
   }
 
   # Fetch NoroSTAT metadata
@@ -336,7 +356,7 @@ Epidata <- (function() {
       auth = auth
     )
     # Make the API call
-    return(.request(params))
+    return(.request_all(params))
   }
 
   # Fetch AFHSB data (point data, no min/max)
@@ -354,7 +374,7 @@ Epidata <- (function() {
         flu_types = .list(flu_types)
     )
     # Make the API call
-    return(.request(params))
+    return(.request_all(params))
   }
 
   # Fetch AFHSB metadata
@@ -369,7 +389,7 @@ Epidata <- (function() {
       auth = auth
     )
     # Make the API call
-    return(.request(params))
+    return(.request_all(params))
   }
 
   # Fetch NIDSS flu data
@@ -394,7 +414,7 @@ Epidata <- (function() {
       params$lag <- lag
     }
     # Make the API call
-    return(.request(params))
+    return(.request_all(params))
   }
 
   # Fetch NIDSS dengue data
@@ -410,7 +430,7 @@ Epidata <- (function() {
       epiweeks = .list(epiweeks)
     )
     # Make the API call
-    return(.request(params))
+    return(.request_all(params))
   }
 
   # Fetch Delphi's forecast
@@ -426,7 +446,7 @@ Epidata <- (function() {
       epiweek = epiweek
     )
     # Make the API call
-    return(.request(params))
+    return(.request_all(params))
   }
 
   # Fetch Delphi's digital surveillance sensors
@@ -444,7 +464,7 @@ Epidata <- (function() {
       epiweeks = .list(epiweeks)
     )
     # Make the API call
-    return(.request(params))
+    return(.request_all(params))
   }
 
   # Fetch Delphi's digital surveillance sensors
@@ -462,7 +482,7 @@ Epidata <- (function() {
       epiweeks = .list(epiweeks)
     )
     # Make the API call
-    return(.request(params))
+    return(.request_all(params))
   }
 
   # Fetch Delphi's wILI nowcast
@@ -478,7 +498,7 @@ Epidata <- (function() {
       epiweeks = .list(epiweeks)
     )
     # Make the API call
-    return(.request(params))
+    return(.request_all(params))
   }
 
   # Fetch Delphi's PAHO Dengue nowcast
@@ -494,12 +514,12 @@ Epidata <- (function() {
       epiweeks = .list(epiweeks)
     )
     # Make the API call
-    return(.request(params))
+    return(.request_all(params))
   }
 
   # Fetch API metadata
   meta <- function() {
-    return(.request(list(source='meta')))
+    return(.request_all(list(source='meta')))
   }
 
   # Fetch Delphi's COVID-19 Surveillance Streams
@@ -531,12 +551,12 @@ Epidata <- (function() {
       params$lag <- lag
     }
     # Make the API call
-    return(.request(params))
+    return(.request_all(params))
   }
 
   # Fetch Delphi's COVID-19 Surveillance Streams metadata
   covidcast_meta <- function() {
-    return(.request(list(source='covidcast_meta', cached='true')))
+    return(.request_all(list(source='covidcast_meta', cached='true')))
   }
 
   # Export the public methods
