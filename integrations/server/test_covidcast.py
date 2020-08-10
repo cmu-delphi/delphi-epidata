@@ -148,6 +148,64 @@ class CovidcastTests(unittest.TestCase):
       'message': 'success',
     })
 
+  def test_pagination(self):
+    """test pagination"""
+
+    data = [f"(0, 'src', 'sig', 'day', 'county', {20200411 + i}, '01234', 123, {i}, 11, 12, 456, 13, {20200411 + i}, 2)" for i in range(20)]
+    # insert dummy data
+    self.cur.execute(f'''
+      insert into covidcast values {','.join(data)}
+    ''')
+    self.cnx.commit()
+
+    def req(**kw):
+      # make the request
+      params = {
+        'source': 'covidcast',
+        'data_source': 'src',
+        'signal': 'sig',
+        'time_type': 'day',
+        'geo_type': 'county',
+        'time_values': '20200410-20210101',
+        'geo_value': '01234',
+      }
+      params.update(kw)
+      response = requests.get(BASE_URL, params=params)
+      response.raise_for_status()
+      return response.json()
+
+    response = req()
+    self.assertTrue('has_more' not in response)
+    self.assertEqual(len(response['epidata']), 20)
+    self.assertEqual([e['value'] for e in response['epidata']], list(range(20)))
+
+    # limit to 2
+    response = req(limit = 2)
+    self.assertEqual(response['has_more'], True)
+    self.assertEqual([e['value'] for e in response['epidata']], [0, 1])
+
+    # limit to more than enough
+    response = req(limit = 30)
+    self.assertTrue('has_more' not in response)
+    self.assertEqual(len(response['epidata']), 20)
+    self.assertEqual([e['value'] for e in response['epidata']], list(range(20)))
+
+    # limit and offset
+    response = req(limit = 2, offset = 2)
+    self.assertEqual(response['has_more'], True)
+    self.assertEqual([e['value'] for e in response['epidata']], [2, 3])
+
+    # limit and offset last page
+    response = req(limit = 10, offset = 15)
+    self.assertTrue('has_more' not in response)
+    self.assertEqual([e['value'] for e in response['epidata']], [15, 16, 17, 18, 19])
+
+    # offset out of scope
+    response = req(offset = 30)
+    self.assertTrue('has_more' not in response)
+    self.assertTrue(response['message'], 'no results')
+    self.assertEqual([e['value'] for e in response['epidata']], [])
+
   def test_location_timeline(self):
     """Select a timeline for a particular location."""
 

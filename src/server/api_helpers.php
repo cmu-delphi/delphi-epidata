@@ -47,17 +47,26 @@ function require_any(&$output, $values) {
 //   $epidata: epidata fetched for the request
 function store_result(&$output, &$epidata) {
   global $MAX_RESULTS;
+
+  $limit = isset($_REQUEST['limit']) ? min(intval($_REQUEST['limit']), $MAX_RESULTS) : $MAX_RESULTS;
+
   if($epidata !== null && count($epidata) > 0) {
     // success!
+
+    // propagate has_more flag
+    if (isset($epidata['has_more'])) {
+      $output['has_more'] = $epidata['has_more'];
+      unset($epidata['has_more']);
+    }
     $output['epidata'] = $epidata;
-    // $output['has_more'] = $has_more
-    if(count($epidata) < $MAX_RESULTS) {
+    if(count($epidata) < $limit) {
       $output['result'] = 1;
       $output['message'] = 'success';
     } else {
       $output['result'] = 2;
       $output['message'] = 'too many results, data truncated';
     }
+
   } else {
     // failure
     $output['result'] = -2;
@@ -151,22 +160,23 @@ function filter_strings($field, $values) {
 
 
 /**
- * processes and stores the given myssql result into the given array with at most MAX_RESULTS entries
+ * processes and stores the given myssql result into the given array with at most limit entries
  * $result (required): mysql result set
  * $epidata (required): an array for storing the data
  * $fields_string (optional): an array of names of string fields
  * $fields_int (optional): an array of names of integer fields
  * $fields_float (optional): an array of names of float fields
+ * $limit
  */
-function _process_query($result, &$epidata, $fields_string, $fields_int, $fields_float) {
+function _process_query($result, &$epidata, $fields_string, $fields_int, $fields_float, $limit) {
   global $dbh;
-  global $MAX_RESULTS;
   if (!$result) {
     error_log(sprintf("Error: %s\n",mysqli_error($dbh)));
     return;
   }
   while($row = mysqli_fetch_array($result)) {
-    if(count($epidata) >= $MAX_RESULTS) {
+    if(count($epidata) >= $limit) {
+      $epidata['has_more'] = true;
       break;
     }
     $values = array();
@@ -202,9 +212,22 @@ function _process_query($result, &$epidata, $fields_string, $fields_int, $fields
 function append_execute_query($query, &$epidata, $fields_string, $fields_int, $fields_float) {
   global $dbh;
   global $MAX_RESULTS;
-  error_log($query);
-  $result = mysqli_query($dbh, $query . " LIMIT {$MAX_RESULTS}");
-  _process_query($result, $epidata, $fields_string, $fields_int, $fields_float);
+  $current = count($epidata);
+  // add + 1 to the limit such that we hit the `has_more` flag if we hit the limit
+  $limit = 1 + (isset($_REQUEST['limit']) ? min(intval($_REQUEST['limit']), $MAX_RESULTS) : $MAX_RESULTS);
+  // further restrict limit by the current number of rows
+  $limit = $limit - $current;
+  // if we have a given offset then treat the existing data part of the offset
+  $offset = isset($_REQUEST['offset']) ? max(0, intval($_REQUEST['offset']) - $current) : 0;
+
+  if ($limit <= 0) {
+    // will be an empty query
+    return;
+  }
+  $full_query = $query . " LIMIT {$limit} OFFSET {$offset}";
+  error_log($full_query);
+  $result = mysqli_query($dbh, $full_query);
+  _process_query($result, $epidata, $fields_string, $fields_int, $fields_float, $limit - 1);
 }
 
 // executes a query, casts the results, and returns an array of the data
@@ -216,10 +239,15 @@ function append_execute_query($query, &$epidata, $fields_string, $fields_int, $f
 function execute_query($query, $fields_string, $fields_int, $fields_float) {
   global $dbh;
   global $MAX_RESULTS;
-  error_log($query);
-  $result = mysqli_query($dbh, $query . " LIMIT {$MAX_RESULTS}");
+  // add + 1 to the limit such that we hit the `has_more` flag if we hit the limit
+  $limit = 1 + (isset($_REQUEST['limit']) ? min(intval($_REQUEST['limit']), $MAX_RESULTS) : $MAX_RESULTS);
+  $offset = isset($_REQUEST['offset']) ? intval($_REQUEST['offset']) : 0;
+
+  $full_query = $query . " LIMIT {$limit} OFFSET {$offset}";
+  error_log($full_query);
+  $result = mysqli_query($dbh, $full_query);
   $epidata = array();
-  _process_query($result, $epidata, $fields_string, $fields_int, $fields_float);
+  _process_query($result, $epidata, $fields_string, $fields_int, $fields_float, $limit - 1);
   return $epidata;
 }
 
