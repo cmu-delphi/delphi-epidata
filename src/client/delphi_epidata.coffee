@@ -56,6 +56,37 @@ class Epidata
       # API call with Node
       https.get("#{BASE_URL}?#{querystring.stringify(params)}", reader)
 
+  # Helper function to request and parse epidata with pagination
+  _request_all = (callback, params) ->
+    handle = (r) ->
+      if !r || r.result < 0
+        callback(r);
+        return;
+
+      if (r.result == 1 || r.result == 2) && r.has_more
+        # has more pages
+        results = [];
+
+        process_chunk = (r) ->
+          if r.result != 1 && r.result != 2
+            callback({result: 1, message: 'success', epidata: results})
+            return
+          results = results.concat(r.epidata || [])
+          if (!r.has_more)
+            callback({result: 1, message: 'success', epidata: results})
+            return
+
+          # another page request
+          page_params = Object.assign({}, params)
+          page_params.offset = results.length
+          _request(process_chunk, page_params)
+        process_chunk(r);
+        return;
+
+      callback(r);
+
+    _request(handle, params);
+
   # Build a `range` object (ex: dates/epiweeks)
   @range = (from, to) ->
     if to <= from
@@ -81,7 +112,7 @@ class Epidata
     if auth?
       params.auth = auth
     # Make the API call
-    _request(callback, params)
+    _request_all(callback, params)
 
 
   # Fetch FluView metadata
@@ -90,7 +121,7 @@ class Epidata
     params =
       'source': 'fluview_meta'
     # Make the API call
-    _request(callback, params)
+    _request_all(callback, params)
 
   # Fetch FluView clinical data
   @fluview_clinical: (callback, regions, epiweeks, issues, lag) ->
@@ -109,7 +140,7 @@ class Epidata
     if lag?
       params.lag = lag
     # Make the API call
-    _request(callback, params)
+    _request_all(callback, params)
 
   # Fetch FluSurv data
   @flusurv: (callback, locations, epiweeks, issues, lag) ->
@@ -128,7 +159,7 @@ class Epidata
     if lag?
       params.lag = lag
     # Make the API call
-    _request(callback, params)
+    _request_all(callback, params)
 
   # Fetch Google Flu Trends data
   @gft: (callback, locations, epiweeks) ->
@@ -141,7 +172,7 @@ class Epidata
       'locations': _list(locations)
       'epiweeks': _list(epiweeks)
     # Make the API call
-    _request(callback, params)
+    _request_all(callback, params)
 
   # Fetch Google Health Trends data
   @ght: (callback, auth, locations, epiweeks, query) ->
@@ -156,7 +187,7 @@ class Epidata
       'epiweeks': _list(epiweeks)
       'query': query
     # Make the API call
-    _request(callback, params)
+    _request_all(callback, params)
 
   # Fetch HealthTweets data
   @twitter: (callback, auth, locations, dates, epiweeks) ->
@@ -175,7 +206,7 @@ class Epidata
     if epiweeks?
       params.epiweeks = _list(epiweeks)
     # Make the API call
-    _request(callback, params)
+    _request_all(callback, params)
 
   # Fetch Wikipedia access data
   @wiki: (callback, articles, dates, epiweeks, hours) ->
@@ -195,7 +226,7 @@ class Epidata
     if hours?
       params.hours = _list(hours)
     # Make the API call
-    _request(callback, params)
+    _request_all(callback, params)
 
   # Fetch CDC page hits
   @cdc: (callback, auth, epiweeks, locations) ->
@@ -209,7 +240,7 @@ class Epidata
       'epiweeks': _list(epiweeks)
       'locations': _list(locations)
     # Make the API call
-    _request(callback, params)
+    _request_all(callback, params)
 
   # Fetch Quidel data
   @quidel: (callback, auth, epiweeks, locations) ->
@@ -223,7 +254,7 @@ class Epidata
       'epiweeks': _list(epiweeks)
       'locations': _list(locations)
     # Make the API call
-    _request(callback, params)
+    _request_all(callback, params)
 
   # Fetch NoroSTAT data (point data, no min/max)
   @norostat: (callback, auth, location, epiweeks) ->
@@ -237,7 +268,7 @@ class Epidata
       'location': location
       'epiweeks': _list(epiweeks)
     # Make the API call
-    _request(callback, params)
+    _request_all(callback, params)
 
   # Fetch NoroSTAT metadata
   @meta_norostat: (callback, auth) ->
@@ -249,7 +280,7 @@ class Epidata
       'source': 'meta_norostat'
       'auth': auth
     # Make the API call
-    _request(callback, params)
+    _request_all(callback, params)
 
   # Fetch AFHSB data (point data, no min/max)
   @afhsb: (callback, auth, locations, epiweeks, flu_types) ->
@@ -264,7 +295,7 @@ class Epidata
       'epiweeks': _list(epiweeks)
       'flu_types': _list(flu_types)
     # Make the API call
-    _request(callback, params)
+    _request_all(callback, params)
 
   # Fetch AFHSB metadata
   @meta_afhsb: (callback, auth) ->
@@ -276,7 +307,7 @@ class Epidata
       'source': 'meta_afhsb'
       'auth': auth
     # Make the API call
-    _request(callback, params)
+    _request_all(callback, params)
 
   # Fetch NIDSS flu data
   @nidss_flu: (callback, regions, epiweeks, issues, lag) ->
@@ -295,7 +326,7 @@ class Epidata
     if lag?
       params.lag = lag
     # Make the API call
-    _request(callback, params)
+    _request_all(callback, params)
 
   # Fetch NIDSS dengue data
   @nidss_dengue: (callback, locations, epiweeks) ->
@@ -308,7 +339,7 @@ class Epidata
       'locations': _list(locations)
       'epiweeks': _list(epiweeks)
     # Make the API call
-    _request(callback, params)
+    _request_all(callback, params)
 
   # Fetch Delphi's forecast
   @delphi: (callback, system, epiweek) ->
@@ -321,7 +352,7 @@ class Epidata
       'system': system
       'epiweek': epiweek
     # Make the API call
-    _request(callback, params)
+    _request_all(callback, params)
 
   # Fetch Delphi's digital surveillance sensors
   @sensors: (callback, auth, names, locations, epiweeks) ->
@@ -336,7 +367,7 @@ class Epidata
       'locations': _list(locations)
       'epiweeks': _list(epiweeks)
     # Make the API call
-    _request(callback, params)
+    _request_all(callback, params)
 
   # Fetch Delphi's wILI nowcast
   @nowcast: (callback, locations, epiweeks) ->
@@ -349,11 +380,11 @@ class Epidata
       'locations': _list(locations)
       'epiweeks': _list(epiweeks)
     # Make the API call
-    _request(callback, params)
+    _request_all(callback, params)
 
   # Fetch API metadata
   @meta: (callback) ->
-    _request(callback, {'source': 'meta'})
+    _request_all(callback, {'source': 'meta'})
 
   # Fetch Delphi's COVID-19 Surveillance Streams
   @covidcast: (callback, data_source, signal, time_type, geo_type, time_values, geo_value, as_of, issues, lag) ->
@@ -378,11 +409,11 @@ class Epidata
     if lag?
       params.lag = lag
     # Make the API call
-    _request(callback, params)
+    _request_all(callback, params)
 
   # Fetch Delphi's COVID-19 Surveillance Streams metadata
   @covidcast_meta: (callback) ->
-    _request(callback, {'source': 'covidcast_meta'})
+    _request_all(callback, {'source': 'covidcast_meta'})
 
 # Export the API to the global environment
 (exports ? window).Epidata = Epidata
