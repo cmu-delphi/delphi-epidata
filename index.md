@@ -5,12 +5,16 @@ nav_order: 0
 
 # Epidata API
 
-This is the GitHub Pages home for the Epidata API.
+The Epidata API provides real-time access to epidemiological surveillance data.
+It is built and maintained by the Carnegie Mellon University [Delphi research
+group](https://delphi.cmu.edu/). The Epidata API includes:
 
-The Epidata API is built and maintained by the Carnegie Mellon University
-[Delphi research group](https://delphi.cmu.edu/). Explore one way in which
-Delphi is responding to the pandemic by visiting the
-[COVIDcast API documentation](api/covidcast.md).
+- The [COVIDcast API](api/covidcast.md), providing daily updates about COVID-19
+  activity across the United States. [API clients](api/covidcast_clients.md) are
+  available.
+- The general [Epidata API](api/README.md), providing information about
+  influenza, dengue, and other epidemics tracked by Delphi through a variety of
+  data streams.
 
 The Delphi group is extremely grateful for Pedrito Maynard-Zhang for all his
 help with the Epidata API [documentation](api/index.md).
