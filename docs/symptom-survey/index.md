@@ -11,7 +11,7 @@ partnership with Facebook. This survey asks respondents about COVID-like
 symptoms, their behavior (such as social distancing), mental health, and
 economic and health impacts they have experienced as a result of the pandemic. A
 high-level overview of the survey is posted [on the COVIDcast
-website](https://covidcast.cmu.edu/survey.html).
+website](https://covidcast.cmu.edu/surveys.html).
 
 Aggregate data from this survey is available through the [COVIDcast API](../api/covidcast.md)
 as the [`fb-survey` data source](../api/covidcast-signals/fb-survey.md).
