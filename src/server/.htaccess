@@ -11,6 +11,7 @@ Header set Access-Control-Allow-Origin "*"
 
 # Allow brief caching of API responses
 <IfModule mod_expires.c>
-    ExpiresByType application/json "access plus 2 hours"
+    # ExpiresActive on
+    # ExpiresByType application/json "access plus 2 hours"
 </IfModule>
 
