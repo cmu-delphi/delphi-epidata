@@ -334,7 +334,7 @@ for all $$i$$. If such a selection is impossible, then we have insufficient
 survey responses (less than 100), and do not produce an estimate for the given
 aggregation unit.
 
-Next, we rescale the weights $$w_i$$ over all $i$ so that $$\sum_{i=1}^m
+Next, we rescale the weights $$w_i$$ over all $$i$$ so that $$\sum_{i=1}^m 
 w_i=1$$. Then our adjusted estimates of $$p$$ and $$q$$ are: 
 
 $$
@@ -417,7 +417,7 @@ importance sampling estimators.
 ## Appendix
 
 Here are some details behind the choice of
-[estimators for percent ILI and percent CLI](#ili-and-cli-indicators). 
+estimators for [percent ILI and percent CLI](#ili-and-cli-indicators). 
 
 Suppose there are $$h$$ households total in the underlying population, and for 
 household $$i$$, denote $$\theta_i=N_i/n$$.  Then note that the quantities of 
@@ -439,8 +439,8 @@ $$
 \quad\text{and}\quad 
 \hat{q} = \frac{1}{m} \sum_{i \in S} \frac{Y_i}{N_i},
 $$
-which are equivalent to our
-[previously-defined estimates](#ili-and-cli-indicators). 
+
+which are an equivalent way of writing our previously-defined estimates. 
 
 Note that we can again rewrite our quantities of interest as
 
@@ -455,10 +455,10 @@ people with ILI per household, expected number of people with CLI per household,
 and expected number of people total per household, respectively, and $$h$$
 denotes the total number of households in the population.
 
-Suppose that instead of proportional sampling, we sampled households  
-uniformly, resulting in $$S \subseteq \{1,\ldots,h\}$$ denote sampled
-households, with $$m=|S|$$. Then the natural estimates of $$p$$ and $$q$$ are
-instead plug-in estimates of the numerators and denominators in the above,
+Suppose that instead of proportional sampling, we sampled households uniformly,
+resulting in $$S \subseteq \{1,\ldots,h\}$$ denote sampled households, with
+$$m=|S|$$. Then the natural estimates of $$p$$ and $$q$$ are instead plug-in
+estimates of the numerators and denominators in the above, 
 
 $$
 \tilde{p} = \frac{\bar{X}}{\bar{N}}
@@ -470,13 +470,13 @@ where $$\bar{X}=\sum_{i \in S} X_i/m$$, $$\bar{Y}=\sum_{i \in S} Y_i/m$$, and
 $$\bar{N}=\sum_{i \in S} N_i/m$$ denote the sample means of $$\{X_i\}_{i \in
 S}$$, $$\{Y_i\}_{i \in S}$$, and $$\{N_i\}_{i \in S}$$, respectively.
 
-Whether we consider $$\hat{p}$$ and $$\hat{q}$$, or $$\tilde{p} and \tilde{q}$$, 
-to be more natural natural---mean of fractions, or fraction of means,
-respectively---depends on the sampling model: if we are sampling households
-proportional to household size, then it is $$\hat{p}$$ and $$\hat{q}$$; if we
-are sampling household uniformly, then it is $$\tilde{p} and \tilde{q}$$.  We
-settled on the former, based on both conceptual and empirical supporting
-evidence: 
+Whether we consider $$\hat{p}$$ and $$\hat{q}$$, or $$\tilde{p}$$ and
+$$\tilde{q}$$, to be more natural natural---mean of fractions, or fraction of
+means, respectively---depends on the sampling model: if we are sampling
+households proportional to household size, then it is $$\hat{p}$$ and
+$$\hat{q}$$; if we are sampling household uniformly, then it is $$\tilde{p} and
+\tilde{q}$$.  We settled on the former, based on both conceptual and empirical
+supporting evidence: 
 
 - Conceptually, though we do not know the details, we have reason to believe
   that Facebook offers an essentially uniform random draw of eligible
