@@ -43,9 +43,9 @@ attempt to distinguish between COVID-like and influenza-like illness.
 Along with the `raw_` signals, there are additional signals with names beginning
 with `smoothed_`. These estimate the same quantities as the above signals, but
 are smoothed in time to reduce day-to-day sampling noise; see [details
-below](#smoothing). Because the smoothed signals combine information across
-seven days, they have larger sample sizes and hence are available for more
-counties and MSAs than the raw signals.
+below](#smoothing). Crucially, because the smoothed signals combine information
+across multiple days, they have larger sample sizes and hence are available for
+more counties and MSAs than the raw signals.
 
 ## Table of contents
 {: .no_toc .text-delta}
@@ -71,16 +71,20 @@ The survey starts with the following 5 questions:
 5. How many additional people in your local community that you know personally
    are sick (fever, along with at least one other symptom from the above list)?
 
-
 Beyond these 5 questions, there are also many other questions that follow in the
-survey, which go into more detail on symptoms and demographics. These are
-primarily of interest to researchers studying the social and economic effects of
-the pandemic, but could still be useful for forecasting purposes. The full
-survey can be found TODO. TODO Link to details on obtaining research access
+survey, which go into more detail on symptoms, contacts, risk factors, and
+demographics. These are surely of great interest as well, but we have not fully
+tapped into this wealth of information yet.  We should be able to produce
+indicators from these questions soon.  The full text of the survey (including
+the text from each previous survey version) can be found on our
+[questions and coding site](https://cmu-delphi.github.io/delphi-epidata/symptom-survey/coding.html). 
+Researchers can
+[request access](https://dataforgood.fb.com/docs/covid-19-symptom-survey-request-for-data-access/)
+to (fully de-identified) individual survey responses for research purposes.
 
-As of mid-June 2020, the median number of Facebook survey responses per day, is
-about 72,000.
-
+As of mid-August 2020, the average number of Facebook survey responses we
+receive each day is about 74,000, and the total number of survey responses we
+have received is over 9 million.
 
 ## ILI and CLI Indicators
 
@@ -145,27 +149,27 @@ p = 100 \cdot \frac{x}{n}
 q = 100 \cdot \frac{y}{n}.
 $$
 
-We estimate $$p$$ and $$q$$ across 4 temporal-spatial aggregation schemes:
+We estimate $$p$$ and $$q$$ across 4 aggregation schemes:
 
 1. daily, at the county level;
 2. daily, at the MSA (metropolitan statistical area) level;
 3. daily, at the HRR (hospital referral region) level;
 4. daily, at the state level.
 
-Note that these spatial aggregations are possible as we have the ZIP code of the
-household from Q4 of the survey. Our current rule-of-thumb is to discard any
-estimate (whether at a county, MSA, HRR, or state level) that is based on fewer
-than 100 survey responses. When our geographical mapping data indicates that a
-ZIP code is part of multiple geographical units in a single aggregation, we
-assign weights to each of these units and proceed as described below, but with
-uniform participation weights ($$w^{\text{part}}_i=1$$ for all $$i$$).
+Note that are possible as we have the ZIP code of the household from Q4 of the
+survey. Our current rule-of-thumb is to discard any estimate (whether at a
+county, MSA, HRR, or state level) that is based on fewer than 100 survey
+responses. When our geographical mapping data indicates that a ZIP code is part
+of multiple geographical units in a single aggregation, we assign weights to
+each of these units and proceed as described below, but with uniform
+participation weights ($$w^{\text{part}}_i=1$$ for all $$i$$).
 
-In a given temporal-spatial unit (for example, daily-county), let $$X_i$$ and
+In a given aggregation unit (for example, daily-county), let $$X_i$$ and
 $$Y_i$$ denote number of ILI and CLI cases in the household, respectively
 (computed according to the simple strategy described above), and let $$N_i$$
 denote the total number of people in the household, in survey $$i$$, out of
-$$m$$ surveys we collected. Then our estimates of $$p$$ and $$q$$ (see Appendix
-below for motivating details) are:
+$$m$$ surveys we collected. Then our estimates of $$p$$ and $$q$$ (see
+the [appendix](#appendix) for motivating details) are: 
 
 $$
 \hat{p} = 100 \cdot \frac{1}{m}\sum_{i=1}^m \frac{X_i}{N_i}
@@ -211,15 +215,15 @@ a = 100 \cdot \frac{u}{n}
 b = 100 \cdot \frac{y}{n}.
 $$
 
-We will estimate $$a$$ and $$b$$ across the same 4 temporal-spatial aggregation
-schemes as before.
+We will estimate $$a$$ and $$b$$ across the same 4 aggregation schemes as
+before. 
 
 For a single survey, let:
 
 - $$U = 1$$ if and only if a positive number is reported for Q2 or Q5;
 - $$V = 1$$ if and only if a positive number is reported for Q2.
 
-In a given temporal-spatial unit (for example, daily-county), let $$U_i$$ and
+In a given aggregation unit (for example, daily-county), let $$U_i$$ and
 $$V_i$$ denote these quantities for survey $$i$$, and $$m$$ denote the number of
 surveys total.  Then to estimate $$a$$ and $$b$$, we simply use:
 
@@ -288,20 +292,20 @@ take our survey in the first  place.
 In more detail, we receive a participation weight
 
 $$
-w^{\text{part}}_i = \frac{c^{\text{part}}}{\pi^{\text{part}}_i},
+w^{\text{part}}_i \propto \frac{1}{\pi_i},
 $$
 
 where $$\pi_i$$ is an estimated probability (produced by Facebook) that an
 individual with the same state-by-age-gender profile as user $$i$$ would be a
-Facebook user and take our CMU survey, scaled by some unknown constant $$c>0$$.
-The adjustment we make follows a standard inverse probability weighting strategy
-(this being a special case of importance sampling).
+Facebook user and take our CMU survey. The adjustment we make follows a standard
+inverse probability weighting strategy (this being a special case of importance
+sampling).
 
 ### Adjusting Household ILI and CLI
 
-As before, for a given temporal-spatial unit (for example, daily-county), let
-$$X_i$$ and $$Y_i$$ denote the numbers of ILI and CLI cases in household $$i$$,
-respectively (computed according to the simple strategy above), and let $$N_i$$
+As before, for a given aggregation unit (for example, daily-county), let $$X_i$$
+and $$Y_i$$ denote the numbers of ILI and CLI cases in household $$i$$,
+respectively (computed according to the simple strategy above), and let $$N_i$$ 
 denote the total number of people in the household. Let $$i = 1, \dots, m$$
 denote the surveys started during the time period of interest and reported in a
 ZIP code intersecting the spatial unit of interest.
@@ -313,14 +317,12 @@ in the spatial unit of interest. (For example, a ZIP code may overlap with
 multiple counties, so the weight describes what proportion of the ZIP code's
 population is in each county.)
 
-Let $$w^{\text{init}}_i=w^{\text{part}}_i w^{\text{geodiv}}_i=c/\pi_i$$ denote
-the initial weight assigned to this survey. This is simply the weight provided
-to us by Facebook, rescaled with $$c>0$$ chosen so that $$\sum_{i=1}^m w_i=1$$.
-
-First, the initial weights are adjusted to reduce sensitivity to any individual
-survey by "mixing" them with a uniform weighting across all relevant surveys.
-This prevents specific survey respondents with high survey weights having
-disproportionate influence on the weighted estimates.
+Let $$w^{\text{init}}_i=w^{\text{part}}_i w^{\text{geodiv}}_i$$ denote the
+initial weight assigned to this survey. First, we adjust these initial weights
+to reduce sensitivity to any individual survey by "mixing" them with a uniform
+weighting across all relevant surveys. This prevents specific survey respondents 
+with high survey weights having disproportionate influence on the weighted
+estimates. 
 
 Specifically, we select the smallest value of $$a \in [0.05, 1]$$ such that
 
@@ -330,9 +332,10 @@ $$
 
 for all $$i$$. If such a selection is impossible, then we have insufficient
 survey responses (less than 100), and do not produce an estimate for the given
-temporal-spatial unit.
+aggregation unit.
 
-Then our adjusted estimates of $$p$$ and $$q$$ are:
+Next, we rescale the weights $$w_i$$ over all $i$ so that $$\sum_{i=1}^m
+w_i=1$$. Then our adjusted estimates of $$p$$ and $$q$$ are: 
 
 $$
 \begin{aligned}
@@ -383,12 +386,12 @@ which were used above.)
 
 ### Adjusting Community CLI
 
-As before, in a given temporal-spatial unit (for example, daily-county), let
-$$U_i$$ and $$V_i$$ denote the indicators that the survey respondent knows someone
-in their community with CLI, including and not including their household,
-respectively, for survey $$i$$, out of $$m$$ surveys collected.   Also let $$w_i$$ be
-the self-normalized weight that accompanies survey $$i$$, as above. Then our
-adjusted estimates of $$a$$ and $$b$$ are:
+As before, in a given aggregation unit (for example, daily-county), let $$U_i$$
+and $$V_i$$ denote the indicators that the survey respondent knows someone in
+their community with CLI, including and not including their household,
+respectively, for survey $$i$$, out of $$m$$ surveys collected.   Also let
+$$w_i$$ be the self-normalized weight that accompanies survey $$i$$, as
+above. Then our adjusted estimates of $$a$$ and $$b$$ are: 
 
 $$
 \begin{aligned}
@@ -410,3 +413,84 @@ $$
 
 the delta method estimates of variance associated with self-normalized
 importance sampling estimators.
+
+## Appendix
+
+Here are some details behind the choice of
+[estimators for percent ILI and percent CLI](#ili-and-cli-indicators). 
+
+Suppose there are $$h$$ households total in the underlying population, and for 
+household $$i$$, denote $$\theta_i=N_i/n$$.  Then note that the quantities of 
+interest, $$p$$ and $$q$$, are 
+
+$$
+p = \sum_{i=1}^h \frac{X_i}{N_i} \theta_i
+\quad\text{and}\quad 
+q = \sum_{i=1}^h \frac{Y_i}{N_i} \theta_i.
+$$
+
+Let $$S \subseteq \{1,\ldots,h\}$$ denote sampled households, with $$m=|S|$$,
+and suppose we sampled household $$i$$ with probability $$\theta_i=N_i/n$$
+proportional to the household size.  Then unbiased estimates of $$p$$ and $$q$$
+are simply
+
+$$
+\hat{p} = \frac{1}{m} \sum_{i \in S} \frac{X_i}{N_i}
+\quad\text{and}\quad 
+\hat{q} = \frac{1}{m} \sum_{i \in S} \frac{Y_i}{N_i},
+$$
+which are equivalent to our
+[previously-defined estimates](#ili-and-cli-indicators). 
+
+Note that we can again rewrite our quantities of interest as
+
+$$
+p = \frac{\mu_x}{\mu_n} 
+\quad\text{and}\quad 
+q = \frac{\mu_y}{\mu_n},
+$$
+
+where $$\mu_x=x/h$$, $$\mu_y=y/h$$, $$\mu_n=n/h$$ denote the expected number
+people with ILI per household, expected number of people with CLI per household,
+and expected number of people total per household, respectively, and $$h$$
+denotes the total number of households in the population.
+
+Suppose that instead of proportional sampling, we sampled households  
+uniformly, resulting in $$S \subseteq \{1,\ldots,h\}$$ denote sampled
+households, with $$m=|S|$$. Then the natural estimates of $$p$$ and $$q$$ are
+instead plug-in estimates of the numerators and denominators in the above,
+
+$$
+\tilde{p} = \frac{\bar{X}}{\bar{N}}
+\quad\text{and}\quad 
+\tilde{q} = \frac{\bar{X}}{\bar{N}}
+$$
+
+where $$\bar{X}=\sum_{i \in S} X_i/m$$, $$\bar{Y}=\sum_{i \in S} Y_i/m$$, and
+$$\bar{N}=\sum_{i \in S} N_i/m$$ denote the sample means of $$\{X_i\}_{i \in
+S}$$, $$\{Y_i\}_{i \in S}$$, and $$\{N_i\}_{i \in S}$$, respectively.
+
+Whether we consider $$\hat{p}$$ and $$\hat{q}$$, or $$\tilde{p} and \tilde{q}$$, 
+to be more natural natural---mean of fractions, or fraction of means,
+respectively---depends on the sampling model: if we are sampling households
+proportional to household size, then it is $$\hat{p}$$ and $$\hat{q}$$; if we
+are sampling household uniformly, then it is $$\tilde{p} and \tilde{q}$$.  We
+settled on the former, based on both conceptual and empirical supporting
+evidence: 
+
+- Conceptually, though we do not know the details, we have reason to believe
+  that Facebook offers an essentially uniform random draw of eligible
+  users---those 18 years or older---to take our survey.  In this sense, the
+  sampling is done proportional to the number of "Facebook adults" in a
+  household: individuals 18 years or older, who have a Facebook account.  Hence
+  if we posit that the number of "Facebook adults" scales linearly with the
+  household size, which seems to us like a reasonable assumption, then sampling
+  would still be proportional to household size.  (Notice that this would 
+  remain true no matter how small the linear coefficient is, that is, it would
+  even be true if Facebook did not have good coverage over the US.)
+
+- Empirically, we have computed the distribution of household sizes (proportion
+  of households of size 1, size 2, size 3, etc.) in the Facebook survey data
+  thus far, and compared it to the distribution of household sizes from the
+  census.  These align quite closely, also suggesting that sampling is likely
+  done proportional to household size.
