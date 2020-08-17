@@ -160,9 +160,10 @@ These are possible because we have the ZIP code of the household from Q4 of the
 survey. Our current rule-of-thumb is to discard any estimate (whether at a
 county, MSA, HRR, or state level) that is based on fewer than 100 survey
 responses. When our geographical mapping data indicates that a ZIP code is part
-of multiple geographical units in a single aggregation, we assign weights to
-each of these units and proceed as described below, but with uniform
-participation weights ($$w^{\text{part}}_i=1$$ for all $$i$$).
+of multiple geographical units in a single aggregation, we assign weights
+$$w_i^\text{geodiv}$$ to each of these units (based on the ZIP code's overlap
+with each geographical unit) and use these weights as part of the survey
+weighting, as [described below](#survey-weighting).
 
 In a given aggregation unit (for example, daily-county), let $$X_i$$ and
 $$Y_i$$ denote number of ILI and CLI cases in the household, respectively
