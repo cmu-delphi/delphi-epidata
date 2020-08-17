@@ -77,7 +77,7 @@ demographics. These are surely of great interest as well, but we have not fully
 tapped into this wealth of information yet.  We should be able to produce
 indicators from these questions soon.  The full text of the survey (including
 the text from each previous survey version) can be found on our
-[questions and coding site](https://cmu-delphi.github.io/delphi-epidata/symptom-survey/coding.html). 
+[questions and coding page](../../symptom-survey/coding.md).
 Researchers can
 [request access](https://dataforgood.fb.com/docs/covid-19-symptom-survey-request-for-data-access/)
 to (fully de-identified) individual survey responses for research purposes.
@@ -156,7 +156,7 @@ We estimate $$p$$ and $$q$$ across 4 aggregation schemes:
 3. daily, at the HRR (hospital referral region) level;
 4. daily, at the state level.
 
-Note that are possible as we have the ZIP code of the household from Q4 of the
+These are possible because we have the ZIP code of the household from Q4 of the
 survey. Our current rule-of-thumb is to discard any estimate (whether at a
 county, MSA, HRR, or state level) that is based on fewer than 100 survey
 responses. When our geographical mapping data indicates that a ZIP code is part
@@ -416,8 +416,8 @@ importance sampling estimators.
 
 ## Appendix
 
-Here are some details behind the choice of
-estimators for [percent ILI and percent CLI](#ili-and-cli-indicators). 
+Here are some details behind the choice of estimators for [percent ILI and
+percent CLI](#ili-and-cli-indicators).
 
 Suppose there are $$h$$ households total in the underlying population, and for 
 household $$i$$, denote $$\theta_i=N_i/n$$.  Then note that the quantities of 
@@ -429,7 +429,7 @@ p = \sum_{i=1}^h \frac{X_i}{N_i} \theta_i
 q = \sum_{i=1}^h \frac{Y_i}{N_i} \theta_i.
 $$
 
-Let $$S \subseteq \{1,\ldots,h\}$$ denote sampled households, with $$m=|S|$$,
+Let $$S \subseteq \{1,\dots,h\}$$ denote sampled households, with $$m=|S|$$,
 and suppose we sampled household $$i$$ with probability $$\theta_i=N_i/n$$
 proportional to the household size.  Then unbiased estimates of $$p$$ and $$q$$
 are simply
@@ -456,7 +456,7 @@ and expected number of people total per household, respectively, and $$h$$
 denotes the total number of households in the population.
 
 Suppose that instead of proportional sampling, we sampled households uniformly,
-resulting in $$S \subseteq \{1,\ldots,h\}$$ denote sampled households, with
+resulting in $$S \subseteq \{1,\dots,h\}$$ denote sampled households, with
 $$m=|S|$$. Then the natural estimates of $$p$$ and $$q$$ are instead plug-in
 estimates of the numerators and denominators in the above, 
 
@@ -471,12 +471,12 @@ $$\bar{N}=\sum_{i \in S} N_i/m$$ denote the sample means of $$\{X_i\}_{i \in
 S}$$, $$\{Y_i\}_{i \in S}$$, and $$\{N_i\}_{i \in S}$$, respectively.
 
 Whether we consider $$\hat{p}$$ and $$\hat{q}$$, or $$\tilde{p}$$ and
-$$\tilde{q}$$, to be more natural natural---mean of fractions, or fraction of
-means, respectively---depends on the sampling model: if we are sampling
-households proportional to household size, then it is $$\hat{p}$$ and
-$$\hat{q}$$; if we are sampling household uniformly, then it is $$\tilde{p} and
-\tilde{q}$$.  We settled on the former, based on both conceptual and empirical
-supporting evidence: 
+$$\tilde{q}$$, to be more natural---mean of fractions, or fraction of means,
+respectively---depends on the sampling model: if we are sampling households
+proportional to household size, then it is $$\hat{p}$$ and $$\hat{q}$$; if we
+are sampling households uniformly, then it is $$\tilde{p}$$ and $$\tilde{q}$$.
+We settled on the former, based on both conceptual and empirical supporting
+evidence:
 
 - Conceptually, though we do not know the details, we have reason to believe
   that Facebook offers an essentially uniform random draw of eligible
@@ -492,5 +492,5 @@ supporting evidence:
 - Empirically, we have computed the distribution of household sizes (proportion
   of households of size 1, size 2, size 3, etc.) in the Facebook survey data
   thus far, and compared it to the distribution of household sizes from the
-  census.  These align quite closely, also suggesting that sampling is likely
+  Census.  These align quite closely, also suggesting that sampling is likely
   done proportional to household size.
