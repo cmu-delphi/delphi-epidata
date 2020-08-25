@@ -959,7 +959,7 @@ function get_covidcast($source, $signal, $time_type, $geo_type, $time_values, $g
   $condition_time_type = "t.`time_type` = '{$time_type}'";
   $condition_geo_type = "t.`geo_type` = '{$geo_type}'";
   $condition_time_value = filter_integers('t.`time_value`', $time_values);
-    
+
   if ($geo_value === '*') {
     // the wildcard query should return data for all locations in `geo_type`
     $condition_geo_value = 'TRUE';
@@ -1017,6 +1017,50 @@ function get_covidcast_meta() {
 
     if (intval($row['age']) > $max_age && strlen($row['epidata']) > 0) {
       error_log('covidcast_meta cache is stale: '.$row['age']);
+    }
+  }
+
+  if ($epidata !== null) {
+    // filter rows
+    $time_types = extract_values($_REQUEST['time_type'], 'str');
+    $signals = isset($_REQUEST['signals']) ? array_map(function($signal) {
+        return explode(':', $signal, 2);
+      }, extract_values($_REQUEST['signals'], 'str')) : null;
+    $geo_types = extract_values($_REQUEST['geo_types'], 'str');
+
+    if ($time_types !== null || $signals !== null || $geo_types !== null) {
+      $epidata = array_filter($epidata, function($row) use(&$time_types, &$signals, &$geo_types) {
+        if ($time_types !== null && !in_array($row['time_type'], $time_types)) {
+          return false;
+        }
+        if ($geo_types !== null && !in_array($row['geo_type'], $geo_types)) {
+          return false;
+        }
+        if ($signals === null || count($signals) === 0) {
+          return true;
+        }
+        // filter by signal
+        foreach($signals as $signal) {
+          if ($row['data_source'] === $signal[0] && $row['signal'] === $signal[1]) {
+            return true;
+          }
+        }
+        return false;
+      });
+    }
+    // filter fields
+    if (isset($_REQUEST['fields'])) {
+      $fields = extract_values($_REQUEST['fields'], 'str');
+
+      $epidata = array_map(function($row) use(&$fields) {
+        $filtered_row = [];
+        foreach($fields as $field) {
+          if (isset($row[$field])) {
+            $filtered_row[$field] = $row[$field];
+          }
+        }
+        return $filtered_row;
+      }, $epidata);
     }
   }
 
