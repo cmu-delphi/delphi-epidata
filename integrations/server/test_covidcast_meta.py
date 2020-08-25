@@ -28,6 +28,7 @@ class CovidcastMetaTests(unittest.TestCase):
         database='epidata')
     cur = cnx.cursor()
     cur.execute('truncate table covidcast')
+    cur.execute('update covidcast_meta_cache set timestamp = 0, epidata = ""')
     cnx.commit()
     cur.close()
 
@@ -46,7 +47,7 @@ class CovidcastMetaTests(unittest.TestCase):
     # insert dummy data and accumulate expected results (in sort order)
     template = '''
       insert into covidcast values
-        (0, "%s", "%s", "%s", "%s", %d, "%s", 123, %d, 0, 0, 456, 0, %d, 0)
+        (0, "%s", "%s", "%s", "%s", %d, "%s", 123, %d, 0, 0, 456, 0, %d, 0, 1, %d)
     '''
     expected = []
     for src in ('src1', 'src2'):
@@ -72,7 +73,7 @@ class CovidcastMetaTests(unittest.TestCase):
             })
             for tv in (1, 2):
               for gv, v in zip(('geo1', 'geo2'), (10, 20)):
-                self.cur.execute(template % (src, sig, tt, gt, tv, gv, v, tv))
+                self.cur.execute(template % (src, sig, tt, gt, tv, gv, v, tv, False))
     self.cnx.commit()
     update_cache(args=None)
 
@@ -94,14 +95,18 @@ class CovidcastMetaTests(unittest.TestCase):
     # insert dummy data and accumulate expected results (in sort order)
     template = '''
       insert into covidcast values
-        (0, "%s", "%s", "%s", "%s", %d, "%s", 123, %d, 0, 0, 456, 0, %d, 0)
+        (0, "%s", "%s", "%s", "%s", %d, "%s", 123, %d, 0, 0, 456, 0, %d, 0, 1, %d)
     '''
     expected = []
     for src in ('src1', 'src2'):
       for sig in ('sig1', 'sig2', 'wip_sig3'):
         for tt in ('day', 'week'):
           for gt in ('hrr', 'msa'):
-            if sig != 'wip_sig3':
+
+            if sig == 'wip_sig3':
+              is_wip = True
+            else:
+              is_wip = False
               expected.append({
                 'data_source': src,
                 'signal': sig,
@@ -121,7 +126,7 @@ class CovidcastMetaTests(unittest.TestCase):
               })
             for tv in (1, 2):
               for gv, v in zip(('geo1', 'geo2'), (10, 20)):
-                self.cur.execute(template % (src, sig, tt, gt, tv, gv, v, tv))
+                self.cur.execute(template % (src, sig, tt, gt, tv, gv, v, tv, is_wip))
     self.cnx.commit()
     update_cache(args=None)
 

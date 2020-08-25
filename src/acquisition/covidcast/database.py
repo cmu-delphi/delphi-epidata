@@ -4,34 +4,35 @@ See src/ddl/covidcast.sql for an explanation of each field.
 """
 
 # third party
+import json
 import mysql.connector
 import numpy as np
+from math import ceil
 
 # first party
 import delphi.operations.secrets as secrets
 
-from math import ceil
 
 
 class CovidcastRow():
   """A container for all the values of a single covidcast row."""
 
   @staticmethod
-  def fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag):
+  def fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag, is_wip):
     return CovidcastRow(source, signal, time_type, geo_type, time_value,
                         row_value.geo_value,
                         row_value.value,
                         row_value.stderr,
                         row_value.sample_size,
-                        issue, lag)
+                        issue, lag, is_wip)
 
   @staticmethod
-  def fromCsvRows(row_values, source, signal, time_type, geo_type, time_value, issue, lag):
+  def fromCsvRows(row_values, source, signal, time_type, geo_type, time_value, issue, lag, is_wip):
     # NOTE: returns a generator, as row_values is expected to be a generator
-    return (CovidcastRow.fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag)
+    return (CovidcastRow.fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag, is_wip)
             for row_value in row_values)
 
-  def __init__(self, source, signal, time_type, geo_type, time_value, geo_value, value, stderr, sample_size, issue, lag):
+  def __init__(self, source, signal, time_type, geo_type, time_value, geo_value, value, stderr, sample_size, issue, lag, is_wip):
     self.id = None
     self.source = source
     self.signal = signal
@@ -42,10 +43,11 @@ class CovidcastRow():
     self.value = value              # ...
     self.stderr = stderr            # ...
     self.sample_size = sample_size  # from CSV row
-    self.timestamp2 = 0
+    self.direction_updated_timestamp = 0
     self.direction = None
     self.issue = issue
     self.lag = lag
+    self.is_wip = is_wip
 
 
 class Database:
@@ -92,110 +94,141 @@ class Database:
   def insert_or_update_bulk(self, cc_rows):
     return self.insert_or_update_batch(cc_rows)
 
-  def insert_or_update_batch(self, cc_rows, batch_size=0, commit_partial=False):
+  def insert_or_update_batch(self, cc_rows, batch_size=2**20, commit_partial=False):
     """
     Insert new rows (or update existing) in the `covidcast` table.
 
     This has the intentional side effect of updating the primary timestamp.
+
+
     """
-    sql = '''
-      INSERT INTO `covidcast`
-        (`id`, `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`,
-        `timestamp1`, `value`, `stderr`, `sample_size`,
-        `timestamp2`, `direction`,
-        `issue`, `lag`)
+
+    tmp_table_name = 'tmp_insert_update_table'
+
+    create_tmp_table_sql = f'''
+      CREATE TEMPORARY TABLE `{tmp_table_name}` (
+        `source` varchar(32) NOT NULL,
+        `signal` varchar(64) NOT NULL,
+        `time_type` varchar(12) NOT NULL,
+        `geo_type` varchar(12) NOT NULL,
+        `time_value` int(11) NOT NULL,
+        `geo_value` varchar(12) NOT NULL,
+        `value_updated_timestamp` int(11) NOT NULL,
+        `value` double NOT NULL,
+        `stderr` double,
+        `sample_size` double,
+        `direction_updated_timestamp` int(11) NOT NULL,
+        `direction` int(11),
+        `issue` int(11) NOT NULL,
+        `lag` int(11) NOT NULL,
+        `is_latest_issue` BINARY(1) NOT NULL,
+        `is_wip` BINARY(1) NOT NULL
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    '''
+
+    truncate_tmp_table_sql = f'TRUNCATE TABLE {tmp_table_name};'
+    drop_tmp_table_sql = f'DROP TEMPORARY TABLE {tmp_table_name}'
+
+    insert_into_tmp_sql = f'''
+      INSERT INTO `{tmp_table_name}`
+        (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`,
+        `value_updated_timestamp`, `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, `direction`,
+        `issue`, `lag`, `is_latest_issue`, `is_wip`)
       VALUES
-        (0, %s, %s, %s, %s, %s, %s,
-        UNIX_TIMESTAMP(NOW()), %s, %s, %s,
-        0, NULL,
-        %s, %s)
+        (%s, %s, %s, %s, %s, %s, UNIX_TIMESTAMP(NOW()), %s, %s, %s, 0, NULL, %s, %s, 0, %s)
+    '''
+
+    insert_or_update_sql = f'''
+      INSERT INTO `covidcast`
+        (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`,
+        `value_updated_timestamp`, `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, `direction`,
+        `issue`, `lag`, `is_latest_issue`, `is_wip`)
+      SELECT * FROM `{tmp_table_name}`
       ON DUPLICATE KEY UPDATE
-        `timestamp1` = VALUES(`timestamp1`),
+        `value_updated_timestamp` = VALUES(`value_updated_timestamp`),
         `value` = VALUES(`value`),
         `stderr` = VALUES(`stderr`),
         `sample_size` = VALUES(`sample_size`)
     '''
-    # TODO: ^ do we want to reset `timestamp2` and `direction` in the duplicate key case?
+    zero_is_latest_issue_sql = f'''
+      UPDATE
+      (
+        SELECT DISTINCT `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`
+        FROM `{tmp_table_name}`
+      ) AS TMP
+      LEFT JOIN `covidcast`
+      USING (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`)
+      SET `is_latest_issue`=0
+    '''
+    set_is_latest_issue_sql = f'''
+      UPDATE 
+      (
+        SELECT `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`, MAX(`issue`) AS `issue`
+        FROM
+        (
+          SELECT DISTINCT `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value` 
+          FROM `{tmp_table_name}`
+        ) AS TMP
+        LEFT JOIN `covidcast`
+        USING (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`)
+        GROUP BY `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`
+      ) AS TMP
+      LEFT JOIN `covidcast`
+      USING (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`, `issue`)
+      SET `is_latest_issue`=1        
+    '''
+
+    # TODO: ^ do we want to reset `direction_updated_timestamp` and `direction` in the duplicate key case?
 
     # TODO: consider handling cc_rows as a generator instead of a list
-    num_rows = len(cc_rows)
-    total = 0
-    if not batch_size:
-      batch_size = num_rows
-    num_batches = ceil(num_rows/batch_size)
-    for batch_num in range(num_batches):
-      start = batch_num * batch_size
-      end = min(num_rows, start + batch_size)
-      length = end - start
+    self._cursor.execute(create_tmp_table_sql)
 
-      args = [(
-        row.source,
-        row.signal,
-        row.time_type,
-        row.geo_type,
-        row.time_value,
-        row.geo_value,
-        row.value,
-        row.stderr,
-        row.sample_size,
-        row.issue,
-        row.lag
-      ) for row in cc_rows[start:end]]
+    try:
 
-      result = self._cursor.executemany(sql, args)
-      if result is None:
-        # the SQL connector does not support returning number of rows affected
-        total = None
-      else:
-        total += result
-      if commit_partial:
-        self._connection.commit()
-    return total
+      num_rows = len(cc_rows)
+      total = 0
+      if not batch_size:
+        batch_size = num_rows
+      num_batches = ceil(num_rows/batch_size)
+      for batch_num in range(num_batches):
+        start = batch_num * batch_size
+        end = min(num_rows, start + batch_size)
+        length = end - start
 
-  def insert_or_update(
-      self,
-      source,
-      signal,
-      time_type,
-      geo_type,
-      time_value,
-      geo_value,
-      value,
-      stderr,
-      sample_size,
-      issue,
-      lag):
-    """
-    Insert a new row, or update an existing row, in the `covidcast` table.
+        args = [(
+          row.source,
+          row.signal,
+          row.time_type,
+          row.geo_type,
+          row.time_value,
+          row.geo_value,
+          row.value,
+          row.stderr,
+          row.sample_size,
+          row.issue,
+          row.lag,
+          row.is_wip
+        ) for row in cc_rows[start:end]]
 
-    This has the intentional side effect of updating the primary timestamp.
-    """
 
-    sql = '''
-      INSERT INTO `covidcast` VALUES
-        (0, %s, %s, %s, %s, %s, %s, UNIX_TIMESTAMP(NOW()), %s, %s, %s, 0, NULL, %s, %s)
-      ON DUPLICATE KEY UPDATE
-        `timestamp1` = VALUES(`timestamp1`),
-        `value` = VALUES(`value`),
-        `stderr` = VALUES(`stderr`),
-        `sample_size` = VALUES(`sample_size`)
-    '''
+        result = self._cursor.executemany(insert_into_tmp_sql, args)
+        self._cursor.execute(insert_or_update_sql)
+        self._cursor.execute(zero_is_latest_issue_sql)
+        self._cursor.execute(set_is_latest_issue_sql)
+        self._cursor.execute(truncate_tmp_table_sql)
 
-    args = (
-      source,
-      signal,
-      time_type,
-      geo_type,
-      time_value,
-      geo_value,
-      value,
-      stderr,
-      sample_size,
-      issue,
-      lag
-    )
-
-    self._cursor.execute(sql, args)
+        if result is None:
+          # the SQL connector does not support returning number of rows affected
+          total = None
+        else:
+          total += result
+        if commit_partial:
+          self._connection.commit()
+    except Exception as e:
+      raise e
+    finally:
+      self._cursor.execute(drop_tmp_table_sql)
+      return total
 
   def get_data_stdev_across_locations(self, max_day):
     """
@@ -246,7 +279,7 @@ class Database:
       UPDATE
         `covidcast`
       SET
-        `timestamp2` = UNIX_TIMESTAMP(NOW()),
+        `direction_updated_timestamp` = UNIX_TIMESTAMP(NOW()),
         `direction` = %s
       WHERE
         `source` = %s AND
@@ -269,26 +302,28 @@ class Database:
 
     self._cursor.execute(sql, args)
 
-  def get_all_record_values_of_timeseries_with_potentially_stale_direction(self, temporary_table=None):
+  def get_all_record_values_of_timeseries_with_potentially_stale_direction(self, temporary_table=None,
+                                                                           partition_condition='(TRUE)'):
     """Return the rows of all daily time-series with potentially stale directions,
     only rows corresponding to the most recent issue for each time_value is returned.
 
     `temporary_table`: if provided, a temporary table with the name `temporary_table`
                        is created and the result is also stored in that table.
+    `partition_condition`: a condition that defines the partition to be processed.
     """
 
     create_tmp_table_sql = f'''
     CREATE TEMPORARY TABLE `{temporary_table}` (
       `id` int(11) NOT NULL,
       `source` varchar(32),
-      `signal` varchar(32),
+      `signal` varchar(64),
       `time_type` varchar(12),
       `geo_type` varchar(12),
       `geo_value` varchar(12),
       `time_value` int(11),
-      `timestamp1` int(11),
+      `value_updated_timestamp` int(11),
       `value` double,
-      `timestamp2` int(11),
+      `direction_updated_timestamp` int(11),
       `direction` int(11),
       PRIMARY KEY(`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -305,33 +340,14 @@ class Database:
       `geo_type`,
       `geo_value`,
       `time_value`,
-      `timestamp1`,
+      `value_updated_timestamp`,
       `value`,
-      `timestamp2`,
+      `direction_updated_timestamp`,
       `direction`
-    FROM
-    (
-      SELECT
-        `source`,
-        `signal`,
-        `time_type`,
-        `geo_type`,
-        `geo_value`,
-        `time_value`,
-        MAX(`issue`) AS `issue`
-      FROM `covidcast`
-      WHERE
-        `time_type` = 'day'
-      GROUP BY
-        `source`,
-        `signal`,
-        `time_type`,
-        `geo_type`,
-        `geo_value`,
-        `time_value`
-    ) b
-    LEFT JOIN `covidcast` a
-    USING (`source`, `signal`, `time_type`, `geo_type`, `geo_value`, `time_value`, `issue`)
+    FROM `covidcast`
+    WHERE `is_latest_issue` = 1 AND
+        `time_type` = 'day' AND
+        {partition_condition}
     '''
 
     cte_definition = f'''
@@ -358,7 +374,7 @@ class Database:
         `geo_type`,
         `geo_value`
       HAVING
-        MAX(`timestamp1`) > MIN(`timestamp2`)
+        MAX(`value_updated_timestamp`) > MIN(`direction_updated_timestamp`)
     '''
 
     # A query that selects rows of the time-series selected by stale_ts_key_sql query.
@@ -372,9 +388,9 @@ class Database:
       `geo_type`,
       `geo_value`,
       `time_value`,
-      `timestamp1`,
+      `value_updated_timestamp`,
       `value`,
-      `timestamp2`,
+      `direction_updated_timestamp`,
       `direction`
     FROM ({stale_ts_key_sql}) AS t2
     LEFT JOIN `latest_issues` AS t3
@@ -424,8 +440,8 @@ class Database:
     sql = f'DROP TEMPORARY TABLE `{tmp_table_name}`;'
     self._cursor.execute(sql)
 
-  def update_timestamp2_from_temporary_table(self, tmp_table_name):
-    """Updates the `timestamp2` column of `covidcast` table for all the rows with id value in `tmp_table_name`.
+  def update_direction_updated_timestamp_from_temporary_table(self, tmp_table_name):
+    """Updates the `direction_updated_timestamp` column of `covidcast` table for all the rows with id value in `tmp_table_name`.
 
     `tmp_table_name`: name of the temporary table.
     """
@@ -437,7 +453,7 @@ class Database:
       ON
         `covidcast`.id=t.id
       SET
-        `covidcast`.timestamp2=UNIX_TIMESTAMP(NOW())
+        `covidcast`.direction_updated_timestamp=UNIX_TIMESTAMP(NOW())
       '''
     self._cursor.execute(sql)
 
@@ -457,8 +473,8 @@ class Database:
         `signal`,
         `geo_type`,
         `geo_value`,
-        MAX(`timestamp1`) AS `max_timestamp1`,
-        MIN(`timestamp2`) AS `min_timestamp2`,
+        MAX(`value_updated_timestamp`) AS `max_value_updated_timestamp`,
+        MIN(`direction_updated_timestamp`) AS `min_direction_updated_timestamp`,
         MIN(`time_value`) AS `min_day`,
         MAX(`time_value`) AS `max_day`,
         COUNT(1) AS `series_length`
@@ -473,7 +489,7 @@ class Database:
         `geo_type`,
         `geo_value`
       HAVING
-        MAX(`timestamp1`) > MIN(`timestamp2`)
+        MAX(`value_updated_timestamp`) > MIN(`direction_updated_timestamp`)
     '''
 
     self._cursor.execute(sql)
@@ -488,8 +504,8 @@ class Database:
         DATEDIFF(`time_value`, %s) AS `offset`,
         `time_value` AS `day`,
         `value`,
-        `timestamp1`,
-        `timestamp2`
+        `value_updated_timestamp`,
+        `direction_updated_timestamp`
       FROM
         `covidcast`
       WHERE
@@ -507,9 +523,9 @@ class Database:
     self._cursor.execute(sql, args)
     return list(self._cursor)
 
-  def update_timeseries_timestamp2(
+  def update_timeseries_direction_updated_timestamp(
       self, source, signal, time_type, geo_type, geo_value):
-    """Update the `timestamp2` column for an entire time-series.
+    """Update the `direction_updated_timestamp` column for an entire time-series.
 
     For daily time-series, this implies that all `direction` values in the
     specified time-series are confirmed fresh as of the current time. Even if
@@ -523,7 +539,7 @@ class Database:
       UPDATE
         `covidcast`
       SET
-        `timestamp2` = UNIX_TIMESTAMP(NOW())
+        `direction_updated_timestamp` = UNIX_TIMESTAMP(NOW())
       WHERE
         `source` = %s AND
         `signal` = %s AND
@@ -539,7 +555,13 @@ class Database:
   def get_covidcast_meta(self):
     """Compute and return metadata on all non-WIP COVIDcast signals."""
 
-    sql = '''
+    meta = []
+
+    sql = 'SELECT `source`, `signal` FROM covidcast WHERE NOT `is_wip` GROUP BY `source`, `signal` ORDER BY `source` ASC, `signal` ASC;'
+    self._cursor.execute(sql)
+    for source, signal in  [ss for ss in self._cursor]: #NOTE: this obfuscation protects the integrity of the cursor; using the cursor as a generator will cause contention w/ subsequent queries
+
+      sql = '''
       SELECT
         t.`source` AS `data_source`,
         t.`signal`,
@@ -552,7 +574,7 @@ class Database:
         MAX(`value`) AS `max_value`,
         ROUND(AVG(`value`),7) AS `mean_value`,
         ROUND(STD(`value`),7) AS `stdev_value`,
-        MAX(`timestamp1`) AS `last_update`,
+        MAX(`value_updated_timestamp`) AS `last_update`,
         MAX(`issue`) as `max_issue`,
         MIN(`lag`) as `min_lag`,
         MAX(`lag`) as `max_lag`
@@ -570,12 +592,13 @@ class Database:
               `geo_value`
             FROM
               `covidcast`
+            WHERE
+              `source` = %s AND
+              `signal` = %s
             GROUP BY
               `time_value`,
               `time_type`,
               `geo_type`,
-              `source`,
-              `signal`,
               `geo_value`
           ) x
         ON
@@ -586,23 +609,19 @@ class Database:
           x.`signal` = t.`signal` AND
           x.`geo_type` = t.`geo_type` AND
           x.`geo_value` = t.`geo_value`
-      WHERE
-        t.`signal` NOT LIKE 'wip_%'
       GROUP BY
-        t.`source`,
-        t.`signal`,
         t.`time_type`,
         t.`geo_type`
       ORDER BY
-        t.`source` ASC,
-        t.`signal` ASC,
         t.`time_type` ASC,
         t.`geo_type` ASC
-    '''
-    self._cursor.execute(sql)
-    return list(dict(zip(self._cursor.column_names,x)) for x in self._cursor)
+      '''
+      self._cursor.execute(sql, (source, signal))
+      meta.extend(list(dict(zip(self._cursor.column_names,x)) for x in self._cursor))
 
-  def update_covidcast_meta_cache(self, epidata_json):
+    return meta
+  
+  def update_covidcast_meta_cache(self, metadata):
     """Updates the `covidcast_meta_cache` table."""
 
     sql = '''
@@ -612,5 +631,23 @@ class Database:
         `timestamp` = UNIX_TIMESTAMP(NOW()),
         `epidata` = %s
     '''
+    epidata_json = json.dumps(metadata)
 
     self._cursor.execute(sql, (epidata_json,))
+
+  def retrieve_covidcast_meta_cache(self):
+    """Useful for viewing cache entries (was used in debugging)"""
+
+    sql = '''
+      SELECT `epidata`
+      FROM `covidcast_meta_cache`
+      ORDER BY `timestamp` DESC
+      LIMIT 1;
+    '''
+    self._cursor.execute(sql)
+    cache_json = self._cursor.fetchone()[0]
+    cache = json.loads(cache_json)
+    cache_hash = {}
+    for entry in cache:
+      cache_hash[(entry['data_source'], entry['signal'], entry['time_type'], entry['geo_type'])] = entry
+    return cache_hash
