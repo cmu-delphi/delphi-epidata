@@ -162,6 +162,21 @@ function execute_query($query, &$epidata, $fields_string, $fields_int, $fields_f
     error_log(sprintf("Error: %s\n",mysqli_error($dbh)));
     return;
   }
+
+  if (isset($_REQUEST['fields'])) {
+    $fields = extract_values($_REQUEST['fields'], 'str');
+    // limit fields to the selection
+    if($fields_string !== null) {
+      $fields_string = array_intersect($fields_string, $fields);
+    }
+    if($fields_int !== null) {
+      $fields_int = array_intersect($fields_int, $fields);
+    }
+    if($fields_float !== null) {
+      $fields_float = array_intersect($fields_float, $fields);
+    }
+  }
+
   while($row = mysqli_fetch_array($result)) {
     if(count($epidata) < $MAX_RESULTS) {
       $values = array();
