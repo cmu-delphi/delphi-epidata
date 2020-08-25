@@ -78,6 +78,94 @@ class CovidcastTests(unittest.TestCase):
       'message': 'success',
     })
 
+  def test_fields(self):
+    """Test to limit fields field"""
+
+    # insert dummy data
+    self.cur.execute('''
+      insert into covidcast values
+        (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
+          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0)
+    ''')
+    self.cnx.commit()
+
+    # make the request
+    response = requests.get(BASE_URL, params={
+      'source': 'covidcast',
+      'data_source': 'src',
+      'signal': 'sig',
+      'time_type': 'day',
+      'geo_type': 'county',
+      'time_values': 20200414,
+      'geo_value': '01234',
+    })
+    response.raise_for_status()
+    response = response.json()
+
+    # assert that the right data came back
+    self.assertEqual(response, {
+      'result': 1,
+      'epidata': [{
+        'time_value': 20200414,
+        'geo_value': '01234',
+        'value': 1.5,
+        'stderr': 2.5,
+        'sample_size': 3.5,
+        'direction': 4,
+        'issue': 20200414,
+        'lag': 0
+       }],
+      'message': 'success',
+    })
+
+    # limit fields
+    response = requests.get(BASE_URL, params={
+      'source': 'covidcast',
+      'data_source': 'src',
+      'signal': 'sig',
+      'time_type': 'day',
+      'geo_type': 'county',
+      'time_values': 20200414,
+      'geo_value': '01234',
+      'fields': 'time_value,geo_value'
+    })
+    response.raise_for_status()
+    response = response.json()
+
+    # assert that the right data came back
+    self.assertEqual(response, {
+      'result': 1,
+      'epidata': [{
+        'time_value': 20200414,
+        'geo_value': '01234'
+       }],
+      'message': 'success',
+    })
+
+    # limit invalid values
+    response = requests.get(BASE_URL, params={
+      'source': 'covidcast',
+      'data_source': 'src',
+      'signal': 'sig',
+      'time_type': 'day',
+      'geo_type': 'county',
+      'time_values': 20200414,
+      'geo_value': '01234',
+      'fields': 'time_value,geo_value,dummy'
+    })
+    response.raise_for_status()
+    response = response.json()
+
+    # assert that the right data came back
+    self.assertEqual(response, {
+      'result': 1,
+      'epidata': [{
+        'time_value': 20200414,
+        'geo_value': '01234'
+       }],
+      'message': 'success',
+    })
+
   def test_location_wildcard(self):
     """Select all locations with a wildcard query."""
 
