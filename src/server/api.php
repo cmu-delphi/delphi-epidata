@@ -1022,7 +1022,7 @@ function get_covidcast_meta() {
 
   if ($epidata !== null) {
     // filter rows
-    $time_types = extract_values($_REQUEST['time_type'], 'str');
+    $time_types = extract_values($_REQUEST['time_types'], 'str');
     $signals = isset($_REQUEST['signals']) ? array_map(function($signal) {
         return explode(':', $signal, 2);
       }, extract_values($_REQUEST['signals'], 'str')) : null;
@@ -1041,7 +1041,8 @@ function get_covidcast_meta() {
         }
         // filter by signal
         foreach($signals as $signal) {
-          if ($row['data_source'] === $signal[0] && $row['signal'] === $signal[1]) {
+          // match source and (signal or no signal or signal = *)
+          if ($row['data_source'] === $signal[0] && (count($signal) === 1 || $row['signal'] === $signal[1] || $signal[1] === '*')) {
             return true;
           }
         }

@@ -88,6 +88,114 @@ class CovidcastMetaTests(unittest.TestCase):
       'message': 'success',
     })
 
+
+  def test_filter(self):
+    """Test filtering options some sample data."""
+
+    # insert dummy data and accumulate expected results (in sort order)
+    template = '''
+      insert into covidcast values
+        (0, "%s", "%s", "%s", "%s", %d, "%s", 123, %d, 0, 0, 456, 0, %d, 0)
+    '''
+    expected = []
+    for src in ('src1', 'src2'):
+      for sig in ('sig1', 'sig2'):
+        for tt in ('day', 'week'):
+          for gt in ('hrr', 'msa'):
+            expected.append({
+              'data_source': src,
+              'signal': sig,
+              'time_type': tt,
+              'geo_type': gt,
+              'min_time': 1,
+              'max_time': 2,
+              'num_locations': 2,
+              'min_value': 10,
+              'max_value': 20,
+              'mean_value': 15,
+              'stdev_value': 5,
+              'last_update': 123,
+              'max_issue': 2,
+              'min_lag': 0,
+              'max_lag': 0,
+            })
+            for tv in (1, 2):
+              for gv, v in zip(('geo1', 'geo2'), (10, 20)):
+                self.cur.execute(template % (src, sig, tt, gt, tv, gv, v, tv))
+    self.cnx.commit()
+    update_cache(args=None)
+
+    def fetch(**kwargs):
+      # make the request
+      params = kwargs.copy()
+      params['source'] = 'covidcast_meta'
+      response = requests.get(BASE_URL, params=params)
+      response.raise_for_status()
+      return response.json()
+
+    res = fetch()
+    self.assertEqual(res['result'], 1)
+    self.assertEqual(len(res['epidata']), len(expected))
+
+    # time types
+    res = fetch(time_types='day')
+    self.assertEqual(res['result'], 1)
+    self.assertEqual(len(res['epidata']), sum([1 for s in expected if s['time_type'] == 'day']))
+
+    res = fetch(time_types='day,week')
+    self.assertEqual(res['result'], 1)
+    self.assertEqual(len(res['epidata']), len(expected))
+
+    res = fetch(time_types='sec')
+    self.assertEqual(res['result'], -2)
+
+    # geo types
+    res = fetch(geo_types='hrr')
+    self.assertEqual(res['result'], 1)
+    self.assertEqual(len(res['epidata']), sum([1 for s in expected if s['geo_type'] == 'hrr']))
+
+    res = fetch(geo_types='hrr,msa')
+    self.assertEqual(res['result'], 1)
+    self.assertEqual(len(res['epidata']), len(expected))
+
+    res = fetch(geo_types='state')
+    self.assertEqual(res['result'], -2)
+
+    # signals
+    res = fetch(signals='src1:sig1')
+    self.assertEqual(res['result'], 1)
+    self.assertEqual(len(res['epidata']), sum([1 for s in expected if s['data_source'] == 'src1' and s['signal'] == 'sig1']))
+
+    res = fetch(signals='src1')
+    self.assertEqual(res['result'], 1)
+    self.assertEqual(len(res['epidata']), sum([1 for s in expected if s['data_source'] == 'src1']))
+
+    res = fetch(signals='src1:*')
+    self.assertEqual(res['result'], 1)
+    self.assertEqual(len(res['epidata']), sum([1 for s in expected if s['data_source'] == 'src1']))
+
+    res = fetch(signals='src1:src4')
+    self.assertEqual(res['result'], -2)
+
+    res = fetch(signals='src1:*,src2:*')
+    self.assertEqual(res['result'], 1)
+    self.assertEqual(len(res['epidata']), len(expected))
+
+    # filter fields
+    res = fetch(fields='data_source,min_time')
+    self.assertEqual(res['result'], 1)
+    self.assertEqual(len(res['epidata']), len(expected))
+    self.assertTrue('data_source' in res['epidata'][0])
+    self.assertTrue('min_time' in res['epidata'][0])
+    self.assertFalse('max_time' in res['epidata'][0])
+    self.assertFalse('signal' in res['epidata'][0])
+
+    res = fetch(fields='xx')
+    self.assertEqual(res['result'], 1)
+    self.assertEqual(len(res['epidata']), len(expected))
+    self.assertEqual(res['epidata'][0], {})
+
+
   def test_suppress_work_in_progress(self):
     """Don't surface signals that are a work-in-progress."""
 
