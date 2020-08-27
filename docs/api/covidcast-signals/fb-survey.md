@@ -16,14 +16,15 @@ This data source is based on symptom surveys run by Carnegie Mellon. Facebook
 directs a random sample of its users to these surveys, which are voluntary.
 Individual survey responses are held by CMU and are sharable with other health
 researchers under a data use agreement. No individual survey responses are
-shared back to Facebook.
+shared back to Facebook. See our [surveys
+page](https://covidcast.cmu.edu/surveys.html) for more detail about how the
+surveys work and how they are used outside the COVIDcast API.
 
-Of primary interest in these surveys are the symptoms defining a COVID-like
-illness (fever, along with cough, or shortness of breath, or difficulty
-breathing) or influenza-like illness (fever, along with cough or sore throat).
-Using this survey data, we estimate the percentage of people who have a
-COVID-like illness, or influenza-like illness, in a given location, on a given
-day.
+Of primary interest for the API are the symptoms defining a COVID-like illness
+(fever, along with cough, or shortness of breath, or difficulty breathing) or
+influenza-like illness (fever, along with cough or sore throat). Using this
+survey data, we estimate the percentage of people who have a COVID-like illness,
+or influenza-like illness, in a given location, on a given day.
 
 | Signal | Description |
 | --- | --- |
