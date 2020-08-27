@@ -39,9 +39,18 @@ describe each survey response:
 * `weight`: The survey weight calculated by Facebook, for demographically
   adjusting estimates. See the [weights documentation](weights.md) for details
   on how to use these weights.
+
+The following columns were added beginning on TODO DATE:
+
 * `wave`: Integer specifying the survey wave this respondent completed; see
   below for the full list.
 * `UserLanguage`: Language the respondent completed the survey in.
+- `fips`: The *primary* county FIPS code corresponding to the ZIP code selected
+  by the respondent. Note that ZIP codes can cross county and even state
+  boundaries; if a respondent's ZIP is in multiple counties, the FIPS reported
+  in this column corresponds to the county the ZIP overlaps most with. If a ZIP
+  is not more than 50% in any one county, or if their reported ZIP code cannot
+  be found, `NA` is reported.
 
 Coding details for each survey wave follow.
 
