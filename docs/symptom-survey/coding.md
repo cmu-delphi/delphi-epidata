@@ -57,6 +57,10 @@ was deployed.
 * [Survey text and
   coding](waves/Survey_of_COVID-Like_Illness_-_TODEPLOY_2020-04-06.docx) (Word)
 
+**Warning:** Item A2 shows high missingness and strange values in Wave 1,
+possibly due to incorrect validation in the Qualtrics survey. Item A2 should not
+be used in Wave 1 data until this problem is understood.
+
 ## Wave 2
 
 Wave 2 was first deployed on April 15, 2020. This was replaced by Wave 3, but
