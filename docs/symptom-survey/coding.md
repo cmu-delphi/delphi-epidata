@@ -40,7 +40,7 @@ describe each survey response:
   adjusting estimates. See the [weights documentation](weights.md) for details
   on how to use these weights.
 
-The following columns were added beginning on TODO DATE:
+The following columns were added beginning when Wave 4 was deployed:
 
 * `wave`: Integer specifying the survey wave this respondent completed; see
   below for the full list.
