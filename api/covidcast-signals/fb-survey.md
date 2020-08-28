@@ -184,12 +184,12 @@ Their estimated standard errors are:
 $$
 \begin{aligned}
 \widehat{\mathrm{se}}(\hat{p}) &= 100 \cdot \frac{1}{m+1}\sqrt{
-  \left(\frac{1}{2} - \hat{p}\right)^2 +
-  \sum_{i=1}^m \left(\frac{X_i}{N_i} - \hat{p}\right)^2
+  \left(\frac{1}{2} - \frac{\hat{p}}{100}\right)^2 +
+  \sum_{i=1}^m \left(\frac{X_i}{N_i} - \frac{\hat{p}}{100}\right)^2
 } \\
 \widehat{\mathrm{se}}(\hat{q}) &= 100 \cdot \frac{1}{m+1}\sqrt{
-  \left(\frac{1}{2} - \hat{q}\right)^2 +
-  \sum_{i=1}^m \left(\frac{Y_i}{N_i} - \hat{q}\right)^2
+  \left(\frac{1}{2} - \frac{\hat{q}}{100}\right)^2 +
+  \sum_{i=1}^m \left(\frac{Y_i}{N_i} - \frac{\hat{q}}{100}\right)^2
 },
 \end{aligned}
 $$
@@ -240,8 +240,8 @@ the `nohh_cmnty_cli` signals. Their estimated standard errors are:
 
 $$
 \begin{aligned}
-\widehat{\mathrm{se}}(\hat{a}) &= 100 \cdot \sqrt{\frac{\hat{a}(1-\hat{a})}{m}} \\
-\widehat{\mathrm{se}}(\hat{b}) &= 100 \cdot \sqrt{\frac{\hat{b}(1-\hat{b})}{m}},
+\widehat{\mathrm{se}}(\hat{a}) &= 100 \cdot \sqrt{\frac{\frac{\hat{a}}{100}(1-\frac{\hat{a}}{100})}{m}} \\
+\widehat{\mathrm{se}}(\hat{b}) &= 100 \cdot \sqrt{\frac{\frac{\hat{b}}{100}(1-\frac{\hat{b}}{100})}{m}},
 \end{aligned}
 $$
 
@@ -351,11 +351,11 @@ with estimated standard errors:
 $$
 \begin{aligned}
 \widehat{\mathrm{se}}(\hat{p}_w) &= 100 \cdot \sqrt{
-  \left(\frac{1}{1 + n_e}\right)^2 \left(\frac12 - \hat{p}_w\right)^2 +
+  \left(\frac{1}{1 + n_e}\right)^2 \left(\frac12 - \frac{\hat{p}_w}{100}\right)^2 +
   n_e \hat{s}_p^2
 }\\
 \widehat{\mathrm{se}}(\hat{q}_w) &= 100 \cdot \sqrt{
-  \left(\frac{1}{1 + n_e}\right)^2 \left(\frac12 - \hat{q}_w\right)^2 +
+  \left(\frac{1}{1 + n_e}\right)^2 \left(\frac12 - \frac{\hat{q}_w}{100}\right)^2 +
   n_e \hat{s}_q^2
 },
 \end{aligned}
@@ -365,8 +365,8 @@ where
 
 $$
 \begin{aligned}
-\hat{s}_p^2 &= \sum_{i=1}^m w_i^2 \left(\frac{X_i}{N_i} - \hat{p}_w\right)^2 \\
-\hat{s}_q^2 &= \sum_{i=1}^m w_i^2 \left(\frac{Y_i}{N_i} - \hat{q}_w\right)^2 \\
+\hat{s}_p^2 &= \sum_{i=1}^m w_i^2 \left(\frac{X_i}{N_i} - \frac{\hat{p}_w}{100}\right)^2 \\
+\hat{s}_q^2 &= \sum_{i=1}^m w_i^2 \left(\frac{Y_i}{N_i} - \frac{\hat{q}_w}{100}\right)^2 \\
 n_e &= \frac1{\sum_{i=1}^m w_i^2},
 \end{aligned}
 $$
@@ -407,9 +407,9 @@ with estimated standard errors:
 $$
 \begin{aligned}
 \widehat{\mathrm{se}}(\hat{a}_w) &= 100 \cdot \sqrt{\sum_{i=1}^m
-w_i^2 (U_i - \hat{a}_w)^2} \\
+w_i^2 \left(U_i - \frac{\hat{a}_w}{100} \right)^2} \\
 \widehat{\mathrm{se}}(\hat{b}_w) &= 100 \cdot \sqrt{\sum_{i=1}^m
-w_i^2 (V_i - \hat{b}_w)^2},
+w_i^2 \left(V_i - \frac{\hat{b}_w}{100} \right)^2},
 \end{aligned}
 $$
 
