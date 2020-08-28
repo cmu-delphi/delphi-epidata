@@ -90,7 +90,7 @@ We assume the estimates for each time point follow a binomial distribution. The
 estimated standard error then is:
 
 $$
-\text{se} = \sqrt{ \frac{p(1-p)}{N} } 
+\text{se} = 100 \sqrt{ \frac{\frac{p}{100}(1- \frac{p}{100})}{N} } 
 $$
 
 #### Smoothing
