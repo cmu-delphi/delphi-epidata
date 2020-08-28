@@ -95,7 +95,7 @@ $$
 The estimated standard error is:
 
 $$
-\widehat{\text{se}}(\hat{p}_{it}) =  \sqrt{\frac{\hat{p}_{it}(1-\hat{p}_{it})}{N_{it}}}.
+\widehat{\text{se}}(\hat{p}_{it}) =  100 \sqrt{\frac{\frac{\hat{p}_{it}}{100}(1-\frac{\hat{p}_{it}}{100})}{N_{it}}}.
 $$
 
 Note the quantity above is not going to be correct for multiple reasons: smoothing/day of
