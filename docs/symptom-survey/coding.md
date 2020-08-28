@@ -45,6 +45,16 @@ describe each survey response:
 
 Coding details for each survey wave follow.
 
+## Privacy Restrictions
+
+To prevent respondents from being identifiable in the response data, responses
+with ZIP codes with populations of 100 or fewer have their location set to `NA`.
+This affects item A3 in the individual response files. (This change was
+implemented with the introduction of Wave 4. Previously, all ZIPs were
+reported.)
+
+Invalid ZIP codes are preserved unchanged, and these rows are reported in the
+individual response files with their invalid ZIPs.
 
 ## Wave 1
 
