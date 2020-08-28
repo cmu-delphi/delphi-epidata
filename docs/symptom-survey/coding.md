@@ -39,9 +39,18 @@ describe each survey response:
 * `weight`: The survey weight calculated by Facebook, for demographically
   adjusting estimates. See the [weights documentation](weights.md) for details
   on how to use these weights.
+
+The following columns were added beginning when Wave 4 was deployed:
+
 * `wave`: Integer specifying the survey wave this respondent completed; see
   below for the full list.
 * `UserLanguage`: Language the respondent completed the survey in.
+- `fips`: The *primary* county FIPS code corresponding to the ZIP code selected
+  by the respondent. Note that ZIP codes can cross county and even state
+  boundaries; if a respondent's ZIP is in multiple counties, the FIPS reported
+  in this column corresponds to the county the ZIP overlaps most with. If a ZIP
+  is not more than 50% in any one county, or if their reported ZIP code cannot
+  be found, `NA` is reported.
 
 Coding details for each survey wave follow.
 
@@ -66,6 +75,10 @@ was deployed.
   coding](waves/Survey_of_COVID-Like_Illness_-_TODEPLOY_2020-04-06.pdf) (PDF)
 * [Survey text and
   coding](waves/Survey_of_COVID-Like_Illness_-_TODEPLOY_2020-04-06.docx) (Word)
+
+**Warning:** Item A2 shows high missingness and strange values in Wave 1,
+possibly due to incorrect validation in the Qualtrics survey. Item A2 should not
+be used in Wave 1 data until this problem is understood.
 
 ## Wave 2
 
