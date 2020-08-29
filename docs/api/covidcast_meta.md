@@ -106,7 +106,7 @@ Epidata.covidcast_meta(callback)
 
 Python users seeking to use the COVIDcast API to fetch data should instead
 consider using the [dedicated API client](covidcast_clients.md), which provides
-a `meta()` method to return metadata as a data frame.
+a `metadata()` method to return metadata as a data frame.
 
 Optionally install the package using pip(env):
 ````bash
