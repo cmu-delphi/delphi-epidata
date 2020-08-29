@@ -12,8 +12,9 @@ Dedicated COVIDcast clients are available for several languages:
 * Python: [covidcast](https://cmu-delphi.github.io/covidcast/covidcast-py/html/)
 
 These packages provide a convenient way to obtain COVIDcast data as a data frame
-ready to be used in further analyses. For installation instructions and
-examples, consult their respective webpages.
+ready to be used in further analyses, and provide convenient mapping and
+analysis functions. For installation instructions and examples, consult their
+respective webpages.
 
 ## Generic Epidata Clients
 
