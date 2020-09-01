@@ -37,7 +37,7 @@ href="https://lists.andrew.cmu.edu/mailman/listinfo/delphi-covidcast-api">subscr
 Several [API clients are available](covidcast_clients.md) for common programming
 languages, so you do not need to construct API calls yourself. Once you install
 the appropriate client for your programming language, accessing data is as easy
-as (in [R](https://www.r-project.org/)):
+as, in [R](https://www.r-project.org/):
 
 ```r
 library(covidcast)
@@ -46,7 +46,7 @@ data <- covidcast_signal("fb-survey", "smoothed_cli", start_day = "20200501",
                          end_day = "20200507")
 ```
 
-or, in Python
+or, in [Python](https://www.python.org):
 
 ```python
 import covidcast
@@ -77,7 +77,8 @@ select set of these data signals.
 ## Constructing API Queries
 
 The COVIDcast API is based on HTTP GET queries and returns data in JSON form.
-The base URL is https://api.covidcast.cmu.edu/epidata/api.php.
+The base URL is https://api.covidcast.cmu.edu/epidata/api.php.  The covidcast
+endpoint is https://api.covidcast.cmu.edu/epidata/api.php?source=covidcast. 
 
 See [this documentation](README.md) for details on specifying epiweeks, dates,
 and lists.
