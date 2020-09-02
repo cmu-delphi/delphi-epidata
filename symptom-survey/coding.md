@@ -54,6 +54,16 @@ The following columns were added beginning when Wave 4 was deployed:
 
 Coding details for each survey wave follow.
 
+## Privacy Restrictions
+
+To prevent respondents from being identifiable in the response data, responses
+with ZIP codes with populations of 100 or fewer have their location set to `NA`.
+This affects item A3 in the individual response files. (This change was
+implemented with the introduction of Wave 4. Previously, all ZIPs were
+reported.)
+
+Invalid ZIP codes are preserved unchanged, and these rows are reported in the
+individual response files with their invalid ZIPs.
 
 ## Wave 1
 
@@ -143,12 +153,18 @@ Files:
 
 ## Wave 4
 
-Wave 4 will be deployed in late August 2020. It will be available in English, as
-well as
+Wave 4 will be deployed in early September 2020. It will be available in
+English, as well as
 
-* *[translations to be completed]*
+* Simplified Chinese
+* English (UK)
+* Spanish (Latin America)
+* Spanish
+* French
+* Brazilian Portuguese
+* Vietnamese
 
-Draft files [final versions to be posted when available]:
+Files:
 
 * [Survey text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_4.pdf)
   (PDF)
