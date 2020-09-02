@@ -42,8 +42,8 @@ as, in [R](https://www.r-project.org/):
 ```r
 library(covidcast)
 
-data <- covidcast_signal("fb-survey", "smoothed_cli", start_day = "20200501",
-                         end_day = "20200507")
+data <- covidcast_signal("fb-survey", "smoothed_cli", start_day = "2020-05-01",
+                         end_day = "2020-05-07")
 ```
 
 or, in [Python](https://www.python.org):
@@ -56,8 +56,11 @@ data = covidcast.signal("fb-survey", "smoothed_cli", date(2020, 5, 1), date(2020
                         "county")
 ```
 
-Alternately, for full API access, [see below](#constructing-api-queries) for
-details on how to construct URLs and parse responses to access data manually.
+[The API clients](covidcast_clients.md) have extensive documentation providing
+further examples.
+
+Alternately, to construct URLs and parse responses to access data manually, [see
+below](#constructing-api-queries) for details.
 
 ## Data Sources and Signals
 
