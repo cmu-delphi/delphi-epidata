@@ -153,12 +153,18 @@ Files:
 
 ## Wave 4
 
-Wave 4 will be deployed in late August 2020. It will be available in English, as
-well as
+Wave 4 will be deployed in early September 2020. It will be available in
+English, as well as
 
-* *[translations to be completed]*
+* Simplified Chinese
+* English (UK)
+* Spanish (Latin America)
+* Spanish
+* French
+* Brazilian Portuguese
+* Vietnamese
 
-Draft files [final versions to be posted when available]:
+Files:
 
 * [Survey text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_4.pdf)
   (PDF)
