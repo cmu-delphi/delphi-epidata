@@ -74,27 +74,23 @@ def scan_upload_archive(
 
     (source, signal, time_type, geo_type, time_value, issue, lag) = details
 
-    is_wip = False
-    if signal[:4].lower() == "wip_":
-      is_wip = True
-    print(signal, is_wip)
+    is_wip = signal[:4].lower() == "wip_"
 
     csv_rows = csv_importer_impl.load_csv(path, geo_type)
 
-    all_rows_valid = False
-    try:
-      cc_rows = CovidcastRow.fromCsvRows(csv_rows, source, signal, time_type, geo_type, time_value, issue, lag, is_wip)
-      rows_list = list(cc_rows)
-      if not rows_list:
-        raise ValueError("No data")
-      result = database.insert_or_update_bulk(rows_list)
-      if result is None or result: # else would indicate zero rows inserted
-        database.commit()
-        all_rows_valid = True
-    except Exception as e:
-      all_rows_valid = False
-      print('exception while inserting rows:', e)
-      database.rollback()
+    cc_rows = CovidcastRow.fromCsvRows(csv_rows, source, signal, time_type, geo_type, time_value, issue, lag, is_wip)
+    rows_list = list(cc_rows)
+    all_rows_valid = rows_list and all(r is not None for r in rows_list)
+    if all_rows_valid:
+      try:
+        result = database.insert_or_update_bulk(rows_list)
+        print(f"insert_or_update_bulk {filename} returned {result}")
+        if result is None or result: # else would indicate zero rows inserted
+          database.commit()
+      except Exception as e:
+        all_rows_valid = False
+        print('exception while inserting rows:', e)
+        database.rollback()
 
     # archive the current file based on validation results
     if all_rows_valid:

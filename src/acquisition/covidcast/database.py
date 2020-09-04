@@ -19,6 +19,7 @@ class CovidcastRow():
 
   @staticmethod
   def fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag, is_wip):
+    if row_value is None: return None
     return CovidcastRow(source, signal, time_type, geo_type, time_value,
                         row_value.geo_value,
                         row_value.value,

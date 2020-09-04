@@ -555,20 +555,22 @@ class Epidata:
   # Fetch Delphi's COVID-19 Surveillance Streams
   @staticmethod
   def covidcast(
-          data_source, signal, time_type, geo_type,
-          time_values, geo_value, as_of=None, issues=None, lag=None):
+          data_source, signals, time_type, geo_type,
+          time_values, geo_value, as_of=None, issues=None, lag=None, **kwargs):
     """Fetch Delphi's COVID-19 Surveillance Streams"""
+    # also support old parameter name
+    if signals is None and 'signal' in kwargs:
+      signals=kwargs['signal']
     # Check parameters
-    if data_source is None or signal is None or time_type is None or geo_type is None or time_values is None or geo_value is None:
-      raise Exception('`data_source`, `signal`, `time_type`, `geo_type`, `time_values`, and `geo_value` are all required')
+    if data_source is None or signals is None or time_type is None or geo_type is None or time_values is None or geo_value is None:
+      raise Exception('`data_source`, `signals`, `time_type`, `geo_type`, `time_values`, and `geo_value` are all required')
     if issues is not None and lag is not None:
       raise Exception('`issues` and `lag` are mutually exclusive')
-
     # Set up request
     params = {
       'source': 'covidcast',
       'data_source': data_source,
-      'signal': signal,
+      'signals': Epidata._list(signals),
       'time_type': time_type,
       'geo_type': geo_type,
       'time_values': Epidata._list(time_values),
@@ -581,6 +583,9 @@ class Epidata:
       params['issues'] = Epidata._list(issues)
     if lag is not None:
       params['lag'] = lag
+
+    if 'format' in kwargs:
+      params['format'] = kwargs['format']
 
     # Make the API call
     return Epidata._request(params)
