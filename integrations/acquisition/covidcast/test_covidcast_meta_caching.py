@@ -1,6 +1,7 @@
 """Integration tests for covidcast's metadata caching."""
 
 # standard library
+import json
 import unittest
 
 # third party
@@ -66,14 +67,14 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     self.cur.execute('''
       insert into covidcast values
         (0, 'src', 'sig', 'day', 'state', 20200422, 'pa',
-          123, 1, 2, 3, 456, 1, 20200422, 0),
+          123, 1, 2, 3, 456, 1, 20200422, 0, 1, False),
         (0, 'src', 'sig', 'day', 'state', 20200422, 'wa',
-          789, 1, 2, 3, 456, 1, 20200423, 1)
+          789, 1, 2, 3, 456, 1, 20200423, 1, 1, False)
     ''')
     self.cur.execute('''
       insert into covidcast values
         (100, 'src', 'wip_sig', 'day', 'state', 20200422, 'pa',
-          456, 4, 5, 6, 789, -1, 20200422, 0)
+          456, 4, 5, 6, 789, -1, 20200422, 0, 1, True)
     ''')
 
     self.cnx.commit()
@@ -100,15 +101,15 @@ class CovidcastMetaCacheTests(unittest.TestCase):
         'stdev_value': 0,
         'max_issue': 20200423,
         'min_lag': 0,
-        'max_lag': 1
+        'max_lag': 1,
       }
     ])
-    epidata1={'result':1,'message':'success','epidata':epidata1}
+    epidata1={'result':1, 'message':'success', 'epidata':epidata1}
 
     # make sure the API covidcast_meta is still blank, since it only serves
     # the cached version and we haven't cached anything yet
     epidata2 = Epidata.covidcast_meta()
-    self.assertEqual(epidata2['result'], -2)
+    self.assertEqual(epidata2['result'], -2, json.dumps(epidata2))
 
     # update the cache
     args = None

@@ -13,15 +13,13 @@ geographic levels at which they are reported.
 
 ## The API
 
-The base URL is: https://delphi.cmu.edu/epidata/api.php
+The base URL is: https://api.covidcast.cmu.edu/epidata/api.php
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
 ### Parameters
 
-| Parameter | Description | Type |
-| --- | --- | --- |
-| `cached` | If `true`, return a cached copy of the metadata instead of recalculating from scratch; the cached copy should never be more than an hour out of date. Recalculation without the cache can be quite slow. *Note:* a future API version will always report the cached version, ignoring this parameter. | string |
+None required.
 
 ### Response
 
@@ -47,7 +45,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 ## Example URLs
 
-https://delphi.cmu.edu/epidata/api.php?source=covidcast_meta&cached=true
+https://api.covidcast.cmu.edu/epidata/api.php?source=covidcast_meta
 
 ```json
 {
@@ -107,7 +105,8 @@ Epidata.covidcast_meta(callback)
 ### Python
 
 Python users seeking to use the COVIDcast API to fetch data should instead
-consider using the [dedicated API client](covidcast_clients.md).
+consider using the [dedicated API client](covidcast_clients.md), which provides
+a `metadata()` method to return metadata as a data frame.
 
 Optionally install the package using pip(env):
 ````bash
@@ -127,7 +126,8 @@ print(res['result'], res['message'], len(res['epidata']))
 ### R
 
 R users seeking to use the COVIDcast API to fetch data should instead consider
-using the [dedicated API client](covidcast_clients.md).
+using the [dedicated API client](covidcast_clients.md), which provides a
+`covidcast_meta()` function to return metadata as a data frame.
 
 ````R
 # Import

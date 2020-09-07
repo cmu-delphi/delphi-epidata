@@ -159,7 +159,8 @@ function execute_query($query, &$epidata, $fields_string, $fields_int, $fields_f
   error_log($query);
   $result = mysqli_query($dbh, $query . " LIMIT {$MAX_RESULTS}");
   if (!$result) {
-    error_log(sprintf("Error: %s\n",mysqli_error($dbh)));
+    error_log("Bad query: ".$query);
+    error_log(mysqli_error($dbh));
     return;
   }
   while($row = mysqli_fetch_array($result)) {

@@ -37,16 +37,16 @@ href="https://lists.andrew.cmu.edu/mailman/listinfo/delphi-covidcast-api">subscr
 Several [API clients are available](covidcast_clients.md) for common programming
 languages, so you do not need to construct API calls yourself. Once you install
 the appropriate client for your programming language, accessing data is as easy
-as (in [R](https://www.r-project.org/)):
+as, in [R](https://www.r-project.org/):
 
 ```r
 library(covidcast)
 
-data <- covidcast_signal("fb-survey", "smoothed_cli", start_day = "20200501",
-                         end_day = "20200507")
+data <- covidcast_signal("fb-survey", "smoothed_cli", start_day = "2020-05-01",
+                         end_day = "2020-05-07")
 ```
 
-or, in Python
+or, in [Python](https://www.python.org):
 
 ```python
 import covidcast
@@ -56,8 +56,11 @@ data = covidcast.signal("fb-survey", "smoothed_cli", date(2020, 5, 1), date(2020
                         "county")
 ```
 
-Alternately, for full API access, [see below](#constructing-api-queries) for
-details on how to construct URLs and parse responses to access data manually.
+[The API clients](covidcast_clients.md) have extensive documentation providing
+further examples.
+
+Alternately, to construct URLs and parse responses to access data manually, [see
+below](#constructing-api-queries) for details.
 
 ## Data Sources and Signals
 
@@ -77,7 +80,8 @@ select set of these data signals.
 ## Constructing API Queries
 
 The COVIDcast API is based on HTTP GET queries and returns data in JSON form.
-The base URL is https://delphi.cmu.edu/epidata/api.php.
+The base URL is https://api.covidcast.cmu.edu/epidata/api.php.  The covidcast
+endpoint is https://api.covidcast.cmu.edu/epidata/api.php?source=covidcast. 
 
 See [this documentation](README.md) for details on specifying epiweeks, dates,
 and lists.
@@ -166,7 +170,7 @@ requests for smaller time intervals.
 
 ### Facebook Survey CLI on 2020-04-06 to 2010-04-10 (county 06001)
 
-https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&signal=raw_cli&time_type=day&geo_type=county&time_values=20200406-20200410&geo_value=06001
+https://api.covidcast.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&signal=raw_cli&time_type=day&geo_type=county&time_values=20200406-20200410&geo_value=06001
 
 ```json
 {
@@ -188,7 +192,7 @@ https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&si
 
 ### Facebook Survey CLI on 2020-04-06 (all counties)
 
-https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&signal=raw_cli&time_type=day&geo_type=county&time_values=20200406&geo_value=*
+https://api.covidcast.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&signal=raw_cli&time_type=day&geo_type=county&time_values=20200406&geo_value=*
 
 ```json
 {

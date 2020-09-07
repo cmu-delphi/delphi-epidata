@@ -76,7 +76,12 @@ class CsvUploadingTests(unittest.TestCase):
       f.write('wa,30,0.03,300\n')
 
     # invalid
-    with open(source_receiving_dir + '/20200419_state_wip_really_long_name_that_will_get_truncated.csv', 'w') as f:
+    with open(source_receiving_dir + '/20200419_state_wip_really_long_name_that_will_be_accepted.csv', 'w') as f:
+      f.write('geo_id,val,se,sample_size\n')
+      f.write('pa,100,5.4,624\n')
+      
+    # invalid
+    with open(source_receiving_dir + '/20200419_state_wip_really_long_name_that_will_get_truncated_lorem_ipsum_dolor_sit_amet.csv', 'w') as f:
       f.write('geo_id,val,se,sample_size\n')
       f.write('pa,100,5.4,624\n')
 
@@ -121,6 +126,7 @@ class CsvUploadingTests(unittest.TestCase):
           'stderr': 0.1,
           'sample_size': 10,
           'direction': None,
+          'signal': 'test',
         },
         {
           'time_value': 20200419,
@@ -129,6 +135,7 @@ class CsvUploadingTests(unittest.TestCase):
           'stderr': 0.3,
           'sample_size': 30,
           'direction': None,
+          'signal': 'test',
         },
         {
           'time_value': 20200419,
@@ -137,6 +144,7 @@ class CsvUploadingTests(unittest.TestCase):
           'stderr': 0.2,
           'sample_size': 20,
           'direction': None,
+          'signal': 'test',
         },
     ]),
       'message': 'success',
@@ -159,6 +167,7 @@ class CsvUploadingTests(unittest.TestCase):
           'stderr': 0.01,
           'sample_size': 100,
           'direction': None,
+          'signal': 'wip_prototype',
         },
         {
           'time_value': 20200419,
@@ -167,6 +176,7 @@ class CsvUploadingTests(unittest.TestCase):
           'stderr': 0.02,
           'sample_size': 200,
           'direction': None,
+          'signal': 'wip_prototype',
         },
         {
           'time_value': 20200419,
@@ -175,14 +185,37 @@ class CsvUploadingTests(unittest.TestCase):
           'stderr': 0.03,
           'sample_size': 300,
           'direction': None,
+          'signal': 'wip_prototype',
         },
        ]),
       'message': 'success',
     })
 
+    
+    # request CSV data from the API on the signal with name length 32<x<64
+    response = Epidata.covidcast(
+      'src-name', 'wip_really_long_name_that_will_be_accepted', 'day', 'state', 20200419, '*')
+
+    # verify data matches the CSV
+    self.assertEqual(response, {
+      'result': 1,
+      'message': 'success',
+      'epidata': apply_lag([
+        {
+          'time_value': 20200419,
+          'geo_value': 'pa',
+          'value': 100,
+          'stderr': 5.4,
+          'sample_size': 624,
+          'direction': None,
+          'signal': 'wip_really_long_name_that_will_be_accepted',
+        },
+      ])
+    })
+    
     # request CSV data from the API on the long-named signal
     response = Epidata.covidcast(
-      'src-name', 'wip_really_long_name_that_will_g', 'day', 'state', 20200419, '*')
+      'src-name', 'wip_really_long_name_that_will_get_truncated_lorem_ipsum_dolor_s', 'day', 'state', 20200419, '*')
 
     # verify data matches the CSV
     # if the CSV failed correctly there should be no results
@@ -192,10 +225,10 @@ class CsvUploadingTests(unittest.TestCase):
     })
 
     # verify timestamps and default values are reasonable
-    self.cur.execute('select timestamp1, timestamp2, direction from covidcast')
-    for timestamp1, timestamp2, direction in self.cur:
-      self.assertGreater(timestamp1, 0)
-      self.assertEqual(timestamp2, 0)
+    self.cur.execute('select value_updated_timestamp, direction_updated_timestamp, direction from covidcast')
+    for value_updated_timestamp, direction_updated_timestamp, direction in self.cur:
+      self.assertGreater(value_updated_timestamp, 0)
+      self.assertEqual(direction_updated_timestamp, 0)
       self.assertIsNone(direction)
 
     # verify that the CSVs were archived

@@ -8,25 +8,31 @@ Delphi's COVID-19 surveillance streams.
 
 Data is public.
 
-+-------------+-------------+------+-----+---------+----------------+
-| Field       | Type        | Null | Key | Default | Extra          |
-+-------------+-------------+------+-----+---------+----------------+
-| id          | int(11)     | NO   | PRI | NULL    | auto_increment |
-| source      | varchar(32) | NO   | MUL | NULL    |                |
-| signal      | varchar(32) | NO   |     | NULL    |                |
-| time_type   | varchar(12) | NO   |     | NULL    |                |
-| geo_type    | varchar(12) | NO   |     | NULL    |                |
-| time_value  | int(11)     | NO   |     | NULL    |                |
-| geo_value   | varchar(12) | NO   |     | NULL    |                |
-| timestamp1  | int(11)     | NO   |     | NULL    |                |
-| value       | double      | NO   |     | NULL    |                |
-| stderr      | double      | YES  |     | NULL    |                |
-| sample_size | double      | YES  |     | NULL    |                |
-| timestamp2  | int(11)     | NO   |     | NULL    |                |
-| direction   | int(11)     | YES  |     | NULL    |                |
-| issue       | int(11)     | NO   |     | NULL    |                |
-| lag         | int(11)     | NO   |     | NULL    |                |
-+-------------+-------------+------+-----+---------+----------------+
+
++------------------------------+-------------+------+-----+---------+----------------+
+| Field                        | Type        | Null | Key | Default | Extra          |
++------------------------------+-------------+------+-----+---------+----------------+
+| id                           | int(11)     | NO   | PRI | NULL    | auto_increment |
+| source                       | varchar(32) | NO   | MUL | NULL    |                |
+| signal                       | varchar(64) | NO   |     | NULL    |                |
+| time_type                    | varchar(12) | NO   |     | NULL    |                |
+| geo_type                     | varchar(12) | NO   |     | NULL    |                |
+| time_value                   | int(11)     | NO   |     | NULL    |                |
+| geo_value                    | varchar(12) | NO   |     | NULL    |                |
+| value_updated_timestamp      | int(11)     | NO   |     | NULL    |                |
+| value                        | double      | NO   |     | NULL    |                |
+| stderr                       | double      | YES  |     | NULL    |                |
+| sample_size                  | double      | YES  |     | NULL    |                |
+| direction_updated_timestamp  | int(11)     | NO   |     | NULL    |                |
+| direction                    | int(11)     | YES  |     | NULL    |                |
+| issue                        | int(11)     | NO   |     | NULL    |                |
+| lag                          | int(11)     | NO   |     | NULL    |                |
+| is_latest_issue              | binary(1)   | NO   |     | NULL    |                |
+| is_wip                       | binary(1)   | YES  |     | NULL    |                |
+| missing_value                | int(11)     | YES  |     | NULL    |                |
+| missing_std                  | int(11)     | YES  |     | NULL    |                |
+| missing_sample_size          | int(11)     | YES  |     | NULL    |                |
++------------------------------+-------------+------+-----+---------+----------------+
 
 - `id`
   unique identifier for each record
@@ -48,7 +54,7 @@ Data is public.
   - HRR: hospital referral region (HRR) number
   - DMA: designated market area (DMA) code
   - state: two-letter state abbreviation
-- `timestamp1`
+- `value_updated_timestamp`
   time when primary data (e.g. `value`) was last updated
 - `value`
   value (statistic) derived from the underlying data source
@@ -56,7 +62,7 @@ Data is public.
   standard error of the statistic with respect to its sampling distribution
 - `sample_size` (NULL when not applicable)
   number of "data points" used in computing the statistic
-- `timestamp2`
+- `direction_updated_timestamp`
   time when secondary data (e.g. `direction`) was last updated
 - `direction` (NULL when not applicable)
   trend classifier with possible values:
@@ -67,26 +73,41 @@ Data is public.
   the time_value of publication
 - `lag`
   the number of time_type units between `time_value` and `issue`
+- `is_latest_issue`
+  flag which indicates whether or not the row corresponds to the latest issue for its key
+- `is_wip`
+  flag indicating that the signal is a 'work in progress'.  this should be True iff `signal` has a 'wip_' prefix.
+- `missing_value`
+  ~ENUM for the reason a `value` was deleted
+- `missing_std`
+  ~ENUM for the reason a `stderr` was deleted
+- `missing_sample_size`
+  ~ENUM for the reason a `sample_size` was deleted
 */
 
 CREATE TABLE `covidcast` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `source` varchar(32) NOT NULL,
-  `signal` varchar(32) NOT NULL,
+  `signal` varchar(64) NOT NULL,
   `time_type` varchar(12) NOT NULL,
   `geo_type` varchar(12) NOT NULL,
   `time_value` int(11) NOT NULL,
   `geo_value` varchar(12) NOT NULL,
   -- "primary" values are derived from the upstream data source
-  `timestamp1` int(11) NOT NULL,
+  `value_updated_timestamp` int(11) NOT NULL,
   `value` double NOT NULL,
   `stderr` double,
   `sample_size` double,
   -- "secondary" values are derived from data in this table
-  `timestamp2` int(11) NOT NULL,
+  `direction_updated_timestamp` int(11) NOT NULL,
   `direction` int(11),
   `issue` int(11) NOT NULL,
   `lag` int(11) NOT NULL,
+  `is_latest_issue` binary(1) NOT NULL,
+  `is_wip` binary(1) DEFAULT NULL,
+  -- TODO: `missing_value` int(11) DEFAULT NULL,
+  -- TODO: `missing_std` int(11) DEFAULT NULL,
+  -- TODO: `missing_sample_size` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   -- for uniqueness, and also fast lookup of all locations on a given date
   UNIQUE KEY (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`, `issue`),
