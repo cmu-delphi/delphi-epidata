@@ -86,7 +86,7 @@ class CovidcastTests(unittest.TestCase):
     self.cur.execute('''
       insert into covidcast values
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0)
+          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 1, False)
     ''')
     self.cnx.commit()
 
@@ -114,7 +114,8 @@ class CovidcastTests(unittest.TestCase):
         'sample_size': 3.5,
         'direction': 4,
         'issue': 20200414,
-        'lag': 0
+        'lag': 0,
+        'signal': 'sig'
        }],
       'message': 'success',
     })
