@@ -551,12 +551,12 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
       }, {
         key: "covidcast",
-        value: function covidcast(callback, data_source, signal, time_type, geo_type, time_values, geo_value, as_of, issues, lag) {
+        value: function covidcast(callback, data_source, signals, time_type, geo_type, time_values, geo_value, as_of, issues, lag, format) {
           var params; // Check parameters
 
-          if (!(data_source != null && signal != null && time_type != null && geo_type != null && time_values != null && geo_value != null)) {
+          if (!(data_source != null && signals != null && time_type != null && geo_type != null && time_values != null && geo_value != null)) {
             throw {
-              msg: '`data_source`, `signal`, `time_type`, `geo_type`, `time_values`, and `geo_value` are all required'
+              msg: '`data_source`, `signals`, `time_type`, `geo_type`, `time_values`, and `geo_value` are all required'
             };
           }
 
@@ -570,7 +570,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           params = {
             'source': 'covidcast',
             'data_source': data_source,
-            'signal': signal,
+            'signals': signals,
             'time_type': time_type,
             'geo_type': geo_type,
             'time_values': _list(time_values),
@@ -587,6 +587,10 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
           if (lag != null) {
             params.lag = lag;
+          }
+
+          if (format != null) {
+            params.format = format;
           } // Make the API call
 
 
@@ -682,4 +686,3 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
   (typeof exports !== "undefined" && exports !== null ? exports : window).Epidata = Epidata;
 }).call(void 0);
-

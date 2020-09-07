@@ -20,7 +20,7 @@ class UnitTests(unittest.TestCase):
   def test_main_successful(self):
     """Run the main program, and successfully commit changes."""
 
-    args = None
+    args = MagicMock(partitions=[0, 1])
     mock_database = MagicMock()
     fake_database_impl = lambda: mock_database
     mock_update_loop = MagicMock()
@@ -38,7 +38,7 @@ class UnitTests(unittest.TestCase):
   def test_main_unsuccessful(self):
     """Run the main program, but don't commit changes on failure."""
 
-    args = None
+    args = MagicMock(partitions=[0, 1])
     mock_database = MagicMock()
     fake_database_impl = lambda: mock_database
     mock_update_loop = MagicMock(side_effect=Exception('testing'))
@@ -110,7 +110,7 @@ class UnitTests(unittest.TestCase):
     )
     self.assertEqual(call_args_list[1][0], expected_args)
 
-    self.assertTrue(mock_database.update_timeseries_timestamp2.called)
-    args = mock_database.update_timeseries_timestamp2.call_args[0]
+    self.assertTrue(mock_database.update_timeseries_direction_updated_timestamp.called)
+    args = mock_database.update_timeseries_direction_updated_timestamp.call_args[0]
     expected_args = ('source', 'signal', 'day', 'geo_type', 'geo_value')
     self.assertEqual(args, expected_args)
