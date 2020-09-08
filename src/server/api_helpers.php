@@ -286,4 +286,12 @@ function record_analytics($source, $data) {
 }
 
 
+function send_csv(&$data) {
+
+}
+
+function send_json(&$data) {
+
+}
+
 ?>

@@ -958,7 +958,7 @@ function get_covidcast($source, $signals, $time_type, $geo_type, $time_values, $
   $condition_time_type = "t.`time_type` = '{$time_type}'";
   $condition_geo_type = "t.`geo_type` = '{$geo_type}'";
   $condition_time_value = filter_integers('t.`time_value`', $time_values);
-    
+
   if ($geo_value === '*') {
     // the wildcard query should return data for all locations in `geo_type`
     $condition_geo_value = 'TRUE';
@@ -1521,7 +1521,13 @@ if(database_connect()) {
   $data['message'] = 'database error';
 }
 
-// send the response as a json object
-header('Content-Type: application/json');
-echo json_encode($data);
+if(isset($_REQUEST['format']) && $_REQUEST['format'] == "csv") {
+  send_csv($data);
+} if(isset($_REQUEST['format']) && $_REQUEST['format'] == "json") {
+  send_json($data);
+} else {
+  // send the response as a json object
+  header('Content-Type: application/json');
+  echo json_encode($data);
+}
 ?>
