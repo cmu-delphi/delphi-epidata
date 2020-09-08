@@ -1566,7 +1566,13 @@ if(database_connect()) {
   $data['message'] = 'database error';
 }
 
-// send the response as a json object
-header('Content-Type: application/json');
-echo json_encode($data);
+if(isset($_REQUEST['format']) && $_REQUEST['format'] == "csv") {
+  send_csv($data);
+} else if(isset($_REQUEST['format']) && $_REQUEST['format'] == "json") {
+  send_json($data);
+} else {
+  // send the response as a json object
+  header('Content-Type: application/json');
+  echo json_encode($data);
+}
 ?>

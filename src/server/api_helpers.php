@@ -367,5 +367,55 @@ function record_analytics($source, $data) {
   mysqli_query($dbh, "INSERT INTO `api_analytics` (`datetime`, `ip`, `ua`, `source`, `result`, `num_rows`) VALUES (now(), '{$ip}', '{$ua}', '{$source}', {$result}, {$num_rows})");
 }
 
+function send_status(&$data) {
+  if (intval($data["result"]) > 0 || intval($data["result"]) == -2) {
+    return FALSE;
+  }
+  if ($data["message"] == 'database error') {
+    http_response_code(500);
+  } else if ($data["message"] == 'unauthenticated') {
+    http_response_code(401);
+  } else {
+    http_response_code(400); // bad request
+  }
+  header('Content-Type: application/json');
+  echo json_encode($data);
+  return TRUE;
+}
+
+function send_csv(&$data) {
+  if (send_status($data)) {
+    return;
+  }
+  header('Content-Type: text/csv');
+  header('Content-Disposition: attachment; filename=epidata.csv');
+
+  if (intval(data["result"]) == -2) {
+    // empty
+    return;
+  }
+
+  $rows = $data["epidata"];
+  $headers = array_keys($rows[0]);
+  $out = fopen('php://output', 'w');
+  fputcsv($out, $headers);
+  foreach ($rows as $row) {
+    fputcsv($out, $row);
+  }
+  fclose($out);
+}
+
+function send_json(&$data) {
+  if (send_status($data)) {
+    return;
+  }
+  header('Content-Type: application/json');
+
+  if (intval($data["result"]) == -2) {
+    echo json_encode(array());
+  } else {
+    echo json_encode($data["epidata"]);
+  }
+}
 
 ?>

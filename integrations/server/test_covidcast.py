@@ -79,6 +79,76 @@ class CovidcastTests(unittest.TestCase):
       'message': 'success',
     })
 
+
+  def test_csv_format(self):
+    """Test generate csv data."""
+
+    # insert dummy data
+    self.cur.execute('''
+      insert into covidcast values
+        (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
+          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 1, False)
+    ''')
+    self.cnx.commit()
+
+    # make the request
+    response = requests.get(BASE_URL, params={
+      'source': 'covidcast',
+      'data_source': 'src',
+      'signal': 'sig',
+      'time_type': 'day',
+      'geo_type': 'county',
+      'time_values': 20200414,
+      'geo_value': '01234',
+      'format': 'csv'
+    })
+    response.raise_for_status()
+    response = response.text
+
+    # assert that the right data came back
+    self.assertEqual(response,
+"""geo_value,signal,time_value,direction,issue,lag,value,stderr,sample_size
+01234,sig,20200414,4,20200414,0,1.5,2.5,3.5
+""")
+
+  def test_raw_json_format(self):
+    """Test generate raw json data."""
+
+    # insert dummy data
+    self.cur.execute('''
+      insert into covidcast values
+        (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
+          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 1, False)
+    ''')
+    self.cnx.commit()
+
+    # make the request
+    response = requests.get(BASE_URL, params={
+      'source': 'covidcast',
+      'data_source': 'src',
+      'signal': 'sig',
+      'time_type': 'day',
+      'geo_type': 'county',
+      'time_values': 20200414,
+      'geo_value': '01234',
+      'format': 'json'
+    })
+    response.raise_for_status()
+    response = response.json()
+
+    # assert that the right data came back
+    self.assertEqual(response, [{
+      'time_value': 20200414,
+      'geo_value': '01234',
+      'value': 1.5,
+      'stderr': 2.5,
+      'sample_size': 3.5,
+      'direction': 4,
+      'issue': 20200414,
+      'lag': 0,
+      'signal': 'sig',
+    }])
+
   def test_fields(self):
     """Test to limit fields field"""
 
