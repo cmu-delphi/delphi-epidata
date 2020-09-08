@@ -249,6 +249,73 @@ function extract_values($str, $type) {
   return $values;
 }
 
+/**
+ * parses a given string in format YYYYMMDD or YYYY-MM-DD to a number in the form YYYYMMDD
+ */
+function parse_date($s) {
+  return intval(str_replace('-', '', $s));
+}
+
+// extracts an array of values and/or ranges from a string
+//   $str: the string to parse
+function extract_dates($str) {
+  if($str === null || strlen($str) === 0) {
+    // nothing to do
+    return null;
+  }
+  $values = array();
+  // split on commas and loop over each entry, which could be either a single value or a range of values
+  $parts = explode(',', $str);
+
+  $push_range = function($first, $last) {
+    $first = parse_date($first);
+    $last = parse_date($last);
+    if($last === $first) {
+      // the first and last numbers are the same, just treat it as a singe value
+      return $first;
+    }
+    if($last > $first) {
+      // add the range as an array
+      return array($first, $last);
+    }
+    // the range is inverted, this is an error
+    return false;
+  };
+
+  foreach($parts as $part) {
+    if(strpos($part, '-') === false && strpos($part, ':') === false) {
+      // YYYYMMDD
+      array_push($values, parse_date($part));
+      continue;
+    }
+    if (strpos($part, ':') !== false) {
+      // YYYY-MM-DD:YYYY-MM-DD
+      $range = explode(':', $part);
+      $r = $push_range($range[0], $range[1]);
+      if ($r === false) {
+        return null;
+      }
+      array_push($values, $r);
+    }
+    // YYYY-MM-DD or YYYYMMDD-YYYYMMDD
+    // split on the dash
+    $range = explode('-', $part);
+    if (count($range) === 2) {
+      // YYYYMMDD-YYYYMMDD
+      $r = $push_range($range[0], $range[1]);
+      if ($r === false) {
+        return null;
+      }
+      array_push($values, $r);
+      continue;
+    }
+    // YYYY-MM-DD
+    array_push($values, parse_date($part));
+  }
+  // success, return the list
+  return $values;
+}
+
 // give a comma-separated, quoted list of states in an HHS or Census region
 function get_region_states($region) {
   switch($region) {

@@ -958,7 +958,7 @@ function get_covidcast($source, $signals, $time_type, $geo_type, $time_values, $
   $condition_time_type = "t.`time_type` = '{$time_type}'";
   $condition_geo_type = "t.`geo_type` = '{$geo_type}'";
   $condition_time_value = filter_integers('t.`time_value`', $time_values);
-    
+
   if ($geo_value === '*') {
     // the wildcard query should return data for all locations in `geo_type`
     $condition_geo_value = 'TRUE';
@@ -1476,9 +1476,9 @@ if(database_connect()) {
     if(require_all($data, array('data_source', 'time_type', 'geo_type', 'time_values', 'geo_value'))
        && require_any($data, array('signal', 'signals'))) {
       // parse the request
-      $time_values = extract_values($_REQUEST['time_values'], 'int');
-      $as_of = isset($_REQUEST['as_of']) ? intval($_REQUEST['as_of']) : null;
-      $issues = isset($_REQUEST['issues']) ? extract_values($_REQUEST['issues'], 'int') : null;
+      $time_values = extract_dates($_REQUEST['time_values']);
+      $as_of = isset($_REQUEST['as_of']) ? parse_date($_REQUEST['as_of']) : null;
+      $issues = isset($_REQUEST['issues']) ? extract_dates($_REQUEST['issues']) : null;
       $lag = isset($_REQUEST['lag']) ? intval($_REQUEST['lag']) : null;
       $signals = extract_values(isset($_REQUEST['signals']) ? $_REQUEST['signals'] : $_REQUEST['signal'], 'string');
       // get the data

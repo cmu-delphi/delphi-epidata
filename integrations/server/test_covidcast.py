@@ -340,3 +340,120 @@ class CovidcastTests(unittest.TestCase):
        }],
       'message': 'success',
     })
+
+  def test_date_formats(self):
+    """Request a signal using different time formats."""
+
+    # insert dummy data
+    self.cur.execute('''
+      insert into covidcast values
+      (0, 'src', 'sig', 'day', 'county', 20200411, '01234',
+          123, 10, 11, 12, 456, 13, 20200413, 0, 1, False),
+        (0, 'src', 'sig', 'day', 'county', 20200412, '01234',
+          123, 20, 21, 22, 456, 23, 20200413, 0, 1, False),
+        (0, 'src', 'sig', 'day', 'county', 20200413, '01234',
+          123, 30, 31, 32, 456, 33, 20200413, 0, 1, False),
+        (0, 'src', 'sig', 'day', 'county', 20200411, '11111',
+          123, 40, 41, 42, 456, 43, 20200413, 0, 1, False),
+        (0, 'src', 'sig', 'day', 'county', 20200412, '22222',
+          123, 50, 51, 52, 456, 53, 20200413, 0, 1, False),
+        (0, 'src', 'sig', 'day', 'county', 20200413, '33333',
+          123, 60, 61, 62, 456, 63, 20200413, 0, 1, False)
+    ''')
+    self.cnx.commit()
+
+    # make the request
+    response = requests.get(BASE_URL, params={
+      'source': 'covidcast',
+      'data_source': 'src',
+      'signal': 'sig',
+      'time_type': 'day',
+      'geo_type': 'county',
+      'time_values': '20200411',
+      'geo_value': '*',
+    })
+    response.raise_for_status()
+    response = response.json()
+
+    # assert that the right data came back
+    self.assertEqual(len(response['epidata']), 2)
+
+    # make the request
+    response = requests.get(BASE_URL, params={
+      'source': 'covidcast',
+      'data_source': 'src',
+      'signal': 'sig',
+      'time_type': 'day',
+      'geo_type': 'county',
+      'time_values': '2020-04-11',
+      'geo_value': '*',
+    })
+    response.raise_for_status()
+    response = response.json()
+
+    # assert that the right data came back
+    self.assertEqual(len(response['epidata']), 2)
+
+    # make the request
+    response = requests.get(BASE_URL, params={
+      'source': 'covidcast',
+      'data_source': 'src',
+      'signal': 'sig',
+      'time_type': 'day',
+      'geo_type': 'county',
+      'time_values': '20200411,20200412',
+      'geo_value': '*',
+    })
+    response.raise_for_status()
+    response = response.json()
+
+    # assert that the right data came back
+    self.assertEqual(len(response['epidata']), 4)
+
+    # make the request
+    response = requests.get(BASE_URL, params={
+      'source': 'covidcast',
+      'data_source': 'src',
+      'signal': 'sig',
+      'time_type': 'day',
+      'geo_type': 'county',
+      'time_values': '2020-04-11,2020-04-12',
+      'geo_value': '*',
+    })
+    response.raise_for_status()
+    response = response.json()
+
+    # assert that the right data came back
+    self.assertEqual(len(response['epidata']), 4)
+
+    # make the request
+    response = requests.get(BASE_URL, params={
+      'source': 'covidcast',
+      'data_source': 'src',
+      'signal': 'sig',
+      'time_type': 'day',
+      'geo_type': 'county',
+      'time_values': '20200411-20200413',
+      'geo_value': '*',
+    })
+    response.raise_for_status()
+    response = response.json()
+
+    # assert that the right data came back
+    self.assertEqual(len(response['epidata']), 6)
+
+    # make the request
+    response = requests.get(BASE_URL, params={
+      'source': 'covidcast',
+      'data_source': 'src',
+      'signal': 'sig',
+      'time_type': 'day',
+      'geo_type': 'county',
+      'time_values': '2020-04-11:2020-04-13',
+      'geo_value': '*',
+    })
+    response.raise_for_status()
+    response = response.json()
+
+    # assert that the right data came back
+    self.assertEqual(len(response['epidata']), 6)
