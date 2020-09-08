@@ -1568,7 +1568,7 @@ if(database_connect()) {
 
 if(isset($_REQUEST['format']) && $_REQUEST['format'] == "csv") {
   send_csv($data);
-} if(isset($_REQUEST['format']) && $_REQUEST['format'] == "json") {
+} else if(isset($_REQUEST['format']) && $_REQUEST['format'] == "json") {
   send_json($data);
 } else {
   // send the response as a json object
