@@ -390,7 +390,7 @@ function send_csv(&$data) {
   header('Content-Type: text/csv');
   header('Content-Disposition: attachment; filename=epidata.csv');
 
-  if (intval(data["result"]) == -2) {
+  if (intval($data["result"]) == -2) {
     // empty
     return;
   }
