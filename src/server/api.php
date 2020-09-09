@@ -1028,7 +1028,7 @@ function get_covidcast_meta() {
     $geo_types = extract_values($_REQUEST['geo_types'], 'str');
 
     if ($time_types !== null || $signals !== null || $geo_types !== null) {
-      $epidata = array_filter($epidata, function($row) use(&$time_types, &$signals, &$geo_types) {
+      $epidata = array_values(array_filter($epidata, function($row) use(&$time_types, &$signals, &$geo_types) {
         if ($time_types !== null && !in_array($row['time_type'], $time_types)) {
           return false;
         }
@@ -1046,7 +1046,7 @@ function get_covidcast_meta() {
           }
         }
         return false;
-      });
+      }));
     }
     // filter fields
     if (isset($_REQUEST['fields'])) {

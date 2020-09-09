@@ -145,6 +145,7 @@ class CovidcastMetaTests(unittest.TestCase):
 
     res = fetch(time_types='day,week')
     self.assertEqual(res['result'], 1)
+    self.assertTrue(isinstance(res['epidata'], list))
     self.assertEqual(len(res['epidata']), len(expected))
 
     res = fetch(time_types='sec')
@@ -153,10 +154,12 @@ class CovidcastMetaTests(unittest.TestCase):
     # geo types
     res = fetch(geo_types='hrr')
     self.assertEqual(res['result'], 1)
+    self.assertTrue(isinstance(res['epidata'], list))
     self.assertEqual(len(res['epidata']), sum([1 for s in expected if s['geo_type'] == 'hrr']))
 
     res = fetch(geo_types='hrr,msa')
     self.assertEqual(res['result'], 1)
+    self.assertTrue(isinstance(res['epidata'], list))
     self.assertEqual(len(res['epidata']), len(expected))
 
     res = fetch(geo_types='state')
@@ -165,14 +168,17 @@ class CovidcastMetaTests(unittest.TestCase):
     # signals
     res = fetch(signals='src1:sig1')
     self.assertEqual(res['result'], 1)
+    self.assertTrue(isinstance(res['epidata'], list))
     self.assertEqual(len(res['epidata']), sum([1 for s in expected if s['data_source'] == 'src1' and s['signal'] == 'sig1']))
 
     res = fetch(signals='src1')
     self.assertEqual(res['result'], 1)
+    self.assertTrue(isinstance(res['epidata'], list))
     self.assertEqual(len(res['epidata']), sum([1 for s in expected if s['data_source'] == 'src1']))
 
     res = fetch(signals='src1:*')
     self.assertEqual(res['result'], 1)
+    self.assertTrue(isinstance(res['epidata'], list))
     self.assertEqual(len(res['epidata']), sum([1 for s in expected if s['data_source'] == 'src1']))
 
     res = fetch(signals='src1:src4')
@@ -180,6 +186,7 @@ class CovidcastMetaTests(unittest.TestCase):
 
     res = fetch(signals='src1:*,src2:*')
     self.assertEqual(res['result'], 1)
+    self.assertTrue(isinstance(res['epidata'], list))
     self.assertEqual(len(res['epidata']), len(expected))
 
     # filter fields
