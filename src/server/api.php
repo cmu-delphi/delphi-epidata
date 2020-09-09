@@ -1028,25 +1028,31 @@ function get_covidcast_meta() {
     $geo_types = extract_values($_REQUEST['geo_types'], 'str');
 
     if ($time_types !== null || $signals !== null || $geo_types !== null) {
-      $epidata = array_filter($epidata, function($row) use(&$time_types, &$signals, &$geo_types) {
+      $epidata_f = [];
+      foreach($epidata as $row) {
         if ($time_types !== null && !in_array($row['time_type'], $time_types)) {
-          return false;
+          continue;
         }
         if ($geo_types !== null && !in_array($row['geo_type'], $geo_types)) {
-          return false;
+          continue;
         }
         if ($signals === null || count($signals) === 0) {
-          return true;
+          array_push($epidata_f, $row);
+          continue;
         }
         // filter by signal
+        $add = false;
         foreach($signals as $signal) {
           // match source and (signal or no signal or signal = *)
           if ($row['data_source'] === $signal[0] && (count($signal) === 1 || $row['signal'] === $signal[1] || $signal[1] === '*')) {
-            return true;
+            $add = true;
           }
         }
-        return false;
-      });
+        if ($add) {
+          array_push($epidata_f, $row);
+        }
+      }
+      $epidata = $epidata_f;
     }
     // filter fields
     if (isset($_REQUEST['fields'])) {
