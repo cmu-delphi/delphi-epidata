@@ -503,7 +503,7 @@ Epidata <- (function() {
   }
 
   # Fetch Delphi's COVID-19 Surveillance Streams
-  covidcast <- function(data_source, signals, time_type, geo_type, time_values, geo_value, as_of, issues, lag, format=c("flat","tree"), signal) {
+  covidcast <- function(data_source, signals, time_type, geo_type, time_values, geo_value, as_of, issues, lag, format=c("classic","tree"), signal) {
     # Check parameters
     if(missing(data_source) || (missing(signals) && missing(signal)) || missing(time_type) || missing(geo_type) || missing(time_values) || missing(geo_value)) {
       stop('`data_source`, `signals`, `time_type`, `geo_type`, `time_values`, and `geo_value` are all required')
