@@ -54,9 +54,9 @@ may first be available in the API on June 14th and subsequently revised on June
 
 ## Qualifying Admissions
 
-We receive the daily count of new hospital admissions recorded by the health
-system partners at each location. Admissions are considered COVID-associated if
-they meet the following criteria:
+We receive two daily data streams of new hospital admissions recorded by the health system partners at each location. One stream is based on electronic medical records, and the other comes from claims records.
+
+In the electronic medical records stream, admissions are considered COVID-associated if they meet the following criteria:
 
 * If the admission has any ICD-10 code matching {U071, U072, B9729}, or
 * If the primary ICD-10 code is one of {R05, R060, R509, Z9911, R0902, R0603,
@@ -65,15 +65,20 @@ they meet the following criteria:
   R6889} and there is a secondary ICD-10 code of Z20828, or
 * If the primary ICD-10 code is Z20828.
 
+For the claims stream, admissions are considered COVID-associated if the patient has a primary ICD-10 code matching {U071, U072, B9729, J1281, Z03818, B342, J1289}.
+
+
 ## Estimation
 
-For a fixed location $$i$$ and time $$t$$, let $$Y_{it}$$ denote the number of
-hospital admissions meeting the qualifying conditions, and let $$N_{it}$$ be the
-total number of hospital admissions. Our estimate of the COVID-19 percentage is
-given by
+For a fixed location $$i$$ and time $$t$$, let $$Y_{it} = Y_{it}^{\text{emr}} + Y_{it}^{\text{claims}}$$ denote the number of
+hospital admissions meeting the qualifying conditions, where the superscript denotes the respective data stream. Similarly, let $$N_{it} = N_{it}^{\text{emr}} + N_{it}^{\text{claims}}$$ denote the
+total number of hospital admissions. 
+
+Our estimate of the COVID-19 percentage is
+weighted by the contribution from each data stream according to the magnitude of their total admissions.
 
 $$
-\hat p_{it} = 100 \cdot \frac{Y_{it} + 0.5}{N_{it} + 1}.
+\hat p_{it} = 100 \cdot \frac{Y_{it} + 0.5}{N_{it} + 1} \approx 100\cdot\left(\frac{N_{it}^{\text{emr}}}{N_{it}}\cdot\frac{Y_{it}^{\text{emr}}}{N_{it}^{\text{emr}}} + \frac{N_{it}^{\text{claims}}}{N_{it}}\cdot\frac{Y_{it}^{\text{claims}}}{N_{it}^{\text{claims}}} \right)
 $$
 
 The additional pseudo-observation of 0.5 means this estimate can be interpreted
