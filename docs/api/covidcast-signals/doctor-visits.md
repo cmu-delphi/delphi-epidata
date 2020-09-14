@@ -149,7 +149,7 @@ $$\dot{Y}_{it}^k = Y_{it}^k / \alpha_{wd(t)}.$$
 We then use these adjusted counts to estimate the CLI percentage as described
 above.
 
-### Backwards padding
+### Backwards Padding
 
 To help with the reporting delay, we perform the following simple
 correction on each location. At each time $$t$$, we consider the total visit
