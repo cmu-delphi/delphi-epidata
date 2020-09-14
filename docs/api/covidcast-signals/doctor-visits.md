@@ -149,9 +149,9 @@ $$\dot{Y}_{it}^k = Y_{it}^k / \alpha_{wd(t)}.$$
 We then use these adjusted counts to estimate the CLI percentage as described
 above.
 
-### Backfill
+### Backwards padding
 
-To help with the reporting delay, we perform the following simple "backfill"
+To help with the reporting delay, we perform the following simple
 correction on each location. At each time $$t$$, we consider the total visit
 count. If the value is less than a minimum sample threshold, we go back to the
 previous time $$t-1$$, and add this visit count to the previous total, again
