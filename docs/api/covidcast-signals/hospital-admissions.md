@@ -91,10 +91,10 @@ $$
 \widehat{\text{se}}(\hat{p}_{it}) = 100 \sqrt{\frac{\frac{\hat{p}_{it}}{100}(1-\frac{\hat{p}_{it}}{100})}{N_{it}}}.
 $$
 
-## Backfill
+## Backwards Padding
 
-This source undergoes the same backfill adjustment as the `doctor-visits`
-source; see [its documentation](doctor-visits.md#backfill).
+This source undergoes the same backwards padding adjustment as the `doctor-visits`
+source; see [its documentation](doctor-visits.md#backwards-padding).
 
 ## Smoothing
 
