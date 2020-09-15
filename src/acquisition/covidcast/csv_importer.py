@@ -225,7 +225,7 @@ class CsvImporter:
 
     elif geo_type == 'nation':
       # geo_id is lowercase
-      if not 'a' <= geo_id <= 'z':
+      if len(geo_id) != 2 or not 'aa' <= geo_id <= 'zz':
         return (None, 'geo_id')
 
     else:
