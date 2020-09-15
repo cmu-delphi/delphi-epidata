@@ -43,6 +43,8 @@ class UnitTests(unittest.TestCase):
       path_prefix + 'fb_survey/weekly_202015_county_cli.csv',
       # valid daily
       path_prefix + 'ght/20200408_state_rawsearch.csv',
+      # valid national
+      path_prefix + 'valid/20200408_nation_sig.csv',
       # invalid
       path_prefix + 'invalid/hello_world.csv',
       # invalid day
@@ -50,7 +52,7 @@ class UnitTests(unittest.TestCase):
       # invalid week
       path_prefix + 'invalid/weekly_222222_b_c.csv',
       # invalid geography
-      path_prefix + 'invalid/20200418_country_c.csv',
+      path_prefix + 'invalid/20200418_province_c.csv',
       # ignored
       path_prefix + 'ignored/README.md',
     ]
@@ -65,10 +67,11 @@ class UnitTests(unittest.TestCase):
     expected = set([
       (glob_paths[0], ('fb_survey', 'cli', 'week', 'county', 202015, expected_issue_week, delta_epiweeks(202015, expected_issue_week))),
       (glob_paths[1], ('ght', 'rawsearch', 'day', 'state', time_value_day, expected_issue_day, (date.today() - date(year=time_value_day // 10000, month=(time_value_day // 100) % 100, day=time_value_day % 100)).days)),
-      (glob_paths[2], None),
+      (glob_paths[2], ('valid', 'sig', 'day', 'nation', time_value_day, expected_issue_day, (date.today() - date(year=time_value_day // 10000, month=(time_value_day // 100) % 100, day=time_value_day % 100)).days)),
       (glob_paths[3], None),
       (glob_paths[4], None),
       (glob_paths[5], None),
+      (glob_paths[6], None),
     ])
     self.assertEqual(found, expected)
 
@@ -133,7 +136,8 @@ class UnitTests(unittest.TestCase):
       (make_row(geo_type='dma', geo_id='400'), 'geo_id'),
       (make_row(geo_type='state', geo_id='48'), 'geo_id'),
       (make_row(geo_type='state', geo_id='iowa'), 'geo_id'),
-      (make_row(geo_type='country', geo_id='usa'), 'geo_type'),
+      (make_row(geo_type='nation', geo_id='0000'), 'geo_id'),
+      (make_row(geo_type='province', geo_id='ab'), 'geo_type'),
       (make_row(se='-1'), 'se'),
       (make_row(geo_type=None), 'geo_type'),
       (make_row(geo_id=None), 'geo_id'),

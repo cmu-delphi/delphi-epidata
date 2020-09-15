@@ -24,7 +24,7 @@ class CsvImporter:
   PATTERN_WEEKLY = re.compile(r'^.*/([^/]*)/weekly_(\d{6})_(\w+?)_(\w+)\.csv$')
 
   # set of allowed resolutions (aka "geo_type")
-  GEOGRAPHIC_RESOLUTIONS = {'county', 'hrr', 'msa', 'dma', 'state'}
+  GEOGRAPHIC_RESOLUTIONS = {'county', 'hrr', 'msa', 'dma', 'state', 'nation'}
 
   # set of required CSV columns
   REQUIRED_COLUMNS = {'geo_id', 'val', 'se', 'sample_size'}
@@ -220,6 +220,11 @@ class CsvImporter:
 
     elif geo_type == 'state':
       # note that geo_id is lowercase
+      if len(geo_id) != 2 or not 'aa' <= geo_id <= 'zz':
+        return (None, 'geo_id')
+
+    elif geo_type == 'nation':
+      # geo_id is lowercase
       if len(geo_id) != 2 or not 'aa' <= geo_id <= 'zz':
         return (None, 'geo_id')
 

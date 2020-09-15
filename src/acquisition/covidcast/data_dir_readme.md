@@ -42,7 +42,7 @@ Criteria for a valid filename:
   `weekly_YYYYWW_{geo}_{signal}.csv` for weeklies
 - Minimum year: 2019
 - Maximum year: 2030
-- `geo` one of: county, hrr, msa, dma, state
+- `geo` one of: county, hrr, msa, dma, state, nation
 - `signal` must be matched by a `/\w+/` regex. If you do not want this signal to
   be surfaced in the metadata information, the signal name should start with
   `wip_`.
@@ -60,7 +60,7 @@ Criteria for a valid file:
 - `geo_id` for `hrr` must sort between '001' and '500'
 - `geo_id` for `msa` must have length 5 and sort between '10000' and'99999'
 - `geo_id` for `dma` must sort between '450' and '950'
-- `geo_id` for `state` must have length 2 and sort between 'aa' and 'zz'
+- `geo_id` for `state`, `nation` must have length 2 and sort between 'aa' and 'zz'
 - `value` must be a real number (ie not nan, inf, empty, na, or None)
 - `se` may be nan; if it is a number, it must be nonnegative
 - `sample_size` may be nan; if it is a number, it must be at least 5
