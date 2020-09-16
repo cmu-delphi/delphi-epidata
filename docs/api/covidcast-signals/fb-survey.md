@@ -12,19 +12,18 @@ grand_parent: COVIDcast API
 * **Date of last change:** [3 June 2020](../covidcast_changelog.md#fb-survey)
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 
-This data source is based on symptom surveys run by Carnegie Mellon. Facebook
-directs a random sample of its users to these surveys, which are voluntary.
-Individual survey responses are held by CMU and are sharable with other health
-researchers under a data use agreement. No individual survey responses are
-shared back to Facebook. See our [surveys
+This data source is based on symptom surveys run by the Delphi group at Carnegie
+Mellon. Facebook directs a random sample of its users to these surveys, which
+are voluntary. Individual survey responses are held by CMU and are sharable with
+other health researchers under a data use agreement. No individual survey
+responses are shared back to Facebook. See our [surveys
 page](https://covidcast.cmu.edu/surveys.html) for more detail about how the
-surveys work and how they are used outside the COVIDcast API. The full text of
-all survey items is available in our [survey coding documentation](../../symptom-survey/coding.md).
+surveys work and how they are used outside the COVIDcast API.
 
 We produce several sets of signals based on the survey data, listed and
 described in the sections below:
 
-1. [Influenza-like and COVID-Like illness indicators](#ili-and-cli-indicators),
+1. [Influenza-like and COVID-like illness indicators](#ili-and-cli-indicators),
    based on reported symptoms
 2. [Behavior indicators](#behavior-indicators), including mask-wearing,
    traveling, and activities outside the home
@@ -46,7 +45,7 @@ more counties and MSAs than the raw signals.
 1. TOC
 {:toc}
 
-## Survey Questions
+## Survey Text and Questions
 
 The survey starts with the following 5 questions:
 
@@ -60,16 +59,18 @@ The survey starts with the following 5 questions:
 2. How many people in your household (including yourself) are sick (fever, along
    with at least one other symptom from the above list)?
 3. How many people are there in your household in total (including yourself)?
+   *[Beginning in wave 4, this question asks respondents to break the number
+   down into three age categories.]*
 4. What is your current ZIP code?
 5. How many additional people in your local community that you know personally
    are sick (fever, along with at least one other symptom from the above list)?
 
 Beyond these 5 questions, there are also many other questions that follow in the
 survey, which go into more detail on symptoms, contacts, risk factors, and
-demographics. These are used for many of our behavior and testing indicators.
-The full text of the survey (including the text from each previous survey
-version) can be found on our [questions and coding
-page](../../symptom-survey/coding.md). Researchers can [request
+demographics. These are used for many of our behavior and testing indicators
+below. The full text of the survey (including all deployed versions) can be
+found on our [questions and coding page](../../symptom-survey/coding.md).
+Researchers can [request
 access](https://dataforgood.fb.com/docs/covid-19-symptom-survey-request-for-data-access/)
 to (fully de-identified) individual survey responses for research purposes.
 
@@ -318,7 +319,7 @@ also available. These have names beginning `smoothed_w`, such as
 Weighted versions of these signals, using the [survey weighting describe
 below](#survey-weighting) to be more representative of state demographics, are
 also available. These have names beginning `smoothed_w`, such as
-`smoothed_wanxious_5d`.
+`smoothed_wdepressed_5d`.
 
 ## Survey Weighting
 
@@ -355,7 +356,7 @@ inverse probability weighting strategy (this being a special case of importance
 sampling).
 
 Detailed documentation on how Facebook calculates these weights is available on
-our [survey weight documentation page](../../symptom-survey/weights.md)
+our [survey weight documentation page](../../symptom-survey/weights.md).
 
 ### Adjusting Household ILI and CLI
 
