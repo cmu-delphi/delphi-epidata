@@ -53,6 +53,10 @@ We assume the estimates for each time point follow a binomial distribution. The 
 
 $$ \text{se} = 100 \sqrt{ \frac{\frac{p}{100}(1- \frac{p}{100})}{N} } $$
 
+### Sample Size
+
+The sample sizes are number of tests taken due to COVID-19 for a certain location on that day . 
+
 ### Smoothing
 
 Smoothed estimates are formed by pooling data over time. That is, daily, for each location, we pool all data available in that location over the last 7 days
