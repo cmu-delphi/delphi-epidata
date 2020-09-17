@@ -13,11 +13,19 @@ grand_parent: COVIDcast API
 * **Date of last change:** Never
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 
-A brief description of what this source measures.
+This data source of confirmed COVID-19 cases and tests taken due to COVID-19 is based on reports made available by the Corona Data Scraper.
 
-| Signal | Description |
-| --- | --- |
-| `signal_name` | Brief description of the signal, including the units it is measured in and any smoothing that is applied |
+| Signal | 7-day average signal | Description |
+| --- | --- | --- |
+| `confirmed_cumulative_num` | `confirmed_7dav_cumulative_num` | Cumulative number of confirmed COVID-19 cases |
+| `confirmed_cumulative_prop` | `confirmed_7dav_cumulative_prop` | Cumulative number of confirmed COVID-19 cases per 100,000 population |
+| `confirmed_incidence_num` | `confirmed_7dav_incidence_num` | Number of new confirmed COVID-19 cases, daily |
+| `confirmed_incidence_prop` | `confirmed_7dav_incidence_prop` | Number of new confirmed COVID-19 cases per 100,000 population, daily |
+| `tested_cumulative_num` | `tested_7dav_cumulative_num` | Cumulative number of tests taken due to COVID-19 |
+| `tested_cumulative_prop` | `tested_7dav_cumulative_prop` | Cumulative number of tests taken due to COVID-19, per 100,000 population |
+| `tested_incidence_num` | `tested_7dav_incidence_num` | Number of new tests taken due to COVID-19, daily |
+| `tested_incidence_prop` | `tested_7dav_incidence_prop` | Number of new tests taken due to COVID-19 per 100,000 population, daily |
+| `raw_pct_positive` | `smoothed_pct_positive` | Percentage of tests that were positive for COVID-19 |
 
 ## Table of contents
 {: .no_toc .text-delta}
@@ -27,48 +35,71 @@ A brief description of what this source measures.
 
 ## Estimation
 
-Describe how any relevant quantities are estimated---both statistically and in
-terms of the underlying features or inputs. (For example, if a signal is based
-on hospitalizations, what specific types of hospitalization are counted?)
+These `confirmed_cases` and `tested` related signals are taken directly from the Corona Data Scraper without changes. The 7-day average signals are computed by Delphi by calculating moving averages of the preceding 7 days, so e.g. the signal for June 7 is the average of the underlying data for June 1 through 7, inclusive.
 
-If you need mathematics, we use KaTeX; you can see its supported LaTeX
-[here](https://katex.org/docs/supported.html). Inline math is done with *double*
-dollar signs, as in $$x = y/z$$, and display math by placing them with
-surrounding blank lines, as in
+The `confirmed_cases` related signals are similar in intent to our JHU Cases and Deaths source, but Corona Data Scraper collects its data from multiple source including JHU-CSSE,  New York Times and cross checks them which results in the descrepancies in reported numbers. Users should evaluate which source better fits their needs.
 
-$$
-\frac{-b \pm \sqrt{b^2 - 4ac}}{2a}.
-$$
+Delphi derives the `pct_positive` signals using `confirmed_incidence_num` as the numerator and `tested_incidence_num` as the denominator. Invalid results such as `inf` and negative ratios (which are due to the quality of the raw data) will not be reported. For `pct_positive` signals, 
 
-Note that the blank lines are essential.
+Let $$n$$ be the number of total COVID tests taken over a given time period and a given location. Let $$x$$ be the number of confirmed cases in this location over the given time period. We are interested in estimating the percentage:
+
+$$ p = \frac{100 x}{n} $$
+
+In order to ensure it is statistically meaningful, locations with total number of tests fewer tha 50 will not be reported. 
 
 ### Standard Error
 
-If this signal is a random variable, e.g. if it is a survey or based on
-proportion estimates, describe here how its standard error is reported and the
-nature of the random variation.
+We assume the estimates for each time point follow a binomial distribution. The estimated standard error then is:
+
+$$ \text{se} = 100 \sqrt{ \frac{\frac{p}{100}(1- \frac{p}{100})}{N} } $$
+
+### Sample Size
+
+The sample sizes are number of tests taken due to COVID-19 for a certain location on that day . 
 
 ### Smoothing
 
-If the smoothing is unusual or involves extra steps beyond a simple moving
-average, describe it here.
+Smoothed estimates are formed by pooling data over time. That is, daily, for each location, we pool all data available in that location over the last 7 days
 
 ## Limitations
 
-Any limitations in the interpretation of this signal, such as limits in its
-geographic coverage, limits in its interpretation (symptoms in a survey aren't
-always caused by COVID, our healthcare partner only is part of the market, there
-may be a demographic bias in respondents, etc.), known inaccuracies, etc.
+Corona Data Scraper's data reports cumulative cases and tests, so our incidence signals are calculated by subtracting each day's cumulative count from the previous day. Since cumulative figures are sometimes corrected or amended by health authorities, this can sometimes result in negative incidence. Health authorities can also change reporting standards in ways that dramatically increase the number of cumulative deaths, resulting in an apparent spike in incidence. This should be interpreted purely as an artifact of data reporting and correction.
 
-## Lag and Backfill
+Corona Data Scraper provides data at county level and state level respectively. They only provide the number of tests for approximately 700 counties. County level reports can be missed for some states entirely. However, Cororna Data Scraper has a good coverage at state level. Because of this, we report msa/hrr level data based on county level information. As for state level data, we use county level aggregates for confirmed cases but state level data directly from the raw for tested. Note that, this will also influence the `pct_positive` signals since the denominators are number of tests taken due to COVID-19 instead of population. 
 
-If this signal is reported with a consistent lag, describe it here.
+## Geographical Exceptions
 
-If this signal is regularly backfilled, describe the reason and nature of the
-backfill here.
+At the state and County (FIPS) level, we report the data _exactly_ as CDS reports their
+data, to prevent confusing public consumers of the data. 
+The visualization and modeling teams should take note of these exceptions.
 
-## Source
+### States with County level Tested Data Available
+Only Arkansas, California, Florida, Illinois, Louisiana, Massachusetts, Missouri, North Dakota, New York, Oregon,
+Tennessee, Wisconsin have conty level tested data available. We derive MSA and HRR level data based on it at county 
+level. For the tested data in rest of the states, only state level data is available.
 
-If the signal has specific licensing or sourcing that should be acknowledged,
-describe it here. Also, include links to source websites for data that is
-scraped or received from another source.
+### Ignored Areas at State Level
+Due to the lack of population information, we ignore the four areas listed below although 
+we have dat provided from Corona Data Scraper:
+|Name        |
+|-------------------|
+|Guam     |
+|United States Virgin Islands           |
+|Northern Mariana Islands              |
+|Washington, D.C.          |
+
+### Mismatched FIPS Codes
+
+There are two FIPS codes that were changed in 2015 (see the [Census
+Bureau
+documentation](https://www.census.gov/programs-surveys/geography/technical-documentation/county-changes.html)), leading to
+mismatch between us and CDS.  We report the data using the FIPS code used
+by CDS, again to promote consistency and avoid confusion by external users
+of the dataset.  For the mapping to MSA, HRR, these two counties are
+included properly.
+
+|County Name        |State          |"Our" FIPS         |CDS FIPS       |
+|-------------------|---------------|-------------------|---------------|
+|Oglala Lakota      |South Dakota   |46113              |46102          |
+|Kusilvak           |Alaska         |02270              |02158          |
+
