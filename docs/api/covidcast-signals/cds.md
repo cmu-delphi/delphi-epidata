@@ -73,6 +73,11 @@ At the state and County (FIPS) level, we report the data _exactly_ as CDS report
 data, to prevent confusing public consumers of the data. 
 The visualization and modeling teams should take note of these exceptions.
 
+### States with County level Tested Data Available
+Only Arkansas, California, Florida, Illinois, Louisiana, Massachusetts, Missouri, North Dakota, New York, Oregon,
+Tennessee, Wisconsin have conty level tested data available. We derive MSA and HRR level data based on it at county 
+level. For the tested data in rest of the states, only state level data is available.
+
 ### Ignored Areas at State Level
 Due to the lack of population information, we ignore the four areas listed below although 
 we have dat provided from Corona Data Scraper:
@@ -85,7 +90,9 @@ we have dat provided from Corona Data Scraper:
 
 ### Mismatched FIPS Codes
 
-There are two FIPS codes that were changed in 2015, leading to
+There are two FIPS codes that were changed in 2015 (see the [Census
+Bureau
+documentation](https://www.census.gov/programs-surveys/geography/technical-documentation/county-changes.html)), leading to
 mismatch between us and CDS.  We report the data using the FIPS code used
 by CDS, again to promote consistency and avoid confusion by external users
 of the dataset.  For the mapping to MSA, HRR, these two counties are
@@ -95,7 +102,4 @@ included properly.
 |-------------------|---------------|-------------------|---------------|
 |Oglala Lakota      |South Dakota   |46113              |46102          |
 |Kusilvak           |Alaska         |02270              |02158          |
-
-Documentation for the changes made by the US Census Bureau in 2015:
-https://www.census.gov/programs-surveys/geography/technical-documentation/county-changes.html
 
