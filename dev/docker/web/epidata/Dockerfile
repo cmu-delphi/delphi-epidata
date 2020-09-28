@@ -7,3 +7,6 @@ COPY repos/delphi/delphi-epidata/src/server/*.php /var/www/html/epidata/
 
 # point to the development database (overwrites the production config)
 COPY repos/delphi/delphi-epidata/dev/docker/web/epidata/assets/database_config.php /var/www/html/epidata/
+
+RUN chmod o+r /var/www/html/secrets.php
+RUN chmod o+r /var/www/html/epidata/*.php
