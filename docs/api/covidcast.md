@@ -19,7 +19,10 @@ and other divisions.
 
 This data is freely available under our [licensing](README.md#data-licensing)
 terms; we encourage academic users to [cite](README.md#citing) the data if they
-use it in any publications. Further documentation on Delphi's APIs is available
+use it in any publications. Our [data ingestion
+code](https://github.com/cmu-delphi/covidcast-indicators) and [API server
+code](https://github.com/cmu-delphi/delphi-epidata) is open-source, and
+contributions are welcome. Further documentation on Delphi's APIs is available
 in the [API overview](README.md).
 
 <div style="background-color:#FCC; padding: 10px 30px;"><strong>For

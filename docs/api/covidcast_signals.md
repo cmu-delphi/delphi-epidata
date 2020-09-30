@@ -16,6 +16,13 @@ The API for retrieving data from these sources is described in the
 [COVIDcast API endpoint documentation](covidcast.md). Changes and corrections to
 data in this API are listed in the [API changelog](covidcast_changelog.md).
 
+To obtain many of these signals and update them daily, Delphi has written
+extensive software to obtain data from various sources, aggregate the data,
+calculate statistical estimates, and format the data to be shared through the
+COVIDcast API. This code is [open source and available on
+GitHub](https://github.com/cmu-delphi/covidcast-indicators), and contributions
+are welcome.
+
 ## COVIDcast Map Signals
 
 The following signals are currently displayed on [the public COVIDcast
