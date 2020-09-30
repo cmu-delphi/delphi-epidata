@@ -30,19 +30,19 @@ map](https://covidcast.cmu.edu/):
 
 | Kind             | Name                             | Source                                                                | Signal                           |
 | ----             | ----                             | ------                                                                | ------                           |
-| Public Behavior  | Away from Home 6hr+ (SafeGraph)  | [`safegraph`](covidcast-signals/safegraph.md)                         | `full_time_work_prop`            |
-| Public Behavior  | Away from Home 3-6hr (SafeGraph) | [`safegraph`](covidcast-signals/safegraph.md)                         | `part_time_work_prop`            |
-| Public Behavior  | Search Trends (Google)           | [`ght`](covidcast-signals/ght.md)                                     | `smoothed_search`                |
-| Early Indicators | Symptoms (Facebook)              | [`fb-survey`](covidcast-signals/fb-survey.md)                         | `smoothed_cli`                   |
-| Early Indicators | Symptoms in Community (Facebook) | [`fb-survey`](covidcast-signals/fb-survey.md)                         | `smoothed_hh_cmnty_cli`          |
-| Early Indicators | Doctor's Visits                  | [`doctor-visits`](covidcast-signals/doctor-visits.md)                 | `smoothed_adj_cli`               |
-| Early Indicators | Combined                         | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `nmf_day_doc_fbc_fbs_ght`        |
-| Late Indicators  | Test Positivity Rate             | [`quidel`](covidcast-signals/quidel.md)                               | `covid_ag_smoothed_pct_positive` |
+| Public Behavior  | Away from Home 6hr+ a Day  | [`safegraph`](covidcast-signals/safegraph.md)                         | `full_time_work_prop`            |
+| Public Behavior  | Away from Home 3-6hr a Day  | [`safegraph`](covidcast-signals/safegraph.md)                         | `part_time_work_prop`            |
+| Public Behavior  | COVID Searches on Google           | [`ght`](covidcast-signals/ght.md)                                     | `smoothed_search`                |
+| Early Indicators | COVID-Like Symptoms              | [`fb-survey`](covidcast-signals/fb-survey.md)                         | `smoothed_cli`                   |
+| Early Indicators | COVID-Like Symptoms in Community | [`fb-survey`](covidcast-signals/fb-survey.md)                         | `smoothed_hh_cmnty_cli`          |
+| Early Indicators | COVID-Related Doctor Visits                  | [`doctor-visits`](covidcast-signals/doctor-visits.md)                 | `smoothed_adj_cli`               |
+| Early Indicators | COVID Indicator Combination                         | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `nmf_day_doc_fbc_fbs_ght`        |
+| Late Indicators  | COVID Antigen Test Positivity (Quidel)             | [`quidel`](covidcast-signals/quidel.md)                               | `covid_ag_smoothed_pct_positive` |
+| Late Indicators  | COVID Hospital Admissions              | [`hospital-admissions`](covidcast-signals/hospital-admissions.md)     | `smoothed_adj_covid19`           |
 | Late Indicators  | Cases                            | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `confirmed_7dav_incidence_num`   |
 | Late Indicators  | Cases per 100,000 People         | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `confirmed_7dav_incidence_prop`  |
 | Late Indicators  | Deaths                           | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `deaths_7dav_incidence_num`      |
 | Late Indicators  | Deaths per 100,000 People        | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `deaths_7dav_incidence_prop`     |
-| Late Indicators  | Hospital Admissions              | [`hospital-admissions`](covidcast-signals/hospital-admissions.md)     | `smoothed_adj_covid19`           |
 
 ## All Available Sources and Signals
 
