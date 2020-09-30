@@ -20,8 +20,10 @@ COVID-associated diagnosis code in a given location, on a given day.
 
 | Signal | Description |
 | --- | --- |
-| `smoothed_covid19` | Estimated percentage of new hospital admissions with COVID-associated diagnoses, based on data from health system partners, smoothed in time using a Gaussian linear smoother |
-| `smoothed_adj_covid19` | Same, but with systematic day-of-week effects removed using [the same mechanism as in `doctor-visits`](doctor-visits.md#day-of-week-adjustment) |
+| `smoothed_covid19` | Estimated percentage of new hospital admissions with COVID-associated diagnoses, based on electronic medical record and claims data from health system partners, smoothed in time using a Gaussian linear smoother. _This signal is deprecated as of 1 October, 2020._  |
+| `smoothed_adj_covid19` | Same as `smoothed_covid19`, but with systematic day-of-week effects removed using [the same mechanism as in `doctor-visits`](doctor-visits.md#day-of-week-adjustment). _This signal is deprecated as of 1 October, 2020._ |
+| `smoothed_claims_covid19` | Estimated percentage of new hospital admissions with COVID-associated diagnoses, based on claims data from health system partners, smoothed in time using a Gaussian linear smoother |
+| `smoothed_adj_claims_covid19` | Same as `smoothed_claims_covid19`, but with systematic day-of-week effects removed using [the same mechanism as in `doctor-visits`](doctor-visits.md#day-of-week-adjustment) |
 
 ## Table of contents
 {: .no_toc .text-delta}
@@ -67,18 +69,14 @@ In the electronic medical records stream, admissions are considered COVID-associ
 
 For the claims stream, admissions are considered COVID-associated if the patient has a primary ICD-10 code matching {U071, U072, B9729, J1281, Z03818, B342, J1289}.
 
-
 ## Estimation
 
-For a fixed location $$i$$ and time $$t$$, let $$Y_{it} = Y_{it}^{\text{emr}} + Y_{it}^{\text{claims}}$$ denote the number of
-hospital admissions meeting the qualifying conditions, where the superscript denotes the respective data stream. Similarly, let $$N_{it} = N_{it}^{\text{emr}} + N_{it}^{\text{claims}}$$ denote the
-total number of hospital admissions. 
+For a fixed location $$i$$ and time $$t$$, let $$Y_{it}$$ denote the number of hospital admissions meeting the qualifying conditions.  Let $$N_{it}$$ denote the total number of hospital admissions. 
 
-Our estimate of the COVID-19 percentage is
-weighted by the contribution from each data stream according to the magnitude of their total admissions.
+Our estimate of the COVID-19 percentage is given by
 
 $$
-\hat p_{it} = 100 \cdot \frac{Y_{it} + 0.5}{N_{it} + 1} \approx 100\cdot\left(\frac{N_{it}^{\text{emr}}}{N_{it}}\cdot\frac{Y_{it}^{\text{emr}}}{N_{it}^{\text{emr}}} + \frac{N_{it}^{\text{claims}}}{N_{it}}\cdot\frac{Y_{it}^{\text{claims}}}{N_{it}^{\text{claims}}} \right)
+\hat p_{it} = 100 \cdot \frac{Y_{it} + 0.5}{N_{it} + 1}.
 $$
 
 The additional pseudo-observation of 0.5 means this estimate can be interpreted
@@ -90,6 +88,18 @@ estimated standard error is:
 $$
 \widehat{\text{se}}(\hat{p}_{it}) = 100 \sqrt{\frac{\frac{\hat{p}_{it}}{100}(1-\frac{\hat{p}_{it}}{100})}{N_{it}}}.
 $$
+
+#### Data Streams
+* `smoothed_covid19` and  `smoothed_adj_covid19`: This signal combines data from electronic medical records (emr) and claims records. Here, $$Y_{it} = Y_{it}^{\text{emr}} + Y_{it}^{\text{claims}}$$ is the number of
+hospital admissions meeting the qualifying conditions, where the superscript denotes the respective data stream. Similarly, $$N_{it} = N_{it}^{\text{emr}} + N_{it}^{\text{claims}}$$ is taken as the
+total number of hospital admissions. Thus, the estimate of the COVID-19 percentage is
+weighted by the contribution from each data stream according to the magnitude of their total admissions.
+
+$$
+\hat p_{it} = 100 \cdot \frac{Y_{it} + 0.5}{N_{it} + 1} \approx 100\cdot\left(\frac{N_{it}^{\text{emr}}}{N_{it}}\cdot\frac{Y_{it}^{\text{emr}}}{N_{it}^{\text{emr}}} + \frac{N_{it}^{\text{claims}}}{N_{it}}\cdot\frac{Y_{it}^{\text{claims}}}{N_{it}^{\text{claims}}} \right)
+$$
+
+* `smoothed_claims_covid19` and  `smoothed_adj_claims_covid19`: This signal uses data solely from the claims stream: $$Y_{it} = Y_{it}^{\text{claims}} $$ and $$N_{it} = N_{it}^{\text{claims}}$$. 
 
 ## Backwards Padding
 
