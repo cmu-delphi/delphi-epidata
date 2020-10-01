@@ -19,11 +19,14 @@ and other divisions.
 
 This data is freely available under our [licensing](README.md#data-licensing)
 terms; we encourage academic users to [cite](README.md#citing) the data if they
-use it in any publications. Further documentation on Delphi's APIs is available
+use it in any publications. Our [data ingestion
+code](https://github.com/cmu-delphi/covidcast-indicators) and [API server
+code](https://github.com/cmu-delphi/delphi-epidata) is open-source, and
+contributions are welcome. Further documentation on Delphi's APIs is available
 in the [API overview](README.md).
 
-<div style="background-color:#FCC; padding: 10px 30px;"><strong>For
-users:</strong> Delphi operates a <a
+<div style="background-color:#FCC; padding: 10px 30px;"><strong>Get
+updates:</strong> Delphi operates a <a
 href="https://lists.andrew.cmu.edu/mailman/listinfo/delphi-covidcast-api">mailing
 list</a> for users of the COVIDcast API. We will use the list to announce API
 changes, corrections to data, and new features; API users may also use the
@@ -32,12 +35,23 @@ strongly encourage you to <a
 href="https://lists.andrew.cmu.edu/mailman/listinfo/delphi-covidcast-api">subscribe</a>.
 </div>
 
-## Accessing the API
+## Table of contents
+{: .no_toc .text-delta}
+
+1. TOC
+{:toc}
+
+## Accessing the Data
+
+Our [COVIDcast site](https://covidcast.cmu.edu) provides an interactive
+visualization of a select set of the data signals available in the COVIDcast
+API, and also provides a data export feature to download any range of data as a
+CSV file.
 
 Several [API clients are available](covidcast_clients.md) for common programming
-languages, so you do not need to construct API calls yourself. Once you install
-the appropriate client for your programming language, accessing data is as easy
-as, in [R](https://www.r-project.org/):
+languages, so you do not need to construct API calls yourself to obtain
+COVIDcast data. Once you install the appropriate client for your programming
+language, accessing data is as easy as, in [R](https://www.r-project.org/):
 
 ```r
 library(covidcast)
@@ -73,20 +87,18 @@ outpatient doctor's visits, and other sources. Many of these are publicly
 available *only* through the COVIDcast API.
 
 The [signals documentation](covidcast_signals.md) describes all available
-sources and signals. Furthermore, our [COVIDcast
-site](https://covidcast.cmu.edu) provides an interactive visualization of a
-select set of these data signals.
+sources and signals.
 
 ## Constructing API Queries
 
 The COVIDcast API is based on HTTP GET queries and returns data in JSON form.
-The base URL is https://api.covidcast.cmu.edu/epidata/api.php.  The covidcast
-endpoint is https://api.covidcast.cmu.edu/epidata/api.php?source=covidcast. 
+The base URL is `https://api.covidcast.cmu.edu/epidata/api.php`.  The covidcast
+endpoint is `https://api.covidcast.cmu.edu/epidata/api.php?source=covidcast`.
 
 See [this documentation](README.md) for details on specifying epiweeks, dates,
 and lists.
 
-### Parameters
+### Query Parameters
 
 #### Required
 
