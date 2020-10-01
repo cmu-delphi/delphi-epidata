@@ -44,6 +44,12 @@ Duplicate survey weights had corrupted historical figures for the following sign
 
 We now include figures on Puerto Rico for all `jhu-csse` signals at the state level.
 
+#### 30 Sept 2020
+
+The following changes were made to all `jhu-csse` signals related to geocoding,
+- NY Boroughs FIPS are now differentiated instead of being grouped into a single FIPS code
+- “Unassigned” and “Out of State” counts are assigned to a megaFIPS at the county level (XX000 where XX is the state FIPS code) and will now be incorporated into the state totals
+
 ### `indicator-combination`
 
 #### 3 June 2020
