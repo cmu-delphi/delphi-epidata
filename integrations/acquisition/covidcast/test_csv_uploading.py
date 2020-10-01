@@ -94,7 +94,8 @@ class CsvUploadingTests(unittest.TestCase):
       f.write('file name is wrong\n')
 
     # upload CSVs
-    args = MagicMock(data_dir=data_dir)
+    # TODO: use an actual argparse object for the args instead of a MagicMock
+    args = MagicMock(data_dir=data_dir, is_wip_override=False, not_wip_override=False, specific_issue_date=False)
     main(args)
 
     # request CSV data from the API
