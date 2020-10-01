@@ -71,6 +71,21 @@ As of June 2020, the JHU data [does not report any cases or deaths](https://gith
 
 JHU does not report Puerto Rico deaths at the municipal level, instead reporting them in the "Unassigned" category. We map this to megaFIPS 72000 and provide uses this information when reporting deaths at the state level.
 
+### Utah
+
+JHU reports some counts for Utah in special geocodes. These geocodes correspond to clusters of counties overseen by the same health department.
+
+|County Name        |JHU UID Code   |
+|-------------------|---------------|
+|Bear River         |84070015       |
+|Central Utah       |84070016       |
+|Southeast Utah     |84070017       |
+|Southwest Utah     |84070018       |
+|TriCounty          |84070019       |
+|Weber-Morgan       |84070020       |
+
+These are mapped to the megaFIPS 49000 and accounted for in the state totals.
+
 ### Kansas City, Missouri
 
 Kansas City intersects the following four counties, which themselves report
