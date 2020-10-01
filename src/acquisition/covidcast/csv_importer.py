@@ -23,6 +23,9 @@ class CsvImporter:
   # .../source/weekly_yyyyww_geo_signal.csv
   PATTERN_WEEKLY = re.compile(r'^.*/([^/]*)/weekly_(\d{6})_(\w+?)_(\w+)\.csv$')
 
+  # .../issue_yyyymmdd
+  PATTERN_ISSUE_DIR = re.compile(r'^.*/([^/]*)/issue_(\d{8})$')
+
   # set of allowed resolutions (aka "geo_type")
   GEOGRAPHIC_RESOLUTIONS = {'county', 'hrr', 'msa', 'dma', 'state', 'nation'}
 
@@ -74,6 +77,19 @@ class CsvImporter:
     if not (nearby_year and sensible_week):
       return False
     return value
+
+  @staticmethod
+  def find_issue_specific_csv_files(scan_dir, glob=glob):
+    for path in sorted(glob.glob(os.path.join(scan_dir, '*'))):
+      issuedir_match = CsvImporter.PATTERN_ISSUE_DIR.match(path.lower())
+      if issuedir_match and os.path.isdir(path):
+        issue_date_value = int(issuedir_match.group(2))
+        issue_date = CsvImporter.is_sane_day(issue_date_value)
+        if issue_date:
+          print(' processing csv files from issue date: "' + str(issue_date) + '", directory', path)
+          yield from CsvImporter.find_csv_files(path, issue=(issue_date, epi.Week.fromdate(issue_date)), glob=glob)
+        else:
+          print(' invalid issue directory day', issue_date_value)
 
   @staticmethod
   def find_csv_files(scan_dir, issue=(date.today(), epi.Week.fromdate(date.today())), glob=glob):

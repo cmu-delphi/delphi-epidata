@@ -96,7 +96,8 @@ class UnitTests(unittest.TestCase):
   def test_main_successful(self):
     """Run the main program successfully, then commit changes."""
 
-    args = MagicMock(data_dir='data')
+    # TODO: use an actual argparse object for the args instead of a MagicMock
+    args = MagicMock(data_dir='data', is_wip_override=False, not_wip_override=False, specific_issue_date=False)
     mock_database = MagicMock()
     mock_database.count_all_rows.return_value = 0
     fake_database_impl = lambda: mock_database
@@ -117,7 +118,8 @@ class UnitTests(unittest.TestCase):
   def test_main_unsuccessful(self):
     """Run the main program with failure, then commit changes."""
 
-    args = MagicMock(data_dir='data')
+    # TODO: use an actual argparse object for the args instead of a MagicMock
+    args = MagicMock(data_dir='data', is_wip_override=False, not_wip_override=False, specific_issue_date=False)
     mock_database = MagicMock()
     mock_database.count_all_rows.return_value = 0
     fake_database_impl = lambda: mock_database

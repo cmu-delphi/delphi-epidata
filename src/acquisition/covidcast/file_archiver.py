@@ -10,6 +10,14 @@ class FileArchiver:
   """Archives files by moving and compressing."""
 
   @staticmethod
+  def archive_inplace(path, filename,
+                      gzip=gzip,
+                      os=os,
+                      shutil=shutil,
+                      open_impl=open):
+    return FileArchiver.archive_file(path, path, filename, True, gzip, os, shutil, open_impl)
+
+  @staticmethod
   def archive_file(
       path_src,
       path_dst,
