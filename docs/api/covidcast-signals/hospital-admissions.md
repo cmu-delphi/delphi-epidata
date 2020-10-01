@@ -20,8 +20,8 @@ COVID-associated diagnosis code in a given location, on a given day.
 
 | Signal | Description |
 | --- | --- |
-| `smoothed_covid19` | Estimated percentage of new hospital admissions with COVID-associated diagnoses, based on electronic medical record and claims data from health system partners, smoothed in time using a Gaussian linear smoother. _This signal is deprecated as of 1 October, 2020._  |
-| `smoothed_adj_covid19` | Same as `smoothed_covid19`, but with systematic day-of-week effects removed using [the same mechanism as in `doctor-visits`](doctor-visits.md#day-of-week-adjustment). _This signal is deprecated as of 1 October, 2020._ |
+| `smoothed_covid19` | Estimated percentage of new hospital admissions with COVID-associated diagnoses, based on electronic medical record and claims data from health system partners, smoothed in time using a Gaussian linear smoother. _This signal is no longer updated as of 1 October, 2020._  |
+| `smoothed_adj_covid19` | Same as `smoothed_covid19`, but with systematic day-of-week effects removed using [the same mechanism as in `doctor-visits`](doctor-visits.md#day-of-week-adjustment). _This signal is no longer updated as of 1 October, 2020._ |
 | `smoothed_claims_covid19` | Estimated percentage of new hospital admissions with COVID-associated diagnoses, based on claims data from health system partners, smoothed in time using a Gaussian linear smoother |
 | `smoothed_adj_claims_covid19` | Same as `smoothed_claims_covid19`, but with systematic day-of-week effects removed using [the same mechanism as in `doctor-visits`](doctor-visits.md#day-of-week-adjustment) |
 
@@ -89,7 +89,7 @@ $$
 \widehat{\text{se}}(\hat{p}_{it}) = 100 \sqrt{\frac{\frac{\hat{p}_{it}}{100}(1-\frac{\hat{p}_{it}}{100})}{N_{it}}}.
 $$
 
-#### Data Streams
+### Data Streams
 * `smoothed_covid19` and  `smoothed_adj_covid19`: This signal combines data from electronic medical records (emr) and claims records. Here, $$Y_{it} = Y_{it}^{\text{emr}} + Y_{it}^{\text{claims}}$$ is the number of
 hospital admissions meeting the qualifying conditions, where the superscript denotes the respective data stream. Similarly, $$N_{it} = N_{it}^{\text{emr}} + N_{it}^{\text{claims}}$$ is taken as the
 total number of hospital admissions. Thus, the estimate of the COVID-19 percentage is
