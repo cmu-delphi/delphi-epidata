@@ -8,8 +8,8 @@ grand_parent: COVIDcast API
 {: .no_toc}
 
 * **Source name:** `jhu-csse`
-* **Number of data revisions since 19 May 2020:** 1
-* **Date of last change:** [3 June 2020](../covidcast_changelog.md#jhu-csse)
+* **Number of data revisions since 19 May 2020:** 2
+* **Date of last change:** [30 September 2020](../covidcast_changelog.md#jhu-csse)
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 
 This data source of confirmed COVID-19 cases and deaths is based on reports made
@@ -63,32 +63,13 @@ At the County (FIPS) level, we report the data _exactly_ as JHU reports their
 data, to prevent confusing public consumers of the data. JHU FIPS reporting
 matches that used in the other signals, except for the following exceptions.
 
-### New York City
-
-New York City comprises five boroughs, each of which is a county:
-
-|Borough Name       |County Name        |FIPS Code      |
-|-------------------|-------------------|---------------|
-|Manhattan          |New York County    |36061          |
-|The Bronx          |Bronx County       |36005          |
-|Brooklyn           |Kings County       |36047          |
-|Queens             |Queens County      |36081          |
-|Staten Island      |Richmond County    |36085          |
-
-**Data from all five boroughs are reported under New York County, FIPS Code
-36061.** The other four boroughs are included in the dataset and show up in our
-API, but always report zero cases and deaths.
-
-All NYC counts are mapped to the MSA with CBSA ID 35620, which encompasses all
-five boroughs. All NYC counts are mapped to HRR 303, which intersects all five
-boroughs (297 also intersects the Bronx and 301 also intersects Brooklyn and
-Queens, but absent additional information, we chose to leave all counts in 303).
-
 ### Rhode Island
 
-As of June 2020, the JHU data does not report any cases or deaths for individual
-counties in Rhode Island. These cases and deaths are reported unassigned to any
-individual county, and are hence available in state-level estimates only.
+As of June 2020, the JHU data [does not report any cases or deaths](https://github.com/CSSEGISandData/COVID-19/issues/3165) for individual counties in Rhode Island. These cases and deaths are reported unassigned to any individual county, and are hence available in state-level estimates only.
+
+### Puerto Rico
+
+JHU does not report Puerto Rico deaths at the municipal level, instead reporting them in the "Unassigned" category. We map this to megaFIPS 72000 and provide uses this information when reporting deaths at the state level.
 
 ### Kansas City, Missouri
 
