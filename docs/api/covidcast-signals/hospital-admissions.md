@@ -22,8 +22,8 @@ COVID-associated diagnosis code in a given location, on a given day.
 | --- | --- |
 | `smoothed_covid19` | Estimated percentage of new hospital admissions with COVID-associated diagnoses, based on electronic medical record and claims data from health system partners, smoothed in time using a Gaussian linear smoother. _This signal is no longer updated as of 1 October, 2020._  |
 | `smoothed_adj_covid19` | Same as `smoothed_covid19`, but with systematic day-of-week effects removed using [the same mechanism as in `doctor-visits`](doctor-visits.md#day-of-week-adjustment). _This signal is no longer updated as of 1 October, 2020._ |
-| `smoothed_claims_covid19` | Estimated percentage of new hospital admissions with COVID-associated diagnoses, based on claims data from health system partners, smoothed in time using a Gaussian linear smoother |
-| `smoothed_adj_claims_covid19` | Same as `smoothed_claims_covid19`, but with systematic day-of-week effects removed using [the same mechanism as in `doctor-visits`](doctor-visits.md#day-of-week-adjustment) |
+| `smoothed_covid19_from_claims` | Estimated percentage of new hospital admissions with COVID-associated diagnoses, based on claims data from health system partners, smoothed in time using a Gaussian linear smoother |
+| `smoothed_adj_covid19_from_claims` | Same as `smoothed_covid19_from_claims`, but with systematic day-of-week effects removed using [the same mechanism as in `doctor-visits`](doctor-visits.md#day-of-week-adjustment) |
 
 ## Table of contents
 {: .no_toc .text-delta}
@@ -99,7 +99,7 @@ $$
 \hat p_{it} = 100 \cdot \frac{Y_{it} + 0.5}{N_{it} + 1} \approx 100\cdot\left(\frac{N_{it}^{\text{emr}}}{N_{it}}\cdot\frac{Y_{it}^{\text{emr}}}{N_{it}^{\text{emr}}} + \frac{N_{it}^{\text{claims}}}{N_{it}}\cdot\frac{Y_{it}^{\text{claims}}}{N_{it}^{\text{claims}}} \right)
 $$
 
-* `smoothed_claims_covid19` and  `smoothed_adj_claims_covid19`: This signal uses data solely from the claims stream: $$Y_{it} = Y_{it}^{\text{claims}} $$ and $$N_{it} = N_{it}^{\text{claims}}$$. 
+* `smoothed_covid19_from_claims` and  `smoothed_adj_covid19_from_claims`: This signal uses data solely from the claims stream: $$Y_{it} = Y_{it}^{\text{claims}} $$ and $$N_{it} = N_{it}^{\text{claims}}$$. 
 
 ## Backwards Padding
 
