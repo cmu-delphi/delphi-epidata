@@ -59,13 +59,9 @@ should be interpreted purely as an artifact of data reporting and correction.
 Due to differences in state reporting standards, certain counties are not
 reported in the JHU data or are reported combined with other counties.
 
-At the County (FIPS) level, we report the data _exactly_ as JHU reports their
-data, to prevent confusing public consumers of the data. JHU FIPS reporting
-matches that used in the other signals, except for the following exceptions.
-
 ### Rhode Island
 
-As of June 2020, the JHU data [does not report any cases or deaths](https://github.com/CSSEGISandData/COVID-19/issues/3165) for individual counties in Rhode Island. These cases and deaths are reported unassigned to any individual county, and are hence available in state-level estimates only.
+As of June 2020, the JHU data [does not report any cases or deaths](https://github.com/CSSEGISandData/COVID-19/issues/3165) for individual counties in Rhode Island. These cases and deaths are reported unassigned to any individual county, and are attributed to the megaFIPS 44000 as well as contributing to the state-level estimates.
 
 ### Puerto Rico
 
@@ -98,28 +94,21 @@ confirmed case and deaths data:
 |Cass County        |29037          |
 |Clay County        |29047          |
 
-**Data from Kansas City is given its own dedicated line, with FIPS
-code 70003.**  This is how JHU encodes their data.  However, the data in
-the four counties that Kansas City intersects is not necessarily zero.
-
-For the mapping to HRR and MSA, the counts for Kansas City are dispersed to
-these four counties in equal proportions.
+**We evenly distribute count totals to each of these counties.**  JHU reports 
+all of these in the UID 84070003, which does not correspond to a Census 
+Bureau FIPS.
 
 ### Dukes and Nantucket Counties, Massachusetts
 
-**The counties of Dukes and Nantucket report their figures together,
-and we (like JHU) list them under FIPS Code 70002.**  Here are the FIPS codes
-for the individual counties:
+**The counties of Dukes and Nantucket report their figures together; We 
+evenly distribute count totals to each of these counties.**  JHU reports all 
+of these in the UID 84070002, which does not correspond to a Census Bureau 
+FIPS.  Here are the FIPS codes for the individual counties:
 
 |County Name        |FIPS Code      |
 |-------------------|---------------|
 |Dukes County       |25007          |
 |Nantucket County   |25019          |
-
-For the mapping to HRR and MSA, the counts for Dukes and Nantucket are
-dispersed to the two counties in equal proportions.
-
-The data in the individual counties is expected to be zero.
 
 ### Mismatched FIPS Codes
 
