@@ -65,7 +65,7 @@ As of June 2020, the JHU data [does not report any cases or deaths](https://gith
 
 ### Puerto Rico
 
-JHU does not report Puerto Rico deaths at the municipal level, instead reporting them in the "Unassigned" category. We map this to megaFIPS 72000 and provide uses this information when reporting deaths at the state level.
+JHU does not report Puerto Rico deaths at the municipal level, but instead reports the numbers for the whole Commonwealth in the "Unassigned" category. We map this JHU UID to megaFIPS 72000 and use this information when reporting deaths at the state level.
 
 ### Utah
 
@@ -84,8 +84,7 @@ These are mapped to the megaFIPS 49000 and accounted for in the state totals.
 
 ### Kansas City, Missouri
 
-Kansas City intersects the following four counties, which themselves report
-confirmed case and deaths data:
+Kansas City intersects the following four counties, which themselves report confirmed case and deaths data:
 
 |County Name        |FIPS Code      |
 |-------------------|---------------|
@@ -94,16 +93,11 @@ confirmed case and deaths data:
 |Cass County        |29037          |
 |Clay County        |29047          |
 
-**We evenly distribute count totals to each of these counties.**  JHU reports 
-all of these in the UID 84070003, which does not correspond to a Census 
-Bureau FIPS.
+**We distribute count totals to each of these counties in proportion to the population.**  JHU reports all of these in the UID 84070003, which does not correspond to a Census Bureau FIPS.
 
 ### Dukes and Nantucket Counties, Massachusetts
 
-**The counties of Dukes and Nantucket report their figures together; We 
-evenly distribute count totals to each of these counties.**  JHU reports all 
-of these in the UID 84070002, which does not correspond to a Census Bureau 
-FIPS.  Here are the FIPS codes for the individual counties:
+**The counties of Dukes and Nantucket report their figures together; We distribute count totals to each of these counties in proportion to the population.**  JHU reports all of these in the UID 84070002, which does not correspond to a Census Bureau FIPS. Here are the FIPS codes for the individual counties:
 
 |County Name        |FIPS Code      |
 |-------------------|---------------|
