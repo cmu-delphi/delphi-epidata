@@ -94,8 +94,17 @@ docker build -t delphi_database_epidata \
 
 # test
 
-At this point you're ready to bring the stack online. To do that, just start
-containers for the epidata-specific web and database images. As an aside, the
+At this point you're ready to bring the stack online. 
+
+First, make sure you have the docker network set up so that the containers can
+communicate:
+
+```
+docker network create --driver bridge delphi-net
+
+```
+
+Next, start containers for the epidata-specific web and database images. As an aside, the
 output from these commands (especially the web server) can be very helpful for
 debugging. For example:
 
