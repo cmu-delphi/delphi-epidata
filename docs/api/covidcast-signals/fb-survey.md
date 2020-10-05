@@ -29,8 +29,6 @@ described in the sections below:
    traveling, and activities outside the home
 3. [Testing indicators](#testing-indicators) based on respondent reporting of
    their COVID test results
-4. [Mental health indicators](#mental-health-indicators) indicating prevalence
-   of anxiety, depression, and other mental health concerns
 
 For most `raw_` signals below, there are additional signals with names beginning
 with `smoothed_`. These estimate the same quantities as the above signals, but
