@@ -282,10 +282,11 @@ data in the estimation procedures described above.
 | Signal | Description | Survey Item |
 | --- | --- | --- |
 | `smoothed_wearing_mask` | Estimated percentage of people who wore a mask most or all of the time while in public in the past 5 days; those not in public in the past 5 days are not counted. | C14 |
-| `smoothed_work_outside_home_5d` | Estimated percentage of people who went to work outside their home in the past 5 days. Available only in surveys conducted up to September 8th, 2020. | C3 |
-| `smoothed_travel_outside_state_5d` | Estimated percentage of people who traveled outside their state in the past 5 days | C6 |
 
-Weighted versions of these signals, using the [survey weighting describe
+These indicators are based on questions in Wave 4 of the survey, introduced on
+September 8, 2020.
+
+Weighted versions of these signals, using the [survey weighting described
 below](#survey-weighting) to be more representative of state demographics, are
 also available. These have names beginning `smoothed_w`, such as
 `smoothed_wwearing_mask`.
@@ -302,24 +303,11 @@ also available. These have names beginning `smoothed_w`, such as
 These indicators are based on questions in Wave 4 of the survey, introduced on
 September 8, 2020.
 
-Weighted versions of these signals, using the [survey weighting describe
+Weighted versions of these signals, using the [survey weighting described
 below](#survey-weighting) to be more representative of state demographics, are
 also available. These have names beginning `smoothed_w`, such as
 `smoothed_wtested_14d`.
 
-
-## Mental Health Indicators
-
-| Signal | Description | Survey Item |
-| --- | --- | --- |
-| `smoothed_anxious_5d` | Estimated percentage of people reporting they "felt nervous, anxious, or on edge" for most or all of the past 5 days | C8 |
-| `smoothed_depressed_5d` | Estimated percentage of people reporting they felt depressed for most or all of the past 5 days | C8 |
-| `smoothed_felt_isolated_5d` | Estimated percentage of people reporting they "felt isolated from others" for most or all of the past 5 days (new in Wave 4) | C8 |
-
-Weighted versions of these signals, using the [survey weighting describe
-below](#survey-weighting) to be more representative of state demographics, are
-also available. These have names beginning `smoothed_w`, such as
-`smoothed_wdepressed_5d`.
 
 ## Survey Weighting
 
