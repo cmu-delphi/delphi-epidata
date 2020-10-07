@@ -48,7 +48,7 @@ We now include figures on Puerto Rico for all `jhu-csse` signals at the state le
 
 NY Boroughs county FIPS (36005, 36047, 36061, 36081, 36085) are now split in proportion to the population of each county, instead of being reported in aggregate in FIPS 36061. 
 
-#### 30 September 2020
+#### 7 October 2020
 
 The following changes were made to all `jhu-csse` signals related to geocoding
 - NY Boroughs county FIPS (36005, 36047, 36061, 36081, 36085) are now [differentiated by JHU](https://github.com/CSSEGISandData/COVID-19/issues/3084),
