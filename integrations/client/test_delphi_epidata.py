@@ -46,7 +46,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
   def test_covidcast(self):
     """Test that the covidcast endpoint returns expected data."""
     self.maxDiff=None
-    
+
     # insert dummy data
     self.cur.execute('''
       insert into covidcast values
@@ -123,7 +123,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
       }],
       'message': 'success',
     })
-    
+
     # fetch data, without specifying issue or lag
     response_1 = Epidata.covidcast(
         'src', 'sig', 'day', 'county', 20200414, '01234')
@@ -258,6 +258,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
         'mean_value': 6.5,
         'stdev_value': 0.5,
         'last_update': 345,
+        'min_issue': 20200416,
         'max_issue': 20200416,
         'min_lag': 1,
         'max_lag': 2,

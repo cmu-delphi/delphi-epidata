@@ -162,12 +162,12 @@ class Database:
       SET `is_latest_issue`=0
     '''
     set_is_latest_issue_sql = f'''
-      UPDATE 
+      UPDATE
       (
         SELECT `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`, MAX(`issue`) AS `issue`
         FROM
         (
-          SELECT DISTINCT `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value` 
+          SELECT DISTINCT `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`
           FROM `{tmp_table_name}`
         ) AS TMP
         LEFT JOIN `covidcast`
@@ -176,7 +176,7 @@ class Database:
       ) AS TMP
       LEFT JOIN `covidcast`
       USING (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`, `issue`)
-      SET `is_latest_issue`=1        
+      SET `is_latest_issue`=1
     '''
 
     # TODO: ^ do we want to reset `direction_updated_timestamp` and `direction` in the duplicate key case?
@@ -333,7 +333,7 @@ class Database:
     # A query that selects all rows from `covidcast` that have latest issue-date
     # for any (time-series-key, time_value) with time_type='day'.
     latest_issues_sql = f'''
-    SELECT 
+    SELECT
       `id`,
       `source`,
       `signal`,
@@ -576,6 +576,7 @@ class Database:
         ROUND(AVG(`value`),7) AS `mean_value`,
         ROUND(STD(`value`),7) AS `stdev_value`,
         MAX(`value_updated_timestamp`) AS `last_update`,
+        MIN(`issue`) as `min_issue`,
         MAX(`issue`) as `max_issue`,
         MIN(`lag`) as `min_lag`,
         MAX(`lag`) as `max_lag`
@@ -621,7 +622,7 @@ class Database:
       meta.extend(list(dict(zip(self._cursor.column_names,x)) for x in self._cursor))
 
     return meta
-  
+
   def update_covidcast_meta_cache(self, metadata):
     """Updates the `covidcast_meta_cache` table."""
 

@@ -38,6 +38,7 @@ None required.
 | `epidata[].max_value` | maximum value | float |
 | `epidata[].mean_value` | mean of value | float |
 | `epidata[].stdev_value` | standard deviation of value | float |
+| `epidata[].min_issue` | earliest date data was issued (e.g., 20200710) | integer |
 | `epidata[].max_issue` | most recent date data was issued (e.g., 20200710) | integer |
 | `epidata[].min_lag` | smallest lag from observation to issue, in `time_type` units | integer |
 | `epidata[].max_lag` | largest lag from observation to issue, in `time_type` units | integer |

@@ -99,6 +99,7 @@ class CovidcastMetaCacheTests(unittest.TestCase):
         'max_value': 1,
         'mean_value': 1,
         'stdev_value': 0,
+        'min_issue': 20200423,
         'max_issue': 20200423,
         'min_lag': 0,
         'max_lag': 1,
