@@ -110,12 +110,12 @@ debugging. For example:
 
 ```bash
 # launch the database
-docker run --rm -p 13306:3306 \
+docker run --rm -p 127.0.0.1:13306:3306 \
   --network delphi-net --name delphi_database_epidata \
   delphi_database_epidata
 
 # launch the web server
-docker run --rm -p 10080:80 \
+docker run --rm -p 127.0.0.1:10080:80 \
   --network delphi-net --name delphi_web_epidata \
   delphi_web_epidata
 ```
