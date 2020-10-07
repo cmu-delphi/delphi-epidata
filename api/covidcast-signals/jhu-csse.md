@@ -9,7 +9,7 @@ grand_parent: COVIDcast API
 
 * **Source name:** `jhu-csse`
 * **Number of data revisions since 19 May 2020:** 1
-* **Date of last change:** [3 June 2020](../covidcast_changelog.md#jhu-csse)
+* **Date of last change:** [7 October 2020](../covidcast_changelog.md#jhu-csse)
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 
 This data source of confirmed COVID-19 cases and deaths is based on reports made
@@ -59,41 +59,32 @@ should be interpreted purely as an artifact of data reporting and correction.
 Due to differences in state reporting standards, certain counties are not
 reported in the JHU data or are reported combined with other counties.
 
-At the County (FIPS) level, we report the data _exactly_ as JHU reports their
-data, to prevent confusing public consumers of the data. JHU FIPS reporting
-matches that used in the other signals, except for the following exceptions.
-
-### New York City
-
-New York City comprises five boroughs, each of which is a county:
-
-|Borough Name       |County Name        |FIPS Code      |
-|-------------------|-------------------|---------------|
-|Manhattan          |New York County    |36061          |
-|The Bronx          |Bronx County       |36005          |
-|Brooklyn           |Kings County       |36047          |
-|Queens             |Queens County      |36081          |
-|Staten Island      |Richmond County    |36085          |
-
-**Data from all five boroughs are reported under New York County, FIPS Code
-36061.** The other four boroughs are included in the dataset and show up in our
-API, but always report zero cases and deaths.
-
-All NYC counts are mapped to the MSA with CBSA ID 35620, which encompasses all
-five boroughs. All NYC counts are mapped to HRR 303, which intersects all five
-boroughs (297 also intersects the Bronx and 301 also intersects Brooklyn and
-Queens, but absent additional information, we chose to leave all counts in 303).
-
 ### Rhode Island
 
-As of June 2020, the JHU data does not report any cases or deaths for individual
-counties in Rhode Island. These cases and deaths are reported unassigned to any
-individual county, and are hence available in state-level estimates only.
+As of June 2020, the JHU data [does not report any cases or deaths](https://github.com/CSSEGISandData/COVID-19/issues/3165) for individual counties in Rhode Island. These cases and deaths are reported unassigned to any individual county, and are attributed to the megaFIPS 44000 as well as contributing to the state-level estimates.
+
+### Puerto Rico
+
+JHU does not report Puerto Rico deaths at the municipal level, but instead reports the numbers for the whole Commonwealth in the "Unassigned" category. We map this JHU UID to megaFIPS 72000 and use this information when reporting deaths at the state level.
+
+### Utah
+
+JHU reports some counts for Utah in special geocodes. These geocodes correspond to clusters of counties overseen by the same health department.
+
+|County Name        |JHU UID Code   |
+|-------------------|---------------|
+|Bear River         |84070015       |
+|Central Utah       |84070016       |
+|Southeast Utah     |84070017       |
+|Southwest Utah     |84070018       |
+|TriCounty          |84070019       |
+|Weber-Morgan       |84070020       |
+
+These are mapped to the megaFIPS 49000 and accounted for in the state totals.
 
 ### Kansas City, Missouri
 
-Kansas City intersects the following four counties, which themselves report
-confirmed case and deaths data:
+Kansas City intersects the following four counties, which themselves report confirmed case and deaths data:
 
 |County Name        |FIPS Code      |
 |-------------------|---------------|
@@ -102,28 +93,16 @@ confirmed case and deaths data:
 |Cass County        |29037          |
 |Clay County        |29047          |
 
-**Data from Kansas City is given its own dedicated line, with FIPS
-code 70003.**  This is how JHU encodes their data.  However, the data in
-the four counties that Kansas City intersects is not necessarily zero.
-
-For the mapping to HRR and MSA, the counts for Kansas City are dispersed to
-these four counties in equal proportions.
+**We distribute count totals to each of these counties in proportion to the population.**  JHU reports all of these in the UID 84070003, which does not correspond to a Census Bureau FIPS.
 
 ### Dukes and Nantucket Counties, Massachusetts
 
-**The counties of Dukes and Nantucket report their figures together,
-and we (like JHU) list them under FIPS Code 70002.**  Here are the FIPS codes
-for the individual counties:
+**The counties of Dukes and Nantucket report their figures together; We distribute count totals to each of these counties in proportion to the population.**  JHU reports all of these in the UID 84070002, which does not correspond to a Census Bureau FIPS. Here are the FIPS codes for the individual counties:
 
 |County Name        |FIPS Code      |
 |-------------------|---------------|
 |Dukes County       |25007          |
 |Nantucket County   |25019          |
-
-For the mapping to HRR and MSA, the counts for Dukes and Nantucket are
-dispersed to the two counties in equal proportions.
-
-The data in the individual counties is expected to be zero.
 
 ### Mismatched FIPS Codes
 
