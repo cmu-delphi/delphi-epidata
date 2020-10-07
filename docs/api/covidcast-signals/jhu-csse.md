@@ -9,7 +9,7 @@ grand_parent: COVIDcast API
 
 * **Source name:** `jhu-csse`
 * **Number of data revisions since 19 May 2020:** 1
-* **Date of last change:** [30 September 2020](../covidcast_changelog.md#jhu-csse)
+* **Date of last change:** [7 October 2020](../covidcast_changelog.md#jhu-csse)
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 
 This data source of confirmed COVID-19 cases and deaths is based on reports made
