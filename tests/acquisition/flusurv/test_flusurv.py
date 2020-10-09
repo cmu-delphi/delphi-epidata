@@ -4,6 +4,7 @@
 import json
 import unittest
 from unittest.mock import MagicMock
+from unittest.mock import sentinel
 
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.acquisition.flusurv.flusurv'
@@ -21,11 +22,11 @@ class FunctionTests(unittest.TestCase):
     response_object = MagicMock()
     response_object.status_code = 200
     response_object.headers = {'Content-Type': 'application/json'}
-    response_object.json.return_value = 'expected'
+    response_object.json.return_value = sentinel.expected
 
     requests_impl = MagicMock()
     requests_impl.get.return_value = response_object
 
     actual = fetch_json(path, payload, requests_impl=requests_impl)
 
-    self.assertEqual(actual, 'expected')
+    self.assertEqual(actual, sentinel.expected)
