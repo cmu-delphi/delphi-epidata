@@ -75,7 +75,7 @@ import argparse
 import mysql.connector
 
 # first party
-from . import flusurv
+from delphi.epidata.acquisition.flusurv import flusurv
 import delphi.operations.secrets as secrets
 from delphi.utils.epidate import EpiDate
 from delphi.utils.epiweek import delta_epiweeks

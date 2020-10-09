@@ -75,7 +75,7 @@ location_codes = {
 }
 
 
-def fetch_json(path, payload, call_count=1):
+def fetch_json(path, payload, call_count=1, requests_impl=requests):
   """Send a request to the server and return the parsed JSON response."""
 
   # it's polite to self-identify this "bot"
@@ -95,10 +95,10 @@ def fetch_json(path, payload, call_count=1):
 
   # send the request and read the response
   if payload is None:
-    method = requests.get
+    method = requests_impl.get
     data = None
   else:
-    method = requests.post
+    method = requests_impl.post
     data = json.dumps(payload)
   resp = method(flusurv_url, headers=headers, data=data)
 
