@@ -250,8 +250,8 @@ class CsvImporter:
     # required float
     try:
       value = float(row.val)
-      if math.isnan(value):
-        raise ValueError('nan not valid for `value`')
+      if math.isnan(value) or math.isinf(value):
+        raise ValueError('nan/inf not valid for `value`')
     except (TypeError, ValueError) as e:
       # val was either `None` or not a float
       return (None, 'val')
