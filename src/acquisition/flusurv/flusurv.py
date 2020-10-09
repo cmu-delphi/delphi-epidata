@@ -112,7 +112,7 @@ def fetch_json(path, payload, call_count=1):
   elif resp.status_code != 200:
     raise Exception(['status code != 200', resp.status_code])
 
-  # check response mine type
+  # check response mime type
   if 'application/json' not in resp.headers.get('Content-Type', ''):
     raise Exception('response is not json')
 
