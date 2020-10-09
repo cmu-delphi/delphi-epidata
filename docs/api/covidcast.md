@@ -1,76 +1,161 @@
-# About
+---
+title: COVIDcast API
+has_children: true
+nav_order: 1
+---
 
-This is the documentation of the API for accessing the Delphi's COVID-19 Surveillance Streams (`covidcast`)
-data source of the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
+# Delphi's COVIDcast API
 
-General topics not specific to any particular data source are discussed in the
-[API overview](README.md). Such topics include:
-[contributing](README.md#contributing), [citing](README.md#citing), and
-[data licensing](README.md#data-licensing).
+This is the documentation for accessing the Delphi's COVID-19 Surveillance
+Streams (`covidcast`) endpoint of [Delphi](https://delphi.cmu.edu/)'s
+epidemiological data API. This API provides data on the spread and impact of the
+COVID-19 pandemic across the United States, most of which is available at the
+county level and updated daily. This data powers our public [COVIDcast
+map](https://covidcast.cmu.edu/), and includes testing, cases, and death data,
+as well as unique healthcare and survey data Delphi acquires through its
+partners. The API allows users to select specific signals and download data for
+selected geographical areas---counties, states, metropolitan statistical areas,
+and other divisions.
 
-## Delphi's COVID-19 Surveillance Streams Data
+This data is freely available under our [licensing](README.md#data-licensing)
+terms; we encourage academic users to [cite](README.md#citing) the data if they
+use it in any publications. Our [data ingestion
+code](https://github.com/cmu-delphi/covidcast-indicators) and [API server
+code](https://github.com/cmu-delphi/delphi-epidata) is open-source, and
+contributions are welcome. Further documentation on Delphi's APIs is available
+in the [API overview](README.md).
 
-Delphi's COVID-19 Surveillance Streams data includes the following data sources:
-* `fb-survey`: Data signal based on CMU-run symptom surveys, advertised through Facebook.  These surveys are
-voluntary, and no individual survey responses are shared back to Facebook. Using this survey data, we estimate the
-percentage of people in a given location, on a given day that have CLI (covid-like illness = fever, along with cough,
-or shortness of breath, or difficulty breathing), and separately, that have ILI (influenza-like illness = fever,
-along with cough or sore throat).
-* `google-survey`: Data signal based on Google-run symptom surveys, through their Opinions Reward app (and similar
-applications).  These surveys are again voluntary.  They are just one question long, and ask "Do you know someone
-in your community who is sick (fever, along with cough, or shortness of breath, or difficulty breathing) right now?"
-Using this survey data, we estimate the percentage of people in a given location, on a given day, that know somebody
-who has CLI (covid-like illness = fever, along with cough, or shortness of breath, or difficulty breathing).
-Note that this is tracking a different quantity than the surveys through Facebook, and (unsurprisingly) the estimates
-here tend to be much larger.
-* `quidel`: Data signal based on flu lab tests, provided to us by Quidel, Inc.  When a patient (whether at a doctor’s
-office, clinic, or hospital) has covid-like symptoms, standard practice currently is to perform a flu test to rule
-out seasonal flu (influenza), because these two diseases have similar symptoms. Using this lab test data, we estimate
-the percentage of flu tests that came back negative among all those that were performed in a given geography (state,
-metro-area or county) and on a given day.  While many of these patients may not have covid, the fraction of tests
-negative for flu is positively correlated with the prevalence of covid.
-* `ght`: Data signal based on Google searches, provided to us by Google Health Trends.  Using this search data, we
-estimate the volume of covid-related searches in a given location, on a given day.   This signal is measured in
-arbitrary units (its scale is meaningless).
-* `doctor-visits`: Data based on outpatient visits, provided to us by a national health system.  Using this outpatient
-data, we estimate the percentage of covid-related doctor's visits in a given location, on a given day.
+<div style="background-color:#FCC; padding: 10px 30px;"><strong>Get
+updates:</strong> Delphi operates a <a
+href="https://lists.andrew.cmu.edu/mailman/listinfo/delphi-covidcast-api">mailing
+list</a> for users of the COVIDcast API. We will use the list to announce API
+changes, corrections to data, and new features; API users may also use the
+mailing list to ask general questions about its use. If you use the API, we
+strongly encourage you to <a
+href="https://lists.andrew.cmu.edu/mailman/listinfo/delphi-covidcast-api">subscribe</a>.
+</div>
 
-The data is expected to be updated daily. You can use the [`covidcast_meta`](covidcast_meta.md) endpoint to get
-summary information about the ranges of the different attributes for the different data sources currently in the data.
+## Table of contents
+{: .no_toc .text-delta}
 
+1. TOC
+{:toc}
 
-# The API
+## Accessing the Data
 
-The base URL is: https://delphi.cmu.edu/epidata/api.php
+Our [COVIDcast site](https://covidcast.cmu.edu) provides an interactive
+visualization of a select set of the data signals available in the COVIDcast
+API, and also provides a data export feature to download any range of data as a
+CSV file.
 
-See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
+Several [API clients are available](covidcast_clients.md) for common programming
+languages, so you do not need to construct API calls yourself to obtain
+COVIDcast data. Once you install the appropriate client for your programming
+language, accessing data is as easy as, in [R](https://www.r-project.org/):
 
-## Parameters
+```r
+library(covidcast)
 
-### Required
+data <- covidcast_signal("fb-survey", "smoothed_cli", start_day = "2020-05-01",
+                         end_day = "2020-05-07")
+```
+
+or, in [Python](https://www.python.org):
+
+```python
+import covidcast
+from datetime import date
+
+data = covidcast.signal("fb-survey", "smoothed_cli", date(2020, 5, 1), date(2020, 5, 7),
+                        "county")
+```
+
+[The API clients](covidcast_clients.md) have extensive documentation providing
+further examples.
+
+Alternately, to construct URLs and parse responses to access data manually, [see
+below](#constructing-api-queries) for details.
+
+## Data Sources and Signals
+
+The API provides multiple data sources, each with several signals. Each source
+represents one provider of data, such as a medical testing provider or a symptom
+survey, and each signal represents one quantity computed from data provided by
+that source. Our sources provide detailed data about COVID-related topics,
+including confirmed cases, symptom-related search queries, hospitalizations,
+outpatient doctor's visits, and other sources. Many of these are publicly
+available *only* through the COVIDcast API.
+
+The [signals documentation](covidcast_signals.md) describes all available
+sources and signals.
+
+## Constructing API Queries
+
+The COVIDcast API is based on HTTP GET queries and returns data in JSON form.
+The base URL is `https://api.covidcast.cmu.edu/epidata/api.php`.  The covidcast
+endpoint is `https://api.covidcast.cmu.edu/epidata/api.php?source=covidcast`.
+
+See [this documentation](README.md) for details on specifying epiweeks, dates,
+and lists.
+
+### Query Parameters
+
+#### Required
 
 | Parameter | Description | Type |
 | --- | --- | --- |
-| `data_source` | name of upstream data source (e.g., `fb-survey`, `google-survey`, `ght`, `quidel`, `doctor-visits`) | string |
+| `data_source` | name of upstream data source (e.g., `doctor-visits` or `fb-survey`; [see full list](covidcast_signals.md)) | string |
 | `signal` | name of signal derived from upstream data (see notes below) | string |
 | `time_type` | temporal resolution of the signal (e.g., `day`, `week`) | string |
 | `geo_type` | spatial resolution of the signal (e.g., `county`, `hrr`, `msa`, `dma`, `state`) | string |
 | `time_values` | time unit (e.g., date) over which underlying events happened | `list` of time values (e.g., 20200401) |
-| `geo_value` | unique code for each location, depending on `geo_type` (county -> FIPS 6-4 code, HRR -> HRR number, MSA -> CBSA code, DMA -> DMA code, state -> two-letter [state](../../labels/states.txt) code), or `*` for all | string |
+| `geo_value` | unique code for each location, depending on `geo_type` (see [geographic coding details](covidcast_geography.md)), or `*` for all | string |
 
-As of this writing, data sources have the following signals:
-* `fb-survey` `signal` values include `raw_cli`, `raw_ili`, `raw_wcli`,
-  `raw_wili`, and also four additional named with `raw_*` replaced by
-  `smoothed_*` (e.g. `smoothed_cli`, etc).
-* `google-survey` `signal` values include `raw_cli` and `smoothed_cli`.
-* `ght` `signal` values include `raw_search` and `smoothed_search`.
-* `quidel` `signal` values include `smoothed_pct_negative` and `smoothed_tests_per_device`.
-* `doctor-visits` `signal` values include `smoothed_cli`.
+The current set of signals available for each data source is returned by the
+[`covidcast_meta`](covidcast_meta.md) endpoint.
 
-More generally, the current set of signals available for each data source is
-returned by the [`covidcast_meta`](covidcast_meta.md) endpoint.
+#### Optional
 
-## Response
+Estimates for a specific `time_value` and `geo_value` are sometimes updated
+after they are first published. Many of our data sources issue corrections or
+backfill estimates as data arrives; see the [documentation for each
+source](covidcast_signals.md) for details.
+
+The default API behavior is to return the most recently issued value for each
+`time_value` selected.
+
+We also provide access to previous versions of data using the optional query
+parameters below.
+
+| Parameter | Description | Type |
+| --- | --- | --- |
+| `as_of` | maximum time unit (e.g., date) when the signal data were published (return most recent for each `time_value`) | time value (e.g., 20200401) |
+| `issues` | time unit (e.g., date) when the signal data were published (return all matching records for each `time_value`) | `list` of time values (e.g., 20200401) |
+| `lag` | time delta (e.g. days) between when the underlying events happened and when the data were published | integer |
+
+Use cases:
+
+* To pretend like you queried the API on June 1, such that the returned results
+  do not include any updates that became available after June 1, use
+  `as_of=20200601`.
+* To retrieve only data that was published or updated on June 1, and exclude
+  records whose most recent update occured earlier than June 1, use
+  `issues=20200601`.
+* To retrieve all data that was published between May 1 and June 1, and exclude
+  records whose most recent update occured earlier than May 1, use
+  `issues=20200501-20200601`. The results will include all matching issues for
+  each `time_value`, not just the most recent.
+* To retrieve only data that was published or updated exactly 3 days after the
+  underlying events occurred, use `lag=3`.
+
+You should specify only one of these three parameters in any given query.
+
+**Note:** Each issue in the versioning system contains only the records that
+were added or updated during that time unit; we exclude records whose values
+remain the same as a previous issue. If you have a research problem that would
+require knowing when an unchanged value was last confirmed, please get in touch.
+
+### Response
 
 | Field | Description | Type |
 | --- | --- | --- |
@@ -78,16 +163,26 @@ returned by the [`covidcast_meta`](covidcast_meta.md) endpoint.
 | `epidata` | list of results, 1 per geo/time pair | array of objects |
 | `epidata[].geo_value` | location code, depending on `geo_type` | string |
 | `epidata[].time_value` | time unit (e.g. date) over which underlying events happened | integer |
-| `epidata[].direction` | trend classifier (+1 -> increasing, 0 steady or not determined, -1 -> decreasing) | integer |
+| `epidata[].direction` | trend classifier (+1 -> increasing, 0 -> steady or not determined, -1 -> decreasing) | integer |
 | `epidata[].value` | value (statistic) derived from the underlying data source | float |
-| `epidata[].stderr` | standard error of the statistic with respect to its sampling distribution, `null` when not applicable | float |
+| `epidata[].stderr` | approximate standard error of the statistic with respect to its sampling distribution, `null` when not applicable | float |
 | `epidata[].sample_size` | number of "data points" used in computing the statistic, `null` when not applicable | float |
+| `epidata[].issue` | time unit (e.g. date) when this statistic was published | integer |
+| `epidata[].lag` | time delta (e.g. days) between when the underlying events happened and when this statistic was published | integer |
 | `message` | `success` or error message | string |
 
-# Example URLs
+**Note:** `result` code 2, "too many results", means that the number of results
+you requested was greater than the API's maximum results limit. Results will be
+returned, but not all of the results you requested. API clients should check the
+results code, and should consider breaking up their requests across multiple API
+calls, such as by breaking a request for a large time interval into multiple
+requests for smaller time intervals.
 
-### Delphi's COVID-19 Surveillance Streams from Facebook Survey CLI on 2020-04-06 - 2010-04-10 (county 06001)
-https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&signal=raw_cli&time_type=day&geo_type=county&time_values=20200406-20200410&geo_value=06001
+## Example URLs
+
+### Facebook Survey CLI on 2020-04-06 to 2010-04-10 (county 06001)
+
+https://api.covidcast.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&signal=raw_cli&time_type=day&geo_type=county&time_values=20200406-20200410&geo_value=06001
 
 ```json
 {
@@ -107,63 +202,24 @@ https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&si
 }
 ```
 
-## Delphi's COVID-19 Surveillance Streams from Facebook Survey CLI on 2020-04-06 (all counties)
-https://delphi.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&signal=raw_cli&time_type=day&geo_type=county&time_values=20200406&geo_value=*
+### Facebook Survey CLI on 2020-04-06 (all counties)
 
-# Code Samples
+https://api.covidcast.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&signal=raw_cli&time_type=day&geo_type=county&time_values=20200406&geo_value=*
 
-Libraries are available for [CoffeeScript](../../src/client/delphi_epidata.coffee), [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
-The following samples show how to import the library and fetch Delphi's COVID-19 Surveillance Streams from Facebook Survey CLI for county 06001 and days `20200401` and `20200405-20200414` (11 days total).
-
-### CoffeeScript (in Node.js)
-
-````coffeescript
-# Import
-{Epidata} = require('./delphi_epidata')
-# Fetch data
-callback = (result, message, epidata) ->
-  console.log(result, message, epidata?.length)
-Epidata.covidcast(callback, 'fb-survey', 'raw_cli', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001')
-````
-
-### JavaScript (in a web browser)
-
-````html
-<!-- Imports -->
-<script src="jquery.js"></script>
-<script src="delphi_epidata.js"></script>
-<!-- Fetch data -->
-<script>
-  var callback = function(result, message, epidata) {
-    console.log(result, message, epidata != null ? epidata.length : void 0);
-  };
-  Epidata.covidcast(callback, 'fb-survey', 'raw_cli', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001');
-</script>
-````
-
-### Python
-
-Optionally install the package using pip(env):
-````bash
-pip install delphi-epidata
-````
-
-Otherwise, place `delphi_epidata.py` from this repo next to your python script.
-
-````python
-# Import
-from delphi_epidata import Epidata
-# Fetch data
-res = Epidata.covidcast('fb-survey', 'raw_cli', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001')
-print(res['result'], res['message'], len(res['epidata']))
-````
-
-### R
-
-````R
-# Import
-source('delphi_epidata.R')
-# Fetch data
-res <- Epidata$covidcast('fb-survey', 'raw_cli', 'day', 'county', list(20200401, Epidata$range(20200405, 20200414)), '06001')
-cat(paste(res$result, res$message, length(res$epidata), "\n"))
-````
+```json
+{
+  "result": 1,
+  "epidata": [
+    {
+      "geo_value": "01000",
+      "time_value": 20200406,
+      "direction": null,
+      "value": 1.1693378,
+      "stderr": 0.1909232,
+      "sample_size": 1451.0327
+    },
+    ...
+  ],
+  "message": "success"
+}
+```

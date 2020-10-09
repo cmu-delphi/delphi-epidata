@@ -25,7 +25,8 @@ class UnitTests(unittest.TestCase):
         geo_value=value,
         value=value,
         stderr=value,
-        sample_size=value)
+        sample_size=value,
+      )
 
     def load_csv_impl(path, *args):
       if path == 'path/a.csv':
@@ -38,6 +39,8 @@ class UnitTests(unittest.TestCase):
         yield make_row('b1')
         yield None
         yield make_row('b3')
+      elif path == 'path/d.csv':
+        yield make_row('d1')
       else:
         # fail the test for any other path
         raise Exception('unexpected path')
@@ -46,10 +49,14 @@ class UnitTests(unittest.TestCase):
     mock_database = MagicMock()
     mock_csv_importer = MagicMock()
     mock_csv_importer.find_csv_files.return_value = [
-      ('path/a.csv', ('src_a', 'sig_a', 'day', 'hrr', 20200419)),
-      ('path/b.csv', ('src_b', 'sig_b', 'week', 'msa', 202016)),
+      # a good file
+      ('path/a.csv', ('src_a', 'sig_a', 'day', 'hrr', 20200419, 20200420, 1)),
+      # a file with a data error
+      ('path/b.csv', ('src_b', 'sig_b', 'week', 'msa', 202016, 202017, 1)),
       # emulate a file that's named incorrectly
       ('path/c.csv', None),
+      # another good file w/ wip
+      ('path/d.csv', ('src_d', 'wip_sig_d', 'week', 'msa', 202016, 202017, 1)),
     ]
     mock_csv_importer.load_csv = load_csv_impl
     mock_file_archiver = MagicMock()
@@ -60,34 +67,37 @@ class UnitTests(unittest.TestCase):
         csv_importer_impl=mock_csv_importer,
         file_archiver_impl=mock_file_archiver)
 
-    # verify that five rows were added to the database
-    self.assertEqual(mock_database.insert_or_update.call_count, 5)
-    call_args_list = mock_database.insert_or_update.call_args_list
-    actual_args = [args for (args, kwargs) in call_args_list]
+    # verify that appropriate rows were added to the database
+    self.assertEqual(mock_database.insert_or_update_bulk.call_count, 2)
+    call_args_list = mock_database.insert_or_update_bulk.call_args_list
+    actual_args = [[(a.source, a.signal, a.time_type, a.geo_type, a.time_value,
+                     a.geo_value, a.value, a.stderr, a.sample_size, a.issue, a.lag, a.is_wip)
+                    for a in call.args[0]] for call in call_args_list]
     expected_args = [
-      ('src_a', 'sig_a', 'day', 'hrr', 20200419, 'a1', 'a1', 'a1', 'a1'),
-      ('src_a', 'sig_a', 'day', 'hrr', 20200419, 'a2', 'a2', 'a2', 'a2'),
-      ('src_a', 'sig_a', 'day', 'hrr', 20200419, 'a3', 'a3', 'a3', 'a3'),
-      ('src_b', 'sig_b', 'week', 'msa', 202016, 'b1', 'b1', 'b1', 'b1'),
-      ('src_b', 'sig_b', 'week', 'msa', 202016, 'b3', 'b3', 'b3', 'b3'),
+      [('src_a', 'sig_a', 'day', 'hrr', 20200419, 'a1', 'a1', 'a1', 'a1', 20200420, 1, False),
+       ('src_a', 'sig_a', 'day', 'hrr', 20200419, 'a2', 'a2', 'a2', 'a2', 20200420, 1, False),
+       ('src_a', 'sig_a', 'day', 'hrr', 20200419, 'a3', 'a3', 'a3', 'a3', 20200420, 1, False)],
+      [('src_d', 'wip_sig_d', 'week', 'msa', 202016, 'd1', 'd1', 'd1', 'd1', 202017, 1, True)]
     ]
     self.assertEqual(actual_args, expected_args)
 
-    # verify that one file was successful (a) and two failed (b, c)
-    self.assertEqual(mock_file_archiver.archive_file.call_count, 3)
+    # verify that two files were successful (a, d) and two failed (b, c)
+    self.assertEqual(mock_file_archiver.archive_file.call_count, 4)
     call_args_list = mock_file_archiver.archive_file.call_args_list
     actual_args = [args for (args, kwargs) in call_args_list]
     expected_args = [
       ('path', 'data_dir/archive/successful/src_a', 'a.csv', True),
       ('path', 'data_dir/archive/failed/src_b', 'b.csv', False),
       ('path', 'data_dir/archive/failed/unknown', 'c.csv', False),
+      ('path', 'data_dir/archive/successful/src_d', 'd.csv', True),
     ]
     self.assertEqual(actual_args, expected_args)
 
   def test_main_successful(self):
     """Run the main program successfully, then commit changes."""
 
-    args = MagicMock(data_dir='data')
+    # TODO: use an actual argparse object for the args instead of a MagicMock
+    args = MagicMock(data_dir='data', is_wip_override=False, not_wip_override=False, specific_issue_date=False)
     mock_database = MagicMock()
     mock_database.count_all_rows.return_value = 0
     fake_database_impl = lambda: mock_database
@@ -108,7 +118,8 @@ class UnitTests(unittest.TestCase):
   def test_main_unsuccessful(self):
     """Run the main program with failure, then commit changes."""
 
-    args = MagicMock(data_dir='data')
+    # TODO: use an actual argparse object for the args instead of a MagicMock
+    args = MagicMock(data_dir='data', is_wip_override=False, not_wip_override=False, specific_issue_date=False)
     mock_database = MagicMock()
     mock_database.count_all_rows.return_value = 0
     fake_database_impl = lambda: mock_database
@@ -132,10 +143,10 @@ class UnitTests(unittest.TestCase):
 
     data_dir = 'data_dir'
     mock_database = MagicMock()
-    mock_database.insert_or_update.side_effect = Exception('testing')
+    mock_database.insert_or_update_bulk.side_effect = Exception('testing')
     mock_csv_importer = MagicMock()
     mock_csv_importer.find_csv_files.return_value = [
-      ('path/file.csv', ('src', 'sig', 'day', 'hrr', 20200423)),
+      ('path/file.csv', ('src', 'sig', 'day', 'hrr', 20200423, 20200424, 1)),
     ]
     mock_csv_importer.load_csv.return_value = [
       MagicMock(geo_value='geo', value=1, stderr=1, sample_size=1),
@@ -148,8 +159,8 @@ class UnitTests(unittest.TestCase):
         csv_importer_impl=mock_csv_importer,
         file_archiver_impl=mock_file_archiver)
 
-    # verify that a row insertion was attempted
-    self.assertTrue(mock_database.insert_or_update.called)
+    # verify that insertions were attempted
+    self.assertTrue(mock_database.insert_or_update_bulk.called)
 
     # verify that the file was archived as having failed
     self.assertTrue(mock_file_archiver.archive_file.called)

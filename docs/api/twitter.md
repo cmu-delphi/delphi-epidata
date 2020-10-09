@@ -1,4 +1,9 @@
-# About
+---
+title: Twitter Stream
+parent: Delphi Epidata API
+---
+
+# Twitter Stream
 
 This is the documentation of the API for accessing the Twitter Stream (`twitter`) data source of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.

@@ -156,7 +156,28 @@ function filter_strings($field, $values) {
 function execute_query($query, &$epidata, $fields_string, $fields_int, $fields_float) {
   global $dbh;
   global $MAX_RESULTS;
+  error_log($query);
   $result = mysqli_query($dbh, $query . " LIMIT {$MAX_RESULTS}");
+  if (!$result) {
+    error_log("Bad query: ".$query);
+    error_log(mysqli_error($dbh));
+    return;
+  }
+
+  if (isset($_REQUEST['fields'])) {
+    $fields = extract_values($_REQUEST['fields'], 'str');
+    // limit fields to the selection
+    if($fields_string !== null) {
+      $fields_string = array_intersect($fields_string, $fields);
+    }
+    if($fields_int !== null) {
+      $fields_int = array_intersect($fields_int, $fields);
+    }
+    if($fields_float !== null) {
+      $fields_float = array_intersect($fields_float, $fields);
+    }
+  }
+
   while($row = mysqli_fetch_array($result)) {
     if(count($epidata) < $MAX_RESULTS) {
       $values = array();
@@ -243,6 +264,73 @@ function extract_values($str, $type) {
   return $values;
 }
 
+/**
+ * parses a given string in format YYYYMMDD or YYYY-MM-DD to a number in the form YYYYMMDD
+ */
+function parse_date($s) {
+  return intval(str_replace('-', '', $s));
+}
+
+// extracts an array of values and/or ranges from a string
+//   $str: the string to parse
+function extract_dates($str) {
+  if($str === null || strlen($str) === 0) {
+    // nothing to do
+    return null;
+  }
+  $values = array();
+  // split on commas and loop over each entry, which could be either a single value or a range of values
+  $parts = explode(',', $str);
+
+  $push_range = function($first, $last) {
+    $first = parse_date($first);
+    $last = parse_date($last);
+    if($last === $first) {
+      // the first and last numbers are the same, just treat it as a singe value
+      return $first;
+    }
+    if($last > $first) {
+      // add the range as an array
+      return array($first, $last);
+    }
+    // the range is inverted, this is an error
+    return false;
+  };
+
+  foreach($parts as $part) {
+    if(strpos($part, '-') === false && strpos($part, ':') === false) {
+      // YYYYMMDD
+      array_push($values, parse_date($part));
+      continue;
+    }
+    if (strpos($part, ':') !== false) {
+      // YYYY-MM-DD:YYYY-MM-DD
+      $range = explode(':', $part);
+      $r = $push_range($range[0], $range[1]);
+      if ($r === false) {
+        return null;
+      }
+      array_push($values, $r);
+    }
+    // YYYY-MM-DD or YYYYMMDD-YYYYMMDD
+    // split on the dash
+    $range = explode('-', $part);
+    if (count($range) === 2) {
+      // YYYYMMDD-YYYYMMDD
+      $r = $push_range($range[0], $range[1]);
+      if ($r === false) {
+        return null;
+      }
+      array_push($values, $r);
+      continue;
+    }
+    // YYYY-MM-DD
+    array_push($values, parse_date($part));
+  }
+  // success, return the list
+  return $values;
+}
+
 // give a comma-separated, quoted list of states in an HHS or Census region
 function get_region_states($region) {
   switch($region) {
@@ -279,5 +367,55 @@ function record_analytics($source, $data) {
   mysqli_query($dbh, "INSERT INTO `api_analytics` (`datetime`, `ip`, `ua`, `source`, `result`, `num_rows`) VALUES (now(), '{$ip}', '{$ua}', '{$source}', {$result}, {$num_rows})");
 }
 
+function send_status(&$data) {
+  if (intval($data["result"]) > 0 || intval($data["result"]) == -2) {
+    return FALSE;
+  }
+  if ($data["message"] == 'database error') {
+    http_response_code(500);
+  } else if ($data["message"] == 'unauthenticated') {
+    http_response_code(401);
+  } else {
+    http_response_code(400); // bad request
+  }
+  header('Content-Type: application/json');
+  echo json_encode($data);
+  return TRUE;
+}
+
+function send_csv(&$data) {
+  if (send_status($data)) {
+    return;
+  }
+  header('Content-Type: text/csv');
+  header('Content-Disposition: attachment; filename=epidata.csv');
+
+  if (intval($data["result"]) == -2) {
+    // empty
+    return;
+  }
+
+  $rows = $data["epidata"];
+  $headers = array_keys($rows[0]);
+  $out = fopen('php://output', 'w');
+  fputcsv($out, $headers);
+  foreach ($rows as $row) {
+    fputcsv($out, $row);
+  }
+  fclose($out);
+}
+
+function send_json(&$data) {
+  if (send_status($data)) {
+    return;
+  }
+  header('Content-Type: application/json');
+
+  if (intval($data["result"]) == -2) {
+    echo json_encode(array());
+  } else {
+    echo json_encode($data["epidata"]);
+  }
+}
 
 ?>

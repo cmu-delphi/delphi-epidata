@@ -1,0 +1,5 @@
+*.sql.gz
+*.sql
+*.csv
+./tmp
+./out

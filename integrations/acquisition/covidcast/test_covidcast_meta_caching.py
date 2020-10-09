@@ -1,6 +1,7 @@
 """Integration tests for covidcast's metadata caching."""
 
 # standard library
+import json
 import unittest
 
 # third party
@@ -10,6 +11,7 @@ import requests
 # first party
 from delphi.epidata.client.delphi_epidata import Epidata
 import delphi.operations.secrets as secrets
+import delphi.epidata.acquisition.covidcast.database as live
 
 # py3tester coverage target (equivalent to `import *`)
 __test_target__ = (
@@ -65,14 +67,25 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     self.cur.execute('''
       insert into covidcast values
         (0, 'src', 'sig', 'day', 'state', 20200422, 'pa',
-          123, 1, 2, 3, 456, 1)
+          123, 1, 2, 3, 456, 1, 20200422, 0, 1, False),
+        (0, 'src', 'sig', 'day', 'state', 20200422, 'wa',
+          789, 1, 2, 3, 456, 1, 20200423, 1, 1, False)
     ''')
+    self.cur.execute('''
+      insert into covidcast values
+        (100, 'src', 'wip_sig', 'day', 'state', 20200422, 'pa',
+          456, 4, 5, 6, 789, -1, 20200422, 0, 1, True)
+    ''')
+
     self.cnx.commit()
 
-    # make sure covidcast_meta is serving something sensible
-    epidata1 = Epidata.covidcast_meta()
-    self.assertEqual(epidata1['result'], 1)
-    self.assertEqual(epidata1['epidata'], [
+    # make sure the live utility is serving something sensible
+    cvc_database = live.Database()
+    cvc_database.connect()
+    epidata1 = cvc_database.get_covidcast_meta()
+    cvc_database.disconnect(False)
+    self.assertEqual(len(epidata1),1)
+    self.assertEqual(epidata1, [
       {
         'data_source': 'src',
         'signal': 'sig',
@@ -80,35 +93,32 @@ class CovidcastMetaCacheTests(unittest.TestCase):
         'geo_type': 'state',
         'min_time': 20200422,
         'max_time': 20200422,
-        'num_locations': 1,
-        'last_update': 123,
+        'num_locations': 2,
+        'last_update': 789,
         'min_value': 1,
         'max_value': 1,
         'mean_value': 1,
         'stdev_value': 0,
+        'max_issue': 20200423,
+        'min_lag': 0,
+        'max_lag': 1,
       }
     ])
+    epidata1={'result':1, 'message':'success', 'epidata':epidata1}
 
-    # fetch the cached version (manually)
-    params = {'source': 'covidcast_meta', 'cached': 'true'}
-    response = requests.get(BASE_URL, params=params)
-    response.raise_for_status()
-    epidata2 = response.json()
-
-    # API should fallback to live version
-    self.assertEqual(epidata1, epidata2)
+    # make sure the API covidcast_meta is still blank, since it only serves
+    # the cached version and we haven't cached anything yet
+    epidata2 = Epidata.covidcast_meta()
+    self.assertEqual(epidata2['result'], -2, json.dumps(epidata2))
 
     # update the cache
     args = None
     main(args)
 
-    # fetch the cached version (manually)
-    params = {'source': 'covidcast_meta', 'cached': 'true'}
-    response = requests.get(BASE_URL, params=params)
-    response.raise_for_status()
-    epidata3 = response.json()
+    # fetch the cached version
+    epidata3 = Epidata.covidcast_meta()
 
-    # cached version should equal live version
+    # cached version should now equal live version
     self.assertEqual(epidata1, epidata3)
 
     # insert dummy data timestamped as of now
@@ -148,5 +158,5 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     response.raise_for_status()
     epidata5 = response.json()
 
-    # make sure the cache was bypassed
-    self.assertEqual(epidata1, epidata5)
+    # make sure the cache was returned anyhow
+    self.assertEqual(epidata4, epidata5)

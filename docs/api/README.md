@@ -1,4 +1,10 @@
-# About
+---
+title: Delphi Epidata API
+nav_order: 3
+has_children: true
+---
+
+# Delphi Epidata API
 
 This is the home of [Delphi](https://delphi.cmu.edu/)'s epidemiological data
 API.

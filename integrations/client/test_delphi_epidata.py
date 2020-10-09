@@ -8,6 +8,7 @@ import mysql.connector
 
 # first party
 from delphi.epidata.client.delphi_epidata import Epidata
+from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import main as update_covidcast_meta_cache
 
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.client.delphi_epidata'
@@ -44,18 +45,25 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
 
   def test_covidcast(self):
     """Test that the covidcast endpoint returns expected data."""
-
+    self.maxDiff=None
+    
     # insert dummy data
     self.cur.execute('''
       insert into covidcast values
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          123, 1.5, 2.5, 3.5, 456, 4)
+          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 0, False),
+        (0, 'src', 'sig2', 'day', 'county', 20200414, '01234',
+          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 0, False),
+        (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
+          456, 5.5, 1.2, 10.5, 789, 0, 20200415, 1, 0, False),
+        (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
+          345, 6.5, 2.2, 11.5, 678, 0, 20200416, 2, 1, False)
     ''')
     self.cnx.commit()
 
     # fetch data
     response = Epidata.covidcast(
-        'src', 'sig', 'day', 'county', 20200414, '01234')
+        'src', ['sig','sig2'], 'day', 'county', 20200414, '01234')
 
     # check result
     self.assertEqual(response, {
@@ -63,12 +71,154 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
       'epidata': [{
         'time_value': 20200414,
         'geo_value': '01234',
+        'value': 6.5,
+        'stderr': 2.2,
+        'sample_size': 11.5,
+        'direction': 0,
+        'issue': 20200416,
+        'lag': 2,
+        'signal': 'sig',
+      },{
+        'time_value': 20200414,
+        'geo_value': '01234',
         'value': 1.5,
         'stderr': 2.5,
         'sample_size': 3.5,
         'direction': 4,
+        'issue': 20200414,
+        'lag': 0,
+        'signal': 'sig2',
+      }],
+      'message': 'success',
+    })
+
+    # fetch data
+    response = Epidata.covidcast(
+        'src', ['sig','sig2'], 'day', 'county', 20200414, '01234', format='tree')
+
+    # check result
+    self.assertEqual(response, {
+      'result': 1,
+      'epidata': [{
+        'sig': [{
+          'time_value': 20200414,
+          'geo_value': '01234',
+          'value': 6.5,
+          'stderr': 2.2,
+          'sample_size': 11.5,
+          'direction': 0,
+          'issue': 20200416,
+          'lag': 2,
+        }],
+        'sig2': [{
+          'time_value': 20200414,
+          'geo_value': '01234',
+          'value': 1.5,
+          'stderr': 2.5,
+          'sample_size': 3.5,
+          'direction': 4,
+          'issue': 20200414,
+          'lag': 0,
+        }],
+      }],
+      'message': 'success',
+    })
+    
+    # fetch data, without specifying issue or lag
+    response_1 = Epidata.covidcast(
+        'src', 'sig', 'day', 'county', 20200414, '01234')
+
+    # check result
+    self.assertEqual(response_1, {
+      'result': 1,
+      'epidata': [{
+        'time_value': 20200414,
+        'geo_value': '01234',
+        'value': 6.5,
+        'stderr': 2.2,
+        'sample_size': 11.5,
+        'direction': 0,
+        'issue': 20200416,
+        'lag': 2,
+        'signal': 'sig',
        }],
       'message': 'success',
+    })
+
+    # fetch data, specifying as_of
+    response_1a = Epidata.covidcast(
+        'src', 'sig', 'day', 'county', 20200414, '01234',
+      as_of=20200415)
+
+    # check result
+    self.assertEqual(response_1a, {
+      'result': 1,
+      'epidata': [{
+        'time_value': 20200414,
+        'geo_value': '01234',
+        'value': 5.5,
+        'stderr': 1.2,
+        'sample_size': 10.5,
+        'direction': 0,
+        'issue': 20200415,
+        'lag': 1,
+        'signal': 'sig',
+       }],
+      'message': 'success',
+    })
+
+    # fetch data, specifying issue range, not lag
+    response_2 = Epidata.covidcast(
+        'src', 'sig', 'day', 'county', 20200414, '01234',
+        issues=Epidata.range(20200414, 20200415))
+
+    # check result
+    self.assertDictEqual(response_2, {
+        'result': 1,
+        'epidata': [{
+            'time_value': 20200414,
+            'geo_value': '01234',
+            'value': 1.5,
+            'stderr': 2.5,
+            'sample_size': 3.5,
+            'direction': 4,
+            'issue': 20200414,
+            'lag': 0,
+            'signal': 'sig',
+        }, {
+            'time_value': 20200414,
+            'geo_value': '01234',
+            'value': 5.5,
+            'stderr': 1.2,
+            'sample_size': 10.5,
+            'direction': 0,
+            'issue': 20200415,
+            'lag': 1,
+            'signal': 'sig',
+        }],
+        'message': 'success',
+    })
+
+    # fetch data, specifying lag, not issue range
+    response_3 = Epidata.covidcast(
+        'src', 'sig', 'day', 'county', 20200414, '01234',
+        lag=2)
+
+    # check result
+    self.assertDictEqual(response_3, {
+        'result': 1,
+        'epidata': [{
+            'time_value': 20200414,
+            'geo_value': '01234',
+            'value': 6.5,
+            'stderr': 2.2,
+            'sample_size': 11.5,
+            'direction': 0,
+            'issue': 20200416,
+            'lag': 2,
+            'signal': 'sig',
+        }],
+        'message': 'success',
     })
 
   def test_covidcast_meta(self):
@@ -78,9 +228,16 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
     self.cur.execute('''
       insert into covidcast values
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          123, 1.5, 2.5, 3.5, 456, 4)
+          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 0, False),
+        (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
+          345, 6.0, 2.2, 11.5, 678, 0, 20200416, 2, 1, False),
+        (0, 'src', 'sig', 'day', 'county', 20200415, '01234',
+          345, 7.0, 2.0, 12.5, 678, 0, 20200416, 1, 1, False)
     ''')
     self.cnx.commit()
+
+    # cache it
+    update_covidcast_meta_cache(args=None)
 
     # fetch data
     response = Epidata.covidcast_meta()
@@ -94,13 +251,16 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
         'time_type': 'day',
         'geo_type': 'county',
         'min_time': 20200414,
-        'max_time': 20200414,
+        'max_time': 20200415,
         'num_locations': 1,
-        'min_value': 1.5,
-        'max_value': 1.5,
-        'mean_value': 1.5,
-        'stdev_value': 0,
-        'last_update': 123,
+        'min_value': 6.0,
+        'max_value': 7.0,
+        'mean_value': 6.5,
+        'stdev_value': 0.5,
+        'last_update': 345,
+        'max_issue': 20200416,
+        'min_lag': 1,
+        'max_lag': 2,
        }],
       'message': 'success',
     })

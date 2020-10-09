@@ -1,4 +1,9 @@
-# About
+---
+title: Metadata
+parent: Delphi Epidata API
+---
+
+# API Metadata
 
 This is the documentation of the API for accessing the API Metadata (`meta`) for `fluview`, `twitter`, `wiki`,
 and `delphi` data sources of the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.

@@ -1,6 +1,7 @@
 """Integration tests for covidcast's CSV-to-database uploading."""
 
 # standard library
+from datetime import date
 import os
 import unittest
 from unittest.mock import MagicMock
@@ -52,6 +53,9 @@ class CsvUploadingTests(unittest.TestCase):
   def test_uploading(self):
     """Scan, parse, upload, archive, serve, and fetch a covidcast signal."""
 
+    # print full diff if something unexpected comes out
+    self.maxDiff=None
+
     # make some fake data files
     data_dir = 'covid/data'
     source_receiving_dir = data_dir + '/receiving/src-name'
@@ -64,6 +68,23 @@ class CsvUploadingTests(unittest.TestCase):
       f.write('tx,2,0.2,20\n')
       f.write('fl,3,0.3,30\n')
 
+    # valid wip
+    with open(source_receiving_dir + '/20200419_state_wip_prototype.csv', 'w') as f:
+      f.write('geo_id,val,se,sample_size\n')
+      f.write('me,10,0.01,100\n')
+      f.write('nd,20,0.02,200\n')
+      f.write('wa,30,0.03,300\n')
+
+    # invalid
+    with open(source_receiving_dir + '/20200419_state_wip_really_long_name_that_will_be_accepted.csv', 'w') as f:
+      f.write('geo_id,val,se,sample_size\n')
+      f.write('pa,100,5.4,624\n')
+      
+    # invalid
+    with open(source_receiving_dir + '/20200419_state_wip_really_long_name_that_will_get_truncated_lorem_ipsum_dolor_sit_amet.csv', 'w') as f:
+      f.write('geo_id,val,se,sample_size\n')
+      f.write('pa,100,5.4,624\n')
+
     # invalid
     with open(source_receiving_dir + '/20200420_state_test.csv', 'w') as f:
       f.write('this,header,is,wrong\n')
@@ -73,17 +94,32 @@ class CsvUploadingTests(unittest.TestCase):
       f.write('file name is wrong\n')
 
     # upload CSVs
-    args = MagicMock(data_dir=data_dir)
+    # TODO: use an actual argparse object for the args instead of a MagicMock
+    args = MagicMock(data_dir=data_dir, is_wip_override=False, not_wip_override=False, specific_issue_date=False)
     main(args)
 
     # request CSV data from the API
     response = Epidata.covidcast(
         'src-name', 'test', 'day', 'state', 20200419, '*')
 
+
+    expected_issue_day=date.today()
+    expected_issue=expected_issue_day.strftime("%Y%m%d")
+    def apply_lag(expected_epidata):
+      for dct in expected_epidata:
+        dct['issue'] = int(expected_issue)
+        time_value_day = date(year=dct['time_value'] // 10000,
+                              month=dct['time_value'] % 10000 // 100,
+                              day= dct['time_value'] % 100)
+        expected_lag = (expected_issue_day - time_value_day).days
+        dct['lag'] = expected_lag
+      return expected_epidata
+    
     # verify data matches the CSV
+    # NB these are ordered by geo_value
     self.assertEqual(response, {
       'result': 1,
-      'epidata': [
+      'epidata': apply_lag([
         {
           'time_value': 20200419,
           'geo_value': 'ca',
@@ -91,6 +127,7 @@ class CsvUploadingTests(unittest.TestCase):
           'stderr': 0.1,
           'sample_size': 10,
           'direction': None,
+          'signal': 'test',
         },
         {
           'time_value': 20200419,
@@ -99,6 +136,7 @@ class CsvUploadingTests(unittest.TestCase):
           'stderr': 0.3,
           'sample_size': 30,
           'direction': None,
+          'signal': 'test',
         },
         {
           'time_value': 20200419,
@@ -107,21 +145,97 @@ class CsvUploadingTests(unittest.TestCase):
           'stderr': 0.2,
           'sample_size': 20,
           'direction': None,
+          'signal': 'test',
         },
-       ],
+    ]),
       'message': 'success',
     })
 
+    # request CSV data from the API on WIP signal
+    response = Epidata.covidcast(
+      'src-name', 'wip_prototype', 'day', 'state', 20200419, '*')
+
+    
+    # verify data matches the CSV
+    # NB these are ordered by geo_value
+    self.assertEqual(response, {
+      'result': 1,
+      'epidata': apply_lag([
+        {
+          'time_value': 20200419,
+          'geo_value': 'me',
+          'value': 10,
+          'stderr': 0.01,
+          'sample_size': 100,
+          'direction': None,
+          'signal': 'wip_prototype',
+        },
+        {
+          'time_value': 20200419,
+          'geo_value': 'nd',
+          'value': 20,
+          'stderr': 0.02,
+          'sample_size': 200,
+          'direction': None,
+          'signal': 'wip_prototype',
+        },
+        {
+          'time_value': 20200419,
+          'geo_value': 'wa',
+          'value': 30,
+          'stderr': 0.03,
+          'sample_size': 300,
+          'direction': None,
+          'signal': 'wip_prototype',
+        },
+       ]),
+      'message': 'success',
+    })
+
+    
+    # request CSV data from the API on the signal with name length 32<x<64
+    response = Epidata.covidcast(
+      'src-name', 'wip_really_long_name_that_will_be_accepted', 'day', 'state', 20200419, '*')
+
+    # verify data matches the CSV
+    self.assertEqual(response, {
+      'result': 1,
+      'message': 'success',
+      'epidata': apply_lag([
+        {
+          'time_value': 20200419,
+          'geo_value': 'pa',
+          'value': 100,
+          'stderr': 5.4,
+          'sample_size': 624,
+          'direction': None,
+          'signal': 'wip_really_long_name_that_will_be_accepted',
+        },
+      ])
+    })
+    
+    # request CSV data from the API on the long-named signal
+    response = Epidata.covidcast(
+      'src-name', 'wip_really_long_name_that_will_get_truncated_lorem_ipsum_dolor_s', 'day', 'state', 20200419, '*')
+
+    # verify data matches the CSV
+    # if the CSV failed correctly there should be no results
+    self.assertEqual(response, {
+      'result': -2,
+      'message': 'no results',
+    })
+
     # verify timestamps and default values are reasonable
-    self.cur.execute('select timestamp1, timestamp2, direction from covidcast')
-    for timestamp1, timestamp2, direction in self.cur:
-      self.assertGreater(timestamp1, 0)
-      self.assertEqual(timestamp2, 0)
+    self.cur.execute('select value_updated_timestamp, direction_updated_timestamp, direction from covidcast')
+    for value_updated_timestamp, direction_updated_timestamp, direction in self.cur:
+      self.assertGreater(value_updated_timestamp, 0)
+      self.assertEqual(direction_updated_timestamp, 0)
       self.assertIsNone(direction)
 
     # verify that the CSVs were archived
-    path = data_dir + '/archive/successful/src-name/20200419_state_test.csv.gz'
-    self.assertIsNotNone(os.stat(path))
+    for sig in ["test","wip_prototype"]:
+      path = data_dir + f'/archive/successful/src-name/20200419_state_{sig}.csv.gz'
+      self.assertIsNotNone(os.stat(path))
     path = data_dir + '/archive/failed/src-name/20200420_state_test.csv'
     self.assertIsNotNone(os.stat(path))
     path = data_dir + '/archive/failed/unknown/hello.csv'

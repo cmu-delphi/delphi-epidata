@@ -11,6 +11,19 @@ Notes:
 # External modules
 import requests
 
+from pkg_resources import get_distribution, DistributionNotFound
+
+# Obtain package version for the user-agent. Uses the installed version by
+# preference, even if you've installed it and then use this script independently
+# by accident.
+try:
+  _version = get_distribution('delphi-epidata').version
+except DistributionNotFound:
+  _version = "0.script"
+
+_HEADERS = {
+  "user-agent": "delphi_epidata/" + _version
+}
 
 # Because the API is stateless, the Epidata class only contains static methods
 class Epidata:
@@ -42,7 +55,7 @@ class Epidata:
     """Request and parse epidata."""
     try:
       # API call
-      return requests.get(Epidata.BASE_URL, params).json()
+      return requests.get(Epidata.BASE_URL, params, headers=_HEADERS).json()
     except Exception as e:
       # Something broke
       return {'result': 0, 'message': 'error: ' + str(e)}
@@ -541,21 +554,39 @@ class Epidata:
 
   # Fetch Delphi's COVID-19 Surveillance Streams
   @staticmethod
-  def covidcast(data_source, signal, time_type, geo_type, time_values, geo_value):
+  def covidcast(
+          data_source, signals, time_type, geo_type,
+          time_values, geo_value, as_of=None, issues=None, lag=None, **kwargs):
     """Fetch Delphi's COVID-19 Surveillance Streams"""
+    # also support old parameter name
+    if signals is None and 'signal' in kwargs:
+      signals=kwargs['signal']
     # Check parameters
-    if data_source is None or signal is None or time_type is None or geo_type is None or time_values is None or geo_value is None:
-      raise Exception('`data_source`, `signal`, `time_type`, `geo_type`, `time_values`, and `geo_value` are all required')
+    if data_source is None or signals is None or time_type is None or geo_type is None or time_values is None or geo_value is None:
+      raise Exception('`data_source`, `signals`, `time_type`, `geo_type`, `time_values`, and `geo_value` are all required')
+    if issues is not None and lag is not None:
+      raise Exception('`issues` and `lag` are mutually exclusive')
     # Set up request
     params = {
       'source': 'covidcast',
       'data_source': data_source,
-      'signal': signal,
+      'signals': Epidata._list(signals),
       'time_type': time_type,
       'geo_type': geo_type,
       'time_values': Epidata._list(time_values),
       'geo_value': geo_value,
     }
+
+    if as_of is not None:
+      params['as_of'] = as_of
+    if issues is not None:
+      params['issues'] = Epidata._list(issues)
+    if lag is not None:
+      params['lag'] = lag
+
+    if 'format' in kwargs:
+      params['format'] = kwargs['format']
+
     # Make the API call
     return Epidata._request(params)
 

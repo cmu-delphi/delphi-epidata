@@ -1,3 +1,8 @@
+---
+title: Epidata API Development Guide
+nav_order: 4
+---
+
 # Epidata API Development Guide
 
 **Prerequisite:** this guide assumes that you have read the
@@ -89,24 +94,55 @@ docker build -t delphi_database_epidata \
 
 # test
 
-At this point you're ready to bring the stack online. To do that, just start
-containers for the epidata-specific web and database images. As an aside, the
+At this point you're ready to bring the stack online. 
+
+First, make sure you have the docker network set up so that the containers can
+communicate:
+
+```
+docker network create --driver bridge delphi-net
+
+```
+
+Next, start containers for the epidata-specific web and database images. As an aside, the
 output from these commands (especially the web server) can be very helpful for
 debugging. For example:
 
 ```bash
 # launch the database
-docker run --rm -p 13306:3306 \
+docker run --rm -p 127.0.0.1:13306:3306 \
   --network delphi-net --name delphi_database_epidata \
   delphi_database_epidata
 
 # launch the web server
-docker run --rm -p 10080:80 \
+docker run --rm -p 127.0.0.1:10080:80 \
   --network delphi-net --name delphi_web_epidata \
   delphi_web_epidata
 ```
 
-## manual
+## unit tests
+
+Once the server containers are running, you can run unit tests.
+
+First, build the `delphi_python` image per the
+  [backend development guide](https://github.com/cmu-delphi/operations/blob/master/docs/backend_development.md#creating-an-image).
+  Your test sources will live in, and be executed from within, this image.
+
+Then run the test container:
+
+  ```bash
+  docker run --rm --network delphi-net delphi_python \
+  python3 -m undefx.py3tester.py3tester \
+  repos/delphi/delphi-epidata/tests
+  ```
+  
+  The final line of output should be similar to the following:
+  
+  ```
+  All 48 tests passed! 68% (490/711) coverage.
+  ```
+
+## manual tests
 
 You can test your changes manually by:
 
@@ -195,7 +231,7 @@ Here's a full example based on the `fluview` endpoint:
   libraries are better candidates for automated integration tests (and unit
   tests, in the case of the python client) than one-off manual tests.
 
-## integration
+## integration tests
 
 Writing an integration test is outside of the scope of this document. However,
 a number of existing integration tests exist and can be used as a good starting

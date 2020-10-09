@@ -64,8 +64,8 @@ class Direction:
       offsets,
       days,
       values,
-      timestamp1s,
-      timestamp2s,
+      value_updated_timestamps,
+      direction_updated_timestamps,
       get_direction_impl):
     """Scan an entire time-series and return fresh direction updates.
 
@@ -73,9 +73,9 @@ class Direction:
       each day in `days`
     `days`: day (YYYYMMDD) corresponding to each row in the other arrays
     `values`: value of the signal on each day
-    `timestamp1s`: primary timestamp for each row (i.e. when `value` was
+    `value_updated_timestamps`: primary timestamp for each row (i.e. when `value` was
       updated)
-    `timestamp2s`: secondary timestamp for each row (i.e. when `direction` was
+    `direction_updated_timestamps`: secondary timestamp for each row (i.e. when `direction` was
       last deemed to be fresh, relative to associated `value`s)
     `get_direction_impl`: a function which takes two arrays (time and value)
       and returns a classification of the direction (i.e. as -1, 0, +1)
@@ -100,8 +100,8 @@ class Direction:
         start += 1
 
       # check whether this row needs an update
-      direction_time = timestamp2s[end]
-      value_time = np.max(timestamp1s[start:end + 1])
+      direction_time = direction_updated_timestamps[end]
+      value_time = np.max(value_updated_timestamps[start:end + 1])
       if direction_time > value_time:
         # this row is fresh
         continue

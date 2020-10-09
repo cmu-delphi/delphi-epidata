@@ -1,4 +1,9 @@
-# About
+---
+title: Digital Surveillance Sensors
+parent: Delphi Epidata API
+---
+
+# Digital Surveillance Sensors
 
 This is the documentation of the API for accessing the Delphi's Digital Surveillance Sensors (`sensors`) data source of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.

@@ -1,4 +1,9 @@
-# About
+---
+title: Google Flu Trends
+parent: Delphi Epidata API
+---
+
+# Google Flu Trends
 
 This is the documentation of the API for accessing the Google Flu Trends (`gft`) data source of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
