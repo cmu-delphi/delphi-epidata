@@ -1,7 +1,6 @@
 """Unit tests for flusurv.py."""
 
 # standard library
-import json
 import unittest
 from unittest.mock import MagicMock
 from unittest.mock import sentinel
