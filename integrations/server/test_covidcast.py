@@ -384,23 +384,30 @@ class CovidcastTests(unittest.TestCase):
       'signal': 'sig',
     }]
 
+    # test fetch all
     r = fetch('*')
     self.assertEqual(r['message'], 'success')
     self.assertEqual(r['epidata'], counties)
+    # test fetch a specific region
     r = fetch('11111')
     self.assertEqual(r['message'], 'success')
     self.assertEqual(r['epidata'], [counties[0]])
+    # test fetch a specific yet not existing region
     r = fetch('55555')
     self.assertEqual(r['message'], 'no results')
+    # test fetch a multiple regions
     r = fetch(['11111', '22222'])
     self.assertEqual(r['message'], 'success')
     self.assertEqual(r['epidata'], [counties[0], counties[1]])
+    # test fetch a multiple regions in another variant
     r = fetch(['11111', '33333'])
     self.assertEqual(r['message'], 'success')
     self.assertEqual(r['epidata'], [counties[0], counties[2]])
+    # test fetch a multiple regions but one is not existing
     r = fetch(['11111', '55555'])
     self.assertEqual(r['message'], 'success')
     self.assertEqual(r['epidata'], [counties[0]])
+    # test fetch a multiple regions but specify no region
     r = fetch([])
     self.assertEqual(r['message'], 'no results')
 
