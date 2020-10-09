@@ -152,20 +152,25 @@ def extract_from_object(data_in):
 
   # iterate over all seasons and age groups
   for obj in data_in['busdata']['dataseries']:
-    age = obj['age'] - 1
+    if obj['age'] in (10, 11, 12):
+      # TODO(https://github.com/cmu-delphi/delphi-epidata/issues/242):
+      #   capture as-of-yet undefined age groups 10, 11, and 12
+      continue
+    age_index = obj['age'] - 1
     # iterage over weeks
     for mmwrid, week, overall, rate in obj['data']:
       epiweek = mmwrid_to_epiweek(mmwrid)
       if epiweek not in data_out:
-        # weekly rate of nine age groups
+        # weekly rate of each age group
         data_out[epiweek] = [None] * 9
-      prev_rate = data_out[epiweek][age]
+      prev_rate = data_out[epiweek][age_index]
       if prev_rate is None:
         # this is the first time to see a rate for this epiweek/age
-        data_out[epiweek][age] = rate
+        data_out[epiweek][age_index] = rate
       elif prev_rate != rate:
         # a different rate was already found for this epiweek/age
-        print('warning: %d %d %f != %f' % (epiweek, age + 1, prev_rate, rate))
+        format_args = (epiweek, obj['age'], prev_rate, rate)
+        print('warning: %d %d %f != %f' % format_args)
 
   # sanity check the result
   if len(data_out) == 0:
