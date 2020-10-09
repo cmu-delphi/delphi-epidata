@@ -105,7 +105,8 @@ def update(issue, location_name, test_mode=False):
 
   # connect to the database
   u, p = secrets.db.epi
-  cnx = mysql.connector.connect(user=u, password=p, database='epidata')
+  cnx = mysql.connector.connect(
+      host=secrets.db.host, user=u, password=p, database='epidata')
   cur = cnx.cursor()
   rows1 = get_rows(cur)
   print('rows before: %d' % rows1)
