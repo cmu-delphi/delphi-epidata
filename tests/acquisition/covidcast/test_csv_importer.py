@@ -144,6 +144,7 @@ class UnitTests(unittest.TestCase):
       (make_row(val=None), 'val'),
       (make_row(val='nan'), 'val'),
       (make_row(val='NaN'), 'val'),
+      (make_row(val='inf'), 'val'),
       (make_row(geo_type='hrr', geo_id='hrr001'), 'geo_id'),
       (make_row(val='val'), 'val'),
       (make_row(se='se'), 'se'),
