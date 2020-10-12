@@ -94,14 +94,13 @@ docker build -t delphi_database_epidata \
 
 # test
 
-At this point you're ready to bring the stack online. 
+At this point you're ready to bring the stack online.
 
 First, make sure you have the docker network set up so that the containers can
 communicate:
 
 ```
 docker network create --driver bridge delphi-net
-
 ```
 
 Next, start containers for the epidata-specific web and database images. As an aside, the
@@ -122,25 +121,27 @@ docker run --rm -p 127.0.0.1:10080:80 \
 
 ## unit tests
 
-Once the server containers are running, you can run unit tests.
+Unit tests are self-contained, and do not depend on external services like
+databases or web servers. You can run unit tests at any time according to the
+instructions in the
+[backend development guide](https://github.com/cmu-delphi/operations/blob/master/docs/backend_development.md).
 
-First, build the `delphi_python` image per the
-  [backend development guide](https://github.com/cmu-delphi/operations/blob/master/docs/backend_development.md#creating-an-image).
-  Your test sources will live in, and be executed from within, this image.
+First, [build the `delphi_python` image](https://github.com/cmu-delphi/operations/blob/master/docs/backend_development.md#creating-an-image).
+Your test sources will live in, and be executed from within, this image.
 
-Then run the test container:
+Then run the tests in a container based on that image:
 
-  ```bash
-  docker run --rm --network delphi-net delphi_python \
-  python3 -m undefx.py3tester.py3tester \
-  repos/delphi/delphi-epidata/tests
-  ```
-  
-  The final line of output should be similar to the following:
-  
-  ```
-  All 48 tests passed! 68% (490/711) coverage.
-  ```
+```bash
+docker run --rm delphi_python \
+  python3 -m undefx.py3tester.py3tester --color \
+    repos/delphi/delphi-epidata/tests
+```
+
+The final line of output should be similar to the following:
+
+```
+All 48 tests passed! 68% (490/711) coverage.
+```
 
 ## manual tests
 
