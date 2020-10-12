@@ -370,7 +370,10 @@ class Epidata
       'time_type': time_type
       'geo_type': geo_type
       'time_values': _list(time_values)
-      'geo_value': geo_value
+    if Array.isArray(geo_value)
+      params.geo_values = geo_value.join(',')
+    else
+      params.geo_value = geo_value
     if as_of?
       params.as_of = as_of
     if issues?
