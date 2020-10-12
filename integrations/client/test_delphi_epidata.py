@@ -258,7 +258,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
         'mean_value': 6.5,
         'stdev_value': 0.5,
         'last_update': 345,
-        'min_issue': 20200416,
+        'min_issue': 20200414,
         'max_issue': 20200416,
         'min_lag': 1,
         'max_lag': 2,
