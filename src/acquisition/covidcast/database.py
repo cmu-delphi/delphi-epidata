@@ -560,17 +560,37 @@ class Database:
 
     sql = 'SELECT `source`, `signal` FROM covidcast WHERE NOT `is_wip` GROUP BY `source`, `signal` ORDER BY `source` ASC, `signal` ASC;'
     self._cursor.execute(sql)
-    for source, signal in  [ss for ss in self._cursor]: #NOTE: this obfuscation protects the integrity of the cursor; using the cursor as a generator will cause contention w/ subsequent queries
+    signals = [ss for ss in self._cursor] #NOTE: this obfuscation protects the integrity of the cursor; using the cursor as a generator will cause contention w/ subsequent queries
+    for source, signal in signals:
 
+      # calculate the min issues per combination
       sql = '''
       SELECT
-        t.`source` AS `data_source`,
-        t.`signal`,
-        t.`time_type`,
-        t.`geo_type`,
-        MIN(t.`time_value`) AS `min_time`,
-        MAX(t.`time_value`) AS `max_time`,
-        COUNT(DISTINCT t.`geo_value`) AS `num_locations`,
+        `time_type`,
+        `geo_type`,
+        MIN(`issue`) as `min_issue`
+      FROM
+        `covidcast`
+      WHERE
+        `source` = %s AND
+        `signal` = %s
+      GROUP BY
+        `time_type`,
+        `geo_type`
+      '''
+      self._cursor.execute(sql, (source, signal))
+      min_issue_lookup = {f'{x[0]}:{x[1]}': x[2] for x in self._cursor}
+
+      # calculate statistics for the latest issue entries
+      sql = '''
+      SELECT
+        `source` AS `data_source`,
+        `signal`,
+        `time_type`,
+        `geo_type`,
+        MIN(`time_value`) AS `min_time`,
+        MAX(`time_value`) AS `max_time`,
+        COUNT(DISTINCT `geo_value`) AS `num_locations`,
         MIN(`value`) AS `min_value`,
         MAX(`value`) AS `max_value`,
         ROUND(AVG(`value`),7) AS `mean_value`,
@@ -581,46 +601,26 @@ class Database:
         MIN(`lag`) as `min_lag`,
         MAX(`lag`) as `max_lag`
       FROM
-        `covidcast` t
-        JOIN
-          (
-            SELECT
-              max(`issue`) `max_issue`,
-              `time_type`,
-              `time_value`,
-              `source`,
-              `signal`,
-              `geo_type`,
-              `geo_value`
-            FROM
-              `covidcast`
-            WHERE
-              `source` = %s AND
-              `signal` = %s
-            GROUP BY
-              `time_value`,
-              `time_type`,
-              `geo_type`,
-              `geo_value`
-          ) x
-        ON
-          x.`max_issue` = t.`issue` AND
-          x.`time_type` = t.`time_type` AND
-          x.`time_value` = t.`time_value` AND
-          x.`source` = t.`source` AND
-          x.`signal` = t.`signal` AND
-          x.`geo_type` = t.`geo_type` AND
-          x.`geo_value` = t.`geo_value`
+        `covidcast`
+      WHERE
+        `source` = %s AND
+        `signal` = %s AND
+        `is_latest_issue` is TRUE
       GROUP BY
-        t.`time_type`,
-        t.`geo_type`
+        `time_type`,
+        `geo_type`
       ORDER BY
-        t.`time_type` ASC,
-        t.`geo_type` ASC
+        `time_type` ASC,
+        `geo_type` ASC
       '''
       self._cursor.execute(sql, (source, signal))
-      meta.extend(list(dict(zip(self._cursor.column_names,x)) for x in self._cursor))
 
+      for x in self._cursor:
+        entry = dict(zip(self._cursor.column_names, x))
+        # merge in the min issue
+        key = f"{entry['time_type']}:{entry['geo_type']}"
+        entry['min_issue'] = min_issue_lookup.get(key, entry['max_issue'])
+        meta.append(entry)
     return meta
 
   def update_covidcast_meta_cache(self, metadata):

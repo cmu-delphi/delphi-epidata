@@ -47,7 +47,11 @@ class CovidcastMetaTests(unittest.TestCase):
     # insert dummy data and accumulate expected results (in sort order)
     template = '''
       insert into covidcast values
-        (0, "%s", "%s", "%s", "%s", %d, "%s", 123, %d, 0, 0, 456, 0, %d, 0, 1, %d)
+        (0, "%s", "%s", "%s", "%s", %d, "%s",
+        123,
+        %d, 0, 0,
+        456, 0,
+        %d, 0, 1, %d)
     '''
     expected = []
     for src in ('src1', 'src2'):
@@ -67,7 +71,7 @@ class CovidcastMetaTests(unittest.TestCase):
               'mean_value': 15,
               'stdev_value': 5,
               'last_update': 123,
-              'min_issue': 2,
+              'min_issue': 1,
               'max_issue': 2,
               'min_lag': 0,
               'max_lag': 0,
@@ -117,7 +121,7 @@ class CovidcastMetaTests(unittest.TestCase):
               'mean_value': 15,
               'stdev_value': 5,
               'last_update': 123,
-              'min_issue': 2,
+              'min_issue': 1,
               'max_issue': 2,
               'min_lag': 0,
               'max_lag': 0,
@@ -237,7 +241,7 @@ class CovidcastMetaTests(unittest.TestCase):
                 'mean_value': 15,
                 'stdev_value': 5,
                 'last_update': 123,
-                'min_issue': 2,
+                'min_issue': 1,
                 'max_issue': 2,
                 'min_lag': 0,
                 'max_lag': 0,
@@ -254,6 +258,55 @@ class CovidcastMetaTests(unittest.TestCase):
     response = response.json()
 
     # assert that the right data came back
+    self.assertEqual(response, {
+      'result': 1,
+      'epidata': expected,
+      'message': 'success',
+    })
+
+
+  def test_min_issue(self):
+    """Test proper computation of min issue in a complex setup."""
+
+    def add_row(src, sig, time_type, geo_type, time_value, geo_value, value, issue, is_latest = True):
+
+      template = '''
+        insert into covidcast(
+`id`, `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`,
+`value_updated_timestamp`, `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, `direction`,
+`issue`, `lag`, `is_latest_issue`, `is_wip`)
+       values
+          (0, "%s", "%s", "%s", "%s", %d, "%s",
+          19700101, %d, 0, 0, 19700101, 0,
+          %d, 0, %d, 0)
+      '''
+      self.cur.execute(template % (src, sig, time_type, geo_type, time_value, geo_value, value, issue, is_latest))
+
+    expected = []
+    for src in ('src1', 'src2'):
+      for sig in ('sig1', 'sig2'):
+        expected.append(dict(data_source=src, signal=sig, min_issue=20200502, max_issue=20200505, mean_value=15))
+
+        for time_value in [20200101, 20200102]:
+          for geo_value, value in zip(('geo1', 'geo2'), (1, 2)):
+              # add some old issue rows which won't influence the mean
+              add_row(src, sig, 'day', 'county', time_value, geo_value, value, 20200502, False)
+
+        for time_value in range(20200101, 20200105):
+          for geo_value, value in zip(('geo1', 'geo2'), (10, 20)):
+            # add a latest issue row
+            add_row(src, sig, 'day', 'county', time_value, geo_value, value, 20200505, True)
+
+    self.cnx.commit()
+    update_cache(args=None)
+
+    # make the request
+    response = requests.get(BASE_URL, params=dict(source='covidcast_meta', fields="data_source,signal,min_issue,max_issue,mean_value"))
+    response.raise_for_status()
+    response = response.json()
+
+    # assert that the right data came back
+    self.maxDiff = None
     self.assertEqual(response, {
       'result': 1,
       'epidata': expected,
