@@ -75,10 +75,10 @@ Standard errors are now included in the `nmf_day_doc_fbc_fbs_ght` signal for all
 
 #### 12 October 2020
 
-The 10 October 2020 issue of all `indicator-combination` deaths signals has been removed from the API. These signals are primarily constructed of USAFacts data, whose 10 October 2020 issue was discovered to be corrupt on 11 October and repaired on 12 October.
+The 10 October 2020 issue of all `indicator-combination` deaths signals has been removed from the API. These signals are primarily constructed of USAFacts data, whose 10 October 2020 issue was discovered to be corrupt on 11 October and repaired on 12 October. Subsequent issues have adequate coverage of all regions and dates which were included in the 10 October issue, so this change only affects forecasters which intend to pull training data with an `as_of` or `issues` parameter set to 20201010.
 
 ### `usa-facts`
 
 #### 12 October 2020
 
-The 10 October 2020 issue of all `usa-facts` deaths signals has been removed from the API. The file for deaths provided by USAFacts on 10 October included cases data instead. The resulting spurious 100x increase in magnitude of COVIDcast `usa-facts` deaths signals was noticed on 11 October and repaired on 12 October.
+The 10 October 2020 issue of all `usa-facts` deaths signals has been removed from the API. The file for deaths provided by USAFacts on 10 October included cases data instead. The resulting spurious 100x increase in magnitude of COVIDcast `usa-facts` deaths signals was noticed on 11 October and repaired on 12 October. Subsequent issues have adequate coverage of all regions and dates which were included in the 10 October issue, so this change only affects forecasters which intend to pull training data with an `as_of` or `issues` parameter set to 20201010.
