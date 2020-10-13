@@ -17,6 +17,12 @@ we **strongly recommend** that anyone using the API to regularly download data
 should subscribe to this list. The list will only be used to announce API
 changes, data corrections, and other information relevant to API users.
 
+## Table of contents
+{: .no_toc .text-delta}
+
+1. TOC
+{:toc}
+
 ## Sources and Signals
 ### `doctor-visits`
 ### `fb-survey`
@@ -66,3 +72,13 @@ Standard errors are now included in the `nmf_day_doc_fbc_fbs_ght` signal for all
 * `nmf_day_doc_fbc_fbs_ght`
   * all geo levels
     * all dates
+
+#### 12 October 2020
+
+The 10 October 2020 issue of all `indicator-combination` deaths signals has been removed from the API. These signals are primarily constructed of USAFacts data, whose 10 October 2020 issue was discovered to be corrupt on 11 October and repaired on 12 October.
+
+### `usa-facts`
+
+#### 12 October 2020
+
+The 10 October 2020 issue of all `usa-facts` deaths signals has been removed from the API. The file for deaths provided by USAFacts on 10 October included cases data instead. The resulting spurious 100x increase in magnitude of COVIDcast `usa-facts` deaths signals was noticed on 11 October and repaired on 12 October.
