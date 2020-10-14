@@ -250,3 +250,15 @@ class UnitTests(unittest.TestCase):
     self.assertIn('`covidcast_meta_cache`', sql)
     self.assertIn('timestamp', sql)
     self.assertIn('epidata', sql)
+
+  def test_insert_or_update_batch_exception_reraised(self):
+    """Test that an exception is reraised"""
+    mock_connector = MagicMock()
+    database = Database()
+    database.connect(connector_impl=mock_connector)
+    connection = mock_connector.connect()
+    cursor = connection.cursor() 
+    cursor.executemany.side_effect = Exception('Test')
+
+    cc_rows = {MagicMock(geo_id='CA', val=1, se=0, sample_size=0)}
+    self.assertRaises(Exception, database.insert_or_update_batch, cc_rows)
