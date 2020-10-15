@@ -229,7 +229,7 @@ class Database:
       raise e
     finally:
       self._cursor.execute(drop_tmp_table_sql)
-      return total
+    return total
 
   def get_data_stdev_across_locations(self, max_day):
     """

@@ -522,9 +522,13 @@ Epidata <- (function() {
       time_type = time_type,
       geo_type = geo_type,
       time_values = .list(time_values),
-      geo_value = geo_value,
       format = format
     )
+    if(is.list(geo_value)) {
+      params$geo_values = paste(geo_value, collapse=',')
+    } else {
+      params$geo_value = geo_value
+    }
     if(!missing(as_of)) {
       params$as_of <- as_of
     }
