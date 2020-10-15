@@ -976,21 +976,21 @@ function get_covidcast($source, $signals, $time_type, $geo_type, $time_values, $
     //build the issue filter
     $condition_issue = filter_integers('t.`issue`', $issues);
     $condition_version = $condition_issue;
-  } else if($lag !== null) {
+  } else if ($lag !== null) {
     //build the lag filter
     $condition_lag = "(t.`lag` = {$lag})";
     $condition_version = $condition_lag;
-  } else {
-    //fetch most recent issues
-    $sub_condition_asof = "TRUE";
-    if ($as_of !== null) {
-      $sub_condition_asof = "(`issue` <= {$as_of})";
-    }
+  } else if ($as_of !== null) {
+    // fetch most recent issues with as of
+    $sub_condition_asof = "(`issue` <= {$as_of})";
     $sub_fields = "max(`issue`) `max_issue`, `time_type`, `time_value`, `source`, `signal`, `geo_type`, `geo_value`";
     $sub_group = "`time_type`, `time_value`, `source`, `signal`, `geo_type`, `geo_value`";
     $sub_condition = "x.`max_issue` = t.`issue` AND x.`time_type` = t.`time_type` AND x.`time_value` = t.`time_value` AND x.`source` = t.`source` AND x.`signal` = t.`signal` AND x.`geo_type` = t.`geo_type` AND x.`geo_value` = t.`geo_value`";
     $subquery = "JOIN (SELECT {$sub_fields} FROM {$table} WHERE ({$conditions} AND {$sub_condition_asof}) GROUP BY {$sub_group}) x ON {$sub_condition}";
     $condition_version = 'TRUE';
+  } else {
+    // fetch most recent issue fast
+    $condition_version = '(t.`is_latest_issue` IS TRUE)';
   }
   // the query
   $query = "SELECT {$fields} FROM {$table} {$subquery} WHERE {$conditions} AND ({$condition_version}) ORDER BY {$order}";
