@@ -579,7 +579,7 @@ class Database:
         `geo_type`
       '''
       self._cursor.execute(sql, (source, signal))
-      min_issue_lookup = {f'{x[0]}:{x[1]}': x[2] for x in self._cursor}
+      min_issue_lookup = {(x[0], x[1]): x[2] for x in self._cursor}
 
       # calculate statistics for the latest issue entries
       sql = '''
@@ -618,7 +618,7 @@ class Database:
       for x in self._cursor:
         entry = dict(zip(self._cursor.column_names, x))
         # merge in the min issue
-        key = f"{entry['time_type']}:{entry['geo_type']}"
+        key = (entry['time_type'], entry['geo_type'])
         entry['min_issue'] = min_issue_lookup.get(key, entry['max_issue'])
         meta.append(entry)
     return meta
