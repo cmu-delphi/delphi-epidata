@@ -6,11 +6,11 @@ nav_order: 4
 # Epidata API Development Guide
 
 **Prerequisite:** this guide assumes that you have read the
-[frontend development guide](https://github.com/cmu-delphi/operations/blob/master/docs/frontend_development.md).
+[frontend development guide](https://github.com/cmu-delphi/operations/blob/main/docs/frontend_development.md).
 
 This guide describes how to write and test code for the Epidata API. For
 preliminary steps,
-[install docker and create a virtual network](https://github.com/cmu-delphi/operations/blob/master/docs/frontend_development.md#setup).
+[install docker and create a virtual network](https://github.com/cmu-delphi/operations/blob/main/docs/frontend_development.md#setup).
 
 After reading this guide, you may want to visit
 [the `fluview_meta` tutorial](new_endpoint_tutorial.md) for an example of how
@@ -28,7 +28,7 @@ You likely won't need to modify the `operations` repo, so cloning directly from
 `cmu-delphi` is usually sufficient. However, since you _are_ going to be
 modifying `delphi-epidata` sources, you'll first need to fork the repository
 and then clone your personal fork. For more details, see the Delphi-specific
-[discussion on forking and branching](https://github.com/cmu-delphi/operations/blob/master/docs/backend_development.md#everyone).
+[discussion on forking and branching](https://github.com/cmu-delphi/operations/blob/main/docs/backend_development.md#everyone).
 
 Here's an example of how to setup your local workspace. Note that you will need
 to use your own GitHub username where indicated.
@@ -124,9 +124,9 @@ docker run --rm -p 127.0.0.1:10080:80 \
 Unit tests are self-contained, and do not depend on external services like
 databases or web servers. You can run unit tests at any time according to the
 instructions in the
-[backend development guide](https://github.com/cmu-delphi/operations/blob/master/docs/backend_development.md).
+[backend development guide](https://github.com/cmu-delphi/operations/blob/main/docs/backend_development.md).
 
-First, [build the `delphi_python` image](https://github.com/cmu-delphi/operations/blob/master/docs/backend_development.md#creating-an-image).
+First, [build the `delphi_python` image](https://github.com/cmu-delphi/operations/blob/main/docs/backend_development.md#creating-an-image).
 Your test sources will live in, and be executed from within, this image.
 
 Then run the tests in a container based on that image:
@@ -242,7 +242,7 @@ point for additional tests. For example, see the tests for the
 
 To run the existing tests and any new tests that you write, you must
 follow the
-[backend development guide](https://github.com/cmu-delphi/operations/blob/master/docs/backend_development.md)
+[backend development guide](https://github.com/cmu-delphi/operations/blob/main/docs/backend_development.md)
 _within the same workspace_, so that the `delphi_python` image is created with
 any changes you have made (e.g. adding new integration tests). That image will
 contain the test driver and the source code of your integration tests. Then,
@@ -259,7 +259,7 @@ More concretely, you can run Epidata API integration tests like this:
   above.
 
 3. Build the `delphi_python` image per the
-  [backend development guide](https://github.com/cmu-delphi/operations/blob/master/docs/backend_development.md#creating-an-image).
+  [backend development guide](https://github.com/cmu-delphi/operations/blob/main/docs/backend_development.md#creating-an-image).
   Your test sources will live in, and be executed from within, this image.
 
 4. Run integration tests in a container based on the `delphi_python` image:
@@ -297,7 +297,7 @@ This allows your code changes to be reflected immediately, without needing to
 rebuild containers.
 
 There are some drawbacks however, as discussed in the
-[Epicast development guide](https://github.com/cmu-delphi/www-epicast/blob/master/docs/epicast_development.md#develop).
+[Epicast development guide](https://github.com/cmu-delphi/www-epicast/blob/main/docs/epicast_development.md#develop).
 For example:
 
 - Code running in the container is able to read (and possibly also write) your local filesystem.
