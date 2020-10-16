@@ -285,3 +285,78 @@ More concretely, you can run Epidata API integration tests like this:
   ```
 
 5. Bring down the servers, for example with the `docker stop` command.
+
+# rapid iteration
+
+The workflow described above requires containers to be stopped, rebuilt, and
+restarted each time code (including tests) is changed, which can be tedious. To
+reduce friction, it's possible to
+[bind-mount](https://docs.docker.com/storage/bind-mounts/) your local source
+files into a container, which replace the corresponding files from the image.
+This allows your code changes to be reflected immediately, without needing to
+rebuild containers.
+
+There are some drawbacks however, as discussed in the
+[Epicast development guide](https://github.com/cmu-delphi/www-epicast/blob/master/docs/epicast_development.md#develop).
+For example:
+
+- Code running in the container is able to read (and possibly also write) your local filesystem.
+- The command line specification of bind-mounts is quite tedious.
+- Bind mounts do not interact well with `selinux` on some systems, leading to
+various access denials at runtime. As a workaround, you may have to use the
+[dangerous "Z" flag](https://docs.docker.com/storage/bind-mounts/#configure-the-selinux-label),
+or temporarily disable `selinux` -- neither of which is advised.
+
+## bind-mounting
+
+### non-server code
+
+Python sources (e.g. data acquisition, API clients, and tests), can be
+bind-mounted into a `delphi_python` container as follows:
+
+```bash
+docker run --rm --network delphi-net \
+  --mount type=bind,source="$(pwd)"/repos/delphi/delphi-epidata,target=/usr/src/app/repos/delphi/delphi-epidata,readonly \
+  --mount type=bind,source="$(pwd)"/repos/delphi/delphi-epidata/src,target=/usr/src/app/delphi/epidata,readonly \
+  delphi_python \
+python3 -m undefx.py3tester.py3tester --color \
+  repos/delphi/delphi-epidata/integrations
+```
+
+The command above maps two local directories into the container:
+
+- `/repos/delphi/delphi-epidata`: The entire repo, notably including unit and
+  integration test sources.
+- `/repos/delphi/delphi-epidata/src`: Just the source code, which forms the
+  container's `delphi.epidata` python package.
+
+### server code
+
+Local web sources (e.g. PHP files) can be bind-mounted into a
+`delphi_web_epidata` container as follows:
+
+```bash
+docker run --rm -p 127.0.0.1:10080:80 \
+  --mount type=bind,source="$(pwd)"/repos/delphi/delphi-epidata/src/server/api.php,target=/var/www/html/epidata/api.php,readonly \
+  --mount type=bind,source="$(pwd)"/repos/delphi/delphi-epidata/src/server/api_helpers.php,target=/var/www/html/epidata/api_helpers.php,readonly \
+  --network delphi-net --name delphi_web_epidata \
+  delphi_web_epidata
+```
+
+The command above mounts two specific files into the image. It may be tempting
+to bind mount the `src/server` directory rather than specific files, however
+that is currently problematic for a couple of reasons:
+
+1. `server/.htaccess` [from the local repository](../src/server/.htaccess) uses
+  the `Header` directive, however the web server in the container doesn't have
+  the corresponding module enabled. This causes the server to deny access to
+  the API.
+2. `server/database_config.php`
+  [in the image](../dev/docker/web/epidata/assets/database_config.php) contains
+  database credentials for use in conjunction with the
+  `delphi_database_epidata` container during development. However, the same
+  file from [the local repository](../src/server/database_config.php) only
+  contains placeholder values. This prevents communication with the database.
+
+There is currently no benefit to bind-mounting sources into the database
+container because schema changes require restarting the container anyway.
