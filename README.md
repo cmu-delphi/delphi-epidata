@@ -38,7 +38,6 @@ like to cite it, we would gratefully recommend the following copy:
 
 > David C. Farrow,
 > Logan C. Brooks,
-> Aaron Rumack,
 > Ryan J. Tibshirani,
 > Roni Rosenfeld
 > (2015).
