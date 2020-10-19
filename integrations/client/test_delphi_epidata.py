@@ -57,7 +57,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
           123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 0, False),
         (0, 'src', 'sig2', 'day', 'county', 20200414, '01234',
-          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 0, False),
+          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 1, False),
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
           456, 5.5, 1.2, 10.5, 789, 0, 20200415, 1, 0, False),
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
