@@ -21,7 +21,7 @@ In this tutorial we'll create a brand new endpoint for the Epidata API:
 # setup
 
 Follow
-[the backend guide](https://github.com/cmu-delphi/operations/blob/master/docs/backend_development.md)
+[the backend guide](https://github.com/cmu-delphi/operations/blob/main/docs/backend_development.md)
 and [the epidata guide](epidata_development.md) to install Docker and get your
 workspace ready for development. Before continuing, your workspace should look
 something like the following:
@@ -174,7 +174,7 @@ Now that we've changed several files, we need to make sure that the changes
 work as intended _before_ submitting code for review or committing code to the
 repository. Given that the code spans multiple components and languages, this
 needs to be an integration test. See more about integration testing in Delphi's
-[frontend development guide](https://github.com/cmu-delphi/operations/blob/master/docs/frontend_development.md#integration).
+[frontend development guide](https://github.com/cmu-delphi/operations/blob/main/docs/frontend_development.md#integration).
 
 Create an integration test for the new endpoint by creating a new file
 `integrations/server/test_fluview_meta.py`. There's a good amount of
@@ -245,7 +245,7 @@ the following row in the appropriate place (i.e. next to the row for
 Finally, we just need to run all new and existing tests. It is recommended to
 start with the unit tests because they are faster to build, run, and either
 succeed or fail. Follow the
-[backend development guide](https://github.com/cmu-delphi/operations/blob/master/docs/backend_development.md#running-a-container).
+[backend development guide](https://github.com/cmu-delphi/operations/blob/main/docs/backend_development.md#running-a-container).
 In summary:
 
 ```bash
