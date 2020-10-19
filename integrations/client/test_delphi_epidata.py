@@ -9,6 +9,7 @@ import mysql.connector
 # first party
 from delphi.epidata.client.delphi_epidata import Epidata
 from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import main as update_covidcast_meta_cache
+import delphi.operations.secrets as secrets
 
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.client.delphi_epidata'
@@ -37,6 +38,10 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
 
     # use the local instance of the Epidata API
     Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+
+    # use the local instance of the epidata database
+    secrets.db.host = 'delphi_database_epidata'
+    secrets.db.epi = ('user', 'pass')
 
   def tearDown(self):
     """Perform per-test teardown."""
