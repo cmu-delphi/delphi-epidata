@@ -15,7 +15,7 @@ If you're not familiar with SFTP, it is a protocol for accessing and downloading
 large amounts of data from remote servers. The instructions below explain how to
 connect to our SFTP server on Windows or Mac. (Linux users can use the
 command-line `sftp` program, or most file managers can browse directly to
-`sftp://@ftp.delphi.cmu.edu:2222` using the username and password provided to
+`sftp://ftp.delphi.cmu.edu:2222` using the username and password provided to
 you.)
 
 ## Windows
