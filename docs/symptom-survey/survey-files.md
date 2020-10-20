@@ -7,9 +7,11 @@ nav_order: 1
 # Response Files
 {: .no_toc}
 
-Users with access to the [COVID symptom survey](./index.md) individual response data
-should have received SFTP credentials for a private server where the data are
-stored. This documentation describes the survey data available on that server.
+Users with access to the [COVID symptom survey](./index.md) individual response
+data should have received SFTP credentials for a private server where the data
+are stored. To connect to the server, see the [server access
+documentation](server-access.md). This documentation describes the survey data
+available on that server.
 
 You must sign a Data Use Agreement with Facebook and with CMU to gain
 access to the individual survey responses. If you have not done so, aggregate data is available
@@ -44,7 +46,7 @@ Every day, we write response files for *all* days of data, with today's
 `recorded` date. You need only load the most recent set of `recorded` files to
 obtain all survey responses; the older versions are available to track any
 changes in file formats or slight changes from late-arriving responses, as
-described in the lag policy.
+described in the [lag policy below](#lag-policy).
 
 ## Conditions Responses are Recorded
 
