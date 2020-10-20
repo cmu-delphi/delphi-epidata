@@ -9,9 +9,8 @@ nav_order: 1
 
 Users with access to the [COVID symptom survey](./index.md) individual response
 data should have received SFTP credentials for a private server where the data
-are stored. To connect to the server, see the [server access
-documentation](server-access.md). This documentation describes the survey data
-available on that server.
+are stored. To connect to the server, see the [server access documentation](server-access.md).
+This documentation describes the survey data available on that server.
 
 You must sign a Data Use Agreement with Facebook and with CMU to gain
 access to the individual survey responses. If you have not done so, aggregate data is available

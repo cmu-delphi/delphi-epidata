@@ -4,6 +4,8 @@ parent: COVID Symptom Survey
 nav_order: 4
 ---
 
+# SFTP Server Access
+
 Researchers with data use agreements to access the raw data from the COVID-19
 symptom survey can access the data over SFTP. (If you do not have a data use
 agreement, see the [main survey page](index.md) for information about getting
@@ -13,7 +15,8 @@ If you're not familiar with SFTP, it is a protocol for accessing and downloading
 large amounts of data from remote servers. The instructions below explain how to
 connect to our SFTP server on Windows or Mac. (Linux users can use the
 command-line `sftp` program, or most file managers can browse directly to
-`sftp://fb-survey-results@ftp.delphi.cmu.edu:2222`.)
+`sftp://@ftp.delphi.cmu.edu:2222` using the username and password provided to
+you.)
 
 ## Windows
 
@@ -35,9 +38,8 @@ prefer.)
    ![Screenshot of WinSCP's credentials and login screen.](screenshots/winscp-small2.png)
 
 4. You should then have access to the CSV files of individual responses from CMU
-   Delphi COVID Survey of Facebook users. See our [response files
-   documentation](survey-files.md) for information on how these files are
-   formatted.
+   Delphi COVID Survey of Facebook users. See our [response files documentation](survey-files.md)
+   for information on how these files are formatted.
 
 ## MacOS
 
@@ -49,11 +51,11 @@ prefer.)
     ![Screenshot of Cyberduck's opening screen.](screenshots/cyberduck-1.png)
 
 2. Select SFTP (SSH File Transfer Protocol) and input the credentials given to
-   you in the “CMU Delphi COVID Survey Data Access” email.
+   you (server, user, password, and port) in the “CMU Delphi COVID Survey Data
+   Access” email.
 
     ![Screenshot of Cyberduck's screen to enter credentials.](screenshots/cyberduck-2.png)
 
 3. You should then have access to the CSV files of individual responses from CMU
-   Delphi COVID Survey of Facebook users. See our [response files
-   documentation](survey-files.md) for information on how these files are
-   formatted.
+   Delphi COVID Survey of Facebook users. See our [response files documentation](survey-files.md)
+   for information on how these files are formatted.
