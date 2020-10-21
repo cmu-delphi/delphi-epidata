@@ -11,7 +11,7 @@ symptom survey can access the data over SFTP. (If you do not have a data use
 agreement, see the [main survey page](index.md) for information about getting
 access.)
 
-If you're not familiar with SFTP, it is a protocol for accessing and downloading
+If you're not familiar with SFTP, it is a protocol for securely accessing and downloading
 large amounts of data from remote servers. The instructions below explain how to
 connect to our SFTP server on Windows or Mac. (Linux users can use the
 command-line `sftp` program, or most file managers can browse directly to
@@ -43,7 +43,7 @@ prefer.)
 
 ## MacOS
 
-[Cyperduck](https://cyberduck.io) is a free, open source SFTP client for MacOS.
+[Cyberduck](https://cyberduck.io) is a free, open source SFTP client for MacOS.
 (Download directly from their site for free; the App Store version costs $24.)
 
 1. Once the program is installed, click “Open Connection”.
