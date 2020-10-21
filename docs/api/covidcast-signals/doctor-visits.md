@@ -51,6 +51,12 @@ States.
 
 Standard errors are not available for this data source.
 
+Due to changes in medical-seeking behavior on holidays, this data source has
+upward spikes in the fraction of doctor's visits that are COVID-related around
+major holidays (e.g. Memorial Day, July 4, Labor Day, etc.). These spikes are
+not necessarily indicative of a true increase of COVID-like illness in a
+location.
+
 ## Qualifying Conditions
 
 We receive data on the following five categories of counts:

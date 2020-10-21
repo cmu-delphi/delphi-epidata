@@ -6,11 +6,11 @@ nav_order: 4
 # Epidata API Development Guide
 
 **Prerequisite:** this guide assumes that you have read the
-[frontend development guide](https://github.com/cmu-delphi/operations/blob/master/docs/frontend_development.md).
+[frontend development guide](https://github.com/cmu-delphi/operations/blob/main/docs/frontend_development.md).
 
 This guide describes how to write and test code for the Epidata API. For
 preliminary steps,
-[install docker and create a virtual network](https://github.com/cmu-delphi/operations/blob/master/docs/frontend_development.md#setup).
+[install docker and create a virtual network](https://github.com/cmu-delphi/operations/blob/main/docs/frontend_development.md#setup).
 
 After reading this guide, you may want to visit
 [the `fluview_meta` tutorial](new_endpoint_tutorial.md) for an example of how
@@ -28,7 +28,7 @@ You likely won't need to modify the `operations` repo, so cloning directly from
 `cmu-delphi` is usually sufficient. However, since you _are_ going to be
 modifying `delphi-epidata` sources, you'll first need to fork the repository
 and then clone your personal fork. For more details, see the Delphi-specific
-[discussion on forking and branching](https://github.com/cmu-delphi/operations/blob/master/docs/backend_development.md#everyone).
+[discussion on forking and branching](https://github.com/cmu-delphi/operations/blob/main/docs/backend_development.md#everyone).
 
 Here's an example of how to setup your local workspace. Note that you will need
 to use your own GitHub username where indicated.
@@ -94,14 +94,13 @@ docker build -t delphi_database_epidata \
 
 # test
 
-At this point you're ready to bring the stack online. 
+At this point you're ready to bring the stack online.
 
 First, make sure you have the docker network set up so that the containers can
 communicate:
 
 ```
 docker network create --driver bridge delphi-net
-
 ```
 
 Next, start containers for the epidata-specific web and database images. As an aside, the
@@ -122,25 +121,27 @@ docker run --rm -p 127.0.0.1:10080:80 \
 
 ## unit tests
 
-Once the server containers are running, you can run unit tests.
+Unit tests are self-contained, and do not depend on external services like
+databases or web servers. You can run unit tests at any time according to the
+instructions in the
+[backend development guide](https://github.com/cmu-delphi/operations/blob/main/docs/backend_development.md).
 
-First, build the `delphi_python` image per the
-  [backend development guide](https://github.com/cmu-delphi/operations/blob/master/docs/backend_development.md#creating-an-image).
-  Your test sources will live in, and be executed from within, this image.
+First, [build the `delphi_python` image](https://github.com/cmu-delphi/operations/blob/main/docs/backend_development.md#creating-an-image).
+Your test sources will live in, and be executed from within, this image.
 
-Then run the test container:
+Then run the tests in a container based on that image:
 
-  ```bash
-  docker run --rm --network delphi-net delphi_python \
-  python3 -m undefx.py3tester.py3tester \
-  repos/delphi/delphi-epidata/tests
-  ```
-  
-  The final line of output should be similar to the following:
-  
-  ```
-  All 48 tests passed! 68% (490/711) coverage.
-  ```
+```bash
+docker run --rm delphi_python \
+  python3 -m undefx.py3tester.py3tester --color \
+    repos/delphi/delphi-epidata/tests
+```
+
+The final line of output should be similar to the following:
+
+```
+All 48 tests passed! 68% (490/711) coverage.
+```
 
 ## manual tests
 
@@ -241,7 +242,7 @@ point for additional tests. For example, see the tests for the
 
 To run the existing tests and any new tests that you write, you must
 follow the
-[backend development guide](https://github.com/cmu-delphi/operations/blob/master/docs/backend_development.md)
+[backend development guide](https://github.com/cmu-delphi/operations/blob/main/docs/backend_development.md)
 _within the same workspace_, so that the `delphi_python` image is created with
 any changes you have made (e.g. adding new integration tests). That image will
 contain the test driver and the source code of your integration tests. Then,
@@ -258,7 +259,7 @@ More concretely, you can run Epidata API integration tests like this:
   above.
 
 3. Build the `delphi_python` image per the
-  [backend development guide](https://github.com/cmu-delphi/operations/blob/master/docs/backend_development.md#creating-an-image).
+  [backend development guide](https://github.com/cmu-delphi/operations/blob/main/docs/backend_development.md#creating-an-image).
   Your test sources will live in, and be executed from within, this image.
 
 4. Run integration tests in a container based on the `delphi_python` image:
@@ -284,3 +285,78 @@ More concretely, you can run Epidata API integration tests like this:
   ```
 
 5. Bring down the servers, for example with the `docker stop` command.
+
+# rapid iteration
+
+The workflow described above requires containers to be stopped, rebuilt, and
+restarted each time code (including tests) is changed, which can be tedious. To
+reduce friction, it's possible to
+[bind-mount](https://docs.docker.com/storage/bind-mounts/) your local source
+files into a container, which replace the corresponding files from the image.
+This allows your code changes to be reflected immediately, without needing to
+rebuild containers.
+
+There are some drawbacks however, as discussed in the
+[Epicast development guide](https://github.com/cmu-delphi/www-epicast/blob/main/docs/epicast_development.md#develop).
+For example:
+
+- Code running in the container is able to read (and possibly also write) your local filesystem.
+- The command line specification of bind-mounts is quite tedious.
+- Bind mounts do not interact well with `selinux` on some systems, leading to
+various access denials at runtime. As a workaround, you may have to use the
+[dangerous "Z" flag](https://docs.docker.com/storage/bind-mounts/#configure-the-selinux-label),
+or temporarily disable `selinux` -- neither of which is advised.
+
+## bind-mounting
+
+### non-server code
+
+Python sources (e.g. data acquisition, API clients, and tests), can be
+bind-mounted into a `delphi_python` container as follows:
+
+```bash
+docker run --rm --network delphi-net \
+  --mount type=bind,source="$(pwd)"/repos/delphi/delphi-epidata,target=/usr/src/app/repos/delphi/delphi-epidata,readonly \
+  --mount type=bind,source="$(pwd)"/repos/delphi/delphi-epidata/src,target=/usr/src/app/delphi/epidata,readonly \
+  delphi_python \
+python3 -m undefx.py3tester.py3tester --color \
+  repos/delphi/delphi-epidata/integrations
+```
+
+The command above maps two local directories into the container:
+
+- `/repos/delphi/delphi-epidata`: The entire repo, notably including unit and
+  integration test sources.
+- `/repos/delphi/delphi-epidata/src`: Just the source code, which forms the
+  container's `delphi.epidata` python package.
+
+### server code
+
+Local web sources (e.g. PHP files) can be bind-mounted into a
+`delphi_web_epidata` container as follows:
+
+```bash
+docker run --rm -p 127.0.0.1:10080:80 \
+  --mount type=bind,source="$(pwd)"/repos/delphi/delphi-epidata/src/server/api.php,target=/var/www/html/epidata/api.php,readonly \
+  --mount type=bind,source="$(pwd)"/repos/delphi/delphi-epidata/src/server/api_helpers.php,target=/var/www/html/epidata/api_helpers.php,readonly \
+  --network delphi-net --name delphi_web_epidata \
+  delphi_web_epidata
+```
+
+The command above mounts two specific files into the image. It may be tempting
+to bind mount the `src/server` directory rather than specific files, however
+that is currently problematic for a couple of reasons:
+
+1. `server/.htaccess` [from the local repository](../src/server/.htaccess) uses
+  the `Header` directive, however the web server in the container doesn't have
+  the corresponding module enabled. This causes the server to deny access to
+  the API.
+2. `server/database_config.php`
+  [in the image](../dev/docker/web/epidata/assets/database_config.php) contains
+  database credentials for use in conjunction with the
+  `delphi_database_epidata` container during development. However, the same
+  file from [the local repository](../src/server/database_config.php) only
+  contains placeholder values. This prevents communication with the database.
+
+There is currently no benefit to bind-mounting sources into the database
+container because schema changes require restarting the container anyway.
