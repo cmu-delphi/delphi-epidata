@@ -118,8 +118,8 @@ The current set of signals available for each data source is returned by the
 
 Estimates for a specific `time_value` and `geo_value` are sometimes updated
 after they are first published. Many of our data sources issue corrections or
-backfill estimates as data arrives; see the [documentation for each
-source](covidcast_signals.md) for details.
+backfill estimates as data arrives; see the [documentation for each source](covidcast_signals.md)
+for details.
 
 The default API behavior is to return the most recently issued value for each
 `time_value` selected.
