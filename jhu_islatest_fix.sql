@@ -1,5 +1,5 @@
 
-DROP TEMPORARY TABLE `jhu_islatest_fix`;
+-- DROP TEMPORARY TABLE `jhu_islatest_fix`;
 CREATE TEMPORARY TABLE `jhu_islatest_fix` (`latest_id` INT(11) NOT NULL, PRIMARY KEY (`latest_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -1938,5 +1938,7 @@ UPDATE `covidcast` SET `is_latest_issue`=0  WHERE `source`='jhu-csse' AND `time_
 UPDATE `covidcast` SET `is_latest_issue`=0  WHERE `source`='jhu-csse' AND `time_type`='day' AND `geo_type`='state' AND `signal`='deaths_cumulative_prop' AND (`time_value` >= 20201001) AND (TRUE);
 UPDATE `covidcast` SET `is_latest_issue`=0  WHERE `source`='jhu-csse' AND `time_type`='day' AND `geo_type`='state' AND `signal`='deaths_incidence_num' AND (`time_value` >= 20201001) AND (TRUE);
 UPDATE `covidcast` SET `is_latest_issue`=0  WHERE `source`='jhu-csse' AND `time_type`='day' AND `geo_type`='state' AND `signal`='deaths_incidence_prop' AND (`time_value` >= 20201001) AND (TRUE);
+
 UPDATE (SELECT `latest_id` FROM `jhu_islatest_fix`) xxx LEFT JOIN `covidcast` ON `xxx`.`latest_id`=`covidcast`.`id` SET `covidcast`.`is_latest_issue`=1;
-DROP TEMPORARY TABLE `jhu_islatest_fix`;
+
+-- DROP TEMPORARY TABLE `jhu_islatest_fix`;
