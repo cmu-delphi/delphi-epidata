@@ -18,7 +18,10 @@ pandemic and powers the [COVIDcast project](https://covidcast.cmu.edu/).
 Our other, non-COVID data sources remain generally available on a best-effort
 basis. However, non-COVID sources should be held to scrutiny at this time since
 they were designed to serve as indicators of typical seasonal ILI
-(influenza-like illness), not pandemic ILI or CLI (covid-like illness).
+(influenza-like illness), not pandemic ILI or CLI (COVID-like illness).
+
+For a high-level introduction to the COVIDcast API, see our recent
+[blog post](https://delphi.cmu.edu/blog/2020/10/07/accessing-open-covid-19-data-via-the-covidcast-epidata-api/).
 
 # Contributing
 
