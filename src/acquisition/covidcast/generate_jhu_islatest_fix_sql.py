@@ -25,8 +25,8 @@ for partition_index in range(len(PARTITION_SPLITS)+1):
   partition_condition = f'({ge_condition}) AND ({l_condition})'
 
   for sig in signals:
-    where_clause = "WHERE `source`='jhu-csse' AND `time_type`='day' AND `geo_type`='state' AND `signal`='%s' AND %s"  % (sig, partition_condition)
-    ### where_clause = "WHERE `source`='src2' AND `time_type`='day' AND `geo_type`='msa' AND `signal`='%s' AND %s"  % (sig, partition_condition) ###
+    where_clause = "WHERE `source`='jhu-csse' AND `time_type`='day' AND `signal`='%s' AND %s"  % (sig, partition_condition)
+    ### where_clause = "WHERE `source`='src2' AND `time_type`='day' AND `signal`='%s' AND %s"  % (sig, partition_condition) ###
 
     print('''
 INSERT INTO `jhu_islatest_fix`
