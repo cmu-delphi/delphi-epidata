@@ -18,8 +18,8 @@ grand_parent: COVIDcast API
 ## COVID-19 Tests
 
 * **First issued:** 27 July 2020 
-* **Number of data revisions since 19 May 2020:** 0
-* **Date of last change:** Never
+* **Number of data revisions since 19 May 2020:** 1
+* **Date of last change:** 22 October 2020
 * **Available for:** hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 
 Data source based on COVID-19 Antigen tests, provided to us by Quidel, Inc. When
