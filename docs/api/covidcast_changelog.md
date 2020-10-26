@@ -43,7 +43,11 @@ Duplicate survey weights had corrupted historical figures for the following sign
 
 ### `google-survey`
 ### `ght`
-### `quidel`
+
+### `hospital-admissions`
+#### 20 October 2020
+We went from a custom (using a zip->(county, msa, hrr, state)) to a central geo file based on rigorously sourced US census data.
+
 ### `jhu-csse`
 
 #### 3 June 2020
@@ -76,6 +80,11 @@ Standard errors are now included in the `nmf_day_doc_fbc_fbs_ght` signal for all
 #### 12 October 2020
 
 The 10 October 2020 issue of all `indicator-combination` deaths signals has been removed from the API. These signals are primarily constructed of USAFacts data, whose 10 October 2020 issue was discovered to be corrupt on 11 October and repaired on 12 October. Subsequent issues have adequate coverage of all regions and dates which were included in the 10 October issue, so this change only affects forecasters which intend to pull training data with an `as_of` or `issues` parameter set to 20201010.
+
+### `quidel`
+
+#### 22 October 2020
+We went from a custom (using a zip->(county, msa, hrr, state)) to a central geo file based on rigorously sourced US census data.
 
 ### `usa-facts`
 
