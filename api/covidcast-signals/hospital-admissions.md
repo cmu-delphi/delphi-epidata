@@ -9,8 +9,8 @@ grand_parent: COVIDcast API
 
 * **Source name:** `hospital-admissions`
 * **First issued:** June 30, 2020
-* **Number of data revisions since 19 May 2020:** 0
-* **Date of last change:** Never
+* **Number of data revisions since 19 May 2020:** 1
+* **Date of last change:** 20 October 2020
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 
 This data source is based on electronic medical records and claims data about
