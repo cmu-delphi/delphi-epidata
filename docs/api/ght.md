@@ -1,6 +1,6 @@
 ---
 title: Google Health Trends
-parent: Delphi Epidata API
+parent: Epidata API (Other Epidemics)
 ---
 
 # Google Health Trends

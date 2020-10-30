@@ -1,6 +1,6 @@
 ---
 title: Metadata
-parent: COVIDcast API
+parent: COVIDcast Epidata API
 nav_order: 5
 ---
 

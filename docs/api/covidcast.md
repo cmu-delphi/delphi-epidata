@@ -1,10 +1,10 @@
 ---
-title: COVIDcast API
+title: COVIDcast Epidata API
 has_children: true
 nav_order: 1
 ---
 
-# Delphi's COVIDcast API
+# COVIDcast Epidata API
 
 This is the documentation for accessing the Delphi's COVID-19 Surveillance
 Streams (`covidcast`) endpoint of [Delphi](https://delphi.cmu.edu/)'s

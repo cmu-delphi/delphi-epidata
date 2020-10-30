@@ -1,6 +1,6 @@
 ---
 title: Flusurv
-parent: Delphi Epidata API
+parent: Epidata API (Other Epidemics)
 ---
 
 # FluSurv
