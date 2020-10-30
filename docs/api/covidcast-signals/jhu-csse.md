@@ -1,7 +1,7 @@
 ---
 title: JHU Cases and Deaths
 parent: Data Sources and Signals
-grand_parent: COVIDcast API
+grand_parent: COVIDcast Epidata API
 ---
 
 # JHU Cases and Deaths

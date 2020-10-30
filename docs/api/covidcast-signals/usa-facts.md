@@ -1,7 +1,7 @@
 ---
 title: USAFacts Cases and Deaths
 parent: Data Sources and Signals
-grand_parent: COVIDcast API
+grand_parent: COVIDcast Epidata API
 ---
 
 # USAFacts Cases and Deaths

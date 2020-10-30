@@ -1,7 +1,7 @@
 ---
 title: Symptom Surveys
 parent: Data Sources and Signals
-grand_parent: COVIDcast API
+grand_parent: COVIDcast Epidata API
 ---
 
 # Symptom Surveys
