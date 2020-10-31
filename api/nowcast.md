@@ -1,6 +1,6 @@
 ---
 title: ILI Nearby Nowcast
-parent: Delphi Epidata API
+parent: Epidata API (Other Epidemics)
 ---
 
 # ILI Nearby Nowcast

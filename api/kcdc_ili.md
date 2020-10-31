@@ -1,6 +1,6 @@
 ---
 title: KCDC ILI
-parent: Delphi Epidata API
+parent: Epidata API (Other Epidemics)
 ---
 
 # KCDC ILI

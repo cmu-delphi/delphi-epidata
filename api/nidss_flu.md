@@ -1,6 +1,6 @@
 ---
 title: NIDSS Flu
-parent: Delphi Epidata API
+parent: Epidata API (Other Epidemics)
 ---
 
 # NIDSS Flu
