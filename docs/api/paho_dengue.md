@@ -1,6 +1,6 @@
 ---
 title: PAHO Dengue
-parent: Delphi Epidata API
+parent: Epidata API (Other Epidemics)
 ---
 
 # PAHO Dengue

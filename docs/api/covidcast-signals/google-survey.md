@@ -1,7 +1,7 @@
 ---
 title: Google Symptom Surveys
 parent: Inactive Signals
-grand_parent: COVIDcast API
+grand_parent: COVIDcast Epidata API
 ---
 
 # Google Symptom Surveys

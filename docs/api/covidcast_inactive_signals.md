@@ -1,6 +1,6 @@
 ---
 title: Inactive Signals
-parent: COVIDcast API
+parent: COVIDcast Epidata API
 has_children: true
 nav_order: 6
 ---

@@ -1,5 +1,5 @@
 ---
-title: Delphi Epidata API
+title: Epidata API (Other Epidemics)
 nav_order: 3
 has_children: true
 ---
@@ -7,7 +7,8 @@ has_children: true
 # Delphi Epidata API
 
 This is the home of [Delphi](https://delphi.cmu.edu/)'s epidemiological data
-API.
+API for tracking epidemics such as influenza, dengue, and norovirus. Note that
+our work on COVID-19 is available in the [COVIDcast Epidata API documentation](covidcast.md).
 
 ## Contributing
 

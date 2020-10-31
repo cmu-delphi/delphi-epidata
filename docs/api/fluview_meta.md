@@ -1,6 +1,6 @@
 ---
 title: FluView metadata
-parent: Delphi Epidata API
+parent: Epidata API (Other Epidemics)
 ---
 
 # FluView metadata

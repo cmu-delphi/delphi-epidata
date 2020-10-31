@@ -1,6 +1,6 @@
 ---
 title: AFHSB Metadata
-parent: Delphi Epidata API
+parent: Epidata API (Other Epidemics)
 ---
 
 # AFHSB Metadata

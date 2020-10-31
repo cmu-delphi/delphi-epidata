@@ -1,6 +1,6 @@
 ---
 title: Signal Changelog
-parent: COVIDcast API
+parent: COVIDcast Epidata API
 nav_order: 3
 ---
 
