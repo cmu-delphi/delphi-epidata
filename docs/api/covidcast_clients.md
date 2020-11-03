@@ -1,6 +1,6 @@
 ---
 title: API Clients
-parent: COVIDcast API
+parent: COVIDcast Epidata API
 nav_order: 1
 ---
 

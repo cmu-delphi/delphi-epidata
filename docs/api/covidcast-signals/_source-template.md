@@ -1,7 +1,7 @@
 ---
 title: SOURCE NAME
 parent: Data Sources and Signals
-grand_parent: COVIDcast API
+grand_parent: COVIDcast Epidata API
 ---
 
 # SOURCE NAME

@@ -1,6 +1,6 @@
 ---
 title: Data Sources and Signals
-parent: COVIDcast API
+parent: COVIDcast Epidata API
 nav_order: 2
 has_children: true
 ---

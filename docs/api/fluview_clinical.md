@@ -1,6 +1,6 @@
 ---
 title: FluView Clinical
-parent: Delphi Epidata API
+parent: Epidata API (Other Epidemics)
 ---
 
 # FluView Clinical

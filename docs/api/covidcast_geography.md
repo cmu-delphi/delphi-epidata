@@ -1,6 +1,6 @@
 ---
 title: Geographic Coding
-parent: COVIDcast API
+parent: COVIDcast Epidata API
 nav_order: 4
 ---
 

@@ -11,12 +11,28 @@ import delphi.operations.secrets as secrets
 
 
 # partition configuration
-PARTITION_VARIABLE = 'geo_value'
-PARTITION_SPLITS = ["'05101'", "'101'", "'13071'", "'15007'", "'17161'", "'19039'", "'20123'", "'21213'", "'24035'",
-                    "'27005'", "'28115'", "'29510'", "'31161'", "'35100'", "'37117'", "'39081'", "'41013'", "'44140'",
-                    "'47027'", "'48140'", "'48461'", "'51169'", "'55033'"]
+###PARTITION_VARIABLE = 'geo_value'
+###PARTITION_SPLITS = ["'05101'", "'101'", "'13071'", "'15007'", "'17161'", "'19039'", "'20123'", "'21213'", "'24035'",
+###                    "'27005'", "'28115'", "'29510'", "'31161'", "'35100'", "'37117'", "'39081'", "'41013'", "'44140'",
+###                    "'47027'", "'48140'", "'48461'", "'51169'", "'55033'"]
 
-def main():
+PARTITION_VARIABLE = 'time_value'
+PARTITION_SPLITS = [20200201 + i*100 for i in range(9)] # dates for the first of the month from feb - oct 2020
+
+if sorted(PARTITION_SPLITS) != PARTITION_SPLITS:
+  raise Exception('PARTITION_SPLITS not properly ordered!')
+
+# filtering configuration
+_FILTER_CONDITION = "TRUE" # this would indicate no filtering should be done
+_FILTER_CONDITION = (
+  "`time_type` = 'day'" # TODO: do we not care about issues on week-type data?
+  " AND `source` = 'jhu-csse'" # for fixing is_latest on JHU data
+)
+
+_CLEAR_LATEST_BY_PARTITION = True
+
+
+def main(*, CLEAR_LATEST_BY_PARTITION=_CLEAR_LATEST_BY_PARTITION, FILTER_CONDITION=_FILTER_CONDITION):
 
   u, p = secrets.db.epi
   connection = mysql.connector.connect(
@@ -26,7 +42,7 @@ def main():
     database='epidata')
   cursor = connection.cursor()
 
-  set_partition_to_one_query = '''
+  set_latest_query = '''
     UPDATE
     (
       SELECT
@@ -39,7 +55,6 @@ def main():
         MAX(`issue`) AS `issue`
       FROM `covidcast`
       WHERE
-        `time_type` = 'day' AND
         %s
       GROUP BY
         `source`,
@@ -54,27 +69,32 @@ def main():
     SET `is_latest_issue`=1
     '''
 
-  set_to_zero_query = '''
+  clear_latest_query = '''
     UPDATE `covidcast`
-    SET `is_latest_issue` = 0;
+    SET `is_latest_issue` = 0
+    WHERE %s;
   '''
 
   commit = False
   try:
-    cursor.execute(set_to_zero_query)
-    for partition_index in range(24):
-      # constructing the partitoin condition from partition index
+    if not CLEAR_LATEST_BY_PARTITION:
+      cursor.execute(clear_latest_query % FILTER_CONDITION)
+    for partition_index in range(len(PARTITION_SPLITS)+1):
+      # constructing the partition condition from partition index
       ge_condition = 'TRUE' if partition_index == 0 else \
       f'`{PARTITION_VARIABLE}` >= {PARTITION_SPLITS[partition_index - 1]}'
       l_condition = 'TRUE' if partition_index == len(PARTITION_SPLITS) else \
         f'`{PARTITION_VARIABLE}` < {PARTITION_SPLITS[partition_index]}'
-      partition_condition = f'({ge_condition}) AND ({l_condition})'
+      partition_condition = f'({FILTER_CONDITION}) AND ({ge_condition}) AND ({l_condition})'
 
-      cursor.execute(set_partition_to_one_query % partition_condition)
+      if CLEAR_LATEST_BY_PARTITION:
+        cursor.execute(clear_latest_query % partition_condition)
+      cursor.execute(set_latest_query % partition_condition)
 
       commit = True
   except Exception as e:
     connection.rollback()
+    print("exception raised at partition %s (partition index #%s) of column `%s`" % (PARTITION_SPLITS[partition_index], partition_index, PARTITION_VARIABLE))
     raise e
   finally:
     cursor.close()

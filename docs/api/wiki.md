@@ -1,6 +1,6 @@
 ---
 title: Wikipedia Access
-parent: Delphi Epidata API
+parent: Epidata API (Other Epidemics)
 ---
 
 # Wikipedia Access
