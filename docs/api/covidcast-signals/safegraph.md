@@ -8,8 +8,8 @@ grand_parent: COVIDcast Epidata API
 
 * **Source name:** `safegraph`
 * **First issued:** 23 June 2020
-* **Number of data revisions since 23 June 2020:** 0
-* **Date of last change:** never
+* **Number of data revisions since 23 June 2020:** 1
+* **Date of last change:** 3 November 2020
 * **Available for:** county, state (see [geography coding docs](../covidcast_geography.md))
 
 This data source uses data reported by [SafeGraph](https://www.safegraph.com/)
