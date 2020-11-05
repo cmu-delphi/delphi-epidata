@@ -88,6 +88,9 @@ We went from a custom (using a zip->(county, msa, hrr, state)) to a central geo 
 
 ### `usa-facts`
 
+#### 3 November 2020
+We went from a custom geo mapping file (for aggregating from zip->(county, msa, hrr, state)) to a central geo file based on rigorously sourced US census data.
+
 #### 12 October 2020
 
 The 10 October 2020 issue of all `usa-facts` deaths signals has been removed from the API. The file for deaths provided by USAFacts on 10 October included cases data instead. The resulting spurious 100× increase in magnitude of COVIDcast `usa-facts` deaths signals was noticed on 11 October and repaired on 12 October. Subsequent issues have adequate coverage of all regions and dates that were included in the 10 October issue, so this change only affects forecasters that intend to pull training data with an `as_of` or `issues` parameter set to 20201010.

@@ -8,8 +8,8 @@ grand_parent: COVIDcast API
 {: .no_toc}
 
 * **Source name:** `usa-facts`
-* **Number of data revisions since 19 May 2020:** 1
-* **Date of last change:** [12 October 2020](../covidcast_changelog.md#usa-facts)
+* **Number of data revisions since 19 May 2020:** 2
+* **Date of last change:** [3 November 2020](../covidcast_changelog.md#usa-facts)
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 
 This data source of confirmed COVID-19 cases and deaths is based on reports made
