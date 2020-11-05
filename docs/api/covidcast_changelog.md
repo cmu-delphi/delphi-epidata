@@ -86,6 +86,11 @@ The 10 October 2020 issue of all `indicator-combination` deaths signals has been
 #### 22 October 2020
 We went from a custom geo mapping file (for aggregating from zip->(county, msa, hrr, state)) to a central geo file based on rigorously sourced US census data.
 
+### `safegraph`
+
+#### 3 November 2020
+We went from a custom geo mapping file (for aggregating from county->state) to a central geo file based on rigorously sourced US census data.
+
 ### `usa-facts`
 
 #### 12 October 2020
