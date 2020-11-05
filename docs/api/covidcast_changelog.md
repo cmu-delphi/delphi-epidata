@@ -89,7 +89,7 @@ We went from a custom (using a zip->(county, msa, hrr, state)) to a central geo 
 ### `usa-facts`
 
 #### 3 November 2020
-We went from a custom geo mapping file (for aggregating from zip->(county, msa, hrr, state)) to a central geo file based on rigorously sourced US census data.
+We went from a custom geo mapping file (for aggregating from county->(msa, hrr, state)) to a central geo file based on rigorously sourced US census data.
 
 #### 12 October 2020
 
