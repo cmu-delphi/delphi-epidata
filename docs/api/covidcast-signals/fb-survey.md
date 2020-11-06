@@ -77,14 +77,14 @@ influenza-like illness (fever, along with cough or sore throat). Using this
 survey data, we estimate the percentage of people who have a COVID-like illness,
 or influenza-like illness, in a given location, on a given day.
 
-| Signal | Description |
+| Signals | Description |
 | --- | --- |
-| `raw_cli` | Estimated percentage of people with COVID-like illness based on the [criteria below](#ili-and-cli-indicators), with no smoothing or survey weighting |
-| `raw_ili` | Estimated percentage of people with influenza-like illness based on the [criteria below](#ili-and-cli-indicators), with no smoothing or survey weighting |
-| `raw_wcli` | Estimated percentage of people with COVID-like illness; adjusted using survey weights [as described below](#survey-weighting) |
-| `raw_wili` | Estimated percentage of people with influenza-like illness; adjusted using survey weights [as described below](#survey-weighting) |
-| `raw_hh_cmnty_cli` | Estimated percentage of people reporting illness in their local community, as [described below](#estimating-community-cli), including their household, with no smoothing or survey weighting |
-| `raw_nohh_cmnty_cli` | Estimated percentage of people reporting illness in their local community, as [described below](#estimating-community-cli), not including their household, with no smoothing or survey weighting |
+| `raw_cli` and `smoothed_cli` | Estimated percentage of people with COVID-like illness based on the [criteria below](#ili-and-cli-indicators), with no survey weighting |
+| `raw_ili` and `smoothed_ili` | Estimated percentage of people with influenza-like illness based on the [criteria below](#ili-and-cli-indicators), with no survey weighting |
+| `raw_wcli` and `smoothed_wcli` | Estimated percentage of people with COVID-like illness; adjusted using survey weights [as described below](#survey-weighting) |
+| `raw_wili` and `smoothed_wili` | Estimated percentage of people with influenza-like illness; adjusted using survey weights [as described below](#survey-weighting) |
+| `raw_hh_cmnty_cli` and `smoothed_hh_cmnty_cli` | Estimated percentage of people reporting illness in their local community, as [described below](#estimating-community-cli), including their household, with no survey weighting |
+| `raw_nohh_cmnty_cli` and `smoothed_nohh_cmnty_cli` | Estimated percentage of people reporting illness in their local community, as [described below](#estimating-community-cli), not including their household, with no survey weighting |
 
 Note that for `raw_hh_cmnty_cli` and `raw_nohh_cmnty_cli`, the illnesses
 included are broader: a respondent is included if they know someone in their
@@ -108,10 +108,9 @@ can be asymptomatic. Instead, we expect these indicators to be useful for
 comparison across the United States and across time, to determine where symptoms
 appear to be increasing.
 
-**Smoothing.** For the `raw_` signals above, there are additional signals with
-names beginning with `smoothed_`. These estimate the same quantities as the
-above signals, but are smoothed in time to reduce day-to-day sampling noise; see
-[details below](#smoothing). Crucially, because the smoothed signals combine
+The signals beginning with `smoothed_` estimate the same quantities as their
+`raw` partners, but are smoothed in time to reduce day-to-day sampling noise;
+see [details below](#smoothing). Crucially, because the smoothed signals combine
 information across multiple days, they have larger sample sizes and hence are
 available for more counties and MSAs than the raw signals.
 
