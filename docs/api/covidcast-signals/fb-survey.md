@@ -30,13 +30,6 @@ described in the sections below:
 3. [Testing indicators](#testing-indicators) based on respondent reporting of
    their COVID test results
 
-For most `raw_` signals below, there are additional signals with names beginning
-with `smoothed_`. These estimate the same quantities as the above signals, but
-are smoothed in time to reduce day-to-day sampling noise; see [details
-below](#smoothing). Crucially, because the smoothed signals combine information
-across multiple days, they have larger sample sizes and hence are available for
-more counties and MSAs than the raw signals.
-
 ## Table of contents
 {: .no_toc .text-delta}
 
@@ -114,6 +107,13 @@ These symptoms can be caused by many other conditions, and many true infections
 can be asymptomatic. Instead, we expect these indicators to be useful for
 comparison across the United States and across time, to determine where symptoms
 appear to be increasing.
+
+**Smoothing.** For the `raw_` signals above, there are additional signals with
+names beginning with `smoothed_`. These estimate the same quantities as the
+above signals, but are smoothed in time to reduce day-to-day sampling noise; see
+[details below](#smoothing). Crucially, because the smoothed signals combine
+information across multiple days, they have larger sample sizes and hence are
+available for more counties and MSAs than the raw signals.
 
 ### Defining Household ILI and CLI
 
@@ -268,9 +268,9 @@ problematic.
 
 ### Smoothing
 
-The smoothed versions of the signals described above (with `smoothed_` prefix)
-are calculated using seven day pooling. For example, the estimate reported for
-June 7 in a specific geographical area (such as county or MSA) is formed by
+The smoothed versions of all `fb-survey` signals (with `smoothed_` prefix) are
+calculated using seven day pooling. For example, the estimate reported for June
+7 in a specific geographical area (such as county or MSA) is formed by
 collecting all surveys completed between June 1 and 7 (inclusive) and using that
 data in the estimation procedures described above.
 
