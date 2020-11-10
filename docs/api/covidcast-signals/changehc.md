@@ -149,5 +149,4 @@ working backwards through time. The threshold is set at 100 observations.
 To help with variability, we also employ a local linear regression filter with a
 Gaussian kernel. The bandwidth is fixed to approximately cover a rolling 7 day
 window, with the highest weight placed on the right edge of the window (the most
-recent timepoint). Given this smoothing step, the standard error estimate shown
-above is not exactly correct, as the calculation is done post-smoothing.
+recent timepoint).
