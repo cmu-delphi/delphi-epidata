@@ -4,7 +4,7 @@ parent: Data Sources and Signals
 grand_parent: COVIDcast Epidata API
 ---
 
-# Doctor Visits
+# Change Healthcare
 {: .no_toc}
 
 * **Source name:** `changehc`
@@ -13,7 +13,7 @@ grand_parent: COVIDcast Epidata API
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 
 This data source is based on information about outpatient visits, provided to us
-by health system partners. Using this outpatient data, we estimate the
+by Change Healthcare. Using this outpatient data, we estimate the
 percentage of COVID-related doctor's visits in a given location, on a given day.
 
 | Signal | Description |
@@ -36,7 +36,7 @@ available several days later.
 
 The amount of lag in reporting can vary, and not all visits are reported with
 the same lag. After we first report estimates for a specific date, further data
-may arrive about outpatients visits on that date. When this occurs, we issue new
+may arrive about outpatient visits on that date. When this occurs, we issue new
 estimates for those dates. This means that a reported estimate for, say, June
 10th may first be available in the API on June 14th and subsequently revised on
 June 16th.
