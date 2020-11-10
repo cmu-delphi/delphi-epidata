@@ -12,8 +12,10 @@ grand_parent: COVIDcast Epidata API
 * **Date of last change:** Never
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 
-This data source is based on information about outpatient visits, provided to us
-by Change Healthcare. Using this outpatient data, we estimate the
+This data source is based on information about outpatient visits, provided to
+us by Change Healthcare. Change Healthcare is a healthcare technology company
+that provides us with information about outpatient visits, which they aggregate
+from many healthcare providers. Using this outpatient data, we estimate the
 percentage of COVID-related doctor's visits in a given location, on a given day.
 
 | Signal | Description |
