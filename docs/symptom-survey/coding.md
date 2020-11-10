@@ -153,8 +153,8 @@ Files:
 
 ## Wave 4
 
-Wave 4 will be deployed in early September 2020. It will be available in
-English, as well as
+Wave 4 was first deployed September 8, 2020. It is available in English, as well
+as
 
 * Simplified Chinese
 * English (UK)

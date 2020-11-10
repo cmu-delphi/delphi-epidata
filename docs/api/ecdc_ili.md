@@ -1,6 +1,6 @@
 ---
 title: ECDC ILI
-parent: Delphi Epidata API
+parent: Epidata API (Other Epidemics)
 ---
 
 # ECDC ILI

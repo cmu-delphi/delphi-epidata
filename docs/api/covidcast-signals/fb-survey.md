@@ -1,7 +1,7 @@
 ---
 title: Symptom Surveys
 parent: Data Sources and Signals
-grand_parent: COVIDcast API
+grand_parent: COVIDcast Epidata API
 ---
 
 # Symptom Surveys
@@ -12,13 +12,71 @@ grand_parent: COVIDcast API
 * **Date of last change:** [3 June 2020](../covidcast_changelog.md#fb-survey)
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 
-This data source is based on symptom surveys run by Carnegie Mellon. Facebook
-directs a random sample of its users to these surveys, which are voluntary.
-Individual survey responses are held by CMU and are sharable with other health
-researchers under a data use agreement. No individual survey responses are
-shared back to Facebook. See our [surveys
+This data source is based on symptom surveys run by the Delphi group at Carnegie
+Mellon. Facebook directs a random sample of its users to these surveys, which
+are voluntary. Individual survey responses are held by CMU and are sharable with
+other health researchers under a data use agreement. No individual survey
+responses are shared back to Facebook. See our [surveys
 page](https://covidcast.cmu.edu/surveys.html) for more detail about how the
 surveys work and how they are used outside the COVIDcast API.
+
+We produce several sets of signals based on the survey data, listed and
+described in the sections below:
+
+1. [Influenza-like and COVID-like illness indicators](#ili-and-cli-indicators),
+   based on reported symptoms
+2. [Behavior indicators](#behavior-indicators), including mask-wearing,
+   traveling, and activities outside the home
+3. [Testing indicators](#testing-indicators) based on respondent reporting of
+   their COVID test results
+
+For most `raw_` signals below, there are additional signals with names beginning
+with `smoothed_`. These estimate the same quantities as the above signals, but
+are smoothed in time to reduce day-to-day sampling noise; see [details
+below](#smoothing). Crucially, because the smoothed signals combine information
+across multiple days, they have larger sample sizes and hence are available for
+more counties and MSAs than the raw signals.
+
+## Table of contents
+{: .no_toc .text-delta}
+
+1. TOC
+{:toc}
+
+## Survey Text and Questions
+
+The survey starts with the following 5 questions:
+
+1. In the past 24 hours, have you or anyone in your household had any of the
+   following (yes/no for each):
+   - (a) Fever (100 °F or higher)
+   - (b) Sore throat
+   - (c) Cough
+   - (d) Shortness of breath
+   - (e) Difficulty breathing
+2. How many people in your household (including yourself) are sick (fever, along
+   with at least one other symptom from the above list)?
+3. How many people are there in your household in total (including yourself)?
+   *[Beginning in wave 4, this question asks respondents to break the number
+   down into three age categories.]*
+4. What is your current ZIP code?
+5. How many additional people in your local community that you know personally
+   are sick (fever, along with at least one other symptom from the above list)?
+
+Beyond these 5 questions, there are also many other questions that follow in the
+survey, which go into more detail on symptoms, contacts, risk factors, and
+demographics. These are used for many of our behavior and testing indicators
+below. The full text of the survey (including all deployed versions) can be
+found on our [questions and coding page](../../symptom-survey/coding.md).
+Researchers can [request
+access](https://dataforgood.fb.com/docs/covid-19-symptom-survey-request-for-data-access/)
+to (fully de-identified) individual survey responses for research purposes.
+
+As of mid-August 2020, the average number of Facebook survey responses we
+receive each day is about 74,000, and the total number of survey responses we
+have received is over 9 million.
+
+## ILI and CLI Indicators
 
 Of primary interest for the API are the symptoms defining a COVID-like illness
 (fever, along with cough, or shortness of breath, or difficulty breathing) or
@@ -40,54 +98,6 @@ included are broader: a respondent is included if they know someone in their
 household (for `raw_hh_cmnty_cli`) or community with fever, along with sore
 throat, cough, shortness of breath, or difficulty breathing. This does not
 attempt to distinguish between COVID-like and influenza-like illness.
-
-Along with the `raw_` signals, there are additional signals with names beginning
-with `smoothed_`. These estimate the same quantities as the above signals, but
-are smoothed in time to reduce day-to-day sampling noise; see [details
-below](#smoothing). Crucially, because the smoothed signals combine information
-across multiple days, they have larger sample sizes and hence are available for
-more counties and MSAs than the raw signals.
-
-## Table of contents
-{: .no_toc .text-delta}
-
-1. TOC
-{:toc}
-
-## Survey Questions
-
-The survey starts with the following 5 questions:
-
-1. In the past 24 hours, have you or anyone in your household had any of the
-   following (yes/no for each):
-   - (a) Fever (100 °F or higher)
-   - (b) Sore throat
-   - (c) Cough
-   - (d) Shortness of breath
-   - (e) Difficulty breathing
-2. How many people in your household (including yourself) are sick (fever, along
-   with at least one other symptom from the above list)?
-3. How many people are there in your household in total (including yourself)?
-4. What is your current ZIP code?
-5. How many additional people in your local community that you know personally
-   are sick (fever, along with at least one other symptom from the above list)?
-
-Beyond these 5 questions, there are also many other questions that follow in the
-survey, which go into more detail on symptoms, contacts, risk factors, and
-demographics. These are surely of great interest as well, but we have not fully
-tapped into this wealth of information yet.  We should be able to produce
-indicators from these questions soon.  The full text of the survey (including
-the text from each previous survey version) can be found on our
-[questions and coding page](../../symptom-survey/coding.md).
-Researchers can
-[request access](https://dataforgood.fb.com/docs/covid-19-symptom-survey-request-for-data-access/)
-to (fully de-identified) individual survey responses for research purposes.
-
-As of mid-August 2020, the average number of Facebook survey responses we
-receive each day is about 74,000, and the total number of survey responses we
-have received is over 9 million.
-
-## ILI and CLI Indicators
 
 Influenza-like illness or ILI is a standard indicator, and is defined by the CDC
 as: fever along with sore throat or cough. From the list of symptoms from Q1 on
@@ -265,31 +275,59 @@ collecting all surveys completed between June 1 and 7 (inclusive) and using that
 data in the estimation procedures described above.
 
 
+## Behavior Indicators
+
+| Signal | Description | Survey Item |
+| --- | --- | --- |
+| `smoothed_wearing_mask` | Estimated percentage of people who wore a mask most or all of the time while in public in the past 5 days; those not in public in the past 5 days are not counted. | C14 |
+
+These indicators are based on questions in Wave 4 of the survey, introduced on
+September 8, 2020.
+
+Weighted versions of these signals, using the [survey weighting described
+below](#survey-weighting) to be more representative of state demographics, are
+also available. These have names beginning `smoothed_w`, such as
+`smoothed_wwearing_mask`.
+
+
+## Testing Indicators
+
+| Signal | Description | Survey Item |
+| --- | --- | --- |
+| `smoothed_tested_14d` | Estimated percentage of people who were tested for COVID-19 in the past 14 days, regardless of their test result | B8, B10 |
+| `smoothed_tested_positive_14d` | Estimated test positivity rate (percent) among people tested for COVID-19 in the past 14 days | B10a |
+| `smoothed_wanted_test_14d` | Estimated percentage of people who *wanted* to be tested for COVID-19 in the past 14 days, out of people who were *not* tested in that time | B12 |
+
+These indicators are based on questions in Wave 4 of the survey, introduced on
+September 8, 2020.
+
+Weighted versions of these signals, using the [survey weighting described
+below](#survey-weighting) to be more representative of state demographics, are
+also available. These have names beginning `smoothed_w`, such as
+`smoothed_wtested_14d`.
+
+
 ## Survey Weighting
 
-Notice that the estimates defined in last two subsections actually reflect the
-percentage of inviduals with ILI and CLI, and individuals who know someone with
-CLI, with respect to the population of US Facebook users. (To be precise, the
-estimates above actually reflect the percentage inviduals with ILI and CLI, with
-respect to the population of US Facebook users *and* their households members).
-In reality, our estimates are even further skewed by the varying propensity of
-people in the population of US Facebook users to take our survey in the first
-place.
+Notice that the estimates defined in the previous sections are calculated with
+respect to the population of US Facebook users. (To be precise, the ILI and CLI
+indicators reflect the population of US Facebook users *and* their household
+members). In reality, our estimates are even further skewed by the varying
+propensity of people in the population of US Facebook users to take our survey
+in the first place.
 
 When Facebook sends a user to our survey, it generates a random ID number and
 sends this to us as well. Once the user completes the survey, we pass this ID
 number back to Facebook to confirm completion, and in return receive a
-weight---call it $$w_i$$ for user $$i$$. (To be clear, the random ID number that
-is generated is completely meaningless for any other purpose than receiving said
-weight, and does not allow us to access any information about the user's
-Facebook profile.)
+weight---call it $$w_i$$ for user $$i$$. (The random ID number is completely
+meaningless for any other purpose than receiving this weight, and does not allow
+us to access any information about the user's Facebook profile.)
 
-We can use these weights to adjust our estimates of the true ILI and CLI
-proportions so that they are representative of the US population---adjusting
-both for the differences between the US population and US Facebook users
-(according to a state-by-age-gender stratification of the US population from the
-2018 Census March Supplement) and for the propensity of a Facebook user to
-take our survey in the first  place.
+We can use these weights to adjust our estimates so that they are representative
+of the US population---adjusting both for the differences between the US
+population and US Facebook users (according to a state-by-age-gender
+stratification of the US population from the 2018 Census March Supplement) and
+for the propensity of a Facebook user to take our survey in the first place.
 
 In more detail, we receive a participation weight
 
@@ -302,6 +340,9 @@ individual with the same state-by-age-gender profile as user $$i$$ would be a
 Facebook user and take our CMU survey. The adjustment we make follows a standard
 inverse probability weighting strategy (this being a special case of importance
 sampling).
+
+Detailed documentation on how Facebook calculates these weights is available on
+our [survey weight documentation page](../../symptom-survey/weights.md).
 
 ### Adjusting Household ILI and CLI
 
@@ -386,12 +427,20 @@ to prepare the estimate. (This notion of sample size is distinct from
 "effective" sample sizes based on variance of the importance sampling estimators
 which were used above.)
 
-### Adjusting Community CLI
+### Adjusting Other Percentage Estimators
+
+The household ILI and CLI estimates are complex to weight, as shown in the
+previous subsection, because they use an estimator based on the survey
+respondent *and their household.* All other estimates reported in the API are
+simply based on percentages of respondents, such as the percentage who report
+knowing someone in their community who is sick. In this subsection we will
+describe how survey weights are used to construct weighted estimates for these
+indicators, using community CLI as an example.
 
 As before, in a given aggregation unit (for example, daily-county), let $$U_i$$
 and $$V_i$$ denote the indicators that the survey respondent knows someone in
 their community with CLI, including and not including their household,
-respectively, for survey $$i$$, out of $$m$$ surveys collected.   Also let
+respectively, for survey $$i$$, out of $$m$$ surveys collected. Also let
 $$w_i$$ be the self-normalized weight that accompanies survey $$i$$, as
 above. Then our adjusted estimates of $$a$$ and $$b$$ are: 
 

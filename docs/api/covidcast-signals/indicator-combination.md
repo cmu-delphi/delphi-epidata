@@ -1,7 +1,7 @@
 ---
 title: Indicator Combination
 parent: Data Sources and Signals
-grand_parent: COVIDcast API
+grand_parent: COVIDcast Epidata API
 ---
 
 # Indicator Combination
@@ -200,8 +200,8 @@ The resampling method for each input source is as follows:
 ## Compositional Signals: Confirmed Cases and Deaths
 
 * **First issued:** 7 July 2020
-* **Number of data revisions since 19 May 2020:** 0
-* **Date of last change:** never
+* **Number of data revisions since 19 May 2020:** 1
+* **Date of last change:** [12 October 2020](../covidcast_changelog.md#indicator-combination)
 * **Available for:** county, msa, hrr, state (see [geography coding docs](../covidcast_geography.md))
 
 These signals combine the cases and deaths data from JHU and USA Facts. This is

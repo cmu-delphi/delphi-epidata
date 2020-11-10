@@ -75,7 +75,7 @@ import argparse
 import mysql.connector
 
 # first party
-from . import flusurv
+from delphi.epidata.acquisition.flusurv import flusurv
 import delphi.operations.secrets as secrets
 from delphi.utils.epidate import EpiDate
 from delphi.utils.epiweek import delta_epiweeks
@@ -105,7 +105,8 @@ def update(issue, location_name, test_mode=False):
 
   # connect to the database
   u, p = secrets.db.epi
-  cnx = mysql.connector.connect(user=u, password=p, database='epidata')
+  cnx = mysql.connector.connect(
+      host=secrets.db.host, user=u, password=p, database='epidata')
   cur = cnx.cursor()
   rows1 = get_rows(cur)
   print('rows before: %d' % rows1)

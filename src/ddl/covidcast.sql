@@ -23,8 +23,8 @@ Data is public.
 | value                        | double      | NO   |     | NULL    |                |
 | stderr                       | double      | YES  |     | NULL    |                |
 | sample_size                  | double      | YES  |     | NULL    |                |
-| direction_updated_timestamp  | int(11)     | NO   |     | NULL    |                |
-| direction                    | int(11)     | YES  |     | NULL    |                |
+| direction_updated_timestamp  | int(11)     | NO   |     | NULL    | deprecated     |
+| direction                    | int(11)     | YES  |     | NULL    | deprecated     |
 | issue                        | int(11)     | NO   |     | NULL    |                |
 | lag                          | int(11)     | NO   |     | NULL    |                |
 | is_latest_issue              | binary(1)   | NO   |     | NULL    |                |
@@ -63,12 +63,9 @@ Data is public.
 - `sample_size` (NULL when not applicable)
   number of "data points" used in computing the statistic
 - `direction_updated_timestamp`
-  time when secondary data (e.g. `direction`) was last updated
-- `direction` (NULL when not applicable)
-  trend classifier with possible values:
-  - +1: `value` is increasing
-  -  0: `value` is steady
-  - -1: `value` is decreasing
+  (deprecated) 0
+- `direction`
+  (deprecated) NULL
 - `issue`
   the time_value of publication
 - `lag`
@@ -98,7 +95,6 @@ CREATE TABLE `covidcast` (
   `value` double NOT NULL,
   `stderr` double,
   `sample_size` double,
-  -- "secondary" values are derived from data in this table
   `direction_updated_timestamp` int(11) NOT NULL,
   `direction` int(11),
   `issue` int(11) NOT NULL,

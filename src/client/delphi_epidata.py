@@ -573,10 +573,13 @@ class Epidata:
       'signals': Epidata._list(signals),
       'time_type': time_type,
       'geo_type': geo_type,
-      'time_values': Epidata._list(time_values),
-      'geo_value': geo_value,
+      'time_values': Epidata._list(time_values)
     }
 
+    if isinstance(geo_value, (list, tuple)):
+      params['geo_values'] = ','.join(geo_value)
+    else:
+      params['geo_value'] = geo_value
     if as_of is not None:
       params['as_of'] = as_of
     if issues is not None:
