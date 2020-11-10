@@ -46,6 +46,11 @@ doing so, we make the simplifying assumption that each CBG contributes an iid
 observation to the county-level distribution. `n` also serves as the sample
 size. The same method is used for aggregation to states.
 
+Because these signals measure mobility each day, there are strong day-of-week effects:
+weekends have substantially different values than weekdays. Users interested in long-term
+trends, rather than mobility on one specific day, may prefer the `7d_avg` signals, since
+averaging over the preceding 7 days removes these day-of-week effects.
+
 ## Lag
 
 SafeGraph provides this data with a three-day lag, meaning estimates for a
