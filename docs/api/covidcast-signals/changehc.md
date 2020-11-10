@@ -80,15 +80,6 @@ $$
 \hat p_{it} = 100 \cdot  \frac{Y_{it}}{N_{it}}
 $$
 
-The estimated standard error is:
-
-$$
-\widehat{\text{se}}(\hat{p}_{it}) =  100 \sqrt{\frac{\frac{\hat{p}_{it}}{100}(1-\frac{\hat{p}_{it}}{100})}{N_{it}}}.
-$$
-
-Note the quantity above is not going to be correct for multiple reasons: smoothing/day of
-week adjustments/etc.
-
 ### Day-of-Week Adjustment
 
 The fraction of visits due to CLI is dependent on the day of the week. On
