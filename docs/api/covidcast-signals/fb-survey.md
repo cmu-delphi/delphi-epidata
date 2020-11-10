@@ -108,7 +108,7 @@ can be asymptomatic. Instead, we expect these indicators to be useful for
 comparison across the United States and across time, to determine where symptoms
 appear to be increasing.
 
-The signals beginning with `smoothed_` estimate the same quantities as their
+**Smoothing.** The signals beginning with `smoothed_` estimate the same quantities as their
 `raw` partners, but are smoothed in time to reduce day-to-day sampling noise;
 see [details below](#smoothing). Crucially, because the smoothed signals combine
 information across multiple days, they have larger sample sizes and hence are
