@@ -71,8 +71,8 @@ We receive data on the following two categories of counts:
 
 ### COVID-Like Illness
 
-For a fixed location $i$ and time $t$, let $Y_{it}$
-denote the Covid counts and let $N_{it}$ be the
+For a fixed location $$i$$ and time $$t$$, let $$Y_{it}$$
+denote the Covid counts and let $$N_{it}$$ be the
 total count of visits (the *Denominator*). Our estimate of the COVID-19
 percentage is given by
 
@@ -101,26 +101,26 @@ $$
 \end{aligned}
 $$
 
-where $Y_{it}$ is the observed doctor visits percentage of COVID-19 at time $t$,
-$\text{wd}(t) \in \{0, \dots, 6\}$ is the day-of-week of time $t$,
-$\alpha_{\text{wd}(t)}$ is the corresponding weekday correction, and
-$\phi_t$ is the corrected doctor visits percentage of COVID-19 at time $t$.
+where $$Y_{it}$$ is the observed doctor visits percentage of COVID-19 at time $$t$$,
+$$\text{wd}(t) \in \{0, \dots, 6\}$$ is the day-of-week of time $$t$$,
+$$\alpha_{\text{wd}(t)}$$ is the corresponding weekday correction, and
+$$\phi_t$$ is the corrected doctor visits percentage of COVID-19 at time $$t$$.
 
 For simplicity, we assume that the weekday parameters do not change over time or
-location. To fit the $\alpha$ parameters, we minimize the following convex
+location. To fit the $$\alpha$$ parameters, we minimize the following convex
 objective function:
 
 $$
 f(\alpha, \phi | \mu) = -\log \ell (\alpha,\phi|\mu) + \lambda ||\Delta^3 \phi||_1
 $$
 
-where $\ell$ is the Poisson likelihood and $\Delta^3 \phi$ is the third
-differences of $\phi$. For identifiability, we constrain the sum of $\alpha$
+where $$\ell$$ is the Poisson likelihood and $$\Delta^3 \phi$$ is the third
+differences of $$\phi$$. For identifiability, we constrain the sum of $$\alpha$$
 to be zero by setting Sunday's fixed effect to be the negative sum of the other
-weekdays. The penalty term encourages the $\phi$ curve to be smooth and
-produces meaningful $\alpha$ values.
+weekdays. The penalty term encourages the $$\phi$$ curve to be smooth and
+produces meaningful $$\alpha$$ values.
 
-Once we have estimated values for $\alpha$ for the Covid counts, we obtain the
+Once we have estimated values for $$\alpha$$ for the Covid counts, we obtain the
 adjusted count
 
 $$\dot{Y}_{it} = Y_{it} / \alpha_{wd(t)}.$$
@@ -131,16 +131,16 @@ above.
 ### Backwards Padding
 
 To help with the reporting delay, we perform the following simple
-correction on each location. At each time $t$, we consider the total visit
+correction on each location. At each time $$t$$, we consider the total visit
 count. If the value is less than a minimum sample threshold, we go back to the
-previous time $t-1$, and add this visit count to the previous total, again
+previous time $$t-1$$, and add this visit count to the previous total, again
 checking to see if the threshold has been met. If not, we continue to move
 backwards in time until we meet the threshold, and take the estimate at time
-$t$ to be the average over the smallest window that meets the threshold. We
+$$t$$ to be the average over the smallest window that meets the threshold. We
 enforce a hard stop to consider only the past 7 days, if we have not yet met the
 threshold during that time bin, no estimate will be produced. If, for instance,
-at time $t$, the minimum sample threshold is already met, then the estimate
-only contains data from time $t$. This is a dynamic-length moving average,
+at time $$t$$, the minimum sample threshold is already met, then the estimate
+only contains data from time $$t$$. This is a dynamic-length moving average,
 working backwards through time. The threshold is set at 100 observations.
 
 ### Smoothing
