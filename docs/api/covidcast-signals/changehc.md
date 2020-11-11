@@ -21,8 +21,8 @@ percentage of COVID-related doctor's visits in a given location, on a given day.
 
 | Signal | Description |
 | --- | --- |
-| `smoothed_cli` | Estimated percentage of outpatient doctor visits with confirmed COVID-19, based on data from Change Healthcare, smoothed in time using a Gaussian linear smoother |
-| `smoothed_adj_cli` | Same, but with systematic day-of-week effects removed; see [details below](#day-of-week-adjustment) |
+| `smoothed_covid` | Estimated percentage of outpatient doctor visits with confirmed COVID-19, based on data from Change Healthcare, smoothed in time using a Gaussian linear smoother |
+| `smoothed_adj_covid` | Same, but with systematic day-of-week effects removed; see [details below](#day-of-week-adjustment) |
 
 ## Table of contents
 {: .no_toc .text-delta}
@@ -57,8 +57,7 @@ Standard errors are not available for this data source.
 Due to changes in medical-seeking behavior on holidays, this data source has
 upward spikes in the fraction of doctor's visits that are COVID-related around
 major holidays (e.g. Memorial Day, July 4, Labor Day, etc.). These spikes are
-not necessarily indicative of a true increase of COVID-like illness in a
-location.
+not necessarily indicative of a true increase of COVID-19 in a location.
 
 ## Qualifying Conditions
 
@@ -66,7 +65,7 @@ We receive data on the following two categories of counts:
 
 - Denominator: Daily count of all unique outpatient visits.
 - Covid: Daily count of all unique visits with primary ICD-10 code in any of:
-{U071, U072, B9721, or B9729}.
+{U07.1, B97.21, or B97.29}.
 
 ## Estimation
 
@@ -74,8 +73,8 @@ We receive data on the following two categories of counts:
 
 For a fixed location $i$ and time $t$, let $Y_{it}$
 denote the Covid counts and let $N_{it}$ be the
-total count of visits (the *Denominator*). Our estimate of the CLI percentage is
-given by
+total count of visits (the *Denominator*). Our estimate of the COVID-19
+percentage is given by
 
 $$
 \hat p_{it} = 100 \cdot  \frac{Y_{it}}{N_{it}}
@@ -83,15 +82,15 @@ $$
 
 ### Day-of-Week Adjustment
 
-The fraction of visits due to CLI is dependent on the day of the week. On
+The fraction of visits due to COVID-19 is dependent on the day of the week. On
 weekends, doctors see a higher percentage of acute conditions, so the percentage
-of CLI is higher. Each day of the week has a different behavior, and if we do
+of COVID-19 is higher. Each day of the week has a different behavior, and if we do
 not adjust for this effect, we will not be able to meaningfully compare the
 doctor visits signal across different days of the week. We use a Poisson
 regression model to produce a signal adjusted for this effect.
 
 We assume that this weekday effect is multiplicative. For example, if the
-underlying rate of CLI on each Monday was the same as the previous Sunday, then
+underlying rate of COVID-19 on each Monday was the same as the previous Sunday, then
 the ratio between the doctor visit signals on Sunday and Monday would be a
 constant. Formally, we assume that
 
@@ -102,10 +101,10 @@ $$
 \end{aligned}
 $$
 
-where $Y_{it}$ is the observed doctor visits percentage of CLI at time $t$,
+where $Y_{it}$ is the observed doctor visits percentage of COVID-19 at time $t$,
 $\text{wd}(t) \in \{0, \dots, 6\}$ is the day-of-week of time $t$,
 $\alpha_{\text{wd}(t)}$ is the corresponding weekday correction, and
-$\phi_t$ is the corrected doctor visits percentage of CLI at time $t$.
+$\phi_t$ is the corrected doctor visits percentage of COVID-19 at time $t$.
 
 For simplicity, we assume that the weekday parameters do not change over time or
 location. To fit the $\alpha$ parameters, we minimize the following convex
@@ -126,7 +125,7 @@ adjusted count
 
 $$\dot{Y}_{it} = Y_{it} / \alpha_{wd(t)}.$$
 
-We then use these adjusted counts to estimate the CLI percentage as described
+We then use these adjusted counts to estimate the COVID-19 percentage as described
 above.
 
 ### Backwards Padding
