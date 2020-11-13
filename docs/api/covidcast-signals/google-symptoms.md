@@ -63,5 +63,4 @@ The state-level and county-level `raw_search` signals for specific symptoms such
 
 
 ## Lag and Backfill
-Google does not update the search data daily, but has an uncertain update frequency. The delay can range from 1 day to 10 days or even more. We check for updates everyday and provide the most update-to-date data.
-
+Google does not update the search data daily, but has an uncertain update frequency. The delay can range from 1 day to 10 days or even more. We check for updates everyday and provide the most up-to-date data.
