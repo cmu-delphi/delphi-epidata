@@ -40,8 +40,8 @@ searches.
 wait for Roni's decision
 
 ## Limitation 
-When daily volume in a region does not meet quality or privacy thresholds, set by Google, the value
-is assigned a NaN and will not be reported. Since Google uses differential privacy, there is artificial 
+When daily volume in a region does not meet quality or privacy thresholds, set by Google, no value
+will be reported. Since Google uses differential privacy, there is artificial 
 noise added to the raw datasets to avoid identifying any individual persons without affecting the quality 
 of results. 
 
@@ -64,5 +64,4 @@ The state-level and county-level `raw_search` signals for specific symptoms such
 
 ## Lag and Backfill
 Google does not update the search data daily, but has an uncertain update frequency. The delay can range from 1 day to 10 days or even more. We check for updates everyday and provide the most update-to-date data.
-
 
