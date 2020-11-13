@@ -20,7 +20,7 @@ privacy of individual people in the data.
 
 Delphi gathers the number of daily visits to POIs of certain types(bars, restaurants etc.) 
 from SafeGraph Weekly Patterns data at the 5-digit ZipCode level, then aggregates and 
-reports these features to the county, MSA, HRR and  state levels. The aggregated data 
+reports these features to the county, MSA, HRR, and state levels. The aggregated data 
 is freely available through the COVIDcast API.
 
 For precise definitions of the quantities below, consult the [SafeGraph Weekly 
