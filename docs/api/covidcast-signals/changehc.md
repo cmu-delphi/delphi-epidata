@@ -18,6 +18,8 @@ us by Change Healthcare. Change Healthcare is a healthcare technology company
 that provides us with information about outpatient visits, which they aggregate
 from many healthcare providers. Using this outpatient data, we estimate the
 percentage of COVID-related doctor's visits in a given location, on a given day.
+Change Healthcare claims data that has been de-identified in accordance with
+HIPAA privacy regulations.
 
 | Signal | Description |
 | --- | --- |
