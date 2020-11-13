@@ -8,7 +8,7 @@ grand_parent: COVIDcast Epidata API
 {: .no_toc}
 
 * **Source name:** `SOURCE-API-NAME`
-* **First issued:** DATE RELEASED TO API
+* **First issued:** FIRST ISSUE DATE IN API
 * **Number of data revisions since 19 May 2020:** 0
 * **Date of last change:** Never
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
@@ -72,3 +72,30 @@ backfill here.
 If the signal has specific licensing or sourcing that should be acknowledged,
 describe it here. Also, include links to source websites for data that is
 scraped or received from another source.
+
+## Licensing
+
+### For signals constructed by Delphi:
+
+This data is provided under the terms of the [Creative Commons Attribution
+license](https://creativecommons.org/licenses/by/4.0/). If you use this data,
+you must cite [Delphi](https://delphi.cmu.edu/) COVIDcast API, preferably by
+providing a link to this page.
+
+### For signals republished from other sources:
+
+This data is originally published by SOURCE NAME under the terms LICENSE. Cite
+the source as
+
+> SOURCE'S PREFERRED ATTRIBUTION.
+
+If you use the Delphi COVIDcast API to access this data, we additionally request
+you acknowledge us in your product or publication.
+
+### For signals from the United States government:
+
+This data is originally published by AGENCY NAME. As a work of the United States
+Federal Government, it is in the public domain.
+
+If you use the Delphi COVIDcast API to access this data, we request you
+acknowledge us in your product or publication.
