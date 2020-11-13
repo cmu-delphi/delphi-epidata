@@ -53,8 +53,8 @@ and stored at a certain time point, the symptom popularity released after that t
 likely to exceed the previously-observed maximum value which results in values larger than 1.
 
 The data volume is calculated based on search queries. A single search query can be mapped to more 
-than one symptoms. Currently, Google does not provide _intersection/union_ data. Users should be careful
-when dealing with more than one symptoms. 
+than one symptom. Currently, Google does not provide _intersection/union_ data. Users should be careful
+when dealing with more than one symptom. 
 
 
 
