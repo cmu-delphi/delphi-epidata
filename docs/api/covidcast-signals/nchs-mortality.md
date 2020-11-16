@@ -12,7 +12,7 @@ grand_parent: COVIDcast API
 * **Date of last change:** Never
 * **Available for:** state (see [geography coding docs](../covidcast_geography.md))
 
-This data source of national provisional death counts are based on death certificate data received and coded by the National Center for Health Statistics [(NCHS)](https://www.cdc.gov/nchs/nvss/vsrr/COVID19/index.htm). 
+This data source of national provisional death counts is based on death certificate data received and coded by the National Center for Health Statistics [(NCHS)](https://www.cdc.gov/nchs/nvss/vsrr/COVID19/index.htm). 
 
 | Signal | Description |
 | --- | --- |
@@ -48,4 +48,3 @@ We report the NCHS Mortality data in a weekly format (`time_type=week` \& `time_
 
 ## Lag and Backfill
 There is a lag in time between the death occurred and when the death certificate is completed, submitted to NCHS and processed for reporting purposes. The death counts for earlier weeks are continually revised and may increase or decrease as new and updated death certificate data are received from the states by NCHS.  This delay can range from 1 week to 8 weeks or even more. We check for updates every weekday as they are reported by NCHS, but will report the signals weekly (on Mondays). The changes in the data due to backfill made over the past week can be fetched from our API.
-
