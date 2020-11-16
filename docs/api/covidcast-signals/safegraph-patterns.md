@@ -15,13 +15,10 @@ This data source uses data reported by [SafeGraph](https://www.safegraph.com/)
 using anonymized location data from mobile phones. SafeGraph provides
 [Weekly Patterns](https://docs.safegraph.com/docs/weekly-patterns) dataset
 to eligible researchers who obtain an API key. SafeGraph provides this data for
-individual census block groups, using differential privacy to protect the
-privacy of individual people in the data.
+individual census block groups, using differential privacy to protect individual people's privacy in data.
 
-Delphi gathers the number of daily visits to POIs of certain types(bars, restaurants etc.) 
-from SafeGraph Weekly Patterns data at the 5-digit ZipCode level, then aggregates and 
-reports these features to the county, MSA, HRR, and state levels. The aggregated data 
-is freely available through the COVIDcast API.
+Delphi gathers the number of daily visits to POIs of certain types(bars, restaurants, etc.) 
+from SafeGraph Weekly Patterns data at the 5-digit ZipCode level, then aggregates and reports these features to the county, MSA, HRR, and state levels. The aggregated data is freely available through the COVIDcast API.
 
 For precise definitions of the quantities below, consult the [SafeGraph Weekly 
 Patterns documentation](https://docs.safegraph.com/docs/weekly-patterns).
