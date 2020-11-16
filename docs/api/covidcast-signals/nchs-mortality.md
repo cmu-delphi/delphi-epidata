@@ -16,7 +16,7 @@ This data source of national provisional death counts is based on death certific
 
 | Signal | Description |
 | --- | --- |
-| `deaths_covid_incidence_num` | Number of  weekly new deaths with confirmed or presumed COVID-19 |
+| `deaths_covid_incidence_num` | Number of weekly new deaths with confirmed or presumed COVID-19 |
 | `deaths_covid_incidence_prop` | Number of weekly new deaths with confirmed or presumed COVID-19, per 100,000 population |
 | `deaths_allcause_incidence_num` | Number of weekly new deaths from all causes |
 | `deaths_allcause_incidence_prop` | Number of weekly new deaths from all causes, per 100,000 population |
@@ -30,7 +30,7 @@ This data source of national provisional death counts is based on death certific
 |`deaths_pneumonia_or_flu_or_covid_incidence_prop`| Number of weekly new deaths involving Pneumonia, Influenza, or COVID-19, per 100,000 population|
 |`deaths_percent_of_expected`| The number of weekly new deaths for all causes in 2020 compared to the average number across the same week in 2017–2019|
 
-These signals are taken directly from [Table 1](https://www.cdc.gov/nchs/nvss/vsrr/COVID19/index.htm) without changes. National provisional death counts include deaths occurring within the 50 states and the District of Columbia that have been received and coded as of the date specified during a given time period, especially for the more recent time periods. The deaths are classified based on a new ICD-10 code. (Note that, the classification is based on all the codes on the death certificate, but not the primary cause of death). The codes that are considered for each signals are described in details [here](https://github.com/cmu-delphi/covidcast-indicators/blob/nchs_mortality/nchs_mortality/DETAILS.md#metrics-level-1-m1). We export the state-level data as-is in a weekly format. 
+These signals are taken directly from [Table 1](https://www.cdc.gov/nchs/nvss/vsrr/COVID19/index.htm) without changes. National provisional death counts include deaths occurring within the 50 states and the District of Columbia that have been received and coded as of the date specified during a given time period. The deaths are classified based on a new ICD-10 code. (Note that, the classification is based on all the codes on the death certificate, but not the primary cause of death). The codes that are considered for each signals are described in details [here](https://github.com/cmu-delphi/covidcast-indicators/blob/nchs_mortality/nchs_mortality/DETAILS.md#metrics-level-1-m1). We export the state-level data as-is in a weekly format. 
 
 ## Table of contents
 {: .no_toc .text-delta}
@@ -44,7 +44,7 @@ New York City is considered as a special state in the NCHS Mortality data, but w
 
 ## Report Using Epiweeks
 
-We report the NCHS Mortality data in a weekly format (`time_type=week` \& `time_value=\{YYYYWW\}`, where YYYYWW refers to an epiweek). However, NCHS reports their weekly data from Saturday to Saturday. We assume there is a one day shift. For example, they report a death counts for Alaska in a week starting from date D (a Saturday), out report will have `time_value` set to be the corresponding epiweek of date (D + 1).
+We report the NCHS Mortality data in a weekly format (`time_type=week` \& `time_value=\{YYYYWW\}`, where `YYYYWW` refers to an epiweek). The CDC defines the [epiweek](https://wwwn.cdc.gov/nndss/document/MMWR_Week_overview.pdf) as seven days, from Sunday to Saturday. We check the week-ending dates provided in the NCHS morality data and use Python package [epiweeks](https://pypi.org/project/epiweeks/) to convert them into epiweek format.
 
 ## Lag and Backfill
 There is a lag in time between the death occurred and when the death certificate is completed, submitted to NCHS and processed for reporting purposes. The death counts for earlier weeks are continually revised and may increase or decrease as new and updated death certificate data are received from the states by NCHS.  This delay can range from 1 week to 8 weeks or even more. We check for updates every weekday as they are reported by NCHS, but will report the signals weekly (on Mondays). The changes in the data due to backfill made over the past week can be fetched from our API.
