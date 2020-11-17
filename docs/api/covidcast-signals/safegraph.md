@@ -88,7 +88,7 @@ Patterns documentation](https://docs.safegraph.com/docs/weekly-patterns).
 | `bars_visit_num` | The number of daily visits to bar-related POIs in a certain region |
 | `bars_visit_prop` | The number of daily visits to bar-related POIs in a certain region, per 100,000 population |
 | `restaurants_visit_num` | The number of daily visits to restaurant-related POIs in a certain region |
-| `restaurants_visit_prop` | The number of daily visits to bar-related POIs in a certain region, per 100,000 population |
+| `restaurants_visit_prop` | The number of daily visits to restaurant-related POIs in a certain region, per 100,000 population |
 
 SafeGraph delivers the number of daily visits to U.S. POIs, the details of which are described in 
 [Places Manual](https://readme.safegraph.com/docs/places-manual#section-placekey) dataset. 
