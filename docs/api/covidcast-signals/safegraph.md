@@ -24,8 +24,7 @@ using anonymized location data from mobile phones. Safegraph provides several di
 Data source based on [social
 distancing metrics](https://docs.safegraph.com/docs/social-distancing-metrics). 
 SafeGraph provides this data for
-individual census block groups, using differential privacy to protect the
-privacy of individual people in the data.
+individual census block groups, using differential privacy to protect individual people's data privacy.
 
 Delphi creates features of the Safegraph data at the census block group level,
 then aggregates these features to the county and state levels. The aggregated
@@ -75,10 +74,10 @@ additional day for SafeGraph's data to be ingested into the COVIDcast API.
 
 Data source based on
 [Weekly Patterns](https://docs.safegraph.com/docs/weekly-patterns) dataset. SafeGraph provides this data for
-different points of interest ([POIs](https://docs.safegraph.com/v4.0/docs#section-core-places)) considering individual census block groups, using differential privacy to protect individual people's privacy in data.
+different points of interest ([POIs](https://docs.safegraph.com/v4.0/docs#section-core-places)) considering individual census block groups, using differential privacy to protect individual people's data privacy.
 
 Delphi gathers the number of daily visits to POIs of certain types(bars, restaurants, etc.) 
-from SafeGraph Weekly Patterns data at the 5-digit ZipCode level, then aggregates and reports these features to the county, MSA, HRR, and state levels. The aggregated data is freely available through the COVIDcast API.
+from SafeGraph' Weekly Patterns data at the 5-digit ZipCode level, then aggregates and reports these features to the county, MSA, HRR, and state levels. The aggregated data is freely available through the COVIDcast API.
 
 For precise definitions of the quantities below, consult the [SafeGraph Weekly 
 Patterns documentation](https://docs.safegraph.com/docs/weekly-patterns).
@@ -91,9 +90,9 @@ Patterns documentation](https://docs.safegraph.com/docs/weekly-patterns).
 | `restaurants_visit_prop` | The number of daily visits to restaurant-related POIs in a certain region, per 100,000 population |
 
 SafeGraph delivers the number of daily visits to U.S. POIs, the details of which are described in 
-[Places Manual](https://readme.safegraph.com/docs/places-manual#section-placekey) dataset. 
+the [Places Manual](https://readme.safegraph.com/docs/places-manual#section-placekey) dataset. 
 Delphi aggregates the number of visits from specific places to certain types of places, such as 
-bars and restaurants. 
+bars and restaurants. For example, Adagio Teas belongs to the first group while Napkin Burger is considered to be a restaurant.
 
 ## Lag
 
