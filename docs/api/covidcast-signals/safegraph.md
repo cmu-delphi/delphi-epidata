@@ -5,7 +5,7 @@ grand_parent: COVIDcast API
 ---
 
 This data source uses data reported by [SafeGraph](https://www.safegraph.com/)
-using anonymized location data from mobile phones. We provide multiple signals based on different datasets provided to eligible researchers who obtain an API key by SafeGraph.
+using anonymized location data from mobile phones. Safegraph provides several different datasets to eligible researchers. We surface signals from two such datasets.
 
 
 # SafeGraph Social Distancing Metrics
