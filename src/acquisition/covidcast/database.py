@@ -108,7 +108,7 @@ class Database:
 
     # TODO: this heavily copypastas src/ddl/covidcast.sql -- theres got to be a better way
     create_tmp_table_sql = f'''
-      CREATE TEMPORARY TABLE `{tmp_table_name}` (
+      CREATE TABLE `{tmp_table_name}` (
         `source` varchar(32) NOT NULL,
         `signal` varchar(64) NOT NULL,
         `time_type` varchar(12) NOT NULL,
@@ -129,7 +129,7 @@ class Database:
     '''
 
     truncate_tmp_table_sql = f'TRUNCATE TABLE {tmp_table_name};'
-    drop_tmp_table_sql = f'DROP TEMPORARY TABLE {tmp_table_name}'
+    drop_tmp_table_sql = f'DROP TABLE {tmp_table_name}'
 
     insert_into_tmp_sql = f'''
       INSERT INTO `{tmp_table_name}`
