@@ -4,7 +4,11 @@ parent: Data Sources and Signals
 grand_parent: COVIDcast Epidata API
 ---
 
-# SafeGraph Mobility
+This data source uses data reported by [SafeGraph](https://www.safegraph.com/)
+using anonymized location data from mobile phones. We provide multiple signals based on different datasets provided to eligible researchers who obtain an API key by SafeGraph.
+
+
+# SafeGraph Social Distancing Metrics
 
 * **Source name:** `safegraph`
 * **First issued:** 23 June 2020
@@ -13,10 +17,9 @@ grand_parent: COVIDcast Epidata API
 * **Available for:** county, state (see [geography coding docs](../covidcast_geography.md))
 * **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
 
-This data source uses data reported by [SafeGraph](https://www.safegraph.com/)
-using anonymized location data from mobile phones. SafeGraph provides [social
-distancing metrics](https://docs.safegraph.com/docs/social-distancing-metrics)
-to eligible researchers who obtain an API key. SafeGraph provides this data for
+Data source based on [social
+distancing metrics](https://docs.safegraph.com/docs/social-distancing-metrics). 
+SafeGraph provides this data for
 individual census block groups, using differential privacy to protect the
 privacy of individual people in the data.
 
@@ -56,4 +59,40 @@ averaging over the preceding 7 days removes these day-of-week effects.
 
 SafeGraph provides this data with a three-day lag, meaning estimates for a
 specific day are only available three days later. It may take up to an
+additional day for SafeGraph's data to be ingested into the COVIDcast API.
+
+
+# SafeGraph Weekly Patterns
+
+* **Source name:** `safegraph`
+* **Number of data revisions since 23 June 2020:** 0
+* **Date of last change:** never
+* **Available for:** county, MSA, HRR, state (see [geography coding docs](../covidcast_geography.md))
+
+Data source based on
+[Weekly Patterns](https://docs.safegraph.com/docs/weekly-patterns) dataset. SafeGraph provides this data for
+different points of interest ([POIs](https://docs.safegraph.com/v4.0/docs#section-core-places)) considering individual census block groups, using differential privacy to protect individual people's privacy in data.
+
+Delphi gathers the number of daily visits to POIs of certain types(bars, restaurants, etc.) 
+from SafeGraph Weekly Patterns data at the 5-digit ZipCode level, then aggregates and reports these features to the county, MSA, HRR, and state levels. The aggregated data is freely available through the COVIDcast API.
+
+For precise definitions of the quantities below, consult the [SafeGraph Weekly 
+Patterns documentation](https://docs.safegraph.com/docs/weekly-patterns).
+
+| Signal | Description |
+| --- | --- |
+| `bars_visit_num` | The number of daily visits to bar-related POIs in a certain region |
+| `bars_visit_prop` | The number of daily visits to bar-related POIs in a certain region, per 100,000 population |
+| `restaurants_visit_num` | The number of daily visits to restaurant-related POIs in a certain region |
+| `restaurants_visit_prop` | The number of daily visits to bar-related POIs in a certain region, per 100,000 population |
+
+SafeGraph delivers the number of daily visits to U.S. POIs, the details of which are described in 
+[Places Manual](https://readme.safegraph.com/docs/places-manual#section-placekey) dataset. 
+Delphi aggregates the number of visits from specific places to certain types of places, such as 
+bars and restaurants. 
+
+## Lag
+
+SafeGraph provides newly updated data for the previous week every Wednesday, 
+meaning estimates for a specific day are only available 3-9 days later. It may take up to an
 additional day for SafeGraph's data to be ingested into the COVIDcast API.
