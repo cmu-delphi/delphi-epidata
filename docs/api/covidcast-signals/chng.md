@@ -12,13 +12,15 @@ grand_parent: COVIDcast Epidata API
 * **Number of data revisions since 19 May 2020:** 0
 * **Date of last change:** Never
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
+* **License:** [CC BY-NC](https://creativecommons.org/licenses/by-nc/2.0/)
 
 This data source is based on Change Healthcare claims data that has been
 de-identified in accordance with HIPAA privacy regulations. Change Healthcare is
 a healthcare technology company that aggregates data from many healthcare providers.
 
-The signals under this source are made available under a CC-BY-NC license, which
-differs from the typical COVIDcast license. Details TBD.
+The signals under this source are made available under a CC BY-NC license, which
+differs from the typical COVIDcast license. You may not use this data for
+commercial purposes.
 
 | Signal | Description |
 | --- | --- |
