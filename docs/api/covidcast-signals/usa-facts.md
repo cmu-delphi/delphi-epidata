@@ -11,7 +11,7 @@ grand_parent: COVIDcast Epidata API
 * **Number of data revisions since 19 May 2020:** 2
 * **Date of last change:** [3 November 2020](../covidcast_changelog.md#usa-facts)
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
-* **License:** [CC-BY](#source-and-licensing)
+* **License:** [CC BY](#source-and-licensing)
 
 This data source of confirmed COVID-19 cases and deaths is based on reports made
 available by [USAFacts](https://usafacts.org/).
