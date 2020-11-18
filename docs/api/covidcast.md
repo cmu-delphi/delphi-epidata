@@ -17,13 +17,6 @@ partners. The API allows users to select specific signals and download data for
 selected geographical areas---counties, states, metropolitan statistical areas,
 and other divisions.
 
-*Licensing*: This data is freely available under our [licensing](README.md#data-licensing)
-terms; we encourage academic users to [cite](README.md#citing) the data if they
-use it in any publications. Our [data ingestion
-code](https://github.com/cmu-delphi/covidcast-indicators) and [API server
-code](https://github.com/cmu-delphi/delphi-epidata) is open-source, and
-contributions are welcome. Further documentation on Delphi's APIs is available
-in the [API overview](README.md).
 
 <div style="background-color:#FCC; padding: 10px 30px;"><strong>Get
 updates:</strong> Delphi operates a <a
@@ -40,6 +33,16 @@ href="https://lists.andrew.cmu.edu/mailman/listinfo/delphi-covidcast-api">subscr
 
 1. TOC
 {:toc}
+
+## Licensing
+Our CovidCast data is freely available under our [licensing](README.md#data-licensing)
+terms. For specific licensing on individual indicators we suggest users visit our [indicator licensing](covidcast_licensing.md) page.
+We encourage academic users to [cite](README.md#citing) the data if they
+use it in any publications. Our [data ingestion
+code](https://github.com/cmu-delphi/covidcast-indicators) and [API server
+code](https://github.com/cmu-delphi/delphi-epidata) is open-source, and
+contributions are welcome. Further documentation on Delphi's APIs is available
+in the [API overview](README.md).
 
 ## Accessing the Data
 
