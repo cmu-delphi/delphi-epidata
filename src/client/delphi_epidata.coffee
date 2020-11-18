@@ -389,5 +389,20 @@ class Epidata
   @covidcast_meta: (callback) ->
     _request(callback, {'source': 'covidcast_meta'})
 
+  # Fetch COVID hospitalization data
+  @covid_hosp: (callback, states, dates, issues) ->
+    # Check parameters
+    unless states? and dates?
+      throw { msg: '`states` and `dates` are both required' }
+    # Set up request
+    params =
+      'source': 'covid_hosp'
+      'states': _list(states)
+      'dates': _list(dates)
+    if issues?
+      params.issues = _list(issues)
+    # Make the API call
+    _request(callback, params)
+
 # Export the API to the global environment
 (exports ? window).Epidata = Epidata

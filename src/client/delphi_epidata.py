@@ -598,3 +598,21 @@ class Epidata:
   def covidcast_meta():
     """Fetch Delphi's COVID-19 Surveillance Streams metadata"""
     return Epidata._request({'source': 'covidcast_meta'})
+
+  # Fetch COVID hospitalization data
+  @staticmethod
+  def covid_hosp(states, dates, issues=None):
+    """Fetch COVID hospitalization data."""
+    # Check parameters
+    if states is None or dates is None:
+      raise Exception('`states` and `dates` are both required')
+    # Set up request
+    params = {
+      'source': 'covid_hosp',
+      'states': Epidata._list(states),
+      'dates': Epidata._list(dates),
+    }
+    if issues is not None:
+      params['issues'] = Epidata._list(issues)
+    # Make the API call
+    return Epidata._request(params)
