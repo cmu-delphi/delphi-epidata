@@ -69,7 +69,7 @@ class AcquisitionTests(unittest.TestCase):
       self.assertEqual(row['hospital_onset_covid'], 53)
       actual = row['inpatient_bed_covid_utilization']
       expected = 0.21056656682174496
-      self.assertAlmostEqual(actual, expected, delta=1e-5)
+      self.assertAlmostEqual(actual, expected)
       self.assertIsNone(row['adult_icu_bed_utilization'])
 
       # expect 55 fields per row (56 database columns, except `id`)

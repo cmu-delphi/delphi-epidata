@@ -140,6 +140,6 @@ class DatabaseTests(unittest.TestCase):
 
     for actual, expected in zip(last_query_values, expected_query_values):
       if isinstance(expected, float):
-        self.assertTrue(abs(actual - expected) < 1e-5)
+        self.assertAlmostEqual(actual, expected)
       else:
         self.assertEqual(actual, expected)
