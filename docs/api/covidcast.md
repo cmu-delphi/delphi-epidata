@@ -17,7 +17,7 @@ partners. The API allows users to select specific signals and download data for
 selected geographical areas---counties, states, metropolitan statistical areas,
 and other divisions.
 
-This data is freely available under our [licensing](README.md#data-licensing)
+*Licensing*: This data is freely available under our [licensing](README.md#data-licensing)
 terms; we encourage academic users to [cite](README.md#citing) the data if they
 use it in any publications. Our [data ingestion
 code](https://github.com/cmu-delphi/covidcast-indicators) and [API server

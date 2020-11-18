@@ -37,17 +37,15 @@ like to cite it, we would gratefully recommend the following copy:
 
 ## Data licensing
 
-The majority of the data surfaced through this API is more or less just a
-carefully curated mirror of data acquired from various external parties. Such
-data is subject to its original licensing, where applicable.
-
----
+Several datasets surfaced through this API are carefully curated mirrors of data
+acquired from various external parties. Such data is subject to its original
+licensing, where applicable.
 
 Any data which is produced novelly by Delphi and is intentionally and openly
 surfaced by Delphi through this API is hereby licensed
-[CC-BY](https://creativecommons.org/licenses/by/4.0/). Endpoints, as specified
-by the `source` parameter, which are known to wholly or partially serve data
-under this license include:
+[CC-BY](https://creativecommons.org/licenses/by/4.0/) except where otherwise
+noted. Endpoints, as specified by the `source` parameter, which are known to
+wholly or partially serve data under this license include:
 
 - `covidcast`
 - `covidcast_meta`
