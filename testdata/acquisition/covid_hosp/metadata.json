@@ -1,0 +1,67 @@
+{
+    "help": "Return the metadata of a dataset (package) and its resources. :param id: the id or name of the dataset :type id: string",
+    "success": true,
+    "result": [
+        {
+            "id": "83b4a668-9321-4d8c-bc4f-2bef66c49050",
+            "name": "covid-19-reported-patient-impact-and-hospital-capacity-state-timeseries",
+            "title": "COVID-19 Reported Patient Impact and Hospital Capacity by State Timeseries",
+            "maintainer": "HealthData.gov",
+            "maintainer_email": "HealthData@hhs.gov",
+            "license_title": "https://opendatacommons.org/licenses/odbl/1.0/",
+            "notes": "<p>The following dataset provides state-aggregated data for hospital utilization <strong>in a timeseries format</strong> dating back to January 1, 2020. These are derived from reports with facility-level granularity across three main sources: (1) HHS TeleTracking, (2) reporting provided directly to HHS Protect by state/territorial health departments on behalf of their healthcare facilities and (3) National Healthcare Safety Network (before July 15).</p>\n<p>The file will be updated regularly and provides the latest values reported by each facility within the last four days for all time. This allows for a more comprehensive picture of the hospital utilization within a state by ensuring a hospital is represented, even if they miss a single day of reporting.</p>\n<p>No statistical analysis is applied to account for non-response and/or to account for missing data.</p>\n<p>The below table displays one value for each field (i.e., column). Sometimes, reports for a given facility will be provided to more than one reporting source: HHS TeleTracking, NHSN, and HHS Protect. When this occurs, to ensure that there are not duplicate reports, prioritization is applied to the numbers for each facility.</p>\n<p><a href=\"https://healthdata.gov/covid-19-reported-patient-impact-and-hospital-capacity-state-data-dictionary\">COVID-19 Reported Patient Impact and Hospital Capacity by State Data Dictionary</a></p>\n",
+            "url": "https://healthdata.gov/dataset/covid-19-reported-patient-impact-and-hospital-capacity-state-timeseries",
+            "state": "Active",
+            "log_message": "Update to resource COVID-19 Reported Patient Impact and Hospital Capacity by State Timeseries",
+            "private": true,
+            "revision_timestamp": "Mon, 11/16/2020 - 00:55",
+            "metadata_created": "Tue, 11/03/2020 - 19:36",
+            "metadata_modified": "Mon, 11/16/2020 - 00:55",
+            "creator_user_id": "4be8b03b-ca18-4c6c-92fe-93fb680f6983",
+            "type": "Dataset",
+            "resources": [
+                {
+                    "id": "3ce11e2c-05b4-4480-9a11-bc9e9ea769f9",
+                    "revision_id": "",
+                    "url": "https://healthdata.gov/sites/default/files/reported_hospital_utilization_timeseries_20201115_2134.csv",
+                    "description": "<p><strong>Updated 11/16/2020 12:55 AM</strong></p>\n",
+                    "format": "csv",
+                    "state": "Active",
+                    "revision_timestamp": "Mon, 11/16/2020 - 00:55",
+                    "name": "COVID-19 Reported Patient Impact and Hospital Capacity by State Timeseries",
+                    "mimetype": "text/csv",
+                    "size": "3.01 MB",
+                    "created": "Tue, 11/03/2020 - 19:38",
+                    "resource_group_id": "af7749f7-beeb-453f-97e7-c958adeb40dc",
+                    "last_modified": "Date changed  Mon, 11/16/2020 - 00:55"
+                }
+            ],
+            "tags": [
+                {
+                    "id": "10b1ca03-8c76-4a95-91e6-86d31816f575",
+                    "vocabulary_id": "6",
+                    "name": "Covid-19"
+                },
+                {
+                    "id": "00a48b5c-b18a-4ac2-864b-160d453e4f1c",
+                    "vocabulary_id": "6",
+                    "name": "Covid"
+                },
+                {
+                    "id": "56f3cdad-8acb-46c8-bc71-aa1ded8407fb",
+                    "vocabulary_id": "6",
+                    "name": "Covid19"
+                }
+            ],
+            "groups": [
+                {
+                    "description": "<p>The United States Department of Health and Human Services (HHS), also known as the Health Department, is a cabinet-level department of the U.S. federal government with the goal of protecting the health of all Americans and providing essential human services. The official HHS motto is \"Improving the health, safety, and well-being of America.\"</p>\n",
+                    "id": "af7749f7-beeb-453f-97e7-c958adeb40dc",
+                    "image_display_url": "https://healthdata.gov/sites/default/files/US-DeptOfHHS-Seal1_0.jpg",
+                    "title": "Department of Health & Human Services",
+                    "name": "agencies/department-health-human-services"
+                }
+            ]
+        }
+    ]
+}
