@@ -11,6 +11,7 @@ grand_parent: COVIDcast Epidata API
 * **Number of data revisions since 19 May 2020:** 1
 * **Date of last change:** [7 October 2020](../covidcast_changelog.md#jhu-csse)
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
+* **License:** [CC-BY](#source-and-licensing)
 
 This data source of confirmed COVID-19 cases and deaths is based on reports made
 available by the Center for Systems Science and Engineering at Johns Hopkins
@@ -118,3 +119,10 @@ properly.
 |-------------------|---------------|-------------------|---------------|
 |Oglala Lakota      |South Dakota   |46113              |46102          |
 |Kusilvak           |Alaska         |02270              |02158          |
+
+## Source and Licensing
+
+This data set is republished from the COVID-19 Data Repository by the Center for
+Systems Science and Engineering (CSSE) at Johns Hopkins University, under the
+terms of the [Creative Commons Attribution 4.0 International (CC BY 4.0)
+license](https://creativecommons.org/licenses/by/4.0/).
