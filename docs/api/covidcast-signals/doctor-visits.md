@@ -11,6 +11,7 @@ grand_parent: COVIDcast Epidata API
 * **Number of data revisions since 19 May 2020:** 1
 * **Date of last change:** 9 November 2020
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
+* **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
 
 This data source is based on information about outpatient visits, provided to us
 by health system partners. Using this outpatient data, we estimate the

@@ -11,6 +11,7 @@ grand_parent: COVIDcast Epidata API
 * **Number of data revisions since 23 June 2020:** 1
 * **Date of last change:** 3 November 2020
 * **Available for:** county, state (see [geography coding docs](../covidcast_geography.md))
+* **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
 
 This data source uses data reported by [SafeGraph](https://www.safegraph.com/)
 using anonymized location data from mobile phones. SafeGraph provides [social

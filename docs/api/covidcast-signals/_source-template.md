@@ -12,6 +12,7 @@ grand_parent: COVIDcast Epidata API
 * **Number of data revisions since 19 May 2020:** 0
 * **Date of last change:** Never
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
+* **License:** LINK
 
 A brief description of what this source measures.
 

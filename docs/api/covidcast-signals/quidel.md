@@ -21,6 +21,7 @@ grand_parent: COVIDcast Epidata API
 * **Number of data revisions since 19 May 2020:** 1
 * **Date of last change:** 22 October 2020
 * **Available for:** hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
+* **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
 
 Data source based on COVID-19 Antigen tests, provided to us by Quidel, Inc. When
 a patient (whether at a doctor’s office, clinic, or hospital) has COVID-like
