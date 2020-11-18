@@ -34,10 +34,10 @@ documentation](https://docs.safegraph.com/docs/social-distancing-metrics).
 | `full_time_work_prop` | The fraction of mobile devices that spent more than 6 hours at a location other than their home during the daytime (SafeGraph's `full_time_work_behavior_devices / device_count`) |
 | `part_time_work_prop` | The fraction of devices that spent between 3 and 6 hours at a location other than their home during the daytime (SafeGraph's `part_time_work_behavior_devices / device_count`) |
 | `median_home_dwell_time` | The median time spent at home for all devices at this location for this time period, in minutes |
-| `completely_home_prop_7d_avg` | Same as `completely_home_prop` but averaged over a 7 day trailing window. |
-| `full_time_work_prop_7d_avg` | Same as `full_time_work_prop` but averaged over a 7 day trailing window. |
-| `part_time_work_prop_7d_avg` | Same as `part_time_work_prop` but averaged over a 7 day trailing window. |
-| `median_home_dwell_time_7d_avg` | Same as `median_home_dwell_time` but averaged over a 7 day trailing window. |
+| `completely_home_prop_7dav` | Same as `completely_home_prop` but averaged over a 7 day trailing window. |
+| `full_time_work_prop_7dav` | Same as `full_time_work_prop` but averaged over a 7 day trailing window. |
+| `part_time_work_prop_7dav` | Same as `part_time_work_prop` but averaged over a 7 day trailing window. |
+| `median_home_dwell_time_7dav` | Same as `median_home_dwell_time` but averaged over a 7 day trailing window. |
 
 After computing each metric on the census block group (CBG) level, we aggregate
 to the county-level by taking the mean over CBGs in a county to obtain the value
@@ -49,7 +49,7 @@ size. The same method is used for aggregation to states.
 
 Because these signals measure mobility each day, there are strong day-of-week effects:
 weekends have substantially different values than weekdays. Users interested in long-term
-trends, rather than mobility on one specific day, may prefer the `7d_avg` signals, since
+trends, rather than mobility on one specific day, may prefer the `7dav` signals, since
 averaging over the preceding 7 days removes these day-of-week effects.
 
 ## Lag
