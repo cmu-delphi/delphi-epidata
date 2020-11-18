@@ -207,6 +207,15 @@
       "dst": "/common/covidcast/README.md"
     },
 
+    "// acquisition - covid_hosp",
+    {
+      "type": "move",
+      "src": "src/acquisition/covid_hosp/",
+      "dst": "[[package]]/acquisition/covid_hosp/",
+      "match": "^.*\\.(py)$",
+      "add-header-comment": true
+    },
+
     "// run unit and coverage tests",
     {"type": "py3test"}
 
