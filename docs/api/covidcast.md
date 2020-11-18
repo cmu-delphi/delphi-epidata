@@ -36,7 +36,7 @@ href="https://lists.andrew.cmu.edu/mailman/listinfo/delphi-covidcast-api">subscr
 
 ## Licensing
 Our CovidCast data is freely available under our [licensing](README.md#data-licensing)
-terms. For specific licensing on individual indicators we suggest users to visit [indicator licensing](covidcast_licensing.md).
+terms. For specific licensing on individual indicators we suggest users visit our [indicator licensing](covidcast_licensing.md) page.
 We encourage academic users to [cite](README.md#citing) the data if they
 use it in any publications. Our [data ingestion
 code](https://github.com/cmu-delphi/covidcast-indicators) and [API server
