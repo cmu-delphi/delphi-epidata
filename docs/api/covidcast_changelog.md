@@ -25,6 +25,9 @@ changes, data corrections, and other information relevant to API users.
 
 ## Sources and Signals
 ### `doctor-visits`
+#### 9 November 2020
+We went from a custom geo mapping file (for aggregating from county->(msa, hrr, state)) to a central geo file based on rigorously sourced US census data.
+
 ### `fb-survey`
 
 #### 3 June 2020
