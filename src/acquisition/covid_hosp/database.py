@@ -193,7 +193,8 @@ class Database:
     # the database requires `nan` to be converted to `None` for `NULL` values
     dataframe = dataframe.replace({math.nan: None})
 
-    value_placeholders = ', '.join(['%s'] * (len(Database.ORDERED_CSV_COLUMNS) + 2))
+    num_columns = 2 + len(Database.ORDERED_CSV_COLUMNS)
+    value_placeholders = ', '.join(['%s'] * num_columns)
     sql = f'''
       INSERT INTO
         `covid_hosp`
