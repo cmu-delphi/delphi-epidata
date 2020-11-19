@@ -96,6 +96,7 @@ The parameters available for each source are documented in each linked source-sp
 | --- | --- | --- | --- |
 | [`covidcast`](covidcast.md) | COVIDCast | Delphi's COVID-19 surveillance streams. | no |
 | [`covidcast_meta`](covidcast_meta.md) | COVIDCast Metadata | Metadata for Delphi's COVID-19 surveillance streams. | no |
+| [`covid_hosp`](covid_hosp.md) | COVID-19 Hospitalization | COVID-19 Reported Patient Impact and Hospital Capacity. | no |
 
 ### Influenza Data
 

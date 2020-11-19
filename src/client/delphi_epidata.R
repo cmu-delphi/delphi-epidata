@@ -547,6 +547,25 @@ Epidata <- (function() {
     return(.request(list(source='covidcast_meta', cached='true')))
   }
 
+  # Fetch COVID hospitalization data
+  covid_hosp <- function(states, dates, issues) {
+    # Check parameters
+    if(missing(states) || missing(dates)) {
+      stop('`states` and `dates` are both required')
+    }
+    # Set up request
+    params <- list(
+      source = 'covid_hosp',
+      states = .list(states),
+      dates = .list(dates)
+    )
+    if(!missing(issues)) {
+      params$issues <- .list(issues)
+    }
+    # Make the API call
+    return(.request(params))
+  }
+
   # Export the public methods
   return(list(
     range = range,
@@ -573,6 +592,7 @@ Epidata <- (function() {
     dengue_nowcast = dengue_nowcast,
     meta = meta,
     covidcast = covidcast,
-    covidcast_meta = covidcast_meta
+    covidcast_meta = covidcast_meta,
+    covid_hosp = covid_hosp
   ))
 })()
