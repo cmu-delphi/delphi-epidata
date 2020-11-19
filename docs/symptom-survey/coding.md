@@ -268,3 +268,68 @@ your protocol.
   your household’s finances?") has been removed and replaced with item C15, for
   consistency with the international version of the survey.
 * Item D1b ("Are you currently pregnant?") has been removed.
+
+## Wave 5
+
+Wave 5 will be deployed in late November, 2020. It is available in English, as
+well as
+
+* Simplified Chinese
+* English (UK)
+* Spanish (Latin America)
+* Spanish
+* French
+* Brazilian Portuguese
+* Vietnamese
+
+**Draft** files:
+
+* [Survey text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_5.pdf)
+  (PDF)
+
+### Summary of Changes
+
+Wave 5 is a minor change to the survey instrument with the addition of a few new
+items. Please review the changes carefully when you use responses from multiple
+waves of this survey.
+
+Note that this changelog is a draft; as the survey instrument is finalized, this
+changelog will be updated to include all final changes.
+
+#### Consent Text
+
+The survey consent text has been altered to encourage respondents to answer the
+survey, even if they have already taken it before:
+
+> We encourage you to complete the survey each time you are invited, even if you
+> have participated before. Completing the survey again will help us understand
+> how the situation is changing.
+
+#### New Items
+
+* Item C16 asks respondents to estimate how many people are wearing masks in
+  their community.
+* Item C7 was previously asked in Waves 1-3; it asks respondents the extent they
+  are avoiding other people.
+* Item C17 asks whether respondents have received a flu vaccine. The time frame
+  and responses are adapted to specify the current seasonal flu vaccine. A more
+  general version inquiry about the flu vaccine appeared in Wave 1-3 as item C2.
+* Items E1-E3 ask about household children and their education during the
+  pandemic. These items appear for respondents who indicate there is a child in
+  their household under the age of 18. E1 asks respondents to indicate the
+  current grade level(s) the child(ren) in their household. Item E2 asks the
+  respondents if the child(ren) are attending in-person classes part time or
+  full time. Item E3 asks respondents what measures are applied to prevent the
+  spread of COVID-19 when the child(ren) attend in-person classes (e.g.
+  mandatory, mask wearing, closed communal areas).
+
+#### Changed Items
+
+* Item B2 now includes headaches and changes in sleep as symptoms.
+* Item D8 now includes the option of Master’s degree (unfortunately omitted in
+  Wave 4) and has examples of professional degree for clarification.
+
+#### Removed Items
+
+* There are no items from Wave 4 that were removed in the Wave 5 version of
+  this survey.
