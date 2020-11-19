@@ -61,7 +61,7 @@ additional day for SafeGraph's data to be ingested into the COVIDcast API.
 
 ## SafeGraph Weekly Patterns
 
-
+* **First issued:** 20 November 2020
 * **Number of data revisions since 23 June 2020:** 0
 * **Date of last change:** never
 * **Available for:** county, MSA, HRR, state (see [geography coding docs](../covidcast_geography.md))
