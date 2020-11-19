@@ -82,7 +82,7 @@ Patterns documentation](https://docs.safegraph.com/docs/weekly-patterns).
 SafeGraph delivers the number of daily visits to U.S. POIs, the details of which are described in 
 the [Places Manual](https://readme.safegraph.com/docs/places-manual#section-placekey) dataset. 
 Delphi aggregates the number of visits from specific places to certain types of places, such as 
-bars and restaurants. For example, Adagio Teas belongs to the first group while Napkin Burger is considered to be a restaurant.
+bars (places with NAICS code = 722410) and restaurants (places with NAICS code = 722511). For example, Adagio Teas belongs to the first group while Napkin Burger is considered to be a restaurant.
 
 ## Lag
 
