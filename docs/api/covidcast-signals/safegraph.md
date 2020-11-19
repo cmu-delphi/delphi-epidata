@@ -35,7 +35,7 @@ documentation](https://docs.safegraph.com/docs/social-distancing-metrics).
 | `median_home_dwell_time` | The median time spent at home for all devices at this location for this time period, in minutes |
 | `completely_home_prop_7dav` | Same as `completely_home_prop` but averaged over a 7 day trailing window. |
 | `full_time_work_prop_7dav` | Same as `full_time_work_prop` but averaged over a 7 day trailing window. |
-| `part_time_work_prop_7dav` | Same as `part_time_work_prop` but averaged over a 7 day trailing window. |
+| `part_time_work_prop_7dav` | Offers a 7-day trailing window average of the`part_time_work_prop`.|
 | `median_home_dwell_time_7dav` | Offers a 7-day trailing window average of the `median_home_dwell_time`.|
 
 After computing each metric on the census block group (CBG) level, we aggregate
