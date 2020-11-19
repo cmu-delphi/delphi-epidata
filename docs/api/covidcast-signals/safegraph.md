@@ -4,17 +4,21 @@ parent: Data Sources and Signals
 grand_parent: COVIDcast Epidata API
 ---
 
+# SafeGraph
+{: .no_toc}
+* **Source name:** `safegraph`
+
 This data source uses data reported by [SafeGraph](https://www.safegraph.com/)
-using anonymized location data from mobile phones. Safegraph provides several different datasets to eligible researchers. We surface signals from two such datasets.
-# Table of contents
+using anonymized location data from mobile phones. SafeGraph provides several different datasets to eligible researchers. We surface signals from two such datasets.
+
+## Table of contents
 {: .no_toc .text-delta}
 
 1. TOC
 {:toc}
 
-# SafeGraph Social Distancing Metrics
+## SafeGraph Social Distancing Metrics
 
-* **Source name:** `safegraph`
 * **First issued:** 23 June 2020
 * **Number of data revisions since 23 June 2020:** 1
 * **Date of last change:** 3 November 2020
@@ -26,7 +30,7 @@ distancing metrics](https://docs.safegraph.com/docs/social-distancing-metrics).
 SafeGraph provides this data for
 individual census block groups, using differential privacy to protect individual people's data privacy.
 
-Delphi creates features of the Safegraph data at the census block group level,
+Delphi creates features of the SafeGraph data at the census block group level,
 then aggregates these features to the county and state levels. The aggregated
 data is freely available through the COVIDcast API.
 
@@ -58,16 +62,16 @@ weekends have substantially different values than weekdays. Users interested in 
 trends, rather than mobility on one specific day, may prefer the `7dav` signals since
 averaging over the preceding 7 days removes these day-of-week effects.
 
-## Lag
+### Lag
 
 SafeGraph provides this data with a three-day lag, meaning estimates for a
 specific day are only available three days later. It may take up to an
 additional day for SafeGraph's data to be ingested into the COVIDcast API.
 
 
-# SafeGraph Weekly Patterns
+## SafeGraph Weekly Patterns
 
-* **Source name:** `safegraph`
+
 * **Number of data revisions since 23 June 2020:** 0
 * **Date of last change:** never
 * **Available for:** county, MSA, HRR, state (see [geography coding docs](../covidcast_geography.md))
@@ -94,7 +98,7 @@ the [Places Manual](https://readme.safegraph.com/docs/places-manual#section-plac
 Delphi aggregates the number of visits from specific places to certain types of places, such as 
 bars (places with NAICS code = 722410) and restaurants (places with NAICS code = 722511). For example, Adagio Teas belongs to the first group while Napkin Burger is considered to be a restaurant.
 
-## Lag
+### Lag
 
 SafeGraph provides newly updated data for the previous week every Wednesday, 
 meaning estimates for a specific day are only available 3-9 days later. It may take up to an
