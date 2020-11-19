@@ -36,7 +36,7 @@ documentation](https://docs.safegraph.com/docs/social-distancing-metrics).
 | `completely_home_prop_7dav` | Same as `completely_home_prop` but averaged over a 7 day trailing window. |
 | `full_time_work_prop_7dav` | Same as `full_time_work_prop` but averaged over a 7 day trailing window. |
 | `part_time_work_prop_7dav` | Same as `part_time_work_prop` but averaged over a 7 day trailing window. |
-| `median_home_dwell_time_7dav` | Same as `median_home_dwell_time` but averaged over a 7 day trailing window. |
+| `median_home_dwell_time_7dav` | Offers a 7-day trailing window average of the `median_home_dwell_time`.|
 
 After computing each metric on the census block group (CBG) level, we aggregate
 to the county-level by taking the mean over CBGs in a county to obtain the value
