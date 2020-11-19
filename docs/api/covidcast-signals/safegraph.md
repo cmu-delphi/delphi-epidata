@@ -34,7 +34,7 @@ documentation](https://docs.safegraph.com/docs/social-distancing-metrics).
 | `full_time_work_prop` | The fraction of mobile devices that spent more than 6 hours at a location other than their home during the daytime (SafeGraph's `full_time_work_behavior_devices / device_count`) |
 | `part_time_work_prop` | The fraction of devices that spent between 3 and 6 hours at a location other than their home during the daytime (SafeGraph's `part_time_work_behavior_devices / device_count`) |
 | `median_home_dwell_time` | The median time spent at home for all devices at this location for this time period, in minutes |
-| `completely_home_prop_7dav` | Same as `completely_home_prop` but averaged over a 7 day trailing window. |
+| `completely_home_prop_7dav` | Offers a 7-day trailing window average of the `completely_home_prop`. |
 | `full_time_work_prop_7dav` | Offers a 7-day trailing window average of the`full_time_work_prop`. |
 | `part_time_work_prop_7dav` | Offers a 7-day trailing window average of the`part_time_work_prop`.|
 | `median_home_dwell_time_7dav` | Offers a 7-day trailing window average of the `median_home_dwell_time`.|
