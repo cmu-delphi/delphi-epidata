@@ -1,7 +1,7 @@
 ---
 title: Response Files
 parent: COVID Symptom Survey
-nav_order: 1
+nav_order: 3
 ---
 
 # Response Files
