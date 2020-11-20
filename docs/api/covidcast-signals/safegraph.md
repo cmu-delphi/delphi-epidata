@@ -81,7 +81,7 @@ Data source based on
 different points of interest ([POIs](https://docs.safegraph.com/v4.0/docs#section-core-places)) considering individual census block groups, using differential privacy to protect individual people's data privacy.
 
 Delphi gathers the number of daily visits to POIs of certain types(bars, restaurants, etc.) 
-from SafeGraph' Weekly Patterns data at the 5-digit ZipCode level, then aggregates and reports these features to the county, MSA, HRR, and state levels. The aggregated data is freely available through the COVIDcast API.
+from SafeGraph's Weekly Patterns data at the 5-digit ZipCode level, then aggregates and reports these features to the county, MSA, HRR, and state levels. The aggregated data is freely available through the COVIDcast API.
 
 For precise definitions of the quantities below, consult the [SafeGraph Weekly 
 Patterns documentation](https://docs.safegraph.com/docs/weekly-patterns).
