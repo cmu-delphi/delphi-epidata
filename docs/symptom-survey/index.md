@@ -19,7 +19,8 @@ as the [`fb-survey` data source](../api/covidcast-signals/fb-survey.md).
 This documentation is for users who have a signed Data Use Agreement to receive
 individual response data from the survey. It describes the survey items, data
 coding, data distribution, and the survey weights computed by Facebook. If you
-are a researcher and would like to get access to the data, check [Facebook's
-page on obtaining data
-access](https://dataforgood.fb.com/docs/covid-19-symptom-survey-request-for-data-access/),
-which sets out the basic conditions and provides a form to request access.
+are a researcher and would like to get access to the data, see our page on
+getting [data access](data-access.md).
+
+If you have questions about the survey or getting access to data, contact us at
+<delphi-survey-info@lists.andrew.cmu.edu>.
