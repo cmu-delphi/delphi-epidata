@@ -1,4 +1,4 @@
----
+        ---
 title: Signal Changelog
 parent: COVIDcast API
 nav_order: 3
