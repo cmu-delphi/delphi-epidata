@@ -289,9 +289,9 @@ well as
 
 ### Summary of Changes
 
-Wave 5 is a minor change to the survey instrument with the addition of a few new
-items. Please review the changes carefully when you use responses from multiple
-waves of this survey.
+Wave 5 contains minor changes to the survey instrument and a few new items.
+Please review the changes carefully when you use responses from multiple waves
+of this survey.
 
 Note that this changelog is a draft; as the survey instrument is finalized, this
 changelog will be updated to include all final changes.
