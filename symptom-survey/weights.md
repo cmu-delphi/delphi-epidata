@@ -1,7 +1,7 @@
 ---
 title: Survey Weights
 parent: COVID Symptom Survey
-nav_order: 2
+nav_order: 4
 ---
 
 # Survey Weights
