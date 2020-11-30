@@ -7,9 +7,13 @@ grand_parent: COVIDcast Epidata API
 # SafeGraph
 {: .no_toc}
 * **Source name:** `safegraph`
+* **Available for:** county, MSA, HRR, state (see [geography coding docs](../covidcast_geography.md))
+* **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
 
 This data source uses data reported by [SafeGraph](https://www.safegraph.com/)
-using anonymized location data from mobile phones. SafeGraph provides several different datasets to eligible researchers. We surface signals from two such datasets.
+using anonymized location data from mobile phones. SafeGraph provides several
+different datasets to eligible researchers. We surface signals from two such
+datasets.
 
 ## Table of contents
 {: .no_toc .text-delta}
@@ -22,8 +26,6 @@ using anonymized location data from mobile phones. SafeGraph provides several di
 * **First issued:** 23 June 2020
 * **Number of data revisions since 23 June 2020:** 1
 * **Date of last change:** 3 November 2020
-* **Available for:** county, state (see [geography coding docs](../covidcast_geography.md))
-* **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
 
 Data source based on [social
 distancing metrics](https://docs.safegraph.com/docs/social-distancing-metrics). 
@@ -71,10 +73,9 @@ additional day for SafeGraph's data to be ingested into the COVIDcast API.
 
 ## SafeGraph Weekly Patterns
 
-* **First issued:** 20 November 2020
+* **First issued:** 30 November 2020
 * **Number of data revisions since 23 June 2020:** 0
 * **Date of last change:** never
-* **Available for:** county, MSA, HRR, state (see [geography coding docs](../covidcast_geography.md))
 
 Data source based on
 [Weekly Patterns](https://docs.safegraph.com/docs/weekly-patterns) dataset. SafeGraph provides this data for
