@@ -1,6 +1,6 @@
 ---
 title: Digital Surveillance Sensors
-parent: Epidata API (Other Epidemics)
+parent: Epidata API (Other Diseases)
 ---
 
 # Digital Surveillance Sensors

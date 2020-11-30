@@ -1,6 +1,6 @@
 ---
 title: NoroSTAT
-parent: Epidata API (Other Epidemics)
+parent: Epidata API (Other Diseases)
 ---
 
 # NoroSTAT
