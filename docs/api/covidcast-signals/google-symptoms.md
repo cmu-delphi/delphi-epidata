@@ -8,9 +8,11 @@ grand_parent: COVIDcast API
 {: .no_toc}
 
 * **Source name:** `google-symptoms`
+* **First issued:** 30 November 2020
 * **Number of data revisions since 19 May 2020:** 0
 * **Date of last change:** Never
 * **Available for:** county, MSA, HRR, state (see [geography coding docs](../covidcast_geography.md))
+* **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
 
 This data source is based on [COVID-19 Search Trends symptoms dataset](https://github.com/google-research/open-covid-19-data/tree/master/data/exports/search_trends_symptoms_dataset). Using this search data, we estimate the volume of searches mapped to symptoms related to COVID-19 such as _anosmia_ (lack of smell) and _ageusia_(lack of taste). The resulting daily dataset for each region shows the relative frequency of searches for each symptom. The signals are measured in arbitrary units that are normalized for population and scaled by the maximum value of the normalized popularity within a 
 geographic region across a specific time range. **Thus, values are NOT 
