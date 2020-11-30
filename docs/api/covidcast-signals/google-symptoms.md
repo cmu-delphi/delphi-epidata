@@ -14,7 +14,7 @@ grand_parent: COVIDcast API
 * **Available for:** county, MSA, HRR, state (see [geography coding docs](../covidcast_geography.md))
 * **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
 
-This data source is based on [COVID-19 Search Trends symptoms dataset](https://github.com/google-research/open-covid-19-data/tree/master/data/exports/search_trends_symptoms_dataset). Using this search data, we estimate the volume of searches mapped to symptoms related to COVID-19 such as _anosmia_ (lack of smell) and _ageusia_(lack of taste). The resulting daily dataset for each region shows the relative frequency of searches for each symptom. The signals are measured in arbitrary units that are normalized for population and scaled by the maximum value of the normalized popularity within a 
+This data source is based on the [COVID-19 Search Trends symptoms dataset](https://github.com/google-research/open-covid-19-data/tree/master/data/exports/search_trends_symptoms_dataset). Using this search data, we estimate the volume of searches mapped to symptoms related to COVID-19 such as _anosmia_ (lack of smell) and _ageusia_(lack of taste). The resulting daily dataset for each region shows the relative frequency of searches for each symptom. The signals are measured in arbitrary units that are normalized for population and scaled by the maximum value of the normalized popularity within a
 geographic region across a specific time range. **Thus, values are NOT 
 comparable across geographic regions**. Larger numbers represent higher numbers of symptom-related searches.
 
@@ -49,8 +49,8 @@ most of the values should be in the range 0-1. However, since the scaling factor
 
 
 ## Geographical Aggregation
-The state-level and county-level `raw_search` signals for specific symptoms such as _anosmia_ and _ageusia_ are taken directly from the [COVID-19 Search Trends symptoms dataset](https://github.com/google-research/open-covid-19-data/tree/master/data/exports/search_trends_symptoms_dataset) without changes. We aggregate the county-level data to the MSA and HRR levels using the population-weighted average. For MSAs/HRRs with part of the counties with no data provided due to quality of privacy issue for a certain day, we simply assume the values to be 0 during aggregation. The values for MSAs/HRRs with no counties having non-NaN values will not be reported. Thus, the resulting MSA/HRR level data does not fully match the _actual_ MSA/HRR level data (which we are not provided).
+The state-level and county-level `raw_search` signals for specific symptoms such as _anosmia_ and _ageusia_ are taken directly from the [COVID-19 Search Trends symptoms dataset](https://github.com/google-research/open-covid-19-data/tree/master/data/exports/search_trends_symptoms_dataset) without changes. We aggregate the county-level data to the MSA and HRR levels using the population-weighted average. For MSAs/HRRs that include counties that have no data provided due to quality or privacy issues for a certain day, we simply assume the values to be 0 during aggregation. The values for MSAs/HRRs with no counties having non-NaN values will not be reported. Thus, the resulting MSA/HRR level data does not fully match the _actual_ MSA/HRR level data (which we are not provided).
 
 
 ## Lag and Backfill
-Google does not update the search data daily, but has an uncertain update frequency. The delay can range from 1 day to 10 days or even more. We check for updates everyday and provide the most up-to-date data.
+Google does not update the search data daily, but has an uncertain update frequency. The delay can range from 1 day to 10 days or even more. We check for updates every day and provide the most up-to-date data.
