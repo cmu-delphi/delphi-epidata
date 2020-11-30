@@ -310,7 +310,7 @@ survey, even if they have already taken it before:
 > have participated before. Completing the survey again will help us understand
 > how the situation is changing.
 
-It also more clearly states that the data may be shared and aggregates publicly
+Wave 5 now clearly states that the data may be shared and aggregates publicly when
 released:
 
 > The de-identified results of this survey may be used for our future studies or
