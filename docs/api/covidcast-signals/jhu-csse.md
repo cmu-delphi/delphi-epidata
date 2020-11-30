@@ -125,4 +125,9 @@ properly.
 This data set is republished from the COVID-19 Data Repository by the Center for
 Systems Science and Engineering (CSSE) at Johns Hopkins University, under the
 terms of the [Creative Commons Attribution 4.0 International (CC BY 4.0)
-license](https://creativecommons.org/licenses/by/4.0/).
+license](https://creativecommons.org/licenses/by/4.0/). If you use this data,
+you are requested to attribute the data as follows:
+
+> COVID-19 Data Repository by the Center for Systems Science and Engineering
+> (CSSE) at Johns Hopkins University.
+> <https://github.com/CSSEGISandData/COVID-19>
