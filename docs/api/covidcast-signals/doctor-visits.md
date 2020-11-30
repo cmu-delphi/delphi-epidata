@@ -1,15 +1,15 @@
 ---
 title: Doctor Visits
 parent: Data Sources and Signals
-grand_parent: COVIDcast API
+grand_parent: COVIDcast Epidata API
 ---
 
 # Doctor Visits
 {: .no_toc}
 
 * **Source name:** `doctor-visits`
-* **Number of data revisions since 19 May 2020:** 0
-* **Date of last change:** Never
+* **Number of data revisions since 19 May 2020:** 1
+* **Date of last change:** 9 November 2020
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 
 This data source is based on information about outpatient visits, provided to us

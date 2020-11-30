@@ -1,7 +1,7 @@
 ---
 title: Google Health Trends
 parent: Data Sources and Signals
-grand_parent: COVIDcast API
+grand_parent: COVIDcast Epidata API
 ---
 
 # Google Health Trends
