@@ -271,8 +271,11 @@ your protocol.
 
 ## Wave 5
 
-Wave 5 will be deployed in late November, 2020. It is available in English, as
-well as
+Wave 5 was deployed on November 24, 2020. Deployment was phased: a fraction of
+users were invited to take Wave 4, while the majority were invited to Wave 5, so
+data users can determine if changes in responses are due to survey revisions or
+to population changes at the same time. Wave 5 is available in English, as well
+as
 
 * Simplified Chinese
 * English (UK)
@@ -282,10 +285,12 @@ well as
 * Brazilian Portuguese
 * Vietnamese
 
-**Draft** files:
+Files:
 
 * [Survey text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_5.pdf)
   (PDF)
+* [Survey text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_5.docx)
+  (Word)
 
 ### Summary of Changes
 
@@ -305,6 +310,14 @@ survey, even if they have already taken it before:
 > have participated before. Completing the survey again will help us understand
 > how the situation is changing.
 
+It also more clearly states that the data may be shared and aggregates publicly
+released:
+
+> The de-identified results of this survey may be used for our future studies or
+> shared with other investigators for their research studies. Results published
+> by us and other researchers will be in aggregate and will not identify
+> individual participants or their responses.
+
 #### New Items
 
 * Item C16 asks respondents to estimate how many people are wearing masks in
@@ -322,6 +335,12 @@ survey, even if they have already taken it before:
   full time. Item E3 asks respondents what measures are applied to prevent the
   spread of COVID-19 when the child(ren) attend in-person classes (e.g.
   mandatory, mask wearing, closed communal areas).
+  * **Note:** Soon after survey deployment, we discovered that the translations
+    for French, Brazilian Portuguese, and Spanish (not Latin America) translated
+    these questions to use terms appropriate for education systems in those
+    countries, rather than education in the US. We disabled the question in
+    these translations, and are preparing updated translations that use the
+    correct terms.
 
 #### Changed Items
 
