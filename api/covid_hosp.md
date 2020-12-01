@@ -1,6 +1,6 @@
 ---
 title: COVID-19 Reported Patient Impact and Hospital Capacity by State Timeseries
-parent: Epidata API (Other Epidemics)
+parent: Epidata API (Other Diseases)
 ---
 
 # COVID-19 Hospitalization

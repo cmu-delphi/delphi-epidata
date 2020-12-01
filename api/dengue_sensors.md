@@ -1,6 +1,6 @@
 ---
 title: Dengue Digital Surveillance
-parent: Epidata API (Other Epidemics)
+parent: Epidata API (Other Diseases)
 ---
 
 # Dengue Digital Surveillance Sensors

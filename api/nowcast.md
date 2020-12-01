@@ -1,6 +1,6 @@
 ---
 title: ILI Nearby Nowcast
-parent: Epidata API (Other Epidemics)
+parent: Epidata API (Other Diseases)
 ---
 
 # ILI Nearby Nowcast

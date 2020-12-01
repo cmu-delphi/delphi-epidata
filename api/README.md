@@ -1,5 +1,5 @@
 ---
-title: Epidata API (Other Epidemics)
+title: Epidata API (Other Diseases)
 nav_order: 3
 has_children: true
 ---
