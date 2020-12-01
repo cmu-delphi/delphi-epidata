@@ -1,5 +1,5 @@
 ---
-title: SafeGraph Mobility
+title: SafeGraph
 parent: Data Sources and Signals
 grand_parent: COVIDcast Epidata API
 ---
