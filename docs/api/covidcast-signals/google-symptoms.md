@@ -1,7 +1,7 @@
 ---
 title: Google Symptoms
 parent: Data Sources and Signals
-grand_parent: COVIDcast API
+grand_parent: COVIDcast Epidata API
 ---
 
 # Google Symptoms
