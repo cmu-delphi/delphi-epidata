@@ -1,6 +1,6 @@
 ---
 title: AFHSB Metadata
-parent: Epidata API (Other Epidemics)
+parent: Epidata API (Other Diseases)
 ---
 
 # AFHSB Metadata

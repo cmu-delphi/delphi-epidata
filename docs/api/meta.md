@@ -1,6 +1,6 @@
 ---
 title: Metadata
-parent: Epidata API (Other Epidemics)
+parent: Epidata API (Other Diseases)
 ---
 
 # API Metadata
