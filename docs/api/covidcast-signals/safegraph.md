@@ -27,10 +27,10 @@ datasets.
 * **Number of data revisions since 23 June 2020:** 1
 * **Date of last change:** 3 November 2020
 
-Data source based on [social
-distancing metrics](https://docs.safegraph.com/docs/social-distancing-metrics). 
-SafeGraph provides this data for
-individual census block groups, using differential privacy to protect individual people's data privacy.
+Data source based on [social distancing
+metrics](https://docs.safegraph.com/docs/social-distancing-metrics).  SafeGraph
+provides this data for individual census block groups, using differential
+privacy to protect individual people's data privacy.
 
 Delphi creates features of the SafeGraph data at the census block group level,
 then aggregates these features to the county and state levels. The aggregated
@@ -59,10 +59,11 @@ doing so, we make the simplifying assumption that each CBG contributes an iid
 observation to the county-level distribution. `n` also serves as the sample
 size. The same method is used for aggregation to states.
 
-SafeGraph's signals measure mobility each day, which causes strong day-of-week effects:
-weekends have substantially different values than weekdays. Users interested in long-term
-trends, rather than mobility on one specific day, may prefer the `7dav` signals since
-averaging over the preceding 7 days removes these day-of-week effects.
+SafeGraph's signals measure mobility each day, which causes strong day-of-week
+effects: weekends have substantially different values than weekdays. Users
+interested in long-term trends, rather than mobility on one specific day, may
+prefer the `7dav` signals since averaging over the preceding 7 days removes
+these day-of-week effects.
 
 ### Lag
 
@@ -77,12 +78,17 @@ additional day for SafeGraph's data to be ingested into the COVIDcast API.
 * **Number of data revisions since 23 June 2020:** 0
 * **Date of last change:** never
 
-Data source based on
-[Weekly Patterns](https://docs.safegraph.com/docs/weekly-patterns) dataset. SafeGraph provides this data for
-different points of interest ([POIs](https://docs.safegraph.com/v4.0/docs#section-core-places)) considering individual census block groups, using differential privacy to protect individual people's data privacy.
+Data source based on [Weekly
+Patterns](https://docs.safegraph.com/docs/weekly-patterns) dataset. SafeGraph
+provides this data for different points of interest
+([POIs](https://docs.safegraph.com/v4.0/docs#section-core-places)) considering
+individual census block groups, using differential privacy to protect individual
+people's data privacy.
 
-Delphi gathers the number of daily visits to POIs of certain types(bars, restaurants, etc.) 
-from SafeGraph's Weekly Patterns data at the 5-digit ZipCode level, then aggregates and reports these features to the county, MSA, HRR, and state levels. The aggregated data is freely available through the COVIDcast API.
+Delphi gathers the number of daily visits to POIs of certain types(bars,
+restaurants, etc.)  from SafeGraph's Weekly Patterns data at the 5-digit ZipCode
+level, then aggregates and reports these features to the county, MSA, HRR, and
+state levels. The aggregated data is freely available through the COVIDcast API.
 
 For precise definitions of the quantities below, consult the [SafeGraph Weekly 
 Patterns documentation](https://docs.safegraph.com/docs/weekly-patterns).
@@ -94,14 +100,22 @@ Patterns documentation](https://docs.safegraph.com/docs/weekly-patterns).
 | `restaurants_visit_num` | The number of daily visits to restaurant-related POIs in a certain region |
 | `restaurants_visit_prop` | The number of daily visits to restaurant-related POIs in a certain region, per 100,000 population |
 
-SafeGraph delivers the number of daily visits to U.S. POIs, the details of which are described in 
-the [Places Manual](https://readme.safegraph.com/docs/places-manual#section-placekey) dataset. 
-Delphi aggregates the number of visits to certain types of places, such as 
-bars (places with [NAICS code = 722410](https://www.census.gov/cgi-bin/sssd/naics/naicsrch?input=722410&search=2017+NAICS+Search&search=2017)) and restaurants (places with [NAICS code = 722511](https://www.census.gov/cgi-bin/sssd/naics/naicsrch)). For example, Adagio Teas is coded as a bar because it serves alcohol, while Napkin Burger is considered to be a full-service restaurant.
-More information on NAICS codes is available from the [US Census Bureau: North American Industry Classification System](https://www.census.gov/eos/www/naics/index.html).
+SafeGraph delivers the number of daily visits to U.S. POIs, the details of which
+are described in the [Places
+Manual](https://readme.safegraph.com/docs/places-manual#section-placekey)
+dataset.  Delphi aggregates the number of visits to certain types of places,
+such as bars (places with [NAICS code =
+722410](https://www.census.gov/cgi-bin/sssd/naics/naicsrch?input=722410&search=2017+NAICS+Search&search=2017))
+and restaurants (places with [NAICS code =
+722511](https://www.census.gov/cgi-bin/sssd/naics/naicsrch)). For example,
+Adagio Teas is coded as a bar because it serves alcohol, while Napkin Burger is
+considered to be a full-service restaurant.  More information on NAICS codes is
+available from the [US Census Bureau: North American Industry Classification
+System](https://www.census.gov/eos/www/naics/index.html).
 
 ### Lag
 
-SafeGraph provides newly updated data for the previous week every Wednesday, 
-meaning estimates for a specific day are only available 3-9 days later. It may take up to an
-additional day for SafeGraph's data to be ingested into the COVIDcast API.
+SafeGraph provides newly updated data for the previous week every Wednesday,
+meaning estimates for a specific day are only available 3-9 days later. It may
+take up to an additional day for SafeGraph's data to be ingested into the
+COVIDcast API.
