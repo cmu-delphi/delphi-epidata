@@ -6,8 +6,7 @@ nav_order: 1
 
 # COVIDcast Epidata API
 
-This is the documentation for accessing the Delphi's COVID-19 Surveillance
-Streams (`covidcast`) endpoint of [Delphi](https://delphi.cmu.edu/)'s
+This is the documentation for accessing Delphi's COVID-19 indicators, an (`covidcast`) endpoint of [Delphi](https://delphi.cmu.edu/)'s
 epidemiological data API. This API provides data on the spread and impact of the
 COVID-19 pandemic across the United States, most of which is available at the
 county level and updated daily. This data powers our public [COVIDcast
@@ -35,7 +34,7 @@ href="https://lists.andrew.cmu.edu/mailman/listinfo/delphi-covidcast-api">subscr
 {:toc}
 
 ## Licensing
-Like all other Delphi Epidata datasets, our COVIDcast data is freely available to the public. However, our COVID-19 surveillance streams include data from many different sources, with data licensing handled separately for each source. For a summary of the licenses used and a list of the indicators each license applies to, we suggest users visit our [COVIDcast licensing](covidcast_licensing.md) page. Licensing information is also summarized on each indicator's details page.
+Like all other Delphi Epidata datasets, our COVIDcast data is freely available to the public. However, our COVID-19 indicators include data from many different sources, with data licensing handled separately for each source. For a summary of the licenses used and a list of the indicators each license applies to, we suggest users visit our [COVIDcast licensing](covidcast_licensing.md) page. Licensing information is also summarized on each indicator's details page.
 We encourage academic users to [cite](README.md#citing) the data if they
 use it in any publications. Our [data ingestion
 code](https://github.com/cmu-delphi/covidcast-indicators) and [API server
@@ -184,7 +183,7 @@ requests for smaller time intervals.
 
 ### Facebook Survey CLI on 2020-04-06 to 2010-04-10 (county 06001)
 
-https://api.covidcast.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&signal=raw_cli&time_type=day&geo_type=county&time_values=20200406-20200410&geo_value=06001
+https://api.covidcast.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&signal=smoothed_cli&time_type=day&geo_type=county&time_values=20200406-20200410&geo_value=06001
 
 ```json
 {
@@ -206,7 +205,7 @@ https://api.covidcast.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-su
 
 ### Facebook Survey CLI on 2020-04-06 (all counties)
 
-https://api.covidcast.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&signal=raw_cli&time_type=day&geo_type=county&time_values=20200406&geo_value=*
+https://api.covidcast.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&signal=smoothed_cli&time_type=day&geo_type=county&time_values=20200406&geo_value=*
 
 ```json
 {
