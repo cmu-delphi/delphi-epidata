@@ -113,6 +113,10 @@ considered to be a full-service restaurant.  More information on NAICS codes is
 available from the [US Census Bureau: North American Industry Classification
 System](https://www.census.gov/eos/www/naics/index.html).
 
+### Limitation
+The number of POIs coded as bars is much smaller than the number of POIs coded as restaurants. There is no bar visits data provided in SafeGraph's Weekly Patterns data for Alaska, Delaware, Maine, North Dakota, New Hampshire, South Dakota, Vermont, West Virginia, Wyoming consistently. For certain dates, bar visits data is also missing for District of Columbia, Idaho and Washington. Restaurant visits data is available for all of the states, District of Columbia and Puerto Rico.
+
+
 ### Lag
 
 SafeGraph provides newly updated data for the previous week every Wednesday,
