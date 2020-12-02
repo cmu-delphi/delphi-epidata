@@ -170,7 +170,7 @@ above.
 
 For the CLI indicator, we apply the same method to the numerator $$Y_{it} =
 Y_{it}^{\text{Covid-like}} + \left((Y_{it}^{\text{Flu-like}} +
-Y_{it}^{\text{Mixed}}) - Y_{it}^{\text{Flu}}\right)$$
+Y_{it}^{\text{Mixed}}) - Y_{it}^{\text{Flu}}\right).$$
 
 ### Backwards Padding
 
