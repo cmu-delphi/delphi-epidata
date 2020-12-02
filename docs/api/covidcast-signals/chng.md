@@ -97,6 +97,8 @@ for confirmed influenza cases, which are unrelated to the COVID-19 coronavirus.
 
 ### COVID Illness
 
+The following estimation method is used for the `*_outpatient_covid` signals.
+
 For a fixed location $$i$$ and time $$t$$, let $$Y_{it}$$
 denote the Covid counts and let $$N_{it}$$ be the
 total count of visits (the *Denominator*). Our estimate of the COVID-19
@@ -107,6 +109,8 @@ $$
 $$
 
 ### COVID-Like Illness
+
+The following estimation method is used for the `*_outpatient_cli` signals.
 
 For a fixed location $$i$$ and time $$t$$, let $$Y_{it}^{\text{Covid-like}}$$,
 $$Y_{it}^{\text{Flu-like}}$$, $$Y_{it}^{\text{Mixed}}$$, $$Y_{it}^{\text{Flu}}$$
