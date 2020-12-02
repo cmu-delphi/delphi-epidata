@@ -3,9 +3,9 @@ title: Home
 nav_order: 0
 ---
 
-# Epidata API
+# Delphi's Epidata API
 
-The Epidata API provides real-time access to epidemiological surveillance data.
+Delphi's Epidata API provides real-time access to epidemiological surveillance data.
 It is built and maintained by the Carnegie Mellon University [Delphi research
 group](https://delphi.cmu.edu/). The Epidata API includes:
 
@@ -16,7 +16,7 @@ group](https://delphi.cmu.edu/). The Epidata API includes:
   other epidemics tracked by Delphi through a variety of data streams.
 
 The Delphi group is extremely grateful for Pedrito Maynard-Zhang for all his
-help with the Epidata API [documentation](api/index.md).
+help with the Epidata API documentation.
 
 Developers interested in modifying or extending this project are directed to
 the [Epidata API Development Guide](epidata_development.md).
