@@ -125,5 +125,5 @@ COVIDcast API.
 This data source is based on mobile devices that are members of SafeGraph panels, which is not necessarily the same thing as measuring the general public. This means that counts are subject to bias if some regions have a greater density of SafeGraph panel members as a percentage of the population. These counts do not represent absolute counts, and only count visits by members of the panel in that region.
 
 The number of POIs coded as bars is much smaller than the number of POIs coded as restaurants. 
-There is no bar visits data provided in SafeGraph's Weekly Patterns data for Alaska, Delaware, Maine, North Dakota, New Hampshire, South Dakota, Vermont, West Virginia, Wyoming consistently. 
+SafeGraph's Weekly Patterns data consistently lacks data on bar visits for Alaska, Delaware, Maine, North Dakota, New Hampshire, South Dakota, Vermont, West Virginia, and Wyoming. 
 For certain dates, bar visits data is also missing for District of Columbia, Idaho and Washington. Restaurant visits data is available for all of the states, District of Columbia and Puerto Rico.
