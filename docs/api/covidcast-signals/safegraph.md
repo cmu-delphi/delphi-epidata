@@ -95,10 +95,10 @@ Patterns documentation](https://docs.safegraph.com/docs/weekly-patterns).
 
 | Signal | Description |
 | --- | --- |
-| `bars_visit_num` | The number of daily visits to bar-related POIs in a certain region |
-| `bars_visit_prop` | The number of daily visits to bar-related POIs in a certain region, per 100,000 population |
-| `restaurants_visit_num` | The number of daily visits to restaurant-related POIs in a certain region |
-| `restaurants_visit_prop` | The number of daily visits to restaurant-related POIs in a certain region, per 100,000 population |
+| `bars_visit_num` | The number of daily visits made by those with SafeGraph's apps to bar-related POIs in a certain region |
+| `bars_visit_prop` | The number of daily visits made by those with SafeGraph's apps to bar-related POIs in a certain region, per 100,000 population |
+| `restaurants_visit_num` | The number of daily visits made by those with SafeGraph's apps to restaurant-related POIs in a certain region |
+| `restaurants_visit_prop` | The number of daily visits made by those with SafeGraph's apps to restaurant-related POIs in a certain region, per 100,000 population |
 
 SafeGraph delivers the number of daily visits to U.S. POIs, the details of which
 are described in the [Places
@@ -119,3 +119,11 @@ SafeGraph provides newly updated data for the previous week every Wednesday,
 meaning estimates for a specific day are only available 3-9 days later. It may
 take up to an additional day for SafeGraph's data to be ingested into the
 COVIDcast API.
+
+### Limitations
+
+This data source is based on mobile devices that are members of SafeGraph panels, which is not necessarily the same thing as measuring the general public. This means that counts are subject to bias if some regions have a greater density of SafeGraph panel members as a percentage of the population. These counts do not represent absolute counts, and only count visits by members of the panel in that region.
+
+The number of POIs coded as bars is much smaller than the number of POIs coded as restaurants. 
+SafeGraph's Weekly Patterns data consistently lacks data on bar visits for Alaska, Delaware, Maine, North Dakota, New Hampshire, South Dakota, Vermont, West Virginia, and Wyoming. 
+For certain dates, bar visits data is also missing for District of Columbia, Idaho and Washington. Restaurant visits data is available for all of the states, as well as the District of Columbia and Puerto Rico.
