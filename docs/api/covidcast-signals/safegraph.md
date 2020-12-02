@@ -126,4 +126,4 @@ This data source is based on mobile devices that are members of SafeGraph panels
 
 The number of POIs coded as bars is much smaller than the number of POIs coded as restaurants. 
 SafeGraph's Weekly Patterns data consistently lacks data on bar visits for Alaska, Delaware, Maine, North Dakota, New Hampshire, South Dakota, Vermont, West Virginia, and Wyoming. 
-For certain dates, bar visits data is also missing for District of Columbia, Idaho and Washington. Restaurant visits data is available for all of the states, District of Columbia and Puerto Rico.
+For certain dates, bar visits data is also missing for District of Columbia, Idaho and Washington. Restaurant visits data is available for all of the states, as well as the District of Columbia and Puerto Rico.
