@@ -95,10 +95,10 @@ Patterns documentation](https://docs.safegraph.com/docs/weekly-patterns).
 
 | Signal | Description |
 | --- | --- |
-| `bars_visit_num` | The number of daily visits to bar-related POIs in a certain region |
-| `bars_visit_prop` | The number of daily visits to bar-related POIs in a certain region, per 100,000 population |
-| `restaurants_visit_num` | The number of daily visits to restaurant-related POIs in a certain region |
-| `restaurants_visit_prop` | The number of daily visits to restaurant-related POIs in a certain region, per 100,000 population |
+| `bars_visit_num` | The number of daily visits made by those with SafeGraph's apps to bar-related POIs in a certain region |
+| `bars_visit_prop` | The number of daily visits made by those with SafeGraph's apps to bar-related POIs in a certain region, per 100,000 population |
+| `restaurants_visit_num` | The number of daily visits made by those with SafeGraph's apps to restaurant-related POIs in a certain region |
+| `restaurants_visit_prop` | The number of daily visits made by those with SafeGraph's apps to restaurant-related POIs in a certain region, per 100,000 population |
 
 SafeGraph delivers the number of daily visits to U.S. POIs, the details of which
 are described in the [Places
@@ -119,3 +119,8 @@ SafeGraph provides newly updated data for the previous week every Wednesday,
 meaning estimates for a specific day are only available 3-9 days later. It may
 take up to an additional day for SafeGraph's data to be ingested into the
 COVIDcast API.
+
+### Limitations
+
+This data source is based on provided through those that are part of SafeGraph's panel members. It is important to note that counts are subject to bias if some regions have more SafeGraph panel members. These counts do not represent absolute counts, only count in the panel in that region.
+
