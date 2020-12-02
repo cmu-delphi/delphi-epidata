@@ -72,13 +72,13 @@ We receive data on the following six categories of counts:
 - Covid: Daily count of all unique visits with primary ICD-10 code in any of:
 {U07.1, B97.21, or B97.29}.
 - COVID-like: Daily count of all unique outpatient visits with primary ICD-10 code
-	of any of: {U071, U072, B9729, J1281, Z03818, B342, J1289}.
+	of any of: {U07.1, U07.2, B97.29, J12.81, Z03.818, B34.2, J12.89}.
 - Flu-like: Daily count of all unique outpatient visits with primary ICD-10 code
-	of any of: {J22, B349}. The occurrence of these codes in an area is
+	of any of: {J22, B34.9}. The occurrence of these codes in an area is
 	correlated with that area's historical influenza activity, but are
 	diagnostic codes not specific to influenza and can appear in COVID-19 cases.
 - Mixed: Daily count of all unique outpatient visits with primary ICD-10 code of
-	any of: {Z20828, J129}. The occurance of these codes in an area is
+	any of: {Z20.828, J12.9}. The occurance of these codes in an area is
 	correlated to a blend of that area's COVID-19 confirmed case counts and
 	influenza behavior, and are not diagnostic codes specific to either disease.
 - Flu: Daily count of all unique outpatient visits with primary ICD-10 code of
