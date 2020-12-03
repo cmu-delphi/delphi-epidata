@@ -4,11 +4,11 @@ nav_order: 3
 has_children: true
 ---
 
-# Delphi Epidata API
+# Epidata API (Other Diseases)
 
 This is the home of [Delphi](https://delphi.cmu.edu/)'s epidemiological data
 API for tracking epidemics such as influenza, dengue, and norovirus. Note that
-our work on COVID-19 is available in the [COVIDcast Epidata API documentation](covidcast.md).
+our work on COVID-19 is described in the [COVIDcast Epidata API documentation](covidcast.md).
 
 ## Contributing
 
@@ -197,60 +197,7 @@ https://delphi.cmu.edu/epidata/api.php?source=wiki&language=en&articles=influenz
 
 # Code Samples
 
-Libraries are available for [CoffeeScript](../../src/client/delphi_epidata.coffee), [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R). The following samples show how to import the library and fetch national FluView data for epiweeks `201440` and `201501-201510` (11 weeks total).
-
-### CoffeeScript (in Node.js)
-
-````coffeescript
-# Import
-{Epidata} = require('./delphi_epidata')
-# Fetch data
-callback = (result, message, epidata) ->
-  console.log(result, message, epidata?.length)
-Epidata.fluview(callback, ['nat'], [201440, Epidata.range(201501, 201510)])
-````
-
-### JavaScript (in a web browser)
-
-````html
-<!-- Imports -->
-<script src="jquery.js"></script>
-<script src="delphi_epidata.js"></script>
-<!-- Fetch data -->
-<script>
-  var callback = function(result, message, epidata) {
-    console.log(result, message, epidata != null ? epidata.length : void 0);
-  };
-  Epidata.fluview(callback, ['nat'], [201440, Epidata.range(201501, 201510)]);
-</script>
-````
-
-### Python
-
-Optionally install the package using pip(env):
-````bash
-pip install delphi-epidata
-````
-
-Otherwise, place `delphi_epidata.py` from this repo next to your python script.
-
-````python
-# Import
-from delphi_epidata import Epidata
-# Fetch data
-res = Epidata.fluview(['nat'], [201440, Epidata.range(201501, 201510)])
-print(res['result'], res['message'], len(res['epidata']))
-````
-
-### R
-
-````R
-# Import
-source('delphi_epidata.R')
-# Fetch data
-res <- Epidata$fluview(list('nat'), list(201440, Epidata$range(201501, 201510)))
-cat(paste(res$result, res$message, length(res$epidata), "\n"))
-````
+To access our Epidata API (Other Diseases) visit our [Epidata API Client Libraries)](client_libraries.md). For anyone looking for COVIDCast data, please visit our [COVIDCast Libraries](covidcast_clients.md)
 
 # Related work
 
