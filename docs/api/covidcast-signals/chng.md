@@ -40,6 +40,12 @@ several days after they occur, these signals are typically available with
 several days of lag. This means that estimates for a specific day are only
 available several days later.
 
+Note that we expect estimates available for the most recent X days to be substantially revised due to later data revisions. 
+
+As doctor’s visits are available at a significant and variable latency, the signal experiences heavy backfill with data delayed for a couple of weeks. 
+ 
+We are currently working on adjustments to correct for this.
+
 The amount of lag in reporting can vary, and not all visits are reported with
 the same lag. After we first report estimates for a specific date, further data
 may arrive about outpatient visits on that date. When this occurs, we issue new
@@ -61,6 +67,8 @@ Due to changes in medical-seeking behavior on holidays, this data source has
 upward spikes in the fraction of doctor's visits that are COVID-related around
 major holidays (e.g. Memorial Day, July 4, Labor Day, etc.). These spikes are
 not necessarily indicative of a true increase of COVID-19 in a location.
+
+Note that due to Y, estimates are not always comparable across geo locations. We are currently working on adjustments to correct this spatial bias.
 
 ## Qualifying Conditions
 
