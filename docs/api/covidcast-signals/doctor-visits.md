@@ -33,19 +33,19 @@ percentage of COVID-related doctor's visits in a given location, on a given day.
 Note that because doctor's visits may be reported to the health system partners
 several days after they occur, these signals are typically available with
 several days of lag. This means that estimates for a specific day are only
-available several days later.
-
-Note that we expect estimates available for the most recent X days to be substantially revised due to later data revisions. 
-
-As insurnace claims are available at a significant and variable latency, the signal experiences heavy backfill with data delayed for a couple of weeks. Visit [Doctor's Visits](https://delphi.cmu.edu/blog/2020/11/05/a-syndromic-covid-19-indicator-based-on-insurance-claims-of-outpatient-visits/#backfill) for more information on backfill.
+available several days later. 
 
 The amount of lag in reporting can vary, and not all visits are reported with
 the same lag. After we first report estimates for a specific date, further data
 may arrive about outpatients visits on that date. When this occurs, we issue new
-estimates for those dates. This means that a reported estimate for, say, June
+estimates for those dates to backfill any missing data. This means that a reported estimate for, say, June
 10th may first be available in the API on June 14th and subsequently revised on
 June 16th.
 
+ As insurnace claims are available at a significant and variable latency, the signal experiences heavy backfill with data delayed for a couple of weeks. 
+ Note that we expect estimates available for the most recent X days to be substantially revised due to later data revisions, estimates for past dates are more static due to these revisions having already occured. 
+
+See our [blog post](https://delphi.cmu.edu/blog/2020/11/05/a-syndromic-covid-19-indicator-based-on-insurance-claims-of-outpatient-visits/#backfill) for more information on backfill.
 
 ## Limitations
 
@@ -63,7 +63,7 @@ major holidays (e.g. Memorial Day, July 4, Labor Day, etc.). These spikes are
 not necessarily indicative of a true increase of COVID-like illness in a
 location.
 
-Note that due to Y, estimates are not always comparable across geo locations. We are currently working on adjustments to correct this spatial bias.
+Note that due to local differences in health record-keeping practices, estimates are not always comparable across locations. We are currently working on adjustments to correct this spatial bias.
 
 ## Qualifying Conditions
 
