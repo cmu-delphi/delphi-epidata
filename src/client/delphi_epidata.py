@@ -55,7 +55,7 @@ class Epidata:
     """Request and parse epidata."""
     try:
       # API call
-      return requests.get(Epidata.BASE_URL, params, headers=_HEADERS).json()
+      return requests.post(Epidata.BASE_URL, params, headers=_HEADERS).json()
     except Exception as e:
       # Something broke
       return {'result': 0, 'message': 'error: ' + str(e)}
