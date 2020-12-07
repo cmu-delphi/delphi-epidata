@@ -10,7 +10,7 @@ This is the home of [Delphi](https://delphi.cmu.edu/)'s epidemiological data
 API for tracking epidemics such as influenza, dengue, and norovirus. Note that
 our work on COVID-19 is described in the [COVIDcast Epidata API documentation](covidcast.md).
 
-## Table of contents
+## Table of Contents
 {: .no_toc .text-delta}
 
 1. TOC
@@ -41,7 +41,7 @@ like to cite it, we would gratefully recommend the following copy:
 > _Delphi Epidata API_.
 > https://github.com/cmu-delphi/delphi-epidata
 
-## Data licensing
+## Data Licensing
 
 Several datasets surfaced through this API are carefully curated mirrors of data
 acquired from various external parties. Such data is subject to its original
@@ -205,6 +205,6 @@ https://delphi.cmu.edu/epidata/api.php?source=wiki&language=en&articles=influenz
 
 To access our Epidata API (Other Diseases) visit our [Epidata API Client Libraries)](client_libraries.md). For anyone looking for COVIDCast data, please visit our [COVIDCast Libraries](covidcast_clients.md)
 
-# Related work
+# Related Work
 
 Please visit our [related works](related_work.md) page for more information.
