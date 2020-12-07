@@ -231,6 +231,13 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
           }],
           'message': 'success',
       })
+    with self.subTest(name='long request'):
+      # fetch data, without specifying issue or lag
+      response_1 = Epidata.covidcast(
+          'src', 'sig'*3000, 'day', 'county', 20200414, '01234')
+
+      # check result
+      self.assertEqual(response_1, {'message': 'no results', 'result': -2})
 
   def test_geo_value(self):
     """test different variants of geo types: single, *, multi."""

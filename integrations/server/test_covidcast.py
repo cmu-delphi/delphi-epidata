@@ -79,6 +79,41 @@ class CovidcastTests(unittest.TestCase):
       'message': 'success',
     })
 
+  def test_uri_too_long(self):
+    """Make a simple round-trip with some sample data."""
+
+    # insert dummy data
+    self.cur.execute('''
+      insert into covidcast values
+        (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
+          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 1, False)
+    ''')
+    self.cnx.commit()
+
+    # make the request with GET
+    response = requests.get(BASE_URL, {
+      'source': 'covidcast',
+      'data_source': 'src'*10000,
+      'signal': 'sig',
+      'time_type': 'day',
+      'geo_type': 'county',
+      'time_values': 20200414,
+      'geo_value': '01234',
+    })
+    self.assertEqual(response.status_code, 414)
+
+    # make request with POST
+    response = requests.post(BASE_URL, {
+      'source': 'covidcast',
+      'data_source': 'src'*10000,
+      'signal': 'sig',
+      'time_type': 'day',
+      'geo_type': 'county',
+      'time_values': 20200414,
+      'geo_value': '01234',
+    })
+
+    self.assertEqual(response.status_code, 200)
 
   def test_csv_format(self):
     """Test generate csv data."""
