@@ -12,8 +12,8 @@ group](https://delphi.cmu.edu/). The Epidata API includes:
 - [COVIDcast data](api/covidcast.md), providing daily updates about COVID-19
   activity across the United States. [API clients](api/covidcast_clients.md) for
   quick access to COVID data are available.
-- [Data about other epidemics](api/README.md), including influenza, dengue, and
-  other epidemics tracked by Delphi through a variety of data streams.
+- [Data about other diseases](api/README.md), including influenza, dengue, and
+  other diseases tracked by Delphi through a variety of data streams.
 
 The Delphi group is extremely grateful for Pedrito Maynard-Zhang for all his
 help with the Epidata API [documentation](api/README.md).
