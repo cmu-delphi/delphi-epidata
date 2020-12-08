@@ -80,7 +80,7 @@ class CovidcastTests(unittest.TestCase):
     })
 
   def test_uri_too_long(self):
-    """Make a simple round-trip with some sample data."""
+    """Test that a long request yields a 414 with GET but works with POST."""
 
     # insert dummy data
     self.cur.execute('''

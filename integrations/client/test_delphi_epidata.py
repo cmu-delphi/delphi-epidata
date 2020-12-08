@@ -243,6 +243,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
   @patch('requests.post')
   @patch('requests.get')
   def test_request_method(self, get, post):
+    """Test that a GET request is default and POST is used if a 414 is returned."""
     with self.subTest(name='get request'):
       Epidata.covidcast('src', 'sig', 'day', 'county', 20200414, '01234')
       get.assert_called_once()
