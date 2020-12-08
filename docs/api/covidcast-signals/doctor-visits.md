@@ -43,7 +43,7 @@ estimates for those dates to backfill any missing data. This means that a report
 June 16th.
 
  As insurance claims are available at a significant and variable latency, the signal experiences heavy backfill with data delayed for a couple of weeks. 
- Note that we expect estimates available for the most recent X days to be substantially revised due to later data revisions, estimates for past dates are more static due to these revisions having already occured. 
+We expect estimates available for the most recent 7-14 days to change substantially in later data revisions. Estimates for dates more than 28 days in the past are expected to remain fairly static, as most major revisions have already occurred.
 
 See our [blog post](https://delphi.cmu.edu/blog/2020/11/05/a-syndromic-covid-19-indicator-based-on-insurance-claims-of-outpatient-visits/#backfill) for more information on backfill.
 
