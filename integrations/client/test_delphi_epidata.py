@@ -251,7 +251,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
       mock_response = MagicMock()
       mock_response.status_code = 414
       get.return_value = mock_response
-      Epidata.covidcast('src', 'sig'*3000, 'day', 'county', 20200414, '01234')
+      Epidata.covidcast('src', 'sig', 'day', 'county', 20200414, '01234')
       self.assertEqual(get.call_count, 2)  # one from post test and one from get test
       post.assert_called_once()
 
