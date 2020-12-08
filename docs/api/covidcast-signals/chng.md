@@ -48,7 +48,7 @@ estimates for those dates to backfill any missing data. This means that a report
 June 16th.
 
 As doctor’s visits data are available at a significant and variable latency, the signal experiences heavy backfill with data delayed for a couple of weeks. 
-Note that we expect estimates available for the most recent X days to be substantially revised due to later data revisions, estimates for past dates are more static due to these revisions having already occured. 
+We expect estimates available for the most recent X days to change substantially in later data revisions. Estimates for dates more than W days in the past are expected to remain fairly static, as most major revisions have already occurred. 
 
 We are currently working on adjustments to correct for this.
 
