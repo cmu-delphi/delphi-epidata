@@ -42,7 +42,7 @@ estimates for those dates to backfill any missing data. This means that a report
 10th may first be available in the API on June 14th and subsequently revised on
 June 16th.
 
- As insurnace claims are available at a significant and variable latency, the signal experiences heavy backfill with data delayed for a couple of weeks. 
+ As insurance claims are available at a significant and variable latency, the signal experiences heavy backfill with data delayed for a couple of weeks. 
  Note that we expect estimates available for the most recent X days to be substantially revised due to later data revisions, estimates for past dates are more static due to these revisions having already occured. 
 
 See our [blog post](https://delphi.cmu.edu/blog/2020/11/05/a-syndromic-covid-19-indicator-based-on-insurance-claims-of-outpatient-visits/#backfill) for more information on backfill.
