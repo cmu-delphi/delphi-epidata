@@ -32,7 +32,7 @@ certificate data received and coded by the National Center for Health Statistics
 | `deaths_covid_and_pneumonia_notflu_incidence_prop`| Number of weekly new deaths involving COVID-19 and Pneumonia, excluding Influenza, per 100,000 population |
 |`deaths_pneumonia_or_flu_or_covid_incidence_num`| Number of weekly new deaths involving Pneumonia, Influenza, or COVID-19|
 |`deaths_pneumonia_or_flu_or_covid_incidence_prop`| Number of weekly new deaths involving Pneumonia, Influenza, or COVID-19, per 100,000 population|
-|`deaths_percent_of_expected`| The number of weekly new deaths for all causes in 2020 compared to the average number across the same week in 2017–2019|
+|`deaths_percent_of_expected`| Number of weekly new deaths for all causes in 2020 compared to the average number across the same week in 2017–2019|
 
 These signals are taken directly from [Table
 1](https://www.cdc.gov/nchs/nvss/vsrr/COVID19/index.htm) without
@@ -53,7 +53,7 @@ export the state-level data as-is in a weekly format.
 
 ## Geographical Exceptions
 
-New York City is considered as a special state in the NCHS Mortality data, but
+New York City is listed as its own region in the NCHS Mortality data, but
 we don't consider NYC separately. The death counts for NYC are included in New
 York State in our reports.
 
@@ -81,7 +81,7 @@ There is a lag in time between when the death occurred and when the death
 certificate is completed, submitted to NCHS, and processed for reporting
 purposes. The death counts for earlier weeks are continually revised and may
 increase or decrease as new and updated death certificate data are received from
-the states by NCHS. This delay can range from 1 week to 8 weeks or even more.
+the states by NCHS. This delay can range from 1 to 8 weeks or even more.
 Some states report deaths on a daily basis, while other states report deaths weekly
 or monthly. State vital record reporting may also be affected or delayed by
 COVID-19 related response activities which make death counts not comparable
