@@ -67,6 +67,14 @@ the NCHS morality data and use Python package
 [epiweeks](https://pypi.org/project/epiweeks/) to convert them into epiweek
 format.
 
+## Missingness
+
+NCHS suppresses some data to protect individual privacy and avoid publishing
+low-confidence figures. This includes data for jurisdictions where counts are
+between 1 and 9, and data for weeks where the counts are less than 50% of the
+expected number, since these provisional counts are highly incomplete and
+potentially misleading.
+
 ## Lag and Backfill
 
 There is a lag in time between when the death occurred and when the death
