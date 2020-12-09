@@ -280,7 +280,7 @@ data in the estimation procedures described above.
 ## Behavior Indicators
 
 | Signal | Description | Survey Item | Introduced |
-| --- | --- | --- |
+| --- | --- | --- | --- |
 | `smoothed_wearing_mask` | Estimated percentage of people who wore a mask for most or all of the time while in public in the past 5 days; those not in public in the past 5 days are not counted. | C14 | Wave 4, Sept 8, 2020 |
 | `smoothed_others_masked` | Estimated percentage of respondents who say that most or all *other* people wear masks, when they are in public and social distancing is not possible | C16 | Wave 5, Nov 24, 2020 |
 | `smoothed_travel_outside_state_5d` | Estimated percentage of respondents who report traveling outside their state in the past 5 days | C6 | Wave 1 |
