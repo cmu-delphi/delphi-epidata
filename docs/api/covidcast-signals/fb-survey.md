@@ -281,7 +281,7 @@ data in the estimation procedures described above.
 
 | Signal | Description | Survey Item | Introduced |
 | --- | --- | --- |
-| `smoothed_wearing_mask` | Estimated percentage of people who wore a mask most or all of the time while in public in the past 5 days; those not in public in the past 5 days are not counted. | C14 | Wave 4, Sept 8, 2020 |
+| `smoothed_wearing_mask` | Estimated percentage of people who wore a mask for most or all of the time while in public in the past 5 days; those not in public in the past 5 days are not counted. | C14 | Wave 4, Sept 8, 2020 |
 | `smoothed_others_masked` | Estimated percentage of respondents who say that most or all *other* people wear masks, when they are in public and social distancing is not possible | C16 | Wave 5, Nov 24, 2020 |
 | `smoothed_travel_outside_state_5d` | Estimated percentage of respondents who report traveling outside their state in the past 5 days | C6 | Wave 1 |
 | `smoothed_work_outside_home_1d` | Estimated percentage of respondents who worked or went to school outside their home in the past 24 hours | C13 | Wave 4, Sept 8, 2020 |
@@ -324,9 +324,9 @@ also available. These have names beginning `smoothed_w`, such as
 | `smoothed_worried_become_ill` | Estimated percentage of respondents who reported feeling very or somewhat worried that "you or someone in your immediate family might become seriously ill from COVID-19" | C9 |
 | `smoothed_worried_finances` | Estimated percentage of respondents who report being very or somewhat worried about their "household's finances for the next month" | C15 |
 
-Some of these questions were present from the earliest waves of the survey, but
-only since Wave 4 have respondents consented to aggregate data being used to
-study other impacts of COVID, such as mental health. These aggregates hence only
+Some of these questions were present in the earliest waves of the survey, but
+only in Wave 4 did respondents consent to our use of aggregate data to
+study other impacts of COVID, such as mental health. Hence, these aggregates only
 include respondents to Wave 4 and later waves, beginning September 8, 2020.
 
 Weighted versions of these signals, using the [survey weighting described
