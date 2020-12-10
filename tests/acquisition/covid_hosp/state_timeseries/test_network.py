@@ -6,7 +6,8 @@ from unittest.mock import MagicMock
 from unittest.mock import sentinel
 
 # py3tester coverage target
-__test_target__ = 'delphi.epidata.acquisition.covid_hosp.network'
+__test_target__ = \
+    'delphi.epidata.acquisition.covid_hosp.state_timeseries.network'
 
 
 class NetworkTests(unittest.TestCase):

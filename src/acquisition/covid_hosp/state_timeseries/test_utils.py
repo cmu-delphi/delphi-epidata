@@ -18,10 +18,17 @@ import pandas
 
 class TestUtils:
 
-  def __init__(self, path_to_repo_root):
-    self.data_dir = (
-      Path(path_to_repo_root) / 'testdata/acquisition/covid_hosp/'
-    ).resolve()
+  def __init__(self, abs_path_to_caller):
+    # navigate to the root of the delphi-epidata repo
+    path_to_repo = Path(abs_path_to_caller)
+    while path_to_repo.name != 'delphi-epidata':
+      if not path_to_repo.name:
+        raise Exception('unable to determine path to delphi-epidata repo')
+      path_to_repo = path_to_repo.parent
+
+    # path to the data, relative to the root of the repo
+    rel_data_path = 'testdata/acquisition/covid_hosp/state_timeseries/'
+    self.data_dir = (path_to_repo / rel_data_path).resolve()
 
   def load_sample_metadata(self):
     with open(self.data_dir / 'metadata.json', 'rb') as f:

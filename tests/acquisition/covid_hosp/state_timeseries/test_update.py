@@ -1,15 +1,15 @@
 """Unit tests for update.py."""
 
 # standard library
-from pathlib import Path
 import unittest
 from unittest.mock import MagicMock
 
 # first party
-from delphi.epidata.acquisition.covid_hosp.test_utils import TestUtils
+from delphi.epidata.acquisition.covid_hosp.state_timeseries.test_utils import TestUtils
 
 # py3tester coverage target
-__test_target__ = 'delphi.epidata.acquisition.covid_hosp.update'
+__test_target__ = \
+    'delphi.epidata.acquisition.covid_hosp.state_timeseries.update'
 
 
 class UpdateTests(unittest.TestCase):
@@ -18,8 +18,7 @@ class UpdateTests(unittest.TestCase):
     """Perform per-test setup."""
 
     # configure test data
-    path_to_repo_root = Path(__file__).parent.parent.parent.parent
-    self.test_utils = TestUtils(path_to_repo_root)
+    self.test_utils = TestUtils(__file__)
 
   def test_get_entry_success(self):
     """Get a deeply nested field from an arbitrary object."""

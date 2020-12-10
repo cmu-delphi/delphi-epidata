@@ -1,18 +1,18 @@
 """Integration tests for acquisition of COVID hospitalization."""
 
 # standard library
-from pathlib import Path
 import unittest
 from unittest.mock import MagicMock
 
 # first party
-from delphi.epidata.acquisition.covid_hosp.database import Database
-from delphi.epidata.acquisition.covid_hosp.test_utils import TestUtils
+from delphi.epidata.acquisition.covid_hosp.state_timeseries.database import Database
+from delphi.epidata.acquisition.covid_hosp.state_timeseries.test_utils import TestUtils
 from delphi.epidata.client.delphi_epidata import Epidata
 import delphi.operations.secrets as secrets
 
 # py3tester coverage target (equivalent to `import *`)
-__test_target__ = 'delphi.epidata.acquisition.covid_hosp.update'
+__test_target__ = \
+    'delphi.epidata.acquisition.covid_hosp.state_timeseries.update'
 
 
 class AcquisitionTests(unittest.TestCase):
@@ -21,8 +21,7 @@ class AcquisitionTests(unittest.TestCase):
     """Perform per-test setup."""
 
     # configure test data
-    path_to_repo_root = Path(__file__).parent.parent.parent.parent
-    self.test_utils = TestUtils(path_to_repo_root)
+    self.test_utils = TestUtils(__file__)
 
     # use the local instance of the Epidata API
     Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
