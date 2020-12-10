@@ -42,7 +42,7 @@ the date specified during a given time period. The deaths are classified based
 on a new ICD-10 code. (Note that the classification is based on all the codes on
 the death certificate, not just the primary cause of death). The codes that are
 considered for each signals are described in detail
-[here](https://github.com/cmu-delphi/covidcast-indicators/blob/nchs_mortality/nchs_mortality/DETAILS.md#metrics-level-1-m1). We
+[here](https://github.com/cmu-delphi/covidcast-indicators/blob/main/nchs_mortality/DETAILS.md#metrics-level-1-m1). We
 export the state-level data as-is in a weekly format.
 
 ## Table of contents
