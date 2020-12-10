@@ -1,7 +1,7 @@
 ---
 title: Questions and Coding
 parent: COVID Symptom Survey
-nav_order: 3
+nav_order: 5
 ---
 
 # Questions and Coding
@@ -268,3 +268,87 @@ your protocol.
   your household’s finances?") has been removed and replaced with item C15, for
   consistency with the international version of the survey.
 * Item D1b ("Are you currently pregnant?") has been removed.
+
+## Wave 5
+
+Wave 5 was deployed on November 24, 2020. Deployment was phased: a fraction of
+users were invited to take Wave 4, while the majority were invited to Wave 5, so
+data users can determine if changes in responses are due to survey revisions or
+to population changes at the same time. Wave 5 is available in English, as well
+as
+
+* Simplified Chinese
+* English (UK)
+* Spanish (Latin America)
+* Spanish
+* French
+* Brazilian Portuguese
+* Vietnamese
+
+Files:
+
+* [Survey text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_5.pdf)
+  (PDF)
+* [Survey text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_5.docx)
+  (Word)
+
+### Summary of Changes
+
+Wave 5 contains minor changes to the survey instrument and a few new items.
+Please review the changes carefully when you use responses from multiple waves
+of this survey.
+
+Note that this changelog is a draft; as the survey instrument is finalized, this
+changelog will be updated to include all final changes.
+
+#### Consent Text
+
+The survey consent text has been altered to encourage respondents to answer the
+survey, even if they have already taken it before:
+
+> We encourage you to complete the survey each time you are invited, even if you
+> have participated before. Completing the survey again will help us understand
+> how the situation is changing.
+
+Wave 5 now clearly states that the data may be shared and aggregates publicly when
+released:
+
+> The de-identified results of this survey may be used for our future studies or
+> shared with other investigators for their research studies. Results published
+> by us and other researchers will be in aggregate and will not identify
+> individual participants or their responses.
+
+#### New Items
+
+* Item C16 asks respondents to estimate how many people are wearing masks in
+  their community.
+* Item C7 was previously asked in Waves 1-3; it asks respondents the extent they
+  are avoiding other people.
+* Item C17 asks whether respondents have received a flu vaccine. The time frame
+  and responses are adapted to specify the current seasonal flu vaccine. A more
+  general version inquiry about the flu vaccine appeared in Wave 1-3 as item C2.
+* Items E1-E3 ask about household children and their education during the
+  pandemic. These items appear for respondents who indicate there is a child in
+  their household under the age of 18. E1 asks respondents to indicate the
+  current grade level(s) the child(ren) in their household. Item E2 asks the
+  respondents if the child(ren) are attending in-person classes part time or
+  full time. Item E3 asks respondents what measures are applied to prevent the
+  spread of COVID-19 when the child(ren) attend in-person classes (e.g.
+  mandatory, mask wearing, closed communal areas).
+  * **Note:** Soon after survey deployment, we discovered that the translations
+    for French, Brazilian Portuguese, and Spanish (not Latin America) translated
+    these questions to use terms appropriate for education systems in those
+    countries, rather than education in the US. We disabled the question in
+    these translations, and are preparing updated translations that use the
+    correct terms.
+
+#### Changed Items
+
+* Item B2 now includes headaches and changes in sleep as symptoms.
+* Item D8 now includes the option of Master’s degree (unfortunately omitted in
+  Wave 4) and has examples of professional degree for clarification.
+
+#### Removed Items
+
+* There are no items from Wave 4 that were removed in the Wave 5 version of
+  this survey.

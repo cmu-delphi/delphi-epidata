@@ -1,6 +1,8 @@
 "use strict";
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _instanceof(left, right) { if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) { return !!right[Symbol.hasInstance](left); } else { return left instanceof right; } }
+
+function _classCallCheck(instance, Constructor) { if (!_instanceof(instance, Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
@@ -608,6 +610,32 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           return _request(callback, {
             'source': 'covidcast_meta'
           });
+        } // Fetch COVID hospitalization data
+
+      }, {
+        key: "covid_hosp",
+        value: function covid_hosp(callback, states, dates, issues) {
+          var params; // Check parameters
+
+          if (!(states != null && dates != null)) {
+            throw {
+              msg: '`states` and `dates` are both required'
+            };
+          } // Set up request
+
+
+          params = {
+            'source': 'covid_hosp',
+            'states': _list(states),
+            'dates': _list(dates)
+          };
+
+          if (issues != null) {
+            params.issues = _list(issues);
+          } // Make the API call
+
+
+          return _request(callback, params);
         }
       }]);
 

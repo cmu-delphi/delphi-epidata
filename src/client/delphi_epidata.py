@@ -52,10 +52,18 @@ class Epidata:
   # Helper function to request and parse epidata
   @staticmethod
   def _request(params):
-    """Request and parse epidata."""
+    """Request and parse epidata.
+
+    We default to GET since it has better caching and logging
+    capabilities, but fall back to POST if the request is too
+    long and returns a 414.
+    """
     try:
       # API call
-      return requests.get(Epidata.BASE_URL, params, headers=_HEADERS).json()
+      req = requests.get(Epidata.BASE_URL, params, headers=_HEADERS)
+      if req.status_code == 414:
+        req = requests.post(Epidata.BASE_URL, params, headers=_HEADERS)
+      return req.json()
     except Exception as e:
       # Something broke
       return {'result': 0, 'message': 'error: ' + str(e)}
@@ -598,3 +606,21 @@ class Epidata:
   def covidcast_meta():
     """Fetch Delphi's COVID-19 Surveillance Streams metadata"""
     return Epidata._request({'source': 'covidcast_meta'})
+
+  # Fetch COVID hospitalization data
+  @staticmethod
+  def covid_hosp(states, dates, issues=None):
+    """Fetch COVID hospitalization data."""
+    # Check parameters
+    if states is None or dates is None:
+      raise Exception('`states` and `dates` are both required')
+    # Set up request
+    params = {
+      'source': 'covid_hosp',
+      'states': Epidata._list(states),
+      'dates': Epidata._list(dates),
+    }
+    if issues is not None:
+      params['issues'] = Epidata._list(issues)
+    # Make the API call
+    return Epidata._request(params)

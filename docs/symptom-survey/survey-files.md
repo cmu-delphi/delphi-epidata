@@ -1,13 +1,13 @@
 ---
 title: Response Files
 parent: COVID Symptom Survey
-nav_order: 1
+nav_order: 3
 ---
 
 # Response Files
 {: .no_toc}
 
-Users with access to the [COVID symptom survey](./index.md) individual response
+Users with access to the [COVID Symptom Survey](./index.md) individual response
 data should have received SFTP credentials for a private server where the data
 are stored. To connect to the server, see the [server access documentation](server-access.md).
 This documentation describes the survey data available on that server.
@@ -41,11 +41,22 @@ day the survey response was started, in the Pacific time zone (UTC -
 7). `recorded` refers to the day survey data was retrieved; see the [lag
 policy](#lag-policy) for more details.
 
-Every day, we write response files for *all* days of data, with today's
+Every day, we write response files for all recent days of data, with today's
 `recorded` date. You need only load the most recent set of `recorded` files to
 obtain all survey responses; the older versions are available to track any
 changes in file formats or slight changes from late-arriving responses, as
 described in the [lag policy below](#lag-policy).
+
+## Loading Data Files
+
+As described above, one day of data may be reissued several times, if responses
+arrive late, file formats are changed, or errors in data processing are
+corrected. You need only load the latest version of each file.
+
+For data users who use R to load and process data, we provide a [`get_survey_df`
+function](survey-utils.R) to read a directory of CSV files (such as those
+provided on the SFTP server), select the correct files, and read them into a
+single data frame for use.
 
 ## Conditions Responses are Recorded
 

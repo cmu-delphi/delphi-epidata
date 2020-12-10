@@ -1,6 +1,6 @@
 ---
 title: Dengue Nowcast
-parent: Epidata API (Other Epidemics)
+parent: Epidata API (Other Diseases)
 ---
 
 # Delphi's Dengue Nowcast
