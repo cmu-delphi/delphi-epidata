@@ -21,7 +21,7 @@ class TestUtils:
   def __init__(self, abs_path_to_caller):
     # navigate to the root of the delphi-epidata repo
     path_to_repo = Path(abs_path_to_caller)
-    while path_to_repo.name != 'delphi-epidata':
+    while not (path_to_repo / 'testdata').exists():
       if not path_to_repo.name:
         raise Exception('unable to determine path to delphi-epidata repo')
       path_to_repo = path_to_repo.parent
