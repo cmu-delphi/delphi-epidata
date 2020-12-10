@@ -1,16 +1,16 @@
 """Unit tests for database.py."""
 
 # standard library
-from pathlib import Path
 import unittest
 from unittest.mock import MagicMock
 from unittest.mock import sentinel
 
 # first party
-from delphi.epidata.acquisition.covid_hosp.test_utils import TestUtils
+from delphi.epidata.acquisition.covid_hosp.state_timeseries.test_utils import TestUtils
 
 # py3tester coverage target
-__test_target__ = 'delphi.epidata.acquisition.covid_hosp.database'
+__test_target__ = \
+    'delphi.epidata.acquisition.covid_hosp.state_timeseries.database'
 
 
 class DatabaseTests(unittest.TestCase):
@@ -19,8 +19,7 @@ class DatabaseTests(unittest.TestCase):
     """Perform per-test setup."""
 
     # configure test data
-    path_to_repo_root = Path(__file__).parent.parent.parent.parent
-    self.test_utils = TestUtils(path_to_repo_root)
+    self.test_utils = TestUtils(__file__)
 
   def test_commit_and_close_on_success(self):
     """Commit and close the connection after success."""

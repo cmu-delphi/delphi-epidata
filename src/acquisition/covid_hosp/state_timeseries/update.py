@@ -9,8 +9,8 @@ import json
 import re
 
 # first party
-from delphi.epidata.acquisition.covid_hosp.database import Database
-from delphi.epidata.acquisition.covid_hosp.network import Network
+from delphi.epidata.acquisition.covid_hosp.state_timeseries.database import Database
+from delphi.epidata.acquisition.covid_hosp.state_timeseries.network import Network
 
 
 class UpdateException(Exception):

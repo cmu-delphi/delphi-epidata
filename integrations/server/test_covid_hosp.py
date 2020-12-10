@@ -4,7 +4,7 @@
 import unittest
 
 # first party
-from delphi.epidata.acquisition.covid_hosp.database import Database
+from delphi.epidata.acquisition.covid_hosp.state_timeseries.database import Database
 from delphi.epidata.client.delphi_epidata import Epidata
 import delphi.operations.secrets as secrets
 
