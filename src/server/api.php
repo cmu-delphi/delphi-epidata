@@ -924,7 +924,7 @@ function get_dengue_nowcast($locations, $epiweeks) {
 }
 
 // queries the `covidcast` table.
-//   $source (required): name of upstream data source
+//   $endpoint (required): name of data endpoint; 'source' also accepted here for backwards-compatibility
 //   $signals (required): array of names for signals derived from upstream data
 //   $time_type (required): temporal resolution (e.g. day, week)
 //   $geo_type (required): spatial resolution (e.g. county, msa, state)
