@@ -65,11 +65,11 @@ the following:
 # update the server
 
 Open [`api.php`](../src/server/api.php) and navigate to the bottom where we see
-line like `if($source === 'NAME') { ... }`. Right below the `if` block for
-`if($source === 'fluview')`, add a new `if else` block for our new endpoint:
+line like `if($endpoint === 'NAME') { ... }`. Right below the `if` block for
+`if($endpoint === 'fluview')`, add a new `if else` block for our new endpoint:
 
 ```php
-else if($source === 'fluview_meta') {
+else if($endpoint === 'fluview_meta') {
  // get the data
  $epidata = meta_fluview();
  store_result($data, $epidata);
@@ -103,7 +103,7 @@ Here's what we add to each client:
     @fluview_meta: (callback) ->
       # Set up request
       params =
-        'source': 'fluview_meta'
+        'endpoint': 'fluview_meta'
       # Make the API call
       _request(callback, params)
     ```
@@ -119,7 +119,7 @@ Here's what we add to each client:
     Epidata.fluview_meta = function(callback) {
       var params;
       params = {
-        'source': 'fluview_meta'
+        'endpoint': 'fluview_meta'
       };
       return _request(callback, params);
     };
@@ -139,7 +139,7 @@ Here's what we add to each client:
       """Fetch FluView metadata."""
       # Set up request
       params = {
-        'source': 'fluview_meta',
+        'endpoint': 'fluview_meta',
       }
       # Make the API call
       return Epidata._request(params)
@@ -152,7 +152,7 @@ Here's what we add to each client:
     fluview_meta <- function() {
       # Set up request
       params <- list(
-        source = 'fluview_meta'
+        endpoint = 'fluview_meta'
       )
       # Make the API call
       return(.request(params))
@@ -328,7 +328,7 @@ created in this tutorial.
 
 Once it's approved, commit the code. Within a short amount of time (usually ~30
 seconds), the API will begin serving your new endpoint. Go ahead and give it a
-try: https://delphi.midas.cs.cmu.edu/epidata/api.php?source=fluview_meta
+try: https://delphi.midas.cs.cmu.edu/epidata/api.php?endpoint=fluview_meta
 
 ```
 {

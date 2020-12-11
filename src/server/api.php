@@ -924,7 +924,7 @@ function get_dengue_nowcast($locations, $epiweeks) {
 }
 
 // queries the `covidcast` table.
-//   $source (required): name of upstream data souce
+//   $source (required): name of upstream data source
 //   $signals (required): array of names for signals derived from upstream data
 //   $time_type (required): temporal resolution (e.g. day, week)
 //   $geo_type (required): spatial resolution (e.g. county, msa, state)
@@ -1318,9 +1318,12 @@ function meta_delphi() {
 $data = array('result' => -1);
 // connect to the database
 if(database_connect()) {
+
   // select the data source
-  $source = isset($_REQUEST['source']) ? strtolower($_REQUEST['source']) : null;
-  if($source === 'fluview') {
+  // endpoint parameter with a fallback to source parameter for compatibility reasons
+  $endpoint = isset($_REQUEST['endpoint']) ? strtolower($_REQUEST['endpoint']) : (isset($_REQUEST['source']) ? strtolower($_REQUEST['source']) : null);
+
+  if($endpoint === 'fluview') {
     if(require_all($data, array('epiweeks', 'regions'))) {
       // parse the request
       $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
@@ -1332,11 +1335,11 @@ if(database_connect()) {
       $epidata = get_fluview($epiweeks, $regions, $issues, $lag, $authorized);
       store_result($data, $epidata);
     }
-  } else if($source === 'fluview_meta') {
+  } else if($endpoint === 'fluview_meta') {
     // get the data
     $epidata = meta_fluview();
     store_result($data, $epidata);
-  } else if ($source === 'fluview_clinical') {
+  } else if ($endpoint === 'fluview_clinical') {
     if(require_all($data, array('epiweeks', 'regions'))) {
       // parse the request
       $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
@@ -1347,7 +1350,7 @@ if(database_connect()) {
       $epidata = get_fluview_clinical($epiweeks, $regions, $issues, $lag);
       store_result($data, $epidata);
     }
-  } else if($source === 'flusurv') {
+  } else if($endpoint === 'flusurv') {
     if(require_all($data, array('epiweeks', 'locations'))) {
       // parse the request
       $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
@@ -1358,7 +1361,7 @@ if(database_connect()) {
       $epidata = get_flusurv($epiweeks, $locations, $issues, $lag);
       store_result($data, $epidata);
     }
-  } else if ($source === 'paho_dengue') {
+  } else if ($endpoint === 'paho_dengue') {
     if(require_all($data, array('epiweeks', 'regions'))) {
       // parse the request
       $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
@@ -1369,7 +1372,7 @@ if(database_connect()) {
       $epidata = get_paho_dengue($epiweeks, $regions, $issues, $lag);
       store_result($data, $epidata);
     }
-  } else if ($source === 'ecdc_ili') {
+  } else if ($endpoint === 'ecdc_ili') {
     if(require_all($data, array('epiweeks', 'regions'))) {
       // parse the request
       $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
@@ -1380,7 +1383,7 @@ if(database_connect()) {
       $epidata = get_ecdc_ili($epiweeks, $regions, $issues, $lag);
       store_result($data, $epidata);
     }
-  } else if ($source === 'kcdc_ili') {
+  } else if ($endpoint === 'kcdc_ili') {
     if(require_all($data, array('epiweeks', 'regions'))) {
       // parse the request
       $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
@@ -1391,10 +1394,10 @@ if(database_connect()) {
       $epidata = get_kcdc_ili($epiweeks, $regions, $issues, $lag);
       store_result($data, $epidata);
     }
-  } else if($source === 'ilinet' || $source === 'stateili') {
+  } else if($endpoint === 'ilinet' || $endpoint === 'stateili') {
     // these two sources are now combined into fluview
     $data['message'] = 'use fluview instead';
-  } else if($source === 'gft') {
+  } else if($endpoint === 'gft') {
     if(require_all($data, array('epiweeks', 'locations'))) {
       // parse the request
       $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
@@ -1403,7 +1406,7 @@ if(database_connect()) {
       $epidata = get_gft($epiweeks, $locations);
       store_result($data, $epidata);
     }
-  } else if($source === 'ght') {
+  } else if($endpoint === 'ght') {
     if(require_all($data, array('auth', 'epiweeks', 'locations', 'query'))) {
       if($_REQUEST['auth'] === $AUTH['ght']) {
         // parse the request
@@ -1417,7 +1420,7 @@ if(database_connect()) {
         $data['message'] = 'unauthenticated';
       }
     }
-  } else if($source === 'twitter') {
+  } else if($endpoint === 'twitter') {
     if(require_all($data, array('auth', 'locations'))) {
       if($_REQUEST['auth'] === $AUTH['twitter']) {
         // parse the request
@@ -1438,7 +1441,7 @@ if(database_connect()) {
         $data['message'] = 'unauthenticated';
       }
     }
-  } else if($source === 'wiki') {
+  } else if($endpoint === 'wiki') {
     if(require_all($data, array('articles', 'language'))) {
       // parse the request
       $articles = extract_values($_REQUEST['articles'], 'str');
@@ -1457,7 +1460,7 @@ if(database_connect()) {
         store_result($data, $epidata);
       }
     }
-  } else if($source === 'quidel') {
+  } else if($endpoint === 'quidel') {
     if(require_all($data, array('auth', 'locations', 'epiweeks'))) {
       if($_REQUEST['auth'] === $AUTH['quidel']) {
         // parse the request
@@ -1470,7 +1473,7 @@ if(database_connect()) {
         $data['message'] = 'unauthenticated';
       }
     }
-  } else if($source === 'norostat') {
+  } else if($endpoint === 'norostat') {
     if(require_all($data, array('auth', 'location', 'epiweeks'))) {
       if($_REQUEST['auth'] === $AUTH['norostat']) {
         // parse the request
@@ -1483,7 +1486,7 @@ if(database_connect()) {
           $data['message'] = 'unauthenticated';
       }
     }
-  } else if($source === 'afhsb') {
+  } else if($endpoint === 'afhsb') {
     if(require_all($data, array('auth', 'locations', 'epiweeks', 'flu_types'))) {
       if($_REQUEST['auth'] === $AUTH['afhsb']) {
         // parse the request
@@ -1497,7 +1500,7 @@ if(database_connect()) {
           $data['message'] = 'unauthenticated';
       }
     }
-  } else if($source === 'nidss_flu') {
+  } else if($endpoint === 'nidss_flu') {
     if(require_all($data, array('epiweeks', 'regions'))) {
       // parse the request
       $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
@@ -1508,7 +1511,7 @@ if(database_connect()) {
       $epidata = get_nidss_flu($epiweeks, $regions, $issues, $lag);
       store_result($data, $epidata);
     }
-  } else if($source === 'nidss_dengue') {
+  } else if($endpoint === 'nidss_dengue') {
     if(require_all($data, array('epiweeks', 'locations'))) {
       // parse the request
       $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
@@ -1517,7 +1520,7 @@ if(database_connect()) {
       $epidata = get_nidss_dengue($epiweeks, $locations);
       store_result($data, $epidata);
     }
-  } else if($source === 'delphi') {
+  } else if($endpoint === 'delphi') {
     if(require_all($data, array('system', 'epiweek'))) {
       // parse the request
       $system = $_REQUEST['system'];
@@ -1526,10 +1529,10 @@ if(database_connect()) {
       $epidata = get_forecast($system, $epiweek);
       store_result($data, $epidata);
     }
-  } else if($source === 'signals') {
+  } else if($endpoint === 'signals') {
     // this sources is now replaced by sensors
     $data['message'] = 'use sensors instead';
-  } else if($source === 'cdc') {
+  } else if($endpoint === 'cdc') {
     if(require_all($data, array('auth', 'epiweeks', 'locations'))) {
       if($_REQUEST['auth'] === $AUTH['cdc']) {
         // parse the request
@@ -1542,7 +1545,7 @@ if(database_connect()) {
         $data['message'] = 'unauthenticated';
       }
     }
-  } else if($source === 'sensors') {
+  } else if($endpoint === 'sensors') {
     if(require_all($data, array('names', 'locations', 'epiweeks'))) {
       if(!array_key_exists('auth', $_REQUEST)) {
         $auth_tokens_presented = array();
@@ -1613,7 +1616,7 @@ if(database_connect()) {
         }
       }
     }
-  } else if($source === 'dengue_sensors') {
+  } else if($endpoint === 'dengue_sensors') {
     if(require_all($data, array('auth', 'names', 'locations', 'epiweeks'))) {
       if($_REQUEST['auth'] === $AUTH['sensors']) {
         // parse the request
@@ -1627,7 +1630,7 @@ if(database_connect()) {
         $data['message'] = 'unauthenticated';
       }
     }
-  } else if($source === 'nowcast') {
+  } else if($endpoint === 'nowcast') {
     if(require_all($data, array('locations', 'epiweeks'))) {
       // parse the request
       $locations = extract_values($_REQUEST['locations'], 'str');
@@ -1636,7 +1639,7 @@ if(database_connect()) {
       $epidata = get_nowcast($locations, $epiweeks);
       store_result($data, $epidata);
     }
-  } else if($source === 'dengue_nowcast') {
+  } else if($endpoint === 'dengue_nowcast') {
     if(require_all($data, array('locations', 'epiweeks'))) {
       // parse the request
       $locations = extract_values($_REQUEST['locations'], 'str');
@@ -1645,11 +1648,11 @@ if(database_connect()) {
       $epidata = get_dengue_nowcast($locations, $epiweeks);
       store_result($data, $epidata);
     }
-  } else if($source === 'meta') {
+  } else if($endpoint === 'meta') {
     // get the data
     $epidata = get_meta();
     store_result($data, $epidata);
-  } else if($source === 'meta_norostat') {
+  } else if($endpoint === 'meta_norostat') {
     if(require_all($data, array('auth'))) {
       if($_REQUEST['auth'] === $AUTH['norostat']) {
         $epidata = get_meta_norostat();
@@ -1658,7 +1661,7 @@ if(database_connect()) {
           $data['message'] = 'unauthenticated';
       }
     }
-  } else if($source === 'meta_afhsb') {
+  } else if($endpoint === 'meta_afhsb') {
     if(require_all($data, array('auth'))) {
       if($_REQUEST['auth'] === $AUTH['afhsb']) {
         $epidata = get_meta_afhsb();
@@ -1667,7 +1670,7 @@ if(database_connect()) {
           $data['message'] = 'unauthenticated';
       }
     }
-  } else if($source === 'covidcast') {
+  } else if($endpoint === 'covidcast') {
     if(require_all($data, array('data_source', 'time_type', 'geo_type', 'time_values'))
        && require_any($data, array('signal', 'signals'))
        && require_any($data, array('geo_value', 'geo_values'))) {
@@ -1705,11 +1708,11 @@ if(database_connect()) {
       }
       store_result($data, $epidata);
     }
-  } else if($source === 'covidcast_meta') {
+  } else if($endpoint === 'covidcast_meta') {
     // get the metadata
     $epidata = get_covidcast_meta();
     store_result($data, $epidata);
-  } else if($source === 'covid_hosp') {
+  } else if($endpoint === 'covid_hosp') {
     if(require_all($data, array('states', 'dates'))) {
       // parse the request
       $states = extract_values($_REQUEST['states'], 'str');
@@ -1723,7 +1726,7 @@ if(database_connect()) {
     $data['message'] = 'no data source specified';
   }
   // API analytics
-  record_analytics($source, $data);
+  record_analytics($endpoint, $data);
 } else {
   $data['message'] = 'database error';
 }
