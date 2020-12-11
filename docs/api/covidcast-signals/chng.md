@@ -26,6 +26,8 @@ commercial purposes.
 | --- | --- |
 | `smoothed_outpatient_covid` | Estimated percentage of outpatient doctor visits with confirmed COVID-19, based on Change Healthcare claims data that has been de-identified in accordance with HIPAA privacy regulations, smoothed in time using a Gaussian linear smoother |
 | `smoothed_adj_outpatient_covid` | Same, but with systematic day-of-week effects removed; see [details below](#day-of-week-adjustment) |
+| `smoothed_outpatient_cli` | Estimated percentage of outpatient doctor visits primarily about COVID-related symptoms, based on Change Healthcare claims data that has been de-identified in accordance with HIPAA privacy regulations, smoothed in time using a Gaussian linear smoother |
+| `smoothed_adj_outpatient_cli` | Same, but with systematic day-of-week effects removed; see [details below](#day-of-week-adjustment) |
 
 ## Table of contents
 {: .no_toc .text-delta}
@@ -71,15 +73,38 @@ Note that due to local differences in health record-keeping practices, estimates
 
 ## Qualifying Conditions
 
-We receive data on the following two categories of counts:
+We receive data on the following six categories of counts:
 
 - Denominator: Daily count of all unique outpatient visits.
 - Covid: Daily count of all unique visits with primary ICD-10 code in any of:
 {U07.1, B97.21, or B97.29}.
+- COVID-like: Daily count of all unique outpatient visits with primary ICD-10 code
+	of any of: {U07.1, U07.2, B97.29, J12.81, Z03.818, B34.2, J12.89}.
+- Flu-like: Daily count of all unique outpatient visits with primary ICD-10 code
+	of any of: {J22, B34.9}. The occurrence of these codes in an area is
+	correlated with that area's historical influenza activity, but are
+	diagnostic codes not specific to influenza and can appear in COVID-19 cases.
+- Mixed: Daily count of all unique outpatient visits with primary ICD-10 code of
+	any of: {Z20.828, J12.9}. The occurance of these codes in an area is
+	correlated to a blend of that area's COVID-19 confirmed case counts and
+	influenza behavior, and are not diagnostic codes specific to either disease.
+- Flu: Daily count of all unique outpatient visits with primary ICD-10 code of
+	any of: {J09\*, J10\*, J11\*}. The asterisk `*` indicates inclusion of all
+	subcodes. This set of codes are assigned to influenza viruses.
+
+For the COVID signal, we consider only the *Denominator* and *Covid* counts.
+
+For the CLI signal, if a patient has multiple visits on the same date (and hence
+multiple primary ICD-10 codes), then we will only count one of and in descending
+order: *Flu*, *COVID-like*, *Flu-like*, *Mixed*. This ordering tries to account for
+the most definitive confirmation, e.g. the codes assigned to *Flu* are only used
+for confirmed influenza cases, which are unrelated to the COVID-19 coronavirus.
 
 ## Estimation
 
-### COVID-Like Illness
+### COVID Illness
+
+The following estimation method is used for the `*_outpatient_covid` signals.
 
 For a fixed location $$i$$ and time $$t$$, let $$Y_{it}$$
 denote the Covid counts and let $$N_{it}$$ be the
@@ -88,6 +113,22 @@ percentage is given by
 
 $$
 \hat p_{it} = 100 \cdot  \frac{Y_{it}}{N_{it}}
+$$
+
+### COVID-Like Illness
+
+The following estimation method is used for the `*_outpatient_cli` signals.
+
+For a fixed location $$i$$ and time $$t$$, let $$Y_{it}^{\text{Covid-like}}$$,
+$$Y_{it}^{\text{Flu-like}}$$, $$Y_{it}^{\text{Mixed}}$$, $$Y_{it}^{\text{Flu}}$$
+denote the correspondingly named ICD-filtered counts and let $$N_{it}$$ be the
+total count of visits (the *Denominator*). Our estimate of the CLI percentage is
+given by
+
+$$
+\hat p_{it} = 100 \cdot  \frac{Y_{it}^{\text{Covid-like}} +
+	\left((Y_{it}^{\text{Flu-like}} + Y_{it}^{\text{Mixed}}) -
+	Y_{it}^{\text{Flu}}\right)}{N_{it}}
 $$
 
 ### Day-of-Week Adjustment
@@ -137,6 +178,10 @@ $$\dot{Y}_{it} = Y_{it} / \alpha_{wd(t)}.$$
 
 We then use these adjusted counts to estimate the COVID-19 percentage as described
 above.
+
+For the CLI indicator, we apply the same method to the numerator $$Y_{it} =
+Y_{it}^{\text{Covid-like}} + \left((Y_{it}^{\text{Flu-like}} +
+Y_{it}^{\text{Mixed}}) - Y_{it}^{\text{Flu}}\right).$$
 
 ### Backwards Padding
 
