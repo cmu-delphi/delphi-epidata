@@ -30,6 +30,8 @@ described in the sections below:
    traveling, and activities outside the home
 3. [Testing indicators](#testing-indicators) based on respondent reporting of
    their COVID test results
+4. [Mental health indicators](#mental-health-indicators), based on self-reports
+   of anxiety, depression, isolation, and worry about COVID
 
 ## Table of contents
 {: .no_toc .text-delta}
@@ -277,12 +279,17 @@ data in the estimation procedures described above.
 
 ## Behavior Indicators
 
-| Signal | Description | Survey Item |
-| --- | --- | --- |
-| `smoothed_wearing_mask` | Estimated percentage of people who wore a mask most or all of the time while in public in the past 5 days; those not in public in the past 5 days are not counted. | C14 |
-
-These indicators are based on questions in Wave 4 of the survey, introduced on
-September 8, 2020.
+| Signal | Description | Survey Item | Introduced |
+| --- | --- | --- | --- |
+| `smoothed_wearing_mask` | Estimated percentage of people who wore a mask for most or all of the time while in public in the past 5 days; those not in public in the past 5 days are not counted. | C14 | Wave 4, Sept 8, 2020 |
+| `smoothed_others_masked` | Estimated percentage of respondents who say that most or all *other* people wear masks, when they are in public and social distancing is not possible | C16 | Wave 5, Nov 24, 2020 |
+| `smoothed_travel_outside_state_5d` | Estimated percentage of respondents who report traveling outside their state in the past 5 days | C6 | Wave 1 |
+| `smoothed_work_outside_home_1d` | Estimated percentage of respondents who worked or went to school outside their home in the past 24 hours | C13 | Wave 4, Sept 8, 2020 |
+| `smoothed_shop_1d` | Estimated percentage of respondents who went to a "market, grocery store, or pharmacy" in the past 24 hours | C13 | Wave 4, Sept 8, 2020 |
+| `smoothed_restaurant_1d` | Estimated percentage of respondents who went to a "bar, restaurant, or cafe" in the past 24 hours | C13 | Wave 4, Sept 8, 2020 |
+| `smoothed_spent_time_1d` | Estimated percentage of respondents who "spent time with someone who isn't currently staying with you" in the past 24 hours | C13 | Wave 4, Sept 8, 2020 |
+| `smoothed_large_event_1d` | Estimated percentage of respondents who "attended an event with more than 10 people" in the past 24 hours | C13 | Wave 4, Sept 8, 2020 |
+| `smoothed_public_transit_1d` | Estimated percentage of respondents who "used public transit" in the past 24 hours | C13 | Wave 4, Sept 8, 2020 |
 
 Weighted versions of these signals, using the [survey weighting described
 below](#survey-weighting) to be more representative of state demographics, are
@@ -305,6 +312,27 @@ Weighted versions of these signals, using the [survey weighting described
 below](#survey-weighting) to be more representative of state demographics, are
 also available. These have names beginning `smoothed_w`, such as
 `smoothed_wtested_14d`.
+
+
+## Mental Health Indicators
+
+| Signal | Description | Survey Item |
+| --- | --- | --- |
+| `smoothed_anxious_5d` | Estimated percentage of respondents who reported feeling "nervous, anxious, or on edge" for most or all of the past 5 days | C8 |
+| `smoothed_depressed_5d` | Estimated percentage of respondents who reported feeling depressed for most or all of the past 5 days | C8 |
+| `smoothed_felt_isolated_5d` | Estimated percentage of respondents who reported feeling "isolated from others" for most or all of the past 5 days | C8 |
+| `smoothed_worried_become_ill` | Estimated percentage of respondents who reported feeling very or somewhat worried that "you or someone in your immediate family might become seriously ill from COVID-19" | C9 |
+| `smoothed_worried_finances` | Estimated percentage of respondents who report being very or somewhat worried about their "household's finances for the next month" | C15 |
+
+Some of these questions were present in the earliest waves of the survey, but
+only in Wave 4 did respondents consent to our use of aggregate data to
+study other impacts of COVID, such as mental health. Hence, these aggregates only
+include respondents to Wave 4 and later waves, beginning September 8, 2020.
+
+Weighted versions of these signals, using the [survey weighting described
+below](#survey-weighting) to be more representative of state demographics, are
+also available. These have names beginning `smoothed_w`, such as
+`smoothed_wdepressed_14d`.
 
 
 ## Survey Weighting
