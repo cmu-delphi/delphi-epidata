@@ -42,28 +42,6 @@ function require_any(&$output, $values) {
   return false;
 }
 
-// stores the epidata array as part of the output object, setting the result and message fields appropriately
-//   $output: the output array
-//   $epidata: epidata fetched for the request
-function store_result(&$output, &$epidata) {
-  global $MAX_RESULTS;
-  if($epidata !== null) {
-    // success!
-    $output['epidata'] = $epidata;
-    if(count($epidata) < $MAX_RESULTS) {
-      $output['result'] = 1;
-      $output['message'] = 'success';
-    } else {
-      $output['result'] = 2;
-      $output['message'] = 'too many results, data truncated';
-    }
-  } else {
-    // failure
-    $output['result'] = -2;
-    $output['message'] = 'no results';
-  }
-}
-
 // converts a date integer (YYYYMMDD) into a date string (YYYY-MM-DD)
 //   $value: the date as an 8-digit integer
 function date_string($value) {
@@ -144,69 +122,6 @@ function filter_strings($field, $values) {
     }
   }
   return $filter;
-}
-
-// executes a query, casts the results, and returns an array of the data
-// the number of results is limited to $MAX_RESULTS
-//   $query (required): a SQL query string
-//   $epidata (required): an array for storing the data
-//   $fields_string (optional): an array of names of string fields
-//   $fields_int (optional): an array of names of integer fields
-//   $fields_float (optional): an array of names of float fields
-function execute_query($query, &$epidata, $fields_string, $fields_int, $fields_float) {
-  global $dbh;
-  global $MAX_RESULTS;
-  error_log($query);
-  $result = mysqli_query($dbh, $query . " LIMIT {$MAX_RESULTS}");
-  if (!$result) {
-    error_log("Bad query: ".$query);
-    error_log(mysqli_error($dbh));
-    return;
-  }
-
-  if (isset($_REQUEST['fields'])) {
-    $fields = extract_values($_REQUEST['fields'], 'str');
-    // limit fields to the selection
-    if($fields_string !== null) {
-      $fields_string = array_intersect($fields_string, $fields);
-    }
-    if($fields_int !== null) {
-      $fields_int = array_intersect($fields_int, $fields);
-    }
-    if($fields_float !== null) {
-      $fields_float = array_intersect($fields_float, $fields);
-    }
-  }
-
-  while($row = mysqli_fetch_array($result)) {
-    if(count($epidata) < $MAX_RESULTS) {
-      $values = array();
-      if($fields_string !== null) {
-        foreach($fields_string as $field) {
-          $values[$field] = $row[$field];
-        }
-      }
-      if($fields_int !== null) {
-        foreach($fields_int as $field) {
-          if($row[$field] === null) {
-            $values[$field] = null;
-          } else {
-            $values[$field] = intval($row[$field]);
-          }
-        }
-      }
-      if($fields_float !== null) {
-        foreach($fields_float as $field) {
-          if($row[$field] === null) {
-            $values[$field] = null;
-          } else {
-            $values[$field] = floatval($row[$field]);
-          }
-        }
-      }
-      array_push($epidata, $values);
-    }
-  }
 }
 
 // extracts an array of values and/or ranges from a string
@@ -365,6 +280,91 @@ function record_analytics($source, $data) {
   $result = intval($data['result']);
   $num_rows = intval(isset($data['epidata']) ? count($data['epidata']) : 0);
   mysqli_query($dbh, "INSERT INTO `api_analytics` (`datetime`, `ip`, `ua`, `source`, `result`, `num_rows`) VALUES (now(), '{$ip}', '{$ua}', '{$source}', {$result}, {$num_rows})");
+}
+
+// executes a query, casts the results, and returns an array of the data
+// the number of results is limited to $MAX_RESULTS
+//   $query (required): a SQL query string
+//   $epidata (required): an array for storing the data
+//   $fields_string (optional): an array of names of string fields
+//   $fields_int (optional): an array of names of integer fields
+//   $fields_float (optional): an array of names of float fields
+function execute_query($query, &$epidata, $fields_string, $fields_int, $fields_float) {
+  global $dbh;
+  global $MAX_RESULTS;
+  error_log($query);
+  $result = mysqli_query($dbh, $query . " LIMIT {$MAX_RESULTS}");
+  if (!$result) {
+    error_log("Bad query: ".$query);
+    error_log(mysqli_error($dbh));
+    return;
+  }
+
+  if (isset($_REQUEST['fields'])) {
+    $fields = extract_values($_REQUEST['fields'], 'str');
+    // limit fields to the selection
+    if($fields_string !== null) {
+      $fields_string = array_intersect($fields_string, $fields);
+    }
+    if($fields_int !== null) {
+      $fields_int = array_intersect($fields_int, $fields);
+    }
+    if($fields_float !== null) {
+      $fields_float = array_intersect($fields_float, $fields);
+    }
+  }
+
+  while($row = mysqli_fetch_array($result)) {
+    if(count($epidata) < $MAX_RESULTS) {
+      $values = array();
+      if($fields_string !== null) {
+        foreach($fields_string as $field) {
+          $values[$field] = $row[$field];
+        }
+      }
+      if($fields_int !== null) {
+        foreach($fields_int as $field) {
+          if($row[$field] === null) {
+            $values[$field] = null;
+          } else {
+            $values[$field] = intval($row[$field]);
+          }
+        }
+      }
+      if($fields_float !== null) {
+        foreach($fields_float as $field) {
+          if($row[$field] === null) {
+            $values[$field] = null;
+          } else {
+            $values[$field] = floatval($row[$field]);
+          }
+        }
+      }
+      array_push($epidata, $values);
+    }
+  }
+}
+
+// stores the epidata array as part of the output object, setting the result and message fields appropriately
+//   $output: the output array
+//   $epidata: epidata fetched for the request
+function store_result(&$output, &$epidata) {
+  global $MAX_RESULTS;
+  if($epidata !== null) {
+    // success!
+    $output['epidata'] = $epidata;
+    if(count($epidata) < $MAX_RESULTS) {
+      $output['result'] = 1;
+      $output['message'] = 'success';
+    } else {
+      $output['result'] = 2;
+      $output['message'] = 'too many results, data truncated';
+    }
+  } else {
+    // failure
+    $output['result'] = -2;
+    $output['message'] = 'no results';
+  }
 }
 
 function send_status(&$data) {
