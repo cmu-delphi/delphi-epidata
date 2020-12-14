@@ -1,16 +1,18 @@
 /*
-These tables store a mirror of the "COVID-19 Reported Patient Impact and
-Hospital Capacity by State Timeseries" dataset provided by the US Department of
-Health & Human Services via healthdata.gov.
+These tables store the collection of datasets relating to COVID-19 patient
+impact and hospital capacity. Data is provided by the US Department of Health &
+Human Services via healthdata.gov.
 
-See
-https://healthdata.gov/dataset/covid-19-reported-patient-impact-and-hospital-capacity-state-timeseries
-for more information.
+For more information, see:
+- https://healthdata.gov/dataset/covid-19-reported-patient-impact-and-hospital-capacity-state-timeseries
+- https://healthdata.gov/dataset/covid-19-reported-patient-impact-and-hospital-capacity-facility
+- src/acquisition/covid_hosp/README.md
+.
 */
 
 
 /*
-`covid_hosp_meta` stores metadata about each version of the dataset.
+`covid_hosp_meta` stores metadata about all datasets.
 
 Data is public. However, it will likely only be used internally and will not be
 surfaced through the Epidata API.
@@ -19,16 +21,19 @@ surfaced through the Epidata API.
 | Field                | Type          | Null | Key | Default | Extra          |
 +----------------------+---------------+------+-----+---------+----------------+
 | id                   | int(11)       | NO   | PRI | NULL    | auto_increment |
-| issue                | int(11)       | NO   |     | NULL    |                |
-| revision_timestamp   | varchar(1024) | NO   | UNI | NULL    |                |
+| dataset_name         | varchar(64)   | NO   | MUL | NULL    |                |
+| publication_date     | int(11)       | NO   |     | NULL    |                |
+| revision_timestamp   | varchar(1024) | NO   |     | NULL    |                |
 | metadata_json        | longtext      | NO   |     | NULL    |                |
 | acquisition_datetime | datetime      | NO   |     | NULL    |                |
 +----------------------+---------------+------+-----+---------+----------------+
 
 - `id`
   unique identifier for each record
-- `issue`
+- `publication_date`
   the day (YYYYMMDD) that the dataset was published
+- `dataset_name`
+  name of the type of this dataset (e.g. "state_timeseries", "facility")
 - `revision_timestamp`
   free-form text field indicating when the dataset was last revised; will
   generally contain some type of timestamp, although the format is not
@@ -41,19 +46,20 @@ surfaced through the Epidata API.
 
 CREATE TABLE `covid_hosp_meta` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `issue` INT NOT NULL,
+  `dataset_name` VARCHAR(64) NOT NULL,
+  `publication_date` INT NOT NULL,
   `revision_timestamp` VARCHAR(1024) NOT NULL,
   `metadata_json` JSON NOT NULL,
   `acquisition_datetime` DATETIME NOT NULL,
   PRIMARY KEY (`id`),
   -- for uniqueness
-  -- for fast lookup of a particular revision
-  UNIQUE KEY (`revision_timestamp`)
+  -- for fast lookup of a particular revision for a specific dataset
+  UNIQUE KEY (`dataset_name`, `revision_timestamp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 /*
-`covid_hosp` stores the versioned dataset.
+`covid_hosp_state_timeseries` stores the versioned "state timeseries" dataset.
 
 Data is public under the Open Data Commons Open Database License (ODbL).
 
@@ -336,7 +342,7 @@ actually appear in the dataset.
   this report starting with this date.
 */
 
-CREATE TABLE `covid_hosp` (
+CREATE TABLE `covid_hosp_state_timeseries` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `issue` INT NOT NULL,
   `state` CHAR(2) NOT NULL,

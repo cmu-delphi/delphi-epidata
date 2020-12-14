@@ -1,4 +1,4 @@
-"""Integration tests for the `covid_meta` endpoint."""
+"""Integration tests for the `covid_hosp` endpoint."""
 
 # standard library
 import unittest
@@ -10,7 +10,7 @@ import delphi.operations.secrets as secrets
 
 
 class ServerTests(unittest.TestCase):
-  """Tests the `covid_meta` endpoint."""
+  """Tests the `covid_hosp` endpoint."""
 
   def setUp(self):
     """Perform per-test setup."""
@@ -25,7 +25,7 @@ class ServerTests(unittest.TestCase):
     # clear relevant tables
     with Database.connect() as db:
       with db.new_cursor() as cur:
-        cur.execute('truncate table covid_hosp')
+        cur.execute('truncate table covid_hosp_state_timeseries')
         cur.execute('truncate table covid_hosp_meta')
 
   def test_query_by_issue(self):
@@ -34,7 +34,7 @@ class ServerTests(unittest.TestCase):
     # insert dummy data
     def insert_issue(cur, issue, value):
       so_many_nulls = ', '.join(['null'] * 51)
-      cur.execute(f'''insert into covid_hosp values (
+      cur.execute(f'''insert into covid_hosp_state_timeseries values (
         0, {issue}, 'PA', 20201118, {value}, {so_many_nulls}
       )''')
     with Database.connect() as db:
