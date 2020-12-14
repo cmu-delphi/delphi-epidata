@@ -247,7 +247,7 @@ Epidata <- (function() {
   }
 
   # Fetch Wikipedia access data
-  wiki <- function(articles, dates, epiweeks, hours) {
+  wiki <- function(articles, dates, epiweeks, hours, language='en') {
     # Check parameters
     if(missing(articles)) {
       stop('`articles` is required')
@@ -258,7 +258,8 @@ Epidata <- (function() {
     # Set up request
     params <- list(
       source = 'wiki',
-      articles = .list(articles)
+      articles = .list(articles),
+      language = language
     )
     if(!missing(dates)) {
       params$dates <- .list(dates)
