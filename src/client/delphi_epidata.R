@@ -35,7 +35,11 @@ Epidata <- (function() {
   # Helper function to request and parse epidata
   .request <- function(params) {
     # API call
-    return(content(GET(BASE_URL, query=params), 'parsed'))
+    res <- GET(BASE_URL, query=params)
+    if (res$status_code == 414) {
+      res <- POST(BASE_URL, body=params, encode='form')
+    }
+    return(content(res, 'parsed'))
   }
 
   # Build a `range` object (ex: dates/epiweeks)
