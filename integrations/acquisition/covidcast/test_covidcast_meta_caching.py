@@ -130,7 +130,7 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     self.cnx.commit()
 
     # fetch the cached version (manually)
-    params = {'source': 'covidcast_meta', 'cached': 'true'}
+    params = {'endpoint': 'covidcast_meta', 'cached': 'true'}
     response = requests.get(BASE_URL, params=params)
     response.raise_for_status()
     epidata4 = response.json()
@@ -153,7 +153,7 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     self.cnx.commit()
 
     # fetch the cached version (manually)
-    params = {'source': 'covidcast_meta', 'cached': 'true'}
+    params = {'endpoint': 'covidcast_meta', 'cached': 'true'}
     response = requests.get(BASE_URL, params=params)
     response.raise_for_status()
     epidata5 = response.json()

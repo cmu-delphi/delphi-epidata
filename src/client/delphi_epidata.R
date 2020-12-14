@@ -59,7 +59,7 @@ Epidata <- (function() {
     }
     # Set up request
     params <- list(
-      source = 'fluview',
+      endpoint = 'fluview',
       regions = .list(regions),
       epiweeks = .list(epiweeks)
     )
@@ -80,7 +80,7 @@ Epidata <- (function() {
   fluview_meta <- function() {
     # Set up request
     params <- list(
-      source = 'fluview_meta'
+      endpoint = 'fluview_meta'
     )
     # Make the API call
     return(.request(params))
@@ -97,7 +97,7 @@ Epidata <- (function() {
     }
     # Set up request
     params <- list(
-      source = 'fluview_clinical',
+      endpoint = 'fluview_clinical',
       regions = .list(regions),
       epiweeks = .list(epiweeks)
     )
@@ -122,7 +122,7 @@ Epidata <- (function() {
     }
     # Set up request
     params <- list(
-      source = 'flusurv',
+      endpoint = 'flusurv',
       locations = .list(locations),
       epiweeks = .list(epiweeks)
     )
@@ -147,7 +147,7 @@ Epidata <- (function() {
     }
     # Set up request
     params <- list(
-      source = 'ecdc_ili',
+      endpoint = 'ecdc_ili',
       regions = .list(regions),
       epiweeks = .list(epiweeks)
     )
@@ -172,7 +172,7 @@ Epidata <- (function() {
     }
     # Set up request
     params <- list(
-      source = 'kcdc_ili',
+      endpoint = 'kcdc_ili',
       regions = .list(regions),
       epiweeks = .list(epiweeks)
     )
@@ -195,7 +195,7 @@ Epidata <- (function() {
     }
     # Set up request
     params <- list(
-      source = 'gft',
+      endpoint = 'gft',
       locations = .list(locations),
       epiweeks = .list(epiweeks)
     )
@@ -211,7 +211,7 @@ Epidata <- (function() {
     }
     # Set up request
     params <- list(
-      source = 'ght',
+      endpoint = 'ght',
       auth = auth,
       locations = .list(locations),
       epiweeks = .list(epiweeks),
@@ -232,7 +232,7 @@ Epidata <- (function() {
     }
     # Set up request
     params <- list(
-      source = 'twitter',
+      endpoint = 'twitter',
       auth = auth,
       locations = .list(locations)
     )
@@ -257,7 +257,7 @@ Epidata <- (function() {
     }
     # Set up request
     params <- list(
-      source = 'wiki',
+      endpoint = 'wiki',
       articles = .list(articles)
     )
     if(!missing(dates)) {
@@ -281,7 +281,7 @@ Epidata <- (function() {
     }
     # Set up request
     params <- list(
-      source = 'cdc',
+      endpoint = 'cdc',
       auth = auth,
       epiweeks = .list(epiweeks),
       locations = .list(locations)
@@ -298,7 +298,7 @@ Epidata <- (function() {
     }
     # Set up request
     params <- list(
-      source = 'quidel',
+      endpoint = 'quidel',
       auth = auth,
       epiweeks = .list(epiweeks),
       locations = .list(locations)
@@ -315,7 +315,7 @@ Epidata <- (function() {
     }
     # Set up request
     params <- list(
-        source = 'norostat',
+        endpoint = 'norostat',
         auth = auth,
         location = location,
         epiweeks = .list(epiweeks)
@@ -332,7 +332,7 @@ Epidata <- (function() {
     }
     # Set up request
     params <- list(
-      source = 'meta_norostat',
+      endpoint = 'meta_norostat',
       auth = auth
     )
     # Make the API call
@@ -347,7 +347,7 @@ Epidata <- (function() {
     }
     # Set up request
     params <- list(
-        source = 'afhsb',
+        endpoint = 'afhsb',
         auth = auth,
         locations = .list(locations),
         epiweeks = .list(epiweeks),
@@ -365,7 +365,7 @@ Epidata <- (function() {
     }
     # Set up request
     params <- list(
-      source = 'meta_afhsb',
+      endpoint = 'meta_afhsb',
       auth = auth
     )
     # Make the API call
@@ -383,7 +383,7 @@ Epidata <- (function() {
     }
     # Set up request
     params <- list(
-      source = 'nidss_flu',
+      endpoint = 'nidss_flu',
       regions = .list(regions),
       epiweeks = .list(epiweeks)
     )
@@ -405,7 +405,7 @@ Epidata <- (function() {
     }
     # Set up request
     params <- list(
-      source = 'nidss_dengue',
+      endpoint = 'nidss_dengue',
       locations = .list(locations),
       epiweeks = .list(epiweeks)
     )
@@ -421,7 +421,7 @@ Epidata <- (function() {
     }
     # Set up request
     params <- list(
-      source = 'delphi',
+      endpoint = 'delphi',
       system = system,
       epiweek = epiweek
     )
@@ -437,7 +437,7 @@ Epidata <- (function() {
     }
     # Set up request
     params <- list(
-      source = 'sensors',
+      endpoint = 'sensors',
       auth = auth,
       names = .list(names),
       locations = .list(locations),
@@ -455,7 +455,7 @@ Epidata <- (function() {
     }
     # Set up request
     params <- list(
-      source = 'dengue_sensors',
+      endpoint = 'dengue_sensors',
       auth = auth,
       names = .list(names),
       locations = .list(locations),
@@ -473,7 +473,7 @@ Epidata <- (function() {
     }
     # Set up request
     params <- list(
-      source = 'nowcast',
+      endpoint = 'nowcast',
       locations = .list(locations),
       epiweeks = .list(epiweeks)
     )
@@ -489,7 +489,7 @@ Epidata <- (function() {
     }
     # Set up request
     params <- list(
-      source = 'dengue_nowcast',
+      endpoint = 'dengue_nowcast',
       locations = .list(locations),
       epiweeks = .list(epiweeks)
     )
@@ -499,7 +499,7 @@ Epidata <- (function() {
 
   # Fetch API metadata
   meta <- function() {
-    return(.request(list(source='meta')))
+    return(.request(list(endpoint='meta')))
   }
 
   # Fetch Delphi's COVID-19 Surveillance Streams
@@ -516,7 +516,7 @@ Epidata <- (function() {
     }
     # Set up request
     params <- list(
-      source = 'covidcast',
+      endpoint = 'covidcast',
       data_source = data_source,
       signals = .list(signals),
       time_type = time_type,
@@ -544,7 +544,7 @@ Epidata <- (function() {
 
   # Fetch Delphi's COVID-19 Surveillance Streams metadata
   covidcast_meta <- function() {
-    return(.request(list(source='covidcast_meta', cached='true')))
+    return(.request(list(endpoint='covidcast_meta', cached='true')))
   }
 
   # Fetch COVID hospitalization data
@@ -555,7 +555,7 @@ Epidata <- (function() {
     }
     # Set up request
     params <- list(
-      source = 'covid_hosp',
+      endpoint = 'covid_hosp',
       states = .list(states),
       dates = .list(dates)
     )

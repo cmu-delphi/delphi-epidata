@@ -53,7 +53,7 @@ Note:
 # Example URLs
 
 ### Twitter on 2015w01 (national)
-https://delphi.cmu.edu/epidata/api.php?source=twitter&auth=...&locations=nat&epiweeks=201501
+https://delphi.cmu.edu/epidata/api.php?endpoint=twitter&auth=...&locations=nat&epiweeks=201501
 
 ```json
 {

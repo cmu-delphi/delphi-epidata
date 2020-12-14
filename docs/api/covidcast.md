@@ -95,7 +95,7 @@ sources and signals.
 
 The COVIDcast API is based on HTTP GET queries and returns data in JSON form.
 The base URL is `https://api.covidcast.cmu.edu/epidata/api.php`.  The covidcast
-endpoint is `https://api.covidcast.cmu.edu/epidata/api.php?source=covidcast`.
+endpoint is `https://api.covidcast.cmu.edu/epidata/api.php?endpoint=covidcast`.
 
 See [this documentation](README.md) for details on specifying epiweeks, dates,
 and lists.
@@ -184,7 +184,7 @@ requests for smaller time intervals.
 
 ### Facebook Survey CLI on 2020-04-06 to 2010-04-10 (county 06001)
 
-https://api.covidcast.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&signal=raw_cli&time_type=day&geo_type=county&time_values=20200406-20200410&geo_value=06001
+https://api.covidcast.cmu.edu/epidata/api.php?endpoint=covidcast&data_source=fb-survey&signal=raw_cli&time_type=day&geo_type=county&time_values=20200406-20200410&geo_value=06001
 
 ```json
 {
@@ -206,7 +206,7 @@ https://api.covidcast.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-su
 
 ### Facebook Survey CLI on 2020-04-06 (all counties)
 
-https://api.covidcast.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&signal=raw_cli&time_type=day&geo_type=county&time_values=20200406&geo_value=*
+https://api.covidcast.cmu.edu/epidata/api.php?endpoint=covidcast&data_source=fb-survey&signal=raw_cli&time_type=day&geo_type=county&time_values=20200406&geo_value=*
 
 ```json
 {

@@ -50,7 +50,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 # Example URLs
 
 ### NIDSS Dengue on 2015w01 (nationwide)
-https://delphi.cmu.edu/epidata/api.php?source=nidss_dengue&locations=nationwide&epiweeks=201501
+https://delphi.cmu.edu/epidata/api.php?endpoint=nidss_dengue&locations=nationwide&epiweeks=201501
 
 ```json
 {
