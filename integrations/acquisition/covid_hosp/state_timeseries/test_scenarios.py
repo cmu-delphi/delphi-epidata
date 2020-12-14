@@ -5,8 +5,8 @@ import unittest
 from unittest.mock import MagicMock
 
 # first party
-from delphi.epidata.acquisition.covid_hosp.state_timeseries.database import Database
-from delphi.epidata.acquisition.covid_hosp.state_timeseries.test_utils import TestUtils
+from delphi.epidata.acquisition.covid_hosp.common.database import Database
+from delphi.epidata.acquisition.covid_hosp.common.test_utils import TestUtils
 from delphi.epidata.client.delphi_epidata import Epidata
 import delphi.operations.secrets as secrets
 
@@ -33,7 +33,7 @@ class AcquisitionTests(unittest.TestCase):
     # clear relevant tables
     with Database.connect() as db:
       with db.new_cursor() as cur:
-        cur.execute('truncate table covid_hosp')
+        cur.execute('truncate table covid_hosp_state_timeseries')
         cur.execute('truncate table covid_hosp_meta')
 
   def test_acquire_dataset(self):
@@ -53,7 +53,7 @@ class AcquisitionTests(unittest.TestCase):
 
     # acquire sample data into local database
     with self.subTest(name='first acquisition'):
-      acquired = Update.run(network_impl=mock_network)
+      acquired = Update.run(network=mock_network)
       self.assertTrue(acquired)
 
     # make sure the data now exists
@@ -76,7 +76,7 @@ class AcquisitionTests(unittest.TestCase):
 
     # re-acquisition of the same dataset should be a no-op
     with self.subTest(name='second acquisition'):
-      acquired = Update.run(network_impl=mock_network)
+      acquired = Update.run(network=mock_network)
       self.assertFalse(acquired)
 
     # make sure the data still exists
