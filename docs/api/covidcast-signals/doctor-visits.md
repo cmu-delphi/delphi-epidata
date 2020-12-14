@@ -37,10 +37,8 @@ available several days later.
 
 The amount of lag in reporting can vary, and not all visits are reported with
 the same lag. After we first report estimates for a specific date, further data
-may arrive about outpatients visits on that date. When this occurs, we issue new
-estimates for those dates to backfill any missing data. This means that a reported estimate for, say, June
-10th may first be available in the API on June 14th and subsequently revised on
-June 16th.
+may arrive about outpatients visits on that date. When this occurs, we issue new estimates for those dates that include the most recent data reports. This means that a reported estimate for, June
+10th, may first be available in the API on June 14th and subsequently revised on June 16th.
 
  As insurance claims are available at a significant and variable latency, the signal experiences heavy backfill with data delayed for a couple of weeks. 
 We expect estimates available for the most recent 7-14 days to change substantially in later data revisions. Estimates for dates more than 28 days in the past are expected to remain fairly static, as most major revisions have already occurred.
