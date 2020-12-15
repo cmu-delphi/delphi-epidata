@@ -14,6 +14,8 @@ grand_parent: COVIDcast Epidata API
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 * **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
 
+## Overview
+
 This data source is based on electronic medical records and claims data about
 hospital admissions, provided to us by health system partners. We use this
 inpatient data to estimate the percentage of new hospital admissions with a
@@ -26,19 +28,11 @@ COVID-associated diagnosis code in a given location, on a given day.
 | `smoothed_covid19` | Estimated percentage of new hospital admissions with COVID-associated diagnoses, based on electronic medical record and claims data from health system partners, smoothed in time using a Gaussian linear smoother. _This signal is no longer updated as of 1 October, 2020._  |
 | `smoothed_adj_covid19` | Same as `smoothed_covid19`, but with systematic day-of-week effects removed using [the same mechanism as in `doctor-visits`](doctor-visits.md#day-of-week-adjustment). _This signal is no longer updated as of 1 October, 2020._ |
 
-## Table of contents
+## Table of Contents
 {: .no_toc .text-delta}
 
 1. TOC
 {:toc}
-
-## Limitations
-
-This data source is based on electronic medical records and claims data provided
-to us by health system partners. The partners can report on a portion of
-hospitalizations, but not all of them, and so this source only represents those
-hospitalizations known to them. Their coverage may vary across the United
-States.
 
 ## Lag and Backfill
 
@@ -54,6 +48,14 @@ date, or diagnoses for admissions from that date may change. When this occurs,
 we issue new estimates. This means that a reported estimate for, say, June 10th
 may first be available in the API on June 14th and subsequently revised on June
 16th.
+
+## Limitations
+
+This data source is based on electronic medical records and claims data provided
+to us by health system partners. The partners can report on a portion of
+hospitalizations, but not all of them, and so this source only represents those
+hospitalizations known to them. Their coverage may vary across the United
+States.
 
 ## Qualifying Admissions
 
@@ -102,12 +104,12 @@ $$
 
 * `smoothed_covid19_from_claims` and  `smoothed_adj_covid19_from_claims`: This signal uses data solely from the claims stream: $$Y_{it} = Y_{it}^{\text{claims}} $$ and $$N_{it} = N_{it}^{\text{claims}}$$. 
 
-## Backwards Padding
+### Backwards Padding
 
 This source undergoes the same backwards padding adjustment as the `doctor-visits`
 source; see [its documentation](doctor-visits.md#backwards-padding).
 
-## Smoothing
+### Smoothing
 
 This source undergoes the same smoothing adjustment as the `doctor-visits`
 source (see [its documentation](doctor-visits.md#smoothing)), with the exception

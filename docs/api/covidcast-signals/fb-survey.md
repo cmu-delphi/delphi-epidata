@@ -13,6 +13,8 @@ grand_parent: COVIDcast Epidata API
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 * **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
 
+## Overview
+
 This data source is based on symptom surveys run by the Delphi group at Carnegie
 Mellon. Facebook directs a random sample of its users to these surveys, which
 are voluntary. Individual survey responses are held by CMU and are sharable with
@@ -31,7 +33,7 @@ described in the sections below:
 3. [Testing indicators](#testing-indicators) based on respondent reporting of
    their COVID test results
 
-## Table of contents
+## Table of Contents
 {: .no_toc .text-delta}
 
 1. TOC

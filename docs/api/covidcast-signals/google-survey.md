@@ -13,6 +13,8 @@ grand_parent: COVIDcast Epidata API
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 * **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
 
+## Overview
+
 Data source based on Google-run symptom surveys, through publisher websites,
 their Opinions Reward app, and similar applications. Respondents can opt to skip
 the survey and complete a different one if they prefer not to answer. The survey
@@ -39,7 +41,7 @@ specific geographical areas as needed to support forecasting efforts.
 | `raw_cli` | Estimated percentage of people who know someone in their community with COVID-like illness |
 | `smoothed_cli` | Estimated percentage of people who know someone in their community with COVID-like illness, smoothed in time [as described below](#smoothing) |
 
-## Table of contents
+## Table of Contents
 {: .no_toc .text-delta}
 
 1. TOC
@@ -257,7 +259,7 @@ parameters are fixed and not random, so the unsurveyed counties only contribute
 bias while the surveyed counties are unbiased for their respective county
 probabilities and contribute variance.
 
-## Smoothing
+### Smoothing
 
 Additionally, as with the Facebook surveys, we consider estimates formed by
 pooling data over time.  That is, daily, for each location, we first pool all

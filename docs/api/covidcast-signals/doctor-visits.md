@@ -13,6 +13,14 @@ grand_parent: COVIDcast Epidata API
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 * **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
 
+## Table of contents
+{: .no_toc .text-delta}
+
+1. TOC
+{:toc}
+
+## Overview
+
 This data source is based on information about outpatient visits, provided to us
 by health system partners. Using this outpatient data, we estimate the
 percentage of COVID-related doctor's visits in a given location, on a given day.
@@ -21,12 +29,6 @@ percentage of COVID-related doctor's visits in a given location, on a given day.
 | --- | --- |
 | `smoothed_cli` | Estimated percentage of outpatient doctor visits primarily about COVID-related symptoms, based on data from health system partners, smoothed in time using a Gaussian linear smoother |
 | `smoothed_adj_cli` | Same, but with systematic day-of-week effects removed; see [details below](#day-of-week-adjustment) |
-
-## Table of contents
-{: .no_toc .text-delta}
-
-1. TOC
-{:toc}
 
 ## Lag and Backfill
 
