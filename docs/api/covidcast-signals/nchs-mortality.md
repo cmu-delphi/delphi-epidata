@@ -65,8 +65,8 @@ York State in our reports.
 
 ## Report Using Epiweeks
 
-We report the NCHS Mortality data in a weekly format (`time_type=week` \&
-`time_value=\{YYYYWW\}`, where `YYYYWW` refers to an epiweek). The CDC defines
+We report the NCHS Mortality data in a weekly format (`time_type=week` &
+`time_value={YYYYWW}`, where `YYYYWW` refers to an epiweek). The CDC defines
 the [epiweek](https://wwwn.cdc.gov/nndss/document/MMWR_Week_overview.pdf) as
 seven days, from Sunday to Saturday. We check the week-ending dates provided in
 the NCHS morality data and use Python package
@@ -85,7 +85,7 @@ potentially misleading.
 
 There is a lag in time between when the death occurred and when the death
 certificate is completed, submitted to NCHS, and processed for reporting
-purposes. The death counts for earlier weeks are continually revised and may
+purposes. The death counts for recent weeks are continually revised and may
 increase or decrease as new and updated death certificate data are received from
 the states by NCHS. This delay can range from 1 to 8 weeks or even more.
 Some states report deaths on a daily basis, while other states report deaths weekly
@@ -101,7 +101,7 @@ and is made available here as a convenience to the forecasting community under
 the terms of the original license. The NCHS places restrictions on how this
 dataset may be used: you may not attempt to identify any individual included in
 the data, whether by itself or through linking to other
-individually=identifiable data; you may only use the dataset for statistical
+individually identifiable data; you may only use the dataset for statistical
 reporting and analysis. The full text of the [NCHS Data Use
 Agreement](https://www.cdc.gov/nchs/data_access/restrictions.htm) is available
 from their website.
