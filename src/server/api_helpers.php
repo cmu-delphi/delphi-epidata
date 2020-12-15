@@ -287,7 +287,7 @@ function record_analytics($source, $result, $num_rows = 0) {
 //   $fields_string (optional): an array of names of string fields
 //   $fields_int (optional): an array of names of integer fields
 //   $fields_float (optional): an array of names of float fields
-function execute_query(string $query, IRowPrinter &$printer, ?array $fields_string, ?array $fields_int, ?array $fields_float, bool $single_query = TRUE) {
+function execute_query(string $query, IRowPrinter &$printer, ?array $fields_string = null, ?array $fields_int = null, ?array $fields_float = null, bool $single_query = TRUE) {
   global $dbh;
   if ($printer->remainingRows() >= 0) {
     $limit = $printer->remainingRows() + 1;
@@ -320,7 +320,7 @@ function execute_query(string $query, IRowPrinter &$printer, ?array $fields_stri
 
   $printer->begin();
 
-  while ($row = mysqli_fetch_row($result)) {
+  while ($row = mysqli_fetch_array($result)) {
     $values = array();
     if($fields_string !== null) {
       foreach($fields_string as $field) {
@@ -509,7 +509,7 @@ abstract class APrinter implements IRowPrinter {
       return;
     }
     $this->endImpl();
-    record_analytics($this->source, $this->result, $this->count);
+    record_analytics($this->endpoint, $this->result, $this->count);
   }
 
   protected function endImpl() {

@@ -711,12 +711,13 @@ function get_forecast(IRowPrinter &$printer, $system, $epiweek) {
   $data = $collector->$data;
   
   // parse forecast data
+  $printer->begin();
   if(count($data) === 1 && array_key_exists('json', $data[0])) {
     $data[0]['forecast'] = json_decode($data[0]['json']);
     unset($data[0]['json']);
     $printer->printRow($data[0]);
-    $printer->end();
   }
+  $printer->end();
 }
 
 // queries the `cdc_extract` table
@@ -1008,6 +1009,7 @@ function get_covidcast_meta(IRowPrinter &$printer) {
     }, $epidata);
   }
 
+  $printer->begin();
   // print rows
   foreach($epidata as $row) {
     $printer->printRow($row);
@@ -1185,6 +1187,7 @@ function get_meta(IRowPrinter &$printer) {
     'wiki' => $wiki->$data,
     'delphi' => $delphi->$data,
   );
+  $printer->begin();
   $printer->printRow($row);
   $printer->end();
 }
