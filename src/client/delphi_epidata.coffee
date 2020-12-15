@@ -178,7 +178,7 @@ class Epidata
     _request(callback, params)
 
   # Fetch Wikipedia access data
-  @wiki: (callback, articles, dates, epiweeks, hours) ->
+  @wiki: (callback, articles, dates, epiweeks, hours, language) ->
     # Check parameters
     unless articles?
       throw { msg: '`articles` is required' }
@@ -188,6 +188,7 @@ class Epidata
     params =
       'source': 'wiki'
       'articles': _list(articles)
+      'language': language || 'en'
     if dates?
       params.dates = _list(dates)
     if epiweeks?

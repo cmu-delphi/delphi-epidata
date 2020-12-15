@@ -1072,14 +1072,14 @@ function get_covidcast_meta() {
   return $has_values ? $epidata : null;
 }
 
-// queries the `covid_hosp` table
+// queries the `covid_hosp_state_timeseries` table
 //   $states (required): array of state abbreviations
 //   $dates (required): array of date values/ranges
 //   $issues (optional): array of date values/ranges
 //     default: most recent issue
-function get_covid_hosp($states, $dates, $issues) {
+function get_covid_hosp_state_timeseries($states, $dates, $issues) {
   $epidata = array();
-  $table = '`covid_hosp` c';
+  $table = '`covid_hosp_state_timeseries` c';
   $fields = implode(', ', array(
     'c.`issue`',
     'c.`state`',
@@ -1709,14 +1709,14 @@ if(database_connect()) {
     // get the metadata
     $epidata = get_covidcast_meta();
     store_result($data, $epidata);
-  } else if($source === 'covid_hosp') {
+  } else if($source === 'covid_hosp' || $source === 'covid_hosp_state_timeseries') {
     if(require_all($data, array('states', 'dates'))) {
       // parse the request
       $states = extract_values($_REQUEST['states'], 'str');
       $dates = extract_values($_REQUEST['dates'], 'int');
       $issues = isset($_REQUEST['issues']) ? extract_values($_REQUEST['issues'], 'int') : null;
       // get the data
-      $epidata = get_covid_hosp($states, $dates, $issues);
+      $epidata = get_covid_hosp_state_timeseries($states, $dates, $issues);
       store_result($data, $epidata);
     }
   } else {

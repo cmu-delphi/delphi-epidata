@@ -1,32 +1,54 @@
-"""Unit tests for update.py."""
+"""Unit tests for utils.py."""
 
 # standard library
-from pathlib import Path
 import unittest
 from unittest.mock import MagicMock
+from unittest.mock import sentinel
 
 # first party
-from delphi.epidata.acquisition.covid_hosp.test_utils import TestUtils
+from delphi.epidata.acquisition.covid_hosp.common.test_utils import TestUtils
 
 # py3tester coverage target
-__test_target__ = 'delphi.epidata.acquisition.covid_hosp.update'
+__test_target__ = 'delphi.epidata.acquisition.covid_hosp.common.utils'
 
 
-class UpdateTests(unittest.TestCase):
+class UtilsTests(unittest.TestCase):
 
   def setUp(self):
     """Perform per-test setup."""
 
     # configure test data
-    path_to_repo_root = Path(__file__).parent.parent.parent.parent
-    self.test_utils = TestUtils(path_to_repo_root)
+    self.test_utils = TestUtils(__file__)
+
+  def test_launch_if_main_when_main(self):
+    """Launch the main entry point."""
+
+    mock_entry = MagicMock()
+
+    Utils.launch_if_main(mock_entry, '__main__')
+
+    mock_entry.assert_called_once()
+
+  def test_launch_if_main_when_not_main(self):
+    """Don't launch the main entry point."""
+
+    mock_entry = MagicMock()
+
+    Utils.launch_if_main(mock_entry, '__test__')
+
+    mock_entry.assert_not_called()
+
+  def test_int_from_date(self):
+    """Convert a YYY-MM-DD date to a YYYYMMDD int."""
+
+    self.assertEqual(Utils.int_from_date('2020-11-17'), 20201117)
 
   def test_get_entry_success(self):
     """Get a deeply nested field from an arbitrary object."""
 
     obj = self.test_utils.load_sample_metadata()
 
-    result = Update.get_entry(obj, 'result', 0, 'tags', 2, 'id')
+    result = Utils.get_entry(obj, 'result', 0, 'tags', 2, 'id')
 
     self.assertEqual(result, '56f3cdad-8acb-46c8-bc71-aa1ded8407fb')
 
@@ -35,8 +57,8 @@ class UpdateTests(unittest.TestCase):
 
     obj = self.test_utils.load_sample_metadata()
 
-    with self.assertRaises(UpdateException):
-      Update.get_entry(obj, -1)
+    with self.assertRaises(CovidHospException):
+      Utils.get_entry(obj, -1)
 
   def test_get_issue_from_revision(self):
     """Extract an issue date from a free-form revision string."""
@@ -48,18 +70,11 @@ class UpdateTests(unittest.TestCase):
       with self.subTest(revision=revision):
 
         if issue:
-          result = Update.get_issue_from_revision(revision)
+          result = Utils.get_issue_from_revision(revision)
           self.assertEqual(result, issue)
         else:
-          with self.assertRaises(UpdateException):
-            Update.get_issue_from_revision(revision)
-
-  def test_get_date_as_int(self):
-    """Convert a YYY-MM-DD date to a YYYYMMDD int."""
-
-    result = Update.get_date_as_int('2020-11-17')
-
-    self.assertEqual(result, 20201117)
+          with self.assertRaises(CovidHospException):
+            Utils.get_issue_from_revision(revision)
 
   def test_extract_resource_details(self):
     """Extract URL and revision from metadata."""
@@ -68,34 +83,34 @@ class UpdateTests(unittest.TestCase):
       metadata = self.test_utils.load_sample_metadata()
       metadata['success'] = False
 
-      with self.assertRaises(UpdateException):
-        Update.extract_resource_details(metadata)
+      with self.assertRaises(CovidHospException):
+        Utils.extract_resource_details(metadata)
 
     with self.subTest(name='invalid result'):
       metadata = self.test_utils.load_sample_metadata()
       metadata['result'] = []
 
-      with self.assertRaises(UpdateException):
-        Update.extract_resource_details(metadata)
+      with self.assertRaises(CovidHospException):
+        Utils.extract_resource_details(metadata)
 
     with self.subTest(name='invalid resource'):
       metadata = self.test_utils.load_sample_metadata()
       metadata['result'][0]['resources'] = []
 
-      with self.assertRaises(UpdateException):
-        Update.extract_resource_details(metadata)
+      with self.assertRaises(CovidHospException):
+        Utils.extract_resource_details(metadata)
 
     with self.subTest(name='valid'):
       metadata = self.test_utils.load_sample_metadata()
 
-      url, revision = Update.extract_resource_details(metadata)
+      url, revision = Utils.extract_resource_details(metadata)
 
       expected_url = (
         'https://healthdata.gov/sites/default/files/'
-        'reported_hospital_utilization_timeseries_20201115_2134.csv'
+        'estimated_inpatient_all_20201213_1757.csv'
       )
       self.assertEqual(url, expected_url)
-      self.assertEqual(revision, 'Mon, 11/16/2020 - 00:55')
+      self.assertEqual(revision, 'Sun, 12/13/2020 - 22:36')
 
   def test_run_skip_old_dataset(self):
     """Don't re-acquire an old dataset."""
@@ -108,7 +123,7 @@ class UpdateTests(unittest.TestCase):
       pass
     mock_connection.contains_revision.return_value = True
 
-    result = Update.run(database_impl=mock_database, network_impl=mock_network)
+    result = Utils.update_dataset(database=mock_database, network=mock_network)
 
     self.assertFalse(result)
     mock_network.fetch_dataset.assert_not_called()
@@ -121,23 +136,20 @@ class UpdateTests(unittest.TestCase):
     mock_network = MagicMock()
     mock_network.fetch_metadata.return_value = \
         self.test_utils.load_sample_metadata()
-    mock_network.fetch_dataset.return_value = \
-        self.test_utils.load_sample_dataset()
+    fake_dataset = [1, 2, 3]
+    mock_network.fetch_dataset.return_value = fake_dataset
     mock_database = MagicMock()
     with mock_database.connect() as mock_connection:
       pass
     mock_connection.contains_revision.return_value = False
 
-    result = Update.run(database_impl=mock_database, network_impl=mock_network)
+    result = Utils.update_dataset(database=mock_database, network=mock_network)
 
     self.assertTrue(result)
 
     mock_connection.insert_metadata.assert_called_once()
     args = mock_connection.insert_metadata.call_args[0]
-    self.assertEqual(args[:2], (20201116, 'Mon, 11/16/2020 - 00:55'))
+    self.assertEqual(args[:2], (20201213, 'Sun, 12/13/2020 - 22:36'))
 
-    mock_connection.insert_dataset.assert_called_once()
-    args = mock_connection.insert_dataset.call_args[0]
-    self.assertEqual(args[0], 20201116)
-    self.assertEqual(len(args[1]), 20)
-    self.assertEqual(args[1]['date'][19], 20200510)
+    mock_connection.insert_dataset.assert_called_once_with(
+        20201213, fake_dataset)

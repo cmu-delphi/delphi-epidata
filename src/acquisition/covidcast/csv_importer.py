@@ -27,7 +27,7 @@ class CsvImporter:
   PATTERN_ISSUE_DIR = re.compile(r'^.*/([^/]*)/issue_(\d{8})$')
 
   # set of allowed resolutions (aka "geo_type")
-  GEOGRAPHIC_RESOLUTIONS = {'county', 'hrr', 'msa', 'dma', 'state', 'nation'}
+  GEOGRAPHIC_RESOLUTIONS = {'county', 'hrr', 'msa', 'dma', 'state', 'hhs', 'nation'}
 
   # set of required CSV columns
   REQUIRED_COLUMNS = {'geo_id', 'val', 'se', 'sample_size'}
@@ -209,7 +209,7 @@ class CsvImporter:
       # geo_id was `None`
       return (None, 'geo_id')
 
-    if geo_type in ('hrr', 'msa', 'dma'):
+    if geo_type in ('hrr', 'msa', 'dma', 'hhs'):
       # these particular ids are prone to be written as ints -- and floats
       try:
         geo_id = str(CsvImporter.floaty_int(geo_id))
@@ -237,6 +237,10 @@ class CsvImporter:
     elif geo_type == 'state':
       # note that geo_id is lowercase
       if len(geo_id) != 2 or not 'aa' <= geo_id <= 'zz':
+        return (None, 'geo_id')
+
+    elif geo_type == 'hhs':
+      if not 1 <= int(geo_id) <= 10:
         return (None, 'geo_id')
 
     elif geo_type == 'nation':

@@ -16,7 +16,7 @@ group](https://delphi.cmu.edu/). The Epidata API includes:
   other epidemics tracked by Delphi through a variety of data streams.
 
 The Delphi group is extremely grateful for Pedrito Maynard-Zhang for all his
-help with the Epidata API [documentation](api/index.md).
+help with the Epidata API [documentation](api/README.md).
 
 Developers interested in modifying or extending this project are directed to
 the [Epidata API Development Guide](epidata_development.md).
