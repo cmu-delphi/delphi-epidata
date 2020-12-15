@@ -688,7 +688,8 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
       isBrowser = (typeof $ !== "undefined" && $ !== null ? $.ajax : void 0) != null;
       data = isBrowser ? $.param(params) : querystring.stringify(params);
-      fullURL = "".concat(BASE_URL, "?").concat(data);
+      fullURL = "".concat(BASE_URL, "?").concat(data); // decide method to avoid that we getting a 414 request too large error
+
       method = fullURL.length < 2048 ? 'GET' : 'POST';
 
       if (isBrowser) {

@@ -45,7 +45,10 @@ class Epidata
     isBrowser = $?.ajax?
     data = if isBrowser then $.param(params) else querystring.stringify(params)
     fullURL = "#{BASE_URL}?#{data}"
+
+    # decide method to avoid that we getting a 414 request too large error
     method = if fullURL.length < 2048 then 'GET' else 'POST'
+
     if isBrowser
       # API call with jQuery
       $.ajax({
