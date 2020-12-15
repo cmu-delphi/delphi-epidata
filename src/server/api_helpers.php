@@ -182,7 +182,7 @@ function extract_values($str, $type) {
 /**
  * parses a given string in format YYYYMMDD or YYYY-MM-DD to a number in the form YYYYMMDD
  */
-function parse_date($s) {
+function parse_date(string $s) {
   return intval(str_replace('-', '', $s));
 }
 
@@ -289,9 +289,14 @@ function record_analytics($source, $result, $num_rows = 0) {
 //   $fields_float (optional): an array of names of float fields
 function execute_query(string $query, IRowPrinter &$printer, ?array $fields_string, ?array $fields_int, ?array $fields_float, bool $single_query = TRUE) {
   global $dbh;
-  global $MAX_RESULTS;
-  error_log($query);
-  $result = mysqli_real_query($dbh, $query . " LIMIT {$MAX_RESULTS}");
+  if ($printer->remainingRows() >= 0) {
+    $limit = $printer->remainingRows() + 1;
+    $fullQuery = $query . " LIMIT {$limit}"; // +1 to know if there is more
+  } else {
+    $fullQuery = $query; // no limit
+  }
+  error_log($fullQuery);
+  $result = mysqli_real_query($dbh, $fullQuery);
   if (!$result) {
     error_log("Bad query: ".$query);
     error_log(mysqli_error($dbh));
@@ -355,13 +360,31 @@ function execute_query_append(string $query, IRowPrinter &$printer, ?array $fiel
 }
 
 interface IRowPrinter {
+  /**
+   * returns the number of possible remaining rows to fetch, if < 0 it means no limit
+   */
+  public function remainingRows(): int;
+  /**
+   * starts printing rows, can be called multiple times without harm
+   */
   public function begin();
+  /**
+   * print a specific row
+   */
   public function printRow(array &$row);
+  /**
+   * finish writing rows needs to be called once
+   */
   public function end();
 }
 
 class CollectRowPrinter implements IRowPrinter {
   public array $data = [];
+
+  public function remainingRows(): int {
+    global $MAX_RESULTS;
+    return $MAX_RESULTS - count($this->data);
+  }
 
   public function begin() {
     // dummy
@@ -375,25 +398,46 @@ class CollectRowPrinter implements IRowPrinter {
 }
 
 abstract class APrinter implements IRowPrinter {
+  /**
+   * number of rows that were printed
+   */
   public int $count = 0;
+  /**
+   * message result status
+   */
   public int $result = -1;
+  /**
+   * flag whether begin was called
+   */
   protected bool $began = FALSE;
+  /**
+   * flag for using status codes for handling errors
+   */
   protected bool $useStatusCodes = TRUE;
-  public string $source;
+  /**
+   * the endpoint selected by the user
+   */
+  public string $endpoint;
 
-  function __construct(string $source, bool $useStatusCodes = TRUE) {
-    $this->source = $source;
+  function __construct(string $endpoint, bool $useStatusCodes = TRUE) {
+    $this->endpoint = $endpoint;
     $this->useStatusCodes = $useStatusCodes;
   }
 
-  public function printError(int $result, string $message, int $statusCode = -1) {
+  /**
+   * prints a generic error
+   * @param {int} $result the message result
+   * @param {string} $message the message itself
+   * @param {int} $statusCode http status code if status codes are enabled in this printer
+   */
+  public function printError(int $result, string $message, int $statusCode = 500) {
     $this->result = $result;
-    if ($statusCode >= 0 && $this->useStatusCodes) {
+    if ($this->useStatusCodes) {
       http_response_code($statusCode);
     }
     header('Content-Type: application/json');
     echo json_encode(array('result' => $result, 'message' => $message));
-    record_analytics($this->source, $this->result);
+    record_analytics($this->endpoint, $this->result);
   }
 
   public function printDatabaseError() {
@@ -412,11 +456,19 @@ abstract class APrinter implements IRowPrinter {
     $this->printError(-1, 'no data source specified', 400);    
   }
 
+  /**
+   * prints a non standard JSON message
+   */
   public function printNonStandard(mixed &$data) {
     $this->result = 1;
     header('Content-Type: application/json');
     echo json_encode(array('result' => $this->result, 'message' => 'success', 'epidata' => $data));
-    record_analytics($this->source, $this->result);
+    record_analytics($this->endpoint, $this->result);
+  }
+
+  public function remainingRows(): int {
+    global $MAX_RESULTS;
+    return $MAX_RESULTS - $this->count;
   }
 
   public function begin() {
@@ -424,6 +476,7 @@ abstract class APrinter implements IRowPrinter {
       return;
     }
     $this->began = TRUE;
+    $this->result = -2; // no result
     $this->beginImpl();
   }
 
@@ -432,21 +485,29 @@ abstract class APrinter implements IRowPrinter {
   }
 
   public function printRow(array &$row) {
+    global $MAX_RESULTS;
     if (!$this->began) {
       $this->begin();
     }
     $first = $this->count == 0;
+    if ($this->count >= $MAX_RESULTS) {
+      // hit the limit
+      $this->result = 2;
+      return;
+    }
+    if ($first) {
+      $this->result = 1; // at least one row
+    }
     $this->printRowImpl($first, $row);
     $this->count++;
   }
 
   protected abstract function printRowImpl(bool $first, array &$row);
 
-  public function end(bool $hasMore = FALSE) {
+  public function end() {
     if (!$this->began) {
       return;
     }
-    $this->result = $this->count == 0 ? -2 : ($hasMore ? 2 : 1);
     $this->endImpl();
     record_analytics($this->source, $this->result, $this->count);
   }
@@ -456,10 +517,13 @@ abstract class APrinter implements IRowPrinter {
   }
 }
 
+/**
+ * a printer class writing in the classic epidata format
+ */
 class ClassicPrinter extends APrinter {
 
-  function __construct(string $source) {
-    parent::__construct($source, FALSE);
+  function __construct(string $endpoint) {
+    parent::__construct($endpoint, FALSE);
   }
 
   protected function beginImpl() {
@@ -477,16 +541,19 @@ class ClassicPrinter extends APrinter {
   protected function endImpl() {
     $message = $this->count == 0 ? 'no results' : ($this->result == 2 ? 'too many results, data truncated' : 'success');
     $messageEncoded = json_encode($message);
-    echo "], \"count\": {$this->count}, \"result\": {$this->result}, \"message\": {$messageEncoded} }";
+    echo "], \"result\": {$this->result}, \"message\": {$messageEncoded} }";
   }
 }
 
+/**
+ * a printer class writing a tree by the given grouping criteria as the first element in the epidata array
+ */
 class ClassicTreePrinter extends ClassicPrinter {
   private array $data = [];
   private string $group;
 
-  function __construct(string $source, string $group) {
-    parent::__construct($source);
+  function __construct(string $endpoint, string $group) {
+    parent::__construct($endpoint);
     $this->group = $group;
   }
 
@@ -523,6 +590,9 @@ class ClassicTreePrinter extends ClassicPrinter {
   }
 }
 
+/**
+ * a printer class writing in a CSV file
+ */
 class CSVPrinter extends APrinter {
   private $out = null;
 
@@ -546,6 +616,9 @@ class CSVPrinter extends APrinter {
   }
 }
 
+/**
+ * a printer class writing in a JSON array
+ */
 class JSONPrinter extends APrinter {
   protected function beginImpl() {
     header('Content-Type: application/json');
@@ -564,6 +637,9 @@ class JSONPrinter extends APrinter {
   }
 }
 
+/**
+ * a printer class writing in JSONLines format
+ */
 class JSONLPrinter extends APrinter {
   protected function beginImpl() {
     // there is no official mime type for json lines
@@ -571,23 +647,24 @@ class JSONLPrinter extends APrinter {
   }
 
   protected function printRowImpl(bool $first, array &$row) {
+    // each line is a JSON file with a new line to separate them
     echo json_encode($row);
     echo "\n";
   }
 }
 
-function createPrinter(string $source, string $format = 'classic') {
+function createPrinter(string $endpoint, string $format = 'classic') {
   switch($format) {
   case 'tree':
-    return new ClassicTreePrinter($source, 'signal');
+    return new ClassicTreePrinter($endpoint, 'signal');
   case 'json': 
-    return new JSONPrinter($source);
+    return new JSONPrinter($endpoint);
   case 'csv': 
-    return new CSVPrinter($source);
+    return new CSVPrinter($endpoint);
   case 'jsonl':
-    return new JSONLPrinter($source);
+    return new JSONLPrinter($endpoint);
   default:
-    return new ClassicPrinter($source);
+    return new ClassicPrinter($endpoint);
   }
 }
 
