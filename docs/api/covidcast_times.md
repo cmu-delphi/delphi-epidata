@@ -8,13 +8,13 @@ nav_order: 5
 
 Every observation in the COVIDcast Epidata API has two dates attached:
 
-* `time_value`: The time the underlying events happened. For example, for a data
-  source that reports on COVID test results, the time value is the date the
+* `time_value`: The time the underlying events happened. For example, when a data
+  source reports on COVID test results, the time value is the date the
   results were recorded by the testing provider.
 * `issue`: The date the estimates were *issued*. For example, a COVID test
   result might be recorded on October 1st, but it may take several days for
   that report to be collected, aggregated, received by Delphi, and added to our
-  database. The date Delphi makes the data available is the *issue date*.
+  database.  The *issue date* is when Delphi makes the data available.
 
 For example, consider using our [doctor visits signal](covidcast-signals/doctor-visits.md),
 which estimates the percentage of outpatient doctor visits that are
