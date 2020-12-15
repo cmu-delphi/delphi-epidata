@@ -1260,16 +1260,25 @@ function meta_delphi(IRowPrinter &$printer) {
   execute_query($query, $printer, $fields_string, $fields_int, null);
 }
 
-$source = isset($_REQUEST['source']) ? strtolower($_REQUEST['source']) : null;
-$format = isset($_REQUEST['format']) ? $_REQUEST['format'] : 'classic';
-$printer = createPrinter($source, $format);
 
-if (!database_connect()) {
-  return $printer->send_database_error();
-}
-// connected to the database
+/*
+ * main function
+ */
+function main() {
+  $source = isset($_REQUEST['source']) ? strtolower($_REQUEST['source']) : '';
+  $format = isset($_REQUEST['format']) ? $_REQUEST['format'] : 'classic';
+  $printer = createPrinter($source, $format);
 
-// switch the data source
+  if (!$source) {
+    return $printer->printMissingOrWrongSource();
+  }
+
+  if (!database_connect()) {
+    return $printer->send_database_error();
+  }
+  // connected to the database
+
+  // switch the data source
   
   if($source === 'fluview') {
     if(require_all($printer, array('epiweeks', 'regions'))) {
@@ -1631,4 +1640,6 @@ if (!database_connect()) {
   } else {
     $printer->printMissingOrWrongSource();
   }
+}
+main();
 ?>
