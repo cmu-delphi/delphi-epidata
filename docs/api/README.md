@@ -58,6 +58,8 @@ wholly or partially serve data under this license include:
 
 [![Creative Commons License](https://i.creativecommons.org/l/by/4.0/88x31.png)](https://creativecommons.org/licenses/by/4.0/)
 
+Please note that our `endpoint` parameters were previously referenced as `source` in our API. New users will now use the `endpoint` parameter when accessing our data. If you are a returning or continuous user you do not have to make any changes, as the parameter `source` still works as usual.
+
 ---
 
 # The API
