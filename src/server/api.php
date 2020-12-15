@@ -1316,8 +1316,12 @@ function meta_delphi() {
 
 // all responses will have a result field
 $data = array('result' => -1);
-// connect to the database
-if(database_connect()) {
+
+if (!database_connect()) {
+  return send_database_error();
+}
+// connected to the database
+
   // select the data source
   $source = isset($_REQUEST['source']) ? strtolower($_REQUEST['source']) : null;
   if($source === 'fluview') {
@@ -1394,6 +1398,7 @@ if(database_connect()) {
   } else if($source === 'ilinet' || $source === 'stateili') {
     // these two sources are now combined into fluview
     $data['message'] = 'use fluview instead';
+    
   } else if($source === 'gft') {
     if(require_all($data, array('epiweeks', 'locations'))) {
       // parse the request
@@ -1724,9 +1729,6 @@ if(database_connect()) {
   }
   // API analytics
   record_analytics($source, $data);
-} else {
-  $data['message'] = 'database error';
-}
 
 if(isset($_REQUEST['format']) && $_REQUEST['format'] == "csv") {
   send_csv($data);

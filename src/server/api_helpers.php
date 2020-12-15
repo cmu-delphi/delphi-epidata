@@ -272,7 +272,7 @@ function get_region_states($region) {
   return null;
 }
 
-function record_analytics($source, $data) {
+function record_analytics($source, $result, $num_rows) {
   global $dbh;
   $ip = mysqli_real_escape_string($dbh, isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '');
   $ua = mysqli_real_escape_string($dbh, isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '');
@@ -383,6 +383,12 @@ function send_status(&$data) {
   return TRUE;
 }
 
+function send_database_error($message) {
+  http_response_code(500);
+  header('Content-Type: application/json');
+  echo json_encode(array('result' => -1, 'message' => 'database error'));
+}
+
 function send_csv(&$data) {
   if (send_status($data)) {
     return;
@@ -415,6 +421,85 @@ function send_json(&$data) {
     echo json_encode(array());
   } else {
     echo json_encode($data["epidata"]);
+  }
+}
+
+function send_json_row(&$row) {
+  echo json_encode($row);
+}
+function send_csv_row(&$row) {
+  fputcsv($out, $row);
+}
+function send_newline_separator(){}
+
+class LegacyPrinter {
+  public function print_database_error() {
+    header('Content-Type: application/json');
+    echo json_encode(array('result' => -1, 'message' => 'database error'));
+  }
+
+  abstract public function printRow(array &$row) {
+    
+  }
+}
+
+class APrinter {
+  protected bool $first = true;
+
+  public function print_database_error() {
+    http_response_code(500);
+    header('Content-Type: application/json');
+    echo json_encode(array('result' => -1, 'message' => 'database error'));
+  }
+
+  protected function printSeparator(string $separator = ',') {
+    if ($this->$first) {
+      $this->$first = false;
+    } else {
+      echo ',';
+    }
+  }
+
+  abstract public function printRow(array &$row);
+}
+
+class CSVPrinter extends APrinter {
+  private resource $out;
+
+  function __construct() {
+    parent::__construct();
+    $this->$out = fopen('php://output', 'w');
+  }
+
+  function __destruct() {
+    fclose($this->$out);
+  }
+
+  public function printRow(array &$row) {
+    fputcsv($this->$out, $row);
+  }
+}
+
+class FlatJSONPrinter {
+  function __construct() {
+    parent::__construct();
+    echo '[';
+  }
+
+  function __destruct() {
+    echo ']';
+  }
+
+  public function printRow(array &$row) {
+    $this->print_separator(',');
+    echo json_encode($row);
+  }
+}
+
+class JSONNLPrinter {
+  public function printRow(array &$row) {
+    echo json_encode($row);
+    echo '\n';
   }
 }
 
