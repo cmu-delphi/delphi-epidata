@@ -69,7 +69,9 @@ $MAX_AUTH_KEYS_PROVIDED_PER_SENSOR_QUERY = 1;
 // end sensor query authentication configuration
 
 // result limit, ~10 years of daily data
-$MAX_RESULTS = 3650;
+$MAX_RESULTS = 10e6;
+// specify the number of seconds the script is maximally allowed to run (default 30s)
+set_time_limit(60*10); // in seconds
 
 // queries the `fluview` and `fluview_imputed` tables
 //   $epiweeks (required): array of epiweek values/ranges
