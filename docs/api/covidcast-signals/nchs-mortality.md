@@ -16,7 +16,11 @@ grand_parent: COVIDcast Epidata API
 
 This data source of national provisional death counts is based on death
 certificate data received and coded by the National Center for Health Statistics
-[(NCHS)](https://www.cdc.gov/nchs/nvss/vsrr/COVID19/index.htm).
+[(NCHS)](https://www.cdc.gov/nchs/nvss/vsrr/COVID19/index.htm). This data is
+different from the death data available from [USAFacts](usa-facts.md) and [JHU
+CSSE](jhu-csse.md): deaths are reported by the date they occur, not the date
+they are reported by local health departments, and data is frequently reissued
+as additional death certificates from recent weeks are received and tabulated.
 
 | Signal | Description |
 | --- | --- |
@@ -34,6 +38,14 @@ certificate data received and coded by the National Center for Health Statistics
 |`deaths_pneumonia_or_flu_or_covid_incidence_prop`| Number of weekly new deaths involving Pneumonia, Influenza, or COVID-19, per 100,000 population|
 |`deaths_percent_of_expected`| Number of weekly new deaths for all causes in 2020 compared to the average number across the same week in 2017–2019|
 
+## Table of contents
+{: .no_toc .text-delta}
+
+1. TOC
+{:toc}
+
+## Calculation
+
 These signals are taken directly from [Table
 1](https://www.cdc.gov/nchs/nvss/vsrr/COVID19/index.htm) without
 changes. National provisional death counts include deaths occurring within the
@@ -44,12 +56,6 @@ the death certificate, not just the primary cause of death). The codes that are
 considered for each signals are described in detail
 [here](https://github.com/cmu-delphi/covidcast-indicators/blob/main/nchs_mortality/DETAILS.md#metrics-level-1-m1). We
 export the state-level data as-is in a weekly format.
-
-## Table of contents
-{: .no_toc .text-delta}
-
-1. TOC
-{:toc}
 
 ## Geographical Exceptions
 
