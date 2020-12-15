@@ -23,7 +23,7 @@ whose estimate is being reported. Estimates are available for several possible
   available
   [here](https://hub.arcgis.com/datasets/fedmaps::hospital-referral-regions). We
   report HRRs by their number (non-consecutive, between 1 and 457).
-* `hss`:  values that are accepted are the numbers 1-10, corresponding to the US Department of Health & Human Services Regional Offices; [found here](https://www.hhs.gov/about/agencies/iea/regional-offices/index.html)
+* `hhs`:  values that are accepted are the numbers 1-10, corresponding to the US [Department of Health & Human Services Regional Offices](https://www.hhs.gov/about/agencies/iea/regional-offices/index.html)
 * `msa`: Metropolitan Statistical Area, as defined by the Office of Management
   and Budget. The Census Bureau provides [detailed definitions of these
   regions](https://www.census.gov/programs-surveys/metro-micro/about.html). We
