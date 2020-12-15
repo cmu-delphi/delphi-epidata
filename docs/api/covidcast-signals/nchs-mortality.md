@@ -12,6 +12,7 @@ grand_parent: COVIDcast Epidata API
 * **Number of data revisions since 19 May 2020:** 0
 * **Date of last change:** Never
 * **Available for:** state (see [geography coding docs](../covidcast_geography.md))
+* **Time type:** week (see [date format docs](../covidcast_times.md))
 * **License:** [NCHS Data Use Agreement](https://www.cdc.gov/nchs/data_access/restrictions.htm)
 
 This data source of national provisional death counts is based on death
