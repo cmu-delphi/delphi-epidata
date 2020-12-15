@@ -9,8 +9,7 @@ from unittest.mock import sentinel
 from delphi.epidata.acquisition.covid_hosp.common.test_utils import TestUtils
 
 # py3tester coverage target
-__test_target__ = \
-    'delphi.epidata.acquisition.covid_hosp.state_timeseries.database'
+__test_target__ = 'delphi.epidata.acquisition.covid_hosp.facility.database'
 
 
 class DatabaseTests(unittest.TestCase):
@@ -32,18 +31,23 @@ class DatabaseTests(unittest.TestCase):
     database = Database(mock_connection)
     dataset = self.test_utils.load_sample_dataset()
 
-    result = database.insert_dataset(sentinel.issue, dataset)
+    result = database.insert_dataset(sentinel.publication_date, dataset)
 
     self.assertIsNone(result)
     self.assertEqual(mock_cursor.execute.call_count, 20)
 
     last_query_values = mock_cursor.execute.call_args[0][-1]
     expected_query_values = (
-        0, sentinel.issue, 'MA', 20200510, 53, 84, 15691, 73, 12427, 83, 3625,
-        84, None, 0, None, 0, None, 0, None, 0, None, 0, None, 0, None, 0,
-        None, 0, None, 0, None, 0, None, 0, None, 0, 0.697850497273019, 72,
-        10876, 15585, 0.2902550897239881, 83, 3607, 12427, 0.21056656682174496,
-        73, 3304, 15691, None, None, None, None, None, None, None, None)
+        0, sentinel.publication_date, '450822', 20201030, 'TX', '450822',
+        'MEDICAL CITY LAS COLINAS', '6800 N MACARTHUR BLVD', 'IRVING', '75039',
+        'Short Term', '48113', True, 69.3, 61.1, 61.1, 69.0, 60.9, 6.9, 6.1,
+        -999999, -999999, 69.3, 14.3, 6.1, 14.0, 5.9, -999999, -999999,
+        -999999, -999999, -999999, 485, 428, 428, 483, 426, 48, 43, -999999,
+        -999999, 485, 100, 43, 98, 41, 16, 14, -999999, -999999, -999999, 7, 7,
+        7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 11, -999999,
+        -999999, -999999, -999999, -999999, -999999, -999999, -999999, -999999,
+        -999999, 58, -999999, -999999, -999999, -999999, -999999, -999999,
+        -999999, -999999, -999999, -999999, -999999, 536, -999999)
     self.assertEqual(len(last_query_values), len(expected_query_values))
 
     for actual, expected in zip(last_query_values, expected_query_values):

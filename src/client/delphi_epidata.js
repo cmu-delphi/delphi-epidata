@@ -1,8 +1,6 @@
 "use strict";
 
-function _instanceof(left, right) { if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) { return !!right[Symbol.hasInstance](left); } else { return left instanceof right; } }
-
-function _classCallCheck(instance, Constructor) { if (!_instanceof(instance, Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
@@ -255,7 +253,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
       }, {
         key: "wiki",
-        value: function wiki(callback, articles, dates, epiweeks, hours) {
+        value: function wiki(callback, articles, dates, epiweeks, hours, language) {
           var params; // Check parameters
 
           if (articles == null) {
@@ -273,7 +271,8 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
           params = {
             'source': 'wiki',
-            'articles': _list(articles)
+            'articles': _list(articles),
+            'language': language || 'en'
           };
 
           if (dates != null) {
@@ -677,7 +676,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
     _request = function _request(callback, params) {
-      var handler, reader; // Function to handle the API response
+      var data, fullURL, handler, isBrowser, method, reader, req; // Function to handle the API response
 
       handler = function handler(data) {
         if ((data != null ? data.result : void 0) != null) {
@@ -688,9 +687,21 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }; // Request data from the server
 
 
-      if ((typeof $ !== "undefined" && $ !== null ? $.getJSON : void 0) != null) {
+      isBrowser = (typeof $ !== "undefined" && $ !== null ? $.ajax : void 0) != null;
+      data = isBrowser ? $.param(params) : querystring.stringify(params);
+      fullURL = "".concat(BASE_URL, "?").concat(data); // decide method to avoid that we getting a 414 request too large error
+
+      method = fullURL.length < 2048 ? 'GET' : 'POST';
+
+      if (isBrowser) {
         // API call with jQuery
-        return $.getJSON(BASE_URL, params, handler);
+        return $.ajax({
+          url: BASE_URL,
+          dataType: "json",
+          method: method,
+          success: handler,
+          data: params
+        });
       } else {
         // Function to handle the HTTP response
         reader = function reader(response) {
@@ -709,7 +720,20 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         }; // API call with Node
 
 
-        return https.get("".concat(BASE_URL, "?").concat(querystring.stringify(params)), reader);
+        if (method === 'GET') {
+          return https.get(fullURL, reader);
+        } else {
+          req = https.request(BASE_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'Content-Length': Buffer.byteLength(data)
+            }
+          }, reader); // Write data to request body
+
+          req.write(data);
+          return req.end();
+        }
       }
     };
 

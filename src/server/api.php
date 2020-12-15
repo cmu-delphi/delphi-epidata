@@ -1019,13 +1019,13 @@ function get_covidcast_meta(IRowPrinter &$printer) {
   $printer->end();
 }
 
-// queries the `covid_hosp` table
+// queries the `covid_hosp_state_timeseries` table
 //   $states (required): array of state abbreviations
 //   $dates (required): array of date values/ranges
 //   $issues (optional): array of date values/ranges
 //     default: most recent issue
-function get_covid_hosp(IRowPrinter &$printer, $states, $dates, $issues) {
-  $table = '`covid_hosp` c';
+function get_covid_hosp_state_timeseries(IRowPrinter &$printer, $states, $dates, $issues) {
+  $table = '`covid_hosp_state_timeseries` c';
   $fields = implode(', ', array(
     'c.`issue`',
     'c.`state`',
@@ -1633,14 +1633,14 @@ function main() {
   } else if($source === 'covidcast_meta') {
     // get the metadata
     get_covidcast_meta($printer);
-  } else if($source === 'covid_hosp') {
+  } else if($source === 'covid_hosp' || $source === 'covid_hosp_state_timeseries') {
     if(require_all($printer, array('states', 'dates'))) {
       // parse the request
       $states = extract_values($_REQUEST['states'], 'str');
       $dates = extract_values($_REQUEST['dates'], 'int');
       $issues = isset($_REQUEST['issues']) ? extract_values($_REQUEST['issues'], 'int') : null;
       // get the data
-      get_covid_hosp($printer, $states, $dates, $issues);
+      get_covid_hosp_state_timeseries($printer, $states, $dates, $issues);
     }
   } else {
     $printer->printMissingOrWrongSource();

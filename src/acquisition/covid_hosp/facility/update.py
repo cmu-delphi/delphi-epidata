@@ -1,13 +1,13 @@
 """
-Acquires the "COVID-19 Reported Patient Impact and Hospital Capacity by State
-Timeseries" dataset provided by the US Department of Health & Human Services
-via healthdata.gov.
+Acquires the "COVID-19 Reported Patient Impact and Hospital Capacity by
+Facility" dataset provided by the US Department of Health & Human Services via
+healthdata.gov.
 """
 
 # first party
 from delphi.epidata.acquisition.covid_hosp.common.utils import Utils
-from delphi.epidata.acquisition.covid_hosp.state_timeseries.database import Database
-from delphi.epidata.acquisition.covid_hosp.state_timeseries.network import Network
+from delphi.epidata.acquisition.covid_hosp.facility.database import Database
+from delphi.epidata.acquisition.covid_hosp.facility.network import Network
 
 
 class Update:

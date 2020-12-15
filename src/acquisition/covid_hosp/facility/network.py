@@ -4,7 +4,7 @@ from delphi.epidata.acquisition.covid_hosp.common.network import Network as Base
 
 class Network(BaseNetwork):
 
-  DATASET_ID = '83b4a668-9321-4d8c-bc4f-2bef66c49050'
+  DATASET_ID = 'd475cc4e-83cd-4c16-be57-9105f300e0bc'
 
   def fetch_metadata(*args, **kwags):
     """Download and return metadata.

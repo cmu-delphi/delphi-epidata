@@ -35,7 +35,11 @@ Epidata <- (function() {
   # Helper function to request and parse epidata
   .request <- function(params) {
     # API call
-    return(content(GET(BASE_URL, query=params), 'parsed'))
+    res <- GET(BASE_URL, query=params)
+    if (res$status_code == 414) {
+      res <- POST(BASE_URL, body=params, encode='form')
+    }
+    return(content(res, 'parsed'))
   }
 
   # Build a `range` object (ex: dates/epiweeks)
@@ -247,7 +251,7 @@ Epidata <- (function() {
   }
 
   # Fetch Wikipedia access data
-  wiki <- function(articles, dates, epiweeks, hours) {
+  wiki <- function(articles, dates, epiweeks, hours, language='en') {
     # Check parameters
     if(missing(articles)) {
       stop('`articles` is required')
@@ -258,7 +262,8 @@ Epidata <- (function() {
     # Set up request
     params <- list(
       source = 'wiki',
-      articles = .list(articles)
+      articles = .list(articles),
+      language = language
     )
     if(!missing(dates)) {
       params$dates <- .list(dates)
