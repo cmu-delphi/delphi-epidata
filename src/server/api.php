@@ -82,7 +82,7 @@ $MAX_RESULTS = 3650;
 //     default: most recent issue
 //   $authorized: determines whether private data (i.e. `fluview_imputed`) is
 //     included in the result
-function get_fluview(IRowPrinter $printer, $epiweeks, $regions, $issues, $lag, $authorized) {
+function get_fluview(IRowPrinter &$printer, $epiweeks, $regions, $issues, $lag, $authorized) {
   // public data
   $table = '`fluview` fv';
   $fields = "fv.`release_date`, fv.`issue`, fv.`epiweek`, fv.`region`, fv.`lag`, fv.`num_ili`, fv.`num_patients`, fv.`num_providers`, fv.`wili`, fv.`ili`, fv.`num_age_0`, fv.`num_age_1`, fv.`num_age_2`, fv.`num_age_3`, fv.`num_age_4`, fv.`num_age_5`";
@@ -102,11 +102,12 @@ function get_fluview(IRowPrinter $printer, $epiweeks, $regions, $issues, $lag, $
     $fields = "NULL `release_date`, fv.`issue`, fv.`epiweek`, fv.`region`, fv.`lag`, fv.`num_ili`, fv.`num_patients`, fv.`num_providers`, fv.`ili` `wili`, fv.`ili`, NULL `num_age_0`, NULL `num_age_1`, NULL `num_age_2`, NULL `num_age_3`, NULL `num_age_4`, NULL `num_age_5`";
     _get_fluview_by_table($printer, $epiweeks, $regions, $issues, $lag, $table, $fields);
   }
+  $printer->end();
 }
 
 // a helper function to query `fluview` and `fluview_imputed` individually
 // parameters
-function _get_fluview_by_table(IRowPrinter $printer, $epiweeks, $regions, $issues, $lag, $table, $fields) {
+function _get_fluview_by_table(IRowPrinter &$printer, $epiweeks, $regions, $issues, $lag, $table, $fields) {
   // basic query info
   $order = "fv.`epiweek` ASC, fv.`region` ASC, fv.`issue` ASC";
   // build the epiweek filter
@@ -133,7 +134,7 @@ function _get_fluview_by_table(IRowPrinter $printer, $epiweeks, $regions, $issue
   $fields_string = array('release_date', 'region');
   $fields_int = array('issue', 'epiweek', 'lag', 'num_ili', 'num_patients', 'num_providers', 'num_age_0', 'num_age_1', 'num_age_2', 'num_age_3', 'num_age_4', 'num_age_5');
   $fields_float = array('wili', 'ili');
-  execute_query($query, $printer, $fields_string, $fields_int, $fields_float);
+  execute_query_append($query, $printer, $fields_string, $fields_int, $fields_float);
 }
 
 // queries the `fluview_clinical` table
@@ -145,7 +146,7 @@ function _get_fluview_by_table(IRowPrinter $printer, $epiweeks, $regions, $issue
 //   $lag (optional): number of weeks between each epiweek and its issue
 //     overridden by $issues
 //     default: most recent issue
-function get_fluview_clinical(IRowPrinter $printer, $epiweeks, $regions, $issues, $lag) {
+function get_fluview_clinical(IRowPrinter &$printer, $epiweeks, $regions, $issues, $lag) {
   // set up for query
   $table = "`fluview_clinical` fvc";
   // $fields = 'fvc.`release_date`, fvc.`issue`, fvc.`epiweek`, fvc.`region`, fvc.`lag`, fvc.`total_specimens`, fvc.`total_a_h1n1`, fvc.`total_a_h3`, fvc.`total_a_h3n2v`, fvc.`total_a_no_sub`, fvc.`total_b`, fvc.`total_b_vic`, fvc.`total_b_yam`';
@@ -184,7 +185,7 @@ function get_fluview_clinical(IRowPrinter $printer, $epiweeks, $regions, $issues
 //   $lag (optional): number of weeks between each epiweek and its issue
 //     overridden by $issues
 //     default: most recent issue
-function get_flusurv(IRowPrinter $printer, $epiweeks, $locations, $issues, $lag) {
+function get_flusurv(IRowPrinter &$printer, $epiweeks, $locations, $issues, $lag) {
   // basic query info
   $table = '`flusurv` fs';
   $fields = "fs.`release_date`, fs.`issue`, fs.`epiweek`, fs.`location`, fs.`lag`, fs.`rate_age_0`, fs.`rate_age_1`, fs.`rate_age_2`, fs.`rate_age_3`, fs.`rate_age_4`, fs.`rate_overall`";
@@ -225,7 +226,7 @@ function get_flusurv(IRowPrinter $printer, $epiweeks, $locations, $issues, $lag)
 //   $lag (optional): number of weeks between each epiweek and its issue
 //     overridden by $issues
 //     default: most recent issue
-function get_paho_dengue(IRowPrinter $printer, $epiweeks, $regions, $issues, $lag) {
+function get_paho_dengue(IRowPrinter &$printer, $epiweeks, $regions, $issues, $lag) {
   // set up for query
   $table = "`paho_dengue` pd";
   $fields = "pd.`release_date`, pd.`issue`, pd.`epiweek`, pd.`region`, pd.`lag`, pd.`total_pop`, pd.`serotype`, pd.`num_dengue`, pd.`incidence_rate`, pd.`num_severe`, pd.`num_deaths`";
@@ -263,7 +264,7 @@ function get_paho_dengue(IRowPrinter $printer, $epiweeks, $regions, $issues, $la
 //   $lag (optional): number of weeks between each epiweek and its issue
 //     overridden by $issues
 //     default: most recent issue
-function get_ecdc_ili(IRowPrinter $printer, $epiweeks, $regions, $issues, $lag) {
+function get_ecdc_ili(IRowPrinter &$printer, $epiweeks, $regions, $issues, $lag) {
   // set up for query
   $table = "`ecdc_ili` ec";
   $fields = "ec.`release_date`, ec.`issue`, ec.`epiweek`, ec.`region`, ec.`lag`, ec.`incidence_rate`";
@@ -301,7 +302,7 @@ function get_ecdc_ili(IRowPrinter $printer, $epiweeks, $regions, $issues, $lag) 
 //   $lag (optional): number of weeks between each epiweek and its issue
 //     overridden by $issues
 //     default: most recent issue
-function get_kcdc_ili(IRowPrinter $printer, $epiweeks, $regions, $issues, $lag) {
+function get_kcdc_ili(IRowPrinter &$printer, $epiweeks, $regions, $issues, $lag) {
   // set up for query
   $table = "`kcdc_ili` kc";
   $fields = "kc.`release_date`, kc.`issue`, kc.`epiweek`, kc.`region`, kc.`lag`, kc.`ili`";
@@ -333,7 +334,7 @@ function get_kcdc_ili(IRowPrinter $printer, $epiweeks, $regions, $issues, $lag) 
 // queries the `gft` table
 //   $epiweeks (required): array of epiweek values/ranges
 //   $locations (required): array of location names
-function get_gft(IRowPrinter $printer, $epiweeks, $locations) {
+function get_gft(IRowPrinter &$printer, $epiweeks, $locations) {
   // basic query info
   $table = '`gft` g';
   $fields = "g.`epiweek`, g.`location`, g.`num`";
@@ -352,7 +353,7 @@ function get_gft(IRowPrinter $printer, $epiweeks, $locations) {
 //   $epiweeks (required): array of epiweek values/ranges
 //   $locations (required): array of location names
 //   $query (required): search query or topic ID
-function get_ght(IRowPrinter $printer, $epiweeks, $locations, $query) {
+function get_ght(IRowPrinter &$printer, $epiweeks, $locations, $query) {
   // basic query info
   $table = '`ght` g';
   $fields = "g.`epiweek`, g.`location`, g.`value`";
@@ -373,7 +374,7 @@ function get_ght(IRowPrinter $printer, $epiweeks, $locations, $query) {
 //   $locations (required): array of location names
 //   $dates (required): array of date or epiweek values/ranges
 //   $resolution (required): either 'daily' or 'weekly'
-function get_twitter(IRowPrinter $printer, $locations, $dates, $resolution) {
+function get_twitter(IRowPrinter &$printer, $locations, $dates, $resolution) {
   global $dbh;
   // basic query info
   $table = '`twitter` t';
@@ -419,7 +420,7 @@ function get_twitter(IRowPrinter $printer, $locations, $dates, $resolution) {
       $query = "SELECT {$fields}, '{$region}' `location` FROM {$table} WHERE ({$condition_filter}) AND ({$condition_date}) AND ({$condition_location}) GROUP BY {$date_field} ORDER BY {$date_field} ASC";
     }
     // append query results to the epidata array
-    execute_query($query, $printer, $fields_string, $fields_int, $fields_float);
+    execute_query_append($query, $printer, $fields_string, $fields_int, $fields_float);
   }
   // query all states together
   if(count($states) !== 0) {
@@ -428,8 +429,9 @@ function get_twitter(IRowPrinter $printer, $locations, $dates, $resolution) {
     // final query for states
     $query = "SELECT {$fields}, t.`state` `location` FROM {$table} WHERE ({$condition_filter}) AND ({$condition_date}) AND ({$condition_location}) GROUP BY {$date_field}, t.`state` ORDER BY {$date_field} ASC, t.`state` ASC";
     // append query results to the epidata array
-    execute_query($query, $printer, $fields_string, $fields_int, $fields_float);
+    execute_query_append($query, $printer, $fields_string, $fields_int, $fields_float);
   }
+  $printer->end();
 }
 
 // queries the `wiki` table
@@ -440,7 +442,7 @@ function get_twitter(IRowPrinter $printer, $locations, $dates, $resolution) {
 //   $hours (optional): array of hour values/ranges
 // if present, $hours determines which counts are used within each day; otherwise all counts are used
 // for example, if hours=[4], then only the 4 AM (UTC) stream is returned
-function get_wiki(IRowPrinter $printer, $articles, $language, $dates, $resolution, $hours) {
+function get_wiki(IRowPrinter &$printer, $articles, $language, $dates, $resolution, $hours) {
   // required for `mysqli_real_escape_string`
   global $dbh;
   $language = mysqli_real_escape_string($dbh, $language);
@@ -483,7 +485,7 @@ function get_wiki(IRowPrinter $printer, $articles, $language, $dates, $resolutio
 // queries the `quidel` table
 //   $locations (required): array of location names
 //   $epiweeks (required): array of epiweek values/ranges
-function get_quidel(IRowPrinter $printer, $locations, $epiweeks) {
+function get_quidel(IRowPrinter &$printer, $locations, $epiweeks) {
   // basic query info
   $table = '`quidel` q';
   $fields = "q.`location`, q.`epiweek`, q.`value`";
@@ -505,7 +507,7 @@ function get_quidel(IRowPrinter $printer, $locations, $epiweeks) {
 // queries the `norostat_point` table
 //   $locations (required): single location value (str listing included states)
 //   $epiweeks (required): array of epiweek values/ranges
-function get_norostat(IRowPrinter $printer, $location, $epiweeks) {
+function get_norostat(IRowPrinter &$printer, $location, $epiweeks) {
   // todo add release/issue args
   //
   // build the filters:
@@ -542,7 +544,7 @@ function get_norostat(IRowPrinter $printer, $location, $epiweeks) {
 //   $epiweeks (required): array of epiweek values/ranges
 //   $locations (required): array of location names
 //   $flu_types (required): array of flu types
-function get_afhsb(IRowPrinter $printer, $locations, $epiweeks, $flu_types) {
+function get_afhsb(IRowPrinter &$printer, $locations, $epiweeks, $flu_types) {
   global $dbh;
   // split locations into national/regional/state
   $location_dict = array("hhs" => array(), "cen" => array(),
@@ -574,10 +576,11 @@ function get_afhsb(IRowPrinter $printer, $locations, $epiweeks, $flu_types) {
       _get_afhsb_by_table($printer, $location_type, $epiweeks, $locs, $disjoint_flus, $subset_flus);
     }
   }
+  $printer->end();
 }
 
 // A helper function to query afhsb tables
-function _get_afhsb_by_table(IRowPrinter $printer, $location_type, $epiweeks, $locations, $disjoint_flus, $subset_flus) {
+function _get_afhsb_by_table(IRowPrinter &$printer, $location_type, $epiweeks, $locations, $disjoint_flus, $subset_flus) {
   // basic query info
   $table = (in_array($location_type, array("hhs", "cen"))) ? "afhsb_00to13_region" : "afhsb_00to13_state";
   $fields = "`epiweek`, `{$location_type}` `location`, sum(`visit_sum`) `visit_sum`";
@@ -599,7 +602,7 @@ function _get_afhsb_by_table(IRowPrinter $printer, $location_type, $epiweeks, $l
     $query = "SELECT {$fields}, '{$subset_flu}' `flu_type` FROM {$table}
       WHERE ({$condition_epiweek}) AND ({$condition_location}) AND ({$condition_flu})
       GROUP BY {$group} ORDER BY {$order}";
-      execute_query($query, $printer, $fields_string, $fields_int, null);
+      execute_query_append($query, $printer, $fields_string, $fields_int, null);
   }
   // disjoint flu types: flu1, flu2-flu1, flu3-flu2, ili-flu3
   if(!empty($disjoint_flus)){
@@ -607,7 +610,7 @@ function _get_afhsb_by_table(IRowPrinter $printer, $location_type, $epiweeks, $l
     $query = "SELECT {$fields}, `flu_type` FROM {$table}
     WHERE ({$condition_epiweek}) AND ({$condition_location}) AND ({$condition_flu})
     GROUP BY {$group},`flu_type` ORDER BY {$order},`flu_type`";
-    execute_query($query, $printer, $fields_string, $fields_int, null);
+    execute_query_append($query, $printer, $fields_string, $fields_int, null);
   }
 }
 
@@ -620,7 +623,7 @@ function _get_afhsb_by_table(IRowPrinter $printer, $location_type, $epiweeks, $l
 //   $lag (optional): number of weeks between each epiweek and its issue
 //     overridden by $issues
 //     default: most recent issue
-function get_nidss_flu(IRowPrinter $printer, $epiweeks, $regions, $issues, $lag) {
+function get_nidss_flu(IRowPrinter &$printer, $epiweeks, $regions, $issues, $lag) {
   // basic query info
   $table = '`nidss_flu` nf';
   $fields = "nf.`release_date`, nf.`issue`, nf.`epiweek`, nf.`region`, nf.`lag`, nf.`visits`, nf.`ili`";
@@ -655,7 +658,7 @@ function get_nidss_flu(IRowPrinter $printer, $epiweeks, $regions, $issues, $lag)
 // queries the `nidss_dengue` table
 //   $epiweeks (required): array of epiweek values/ranges
 //   $locations (required): array of region and/or location names
-function get_nidss_dengue(IRowPrinter $printer, $epiweeks, $locations) {
+function get_nidss_dengue(IRowPrinter &$printer, $epiweeks, $locations) {
   global $dbh;
   // build the epiweek filter
   $condition_epiweek = filter_integers('nd.`epiweek`', $epiweeks);
@@ -687,14 +690,15 @@ function get_nidss_dengue(IRowPrinter $printer, $epiweeks, $locations) {
       GROUP BY
         nd2.`epiweek`, nd2.`location`
       ";
-    execute_query($query, $printer, $fields_string, $fields_int, null);
+    execute_query_append($query, $printer, $fields_string, $fields_int, null);
   }
+  $printer->end();
 }
 
 // queries the `forecasts` table
 //   $system (required): system name
 //   $epiweek (required): epiweek on which the forecast was made
-function get_forecast(IRowPrinter $printer, $system, $epiweek) {
+function get_forecast(IRowPrinter &$printer, $system, $epiweek) {
   global $dbh;
   // get the data from the database
   $system = mysqli_real_escape_string($dbh, $system);
@@ -711,13 +715,14 @@ function get_forecast(IRowPrinter $printer, $system, $epiweek) {
     $data[0]['forecast'] = json_decode($data[0]['json']);
     unset($data[0]['json']);
     $printer->printRow($data[0]);
+    $printer->end();
   }
 }
 
 // queries the `cdc_extract` table
 //   $epiweeks (required): array of epiweek values/ranges
 //   $locations (required): array of location names
-function get_cdc(IRowPrinter $printer, $epiweeks, $locations) {
+function get_cdc(IRowPrinter &$printer, $epiweeks, $locations) {
   global $dbh;
   // basic query info
   $table = '`cdc_extract` c';
@@ -752,7 +757,7 @@ function get_cdc(IRowPrinter $printer, $epiweeks, $locations) {
       $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_epiweek}) AND ({$condition_location}) GROUP BY {$group} ORDER BY {$order}";
     }
     // append query results to the epidata array
-    execute_query($query, $printer, $fields_string, $fields_int, null);
+    execute_query_append($query, $printer, $fields_string, $fields_int, null);
   }
   // query all states together
   if(count($states) !== 0) {
@@ -762,15 +767,16 @@ function get_cdc(IRowPrinter $printer, $epiweeks, $locations) {
     // final query for states
     $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_epiweek}) AND ({$condition_location}) ORDER BY {$order}, c.`state` ASC";
     // append query results to the epidata array
-    execute_query($query, $printer, $fields_string, $fields_int, null);
+    execute_query_append($query, $printer, $fields_string, $fields_int, null);
   }
+  $printer->end();
 }
 
 // queries the `sensors` table
 //   $names (required): array of sensor names
 //   $locations (required): array of location names
 //   $epiweeks (required): array of epiweek values/ranges
-function get_sensors(IRowPrinter $printer, $names, $locations, $epiweeks) {
+function get_sensors(IRowPrinter &$printer, $names, $locations, $epiweeks) {
   // basic query info
   $table = '`sensors` s';
   $fields = "s.`name`, s.`location`, s.`epiweek`, s.`value`";
@@ -795,7 +801,7 @@ function get_sensors(IRowPrinter $printer, $names, $locations, $epiweeks) {
 //   $names (required): array of sensor names
 //   $locations (required): array of location names
 //   $epiweeks (required): array of epiweek values/ranges
-function get_dengue_sensors(IRowPrinter $printer, $names, $locations, $epiweeks) {
+function get_dengue_sensors(IRowPrinter &$printer, $names, $locations, $epiweeks) {
   // basic query info
   $table = '`dengue_sensors` s';
   $fields = "s.`name`, s.`location`, s.`epiweek`, s.`value`";
@@ -819,7 +825,7 @@ function get_dengue_sensors(IRowPrinter $printer, $names, $locations, $epiweeks)
 // queries the `nowcasts` table
 //   $locations (required): array of location names
 //   $epiweeks (required): array of epiweek values/ranges
-function get_nowcast(IRowPrinter $printer, $locations, $epiweeks) {
+function get_nowcast(IRowPrinter &$printer, $locations, $epiweeks) {
   // basic query info
   $table = '`nowcasts` n';
   $fields = "n.`location`, n.`epiweek`, n.`value`, n.`std`";
@@ -841,7 +847,7 @@ function get_nowcast(IRowPrinter $printer, $locations, $epiweeks) {
 // queries the `dengue_nowcasts` table
 //   $locations (required): array of location names
 //   $epiweeks (required): array of epiweek values/ranges
-function get_dengue_nowcast(IRowPrinter $printer, $locations, $epiweeks) {
+function get_dengue_nowcast(IRowPrinter &$printer, $locations, $epiweeks) {
   // basic query info
   $table = '`dengue_nowcasts` n';
   $fields = "n.`location`, n.`epiweek`, n.`value`, n.`std`";
@@ -874,7 +880,7 @@ function get_dengue_nowcast(IRowPrinter $printer, $locations, $epiweeks) {
 //   $lag (optional): number of time units between each time value and its issue
 //     overridden by $issues
 //     default: most recent issue
-function get_covidcast(IRowPrinter $printer, $source, $signals, $time_type, $geo_type, $time_values, $geo_values, $as_of, $issues, $lag) {
+function get_covidcast(IRowPrinter &$printer, $source, $signals, $time_type, $geo_type, $time_values, $geo_values, $as_of, $issues, $lag) {
   // required for `mysqli_real_escape_string`
   global $dbh;
   $source = mysqli_real_escape_string($dbh, $source);
@@ -936,7 +942,7 @@ function get_covidcast(IRowPrinter $printer, $source, $signals, $time_type, $geo
 }
 
 // queries the `covidcast_meta_cache` table for metadata
-function get_covidcast_meta(IRowPrinter $printer) {
+function get_covidcast_meta(IRowPrinter &$printer) {
   // complain if the cache is more than 75 minutes old
   $max_age = 75 * 60;
 
@@ -960,11 +966,11 @@ function get_covidcast_meta(IRowPrinter $printer) {
     return;
   }
   // filter rows
-  $time_types = extract_values($_REQUEST['time_types'], 'str');
+  $time_types = extract_values(isset($_REQUEST['time_types']) ? $_REQUEST['time_types'] : null, 'str');
   $signals = isset($_REQUEST['signals']) ? array_map(function($signal) {
       return explode(':', $signal, 2);
     }, extract_values($_REQUEST['signals'], 'str')) : null;
-  $geo_types = extract_values($_REQUEST['geo_types'], 'str');
+  $geo_types = extract_values(isset($_REQUEST['geo_types']) ? $_REQUEST['geo_types'] : null, 'str');
 
   if ($time_types !== null || $signals !== null || $geo_types !== null) {
     $epidata = array_values(array_filter($epidata, function($row) use(&$time_types, &$signals, &$geo_types) {
@@ -1003,9 +1009,10 @@ function get_covidcast_meta(IRowPrinter $printer) {
   }
 
   // print rows
-  for($epidata as $row) {
+  foreach($epidata as $row) {
     $printer->printRow($row);
   }
+  $printer->end();
 }
 
 // queries the `covid_hosp` table
@@ -1013,7 +1020,7 @@ function get_covidcast_meta(IRowPrinter $printer) {
 //   $dates (required): array of date values/ranges
 //   $issues (optional): array of date values/ranges
 //     default: most recent issue
-function get_covid_hosp(IRowPrinter $printer, $states, $dates, $issues) {
+function get_covid_hosp(IRowPrinter &$printer, $states, $dates, $issues) {
   $table = '`covid_hosp` c';
   $fields = implode(', ', array(
     'c.`issue`',
@@ -1153,7 +1160,7 @@ function get_covid_hosp(IRowPrinter $printer, $states, $dates, $issues) {
 }
 
 // queries a bunch of epidata tables
-function get_meta(IRowPrinter $printer) {
+function get_meta(IRowPrinter &$printer) {
   // query and return metadata
   // collect individual meta data results using collectors
   $fluview = new CollectRowPrinter();
@@ -1177,8 +1184,9 @@ function get_meta(IRowPrinter $printer) {
     'twitter' => $twitter->$data,
     'wiki' => $wiki->$data,
     'delphi' => $delphi->$data,
-  )
+  );
   $printer->printRow($row);
+  $printer->end();
 }
 function meta_api(int $seconds) {
   $seconds = intval($seconds);
@@ -1188,26 +1196,26 @@ function meta_api(int $seconds) {
   execute_query($query, $rows, null, $fields_int, null);
   return count($rows->$data) === 0 ? null : $rows->$data;
 }
-function meta_fluview(IRowPrinter $printer) {
+function meta_fluview(IRowPrinter &$printer) {
   $query = 'SELECT max(`release_date`) `latest_update`, max(`issue`) `latest_issue`, count(1) `table_rows` FROM `fluview`';
   $fields_string = array('latest_update');
   $fields_int = array('latest_issue', 'table_rows');
   execute_query($query, $printer, $fields_string, $fields_int, null);
 }
-function meta_twitter(IRowPrinter $printer) {
+function meta_twitter(IRowPrinter &$printer) {
   $query = 'SELECT x.`date` `latest_update`, x.`table_rows`, count(distinct t.`state`) `num_states` FROM (SELECT max(`date`) `date`, count(1) `table_rows` FROM `twitter`) x JOIN `twitter` t ON t.`date` = x.`date`';
   $fields_string = array('latest_update');
   $fields_int = array('num_states', 'table_rows');
   execute_query($query, $printer, $fields_string, $fields_int, null);
 }
-function meta_wiki(IRowPrinter $printer) {
+function meta_wiki(IRowPrinter &$printer) {
   //$query = 'SELECT date_sub(max(`datetime`), interval 5 hour) `latest_update`, count(1) `table_rows` FROM `wiki_meta`'; // GMT to EST
   $query = 'SELECT max(`datetime`) `latest_update`, count(1) `table_rows` FROM `wiki_meta`';
   $fields_string = array('latest_update');
   $fields_int = array('table_rows');
   execute_query($query, $printer, $fields_string, $fields_int, null);
 }
-function get_meta_norostat(IRowPrinter $printer) {
+function get_meta_norostat(APrinter &$printer) {
   // put behind appropriate auth check
   $epidata_releases = new CollectRowPrinter();
   $query = 'SELECT DISTINCT `release_date` FROM `norostat_raw_datatable_version_list`';
@@ -1215,12 +1223,12 @@ function get_meta_norostat(IRowPrinter $printer) {
   $epidata_locations = new CollectRowPrinter();
   $query = 'SELECT DISTINCT `location` FROM `norostat_raw_datatable_location_pool`';
   execute_query($query, $epidata_locations, array('location'), null, null);
-  // TODO doesn't follow the common format
+  // TODO printer doesn't follow the common format
   $epidata = array(
     "releases" => $epidata_releases->$data,
     "locations" => $epidata_locations->$data
   );
-  return $epidata;
+  $printer->printNonStandard($epidata);
 }
 function get_meta_afhsb() {
   // TODO
@@ -1245,7 +1253,7 @@ function get_meta_afhsb() {
   }
   return $epidata;
 }
-function meta_delphi(IRowPrinter $printer) {
+function meta_delphi(IRowPrinter &$printer) {
   $query = 'SELECT `system`, min(`epiweek`) `first_week`, max(`epiweek`) `last_week`, count(1) `num_weeks` FROM `forecasts` GROUP BY `system` ORDER BY `system` ASC';
   $fields_string = array('system');
   $fields_int = array('first_week', 'last_week', 'num_weeks');
@@ -1623,5 +1631,4 @@ if (!database_connect()) {
   } else {
     $printer->printMissingOrWrongSource();
   }
-}
 ?>

@@ -19,7 +19,7 @@ function database_connect() {
 // returns true if all fields are present in the request
 //   $output: output array to set an error message
 //   $values: an array of field names
-function require_all(APrinter $printer, $values) {
+function require_all(APrinter &$printer, $values) {
   foreach($values as $value) {
     if(!isset($_REQUEST[$value])) {
       $printer->printValidationFailed('missing parameter: need [' . $value . ']');
@@ -32,7 +32,7 @@ function require_all(APrinter $printer, $values) {
 // returns true if any fields are present in the request
 //   $output: output array to set an error message
 //   $values: an array of field names
-function require_any(APrinter $printer, $values) {
+function require_any(APrinter &$printer, $values) {
   foreach($values as $value) {
     if(isset($_REQUEST[$value])) {
       return true;
@@ -283,20 +283,21 @@ function record_analytics($source, $result, $num_rows = 0) {
 // executes a query, casts the results, and returns an array of the data
 // the number of results is limited to $MAX_RESULTS
 //   $query (required): a SQL query string
-//   $epidata (required): an array for storing the data
+//   $printer (required): the row printer to use
 //   $fields_string (optional): an array of names of string fields
 //   $fields_int (optional): an array of names of integer fields
 //   $fields_float (optional): an array of names of float fields
-function execute_query($query, &$epidata, $fields_string, $fields_int, $fields_float) {
+function execute_query(string $query, IRowPrinter &$printer, ?array $fields_string, ?array $fields_int, ?array $fields_float, bool $single_query = TRUE) {
   global $dbh;
   global $MAX_RESULTS;
   error_log($query);
-  $result = mysqli_query($dbh, $query . " LIMIT {$MAX_RESULTS}");
+  $result = mysqli_real_query($dbh, $query . " LIMIT {$MAX_RESULTS}");
   if (!$result) {
     error_log("Bad query: ".$query);
     error_log(mysqli_error($dbh));
     return;
   }
+  $result = mysqli_use_result($dbh);
 
   if (isset($_REQUEST['fields'])) {
     $fields = extract_values($_REQUEST['fields'], 'str');
@@ -312,65 +313,87 @@ function execute_query($query, &$epidata, $fields_string, $fields_int, $fields_f
     }
   }
 
-  while($row = mysqli_fetch_array($result)) {
-    if(count($epidata) < $MAX_RESULTS) {
-      $values = array();
-      if($fields_string !== null) {
-        foreach($fields_string as $field) {
-          $values[$field] = $row[$field];
-        }
+  $printer->begin();
+
+  while ($row = mysqli_fetch_row($result)) {
+    $values = array();
+    if($fields_string !== null) {
+      foreach($fields_string as $field) {
+        $values[$field] = $row[$field];
       }
-      if($fields_int !== null) {
-        foreach($fields_int as $field) {
-          if($row[$field] === null) {
-            $values[$field] = null;
-          } else {
-            $values[$field] = intval($row[$field]);
-          }
-        }
-      }
-      if($fields_float !== null) {
-        foreach($fields_float as $field) {
-          if($row[$field] === null) {
-            $values[$field] = null;
-          } else {
-            $values[$field] = floatval($row[$field]);
-          }
-        }
-      }
-      array_push($epidata, $values);
     }
+    if($fields_int !== null) {
+      foreach($fields_int as $field) {
+        if($row[$field] === null) {
+          $values[$field] = null;
+        } else {
+          $values[$field] = intval($row[$field]);
+        }
+      }
+    }
+    if($fields_float !== null) {
+      foreach($fields_float as $field) {
+        if($row[$field] === null) {
+          $values[$field] = null;
+        } else {
+          $values[$field] = floatval($row[$field]);
+        }
+      }
+    }
+    $printer->printRow($values);
+  }
+  mysqli_free_result($result);
+
+  if ($single_query) {
+    // unless we are going to append more, we end the printing
+    $printer->end();
   }
 }
 
+function execute_query_append(string $query, IRowPrinter &$printer, ?array $fields_string, ?array $fields_int, ?array $fields_float) {
+  return execute_query($query, $printer, $fields_string, $fields_int, $fields_float, FALSE);
+}
+
 interface IRowPrinter {
+  public function begin();
   public function printRow(array &$row);
+  public function end();
 }
 
 class CollectRowPrinter implements IRowPrinter {
   public array $data = [];
 
+  public function begin() {
+    // dummy
+  }
   public function printRow(array &$row) {
-    array_push($this->$data, $row);
+    array_push($this->data, $row);
+  }
+  public function end() {
+    // dummy
   }
 }
 
 abstract class APrinter implements IRowPrinter {
   public int $count = 0;
   public int $result = -1;
+  protected bool $began = FALSE;
+  protected bool $useStatusCodes = TRUE;
+  public string $source;
 
-  __construct(public string $source) {
-
+  function __construct(string $source, bool $useStatusCodes = TRUE) {
+    $this->source = $source;
+    $this->useStatusCodes = $useStatusCodes;
   }
 
   public function printError(int $result, string $message, int $statusCode = -1) {
-    $this->$result = $result;
-    if ($statusCode >= 0) {
+    $this->result = $result;
+    if ($statusCode >= 0 && $this->useStatusCodes) {
       http_response_code($statusCode);
     }
-    header('Content-Type: application/json; charset=utf8');
+    header('Content-Type: application/json');
     echo json_encode(array('result' => $result, 'message' => $message));
-    record_analytics($this->$source, $this->result);
+    record_analytics($this->source, $this->result);
   }
 
   public function printDatabaseError() {
@@ -389,132 +412,174 @@ abstract class APrinter implements IRowPrinter {
     $this->printError(-1, 'no data source specified', 400);    
   }
 
+  public function printNonStandard(mixed &$data) {
+    $this->result = 1;
+    header('Content-Type: application/json');
+    echo json_encode(array('result' => $this->result, 'message' => 'success', 'epidata' => $data));
+    record_analytics($this->source, $this->result);
+  }
+
   public function begin() {
+    if ($this->began) {
+      return;
+    }
+    $this->began = TRUE;
+    $this->beginImpl();
+  }
+
+  protected function beginImpl() {
     // hook
   }
 
-  public abstract function printRow(array &$row);
+  public function printRow(array &$row) {
+    if (!$this->began) {
+      $this->begin();
+    }
+    $first = $this->count == 0;
+    $this->printRowImpl($first, $row);
+    $this->count++;
+  }
+
+  protected abstract function printRowImpl(bool $first, array &$row);
 
   public function end(bool $hasMore = FALSE) {
-    $this->$result = $this->$count == 0 ? -2 : ($hasMore ? 2 : 1);
-    record_analytics($this->$source, $this->result, $this->count);
+    if (!$this->began) {
+      return;
+    }
+    $this->result = $this->count == 0 ? -2 : ($hasMore ? 2 : 1);
+    $this->endImpl();
+    record_analytics($this->source, $this->result, $this->count);
+  }
+
+  protected function endImpl() {
+    // hook
   }
 }
 
-class ClassicPrinter implements IPrinter {
-  public int $count = 0;
+class ClassicPrinter extends APrinter {
 
-  public function begin() {
-    parent::begin();
-    header('Content-Type: application/json; charset=utf8');
+  function __construct(string $source) {
+    parent::__construct($source, FALSE);
+  }
+
+  protected function beginImpl() {
+    header('Content-Type: application/json');
     echo '{ "epidata": [';
   }
 
-  public function printRow(array &$row) {
-    if ($this->$count > 0) {
+  protected function printRowImpl(bool $first, array &$row) {
+    if (!$first) {
       echo ',';
     }
-    $this->$count++;
     echo json_encode($row);
   }
 
-  public function end(bool $hasMore = FALSE) {
-    parent::end($hasMore);
-    $message = $this->$count == 0 ? 'no results' : ($hasMore ? 'too many results, data truncated' : 'success');
+  protected function endImpl() {
+    $message = $this->count == 0 ? 'no results' : ($this->result == 2 ? 'too many results, data truncated' : 'success');
     $messageEncoded = json_encode($message);
-    echo "], \"count\": {$this->$count}, \"result\": {$this->$result}, \"message\": {$messageEncoded}";
+    echo "], \"count\": {$this->count}, \"result\": {$this->result}, \"message\": {$messageEncoded} }";
   }
 }
 
 class ClassicTreePrinter extends ClassicPrinter {
-  // TODO
-  // if(isset($_REQUEST['format']) && $_REQUEST['format']=="tree") {
-  //       //organize results by signal
-  //       $epi_tree = array();
-  //       $key = -1;
-  //       foreach ($epidata as $row) {
-  //         if ($key != $row['signal']) {
-  //           $key = $row['signal'];
-  //           $epi_tree[$key] = array();
-  //         }
-  //         unset($row['signal']);
-  //         array_push($epi_tree[$key],$row);
-  //       }
-  //       $epidata = array($epi_tree);
-  //     }
-  //     store_result($data, $epidata);
+  private array $data = [];
+  private string $group;
+
+  function __construct(string $source, string $group) {
+    parent::__construct($source);
+    $this->group = $group;
+  }
+
+  protected function printRowImpl(bool $first, array &$row) {
+    array_push($this->data, $row);
+  }
+
+  private function printTree() {
+    // compute tree and print single row
+    $epi_tree = [];
+
+    foreach ($this->data as $row) {
+      $group = isset($row[$this->group]) ? $row[$this->group] : '';
+      unset($row[$this->group]);      
+      if (isset($epi_tree[$group])) {
+        array_push($epi_tree[$group], $row);
+      } else {
+        $epi_tree[$group] = [$row];
+      }
+    }
+    // clean up
+    $this->data = [];
+
+    if (count($epi_tree) == 0) {
+      echo '{}'; // force object style
+    } else {
+      echo json_encode($epi_tree);
+    }
+  }
+
+  protected function endImpl() {
+    $this->printTree();
+    parent::endImpl();
+  }
 }
 
-class CSVPrinter implements IPrinter {
-  private resource $out;
-  public int $count = 0;
+class CSVPrinter extends APrinter {
+  private $out = null;
 
-  public function begin() {
-    parent::begin();
-    $this->$out = fopen('php://output', 'w');
+  protected function beginImpl() {
+    $this->out = fopen('php://output', 'w');
     header('Content-Type: text/csv; charset=utf8');
     header('Content-Disposition: attachment; filename=epidata.csv');
   }
 
-  public function printRow(array &$row) {
-    if ($this->$count == 0) {
+  protected function printRowImpl(bool $first, array &$row) {
+    if ($first) {
       // print headers
       $headers = array_keys($row);
-      fputcsv($this->$out, $headers);  
+      fputcsv($this->out, $headers);  
     }
-    $this->$count++;
-    fputcsv($this->$out, $row);
+    fputcsv($this->out, $row);
   }
 
-  public function end(bool $hasMore = FALSE) {
-    parent::end($hasMore);
-    fclose($this->$out);
+  protected function endImpl() {
+    fclose($this->out);
   }
 }
 
-class JSONPrinter {
-  public int $count = 0;
-
-  function begin() {
-    parent::begin();
-    header('Content-Type: application/json; charset=utf8');
+class JSONPrinter extends APrinter {
+  protected function beginImpl() {
+    header('Content-Type: application/json');
     echo '[';
   }
 
-  public function printRow(array &$row) {
-    if ($this->$count > 0) {
+  protected function printRowImpl(bool $first, array &$row) {
+    if (!$first) {
       echo ',';
     }
-    $this->$count++;
     echo json_encode($row);
   }
 
-  function end(bool $hasMore = FALSE) {
-    parent::end($hasMore);
+  protected function endImpl() {
     echo ']';
   }
 }
 
-class JSONLPrinter {
-  public int $count = 0;
-
-  public function begin() {
-    parent::begin();
+class JSONLPrinter extends APrinter {
+  protected function beginImpl() {
     // there is no official mime type for json lines
     header('Content-Type: text/plain; charset=utf8');
   }
 
-  public function printRow(array &$row) {
-    $this->$count++;
+  protected function printRowImpl(bool $first, array &$row) {
     echo json_encode($row);
-    echo '\n';
+    echo "\n";
   }
 }
 
 function createPrinter(string $source, string $format = 'classic') {
   switch($format) {
   case 'tree':
-    return new JSONTreePrinter($source); //'signal');
+    return new ClassicTreePrinter($source, 'signal');
   case 'json': 
     return new JSONPrinter($source);
   case 'csv': 
