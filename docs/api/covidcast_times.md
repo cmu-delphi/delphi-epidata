@@ -4,6 +4,8 @@ parent: COVIDcast Epidata API
 nav_order: 5
 ---
 
+# Date Coding and Revisions
+
 Every observation in the COVIDcast Epidata API has two dates attached:
 
 * `time_value`: The time the underlying events happened. For example, for a data
@@ -22,7 +24,8 @@ May 1, 2020. That estimate was issued on May 5, 2020, the delay being due to the
 aggregation of data by our source and the time taken by the API to ingest the
 data provided. Later, the estimate for May 1st could be updated, perhaps because
 additional visit data from May 1st arrived at our source and was reported to us.
-This constitutes a new issue of the data.
+This constitutes a new issue of the data, and would be reported with a new issue
+date.
 
 The format of the `time_value` and `issue` dates depends on the `time_type` API
 parameter. Each data source is available for specified time types; check each
