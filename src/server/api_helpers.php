@@ -19,10 +19,10 @@ function database_connect() {
 // returns true if all fields are present in the request
 //   $output: output array to set an error message
 //   $values: an array of field names
-function require_all(&$output, $values) {
+function require_all(APrinter $printer, $values) {
   foreach($values as $value) {
     if(!isset($_REQUEST[$value])) {
-      $output['message'] = 'missing parameter: need [' . $value . ']';
+      $printer->printValidationFailed('missing parameter: need [' . $value . ']');
       return false;
     }
   }
@@ -32,13 +32,13 @@ function require_all(&$output, $values) {
 // returns true if any fields are present in the request
 //   $output: output array to set an error message
 //   $values: an array of field names
-function require_any(&$output, $values) {
+function require_any(APrinter $printer, $values) {
   foreach($values as $value) {
     if(isset($_REQUEST[$value])) {
       return true;
     }
   }
-  $output['message'] = 'missing parameter: need one of [' . implode(', ', $values) . ']';
+  $printer->printValidationFailed('missing parameter: need one of [' . implode(', ', $values) . ']');
   return false;
 }
 
@@ -272,13 +272,11 @@ function get_region_states($region) {
   return null;
 }
 
-function record_analytics($source, $result, $num_rows) {
+function record_analytics($source, $result, $num_rows = 0) {
   global $dbh;
   $ip = mysqli_real_escape_string($dbh, isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '');
   $ua = mysqli_real_escape_string($dbh, isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '');
   $source = mysqli_real_escape_string($dbh, isset($source) ? $source : '');
-  $result = intval($data['result']);
-  $num_rows = intval(isset($data['epidata']) ? count($data['epidata']) : 0);
   mysqli_query($dbh, "INSERT INTO `api_analytics` (`datetime`, `ip`, `ua`, `source`, `result`, `num_rows`) VALUES (now(), '{$ip}', '{$ua}', '{$source}', {$result}, {$num_rows})");
 }
 
@@ -345,161 +343,186 @@ function execute_query($query, &$epidata, $fields_string, $fields_int, $fields_f
   }
 }
 
-// stores the epidata array as part of the output object, setting the result and message fields appropriately
-//   $output: the output array
-//   $epidata: epidata fetched for the request
-function store_result(&$output, &$epidata) {
-  global $MAX_RESULTS;
-  if($epidata !== null) {
-    // success!
-    $output['epidata'] = $epidata;
-    if(count($epidata) < $MAX_RESULTS) {
-      $output['result'] = 1;
-      $output['message'] = 'success';
-    } else {
-      $output['result'] = 2;
-      $output['message'] = 'too many results, data truncated';
+interface IRowPrinter {
+  public function printRow(array &$row);
+}
+
+class CollectRowPrinter implements IRowPrinter {
+  public array $data = [];
+
+  public function printRow(array &$row) {
+    array_push($this->$data, $row);
+  }
+}
+
+abstract class APrinter implements IRowPrinter {
+  public int $count = 0;
+  public int $result = -1;
+
+  __construct(public string $source) {
+
+  }
+
+  public function printError(int $result, string $message, int $statusCode = -1) {
+    $this->$result = $result;
+    if ($statusCode >= 0) {
+      http_response_code($statusCode);
     }
-  } else {
-    // failure
-    $output['result'] = -2;
-    $output['message'] = 'no results';
+    header('Content-Type: application/json; charset=utf8');
+    echo json_encode(array('result' => $result, 'message' => $message));
+    record_analytics($this->$source, $this->result);
+  }
+
+  public function printDatabaseError() {
+    $this->printError(-1, 'database error', 500);
+  }
+
+  public function printUnAuthenticated() {
+    $this->printError(-1, 'unauthenticated', 401);
+  }
+
+  public function printValidationFailed(string $message) {
+    $this->printError(-1, $message, 400);
+  }
+
+  public function printMissingOrWrongSource() {
+    $this->printError(-1, 'no data source specified', 400);    
+  }
+
+  public function begin() {
+    // hook
+  }
+
+  public abstract function printRow(array &$row);
+
+  public function end(bool $hasMore = FALSE) {
+    $this->$result = $this->$count == 0 ? -2 : ($hasMore ? 2 : 1);
+    record_analytics($this->$source, $this->result, $this->count);
   }
 }
 
-function send_status(&$data) {
-  if (intval($data["result"]) > 0 || intval($data["result"]) == -2) {
-    return FALSE;
-  }
-  if ($data["message"] == 'database error') {
-    http_response_code(500);
-  } else if ($data["message"] == 'unauthenticated') {
-    http_response_code(401);
-  } else {
-    http_response_code(400); // bad request
-  }
-  header('Content-Type: application/json');
-  echo json_encode($data);
-  return TRUE;
-}
+class ClassicPrinter implements IPrinter {
+  public int $count = 0;
 
-function send_database_error($message) {
-  http_response_code(500);
-  header('Content-Type: application/json');
-  echo json_encode(array('result' => -1, 'message' => 'database error'));
-}
-
-function send_csv(&$data) {
-  if (send_status($data)) {
-    return;
-  }
-  header('Content-Type: text/csv');
-  header('Content-Disposition: attachment; filename=epidata.csv');
-
-  if (intval($data["result"]) == -2) {
-    // empty
-    return;
-  }
-
-  $rows = $data["epidata"];
-  $headers = array_keys($rows[0]);
-  $out = fopen('php://output', 'w');
-  fputcsv($out, $headers);
-  foreach ($rows as $row) {
-    fputcsv($out, $row);
-  }
-  fclose($out);
-}
-
-function send_json(&$data) {
-  if (send_status($data)) {
-    return;
-  }
-  header('Content-Type: application/json');
-
-  if (intval($data["result"]) == -2) {
-    echo json_encode(array());
-  } else {
-    echo json_encode($data["epidata"]);
-  }
-}
-
-function send_json_row(&$row) {
-  echo json_encode($row);
-}
-function send_csv_row(&$row) {
-  fputcsv($out, $row);
-}
-function send_newline_separator(){}
-
-class LegacyPrinter {
-  public function print_database_error() {
-    header('Content-Type: application/json');
-    echo json_encode(array('result' => -1, 'message' => 'database error'));
-  }
-
-  abstract public function printRow(array &$row) {
-    
-  }
-}
-
-class APrinter {
-  protected bool $first = true;
-
-  public function print_database_error() {
-    http_response_code(500);
-    header('Content-Type: application/json');
-    echo json_encode(array('result' => -1, 'message' => 'database error'));
-  }
-
-  protected function printSeparator(string $separator = ',') {
-    if ($this->$first) {
-      $this->$first = false;
-    } else {
-      echo ',';
-    }
-  }
-
-  abstract public function printRow(array &$row);
-}
-
-class CSVPrinter extends APrinter {
-  private resource $out;
-
-  function __construct() {
-    parent::__construct();
-    $this->$out = fopen('php://output', 'w');
-  }
-
-  function __destruct() {
-    fclose($this->$out);
+  public function begin() {
+    parent::begin();
+    header('Content-Type: application/json; charset=utf8');
+    echo '{ "epidata": [';
   }
 
   public function printRow(array &$row) {
-    fputcsv($this->$out, $row);
+    if ($this->$count > 0) {
+      echo ',';
+    }
+    $this->$count++;
+    echo json_encode($row);
+  }
+
+  public function end(bool $hasMore = FALSE) {
+    parent::end($hasMore);
+    $message = $this->$count == 0 ? 'no results' : ($hasMore ? 'too many results, data truncated' : 'success');
+    $messageEncoded = json_encode($message);
+    echo "], \"count\": {$this->$count}, \"result\": {$this->$result}, \"message\": {$messageEncoded}";
   }
 }
 
-class FlatJSONPrinter {
-  function __construct() {
-    parent::__construct();
+class ClassicTreePrinter extends ClassicPrinter {
+  // TODO
+  // if(isset($_REQUEST['format']) && $_REQUEST['format']=="tree") {
+  //       //organize results by signal
+  //       $epi_tree = array();
+  //       $key = -1;
+  //       foreach ($epidata as $row) {
+  //         if ($key != $row['signal']) {
+  //           $key = $row['signal'];
+  //           $epi_tree[$key] = array();
+  //         }
+  //         unset($row['signal']);
+  //         array_push($epi_tree[$key],$row);
+  //       }
+  //       $epidata = array($epi_tree);
+  //     }
+  //     store_result($data, $epidata);
+}
+
+class CSVPrinter implements IPrinter {
+  private resource $out;
+  public int $count = 0;
+
+  public function begin() {
+    parent::begin();
+    $this->$out = fopen('php://output', 'w');
+    header('Content-Type: text/csv; charset=utf8');
+    header('Content-Disposition: attachment; filename=epidata.csv');
+  }
+
+  public function printRow(array &$row) {
+    if ($this->$count == 0) {
+      // print headers
+      $headers = array_keys($row);
+      fputcsv($this->$out, $headers);  
+    }
+    $this->$count++;
+    fputcsv($this->$out, $row);
+  }
+
+  public function end(bool $hasMore = FALSE) {
+    parent::end($hasMore);
+    fclose($this->$out);
+  }
+}
+
+class JSONPrinter {
+  public int $count = 0;
+
+  function begin() {
+    parent::begin();
+    header('Content-Type: application/json; charset=utf8');
     echo '[';
   }
 
-  function __destruct() {
-    echo ']';
+  public function printRow(array &$row) {
+    if ($this->$count > 0) {
+      echo ',';
+    }
+    $this->$count++;
+    echo json_encode($row);
   }
 
-  public function printRow(array &$row) {
-    $this->print_separator(',');
-    echo json_encode($row);
+  function end(bool $hasMore = FALSE) {
+    parent::end($hasMore);
+    echo ']';
   }
 }
 
-class JSONNLPrinter {
+class JSONLPrinter {
+  public int $count = 0;
+
+  public function begin() {
+    parent::begin();
+    // there is no official mime type for json lines
+    header('Content-Type: text/plain; charset=utf8');
+  }
+
   public function printRow(array &$row) {
+    $this->$count++;
     echo json_encode($row);
     echo '\n';
+  }
+}
+
+function createPrinter(string $source, string $format = 'classic') {
+  switch($format) {
+  case 'tree':
+    return new JSONTreePrinter($source); //'signal');
+  case 'json': 
+    return new JSONPrinter($source);
+  case 'csv': 
+    return new CSVPrinter($source);
+  case 'jsonl':
+    return new JSONLPrinter($source);
+  default:
+    return new ClassicPrinter($source);
   }
 }
 
