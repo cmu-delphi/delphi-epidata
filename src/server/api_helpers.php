@@ -568,14 +568,13 @@ class ClassicTreePrinter extends ClassicPrinter {
   }
 
   private function printTree() {
-    // clean up
-    $this->tree = [];
-
     if (count($this->tree) == 0) {
       echo '{}'; // force object style
     } else {
       echo json_encode($this->tree);
     }
+    // clean up
+    $this->tree = [];
   }
 
   protected function endImpl() {
