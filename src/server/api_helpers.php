@@ -549,7 +549,7 @@ class ClassicPrinter extends APrinter {
  * a printer class writing a tree by the given grouping criteria as the first element in the epidata array
  */
 class ClassicTreePrinter extends ClassicPrinter {
-  private array $data = [];
+  private array $tree = [];
   private string $group;
 
   function __construct(string $endpoint, string $group) {
@@ -558,29 +558,23 @@ class ClassicTreePrinter extends ClassicPrinter {
   }
 
   protected function printRowImpl(bool $first, array &$row) {
-    array_push($this->data, $row);
+    $group = isset($row[$this->group]) ? $row[$this->group] : '';
+    unset($row[$this->group]);      
+    if (isset($this->tree[$group])) {
+      array_push($this->tree[$group], $row);
+    } else {
+      $this->tree[$group] = [$row];
+    }
   }
 
   private function printTree() {
-    // compute tree and print single row
-    $epi_tree = [];
-
-    foreach ($this->data as $row) {
-      $group = isset($row[$this->group]) ? $row[$this->group] : '';
-      unset($row[$this->group]);      
-      if (isset($epi_tree[$group])) {
-        array_push($epi_tree[$group], $row);
-      } else {
-        $epi_tree[$group] = [$row];
-      }
-    }
     // clean up
-    $this->data = [];
+    $this->tree = [];
 
-    if (count($epi_tree) == 0) {
+    if (count($this->tree) == 0) {
       echo '{}'; // force object style
     } else {
-      echo json_encode($epi_tree);
+      echo json_encode($this->tree);
     }
   }
 
