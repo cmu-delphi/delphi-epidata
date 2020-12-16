@@ -5,7 +5,7 @@ from delphi.epidata.acquisition.covid_hosp.common.utils import Utils
 
 class Database(BaseDatabase):
 
-  TABLE_NAME = 'covid_hosp_state_daily'
+  TABLE_NAME = 'covid_hosp_state_timeseries'
 
   # These are the names that appear in the CSV header, in order of appearance
   # in the database table, along with corresponding data type converters.
@@ -14,12 +14,7 @@ class Database(BaseDatabase):
   # /src/ddl/covid_hosp.sql for more information.
   ORDERED_CSV_COLUMNS = [
     ('state', str),
-    ('critical_staffing_shortage_today_yes', int),
-    ('critical_staffing_shortage_today_no', int),
-    ('critical_staffing_shortage_today_not_reported', int),
-    ('critical_staffing_shortage_anticipated_within_week_yes', int),
-    ('critical_staffing_shortage_anticipated_within_week_no', int),
-    ('critical_staffing_shortage_anticipated_within_week_not_reported', int),
+    ('date', Utils.int_from_date),
     ('hospital_onset_covid', int),
     ('hospital_onset_covid_coverage', int),
     ('inpatient_beds', int),
@@ -72,7 +67,7 @@ class Database(BaseDatabase):
     ('adult_icu_bed_utilization_coverage', int),
     ('adult_icu_bed_utilization_numerator', int),
     ('adult_icu_bed_utilization_denominator', int),
-    ('reporting_cutoff_start', Utils.int_from_date),
+    ('record_type', str),
   ]
 
   def __init__(self, *args, **kwargs):
@@ -80,4 +75,5 @@ class Database(BaseDatabase):
         *args,
         **kwargs,
         table_name=Database.TABLE_NAME,
-        columns_and_types=Database.ORDERED_CSV_COLUMNS)
+        columns_and_types=Database.ORDERED_CSV_COLUMNS,
+        additional_fields=("D"))

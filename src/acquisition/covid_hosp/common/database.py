@@ -13,7 +13,11 @@ import delphi.operations.secrets as secrets
 
 class Database:
 
-  def __init__(self, connection, table_name=None, columns_and_types=None):
+  def __init__(self,
+               connection,
+               table_name=None,
+               columns_and_types=None,
+               additional_fields=tuple()):
     """Create a new Database object.
 
     Parameters
@@ -32,6 +36,7 @@ class Database:
     self.connection = connection
     self.table_name = table_name
     self.columns_and_types = columns_and_types
+    self.additional_fields = additional_fields
 
   @classmethod
   @contextmanager
@@ -155,4 +160,5 @@ class Database:
             values.append(None)
           else:
             values.append(dtype(row[name]))
-        cursor.execute(sql, id_and_publication_date + tuple(values))
+        cursor.execute(sql,
+                       id_and_publication_date + tuple(values) + self.additional_fields)

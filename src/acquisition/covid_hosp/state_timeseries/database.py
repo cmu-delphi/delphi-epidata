@@ -67,6 +67,7 @@ class Database(BaseDatabase):
     ('adult_icu_bed_utilization_coverage', int),
     ('adult_icu_bed_utilization_numerator', int),
     ('adult_icu_bed_utilization_denominator', int),
+    ('record_type', str),
   ]
 
   def __init__(self, *args, **kwargs):
@@ -74,4 +75,5 @@ class Database(BaseDatabase):
         *args,
         **kwargs,
         table_name=Database.TABLE_NAME,
-        columns_and_types=Database.ORDERED_CSV_COLUMNS)
+        columns_and_types=Database.ORDERED_CSV_COLUMNS,
+        additional_fields="T")
