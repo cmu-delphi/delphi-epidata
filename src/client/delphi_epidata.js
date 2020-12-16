@@ -66,7 +66,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
           params = {
-            'source': 'fluview',
+            'endpoint': 'fluview',
             'regions': _list(regions),
             'epiweeks': _list(epiweeks)
           };
@@ -93,7 +93,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           var params; // Set up request
 
           params = {
-            'source': 'fluview_meta'
+            'endpoint': 'fluview_meta'
           }; // Make the API call
 
           return _request(callback, params);
@@ -118,7 +118,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
           params = {
-            'source': 'fluview_clinical',
+            'endpoint': 'fluview_clinical',
             'regions': _list(regions),
             'epiweeks': _list(epiweeks)
           };
@@ -154,7 +154,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
           params = {
-            'source': 'flusurv',
+            'endpoint': 'flusurv',
             'locations': _list(locations),
             'epiweeks': _list(epiweeks)
           };
@@ -184,7 +184,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
           params = {
-            'source': 'gft',
+            'endpoint': 'gft',
             'locations': _list(locations),
             'epiweeks': _list(epiweeks)
           }; // Make the API call
@@ -205,7 +205,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
           params = {
-            'source': 'ght',
+            'endpoint': 'ght',
             'auth': auth,
             'locations': _list(locations),
             'epiweeks': _list(epiweeks),
@@ -234,7 +234,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
           params = {
-            'source': 'twitter',
+            'endpoint': 'twitter',
             'auth': auth,
             'locations': _list(locations)
           };
@@ -270,7 +270,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
           params = {
-            'source': 'wiki',
+            'endpoint': 'wiki',
             'articles': _list(articles),
             'language': language || 'en'
           };
@@ -304,7 +304,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
           params = {
-            'source': 'cdc',
+            'endpoint': 'cdc',
             'auth': auth,
             'epiweeks': _list(epiweeks),
             'locations': _list(locations)
@@ -326,7 +326,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
           params = {
-            'source': 'quidel',
+            'endpoint': 'quidel',
             'auth': auth,
             'epiweeks': _list(epiweeks),
             'locations': _list(locations)
@@ -348,7 +348,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
           params = {
-            'source': 'norostat',
+            'endpoint': 'norostat',
             'auth': auth,
             'location': location,
             'epiweeks': _list(epiweeks)
@@ -370,7 +370,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
           params = {
-            'source': 'meta_norostat',
+            'endpoint': 'meta_norostat',
             'auth': auth
           }; // Make the API call
 
@@ -390,7 +390,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
           params = {
-            'source': 'afhsb',
+            'endpoint': 'afhsb',
             'auth': auth,
             'locations': _list(locations),
             'epiweeks': _list(epiweeks),
@@ -413,7 +413,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
           params = {
-            'source': 'meta_afhsb',
+            'endpoint': 'meta_afhsb',
             'auth': auth
           }; // Make the API call
 
@@ -439,7 +439,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
           params = {
-            'source': 'nidss_flu',
+            'endpoint': 'nidss_flu',
             'regions': _list(regions),
             'epiweeks': _list(epiweeks)
           };
@@ -469,7 +469,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
           params = {
-            'source': 'nidss_dengue',
+            'endpoint': 'nidss_dengue',
             'locations': _list(locations),
             'epiweeks': _list(epiweeks)
           }; // Make the API call
@@ -490,7 +490,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
           params = {
-            'source': 'delphi',
+            'endpoint': 'delphi',
             'system': system,
             'epiweek': epiweek
           }; // Make the API call
@@ -511,7 +511,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
           params = {
-            'source': 'sensors',
+            'endpoint': 'sensors',
             'auth': auth,
             'names': _list(names),
             'locations': _list(locations),
@@ -534,7 +534,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
           params = {
-            'source': 'nowcast',
+            'endpoint': 'nowcast',
             'locations': _list(locations),
             'epiweeks': _list(epiweeks)
           }; // Make the API call
@@ -546,7 +546,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         key: "meta",
         value: function meta(callback) {
           return _request(callback, {
-            'source': 'meta'
+            'endpoint': 'meta'
           });
         } // Fetch Delphi's COVID-19 Surveillance Streams
 
@@ -569,7 +569,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
           params = {
-            'source': 'covidcast',
+            'endpoint': 'covidcast',
             'data_source': data_source,
             'signals': signals,
             'time_type': time_type,
@@ -607,7 +607,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         key: "covidcast_meta",
         value: function covidcast_meta(callback) {
           return _request(callback, {
-            'source': 'covidcast_meta'
+            'endpoint': 'covidcast_meta'
           });
         } // Fetch COVID hospitalization data
 
@@ -624,7 +624,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
           params = {
-            'source': 'covid_hosp',
+            'endpoint': 'covid_hosp',
             'states': _list(states),
             'dates': _list(dates)
           };

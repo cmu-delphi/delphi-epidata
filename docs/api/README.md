@@ -44,7 +44,7 @@ licensing, where applicable.
 Any data which is produced novelly by Delphi and is intentionally and openly
 surfaced by Delphi through this API is hereby licensed
 [CC BY](https://creativecommons.org/licenses/by/4.0/) except where otherwise
-noted. Endpoints, as specified by the `source` parameter, which are known to
+noted. Endpoints, as specified by the `endpoint` parameter, which are known to
 wholly or partially serve data under this license include:
 
 - `covidcast`
@@ -57,6 +57,8 @@ wholly or partially serve data under this license include:
 - `sensors`
 
 [![Creative Commons License](https://i.creativecommons.org/l/by/4.0/88x31.png)](https://creativecommons.org/licenses/by/4.0/)
+
+Please note that our `endpoint` parameters were previously referenced as `source` in our API. New users will now use the `endpoint` parameter when accessing our data. If you are a returning or continuous user you do not have to make any changes, as the parameter `source` still works as usual.
 
 ---
 
@@ -82,7 +84,7 @@ Formatting for epiweeks is YYYYWW and for dates is YYYYMMDD.
 
 ## Universal Parameters
 
-The only universally required parameter is `source`, which must be one of the supported source names listed below, e.g., `fluview`.
+The only universally required parameter is `endpoint`, which must be one of the supported source names listed below, e.g., `fluview`.
 
 ## Source-Specific Parameters
 
@@ -146,7 +148,7 @@ The parameters available for each source are documented in each linked source-sp
 # Example URLs
 
 ### FluView on 2015w01 (national)
-https://delphi.cmu.edu/epidata/api.php?source=fluview&regions=nat&epiweeks=201501
+https://delphi.cmu.edu/epidata/api.php?endpoint=fluview&regions=nat&epiweeks=201501
 
 ```json
 {
@@ -176,7 +178,7 @@ https://delphi.cmu.edu/epidata/api.php?source=fluview&regions=nat&epiweeks=20150
 ```
 
 ### Wikipedia Access article "influenza" on 2020w01
-https://delphi.cmu.edu/epidata/api.php?source=wiki&language=en&articles=influenza&epiweeks=202001
+https://delphi.cmu.edu/epidata/api.php?endpoint=wiki&language=en&articles=influenza&epiweeks=202001
 
 ```json
 {

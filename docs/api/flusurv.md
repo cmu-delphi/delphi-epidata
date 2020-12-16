@@ -79,7 +79,7 @@ Notes:
 # Example URLs
 
 ### FluSurv on 2020w01 (CA)
-https://delphi.cmu.edu/epidata/api.php?source=flusurv&locations=ca&epiweeks=202001
+https://delphi.cmu.edu/epidata/api.php?endpoint=flusurv&locations=ca&epiweeks=202001
 
 ```json
 {
