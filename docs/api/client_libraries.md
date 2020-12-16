@@ -67,10 +67,6 @@ print(res['result'], res['message'], len(res['epidata']))
 
 ### R
 
-**Note:** For COVIDcast usage, R users should prefer the [covidcast
-package](https://cmu-delphi.github.io/covidcast/covidcastR/); these instructions
-are for advanced users who want access to the entire Epidata API, including data
-on influenza, dengue, and norovirus.
 
 ````R
 # Import
