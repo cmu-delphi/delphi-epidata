@@ -6,7 +6,6 @@ nav_order: 1
 
 # Epidata API Client Libraries.
 
-More generic clients that support the entire Epidata API are available as well.
 Epidata clients are available for
 [CoffeeScript](https://github.com/cmu-delphi/delphi-epidata/blob/master/src/client/delphi_epidata.coffee),
 [JavaScript](https://github.com/cmu-delphi/delphi-epidata/blob/master/src/client/delphi_epidata.js),
