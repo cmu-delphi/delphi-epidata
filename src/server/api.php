@@ -1228,7 +1228,7 @@ function get_meta_norostat(APrinter &$printer) {
   $epidata_locations = new CollectRowPrinter();
   $query = 'SELECT DISTINCT `location` FROM `norostat_raw_datatable_location_pool`';
   execute_query($query, $epidata_locations, array('location'), null, null);
-  // TODO printer doesn't follow the common format
+  
   $epidata = array(
     "releases" => $epidata_releases->$data,
     "locations" => $epidata_locations->$data
@@ -1236,7 +1236,6 @@ function get_meta_norostat(APrinter &$printer) {
   $printer->printNonStandard($epidata);
 }
 function get_meta_afhsb() {
-  // TODO
   // put behind appropriate auth check
   $table1 = 'afhsb_00to13_state';
   $table2 = 'afhsb_13to17_state';
@@ -1244,19 +1243,19 @@ function get_meta_afhsb() {
   $string_keys = array('state', 'country');
   $int_keys = array('flu_severity');
   foreach($string_keys as $key) {
-    $epidata_key = array();
+    $coll = new CollectRowPrinter();
     $query = "SELECT DISTINCT `{$key}` FROM (select `{$key}` from `{$table1}` union select `{$key}` from `{$table2}`) t";
-    execute_query($query, $epidata_key, array($key), null, null);
-    $epidata[$key] = $epidata_key;
+    execute_query($query, $coll, array($key), null, null);
+    $epidata[$key] = $coll->data;
   }
   foreach($int_keys as $key) {
-    $epidata_key = array();
+    $coll = new CollectRowPrinter();
     $query = "SELECT DISTINCT `{$key}` FROM (select `{$key}` from `{$table1}` union select `{$key}` from `{$table2}`) t";
 
-    execute_query($query, $epidata_key, null, array($key), null);
-    $epidata[$key] = $epidata_key;
+    execute_query($query, $coll, null, array($key), null);
+    $epidata[$key] = $coll->data;
   }
-  return $epidata;
+  $printer->printNonStandard($epidata);
 }
 function meta_delphi(IRowPrinter &$printer) {
   $query = 'SELECT `system`, min(`epiweek`) `first_week`, max(`epiweek`) `last_week`, count(1) `num_weeks` FROM `forecasts` GROUP BY `system` ORDER BY `system` ASC';
