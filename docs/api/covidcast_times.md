@@ -20,7 +20,7 @@ For example, consider using our [doctor visits signal](covidcast-signals/doctor-
 which estimates the percentage of outpatient doctor visits that are
 COVID-related, and consider a result row with `time_value = "2020-05-01"` for
 `geo_value = "pa"`. This is an estimate for the percentage in Pennsylvania on
-May 1, 2020. That estimate was issued on May 5, 2020, the delay being due to the
+May 1, 2020, which was issued on May 5, 2020. The delay is due to the
 aggregation of data by our source and the time taken by the API to ingest the
 data provided. Later, the estimate for May 1st could be updated, perhaps because
 additional visit data from May 1st arrived at our source and was reported to us.
