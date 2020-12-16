@@ -266,9 +266,17 @@ class Database:
 
     meta = []
 
-    sql = 'SELECT `source`, `signal` FROM covidcast WHERE NOT `is_wip` GROUP BY `source`, `signal` ORDER BY `source` ASC, `signal` ASC;'
+    signal_list = []
+    sql = 'SELECT `source`, `signal` FROM `covidcast` GROUP BY `source`, `signal` ORDER BY `source` ASC, `signal` ASC;'
     self._cursor.execute(sql)
-    for source, signal in  [ss for ss in self._cursor]: #NOTE: this obfuscation protects the integrity of the cursor; using the cursor as a generator will cause contention w/ subsequent queries
+    for source, signal in list(self._cursor):
+      sql = "SELECT `is_wip` FROM `covidcast` WHERE `source`=%s AND `signal`=%s LIMIT 1"
+      self._cursor.execute(sql, (source, signal))
+      is_wip = int(self._cursor.fetchone()[0]) # casting to int as it comes out as bytearray (essentially str)
+      if not is_wip:
+        signal_list.append((source, signal))
+
+    for source, signal in signal_list:
 
       sql = '''
       SELECT
