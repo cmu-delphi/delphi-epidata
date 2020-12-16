@@ -203,7 +203,7 @@ https://delphi.cmu.edu/epidata/api.php?source=wiki&language=en&articles=influenz
 
 # Code Samples
 
-To access our Epidata API (Other Diseases) visit our [Epidata API Client Libraries)](client_libraries.md). For anyone looking for COVIDCast data, please visit our [COVIDCast Libraries](covidcast_clients.md)
+To access our Epidata API, visit our [Epidata API Client Libraries)](client_libraries.md). For anyone looking for COVIDCast data in particular, please visit our purpose-built [COVIDCast Libraries](covidcast_clients.md) instead.
 
 # Related Work
 
