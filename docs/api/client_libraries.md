@@ -17,7 +17,7 @@ The following samples show how to import the library and fetch Delphi's COVID-19
 Surveillance Streams from Facebook Survey CLI for county 06001 and days
 `20200401` and `20200405-20200414` (11 days total).
 
-For anyone looking for COVIDCast data, please visit our [COVIDCast Libraries](covidcast_clients.md)
+For anyone looking for COVIDCast data, please visit our [COVIDCast Libraries](covidcast_clients.md).
 
 ### CoffeeScript (in Node.js)
 
