@@ -40,7 +40,7 @@ Epidata.covidcast(callback, 'fb-survey', 'smoothed_cli', 'day', 'county', [20200
   var callback = function(result, message, epidata) {
     console.log(result, message, epidata != null ? epidata.length : void 0);
   };
-  Epidata.covidcast(callback, 'fb-survey', 'raw_cli', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001');
+  Epidata.covidcast(callback, 'fb-survey', 'smoothed_cli', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001');
 </script>
 ````
 
