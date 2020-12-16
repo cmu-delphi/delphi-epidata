@@ -60,7 +60,7 @@ in the same directory as your Python script.
 # Import
 from delphi_epidata import Epidata
 # Fetch data
-res = Epidata.covidcast('fb-survey', 'raw_cli', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001')
+res = Epidata.covidcast('fb-survey', 'smoothed_cli', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001')
 print(res['result'], res['message'], len(res['epidata']))
 ````
 
