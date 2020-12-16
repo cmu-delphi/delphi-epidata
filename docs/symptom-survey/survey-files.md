@@ -66,7 +66,7 @@ First, the monthly CSV files have filenames in the form
     {YYYY}-{mm}.csv.gz
 
 and contain all valid responses for that month. These are produced from the
-daily files, by taking the data with the most recent `recordedby` date for each
+daily files, by taking the data with the most recent `recorded` date for each
 day of the month. They are compressed with gzip; the standard `gunzip` command
 on macOS or Linux can decompress them. (macOS can also decompress these files
 through Finder automatically; on Windows, free programs like
@@ -75,13 +75,15 @@ historical analyses of the survey data should start with these files, since they
 provide the easiest way to get all the necessary data, without accidentally
 including duplicate results.
 
-Second, we produce monthly tarballs containing all the daily `.csv.gz` files for
+Second, we produce monthly tarballs containing the daily `.csv.gz` files for
 that month, with names in the form
 
 	{YYYY}-{mm}.tar
 
-These archives can be unpacked using the standard `tar` command. The unpacked
-files are described in [Daily Files](#daily-files) above.
+Similar to the monthly CSV files, they contain only the files with the most
+recent `recorded` date for each day. These archives can be unpacked using the
+standard `tar` command. The unpacked files are described in [Daily
+Files](#daily-files) above.
 
 ## Conditions Responses are Recorded
 
