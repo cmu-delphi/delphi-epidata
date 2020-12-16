@@ -965,9 +965,14 @@ function get_covidcast_meta(IRowPrinter &$printer) {
     }
   }
 
+  $printer->begin();
+  
   if ($epidata == null) {
+    # early abort but still proper ending
+    $printer->end();
     return;
   }
+
   // filter rows
   $time_types = extract_values(isset($_REQUEST['time_types']) ? $_REQUEST['time_types'] : null, 'str');
   $signals = isset($_REQUEST['signals']) ? array_map(function($signal) {
@@ -1011,7 +1016,6 @@ function get_covidcast_meta(IRowPrinter &$printer) {
     }, $epidata);
   }
 
-  $printer->begin();
   // print rows
   foreach($epidata as $row) {
     $printer->printRow($row);
