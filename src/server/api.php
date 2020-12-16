@@ -1274,7 +1274,7 @@ function meta_delphi(IRowPrinter &$printer) {
  */
 function main() {
   // endpoint parameter with a fallback to source parameter for compatibility reasons
-  $endpoint = isset($_REQUEST['endpoint']) ? strtolower($_REQUEST['endpoint']) : (isset($_REQUEST['source']) ? strtolower($_REQUEST['source']) : null);
+  $endpoint = isset($_REQUEST['endpoint']) ? strtolower($_REQUEST['endpoint']) : (isset($_REQUEST['source']) ? strtolower($_REQUEST['source']) : '');
   $format = isset($_REQUEST['format']) ? $_REQUEST['format'] : 'classic';
   $printer = createPrinter($endpoint, $format);
 
