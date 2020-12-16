@@ -17,5 +17,4 @@ analysis functions. For installation instructions and examples, consult their
 respective webpages.
 
 
-To access our Epidata API (Other Diseases) visit our [Epidata API Client Libraries)](client_libraries.md) documentation.
-
+To access Epidata datasets on other diseases, visit our [Epidata API Client Libraries)](client_libraries.md) documentation.
