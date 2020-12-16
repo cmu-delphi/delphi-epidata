@@ -71,6 +71,6 @@ print(res['result'], res['message'], len(res['epidata']))
 # Import
 source('delphi_epidata.R')
 # Fetch data
-res <- Epidata$covidcast('fb-survey', 'raw_cli', 'day', 'county', list(20200401, Epidata$range(20200405, 20200414)), '06001')
+res <- Epidata$covidcast('fb-survey', 'smoothed_cli', 'day', 'county', list(20200401, Epidata$range(20200405, 20200414)), '06001')
 cat(paste(res$result, res$message, length(res$epidata), "\n"))
 ````
