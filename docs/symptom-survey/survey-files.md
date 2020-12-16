@@ -26,13 +26,16 @@ where the data is hosted.
 1. TOC
 {:toc}
 
-## Naming Conventions
+## Available Data Files
 
-Cumulative files:
+We provide two types of data files, daily and monthly. Users who need the most
+up-to-date data should use the daily files, while those who want to conduct
+retrospective analyses using many months of data may find the monthly files more
+convenient.
 
-	{YYYY_mm}.tar
+### Daily Files
 
-Incremental files:
+Each day, we write CSV files with names following this pattern:
 
 	cvid_responses_{for}_recordedby_{recorded}.csv.gz
 
@@ -42,33 +45,51 @@ day the survey response was started, in the Pacific time zone (UTC -
 policy](#lag-policy) for more details.
 
 Every day, we write response files for all recent days of data, with today's
-`recorded` date. You need only load the most recent set of `recorded` files to
-obtain all survey responses; the older versions are available to track any
-changes in file formats or slight changes from late-arriving responses, as
-described in the [lag policy below](#lag-policy).
-
-## Loading Data Files
-
-As described above, one day of data may be reissued several times, if responses
-arrive late, file formats are changed, or errors in data processing are
-corrected. You need only load the latest version of each file.
+`recorded` date. For each `for` date, you need only load the most recent
+`recorded` file to obtain all survey responses; the older versions are available
+to track any changes in file formats or slight changes from late-arriving
+responses, as described in the [lag policy below](#lag-policy).
 
 For data users who use R to load and process data, we provide a [`get_survey_df`
 function](survey-utils.R) to read a directory of CSV files (such as those
 provided on the SFTP server), select the correct files, and read them into a
 single data frame for use.
 
+### Monthly Files
+
+Several days after the end of each month, we produce "rollup" files containing
+all survey responses from that month. These are in two forms.
+
+First, the monthly CSV files have filenames in the form
+
+    {YYYY}-{mm}.csv
+
+and contain all valid responses for that month. These are produced from the
+daily files, by taking the data with the most recent `recordedby` date for each
+day of the month. Users doing historical analyses of the survey data should
+start with these files, since they provide the easiest way to get all the
+necessary data, without accidentally including duplicate results.
+
+Second, we produce monthly tarballs containing all the daily `.csv.gz` files for
+that month, with names in the form
+
+	{YYYY}-{mm}.tar
+
+These archives can be unpacked using the standard `tar` command. The unpacked
+files are described in [Daily Files](#daily-files) above.
+
 ## Conditions Responses are Recorded
 
-The survey was configured to record responses under two sets of circumstances:
+The survey is configured to record responses under two sets of circumstances:
 
-1. The user taking the survey clicked submit, or
+1. The user taking the survey reached the end of the survey, or
 2. The user taking the survey left the survey unattended for 4 hours.
 
 An abandoned survey as in (2) is automatically closed and recorded, and the user
 is not permitted to reopen it.
 
 Responses qualify for inclusion in these files if they meet the following conditions:
+
 * answered "yes" to age consent
 * answered a minimum of 2 additional questions, where to “answer” a numeric
   open-ended question (A2, A2b, B2b, Q40, C10_1_1, C10_2_1, C10_3_1, C10_4_1,
@@ -113,6 +134,7 @@ observed was four days.
 
 Once a weight has been generated for a unique identifier, CMU continues to
 retrieve survey responses for that identifier in case one comes in with an
-earlier starting time. If it does, CMU will replace the individual response data
-in the appropriate file with the response that was started earlier. We expect
-all response files to stabilize after four days.
+earlier starting time. If it does, CMU will write a new daily CSV file
+containing the response with the earlier starting time (and not the later
+response), as [described above](#daily-files). We expect all response files to
+stabilize after four days.
