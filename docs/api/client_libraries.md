@@ -26,7 +26,7 @@ For anyone looking for COVIDCast data, please visit our [COVIDCast Libraries](co
 # Fetch data
 callback = (result, message, epidata) ->
   console.log(result, message, epidata?.length)
-Epidata.covidcast(callback, 'fb-survey', 'raw_cli', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001')
+Epidata.covidcast(callback, 'fb-survey', 'smoothed_cli', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001')
 ````
 
 ### JavaScript (in a web browser)
