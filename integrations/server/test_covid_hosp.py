@@ -73,8 +73,10 @@ class ServerTests(unittest.TestCase):
       self.assertEqual(response['result'], 1)
       self.assertEqual(len(response['epidata']), 3)
       rows = response['epidata']
+      # tiebreaker
       self.assertEqual(rows[0]['issue'], 20201201)
       self.assertEqual(rows[0]['critical_staffing_shortage_today_yes'], 321)
+      # server-side order by
       self.assertEqual(rows[1]['issue'], 20201202)
       self.assertEqual(rows[1]['critical_staffing_shortage_today_yes'], 456)
       self.assertEqual(rows[2]['issue'], 20201203)

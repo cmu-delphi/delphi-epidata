@@ -5,6 +5,7 @@ from delphi.epidata.acquisition.covid_hosp.common.utils import Utils
 
 class Database(BaseDatabase):
 
+  # note we share a database with state_timeseries
   TABLE_NAME = 'covid_hosp_state_timeseries'
 
   # These are the names that appear in the CSV header, in order of appearance
