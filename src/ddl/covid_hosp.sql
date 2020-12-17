@@ -159,10 +159,25 @@ total_pediatric_patients_hospitalized_confirmed_covid_coverage ->
 
 NOTE: the following data dictionary is copied from
 https://healthdata.gov/covid-19-reported-patient-impact-and-hospital-capacity-state-data-dictionary
-version entitled "November 16, 2020 release 2.3".
+version entitled "November 18, 2020 release 2.4".
 
 - `state`
   The two digit state code
+- `critical_staffing_shortage_today_yes`
+  Number of hospitals reporting a critical staffing shortage today in this state.
+- `critical_staffing_shortage_today_no`
+  Number of hospitals reporting as not having a critical staffing shortage today
+  in this state.
+- `critical_staffing_shortage_today_not_reported`
+  Number of hospitals not reporting staffing shortage today status in this state.
+- `critical_staffing_shortage_anticipated_within_week_yes`
+  Number of hospitals reporting that they anticipate a critical staffing shortage
+  within a week in this state.
+- `critical_staffing_shortage_anticipated_within_week_no`
+  Number of hospitals reporting that they do not anticipate a critical staffing
+  shortage within a week in this state.
+- `critical_staffing_shortage_anticipated_within_week_not_reported`
+  Number of hospitals not reporting staffing shortage within week status in this state.
 - `hospital_onset_covid`
   Total current inpatients with onset of suspected or laboratory-confirmed
   COVID-19 fourteen or more days after admission for a condition other than
@@ -354,6 +369,12 @@ CREATE TABLE `covid_hosp_state_timeseries` (
   `issue` INT NOT NULL,
   `state` CHAR(2) NOT NULL,
   `date` INT NOT NULL,
+  `critical_staffing_shortage_today_yes` INT,
+  `critical_staffing_shortage_today_no` INT,
+  `critical_staffing_shortage_today_not_reported` INT,
+  `critical_staffing_shortage_anticipated_within_week_yes` INT,
+  `critical_staffing_shortage_anticipated_within_week_no` INT,
+  `critical_staffing_shortage_anticipated_within_week_not_reported` INT,
   `hospital_onset_covid` INT,
   `hospital_onset_covid_coverage` INT,
   `inpatient_beds` INT,

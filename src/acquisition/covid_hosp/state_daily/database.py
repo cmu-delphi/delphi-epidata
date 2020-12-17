@@ -14,7 +14,13 @@ class Database(BaseDatabase):
   # /src/ddl/covid_hosp.sql for more information.
   ORDERED_CSV_COLUMNS = [
     ('state', str),
-    ('date', Utils.int_from_date),
+    ('reporting_cutoff_start', Utils.int_from_date),
+    ('critical_staffing_shortage_today_yes', int),
+    ('critical_staffing_shortage_today_no', int),
+    ('critical_staffing_shortage_today_not_reported', int),
+    ('critical_staffing_shortage_anticipated_within_week_yes', int),
+    ('critical_staffing_shortage_anticipated_within_week_no', int),
+    ('critical_staffing_shortage_anticipated_within_week_not_reported', int),
     ('hospital_onset_covid', int),
     ('hospital_onset_covid_coverage', int),
     ('inpatient_beds', int),
@@ -67,7 +73,6 @@ class Database(BaseDatabase):
     ('adult_icu_bed_utilization_coverage', int),
     ('adult_icu_bed_utilization_numerator', int),
     ('adult_icu_bed_utilization_denominator', int),
-    ('record_type', str),
   ]
 
   def __init__(self, *args, **kwargs):
@@ -76,4 +81,4 @@ class Database(BaseDatabase):
         **kwargs,
         table_name=Database.TABLE_NAME,
         columns_and_types=Database.ORDERED_CSV_COLUMNS,
-        additional_fields=("D"))
+        additional_fields=('D',))
