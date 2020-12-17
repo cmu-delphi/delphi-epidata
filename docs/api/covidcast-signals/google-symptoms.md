@@ -69,7 +69,7 @@ Google does not update the search data daily, but has an uncertain update
 frequency. The delay can range from 1 day to 10 days or even more. We check for
 updates every day and provide the most up-to-date data.
 
-## Limitation 
+## Limitations 
 When daily volume in a region does not meet quality or privacy thresholds, set
 by Google, no value will be reported. Since Google uses differential privacy,
 there is artificial noise added to the raw datasets to avoid identifying any
