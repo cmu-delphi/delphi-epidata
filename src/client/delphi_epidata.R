@@ -571,6 +571,25 @@ Epidata <- (function() {
     return(.request(params))
   }
 
+  # Fetch COVID hospitalization data for specific facilities
+  covid_hosp_facility <- function(hospital_pks, collection_weeks, publication_dates) {
+    # Check parameters
+    if(missing(hospital_pks) || missing(collection_weeks)) {
+      stop('`hospital_pks` and `collection_weeks` are both required')
+    }
+    # Set up request
+    params <- list(
+      source = 'covid_hosp_facility',
+      hospital_pks = .list(hospital_pks),
+      collection_weeks = .list(collection_weeks)
+    )
+    if(!missing(publication_dates)) {
+      params$publication_dates <- .list(publication_dates)
+    }
+    # Make the API call
+    return(.request(params))
+  }
+
   # Export the public methods
   return(list(
     range = range,
@@ -598,6 +617,7 @@ Epidata <- (function() {
     meta = meta,
     covidcast = covidcast,
     covidcast_meta = covidcast_meta,
-    covid_hosp = covid_hosp
+    covid_hosp = covid_hosp,
+    covid_hosp_facility = covid_hosp_facility
   ))
 })()

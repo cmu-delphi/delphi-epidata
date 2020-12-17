@@ -430,5 +430,20 @@ class Epidata
     # Make the API call
     _request(callback, params)
 
+  # Fetch COVID hospitalization data for specific facilities
+  @covid_hosp_facility: (callback, hospital_pks, collection_weeks, publication_dates) ->
+    # Check parameters
+    unless hospital_pks? and collection_weeks?
+      throw { msg: '`hospital_pks` and `collection_weeks` are both required' }
+    # Set up request
+    params =
+      'source': 'covid_hosp_facility'
+      'hospital_pks': _list(hospital_pks)
+      'collection_weeks': _list(collection_weeks)
+    if publication_dates?
+      params.publication_dates = _list(publication_dates)
+    # Make the API call
+    _request(callback, params)
+
 # Export the API to the global environment
 (exports ? window).Epidata = Epidata

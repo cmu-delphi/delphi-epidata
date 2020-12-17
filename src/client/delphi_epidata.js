@@ -635,6 +635,32 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
           return _request(callback, params);
+        } // Fetch COVID hospitalization data for specific facilities
+
+      }, {
+        key: "covid_hosp_facility",
+        value: function covid_hosp_facility(callback, hospital_pks, collection_weeks, publication_dates) {
+          var params; // Check parameters
+
+          if (!(hospital_pks != null && collection_weeks != null)) {
+            throw {
+              msg: '`hospital_pks` and `collection_weeks` are both required'
+            };
+          } // Set up request
+
+
+          params = {
+            'source': 'covid_hosp_facility',
+            'hospital_pks': _list(hospital_pks),
+            'collection_weeks': _list(collection_weeks)
+          };
+
+          if (publication_dates != null) {
+            params.publication_dates = _list(publication_dates);
+          } // Make the API call
+
+
+          return _request(callback, params);
         }
       }]);
 
