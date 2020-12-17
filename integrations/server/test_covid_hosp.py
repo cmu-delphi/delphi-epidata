@@ -33,9 +33,9 @@ class ServerTests(unittest.TestCase):
 
     # insert dummy data
     def insert_issue(cur, issue, value):
-      so_many_nulls = ', '.join(['null'] * 51)
+      so_many_nulls = ', '.join(['null'] * 57)
       cur.execute(f'''insert into covid_hosp_state_timeseries values (
-        0, {issue}, 'PA', 20201118, {value}, {so_many_nulls}
+        0, {issue}, 'PA', 20201118, {value}, {so_many_nulls}, 'T'
       )''')
     with Database.connect() as db:
       with db.new_cursor() as cur:
@@ -51,7 +51,7 @@ class ServerTests(unittest.TestCase):
       self.assertEqual(response['result'], 1)
       self.assertEqual(len(response['epidata']), 1)
       self.assertEqual(response['epidata'][0]['issue'], 20201203)
-      self.assertEqual(response['epidata'][0]['hospital_onset_covid'], 789)
+      self.assertEqual(response['epidata'][0]['critical_staffing_shortage_today_yes'], 789)
 
     # request for specific issue
     with self.subTest(name='specific single issue'):
@@ -60,7 +60,7 @@ class ServerTests(unittest.TestCase):
       self.assertEqual(response['result'], 1)
       self.assertEqual(len(response['epidata']), 1)
       self.assertEqual(response['epidata'][0]['issue'], 20201201)
-      self.assertEqual(response['epidata'][0]['hospital_onset_covid'], 123)
+      self.assertEqual(response['epidata'][0]['critical_staffing_shortage_today_yes'], 123)
 
     # request for multiple issues
     with self.subTest(name='specific multiple issues'):
@@ -71,8 +71,8 @@ class ServerTests(unittest.TestCase):
       self.assertEqual(len(response['epidata']), 3)
       rows = response['epidata']
       self.assertEqual(rows[0]['issue'], 20201201)
-      self.assertEqual(rows[0]['hospital_onset_covid'], 123)
+      self.assertEqual(rows[0]['critical_staffing_shortage_today_yes'], 123)
       self.assertEqual(rows[1]['issue'], 20201202)
-      self.assertEqual(rows[1]['hospital_onset_covid'], 456)
+      self.assertEqual(rows[1]['critical_staffing_shortage_today_yes'], 456)
       self.assertEqual(rows[2]['issue'], 20201203)
-      self.assertEqual(rows[2]['hospital_onset_covid'], 789)
+      self.assertEqual(rows[2]['critical_staffing_shortage_today_yes'], 789)

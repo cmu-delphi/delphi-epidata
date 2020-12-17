@@ -147,7 +147,7 @@ class Database:
       The dataset.
     """
 
-    num_columns = 2 + len(self.columns_and_types)
+    num_columns = 2 + len(self.columns_and_types) + len(self.additional_fields)
     value_placeholders = ', '.join(['%s'] * num_columns)
     sql = f'INSERT INTO `{self.table_name}` VALUES ({value_placeholders})'
 
