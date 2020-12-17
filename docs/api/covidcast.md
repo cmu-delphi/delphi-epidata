@@ -6,7 +6,7 @@ nav_order: 1
 
 # COVIDcast Epidata API
 
-This is the documentation for accessing Delphi's COVID-19 indicators, an (`covidcast`) endpoint of [Delphi](https://delphi.cmu.edu/)'s
+This is the documentation for accessing Delphi's COVID-19 indicators via the `covidcast` endpoint of [Delphi](https://delphi.cmu.edu/)'s
 epidemiological data API. This API provides data on the spread and impact of the
 COVID-19 pandemic across the United States, most of which is available at the
 county level and updated daily. This data powers our public [COVIDcast
