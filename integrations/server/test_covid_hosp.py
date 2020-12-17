@@ -32,17 +32,20 @@ class ServerTests(unittest.TestCase):
     """Query with and without specifying an issue."""
 
     # insert dummy data
-    def insert_issue(cur, issue, value):
+    def insert_issue(cur, issue, value, record_type):
       so_many_nulls = ', '.join(['null'] * 57)
       cur.execute(f'''insert into covid_hosp_state_timeseries values (
-        0, {issue}, 'PA', 20201118, {value}, {so_many_nulls}, 'T'
+        0, {issue}, 'PA', 20201118, {value}, {so_many_nulls}, '{record_type}'
       )''')
+
     with Database.connect() as db:
       with db.new_cursor() as cur:
         # inserting out of order to test server-side order by
-        insert_issue(cur, 20201201, 123)
-        insert_issue(cur, 20201203, 789)
-        insert_issue(cur, 20201202, 456)
+        # also inserting two for 20201201 to test tiebreaker.
+        insert_issue(cur, 20201201, 123, 'T')
+        insert_issue(cur, 20201201, 321, 'D')
+        insert_issue(cur, 20201203, 789, 'T')
+        insert_issue(cur, 20201202, 456, 'T')
 
     # request without issue (defaulting to latest issue)
     with self.subTest(name='no issue (latest)'):
@@ -60,7 +63,7 @@ class ServerTests(unittest.TestCase):
       self.assertEqual(response['result'], 1)
       self.assertEqual(len(response['epidata']), 1)
       self.assertEqual(response['epidata'][0]['issue'], 20201201)
-      self.assertEqual(response['epidata'][0]['critical_staffing_shortage_today_yes'], 123)
+      self.assertEqual(response['epidata'][0]['critical_staffing_shortage_today_yes'], 321)
 
     # request for multiple issues
     with self.subTest(name='specific multiple issues'):
@@ -71,7 +74,7 @@ class ServerTests(unittest.TestCase):
       self.assertEqual(len(response['epidata']), 3)
       rows = response['epidata']
       self.assertEqual(rows[0]['issue'], 20201201)
-      self.assertEqual(rows[0]['critical_staffing_shortage_today_yes'], 123)
+      self.assertEqual(rows[0]['critical_staffing_shortage_today_yes'], 321)
       self.assertEqual(rows[1]['issue'], 20201202)
       self.assertEqual(rows[1]['critical_staffing_shortage_today_yes'], 456)
       self.assertEqual(rows[2]['issue'], 20201203)
