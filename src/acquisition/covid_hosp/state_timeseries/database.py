@@ -12,8 +12,8 @@ class Database(BaseDatabase):
   # However, note that the corresponding database column names may be shorter
   # due to constraints on the length of column names. See
   # /src/ddl/covid_hosp.sql for more information.
-  # Additionally, all column names below are shared with state_timeseries,
-  # except for reporting_cutoff_start (here) and date (there). If you need
+  # Additionally, all column names below are shared with state_daily,
+  # except for reporting_cutoff_start (there) and date (here). If you need
   # to update a column name, do it in both places.
   ORDERED_CSV_COLUMNS = [
     ('state', str),
