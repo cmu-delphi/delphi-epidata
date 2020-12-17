@@ -123,7 +123,7 @@ Data is public under the Open Data Commons Open Database License (ODbL).
 | adult_icu_bed_utilization_coverage                               | int(11) | YES  |     | NULL    |                |
 | adult_icu_bed_utilization_numerator                              | int(11) | YES  |     | NULL    |                |
 | adult_icu_bed_utilization_denominator                            | int(11) | YES  |     | NULL    |                |
-| record_type                                                      | char(2) | NO   | MUL | NULL    |                |
+| record_type                                                      | char(1) | NO   | MUL | NULL    |                |
 +------------------------------------------------------------------+---------+------+-----+---------+----------------+
 
 - `id`
