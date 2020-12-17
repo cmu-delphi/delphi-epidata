@@ -85,3 +85,79 @@ class AcquisitionTests(unittest.TestCase):
           '450822', Epidata.range(20200101, 20210101))
       self.assertEqual(response['result'], 1)
       self.assertEqual(len(response['epidata']), 1)
+
+  def test_facility_lookup(self):
+    """Lookup facilities using various filters."""
+
+    # only mock out network calls to external hosts
+    mock_network = MagicMock()
+    mock_network.fetch_metadata.return_value = \
+        self.test_utils.load_sample_metadata()
+    mock_network.fetch_dataset.return_value = \
+        self.test_utils.load_sample_dataset()
+
+    # acquire sample data into local database
+    with self.subTest(name='first acquisition'):
+      acquired = Update.run(network=mock_network)
+      self.assertTrue(acquired)
+
+    # texas ground truth, sorted by `hospital_pk`
+    # see sample data at testdata/acquisition/covid_hosp/facility/dataset.csv
+    texas_hospitals = [{
+      'hospital_pk': '450771',
+      'state': 'TX',
+      'ccn': '450771',
+      'hospital_name': 'TEXAS HEALTH PRESBYTERIAN HOSPITAL PLANO',
+      'address': '6200 W PARKER RD',
+      'city': 'PLANO',
+      'zip': '75093',
+      'hospital_subtype': 'Short Term',
+      'fips_code': '48085',
+      'is_metro_micro': 1,
+    }, {
+      'hospital_pk': '450822',
+      'state': 'TX',
+      'ccn': '450822',
+      'hospital_name': 'MEDICAL CITY LAS COLINAS',
+      'address': '6800 N MACARTHUR BLVD',
+      'city': 'IRVING',
+      'zip': '75039',
+      'hospital_subtype': 'Short Term',
+      'fips_code': '48113',
+      'is_metro_micro': 1,
+    }, {
+      'hospital_pk': '451329',
+      'state': 'TX',
+      'ccn': '451329',
+      'hospital_name': 'RANKIN HOSPITAL MEDICAL CLINIC',
+      'address': '1611 SPUR 576',
+      'city': 'RANKIN',
+      'zip': '79778',
+      'hospital_subtype': 'Critical Access Hospitals',
+      'fips_code': '48461',
+      'is_metro_micro': 0,
+    }]
+
+    with self.subTest(name='by state'):
+      response = Epidata.covid_hosp_facility_lookup(state='tx')
+      self.assertEqual(response['epidata'], texas_hospitals)
+
+    with self.subTest(name='by ccn'):
+      response = Epidata.covid_hosp_facility_lookup(ccn='450771')
+      self.assertEqual(response['epidata'], texas_hospitals[0:1])
+
+    with self.subTest(name='by city'):
+      response = Epidata.covid_hosp_facility_lookup(city='irving')
+      self.assertEqual(response['epidata'], texas_hospitals[1:2])
+
+    with self.subTest(name='by zip'):
+      response = Epidata.covid_hosp_facility_lookup(zip='79778')
+      self.assertEqual(response['epidata'], texas_hospitals[2:3])
+
+    with self.subTest(name='by fips_code'):
+      response = Epidata.covid_hosp_facility_lookup(fips_code='48085')
+      self.assertEqual(response['epidata'], texas_hospitals[0:1])
+
+    with self.subTest(name='no results'):
+      response = Epidata.covid_hosp_facility_lookup(state='not a state')
+      self.assertEqual(response['result'], -2)

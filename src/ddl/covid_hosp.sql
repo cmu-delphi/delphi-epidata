@@ -1043,6 +1043,10 @@ CREATE TABLE `covid_hosp_facility` (
   UNIQUE KEY (`hospital_pk`, `collection_week`, `publication_date`),
   -- for fast lookup of a time-series for a given hospital and publication date
   KEY (`publication_date`, `hospital_pk`, `collection_week`),
-  -- for fast lookup of all hospital identifiers in a given state
-  KEY (`state`, `hospital_pk`)
+  -- for fast lookup of hospitals in a given location
+  KEY (`state`, `hospital_pk`),
+  KEY (`ccn`, `hospital_pk`),
+  KEY (`city`, `hospital_pk`),
+  KEY (`zip`, `hospital_pk`),
+  KEY (`fips_code`, `hospital_pk`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

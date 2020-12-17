@@ -662,6 +662,35 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
           return _request(callback, params);
+        } // Lookup COVID hospitalization facility identifiers
+
+      }, {
+        key: "covid_hosp_facility_lookup",
+        value: function covid_hosp_facility_lookup(state, ccn, city, zip, fips_code) {
+          var params; // Set up request
+
+          params = {
+            'source': 'covid_hosp_facility'
+          };
+
+          if (state != null) {
+            params.state = state;
+          } else if (ccn != null) {
+            params.ccn = ccn;
+          } else if (city != null) {
+            params.city = city;
+          } else if (zip != null) {
+            params.zip = zip;
+          } else if (fips_code != null) {
+            params.fips_code = fips_code;
+          } else {
+            throw {
+              msg: 'one of `state`, `ccn`, `city`, `zip`, or `fips_code` is required'
+            };
+          } // Make the API call
+
+
+          return _request(callback, params);
         }
       }]);
 

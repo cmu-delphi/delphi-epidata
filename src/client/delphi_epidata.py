@@ -643,3 +643,25 @@ class Epidata:
       params['publication_dates'] = Epidata._list(publication_dates)
     # Make the API call
     return Epidata._request(params)
+
+  # Lookup COVID hospitalization facility identifiers
+  @staticmethod
+  def covid_hosp_facility_lookup(
+      state=None, ccn=None, city=None, zip=None, fips_code=None):
+    """Lookup COVID hospitalization facility identifiers."""
+    # Set up request
+    params = {'source': 'covid_hosp_facility_lookup'}
+    if state is not None:
+      params['state'] = state
+    elif ccn is not None:
+      params['ccn'] = ccn
+    elif city is not None:
+      params['city'] = city
+    elif zip is not None:
+      params['zip'] = zip
+    elif fips_code is not None:
+      params['fips_code'] = fips_code
+    else:
+      raise Exception('one of `state`, `ccn`, `city`, `zip`, or `fips_code` is required')
+    # Make the API call
+    return Epidata._request(params)
