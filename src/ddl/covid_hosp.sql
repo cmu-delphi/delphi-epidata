@@ -361,7 +361,11 @@ into the `date` column.
 
 We also add a column `record_type` that specifies if a row came from a
 time series file or a daily snapshot file. "T" = time series and
-"D" =  daily snapshot.
+"D" =  daily snapshot. When both a time series and a daily snapshot row
+have the same issue/date/state but different values, we tiebreak by
+taking the daily snapshot value. This is done with a window function that
+sorts by the record_type field, ascending, and so it is important that "D"
+comes before "T".
 */
 
 CREATE TABLE `covid_hosp_state_timeseries` (

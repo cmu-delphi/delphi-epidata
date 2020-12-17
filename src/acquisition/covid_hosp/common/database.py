@@ -31,6 +31,9 @@ class Database:
       element of each tuple is the CSV column name, and the second element is a
       function which converts a string into the appropriate datatype for the
       column.
+    additional_fields : tuple[str]
+      Tuple of additional fields to include at the end of the row which are not
+      present in the CSV data.
     """
 
     self.connection = connection
