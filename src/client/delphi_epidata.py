@@ -624,3 +624,22 @@ class Epidata:
       params['issues'] = Epidata._list(issues)
     # Make the API call
     return Epidata._request(params)
+
+  # Fetch COVID hospitalization data for specific facilities
+  @staticmethod
+  def covid_hosp_facility(
+      hospital_pks, collection_weeks, publication_dates=None):
+    """Fetch COVID hospitalization data for specific facilities."""
+    # Check parameters
+    if hospital_pks is None or collection_weeks is None:
+      raise Exception('`hospital_pks` and `collection_weeks` are both required')
+    # Set up request
+    params = {
+      'source': 'covid_hosp_facility',
+      'hospital_pks': Epidata._list(hospital_pks),
+      'collection_weeks': Epidata._list(collection_weeks),
+    }
+    if publication_dates is not None:
+      params['publication_dates'] = Epidata._list(publication_dates)
+    # Make the API call
+    return Epidata._request(params)
