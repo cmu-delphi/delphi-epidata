@@ -1153,12 +1153,12 @@ function get_covid_hosp_state_timeseries($states, $dates, $issues) {
     // build the issue filter
     $condition_issue = filter_integers('c.`issue`', $issues);
     // final query using specific issues
-    $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_date}) AND ({$condition_state}) AND ({$condition_issue}) ORDER BY {$order}";
+    $query = "WITH c as (SELECT {$fields}, ROW_NUMBER() OVER (PARTITION BY date, state, issue ORDER BY record_type) row FROM {$table} WHERE ({$condition_date}) AND ({$condition_state}) AND ({$condition_issue}) ORDER BY {$order}) SELECT {$fields} FROM c where row = 1";
   } else {
     // final query using most recent issues
     $subquery = "(SELECT max(`issue`) `max_issue`, `date`, `state` FROM {$table} WHERE ({$condition_date}) AND ({$condition_state}) GROUP BY `date`, `state`) x";
     $condition = "x.`max_issue` = c.`issue` AND x.`date` = c.`date` AND x.`state` = c.`state`";
-    $query = "SELECT {$fields} FROM {$table} JOIN {$subquery} ON {$condition} ORDER BY {$order}";
+    $query = "WITH c as (SELECT {$fields}, ROW_NUMBER() OVER (PARTITION BY date, state, issue ORDER BY record_type) row FROM {$table} JOIN {$subquery} ON {$condition} ORDER BY {$order}) select {$fields} FROM c WHERE row = 1";
   }
   // get the data from the database
   $fields_string = array('state');
