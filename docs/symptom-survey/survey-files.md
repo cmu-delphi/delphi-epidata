@@ -67,13 +67,13 @@ First, the monthly CSV files have filenames in the form
 
 and contain all valid responses for that month. These are produced from the
 daily files, by taking the data with the most recent `recorded` date for each
-day of the month. They are compressed with gzip; the standard `gunzip` command
-on macOS or Linux can decompress them. (macOS can also decompress these files
-through Finder automatically; on Windows, free programs like
-[7-zip](https://www.7-zip.org/) can decompress gzip files.) Users doing
-historical analyses of the survey data should start with these files, since they
-provide the easiest way to get all the necessary data, without accidentally
-including duplicate results.
+day of the month. Because these files are large (typically over 300 MB), they
+are compressed with gzip; the standard `gunzip` command on macOS or Linux can
+decompress them. (macOS can also decompress these files through Finder
+automatically; on Windows, free programs like [7-zip](https://www.7-zip.org/)
+can decompress gzip files.) Users doing historical analyses of the survey data
+should start with these files, since they provide the easiest way to get all the
+necessary data, without accidentally including duplicate results.
 
 Second, we produce monthly tarballs containing the daily `.csv.gz` files for
 that month, with names in the form
