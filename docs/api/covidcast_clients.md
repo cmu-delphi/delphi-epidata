@@ -6,7 +6,7 @@ nav_order: 1
 
 # COVIDcast Libraries
 
-Dedicated COVIDcast clients are available for several languages:
+Dedicated COVIDcast access and analysis libraries are available for several languages:
 
 * R: [covidcast](https://cmu-delphi.github.io/covidcast/covidcastR/)
 * Python: [covidcast](https://cmu-delphi.github.io/covidcast/covidcast-py/html/)
