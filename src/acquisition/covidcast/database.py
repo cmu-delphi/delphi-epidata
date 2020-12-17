@@ -269,10 +269,10 @@ class Database:
     signal_list = []
     sql = 'SELECT `source`, `signal` FROM `covidcast` GROUP BY `source`, `signal` ORDER BY `source` ASC, `signal` ASC;'
     self._cursor.execute(sql)
-    for source, signal in list(self._cursor):
+    for source, signal in list(self._cursor): # self._cursor is a generator; this lets us use the cursor for subsequent queries inside the loop
       sql = "SELECT `is_wip` FROM `covidcast` WHERE `source`=%s AND `signal`=%s LIMIT 1"
       self._cursor.execute(sql, (source, signal))
-      is_wip = int(self._cursor.fetchone()[0]) # casting to int as it comes out as bytearray (essentially str)
+      is_wip = int(self._cursor.fetchone()[0]) # casting to int as it comes out as a '0' or '1' bytearray; bool('0')==True :(
       if not is_wip:
         signal_list.append((source, signal))
 
