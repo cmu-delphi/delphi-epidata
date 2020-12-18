@@ -119,6 +119,6 @@ published by the U.S. Department of Health & Human Services under an
 [Open Data Commons Open Database License
 (ODbL)](https://opendatacommons.org/licenses/odbl/1-0/). The ODbL
 permits sharing, transformation, and redistribution of data or derived
-works so long as all public uses are attributed, and are likewise
-distributed under the ODbL. For more details, consult the official
+works so long as all public uses are distributed under the ODbL and 
+attributed to the source. For more details, consult the official
 license text.
