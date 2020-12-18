@@ -67,7 +67,7 @@ The `sum_confirmed_suspected` signal is the sum of all four columns:
 * pediatric confirmed
 * pediatric suspected
 
-The source data specfies that admissions occured on the previous
+The source data specifies that admissions occurred on the previous
 day. We automatically adjust the date of each result so that
 admissions are incident on that date.
 
@@ -90,7 +90,7 @@ The `sum_confirmed_suspected` signal is the sum of all four columns:
 * pediatric confirmed
 * pediatric suspected
 
-The source data specfies that admissions for the previous day are
+The source data specifies that admissions for the previous day are
 summed over a seven-day period starting with the collection date. We
 automatically adjust the date for each result so that admissions are
 incident to the seven day period starting with that date.
@@ -98,12 +98,11 @@ incident to the seven day period starting with that date.
 The source data uses an unusual week definition (originally
 Friday-Thursday; Thursday-Wednesday with our adjustment). Because this
 definition does not match that used by epiweeks, this dataset uses
-`time_type=day`, however data will only ever be present for dates that
+`time_type=day`. However, data will only ever be present for dates that
 are the start of a seven-day collection period (ie Thursdays).
 
-Facilitywise data is aggregated to other geographies using the FIPS
-code of the facility, if available, and the ZIP5 code of the facility
-otherwise.
+Facility-wise data is aggregated to other geographies using the facility's FIPS
+code, if available, and the ZIP5 code of the facility otherwise.
 
 ## Limitations
 
