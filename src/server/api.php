@@ -1446,6 +1446,67 @@ function get_covid_hosp_facility($hospital_pks, $collection_weeks, $publication_
   return count($epidata) === 0 ? null : $epidata;
 }
 
+// queries the `covid_hosp_facility` table for hospital discovery
+//   $state (optional): 2-letter state abbreviation
+//   $ccn (optional): cms certification number (ccn) of the given facility
+//   $city (optional): name of
+//   $zip (optional): 2-letter state abbreviation
+//   $fips_code (optional): 2-letter state abbreviation
+//   note: exactly one of the above parameters should be non-null. if more than
+//         one is non-null, then only the first filter will be used.
+function get_covid_hosp_facility_lookup($state, $ccn, $city, $zip, $fips_code) {
+  $epidata = array();
+  $table = '`covid_hosp_facility` c';
+  $fields = implode(', ', array(
+    'c.`hospital_pk`',
+    'MAX(c.`state`) `state`',
+    'MAX(c.`ccn`) `ccn`',
+    'MAX(c.`hospital_name`) `hospital_name`',
+    'MAX(c.`address`) `address`',
+    'MAX(c.`city`) `city`',
+    'MAX(c.`zip`) `zip`',
+    'MAX(c.`hospital_subtype`) `hospital_subtype`',
+    'MAX(c.`fips_code`) `fips_code`',
+    'MAX(c.`is_metro_micro`) `is_metro_micro`',
+  ));
+  // basic query info
+  $group = 'c.`hospital_pk`';
+  $order = "c.`hospital_pk` ASC";
+  // build the filter
+  // these are all fast because the table has indexes on each of these fields
+  $condition = 'FALSE';
+  if ($state !== null) {
+    $condition = filter_strings('c.`state`', $state);
+  } else if ($ccn !== null) {
+    $condition = filter_strings('c.`ccn`', $ccn);
+  } else if ($city !== null) {
+    $condition = filter_strings('c.`city`', $city);
+  } else if ($zip !== null) {
+    $condition = filter_strings('c.`zip`', $zip);
+  } else if ($fips_code !== null) {
+    $condition = filter_strings('c.`fips_code`', $fips_code);
+  }
+  // final query using specific issues
+  $query = "SELECT {$fields} FROM {$table} WHERE ({$condition}) GROUP BY {$group} ORDER BY {$order}";
+  // get the data from the database
+  $fields_string = array(
+    'hospital_pk',
+    'state',
+    'ccn',
+    'hospital_name',
+    'address',
+    'city',
+    'zip',
+    'hospital_subtype',
+    'fips_code',
+  );
+  $fields_int = array('is_metro_micro');
+  $fields_float = null;
+  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
+  // return the data
+  return count($epidata) === 0 ? null : $epidata;
+}
+
 // queries a bunch of epidata tables
 function get_meta() {
   // query and return metadata
@@ -1954,6 +2015,17 @@ if(database_connect()) {
       $publication_dates = isset($_REQUEST['publication_dates']) ? extract_values($_REQUEST['publication_dates'], 'int') : null;
       // get the data
       $epidata = get_covid_hosp_facility($hospital_pks, $collection_weeks, $publication_dates);
+      store_result($data, $epidata);
+    }
+  } else if($source === 'covid_hosp_facility_lookup') {
+    if(require_any($data, array('state', 'ccn', 'city', 'zip', 'fips_code'))) {
+      $state = isset($_REQUEST['state']) ? extract_values($_REQUEST['state'], 'str') : null;
+      $ccn = isset($_REQUEST['ccn']) ? extract_values($_REQUEST['ccn'], 'str') : null;
+      $city = isset($_REQUEST['city']) ? extract_values($_REQUEST['city'], 'str') : null;
+      $zip = isset($_REQUEST['zip']) ? extract_values($_REQUEST['zip'], 'str') : null;
+      $fips_code = isset($_REQUEST['fips_code']) ? extract_values($_REQUEST['fips_code'], 'str') : null;
+      // get the data
+      $epidata = get_covid_hosp_facility_lookup($state, $ccn, $city, $zip, $fips_code);
       store_result($data, $epidata);
     }
   } else {

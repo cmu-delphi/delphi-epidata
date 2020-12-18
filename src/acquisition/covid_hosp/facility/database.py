@@ -23,7 +23,7 @@ class Database(BaseDatabase):
     ('zip', str),
     ('hospital_subtype', str),
     ('fips_code', str),
-    ('is_metro_micro', bool),
+    ('is_metro_micro', Utils.parse_bool),
     ('total_beds_7_day_avg', float),
     ('all_adult_hospital_beds_7_day_avg', float),
     ('all_adult_hospital_inpatient_beds_7_day_avg', float),
