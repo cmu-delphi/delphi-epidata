@@ -28,7 +28,7 @@ resource usage in different ways.
 This indicator makes available several commonly-used combinations of
 those columns, aggregated geographically. In particular, we include
 the sum of all adult and pediatric COVID-19 hospital admissions. This
-sum is used as the "ground truth" for hospitalizations by the (Reich
+sum is used as the "ground truth" for hospitalizations by the [Reich
 lab COVID-19 forecast
 hub](https://github.com/reichlab/covid19-forecast-hub/blob/master/data-processed/README.md#hospitalizations).
 
