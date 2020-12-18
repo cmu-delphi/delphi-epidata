@@ -12,6 +12,7 @@ grand_parent: COVIDcast Epidata API
 * **Number of data revisions since 19 May 2020:** 0
 * **Date of last change:** Never
 * **Available for:** county, MSA, HRR, state (see [geography coding docs](../covidcast_geography.md))
+* **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
 
 This data source is based on the [COVID-19 Search Trends symptoms

@@ -37,6 +37,36 @@ class Utils:
 
     return int(date.replace('-', ''))
 
+  def parse_bool(value):
+    """Convert a string to a boolean.
+
+    Parameters
+    ----------
+    value : str
+      Boolean-like value, like "true" or "false".
+
+    Returns
+    -------
+    bool
+      If the string contains some version of "true" or "false".
+    None
+      If the string is None or empty.
+
+    Raises
+    ------
+    CovidHospException
+      If the string constains something other than a version of "true" or
+      "false".
+    """
+
+    if not value:
+      return None
+    if value.lower() == 'true':
+      return True
+    if value.lower() == 'false':
+      return False
+    raise CovidHospException(f'cannot convert "{value}" to bool')
+
   def get_entry(obj, *path):
     """Get a deeply nested field from an arbitrary object.
 

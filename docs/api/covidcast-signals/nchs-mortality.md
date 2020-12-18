@@ -12,11 +12,16 @@ grand_parent: COVIDcast Epidata API
 * **Number of data revisions since 19 May 2020:** 0
 * **Date of last change:** Never
 * **Available for:** state (see [geography coding docs](../covidcast_geography.md))
+* **Time type:** week (see [date format docs](../covidcast_times.md))
 * **License:** [NCHS Data Use Agreement](https://www.cdc.gov/nchs/data_access/restrictions.htm)
 
 This data source of national provisional death counts is based on death
 certificate data received and coded by the National Center for Health Statistics
-[(NCHS)](https://www.cdc.gov/nchs/nvss/vsrr/COVID19/index.htm).
+[(NCHS)](https://www.cdc.gov/nchs/nvss/vsrr/COVID19/index.htm). This data is
+different from the death data available from [USAFacts](usa-facts.md) and [JHU
+CSSE](jhu-csse.md): deaths are reported by the date they occur, not the date
+they are reported by local health departments, and data is frequently reissued
+as additional death certificates from recent weeks are received and tabulated.
 
 | Signal | Description |
 | --- | --- |
@@ -34,6 +39,14 @@ certificate data received and coded by the National Center for Health Statistics
 |`deaths_pneumonia_or_flu_or_covid_incidence_prop`| Number of weekly new deaths involving Pneumonia, Influenza, or COVID-19, per 100,000 population|
 |`deaths_percent_of_expected`| Number of weekly new deaths for all causes in 2020 compared to the average number across the same week in 2017–2019|
 
+## Table of contents
+{: .no_toc .text-delta}
+
+1. TOC
+{:toc}
+
+## Calculation
+
 These signals are taken directly from [Table
 1](https://www.cdc.gov/nchs/nvss/vsrr/COVID19/index.htm) without
 changes. National provisional death counts include deaths occurring within the
@@ -45,12 +58,6 @@ considered for each signals are described in detail
 [here](https://github.com/cmu-delphi/covidcast-indicators/blob/main/nchs_mortality/DETAILS.md#metrics-level-1-m1). We
 export the state-level data as-is in a weekly format.
 
-## Table of contents
-{: .no_toc .text-delta}
-
-1. TOC
-{:toc}
-
 ## Geographical Exceptions
 
 New York City is listed as its own region in the NCHS Mortality data, but
@@ -59,8 +66,8 @@ York State in our reports.
 
 ## Report Using Epiweeks
 
-We report the NCHS Mortality data in a weekly format (`time_type=week` \&
-`time_value=\{YYYYWW\}`, where `YYYYWW` refers to an epiweek). The CDC defines
+We report the NCHS Mortality data in a weekly format (`time_type=week` &
+`time_value={YYYYWW}`, where `YYYYWW` refers to an epiweek). The CDC defines
 the [epiweek](https://wwwn.cdc.gov/nndss/document/MMWR_Week_overview.pdf) as
 seven days, from Sunday to Saturday. We check the week-ending dates provided in
 the NCHS morality data and use Python package
@@ -79,7 +86,7 @@ potentially misleading.
 
 There is a lag in time between when the death occurred and when the death
 certificate is completed, submitted to NCHS, and processed for reporting
-purposes. The death counts for earlier weeks are continually revised and may
+purposes. The death counts for recent weeks are continually revised and may
 increase or decrease as new and updated death certificate data are received from
 the states by NCHS. This delay can range from 1 to 8 weeks or even more.
 Some states report deaths on a daily basis, while other states report deaths weekly
@@ -95,7 +102,7 @@ and is made available here as a convenience to the forecasting community under
 the terms of the original license. The NCHS places restrictions on how this
 dataset may be used: you may not attempt to identify any individual included in
 the data, whether by itself or through linking to other
-individually=identifiable data; you may only use the dataset for statistical
+individually identifiable data; you may only use the dataset for statistical
 reporting and analysis. The full text of the [NCHS Data Use
 Agreement](https://www.cdc.gov/nchs/data_access/restrictions.htm) is available
 from their website.
