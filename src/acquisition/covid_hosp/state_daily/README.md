@@ -1,4 +1,4 @@
-# COVID-19 Reported Patient Impact and Hospital Capacity by State Daily Snapshots
+# COVID-19 Reported Patient Impact and Hospital Capacity by State (Daily Snapshots)
 
 - Data source:
   https://healthdata.gov/dataset/covid-19-reported-patient-impact-and-hospital-capacity-state
