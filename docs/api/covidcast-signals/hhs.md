@@ -34,7 +34,7 @@ hub](https://github.com/reichlab/covid19-forecast-hub/blob/master/data-processed
 
 
 | Signal | Geography | Resolution | Description |
-| --- | --- |
+| --- | --- | --- | --- |
 | `confirmed_admissions_1d` | state | 1 day | Sum of adult and pediatric confirmed COVID-19 hospital admissions occuring each day. |
 | `sum_confirmed_suspected_admissions_1d` | state | 1 day | Sum of adult and pediatric confirmed and suspected COVID-19 hospital admissions occuring each day. |
 | `confirmed_admissions_7d` | county, hrr, msa, state | 7 days | Sum of adult and pediatric confirmed COVID-19 hospital admissions occuring over a span of 7 days. |
