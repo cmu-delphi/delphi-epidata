@@ -42,9 +42,22 @@ class Epidata
       else
         callback(0, 'unknown error', null)
     # Request data from the server
-    if $?.getJSON?
+    isBrowser = $?.ajax?
+    data = if isBrowser then $.param(params) else querystring.stringify(params)
+    fullURL = "#{BASE_URL}?#{data}"
+
+    # decide method to avoid that we getting a 414 request too large error
+    method = if fullURL.length < 2048 then 'GET' else 'POST'
+
+    if isBrowser
       # API call with jQuery
-      $.getJSON(BASE_URL, params, handler)
+      $.ajax({
+        url: BASE_URL,
+        dataType: "json",
+        method: method,
+        success: handler,
+        data: params,
+      });
     else
       # Function to handle the HTTP response
       reader = (response) ->
@@ -54,7 +67,19 @@ class Epidata
         response.on('error', (e) -> error(e.message))
         response.on('end', () -> handler(JSON.parse(text)))
       # API call with Node
-      https.get("#{BASE_URL}?#{querystring.stringify(params)}", reader)
+      if method == 'GET'
+        https.get(fullURL, reader)
+      else
+        req = https.request(BASE_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Length': Buffer.byteLength(data)
+          }
+        }, reader)
+        # Write data to request body
+        req.write(data)
+        req.end()
 
   # Build a `range` object (ex: dates/epiweeks)
   @range = (from, to) ->
@@ -178,7 +203,7 @@ class Epidata
     _request(callback, params)
 
   # Fetch Wikipedia access data
-  @wiki: (callback, articles, dates, epiweeks, hours) ->
+  @wiki: (callback, articles, dates, epiweeks, hours, language) ->
     # Check parameters
     unless articles?
       throw { msg: '`articles` is required' }
@@ -188,6 +213,7 @@ class Epidata
     params =
       'source': 'wiki'
       'articles': _list(articles)
+      'language': language || 'en'
     if dates?
       params.dates = _list(dates)
     if epiweeks?
