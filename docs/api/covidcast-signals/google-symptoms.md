@@ -7,7 +7,7 @@ grand_parent: COVIDcast Epidata API
 # Google Symptoms
 {: .no_toc}
 
-* **Source name:** `google-search-trends-symptoms-dataset`
+* **Source name:** `google-symptoms`
 * **First issued:** 30 November 2020
 * **Number of data revisions since 19 May 2020:** 0
 * **Date of last change:** Never
