@@ -50,7 +50,7 @@ The `sum_anosmia_ageusia_raw_search` signals are simply the raw sum of the
  data. Users should be careful when considering such signals.
 
 ## Properties and limitations 
-WTo learn more about the dataset, how it is generated it and its limitations, 
+To learn more about the dataset, how it is generated it and its limitations, 
 read the [dataset documentation](https://storage.googleapis.com/gcp-public-data-symptom-search/COVID-19%20Search%20Trends%20symptoms%20dataset%20documentation%20.pdf).
 
 ## Geographical Aggregation
@@ -69,6 +69,6 @@ we are not provided).
 
 ## Lag and Backfill
 Google does not currently update the search data daily, but usually twice a week.
-Each update will usually the coverage to within three days of the day of the update.
+Each update will usually extend the coverage to within three days of the day of the update.
 As a result the delay can range from 3 to 10 days or even more. We check for
 updates every day and provide the most up-to-date data.
