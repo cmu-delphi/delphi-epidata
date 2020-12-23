@@ -24,3 +24,25 @@ getting [data access](data-access.md).
 
 If you have questions about the survey or getting access to data, contact us at
 <delphi-survey-info@lists.andrew.cmu.edu>.
+
+## Citing the Survey
+
+Researchers who use the survey microdata for research are asked to credit and
+cite the survey in publications based on the data. Specifically, we ask that
+you:
+
+1. Include the acknowledgment "This research is based on survey results from
+   Carnegie Mellon University’s Delphi Group."
+2. Cite our publication describing the survey and its methods. This publication
+   is currently in preparation, and we will update this page when it is
+   available. Until it is available, we recommend you provide a link to this
+   page.
+3. Send a copy of your publication, once it appears publicly as a preprint or
+   journal article, to <delphi-survey-info@lists.andrew.cmu.edu>.
+
+Additionally, please note that the data use agreement requires that if you
+disclose survey microdata, we must agree on the aggregation method that you will
+use to ensure reported estimates to not identify or disclose any individual
+identifiable information, including individual survey results. If you are unsure
+whether a particular aggregation will prevent disclosure of individual survey
+results, please email us at <delphi-survey-info@lists.andrew.cmu.edu>.
