@@ -1,5 +1,6 @@
 from invoke import task
 
+
 @task
 def start(c):
-    c.run("uvicorn src.server.main:app --reload")
+    c.run("python -m src.server.main")

@@ -1,17 +1,27 @@
-from typing import Optional
-from fastapi import FastAPI, HTTPException
+from ._common import app
+from flask import send_file, request, abort
+import pathlib
 
-from ._common import create_engine, app
 from .covidcast_meta import covidcast_meta
 
 __all__ = ["app"]
 
-engine = create_engine()
+endpoints = {"covidcast_meta": covidcast_meta}
 
 
-@app.get("/api.php")
-def handle_generic(
-    endpoint: Optional[str] = None, source: Optional[str] = None, **kwargs
-):
-    # if not endpoint and not source:
-    raise HTTPException(401, detail=dict(a=5))
+@app.route("/api.php", methods=["GET", "POST"])
+def handle_generic():
+    endpoint = request.values.get("endpoint", request.values.get("source"))
+    if not endpoint or endpoint not in endpoints:
+        abort(401)
+    return endpoints[endpoint]()
+
+
+@app.route("/")
+@app.route("/index.html")
+def send_index_file():
+    return send_file(pathlib.Path(__file__).parent / "index.html")
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)

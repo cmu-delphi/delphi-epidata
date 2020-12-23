@@ -1,3 +1,6 @@
-FROM tiangolo/uvicorn-gunicorn-fastapi:python3.7
+FROM tiangolo/meinheld-gunicorn:python3.7
 
-COPY ./src/server/*.py /app
+COPY requirements.txt
+RUN pip install --no-cache -r requirements.txt
+
+COPY ./src/server/*.py ./src/server/*.html /app/app/
