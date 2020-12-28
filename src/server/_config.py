@@ -10,3 +10,5 @@ SQLALCHEMY_ENGINE_OPTIONS = json.loads(
     os.environ.get("SQLALCHEMY_ENGINE_OPTIONS", "{}")
 )
 SECRET = os.environ["SECRET"]
+
+AUTH = {"fluview": "xxx"}

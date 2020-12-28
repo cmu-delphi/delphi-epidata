@@ -115,13 +115,6 @@ function get_region_states($region) {
   return null;
 }
 
-function record_analytics($source, $result, $num_rows = 0) {
-  global $dbh;
-  $ip = mysqli_real_escape_string($dbh, isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '');
-  $ua = mysqli_real_escape_string($dbh, isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '');
-  $source = mysqli_real_escape_string($dbh, isset($source) ? $source : '');
-  mysqli_query($dbh, "INSERT INTO `api_analytics` (`datetime`, `ip`, `ua`, `source`, `result`, `num_rows`) VALUES (now(), '{$ip}', '{$ua}', '{$source}', {$result}, {$num_rows})");
-}
 
 // executes a query, casts the results, and returns an array of the data
 // the number of results is limited to $MAX_RESULTS

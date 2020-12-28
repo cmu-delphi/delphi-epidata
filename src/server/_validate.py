@@ -1,87 +1,65 @@
 from flask import request
-from typing import Iterable, List, Union, Optional
-from ._printer import APrinter
+from typing import Iterable, List, Union, Optional, Tuple
+from ._printer import ValidationFailedException
 
 
-def require_all(printer: APrinter, *values: Iterable[str]) -> bool:
+def require_all(*values: Iterable[str]) -> bool:
     """
-    returns true if all fields are present in the request
+    returns true if all fields are present in the request otherwise raises an exception
     :returns bool
     """
     for value in values:
         if not request.values.get(value):
-            printer.print_validation_failed(f"missing parameter: need [{values}]")
-            return False
+            raise ValidationFailedException(f"missing parameter: need [{values}]")
     return True
 
 
-def require_any(printer: APrinter, *values: Iterable[str]) -> bool:
+def require_any(*values: Iterable[str]) -> bool:
     """
-    returns true if any fields are present in the request
+    returns true if any fields are present in the request otherwise raises an exception
     :returns bool
     """
     for value in values:
         if request.values.get(value):
             return True
-    printer.print_validation_failed(f"missing parameter: need one of [{values}]")
-    return False
+    raise ValidationFailedException(f"missing parameter: need one of [{values}]")
 
 
-def date_string(value: int) -> str:
-    # converts a date integer (YYYYMMDD) into a date string (YYYY-MM-DD)
-    # $value: the date as an 8-digit integer
-    year = int(value / 10000) % 10000
-    month = int(value / 100) % 100
-    day = value % 100
-    return "{0:04d}-{1:02d}-{2:%02d}".format(year, month, day)
-
-
-def extract_values(
-    s: str, value_type="str"
-) -> Optional[List[Union[Tuple[str, str], Tuple[int, int], str, int]]]:
-    # extracts an array of values and/or ranges from a string
-    #   $str: the string to parse
-    #   $type:
-    #     - 'int': interpret dashes as ranges, cast values to integers
-    #     - 'ordered_string': interpret dashes as ranges, keep values as strings
-    #     - otherwise: ignore dashes, keep values as strings
-    if not str:
+def extract_strings(key: str) -> Optional[List[str]]:
+    s = request.values.get(key)
+    if not s:
         # nothing to do
         return None
-    # whether to parse a value with a dash as a range of values
-    should_parse_range = value_type == "int" or value_type == "ordered_string"
-    # maintain a list of values and/or ranges
-    values: List[Union[Tuple[str, str], Tuple[int, int], str, int]] = []
-    # split on commas and loop over each entry, which could be either a single value or a range of values
-    parts = s.split(",")
-    for part in parts:
-        if should_parse_range and "-" in part:
-            # split on the dash
-            [first, last] = part.split("-", 2)
-            if value_type == "int":
-                first = int(first)
-                last = int(last)
-            if first == last:
-                # the first and last numbers are the same, just treat it as a singe value
-                values.append(first)
-            elif last > first:
-                # add the range as an array
-                values.append((first, last))
-            else:
-                # the range is inverted, this is an error
-                return None
-        else:
-            # this is a single value
-            if value_type == "int":
-                # cast to integer
-                value = int(part)
-            else:
-                # interpret the string literally
-                value = part
-            # add the extracted value to the list
-            values.append(value)
-    # success, return the list
-    return values
+    return s.split(",")
+
+
+IntRange = Union[Tuple[int, int], int]
+
+
+def extract_ints(key: str) -> Optional[List[IntRange]]:
+    s = request.values.get(key)
+    if not s:
+        # nothing to do
+        return None
+
+    def _parse_range(part: str):
+        if "-" not in part:
+            return int(part)
+        r = part.split("-", 2)
+        first = int(r[0])
+        last = int(r[1])
+        if first == last:
+            # the first and last numbers are the same, just treat it as a singe value
+            return first
+        elif last > first:
+            # add the range as an array
+            return (first, last)
+        # the range is inverted, this is an error
+        return None
+
+    values = [_parse_range(part) for part in s.split(",")]
+    # check for invalid values
+    return None if any(v is None for v in values) else values
 
 
 def parse_date(s: str) -> int:
@@ -89,7 +67,10 @@ def parse_date(s: str) -> int:
     return int(s.replace("-", ""))
 
 
-def extract_dates(s: str) -> Optional[List[Union[Tuple[int, int], int]]]:
+DateRange = Union[Tuple[int, int], int]
+
+
+def extract_dates(s: str) -> Optional[List[DateRange]]:
     # extracts an array of values and/or ranges from a string
     #   $str: the string to parse
     if not s:

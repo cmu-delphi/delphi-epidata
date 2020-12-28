@@ -3,7 +3,7 @@ from flask import jsonify, request, Blueprint
 from sqlalchemy import select
 from .._common import app, db
 
-bp = Blueprint("covidcast_meta", __name__, url_prefix="/covidcast_meta")
+bp = Blueprint("covidcast_meta", __name__)
 
 
 @bp.route("/", methods=("GET", "POST"))

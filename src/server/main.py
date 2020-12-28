@@ -3,20 +3,23 @@ from flask import send_file, request, abort
 from ._printer import MissingOrWrongSourceException
 import pathlib
 
-from .endpoints import covidcast_meta
+from .endpoints import endpoints
 
 __all__ = ["app"]
 
-endpoints = {e.bp.name: e.handle for e in [covidcast_meta]}
-app.register_blueprint(covidcast_meta.bp)
+
+endpoint_map = {}
+for endpoint in endpoints:
+    endpoint_map[endpoint.bp.name] = endpoint.handle
+    app.register_blueprint(endpoint.bp, url_prefix=f"/{endpoint.bp.name}")
 
 
 @app.route("/api.php", methods=["GET", "POST"])
 def handle_generic():
     endpoint = request.values.get("endpoint", request.values.get("source"))
-    if not endpoint or endpoint not in endpoints:
+    if not endpoint or endpoint not in endpoint_map:
         raise MissingOrWrongSourceException()
-    return endpoints[endpoint]()
+    return endpoint_map[endpoint]()
 
 
 @app.route("/")

@@ -1,6 +1,8 @@
 from flask import request, jsonify, abort, make_response, request
 from werkzeug.exceptions import HTTPException
 from flask.json import dumps
+from ._analytics import record_analytics
+from typing import Dict
 
 MAX_RESULTS = 1000
 
@@ -15,10 +17,10 @@ class EpiDataException(HTTPException):
         self.code = status_code if _is_using_status_codes() else 200
         self.response = make_response(
             dumps(dict(result=-1, message=message)),
-            mimetype="application/json",
-            status_code=self.code,
+            self.code,
         )
-        # TODO record_analytics($this->endpoint, $this->result);
+        self.response.mimetype = "application/json"
+        record_analytics(-1)
 
 
 class MissingOrWrongSourceException(EpiDataException):
@@ -59,7 +61,8 @@ class APrinter:
         prints a non standard JSON message
         """
         self._result = 1
-        # TODO record_analytics($this->endpoint, $this->result);
+        record_analytics(1)
+        # TODO
         return jsonify(dict(result=self._result, message="success", epidata=data))
 
     @property
