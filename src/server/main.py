@@ -1,5 +1,6 @@
 from ._common import app
 from flask import send_file, request, abort
+from ._printer import MissingOrWrongSourceException
 import pathlib
 
 from .endpoints import covidcast_meta
@@ -14,7 +15,7 @@ app.register_blueprint(covidcast_meta.bp)
 def handle_generic():
     endpoint = request.values.get("endpoint", request.values.get("source"))
     if not endpoint or endpoint not in endpoints:
-        abort(401)
+        raise MissingOrWrongSourceException()
     return endpoints[endpoint]()
 
 
