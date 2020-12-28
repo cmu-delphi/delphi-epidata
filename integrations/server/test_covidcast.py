@@ -51,7 +51,7 @@ class CovidcastTests(unittest.TestCase):
 
     # make the request
     response = requests.get(BASE_URL, params={
-      'source': 'covidcast',
+      'endpoint': 'covidcast',
       'data_source': 'src',
       'signal': 'sig',
       'time_type': 'day',
@@ -92,7 +92,7 @@ class CovidcastTests(unittest.TestCase):
 
     # make the request with GET
     response = requests.get(BASE_URL, {
-      'source': 'covidcast',
+      'endpoint': 'covidcast',
       'data_source': 'src'*10000,
       'signal': 'sig',
       'time_type': 'day',
@@ -104,7 +104,7 @@ class CovidcastTests(unittest.TestCase):
 
     # make request with POST
     response = requests.post(BASE_URL, {
-      'source': 'covidcast',
+      'endpoint': 'covidcast',
       'data_source': 'src'*10000,
       'signal': 'sig',
       'time_type': 'day',
@@ -128,7 +128,7 @@ class CovidcastTests(unittest.TestCase):
 
     # make the request
     response = requests.get(BASE_URL, params={
-      'source': 'covidcast',
+      'endpoint': 'covidcast',
       'data_source': 'src',
       'signal': 'sig',
       'time_type': 'day',
@@ -159,7 +159,7 @@ class CovidcastTests(unittest.TestCase):
 
     # make the request
     response = requests.get(BASE_URL, params={
-      'source': 'covidcast',
+      'endpoint': 'covidcast',
       'data_source': 'src',
       'signal': 'sig',
       'time_type': 'day',
@@ -197,7 +197,7 @@ class CovidcastTests(unittest.TestCase):
 
     # make the request
     response = requests.get(BASE_URL, params={
-      'source': 'covidcast',
+      'endpoint': 'covidcast',
       'data_source': 'src',
       'signal': 'sig',
       'time_type': 'day',
@@ -227,7 +227,7 @@ class CovidcastTests(unittest.TestCase):
 
     # limit fields
     response = requests.get(BASE_URL, params={
-      'source': 'covidcast',
+      'endpoint': 'covidcast',
       'data_source': 'src',
       'signal': 'sig',
       'time_type': 'day',
@@ -251,7 +251,7 @@ class CovidcastTests(unittest.TestCase):
 
     # limit invalid values
     response = requests.get(BASE_URL, params={
-      'source': 'covidcast',
+      'endpoint': 'covidcast',
       'data_source': 'src',
       'signal': 'sig',
       'time_type': 'day',
@@ -296,7 +296,7 @@ class CovidcastTests(unittest.TestCase):
 
     # make the request
     response = requests.get(BASE_URL, params={
-      'source': 'covidcast',
+      'endpoint': 'covidcast',
       'data_source': 'src',
       'signal': 'sig',
       'time_type': 'day',
@@ -370,7 +370,7 @@ class CovidcastTests(unittest.TestCase):
     def fetch(geo_value):
       # make the request
       params = {
-        'source': 'covidcast',
+        'endpoint': 'covidcast',
         'data_source': 'src',
         'signal': 'sig',
         'time_type': 'day',
@@ -470,7 +470,7 @@ class CovidcastTests(unittest.TestCase):
 
     # make the request
     response = requests.get(BASE_URL, params={
-      'source': 'covidcast',
+      'endpoint': 'covidcast',
       'data_source': 'src',
       'signal': 'sig',
       'time_type': 'day',
@@ -559,7 +559,7 @@ class CovidcastTests(unittest.TestCase):
 
     # make the request
     response = requests.get(BASE_URL, params={
-      'source': 'covidcast',
+      'endpoint': 'covidcast',
       'data_source': 'src',
       'signal': 'sig',
       'time_type': 'day',
@@ -608,7 +608,7 @@ class CovidcastTests(unittest.TestCase):
 
     # make the request
     response = requests.get(BASE_URL, params={
-      'source': 'covidcast',
+      'endpoint': 'covidcast',
       'data_source': 'src',
       'signal': 'sig',
       'time_type': 'week',
@@ -659,7 +659,7 @@ class CovidcastTests(unittest.TestCase):
 
     # make the request
     response = requests.get(BASE_URL, params={
-      'source': 'covidcast',
+      'endpoint': 'covidcast',
       'data_source': 'src',
       'signal': 'sig',
       'time_type': 'day',
@@ -675,7 +675,7 @@ class CovidcastTests(unittest.TestCase):
 
     # make the request
     response = requests.get(BASE_URL, params={
-      'source': 'covidcast',
+      'endpoint': 'covidcast',
       'data_source': 'src',
       'signal': 'sig',
       'time_type': 'day',
@@ -691,7 +691,7 @@ class CovidcastTests(unittest.TestCase):
 
     # make the request
     response = requests.get(BASE_URL, params={
-      'source': 'covidcast',
+      'endpoint': 'covidcast',
       'data_source': 'src',
       'signal': 'sig',
       'time_type': 'day',
@@ -707,7 +707,7 @@ class CovidcastTests(unittest.TestCase):
 
     # make the request
     response = requests.get(BASE_URL, params={
-      'source': 'covidcast',
+      'endpoint': 'covidcast',
       'data_source': 'src',
       'signal': 'sig',
       'time_type': 'day',
@@ -723,7 +723,7 @@ class CovidcastTests(unittest.TestCase):
 
     # make the request
     response = requests.get(BASE_URL, params={
-      'source': 'covidcast',
+      'endpoint': 'covidcast',
       'data_source': 'src',
       'signal': 'sig',
       'time_type': 'day',
@@ -739,7 +739,7 @@ class CovidcastTests(unittest.TestCase):
 
     # make the request
     response = requests.get(BASE_URL, params={
-      'source': 'covidcast',
+      'endpoint': 'covidcast',
       'data_source': 'src',
       'signal': 'sig',
       'time_type': 'day',

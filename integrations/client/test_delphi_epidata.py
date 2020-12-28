@@ -238,7 +238,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
           'src', 'sig'*3000, 'day', 'county', 20200414, '01234')
 
       # check result
-      self.assertEqual(response_1, {'message': 'no results', 'result': -2})
+      self.assertEqual(response_1, {'message': 'no results', 'result': -2, 'epidata': []})
 
   @patch('requests.post')
   @patch('requests.get')
