@@ -1,14 +1,79 @@
 from flask import jsonify, request, Blueprint
+from flask.json import loads
+from sqlalchemy import text
+from typing import Optional, List, Dict
 
-from sqlalchemy import select
 from .._common import app, db
+from .._validate import extract_strings, filter_fields
+from .._printer import send_rows
 
 bp = Blueprint("covidcast_meta", __name__)
 
 
-@bp.route("/", methods=("GET", "POST"))
-def handle():
+class SourceSignal:
+    source: str
+    signal: str
+
+    def __init__(self, source_signal: str):
+        split = source_signal.split(":", 2)
+        self.source = split[0]
+        self.signal = split[1] if len(split) > 1 else "*"
+
+    def __str__(self):
+        return f"{self.source}:{self.signal}"
+
+
+def fetch_data(
+    time_types: Optional[List[str]],
+    geo_types: Optional[List[str]],
+    signals: Optional[List[SourceSignal]],
+):
     # complain if the cache is more than 75 minutes old
     max_age = 75 * 60
 
-    return jsonify({"test": request.values.get("test", "No")})
+    row = db.execute(
+        text(
+            "SELECT UNIX_TIMESTAMP(NOW()) - timestamp AS age, epidata FROM covidcast_meta_cache LIMIT 1"
+        )
+    ).fetchone()
+
+    if not row:
+        return
+
+    age = row["age"]
+    if age > max_age and row["epidata"]:
+        # TODO error_log('covidcast_meta cache is stale: '.$row['age']);
+        pass
+
+    epidata = loads(row["epidata"])
+
+    if not epidata:
+        return
+
+    def filter_row(row: Dict):
+        if time_types and row.get("time_type") not in time_types:
+            return False
+        if geo_types and row.get("geo_type") not in geo_types:
+            return False
+        if not signals:
+            return True
+        for signal in signals:
+            # match source and (signal or no signal or signal = *)
+            if row.get("data_source") == signal.source and (
+                signal.signal == "*" or signal.signal == row.get("signal")
+            ):
+                return True
+        return False
+
+    for row in epidata:
+        if filter_row(row):
+            yield row
+
+
+@bp.route("/", methods=("GET", "POST"))
+def handle():
+    time_types = extract_strings("time_types")
+    signals = [SourceSignal(v) for v in (extract_strings("signals") or [])]
+    geo_types = extract_strings("geo_types")
+
+    return send_rows(filter_fields(fetch_data(time_types, geo_types, signals)))

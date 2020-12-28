@@ -1,5 +1,5 @@
 from flask import request
-from typing import Iterable, List, Union, Optional, Tuple
+from typing import Iterable, List, Union, Optional, Tuple, Dict, Any
 from ._printer import ValidationFailedException
 
 
@@ -117,3 +117,16 @@ def extract_dates(s: str) -> Optional[List[DateRange]]:
         values.append(parse_date(part))
     # success, return the list
     return values
+
+
+def filter_fields(generator: Iterable[Dict[str, Any]]):
+    fields = extract_strings("fields")
+    if not fields:
+        yield from generator
+    else:
+        for row in generator:
+            filtered = dict()
+            for field in fields:
+                if field in row:
+                    filtered[field] = row[field]
+            yield filtered

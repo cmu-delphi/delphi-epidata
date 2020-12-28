@@ -1,5 +1,5 @@
 from sqlalchemy import Table, Column, String, Integer, DateTime, func
-from ._db import metadata
+from ._db import metadata, TABLE_OPTIONS
 from flask import request
 from ._common import db
 
@@ -13,6 +13,7 @@ analytics_table = Table(
     Column("source", String(32)),
     Column("result", Integer),
     Column("num_rows", Integer),
+    **TABLE_OPTIONS
 )
 
 
