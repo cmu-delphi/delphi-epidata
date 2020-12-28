@@ -2,11 +2,12 @@ from ._common import app
 from flask import send_file, request, abort
 import pathlib
 
-from .covidcast_meta import covidcast_meta
+from .endpoints import covidcast_meta
 
 __all__ = ["app"]
 
-endpoints = {"covidcast_meta": covidcast_meta}
+endpoints = {e.bp.name: e.handle for e in [covidcast_meta]}
+app.register_blueprint(covidcast_meta.bp)
 
 
 @app.route("/api.php", methods=["GET", "POST"])
