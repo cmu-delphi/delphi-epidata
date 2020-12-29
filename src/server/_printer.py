@@ -7,13 +7,13 @@ from flask import (
     Response,
     stream_with_context,
 )
+from ._config import MAX_RESULTS
 from werkzeug.exceptions import HTTPException
 from flask.json import dumps
 from ._analytics import record_analytics
 from typing import Dict, Iterable, Any, Union, Optional, List
-
-
-MAX_RESULTS = 1000
+from csv import DictWriter
+from io import StringIO
 
 
 def _is_using_status_codes() -> bool:
@@ -163,28 +163,33 @@ class CSVPrinter(APrinter):
     a printer class writing in a CSV file
     """
 
+    _stream = StringIO()
+    _writer: DictWriter
+
     def make_response(self, gen):
         return Response(
             gen,
             mimetype="text/csv; charset=utf8",
-            headers={"Content-Disposition": "attachment; filename=epidata.csv"},
+            # headers={"Content-Disposition": "attachment; filename=epidata.csv"},
         )
 
     def _begin_impl(self):
-        pass
+        return None
 
-    def _print_row_impl(self, first: bool, row: Dict):
-        #     if ($first) {
-        #   // print headers
-        #   $headers = array_keys($row);
-        #   fputcsv($this->out, $headers);
-        # }
-        # fputcsv($this->out, $row);
-        pass
+    def _print_row(self, first: bool, row: Dict):
+        if first:
+            self._writer = DictWriter(self._stream, list(row.keys()))
+            self._writer.writeheader()
+        self._writer.writerow(row)
+        self._stream.flush()
+        v = self._stream.getvalue()
+        self._stream.seek(0)
+        self._stream.truncate(0)
+        return v
 
     def _end_impl(self):
-        # echo ']'
-        pass
+        self._writer = None
+        return None
 
 
 class JSONPrinter(APrinter):
