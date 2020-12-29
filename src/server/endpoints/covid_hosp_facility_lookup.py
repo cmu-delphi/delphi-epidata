@@ -3,7 +3,7 @@ from flask import jsonify, request, Blueprint
 from sqlalchemy import select
 from .._common import app, db
 from .._config import AUTH
-from .._validate import require_any, extract_strings, extract_ints
+from .._validate import require_any, extract_strings, extract_integers
 from .._query import filter_strings, execute_query
 
 # first argument is the endpoint name

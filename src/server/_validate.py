@@ -40,7 +40,7 @@ def extract_strings(key: str) -> Optional[List[str]]:
 IntRange = Union[Tuple[int, int], int]
 
 
-def extract_ints(key: str) -> Optional[List[IntRange]]:
+def extract_integers(key: str) -> Optional[List[IntRange]]:
     s = request.values.get(key)
     if not s:
         # nothing to do

@@ -3,7 +3,7 @@ from flask import jsonify, request, Blueprint
 from sqlalchemy import select
 from .._common import app, db
 from .._config import AUTH
-from .._validate import require_all, extract_strings, extract_ints
+from .._validate import require_all, extract_strings, extract_integers
 
 bp = Blueprint("fluview", __name__)
 
@@ -12,9 +12,9 @@ bp = Blueprint("fluview", __name__)
 def handle():
     require_all("epiweeks", "regions")
 
-    epiweeks = extract_ints("epiweeks")
+    epiweeks = extract_integers("epiweeks")
     regions = extract_strings("regions")
-    issues = extract_ints("isues")
+    issues = extract_integers("isues")
     lag = int(request.values["lag"]) if "lag" in request.values else None
     authorized = request.values.get("auth") == AUTH["fluview"]
 

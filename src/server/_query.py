@@ -58,7 +58,7 @@ def filter_strings(
     return filter_values(field, values, param_key, params)
 
 
-def filter_ints(
+def filter_integers(
     field: str,
     values: Sequence[Union[Tuple[int, int], int]],
     param_key: str,
