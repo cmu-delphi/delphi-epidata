@@ -12,7 +12,7 @@ Dedicated COVIDcast access and analysis libraries are available for several lang
 * Python: [covidcast](https://cmu-delphi.github.io/covidcast/covidcast-py/html/)
 
 These packages provide a convenient way to obtain COVIDcast data as a data frame
-ready to be used in further analyses, and provide convenient mapping and
+ready to be used in further analyses and provide convenient mapping and
 analysis functions. For installation instructions and examples, consult their
 respective webpages.
 

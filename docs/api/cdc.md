@@ -5,8 +5,7 @@ parent: Epidata API (Other Diseases)
 
 # CDC
 
-This is the documentation of the API for accessing the CDC (`cdc`) data source of
-the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
+This is the API documentation for accessing the CDC (`cdc`) data source in [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 
 General topics not specific to any particular data source are discussed in the
 [API overview](README.md). Such topics include:
