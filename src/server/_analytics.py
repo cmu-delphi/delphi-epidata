@@ -48,4 +48,4 @@ def record_analytics(result: int, num_rows=0):
         num_rows=num_rows,
     )
 
-    db.execute(stmt)
+    db.execution_options(stream_results=False).execute(stmt)

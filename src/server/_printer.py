@@ -17,8 +17,13 @@ def print_non_standard(data):
     """
     prints a non standard JSON message
     """
-    record_analytics(1)
-    return jsonify(dict(result=1, message="success", epidata=data))
+    record_analytics(1, len(data) if isinstance(data, list) else 0)
+
+    format = request.values.get("format", "classic")
+    if format == "json":
+        return jsonify(data)
+    else:
+        return jsonify(dict(result=1, message="success", epidata=data))
 
 
 class APrinter:

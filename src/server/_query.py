@@ -1,5 +1,5 @@
 from ._db import metadata
-from typing import Optional, Sequence, Union, Tuple, Dict, Any
+from typing import Optional, Sequence, Union, Tuple, Dict, Any, List
 from ._validate import DateRange
 from ._printer import create_printer
 from ._common import db
@@ -97,13 +97,14 @@ def parse_row(
 
 def parse_result(
     query: str,
+    params: Dict[str, Any],
     fields_string: Optional[Sequence[str]] = None,
     fields_int: Optional[Sequence[str]] = None,
     fields_float: Optional[Sequence[str]] = None,
-):
+) -> List[Dict[str, Any]]:
     return [
         parse_row(row, fields_string, fields_int, fields_float)
-        for row in db.execute(text(query), execution_options={"stream_results": True})
+        for row in db.execute(text(query), **params)
     ]
 
 
@@ -128,8 +129,8 @@ def execute_queries(
                 break
             # limit rows + 1 for detecting whether we would have more
             full_query = f"{query} LIMIT {p.remaining_rows + 1}"
-            r = db.execute(
-                text(full_query), execution_options={"stream_results": True}, **params
+            r = db.execution_options(stream_results=True).execute(
+                text(full_query), **params
             )
             for row in r:
                 yield parse_row(row, fields_string, fields_int, fields_float)
