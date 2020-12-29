@@ -1,6 +1,6 @@
 from ._common import app
 from flask import send_file, request, abort
-from ._printer import MissingOrWrongSourceException
+from ._exceptions import MissingOrWrongSourceException
 import pathlib
 
 from .endpoints import endpoints

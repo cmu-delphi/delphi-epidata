@@ -1,6 +1,6 @@
 from flask import request
 from typing import Iterable, List, Union, Optional, Tuple, Dict, Any
-from ._printer import ValidationFailedException
+from ._exceptions import ValidationFailedException
 
 
 def require_all(*values: Iterable[str]) -> bool:

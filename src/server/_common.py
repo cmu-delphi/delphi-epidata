@@ -2,11 +2,12 @@ from flask import Flask
 from sqlalchemy.engine import Connection
 from werkzeug.local import LocalProxy
 from flask import g
-from . import _config as default_config
+from ._config import SECRET
 from ._db import engine
+from typing import cast
 
 app = Flask("EpiData")
-app.config.from_object(default_config)
+app.config["SECRET"] = SECRET
 
 
 def _get_db() -> Connection:
@@ -19,7 +20,7 @@ def _get_db() -> Connection:
 """
 access to the SQL Alchemy connection for this request
 """
-db: Connection = LocalProxy(_get_db)
+db: Connection = cast(Connection, LocalProxy(_get_db))
 
 
 @app.teardown_appcontext

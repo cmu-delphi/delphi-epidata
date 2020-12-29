@@ -1,57 +1,23 @@
 from flask import (
     request,
     jsonify,
-    abort,
-    make_response,
     request,
     Response,
     stream_with_context,
 )
 from ._config import MAX_RESULTS
-from werkzeug.exceptions import HTTPException
 from flask.json import dumps
 from ._analytics import record_analytics
 from typing import Dict, Iterable, Any, Union, Optional, List
 from csv import DictWriter
 from io import StringIO
 
-
-def _is_using_status_codes() -> bool:
-    return request.values.get("format", "classic") not in ["classic", "tree"]
-
-
-class EpiDataException(HTTPException):
-    def __init__(self, message: str, status_code: int = 500):
-        super(EpiDataException, self).__init__(message)
-        self.code = status_code if _is_using_status_codes() else 200
-        self.response = make_response(
-            dumps(dict(result=-1, message=message)),
-            self.code,
-        )
-        self.response.mimetype = "application/json"
-        record_analytics(-1)
-
-
-class MissingOrWrongSourceException(EpiDataException):
-    def __init__(self):
-        super(MissingOrWrongSourceException, self).__init__(
-            "no data source specified", 400
-        )
-
-
-class UnAuthenticatedException(EpiDataException):
-    def __init__(self):
-        super(UnAuthenticatedException, self).__init__("unauthenticated", 401)
-
-
-class ValidationFailedException(EpiDataException):
-    def __init__(self, message: str):
-        super(ValidationFailedException, self).__init__(message, 400)
-
-
-class DatabaseErrorException(EpiDataException):
-    def __init__(self):
-        super(DatabaseErrorException, self).__init__("database error", 500)
+def print_non_standard(data):
+    """
+    prints a non standard JSON message
+    """
+    record_analytics(1)
+    return jsonify(dict(result=1, message="success", epidata=data))
 
 
 class APrinter:
@@ -64,28 +30,32 @@ class APrinter:
             mimetype="application/json",
         )
 
-    def print_non_standard(self, data):
-        """
-        prints a non standard JSON message
-        """
-        self._result = 1
-        record_analytics(1)
-        # TODO
-        return jsonify(dict(result=self._result, message="success", epidata=data))
+    def __call__(self, generator: Iterable[Dict[str, Any]]):
+        def gen():
+            self.result = -2  # no result
+            r = self._begin()
+            if r is not None:
+                yield r
+            for row in generator:
+                r = self._print_row(row)
+                if r is not None:
+                    yield r
+            record_analytics(self.result, self.count)
+            r = self._end()
+            if r is not None:
+                yield r
+
+        return self.make_response(stream_with_context(gen()))
 
     @property
     def remaining_rows(self) -> int:
         return MAX_RESULTS - self.count
 
-    def begin(self):
-        self.result = -2  # no result
-        return self._begin_impl()
-
-    def _begin_impl(self):
+    def _begin(self) -> Optional[Union[str, bytes]]:
         # hook
         return None
 
-    def __call__(self, row: Dict) -> Optional[Union[str, bytes]]:
+    def _print_row(self, row: Dict) -> Optional[Union[str, bytes]]:
         first = self.count == 0
         if self.count >= MAX_RESULTS:
             # hit the limit
@@ -94,16 +64,13 @@ class APrinter:
         if first:
             self.result = 1  # at least one row
         self.count += 1
-        return self._print_row(first, row)
+        return self._format_row(first, row)
 
-    def _print_row(self, first: bool, row: Dict) -> Optional[Union[str, bytes]]:
+    def _format_row(self, first: bool, row: Dict) -> Optional[Union[str, bytes]]:
+        # hook
         return None
 
-    def end(self) -> Optional[Union[str, bytes]]:
-        record_analytics(self.result, self.count)
-        return self._end_impl()
-
-    def _end_impl(self):
+    def _end(self) -> Optional[Union[str, bytes]]:
         # hook
         return None
 
@@ -113,14 +80,14 @@ class ClassicPrinter(APrinter):
     a printer class writing in the classic epidata format
     """
 
-    def _begin_impl(self):
+    def _begin(self):
         return '{ "epidata": ['
 
-    def _print_row(self, first: bool, row: Dict):
+    def _format_row(self, first: bool, row: Dict):
         sep = "," if not first else ""
         return f"{sep}{dumps(row)}"
 
-    def _end_impl(self):
+    def _end(self):
         message = "success"
         if self.count == 0:
             message = "no results"
@@ -142,7 +109,11 @@ class ClassicTreePrinter(ClassicPrinter):
         self.group = group
         self._tree = dict()
 
-    def _print_row(self, first: bool, row: Dict):
+    def _begin(self):
+        self._tree = dict()
+        return None
+
+    def _format_row(self, first: bool, row: Dict):
         group = row.get(self.group, "")
         del row[self.group]
         if group in self._tree:
@@ -151,7 +122,7 @@ class ClassicTreePrinter(ClassicPrinter):
             self._tree[group] = [row]
         return None
 
-    def _end_impl(self):
+    def _end(self):
         tree = dumps(self._tree)
         self._tree = dict()
         r = super(ClassicTreePrinter, self)._end_impl()
@@ -173,10 +144,10 @@ class CSVPrinter(APrinter):
             # headers={"Content-Disposition": "attachment; filename=epidata.csv"},
         )
 
-    def _begin_impl(self):
+    def _begin(self):
         return None
 
-    def _print_row(self, first: bool, row: Dict):
+    def _format_row(self, first: bool, row: Dict):
         if first:
             self._writer = DictWriter(self._stream, list(row.keys()))
             self._writer.writeheader()
@@ -187,7 +158,7 @@ class CSVPrinter(APrinter):
         self._stream.truncate(0)
         return v
 
-    def _end_impl(self):
+    def _end(self):
         self._writer = None
         return None
 
@@ -197,14 +168,14 @@ class JSONPrinter(APrinter):
     a printer class writing in a JSON array
     """
 
-    def _begin_impl(self):
+    def _begin(self):
         return "["
 
-    def _print_row(self, first: bool, row: Dict):
+    def _format_row(self, first: bool, row: Dict):
         sep = "," if not first else ""
         return f"{sep}{dumps(row)}"
 
-    def _end_impl(self):
+    def _end(self):
         return "]"
 
 
@@ -216,7 +187,7 @@ class JSONLPrinter(APrinter):
     def make_response(self, gen):
         return Response(gen, mimetype=" text/plain; charset=utf8")
 
-    def _print_row(self, first: bool, row: Dict):
+    def _format_row(self, first: bool, row: Dict):
         # each line is a JSON file with a new line to separate them
         return f"{dumps(row)}\n"
 
@@ -232,24 +203,6 @@ def create_printer():
     if format == "jsonl":
         return JSONLPrinter()
     return ClassicPrinter()
-
-
-def send_rows(generator: Iterable[Dict[str, Any]]):
-    printer = create_printer()
-
-    def gen():
-        r = printer.begin()
-        if r is not None:
-            yield r
-        for row in generator:
-            r = printer(row)
-            if r is not None:
-                yield r
-        r = printer.end()
-        if r is not None:
-            yield r
-
-    return printer.make_response(stream_with_context(gen()))
 
 
 # , execution_options={"stream_results": True}
