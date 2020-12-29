@@ -31,6 +31,8 @@ described in the sections below:
    traveling, and activities outside the home
 3. [Testing indicators](#testing-indicators) based on respondent reporting of
    their COVID test results
+4. [Vaccination indicators](#vaccination-indicators), based on respondent
+   reporting of COVID vaccinations and whether they would accept a vaccine
 4. [Mental health indicators](#mental-health-indicators), based on self-reports
    of anxiety, depression, isolation, and worry about COVID
 
@@ -313,6 +315,20 @@ Weighted versions of these signals, using the [survey weighting described
 below](#survey-weighting) to be more representative of state demographics, are
 also available. These have names beginning `smoothed_w`, such as
 `smoothed_wtested_14d`.
+
+
+## Vaccination Indicators
+
+| Signal | Description | Survey Item |
+| --- | --- | --- |
+| `smoothed_accept_covid_vaccine` | Estimated percentage of respondents who would definitely or probably choose to get vaccinated, if a COVID-19 vaccine were offered to them today | V3 |
+
+This indicator is based on questions added in Wave 6 of the survey, introduced
+on December 19, 2020.
+
+A weighted versions of this signal, using the [survey weighting described
+below](#survey-weighting) to be more representative of state demographics, is
+also available. It is `smoothed_waccept_covid_vaccine`.
 
 
 ## Mental Health Indicators
