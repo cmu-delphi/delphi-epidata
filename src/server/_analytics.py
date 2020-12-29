@@ -21,6 +21,7 @@ def _derive_endpoint():
     endpoint = request.values.get("endpoint", request.values.get("source"))
     if endpoint:
         return endpoint
+    # guess from path
     path: str = request.path
     if path.startswith("/"):
         path = path[1:]

@@ -12,6 +12,7 @@ from typing import Dict, Iterable, Any, Union, Optional, List
 from csv import DictWriter
 from io import StringIO
 
+
 def print_non_standard(data):
     """
     prints a non standard JSON message
@@ -203,6 +204,3 @@ def create_printer():
     if format == "jsonl":
         return JSONLPrinter()
     return ClassicPrinter()
-
-
-# , execution_options={"stream_results": True}

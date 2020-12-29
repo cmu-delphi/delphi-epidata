@@ -76,6 +76,37 @@ def filter_dates(
     return filter_values(field, values, param_key, params, date_string)
 
 
+def parse_row(
+    row,
+    fields_string: Optional[Sequence[str]] = None,
+    fields_int: Optional[Sequence[str]] = None,
+    fields_float: Optional[Sequence[str]] = None,
+):
+    parsed = dict()
+    if fields_string:
+        for f in fields_string:
+            parsed[f] = row.get(f)
+    if fields_int:
+        for f in fields_int:
+            parsed[f] = int(row.get(f)) if f in row else None
+    if fields_float:
+        for f in fields_float:
+            parsed[f] = float(row.get(f)) if f in row else None
+    return parsed
+
+
+def parse_result(
+    query: str,
+    fields_string: Optional[Sequence[str]] = None,
+    fields_int: Optional[Sequence[str]] = None,
+    fields_float: Optional[Sequence[str]] = None,
+):
+    return [
+        parse_row(row, fields_string, fields_int, fields_float)
+        for row in db.execute(text(query), execution_options={"stream_results": True})
+    ]
+
+
 def execute_query(
     query: str,
     params: Dict[str, Any],
@@ -92,16 +123,11 @@ def execute_query(
         fields_float = [v for v in fields_float if v in fields_to_send]
 
     def gen():
-        r = db.execute(text(query), **params)
+        r = db.execute(
+            text(query), execution_options={"stream_results": True}, **params
+        )
 
         for row in r:
-            filtered = dict()
-            for f in fields_string:
-                filtered[f] = row.get(f)
-            for f in fields_int:
-                filtered[f] = int(row.get(f)) if f in row else None
-            for f in fields_float:
-                filtered[f] = float(row.get(f)) if f in row else None
-            yield filtered
+            yield parse_row(row, fields_string, fields_int, fields_float)
 
     return p(gen)
