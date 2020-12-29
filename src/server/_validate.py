@@ -3,18 +3,20 @@ from typing import Iterable, List, Union, Optional, Tuple, Dict, Any
 from ._exceptions import ValidationFailedException
 
 
-def require_all(*values: Iterable[str]) -> bool:
+def require_all(*values: str) -> bool:
     """
     returns true if all fields are present in the request otherwise raises an exception
     :returns bool
     """
     for value in values:
         if not request.values.get(value):
-            raise ValidationFailedException(f"missing parameter: need [{values}]")
+            raise ValidationFailedException(
+                f"missing parameter: need [{', '.join(values)}]"
+            )
     return True
 
 
-def require_any(*values: Iterable[str]) -> bool:
+def require_any(*values: str) -> bool:
     """
     returns true if any fields are present in the request otherwise raises an exception
     :returns bool
@@ -22,7 +24,9 @@ def require_any(*values: Iterable[str]) -> bool:
     for value in values:
         if request.values.get(value):
             return True
-    raise ValidationFailedException(f"missing parameter: need one of [{values}]")
+    raise ValidationFailedException(
+        f"missing parameter: need one of [{', '.join(values)}]"
+    )
 
 
 def extract_strings(key: str) -> Optional[List[str]]:
