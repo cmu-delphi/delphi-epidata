@@ -13,6 +13,10 @@ for endpoint in endpoints:
     endpoint_map[endpoint.bp.name] = endpoint.handle
     app.register_blueprint(endpoint.bp, url_prefix=f"/{endpoint.bp.name}")
 
+    alias = getattr(endpoint, "alias", None)
+    if alias:
+        endpoint_map[alias] = endpoint.handle
+
 
 @app.route("/api.php", methods=["GET", "POST"])
 def handle_generic():

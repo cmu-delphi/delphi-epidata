@@ -8,6 +8,7 @@ from .._query import filter_strings, execute_query
 
 # first argument is the endpoint name
 bp = Blueprint("covid_hosp_facility_lookup", __name__)
+alias = None
 
 
 @bp.route("/", methods=("GET", "POST"))

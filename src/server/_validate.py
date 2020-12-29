@@ -1,5 +1,5 @@
 from flask import request
-from typing import Iterable, List, Union, Optional, Tuple, Dict, Any
+from typing import Iterable, List, Union, Optional, Tuple, Dict, Any, Sequence
 from ._exceptions import ValidationFailedException
 
 
@@ -29,8 +29,17 @@ def require_any(*values: str) -> bool:
     )
 
 
-def extract_strings(key: str) -> Optional[List[str]]:
-    s = request.values.get(key)
+def _extract_value(key: Union[str, Sequence[str]]) -> Optional[str]:
+    if isinstance(key, str):
+        return request.values.get(key)
+    for k in key:
+        if k in request.values:
+            return request.values[k]
+    return None
+
+
+def extract_strings(key: Union[str, Sequence[str]]) -> Optional[List[str]]:
+    s = _extract_value(key)
     if not s:
         # nothing to do
         return None
@@ -40,8 +49,16 @@ def extract_strings(key: str) -> Optional[List[str]]:
 IntRange = Union[Tuple[int, int], int]
 
 
-def extract_integers(key: str) -> Optional[List[IntRange]]:
-    s = request.values.get(key)
+def extract_integer(key: Union[str, Sequence[str]]) -> Optional[int]:
+    s = _extract_value(key)
+    if not s:
+        # nothing to do
+        return None
+    return int(s)
+
+
+def extract_integers(key: Union[str, Sequence[str]]) -> Optional[List[IntRange]]:
+    s = _extract_value(key)
     if not s:
         # nothing to do
         return None
@@ -71,12 +88,18 @@ def parse_date(s: str) -> int:
     return int(s.replace("-", ""))
 
 
+def extract_date(key: Union[str, Sequence[str]]) -> Optional[int]:
+    s = _extract_value(key)
+    if not s:
+        return None
+    return parse_date(s)
+
+
 DateRange = Union[Tuple[int, int], int]
 
 
-def extract_dates(s: str) -> Optional[List[DateRange]]:
-    # extracts an array of values and/or ranges from a string
-    #   $str: the string to parse
+def extract_dates(key: Union[str, Sequence[str]]) -> Optional[List[DateRange]]:
+    s = _extract_value(key)
     if not s:
         return None
     values: List[Union[Tuple[int, int], int]] = []

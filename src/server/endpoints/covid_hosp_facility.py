@@ -7,7 +7,7 @@ from .._validate import require_all, extract_strings, extract_integers
 from .._query import filter_strings, execute_query, filter_integers
 
 # first argument is the endpoint name
-bp = Blueprint("get_covid_hosp_facility", __name__)
+bp = Blueprint("covid_hosp_facility", __name__)
 
 
 @bp.route("/", methods=("GET", "POST"))
