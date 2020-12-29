@@ -107,9 +107,8 @@ def parse_result(
     ]
 
 
-def execute_query(
-    query: str,
-    params: Dict[str, Any],
+def execute_queries(
+    queries: Sequence[Tuple[str, Dict[str, Any]]],
     fields_string: Sequence[str],
     fields_int: Sequence[str],
     fields_float: Sequence[str],
@@ -123,11 +122,26 @@ def execute_query(
         fields_float = [v for v in fields_float if v in fields_to_send]
 
     def gen():
-        r = db.execute(
-            text(query), execution_options={"stream_results": True}, **params
-        )
-
-        for row in r:
-            yield parse_row(row, fields_string, fields_int, fields_float)
+        for query, params in queries:
+            if p.remaining_rows <= 0:
+                # no more rows
+                break
+            # limit rows + 1 for detecting whether we would have more
+            full_query = f"{query} LIMIT {p.remaining_rows + 1}"
+            r = db.execute(
+                text(full_query), execution_options={"stream_results": True}, **params
+            )
+            for row in r:
+                yield parse_row(row, fields_string, fields_int, fields_float)
 
     return p(gen)
+
+
+def execute_query(
+    query: str,
+    params: Dict[str, Any],
+    fields_string: Sequence[str],
+    fields_int: Sequence[str],
+    fields_float: Sequence[str],
+):
+    return execute_queries([(query, params)], fields_string, fields_int, fields_float)
