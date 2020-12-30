@@ -153,7 +153,9 @@ class CSVPrinter(APrinter):
 
     def _format_row(self, first: bool, row: Dict):
         if first:
-            self._writer = DictWriter(self._stream, list(row.keys()))
+            self._writer = DictWriter(
+                self._stream, list(row.keys()), lineterminator="\n"
+            )
             self._writer.writeheader()
         self._writer.writerow(row)
 

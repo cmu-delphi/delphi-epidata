@@ -1,6 +1,7 @@
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple, Union
 
 from sqlalchemy import text
+from sqlalchemy.engine import RowProxy
 
 from ._common import db, app
 from ._db import metadata
@@ -35,11 +36,13 @@ def to_condition(
 
 def filter_values(
     field: str,
-    values: Sequence[Union[Tuple[str, str], str, Tuple[int, int], int]],
+    values: Optional[Sequence[Union[Tuple[str, str], str, Tuple[int, int], int]]],
     param_key: str,
     params: Dict[str, Any],
     formatter=lambda x: x,
 ):
+    if not values:
+        return "FALSE"
     # builds a SQL expression to filter strings (ex: locations)
     #   $field: name of the field to filter
     #   $values: array of values
@@ -52,7 +55,7 @@ def filter_values(
 
 def filter_strings(
     field: str,
-    values: Sequence[Union[Tuple[str, str], str]],
+    values: Optional[Sequence[Union[Tuple[str, str], str]]],
     param_key: str,
     params: Dict[str, Any],
 ):
@@ -61,7 +64,7 @@ def filter_strings(
 
 def filter_integers(
     field: str,
-    values: Sequence[Union[Tuple[int, int], int]],
+    values: Optional[Sequence[Union[Tuple[int, int], int]]],
     param_key: str,
     params: Dict[str, Any],
 ):
@@ -70,7 +73,7 @@ def filter_integers(
 
 def filter_dates(
     field: str,
-    values: Sequence[Union[Tuple[int, int], int]],
+    values: Optional[Sequence[Union[Tuple[int, int], int]]],
     param_key: str,
     params: Dict[str, Any],
 ):
@@ -91,21 +94,22 @@ def filter_fields(generator: Iterable[Dict[str, Any]]):
 
 
 def parse_row(
-    row,
+    row: RowProxy,
     fields_string: Optional[Sequence[str]] = None,
     fields_int: Optional[Sequence[str]] = None,
     fields_float: Optional[Sequence[str]] = None,
 ):
+    keys = set(row.keys())
     parsed = dict()
     if fields_string:
         for f in fields_string:
-            parsed[f] = row.get(f)
+            parsed[f] = row[f] if f in keys else None
     if fields_int:
         for f in fields_int:
-            parsed[f] = int(row.get(f)) if f in row else None
+            parsed[f] = int(row[f]) if f in keys and row[f] is not None else None
     if fields_float:
         for f in fields_float:
-            parsed[f] = float(row.get(f)) if f in row else None
+            parsed[f] = float(row[f]) if f in keys and row[f] is not None else None
     return parsed
 
 

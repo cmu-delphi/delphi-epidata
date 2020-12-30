@@ -35,13 +35,13 @@ def require_all(*values: str) -> bool:
     return True
 
 
-def require_any(*values: str) -> bool:
+def require_any(*values: str, empty=False) -> bool:
     """
     returns true if any fields are present in the request otherwise raises an exception
     :returns bool
     """
     for value in values:
-        if request.values.get(value):
+        if request.values.get(value) or (empty and value in request.values):
             return True
     raise ValidationFailedException(
         f"missing parameter: need one of [{', '.join(values)}]"

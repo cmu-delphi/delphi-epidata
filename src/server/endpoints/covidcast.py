@@ -20,7 +20,7 @@ alias = None
 def handle():
     require_all("data_source", "time_type", "geo_type", "time_values")
     require_any("signal", "signals")
-    require_any("geo_value", "geo_values")
+    require_any("geo_value", "geo_values", empty=True)
 
     time_values = extract_dates("time_values")
     as_of = extract_date("as_of")
@@ -52,7 +52,9 @@ def handle():
         "t.`time_value`", time_values, "time_value", params
     )
 
-    if geo_values and len(geo_values) == 1 and geo_values[0] == "*":
+    if not geo_values:
+        condition_geo_value = "FALSE"
+    elif len(geo_values) == 1 and geo_values[0] == "*":
         # the wildcard query should return data for all locations in `geo_type`
         condition_geo_value = "TRUE"
     else:
