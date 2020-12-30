@@ -27,7 +27,7 @@ def to_condition(
     if isinstance(value, (list, tuple)):
         params[param_key] = formatter(value[0])
         params[f"{param_key}_2"] = formatter(value[1])
-        return f"{field} BETWEEN :{param_key} AND {param_key}_2"
+        return f"{field} BETWEEN :{param_key} AND :{param_key}_2"
 
     params[param_key] = formatter(value)
     return f"{field} = :{param_key}"
@@ -148,14 +148,13 @@ def execute_queries(
                 # no more rows
                 break
             # limit rows + 1 for detecting whether we would have more
-            full_query = f"{query} LIMIT {p.remaining_rows + 1}"
-            r = db.execution_options(stream_results=True).execute(
-                text(full_query), **params
-            )
+            full_query = text(f"{query} LIMIT {p.remaining_rows + 1}")
+            print(f'full_query: "{full_query}", params: {str(params)}', flush=True)
+            r = db.execution_options(stream_results=True).execute(full_query, **params)
             for row in r:
                 yield parse_row(row, fields_string, fields_int, fields_float)
 
-    return p(gen)
+    return p(gen())
 
 
 def execute_query(

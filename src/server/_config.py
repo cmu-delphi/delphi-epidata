@@ -6,7 +6,7 @@ import json
 load_dotenv()
 
 
-MAX_RESULTS = 10e6
+MAX_RESULTS = int(10e6)
 SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI", "sqlite:///test.db")
 SQLALCHEMY_ENGINE_OPTIONS = json.loads(
     os.environ.get("SQLALCHEMY_ENGINE_OPTIONS", "{}")
