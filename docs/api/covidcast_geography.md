@@ -11,8 +11,8 @@ The `geo_value` field returned by the API specifies the geographic location
 whose estimate is being reported. Estimates are available for several possible
 `geo_type`s:
 
-* `county`: County-level estimates are reported by the county's five-digit [FIPS
-  code](https://en.wikipedia.org/wiki/FIPS_county_code). All FIPS codes are
+* `county`: The county's five-digit [FIPS
+  code](https://en.wikipedia.org/wiki/FIPS_county_code) reports County-level estimates . All FIPS codes are
   reported using pre-2015 FIPS code assignments, *except* for FIPS codes used by
   the `jhu-csse` and `usa-facts` sources. These are reported exactly as the
   sources report their data; [see below](#coding-exceptions). FIPS codes ending
@@ -34,8 +34,8 @@ whose estimate is being reported. Estimates are available for several possible
   lower case). Estimates for Puerto Rico are available as state `pr`;
   Washington, D.C. is available as state `dc`.
 
-Some signals are not available for all `geo_type`s, since they may be reported
-by their original sources with different levels of aggregation.
+Some signals are not available for all `geo_type`s since they may be reported
+by their original sources with different aggregation levels.
 
 ## Table of contents
 {: .no_toc .text-delta}
@@ -46,14 +46,14 @@ by their original sources with different levels of aggregation.
 ## Small Sample Sizes and "Megacounties"
 
 Most sources do not report the same amount of data for every county; for
-example, the survey sources rely on survey responses each day, and many counties
+example, the survey sources rely on survey responses each day. Many counties
 may have comparatively few survey responses. We do not report individual county
 estimates when small sample sizes would make estimates unreliable or would allow
 identification of respondents, violating privacy and confidentiality agreements.
 Additional considerations for specific signals are discussed in the [source and
 signal documentation](covidcast_signals.md).
 
-On each day, in each state, we collect together the data from all counties with
+On each day, in each state, we collect the data from all counties with
 insufficient data to be individually reported. These counties are combined into
 a single "megacounty". For example, if only five counties in a state have
 sufficient data to be reported, the remaining counties will form one megacounty
@@ -63,14 +63,13 @@ example, megacounty estimates for the state of New York are reported with FIPS
 code `36000`, since `36` is the FIPS code prefix for New York.
 
 These megacounty estimates are used on our COVIDcast map and in the county maps
-produced by our [API clients](covidcast_clients.md), to color in the background
-of states and graphically represent the "rest of" states whose counties are not
+produced by our [API clients](covidcast_clients.md), to color in state backgrounds and graphically represent the "rest of" states whose counties are not
 all individually reported.
 
 **Warning:** As sample sizes vary from day to day, the counties composing the
 megacounty can vary daily; the geographic area covered by the megacounty is
 simply the state minus the counties reported for that day. The megacounty
-construction also depends on the specific source and signal, so on one day,
+construction also depends on the specific source and signal. On one day,
 megacounty `36000` can cover a different geographic area for the `doctor-visits`
 source than it does for the `fb-survey` source. Do not try to compare megacounty
 estimates across time or between signals.
