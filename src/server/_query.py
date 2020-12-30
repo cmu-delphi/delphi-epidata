@@ -2,7 +2,7 @@ from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple, Union
 
 from sqlalchemy import text
 
-from ._common import db
+from ._common import db, app
 from ._db import metadata
 from ._printer import create_printer
 from ._validate import DateRange, extract_strings
@@ -149,7 +149,7 @@ def execute_queries(
                 break
             # limit rows + 1 for detecting whether we would have more
             full_query = text(f"{query} LIMIT {p.remaining_rows + 1}")
-            print(f'full_query: "{full_query}", params: {str(params)}', flush=True)
+            app.logger.info("full_query: %s, params: %s", full_query, params)
             r = db.execution_options(stream_results=True).execute(full_query, **params)
             for row in r:
                 yield parse_row(row, fields_string, fields_int, fields_float)

@@ -2,8 +2,6 @@ from flask import make_response, request
 from flask.json import dumps
 from werkzeug.exceptions import HTTPException
 
-from ._analytics import record_analytics
-
 
 def _is_using_status_codes() -> bool:
     # classic and tree are old school
@@ -11,7 +9,7 @@ def _is_using_status_codes() -> bool:
 
 
 class EpiDataException(HTTPException):
-    def __init__(self, message: str, status_code: int = 500):
+    def __init__(self, message: str, status_code: int = 500, analytics=True):
         super(EpiDataException, self).__init__(message)
         self.code = status_code if _is_using_status_codes() else 200
         self.response = make_response(
@@ -19,7 +17,11 @@ class EpiDataException(HTTPException):
             self.code,
         )
         self.response.mimetype = "application/json"
-        record_analytics(-1)
+        if analytics:
+            # lazy to avoid circular references
+            from ._analytics import record_analytics
+
+            record_analytics(-1)
 
 
 class MissingOrWrongSourceException(EpiDataException):
@@ -41,4 +43,4 @@ class ValidationFailedException(EpiDataException):
 
 class DatabaseErrorException(EpiDataException):
     def __init__(self):
-        super(DatabaseErrorException, self).__init__("database error", 500)
+        super(DatabaseErrorException, self).__init__("database error", 500, False)

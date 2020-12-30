@@ -5,7 +5,7 @@ from flask import Blueprint
 from flask.json import loads
 from sqlalchemy import text
 
-from .._common import db
+from .._common import db, app
 from .._printer import create_printer
 from .._query import filter_fields
 from .._validate import extract_strings
@@ -45,7 +45,7 @@ def fetch_data(
 
     age = row["age"]
     if age > max_age and row["epidata"]:
-        print("covidcast_meta cache is stale: " + str(age), file=sys.stderr)
+        app.logger.warning("covidcast_meta cache is stale: %d", age)
         pass
 
     epidata = loads(row["epidata"])

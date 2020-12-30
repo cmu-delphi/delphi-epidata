@@ -6,6 +6,7 @@ from werkzeug.local import LocalProxy
 
 from ._config import SECRET
 from ._db import engine
+from ._exceptions import DatabaseErrorException
 
 app = Flask("EpiData")
 app.config["SECRET"] = SECRET
@@ -22,6 +23,15 @@ def _get_db() -> Connection:
 access to the SQL Alchemy connection for this request
 """
 db: Connection = cast(Connection, LocalProxy(_get_db))
+
+
+@app.before_request
+def connect_db():
+    # try to get the db
+    try:
+        _get_db()
+    except:
+        raise DatabaseErrorException()
 
 
 @app.teardown_appcontext

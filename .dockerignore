@@ -1,0 +1,5 @@
+/delphi-epidata
+/.mypy_cache
+/.github
+/docs
+__pycache__

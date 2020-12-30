@@ -25,6 +25,8 @@ def _derive_endpoint():
     path: str = request.path
     if path.startswith("/"):
         path = path[1:]
+    if path.startswith("epidata/"):
+        path = path[len("epidata/") :]
     if path.endswith("/"):
         path = path[:-1]
     if path == "api.php":
@@ -37,7 +39,7 @@ def record_analytics(result: int, num_rows=0):
     ip = request.headers.get(
         "HTTP_X_FORWARDED_FOR", request.headers.get("REMOTE_ADDR", "")
     )
-    ua = request.headers.get("HTTP_USER_AGENT", "")
+    ua = request.headers.get("User-Agent", "")
     endpoint = _derive_endpoint()
 
     stmt = analytics_table.insert().values(
