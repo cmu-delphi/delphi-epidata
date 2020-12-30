@@ -3,9 +3,8 @@ from flask import jsonify, request, Blueprint
 from sqlalchemy import select
 from .._common import app, db
 from .._config import AUTH, NATION_REGION, REGION_TO_STATE
-from .._validate import require_all, extract_strings, extract_integers
+from .._validate import require_all, extract_strings, extract_integers, check_auth_token
 from .._query import filter_strings, execute_queries, filter_integers
-from .._exceptions import UnAuthenticatedException
 
 # first argument is the endpoint name
 bp = Blueprint("dengue_sensors", __name__)
@@ -14,9 +13,8 @@ alias = None
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    require_all("auth", "names", "locations", "epiweeks")
-    if request.values["auth"] != AUTH["sensors"]:
-        raise UnAuthenticatedException()
+    check_auth_token(AUTH["sensors"])
+    require_all("names", "locations", "epiweeks")
 
     names = extract_strings("names")
     locations = extract_strings("locations")
@@ -43,7 +41,7 @@ def handle():
     queries = []
     # query each region type individually (the data is stored by state, so getting regional data requires some extra processing)
     for region in regions:
-        assert location == NATION_REGION or location in REGION_TO_STATE
+        assert region == NATION_REGION or region in REGION_TO_STATE
         # escape region not needed since only certain valid strings
         fields = f"'{region}' `location`, c.`epiweek`, sum(c.`num1`) `num1`, sum(c.`num2`) `num2`, sum(c.`num3`) `num3`, sum(c.`num4`) `num4`, sum(c.`num5`) `num5`, sum(c.`num6`) `num6`, sum(c.`num7`) `num7`, sum(c.`num8`) `num8`, sum(c.`total`) `total`"
         region_params = params.copy()

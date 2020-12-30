@@ -3,9 +3,8 @@ from flask import jsonify, request, Blueprint
 from sqlalchemy import select
 from .._common import app, db
 from .._config import AUTH
-from .._validate import require_all, extract_strings, extract_integers
+from .._validate import require_all, extract_strings, extract_integers, check_auth_token
 from .._query import filter_strings, execute_query, filter_integers
-from .._exceptions import UnAuthenticatedException
 
 # first argument is the endpoint name
 bp = Blueprint("norostat", __name__)
@@ -14,9 +13,8 @@ alias = None
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    require_all("auth", "location", "epiweeks")
-    if request.values["auth"] != AUTH["norostat"]:
-        raise UnAuthenticatedException()
+    check_auth_token(AUTH["norostat"])
+    require_all("location", "epiweeks")
 
     location = request.values["location"]
     epiweeks = extract_integers("epiweeks")

@@ -3,8 +3,7 @@ from flask import request, Blueprint
 from sqlalchemy import text
 from .._common import app, db
 from .._config import AUTH
-from .._exceptions import UnAuthenticatedException
-from .._validate import require_all, extract_strings, extract_integers
+from .._validate import require_all, extract_strings, extract_integers, check_auth_token
 from .._query import filter_strings, execute_query
 from .._printer import print_non_standard
 
@@ -15,9 +14,7 @@ alias = None
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    require_all("auth")
-    if request.values["auth"] != AUTH["norostat"]:
-        raise UnAuthenticatedException()
+    check_auth_token(AUTH["norostat"])
 
     # build query
     query = "SELECT DISTINCT `release_date` FROM `norostat_raw_datatable_version_list`"

@@ -1,6 +1,23 @@
 from flask import request
 from typing import Iterable, List, Union, Optional, Tuple, Dict, Any, Sequence
-from ._exceptions import ValidationFailedException
+from ._exceptions import ValidationFailedException, UnAuthenticatedException
+
+
+def check_auth_token(token: str, optional=False) -> bool:
+    # TODO: support bearer token and basic authentication style
+    missing = "auth" not in request.values
+
+    if optional:
+        return False
+    else:
+        raise ValidationFailedException(f"missing parameter: auth")
+
+    value = request.values["auth"]
+
+    valid_token = value == token
+    if not valid_token and not optional:
+        raise UnAuthenticatedException()
+    return valid_token
 
 
 def require_all(*values: str) -> bool:

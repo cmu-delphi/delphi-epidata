@@ -3,40 +3,40 @@ from flask import jsonify, request, Blueprint
 from sqlalchemy import select
 from .._common import app, db
 from .._config import AUTH
-from .._validate import require_all, extract_strings, extract_integers, check_auth_token
+from .._validate import require_all, extract_strings, extract_integers
 from .._query import filter_strings, execute_query, filter_integers
+from .._exceptions import UnAuthenticatedException
 
 # first argument is the endpoint name
-bp = Blueprint("quidel", __name__)
+bp = Blueprint("gft", __name__)
 alias = None
 
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    check_auth_token(AUTH["quidel"])
     require_all("locations", "epiweeks")
 
     locations = extract_strings("locations")
     epiweeks = extract_integers("epiweeks")
 
     # build query
-    table = "`quidel` q"
-    fields = "q.`location`, q.`epiweek`, q.`value`"
-    order = "q.`epiweek` ASC, q.`location` ASC"
+    table = "`gft` g"
+    fields = "g.`epiweek`, g.`location`, g.`num`"
+    order = "g.`epiweek` ASC, g.`location` ASC"
 
     # build the filter
     params = dict()
+    condition_epiweek = filter_integers("g.`epiweek`", epiweeks, "epiweek", params)
     # build the location filter
-    condition_location = filter_strings("q.`location`", locations, "loc", params)
-    condition_epiweek = filter_integers("q.`epiweek`", epiweeks, "epiweek", params)
+    condition_location = filter_strings("g.`location`", locations, "loc", params)
     # the query
-    query = f"SELECT {fields} FROM {table} WHERE ({condition_location}) AND ({condition_epiweek}) ORDER BY {order}"
+    query = f"SELECT {fields} FROM {table} WHERE ({condition_epiweek}) AND ({condition_location}) ORDER BY {order}"
 
     fields_string = [
         "location",
     ]
-    fields_int = ["epiweek"]
-    fields_float = ["value"]
+    fields_int = ["epiweek", "num"]
+    fields_float = []
 
     # send query
     return execute_query(query, params, fields_string, fields_int, fields_float)

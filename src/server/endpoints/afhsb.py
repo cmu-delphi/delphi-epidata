@@ -4,9 +4,8 @@ import re
 from sqlalchemy import select
 from .._common import app, db
 from .._config import AUTH
-from .._validate import require_all, extract_strings, extract_integers
+from .._validate import require_all, extract_strings, extract_integers, check_auth_token
 from .._query import filter_strings, execute_query, filter_integers, execute_queries
-from .._exceptions import UnAuthenticatedException
 from typing import List, Dict
 
 
@@ -57,9 +56,8 @@ FLU_MAPPING = {
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    require_all("auth", "locations", "epiweeks", "flu_types")
-    if request.values["auth"] != AUTH["afhsb"]:
-        raise UnAuthenticatedException()
+    check_auth_token(AUTH["afhsb"])
+    require_all("locations", "epiweeks", "flu_types")
 
     locations = extract_strings("locations")
     epiweeks = extract_integers("epiweeks")

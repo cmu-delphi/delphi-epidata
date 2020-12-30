@@ -3,26 +3,24 @@ from flask import jsonify, request, Blueprint
 from sqlalchemy import select
 from .._common import app, db
 from .._config import AUTH
-from .._validate import require_all, extract_strings, extract_integers
+from .._validate import require_all, extract_strings, extract_integers, check_auth_token
 from .._query import filter_strings, execute_query, filter_integers
-from .._exceptions import UnAuthenticatedException, EpiDataException
+from .._exceptions import EpiDataException
 from typing import List
 
 # first argument is the endpoint name
 bp = Blueprint("cdc", __name__)
 alias = None
 
+
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    require_all("auth", "locations", "epiweeks")
-
-    if request.values['auth'] != AUTH['cdc']:
-        raise UnAuthenticatedException()
+    check_auth_token(AUTH["cdc"])
+    require_all("locations", "epiweeks")
 
     # parse the request
     locations = extract_strings("locations")
     epiweeks = extract_integers("epiweeks")
-
 
     # build query
     table = "`sensors` s"

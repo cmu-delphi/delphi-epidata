@@ -40,6 +40,7 @@ PHP_INT_MAX = 2147483647
 
 
 def _authenticate(names: List[str]):
+    # TODO support all variants
     auth_tokens_presented = extract_strings("auth") or []
 
     names = extract_strings("names")
