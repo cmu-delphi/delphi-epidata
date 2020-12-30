@@ -33,6 +33,7 @@ def _derive_endpoint():
 
 
 def record_analytics(result: int, num_rows=0):
+    # resolve IP with handling proxies
     ip = request.headers.get(
         "HTTP_X_FORWARDED_FOR", request.headers.get("REMOTE_ADDR", "")
     )

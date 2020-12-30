@@ -1,10 +1,11 @@
-from ._db import metadata
-from typing import Optional, Sequence, Union, Tuple, Dict, Any, List
-from ._validate import DateRange
-from ._printer import create_printer
-from ._common import db
+from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple, Union
+
 from sqlalchemy import text
-from ._validate import extract_strings
+
+from ._common import db
+from ._db import metadata
+from ._printer import create_printer
+from ._validate import DateRange, extract_strings
 
 
 def date_string(value: int) -> str:
@@ -76,6 +77,19 @@ def filter_dates(
     return filter_values(field, values, param_key, params, date_string)
 
 
+def filter_fields(generator: Iterable[Dict[str, Any]]):
+    fields = extract_strings("fields")
+    if not fields:
+        yield from generator
+    else:
+        for row in generator:
+            filtered = dict()
+            for field in fields:
+                if field in row:
+                    filtered[field] = row[field]
+            yield filtered
+
+
 def parse_row(
     row,
     fields_string: Optional[Sequence[str]] = None,
@@ -102,6 +116,9 @@ def parse_result(
     fields_int: Optional[Sequence[str]] = None,
     fields_float: Optional[Sequence[str]] = None,
 ) -> List[Dict[str, Any]]:
+    """
+    execute the given query and return the result as a list of dictionaries
+    """
     return [
         parse_row(row, fields_string, fields_int, fields_float)
         for row in db.execute(text(query), **params)
@@ -114,6 +131,9 @@ def execute_queries(
     fields_int: Sequence[str],
     fields_float: Sequence[str],
 ):
+    """
+    execute the given queries and return the response to send them
+    """
     p = create_printer()
 
     fields_to_send = set(extract_strings("fields") or [])
@@ -145,4 +165,7 @@ def execute_query(
     fields_int: Sequence[str],
     fields_float: Sequence[str],
 ):
+    """
+    execute the given query and return the response to send it
+    """
     return execute_queries([(query, params)], fields_string, fields_int, fields_float)

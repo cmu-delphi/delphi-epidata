@@ -1,10 +1,11 @@
-from flask import Flask
+from typing import cast
+
+from flask import Flask, g
 from sqlalchemy.engine import Connection
 from werkzeug.local import LocalProxy
-from flask import g
+
 from ._config import SECRET
 from ._db import engine
-from typing import cast
 
 app = Flask("EpiData")
 app.config["SECRET"] = SECRET
@@ -25,6 +26,7 @@ db: Connection = cast(Connection, LocalProxy(_get_db))
 
 @app.teardown_appcontext
 def teardown_db(exception=None):
+    # close the db connection
     db = g.pop("db", None)
 
     if db is not None:

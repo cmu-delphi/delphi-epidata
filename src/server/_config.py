@@ -11,9 +11,38 @@ SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI", "sqlite:///t
 SQLALCHEMY_ENGINE_OPTIONS = json.loads(
     os.environ.get("SQLALCHEMY_ENGINE_OPTIONS", "{}")
 )
-SECRET = os.environ["SECRET"]
+SECRET = os.environ["FLASK_SECRET"]
 
-AUTH = {"fluview": "xxx"}
+AUTH = {
+    "twitter": os.environ.get("SECRET_TWITTER"),
+    "ght": os.environ.get("SECRET_GHT"),
+    "fluview": os.environ.get("SECRET_FLUVIEW"),
+    "cdc": os.environ.get("SECRET_CDC"),
+    "sensors": os.environ.get("SECRET_SENSORS"),
+    "quidel": os.environ.get("SECRET_QUIDEL"),
+    "norostat": os.environ.get("SECRET_NOROSTAT"),
+    "afhsb": os.environ.get("SECRET_AFHSB"),
+}
+
+# begin sensor query authentication configuration
+#   A multimap of sensor names to the "granular" auth tokens that can be used to access them; excludes the "global" sensor auth key that works for all sensors:
+_sensor_subsets = json.loads(os.environ.get("SECRET_SENSOR_SUBSETS", "{}"))
+GRANULAR_SENSOR_AUTH_TOKENS = {
+    "twtr": _sensor_subsets.get("twtr_sensor", []),
+    "gft": _sensor_subsets.get("gft_sensor"),
+    "ght": _sensor_subsets.get("ght_sensors"),
+    "ghtj": _sensor_subsets.get("ght_sensors"),
+    "cdc": _sensor_subsets.get("cdc_sensor"),
+    "quid": _sensor_subsets.get("quid_sensor"),
+    "wiki": _sensor_subsets.get("wiki_sensor"),
+}
+
+#   A set of sensors that do not require an auth key to access:
+OPEN_SENSORS = [
+    "sar3",
+    "epic",
+    "arch",
+]
 
 REGION_TO_STATE = {
     "hhs1": ["VT", "CT", "ME", "MA", "NH", "RI"],

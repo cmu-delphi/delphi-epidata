@@ -1,8 +1,4 @@
-from flask import (
-    jsonify,
-    make_response,
-    request,
-)
+from flask import make_response, request
 from flask.json import dumps
 from werkzeug.exceptions import HTTPException
 
@@ -10,6 +6,7 @@ from ._analytics import record_analytics
 
 
 def _is_using_status_codes() -> bool:
+    # classic and tree are old school
     return request.values.get("format", "classic") not in ["classic", "tree"]
 
 

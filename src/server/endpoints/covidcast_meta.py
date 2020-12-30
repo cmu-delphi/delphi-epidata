@@ -4,7 +4,8 @@ from sqlalchemy import text
 from typing import Optional, List, Dict
 
 from .._common import app, db
-from .._validate import extract_strings, filter_fields
+from .._validate import extract_strings
+from .._query import filter_fields
 from .._printer import create_printer
 
 bp = Blueprint("covidcast_meta", __name__)

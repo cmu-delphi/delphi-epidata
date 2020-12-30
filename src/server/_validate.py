@@ -1,6 +1,8 @@
+from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple, Union
+
 from flask import request
-from typing import Iterable, List, Union, Optional, Tuple, Dict, Any, Sequence
-from ._exceptions import ValidationFailedException, UnAuthenticatedException
+
+from ._exceptions import UnAuthenticatedException, ValidationFailedException
 
 
 def check_auth_token(token: str, optional=False) -> bool:
@@ -161,16 +163,3 @@ def extract_dates(key: Union[str, Sequence[str]]) -> Optional[List[DateRange]]:
         values.append(parse_date(part))
     # success, return the list
     return values
-
-
-def filter_fields(generator: Iterable[Dict[str, Any]]):
-    fields = extract_strings("fields")
-    if not fields:
-        yield from generator
-    else:
-        for row in generator:
-            filtered = dict()
-            for field in fields:
-                if field in row:
-                    filtered[field] = row[field]
-            yield filtered

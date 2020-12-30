@@ -1,14 +1,17 @@
-from ._common import app
-from flask import send_file, request, abort
-from ._exceptions import MissingOrWrongSourceException
 import pathlib
+from typing import Dict, Callable
 
+from flask import request, send_file, Response
+
+from ._common import app
+from ._exceptions import MissingOrWrongSourceException
 from .endpoints import endpoints
 
 __all__ = ["app"]
 
 
-endpoint_map = {}
+endpoint_map: Dict[str, Callable[[], Response]] = {}
+
 for endpoint in endpoints:
     endpoint_map[endpoint.bp.name] = endpoint.handle
     app.register_blueprint(endpoint.bp, url_prefix=f"/{endpoint.bp.name}")

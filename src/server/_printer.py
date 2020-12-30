@@ -1,16 +1,12 @@
-from flask import (
-    request,
-    jsonify,
-    request,
-    Response,
-    stream_with_context,
-)
-from ._config import MAX_RESULTS
-from flask.json import dumps
-from ._analytics import record_analytics
-from typing import Dict, Iterable, Any, Union, Optional, List
 from csv import DictWriter
 from io import StringIO
+from typing import Any, Dict, Iterable, List, Optional, Union
+
+from flask import Response, jsonify, request, stream_with_context
+from flask.json import dumps
+
+from ._analytics import record_analytics
+from ._config import MAX_RESULTS
 
 
 def print_non_standard(data):
@@ -36,17 +32,20 @@ class APrinter:
             mimetype="application/json",
         )
 
-    def __call__(self, generator: Iterable[Dict[str, Any]]):
+    def __call__(self, generator: Iterable[Dict[str, Any]]) -> Response:
         def gen():
-            self.result = -2  # no result
+            self.result = -2  # no result, default response
             r = self._begin()
             if r is not None:
                 yield r
+
             for row in generator:
                 r = self._print_row(row)
                 if r is not None:
                     yield r
+
             record_analytics(self.result, self.count)
+
             r = self._end()
             if r is not None:
                 yield r
@@ -113,7 +112,6 @@ class ClassicTreePrinter(ClassicPrinter):
     def __init__(self, group: str):
         super(ClassicTreePrinter, self).__init__()
         self.group = group
-        self._tree = dict()
 
     def _begin(self):
         self._tree = dict()
@@ -158,6 +156,8 @@ class CSVPrinter(APrinter):
             self._writer = DictWriter(self._stream, list(row.keys()))
             self._writer.writeheader()
         self._writer.writerow(row)
+
+        # remove the stream content to print just one line at a time
         self._stream.flush()
         v = self._stream.getvalue()
         self._stream.seek(0)
@@ -198,7 +198,7 @@ class JSONLPrinter(APrinter):
         return f"{dumps(row)}\n"
 
 
-def create_printer():
+def create_printer() -> APrinter:
     format = request.values.get("format", "classic")
     if format == "tree":
         return ClassicTreePrinter("signal")

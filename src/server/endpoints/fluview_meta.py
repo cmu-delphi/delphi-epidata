@@ -4,8 +4,8 @@ from sqlalchemy import text
 from .._common import app, db
 from .._config import AUTH
 from .._exceptions import UnAuthenticatedException
-from .._validate import require_all, extract_strings, extract_integers, filter_fields
-from .._query import filter_strings, execute_query, parse_result
+from .._validate import require_all, extract_strings, extract_integers
+from .._query import filter_strings, execute_query, parse_result, filter_fields
 from .._printer import create_printer
 
 # first argument is the endpoint name

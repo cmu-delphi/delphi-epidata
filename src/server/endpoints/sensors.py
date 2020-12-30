@@ -2,7 +2,7 @@ from flask import jsonify, request, Blueprint
 
 from sqlalchemy import select
 from .._common import app, db
-from .._config import AUTH
+from .._config import AUTH, GRANULAR_SENSOR_AUTH_TOKENS, OPEN_SENSORS
 from .._validate import require_all, extract_strings, extract_integers
 from .._query import filter_strings, execute_query, filter_integers
 from .._exceptions import UnAuthenticatedException, EpiDataException
@@ -12,23 +12,6 @@ from typing import List
 bp = Blueprint("sensors", __name__)
 alias = "signals"
 
-# begin sensor query authentication configuration
-#   A multimap of sensor names to the "granular" auth tokens that can be used to access them; excludes the "global" sensor auth key that works for all sensors:
-GRANULAR_SENSOR_AUTH_TOKENS = {
-    "twtr": AUTH["sensor_subsets"]["twtr_sensor"],
-    "gft": AUTH["sensor_subsets"]["gft_sensor"],
-    "ght": AUTH["sensor_subsets"]["ght_sensors"],
-    "ghtj": AUTH["sensor_subsets"]["ght_sensors"],
-    "cdc": AUTH["sensor_subsets"]["cdc_sensor"],
-    "quid": AUTH["sensor_subsets"]["quid_sensor"],
-    "wiki": AUTH["sensor_subsets"]["wiki_sensor"],
-}
-#   A set of sensors that do not require an auth key to access:
-OPEN_SENSORS = [
-    "sar3",
-    "epic",
-    "arch",
-]
 #   Limits on the number of effective auth token equality checks performed per sensor query; generate auth tokens with appropriate levels of entropy according to the limits below:
 MAX_GLOBAL_AUTH_CHECKS_PER_SENSOR_QUERY = 1  # (but imagine is larger to futureproof)
 MAX_GRANULAR_AUTH_CHECKS_PER_SENSOR_QUERY = 30  # (but imagine is larger to futureproof)
