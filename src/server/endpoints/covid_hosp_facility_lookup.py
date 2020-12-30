@@ -1,10 +1,7 @@
-from flask import jsonify, request, Blueprint
+from flask import Blueprint
 
-from sqlalchemy import select
-from .._common import app, db
-from .._config import AUTH
-from .._validate import require_any, extract_strings, extract_integers
-from .._query import filter_strings, execute_query
+from .._query import execute_query, filter_strings
+from .._validate import extract_strings, require_any
 
 # first argument is the endpoint name
 bp = Blueprint("covid_hosp_facility_lookup", __name__)

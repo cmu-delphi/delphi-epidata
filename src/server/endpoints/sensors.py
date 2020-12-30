@@ -1,11 +1,9 @@
-from flask import jsonify, request, Blueprint
+from flask import request, Blueprint
 
-from sqlalchemy import select
-from .._common import app, db
 from .._config import AUTH, GRANULAR_SENSOR_AUTH_TOKENS, OPEN_SENSORS
 from .._validate import require_all, extract_strings, extract_integers
 from .._query import filter_strings, execute_query, filter_integers
-from .._exceptions import UnAuthenticatedException, EpiDataException
+from .._exceptions import EpiDataException
 from typing import List
 
 # first argument is the endpoint name
@@ -123,10 +121,7 @@ def handle():
     # the query
     query = f"SELECT {fields} FROM {table} WHERE ({condition_name}) AND ({condition_location}) AND ({condition_epiweek}) ORDER BY {order}"
 
-    fields_string = [
-        "name",
-        "location",
-    ]
+    fields_string = ["name", "location"]
     fields_int = ["epiweek"]
     fields_float = ["value"]
 

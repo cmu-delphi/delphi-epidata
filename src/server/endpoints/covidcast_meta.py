@@ -1,12 +1,14 @@
-from flask import jsonify, request, Blueprint
+import sys
+from typing import Dict, List, Optional
+
+from flask import Blueprint
 from flask.json import loads
 from sqlalchemy import text
-from typing import Optional, List, Dict
 
-from .._common import app, db
-from .._validate import extract_strings
-from .._query import filter_fields
+from .._common import db
 from .._printer import create_printer
+from .._query import filter_fields
+from .._validate import extract_strings
 
 bp = Blueprint("covidcast_meta", __name__)
 
@@ -43,7 +45,7 @@ def fetch_data(
 
     age = row["age"]
     if age > max_age and row["epidata"]:
-        # TODO error_log('covidcast_meta cache is stale: '.$row['age']);
+        print("covidcast_meta cache is stale: " + str(age), file=sys.stderr)
         pass
 
     epidata = loads(row["epidata"])

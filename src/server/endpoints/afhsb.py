@@ -1,13 +1,11 @@
-from flask import jsonify, request, Blueprint
 import re
+from typing import Dict, List
 
-from sqlalchemy import select
-from .._common import app, db
+from flask import Blueprint
+
 from .._config import AUTH
-from .._validate import require_all, extract_strings, extract_integers, check_auth_token
-from .._query import filter_strings, execute_query, filter_integers, execute_queries
-from typing import List, Dict
-
+from .._query import execute_queries, filter_integers, filter_strings
+from .._validate import check_auth_token, extract_integers, extract_strings, require_all
 
 # first argument is the endpoint name
 bp = Blueprint("afhsb", __name__)

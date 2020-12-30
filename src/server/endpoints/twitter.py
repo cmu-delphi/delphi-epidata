@@ -1,20 +1,13 @@
-from flask import jsonify, request, Blueprint
+from flask import Blueprint, request
 
-from sqlalchemy import select
-from .._common import app, db
 from .._config import AUTH, NATION_REGION, REGION_TO_STATE
+from .._query import execute_queries, filter_dates, filter_integers, filter_strings
 from .._validate import (
-    require_all,
-    extract_strings,
-    extract_integers,
-    require_any,
     check_auth_token,
-)
-from .._query import (
-    filter_strings,
-    filter_integers,
-    filter_dates,
-    execute_queries,
+    extract_integers,
+    extract_strings,
+    require_all,
+    require_any,
 )
 
 # first argument is the endpoint name
@@ -40,13 +33,8 @@ def handle():
     table = "`twitter` t"
     params = dict()
 
-    fields_string = [
-        "location",
-    ]
-    fields_int = [
-        "num",
-        "total",
-    ]
+    fields_string = ["location"]
+    fields_int = ["num", "total"]
     fields_float = ["percent"]
 
     if resolution == "daily":

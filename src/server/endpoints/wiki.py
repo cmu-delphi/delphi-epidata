@@ -1,11 +1,7 @@
-from flask import jsonify, request, Blueprint
+from flask import Blueprint, request
 
-from sqlalchemy import select
-from .._common import app, db
-from .._config import AUTH
-from .._validate import require_all, extract_strings, extract_integers, require_any
-from .._query import filter_strings, execute_query, filter_integers, filter_dates
-from .._exceptions import UnAuthenticatedException
+from .._query import execute_query, filter_dates, filter_integers, filter_strings
+from .._validate import extract_integers, extract_strings, require_all, require_any
 
 # first argument is the endpoint name
 bp = Blueprint("wiki", __name__)
@@ -35,10 +31,7 @@ def handle():
     table = "( SELECT * FROM `wiki` WHERE `language` = :language ) w JOIN (SELECT * FROM `wiki_meta` WHERE `total` < 100000000 AND `language` = :language ) m ON m.`datetime` = w.`datetime`"
     params["language"] = language
 
-    fields_string = [
-        "article",
-    ]
-
+    fields_string = ["article"]
     fields_int = ["count", "total", "hour"]
     fields_float = ["value"]
 

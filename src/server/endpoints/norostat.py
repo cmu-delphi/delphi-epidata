@@ -1,10 +1,8 @@
-from flask import jsonify, request, Blueprint
+from flask import Blueprint, request
 
-from sqlalchemy import select
-from .._common import app, db
 from .._config import AUTH
-from .._validate import require_all, extract_strings, extract_integers, check_auth_token
-from .._query import filter_strings, execute_query, filter_integers
+from .._query import execute_query, filter_integers, filter_strings
+from .._validate import check_auth_token, extract_integers, require_all
 
 # first argument is the endpoint name
 bp = Blueprint("norostat", __name__)
@@ -48,9 +46,7 @@ def handle():
             `latest`.`new_value` IS NOT NULL
     """
 
-    fields_string = [
-        "release_date",
-    ]
+    fields_string = ["release_date"]
     fields_int = ["epiweek", "value"]
     fields_float = []
 

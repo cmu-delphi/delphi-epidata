@@ -1,11 +1,9 @@
-from flask import request, Blueprint
+from flask import Blueprint
 
-from sqlalchemy import text
-from .._common import app, db
 from .._config import AUTH
-from .._validate import require_all, extract_strings, extract_integers, check_auth_token
-from .._query import filter_strings, execute_query
 from .._printer import print_non_standard
+from .._query import parse_result
+from .._validate import check_auth_token
 
 # first argument is the endpoint name
 bp = Blueprint("meta_norostat", __name__)
@@ -18,12 +16,10 @@ def handle():
 
     # build query
     query = "SELECT DISTINCT `release_date` FROM `norostat_raw_datatable_version_list`"
-    releases = [
-        {"release_date": row.get("release_date")} for row in db.execute(text(query))
-    ]
+    releases = parse_result(query, {}, ["release_date"])
 
     query = "SELECT DISTINCT `location` FROM `norostat_raw_datatable_location_pool`"
-    locations = [{"location": row.get("location")} for row in db.execute(text(query))]
+    locations = parse_result(query, {}, ["location"])
 
     data = {"releases": releases, "locations": locations}
     return print_non_standard(data)

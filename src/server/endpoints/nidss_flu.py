@@ -1,12 +1,7 @@
-from flask import jsonify, request, Blueprint
-import re
+from flask import Blueprint
 
-from sqlalchemy import select
-from .._common import app, db
-from .._config import AUTH
-from .._validate import require_all, extract_strings, extract_integers, extract_integer
-from .._query import filter_strings, execute_query, filter_integers, execute_queries
-
+from .._query import execute_query, filter_integers, filter_strings
+from .._validate import extract_integer, extract_integers, extract_strings, require_all
 
 # first argument is the endpoint name
 bp = Blueprint("nidss_flu", __name__)
@@ -20,8 +15,6 @@ def handle():
     epiweeks = extract_integers("epiweeks")
     issues = extract_integers("issues")
     lag = extract_integer("lag")
-
-    # build query
 
     # build query
     table = "`nidss_flu` nf"
@@ -49,10 +42,7 @@ def handle():
         condition = "x.`max_issue` = nf.`issue` AND x.`epiweek` = nf.`epiweek` AND x.`region` = nf.`region`"
         query = f"SELECT {fields} FROM {table} JOIN {subquery} ON {condition} ORDER BY {order}"
 
-    fields_string = [
-        "release_date",
-        "region",
-    ]
+    fields_string = ["release_date", "region"]
     fields_int = ["issue", "epiweek", "lag", "visits"]
     fields_float = ["ili"]
 

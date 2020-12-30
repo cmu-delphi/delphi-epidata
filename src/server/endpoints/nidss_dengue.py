@@ -1,12 +1,9 @@
-from flask import jsonify, request, Blueprint
 import re
 
-from sqlalchemy import select
-from .._common import app, db
-from .._config import AUTH
-from .._validate import require_all, extract_strings, extract_integers
-from .._query import filter_strings, execute_query, filter_integers, execute_queries
+from flask import Blueprint
 
+from .._query import execute_queries, filter_integers
+from .._validate import extract_integers, extract_strings, require_all
 
 # first argument is the endpoint name
 bp = Blueprint("nidss_dengue", __name__)
@@ -55,9 +52,7 @@ def handle():
             """
         queries.append((query, location_params))
 
-    fields_string = [
-        "location",
-    ]
+    fields_string = ["location"]
     fields_int = ["epiweek", "count"]
     fields_float = []
 

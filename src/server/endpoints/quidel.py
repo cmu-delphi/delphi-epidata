@@ -1,10 +1,8 @@
-from flask import jsonify, request, Blueprint
+from flask import Blueprint
 
-from sqlalchemy import select
-from .._common import app, db
 from .._config import AUTH
-from .._validate import require_all, extract_strings, extract_integers, check_auth_token
-from .._query import filter_strings, execute_query, filter_integers
+from .._query import execute_query, filter_integers, filter_strings
+from .._validate import check_auth_token, extract_integers, extract_strings, require_all
 
 # first argument is the endpoint name
 bp = Blueprint("quidel", __name__)
@@ -32,9 +30,7 @@ def handle():
     # the query
     query = f"SELECT {fields} FROM {table} WHERE ({condition_location}) AND ({condition_epiweek}) ORDER BY {order}"
 
-    fields_string = [
-        "location",
-    ]
+    fields_string = ["location"]
     fields_int = ["epiweek"]
     fields_float = ["value"]
 

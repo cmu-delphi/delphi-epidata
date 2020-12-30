@@ -1,12 +1,9 @@
-from flask import jsonify, request, Blueprint
+from flask import Blueprint, request
 from flask.json import loads
 
-from sqlalchemy import select
-from .._common import app, db
-from .._config import AUTH
-from .._validate import require_all, extract_strings, extract_integers
-from .._query import filter_strings, execute_query, filter_integers, parse_result
 from .._printer import print_non_standard
+from .._query import parse_result
+from .._validate import require_all
 
 # first argument is the endpoint name
 bp = Blueprint("delphi", __name__)

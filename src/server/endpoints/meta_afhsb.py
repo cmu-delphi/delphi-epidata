@@ -1,11 +1,9 @@
-from flask import request, Blueprint
+from flask import Blueprint
 
-from sqlalchemy import text
-from .._common import app, db
 from .._config import AUTH
-from .._validate import require_all, extract_strings, extract_integers, check_auth_token
-from .._query import filter_strings, execute_query
 from .._printer import print_non_standard
+from .._query import parse_result
+from .._validate import check_auth_token
 
 # first argument is the endpoint name
 bp = Blueprint("meta_afhsb", __name__)
@@ -26,11 +24,9 @@ def handle():
 
     for key in string_keys:
         query = f"SELECT DISTINCT `{key}` FROM (select `{key}` from `{table1}` union select `{key}` from `{table2}`) t"
-        r = db.execute(text(query))
-        data[key] = [{key: row.get(key)} for row in r]
+        data[key] = parse_result(query, {}, [key])
     for key in int_keys:
         query = f"SELECT DISTINCT `{key}` FROM (select `{key}` from `{table1}` union select `{key}` from `{table2}`) t"
-        r = db.execute(text(query))
-        data[key] = [{key: (int(row[key]) if key in row else None)} for row in r]
+        data[key] = parse_result(query, {}, [], [key])
 
     return print_non_standard(data)
