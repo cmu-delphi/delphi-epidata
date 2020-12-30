@@ -16,6 +16,41 @@ function database_connect() {
   return $dbh;
 }
 
+// returns true if all fields are present in the request
+//   $output: output array to set an error message
+//   $values: an array of field names
+function require_all(APrinter &$printer, $values) {
+  foreach($values as $value) {
+    if(!isset($_REQUEST[$value])) {
+      $printer->printValidationFailed('missing parameter: need [' . $value . ']');
+      return false;
+    }
+  }
+  return true;
+}
+
+// returns true if any fields are present in the request
+//   $output: output array to set an error message
+//   $values: an array of field names
+function require_any(APrinter &$printer, $values) {
+  foreach($values as $value) {
+    if(isset($_REQUEST[$value])) {
+      return true;
+    }
+  }
+  $printer->printValidationFailed('missing parameter: need one of [' . implode(', ', $values) . ']');
+  return false;
+}
+
+// converts a date integer (YYYYMMDD) into a date string (YYYY-MM-DD)
+//   $value: the date as an 8-digit integer
+function date_string($value) {
+  $year = intval($value / 10000) % 10000;
+  $month = intval($value / 100) % 100;
+  $day = $value % 100;
+  return sprintf('%04d-%02d-%02d', $year, $month, $day);
+}
+
 // builds a SQL expression to filter values/ranges of dates
 //   $field: name of the field to filter
 //   $dates: array of date values/ranges
@@ -89,6 +124,128 @@ function filter_strings($field, $values) {
   return $filter;
 }
 
+// extracts an array of values and/or ranges from a string
+//   $str: the string to parse
+//   $type:
+//     - 'int': interpret dashes as ranges, cast values to integers
+//     - 'ordered_string': interpret dashes as ranges, keep values as strings
+//     - otherwise: ignore dashes, keep values as strings
+function extract_values($str, $type) {
+  if($str === null || strlen($str) === 0) {
+    // nothing to do
+    return null;
+  }
+  // whether to parse a value with a dash as a range of values
+  $shouldParseRange = $type === 'int' || $type === 'ordered_string';
+  // maintain a list of values and/or ranges
+  $values = array();
+  // split on commas and loop over each entry, which could be either a single value or a range of values
+  $parts = explode(',', $str);
+  foreach($parts as $part) {
+    if($shouldParseRange && strpos($part, '-') !== false) {
+      // split on the dash
+      $range = explode('-', $part);
+      // get the range endpoints
+      $first = $range[0];
+      $last = $range[1];
+      if ($type === 'int') {
+        $first = intval($first);
+        $last = intval($last);
+      }
+      if($last === $first) {
+        // the first and last numbers are the same, just treat it as a singe value
+        array_push($values, $first);
+      } else if($last > $first) {
+        // add the range as an array
+        array_push($values, array($first, $last));
+      } else {
+        // the range is inverted, this is an error
+        return null;
+      }
+    } else {
+      // this is a single value
+      if($type === 'int') {
+        // cast to integer
+        $value = intval($part);
+      } else {
+        // interpret the string literally
+        $value = $part;
+      }
+      // add the extracted value to the list
+      array_push($values, $value);
+    }
+  }
+  // success, return the list
+  return $values;
+}
+
+/**
+ * parses a given string in format YYYYMMDD or YYYY-MM-DD to a number in the form YYYYMMDD
+ */
+function parse_date(string $s) {
+  return intval(str_replace('-', '', $s));
+}
+
+// extracts an array of values and/or ranges from a string
+//   $str: the string to parse
+function extract_dates($str) {
+  if($str === null || strlen($str) === 0) {
+    // nothing to do
+    return null;
+  }
+  $values = array();
+  // split on commas and loop over each entry, which could be either a single value or a range of values
+  $parts = explode(',', $str);
+
+  $push_range = function($first, $last) {
+    $first = parse_date($first);
+    $last = parse_date($last);
+    if($last === $first) {
+      // the first and last numbers are the same, just treat it as a singe value
+      return $first;
+    }
+    if($last > $first) {
+      // add the range as an array
+      return array($first, $last);
+    }
+    // the range is inverted, this is an error
+    return false;
+  };
+
+  foreach($parts as $part) {
+    if(strpos($part, '-') === false && strpos($part, ':') === false) {
+      // YYYYMMDD
+      array_push($values, parse_date($part));
+      continue;
+    }
+    if (strpos($part, ':') !== false) {
+      // YYYY-MM-DD:YYYY-MM-DD
+      $range = explode(':', $part);
+      $r = $push_range($range[0], $range[1]);
+      if ($r === false) {
+        return null;
+      }
+      array_push($values, $r);
+    }
+    // YYYY-MM-DD or YYYYMMDD-YYYYMMDD
+    // split on the dash
+    $range = explode('-', $part);
+    if (count($range) === 2) {
+      // YYYYMMDD-YYYYMMDD
+      $r = $push_range($range[0], $range[1]);
+      if ($r === false) {
+        return null;
+      }
+      array_push($values, $r);
+      continue;
+    }
+    // YYYY-MM-DD
+    array_push($values, parse_date($part));
+  }
+  // success, return the list
+  return $values;
+}
+
 // give a comma-separated, quoted list of states in an HHS or Census region
 function get_region_states($region) {
   switch($region) {
@@ -115,6 +272,13 @@ function get_region_states($region) {
   return null;
 }
 
+function record_analytics($source, $result, $num_rows = 0) {
+  global $dbh;
+  $ip = mysqli_real_escape_string($dbh, isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '');
+  $ua = mysqli_real_escape_string($dbh, isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '');
+  $source = mysqli_real_escape_string($dbh, isset($source) ? $source : '');
+  mysqli_query($dbh, "INSERT INTO `api_analytics` (`datetime`, `ip`, `ua`, `source`, `result`, `num_rows`) VALUES (now(), '{$ip}', '{$ua}', '{$source}', {$result}, {$num_rows})");
+}
 
 // executes a query, casts the results, and returns an array of the data
 // the number of results is limited to $MAX_RESULTS
