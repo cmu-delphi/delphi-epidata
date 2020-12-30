@@ -5,8 +5,8 @@ parent: Epidata API (Other Diseases)
 
 # FluView metadata
 
-This is the documentation of the API for accessing the FluView metadata
-(`fluview_meta`) data source of [Delphi](https://delphi.cmu.edu/)'s
+This is the API documentation for accessing the FluView metadata
+(`fluview_meta`) data endpoint of [Delphi](https://delphi.cmu.edu/)'s
 epidemiological data.
 
 General topics not specific to any particular data source are discussed in the
