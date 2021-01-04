@@ -5,5 +5,5 @@ RUN ln -s -f /usr/share/zoneinfo/America/New_York /etc/localtime
 COPY requirements.txt /app
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY ./src/server/**/*.py ./src/server/**/*.html /app/app/
-RUN chmod -R o+r /app/app
+COPY ./src/server/ /app/app/
+RUN rm -rf /app/app/__pycache__ /app/app/*.php && chmod -R o+r /app/app
