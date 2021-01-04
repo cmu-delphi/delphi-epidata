@@ -1172,8 +1172,7 @@ function get_covid_hosp_state_timeseries(IRowPrinter &$printer, $states, $dates,
 //   $collection_weeks (required): array of date values/ranges
 //   $publication_dates (optional): array of date values/ranges
 //     default: most recent issue
-function get_covid_hosp_facility($hospital_pks, $collection_weeks, $publication_dates) {
-  $epidata = array();
+function get_covid_hosp_facility(IRowPrinter &$printer, $hospital_pks, $collection_weeks, $publication_dates) {
   $table = '`covid_hosp_facility` c';
   $fields = implode(', ', array(
     'c.`publication_date`',
@@ -1389,9 +1388,7 @@ function get_covid_hosp_facility($hospital_pks, $collection_weeks, $publication_
     'icu_patients_confirmed_influenza_7_day_avg',
     'total_patients_hosp_confirmed_influenza_and_covid_7d_avg',
   );
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  execute_query($query, $printer, $fields_string, $fields_int, $fields_float);
 }
 
 // queries the `covid_hosp_facility` table for hospital discovery
@@ -1402,8 +1399,7 @@ function get_covid_hosp_facility($hospital_pks, $collection_weeks, $publication_
 //   $fips_code (optional): 2-letter state abbreviation
 //   note: exactly one of the above parameters should be non-null. if more than
 //         one is non-null, then only the first filter will be used.
-function get_covid_hosp_facility_lookup($state, $ccn, $city, $zip, $fips_code) {
-  $epidata = array();
+function get_covid_hosp_facility_lookup(IRowPrinter &$printer, $state, $ccn, $city, $zip, $fips_code) {
   $table = '`covid_hosp_facility` c';
   $fields = implode(', ', array(
     'c.`hospital_pk`',
@@ -1450,9 +1446,7 @@ function get_covid_hosp_facility_lookup($state, $ccn, $city, $zip, $fips_code) {
   );
   $fields_int = array('is_metro_micro');
   $fields_float = null;
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  execute_query($query, $printer, $fields_string, $fields_int, $fields_float);
 }
 
 // queries a bunch of epidata tables
@@ -1935,25 +1929,23 @@ function main() {
       get_covid_hosp_state_timeseries($printer, $states, $dates, $issues);
     }
   } else if($source === 'covid_hosp_facility') {
-    if(require_all($data, array('hospital_pks', 'collection_weeks'))) {
+    if(require_all($printer, array('hospital_pks', 'collection_weeks'))) {
       // parse the request
       $hospital_pks = extract_values($_REQUEST['hospital_pks'], 'str');
       $collection_weeks = extract_values($_REQUEST['collection_weeks'], 'int');
       $publication_dates = isset($_REQUEST['publication_dates']) ? extract_values($_REQUEST['publication_dates'], 'int') : null;
       // get the data
-      $epidata = get_covid_hosp_facility($hospital_pks, $collection_weeks, $publication_dates);
-      store_result($data, $epidata);
+      get_covid_hosp_facility($printer, $hospital_pks, $collection_weeks, $publication_dates);
     }
   } else if($source === 'covid_hosp_facility_lookup') {
-    if(require_any($data, array('state', 'ccn', 'city', 'zip', 'fips_code'))) {
+    if(require_any($printer, array('state', 'ccn', 'city', 'zip', 'fips_code'))) {
       $state = isset($_REQUEST['state']) ? extract_values($_REQUEST['state'], 'str') : null;
       $ccn = isset($_REQUEST['ccn']) ? extract_values($_REQUEST['ccn'], 'str') : null;
       $city = isset($_REQUEST['city']) ? extract_values($_REQUEST['city'], 'str') : null;
       $zip = isset($_REQUEST['zip']) ? extract_values($_REQUEST['zip'], 'str') : null;
       $fips_code = isset($_REQUEST['fips_code']) ? extract_values($_REQUEST['fips_code'], 'str') : null;
       // get the data
-      $epidata = get_covid_hosp_facility_lookup($state, $ccn, $city, $zip, $fips_code);
-      store_result($data, $epidata);
+      get_covid_hosp_facility_lookup($printer, $state, $ccn, $city, $zip, $fips_code);
     }
   } else {
     $printer->printMissingOrWrongSource();
