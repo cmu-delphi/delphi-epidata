@@ -1,3 +1,4 @@
+from datetime import date, datetime
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple, Union
 
 from sqlalchemy import text
@@ -103,7 +104,10 @@ def parse_row(
     parsed = dict()
     if fields_string:
         for f in fields_string:
-            parsed[f] = row[f] if f in keys else None
+            v = row[f] if f in keys else None
+            if isinstance(v, (date, datetime)):
+                v = v.strftime('%Y-%m-%d')  # format to iso date
+            parsed[f] = v
     if fields_int:
         for f in fields_int:
             parsed[f] = int(row[f]) if f in keys and row[f] is not None else None
