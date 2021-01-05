@@ -16,7 +16,7 @@ General topics not specific to any particular endpoint are discussed in the
 ## Twitter Stream Data
 
 Estimate of influenza activity based on analysis of language used in tweets.
- - Endpoint: [HealthTweets](http://www.healthtweets.org/)
+ - Data source: [HealthTweets](http://www.healthtweets.org/)
  - Temporal Resolution: Daily and weekly from 2011-12-01 (2011w48)
  - Spatial Resolution: National, [HHS regions](http://www.hhs.gov/iea/regional/), and [Census divisions](http://www.census.gov/econ/census/help/geography/regions_and_divisions.html) ([1+10+9](../../labels/regions.txt)); and by state/territory ([51](../../labels/states.txt))
  - Restricted access: Delphi doesn't have permission to share this dataset
