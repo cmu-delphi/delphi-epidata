@@ -16,7 +16,7 @@ General topics not specific to any particular endpoint are discussed in the
 ## ILI Nearby Data
 
 A nowcast of U.S. national, regional, and state-level (weighted) %ILI, available seven days (regionally) or five days (state-level) before the first ILINet report for the corresponding week.
- - Endpoint: [Delphi's ILI Nearby system](https://delphi.cmu.edu/nowcast/)
+ - Source: [Delphi's ILI Nearby system](https://delphi.cmu.edu/nowcast/)
  - Temporal Resolution: Weekly, from 2010w30*
  - Spatial Resolution: National, [HHS regions](http://www.hhs.gov/iea/regional/), [Census divisions](http://www.census.gov/econ/census/help/geography/regions_and_divisions.html) ([1+10+9](../../labels/regions.txt)), and by state/territory ([51](../../labels/states.txt))
  - Open access
