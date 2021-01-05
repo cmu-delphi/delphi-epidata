@@ -72,3 +72,9 @@ Google does not currently update the search data daily, but usually twice a week
 Each update will usually extend the coverage to within three days of the day of the update.
 As a result the delay can range from 3 to 10 days or even more. We check for
 updates every day and provide the most up-to-date data.
+
+## Source and Licensing
+This dataset is based on Google's [COVID-19 Search Trends symptoms dataset](http://goo.gle/covid19symptomdataset), which is licensed under Google's [Terms of Service](https://policies.google.com/terms).
+
+To learn more about the source data, how it is generated and its limitations, 
+read [Google's Search Trends symptoms dataset documentation](https://storage.googleapis.com/gcp-public-data-symptom-search/COVID-19%20Search%20Trends%20symptoms%20dataset%20documentation%20.pdf).
