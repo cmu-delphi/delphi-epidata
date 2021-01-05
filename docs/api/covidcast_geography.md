@@ -11,8 +11,8 @@ The `geo_value` field returned by the API specifies the geographic location
 whose estimate is being reported. Estimates are available for several possible
 `geo_type`s:
 
-* `county`: The county's five-digit [FIPS
-  code](https://en.wikipedia.org/wiki/FIPS_county_code) reports County-level estimates . All FIPS codes are
+* `county`: County-level estimates are labeled with the county's five-digit [FIPS
+  code](https://en.wikipedia.org/wiki/FIPS_county_code). All FIPS codes are
   reported using pre-2015 FIPS code assignments, *except* for FIPS codes used by
   the `jhu-csse` and `usa-facts` sources. These are reported exactly as the
   sources report their data; [see below](#coding-exceptions). FIPS codes ending
