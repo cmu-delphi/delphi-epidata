@@ -5,10 +5,10 @@ parent: Epidata API (Other Diseases)
 
 # FluView
 
-This is the documentation of the API for accessing the FluView (`fluview`) data source of
+This is the documentation of the API for accessing the FluView (`fluview`) endpoint of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 
-General topics not specific to any particular data source are discussed in the
+General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
@@ -16,7 +16,7 @@ General topics not specific to any particular data source are discussed in the
 ## FluView Data
 
 Influenza-like illness (ILI) from U.S. Outpatient Influenza-like Illness Surveillance Network (ILINet).
- - Data source: [United States Centers for Disease Control and Prevention](http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html) (CDC)
+ - Endpoint: [United States Centers for Disease Control and Prevention](http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html) (CDC)
  - Temporal Resolution: Weekly* from 1997w40
  - Spatial Resolution: National, [HHS regions](http://www.hhs.gov/iea/regional/), [Census divisions](http://www.census.gov/econ/census/help/geography/regions_and_divisions.html), most States and Territories, and some Cities (full list [here](../../src/acquisition/fluview/fluview_locations.py))
  - Open access

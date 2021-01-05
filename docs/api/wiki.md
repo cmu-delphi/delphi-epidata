@@ -5,10 +5,10 @@ parent: Epidata API (Other Diseases)
 
 # Wikipedia Access
 
-This is the documentation of the API for accessing the Wikipedia Access (`wiki`) data source of
+This is the documentation of the API for accessing the Wikipedia Access (`wiki`) endpoint of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 
-General topics not specific to any particular data source are discussed in the
+General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
@@ -16,7 +16,7 @@ General topics not specific to any particular data source are discussed in the
 ## Wikipedia Access Data
 
 Number of page visits for selected English, Influenza-related wikipedia articles.
- - Data source: [Wikimedia](https://dumps.wikimedia.org/other/pagecounts-raw/)
+ - Endpoint: [Wikimedia](https://dumps.wikimedia.org/other/pagecounts-raw/)
  - Temporal Resolution: Hourly, daily, and weekly from 2007-12-09 (2007w50)
  - Spatial Resolution: N/A
  - Other resolution: By article ([54](../../labels/articles.txt))
