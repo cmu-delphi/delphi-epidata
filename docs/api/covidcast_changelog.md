@@ -81,7 +81,7 @@ The following changes were made to all `jhu-csse` signals related to geocoding:
 
 #### 3 June 2020
 
-Standard errors are now included in the `nmf_day_doc_fbc_fbs_ght` signal for all geo levels and dates, representing the estimated uncertainty in this signal. This uncertainty comes because the signal is a combination of the other signals based on survey estimates or other estimates with margins of error.
+Standard errors are now included in the `nmf_day_doc_fbc_fbs_ght` signal for all geo levels and dates, representing the estimated uncertainty in this signal. This uncertainty comes because the signal is a combination of other signals based on survey estimates or other estimates with margins of error.
 
 * `nmf_day_doc_fbc_fbs_ght`
   * all geo levels
