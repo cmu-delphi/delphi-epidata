@@ -325,11 +325,9 @@ also available. These have names beginning `smoothed_w`, such as
 
 This indicator is based on questions added in Wave 6 of the survey, introduced
 on December 19, 2020. **Note:** As of January 2021, vaccination items on the
-survey are being revised in preparation for Wave 7. The signal above may be
-replaced with a new signal (with different name) if the underlying survey item
-changes significantly.
+survey are being revised in preparation for Wave 7. We may replace the signal above with a new signal (with a different name) if the underlying survey item changes significantly.
 
-A weighted versions of this signal, using the [survey weighting described
+A weighted version of this signal, using the [survey weighting described
 below](#survey-weighting) to be more representative of state demographics, is
 also available. It is `smoothed_waccept_covid_vaccine`.
 
