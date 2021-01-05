@@ -150,7 +150,7 @@ Use cases:
 
 You should specify only one of these three parameters in any given query.
 
-**Note:** Each issue in the versioning system contains only the added or updated records during that time unit; we exclude records whose values
+**Note:** Each issue in the versioning system contains only the records added or updated during that time unit; we exclude records whose values
 remain the same as a previous issue. If you have a research problem that would
 require knowing when we last confirmed an unchanged value, please get in touch.
 
