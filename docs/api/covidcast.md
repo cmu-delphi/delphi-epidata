@@ -173,9 +173,8 @@ require knowing when we last confirmed an unchanged value, please get in touch.
 **Note:** `result` code 2, "too many results", means that the number of results
 you requested was greater than the API's maximum results limit. Results will be
 returned, but not all of the results you requested. API clients should check the
-results code and consider breaking up their requests across multiple API
-calls, such as by breaking a request for a large time interval into multiple
-requests for smaller time intervals.
+results code and consider breaking up requests for e.g. large time intervals into multiple
+API calls.
 
 ## Example URLs
 
