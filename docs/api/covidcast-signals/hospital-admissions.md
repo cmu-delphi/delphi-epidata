@@ -12,6 +12,7 @@ grand_parent: COVIDcast Epidata API
 * **Number of data revisions since 19 May 2020:** 1
 * **Date of last change:** 20 October 2020
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
+* **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
 
 ## Overview
@@ -48,6 +49,13 @@ date, or diagnoses for admissions from that date may change. When this occurs,
 we issue new estimates. This means that a reported estimate for, say, June 10th
 may first be available in the API on June 14th and subsequently revised on June
 16th.
+
+As claims and records are available at a significant and variable latency, the
+signal experiences heavy backfill with data delayed for a couple of weeks.  We
+expect estimates available for the most recent 7-13 days to change substantially
+in later data revisions (having a median delta of 10% or more). Estimates for
+dates more than 57 days in the past are expected to remain fairly static (having
+a median delta of 1% or less), as most major revisions have already occurred.
 
 ## Limitations
 

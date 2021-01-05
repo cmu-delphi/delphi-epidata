@@ -5,14 +5,14 @@ library(dplyr)
 #' Fetch all survey data in a chosen directory.
 #'
 #' There can be multiple data files for a single day of survey responses, for
-#' example if the data is reissued when late-arriving surveys are recorded.
-#' Each file contains *all* data recorded for that date, so only the later files
-#' are needed.
+#' example if the data is reissued when late-arriving surveys are recorded. Each
+#' file contains *all* data recorded for that date, so only the most recently
+#' updated file for each date is needed.
 #'
-#' This function extracts the date from each file, determines which files are
-#' reissued data, and produces a single data frame representing the most recent
-#' data available for each day. It can read gzip-compressed CSV files, such as
-#' those on the SFTP site, using `readr::read_csv`.
+#' This function extracts the date from each file, determines which files
+#' contain reissued data, and produces a single data frame representing the most
+#' recent data available for each day. It can read gzip-compressed CSV files,
+#' such as those on the SFTP site, using `readr::read_csv`.
 #'
 #' This function handles column types correctly for surveys up to Wave 4.
 #'
@@ -62,10 +62,27 @@ get_survey_df <- function(directory, pattern = "*.csv.gz$") {
                  C13 = col_character(),
                  C13a = col_character(),
                  D1_4_TEXT = col_character(),
+                 E3 = col_character(),
                  fips = col_character(),
                  UserLanguage = col_character(),
                  StartDatetime = col_character(),
                  EndDatetime = col_character(),
+                 Q65 = col_integer(),
+                 Q66 = col_integer(),
+                 Q67 = col_integer(),
+                 Q68 = col_integer(),
+                 Q69 = col_integer(),
+                 Q70 = col_integer(),
+                 Q71 = col_integer(),
+                 Q72 = col_integer(),
+                 Q73 = col_integer(),
+                 Q74 = col_integer(),
+                 Q75 = col_integer(),
+                 Q76 = col_integer(),
+                 Q77 = col_integer(),
+                 Q78 = col_integer(),
+                 Q79 = col_integer(),
+                 Q80 = col_integer(),
                  .default = col_number()))
     }
   )

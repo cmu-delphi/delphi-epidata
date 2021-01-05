@@ -23,6 +23,7 @@ whose estimate is being reported. Estimates are available for several possible
   available
   [here](https://hub.arcgis.com/datasets/fedmaps::hospital-referral-regions). We
   report HRRs by their number (non-consecutive, between 1 and 457).
+* `hhs`:  values that are accepted are the numbers 1-10, corresponding to the US [Department of Health & Human Services Regional Offices](https://www.hhs.gov/about/agencies/iea/regional-offices/index.html)
 * `msa`: Metropolitan Statistical Area, as defined by the Office of Management
   and Budget. The Census Bureau provides [detailed definitions of these
   regions](https://www.census.gov/programs-surveys/metro-micro/about.html). We
@@ -33,6 +34,7 @@ whose estimate is being reported. Estimates are available for several possible
 * `state`: The 50 states, identified by their two-digit postal abbreviation (in
   lower case). Estimates for Puerto Rico are available as state `pr`;
   Washington, D.C. is available as state `dc`.
+  * `nation`: accepted values are the ISO 3166-1 alpha-2 [country codes](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). Currently the only nation we have data on is `us`.
 
 Some signals are not available for all `geo_type`s since they may be reported
 by their original sources with different aggregation levels.
