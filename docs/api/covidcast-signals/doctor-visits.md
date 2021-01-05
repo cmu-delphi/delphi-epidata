@@ -45,9 +45,9 @@ June 14th and subsequently revised on June 16th.
 
 As insurance claims are available at a significant and variable latency, the
 signal experiences heavy backfill with data delayed for a couple of weeks.  We
-expect estimates available for the most recent 7-13 days to change substantially
+expect estimates available for the most recent 5-7 days to change substantially
 in later data revisions (having a median delta of 10% or more). Estimates for
-dates more than 57 days in the past are expected to remain fairly static (having
+dates more than 50 days in the past are expected to remain fairly static (having
 a median delta of 1% or less), as most major revisions have already occurred.
 
 See our [blog post](https://delphi.cmu.edu/blog/2020/11/05/a-syndromic-covid-19-indicator-based-on-insurance-claims-of-outpatient-visits/#backfill) for more information on backfill.
