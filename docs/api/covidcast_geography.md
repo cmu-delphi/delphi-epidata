@@ -71,8 +71,8 @@ all individually reported.
 **Warning:** As sample sizes vary from day to day, the counties composing the
 megacounty can vary daily; the geographic area covered by the megacounty is
 simply the state minus the counties reported for that day. The megacounty
-construction also depends on the specific source and signal. On one day,
-megacounty `36000` can cover a different geographic area for the `doctor-visits`
+construction also depends on the specific source and signal. For example, on one day,
+megacounty `36000` may cover a different geographic area for the `doctor-visits`
 source than it does for the `fb-survey` source. Do not try to compare megacounty
 estimates across time or between signals.
 
