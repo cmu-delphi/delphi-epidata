@@ -77,8 +77,8 @@ else if($source === 'fluview_meta') {
 ```
 
 Fortunately, the function `meta_fluview()` is already defined, so we can just
-reuse it. (It's used by the `meta` endpoint as mentioned above.) 
-You will likely need to define a new function named like
+reuse it. (It's used by the `meta` endpoint as mentioned above.) In general,
+you will likely need to define a new function named like
 `get_SOURCE(params...)`, especially if you're reading from a new database
 table.
 
