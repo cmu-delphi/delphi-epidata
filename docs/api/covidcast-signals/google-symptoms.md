@@ -49,7 +49,7 @@ The `sum_anosmia_ageusia_raw_search` signals are simply the raw sum of the
  than one symptom. Currently, Google does not provide _intersection/union_
  data. Users should be careful when considering such signals.
 
-## Properties and limitations 
+## Limitations 
 To learn more about the dataset, how it is generated it and its limitations, 
 read the [dataset documentation](https://storage.googleapis.com/gcp-public-data-symptom-search/COVID-19%20Search%20Trends%20symptoms%20dataset%20documentation%20.pdf).
 
