@@ -46,7 +46,7 @@ Duplicate survey weights had corrupted historical figures for the following sign
   
 #### 20 November 2020  
 
-Due to a bug in our data processing system, estimates of the percentage of people reporting that they have been tested for COVID-19 calculated before October 8th was incorrect. 
+Due to a bug in our data processing system, estimates of the percentage of people reporting that they have been tested for COVID-19 calculated before October 8th were incorrect. 
 We incorrectly treated an answer of “no” as a missing response, which affected the `smoothed_tested_14d` and `smoothed_wtested_14d` signals from the `fb-survey` source. 
 
 As of Nov. 20th, the error has been corrected and all affected data reissued. 
