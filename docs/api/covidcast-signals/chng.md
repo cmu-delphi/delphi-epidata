@@ -12,6 +12,7 @@ grand_parent: COVIDcast Epidata API
 * **Number of data revisions since 19 May 2020:** 0
 * **Date of last change:** Never
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
+* **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** [CC BY-NC](../covidcast_licensing.md#creative-commons-attribution-noncommercial)
 
 This data source is based on Change Healthcare claims data that has been
@@ -45,12 +46,16 @@ available several days later.
 The amount of lag in reporting can vary, and not all visits are reported with
 the same lag. After we first report estimates for a specific date, further data
 may arrive about outpatient visits on that date. When this occurs, we issue new
-estimates for those dates to backfill any missing data. This means that a reported estimate for, say, June
-10th may first be available in the API on June 14th and subsequently revised on
-June 16th.
+estimates for those dates to backfill any missing data. This means that a
+reported estimate for, say, June 10th may first be available in the API on June
+14th and subsequently revised on June 16th.
 
-As doctor’s visits data are available at a significant and variable latency, the signal experiences heavy backfill with data delayed for a couple of weeks. 
-We expect estimates available for the most recent 7-14 days to change substantially in later data revisions. Estimates for dates more than 60 days in the past are expected to remain fairly static, as most major revisions have already occurred. 
+As doctor’s visits data are available at a significant and variable latency, the
+signal experiences heavy backfill with data delayed for a couple of weeks.  We
+expect estimates available for the most recent 4-6 days to change substantially
+in later data revisions (having a median delta of 10% or more). Estimates for
+dates more than 45 days in the past are expected to remain fairly static (having
+a median delta of 1% or less), as most major revisions have already occurred.
 
 We are currently working on adjustments to correct for this.
 
@@ -69,7 +74,9 @@ upward spikes in the fraction of doctor's visits that are COVID-related around
 major holidays (e.g. Memorial Day, July 4, Labor Day, etc.). These spikes are
 not necessarily indicative of a true increase of COVID-19 in a location.
 
-Note that due to local differences in health record-keeping practices, estimates are not always comparable across locations. We are currently working on adjustments to correct this spatial bias.
+Note that due to local differences in health record-keeping practices, estimates
+are not always comparable across locations. We are currently working on
+adjustments to correct this spatial bias.
 
 ## Qualifying Conditions
 

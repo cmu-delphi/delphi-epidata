@@ -8,6 +8,7 @@ grand_parent: COVIDcast Epidata API
 {: .no_toc}
 * **Source name:** `safegraph`
 * **Available for:** county, MSA, HRR, state (see [geography coding docs](../covidcast_geography.md))
+* **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
 
 This data source uses data reported by [SafeGraph](https://www.safegraph.com/)
