@@ -16,7 +16,7 @@ General topics not specific to any particular endpoint are discussed in the
 ## NIDSS Flu Data
 
 Outpatient ILI from Taiwan's National Infectious Disease Statistics System (NIDSS).
- - Endpoint: [Taiwan CDC](http://nidss.cdc.gov.tw/en/CDCWNH01.aspx?dc=wnh)
+ - Source: [Taiwan CDC](http://nidss.cdc.gov.tw/en/CDCWNH01.aspx?dc=wnh)
  - Temporal Resolution: Weekly* from 2008w14
  - Spatial Resolution: By [hexchotomy region](https://en.wikipedia.org/wiki/Regions_of_Taiwan#Hexchotomy) ([6+1](../../labels/nidss_regions.txt))
  - Open access
