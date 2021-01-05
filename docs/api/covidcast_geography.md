@@ -48,7 +48,7 @@ by their original sources at geographic resolutions which are too coarse.
 ## Small Sample Sizes and "Megacounties"
 
 Most sources do not report the same amount of data for every county; for
-example, the survey sources rely on survey responses each day. Many counties
+example, since the survey sources rely on survey responses submitted each day, counties with small populations 
 may have comparatively few survey responses. We do not report individual county
 estimates when small sample sizes would make estimates unreliable or would allow
 identification of respondents, violating privacy and confidentiality agreements.
