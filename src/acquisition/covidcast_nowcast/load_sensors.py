@@ -17,7 +17,13 @@ CSV_DTYPES = {"source": str,
 
 def main(csv_path: str = SENSOR_CSV_PATH) -> None:
     """
-    Parse all files in a given directory and insert them into sensor table.
+    Parse all files in a given directory and insert them into database sensor table.
+
+    For all the files found recursively in csv_path that match the naming scheme specified by
+    CsvImporter.find_csv_files(), attempt to load the insert them into the database. Files which do
+    not match the naming scheme will be moved to an archive/failed folder and skipped, and files
+    which raise an error during loading/uploading will be moved to the archive/failed folder and
+    have the error raised.
 
     Parameters
     ----------
@@ -45,7 +51,7 @@ def main(csv_path: str = SENSOR_CSV_PATH) -> None:
 
 def load_and_prepare_file(filepath: str, attributes: tuple) -> pd.DataFrame:
     """
-    Read CSV file, parse filename to add relevant data columns, and return DataFrame.
+    Read CSV file into a DataFrame and add relevant attributes as new columns to match DB table.
 
     Parameters
     ----------
@@ -57,8 +63,7 @@ def load_and_prepare_file(filepath: str, attributes: tuple) -> pd.DataFrame:
 
     Returns
     -------
-        DataFrame with an issue column based on current date and time_value, signal, source,
-        and geo_type columns based on filename.
+        DataFrame with additional attributes added as columns based on filename and current date.
     """
     source, signal, time_type, geo_type, time_value, issue_value, lag_value = attributes
     data = pd.read_csv(filepath, dtypes=CSV_DTYPES)
