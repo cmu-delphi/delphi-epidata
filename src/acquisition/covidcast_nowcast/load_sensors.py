@@ -1,4 +1,5 @@
 from shutil import move
+import time
 
 import delphi.operations.secrets as secrets
 import pandas as pd
@@ -70,6 +71,7 @@ def load_and_prepare_file(filepath: str, attributes: tuple) -> pd.DataFrame:
     data["time_value"] = time_value
     data["issue"] = issue_value
     data["lag"] = lag_value
+    data["value_updated_timestamp"] = int(time.time())
     return data
 
 

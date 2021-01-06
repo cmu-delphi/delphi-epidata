@@ -2,9 +2,7 @@
 
 # standard library
 import unittest
-from unittest.mock import patch
-from unittest.mock import sentinel
-import tempfile
+from unittest import mock
 from io import StringIO
 
 # third party
@@ -19,6 +17,7 @@ __test_target__ = 'delphi.epidata.acquisition.covidcast_nowcast.load_sensors'
 
 class UpdateTests(unittest.TestCase):
 
+  @mock.patch('time.time', mock.MagicMock(return_value=12345))
   def test_load_and_prepate_file(self):
     
     test_attributes = ("test_source",
@@ -39,5 +38,6 @@ class UpdateTests(unittest.TestCase):
                                                 "geo_type": ["test_geo_type"],
                                                 "time_value": ["test_time_value"],
                                                 "issue": ["test_issue_value"],
-                                                "lag": ["test_lag_value"]})
+                                                "lag": ["test_lag_value"],
+                                                "value_updated_timestamp": [12345]})
                                   )
