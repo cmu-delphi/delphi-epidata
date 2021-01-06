@@ -8,11 +8,7 @@ from delphi.epidata.acquisition.covidcast.csv_importer import CsvImporter
 SENSOR_CSV_PATH = "/common/covidcast-nowcast/receiving/"
 TABLE_NAME = "covidcast_nowcast"
 DB_NAME = "epidata"
-CSV_DTYPES = {"source": str,
-              "signal": str,
-              "time_value": int,
-              "value": float,
-              "geo": str}
+CSV_DTYPES = {"geo": str, "value": float}
 
 
 def main(csv_path: str = SENSOR_CSV_PATH) -> None:
@@ -66,10 +62,10 @@ def load_and_prepare_file(filepath: str, attributes: tuple) -> pd.DataFrame:
         DataFrame with additional attributes added as columns based on filename and current date.
     """
     source, signal, time_type, geo_type, time_value, issue_value, lag_value = attributes
-    data = pd.read_csv(filepath, dtypes=CSV_DTYPES)
+    data = pd.read_csv(filepath, dtype=CSV_DTYPES)
     data["source"] = source
     data["signal"] = signal
-    data["time_type"] = time_value
+    data["time_type"] = time_type
     data["geo_type"] = geo_type
     data["time_value"] = time_value
     data["issue"] = issue_value
