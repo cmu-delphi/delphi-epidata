@@ -395,6 +395,6 @@ changes carefully when you use responses from multiple waves of this survey.
 * **Note:** Items V1 and V2 are shown in the Qualtrics files. These ask the
   respondent if they have received a COVID vaccination. However, due to
   reidentification concerns, these items were **disabled** in the display logic,
-  and are not displayed to or asked of respondents. On January 6, 2021, item V1
+  and were not displayed to or asked of respondents. On January 6, 2021, item V1
   was enabled, and V3 and V4 were made conditional on respondents not answering
   "yes" to V1. Item V2 remains disabled in the display logic.
