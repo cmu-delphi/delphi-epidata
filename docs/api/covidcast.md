@@ -6,11 +6,10 @@ nav_order: 1
 
 # COVIDcast Epidata API
 
-This is the documentation for accessing Delphi's COVID-19 indicators, an (`covidcast`) endpoint of [Delphi](https://delphi.cmu.edu/)'s
-epidemiological data API. This API provides data on the spread and impact of the
-COVID-19 pandemic across the United States, most of which is available at the
+This is the documentation for accessing Delphi's COVID-19 indicators via the `covidcast` endpoint of [Delphi](https://delphi.cmu.edu/)'s
+epidemiological data API. This API provides data on the spread and impact of the COVID-19 pandemic across the United States, most of which is available at the
 county level and updated daily. This data powers our public [COVIDcast
-map](https://covidcast.cmu.edu/), and includes testing, cases, and death data,
+map](https://covidcast.cmu.edu/) which includes testing, cases, and death data,
 as well as unique healthcare and survey data Delphi acquires through its
 partners. The API allows users to select specific signals and download data for
 selected geographical areas---counties, states, metropolitan statistical areas,
@@ -46,7 +45,7 @@ in the [API overview](README.md).
 
 Our [COVIDcast site](https://covidcast.cmu.edu) provides an interactive
 visualization of a select set of the data signals available in the COVIDcast
-API, and also provides a data export feature to download any range of data as a
+API, and provides a data export feature to download any data range as a
 CSV file.
 
 Several [API clients are available](covidcast_clients.md) for common programming
@@ -151,10 +150,9 @@ Use cases:
 
 You should specify only one of these three parameters in any given query.
 
-**Note:** Each issue in the versioning system contains only the records that
-were added or updated during that time unit; we exclude records whose values
+**Note:** Each issue in the versioning system contains only the records added or updated during that time unit; we exclude records whose values
 remain the same as a previous issue. If you have a research problem that would
-require knowing when an unchanged value was last confirmed, please get in touch.
+require knowing when we last confirmed an unchanged value, please get in touch.
 
 ### Response
 
@@ -175,9 +173,8 @@ require knowing when an unchanged value was last confirmed, please get in touch.
 **Note:** `result` code 2, "too many results", means that the number of results
 you requested was greater than the API's maximum results limit. Results will be
 returned, but not all of the results you requested. API clients should check the
-results code, and should consider breaking up their requests across multiple API
-calls, such as by breaking a request for a large time interval into multiple
-requests for smaller time intervals.
+results code and consider breaking up requests for e.g. large time intervals into multiple
+API calls.
 
 ## Example URLs
 

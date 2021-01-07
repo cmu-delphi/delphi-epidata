@@ -6,15 +6,15 @@ nav_order: 3
 
 # COVIDcast Signal Changelog
 
-When Delphi makes substantial changes to the computation of a signal, we will
+When Delphi makes substantial changes to a signal's computation, we will
 typically publish it under a new name rather than revising the existing signal.
 By contrast, the changes documented here are bug fixes, pipeline repairs, and
 minor enhancements.
 
 Changes are also announced via the [COVIDcast API mailing
 list](https://lists.andrew.cmu.edu/mailman/listinfo/delphi-covidcast-api), and
-we **strongly recommend** that anyone using the API to regularly download data
-should subscribe to this list. The list will only be used to announce API
+we **strongly recommend** that anyone using the API to download data regularly
+should subscribe to this list. We will only use the list to announce API
 changes, data corrections, and other information relevant to API users.
 
 ## Table of contents
@@ -26,7 +26,7 @@ changes, data corrections, and other information relevant to API users.
 ## Sources and Signals
 ### `doctor-visits`
 #### 9 November 2020
-We went from a custom geo mapping file (for aggregating from county->(msa, hrr, state)) to a central geo file based on rigorously sourced US census data.
+We went from a custom geo-mapping file (for aggregating from county->(msa, hrr, state)) to a central geo file based on rigorously sourced US census data.
 
 ### `fb-survey`
 
@@ -70,18 +70,18 @@ NY Boroughs county FIPS (36005, 36047, 36061, 36081, 36085) are now split in pro
 
 #### 7 October 2020
 
-The following changes were made to all `jhu-csse` signals related to geocoding
+The following changes were made to all `jhu-csse` signals related to geocoding:
 - NY Boroughs county FIPS (36005, 36047, 36061, 36081, 36085) are now [differentiated by JHU](https://github.com/CSSEGISandData/COVID-19/issues/3084),
 - “Unassigned” and “Out of State” counts are assigned to a megaFIPS at the county level (XX000 where XX is the state FIPS code) and will now be incorporated into the state totals
-- The split of the Kansas City, Missouri into its four subcounties is now done with a more precise population proportion,
-- The split of the Dukes and Nantucket, Massachusetts FIPS codes into the two subcounties is now done with a more precise population proportion,
-- Some counts are reported in the Utah territories JHU UIDs 84070015-84070020. These are now properly aggregated into the state megaFIPS 49000, which will be aggregated in state level information.
+- The split of the Kansas City, Missouri into its four sub-counties is now done with a more precise population proportion,
+- The split of the Dukes and Nantucket, Massachusetts FIPS codes into the two sub-counties is now done with a more precise population proportion,
+- Some counts are reported in the Utah territories JHU UIDs 84070015-84070020. These are now aggregated properly into the state megaFIPS 49000, which will be aggregated in state-level information.
 
 ### `indicator-combination`
 
 #### 3 June 2020
 
-Standard errors are now included in the `nmf_day_doc_fbc_fbs_ght` signal for all geo levels and dates, representing the estimated uncertainty in this signal. This uncertainty comes because the signal is a combination of the other signals which are based on survey estimates or other estimates with margins of error.
+Standard errors are now included in the `nmf_day_doc_fbc_fbs_ght` signal for all geo levels and dates, representing the estimated uncertainty in this signal. This uncertainty comes because the signal is a combination of other signals based on survey estimates or other estimates with margins of error.
 
 * `nmf_day_doc_fbc_fbs_ght`
   * all geo levels
@@ -89,7 +89,7 @@ Standard errors are now included in the `nmf_day_doc_fbc_fbs_ght` signal for all
 
 #### 12 October 2020
 
-The 10 October 2020 issue of all `indicator-combination` deaths signals has been removed from the API. These signals are primarily constructed of USAFacts data, whose 10 October 2020 issue was discovered to be corrupt on 11 October and repaired on 12 October. Subsequent issues have adequate coverage of all regions and dates which were included in the 10 October issue, so this change only affects forecasters which intend to pull training data with an `as_of` or `issues` parameter set to 20201010.
+The 10 October 2020 issue of all `indicator-combination` deaths signals has been removed from the API. These signals are primarily constructed of USAFacts data, whose 10 October 2020 issue was discovered to be corrupt on 11 October and repaired on 12 October. Subsequent issues have adequate coverage of all regions and dates included in the 10 October issue, so this change only affects forecasters who intend to pull training data with an `as_of` or `issues` parameter set to 20201010.
 
 ### `quidel`
 
@@ -108,4 +108,4 @@ We went from a custom geo mapping file (for aggregating from county->(msa, hrr, 
 
 #### 12 October 2020
 
-The 10 October 2020 issue of all `usa-facts` deaths signals has been removed from the API. The file for deaths provided by USAFacts on 10 October included cases data instead. The resulting spurious 100× increase in magnitude of COVIDcast `usa-facts` deaths signals was noticed on 11 October and repaired on 12 October. Subsequent issues have adequate coverage of all regions and dates that were included in the 10 October issue, so this change only affects forecasters that intend to pull training data with an `as_of` or `issues` parameter set to 20201010.
+The 10 October 2020 issue of all `usa-facts` deaths signals has been removed from the API. The file for deaths provided by USAFacts on 10 October included case data instead. The resulting spurious 100× increase in magnitude of COVIDcast `usa-facts` deaths signals was noticed on 11 October and repaired on 12 October. Subsequent issues have adequate coverage of all regions and dates included in the 10 October issue, so this change only affects forecasters that intend to pull training data with an `as_of` or `issues` parameter set to 20201010.
