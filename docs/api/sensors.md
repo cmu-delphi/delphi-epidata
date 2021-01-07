@@ -5,7 +5,7 @@ parent: Epidata API (Other Diseases)
 
 # Digital Surveillance Sensors
 
-This is the documentation of the API for accessing the Delphi's Digital Surveillance Sensors (`sensors`) endpoint of
+This is the documentation of the API for accessing the Digital Surveillance Sensors (`sensors`) endpoint of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 
 General topics not specific to any particular endpoint are discussed in the
