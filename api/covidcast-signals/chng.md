@@ -15,6 +15,8 @@ grand_parent: COVIDcast Epidata API
 * **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** [CC BY-NC](../covidcast_licensing.md#creative-commons-attribution-noncommercial)
 
+## Overview
+
 This data source is based on Change Healthcare claims data that has been
 de-identified in accordance with HIPAA privacy regulations. Change Healthcare is
 a healthcare technology company that aggregates data from many healthcare providers.
@@ -30,82 +32,11 @@ commercial purposes.
 | `smoothed_outpatient_cli` | Estimated percentage of outpatient doctor visits primarily about COVID-related symptoms, based on Change Healthcare claims data that has been de-identified in accordance with HIPAA privacy regulations, smoothed in time using a Gaussian linear smoother |
 | `smoothed_adj_outpatient_cli` | Same, but with systematic day-of-week effects removed; see [details below](#day-of-week-adjustment) |
 
-## Table of contents
+## Table of Contents
 {: .no_toc .text-delta}
 
 1. TOC
 {:toc}
-
-## Lag and Backfill
-
-Note that because doctor's visits may be reported to Change Healthcare
-several days after they occur, these signals are typically available with
-several days of lag. This means that estimates for a specific day are only
-available several days later.
-
-The amount of lag in reporting can vary, and not all visits are reported with
-the same lag. After we first report estimates for a specific date, further data
-may arrive about outpatient visits on that date. When this occurs, we issue new
-estimates for those dates to backfill any missing data. This means that a
-reported estimate for, say, June 10th may first be available in the API on June
-14th and subsequently revised on June 16th.
-
-As doctor’s visits data are available at a significant and variable latency, the
-signal experiences heavy backfill with data delayed for a couple of weeks.  We
-expect estimates available for the most recent 4-6 days to change substantially
-in later data revisions (having a median delta of 10% or more). Estimates for
-dates more than 45 days in the past are expected to remain fairly static (having
-a median delta of 1% or less), as most major revisions have already occurred.
-
-We are currently working on adjustments to correct for this.
-
-## Limitations
-
-This data source is based on data provided to us by Change Healthcare. Change
-Healthcare reports on a portion of United States healthcare encounters, but not
-all of them, and so this source only represents those encounters known to
-them. Their coverage may vary across the United States, but they report on about
-45% of all doctor's visits nationally.
-
-Standard errors are not available for this data source.
-
-Due to changes in medical-seeking behavior on holidays, this data source has
-upward spikes in the fraction of doctor's visits that are COVID-related around
-major holidays (e.g. Memorial Day, July 4, Labor Day, etc.). These spikes are
-not necessarily indicative of a true increase of COVID-19 in a location.
-
-Note that due to local differences in health record-keeping practices, estimates
-are not always comparable across locations. We are currently working on
-adjustments to correct this spatial bias.
-
-## Qualifying Conditions
-
-We receive data on the following six categories of counts:
-
-- Denominator: Daily count of all unique outpatient visits.
-- Covid: Daily count of all unique visits with primary ICD-10 code in any of:
-{U07.1, B97.21, or B97.29}.
-- COVID-like: Daily count of all unique outpatient visits with primary ICD-10 code
-	of any of: {U07.1, U07.2, B97.29, J12.81, Z03.818, B34.2, J12.89}.
-- Flu-like: Daily count of all unique outpatient visits with primary ICD-10 code
-	of any of: {J22, B34.9}. The occurrence of these codes in an area is
-	correlated with that area's historical influenza activity, but are
-	diagnostic codes not specific to influenza and can appear in COVID-19 cases.
-- Mixed: Daily count of all unique outpatient visits with primary ICD-10 code of
-	any of: {Z20.828, J12.9}. The occurance of these codes in an area is
-	correlated to a blend of that area's COVID-19 confirmed case counts and
-	influenza behavior, and are not diagnostic codes specific to either disease.
-- Flu: Daily count of all unique outpatient visits with primary ICD-10 code of
-	any of: {J09\*, J10\*, J11\*}. The asterisk `*` indicates inclusion of all
-	subcodes. This set of codes are assigned to influenza viruses.
-
-For the COVID signal, we consider only the *Denominator* and *Covid* counts.
-
-For the CLI signal, if a patient has multiple visits on the same date (and hence
-multiple primary ICD-10 codes), then we will only count one of and in descending
-order: *Flu*, *COVID-like*, *Flu-like*, *Mixed*. This ordering tries to account for
-the most definitive confirmation, e.g. the codes assigned to *Flu* are only used
-for confirmed influenza cases, which are unrelated to the COVID-19 coronavirus.
 
 ## Estimation
 
@@ -211,3 +142,74 @@ To help with variability, we also employ a local linear regression filter with a
 Gaussian kernel. The bandwidth is fixed to approximately cover a rolling 7 day
 window, with the highest weight placed on the right edge of the window (the most
 recent timepoint).
+
+## Lag and Backfill
+
+Note that because doctor's visits may be reported to Change Healthcare
+several days after they occur, these signals are typically available with
+several days of lag. This means that estimates for a specific day are only
+available several days later.
+
+The amount of lag in reporting can vary, and not all visits are reported with
+the same lag. After we first report estimates for a specific date, further data
+may arrive about outpatient visits on that date. When this occurs, we issue new
+estimates for those dates to backfill any missing data. This means that a
+reported estimate for, say, June 10th may first be available in the API on June
+14th and subsequently revised on June 16th.
+
+As doctor’s visits data are available at a significant and variable latency, the
+signal experiences heavy backfill with data delayed for a couple of weeks.  We
+expect estimates available for the most recent 4-6 days to change substantially
+in later data revisions (having a median delta of 10% or more). Estimates for
+dates more than 45 days in the past are expected to remain fairly static (having
+a median delta of 1% or less), as most major revisions have already occurred.
+
+We are currently working on adjustments to correct for this.
+
+## Limitations
+
+This data source is based on data provided to us by Change Healthcare. Change
+Healthcare reports on a portion of United States healthcare encounters, but not
+all of them, and so this source only represents those encounters known to
+them. Their coverage may vary across the United States, but they report on about
+45% of all doctor's visits nationally.
+
+Standard errors are not available for this data source.
+
+Due to changes in medical-seeking behavior on holidays, this data source has
+upward spikes in the fraction of doctor's visits that are COVID-related around
+major holidays (e.g. Memorial Day, July 4, Labor Day, etc.). These spikes are
+not necessarily indicative of a true increase of COVID-19 in a location.
+
+Note that due to local differences in health record-keeping practices, estimates
+are not always comparable across locations. We are currently working on
+adjustments to correct this spatial bias.
+
+## Qualifying Conditions
+
+We receive data on the following six categories of counts:
+
+- Denominator: Daily count of all unique outpatient visits.
+- Covid: Daily count of all unique visits with primary ICD-10 code in any of:
+{U07.1, B97.21, or B97.29}.
+- COVID-like: Daily count of all unique outpatient visits with primary ICD-10 code
+	of any of: {U07.1, U07.2, B97.29, J12.81, Z03.818, B34.2, J12.89}.
+- Flu-like: Daily count of all unique outpatient visits with primary ICD-10 code
+	of any of: {J22, B34.9}. The occurrence of these codes in an area is
+	correlated with that area's historical influenza activity, but are
+	diagnostic codes not specific to influenza and can appear in COVID-19 cases.
+- Mixed: Daily count of all unique outpatient visits with primary ICD-10 code of
+	any of: {Z20.828, J12.9}. The occurance of these codes in an area is
+	correlated to a blend of that area's COVID-19 confirmed case counts and
+	influenza behavior, and are not diagnostic codes specific to either disease.
+- Flu: Daily count of all unique outpatient visits with primary ICD-10 code of
+	any of: {J09\*, J10\*, J11\*}. The asterisk `*` indicates inclusion of all
+	subcodes. This set of codes are assigned to influenza viruses.
+
+For the COVID signal, we consider only the *Denominator* and *Covid* counts.
+
+For the CLI signal, if a patient has multiple visits on the same date (and hence
+multiple primary ICD-10 codes), then we will only count one of and in descending
+order: *Flu*, *COVID-like*, *Flu-like*, *Mixed*. This ordering tries to account for
+the most definitive confirmation, e.g. the codes assigned to *Flu* are only used
+for confirmed influenza cases, which are unrelated to the COVID-19 coronavirus.

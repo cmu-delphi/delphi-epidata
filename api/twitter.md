@@ -5,8 +5,8 @@ parent: Epidata API (Other Diseases)
 
 # Twitter Stream
 
-This is the documentation of the API for accessing the Twitter Stream (`twitter`) endpoint of
-the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
+This is the API documentation for accessing the Twitter Stream (`twitter`)
+endpoint of [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
