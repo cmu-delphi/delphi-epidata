@@ -6,7 +6,7 @@ import pandas as pd
 import sqlalchemy
 from delphi.epidata.acquisition.covidcast.csv_importer import CsvImporter
 
-SENSOR_CSV_PATH = "/common/covidcast-nowcast/receiving/"
+SENSOR_CSV_PATH = "/common/covidcast_nowcast/receiving/"
 TABLE_NAME = "covidcast_nowcast"
 DB_NAME = "epidata"
 CSV_DTYPES = {"geo_value": str, "value": float}
