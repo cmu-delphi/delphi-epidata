@@ -26,9 +26,6 @@ Trends, etc., during the COVID-19 pandemic, because these were designed to track
 ILI as driven by seasonal influenza, and were NOT designed to track ILI during
 the COVID-19 pandemic.
 
-We are working on collecting new ILI-related endpoints may be useful to
-nowcasting and forecasting ILI during the COVID-19 pandemic, and will make these
-available as soon as possible.
 
 # The API
 
