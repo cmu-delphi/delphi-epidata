@@ -2114,20 +2114,6 @@ if(database_connect()) {
           $as_of,
           $issues,
           $lag);
-      if(isset($_REQUEST['format']) && $_REQUEST['format']=="tree") {
-        //organize results by signal
-        $epi_tree = array();
-        $key = -1;
-        foreach ($epidata as $row) {
-          if ($key != $row['signal']) {
-            $key = $row['signal'];
-            $epi_tree[$key] = array();
-          }
-          unset($row['signal']);
-          array_push($epi_tree[$key],$row);
-        }
-        $epidata = array($epi_tree);
-      }
       store_result($data, $epidata);
     }
   } else {
