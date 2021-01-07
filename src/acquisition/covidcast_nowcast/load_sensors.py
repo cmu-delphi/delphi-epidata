@@ -17,7 +17,7 @@ def main(csv_path: str = SENSOR_CSV_PATH) -> None:
     Parse all files in a given directory and insert them into the sensor table in the database.
 
     For all the files found recursively in csv_path that match the naming scheme specified by
-    CsvImporter.find_csv_files(), attempt to load the insert them into the database. Files which do
+    CsvImporter.find_csv_files(), attempt to load and insert them into the database. Files which do
     not match the naming scheme will be moved to an archive/failed folder and skipped, and files
     which raise an error during loading/uploading will be moved to the archive/failed folder and
     have the error raised.
