@@ -18,7 +18,7 @@ __test_target__ = 'delphi.epidata.acquisition.covidcast_nowcast.load_sensors'
 class UpdateTests(unittest.TestCase):
 
   @mock.patch('time.time', mock.MagicMock(return_value=12345))
-  def test_load_and_prepate_file(self):
+  def test_load_and_prepare_file(self):
     
     test_attributes = ("test_source",
                        "test_signal",
@@ -28,9 +28,9 @@ class UpdateTests(unittest.TestCase):
                        "test_issue_value",
                        "test_lag_value")
 
-    test_df = load_and_prepare_file(StringIO("geo,value\n01001,1.5"), test_attributes)
+    test_df = load_and_prepare_file(StringIO("geo_value,value\n01001,1.5"), test_attributes)
     pd.testing.assert_frame_equal(test_df,
-                                  pd.DataFrame({"geo":["01001"],
+                                  pd.DataFrame({"geo_value": ["01001"],
                                                 "value": [1.5],
                                                 "source": ["test_source"],
                                                 "signal": ["test_signal"],
