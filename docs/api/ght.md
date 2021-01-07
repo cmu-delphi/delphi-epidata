@@ -5,10 +5,10 @@ parent: Epidata API (Other Diseases)
 
 # Google Health Trends
 
-This is the documentation of the API for accessing the Google Health Trends (`ght`) data source of
+This is the documentation of the API for accessing the Google Health Trends (`ght`) endpoint of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 
-General topics not specific to any particular data source are discussed in the
+General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
