@@ -1602,6 +1602,70 @@ function meta_delphi() {
   return count($epidata) === 0 ? null : $epidata;
 }
 
+function get_covidcast_nowcast($source, $signals, $time_type, $geo_type, $time_values, $geo_values, $as_of, $issues, $lag) {
+  // required for `mysqli_real_escape_string`
+  global $dbh;
+  $source = mysqli_real_escape_string($dbh, $source);
+  $time_type = mysqli_real_escape_string($dbh, $time_type);
+  $geo_type = mysqli_real_escape_string($dbh, $geo_type);
+  // basic query info
+  $table = '`covidcast_nowcast` t';
+  $fields = "t.`signal`, t.`time_value`, t.`geo_value`, t.`value`, t.`issue`, t.`lag`";
+  $order = "t.`signal` ASC, t.`time_value` ASC, t.`geo_value` ASC, t.`issue` ASC";
+  // data type of each field
+  $fields_string = array('geo_value', 'signal');
+  $fields_int = array('time_value', 'issue', 'lag');
+  $fields_float = array('value');
+  // build the source, signal, time, and location (type and id) filters
+  $condition_source = "t.`source` = '{$source}'";
+  $condition_signal = filter_strings('t.`signal`', $signals);
+  $condition_time_type = "t.`time_type` = '{$time_type}'";
+  $condition_geo_type = "t.`geo_type` = '{$geo_type}'";
+  $condition_time_value = filter_integers('t.`time_value`', $time_values);
+
+  if ($geo_values === '*') {
+    // the wildcard query should return data for all locations in `geo_type`
+    $condition_geo_value = 'TRUE';
+  } else if (is_array($geo_values)) {
+    // return data for multiple location
+    $condition_geo_value = filter_strings('t.`geo_value`', $geo_values);
+  } else {
+    // return data for a particular location
+    $geo_escaped_value = mysqli_real_escape_string($dbh, $geo_values);
+    $condition_geo_value = "t.`geo_value` = '{$geo_escaped_value}'";
+  }
+  $conditions = "({$condition_source}) AND ({$condition_signal}) AND ({$condition_time_type}) AND ({$condition_geo_type}) AND ({$condition_time_value}) AND ({$condition_geo_value})";
+
+  $subquery = "";
+  if ($issues !== null) {
+    //build the issue filter
+    $condition_issue = filter_integers('t.`issue`', $issues);
+    $query = "SELECT {$fields} FROM {$table} {$subquery} WHERE {$conditions} AND ({$condition_issue}) ORDER BY {$order}";
+  } else if ($lag !== null) {
+    //build the lag filter
+    $condition_lag = "(t.`lag` = {$lag})";
+    $query = "SELECT {$fields} FROM {$table} {$subquery} WHERE {$conditions} AND ({$condition_lag}) ORDER BY {$order}";
+  } else if ($as_of !== null) {
+    // fetch most recent issues with as of
+    $sub_condition_asof = "(`issue` <= {$as_of})";
+    $sub_fields = "max(`issue`) `max_issue`, `time_type`, `time_value`, `source`, `signal`, `geo_type`, `geo_value`";
+    $sub_group = "`time_type`, `time_value`, `source`, `signal`, `geo_type`, `geo_value`";
+    $sub_condition = "x.`max_issue` = t.`issue` AND x.`time_type` = t.`time_type` AND x.`time_value` = t.`time_value` AND x.`source` = t.`source` AND x.`signal` = t.`signal` AND x.`geo_type` = t.`geo_type` AND x.`geo_value` = t.`geo_value`";
+    $subquery = "JOIN (SELECT {$sub_fields} FROM {$table} WHERE ({$conditions} AND {$sub_condition_asof}) GROUP BY {$sub_group}) x ON {$sub_condition}";
+    $condition_version = 'TRUE';
+    $query = "SELECT {$fields} FROM {$table} {$subquery} WHERE {$conditions} AND ({$condition_version}) ORDER BY {$order}";
+  } else {
+    // fetch most recent issue fast
+    $query = "WITH t as (SELECT {$fields}, ROW_NUMBER() OVER (PARTITION BY t.`time_type`, t.`time_value`, t.`source`, t.`signal`, t.`geo_type`, t.`geo_value` ORDER BY t.`issue` DESC) row FROM {$table}  {$subquery} WHERE {$conditions}) SELECT {$fields} FROM t where row = 1 ORDER BY {$order}";
+  }
+  // get the data from the database
+  $epidata = array();
+  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
+  // return the data
+  return count($epidata) === 0 ? null : $epidata;
+}
+
+
 // all responses will have a result field
 $data = array('result' => -1);
 // connect to the database
@@ -2026,6 +2090,44 @@ if(database_connect()) {
       $fips_code = isset($_REQUEST['fips_code']) ? extract_values($_REQUEST['fips_code'], 'str') : null;
       // get the data
       $epidata = get_covid_hosp_facility_lookup($state, $ccn, $city, $zip, $fips_code);
+      store_result($data, $epidata);
+    }
+  } else if($source === 'covidcast_nowcast') {
+    if(require_all($data, array('data_source', 'time_type', 'geo_type', 'time_values'))
+       && require_any($data, array('signal', 'signals'))
+       && require_any($data, array('geo_value', 'geo_values'))) {
+      // parse the request
+      $time_values = extract_dates($_REQUEST['time_values']);
+      $as_of = isset($_REQUEST['as_of']) ? parse_date($_REQUEST['as_of']) : null;
+      $issues = isset($_REQUEST['issues']) ? extract_dates($_REQUEST['issues']) : null;
+      $lag = isset($_REQUEST['lag']) ? intval($_REQUEST['lag']) : null;
+      $signals = extract_values(isset($_REQUEST['signals']) ? $_REQUEST['signals'] : $_REQUEST['signal'], 'string');
+      $geo_values = isset($_REQUEST['geo_value']) ? $_REQUEST['geo_value'] : extract_values($_REQUEST['geo_values'], 'string');
+      // get the data
+      $epidata = get_covidcast_nowcast(
+          $_REQUEST['data_source'],
+          $signals,
+          $_REQUEST['time_type'],
+          $_REQUEST['geo_type'],
+          $time_values,
+          $geo_values,
+          $as_of,
+          $issues,
+          $lag);
+      if(isset($_REQUEST['format']) && $_REQUEST['format']=="tree") {
+        //organize results by signal
+        $epi_tree = array();
+        $key = -1;
+        foreach ($epidata as $row) {
+          if ($key != $row['signal']) {
+            $key = $row['signal'];
+            $epi_tree[$key] = array();
+          }
+          unset($row['signal']);
+          array_push($epi_tree[$key],$row);
+        }
+        $epidata = array($epi_tree);
+      }
       store_result($data, $epidata);
     }
   } else {
