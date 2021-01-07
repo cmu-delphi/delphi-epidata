@@ -14,7 +14,7 @@ CSV_DTYPES = {"geo_value": str, "value": float}
 
 def main(csv_path: str = SENSOR_CSV_PATH) -> None:
     """
-    Parse all files in a given directory and insert them into database sensor table.
+    Parse all files in a given directory and insert them into the sensor table in the database.
 
     For all the files found recursively in csv_path that match the naming scheme specified by
     CsvImporter.find_csv_files(), attempt to load the insert them into the database. Files which do
