@@ -352,3 +352,49 @@ released:
 
 * There are no items from Wave 4 that were removed in the Wave 5 version of
   this survey.
+
+
+## Wave 6
+
+Wave 6 was deployed on December 19, 2020. It is available in English, as well as
+
+* Simplified Chinese
+* English (UK)
+* Spanish (Latin America)
+* Spanish
+* French
+* Brazilian Portuguese
+* Vietnamese
+
+Files:
+
+* [Survey text and coding](waves/CMU Survey Wave 6.pdf) (PDF)
+* [Survey text and coding](waves/CMU Survey Wave 6.docx) (Word)
+
+### Summary of Changes
+
+Wave 6 is a minor change to the survey instrument with the addition of a few new
+items regarding COVID-19 vaccine intent. We intend to expand the scope of our
+questions in the next wave after the beginning of the year. Please review the
+changes carefully when you use responses from multiple waves of this survey.
+
+#### New Items
+
+* Item V3 asks respondents how likely they would choose to be vaccinated, if
+  they were offered a COVID vaccine.
+* Item V4 asks respondents if their intent to get a vaccination would change
+  based on recommendations from different sources (e.g. friends and family,
+  health workers, organizations). **Note:** Between December 19 and December 23,
+  2020, non-English translations of this question labeled the answer choices
+  inconsistently with the English version. We corrected this on December 23, and
+  reissued the affected microdata files to delete responses to V4 by respondents
+  seeing an affected translation. The corrected question is labeled V4a in the
+  Qualtrics survey, but appears in the microdata files as V4. Because we
+  reissued the affected data, you should not need to make any changes to your
+  analysis.
+* **Note:** Items V1 and V2 are shown in the Qualtrics files. These ask the
+  respondent if they have received a COVID vaccination. However, due to
+  reidentification concerns, these items were **disabled** in the display logic,
+  and were not displayed to or asked of respondents. On January 6, 2021, item V1
+  was enabled, and V3 and V4 were made conditional on respondents not answering
+  "yes" to V1. Item V2 remains disabled in the display logic.

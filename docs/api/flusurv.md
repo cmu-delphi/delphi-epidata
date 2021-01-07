@@ -5,9 +5,9 @@ parent: Epidata API (Other Diseases)
 
 # FluSurv
 
-This is the API documentation for accessing the FluSurv (`flusurv`) data endpoint of [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
+This is the API documentation for accessing the FluSurv (`flusurv`) endpoint of [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 
-General topics not specific to any particular data source are discussed in the
+General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).

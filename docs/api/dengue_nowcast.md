@@ -5,9 +5,11 @@ parent: Epidata API (Other Diseases)
 
 # Delphi's Dengue Nowcast
 
-This is the API documentation for accessing Delphi's Dengue Nowcast (`dengue_nowcast`) data endpoint of [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 
-General topics not specific to any particular data source are discussed in the
+This is the API documentation for accessing the Dengue Nowcast (`dengue_nowcast`) endpoint of [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
+
+
+General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).

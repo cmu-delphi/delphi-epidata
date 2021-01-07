@@ -45,6 +45,8 @@ class UnitTests(unittest.TestCase):
       path_prefix + 'ght/20200408_state_rawsearch.csv',
       # valid national
       path_prefix + 'valid/20200408_nation_sig.csv',
+      # valid hhs
+      path_prefix + 'valid/20200408_hhs_sig.csv',
       # invalid
       path_prefix + 'invalid/hello_world.csv',
       # invalid day
@@ -68,10 +70,11 @@ class UnitTests(unittest.TestCase):
       (glob_paths[0], ('fb_survey', 'cli', 'week', 'county', 202015, expected_issue_week, delta_epiweeks(202015, expected_issue_week))),
       (glob_paths[1], ('ght', 'rawsearch', 'day', 'state', time_value_day, expected_issue_day, (date.today() - date(year=time_value_day // 10000, month=(time_value_day // 100) % 100, day=time_value_day % 100)).days)),
       (glob_paths[2], ('valid', 'sig', 'day', 'nation', time_value_day, expected_issue_day, (date.today() - date(year=time_value_day // 10000, month=(time_value_day // 100) % 100, day=time_value_day % 100)).days)),
-      (glob_paths[3], None),
+      (glob_paths[3], ('valid', 'sig', 'day', 'hhs', time_value_day, expected_issue_day, (date.today() - date(year=time_value_day // 10000, month=(time_value_day // 100) % 100, day=time_value_day % 100)).days)),
       (glob_paths[4], None),
       (glob_paths[5], None),
       (glob_paths[6], None),
+      (glob_paths[7], None),
     ])
     self.assertEqual(found, expected)
 
@@ -137,6 +140,7 @@ class UnitTests(unittest.TestCase):
       (make_row(geo_type='state', geo_id='48'), 'geo_id'),
       (make_row(geo_type='state', geo_id='iowa'), 'geo_id'),
       (make_row(geo_type='nation', geo_id='0000'), 'geo_id'),
+      (make_row(geo_type='hhs', geo_id='0'), 'geo_id'),
       (make_row(geo_type='province', geo_id='ab'), 'geo_type'),
       (make_row(se='-1'), 'se'),
       (make_row(geo_type=None), 'geo_type'),

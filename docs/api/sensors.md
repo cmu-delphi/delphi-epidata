@@ -5,10 +5,10 @@ parent: Epidata API (Other Diseases)
 
 # Digital Surveillance Sensors
 
-This is the documentation of the API for accessing the Delphi's Digital Surveillance Sensors (`sensors`) data source of
+This is the documentation of the API for accessing the Digital Surveillance Sensors (`sensors`) endpoint of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 
-General topics not specific to any particular data source are discussed in the
+General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
@@ -26,9 +26,6 @@ Trends, etc., during the COVID-19 pandemic, because these were designed to track
 ILI as driven by seasonal influenza, and were NOT designed to track ILI during
 the COVID-19 pandemic.
 
-We are working on collecting new ILI-related data sources may be useful to
-nowcasting and forecasting ILI during the COVID-19 pandemic, and will make these
-available as soon as possible.
 
 # The API
 
