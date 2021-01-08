@@ -672,9 +672,6 @@ class Epidata:
           data_source, signals, time_type, geo_type,
           time_values, geo_value, as_of=None, issues=None, lag=None, **kwargs):
     """Fetch Delphi's COVID-19 Nowcast sensors"""
-    # also support old parameter name
-    if signals is None and 'signal' in kwargs:
-      signals=kwargs['signal']
     # Check parameters
     if data_source is None or signals is None or time_type is None or geo_type is None or time_values is None or geo_value is None:
       raise Exception('`data_source`, `signals`, `time_type`, `geo_type`, `time_values`, and `geo_value` are all required')
