@@ -5,8 +5,7 @@ parent: Epidata API (Other Diseases)
 
 # Delphi Forecasts
 
-This is the documentation of the API for accessing the Delphi Forecast (`delphi`) endpoint of
-the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
+This is the documentation of the API for accessing the Delphi Forecast (`delphi`) endpoint of [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
