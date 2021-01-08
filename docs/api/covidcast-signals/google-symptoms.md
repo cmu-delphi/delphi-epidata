@@ -50,8 +50,20 @@ The `sum_anosmia_ageusia_raw_search` signals are simply the raw sum of the
  data. Users should be careful when considering such signals.
 
 ## Limitations 
-To learn more about the dataset, how it is generated it and its limitations, 
-read the [dataset documentation](https://storage.googleapis.com/gcp-public-data-symptom-search/COVID-19%20Search%20Trends%20symptoms%20dataset%20documentation%20.pdf).
+When daily volume in a region does not meet quality or privacy thresholds, set
+by Google, no daily value is reported. Weekly data may be available from Google 
+in these cases, but we do not yet support importation using weekly data.
+
+Google uses differential privacy, which adds artificial noise to the raw
+datasets to avoid identifying any individual persons without affecting the
+quality of results.
+
+Google normalizes and scales time series values to determine the relative
+popularity of symptoms in searches within each geographical region individually.
+This means that the resulting values of symptom popularity are **NOT**
+comparable across geographic regions. 
+More details about the limitations of this dataset are available in [Google's Search 
+Trends symptoms dataset documentation](https://storage.googleapis.com/gcp-public-data-symptom-search/COVID-19%20Search%20Trends%20symptoms%20dataset%20documentation%20.pdf).
 
 ## Geographical Aggregation
 The state-level and county-level `raw_search` signals for specific symptoms such
