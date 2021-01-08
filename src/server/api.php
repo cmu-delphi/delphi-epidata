@@ -2093,8 +2093,7 @@ if(database_connect()) {
       store_result($data, $epidata);
     }
   } else if($source === 'covidcast_nowcast') {
-    if(require_all($data, array('data_source', 'time_type', 'geo_type', 'time_values'))
-       && require_any($data, array('signal', 'signals'))
+    if(require_all($data, array('data_source', 'time_type', 'geo_type', 'time_values', 'signals'))
        && require_any($data, array('geo_value', 'geo_values'))) {
       // parse the request
       $time_values = extract_dates($_REQUEST['time_values']);
