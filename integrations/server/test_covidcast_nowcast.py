@@ -38,8 +38,8 @@ class CovidcastTests(unittest.TestCase):
     self.cur.close()
     self.cnx.close()
 
-  def test_query_without(self):
-    """Query without specifying an issue."""
+  def test_query(self):
+    """Query nowcasts using default and specified issue."""
 
     self.cur.execute(
       f'''insert into covidcast_nowcast values 
