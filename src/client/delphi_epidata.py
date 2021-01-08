@@ -666,7 +666,7 @@ class Epidata:
     # Make the API call
     return Epidata._request(params)
 
-  # Fetch Delphi's COVID-19 Surveillance Streams
+  # Fetch Delphi's COVID-19 Nowcast sensors
   @staticmethod
   def covidcast_nowcast(
           data_source, signals, time_type, geo_type,
