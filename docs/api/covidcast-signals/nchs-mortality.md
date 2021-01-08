@@ -23,21 +23,21 @@ CSSE](jhu-csse.md): deaths are reported by the date they occur, not the date
 they are reported by local health departments, and data is frequently reissued
 as additional death certificates from recent weeks are received and tabulated.
 
-| Signal | Description |
-| --- | --- |
-| `deaths_covid_incidence_num` | Number of weekly new deaths with confirmed or presumed COVID-19 |
-| `deaths_covid_incidence_prop` | Number of weekly new deaths with confirmed or presumed COVID-19, per 100,000 population |
-| `deaths_allcause_incidence_num` | Number of weekly new deaths from all causes |
-| `deaths_allcause_incidence_prop` | Number of weekly new deaths from all causes, per 100,000 population |
-| `deaths_flu_incidence_num` | Number of weekly new deaths involving Influenza and at least one of (Pneumonia, COVID-19)|
-| `deaths_flu_incidence_prop` | Number of weekly new deaths involving Influenza and at least one of (Pneumonia, COVID-19), per 100,000 population |
-| `deaths_pneumonia_notflu_incidence_num` | Number of weekly new deaths involving Pneumonia, excluding Influenza deaths |
-| `deaths_pneumonia_notflu_incidence_prop` | Number of weekly new deaths involving Pneumonia, excluding Influenza deaths, per 100,000 population |
-| `deaths_covid_and_pneumonia_notflu_incidence_num`| Number of weekly new deaths involving COVID-19 and Pneumonia, excluding Influenza |
-| `deaths_covid_and_pneumonia_notflu_incidence_prop`| Number of weekly new deaths involving COVID-19 and Pneumonia, excluding Influenza, per 100,000 population |
-|`deaths_pneumonia_or_flu_or_covid_incidence_num`| Number of weekly new deaths involving Pneumonia, Influenza, or COVID-19|
-|`deaths_pneumonia_or_flu_or_covid_incidence_prop`| Number of weekly new deaths involving Pneumonia, Influenza, or COVID-19, per 100,000 population|
-|`deaths_percent_of_expected`| Number of weekly new deaths for all causes in 2020 compared to the average number across the same week in 2017–2019|
+| Signal | Description | First Available |
+| --- | --- | --- |
+| `deaths_covid_incidence_num` | Number of weekly new deaths with confirmed or presumed COVID-19 | 00-00-0000 |
+| `deaths_covid_incidence_prop` | Number of weekly new deaths with confirmed or presumed COVID-19, per 100,000 population | 00-00-0000 |
+| `deaths_allcause_incidence_num` | Number of weekly new deaths from all causes | 00-00-0000 |
+| `deaths_allcause_incidence_prop` | Number of weekly new deaths from all causes, per 100,000 population | 00-00-0000 |
+| `deaths_flu_incidence_num` | Number of weekly new deaths involving Influenza and at least one of (Pneumonia, COVID-19)| 00-00-0000 |
+| `deaths_flu_incidence_prop` | Number of weekly new deaths involving Influenza and at least one of (Pneumonia, COVID-19), per 100,000 population | 00-00-0000 |
+| `deaths_pneumonia_notflu_incidence_num` | Number of weekly new deaths involving Pneumonia, excluding Influenza deaths | 00-00-0000 |
+| `deaths_pneumonia_notflu_incidence_prop` | Number of weekly new deaths involving Pneumonia, excluding Influenza deaths, per 100,000 population | 00-00-0000 |
+| `deaths_covid_and_pneumonia_notflu_incidence_num`| Number of weekly new deaths involving COVID-19 and Pneumonia, excluding Influenza | 00-00-0000 |
+| `deaths_covid_and_pneumonia_notflu_incidence_prop`| Number of weekly new deaths involving COVID-19 and Pneumonia, excluding Influenza, per 100,000 population | 00-00-0000 |
+|`deaths_pneumonia_or_flu_or_covid_incidence_num`| Number of weekly new deaths involving Pneumonia, Influenza, or COVID-19| 00-00-0000 |
+|`deaths_pneumonia_or_flu_or_covid_incidence_prop`| Number of weekly new deaths involving Pneumonia, Influenza, or COVID-19, per 100,000 population| 00-00-0000 |
+|`deaths_percent_of_expected`| Number of weekly new deaths for all causes in 2020 compared to the average number across the same week in 2017–2019| 00-00-0000 |
 
 ## Table of contents
 {: .no_toc .text-delta}
