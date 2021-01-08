@@ -448,7 +448,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
       'message': 'success',
     })
 
-    # request as_od
+    # request as_of
     response = Epidata.covidcast_nowcast(
       'src', 'sig1', 'day', 'county', 20200101, '01001',
       as_of=20200101)
