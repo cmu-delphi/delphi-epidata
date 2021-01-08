@@ -161,6 +161,32 @@ class UnitTests(unittest.TestCase):
     self.assertTrue(mock_database.disconnect.called)
     self.assertTrue(mock_database.disconnect.call_args[0][0])
 
+  def test_main_early_exit(self):
+    """Run the main program with an empty receiving directory."""
+
+    # TODO: use an actual argparse object for the args instead of a MagicMock
+    args = MagicMock(data_dir='data', is_wip_override=False, not_wip_override=False, specific_issue_date=False)
+    mock_database = MagicMock()
+    mock_database.count_all_rows.return_value = 0
+    fake_database_impl = lambda: mock_database
+    mock_collect_files = MagicMock()
+    mock_collect_files.return_value = []
+    mock_upload_archive = MagicMock()
+
+    main(
+        args,
+        database_impl=fake_database_impl,
+        collect_files_impl=mock_collect_files,
+        upload_archive_impl=mock_upload_archive)
+
+    self.assertTrue(mock_collect_files.called)
+    self.assertEqual(mock_collect_files.call_args[0][0], 'data')
+
+    self.assertFalse(mock_upload_archive.called)
+
+    self.assertFalse(mock_database.connect.called)
+    self.assertFalse(mock_database.disconnect.called)
+
   def test_database_exception_is_handled(self):
     """Gracefully handle database exceptions."""
 

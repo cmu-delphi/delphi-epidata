@@ -145,7 +145,7 @@ def main(
 
   if args.is_wip_override and args.not_wip_override:
     print('conflicting overrides for forcing WIP option!  exiting...')
-    exit()
+    return
   wip_override = None
   if args.is_wip_override:
     wip_override = True
@@ -156,7 +156,7 @@ def main(
   path_details = collect_files_impl(args.data_dir, args.specific_issue_date)
   if not path_details:
     print('nothing to do; exiting...')
-    exit()
+    return
     
   database = database_impl()
   database.connect()
