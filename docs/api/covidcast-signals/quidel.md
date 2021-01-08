@@ -33,10 +33,10 @@ but which persist long after the infection has passed. Quidel began providing us
 with test data starting May 9, 2020, and data volume increased to statistically
 meaningful levels starting May 26, 2020.
 
-| Signal | Description |
-| --- | --- |
-| `covid_ag_raw_pct_positive` | Percentage of antigen tests that were positive for COVID-19, with no smoothing applied. |
-| `covid_ag_smoothed_pct_positive` | Percentage of antigen tests that were positive for COVID-19, smoothed by pooling together the last 7 days of tests. |
+| Signal | Description | First Available |
+| --- | --- | --- |
+| `covid_ag_raw_pct_positive` | Percentage of antigen tests that were positive for COVID-19, with no smoothing applied. | 00-00-0000 |
+| `covid_ag_smoothed_pct_positive` | Percentage of antigen tests that were positive for COVID-19, smoothed by pooling together the last 7 days of tests. | 00-00-0000 |
 
 ### Estimation
 
