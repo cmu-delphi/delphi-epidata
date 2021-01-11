@@ -30,7 +30,7 @@ class Database:
         except pymysql.MySQLError as e:
             print(e)
             sys.exit()
-
+   
     def insert_apple_data(self, data):
         """Execute SQL query."""
         try:
@@ -43,19 +43,12 @@ class Database:
                             len(row) - 1) + "%s) ON " \
                                             "DUPLICATE KEY UPDATE " \
                                             "`state` = %s," \
-                                            "`county_and_city` = %s," \
-                                            "`geo_type` = %s, `date` = " \
-                                            "%s, " \
-                                            "`driving` = %s, `transit` = " \
-                                            "%s, " \
-                                            "`walking` = %s "
-                    sql_data = (
-                    row['state'].lower(), row['county_and_city'].lower(), row['geo_type'].lower(), row['date'],
-                    row['driving'],
-                    row['transit'], row['walking'], row['state'].lower(), row['county_and_city'].lower(),
-                    row['geo_type'].lower(),
-                    row['date'], row['driving'], row['transit'], row['walking'])
-                    # print(sql_data)
+                                            "`county` = %s," \
+                                            "`date` = %s"
+                    sql_data = (row['state'].lower(), row['county'].lower(),
+                                row['date'], row['driving'], row['transit'],
+                                row['walking'], row['fips code'], row['state'].lower(),
+                                row['county'].lower(), row['date'])
                     cur.execute(sql, sql_data)
             self.conn.commit()
             cur.close()
@@ -76,19 +69,18 @@ class Database:
 
                 # Insert DataFrame records one by one.
                 for i, row in data.iterrows():
-                    sql = "INSERT INTO `Google_Mobility_US` (`" + cols + "`) VALUES (" + "%s," * (
-                            len(row) - 1) + "%s) ON " \
-                                            "DUPLICATE KEY UPDATE " \
-                                            "`state` = %s," \
-                                            " `county` = %s," \
-                                            " `date` = %s"
+                    sql = "INSERT INTO `Google_Mobility_US` (`" + cols + "`) VALUES ( " + "%s, %s, %s, %s, %s, %s, " \
+                                                                                          "%s, %s, %s, %s ) ON DUPLICATE KEY UPDATE " \
+                                                                                          "`state` = %s," \
+                                                                                          " `county` = %s," \
+                                                                                          " `date` = %s"
                     sql_data = (
-                        row['state'].lower(), row['county'].lower(), row['date'], row['retail and recreation'],
+                        row['state'].lower(), row['county'].lower(), row['fips code'], row['date'],
+                        row['retail and recreation'],
                         row['grocery and pharmacy'],
                         row['parks'], row['transit stations'], row['workplaces'], row['residential'],
                         row['state'].lower(),
                         row['county'].lower(), row['date'])
-                    # print(sql_data)
                     cur.execute(sql, sql_data)
                 self.conn.commit()
                 cur.close()
