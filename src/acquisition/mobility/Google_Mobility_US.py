@@ -10,7 +10,7 @@ directory = 'Google_Mobility'
 def get_mobility_data():
     """Download Google Mobility data in CSV format
     """
-    # create directory if it don't exist
+    # create directory if it doesn't exist
     if not os.path.exists(directory) and directory != '':
         os.makedirs(directory)
     else:
@@ -33,10 +33,12 @@ def build_report():
     mobilityData = mobilityData.rename(
         columns={
             'sub region 1': 'state',
-            'sub region 2': 'county'})
+            'sub region 2': 'county',
+            'census fips code': 'fips code'})
     mobilityData = mobilityData.loc[:,
                    ['state',
                     'county',
+                    'fips code',
                     'date',
                     'retail and recreation',
                     'grocery and pharmacy',
@@ -44,9 +46,11 @@ def build_report():
                     'transit stations',
                     'workplaces',
                     'residential']]
-    mobilityData['state'].fillna('Total', inplace=True)
-    mobilityData['county'].fillna('Total', inplace=True)
+
+    mobilityData.dropna(subset=['county'], how='all', inplace=True)
     mobilityData.fillna(0, inplace=True)
+    mobilityData['fips code'] = mobilityData['fips code'].astype(str).replace('\.0', '', regex=True)
+    mobilityData['fips code'] = mobilityData['fips code'].str.rjust(5, '0')
     return mobilityData
 
 
