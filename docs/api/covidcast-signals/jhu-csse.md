@@ -14,6 +14,8 @@ grand_parent: COVIDcast Epidata API
 * **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** [CC BY](#source-and-licensing)
 
+## Overview
+
 This data source of confirmed COVID-19 cases and deaths is based on reports made
 available by the Center for Systems Science and Engineering at Johns Hopkins
 University.
@@ -40,7 +42,7 @@ source, but as USAFacts collects and aggregates its data in slightly different
 ways, the data is not identical. Users should evaluate which source better fits
 their needs, or use the [combination signal of both USAFacts and JHU data](indicator-combination.md).
 
-## Table of contents
+## Table of Contents
 {: .no_toc .text-delta}
 
 1. TOC

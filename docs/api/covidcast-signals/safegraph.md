@@ -16,7 +16,7 @@ using anonymized location data from mobile phones. SafeGraph provides several
 different datasets to eligible researchers. We surface signals from two such
 datasets.
 
-## Table of contents
+## Table of Contents
 {: .no_toc .text-delta}
 
 1. TOC

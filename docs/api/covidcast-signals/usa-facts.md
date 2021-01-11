@@ -40,7 +40,7 @@ ways, the data is not identical. Users should evaluate which source better fits
 their needs. Users should evaluate which source better fits their needs, or use
 the [combination signal of both USAFacts and JHU data](indicator-combination.md).
 
-## Table of contents
+## Table of Contents
 {: .no_toc .text-delta}
 
 1. TOC
