@@ -611,6 +611,28 @@ Epidata <- (function() {
     return(.request(params))
   }
 
+  # Fetch COVID mobility data
+  mobility <- function(type, country, state, month, year, issues) {
+    # Check parameters
+    if(missing(type) || missing(country) || missing(state) || missing(month) || missing(year)) {
+      stop('`type` , `country` , `state` , `month` , `year` are required')
+    }
+    # Set up request
+    params <- list(
+      source = 'mobility',
+      type = type,
+      country = country,
+      state = state,
+      month = month,
+      year = year
+    )
+    if(!missing(issues)) {
+      params$issues <- .list(issues)
+    }
+    # Make the API call
+    return(.request(params))
+  }
+    
   # Export the public methods
   return(list(
     range = range,

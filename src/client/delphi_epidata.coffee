@@ -465,5 +465,23 @@ class Epidata
     # Make the API call
     _request(callback, params)
 
+  # Fetch COVID mobility data
+  @mobility: (callback, type, country, state, month, year, issues) ->
+    # Check parameters
+    unless type? and country? and state? and month? and year
+      throw { msg: '`type` , `country` , `state` , `month` , `year` are required' }
+    # Set up request
+    params =
+      'source': 'mobility'
+      'type' : type
+      'country' : country
+      'state' : state
+      'month' : month
+      'year' : year
+    if issues?
+      params.issues = _list(issues)
+    # Make the API call
+    _request(callback, params)
+    
 # Export the API to the global environment
 (exports ? window).Epidata = Epidata

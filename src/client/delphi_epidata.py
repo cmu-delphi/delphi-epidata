@@ -665,6 +665,27 @@ class Epidata:
       raise Exception('one of `state`, `ccn`, `city`, `zip`, or `fips_code` is required')
     # Make the API call
     return Epidata._request(params)
+   
+    # Fetch COVID mobility data
+    @staticmethod
+    def mobility(type, country, state, month, year, issues=None):
+      """Fetch COVID mobility data."""
+      # Check parameters
+      if type is None or country is None or state is None or month is None or year is None:
+        raise Exception('`type` , `country` , `state` , `month` , `year` are required')
+      # Set up request
+      params = {
+        'source': 'mobility',
+        'type': type,
+        'country': country,
+        'state': state,
+        'month': month,
+        'year': year,
+      }
+      if issues is not None:
+        params['issues'] = Epidata._list(issues)
+      # Make the API call
+      return Epidata._request(params)
 
   # Fetch Delphi's COVID-19 Nowcast sensors
   @staticmethod

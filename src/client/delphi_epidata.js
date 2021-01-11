@@ -612,6 +612,30 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         } // Fetch COVID hospitalization data
 
       }, {
+        key: "mobility",
+        value: function mobility(callback, type, country, state, month, year) {
+          var params; // Check parameters
+
+          if (!(type != null && country != null && state != null && month != null && year != null)) {
+            throw {
+              msg: '`type` , `country` , `state` , `month` , `year` are required'
+            };
+          } // Set up request
+
+
+          params = {
+            'source': 'mobility',
+            'type' : type,
+            'country' : country,
+            'state' : state,
+            'month' : month,
+            'year' : year
+          }; // Make the API call
+
+          return _request(callback, params);
+        } // Fetch API metadata
+
+      }, {
         key: "covid_hosp",
         value: function covid_hosp(callback, states, dates, issues) {
           var params; // Check parameters
