@@ -13,23 +13,21 @@ These tables store the mobility data collected during COVID
 | Field                | Type          | Null | Key | Default | Extra          |
 +----------------------+---------------+------+-----+---------+----------------+
 | id                   | int(14)       | NO   | PRI | NULL    | auto_increment |
-| state		       | varchar(50)   | NO   |     | NULL    |                |
-| county_and_city      | varchar(50)   | NO   |     | NULL    |                |
-| geo_type             | varchar(50)   | NO   |     | NULL    |                |
+| state		             | varchar(50)   | NO   |     | NULL    |                |
+| county               | varchar(50)   | NO   |     | NULL    |                |
 | date                 | datetime      | NO   |     | NULL    |                |
 | driving              | double        | NO   |     | NULL    |                |
 | transit              | double        | NO   |     | NULL    |                |
 | walking              | double        | NO   |     | NULL    |                |
+| fips code            | varchar(10)   | NO   |     | NULL    |                |
 +----------------------+---------------+------+-----+---------+----------------+
 
 - `id`
   unique identifier for each record
 - `state`
   state mobility data collected
-- `county_and_city`
-  county and city mobility data collected
-- `geo type`
-  type of region
+- `county`
+  county mobility data collected
 - `date`
   date of mobility data collection
 - `driving`
@@ -38,19 +36,21 @@ These tables store the mobility data collected during COVID
   transit data
 - `walking`
   walking data
+- `fips code`
+  fips code of county
 */
 
 CREATE TABLE `Apple_Mobility_US` (
   `id` INT(14) NOT NULL AUTO_INCREMENT,
   `state` VARCHAR(50) NOT NULL,
-  `county_and_city` VARCHAR(50) NOT NULL,
-  `geo_type` VARCHAR(50) NOT NULL,	
+  `county` VARCHAR(50) NOT NULL,	
   `date` DATETIME NOT NULL,
   `driving` DOUBLE NOT NULL,
   `transit` DOUBLE NOT NULL,
-  `walking` DOUBLE NOT NULL,  	
+  `walking` DOUBLE NOT NULL,  
+  `fips code` VARCHAR(10) NOT NULL,	
   PRIMARY KEY (`id`),
-  UNIQUE KEY (`state`,`county_and_city`,`geo_type`,`date`)
+  UNIQUE KEY (`state`,`county`,`date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*
@@ -60,8 +60,9 @@ CREATE TABLE `Apple_Mobility_US` (
 | Field                | Type          | Null | Key | Default | Extra          |
 +----------------------+---------------+------+-----+---------+----------------+
 | id                   | int(14)       | NO   | PRI | NULL    | auto_increment |
-| state		       | varchar(50)   | NO   |     | NULL    |                |
+| state		             | varchar(50)   | NO   |     | NULL    |                |
 | county               | varchar(50)   | NO   |     | NULL    |                |
+| fips code            | varchar(10)   | NO   |     | NULL    |                |
 | date                 | datetime      | NO   |     | NULL    |                |
 | retail and recreation| double        | NO   |     | NULL    |                |
 | grocery and pharmacy | double        | NO   |     | NULL    |                |
@@ -77,6 +78,8 @@ CREATE TABLE `Apple_Mobility_US` (
   state mobility data collected
 - `county`
   county mobility data collected
+- `fips code`
+  fips code of county
 - `date`
   date of mobility data collection
 - `retail and recreation`
@@ -93,10 +96,12 @@ CREATE TABLE `Apple_Mobility_US` (
   residential data
 */
 
+
 CREATE TABLE `Google_Mobility_US` (
   `id` INT(14) NOT NULL AUTO_INCREMENT,
   `state` VARCHAR(50) NOT NULL,
-  `county` VARCHAR(50) NOT NULL,	
+  `county` VARCHAR(50) NOT NULL,
+  `fips code` VARCHAR(10) NOT NULL,	
   `date` DATETIME NOT NULL,
   `retail and recreation` DOUBLE NOT NULL,
   `grocery and pharmacy` DOUBLE NOT NULL,
