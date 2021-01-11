@@ -289,35 +289,10 @@ class Database:
         MAX(`lag`) as `max_lag`
       FROM
         `covidcast` t
-        JOIN
-          (
-            SELECT
-              max(`issue`) `max_issue`,
-              `time_type`,
-              `time_value`,
-              `source`,
-              `signal`,
-              `geo_type`,
-              `geo_value`
-            FROM
-              `covidcast`
-            WHERE
-              `source` = %s AND
-              `signal` = %s
-            GROUP BY
-              `time_value`,
-              `time_type`,
-              `geo_type`,
-              `geo_value`
-          ) x
-        ON
-          x.`max_issue` = t.`issue` AND
-          x.`time_type` = t.`time_type` AND
-          x.`time_value` = t.`time_value` AND
-          x.`source` = t.`source` AND
-          x.`signal` = t.`signal` AND
-          x.`geo_type` = t.`geo_type` AND
-          x.`geo_value` = t.`geo_value`
+      WHERE
+        `source` = %s AND
+        `signal` = %s AND
+        is_latest_issue = 1
       GROUP BY
         t.`time_type`,
         t.`geo_type`
