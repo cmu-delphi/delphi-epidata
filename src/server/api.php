@@ -383,14 +383,14 @@ function get_apple_mobility_data($country,$state,$month,$year) {
   $applemobilitydata = array();
   if($country === 'us'){	
   $table = '`Apple_Mobility_US` am';
-  $fields = "am.`state`, am.`county_and_city`, am.`geo_type`, am.`date`, am.`driving`, am.`transit`, am.`walking`";	
+  $fields = "am.`state`, am.`county`, am.`fips code`, am.`date`, am.`driving`, am.`transit`, am.`walking`";	
   // build the filter
   $condition_state = filter_strings('am.`state`', $state);
   $condition_month = filter_strings('month(`date`)', $month);
   $condition_year = filter_strings('year(`date`)', $year);
   $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_state}) AND ({$condition_month}) AND ({$condition_year})";
   // get the data from the database
-  execute_query($query, $applemobilitydata,array('state','county_and_city','geo_type','date'), null, array('driving','transit','walking'));
+  execute_query($query, $applemobilitydata,array('state','county','fips code','date'), null, array('driving','transit','walking'));
   }
   return count($applemobilitydata) === 0 ? null : $applemobilitydata;
 }
@@ -405,14 +405,14 @@ function get_google_mobility_data($country,$state,$month,$year) {
   $googlemobilitydata = array();
   if($country === 'us'){
   $table = '`Google_Mobility_US` gm';
-  $fields = "gm.`state`, gm.`county`, gm.`date`, gm.`retail and recreation`, gm.`grocery and pharmacy`, gm.`parks`, gm.`transit stations`, gm.`workplaces`, gm.`residential`";
+  $fields = "gm.`state`, gm.`county`, gm.`fips code` , gm.`date`, gm.`retail and recreation`, gm.`grocery and pharmacy`, gm.`parks`, gm.`transit stations`, gm.`workplaces`, gm.`residential`";
   // build the filter
   $condition_state = filter_strings('gm.`state`', $state);
   $condition_month = filter_strings('month(`date`)', $month);
   $condition_year = filter_strings('year(`date`)', $year);
   $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_state}) AND ({$condition_month}) AND ({$condition_year})";
   // get the data from the database
-  execute_query($query, $googlemobilitydata,array('state','county','date'), null, array('retail and recreation','grocery and pharmacy','parks','transit stations','workplaces','residential'));
+  execute_query($query, $googlemobilitydata,array('state','county','fips code','date'), null, array('retail and recreation','grocery and pharmacy','parks','transit stations','workplaces','residential'));
   }
   return count($googlemobilitydata) === 0 ? null : $googlemobilitydata;
 }
