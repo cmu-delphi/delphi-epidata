@@ -26,7 +26,7 @@ def get_mobility_link():
 def get_mobility_data():
     """Download Apple Mobility data in CSV format
     """
-    # create directory if it don't exist
+    # create directory if it doesn't exist
     if not os.path.exists(directory) and directory != '':
         os.makedirs(directory)
     else:
@@ -55,13 +55,13 @@ def build_report():
     mobilityData = mobilityData.rename(
         columns={
             'sub-region': 'state',
-            'region': 'county_and_city'})
+            'region': 'county'})
 
     mobilityData = mobilityData.melt(
         id_vars=[
             'geo_type',
             'state',
-            'county_and_city',
+            'county',
             'transportation_type'],
         var_name='date')
     mobilityData['value'] = mobilityData['value'] - 100
@@ -70,18 +70,33 @@ def build_report():
         index=[
             'geo_type',
             'state',
-            'county_and_city',
+            'county',
             'date'],
         columns='transportation_type').reset_index()
     mobilityData.columns = [t + (v if v != "value" else "")
                             for v, t in mobilityData.columns]
 
-    mobilityData = mobilityData.loc[:, ['state', 'county_and_city', 'geo_type',
+    mobilityData = mobilityData.loc[:, ['state', 'county', 'geo_type',
                                         'date', 'driving', 'transit', 'walking']]
     mobilityData = mobilityData.sort_values(
-        by=['state', 'county_and_city', 'geo_type', 'date']).reset_index(drop=True)
+        by=['state', 'county', 'geo_type', 'date']).reset_index(drop=True)
+    mobilityData = mobilityData[(mobilityData['geo_type'] == "county")]
     mobilityData.fillna(0, inplace=True)
-    return mobilityData
+
+    fipsData = pd.read_csv("data/county_fipscode.csv")
+    fipsData['f_county_country'] = fipsData['county name'].astype(str) + ',' + fipsData['state name'].astype(str)
+    mobilityData['m_county_country'] = mobilityData['county'].astype(str) + ',' + mobilityData['state'].astype(
+        str)
+
+    mergeData = pd.merge(mobilityData, fipsData, left_on=['m_county_country'],
+                         right_on=['f_county_country'],
+                         how='left', sort=False)
+
+    mergeData = mergeData.drop(columns=['m_county_country', 'state name', 'county name', 'f_county_country', 'geo_type'])
+    mergeData['fips code'] = mergeData['fips code'].astype(str).replace('\.0', '', regex=True)
+    mergeData['fips code'] = mergeData['fips code'].str.rjust(5, '0')
+    mergeData.fillna(0, inplace=True)
+    return mergeData
 
 
 def split_df(df, size):
@@ -96,6 +111,7 @@ def split_df(df, size):
 
 
 if __name__ == '__main__':
+
     # get data
     get_mobility_data()
     # build reports
