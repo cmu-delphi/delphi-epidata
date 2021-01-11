@@ -24,9 +24,9 @@ datasets.
 
 ## SafeGraph Social Distancing Metrics
 
-* **First issued:** 23 June 2020
-* **Number of data revisions since 23 June 2020:** 1
-* **Date of last change:** 3 November 2020
+* **First issued:** June 20, 2020
+* **Number of data revisions since June 23, 2020:** 1
+* **Date of last change:** November 3, 2020
 
 Data source based on [social distancing
 metrics](https://docs.safegraph.com/docs/social-distancing-metrics).  SafeGraph
@@ -75,8 +75,8 @@ additional day for SafeGraph's data to be ingested into the COVIDcast API.
 
 ## SafeGraph Weekly Patterns
 
-* **First issued:** 30 November 2020
-* **Number of data revisions since 23 June 2020:** 0
+* **First issued:** November 30, 2020
+* **Number of data revisions since June 23, 2020:** 0
 * **Date of last change:** never
 
 Data source based on [Weekly

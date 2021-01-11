@@ -8,8 +8,9 @@ grand_parent: COVIDcast Epidata API
 {: .no_toc}
 
 * **Source name:** `doctor-visits`
-* **Number of data revisions since 19 May 2020:** 1
-* **Date of last change:** 9 November 2020
+* **First issued:** April 29, 2020
+* **Number of data revisions since May 19, 2020:** 1
+* **Date of last change:** November 9, 2020
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)

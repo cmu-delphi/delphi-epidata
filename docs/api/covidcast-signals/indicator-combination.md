@@ -20,9 +20,9 @@ calculated or composed by Delphi. It is not a primary data source.
 
 ## Statistical Combination Signals
 
-* **First issued:** 19 May 2020
-* **Number of data revisions since 19 May 2020:** 1
-* **Date of last change:** [3 June 2020](../covidcast_changelog.md#indicator-combination)
+* **First issued:** May 20, 2020
+* **Number of data revisions since May 19, 2020:** 1
+* **Date of last change:** [June 3, 2020](../covidcast_changelog.md#indicator-combination)
 * **Available for:** county, msa, state (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)

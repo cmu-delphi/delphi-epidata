@@ -9,7 +9,7 @@ grand_parent: COVIDcast Epidata API
 
 * **Source name:** `chng`
 * **First issued:** November 4, 2020
-* **Number of data revisions since 19 May 2020:** 0
+* **Number of data revisions since May 19 2020:** 0
 * **Date of last change:** Never
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))

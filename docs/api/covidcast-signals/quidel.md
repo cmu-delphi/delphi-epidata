@@ -17,9 +17,9 @@ grand_parent: COVIDcast Epidata API
 
 ## COVID-19 Tests
 
-* **First issued:** 27 July 2020 
-* **Number of data revisions since 19 May 2020:** 1
-* **Date of last change:** 22 October 2020
+* **First issued:** July 29, 2020 
+* **Number of data revisions since May 19, 2020:** 1
+* **Date of last change:** October 22, 2020
 * **Available for:** hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
@@ -135,9 +135,9 @@ that day will not include it.
 
 ## Flu Tests
 
-* **First issued:** 20 April 2020
-* **Last issued:** 19 May 2020
-* **Number of data revisions since 19 May 2020:** 0
+* **First issued:** April 29, 2020
+* **Last issued:** May 19, 2020
+* **Number of data revisions since May 19, 2020:** 0
 * **Date of last change:** Never
 * **Available for:** msa, state (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
