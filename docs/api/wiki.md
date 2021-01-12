@@ -66,7 +66,7 @@ Note:
 # Example URLs
 
 ### Wikipedia Access article "influenza" on 2020w01
-https://delphi.cmu.edu/epidata/api.php?source=wiki&language=en&articles=influenza&epiweeks=202001
+https://delphi.cmu.edu/epidata/api.php?endpoint=wiki&language=en&articles=influenza&epiweeks=202001
 
 ```json
 {
@@ -86,7 +86,7 @@ https://delphi.cmu.edu/epidata/api.php?source=wiki&language=en&articles=influenz
 ```
 
 ### Wikipedia Access article "influenza" on date 2020-01-01
-https://delphi.cmu.edu/epidata/api.php?source=wiki&language=en&articles=influenza&dates=20200101
+https://delphi.cmu.edu/epidata/api.php?endpoint=wiki&language=en&articles=influenza&dates=20200101
 
 ```json
 {

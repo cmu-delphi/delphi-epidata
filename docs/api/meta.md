@@ -38,7 +38,7 @@ None.
 
 # Example URLs
 
-https://delphi.cmu.edu/epidata/api.php?source=meta
+https://delphi.cmu.edu/epidata/api.php?endpoint=meta
 
 ```json
 {
