@@ -5,8 +5,8 @@ parent: Epidata API (Other Diseases)
 
 # ECDC ILI
 
-This is the documentation of the API for accessing the ECDC ILI (`ecdc_ili`) endpoint of
-the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
+This is the API documentation for accessing the ECDC ILI (`ecdc_ili`) endpoint
+of [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:

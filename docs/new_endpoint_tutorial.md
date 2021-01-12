@@ -49,9 +49,9 @@ tree -L 3 .
 
 Here's the requirement: we need to quickly surface the most recent "issue"
 (epiweek of publication) for the existing [`fluview` endpoint](api/fluview.md).
-This is already provided by the existing [`meta` endpoint](api/meta.md),
+The existing [`meta` endpoint](api/meta.md) already provides this,
 however, it's _very_ slow, and it returns a bunch of unrelated data. The goal
-is extract the subset of metadata pertaining to `fluview` and return just that
+is to extract the subset of metadata pertaining to `fluview` and return just that
 data through a new endpoint.
 
 Each row in the `fluview` table contains
@@ -65,11 +65,11 @@ the following:
 # update the server
 
 Open [`api.php`](../src/server/api.php) and navigate to the bottom where we see
-line like `if($source === 'NAME') { ... }`. Right below the `if` block for
-`if($source === 'fluview')`, add a new `if else` block for our new endpoint:
+line like `if($endpoint === 'NAME') { ... }`. Right below the `if` block for
+`if($endpoint === 'fluview')`, add a new `if else` block for our new endpoint:
 
 ```php
-else if($source === 'fluview_meta') {
+else if($endpoint === 'fluview_meta') {
  // get the data
  $epidata = meta_fluview();
  store_result($data, $epidata);
@@ -86,9 +86,9 @@ table.
 
 There are currently four client libraries. They all need to be updated to make
 the new `fluview_meta` endpoint available to callers. The pattern is very
-similar for all endpoints, so copy-paste will get you 90% of the way there.
+similar for all endpoints so that copy-paste will get you 90% of the way there.
 
-`fluview_meta` is especially simple as it takes no parameters, and consequently
+`fluview_meta` is especially simple as it takes no parameters, and consequently,
 there is no need to validate parameters. In general, it's a good idea to do
 sanity checks on caller inputs prior to sending the request to the API. See
 some of the other endpoint implementations (e.g. `fluview`) for an example of
@@ -103,7 +103,7 @@ Here's what we add to each client:
     @fluview_meta: (callback) ->
       # Set up request
       params =
-        'source': 'fluview_meta'
+        'endpoint': 'fluview_meta'
       # Make the API call
       _request(callback, params)
     ```
@@ -119,7 +119,7 @@ Here's what we add to each client:
     Epidata.fluview_meta = function(callback) {
       var params;
       params = {
-        'source': 'fluview_meta'
+        'endpoint': 'fluview_meta'
       };
       return _request(callback, params);
     };
@@ -128,8 +128,8 @@ Here's what we add to each client:
 - [`delphi_epidata.py`](../src/client/delphi_epidata.py)
 
     Note that this file, unlike the others, is released as a public package,
-    available to install easily though Python's `pip` tool. That package should
-    be updated once the code is committed, however that is outside of the scope
+    available to install easily through Python's `pip` tool. That package should
+    be updated once the code is committed. However, that is outside of the scope
     of this tutorial.
 
     ```python
@@ -139,7 +139,7 @@ Here's what we add to each client:
       """Fetch FluView metadata."""
       # Set up request
       params = {
-        'source': 'fluview_meta',
+        'endpoint': 'fluview_meta',
       }
       # Make the API call
       return Epidata._request(params)
@@ -152,7 +152,7 @@ Here's what we add to each client:
     fluview_meta <- function() {
       # Set up request
       params <- list(
-        source = 'fluview_meta'
+        endpoint = 'fluview_meta'
       )
       # Make the API call
       return(.request(params))
@@ -176,9 +176,9 @@ repository. Given that the code spans multiple components and languages, this
 needs to be an integration test. See more about integration testing in Delphi's
 [frontend development guide](https://github.com/cmu-delphi/operations/blob/main/docs/frontend_development.md#integration).
 
-Create an integration test for the new endpoint by creating a new file
+Create an integration test for the new endpoint by creating a new file,
 `integrations/server/test_fluview_meta.py`. There's a good amount of
-boilerplate, but fortunately this can be copied _almost_ verbatim from the
+boilerplate, but fortunately, this can be copied _almost_ verbatim from the
 [`fluview` endpoint integration test](../integrations/server/test_fluview.py).
 
 Include the following pieces:
@@ -188,7 +188,7 @@ Include the following pieces:
 - the test class (update name and docstring for `fluview_meta`)
 - the methods `setUpClass`, `setUp`, and `tearDown` (no changes needed)
 
-Add the following test method which creates some dummy data, fetches the new
+Add the following test method, which creates some dummy data, fetches the new
 `fluview_meta` endpoint using the Python client library, and asserts that the
 returned value is what we expect.
 
@@ -231,7 +231,7 @@ endpoints, e.g. [the fluview documentation](api/fluview.md). Update the
 description, table of return values, and sample code and URLs as needed.
 
 Edit the table of endpoints in [`docs/api/README.md`](api/README.md), adding
-the following row in the appropriate place (i.e. next to the row for
+the following row in the appropriate place (i.e., next to the row for
 `fluview`):
 
 ```
@@ -269,10 +269,10 @@ If all succeeds, output should look like this:
 
 ## integration
 
-Integration tests require more effort, and take longer to setup and run.
+Integration tests require more effort and take longer to set up and run.
 However, they allow us to test that various pieces are working together
 correctly. Many of these pieces we can't test individually with unit tests
-(e.g. database, and the API server), so integration tests are the only way we
+(e.g., database, and the API server), so integration tests are the only way we
 can be confident that our changes won't break the API. Follow the [epidata
 development guide](epidata_development.md#test). In summary, assuming you have
 already built the `delphi_python` image above:
@@ -321,14 +321,14 @@ delphi.delphi-epidata.integrations.server.test_fluview_meta.FluviewMetaTests.tes
 # code review and submission
 
 All tests pass, and the changes are working as intended. Now submit the code
-for review, e.g. by opening a pull request on GitHub. For an example, see the
+for review, (e.g., by opening a pull request on GitHub). For an example, see the
 actual
 [pull request for the `fluview_meta` endpoint](https://github.com/cmu-delphi/delphi-epidata/pull/93)
 created in this tutorial.
 
 Once it's approved, commit the code. Within a short amount of time (usually ~30
 seconds), the API will begin serving your new endpoint. Go ahead and give it a
-try: https://delphi.midas.cs.cmu.edu/epidata/api.php?source=fluview_meta
+try: https://delphi.midas.cs.cmu.edu/epidata/api.php?endpoint=fluview_meta
 
 ```
 {

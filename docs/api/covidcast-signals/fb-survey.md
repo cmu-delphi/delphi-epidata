@@ -14,6 +14,8 @@ grand_parent: COVIDcast Epidata API
 * **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
 
+## Overview
+
 This data source is based on symptom surveys run by the Delphi group at Carnegie
 Mellon. Facebook directs a random sample of its users to these surveys, which
 are voluntary. Individual survey responses are held by CMU and are sharable with
@@ -36,7 +38,7 @@ described in the sections below:
 4. [Mental health indicators](#mental-health-indicators), based on self-reports
    of anxiety, depression, isolation, and worry about COVID
 
-## Table of contents
+## Table of Contents
 {: .no_toc .text-delta}
 
 1. TOC
