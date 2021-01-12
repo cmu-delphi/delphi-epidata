@@ -34,7 +34,7 @@ whose estimate is being reported. Estimates are available for several possible
 * `state`: The 50 states, identified by their two-digit postal abbreviation (in
   lower case). Estimates for Puerto Rico are available as state `pr`;
   Washington, D.C. is available as state `dc`.
-  * `nation`: accepted values are the ISO 3166-1 alpha-2 [country codes](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). Currently the only nation we have data on is `us`.
+* `nation`: accepted values are the ISO 3166-1 alpha-2 [country codes](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). Currently the only nation we have data on is `us`.
 
 Some signals are not available for all `geo_type`s since they may be reported
 by their original sources at geographic resolutions which are too coarse.
