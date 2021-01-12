@@ -52,7 +52,7 @@ class CovidcastTests(unittest.TestCase):
     response = requests.get(BASE_URL, params={
       'source': 'covidcast_nowcast',
       'data_source': 'src',
-      'signal': 'sig',
+      'signals': 'sig',
       'time_type': 'day',
       'geo_type': 'county',
       'time_values': 20200101,
@@ -78,7 +78,7 @@ class CovidcastTests(unittest.TestCase):
     response = requests.get(BASE_URL, params={
       'source': 'covidcast_nowcast',
       'data_source': 'src',
-      'signal': 'sig',
+      'signals': 'sig',
       'time_type': 'day',
       'geo_type': 'county',
       'time_values': 20200101,
@@ -103,7 +103,7 @@ class CovidcastTests(unittest.TestCase):
     response = requests.get(BASE_URL, params={
       'source': 'covidcast_nowcast',
       'data_source': 'src',
-      'signal': 'sig',
+      'signals': 'sig',
       'time_type': 'day',
       'geo_type': 'county',
       'time_values': 20200101,
