@@ -1,5 +1,5 @@
 ---
-title: COVID-19 Reported Patient Impact and Hospital Capacity: Facility lookup
+title: COVID-19 Reported Patient Impact and Hospital Capacity - Facility lookup
 parent: Epidata API (Other Diseases)
 ---
 
@@ -31,7 +31,7 @@ This data source provides metadata about healthcare facilities in the US.
 
 # The API
 
-The base URL is: https://delphi.cmu.edu/epidata/api.php
+The base URL is: https://delphi.cmu.edu/epidata/api.php?source=covid_hosp_facility_lookup
 
 See [this documentation](README.md) for details on specifying locations and dates.
 
