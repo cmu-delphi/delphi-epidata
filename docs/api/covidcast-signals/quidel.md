@@ -35,8 +35,8 @@ meaningful levels starting May 26, 2020.
 
 | Signal | Description |
 | --- | --- |
-| `covid_ag_raw_pct_positive` | Percentage of antigen tests that were positive for COVID-19, with no smoothing applied. |
-| `covid_ag_smoothed_pct_positive` | Percentage of antigen tests that were positive for COVID-19, smoothed by pooling together the last 7 days of tests. |
+| `covid_ag_raw_pct_positive` | Percentage of antigen tests that were positive for COVID-19, with no smoothing applied. <br/> **First Available:** 05/26/2020 |
+| `covid_ag_smoothed_pct_positive` | Percentage of antigen tests that were positive for COVID-19, smoothed by pooling together the last 7 days of tests. <br/> **First Available:** 05/26/2020 |
 
 ### Estimation
 
@@ -160,7 +160,7 @@ small. The data may be updated again when the Winter 2020 flu season begins.
 
 | Signal | Description |
 | --- | --- |
-| `raw_pct_negative` | The percentage of flu tests that are negative, suggesting the patient's illness has another cause, possibly COVID-19 |
-| `smoothed_pct_negative` | Same as above, but smoothed in time |
-| `raw_tests_per_device` | The number of flu tests conducted by each testing device; measures volume of testing |
-| `smoothed_tests_per_device` | Same as above, but smoothed in time |
+| `raw_pct_negative` | The percentage of flu tests that are negative, suggesting the patient's illness has another cause, possibly COVID-19 <br/> **First Available:** 01/31/2020 |
+| `smoothed_pct_negative` | Same as above, but smoothed in time <br/> **First Available:** 01/31/2020 |
+| `raw_tests_per_device` | The number of flu tests conducted by each testing device; measures volume of testing <br/> **First Available:** 01/31/2020  |
+| `smoothed_tests_per_device` | Same as above, but smoothed in time <br/> **First Available:** 01/31/2020  |
