@@ -2074,7 +2074,7 @@ if(database_connect()) {
       $epidata = get_covid_hosp_state_timeseries($states, $dates, $issues);
       store_result($data, $epidata);
     }
-  } else if($source === 'covid_hosp_facility') {
+  } else if($endpoint === 'covid_hosp_facility') {
     if(require_all($data, array('hospital_pks', 'collection_weeks'))) {
       // parse the request
       $hospital_pks = extract_values($_REQUEST['hospital_pks'], 'str');
@@ -2084,7 +2084,7 @@ if(database_connect()) {
       $epidata = get_covid_hosp_facility($hospital_pks, $collection_weeks, $publication_dates);
       store_result($data, $epidata);
     }
-  } else if($source === 'covid_hosp_facility_lookup') {
+  } else if($endpoint === 'covid_hosp_facility_lookup') {
     if(require_any($data, array('state', 'ccn', 'city', 'zip', 'fips_code'))) {
       $state = isset($_REQUEST['state']) ? extract_values($_REQUEST['state'], 'str') : null;
       $ccn = isset($_REQUEST['ccn']) ? extract_values($_REQUEST['ccn'], 'str') : null;
@@ -2095,7 +2095,7 @@ if(database_connect()) {
       $epidata = get_covid_hosp_facility_lookup($state, $ccn, $city, $zip, $fips_code);
       store_result($data, $epidata);
     }
-  } else if($source === 'covidcast_nowcast') {
+  } else if($endpoint === 'covidcast_nowcast') {
     if(require_all($data, array('data_source', 'time_type', 'geo_type', 'time_values', 'signals'))
        && require_any($data, array('geo_value', 'geo_values'))) {
       // parse the request
