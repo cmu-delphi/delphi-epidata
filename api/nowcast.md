@@ -53,7 +53,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 # Example URLs
 
 ### ILI Nearby on 2020w01 (national)
-https://delphi.cmu.edu/epidata/api.php?source=nowcast&locations=nat&epiweeks=202001
+https://delphi.cmu.edu/epidata/api.php?endpoint=nowcast&locations=nat&epiweeks=202001
 
 ```json
 {
