@@ -1,0 +1,68 @@
+{
+    "help": "Return the metadata of a dataset (package) and its resources. :param id: the id or name of the dataset :type id: string",
+    "success": true,
+    "result": [
+        {
+            "id": "060e4acc-241d-4d19-a929-f5f7b653c648",
+            "name": "covid-19-estimated-patient-impact-and-hospital-capacity-state",
+            "title": "COVID-19 Estimated Patient Impact and Hospital Capacity by State",
+            "author": "U.S. Department of Health &amp; Human Services",
+            "maintainer": "HealthData.gov",
+            "maintainer_email": "HealthData@hhs.gov",
+            "license_title": "https://opendatacommons.org/licenses/odbl/1.0/",
+            "notes": "<p>The following dataset provides state-aggregated data for <strong>estimated patient impact and hospital utilization</strong>.</p>\n<p>The source data for estimation is derived from reports with facility-level granularity across two main sources: (1) HHS TeleTracking, and (2) reporting provided directly to HHS Protect by state/territorial health departments on behalf of their healthcare facilities.</p>\n<p>Estimates Basis: These files are representative estimates for each state and are updated weekly. These projections are based on the information we have from those who reported.  As more hospitals report more frequently our projections become more accurate. The actual data for these data points are updated every day, once a day on healthdata.gov and these are the downloadable data sets.</p>\n",
+            "url": "https://healthdata.gov/dataset/covid-19-estimated-patient-impact-and-hospital-capacity-state",
+            "state": "Active",
+            "log_message": "Update to resource Estimated ICU Beds Occupied by State Timeseries",
+            "private": true,
+            "revision_timestamp": "Sun, 12/13/2020 - 22:40",
+            "metadata_created": "Mon, 07/20/2020 - 08:22",
+            "metadata_modified": "Sun, 12/13/2020 - 22:40",
+            "creator_user_id": "4be8b03b-ca18-4c6c-92fe-93fb680f6983",
+            "type": "Dataset",
+            "resources": [
+                {
+                    "id": "2e53c415-5cbe-440a-824e-aa3e450c8fa1",
+                    "revision_id": "",
+                    "url": "https://healthdata.gov/sites/default/files/estimated_inpatient_all_20201213_1757.csv",
+                    "description": "<p><strong>Updated: December 13, 2020 10:35 PM</strong></p>\n<p>Statistical estimation with a 95% confidence interval for number and percentage of inpatient beds occupied for the given state and date</p>\n<p><strong>Data Dictionary:</strong><br />\n1. state (string): The two digit state code<br />\n2. collection_date (date): Date estimated<br />\n3. Inpatient Beds Occupied Estimated (double): Estimated number of inpatient beds occupied for the given state and date<br />\n4. Count LL (double): Estimated number of inpatient beds occupied for the given state and date, lower limit, 95% confidence interval<br />\n5. Count UL (double): Estimated number of inpatient beds occupied for the given state and date, upper limit, 95% confidence interval<br />\n6. Percentage of Inpatient Beds Occupied Estimated (double): Estimated percentage of inpatient beds occupied for the given state and date<br />\n7. Percentage LL (double): Estimated percentage of inpatient beds occupied for the given state and date, lower limit, 95% confidence interval<br />\n8. Percentage UL (double): Estimated percentage of inpatient beds occupied for the given state and date, upper limit, 95% confidence interval</p>\n",
+                    "format": "csv",
+                    "state": "Active",
+                    "revision_timestamp": "Sun, 12/13/2020 - 22:36",
+                    "name": "Estimated Inpatient Beds Occupied by State Timeseries",
+                    "mimetype": "text/csv",
+                    "size": "129.14 KB",
+                    "created": "Mon, 07/20/2020 - 08:25",
+                    "resource_group_id": "af7749f7-beeb-453f-97e7-c958adeb40dc",
+                    "last_modified": "Date changed  Sun, 12/13/2020 - 22:36"
+                }
+            ],
+            "tags": [
+                {
+                    "id": "00a48b5c-b18a-4ac2-864b-160d453e4f1c",
+                    "vocabulary_id": "6",
+                    "name": "Covid"
+                },
+                {
+                    "id": "10b1ca03-8c76-4a95-91e6-86d31816f575",
+                    "vocabulary_id": "6",
+                    "name": "Covid-19"
+                },
+                {
+                    "id": "56f3cdad-8acb-46c8-bc71-aa1ded8407fb",
+                    "vocabulary_id": "6",
+                    "name": "Covid19"
+                }
+            ],
+            "groups": [
+                {
+                    "description": "<p>The United States Department of Health and Human Services (HHS), also known as the Health Department, is a cabinet-level department of the U.S. federal government with the goal of protecting the health of all Americans and providing essential human services. The official HHS motto is \"Improving the health, safety, and well-being of America.\"</p>\n",
+                    "id": "af7749f7-beeb-453f-97e7-c958adeb40dc",
+                    "image_display_url": "https://healthdata.gov/sites/default/files/US-DeptOfHHS-Seal1_0.jpg",
+                    "title": "Department of Health & Human Services",
+                    "name": "agencies/department-health-human-services"
+                }
+            ]
+        }
+    ]
+}

@@ -8,6 +8,7 @@ grand_parent: COVIDcast Epidata API
 {: .no_toc}
 * **Source name:** `safegraph`
 * **Available for:** county, MSA, HRR, state (see [geography coding docs](../covidcast_geography.md))
+* **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
 
 This data source uses data reported by [SafeGraph](https://www.safegraph.com/)
@@ -15,7 +16,7 @@ using anonymized location data from mobile phones. SafeGraph provides several
 different datasets to eligible researchers. We surface signals from two such
 datasets.
 
-## Table of contents
+## Table of Contents
 {: .no_toc .text-delta}
 
 1. TOC

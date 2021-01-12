@@ -624,3 +624,82 @@ class Epidata:
       params['issues'] = Epidata._list(issues)
     # Make the API call
     return Epidata._request(params)
+
+  # Fetch COVID hospitalization data for specific facilities
+  @staticmethod
+  def covid_hosp_facility(
+      hospital_pks, collection_weeks, publication_dates=None):
+    """Fetch COVID hospitalization data for specific facilities."""
+    # Check parameters
+    if hospital_pks is None or collection_weeks is None:
+      raise Exception('`hospital_pks` and `collection_weeks` are both required')
+    # Set up request
+    params = {
+      'source': 'covid_hosp_facility',
+      'hospital_pks': Epidata._list(hospital_pks),
+      'collection_weeks': Epidata._list(collection_weeks),
+    }
+    if publication_dates is not None:
+      params['publication_dates'] = Epidata._list(publication_dates)
+    # Make the API call
+    return Epidata._request(params)
+
+  # Lookup COVID hospitalization facility identifiers
+  @staticmethod
+  def covid_hosp_facility_lookup(
+      state=None, ccn=None, city=None, zip=None, fips_code=None):
+    """Lookup COVID hospitalization facility identifiers."""
+    # Set up request
+    params = {'source': 'covid_hosp_facility_lookup'}
+    if state is not None:
+      params['state'] = state
+    elif ccn is not None:
+      params['ccn'] = ccn
+    elif city is not None:
+      params['city'] = city
+    elif zip is not None:
+      params['zip'] = zip
+    elif fips_code is not None:
+      params['fips_code'] = fips_code
+    else:
+      raise Exception('one of `state`, `ccn`, `city`, `zip`, or `fips_code` is required')
+    # Make the API call
+    return Epidata._request(params)
+
+  # Fetch Delphi's COVID-19 Nowcast sensors
+  @staticmethod
+  def covidcast_nowcast(
+          data_source, signals, time_type, geo_type,
+          time_values, geo_value, as_of=None, issues=None, lag=None, **kwargs):
+    """Fetch Delphi's COVID-19 Nowcast sensors"""
+    # Check parameters
+    if data_source is None or signals is None or time_type is None or geo_type is None or time_values is None or geo_value is None:
+      raise Exception('`data_source`, `signals`, `time_type`, `geo_type`, `time_values`, and `geo_value` are all required')
+    if issues is not None and lag is not None:
+      raise Exception('`issues` and `lag` are mutually exclusive')
+    # Set up request
+    params = {
+      'source': 'covidcast_nowcast',
+      'data_source': data_source,
+      'signals': Epidata._list(signals),
+      'time_type': time_type,
+      'geo_type': geo_type,
+      'time_values': Epidata._list(time_values)
+    }
+
+    if isinstance(geo_value, (list, tuple)):
+      params['geo_values'] = ','.join(geo_value)
+    else:
+      params['geo_value'] = geo_value
+    if as_of is not None:
+      params['as_of'] = as_of
+    if issues is not None:
+      params['issues'] = Epidata._list(issues)
+    if lag is not None:
+      params['lag'] = lag
+
+    if 'format' in kwargs:
+      params['format'] = kwargs['format']
+
+    # Make the API call
+    return Epidata._request(params)

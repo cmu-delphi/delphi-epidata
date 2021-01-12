@@ -1,0 +1,62 @@
+{
+    "help": "Return the metadata of a dataset (package) and its resources. :param id: the id or name of the dataset :type id: string",
+    "success": true,
+    "result": [
+        {
+            "id": "d475cc4e-83cd-4c16-be57-9105f300e0bc",
+            "name": "covid-19-reported-patient-impact-and-hospital-capacity-facility",
+            "title": "COVID-19 Reported Patient Impact and Hospital Capacity by Facility",
+            "maintainer": "HealthData.gov",
+            "maintainer_email": "HealthData@hhs.gov",
+            "license_title": "https://opendatacommons.org/licenses/by/1.0/",
+            "notes": "<p>The following dataset provides facility-level data for hospital utilization aggregated on a weekly basis (Friday to Thursday). These are derived from reports with facility-level granularity across two main sources: (1) HHS TeleTracking, and (2) reporting provided directly to HHS Protect by state/territorial health departments on behalf of their healthcare facilities.</p>\n<p>The hospital population includes all hospitals registered with Centers for Medicare &amp; Medicaid Services (CMS) as of June 1, 2020. It includes non-CMS hospitals that have reported since July 15, 2020.  It does not include psychiatric, rehabilitation, Indian Health Service (IHS) facilities, U.S. Department of Veterans Affairs (VA) facilities, Defense Health Agency (DHA) facilities, and religious non-medical facilities.</p>\n<p>For a given entry, the term \u201ccollection_week\u201d signifies the start of the period that is aggregated. For example, a \u201ccollection_week\u201d of 2020-11-20 means the average/sum/coverage of the elements captured from that given facility starting and including Friday, November 20, 2020, and ending and including reports for Thursday, November 26, 2020.</p>\n<p>Reported elements include an append of either \u201c_coverage\u201d, \u201c_sum\u201d, or \u201c_avg\u201d.</p>\n<ul>\n<li>A \u201c_coverage\u201d append denotes how many times the facility reported that element during that collection week.</li>\n<li>A \u201c_sum\u201d append denotes the sum of the reports provided for that facility for that element during that collection week.</li>\n<li>A \u201c_avg\u201d append is the average of the reports provided for that facility for that element during that collection week.</li>\n</ul>\n<p>The file will be updated weekly. No statistical analysis is applied to impute non-response. For averages, calculations are based on the number of values collected for a given hospital in that collection week. Suppression is applied to the file for sums and averages less than four (4). In these cases, the field will be replaced with \u201c-999,999\u201d.</p>\n<p>This data is preliminary and subject to change as more data become available. Data is available starting on July 31, 2020.</p>\n<p>Sometimes, reports for a given facility will be provided to both HHS TeleTracking and HHS Protect. When this occurs, to ensure that there are not duplicate reports, deduplication is applied according to prioritization rules within HHS Protect.</p>\n<p>For influenza fields listed in the file, the current HHS guidance marks these fields as optional. As a result, coverage of these elements are varied.</p>\n<p><a href=\"https://healthdata.gov/covid-19-reported-patient-impact-and-hospital-capacity-facility-data-dictionary\">COVID-19 Reported Patient Impact and Hospital Capacity by Facility Data Dictionary</a></p>\n",
+            "url": "https://healthdata.gov/dataset/covid-19-reported-patient-impact-and-hospital-capacity-facility",
+            "state": "Active",
+            "log_message": "12/9/2020 - Addition of the Data Dictionary for the File",
+            "private": true,
+            "revision_timestamp": "Wed, 12/09/2020 - 17:23",
+            "metadata_created": "Mon, 12/07/2020 - 16:45",
+            "metadata_modified": "Wed, 12/09/2020 - 17:23",
+            "creator_user_id": "4be8b03b-ca18-4c6c-92fe-93fb680f6983",
+            "type": "Dataset",
+            "resources": [
+                {
+                    "id": "b2ce2346-5e9b-4392-bfcf-8fe677f20708",
+                    "revision_id": "",
+                    "url": "https://healthdata.gov/sites/default/files/reported_hospital_capacity_admissions_facility-level_weekly_average_timeseries_20201207.csv",
+                    "description": "",
+                    "format": ".csv",
+                    "state": "Active",
+                    "revision_timestamp": "Tue, 12/08/2020 - 08:46",
+                    "name": "COVID-19 Reported Patient Impact and Hospital Capacity by Facility",
+                    "mimetype": "text/csv",
+                    "size": "44.35 MB",
+                    "created": "Mon, 12/07/2020 - 16:45",
+                    "resource_group_id": "af7749f7-beeb-453f-97e7-c958adeb40dc",
+                    "last_modified": "Date changed  Tue, 12/08/2020 - 08:46"
+                }
+            ],
+            "tags": [
+                {
+                    "id": "08e08c62-744c-42fc-adde-231990e26602",
+                    "vocabulary_id": "6",
+                    "name": "COVID"
+                },
+                {
+                    "id": "740bc6ef-31aa-4b9d-97fa-a55a15a5cd22",
+                    "vocabulary_id": "6",
+                    "name": "COVID-19"
+                }
+            ],
+            "groups": [
+                {
+                    "description": "<p>The United States Department of Health and Human Services (HHS), also known as the Health Department, is a cabinet-level department of the U.S. federal government with the goal of protecting the health of all Americans and providing essential human services. The official HHS motto is \"Improving the health, safety, and well-being of America.\"</p>\n",
+                    "id": "af7749f7-beeb-453f-97e7-c958adeb40dc",
+                    "image_display_url": "https://healthdata.gov/sites/default/files/US-DeptOfHHS-Seal1_0.jpg",
+                    "title": "Department of Health & Human Services",
+                    "name": "agencies/department-health-human-services"
+                }
+            ]
+        }
+    ]
+}

@@ -35,7 +35,11 @@ Epidata <- (function() {
   # Helper function to request and parse epidata
   .request <- function(params) {
     # API call
-    return(content(GET(BASE_URL, query=params), 'parsed'))
+    res <- GET(BASE_URL, query=params)
+    if (res$status_code == 414) {
+      res <- POST(BASE_URL, body=params, encode='form')
+    }
+    return(content(res, 'parsed'))
   }
 
   # Build a `range` object (ex: dates/epiweeks)
@@ -247,7 +251,7 @@ Epidata <- (function() {
   }
 
   # Fetch Wikipedia access data
-  wiki <- function(articles, dates, epiweeks, hours) {
+  wiki <- function(articles, dates, epiweeks, hours, language='en') {
     # Check parameters
     if(missing(articles)) {
       stop('`articles` is required')
@@ -258,7 +262,8 @@ Epidata <- (function() {
     # Set up request
     params <- list(
       endpoint = 'wiki',
-      articles = .list(articles)
+      articles = .list(articles),
+      language = language
     )
     if(!missing(dates)) {
       params$dates <- .list(dates)
@@ -566,6 +571,46 @@ Epidata <- (function() {
     return(.request(params))
   }
 
+  # Fetch COVID hospitalization data for specific facilities
+  covid_hosp_facility <- function(hospital_pks, collection_weeks, publication_dates) {
+    # Check parameters
+    if(missing(hospital_pks) || missing(collection_weeks)) {
+      stop('`hospital_pks` and `collection_weeks` are both required')
+    }
+    # Set up request
+    params <- list(
+      source = 'covid_hosp_facility',
+      hospital_pks = .list(hospital_pks),
+      collection_weeks = .list(collection_weeks)
+    )
+    if(!missing(publication_dates)) {
+      params$publication_dates <- .list(publication_dates)
+    }
+    # Make the API call
+    return(.request(params))
+  }
+
+  # Lookup COVID hospitalization facility identifiers
+  covid_hosp_facility_lookup <- function(state, ccn, city, zip, fips_code) {
+    # Set up request
+    params <- list(source = 'covid_hosp_facility_lookup')
+    if(!missing(state)) {
+      params$state <- state
+    } else if(!missing(ccn)) {
+      params$ccn <- ccn
+    } else if(!missing(city)) {
+      params$city <- city
+    } else if(!missing(zip)) {
+      params$zip <- zip
+    } else if(!missing(fips_code)) {
+      params$fips_code <- fips_code
+    } else {
+      stop('one of `state`, `ccn`, `city`, `zip`, or `fips_code` is required')
+    }
+    # Make the API call
+    return(.request(params))
+  }
+
   # Export the public methods
   return(list(
     range = range,
@@ -593,6 +638,8 @@ Epidata <- (function() {
     meta = meta,
     covidcast = covidcast,
     covidcast_meta = covidcast_meta,
-    covid_hosp = covid_hosp
+    covid_hosp = covid_hosp,
+    covid_hosp_facility = covid_hosp_facility,
+    covid_hosp_facility_lookup = covid_hosp_facility_lookup
   ))
 })()

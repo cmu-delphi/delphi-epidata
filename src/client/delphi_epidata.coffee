@@ -42,9 +42,22 @@ class Epidata
       else
         callback(0, 'unknown error', null)
     # Request data from the server
-    if $?.getJSON?
+    isBrowser = $?.ajax?
+    data = if isBrowser then $.param(params) else querystring.stringify(params)
+    fullURL = "#{BASE_URL}?#{data}"
+
+    # decide method to avoid that we getting a 414 request too large error
+    method = if fullURL.length < 2048 then 'GET' else 'POST'
+
+    if isBrowser
       # API call with jQuery
-      $.getJSON(BASE_URL, params, handler)
+      $.ajax({
+        url: BASE_URL,
+        dataType: "json",
+        method: method,
+        success: handler,
+        data: params,
+      });
     else
       # Function to handle the HTTP response
       reader = (response) ->
@@ -54,7 +67,19 @@ class Epidata
         response.on('error', (e) -> error(e.message))
         response.on('end', () -> handler(JSON.parse(text)))
       # API call with Node
-      https.get("#{BASE_URL}?#{querystring.stringify(params)}", reader)
+      if method == 'GET'
+        https.get(fullURL, reader)
+      else
+        req = https.request(BASE_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Length': Buffer.byteLength(data)
+          }
+        }, reader)
+        # Write data to request body
+        req.write(data)
+        req.end()
 
   # Build a `range` object (ex: dates/epiweeks)
   @range = (from, to) ->
@@ -178,7 +203,7 @@ class Epidata
     _request(callback, params)
 
   # Fetch Wikipedia access data
-  @wiki: (callback, articles, dates, epiweeks, hours) ->
+  @wiki: (callback, articles, dates, epiweeks, hours, language) ->
     # Check parameters
     unless articles?
       throw { msg: '`articles` is required' }
@@ -188,6 +213,7 @@ class Epidata
     params =
       'endpoint': 'wiki'
       'articles': _list(articles)
+      'language': language || 'en'
     if dates?
       params.dates = _list(dates)
     if epiweeks?
@@ -401,6 +427,41 @@ class Epidata
       'dates': _list(dates)
     if issues?
       params.issues = _list(issues)
+    # Make the API call
+    _request(callback, params)
+
+  # Fetch COVID hospitalization data for specific facilities
+  @covid_hosp_facility: (callback, hospital_pks, collection_weeks, publication_dates) ->
+    # Check parameters
+    unless hospital_pks? and collection_weeks?
+      throw { msg: '`hospital_pks` and `collection_weeks` are both required' }
+    # Set up request
+    params =
+      'source': 'covid_hosp_facility'
+      'hospital_pks': _list(hospital_pks)
+      'collection_weeks': _list(collection_weeks)
+    if publication_dates?
+      params.publication_dates = _list(publication_dates)
+    # Make the API call
+    _request(callback, params)
+
+  # Lookup COVID hospitalization facility identifiers
+  @covid_hosp_facility_lookup: (state, ccn, city, zip, fips_code) ->
+    # Set up request
+    params =
+      'source': 'covid_hosp_facility'
+    if state?
+      params.state = state
+    else if ccn?
+      params.ccn = ccn
+    else if city?
+      params.city = city
+    else if zip?
+      params.zip = zip
+    else if fips_code?
+      params.fips_code = fips_code
+    else
+      throw { msg: 'one of `state`, `ccn`, `city`, `zip`, or `fips_code` is required' }
     # Make the API call
     _request(callback, params)
 

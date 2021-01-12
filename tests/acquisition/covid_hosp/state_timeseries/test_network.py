@@ -2,7 +2,7 @@
 
 # standard library
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import patch
 from unittest.mock import sentinel
 
 # py3tester coverage target
@@ -15,23 +15,10 @@ class NetworkTests(unittest.TestCase):
   def test_fetch_metadata(self):
     """Fetch metadata as JSON."""
 
-    mock_response = MagicMock()
-    mock_response.json.return_value = sentinel.metadata
-    mock_requests = MagicMock()
-    mock_requests.get.return_value = mock_response
+    with patch.object(Network, 'fetch_metadata_for_dataset') as func:
+      func.return_value = sentinel.json
 
-    result = Network.fetch_metadata(requests_impl=mock_requests)
+      result = Network.fetch_metadata()
 
-    self.assertEqual(result, sentinel.metadata)
-    mock_requests.get.assert_called_once_with(Network.METADATA_URL)
-
-  def test_fetch_dataset(self):
-    """Fetch dataset as CSV."""
-
-    mock_pandas = MagicMock()
-    mock_pandas.read_csv.return_value = sentinel.dataset
-
-    result = Network.fetch_dataset(sentinel.url, pandas_impl=mock_pandas)
-
-    self.assertEqual(result, sentinel.dataset)
-    mock_pandas.read_csv.assert_called_once_with(sentinel.url)
+      self.assertEqual(result, sentinel.json)
+      func.assert_called_once_with(dataset_id=Network.DATASET_ID)

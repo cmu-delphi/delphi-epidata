@@ -253,7 +253,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
       }, {
         key: "wiki",
-        value: function wiki(callback, articles, dates, epiweeks, hours) {
+        value: function wiki(callback, articles, dates, epiweeks, hours, language) {
           var params; // Check parameters
 
           if (articles == null) {
@@ -271,7 +271,8 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
           params = {
             'endpoint': 'wiki',
-            'articles': _list(articles)
+            'articles': _list(articles),
+            'language': language || 'en'
           };
 
           if (dates != null) {
@@ -634,6 +635,61 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
           return _request(callback, params);
+        } // Fetch COVID hospitalization data for specific facilities
+
+      }, {
+        key: "covid_hosp_facility",
+        value: function covid_hosp_facility(callback, hospital_pks, collection_weeks, publication_dates) {
+          var params; // Check parameters
+
+          if (!(hospital_pks != null && collection_weeks != null)) {
+            throw {
+              msg: '`hospital_pks` and `collection_weeks` are both required'
+            };
+          } // Set up request
+
+
+          params = {
+            'source': 'covid_hosp_facility',
+            'hospital_pks': _list(hospital_pks),
+            'collection_weeks': _list(collection_weeks)
+          };
+
+          if (publication_dates != null) {
+            params.publication_dates = _list(publication_dates);
+          } // Make the API call
+
+
+          return _request(callback, params);
+        } // Lookup COVID hospitalization facility identifiers
+
+      }, {
+        key: "covid_hosp_facility_lookup",
+        value: function covid_hosp_facility_lookup(state, ccn, city, zip, fips_code) {
+          var params; // Set up request
+
+          params = {
+            'source': 'covid_hosp_facility'
+          };
+
+          if (state != null) {
+            params.state = state;
+          } else if (ccn != null) {
+            params.ccn = ccn;
+          } else if (city != null) {
+            params.city = city;
+          } else if (zip != null) {
+            params.zip = zip;
+          } else if (fips_code != null) {
+            params.fips_code = fips_code;
+          } else {
+            throw {
+              msg: 'one of `state`, `ccn`, `city`, `zip`, or `fips_code` is required'
+            };
+          } // Make the API call
+
+
+          return _request(callback, params);
         }
       }]);
 
@@ -675,7 +731,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
     _request = function _request(callback, params) {
-      var handler, reader; // Function to handle the API response
+      var data, fullURL, handler, isBrowser, method, reader, req; // Function to handle the API response
 
       handler = function handler(data) {
         if ((data != null ? data.result : void 0) != null) {
@@ -686,9 +742,21 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       }; // Request data from the server
 
 
-      if ((typeof $ !== "undefined" && $ !== null ? $.getJSON : void 0) != null) {
+      isBrowser = (typeof $ !== "undefined" && $ !== null ? $.ajax : void 0) != null;
+      data = isBrowser ? $.param(params) : querystring.stringify(params);
+      fullURL = "".concat(BASE_URL, "?").concat(data); // decide method to avoid that we getting a 414 request too large error
+
+      method = fullURL.length < 2048 ? 'GET' : 'POST';
+
+      if (isBrowser) {
         // API call with jQuery
-        return $.getJSON(BASE_URL, params, handler);
+        return $.ajax({
+          url: BASE_URL,
+          dataType: "json",
+          method: method,
+          success: handler,
+          data: params
+        });
       } else {
         // Function to handle the HTTP response
         reader = function reader(response) {
@@ -707,7 +775,20 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         }; // API call with Node
 
 
-        return https.get("".concat(BASE_URL, "?").concat(querystring.stringify(params)), reader);
+        if (method === 'GET') {
+          return https.get(fullURL, reader);
+        } else {
+          req = https.request(BASE_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'Content-Length': Buffer.byteLength(data)
+            }
+          }, reader); // Write data to request body
+
+          req.write(data);
+          return req.end();
+        }
       }
     };
 
