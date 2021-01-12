@@ -41,7 +41,7 @@ class ApiAnalyticsTests(unittest.TestCase):
   def test_analytics_update(self):
     """Update internal analytics for requests to the API."""
 
-    make_request = lambda src: requests.get(BASE_URL, params={'source': src})
+    make_request = lambda src: requests.get(BASE_URL, params={'endpoint': src})
 
     # make some requests
     for _ in range(1):

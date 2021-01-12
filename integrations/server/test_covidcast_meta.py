@@ -78,7 +78,7 @@ class CovidcastMetaTests(unittest.TestCase):
     update_cache(args=None)
 
     # make the request
-    response = requests.get(BASE_URL, params={'source': 'covidcast_meta'})
+    response = requests.get(BASE_URL, params={'endpoint': 'covidcast_meta'})
     response.raise_for_status()
     response = response.json()
 
@@ -129,7 +129,7 @@ class CovidcastMetaTests(unittest.TestCase):
     def fetch(**kwargs):
       # make the request
       params = kwargs.copy()
-      params['source'] = 'covidcast_meta'
+      params['endpoint'] = 'covidcast_meta'
       response = requests.get(BASE_URL, params=params)
       response.raise_for_status()
       return response.json()
@@ -246,7 +246,7 @@ class CovidcastMetaTests(unittest.TestCase):
     update_cache(args=None)
 
     # make the request
-    response = requests.get(BASE_URL, params={'source': 'covidcast_meta'})
+    response = requests.get(BASE_URL, params={'endpoint': 'covidcast_meta'})
     response.raise_for_status()
     response = response.json()
 

@@ -50,7 +50,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 # Example URLs
 
 ### Google Flu Trends on 2015w01 (national)
-https://delphi.cmu.edu/epidata/api.php?source=gft&locations=nat&epiweeks=201501
+https://delphi.cmu.edu/epidata/api.php?endpoint=gft&locations=nat&epiweeks=201501
 
 ```json
 {
