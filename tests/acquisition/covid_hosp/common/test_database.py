@@ -9,6 +9,8 @@ from unittest.mock import sentinel
 # third party
 import pandas as pd
 
+from delphi.epidata.acquisition.covid_hosp.common.database import Database
+
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.acquisition.covid_hosp.common.database'
 

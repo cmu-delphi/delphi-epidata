@@ -267,6 +267,15 @@ If all succeeds, output should look like this:
 ✔ All 48 tests passed! 69% (486/704) coverage.
 ```
 
+You can also run tests using pytest like this:
+```
+docker run --rm delphi_python   pytest repos/delphi/delphi-epidata/tests/
+```
+and with pdb enabled like this:
+```
+docker run -it --rm delphi_python   pytest repos/delphi/delphi-epidata/tests/ --pdb
+```
+
 ## integration
 
 Integration tests require more effort and take longer to set up and run.

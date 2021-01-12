@@ -3,9 +3,14 @@
 # standard library
 import unittest
 from unittest.mock import MagicMock
+from datetime import date
 
 # third party
 import pandas
+import epiweeks as epi
+
+from delphi.epidata.acquisition.covidcast.csv_importer import CsvImporter
+from delphi.utils.epiweek import delta_epiweeks
 
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.acquisition.covidcast.csv_importer'

@@ -5,6 +5,8 @@ import unittest
 from unittest.mock import patch
 from unittest.mock import sentinel
 
+from delphi.epidata.acquisition.covid_hosp.facility.network import Network
+
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.acquisition.covid_hosp.facility.network'
 

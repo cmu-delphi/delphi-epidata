@@ -143,6 +143,15 @@ The final line of output should be similar to the following:
 All 48 tests passed! 68% (490/711) coverage.
 ```
 
+You can also run tests using pytest like this:
+```
+docker run --rm delphi_python   pytest repos/delphi/delphi-epidata/tests/
+```
+and with pdb enabled like this:
+```
+docker run -it --rm delphi_python   pytest repos/delphi/delphi-epidata/tests/ --pdb
+```
+
 ## manual tests
 
 You can test your changes manually by:

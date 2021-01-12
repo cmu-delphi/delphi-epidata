@@ -5,8 +5,11 @@ import unittest
 from unittest.mock import MagicMock
 from unittest.mock import sentinel
 
+from delphi.epidata.acquisition.covid_hosp.common.network import Network
+
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.acquisition.covid_hosp.common.network'
+
 
 
 class NetworkTests(unittest.TestCase):
