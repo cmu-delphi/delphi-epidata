@@ -42,7 +42,7 @@ There are no parameters for this endpoint.
 # Example URLs
 
 ### FluView Metadata
-https://delphi.cmu.edu/epidata/api.php?source=fluview_meta
+https://delphi.cmu.edu/epidata/api.php?endpoint=fluview_meta
 
 ```json
 {

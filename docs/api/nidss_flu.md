@@ -67,7 +67,7 @@ If neither is specified, the current issues are used.
 # Example URLs
 
 ### NIDSS Flu on 2015w01 (nationwide)
-https://delphi.cmu.edu/epidata/api.php?source=nidss_flu&regions=nationwide&epiweeks=201501
+https://delphi.cmu.edu/epidata/api.php?endpoint=nidss_flu&regions=nationwide&epiweeks=201501
 
 ```json
 {
