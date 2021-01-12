@@ -327,13 +327,13 @@ also available. These have names beginning `smoothed_w`, such as
 | `smoothed_covid_vaccinated` | Estimated percentage of respondents who have already received a vaccine for COVID-19. **Note:** The Centers for Disease Control compiles data on vaccine administration across the United States. This signal may differ from CDC data because of survey biases and should not be treated as authoritative. However, the survey signal is not subject to the lags and reporting problems in official vaccination data. | V1 |
 
 These indicators are based on questions added in Wave 6 of the survey,
-introduced on December 19, 2020; however, item V1 was only enabled beginning
+introduced on December 19, 2020; however, Delphi only enabled item V1 beginning
 January 6, 2021. **Note:** As of January 2021, vaccination items on the survey
 are being revised in preparation for Wave 7. We may replace the signals above
 with new signals (with different names) if the underlying survey items change
 significantly.
 
-A weighted version of these signal, using the [survey weighting described
+Weighted versions of these signals, using the [survey weighting described
 below](#survey-weighting) to be more representative of state demographics, are
 also available. They have names beginning with `smoothed_w`, such as
 `smoothed_waccept_covid_vaccine`.
