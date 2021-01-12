@@ -10,7 +10,7 @@ grand_parent: COVIDcast Epidata API
 * **Source name:** `fb-survey`
 * **Number of data revisions since 19 May 2020:** 1
 * **Date of last change:** [3 June 2020](../covidcast_changelog.md#fb-survey)
-* **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
+* **Available for:** county, hrr, msa, state, nation (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
 
