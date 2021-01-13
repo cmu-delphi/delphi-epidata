@@ -8,6 +8,7 @@ import mysql.connector
 
 # first party
 from delphi.epidata.client.delphi_epidata import Epidata
+from delphi.epidata.acquisition.covidcast.fill_is_latest_issue import main
 import delphi.operations.secrets as secrets
 
 # py3tester coverage target (equivalent to `import *`)
