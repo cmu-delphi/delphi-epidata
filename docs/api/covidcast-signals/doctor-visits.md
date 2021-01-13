@@ -24,8 +24,8 @@ percentage of COVID-related doctor's visits in a given location, on a given day.
 
 | Signal | Description |
 | --- | --- |
-| `smoothed_cli` | Estimated percentage of outpatient doctor visits primarily about COVID-related symptoms, based on data from health system partners, smoothed in time using a Gaussian linear smoother <br/> **First Available:** 02/01/2020|
-| `smoothed_adj_cli` | Same, but with systematic day-of-week effects removed; see [details below](#day-of-week-adjustment) <br/> **First Available:** 02/01/2020|
+| `smoothed_cli` | Estimated percentage of outpatient doctor visits primarily about COVID-related symptoms, based on data from health system partners, smoothed in time using a Gaussian linear smoother <br/> **First Available:** 2020-02-01 |
+| `smoothed_adj_cli` | Same, but with systematic day-of-week effects removed; see [details below](#day-of-week-adjustment) <br/> **First Available:** 2020-02-01 |
 
 ## Table of Contents
 {: .no_toc .text-delta}

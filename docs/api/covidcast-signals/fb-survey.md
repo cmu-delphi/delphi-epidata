@@ -88,12 +88,12 @@ or influenza-like illness, in a given location, on a given day.
 
 | Signals | Description |
 | --- | --- |
-| `raw_cli` and `smoothed_cli` | Estimated percentage of people with COVID-like illness based on the [criteria below](#ili-and-cli-indicators), with no survey weighting <br/> **First Available:** 04/06/2020|
-| `raw_ili` and `smoothed_ili` | Estimated percentage of people with influenza-like illness based on the [criteria below](#ili-and-cli-indicators), with no survey weighting <br/> **First Available:** 04/06/2020|
-| `raw_wcli` and `smoothed_wcli` | Estimated percentage of people with COVID-like illness; adjusted using survey weights [as described below](#survey-weighting) <br/> **First Available:** 04/06/2020|
-| `raw_wili` and `smoothed_wili` | Estimated percentage of people with influenza-like illness; adjusted using survey weights [as described below](#survey-weighting) <br/> **First Available:** 04/06/2020|
-| `raw_hh_cmnty_cli` and `smoothed_hh_cmnty_cli` | Estimated percentage of people reporting illness in their local community, as [described below](#estimating-community-cli), including their household, with no survey weighting <br/> **First Available:** 04/15/2020 |
-| `raw_nohh_cmnty_cli` and `smoothed_nohh_cmnty_cli` | Estimated percentage of people reporting illness in their local community, as [described below](#estimating-community-cli), not including their household, with no survey weighting <br/> **First Available:** 04/15/2020|
+| `raw_cli` and `smoothed_cli` | Estimated percentage of people with COVID-like illness based on the [criteria below](#ili-and-cli-indicators), with no survey weighting <br/> **First Available:** 2020-04-06 |
+| `raw_ili` and `smoothed_ili` | Estimated percentage of people with influenza-like illness based on the [criteria below](#ili-and-cli-indicators), with no survey weighting <br/> **First Available:** 2020-04-06 |
+| `raw_wcli` and `smoothed_wcli` | Estimated percentage of people with COVID-like illness; adjusted using survey weights [as described below](#survey-weighting) <br/> **First Available:** 2020-04-06 |
+| `raw_wili` and `smoothed_wili` | Estimated percentage of people with influenza-like illness; adjusted using survey weights [as described below](#survey-weighting) <br/> **First Available:** 2020-04-06 |
+| `raw_hh_cmnty_cli` and `smoothed_hh_cmnty_cli` | Estimated percentage of people reporting illness in their local community, as [described below](#estimating-community-cli), including their household, with no survey weighting <br/> **First Available:** 2020-04-15 |
+| `raw_nohh_cmnty_cli` and `smoothed_nohh_cmnty_cli` | Estimated percentage of people reporting illness in their local community, as [described below](#estimating-community-cli), not including their household, with no survey weighting <br/> **First Available:** 2020-04-15 |
 
 Note that for `raw_hh_cmnty_cli` and `raw_nohh_cmnty_cli`, the illnesses
 included are broader: a respondent is included if they know someone in their
@@ -287,15 +287,15 @@ data in the estimation procedures described above.
 
 | Signal | Description | Survey Item | Introduced |
 | --- | --- | --- | --- |
-| `smoothed_wearing_mask` | Estimated percentage of people who wore a mask for most or all of the time while in public in the past 5 days; those not in public in the past 5 days are not counted. <br/> **First Available:** 09/08/2020| C14 | Wave 4, Sept 8, 2020 |
-| `smoothed_others_masked` | Estimated percentage of respondents who say that most or all *other* people wear masks, when they are in public and social distancing is not possible <br/> **First Available:** 11/24/2020 | C16 | Wave 5, Nov 24, 2020 |
-| `smoothed_travel_outside_state_5d` | Estimated percentage of respondents who report traveling outside their state in the past 5 days <br/> **First Available:** 04/06/2020| C6 | Wave 1 |
-| `smoothed_work_outside_home_1d` | Estimated percentage of respondents who worked or went to school outside their home in the past 24 hours <br/> **First Available:** 09/08/2020 | C13 | Wave 4, Sept 8, 2020 |
-| `smoothed_shop_1d` | Estimated percentage of respondents who went to a "market, grocery store, or pharmacy" in the past 24 hours <br/> **First Available:** 09/08/2020| C13 | Wave 4, Sept 8, 2020 |
-| `smoothed_restaurant_1d` | Estimated percentage of respondents who went to a "bar, restaurant, or cafe" in the past 24 hours <br/> **First Available:** 09/08/2020 | C13 | Wave 4, Sept 8, 2020 |
-| `smoothed_spent_time_1d` | Estimated percentage of respondents who "spent time with someone who isn't currently staying with you" in the past 24 hours <br/> **First Available:** 09/08/2020| C13 | Wave 4, Sept 8, 2020 |
-| `smoothed_large_event_1d` | Estimated percentage of respondents who "attended an event with more than 10 people" in the past 24 hours <br/> **First Available:** 09/08/2020| C13 | Wave 4, Sept 8, 2020 |
-| `smoothed_public_transit_1d` | Estimated percentage of respondents who "used public transit" in the past 24 hours <br/> **First Available:** 09/08/2020 | C13 | Wave 4, Sept 8, 2020 |
+| `smoothed_wearing_mask` | Estimated percentage of people who wore a mask for most or all of the time while in public in the past 5 days; those not in public in the past 5 days are not counted. <br/> **First Available:** 2020-09-08 | C14 | Wave 4, Sept 8, 2020 |
+| `smoothed_others_masked` | Estimated percentage of respondents who say that most or all *other* people wear masks, when they are in public and social distancing is not possible <br/> **First Available:** 2020-11-24 | C16 | Wave 5, Nov 24, 2020 |
+| `smoothed_travel_outside_state_5d` | Estimated percentage of respondents who report traveling outside their state in the past 5 days <br/> **First Available:** 2020-04-06 | C6 | Wave 1 |
+| `smoothed_work_outside_home_1d` | Estimated percentage of respondents who worked or went to school outside their home in the past 24 hours <br/> **First Available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
+| `smoothed_shop_1d` | Estimated percentage of respondents who went to a "market, grocery store, or pharmacy" in the past 24 hours <br/> **First Available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
+| `smoothed_restaurant_1d` | Estimated percentage of respondents who went to a "bar, restaurant, or cafe" in the past 24 hours <br/> **First Available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
+| `smoothed_spent_time_1d` | Estimated percentage of respondents who "spent time with someone who isn't currently staying with you" in the past 24 hours <br/> **First Available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
+| `smoothed_large_event_1d` | Estimated percentage of respondents who "attended an event with more than 10 people" in the past 24 hours <br/> **First Available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
+| `smoothed_public_transit_1d` | Estimated percentage of respondents who "used public transit" in the past 24 hours <br/> **First Available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
 
 Weighted versions of these signals, using the [survey weighting described
 below](#survey-weighting) to be more representative of state demographics, are
@@ -307,9 +307,9 @@ also available. These have names beginning `smoothed_w`, such as
 
 | Signal | Description | Survey Item |
 | --- | --- | --- |
-| `smoothed_tested_14d` | Estimated percentage of people who were tested for COVID-19 in the past 14 days, regardless of their test result <br/> **First Available:** 09/08/2020| B8, B10 |
-| `smoothed_tested_positive_14d` | Estimated test positivity rate (percent) among people tested for COVID-19 in the past 14 days <br/> **First Available:** 09/08/2020| B10a |
-| `smoothed_wanted_test_14d` | Estimated percentage of people who *wanted* to be tested for COVID-19 in the past 14 days, out of people who were *not* tested in that time <br/> **First Available:** 09/08/2020 | B12 |
+| `smoothed_tested_14d` | Estimated percentage of people who were tested for COVID-19 in the past 14 days, regardless of their test result <br/> **First Available:** 2020-09-08 | B8, B10 |
+| `smoothed_tested_positive_14d` | Estimated test positivity rate (percent) among people tested for COVID-19 in the past 14 days <br/> **First Available:** 2020-09-08 | B10a |
+| `smoothed_wanted_test_14d` | Estimated percentage of people who *wanted* to be tested for COVID-19 in the past 14 days, out of people who were *not* tested in that time <br/> **First Available:** 2020-09-08 | B12 |
 
 These indicators are based on questions in Wave 4 of the survey, introduced on
 September 8, 2020.
@@ -324,8 +324,8 @@ also available. These have names beginning `smoothed_w`, such as
 
 | Signal | Description | Survey Item |
 | --- | --- | --- |
-| `smoothed_accept_covid_vaccine` | Estimated percentage of respondents who would definitely or probably choose to get vaccinated, if a COVID-19 vaccine were offered to them today. **Note:** Until January 6, 2021, all respondents answered this question; beginning on that date, only respondents who said they have not received a COVID vaccine are asked this question. <br/> **First Available:** 01/01/2021 | V3 |
-| `smoothed_covid_vaccinated` | Estimated percentage of respondents who have already received a vaccine for COVID-19. **Note:** The Centers for Disease Control compiles data on vaccine administration across the United States. This signal may differ from CDC data because of survey biases and should not be treated as authoritative. However, the survey signal is not subject to the lags and reporting problems in official vaccination data. <br/> **First Available:** 06/01/2021 | V1 |
+| `smoothed_accept_covid_vaccine` | Estimated percentage of respondents who would definitely or probably choose to get vaccinated, if a COVID-19 vaccine were offered to them today. **Note:** Until January 6, 2021, all respondents answered this question; beginning on that date, only respondents who said they have not received a COVID vaccine are asked this question. <br/> **First Available:** 2021-01-01 | V3 |
+| `smoothed_covid_vaccinated` | Estimated percentage of respondents who have already received a vaccine for COVID-19. **Note:** The Centers for Disease Control compiles data on vaccine administration across the United States. This signal may differ from CDC data because of survey biases and should not be treated as authoritative. However, the survey signal is not subject to the lags and reporting problems in official vaccination data. <br/> **First Available:** 2021-06-01 | V1 |
 
 These indicators are based on questions added in Wave 6 of the survey,
 introduced on December 19, 2020; however, Delphi only enabled item V1 beginning
@@ -344,11 +344,11 @@ also available. They have names beginning with `smoothed_w`, such as
 
 | Signal | Description | Survey Item |
 | --- | --- | --- |
-| `smoothed_anxious_5d` | Estimated percentage of respondents who reported feeling "nervous, anxious, or on edge" for most or all of the past 5 days <br/> **First Available:** 09/08/2020| C8 |
-| `smoothed_depressed_5d` | Estimated percentage of respondents who reported feeling depressed for most or all of the past 5 days <br/> **First Available:** 09/08/2020| C8 |
-| `smoothed_felt_isolated_5d` | Estimated percentage of respondents who reported feeling "isolated from others" for most or all of the past 5 days <br/> **First Available:** 09/08/2020| C8 |
-| `smoothed_worried_become_ill` | Estimated percentage of respondents who reported feeling very or somewhat worried that "you or someone in your immediate family might become seriously ill from COVID-19" <br/> **First Available:** 09/08/2020| C9 |
-| `smoothed_worried_finances` | Estimated percentage of respondents who report being very or somewhat worried about their "household's finances for the next month" <br/> **First Available:** 09/08/2020| C15 |
+| `smoothed_anxious_5d` | Estimated percentage of respondents who reported feeling "nervous, anxious, or on edge" for most or all of the past 5 days <br/> **First Available:** 2020-09-08 | C8 |
+| `smoothed_depressed_5d` | Estimated percentage of respondents who reported feeling depressed for most or all of the past 5 days <br/> **First Available:** 2020-09-08 | C8 |
+| `smoothed_felt_isolated_5d` | Estimated percentage of respondents who reported feeling "isolated from others" for most or all of the past 5 days <br/> **First Available:** 2020-09-08 | C8 |
+| `smoothed_worried_become_ill` | Estimated percentage of respondents who reported feeling very or somewhat worried that "you or someone in your immediate family might become seriously ill from COVID-19" <br/> **First Available:** 2020-09-08 | C9 |
+| `smoothed_worried_finances` | Estimated percentage of respondents who report being very or somewhat worried about their "household's finances for the next month" <br/> **First Available:** 2020-09-08 | C15 |
 
 Some of these questions were present in the earliest waves of the survey, but
 only in Wave 4 did respondents consent to our use of aggregate data to

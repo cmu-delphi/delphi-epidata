@@ -24,8 +24,8 @@ numbers of COVID-related searches.
 
 | Signal | Description |
 | --- | --- |
-| `raw_search` | Google search volume for COVID-related searches, in arbitrary units that are normalized for population <br/> **First Available:** 02/01/2020 |
-| `smoothed_search` | Google search volume for COVID-related searches, in arbitrary units that are normalized for population, smoothed in time as [described below](#smoothing) <br/> **First Available:** 02/01/2020 |
+| `raw_search` | Google search volume for COVID-related searches, in arbitrary units that are normalized for population <br/> **First Available:** 2020-02-01 |
+| `smoothed_search` | Google search volume for COVID-related searches, in arbitrary units that are normalized for population, smoothed in time as [described below](#smoothing) <br/> **First Available:** 2020-02-01 |
 
 ## Table of Contents
 {: .no_toc .text-delta}

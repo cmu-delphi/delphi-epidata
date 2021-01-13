@@ -40,8 +40,8 @@ specific geographical areas as needed to support forecasting efforts.
 
 | Signal | Description |
 | --- | --- |
-| `raw_cli` | Estimated percentage of people who know someone in their community with COVID-like illness <br/> **First Available:** 04/11/2020 |
-| `smoothed_cli` | Estimated percentage of people who know someone in their community with COVID-like illness, smoothed in time [as described below](#smoothing) <br/> **First Available:** 04/11/2020 |
+| `raw_cli` | Estimated percentage of people who know someone in their community with COVID-like illness <br/> **First Available:** 2020-04-11 |
+| `smoothed_cli` | Estimated percentage of people who know someone in their community with COVID-like illness, smoothed in time [as described below](#smoothing) <br/> **First Available:** 2020-04-11 |
 
 ## Table of Contents
 {: .no_toc .text-delta}
