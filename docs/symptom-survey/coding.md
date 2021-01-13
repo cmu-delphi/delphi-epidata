@@ -418,7 +418,7 @@ Files:
 
 ### Summary of Changes
 
-Wave 7 includes minor modification of the existing questions regarding COVID -19
+Wave 7 includes minor modifications to the existing questions regarding COVID -19
 vaccination. We intend to expand the scope of our questions in the next wave at
 the end of January 2021. Please review the changes carefully when you use
 responses from multiple waves of this survey.
@@ -437,8 +437,8 @@ responses from multiple waves of this survey.
 
 #### Notes
 
-* This wave configures numeric answer items to require answers be ≥0. This is
-  done via JavaScript by setting the `min = "0"` attribute on the input box.
+* This wave configures numeric answer items to require answers to be ≥0. We did this
+  via JavaScript by setting the `min = "0"` attribute on the input box.
   While this should prevent respondents from accidentally entering negative
   numbers, those who deliberately want to enter negative numbers can bypass the
   restriction.
