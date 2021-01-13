@@ -9,7 +9,7 @@ from delphi.epidata.acquisition.covidcast.csv_importer import CsvImporter
 SENSOR_CSV_PATH = "/common/covidcast_nowcast/receiving/"
 TABLE_NAME = "covidcast_nowcast"
 DB_NAME = "epidata"
-CSV_DTYPES = {"geo_value": str, "value": float}
+CSV_DTYPES = {"sensor_name": str, "geo_value": str, "value": float}
 
 
 def main(csv_path: str = SENSOR_CSV_PATH) -> None:

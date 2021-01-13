@@ -669,12 +669,12 @@ class Epidata:
   # Fetch Delphi's COVID-19 Nowcast sensors
   @staticmethod
   def covidcast_nowcast(
-          data_source, signals, time_type, geo_type,
+          data_source, signals, sensor_names, time_type, geo_type,
           time_values, geo_value, as_of=None, issues=None, lag=None, **kwargs):
     """Fetch Delphi's COVID-19 Nowcast sensors"""
     # Check parameters
-    if data_source is None or signals is None or time_type is None or geo_type is None or time_values is None or geo_value is None:
-      raise Exception('`data_source`, `signals`, `time_type`, `geo_type`, `time_values`, and `geo_value` are all required')
+    if data_source is None or signals is None or time_type is None or geo_type is None or time_values is None or geo_value is None or sensor_names is None:
+      raise Exception('`data_source`, `signals`,  `sensor_names`, `time_type`, `geo_type`, `time_values`, and `geo_value` are all required')
     if issues is not None and lag is not None:
       raise Exception('`issues` and `lag` are mutually exclusive')
     # Set up request
@@ -682,6 +682,7 @@ class Epidata:
       'source': 'covidcast_nowcast',
       'data_source': data_source,
       'signals': Epidata._list(signals),
+      'sensor_names': Epidata._list(sensor_names),
       'time_type': time_type,
       'geo_type': geo_type,
       'time_values': Epidata._list(time_values)
