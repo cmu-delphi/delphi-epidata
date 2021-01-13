@@ -10,7 +10,7 @@ from delphi.epidata.acquisition.covid_hosp.common.test_utils import TestUtils
 
 # py3tester coverage target
 __test_target__ = \
-    'delphi.epidata.acquisition.covid_hosp.state_timeseries.database'
+    'delphi.epidata.acquisition.covid_hosp.state_daily.database'
 
 
 class DatabaseTests(unittest.TestCase):
@@ -35,15 +35,16 @@ class DatabaseTests(unittest.TestCase):
     result = database.insert_dataset(sentinel.issue, dataset)
 
     self.assertIsNone(result)
-    self.assertEqual(mock_cursor.execute.call_count, 22)
+    self.assertEqual(mock_cursor.execute.call_count, 53)
 
     last_query_values = mock_cursor.execute.call_args[0][-1]
     expected_query_values = (
-        0, sentinel.issue, 'WY', 20200826, 2, None, 4, 2, 19, 7, 0, 26, 1464,
-        28, 629, 28, 17, 26, 2, 28, 13, 26, 0, 21, 0, 22, 49, 28, 10, 26, 7,
-        28, 17, 26, 14, 28, 0, 26, 0, 26, 114, 28, 0.4296448087431694, 28, 629,
-        1464, 0.027597402597402596, 26, 17, 616, 0.011946591707659873, 26, 17,
-        1423, 0.09345794392523364, 26, 10, 107, 0.4298245614035088, 28, 49, 114, 'T')
+        0, sentinel.issue, 'WY',  20201209, 8, 21, 2, 7, 22, 2, 5, 29, 1729,
+        31, 856, 31, 198, 29, 26, 31, 15, 29, 0, 29, 0, 29, 58, 31, 32, 29,
+        32, 31, 196, 29, 189, 31, 2, 29, 2, 29, 137, 31, 0.4950838635049161, 31,
+        856, 1729, 0.23627684964200477, 29, 198, 838, 0.11729857819905214,
+        29, 198, 1688, 0.25196850393700787, 29, 32, 127, 0.4233576642335766,
+        31, 58, 137, 'D')
     self.assertEqual(len(last_query_values), len(expected_query_values))
 
     for actual, expected in zip(last_query_values, expected_query_values):

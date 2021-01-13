@@ -20,7 +20,7 @@ capacity, collectively referred to as "covid_hosp" here. In short, they are:
     _reported, state-level_ data. However, since the data is preliminary, it is
     subject to greater missingness and larger revisions.
 
-    We do not yet acquire this data source.
+    See [acquisition details](state_daily/README.md).
 
 - [COVID-19 **Estimated** Patient Impact and Hospital Capacity by **State**](https://healthdata.gov/dataset/covid-19-estimated-patient-impact-and-hospital-capacity-state)
 

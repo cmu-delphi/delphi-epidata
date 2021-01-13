@@ -1084,6 +1084,12 @@ function get_covid_hosp_state_timeseries($states, $dates, $issues) {
     'c.`issue`',
     'c.`state`',
     'c.`date`',
+    'c.`critical_staffing_shortage_today_yes`',
+    'c.`critical_staffing_shortage_today_no`',
+    'c.`critical_staffing_shortage_today_not_reported`',
+    'c.`critical_staffing_shortage_anticipated_within_week_yes`',
+    'c.`critical_staffing_shortage_anticipated_within_week_no`',
+    'c.`critical_staffing_shortage_anticipated_within_week_not_reported`',
     'c.`hospital_onset_covid`',
     'c.`hospital_onset_covid_coverage`',
     'c.`inpatient_beds`',
@@ -1147,18 +1153,24 @@ function get_covid_hosp_state_timeseries($states, $dates, $issues) {
     // build the issue filter
     $condition_issue = filter_integers('c.`issue`', $issues);
     // final query using specific issues
-    $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_date}) AND ({$condition_state}) AND ({$condition_issue}) ORDER BY {$order}";
+    $query = "WITH c as (SELECT {$fields}, ROW_NUMBER() OVER (PARTITION BY date, state, issue ORDER BY record_type) row FROM {$table} WHERE ({$condition_date}) AND ({$condition_state}) AND ({$condition_issue})) SELECT {$fields} FROM c where row = 1 ORDER BY {$order}";
   } else {
     // final query using most recent issues
     $subquery = "(SELECT max(`issue`) `max_issue`, `date`, `state` FROM {$table} WHERE ({$condition_date}) AND ({$condition_state}) GROUP BY `date`, `state`) x";
     $condition = "x.`max_issue` = c.`issue` AND x.`date` = c.`date` AND x.`state` = c.`state`";
-    $query = "SELECT {$fields} FROM {$table} JOIN {$subquery} ON {$condition} ORDER BY {$order}";
+    $query = "WITH c as (SELECT {$fields}, ROW_NUMBER() OVER (PARTITION BY date, state, issue ORDER BY record_type) row FROM {$table} JOIN {$subquery} ON {$condition}) select {$fields} FROM c WHERE row = 1 ORDER BY {$order}";
   }
   // get the data from the database
   $fields_string = array('state');
   $fields_int = array(
     'issue',
     'date',
+    'critical_staffing_shortage_today_yes',
+    'critical_staffing_shortage_today_no',
+    'critical_staffing_shortage_today_not_reported',
+    'critical_staffing_shortage_anticipated_within_week_yes',
+    'critical_staffing_shortage_anticipated_within_week_no',
+    'critical_staffing_shortage_anticipated_within_week_not_reported',
     'hospital_onset_covid',
     'hospital_onset_covid_coverage',
     'inpatient_beds',

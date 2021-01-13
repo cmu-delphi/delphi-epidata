@@ -13,7 +13,11 @@ import delphi.operations.secrets as secrets
 
 class Database:
 
-  def __init__(self, connection, table_name=None, columns_and_types=None):
+  def __init__(self,
+               connection,
+               table_name=None,
+               columns_and_types=None,
+               additional_fields=tuple()):
     """Create a new Database object.
 
     Parameters
@@ -27,11 +31,15 @@ class Database:
       element of each tuple is the CSV column name, and the second element is a
       function which converts a string into the appropriate datatype for the
       column.
+    additional_fields : tuple[str]
+      Tuple of additional fields to include at the end of the row which are not
+      present in the CSV data.
     """
 
     self.connection = connection
     self.table_name = table_name
     self.columns_and_types = columns_and_types
+    self.additional_fields = additional_fields
 
   @classmethod
   @contextmanager
@@ -142,7 +150,7 @@ class Database:
       The dataset.
     """
 
-    num_columns = 2 + len(self.columns_and_types)
+    num_columns = 2 + len(self.columns_and_types) + len(self.additional_fields)
     value_placeholders = ', '.join(['%s'] * num_columns)
     sql = f'INSERT INTO `{self.table_name}` VALUES ({value_placeholders})'
 
@@ -155,4 +163,5 @@ class Database:
             values.append(None)
           else:
             values.append(dtype(row[name]))
-        cursor.execute(sql, id_and_publication_date + tuple(values))
+        cursor.execute(sql,
+                       id_and_publication_date + tuple(values) + self.additional_fields)

@@ -5,6 +5,7 @@ from delphi.epidata.acquisition.covid_hosp.common.utils import Utils
 
 class Database(BaseDatabase):
 
+  # note we share a database with state_timeseries
   TABLE_NAME = 'covid_hosp_state_timeseries'
 
   # These are the names that appear in the CSV header, in order of appearance
@@ -12,12 +13,12 @@ class Database(BaseDatabase):
   # However, note that the corresponding database column names may be shorter
   # due to constraints on the length of column names. See
   # /src/ddl/covid_hosp.sql for more information.
-  # Additionally, all column names below are shared with state_daily,
-  # except for reporting_cutoff_start (there) and date (here). If you need
+  # Additionally, all column names below are shared with state_timeseries,
+  # except for reporting_cutoff_start (here) and date (there). If you need
   # to update a column name, do it in both places.
   ORDERED_CSV_COLUMNS = [
     ('state', str),
-    ('date', Utils.int_from_date),
+    ('reporting_cutoff_start', Utils.int_from_date),
     ('critical_staffing_shortage_today_yes', int),
     ('critical_staffing_shortage_today_no', int),
     ('critical_staffing_shortage_today_not_reported', int),
@@ -84,4 +85,4 @@ class Database(BaseDatabase):
         **kwargs,
         table_name=Database.TABLE_NAME,
         columns_and_types=Database.ORDERED_CSV_COLUMNS,
-        additional_fields=('T',))
+        additional_fields=('D',))
