@@ -229,6 +229,13 @@
       "match": "^.*\\.(py)$",
       "add-header-comment": true
     },
+    {
+      "type": "move",
+      "src": "src/acquisition/covid_hosp/state_daily/",
+      "dst": "[[package]]/acquisition/covid_hosp/state_daily/",
+      "match": "^.*\\.(py)$",
+      "add-header-comment": true
+    },
 
     "// acquisition - covidcast_nowcast",
     {
