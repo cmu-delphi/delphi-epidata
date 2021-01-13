@@ -398,3 +398,47 @@ changes carefully when you use responses from multiple waves of this survey.
   and were not displayed to or asked of respondents. On January 6, 2021, item V1
   was enabled, and V3 and V4 were made conditional on respondents not answering
   "yes" to V1. Item V2 remains disabled in the display logic.
+
+## Wave 7
+
+Wave 7 was deployed on January 12, 2021. It is available in English, as well as
+
+* Simplified Chinese
+* English (UK)
+* Spanish (Latin America)
+* Spanish
+* French
+* Brazilian Portuguese
+* Vietnamese
+
+Files:
+
+* [Survey text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_7.pdf) (PDF)
+* [Survey text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_7.docx) (Word)
+
+### Summary of Changes
+
+Wave 7 includes minor modification of the existing questions regarding COVID -19
+vaccination. We intend to expand the scope of our questions in the next wave at
+the end of January 2021. Please review the changes carefully when you use
+responses from multiple waves of this survey.
+
+#### Changed Items
+
+* Slight changes to the wording of questions V1, V2, V3, and V4.
+* Item V2 was included in Wave 6 but not shown to respondents. We have enabled
+  item V2 for Wave 7.
+
+#### New Items
+
+* Item V9 asks if respondents are concerned about a side effect from the
+  COVID-19 vaccination. We ask it of all respondents, regardless of whether they
+  have already received a vaccination.
+
+#### Notes
+
+* This wave configures numeric answer items to require answers be ≥0. This is
+  done via JavaScript by setting the `min = "0"` attribute on the input box.
+  While this should prevent respondents from accidentally entering negative
+  numbers, those who deliberately want to enter negative numbers can bypass the
+  restriction.
