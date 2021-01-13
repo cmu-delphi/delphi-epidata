@@ -10,7 +10,7 @@ grand_parent: COVIDcast Epidata API
 * **Source name:** `doctor-visits`
 * **First issued:** April 29, 2020
 * **Number of data revisions since May 19, 2020:** 1
-* **Date of last change:** November 9, 2020
+* **Date of last change:** [November 9, 2020](../covidcast_changelog.html#doctor-visits)
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
@@ -18,9 +18,8 @@ grand_parent: COVIDcast Epidata API
 
 ## Overview
 
-This data source is based on information about outpatient visits, provided to us
-by health system partners. Using this outpatient data, we estimate the
-percentage of COVID-related doctor's visits in a given location, on a given day.
+Delphi based this data source on information about outpatient visits provided to us by health system partners. Using this outpatient data, we estimate the
+percentage of COVID-related doctor's visits in a given location on a given day.
 
 | Signal | Description |
 | --- | --- |
@@ -62,9 +61,7 @@ week adjustments/etc.
 ### Day-of-Week Adjustment
 
 The fraction of visits due to CLI is dependent on the day of the week. On
-weekends, doctors see a higher percentage of acute conditions, so the percentage
-of CLI is higher. Each day of the week has a different behavior, and if we do
-not adjust for this effect, we will not be able to meaningfully compare the
+weekends, doctors see a higher percentage of acute conditions, making the percentage of CLI higher. Each day of the week has a different behavior, and if we do not adjust for this effect, we will not be able to meaningfully compare the
 doctor visits signal across different days of the week. We use a Poisson
 regression model to produce a signal adjusted for this effect.
 
@@ -114,20 +111,18 @@ correction on each location. At each time $$t$$, we consider the total visit
 count. If the value is less than a minimum sample threshold, we go back to the
 previous time $$t-1$$, and add this visit count to the previous total, again
 checking to see if the threshold has been met. If not, we continue to move
-backwards in time until we meet the threshold, and take the estimate at time
+backward in time until we meet the threshold and take the estimate at time
 $$t$$ to be the average over the smallest window that meets the threshold. We
-enforce a hard stop to consider only the past 7 days, if we have not yet met the
-threshold during that time bin, no estimate will be produced. If, for instance,
+enforce a hard stop to consider only the past 7 days. If we have not yet met the
+threshold during that time bin, we will not produce an estimate. If, for instance,
 at time $$t$$, the minimum sample threshold is already met, then the estimate
 only contains data from time $$t$$. This is a dynamic-length moving average,
-working backwards through time. The threshold is set at 500 observations.
+working backward through time. The threshold is set at 500 observations.
 
 ### Smoothing
 
 To help with variability, we also employ a local linear regression filter with a
-Gaussian kernel. The bandwidth is fixed to approximately cover a rolling 7 day
-window, with the highest weight placed on the right edge of the window (the most
-recent timepoint). Given this smoothing step, the standard error estimate shown
+Gaussian kernel. he bandwidth is fixed to approximately cover a rolling 7-day window, with the highest weight placed on the window's right edge (the most recent time point). Given this smoothing step, the standard error estimate shown
 above is not exactly correct, as the calculation is done post-smoothing.
 
 ## Lag and Backfill
@@ -165,7 +160,7 @@ Standard errors are not available for this data source.
 
 Due to changes in medical-seeking behavior on holidays, this data source has
 upward spikes in the fraction of doctor's visits that are COVID-related around
-major holidays (e.g. Memorial Day, July 4, Labor Day, etc.). These spikes are
+major holidays (e.g., Memorial Day, July 4, Labor Day, etc.). These spikes are
 not necessarily indicative of a true increase of COVID-like illness in a
 location.
 
@@ -193,7 +188,7 @@ We receive data on the following five categories of counts:
 	subcodes. This set of codes are assigned to influenza viruses.
 
 If a patient has multiple visits on the same date (and hence multiple primary
-ICD-10 codes), then we will only count one of and in descending order: *Flu*,
+ICD-10 codes), we will only count one of and in descending order: *Flu*,
 *COVID-like*, *Flu-like*, *Mixed*. This ordering tries to account for the most
-definitive confirmation, e.g. the codes assigned to *Flu* are only used for
-confirmed influenza cases, which are unrelated to the COVID-19 coronavirus.
+definitive confirmation, (e.g., the codes assigned to *Flu* are only used for
+confirmed influenza cases, which are unrelated to the COVID-19 coronavirus).

@@ -129,13 +129,13 @@ correction on each location. At each time $$t$$, we consider the total visit
 count. If the value is less than a minimum sample threshold, we go back to the
 previous time $$t-1$$, and add this visit count to the previous total, again
 checking to see if the threshold has been met. If not, we continue to move
-backwards in time until we meet the threshold, and take the estimate at time
+backward in time until we meet the threshold and take the estimate at time
 $$t$$ to be the average over the smallest window that meets the threshold. We
-enforce a hard stop to consider only the past 7 days, if we have not yet met the
-threshold during that time bin, no estimate will be produced. If, for instance,
+enforce a hard stop to consider only the past 7 days. If we have not yet met the
+threshold during that time bin, we will not produce an estimate. If, for instance,
 at time $$t$$, the minimum sample threshold is already met, then the estimate
 only contains data from time $$t$$. This is a dynamic-length moving average,
-working backwards through time. The threshold is set at 100 observations.
+working backward through time. The threshold is set at 100 observations.
 
 ### Smoothing
 
