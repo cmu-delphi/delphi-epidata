@@ -5,10 +5,10 @@ parent: Epidata API (Other Diseases)
 
 # NIDSS Dengue
 
-This is the documentation of the API for accessing the NIDSS Dengue (`nidss_dengue`) data source of
+This is the documentation of the API for accessing the NIDSS Dengue (`nidss_dengue`) endpoint of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 
-General topics not specific to any particular data source are discussed in the
+General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
@@ -50,7 +50,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 # Example URLs
 
 ### NIDSS Dengue on 2015w01 (nationwide)
-https://delphi.cmu.edu/epidata/api.php?source=nidss_dengue&locations=nationwide&epiweeks=201501
+https://delphi.cmu.edu/epidata/api.php?endpoint=nidss_dengue&locations=nationwide&epiweeks=201501
 
 ```json
 {

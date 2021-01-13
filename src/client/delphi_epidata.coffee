@@ -42,9 +42,22 @@ class Epidata
       else
         callback(0, 'unknown error', null)
     # Request data from the server
-    if $?.getJSON?
+    isBrowser = $?.ajax?
+    data = if isBrowser then $.param(params) else querystring.stringify(params)
+    fullURL = "#{BASE_URL}?#{data}"
+
+    # decide method to avoid that we getting a 414 request too large error
+    method = if fullURL.length < 2048 then 'GET' else 'POST'
+
+    if isBrowser
       # API call with jQuery
-      $.getJSON(BASE_URL, params, handler)
+      $.ajax({
+        url: BASE_URL,
+        dataType: "json",
+        method: method,
+        success: handler,
+        data: params,
+      });
     else
       # Function to handle the HTTP response
       reader = (response) ->
@@ -54,7 +67,19 @@ class Epidata
         response.on('error', (e) -> error(e.message))
         response.on('end', () -> handler(JSON.parse(text)))
       # API call with Node
-      https.get("#{BASE_URL}?#{querystring.stringify(params)}", reader)
+      if method == 'GET'
+        https.get(fullURL, reader)
+      else
+        req = https.request(BASE_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Length': Buffer.byteLength(data)
+          }
+        }, reader)
+        # Write data to request body
+        req.write(data)
+        req.end()
 
   # Build a `range` object (ex: dates/epiweeks)
   @range = (from, to) ->
@@ -71,7 +96,7 @@ class Epidata
       throw { msg: '`issues` and `lag` are mutually exclusive' }
     # Set up request
     params =
-      'source': 'fluview'
+      'endpoint': 'fluview'
       'regions': _list(regions)
       'epiweeks': _list(epiweeks)
     if issues?
@@ -88,7 +113,7 @@ class Epidata
   @fluview_meta: (callback) ->
     # Set up request
     params =
-      'source': 'fluview_meta'
+      'endpoint': 'fluview_meta'
     # Make the API call
     _request(callback, params)
 
@@ -101,7 +126,7 @@ class Epidata
       throw { msg: '`issues` and `lag` are mutually exclusive' }
     # Set up request
     params =
-      'source': 'fluview_clinical'
+      'endpoint': 'fluview_clinical'
       'regions': _list(regions)
       'epiweeks': _list(epiweeks)
     if issues?
@@ -120,7 +145,7 @@ class Epidata
       throw { msg: '`issues` and `lag` are mutually exclusive' }
     # Set up request
     params =
-      'source': 'flusurv'
+      'endpoint': 'flusurv'
       'locations': _list(locations)
       'epiweeks': _list(epiweeks)
     if issues?
@@ -137,7 +162,7 @@ class Epidata
       throw { msg: '`locations` and `epiweeks` are both required' }
     # Set up request
     params =
-      'source': 'gft'
+      'endpoint': 'gft'
       'locations': _list(locations)
       'epiweeks': _list(epiweeks)
     # Make the API call
@@ -150,7 +175,7 @@ class Epidata
       throw { msg: '`auth`, `locations`, `epiweeks`, and `query` are all required' }
     # Set up request
     params =
-      'source': 'ght'
+      'endpoint': 'ght'
       'auth': auth
       'locations': _list(locations)
       'epiweeks': _list(epiweeks)
@@ -167,7 +192,7 @@ class Epidata
       throw { msg: 'exactly one of `dates` and `epiweeks` is required' }
     # Set up request
     params =
-      'source': 'twitter'
+      'endpoint': 'twitter'
       'auth': auth
       'locations': _list(locations)
     if dates?
@@ -186,7 +211,7 @@ class Epidata
       throw { msg: 'exactly one of `dates` and `epiweeks` is required' }
     # Set up request
     params =
-      'source': 'wiki'
+      'endpoint': 'wiki'
       'articles': _list(articles)
       'language': language || 'en'
     if dates?
@@ -205,7 +230,7 @@ class Epidata
       throw { msg: '`auth`, `epiweeks`, and `locations` are all required' }
     # Set up request
     params =
-      'source': 'cdc'
+      'endpoint': 'cdc'
       'auth': auth
       'epiweeks': _list(epiweeks)
       'locations': _list(locations)
@@ -219,7 +244,7 @@ class Epidata
       throw { msg: '`auth`, `epiweeks`, and `locations` are all required' }
     # Set up request
     params =
-      'source': 'quidel'
+      'endpoint': 'quidel'
       'auth': auth
       'epiweeks': _list(epiweeks)
       'locations': _list(locations)
@@ -233,7 +258,7 @@ class Epidata
       throw { msg: '`auth`, `location`, and `epiweeks` are all required' }
     # Set up request
     params =
-      'source': 'norostat'
+      'endpoint': 'norostat'
       'auth': auth
       'location': location
       'epiweeks': _list(epiweeks)
@@ -247,7 +272,7 @@ class Epidata
       throw { msg: '`auth` is required' }
     # Set up request
     params =
-      'source': 'meta_norostat'
+      'endpoint': 'meta_norostat'
       'auth': auth
     # Make the API call
     _request(callback, params)
@@ -259,7 +284,7 @@ class Epidata
       throw { msg: '`auth`, `locations`, `epiweeks` and `flu_types` are all required' }
     # Set up request
     params =
-      'source': 'afhsb'
+      'endpoint': 'afhsb'
       'auth': auth
       'locations': _list(locations)
       'epiweeks': _list(epiweeks)
@@ -274,7 +299,7 @@ class Epidata
       throw { msg: '`auth` is required' }
     # Set up request
     params =
-      'source': 'meta_afhsb'
+      'endpoint': 'meta_afhsb'
       'auth': auth
     # Make the API call
     _request(callback, params)
@@ -288,7 +313,7 @@ class Epidata
       throw { msg: '`issues` and `lag` are mutually exclusive' }
     # Set up request
     params =
-      'source': 'nidss_flu'
+      'endpoint': 'nidss_flu'
       'regions': _list(regions)
       'epiweeks': _list(epiweeks)
     if issues?
@@ -305,7 +330,7 @@ class Epidata
       throw { msg: '`locations` and `epiweeks` are both required' }
     # Set up request
     params =
-      'source': 'nidss_dengue'
+      'endpoint': 'nidss_dengue'
       'locations': _list(locations)
       'epiweeks': _list(epiweeks)
     # Make the API call
@@ -318,7 +343,7 @@ class Epidata
       throw { msg: '`system` and `epiweek` are both required' }
     # Set up request
     params =
-      'source': 'delphi'
+      'endpoint': 'delphi'
       'system': system
       'epiweek': epiweek
     # Make the API call
@@ -331,7 +356,7 @@ class Epidata
       throw { msg: '`auth`, `names`, `locations`, and `epiweeks` are all required' }
     # Set up request
     params =
-      'source': 'sensors'
+      'endpoint': 'sensors'
       'auth': auth
       'names': _list(names)
       'locations': _list(locations)
@@ -346,7 +371,7 @@ class Epidata
       throw { msg: '`locations` and `epiweeks` are both required' }
     # Set up request
     params =
-      'source': 'nowcast'
+      'endpoint': 'nowcast'
       'locations': _list(locations)
       'epiweeks': _list(epiweeks)
     # Make the API call
@@ -354,7 +379,7 @@ class Epidata
 
   # Fetch API metadata
   @meta: (callback) ->
-    _request(callback, {'source': 'meta'})
+    _request(callback, {'endpoint': 'meta'})
 
   # Fetch Delphi's COVID-19 Surveillance Streams
   @covidcast: (callback, data_source, signals, time_type, geo_type, time_values, geo_value, as_of, issues, lag, format) ->
@@ -365,7 +390,7 @@ class Epidata
       throw { msg: '`issues` and `lag` are mutually exclusive' }
     # Set up request
     params =
-      'source': 'covidcast'
+      'endpoint': 'covidcast'
       'data_source': data_source
       'signals': signals
       'time_type': time_type
@@ -388,7 +413,7 @@ class Epidata
 
   # Fetch Delphi's COVID-19 Surveillance Streams metadata
   @covidcast_meta: (callback) ->
-    _request(callback, {'source': 'covidcast_meta'})
+    _request(callback, {'endpoint': 'covidcast_meta'})
 
   # Fetch COVID hospitalization data
   @covid_hosp: (callback, states, dates, issues) ->
@@ -397,11 +422,46 @@ class Epidata
       throw { msg: '`states` and `dates` are both required' }
     # Set up request
     params =
-      'source': 'covid_hosp'
+      'endpoint': 'covid_hosp'
       'states': _list(states)
       'dates': _list(dates)
     if issues?
       params.issues = _list(issues)
+    # Make the API call
+    _request(callback, params)
+
+  # Fetch COVID hospitalization data for specific facilities
+  @covid_hosp_facility: (callback, hospital_pks, collection_weeks, publication_dates) ->
+    # Check parameters
+    unless hospital_pks? and collection_weeks?
+      throw { msg: '`hospital_pks` and `collection_weeks` are both required' }
+    # Set up request
+    params =
+      'source': 'covid_hosp_facility'
+      'hospital_pks': _list(hospital_pks)
+      'collection_weeks': _list(collection_weeks)
+    if publication_dates?
+      params.publication_dates = _list(publication_dates)
+    # Make the API call
+    _request(callback, params)
+
+  # Lookup COVID hospitalization facility identifiers
+  @covid_hosp_facility_lookup: (state, ccn, city, zip, fips_code) ->
+    # Set up request
+    params =
+      'source': 'covid_hosp_facility'
+    if state?
+      params.state = state
+    else if ccn?
+      params.ccn = ccn
+    else if city?
+      params.city = city
+    else if zip?
+      params.zip = zip
+    else if fips_code?
+      params.fips_code = fips_code
+    else
+      throw { msg: 'one of `state`, `ccn`, `city`, `zip`, or `fips_code` is required' }
     # Make the API call
     _request(callback, params)
 

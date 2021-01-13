@@ -1,12 +1,12 @@
 ---
 title: Metadata
 parent: COVIDcast Epidata API
-nav_order: 5
+nav_order: 6
 ---
 
 # COVIDcast Metadata
 
-The COVIDcast metadata endpoint (source `covidcast_meta`) provides a list of all
+The COVIDcast metadata endpoint (endpoint `covidcast_meta`) provides a list of all
 sources and signals available in the API, along with basic summary statistics
 such as the dates they are available, their minimum and maximum values, and the
 geographic levels at which they are reported.
@@ -45,7 +45,7 @@ None required.
 
 ## Example URLs
 
-https://api.covidcast.cmu.edu/epidata/api.php?source=covidcast_meta
+https://api.covidcast.cmu.edu/epidata/api.php?endpoint=covidcast_meta
 
 ```json
 {

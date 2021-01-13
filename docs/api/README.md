@@ -4,11 +4,17 @@ nav_order: 3
 has_children: true
 ---
 
-# Delphi Epidata API
+# Epidata API (Other Diseases)
 
 This is the home of [Delphi](https://delphi.cmu.edu/)'s epidemiological data
 API for tracking epidemics such as influenza, dengue, and norovirus. Note that
-our work on COVID-19 is available in the [COVIDcast Epidata API documentation](covidcast.md).
+our work on COVID-19 is described in the [COVIDcast Epidata API documentation](covidcast.md).
+
+## Table of Contents
+{: .no_toc .text-delta}
+
+1. TOC
+{:toc}
 
 ## Contributing
 
@@ -35,7 +41,7 @@ like to cite it, we would gratefully recommend the following copy:
 > _Delphi Epidata API_.
 > https://github.com/cmu-delphi/delphi-epidata
 
-## Data licensing
+## Data Licensing
 
 Several datasets surfaced through this API are carefully curated mirrors of data
 acquired from various external parties. Such data is subject to its original
@@ -44,7 +50,7 @@ licensing, where applicable.
 Any data which is produced novelly by Delphi and is intentionally and openly
 surfaced by Delphi through this API is hereby licensed
 [CC BY](https://creativecommons.org/licenses/by/4.0/) except where otherwise
-noted. Endpoints, as specified by the `source` parameter, which are known to
+noted. Endpoints, as specified by the `endpoint` parameter, which are known to
 wholly or partially serve data under this license include:
 
 - `covidcast`
@@ -57,6 +63,8 @@ wholly or partially serve data under this license include:
 - `sensors`
 
 [![Creative Commons License](https://i.creativecommons.org/l/by/4.0/88x31.png)](https://creativecommons.org/licenses/by/4.0/)
+
+Please note that our `endpoint` parameters were previously referenced as `source` in our API. New users will now use the `endpoint` parameter when accessing our data. If you are a returning or continuous user you do not have to make any changes, as the parameter `source` still works as usual.
 
 ---
 
@@ -82,7 +90,7 @@ Formatting for epiweeks is YYYYWW and for dates is YYYYMMDD.
 
 ## Universal Parameters
 
-The only universally required parameter is `source`, which must be one of the supported source names listed below, e.g., `fluview`.
+The only universally required parameter is `endpoint`, which must be one of the supported source names listed below, e.g., `fluview`.
 
 ## Source-Specific Parameters
 
@@ -92,7 +100,7 @@ The parameters available for each source are documented in each linked source-sp
 
 ### COVID-19 Data
 
-| Source | Name | Description | Restricted? |
+| Endpoint | Name | Description | Restricted? |
 | --- | --- | --- | --- |
 | [`covidcast`](covidcast.md) | COVIDCast | Delphi's COVID-19 surveillance streams. | no |
 | [`covidcast_meta`](covidcast_meta.md) | COVIDCast Metadata | Metadata for Delphi's COVID-19 surveillance streams. | no |
@@ -100,7 +108,7 @@ The parameters available for each source are documented in each linked source-sp
 
 ### Influenza Data
 
-| Source | Name | Description | Restricted? |
+| Endpoint | Name | Description | Restricted? |
 | --- | --- | --- | --- |
 | [`afhsb`](ahfsb.md) | AFHSB | ... <!-- TODO --> | yes |
 | [`cdc`](cdc.md) | CDC Page Hits | ... <!-- TODO --> | yes |
@@ -110,7 +118,7 @@ The parameters available for each source are documented in each linked source-sp
 | [`fluview`](fluview.md) | FluView | Influenza-like illness (ILI) from U.S. Outpatient Influenza-like Illness Surveillance Network (ILINet). | no |
 | [`fluview_meta`](fluview_meta.md) | FluView Metadata | Summary data about [`fluview`](fluview.md). | no |
 | [`fluview_clinical`](fluview_clinical.md) | FluView Clinical | ... <!-- TODO --> | no |
-| [`gft`](gft.md) | Google Flu Trends | Estimate of influenza activity based on volume of certain search queries. Google has discontinued Flu Trends, and this is now a static data source. | no |
+| [`gft`](gft.md) | Google Flu Trends | Estimate of influenza activity based on volume of certain search queries. Google has discontinued Flu Trends, and this is now a static endpoint. | no |
 | [`ght`](ght.md) | Google Health Trends | Estimate of influenza activity based on volume of certain search queries. | yes |
 | [`kcdc_ili`](kcdc_ili.md) | KCDC ILI | KCDC ILI data from KCDC website. | no |
 | [`meta`](meta.md) | API Metadata | Metadata for `fluview`, `twitter`, `wiki`, and `delphi`. | no |
@@ -124,7 +132,7 @@ The parameters available for each source are documented in each linked source-sp
 
 ### Dengue Data
 
-| Source | Name | Description | Restricted? |
+| Endpoint | Name | Description | Restricted? |
 | --- | --- | --- | --- |
 | [`dengue_nowcast`](dengue_nowcast.md) | Delphi's Dengue Nowcast | ... <!-- TODO --> | ... <!-- TODO --> |
 | [`dengue_sensors`](dengue_sensors.md) | Delphi's Dengue Digital Surveillance Sensors | ... <!-- TODO --> | ... <!-- TODO --> |
@@ -133,7 +141,7 @@ The parameters available for each source are documented in each linked source-sp
 
 ### Norovirus Data
 
-| Source | Name | Description | Restricted? |
+| Endpoint | Name | Description | Restricted? |
 | --- | --- | --- | --- |
 | [`meta_norostat`](meta_norostat.md) | NoroSTAT Metadata | ... <!-- TODO --> | ... <!-- TODO --> |
 | [`norostat`](norostat.md) | NoroSTAT | Suspected and confirmed norovirus outbreaks reported by state health departments to the CDC. | ... <!-- TODO --> |
@@ -146,7 +154,7 @@ The parameters available for each source are documented in each linked source-sp
 # Example URLs
 
 ### FluView on 2015w01 (national)
-https://delphi.cmu.edu/epidata/api.php?source=fluview&regions=nat&epiweeks=201501
+https://delphi.cmu.edu/epidata/api.php?endpoint=fluview&regions=nat&epiweeks=201501
 
 ```json
 {
@@ -176,7 +184,7 @@ https://delphi.cmu.edu/epidata/api.php?source=fluview&regions=nat&epiweeks=20150
 ```
 
 ### Wikipedia Access article "influenza" on 2020w01
-https://delphi.cmu.edu/epidata/api.php?source=wiki&language=en&articles=influenza&epiweeks=202001
+https://delphi.cmu.edu/epidata/api.php?endpoint=wiki&language=en&articles=influenza&epiweeks=202001
 
 ```json
 {
@@ -197,66 +205,8 @@ https://delphi.cmu.edu/epidata/api.php?source=wiki&language=en&articles=influenz
 
 # Code Samples
 
-Libraries are available for [CoffeeScript](../../src/client/delphi_epidata.coffee), [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R). The following samples show how to import the library and fetch national FluView data for epiweeks `201440` and `201501-201510` (11 weeks total).
+To access our Epidata API, visit our [Epidata API Client Libraries)](client_libraries.md). For anyone looking for COVIDCast data in particular, please visit our purpose-built [COVIDCast Libraries](covidcast_clients.md) instead.
 
-### CoffeeScript (in Node.js)
+# Related Work
 
-````coffeescript
-# Import
-{Epidata} = require('./delphi_epidata')
-# Fetch data
-callback = (result, message, epidata) ->
-  console.log(result, message, epidata?.length)
-Epidata.fluview(callback, ['nat'], [201440, Epidata.range(201501, 201510)])
-````
-
-### JavaScript (in a web browser)
-
-````html
-<!-- Imports -->
-<script src="jquery.js"></script>
-<script src="delphi_epidata.js"></script>
-<!-- Fetch data -->
-<script>
-  var callback = function(result, message, epidata) {
-    console.log(result, message, epidata != null ? epidata.length : void 0);
-  };
-  Epidata.fluview(callback, ['nat'], [201440, Epidata.range(201501, 201510)]);
-</script>
-````
-
-### Python
-
-Optionally install the package using pip(env):
-````bash
-pip install delphi-epidata
-````
-
-Otherwise, place `delphi_epidata.py` from this repo next to your python script.
-
-````python
-# Import
-from delphi_epidata import Epidata
-# Fetch data
-res = Epidata.fluview(['nat'], [201440, Epidata.range(201501, 201510)])
-print(res['result'], res['message'], len(res['epidata']))
-````
-
-### R
-
-````R
-# Import
-source('delphi_epidata.R')
-# Fetch data
-res <- Epidata$fluview(list('nat'), list(201440, Epidata$range(201501, 201510)))
-cat(paste(res$result, res$message, length(res$epidata), "\n"))
-````
-
-# Related work
-
- - Cook, Samantha, et al. "Assessing Google flu trends performance in the United States during the 2009 influenza virus A (H1N1) pandemic." PloS one 6.8 (2011): e23610.
- - Broniatowski, David A., Michael J. Paul, and Mark Dredze. "National and local influenza surveillance through Twitter: an analysis of the 2012-2013 influenza epidemic." (2013): e83672.
- - Dredze, Mark, et al. "HealthTweets. org: A Platform for Public Health Surveillance using Twitter." AAAI Conference on Artificial Intelligence. 2014.
- - Generous, Nicholas, et al. "Global disease monitoring and forecasting with Wikipedia." (2014): e1003892.
- - Hickmann, Kyle S., et al. "Forecasting the 2013–2014 Influenza Season Using Wikipedia." (2015): e1004239.
- - McIver, David J., and John S. Brownstein. "Wikipedia usage estimates prevalence of influenza-like illness in the United States in near real-time." PLoS Comput Biol 10.4 (2014): e1003581.
+Please visit our [related works](related_work.md) page for more information.

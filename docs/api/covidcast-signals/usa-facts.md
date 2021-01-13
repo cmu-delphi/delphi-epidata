@@ -8,9 +8,11 @@ grand_parent: COVIDcast Epidata API
 {: .no_toc}
 
 * **Source name:** `usa-facts`
-* **Number of data revisions since 19 May 2020:** 2
-* **Date of last change:** [3 November 2020](../covidcast_changelog.md#usa-facts)
+* **First issued:** June 24, 2020
+* **Number of data revisions since May 19, 2020:** 2
+* **Date of last change:** [November 3, 2020](../covidcast_changelog.md#usa-facts)
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
+* **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** [CC BY](#source-and-licensing)
 
 This data source of confirmed COVID-19 cases and deaths is based on reports made
@@ -18,14 +20,14 @@ available by [USAFacts](https://usafacts.org/).
 
 | Signal | 7-day average signal | Description |
 | --- | --- | --- |
-| `confirmed_cumulative_num` | `confirmed_7dav_cumulative_num` | Cumulative number of confirmed COVID-19 cases |
-| `confirmed_cumulative_prop` | `confirmed_7dav_cumulative_prop` | Cumulative number of confirmed COVID-19 cases per 100,000 population |
-| `confirmed_incidence_num` | `confirmed_7dav_incidence_num` | Number of new confirmed COVID-19 cases, daily |
-| `confirmed_incidence_prop` | `confirmed_7dav_incidence_prop` | Number of new confirmed COVID-19 cases per 100,000 population, daily |
-| `deaths_cumulative_num` | `deaths_7dav_cumulative_num` | Cumulative number of confirmed deaths due to COVID-19 |
-| `deaths_cumulative_prop` | `deaths_7dav_cumulative_prop` | Cumulative number of confirmed due to COVID-19, per 100,000 population |
-| `deaths_incidence_num` | `deaths_7dav_incidence_num` | Number of new confirmed deaths due to COVID-19, daily |
-| `deaths_incidence_prop` | `deaths_7dav_incidence_prop` | Number of new confirmed deaths due to COVID-19 per 100,000 population, daily |
+| `confirmed_cumulative_num` | `confirmed_7dav_cumulative_num` | Cumulative number of confirmed COVID-19 cases <br/> **First Available:** 2020-01-25 & 2020-02-01 |
+| `confirmed_cumulative_prop` | `confirmed_7dav_cumulative_prop` | Cumulative number of confirmed COVID-19 cases per 100,000 population <br/> **First Available:** 2020-01-25 & 2020-02-01 |
+| `confirmed_incidence_num` | `confirmed_7dav_incidence_num` | Number of new confirmed COVID-19 cases, daily <br/> **First Available:** 2020-01-25 & 2020-02-01 |
+| `confirmed_incidence_prop` | `confirmed_7dav_incidence_prop` | Number of new confirmed COVID-19 cases per 100,000 population, daily <br/> **First Available:** 2020-01-25 & 2020-02-01 |
+| `deaths_cumulative_num` | `deaths_7dav_cumulative_num` | Cumulative number of confirmed deaths due to COVID-19 <br/> **First Available:** 2020-01-25 & 2020-02-01 |
+| `deaths_cumulative_prop` | `deaths_7dav_cumulative_prop` | Cumulative number of confirmed due to COVID-19, per 100,000 population <br/> **First Available:** 2020-01-25 & 2020-02-01 |
+| `deaths_incidence_num` | `deaths_7dav_incidence_num` | Number of new confirmed deaths due to COVID-19, daily <br/> **First Available:** 2020-01-25 & 2020-02-01 |
+| `deaths_incidence_prop` | `deaths_7dav_incidence_prop` | Number of new confirmed deaths due to COVID-19 per 100,000 population, daily <br/> **First Available:** 2020-01-25 & 2020-02-01 |
 
 These signals are taken directly from the USAFacts [COVID-19 Map by County and
 State](https://usafacts.org/visualizations/coronavirus-covid-19-spread-map/)
@@ -39,7 +41,7 @@ ways, the data is not identical. Users should evaluate which source better fits
 their needs. Users should evaluate which source better fits their needs, or use
 the [combination signal of both USAFacts and JHU data](indicator-combination.md).
 
-## Table of contents
+## Table of Contents
 {: .no_toc .text-delta}
 
 1. TOC

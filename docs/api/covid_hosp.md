@@ -3,7 +3,7 @@ title: COVID-19 Reported Patient Impact and Hospital Capacity by State Timeserie
 parent: Epidata API (Other Diseases)
 ---
 
-# COVID-19 Hospitalization
+# COVID-19 Hospitalization by State
 
 This data source is a mirror of the "COVID-19 Reported Patient Impact and
 Hospital Capacity by State Timeseries" dataset provided by the US Department of
@@ -25,7 +25,9 @@ This data source provides various measures of COVID-19 burden on patients and he
 - Temporal Resolution: Daily, starting 2020-01-01
 - Spatial Resolution: US States plus DC, PR, and VI
 - Open access via [Open Data Commons Open Database License (ODbL)](https://opendatacommons.org/licenses/odbl/1.0/)
-- Versioned by Delphi according to "issue" date. New issues are expected to be released roughly weekly.
+- Versioned by Delphi according to "issue" date, which is the date that the
+dataset was published by HHS. New issues are expected to be released roughly
+weekly.
 
 # The API
 
@@ -65,7 +67,7 @@ If `issues` is not specified, then the most recent issue is used by default.
 # Example URLs
 
 ### MA on 2020-05-10 (per most recent issue)
-https://delphi.cmu.edu/epidata/api.php?source=covid_hosp&states=MA&dates=20200510
+https://delphi.cmu.edu/epidata/api.php?endpoint=covid_hosp&states=MA&dates=20200510
 
 ```json
 {

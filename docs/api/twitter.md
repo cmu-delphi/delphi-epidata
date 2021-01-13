@@ -5,10 +5,10 @@ parent: Epidata API (Other Diseases)
 
 # Twitter Stream
 
-This is the documentation of the API for accessing the Twitter Stream (`twitter`) data source of
-the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
+This is the API documentation for accessing the Twitter Stream (`twitter`)
+endpoint of [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 
-General topics not specific to any particular data source are discussed in the
+General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
@@ -16,7 +16,7 @@ General topics not specific to any particular data source are discussed in the
 ## Twitter Stream Data
 
 Estimate of influenza activity based on analysis of language used in tweets.
- - Data source: [HealthTweets](http://www.healthtweets.org/)
+ - Source: [HealthTweets](http://www.healthtweets.org/)
  - Temporal Resolution: Daily and weekly from 2011-12-01 (2011w48)
  - Spatial Resolution: National, [HHS regions](http://www.hhs.gov/iea/regional/), and [Census divisions](http://www.census.gov/econ/census/help/geography/regions_and_divisions.html) ([1+10+9](../../labels/regions.txt)); and by state/territory ([51](../../labels/states.txt))
  - Restricted access: Delphi doesn't have permission to share this dataset
@@ -53,7 +53,7 @@ Note:
 # Example URLs
 
 ### Twitter on 2015w01 (national)
-https://delphi.cmu.edu/epidata/api.php?source=twitter&auth=...&locations=nat&epiweeks=201501
+https://delphi.cmu.edu/epidata/api.php?endpoint=twitter&auth=...&locations=nat&epiweeks=201501
 
 ```json
 {

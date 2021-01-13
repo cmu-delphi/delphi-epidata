@@ -96,7 +96,7 @@ class Epidata:
       raise Exception('`issues` and `lag` are mutually exclusive')
     # Set up request
     params = {
-      'source': 'fluview',
+      'endpoint': 'fluview',
       'regions': Epidata._list(regions),
       'epiweeks': Epidata._list(epiweeks),
     }
@@ -115,7 +115,7 @@ class Epidata:
     """Fetch FluView metadata."""
     # Set up request
     params = {
-      'source': 'fluview_meta',
+      'endpoint': 'fluview_meta',
     }
     # Make the API call
     return Epidata._request(params)
@@ -131,7 +131,7 @@ class Epidata:
       raise Exception('`issues` and `lag` are mutually exclusive')
     # Set up request
     params = {
-      'source': 'fluview_clinical',
+      'endpoint': 'fluview_clinical',
       'regions': Epidata._list(regions),
       'epiweeks': Epidata._list(epiweeks),
     }
@@ -153,7 +153,7 @@ class Epidata:
       raise Exception('`issues` and `lag` are mutually exclusive')
     # Set up request
     params = {
-      'source': 'flusurv',
+      'endpoint': 'flusurv',
       'locations': Epidata._list(locations),
       'epiweeks': Epidata._list(epiweeks),
     }
@@ -175,7 +175,7 @@ class Epidata:
       raise Exception('`issues` and `lag` are mutually exclusive')
     # Set up request
     params = {
-      'source': 'paho_dengue',
+      'endpoint': 'paho_dengue',
       'regions': Epidata._list(regions),
       'epiweeks': Epidata._list(epiweeks),
     }
@@ -197,7 +197,7 @@ class Epidata:
       raise Exception('`issues` and `lag` are mutually exclusive')
     # Set up request
     params = {
-      'source': 'ecdc_ili',
+      'endpoint': 'ecdc_ili',
       'regions': Epidata._list(regions),
       'epiweeks': Epidata._list(epiweeks),
     }
@@ -219,7 +219,7 @@ class Epidata:
       raise Exception('`issues` and `lag` are mutually exclusive')
     # Set up request
     params = {
-      'source': 'kcdc_ili',
+      'endpoint': 'kcdc_ili',
       'regions': Epidata._list(regions),
       'epiweeks': Epidata._list(epiweeks),
     }
@@ -239,7 +239,7 @@ class Epidata:
       raise Exception('`locations` and `epiweeks` are both required')
     # Set up request
     params = {
-      'source': 'gft',
+      'endpoint': 'gft',
       'locations': Epidata._list(locations),
       'epiweeks': Epidata._list(epiweeks),
     }
@@ -255,7 +255,7 @@ class Epidata:
       raise Exception('`auth`, `locations`, `epiweeks`, and `query` are all required')
     # Set up request
     params = {
-      'source': 'ght',
+      'endpoint': 'ght',
       'auth': auth,
       'locations': Epidata._list(locations),
       'epiweeks': Epidata._list(epiweeks),
@@ -275,7 +275,7 @@ class Epidata:
       raise Exception('exactly one of `dates` and `epiweeks` is required')
     # Set up request
     params = {
-      'source': 'twitter',
+      'endpoint': 'twitter',
       'auth': auth,
       'locations': Epidata._list(locations),
     }
@@ -297,7 +297,7 @@ class Epidata:
       raise Exception('exactly one of `dates` and `epiweeks` is required')
     # Set up request
     params = {
-      'source': 'wiki',
+      'endpoint': 'wiki',
       'articles': Epidata._list(articles),
       'language': language,
     }
@@ -319,7 +319,7 @@ class Epidata:
       raise Exception('`auth`, `epiweeks`, and `locations` are all required')
     # Set up request
     params = {
-      'source': 'cdc',
+      'endpoint': 'cdc',
       'auth': auth,
       'epiweeks': Epidata._list(epiweeks),
       'locations': Epidata._list(locations),
@@ -336,7 +336,7 @@ class Epidata:
       raise Exception('`auth`, `epiweeks`, and `locations` are all required')
     # Set up request
     params = {
-      'source': 'quidel',
+      'endpoint': 'quidel',
       'auth': auth,
       'epiweeks': Epidata._list(epiweeks),
       'locations': Epidata._list(locations),
@@ -353,7 +353,7 @@ class Epidata:
       raise Exception('`auth`, `location`, and `epiweeks` are all required')
     # Set up request
     params = {
-      'source': 'norostat',
+      'endpoint': 'norostat',
       'auth': auth,
       'location': location,
       'epiweeks': Epidata._list(epiweeks),
@@ -370,7 +370,7 @@ class Epidata:
       raise Exception('`auth` is required')
     # Set up request
     params = {
-      'source': 'meta_norostat',
+      'endpoint': 'meta_norostat',
       'auth': auth,
     }
     # Make the API call
@@ -408,7 +408,7 @@ class Epidata:
 
     # Set up request
     params = {
-      'source': 'afhsb',
+      'endpoint': 'afhsb',
       'auth': auth,
       'locations': Epidata._list(locations),
       'epiweeks': Epidata._list(epiweeks),
@@ -426,7 +426,7 @@ class Epidata:
       raise Exception('`auth` is required')
     # Set up request
     params = {
-      'source': 'meta_afhsb',
+      'endpoint': 'meta_afhsb',
       'auth': auth,
     }
     # Make the API call
@@ -443,7 +443,7 @@ class Epidata:
       raise Exception('`issues` and `lag` are mutually exclusive')
     # Set up request
     params = {
-      'source': 'nidss_flu',
+      'endpoint': 'nidss_flu',
       'regions': Epidata._list(regions),
       'epiweeks': Epidata._list(epiweeks),
     }
@@ -463,7 +463,7 @@ class Epidata:
       raise Exception('`locations` and `epiweeks` are both required')
     # Set up request
     params = {
-      'source': 'nidss_dengue',
+      'endpoint': 'nidss_dengue',
       'locations': Epidata._list(locations),
       'epiweeks': Epidata._list(epiweeks),
     }
@@ -479,7 +479,7 @@ class Epidata:
       raise Exception('`system` and `epiweek` are both required')
     # Set up request
     params = {
-      'source': 'delphi',
+      'endpoint': 'delphi',
       'system': system,
       'epiweek': epiweek,
     }
@@ -495,7 +495,7 @@ class Epidata:
       raise Exception('`auth`, `names`, `locations`, and `epiweeks` are all required')
     # Set up request
     params = {
-      'source': 'sensors',
+      'endpoint': 'sensors',
       'auth': auth,
       'names': Epidata._list(names),
       'locations': Epidata._list(locations),
@@ -513,7 +513,7 @@ class Epidata:
       raise Exception('`auth`, `names`, `locations`, and `epiweeks` are all required')
     # Set up request
     params = {
-      'source': 'dengue_sensors',
+      'endpoint': 'dengue_sensors',
       'auth': auth,
       'names': Epidata._list(names),
       'locations': Epidata._list(locations),
@@ -531,7 +531,7 @@ class Epidata:
       raise Exception('`locations` and `epiweeks` are both required')
     # Set up request
     params = {
-      'source': 'nowcast',
+      'endpoint': 'nowcast',
       'locations': Epidata._list(locations),
       'epiweeks': Epidata._list(epiweeks),
     }
@@ -547,7 +547,7 @@ class Epidata:
       raise Exception('`locations` and `epiweeks` are both required')
     # Set up request
     params = {
-      'source': 'dengue_nowcast',
+      'endpoint': 'dengue_nowcast',
       'locations': Epidata._list(locations),
       'epiweeks': Epidata._list(epiweeks),
     }
@@ -558,7 +558,7 @@ class Epidata:
   @staticmethod
   def meta():
     """Fetch API metadata."""
-    return Epidata._request({'source': 'meta'})
+    return Epidata._request({'endpoint': 'meta'})
 
   # Fetch Delphi's COVID-19 Surveillance Streams
   @staticmethod
@@ -576,7 +576,7 @@ class Epidata:
       raise Exception('`issues` and `lag` are mutually exclusive')
     # Set up request
     params = {
-      'source': 'covidcast',
+      'endpoint': 'covidcast',
       'data_source': data_source,
       'signals': Epidata._list(signals),
       'time_type': time_type,
@@ -605,7 +605,7 @@ class Epidata:
   @staticmethod
   def covidcast_meta():
     """Fetch Delphi's COVID-19 Surveillance Streams metadata"""
-    return Epidata._request({'source': 'covidcast_meta'})
+    return Epidata._request({'endpoint': 'covidcast_meta'})
 
   # Fetch COVID hospitalization data
   @staticmethod
@@ -616,11 +616,90 @@ class Epidata:
       raise Exception('`states` and `dates` are both required')
     # Set up request
     params = {
-      'source': 'covid_hosp',
+      'endpoint': 'covid_hosp',
       'states': Epidata._list(states),
       'dates': Epidata._list(dates),
     }
     if issues is not None:
       params['issues'] = Epidata._list(issues)
+    # Make the API call
+    return Epidata._request(params)
+
+  # Fetch COVID hospitalization data for specific facilities
+  @staticmethod
+  def covid_hosp_facility(
+      hospital_pks, collection_weeks, publication_dates=None):
+    """Fetch COVID hospitalization data for specific facilities."""
+    # Check parameters
+    if hospital_pks is None or collection_weeks is None:
+      raise Exception('`hospital_pks` and `collection_weeks` are both required')
+    # Set up request
+    params = {
+      'source': 'covid_hosp_facility',
+      'hospital_pks': Epidata._list(hospital_pks),
+      'collection_weeks': Epidata._list(collection_weeks),
+    }
+    if publication_dates is not None:
+      params['publication_dates'] = Epidata._list(publication_dates)
+    # Make the API call
+    return Epidata._request(params)
+
+  # Lookup COVID hospitalization facility identifiers
+  @staticmethod
+  def covid_hosp_facility_lookup(
+      state=None, ccn=None, city=None, zip=None, fips_code=None):
+    """Lookup COVID hospitalization facility identifiers."""
+    # Set up request
+    params = {'source': 'covid_hosp_facility_lookup'}
+    if state is not None:
+      params['state'] = state
+    elif ccn is not None:
+      params['ccn'] = ccn
+    elif city is not None:
+      params['city'] = city
+    elif zip is not None:
+      params['zip'] = zip
+    elif fips_code is not None:
+      params['fips_code'] = fips_code
+    else:
+      raise Exception('one of `state`, `ccn`, `city`, `zip`, or `fips_code` is required')
+    # Make the API call
+    return Epidata._request(params)
+
+  # Fetch Delphi's COVID-19 Nowcast sensors
+  @staticmethod
+  def covidcast_nowcast(
+          data_source, signals, time_type, geo_type,
+          time_values, geo_value, as_of=None, issues=None, lag=None, **kwargs):
+    """Fetch Delphi's COVID-19 Nowcast sensors"""
+    # Check parameters
+    if data_source is None or signals is None or time_type is None or geo_type is None or time_values is None or geo_value is None:
+      raise Exception('`data_source`, `signals`, `time_type`, `geo_type`, `time_values`, and `geo_value` are all required')
+    if issues is not None and lag is not None:
+      raise Exception('`issues` and `lag` are mutually exclusive')
+    # Set up request
+    params = {
+      'source': 'covidcast_nowcast',
+      'data_source': data_source,
+      'signals': Epidata._list(signals),
+      'time_type': time_type,
+      'geo_type': geo_type,
+      'time_values': Epidata._list(time_values)
+    }
+
+    if isinstance(geo_value, (list, tuple)):
+      params['geo_values'] = ','.join(geo_value)
+    else:
+      params['geo_value'] = geo_value
+    if as_of is not None:
+      params['as_of'] = as_of
+    if issues is not None:
+      params['issues'] = Epidata._list(issues)
+    if lag is not None:
+      params['lag'] = lag
+
+    if 'format' in kwargs:
+      params['format'] = kwargs['format']
+
     # Make the API call
     return Epidata._request(params)

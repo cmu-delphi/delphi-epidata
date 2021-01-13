@@ -924,7 +924,7 @@ function get_dengue_nowcast($locations, $epiweeks) {
 }
 
 // queries the `covidcast` table.
-//   $source (required): name of upstream data souce
+//   $source (required): name of upstream data source
 //   $signals (required): array of names for signals derived from upstream data
 //   $time_type (required): temporal resolution (e.g. day, week)
 //   $geo_type (required): spatial resolution (e.g. county, msa, state)
@@ -1231,6 +1231,294 @@ function get_covid_hosp_state_timeseries($states, $dates, $issues) {
   return count($epidata) === 0 ? null : $epidata;
 }
 
+// queries the `covid_hosp_facility` table
+//   $hospital_pks (required): array of facility identifiers (`hospital_pk`)
+//   $collection_weeks (required): array of date values/ranges
+//   $publication_dates (optional): array of date values/ranges
+//     default: most recent issue
+function get_covid_hosp_facility($hospital_pks, $collection_weeks, $publication_dates) {
+  $epidata = array();
+  $table = '`covid_hosp_facility` c';
+  $fields = implode(', ', array(
+    'c.`publication_date`',
+    'c.`hospital_pk`',
+    'c.`collection_week`',
+    'c.`state`',
+    'c.`ccn`',
+    'c.`hospital_name`',
+    'c.`address`',
+    'c.`city`',
+    'c.`zip`',
+    'c.`hospital_subtype`',
+    'c.`fips_code`',
+    'c.`is_metro_micro`',
+    'c.`total_beds_7_day_avg`',
+    'c.`all_adult_hospital_beds_7_day_avg`',
+    'c.`all_adult_hospital_inpatient_beds_7_day_avg`',
+    'c.`inpatient_beds_used_7_day_avg`',
+    'c.`all_adult_hospital_inpatient_bed_occupied_7_day_avg`',
+    'c.`total_adult_patients_hosp_confirmed_suspected_covid_7d_avg`',
+    'c.`total_adult_patients_hospitalized_confirmed_covid_7_day_avg`',
+    'c.`total_pediatric_patients_hosp_confirmed_suspected_covid_7d_avg`',
+    'c.`total_pediatric_patients_hospitalized_confirmed_covid_7_day_avg`',
+    'c.`inpatient_beds_7_day_avg`',
+    'c.`total_icu_beds_7_day_avg`',
+    'c.`total_staffed_adult_icu_beds_7_day_avg`',
+    'c.`icu_beds_used_7_day_avg`',
+    'c.`staffed_adult_icu_bed_occupancy_7_day_avg`',
+    'c.`staffed_icu_adult_patients_confirmed_suspected_covid_7d_avg`',
+    'c.`staffed_icu_adult_patients_confirmed_covid_7_day_avg`',
+    'c.`total_patients_hospitalized_confirmed_influenza_7_day_avg`',
+    'c.`icu_patients_confirmed_influenza_7_day_avg`',
+    'c.`total_patients_hosp_confirmed_influenza_and_covid_7d_avg`',
+    'c.`total_beds_7_day_sum`',
+    'c.`all_adult_hospital_beds_7_day_sum`',
+    'c.`all_adult_hospital_inpatient_beds_7_day_sum`',
+    'c.`inpatient_beds_used_7_day_sum`',
+    'c.`all_adult_hospital_inpatient_bed_occupied_7_day_sum`',
+    'c.`total_adult_patients_hosp_confirmed_suspected_covid_7d_sum`',
+    'c.`total_adult_patients_hospitalized_confirmed_covid_7_day_sum`',
+    'c.`total_pediatric_patients_hosp_confirmed_suspected_covid_7d_sum`',
+    'c.`total_pediatric_patients_hospitalized_confirmed_covid_7_day_sum`',
+    'c.`inpatient_beds_7_day_sum`',
+    'c.`total_icu_beds_7_day_sum`',
+    'c.`total_staffed_adult_icu_beds_7_day_sum`',
+    'c.`icu_beds_used_7_day_sum`',
+    'c.`staffed_adult_icu_bed_occupancy_7_day_sum`',
+    'c.`staffed_icu_adult_patients_confirmed_suspected_covid_7d_sum`',
+    'c.`staffed_icu_adult_patients_confirmed_covid_7_day_sum`',
+    'c.`total_patients_hospitalized_confirmed_influenza_7_day_sum`',
+    'c.`icu_patients_confirmed_influenza_7_day_sum`',
+    'c.`total_patients_hosp_confirmed_influenza_and_covid_7d_sum`',
+    'c.`total_beds_7_day_coverage`',
+    'c.`all_adult_hospital_beds_7_day_coverage`',
+    'c.`all_adult_hospital_inpatient_beds_7_day_coverage`',
+    'c.`inpatient_beds_used_7_day_coverage`',
+    'c.`all_adult_hospital_inpatient_bed_occupied_7_day_coverage`',
+    'c.`total_adult_patients_hosp_confirmed_suspected_covid_7d_cov`',
+    'c.`total_adult_patients_hospitalized_confirmed_covid_7_day_coverage`',
+    'c.`total_pediatric_patients_hosp_confirmed_suspected_covid_7d_cov`',
+    'c.`total_pediatric_patients_hosp_confirmed_covid_7d_cov`',
+    'c.`inpatient_beds_7_day_coverage`',
+    'c.`total_icu_beds_7_day_coverage`',
+    'c.`total_staffed_adult_icu_beds_7_day_coverage`',
+    'c.`icu_beds_used_7_day_coverage`',
+    'c.`staffed_adult_icu_bed_occupancy_7_day_coverage`',
+    'c.`staffed_icu_adult_patients_confirmed_suspected_covid_7d_cov`',
+    'c.`staffed_icu_adult_patients_confirmed_covid_7_day_coverage`',
+    'c.`total_patients_hospitalized_confirmed_influenza_7_day_coverage`',
+    'c.`icu_patients_confirmed_influenza_7_day_coverage`',
+    'c.`total_patients_hosp_confirmed_influenza_and_covid_7d_cov`',
+    'c.`previous_day_admission_adult_covid_confirmed_7_day_sum`',
+    'c.`previous_day_admission_adult_covid_confirmed_18_19_7_day_sum`',
+    'c.`previous_day_admission_adult_covid_confirmed_20_29_7_day_sum`',
+    'c.`previous_day_admission_adult_covid_confirmed_30_39_7_day_sum`',
+    'c.`previous_day_admission_adult_covid_confirmed_40_49_7_day_sum`',
+    'c.`previous_day_admission_adult_covid_confirmed_50_59_7_day_sum`',
+    'c.`previous_day_admission_adult_covid_confirmed_60_69_7_day_sum`',
+    'c.`previous_day_admission_adult_covid_confirmed_70_79_7_day_sum`',
+    'c.`previous_day_admission_adult_covid_confirmed_80plus_7_day_sum`',
+    'c.`previous_day_admission_adult_covid_confirmed_unknown_7_day_sum`',
+    'c.`previous_day_admission_pediatric_covid_confirmed_7_day_sum`',
+    'c.`previous_day_covid_ed_visits_7_day_sum`',
+    'c.`previous_day_admission_adult_covid_suspected_7_day_sum`',
+    'c.`previous_day_admission_adult_covid_suspected_18_19_7_day_sum`',
+    'c.`previous_day_admission_adult_covid_suspected_20_29_7_day_sum`',
+    'c.`previous_day_admission_adult_covid_suspected_30_39_7_day_sum`',
+    'c.`previous_day_admission_adult_covid_suspected_40_49_7_day_sum`',
+    'c.`previous_day_admission_adult_covid_suspected_50_59_7_day_sum`',
+    'c.`previous_day_admission_adult_covid_suspected_60_69_7_day_sum`',
+    'c.`previous_day_admission_adult_covid_suspected_70_79_7_day_sum`',
+    'c.`previous_day_admission_adult_covid_suspected_80plus_7_day_sum`',
+    'c.`previous_day_admission_adult_covid_suspected_unknown_7_day_sum`',
+    'c.`previous_day_admission_pediatric_covid_suspected_7_day_sum`',
+    'c.`previous_day_total_ed_visits_7_day_sum`',
+    'c.`previous_day_admission_influenza_confirmed_7_day_sum`',
+  ));
+  // basic query info
+  $order = "c.`collection_week` ASC, c.`hospital_pk` ASC, c.`publication_date` ASC";
+  // build the date filter
+  $condition_collection_week = filter_integers('c.`collection_week`', $collection_weeks);
+  // build the state filter
+  $condition_hospital_pk = filter_strings('c.`hospital_pk`', $hospital_pks);
+  if($publication_dates !== null) {
+    // build the issue filter
+    $condition_publication_date = filter_integers('c.`publication_date`', $publication_dates);
+    // final query using specific issues
+    $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_collection_week}) AND ({$condition_hospital_pk}) AND ({$condition_publication_date}) ORDER BY {$order}";
+  } else {
+    // final query using most recent issues
+    $subquery = "(SELECT max(`publication_date`) `max_publication_date`, `collection_week`, `hospital_pk` FROM {$table} WHERE ({$condition_collection_week}) AND ({$condition_hospital_pk}) GROUP BY `collection_week`, `hospital_pk`) x";
+    $condition = "x.`max_publication_date` = c.`publication_date` AND x.`collection_week` = c.`collection_week` AND x.`hospital_pk` = c.`hospital_pk`";
+    $query = "SELECT {$fields} FROM {$table} JOIN {$subquery} ON {$condition} ORDER BY {$order}";
+  }
+  // get the data from the database
+  $fields_string = array(
+    'hospital_pk',
+    'state',
+    'ccn',
+    'hospital_name',
+    'address',
+    'city',
+    'zip',
+    'hospital_subtype',
+    'fips_code',
+  );
+  $fields_int = array(
+    'publication_date',
+    'collection_week',
+    'is_metro_micro',
+    'total_beds_7_day_sum',
+    'all_adult_hospital_beds_7_day_sum',
+    'all_adult_hospital_inpatient_beds_7_day_sum',
+    'inpatient_beds_used_7_day_sum',
+    'all_adult_hospital_inpatient_bed_occupied_7_day_sum',
+    'total_adult_patients_hosp_confirmed_suspected_covid_7d_sum',
+    'total_adult_patients_hospitalized_confirmed_covid_7_day_sum',
+    'total_pediatric_patients_hosp_confirmed_suspected_covid_7d_sum',
+    'total_pediatric_patients_hospitalized_confirmed_covid_7_day_sum',
+    'inpatient_beds_7_day_sum',
+    'total_icu_beds_7_day_sum',
+    'total_staffed_adult_icu_beds_7_day_sum',
+    'icu_beds_used_7_day_sum',
+    'staffed_adult_icu_bed_occupancy_7_day_sum',
+    'staffed_icu_adult_patients_confirmed_suspected_covid_7d_sum',
+    'staffed_icu_adult_patients_confirmed_covid_7_day_sum',
+    'total_patients_hospitalized_confirmed_influenza_7_day_sum',
+    'icu_patients_confirmed_influenza_7_day_sum',
+    'total_patients_hosp_confirmed_influenza_and_covid_7d_sum',
+    'total_beds_7_day_coverage',
+    'all_adult_hospital_beds_7_day_coverage',
+    'all_adult_hospital_inpatient_beds_7_day_coverage',
+    'inpatient_beds_used_7_day_coverage',
+    'all_adult_hospital_inpatient_bed_occupied_7_day_coverage',
+    'total_adult_patients_hosp_confirmed_suspected_covid_7d_cov',
+    'total_adult_patients_hospitalized_confirmed_covid_7_day_coverage',
+    'total_pediatric_patients_hosp_confirmed_suspected_covid_7d_cov',
+    'total_pediatric_patients_hosp_confirmed_covid_7d_cov',
+    'inpatient_beds_7_day_coverage',
+    'total_icu_beds_7_day_coverage',
+    'total_staffed_adult_icu_beds_7_day_coverage',
+    'icu_beds_used_7_day_coverage',
+    'staffed_adult_icu_bed_occupancy_7_day_coverage',
+    'staffed_icu_adult_patients_confirmed_suspected_covid_7d_cov',
+    'staffed_icu_adult_patients_confirmed_covid_7_day_coverage',
+    'total_patients_hospitalized_confirmed_influenza_7_day_coverage',
+    'icu_patients_confirmed_influenza_7_day_coverage',
+    'total_patients_hosp_confirmed_influenza_and_covid_7d_cov',
+    'previous_day_admission_adult_covid_confirmed_7_day_sum',
+    'previous_day_admission_adult_covid_confirmed_18_19_7_day_sum',
+    'previous_day_admission_adult_covid_confirmed_20_29_7_day_sum',
+    'previous_day_admission_adult_covid_confirmed_30_39_7_day_sum',
+    'previous_day_admission_adult_covid_confirmed_40_49_7_day_sum',
+    'previous_day_admission_adult_covid_confirmed_50_59_7_day_sum',
+    'previous_day_admission_adult_covid_confirmed_60_69_7_day_sum',
+    'previous_day_admission_adult_covid_confirmed_70_79_7_day_sum',
+    'previous_day_admission_adult_covid_confirmed_80plus_7_day_sum',
+    'previous_day_admission_adult_covid_confirmed_unknown_7_day_sum',
+    'previous_day_admission_pediatric_covid_confirmed_7_day_sum',
+    'previous_day_covid_ed_visits_7_day_sum',
+    'previous_day_admission_adult_covid_suspected_7_day_sum',
+    'previous_day_admission_adult_covid_suspected_18_19_7_day_sum',
+    'previous_day_admission_adult_covid_suspected_20_29_7_day_sum',
+    'previous_day_admission_adult_covid_suspected_30_39_7_day_sum',
+    'previous_day_admission_adult_covid_suspected_40_49_7_day_sum',
+    'previous_day_admission_adult_covid_suspected_50_59_7_day_sum',
+    'previous_day_admission_adult_covid_suspected_60_69_7_day_sum',
+    'previous_day_admission_adult_covid_suspected_70_79_7_day_sum',
+    'previous_day_admission_adult_covid_suspected_80plus_7_day_sum',
+    'previous_day_admission_adult_covid_suspected_unknown_7_day_sum',
+    'previous_day_admission_pediatric_covid_suspected_7_day_sum',
+    'previous_day_total_ed_visits_7_day_sum',
+    'previous_day_admission_influenza_confirmed_7_day_sum',
+  );
+  $fields_float = array(
+    'total_beds_7_day_avg',
+    'all_adult_hospital_beds_7_day_avg',
+    'all_adult_hospital_inpatient_beds_7_day_avg',
+    'inpatient_beds_used_7_day_avg',
+    'all_adult_hospital_inpatient_bed_occupied_7_day_avg',
+    'total_adult_patients_hosp_confirmed_suspected_covid_7d_avg',
+    'total_adult_patients_hospitalized_confirmed_covid_7_day_avg',
+    'total_pediatric_patients_hosp_confirmed_suspected_covid_7d_avg',
+    'total_pediatric_patients_hospitalized_confirmed_covid_7_day_avg',
+    'inpatient_beds_7_day_avg',
+    'total_icu_beds_7_day_avg',
+    'total_staffed_adult_icu_beds_7_day_avg',
+    'icu_beds_used_7_day_avg',
+    'staffed_adult_icu_bed_occupancy_7_day_avg',
+    'staffed_icu_adult_patients_confirmed_suspected_covid_7d_avg',
+    'staffed_icu_adult_patients_confirmed_covid_7_day_avg',
+    'total_patients_hospitalized_confirmed_influenza_7_day_avg',
+    'icu_patients_confirmed_influenza_7_day_avg',
+    'total_patients_hosp_confirmed_influenza_and_covid_7d_avg',
+  );
+  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
+  // return the data
+  return count($epidata) === 0 ? null : $epidata;
+}
+
+// queries the `covid_hosp_facility` table for hospital discovery
+//   $state (optional): 2-letter state abbreviation
+//   $ccn (optional): cms certification number (ccn) of the given facility
+//   $city (optional): name of
+//   $zip (optional): 2-letter state abbreviation
+//   $fips_code (optional): 2-letter state abbreviation
+//   note: exactly one of the above parameters should be non-null. if more than
+//         one is non-null, then only the first filter will be used.
+function get_covid_hosp_facility_lookup($state, $ccn, $city, $zip, $fips_code) {
+  $epidata = array();
+  $table = '`covid_hosp_facility` c';
+  $fields = implode(', ', array(
+    'c.`hospital_pk`',
+    'MAX(c.`state`) `state`',
+    'MAX(c.`ccn`) `ccn`',
+    'MAX(c.`hospital_name`) `hospital_name`',
+    'MAX(c.`address`) `address`',
+    'MAX(c.`city`) `city`',
+    'MAX(c.`zip`) `zip`',
+    'MAX(c.`hospital_subtype`) `hospital_subtype`',
+    'MAX(c.`fips_code`) `fips_code`',
+    'MAX(c.`is_metro_micro`) `is_metro_micro`',
+  ));
+  // basic query info
+  $group = 'c.`hospital_pk`';
+  $order = "c.`hospital_pk` ASC";
+  // build the filter
+  // these are all fast because the table has indexes on each of these fields
+  $condition = 'FALSE';
+  if ($state !== null) {
+    $condition = filter_strings('c.`state`', $state);
+  } else if ($ccn !== null) {
+    $condition = filter_strings('c.`ccn`', $ccn);
+  } else if ($city !== null) {
+    $condition = filter_strings('c.`city`', $city);
+  } else if ($zip !== null) {
+    $condition = filter_strings('c.`zip`', $zip);
+  } else if ($fips_code !== null) {
+    $condition = filter_strings('c.`fips_code`', $fips_code);
+  }
+  // final query using specific issues
+  $query = "SELECT {$fields} FROM {$table} WHERE ({$condition}) GROUP BY {$group} ORDER BY {$order}";
+  // get the data from the database
+  $fields_string = array(
+    'hospital_pk',
+    'state',
+    'ccn',
+    'hospital_name',
+    'address',
+    'city',
+    'zip',
+    'hospital_subtype',
+    'fips_code',
+  );
+  $fields_int = array('is_metro_micro');
+  $fields_float = null;
+  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
+  // return the data
+  return count($epidata) === 0 ? null : $epidata;
+}
+
 // queries a bunch of epidata tables
 function get_meta() {
   // query and return metadata
@@ -1326,13 +1614,80 @@ function meta_delphi() {
   return count($epidata) === 0 ? null : $epidata;
 }
 
+function get_covidcast_nowcast($source, $signals, $time_type, $geo_type, $time_values, $geo_values, $as_of, $issues, $lag) {
+  // required for `mysqli_real_escape_string`
+  global $dbh;
+  $source = mysqli_real_escape_string($dbh, $source);
+  $time_type = mysqli_real_escape_string($dbh, $time_type);
+  $geo_type = mysqli_real_escape_string($dbh, $geo_type);
+  // basic query info
+  $table = '`covidcast_nowcast` t';
+  $fields = "t.`signal`, t.`time_value`, t.`geo_value`, t.`value`, t.`issue`, t.`lag`";
+  $order = "t.`signal` ASC, t.`time_value` ASC, t.`geo_value` ASC, t.`issue` ASC";
+  // data type of each field
+  $fields_string = array('geo_value', 'signal');
+  $fields_int = array('time_value', 'issue', 'lag');
+  $fields_float = array('value');
+  // build the source, signal, time, and location (type and id) filters
+  $condition_source = "t.`source` = '{$source}'";
+  $condition_signal = filter_strings('t.`signal`', $signals);
+  $condition_time_type = "t.`time_type` = '{$time_type}'";
+  $condition_geo_type = "t.`geo_type` = '{$geo_type}'";
+  $condition_time_value = filter_integers('t.`time_value`', $time_values);
+
+  if ($geo_values === '*') {
+    // the wildcard query should return data for all locations in `geo_type`
+    $condition_geo_value = 'TRUE';
+  } else if (is_array($geo_values)) {
+    // return data for multiple location
+    $condition_geo_value = filter_strings('t.`geo_value`', $geo_values);
+  } else {
+    // return data for a particular location
+    $geo_escaped_value = mysqli_real_escape_string($dbh, $geo_values);
+    $condition_geo_value = "t.`geo_value` = '{$geo_escaped_value}'";
+  }
+  $conditions = "({$condition_source}) AND ({$condition_signal}) AND ({$condition_time_type}) AND ({$condition_geo_type}) AND ({$condition_time_value}) AND ({$condition_geo_value})";
+
+  $subquery = "";
+  if ($issues !== null) {
+    //build the issue filter
+    $condition_issue = filter_integers('t.`issue`', $issues);
+    $query = "SELECT {$fields} FROM {$table} {$subquery} WHERE {$conditions} AND ({$condition_issue}) ORDER BY {$order}";
+  } else if ($lag !== null) {
+    //build the lag filter
+    $condition_lag = "(t.`lag` = {$lag})";
+    $query = "SELECT {$fields} FROM {$table} {$subquery} WHERE {$conditions} AND ({$condition_lag}) ORDER BY {$order}";
+  } else if ($as_of !== null) {
+    // fetch most recent issues with as of
+    $sub_condition_asof = "(`issue` <= {$as_of})";
+    $sub_fields = "max(`issue`) `max_issue`, `time_type`, `time_value`, `source`, `signal`, `geo_type`, `geo_value`";
+    $sub_group = "`time_type`, `time_value`, `source`, `signal`, `geo_type`, `geo_value`";
+    $sub_condition = "x.`max_issue` = t.`issue` AND x.`time_type` = t.`time_type` AND x.`time_value` = t.`time_value` AND x.`source` = t.`source` AND x.`signal` = t.`signal` AND x.`geo_type` = t.`geo_type` AND x.`geo_value` = t.`geo_value`";
+    $subquery = "JOIN (SELECT {$sub_fields} FROM {$table} WHERE ({$conditions} AND {$sub_condition_asof}) GROUP BY {$sub_group}) x ON {$sub_condition}";
+    $condition_version = 'TRUE';
+    $query = "SELECT {$fields} FROM {$table} {$subquery} WHERE {$conditions} AND ({$condition_version}) ORDER BY {$order}";
+  } else {
+    // fetch most recent issue fast
+    $query = "WITH t as (SELECT {$fields}, ROW_NUMBER() OVER (PARTITION BY t.`time_type`, t.`time_value`, t.`source`, t.`signal`, t.`geo_type`, t.`geo_value` ORDER BY t.`issue` DESC) row FROM {$table}  {$subquery} WHERE {$conditions}) SELECT {$fields} FROM t where row = 1 ORDER BY {$order}";
+  }
+  // get the data from the database
+  $epidata = array();
+  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
+  // return the data
+  return count($epidata) === 0 ? null : $epidata;
+}
+
+
 // all responses will have a result field
 $data = array('result' => -1);
 // connect to the database
 if(database_connect()) {
+
   // select the data source
-  $source = isset($_REQUEST['source']) ? strtolower($_REQUEST['source']) : null;
-  if($source === 'fluview') {
+  // endpoint parameter with a fallback to source parameter for compatibility reasons
+  $endpoint = isset($_REQUEST['endpoint']) ? strtolower($_REQUEST['endpoint']) : (isset($_REQUEST['source']) ? strtolower($_REQUEST['source']) : null);
+
+  if($endpoint === 'fluview') {
     if(require_all($data, array('epiweeks', 'regions'))) {
       // parse the request
       $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
@@ -1344,11 +1699,11 @@ if(database_connect()) {
       $epidata = get_fluview($epiweeks, $regions, $issues, $lag, $authorized);
       store_result($data, $epidata);
     }
-  } else if($source === 'fluview_meta') {
+  } else if($endpoint === 'fluview_meta') {
     // get the data
     $epidata = meta_fluview();
     store_result($data, $epidata);
-  } else if ($source === 'fluview_clinical') {
+  } else if ($endpoint === 'fluview_clinical') {
     if(require_all($data, array('epiweeks', 'regions'))) {
       // parse the request
       $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
@@ -1359,7 +1714,7 @@ if(database_connect()) {
       $epidata = get_fluview_clinical($epiweeks, $regions, $issues, $lag);
       store_result($data, $epidata);
     }
-  } else if($source === 'flusurv') {
+  } else if($endpoint === 'flusurv') {
     if(require_all($data, array('epiweeks', 'locations'))) {
       // parse the request
       $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
@@ -1370,7 +1725,7 @@ if(database_connect()) {
       $epidata = get_flusurv($epiweeks, $locations, $issues, $lag);
       store_result($data, $epidata);
     }
-  } else if ($source === 'paho_dengue') {
+  } else if ($endpoint === 'paho_dengue') {
     if(require_all($data, array('epiweeks', 'regions'))) {
       // parse the request
       $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
@@ -1381,7 +1736,7 @@ if(database_connect()) {
       $epidata = get_paho_dengue($epiweeks, $regions, $issues, $lag);
       store_result($data, $epidata);
     }
-  } else if ($source === 'ecdc_ili') {
+  } else if ($endpoint === 'ecdc_ili') {
     if(require_all($data, array('epiweeks', 'regions'))) {
       // parse the request
       $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
@@ -1392,7 +1747,7 @@ if(database_connect()) {
       $epidata = get_ecdc_ili($epiweeks, $regions, $issues, $lag);
       store_result($data, $epidata);
     }
-  } else if ($source === 'kcdc_ili') {
+  } else if ($endpoint === 'kcdc_ili') {
     if(require_all($data, array('epiweeks', 'regions'))) {
       // parse the request
       $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
@@ -1403,10 +1758,10 @@ if(database_connect()) {
       $epidata = get_kcdc_ili($epiweeks, $regions, $issues, $lag);
       store_result($data, $epidata);
     }
-  } else if($source === 'ilinet' || $source === 'stateili') {
+  } else if($endpoint === 'ilinet' || $endpoint === 'stateili') {
     // these two sources are now combined into fluview
     $data['message'] = 'use fluview instead';
-  } else if($source === 'gft') {
+  } else if($endpoint === 'gft') {
     if(require_all($data, array('epiweeks', 'locations'))) {
       // parse the request
       $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
@@ -1415,7 +1770,7 @@ if(database_connect()) {
       $epidata = get_gft($epiweeks, $locations);
       store_result($data, $epidata);
     }
-  } else if($source === 'ght') {
+  } else if($endpoint === 'ght') {
     if(require_all($data, array('auth', 'epiweeks', 'locations', 'query'))) {
       if($_REQUEST['auth'] === $AUTH['ght']) {
         // parse the request
@@ -1429,7 +1784,7 @@ if(database_connect()) {
         $data['message'] = 'unauthenticated';
       }
     }
-  } else if($source === 'twitter') {
+  } else if($endpoint === 'twitter') {
     if(require_all($data, array('auth', 'locations'))) {
       if($_REQUEST['auth'] === $AUTH['twitter']) {
         // parse the request
@@ -1450,7 +1805,7 @@ if(database_connect()) {
         $data['message'] = 'unauthenticated';
       }
     }
-  } else if($source === 'wiki') {
+  } else if($endpoint === 'wiki') {
     if(require_all($data, array('articles', 'language'))) {
       // parse the request
       $articles = extract_values($_REQUEST['articles'], 'str');
@@ -1469,7 +1824,7 @@ if(database_connect()) {
         store_result($data, $epidata);
       }
     }
-  } else if($source === 'quidel') {
+  } else if($endpoint === 'quidel') {
     if(require_all($data, array('auth', 'locations', 'epiweeks'))) {
       if($_REQUEST['auth'] === $AUTH['quidel']) {
         // parse the request
@@ -1482,7 +1837,7 @@ if(database_connect()) {
         $data['message'] = 'unauthenticated';
       }
     }
-  } else if($source === 'norostat') {
+  } else if($endpoint === 'norostat') {
     if(require_all($data, array('auth', 'location', 'epiweeks'))) {
       if($_REQUEST['auth'] === $AUTH['norostat']) {
         // parse the request
@@ -1495,7 +1850,7 @@ if(database_connect()) {
           $data['message'] = 'unauthenticated';
       }
     }
-  } else if($source === 'afhsb') {
+  } else if($endpoint === 'afhsb') {
     if(require_all($data, array('auth', 'locations', 'epiweeks', 'flu_types'))) {
       if($_REQUEST['auth'] === $AUTH['afhsb']) {
         // parse the request
@@ -1509,7 +1864,7 @@ if(database_connect()) {
           $data['message'] = 'unauthenticated';
       }
     }
-  } else if($source === 'nidss_flu') {
+  } else if($endpoint === 'nidss_flu') {
     if(require_all($data, array('epiweeks', 'regions'))) {
       // parse the request
       $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
@@ -1520,7 +1875,7 @@ if(database_connect()) {
       $epidata = get_nidss_flu($epiweeks, $regions, $issues, $lag);
       store_result($data, $epidata);
     }
-  } else if($source === 'nidss_dengue') {
+  } else if($endpoint === 'nidss_dengue') {
     if(require_all($data, array('epiweeks', 'locations'))) {
       // parse the request
       $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
@@ -1529,7 +1884,7 @@ if(database_connect()) {
       $epidata = get_nidss_dengue($epiweeks, $locations);
       store_result($data, $epidata);
     }
-  } else if($source === 'delphi') {
+  } else if($endpoint === 'delphi') {
     if(require_all($data, array('system', 'epiweek'))) {
       // parse the request
       $system = $_REQUEST['system'];
@@ -1538,10 +1893,10 @@ if(database_connect()) {
       $epidata = get_forecast($system, $epiweek);
       store_result($data, $epidata);
     }
-  } else if($source === 'signals') {
+  } else if($endpoint === 'signals') {
     // this sources is now replaced by sensors
     $data['message'] = 'use sensors instead';
-  } else if($source === 'cdc') {
+  } else if($endpoint === 'cdc') {
     if(require_all($data, array('auth', 'epiweeks', 'locations'))) {
       if($_REQUEST['auth'] === $AUTH['cdc']) {
         // parse the request
@@ -1554,7 +1909,7 @@ if(database_connect()) {
         $data['message'] = 'unauthenticated';
       }
     }
-  } else if($source === 'sensors') {
+  } else if($endpoint === 'sensors') {
     if(require_all($data, array('names', 'locations', 'epiweeks'))) {
       if(!array_key_exists('auth', $_REQUEST)) {
         $auth_tokens_presented = array();
@@ -1625,7 +1980,7 @@ if(database_connect()) {
         }
       }
     }
-  } else if($source === 'dengue_sensors') {
+  } else if($endpoint === 'dengue_sensors') {
     if(require_all($data, array('auth', 'names', 'locations', 'epiweeks'))) {
       if($_REQUEST['auth'] === $AUTH['sensors']) {
         // parse the request
@@ -1639,7 +1994,7 @@ if(database_connect()) {
         $data['message'] = 'unauthenticated';
       }
     }
-  } else if($source === 'nowcast') {
+  } else if($endpoint === 'nowcast') {
     if(require_all($data, array('locations', 'epiweeks'))) {
       // parse the request
       $locations = extract_values($_REQUEST['locations'], 'str');
@@ -1648,7 +2003,7 @@ if(database_connect()) {
       $epidata = get_nowcast($locations, $epiweeks);
       store_result($data, $epidata);
     }
-  } else if($source === 'dengue_nowcast') {
+  } else if($endpoint === 'dengue_nowcast') {
     if(require_all($data, array('locations', 'epiweeks'))) {
       // parse the request
       $locations = extract_values($_REQUEST['locations'], 'str');
@@ -1657,11 +2012,11 @@ if(database_connect()) {
       $epidata = get_dengue_nowcast($locations, $epiweeks);
       store_result($data, $epidata);
     }
-  } else if($source === 'meta') {
+  } else if($endpoint === 'meta') {
     // get the data
     $epidata = get_meta();
     store_result($data, $epidata);
-  } else if($source === 'meta_norostat') {
+  } else if($endpoint === 'meta_norostat') {
     if(require_all($data, array('auth'))) {
       if($_REQUEST['auth'] === $AUTH['norostat']) {
         $epidata = get_meta_norostat();
@@ -1670,7 +2025,7 @@ if(database_connect()) {
           $data['message'] = 'unauthenticated';
       }
     }
-  } else if($source === 'meta_afhsb') {
+  } else if($endpoint === 'meta_afhsb') {
     if(require_all($data, array('auth'))) {
       if($_REQUEST['auth'] === $AUTH['afhsb']) {
         $epidata = get_meta_afhsb();
@@ -1679,7 +2034,7 @@ if(database_connect()) {
           $data['message'] = 'unauthenticated';
       }
     }
-  } else if($source === 'covidcast') {
+  } else if($endpoint === 'covidcast') {
     if(require_all($data, array('data_source', 'time_type', 'geo_type', 'time_values'))
        && require_any($data, array('signal', 'signals'))
        && require_any($data, array('geo_value', 'geo_values'))) {
@@ -1717,11 +2072,11 @@ if(database_connect()) {
       }
       store_result($data, $epidata);
     }
-  } else if($source === 'covidcast_meta') {
+  } else if($endpoint === 'covidcast_meta') {
     // get the metadata
     $epidata = get_covidcast_meta();
     store_result($data, $epidata);
-  } else if($source === 'covid_hosp' || $source === 'covid_hosp_state_timeseries') {
+  } else if($endpoint === 'covid_hosp' || $source === 'covid_hosp_state_timeseries') {
     if(require_all($data, array('states', 'dates'))) {
       // parse the request
       $states = extract_values($_REQUEST['states'], 'str');
@@ -1731,11 +2086,55 @@ if(database_connect()) {
       $epidata = get_covid_hosp_state_timeseries($states, $dates, $issues);
       store_result($data, $epidata);
     }
+  } else if($endpoint === 'covid_hosp_facility') {
+    if(require_all($data, array('hospital_pks', 'collection_weeks'))) {
+      // parse the request
+      $hospital_pks = extract_values($_REQUEST['hospital_pks'], 'str');
+      $collection_weeks = extract_values($_REQUEST['collection_weeks'], 'int');
+      $publication_dates = isset($_REQUEST['publication_dates']) ? extract_values($_REQUEST['publication_dates'], 'int') : null;
+      // get the data
+      $epidata = get_covid_hosp_facility($hospital_pks, $collection_weeks, $publication_dates);
+      store_result($data, $epidata);
+    }
+  } else if($endpoint === 'covid_hosp_facility_lookup') {
+    if(require_any($data, array('state', 'ccn', 'city', 'zip', 'fips_code'))) {
+      $state = isset($_REQUEST['state']) ? extract_values($_REQUEST['state'], 'str') : null;
+      $ccn = isset($_REQUEST['ccn']) ? extract_values($_REQUEST['ccn'], 'str') : null;
+      $city = isset($_REQUEST['city']) ? extract_values($_REQUEST['city'], 'str') : null;
+      $zip = isset($_REQUEST['zip']) ? extract_values($_REQUEST['zip'], 'str') : null;
+      $fips_code = isset($_REQUEST['fips_code']) ? extract_values($_REQUEST['fips_code'], 'str') : null;
+      // get the data
+      $epidata = get_covid_hosp_facility_lookup($state, $ccn, $city, $zip, $fips_code);
+      store_result($data, $epidata);
+    }
+  } else if($endpoint === 'covidcast_nowcast') {
+    if(require_all($data, array('data_source', 'time_type', 'geo_type', 'time_values', 'signals'))
+       && require_any($data, array('geo_value', 'geo_values'))) {
+      // parse the request
+      $time_values = extract_dates($_REQUEST['time_values']);
+      $as_of = isset($_REQUEST['as_of']) ? parse_date($_REQUEST['as_of']) : null;
+      $issues = isset($_REQUEST['issues']) ? extract_dates($_REQUEST['issues']) : null;
+      $lag = isset($_REQUEST['lag']) ? intval($_REQUEST['lag']) : null;
+      $signals = extract_values(isset($_REQUEST['signals']) ? $_REQUEST['signals'] : $_REQUEST['signal'], 'string');
+      $geo_values = isset($_REQUEST['geo_value']) ? $_REQUEST['geo_value'] : extract_values($_REQUEST['geo_values'], 'string');
+      // get the data
+      $epidata = get_covidcast_nowcast(
+          $_REQUEST['data_source'],
+          $signals,
+          $_REQUEST['time_type'],
+          $_REQUEST['geo_type'],
+          $time_values,
+          $geo_values,
+          $as_of,
+          $issues,
+          $lag);
+      store_result($data, $epidata);
+    }
   } else {
     $data['message'] = 'no data source specified';
   }
   // API analytics
-  record_analytics($source, $data);
+  record_analytics($endpoint, $data);
 } else {
   $data['message'] = 'database error';
 }

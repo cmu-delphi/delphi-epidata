@@ -5,18 +5,18 @@ parent: Epidata API (Other Diseases)
 
 # Google Flu Trends
 
-This is the documentation of the API for accessing the Google Flu Trends (`gft`) data source of
-the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
+This is the API documentation for accessing the Google Flu Trends (`gft`)
+endpoint of [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 
-General topics not specific to any particular data source are discussed in the
+General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
 
 ## Google Flu Trends Data
 
-Estimate of influenza activity based on volume of certain search queries. Google has discontinued Flu Trends, and this is now a static data source.
- - Data source: [Google](https://www.google.org/flutrends/)
+Estimate of influenza activity based on volume of certain search queries. Google has discontinued Flu Trends, and this is now a static endpoint.
+ - Source: [Google](https://www.google.org/flutrends/)
  - Temporal Resolution: Weekly from 2003w40 until 2015w32
  - Spatial Resolution: National, [HHS regions](http://www.hhs.gov/iea/regional/) ([1+10](../../labels/regions.txt)); by state/territory ([50+1](../../labels/states.txt)); and by city ([97](../../labels/cities.txt))
  - Open access
@@ -50,7 +50,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 # Example URLs
 
 ### Google Flu Trends on 2015w01 (national)
-https://delphi.cmu.edu/epidata/api.php?source=gft&locations=nat&epiweeks=201501
+https://delphi.cmu.edu/epidata/api.php?endpoint=gft&locations=nat&epiweeks=201501
 
 ```json
 {

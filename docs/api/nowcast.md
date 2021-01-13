@@ -5,10 +5,10 @@ parent: Epidata API (Other Diseases)
 
 # ILI Nearby Nowcast
 
-This is the documentation of the API for accessing the ILI Nearby (`nowcast`) data source of
+This is the documentation of the API for accessing the ILI Nearby (`nowcast`) endpoint of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 
-General topics not specific to any particular data source are discussed in the
+General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
@@ -16,7 +16,7 @@ General topics not specific to any particular data source are discussed in the
 ## ILI Nearby Data
 
 A nowcast of U.S. national, regional, and state-level (weighted) %ILI, available seven days (regionally) or five days (state-level) before the first ILINet report for the corresponding week.
- - Data source: [Delphi's ILI Nearby system](https://delphi.cmu.edu/nowcast/)
+ - Source: [Delphi's ILI Nearby system](https://delphi.cmu.edu/nowcast/)
  - Temporal Resolution: Weekly, from 2010w30*
  - Spatial Resolution: National, [HHS regions](http://www.hhs.gov/iea/regional/), [Census divisions](http://www.census.gov/econ/census/help/geography/regions_and_divisions.html) ([1+10+9](../../labels/regions.txt)), and by state/territory ([51](../../labels/states.txt))
  - Open access
@@ -53,7 +53,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 # Example URLs
 
 ### ILI Nearby on 2020w01 (national)
-https://delphi.cmu.edu/epidata/api.php?source=nowcast&locations=nat&epiweeks=202001
+https://delphi.cmu.edu/epidata/api.php?endpoint=nowcast&locations=nat&epiweeks=202001
 
 ```json
 {
