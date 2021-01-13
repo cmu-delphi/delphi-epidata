@@ -5,10 +5,9 @@ parent: Epidata API (Other Diseases)
 
 # KCDC ILI
 
-This is the documentation of the API for accessing the KCDC ILI (`kcdc_ili`) data source of
-the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
+This is the API documentation for accessing the KCDC ILI (`kcdc_ili`) endpoint of [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 
-General topics not specific to any particular data source are discussed in the
+General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).

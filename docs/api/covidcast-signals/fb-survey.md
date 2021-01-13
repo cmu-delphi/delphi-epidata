@@ -10,9 +10,11 @@ grand_parent: COVIDcast Epidata API
 * **Source name:** `fb-survey`
 * **Number of data revisions since 19 May 2020:** 1
 * **Date of last change:** [3 June 2020](../covidcast_changelog.md#fb-survey)
-* **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
+* **Available for:** county, hrr, msa, state, nation (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
+
+## Overview
 
 This data source is based on symptom surveys run by the Delphi group at Carnegie
 Mellon. Facebook directs a random sample of its users to these surveys, which
@@ -31,10 +33,12 @@ described in the sections below:
    traveling, and activities outside the home
 3. [Testing indicators](#testing-indicators) based on respondent reporting of
    their COVID test results
+4. [Vaccination indicators](#vaccination-indicators), based on respondent
+   reporting of COVID vaccinations and whether they would accept a vaccine
 4. [Mental health indicators](#mental-health-indicators), based on self-reports
    of anxiety, depression, isolation, and worry about COVID
 
-## Table of contents
+## Table of Contents
 {: .no_toc .text-delta}
 
 1. TOC
@@ -313,6 +317,26 @@ Weighted versions of these signals, using the [survey weighting described
 below](#survey-weighting) to be more representative of state demographics, are
 also available. These have names beginning `smoothed_w`, such as
 `smoothed_wtested_14d`.
+
+
+## Vaccination Indicators
+
+| Signal | Description | Survey Item |
+| --- | --- | --- |
+| `smoothed_accept_covid_vaccine` | Estimated percentage of respondents who would definitely or probably choose to get vaccinated, if a COVID-19 vaccine were offered to them today. **Note:** Until January 6, 2021, all respondents answered this question; beginning on that date, only respondents who said they have not received a COVID vaccine are asked this question. | V3 |
+| `smoothed_covid_vaccinated` | Estimated percentage of respondents who have already received a vaccine for COVID-19. **Note:** The Centers for Disease Control compiles data on vaccine administration across the United States. This signal may differ from CDC data because of survey biases and should not be treated as authoritative. However, the survey signal is not subject to the lags and reporting problems in official vaccination data. | V1 |
+
+These indicators are based on questions added in Wave 6 of the survey,
+introduced on December 19, 2020; however, Delphi only enabled item V1 beginning
+January 6, 2021. **Note:** As of January 2021, vaccination items on the survey
+are being revised in preparation for Wave 7. We may replace the signals above
+with new signals (with different names) if the underlying survey items change
+significantly.
+
+Weighted versions of these signals, using the [survey weighting described
+below](#survey-weighting) to be more representative of state demographics, are
+also available. They have names beginning with `smoothed_w`, such as
+`smoothed_waccept_covid_vaccine`.
 
 
 ## Mental Health Indicators

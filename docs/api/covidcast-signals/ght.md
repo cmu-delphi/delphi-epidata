@@ -13,6 +13,8 @@ grand_parent: COVIDcast Epidata API
 * **Available for:** dma, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
 
+## Overview
+
 This data source (`ght`) is based on Google searches, provided to us by Google
 Health Trends. Using this search data, we estimate the volume of COVID-related
 searches in a given location, on a given day. This signal is measured in
@@ -24,7 +26,7 @@ numbers of COVID-related searches.
 | `raw_search` | Google search volume for COVID-related searches, in arbitrary units that are normalized for population |
 | `smoothed_search` | Google search volume for COVID-related searches, in arbitrary units that are normalized for population, smoothed in time as [described below](#smoothing) |
 
-## Table of contents
+## Table of Contents
 {: .no_toc .text-delta}
 
 1. TOC
@@ -51,7 +53,7 @@ view of such information through [Google Trends](https://trends.google.com).
 DMA-level data are aggregated to the MSA and HRR level through
 population-weighted averaging.
 
-## Smoothing
+### Smoothing
 
 The smoothed signal is produced using the following strategy. For each date, we
 fit a local linear regression, using a Gaussian kernel, with only data on or
@@ -67,5 +69,7 @@ reported as 0. Areas with low query volume hence exhibit jumps and
 zero-inflation, as small variations in the signal can cause it to be sometimes
 truncated to 0 and sometimes reported at its actual level.
 
-Google does not describe the units of its reported numbers, so the scale is
-arbitrary.
+Google does not describe the units of its reported numbers, so the scale is arbitrary.
+
+
+

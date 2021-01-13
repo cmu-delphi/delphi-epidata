@@ -23,7 +23,7 @@ surfaced through the Epidata API.
 | id                   | int(11)       | NO   | PRI | NULL    | auto_increment |
 | dataset_name         | varchar(64)   | NO   | MUL | NULL    |                |
 | publication_date     | int(11)       | NO   |     | NULL    |                |
-| revision_timestamp   | varchar(1024) | NO   |     | NULL    |                |
+| revision_timestamp   | varchar(512)  | NO   |     | NULL    |                |
 | metadata_json        | longtext      | NO   |     | NULL    |                |
 | acquisition_datetime | datetime      | NO   |     | NULL    |                |
 +----------------------+---------------+------+-----+---------+----------------+
@@ -48,7 +48,7 @@ CREATE TABLE `covid_hosp_meta` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `dataset_name` VARCHAR(64) NOT NULL,
   `publication_date` INT NOT NULL,
-  `revision_timestamp` VARCHAR(1024) NOT NULL,
+  `revision_timestamp` VARCHAR(512) NOT NULL,
   `metadata_json` JSON NOT NULL,
   `acquisition_datetime` DATETIME NOT NULL,
   PRIMARY KEY (`id`),

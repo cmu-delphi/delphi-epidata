@@ -30,7 +30,7 @@ modifying `delphi-epidata` sources, you'll first need to fork the repository
 and then clone your personal fork. For more details, see the Delphi-specific
 [discussion on forking and branching](https://github.com/cmu-delphi/operations/blob/main/docs/backend_development.md#everyone).
 
-Here's an example of how to setup your local workspace. Note that you will need
+Here's an example of how to set up your local workspace. Note that you will need
 to use your own GitHub username where indicated.
 
 ```bash
@@ -64,7 +64,7 @@ tree -L 3 .
 # build images
 
 We now need images for the Epidata API web server and the `epidata` database.
-These are both based on core Delphi images which are defined in the
+These are both based on core Delphi images as defined in the
 [`operations` repo](https://github.com/cmu-delphi/operations) which you cloned
 above. The base images are built first, followed by the derived
 `epidata`-specific images.
@@ -94,7 +94,7 @@ docker build -t delphi_database_epidata \
 
 # test
 
-At this point you're ready to bring the stack online.
+At this point, you're ready to bring the stack online.
 
 First, make sure you have the docker network set up so that the containers can
 communicate:
@@ -104,7 +104,7 @@ docker network create --driver bridge delphi-net
 ```
 
 Next, start containers for the epidata-specific web and database images. As an aside, the
-output from these commands (especially the web server) can be very helpful for
+output from these commands (especially the webserver) can be very helpful for
 debugging. For example:
 
 ```bash
@@ -121,7 +121,7 @@ docker run --rm -p 127.0.0.1:10080:80 \
 
 ## unit tests
 
-Unit tests are self-contained, and do not depend on external services like
+Unit tests are self-contained and do not depend on external services like
 databases or web servers. You can run unit tests at any time according to the
 instructions in the
 [backend development guide](https://github.com/cmu-delphi/operations/blob/main/docs/backend_development.md).
@@ -168,7 +168,7 @@ Here's a full example based on the `fluview` endpoint:
   locally visible. You'll need the `mysql` client installed locally to run the
   above command.
 
-  In case you don't have the `mysql` client installed on your machine, and
+  In case you don't have the `mysql` client installed on your machine and
   don't want to install it, you can simply use the binary that's bundled with
   the `mariadb` docker image, which you should already have from building the
   `delphi_database` image. In that case, use the "internal" values, which are
@@ -244,10 +244,10 @@ To run the existing tests and any new tests that you write, you must
 follow the
 [backend development guide](https://github.com/cmu-delphi/operations/blob/main/docs/backend_development.md)
 _within the same workspace_, so that the `delphi_python` image is created with
-any changes you have made (e.g. adding new integration tests). That image will
+any changes you have made (e.g., adding new integration tests). That image will
 contain the test driver and the source code of your integration tests. Then,
 run the tests inside a container based on that image. Note that the container
-of tests will need to be attached to the virtual network `delphi-net` in order
+of tests will need to be attached to the virtual network `delphi-net`
 to see and communicate with the web and database servers.
 
 More concretely, you can run Epidata API integration tests like this:
@@ -292,19 +292,19 @@ The workflow described above requires containers to be stopped, rebuilt, and
 restarted each time code (including tests) is changed, which can be tedious. To
 reduce friction, it's possible to
 [bind-mount](https://docs.docker.com/storage/bind-mounts/) your local source
-files into a container, which replace the corresponding files from the image.
+files into a container, which replaces the corresponding files from the image.
 This allows your code changes to be reflected immediately, without needing to
 rebuild containers.
 
-There are some drawbacks however, as discussed in the
+There are some drawbacks, however, as discussed in the
 [Epicast development guide](https://github.com/cmu-delphi/www-epicast/blob/main/docs/epicast_development.md#develop).
 For example:
 
-- Code running in the container is able to read (and possibly also write) your local filesystem.
-- The command line specification of bind-mounts is quite tedious.
+- Code running in the container can read (and possibly also write) your local filesystem.
+- The command-line specification of bind-mounts is quite tedious.
 - Bind mounts do not interact well with `selinux` on some systems, leading to
 various access denials at runtime. As a workaround, you may have to use the
-[dangerous "Z" flag](https://docs.docker.com/storage/bind-mounts/#configure-the-selinux-label),
+[dangerous "Z" flag](https://docs.docker.com/storage/bind-mounts/#configure-the-selinux-label)
 or temporarily disable `selinux` -- neither of which is advised.
 
 ## bind-mounting
@@ -348,7 +348,7 @@ to bind mount the `src/server` directory rather than specific files, however
 that is currently problematic for a couple of reasons:
 
 1. `server/.htaccess` [from the local repository](../src/server/.htaccess) uses
-  the `Header` directive, however the web server in the container doesn't have
+  the `Header` directive. However, the webserver in the container doesn't have
   the corresponding module enabled. This causes the server to deny access to
   the API.
 2. `server/database_config.php`
