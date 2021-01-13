@@ -470,4 +470,4 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
     response = Epidata.covidcast_nowcast(
       'src', 'sig1', 'day', 'county', 22222222, '01001')
 
-    self.assertEqual(response, {'result': -2, 'message': 'no results'})
+    self.assertEqual(response, {'result': -2, 'message': 'no results', 'epidata': []})
