@@ -5,7 +5,8 @@ parent: Epidata API (Other Diseases)
 
 # Google Flu Trends
 
-This is the API documentation for accessing the Google Flu Trends (`gft`) endpoint of [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
+This is the API documentation for accessing the Google Flu Trends (`gft`)
+endpoint of [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
@@ -49,7 +50,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 # Example URLs
 
 ### Google Flu Trends on 2015w01 (national)
-https://delphi.cmu.edu/epidata/api.php?source=gft&locations=nat&epiweeks=201501
+https://delphi.cmu.edu/epidata/api.php?endpoint=gft&locations=nat&epiweeks=201501
 
 ```json
 {

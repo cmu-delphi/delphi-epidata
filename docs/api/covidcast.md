@@ -93,7 +93,7 @@ sources and signals.
 
 The COVIDcast API is based on HTTP GET queries and returns data in JSON form.
 The base URL is `https://api.covidcast.cmu.edu/epidata/api.php`.  The covidcast
-endpoint is `https://api.covidcast.cmu.edu/epidata/api.php?source=covidcast`.
+endpoint is `https://api.covidcast.cmu.edu/epidata/api.php?endpoint=covidcast`.
 
 See [this documentation](README.md) for details on specifying epiweeks, dates,
 and lists.
@@ -150,7 +150,7 @@ Use cases:
 
 You should specify only one of these three parameters in any given query.
 
-**Note:** Each issue in the versioning system contains only the added or updated records during that time unit; we exclude records whose values
+**Note:** Each issue in the versioning system contains only the records added or updated during that time unit; we exclude records whose values
 remain the same as a previous issue. If you have a research problem that would
 require knowing when we last confirmed an unchanged value, please get in touch.
 
@@ -173,15 +173,14 @@ require knowing when we last confirmed an unchanged value, please get in touch.
 **Note:** `result` code 2, "too many results", means that the number of results
 you requested was greater than the API's maximum results limit. Results will be
 returned, but not all of the results you requested. API clients should check the
-results code and consider breaking up their requests across multiple API
-calls, such as by breaking a request for a large time interval into multiple
-requests for smaller time intervals.
+results code and consider breaking up requests for e.g. large time intervals into multiple
+API calls.
 
 ## Example URLs
 
 ### Facebook Survey CLI on 2020-04-06 to 2010-04-10 (county 06001)
 
-https://api.covidcast.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&signal=smoothed_cli&time_type=day&geo_type=county&time_values=20200406-20200410&geo_value=06001
+https://api.covidcast.cmu.edu/epidata/api.php?endpoint=covidcast&data_source=fb-survey&signal=smoothed_cli&time_type=day&geo_type=county&time_values=20200406-20200410&geo_value=06001
 
 ```json
 {
@@ -203,7 +202,7 @@ https://api.covidcast.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-su
 
 ### Facebook Survey CLI on 2020-04-06 (all counties)
 
-https://api.covidcast.cmu.edu/epidata/api.php?source=covidcast&data_source=fb-survey&signal=smoothed_cli&time_type=day&geo_type=county&time_values=20200406&geo_value=*
+https://api.covidcast.cmu.edu/epidata/api.php?endpoint=covidcast&data_source=fb-survey&signal=smoothed_cli&time_type=day&geo_type=county&time_values=20200406&geo_value=*
 
 ```json
 {

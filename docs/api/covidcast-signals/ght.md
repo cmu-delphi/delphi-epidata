@@ -8,7 +8,8 @@ grand_parent: COVIDcast Epidata API
 {: .no_toc}
 
 * **Source name:** `ght`
-* **Number of data revisions since 19 May 2020:** 0
+* **First issued:** April 29, 2020
+* **Number of data revisions since May 19, 2020:** 0
 * **Date of last change:** Never
 * **Available for:** dma, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
@@ -23,8 +24,8 @@ numbers of COVID-related searches.
 
 | Signal | Description |
 | --- | --- |
-| `raw_search` | Google search volume for COVID-related searches, in arbitrary units that are normalized for population |
-| `smoothed_search` | Google search volume for COVID-related searches, in arbitrary units that are normalized for population, smoothed in time as [described below](#smoothing) |
+| `raw_search` | Google search volume for COVID-related searches, in arbitrary units that are normalized for population <br/> **First Available:** 2020-02-01 |
+| `smoothed_search` | Google search volume for COVID-related searches, in arbitrary units that are normalized for population, smoothed in time as [described below](#smoothing) <br/> **First Available:** 2020-02-01 |
 
 ## Table of Contents
 {: .no_toc .text-delta}

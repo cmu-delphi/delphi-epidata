@@ -46,7 +46,7 @@ Duplicate survey weights had corrupted historical figures for the following sign
   
 #### 20 November 2020  
 
-Due to a bug in our data processing system, estimates of the percentage of people reporting that they have been tested for COVID-19 calculated before October 8th was incorrect. 
+Due to a bug in our data processing system, estimates of the percentage of people reporting that they have been tested for COVID-19 calculated before October 8th were incorrect. 
 We incorrectly treated an answer of “no” as a missing response, which affected the `smoothed_tested_14d` and `smoothed_wtested_14d` signals from the `fb-survey` source. 
 
 As of Nov. 20th, the error has been corrected and all affected data reissued. 
@@ -81,7 +81,7 @@ The following changes were made to all `jhu-csse` signals related to geocoding:
 
 #### 3 June 2020
 
-Standard errors are now included in the `nmf_day_doc_fbc_fbs_ght` signal for all geo levels and dates, representing the estimated uncertainty in this signal. This uncertainty comes because the signal is a combination of the other signals based on survey estimates or other estimates with margins of error.
+Standard errors are now included in the `nmf_day_doc_fbc_fbs_ght` signal for all geo levels and dates, representing the estimated uncertainty in this signal. This uncertainty comes because the signal is a combination of other signals based on survey estimates or other estimates with margins of error.
 
 * `nmf_day_doc_fbc_fbs_ght`
   * all geo levels
@@ -89,7 +89,7 @@ Standard errors are now included in the `nmf_day_doc_fbc_fbs_ght` signal for all
 
 #### 12 October 2020
 
-The 10 October 2020 issue of all `indicator-combination` deaths signals has been removed from the API. These signals are primarily constructed of USAFacts data, whose 10 October 2020 issue was discovered to be corrupt on 11 October and repaired on 12 October. Subsequent issues have adequate coverage of all regions and dates, included in the 10 October issue, so this change only affects forecasters who intend to pull training data with an `as_of` or `issues` parameter set to 20201010.
+The 10 October 2020 issue of all `indicator-combination` deaths signals has been removed from the API. These signals are primarily constructed of USAFacts data, whose 10 October 2020 issue was discovered to be corrupt on 11 October and repaired on 12 October. Subsequent issues have adequate coverage of all regions and dates included in the 10 October issue, so this change only affects forecasters who intend to pull training data with an `as_of` or `issues` parameter set to 20201010.
 
 ### `quidel`
 

@@ -5,7 +5,9 @@ parent: Epidata API (Other Diseases)
 
 # FluView Clinical
 
-This is the API documentation for accessing the FluView Clinical (`fluview_clinical`) endpoint of [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
+This is the API documentation for accessing the FluView Clinical
+(`fluview_clinical`) endpoint of [Delphi](https://delphi.cmu.edu/)'s
+epidemiological data.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
@@ -64,7 +66,7 @@ If neither is specified, the current issues are used.
 # Example URLs
 
 ### FluView Clinical on 2020w01 (national)
-https://delphi.cmu.edu/epidata/api.php?source=fluview_clinical&regions=nat&epiweeks=202001
+https://delphi.cmu.edu/epidata/api.php?endpoint=fluview_clinical&regions=nat&epiweeks=202001
 
 ```json
 {

@@ -5,7 +5,10 @@ parent: Epidata API (Other Diseases)
 
 # Dengue Digital Surveillance Sensors
 
-This is the API documentation for accessing the Dengue Digital Surveillance Sensors (`dengue_sensors`) endpoint of [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
+This is the API documentation for accessing the Dengue Digital Surveillance
+Sensors (`dengue_sensors`) endpoint of [Delphi](https://delphi.cmu.edu/)'s
+epidemiological data.
+
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
