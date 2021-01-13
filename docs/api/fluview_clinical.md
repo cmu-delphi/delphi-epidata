@@ -66,7 +66,7 @@ If neither is specified, the current issues are used.
 # Example URLs
 
 ### FluView Clinical on 2020w01 (national)
-https://delphi.cmu.edu/epidata/api.php?source=fluview_clinical&regions=nat&epiweeks=202001
+https://delphi.cmu.edu/epidata/api.php?endpoint=fluview_clinical&regions=nat&epiweeks=202001
 
 ```json
 {

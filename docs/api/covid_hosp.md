@@ -67,7 +67,7 @@ If `issues` is not specified, then the most recent issue is used by default.
 # Example URLs
 
 ### MA on 2020-05-10 (per most recent issue)
-https://delphi.cmu.edu/epidata/api.php?source=covid_hosp&states=MA&dates=20200510
+https://delphi.cmu.edu/epidata/api.php?endpoint=covid_hosp&states=MA&dates=20200510
 
 ```json
 {
