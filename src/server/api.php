@@ -69,7 +69,9 @@ $MAX_AUTH_KEYS_PROVIDED_PER_SENSOR_QUERY = 1;
 // end sensor query authentication configuration
 
 // result limit, ~10 years of daily data
-$MAX_RESULTS = 3650;
+$MAX_RESULTS = 10e6;
+// specify the number of seconds the script is maximally allowed to run (default 30s)
+set_time_limit(60*10); // in seconds
 
 // queries the `fluview` and `fluview_imputed` tables
 //   $epiweeks (required): array of epiweek values/ranges
@@ -82,12 +84,11 @@ $MAX_RESULTS = 3650;
 //     default: most recent issue
 //   $authorized: determines whether private data (i.e. `fluview_imputed`) is
 //     included in the result
-function get_fluview($epiweeks, $regions, $issues, $lag, $authorized) {
-  $epidata = array();
+function get_fluview(IRowPrinter &$printer, $epiweeks, $regions, $issues, $lag, $authorized) {
   // public data
   $table = '`fluview` fv';
   $fields = "fv.`release_date`, fv.`issue`, fv.`epiweek`, fv.`region`, fv.`lag`, fv.`num_ili`, fv.`num_patients`, fv.`num_providers`, fv.`wili`, fv.`ili`, fv.`num_age_0`, fv.`num_age_1`, fv.`num_age_2`, fv.`num_age_3`, fv.`num_age_4`, fv.`num_age_5`";
-  _get_fluview_by_table($epidata, $epiweeks, $regions, $issues, $lag, $table, $fields);
+  _get_fluview_by_table($printer, $epiweeks, $regions, $issues, $lag, $table, $fields);
   if(!$authorized) {
     // Make a special exception for New York. It is a (weighted) sum of two
     // constituent locations -- "ny_minus_jfk" and "jfk" -- both of which are
@@ -101,15 +102,14 @@ function get_fluview($epiweeks, $regions, $issues, $lag, $authorized) {
     // private data (no release date, no age groups, and wili is equal to ili)
     $table = '`fluview_imputed` fv';
     $fields = "NULL `release_date`, fv.`issue`, fv.`epiweek`, fv.`region`, fv.`lag`, fv.`num_ili`, fv.`num_patients`, fv.`num_providers`, fv.`ili` `wili`, fv.`ili`, NULL `num_age_0`, NULL `num_age_1`, NULL `num_age_2`, NULL `num_age_3`, NULL `num_age_4`, NULL `num_age_5`";
-    _get_fluview_by_table($epidata, $epiweeks, $regions, $issues, $lag, $table, $fields);
+    _get_fluview_by_table($printer, $epiweeks, $regions, $issues, $lag, $table, $fields);
   }
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  $printer->end();
 }
 
 // a helper function to query `fluview` and `fluview_imputed` individually
 // parameters
-function _get_fluview_by_table(&$epidata, $epiweeks, $regions, $issues, $lag, $table, $fields) {
+function _get_fluview_by_table(IRowPrinter &$printer, $epiweeks, $regions, $issues, $lag, $table, $fields) {
   // basic query info
   $order = "fv.`epiweek` ASC, fv.`region` ASC, fv.`issue` ASC";
   // build the epiweek filter
@@ -136,7 +136,7 @@ function _get_fluview_by_table(&$epidata, $epiweeks, $regions, $issues, $lag, $t
   $fields_string = array('release_date', 'region');
   $fields_int = array('issue', 'epiweek', 'lag', 'num_ili', 'num_patients', 'num_providers', 'num_age_0', 'num_age_1', 'num_age_2', 'num_age_3', 'num_age_4', 'num_age_5');
   $fields_float = array('wili', 'ili');
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
+  execute_query_append($query, $printer, $fields_string, $fields_int, $fields_float);
 }
 
 // queries the `fluview_clinical` table
@@ -148,9 +148,7 @@ function _get_fluview_by_table(&$epidata, $epiweeks, $regions, $issues, $lag, $t
 //   $lag (optional): number of weeks between each epiweek and its issue
 //     overridden by $issues
 //     default: most recent issue
-function get_fluview_clinical($epiweeks, $regions, $issues, $lag) {
-  // store the results in an array
-  $epidata = array();
+function get_fluview_clinical(IRowPrinter &$printer, $epiweeks, $regions, $issues, $lag) {
   // set up for query
   $table = "`fluview_clinical` fvc";
   // $fields = 'fvc.`release_date`, fvc.`issue`, fvc.`epiweek`, fvc.`region`, fvc.`lag`, fvc.`total_specimens`, fvc.`total_a_h1n1`, fvc.`total_a_h3`, fvc.`total_a_h3n2v`, fvc.`total_a_no_sub`, fvc.`total_b`, fvc.`total_b_vic`, fvc.`total_b_yam`';
@@ -177,9 +175,7 @@ function get_fluview_clinical($epiweeks, $regions, $issues, $lag) {
   $fields_string = array('release_date', 'region');
   $fields_float = array('percent_positive', 'percent_a', 'percent_b');
   $fields_int = array('issue', 'epiweek', 'lag', 'total_specimens', 'total_a', 'total_b');
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the result, if any
-  return count($epidata) === 0 ? null : $epidata;
+  execute_query($query, $printer, $fields_string, $fields_int, $fields_float);
 }
 
 // queries the `flusurv` table
@@ -191,7 +187,7 @@ function get_fluview_clinical($epiweeks, $regions, $issues, $lag) {
 //   $lag (optional): number of weeks between each epiweek and its issue
 //     overridden by $issues
 //     default: most recent issue
-function get_flusurv($epiweeks, $locations, $issues, $lag) {
+function get_flusurv(IRowPrinter &$printer, $epiweeks, $locations, $issues, $lag) {
   // basic query info
   $table = '`flusurv` fs';
   $fields = "fs.`release_date`, fs.`issue`, fs.`epiweek`, fs.`location`, fs.`lag`, fs.`rate_age_0`, fs.`rate_age_1`, fs.`rate_age_2`, fs.`rate_age_3`, fs.`rate_age_4`, fs.`rate_overall`";
@@ -217,13 +213,10 @@ function get_flusurv($epiweeks, $locations, $issues, $lag) {
     $query = "SELECT {$fields} FROM {$table} JOIN {$subquery} ON {$condition} ORDER BY {$order}";
   }
   // get the data from the database
-  $epidata = array();
   $fields_string = array('release_date', 'location');
   $fields_int = array('issue', 'epiweek', 'lag');
   $fields_float = array('rate_age_0', 'rate_age_1', 'rate_age_2', 'rate_age_3', 'rate_age_4', 'rate_overall');
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  execute_query($query, $printer, $fields_string, $fields_int, $fields_float);
 }
 
 // queries the `paho_dengue` table
@@ -235,9 +228,7 @@ function get_flusurv($epiweeks, $locations, $issues, $lag) {
 //   $lag (optional): number of weeks between each epiweek and its issue
 //     overridden by $issues
 //     default: most recent issue
-function get_paho_dengue($epiweeks, $regions, $issues, $lag) {
-  // store the results in an array
-  $epidata = array();
+function get_paho_dengue(IRowPrinter &$printer, $epiweeks, $regions, $issues, $lag) {
   // set up for query
   $table = "`paho_dengue` pd";
   $fields = "pd.`release_date`, pd.`issue`, pd.`epiweek`, pd.`region`, pd.`lag`, pd.`total_pop`, pd.`serotype`, pd.`num_dengue`, pd.`incidence_rate`, pd.`num_severe`, pd.`num_deaths`";
@@ -263,9 +254,7 @@ function get_paho_dengue($epiweeks, $regions, $issues, $lag) {
   $fields_string = array('release_date', 'region', 'serotype');
   $fields_float = array('incidence_rate');
   $fields_int = array('issue', 'epiweek', 'lag', 'total_pop', 'num_dengue', 'num_severe', 'num_deaths');
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the result, if any
-  return count($epidata) === 0 ? null : $epidata;
+  execute_query($query, $printer, $fields_string, $fields_int, $fields_float);
 }
 
 // queries the `ecdc_ili` table
@@ -277,9 +266,7 @@ function get_paho_dengue($epiweeks, $regions, $issues, $lag) {
 //   $lag (optional): number of weeks between each epiweek and its issue
 //     overridden by $issues
 //     default: most recent issue
-function get_ecdc_ili($epiweeks, $regions, $issues, $lag) {
-  // store the results in an array
-  $epidata = array();
+function get_ecdc_ili(IRowPrinter &$printer, $epiweeks, $regions, $issues, $lag) {
   // set up for query
   $table = "`ecdc_ili` ec";
   $fields = "ec.`release_date`, ec.`issue`, ec.`epiweek`, ec.`region`, ec.`lag`, ec.`incidence_rate`";
@@ -305,9 +292,7 @@ function get_ecdc_ili($epiweeks, $regions, $issues, $lag) {
   $fields_string = array('release_date', 'region');
   $fields_float = array('incidence_rate');
   $fields_int = array('issue', 'epiweek', 'lag');
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the result, if any
-  return count($epidata) === 0 ? null : $epidata;
+  execute_query($query, $printer, $fields_string, $fields_int, $fields_float);
 }
 
 // queries the `kcdc_ili` table
@@ -319,9 +304,7 @@ function get_ecdc_ili($epiweeks, $regions, $issues, $lag) {
 //   $lag (optional): number of weeks between each epiweek and its issue
 //     overridden by $issues
 //     default: most recent issue
-function get_kcdc_ili($epiweeks, $regions, $issues, $lag) {
-  // store the results in an array
-  $epidata = array();
+function get_kcdc_ili(IRowPrinter &$printer, $epiweeks, $regions, $issues, $lag) {
   // set up for query
   $table = "`kcdc_ili` kc";
   $fields = "kc.`release_date`, kc.`issue`, kc.`epiweek`, kc.`region`, kc.`lag`, kc.`ili`";
@@ -347,15 +330,13 @@ function get_kcdc_ili($epiweeks, $regions, $issues, $lag) {
   $fields_string = array('release_date', 'region');
   $fields_float = array('ili');
   $fields_int = array('issue', 'epiweek', 'lag');
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the result, if any
-  return count($epidata) === 0 ? null : $epidata;
+  execute_query($query, $printer, $fields_string, $fields_int, $fields_float);
 }
 
 // queries the `gft` table
 //   $epiweeks (required): array of epiweek values/ranges
 //   $locations (required): array of location names
-function get_gft($epiweeks, $locations) {
+function get_gft(IRowPrinter &$printer, $epiweeks, $locations) {
   // basic query info
   $table = '`gft` g';
   $fields = "g.`epiweek`, g.`location`, g.`num`";
@@ -367,17 +348,14 @@ function get_gft($epiweeks, $locations) {
   // final query using specific issues
   $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_epiweek}) AND ({$condition_location}) ORDER BY {$order}";
   // get the data from the database
-  $epidata = array();
-  execute_query($query, $epidata, array('location'), array('epiweek', 'num'), null);
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  execute_query($query, $printer, array('location'), array('epiweek', 'num'), null);
 }
 
 // queries the `ght` table
 //   $epiweeks (required): array of epiweek values/ranges
 //   $locations (required): array of location names
 //   $query (required): search query or topic ID
-function get_ght($epiweeks, $locations, $query) {
+function get_ght(IRowPrinter &$printer, $epiweeks, $locations, $query) {
   // basic query info
   $table = '`ght` g';
   $fields = "g.`epiweek`, g.`location`, g.`value`";
@@ -391,17 +369,14 @@ function get_ght($epiweeks, $locations, $query) {
   // final query using specific issues
   $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_epiweek}) AND ({$condition_location}) AND ({$condition_query}) ORDER BY {$order}";
   // get the data from the database
-  $epidata = array();
-  execute_query($query, $epidata, array('location'), array('epiweek'), array('value'));
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  execute_query($query, $printer, array('location'), array('epiweek'), array('value'));
 }
 
 // queries the `twitter` table
 //   $locations (required): array of location names
 //   $dates (required): array of date or epiweek values/ranges
 //   $resolution (required): either 'daily' or 'weekly'
-function get_twitter($locations, $dates, $resolution) {
+function get_twitter(IRowPrinter &$printer, $locations, $dates, $resolution) {
   global $dbh;
   // basic query info
   $table = '`twitter` t';
@@ -434,8 +409,6 @@ function get_twitter($locations, $dates, $resolution) {
       array_push($states, $location);
     }
   }
-  // initialize the epidata array
-  $epidata = array();
   // query each region type individually (the data is stored by state, so getting regional data requires some extra processing)
   foreach($regions as $region) {
     $region = mysqli_real_escape_string($dbh, $region);
@@ -449,7 +422,7 @@ function get_twitter($locations, $dates, $resolution) {
       $query = "SELECT {$fields}, '{$region}' `location` FROM {$table} WHERE ({$condition_filter}) AND ({$condition_date}) AND ({$condition_location}) GROUP BY {$date_field} ORDER BY {$date_field} ASC";
     }
     // append query results to the epidata array
-    execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
+    execute_query_append($query, $printer, $fields_string, $fields_int, $fields_float);
   }
   // query all states together
   if(count($states) !== 0) {
@@ -458,10 +431,9 @@ function get_twitter($locations, $dates, $resolution) {
     // final query for states
     $query = "SELECT {$fields}, t.`state` `location` FROM {$table} WHERE ({$condition_filter}) AND ({$condition_date}) AND ({$condition_location}) GROUP BY {$date_field}, t.`state` ORDER BY {$date_field} ASC, t.`state` ASC";
     // append query results to the epidata array
-    execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
+    execute_query_append($query, $printer, $fields_string, $fields_int, $fields_float);
   }
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  $printer->end();
 }
 
 // queries the `wiki` table
@@ -472,7 +444,7 @@ function get_twitter($locations, $dates, $resolution) {
 //   $hours (optional): array of hour values/ranges
 // if present, $hours determines which counts are used within each day; otherwise all counts are used
 // for example, if hours=[4], then only the 4 AM (UTC) stream is returned
-function get_wiki($articles, $language, $dates, $resolution, $hours) {
+function get_wiki(IRowPrinter &$printer, $articles, $language, $dates, $resolution, $hours) {
   // required for `mysqli_real_escape_string`
   global $dbh;
   $language = mysqli_real_escape_string($dbh, $language);
@@ -509,16 +481,13 @@ function get_wiki($articles, $language, $dates, $resolution, $hours) {
     $query = "SELECT {$fields}, -1 `hour` FROM {$table} WHERE ({$condition_date}) AND ({$condition_article}) GROUP BY {$date_field}, w.`article` ORDER BY {$date_field} ASC, w.`article` ASC";
   }
   // get the data from the database
-  $epidata = array();
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  execute_query($query, $printer, $fields_string, $fields_int, $fields_float);
 }
 
 // queries the `quidel` table
 //   $locations (required): array of location names
 //   $epiweeks (required): array of epiweek values/ranges
-function get_quidel($locations, $epiweeks) {
+function get_quidel(IRowPrinter &$printer, $locations, $epiweeks) {
   // basic query info
   $table = '`quidel` q';
   $fields = "q.`location`, q.`epiweek`, q.`value`";
@@ -534,23 +503,19 @@ function get_quidel($locations, $epiweeks) {
   // the query
   $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_location}) AND ({$condition_epiweek}) ORDER BY {$order}";
   // get the data from the database
-  $epidata = array();
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  execute_query($query, $printer, $fields_string, $fields_int, $fields_float);
 }
 
 // queries the `norostat_point` table
 //   $locations (required): single location value (str listing included states)
 //   $epiweeks (required): array of epiweek values/ranges
-function get_norostat($location, $epiweeks) {
+function get_norostat(IRowPrinter &$printer, $location, $epiweeks) {
   // todo add release/issue args
   //
   // build the filters:
   $condition_location = filter_strings('`norostat_raw_datatable_location_pool`.`location`', [$location]);
   $condition_epiweek = filter_integers('`latest`.`epiweek`', $epiweeks);
   // get the data from the database
-  $epidata = array();
   // (exclude "location" from output to reduce size & ugliness of result,
   // transfer bandwidth required; it would just be a repeated echo of the input
   // $location)
@@ -574,18 +539,15 @@ function get_norostat($location, $epiweeks) {
           `latest`.`new_value` IS NOT NULL
     ";
   // xxx may reorder epiweeks
-  execute_query($query, $epidata, $fields_string, $fields_int, null);
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  execute_query($query, $printer, $fields_string, $fields_int, null);
 }
 
 // queries the `afhsb_00to13` table
 //   $epiweeks (required): array of epiweek values/ranges
 //   $locations (required): array of location names
 //   $flu_types (required): array of flu types
-function get_afhsb($locations, $epiweeks, $flu_types) {
+function get_afhsb(IRowPrinter &$printer, $locations, $epiweeks, $flu_types) {
   global $dbh;
-  $epidata = array();
   // split locations into national/regional/state
   $location_dict = array("hhs" => array(), "cen" => array(),
                          "state" => array(), "country" => array());
@@ -613,14 +575,14 @@ function get_afhsb($locations, $epiweeks, $flu_types) {
   }
   foreach($location_dict as $location_type=>$locs) {
     if(!empty($locs)) {
-      _get_afhsb_by_table($epidata, $location_type, $epiweeks, $locs, $disjoint_flus, $subset_flus);
+      _get_afhsb_by_table($printer, $location_type, $epiweeks, $locs, $disjoint_flus, $subset_flus);
     }
   }
-  return count($epidata) === 0 ? null : $epidata;
+  $printer->end();
 }
 
 // A helper function to query afhsb tables
-function _get_afhsb_by_table(&$epidata, $location_type, $epiweeks, $locations, $disjoint_flus, $subset_flus) {
+function _get_afhsb_by_table(IRowPrinter &$printer, $location_type, $epiweeks, $locations, $disjoint_flus, $subset_flus) {
   // basic query info
   $table = (in_array($location_type, array("hhs", "cen"))) ? "afhsb_00to13_region" : "afhsb_00to13_state";
   $fields = "`epiweek`, `{$location_type}` `location`, sum(`visit_sum`) `visit_sum`";
@@ -642,7 +604,7 @@ function _get_afhsb_by_table(&$epidata, $location_type, $epiweeks, $locations, $
     $query = "SELECT {$fields}, '{$subset_flu}' `flu_type` FROM {$table}
       WHERE ({$condition_epiweek}) AND ({$condition_location}) AND ({$condition_flu})
       GROUP BY {$group} ORDER BY {$order}";
-      execute_query($query, $epidata, $fields_string, $fields_int, null);
+      execute_query_append($query, $printer, $fields_string, $fields_int, null);
   }
   // disjoint flu types: flu1, flu2-flu1, flu3-flu2, ili-flu3
   if(!empty($disjoint_flus)){
@@ -650,7 +612,7 @@ function _get_afhsb_by_table(&$epidata, $location_type, $epiweeks, $locations, $
     $query = "SELECT {$fields}, `flu_type` FROM {$table}
     WHERE ({$condition_epiweek}) AND ({$condition_location}) AND ({$condition_flu})
     GROUP BY {$group},`flu_type` ORDER BY {$order},`flu_type`";
-    execute_query($query, $epidata, $fields_string, $fields_int, null);
+    execute_query_append($query, $printer, $fields_string, $fields_int, null);
   }
 }
 
@@ -663,7 +625,7 @@ function _get_afhsb_by_table(&$epidata, $location_type, $epiweeks, $locations, $
 //   $lag (optional): number of weeks between each epiweek and its issue
 //     overridden by $issues
 //     default: most recent issue
-function get_nidss_flu($epiweeks, $regions, $issues, $lag) {
+function get_nidss_flu(IRowPrinter &$printer, $epiweeks, $regions, $issues, $lag) {
   // basic query info
   $table = '`nidss_flu` nf';
   $fields = "nf.`release_date`, nf.`issue`, nf.`epiweek`, nf.`region`, nf.`lag`, nf.`visits`, nf.`ili`";
@@ -689,24 +651,20 @@ function get_nidss_flu($epiweeks, $regions, $issues, $lag) {
     $query = "SELECT {$fields} FROM {$table} JOIN {$subquery} ON {$condition} ORDER BY {$order}";
   }
   // get the data from the database
-  $epidata = array();
   $fields_string = array('release_date', 'region');
   $fields_int = array('issue', 'epiweek', 'lag', 'visits');
   $fields_float = array('ili');
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  execute_query($query, $printer, $fields_string, $fields_int, $fields_float);
 }
 
 // queries the `nidss_dengue` table
 //   $epiweeks (required): array of epiweek values/ranges
 //   $locations (required): array of region and/or location names
-function get_nidss_dengue($epiweeks, $locations) {
+function get_nidss_dengue(IRowPrinter &$printer, $epiweeks, $locations) {
   global $dbh;
   // build the epiweek filter
   $condition_epiweek = filter_integers('nd.`epiweek`', $epiweeks);
   // get the data from the database
-  $epidata = array();
   $fields_string = array('location');
   $fields_int = array('epiweek', 'count');
   foreach($locations as $location) {
@@ -734,37 +692,40 @@ function get_nidss_dengue($epiweeks, $locations) {
       GROUP BY
         nd2.`epiweek`, nd2.`location`
       ";
-    execute_query($query, $epidata, $fields_string, $fields_int, null);
+    execute_query_append($query, $printer, $fields_string, $fields_int, null);
   }
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  $printer->end();
 }
 
 // queries the `forecasts` table
 //   $system (required): system name
 //   $epiweek (required): epiweek on which the forecast was made
-function get_forecast($system, $epiweek) {
+function get_forecast(IRowPrinter &$printer, $system, $epiweek) {
   global $dbh;
   // get the data from the database
   $system = mysqli_real_escape_string($dbh, $system);
   $query = "SELECT `system`, `epiweek`, `json` FROM `forecasts` WHERE `system` = '{$system}' AND `epiweek` = {$epiweek}";
-  $epidata = array();
+  $collector = new CollectRowPrinter();
   $fields_string = array('system', 'json');
   $fields_int = array('epiweek');
-  execute_query($query, $epidata, $fields_string, $fields_int, null);
+  execute_query($query, $collector, $fields_string, $fields_int, null);
+
+  $data = $collector->$data;
+  
   // parse forecast data
-  if(count($epidata) === 1 && array_key_exists('json', $epidata[0])) {
-    $epidata[0]['forecast'] = json_decode($epidata[0]['json']);
-    unset($epidata[0]['json']);
+  $printer->begin();
+  if(count($data) === 1 && array_key_exists('json', $data[0])) {
+    $data[0]['forecast'] = json_decode($data[0]['json']);
+    unset($data[0]['json']);
+    $printer->printRow($data[0]);
   }
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  $printer->end();
 }
 
 // queries the `cdc_extract` table
 //   $epiweeks (required): array of epiweek values/ranges
 //   $locations (required): array of location names
-function get_cdc($epiweeks, $locations) {
+function get_cdc(IRowPrinter &$printer, $epiweeks, $locations) {
   global $dbh;
   // basic query info
   $table = '`cdc_extract` c';
@@ -785,8 +746,6 @@ function get_cdc($epiweeks, $locations) {
       array_push($states, $location);
     }
   }
-  // initialize the epidata array
-  $epidata = array();
   // query each region type individually (the data is stored by state, so getting regional data requires some extra processing)
   foreach($regions as $region) {
     $region = mysqli_real_escape_string($dbh, $region);
@@ -801,7 +760,7 @@ function get_cdc($epiweeks, $locations) {
       $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_epiweek}) AND ({$condition_location}) GROUP BY {$group} ORDER BY {$order}";
     }
     // append query results to the epidata array
-    execute_query($query, $epidata, $fields_string, $fields_int, null);
+    execute_query_append($query, $printer, $fields_string, $fields_int, null);
   }
   // query all states together
   if(count($states) !== 0) {
@@ -811,17 +770,16 @@ function get_cdc($epiweeks, $locations) {
     // final query for states
     $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_epiweek}) AND ({$condition_location}) ORDER BY {$order}, c.`state` ASC";
     // append query results to the epidata array
-    execute_query($query, $epidata, $fields_string, $fields_int, null);
+    execute_query_append($query, $printer, $fields_string, $fields_int, null);
   }
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  $printer->end();
 }
 
 // queries the `sensors` table
 //   $names (required): array of sensor names
 //   $locations (required): array of location names
 //   $epiweeks (required): array of epiweek values/ranges
-function get_sensors($names, $locations, $epiweeks) {
+function get_sensors(IRowPrinter &$printer, $names, $locations, $epiweeks) {
   // basic query info
   $table = '`sensors` s';
   $fields = "s.`name`, s.`location`, s.`epiweek`, s.`value`";
@@ -839,17 +797,14 @@ function get_sensors($names, $locations, $epiweeks) {
   // the query
   $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_name}) AND ({$condition_location}) AND ({$condition_epiweek}) ORDER BY {$order}";
   // get the data from the database
-  $epidata = array();
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  execute_query($query, $printer, $fields_string, $fields_int, $fields_float);
 }
 
 // queries the `dengue_sensors` table
 //   $names (required): array of sensor names
 //   $locations (required): array of location names
 //   $epiweeks (required): array of epiweek values/ranges
-function get_dengue_sensors($names, $locations, $epiweeks) {
+function get_dengue_sensors(IRowPrinter &$printer, $names, $locations, $epiweeks) {
   // basic query info
   $table = '`dengue_sensors` s';
   $fields = "s.`name`, s.`location`, s.`epiweek`, s.`value`";
@@ -867,16 +822,13 @@ function get_dengue_sensors($names, $locations, $epiweeks) {
   // the query
   $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_name}) AND ({$condition_location}) AND ({$condition_epiweek}) ORDER BY {$order}";
   // get the data from the database
-  $epidata = array();
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  execute_query($query, $printer, $fields_string, $fields_int, $fields_float);
 }
 
 // queries the `nowcasts` table
 //   $locations (required): array of location names
 //   $epiweeks (required): array of epiweek values/ranges
-function get_nowcast($locations, $epiweeks) {
+function get_nowcast(IRowPrinter &$printer, $locations, $epiweeks) {
   // basic query info
   $table = '`nowcasts` n';
   $fields = "n.`location`, n.`epiweek`, n.`value`, n.`std`";
@@ -892,16 +844,13 @@ function get_nowcast($locations, $epiweeks) {
   // the query
   $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_location}) AND ({$condition_epiweek}) ORDER BY {$order}";
   // get the data from the database
-  $epidata = array();
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  execute_query($query, $printer, $fields_string, $fields_int, $fields_float);
 }
 
 // queries the `dengue_nowcasts` table
 //   $locations (required): array of location names
 //   $epiweeks (required): array of epiweek values/ranges
-function get_dengue_nowcast($locations, $epiweeks) {
+function get_dengue_nowcast(IRowPrinter &$printer, $locations, $epiweeks) {
   // basic query info
   $table = '`dengue_nowcasts` n';
   $fields = "n.`location`, n.`epiweek`, n.`value`, n.`std`";
@@ -917,10 +866,7 @@ function get_dengue_nowcast($locations, $epiweeks) {
   // the query
   $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_location}) AND ({$condition_epiweek}) ORDER BY {$order}";
   // get the data from the database
-  $epidata = array();
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  execute_query($query, $printer, $fields_string, $fields_int, $fields_float);
 }
 
 // queries the `covidcast` table.
@@ -937,7 +883,7 @@ function get_dengue_nowcast($locations, $epiweeks) {
 //   $lag (optional): number of time units between each time value and its issue
 //     overridden by $issues
 //     default: most recent issue
-function get_covidcast($source, $signals, $time_type, $geo_type, $time_values, $geo_values, $as_of, $issues, $lag) {
+function get_covidcast(IRowPrinter &$printer, $source, $signals, $time_type, $geo_type, $time_values, $geo_values, $as_of, $issues, $lag) {
   // required for `mysqli_real_escape_string`
   global $dbh;
   $source = mysqli_real_escape_string($dbh, $source);
@@ -995,14 +941,11 @@ function get_covidcast($source, $signals, $time_type, $geo_type, $time_values, $
   // the query
   $query = "SELECT {$fields} FROM {$table} {$subquery} WHERE {$conditions} AND ({$condition_version}) ORDER BY {$order}";
   // get the data from the database
-  $epidata = array();
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  execute_query($query, $printer, $fields_string, $fields_int, $fields_float);
 }
 
 // queries the `covidcast_meta_cache` table for metadata
-function get_covidcast_meta() {
+function get_covidcast_meta(IRowPrinter &$printer) {
   // complain if the cache is more than 75 minutes old
   $max_age = 75 * 60;
 
@@ -1022,54 +965,62 @@ function get_covidcast_meta() {
     }
   }
 
-  if ($epidata !== null) {
-    // filter rows
-    $time_types = extract_values($_REQUEST['time_types'], 'str');
-    $signals = isset($_REQUEST['signals']) ? array_map(function($signal) {
-        return explode(':', $signal, 2);
-      }, extract_values($_REQUEST['signals'], 'str')) : null;
-    $geo_types = extract_values($_REQUEST['geo_types'], 'str');
-
-    if ($time_types !== null || $signals !== null || $geo_types !== null) {
-      $epidata = array_values(array_filter($epidata, function($row) use(&$time_types, &$signals, &$geo_types) {
-        if ($time_types !== null && !in_array($row['time_type'], $time_types)) {
-          return false;
-        }
-        if ($geo_types !== null && !in_array($row['geo_type'], $geo_types)) {
-          return false;
-        }
-        if ($signals === null || count($signals) === 0) {
-          return true;
-        }
-        // filter by signal
-        foreach($signals as $signal) {
-          // match source and (signal or no signal or signal = *)
-          if ($row['data_source'] === $signal[0] && (count($signal) === 1 || $row['signal'] === $signal[1] || $signal[1] === '*')) {
-            return true;
-          }
-        }
-        return false;
-      }));
-    }
-    // filter fields
-    if (isset($_REQUEST['fields'])) {
-      $fields = extract_values($_REQUEST['fields'], 'str');
-
-      $epidata = array_map(function($row) use(&$fields) {
-        $filtered_row = [];
-        foreach($fields as $field) {
-          if (isset($row[$field])) {
-            $filtered_row[$field] = $row[$field];
-          }
-        }
-        return $filtered_row;
-      }, $epidata);
-    }
+  $printer->begin();
+  
+  if ($epidata == null) {
+    # early abort but still proper ending
+    $printer->end();
+    return;
   }
 
-  // return the data
-  $has_values = $epidata !== null && count($epidata) > 0;
-  return $has_values ? $epidata : null;
+  // filter rows
+  $time_types = extract_values(isset($_REQUEST['time_types']) ? $_REQUEST['time_types'] : null, 'str');
+  $signals = isset($_REQUEST['signals']) ? array_map(function($signal) {
+      return explode(':', $signal, 2);
+    }, extract_values($_REQUEST['signals'], 'str')) : null;
+  $geo_types = extract_values(isset($_REQUEST['geo_types']) ? $_REQUEST['geo_types'] : null, 'str');
+
+  if ($time_types !== null || $signals !== null || $geo_types !== null) {
+    $epidata = array_values(array_filter($epidata, function($row) use(&$time_types, &$signals, &$geo_types) {
+      if ($time_types !== null && !in_array($row['time_type'], $time_types)) {
+        return false;
+      }
+      if ($geo_types !== null && !in_array($row['geo_type'], $geo_types)) {
+        return false;
+      }
+      if ($signals === null || count($signals) === 0) {
+        return true;
+      }
+      // filter by signal
+      foreach($signals as $signal) {
+        // match source and (signal or no signal or signal = *)
+        if ($row['data_source'] === $signal[0] && (count($signal) === 1 || $row['signal'] === $signal[1] || $signal[1] === '*')) {
+          return true;
+        }
+      }
+      return false;
+    }));
+  }
+  // filter fields
+  if (isset($_REQUEST['fields'])) {
+    $fields = extract_values($_REQUEST['fields'], 'str');
+
+    $epidata = array_map(function($row) use(&$fields) {
+      $filtered_row = [];
+      foreach($fields as $field) {
+        if (isset($row[$field])) {
+          $filtered_row[$field] = $row[$field];
+        }
+      }
+      return $filtered_row;
+    }, $epidata);
+  }
+
+  // print rows
+  foreach($epidata as $row) {
+    $printer->printRow($row);
+  }
+  $printer->end();
 }
 
 // queries the `covid_hosp_state_timeseries` table
@@ -1077,8 +1028,7 @@ function get_covidcast_meta() {
 //   $dates (required): array of date values/ranges
 //   $issues (optional): array of date values/ranges
 //     default: most recent issue
-function get_covid_hosp_state_timeseries($states, $dates, $issues) {
-  $epidata = array();
+function get_covid_hosp_state_timeseries(IRowPrinter &$printer, $states, $dates, $issues) {
   $table = '`covid_hosp_state_timeseries` c';
   $fields = implode(', ', array(
     'c.`issue`',
@@ -1226,9 +1176,7 @@ function get_covid_hosp_state_timeseries($states, $dates, $issues) {
     'adult_icu_bed_covid_utilization',
     'adult_icu_bed_utilization',
   );
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  execute_query($query, $printer, $fields_string, $fields_int, $fields_float);
 }
 
 // queries the `covid_hosp_facility` table
@@ -1236,8 +1184,7 @@ function get_covid_hosp_state_timeseries($states, $dates, $issues) {
 //   $collection_weeks (required): array of date values/ranges
 //   $publication_dates (optional): array of date values/ranges
 //     default: most recent issue
-function get_covid_hosp_facility($hospital_pks, $collection_weeks, $publication_dates) {
-  $epidata = array();
+function get_covid_hosp_facility(IRowPrinter &$printer, $hospital_pks, $collection_weeks, $publication_dates) {
   $table = '`covid_hosp_facility` c';
   $fields = implode(', ', array(
     'c.`publication_date`',
@@ -1453,9 +1400,7 @@ function get_covid_hosp_facility($hospital_pks, $collection_weeks, $publication_
     'icu_patients_confirmed_influenza_7_day_avg',
     'total_patients_hosp_confirmed_influenza_and_covid_7d_avg',
   );
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  execute_query($query, $printer, $fields_string, $fields_int, $fields_float);
 }
 
 // queries the `covid_hosp_facility` table for hospital discovery
@@ -1466,8 +1411,7 @@ function get_covid_hosp_facility($hospital_pks, $collection_weeks, $publication_
 //   $fips_code (optional): 2-letter state abbreviation
 //   note: exactly one of the above parameters should be non-null. if more than
 //         one is non-null, then only the first filter will be used.
-function get_covid_hosp_facility_lookup($state, $ccn, $city, $zip, $fips_code) {
-  $epidata = array();
+function get_covid_hosp_facility_lookup(IRowPrinter &$printer, $state, $ccn, $city, $zip, $fips_code) {
   $table = '`covid_hosp_facility` c';
   $fields = implode(', ', array(
     'c.`hospital_pk`',
@@ -1514,15 +1458,23 @@ function get_covid_hosp_facility_lookup($state, $ccn, $city, $zip, $fips_code) {
   );
   $fields_int = array('is_metro_micro');
   $fields_float = null;
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  execute_query($query, $printer, $fields_string, $fields_int, $fields_float);
 }
 
 // queries a bunch of epidata tables
-function get_meta() {
+function get_meta(IRowPrinter &$printer) {
   // query and return metadata
-  return array(array(
+  // collect individual meta data results using collectors
+  $fluview = new CollectRowPrinter();
+  meta_fluview($fluview);
+  $twitter = new CollectRowPrinter();
+  meta_twitter($twitter);
+  $wiki = new CollectRowPrinter();
+  meta_wiki($wiki);
+  $delphi = new CollectRowPrinter();
+  meta_delphi($delphi);
+
+  $row = array(
     '_api' => array(
       'minute' => meta_api(60),
       'hour' => meta_api(60 * 60),
@@ -1530,60 +1482,58 @@ function get_meta() {
       'week' => meta_api(60 * 60 * 24 * 7),
       'month' => meta_api(60 * 60 * 24 * 30),
     ),
-    'fluview' => meta_fluview(),
-    'twitter' => meta_twitter(),
-    'wiki' => meta_wiki(),
-    'delphi' => meta_delphi(),
-  ));
+    'fluview' => $fluview->$data,
+    'twitter' => $twitter->$data,
+    'wiki' => $wiki->$data,
+    'delphi' => $delphi->$data,
+  );
+  $printer->begin();
+  $printer->printRow($row);
+  $printer->end();
 }
-function meta_api($seconds) {
-  $epidata = array();
+function meta_api(int $seconds) {
   $seconds = intval($seconds);
   $query = "SELECT count(1) `num_hits`, count(distinct `ip`) `unique_ips`, sum(`num_rows`) `rows_returned` FROM `api_analytics` WHERE `datetime` >= date_sub(now(), interval {$seconds} second)";
   $fields_int = array('num_hits', 'unique_ips', 'rows_returned');
-  execute_query($query, $epidata, null, $fields_int, null);
-  return count($epidata) === 0 ? null : $epidata;
+  $rows = new CollectRowPrinter();
+  execute_query($query, $rows, null, $fields_int, null);
+  return count($rows->$data) === 0 ? null : $rows->$data;
 }
-function meta_fluview() {
-  $epidata = array();
+function meta_fluview(IRowPrinter &$printer) {
   $query = 'SELECT max(`release_date`) `latest_update`, max(`issue`) `latest_issue`, count(1) `table_rows` FROM `fluview`';
   $fields_string = array('latest_update');
   $fields_int = array('latest_issue', 'table_rows');
-  execute_query($query, $epidata, $fields_string, $fields_int, null);
-  return count($epidata) === 0 ? null : $epidata;
+  execute_query($query, $printer, $fields_string, $fields_int, null);
 }
-function meta_twitter() {
-  $epidata = array();
+function meta_twitter(IRowPrinter &$printer) {
   $query = 'SELECT x.`date` `latest_update`, x.`table_rows`, count(distinct t.`state`) `num_states` FROM (SELECT max(`date`) `date`, count(1) `table_rows` FROM `twitter`) x JOIN `twitter` t ON t.`date` = x.`date`';
   $fields_string = array('latest_update');
   $fields_int = array('num_states', 'table_rows');
-  execute_query($query, $epidata, $fields_string, $fields_int, null);
-  return count($epidata) === 0 ? null : $epidata;
+  execute_query($query, $printer, $fields_string, $fields_int, null);
 }
-function meta_wiki() {
-  $epidata = array();
+function meta_wiki(IRowPrinter &$printer) {
   //$query = 'SELECT date_sub(max(`datetime`), interval 5 hour) `latest_update`, count(1) `table_rows` FROM `wiki_meta`'; // GMT to EST
   $query = 'SELECT max(`datetime`) `latest_update`, count(1) `table_rows` FROM `wiki_meta`';
   $fields_string = array('latest_update');
   $fields_int = array('table_rows');
-  execute_query($query, $epidata, $fields_string, $fields_int, null);
-  return count($epidata) === 0 ? null : $epidata;
+  execute_query($query, $printer, $fields_string, $fields_int, null);
 }
-function get_meta_norostat() {
+function get_meta_norostat(APrinter &$printer) {
   // put behind appropriate auth check
-  $epidata_releases = array();
+  $epidata_releases = new CollectRowPrinter();
   $query = 'SELECT DISTINCT `release_date` FROM `norostat_raw_datatable_version_list`';
   execute_query($query, $epidata_releases, array('release_date'), null, null);
-  $epidata_locations = array();
+  $epidata_locations = new CollectRowPrinter();
   $query = 'SELECT DISTINCT `location` FROM `norostat_raw_datatable_location_pool`';
   execute_query($query, $epidata_locations, array('location'), null, null);
+  
   $epidata = array(
-    "releases" => $epidata_releases,
-    "locations" => $epidata_locations
+    "releases" => $epidata_releases->$data,
+    "locations" => $epidata_locations->$data
   );
-  return $epidata;
+  $printer->printNonStandard($epidata);
 }
-function get_meta_afhsb() {
+function get_meta_afhsb(APrinter &$printer) {
   // put behind appropriate auth check
   $table1 = 'afhsb_00to13_state';
   $table2 = 'afhsb_13to17_state';
@@ -1591,30 +1541,28 @@ function get_meta_afhsb() {
   $string_keys = array('state', 'country');
   $int_keys = array('flu_severity');
   foreach($string_keys as $key) {
-    $epidata_key = array();
+    $coll = new CollectRowPrinter();
     $query = "SELECT DISTINCT `{$key}` FROM (select `{$key}` from `{$table1}` union select `{$key}` from `{$table2}`) t";
-    execute_query($query, $epidata_key, array($key), null, null);
-    $epidata[$key] = $epidata_key;
+    execute_query($query, $coll, array($key), null, null);
+    $epidata[$key] = $coll->data;
   }
   foreach($int_keys as $key) {
-    $epidata_key = array();
+    $coll = new CollectRowPrinter();
     $query = "SELECT DISTINCT `{$key}` FROM (select `{$key}` from `{$table1}` union select `{$key}` from `{$table2}`) t";
 
-    execute_query($query, $epidata_key, null, array($key), null);
-    $epidata[$key] = $epidata_key;
+    execute_query($query, $coll, null, array($key), null);
+    $epidata[$key] = $coll->data;
   }
-  return $epidata;
+  $printer->printNonStandard($epidata);
 }
-function meta_delphi() {
-  $epidata = array();
+function meta_delphi(IRowPrinter &$printer) {
   $query = 'SELECT `system`, min(`epiweek`) `first_week`, max(`epiweek`) `last_week`, count(1) `num_weeks` FROM `forecasts` GROUP BY `system` ORDER BY `system` ASC';
   $fields_string = array('system');
   $fields_int = array('first_week', 'last_week', 'num_weeks');
-  execute_query($query, $epidata, $fields_string, $fields_int, null);
-  return count($epidata) === 0 ? null : $epidata;
+  execute_query($query, $printer, $fields_string, $fields_int, null);
 }
 
-function get_covidcast_nowcast($source, $signals, $time_type, $geo_type, $time_values, $geo_values, $as_of, $issues, $lag) {
+function get_covidcast_nowcast(IRowPrinter &$printer, $source, $signals, $time_type, $geo_type, $time_values, $geo_values, $as_of, $issues, $lag) {
   // required for `mysqli_real_escape_string`
   global $dbh;
   $source = mysqli_real_escape_string($dbh, $source);
@@ -1671,24 +1619,31 @@ function get_covidcast_nowcast($source, $signals, $time_type, $geo_type, $time_v
     $query = "WITH t as (SELECT {$fields}, ROW_NUMBER() OVER (PARTITION BY t.`time_type`, t.`time_value`, t.`source`, t.`signal`, t.`geo_type`, t.`geo_value` ORDER BY t.`issue` DESC) row FROM {$table}  {$subquery} WHERE {$conditions}) SELECT {$fields} FROM t where row = 1 ORDER BY {$order}";
   }
   // get the data from the database
-  $epidata = array();
-  execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
-  // return the data
-  return count($epidata) === 0 ? null : $epidata;
+  execute_query($query, $printer, $fields_string, $fields_int, $fields_float);
 }
 
-
-// all responses will have a result field
-$data = array('result' => -1);
-// connect to the database
-if(database_connect()) {
-
-  // select the data source
+/*
+ * main function
+ */
+function main() {
   // endpoint parameter with a fallback to source parameter for compatibility reasons
-  $endpoint = isset($_REQUEST['endpoint']) ? strtolower($_REQUEST['endpoint']) : (isset($_REQUEST['source']) ? strtolower($_REQUEST['source']) : null);
+  $endpoint = isset($_REQUEST['endpoint']) ? strtolower($_REQUEST['endpoint']) : (isset($_REQUEST['source']) ? strtolower($_REQUEST['source']) : '');
+  $format = isset($_REQUEST['format']) ? $_REQUEST['format'] : 'classic';
+  $printer = createPrinter($endpoint, $format);
 
+  if (!$endpoint) {
+    return $printer->printMissingOrWrongSource();
+  }
+
+  if (!database_connect()) {
+    return $printer->send_database_error();
+  }
+  // connected to the database
+
+  // switch the data source
+  
   if($endpoint === 'fluview') {
-    if(require_all($data, array('epiweeks', 'regions'))) {
+    if(require_all($printer, array('epiweeks', 'regions'))) {
       // parse the request
       $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
       $regions = extract_values($_REQUEST['regions'], 'str');
@@ -1696,100 +1651,91 @@ if(database_connect()) {
       $lag = isset($_REQUEST['lag']) ? intval($_REQUEST['lag']) : null;
       $authorized = isset($_REQUEST['auth']) && $_REQUEST['auth'] === $AUTH['fluview'];
       // get the data
-      $epidata = get_fluview($epiweeks, $regions, $issues, $lag, $authorized);
-      store_result($data, $epidata);
+      get_fluview($printer, $epiweeks, $regions, $issues, $lag, $authorized);
     }
   } else if($endpoint === 'fluview_meta') {
     // get the data
-    $epidata = meta_fluview();
-    store_result($data, $epidata);
+    meta_fluview($printer);
   } else if ($endpoint === 'fluview_clinical') {
-    if(require_all($data, array('epiweeks', 'regions'))) {
+    if(require_all($printer, array('epiweeks', 'regions'))) {
       // parse the request
       $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
       $regions = extract_values($_REQUEST['regions'], 'str');
       $issues = isset($_REQUEST['issues']) ? extract_values($_REQUEST['issues'], 'int') : null;
       $lag = isset($_REQUEST['lag']) ? intval($_REQUEST['lag']) : null;
       // get the data
-      $epidata = get_fluview_clinical($epiweeks, $regions, $issues, $lag);
-      store_result($data, $epidata);
+      get_fluview_clinical($printer, $epiweeks, $regions, $issues, $lag);
     }
   } else if($endpoint === 'flusurv') {
-    if(require_all($data, array('epiweeks', 'locations'))) {
+    if(require_all($printer, array('epiweeks', 'locations'))) {
       // parse the request
       $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
       $locations = extract_values($_REQUEST['locations'], 'str');
       $issues = isset($_REQUEST['issues']) ? extract_values($_REQUEST['issues'], 'int') : null;
       $lag = isset($_REQUEST['lag']) ? intval($_REQUEST['lag']) : null;
       // get the data
-      $epidata = get_flusurv($epiweeks, $locations, $issues, $lag);
-      store_result($data, $epidata);
+      get_flusurv($printer, $epiweeks, $locations, $issues, $lag);
     }
   } else if ($endpoint === 'paho_dengue') {
-    if(require_all($data, array('epiweeks', 'regions'))) {
+    if(require_all($printer, array('epiweeks', 'regions'))) {
       // parse the request
       $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
       $regions = extract_values($_REQUEST['regions'], 'str');
       $issues = isset($_REQUEST['issues']) ? extract_values($_REQUEST['issues'], 'int') : null;
       $lag = isset($_REQUEST['lag']) ? intval($_REQUEST['lag']) : null;
       // get the data
-      $epidata = get_paho_dengue($epiweeks, $regions, $issues, $lag);
-      store_result($data, $epidata);
+      get_paho_dengue($printer, $epiweeks, $regions, $issues, $lag);
     }
   } else if ($endpoint === 'ecdc_ili') {
-    if(require_all($data, array('epiweeks', 'regions'))) {
+    if(require_all($printer, array('epiweeks', 'regions'))) {
       // parse the request
       $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
       $regions = extract_values($_REQUEST['regions'], 'str');
       $issues = isset($_REQUEST['issues']) ? extract_values($_REQUEST['issues'], 'int') : null;
       $lag = isset($_REQUEST['lag']) ? intval($_REQUEST['lag']) : null;
       // get the data
-      $epidata = get_ecdc_ili($epiweeks, $regions, $issues, $lag);
-      store_result($data, $epidata);
+      get_ecdc_ili($printer, $epiweeks, $regions, $issues, $lag);
     }
   } else if ($endpoint === 'kcdc_ili') {
-    if(require_all($data, array('epiweeks', 'regions'))) {
+    if(require_all($printer, array('epiweeks', 'regions'))) {
       // parse the request
       $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
       $regions = extract_values($_REQUEST['regions'], 'str');
       $issues = isset($_REQUEST['issues']) ? extract_values($_REQUEST['issues'], 'int') : null;
       $lag = isset($_REQUEST['lag']) ? intval($_REQUEST['lag']) : null;
       // get the data
-      $epidata = get_kcdc_ili($epiweeks, $regions, $issues, $lag);
-      store_result($data, $epidata);
+      get_kcdc_ili($printer, $epiweeks, $regions, $issues, $lag);
     }
   } else if($endpoint === 'ilinet' || $endpoint === 'stateili') {
     // these two sources are now combined into fluview
-    $data['message'] = 'use fluview instead';
+    $printer->printError(-1, 'use fluview instead');
   } else if($endpoint === 'gft') {
-    if(require_all($data, array('epiweeks', 'locations'))) {
+    if(require_all($printer, array('epiweeks', 'locations'))) {
       // parse the request
       $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
       $locations = extract_values($_REQUEST['locations'], 'str');
       // get the data
-      $epidata = get_gft($epiweeks, $locations);
-      store_result($data, $epidata);
+      get_gft($printer, $epiweeks, $locations);
     }
   } else if($endpoint === 'ght') {
-    if(require_all($data, array('auth', 'epiweeks', 'locations', 'query'))) {
+    if(require_all($printer, array('auth', 'epiweeks', 'locations', 'query'))) {
       if($_REQUEST['auth'] === $AUTH['ght']) {
         // parse the request
         $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
         $locations = extract_values($_REQUEST['locations'], 'str');
         $query = $_REQUEST['query'];
         // get the data
-        $epidata = get_ght($epiweeks, $locations, $query);
-        store_result($data, $epidata);
+        get_ght($printer, $epiweeks, $locations, $query);
       } else {
-        $data['message'] = 'unauthenticated';
+        $printer->printUnAuthenticated();
       }
     }
   } else if($endpoint === 'twitter') {
-    if(require_all($data, array('auth', 'locations'))) {
+    if(require_all($printer, array('auth', 'locations'))) {
       if($_REQUEST['auth'] === $AUTH['twitter']) {
         // parse the request
         $locations = extract_values($_REQUEST['locations'], 'str');
-        if(require_any($data, array('dates', 'epiweeks'))) {
+        if(require_any($printer, array('dates', 'epiweeks'))) {
           if(isset($_REQUEST['dates'])) {
             $resolution = 'daily';
             $dates = extract_values($_REQUEST['dates'], 'int');
@@ -1798,19 +1744,18 @@ if(database_connect()) {
             $dates = extract_values($_REQUEST['epiweeks'], 'int');
           }
           // get the data
-          $epidata = get_twitter($locations, $dates, $resolution);
-          store_result($data, $epidata);
+          get_twitter($printer, $locations, $dates, $resolution);
         }
       } else {
-        $data['message'] = 'unauthenticated';
+        $printer->printUnAuthenticated();
       }
     }
   } else if($endpoint === 'wiki') {
-    if(require_all($data, array('articles', 'language'))) {
+    if(require_all($printer, array('articles', 'language'))) {
       // parse the request
       $articles = extract_values($_REQUEST['articles'], 'str');
       $language = $_REQUEST['language'];
-      if(require_any($data, array('dates', 'epiweeks'))) {
+      if(require_any($printer, array('dates', 'epiweeks'))) {
         if(isset($_REQUEST['dates'])) {
           $resolution = 'daily';
           $dates = extract_values($_REQUEST['dates'], 'int');
@@ -1820,97 +1765,89 @@ if(database_connect()) {
         }
         $hours = isset($_REQUEST['hours']) ? extract_values($_REQUEST['hours'], 'int') : null;
         // get the data
-        $epidata = get_wiki($articles, $language, $dates, $resolution, $hours);
-        store_result($data, $epidata);
+        get_wiki($printer, $articles, $language, $dates, $resolution, $hours);
       }
     }
   } else if($endpoint === 'quidel') {
-    if(require_all($data, array('auth', 'locations', 'epiweeks'))) {
+    if(require_all($printer, array('auth', 'locations', 'epiweeks'))) {
       if($_REQUEST['auth'] === $AUTH['quidel']) {
         // parse the request
         $locations = extract_values($_REQUEST['locations'], 'str');
         $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
         // get the data
-        $epidata = get_quidel($locations, $epiweeks);
-        store_result($data, $epidata);
+        get_quidel($printer, $locations, $epiweeks);
       } else {
-        $data['message'] = 'unauthenticated';
+        $printer->printUnAuthenticated();
       }
     }
   } else if($endpoint === 'norostat') {
-    if(require_all($data, array('auth', 'location', 'epiweeks'))) {
+    if(require_all($printer, array('auth', 'location', 'epiweeks'))) {
       if($_REQUEST['auth'] === $AUTH['norostat']) {
         // parse the request
         $location = $_REQUEST['location'];
         $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
         // get the data
-        $epidata = get_norostat($location, $epiweeks);
-        store_result($data, $epidata);
+        get_norostat($printer, $location, $epiweeks);
       } else {
-          $data['message'] = 'unauthenticated';
+        $printer->printUnAuthenticated();
       }
     }
   } else if($endpoint === 'afhsb') {
-    if(require_all($data, array('auth', 'locations', 'epiweeks', 'flu_types'))) {
+    if(require_all($printer, array('auth', 'locations', 'epiweeks', 'flu_types'))) {
       if($_REQUEST['auth'] === $AUTH['afhsb']) {
         // parse the request
         $locations = extract_values($_REQUEST['locations'], 'str');
         $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
         $flu_types = extract_values($_REQUEST['flu_types'], 'str');
         // get the data
-        $epidata = get_afhsb($locations, $epiweeks, $flu_types);
-        store_result($data, $epidata);
+        get_afhsb($printer, $locations, $epiweeks, $flu_types);
       } else {
-          $data['message'] = 'unauthenticated';
+        $printer->printUnAuthenticated();
       }
     }
   } else if($endpoint === 'nidss_flu') {
-    if(require_all($data, array('epiweeks', 'regions'))) {
+    if(require_all($printer, array('epiweeks', 'regions'))) {
       // parse the request
       $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
       $regions = extract_values($_REQUEST['regions'], 'str');
       $issues = isset($_REQUEST['issues']) ? extract_values($_REQUEST['issues'], 'int') : null;
       $lag = isset($_REQUEST['lag']) ? intval($_REQUEST['lag']) : null;
       // get the data
-      $epidata = get_nidss_flu($epiweeks, $regions, $issues, $lag);
-      store_result($data, $epidata);
+      get_nidss_flu($printer, $epiweeks, $regions, $issues, $lag);
     }
   } else if($endpoint === 'nidss_dengue') {
-    if(require_all($data, array('epiweeks', 'locations'))) {
+    if(require_all($printer, array('epiweeks', 'locations'))) {
       // parse the request
       $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
       $locations = extract_values($_REQUEST['locations'], 'str');
       // get the data
-      $epidata = get_nidss_dengue($epiweeks, $locations);
-      store_result($data, $epidata);
+      get_nidss_dengue($printer, $epiweeks, $locations);
     }
   } else if($endpoint === 'delphi') {
-    if(require_all($data, array('system', 'epiweek'))) {
+    if(require_all($printer, array('system', 'epiweek'))) {
       // parse the request
       $system = $_REQUEST['system'];
       $epiweek = intval($_REQUEST['epiweek']);
       // get the data
-      $epidata = get_forecast($system, $epiweek);
-      store_result($data, $epidata);
+      get_forecast($printer, $system, $epiweek);
     }
   } else if($endpoint === 'signals') {
     // this sources is now replaced by sensors
-    $data['message'] = 'use sensors instead';
+    $printer->printError(-1, 'use sensors instead');
   } else if($endpoint === 'cdc') {
-    if(require_all($data, array('auth', 'epiweeks', 'locations'))) {
+    if(require_all($printer, array('auth', 'epiweeks', 'locations'))) {
       if($_REQUEST['auth'] === $AUTH['cdc']) {
         // parse the request
         $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
         $locations = extract_values($_REQUEST['locations'], 'str');
         // get the data
-        $epidata = get_cdc($epiweeks, $locations);
-        store_result($data, $epidata);
+        get_cdc($printer, $epiweeks, $locations);
       } else {
-        $data['message'] = 'unauthenticated';
+        $printer->printUnAuthenticated();
       }
     }
   } else if($endpoint === 'sensors') {
-    if(require_all($data, array('names', 'locations', 'epiweeks'))) {
+    if(require_all($printer, array('names', 'locations', 'epiweeks'))) {
       if(!array_key_exists('auth', $_REQUEST)) {
         $auth_tokens_presented = array();
       } else {
@@ -1923,9 +1860,9 @@ if(database_connect()) {
       // The number of valid granular tokens is related to the number of auth token checks that a single query could perform.  Use the max number of valid granular auth tokens per name in the check below as a way to prevent leakage of sensor names (but revealing the number of sensor names) via this interface.  Treat all sensors as non-open for convenience of calculation.
       if($n_names === 0) {
         // Check whether no names were provided to prevent edge-case issues in error message below, and in case surrounding behavior changes in the future:
-        $data['message'] = 'no sensor names provided';
+        $printer->printError(-1, 'no sensor names provided');
       } else if($n_auth_tokens_presented > 1) {
-        $data['message'] = 'currently, only a single auth token is allowed to be presented at a time; please issue a separate query for each sensor name using only the corresponding token';
+        $printer->printError(-1, 'currently, only a single auth token is allowed to be presented at a time; please issue a separate query for each sensor name using only the corresponding token');
       } else if(
         // Check whether max number of presented-vs.-acceptable token comparisons that would be performed is over the set limits, avoiding calculation of numbers > PHP_INT_MAX/100:
         //   Global auth token comparison limit check:
@@ -1935,10 +1872,10 @@ if(database_connect()) {
         $n_auth_tokens_presented > (int)(PHP_INT_MAX/100/max(1,$n_names*$max_valid_granular_tokens_per_name)) ||
         $n_auth_tokens_presented * $n_names * $max_valid_granular_tokens_per_name > $MAX_GRANULAR_AUTH_CHECKS_PER_SENSOR_QUERY
       ) {
-        $data['message'] = 'too many sensors requested and/or auth tokens presented; please divide sensors into batches and/or use only the tokens needed for the sensors requested';
+        $printer->printError(-1, 'too many sensors requested and/or auth tokens presented; please divide sensors into batches and/or use only the tokens needed for the sensors requested');
       } else if(count($auth_tokens_presented) > $MAX_AUTH_KEYS_PROVIDED_PER_SENSOR_QUERY) {
         // this check should be redundant with >1 check as well as global check above
-        $data['message'] = 'too many auth tokens presented';
+        $printer->printError(-1, 'too many auth tokens presented');
       } else {
         $unauthenticated_or_nonexistent_sensors = array();
         foreach($names as $name) {
@@ -1967,7 +1904,7 @@ if(database_connect()) {
           }
         }
         if (!empty($unauthenticated_or_nonexistent_sensors)) {
-          $data['message'] = 'unauthenticated/nonexistent sensor(s): ' . implode(',', $unauthenticated_or_nonexistent_sensors);
+          $printer->printError(-1, 'unauthenticated/nonexistent sensor(s): ' . implode(',', $unauthenticated_or_nonexistent_sensors));
           // // Alternative message that may enable shorter tokens:
           // $data['message'] = 'some/all sensors requested were unauthenticated/nonexistent';
         } else {
@@ -1975,69 +1912,62 @@ if(database_connect()) {
           $locations = extract_values($_REQUEST['locations'], 'str');
           $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
           // get the data
-          $epidata = get_sensors($names, $locations, $epiweeks);
-          store_result($data, $epidata);
+          get_sensors($printer, $names, $locations, $epiweeks);
         }
       }
     }
   } else if($endpoint === 'dengue_sensors') {
-    if(require_all($data, array('auth', 'names', 'locations', 'epiweeks'))) {
+    if(require_all($printer, array('auth', 'names', 'locations', 'epiweeks'))) {
       if($_REQUEST['auth'] === $AUTH['sensors']) {
         // parse the request
         $names = extract_values($_REQUEST['names'], 'str');
         $locations = extract_values($_REQUEST['locations'], 'str');
         $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
         // get the data
-        $epidata = get_dengue_sensors($names, $locations, $epiweeks);
-        store_result($data, $epidata);
+        get_dengue_sensors($printer, $names, $locations, $epiweeks);
       } else {
-        $data['message'] = 'unauthenticated';
+        $printer->printUnAuthenticated();
       }
     }
   } else if($endpoint === 'nowcast') {
-    if(require_all($data, array('locations', 'epiweeks'))) {
+    if(require_all($printer, array('locations', 'epiweeks'))) {
       // parse the request
       $locations = extract_values($_REQUEST['locations'], 'str');
       $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
       // get the data
-      $epidata = get_nowcast($locations, $epiweeks);
-      store_result($data, $epidata);
+      get_nowcast($printer, $locations, $epiweeks);
     }
   } else if($endpoint === 'dengue_nowcast') {
-    if(require_all($data, array('locations', 'epiweeks'))) {
+    if(require_all($printer, array('locations', 'epiweeks'))) {
       // parse the request
       $locations = extract_values($_REQUEST['locations'], 'str');
       $epiweeks = extract_values($_REQUEST['epiweeks'], 'int');
       // get the data
-      $epidata = get_dengue_nowcast($locations, $epiweeks);
-      store_result($data, $epidata);
+      get_dengue_nowcast($printer, $locations, $epiweeks);
     }
   } else if($endpoint === 'meta') {
     // get the data
-    $epidata = get_meta();
-    store_result($data, $epidata);
+    get_meta($printer);
   } else if($endpoint === 'meta_norostat') {
-    if(require_all($data, array('auth'))) {
+    if(require_all($printer, array('auth'))) {
       if($_REQUEST['auth'] === $AUTH['norostat']) {
-        $epidata = get_meta_norostat();
-        store_result($data, $epidata);
+        get_meta_norostat($printer);
       } else {
-          $data['message'] = 'unauthenticated';
+        $printer->printUnAuthenticated();
       }
     }
   } else if($endpoint === 'meta_afhsb') {
-    if(require_all($data, array('auth'))) {
+    if(require_all($printer, array('auth'))) {
       if($_REQUEST['auth'] === $AUTH['afhsb']) {
-        $epidata = get_meta_afhsb();
-        store_result($data, $epidata);
+        get_meta_afhsb($printer);
       } else {
-          $data['message'] = 'unauthenticated';
+        $printer->printUnAuthenticated();
       }
     }
   } else if($endpoint === 'covidcast') {
-    if(require_all($data, array('data_source', 'time_type', 'geo_type', 'time_values'))
-       && require_any($data, array('signal', 'signals'))
-       && require_any($data, array('geo_value', 'geo_values'))) {
+    if(require_all($printer, array('data_source', 'time_type', 'geo_type', 'time_values'))
+       && require_any($printer, array('signal', 'signals'))
+       && require_any($printer, array('geo_value', 'geo_values'))) {
       // parse the request
       $time_values = extract_dates($_REQUEST['time_values']);
       $as_of = isset($_REQUEST['as_of']) ? parse_date($_REQUEST['as_of']) : null;
@@ -2046,7 +1976,7 @@ if(database_connect()) {
       $signals = extract_values(isset($_REQUEST['signals']) ? $_REQUEST['signals'] : $_REQUEST['signal'], 'string');
       $geo_values = isset($_REQUEST['geo_value']) ? $_REQUEST['geo_value'] : extract_values($_REQUEST['geo_values'], 'string');
       // get the data
-      $epidata = get_covidcast(
+      get_covidcast($printer,
           $_REQUEST['data_source'],
           $signals,
           $_REQUEST['time_type'],
@@ -2056,60 +1986,41 @@ if(database_connect()) {
           $as_of,
           $issues,
           $lag);
-      if(isset($_REQUEST['format']) && $_REQUEST['format']=="tree") {
-        //organize results by signal
-        $epi_tree = array();
-        $key = -1;
-        foreach ($epidata as $row) {
-          if ($key != $row['signal']) {
-            $key = $row['signal'];
-            $epi_tree[$key] = array();
-          }
-          unset($row['signal']);
-          array_push($epi_tree[$key],$row);
-        }
-        $epidata = array($epi_tree);
-      }
-      store_result($data, $epidata);
     }
   } else if($endpoint === 'covidcast_meta') {
     // get the metadata
-    $epidata = get_covidcast_meta();
-    store_result($data, $epidata);
-  } else if($endpoint === 'covid_hosp' || $source === 'covid_hosp_state_timeseries') {
-    if(require_all($data, array('states', 'dates'))) {
+    get_covidcast_meta($printer);
+  } else if($endpoint === 'covid_hosp' || $endpoint === 'covid_hosp_state_timeseries') {
+    if(require_all($printer, array('states', 'dates'))) {
       // parse the request
       $states = extract_values($_REQUEST['states'], 'str');
       $dates = extract_values($_REQUEST['dates'], 'int');
       $issues = isset($_REQUEST['issues']) ? extract_values($_REQUEST['issues'], 'int') : null;
       // get the data
-      $epidata = get_covid_hosp_state_timeseries($states, $dates, $issues);
-      store_result($data, $epidata);
+      get_covid_hosp_state_timeseries($printer, $states, $dates, $issues);
     }
   } else if($endpoint === 'covid_hosp_facility') {
-    if(require_all($data, array('hospital_pks', 'collection_weeks'))) {
+    if(require_all($printer, array('hospital_pks', 'collection_weeks'))) {
       // parse the request
       $hospital_pks = extract_values($_REQUEST['hospital_pks'], 'str');
       $collection_weeks = extract_values($_REQUEST['collection_weeks'], 'int');
       $publication_dates = isset($_REQUEST['publication_dates']) ? extract_values($_REQUEST['publication_dates'], 'int') : null;
       // get the data
-      $epidata = get_covid_hosp_facility($hospital_pks, $collection_weeks, $publication_dates);
-      store_result($data, $epidata);
+      get_covid_hosp_facility($printer, $hospital_pks, $collection_weeks, $publication_dates);
     }
   } else if($endpoint === 'covid_hosp_facility_lookup') {
-    if(require_any($data, array('state', 'ccn', 'city', 'zip', 'fips_code'))) {
+    if(require_any($printer, array('state', 'ccn', 'city', 'zip', 'fips_code'))) {
       $state = isset($_REQUEST['state']) ? extract_values($_REQUEST['state'], 'str') : null;
       $ccn = isset($_REQUEST['ccn']) ? extract_values($_REQUEST['ccn'], 'str') : null;
       $city = isset($_REQUEST['city']) ? extract_values($_REQUEST['city'], 'str') : null;
       $zip = isset($_REQUEST['zip']) ? extract_values($_REQUEST['zip'], 'str') : null;
       $fips_code = isset($_REQUEST['fips_code']) ? extract_values($_REQUEST['fips_code'], 'str') : null;
       // get the data
-      $epidata = get_covid_hosp_facility_lookup($state, $ccn, $city, $zip, $fips_code);
-      store_result($data, $epidata);
+      get_covid_hosp_facility_lookup($printer, $state, $ccn, $city, $zip, $fips_code);
     }
   } else if($endpoint === 'covidcast_nowcast') {
-    if(require_all($data, array('data_source', 'time_type', 'geo_type', 'time_values', 'signals'))
-       && require_any($data, array('geo_value', 'geo_values'))) {
+    if(require_all($printer, array('data_source', 'time_type', 'geo_type', 'time_values', 'signals'))
+       && require_any($printer, array('geo_value', 'geo_values'))) {
       // parse the request
       $time_values = extract_dates($_REQUEST['time_values']);
       $as_of = isset($_REQUEST['as_of']) ? parse_date($_REQUEST['as_of']) : null;
@@ -2118,7 +2029,7 @@ if(database_connect()) {
       $signals = extract_values(isset($_REQUEST['signals']) ? $_REQUEST['signals'] : $_REQUEST['signal'], 'string');
       $geo_values = isset($_REQUEST['geo_value']) ? $_REQUEST['geo_value'] : extract_values($_REQUEST['geo_values'], 'string');
       // get the data
-      $epidata = get_covidcast_nowcast(
+      get_covidcast_nowcast($printer, 
           $_REQUEST['data_source'],
           $signals,
           $_REQUEST['time_type'],
@@ -2128,24 +2039,10 @@ if(database_connect()) {
           $as_of,
           $issues,
           $lag);
-      store_result($data, $epidata);
     }
   } else {
-    $data['message'] = 'no data source specified';
+    $printer->printMissingOrWrongSource();
   }
-  // API analytics
-  record_analytics($endpoint, $data);
-} else {
-  $data['message'] = 'database error';
 }
-
-if(isset($_REQUEST['format']) && $_REQUEST['format'] == "csv") {
-  send_csv($data);
-} else if(isset($_REQUEST['format']) && $_REQUEST['format'] == "json") {
-  send_json($data);
-} else {
-  // send the response as a json object
-  header('Content-Type: application/json');
-  echo json_encode($data);
-}
+main();
 ?>

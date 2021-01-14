@@ -223,6 +223,7 @@ class CsvUploadingTests(unittest.TestCase):
     self.assertEqual(response, {
       'result': -2,
       'message': 'no results',
+      'epidata': []
     })
 
     # verify timestamps and default values are reasonable
