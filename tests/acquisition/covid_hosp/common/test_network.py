@@ -11,7 +11,6 @@ from delphi.epidata.acquisition.covid_hosp.common.network import Network
 __test_target__ = 'delphi.epidata.acquisition.covid_hosp.common.network'
 
 
-
 class NetworkTests(unittest.TestCase):
 
   def test_fetch_metadata_for_dataset(self):
