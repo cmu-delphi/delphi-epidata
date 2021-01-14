@@ -1635,7 +1635,7 @@ function get_covidcast_nowcast($source, $signals, $sensor_names, $time_type, $ge
     $geo_escaped_value = mysqli_real_escape_string($dbh, $geo_values);
     $condition_geo_value = "t.`geo_value` = '{$geo_escaped_value}'";
   }
-  $conditions = "({$condition_source}) AND ({$condition_signal}) AND ({$condition_sensor_name   }) AND ({$condition_time_type}) AND ({$condition_geo_type}) AND ({$condition_time_value}) AND ({$condition_geo_value})";
+  $conditions = "({$condition_source}) AND ({$condition_signal}) AND ({$condition_sensor_name}) AND ({$condition_time_type}) AND ({$condition_geo_type}) AND ({$condition_time_value}) AND ({$condition_geo_value})";
 
   $subquery = "";
   if ($issues !== null) {
