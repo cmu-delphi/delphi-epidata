@@ -138,4 +138,13 @@ CREATE TABLE `covidcast_meta_cache` (
   `epidata` LONGTEXT NOT NULL,
   PRIMARY KEY (`timestamp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-INSERT INTO covidcast_meta_cache VALUES (0, '');
+INSERT INTO covidcast_meta_cache VALUES (0, '[]');
+
+-- TODO: remove this after successfully testing incremental cache updates
+--       also, drop the test table in production
+CREATE TABLE `covidcast_meta_cache_test` (
+  `timestamp` int(11) NOT NULL,
+  `epidata` LONGTEXT NOT NULL,
+  PRIMARY KEY (`timestamp`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+INSERT INTO covidcast_meta_cache_test VALUES (0, '[]');

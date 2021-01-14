@@ -7,7 +7,7 @@ See src/ddl/covidcast.sql for an explanation of each field.
 import json
 import mysql.connector
 import numpy as np
-from math import ceil
+from math import ceil, sqrt
 
 # first party
 import delphi.operations.secrets as secrets
@@ -183,7 +183,7 @@ class Database:
 
     # TODO: consider handling cc_rows as a generator instead of a list
     self._cursor.execute(create_tmp_table_sql)
-
+    meta_cache = self.retrieve_covidcast_meta_cache()
     try:
 
       num_rows = len(cc_rows)
@@ -213,10 +213,15 @@ class Database:
 
 
         result = self._cursor.executemany(insert_into_tmp_sql, args)
+
+        meta_update = self.compute_covidcast_meta(table_name=tmp_table_name)
+        meta_cache = Database.merge_cache_dicts(meta_cache, meta_update)
+
         self._cursor.execute(insert_or_update_sql)
         self._cursor.execute(zero_is_latest_issue_sql)
         self._cursor.execute(set_is_latest_issue_sql)
         self._cursor.execute(truncate_tmp_table_sql)
+        self.update_covidcast_meta_cache_from_dict(meta_cache)
 
         if result is None:
           # the SQL connector does not support returning number of rows affected
@@ -261,16 +266,16 @@ class Database:
     self._cursor.execute(sql, args)
     return list(self._cursor)
 
-  def get_covidcast_meta(self):
+  def compute_covidcast_meta(self, table_name='covidcast'):
     """Compute and return metadata on all non-WIP COVIDcast signals."""
 
     meta = []
 
     signal_list = []
-    sql = 'SELECT `source`, `signal` FROM `covidcast` GROUP BY `source`, `signal` ORDER BY `source` ASC, `signal` ASC;'
+    sql = f'SELECT `source`, `signal` FROM `{table_name}` GROUP BY `source`, `signal` ORDER BY `source` ASC, `signal` ASC;'
     self._cursor.execute(sql)
     for source, signal in list(self._cursor): # self._cursor is a generator; this lets us use the cursor for subsequent queries inside the loop
-      sql = "SELECT `is_wip` FROM `covidcast` WHERE `source`=%s AND `signal`=%s LIMIT 1"
+      sql = "SELECT `is_wip` FROM `{table_name}` WHERE `source`=%s AND `signal`=%s LIMIT 1"
       self._cursor.execute(sql, (source, signal))
       is_wip = int(self._cursor.fetchone()[0]) # casting to int as it comes out as a '0' or '1' bytearray; bool('0')==True :(
       if not is_wip:
@@ -278,15 +283,16 @@ class Database:
 
     for source, signal in signal_list:
 
-      sql = '''
+      sql = f'''
       SELECT
-        t.`source` AS `data_source`,
-        t.`signal`,
-        t.`time_type`,
-        t.`geo_type`,
-        MIN(t.`time_value`) AS `min_time`,
-        MAX(t.`time_value`) AS `max_time`,
-        COUNT(DISTINCT t.`geo_value`) AS `num_locations`,
+        `source` AS `data_source`,
+        `signal`,
+        `time_type`,
+        `geo_type`,
+        MIN(`time_value`) AS `min_time`,
+        MAX(`time_value`) AS `max_time`,
+        COUNT(DISTINCT `geo_value`) AS `num_locations`,
+        COUNT(`value`) AS `num_points`,
         MIN(`value`) AS `min_value`,
         MAX(`value`) AS `max_value`,
         ROUND(AVG(`value`),7) AS `mean_value`,
@@ -296,29 +302,29 @@ class Database:
         MIN(`lag`) as `min_lag`,
         MAX(`lag`) as `max_lag`
       FROM
-        `covidcast` t
+        `{table_name}`
       WHERE
         `source` = %s AND
         `signal` = %s AND
         is_latest_issue = 1
       GROUP BY
-        t.`time_type`,
-        t.`geo_type`
+        `time_type`,
+        `geo_type`
       ORDER BY
-        t.`time_type` ASC,
-        t.`geo_type` ASC
+        `time_type` ASC,
+        `geo_type` ASC
       '''
       self._cursor.execute(sql, (source, signal))
       meta.extend(list(dict(zip(self._cursor.column_names,x)) for x in self._cursor))
 
     return meta
   
-  def update_covidcast_meta_cache(self, metadata):
+  def update_covidcast_meta_cache(self, metadata, table_name='covidcast_meta_cache'): # TODO: remove arg
     """Updates the `covidcast_meta_cache` table."""
 
-    sql = '''
+    sql = f'''
       UPDATE
-        `covidcast_meta_cache`
+        `{table_name}`
       SET
         `timestamp` = UNIX_TIMESTAMP(NOW()),
         `epidata` = %s
@@ -327,12 +333,12 @@ class Database:
 
     self._cursor.execute(sql, (epidata_json,))
 
-  def retrieve_covidcast_meta_cache(self):
+  def retrieve_covidcast_meta_cache(self, table_name='covidcast_meta_cache_test'): # TODO: remove arg
     """Useful for viewing cache entries (was used in debugging)"""
 
-    sql = '''
+    sql = f'''
       SELECT `epidata`
-      FROM `covidcast_meta_cache`
+      FROM `{table_name}` -- TODO: remove '_test' after successfully testing incremental cache updates
       ORDER BY `timestamp` DESC
       LIMIT 1;
     '''
@@ -342,4 +348,48 @@ class Database:
     cache_hash = {}
     for entry in cache:
       cache_hash[(entry['data_source'], entry['signal'], entry['time_type'], entry['geo_type'])] = entry
+    if not len(cache) and table_name=='covidcast_meta_cache_test': # TODO: remove line
+      print("test cache empty -- falling back to regular cache ; this should happen ONLY ONCE (after regular cache populated)") # TODO: remove line
+      return self.retrieve_covidcast_meta_cache(table_name='covidcast_meta_cache') # TODO: remove line
     return cache_hash
+
+  def update_covidcast_meta_cache_from_dict(self, cache_hash):
+    """Updates the `covidcast_meta_cache` table from the dict version of the cache, ordered by key"""
+
+    cache_list = [cache_hash[k] for k in sorted(cache_hash)]
+    self.update_covidcast_meta_cache(cache_list, table_name='covidcast_meta_cache_test') # TODO: remove arg
+
+  @staticmethod
+  def merge_cache_dicts(base_cache, cache_update):
+    """merges two covidcast metadata caches (in dict form), modifying (and returning) the first"""
+
+    for data_id in cache_update:
+      if data_id not in base_cache:
+        base_cache[data_id] = cache_update[data_id]
+        continue
+
+      mainstats = base_cache[data_id].copy() # copy this entry so we can update the whole thing in one assignment
+      updtstats = cache_update[data_id]
+
+      # combined stdev formula shamelessly stolen from:
+      # https://math.stackexchange.com/questions/2971315/how-do-i-combine-standard-deviations-of-two-groups
+      sx, xbar, n = [mainstats[i] for i in ('stdev_value', 'mean_value', 'num_points')]
+      sy, ybar, m = [updtstats[i] for i in ('stdev_value', 'mean_value', 'num_points')]
+      comb_mean = ( xbar*n + ybar*m ) / (n+m)
+      comb_sd = sqrt(
+        ( (n-1)*sx*sx + (m-1)*sy*sy ) / (n+m-1)
+        +
+        n*m*(xbar-ybar)**2 / ((n+m)*(n+m-1))
+      )
+
+      mainstats['num_points'] = m + n
+      mainstats['stdev_value'] = comb_sd
+      mainstats['mean_value'] = comb_mean
+      for stat in ('max_lag', 'max_value', 'max_time', 'max_issue', 'last_update', 'num_locations'):
+        mainstats[stat] = max(mainstats[stat], updtstats[stat])
+      for stat in ('min_lag', 'min_value', 'min_time'):
+        mainstats[stat] = min(mainstats[stat], updtstats[stat])
+
+      base_cache[data_id] = mainstats # write copy back to base_cache
+
+    return base_cache

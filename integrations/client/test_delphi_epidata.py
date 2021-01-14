@@ -375,6 +375,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
         'min_time': 20200414,
         'max_time': 20200415,
         'num_locations': 1,
+        'num_points': 2,
         'min_value': 6.0,
         'max_value': 7.0,
         'mean_value': 6.5,

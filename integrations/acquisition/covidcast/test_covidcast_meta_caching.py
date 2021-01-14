@@ -82,7 +82,7 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     # make sure the live utility is serving something sensible
     cvc_database = live.Database()
     cvc_database.connect()
-    epidata1 = cvc_database.get_covidcast_meta()
+    epidata1 = cvc_database.compute_covidcast_meta()
     cvc_database.disconnect(False)
     self.assertEqual(len(epidata1),1)
     self.assertEqual(epidata1, [
@@ -94,11 +94,12 @@ class CovidcastMetaCacheTests(unittest.TestCase):
         'min_time': 20200422,
         'max_time': 20200422,
         'num_locations': 2,
+        'num_points': 2,
         'last_update': 789,
-        'min_value': 1,
-        'max_value': 1,
-        'mean_value': 1,
-        'stdev_value': 0,
+        'min_value': 1.0,
+        'max_value': 1.0,
+        'mean_value': 1.0,
+        'stdev_value': 0.0,
         'max_issue': 20200423,
         'min_lag': 0,
         'max_lag': 1,
@@ -125,7 +126,7 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     self.cur.execute('''
       update covidcast_meta_cache set
         timestamp = UNIX_TIMESTAMP(NOW()),
-        epidata = '[{"hello": "world"}]'
+        epidata = '[{"data_source": "hell", "signal": "temp", "time_type": "inf", "geo_type": "void", "is_wip": 0}]'
     ''')
     self.cnx.commit()
 
@@ -139,7 +140,7 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     self.assertEqual(epidata4, {
       'result': 1,
       'epidata': [{
-        'hello': 'world',
+        'data_source': 'hell', 'signal': 'temp', 'time_type': 'inf', 'geo_type': 'void', 'is_wip': 0
       }],
       'message': 'success',
     })
@@ -148,7 +149,7 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     self.cur.execute('''
       update covidcast_meta_cache set
         timestamp = UNIX_TIMESTAMP(NOW()) - 3600 * 2,
-        epidata = '[{"hello": "world"}]'
+        epidata = '[{"data_source": "hell", "signal": "temp", "time_type": "inf", "geo_type": "void", "is_wip": 0}]'
     ''')
     self.cnx.commit()
 
