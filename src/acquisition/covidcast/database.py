@@ -214,6 +214,8 @@ class Database:
 
         result = self._cursor.executemany(insert_into_tmp_sql, args)
 
+        # use the temp table to compute meta just for new data, 
+        # then merge with the global meta
         meta_update = self.compute_covidcast_meta(table_name=tmp_table_name)
         meta_cache = Database.merge_cache_dicts(meta_cache, meta_update)
 
