@@ -76,9 +76,9 @@ class CsvUploadingTests(unittest.TestCase):
     os.makedirs(failed_dir, exist_ok=True)
 
     # valid
-    with open(receiving_dir + '20200419_state_test.csv', 'w') as f:
-      f.write('geo_value,value\n')
-      f.write('ca,1\n')
+    with open(receiving_dir + '20200419_state_sig.csv', 'w') as f:
+      f.write('sensor_name,geo_value,value\n')
+      f.write('testsensor,ca,1\n')
 
     # invalid filename
     with open(receiving_dir + 'hello.csv', 'w') as f:
@@ -89,7 +89,7 @@ class CsvUploadingTests(unittest.TestCase):
 
     # check files moved correctly
     self.assertTrue(
-      os.path.isfile(success_dir + '20200419_state_test.csv')
+      os.path.isfile(success_dir + '20200419_state_sig.csv')
     )
     self.assertTrue(
       os.path.isfile(failed_dir + 'hello.csv')
@@ -105,7 +105,7 @@ class CsvUploadingTests(unittest.TestCase):
 
     # check data uploaded
     response = Epidata.covidcast_nowcast(
-      'src', 'test', 'day', 'state', 20200419, 'ca')
+      'src', 'sig', 'testsensor', 'day', 'state', 20200419, 'ca')
     self.assertEqual(response, {
       'result': 1,
       'epidata': [{
@@ -114,7 +114,7 @@ class CsvUploadingTests(unittest.TestCase):
         'value': 1,
         'issue': 20200421,
         'lag': 2,
-        'signal': 'test',
+        'signal': 'sig',
       }],
       'message': 'success',
     })

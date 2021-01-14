@@ -393,14 +393,14 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
 
     # insert dummy data
     self.cur.execute(f'''insert into covidcast_nowcast values 
-      (0, 'src', 'sig1', 'day', 'county', 20200101, '01001', 12345678, 3.5, 20200101, 2),
-      (0, 'src', 'sig2', 'day', 'county', 20200101, '01001', 12345678, 2.5, 20200101, 2),
-      (0, 'src', 'sig1', 'day', 'county', 20200101, '01001', 12345678, 1.5, 20200102, 2)''')
+      (0, 'src', 'sig1', 'sensor', 'day', 'county', 20200101, '01001', 12345678, 3.5, 20200101, 2),
+      (0, 'src', 'sig2', 'sensor', 'day', 'county', 20200101, '01001', 12345678, 2.5, 20200101, 2),
+      (0, 'src', 'sig1', 'sensor', 'day', 'county', 20200101, '01001', 12345678, 1.5, 20200102, 2)''')
     self.cnx.commit()
 
     # fetch data
     response = Epidata.covidcast_nowcast(
-      'src', ['sig1', 'sig2'], 'day', 'county', 20200101, '01001')
+      'src', ['sig1', 'sig2'], 'sensor', 'day', 'county', 20200101, '01001')
 
     # request two signals
     self.assertEqual(response, {
@@ -425,7 +425,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
 
     # request range of issues
     response = Epidata.covidcast_nowcast(
-      'src', 'sig1', 'day', 'county', 20200101, '01001',
+      'src', 'sig1', 'sensor', 'day', 'county', 20200101, '01001',
       issues=Epidata.range(20200101, 20200102))
 
     self.assertEqual(response, {
@@ -450,7 +450,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
 
     # request as_of
     response = Epidata.covidcast_nowcast(
-      'src', 'sig1', 'day', 'county', 20200101, '01001',
+      'src', 'sig1', 'sensor', 'day', 'county', 20200101, '01001',
       as_of=20200101)
 
     self.assertEqual(response, {
@@ -468,6 +468,6 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
 
     # request unavailable data
     response = Epidata.covidcast_nowcast(
-      'src', 'sig1', 'day', 'county', 22222222, '01001')
+      'src', 'sig1', 'sensor', 'day', 'county', 22222222, '01001')
 
     self.assertEqual(response, {'result': -2, 'message': 'no results'})

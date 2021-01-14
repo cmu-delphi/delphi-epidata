@@ -43,9 +43,9 @@ class CovidcastTests(unittest.TestCase):
 
     self.cur.execute(
       f'''insert into covidcast_nowcast values 
-      (0, 'src', 'sig', 'day', 'county', 20200101, '01001', 12345678, 3.5, 20200101, 2),
-      (0, 'src', 'sig', 'day', 'county', 20200101, '01001', 12345678, 2.5, 20200102, 2),
-      (0, 'src', 'sig', 'day', 'county', 20200101, '01001', 12345678, 1.5, 20200103, 2)''')
+      (0, 'src', 'sig', 'sensor', 'day', 'county', 20200101, '01001', 12345678, 3.5, 20200101, 2),
+      (0, 'src', 'sig', 'sensor', 'day', 'county', 20200101, '01001', 12345678, 2.5, 20200102, 2),
+      (0, 'src', 'sig', 'sensor', 'day', 'county', 20200101, '01001', 12345678, 1.5, 20200103, 2)''')
 
     self.cnx.commit()
     # make the request with specified issue date
@@ -53,6 +53,7 @@ class CovidcastTests(unittest.TestCase):
       'source': 'covidcast_nowcast',
       'data_source': 'src',
       'signals': 'sig',
+      'sensor_names': 'sensor',
       'time_type': 'day',
       'geo_type': 'county',
       'time_values': 20200101,
@@ -79,6 +80,7 @@ class CovidcastTests(unittest.TestCase):
       'source': 'covidcast_nowcast',
       'data_source': 'src',
       'signals': 'sig',
+      'sensor_names': 'sensor',
       'time_type': 'day',
       'geo_type': 'county',
       'time_values': 20200101,
@@ -104,6 +106,7 @@ class CovidcastTests(unittest.TestCase):
       'source': 'covidcast_nowcast',
       'data_source': 'src',
       'signals': 'sig',
+      'sensor_names': 'sensor',
       'time_type': 'day',
       'geo_type': 'county',
       'time_values': 20200101,

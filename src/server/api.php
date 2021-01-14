@@ -1614,7 +1614,7 @@ function meta_delphi() {
   return count($epidata) === 0 ? null : $epidata;
 }
 
-function get_covidcast_nowcast($source, $signals, $time_type, $geo_type, $time_values, $geo_values, $as_of, $issues, $lag) {
+function get_covidcast_nowcast($source, $signals, $sensor_names, $time_type, $geo_type, $time_values, $geo_values, $as_of, $issues, $lag) {
   // required for `mysqli_real_escape_string`
   global $dbh;
   $source = mysqli_real_escape_string($dbh, $source);
@@ -1631,6 +1631,7 @@ function get_covidcast_nowcast($source, $signals, $time_type, $geo_type, $time_v
   // build the source, signal, time, and location (type and id) filters
   $condition_source = "t.`source` = '{$source}'";
   $condition_signal = filter_strings('t.`signal`', $signals);
+  $condition_sensor_name = filter_strings('t.`sensor_name`', $sensor_names);
   $condition_time_type = "t.`time_type` = '{$time_type}'";
   $condition_geo_type = "t.`geo_type` = '{$geo_type}'";
   $condition_time_value = filter_integers('t.`time_value`', $time_values);
@@ -1646,7 +1647,7 @@ function get_covidcast_nowcast($source, $signals, $time_type, $geo_type, $time_v
     $geo_escaped_value = mysqli_real_escape_string($dbh, $geo_values);
     $condition_geo_value = "t.`geo_value` = '{$geo_escaped_value}'";
   }
-  $conditions = "({$condition_source}) AND ({$condition_signal}) AND ({$condition_time_type}) AND ({$condition_geo_type}) AND ({$condition_time_value}) AND ({$condition_geo_value})";
+  $conditions = "({$condition_source}) AND ({$condition_signal}) AND ({$condition_sensor_name}) AND ({$condition_time_type}) AND ({$condition_geo_type}) AND ({$condition_time_value}) AND ({$condition_geo_value})";
 
   $subquery = "";
   if ($issues !== null) {
@@ -2108,7 +2109,7 @@ if(database_connect()) {
       store_result($data, $epidata);
     }
   } else if($endpoint === 'covidcast_nowcast') {
-    if(require_all($data, array('data_source', 'time_type', 'geo_type', 'time_values', 'signals'))
+    if(require_all($data, array('data_source', 'time_type', 'geo_type', 'time_values', 'signals', 'sensor_names'))
        && require_any($data, array('geo_value', 'geo_values'))) {
       // parse the request
       $time_values = extract_dates($_REQUEST['time_values']);
@@ -2116,11 +2117,13 @@ if(database_connect()) {
       $issues = isset($_REQUEST['issues']) ? extract_dates($_REQUEST['issues']) : null;
       $lag = isset($_REQUEST['lag']) ? intval($_REQUEST['lag']) : null;
       $signals = extract_values(isset($_REQUEST['signals']) ? $_REQUEST['signals'] : $_REQUEST['signal'], 'string');
+      $sensor_names = extract_values(isset($_REQUEST['sensor_names']) ? $_REQUEST['sensor_names'] : $_REQUEST['sensor_names'], 'sensor_names');
       $geo_values = isset($_REQUEST['geo_value']) ? $_REQUEST['geo_value'] : extract_values($_REQUEST['geo_values'], 'string');
       // get the data
       $epidata = get_covidcast_nowcast(
           $_REQUEST['data_source'],
           $signals,
+          $sensor_names,
           $_REQUEST['time_type'],
           $_REQUEST['geo_type'],
           $time_values,
