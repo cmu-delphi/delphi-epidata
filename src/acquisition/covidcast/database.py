@@ -321,12 +321,12 @@ class Database:
 
     return meta
   
-  def update_covidcast_meta_cache(self, metadata, table_name='covidcast_meta_cache'): # TODO: remove arg
+  def update_covidcast_meta_cache(self, metadata):
     """Updates the `covidcast_meta_cache` table."""
 
-    sql = f'''
+    sql = '''
       UPDATE
-        `{table_name}`
+        `covidcast_meta_cache`
       SET
         `timestamp` = UNIX_TIMESTAMP(NOW()),
         `epidata` = %s
@@ -335,12 +335,12 @@ class Database:
 
     self._cursor.execute(sql, (epidata_json,))
 
-  def retrieve_covidcast_meta_cache(self, table_name='covidcast_meta_cache_test'): # TODO: remove arg
+  def retrieve_covidcast_meta_cache(self):
     """Useful for viewing cache entries (was used in debugging)"""
 
-    sql = f'''
+    sql = '''
       SELECT `epidata`
-      FROM `{table_name}` -- TODO: remove '_test' after successfully testing incremental cache updates
+      FROM `covidcast_meta_cache`
       ORDER BY `timestamp` DESC
       LIMIT 1;
     '''
@@ -350,16 +350,13 @@ class Database:
     cache_hash = {}
     for entry in cache:
       cache_hash[(entry['data_source'], entry['signal'], entry['time_type'], entry['geo_type'])] = entry
-    if not len(cache) and table_name=='covidcast_meta_cache_test': # TODO: remove line
-      print("test cache empty -- falling back to regular cache ; this should happen ONLY ONCE (after regular cache populated)") # TODO: remove line
-      return self.retrieve_covidcast_meta_cache(table_name='covidcast_meta_cache') # TODO: remove line
     return cache_hash
 
   def update_covidcast_meta_cache_from_dict(self, cache_hash):
     """Updates the `covidcast_meta_cache` table from the dict version of the cache, ordered by key"""
 
     cache_list = [cache_hash[k] for k in sorted(cache_hash)]
-    self.update_covidcast_meta_cache(cache_list, table_name='covidcast_meta_cache_test') # TODO: remove arg
+    self.update_covidcast_meta_cache(cache_list)
 
   @staticmethod
   def merge_cache_dicts(base_cache, cache_update):
