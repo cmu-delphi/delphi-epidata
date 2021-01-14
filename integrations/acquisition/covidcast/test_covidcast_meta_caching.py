@@ -126,7 +126,7 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     self.cur.execute('''
       update covidcast_meta_cache set
         timestamp = UNIX_TIMESTAMP(NOW()),
-        epidata = '[{"data_source": "hell", "signal": "temp", "time_type": "inf", "geo_type": "void", "is_wip": 0}]'
+        epidata = '[{"data_source": "earth", "signal": "lols_per_capita", "time_type": "yearly", "geo_type": "country", "is_wip": 0}]'
     ''')
     self.cnx.commit()
 
@@ -140,7 +140,7 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     self.assertEqual(epidata4, {
       'result': 1,
       'epidata': [{
-        'data_source': 'hell', 'signal': 'temp', 'time_type': 'inf', 'geo_type': 'void', 'is_wip': 0
+        'data_source': 'earth', 'signal': 'lols_per_capita', 'time_type': 'yearly', 'geo_type': 'country', 'is_wip': 0
       }],
       'message': 'success',
     })
@@ -149,7 +149,7 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     self.cur.execute('''
       update covidcast_meta_cache set
         timestamp = UNIX_TIMESTAMP(NOW()) - 3600 * 2,
-        epidata = '[{"data_source": "hell", "signal": "temp", "time_type": "inf", "geo_type": "void", "is_wip": 0}]'
+        epidata = '[{"data_source": "earth", "signal": "lols_per_capita", "time_type": "yearly", "geo_type": "country", "is_wip": 0}]'
     ''')
     self.cnx.commit()
 
