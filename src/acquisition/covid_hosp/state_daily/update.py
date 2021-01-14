@@ -6,8 +6,8 @@ via healthdata.gov.
 
 # first party
 from delphi.epidata.acquisition.covid_hosp.common.utils import Utils
-from delphi.epidata.acquisition.covid_hosp.state_timeseries.database import Database
-from delphi.epidata.acquisition.covid_hosp.state_timeseries.network import Network
+from delphi.epidata.acquisition.covid_hosp.state_daily.database import Database
+from delphi.epidata.acquisition.covid_hosp.state_daily.network import Network
 
 
 class Update:
