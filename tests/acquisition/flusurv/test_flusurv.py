@@ -5,6 +5,8 @@ import unittest
 from unittest.mock import MagicMock
 from unittest.mock import sentinel
 
+from delphi.epidata.acquisition.flusurv.flusurv import fetch_json
+
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.acquisition.flusurv.flusurv'
 

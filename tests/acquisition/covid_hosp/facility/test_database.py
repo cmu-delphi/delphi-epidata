@@ -7,6 +7,7 @@ from unittest.mock import sentinel
 
 # first party
 from delphi.epidata.acquisition.covid_hosp.common.test_utils import TestUtils
+from delphi.epidata.acquisition.covid_hosp.facility.database import Database
 
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.acquisition.covid_hosp.facility.database'
