@@ -5,10 +5,10 @@ parent: Epidata API (Other Diseases)
 
 # NIDSS Flu
 
-This is the documentation of the API for accessing the NIDSS Flu (`nidss_flu`) data source of
+This is the documentation of the API for accessing the NIDSS Flu (`nidss_flu`) endpoint of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 
-General topics not specific to any particular data source are discussed in the
+General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
@@ -16,7 +16,7 @@ General topics not specific to any particular data source are discussed in the
 ## NIDSS Flu Data
 
 Outpatient ILI from Taiwan's National Infectious Disease Statistics System (NIDSS).
- - Data source: [Taiwan CDC](http://nidss.cdc.gov.tw/en/CDCWNH01.aspx?dc=wnh)
+ - Source: [Taiwan CDC](http://nidss.cdc.gov.tw/en/CDCWNH01.aspx?dc=wnh)
  - Temporal Resolution: Weekly* from 2008w14
  - Spatial Resolution: By [hexchotomy region](https://en.wikipedia.org/wiki/Regions_of_Taiwan#Hexchotomy) ([6+1](../../labels/nidss_regions.txt))
  - Open access

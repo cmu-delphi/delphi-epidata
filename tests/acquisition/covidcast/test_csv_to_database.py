@@ -5,6 +5,9 @@ import argparse
 import unittest
 from unittest.mock import MagicMock
 
+from delphi.epidata.acquisition.covidcast.csv_to_database import get_argument_parser, main, \
+  collect_files, upload_archive, make_handlers
+
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.acquisition.covidcast.csv_to_database'
 
@@ -17,8 +20,31 @@ class UnitTests(unittest.TestCase):
 
     self.assertIsInstance(get_argument_parser(), argparse.ArgumentParser)
 
-  def test_scan_upload_archive(self):
-    """Scan the data directory, upload to the database, and archive."""
+  def _path_details(self):
+    return [
+      # a good file
+      ('path/a.csv', ('src_a', 'sig_a', 'day', 'hrr', 20200419, 20200420, 1)),
+      # a file with a data error
+      ('path/b.csv', ('src_b', 'sig_b', 'week', 'msa', 202016, 202017, 1)),
+      # emulate a file that's named incorrectly
+      ('path/c.csv', None),
+      # another good file w/ wip
+      ('path/d.csv', ('src_d', 'wip_sig_d', 'week', 'msa', 202016, 202017, 1)),
+    ]
+
+  def test_collect_files(self):
+    """Scan the data directory."""
+
+    mock_csv_importer = MagicMock()
+    mock_csv_importer.find_csv_files.return_value = self._path_details()
+    collect_files(
+      "fake_data_dir",
+      False, # no specific issue
+      csv_importer_impl=mock_csv_importer)
+    self.assertEqual(mock_csv_importer.find_csv_files.call_count, 1)
+    
+  def test_upload_archive(self):
+    """Upload to the database, and archive."""
 
     def make_row(value):
       return MagicMock(
@@ -48,24 +74,15 @@ class UnitTests(unittest.TestCase):
     data_dir = 'data_dir'
     mock_database = MagicMock()
     mock_csv_importer = MagicMock()
-    mock_csv_importer.find_csv_files.return_value = [
-      # a good file
-      ('path/a.csv', ('src_a', 'sig_a', 'day', 'hrr', 20200419, 20200420, 1)),
-      # a file with a data error
-      ('path/b.csv', ('src_b', 'sig_b', 'week', 'msa', 202016, 202017, 1)),
-      # emulate a file that's named incorrectly
-      ('path/c.csv', None),
-      # another good file w/ wip
-      ('path/d.csv', ('src_d', 'wip_sig_d', 'week', 'msa', 202016, 202017, 1)),
-    ]
     mock_csv_importer.load_csv = load_csv_impl
     mock_file_archiver = MagicMock()
 
-    scan_upload_archive(
-        data_dir,
-        mock_database,
-        csv_importer_impl=mock_csv_importer,
-        file_archiver_impl=mock_file_archiver)
+    upload_archive(
+      self._path_details(),
+      mock_database,
+      make_handlers(data_dir, False,
+                    file_archiver_impl=mock_file_archiver),
+      csv_importer_impl=mock_csv_importer)
 
     # verify that appropriate rows were added to the database
     self.assertEqual(mock_database.insert_or_update_bulk.call_count, 2)
@@ -101,15 +118,21 @@ class UnitTests(unittest.TestCase):
     mock_database = MagicMock()
     mock_database.count_all_rows.return_value = 0
     fake_database_impl = lambda: mock_database
-    mock_scan_upload_archive = MagicMock()
+    mock_collect_files = MagicMock()
+    mock_collect_files.return_value = [("a",False)]
+    mock_upload_archive = MagicMock()
 
     main(
         args,
         database_impl=fake_database_impl,
-        scan_upload_archive_impl=mock_scan_upload_archive)
+        collect_files_impl=mock_collect_files,
+        upload_archive_impl=mock_upload_archive)
 
-    self.assertTrue(mock_scan_upload_archive.called)
-    self.assertEqual(mock_scan_upload_archive.call_args[0][0], 'data')
+    self.assertTrue(mock_collect_files.called)
+    self.assertEqual(mock_collect_files.call_args[0][0], 'data')
+    
+    self.assertTrue(mock_upload_archive.called)
+    self.assertEqual(mock_upload_archive.call_args[0][0], [("a",False)])
 
     self.assertTrue(mock_database.connect.called)
     self.assertTrue(mock_database.disconnect.called)
@@ -123,20 +146,49 @@ class UnitTests(unittest.TestCase):
     mock_database = MagicMock()
     mock_database.count_all_rows.return_value = 0
     fake_database_impl = lambda: mock_database
-    mock_scan_upload_archive = MagicMock(side_effect=Exception('testing'))
+    mock_upload_archive = MagicMock(side_effect=Exception('testing'))
+    mock_collect_files = MagicMock()
+    mock_collect_files.return_value=[("a",False)]
 
     with self.assertRaises(Exception):
       main(
           args,
           database_impl=fake_database_impl,
-          scan_upload_archive_impl=mock_scan_upload_archive)
+          collect_files_impl=mock_collect_files,
+          upload_archive_impl=mock_upload_archive)
 
-    self.assertTrue(mock_scan_upload_archive.called)
-    self.assertEqual(mock_scan_upload_archive.call_args[0][0], 'data')
+    self.assertTrue(mock_upload_archive.called)
+    self.assertEqual(mock_upload_archive.call_args[0][0], [("a",False)])
 
     self.assertTrue(mock_database.connect.called)
     self.assertTrue(mock_database.disconnect.called)
     self.assertTrue(mock_database.disconnect.call_args[0][0])
+
+  def test_main_early_exit(self):
+    """Run the main program with an empty receiving directory."""
+
+    # TODO: use an actual argparse object for the args instead of a MagicMock
+    args = MagicMock(data_dir='data', is_wip_override=False, not_wip_override=False, specific_issue_date=False)
+    mock_database = MagicMock()
+    mock_database.count_all_rows.return_value = 0
+    fake_database_impl = lambda: mock_database
+    mock_collect_files = MagicMock()
+    mock_collect_files.return_value = []
+    mock_upload_archive = MagicMock()
+
+    main(
+        args,
+        database_impl=fake_database_impl,
+        collect_files_impl=mock_collect_files,
+        upload_archive_impl=mock_upload_archive)
+
+    self.assertTrue(mock_collect_files.called)
+    self.assertEqual(mock_collect_files.call_args[0][0], 'data')
+
+    self.assertFalse(mock_upload_archive.called)
+
+    self.assertFalse(mock_database.connect.called)
+    self.assertFalse(mock_database.disconnect.called)
 
   def test_database_exception_is_handled(self):
     """Gracefully handle database exceptions."""
@@ -153,11 +205,12 @@ class UnitTests(unittest.TestCase):
     ]
     mock_file_archiver = MagicMock()
 
-    scan_upload_archive(
-        data_dir,
+    upload_archive(
+        collect_files(data_dir, False, csv_importer_impl=mock_csv_importer),
         mock_database,
+        make_handlers(data_dir, False, file_archiver_impl=mock_file_archiver),
         csv_importer_impl=mock_csv_importer,
-        file_archiver_impl=mock_file_archiver)
+        )
 
     # verify that insertions were attempted
     self.assertTrue(mock_database.insert_or_update_bulk.called)

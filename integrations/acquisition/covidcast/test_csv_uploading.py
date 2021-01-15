@@ -11,6 +11,7 @@ import mysql.connector
 
 # first party
 from delphi.epidata.client.delphi_epidata import Epidata
+from delphi.epidata.acquisition.covidcast.csv_to_database import main
 import delphi.operations.secrets as secrets
 
 # py3tester coverage target (equivalent to `import *`)
@@ -223,7 +224,6 @@ class CsvUploadingTests(unittest.TestCase):
     self.assertEqual(response, {
       'result': -2,
       'message': 'no results',
-      'epidata': []
     })
 
     # verify timestamps and default values are reasonable
