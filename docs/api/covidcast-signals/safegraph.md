@@ -26,16 +26,13 @@ datasets.
 
 * **First issued:** June 20, 2020
 * **Number of data revisions since June 23, 2020:** 1
-* **Date of last change:** November 3, 2020
+* **Date of last change:** [November 3, 2020](../covidcast_changelog.html#safegraph)
 
-Data source based on [social distancing
-metrics](https://docs.safegraph.com/docs/social-distancing-metrics).  SafeGraph
+Delphi's data source is based on [social distancing metrics](https://docs.safegraph.com/docs/social-distancing-metrics).  SafeGraph
 provides this data for individual census block groups, using differential
 privacy to protect individual people's data privacy.
 
-Delphi creates features of the SafeGraph data at the census block group level,
-then aggregates these features to the county and state levels. The aggregated
-data is freely available through the COVIDcast API.
+Delphi creates the SafeGraph data features at the census block group level, then aggregates these features to the county and state levels. The aggregated data is freely available through the COVIDcast API.
 
 For precise definitions of the quantities below, consult the [SafeGraph social
 distancing metric
@@ -52,13 +49,7 @@ documentation](https://docs.safegraph.com/docs/social-distancing-metrics).
 | `part_time_work_prop_7dav` | Offers a 7-day trailing window average of the`part_time_work_prop`. <br/> **First Available:** 01/01/2019 |
 | `median_home_dwell_time_7dav` | Offers a 7-day trailing window average of the `median_home_dwell_time`. <br/> **First Available:** 01/01/2019 |
 
-After computing each metric on the census block group (CBG) level, we aggregate
-to the county-level by taking the mean over CBGs in a county to obtain the value
-and taking `sd / sqrt(n)` for the standard error, where `sd` is the standard
-deviation over the metric values and `n` is the number of CBGs in the county. In
-doing so, we make the simplifying assumption that each CBG contributes an iid
-observation to the county-level distribution. `n` also serves as the sample
-size. The same method is used for aggregation to states.
+After computing each metric on the census block group (CBG) level, we aggregate to the county-level by taking the mean over CBGs in a county to obtain the value and taking `sd / sqrt(n)` for the standard error. Here `sd` is the standard deviation over the metric values and `n` is the county's number of CBGs. In doing so, we make the simplifying assumption that each CBG contributes an iid observation to the county-level distribution. `n` also serves as the sample size. The same method is used for aggregation to states.
 
 SafeGraph's signals measure mobility each day, which causes strong day-of-week
 effects: weekends have substantially different values than weekdays. Users
@@ -79,17 +70,10 @@ additional day for SafeGraph's data to be ingested into the COVIDcast API.
 * **Number of data revisions since June 23, 2020:** 0
 * **Date of last change:** never
 
-Data source based on [Weekly
-Patterns](https://docs.safegraph.com/docs/weekly-patterns) dataset. SafeGraph
-provides this data for different points of interest
-([POIs](https://docs.safegraph.com/v4.0/docs#section-core-places)) considering
-individual census block groups, using differential privacy to protect individual
-people's data privacy.
+Delphi's data source is based on SafeGraph's [Weekly Patterns](https://docs.safegraph.com/docs/weekly-patterns) dataset. SafeGraph provides this data for different points of interest ([POIs](https://docs.safegraph.com/v4.0/docs#section-core-places)) considering individual census block groups, using differential privacy to protect individual people's data privacy.
 
 Delphi gathers the number of daily visits to POIs of certain types(bars,
-restaurants, etc.)  from SafeGraph's Weekly Patterns data at the 5-digit ZipCode
-level, then aggregates and reports these features to the county, MSA, HRR, and
-state levels. The aggregated data is freely available through the COVIDcast API.
+restaurants, etc.)  from SafeGraph's Weekly Patterns data at the 5-digit ZipCode level aggregates and reports these features to the county, MSA, HRR, and state levels. The aggregated data is freely available through the COVIDcast API.
 
 For precise definitions of the quantities below, consult the [SafeGraph Weekly 
 Patterns documentation](https://docs.safegraph.com/docs/weekly-patterns).
@@ -101,8 +85,7 @@ Patterns documentation](https://docs.safegraph.com/docs/weekly-patterns).
 | `restaurants_visit_num` | The number of daily visits made by those with SafeGraph's apps to restaurant-related POIs in a certain region <br/> **First Available:** 01/01/2019 |
 | `restaurants_visit_prop` | The number of daily visits made by those with SafeGraph's apps to restaurant-related POIs in a certain region, per 100,000 population <br/> **First Available:** 01/01/2019 |
 
-SafeGraph delivers the number of daily visits to U.S. POIs, the details of which
-are described in the [Places
+SafeGraph delivers the number of daily visits to U.S. POIs, the details described in the [Places
 Manual](https://readme.safegraph.com/docs/places-manual#section-placekey)
 dataset.  Delphi aggregates the number of visits to certain types of places,
 such as bars (places with [NAICS code =
@@ -110,7 +93,7 @@ such as bars (places with [NAICS code =
 and restaurants (places with [NAICS code =
 722511](https://www.census.gov/cgi-bin/sssd/naics/naicsrch)). For example,
 Adagio Teas is coded as a bar because it serves alcohol, while Napkin Burger is
-considered to be a full-service restaurant.  More information on NAICS codes is
+considered a full-service restaurant.  More information on NAICS codes is
 available from the [US Census Bureau: North American Industry Classification
 System](https://www.census.gov/eos/www/naics/index.html).
 
@@ -123,8 +106,8 @@ COVIDcast API.
 
 ### Limitations
 
-This data source is based on mobile devices that are members of SafeGraph panels, which is not necessarily the same thing as measuring the general public. This means that counts are subject to bias if some regions have a greater density of SafeGraph panel members as a percentage of the population. These counts do not represent absolute counts, and only count visits by members of the panel in that region.
+This data source is based on mobile devices that are members of SafeGraph panels, which is not necessarily the same thing as measuring the general public. This means that counts are subject to bias if some regions have a greater density of SafeGraph panel members as a percentage of the population. These counts do not represent absolute counts and only count visits by members of the panel in that region.
 
 The number of POIs coded as bars is much smaller than the number of POIs coded as restaurants. 
 SafeGraph's Weekly Patterns data consistently lacks data on bar visits for Alaska, Delaware, Maine, North Dakota, New Hampshire, South Dakota, Vermont, West Virginia, and Wyoming. 
-For certain dates, bar visits data is also missing for District of Columbia, Idaho and Washington. Restaurant visits data is available for all of the states, as well as the District of Columbia and Puerto Rico.
+For certain dates, bar visits data is also missing for the District of Columbia, Idaho, and Washington. Restaurant visits data is available for all of the states, including the District of Columbia and Puerto Rico.

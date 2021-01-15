@@ -33,31 +33,17 @@ University.
 | `deaths_incidence_prop` | `deaths_7dav_incidence_prop` | Number of new confirmed deaths due to COVID-19 per 100,000 population, daily <br/> **First Available:** 2020-01-22 & 2020-02-20 |
 
 These signals are taken directly from the JHU CSSE [COVID-19 GitHub
-repository](https://github.com/CSSEGISandData/COVID-19) without changes. The
-7-day average signals are computed by Delphi by calculating moving averages of
-the preceding 7 days, so e.g. the signal for June 7 is the average of the
-underlying data for June 1 through 7, inclusive.
+repository](https://github.com/CSSEGISandData/COVID-19) without changes. Delphi computes 7-day average signals by calculating moving averages of
+the preceding 7 days (e.g., the signal for June 7 is the average of the
+underlying data for June 1 through 7, inclusive).
 
-This data is similar in intent to our [USAFacts Cases and Deaths](usa-facts.md)
-source, but as USAFacts collects and aggregates its data in slightly different
-ways, the data is not identical. Users should evaluate which source better fits
-their needs, or use the [combination signal of both USAFacts and JHU data](indicator-combination.md).
+This data is similar in intent to our [USAFacts Cases and Deaths](usa-facts.md) source. However, as USAFacts collects and aggregates its data in slightly different ways, the data is not identical. Users should evaluate which source better fits their needs or use the [combination signal of both USAFacts and JHU data](indicator-combination.md).
 
 ## Table of Contents
 {: .no_toc .text-delta}
 
 1. TOC
 {:toc}
-
-## Limitations
-
-JHU's data reports cumulative cases and deaths, so our incidence signals are
-calculated by subtracting each day's cumulative count from the previous day.
-Since cumulative figures are sometimes corrected or amended by health
-authorities, this can sometimes result in negative incidence. Health authorities
-can also change reporting standards in ways that dramatically increase the
-number of cumulative deaths, resulting in an apparent spike in incidence. This
-should be interpreted purely as an artifact of data reporting and correction.
 
 ## Geographical Exceptions
 
@@ -66,11 +52,11 @@ reported in the JHU data or are reported combined with other counties.
 
 ### Rhode Island
 
-As of June 2020, the JHU data [does not report any cases or deaths](https://github.com/CSSEGISandData/COVID-19/issues/3165) for individual counties in Rhode Island. These cases and deaths are reported unassigned to any individual county, and are attributed to the megaFIPS 44000 as well as contributing to the state-level estimates.
+As of June 2020, the JHU data [does not report any cases or deaths](https://github.com/CSSEGISandData/COVID-19/issues/3165) for individual counties in Rhode Island. These cases and deaths are reported, unassigned to any individual county, and attributed to the megaFIPS 44000, contributing to the state-level estimates.
 
 ### Puerto Rico
 
-JHU does not report Puerto Rico deaths at the municipal level, but instead reports the numbers for the whole Commonwealth in the "Unassigned" category. We map this JHU UID to megaFIPS 72000 and use this information when reporting deaths at the state level.
+JHU does not report Puerto Rico deaths at the municipal level but instead reports the whole Commonwealth numbers in the "Unassigned" category. We map this JHU UID to megaFIPS 72000 and use it when reporting deaths at the state level.
 
 ### Utah
 
@@ -111,18 +97,23 @@ Kansas City intersects the following four counties, which themselves report conf
 
 ### Mismatched FIPS Codes
 
-Finally, there are two FIPS codes that were changed in 2015 (see the [Census
-Bureau
-documentation](https://www.census.gov/programs-surveys/geography/technical-documentation/county-changes.html)),
-leading to mismatch between us and JHU. We report the data using the FIPS code
-used by JHU, again to promote consistency and avoid confusion by external users
-of the dataset. For the mapping to MSA and HRR, these two counties are included
-properly.
+Finally, two FIPS codes were changed in 2015 (see the [Census Bureau documentation](https://www.census.gov/programs-surveys/geography/technical-documentation/county-changes.html)),
+leading to a mismatch between us and JHU. We report the data using the FIPS code used by JHU to promote consistency and avoid confusion by external users of the dataset. For the mapping to MSA and HRR, these two counties are included properly.
 
 |County Name        |State          |"Our" FIPS         |JHU FIPS       |
 |-------------------|---------------|-------------------|---------------|
 |Oglala Lakota      |South Dakota   |46113              |46102          |
 |Kusilvak           |Alaska         |02270              |02158          |
+
+## Limitations
+
+JHU's data reports cumulative cases and deaths, so our incidence signals are
+calculated by subtracting each day's cumulative count from the previous day.
+Since cumulative figures are sometimes corrected or amended by health
+authorities, this can sometimes result in negative incidence. Health authorities
+can also change reporting standards in ways that dramatically increase the
+number of cumulative deaths, resulting in an apparent spike in incidence. This
+should be interpreted purely as an artifact of data reporting and correction.
 
 ## Source and Licensing
 

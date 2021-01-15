@@ -19,7 +19,7 @@ grand_parent: COVIDcast Epidata API
 
 * **First issued:** July 29, 2020 
 * **Number of data revisions since May 19, 2020:** 1
-* **Date of last change:** October 22, 2020
+* **Date of last change:** [October 22, 2020](../covidcast_changelog.html#quidel)
 * **Available for:** hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
@@ -27,8 +27,7 @@ grand_parent: COVIDcast Epidata API
 Data source based on COVID-19 Antigen tests, provided to us by Quidel, Inc. When
 a patient (whether at a doctor’s office, clinic, or hospital) has COVID-like
 symptoms, doctors may order an antigen test. An antigen test can detect parts of
-the virus that are present during an active infection. This is in contrast with
-antibody tests, which detect parts of the immune system that react to the virus,
+the virus that are present during an active infection. This contrasts with antibody tests, which detect parts of the immune system that react to the virus,
 but which persist long after the infection has passed. Quidel began providing us
 with test data starting May 9, 2020, and data volume increased to statistically
 meaningful levels starting May 26, 2020.
@@ -40,16 +39,12 @@ meaningful levels starting May 26, 2020.
 
 ### Estimation
 
-The source data from which we derive our estimates contains a number of features
-for every test, including localization at 5-digit Zip Code level, a TestDate and
-StorageDate, patient age, and unique identifiers for the device on which the
-test was performed, the individual test, and the result. Multiple tests are
-stored on each device.
+The source data from which we derive our estimates contains several features for every test, including localization at a 5-digit Zip Code level, a TestDate and StorageDate, patient age, and unique identifiers for the device on which the test was performed, the individual test, and the result. Multiple tests are stored on each device.
 
 Let $$n$$ be the number of total COVID tests taken over a given time period and a
 given location (the test result can be negative, positive, or invalid). Let $$x$$ be the
 number of tests taken with positive results in this location over the given time
-period. We are interested in estimating the percentage of positive tests which
+period. We are interested in estimating the percentage of positive tests, which
 is defined as:
 
 $$
@@ -97,12 +92,8 @@ $$
 
 #### Smoothing
 
-Smoothed estimates are formed by pooling data over time. That is, daily, for
-each location, we first pool all data available in that location over the last 7
-days, and we then recompute everything described in the last two
-subsections. Pooling in this way makes estimates available in more geographic
-areas, as many areas report very few tests per day, but have enough data to
-report when 7 days are considered.
+Pooling data forms smoothed estimates over time. That is, daily, for each location, we first pool all data available in that location over the last 7-days, and we then recompute everything described in the last two
+subsections. Pooling in this way makes estimates available in more geographic areas, as many areas report very few tests per day but have enough data to report when 7 days are considered.
 
 ### Lag and Backfill
 
@@ -124,14 +115,9 @@ This data source is based on data provided to us by a lab testing company. They 
 
 ### Missingness
 
-When fewer than 50 tests are reported in a state on a specific day, no data is
-reported for that area on that day; an API query for all reported states on that
-day will not include it.
+When fewer than 50 tests are reported in a state on a specific day, no data is reported for that area; an API query for all reported states will not include it.
 
-When fewer than 50 tests are reported in an HRR or MSA on a specific day, and
-not enough samples can be filled in from the parent state, no data is reported
-for that area on that day; an API query for all reported geographic areas on
-that day will not include it.
+When fewer than 50 tests are reported in an HRR or MSA on a specific day, and not enough samples can be filled in from the parent state, no data is reported for that area on that day. An API query for all reported geographic areas on that day will not include it.
 
 ## Flu Tests
 

@@ -10,7 +10,7 @@ grand_parent: COVIDcast Epidata API
 * **Source name:** `hospital-admissions`
 * **First issued:** June 21, 2020
 * **Number of data revisions since May 19, 2020:** 1
-* **Date of last change:** October 20, 2020
+* **Date of last change:** [October 20, 2020](../covidcast_changelog.html#hospital-admissions)
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
@@ -20,7 +20,7 @@ grand_parent: COVIDcast Epidata API
 This data source is based on electronic medical records and claims data about
 hospital admissions, provided to us by health system partners. We use this
 inpatient data to estimate the percentage of new hospital admissions with a
-COVID-associated diagnosis code in a given location, on a given day.
+COVID-associated diagnosis code in a given location on a given day.
 
 | Signal | Description |
 | --- | --- |
@@ -77,7 +77,7 @@ source; see [its documentation](doctor-visits.md#backwards-padding).
 
 This source undergoes the same smoothing adjustment as the `doctor-visits`
 source (see [its documentation](doctor-visits.md#smoothing)), with the exception
-that the smoothing is performed on the raw counts, rather than the raw rate.
+that the smoothing is performed on the raw counts rather than the raw rate.
 
 ## Lag and Backfill
 
@@ -87,7 +87,7 @@ several days of lag. This means that estimates for a specific day are only
 available several days later.
 
 The amount of lag in reporting can vary, particularly whether the data comes
-from electronic medical records or from processed claims. After we first report
+from electronic medical records or processed claims. After we first report
 estimates for a specific date, further hospitalization data may arrive for that
 date, or diagnoses for admissions from that date may change. When this occurs,
 we issue new estimates. This means that a reported estimate for, say, June 10th

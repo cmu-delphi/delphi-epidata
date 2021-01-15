@@ -17,11 +17,7 @@ grand_parent: COVIDcast Epidata API
 
 This data source of national provisional death counts is based on death
 certificate data received and coded by the National Center for Health Statistics
-[(NCHS)](https://www.cdc.gov/nchs/nvss/vsrr/COVID19/index.htm). This data is
-different from the death data available from [USAFacts](usa-facts.md) and [JHU
-CSSE](jhu-csse.md): deaths are reported by the date they occur, not the date
-they are reported by local health departments, and data is frequently reissued
-as additional death certificates from recent weeks are received and tabulated.
+[(NCHS)](https://www.cdc.gov/nchs/nvss/vsrr/COVID19/index.htm). This data is different from the death data available from [USAFacts](usa-facts.md) and [JHU CSSE](jhu-csse.md). For this signal, deaths are reported by the date they occur, not the date local health departments report them, and data is frequently reissued as additional death certificates from recent weeks are received and tabulated.
 
 | Signal | Description |
 | --- | --- |
@@ -54,7 +50,7 @@ changes. National provisional death counts include deaths occurring within the
 the date specified during a given time period. The deaths are classified based
 on a new ICD-10 code. (Note that the classification is based on all the codes on
 the death certificate, not just the primary cause of death). The codes that are
-considered for each signals are described in detail
+considered for each signal are described in detail
 [here](https://github.com/cmu-delphi/covidcast-indicators/blob/main/nchs_mortality/DETAILS.md#metrics-level-1-m1). We
 export the state-level data as-is in a weekly format.
 
@@ -63,16 +59,6 @@ export the state-level data as-is in a weekly format.
 New York City is listed as its own region in the NCHS Mortality data, but
 we don't consider NYC separately. The death counts for NYC are included in New
 York State in our reports.
-
-## Report Using Epiweeks
-
-We report the NCHS Mortality data in a weekly format (`time_type=week` &
-`time_value={YYYYWW}`, where `YYYYWW` refers to an epiweek). The CDC defines
-the [epiweek](https://wwwn.cdc.gov/nndss/document/MMWR_Week_overview.pdf) as
-seven days, from Sunday to Saturday. We check the week-ending dates provided in
-the NCHS morality data and use Python package
-[epiweeks](https://pypi.org/project/epiweeks/) to convert them into epiweek
-format.
 
 ## Missingness
 
@@ -89,20 +75,21 @@ certificate is completed, submitted to NCHS, and processed for reporting
 purposes. The death counts for recent weeks are continually revised and may
 increase or decrease as new and updated death certificate data are received from
 the states by NCHS. This delay can range from 1 to 8 weeks or even more.
-Some states report deaths on a daily basis, while other states report deaths weekly
-or monthly. State vital record reporting may also be affected or delayed by
-COVID-19 related response activities which make death counts not comparable
+Some states report deaths daily, while other states report deaths weekly or monthly. State vital record reporting may also be affected or delayed by
+COVID-19 related response activities, which make death counts not comparable
 across states. We check for updates reported by NCHS every weekday but will
 report the signals weekly (on Monday).
 
+## Report Using Epiweeks
+
+We report the NCHS Mortality data in a weekly format (`time_type=week` &
+`time_value={YYYYWW}`, where `YYYYWW` refers to an epiweek). The CDC defines
+the [epiweek](https://wwwn.cdc.gov/nndss/document/MMWR_Week_overview.pdf) as
+seven days, from Sunday to Saturday. We check the week-ending dates provided in
+the NCHS mortality data and use the Python package
+[epiweeks](https://pypi.org/project/epiweeks/) to convert them into epiweek
+format.
+
 ## Source and Licensing
 
-This data was originally published by the National Center for Health Statistics,
-and is made available here as a convenience to the forecasting community under
-the terms of the original license. The NCHS places restrictions on how this
-dataset may be used: you may not attempt to identify any individual included in
-the data, whether by itself or through linking to other
-individually identifiable data; you may only use the dataset for statistical
-reporting and analysis. The full text of the [NCHS Data Use
-Agreement](https://www.cdc.gov/nchs/data_access/restrictions.htm) is available
-from their website.
+This data, originally published by the National Center for Health Statistics, is made available here as a convenience to the forecasting community under the terms of the original license. The NCHS places restrictions on how this dataset may be used: you may not attempt to identify any individual included in the data, whether by itself or through links to other individually identifiable data; you may only use the dataset for statistical reporting and analysis. The full text of the [NCHS Data Use Agreement](https://www.cdc.gov/nchs/data_access/restrictions.htm) is available from their website.
