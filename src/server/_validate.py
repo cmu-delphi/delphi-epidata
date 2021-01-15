@@ -57,12 +57,22 @@ def _extract_value(key: Union[str, Sequence[str]]) -> Optional[str]:
     return None
 
 
+def _extract_list_value(key: Union[str, Sequence[str]]) -> List[str]:
+    if isinstance(key, str):
+        return request.values.getlist(key)
+    for k in key:
+        if k in request.values:
+            return request.values.getlist(k)
+    return []
+
+
 def extract_strings(key: Union[str, Sequence[str]]) -> Optional[List[str]]:
-    s = _extract_value(key)
+    s = _extract_list_value(key)
     if not s:
         # nothing to do
         return None
-    return s.split(",")
+    # we can have multiple values
+    return [v for vs in s for v in vs.split(",")]
 
 
 IntRange = Union[Tuple[int, int], int]
@@ -77,8 +87,8 @@ def extract_integer(key: Union[str, Sequence[str]]) -> Optional[int]:
 
 
 def extract_integers(key: Union[str, Sequence[str]]) -> Optional[List[IntRange]]:
-    s = _extract_value(key)
-    if not s:
+    parts = extract_strings(key)
+    if not parts:
         # nothing to do
         return None
 
@@ -97,7 +107,7 @@ def extract_integers(key: Union[str, Sequence[str]]) -> Optional[List[IntRange]]
         # the range is inverted, this is an error
         return None
 
-    values = [_parse_range(part) for part in s.split(",")]
+    values = [_parse_range(part) for part in parts]
     # check for invalid values
     return None if any(v is None for v in values) else values
 
@@ -118,8 +128,8 @@ DateRange = Union[Tuple[int, int], int]
 
 
 def extract_dates(key: Union[str, Sequence[str]]) -> Optional[List[DateRange]]:
-    s = _extract_value(key)
-    if not s:
+    parts = extract_strings(key)
+    if not parts:
         return None
     values: List[Union[Tuple[int, int], int]] = []
 
@@ -135,7 +145,6 @@ def extract_dates(key: Union[str, Sequence[str]]) -> Optional[List[DateRange]]:
         # the range is inverted, this is an error
         return None
 
-    parts = s.split(",")
     for part in parts:
         if "-" not in part and ":" not in part:
             # YYYYMMDD
