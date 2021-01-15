@@ -1,6 +1,6 @@
 from flask import Blueprint
 
-from .._query import execute_query, filter_integers, filter_strings
+from .._query import execute_query, QueryBuilder
 from .._validate import extract_integer, extract_integers, extract_strings, require_all
 
 # first argument is the endpoint name
@@ -17,36 +17,27 @@ def handle():
     lag = extract_integer("lag")
 
     # build query
-    table = "`kcdc_ili` kc"
-    fields = (
-        "kc.`release_date`, kc.`issue`, kc.`epiweek`, kc.`region`, kc.`lag`, kc.`ili`"
-    )
-    order = "kc.`epiweek` ASC, kc.`region` ASC, kc.`issue` ASC"
+    q = QueryBuilder("kcdc_ili", "kc")
+    q.fields = "kc.release_date, kc.issue, kc.epiweek, kc.region, kc.lag, kc.ili"
+    q.order = "kc.epiweek ASC, kc.region ASC, kc.issue ASC"
     # build the filter
-    params = dict()
-    # build the epiweek filter
-    condition_epiweek = filter_integers("kc.`epiweek`", epiweeks, "epiweek", params)
-    # build the region filter
-    condition_region = filter_strings("kc.`region`", regions, "region", params)
+    q.where_integers("epiweek", epiweeks)
+    q.where_strings("region", regions)
+
     if issues:
-        condition_issue = filter_integers("kc.`issue`", issues, "issue", params)
-        # final query using specific issues
-        query = f"SELECT {fields} FROM {table} WHERE ({condition_epiweek}) AND ({condition_region}) AND ({condition_issue}) ORDER BY {order}"
+        q.where_integers("issue", issues)
     elif lag is not None:
-        # build the lag filter
-        condition_lag = "(kc.`lag` = :lag)"
-        params["lag"] = lag
-        # final query using lagged issues
-        query = f"SELECT {fields} FROM {table} WHERE ({condition_epiweek}) AND ({condition_region}) AND ({condition_lag}) ORDER BY {order}"
+        q.where(lag=lag)
     else:
         # final query using most recent issues
-        subquery = f"(SELECT max(`issue`) `max_issue`, `epiweek`, `region` FROM {table} WHERE ({condition_epiweek}) AND ({condition_region}) GROUP BY `epiweek`, `region`) x"
-        condition = "x.`max_issue` = kc.`issue` AND x.`epiweek` = kc.`epiweek` AND x.`region` = kc.`region`"
-        query = f"SELECT {fields} FROM {table} JOIN {subquery} ON {condition} ORDER BY {order}"
+        condition = (
+            f"x.max_issue = {q.alias}.issue AND x.epiweek = {q.alias}.epiweek AND x.region = {q.alias}.region"
+        )
+        q.subquery = f"JOIN (SELECT max(issue) max_issue, epiweek, region FROM {q.table} WHERE {q.conditions_clause} GROUP BY epiweek, region) x ON {condition}"
 
     fields_string = ["release_date", "region"]
     fields_int = ["issue", "epiweek", "lag"]
     fields_float = ["ili"]
 
     # send query
-    return execute_query(query, params, fields_string, fields_int, fields_float)
+    return execute_query(str(q), q.params, fields_string, fields_int, fields_float)

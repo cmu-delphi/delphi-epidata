@@ -1,6 +1,6 @@
 from flask import Blueprint
 
-from .._query import execute_query, filter_integers, filter_strings
+from .._query import execute_query, QueryBuilder
 from .._validate import extract_integers, extract_strings, require_all
 
 # first argument is the endpoint name
@@ -15,22 +15,18 @@ def handle():
     epiweeks = extract_integers("epiweeks")
 
     # build query
-    table = "`nowcasts` n"
-    fields = "n.`location`, n.`epiweek`, n.`value`, n.`std`"
-    # basic query info
-    order = "n.`epiweek` ASC, n.`location` ASC"
-    # build the filter
-    params = dict()
-    # build the location filter
-    condition_location = filter_strings("n.`location`", locations, "loc", params)
-    # build the epiweek filter
-    condition_epiweek = filter_integers("n.`epiweek`", epiweeks, "epiweek", params)
-    # the query
-    query = f"SELECT {fields} FROM {table} WHERE ({condition_location}) AND ({condition_epiweek}) ORDER BY {order}"
+    q = QueryBuilder("nowcasts", "n")
 
     fields_string = ["location"]
     fields_int = ["epiweek"]
     fields_float = ["value", "std"]
+    q.set_fields(fields_string, fields_int, fields_float)
+
+    q.set_order(epiweek=True, location=True)
+
+    # build the filter
+    q.where_strings("location", locations)
+    q.where_integers("epiweek", epiweeks)
 
     # send query
-    return execute_query(query, params, fields_string, fields_int, fields_float)
+    return execute_query(str(q), q.params, fields_string, fields_int, fields_float)

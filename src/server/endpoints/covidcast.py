@@ -34,8 +34,12 @@ def handle():
 
     # build query
     q = QueryBuilder("covidcast", "t")
-    q.fields = "t.signal, t.time_value, t.geo_value, t.value, t.stderr, t.sample_size, t.direction, t.issue, t.lag"
-    q.order = "t.signal ASC, t.time_value ASC, t.geo_value ASC, t.issue ASC"
+
+    fields_string = ["geo_value", "signal"]
+    fields_int = ["time_value", "direction", "issue", "lag"]
+    fields_float = ["value", "stderr", "sample_size"]
+    q.set_fields(fields_string, fields_int, fields_float)
+    q.set_order(signal=True, time_value=True, geo_value=True, issue=True)
 
     # basic query info
     # data type of each field
@@ -71,10 +75,6 @@ def handle():
     else:
         # fetch most recent issue fast
         q.conditions.append("(t.is_latest_issue IS TRUE)")
-
-    fields_string = ["geo_value", "signal"]
-    fields_int = ["time_value", "direction", "issue", "lag"]
-    fields_float = ["value", "stderr", "sample_size"]
 
     # send query
     return execute_query(str(q), q.params, fields_string, fields_int, fields_float)

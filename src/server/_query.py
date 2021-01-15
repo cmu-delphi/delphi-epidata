@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple, Union
+from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple, Union, cast
 
 from sqlalchemy import text
 from sqlalchemy.engine import RowProxy
@@ -183,12 +183,16 @@ def join_l(value: Union[str, List[str]]):
 
 
 class QueryBuilder:
+    """
+    query builder helper class for simplified conditions
+    """
+
     table: str
     alias: str
     order: Union[str, List[str]] = ""
-    params: Dict[str, Any] = {}
     fields: Union[str, List[str]] = "*"
     conditions: List[str] = []
+    params: Dict[str, Any] = {}
     subquery: str = ""
 
     def __init__(self, table: str, alias: str):
@@ -250,4 +254,24 @@ class QueryBuilder:
         self.conditions.append(
             filter_dates(fq_field, values, param_key or field, self.params)
         )
+        return self
+
+    def set_fields(self, *fields: Iterable[Iterable[str]]) -> "QueryBuilder":
+        self.fields = [
+            f"{self.alias}.{field}" for field_list in fields for field in field_list
+        ]
+        return self
+
+    def set_order(self, **kwargs: Dict[str, Union[str, bool]]) -> "QueryBuilder":
+        """
+        sets the order for the given fields (as key word arguments), True = ASC, False = DESC
+        """
+        def to_asc(v: Union[str, bool]) -> str:
+            if v == True:
+                return "ASC"
+            elif v == False:
+                return "DESC"
+            return cast(str, v)
+
+        self.order = [f"{self.alias}.{k} {to_asc(v)}" for k, v in kwargs.items()]
         return self
