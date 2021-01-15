@@ -106,7 +106,7 @@ def parse_row(
         for f in fields_string:
             v = row[f] if f in keys else None
             if isinstance(v, (date, datetime)):
-                v = v.strftime('%Y-%m-%d')  # format to iso date
+                v = v.strftime("%Y-%m-%d")  # format to iso date
             parsed[f] = v
     if fields_int:
         for f in fields_int:
@@ -176,3 +176,78 @@ def execute_query(
     execute the given query and return the response to send it
     """
     return execute_queries([(query, params)], fields_string, fields_int, fields_float)
+
+
+def join_l(value: Union[str, List[str]]):
+    return ", ".join(value) if isinstance(value, (list, tuple)) else value
+
+
+class QueryBuilder:
+    table: str
+    alias: str
+    order: Union[str, List[str]] = ""
+    params: Dict[str, Any] = {}
+    fields: Union[str, List[str]] = "*"
+    conditions: List[str] = []
+    subquery: str = ""
+
+    def __init__(self, table: str, alias: str):
+        self.table = f"{table} {alias}"
+        self.alias = alias
+
+    @property
+    def conditions_clause(self) -> str:
+        return " AND ".join(self.conditions)
+
+    @property
+    def fields_clause(self) -> str:
+        return join_l(self.fields) if self.fields else "*"
+
+    def __str__(self):
+
+        where = f"WHERE {self.conditions_clause}" if self.conditions else ""
+        order = f"ORDER BY {join_l(self.order)}" if self.order else ""
+
+        return f"SELECT {self.fields_clause} FROM {self.table} {self.subquery} {where} {order}"
+
+    def where(self, **kvargs: Dict[str, Any]) -> "QueryBuilder":
+        for k, v in kvargs.items():
+            self.conditions.append(f"{self.alias}.{k} = :{k}")
+            self.params[k] = v
+        return self
+
+    def where_strings(
+        self,
+        field: str,
+        values: Optional[Sequence[Union[Tuple[str, str], str]]],
+        param_key: Optional[str] = None,
+    ) -> "QueryBuilder":
+        fq_field = f"{self.alias}.{field}" if "." not in field else field
+        self.conditions.append(
+            filter_strings(fq_field, values, param_key or field, self.params)
+        )
+        return self
+
+    def where_integers(
+        self,
+        field: str,
+        values: Optional[Sequence[Union[Tuple[int, int], int]]],
+        param_key: Optional[str] = None,
+    ) -> "QueryBuilder":
+        fq_field = f"{self.alias}.{field}" if "." not in field else field
+        self.conditions.append(
+            filter_integers(fq_field, values, param_key or field, self.params)
+        )
+        return self
+
+    def where_dates(
+        self,
+        field: str,
+        values: Optional[Sequence[Union[Tuple[int, int], int]]],
+        param_key: Optional[str] = None,
+    ) -> "QueryBuilder":
+        fq_field = f"{self.alias}.{field}" if "." not in field else field
+        self.conditions.append(
+            filter_dates(fq_field, values, param_key or field, self.params)
+        )
+        return self
