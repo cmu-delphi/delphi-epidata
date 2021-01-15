@@ -5,17 +5,30 @@ from flask import request
 from ._exceptions import UnAuthenticatedException, ValidationFailedException
 
 
+def resolve_auth_token() -> Optional[str]:
+    # auth request param
+    if "auth" in request.values:
+        return request.values["auth"]
+    # user name password
+    if request.authorization and request.authorization.username == "epidata":
+        return request.authorization.password
+    # bearer token authentication
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        return auth_header[len("Bearer ") :]
+    return None
+
+
 def check_auth_token(token: str, optional=False) -> bool:
-    # TODO: support bearer token and basic authentication style
-    missing = "auth" not in request.values
+    value = resolve_auth_token()
 
-    if optional:
-        return False
-    else:
-        raise ValidationFailedException(f"missing parameter: auth")
+    if value is None:
+        if optional:
+            return False
+        else:
+            raise ValidationFailedException(f"missing parameter: auth")
 
-    value = request.values["auth"]
-
+    print(value, flush=True)
     valid_token = value == token
     if not valid_token and not optional:
         raise UnAuthenticatedException()

@@ -1,7 +1,12 @@
 from flask import request, Blueprint
 
 from .._config import AUTH, GRANULAR_SENSOR_AUTH_TOKENS, OPEN_SENSORS
-from .._validate import require_all, extract_strings, extract_integers
+from .._validate import (
+    require_all,
+    extract_strings,
+    extract_integers,
+    resolve_auth_token,
+)
 from .._query import filter_strings, execute_query, filter_integers
 from .._exceptions import EpiDataException
 from typing import List
@@ -21,8 +26,7 @@ PHP_INT_MAX = 2147483647
 
 
 def _authenticate(names: List[str]):
-    # TODO support all variants
-    auth_tokens_presented = extract_strings("auth") or []
+    auth_tokens_presented = (resolve_auth_token("auth") or "").split(",")
 
     names = extract_strings("names")
     n_names = len(names)
