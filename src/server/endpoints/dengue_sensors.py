@@ -1,7 +1,7 @@
 from flask import Blueprint
 
 from .._config import AUTH
-from .._query import execute_query, filter_integers, filter_strings
+from .._query import execute_query, QueryBuilder
 from .._validate import check_auth_token, extract_integers, extract_strings, require_all
 
 # first argument is the endpoint name
@@ -19,23 +19,18 @@ def handle():
     epiweeks = extract_integers("epiweeks")
 
     # build query
-    table = "`dengue_sensors` s"
-    fields = "s.`name`, s.`location`, s.`epiweek`, s.`value`"
-    # basic query info
-    order = "s.`epiweek` ASC, s.`name` ASC, s.`location` ASC"
-    # build the filter
-    params = dict()
-    condition_name = filter_strings("s.`name`", names, "name", params)
-    # build the location filter
-    condition_location = filter_strings("s.`location`", locations, "loc", params)
-    # build the epiweek filter
-    condition_epiweek = filter_integers("s.`epiweek`", epiweeks, "epiweek", params)
-    # the query
-    query = f"SELECT {fields} FROM {table} WHERE ({condition_name}) AND ({condition_location}) AND ({condition_epiweek}) ORDER BY {order}"
-
+    q = QueryBuilder("dengue_sensors", "s")
+    
     fields_string = ["name", "location"]
     fields_int = ["epiweek"]
     fields_float = ["value"]
+    q.set_fields(fields_string, fields_int, fields_float)
+    
+    q.set_order('epiweek', 'name', 'location')
+    
+    q.where_strings('name', names)
+    q.where_strings('location', locations)
+    q.where_integers('epiweek', epiweeks)
 
     # send query
-    return execute_query(query, params, fields_string, fields_int, fields_float)
+    return execute_query(str(q), q.params, fields_string, fields_int, fields_float)

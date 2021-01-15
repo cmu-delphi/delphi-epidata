@@ -44,8 +44,7 @@ def handle():
         q.where(lag=lag)
     else:
         # final query using most recent issues
-        condition = f"x.max_issue = {q.alias}.issue AND x.epiweek = {q.alias}.epiweek AND x.region = {q.alias}.region"
-        q.subquery = f"JOIN (SELECT max(issue) max_issue, epiweek, region FROM {q.table} WHERE {q.conditions_clause} GROUP BY epiweek, region) x ON {condition}"
+        q.with_max_issue('epiweek', 'region')
 
     # send query
     return execute_query(str(q), q.params, fields_string, fields_int, fields_float)

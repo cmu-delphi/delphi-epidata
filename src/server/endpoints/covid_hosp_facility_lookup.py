@@ -1,6 +1,6 @@
 from flask import Blueprint
 
-from .._query import execute_query, filter_strings
+from .._query import execute_query, QueryBuilder
 from .._validate import extract_strings, require_any
 
 # first argument is the endpoint name
@@ -17,41 +17,39 @@ def handle():
     fips_code = extract_strings("fips_code")
 
     # build query
-    table = "covid_hosp_facility c"
-    fields = ", ".join(
+    q = QueryBuilder("covid_hosp_facility", "c")
+    q.fields = ", ".join(
         [
-            "c.`hospital_pk`",
-            "MAX(c.`state`) `state`",
-            "MAX(c.`ccn`) `ccn`",
-            "MAX(c.`hospital_name`) `hospital_name`",
-            "MAX(c.`address`) `address`",
-            "MAX(c.`city`) `city`",
-            "MAX(c.`zip`) `zip`",
-            "MAX(c.`hospital_subtype`) `hospital_subtype`",
-            "MAX(c.`fips_code`) `fips_code`",
-            "MAX(c.`is_metro_micro`) `is_metro_micro`",
+            "c.hospital_pk",
+            "MAX(c.state) state",
+            "MAX(c.ccn) ccn",
+            "MAX(c.hospital_name) hospital_name",
+            "MAX(c.address) address",
+            "MAX(c.city) city",
+            "MAX(c.zip) zip",
+            "MAX(c.hospital_subtype) hospital_subtype",
+            "MAX(c.fips_code) fips_code",
+            "MAX(c.is_metro_micro) is_metro_micro",
         ]
     )
     # basic query info
-    group = "c.`hospital_pk`"
-    order = "c.`hospital_pk` ASC"
+    q.group = "c.hospital_pk"
+    q.set_order("hospital_pk")
     # build the filter
     # these are all fast because the table has indexes on each of these fields
-    condition = "FALSE"
-    params = dict()
+    
     if state:
-        condition = filter_strings("c.`state`", state, "state", params)
+        q.where_strings('state', state)
     elif ccn:
-        condition = filter_strings("c.`ccn`", ccn, "ccn", params)
+        q.where_strings('ccn', ccn)
     elif city:
-        condition = filter_strings("c.`city`", city, "city", params)
+        q.where_strings('city', city)
     elif zip:
-        condition = filter_strings("c.`zip`", zip, "zip", params)
+        q.where_strings("zip", zip)
     elif fips_code:
-        condition = filter_strings("c.`fips_code`", fips_code, "fips_code", params)
-
-    # final query using specific issues
-    query = f"SELECT {fields} FROM {table} WHERE ({condition}) GROUP BY {group} ORDER BY {order}"
+        q.where_strings("fips_code", fips_code)
+    else:
+        q.conditions.append('FALSE')
 
     fields_string = [
         "hospital_pk",
@@ -68,4 +66,4 @@ def handle():
     fields_float = []
 
     # send query
-    return execute_query(query, params, fields_string, fields_int, fields_float)
+    return execute_query(str(q), q.params, fields_string, fields_int, fields_float)

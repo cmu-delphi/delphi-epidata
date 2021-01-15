@@ -1,6 +1,6 @@
 from flask import Blueprint
 
-from .._query import execute_query, filter_integers, filter_strings
+from .._query import execute_query, QueryBuilder
 from .._validate import extract_integers, extract_strings, require_all
 
 # first argument is the endpoint name
@@ -16,86 +16,8 @@ def handle():
     issues = extract_integers("issues")
 
     # build query
-    table = "`covid_hosp_state_timeseries` c"
-    fields = ", ".join(
-        [
-            "c.`issue`",
-            "c.`state`",
-            "c.`date`",
-            "c.`hospital_onset_covid`",
-            "c.`hospital_onset_covid_coverage`",
-            "c.`inpatient_beds`",
-            "c.`inpatient_beds_coverage`",
-            "c.`inpatient_beds_used`",
-            "c.`inpatient_beds_used_coverage`",
-            "c.`inpatient_beds_used_covid`",
-            "c.`inpatient_beds_used_covid_coverage`",
-            "c.`previous_day_admission_adult_covid_confirmed`",
-            "c.`previous_day_admission_adult_covid_confirmed_coverage`",
-            "c.`previous_day_admission_adult_covid_suspected`",
-            "c.`previous_day_admission_adult_covid_suspected_coverage`",
-            "c.`previous_day_admission_pediatric_covid_confirmed`",
-            "c.`previous_day_admission_pediatric_covid_confirmed_coverage`",
-            "c.`previous_day_admission_pediatric_covid_suspected`",
-            "c.`previous_day_admission_pediatric_covid_suspected_coverage`",
-            "c.`staffed_adult_icu_bed_occupancy`",
-            "c.`staffed_adult_icu_bed_occupancy_coverage`",
-            "c.`staffed_icu_adult_patients_confirmed_suspected_covid`",
-            "c.`staffed_icu_adult_patients_confirmed_suspected_covid_coverage`",
-            "c.`staffed_icu_adult_patients_confirmed_covid`",
-            "c.`staffed_icu_adult_patients_confirmed_covid_coverage`",
-            "c.`total_adult_patients_hosp_confirmed_suspected_covid`",
-            "c.`total_adult_patients_hosp_confirmed_suspected_covid_coverage`",
-            "c.`total_adult_patients_hosp_confirmed_covid`",
-            "c.`total_adult_patients_hosp_confirmed_covid_coverage`",
-            "c.`total_pediatric_patients_hosp_confirmed_suspected_covid`",
-            "c.`total_pediatric_patients_hosp_confirmed_suspected_covid_coverage`",
-            "c.`total_pediatric_patients_hosp_confirmed_covid`",
-            "c.`total_pediatric_patients_hosp_confirmed_covid_coverage`",
-            "c.`total_staffed_adult_icu_beds`",
-            "c.`total_staffed_adult_icu_beds_coverage`",
-            "c.`inpatient_beds_utilization`",
-            "c.`inpatient_beds_utilization_coverage`",
-            "c.`inpatient_beds_utilization_numerator`",
-            "c.`inpatient_beds_utilization_denominator`",
-            "c.`percent_of_inpatients_with_covid`",
-            "c.`percent_of_inpatients_with_covid_coverage`",
-            "c.`percent_of_inpatients_with_covid_numerator`",
-            "c.`percent_of_inpatients_with_covid_denominator`",
-            "c.`inpatient_bed_covid_utilization`",
-            "c.`inpatient_bed_covid_utilization_coverage`",
-            "c.`inpatient_bed_covid_utilization_numerator`",
-            "c.`inpatient_bed_covid_utilization_denominator`",
-            "c.`adult_icu_bed_covid_utilization`",
-            "c.`adult_icu_bed_covid_utilization_coverage`",
-            "c.`adult_icu_bed_covid_utilization_numerator`",
-            "c.`adult_icu_bed_covid_utilization_denominator`",
-            "c.`adult_icu_bed_utilization`",
-            "c.`adult_icu_bed_utilization_coverage`",
-            "c.`adult_icu_bed_utilization_numerator`",
-            "c.`adult_icu_bed_utilization_denominator`",
-        ]
-    )
-    # basic query info
-    order = "c.`date` ASC, c.`state` ASC, c.`issue` ASC"
-    params = dict()
-    # build the filter
-    # build the date filter
-    condition_date = filter_integers("c.`date`", dates, "date", params)
-    # build the state filter
-    condition_state = filter_strings("c.`state`", states, "state", params)
-    if issues:
-        # build the issue filter
-        condition_issue = filter_integers("c.`issue`", issues, "issue", params)
-        # final query using specific issues
-        query = f"SELECT {fields} FROM {table} WHERE ({condition_date}) AND ({condition_state}) AND ({condition_issue}) ORDER BY {order}"
-    else:
-        # final query using most recent issues
-        subquery = f"(SELECT max(`issue`) `max_issue`, `date`, `state` FROM {table} WHERE ({condition_date}) AND ({condition_state}) GROUP BY `date`, `state`) x"
-        condition = "x.`max_issue` = c.`issue` AND x.`date` = c.`date` AND x.`state` = c.`state`"
-        query = f"SELECT {fields} FROM {table} JOIN {subquery} ON {condition} ORDER BY {order}"
+    q = QueryBuilder("covid_hosp_state_timeseries", "c")
 
-    # get the data from the database
     fields_string = ["state"]
     fields_int = [
         "issue",
@@ -156,5 +78,17 @@ def handle():
         "adult_icu_bed_utilization",
     ]
 
+    q.set_fields(fields_string, fields_int, fields_float)
+    q.set_order("date", "state", "issue")
+
+    # build the filter
+    q.where_integers("date", dates)
+    q.where_strings("state", states)
+
+    if issues:
+        q.where_integers("issue", issues)
+    else:
+        q.with_max_issue("date", "state")
+
     # send query
-    return execute_query(query, params, fields_string, fields_int, fields_float)
+    return execute_query(str(q), q.params, fields_string, fields_int, fields_float)

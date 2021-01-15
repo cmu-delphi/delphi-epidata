@@ -17,8 +17,12 @@ def handle():
 
     # basic query info
     q = QueryBuilder("fluview_clinical", "fvc")
-    q.fields = "fvc.release_date, fvc.issue, fvc.epiweek, fvc.region, fvc.lag, fvc.total_specimens, fvc.total_a, fvc.total_b, fvc.percent_positive, fvc.percent_a, fvc.percent_b"
-    q.order = "fvc.epiweek ASC, fvc.region ASC, fvc.issue ASC"
+
+    fields_string = ["release_date", "region"]
+    fields_int = ["issue", "epiweek", "lag", "total_specimens", "total_a", "total_b"]
+    fields_float = ["percent_positive", "percent_a", "percent_b"]
+    q.set_fields(fields_string, fields_int, fields_float)
+    q.set_order("epiweek", "region", "issue")
 
     q.where_integers("epiweek", epiweeks)
     q.where_strings("region", regions)
@@ -29,12 +33,7 @@ def handle():
         q.where(lag=lag)
     else:
         # final query using most recent issues
-        condition = "x.max_issue = fvc.issue AND x.epiweek = fvc.epiweek AND x.region = fvc.region"
-        q.subquery = f"JOIN (SELECT max(issue) max_issue, epiweek, region FROM {q.table} WHERE {q.conditions_clause} GROUP BY epiweek, region) x ON {condition}"
-
-    fields_string = ["release_date", "region"]
-    fields_int = ["issue", "epiweek", "lag", "total_specimens", "total_a", "total_b"]
-    fields_float = ["percent_positive", "percent_a", "percent_b"]
+        q.with_max_issue("epiweek", "region")
 
     # send query
     return execute_query(str(q), q.params, fields_string, fields_int, fields_float)

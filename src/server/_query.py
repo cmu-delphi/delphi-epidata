@@ -1,5 +1,16 @@
 from datetime import date, datetime
-from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple, Union, cast
+from typing import (
+    Any,
+    Dict,
+    Iterable,
+    List,
+    Optional,
+    Sequence,
+    Tuple,
+    Union,
+    cast,
+    Mapping,
+)
 
 from sqlalchemy import text
 from sqlalchemy.engine import RowProxy
@@ -25,7 +36,7 @@ def to_condition(
     param_key: str,
     params: Dict[str, Any],
     formatter=lambda x: x,
-):
+) -> str:
     if isinstance(value, (list, tuple)):
         params[param_key] = formatter(value[0])
         params[f"{param_key}_2"] = formatter(value[1])
@@ -189,6 +200,7 @@ class QueryBuilder:
 
     table: str
     alias: str
+    group_by: Union[str, List[str]] = ""
     order: Union[str, List[str]] = ""
     fields: Union[str, List[str]] = "*"
     conditions: List[str] = []
@@ -211,8 +223,9 @@ class QueryBuilder:
 
         where = f"WHERE {self.conditions_clause}" if self.conditions else ""
         order = f"ORDER BY {join_l(self.order)}" if self.order else ""
+        group_by = f"GROUP BY {join_l(self.group_by)}" if self.group_by else ""
 
-        return f"SELECT {self.fields_clause} FROM {self.table} {self.subquery} {where} {order}"
+        return f"SELECT {self.fields_clause} FROM {self.table} {self.subquery} {where} {group_by} {order}"
 
     def where(self, **kvargs: Dict[str, Any]) -> "QueryBuilder":
         for k, v in kvargs.items():
@@ -256,16 +269,17 @@ class QueryBuilder:
         )
         return self
 
-    def set_fields(self, *fields: Iterable[Iterable[str]]) -> "QueryBuilder":
+    def set_fields(self, *fields: Iterable[str]) -> "QueryBuilder":
         self.fields = [
             f"{self.alias}.{field}" for field_list in fields for field in field_list
         ]
         return self
 
-    def set_order(self, **kwargs: Dict[str, Union[str, bool]]) -> "QueryBuilder":
+    def set_order(self, *args: str, **kwargs: Union[str, bool]) -> "QueryBuilder":
         """
         sets the order for the given fields (as key word arguments), True = ASC, False = DESC
         """
+
         def to_asc(v: Union[str, bool]) -> str:
             if v == True:
                 return "ASC"
@@ -273,5 +287,21 @@ class QueryBuilder:
                 return "DESC"
             return cast(str, v)
 
-        self.order = [f"{self.alias}.{k} {to_asc(v)}" for k, v in kwargs.items()]
+        args_order = [f"{self.alias}.{k} ASC" for k in args]
+        kw_order = [f"{self.alias}.{k} {to_asc(v)}" for k, v in kwargs.items()]
+        self.order = args_order + kw_order
+        return self
+
+    def with_max_issue(self, *args: str) -> "QueryBuilder":
+        fields: List[str] = [f for f in args]
+
+        subfields = f"max(issue) max_issue, {','.join(fields)}"
+        group_by = ",".join(fields)
+        field_conditions = " AND ".join(
+            f"x.{field} = {self.alias}.{field}" for field in fields
+        )
+        condition = f"x.max_issue = {self.alias}.issue AND {field_conditions}"
+        self.subquery = f"JOIN (SELECT {subfields} FROM {self.table} WHERE {self.conditions_clause} GROUP BY {group_by}) x ON {condition}"
+        # reset conditions since for join
+        self.conditions = []
         return self
