@@ -115,7 +115,7 @@ class ClassicTreePrinter(ClassicPrinter):
 
     def _begin(self):
         self._tree = dict()
-        return None
+        return super(ClassicTreePrinter, self)._begin()
 
     def _format_row(self, first: bool, row: Dict):
         group = row.get(self.group, "")
@@ -129,7 +129,7 @@ class ClassicTreePrinter(ClassicPrinter):
     def _end(self):
         tree = dumps(self._tree)
         self._tree = dict()
-        r = super(ClassicTreePrinter, self)._end_impl()
+        r = super(ClassicTreePrinter, self)._end()
         return f"{tree}{r}"
 
 
@@ -201,9 +201,12 @@ class JSONLPrinter(APrinter):
 
 
 def create_printer() -> APrinter:
-    format = request.values.get("format", "classic")
+    format: str = request.values.get("format", "classic")
     if format == "tree":
         return ClassicTreePrinter("signal")
+    if format.startswith("tree-"):
+        # support tree format by any property following the dash
+        return ClassicTreePrinter(format[len("tree-") :])
     if format == "json":
         return JSONPrinter()
     if format == "csv":
