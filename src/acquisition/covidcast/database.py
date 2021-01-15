@@ -350,6 +350,7 @@ class Database:
     cache_hash = {}
     for entry in cache:
       cache_hash[(entry['data_source'], entry['signal'], entry['time_type'], entry['geo_type'])] = entry
+    # TODO: add log statements here @benjaminysmith
     if not len(cache) and table_name=='covidcast_meta_cache_test': # TODO: remove line
       print("test cache empty -- falling back to regular cache ; this should happen ONLY ONCE (after regular cache populated)") # TODO: remove line
       return self.retrieve_covidcast_meta_cache(table_name='covidcast_meta_cache') # TODO: remove line
