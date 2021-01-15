@@ -5,7 +5,7 @@ parent: Epidata API (Other Diseases)
 
 # COVID-19 Hospitalization by Facility
 
-This data source is a mirror of the "COVID-19 Reported Patient Impact and
+This data source mirrors the "COVID-19 Reported Patient Impact and
 Hospital Capacity by Facility" dataset provided by the US Department of Health
 & Human Services via healthdata.gov.
 
@@ -21,7 +21,7 @@ General topics not specific to any particular data source are discussed in the
 ## Metadata
 
 This data source provides various measures of COVID-19 burden on patients and healthcare in the US.
-- Data source: [US Department of Health & Human Services](https://healthdata.gov/dataset/covid-19-reported-patient-impact-and-hospital-capacity-facility) (HHS)
+- Source: [US Department of Health & Human Services](https://healthdata.gov/dataset/covid-19-reported-patient-impact-and-hospital-capacity-facility) (HHS)
 - Geographic resolution: healthcare facility (address, city, zip, fips)
 - Temporal resolution: weekly (Friday -- Thursday)
 - First week: 2020-07-31
@@ -193,8 +193,7 @@ https://delphi.cmu.edu/epidata/api.php?source=covid_hosp_facility&hospital_pks=3
 
 Libraries are available for [CoffeeScript](../../src/client/delphi_epidata.coffee), [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
 The following sample shows how to import the library and fetch Moses Taylor
-Hospital (Scranton, PA) on the first collection week of December 2020 (per most
-recent issue).
+Hospital (Scranton, PA) on the first collection week of December 2020 (per the most recent issue).
 
 ### Python
 
