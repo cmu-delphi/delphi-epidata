@@ -26,15 +26,14 @@ AUTH = {
 
 # begin sensor query authentication configuration
 #   A multimap of sensor names to the "granular" auth tokens that can be used to access them; excludes the "global" sensor auth key that works for all sensors:
-_sensor_subsets = json.loads(os.environ.get("SECRET_SENSOR_SUBSETS", "{}"))
 GRANULAR_SENSOR_AUTH_TOKENS = {
-    "twtr": _sensor_subsets.get("twtr_sensor", []),
-    "gft": _sensor_subsets.get("gft_sensor"),
-    "ght": _sensor_subsets.get("ght_sensors"),
-    "ghtj": _sensor_subsets.get("ght_sensors"),
-    "cdc": _sensor_subsets.get("cdc_sensor"),
-    "quid": _sensor_subsets.get("quid_sensor"),
-    "wiki": _sensor_subsets.get("wiki_sensor"),
+    "twtr": os.environ.get("SECRET_SENSOR_TWTR", "").split(","),
+    "gft": os.environ.get("SECRET_SENSOR_GFT", "").split(","),
+    "ght": os.environ.get("SECRET_SENSOR_GHT", "").split(","),
+    "ghtj": os.environ.get("SECRET_SENSOR_GHTJ", "").split(","),
+    "cdc": os.environ.get("SECRET_SENSOR_CDC", "").split(","),
+    "quid": os.environ.get("SECRET_SENSOR_QUID", "").split(","),
+    "wiki": os.environ.get("SECRET_SENSOR_WIKI", "").split(","),
 }
 
 #   A set of sensors that do not require an auth key to access:
