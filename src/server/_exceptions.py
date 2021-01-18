@@ -1,5 +1,6 @@
 from flask import make_response, request
 from flask.json import dumps
+from typing import Iterable
 from werkzeug.exceptions import HTTPException
 
 
@@ -25,9 +26,9 @@ class EpiDataException(HTTPException):
 
 
 class MissingOrWrongSourceException(EpiDataException):
-    def __init__(self):
+    def __init__(self, endpoints: Iterable[str]):
         super(MissingOrWrongSourceException, self).__init__(
-            "no data source specified", 400
+            f"no data source specified, possible values: {','.join(endpoints)}", 400
         )
 
 

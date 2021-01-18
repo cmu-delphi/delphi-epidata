@@ -26,7 +26,7 @@ for endpoint in endpoints:
 def handle_generic():
     endpoint = request.values.get("endpoint", request.values.get("source"))
     if not endpoint or endpoint not in endpoint_map:
-        raise MissingOrWrongSourceException()
+        raise MissingOrWrongSourceException(endpoint_map.keys())
     return endpoint_map[endpoint]()
 
 
