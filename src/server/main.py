@@ -4,6 +4,7 @@ from typing import Dict, Callable
 
 from flask import request, send_file, Response
 
+from ._config import URL_PREFIX
 from ._common import app
 from ._exceptions import MissingOrWrongSourceException
 from .endpoints import endpoints
@@ -15,14 +16,14 @@ endpoint_map: Dict[str, Callable[[], Response]] = {}
 
 for endpoint in endpoints:
     endpoint_map[endpoint.bp.name] = endpoint.handle
-    app.register_blueprint(endpoint.bp, url_prefix=f"/epidata/{endpoint.bp.name}")
+    app.register_blueprint(endpoint.bp, url_prefix=f"{URL_PREFIX}/{endpoint.bp.name}")
 
     alias = getattr(endpoint, "alias", None)
     if alias:
         endpoint_map[alias] = endpoint.handle
 
 
-@app.route("/epidata/api.php", methods=["GET", "POST"])
+@app.route(f"{URL_PREFIX}/api.php", methods=["GET", "POST"])
 def handle_generic():
     endpoint = request.values.get("endpoint", request.values.get("source"))
     if not endpoint or endpoint not in endpoint_map:
@@ -30,9 +31,9 @@ def handle_generic():
     return endpoint_map[endpoint]()
 
 
-@app.route("/epidata")
-@app.route("/epidata/")
-@app.route("/epidata/index.html")
+@app.route(f"{URL_PREFIX}")
+@app.route(f"{URL_PREFIX}/")
+@app.route(f"{URL_PREFIX}/index.html")
 def send_index_file():
     return send_file(pathlib.Path(__file__).parent / "index.html")
 

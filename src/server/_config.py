@@ -12,6 +12,7 @@ SQLALCHEMY_ENGINE_OPTIONS = json.loads(
     os.environ.get("SQLALCHEMY_ENGINE_OPTIONS", "{}")
 )
 SECRET = os.environ["FLASK_SECRET"]
+URL_PREFIX = os.environ.get('FLASK_PREFIX', '/')
 
 AUTH = {
     "twitter": os.environ.get("SECRET_TWITTER"),
