@@ -1,4 +1,5 @@
 FROM tiangolo/meinheld-gunicorn:python3.7
+LABEL org.opencontainers.image.source=https://github.com/cmu-delphi/delphi-epidata
 # use delphi's timezome
 RUN ln -s -f /usr/share/zoneinfo/America/New_York /etc/localtime
 
