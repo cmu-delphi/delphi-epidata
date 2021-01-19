@@ -84,39 +84,33 @@ jobs:
           docker network remove delphi-net
 
       # Deployment
-      # - name: Configure AWS credentials
-      #   uses: aws-actions/configure-aws-credentials@v1
-      #   with:
-      #     aws-access-key-id: ${{ secrets.DELPHI_ECR_ACCESS_ID }}
-      #     aws-secret-access-key: ${{ secrets.DELPHI_ECR_ACCESS_KEY }}
-      #     aws-region: us-east-1
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.CR_USER }}
+          password: ${{ secrets.CR_PAT }}
 
-      # - name: Login to Amazon ECR
-      #   id: login-ecr
-      #   uses: aws-actions/amazon-ecr-login@v1
+      - name: Build, tag, and push image to Github
+        env:
+          DEVOPS_DOCKER_FILE: ./devops/Dockerfile
+        run: |
+          baseRef="${GITHUB_REF#*/}"
+          baseRef="${baseRef#*/}"
+          case "${baseRef}" in
+          main)
+            imageTag="latest"
+            ;;
+          *)
+            imageTag="${baseRef//\//_}" # replace `/` with `_` in branch name
+            ;;
+          esac
+          echo "using tag: --${imageTag}--"
+          docker build -t ghcr.io/${{ github.repository_owner }}/${{ github.repository.name }}:$imageTag --file ${DEVOPS_DOCKER_FILE} .
+          docker push ghcr.io/${{ github.repository_owner }}/${{ github.repository.name }}:$imageTag
 
-      # - name: Build, tag, and push image to Amazon ECR
-      #   env:
-      #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-      #     ECR_REPOSITORY: ${{ github.event.repository.name }}
-      #   run: |
-      #     baseRef="${GITHUB_REF#*/}"
-      #     baseRef="${baseRef#*/}"
-      #     case "${baseRef}" in
-      #     main)
-      #       awsTag="latest"
-      #       ;;
-      #     *)
-      #       awsTag="${baseRef//\//_}" # replace `/` with `_` in branch name
-      #       ;;
-      #     esac
-      #     echo "using tag: --${awsTag}--"
-      #     cd ./repos/delphi/delphi-epidata
-      #     docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$awsTag --file ./devops/Dockerfile .
-      #     docker push $ECR_REGISTRY/$ECR_REPOSITORY:$awsTag
-
-      #     # trigger a webhook update
-      #     curl -H "Authorization: Bearer ${{ secrets.DELPHI_DEPLOY_WEBHOOK_TOKEN }}" \
-      #          -X POST ${{ secrets.DELPHI_DEPLOY_WEBHOOK_URL }} \
-      #          -H "Content-Type: application/x-www-form-urlencoded" \
-      #          -d "repository=$ECR_REGISTRY/$ECR_REPOSITORY&tag=$awsTag"
+          # trigger a webhook update
+          curl -H "Authorization: Bearer ${{ secrets.DELPHI_DEPLOY_WEBHOOK_TOKEN }}" \
+               -X POST ${{ secrets.DELPHI_DEPLOY_WEBHOOK_URL }} \
+               -H "Content-Type: application/x-www-form-urlencoded" \
+               -d "repository=ghcr.io/cmu-delphi/${{ github.repository.name }}&tag=$imageTag"
