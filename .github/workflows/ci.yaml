@@ -83,13 +83,13 @@ jobs:
           docker stop delphi_database_epidata delphi_web_epidata
           docker network remove delphi-net
 
-      # Deployment
+      # Deployment      
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
-          username: ${{ secrets.CR_USER }}
-          password: ${{ secrets.CR_PAT }}
+          username: cmu-delphi-deploy-machine
+          password: ${{ secrets.CMU_DELPHI_DEPLOY_MACHINE_PAT }}
 
       - name: Build, tag, and push image to Github
         env:
@@ -106,11 +106,11 @@ jobs:
             ;;
           esac
           echo "using tag: --${imageTag}--"
-          docker build -t ghcr.io/${{ github.repository_owner }}/${{ github.repository.name }}:$imageTag --file ${DEVOPS_DOCKER_FILE} .
-          docker push ghcr.io/${{ github.repository_owner }}/${{ github.repository.name }}:$imageTag
+          docker build -t ghcr.io/${{ github.repository }}:$imageTag --file ${DEVOPS_DOCKER_FILE} .
+          docker push ghcr.io/${{ github.repository }}:$imageTag
 
           # trigger a webhook update
           curl -H "Authorization: Bearer ${{ secrets.DELPHI_DEPLOY_WEBHOOK_TOKEN }}" \
                -X POST ${{ secrets.DELPHI_DEPLOY_WEBHOOK_URL }} \
                -H "Content-Type: application/x-www-form-urlencoded" \
-               -d "repository=ghcr.io/cmu-delphi/${{ github.repository.name }}&tag=$imageTag"
+               -d "repository=ghcr.io/${{ github.repository }}&tag=$imageTag"
