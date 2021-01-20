@@ -95,6 +95,7 @@ jobs:
         env:
           DEVOPS_DOCKER_FILE: ./devops/Dockerfile
         run: |
+          cd repos/delphi/delphi-epidata
           baseRef="${GITHUB_REF#*/}"
           baseRef="${baseRef#*/}"
           case "${baseRef}" in
