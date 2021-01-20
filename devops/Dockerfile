@@ -6,5 +6,6 @@ RUN ln -s -f /usr/share/zoneinfo/America/New_York /etc/localtime
 COPY requirements.txt /app
 RUN pip install --no-cache-dir -r requirements.txt
 
+COPY ./devops/gunicorn_conf.py /app
 COPY ./src/server/ /app/app/
 RUN rm -rf /app/app/__pycache__ /app/app/*.php && chmod -R o+r /app/app
