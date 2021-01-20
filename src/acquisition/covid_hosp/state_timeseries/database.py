@@ -18,16 +18,6 @@ class Database(BaseDatabase):
   ORDERED_CSV_COLUMNS = [
     ('state', 'state', str),
     ('date', 'date', Utils.int_from_date),
-    ('critical_staffing_shortage_today_yes', 'critical_staffing_shortage_today_yes', int),
-    ('critical_staffing_shortage_today_no', 'critical_staffing_shortage_today_no', int),
-    ('critical_staffing_shortage_today_not_reported',
-     'critical_staffing_shortage_today_not_reported', int),
-    ('critical_staffing_shortage_anticipated_within_week_yes',
-     'critical_staffing_shortage_anticipated_within_week_yes', int),
-    ('critical_staffing_shortage_anticipated_within_week_no',
-     'critical_staffing_shortage_anticipated_within_week_no', int),
-    ('critical_staffing_shortage_anticipated_within_week_not_reported',
-     'critical_staffing_shortage_anticipated_within_week_not_reported', int),
     ('hospital_onset_covid', 'hospital_onset_covid', int),
     ('hospital_onset_covid_coverage', 'hospital_onset_covid_coverage', int),
     ('inpatient_beds', 'inpatient_beds', int),
@@ -104,6 +94,16 @@ class Database(BaseDatabase):
     ('adult_icu_bed_utilization_coverage', 'adult_icu_bed_utilization_coverage', int),
     ('adult_icu_bed_utilization_numerator', 'adult_icu_bed_utilization_numerator', int),
     ('adult_icu_bed_utilization_denominator', 'adult_icu_bed_utilization_denominator', int),
+    ('critical_staffing_shortage_today_yes', 'critical_staffing_shortage_today_yes', int),
+    ('critical_staffing_shortage_today_no', 'critical_staffing_shortage_today_no', int),
+    ('critical_staffing_shortage_today_not_reported',
+     'critical_staffing_shortage_today_not_reported', int),
+    ('critical_staffing_shortage_anticipated_within_week_yes',
+     'critical_staffing_shortage_anticipated_within_week_yes', int),
+    ('critical_staffing_shortage_anticipated_within_week_no',
+     'critical_staffing_shortage_anticipated_within_week_no', int),
+    ('critical_staffing_shortage_anticipated_within_week_not_reported',
+     'critical_staffing_shortage_anticipated_within_week_not_reported', int),
   ]
 
   def __init__(self, *args, **kwargs):
