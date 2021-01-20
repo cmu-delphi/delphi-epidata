@@ -7,6 +7,7 @@ from flask.json import dumps
 
 from ._analytics import record_analytics
 from ._config import MAX_RESULTS
+from ._common import app
 
 
 def print_non_standard(data):
@@ -23,8 +24,9 @@ def print_non_standard(data):
 
 
 class APrinter:
-    count: int = 0
-    result: int = -1
+    def __init__(self):
+        self.count: int = 0
+        self.result: int = -1
 
     def make_response(self, gen):
         return Response(
@@ -38,12 +40,16 @@ class APrinter:
             r = self._begin()
             if r is not None:
                 yield r
-
-            for row in generator:
-                r = self._print_row(row)
-                if r is not None:
-                    yield r
-
+            try: 
+                for row in generator:
+                    r = self._print_row(row)
+                    if r is not None:
+                        yield r
+            except Exception as e:
+                app.logger.error(f'error executing')
+                self.result = -1
+                raise e
+            
             record_analytics(self.result, self.count)
 
             r = self._end()

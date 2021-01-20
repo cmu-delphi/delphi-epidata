@@ -71,14 +71,14 @@ def handle():
         # fetch most recent issues with as of
         sub_condition_asof = "(issue <= :as_of)"
         q.params["as_of"] = as_of
-        sub_fields = "max(issue) max_issue, time_type, time_value, source, signal, geo_type, geo_value"
-        sub_group = "time_type, time_value, source, signal, geo_type, geo_value"
+        sub_fields = "max(issue) max_issue, time_type, time_value, `source`, `signal`, geo_type, geo_value"
+        sub_group = "time_type, time_value, `source`, `signal`, geo_type, geo_value"
         sub_condition = f"x.max_issue = {q.alias}.issue AND x.time_type = {q.alias}.time_type AND x.time_value = {q.alias}.time_value AND x.source = {q.alias}.source AND x.signal = {q.alias}.signal AND x.geo_type = {q.alias}.geo_type AND x.geo_value = {q.alias}.geo_value"
-        q.subquery = f"JOIN (SELECT {sub_fields} FROM {q.table} WHERE ({q.conditions_clause} AND {sub_condition_asof}) GROUP BY {sub_group}) x ON {sub_condition}"
+        q.subquery = f"JOIN (SELECT {sub_fields} FROM {q.table} WHERE {q.conditions_clause} AND {sub_condition_asof} GROUP BY {sub_group}) x ON {sub_condition}"
         # condition_version = "TRUE"
     else:
         # fetch most recent issue fast
-        q.conditions.append("(t.is_latest_issue IS TRUE)")
+        q.conditions.append(f"({q.alias}.is_latest_issue IS TRUE)")
 
     # send query
     return execute_query(str(q), q.params, fields_string, fields_int, fields_float)

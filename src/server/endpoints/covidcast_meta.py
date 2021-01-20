@@ -40,7 +40,7 @@ def fetch_data(
         )
     ).fetchone()
 
-    if not row:
+    if not row or not row["epidata"]:
         return
 
     age = row["age"]

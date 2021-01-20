@@ -20,20 +20,20 @@ def handle():
     q = QueryBuilder("covid_hosp_facility", "c")
     q.fields = ", ".join(
         [
-            "c.hospital_pk",
-            "MAX(c.state) state",
-            "MAX(c.ccn) ccn",
-            "MAX(c.hospital_name) hospital_name",
-            "MAX(c.address) address",
-            "MAX(c.city) city",
-            "MAX(c.zip) zip",
-            "MAX(c.hospital_subtype) hospital_subtype",
-            "MAX(c.fips_code) fips_code",
-            "MAX(c.is_metro_micro) is_metro_micro",
+            f"{q.alias}.hospital_pk",
+            f"MAX({q.alias}.state) state",
+            f"MAX({q.alias}.ccn) ccn",
+            f"MAX({q.alias}.hospital_name) hospital_name",
+            f"MAX({q.alias}.address) address",
+            f"MAX({q.alias}.city) city",
+            f"MAX({q.alias}.zip) zip",
+            f"MAX({q.alias}.hospital_subtype) hospital_subtype",
+            f"MAX({q.alias}.fips_code) fips_code",
+            f"MAX({q.alias}.is_metro_micro) is_metro_micro",
         ]
     )
     # basic query info
-    q.group = "c.hospital_pk"
+    q.group_by = f"{q.alias}.hospital_pk"
     q.set_order("hospital_pk")
     # build the filter
     # these are all fast because the table has indexes on each of these fields

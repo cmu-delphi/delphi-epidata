@@ -216,6 +216,10 @@ class QueryBuilder:
     def fields_clause(self) -> str:
         return join_l(self.fields) if self.fields else "*"
 
+    @property
+    def order_clause(self) -> str:
+        return join_l(self.order)
+
     def __str__(self):
         where = f"WHERE {self.conditions_clause}" if self.conditions else ""
         order = f"ORDER BY {join_l(self.order)}" if self.order else ""
