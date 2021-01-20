@@ -22,6 +22,12 @@ def handle():
     fields_int = [
         "issue",
         "date",
+        "critical_staffing_shortage_today_yes",
+        "critical_staffing_shortage_today_no",
+        "critical_staffing_shortage_today_not_reported",
+        "critical_staffing_shortage_anticipated_within_week_yes",
+        "critical_staffing_shortage_anticipated_within_week_no",
+        "critical_staffing_shortage_anticipated_within_week_not_reported",
         "hospital_onset_covid",
         "hospital_onset_covid_coverage",
         "inpatient_beds",
@@ -85,10 +91,15 @@ def handle():
     q.where_integers("date", dates)
     q.where_strings("state", states)
 
-    if issues:
+    if issues is not None:
         q.where_integers("issue", issues)
+        # final query using specific issues
+        query = f"WITH c as (SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY date, state, issue ORDER BY record_type) row FROM {q.table} WHERE {q.conditions_clause}) SELECT {q.fields_clause} FROM {q.alias} where row = 1 ORDER BY {q.order}"
     else:
-        q.with_max_issue("date", "state")
+        # final query using most recent issues
+        subquery = f"(SELECT max(`issue`) `max_issue`, `date`, `state` FROM {q.table} WHERE {q.conditions_clause} GROUP BY `date`, `state`) x"
+        condition = f"x.`max_issue` = {q.alias}.`issue` AND x.`date` = {q.alias}.`date` AND x.`state` = {q.alias}.`state`"
+        query = f"WITH c as (SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY date, state, issue ORDER BY record_type) row FROM {q.table} JOIN {subquery} ON {condition}) select {q.fields_clause} FROM {q.alias} WHERE row = 1 ORDER BY {q.order}"
 
     # send query
-    return execute_query(str(q), q.params, fields_string, fields_int, fields_float)
+    return execute_query(query, q.params, fields_string, fields_int, fields_float)

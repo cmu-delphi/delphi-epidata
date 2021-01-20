@@ -1,4 +1,5 @@
 from flask import Blueprint, request
+from typing import List
 
 from .._query import execute_query, filter_integers, filter_strings, QueryBuilder
 from .._validate import (
@@ -14,6 +15,16 @@ from .._validate import (
 # first argument is the endpoint name
 bp = Blueprint("covidcast", __name__)
 alias = None
+
+def where_geo_values(q: QueryBuilder, geo_values: List[str]):
+    if not geo_values:
+        q.conditions.append("FALSE")
+    elif len(geo_values) == 1 and geo_values[0] == "*":
+        # the wildcard query should return data for all locations in geo_type
+        pass
+    else:
+        # return data for multiple location
+        q.where_strings("geo_value", geo_values)
 
 
 @bp.route("/", methods=("GET", "POST"))
@@ -49,14 +60,7 @@ def handle():
     q.where_strings("signal", signals)
     q.where_integers("time_value", time_values)
 
-    if not geo_values:
-        q.conditions.append("FALSE")
-    elif len(geo_values) == 1 and geo_values[0] == "*":
-        # the wildcard query should return data for all locations in geo_type
-        pass
-    else:
-        # return data for multiple location
-        q.where_strings("geo_value", geo_values)
+    where_geo_values(q, geo_values)
 
     subquery = ""
     if issues:
