@@ -198,18 +198,15 @@ class QueryBuilder:
     query builder helper class for simplified conditions
     """
 
-    table: str
-    alias: str
-    group_by: Union[str, List[str]] = ""
-    order: Union[str, List[str]] = ""
-    fields: Union[str, List[str]] = "*"
-    conditions: List[str] = []
-    params: Dict[str, Any] = {}
-    subquery: str = ""
-
     def __init__(self, table: str, alias: str):
-        self.table = f"{table} {alias}"
-        self.alias = alias
+        self.table: str = f"{table} {alias}"
+        self.alias: str = alias
+        self.group_by: Union[str, List[str]] = ""
+        self.order: Union[str, List[str]] = ""
+        self.fields: Union[str, List[str]] = "*"
+        self.conditions: List[str] = []
+        self.params: Dict[str, Any] = {}
+        self.subquery: str = ""
 
     @property
     def conditions_clause(self) -> str:
@@ -220,7 +217,6 @@ class QueryBuilder:
         return join_l(self.fields) if self.fields else "*"
 
     def __str__(self):
-
         where = f"WHERE {self.conditions_clause}" if self.conditions else ""
         order = f"ORDER BY {join_l(self.order)}" if self.order else ""
         group_by = f"GROUP BY {join_l(self.group_by)}" if self.group_by else ""
