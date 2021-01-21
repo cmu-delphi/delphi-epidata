@@ -17,7 +17,7 @@ class Database:
                connection,
                table_name=None,
                columns_and_types=None,
-               additional_fields=tuple()):
+               additional_fields=None):
     """Create a new Database object.
 
     Parameters
@@ -26,20 +26,20 @@ class Database:
       An open connection to a database.
     table_name : str
       The name of the table which holds the dataset.
-    columns_and_types : list[tuple[str, Callable[str, ...]]]
-      List of CSV columns in order of appearance in the database. The first
-      element of each tuple is the CSV column name, and the second element is a
-      function which converts a string into the appropriate datatype for the
-      column.
+    columns_and_types : tuple[str, str, Callable]
+      List of 3-tuples of (CSV header name, SQL column name, data type) for
+      all the columns in the CSV file.
     additional_fields : tuple[str]
-      Tuple of additional fields to include at the end of the row which are not
-      present in the CSV data.
+      List of 2-tuples of (value, SQL column name) fordditional fields to include
+      at the end of the row which are not present in the CSV data.
     """
 
     self.connection = connection
     self.table_name = table_name
+    self.publication_col_name = "issue" if table_name == 'covid_hosp_state_timeseries' else \
+      'publication_date'
     self.columns_and_types = columns_and_types
-    self.additional_fields = additional_fields
+    self.additional_fields = additional_fields if additional_fields is not None else []
 
   @classmethod
   @contextmanager
@@ -152,16 +152,19 @@ class Database:
 
     num_columns = 2 + len(self.columns_and_types) + len(self.additional_fields)
     value_placeholders = ', '.join(['%s'] * num_columns)
-    sql = f'INSERT INTO `{self.table_name}` VALUES ({value_placeholders})'
-
+    columns = ', '.join(f'`{i[1]}`' for i in self.columns_and_types + self.additional_fields)
+    sql = f'INSERT INTO `{self.table_name}` (`id`, `{self.publication_col_name}`, {columns}) ' \
+          f'VALUES ({value_placeholders})'
     id_and_publication_date = (0, publication_date)
     with self.new_cursor() as cursor:
       for _, row in dataframe.iterrows():
         values = []
-        for name, dtype in self.columns_and_types:
+        for name, _, dtype in self.columns_and_types:
           if isinstance(row[name], float) and math.isnan(row[name]):
             values.append(None)
           else:
             values.append(dtype(row[name]))
         cursor.execute(sql,
-                       id_and_publication_date + tuple(values) + self.additional_fields)
+                       id_and_publication_date +
+                       tuple(values) +
+                       tuple(i[0] for i in self.additional_fields))

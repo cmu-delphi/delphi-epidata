@@ -40,11 +40,12 @@ class DatabaseTests(unittest.TestCase):
 
     last_query_values = mock_cursor.execute.call_args[0][-1]
     expected_query_values = (
-        0, sentinel.issue, 'WY', 20200826, 2, None, 4, 2, 19, 7, 0, 26, 1464,
+        0, sentinel.issue, 'WY', 20200826, 0, 26, 1464,
         28, 629, 28, 17, 26, 2, 28, 13, 26, 0, 21, 0, 22, 49, 28, 10, 26, 7,
         28, 17, 26, 14, 28, 0, 26, 0, 26, 114, 28, 0.4296448087431694, 28, 629,
         1464, 0.027597402597402596, 26, 17, 616, 0.011946591707659873, 26, 17,
-        1423, 0.09345794392523364, 26, 10, 107, 0.4298245614035088, 28, 49, 114, 'T')
+        1423, 0.09345794392523364, 26, 10, 107, 0.4298245614035088, 28, 49, 114,
+        2, None, 4, 2, 19, 7, 'T')
     self.assertEqual(len(last_query_values), len(expected_query_values))
 
     for actual, expected in zip(last_query_values, expected_query_values):
