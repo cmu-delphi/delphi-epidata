@@ -1,4 +1,5 @@
 from shutil import move
+import os
 import time
 
 import delphi.operations.secrets as secrets
@@ -7,6 +8,8 @@ import sqlalchemy
 from delphi.epidata.acquisition.covidcast.csv_importer import CsvImporter
 
 SENSOR_CSV_PATH = "/common/covidcast_nowcast/receiving/"
+SUCCESS_DIR = "archive/successful"
+FAIL_DIR = "archive/failed"
 TABLE_NAME = "covidcast_nowcast"
 DB_NAME = "epidata"
 CSV_DTYPES = {"sensor_name": str, "geo_value": str, "value": float}
@@ -33,17 +36,20 @@ def main(csv_path: str = SENSOR_CSV_PATH) -> None:
     """
     user, pw = secrets.db.epi
     engine = sqlalchemy.create_engine(f"mysql+pymysql://{user}:{pw}@{secrets.db.host}/{DB_NAME}")
-    for filepath, attributes in CsvImporter.find_csv_files(csv_path):
-        if attributes is None:
-            move(filepath, filepath.replace("receiving", "archive/failed"))
+    for filepath, attr in CsvImporter.find_csv_files(csv_path):
+        if attr is None:
+            _move_after_processing(filepath, success=False)
             continue
         try:
-            data = load_and_prepare_file(filepath, attributes)
-            data.to_sql(TABLE_NAME, engine, if_exists="append", index=False)
+            data = load_and_prepare_file(filepath, attr)
+            conn = engine.connect()
+            with conn.begin():
+                method = _create_upsert_method(sqlalchemy.MetaData(conn))
+                data.to_sql(TABLE_NAME, engine, if_exists="append", method=method, index=False)
         except Exception:
-            move(filepath, filepath.replace("receiving", "archive/failed"))
+            _move_after_processing(filepath, success=False)
             raise
-        move(filepath, filepath.replace("receiving", "archive/successful"))
+        _move_after_processing(filepath, success=True)
 
 
 def load_and_prepare_file(filepath: str, attributes: tuple) -> pd.DataFrame:
@@ -73,6 +79,24 @@ def load_and_prepare_file(filepath: str, attributes: tuple) -> pd.DataFrame:
     data["lag"] = lag_value
     data["value_updated_timestamp"] = int(time.time())
     return data
+
+
+def _move_after_processing(filepath, success):
+    archive_dir = SUCCESS_DIR if success else FAIL_DIR
+    new_dir = os.path.dirname(filepath).replace(
+        "receiving", archive_dir)
+    os.makedirs(new_dir, exist_ok=True)
+    move(filepath, filepath.replace("receiving", archive_dir))
+    print(f"{filepath} moved to {archive_dir}")
+
+
+def _create_upsert_method(meta):
+    def method(table, conn, keys, data_iter):
+        sql_table = sqlalchemy.Table(table.name, meta, autoload=True)
+        insert_stmt = sqlalchemy.dialects.mysql.insert(sql_table).values([dict(zip(keys, data)) for data in data_iter])
+        upsert_stmt = insert_stmt.on_duplicate_key_update({x.name: x for x in insert_stmt.inserted})
+        conn.execute(upsert_stmt)
+    return method
 
 
 if __name__ == "__main__":
