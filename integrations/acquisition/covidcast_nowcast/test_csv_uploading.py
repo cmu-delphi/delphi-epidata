@@ -72,8 +72,6 @@ class CsvUploadingTests(unittest.TestCase):
     success_dir = '/common/covidcast_nowcast/archive/successful/src/'
     failed_dir = '/common/covidcast_nowcast/archive/failed/src/'
     os.makedirs(receiving_dir, exist_ok=True)
-    os.makedirs(success_dir, exist_ok=True)
-    os.makedirs(failed_dir, exist_ok=True)
 
     # valid
     with open(receiving_dir + '20200419_state_sig.csv', 'w') as f:
@@ -112,6 +110,42 @@ class CsvUploadingTests(unittest.TestCase):
         'time_value': 20200419,
         'geo_value': 'ca',
         'value': 1,
+        'issue': 20200421,
+        'lag': 2,
+        'signal': 'sig',
+      }],
+      'message': 'success',
+    })
+
+  @patch('delphi.epidata.acquisition.covidcast_nowcast.load_sensors.CsvImporter.find_csv_files',
+         new=FIXED_ISSUE_IMPORTER)
+  def test_duplicate_row(self):
+    """Test duplicate unique keys are updated."""
+
+    # print full diff if something unexpected comes out
+    self.maxDiff=None
+
+    receiving_dir = '/common/covidcast_nowcast/receiving/src/'
+    os.makedirs(receiving_dir, exist_ok=True)
+
+    with open(receiving_dir + '20200419_state_sig.csv', 'w') as f:
+      f.write('sensor_name,geo_value,value\n')
+      f.write('testsensor,ca,1\n')
+    main()
+    with open(receiving_dir + '20200419_state_sig.csv', 'w') as f:
+      f.write('sensor_name,geo_value,value\n')
+      f.write('testsensor,ca,2\n')
+    main()
+
+    # most most recent value is the one stored
+    response = Epidata.covidcast_nowcast(
+      'src', 'sig', 'testsensor', 'day', 'state', 20200419, 'ca')
+    self.assertEqual(response, {
+      'result': 1,
+      'epidata': [{
+        'time_value': 20200419,
+        'geo_value': 'ca',
+        'value': 2,
         'issue': 20200421,
         'lag': 2,
         'signal': 'sig',
