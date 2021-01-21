@@ -112,4 +112,4 @@ class Database(BaseDatabase):
         **kwargs,
         table_name=Database.TABLE_NAME,
         columns_and_types=Database.ORDERED_CSV_COLUMNS,
-        additional_fields=[('record_type', 'T')])
+        additional_fields=[('T', 'record_type')])
