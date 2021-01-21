@@ -36,12 +36,12 @@ def main(csv_path: str = SENSOR_CSV_PATH) -> None:
     """
     user, pw = secrets.db.epi
     engine = sqlalchemy.create_engine(f"mysql+pymysql://{user}:{pw}@{secrets.db.host}/{DB_NAME}")
-    for filepath, attr in CsvImporter.find_csv_files(csv_path):
-        if attr is None:
+    for filepath, attribute in CsvImporter.find_csv_files(csv_path):
+        if attribute is None:
             _move_after_processing(filepath, success=False)
             continue
         try:
-            data = load_and_prepare_file(filepath, attr)
+            data = load_and_prepare_file(filepath, attribute)
             conn = engine.connect()
             with conn.begin():
                 method = _create_upsert_method(sqlalchemy.MetaData(conn))
