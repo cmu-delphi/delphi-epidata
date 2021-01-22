@@ -33,6 +33,7 @@ def connect_db():
     try:
         _get_db()
     except:
+        app.logger.error('database connection error')
         raise DatabaseErrorException()
 
 

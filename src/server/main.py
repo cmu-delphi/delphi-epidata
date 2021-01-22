@@ -39,7 +39,6 @@ def send_index_file():
 
 @app.route(f"{URL_PREFIX}/lib/<path:path>")
 def send_lib_file(path: str):
-    print(path, flush=True)
     return send_from_directory(pathlib.Path(__file__).parent / "lib", path)
 
 
