@@ -1,6 +1,6 @@
 from typing import cast
 
-from flask import Flask, g
+from flask import Flask, g, request
 from sqlalchemy.engine import Connection
 from werkzeug.local import LocalProxy
 
@@ -8,7 +8,7 @@ from ._config import SECRET
 from ._db import engine
 from ._exceptions import DatabaseErrorException
 
-app = Flask("EpiData")
+app = Flask("EpiData", static_url_path="")
 app.config["SECRET"] = SECRET
 
 
@@ -27,6 +27,8 @@ db: Connection = cast(Connection, LocalProxy(_get_db))
 
 @app.before_request
 def connect_db():
+    if request.path.startswith('/lib'):
+        return
     # try to get the db
     try:
         _get_db()

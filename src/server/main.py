@@ -2,7 +2,7 @@ import pathlib
 import logging
 from typing import Dict, Callable
 
-from flask import request, send_file, Response
+from flask import request, send_file, Response, send_from_directory
 
 from ._config import URL_PREFIX
 from ._common import app
@@ -36,6 +36,11 @@ def handle_generic():
 @app.route(f"{URL_PREFIX}/index.html")
 def send_index_file():
     return send_file(pathlib.Path(__file__).parent / "index.html")
+
+@app.route(f"{URL_PREFIX}/lib/<path:path>")
+def send_lib_file(path: str):
+    print(path, flush=True)
+    return send_from_directory(pathlib.Path(__file__).parent / "lib", path)
 
 
 if __name__ == "__main__":

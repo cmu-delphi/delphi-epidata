@@ -1,0 +1,12 @@
+{
+    "name": "delphi-epidata",
+    "private": true,
+    "dependencies": {},
+    "devDependencies": {
+        "delphi-cmu-buildtools": "github:sgratzl/delphi-cmu-buildtools"
+    },
+    "scripts": {
+        "build": "node build.js",
+        "image": "docker build -t delphi-epidata:latest --file ./devops/Dockerfile ."
+    }
+}

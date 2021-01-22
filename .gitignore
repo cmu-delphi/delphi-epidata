@@ -4,3 +4,5 @@ __pycache__/
 /delphi-epidata
 /.env
 *.db
+/build
+/node_modules
