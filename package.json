@@ -3,7 +3,7 @@
     "private": true,
     "dependencies": {},
     "devDependencies": {
-        "delphi-cmu-buildtools": "github:sgratzl/delphi-cmu-buildtools"
+        "delphi-cmu-buildtools": "git+https://github.com/sgratzl/delphi-cmu-buildtools.git"
     },
     "scripts": {
         "build": "node build.js",
