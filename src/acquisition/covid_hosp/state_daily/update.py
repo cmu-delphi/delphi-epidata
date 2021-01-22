@@ -5,6 +5,8 @@ via healthdata.gov.
 """
 
 # first party
+import argparse
+
 from delphi.epidata.acquisition.covid_hosp.common.utils import Utils
 from delphi.epidata.acquisition.covid_hosp.state_daily.database import Database
 from delphi.epidata.acquisition.covid_hosp.state_daily.network import Network
@@ -20,8 +22,10 @@ class Update:
     bool
       Whether a new dataset was acquired.
     """
-
-    return Utils.update_dataset(Database, network)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--revision", help="Select a past revision to reload")
+    args = parser.parse_args()
+    return Utils.update_dataset(Database, network, args.revision)
 
 
 # main entry point

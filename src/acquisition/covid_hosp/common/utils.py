@@ -160,7 +160,7 @@ class Utils:
     resource = Utils.get_entry(metadata, 'result', 0, 'resources', 0)
     return resource['url'], resource['revision_timestamp']
 
-  def update_dataset(database, network):
+  def update_dataset(database, network, revision=None):
     """Acquire the most recent dataset, unless it was previously acquired.
 
     Parameters
@@ -175,26 +175,25 @@ class Utils:
     bool
       Whether a new dataset was acquired.
     """
-
-    # get dataset details from metadata
-    metadata = network.fetch_metadata()
-    url, revision = Utils.extract_resource_details(metadata)
-    issue = Utils.get_issue_from_revision(revision)
-    print(f'issue: {issue}')
-    print(f'revision: {revision}')
-
     # connect to the database
     with database.connect() as db:
-
-      # bail if the dataset has already been acquired
-      if db.contains_revision(revision):
-        print('already have this revision, nothing to do')
-        return False
-
-      # add metadata to the database
-      metadata_json = json.dumps(metadata)
-      db.insert_metadata(issue, revision, metadata_json)
-
+      if revision:
+        url = db.get_revision_url(revision)
+        issue = Utils.get_issue_from_revision(revision)
+      else:
+        # get dataset details from healthdata.gov metadata
+        metadata = network.fetch_metadata()
+        url, revision = Utils.extract_resource_details(metadata)
+        issue = Utils.get_issue_from_revision(revision)
+        print(f'issue: {issue}')
+        print(f'revision: {revision}')
+        # bail if the dataset has already been acquired
+        if db.contains_revision(revision):
+          print('already have this revision, nothing to do')
+          return False
+        # add metadata to the database
+        metadata_json = json.dumps(metadata)
+        db.insert_metadata(issue, revision, metadata_json)
       # download the dataset and add it to the database
       dataset = network.fetch_dataset(url)
       db.insert_dataset(issue, dataset)

@@ -3,6 +3,7 @@
 # standard library
 from contextlib import contextmanager
 import math
+import json
 
 # third party
 import mysql.connector
@@ -111,6 +112,32 @@ class Database:
       ''', (self.table_name, revision))
       for (result,) in cursor:
         return bool(result)
+
+  def get_revision_url(self, revision):
+    """Return whether the given revision already exists in the database.
+
+    Parameters
+    ----------
+    revision : str
+      Unique revision string.
+
+    Returns
+    -------
+    str
+      dataset URL string
+    """
+
+    with self.new_cursor() as cursor:
+      cursor.execute('''
+        SELECT
+          metadata_json
+        FROM
+          `covid_hosp_meta`
+        WHERE
+          `dataset_name` = %s AND `revision_timestamp` = %s 
+      ''', (self.table_name, revision))
+      for (result,) in cursor:
+        return json.loads(result.replace("\n", "\\n"))["result"][0]["url"]
 
   def insert_metadata(self, publication_date, revision, meta_json):
     """Add revision metadata to the database.
