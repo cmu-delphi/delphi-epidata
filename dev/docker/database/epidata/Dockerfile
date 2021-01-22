@@ -9,7 +9,7 @@ ENV MYSQL_USER user
 ENV MYSQL_PASSWORD pass
 
 # provide DDL which will create empty tables at container startup
-COPY ./src/ddl/*.sql /docker-entrypoint-initdb.d/
+COPY repos/delphi/delphi-epidata/src/ddl/*.sql /docker-entrypoint-initdb.d/
 
 # grant access to SQL scripts
 RUN chmod o+r /docker-entrypoint-initdb.d/*.sql
