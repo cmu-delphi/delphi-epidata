@@ -29,7 +29,11 @@ loglevel = use_loglevel
 workers = web_concurrency
 bind = use_bind
 keepalive = 120
+
 errorlog = "-"
+accesslog = "-"
+capture_output = True
+enable_stdio_inheritance = True
 
 # disable limit request line till 414 issue is resolved
 limit_request_line = 0
@@ -46,5 +50,4 @@ log_data = {
     "host": host,
     "port": port,
 }
-print(json.dumps(log_data))
-
+print(json.dumps(log_data), flush=True)

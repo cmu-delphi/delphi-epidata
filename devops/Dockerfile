@@ -11,6 +11,9 @@ RUN ln -s -f /usr/share/zoneinfo/America/New_York /etc/localtime
 COPY requirements.txt /app
 RUN pip install --no-cache-dir -r requirements.txt
 
+# disable python stdout buffering
+ENV PYTHONUNBUFFERED 1
+
 COPY ./devops/gunicorn_conf.py /app
 COPY ./src/server/ /app/app/
 COPY --from=builder ./src/build/lib/ /app/app/lib/
