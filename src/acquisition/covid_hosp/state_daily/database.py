@@ -18,7 +18,7 @@ class Database(BaseDatabase):
   # to update a column name, do it in both places.
   ORDERED_CSV_COLUMNS = [
     ('state', 'state', str),
-    ('reporting_cutoff_start', 'reporting_cutoff_start', Utils.int_from_date),
+    ('reporting_cutoff_start', 'date', Utils.int_from_date),
     ('critical_staffing_shortage_today_yes', 'critical_staffing_shortage_today_yes', int),
     ('critical_staffing_shortage_today_no', 'critical_staffing_shortage_today_no', int),
     ('critical_staffing_shortage_today_not_reported',
