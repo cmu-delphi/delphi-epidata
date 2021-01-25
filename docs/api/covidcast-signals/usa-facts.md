@@ -34,7 +34,7 @@ These signals are taken directly from the USAFacts [COVID-19 Map by County and S
 This data is similar in intent to our [JHU Cases and Deaths](jhu-csse.md)
 source, but as USAFacts collects and aggregates its data in slightly different
 ways, the data is not identical. Users should evaluate which source better fits
-their needs. Users should evaluate which source better fits their needs or use
+their needs or use
 the [combination signal of both USAFacts and JHU data](indicator-combination.md).
 
 ## Table of Contents
@@ -77,8 +77,8 @@ code used by USAFacts to promote consistency and avoid confusion by external use
 |Oglala Lakota      |South Dakota   |46113              |46102          |
 |Kusilvak           |Alaska         |02270              |02158 & 02270  |
 
-Besides, Wade Hampton Census Area and Kusilvak Census Area are reported by
-USAFacts with FIPS 02270 and 02158 respectively though there is always 0
+Additionally, Wade Hampton Census Area and Kusilvak Census Area are reported by
+USAFacts with FIPS 02270 and 02158 respectively though there are always 0
 cases/deaths reported for Wade Hampton Census Area (02270). [According to the US
 Census Bureau](https://www.census.gov/quickfacts/kusilvakcensusareaalaska), Wade
 Hampton Census Area has changed name and code from Wade Hampton Census Area,
@@ -131,7 +131,7 @@ There is no information provided for Puerto Rico in USAFacts's data. There are
 unallocated cases/deaths reported for different states and New York City.
 Due to differences in state reporting standards, certain counties are not
 reported in the USAFacts data or are reported combined with other counties;
-these exceptions are explained below.
+these exceptions are explained above.
 
 ## Source and Licensing
 

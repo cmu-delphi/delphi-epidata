@@ -33,7 +33,7 @@ University.
 | `deaths_incidence_prop` | `deaths_7dav_incidence_prop` | Number of new confirmed deaths due to COVID-19 per 100,000 population, daily <br/> **First Available:** 2020-01-22 & 2020-02-20 |
 
 These signals are taken directly from the JHU CSSE [COVID-19 GitHub
-repository](https://github.com/CSSEGISandData/COVID-19) without changes. Delphi computes 7-day average signals by calculating moving averages of
+repository](https://github.com/CSSEGISandData/COVID-19) without changes. Delphi computes the 7-day average signals by calculating moving averages of
 the preceding 7 days (e.g., the signal for June 7 is the average of the
 underlying data for June 1 through 7, inclusive).
 

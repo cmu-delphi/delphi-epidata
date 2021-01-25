@@ -17,7 +17,7 @@ grand_parent: COVIDcast Epidata API
 
 ## Overview
 
-Our data source is based on Google-run symptom surveys through publisher websites, their Opinions Reward app, and similar applications. Respondents can opt to skip
+This data source is based on symptom surveys which we run using a Google platform that includes publisher websites, their Opinions Reward app, and similar applications. Respondents can opt to skip
 the survey and complete a different one if they prefer not to answer. The survey
 is just one question long, and asks "Do you know someone in your community who
 is sick (fever, along with cough, or shortness of breath, or difficulty
@@ -114,7 +114,7 @@ again the plug-in estimate of standard error of the estimator.
 
 ### State and Mega-County Estimates
 
-State estimates are somewhat complicated by the multi-resolution nature of sampling within a state: recall that we run surveys directly in each state and all of its counties with more than 100,000 populations. We use a Bayesian approach to combine state and county level surveys into a state-level community %CLI estimate.
+State estimates are somewhat complicated by the multi-resolution nature of sampling within a state: recall that we run surveys in each state overall and in each county with a population greater than 100,000. We use a Bayesian approach to combine state and county level surveys into a state-level community %CLI estimate.
 
 For *every* county $$i$$ in the state, irrespective of whether the county was
 surveyed, let $$(Y_{c,i},N_{c,i})$$ represent the number of observed yes and no
@@ -227,7 +227,7 @@ p_{c,i}}{m_s} = \frac{\sum_{\text{surveyed } i} m_{c,i} \hat p_{c,i}}{m_s-m_o}.
 $$
 
 Since this estimator is biased, the variance is not representative of
-the estimate's amount of uncertainty. Our alternative to reporting variance is to report the MSE of the MAP estimate:
+the estimate's uncertainty. Our alternative to reporting variance is to report the MSE of the MAP estimate:
 
 $$
 \text{MSE}(\hat p_s) =
@@ -258,4 +258,4 @@ pooling data over time.  That is, daily, for each location, we first pool all
 data available in that location over the last 5 days, and compute the estimates
 given above using all five days of data.
 
-In contrast to the Facebook surveys, this pooling does not significantly change the availability. Our stratified sampling procedure (essentially always) delivers sufficient data at the county level--at least 100 survey responses--to warrant their estimates. However, the pooling procedure still does help by serving as a smoother. 
+In contrast to the Facebook surveys, this pooling does not significantly change availability. Our stratified sampling procedure (essentially always) delivers sufficient data at the county level--at least 100 survey responses--to meet our sample size thresholds. However, the pooling procedure still does help by serving as a smoother. 

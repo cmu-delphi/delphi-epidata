@@ -28,11 +28,11 @@ datasets.
 * **Number of data revisions since June 23, 2020:** 1
 * **Date of last change:** [November 3, 2020](../covidcast_changelog.html#safegraph)
 
-Delphi's data source is based on [social distancing metrics](https://docs.safegraph.com/docs/social-distancing-metrics).  SafeGraph
+This data source is based on [SafeGraph's social distancing metrics](https://docs.safegraph.com/docs/social-distancing-metrics).  SafeGraph
 provides this data for individual census block groups, using differential
 privacy to protect individual people's data privacy.
 
-Delphi creates the SafeGraph data features at the census block group level, then aggregates these features to the county and state levels. The aggregated data is freely available through the COVIDcast API.
+Delphi uses this information to create features at the census block group level, then aggregates these features to the county and state levels. The aggregated data is freely available through the COVIDcast API.
 
 For precise definitions of the quantities below, consult the [SafeGraph social
 distancing metric
@@ -70,10 +70,10 @@ additional day for SafeGraph's data to be ingested into the COVIDcast API.
 * **Number of data revisions since June 23, 2020:** 0
 * **Date of last change:** never
 
-Delphi's data source is based on SafeGraph's [Weekly Patterns](https://docs.safegraph.com/docs/weekly-patterns) dataset. SafeGraph provides this data for different points of interest ([POIs](https://docs.safegraph.com/v4.0/docs#section-core-places)) considering individual census block groups, using differential privacy to protect individual people's data privacy.
+This data source is based on [SafeGraph's Weekly Patterns](https://docs.safegraph.com/docs/weekly-patterns) dataset. SafeGraph provides this data for different points of interest ([POIs](https://docs.safegraph.com/v4.0/docs#section-core-places)) considering individual census block groups, using differential privacy to protect individual people's data privacy.
 
 Delphi gathers the number of daily visits to POIs of certain types(bars,
-restaurants, etc.)  from SafeGraph's Weekly Patterns data at the 5-digit ZipCode level aggregates and reports these features to the county, MSA, HRR, and state levels. The aggregated data is freely available through the COVIDcast API.
+restaurants, etc.)  from SafeGraph's Weekly Patterns data at the 5-digit ZipCode level, then aggregates these features to the county, MSA, HRR, and state levels. The aggregated data is freely available through the COVIDcast API.
 
 For precise definitions of the quantities below, consult the [SafeGraph Weekly 
 Patterns documentation](https://docs.safegraph.com/docs/weekly-patterns).
@@ -85,7 +85,7 @@ Patterns documentation](https://docs.safegraph.com/docs/weekly-patterns).
 | `restaurants_visit_num` | The number of daily visits made by those with SafeGraph's apps to restaurant-related POIs in a certain region <br/> **First Available:** 01/01/2019 |
 | `restaurants_visit_prop` | The number of daily visits made by those with SafeGraph's apps to restaurant-related POIs in a certain region, per 100,000 population <br/> **First Available:** 01/01/2019 |
 
-SafeGraph delivers the number of daily visits to U.S. POIs, the details described in the [Places
+SafeGraph delivers the number of daily visits to U.S. POIs described in the [Places
 Manual](https://readme.safegraph.com/docs/places-manual#section-placekey)
 dataset.  Delphi aggregates the number of visits to certain types of places,
 such as bars (places with [NAICS code =

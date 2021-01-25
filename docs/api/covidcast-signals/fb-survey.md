@@ -18,7 +18,8 @@ grand_parent: COVIDcast Epidata API
 ## Overview
 
 This data source is based on symptom surveys run by the Delphi group at Carnegie
-Mellon. Facebook directs a random sample of its users these voluntary surveys. Individual survey responses are held by CMU and are sharable with
+Mellon. Facebook directs a random sample of its users to these voluntary surveys. 
+Individual survey responses are held by CMU and are sharable with
 other health researchers under a data use agreement. No individual survey
 responses are shared back to Facebook. See our [surveys
 page](https://covidcast.cmu.edu/surveys.html) for more detail about how the
@@ -64,7 +65,7 @@ The survey starts with the following 5 questions:
 5. How many additional people in your local community that you know personally
    are sick (fever, along with at least one other symptom from the above list)?
 
-Beyond these 5 questions, many other questions follow in the survey, which go into more detail on symptoms, contacts, risk factors, and demographics. These are used for many of our behavior and testing indicators
+After these 5 questions, the survey asks many other questions which go into more detail on symptoms, contacts, risk factors, and demographics. These are used for many of our behavior and testing indicators
 below. The full text of the survey (including all deployed versions) can be
 found on our [questions and coding page](../../symptom-survey/coding.md).
 Researchers can [request
@@ -79,7 +80,7 @@ have received is over 9 million.
 
 Of primary interest for the API are the symptoms defining a COVID-like illness
 (fever, along with cough, or shortness of breath, or difficulty breathing) or
-influenza-like illness (fever, along with a cough or sore throat). Using this
+influenza-like illness (fever, along with cough or sore throat). Using this
 survey data, we estimate the percentage of people who have a COVID-like illness,
 or influenza-like illness, in a given location, on a given day.
 
@@ -102,7 +103,7 @@ Influenza-like illness or ILI is a standard indicator defined by the CDC
 as fever along with sore throat or cough. From the list of symptoms from Q1 on
 our survey, this means a and (b or c).
 
-COVID-like illness or CLI is not a standard indicator.  We chose to define it through our discussions with the CDC as fever along with a cough or shortness of breath, or difficulty breathing.
+COVID-like illness or CLI is not a standard indicator. We define it as fever along with a cough, shortness of breath, or difficulty breathing.
 
 Symptoms alone are not sufficient to diagnose influenza or coronavirus
 infections, and so these ILI and CLI indicators are *not* expected to be
@@ -127,7 +128,7 @@ For a single survey, we are interested in the quantities:
 - $$N =$$ the number of people in the household.
 
 Note that $$N$$ comes directly from the answer to Q3. However, neither $$X$$ nor
-$$Y$$ can be computed directly (because Q2 does not answer the
+$$Y$$ can be computed directly (because Q2 does not specify the
 precise symptomatic profile of all individuals in the household, it only asks
 how many individuals have a fever and at least one other symptom from the list).
 
@@ -142,7 +143,7 @@ This can only "overcount" (result in too large estimates of) the true $$X$$ and
 $$Y$$. For example, this happens when some household members experience
 ILI that does not also qualify as CLI, while others experience CLI that does not
 also qualify as ILI. In this case, for both $$X$$ and $$Y$$, our simple strategy
-would return the sum of both types of cases. However, given the extreme degree of overlap between the ILI and CLI definitions, it is reasonable to believe that, if symptoms across all household members qualified as both ILI and CLI, each individual would have both, or neither--with neither being the more common possibility.Therefore we do not consider this "over counting" phenomenon practically problematic.
+would return the sum of both types of cases. However, given the extreme degree of overlap between the ILI and CLI definitions, it is reasonable to believe that, if symptoms across all household members qualified as both ILI and CLI, each individual would have both, or neither--with neither being the more common possibility. Therefore we do not consider this "overcounting" phenomenon practically problematic.
 
 ### Estimating Percent ILI and CLI
 
@@ -347,7 +348,7 @@ also available. These have names beginning `smoothed_w`, such as
 
 ## Survey Weighting
 
-Notice that the estimates defined in the previous sections are calculated with respect to US Facebook users' population. (To be precise, the ILI and CLI
+Notice that the estimates defined in the previous sections are calculated with respect to the population of US Facebook users. (To be precise, the ILI and CLI
 indicators reflect the population of US Facebook users *and* their household
 members). In reality, our estimates are even further skewed by the varying
 propensity of people in the population of US Facebook users to take our survey
@@ -389,7 +390,7 @@ ZIP code intersecting the spatial unit of interest.
 Each of these surveys is assigned two weights: the participation weight
 $$w^{\text{part}}_i$$, and a geographical-division weight
 $$w^{\text{geodiv}}_i$$ describing how much a participant's ZIP code "belongs"
-in the spatial unit of interest. (For example, a ZIP code may overlap with multiple counties, so the weight describes the proportion of the ZIP code's population in each county.)
+in the spatial unit of interest. (For example, a ZIP code may overlap with multiple counties, so the weight describes the proportion of the ZIP code's population located in each county.)
 
 Let $$w^{\text{init}}_i=w^{\text{part}}_i w^{\text{geodiv}}_i$$ denote the
 initial weight assigned to this survey. First, we adjust these initial weights
@@ -443,7 +444,7 @@ $$
 
 are the delta method estimates of variance associated with self-normalized
 importance sampling estimators above, after combining with a pseudo-observation
-of 1/2 with the weight assigned to appear like a single effective observation
+of 1/2 with a weight assigned to appear like a single effective observation
 according to importance sampling diagnostics.
 
 The sample size reported is calculated by rounding down $$\sum_{i=1}^{m}
@@ -457,8 +458,8 @@ to prepare the estimate. (This notion of sample size is distinct from
 
 ### Adjusting Other Percentage Estimators
 
-The household ILI and CLI estimates are complex to weight, as shown in the
-previous subsection because they use an estimator based on the survey
+The household ILI and CLI estimates described in the previous subsection are complex to weight
+because they use an estimator based on the survey
 respondent *and their household.* All other estimates reported in the API are based on percentages of respondents, such as the percentage who report
 knowing someone in their community who is sick. This subsection will describes how survey weights are used to construct weighted estimates for these indicators, using community CLI as an example.
 

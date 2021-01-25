@@ -9,7 +9,7 @@ grand_parent: COVIDcast Epidata API
 
 * **Source name:** `indicator-combination`
 
-This source provides signals, which are combinations of the other sources,
+This source provides signals that are combinations of those
 calculated or composed by Delphi. It is not a primary data source.
 
 ## Table of contents
@@ -27,7 +27,7 @@ calculated or composed by Delphi. It is not a primary data source.
 * **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
 
-These signals combine Delphi's indicators---*not* including cases and deaths, but including other signals expected to be related to the underlying coronavirus infection rate-- to produce a single indicator. The goal is to provide a single map of the daily COVID-19 activity at each geographic level that summarizes other indicators so that users can study its fluctuations over space and time and not be overwhelmed by having to monitor many individual sensors.
+These signals combine Delphi's indicators---*not* including cases and deaths, but including other signals expected to be related to the underlying rate of coronavirus infection-- to produce a single indicator. The goal is to provide a single map of daily COVID-19 activity at each geographic level to summarize other indicators so that users can study its fluctuations over space and time and not be overwhelmed by having to monitor many individual sensors.
 
 * `nmf_day_doc_fbc_fbs_ght`: This signal uses a rank-1 approximation, from a
   nonnegative matrix factorization approach, to identify an underlying signal

@@ -92,7 +92,7 @@ $$
 
 #### Smoothing
 
-Pooling data forms smoothed estimates over time. That is, daily, for each location, we first pool all data available in that location over the last 7-days, and we then recompute everything described in the last two
+We compute smoothed estimates by pooling data over time. That is, daily, for each location, we first pool all data available in that location over the last 7-days, and we then recompute everything described in the last two
 subsections. Pooling in this way makes estimates available in more geographic areas, as many areas report very few tests per day but have enough data to report when 7 days are considered.
 
 ### Lag and Backfill

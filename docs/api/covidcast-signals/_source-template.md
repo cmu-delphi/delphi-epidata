@@ -58,7 +58,10 @@ average, describe it here.
 ## Limitations
 
 Any limitations in the interpretation of this signal, such as limits in its
-geographic coverage, limits in its interpretation (COVID doesn't always cause symptoms in a survey, our healthcare partner only is part of the market, there may be a demographic bias in respondents, etc.), known inaccuracies, etc.
+geographic coverage, limits in its interpretation (COVID doesn't always cause 
+the symptoms identified in a survey, our healthcare partner only is part of the 
+market, there may be a demographic bias in respondents, etc.), known 
+inaccuracies, etc.
 
 ## Lag and Backfill
 

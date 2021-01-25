@@ -18,7 +18,8 @@ grand_parent: COVIDcast Epidata API
 
 ## Overview
 
-Delphi based this data source on information about outpatient visits provided to us by health system partners. Using this outpatient data, we estimate the
+This data source is based on information about outpatient visits provided to us
+by health system partners. Using this outpatient data, we estimate the
 percentage of COVID-related doctor's visits in a given location on a given day.
 
 | Signal | Description |
@@ -122,7 +123,7 @@ working backward through time. The threshold is set at 500 observations.
 ### Smoothing
 
 To help with variability, we also employ a local linear regression filter with a
-Gaussian kernel. he bandwidth is fixed to approximately cover a rolling 7-day window, with the highest weight placed on the window's right edge (the most recent time point). Given this smoothing step, the standard error estimate shown
+Gaussian kernel. The bandwidth is fixed to approximately cover a rolling 7-day window, with the highest weight placed on the window's right edge (the most recent time point). Given this smoothing step, the standard error estimate shown
 above is not exactly correct, as the calculation is done post-smoothing.
 
 ## Lag and Backfill

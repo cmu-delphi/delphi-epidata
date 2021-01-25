@@ -18,7 +18,7 @@ grand_parent: COVIDcast Epidata API
 ## Overview
 
 This data source is based on the [COVID-19 Search Trends symptoms
-dataset](http://goo.gle/covid19symptomdataset). Using this search data, we estimate the volume of searches mapped to symptoms related to COVID-19, such as _anosmia_ (lack of smell) and _ageusia_(lack of taste). The resulting daily dataset for each region shows the relative frequency of searches for each symptom. The signals are measured in arbitrary units normalized for overall search users in the region and scaled by the maximum value of the normalized popularity within a geographic region across a specific time range. **Thus, values are NOT comparable across geographic regions**. Larger numbers represent the increased relative popularity of symptom-related searches.
+dataset](http://goo.gle/covid19symptomdataset). Using this search data, we estimate the volume of searches mapped to symptoms related to COVID-19, such as _anosmia_ (lack of smell) and _ageusia_(lack of taste). The resulting daily dataset for each region shows the relative frequency of searches for each symptom. The signals are measured in arbitrary units normalized for overall search users in the region and scaled by the maximum value of the normalized popularity within a geographic region across a specific time range. **Thus, values are NOT comparable across geographic regions**. Larger numbers represent greater relative popularity of symptom-related searches.
 
 | Signal | Description |
 | --- | --- |
@@ -84,4 +84,3 @@ This dataset is based on Google's [COVID-19 Search Trends symptoms dataset](http
 
 To learn more about the source data, how it is generated and its limitations, 
 read [Google's Search Trends symptoms dataset documentation](https://storage.googleapis.com/gcp-public-data-symptom-search/COVID-19%20Search%20Trends%20symptoms%20dataset%20documentation%20.pdf).
-
