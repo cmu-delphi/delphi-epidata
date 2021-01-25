@@ -1,6 +1,6 @@
 from flask import make_response, request
 from flask.json import dumps
-from typing import Iterable
+from typing import Iterable, Optional
 from werkzeug.exceptions import HTTPException
 
 
@@ -14,7 +14,7 @@ class EpiDataException(HTTPException):
         super(EpiDataException, self).__init__(message)
         self.code = status_code if _is_using_status_codes() else 200
         self.response = make_response(
-            dumps(dict(result=-1, message=message)),
+            dumps(dict(result=-1, message=message, epidata=[])),
             self.code,
         )
         self.response.mimetype = "application/json"
@@ -43,5 +43,8 @@ class ValidationFailedException(EpiDataException):
 
 
 class DatabaseErrorException(EpiDataException):
-    def __init__(self):
-        super(DatabaseErrorException, self).__init__("database error", 500, False)
+    def __init__(self, details: Optional[str] = None):
+        msg = "database error"
+        if details:
+            msg = f"{msg}: {details}"
+        super(DatabaseErrorException, self).__init__(msg, 500, False)

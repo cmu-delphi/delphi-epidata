@@ -17,7 +17,8 @@ from sqlalchemy.engine import RowProxy
 
 from ._common import db, app
 from ._db import metadata
-from ._printer import create_printer
+from ._printer import create_printer, APrinter
+from ._exceptions import DatabaseErrorException
 from ._validate import DateRange, extract_strings
 
 
@@ -144,6 +145,14 @@ def parse_result(
     ]
 
 
+def _run_query(p: APrinter, query_tuple: Tuple[str, Dict[str, Any]]):
+    query, params = query_tuple
+    # limit rows + 1 for detecting whether we would have more
+    full_query = text(f"{query} LIMIT {p.remaining_rows + 1}")
+    app.logger.info("full_query: %s, params: %s", full_query, params)
+    return db.execution_options(stream_results=True).execute(full_query, **params)
+
+
 def execute_queries(
     queries: Sequence[Tuple[str, Dict[str, Any]]],
     fields_string: Sequence[str],
@@ -161,19 +170,36 @@ def execute_queries(
         fields_int = [v for v in fields_int if v in fields_to_send]
         fields_float = [v for v in fields_float if v in fields_to_send]
 
-    def gen():
-        for query, params in queries:
+    query_list = list(queries)
+
+    def dummy_gen():
+        if 3 > 4:
+            yield {}
+        pass
+
+    if not query_list or p.remaining_rows <= 0:
+        return p(dummy_gen)
+    
+    def gen(first_rows):
+        for row in first_rows:
+            yield parse_row(row, fields_string, fields_int, fields_float)
+
+        for query_params in query_list:
             if p.remaining_rows <= 0:
                 # no more rows
                 break
-            # limit rows + 1 for detecting whether we would have more
-            full_query = text(f"{query} LIMIT {p.remaining_rows + 1}")
-            app.logger.info("full_query: %s, params: %s", full_query, params)
-            r = db.execution_options(stream_results=True).execute(full_query, **params)
+            r = _run_query(p, query_params)
             for row in r:
                 yield parse_row(row, fields_string, fields_int, fields_float)
 
-    return p(gen())
+    # execute first query
+    try:
+        r = _run_query(p, query_list.pop(0))
+    except Exception as e:
+        raise DatabaseErrorException(str(e))
+
+    # now use a generator for sending the rows and execute all the other queries
+    return p(gen(r))
 
 
 def execute_query(

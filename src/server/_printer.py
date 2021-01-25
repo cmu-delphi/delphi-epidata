@@ -37,20 +37,31 @@ class APrinter:
     def __call__(self, generator: Iterable[Dict[str, Any]]) -> Response:
         def gen():
             self.result = -2  # no result, default response
-            r = self._begin()
-            if r is not None:
-                yield r
+            began = False
             try: 
                 for row in generator:
+                    if not began:
+                        # do it here to catch an error before we send the begin
+                        r = self._begin()
+                        began = True
+                        if r is not None:
+                            yield r
                     r = self._print_row(row)
                     if r is not None:
                         yield r
             except Exception as e:
                 app.logger.error(f'error executing')
                 self.result = -1
-                raise e
+                yield self._error(e)
             
             record_analytics(self.result, self.count)
+
+            if not began:
+                # do it manually to catch an error before we send the begin
+                r = self._begin()
+                began = True
+                if r is not None:
+                    yield r
 
             r = self._end()
             if r is not None:
@@ -65,6 +76,10 @@ class APrinter:
     def _begin(self) -> Optional[Union[str, bytes]]:
         # hook
         return None
+
+    def _error(self, error: Exception) -> str:
+        # send an generic error
+        return dumps(dict(result=self.result, message=f"unknown error occurred: {error}",error=error, epidata=[]))
 
     def _print_row(self, row: Dict) -> Optional[Union[str, bytes]]:
         first = self.count == 0
@@ -156,6 +171,10 @@ class CSVPrinter(APrinter):
 
     def _begin(self):
         return None
+
+    def _error(self, error: Exception) -> str:
+        # send an generic error
+        return f"unknown error occurred:\n{error}"
 
     def _format_row(self, first: bool, row: Dict):
         if first:
