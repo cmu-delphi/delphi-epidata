@@ -10,7 +10,7 @@ alias = None
 
 
 def meta_api(seconds: int):
-    query = "SELECT count(1) `num_hits`, count(distinct `ip`) `unique_ips`, sum(`num_rows`) `rows_returned` FROM `api_analytics` WHERE `datetime` >= date_sub(now(), interval {$seconds} second)"
+    query = f"SELECT count(1) `num_hits`, count(distinct `ip`) `unique_ips`, sum(`num_rows`) `rows_returned` FROM `api_analytics` WHERE `datetime` >= date_sub(now(), interval {seconds} second)"
     fields_int = ["num_hits", "unique_ips", "rows_returned"]
 
     return parse_result(query, {}, None, fields_int, None)

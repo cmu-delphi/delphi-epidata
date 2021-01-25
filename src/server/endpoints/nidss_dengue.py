@@ -25,7 +25,7 @@ def handle():
     queries = []
     for location in locations:
         # some kind of enforcing escaping
-        location = re.search(r"([\w-]+)", location)
+        location = re.search(r"([\w-]+)", location)[0]
         location_params = params.copy()
         query = f"""
             SELECT
