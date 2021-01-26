@@ -28,17 +28,17 @@ class UpdateTests(unittest.TestCase):
                        "test_issue_value",
                        "test_lag_value")
 
-    test_df = load_and_prepare_file(StringIO("sensor_name,geo_value,value\ntestname,01001,1.5"), test_attributes)
+    test_df = load_and_prepare_file(StringIO("sensor_name,geo_value,value,lag,issue\ntestname,01001,1.5,2,20200101"), test_attributes)
     pd.testing.assert_frame_equal(test_df,
                                   pd.DataFrame({"sensor_name": ["testname"],
                                                 "geo_value": ["01001"],
                                                 "value": [1.5],
+                                                "lag": [2],
+                                                "issue": [20200101],
                                                 "source": ["test_source"],
                                                 "signal": ["test_signal"],
                                                 "time_type": ["test_time_type"],
                                                 "geo_type": ["test_geo_type"],
                                                 "time_value": ["test_time_value"],
-                                                "issue": ["test_issue_value"],
-                                                "lag": ["test_lag_value"],
                                                 "value_updated_timestamp": [12345]})
                                   )

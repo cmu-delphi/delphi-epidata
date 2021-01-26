@@ -12,7 +12,7 @@ SUCCESS_DIR = "archive/successful"
 FAIL_DIR = "archive/failed"
 TABLE_NAME = "covidcast_nowcast"
 DB_NAME = "epidata"
-CSV_DTYPES = {"sensor_name": str, "geo_value": str, "value": float}
+CSV_DTYPES = {"sensor_name": str, "geo_value": str, "value": float, "lag": int, "issue": int}
 
 
 def main(csv_path: str = SENSOR_CSV_PATH) -> None:
@@ -75,8 +75,7 @@ def load_and_prepare_file(filepath: str, attributes: tuple) -> pd.DataFrame:
     data["time_type"] = time_type
     data["geo_type"] = geo_type
     data["time_value"] = time_value
-    data["issue"] = issue_value
-    data["lag"] = lag_value
+    # we don't use the lag and issue calculation since it's specified in the data.
     data["value_updated_timestamp"] = int(time.time())
     return data
 
