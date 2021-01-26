@@ -11,7 +11,7 @@ grand_parent: COVIDcast Epidata API
 * **First issued:** TBD
 * **Number of data revisions since 19 May 2020:** 0
 * **Date of last change:** Never
-* **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
+* **Available for:** state, hhs, nation (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** [Open Data Commons Open Database License (ODbL)](https://opendatacommons.org/licenses/odbl/1-0/)
 
@@ -21,7 +21,7 @@ datasets is mirrored in Epidata at the following endpoint:
 
 * [COVID-19 Hospitalization: States](../covid_hosp.md) - daily resolution, state aggregates
 
-This dataset contain dozens of columns that break down hospital
+That dataset contain dozens of columns that break down hospital
 resource usage in different ways.
 
 This indicator makes available several commonly-used combinations of
@@ -70,11 +70,24 @@ admissions are incident on that date.
 
 ## Limitations
 
-TBD
+HHS collects data from state and territorial health departments about many, but
+not all, hospitals in the U.S. Notably excluded from this dataset are
+psychiatric, rehabilitation, Indian Health Service (IHS) facilities,
+U.S. Department of Veterans Affairs (VA) facilities, Defense Health Agency (DHA)
+facilities, and religious non-medical facilities.
 
 ## Lag and Backfill
 
-TBD
+HHS issues updates to this data once a week, and occasionally more often. We
+check for updates daily. Lag varies from 0 to 6 days.
+
+Occasionally a value published in an early issue will be changed in a subsequent
+issue when additional data becomes known. This effect is known as
+backfill. Backfill is relatively uncommon in this dataset (80% of dates from
+November 1 2020 onward are never touched after their first issue) and most such
+updates occur one to two weeks after information about a date is first
+published. In rare instances, a value may be updated 10 weeks or more after it
+is first published.
 
 ## Source and Licensing
 
