@@ -75,8 +75,8 @@ class CsvUploadingTests(unittest.TestCase):
 
     # valid
     with open(receiving_dir + '20200419_state_sig.csv', 'w') as f:
-      f.write('sensor_name,geo_value,value,lag,issue\n')
-      f.write('testsensor,ca,1,2,20200421\n')
+      f.write('sensor_name,geo_value,value,issue\n')
+      f.write('testsensor,ca,1,20200421\n')
 
     # invalid filename
     with open(receiving_dir + 'hello.csv', 'w') as f:
@@ -129,12 +129,12 @@ class CsvUploadingTests(unittest.TestCase):
     os.makedirs(receiving_dir, exist_ok=True)
 
     with open(receiving_dir + '20200419_state_sig.csv', 'w') as f:
-      f.write('sensor_name,geo_value,value,lag,issue\n')
-      f.write('testsensor,ca,1,2,20200415\n')
+      f.write('sensor_name,geo_value,value,issue\n')
+      f.write('testsensor,ca,1,20200425\n')
     main()
     with open(receiving_dir + '20200419_state_sig.csv', 'w') as f:
-      f.write('sensor_name,geo_value,value,lag,issue\n')
-      f.write('testsensor,ca,2,2,20200415\n')
+      f.write('sensor_name,geo_value,value,issue\n')
+      f.write('testsensor,ca,2,20200425\n')
     main()
 
     # most most recent value is the one stored
@@ -146,8 +146,8 @@ class CsvUploadingTests(unittest.TestCase):
         'time_value': 20200419,
         'geo_value': 'ca',
         'value': 2,
-        'issue': 20200415,
-        'lag': 2,
+        'issue': 20200425,
+        'lag': 6,
         'signal': 'sig',
       }],
       'message': 'success',
