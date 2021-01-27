@@ -20,7 +20,7 @@ calculated or composed by Delphi. It is not a primary data source.
 
 ## Statistical Combination Signals
 
-* **First issued by Delphi:** May 20, 2020
+* **Earliest issue available:** May 20, 2020
 * **Number of data revisions since May 19, 2020:** 1
 * **Date of last change:** [June 3, 2020](../covidcast_changelog.md#indicator-combination)
 * **Available for:** county, msa, state (see [geography coding docs](../covidcast_geography.md))
@@ -201,7 +201,7 @@ The resampling method for each input source is as follows:
 
 ## Compositional Signals: Confirmed Cases and Deaths
 
-* **First issued by Delphi:** 7 July 2020
+* **Earliest issue available:** 7 July 2020
 * **Number of data revisions since 19 May 2020:** 1
 * **Date of last change:** [12 October 2020](../covidcast_changelog.md#indicator-combination)
 * **Available for:** county, msa, hrr, state (see [geography coding docs](../covidcast_geography.md))
@@ -215,11 +215,11 @@ backfill, and other limitations.
 
 | Signal | 7-day average signal | Description |
 | --- | --- | --- |
-| `confirmed_cumulative_num` | `confirmed_7dav_cumulative_num` | Cumulative number of confirmed COVID-19 cases <br/> **First Available:** 2020-02-20 |
-| `confirmed_cumulative_prop` | `confirmed_7dav_cumulative_prop` | Cumulative number of confirmed COVID-19 cases per 100,000 population <br/> **First Available:** 2020-02-20 |
-| `confirmed_incidence_num` | `confirmed_7dav_incidence_num` | Number of new confirmed COVID-19 cases, daily <br/> **First Available:** 2020-02-20 |
-| `confirmed_incidence_prop` | `confirmed_7dav_incidence_prop` | Number of new confirmed COVID-19 cases per 100,000 population, daily <br/> **First Available:** 2020-02-20 |
-| `deaths_cumulative_num` | `deaths_7dav_cumulative_num` | Cumulative number of confirmed deaths due to COVID-19 <br/> **First Available:** 2020-02-20 |
-| `deaths_cumulative_prop` | `deaths_7dav_cumulative_prop` | Cumulative number of confirmed due to COVID-19, per 100,000 population <br/> **First Available:** 2020-02-20 |
-| `deaths_incidence_num` | `deaths_7dav_incidence_num` | Number of new confirmed deaths due to COVID-19, daily <br/> **First Available:** 2020-02-20 |
-| `deaths_incidence_prop` | `deaths_7dav_incidence_prop` | Number of new confirmed deaths due to COVID-19 per 100,000 population, daily <br/> **First Available:** 2020-02-20 |
+| `confirmed_cumulative_num` | `confirmed_7dav_cumulative_num` | Cumulative number of confirmed COVID-19 cases <br/> **Earliest date available:** 2020-02-20 |
+| `confirmed_cumulative_prop` | `confirmed_7dav_cumulative_prop` | Cumulative number of confirmed COVID-19 cases per 100,000 population <br/> **Earliest date available:** 2020-02-20 |
+| `confirmed_incidence_num` | `confirmed_7dav_incidence_num` | Number of new confirmed COVID-19 cases, daily <br/> **Earliest date available:** 2020-02-20 |
+| `confirmed_incidence_prop` | `confirmed_7dav_incidence_prop` | Number of new confirmed COVID-19 cases per 100,000 population, daily <br/> **Earliest date available:** 2020-02-20 |
+| `deaths_cumulative_num` | `deaths_7dav_cumulative_num` | Cumulative number of confirmed deaths due to COVID-19 <br/> **Earliest date available:** 2020-02-20 |
+| `deaths_cumulative_prop` | `deaths_7dav_cumulative_prop` | Cumulative number of confirmed due to COVID-19, per 100,000 population <br/> **Earliest date available:** 2020-02-20 |
+| `deaths_incidence_num` | `deaths_7dav_incidence_num` | Number of new confirmed deaths due to COVID-19, daily <br/> **Earliest date available:** 2020-02-20 |
+| `deaths_incidence_prop` | `deaths_7dav_incidence_prop` | Number of new confirmed deaths due to COVID-19 per 100,000 population, daily <br/> **Earliest date available:** 2020-02-20 |

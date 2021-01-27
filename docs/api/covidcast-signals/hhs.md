@@ -8,7 +8,7 @@ grand_parent: COVIDcast Epidata API
 {: .no_toc}
 
 * **Source name:** `hhs`
-* **First issued by Delphi:** January 26, 2021
+* **Earliest issue available:** January 26, 2021
 * **Number of data revisions since 19 May 2020:** 0
 * **Date of last change:** Never
 * **Available for:** state, hhs, nation (see [geography coding docs](../covidcast_geography.md))

@@ -8,7 +8,7 @@ grand_parent: COVIDcast Epidata API
 {: .no_toc}
 
 * **Source name:** `google-survey`
-* **First issued by Delphi:** April 29, 2020
+* **Earliest issue available:** April 29, 2020
 * **Number of data revisions since May 19, 2020:** 0
 * **Date of last change:** Never
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
@@ -40,8 +40,8 @@ specific geographical areas as needed to support forecasting efforts.
 
 | Signal | Description |
 | --- | --- |
-| `raw_cli` | Estimated percentage of people who know someone in their community with COVID-like illness <br/> **First Available:** 2020-04-11 |
-| `smoothed_cli` | Estimated percentage of people who know someone in their community with COVID-like illness, smoothed in time [as described below](#smoothing) <br/> **First Available:** 2020-04-11 |
+| `raw_cli` | Estimated percentage of people who know someone in their community with COVID-like illness <br/> **Earliest date available:** 2020-04-11 |
+| `smoothed_cli` | Estimated percentage of people who know someone in their community with COVID-like illness, smoothed in time [as described below](#smoothing) <br/> **Earliest date available:** 2020-04-11 |
 
 ## Table of Contents
 {: .no_toc .text-delta}

@@ -8,7 +8,7 @@ grand_parent: COVIDcast Epidata API
 {: .no_toc}
 
 * **Source name:** `google-symptoms`
-* **First issued by Delphi:** November 30, 2020
+* **Earliest issue available:** November 30, 2020
 * **Number of data revisions since May 19, 2020:** 0
 * **Date of last change:** Never
 * **Available for:** county, MSA, HRR, state (see [geography coding docs](../covidcast_geography.md))
@@ -30,12 +30,12 @@ increased releative popularity of symptom-related searches.
 
 | Signal | Description |
 | --- | --- |
-| `anosmia_raw_search` |  Google search volume for anosmia-related searches, in arbitrary units that are normalized for overall search users <br/> **First Available:** 2020-02-13 |
-| `anosmia_smoothed_search` | Google search volume for anosmia-related searches, in arbitrary units that are normalized for overall search users, smoothed by 7-day average <br/> **First Available:** 2020-02-20 |
-| `ageusia_raw_search` | Google search volume for ageusia-related searches, in arbitrary units that are normalized for overall search users <br/> **First Available:** 2020-02-13 |
-| `ageusia_smoothed_search` |  Google search volume for ageusia-related searches, in arbitrary units that are normalized for overall search users, smoothed by 7-day average <br/> **First Available:** 2020-02-20 |
-| `sum_anosmia_ageusia_raw_search` | The sum of Google search volume for anosmia and ageusia related searches, in an arbitrary units that are normalized for overall search users <br/> **First Available:** 2020-02-13 |
-| `sum_anosmia_ageusia_smoothed_search` | The sum of Google search volume for anosmia and ageusia related searches, in an arbitrary units that are normalized for overall search users, smoothed by 7-day average <br/> **First Available:** 2020-02-20 |
+| `anosmia_raw_search` |  Google search volume for anosmia-related searches, in arbitrary units that are normalized for overall search users <br/> **Earliest date available:** 2020-02-13 |
+| `anosmia_smoothed_search` | Google search volume for anosmia-related searches, in arbitrary units that are normalized for overall search users, smoothed by 7-day average <br/> **Earliest date available:** 2020-02-20 |
+| `ageusia_raw_search` | Google search volume for ageusia-related searches, in arbitrary units that are normalized for overall search users <br/> **Earliest date available:** 2020-02-13 |
+| `ageusia_smoothed_search` |  Google search volume for ageusia-related searches, in arbitrary units that are normalized for overall search users, smoothed by 7-day average <br/> **Earliest date available:** 2020-02-20 |
+| `sum_anosmia_ageusia_raw_search` | The sum of Google search volume for anosmia and ageusia related searches, in an arbitrary units that are normalized for overall search users <br/> **Earliest date available:** 2020-02-13 |
+| `sum_anosmia_ageusia_smoothed_search` | The sum of Google search volume for anosmia and ageusia related searches, in an arbitrary units that are normalized for overall search users, smoothed by 7-day average <br/> **Earliest date available:** 2020-02-20 |
 
 
 ## Table of Contents
