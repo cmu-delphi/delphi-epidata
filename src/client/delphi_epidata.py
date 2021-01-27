@@ -726,8 +726,9 @@ class Epidata:
       return responses
 
   @staticmethod
-  def async_call(param_combos):
+  def async_call(param_list):
+    """Make asynchronous Epidata calls for a list of parameters."""
     loop = asyncio.get_event_loop()
-    future = asyncio.ensure_future(Epidata.fetch_epidata(param_combos))
+    future = asyncio.ensure_future(Epidata.fetch_epidata(param_list))
     responses = loop.run_until_complete(future)
     return responses
