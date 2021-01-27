@@ -21,21 +21,20 @@ datasets is mirrored in Epidata at the following endpoint:
 
 * [COVID-19 Hospitalization: States](../covid_hosp.md) - daily resolution, state aggregates
 
-That dataset contain dozens of columns that break down hospital
+That dataset contains dozens of columns that break down hospital
 resource usage in different ways.
 
 This indicator makes available several commonly-used combinations of
 those columns, aggregated geographically. In particular, we include
 the sum of all adult and pediatric COVID-19 hospital admissions. This
-sum is used as the "ground truth" for hospitalizations by the [Reich
-lab COVID-19 forecast
-hub](https://github.com/reichlab/covid19-forecast-hub/blob/master/data-processed/README.md#hospitalizations).
+sum is used as the "ground truth" for hospitalizations by the [COVID-19 
+Forecast Hub](https://github.com/reichlab/covid19-forecast-hub/blob/master/data-processed/README.md#hospitalizations).
 
 
 | Signal | Geography | Resolution | Description |
 | --- | --- | --- | --- |
-| `confirmed_admissions_1d` | state | 1 day | Sum of adult and pediatric confirmed COVID-19 hospital admissions occuring each day. |
-| `sum_confirmed_suspected_admissions_1d` | state | 1 day | Sum of adult and pediatric confirmed and suspected COVID-19 hospital admissions occuring each day. |
+| `confirmed_admissions_covid_1d` | state | 1 day | Sum of adult and pediatric confirmed COVID-19 hospital admissions occurring each day. |
+| `sum_confirmed_suspected_admissions_covid_1d` | state | 1 day | Sum of adult and pediatric confirmed and suspected COVID-19 hospital admissions occurring each day. |
 
 ## Table of contents
 {: .no_toc .text-delta}
@@ -72,14 +71,14 @@ admissions are incident on that date.
 
 HHS collects data from state and territorial health departments about many, but
 not all, hospitals in the U.S. Notably excluded from this dataset are
-psychiatric, rehabilitation, Indian Health Service (IHS) facilities,
-U.S. Department of Veterans Affairs (VA) facilities, Defense Health Agency (DHA)
-facilities, and religious non-medical facilities.
+psychiatric and rehabilitation facilities, Indian Health Service (IHS)
+facilities, U.S. Department of Veterans Affairs (VA) facilities, Defense Health
+Agency (DHA) facilities, and religious non-medical facilities.
 
 ## Lag and Backfill
 
-HHS issues updates to this data once a week, and occasionally more often. We
-check for updates daily. Lag varies from 0 to 6 days.
+HHS issues updates to this timeseries once a week, and occasionally more
+often. We check for updates daily. Lag varies from 0 to 6 days.
 
 Occasionally a value published in an early issue will be changed in a subsequent
 issue when additional data becomes known. This effect is known as
