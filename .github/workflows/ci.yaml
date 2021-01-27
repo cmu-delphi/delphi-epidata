@@ -73,11 +73,11 @@ jobs:
           sleep 10s
       - name: Run Unit Tests
         run: |
-          docker run --rm --network delphi-net --env "SQLALCHEMY_DATABASE_URI=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata" --env "FLASK_SECRET=abc" delphi_web_python python3 -m undefx.py3tester.py3tester --use-exit-code repos/delphi/delphi-epidata/tests
+          docker run --rm --network delphi-net --env "SQLALCHEMY_DATABASE_URI=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata" --env "FLASK_SECRET=abc" delphi_web_python pytest repos/delphi/delphi-epidata/tests
 
       - name: Run Integration Tests
         run: |
-          docker run --rm --network delphi-net delphi_web_python python3 -m undefx.py3tester.py3tester --use-exit-code repos/delphi/delphi-epidata/integrations
+          docker run --rm --network delphi-net delphi_web_python pytest repos/delphi/delphi-epidata/integrations
 
       - name: Clean Up
         run: |
