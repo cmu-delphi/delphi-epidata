@@ -68,15 +68,15 @@ class CsvUploadingTests(unittest.TestCase):
     # print full diff if something unexpected comes out
     self.maxDiff=None
 
-    receiving_dir = '/common/covidcast_nowcast/receiving/src/'
-    success_dir = '/common/covidcast_nowcast/archive/successful/src/'
-    failed_dir = '/common/covidcast_nowcast/archive/failed/src/'
+    receiving_dir = '/common/covidcast_nowcast/receiving/issue_20200421/src/'
+    success_dir = '/common/covidcast_nowcast/archive/successful/issue_20200421/src/'
+    failed_dir = '/common/covidcast_nowcast/archive/failed/issue_20200421/src/'
     os.makedirs(receiving_dir, exist_ok=True)
 
     # valid
     with open(receiving_dir + '20200419_state_sig.csv', 'w') as f:
-      f.write('sensor_name,geo_value,value,issue\n')
-      f.write('testsensor,ca,1,20200421\n')
+      f.write('sensor_name,geo_value,value\n')
+      f.write('testsensor,ca,1\n')
 
     # invalid filename
     with open(receiving_dir + 'hello.csv', 'w') as f:
@@ -125,16 +125,16 @@ class CsvUploadingTests(unittest.TestCase):
     # print full diff if something unexpected comes out
     self.maxDiff=None
 
-    receiving_dir = '/common/covidcast_nowcast/receiving/src/'
+    receiving_dir = '/common/covidcast_nowcast/receiving/issue_20200425/src/'
     os.makedirs(receiving_dir, exist_ok=True)
 
     with open(receiving_dir + '20200419_state_sig.csv', 'w') as f:
-      f.write('sensor_name,geo_value,value,issue\n')
-      f.write('testsensor,ca,1,20200425\n')
+      f.write('sensor_name,geo_value,value\n')
+      f.write('testsensor,ca,1\n')
     main()
     with open(receiving_dir + '20200419_state_sig.csv', 'w') as f:
-      f.write('sensor_name,geo_value,value,issue\n')
-      f.write('testsensor,ca,2,20200425\n')
+      f.write('sensor_name,geo_value,value\n')
+      f.write('testsensor,ca,2\n')
     main()
 
     # most most recent value is the one stored

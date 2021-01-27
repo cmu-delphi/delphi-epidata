@@ -13,7 +13,7 @@ SUCCESS_DIR = "archive/successful"
 FAIL_DIR = "archive/failed"
 TABLE_NAME = "covidcast_nowcast"
 DB_NAME = "epidata"
-CSV_DTYPES = {"sensor_name": str, "geo_value": str, "value": float, "issue": int}
+CSV_DTYPES = {"sensor_name": str, "geo_value": str, "value": float}
 
 
 def main(csv_path: str = SENSOR_CSV_PATH) -> None:
@@ -37,7 +37,8 @@ def main(csv_path: str = SENSOR_CSV_PATH) -> None:
     """
     user, pw = secrets.db.epi
     engine = sqlalchemy.create_engine(f"mysql+pymysql://{user}:{pw}@{secrets.db.host}/{DB_NAME}")
-    for filepath, attribute in CsvImporter.find_csv_files(csv_path):
+#    for filepath, attribute in CsvImporter.find_csv_files(csv_path):
+    for filepath, attribute in CsvImporter.find_issue_specific_csv_files(csv_path):
         if attribute is None:
             _move_after_processing(filepath, success=False)
             continue
@@ -76,8 +77,8 @@ def load_and_prepare_file(filepath: str, attributes: tuple) -> pd.DataFrame:
     data["time_type"] = time_type
     data["geo_type"] = geo_type
     data["time_value"] = time_value
-    data["lag"] = [(datetime.strptime(str(i), "%Y%m%d") - datetime.strptime(str(j), "%Y%m%d")).days
-                   for i, j in zip(data["issue"], data["time_value"])]
+    data["issue"] = issue_value
+    data["lag"] = lag_value
     data["value_updated_timestamp"] = int(time.time())
     return data
 
