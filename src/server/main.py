@@ -11,7 +11,6 @@ from .endpoints import endpoints
 
 __all__ = ["app"]
 
-
 endpoint_map: Dict[str, Callable[[], Response]] = {}
 
 for endpoint in endpoints:
@@ -36,6 +35,7 @@ def handle_generic():
 @app.route(f"{URL_PREFIX}/index.html")
 def send_index_file():
     return send_file(pathlib.Path(__file__).parent / "index.html")
+
 
 @app.route(f"{URL_PREFIX}/lib/<path:path>")
 def send_lib_file(path: str):

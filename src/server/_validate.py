@@ -28,7 +28,6 @@ def check_auth_token(token: str, optional=False) -> bool:
         else:
             raise ValidationFailedException(f"missing parameter: auth")
 
-    print(value, flush=True)
     valid_token = value == token
     if not valid_token and not optional:
         raise UnAuthenticatedException()
@@ -96,7 +95,11 @@ def extract_integer(key: Union[str, Sequence[str]]) -> Optional[int]:
     if not s:
         # nothing to do
         return None
-    return int(s)
+    try:
+        return int(s)
+    except ValueError as e:
+        raise ValidationFailedException(f"{key}: not a number: {s}")
+
 
 
 def extract_integers(key: Union[str, Sequence[str]]) -> Optional[List[IntRange]]:
@@ -118,16 +121,22 @@ def extract_integers(key: Union[str, Sequence[str]]) -> Optional[List[IntRange]]
             # add the range as an array
             return (first, last)
         # the range is inverted, this is an error
-        return None
+        raise ValidationFailedException(f"{key}: the given range is inverted")
 
-    values = [_parse_range(part) for part in parts]
-    # check for invalid values
-    return None if any(v is None for v in values) else values
+    try:
+        values = [_parse_range(part) for part in parts]
+        # check for invalid values
+        return None if any(v is None for v in values) else values
+    except ValueError as e:
+        raise ValidationFailedException(f"{key}: not a number: {str(e)}")
 
 
 def parse_date(s: str) -> int:
     # parses a given string in format YYYYMMDD or YYYY-MM-DD to a number in the form YYYYMMDD
-    return int(s.replace("-", ""))
+    try:
+        return int(s.replace("-", ""))
+    except ValueError:
+        raise ValidationFailedException(f"not a valid date: {s}")
 
 
 def extract_date(key: Union[str, Sequence[str]]) -> Optional[int]:
@@ -156,7 +165,7 @@ def extract_dates(key: Union[str, Sequence[str]]) -> Optional[List[DateRange]]:
             # add the range as an array
             return (first_d, last_d)
         # the range is inverted, this is an error
-        return None
+        raise ValidationFailedException(f"{key}: the given range is inverted")
 
     for part in parts:
         if "-" not in part and ":" not in part:
