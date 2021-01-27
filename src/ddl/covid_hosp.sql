@@ -71,6 +71,12 @@ Data is public under the Open Data Commons Open Database License (ODbL).
 | issue                                                            | int(11) | NO   | MUL | NULL    |                |
 | state                                                            | char(2) | NO   | MUL | NULL    |                |
 | date                                                             | int(11) | NO   |     | NULL    |                |
+| critical_staffing_shortage_today_yes                             | int(11) | YES  |     | NULL    |                |
+| critical_staffing_shortage_today_no                              | int(11) | YES  |     | NULL    |                |
+| critical_staffing_shortage_today_not_reported                    | int(11) | YES  |     | NULL    |                |
+| critical_staffing_shortage_anticipated_within_week_yes           | int(11) | YES  |     | NULL    |                |
+| critical_staffing_shortage_anticipated_within_week_no            | int(11) | YES  |     | NULL    |                |
+| critical_staffing_shortage_anticipated_within_week_not_reported  | int(11) | YES  |     | NULL    |                |
 | hospital_onset_covid                                             | int(11) | YES  |     | NULL    |                |
 | hospital_onset_covid_coverage                                    | int(11) | YES  |     | NULL    |                |
 | inpatient_beds                                                   | int(11) | YES  |     | NULL    |                |
