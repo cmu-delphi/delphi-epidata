@@ -8,7 +8,7 @@ grand_parent: COVIDcast Epidata API
 {: .no_toc}
 
 * **Source name:** `nchs-mortality`
-* **First issued:** Epiweek 50 2020 (6-12 December 2020)
+* **First issued by Delphi:** Epiweek 50 2020 (6-12 December 2020)
 * **Number of data revisions since May 19, 2020:** 0
 * **Date of last change:** Never
 * **Available for:** state (see [geography coding docs](../covidcast_geography.md))

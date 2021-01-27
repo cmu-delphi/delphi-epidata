@@ -20,7 +20,7 @@ calculated or composed by Delphi. It is not a primary data source.
 
 ## Statistical Combination Signals
 
-* **First issued:** May 20, 2020
+* **First issued by Delphi:** May 20, 2020
 * **Number of data revisions since May 19, 2020:** 1
 * **Date of last change:** [June 3, 2020](../covidcast_changelog.md#indicator-combination)
 * **Available for:** county, msa, state (see [geography coding docs](../covidcast_geography.md))
@@ -201,7 +201,7 @@ The resampling method for each input source is as follows:
 
 ## Compositional Signals: Confirmed Cases and Deaths
 
-* **First issued:** 7 July 2020
+* **First issued by Delphi:** 7 July 2020
 * **Number of data revisions since 19 May 2020:** 1
 * **Date of last change:** [12 October 2020](../covidcast_changelog.md#indicator-combination)
 * **Available for:** county, msa, hrr, state (see [geography coding docs](../covidcast_geography.md))

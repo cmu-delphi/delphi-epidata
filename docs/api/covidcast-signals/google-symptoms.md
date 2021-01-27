@@ -8,7 +8,7 @@ grand_parent: COVIDcast Epidata API
 {: .no_toc}
 
 * **Source name:** `google-symptoms`
-* **First issued:** November 30, 2020
+* **First issued by Delphi:** November 30, 2020
 * **Number of data revisions since May 19, 2020:** 0
 * **Date of last change:** Never
 * **Available for:** county, MSA, HRR, state (see [geography coding docs](../covidcast_geography.md))

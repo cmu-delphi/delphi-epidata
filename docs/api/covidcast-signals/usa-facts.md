@@ -8,7 +8,7 @@ grand_parent: COVIDcast Epidata API
 {: .no_toc}
 
 * **Source name:** `usa-facts`
-* **First issued:** June 24, 2020
+* **First issued by Delphi:** June 24, 2020
 * **Number of data revisions since May 19, 2020:** 2
 * **Date of last change:** [November 3, 2020](../covidcast_changelog.md#usa-facts)
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))

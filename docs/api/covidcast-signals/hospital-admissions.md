@@ -8,7 +8,7 @@ grand_parent: COVIDcast Epidata API
 {: .no_toc}
 
 * **Source name:** `hospital-admissions`
-* **First issued:** June 21, 2020
+* **First issued by Delphi:** June 21, 2020
 * **Number of data revisions since May 19, 2020:** 1
 * **Date of last change:** October 20, 2020
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))

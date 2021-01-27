@@ -17,7 +17,7 @@ grand_parent: COVIDcast Epidata API
 
 ## COVID-19 Tests
 
-* **First issued:** July 29, 2020 
+* **First issued by Delphi:** July 29, 2020 
 * **Number of data revisions since May 19, 2020:** 1
 * **Date of last change:** October 22, 2020
 * **Available for:** hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
@@ -135,7 +135,7 @@ that day will not include it.
 
 ## Flu Tests
 
-* **First issued:** April 29, 2020
+* **First issued by Delphi:** April 29, 2020
 * **Last issued:** May 19, 2020
 * **Number of data revisions since May 19, 2020:** 0
 * **Date of last change:** Never

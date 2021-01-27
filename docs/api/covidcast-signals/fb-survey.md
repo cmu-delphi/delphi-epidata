@@ -8,7 +8,7 @@ grand_parent: COVIDcast Epidata API
 {: .no_toc}
 
 * **Source name:** `fb-survey`
-* **First issued:** April 29, 2020
+* **First issued by Delphi:** April 29, 2020
 * **Number of data revisions since May 19, 2020:** 1
 * **Date of last change:** [June 3, 2020](../covidcast_changelog.md#fb-survey)
 * **Available for:** county, hrr, msa, state, nation (see [geography coding docs](../covidcast_geography.md))

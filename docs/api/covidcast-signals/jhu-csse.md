@@ -8,7 +8,7 @@ grand_parent: COVIDcast Epidata API
 {: .no_toc}
 
 * **Source name:** `jhu-csse`
-* **First issued:** May 7, 2020
+* **First issued by Delphi:** May 7, 2020
 * **Number of data revisions since May 19, 2020:** 1
 * **Date of last change:** [October 7, 2020](../covidcast_changelog.md#jhu-csse)
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))

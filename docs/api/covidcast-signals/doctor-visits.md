@@ -8,7 +8,7 @@ grand_parent: COVIDcast Epidata API
 {: .no_toc}
 
 * **Source name:** `doctor-visits`
-* **First issued:** April 29, 2020
+* **First issued by Delphi:** April 29, 2020
 * **Number of data revisions since May 19, 2020:** 1
 * **Date of last change:** November 9, 2020
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
