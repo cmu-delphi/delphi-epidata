@@ -215,7 +215,7 @@ def execute_query(
     return execute_queries([(query, params)], fields_string, fields_int, fields_float)
 
 
-def join_l(value: Union[str, List[str]]):
+def _join_l(value: Union[str, List[str]]):
     return ", ".join(value) if isinstance(value, (list, tuple)) else value
 
 
@@ -240,16 +240,16 @@ class QueryBuilder:
 
     @property
     def fields_clause(self) -> str:
-        return join_l(self.fields) if self.fields else "*"
+        return _join_l(self.fields) if self.fields else "*"
 
     @property
     def order_clause(self) -> str:
-        return join_l(self.order)
+        return _join_l(self.order)
 
     def __str__(self):
         where = f"WHERE {self.conditions_clause}" if self.conditions else ""
-        order = f"ORDER BY {join_l(self.order)}" if self.order else ""
-        group_by = f"GROUP BY {join_l(self.group_by)}" if self.group_by else ""
+        order = f"ORDER BY {_join_l(self.order)}" if self.order else ""
+        group_by = f"GROUP BY {_join_l(self.group_by)}" if self.group_by else ""
 
         return f"SELECT {self.fields_clause} FROM {self.table} {self.subquery} {where} {group_by} {order}"
 
