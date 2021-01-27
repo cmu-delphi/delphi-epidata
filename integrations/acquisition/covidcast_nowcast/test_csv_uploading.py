@@ -68,9 +68,9 @@ class CsvUploadingTests(unittest.TestCase):
     # print full diff if something unexpected comes out
     self.maxDiff=None
 
-    receiving_dir = '/common/covidcast_nowcast/receiving/src/'
-    success_dir = '/common/covidcast_nowcast/archive/successful/src/'
-    failed_dir = '/common/covidcast_nowcast/archive/failed/src/'
+    receiving_dir = '/common/covidcast_nowcast/receiving/issue_20200421/src/'
+    success_dir = '/common/covidcast_nowcast/archive/successful/issue_20200421/src/'
+    failed_dir = '/common/covidcast_nowcast/archive/failed/issue_20200421/src/'
     os.makedirs(receiving_dir, exist_ok=True)
 
     # valid
@@ -125,7 +125,7 @@ class CsvUploadingTests(unittest.TestCase):
     # print full diff if something unexpected comes out
     self.maxDiff=None
 
-    receiving_dir = '/common/covidcast_nowcast/receiving/src/'
+    receiving_dir = '/common/covidcast_nowcast/receiving/issue_20200425/src/'
     os.makedirs(receiving_dir, exist_ok=True)
 
     with open(receiving_dir + '20200419_state_sig.csv', 'w') as f:
@@ -146,8 +146,8 @@ class CsvUploadingTests(unittest.TestCase):
         'time_value': 20200419,
         'geo_value': 'ca',
         'value': 2,
-        'issue': 20200421,
-        'lag': 2,
+        'issue': 20200425,
+        'lag': 6,
         'signal': 'sig',
       }],
       'message': 'success',
