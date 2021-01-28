@@ -709,7 +709,7 @@ class Epidata:
     return Epidata._request(params)
 
   @staticmethod
-  async def get(params, session):
+  async def async_get(params, session):
     """Helper function to make Epidata GET requests."""
     async with session.get(Epidata.BASE_URL, params=params) as response:
       return await response.json(), params
