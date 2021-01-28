@@ -715,7 +715,7 @@ class Epidata:
       return await response.json(), params
 
   @staticmethod
-  async def fetch_epidata(param_combos):
+  async def async_fetch_epidata(param_combos):
     """Helper function to asynchronously make and aggregate Epidata GET requests."""
     tasks = []
     async with ClientSession() as session:
