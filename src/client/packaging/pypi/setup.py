@@ -14,6 +14,7 @@ setuptools.setup(
   url='https://github.com/cmu-delphi/delphi-epidata',
   packages=setuptools.find_packages(),
   install_requires=[
+    'aiohttp'
     'requests>=2.7.0',
   ],
   classifiers=[
