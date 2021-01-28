@@ -472,7 +472,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
 
     self.assertEqual(response, {'result': -2, 'message': 'no results'})
 
-  def test_async_call(self):
+  def test_async_epidata(self):
     # insert dummy data
     self.cur.execute('''
       insert into covidcast values
@@ -490,7 +490,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
           123, 60, 61, 62, 456, 634, 20200414, 0, 1, False)
     ''')
     self.cnx.commit()
-    test_output = Epidata.async_call([
+    test_output = Epidata.async_epidata([
       {
         'source': 'covidcast',
         'data_source': 'src',

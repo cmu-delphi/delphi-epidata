@@ -709,29 +709,27 @@ class Epidata:
     return Epidata._request(params)
 
   @staticmethod
-  async def async_get(params, session):
-    """Helper function to make Epidata GET requests."""
-    async with session.get(Epidata.BASE_URL, params=params) as response:
-      return await response.json(), params
-
-  @staticmethod
-  async def async_fetch_epidata(param_combos):
-    """Helper function to asynchronously make and aggregate Epidata GET requests."""
-    tasks = []
-    async with ClientSession() as session:
-      for param in param_combos:
-        task = asyncio.ensure_future(Epidata.async_get(param, session))
-        tasks.append(task)
-      responses = await asyncio.gather(*tasks)
-      return responses
-
-  @staticmethod
-  def async_call(param_list, batch_size=100):
+  def async_epidata(param_list, batch_size=100):
     """Make asynchronous Epidata calls for a list of parameters."""
+    async def async_get(params, session):
+      """Helper function to make Epidata GET requests."""
+      async with session.get(Epidata.BASE_URL, params=params) as response:
+        return await response.json(), params
+
+    async def async_make_calls(param_combos):
+      """Helper function to asynchronously make and aggregate Epidata GET requests."""
+      tasks = []
+      async with ClientSession() as session:
+        for param in param_combos:
+          task = asyncio.ensure_future(async_get(param, session))
+          tasks.append(task)
+        responses = await asyncio.gather(*tasks)
+        return responses
+
     batches = [param_list[i:i+batch_size] for i in range(0, len(param_list), batch_size)]
     responses = []
     for batch in batches:
       loop = asyncio.get_event_loop()
-      future = asyncio.ensure_future(Epidata.async_fetch_epidata(batch))
+      future = asyncio.ensure_future(async_make_calls(batch))
       responses += loop.run_until_complete(future)
     return responses
