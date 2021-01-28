@@ -8,7 +8,7 @@ grand_parent: COVIDcast Epidata API
 {: .no_toc}
 
 * **Source name:** `hhs`
-* **Earliest issue available:** January 26, 2021
+* **Earliest issue available:** November 16, 2020
 * **Number of data revisions since 19 May 2020:** 0
 * **Date of last change:** Never
 * **Available for:** state, hhs, nation (see [geography coding docs](../covidcast_geography.md))
@@ -33,8 +33,8 @@ Forecast Hub](https://github.com/reichlab/covid19-forecast-hub/blob/master/data-
 
 | Signal | Geography | Resolution | Description |
 | --- | --- | --- | --- |
-| `confirmed_admissions_covid_1d` | state | 1 day | Sum of adult and pediatric confirmed COVID-19 hospital admissions occurring each day. |
-| `sum_confirmed_suspected_admissions_covid_1d` | state | 1 day | Sum of adult and pediatric confirmed and suspected COVID-19 hospital admissions occurring each day. |
+| `confirmed_admissions_covid_1d` | state | 1 day | Sum of adult and pediatric confirmed COVID-19 hospital admissions occurring each day. <br/> **Earliest date available:** 2019-12-31 |
+| `sum_confirmed_suspected_admissions_covid_1d` | state | 1 day | Sum of adult and pediatric confirmed and suspected COVID-19 hospital admissions occurring each day. <br/> **Earliest date available:** 2019-12-31 |
 
 ## Table of contents
 {: .no_toc .text-delta}
@@ -83,7 +83,7 @@ often. We check for updates daily. Lag varies from 0 to 6 days.
 Occasionally a value published in an early issue will be changed in a subsequent
 issue when additional data becomes known. This effect is known as
 backfill. Backfill is relatively uncommon in this dataset (80% of dates from
-November 1 2020 onward are never touched after their first issue) and most such
+November 1, 2020 onward are never touched after their first issue) and most such
 updates occur one to two weeks after information about a date is first
 published. In rare instances, a value may be updated 10 weeks or more after it
 is first published.
