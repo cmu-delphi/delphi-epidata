@@ -720,7 +720,7 @@ class Epidata:
     tasks = []
     async with ClientSession() as session:
       for param in param_combos:
-        task = asyncio.ensure_future(Epidata.get(param, session))
+        task = asyncio.ensure_future(Epidata.async_get(param, session))
         tasks.append(task)
       responses = await asyncio.gather(*tasks)
       return responses
