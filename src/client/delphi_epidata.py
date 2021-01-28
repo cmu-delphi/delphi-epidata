@@ -732,6 +732,6 @@ class Epidata:
     responses = []
     for batch in batches:
       loop = asyncio.get_event_loop()
-      future = asyncio.ensure_future(Epidata.fetch_epidata(batch))
+      future = asyncio.ensure_future(Epidata.async_fetch_epidata(batch))
       responses += loop.run_until_complete(future)
     return responses
