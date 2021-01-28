@@ -726,9 +726,12 @@ class Epidata:
       return responses
 
   @staticmethod
-  def async_call(param_list):
+  def async_call(param_list, batch_size=100):
     """Make asynchronous Epidata calls for a list of parameters."""
-    loop = asyncio.get_event_loop()
-    future = asyncio.ensure_future(Epidata.fetch_epidata(param_list))
-    responses = loop.run_until_complete(future)
+    batches = [param_list[i:i+batch_size] for i in range(0, len(param_list), batch_size)]
+    responses = []
+    for batch in batches:
+      loop = asyncio.get_event_loop()
+      future = asyncio.ensure_future(Epidata.fetch_epidata(batch))
+      responses += loop.run_until_complete(future)
     return responses
