@@ -8,7 +8,7 @@ grand_parent: COVIDcast Epidata API
 {: .no_toc}
 
 * **Source name:** `SOURCE-API-NAME`
-* **First issued:** DATE RELEASED TO API
+* **Earliest issue available:** DATE RELEASED TO API
 * **Number of data revisions since 19 May 2020:** 0
 * **Date of last change:** Never
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))

@@ -24,7 +24,7 @@ datasets.
 
 ## SafeGraph Social Distancing Metrics
 
-* **First issued:** June 20, 2020
+* **Earliest issue available:** June 20, 2020
 * **Number of data revisions since June 23, 2020:** 1
 * **Date of last change:** November 3, 2020
 
@@ -43,14 +43,14 @@ documentation](https://docs.safegraph.com/docs/social-distancing-metrics).
 
 | Signal | Description |
 | --- | --- |
-| `completely_home_prop` | The fraction of mobile devices that did not leave the immediate area of their home (SafeGraph's `completely_home_device_count / device_count`) <br/> **First Available:** 01/01/2019 |
-| `full_time_work_prop` | The fraction of mobile devices that spent more than 6 hours at a location other than their home during the daytime (SafeGraph's `full_time_work_behavior_devices / device_count`) <br/> **First Available:** 01/01/2019 |
-| `part_time_work_prop` | The fraction of devices that spent between 3 and 6 hours at a location other than their home during the daytime (SafeGraph's `part_time_work_behavior_devices / device_count`) <br/> **First Available:** 01/01/2019 |
-| `median_home_dwell_time` | The median time spent at home for all devices at this location for this time period, in minutes <br/> **First Available:** 01/01/2019 |
-| `completely_home_prop_7dav` | Offers a 7-day trailing window average of the `completely_home_prop`. <br/> **First Available:** 01/01/2019 |
-| `full_time_work_prop_7dav` | Offers a 7-day trailing window average of the`full_time_work_prop`. <br/> **First Available:** 01/01/2019 |
-| `part_time_work_prop_7dav` | Offers a 7-day trailing window average of the`part_time_work_prop`. <br/> **First Available:** 01/01/2019 |
-| `median_home_dwell_time_7dav` | Offers a 7-day trailing window average of the `median_home_dwell_time`. <br/> **First Available:** 01/01/2019 |
+| `completely_home_prop` | The fraction of mobile devices that did not leave the immediate area of their home (SafeGraph's `completely_home_device_count / device_count`) <br/> **Earliest date available:** 01/01/2019 |
+| `full_time_work_prop` | The fraction of mobile devices that spent more than 6 hours at a location other than their home during the daytime (SafeGraph's `full_time_work_behavior_devices / device_count`) <br/> **Earliest date available:** 01/01/2019 |
+| `part_time_work_prop` | The fraction of devices that spent between 3 and 6 hours at a location other than their home during the daytime (SafeGraph's `part_time_work_behavior_devices / device_count`) <br/> **Earliest date available:** 01/01/2019 |
+| `median_home_dwell_time` | The median time spent at home for all devices at this location for this time period, in minutes <br/> **Earliest date available:** 01/01/2019 |
+| `completely_home_prop_7dav` | Offers a 7-day trailing window average of the `completely_home_prop`. <br/> **Earliest date available:** 01/01/2019 |
+| `full_time_work_prop_7dav` | Offers a 7-day trailing window average of the`full_time_work_prop`. <br/> **Earliest date available:** 01/01/2019 |
+| `part_time_work_prop_7dav` | Offers a 7-day trailing window average of the`part_time_work_prop`. <br/> **Earliest date available:** 01/01/2019 |
+| `median_home_dwell_time_7dav` | Offers a 7-day trailing window average of the `median_home_dwell_time`. <br/> **Earliest date available:** 01/01/2019 |
 
 After computing each metric on the census block group (CBG) level, we aggregate
 to the county-level by taking the mean over CBGs in a county to obtain the value
@@ -75,7 +75,7 @@ additional day for SafeGraph's data to be ingested into the COVIDcast API.
 
 ## SafeGraph Weekly Patterns
 
-* **First issued:** November 30, 2020
+* **Earliest issue available:** November 30, 2020
 * **Number of data revisions since June 23, 2020:** 0
 * **Date of last change:** never
 
@@ -96,10 +96,10 @@ Patterns documentation](https://docs.safegraph.com/docs/weekly-patterns).
 
 | Signal | Description |
 | --- | --- |
-| `bars_visit_num` | The number of daily visits made by those with SafeGraph's apps to bar-related POIs in a certain region <br/> **First Available:** 01/01/2019 |
-| `bars_visit_prop` | The number of daily visits made by those with SafeGraph's apps to bar-related POIs in a certain region, per 100,000 population <br/> **First Available:** 01/01/2019 |
-| `restaurants_visit_num` | The number of daily visits made by those with SafeGraph's apps to restaurant-related POIs in a certain region <br/> **First Available:** 01/01/2019 |
-| `restaurants_visit_prop` | The number of daily visits made by those with SafeGraph's apps to restaurant-related POIs in a certain region, per 100,000 population <br/> **First Available:** 01/01/2019 |
+| `bars_visit_num` | The number of daily visits made by those with SafeGraph's apps to bar-related POIs in a certain region <br/> **Earliest date available:** 01/01/2019 |
+| `bars_visit_prop` | The number of daily visits made by those with SafeGraph's apps to bar-related POIs in a certain region, per 100,000 population <br/> **Earliest date available:** 01/01/2019 |
+| `restaurants_visit_num` | The number of daily visits made by those with SafeGraph's apps to restaurant-related POIs in a certain region <br/> **Earliest date available:** 01/01/2019 |
+| `restaurants_visit_prop` | The number of daily visits made by those with SafeGraph's apps to restaurant-related POIs in a certain region, per 100,000 population <br/> **Earliest date available:** 01/01/2019 |
 
 SafeGraph delivers the number of daily visits to U.S. POIs, the details of which
 are described in the [Places
