@@ -324,8 +324,10 @@ also available. These have names beginning `smoothed_w`, such as
 
 | Signal | Description | Survey Item |
 | --- | --- | --- |
+| `smoothed_covid_vaccinated_or_accept` | Estimated percentage of respondents who *either* have already received a COVID vaccine *or* would definitely or probably choose to get vaccinated, if a vaccine were offered to them today. <br/> **Earliest date available:** 2021-01-06 | V1 and V3 |
 | `smoothed_accept_covid_vaccine` | Estimated percentage of respondents who would definitely or probably choose to get vaccinated, if a COVID-19 vaccine were offered to them today. **Note:** Until January 6, 2021, all respondents answered this question; beginning on that date, only respondents who said they have not received a COVID vaccine are asked this question. <br/> **Earliest date available:** 2021-01-01 | V3 |
 | `smoothed_covid_vaccinated` | Estimated percentage of respondents who have already received a vaccine for COVID-19. **Note:** The Centers for Disease Control compiles data on vaccine administration across the United States. This signal may differ from CDC data because of survey biases and should not be treated as authoritative. However, the survey signal is not subject to the lags and reporting problems in official vaccination data. <br/> **Earliest date available:** 2021-01-06 | V1 |
+| `smoothed_worried_vaccine_side_effects` | Estimated percentage of respondents who are very or moderately concerned that they would "experience a side effect from a COVID-19 vaccination." (Asked of all respondents, including those who have already received one or more doses of a COVID-19 vaccine.) <br/> **Earliest date available:** 2021-01-12 | V9 |
 | `smoothed_vaccine_likely_friends` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by friends and family, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-20 | V4 |
 | `smoothed_vaccine_likely_local_health` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by local health workers, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-20 | V4 |
 | `smoothed_vaccine_likely_who` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by the World Health Organization, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-20 | V4 |
@@ -335,9 +337,9 @@ also available. These have names beginning `smoothed_w`, such as
 These indicators are based on questions added in Wave 6 of the survey,
 introduced on December 19, 2020; however, Delphi only enabled item V1 beginning
 January 6, 2021. **Note:** As of January 2021, vaccination items on the survey
-are being revised in preparation for Wave 7. We may replace the signals above
-with new signals (with different names) if the underlying survey items change
-significantly.
+are being revised in preparation for later waves. We may replace the signals
+above with new signals (with different names) if the underlying survey items
+change significantly.
 
 Weighted versions of these signals, using the [survey weighting described
 below](#survey-weighting) to be more representative of state demographics, are
