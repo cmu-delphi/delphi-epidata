@@ -3,7 +3,7 @@ from io import StringIO
 from typing import Any, Dict, Iterable, List, Optional, Union
 
 from flask import Response, jsonify, request, stream_with_context
-from flask.json import dumps
+from orjson import dumps
 
 from ._analytics import record_analytics
 from ._config import MAX_RESULTS
