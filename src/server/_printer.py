@@ -3,7 +3,8 @@ from io import StringIO
 from typing import Any, Dict, Iterable, List, Optional, Union
 
 from flask import Response, jsonify, request, stream_with_context
-from orjson import dumps
+from flask.json import dumps
+import orjson
 
 from ._analytics import record_analytics
 from ._config import MAX_RESULTS
@@ -110,8 +111,8 @@ class ClassicPrinter(APrinter):
         return '{ "epidata": ['
 
     def _format_row(self, first: bool, row: Dict):
-        sep = "," if not first else ""
-        return f"{sep}{dumps(row)}"
+        sep = b"," if not first else b""
+        return sep + orjson.dumps(row)
 
     def _end(self):
         message = "success"
@@ -119,7 +120,7 @@ class ClassicPrinter(APrinter):
             message = "no results"
         elif self.result == 2:
             message = "too many results, data truncated"
-        return f'], "result": {self.result}, "message": {dumps(message)} }}'
+        return f'], "result": {self.result}, "message": {dumps(message)} }}'.encode('utf-8')
 
 
 class ClassicTreePrinter(ClassicPrinter):
@@ -148,10 +149,10 @@ class ClassicTreePrinter(ClassicPrinter):
         return None
 
     def _end(self):
-        tree = dumps(self._tree)
+        tree = orjson.dumps(self._tree)
         self._tree = dict()
         r = super(ClassicTreePrinter, self)._end()
-        return f"{tree}{r}"
+        return tree + r
 
 
 class CSVPrinter(APrinter):
@@ -202,14 +203,14 @@ class JSONPrinter(APrinter):
     """
 
     def _begin(self):
-        return "["
+        return b"["
 
     def _format_row(self, first: bool, row: Dict):
-        sep = "," if not first else ""
-        return f"{sep}{dumps(row)}"
+        sep = b"," if not first else b""
+        return sep + orjson.dumps(row)
 
     def _end(self):
-        return "]"
+        return b"]"
 
 
 class JSONLPrinter(APrinter):
@@ -222,7 +223,7 @@ class JSONLPrinter(APrinter):
 
     def _format_row(self, first: bool, row: Dict):
         # each line is a JSON file with a new line to separate them
-        return f"{dumps(row)}\n"
+        return orjson.dumps(row, option=orjson.OPT_APPEND_NEWLINE)
 
 
 def create_printer() -> APrinter:
