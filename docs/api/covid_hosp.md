@@ -1,13 +1,14 @@
 ---
-title: COVID-19 Reported Patient Impact and Hospital Capacity by State Timeseries
+title: COVID-19 Reported Patient Impact and Hospital Capacity by State
 parent: Epidata API (Other Diseases)
 ---
 
 # COVID-19 Hospitalization by State
 
 This data source is a mirror of the "COVID-19 Reported Patient Impact and
-Hospital Capacity by State Timeseries" dataset provided by the US Department of
-Health & Human Services via healthdata.gov.
+Hospital Capacity by State" and "COVID-19 Reported Patient Impact and Hospital
+Capacity by State Timeseries" datasets provided by the US Department of Health &
+Human Services via healthdata.gov.
 
 See the
 [official description at healthdata.gov](https://healthdata.gov/dataset/covid-19-reported-patient-impact-and-hospital-capacity-state-timeseries)
@@ -26,8 +27,13 @@ This data source provides various measures of COVID-19 burden on patients and he
 - Spatial Resolution: US States plus DC, PR, and VI
 - Open access via [Open Data Commons Open Database License (ODbL)](https://opendatacommons.org/licenses/odbl/1.0/)
 - Versioned by Delphi according to "issue" date, which is the date that the
-dataset was published by HHS. New issues are expected to be released roughly
-weekly.
+dataset was published by HHS. We ingest two kinds of updates from HHS:
+timeseries and daily snapshots. Timeseries updates are published by HHS roughly
+weekly, while daily snapshots are published in batches every 1-9 days. Delphi
+keys the issue date to the timestamp of each file in the batch, not the date
+when the batch was posted. When both a daily and a timeseries update are issued
+on the same day, Delphi stores both versions but returns the values from the
+daily update.
 
 # The API
 

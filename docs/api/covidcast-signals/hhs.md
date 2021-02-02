@@ -78,7 +78,10 @@ Agency (DHA) facilities, and religious non-medical facilities.
 ## Lag and Backfill
 
 HHS issues updates to this timeseries once a week, and occasionally more
-often. We check for updates daily. Lag varies from 0 to 6 days.
+often. There is a separate update stream recording daily updates to figures in
+this timeseries, though these daily snapshots are released in irregular batches,
+about twice a week on average. We check for updates daily from both streams. Lag
+varies from 0 to 6 days.
 
 Occasionally a value published in an early issue will be changed in a subsequent
 issue when additional data becomes known. This effect is known as
