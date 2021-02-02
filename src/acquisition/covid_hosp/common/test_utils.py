@@ -11,6 +11,7 @@ dir, hence the existence of this file.
 # standard library
 import json
 from pathlib import Path
+from unittest.mock import Mock
 
 # third party
 import pandas
@@ -55,3 +56,9 @@ class TestUtils:
 
   def load_sample_dataset(self):
     return pandas.read_csv(self.data_dir / 'dataset.csv', dtype=str)
+
+  def load_sample_revisions(self):
+    for filename in [f"revision{x}.html" for x in
+                     ["s", "_0130", "_0129", "_0128", "_0127"]]:
+      with open(self.data_dir / filename, 'rb') as f:
+        yield Mock(content=f.read().decode('utf-8'))

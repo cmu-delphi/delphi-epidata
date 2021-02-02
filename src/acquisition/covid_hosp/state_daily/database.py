@@ -114,3 +114,19 @@ class Database(BaseDatabase):
         table_name=Database.TABLE_NAME,
         columns_and_types=Database.ORDERED_CSV_COLUMNS,
         additional_fields=[('D', 'record_type')])
+
+  def get_max_issue(self):
+    with self.new_cursor() as cursor:
+      cursor.execute(f'''
+        SELECT
+          max(issue)
+        from
+          `{self.table_name}`
+        WHERE
+          `record_type` = "D"
+      ''')
+      for (result,) in cursor:
+        if result is not None:
+          return int(result)
+      # if empty, return beginning of time
+      return 0
