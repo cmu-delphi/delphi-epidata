@@ -44,7 +44,7 @@ def record_analytics(result: int, num_rows=0):
 
     stmt = analytics_table.insert().values(
         datetime=func.now(),
-        source=endpoint,
+        source=endpoint[:32] if len(endpoint) > 32 else endpoint,
         ip=ip,
         ua=ua,
         result=result,
