@@ -43,7 +43,7 @@ def main(args, epidata_impl=Epidata, database_impl=Database):
   args = ("success",1)
   if len(metadata)==0:
     args = ("no results",-2)
-    
+
   print('covidcast_meta result: %s (code %d)' % args)
 
   if args[-1] != 1:
