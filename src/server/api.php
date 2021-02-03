@@ -945,11 +945,11 @@ function get_covidcast($source, $signals, $time_type, $geo_type, $time_values, $
   $geo_type = mysqli_real_escape_string($dbh, $geo_type);
   // basic query info
   $table = '`covidcast` t';
-  $fields = "t.`signal`, t.`time_value`, t.`geo_value`, t.`value`, t.`stderr`, t.`sample_size`, t.`direction`, t.`issue`, t.`lag`";
+  $fields = "t.`signal`, t.`time_value`, t.`geo_value`, t.`value`, t.`stderr`, t.`sample_size`, t.`direction`, t.`issue`, t.`lag`, t. `missing_value`, t. `missing_stderr`, t. `missing_sample_size`";
   $order = "t.`signal` ASC, t.`time_value` ASC, t.`geo_value` ASC, t.`issue` ASC";
   // data type of each field
   $fields_string = array('geo_value', 'signal');
-  $fields_int = array('time_value', 'direction', 'issue', 'lag');
+  $fields_int = array('time_value', 'direction', 'issue', 'lag', 'missing_value', 'missing_stderr', 'missing_sample_size');
   $fields_float = array('value', 'stderr', 'sample_size');
   // build the source, signal, time, and location (type and id) filters
   $condition_source = "t.`source` = '{$source}'";

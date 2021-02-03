@@ -13,6 +13,7 @@ from delphi.epidata.client.delphi_epidata import Epidata
 import delphi.operations.secrets as secrets
 import delphi.epidata.acquisition.covidcast.database as live
 from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import main
+from delphi.epidata.acquisition.covidcast.nancodes import Nans
 
 # py3tester coverage target (equivalent to `import *`)
 __test_target__ = (
@@ -65,17 +66,17 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     """Populate, query, cache, query, and verify the cache."""
 
     # insert dummy data
-    self.cur.execute('''
+    self.cur.execute(f'''
       insert into covidcast values
         (0, 'src', 'sig', 'day', 'state', 20200422, 'pa',
-          123, 1, 2, 3, 456, 1, 20200422, 0, 1, False),
+          123, 1, 2, 3, 456, 1, 20200422, 0, 1, False, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'state', 20200422, 'wa',
-          789, 1, 2, 3, 456, 1, 20200423, 1, 1, False)
+          789, 1, 2, 3, 456, 1, 20200423, 1, 1, False, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
     ''')
-    self.cur.execute('''
+    self.cur.execute(f'''
       insert into covidcast values
         (100, 'src', 'wip_sig', 'day', 'state', 20200422, 'pa',
-          456, 4, 5, 6, 789, -1, 20200422, 0, 1, True)
+          456, 4, 5, 6, 789, -1, 20200422, 0, 1, True, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
     ''')
 
     self.cnx.commit()

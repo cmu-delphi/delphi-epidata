@@ -17,7 +17,6 @@ from multiprocessing import cpu_count
 import delphi.operations.secrets as secrets
 
 
-
 class CovidcastRow():
   """A container for all the values of a single covidcast row."""
 
@@ -29,6 +28,9 @@ class CovidcastRow():
                         row_value.value,
                         row_value.stderr,
                         row_value.sample_size,
+                        row_value.missing_value,
+                        row_value.missing_stderr,
+                        row_value.missing_sample_size,
                         issue, lag, is_wip)
 
   @staticmethod
@@ -37,7 +39,8 @@ class CovidcastRow():
     return (CovidcastRow.fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag, is_wip)
             for row_value in row_values)
 
-  def __init__(self, source, signal, time_type, geo_type, time_value, geo_value, value, stderr, sample_size, issue, lag, is_wip):
+  def __init__(self, source, signal, time_type, geo_type, time_value, geo_value, value, stderr, 
+    sample_size, missing_value, missing_stderr, missing_sample_size, issue, lag, is_wip):
     self.id = None
     self.source = source
     self.signal = signal
@@ -47,7 +50,10 @@ class CovidcastRow():
     self.geo_value = geo_value      # from CSV row
     self.value = value              # ...
     self.stderr = stderr            # ...
-    self.sample_size = sample_size  # from CSV row
+    self.sample_size = sample_size  # ...
+    self.missing_value = missing_value # ...
+    self.missing_stderr = missing_stderr # ...
+    self.missing_sample_size = missing_sample_size # from CSV row
     self.direction_updated_timestamp = 0
     self.direction = None
     self.issue = issue
@@ -92,7 +98,7 @@ class Database:
   def count_all_rows(self):
     """Return the total number of rows in table `covidcast`."""
 
-    self._cursor.execute('SELECT count(1) FROM `covidcast`')
+    self._cursor.execute(f'SELECT count(1) FROM `covidcast`')
 
     for (num,) in self._cursor:
       return num
@@ -102,11 +108,9 @@ class Database:
 
   def insert_or_update_batch(self, cc_rows, batch_size=2**20, commit_partial=False):
     """
-    Insert new rows (or update existing) in the `covidcast` table.
+    Insert new rows (or update existing) into the table `covidcast`.
 
     This has the intentional side effect of updating the primary timestamp.
-
-
     """
 
     tmp_table_name = 'tmp_insert_update_table'
@@ -121,7 +125,7 @@ class Database:
         `time_value` int(11) NOT NULL,
         `geo_value` varchar(12) NOT NULL,
         `value_updated_timestamp` int(11) NOT NULL,
-        `value` double NOT NULL,
+        `value` double,
         `stderr` double,
         `sample_size` double,
         `direction_updated_timestamp` int(11) NOT NULL,
@@ -129,7 +133,10 @@ class Database:
         `issue` int(11) NOT NULL,
         `lag` int(11) NOT NULL,
         `is_latest_issue` BINARY(1) NOT NULL,
-        `is_wip` BINARY(1) NOT NULL
+        `is_wip` BINARY(1) NOT NULL,
+        `missing_value` int(1) DEFAULT 0,
+        `missing_stderr` int(1) DEFAULT 0,
+        `missing_sample_size` int(1) DEFAULT 0
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
     '''
 
@@ -140,16 +147,16 @@ class Database:
       INSERT INTO `{tmp_table_name}`
         (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`,
         `value_updated_timestamp`, `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, `direction`,
-        `issue`, `lag`, `is_latest_issue`, `is_wip`)
+        `issue`, `lag`, `is_latest_issue`, `is_wip`, `missing_value`, `missing_stderr`, `missing_sample_size`)
       VALUES
-        (%s, %s, %s, %s, %s, %s, UNIX_TIMESTAMP(NOW()), %s, %s, %s, 0, NULL, %s, %s, 0, %s)
+        (%s, %s, %s, %s, %s, %s, UNIX_TIMESTAMP(NOW()), %s, %s, %s, 0, NULL, %s, %s, 0, %s, %s, %s, %s)
     '''
 
     insert_or_update_sql = f'''
       INSERT INTO `covidcast`
         (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`,
         `value_updated_timestamp`, `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, `direction`,
-        `issue`, `lag`, `is_latest_issue`, `is_wip`)
+        `issue`, `lag`, `is_latest_issue`, `is_wip`, `missing_value`, `missing_stderr`, `missing_sample_size`)
       SELECT * FROM `{tmp_table_name}`
       ON DUPLICATE KEY UPDATE
         `value_updated_timestamp` = VALUES(`value_updated_timestamp`),
@@ -190,7 +197,6 @@ class Database:
     self._cursor.execute(create_tmp_table_sql)
 
     try:
-
       num_rows = len(cc_rows)
       total = 0
       if not batch_size:
@@ -213,7 +219,10 @@ class Database:
           row.sample_size,
           row.issue,
           row.lag,
-          row.is_wip
+          row.is_wip,
+          row.missing_value,
+          row.missing_stderr,
+          row.missing_sample_size
         ) for row in cc_rows[start:end]]
 
 

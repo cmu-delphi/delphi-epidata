@@ -13,6 +13,7 @@ import epiweeks as epi
 
 # first party
 from delphi.utils.epiweek import delta_epiweeks
+from delphi.epidata.acquisition.covidcast.nancodes import Nans
 
 class CsvImporter:
   """Finds and parses covidcast CSV files."""
@@ -41,11 +42,14 @@ class CsvImporter:
   class RowValues:
     """A container for the values of a single covidcast row."""
 
-    def __init__(self, geo_value, value, stderr, sample_size):
+    def __init__(self, geo_value, value, stderr, sample_size, missing_value, missing_stderr, missing_sample_size):
       self.geo_value = geo_value
       self.value = value
       self.stderr = stderr
       self.sample_size = sample_size
+      self.missing_value = missing_value
+      self.missing_stderr = missing_stderr
+      self.missing_sample_size = missing_sample_size
 
   @staticmethod
   def is_sane_day(value):
@@ -188,9 +192,53 @@ class CsvImporter:
   @staticmethod
   def maybe_apply(func, value):
     """Apply the given function to the given value if not null-ish."""
-
-    if str(value).lower() not in ('', 'na', 'nan', 'inf', '-inf', 'none'):
+    if str(value).lower() in ('inf', '-inf'):
+      raise ValueError
+    elif str(value).lower() in ('', 'na', 'nan', 'none'):
+      return None
+    else:
       return func(value)
+
+  @staticmethod
+  def validate_value(row, attr_value):
+    """Take a row and validate a given associated value (e.g., val, se, stderr).
+    
+    Returns either a float value, a None value, or "Error".
+    """
+    try:
+      value = CsvImporter.maybe_apply(float, getattr(row, attr_value))
+      return value
+    except (ValueError, AttributeError) as e:
+      # val was a string or another data
+      return "Error"
+
+  @staticmethod
+  def validate_missing_code(row, attr_value, attr_name):
+    """Take a row and validate the missing code associated with
+    a value (e.g., val, se, stderr).
+    
+    Returns either a nan code for assignment to the missing value
+    or a None to signal an error with the missing code. We decline
+    to infer missing codes except for a very simple cases; the default
+    is to produce an error so that the issue can be fixed in indicators.
+    """
+    if hasattr(row, "missing_" + attr_name):
+      missing_entry = getattr(row, "missing_" + attr_name)
+      try:
+        missing_entry = int(missing_entry)
+      except ValueError:
+        return None
+      # A missing code should never contradict the value being present, 
+      # since that will be filtered in the export_to_csv util in 
+      # covidcast-indicators; nonetheless this code is here for safety
+      if attr_value is not None and missing_entry > 0:
+        return None
+      return missing_entry
+    else:
+      if attr_value is not None:
+        return Nans.NOT_MISSING.value
+      else:
+        return Nans.UNKNOWN.value
 
   @staticmethod
   def extract_and_check_row(row, geo_type):
@@ -251,33 +299,40 @@ class CsvImporter:
     else:
       return (None, 'geo_type')
 
-    # required float
-    try:
-      value = float(row.val)
-      if math.isnan(value) or math.isinf(value):
-        raise ValueError('nan/inf not valid for `value`')
-    except (TypeError, ValueError) as e:
-      # val was either `None` or not a float
+    # Validate row values
+    value = CsvImporter.validate_value(row, "val")
+    # val was a string or another dtype
+    if value == "Error":
       return (None, 'val')
-
-    # optional nonnegative float
-    try:
-      stderr = CsvImporter.maybe_apply(float, row.se)
-    except ValueError:
-      # expected a number, but got a string
+    stderr = CsvImporter.validate_value(row, "se")
+    # stderr was a string or another dtype
+    if stderr == "Error":
       return (None, 'se')
     if stderr is not None and stderr < 0:
       return (None, 'se')
-
-    # optional not-too-small float
-    try:
-      sample_size = CsvImporter.maybe_apply(float, row.sample_size)
-    except ValueError:
-      # expected a number, but got a string
+    sample_size = CsvImporter.validate_value(row, "sample_size")
+    # sample_size was a string or another dtype
+    if sample_size == "Error":
+      return (None, 'sample_size')
+    if sample_size is not None and sample_size < 0:
       return (None, 'sample_size')
 
+    # Validate and write missingness codes
+    missing_value = CsvImporter.validate_missing_code(row, value, "val")
+    if missing_value is None:
+      return (None, 'missing_val')
+    missing_stderr = CsvImporter.validate_missing_code(row, stderr, "se")
+    if missing_stderr is None:
+      return (None, 'missing_se')
+    missing_sample_size = CsvImporter.validate_missing_code(row, sample_size, "sample_size")
+    if missing_sample_size is None:
+      return (None, 'missing_sample_size')
+
     # return extracted and validated row values
-    row_values = CsvImporter.RowValues(geo_id, value, stderr, sample_size)
+    row_values = CsvImporter.RowValues(
+      geo_id, value, stderr, sample_size, 
+      missing_value, missing_stderr, missing_sample_size
+    )
     return (row_values, None)
 
   @staticmethod
@@ -300,11 +355,9 @@ class CsvImporter:
       return
 
     for row in table.itertuples(index=False):
-
       row_values, error = CsvImporter.extract_and_check_row(row, geo_type)
       if error:
         print(' invalid value for %s (%s)' % (str(row), error))
         yield None
         continue
-
       yield row_values

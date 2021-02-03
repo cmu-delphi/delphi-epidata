@@ -29,9 +29,9 @@ Data is public.
 | lag                          | int(11)     | NO   |     | NULL    |                |
 | is_latest_issue              | binary(1)   | NO   |     | NULL    |                |
 | is_wip                       | binary(1)   | YES  |     | NULL    |                |
-| missing_value                | int(11)     | YES  |     | NULL    |                |
-| missing_std                  | int(11)     | YES  |     | NULL    |                |
-| missing_sample_size          | int(11)     | YES  |     | NULL    |                |
+| missing_value                | int(1)      | YES  |     | NULL    |                |
+| missing_stderr               | int(1)      | YES  |     | NULL    |                |
+| missing_sample_size          | int(1)      | YES  |     | NULL    |                |
 +------------------------------+-------------+------+-----+---------+----------------+
 
 - `id`
@@ -76,7 +76,7 @@ Data is public.
   flag indicating that the signal is a 'work in progress'.  this should be True iff `signal` has a 'wip_' prefix.
 - `missing_value`
   ~ENUM for the reason a `value` was deleted
-- `missing_std`
+- `missing_stderr`
   ~ENUM for the reason a `stderr` was deleted
 - `missing_sample_size`
   ~ENUM for the reason a `sample_size` was deleted
@@ -92,7 +92,7 @@ CREATE TABLE `covidcast` (
   `geo_value` varchar(12) NOT NULL,
   -- "primary" values are derived from the upstream data source
   `value_updated_timestamp` int(11) NOT NULL,
-  `value` double NOT NULL,
+  `value` double,
   `stderr` double,
   `sample_size` double,
   `direction_updated_timestamp` int(11) NOT NULL,
@@ -101,9 +101,9 @@ CREATE TABLE `covidcast` (
   `lag` int(11) NOT NULL,
   `is_latest_issue` binary(1) NOT NULL,
   `is_wip` binary(1) DEFAULT NULL,
-  -- TODO: `missing_value` int(11) DEFAULT NULL,
-  -- TODO: `missing_std` int(11) DEFAULT NULL,
-  -- TODO: `missing_sample_size` int(11) DEFAULT NULL,
+  `missing_value` int(1) DEFAULT 0,
+  `missing_stderr` int(1) DEFAULT 0,
+  `missing_sample_size` int(1) DEFAULT 0,
   PRIMARY KEY (`id`),
   -- for uniqueness, and also fast lookup of all locations on a given date
   UNIQUE KEY (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`, `issue`),
