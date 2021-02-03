@@ -27,7 +27,8 @@ class Update:
 
     # can't use Utils here because daily files are posted in batches and we want
     # all files in the batch. These have to be scraped from the Revisions page,
-    # since they aren't surfaced in metadata. :,(
+    # since they aren't surfaced in metadata. :(
+    # then we merge them into an issue based on their publish date.
 
     # get dataset details from metadata
     metadata = network.fetch_metadata()

@@ -22,6 +22,30 @@ class Network(BaseNetwork):
         *args, **kwags, dataset_id=Network.DATASET_ID)
 
   def fetch_revisions(newer_than):
+    """Scrape CSV urls from the HHS revisions pages.
+
+    The revisions page is a big table showing recent revisions to the state
+    daily dataset. Each row represents a single revision with a link to a
+    separate page where a download is available for that revision. 
+
+    The first row is different, and links directly back to the main dataset
+    page. Since this row represents the current published version, and the URL
+    for that CSV is included in the metadata, we do not retrieve it here.
+
+    The link for each revision is a date in the same format as
+    `revision_timestamp` from the metadata, so we bookend which links we retrieve
+    by checking against the issue code (YYYYMMDD) for the last issue we
+    imported. 
+
+    This approach will break under the following conditions:
+     - Automation starts the update routine after the first file of a batch is
+       uploaded by HHS, but before the final file of the batch is uploaded (HHS
+       typically uploads in the evenings, but there are some midmorning and
+       afternoon batches in the revision history, so who knows)
+     - HHS uploads batches on two days in a row, and the first batch isn't completed
+       until after midnight (causing files from two distinct batches to have the
+       same date in the link from the revisions page)
+    """
     urls = []
     soup = BeautifulSoup(requests.get(Network.ROOT + Network.REVISIONS).content, "html.parser")
     views = [

@@ -116,6 +116,10 @@ class Database(BaseDatabase):
         additional_fields=[('D', 'record_type')])
 
   def get_max_issue(self):
+    """Fetch the most recent state-daily issue.
+
+    This is used to bookend what links we scrape from the HHS revisions page.
+    """
     with self.new_cursor() as cursor:
       cursor.execute(f'''
         SELECT
