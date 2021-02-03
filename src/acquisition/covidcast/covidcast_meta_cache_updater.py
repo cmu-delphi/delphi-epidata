@@ -9,7 +9,6 @@ import time
 from delphi.epidata.acquisition.covidcast.database import Database
 from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
 from delphi.epidata.client.delphi_epidata import Epidata
-from delphi.operations import secrets
 
 def get_argument_parser():
   """Define command line arguments."""
@@ -24,18 +23,16 @@ def main(args, epidata_impl=Epidata, database_impl=Database):
 
   `args`: parsed command-line arguments
   """
-  
-  secrets.db.host = 'delphi_database_epidata'
-  secrets.db.epi = ('user', 'pass')
-
-  logger = get_structured_logger("metadata_cache_updater", filename = args.log_file)
+  logger = get_structured_logger(
+      "metadata_cache_updater",
+      filename=args.log_file)
   start_time = time.time()
   database = database_impl()
   database.connect()
 
   # fetch metadata
   try:
-    metadata_calculation_start_time = time.time() 
+    metadata_calculation_start_time = time.time()
     metadata = database.get_covidcast_meta()
     metadata_calculation_interval_in_seconds = metadata_calculation_start_time - start_time
   except:
@@ -64,10 +61,13 @@ def main(args, epidata_impl=Epidata, database_impl=Database):
     # fail after the following cleanup
     database.disconnect(True)
 
-  logger.info("Generated and updated covidcast metadata",
-      metadata_calculation_interval_in_seconds = round(metadata_calculation_interval_in_seconds, 2),
-      metadata_update_interval_in_seconds = round(metadata_update_interval_in_seconds, 2),
-      total_runtime_in_seconds = round(time.time() - start_time, 2))
+  logger.info(
+      "Generated and updated covidcast metadata",
+      metadata_calculation_interval_in_seconds=round(
+          metadata_calculation_interval_in_seconds, 2),
+      metadata_update_interval_in_seconds=round(
+          metadata_update_interval_in_seconds, 2),
+      total_runtime_in_seconds=round(time.time() - start_time, 2))
   return True
 
 
