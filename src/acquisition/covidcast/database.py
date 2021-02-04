@@ -137,8 +137,10 @@ class Database:
         `value_updated_timestamp`, `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, `direction`,
         `issue`, `lag`, `is_latest_issue`, `is_wip`)
       VALUES
-        (%s, %s, %s, %s, %s, %s, UNIX_TIMESTAMP(NOW()), %s, %s, %s, 0, NULL, %s, %s, 0, %s)
+        (%s, %s, %s, %s, %s, %s, UNIX_TIMESTAMP(NOW()), %s, %s, %s, 0, NULL, %s, %s, 1, %s)
     '''
+    # NOTE: `is_latest_issue` is being set to 1 above to enable cache computation of temp table.
+    #       zero_is_latest_issue_sql and set_is_latest_issue_sql (below) ensure bit is properly set later in this method.
 
     insert_or_update_sql = f'''
       INSERT INTO `covidcast`
@@ -402,8 +404,9 @@ class Database:
     test_cache = self.retrieve_covidcast_meta_cache('covidcast_meta_cache_test')
     main_set = set(main_cache)
     test_set = set(test_cache)
-    print("only in main: (should always be none)\n  " + "\n  ".join(sorted(list(map(str, main_set - test_set)))))
+    print("only in main: \n  " + "\n  ".join(sorted(list(map(str, main_set - test_set)))))
     print("only in test: \n  " + "\n  ".join(sorted(list(map(str, test_set - main_set)))))
+    print("in both, showing diffs:")
     unchanged = []
     for k in sorted(list(main_set & test_set)):
       main_entry = main_cache[k]
@@ -411,9 +414,11 @@ class Database:
       diffs = {}
       stat_list = ['num_points', 'mean_value', 'max_lag', 'max_value', 'max_time', 'max_issue', 'last_update', 'num_locations', 'min_lag', 'min_value', 'min_time']
       for stat in stat_list:
-        diffs[stat] = main_entry[stat] - test_entry[stat]
+        d = main_entry[stat] - test_entry[stat]
+        if abs(d) > 0.05:
+          diffs[stat] = d
       if any(diffs.values()):
         print("  %s cache varies: %s" % (k, diffs))
       else:
         unchanged.append(k)
-    print("%s identical entries" % len(unchanged))
+    print("\n\n  %s identical entries of %s total" % (len(unchanged), len(combined)))
