@@ -177,9 +177,6 @@ Wave 4 is a **major change** to the survey instrument. Some items have been
 removed and several new items have been added. Please review the changes
 carefully when you use responses from both waves.
 
-Note that this changelog is a draft; as the survey instrument is finalized, this
-changelog will be updated to include all final changes.
-
 #### Consent Text
 
 The survey consent text has been altered to more clearly indicate that
@@ -297,9 +294,6 @@ Files:
 Wave 5 contains minor changes to the survey instrument and a few new items.
 Please review the changes carefully when you use responses from multiple waves
 of this survey.
-
-Note that this changelog is a draft; as the survey instrument is finalized, this
-changelog will be updated to include all final changes.
 
 #### Consent Text
 
@@ -442,3 +436,46 @@ responses from multiple waves of this survey.
   While this should prevent respondents from accidentally entering negative
   numbers, those who deliberately want to enter negative numbers can bypass the
   restriction.
+
+## Wave 8
+
+Wave 8 was deployed on February 8, 2021. It is available in English, as well as
+
+* Simplified Chinese
+* English (UK)
+* Spanish (Latin America)
+* Spanish
+* French
+* Brazilian Portuguese
+* Vietnamese
+
+Files:
+
+* [Survey text and coding](waves/CMU Survey Wave 8.pdf) (PDF)
+* [Survey text and coding](waves/CMU Survey Wave 8.docx) (Word)
+
+### Summary of Changes
+
+Wave 8 expands the scope of the survey items about COVID-19 vaccinations. These
+new items were meant to capture reasons for vaccine hesitancy among respondents.
+
+#### Changed Items
+
+* Answer options for items C1, on chronic medical conditions, have been revised
+  and expanded.
+* Answer options for the occupation questions, including Q64, Q68, Q69, and Q71,
+  were revised and expanded for clarity. Please review the changes carefully
+  when you use responses from multiple waves of this survey, since they may
+  shift which occupations respondents choose.
+
+#### New Items
+
+* Item V2a ask respondents that have received a COVID-19 vaccine and indicated
+  that they have not had 2 doses of the vaccine whether they intend to get the
+  required doses.
+* Items V5a-V5d and V6 were added to capture reasons for respondents not
+  wanting to get a COVID-19 vaccine. The questions are displayed based on the
+  respondents' answers to V2a and V3.
+* Item D1b was previously removed in wave 4 and asks respondents that identify
+  as not male if they are currently pregnant.
+* Item D11 ask respondents if they smoke cigarettes.
