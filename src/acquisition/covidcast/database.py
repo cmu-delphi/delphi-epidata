@@ -218,7 +218,7 @@ class Database:
 
         # use the temp table to compute meta just for new data, 
         # then merge with the global meta
-        meta_update = self.compute_covidcast_meta(table_name=tmp_table_name)
+        meta_update = Database.cache_to_dict(self.compute_covidcast_meta(table_name=tmp_table_name))
         meta_cache = Database.merge_cache_dicts(meta_cache, meta_update)
 
         self._cursor.execute(insert_or_update_sql)
@@ -349,13 +349,19 @@ class Database:
     self._cursor.execute(sql)
     cache_json = self._cursor.fetchone()[0]
     cache = json.loads(cache_json)
-    cache_hash = {}
-    for entry in cache:
-      cache_hash[(entry['data_source'], entry['signal'], entry['time_type'], entry['geo_type'])] = entry
-    # TODO: add log statements here @benjaminysmith
+
     if not len(cache) and table_name=='covidcast_meta_cache_test': # TODO: remove line
       print("test cache empty -- falling back to regular cache ; this should happen ONLY ONCE (after regular cache populated)") # TODO: remove line
       return self.retrieve_covidcast_meta_cache(table_name='covidcast_meta_cache') # TODO: remove line
+
+    # TODO: add log statements here @benjaminysmith
+    return Database.cache_to_dict(cache)
+
+  @staticmethod
+  def cache_to_dict(cache):
+    cache_hash = {}
+    for entry in cache:
+      cache_hash[(entry['data_source'], entry['signal'], entry['time_type'], entry['geo_type'])] = entry
     return cache_hash
 
   def update_covidcast_meta_cache_from_dict(self, cache_hash):
