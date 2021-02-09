@@ -34,7 +34,7 @@ class UnitTests(unittest.TestCase):
       'epidata': [{'foo': 'bar'}],
     }
 
-    args = None
+    args = MagicMock(log_file="log")
     mock_epidata_impl = MagicMock()
     mock_epidata_impl.covidcast_meta.return_value = api_response
     mock_database = MagicMock()
@@ -64,7 +64,7 @@ class UnitTests(unittest.TestCase):
       'message': 'no',
     }
 
-    args = None
+    args = MagicMock(log_file="log")
     mock_database = MagicMock()
     mock_database.get_covidcast_meta.return_value = list()
     fake_database_impl = lambda: mock_database
