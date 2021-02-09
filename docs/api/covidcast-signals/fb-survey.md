@@ -333,7 +333,7 @@ also available. These have names beginning `smoothed_w`, such as
 | `smoothed_vaccine_likely_who` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by the World Health Organization, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-20 | V4 |
 | `smoothed_vaccine_likely_govt_health` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by government health officials, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-20 | V4 |
 | `smoothed_vaccine_likely_politicians` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by politicians, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-20 | V4 |
-| `smoothed_received_2_vaccine_doses` | Estimated percentage of respondents who have received two doses of a COVID-19 vaccine. <br/> **Earliest date available:** 2021-02-06 | V2 |
+| `smoothed_received_2_vaccine_doses` | Estimated percentage of respondents who have received two doses of a COVID-19 vaccine, among respondents who have received either one or two doses of a COVID-19 vaccine. This item was shown to respondents starting in Wave 7. <br/> **Earliest date available:** 2021-02-06 | V2 |
 
 These indicators are based on questions added in Wave 6 of the survey,
 introduced on December 19, 2020; however, Delphi only enabled item V1 beginning
