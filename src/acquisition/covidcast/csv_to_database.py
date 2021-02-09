@@ -3,11 +3,13 @@
 # standard library
 import argparse
 import os
+import time
 
 # first party
 from delphi.epidata.acquisition.covidcast.csv_importer import CsvImporter
 from delphi.epidata.acquisition.covidcast.database import Database, CovidcastRow
 from delphi.epidata.acquisition.covidcast.file_archiver import FileArchiver
+from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
 
 
 def get_argument_parser():
@@ -30,6 +32,9 @@ def get_argument_parser():
     '--not_wip_override',
     action='store_true',
     help='overrides all signals to mark them as *not* WIP.  NOTE: specify neither or only one of --is_wip_override and --not_wip_override.')
+  parser.add_argument(
+    '--log_file',
+    help="filename for log output (defaults to stdout)")
   return parser
 
 def collect_files(data_dir, specific_issue_date, csv_importer_impl=CsvImporter):
@@ -77,6 +82,7 @@ def upload_archive(
     path_details,
     database,
     handlers,
+    logger,
     is_wip_override=None,
     csv_importer_impl=CsvImporter):
   """Upload CSVs to the database and archive them using the specified handlers.
@@ -123,6 +129,15 @@ def upload_archive(
       try:
         result = database.insert_or_update_bulk(rows_list)
         print(f"insert_or_update_bulk {filename} returned {result}")
+        logger.info(
+          "Inserted database rows",
+          row_count = result,
+          source = source,
+          signal = signal,
+          geo_type = geo_type,
+          time_value = time_value,
+          issue = issue,
+          lag = lag)
         if result is None or result: # else would indicate zero rows inserted
           database.commit()
       except Exception as e:
@@ -143,6 +158,9 @@ def main(
     upload_archive_impl=upload_archive):
   """Find, parse, and upload covidcast signals."""
 
+  logger = get_structured_logger("csv_ingestion", filename=args.log_file)
+  start_time = time.time()
+
   if args.is_wip_override and args.not_wip_override:
     print('conflicting overrides for forcing WIP option!  exiting...')
     return
@@ -157,7 +175,9 @@ def main(
   if not path_details:
     print('nothing to do; exiting...')
     return
-    
+  
+  logger.info("Ingesting CSVs", csv_count = len(path_details))
+
   database = database_impl()
   database.connect()
   num_starting_rows = database.count_all_rows()
@@ -166,6 +186,7 @@ def main(
     upload_archive_impl(
       path_details,
       database,
+      logger,
       make_handlers(args.data_dir, args.specific_issue_date),
       is_wip_override=wip_override)
   finally:
@@ -173,10 +194,15 @@ def main(
     # after the following cleanup
     try:
       num_inserted_rows = database.count_all_rows() - num_starting_rows
+      logger.info("Finished inserting database rows", row_count = num_inserted_rows)
       print('inserted/updated %d rows' % num_inserted_rows)
     finally:
       # unconditionally commit database changes since CSVs have been archived
       database.disconnect(True)
+  
+  logger.info(
+      "Ingested CSVs into database",
+      total_runtime_in_seconds=round(time.time() - start_time, 2))
 
 if __name__ == '__main__':
   main(get_argument_parser().parse_args())
