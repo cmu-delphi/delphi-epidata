@@ -189,7 +189,7 @@ $$Y_i$$ denote number of ILI and CLI cases in the household, respectively
 (computed according to the simple strategy described above), and let $$N_i$$
 denote the total number of people in the household, in survey $$i$$, out of
 $$m$$ surveys we collected. Then our estimates of $$p$$ and $$q$$ (see
-the [appendix](#appendix) for motivating details) are: 
+the [appendix](#appendix) for motivating details) are:
 
 $$
 \hat{p} = 100 \cdot \frac{1}{m}\sum_{i=1}^m \frac{X_i}{N_i}
@@ -236,7 +236,7 @@ b = 100 \cdot \frac{y}{n}.
 $$
 
 We will estimate $$a$$ and $$b$$ across the same 4 aggregation schemes as
-before. 
+before.
 
 For a single survey, let:
 
@@ -333,6 +333,7 @@ also available. These have names beginning `smoothed_w`, such as
 | `smoothed_vaccine_likely_who` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by the World Health Organization, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-20 | V4 |
 | `smoothed_vaccine_likely_govt_health` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by government health officials, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-20 | V4 |
 | `smoothed_vaccine_likely_politicians` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by politicians, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-20 | V4 |
+| `smoothed_received_2_vaccine_doses` | Estimated percentage of respondents who have received two doses of a COVID-19 vaccine. <br/> **Earliest date available:** 2021-02-06 | V2 |
 
 These indicators are based on questions added in Wave 6 of the survey,
 introduced on December 19, 2020; however, Delphi only enabled item V1 beginning
@@ -409,7 +410,7 @@ our [survey weight documentation page](../../symptom-survey/weights.md).
 
 As before, for a given aggregation unit (for example, daily-county), let $$X_i$$
 and $$Y_i$$ denote the numbers of ILI and CLI cases in household $$i$$,
-respectively (computed according to the simple strategy above), and let $$N_i$$ 
+respectively (computed according to the simple strategy above), and let $$N_i$$
 denote the total number of people in the household. Let $$i = 1, \dots, m$$
 denote the surveys started during the time period of interest and reported in a
 ZIP code intersecting the spatial unit of interest.
@@ -424,9 +425,9 @@ population is in each county.)
 Let $$w^{\text{init}}_i=w^{\text{part}}_i w^{\text{geodiv}}_i$$ denote the
 initial weight assigned to this survey. First, we adjust these initial weights
 to reduce sensitivity to any individual survey by "mixing" them with a uniform
-weighting across all relevant surveys. This prevents specific survey respondents 
+weighting across all relevant surveys. This prevents specific survey respondents
 with high survey weights having disproportionate influence on the weighted
-estimates. 
+estimates.
 
 Specifically, we select the smallest value of $$a \in [0.05, 1]$$ such that
 
@@ -438,8 +439,8 @@ for all $$i$$. If such a selection is impossible, then we have insufficient
 survey responses (less than 100), and do not produce an estimate for the given
 aggregation unit.
 
-Next, we rescale the weights $$w_i$$ over all $$i$$ so that $$\sum_{i=1}^m 
-w_i=1$$. Then our adjusted estimates of $$p$$ and $$q$$ are: 
+Next, we rescale the weights $$w_i$$ over all $$i$$ so that $$\sum_{i=1}^m
+w_i=1$$. Then our adjusted estimates of $$p$$ and $$q$$ are:
 
 $$
 \begin{aligned}
@@ -503,7 +504,7 @@ and $$V_i$$ denote the indicators that the survey respondent knows someone in
 their community with CLI, including and not including their household,
 respectively, for survey $$i$$, out of $$m$$ surveys collected. Also let
 $$w_i$$ be the self-normalized weight that accompanies survey $$i$$, as
-above. Then our adjusted estimates of $$a$$ and $$b$$ are: 
+above. Then our adjusted estimates of $$a$$ and $$b$$ are:
 
 $$
 \begin{aligned}
@@ -531,13 +532,13 @@ importance sampling estimators.
 Here are some details behind the choice of estimators for [percent ILI and
 percent CLI](#ili-and-cli-indicators).
 
-Suppose there are $$h$$ households total in the underlying population, and for 
-household $$i$$, denote $$\theta_i=N_i/n$$.  Then note that the quantities of 
-interest, $$p$$ and $$q$$, are 
+Suppose there are $$h$$ households total in the underlying population, and for
+household $$i$$, denote $$\theta_i=N_i/n$$.  Then note that the quantities of
+interest, $$p$$ and $$q$$, are
 
 $$
 p = \sum_{i=1}^h \frac{X_i}{N_i} \theta_i
-\quad\text{and}\quad 
+\quad\text{and}\quad
 q = \sum_{i=1}^h \frac{Y_i}{N_i} \theta_i.
 $$
 
@@ -548,17 +549,17 @@ are simply
 
 $$
 \hat{p} = \frac{1}{m} \sum_{i \in S} \frac{X_i}{N_i}
-\quad\text{and}\quad 
+\quad\text{and}\quad
 \hat{q} = \frac{1}{m} \sum_{i \in S} \frac{Y_i}{N_i},
 $$
 
-which are an equivalent way of writing our previously-defined estimates. 
+which are an equivalent way of writing our previously-defined estimates.
 
 Note that we can again rewrite our quantities of interest as
 
 $$
-p = \frac{\mu_x}{\mu_n} 
-\quad\text{and}\quad 
+p = \frac{\mu_x}{\mu_n}
+\quad\text{and}\quad
 q = \frac{\mu_y}{\mu_n},
 $$
 
@@ -570,11 +571,11 @@ denotes the total number of households in the population.
 Suppose that instead of proportional sampling, we sampled households uniformly,
 resulting in $$S \subseteq \{1,\dots,h\}$$ denote sampled households, with
 $$m=|S|$$. Then the natural estimates of $$p$$ and $$q$$ are instead plug-in
-estimates of the numerators and denominators in the above, 
+estimates of the numerators and denominators in the above,
 
 $$
 \tilde{p} = \frac{\bar{X}}{\bar{N}}
-\quad\text{and}\quad 
+\quad\text{and}\quad
 \tilde{q} = \frac{\bar{X}}{\bar{N}}
 $$
 
@@ -597,7 +598,7 @@ evidence:
   household: individuals 18 years or older, who have a Facebook account.  Hence
   if we posit that the number of "Facebook adults" scales linearly with the
   household size, which seems to us like a reasonable assumption, then sampling
-  would still be proportional to household size.  (Notice that this would 
+  would still be proportional to household size.  (Notice that this would
   remain true no matter how small the linear coefficient is, that is, it would
   even be true if Facebook did not have good coverage over the US.)
 
