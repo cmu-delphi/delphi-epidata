@@ -5,7 +5,7 @@ with open('README.md', 'r') as f:
 
 setuptools.setup(
   name='delphi_epidata',
-  version='0.0.10',
+  version='0.0.11',
   author='David Farrow',
   author_email='dfarrow0@gmail.com',
   description='A programmatic interface to Delphi\'s Epidata API.',
@@ -14,7 +14,7 @@ setuptools.setup(
   url='https://github.com/cmu-delphi/delphi-epidata',
   packages=setuptools.find_packages(),
   install_requires=[
-    'aiohttp'
+    'aiohttp',
     'requests>=2.7.0',
   ],
   classifiers=[
