@@ -63,7 +63,7 @@ class TestUtils:
     These are scraped by state_daily to ensure we capture all files, not just the
     most recent in each batch uploaded by HHS.
     """
-    for filename in [f"revision{x}.html" for x in
-                     ["s", "_0130", "_0129", "_0128", "_0127"]]:
+    for filename in [f'revision{x}.html' for x in
+                     ['s', '_0130', '_0129', '_0128', '_0127']]:
       with open(self.data_dir / filename, 'rb') as f:
         yield Mock(content=f.read().decode('utf-8'))

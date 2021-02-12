@@ -40,7 +40,12 @@ class NetworkTests(unittest.TestCase):
                       side_effect=list(self.test_utils.load_sample_revisions())) as requests_get:
       result = Network.fetch_revisions(20201210)
 
+      # 4: one for the revisions page, and one for each of three qualifying
+      # revisions details pages
       self.assertEqual(requests_get.call_count, 4)
+
+      # The revisions page lists 5 revisions, but the first should be skipped
+      # and the fifth should be excluded as outside the date range
       self.assertEqual(result, [
         "https://healthdata.gov/sites/default/files/reported_hospital_utilization_20210130_2344.csv",
         "https://healthdata.gov/sites/default/files/reported_hospital_utilization_20210129_1606.csv",
