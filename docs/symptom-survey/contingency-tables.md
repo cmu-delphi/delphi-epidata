@@ -1,5 +1,7 @@
 ---
-title: Contingency Tables parent: COVID Symptom Survey nav_order: 4
+title: Contingency Tables
+parent: COVID Symptom Survey
+nav_order: 4
 ---
 
 # Contingency Tables
@@ -7,7 +9,10 @@ title: Contingency Tables parent: COVID Symptom Survey nav_order: 4
 
 This documentation describes the fine-resolution contingency tables produced by
 grouping [COVID Symptom Survey](./index.md) individual responses by various
-demographic features.
+demographic features:
+
+* [Weekly files](https://cmu.box.com/s/xwjulq0pteen52d4upni9ikagu7d8bl2)
+* [Monthly files](https://cmu.box.com/s/vh4gs3j541tt9pqn2pn72bktu0op8tpo)
 
 Please also take a look at the [individual response data](./survey-files.md),
 and the coarse aggregates -- grouped only by region -- available [through the
