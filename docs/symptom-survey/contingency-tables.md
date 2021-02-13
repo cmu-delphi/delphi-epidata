@@ -53,7 +53,7 @@ at a time, will likely provide more coverage.
 
 Each CSV is named as follows:
 
-  {date}_{region}_{vars}.csv
+    {date}_{region}_{vars}.csv
 
 Dates in of the form `YYYYmmdd`. `date` refers to the first day of the time
 period survey responses were aggregated over, in the Pacific time zone (UTC -
