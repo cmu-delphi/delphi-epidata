@@ -26,7 +26,7 @@ def main(args, epidata_impl=Epidata, database_impl=Database):
 
   # fetch metadata
   try:
-    metadata = database.get_covidcast_meta()
+    metadata = database.compute_covidcast_meta()
   except:
     # clean up before failing
     database.disconnect(True)

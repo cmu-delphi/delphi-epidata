@@ -138,4 +138,4 @@ CREATE TABLE `covidcast_meta_cache` (
   `epidata` LONGTEXT NOT NULL,
   PRIMARY KEY (`timestamp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-INSERT INTO covidcast_meta_cache VALUES (0, '');
+INSERT INTO covidcast_meta_cache VALUES (0, '[]');
