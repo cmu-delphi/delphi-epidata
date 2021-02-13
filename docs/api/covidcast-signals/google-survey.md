@@ -17,15 +17,14 @@ grand_parent: COVIDcast Epidata API
 
 ## Overview
 
-Data source based on Google-run symptom surveys, through publisher websites,
-their Opinions Reward app, and similar applications. Respondents can opt to skip
+This data source is based on symptom surveys which we run using a Google platform that includes publisher websites, their Opinions Reward app, and similar applications. Respondents can opt to skip
 the survey and complete a different one if they prefer not to answer. The survey
 is just one question long, and asks "Do you know someone in your community who
 is sick (fever, along with cough, or shortness of breath, or difficulty
 breathing) right now?" Using this survey data, we estimate the percentage of
 people in a given location, on a given day, that *know somebody who has a
 COVID-like illness*. This estimates a similar quantity to the `*_cmnty_cli`
-signals from the [Symptom Surveys](fb-survey.md) (`fb-survey`) source, but using
+signals from the [Symptom Surveys](fb-survey.md) (`fb-survey`) source but using
 a different survey population and recruitment method.
 
 The survey sampled from all counties with greater than 100,000 population, along
@@ -34,9 +33,7 @@ with a separate random sample from each state. This means that the megacounties
 counties with populations smaller than 100,000, and megacounty estimates are
 created by combining the state-level survey with the observed county surveys.
 
-These surveys were run daily until May 15, 2020. After that date, new national
-data will not be collected regularly, although the surveys may be deployed in
-specific geographical areas as needed to support forecasting efforts.
+We ran these surveys daily until May 15, 2020. After that date, new national data will not be collected regularly, although the surveys may be deployed in specific geographical areas as needed to support forecasting efforts.
 
 | Signal | Description |
 | --- | --- |
@@ -61,13 +58,13 @@ p = \frac{Y}{Y+N}.
 $$
 
 Since the Google Surveys system provides estimated counties for each respondent,
-we are able to report $$p$$ for counties, MSAs, HRRs, and states. Our current
+we can report $$p$$ for counties, MSAs, HRRs, and states. Our current
 rule-of-thumb is to discard any estimate (whether at a county, MSA, HRR, or
-state level) that is composed of fewer than 100 survey responses.
+state level) composed of fewer than 100 survey responses.
 
 At the county level, MSA, and HRR levels, our estimation procedure is fairly
-simple, and is outlined below. Estimation for mega-counties and states is more
-complex, and deferred to the next subsection.
+simple and is outlined below. Estimation for mega-counties and states is more
+complex and deferred to the next subsection.
 
 ### County Level
 
@@ -75,7 +72,7 @@ Recall that we run surveys separately (in a stratified manner) in each county.
 In a given county, if $$Y$$ denotes the number of respondents who know someone
 in their community with CLI, $$N$$ denotes the total number who do not, and $$n
 = Y + N$$ the number of "yes" and "no" responses combined, then to estimate
-$$p$$ in the county, we simply use:
+$$p$$ in the county, we use:
 
 $$
 \hat{p} = \frac{Y}{n}.
@@ -117,11 +114,7 @@ again the plug-in estimate of standard error of the estimator.
 
 ### State and Mega-County Estimates
 
-State estimates are somewhat complicated by the multi-resolution nature of
-sampling within a state: recall that we run surveys directly in each state, but
-also in directly in all of its counties with more than 100,000 population. In
-order to combine state and county level surveys into a state-level community
-%CLI estimate, we use a Bayesian approach.
+State estimates are somewhat complicated by the multi-resolution nature of sampling within a state: recall that we run surveys in each state overall and in each county with a population greater than 100,000. We use a Bayesian approach to combine state and county level surveys into a state-level community %CLI estimate.
 
 For *every* county $$i$$ in the state, irrespective of whether the county was
 surveyed, let $$(Y_{c,i},N_{c,i})$$ represent the number of observed yes and no
@@ -202,7 +195,7 @@ county estimate, even the unsurveyed ones, toward some relevant prior value.
 
 We currently set the prior hyperparameters so that the prior mode
 $$\frac{a-1}{(a-1)+(b-1)}$$ matches the pooled mean of surveyed county
-proportions and each county receives $$\tilde{n}$$ additional pseudocounts from
+proportions and each county receives $$\tilde{n}$$ additional pseudo-counts from
 the prior:
 
 $$
@@ -213,14 +206,12 @@ b &= 1 + \tilde{n}(1-\hat{\mu}), \text{ for}\\
 \end{aligned}
 $$
 
-The number of pseudocounts $$\tilde n$$ is currently set to 5, although it may
+The number of pseudo-counts $$\tilde n$$ is currently set to 5, although it may
 be possible to choose a value that varies to minimize mean squared error.
 
 #### Modification for when State Survey is Missing
 
-When state survey results are missing due to problems in the sampling process,
-the MAP estimate of the megacounties can be obtained by directly taking the
-prior mode:
+When state survey results are missing due to problems in the sampling process, users can obtain the MAP estimate of the megacounties by directly taking the prior mode:
 
 $$
 \hat p_o = \frac{a-1}{(b-1)+(a-1)} = \hat \mu = \sum_{\text{surveyed } i}
@@ -228,16 +219,15 @@ Y_{c,i} / \sum_{\text{surveyed } i} n_{c,i}
 $$
 
 and the state MAP estimate is the weighted average of the individual
-county-level estimates, reproduced here:
+county-level estimates reproduced here:
 
 $$
 \hat{p}_s = \frac{m_o \hat p_o + \sum_{\text{surveyed } i} m_{c,i} \hat
 p_{c,i}}{m_s} = \frac{\sum_{\text{surveyed } i} m_{c,i} \hat p_{c,i}}{m_s-m_o}.
 $$
 
-Since this estimator is clearly biased, the variance is not representative of
-the amount of uncertainty in the estimate. Our alternative to reporting variance
-is to report the MSE of the MAP estimate:
+Since this estimator is biased, the variance is not representative of
+the estimate's uncertainty. Our alternative to reporting variance is to report the MSE of the MAP estimate:
 
 $$
 \text{MSE}(\hat p_s) =
@@ -256,8 +246,8 @@ $$
 \max\left((1-\hat{p}_o)^2, \hat{p}_o^2\right)
 $$
 
-The MSE assumes that the the survey county data is random and that the prior
-parameters are fixed and not random, so the unsurveyed counties only contribute
+The MSE assumes that the survey county data is random and that the prior
+parameters are fixed and not random. Hence, the unsurveyed counties only contribute
 bias while the surveyed counties are unbiased for their respective county
 probabilities and contribute variance.
 
@@ -268,8 +258,4 @@ pooling data over time.  That is, daily, for each location, we first pool all
 data available in that location over the last 5 days, and compute the estimates
 given above using all five days of data.
 
-In contrast to the Facebook surveys, this pooling does not significantly change
-the availability of estimates, because of our stratified sampling procedure
-(essentially always) delivers sufficient data at the county level---at least 100
-survey responses---to warrant their own estimates. However, the pooling
-procedure still does help by serving as a smoother.
+In contrast to the Facebook surveys, this pooling does not significantly change availability. Our stratified sampling procedure (essentially always) delivers sufficient data at the county level--at least 100 survey responses--to meet our sample size thresholds. However, the pooling procedure still does help by serving as a smoother. 

@@ -18,8 +18,8 @@ grand_parent: COVIDcast Epidata API
 ## Overview
 
 This data source is based on symptom surveys run by the Delphi group at Carnegie
-Mellon. Facebook directs a random sample of its users to these surveys, which
-are voluntary. Individual survey responses are held by CMU and are sharable with
+Mellon. Facebook directs a random sample of its users to these voluntary surveys. 
+Individual survey responses are held by CMU and are sharable with
 other health researchers under a data use agreement. No individual survey
 responses are shared back to Facebook. See our [surveys
 page](https://covidcast.cmu.edu/surveys.html) for more detail about how the
@@ -65,9 +65,7 @@ The survey starts with the following 5 questions:
 5. How many additional people in your local community that you know personally
    are sick (fever, along with at least one other symptom from the above list)?
 
-Beyond these 5 questions, there are also many other questions that follow in the
-survey, which go into more detail on symptoms, contacts, risk factors, and
-demographics. These are used for many of our behavior and testing indicators
+After these 5 questions, the survey asks many other questions which go into more detail on symptoms, contacts, risk factors, and demographics. These are used for many of our behavior and testing indicators
 below. The full text of the survey (including all deployed versions) can be
 found on our [questions and coding page](../../symptom-survey/coding.md).
 Researchers can [request
@@ -101,26 +99,24 @@ household (for `raw_hh_cmnty_cli`) or community with fever, along with sore
 throat, cough, shortness of breath, or difficulty breathing. This does not
 attempt to distinguish between COVID-like and influenza-like illness.
 
-Influenza-like illness or ILI is a standard indicator, and is defined by the CDC
-as: fever along with sore throat or cough. From the list of symptoms from Q1 on
+Influenza-like illness or ILI is a standard indicator defined by the CDC
+as fever along with sore throat or cough. From the list of symptoms from Q1 on
 our survey, this means a and (b or c).
 
-COVID-like illness or CLI is not a standard indicator. Through our discussions
-with the CDC, we chose to define it as: fever along with cough or shortness of
-breath or difficulty breathing.
+COVID-like illness or CLI is not a standard indicator. We define it as fever along with a cough, shortness of breath, or difficulty breathing.
 
 Symptoms alone are not sufficient to diagnose influenza or coronavirus
 infections, and so these ILI and CLI indicators are *not* expected to be
 unbiased estimates of the true rate of influenza or coronavirus infections.
-These symptoms can be caused by many other conditions, and many true infections
+Many other conditions can cause these symptoms, and many true infections
 can be asymptomatic. Instead, we expect these indicators to be useful for
 comparison across the United States and across time, to determine where symptoms
 appear to be increasing.
 
 **Smoothing.** The signals beginning with `smoothed_` estimate the same quantities as their
-`raw` partners, but are smoothed in time to reduce day-to-day sampling noise;
+`raw` partners but are smoothed in time to reduce day-to-day sampling noise;
 see [details below](#smoothing). Crucially, because the smoothed signals combine
-information across multiple days, they have larger sample sizes and hence are
+information across multiple days, they have larger sample sizes and are
 available for more counties and MSAs than the raw signals.
 
 ### Defining Household ILI and CLI
@@ -131,33 +127,28 @@ For a single survey, we are interested in the quantities:
 - $$Y =$$ the number of people in the household with CLI;
 - $$N =$$ the number of people in the household.
 
-Note that $$N$$ comes directly from the answer to Q3, but neither $$X$$ nor
-$$Y$$ can be computed directly (because Q2 does not give an answer to the
+Note that $$N$$ comes directly from the answer to Q3. However, neither $$X$$ nor
+$$Y$$ can be computed directly (because Q2 does not specify the
 precise symptomatic profile of all individuals in the household, it only asks
-how many individuals have fever and at least one other symptom from the list).
+how many individuals have a fever and at least one other symptom from the list).
 
 We hence estimate $$X$$ and $$Y$$ with the following simple strategy. Consider
 ILI, without a loss of generality (we apply the same strategy to CLI). Let $$Z$$
 be the answer to Q2.
 
-- If the answer to Q1 does not meet the ILI definition, then we report $$X=0$$.
-- If the answer to Q1 does meet the ILI definition, then we report $$X = Z$$.
+- If the answer to Q1 does not meet the ILI definition, we report $$X=0$$.
+- If the answer to Q1 meets the ILI definition, we report $$X = Z$$.
 
-This can only "over count" (result in too large estimates of) the true $$X$$ and
-$$Y$$. For example, this happens when some members of the household experience
+This can only "overcount" (result in too large estimates of) the true $$X$$ and
+$$Y$$. For example, this happens when some household members experience
 ILI that does not also qualify as CLI, while others experience CLI that does not
 also qualify as ILI. In this case, for both $$X$$ and $$Y$$, our simple strategy
-would return the sum of both types of cases. However, given the extreme degree
-of overlap between the definitions of ILI and CLI, it is reasonable to believe
-that, if symptoms across all household members qualified as both ILI and CLI,
-each individual would have both, or neither---with neither being more common.
-Therefore we do not consider this "over counting" phenomenon practically
-problematic.
+would return the sum of both types of cases. However, given the extreme degree of overlap between the ILI and CLI definitions, it is reasonable to believe that, if symptoms across all household members qualified as both ILI and CLI, each individual would have both, or neither--with neither being the more common possibility. Therefore we do not consider this "overcounting" phenomenon practically problematic.
 
 ### Estimating Percent ILI and CLI
 
 Let $$x$$ and $$y$$ be the number of people with ILI and CLI, respectively, over
-a given time period, and in a given location (for example, the time period being
+a given time period and in a given location (for example, the time period being
 a particular day, and a location being a particular county). Let $$n$$ be the
 total number of people in this location. We are interested in estimating the
 true ILI and CLI percentages, which we denote by $$p$$ and $$q$$, respectively:
@@ -177,15 +168,11 @@ We estimate $$p$$ and $$q$$ across 4 aggregation schemes:
 
 These are possible because we have the ZIP code of the household from Q4 of the
 survey. Our current rule-of-thumb is to discard any estimate (whether at a
-county, MSA, HRR, or state level) that is based on fewer than 100 survey
-responses. When our geographical mapping data indicates that a ZIP code is part
-of multiple geographical units in a single aggregation, we assign weights
-$$w_i^\text{geodiv}$$ to each of these units (based on the ZIP code's overlap
-with each geographical unit) and use these weights as part of the survey
-weighting, as [described below](#survey-weighting).
+county, MSA, HRR, or state level) based on fewer than 100 survey
+responses. When our geographical mapping data indicates that a ZIP code is part of multiple geographical units in a single aggregation, we assign weights $$w_i^\text{geodiv}$$ to each of these units (based on the ZIP code's overlap with each geographical unit). We then use these weights as part of the survey weighting, as [described below](#survey-weighting).
 
 In a given aggregation unit (for example, daily-county), let $$X_i$$ and
-$$Y_i$$ denote number of ILI and CLI cases in the household, respectively
+$$Y_i$$ denote the number of ILI and CLI cases in the household, respectively
 (computed according to the simple strategy described above), and let $$N_i$$
 denote the total number of people in the household, in survey $$i$$, out of
 $$m$$ surveys we collected. Then our estimates of $$p$$ and $$q$$ (see
@@ -212,9 +199,9 @@ $$
 \end{aligned}
 $$
 
-the standard deviations of the estimators after adding a single
+the estimators' standard deviations after adding a single
 pseudo-observation at 1/2 (treating $$m$$ as fixed). The use of the
-pseudo-observation prevents standard error estimates of zero, and in simulations
+pseudo-observation prevents standard error estimates of zero, and in simulations,
 improves the quality of the standard error estimates.
 
 The pseudo-observation is not used in $$\hat{p}$$ and $$\hat{q}$$ themselves, to
@@ -269,15 +256,13 @@ proportions (treating $$m$$ as fixed).
 Note that $$\sum_{i=1}^m U_i$$ is the number of survey respondents who know
 someone in their community with *either ILI or CLI*, and not CLI alone; and
 similarly for $$V$$. Hence $$\hat{a}$$ and $$\hat{b}$$ will generally
-overestimate $$a$$ and $$b$$. However, given the extremely high overlap between
-the definitions of ILI and CLI, we do not consider this to be practically very
-problematic.
+overestimate $$a$$ and $$b$$. However, given the extremely high overlap between ILI and CLI definitions, we do not consider this to be practically very problematic.
 
 
 ### Smoothing
 
 The smoothed versions of all `fb-survey` signals (with `smoothed_` prefix) are
-calculated using seven day pooling. For example, the estimate reported for June
+calculated using seven-day pooling. For example, the estimate reported for June
 7 in a specific geographical area (such as county or MSA) is formed by
 collecting all surveys completed between June 1 and 7 (inclusive) and using that
 data in the estimation procedures described above.
@@ -370,25 +355,20 @@ also available. These have names beginning `smoothed_w`, such as
 
 ## Survey Weighting
 
-Notice that the estimates defined in the previous sections are calculated with
-respect to the population of US Facebook users. (To be precise, the ILI and CLI
+Notice that the estimates defined in the previous sections are calculated with respect to the population of US Facebook users. (To be precise, the ILI and CLI
 indicators reflect the population of US Facebook users *and* their household
 members). In reality, our estimates are even further skewed by the varying
 propensity of people in the population of US Facebook users to take our survey
 in the first place.
 
 When Facebook sends a user to our survey, it generates a random ID number and
-sends this to us as well. Once the user completes the survey, we pass this ID
-number back to Facebook to confirm completion, and in return receive a
+sends this to us. Once the user completes the survey, we pass this ID
+number back to Facebook to confirm completion, and in return, receive a
 weight---call it $$w_i$$ for user $$i$$. (The random ID number is completely
-meaningless for any other purpose than receiving this weight, and does not allow
+meaningless for any other purpose than receiving this weight and does not allow
 us to access any information about the user's Facebook profile.)
 
-We can use these weights to adjust our estimates so that they are representative
-of the US population---adjusting both for the differences between the US
-population and US Facebook users (according to a state-by-age-gender
-stratification of the US population from the 2018 Census March Supplement) and
-for the propensity of a Facebook user to take our survey in the first place.
+We can use these weights to adjust our estimates so that they are representative of the US population. We adjust for the differences between the US population and US Facebook users(according to a state-by-age-gender stratification of the US population from the 2018 Census March Supplement) and the propensity of a Facebook user to take our survey in the first place.
 
 In more detail, we receive a participation weight
 
@@ -417,16 +397,12 @@ ZIP code intersecting the spatial unit of interest.
 Each of these surveys is assigned two weights: the participation weight
 $$w^{\text{part}}_i$$, and a geographical-division weight
 $$w^{\text{geodiv}}_i$$ describing how much a participant's ZIP code "belongs"
-in the spatial unit of interest. (For example, a ZIP code may overlap with
-multiple counties, so the weight describes what proportion of the ZIP code's
-population is in each county.)
+in the spatial unit of interest. (For example, a ZIP code may overlap with multiple counties, so the weight describes the proportion of the ZIP code's population located in each county.)
 
 Let $$w^{\text{init}}_i=w^{\text{part}}_i w^{\text{geodiv}}_i$$ denote the
 initial weight assigned to this survey. First, we adjust these initial weights
 to reduce sensitivity to any individual survey by "mixing" them with a uniform
-weighting across all relevant surveys. This prevents specific survey respondents 
-with high survey weights having disproportionate influence on the weighted
-estimates. 
+weighting across all relevant surveys. This prevents specific survey respondents with high survey weights from having a disproportionate influence on the weighted estimates.  
 
 Specifically, we select the smallest value of $$a \in [0.05, 1]$$ such that
 
@@ -473,9 +449,9 @@ n_e &= \frac1{\sum_{i=1}^m w_i^2},
 \end{aligned}
 $$
 
-which are the delta method estimates of variance associated with self-normalized
+are the delta method estimates of variance associated with self-normalized
 importance sampling estimators above, after combining with a pseudo-observation
-of 1/2 with weight assigned to appear like a single effective observation
+of 1/2 with a weight assigned to appear like a single effective observation
 according to importance sampling diagnostics.
 
 The sample size reported is calculated by rounding down $$\sum_{i=1}^{m}
@@ -485,23 +461,19 @@ this expression simplifies to $$m$$. When estimates are available for all
 spatial units of a given type over some time period, the sum of the associated
 sample sizes under this definition is consistent with the number of surveys used
 to prepare the estimate. (This notion of sample size is distinct from
-"effective" sample sizes based on variance of the importance sampling estimators
-which were used above.)
+"effective" sample sizes based on the variance of the importance sampling estimators used above.)
 
 ### Adjusting Other Percentage Estimators
 
-The household ILI and CLI estimates are complex to weight, as shown in the
-previous subsection, because they use an estimator based on the survey
-respondent *and their household.* All other estimates reported in the API are
-simply based on percentages of respondents, such as the percentage who report
-knowing someone in their community who is sick. In this subsection we will
-describe how survey weights are used to construct weighted estimates for these
-indicators, using community CLI as an example.
+The household ILI and CLI estimates described in the previous subsection are complex to weight
+because they use an estimator based on the survey
+respondent *and their household.* All other estimates reported in the API are based on percentages of respondents, such as the percentage who report
+knowing someone in their community who is sick. This subsection will describes how survey weights are used to construct weighted estimates for these indicators, using community CLI as an example.
 
 As before, in a given aggregation unit (for example, daily-county), let $$U_i$$
 and $$V_i$$ denote the indicators that the survey respondent knows someone in
 their community with CLI, including and not including their household,
-respectively, for survey $$i$$, out of $$m$$ surveys collected. Also let
+respectively, for survey $$i$$, out of $$m$$ surveys collected. Also, let
 $$w_i$$ be the self-normalized weight that accompanies survey $$i$$, as
 above. Then our adjusted estimates of $$a$$ and $$b$$ are: 
 
@@ -583,26 +555,23 @@ $$\bar{N}=\sum_{i \in S} N_i/m$$ denote the sample means of $$\{X_i\}_{i \in
 S}$$, $$\{Y_i\}_{i \in S}$$, and $$\{N_i\}_{i \in S}$$, respectively.
 
 Whether we consider $$\hat{p}$$ and $$\hat{q}$$, or $$\tilde{p}$$ and
-$$\tilde{q}$$, to be more natural---mean of fractions, or fraction of means,
-respectively---depends on the sampling model: if we are sampling households
-proportional to household size, then it is $$\hat{p}$$ and $$\hat{q}$$; if we
-are sampling households uniformly, then it is $$\tilde{p}$$ and $$\tilde{q}$$.
+$$\tilde{q}$$, to be more natural (mean of fractions, or fraction of means, respectively) depends on the sampling model. If we are sampling households proportional to household size, then it is $$\hat{p}$$ and $$\hat{q}$$; if we are sampling households uniformly, then it is $$\tilde{p}$$ and $$\tilde{q}$$.
 We settled on the former, based on both conceptual and empirical supporting
 evidence:
 
 - Conceptually, though we do not know the details, we have reason to believe
   that Facebook offers an essentially uniform random draw of eligible
-  users---those 18 years or older---to take our survey.  In this sense, the
+  users--those 18 years or older--to take our survey.  In this sense, the
   sampling is done proportional to the number of "Facebook adults" in a
-  household: individuals 18 years or older, who have a Facebook account.  Hence
+  household: individuals 18 years or older who have a Facebook account.  Hence
   if we posit that the number of "Facebook adults" scales linearly with the
   household size, which seems to us like a reasonable assumption, then sampling
-  would still be proportional to household size.  (Notice that this would 
+  would still be proportional to household size. (Notice that this would 
   remain true no matter how small the linear coefficient is, that is, it would
   even be true if Facebook did not have good coverage over the US.)
 
 - Empirically, we have computed the distribution of household sizes (proportion
   of households of size 1, size 2, size 3, etc.) in the Facebook survey data
-  thus far, and compared it to the distribution of household sizes from the
-  Census.  These align quite closely, also suggesting that sampling is likely
+  thus far and compared it to the distribution of household sizes from the
+  Census. These align quite closely, also suggesting that sampling is likely
   done proportional to household size.

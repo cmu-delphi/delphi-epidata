@@ -18,15 +18,7 @@ grand_parent: COVIDcast Epidata API
 ## Overview
 
 This data source is based on the [COVID-19 Search Trends symptoms
-dataset](http://goo.gle/covid19symptomdataset). Using
-this search data, we estimate the volume of searches mapped to symptoms related
-to COVID-19 such as _anosmia_ (lack of smell) and _ageusia_(lack of taste). The
-resulting daily dataset for each region shows the relative frequency of searches
-for each symptom. The signals are measured in arbitrary units that are
-normalized for overall search users in the region and scaled by the maximum value of the normalized
-popularity within a geographic region across a specific time range. **Thus,
-values are NOT comparable across geographic regions**. Larger numbers represent
-increased releative popularity of symptom-related searches.
+dataset](http://goo.gle/covid19symptomdataset). Using this search data, we estimate the volume of searches mapped to symptoms related to COVID-19, such as _anosmia_ (lack of smell) and _ageusia_(lack of taste). The resulting daily dataset for each region shows the relative frequency of searches for each symptom. The signals are measured in arbitrary units normalized for overall search users in the region and scaled by the maximum value of the normalized popularity within a geographic region across a specific time range. **Thus, values are NOT comparable across geographic regions**. Larger numbers represent greater relative popularity of symptom-related searches.
 
 | Signal | Description |
 | --- | --- |
@@ -44,6 +36,18 @@ increased releative popularity of symptom-related searches.
 1. TOC
 {:toc}
 
+
+## Geographical Aggregation
+The state-level and county-level `raw_search` signals for specific symptoms such
+as _anosmia_ and _ageusia_ are taken directly from the [COVID-19 Search Trends
+symptoms
+dataset](https://github.com/google-research/open-covid-19-data/tree/master/data/exports/search_trends_symptoms_dataset)
+without changes. We aggregate the county-level data to the MSA and HRR levels
+using the population-weighted average. For MSAs/HRRs that include counties with no data provided due to quality or privacy issues for a certain day, we assume the values to be 0 during aggregation. The values for MSAs/HRRs
+with no counties having non-NaN values will not be reported. Thus, the resulting
+MSA/HRR level data does not fully match the _actual_ MSA/HRR level data (which
+we are not provided).
+
 ## Estimation
 The `sum_anosmia_ageusia_raw_search` signals are simply the raw sum of the
  values of `anosmia_raw_search` and `ageusia_raw_search`, but not the union of
@@ -52,29 +56,16 @@ The `sum_anosmia_ageusia_raw_search` signals are simply the raw sum of the
  than one symptom. Currently, Google does not provide _intersection/union_
  data. Users should be careful when considering such signals.
 
-## Geographical Aggregation
-The state-level and county-level `raw_search` signals for specific symptoms such
-as _anosmia_ and _ageusia_ are taken directly from the [COVID-19 Search Trends
-symptoms
-dataset](https://github.com/google-research/open-covid-19-data/tree/master/data/exports/search_trends_symptoms_dataset)
-without changes. We aggregate the county-level data to the MSA and HRR levels
-using the population-weighted average. For MSAs/HRRs that include counties that
-have no data provided due to quality or privacy issues for a certain day, we
-simply assume the values to be 0 during aggregation. The values for MSAs/HRRs
-with no counties having non-NaN values will not be reported. Thus, the resulting
-MSA/HRR level data does not fully match the _actual_ MSA/HRR level data (which
-we are not provided).
-
 ## Lag and Backfill
 Google does not currently update the search data daily, but usually twice a week.
 Each update will usually extend the coverage to within three days of the day of the update.
-As a result the delay can range from 3 to 10 days or even more. We check for
+As a result, the delay can range from 3 to 10 days or even more. We check for
 updates every day and provide the most up-to-date data.
 
 ## Limitations 
-When daily volume in a region does not meet quality or privacy thresholds, set
+When daily volume in a region does not meet the quality or privacy thresholds, set
 by Google, no daily value is reported. Weekly data may be available from Google 
-in these cases, but we do not yet support importation using weekly data.
+in these cases, but we do not support importation using weekly data.
 
 Google uses differential privacy, which adds artificial noise to the raw
 datasets to avoid identifying any individual persons without affecting the
@@ -93,4 +84,3 @@ This dataset is based on Google's [COVID-19 Search Trends symptoms dataset](http
 
 To learn more about the source data, how it is generated and its limitations, 
 read [Google's Search Trends symptoms dataset documentation](https://storage.googleapis.com/gcp-public-data-symptom-search/COVID-19%20Search%20Trends%20symptoms%20dataset%20documentation%20.pdf).
-

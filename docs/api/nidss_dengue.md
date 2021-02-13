@@ -5,8 +5,7 @@ parent: Epidata API (Other Diseases)
 
 # NIDSS Dengue
 
-This is the documentation of the API for accessing the NIDSS Dengue (`nidss_dengue`) endpoint of
-the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
+This is the API documentation for accessing the NIDSS Dengue (`nidss_dengue`) endpoint of [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
@@ -16,7 +15,7 @@ General topics not specific to any particular endpoint are discussed in the
 ## NIDSS Dengue Data
 
 Counts of confirmed dengue cases from Taiwan's NIDSS.
- - Data source: [Taiwan CDC](http://nidss.cdc.gov.tw/en/SingleDisease.aspx?dc=1&dt=4&disease=061&position=1)
+ - Source: [Taiwan CDC](http://nidss.cdc.gov.tw/en/SingleDisease.aspx?dc=1&dt=4&disease=061&position=1)
  - Temporal Resolution: Weekly from 2003w01
  - Spatial Resolution: By [hexchotomy region](https://en.wikipedia.org/wiki/Regions_of_Taiwan#Hexchotomy) ([6+1](../../labels/nidss_regions.txt)) and by [city/county](https://en.wikipedia.org/wiki/List_of_administrative_divisions_of_Taiwan) ([22](../../labels/nidss_locations.txt))
  - Open access

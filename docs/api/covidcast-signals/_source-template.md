@@ -31,7 +31,7 @@ A brief description of what this source measures.
 
 Describe how any relevant quantities are estimated---both statistically and in
 terms of the underlying features or inputs. (For example, if a signal is based
-on hospitalizations, what specific types of hospitalization are counted?)
+on hospitalizations, what specific hospitalization types are counted?)
 
 If you need mathematics, we use KaTeX; you can see its supported LaTeX
 [here](https://katex.org/docs/supported.html). Inline math is done with *double*
@@ -46,7 +46,7 @@ Note that the blank lines are essential.
 
 ### Standard Error
 
-If this signal is a random variable, e.g. if it is a survey or based on
+If this signal is a random variable, e.g., if it is a survey or based on
 proportion estimates, describe here how its standard error is reported and the
 nature of the random variation.
 
@@ -58,9 +58,10 @@ average, describe it here.
 ## Limitations
 
 Any limitations in the interpretation of this signal, such as limits in its
-geographic coverage, limits in its interpretation (symptoms in a survey aren't
-always caused by COVID, our healthcare partner only is part of the market, there
-may be a demographic bias in respondents, etc.), known inaccuracies, etc.
+geographic coverage, limits in its interpretation (COVID doesn't always cause 
+the symptoms identified in a survey, our healthcare partner only is part of the 
+market, there may be a demographic bias in respondents, etc.), known 
+inaccuracies, etc.
 
 ## Lag and Backfill
 

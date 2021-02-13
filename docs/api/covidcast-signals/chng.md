@@ -38,6 +38,7 @@ commercial purposes.
 1. TOC
 {:toc}
 
+
 ## Estimation
 
 ### COVID Illness
@@ -128,13 +129,13 @@ correction on each location. At each time $$t$$, we consider the total visit
 count. If the value is less than a minimum sample threshold, we go back to the
 previous time $$t-1$$, and add this visit count to the previous total, again
 checking to see if the threshold has been met. If not, we continue to move
-backwards in time until we meet the threshold, and take the estimate at time
+backward in time until we meet the threshold and take the estimate at time
 $$t$$ to be the average over the smallest window that meets the threshold. We
-enforce a hard stop to consider only the past 7 days, if we have not yet met the
-threshold during that time bin, no estimate will be produced. If, for instance,
+enforce a hard stop to consider only the past 7 days. If we have not yet met the
+threshold during that time bin, we will not produce an estimate. If, for instance,
 at time $$t$$, the minimum sample threshold is already met, then the estimate
 only contains data from time $$t$$. This is a dynamic-length moving average,
-working backwards through time. The threshold is set at 100 observations.
+working backward through time. The threshold is set at 100 observations.
 
 ### Smoothing
 
@@ -142,6 +143,7 @@ To help with variability, we also employ a local linear regression filter with a
 Gaussian kernel. The bandwidth is fixed to approximately cover a rolling 7 day
 window, with the highest weight placed on the right edge of the window (the most
 recent timepoint).
+
 
 ## Lag and Backfill
 
@@ -213,3 +215,5 @@ multiple primary ICD-10 codes), then we will only count one of and in descending
 order: *Flu*, *COVID-like*, *Flu-like*, *Mixed*. This ordering tries to account for
 the most definitive confirmation, e.g. the codes assigned to *Flu* are only used
 for confirmed influenza cases, which are unrelated to the COVID-19 coronavirus.
+
+
