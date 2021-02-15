@@ -2057,7 +2057,7 @@ if(database_connect()) {
           $as_of,
           $issues,
           $lag);
-      if(isset($_REQUEST['format']) && $_REQUEST['format']=="tree") {
+      if(isset($_REQUEST['format']) && $_REQUEST['format']=="tree" && !is_null($epidata)) {
         //organize results by signal
         $epi_tree = array();
         $key = -1;
