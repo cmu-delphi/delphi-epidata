@@ -112,6 +112,38 @@ CREATE TABLE `covidcast` (
   KEY `by_lag` (`source`, `signal`, `time_type`, `geo_type`, `geo_value`, `time_value`, `lag`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+/* covidcast2 stores the data history for 2020 dates */
+CREATE TABLE `covidcast2` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `source` varchar(32) NOT NULL,
+  `signal` varchar(64) NOT NULL,
+  `time_type` varchar(12) NOT NULL,
+  `geo_type` varchar(12) NOT NULL,
+  `time_value` int(11) NOT NULL,
+  `geo_value` varchar(12) NOT NULL,
+  -- "primary" values are derived from the upstream data source
+  `value_updated_timestamp` int(11) NOT NULL,
+  `value` double NOT NULL,
+  `stderr` double,
+  `sample_size` double,
+  `direction_updated_timestamp` int(11) NOT NULL,
+  `direction` int(11),
+  `issue` int(11) NOT NULL,
+  `lag` int(11) NOT NULL,
+  `is_latest_issue` binary(1) NOT NULL,
+  `is_wip` binary(1) DEFAULT NULL,
+  -- TODO: `missing_value` int(11) DEFAULT NULL,
+  -- TODO: `missing_std` int(11) DEFAULT NULL,
+  -- TODO: `missing_sample_size` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  -- for uniqueness, and also fast lookup of all locations on a given date
+  UNIQUE KEY (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`, `issue`),
+  -- for fast lookup of a time-series for a given location
+  KEY `by_issue` (`source`, `signal`, `time_type`, `geo_type`, `geo_value`, `time_value`, `issue`),
+  KEY `by_lag` (`source`, `signal`, `time_type`, `geo_type`, `geo_value`, `time_value`, `lag`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 /*
 `covidcast_meta_cache` stores a cache of the `covidcast_meta` endpoint
 response, e.g. for faster visualization load times.

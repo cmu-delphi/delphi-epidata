@@ -30,6 +30,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
         database='epidata')
     cur = cnx.cursor()
     cur.execute('truncate table covidcast')
+    cur.execute('truncate table covidcast2')
     cur.execute('truncate table covidcast_nowcast')
     cnx.commit()
     cur.close()
@@ -52,10 +53,20 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
 
   def test_covidcast(self):
     """Test that the covidcast endpoint returns expected data."""
+    self.maxDiff=None
 
     # insert dummy data
     self.cur.execute('''
       insert into covidcast values
+        (0, 'src', 'sig2', 'day', 'county', 20200414, '01234',
+          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 1, False),
+        (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
+          678, 6.6, 2.2, 11.5, 678, 0, 20200416, 2, 1, False),
+        (0, 'src', 'sig', 'day', 'county', 20200412, '01234',
+          345, 9.5, 2.2, 11.5, 678, 0, 20200415, 3, 1, False)
+    ''')
+    self.cur.execute('''
+      insert into covidcast2 values
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
           123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 0, False),
         (0, 'src', 'sig2', 'day', 'county', 20200414, '01234',
@@ -63,7 +74,9 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
           456, 5.5, 1.2, 10.5, 789, 0, 20200415, 1, 0, False),
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          345, 6.5, 2.2, 11.5, 678, 0, 20200416, 2, 1, False)
+          345, 6.5, 2.2, 11.5, 678, 0, 20200416, 2, 1, False),
+        (0, 'src', 'sig', 'day', 'county', 20200412, '01234',
+          345, 6.5, 2.2, 11.5, 678, 0, 20200414, 2, 0, False);
     ''')
     self.cnx.commit()
 
@@ -78,7 +91,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
         'epidata': [{
           'time_value': 20200414,
           'geo_value': '01234',
-          'value': 6.5,
+          'value': 6.6,
           'stderr': 2.2,
           'sample_size': 11.5,
           'direction': 0,
@@ -112,7 +125,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
           'sig': [{
             'time_value': 20200414,
             'geo_value': '01234',
-            'value': 6.5,
+            'value': 6.6,
             'stderr': 2.2,
             'sample_size': 11.5,
             'direction': 0,
@@ -144,7 +157,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
         'epidata': [{
           'time_value': 20200414,
           'geo_value': '01234',
-          'value': 6.5,
+          'value': 6.6,
           'stderr': 2.2,
           'sample_size': 11.5,
           'direction': 0,
@@ -173,6 +186,29 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
           'direction': 0,
           'issue': 20200415,
           'lag': 1,
+          'signal': 'sig',
+         }],
+        'message': 'success',
+      })
+
+    with self.subTest(name='request as-of a date capturing a covidcast-covidcast2 collision'):
+      # fetch data, specifying as_of
+      response_1a = Epidata.covidcast(
+          'src', 'sig', 'day', 'county', 20200414, '01234',
+          as_of=20200499)
+
+      # check result
+      self.assertEqual(response_1a, {
+        'result': 1,
+        'epidata': [{
+          'time_value': 20200414,
+          'geo_value': '01234',
+          'value': 6.6,
+          'stderr': 2.2,
+          'sample_size': 11.5,
+          'direction': 0,
+          'issue': 20200416,
+          'lag': 2,
           'signal': 'sig',
          }],
         'message': 'success',
@@ -214,16 +250,26 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
     with self.subTest(name='request at a given lag'):
       # fetch data, specifying lag, not issue range
       response_3 = Epidata.covidcast(
-          'src', 'sig', 'day', 'county', 20200414, '01234',
-          lag=2)
+          'src', 'sig', 'day', 'county', Epidata.range(20200412, 20200414),
+          '01234', lag=2)
 
       # check result
       self.assertDictEqual(response_3, {
           'result': 1,
           'epidata': [{
-            'time_value': 20200414,
+            'time_value': 20200412,
             'geo_value': '01234',
             'value': 6.5,
+            'stderr': 2.2,
+            'sample_size': 11.5,
+            'direction': 0,
+            'issue': 20200414,
+            'lag': 2,
+            'signal': 'sig',
+          }, {
+            'time_value': 20200414,
+            'geo_value': '01234',
+            'value': 6.6,
             'stderr': 2.2,
             'sample_size': 11.5,
             'direction': 0,

@@ -944,9 +944,9 @@ function get_covidcast($source, $signals, $time_type, $geo_type, $time_values, $
   $time_type = mysqli_real_escape_string($dbh, $time_type);
   $geo_type = mysqli_real_escape_string($dbh, $geo_type);
   // basic query info
-  $table = '`covidcast` t';
-  $fields = "t.`signal`, t.`time_value`, t.`geo_value`, t.`value`, t.`stderr`, t.`sample_size`, t.`direction`, t.`issue`, t.`lag`";
-  $order = "t.`signal` ASC, t.`time_value` ASC, t.`geo_value` ASC, t.`issue` ASC";
+  $table = '`#TABLE#` t';
+  $fields = "t.`signal`, t.`time_value`, t.`geo_value`, t.`value`, t.`stderr`, t.`sample_size`, t.`direction`, t.`issue`, t.`lag`, t.`value_updated_timestamp`";
+  $order = "`signal` ASC, `time_value` ASC, `geo_value` ASC, `issue` ASC";
   // data type of each field
   $fields_string = array('geo_value', 'signal');
   $fields_int = array('time_value', 'direction', 'issue', 'lag');
@@ -971,6 +971,7 @@ function get_covidcast($source, $signals, $time_type, $geo_type, $time_values, $
   }
   $conditions = "({$condition_source}) AND ({$condition_signal}) AND ({$condition_time_type}) AND ({$condition_geo_type}) AND ({$condition_time_value}) AND ({$condition_geo_value})";
 
+  $union = True;
   $subquery = "";
   if ($issues !== null) {
     //build the issue filter
@@ -991,12 +992,41 @@ function get_covidcast($source, $signals, $time_type, $geo_type, $time_values, $
   } else {
     // fetch most recent issue fast
     $condition_version = '(t.`is_latest_issue` IS TRUE)';
+    $union = False;
   }
   // the query
-  $query = "SELECT {$fields} FROM {$table} {$subquery} WHERE {$conditions} AND ({$condition_version}) ORDER BY {$order}";
+  $query_template = "SELECT {$fields} FROM {$table} {$subquery} WHERE {$conditions} AND ({$condition_version})";
+
+  $from_2021 = str_replace("#TABLE#", "covidcast", $query_template);
+  $query = "";
+  if ($union) {
+    $from_2020 = str_replace("#TABLE#", "covidcast2", $query_template);
+    $query = "({$from_2020}) UNION ({$from_2021})";
+    $order = "{$order}, `value_updated_timestamp` DESC";
+  } else {
+    $query = $from_2021;
+  }
+
+  $query = "{$query} ORDER BY {$order}";
   // get the data from the database
   $epidata = array();
   execute_query($query, $epidata, $fields_string, $fields_int, $fields_float);
+
+  // drop duplicates where some source+signal+geo+date is in both tables with
+  // different timestamps, preferring most recently updated copy
+  if ($union) {
+    $drop = array();
+    $last = "";
+    foreach ($epidata as $index => $item) {
+      $key = "{$item['signal']}.{$item['time_value']}.{$item['geo_value']}.{$item['issue']}";
+      if ($key == $last) {
+        $drop[$index] = True;
+      }
+      $last = $key;
+    }
+    $epidata = \array_diff_key($epidata, $drop);
+  }
+
   // return the data
   return count($epidata) === 0 ? null : $epidata;
 }
