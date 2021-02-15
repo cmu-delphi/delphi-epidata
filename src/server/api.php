@@ -2077,7 +2077,7 @@ if(database_connect()) {
     // get the metadata
     $epidata = get_covidcast_meta();
     store_result($data, $epidata);
-  } else if($endpoint === 'covid_hosp' || $source === 'covid_hosp_state_timeseries') {
+  } else if($endpoint === 'covid_hosp' || $endpoint === 'covid_hosp_state_timeseries') {
     if(require_all($data, array('states', 'dates'))) {
       // parse the request
       $states = extract_values($_REQUEST['states'], 'str');
