@@ -15,9 +15,8 @@ demographic features:
 * [Monthly files](https://cmu.box.com/s/vh4gs3j541tt9pqn2pn72bktu0op8tpo)
 
 Please also take a look at the [individual response data](./survey-files.md),
-and the coarse aggregates -- grouped only by region -- available [through the
-COVIDcast API](../api/covidcast-signals/fb-survey.md) to find the data product
-that best suits your needs.
+and the [coarse aggregates](../api/covidcast-signals/fb-survey.md) -- grouped
+only by region -- to find the data product that best suits your needs.
 
 Important updates for data users, including corrections to data or updates on
 data processing delays, are posted as `OUTAGES.txt` in the directory where the
@@ -42,10 +41,10 @@ period of either a full epiweek or a full month.
 
 ## Aggregation
 The aggregates are filtered to only include estimates for a particular group if
-there were 100 or more responses. Especially in the weekly aggregtes, many of
-the state-level groups have been filtered out due to low sample size. In such
-cases, the state marginal files, which group by a single demographic of interest
-at a time, will likely provide more coverage.
+that group includes 100 or more responses. Especially in the weekly aggregtes,
+many of the state-level groups have been filtered out due to low sample size. In
+such cases, the state marginal files, which group by a single demographic of
+interest at a time, will likely provide more coverage.
 
 ## File format
 
@@ -55,12 +54,12 @@ Each CSV is named as follows:
 
     {date}_{region}_{vars}.csv
 
-Dates in of the form `YYYYmmdd`. `date` refers to the first day of the time
+Dates are of the form `YYYYmmdd`. `date` refers to the first day of the time
 period survey responses were aggregated over, in the Pacific time zone (UTC -
-7). Unless noted otherwise, this is always a complete month or epiweek. `region`
-is the geographic level responses were aggregated over. At the moment, only
-nation-wide and state groupings are available. `vars` is a list all other
-grouping variables used in the aggregation, ordered alphabetically.
+7). Unless noted otherwise, the time period is always a complete month or
+epiweek. `region` is the geographic level responses were aggregated over. At the
+moment, only nation-wide and state groupings are available. `vars` is a list all
+other grouping variables used in the aggregation, ordered alphabetically.
 
 ### Columns
 
@@ -81,8 +80,9 @@ All aggregates using the same set of grouping variables appear in a single CSV.
 
 ## Indicators
 
-The files in this folder contain [weighted](./weights.md) estimates of percent
-of respondents who fulfill one or several criteria. Estimates are broken out by
+The files in this folder contain [weighted
+estimates](../api/covidcast-signals/fb-survey.md#survey-weighting) of percent of
+respondents who fulfill one or several criteria. Estimates are broken out by
 state, age, gender, race, and ethnicity.
 
 | Signal | Description | Survey Item |
@@ -103,5 +103,6 @@ state, age, gender, race, and ethnicity.
 | `pct_trust_politicians` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by politicians, among respondents who have not yet been vaccinated *and* would "definitely not" or "probably not" get a COVID-19 vaccine if offered. <br/> **Earliest date available:** 2021-01-01 | V3 and V4 |
 
 Note: CSVs for the month of January 2021 only use data from January 6-31 due to
-a [definitional change](./coding.md#new-items-2) in a major vaccine item on
-January 6.
+a [definitional change in a major vaccine item on January
+6](./coding.md#new-items-2). Indicators based on [item V9 use data starting
+January 12](./coding.md#new-items-2).
