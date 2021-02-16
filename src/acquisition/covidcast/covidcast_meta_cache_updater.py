@@ -23,9 +23,13 @@ def main(args, epidata_impl=Epidata, database_impl=Database):
 
   `args`: parsed command-line arguments
   """
+  log_file = None
+  if (args):
+    log_file = args.log_file
+
   logger = get_structured_logger(
       "metadata_cache_updater",
-      filename=args.log_file)
+      filename=log_file)
   start_time = time.time()
   database = database_impl()
   database.connect()
