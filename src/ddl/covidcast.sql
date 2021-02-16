@@ -83,7 +83,7 @@ Data is public.
 */
 
 CREATE TABLE `covidcast` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `source` varchar(32) NOT NULL,
   `signal` varchar(64) NOT NULL,
   `time_type` varchar(12) NOT NULL,
