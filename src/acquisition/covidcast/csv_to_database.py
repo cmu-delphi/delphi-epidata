@@ -186,8 +186,8 @@ def main(
     upload_archive_impl(
       path_details,
       database,
-      logger,
       make_handlers(args.data_dir, args.specific_issue_date),
+      logger,
       is_wip_override=wip_override)
   finally:
     # no catch block so that an exception above will cause the program to fail
