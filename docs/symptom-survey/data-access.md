@@ -22,6 +22,6 @@ is conducted by the University of Maryland (UMD) and access can be requested
 through the same form.
 
 [High-level aggregates](../api/covidcast.md) of select survey items are
-available in the [COVIDcast API](../api/covidcast-signals/fb-survey.md).
+publicly available in the [COVIDcast API](../api/covidcast-signals/fb-survey.md).
 [Finer aggregates](./contingency-tables.md) grouped by various demographic
 characteristics are available for download.
