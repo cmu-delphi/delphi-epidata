@@ -1002,6 +1002,7 @@ function get_covidcast($source, $signals, $time_type, $geo_type, $time_values, $
   if ($union) {
     $from_2020 = str_replace("#TABLE#", "covidcast2", $query_template);
     $query = "({$from_2020}) UNION ({$from_2021})";
+    // add extra ORDER BY so we can drop the right duplicate later
     $order = "{$order}, `value_updated_timestamp` DESC";
   } else {
     $query = $from_2021;
@@ -1014,6 +1015,7 @@ function get_covidcast($source, $signals, $time_type, $geo_type, $time_values, $
 
   // drop duplicates where some source+signal+geo+date is in both tables with
   // different timestamps, preferring most recently updated copy
+  // NB this relies on the inclusion of the extra ORDER BY clause above
   if ($union) {
     $drop = array();
     $last = "";

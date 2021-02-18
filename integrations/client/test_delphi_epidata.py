@@ -193,6 +193,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
 
     with self.subTest(name='request as-of a date capturing a covidcast-covidcast2 collision'):
       # fetch data, specifying as_of
+      # 20200499 grabs everything before may 1 (doesn't need to be a real date)
       response_1a = Epidata.covidcast(
           'src', 'sig', 'day', 'county', 20200414, '01234',
           as_of=20200499)
