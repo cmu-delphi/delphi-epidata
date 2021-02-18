@@ -38,7 +38,7 @@ def main(args, epidata_impl=Epidata, database_impl=Database):
   try:
     metadata_calculation_start_time = time.time()
     metadata = database.get_covidcast_meta()
-    metadata_calculation_interval_in_seconds = metadata_calculation_start_time - start_time
+    metadata_calculation_interval_in_seconds = time.time() - metadata_calculation_start_time
   except:
     # clean up before failing
     database.disconnect(True)
