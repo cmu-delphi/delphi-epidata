@@ -60,7 +60,9 @@ class CsvUploadingTests(unittest.TestCase):
     # make some fake data files
     data_dir = 'covid/data'
     source_receiving_dir = data_dir + '/receiving/src-name'
+    log_file_directory = "/var/log/"
     os.makedirs(source_receiving_dir, exist_ok=True)
+    os.makedirs(log_file_directory, exist_ok=True)
 
     # valid
     with open(source_receiving_dir + '/20200419_state_test.csv', 'w') as f:
@@ -96,7 +98,13 @@ class CsvUploadingTests(unittest.TestCase):
 
     # upload CSVs
     # TODO: use an actual argparse object for the args instead of a MagicMock
-    args = MagicMock(data_dir=data_dir, is_wip_override=False, not_wip_override=False, specific_issue_date=False)
+    args = MagicMock(
+        log_file=log_file_directory +
+        "output.log",
+        data_dir=data_dir,
+        is_wip_override=False,
+        not_wip_override=False,
+        specific_issue_date=False)
     main(args)
 
     # request CSV data from the API

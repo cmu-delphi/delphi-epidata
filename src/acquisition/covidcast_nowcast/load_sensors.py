@@ -43,8 +43,7 @@ def main(csv_path: str = SENSOR_CSV_PATH) -> None:
             continue
         try:
             data = load_and_prepare_file(filepath, attribute)
-            conn = engine.connect()
-            with conn.begin():
+            with engine.connect() as conn:
                 method = _create_upsert_method(sqlalchemy.MetaData(conn))
                 data.to_sql(TABLE_NAME, engine, if_exists="append", method=method, index=False)
         except Exception:
