@@ -14,7 +14,7 @@ demographic features:
 * [Weekly files](https://cmu.box.com/s/xwjulq0pteen52d4upni9ikagu7d8bl2)
 * [Monthly files](https://cmu.box.com/s/vh4gs3j541tt9pqn2pn72bktu0op8tpo)
 
-These contingency tables demographic breakdowns of COVID-related topics such as
+These contingency tables provide demographic breakdowns of COVID-related topics such as
 vaccine uptake and acceptance. They are more detailed than the
 [coarse aggregates reported in the COVIDcast Epidata API](../api/covidcast-signals/fb-survey.md),
 which are grouped only by geographic region. [Individual response data](survey-files.md)
