@@ -231,36 +231,6 @@ class Database:
       self._cursor.execute(drop_tmp_table_sql)
     return total
 
-  def get_data_stdev_across_locations(self, max_day):
-    """
-    Return the standard deviation of daily data over all locations, for all
-    (source, signal, geo_type) tuples.
-
-    `max_day`: base the standard deviation on data up to, and including, but
-      not after, this day (e.g. for a stable result over time)
-    """
-
-    sql = '''
-      SELECT
-        `source`,
-        `signal`,
-        `geo_type`,
-        COALESCE(STD(`value`), 0) AS `aggregate_stdev`
-      FROM
-        `covidcast`
-      WHERE
-        `time_type` = 'day' AND
-        `time_value` <= %s
-      GROUP BY
-        `source`,
-        `signal`,
-        `geo_type`
-    '''
-
-    args = (max_day,)
-    self._cursor.execute(sql, args)
-    return list(self._cursor)
-
   def get_covidcast_meta(self):
     """Compute and return metadata on all non-WIP COVIDcast signals."""
 
