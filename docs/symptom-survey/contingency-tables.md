@@ -15,12 +15,12 @@ demographic features:
 * [Monthly files](https://cmu.box.com/s/vh4gs3j541tt9pqn2pn72bktu0op8tpo)
 
 These contingency tables demographic breakdowns of COVID-related topics such as
-vaccine uptake and acceptance. They are more detailed than the [coarse
-aggregates reported in the COVIDcast Epidata
-API](../api/covidcast-signals/fb-survey.md), which are grouped only by
-geographic region. [Individual response data](survey-files.md) for the survey is
-available, but only to academic or nonprofit researchers who sign a Data Use
-Agreement, whereas these contingency tables are available to the general public.
+vaccine uptake and acceptance. They are more detailed than the
+[coarse aggregates reported in the COVIDcast Epidata API](../api/covidcast-signals/fb-survey.md),
+which are grouped only by geographic region. [Individual response data](survey-files.md)
+for the survey is available, but only to academic or nonprofit researchers who
+sign a Data Use Agreement, whereas these contingency tables are available to the
+general public.
 
 Important updates for data users, including corrections to data or updates on
 data processing delays, are posted as `OUTAGES.txt` in the directory where the
@@ -112,6 +112,5 @@ state, age, gender, race, and ethnicity.
 | `pct_trust_politicians` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by politicians, among respondents who have not yet been vaccinated *and* would "definitely not" or "probably not" get a COVID-19 vaccine if offered. <br/> **Earliest date available:** 2021-01-01 | V3 and V4 |
 
 Note: CSVs for the month of January 2021 only use data from January 6-31 due to
-a [definitional change in a major vaccine item on January
-6](./coding.md#new-items-2). Indicators based on [item V9 use data starting
-January 12](./coding.md#new-items-2).
+a [definitional change in a major vaccine item on January 6](./coding.md#new-items-2).
+Indicators based on [item V9 use data starting January 12](./coding.md#new-items-2).

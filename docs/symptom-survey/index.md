@@ -14,10 +14,9 @@ experienced as a result of the pandemic. A high-level overview of the survey is
 posted [on the COVIDcast website](https://delphi.cmu.edu/covidcast/surveys/).
 
 Geographically aggregated data from this survey is publicly available through
-the [COVIDcast API](../api/covidcast.md) as the [`fb-survey` data
-source](../api/covidcast-signals/fb-survey.md). Demographic breakdowns of survey
-data are publicly available as [downloadable contingency
-tables](contingency-tables.md).
+the [COVIDcast API](../api/covidcast.md) as the [`fb-survey` data source](../api/covidcast-signals/fb-survey.md).
+Demographic breakdowns of survey data are publicly available as
+[downloadable contingency tables](contingency-tables.md).
 
 This documentation describes the survey items, data coding, data distribution,
 and the survey weights computed by Facebook. It also documents the individual
