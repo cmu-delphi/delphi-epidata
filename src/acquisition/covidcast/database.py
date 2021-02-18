@@ -212,17 +212,18 @@ class Database:
         ) for row in cc_rows[start:end]]
 
 
-        result = self._cursor.executemany(insert_into_tmp_sql, args)
+        self._cursor.executemany(insert_into_tmp_sql, args)
         self._cursor.execute(insert_or_update_sql)
+        modified_row_count = self._cursor.rowcount
         self._cursor.execute(zero_is_latest_issue_sql)
         self._cursor.execute(set_is_latest_issue_sql)
         self._cursor.execute(truncate_tmp_table_sql)
 
-        if result is None:
-          # the SQL connector does not support returning number of rows affected
+        if modified_row_count is None or modified_row_count == -1:
+          # the SQL connector does not support returning number of rows affected (see PEP 249)
           total = None
         else:
-          total += result
+          total += modified_row_count
         if commit_partial:
           self._connection.commit()
     except Exception as e:
