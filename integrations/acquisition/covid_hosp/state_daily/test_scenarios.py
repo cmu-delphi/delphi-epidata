@@ -13,6 +13,7 @@ from delphi.epidata.acquisition.covid_hosp.common.database import Database
 from delphi.epidata.acquisition.covid_hosp.common.test_utils import TestUtils
 from delphi.epidata.client.delphi_epidata import Epidata
 from delphi.epidata.acquisition.covid_hosp.state_daily.update import Update
+from delphi.epidata.acquisition.covid_hosp.state_daily.network import Network
 import delphi.operations.secrets as secrets
 
 # py3tester coverage target (equivalent to `import *`)
