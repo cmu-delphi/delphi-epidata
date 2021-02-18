@@ -14,9 +14,13 @@ demographic features:
 * [Weekly files](https://cmu.box.com/s/xwjulq0pteen52d4upni9ikagu7d8bl2)
 * [Monthly files](https://cmu.box.com/s/vh4gs3j541tt9pqn2pn72bktu0op8tpo)
 
-Please also take a look at the [individual response data](./survey-files.md),
-and the [coarse aggregates](../api/covidcast-signals/fb-survey.md) -- grouped
-only by region -- to find the data product that best suits your needs.
+These contingency tables demographic breakdowns of COVID-related topics such as
+vaccine uptake and acceptance. They are more detailed than the [coarse
+aggregates reported in the COVIDcast Epidata
+API](../api/covidcast-signals/fb-survey.md), which are grouped only by
+geographic region. [Individual response data](survey-files.md) for the survey is
+available, but only to academic or nonprofit researchers who sign a Data Use
+Agreement, whereas these contingency tables are available to the general public.
 
 Important updates for data users, including corrections to data or updates on
 data processing delays, are posted as `OUTAGES.txt` in the directory where the
@@ -36,17 +40,21 @@ monthly files. Because monthly aggregates include more responses, they have
 lower missingness when grouping by several features at a time.
 
 ## Dates
+
 The included files provide estimates for various metrics of interest over a
-period of either a full epiweek or a full month.
+period of either a full epiweek (or [MMWR
+week](https://wwwn.cdc.gov/nndss/document/MMWR_week_overview.pdf), a
+standardized numbering of weeks throughout the year) or a full month.
 
 ## Aggregation
+
 The aggregates are filtered to only include estimates for a particular group if
-that group includes 100 or more responses. Especially in the weekly aggregtes,
+that group includes 100 or more responses. Especially in the weekly aggregates,
 many of the state-level groups have been filtered out due to low sample size. In
 such cases, the state marginal files, which group by a single demographic of
 interest at a time, will likely provide more coverage.
 
-## File format
+## File Format
 
 ### Naming
 
@@ -67,25 +75,26 @@ Within a CSV, the first few columns are the grouping variables, ordered
 alphabetically. Each aggregate reports four columns (unrounded):
 
 * `val_<indicator name>`: the main value of interest, e.g., percent, average, or
-  count
+  count, estimated using the [survey weights](weights.md) to better match state
+  demographics
 * `se_<indicator name>`: the standard error of `val_<indicator name>`
 * `sample_size_<indicator name>`: the number of survey responses used to
   calculate `val_<indicator name>`
 * `represented_<indicator name>`: the number of people in the population that
   `val_<indicator name>` represents over all days in the given time period. This
-  is the sum of [participant weights](./weights.md) for all survey responses
+  is the sum of [survey weights](./weights.md) for all survey responses
   used.
 
 All aggregates using the same set of grouping variables appear in a single CSV.
 
 ## Indicators
 
-The files in this folder contain [weighted
+The files contain [weighted
 estimates](../api/covidcast-signals/fb-survey.md#survey-weighting) of percent of
 respondents who fulfill one or several criteria. Estimates are broken out by
 state, age, gender, race, and ethnicity.
 
-| Signal | Description | Survey Item |
+| Indicator | Description | Survey Item |
 | --- | --- | --- |
 | `pct_vaccinated` | Estimated percentage of respondents who have already received a COVID vaccine. <br/> **Earliest date available:** 2021-01-01 | V1 |
 | `pct_accepting` | Estimated percentage of respondents who would definitely or probably choose to get vaccinated, if a vaccine were offered to them today, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-01 | V3 |
