@@ -111,3 +111,29 @@ class UnitTests(unittest.TestCase):
 
     cc_rows = {MagicMock(geo_id='CA', val=1, se=0, sample_size=0)}
     self.assertRaises(Exception, database.insert_or_update_batch, cc_rows)
+  
+  def test_insert_or_update_batch_row_count_returned(self):
+    """Test that the row count is returned"""
+    mock_connector = MagicMock()
+    database = Database()
+    database.connect(connector_impl=mock_connector)
+    connection = mock_connector.connect()
+    cursor = connection.cursor() 
+    cursor.rowcount = 3
+
+    cc_rows = [MagicMock(geo_id='CA', val=1, se=0, sample_size=0)]
+    result = database.insert_or_update_batch(cc_rows)
+    self.assertEqual(result, 3)
+
+  def test_insert_or_update_batch_none_returned(self):
+    """Test that None is returned when row count cannot be returned"""
+    mock_connector = MagicMock()
+    database = Database()
+    database.connect(connector_impl=mock_connector)
+    connection = mock_connector.connect()
+    cursor = connection.cursor() 
+    cursor.rowcount = -1
+
+    cc_rows = [MagicMock(geo_id='CA', val=1, se=0, sample_size=0)]
+    result = database.insert_or_update_batch(cc_rows)
+    self.assertIsNone(result)
