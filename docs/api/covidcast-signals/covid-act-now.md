@@ -60,8 +60,11 @@ $$
 \end{aligned}
 $$
 
-Note that in order to more closely mirror the CAN data source, no pseudo-observations and priors 
-are used in the estimation of these proportions.
+Note that in order to more closely mirror the CAN data source, no pseudo-observations
+(such as we would typically apply for a Jeffreys prior)
+are used in the estimation of these proportions. Instead of using the Jeffreys prior to
+more accurately estimate the standard error when the value is zero, we suppress all
+entries with a value of zero.
 
 ### Standard Error
 
@@ -77,7 +80,7 @@ $$
 ### Smoothing
 
 No additional smoothing is done to avoid double-smoothing, since the data pulled from CAN / CDC 
-is already smoothed as a 7-day-average.
+is already smoothed with a 7-day-average.
 
 ## Limitations
 
@@ -93,7 +96,7 @@ A few counties, most notably in California, are also not covered by this data so
 
 ## Lag and Backfill
 
-The lag for these signals vary depending on the reporting patterns of individual counties.
+The lag for these signals varies depending on the reporting patterns of individual counties.
 Most counties have their latest data report with a lag of 2 days, while others can take 9 days 
 or more in the case of California counties.
 
