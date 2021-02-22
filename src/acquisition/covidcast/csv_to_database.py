@@ -97,9 +97,11 @@ def upload_archive(
   filename). If boolean, whether to force WIP status (True) or
   production status (False) regardless of what the filename says
 
+  :return: the number of modified rows
   """
   archive_as_successful, archive_as_failed = handlers
-  
+  total_modified_row_count = 0
+
   # iterate over each file
   for path, details in path_details:
     print('handling ', path)
@@ -127,18 +129,19 @@ def upload_archive(
     all_rows_valid = rows_list and all(r is not None for r in rows_list)
     if all_rows_valid:
       try:
-        result = database.insert_or_update_bulk(rows_list)
-        print(f"insert_or_update_bulk {filename} returned {result}")
+        modified_row_count = database.insert_or_update_bulk(rows_list)
+        print(f"insert_or_update_bulk {filename} returned {modified_row_count}")
         logger.info(
           "Inserted database rows",
-          row_count = result,
+          row_count = modified_row_count,
           source = source,
           signal = signal,
           geo_type = geo_type,
           time_value = time_value,
           issue = issue,
           lag = lag)
-        if result is None or result: # else would indicate zero rows inserted
+        if modified_row_count is None or modified_row_count: # else would indicate zero rows inserted
+          total_modified_row_count += (modified_row_count if modified_row_count else 0)
           database.commit()
       except Exception as e:
         all_rows_valid = False
@@ -150,6 +153,9 @@ def upload_archive(
       archive_as_successful(path_src, filename, source)
     else:
       archive_as_failed(path_src, filename, source)
+  
+  return total_modified_row_count
+
 
 def main(
     args,
@@ -183,22 +189,17 @@ def main(
   num_starting_rows = database.count_all_rows()
 
   try:
-    upload_archive_impl(
+    modified_row_count = upload_archive_impl(
       path_details,
       database,
       make_handlers(args.data_dir, args.specific_issue_date),
       logger,
       is_wip_override=wip_override)
+    logger.info("Finished inserting database rows", row_count = modified_row_count)
+    print('inserted/updated %d rows' % modified_row_count)
   finally:
-    # no catch block so that an exception above will cause the program to fail
-    # after the following cleanup
-    try:
-      num_inserted_rows = database.count_all_rows() - num_starting_rows
-      logger.info("Finished inserting database rows", row_count = num_inserted_rows)
-      print('inserted/updated %d rows' % num_inserted_rows)
-    finally:
-      # unconditionally commit database changes since CSVs have been archived
-      database.disconnect(True)
+    # unconditionally commit database changes since CSVs have been archived
+    database.disconnect(True)
   
   logger.info(
       "Ingested CSVs into database",
