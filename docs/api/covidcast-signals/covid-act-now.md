@@ -64,7 +64,7 @@ Note that in order to more closely mirror the CAN data source, no pseudo-observa
 (such as we would typically apply for a Jeffreys prior)
 are used in the estimation of these proportions. Instead of using the Jeffreys prior to
 more accurately estimate the standard error when the value is zero, we suppress all
-entries with a value of zero.
+entries with zero sample size (total tests performed) and leave those with 0 positive results as-is.
 
 ### Standard Error
 
@@ -93,6 +93,9 @@ the testing performed are typically not randomly sampled, especially for early d
 with lower testing volumes.
 
 A few counties, most notably in California, are also not covered by this data source.
+
+Entries with zero total tests performed are also suppressed, even if it was actually the case that 
+no tests were performed for the day.
 
 ## Lag and Backfill
 
