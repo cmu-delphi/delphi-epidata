@@ -90,8 +90,7 @@ All aggregates using the same set of grouping variables appear in a single CSV.
 
 ## Indicators
 
-The files contain [weighted
-estimates](../api/covidcast-signals/fb-survey.md#survey-weighting) of percent of
+The files contain [weighted estimates](../api/covidcast-signals/fb-survey.md#survey-weighting) of percent of
 respondents who fulfill one or several criteria. Estimates are broken out by
 state, age, gender, race, and ethnicity.
 
