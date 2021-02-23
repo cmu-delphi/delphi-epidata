@@ -13,8 +13,8 @@ are stored. To connect to the server, see the [server access documentation](serv
 This documentation describes the survey data available on that server.
 
 You must sign a Data Use Agreement with Facebook and with CMU to gain
-access to the individual survey responses. If you have not done so, aggregate data is available
-[through the COVIDcast API](../api/covidcast-signals/fb-survey.md).
+access to the individual survey responses. If you have not done so, aggregate
+data is publicly available; see the [survey overview for details](index.md).
 
 Important updates for data users, including corrections to data or updates on
 data processing delays, are posted as `OUTAGES.txt` in the SFTP server directory

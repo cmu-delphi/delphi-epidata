@@ -1,7 +1,7 @@
 ---
 title: Questions and Coding
 parent: COVID Symptom Survey
-nav_order: 5
+nav_order: 6
 ---
 
 # Questions and Coding
