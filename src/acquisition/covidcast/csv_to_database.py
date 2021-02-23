@@ -186,7 +186,6 @@ def main(
 
   database = database_impl()
   database.connect()
-  num_starting_rows = database.count_all_rows()
 
   try:
     modified_row_count = upload_archive_impl(
