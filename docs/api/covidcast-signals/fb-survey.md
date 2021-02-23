@@ -8,7 +8,7 @@ grand_parent: COVIDcast Epidata API
 {: .no_toc}
 
 * **Source name:** `fb-survey`
-* **First issued:** April 29, 2020
+* **Earliest issue available:** April 29, 2020
 * **Number of data revisions since May 19, 2020:** 1
 * **Date of last change:** [June 3, 2020](../covidcast_changelog.md#fb-survey)
 * **Available for:** county, hrr, msa, state, nation (see [geography coding docs](../covidcast_geography.md))
@@ -88,12 +88,12 @@ or influenza-like illness, in a given location, on a given day.
 
 | Signals | Description |
 | --- | --- |
-| `raw_cli` and `smoothed_cli` | Estimated percentage of people with COVID-like illness based on the [criteria below](#ili-and-cli-indicators), with no survey weighting <br/> **First Available:** 2020-04-06 |
-| `raw_ili` and `smoothed_ili` | Estimated percentage of people with influenza-like illness based on the [criteria below](#ili-and-cli-indicators), with no survey weighting <br/> **First Available:** 2020-04-06 |
-| `raw_wcli` and `smoothed_wcli` | Estimated percentage of people with COVID-like illness; adjusted using survey weights [as described below](#survey-weighting) <br/> **First Available:** 2020-04-06 |
-| `raw_wili` and `smoothed_wili` | Estimated percentage of people with influenza-like illness; adjusted using survey weights [as described below](#survey-weighting) <br/> **First Available:** 2020-04-06 |
-| `raw_hh_cmnty_cli` and `smoothed_hh_cmnty_cli` | Estimated percentage of people reporting illness in their local community, as [described below](#estimating-community-cli), including their household, with no survey weighting <br/> **First Available:** 2020-04-15 |
-| `raw_nohh_cmnty_cli` and `smoothed_nohh_cmnty_cli` | Estimated percentage of people reporting illness in their local community, as [described below](#estimating-community-cli), not including their household, with no survey weighting <br/> **First Available:** 2020-04-15 |
+| `raw_cli` and `smoothed_cli` | Estimated percentage of people with COVID-like illness based on the [criteria below](#ili-and-cli-indicators), with no survey weighting <br/> **Earliest date available:** 2020-04-06 |
+| `raw_ili` and `smoothed_ili` | Estimated percentage of people with influenza-like illness based on the [criteria below](#ili-and-cli-indicators), with no survey weighting <br/> **Earliest date available:** 2020-04-06 |
+| `raw_wcli` and `smoothed_wcli` | Estimated percentage of people with COVID-like illness; adjusted using survey weights [as described below](#survey-weighting) <br/> **Earliest date available:** 2020-04-06 |
+| `raw_wili` and `smoothed_wili` | Estimated percentage of people with influenza-like illness; adjusted using survey weights [as described below](#survey-weighting) <br/> **Earliest date available:** 2020-04-06 |
+| `raw_hh_cmnty_cli` and `smoothed_hh_cmnty_cli` | Estimated percentage of people reporting illness in their local community, as [described below](#estimating-community-cli), including their household, with no survey weighting <br/> **Earliest date available:** 2020-04-15 |
+| `raw_nohh_cmnty_cli` and `smoothed_nohh_cmnty_cli` | Estimated percentage of people reporting illness in their local community, as [described below](#estimating-community-cli), not including their household, with no survey weighting <br/> **Earliest date available:** 2020-04-15 |
 
 Note that for `raw_hh_cmnty_cli` and `raw_nohh_cmnty_cli`, the illnesses
 included are broader: a respondent is included if they know someone in their
@@ -189,7 +189,7 @@ $$Y_i$$ denote number of ILI and CLI cases in the household, respectively
 (computed according to the simple strategy described above), and let $$N_i$$
 denote the total number of people in the household, in survey $$i$$, out of
 $$m$$ surveys we collected. Then our estimates of $$p$$ and $$q$$ (see
-the [appendix](#appendix) for motivating details) are: 
+the [appendix](#appendix) for motivating details) are:
 
 $$
 \hat{p} = 100 \cdot \frac{1}{m}\sum_{i=1}^m \frac{X_i}{N_i}
@@ -236,7 +236,7 @@ b = 100 \cdot \frac{y}{n}.
 $$
 
 We will estimate $$a$$ and $$b$$ across the same 4 aggregation schemes as
-before. 
+before.
 
 For a single survey, let:
 
@@ -287,15 +287,15 @@ data in the estimation procedures described above.
 
 | Signal | Description | Survey Item | Introduced |
 | --- | --- | --- | --- |
-| `smoothed_wearing_mask` | Estimated percentage of people who wore a mask for most or all of the time while in public in the past 5 days; those not in public in the past 5 days are not counted. <br/> **First Available:** 2020-09-08 | C14 | Wave 4, Sept 8, 2020 |
-| `smoothed_others_masked` | Estimated percentage of respondents who say that most or all *other* people wear masks, when they are in public and social distancing is not possible <br/> **First Available:** 2020-11-24 | C16 | Wave 5, Nov 24, 2020 |
-| `smoothed_travel_outside_state_5d` | Estimated percentage of respondents who report traveling outside their state in the past 5 days <br/> **First Available:** 2020-04-06 | C6 | Wave 1 |
-| `smoothed_work_outside_home_1d` | Estimated percentage of respondents who worked or went to school outside their home in the past 24 hours <br/> **First Available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
-| `smoothed_shop_1d` | Estimated percentage of respondents who went to a "market, grocery store, or pharmacy" in the past 24 hours <br/> **First Available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
-| `smoothed_restaurant_1d` | Estimated percentage of respondents who went to a "bar, restaurant, or cafe" in the past 24 hours <br/> **First Available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
-| `smoothed_spent_time_1d` | Estimated percentage of respondents who "spent time with someone who isn't currently staying with you" in the past 24 hours <br/> **First Available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
-| `smoothed_large_event_1d` | Estimated percentage of respondents who "attended an event with more than 10 people" in the past 24 hours <br/> **First Available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
-| `smoothed_public_transit_1d` | Estimated percentage of respondents who "used public transit" in the past 24 hours <br/> **First Available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
+| `smoothed_wearing_mask` | Estimated percentage of people who wore a mask for most or all of the time while in public in the past 5 days; those not in public in the past 5 days are not counted. <br/> **Earliest date available:** 2020-09-08 | C14 | Wave 4, Sept 8, 2020 |
+| `smoothed_others_masked` | Estimated percentage of respondents who say that most or all *other* people wear masks, when they are in public and social distancing is not possible <br/> **Earliest date available:** 2020-11-24 | C16 | Wave 5, Nov 24, 2020 |
+| `smoothed_travel_outside_state_5d` | Estimated percentage of respondents who report traveling outside their state in the past 5 days <br/> **Earliest date available:** 2020-04-06 | C6 | Wave 1 |
+| `smoothed_work_outside_home_1d` | Estimated percentage of respondents who worked or went to school outside their home in the past 24 hours <br/> **Earliest date available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
+| `smoothed_shop_1d` | Estimated percentage of respondents who went to a "market, grocery store, or pharmacy" in the past 24 hours <br/> **Earliest date available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
+| `smoothed_restaurant_1d` | Estimated percentage of respondents who went to a "bar, restaurant, or cafe" in the past 24 hours <br/> **Earliest date available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
+| `smoothed_spent_time_1d` | Estimated percentage of respondents who "spent time with someone who isn't currently staying with you" in the past 24 hours <br/> **Earliest date available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
+| `smoothed_large_event_1d` | Estimated percentage of respondents who "attended an event with more than 10 people" in the past 24 hours <br/> **Earliest date available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
+| `smoothed_public_transit_1d` | Estimated percentage of respondents who "used public transit" in the past 24 hours <br/> **Earliest date available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
 
 Weighted versions of these signals, using the [survey weighting described
 below](#survey-weighting) to be more representative of state demographics, are
@@ -307,9 +307,9 @@ also available. These have names beginning `smoothed_w`, such as
 
 | Signal | Description | Survey Item |
 | --- | --- | --- |
-| `smoothed_tested_14d` | Estimated percentage of people who were tested for COVID-19 in the past 14 days, regardless of their test result <br/> **First Available:** 2020-09-08 | B8, B10 |
-| `smoothed_tested_positive_14d` | Estimated test positivity rate (percent) among people tested for COVID-19 in the past 14 days <br/> **First Available:** 2020-09-08 | B10a |
-| `smoothed_wanted_test_14d` | Estimated percentage of people who *wanted* to be tested for COVID-19 in the past 14 days, out of people who were *not* tested in that time <br/> **First Available:** 2020-09-08 | B12 |
+| `smoothed_tested_14d` | Estimated percentage of people who were tested for COVID-19 in the past 14 days, regardless of their test result <br/> **Earliest date available:** 2020-09-08 | B8, B10 |
+| `smoothed_tested_positive_14d` | Estimated test positivity rate (percent) among people tested for COVID-19 in the past 14 days <br/> **Earliest date available:** 2020-09-08 | B10a |
+| `smoothed_wanted_test_14d` | Estimated percentage of people who *wanted* to be tested for COVID-19 in the past 14 days, out of people who were *not* tested in that time <br/> **Earliest date available:** 2020-09-08 | B12 |
 
 These indicators are based on questions in Wave 4 of the survey, introduced on
 September 8, 2020.
@@ -324,20 +324,23 @@ also available. These have names beginning `smoothed_w`, such as
 
 | Signal | Description | Survey Item |
 | --- | --- | --- |
-| `smoothed_accept_covid_vaccine` | Estimated percentage of respondents who would definitely or probably choose to get vaccinated, if a COVID-19 vaccine were offered to them today. **Note:** Until January 6, 2021, all respondents answered this question; beginning on that date, only respondents who said they have not received a COVID vaccine are asked this question. <br/> **First Available:** 2021-01-01 | V3 |
-| `smoothed_covid_vaccinated` | Estimated percentage of respondents who have already received a vaccine for COVID-19. **Note:** The Centers for Disease Control compiles data on vaccine administration across the United States. This signal may differ from CDC data because of survey biases and should not be treated as authoritative. However, the survey signal is not subject to the lags and reporting problems in official vaccination data. <br/> **First Available:** 2021-01-06 | V1 |
-| `smoothed_vaccine_likely_friends` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by friends and family, among respondents who have not yet been vaccinated. <br/> **First Available:** 2021-01-20 | V4 |
-| `smoothed_vaccine_likely_local_health` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by local health workers, among respondents who have not yet been vaccinated. <br/> **First Available:** 2021-01-20 | V4 |
-| `smoothed_vaccine_likely_who` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by the World Health Organization, among respondents who have not yet been vaccinated. <br/> **First Available:** 2021-01-20 | V4 |
-| `smoothed_vaccine_likely_govt_health` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by government health officials, among respondents who have not yet been vaccinated. <br/> **First Available:** 2021-01-20 | V4 |
-| `smoothed_vaccine_likely_politicians` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by politicians, among respondents who have not yet been vaccinated. <br/> **First Available:** 2021-01-20 | V4 |
+| `smoothed_covid_vaccinated_or_accept` | Estimated percentage of respondents who *either* have already received a COVID vaccine *or* would definitely or probably choose to get vaccinated, if a vaccine were offered to them today. <br/> **Earliest date available:** 2021-01-06 | V1 and V3 |
+| `smoothed_accept_covid_vaccine` | Estimated percentage of respondents who would definitely or probably choose to get vaccinated, if a COVID-19 vaccine were offered to them today. **Note:** Until January 6, 2021, all respondents answered this question; beginning on that date, only respondents who said they have not received a COVID vaccine are asked this question. <br/> **Earliest date available:** 2021-01-01 | V3 |
+| `smoothed_covid_vaccinated` | Estimated percentage of respondents who have already received a vaccine for COVID-19. **Note:** The Centers for Disease Control compiles data on vaccine administration across the United States. This signal may differ from CDC data because of survey biases and should not be treated as authoritative. However, the survey signal is not subject to the lags and reporting problems in official vaccination data. <br/> **Earliest date available:** 2021-01-06 | V1 |
+| `smoothed_worried_vaccine_side_effects` | Estimated percentage of respondents who are very or moderately concerned that they would "experience a side effect from a COVID-19 vaccination." (Asked of all respondents, including those who have already received one or more doses of a COVID-19 vaccine.) <br/> **Earliest date available:** 2021-01-12 | V9 |
+| `smoothed_vaccine_likely_friends` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by friends and family, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-20 | V4 |
+| `smoothed_vaccine_likely_local_health` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by local health workers, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-20 | V4 |
+| `smoothed_vaccine_likely_who` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by the World Health Organization, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-20 | V4 |
+| `smoothed_vaccine_likely_govt_health` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by government health officials, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-20 | V4 |
+| `smoothed_vaccine_likely_politicians` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by politicians, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-20 | V4 |
+| `smoothed_received_2_vaccine_doses` | Estimated percentage of respondents who have received two doses of a COVID-19 vaccine, among respondents who have received either one or two doses of a COVID-19 vaccine. This item was shown to respondents starting in Wave 7. <br/> **Earliest date available:** 2021-02-06 | V2 |
 
 These indicators are based on questions added in Wave 6 of the survey,
 introduced on December 19, 2020; however, Delphi only enabled item V1 beginning
 January 6, 2021. **Note:** As of January 2021, vaccination items on the survey
-are being revised in preparation for Wave 7. We may replace the signals above
-with new signals (with different names) if the underlying survey items change
-significantly.
+are being revised in preparation for later waves. We may replace the signals
+above with new signals (with different names) if the underlying survey items
+change significantly.
 
 Weighted versions of these signals, using the [survey weighting described
 below](#survey-weighting) to be more representative of state demographics, are
@@ -349,11 +352,11 @@ also available. They have names beginning with `smoothed_w`, such as
 
 | Signal | Description | Survey Item |
 | --- | --- | --- |
-| `smoothed_anxious_5d` | Estimated percentage of respondents who reported feeling "nervous, anxious, or on edge" for most or all of the past 5 days <br/> **First Available:** 2020-09-08 | C8 |
-| `smoothed_depressed_5d` | Estimated percentage of respondents who reported feeling depressed for most or all of the past 5 days <br/> **First Available:** 2020-09-08 | C8 |
-| `smoothed_felt_isolated_5d` | Estimated percentage of respondents who reported feeling "isolated from others" for most or all of the past 5 days <br/> **First Available:** 2020-09-08 | C8 |
-| `smoothed_worried_become_ill` | Estimated percentage of respondents who reported feeling very or somewhat worried that "you or someone in your immediate family might become seriously ill from COVID-19" <br/> **First Available:** 2020-09-08 | C9 |
-| `smoothed_worried_finances` | Estimated percentage of respondents who report being very or somewhat worried about their "household's finances for the next month" <br/> **First Available:** 2020-09-08 | C15 |
+| `smoothed_anxious_5d` | Estimated percentage of respondents who reported feeling "nervous, anxious, or on edge" for most or all of the past 5 days <br/> **Earliest date available:** 2020-09-08 | C8 |
+| `smoothed_depressed_5d` | Estimated percentage of respondents who reported feeling depressed for most or all of the past 5 days <br/> **Earliest date available:** 2020-09-08 | C8 |
+| `smoothed_felt_isolated_5d` | Estimated percentage of respondents who reported feeling "isolated from others" for most or all of the past 5 days <br/> **Earliest date available:** 2020-09-08 | C8 |
+| `smoothed_worried_become_ill` | Estimated percentage of respondents who reported feeling very or somewhat worried that "you or someone in your immediate family might become seriously ill from COVID-19" <br/> **Earliest date available:** 2020-09-08 | C9 |
+| `smoothed_worried_finances` | Estimated percentage of respondents who report being very or somewhat worried about their "household's finances for the next month" <br/> **Earliest date available:** 2020-09-08 | C15 |
 
 Some of these questions were present in the earliest waves of the survey, but
 only in Wave 4 did respondents consent to our use of aggregate data to
@@ -407,7 +410,7 @@ our [survey weight documentation page](../../symptom-survey/weights.md).
 
 As before, for a given aggregation unit (for example, daily-county), let $$X_i$$
 and $$Y_i$$ denote the numbers of ILI and CLI cases in household $$i$$,
-respectively (computed according to the simple strategy above), and let $$N_i$$ 
+respectively (computed according to the simple strategy above), and let $$N_i$$
 denote the total number of people in the household. Let $$i = 1, \dots, m$$
 denote the surveys started during the time period of interest and reported in a
 ZIP code intersecting the spatial unit of interest.
@@ -422,9 +425,9 @@ population is in each county.)
 Let $$w^{\text{init}}_i=w^{\text{part}}_i w^{\text{geodiv}}_i$$ denote the
 initial weight assigned to this survey. First, we adjust these initial weights
 to reduce sensitivity to any individual survey by "mixing" them with a uniform
-weighting across all relevant surveys. This prevents specific survey respondents 
+weighting across all relevant surveys. This prevents specific survey respondents
 with high survey weights having disproportionate influence on the weighted
-estimates. 
+estimates.
 
 Specifically, we select the smallest value of $$a \in [0.05, 1]$$ such that
 
@@ -436,8 +439,8 @@ for all $$i$$. If such a selection is impossible, then we have insufficient
 survey responses (less than 100), and do not produce an estimate for the given
 aggregation unit.
 
-Next, we rescale the weights $$w_i$$ over all $$i$$ so that $$\sum_{i=1}^m 
-w_i=1$$. Then our adjusted estimates of $$p$$ and $$q$$ are: 
+Next, we rescale the weights $$w_i$$ over all $$i$$ so that $$\sum_{i=1}^m
+w_i=1$$. Then our adjusted estimates of $$p$$ and $$q$$ are:
 
 $$
 \begin{aligned}
@@ -501,7 +504,7 @@ and $$V_i$$ denote the indicators that the survey respondent knows someone in
 their community with CLI, including and not including their household,
 respectively, for survey $$i$$, out of $$m$$ surveys collected. Also let
 $$w_i$$ be the self-normalized weight that accompanies survey $$i$$, as
-above. Then our adjusted estimates of $$a$$ and $$b$$ are: 
+above. Then our adjusted estimates of $$a$$ and $$b$$ are:
 
 $$
 \begin{aligned}
@@ -529,13 +532,13 @@ importance sampling estimators.
 Here are some details behind the choice of estimators for [percent ILI and
 percent CLI](#ili-and-cli-indicators).
 
-Suppose there are $$h$$ households total in the underlying population, and for 
-household $$i$$, denote $$\theta_i=N_i/n$$.  Then note that the quantities of 
-interest, $$p$$ and $$q$$, are 
+Suppose there are $$h$$ households total in the underlying population, and for
+household $$i$$, denote $$\theta_i=N_i/n$$.  Then note that the quantities of
+interest, $$p$$ and $$q$$, are
 
 $$
 p = \sum_{i=1}^h \frac{X_i}{N_i} \theta_i
-\quad\text{and}\quad 
+\quad\text{and}\quad
 q = \sum_{i=1}^h \frac{Y_i}{N_i} \theta_i.
 $$
 
@@ -546,17 +549,17 @@ are simply
 
 $$
 \hat{p} = \frac{1}{m} \sum_{i \in S} \frac{X_i}{N_i}
-\quad\text{and}\quad 
+\quad\text{and}\quad
 \hat{q} = \frac{1}{m} \sum_{i \in S} \frac{Y_i}{N_i},
 $$
 
-which are an equivalent way of writing our previously-defined estimates. 
+which are an equivalent way of writing our previously-defined estimates.
 
 Note that we can again rewrite our quantities of interest as
 
 $$
-p = \frac{\mu_x}{\mu_n} 
-\quad\text{and}\quad 
+p = \frac{\mu_x}{\mu_n}
+\quad\text{and}\quad
 q = \frac{\mu_y}{\mu_n},
 $$
 
@@ -568,11 +571,11 @@ denotes the total number of households in the population.
 Suppose that instead of proportional sampling, we sampled households uniformly,
 resulting in $$S \subseteq \{1,\dots,h\}$$ denote sampled households, with
 $$m=|S|$$. Then the natural estimates of $$p$$ and $$q$$ are instead plug-in
-estimates of the numerators and denominators in the above, 
+estimates of the numerators and denominators in the above,
 
 $$
 \tilde{p} = \frac{\bar{X}}{\bar{N}}
-\quad\text{and}\quad 
+\quad\text{and}\quad
 \tilde{q} = \frac{\bar{X}}{\bar{N}}
 $$
 
@@ -595,7 +598,7 @@ evidence:
   household: individuals 18 years or older, who have a Facebook account.  Hence
   if we posit that the number of "Facebook adults" scales linearly with the
   household size, which seems to us like a reasonable assumption, then sampling
-  would still be proportional to household size.  (Notice that this would 
+  would still be proportional to household size.  (Notice that this would
   remain true no matter how small the linear coefficient is, that is, it would
   even be true if Facebook did not have good coverage over the US.)
 

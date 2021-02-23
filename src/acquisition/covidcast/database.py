@@ -212,17 +212,18 @@ class Database:
         ) for row in cc_rows[start:end]]
 
 
-        result = self._cursor.executemany(insert_into_tmp_sql, args)
+        self._cursor.executemany(insert_into_tmp_sql, args)
         self._cursor.execute(insert_or_update_sql)
+        modified_row_count = self._cursor.rowcount
         self._cursor.execute(zero_is_latest_issue_sql)
         self._cursor.execute(set_is_latest_issue_sql)
         self._cursor.execute(truncate_tmp_table_sql)
 
-        if result is None:
-          # the SQL connector does not support returning number of rows affected
+        if modified_row_count is None or modified_row_count == -1:
+          # the SQL connector does not support returning number of rows affected (see PEP 249)
           total = None
         else:
-          total += result
+          total += modified_row_count
         if commit_partial:
           self._connection.commit()
     except Exception as e:
@@ -230,36 +231,6 @@ class Database:
     finally:
       self._cursor.execute(drop_tmp_table_sql)
     return total
-
-  def get_data_stdev_across_locations(self, max_day):
-    """
-    Return the standard deviation of daily data over all locations, for all
-    (source, signal, geo_type) tuples.
-
-    `max_day`: base the standard deviation on data up to, and including, but
-      not after, this day (e.g. for a stable result over time)
-    """
-
-    sql = '''
-      SELECT
-        `source`,
-        `signal`,
-        `geo_type`,
-        COALESCE(STD(`value`), 0) AS `aggregate_stdev`
-      FROM
-        `covidcast`
-      WHERE
-        `time_type` = 'day' AND
-        `time_value` <= %s
-      GROUP BY
-        `source`,
-        `signal`,
-        `geo_type`
-    '''
-
-    args = (max_day,)
-    self._cursor.execute(sql, args)
-    return list(self._cursor)
 
   def get_covidcast_meta(self):
     """Compute and return metadata on all non-WIP COVIDcast signals."""

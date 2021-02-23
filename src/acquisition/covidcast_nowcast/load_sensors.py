@@ -1,4 +1,5 @@
 from shutil import move
+from datetime import datetime
 import os
 import time
 
@@ -36,14 +37,13 @@ def main(csv_path: str = SENSOR_CSV_PATH) -> None:
     """
     user, pw = secrets.db.epi
     engine = sqlalchemy.create_engine(f"mysql+pymysql://{user}:{pw}@{secrets.db.host}/{DB_NAME}")
-    for filepath, attribute in CsvImporter.find_csv_files(csv_path):
+    for filepath, attribute in CsvImporter.find_issue_specific_csv_files(csv_path):
         if attribute is None:
             _move_after_processing(filepath, success=False)
             continue
         try:
             data = load_and_prepare_file(filepath, attribute)
-            conn = engine.connect()
-            with conn.begin():
+            with engine.connect() as conn:
                 method = _create_upsert_method(sqlalchemy.MetaData(conn))
                 data.to_sql(TABLE_NAME, engine, if_exists="append", method=method, index=False)
         except Exception:

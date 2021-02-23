@@ -472,3 +472,48 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
       'src', 'sig1', 'sensor', 'day', 'county', 22222222, '01001')
 
     self.assertEqual(response, {'result': -2, 'message': 'no results', 'epidata': []})
+
+  def test_async_epidata(self):
+    # insert dummy data
+    self.cur.execute('''
+      insert into covidcast values
+        (0, 'src', 'sig', 'day', 'county', 20200414, '11111',
+          123, 10, 11, 12, 456, 13, 20200414, 0, 1, False),
+        (0, 'src', 'sig', 'day', 'county', 20200414, '22222',
+          123, 20, 21, 22, 456, 23, 20200414, 0, 1, False),
+        (0, 'src', 'sig', 'day', 'county', 20200414, '33333',
+          123, 30, 31, 32, 456, 33, 20200414, 0, 1, False),
+        (0, 'src', 'sig', 'day', 'msa', 20200414, '11111',
+          123, 40, 41, 42, 456, 43, 20200414, 0, 1, False),
+        (0, 'src', 'sig', 'day', 'msa', 20200414, '22222',
+          123, 50, 51, 52, 456, 53, 20200414, 0, 1, False),
+        (0, 'src', 'sig', 'day', 'msa', 20200414, '33333',
+          123, 60, 61, 62, 456, 634, 20200414, 0, 1, False)
+    ''')
+    self.cnx.commit()
+    test_output = Epidata.async_epidata([
+      {
+        'source': 'covidcast',
+        'data_source': 'src',
+        'signals': 'sig',
+        'time_type': 'day',
+        'geo_type': 'county',
+        'geo_value': '11111',
+        'time_values': '20200414'
+      },
+      {
+        'source': 'covidcast',
+        'data_source': 'src',
+        'signals': 'sig',
+        'time_type': 'day',
+        'geo_type': 'county',
+        'geo_value': '00000',
+        'time_values': '20200414'
+      }
+    ], batch_size=10)
+    responses = [i[0] for i in test_output]*12
+    # check response is same as standard covidcast call, using 24 calls to test batch sizing
+    self.assertEqual(responses,
+                     [Epidata.covidcast('src', 'sig', 'day', 'county', 20200414, '11111'),
+                      Epidata.covidcast('src', 'sig', 'day', 'county', 20200414, '00000')]*12
+                     )

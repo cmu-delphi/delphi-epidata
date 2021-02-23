@@ -59,6 +59,7 @@ published here subject to the original license provided by the source:
 * [JHU Cases and Deaths](covidcast-signals/jhu-csse.md)
 * [SafeGraph Mobility](covidcast-signals/safegraph.md)
 * [USAFacts Cases and Deaths](covidcast-signals/usafacts.md)
+* [Department of Health & Human Services](covidcast-signals/hhs.md)
 
 More information on the license for each source is available on their respective
 documentation pages.

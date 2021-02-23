@@ -76,12 +76,14 @@ class UnitTests(unittest.TestCase):
     mock_csv_importer = MagicMock()
     mock_csv_importer.load_csv = load_csv_impl
     mock_file_archiver = MagicMock()
+    mock_logger = MagicMock()
 
     upload_archive(
       self._path_details(),
       mock_database,
       make_handlers(data_dir, False,
                     file_archiver_impl=mock_file_archiver),
+      mock_logger,
       csv_importer_impl=mock_csv_importer)
 
     # verify that appropriate rows were added to the database
@@ -114,7 +116,7 @@ class UnitTests(unittest.TestCase):
     """Run the main program successfully, then commit changes."""
 
     # TODO: use an actual argparse object for the args instead of a MagicMock
-    args = MagicMock(data_dir='data', is_wip_override=False, not_wip_override=False, specific_issue_date=False)
+    args = MagicMock(log_file=None, data_dir='data', is_wip_override=False, not_wip_override=False, specific_issue_date=False)
     mock_database = MagicMock()
     mock_database.count_all_rows.return_value = 0
     fake_database_impl = lambda: mock_database
@@ -142,7 +144,7 @@ class UnitTests(unittest.TestCase):
     """Run the main program with failure, then commit changes."""
 
     # TODO: use an actual argparse object for the args instead of a MagicMock
-    args = MagicMock(data_dir='data', is_wip_override=False, not_wip_override=False, specific_issue_date=False)
+    args = MagicMock(log_file=None, data_dir='data', is_wip_override=False, not_wip_override=False, specific_issue_date=False)
     mock_database = MagicMock()
     mock_database.count_all_rows.return_value = 0
     fake_database_impl = lambda: mock_database
@@ -168,7 +170,7 @@ class UnitTests(unittest.TestCase):
     """Run the main program with an empty receiving directory."""
 
     # TODO: use an actual argparse object for the args instead of a MagicMock
-    args = MagicMock(data_dir='data', is_wip_override=False, not_wip_override=False, specific_issue_date=False)
+    args = MagicMock(log_file=None, data_dir='data', is_wip_override=False, not_wip_override=False, specific_issue_date=False)
     mock_database = MagicMock()
     mock_database.count_all_rows.return_value = 0
     fake_database_impl = lambda: mock_database
@@ -204,11 +206,13 @@ class UnitTests(unittest.TestCase):
       MagicMock(geo_value='geo', value=1, stderr=1, sample_size=1),
     ]
     mock_file_archiver = MagicMock()
+    mock_logger = MagicMock()
 
     upload_archive(
         collect_files(data_dir, False, csv_importer_impl=mock_csv_importer),
         mock_database,
         make_handlers(data_dir, False, file_archiver_impl=mock_file_archiver),
+        mock_logger,
         csv_importer_impl=mock_csv_importer,
         )
 

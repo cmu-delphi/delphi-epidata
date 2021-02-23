@@ -3,12 +3,17 @@
 # standard library
 import unittest
 from unittest.mock import MagicMock
+from unittest.mock import patch
+
+# third party
+import requests
 
 # first party
 from delphi.epidata.acquisition.covid_hosp.common.database import Database
 from delphi.epidata.acquisition.covid_hosp.common.test_utils import UnitTestUtils
 from delphi.epidata.client.delphi_epidata import Epidata
 from delphi.epidata.acquisition.covid_hosp.state_daily.update import Update
+from delphi.epidata.acquisition.covid_hosp.state_daily.network import Network
 import delphi.operations.secrets as secrets
 
 # py3tester coverage target (equivalent to `import *`)
@@ -40,12 +45,6 @@ class AcquisitionTests(unittest.TestCase):
   def test_acquire_dataset(self):
     """Acquire a new dataset."""
 
-    # only mock out network calls to external hosts
-    mock_network = MagicMock()
-    mock_network.fetch_metadata.return_value = \
-        self.test_utils.load_sample_metadata()
-    mock_network.fetch_dataset.return_value = \
-        self.test_utils.load_sample_dataset()
 
     # make sure the data does not yet exist
     with self.subTest(name='no data yet'):
@@ -53,9 +52,15 @@ class AcquisitionTests(unittest.TestCase):
       self.assertEqual(response['result'], -2)
 
     # acquire sample data into local database
-    with self.subTest(name='first acquisition'):
-      acquired = Update.run(network=mock_network)
+    # mock out network calls to external hosts
+    with self.subTest(name='first acquisition'), \
+         patch.object(requests, 'get', side_effect=
+                      [MagicMock(json=lambda: self.test_utils.load_sample_metadata())] +
+                       list(self.test_utils.load_sample_revisions())) as mock_requests_get, \
+         patch.object(Network, 'fetch_dataset', return_value=self.test_utils.load_sample_dataset()) as mock_fetch:
+      acquired = Update.run()
       self.assertTrue(acquired)
+      self.assertEqual(mock_requests_get.call_count, 6)
 
     # make sure the data now exists
     with self.subTest(name='initial data checks'):
@@ -76,8 +81,12 @@ class AcquisitionTests(unittest.TestCase):
       self.assertEqual(len(row), 61)
 
     # re-acquisition of the same dataset should be a no-op
-    with self.subTest(name='second acquisition'):
-      acquired = Update.run(network=mock_network)
+    with self.subTest(name='second acquisition'), \
+         patch.object(requests, 'get', side_effect=
+                      [MagicMock(json=lambda: self.test_utils.load_sample_metadata())] +
+                       list(self.test_utils.load_sample_revisions())) as mock_requests_get, \
+         patch.object(Network, 'fetch_dataset', return_value=self.test_utils.load_sample_dataset()) as mock_fetch:
+      acquired = Update.run()
       self.assertFalse(acquired)
 
     # make sure the data still exists
