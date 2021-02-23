@@ -18,7 +18,8 @@ data is publicly available; see the [survey overview for details](index.md).
 
 Important updates for data users, including corrections to data or updates on
 data processing delays, are posted as `OUTAGES.txt` in the SFTP server directory
-where the data is hosted.
+where the data is hosted. Our documentation on [data errors](problems.md)
+explains any issues that may affect your use or interpretation of this data.
 
 ## Table of contents
 {: .no_toc .text-delta}
