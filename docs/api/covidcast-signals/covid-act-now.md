@@ -106,7 +106,7 @@ or more in the case of California counties.
 These signals are also backfilled as backlogged test results could get assigned to older 7-day timeframes.
 Most recent test positivity rates do not change substantially with backfill (having a median delta of close to 0).
 However, most recent total tests performed is expected to increase in later data revisions (having a median increase of 7%).
-Values more than 5 days in the past are expected to remain fairly static, with total tests performed 
+Values more than 5 days in the past are expected to remain fairly static (with total tests performed 
 having a median increase of 1% of less), as most major revisions have already occurred.
 
 ## Source and Licensing
