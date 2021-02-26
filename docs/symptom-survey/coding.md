@@ -469,6 +469,7 @@ new items were meant to capture reasons for vaccine hesitancy among respondents.
   shift which occupations respondents choose.
 * C14a is a revision of item C14, changed from "the past 5 days" to "the past
   7 days" to be consistent with other items on the COVID Symptom Survey.
+  C14a replaces C14.
 
 #### New Items
 
