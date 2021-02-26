@@ -479,3 +479,5 @@ new items were meant to capture reasons for vaccine hesitancy among respondents.
 * Item D1b was previously removed in wave 4 and asks respondents that identify
   as not male if they are currently pregnant.
 * Item D11 ask respondents if they smoke cigarettes.
+* Item C14a asks “In the past 7 days, how often did you wear a mask when in
+  public?”, replacing item C14, which asked only about the past 5 days.
