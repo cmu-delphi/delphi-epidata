@@ -287,7 +287,8 @@ data in the estimation procedures described above.
 
 | Signal | Description | Survey Item | Introduced |
 | --- | --- | --- | --- |
-| `smoothed_wearing_mask` | Estimated percentage of people who wore a mask for most or all of the time while in public in the past 5 days; those not in public in the past 5 days are not counted. <br/> **Earliest date available:** 2020-09-08 | C14 | Wave 4, Sept 8, 2020 |
+| `smoothed_wearing_mask` | *Discontinued as of Wave 8, Feb 8, 2021* Estimated percentage of people who wore a mask for most or all of the time while in public in the past 5 days; those not in public in the past 5 days are not counted. <br/> **Earliest date available:** 2020-09-08 | C14 | Wave 4, Sept 8, 2020 |
+| `smoothed_wearing_mask_7d` | Estimated percentage of people who wore a mask for most or all of the time while in public in the past 7 days; those not in public in the past 7 days are not counted. <br/> **Earliest date available:** 2021-02-08 | C14a | Wave 8, Feb 8, 2021 |
 | `smoothed_others_masked` | Estimated percentage of respondents who say that most or all *other* people wear masks, when they are in public and social distancing is not possible <br/> **Earliest date available:** 2020-11-24 | C16 | Wave 5, Nov 24, 2020 |
 | `smoothed_travel_outside_state_5d` | Estimated percentage of respondents who report traveling outside their state in the past 5 days <br/> **Earliest date available:** 2020-04-06 | C6 | Wave 1 |
 | `smoothed_work_outside_home_1d` | Estimated percentage of respondents who worked or went to school outside their home in the past 24 hours <br/> **Earliest date available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
