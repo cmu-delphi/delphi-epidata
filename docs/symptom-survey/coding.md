@@ -490,7 +490,10 @@ administered by the University of Maryland.
 
 ## Wave 10
 
-Wave 10 was be deployed on March 2, 2021. It is available in English, as well as
+Wave 10 was be deployed on March 2, 2021. For the following 7 days, 15% of
+respondents (selected at random) continued to receive Wave 8, allowing for
+comparisons of responses between the two waves. Wave 10 is available in English,
+as well as
 
 * Simplified Chinese
 * English (UK)
@@ -551,7 +554,8 @@ survey.
   activities occurred indoors. Item C13a was similarly replaced with item C13c
   to reflect mask use during those indoor activities.
 * Items C6 and C8 were changed to refer to the past 7 days, rather than the past
-  5 days, to be consistent with other items on the survey.
+  5 days, to be consistent with other items on the survey. They were renamed to
+  C6a and C8a to reflect this change.
 * Typos were fixed in Q67 and Q78.
 
 #### Removed Items
