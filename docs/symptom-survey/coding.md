@@ -65,6 +65,11 @@ reported.)
 Invalid ZIP codes are preserved unchanged, and these rows are reported in the
 individual response files with their invalid ZIPs.
 
+Additionally, beginning in wave 4, items D6 and D7 ask respondents for race and
+ethnicity. These columns are **not** available in the microdata files due to
+reidentification concerns. However, contingency tables that aggregate by race
+and other demographic variables [are available](contingency-tables.md).
+
 ## Wave 1
 
 Wave 1 was first deployed on April 6, 2020. This was replaced by Wave 2, but

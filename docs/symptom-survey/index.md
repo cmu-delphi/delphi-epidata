@@ -59,7 +59,7 @@ the survey in publications based on the data. Specifically, we ask that you:
 2. Cite this web page for details about the survey. For example, you may cite it
    as
 
-    > Delphi Group (2020). COVID Symptom Survey.
+    > Delphi Group (2021). COVID Symptom Survey.
     > <https://cmu-delphi.github.io/delphi-epidata/symptom-survey/>
 
     A journal article describing the survey and its methods is currently in

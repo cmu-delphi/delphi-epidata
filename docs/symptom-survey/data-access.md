@@ -12,6 +12,11 @@ spread of COVID-19 and its effects on public health and well-being. This may
 help improve our local and national responses to the pandemic and our
 understanding of how it has affected society.
 
+[High-level aggregates](../api/covidcast.md) of select survey items are
+publicly available in the [COVIDcast API](../api/covidcast-signals/fb-survey.md).
+[Finer aggregates](./contingency-tables.md) grouped by various demographic
+characteristics are available for download.
+
 De-identified individual survey responses can be made available to researchers associated with
 universities or non-profit organizations. To request access to the data please
 submit the information requested in [Facebook's page on obtaining data
@@ -21,7 +26,10 @@ which sets out the basic conditions and provides a form to request access. An
 is conducted by the University of Maryland (UMD) and access can be requested
 through the same form.
 
-[High-level aggregates](../api/covidcast.md) of select survey items are
-publicly available in the [COVIDcast API](../api/covidcast-signals/fb-survey.md).
-[Finer aggregates](./contingency-tables.md) grouped by various demographic
-characteristics are available for download.
+After completing the form, staff from Facebook and CMU will be in contact to
+guide you through the rest of the process. They will provide data use agreements
+for your institution to sign, and will also request a copy of your Institutional
+Review Board approval to verify you have ethical approval to conduct the
+research. If you have questions about the process, or your IRB needs information
+about the survey for their review, contact us at
+<delphi-survey-info@lists.andrew.cmu.edu>.
