@@ -22,6 +22,9 @@ for the survey is available, but only to academic or nonprofit researchers who
 sign a Data Use Agreement, whereas these contingency tables are available to the
 general public.
 
+Please see our survey [credits](index.md#credits) and [citation information](index.md#citing-the-survey)
+for information on how to cite this data if you use it in a publication.
+
 Important updates for data users, including corrections to data or updates on
 data processing delays, are posted as `OUTAGES.txt` in the directory where the
 data is hosted.
@@ -45,7 +48,7 @@ lower missingness when grouping by several features at a time.
 The included files provide estimates for various metrics of interest over a
 period of either a full epiweek (or [MMWR
 week](https://wwwn.cdc.gov/nndss/document/MMWR_week_overview.pdf), a
-standardized numbering of weeks throughout the year) or a full month.
+standardized numbering of weeks throughout the year) or a full calendar month.
 
 ## Aggregation
 
@@ -93,6 +96,10 @@ All aggregates using the same set of grouping variables appear in a single CSV.
 The files contain [weighted estimates](../api/covidcast-signals/fb-survey.md#survey-weighting) of percent of
 respondents who fulfill one or several criteria. Estimates are broken out by
 state, age, gender, race, and ethnicity.
+
+We plan to expand this list of indicators based on research needs; if you have a
+public health or research need for a particular variable not listed here, please
+contact us at <delphi-survey-info@lists.andrew.cmu.edu>.
 
 | Indicator | Description | Survey Item |
 | --- | --- | --- |

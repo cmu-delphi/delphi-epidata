@@ -5,7 +5,7 @@ nav_order: 7
 ---
 
 # Problems and Data Errors
-{: no_toc}
+{: .no_toc}
 
 Given the scale of the COVID Symptom Survey, we occasionally encounter data
 errors or survey implementation problems that affect the interpretation of
