@@ -509,8 +509,8 @@ as well as
 * Vietnamese
 
 Files:
-* [Survey text and coding](waves/CMU Survey Wave 8.pdf) (PDF)
-* [Survey text and coding](waves/CMU Survey Wave 8.docx) (Word)
+* [Survey text and coding](waves/CMU Survey Wave 10.pdf) (PDF)
+* [Survey text and coding](waves/CMU Survey Wave 10.docx) (Word)
 
 ### Summary of Changes
 
