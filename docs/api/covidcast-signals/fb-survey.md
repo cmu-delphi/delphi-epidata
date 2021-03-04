@@ -44,6 +44,9 @@ Many of these signals can also be browsed on our [survey
 dashboard](https://delphi.cmu.edu/covidcast/survey-results/) at any selected
 location.
 
+Additionally, contingency tables containing demographic breakdowns of survey
+data are [also available for download](../../symptom-survey/contingency-tables.md).
+
 ## Table of Contents
 {: .no_toc .text-delta}
 
