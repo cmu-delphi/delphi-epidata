@@ -519,8 +519,8 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
         'geo_value': '00000',
         'time_values': '20200414'
       }
-    ], batch_size=10)
-    responses = [i[0] for i in test_output]*12
+    ]*12, batch_size=10)
+    responses = [i[0] for i in test_output]
     # check response is same as standard covidcast call, using 24 calls to test batch sizing
     self.assertEqual(responses,
                      [Epidata.covidcast('src', 'sig', 'day', 'county', 20200414, '11111'),
