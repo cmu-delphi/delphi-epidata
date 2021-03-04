@@ -5,7 +5,9 @@ import unittest
 from unittest.mock import patch, MagicMock
 
 # third party
+from aiohttp.client_exceptions import ClientResponseError
 import mysql.connector
+import pytest
 
 # first party
 from delphi.epidata.client.delphi_epidata import Epidata
@@ -516,3 +518,18 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
                      [Epidata.covidcast('src', 'sig', 'day', 'county', 20200414, '11111'),
                       Epidata.covidcast('src', 'sig', 'day', 'county', 20200414, '00000')]*12
                      )
+
+  def test_async_epidata_fail(self):
+    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/fake_api.php'
+    with pytest.raises(ClientResponseError, match="404, message='Not Found'"):
+      Epidata.async_epidata([
+        {
+          'source': 'covidcast',
+          'data_source': 'src',
+          'signals': 'sig',
+          'time_type': 'day',
+          'geo_type': 'county',
+          'geo_value': '11111',
+          'time_values': '20200414'
+        }
+      ])
