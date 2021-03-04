@@ -17,6 +17,14 @@ import delphi.operations.secrets as secrets
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.client.delphi_epidata'
 
+def fake_epidata_endpoint(func):
+  """This can be used as a decorator to enable a bogus Epidata endpoint to return 404 responses."""
+  def wrapper(*args):
+    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/fake_api.php'
+    func(*args)
+    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+  return wrapper
+
 
 class DelphiEpidataPythonClientTests(unittest.TestCase):
   """Tests the Python client."""
@@ -519,8 +527,8 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
                       Epidata.covidcast('src', 'sig', 'day', 'county', 20200414, '00000')]*12
                      )
 
+  @fake_epidata_endpoint
   def test_async_epidata_fail(self):
-    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/fake_api.php'
     with pytest.raises(ClientResponseError, match="404, message='Not Found'"):
       Epidata.async_epidata([
         {
