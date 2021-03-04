@@ -19,10 +19,11 @@ grand_parent: COVIDcast Epidata API
 
 This data source is based on symptom surveys run by the Delphi group at Carnegie
 Mellon. Facebook directs a random sample of its users to these surveys, which
-are voluntary. Individual survey responses are held by CMU and are sharable with
-other health researchers under a data use agreement. No individual survey
-responses are shared back to Facebook. See our [surveys
-page](https://covidcast.cmu.edu/surveys.html) for more detail about how the
+are voluntary. Users age 18 or older are eligible to complete the surveys, and
+their survey responses are held by CMU and are sharable with other health
+researchers under a data use agreement. No individual survey responses are
+shared back to Facebook. See our [surveys
+page](https://delphi.cmu.edu/covidcast/surveys/) for more detail about how the
 surveys work and how they are used outside the COVIDcast API.
 
 We produce several sets of signals based on the survey data, listed and
@@ -38,6 +39,10 @@ described in the sections below:
    reporting of COVID vaccinations and whether they would accept a vaccine
 4. [Mental health indicators](#mental-health-indicators), based on self-reports
    of anxiety, depression, isolation, and worry about COVID
+
+Many of these signals can also be browsed on our [survey
+dashboard](https://delphi.cmu.edu/covidcast/survey-results/) at any selected
+location.
 
 ## Table of Contents
 {: .no_toc .text-delta}
@@ -74,17 +79,18 @@ Researchers can [request
 access](https://dataforgood.fb.com/docs/covid-19-symptom-survey-request-for-data-access/)
 to (fully de-identified) individual survey responses for research purposes.
 
-As of mid-August 2020, the average number of Facebook survey responses we
-receive each day is about 74,000, and the total number of survey responses we
-have received is over 9 million.
+As of early March 2021, the average number of Facebook survey responses we
+receive each day is about 40,000, and the total number of survey responses we
+have received is over 17 million.
 
 ## ILI and CLI Indicators
 
 Of primary interest for the API are the symptoms defining a COVID-like illness
 (fever, along with cough, or shortness of breath, or difficulty breathing) or
 influenza-like illness (fever, along with cough or sore throat). Using this
-survey data, we estimate the percentage of people who have a COVID-like illness,
-or influenza-like illness, in a given location, on a given day.
+survey data, we estimate the percentage of people (age 18 or older) who have a
+COVID-like illness, or influenza-like illness, in a given location, on a given
+day.
 
 | Signals | Description |
 | --- | --- |
@@ -396,6 +402,50 @@ below](#survey-weighting) to be more representative of state demographics, are
 also available. These have names beginning `smoothed_w`, such as
 `smoothed_wdepressed_14d`.
 
+## Limitations
+
+When interpreting the signals above, it is important to keep in mind several
+limitations of this survey data.
+
+* **Survey population.** People are eligible to participate in the survey if
+  they are age 18 or older and they are an active user of Facebook. The survey
+  data does not report on children under age 18, and the Facebook adult user
+  population may differ from the United States population generally in important
+  ways. We use our [survey weighting](#survey-weighting) to adjust the estimates
+  to match age and gender demographics by state, but this process doesn't adjust
+  for other demographic biases we may not be aware of.
+* **Non-response bias.** The survey is voluntary, and people who accept the
+  invitation when it is presented to them on Facebook may be different from
+  those who do not. The [survey weights provided by Facebook](#survey-weighting)
+  attempt to model the probability of response for each user and hence adjust
+  for this, but it is difficult to tell if these weights account for all
+  possible non-response bias.
+* **Social desirability.** Previous survey research has shown that people's
+  responses to surveys are often biased by what responses they believe are
+  socially desirable or acceptable. For example, if it there is widespread
+  pressure to wear masks, respondents who do *not* wear masks may feel pressured
+  to answer that they *do*. This survey is anonymous and online, meaning we
+  expect the social desirability effect to be smaller, but it may still be
+  present.
+* **False responses.** As with anything on the Internet, a small percentage of
+  users give deliberately incorrect responses. We discard a small number of
+  responses that are obviously false, but do not perform extensive filtering.
+  However, the large size of the study, and our procedure for ensuring that each
+  respondent can only be counted once when they are invited to take the survey,
+  prevents individual respondents from having a large effect on results.
+* **Repeat invitations.** Individual respondents can be invited by Facebook to
+  take the survey several times. Usually Facebook only re-invites a respondent
+  after one month. Hence estimates of values on a single day are calculated
+  using independent survey responses from unique respondents (or, at least,
+  unique Facebook accounts), whereas estimates from different months may involve
+  the same respondents.
+
+Whenever possible, you should compare this data to other independent sources. We
+believe that while these biases may affect point estimates -- that is, they may
+bias estimates on a specific day up or down -- the biases should not change
+strongly over time. This means that *changes* in signals, such as increases or
+decreases, are likely to represent true changes in the underlying population,
+even if point estimates are biased.
 
 ## Survey Weighting
 
