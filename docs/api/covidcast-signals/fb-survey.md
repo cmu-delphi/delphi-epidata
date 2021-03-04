@@ -411,7 +411,7 @@ When interpreting the signals above, it is important to keep in mind several
 limitations of this survey data.
 
 * **Survey population.** People are eligible to participate in the survey if
-  they are age 18 or older and they are an active user of Facebook. The survey
+  they are age 18 or older, they are currently located in the USA, and they are an active user of Facebook. The survey
   data does not report on children under age 18, and the Facebook adult user
   population may differ from the United States population generally in important
   ways. We use our [survey weighting](#survey-weighting) to adjust the estimates
