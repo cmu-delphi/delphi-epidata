@@ -8,25 +8,22 @@ import time
 import datetime
 import mysql.connector
 import pandas as pd
-from enum import Enum
 
 # first party
 from logger import get_structured_logger
 
-class DashboardSignal(Enum):
-    # TODO: store this in config file or DB table instead of enum
-    CHANGE = ("change", "chng", 1)
-    QUIDEL = ("quidel", "quidel", 2)
-
-    def __init__(self, signal_name, source, db_id):
-        self.signal_name = signal_name
+class DashboardSignal:
+    def __init__(self, db_id, signal_name, source):
+        self.name = signal_name
         self.source = source
         self.db_id = db_id
+
 
 class Database:
     """Storage for dashboard data."""
 
     DATABASE_NAME = 'epidata'
+    INDICATOR_TABLE_NAME = 'dashboard_indicator'
     STATUS_TABLE_NAME = 'dashboard_indicator_status'
     COVERAGE_TABLE_NAME = 'dashboard_indicator_coverage'
 
@@ -72,7 +69,17 @@ class Database:
             '''
         self._cursor.executemany(insert_statement, coverage_list)
         self.commit()
-
+    
+    def get_enabled_signals(self):
+        select_statement = f'''SELECT `id`, `name`, `source`
+            FROM `{Database.INDICATOR_TABLE_NAME}`
+            WHERE `enabled`
+            '''
+        self._cursor.execute(select_statement)
+        enabled_signals = []
+        for result in self._cursor.fetchall():
+            enabled_signals.append(DashboardSignal(result[0], result[1], result[2]))
+        return enabled_signals
 
 
 def get_argument_parser():
@@ -116,12 +123,6 @@ def get_coverage(dashboard_signal, metadata):
     coverage_list = list(coverage.itertuples(index=False, name=None))
     return coverage_list
 
-
-def get_dashboard_signals_to_generate():
-    # TODO: read this from a config file or DB table
-    return [DashboardSignal.CHANGE, DashboardSignal.QUIDEL]
-
-
 def main(args):
     """Generate data for the signal dashboard.
 
@@ -138,8 +139,8 @@ def main(args):
 
     database = Database()
 
-    signals_to_generate = get_dashboard_signals_to_generate()
-    print(signals_to_generate)
+    signals_to_generate = database.get_enabled_signals()
+    print([signal.name for signal in signals_to_generate])
 
     metadata = covidcast.metadata()
 
