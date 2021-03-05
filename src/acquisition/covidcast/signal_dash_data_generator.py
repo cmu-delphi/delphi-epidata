@@ -57,6 +57,9 @@ class Database:
             (`indicator_id`, `date`, `latest_issue_date`, `latest_data_date`)
             VALUES
             (%s, %s, %s, %s)
+            ON DUPLICATE KEY UPDATE 
+                `latest_issue_date`=VALUES(`latest_issue_date`),
+                `latest_data_date`=VALUES(`latest_data_date`)
             '''
         self._cursor.executemany(insert_statement, status_list)
         self.commit()
@@ -66,6 +69,7 @@ class Database:
             (`indicator_id`, `date`, `geo_type`, `geo_value`)
             VALUES
             (%s, %s, %s, %s)
+            ON DUPLICATE KEY UPDATE `indicator_id` = `indicator_id`
             '''
         self._cursor.executemany(insert_statement, coverage_list)
         self.commit()
@@ -178,7 +182,6 @@ def main(args):
         "Generated signal dashboard data",
         total_runtime_in_seconds=round(time.time() - start_time, 2))
     return True
-
 
 if __name__ == '__main__':
     if not main(get_argument_parser().parse_args()):
