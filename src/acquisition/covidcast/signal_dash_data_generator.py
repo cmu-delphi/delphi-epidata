@@ -65,9 +65,11 @@ class Database:
         self._cursor = self._connection.cursor()
 
     def rowcount(self) -> int:
+        """Get the last modified row count"""
         return self._cursor.rowcount
 
     def write_status(self, status_list: List[DashboardSignalStatus]) -> None:
+        """Write the provided status to the database."""
         insert_statement = f'''INSERT INTO `{Database.STATUS_TABLE_NAME}`
             (`indicator_id`, `date`, `latest_issue_date`, `latest_data_date`)
             VALUES
@@ -84,6 +86,7 @@ class Database:
 
     def write_coverage(
             self, coverage_list: List[DashboardSignalCoverage]) -> None:
+        """Write the provided coverage to the database."""
         insert_statement = f'''INSERT INTO `{Database.COVERAGE_TABLE_NAME}`
             (`indicator_id`, `date`, `geo_type`, `geo_value`)
             VALUES
@@ -97,6 +100,7 @@ class Database:
         self._connection.commit()
 
     def get_enabled_signals(self) -> List[DashboardSignal]:
+        """Retrieve all enabled signals from the database"""
         select_statement = f'''SELECT `id`, `name`, `source`
             FROM `{Database.INDICATOR_TABLE_NAME}`
             WHERE `enabled`
@@ -120,23 +124,26 @@ def get_argument_parser():
 
 
 def get_latest_issue_date_from_metadata(dashboard_signal, metadata):
+    """Get the most recent issue date for the signal."""
     df_for_source = metadata[metadata.data_source == dashboard_signal.source]
     max_int = df_for_source["max_issue"].max()
     return pd.to_datetime(str(max_int), format="%Y%m%d")
 
 
 def get_latest_data_date_from_metadata(dashboard_signal, metadata):
+    """Get the most recent date with data for the signal."""
     df_for_source = metadata[metadata.data_source == dashboard_signal.source]
     return df_for_source["max_time"].max().date()
 
 
 def get_coverage(dashboard_signal: DashboardSignal,
                  metadata) -> List[DashboardSignalCoverage]:
+    """Get the most recent coverage for the signal."""
     latest_data_date = get_latest_data_date_from_metadata(
         dashboard_signal, metadata)
     df_for_source = metadata[metadata.data_source == dashboard_signal.source]
-    # we need to do something smarter here -- make this part of config 
-    # (and allow multiple signals) and/or aggregate across all sources 
+    # we need to do something smarter here -- make this part of config
+    # (and allow multiple signals) and/or aggregate across all sources
     # for a signal
     signal = df_for_source["signal"].iloc[0]
     latest_data = covidcast.signal(
@@ -164,7 +171,7 @@ def main(args):
     `args`: parsed command-line arguments
     """
     log_file = None
-    if (args):
+    if args:
         log_file = args.log_file
 
     logger = get_structured_logger(
@@ -202,14 +209,14 @@ def main(args):
     try:
         database.write_status(signal_status_list)
         logger.info("Wrote status.", rowcount=database.rowcount())
-    except mysql.connector.Error as e:
-        logger.exception(e)
+    except mysql.connector.Error as exception:
+        logger.exception(exception)
 
     try:
         database.write_coverage(coverage_list)
         logger.info("Wrote coverage.", rowcount=database.rowcount())
-    except mysql.connector.Error as e:
-        logger.exception(e)
+    except mysql.connector.Error as exception:
+        logger.exception(exception)
 
     logger.info(
         "Generated signal dashboard data",
