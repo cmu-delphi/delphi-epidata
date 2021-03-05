@@ -1001,6 +1001,29 @@ function get_covidcast($source, $signals, $time_type, $geo_type, $time_values, $
   return count($epidata) === 0 ? null : $epidata;
 }
 
+function get_signal_dash_data() {
+  $query = 'SELECT indicator.`name`,
+              status.`latest_issue_date`,
+              status.`latest_data_date`
+            FROM (SELECT `id`, `name`
+              FROM `dashboard_indicator`
+              WHERE `enabled`) AS indicator
+            LEFT JOIN (SELECT `indicator_id`,
+                              Max(`date`) max_date
+                       FROM `dashboard_indicator_status`
+                       GROUP BY `indicator_id`) AS max_dates
+            ON indicator.`id` = max_dates.`indicator_id`
+            LEFT JOIN `dashboard_indicator_status` AS status
+            ON max_dates.`indicator_id` = status.`indicator_id`
+              AND status.`date` = max_dates.`max_date`';
+  
+  $epidata = array();
+  $fields_string = array('name', 'latest_issue_date', 'latest_data_date');
+  execute_query($query, $epidata, $fields_string, null /* fields_int */, null /* fields_float */);
+  // return the data
+  return count($epidata) === 0 ? null : $epidata; 
+}
+
 // queries the `covidcast_meta_cache` table for metadata
 function get_covidcast_meta() {
   // complain if the cache is more than 75 minutes old
@@ -2077,6 +2100,9 @@ if(database_connect()) {
     // get the metadata
     $epidata = get_covidcast_meta();
     store_result($data, $epidata);
+  } else if($endpoint === 'signal_dashboard') {
+    $signal_dash_data = get_signal_dash_data();
+    store_result($data, $signal_dash_data);
   } else if($endpoint === 'covid_hosp' || $source === 'covid_hosp_state_timeseries') {
     if(require_all($data, array('states', 'dates'))) {
       // parse the request

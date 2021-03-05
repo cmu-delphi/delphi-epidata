@@ -1,4 +1,4 @@
-"""Updates the cache for the `covidcast_meta` endpiont."""
+"""Updates the signal dashboard data."""
 
 # standard library
 import argparse
@@ -9,14 +9,41 @@ import datetime
 import mysql.connector
 import pandas as pd
 
+from dataclasses import dataclass
+from typing import List
+
 # first party
 from logger import get_structured_logger
 
+@dataclass
 class DashboardSignal:
-    def __init__(self, db_id, signal_name, source):
-        self.name = signal_name
-        self.source = source
-        self.db_id = db_id
+    """Container class for information about dashboard signals."""
+
+    db_id: int
+    name: str
+    source: str
+
+#DashboardSignalCoverage = namedtuple("")
+
+
+@dataclass
+class DashboardSignalCoverage:
+    """Container class for coverage of a dashboard signal"""
+
+    signal_id: int
+    date: datetime.date
+    geo_type: str
+    geo_value: str
+
+
+@dataclass
+class DashboardSignalStatus:
+    """Container class for status of a dashboard signal"""
+
+    signal_id: int
+    date: datetime.date
+    latest_issue_date: datetime.date
+    latest_data_date: datetime.date
 
 
 class Database:
@@ -30,51 +57,46 @@ class Database:
     def __init__(self, connector_impl=mysql.connector):
         """Establish a connection to the database."""
         self._connection = connector_impl.connect(
+            port=13306,
             host="localhost",
-            user="test",
-            password="test",
+            user="user",
+            password="pass",
             database=Database.DATABASE_NAME)
         self._cursor = self._connection.cursor()
 
-    def commit(self):
-        self._connection.commit()
+    def rowcount(self) -> int:
+        return self._cursor.rowcount
 
-    def rollback(self):
-        self._connection.rollback()
-
-    def disconnect(self, commit):
-        """Close the database connection.
-
-        commit: if true, commit changes, otherwise rollback
-        """
-        self._cursor.close()
-        if commit:
-            self._connection.commit()
-            self._connection.close()
-    
-    def write_status(self, status_list):
-        insert_statement = f'''INSERT INTO `{Database.STATUS_TABLE_NAME}` 
+    def write_status(self, status_list: List[DashboardSignalStatus]) -> None:
+        insert_statement = f'''INSERT INTO `{Database.STATUS_TABLE_NAME}`
             (`indicator_id`, `date`, `latest_issue_date`, `latest_data_date`)
             VALUES
             (%s, %s, %s, %s)
-            ON DUPLICATE KEY UPDATE 
+            ON DUPLICATE KEY UPDATE
                 `latest_issue_date`=VALUES(`latest_issue_date`),
                 `latest_data_date`=VALUES(`latest_data_date`)
             '''
-        self._cursor.executemany(insert_statement, status_list)
-        self.commit()
+        status_as_tuples = [
+            (x.signal_id, x.date, x.latest_issue_date, x.latest_data_date)
+            for x in status_list]
+        self._cursor.executemany(insert_statement, status_as_tuples)
+        self._connection.commit()
 
-    def write_coverage(self, coverage_list):
-        insert_statement = f'''INSERT INTO `{Database.COVERAGE_TABLE_NAME}` 
+    def write_coverage(
+            self, coverage_list: List[DashboardSignalCoverage]) -> None:
+        insert_statement = f'''INSERT INTO `{Database.COVERAGE_TABLE_NAME}`
             (`indicator_id`, `date`, `geo_type`, `geo_value`)
             VALUES
             (%s, %s, %s, %s)
             ON DUPLICATE KEY UPDATE `indicator_id` = `indicator_id`
             '''
-        self._cursor.executemany(insert_statement, coverage_list)
-        self.commit()
-    
-    def get_enabled_signals(self):
+        coverage_as_tuples = [
+            (x.signal_id, x.date, x.geo_type, x.geo_value)
+            for x in coverage_list]
+        self._cursor.executemany(insert_statement, coverage_as_tuples)
+        self._connection.commit()
+
+    def get_enabled_signals(self) -> List[DashboardSignal]:
         select_statement = f'''SELECT `id`, `name`, `source`
             FROM `{Database.INDICATOR_TABLE_NAME}`
             WHERE `enabled`
@@ -82,7 +104,11 @@ class Database:
         self._cursor.execute(select_statement)
         enabled_signals = []
         for result in self._cursor.fetchall():
-            enabled_signals.append(DashboardSignal(result[0], result[1], result[2]))
+            enabled_signals.append(
+                DashboardSignal(
+                    db_id=result[0],
+                    name=result[1],
+                    source=result[2]))
         return enabled_signals
 
 
@@ -104,28 +130,33 @@ def get_latest_data_date_from_metadata(dashboard_signal, metadata):
     return df_for_source["max_time"].max().date()
 
 
-def get_most_recent_issue_row_count(dashboard_signal, metadata):
-    # TODO: Read database directly to calculate
-    return None
-
-
-def get_coverage(dashboard_signal, metadata):
+def get_coverage(dashboard_signal: DashboardSignal,
+                 metadata) -> List[DashboardSignalCoverage]:
     latest_data_date = get_latest_data_date_from_metadata(
         dashboard_signal, metadata)
     df_for_source = metadata[metadata.data_source == dashboard_signal.source]
-    # we need to do something smarter here -- make this part of config (and allow multiple signals) and/or
-    # aggregate across all sources for a signal
+    # we need to do something smarter here -- make this part of config 
+    # (and allow multiple signals) and/or aggregate across all sources 
+    # for a signal
     signal = df_for_source["signal"].iloc[0]
     latest_data = covidcast.signal(
         dashboard_signal.source,
         signal,
         end_day=latest_data_date,
         start_day=latest_data_date)
-    coverage = latest_data[["time_value", "geo_type", "geo_value"]].head(10).copy()
-    coverage['time_value'] = pd.to_datetime(coverage['time_value']).apply(lambda x: x.date())
-    coverage.insert(0, 'signal_id', dashboard_signal.db_id)
-    coverage_list = list(coverage.itertuples(index=False, name=None))
-    return coverage_list
+
+    signal_coverage_list = []
+    for _, row in latest_data.iterrows():
+        signal_coverage = DashboardSignalCoverage(
+            signal_id=dashboard_signal.db_id,
+            date=pd.to_datetime(
+                row['time_value']).date(),
+            geo_type=row['geo_type'],
+            geo_value=row['geo_value'])
+        signal_coverage_list.append(signal_coverage)
+
+    return signal_coverage_list
+
 
 def main(args):
     """Generate data for the signal dashboard.
@@ -144,37 +175,39 @@ def main(args):
     database = Database()
 
     signals_to_generate = database.get_enabled_signals()
-    print([signal.name for signal in signals_to_generate])
+    logger.info("Starting generating dashboard data.", enabled_signals=[
+                signal.name for signal in signals_to_generate])
 
     metadata = covidcast.metadata()
 
-    signal_status_list = []
-    coverage_list = []
+    signal_status_list: List[DashboardSignalStatus] = []
+    coverage_list: List[DashboardSignalCoverage] = []
+
     for dashboard_signal in signals_to_generate:
         latest_issue_date = get_latest_issue_date_from_metadata(
             dashboard_signal,
             metadata)
         latest_data_date = get_latest_data_date_from_metadata(
             dashboard_signal, metadata)
-        latest_row_count = get_most_recent_issue_row_count(
-            dashboard_signal, metadata)
         latest_coverage = get_coverage(dashboard_signal, metadata)
 
         signal_status_list.append(
-            (dashboard_signal.db_id,
-             datetime.date.today(),
-             latest_issue_date,
-             latest_data_date))
+            DashboardSignalStatus(
+                signal_id=dashboard_signal.db_id,
+                date=datetime.date.today(),
+                latest_issue_date=latest_issue_date,
+                latest_data_date=latest_data_date))
         coverage_list.extend(latest_coverage)
 
-    print(coverage_list)
     try:
         database.write_status(signal_status_list)
+        logger.info("Wrote status.", rowcount=database.rowcount())
     except mysql.connector.Error as e:
         logger.exception(e)
-        
+
     try:
         database.write_coverage(coverage_list)
+        logger.info("Wrote coverage.", rowcount=database.rowcount())
     except mysql.connector.Error as e:
         logger.exception(e)
 
@@ -182,6 +215,7 @@ def main(args):
         "Generated signal dashboard data",
         total_runtime_in_seconds=round(time.time() - start_time, 2))
     return True
+
 
 if __name__ == '__main__':
     if not main(get_argument_parser().parse_args()):
