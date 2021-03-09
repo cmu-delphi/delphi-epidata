@@ -2,7 +2,7 @@
 
 # standard library
 import argparse
-import covidcast
+from delphi.epidata.client.delphi_epidata import Epidata
 import sys
 import time
 import datetime
@@ -13,7 +13,7 @@ from dataclasses import dataclass
 from typing import List
 
 # first party
-from logger import get_structured_logger
+from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
 
 @dataclass
 class DashboardSignal:
@@ -146,7 +146,7 @@ def get_coverage(dashboard_signal: DashboardSignal,
     # (and allow multiple signals) and/or aggregate across all sources
     # for a signal
     signal = df_for_source["signal"].iloc[0]
-    latest_data = covidcast.signal(
+    latest_data = Epidata.covidcast.signal(
         dashboard_signal.source,
         signal,
         end_day=latest_data_date,
@@ -185,7 +185,7 @@ def main(args):
     logger.info("Starting generating dashboard data.", enabled_signals=[
                 signal.name for signal in signals_to_generate])
 
-    metadata = covidcast.metadata()
+    metadata = Epidata.covidcast.metadata()
 
     signal_status_list: List[DashboardSignalStatus] = []
     coverage_list: List[DashboardSignalCoverage] = []
