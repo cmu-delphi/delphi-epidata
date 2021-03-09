@@ -101,7 +101,7 @@ class Database:
     def get_enabled_signals(self) -> List[DashboardSignal]:
         """Retrieve all enabled signals from the database"""
         select_statement = f'''SELECT `id`, `name`, `source`
-            FROM `{Database.INDICATOR_TABLE_NAME}`
+            FROM `{Database.SIGNAL_TABLE_NAME}`
             WHERE `enabled`
             '''
         self._cursor.execute(select_statement)
