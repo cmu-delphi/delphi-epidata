@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from typing import List
 
 # first party
+import delphi.operations.secrets as secrets
 from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
 
 @dataclass
@@ -22,8 +23,6 @@ class DashboardSignal:
     db_id: int
     name: str
     source: str
-
-#DashboardSignalCoverage = namedtuple("")
 
 
 @dataclass
@@ -50,17 +49,17 @@ class Database:
     """Storage for dashboard data."""
 
     DATABASE_NAME = 'epidata'
-    INDICATOR_TABLE_NAME = 'dashboard_indicator'
-    STATUS_TABLE_NAME = 'dashboard_indicator_status'
-    COVERAGE_TABLE_NAME = 'dashboard_indicator_coverage'
+    INDICATOR_TABLE_NAME = 'dashboard_signal'
+    STATUS_TABLE_NAME = 'dashboard_signal_status'
+    COVERAGE_TABLE_NAME = 'dashboard_signal_coverage'
 
     def __init__(self, connector_impl=mysql.connector):
         """Establish a connection to the database."""
+        u, p = secrets.db.epi
         self._connection = connector_impl.connect(
-            port=13306,
-            host="localhost",
-            user="user",
-            password="pass",
+            host=secrets.db.host,
+            user=u,
+            password=p,
             database=Database.DATABASE_NAME)
         self._cursor = self._connection.cursor()
 
