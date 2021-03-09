@@ -2,7 +2,6 @@
 
 # standard library
 import argparse
-from delphi.epidata.client.delphi_epidata import Epidata
 import sys
 import time
 import datetime
@@ -15,6 +14,8 @@ from typing import List
 # first party
 import delphi.operations.secrets as secrets
 from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
+from delphi.epidata.client.delphi_epidata import Epidata
+
 
 @dataclass
 class DashboardSignal:
