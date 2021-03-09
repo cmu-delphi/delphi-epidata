@@ -495,7 +495,7 @@ administered by the University of Maryland.
 
 ## Wave 10
 
-Wave 10 was be deployed on March 2, 2021. For the following 7 days, 15% of
+Wave 10 was deployed on March 2, 2021. For the following 7 days, 15% of
 respondents (selected at random) continued to receive Wave 8, allowing for
 comparisons of responses between the two waves. Wave 10 is available in English,
 as well as
