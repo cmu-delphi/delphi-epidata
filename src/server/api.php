@@ -1002,19 +1002,19 @@ function get_covidcast($source, $signals, $time_type, $geo_type, $time_values, $
 }
 
 function get_signal_dash_status_data() {
-  $query = 'SELECT indicator.`name`,
+  $query = 'SELECT signal.`name`,
               status.`latest_issue_date`,
               status.`latest_data_date`
             FROM (SELECT `id`, `name`
-              FROM `dashboard_indicator`
-              WHERE `enabled`) AS indicator
-            LEFT JOIN (SELECT `indicator_id`,
+              FROM `dashboard_signal`
+              WHERE `enabled`) AS signal
+            LEFT JOIN (SELECT `signal_id`,
                               Max(`date`) max_date
-                       FROM `dashboard_indicator_status`
-                       GROUP BY `indicator_id`) AS max_dates
-            ON indicator.`id` = max_dates.`indicator_id`
-            LEFT JOIN `dashboard_indicator_status` AS status
-            ON max_dates.`indicator_id` = status.`indicator_id`
+                       FROM `dashboard_signal_status`
+                       GROUP BY `signal_id`) AS max_dates
+            ON signal.`id` = max_dates.`signal_id`
+            LEFT JOIN `dashboard_signal_status` AS status
+            ON max_dates.`signal_id` = status.`signal_id`
               AND status.`date` = max_dates.`max_date`';
   
   $epidata = array();
@@ -1025,20 +1025,20 @@ function get_signal_dash_status_data() {
 }
 
 function get_signal_dash_coverage_data() {
-  $query = 'SELECT indicator.`name`,
+  $query = 'SELECT signal.`name`,
               coverage.`date`,
               coverage.`geo_type`,
               coverage.`geo_value`
             FROM (SELECT `id`, `name`
-              FROM `dashboard_indicator`
-              WHERE `enabled`) AS indicator
-            LEFT JOIN (SELECT `indicator_id`,
+              FROM `dashboard_signal`
+              WHERE `enabled`) AS signal
+            LEFT JOIN (SELECT `signal_id`,
                               Max(`date`) max_date
-                       FROM `dashboard_indicator_coverage`
-                       GROUP BY `indicator_id`) AS max_dates
-            ON indicator.`id` = max_dates.`indicator_id`
-            LEFT JOIN `dashboard_indicator_coverage` AS coverage
-            ON max_dates.`indicator_id` = coverage.`indicator_id`
+                       FROM `dashboard_signal_coverage`
+                       GROUP BY `signal_id`) AS max_dates
+            ON signal.`id` = max_dates.`signal_id`
+            LEFT JOIN `dashboard_signal_coverage` AS coverage
+            ON max_dates.`signal_id` = coverage.`signal_id`
               AND coverage.`date` = max_dates.`max_date`';
   
   $epidata = array();

@@ -49,7 +49,7 @@ class Database:
     """Storage for dashboard data."""
 
     DATABASE_NAME = 'epidata'
-    INDICATOR_TABLE_NAME = 'dashboard_signal'
+    SIGNAL_TABLE_NAME = 'dashboard_signal'
     STATUS_TABLE_NAME = 'dashboard_signal_status'
     COVERAGE_TABLE_NAME = 'dashboard_signal_coverage'
 
@@ -70,7 +70,7 @@ class Database:
     def write_status(self, status_list: List[DashboardSignalStatus]) -> None:
         """Write the provided status to the database."""
         insert_statement = f'''INSERT INTO `{Database.STATUS_TABLE_NAME}`
-            (`indicator_id`, `date`, `latest_issue_date`, `latest_data_date`)
+            (`signal_id`, `date`, `latest_issue_date`, `latest_data_date`)
             VALUES
             (%s, %s, %s, %s)
             ON DUPLICATE KEY UPDATE
@@ -87,10 +87,10 @@ class Database:
             self, coverage_list: List[DashboardSignalCoverage]) -> None:
         """Write the provided coverage to the database."""
         insert_statement = f'''INSERT INTO `{Database.COVERAGE_TABLE_NAME}`
-            (`indicator_id`, `date`, `geo_type`, `geo_value`)
+            (`signal_id`, `date`, `geo_type`, `geo_value`)
             VALUES
             (%s, %s, %s, %s)
-            ON DUPLICATE KEY UPDATE `indicator_id` = `indicator_id`
+            ON DUPLICATE KEY UPDATE `signal_id` = `signal_id`
             '''
         coverage_as_tuples = [
             (x.signal_id, x.date, x.geo_type, x.geo_value)
