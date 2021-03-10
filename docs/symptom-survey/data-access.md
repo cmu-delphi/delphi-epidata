@@ -20,9 +20,9 @@ characteristics are available for download.
 ## Getting Microdata Access
 
 De-identified individual survey responses can be made available to researchers
-associated with universities or non-profit organizations. To request access to
-the data please submit the information requested in [Facebook's page on
-obtaining data
+associated with universities or non-profit organizations who sign a Data Use
+Agreement (DUA). To request access to the data please submit the information
+requested in [Facebook's page on obtaining data
 access](https://dataforgood.fb.com/docs/covid-19-symptom-survey-request-for-data-access/),
 which sets out the basic conditions and provides a form to request access. An
 [international version of the COVID Symptom Survey](https://covidmap.umd.edu/)
@@ -34,9 +34,12 @@ Some important notes about obtaining access to the individual survey responses:
 * Your research purpose must be consistent with the consent language used in
   [Wave 1 of the survey](coding.md#wave-1), which states the responses may be
   used to create "a better public health understanding of where the coronavirus
-  pandemic is moving, to improve our local and national responses."
+  pandemic is moving, to improve our local and national responses." While the
+  consent language [changed in Wave 4](coding.md#wave-4) to allow more uses, we
+  are not currently able to adjust the DUAs to support different use cases.
 * Part- or full-time employees of Facebook are **not** eligible to receive data
-  access.
+  access, since Delphi's agreement with Facebook to protect the privacy of
+  respondents prohibits Facebook employees from receiving any microdata.
 * Because this survey is large and many groups have access, the Data Use
   Agreements are not negotiable.
 
