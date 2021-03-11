@@ -11,9 +11,17 @@ from datetime import date
 import pandas as pd
 
 # first party
-from delphi.epidata.acquisition.covidcast.signal_dash_data_generator import get_argument_parser, \
-    main, Database, DashboardSignalStatus, DashboardSignalCoverage, DashboardSignal, get_latest_issue_date_from_metadata, \
-    get_coverage
+from delphi.epidata.acquisition.covidcast.signal_dash_data_generator import (
+  get_argument_parser,
+  main,
+  Database,
+  DashboardSignalStatus,
+  DashboardSignalCoverage,
+  DashboardSignal,
+  get_latest_issue_from_metadata,
+  get_latest_time_value_from_metadata,
+  get_coverage
+ )
 from delphi.epidata.client.delphi_epidata import Epidata
 
 # py3tester coverage target
@@ -39,13 +47,13 @@ class UnitTests(unittest.TestCase):
 
         status1 = DashboardSignalStatus(
             signal_id=1, date=date(
-                2020, 1, 1), latest_issue_date=date(
-                2020, 1, 2), latest_data_date=date(
+                2020, 1, 1), latest_issue=date(
+                2020, 1, 2), latest_time_value=date(
                 2020, 1, 3))
         status2 = DashboardSignalStatus(
             signal_id=2, date=date(
-                2021, 1, 1), latest_issue_date=date(
-                2021, 1, 2), latest_data_date=date(
+                2021, 1, 1), latest_issue=date(
+                2021, 1, 2), latest_time_value=date(
                 2021, 1, 3))
         database.write_status([status1, status2])
 
@@ -107,15 +115,15 @@ class UnitTests(unittest.TestCase):
 
         self.assertListEqual(signals, expected_signals)
 
-    def test_get_latest_issue_date_from_metadata(self):
+    def test_get_latest_issue_from_metadata(self):
         signal = DashboardSignal(db_id=1, name="Change", source="chng")
         data = [['chng', 20200101], ['chng', 20210101], ['quidel', 20220101]]
         metadata = pd.DataFrame(data, columns=['data_source', 'max_issue'])
 
-        issue_date = get_latest_issue_date_from_metadata(signal, metadata)
+        issue_date = get_latest_issue_from_metadata(signal, metadata)
         self.assertEqual(issue_date, date(2021, 1, 1))
 
-    def test_get_latest_data_date_from_metadata(self):
+    def test_get_latest_time_value_from_metadata(self):
         signal = DashboardSignal(db_id=1, name="Change", source="chng")
         data = [
             ['chng', pd.Timestamp("2020-01-01")],
@@ -123,7 +131,7 @@ class UnitTests(unittest.TestCase):
             ['quidel', pd.Timestamp("20220101")]]
         metadata = pd.DataFrame(data, columns=['data_source', 'max_time'])
 
-        data_date = get_latest_data_date_from_metadata(signal, metadata)
+        data_date = get_latest_time_value_from_metadata(signal, metadata)
         self.assertEqual(data_date, date(2021, 1, 1))
 
     @patch('delphi.epidata.client.delphi_epidata.Epidata.covidcast')
