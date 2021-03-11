@@ -143,8 +143,8 @@ def get_coverage(dashboard_signal: DashboardSignal,
         dashboard_signal, metadata)
     df_for_source = metadata[metadata.data_source == dashboard_signal.source]
     # we need to do something smarter here -- make this part of config
-    # (and allow multiple signals) and/or aggregate across all sources
-    # for a signal
+    # (and allow multiple signals) and/or aggregate across all signals
+    # for a source
     signal = df_for_source["signal"].iloc[0]
     latest_data = Epidata.covidcast.signal(
         dashboard_signal.source,
