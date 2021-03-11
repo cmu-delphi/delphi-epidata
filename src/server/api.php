@@ -1002,17 +1002,17 @@ function get_covidcast($source, $signals, $time_type, $geo_type, $time_values, $
 }
 
 function get_signal_dash_status_data() {
-  $query = 'SELECT signal.`name`,
+  $query = 'SELECT enabled_signal.`name`,
               status.`latest_issue`,
               status.`latest_time_value`
             FROM (SELECT `id`, `name`
               FROM `dashboard_signal`
-              WHERE `enabled`) AS signal
+              WHERE `enabled`) AS enabled_signal
             LEFT JOIN (SELECT `signal_id`,
                               Max(`date`) max_date
                        FROM `dashboard_signal_status`
                        GROUP BY `signal_id`) AS max_dates
-            ON signal.`id` = max_dates.`signal_id`
+            ON enabled_signal.`id` = max_dates.`signal_id`
             LEFT JOIN `dashboard_signal_status` AS status
             ON max_dates.`signal_id` = status.`signal_id`
               AND status.`date` = max_dates.`max_date`';
@@ -1025,18 +1025,18 @@ function get_signal_dash_status_data() {
 }
 
 function get_signal_dash_coverage_data() {
-  $query = 'SELECT signal.`name`,
+  $query = 'SELECT enabled_signal.`name`,
               coverage.`date`,
               coverage.`geo_type`,
               coverage.`geo_value`
             FROM (SELECT `id`, `name`
               FROM `dashboard_signal`
-              WHERE `enabled`) AS signal
+              WHERE `enabled`) AS enabled_signal
             LEFT JOIN (SELECT `signal_id`,
                               Max(`date`) max_date
                        FROM `dashboard_signal_coverage`
                        GROUP BY `signal_id`) AS max_dates
-            ON signal.`id` = max_dates.`signal_id`
+            ON enabled_signal.`id` = max_dates.`signal_id`
             LEFT JOIN `dashboard_signal_coverage` AS coverage
             ON max_dates.`signal_id` = coverage.`signal_id`
               AND coverage.`date` = max_dates.`max_date`';
