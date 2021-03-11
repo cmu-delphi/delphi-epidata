@@ -175,7 +175,7 @@ def main(args):
         log_file = args.log_file
 
     logger = get_structured_logger(
-        "metadata_cache_updater",
+        "signal_dash_data_generator",
         filename=log_file, log_exceptions=False)
     start_time = time.time()
 
