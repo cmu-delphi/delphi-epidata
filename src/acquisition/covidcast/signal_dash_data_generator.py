@@ -42,8 +42,8 @@ class DashboardSignalStatus:
 
     signal_id: int
     date: datetime.date
-    latest_issue_date: datetime.date
-    latest_data_date: datetime.date
+    latest_issue: datetime.date
+    latest_time_value: datetime.date
 
 
 class Database:
@@ -71,15 +71,15 @@ class Database:
     def write_status(self, status_list: List[DashboardSignalStatus]) -> None:
         """Write the provided status to the database."""
         insert_statement = f'''INSERT INTO `{Database.STATUS_TABLE_NAME}`
-            (`signal_id`, `date`, `latest_issue_date`, `latest_data_date`)
+            (`signal_id`, `date`, `latest_issue`, `latest_time_value`)
             VALUES
             (%s, %s, %s, %s)
             ON DUPLICATE KEY UPDATE
-                `latest_issue_date`=VALUES(`latest_issue_date`),
-                `latest_data_date`=VALUES(`latest_data_date`)
+                `latest_issue`=VALUES(`latest_issue`),
+                `latest_time_value`=VALUES(`latest_time_value`)
             '''
         status_as_tuples = [
-            (x.signal_id, x.date, x.latest_issue_date, x.latest_data_date)
+            (x.signal_id, x.date, x.latest_issue, x.latest_time_value)
             for x in status_list]
         self._cursor.executemany(insert_statement, status_as_tuples)
         self._connection.commit()
@@ -123,14 +123,14 @@ def get_argument_parser():
     return parser
 
 
-def get_latest_issue_date_from_metadata(dashboard_signal, metadata):
+def get_latest_issue_from_metadata(dashboard_signal, metadata):
     """Get the most recent issue date for the signal."""
     df_for_source = metadata[metadata.data_source == dashboard_signal.source]
-    max_int = df_for_source["max_issue"].max()
-    return pd.to_datetime(str(max_int), format="%Y%m%d")
+    max_issue = df_for_source["max_issue"].max()
+    return pd.to_datetime(str(max_issue), format="%Y%m%d")
 
 
-def get_latest_data_date_from_metadata(dashboard_signal, metadata):
+def get_latest_time_value_from_metadata(dashboard_signal, metadata):
     """Get the most recent date with data for the signal."""
     df_for_source = metadata[metadata.data_source == dashboard_signal.source]
     return df_for_source["max_time"].max().date()
@@ -139,7 +139,7 @@ def get_latest_data_date_from_metadata(dashboard_signal, metadata):
 def get_coverage(dashboard_signal: DashboardSignal,
                  metadata) -> List[DashboardSignalCoverage]:
     """Get the most recent coverage for the signal."""
-    latest_data_date = get_latest_data_date_from_metadata(
+    latest_time_value = get_latest_time_value_from_metadata(
         dashboard_signal, metadata)
     df_for_source = metadata[metadata.data_source == dashboard_signal.source]
     # we need to do something smarter here -- make this part of config
@@ -149,8 +149,8 @@ def get_coverage(dashboard_signal: DashboardSignal,
     latest_data = Epidata.covidcast.signal(
         dashboard_signal.source,
         signal,
-        end_day=latest_data_date,
-        start_day=latest_data_date)
+        end_day=latest_time_value,
+        start_day=latest_time_value)
 
     signal_coverage_list = []
     for _, row in latest_data.iterrows():
@@ -191,10 +191,10 @@ def main(args):
     coverage_list: List[DashboardSignalCoverage] = []
 
     for dashboard_signal in signals_to_generate:
-        latest_issue_date = get_latest_issue_date_from_metadata(
+        latest_issue = get_latest_issue_from_metadata(
             dashboard_signal,
             metadata)
-        latest_data_date = get_latest_data_date_from_metadata(
+        latest_time_value = get_latest_time_value_from_metadata(
             dashboard_signal, metadata)
         latest_coverage = get_coverage(dashboard_signal, metadata)
 
@@ -202,8 +202,8 @@ def main(args):
             DashboardSignalStatus(
                 signal_id=dashboard_signal.db_id,
                 date=datetime.date.today(),
-                latest_issue_date=latest_issue_date,
-                latest_data_date=latest_data_date))
+                latest_issue=latest_issue,
+                latest_time_value=latest_time_value))
         coverage_list.extend(latest_coverage)
 
     try:

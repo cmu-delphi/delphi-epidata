@@ -7,8 +7,8 @@ This table stores the signals used in the public signal dashboard.
 +---------+--------------+------+-----+---------+----------------+
 | id      | int(11)      | NO   | PRI | NULL    | auto_increment |
 | name    | varchar(255) | NO   |     | NULL    |                |
-| source  | varchar(32)  | YES  |     | NULL    |                |
-| enabled | binary(1)    | YES  |     | NULL    |                |
+| source  | varchar(32)  | NO   |     | NULL    |                |
+| enabled | binary(1)    | NO   |     | NULL    |                |
 +---------+--------------+------+-----+---------+----------------+
 
 */
@@ -31,8 +31,8 @@ This table stores the status for signals in the public signal dashboard.
 +-------------------+---------+------+-----+---------+-------+
 | signal_id         | int(11) | NO   | PRI | NULL    |       |
 | date              | date    | NO   | PRI | NULL    |       |
-| latest_issue_date | date    | NO   |     | NULL    |       |
-| latest_data_date  | date    | NO   |     | NULL    |       |
+| latest_issue      | date    | YES  |     | NULL    |       |
+| latest_time_value | date    | YES  |     | NULL    |       |
 +-------------------+---------+------+-----+---------+-------+
 
 */
@@ -40,8 +40,8 @@ This table stores the status for signals in the public signal dashboard.
 CREATE TABLE `dashboard_signal_status` (
   `signal_id` int(11) NOT NULL,
   `date` date NOT NULL,
-  `latest_issue_date` date DEFAULT NULL,
-  `latest_data_date` date DEFAULT NULL,
+  `latest_issue` date DEFAULT NULL,
+  `latest_time_value` date DEFAULT NULL,
   PRIMARY KEY (`signal_id`,`date`),
   CONSTRAINT `dashboard_signal_status_ibfk_1` 
   FOREIGN KEY (`signal_id`) REFERENCES `dashboard_signal` (`id`)

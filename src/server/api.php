@@ -1003,8 +1003,8 @@ function get_covidcast($source, $signals, $time_type, $geo_type, $time_values, $
 
 function get_signal_dash_status_data() {
   $query = 'SELECT signal.`name`,
-              status.`latest_issue_date`,
-              status.`latest_data_date`
+              status.`latest_issue`,
+              status.`latest_time_value`
             FROM (SELECT `id`, `name`
               FROM `dashboard_signal`
               WHERE `enabled`) AS signal
@@ -1018,7 +1018,7 @@ function get_signal_dash_status_data() {
               AND status.`date` = max_dates.`max_date`';
   
   $epidata = array();
-  $fields_string = array('name', 'latest_issue_date', 'latest_data_date');
+  $fields_string = array('name', 'latest_issue', 'latest_time_value');
   execute_query($query, $epidata, $fields_string, null /* fields_int */, null /* fields_float */);
   // return the data
   return count($epidata) === 0 ? null : $epidata; 
