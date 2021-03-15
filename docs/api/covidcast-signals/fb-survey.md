@@ -110,7 +110,7 @@ such as `raw_cli` instead of `raw_wcli`.
 
 Note that for `raw_whh_cmnty_cli` and `raw_wnohh_cmnty_cli`, the illnesses
 included are broader: a respondent is included if they know someone in their
-household (for `raw_hh_cmnty_cli`) or community with fever, along with sore
+household (for `raw_whh_cmnty_cli`) or community with fever, along with sore
 throat, cough, shortness of breath, or difficulty breathing. This does not
 attempt to distinguish between COVID-like and influenza-like illness.
 
@@ -130,7 +130,7 @@ can be asymptomatic. Instead, we expect these indicators to be useful for
 comparison across the United States and across time, to determine where symptoms
 appear to be increasing.
 
-**Smoothing.** The signals beginning with `smoothed_` estimate the same quantities as their
+**Smoothing.** The signals beginning with `smoothed` estimate the same quantities as their
 `raw` partners, but are smoothed in time to reduce day-to-day sampling noise;
 see [details below](#smoothing). Crucially, because the smoothed signals combine
 information across multiple days, they have larger sample sizes and hence are
@@ -289,7 +289,7 @@ problematic.
 
 ### Smoothing
 
-The smoothed versions of all `fb-survey` signals (with `smoothed_` prefix) are
+The smoothed versions of all `fb-survey` signals (with `smoothed` prefix) are
 calculated using seven day pooling. For example, the estimate reported for June
 7 in a specific geographical area (such as county or MSA) is formed by
 collecting all surveys completed between June 1 and 7 (inclusive) and using that
