@@ -119,8 +119,8 @@ class Utils:
 
     # get dataset details from metadata
     metadata = network.fetch_metadata()
-    url, revision = Utils.extract_resource_details(metadata)
-    issue = Utils.get_issue_from_revision(revision)
+    issue = max(metadata.index)
+    revision = metadata.loc[issue, "Archive Link"]
     print(f'issue: {issue}')
     print(f'revision: {revision}')
 
@@ -133,11 +133,11 @@ class Utils:
         return False
 
       # add metadata to the database
-      metadata_json = json.dumps(metadata)
+      metadata_json = metadata.loc[issue].to_json()
       db.insert_metadata(issue, revision, metadata_json)
 
       # download the dataset and add it to the database
-      dataset = network.fetch_dataset(url)
+      dataset = network.fetch_dataset(metadata.loc[issue, "Archive Link"])
       db.insert_dataset(issue, dataset)
 
       print(f'successfully acquired {len(dataset)} rows')
