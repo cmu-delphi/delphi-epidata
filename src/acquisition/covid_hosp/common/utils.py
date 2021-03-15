@@ -101,65 +101,6 @@ class Utils:
       msg = f'unable to access object path "/{path_str}"'
       raise CovidHospException(msg) from ex
 
-  def get_issue_from_revision(revision):
-    """Extract and return an issue from a revision string.
-
-    Parameters
-    ----------
-    revision : str
-      The free-form revision string.
-
-    Returns
-    -------
-    int
-      The issue in YYYYMMDD format.
-
-    Raises
-    ------
-    CovidHospException
-      If the issue can't be extracted.
-    """
-
-    match = Utils.REVISION_PATTERN.match(revision)
-    if not match:
-      raise CovidHospException(f'unable to extract issue from "{revision}"')
-    y, m, d = match.group(3), match.group(1), match.group(2)
-    return int(y) * 10000 + int(m) * 100 + int(d)
-
-  def extract_resource_details(metadata):
-    """Extract resource details, like URL and revision, from metadata.
-
-    Parameters
-    ----------
-    metadata : dict
-      Metadata object as returned from healthcare.gov.
-
-    Returns
-    -------
-    url : str
-      URL of the dataset.
-    revision : str
-      Free-form revision timestamp of the dataset.
-
-    Raises
-    ------
-    CovidHospException
-      If the metadata does not match the expected format.
-    """
-
-    # check data integrity
-    if Utils.get_entry(metadata, 'success') is not True:
-      raise CovidHospException(
-          'metadata does not have `success` equal to `True`')
-    if len(Utils.get_entry(metadata, 'result')) != 1:
-      raise CovidHospException('metadata does not have exactly 1 result')
-    if len(Utils.get_entry(metadata, 'result', 0, 'resources')) != 1:
-      raise CovidHospException('metadata does not have exactly 1 resource')
-
-    # return resource details
-    resource = Utils.get_entry(metadata, 'result', 0, 'resources', 0)
-    return resource['url'], resource['revision_timestamp']
-
   def update_dataset(database, network):
     """Acquire the most recent dataset, unless it was previously acquired.
 

@@ -37,13 +37,10 @@ class UpdateTests(unittest.TestCase):
 
     mock_db = MagicMock(spec=Database)
     mock_db.contains_revision.return_value = False
-    mock_db.get_max_issue.return_value = sentinel.last_issue
+    mock_db.get_max_issue.return_value = pd.Timestamp("2021/3/13")
     sample_dataset = self.test_utils.load_sample_dataset()
     with patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()) as mock_metadata, \
-         patch.object(Utils, 'extract_resource_details', return_value=(sentinel.url, sentinel.revision)) as mock_details, \
-         patch.object(Utils, 'get_issue_from_revision', return_value=sentinel.issue) as mock_issue, \
          patch.object(Database, 'connect', return_value=MagicMock()) as mock_connect, \
-         patch.object(Network, 'fetch_revisions', return_value=[sentinel.batch]) as mock_revisions, \
          patch.object(Network, 'fetch_dataset', return_value=sample_dataset) as mock_fetch:
       # extra level of indirection due to context manager
       mock_connect.return_value.__enter__.return_value = mock_db
@@ -54,18 +51,15 @@ class UpdateTests(unittest.TestCase):
       result = Update.run()
 
       mock_metadata.assert_called_once()
-      mock_details.assert_called_once()
-      mock_issue.assert_called_with(sentinel.revision)
       mock_connect.assert_called_once()
-      mock_revisions.assert_called_with(sentinel.last_issue)
-      mock_fetch.assert_called_with(sentinel.url)
+      mock_fetch.assert_called_with("https://test.csv")
 
       # don't care what the third argument is, so only test the first two:
-      self.assertEqual(mock_db.insert_metadata.call_args.args[0], sentinel.issue)
-      self.assertEqual(mock_db.insert_metadata.call_args.args[1], sentinel.revision)
+      self.assertEqual(mock_db.insert_metadata.call_args.args[0], pd.Timestamp("2021/3/15"))
+      self.assertEqual(mock_db.insert_metadata.call_args.args[1], "https://test.csv")
 
       # can't use assert_called_with to test data frame equality, so check args individually:
-      self.assertEqual(mock_db.insert_dataset.call_args.args[0], sentinel.issue)
+      self.assertEqual(mock_db.insert_dataset.call_args.args[0], pd.Timestamp("2021/3/15"))
       self.assertEqual(set(mock_db.insert_dataset.call_args.args[1].columns),
                        set(sample_dataset.columns))
       pd.testing.assert_frame_equal(

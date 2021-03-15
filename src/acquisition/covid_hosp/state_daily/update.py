@@ -36,8 +36,8 @@ class Update:
 
     # get dataset details from metadata
     metadata = network.fetch_metadata()
-    url, revision = Utils.extract_resource_details(metadata)
-    issue = Utils.get_issue_from_revision(revision)
+    issue = max(metadata.index)
+    revision = metadata.loc[issue, "Archive Link"]
     print(f'issue: {issue}')
     print(f'revision: {revision}')
 
@@ -50,12 +50,11 @@ class Update:
         return False
 
       max_issue = db.get_max_issue()
-
       # add metadata to the database
-      metadata_json = json.dumps(metadata)
+      metadata_json = metadata.loc[issue].to_json()
       db.insert_metadata(issue, revision, metadata_json)
 
-      urls = network.fetch_revisions(max_issue) + [url]
+      urls = network.fetch_revisions(metadata, max_issue)
       print(f'acquiring {len(urls)} daily updates')
       dataset = Update.merge_by_state_date(
         [network.fetch_dataset(url) for url in urls]

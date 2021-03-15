@@ -7,9 +7,9 @@ class Network:
 # This code is a temporary (two weeks or so) fix until the legacy API is fully retired. Code using this style of URL will be phased out entirely then
 # This needs to migrate to the new healthdata.gov API, which is different
   METADATA_URL_TEMPLATE = \
-      'https://legacy.healthdata.gov/api/3/action/package_show?id=%s&page=0'
+      'https://healthdata.gov/api/views/%s/rows.csv'
 
-  def fetch_metadata_for_dataset(dataset_id, requests_impl=requests):
+  def fetch_metadata_for_dataset(dataset_id):
     """Download and return metadata.
 
     Parameters
@@ -22,10 +22,13 @@ class Network:
     object
       The metadata object.
     """
-
     url = Network.METADATA_URL_TEMPLATE % dataset_id
     print(f'fetching metadata at {url}')
-    return requests_impl.get(url).json()
+    df = Network.fetch_dataset(url)
+    df["Update Date"] = pandas.to_datetime(df["Update Date"])
+    df.sort_values("Update Date", inplace=True)
+    df.set_index("Update Date", inplace=True)
+    return df
 
   def fetch_dataset(url, pandas_impl=pandas):
     """Download and return a dataset.
