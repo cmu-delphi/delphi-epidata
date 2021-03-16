@@ -8,7 +8,6 @@ from delphi.epidata.acquisition.covid_hosp.common.network import Network as Base
 class Network(BaseNetwork):
 
   DATASET_ID = '6xf2-c3ie'
-  ROOT = 'https://healthdata.gov'
 
   @staticmethod
   def fetch_metadata(*args, **kwags):
