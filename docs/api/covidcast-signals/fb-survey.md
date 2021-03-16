@@ -95,18 +95,22 @@ survey data, we estimate the percentage of people (age 18 or older) who have a
 COVID-like illness, or influenza-like illness, in a given location, on a given
 day.
 
+Signals beginning `raw_w` or `smoothed_w` are adjusted using survey weights
+[as described below](#survey-weighting) to be demographically representative.
+Weighted signals have 1-2 days of lag, so if low latency is paramount,
+unweighted signals are also available. These begin `smoothed_` or `raw_`,
+such as `raw_cli` instead of `raw_wcli`.
+
 | Signals | Description |
 | --- | --- |
-| `raw_cli` and `smoothed_cli` | Estimated percentage of people with COVID-like illness based on the [criteria below](#ili-and-cli-indicators), with no survey weighting <br/> **Earliest date available:** 2020-04-06 |
-| `raw_ili` and `smoothed_ili` | Estimated percentage of people with influenza-like illness based on the [criteria below](#ili-and-cli-indicators), with no survey weighting <br/> **Earliest date available:** 2020-04-06 |
-| `raw_wcli` and `smoothed_wcli` | Estimated percentage of people with COVID-like illness; adjusted using survey weights [as described below](#survey-weighting) <br/> **Earliest date available:** 2020-04-06 |
-| `raw_wili` and `smoothed_wili` | Estimated percentage of people with influenza-like illness; adjusted using survey weights [as described below](#survey-weighting) <br/> **Earliest date available:** 2020-04-06 |
-| `raw_hh_cmnty_cli` and `smoothed_hh_cmnty_cli` | Estimated percentage of people reporting illness in their local community, as [described below](#estimating-community-cli), including their household, with no survey weighting <br/> **Earliest date available:** 2020-04-15 |
-| `raw_nohh_cmnty_cli` and `smoothed_nohh_cmnty_cli` | Estimated percentage of people reporting illness in their local community, as [described below](#estimating-community-cli), not including their household, with no survey weighting <br/> **Earliest date available:** 2020-04-15 |
+| `raw_wcli` and `smoothed_wcli` | Estimated percentage of people with COVID-like illness <br/> **Earliest date available:** 2020-04-06 |
+| `raw_wili` and `smoothed_wili` | Estimated percentage of people with influenza-like illness <br/> **Earliest date available:** 2020-04-06 |
+| `raw_whh_cmnty_cli` and `smoothed_whh_cmnty_cli` | Estimated percentage of people reporting illness in their local community, as [described below](#estimating-community-cli), including their household <br/> **Earliest date available:** 2020-04-15 |
+| `raw_wnohh_cmnty_cli` and `smoothed_wnohh_cmnty_cli` | Estimated percentage of people reporting illness in their local community, as [described below](#estimating-community-cli), not including their household <br/> **Earliest date available:** 2020-04-15 |
 
-Note that for `raw_hh_cmnty_cli` and `raw_nohh_cmnty_cli`, the illnesses
+Note that for `raw_whh_cmnty_cli` and `raw_wnohh_cmnty_cli`, the illnesses
 included are broader: a respondent is included if they know someone in their
-household (for `raw_hh_cmnty_cli`) or community with fever, along with sore
+household (for `raw_whh_cmnty_cli`) or community with fever, along with sore
 throat, cough, shortness of breath, or difficulty breathing. This does not
 attempt to distinguish between COVID-like and influenza-like illness.
 
@@ -126,7 +130,7 @@ can be asymptomatic. Instead, we expect these indicators to be useful for
 comparison across the United States and across time, to determine where symptoms
 appear to be increasing.
 
-**Smoothing.** The signals beginning with `smoothed_` estimate the same quantities as their
+**Smoothing.** The signals beginning with `smoothed` estimate the same quantities as their
 `raw` partners, but are smoothed in time to reduce day-to-day sampling noise;
 see [details below](#smoothing). Crucially, because the smoothed signals combine
 information across multiple days, they have larger sample sizes and hence are
@@ -285,7 +289,7 @@ problematic.
 
 ### Smoothing
 
-The smoothed versions of all `fb-survey` signals (with `smoothed_` prefix) are
+The smoothed versions of all `fb-survey` signals (with `smoothed` prefix) are
 calculated using seven day pooling. For example, the estimate reported for June
 7 in a specific geographical area (such as county or MSA) is formed by
 collecting all surveys completed between June 1 and 7 (inclusive) and using that
@@ -296,44 +300,46 @@ data in the estimation procedures described above.
 
 | Signal | Description | Survey Item | Introduced |
 | --- | --- | --- | --- |
-| `smoothed_wearing_mask` | *Discontinued as of Wave 8, Feb 8, 2021* Estimated percentage of people who wore a mask for most or all of the time while in public in the past 5 days; those not in public in the past 5 days are not counted. <br/> **Earliest date available:** 2020-09-08 | C14 | Wave 4, Sept 8, 2020 |
-| `smoothed_wearing_mask_7d` | Estimated percentage of people who wore a mask for most or all of the time while in public in the past 7 days; those not in public in the past 7 days are not counted. <br/> **Earliest date available:** 2021-02-08 | C14a | Wave 8, Feb 8, 2021 |
-| `smoothed_others_masked` | Estimated percentage of respondents who say that most or all *other* people wear masks, when they are in public and social distancing is not possible <br/> **Earliest date available:** 2020-11-24 | C16 | Wave 5, Nov 24, 2020 |
-| `smoothed_travel_outside_state_5d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who report traveling outside their state in the past 5 days <br/> **Earliest date available:** 2020-04-06 | C6 | Wave 1 |
-| `smoothed_work_outside_home_1d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who worked or went to school outside their home in the past 24 hours <br/> **Earliest date available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
-| `smoothed_shop_1d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who went to a "market, grocery store, or pharmacy" in the past 24 hours <br/> **Earliest date available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
-| `smoothed_restaurant_1d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who went to a "bar, restaurant, or cafe" in the past 24 hours <br/> **Earliest date available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
-| `smoothed_spent_time_1d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who "spent time with someone who isn't currently staying with you" in the past 24 hours <br/> **Earliest date available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
-| `smoothed_large_event_1d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who "attended an event with more than 10 people" in the past 24 hours <br/> **Earliest date available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
-| `smoothed_public_transit_1d` | Estimated percentage of respondents who "used public transit" in the past 24 hours <br/> **Earliest date available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
-| `smoothed_travel_outside_state_7d` | Estimated percentage of respondents who report traveling outside their state in the past 7 days. This item was asked of respondents starting in Wave 10. <br/> **Earliest date available:** 2021-03-02 | C6a | Wave 10 |
-| `smoothed_work_outside_home_indoors_1d` | Estimated percentage of respondents who worked or went to school indoors and outside their home in the past 24 hours <br/> **Earliest date available:** 2021-03-02 | C13b | Wave 10, Mar 2, 2021 |
-| `smoothed_shop_indoors_1d` | Estimated percentage of respondents who went to an "indoor market, grocery store, or pharmacy" in the past 24 hours <br/> **Earliest date available:** 2021-03-02 | C13b | Wave 10, Mar 2, 2021 |
-| `smoothed_restaurant_indoors_1d` | Estimated percentage of respondents who went to an indoor "bar, restaurant, or cafe" in the past 24 hours <br/> **Earliest date available:** 2021-03-02 | C13b | Wave 10, Mar 2, 2021 |
-| `smoothed_spent_time_indoors_1d` | Estimated percentage of respondents who "spent time indoors with someone who isn't currently staying with you" in the past 24 hours <br/> **Earliest date available:** 2021-03-02 | C13b | Wave 10, Mar 2, 2021 |
-| `smoothed_large_event_indoors_1d` | Estimated percentage of respondents who "attended an indoor event with more than 10 people" in the past 24 hours <br/> **Earliest date available:** 2021-03-02 | C13b | Wave 10, Mar 2, 2021 |
+| `smoothed_wwearing_mask` | *Discontinued as of Wave 8, Feb 8, 2021* Estimated percentage of people who wore a mask for most or all of the time while in public in the past 5 days; those not in public in the past 5 days are not counted. <br/> **Earliest date available:** 2020-09-08 | C14 | Wave 4, Sept 8, 2020 |
+| `smoothed_wwearing_mask_7d` | Estimated percentage of people who wore a mask for most or all of the time while in public in the past 7 days; those not in public in the past 7 days are not counted. <br/> **Earliest date available:** 2021-02-08 | C14a | Wave 8, Feb 8, 2021 |
+| `smoothed_wothers_masked` | Estimated percentage of respondents who say that most or all *other* people wear masks, when they are in public and social distancing is not possible <br/> **Earliest date available:** 2020-11-24 | C16 | Wave 5, Nov 24, 2020 |
+| `smoothed_wtravel_outside_state_5d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who report traveling outside their state in the past 5 days <br/> **Earliest date available:** 2020-04-06 | C6 | Wave 1 |
+| `smoothed_wwork_outside_home_1d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who worked or went to school outside their home in the past 24 hours <br/> **Earliest date available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
+| `smoothed_wshop_1d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who went to a "market, grocery store, or pharmacy" in the past 24 hours <br/> **Earliest date available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
+| `smoothed_wrestaurant_1d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who went to a "bar, restaurant, or cafe" in the past 24 hours <br/> **Earliest date available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
+| `smoothed_wspent_time_1d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who "spent time with someone who isn't currently staying with you" in the past 24 hours <br/> **Earliest date available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
+| `smoothed_wlarge_event_1d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who "attended an event with more than 10 people" in the past 24 hours <br/> **Earliest date available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
+| `smoothed_wpublic_transit_1d` | Estimated percentage of respondents who "used public transit" in the past 24 hours <br/> **Earliest date available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
+| `smoothed_wtravel_outside_state_7d` | Estimated percentage of respondents who report traveling outside their state in the past 7 days. This item was asked of respondents starting in Wave 10. <br/> **Earliest date available:** 2021-03-02 | C6a | Wave 10 |
+| `smoothed_wwork_outside_home_indoors_1d` | Estimated percentage of respondents who worked or went to school indoors and outside their home in the past 24 hours <br/> **Earliest date available:** 2021-03-02 | C13b | Wave 10, Mar 2, 2021 |
+| `smoothed_wshop_indoors_1d` | Estimated percentage of respondents who went to an "indoor market, grocery store, or pharmacy" in the past 24 hours <br/> **Earliest date available:** 2021-03-02 | C13b | Wave 10, Mar 2, 2021 |
+| `smoothed_wrestaurant_indoors_1d` | Estimated percentage of respondents who went to an indoor "bar, restaurant, or cafe" in the past 24 hours <br/> **Earliest date available:** 2021-03-02 | C13b | Wave 10, Mar 2, 2021 |
+| `smoothed_wspent_time_indoors_1d` | Estimated percentage of respondents who "spent time indoors with someone who isn't currently staying with you" in the past 24 hours <br/> **Earliest date available:** 2021-03-02 | C13b | Wave 10, Mar 2, 2021 |
+| `smoothed_wlarge_event_indoors_1d` | Estimated percentage of respondents who "attended an indoor event with more than 10 people" in the past 24 hours <br/> **Earliest date available:** 2021-03-02 | C13b | Wave 10, Mar 2, 2021 |
 
-Weighted versions of these signals, using the [survey weighting described
-below](#survey-weighting) to be more representative of state demographics, are
-also available. These have names beginning `smoothed_w`, such as
-`smoothed_wwearing_mask`.
+Signals beginning `raw_w` or `smoothed_w` are adjusted using survey weights
+[as described below](#survey-weighting) to be demographically representative.
+Weighted signals have 1-2 days of lag, so if low latency is paramount,
+unweighted signals are also available. These begin `smoothed_`, such as
+`smoothed_wearing_mask` instead of `smoothed_wwearing_mask`.
 
 
 ## Testing Indicators
 
 | Signal | Description | Survey Item |
 | --- | --- | --- |
-| `smoothed_tested_14d` | Estimated percentage of people who were tested for COVID-19 in the past 14 days, regardless of their test result <br/> **Earliest date available:** 2020-09-08 | B8, B10 |
-| `smoothed_tested_positive_14d` | Estimated test positivity rate (percent) among people tested for COVID-19 in the past 14 days <br/> **Earliest date available:** 2020-09-08 | B10a |
-| `smoothed_wanted_test_14d` | Estimated percentage of people who *wanted* to be tested for COVID-19 in the past 14 days, out of people who were *not* tested in that time <br/> **Earliest date available:** 2020-09-08 | B12 |
+| `smoothed_wtested_14d` | Estimated percentage of people who were tested for COVID-19 in the past 14 days, regardless of their test result <br/> **Earliest date available:** 2020-09-08 | B8, B10 |
+| `smoothed_wtested_positive_14d` | Estimated test positivity rate (percent) among people tested for COVID-19 in the past 14 days <br/> **Earliest date available:** 2020-09-08 | B10a |
+| `smoothed_wwanted_test_14d` | Estimated percentage of people who *wanted* to be tested for COVID-19 in the past 14 days, out of people who were *not* tested in that time <br/> **Earliest date available:** 2020-09-08 | B12 |
 
 These indicators are based on questions in Wave 4 of the survey, introduced on
 September 8, 2020.
 
-Weighted versions of these signals, using the [survey weighting described
-below](#survey-weighting) to be more representative of state demographics, are
-also available. These have names beginning `smoothed_w`, such as
-`smoothed_wtested_14d`.
+Signals beginning `raw_w` or `smoothed_w` are adjusted using survey weights
+[as described below](#survey-weighting) to be demographically representative.
+Weighted signals have 1-2 days of lag, so if low latency is paramount,
+unweighted signals are also available. These begin `smoothed_`, such as
+`smoothed_tested_14d` instead of `smoothed_wtested_14d`.
 
 
 ## Vaccination Indicators
@@ -342,31 +348,31 @@ also available. These have names beginning `smoothed_w`, such as
 
 | Signal | Description | Survey Item |
 | --- | --- | --- |
-| `smoothed_covid_vaccinated_or_accept` | Estimated percentage of respondents who *either* have already received a COVID vaccine *or* would definitely or probably choose to get vaccinated, if a vaccine were offered to them today. <br/> **Earliest date available:** 2021-01-06 | V1 and V3 |
-| `smoothed_accept_covid_vaccine` | Estimated percentage of respondents who would definitely or probably choose to get vaccinated, if a COVID-19 vaccine were offered to them today. **Note:** Until January 6, 2021, all respondents answered this question; beginning on that date, only respondents who said they have not received a COVID vaccine are asked this question. <br/> **Earliest date available:** 2021-01-01 | V3 |
-| `smoothed_covid_vaccinated` | Estimated percentage of respondents who have already received a vaccine for COVID-19. **Note:** The Centers for Disease Control compiles data on vaccine administration across the United States. This signal may differ from CDC data because of survey biases and should not be treated as authoritative. However, the survey signal is not subject to the lags and reporting problems in official vaccination data. <br/> **Earliest date available:** 2021-01-06 | V1 |
-| `smoothed_received_2_vaccine_doses` | Estimated percentage of respondents who have received two doses of a COVID-19 vaccine, among respondents who have received either one or two doses of a COVID-19 vaccine. This item was shown to respondents starting in Wave 7. <br/> **Earliest date available:** 2021-02-06 | V2 |
+| `smoothed_wcovid_vaccinated_or_accept` | Estimated percentage of respondents who *either* have already received a COVID vaccine *or* would definitely or probably choose to get vaccinated, if a vaccine were offered to them today. <br/> **Earliest date available:** 2021-01-06 | V1 and V3 |
+| `smoothed_waccept_covid_vaccine` | Estimated percentage of respondents who would definitely or probably choose to get vaccinated, if a COVID-19 vaccine were offered to them today. **Note:** Until January 6, 2021, all respondents answered this question; beginning on that date, only respondents who said they have not received a COVID vaccine are asked this question. <br/> **Earliest date available:** 2021-01-01 | V3 |
+| `smoothed_wcovid_vaccinated` | Estimated percentage of respondents who have already received a vaccine for COVID-19. **Note:** The Centers for Disease Control compiles data on vaccine administration across the United States. This signal may differ from CDC data because of survey biases and should not be treated as authoritative. However, the survey signal is not subject to the lags and reporting problems in official vaccination data. <br/> **Earliest date available:** 2021-01-06 | V1 |
+| `smoothed_wreceived_2_vaccine_doses` | Estimated percentage of respondents who have received two doses of a COVID-19 vaccine, among respondents who have received either one or two doses of a COVID-19 vaccine. This item was shown to respondents starting in Wave 7. <br/> **Earliest date available:** 2021-02-06 | V2 |
 
 ### Reasons for Hesitancy
 
 | Signal | Description | Survey Item |
 | --- | --- | --- |
-| `smoothed_worried_vaccine_side_effects` | Estimated percentage of respondents who are very or moderately concerned that they would "experience a side effect from a COVID-19 vaccination." (Asked of all respondents, including those who have already received one or more doses of a COVID-19 vaccine.) <br/> **Earliest date available:** 2021-01-12 | V9 |
-| `smoothed_hesitancy_reason_sideeffects` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they are worried about side effects, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered (item V3). This series of items was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-26 | V5abc |
-| `smoothed_hesitancy_reason_allergic` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they are worried about having an allergic reaction, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered (item V3). This series of items was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-26 | V5abc |
-| `smoothed_hesitancy_reason_ineffective` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they don't know if a COVID-19 vaccine will work, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered (item V3). This series of items was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-26 | V5abc |
-| `smoothed_hesitancy_reason_unnecessary` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they don't believe they need a COVID-19 vaccine, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered (item V3). This series of items was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-26 | V5abc |
-| `smoothed_hesitancy_reason_dislike_vaccines` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they dislike vaccines, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered (item V3). This series of items was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-26 | V5abc |
-| `smoothed_hesitancy_reason_not_recommended` | Estimated percentage of respondents who say they are hesitant to get vaccinated because their doctor did not recommend it, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered (item V3). This series of items was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-26 | V5abc |
-| `smoothed_hesitancy_reason_wait_safety` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they want to wait to see if the COVID-19 vaccines are safe, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered (item V3). This series of items was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-26 | V5abc |
-| `smoothed_hesitancy_reason_low_priority` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they think other people need it more than they do, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered (item V3). This series of items was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-26 | V5abc |
-| `smoothed_hesitancy_reason_cost` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they are worried about the cost, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered (item V3). This series of items was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-26 | V5abc |
-| `smoothed_hesitancy_reason_distrust_vaccines` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they don't trust COVID-19 vaccines, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered (item V3). This series of items was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-26 | V5abc |
-| `smoothed_hesitancy_reason_distrust_gov` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they don't trust the government, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered (item V3). This series of items was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-26 | V5abc |
-| `smoothed_hesitancy_reason_health_condition` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they have a health condition that may impact the safety of a COVID-19 vaccine, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered (item V3). This series of items was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-26 | V5abc |
-| `smoothed_hesitancy_reason_pregnant` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they are pregnant or breastfeeding, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered (item V3). This series of items was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-26 | V5abc |
-| `smoothed_hesitancy_reason_religious` | Estimated percentage of respondents who say they are hesitant to get vaccinated because it is against their religious beliefs, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered (item V3). This series of items was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-26 | V5abc |
-| `smoothed_hesitancy_reason_other` | Estimated percentage of respondents who say they are hesitant to get vaccinated for another reason, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered (item V3). This series of items was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-26 | V5abc |
+| `smoothed_wworried_vaccine_side_effects` | Estimated percentage of respondents who are very or moderately concerned that they would "experience a side effect from a COVID-19 vaccination." (Asked of all respondents, including those who have already received one or more doses of a COVID-19 vaccine.) <br/> **Earliest date available:** 2021-01-12 | V9 |
+| `smoothed_whesitancy_reason_sideeffects` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they are worried about side effects, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered (item V3). This series of items was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-26 | V5abc |
+| `smoothed_whesitancy_reason_allergic` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they are worried about having an allergic reaction, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered (item V3). This series of items was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-26 | V5abc |
+| `smoothed_whesitancy_reason_ineffective` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they don't know if a COVID-19 vaccine will work, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered (item V3). This series of items was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-26 | V5abc |
+| `smoothed_whesitancy_reason_unnecessary` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they don't believe they need a COVID-19 vaccine, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered (item V3). This series of items was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-26 | V5abc |
+| `smoothed_whesitancy_reason_dislike_vaccines` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they dislike vaccines, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered (item V3). This series of items was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-26 | V5abc |
+| `smoothed_whesitancy_reason_not_recommended` | Estimated percentage of respondents who say they are hesitant to get vaccinated because their doctor did not recommend it, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered (item V3). This series of items was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-26 | V5abc |
+| `smoothed_whesitancy_reason_wait_safety` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they want to wait to see if the COVID-19 vaccines are safe, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered (item V3). This series of items was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-26 | V5abc |
+| `smoothed_whesitancy_reason_low_priority` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they think other people need it more than they do, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered (item V3). This series of items was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-26 | V5abc |
+| `smoothed_whesitancy_reason_cost` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they are worried about the cost, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered (item V3). This series of items was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-26 | V5abc |
+| `smoothed_whesitancy_reason_distrust_vaccines` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they don't trust COVID-19 vaccines, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered (item V3). This series of items was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-26 | V5abc |
+| `smoothed_whesitancy_reason_distrust_gov` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they don't trust the government, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered (item V3). This series of items was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-26 | V5abc |
+| `smoothed_whesitancy_reason_health_condition` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they have a health condition that may impact the safety of a COVID-19 vaccine, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered (item V3). This series of items was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-26 | V5abc |
+| `smoothed_whesitancy_reason_pregnant` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they are pregnant or breastfeeding, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered (item V3). This series of items was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-26 | V5abc |
+| `smoothed_whesitancy_reason_religious` | Estimated percentage of respondents who say they are hesitant to get vaccinated because it is against their religious beliefs, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered (item V3). This series of items was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-26 | V5abc |
+| `smoothed_whesitancy_reason_other` | Estimated percentage of respondents who say they are hesitant to get vaccinated for another reason, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered (item V3). This series of items was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-26 | V5abc |
 
 ### Reasons for Believing Vaccine is Unnecessary
 
@@ -374,23 +380,23 @@ Respondents who indicate that "I don't believe I need a COVID-19 vaccine" (in it
 
 | Signal | Description | Survey Item |
 | --- | --- | --- |
-| `smoothed_dontneed_reason_had_covid` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they already had the illness, among respondents who provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-03-12 | V6 |
-| `smoothed_dontneed_reason_dont_spend_time` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they don't spend time with high-risk people, among respondents who provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-03-12 | V6 |
-| `smoothed_dontneed_reason_not_high_risk` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they are not in a high-risk group, among respondents who provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-03-12 | V6 |
-| `smoothed_dontneed_reason_precautions` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they will use other precautions, such as a mask, instead, among respondents who provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-03-12 | V6 |
-| `smoothed_dontneed_reason_not_serious` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they don't believe COVID-19 is a serious illness, among respondents who provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-03-12 | V6 |
-| `smoothed_dontneed_reason_not_beneficial` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they don't think vaccines are beneficial, among respondents who provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-03-12 | V6 |
-| `smoothed_dontneed_reason_other` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine for another reason, among respondents who provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-03-12 | V6 |
+| `smoothed_wdontneed_reason_had_covid` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they already had the illness, among respondents who provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-03-12 | V6 |
+| `smoothed_wdontneed_reason_dont_spend_time` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they don't spend time with high-risk people, among respondents who provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-03-12 | V6 |
+| `smoothed_wdontneed_reason_not_high_risk` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they are not in a high-risk group, among respondents who provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-03-12 | V6 |
+| `smoothed_wdontneed_reason_precautions` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they will use other precautions, such as a mask, instead, among respondents who provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-03-12 | V6 |
+| `smoothed_wdontneed_reason_not_serious` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they don't believe COVID-19 is a serious illness, among respondents who provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-03-12 | V6 |
+| `smoothed_wdontneed_reason_not_beneficial` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they don't think vaccines are beneficial, among respondents who provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-03-12 | V6 |
+| `smoothed_wdontneed_reason_other` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine for another reason, among respondents who provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-03-12 | V6 |
 
 ### Outreach and Image
 
 | Signal | Description | Survey Item |
 | --- | --- | --- |
-| `smoothed_vaccine_likely_friends` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by friends and family, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-20 | V4 |
-| `smoothed_vaccine_likely_local_health` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by local health workers, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-20 | V4 |
-| `smoothed_vaccine_likely_who` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by the World Health Organization, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-20 | V4 |
-| `smoothed_vaccine_likely_govt_health` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by government health officials, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-20 | V4 |
-| `smoothed_vaccine_likely_politicians` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by politicians, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-20 | V4 |
+| `smoothed_wvaccine_likely_friends` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by friends and family, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-20 | V4 |
+| `smoothed_wvaccine_likely_local_health` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by local health workers, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-20 | V4 |
+| `smoothed_wvaccine_likely_who` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by the World Health Organization, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-20 | V4 |
+| `smoothed_wvaccine_likely_govt_health` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by government health officials, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-20 | V4 |
+| `smoothed_wvaccine_likely_politicians` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by politicians, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-20 | V4 |
 
 These indicators are based on questions added in Wave 6 of the survey,
 introduced on December 19, 2020; however, Delphi only enabled item V1 beginning
@@ -399,34 +405,36 @@ are being revised in preparation for later waves. We may replace the signals
 above with new signals (with different names) if the underlying survey items
 change significantly.
 
-Weighted versions of these signals, using the [survey weighting described
-below](#survey-weighting) to be more representative of state demographics, are
-also available. They have names beginning with `smoothed_w`, such as
-`smoothed_waccept_covid_vaccine`.
+Signals beginning `raw_w` or `smoothed_w` are adjusted using survey weights
+[as described below](#survey-weighting) to be demographically representative.
+Weighted signals have 1-2 days of lag, so if low latency is paramount,
+unweighted signals are also available. These begin `smoothed_`, such as
+`smoothed_accept_covid_vaccine` instead of `smoothed_waccept_covid_vaccine`.
 
 
 ## Mental Health Indicators
 
 | Signal | Description | Survey Item |
 | --- | --- | --- |
-| `smoothed_anxious_5d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who reported feeling "nervous, anxious, or on edge" for most or all of the past 5 days <br/> **Earliest date available:** 2020-09-08 | C8 |
-| `smoothed_depressed_5d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who reported feeling depressed for most or all of the past 5 days <br/> **Earliest date available:** 2020-09-08 | C8 |
-| `smoothed_felt_isolated_5d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who reported feeling "isolated from others" for most or all of the past 5 days <br/> **Earliest date available:** 2020-09-08 | C8 |
-| `smoothed_worried_become_ill` | Estimated percentage of respondents who reported feeling very or somewhat worried that "you or someone in your immediate family might become seriously ill from COVID-19" <br/> **Earliest date available:** 2020-09-08 | C9 |
-| `smoothed_worried_finances` | Estimated percentage of respondents who report being very or somewhat worried about their "household's finances for the next month" <br/> **Earliest date available:** 2020-09-08 | C15 |
-| `smoothed_anxious_7d` | Estimated percentage of respondents who reported feeling "nervous, anxious, or on edge" for most or all of the past 7 days. This item was shown to respondents starting in Wave 10. <br/> **Earliest date available:** 2021-03-02 | C8a |
-| `smoothed_depressed_7d` | Estimated percentage of respondents who reported feeling depressed for most or all of the past 7 days. This item was shown to respondents starting in Wave 10. <br/> **Earliest date available:** 2021-03-02 | C8a |
-| `smoothed_felt_isolated_7d` | Estimated percentage of respondents who reported feeling "isolated from others" for most or all of the past 7 days. This item was shown to respondents starting in Wave 10. <br/> **Earliest date available:** 2021-03-02 | C8a |
+| `smoothed_wanxious_5d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who reported feeling "nervous, anxious, or on edge" for most or all of the past 5 days <br/> **Earliest date available:** 2020-09-08 | C8 |
+| `smoothed_wdepressed_5d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who reported feeling depressed for most or all of the past 5 days <br/> **Earliest date available:** 2020-09-08 | C8 |
+| `smoothed_wfelt_isolated_5d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who reported feeling "isolated from others" for most or all of the past 5 days <br/> **Earliest date available:** 2020-09-08 | C8 |
+| `smoothed_wworried_become_ill` | Estimated percentage of respondents who reported feeling very or somewhat worried that "you or someone in your immediate family might become seriously ill from COVID-19" <br/> **Earliest date available:** 2020-09-08 | C9 |
+| `smoothed_wworried_finances` | Estimated percentage of respondents who report being very or somewhat worried about their "household's finances for the next month" <br/> **Earliest date available:** 2020-09-08 | C15 |
+| `smoothed_wanxious_7d` | Estimated percentage of respondents who reported feeling "nervous, anxious, or on edge" for most or all of the past 7 days. This item was shown to respondents starting in Wave 10. <br/> **Earliest date available:** 2021-03-02 | C8a |
+| `smoothed_wdepressed_7d` | Estimated percentage of respondents who reported feeling depressed for most or all of the past 7 days. This item was shown to respondents starting in Wave 10. <br/> **Earliest date available:** 2021-03-02 | C8a |
+| `smoothed_wfelt_isolated_7d` | Estimated percentage of respondents who reported feeling "isolated from others" for most or all of the past 7 days. This item was shown to respondents starting in Wave 10. <br/> **Earliest date available:** 2021-03-02 | C8a |
 
 Some of these questions were present in the earliest waves of the survey, but
 only in Wave 4 did respondents consent to our use of aggregate data to
 study other impacts of COVID, such as mental health. Hence, these aggregates only
 include respondents to Wave 4 and later waves, beginning September 8, 2020.
 
-Weighted versions of these signals, using the [survey weighting described
-below](#survey-weighting) to be more representative of state demographics, are
-also available. These have names beginning `smoothed_w`, such as
-`smoothed_wdepressed_14d`.
+Signals beginning `raw_w` or `smoothed_w` are adjusted using survey weights
+[as described below](#survey-weighting) to be demographically representative.
+Weighted signals have 1-2 days of lag, so if low latency is paramount,
+unweighted signals are also available. These begin `smoothed_`, such as
+`smoothed_anxious_5d` instead of `smoothed_wanxious_5d`.
 
 ## Limitations
 
