@@ -67,40 +67,6 @@ class Utils:
       return False
     raise CovidHospException(f'cannot convert "{value}" to bool')
 
-  def get_entry(obj, *path):
-    """Get a deeply nested field from an arbitrary object.
-
-    Parameters
-    ----------
-    obj : dict
-      The object to traverse.
-    path : tuple of names and indices
-      Path to the desired field in the object.
-
-    Returns
-    -------
-    object
-      The nested object.
-
-    Raises
-    ------
-    CovidHospException
-      If the field can't be found.
-    """
-
-    try:
-      for elem in path:
-        is_index = isinstance(elem, int)
-        is_list = isinstance(obj, list)
-        if is_index != is_list:
-          raise CovidHospException('index given for non-list or vice versa')
-        obj = obj[elem]
-      return obj
-    except Exception as ex:
-      path_str = '/'.join(map(str, path))
-      msg = f'unable to access object path "/{path_str}"'
-      raise CovidHospException(msg) from ex
-
   def update_dataset(database, network):
     """Acquire the most recent dataset, unless it was previously acquired.
 
