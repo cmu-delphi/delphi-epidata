@@ -52,7 +52,8 @@ class Update:
       max_issue = db.get_max_issue()
       # add metadata to the database
       metadata_json = metadata.loc[issue].to_json()
-      db.insert_metadata(issue, revision, metadata_json)
+      issue_int = int(issue.strftime("%Y%m%d"))
+      db.insert_metadata(issue_int, revision, metadata_json)
 
       urls = network.fetch_revisions(metadata, max_issue)
       print(f'acquiring {len(urls)} daily updates')
@@ -60,7 +61,7 @@ class Update:
         [network.fetch_dataset(url) for url in urls]
       )
 
-      db.insert_dataset(issue, dataset)
+      db.insert_dataset(issue_int, dataset)
 
       print(f'successfully acquired {len(dataset)} rows (not excluding overlap)')
     return True

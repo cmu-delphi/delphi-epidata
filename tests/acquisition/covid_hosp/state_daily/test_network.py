@@ -28,23 +28,13 @@ class NetworkTests(unittest.TestCase):
   def test_fetch_metadata(self):
     """Fetch metadata as JSON."""
 
-    with patch.object(pd, "read_csv") as func:
-      func.return_value = pd.DataFrame(
-        {"Archive Link": ["test2", "test1", "test3"],
-         "Update Date": ["2020/1/2", "2020/1/1", "2020/1/3"]}
-      )
+    with patch.object(Network, 'fetch_metadata_for_dataset') as func:
+      func.return_value = sentinel.json
+
       result = Network.fetch_metadata()
-      pd.testing.assert_frame_equal(
-        result,
-        pd.DataFrame(
-          {"Archive Link": ["test1", "test2", "test3"],
-           "Update Date": pd.date_range("2020/1/1", "2020/1/3")}
-        ).set_index("Update Date")
-      )
-      func.assert_called_once_with(
-        "https://healthdata.gov/api/views/%s/rows.csv" % Network.DATASET_ID,
-        dtype=str
-      )
+
+      self.assertEqual(result, sentinel.json)
+      func.assert_called_once_with(dataset_id=Network.DATASET_ID)
 
   def test_fetch_revisions(self):
     """Scrape CSV files from revision pages"""

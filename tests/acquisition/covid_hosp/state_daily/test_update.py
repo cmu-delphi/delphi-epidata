@@ -55,11 +55,11 @@ class UpdateTests(unittest.TestCase):
       mock_fetch.assert_called_with("https://test.csv")
 
       # don't care what the third argument is, so only test the first two:
-      self.assertEqual(mock_db.insert_metadata.call_args.args[0], pd.Timestamp("2021/3/15"))
+      self.assertEqual(mock_db.insert_metadata.call_args.args[0], 20210315)
       self.assertEqual(mock_db.insert_metadata.call_args.args[1], "https://test.csv")
 
       # can't use assert_called_with to test data frame equality, so check args individually:
-      self.assertEqual(mock_db.insert_dataset.call_args.args[0], pd.Timestamp("2021/3/15"))
+      self.assertEqual(mock_db.insert_dataset.call_args.args[0], 20210315)
       self.assertEqual(set(mock_db.insert_dataset.call_args.args[1].columns),
                        set(sample_dataset.columns))
       pd.testing.assert_frame_equal(

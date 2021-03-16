@@ -65,7 +65,7 @@ class AcquisitionTests(unittest.TestCase):
       row = response['epidata'][0]
       self.assertEqual(row['state'], 'WY')
       self.assertEqual(row['date'], 20200826)
-      self.assertEqual(row['issue'], 20201116)
+      self.assertEqual(row['issue'], 20210315)
       self.assertEqual(row['critical_staffing_shortage_today_yes'], 2)
       actual = row['inpatient_bed_covid_utilization']
       expected = 0.011946591707659873

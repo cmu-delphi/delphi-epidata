@@ -2,6 +2,8 @@
 from delphi.epidata.acquisition.covid_hosp.common.database import Database as BaseDatabase
 from delphi.epidata.acquisition.covid_hosp.common.utils import Utils
 
+import pandas as pd
+
 
 class Database(BaseDatabase):
 
@@ -131,6 +133,6 @@ class Database(BaseDatabase):
       ''')
       for (result,) in cursor:
         if result is not None:
-          return int(result)
+          return pd.Timestamp(result)
       # if empty, return beginning of time
-      return 0
+      return pd.Timestamp("1900/1/1")

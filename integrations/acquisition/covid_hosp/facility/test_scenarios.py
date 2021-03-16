@@ -66,7 +66,7 @@ class AcquisitionTests(unittest.TestCase):
       row = response['epidata'][0]
       self.assertEqual(row['hospital_pk'], '450822')
       self.assertEqual(row['collection_week'], 20201030)
-      self.assertEqual(row['publication_date'], 20201208)
+      self.assertEqual(row['publication_date'], 20210315)
       self.assertEqual(row['previous_day_total_ed_visits_7_day_sum'], 536)
       self.assertAlmostEqual(row['total_beds_7_day_avg'], 69.3)
       self.assertEqual(

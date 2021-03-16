@@ -54,13 +54,11 @@ class AcquisitionTests(unittest.TestCase):
     # acquire sample data into local database
     # mock out network calls to external hosts
     with self.subTest(name='first acquisition'), \
-         patch.object(requests, 'get', side_effect=
-                      [MagicMock(json=lambda: self.test_utils.load_sample_metadata())] +
-                       list(self.test_utils.load_sample_revisions())) as mock_requests_get, \
+         patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()) as mock_fetch_meta, \
          patch.object(Network, 'fetch_dataset', return_value=self.test_utils.load_sample_dataset()) as mock_fetch:
       acquired = Update.run()
       self.assertTrue(acquired)
-      self.assertEqual(mock_requests_get.call_count, 6)
+      self.assertEqual(mock_fetch_meta.call_count, 1)
 
     # make sure the data now exists
     with self.subTest(name='initial data checks'):
@@ -70,7 +68,7 @@ class AcquisitionTests(unittest.TestCase):
       row = response['epidata'][0]
       self.assertEqual(row['state'], 'WY')
       self.assertEqual(row['date'], 20201209)
-      self.assertEqual(row['issue'], 20201213)
+      self.assertEqual(row['issue'], 20210315)
       self.assertEqual(row['critical_staffing_shortage_today_yes'], 8)
       actual = row['inpatient_bed_covid_utilization']
       expected = 0.11729857819905214
@@ -82,9 +80,7 @@ class AcquisitionTests(unittest.TestCase):
 
     # re-acquisition of the same dataset should be a no-op
     with self.subTest(name='second acquisition'), \
-         patch.object(requests, 'get', side_effect=
-                      [MagicMock(json=lambda: self.test_utils.load_sample_metadata())] +
-                       list(self.test_utils.load_sample_revisions())) as mock_requests_get, \
+         patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()) as mock_fetch_meta, \
          patch.object(Network, 'fetch_dataset', return_value=self.test_utils.load_sample_dataset()) as mock_fetch:
       acquired = Update.run()
       self.assertFalse(acquired)

@@ -67,75 +67,6 @@ class UtilsTests(unittest.TestCase):
       with self.assertRaises(CovidHospException):
         Utils.parse_bool('maybe')
 
-  def test_get_entry_success(self):
-    """Get a deeply nested field from an arbitrary object."""
-
-    obj = self.test_utils.load_sample_metadata()
-
-    result = Utils.get_entry(obj, 'result', 0, 'tags', 2, 'id')
-
-    self.assertEqual(result, '56f3cdad-8acb-46c8-bc71-aa1ded8407fb')
-
-  def test_get_entry_failure(self):
-    """Fail with a helpful message when a nested field doesn't exist."""
-
-    obj = self.test_utils.load_sample_metadata()
-
-    with self.assertRaises(CovidHospException):
-      Utils.get_entry(obj, -1)
-
-  def test_get_issue_from_revision(self):
-    """Extract an issue date from a free-form revision string."""
-
-    revisions = ('Tue, 11/03/2020 - 19:38', 'Mon, 11/16/2020 - 00:55', 'foo')
-    issues = (20201103, 20201116, None)
-
-    for revision, issue in zip(revisions, issues):
-      with self.subTest(revision=revision):
-
-        if issue:
-          result = Utils.get_issue_from_revision(revision)
-          self.assertEqual(result, issue)
-        else:
-          with self.assertRaises(CovidHospException):
-            Utils.get_issue_from_revision(revision)
-
-  def test_extract_resource_details(self):
-    """Extract URL and revision from metadata."""
-
-    with self.subTest(name='invalid success'):
-      metadata = self.test_utils.load_sample_metadata()
-      metadata['success'] = False
-
-      with self.assertRaises(CovidHospException):
-        Utils.extract_resource_details(metadata)
-
-    with self.subTest(name='invalid result'):
-      metadata = self.test_utils.load_sample_metadata()
-      metadata['result'] = []
-
-      with self.assertRaises(CovidHospException):
-        Utils.extract_resource_details(metadata)
-
-    with self.subTest(name='invalid resource'):
-      metadata = self.test_utils.load_sample_metadata()
-      metadata['result'][0]['resources'] = []
-
-      with self.assertRaises(CovidHospException):
-        Utils.extract_resource_details(metadata)
-
-    with self.subTest(name='valid'):
-      metadata = self.test_utils.load_sample_metadata()
-
-      url, revision = Utils.extract_resource_details(metadata)
-
-      expected_url = (
-        'https://healthdata.gov/sites/default/files/'
-        'estimated_inpatient_all_20201213_1757.csv'
-      )
-      self.assertEqual(url, expected_url)
-      self.assertEqual(revision, 'Sun, 12/13/2020 - 22:36')
-
   def test_run_skip_old_dataset(self):
     """Don't re-acquire an old dataset."""
 
@@ -173,7 +104,7 @@ class UtilsTests(unittest.TestCase):
 
     mock_connection.insert_metadata.assert_called_once()
     args = mock_connection.insert_metadata.call_args[0]
-    self.assertEqual(args[:2], (20201213, 'Sun, 12/13/2020 - 22:36'))
+    self.assertEqual(args[:2], (20210315, 'https://test.csv'))
 
     mock_connection.insert_dataset.assert_called_once_with(
-        20201213, fake_dataset)
+        20210315, fake_dataset)
