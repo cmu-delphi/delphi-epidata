@@ -4,8 +4,6 @@ import requests
 
 
 class Network:
-# This code is a temporary (two weeks or so) fix until the legacy API is fully retired. Code using this style of URL will be phased out entirely then
-# This needs to migrate to the new healthdata.gov API, which is different
   METADATA_URL_TEMPLATE = \
       'https://healthdata.gov/api/views/%s/rows.csv'
 
