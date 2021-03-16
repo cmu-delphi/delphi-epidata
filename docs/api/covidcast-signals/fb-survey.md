@@ -36,7 +36,8 @@ described in the sections below:
 3. [Testing indicators](#testing-indicators) based on respondent reporting of
    their COVID test results
 4. [Vaccination indicators](#vaccination-indicators), based on respondent
-   reporting of COVID vaccinations and whether they would accept a vaccine
+   reporting of COVID vaccinations, whether they would accept a vaccine, and
+   reasons for any hesitancy to accept a vaccine
 4. [Mental health indicators](#mental-health-indicators), based on self-reports
    of anxiety, depression, isolation, and worry about COVID
 
@@ -298,17 +299,24 @@ data in the estimation procedures described above.
 
 ## Behavior Indicators
 
+Signals beginning `raw_w` or `smoothed_w` are adjusted using survey weights
+[as described below](#survey-weighting) to be demographically representative.
+Weighted signals have 1-2 days of lag, so if low latency is paramount,
+unweighted signals are also available. These begin `smoothed_`, such as
+`smoothed_wearing_mask` instead of `smoothed_wwearing_mask`.
+
+### Mask Use
+
 | Signal | Description | Survey Item | Introduced |
 | --- | --- | --- | --- |
-| `smoothed_wwearing_mask` | *Discontinued as of Wave 8, Feb 8, 2021* Estimated percentage of people who wore a mask for most or all of the time while in public in the past 5 days; those not in public in the past 5 days are not counted. <br/> **Earliest date available:** 2020-09-08 | C14 | Wave 4, Sept 8, 2020 |
 | `smoothed_wwearing_mask_7d` | Estimated percentage of people who wore a mask for most or all of the time while in public in the past 7 days; those not in public in the past 7 days are not counted. <br/> **Earliest date available:** 2021-02-08 | C14a | Wave 8, Feb 8, 2021 |
+| `smoothed_wwearing_mask` | *Discontinued as of Wave 8, Feb 8, 2021* Estimated percentage of people who wore a mask for most or all of the time while in public in the past 5 days; those not in public in the past 5 days are not counted. <br/> **Earliest date available:** 2020-09-08 | C14 | Wave 4, Sept 8, 2020 |
 | `smoothed_wothers_masked` | Estimated percentage of respondents who say that most or all *other* people wear masks, when they are in public and social distancing is not possible <br/> **Earliest date available:** 2020-11-24 | C16 | Wave 5, Nov 24, 2020 |
-| `smoothed_wtravel_outside_state_5d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who report traveling outside their state in the past 5 days <br/> **Earliest date available:** 2020-04-06 | C6 | Wave 1 |
-| `smoothed_wwork_outside_home_1d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who worked or went to school outside their home in the past 24 hours <br/> **Earliest date available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
-| `smoothed_wshop_1d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who went to a "market, grocery store, or pharmacy" in the past 24 hours <br/> **Earliest date available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
-| `smoothed_wrestaurant_1d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who went to a "bar, restaurant, or cafe" in the past 24 hours <br/> **Earliest date available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
-| `smoothed_wspent_time_1d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who "spent time with someone who isn't currently staying with you" in the past 24 hours <br/> **Earliest date available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
-| `smoothed_wlarge_event_1d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who "attended an event with more than 10 people" in the past 24 hours <br/> **Earliest date available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
+
+### Social Distancing and Travel
+
+| Signal | Description | Survey Item | Introduced |
+| --- | --- | --- | --- |
 | `smoothed_wpublic_transit_1d` | Estimated percentage of respondents who "used public transit" in the past 24 hours <br/> **Earliest date available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
 | `smoothed_wtravel_outside_state_7d` | Estimated percentage of respondents who report traveling outside their state in the past 7 days. This item was asked of respondents starting in Wave 10. <br/> **Earliest date available:** 2021-03-02 | C6a | Wave 10 |
 | `smoothed_wwork_outside_home_indoors_1d` | Estimated percentage of respondents who worked or went to school indoors and outside their home in the past 24 hours <br/> **Earliest date available:** 2021-03-02 | C13b | Wave 10, Mar 2, 2021 |
@@ -316,12 +324,12 @@ data in the estimation procedures described above.
 | `smoothed_wrestaurant_indoors_1d` | Estimated percentage of respondents who went to an indoor "bar, restaurant, or cafe" in the past 24 hours <br/> **Earliest date available:** 2021-03-02 | C13b | Wave 10, Mar 2, 2021 |
 | `smoothed_wspent_time_indoors_1d` | Estimated percentage of respondents who "spent time indoors with someone who isn't currently staying with you" in the past 24 hours <br/> **Earliest date available:** 2021-03-02 | C13b | Wave 10, Mar 2, 2021 |
 | `smoothed_wlarge_event_indoors_1d` | Estimated percentage of respondents who "attended an indoor event with more than 10 people" in the past 24 hours <br/> **Earliest date available:** 2021-03-02 | C13b | Wave 10, Mar 2, 2021 |
-
-Signals beginning `raw_w` or `smoothed_w` are adjusted using survey weights
-[as described below](#survey-weighting) to be demographically representative.
-Weighted signals have 1-2 days of lag, so if low latency is paramount,
-unweighted signals are also available. These begin `smoothed_`, such as
-`smoothed_wearing_mask` instead of `smoothed_wwearing_mask`.
+| `smoothed_wtravel_outside_state_5d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who report traveling outside their state in the past 5 days <br/> **Earliest date available:** 2020-04-06 | C6 | Wave 1 |
+| `smoothed_wwork_outside_home_1d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who worked or went to school outside their home in the past 24 hours <br/> **Earliest date available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
+| `smoothed_wshop_1d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who went to a "market, grocery store, or pharmacy" in the past 24 hours <br/> **Earliest date available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
+| `smoothed_wrestaurant_1d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who went to a "bar, restaurant, or cafe" in the past 24 hours <br/> **Earliest date available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
+| `smoothed_wspent_time_1d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who "spent time with someone who isn't currently staying with you" in the past 24 hours <br/> **Earliest date available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
+| `smoothed_wlarge_event_1d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who "attended an event with more than 10 people" in the past 24 hours <br/> **Earliest date available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
 
 
 ## Testing Indicators
@@ -376,7 +384,11 @@ unweighted signals are also available. These begin `smoothed_`, such as
 
 ### Reasons for Believing Vaccine is Unnecessary
 
-Respondents who indicate that "I don't believe I need a COVID-19 vaccine" (in items V5a, V5b, V5c, or V5d) are asked a follow-up item asking why they don't believe they need the vaccine. These signals summarize the reasons selected. Respondents who do not select any reason (including "Other") are treated as missing.
+Respondents who indicate that "I don't believe I need a COVID-19 vaccine" (in
+items V5a, V5b, V5c, or V5d) are asked a follow-up item asking why they don't
+believe they need the vaccine. These signals summarize the reasons selected.
+Respondents who do not select any reason (including "Other") are treated as
+missing.
 
 | Signal | Description | Survey Item |
 | --- | --- | --- |
@@ -416,14 +428,14 @@ unweighted signals are also available. These begin `smoothed_`, such as
 
 | Signal | Description | Survey Item |
 | --- | --- | --- |
-| `smoothed_wanxious_5d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who reported feeling "nervous, anxious, or on edge" for most or all of the past 5 days <br/> **Earliest date available:** 2020-09-08 | C8 |
-| `smoothed_wdepressed_5d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who reported feeling depressed for most or all of the past 5 days <br/> **Earliest date available:** 2020-09-08 | C8 |
-| `smoothed_wfelt_isolated_5d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who reported feeling "isolated from others" for most or all of the past 5 days <br/> **Earliest date available:** 2020-09-08 | C8 |
 | `smoothed_wworried_become_ill` | Estimated percentage of respondents who reported feeling very or somewhat worried that "you or someone in your immediate family might become seriously ill from COVID-19" <br/> **Earliest date available:** 2020-09-08 | C9 |
 | `smoothed_wworried_finances` | Estimated percentage of respondents who report being very or somewhat worried about their "household's finances for the next month" <br/> **Earliest date available:** 2020-09-08 | C15 |
 | `smoothed_wanxious_7d` | Estimated percentage of respondents who reported feeling "nervous, anxious, or on edge" for most or all of the past 7 days. This item was shown to respondents starting in Wave 10. <br/> **Earliest date available:** 2021-03-02 | C8a |
 | `smoothed_wdepressed_7d` | Estimated percentage of respondents who reported feeling depressed for most or all of the past 7 days. This item was shown to respondents starting in Wave 10. <br/> **Earliest date available:** 2021-03-02 | C8a |
 | `smoothed_wfelt_isolated_7d` | Estimated percentage of respondents who reported feeling "isolated from others" for most or all of the past 7 days. This item was shown to respondents starting in Wave 10. <br/> **Earliest date available:** 2021-03-02 | C8a |
+| `smoothed_wanxious_5d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who reported feeling "nervous, anxious, or on edge" for most or all of the past 5 days <br/> **Earliest date available:** 2020-09-08 | C8 |
+| `smoothed_wdepressed_5d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who reported feeling depressed for most or all of the past 5 days <br/> **Earliest date available:** 2020-09-08 | C8 |
+| `smoothed_wfelt_isolated_5d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who reported feeling "isolated from others" for most or all of the past 5 days <br/> **Earliest date available:** 2020-09-08 | C8 |
 
 Some of these questions were present in the earliest waves of the survey, but
 only in Wave 4 did respondents consent to our use of aggregate data to
