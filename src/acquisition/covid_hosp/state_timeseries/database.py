@@ -6,7 +6,7 @@ from delphi.epidata.acquisition.covid_hosp.common.utils import Utils
 class Database(BaseDatabase):
 
   TABLE_NAME = 'covid_hosp_state_timeseries'
-
+  CSV_DATE_COL = 'date'
   # These are 3-tuples of (CSV header name, SQL db column name, data type) for
   # all the columns in the CSV file.
   # Note that the corresponding database column names may be shorter
@@ -17,7 +17,7 @@ class Database(BaseDatabase):
   # to update a column name, do it in both places.
   ORDERED_CSV_COLUMNS = [
     ('state', 'state', str),
-    ('date', 'date', Utils.int_from_date),
+    (CSV_DATE_COL, 'date', Utils.int_from_date),
     ('hospital_onset_covid', 'hospital_onset_covid', int),
     ('hospital_onset_covid_coverage', 'hospital_onset_covid_coverage', int),
     ('inpatient_beds', 'inpatient_beds', int),

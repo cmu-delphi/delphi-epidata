@@ -1,9 +1,10 @@
 """Code shared among multiple `covid_hosp` scrapers."""
 
-# standard library
-import json
+# standard library\
+import datetime
 import re
 
+import pandas as pd
 
 class CovidHospException(Exception):
   """Exception raised exclusively by `covid_hosp` utilities."""
@@ -67,6 +68,57 @@ class Utils:
       return False
     raise CovidHospException(f'cannot convert "{value}" to bool')
 
+  def issues_to_fetch(metadata, newer_than):
+    """
+    Construct all issue dates and URLs to be ingested based on metadata.
+
+    Parameters
+    ----------
+    newer_than Date
+      Lower bound (not inclusive) of days to get issues for.
+    Returns
+    -------
+      Dictionary of {issue day: list of download urls} for issues after newer_than
+    """
+    daily_issues = {}
+    for day in metadata.index:
+      if day > newer_than:
+        if day not in daily_issues:
+          daily_issues[day] = [metadata.loc[day, "Archive Link"]]
+        else:
+          daily_issues[day] += [metadata.loc[day, "Archive Link"]]
+    return daily_issues
+
+  @staticmethod
+  def merge_by_state_date(dfs, date_col):
+    """Merge a list of data frames as a series of updates.
+
+    Parameters:
+    -----------
+      dfs : list(pd.DataFrame)
+        Data frames to merge, ordered from earliest to latest.
+
+    Returns a single data frame containing the most recent data for each state+date.
+    """
+    key_cols = ['state', date_col]
+    dfs = [df.set_index(key_cols) for df in dfs
+           if not all(k in df.index.names for k in key_cols)]
+    result = dfs[0]
+
+    for df in dfs[1:]:
+      # update values for existing keys
+      result.update(df)
+      # add any new keys.
+      ## repeated concatenation in pandas is expensive, but (1) we don't expect
+      ## batch sizes to be terribly large (7 files max) and (2) this way we can
+      ## more easily capture the next iteration's updates to any new keys
+      new_rows = df.loc[[i for i in df.index.to_list() if i not in result.index.to_list()]]
+      result = pd.concat([result, new_rows])
+
+    # convert the index rows back to columns
+    return result.reset_index(level=key_cols)
+
+  @staticmethod
   def update_dataset(database, network):
     """Acquire the most recent dataset, unless it was previously acquired.
 
@@ -82,32 +134,29 @@ class Utils:
     bool
       Whether a new dataset was acquired.
     """
-
+    yesterday = datetime.datetime.today().date() - datetime.timedelta(1)
     # get dataset details from metadata
     metadata = network.fetch_metadata()
-    issue = max(metadata.index)
-    revision = metadata.loc[issue, "Archive Link"]
-    print(f'issue: {issue}')
-    print(f'revision: {revision}')
+    daily_issues = Utils.issues_to_fetch(metadata, yesterday)
 
     # connect to the database
     with database.connect() as db:
-
       # bail if the dataset has already been acquired
-      if db.contains_revision(revision):
-        print('already have this revision, nothing to do')
+      if db.get_max_issue() >= yesterday:
+        print("already have this day's revision, nothing to do")
         return False
+      for issue, revisions in daily_issues.items():
+        issue_int = int(issue.strftime("%Y%m%d"))
+        # download the dataset and add it to the database
+        dataset = Utils.merge_by_state_date([network.fetch_dataset(url) for url in revisions],
+                                             db.CSV_DATE_COL)
+        db.insert_dataset(issue_int, dataset)
+        # add metadata to the database using the last revision seen.
+        metadata_json = metadata.loc[issue].to_json()
+        db.insert_metadata(issue_int, revisions[-1], metadata_json)
 
-      # add metadata to the database
-      metadata_json = metadata.loc[issue].to_json()
-      issue_int = int(issue.strftime("%Y%m%d"))
-      db.insert_metadata(issue_int, revision, metadata_json)
 
-      # download the dataset and add it to the database
-      dataset = network.fetch_dataset(metadata.loc[issue, "Archive Link"])
-      db.insert_dataset(issue_int, dataset)
-
-      print(f'successfully acquired {len(dataset)} rows')
+        print(f'successfully acquired {len(dataset)} rows')
 
       # note that the transaction is committed by exiting the `with` block
       return True

@@ -2,12 +2,14 @@
 
 # standard library
 import unittest
-from unittest.mock import MagicMock
-from unittest.mock import sentinel
+from unittest.mock import MagicMock, PropertyMock, patch
 
 # first party
 from delphi.epidata.acquisition.covid_hosp.common.test_utils import TestUtils
 from delphi.epidata.acquisition.covid_hosp.common.utils import Utils, CovidHospException
+
+#third party
+import pandas as pd
 
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.acquisition.covid_hosp.common.utils'
@@ -76,7 +78,7 @@ class UtilsTests(unittest.TestCase):
     mock_database = MagicMock()
     with mock_database.connect() as mock_connection:
       pass
-    mock_connection.contains_revision.return_value = True
+    mock_connection.get_max_issue.return_value = pd.Timestamp("2200/1/1")
 
     result = Utils.update_dataset(database=mock_database, network=mock_network)
 
@@ -91,20 +93,24 @@ class UtilsTests(unittest.TestCase):
     mock_network = MagicMock()
     mock_network.fetch_metadata.return_value = \
         self.test_utils.load_sample_metadata()
-    fake_dataset = [1, 2, 3]
+    fake_dataset = pd.DataFrame({"date": [pd.Timestamp("2020/1/1")], "state": ["ca"]})
     mock_network.fetch_dataset.return_value = fake_dataset
-    mock_database = MagicMock()
+    mock_database = MagicMock(CSV_DATE_COL="date")
     with mock_database.connect() as mock_connection:
       pass
-    mock_connection.contains_revision.return_value = False
-
-    result = Utils.update_dataset(database=mock_database, network=mock_network)
+    type(mock_connection).CSV_DATE_COL = PropertyMock(return_value="date")
+    mock_connection.get_max_issue.return_value = pd.Timestamp("1900/1/1")
+    with patch.object(Utils, 'issues_to_fetch') as mock_issues:
+      mock_issues.return_value = {pd.Timestamp("2021/3/15"): ["test1", "test2"]}
+      result = Utils.update_dataset(database=mock_database, network=mock_network)
 
     self.assertTrue(result)
 
     mock_connection.insert_metadata.assert_called_once()
     args = mock_connection.insert_metadata.call_args[0]
-    self.assertEqual(args[:2], (20210315, 'https://test.csv'))
-
-    mock_connection.insert_dataset.assert_called_once_with(
-        20210315, fake_dataset)
+    self.assertEqual(args[:2], (20210315, 'test2'))
+    pd.testing.assert_frame_equal(
+      mock_connection.insert_dataset.call_args[0][1],
+      pd.DataFrame({"state": ["ca"], "date": [pd.Timestamp("2020/1/1")]})
+    )
+    self.assertEqual(mock_connection.insert_dataset.call_args[0][0], 20210315)
