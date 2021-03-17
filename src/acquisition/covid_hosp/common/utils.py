@@ -81,10 +81,15 @@ class Utils:
       Dictionary of {issue day: list of download urls} for issues after newer_than
     """
     daily_issues = {}
-    for day in set(metadata.index):
+    for index in sorted(set(metadata.index)):
+      day = index.date()
       if day > newer_than and day < older_than:
-          urls = metadata.loc[day, "Archive Link"]
-          daily_issues[day] = [urls] if isinstance(urls, str) else list(urls)
+        urls = metadata.loc[index, "Archive Link"]
+        urls_list = [(urls, index)] if isinstance(urls, str) else [(url, index) for url in urls]
+        if day not in daily_issues:
+          daily_issues[day] = urls_list
+        else:
+          daily_issues[day] += urls_list
     return daily_issues
 
   @staticmethod
@@ -143,12 +148,13 @@ class Utils:
       for issue, revisions in daily_issues.items():
         issue_int = int(issue.strftime("%Y%m%d"))
         # download the dataset and add it to the database
-        dataset = Utils.merge_by_state_date([network.fetch_dataset(url) for url in revisions],
+        dataset = Utils.merge_by_state_date([network.fetch_dataset(url) for url, _ in revisions],
                                              db.CSV_DATE_COL)
         db.insert_dataset(issue_int, dataset)
         # add metadata to the database using the last revision seen.
-        metadata_json = metadata.loc[issue].reset_index().to_json()
-        db.insert_metadata(issue_int, revisions[-1], metadata_json)
+        last_url, last_index = revisions[-1]
+        metadata_json = metadata.loc[last_index].reset_index().to_json()
+        db.insert_metadata(issue_int, last_url, metadata_json)
 
         print(f'successfully acquired {len(dataset)} rows')
 

@@ -1,6 +1,7 @@
 """Unit tests for utils.py."""
 
 # standard library
+from datetime import date
 import unittest
 from unittest.mock import MagicMock, PropertyMock, patch
 
@@ -69,6 +70,25 @@ class UtilsTests(unittest.TestCase):
       with self.assertRaises(CovidHospException):
         Utils.parse_bool('maybe')
 
+  def test_issues_to_fetch(self):
+    test_metadata = pd.DataFrame({
+      "date": [pd.Timestamp("2021-03-13 00:00:00"),
+               pd.Timestamp("2021-03-14 00:00:00"),
+               pd.Timestamp("2021-03-15 00:00:01"),
+               pd.Timestamp("2021-03-15 00:00:00"),
+               pd.Timestamp("2021-03-16 00:00:00")
+               ],
+      "Archive Link": ["a", "b", "d", "c", "e"]
+    }).set_index("date")
+
+    issues = Utils.issues_to_fetch(test_metadata, pd.Timestamp("2021-3-13"), pd.Timestamp("2021-3-16"))
+    self.assertEqual(issues,
+                     {date(2021, 3, 14): [("b", pd.Timestamp("2021-03-14 00:00:00"))],
+                      date(2021, 3, 15): [("c", pd.Timestamp("2021-03-15 00:00:00")),
+                                          ("d", pd.Timestamp("2021-03-15 00:00:01"))]
+                      }
+                     )
+
   def test_run_skip_old_dataset(self):
     """Don't re-acquire an old dataset."""
 
@@ -101,14 +121,15 @@ class UtilsTests(unittest.TestCase):
     type(mock_connection).CSV_DATE_COL = PropertyMock(return_value="date")
     mock_connection.get_max_issue.return_value = pd.Timestamp("1900/1/1")
     with patch.object(Utils, 'issues_to_fetch') as mock_issues:
-      mock_issues.return_value = {pd.Timestamp("2021/3/15"): ["test1", "test2"]}
+      mock_issues.return_value = {pd.Timestamp("2021/3/15"): [("url1", pd.Timestamp("2021-03-15 00:00:00")),
+                                                              ("url2", pd.Timestamp("2021-03-15 00:00:00"))]}
       result = Utils.update_dataset(database=mock_database, network=mock_network)
 
     self.assertTrue(result)
 
     mock_connection.insert_metadata.assert_called_once()
     args = mock_connection.insert_metadata.call_args[0]
-    self.assertEqual(args[:2], (20210315, 'test2'))
+    self.assertEqual(args[:2], (20210315, "url2"))
     pd.testing.assert_frame_equal(
       mock_connection.insert_dataset.call_args[0][1],
       pd.DataFrame({"state": ["ca"], "date": [pd.Timestamp("2020/1/1")]})

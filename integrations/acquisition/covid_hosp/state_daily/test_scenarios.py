@@ -55,9 +55,9 @@ class AcquisitionTests(unittest.TestCase):
     # mock out network calls to external hosts
     with self.subTest(name='first acquisition'), \
          patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()) as mock_fetch_meta, \
-         patch.object(Network, 'fetch_dataset', side_effect=[self.test_utils.load_sample_dataset("dataset0.csv"),  # first dataset for 3/15
-                                                             self.test_utils.load_sample_dataset(), # second dataset for 3/15
-                                                             self.test_utils.load_sample_dataset("dataset0.csv")] # dataset for 3/13
+         patch.object(Network, 'fetch_dataset', side_effect=[self.test_utils.load_sample_dataset("dataset0.csv"), # dataset for 3/13
+                                                             self.test_utils.load_sample_dataset("dataset0.csv"), # first dataset for 3/15
+                                                             self.test_utils.load_sample_dataset()] # second dataset for 3/15
                       ) as mock_fetch:
       acquired = Update.run()
       self.assertTrue(acquired)
