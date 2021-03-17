@@ -171,7 +171,7 @@ class Database:
                        tuple(i[0] for i in self.additional_fields))
 
   def get_max_issue(self):
-    """Fetch the most recent state-daily issue.
+    """Fetch the most recent issue.
 
     This is used to bookend what links we scrape from the HHS revisions page.
     """
