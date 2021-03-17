@@ -74,8 +74,12 @@ class Utils:
 
     Parameters
     ----------
+    metadata pd.DataFrame
+      HHS metadata indexed by issue date and with column "Archive Link"
     newer_than Date
-      Lower bound (not inclusive) of days to get issues for.
+      Lower bound (exclusive) of days to get issues for.
+    older_than Date
+      Upper bound (exclusive) of days to get issues for
     Returns
     -------
       Dictionary of {issue day: list of download urls} for issues after newer_than
