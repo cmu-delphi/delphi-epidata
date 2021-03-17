@@ -57,5 +57,5 @@ class TestUtils:
     df.set_index("Update Date", inplace=True)
     return df
 
-  def load_sample_dataset(self):
-    return pandas.read_csv(self.data_dir / 'dataset.csv', dtype=str)
+  def load_sample_dataset(self, dataset_name='dataset.csv'):
+    return pandas.read_csv(self.data_dir / dataset_name, dtype=str)

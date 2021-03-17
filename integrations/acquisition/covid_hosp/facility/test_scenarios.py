@@ -39,7 +39,7 @@ class AcquisitionTests(unittest.TestCase):
         cur.execute('truncate table covid_hosp_facility')
         cur.execute('truncate table covid_hosp_meta')
 
-  @freeze_time("2021-03-15")
+  @freeze_time("2021-03-16")
   def test_acquire_dataset(self):
     """Acquire a new dataset."""
 
@@ -91,7 +91,7 @@ class AcquisitionTests(unittest.TestCase):
       self.assertEqual(response['result'], 1)
       self.assertEqual(len(response['epidata']), 1)
 
-  @freeze_time("2021-03-15")
+  @freeze_time("2021-03-16")
   def test_facility_lookup(self):
     """Lookup facilities using various filters."""
 

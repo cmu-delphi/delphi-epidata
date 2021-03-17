@@ -68,7 +68,7 @@ class Utils:
       return False
     raise CovidHospException(f'cannot convert "{value}" to bool')
 
-  def issues_to_fetch(metadata, newer_than):
+  def issues_to_fetch(metadata, newer_than, older_than):
     """
     Construct all issue dates and URLs to be ingested based on metadata.
 
@@ -81,12 +81,10 @@ class Utils:
       Dictionary of {issue day: list of download urls} for issues after newer_than
     """
     daily_issues = {}
-    for day in metadata.index:
-      if day > newer_than:
-        if day not in daily_issues:
-          daily_issues[day] = [metadata.loc[day, "Archive Link"]]
-        else:
-          daily_issues[day] += [metadata.loc[day, "Archive Link"]]
+    for day in set(metadata.index):
+      if day > newer_than and day < older_than:
+          urls = metadata.loc[day, "Archive Link"]
+          daily_issues[day] = [urls] if isinstance(urls, str) else list(urls)
     return daily_issues
 
   @staticmethod
@@ -104,7 +102,6 @@ class Utils:
     dfs = [df.set_index(key_cols) for df in dfs
            if not all(k in df.index.names for k in key_cols)]
     result = dfs[0]
-
     for df in dfs[1:]:
       # update values for existing keys
       result.update(df)
@@ -134,18 +131,12 @@ class Utils:
     bool
       Whether a new dataset was acquired.
     """
-    yesterday = datetime.datetime.today().date() - datetime.timedelta(1)
-    # get dataset details from metadata
+    today = datetime.datetime.today().date()
     metadata = network.fetch_metadata()
-    daily_issues = Utils.issues_to_fetch(metadata, yesterday)
 
-    # connect to the database
     with database.connect() as db:
-      # bail if the dataset has already been acquired
-      max_issue =  db.get_max_issue()
-      if max_issue >= yesterday:
-        print("already have this day's revision, nothing to do")
-        return False
+      max_issue = db.get_max_issue()
+      daily_issues = Utils.issues_to_fetch(metadata, max_issue, today)
       if not daily_issues:
         print("no new issues, nothing to do")
         return False
@@ -156,9 +147,8 @@ class Utils:
                                              db.CSV_DATE_COL)
         db.insert_dataset(issue_int, dataset)
         # add metadata to the database using the last revision seen.
-        metadata_json = metadata.loc[issue].to_json()
+        metadata_json = metadata.loc[issue].reset_index().to_json()
         db.insert_metadata(issue_int, revisions[-1], metadata_json)
-
 
         print(f'successfully acquired {len(dataset)} rows')
 
