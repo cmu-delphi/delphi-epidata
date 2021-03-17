@@ -82,7 +82,7 @@ class Utils:
       Upper bound (exclusive) of days to get issues for
     Returns
     -------
-      Dictionary of {issue day: list of download urls} for issues after newer_than
+      Dictionary of {issue day: list of download urls} for issues after newer_than and before older_than
     """
     daily_issues = {}
     for index in sorted(set(metadata.index)):
