@@ -11,6 +11,9 @@ from delphi.epidata.client.delphi_epidata import Epidata
 from delphi.epidata.acquisition.covid_hosp.facility.update import Update
 import delphi.operations.secrets as secrets
 
+# third party
+from freezegun import freeze_time
+
 # py3tester coverage target (equivalent to `import *`)
 __test_target__ = 'delphi.epidata.acquisition.covid_hosp.facility.update'
 
@@ -36,6 +39,7 @@ class AcquisitionTests(unittest.TestCase):
         cur.execute('truncate table covid_hosp_facility')
         cur.execute('truncate table covid_hosp_meta')
 
+  @freeze_time("2021-03-15")
   def test_acquire_dataset(self):
     """Acquire a new dataset."""
 
@@ -87,6 +91,7 @@ class AcquisitionTests(unittest.TestCase):
       self.assertEqual(response['result'], 1)
       self.assertEqual(len(response['epidata']), 1)
 
+  @freeze_time("2021-03-15")
   def test_facility_lookup(self):
     """Lookup facilities using various filters."""
 

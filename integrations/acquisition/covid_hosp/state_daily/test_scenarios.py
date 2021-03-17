@@ -6,7 +6,7 @@ from unittest.mock import MagicMock
 from unittest.mock import patch
 
 # third party
-import requests
+from freezegun import freeze_time
 
 # first party
 from delphi.epidata.acquisition.covid_hosp.common.database import Database
@@ -42,6 +42,7 @@ class AcquisitionTests(unittest.TestCase):
         cur.execute('truncate table covid_hosp_state_timeseries')
         cur.execute('truncate table covid_hosp_meta')
 
+  @freeze_time("2021-03-15")
   def test_acquire_dataset(self):
     """Acquire a new dataset."""
 

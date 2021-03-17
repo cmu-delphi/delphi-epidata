@@ -1,6 +1,6 @@
 """Code shared among multiple `covid_hosp` scrapers."""
 
-# standard library\
+# standard library
 import datetime
 import re
 
@@ -142,8 +142,12 @@ class Utils:
     # connect to the database
     with database.connect() as db:
       # bail if the dataset has already been acquired
-      if db.get_max_issue() >= yesterday:
+      max_issue =  db.get_max_issue()
+      if max_issue >= yesterday:
         print("already have this day's revision, nothing to do")
+        return False
+      if not daily_issues:
+        print("no new issues, nothing to do")
         return False
       for issue, revisions in daily_issues.items():
         issue_int = int(issue.strftime("%Y%m%d"))

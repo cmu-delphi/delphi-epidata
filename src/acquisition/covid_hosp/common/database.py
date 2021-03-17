@@ -182,9 +182,9 @@ class Database:
         from
           `covid_hosp_meta`
         WHERE
-          dataset_name = '{self.table_name}'
+          dataset_name = "{self.table_name}"
       ''')
       for (result,) in cursor:
         if result is not None:
-          return pd.Timestamp(result)
+          return pd.Timestamp(str(result))
       return pd.Timestamp("1900/1/1")
