@@ -76,7 +76,7 @@ class UpdateTests(unittest.TestCase):
         **{spec[0]: value_from for spec in Database.ORDERED_CSV_COLUMNS[2:]}
     )).astype({spec[0]: 'float64' for spec in Database.ORDERED_CSV_COLUMNS[2:]}
     )
-    result = Utils.merge_by_state_date(dfs, Database.CSV_DATE_COL)
+    result = Utils.merge_by_key_cols(dfs, Database.KEY_COLS)
     try:
       pd.testing.assert_frame_equal(result, expected)
     except:

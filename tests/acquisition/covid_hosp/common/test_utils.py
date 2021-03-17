@@ -115,10 +115,10 @@ class UtilsTests(unittest.TestCase):
         self.test_utils.load_sample_metadata()
     fake_dataset = pd.DataFrame({"date": [pd.Timestamp("2020/1/1")], "state": ["ca"]})
     mock_network.fetch_dataset.return_value = fake_dataset
-    mock_database = MagicMock(CSV_DATE_COL="date")
+    mock_database = MagicMock()
     with mock_database.connect() as mock_connection:
       pass
-    type(mock_connection).CSV_DATE_COL = PropertyMock(return_value="date")
+    type(mock_connection).KEY_COLS = PropertyMock(return_value=["state", "date"])
     mock_connection.get_max_issue.return_value = pd.Timestamp("1900/1/1")
     with patch.object(Utils, 'issues_to_fetch') as mock_issues:
       mock_issues.return_value = {pd.Timestamp("2021/3/15"): [("url1", pd.Timestamp("2021-03-15 00:00:00")),

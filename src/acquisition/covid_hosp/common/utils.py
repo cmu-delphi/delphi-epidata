@@ -93,17 +93,19 @@ class Utils:
     return daily_issues
 
   @staticmethod
-  def merge_by_state_date(dfs, date_col):
+  def merge_by_key_cols(dfs, key_cols):
     """Merge a list of data frames as a series of updates.
 
     Parameters:
     -----------
       dfs : list(pd.DataFrame)
         Data frames to merge, ordered from earliest to latest.
+      key_cols: list(str)
+        Columns to use as the index.
 
     Returns a single data frame containing the most recent data for each state+date.
     """
-    key_cols = ['state', date_col]
+
     dfs = [df.set_index(key_cols) for df in dfs
            if not all(k in df.index.names for k in key_cols)]
     result = dfs[0]
@@ -148,8 +150,8 @@ class Utils:
       for issue, revisions in daily_issues.items():
         issue_int = int(issue.strftime("%Y%m%d"))
         # download the dataset and add it to the database
-        dataset = Utils.merge_by_state_date([network.fetch_dataset(url) for url, _ in revisions],
-                                             db.CSV_DATE_COL)
+        dataset = Utils.merge_by_key_cols([network.fetch_dataset(url) for url, _ in revisions],
+                                          db.KEY_COLS)
         db.insert_dataset(issue_int, dataset)
         # add metadata to the database using the last revision seen.
         last_url, last_index = revisions[-1]
