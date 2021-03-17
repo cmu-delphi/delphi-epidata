@@ -173,7 +173,7 @@ class Database:
   def get_max_issue(self):
     """Fetch the most recent issue.
 
-    This is used to bookend what links we scrape from the HHS revisions page.
+    This is used to bookend what updates we pull in from the HHS metadata.
     """
     with self.new_cursor() as cursor:
       cursor.execute(f'''
