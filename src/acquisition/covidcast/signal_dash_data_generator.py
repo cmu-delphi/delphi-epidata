@@ -24,6 +24,8 @@ class DashboardSignal:
     db_id: int
     name: str
     source: str
+    latest_coverage_update: datetime.date
+    latest_status_update: datetime.date
 
 
 @dataclass
@@ -82,6 +84,20 @@ class Database:
             (x.signal_id, x.date, x.latest_issue, x.latest_time_value)
             for x in status_list]
         self._cursor.executemany(insert_statement, status_as_tuples)
+
+        latest_status_dates = {}
+        for x in status_list:
+            latest_status_date = latest_status_dates.get(x.signal_id)
+            if not latest_status_date or x.date > latest_status_date:
+                latest_status_dates.update({x.signal_id: x.date})
+        latest_status_tuples = [(v, k) for k, v in latest_status_dates.items()]
+
+        update_statement = f'''UPDATE `{Database.SIGNAL_TABLE_NAME}`
+            SET `latest_status_update` = GREATEST(`latest_status_update`, %s)
+            WHERE `id` =  %s
+            '''
+        self._cursor.executemany(update_statement, latest_status_tuples)
+
         self._connection.commit()
 
     def write_coverage(
@@ -97,11 +113,30 @@ class Database:
             (x.signal_id, x.date, x.geo_type, x.geo_value)
             for x in coverage_list]
         self._cursor.executemany(insert_statement, coverage_as_tuples)
+
+        latest_coverage_dates = {}
+        for x in coverage_list:
+            latest_coverage_date = latest_coverage_dates.get(x.signal_id)
+            if not latest_coverage_date or x.date > latest_coverage_date:
+                latest_coverage_dates.update({x.signal_id: x.date})
+        latest_coverage_tuples = [(v, k) for k, v in latest_coverage_dates.items()]
+
+        update_statement = f'''UPDATE `{Database.SIGNAL_TABLE_NAME}`
+            SET `latest_coverage_update` = GREATEST(`latest_coverage_update`, %s)
+            WHERE `id` =  %s
+            '''
+        self._cursor.executemany(update_statement, latest_coverage_tuples)
+
         self._connection.commit()
+
 
     def get_enabled_signals(self) -> List[DashboardSignal]:
         """Retrieve all enabled signals from the database"""
-        select_statement = f'''SELECT `id`, `name`, `source`
+        select_statement = f'''SELECT `id`, 
+            `name`,
+            `source`,
+            `latest_coverage_update`, 
+            `latest_status_update`
             FROM `{Database.SIGNAL_TABLE_NAME}`
             WHERE `enabled`
             '''
@@ -112,7 +147,13 @@ class Database:
                 DashboardSignal(
                     db_id=result[0],
                     name=result[1],
-                    source=result[2]))
+                    source=result[2],
+                    latest_coverage_update=datetime.datetime.strptime(
+                        result[3],
+                        '%Y-%m-%d').date(),
+                    latest_status_update=datetime.datetime.strptime(
+                        result[4],
+                        '%Y-%m-%d').date()))
         return enabled_signals
 
 

@@ -57,12 +57,19 @@ class UnitTests(unittest.TestCase):
                 2021, 1, 3))
         database.write_status([status1, status2])
 
-        tuples = cursor.executemany.call_args.args[1]
+        tuples = cursor.executemany.call_args_list[0].args[1]
         expected_tuples = [
             (1, date(2020, 1, 1), date(2020, 1, 2), date(2020, 1, 3)),
             (2, date(2021, 1, 1), date(2021, 1, 2), date(2021, 1, 3))
         ]
         self.assertListEqual(tuples, expected_tuples)
+
+        update_tuples = cursor.executemany.call_args_list[1].args[1]
+        expected_update_tuples = [
+            (date(2020, 1, 1), 1),
+            (date(2021, 1, 1), 2)
+        ]
+        self.assertListEqual(update_tuples, expected_update_tuples)
 
     def test_insert_coverage_successful(self):
         """Test coverage data inserted correctly."""
@@ -86,12 +93,19 @@ class UnitTests(unittest.TestCase):
 
         database.write_coverage([coverage1, coverage2])
 
-        tuples = cursor.executemany.call_args.args[1]
-        expected_tuples = [
+        coverage_tuples = cursor.executemany.call_args_list[0].args[1]
+        expected_coverage_tuples = [
             (1, date(2020, 1, 1), "state", "PA"),
             (2, date(2021, 2, 2), "state", "NJ")
         ]
-        self.assertListEqual(tuples, expected_tuples)
+        self.assertListEqual(coverage_tuples, expected_coverage_tuples)
+
+        update_tuples = cursor.executemany.call_args_list[1].args[1]
+        expected_update_tuples = [
+            (date(2020, 1, 1), 1),
+            (date(2021, 2, 2), 2)
+        ]
+        self.assertListEqual(update_tuples, expected_update_tuples)
 
     def test_get_enabled_signals_successful(self):
         """Test signals retrieved correctly."""
@@ -101,22 +115,33 @@ class UnitTests(unittest.TestCase):
         cursor = connection.cursor()
 
         db_rows = [
-            (1, "Change", "chng"),
-            (2, "Quidel", "quidel"),
+            (1, "Change", "chng", "2020-01-01", "2020-01-02"),
+            (2, "Quidel", "quidel", "2020-02-01", "2020-02-02"),
         ]
         cursor.fetchall.return_value = db_rows
 
         signals = database.get_enabled_signals()
 
         expected_signals = [
-            DashboardSignal(db_id=1, name="Change", source="chng"),
-            DashboardSignal(db_id=2, name="Quidel", source="quidel")
+            DashboardSignal(db_id=1, 
+                name="Change", 
+                source="chng", 
+                latest_coverage_update=date(2020, 1, 1),
+                latest_status_update=date(2020, 1, 2)),
+            DashboardSignal(db_id=2, 
+                name="Quidel",
+                source="quidel",
+                latest_coverage_update=date(2020, 2, 1), 
+                latest_status_update=date(2020, 2, 2))
         ]
 
         self.assertListEqual(signals, expected_signals)
 
     def test_get_latest_issue_from_metadata(self):
-        signal = DashboardSignal(db_id=1, name="Change", source="chng")
+        signal = DashboardSignal(
+            db_id=1, name="Change", source="chng",
+            latest_coverage_update=date(2021, 1, 1),
+            latest_status_update=date(2021, 1, 1))
         data = [['chng', 20200101], ['chng', 20210101], ['quidel', 20220101]]
         metadata = pd.DataFrame(data, columns=['data_source', 'max_issue'])
 
@@ -124,7 +149,10 @@ class UnitTests(unittest.TestCase):
         self.assertEqual(issue_date, date(2021, 1, 1))
 
     def test_get_latest_time_value_from_metadata(self):
-        signal = DashboardSignal(db_id=1, name="Change", source="chng")
+        signal = DashboardSignal(
+            db_id=1, name="Change", source="chng",
+            latest_coverage_update=date(2021, 1, 1),
+            latest_status_update=date(2021, 1, 1))
         data = [
             ['chng', pd.Timestamp("2020-01-01")],
             ['chng', pd.Timestamp("2021-01-01")],
@@ -136,7 +164,10 @@ class UnitTests(unittest.TestCase):
 
     @patch('delphi.epidata.client.delphi_epidata.Epidata.covidcast')
     def test_get_coverage(self, mock_covidcast):
-        signal = DashboardSignal(db_id=1, name="Change", source="chng")
+        signal = DashboardSignal(
+            db_id=1, name="Change", source="chng",
+            latest_coverage_update=date(2021, 1, 1),
+            latest_status_update=date(2021, 1, 1))
         data = [['chng', pd.Timestamp("2020-01-01"), "chng_signal"]]
         metadata = pd.DataFrame(
             data,
