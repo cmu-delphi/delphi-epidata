@@ -12,9 +12,9 @@ from dataclasses import dataclass
 from typing import List
 
 # first party
-#import delphi.operations.secrets as secrets
-from logger import get_structured_logger
-import covidcast 
+import delphi.operations.secrets as secrets
+from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
+from delphi.epidata.client.delphi_epidata import Epidata
 
 
 @dataclass
@@ -58,12 +58,11 @@ class Database:
 
     def __init__(self, connector_impl=mysql.connector):
         """Establish a connection to the database."""
-        #u, p = secrets.db.epi
+        u, p = secrets.db.epi
         self._connection = connector_impl.connect(
-            host="127.0.0.1",
-            user="user",
-            password="pass",
-            port = 13306,
+            host=secrets.db.host,
+            user=u,
+            password=p,
             database=Database.DATABASE_NAME)
         self._cursor = self._connection.cursor()
 
@@ -145,8 +144,12 @@ class Database:
                     db_id=result[0],
                     name=result[1],
                     source=result[2],
-                    latest_coverage_update = result[3],
-                    latest_status_update=result[4]))
+                    latest_coverage_update=datetime.datetime.strptime(
+                        result[3],
+                        '%Y-%m-%d').date(),
+                    latest_status_update=datetime.datetime.strptime(
+                        result[4],
+                        '%Y-%m-%d').date()))
         return enabled_signals
 
 
@@ -180,7 +183,7 @@ def get_coverage(dashboard_signal: DashboardSignal,
     # (and allow multiple signals) and/or aggregate across all signals
     # for a source
     signal = df_for_source["signal"].iloc[0]
-    latest_data = covidcast.signal(
+    latest_data = Epidata.covidcast.signal(
         dashboard_signal.source,
         signal,
         end_day=latest_time_value,
@@ -219,7 +222,7 @@ def main(args):
     logger.info("Starting generating dashboard data.", enabled_signals=[
                 signal.name for signal in signals_to_generate])
 
-    metadata = covidcast.metadata()
+    metadata =Epidata.covidcast.metadata()
 
     signal_status_list: List[DashboardSignalStatus] = []
     coverage_list: List[DashboardSignalCoverage] = []
