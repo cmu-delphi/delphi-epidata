@@ -226,7 +226,7 @@ def main(args):
     logger.info("Starting generating dashboard data.", enabled_signals=[
                 signal.name for signal in signals_to_generate])
 
-    metadata =Epidata.covidcast.metadata()
+    metadata = Epidata.covidcast.metadata()
 
     signal_status_list: List[DashboardSignalStatus] = []
     coverage_list: List[DashboardSignalCoverage] = []
