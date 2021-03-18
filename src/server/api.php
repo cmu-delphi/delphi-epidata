@@ -1005,17 +1005,11 @@ function get_signal_dash_status_data() {
   $query = 'SELECT enabled_signal.`name`,
               status.`latest_issue`,
               status.`latest_time_value`
-            FROM (SELECT `id`, `name`
+            FROM (SELECT `id`, `name`, `latest_status_update`
               FROM `dashboard_signal`
               WHERE `enabled`) AS enabled_signal
-            LEFT JOIN (SELECT `signal_id`,
-                              Max(`date`) max_date
-                       FROM `dashboard_signal_status`
-                       GROUP BY `signal_id`) AS max_dates
-            ON enabled_signal.`id` = max_dates.`signal_id`
             LEFT JOIN `dashboard_signal_status` AS status
-            ON max_dates.`signal_id` = status.`signal_id`
-              AND status.`date` = max_dates.`max_date`';
+            ON enabled_signal.`latest_status_update` = status.`date`';
   
   $epidata = array();
   $fields_string = array('name', 'latest_issue', 'latest_time_value');
@@ -1029,17 +1023,11 @@ function get_signal_dash_coverage_data() {
               coverage.`date`,
               coverage.`geo_type`,
               coverage.`geo_value`
-            FROM (SELECT `id`, `name`
+            FROM (SELECT `id`, `name`, `latest_coverage_update`
               FROM `dashboard_signal`
               WHERE `enabled`) AS enabled_signal
-            LEFT JOIN (SELECT `signal_id`,
-                              Max(`date`) max_date
-                       FROM `dashboard_signal_coverage`
-                       GROUP BY `signal_id`) AS max_dates
-            ON enabled_signal.`id` = max_dates.`signal_id`
             LEFT JOIN `dashboard_signal_coverage` AS coverage
-            ON max_dates.`signal_id` = coverage.`signal_id`
-              AND coverage.`date` = max_dates.`max_date`';
+            ON enabled_signal.`latest_coverage_update` = coverage.`date`';
   
   $epidata = array();
   $fields_string = array('name', 'date', 'geo_type', 'geo_value');

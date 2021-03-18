@@ -12,9 +12,9 @@ from dataclasses import dataclass
 from typing import List
 
 # first party
-import delphi.operations.secrets as secrets
-from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
-from delphi.epidata.client.delphi_epidata import Epidata
+#import delphi.operations.secrets as secrets
+from logger import get_structured_logger
+import covidcast 
 
 
 @dataclass
@@ -24,6 +24,8 @@ class DashboardSignal:
     db_id: int
     name: str
     source: str
+    latest_coverage_update: datetime.date
+    latest_status_update: datetime.date
 
 
 @dataclass
@@ -56,11 +58,12 @@ class Database:
 
     def __init__(self, connector_impl=mysql.connector):
         """Establish a connection to the database."""
-        u, p = secrets.db.epi
+        #u, p = secrets.db.epi
         self._connection = connector_impl.connect(
-            host=secrets.db.host,
-            user=u,
-            password=p,
+            host="127.0.0.1",
+            user="user",
+            password="pass",
+            port = 13306,
             database=Database.DATABASE_NAME)
         self._cursor = self._connection.cursor()
 
@@ -82,6 +85,20 @@ class Database:
             (x.signal_id, x.date, x.latest_issue, x.latest_time_value)
             for x in status_list]
         self._cursor.executemany(insert_statement, status_as_tuples)
+
+        latest_status_dates = {}
+        for x in status_list:
+            latest_status_date = latest_status_dates.get(x.signal_id)
+            if not latest_status_date or x.date > latest_status_date:
+                latest_status_dates.update({x.signal_id: x.date})
+        latest_status_tuples = [(v, k) for k, v in latest_status_dates.items()]
+
+        update_statement = f'''UPDATE `{Database.SIGNAL_TABLE_NAME}`
+            SET `latest_status_update` = GREATEST(`latest_status_update`, %s)
+            WHERE `id` =  %s
+            '''
+        self._cursor.executemany(update_statement, latest_status_tuples)
+
         self._connection.commit()
 
     def write_coverage(
@@ -97,11 +114,26 @@ class Database:
             (x.signal_id, x.date, x.geo_type, x.geo_value)
             for x in coverage_list]
         self._cursor.executemany(insert_statement, coverage_as_tuples)
+
+        latest_coverage_dates = {}
+        for x in coverage_list:
+            latest_coverage_date = latest_coverage_dates.get(x.signal_id)
+            if not latest_coverage_date or x.date > latest_coverage_date:
+                latest_coverage_dates.update({x.signal_id: x.date})
+        latest_coverage_tuples = [(v, k) for k, v in latest_coverage_dates.items()]
+
+        update_statement = f'''UPDATE `{Database.SIGNAL_TABLE_NAME}`
+            SET `latest_coverage_update` = GREATEST(`latest_coverage_update`, %s)
+            WHERE `id` =  %s
+            '''
+        self._cursor.executemany(update_statement, latest_coverage_tuples)
+
         self._connection.commit()
+
 
     def get_enabled_signals(self) -> List[DashboardSignal]:
         """Retrieve all enabled signals from the database"""
-        select_statement = f'''SELECT `id`, `name`, `source`
+        select_statement = f'''SELECT `id`, `name`, `source`, `latest_coverage_update`, `latest_status_update`
             FROM `{Database.SIGNAL_TABLE_NAME}`
             WHERE `enabled`
             '''
@@ -112,7 +144,9 @@ class Database:
                 DashboardSignal(
                     db_id=result[0],
                     name=result[1],
-                    source=result[2]))
+                    source=result[2],
+                    latest_coverage_update = result[3],
+                    latest_status_update=result[4]))
         return enabled_signals
 
 
@@ -146,7 +180,7 @@ def get_coverage(dashboard_signal: DashboardSignal,
     # (and allow multiple signals) and/or aggregate across all signals
     # for a source
     signal = df_for_source["signal"].iloc[0]
-    latest_data = Epidata.covidcast.signal(
+    latest_data = covidcast.signal(
         dashboard_signal.source,
         signal,
         end_day=latest_time_value,
@@ -185,7 +219,7 @@ def main(args):
     logger.info("Starting generating dashboard data.", enabled_signals=[
                 signal.name for signal in signals_to_generate])
 
-    metadata = Epidata.covidcast.metadata()
+    metadata = covidcast.metadata()
 
     signal_status_list: List[DashboardSignalStatus] = []
     coverage_list: List[DashboardSignalCoverage] = []
