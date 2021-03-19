@@ -202,3 +202,38 @@ class UnitTests(unittest.TestCase):
                 count=1)]
 
         self.assertListEqual(coverage, expected_coverage)
+
+    @patch('delphi.epidata.client.delphi_epidata.Epidata.covidcast')
+    def test_get_coverage_too_many_rows(self, mock_covidcast):
+        signal = DashboardSignal(
+            db_id=1, name="Change", source="chng",
+            latest_coverage_update=date(2021, 1, 1),
+            latest_status_update=date(2021, 1, 1))
+        data = [['chng', pd.Timestamp("2020-01-01"), "chng_signal"]]
+        metadata = pd.DataFrame(
+            data,
+            columns=[
+                'data_source',
+                'max_time',
+                'signal'])
+
+        epidata_data = [['chng', 'chng_signal',
+                         pd.Timestamp("2020-01-01"), "state", "PA"],
+                         ['chng', 'chng_signal',
+                         pd.Timestamp("2020-01-01"), "county", "10001"]
+                        ]
+
+        epidata_df = pd.DataFrame(
+            epidata_data,
+            columns=[
+                'data_source',
+                'signal',
+                'time_value',
+                'geo_type',
+                'geo_value'])
+
+        mock_covidcast.signal.return_value = epidata_df
+
+        self.assertRaises(ValueError, get_coverage, signal, metadata)
+
+        
