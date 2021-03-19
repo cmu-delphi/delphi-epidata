@@ -15,9 +15,6 @@ from typing import List
 import delphi.operations.secrets as secrets
 from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
 from delphi.epidata.client.delphi_epidata import Epidata
-# import delphi.operations.secrets as secrets
-# from logger import get_structured_logger
-# import covidcast
 
 
 @dataclass
