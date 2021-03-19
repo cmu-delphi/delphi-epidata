@@ -1001,6 +1001,41 @@ function get_covidcast($source, $signals, $time_type, $geo_type, $time_values, $
   return count($epidata) === 0 ? null : $epidata;
 }
 
+function get_signal_dash_status_data() {
+  $query = 'SELECT enabled_signal.`name`,
+              status.`latest_issue`,
+              status.`latest_time_value`
+            FROM (SELECT `id`, `name`, `latest_status_update`
+              FROM `dashboard_signal`
+              WHERE `enabled`) AS enabled_signal
+            LEFT JOIN `dashboard_signal_status` AS status
+            ON enabled_signal.`latest_status_update` = status.`date`';
+  
+  $epidata = array();
+  $fields_string = array('name', 'latest_issue', 'latest_time_value');
+  execute_query($query, $epidata, $fields_string, null /* fields_int */, null /* fields_float */);
+  // return the data
+  return count($epidata) === 0 ? null : $epidata; 
+}
+
+function get_signal_dash_coverage_data() {
+  $query = 'SELECT enabled_signal.`name`,
+              coverage.`date`,
+              coverage.`geo_type`,
+              coverage.`geo_value`
+            FROM (SELECT `id`, `name`, `latest_coverage_update`
+              FROM `dashboard_signal`
+              WHERE `enabled`) AS enabled_signal
+            LEFT JOIN `dashboard_signal_coverage` AS coverage
+            ON enabled_signal.`latest_coverage_update` = coverage.`date`';
+  
+  $epidata = array();
+  $fields_string = array('name', 'date', 'geo_type', 'geo_value');
+  execute_query($query, $epidata, $fields_string, null /* fields_int */, null /* fields_float */);
+  // return the data
+  return count($epidata) === 0 ? null : $epidata; 
+}
+
 // queries the `covidcast_meta_cache` table for metadata
 function get_covidcast_meta() {
   // complain if the cache is more than 75 minutes old
@@ -2077,6 +2112,12 @@ if(database_connect()) {
     // get the metadata
     $epidata = get_covidcast_meta();
     store_result($data, $epidata);
+  } else if($endpoint === 'signal_dashboard_status') {
+    $signal_dash_data = get_signal_dash_status_data();
+    store_result($data, $signal_dash_data);
+  } else if($endpoint === 'signal_dashboard_coverage') {
+    $signal_dash_data = get_signal_dash_coverage_data();
+    store_result($data, $signal_dash_data);
   } else if($endpoint === 'covid_hosp' || $source === 'covid_hosp_state_timeseries') {
     if(require_all($data, array('states', 'dates'))) {
       // parse the request

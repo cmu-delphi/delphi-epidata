@@ -1,6 +1,6 @@
 ---
 title: Google Health Trends
-parent: Data Sources and Signals
+parent: Inactive Signals
 grand_parent: COVIDcast Epidata API
 ---
 
@@ -21,6 +21,11 @@ Health Trends. Using this search data, we estimate the volume of COVID-related
 searches in a given location, on a given day. This signal is measured in
 arbitrary units (its scale is meaningless); larger numbers represent higher
 numbers of COVID-related searches.
+
+These signals were updated daily until March 8, 2021. After that date, Google
+dropped support for Google Health Trends access. We recommend the [Google
+Symptoms source](google-symptoms.md) as an alternative, which provides
+finer-grained measures of search volume at the symptom level.
 
 | Signal | Description |
 | --- | --- |
@@ -71,6 +76,5 @@ zero-inflation, as small variations in the signal can cause it to be sometimes
 truncated to 0 and sometimes reported at its actual level.
 
 Google does not describe the units of its reported numbers, so the scale is arbitrary.
-
 
 

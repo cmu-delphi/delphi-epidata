@@ -13,14 +13,16 @@ social distancing), mental health, and economic and health impacts they have
 experienced as a result of the pandemic. A high-level overview of the survey is
 posted [on the COVIDcast website](https://delphi.cmu.edu/covidcast/surveys/).
 
-Aggregate data from this survey is available through the [COVIDcast API](../api/covidcast.md)
-as the [`fb-survey` data source](../api/covidcast-signals/fb-survey.md).
+Geographically aggregated data from this survey is publicly available through
+the [COVIDcast API](../api/covidcast.md) as the [`fb-survey` data source](../api/covidcast-signals/fb-survey.md).
+Demographic breakdowns of survey data are publicly available as
+[downloadable contingency tables](contingency-tables.md).
 
-This documentation is for users who have a signed Data Use Agreement to receive
-individual response data from the survey. It describes the survey items, data
-coding, data distribution, and the survey weights computed by Facebook. If you
-are a researcher and would like to get access to the data, see our page on
-getting [data access](data-access.md).
+This documentation describes the survey items, data coding, data distribution,
+and the survey weights computed by Facebook. It also documents the individual
+response data, which is available to researchers with a signed Data Use
+Agreement. If you are a researcher and would like to get access to the data, see
+our page on getting [data access](data-access.md).
 
 If you have questions about the survey or getting access to data, contact us at
 <delphi-survey-info@lists.andrew.cmu.edu>.
@@ -49,16 +51,15 @@ and others. If you are interested in getting involved, see our
 
 ## Citing the Survey
 
-Researchers who use the survey microdata for research are asked to credit and
-cite the survey in publications based on the data. Specifically, we ask that
-you:
+Researchers who use the survey data for research are asked to credit and cite
+the survey in publications based on the data. Specifically, we ask that you:
 
 1. Include the acknowledgment "This research is based on survey results from
    Carnegie Mellon University’s Delphi Group."
 2. Cite this web page for details about the survey. For example, you may cite it
    as
 
-    > Delphi Group (2020). COVID Symptom Survey.
+    > Delphi Group (2021). COVID Symptom Survey.
     > <https://cmu-delphi.github.io/delphi-epidata/symptom-survey/>
 
     A journal article describing the survey and its methods is currently in

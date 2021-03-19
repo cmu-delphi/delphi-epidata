@@ -73,12 +73,13 @@ class UnitTests(unittest.TestCase):
 
     data_dir = 'data_dir'
     mock_database = MagicMock()
+    mock_database.insert_or_update_bulk.return_value = 2
     mock_csv_importer = MagicMock()
     mock_csv_importer.load_csv = load_csv_impl
     mock_file_archiver = MagicMock()
     mock_logger = MagicMock()
 
-    upload_archive(
+    modified_row_count = upload_archive(
       self._path_details(),
       mock_database,
       make_handlers(data_dir, False,
@@ -86,6 +87,7 @@ class UnitTests(unittest.TestCase):
       mock_logger,
       csv_importer_impl=mock_csv_importer)
 
+    self.assertEqual(modified_row_count, 4)
     # verify that appropriate rows were added to the database
     self.assertEqual(mock_database.insert_or_update_bulk.call_count, 2)
     call_args_list = mock_database.insert_or_update_bulk.call_args_list

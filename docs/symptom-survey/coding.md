@@ -1,7 +1,7 @@
 ---
 title: Questions and Coding
 parent: COVID Symptom Survey
-nav_order: 5
+nav_order: 6
 ---
 
 # Questions and Coding
@@ -64,6 +64,11 @@ reported.)
 
 Invalid ZIP codes are preserved unchanged, and these rows are reported in the
 individual response files with their invalid ZIPs.
+
+Additionally, beginning in wave 4, items D6 and D7 ask respondents for race and
+ethnicity. These columns are **not** available in the microdata files due to
+reidentification concerns. However, contingency tables that aggregate by race
+and other demographic variables [are available](contingency-tables.md).
 
 ## Wave 1
 
@@ -467,6 +472,11 @@ new items were meant to capture reasons for vaccine hesitancy among respondents.
   were revised and expanded for clarity. Please review the changes carefully
   when you use responses from multiple waves of this survey, since they may
   shift which occupations respondents choose.
+* C14a is a revision of item C14, changed from "the past 5 days" to "the past
+  7 days" to be consistent with other items on the COVID Symptom Survey.
+  C14a replaces C14.
+* In item V4, the "local health workers" category was changed to read "Doctors
+  and other health professionals you go to for medical care".
 
 #### New Items
 
@@ -479,3 +489,90 @@ new items were meant to capture reasons for vaccine hesitancy among respondents.
 * Item D1b was previously removed in wave 4 and asks respondents that identify
   as not male if they are currently pregnant.
 * Item D11 ask respondents if they smoke cigarettes.
+
+## Wave 9
+
+Wave 9 was skipped to synchronize our numbering with the international survey
+administered by the University of Maryland.
+
+## Wave 10
+
+Wave 10 was deployed on March 2, 2021. For the following 7 days, 15% of
+respondents (selected at random) continued to receive Wave 8, allowing for
+comparisons of responses between the two waves. Wave 10 is available in English,
+as well as
+
+* Simplified Chinese
+* English (UK)
+* Spanish (Latin America)
+* Spanish
+* French
+* Brazilian Portuguese
+* Vietnamese
+
+Files:
+* [Survey text and coding](waves/CMU Survey Wave 10.pdf) (PDF)
+* [Survey text and coding](waves/CMU Survey Wave 10.docx) (Word)
+
+### Summary of Changes
+
+Wave 10 further expands the scope of survey items about COVID-19 vaccination.
+These new items were meant to capture reasons for vaccine hesistancy among
+respondents and gauge access. Other items were revised or replaced. Please
+review the changes carefully when you use responses from multiple waves of this
+survey.
+
+#### New Items
+
+* Item V11 ask respondents if they have an appointment to receive a COVID-19
+  vaccine.
+* Item V12 ask respondents if they have tried to get an appointment to receive a
+  COVID-19 vaccine.
+* Item V13 ask respondents how informed they feel about how they will be able to
+  get a COVID-19 vaccine.
+* Item V14 asks respondent when they think they will be able to get a COVID-19
+  vaccine.
+
+#### Changed Items
+
+* Item A1 now includes description of fever in Celsius as well as Fahrenheit.
+* Item A5 was changed to say "from 18 to 64 years old" instead of "between 18
+  and 64 years old".
+* The instructions following the question text in items B2 and D7 was changed to
+  be consistent with all other multiple response questions and reads "Please
+  select all that apply."
+* Item B10a was changed to remind the respondent "You answered that you have
+  been tested for coronavirus (COVID-19) in the past 14 days."
+* Items B10b, C13a, C13b, was changed to now state “in the past 14 days”, versus
+  the previous version that stated “in last 14 days”.
+* Item B10b response options were changed to provide more specificity. Blood
+  donation was added to the option “I was tested while receiving other medical
+  care, such as surgery” and a “None of the above” response option was added to
+  be consistent with other questions.
+* Item V2a was changed to say "recommended doses"; previous versions said
+  "required doses" (V2).
+* Items V5a-V5d question wording was changed to better match the question stem
+  (V3). For example, if respondents selected for Item V3 (“If a vaccine to
+  prevent COVID-19 were offered to you today, would you choose to get
+  vaccinated?”) response option 2 (“Yes, probably”). The following question
+  would be V5a (“Which of the following, is any, are reasons that you only
+  probably would choose to get the COVID-19 vaccine?”).
+* Item C13 was replaced with item C13b, which asks specifically whether the
+  activities occurred indoors. Item C13a was similarly replaced with item C13c
+  to reflect mask use during those indoor activities.
+* Items C6 and C8 were changed to refer to the past 7 days, rather than the past
+  5 days, to be consistent with other items on the survey. They were renamed to
+  C6a and C8a to reflect this change.
+* Typos were fixed in Q67 and Q78.
+
+#### Removed Items
+
+* Item B2b (“For how many days have you had at least one new or unusual
+  symptom?”) was removed.
+* Item C11 (“In the past 24 hours, have you had direct contact with anyone who
+  recently tested positive for COVID-19 (coronavirus)?”), and the follow-up
+  question, item C12 (“Was this person a member of your household?”), were
+  removed.
+* Item A3b (“In which state are you currently staying?”) was removed.
+  Respondents are asked their ZIP code in item A3, and while some ZIP codes
+  cross state lines, we judged the duplication was not necessary.
