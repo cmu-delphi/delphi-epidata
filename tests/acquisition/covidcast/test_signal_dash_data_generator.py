@@ -219,7 +219,7 @@ class UnitTests(unittest.TestCase):
 
         epidata_data = [['chng', 'chng_signal',
                          pd.Timestamp("2020-01-01"), "state", "PA"],
-                         ['chng', 'chng_signal',
+                        ['chng', 'chng_signal',
                          pd.Timestamp("2020-01-01"), "county", "10001"]
                         ]
 
