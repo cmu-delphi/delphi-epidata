@@ -15,6 +15,9 @@ from typing import List
 import delphi.operations.secrets as secrets
 from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
 from delphi.epidata.client.delphi_epidata import Epidata
+# import delphi.operations.secrets as secrets
+# from logger import get_structured_logger
+# import covidcast
 
 
 @dataclass
@@ -35,7 +38,7 @@ class DashboardSignalCoverage:
     signal_id: int
     date: datetime.date
     geo_type: str
-    geo_value: str
+    count: int
 
 
 @dataclass
@@ -104,13 +107,13 @@ class Database:
             self, coverage_list: List[DashboardSignalCoverage]) -> None:
         """Write the provided coverage to the database."""
         insert_statement = f'''INSERT INTO `{Database.COVERAGE_TABLE_NAME}`
-            (`signal_id`, `date`, `geo_type`, `geo_value`)
+            (`signal_id`, `date`, `geo_type`, `count`)
             VALUES
             (%s, %s, %s, %s)
             ON DUPLICATE KEY UPDATE `signal_id` = `signal_id`
             '''
         coverage_as_tuples = [
-            (x.signal_id, x.date, x.geo_type, x.geo_value)
+            (x.signal_id, x.date, x.geo_type, x.count)
             for x in coverage_list]
         self._cursor.executemany(insert_statement, coverage_as_tuples)
 
@@ -148,12 +151,8 @@ class Database:
                     db_id=result[0],
                     name=result[1],
                     source=result[2],
-                    latest_coverage_update=datetime.datetime.strptime(
-                        result[3],
-                        '%Y-%m-%d').date(),
-                    latest_status_update=datetime.datetime.strptime(
-                        result[4],
-                        '%Y-%m-%d').date()))
+                    latest_coverage_update=result[3],
+                    latest_status_update=result[4]))
         return enabled_signals
 
 
@@ -192,16 +191,20 @@ def get_coverage(dashboard_signal: DashboardSignal,
         signal,
         end_day=latest_time_value,
         start_day=latest_time_value)
+    count_by_geo_type_df = latest_data.groupby(
+        ['geo_type', 'data_source', 'time_value', 'signal']).size().to_frame('count').reset_index()
+
+    if len(count_by_geo_type_df) > 1:
+        raise ValueError(f"Expected one row for coverage, got {len(count_by_geo_type_df)}.")
 
     signal_coverage_list = []
-    for _, row in latest_data.iterrows():
-        signal_coverage = DashboardSignalCoverage(
-            signal_id=dashboard_signal.db_id,
-            date=pd.to_datetime(
-                row['time_value']).date(),
-            geo_type=row['geo_type'],
-            geo_value=row['geo_value'])
-        signal_coverage_list.append(signal_coverage)
+    
+    signal_coverage = DashboardSignalCoverage(
+        signal_id=dashboard_signal.db_id,
+        date=latest_time_value,
+        geo_type=count_by_geo_type_df['geo_type'].iloc[0],
+        count=count_by_geo_type_df['count'].iloc[0].item())
+    signal_coverage_list.append(signal_coverage)
 
     return signal_coverage_list
 
