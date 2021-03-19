@@ -530,7 +530,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
 
   @fake_epidata_endpoint
   def test_async_epidata_fail(self):
-    with pytest.raises(ClientResponseError, match="404, message='Not Found'"):
+    with pytest.raises(ClientResponseError, match="404, message='NOT FOUND'"):
       Epidata.async_epidata([
         {
           'source': 'covidcast',
