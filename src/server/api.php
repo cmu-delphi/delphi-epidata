@@ -1027,14 +1027,35 @@ function get_signal_dash_coverage_data() {
               FROM `dashboard_signal`
               WHERE `enabled`) AS enabled_signal
             LEFT JOIN `dashboard_signal_coverage` AS coverage
-            ON enabled_signal.`latest_coverage_update` = coverage.`date`';
+            ON enabled_signal.`id` = coverage.`signal_id`
+            ORDER BY `id` ASC, `date` DESC';
   
   $epidata = array();
   $fields_string = array('name', 'date', 'geo_type');
   $fields_int = array('count');
   execute_query($query, $epidata, $fields_string, $fields_int, null /* fields_float */);
+
+  $out = array();
+  foreach ($epidata as $row) {
+    $name = $row['name'];
+    $geo_type = $row['geo_type'];
+    $timedata = array();
+    $timedata['date'] = $row['date'];
+    $timedata['count'] =$row['count'];
+
+    if (!isset($out[$name])) {
+      $out[$name] = array();
+    }
+
+    if(!isset($out[$name][$geo_type])) {
+      $out[$name][$geo_type] = array();
+    }
+
+    $out[$name][$geo_type][] = $timedata;
+  }
+
   // return the data
-  return count($epidata) === 0 ? null : $epidata; 
+  return count($out) === 0 ? null : $out; 
 }
 
 // queries the `covidcast_meta_cache` table for metadata
