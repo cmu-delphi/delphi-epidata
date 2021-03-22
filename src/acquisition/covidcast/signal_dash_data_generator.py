@@ -58,8 +58,6 @@ class Database:
 
     def __init__(self, connector_impl=mysql.connector):
         """Establish a connection to the database."""
-        secrets.db.host = 'delphi_database_epidata'
-        secrets.db.epi = ('user', 'pass')
 
         u, p = secrets.db.epi
         self._connection = connector_impl.connect(
