@@ -6,6 +6,7 @@ import math
 
 # third party
 import mysql.connector
+import pandas as pd
 
 # first party
 import delphi.operations.secrets as secrets
@@ -168,3 +169,22 @@ class Database:
                        id_and_publication_date +
                        tuple(values) +
                        tuple(i[0] for i in self.additional_fields))
+
+  def get_max_issue(self):
+    """Fetch the most recent issue.
+
+    This is used to bookend what updates we pull in from the HHS metadata.
+    """
+    with self.new_cursor() as cursor:
+      cursor.execute(f'''
+        SELECT
+          max(publication_date)
+        from
+          `covid_hosp_meta`
+        WHERE
+          dataset_name = "{self.table_name}"
+      ''')
+      for (result,) in cursor:
+        if result is not None:
+          return pd.Timestamp(str(result))
+      return pd.Timestamp("1900/1/1")

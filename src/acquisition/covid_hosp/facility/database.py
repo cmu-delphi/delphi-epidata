@@ -6,7 +6,7 @@ from delphi.epidata.acquisition.covid_hosp.common.utils import Utils
 class Database(BaseDatabase):
 
   TABLE_NAME = 'covid_hosp_facility'
-
+  KEY_COLS = ['hospital_pk', 'collection_week']
   # These are 3-tuples of (CSV header name, SQL db column name, data type) for
   # all the columns in the CSV file.
   # Note that the corresponding database column names may be shorter

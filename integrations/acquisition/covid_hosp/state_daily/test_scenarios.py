@@ -6,7 +6,7 @@ from unittest.mock import MagicMock
 from unittest.mock import patch
 
 # third party
-import requests
+from freezegun import freeze_time
 
 # first party
 from delphi.epidata.acquisition.covid_hosp.common.database import Database
@@ -42,9 +42,9 @@ class AcquisitionTests(unittest.TestCase):
         cur.execute('truncate table covid_hosp_state_timeseries')
         cur.execute('truncate table covid_hosp_meta')
 
+  @freeze_time("2021-03-16")
   def test_acquire_dataset(self):
     """Acquire a new dataset."""
-
 
     # make sure the data does not yet exist
     with self.subTest(name='no data yet'):
@@ -54,13 +54,14 @@ class AcquisitionTests(unittest.TestCase):
     # acquire sample data into local database
     # mock out network calls to external hosts
     with self.subTest(name='first acquisition'), \
-         patch.object(requests, 'get', side_effect=
-                      [MagicMock(json=lambda: self.test_utils.load_sample_metadata())] +
-                       list(self.test_utils.load_sample_revisions())) as mock_requests_get, \
-         patch.object(Network, 'fetch_dataset', return_value=self.test_utils.load_sample_dataset()) as mock_fetch:
+         patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()) as mock_fetch_meta, \
+         patch.object(Network, 'fetch_dataset', side_effect=[self.test_utils.load_sample_dataset("dataset0.csv"), # dataset for 3/13
+                                                             self.test_utils.load_sample_dataset("dataset0.csv"), # first dataset for 3/15
+                                                             self.test_utils.load_sample_dataset()] # second dataset for 3/15
+                      ) as mock_fetch:
       acquired = Update.run()
       self.assertTrue(acquired)
-      self.assertEqual(mock_requests_get.call_count, 6)
+      self.assertEqual(mock_fetch_meta.call_count, 1)
 
     # make sure the data now exists
     with self.subTest(name='initial data checks'):
@@ -70,7 +71,7 @@ class AcquisitionTests(unittest.TestCase):
       row = response['epidata'][0]
       self.assertEqual(row['state'], 'WY')
       self.assertEqual(row['date'], 20201209)
-      self.assertEqual(row['issue'], 20201213)
+      self.assertEqual(row['issue'], 20210315)
       self.assertEqual(row['critical_staffing_shortage_today_yes'], 8)
       actual = row['inpatient_bed_covid_utilization']
       expected = 0.11729857819905214
@@ -80,11 +81,13 @@ class AcquisitionTests(unittest.TestCase):
       # expect 61 fields per row (63 database columns, except `id` and `record_type`)
       self.assertEqual(len(row), 61)
 
+    with self.subTest(name='all date batches acquired'):
+      response = Epidata.covid_hosp('WY', Epidata.range(20200101, 20210101), issues=20210313)
+      self.assertEqual(response['result'], 1)
+
     # re-acquisition of the same dataset should be a no-op
     with self.subTest(name='second acquisition'), \
-         patch.object(requests, 'get', side_effect=
-                      [MagicMock(json=lambda: self.test_utils.load_sample_metadata())] +
-                       list(self.test_utils.load_sample_revisions())) as mock_requests_get, \
+         patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()) as mock_fetch_meta, \
          patch.object(Network, 'fetch_dataset', return_value=self.test_utils.load_sample_dataset()) as mock_fetch:
       acquired = Update.run()
       self.assertFalse(acquired)

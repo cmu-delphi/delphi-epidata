@@ -2,12 +2,14 @@
 from delphi.epidata.acquisition.covid_hosp.common.database import Database as BaseDatabase
 from delphi.epidata.acquisition.covid_hosp.common.utils import Utils
 
+import pandas as pd
+
 
 class Database(BaseDatabase):
 
   # note we share a database with state_timeseries
   TABLE_NAME = 'covid_hosp_state_timeseries'
-
+  KEY_COLS = ['state', 'reporting_cutoff_start']
   # These are 3-tuples of (CSV header name, SQL db column name, data type) for
   # all the columns in the CSV file.
   # Note that the corresponding database column names may be shorter
@@ -114,23 +116,3 @@ class Database(BaseDatabase):
         table_name=Database.TABLE_NAME,
         columns_and_types=Database.ORDERED_CSV_COLUMNS,
         additional_fields=[('D', 'record_type')])
-
-  def get_max_issue(self):
-    """Fetch the most recent state-daily issue.
-
-    This is used to bookend what links we scrape from the HHS revisions page.
-    """
-    with self.new_cursor() as cursor:
-      cursor.execute(f'''
-        SELECT
-          max(issue)
-        from
-          `{self.table_name}`
-        WHERE
-          `record_type` = "D"
-      ''')
-      for (result,) in cursor:
-        if result is not None:
-          return int(result)
-      # if empty, return beginning of time
-      return 0

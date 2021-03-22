@@ -29,50 +29,16 @@ class UpdateTests(unittest.TestCase):
     self.test_utils = TestUtils(__file__)
 
   def test_run(self):
-    """Acquire a new dataset.
+    """Acquire a new dataset."""
 
-    This test is more involved than the other covid_hosp update tests because we
-    need to make sure batches are being fetched properly.
-    """
+    with patch.object(Utils, 'update_dataset') as mock_update_dataset:
+      mock_update_dataset.return_value = sentinel.result
 
-    mock_db = MagicMock(spec=Database)
-    mock_db.contains_revision.return_value = False
-    mock_db.get_max_issue.return_value = sentinel.last_issue
-    sample_dataset = self.test_utils.load_sample_dataset()
-    with patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()) as mock_metadata, \
-         patch.object(Utils, 'extract_resource_details', return_value=(sentinel.url, sentinel.revision)) as mock_details, \
-         patch.object(Utils, 'get_issue_from_revision', return_value=sentinel.issue) as mock_issue, \
-         patch.object(Database, 'connect', return_value=MagicMock()) as mock_connect, \
-         patch.object(Network, 'fetch_revisions', return_value=[sentinel.batch]) as mock_revisions, \
-         patch.object(Network, 'fetch_dataset', return_value=sample_dataset) as mock_fetch:
-      # extra level of indirection due to context manager
-      mock_connect.return_value.__enter__.return_value = mock_db
-
-      key_cols = ['state', 'reporting_cutoff_start']
-      self.assertTrue('state' in sample_dataset.columns)
-      self.assertTrue('reporting_cutoff_start' in sample_dataset.columns)
       result = Update.run()
 
-      mock_metadata.assert_called_once()
-      mock_details.assert_called_once()
-      mock_issue.assert_called_with(sentinel.revision)
-      mock_connect.assert_called_once()
-      mock_revisions.assert_called_with(sentinel.last_issue)
-      mock_fetch.assert_called_with(sentinel.url)
+      self.assertEqual(result, sentinel.result)
+      mock_update_dataset.assert_called_once()
 
-      # don't care what the third argument is, so only test the first two:
-      self.assertEqual(mock_db.insert_metadata.call_args.args[0], sentinel.issue)
-      self.assertEqual(mock_db.insert_metadata.call_args.args[1], sentinel.revision)
-
-      # can't use assert_called_with to test data frame equality, so check args individually:
-      self.assertEqual(mock_db.insert_dataset.call_args.args[0], sentinel.issue)
-      self.assertEqual(set(mock_db.insert_dataset.call_args.args[1].columns),
-                       set(sample_dataset.columns))
-      pd.testing.assert_frame_equal(
-        mock_db.insert_dataset.call_args.args[1],
-        sample_dataset[mock_db.insert_dataset.call_args.args[1].columns]
-      )
-      self.assertTrue(result)
 
   def test_merge(self):
     """Merging the set of updates in each batch is pretty tricky"""
@@ -110,7 +76,7 @@ class UpdateTests(unittest.TestCase):
         **{spec[0]: value_from for spec in Database.ORDERED_CSV_COLUMNS[2:]}
     )).astype({spec[0]: 'float64' for spec in Database.ORDERED_CSV_COLUMNS[2:]}
     )
-    result = Update.merge_by_state_date(dfs)
+    result = Utils.merge_by_key_cols(dfs, Database.KEY_COLS)
     try:
       pd.testing.assert_frame_equal(result, expected)
     except:
