@@ -11,9 +11,9 @@ from datetime import date
 import pandas as pd
 
 # first party
+import delphi.epidata.acquisition.covidcast.signal_dash_data_generator
 from delphi.epidata.acquisition.covidcast.signal_dash_data_generator import (
   get_argument_parser,
-  main,
   Database,
   DashboardSignalStatus,
   DashboardSignalCoverage,
@@ -22,7 +22,6 @@ from delphi.epidata.acquisition.covidcast.signal_dash_data_generator import (
   get_latest_time_value_from_metadata,
   get_coverage
  )
-from delphi.epidata.client.delphi_epidata import Epidata
 
 # py3tester coverage target
 __test_target__ = (
@@ -162,8 +161,8 @@ class UnitTests(unittest.TestCase):
         data_date = get_latest_time_value_from_metadata(signal, metadata)
         self.assertEqual(data_date, date(2021, 1, 1))
 
-    @patch('delphi.epidata.client.delphi_epidata.Epidata.covidcast')
-    def test_get_coverage(self, mock_covidcast):
+    @patch("covidcast.signal")
+    def test_get_coverage(self, mock_signal):
         signal = DashboardSignal(
             db_id=1, name="Change", source="chng",
             latest_coverage_update=date(2021, 1, 1),
@@ -187,7 +186,7 @@ class UnitTests(unittest.TestCase):
                 'geo_type',
                 'geo_value'])
 
-        mock_covidcast.signal.return_value = epidata_df
+        mock_signal.return_value = epidata_df
 
         coverage = get_coverage(signal, metadata)
 
@@ -203,8 +202,8 @@ class UnitTests(unittest.TestCase):
 
         self.assertListEqual(coverage, expected_coverage)
 
-    @patch('delphi.epidata.client.delphi_epidata.Epidata.covidcast')
-    def test_get_coverage_too_many_rows(self, mock_covidcast):
+    @patch("covidcast.signal")
+    def test_get_coverage_too_many_rows(self, mock_signal):
         signal = DashboardSignal(
             db_id=1, name="Change", source="chng",
             latest_coverage_update=date(2021, 1, 1),
@@ -232,7 +231,7 @@ class UnitTests(unittest.TestCase):
                 'geo_type',
                 'geo_value'])
 
-        mock_covidcast.signal.return_value = epidata_df
+        mock_signal.return_value = epidata_df
 
         self.assertRaises(ValueError, get_coverage, signal, metadata)
 
