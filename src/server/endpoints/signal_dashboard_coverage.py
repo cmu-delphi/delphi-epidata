@@ -10,15 +10,15 @@ alias = None
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    fields_string = ["name", "date", "geo_type", "geo_value"]
-    fields_int = []
+    fields_string = ["name", "date", "geo_type"]
+    fields_int = ["count"]
     fields_float = []
 
     query = """
     SELECT enabled_signal.`name`,
         coverage.`date`,
         coverage.`geo_type`,
-        coverage.`geo_value`
+        coverage.`count`
     FROM (SELECT `id`, `name`, `latest_coverage_update`
         FROM `dashboard_signal`
         WHERE `enabled`) AS enabled_signal
