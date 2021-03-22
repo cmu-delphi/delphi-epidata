@@ -12,9 +12,9 @@ from dataclasses import dataclass
 from typing import List
 
 # first party
+import covidcast
 import delphi.operations.secrets as secrets
 from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
-from delphi.epidata.client.delphi_epidata import Epidata
 
 
 @dataclass
@@ -58,6 +58,7 @@ class Database:
 
     def __init__(self, connector_impl=mysql.connector):
         """Establish a connection to the database."""
+
         u, p = secrets.db.epi
         self._connection = connector_impl.connect(
             host=secrets.db.host,
@@ -164,7 +165,7 @@ def get_latest_issue_from_metadata(dashboard_signal, metadata):
     """Get the most recent issue date for the signal."""
     df_for_source = metadata[metadata.data_source == dashboard_signal.source]
     max_issue = df_for_source["max_issue"].max()
-    return pd.to_datetime(str(max_issue), format="%Y%m%d")
+    return pd.to_datetime(str(max_issue), format="%Y%m%d").date()
 
 
 def get_latest_time_value_from_metadata(dashboard_signal, metadata):
@@ -183,7 +184,7 @@ def get_coverage(dashboard_signal: DashboardSignal,
     # (and allow multiple signals) and/or aggregate across all signals
     # for a source
     signal = df_for_source["signal"].iloc[0]
-    latest_data = Epidata.covidcast.signal(
+    latest_data = covidcast.signal(
         dashboard_signal.source,
         signal,
         end_day=latest_time_value,
@@ -226,7 +227,7 @@ def main(args):
     logger.info("Starting generating dashboard data.", enabled_signals=[
                 signal.name for signal in signals_to_generate])
 
-    metadata = Epidata.covidcast.metadata()
+    metadata = covidcast.metadata()
 
     signal_status_list: List[DashboardSignalStatus] = []
     coverage_list: List[DashboardSignalCoverage] = []
