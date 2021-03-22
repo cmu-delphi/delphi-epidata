@@ -11,7 +11,6 @@ from datetime import date
 import pandas as pd
 
 # first party
-import delphi.epidata.acquisition.covidcast.signal_dash_data_generator
 from delphi.epidata.acquisition.covidcast.signal_dash_data_generator import (
   get_argument_parser,
   Database,
