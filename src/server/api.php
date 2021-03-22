@@ -1022,7 +1022,7 @@ function get_signal_dash_coverage_data() {
   $query = 'SELECT enabled_signal.`name`,
               coverage.`date`,
               coverage.`geo_type`,
-              coverage.`geo_value`
+              coverage.`count`
             FROM (SELECT `id`, `name`, `latest_coverage_update`
               FROM `dashboard_signal`
               WHERE `enabled`) AS enabled_signal
@@ -1030,8 +1030,9 @@ function get_signal_dash_coverage_data() {
             ON enabled_signal.`latest_coverage_update` = coverage.`date`';
   
   $epidata = array();
-  $fields_string = array('name', 'date', 'geo_type', 'geo_value');
-  execute_query($query, $epidata, $fields_string, null /* fields_int */, null /* fields_float */);
+  $fields_string = array('name', 'date', 'geo_type');
+  $fields_int = array('count');
+  execute_query($query, $epidata, $fields_string, $fields_int, null /* fields_float */);
   // return the data
   return count($epidata) === 0 ? null : $epidata; 
 }

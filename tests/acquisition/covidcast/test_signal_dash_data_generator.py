@@ -83,21 +83,21 @@ class UnitTests(unittest.TestCase):
             signal_id=1,
             date=date(2020, 1, 1),
             geo_type="state",
-            geo_value="PA"
+            count=1
         )
         coverage2 = DashboardSignalCoverage(
             signal_id=2,
             date=date(2021, 2, 2),
             geo_type="state",
-            geo_value="NJ"
+            count=1
         )
 
         database.write_coverage([coverage1, coverage2])
 
         coverage_tuples = cursor.executemany.call_args_list[0].args[1]
         expected_coverage_tuples = [
-            (1, date(2020, 1, 1), "state", "PA"),
-            (2, date(2021, 2, 2), "state", "NJ")
+            (1, date(2020, 1, 1), "state", 1),
+            (2, date(2021, 2, 2), "state", 1)
         ]
         self.assertListEqual(coverage_tuples, expected_coverage_tuples)
 
@@ -116,8 +116,8 @@ class UnitTests(unittest.TestCase):
         cursor = connection.cursor()
 
         db_rows = [
-            (1, "Change", "chng", "2020-01-01", "2020-01-02"),
-            (2, "Quidel", "quidel", "2020-02-01", "2020-02-02"),
+            (1, "Change", "chng", datetime.date(2020, 1, 1), datetime.date(2020, 1, 2)),
+            (2, "Quidel", "quidel", datetime.date(2020, 2, 1), datetime.date(2020, 2, 2)),
         ]
         cursor.fetchall.return_value = db_rows
 
@@ -177,10 +177,13 @@ class UnitTests(unittest.TestCase):
                 'max_time',
                 'signal'])
 
-        epidata_data = [[pd.Timestamp("2020-01-01"), "state", "PA"]]
+        epidata_data = [['chng', 'chng_signal',
+                         pd.Timestamp("2020-01-01"), "state", "PA"]]
         epidata_df = pd.DataFrame(
             epidata_data,
             columns=[
+                'data_source',
+                'signal',
                 'time_value',
                 'geo_type',
                 'geo_value'])
@@ -197,6 +200,41 @@ class UnitTests(unittest.TestCase):
                     1,
                     1),
                 geo_type='state',
-                geo_value='PA')]
+                count=1)]
 
         self.assertListEqual(coverage, expected_coverage)
+
+    @patch('delphi.epidata.client.delphi_epidata.Epidata.covidcast')
+    def test_get_coverage_too_many_rows(self, mock_covidcast):
+        signal = DashboardSignal(
+            db_id=1, name="Change", source="chng",
+            latest_coverage_update=date(2021, 1, 1),
+            latest_status_update=date(2021, 1, 1))
+        data = [['chng', pd.Timestamp("2020-01-01"), "chng_signal"]]
+        metadata = pd.DataFrame(
+            data,
+            columns=[
+                'data_source',
+                'max_time',
+                'signal'])
+
+        epidata_data = [['chng', 'chng_signal',
+                         pd.Timestamp("2020-01-01"), "state", "PA"],
+                        ['chng', 'chng_signal',
+                         pd.Timestamp("2020-01-01"), "county", "10001"]
+                        ]
+
+        epidata_df = pd.DataFrame(
+            epidata_data,
+            columns=[
+                'data_source',
+                'signal',
+                'time_value',
+                'geo_type',
+                'geo_value'])
+
+        mock_covidcast.signal.return_value = epidata_df
+
+        self.assertRaises(ValueError, get_coverage, signal, metadata)
+
+        

@@ -51,19 +51,11 @@ class UnitTestUtils:
     ).resolve()
 
   def load_sample_metadata(self):
-    with open(self.data_dir / 'metadata.json', 'rb') as f:
-      return json.loads(f.read().decode('utf-8'))
+    df = pandas.read_csv(self.data_dir / 'metadata.csv', dtype=str)
+    df["Update Date"] = pandas.to_datetime(df["Update Date"])
+    df.sort_values("Update Date", inplace=True)
+    df.set_index("Update Date", inplace=True)
+    return df
 
-  def load_sample_dataset(self):
-    return pandas.read_csv(self.data_dir / 'dataset.csv', dtype=str)
-
-  def load_sample_revisions(self):
-    """Pretend to serve pages from the HHS revisions site.
-
-    These are scraped by state_daily to ensure we capture all files, not just the
-    most recent in each batch uploaded by HHS.
-    """
-    for filename in [f'revision{x}.html' for x in
-                     ['s', '_0130', '_0129', '_0128', '_0127']]:
-      with open(self.data_dir / filename, 'rb') as f:
-        yield Mock(content=f.read().decode('utf-8'))
+  def load_sample_dataset(self, dataset_name='dataset.csv'):
+    return pandas.read_csv(self.data_dir / dataset_name, dtype=str)
