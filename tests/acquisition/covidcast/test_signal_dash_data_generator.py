@@ -143,8 +143,10 @@ class UnitTests(unittest.TestCase):
             covidcast_signal="chng-sig",
             latest_coverage_update=date(2021, 1, 1),
             latest_status_update=date(2021, 1, 1))
-        data = [['chng', 20200101], ['chng', 20210101], ['quidel', 20220101]]
-        metadata = pd.DataFrame(data, columns=['data_source', 'max_issue'])
+        data = [['chng', 'chng-sig', 20200101],
+                ['chng', 'chng-sig', 20210101],
+                ['quidel', 'quidel-sig', 20220101]]
+        metadata = pd.DataFrame(data, columns=['data_source', 'signal', 'max_issue'])
 
         issue_date = get_latest_issue_from_metadata(signal, metadata)
         self.assertEqual(issue_date, date(2021, 1, 1))
@@ -156,10 +158,10 @@ class UnitTests(unittest.TestCase):
             latest_coverage_update=date(2021, 1, 1),
             latest_status_update=date(2021, 1, 1))
         data = [
-            ['chng', pd.Timestamp("2020-01-01")],
-            ['chng', pd.Timestamp("2021-01-01")],
-            ['quidel', pd.Timestamp("20220101")]]
-        metadata = pd.DataFrame(data, columns=['data_source', 'max_time'])
+            ['chng', 'chng-sig', pd.Timestamp("2020-01-01")],
+            ['chng', 'chng-sig', pd.Timestamp("2021-01-01")],
+            ['quidel', 'quidel-sig', pd.Timestamp("20220101")]]
+        metadata = pd.DataFrame(data, columns=['data_source', 'signal', 'max_time'])
 
         data_date = get_latest_time_value_from_metadata(signal, metadata)
         self.assertEqual(data_date, date(2021, 1, 1))
@@ -171,7 +173,7 @@ class UnitTests(unittest.TestCase):
             covidcast_signal="chng-sig",
             latest_coverage_update=date(2021, 1, 1),
             latest_status_update=date(2021, 1, 1))
-        data = [['chng', pd.Timestamp("2020-01-01"), "chng_signal"]]
+        data = [['chng', pd.Timestamp("2020-01-01"), "chng-sig"]]
         metadata = pd.DataFrame(
             data,
             columns=[
@@ -179,7 +181,7 @@ class UnitTests(unittest.TestCase):
                 'max_time',
                 'signal'])
 
-        epidata_data = [['chng', 'chng_signal',
+        epidata_data = [['chng', 'chng-sig',
                          pd.Timestamp("2020-01-01"), "state", "PA"]]
         epidata_df = pd.DataFrame(
             epidata_data,
