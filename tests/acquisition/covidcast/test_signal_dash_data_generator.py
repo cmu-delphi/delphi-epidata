@@ -113,8 +113,8 @@ class UnitTests(unittest.TestCase):
         cursor = connection.cursor()
 
         db_rows = [
-            (1, "Change", "chng", datetime.date(2020, 1, 1), datetime.date(2020, 1, 2)),
-            (2, "Quidel", "quidel", datetime.date(2020, 2, 1), datetime.date(2020, 2, 2)),
+            (1, "Change", "chng", "chng-sig", datetime.date(2020, 1, 1), datetime.date(2020, 1, 2)),
+            (2, "Quidel", "quidel", "quidel-sig", datetime.date(2020, 2, 1), datetime.date(2020, 2, 2)),
         ]
         cursor.fetchall.return_value = db_rows
 
@@ -123,12 +123,14 @@ class UnitTests(unittest.TestCase):
         expected_signals = [
             DashboardSignal(db_id=1, 
                 name="Change", 
-                source="chng", 
+                source="chng",
+                covidcast_signal="chng-sig",
                 latest_coverage_update=date(2020, 1, 1),
                 latest_status_update=date(2020, 1, 2)),
             DashboardSignal(db_id=2, 
                 name="Quidel",
                 source="quidel",
+                covidcast_signal="quidel-sig",
                 latest_coverage_update=date(2020, 2, 1), 
                 latest_status_update=date(2020, 2, 2))
         ]
@@ -138,10 +140,13 @@ class UnitTests(unittest.TestCase):
     def test_get_latest_issue_from_metadata(self):
         signal = DashboardSignal(
             db_id=1, name="Change", source="chng",
+            covidcast_signal="chng-sig",
             latest_coverage_update=date(2021, 1, 1),
             latest_status_update=date(2021, 1, 1))
-        data = [['chng', 20200101], ['chng', 20210101], ['quidel', 20220101]]
-        metadata = pd.DataFrame(data, columns=['data_source', 'max_issue'])
+        data = [['chng', 'chng-sig', 20200101],
+                ['chng', 'chng-sig', 20210101],
+                ['quidel', 'quidel-sig', 20220101]]
+        metadata = pd.DataFrame(data, columns=['data_source', 'signal', 'max_issue'])
 
         issue_date = get_latest_issue_from_metadata(signal, metadata)
         self.assertEqual(issue_date, date(2021, 1, 1))
@@ -149,13 +154,14 @@ class UnitTests(unittest.TestCase):
     def test_get_latest_time_value_from_metadata(self):
         signal = DashboardSignal(
             db_id=1, name="Change", source="chng",
+            covidcast_signal="chng-sig",
             latest_coverage_update=date(2021, 1, 1),
             latest_status_update=date(2021, 1, 1))
         data = [
-            ['chng', pd.Timestamp("2020-01-01")],
-            ['chng', pd.Timestamp("2021-01-01")],
-            ['quidel', pd.Timestamp("20220101")]]
-        metadata = pd.DataFrame(data, columns=['data_source', 'max_time'])
+            ['chng', 'chng-sig', pd.Timestamp("2020-01-01")],
+            ['chng', 'chng-sig', pd.Timestamp("2021-01-01")],
+            ['quidel', 'quidel-sig', pd.Timestamp("20220101")]]
+        metadata = pd.DataFrame(data, columns=['data_source', 'signal', 'max_time'])
 
         data_date = get_latest_time_value_from_metadata(signal, metadata)
         self.assertEqual(data_date, date(2021, 1, 1))
@@ -164,9 +170,10 @@ class UnitTests(unittest.TestCase):
     def test_get_coverage(self, mock_signal):
         signal = DashboardSignal(
             db_id=1, name="Change", source="chng",
+            covidcast_signal="chng-sig",
             latest_coverage_update=date(2021, 1, 1),
             latest_status_update=date(2021, 1, 1))
-        data = [['chng', pd.Timestamp("2020-01-01"), "chng_signal"]]
+        data = [['chng', pd.Timestamp("2020-01-01"), "chng-sig"]]
         metadata = pd.DataFrame(
             data,
             columns=[
@@ -174,7 +181,7 @@ class UnitTests(unittest.TestCase):
                 'max_time',
                 'signal'])
 
-        epidata_data = [['chng', 'chng_signal',
+        epidata_data = [['chng', 'chng-sig',
                          pd.Timestamp("2020-01-01"), "state", "PA"]]
         epidata_df = pd.DataFrame(
             epidata_data,
@@ -205,6 +212,7 @@ class UnitTests(unittest.TestCase):
     def test_get_coverage_too_many_rows(self, mock_signal):
         signal = DashboardSignal(
             db_id=1, name="Change", source="chng",
+            covidcast_signal="chng-sig",
             latest_coverage_update=date(2021, 1, 1),
             latest_status_update=date(2021, 1, 1))
         data = [['chng', pd.Timestamp("2020-01-01"), "chng_signal"]]

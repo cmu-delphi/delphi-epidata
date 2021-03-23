@@ -24,6 +24,7 @@ class DashboardSignal:
     db_id: int
     name: str
     source: str
+    covidcast_signal: str
     latest_coverage_update: datetime.date
     latest_status_update: datetime.date
 
@@ -136,6 +137,7 @@ class Database:
         select_statement = f'''SELECT `id`, 
             `name`,
             `source`,
+            `covidcast_signal`,
             `latest_coverage_update`, 
             `latest_status_update`
             FROM `{Database.SIGNAL_TABLE_NAME}`
@@ -149,8 +151,9 @@ class Database:
                     db_id=result[0],
                     name=result[1],
                     source=result[2],
-                    latest_coverage_update=result[3],
-                    latest_status_update=result[4]))
+                    covidcast_signal=result[3],
+                    latest_coverage_update=result[4],
+                    latest_status_update=result[5]))
         return enabled_signals
 
 
@@ -163,14 +166,16 @@ def get_argument_parser():
 
 def get_latest_issue_from_metadata(dashboard_signal, metadata):
     """Get the most recent issue date for the signal."""
-    df_for_source = metadata[metadata.data_source == dashboard_signal.source]
+    df_for_source = metadata[(metadata.data_source == dashboard_signal.source) & (
+        metadata.signal == dashboard_signal.covidcast_signal)]
     max_issue = df_for_source["max_issue"].max()
     return pd.to_datetime(str(max_issue), format="%Y%m%d").date()
 
 
 def get_latest_time_value_from_metadata(dashboard_signal, metadata):
     """Get the most recent date with data for the signal."""
-    df_for_source = metadata[metadata.data_source == dashboard_signal.source]
+    df_for_source = metadata[(metadata.data_source == dashboard_signal.source) & (
+        metadata.signal == dashboard_signal.covidcast_signal)]
     return df_for_source["max_time"].max().date()
 
 
@@ -179,14 +184,9 @@ def get_coverage(dashboard_signal: DashboardSignal,
     """Get the most recent coverage for the signal."""
     latest_time_value = get_latest_time_value_from_metadata(
         dashboard_signal, metadata)
-    df_for_source = metadata[metadata.data_source == dashboard_signal.source]
-    # we need to do something smarter here -- make this part of config
-    # (and allow multiple signals) and/or aggregate across all signals
-    # for a source
-    signal = df_for_source["signal"].iloc[0]
     latest_data = covidcast.signal(
         dashboard_signal.source,
-        signal,
+        dashboard_signal.covidcast_signal,
         end_day=latest_time_value,
         start_day=latest_time_value)
     count_by_geo_type_df = latest_data.groupby(

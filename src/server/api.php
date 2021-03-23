@@ -1003,19 +1003,34 @@ function get_covidcast($source, $signals, $time_type, $geo_type, $time_values, $
 
 function get_signal_dash_status_data() {
   $query = 'SELECT enabled_signal.`name`,
+              enabled_signal.`source`,
+              enabled_signal.`covidcast_signal`,
               status.`latest_issue`,
               status.`latest_time_value`
-            FROM (SELECT `id`, `name`, `latest_status_update`
+            FROM (SELECT `id`, `name`, `source`, `covidcast_signal`, `latest_status_update`
               FROM `dashboard_signal`
               WHERE `enabled`) AS enabled_signal
             LEFT JOIN `dashboard_signal_status` AS status
-            ON enabled_signal.`latest_status_update` = status.`date`';
+            ON enabled_signal.`latest_status_update` = status.`date`
+            AND enabled_signal.`id` = status.`signal_id`';
   
   $epidata = array();
-  $fields_string = array('name', 'latest_issue', 'latest_time_value');
+  $fields_string = array('name', 'source', 'covidcast_signal', 'latest_issue', 'latest_time_value');
   execute_query($query, $epidata, $fields_string, null /* fields_int */, null /* fields_float */);
+
+  $coverage = get_signal_dash_coverage_data();
+
+  $out = array();
+  foreach ($epidata as $signal) {
+    if (isset($coverage[$signal['name']])) {
+      $signal_with_coverage = $signal;
+      $signal_with_coverage['coverage'] = $coverage[$signal['name']];
+      $out[] = $signal_with_coverage;
+    }
+  }
+
   // return the data
-  return count($epidata) === 0 ? null : $epidata; 
+  return count($out) === 0 ? null : $out; 
 }
 
 function get_signal_dash_coverage_data() {
