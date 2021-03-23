@@ -1009,7 +1009,8 @@ function get_signal_dash_status_data() {
               FROM `dashboard_signal`
               WHERE `enabled`) AS enabled_signal
             LEFT JOIN `dashboard_signal_status` AS status
-            ON enabled_signal.`latest_status_update` = status.`date`';
+            ON enabled_signal.`latest_status_update` = status.`date`
+            AND enabled_signal.`id` = status.`signal_id`';
   
   $epidata = array();
   $fields_string = array('name', 'latest_issue', 'latest_time_value');
