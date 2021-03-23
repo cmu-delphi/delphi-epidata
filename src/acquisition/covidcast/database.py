@@ -240,7 +240,7 @@ class Database:
   def get_covidcast_meta(self):
     """Compute and return metadata on all non-WIP COVIDcast signals."""
 
-    n_threads = cpu_count()*9//10 # aka number of concurrent db connections, which [sh|c]ould be ~<= 90% of the #cores available to SQL server
+    n_threads = max(1, cpu_count()*9//10) # aka number of concurrent db connections, which [sh|c]ould be ~<= 90% of the #cores available to SQL server
     # NOTE: this may present a small problem if this job runs on different hardware than the db,
     #       but we should not run into that issue in prod.
 
