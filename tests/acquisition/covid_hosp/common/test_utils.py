@@ -45,7 +45,8 @@ class UtilsTests(unittest.TestCase):
   def test_int_from_date(self):
     """Convert a YYY-MM-DD date to a YYYYMMDD int."""
 
-    self.assertEqual(Utils.int_from_date('2020-11-17'), 20201117)
+    self.assertEqual(Utils.int_from_date('2020/11/17'), 20201117)
+    self.assertEqual(Utils.int_from_date('2020/11/17 10:00:00'), 20201117)
 
   def test_parse_bool(self):
     """Parse a boolean value from a string."""
