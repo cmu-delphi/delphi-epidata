@@ -113,8 +113,8 @@ class UnitTests(unittest.TestCase):
         cursor = connection.cursor()
 
         db_rows = [
-            (1, "Change", "chng", datetime.date(2020, 1, 1), datetime.date(2020, 1, 2)),
-            (2, "Quidel", "quidel", datetime.date(2020, 2, 1), datetime.date(2020, 2, 2)),
+            (1, "Change", "chng", "chng-sig", datetime.date(2020, 1, 1), datetime.date(2020, 1, 2)),
+            (2, "Quidel", "quidel", "quidel-sig", datetime.date(2020, 2, 1), datetime.date(2020, 2, 2)),
         ]
         cursor.fetchall.return_value = db_rows
 
@@ -123,12 +123,14 @@ class UnitTests(unittest.TestCase):
         expected_signals = [
             DashboardSignal(db_id=1, 
                 name="Change", 
-                source="chng", 
+                source="chng",
+                covidcast_signal="chng-sig",
                 latest_coverage_update=date(2020, 1, 1),
                 latest_status_update=date(2020, 1, 2)),
             DashboardSignal(db_id=2, 
                 name="Quidel",
                 source="quidel",
+                covidcast_signal="quidel-sig",
                 latest_coverage_update=date(2020, 2, 1), 
                 latest_status_update=date(2020, 2, 2))
         ]
@@ -138,6 +140,7 @@ class UnitTests(unittest.TestCase):
     def test_get_latest_issue_from_metadata(self):
         signal = DashboardSignal(
             db_id=1, name="Change", source="chng",
+            covidcast_signal="chng-sig",
             latest_coverage_update=date(2021, 1, 1),
             latest_status_update=date(2021, 1, 1))
         data = [['chng', 20200101], ['chng', 20210101], ['quidel', 20220101]]
@@ -149,6 +152,7 @@ class UnitTests(unittest.TestCase):
     def test_get_latest_time_value_from_metadata(self):
         signal = DashboardSignal(
             db_id=1, name="Change", source="chng",
+            covidcast_signal="chng-sig",
             latest_coverage_update=date(2021, 1, 1),
             latest_status_update=date(2021, 1, 1))
         data = [
@@ -164,6 +168,7 @@ class UnitTests(unittest.TestCase):
     def test_get_coverage(self, mock_signal):
         signal = DashboardSignal(
             db_id=1, name="Change", source="chng",
+            covidcast_signal="chng-sig",
             latest_coverage_update=date(2021, 1, 1),
             latest_status_update=date(2021, 1, 1))
         data = [['chng', pd.Timestamp("2020-01-01"), "chng_signal"]]
@@ -205,6 +210,7 @@ class UnitTests(unittest.TestCase):
     def test_get_coverage_too_many_rows(self, mock_signal):
         signal = DashboardSignal(
             db_id=1, name="Change", source="chng",
+            covidcast_signal="chng-sig",
             latest_coverage_update=date(2021, 1, 1),
             latest_status_update=date(2021, 1, 1))
         data = [['chng', pd.Timestamp("2020-01-01"), "chng_signal"]]
