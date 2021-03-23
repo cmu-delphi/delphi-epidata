@@ -11,6 +11,7 @@ from math import ceil
 
 from queue import Queue, Empty
 import threading
+from multiprocessing import cpu_count
 
 # first party
 import delphi.operations.secrets as secrets
@@ -239,7 +240,9 @@ class Database:
   def get_covidcast_meta(self):
     """Compute and return metadata on all non-WIP COVIDcast signals."""
 
-    n_threads = 8 # aka number of concurrent db connections, which [sh|c]ould be ~= #cores available to SQL server
+    n_threads = cpu_count() - 1 # aka number of concurrent db connections, which [sh|c]ould be ~<= #cores available to SQL server
+    # NOTE: this may present a small problem if this job runs on different hardware than the db,
+    #       but we should not run into that issue in prod.
 
     srcsigs = Queue() # multi-consumer threadsafe!
 
@@ -287,12 +290,12 @@ class Database:
     meta_lock = threading.Lock()
 
     def worker():
+      print("starting thread: " + threading.current_thread().name)
+      #  set up new db connection for thread
+      worker_dbc = Database()
+      worker_dbc.connect(connector_impl=self._connector_impl)
+      w_cursor = worker_dbc._cursor
       try:
-        print("starting thread: " + threading.current_thread().name)
-        #  set up new db connection for thread
-        worker_dbc = Database()
-        worker_dbc.connect(connector_impl=self._connector_impl)
-        w_cursor = worker_dbc._cursor
         while True:
           (source, signal) = srcsigs.get_nowait() # this will throw the Empty caught below
           w_cursor.execute(inner_sql, (source, signal))
