@@ -23,12 +23,12 @@ class Utils:
       entrypoint()
 
   def int_from_date(date):
-    """Convert a YYYY-MM-DD date from a string to a YYYYMMDD int.
+    """Convert a YYYY/MM/DD date from a string to a YYYYMMDD int.
 
     Parameters
     ----------
     date : str
-      Date in YYYY-MM-DD format.
+      Date in "YYYY/MM/DD.*" format.
 
     Returns
     -------
@@ -36,7 +36,7 @@ class Utils:
       Date in YYYYMMDD format.
     """
 
-    return int(date.replace('-', ''))
+    return int(date[:10].replace('/', '').replace('-', ''))
 
   def parse_bool(value):
     """Convert a string to a boolean.
