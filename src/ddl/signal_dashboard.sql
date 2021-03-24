@@ -8,6 +8,7 @@ This table stores the signals used in the public signal dashboard.
 | id                     | int(11)      | NO   | PRI | NULL       | auto_increment |
 | name                   | varchar(255) | NO   |     | NULL       |                |
 | source                 | varchar(32)  | NO   |     | NULL       |                |
+| covidcast_signal       | varchar(64)  | NO   |     | NULL       |                |
 | enabled                | tinyint(1)   | NO   |     | NULL       |                |
 | latest_coverage_update | date         | NO   |     | 2020-01-01 |                |
 | latest_status_update   | date         | NO   |     | 2020-01-01 |                |
@@ -19,6 +20,7 @@ CREATE TABLE `dashboard_signal` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `source` varchar(32) NOT NULL,
+  `covidcast_signal` varchar(64) NOT NULL,
   `enabled` boolean NOT NULL,
   `latest_coverage_update` date DEFAULT "2020-01-01" NOT NULL,
   `latest_status_update` date DEFAULT "2020-01-01" NOT NULL,
