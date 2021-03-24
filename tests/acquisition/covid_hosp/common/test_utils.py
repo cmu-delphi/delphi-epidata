@@ -1,13 +1,16 @@
 """Unit tests for utils.py."""
 
 # standard library
+from datetime import date
 import unittest
-from unittest.mock import MagicMock
-from unittest.mock import sentinel
+from unittest.mock import MagicMock, PropertyMock, patch
 
 # first party
 from delphi.epidata.acquisition.covid_hosp.common.test_utils import UnitTestUtils
 from delphi.epidata.acquisition.covid_hosp.common.utils import Utils, CovidHospException
+
+#third party
+import pandas as pd
 
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.acquisition.covid_hosp.common.utils'
@@ -67,74 +70,24 @@ class UtilsTests(unittest.TestCase):
       with self.assertRaises(CovidHospException):
         Utils.parse_bool('maybe')
 
-  def test_get_entry_success(self):
-    """Get a deeply nested field from an arbitrary object."""
+  def test_issues_to_fetch(self):
+    test_metadata = pd.DataFrame({
+      "date": [pd.Timestamp("2021-03-13 00:00:00"),
+               pd.Timestamp("2021-03-14 00:00:00"),
+               pd.Timestamp("2021-03-15 00:00:01"),
+               pd.Timestamp("2021-03-15 00:00:00"),
+               pd.Timestamp("2021-03-16 00:00:00")
+               ],
+      "Archive Link": ["a", "b", "d", "c", "e"]
+    }).set_index("date")
 
-    obj = self.test_utils.load_sample_metadata()
-
-    result = Utils.get_entry(obj, 'result', 0, 'tags', 2, 'id')
-
-    self.assertEqual(result, '56f3cdad-8acb-46c8-bc71-aa1ded8407fb')
-
-  def test_get_entry_failure(self):
-    """Fail with a helpful message when a nested field doesn't exist."""
-
-    obj = self.test_utils.load_sample_metadata()
-
-    with self.assertRaises(CovidHospException):
-      Utils.get_entry(obj, -1)
-
-  def test_get_issue_from_revision(self):
-    """Extract an issue date from a free-form revision string."""
-
-    revisions = ('Tue, 11/03/2020 - 19:38', 'Mon, 11/16/2020 - 00:55', 'foo')
-    issues = (20201103, 20201116, None)
-
-    for revision, issue in zip(revisions, issues):
-      with self.subTest(revision=revision):
-
-        if issue:
-          result = Utils.get_issue_from_revision(revision)
-          self.assertEqual(result, issue)
-        else:
-          with self.assertRaises(CovidHospException):
-            Utils.get_issue_from_revision(revision)
-
-  def test_extract_resource_details(self):
-    """Extract URL and revision from metadata."""
-
-    with self.subTest(name='invalid success'):
-      metadata = self.test_utils.load_sample_metadata()
-      metadata['success'] = False
-
-      with self.assertRaises(CovidHospException):
-        Utils.extract_resource_details(metadata)
-
-    with self.subTest(name='invalid result'):
-      metadata = self.test_utils.load_sample_metadata()
-      metadata['result'] = []
-
-      with self.assertRaises(CovidHospException):
-        Utils.extract_resource_details(metadata)
-
-    with self.subTest(name='invalid resource'):
-      metadata = self.test_utils.load_sample_metadata()
-      metadata['result'][0]['resources'] = []
-
-      with self.assertRaises(CovidHospException):
-        Utils.extract_resource_details(metadata)
-
-    with self.subTest(name='valid'):
-      metadata = self.test_utils.load_sample_metadata()
-
-      url, revision = Utils.extract_resource_details(metadata)
-
-      expected_url = (
-        'https://healthdata.gov/sites/default/files/'
-        'estimated_inpatient_all_20201213_1757.csv'
-      )
-      self.assertEqual(url, expected_url)
-      self.assertEqual(revision, 'Sun, 12/13/2020 - 22:36')
+    issues = Utils.issues_to_fetch(test_metadata, pd.Timestamp("2021-3-13"), pd.Timestamp("2021-3-16"))
+    self.assertEqual(issues,
+                     {date(2021, 3, 14): [("b", pd.Timestamp("2021-03-14 00:00:00"))],
+                      date(2021, 3, 15): [("c", pd.Timestamp("2021-03-15 00:00:00")),
+                                          ("d", pd.Timestamp("2021-03-15 00:00:01"))]
+                      }
+                     )
 
   def test_run_skip_old_dataset(self):
     """Don't re-acquire an old dataset."""
@@ -145,7 +98,7 @@ class UtilsTests(unittest.TestCase):
     mock_database = MagicMock()
     with mock_database.connect() as mock_connection:
       pass
-    mock_connection.contains_revision.return_value = True
+    mock_connection.get_max_issue.return_value = pd.Timestamp("2200/1/1")
 
     result = Utils.update_dataset(database=mock_database, network=mock_network)
 
@@ -160,20 +113,25 @@ class UtilsTests(unittest.TestCase):
     mock_network = MagicMock()
     mock_network.fetch_metadata.return_value = \
         self.test_utils.load_sample_metadata()
-    fake_dataset = [1, 2, 3]
+    fake_dataset = pd.DataFrame({"date": [pd.Timestamp("2020/1/1")], "state": ["ca"]})
     mock_network.fetch_dataset.return_value = fake_dataset
     mock_database = MagicMock()
     with mock_database.connect() as mock_connection:
       pass
-    mock_connection.contains_revision.return_value = False
-
-    result = Utils.update_dataset(database=mock_database, network=mock_network)
+    type(mock_connection).KEY_COLS = PropertyMock(return_value=["state", "date"])
+    mock_connection.get_max_issue.return_value = pd.Timestamp("1900/1/1")
+    with patch.object(Utils, 'issues_to_fetch') as mock_issues:
+      mock_issues.return_value = {pd.Timestamp("2021/3/15"): [("url1", pd.Timestamp("2021-03-15 00:00:00")),
+                                                              ("url2", pd.Timestamp("2021-03-15 00:00:00"))]}
+      result = Utils.update_dataset(database=mock_database, network=mock_network)
 
     self.assertTrue(result)
 
     mock_connection.insert_metadata.assert_called_once()
     args = mock_connection.insert_metadata.call_args[0]
-    self.assertEqual(args[:2], (20201213, 'Sun, 12/13/2020 - 22:36'))
-
-    mock_connection.insert_dataset.assert_called_once_with(
-        20201213, fake_dataset)
+    self.assertEqual(args[:2], (20210315, "url2"))
+    pd.testing.assert_frame_equal(
+      mock_connection.insert_dataset.call_args[0][1],
+      pd.DataFrame({"state": ["ca"], "date": [pd.Timestamp("2020/1/1")]})
+    )
+    self.assertEqual(mock_connection.insert_dataset.call_args[0][0], 20210315)

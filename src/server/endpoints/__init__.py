@@ -31,6 +31,8 @@ from . import (
     sensors,
     twitter,
     wiki,
+    signal_dashboard_status,
+    signal_dashboard_coverage,
 )
 
 endpoints = [
@@ -66,6 +68,8 @@ endpoints = [
     sensors,
     twitter,
     wiki,
+    signal_dashboard_status,
+    signal_dashboard_coverage,
 ]
 
 __all__ = ["endpoints"]

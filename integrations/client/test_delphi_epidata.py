@@ -5,7 +5,9 @@ import unittest
 from unittest.mock import patch, MagicMock
 
 # third party
+from aiohttp.client_exceptions import ClientResponseError
 import mysql.connector
+import pytest
 
 # first party
 from delphi.epidata.client.delphi_epidata import Epidata
@@ -14,6 +16,14 @@ import delphi.operations.secrets as secrets
 
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.client.delphi_epidata'
+
+def fake_epidata_endpoint(func):
+  """This can be used as a decorator to enable a bogus Epidata endpoint to return 404 responses."""
+  def wrapper(*args):
+    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/fake_api.php'
+    func(*args)
+    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+  return wrapper
 
 
 class DelphiEpidataPythonClientTests(unittest.TestCase):
@@ -510,10 +520,25 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
         'geo_value': '00000',
         'time_values': '20200414'
       }
-    ], batch_size=10)
-    responses = [i[0] for i in test_output]*12
+    ]*12, batch_size=10)
+    responses = [i[0] for i in test_output]
     # check response is same as standard covidcast call, using 24 calls to test batch sizing
     self.assertEqual(responses,
                      [Epidata.covidcast('src', 'sig', 'day', 'county', 20200414, '11111'),
                       Epidata.covidcast('src', 'sig', 'day', 'county', 20200414, '00000')]*12
                      )
+
+  @fake_epidata_endpoint
+  def test_async_epidata_fail(self):
+    with pytest.raises(ClientResponseError, match="404, message='NOT FOUND'"):
+      Epidata.async_epidata([
+        {
+          'source': 'covidcast',
+          'data_source': 'src',
+          'signals': 'sig',
+          'time_type': 'day',
+          'geo_type': 'county',
+          'geo_value': '11111',
+          'time_values': '20200414'
+        }
+      ])
