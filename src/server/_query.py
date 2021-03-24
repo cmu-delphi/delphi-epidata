@@ -145,7 +145,7 @@ def parse_result(
     ]
 
 
-def _run_query(p: APrinter, query_tuple: Tuple[str, Dict[str, Any]]):
+def run_query(p: APrinter, query_tuple: Tuple[str, Dict[str, Any]]):
     query, params = query_tuple
     # limit rows + 1 for detecting whether we would have more
     full_query = text(f"{query} LIMIT {p.remaining_rows + 1}")
@@ -179,7 +179,7 @@ def execute_queries(
 
     if not query_list or p.remaining_rows <= 0:
         return p(dummy_gen)
-    
+
     def gen(first_rows):
         for row in first_rows:
             yield parse_row(row, fields_string, fields_int, fields_float)
@@ -188,13 +188,13 @@ def execute_queries(
             if p.remaining_rows <= 0:
                 # no more rows
                 break
-            r = _run_query(p, query_params)
+            r = run_query(p, query_params)
             for row in r:
                 yield parse_row(row, fields_string, fields_int, fields_float)
 
     # execute first query
     try:
-        r = _run_query(p, query_list.pop(0))
+        r = run_query(p, query_list.pop(0))
     except Exception as e:
         raise DatabaseErrorException(str(e))
 
