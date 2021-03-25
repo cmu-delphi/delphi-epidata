@@ -338,6 +338,7 @@ unweighted signals are also available. These begin `smoothed_`, such as
 | --- | --- | --- |
 | `smoothed_wtested_14d` | Estimated percentage of people who were tested for COVID-19 in the past 14 days, regardless of their test result <br/> **Earliest date available:** 2020-09-08 | B8, B10 |
 | `smoothed_wtested_positive_14d` | Estimated test positivity rate (percent) among people tested for COVID-19 in the past 14 days <br/> **Earliest date available:** 2020-09-08 | B10a |
+| `smoothed_wscreening_tested_positive_14d` | Estimated test positivity rate (percent) among people tested for COVID-19 in the past 14 days who were being screened with no symptoms or known exposure. This includes people who said they were tested while receiving other medical care, because their employer or school required it, after attending a large outdoor gathering, or prior to visiting friends or family. <br/> **Earliest date available:** 2021-03-20 | B10a, B10b |
 | `smoothed_wwanted_test_14d` | Estimated percentage of people who *wanted* to be tested for COVID-19 in the past 14 days, out of people who were *not* tested in that time <br/> **Earliest date available:** 2020-09-08 | B12 |
 
 These indicators are based on questions in Wave 4 of the survey, introduced on
