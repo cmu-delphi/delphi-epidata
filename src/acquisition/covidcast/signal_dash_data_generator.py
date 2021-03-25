@@ -17,6 +17,8 @@ import delphi.operations.secrets as secrets
 from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
 
 
+LOOKBACK_DAYS_FOR_COVERAGE = 28
+
 @dataclass
 class DashboardSignal:
     """Container class for information about dashboard signals."""
@@ -184,25 +186,24 @@ def get_coverage(dashboard_signal: DashboardSignal,
     """Get the most recent coverage for the signal."""
     latest_time_value = get_latest_time_value_from_metadata(
         dashboard_signal, metadata)
+    start_day = latest_time_value - datetime.timedelta(days = LOOKBACK_DAYS_FOR_COVERAGE)
     latest_data = covidcast.signal(
         dashboard_signal.source,
         dashboard_signal.covidcast_signal,
-        end_day=latest_time_value,
-        start_day=latest_time_value)
+        end_day = latest_time_value,
+        start_day = start_day)
     count_by_geo_type_df = latest_data.groupby(
         ['geo_type', 'data_source', 'time_value', 'signal']).size().to_frame('count').reset_index()
 
-    if len(count_by_geo_type_df) > 1:
-        raise ValueError(f"Expected one row for coverage, got {len(count_by_geo_type_df)}.")
-
     signal_coverage_list = []
     
-    signal_coverage = DashboardSignalCoverage(
-        signal_id=dashboard_signal.db_id,
-        date=latest_time_value,
-        geo_type=count_by_geo_type_df['geo_type'].iloc[0],
-        count=count_by_geo_type_df['count'].iloc[0].item())
-    signal_coverage_list.append(signal_coverage)
+    for _, row in count_by_geo_type_df.iterrows():
+        signal_coverage = DashboardSignalCoverage(
+            signal_id=dashboard_signal.db_id,
+            date=row['time_value'].date(),
+            geo_type=row['geo_type'],
+            count=row['count'])
+        signal_coverage_list.append(signal_coverage)
 
     return signal_coverage_list
 
