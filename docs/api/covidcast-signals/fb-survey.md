@@ -343,6 +343,15 @@ unweighted signals are also available. These begin `smoothed_`, such as
 These indicators are based on questions in Wave 4 of the survey, introduced on
 September 8, 2020.
 
+
+## Schooling Indicators
+
+| Signal | Description | Survey Item |
+| --- | --- | --- |
+| `smoothed_winperson_school_fulltime` | Estimated percentage of people who had any children attending in-person school on a full-time basis, among people reporting any pre-K-grade 12 children in their household. <br/> **Earliest date available:** 2021-03-28 | E2 |
+| `smoothed_winperson_school_parttime` | Estimated percentage of people who had any children attending in-person school on a part-time basis, among people reporting any pre-K-grade 12 children in their household. <br/> **Earliest date available:** 2021-03-28 | E2 |
+
+
 Signals beginning `raw_w` or `smoothed_w` are adjusted using survey weights
 [as described below](#survey-weighting) to be demographically representative.
 Weighted signals have 1-2 days of lag, so if low latency is paramount,
