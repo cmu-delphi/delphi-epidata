@@ -89,13 +89,20 @@ class UnitTests(unittest.TestCase):
             geo_type="state",
             count=1
         )
+        coverage3 = DashboardSignalCoverage(
+            signal_id=2,
+            date=date(2021, 2, 1),
+            geo_type="state",
+            count=1
+        )
 
-        database.write_coverage([coverage1, coverage2])
+        database.write_coverage([coverage1, coverage2, coverage3])
 
         coverage_tuples = cursor.executemany.call_args_list[0].args[1]
         expected_coverage_tuples = [
             (1, date(2020, 1, 1), "state", 1),
-            (2, date(2021, 2, 2), "state", 1)
+            (2, date(2021, 2, 2), "state", 1),
+            (2, date(2021, 2, 1), "state", 1)
         ]
         self.assertListEqual(coverage_tuples, expected_coverage_tuples)
 
@@ -105,6 +112,13 @@ class UnitTests(unittest.TestCase):
             (date(2021, 2, 2), 2)
         ]
         self.assertListEqual(update_tuples, expected_update_tuples)
+
+        delete_tuples = cursor.executemany.call_args_list[2].args[1]
+        expected_delete_tuples = [
+            (date(2020, 1, 1), 1),
+            (date(2021, 2, 1), 2)
+        ]
+        self.assertListEqual(delete_tuples, expected_delete_tuples)
 
     def test_get_enabled_signals_successful(self):
         """Test signals retrieved correctly."""

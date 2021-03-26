@@ -119,11 +119,17 @@ class Database:
         self._cursor.executemany(insert_statement, coverage_as_tuples)
 
         latest_coverage_dates = {}
+        oldest_coverage_dates = {}
         for x in coverage_list:
             latest_coverage_date = latest_coverage_dates.get(x.signal_id)
+            oldest_coverage_date = oldest_coverage_dates.get(x.signal_id)
             if not latest_coverage_date or x.date > latest_coverage_date:
                 latest_coverage_dates.update({x.signal_id: x.date})
+            if not oldest_coverage_date or x.date < oldest_coverage_date:
+                oldest_coverage_dates.update({x.signal_id: x.date})
+
         latest_coverage_tuples = [(v, k) for k, v in latest_coverage_dates.items()]
+        oldest_coverage_tuples = [(v, k) for k, v in oldest_coverage_dates.items()]
 
         update_statement = f'''UPDATE `{Database.SIGNAL_TABLE_NAME}`
             SET `latest_coverage_update` = GREATEST(`latest_coverage_update`, %s)
@@ -131,8 +137,13 @@ class Database:
             '''
         self._cursor.executemany(update_statement, latest_coverage_tuples)
 
-        self._connection.commit()
+        delete_statement = f'''DELETE FROM `{Database.COVERAGE_TABLE_NAME}`
+            WHERE `date` < %s
+            AND `signal_id` = %s
+            '''
+        self._cursor.executemany(delete_statement, oldest_coverage_tuples)
 
+        self._connection.commit()
 
     def get_enabled_signals(self) -> List[DashboardSignal]:
         """Retrieve all enabled signals from the database"""
