@@ -8,7 +8,7 @@ grand_parent: COVIDcast Epidata API
 {: .no_toc}
 
 * **Source name:** `covid-act-now`
-* **Earliest issue available:** DATE RELEASED TO API
+* **Earliest issue available:** 2021-03-25
 * **Number of data revisions since 19 May 2020:** 0
 * **Date of last change:** Never
 * **Available for:** county, hrr, msa, state, hhs, nation (see [geography coding docs](../covidcast_geography.md))
