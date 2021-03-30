@@ -235,4 +235,48 @@ class UnitTests(unittest.TestCase):
 
         self.assertListEqual(coverage, expected_coverage)
 
+    @patch("covidcast.signal")
+    def test_get_coverage_megacounties_dropped(self, mock_signal):
+        signal = DashboardSignal(
+            db_id=1, name="Change", source="chng",
+            covidcast_signal="chng-sig",
+            latest_coverage_update=date(2021, 1, 1),
+            latest_status_update=date(2021, 1, 1))
+        data = [['chng', pd.Timestamp("2020-01-01"), "chng-sig"]]
+        metadata = pd.DataFrame(
+            data,
+            columns=[
+                'data_source',
+                'max_time',
+                'signal'])
+
+        epidata_data = [
+            ['chng', 'chng-sig', pd.Timestamp("2020-01-01"), "county", "11111"],
+            ['chng', 'chng-sig', pd.Timestamp("2020-01-01"), "county", "10000"],
+        ]
+        epidata_df = pd.DataFrame(
+            epidata_data,
+            columns=[
+                'data_source',
+                'signal',
+                'time_value',
+                'geo_type',
+                'geo_value'])
+
+        mock_signal.return_value = epidata_df
+
+        coverage = get_coverage(signal, metadata)
+
+        expected_coverage = [
+            DashboardSignalCoverage(
+                signal_id=1,
+                date=date(
+                    2020,
+                    1,
+                    1),
+                geo_type='county',
+                count=1),    
+            ]
+
+        self.assertListEqual(coverage, expected_coverage)
      

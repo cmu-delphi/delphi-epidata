@@ -203,8 +203,11 @@ def get_coverage(dashboard_signal: DashboardSignal,
         dashboard_signal.covidcast_signal,
         end_day = latest_time_value,
         start_day = start_day)
-    count_by_geo_type_df = latest_data.groupby(
-        ['geo_type', 'data_source', 'time_value', 'signal']).size().to_frame('count').reset_index()
+    latest_data_without_megacounties = latest_data[~latest_data['geo_value'].str.endswith(
+        '000')]
+    count_by_geo_type_df = latest_data_without_megacounties.groupby(
+        ['geo_type', 'data_source', 'time_value', 'signal']).size().to_frame(
+        'count').reset_index()
 
     signal_coverage_list = []
     
