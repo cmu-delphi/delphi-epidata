@@ -26,7 +26,8 @@ are welcome.
 ## COVIDcast Map Signals
 
 The following signals are currently displayed on [the public COVIDcast
-map](https://delphi.cmu.edu/covidcast/):
+map](https://delphi.cmu.edu/covidcast/) and available in its [data export
+tool](https://delphi.cmu.edu/covidcast/export/):
 
 | Kind             | Name                             | Source                                                                | Signal                           |
 | ----             | ----                             | ------                                                                | ------                           |
