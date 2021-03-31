@@ -111,7 +111,7 @@ class Database:
             (`signal_id`, `date`, `geo_type`, `count`)
             VALUES
             (%s, %s, %s, %s)
-            ON DUPLICATE KEY UPDATE `signal_id` = `signal_id`
+            ON DUPLICATE KEY UPDATE `count` = VALUES(`count`)
             '''
         coverage_as_tuples = [
             (x.signal_id, x.date, x.geo_type, x.count)
