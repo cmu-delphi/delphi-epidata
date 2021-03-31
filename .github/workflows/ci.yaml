@@ -73,18 +73,18 @@ jobs:
           sleep 10s
       - name: Run Unit Tests
         run: |
-          docker run --rm --network delphi-net --env "SQLALCHEMY_DATABASE_URI=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata" --env "FLASK_SECRET=abc" delphi_web_python pytest repos/delphi/delphi-epidata/tests
+          docker run --rm --network delphi-net --env "SQLALCHEMY_DATABASE_URI=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata" --env "FLASK_SECRET=abc" delphi_web_python python -m pytest --import-mode importlib repos/delphi/delphi-epidata/tests
 
       - name: Run Integration Tests
         run: |
-          docker run --rm --network delphi-net delphi_web_python pytest repos/delphi/delphi-epidata/integrations
+          docker run --rm --network delphi-net delphi_web_python python -m pytest --import-mode importlib repos/delphi/delphi-epidata/integrations
 
       - name: Clean Up
         run: |
           docker stop delphi_database_epidata delphi_web_epidata
           docker network remove delphi-net
 
-      # Deployment      
+      # Deployment
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
         with:

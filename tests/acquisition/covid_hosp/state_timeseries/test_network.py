@@ -24,4 +24,4 @@ class NetworkTests(unittest.TestCase):
       result = Network.fetch_metadata()
 
       self.assertEqual(result, sentinel.json)
-      func.assert_called_once_with(dataset_id=Network.DATASET_ID)
+      func.assert_called_once_with(dataset_id=Network.METADATA_ID)
