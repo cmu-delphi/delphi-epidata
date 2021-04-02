@@ -93,9 +93,14 @@ All aggregates using the same set of grouping variables appear in a single CSV.
 Grouping variables use prefixes to indicate the format of the column and the
 originating question.
 
-* `b_` indicates a binary variable, coded as a boolean (True/False or 1/0). The originating item may have been a yes/no question, or the variable may be a binary interpretation of a multiple choice or multi-select item.
-* `mc_` indicates a multiple choice question. For example, age in D2.
-* `ms_` indicates a multi-select question, where the respondent was able to select more than one response if desired. For example, pre-existing medical conditions in C1.
+* `b_` indicates a binary variable, coded as a boolean (True/False or 1/0).
+  The originating item may have been a yes/no question, or the variable may be
+  a binary interpretation of a multiple choice or multi-select item.
+* `mc_` indicates a multiple choice question, where the respondent is able to
+  select no more than one response. For example, age in D2.
+* `ms_` indicates a multi-select question, where the respondent was able to
+  select more than one response if desired. For example, pre-existing medical
+  conditions in C1.
 
 
 ## Indicators
