@@ -7,8 +7,8 @@ from flask.json import dumps
 import orjson
 
 from ._analytics import record_analytics
-from ._config import MAX_RESULTS
-from ._common import app
+from ._config import MAX_RESULTS, MAX_COMPATIBILITY_RESULTS
+from ._common import app, is_compatibility_mode
 
 
 def print_non_standard(data):
@@ -28,6 +28,7 @@ class APrinter:
     def __init__(self):
         self.count: int = 0
         self.result: int = -1
+        self._max_results: int = MAX_COMPATIBILITY_RESULTS if is_compatibility_mode() else MAX_RESULTS
 
     def make_response(self, gen):
         return Response(
@@ -39,7 +40,7 @@ class APrinter:
         def gen():
             self.result = -2  # no result, default response
             began = False
-            try: 
+            try:
                 for row in generator:
                     if not began:
                         # do it here to catch an error before we send the begin
@@ -54,7 +55,7 @@ class APrinter:
                 app.logger.error(f'error executing')
                 self.result = -1
                 yield self._error(e)
-            
+
             record_analytics(self.result, self.count)
 
             if not began:
@@ -72,7 +73,7 @@ class APrinter:
 
     @property
     def remaining_rows(self) -> int:
-        return MAX_RESULTS - self.count
+        return self._max_results - self.count
 
     def _begin(self) -> Optional[Union[str, bytes]]:
         # hook
@@ -84,7 +85,7 @@ class APrinter:
 
     def _print_row(self, row: Dict) -> Optional[Union[str, bytes]]:
         first = self.count == 0
-        if self.count >= MAX_RESULTS:
+        if self.count >= self._max_results:
             # hit the limit
             self.result = 2
             return None
@@ -108,19 +109,29 @@ class ClassicPrinter(APrinter):
     """
 
     def _begin(self):
+        if is_compatibility_mode():
+            return '{ '
         return '{ "epidata": ['
 
     def _format_row(self, first: bool, row: Dict):
-        sep = b"," if not first else b""
+        if first and is_compatibility_mode():
+            sep = b'"epidata": ['
+        else:
+            sep = b"," if not first else b""
         return sep + orjson.dumps(row)
 
     def _end(self):
         message = "success"
+        prefix = "], "
+        if self.count == 0 and is_compatibility_mode():
+            # no array to end
+            prefix = ''
+
         if self.count == 0:
             message = "no results"
         elif self.result == 2:
             message = "too many results, data truncated"
-        return f'], "result": {self.result}, "message": {dumps(message)} }}'.encode('utf-8')
+        return f'{prefix}"result": {self.result}, "message": {dumps(message)} }}'.encode('utf-8')
 
 
 class ClassicTreePrinter(ClassicPrinter):
@@ -146,9 +157,14 @@ class ClassicTreePrinter(ClassicPrinter):
             self._tree[group].append(row)
         else:
             self._tree[group] = [row]
+        if first and is_compatibility_mode():
+            return b'"epidata": ['
         return None
 
     def _end(self):
+        if self.count == 0:
+            return super(ClassicTreePrinter, self)._end()
+
         tree = orjson.dumps(self._tree)
         self._tree = dict()
         r = super(ClassicTreePrinter, self)._end()

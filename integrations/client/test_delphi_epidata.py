@@ -250,7 +250,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
           'src', 'sig'*1000, 'day', 'county', 20200414, '01234')
 
       # check result
-      self.assertEqual(response_1, {'message': 'no results', 'result': -2, 'epidata': []})
+      self.assertEqual(response_1, {'message': 'no results', 'result': -2})
 
   @patch('requests.post')
   @patch('requests.get')
@@ -403,7 +403,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
     """Test that the covidcast_nowcast endpoint returns expected data."""
 
     # insert dummy data
-    self.cur.execute(f'''insert into covidcast_nowcast values 
+    self.cur.execute(f'''insert into covidcast_nowcast values
       (0, 'src', 'sig1', 'sensor', 'day', 'county', 20200101, '01001', 12345678, 3.5, 20200101, 2),
       (0, 'src', 'sig2', 'sensor', 'day', 'county', 20200101, '01001', 12345678, 2.5, 20200101, 2),
       (0, 'src', 'sig1', 'sensor', 'day', 'county', 20200101, '01001', 12345678, 1.5, 20200102, 2)''')
@@ -481,7 +481,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
     response = Epidata.covidcast_nowcast(
       'src', 'sig1', 'sensor', 'day', 'county', 22222222, '01001')
 
-    self.assertEqual(response, {'result': -2, 'message': 'no results', 'epidata': []})
+    self.assertEqual(response, {'result': -2, 'message': 'no results'})
 
   def test_async_epidata(self):
     # insert dummy data

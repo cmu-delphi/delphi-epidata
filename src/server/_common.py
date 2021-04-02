@@ -44,3 +44,17 @@ def teardown_db(exception=None):
 
     if db is not None:
         db.close()
+
+
+def is_compatibility_mode() -> bool:
+    """
+    checks whether this request is in compatibility mode
+    """
+    return 'compatibility' in g and g.compatibility
+
+
+def set_compatibility_mode():
+    """
+    sets the compatibility mode for this request
+    """
+    g.compatibility = True
