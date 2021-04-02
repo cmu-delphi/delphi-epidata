@@ -25,9 +25,10 @@ def print_non_standard(data):
 
 
 class APrinter:
-    def __init__(self):
+    def __init__(self, max_results = MAX_RESULTS):
         self.count: int = 0
         self.result: int = -1
+        self._max_results: int = max_results
 
     def make_response(self, gen):
         return Response(
@@ -39,7 +40,7 @@ class APrinter:
         def gen():
             self.result = -2  # no result, default response
             began = False
-            try: 
+            try:
                 for row in generator:
                     if not began:
                         # do it here to catch an error before we send the begin
@@ -54,7 +55,7 @@ class APrinter:
                 app.logger.error(f'error executing')
                 self.result = -1
                 yield self._error(e)
-            
+
             record_analytics(self.result, self.count)
 
             if not began:
@@ -72,7 +73,7 @@ class APrinter:
 
     @property
     def remaining_rows(self) -> int:
-        return MAX_RESULTS - self.count
+        return self._max_results - self.count
 
     def _begin(self) -> Optional[Union[str, bytes]]:
         # hook
@@ -84,7 +85,7 @@ class APrinter:
 
     def _print_row(self, row: Dict) -> Optional[Union[str, bytes]]:
         first = self.count == 0
-        if self.count >= MAX_RESULTS:
+        if self.count >= self._max_results:
             # hit the limit
             self.result = 2
             return None
@@ -131,8 +132,8 @@ class ClassicTreePrinter(ClassicPrinter):
     group: str
     _tree: Dict[str, List[Dict]] = dict()
 
-    def __init__(self, group: str):
-        super(ClassicTreePrinter, self).__init__()
+    def __init__(self, group: str, max_results = MAX_RESULTS):
+        super(ClassicTreePrinter, self).__init__(max_results)
         self.group = group
 
     def _begin(self):
@@ -226,17 +227,17 @@ class JSONLPrinter(APrinter):
         return orjson.dumps(row, option=orjson.OPT_APPEND_NEWLINE)
 
 
-def create_printer() -> APrinter:
+def create_printer(max_results = MAX_RESULTS) -> APrinter:
     format: str = request.values.get("format", "classic")
     if format == "tree":
-        return ClassicTreePrinter("signal")
+        return ClassicTreePrinter("signal", max_results)
     if format.startswith("tree-"):
         # support tree format by any property following the dash
-        return ClassicTreePrinter(format[len("tree-") :])
+        return ClassicTreePrinter(format[len("tree-") :], max_results)
     if format == "json":
-        return JSONPrinter()
+        return JSONPrinter(max_results)
     if format == "csv":
-        return CSVPrinter()
+        return CSVPrinter(max_results)
     if format == "jsonl":
-        return JSONLPrinter()
-    return ClassicPrinter()
+        return JSONLPrinter(max_results)
+    return ClassicPrinter(max_results)
