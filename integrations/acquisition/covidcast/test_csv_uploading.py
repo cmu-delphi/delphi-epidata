@@ -82,7 +82,7 @@ class CsvUploadingTests(unittest.TestCase):
     with open(source_receiving_dir + '/20200419_state_wip_really_long_name_that_will_be_accepted.csv', 'w') as f:
       f.write('geo_id,val,se,sample_size\n')
       f.write('pa,100,5.4,624\n')
-      
+
     # invalid
     with open(source_receiving_dir + '/20200419_state_wip_really_long_name_that_will_get_truncated_lorem_ipsum_dolor_sit_amet.csv', 'w') as f:
       f.write('geo_id,val,se,sample_size\n')
@@ -123,7 +123,7 @@ class CsvUploadingTests(unittest.TestCase):
         expected_lag = (expected_issue_day - time_value_day).days
         dct['lag'] = expected_lag
       return expected_epidata
-    
+
     # verify data matches the CSV
     # NB these are ordered by geo_value
     self.assertEqual(response, {
@@ -164,7 +164,7 @@ class CsvUploadingTests(unittest.TestCase):
     response = Epidata.covidcast(
       'src-name', 'wip_prototype', 'day', 'state', 20200419, '*')
 
-    
+
     # verify data matches the CSV
     # NB these are ordered by geo_value
     self.assertEqual(response, {
@@ -201,7 +201,7 @@ class CsvUploadingTests(unittest.TestCase):
       'message': 'success',
     })
 
-    
+
     # request CSV data from the API on the signal with name length 32<x<64
     response = Epidata.covidcast(
       'src-name', 'wip_really_long_name_that_will_be_accepted', 'day', 'state', 20200419, '*')
@@ -222,7 +222,7 @@ class CsvUploadingTests(unittest.TestCase):
         },
       ])
     })
-    
+
     # request CSV data from the API on the long-named signal
     response = Epidata.covidcast(
       'src-name', 'wip_really_long_name_that_will_get_truncated_lorem_ipsum_dolor_s', 'day', 'state', 20200419, '*')
@@ -232,7 +232,6 @@ class CsvUploadingTests(unittest.TestCase):
     self.assertEqual(response, {
       'result': -2,
       'message': 'no results',
-      'epidata': []
     })
 
     # verify timestamps and default values are reasonable
