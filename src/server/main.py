@@ -5,7 +5,7 @@ from typing import Dict, Callable
 from flask import request, send_file, Response, send_from_directory
 
 from ._config import URL_PREFIX
-from ._common import app
+from ._common import app, set_compatibility_mode
 from ._exceptions import MissingOrWrongSourceException
 from .endpoints import endpoints
 
@@ -24,6 +24,8 @@ for endpoint in endpoints:
 
 @app.route(f"{URL_PREFIX}/api.php", methods=["GET", "POST"])
 def handle_generic():
+    # mark as compatibility mode
+    set_compatibility_mode()
     endpoint = request.values.get("endpoint", request.values.get("source"))
     if not endpoint or endpoint not in endpoint_map:
         raise MissingOrWrongSourceException(endpoint_map.keys())

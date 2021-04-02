@@ -7,8 +7,8 @@ from flask.json import dumps
 import orjson
 
 from ._analytics import record_analytics
-from ._config import MAX_RESULTS
-from ._common import app
+from ._config import MAX_RESULTS, MAX_COMPATIBILITY_RESULTS
+from ._common import app, is_compatibility_mode
 
 
 def print_non_standard(data):
@@ -25,10 +25,10 @@ def print_non_standard(data):
 
 
 class APrinter:
-    def __init__(self, max_results = MAX_RESULTS):
+    def __init__(self):
         self.count: int = 0
         self.result: int = -1
-        self._max_results: int = max_results
+        self._max_results: int = MAX_COMPATIBILITY_RESULTS if is_compatibility_mode() else MAX_RESULTS
 
     def make_response(self, gen):
         return Response(
@@ -109,19 +109,29 @@ class ClassicPrinter(APrinter):
     """
 
     def _begin(self):
+        if is_compatibility_mode():
+            return '{ '
         return '{ "epidata": ['
 
     def _format_row(self, first: bool, row: Dict):
-        sep = b"," if not first else b""
+        if first and is_compatibility_mode():
+            sep = b'"epidata": ['
+        else:
+            sep = b"," if not first else b""
         return sep + orjson.dumps(row)
 
     def _end(self):
         message = "success"
+        prefix = "], "
+        if self.count == 0 and is_compatibility_mode():
+            # no array to end
+            prefix = ''
+
         if self.count == 0:
             message = "no results"
         elif self.result == 2:
             message = "too many results, data truncated"
-        return f'], "result": {self.result}, "message": {dumps(message)} }}'.encode('utf-8')
+        return f'{prefix}"result": {self.result}, "message": {dumps(message)} }}'.encode('utf-8')
 
 
 class ClassicTreePrinter(ClassicPrinter):
@@ -132,8 +142,8 @@ class ClassicTreePrinter(ClassicPrinter):
     group: str
     _tree: Dict[str, List[Dict]] = dict()
 
-    def __init__(self, group: str, max_results = MAX_RESULTS):
-        super(ClassicTreePrinter, self).__init__(max_results)
+    def __init__(self, group: str):
+        super(ClassicTreePrinter, self).__init__()
         self.group = group
 
     def _begin(self):
@@ -150,6 +160,9 @@ class ClassicTreePrinter(ClassicPrinter):
         return None
 
     def _end(self):
+        if self.count == 0:
+            return super(ClassicTreePrinter, self)._end()
+
         tree = orjson.dumps(self._tree)
         self._tree = dict()
         r = super(ClassicTreePrinter, self)._end()
@@ -227,17 +240,17 @@ class JSONLPrinter(APrinter):
         return orjson.dumps(row, option=orjson.OPT_APPEND_NEWLINE)
 
 
-def create_printer(max_results = MAX_RESULTS) -> APrinter:
+def create_printer() -> APrinter:
     format: str = request.values.get("format", "classic")
     if format == "tree":
-        return ClassicTreePrinter("signal", max_results)
+        return ClassicTreePrinter("signal")
     if format.startswith("tree-"):
         # support tree format by any property following the dash
-        return ClassicTreePrinter(format[len("tree-") :], max_results)
+        return ClassicTreePrinter(format[len("tree-") :])
     if format == "json":
-        return JSONPrinter(max_results)
+        return JSONPrinter()
     if format == "csv":
-        return CSVPrinter(max_results)
+        return CSVPrinter()
     if format == "jsonl":
-        return JSONLPrinter(max_results)
-    return ClassicPrinter(max_results)
+        return JSONLPrinter()
+    return ClassicPrinter()
