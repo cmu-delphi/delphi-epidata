@@ -157,6 +157,8 @@ class ClassicTreePrinter(ClassicPrinter):
             self._tree[group].append(row)
         else:
             self._tree[group] = [row]
+        if first and is_compatibility_mode():
+            return b'"epidata": ['
         return None
 
     def _end(self):
