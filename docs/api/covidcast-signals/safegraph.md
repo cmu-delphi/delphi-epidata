@@ -114,6 +114,10 @@ considered to be a full-service restaurant.  More information on NAICS codes is
 available from the [US Census Bureau: North American Industry Classification
 System](https://www.census.gov/eos/www/naics/index.html).
 
+The number of POIs coded as bars is much smaller than the number of POIs coded as restaurants.
+SafeGraph's Weekly Patterns data consistently lacks data on bar visits for Alaska, Delaware, Maine, North Dakota, New Hampshire, South Dakota, Vermont, West Virginia, and Wyoming.
+For certain dates, bar visits data is also missing for District of Columbia, Idaho and Washington. Restaurant visits data is available for all of the states, as well as the District of Columbia and Puerto Rico.
+
 ### Lag
 
 SafeGraph provides newly updated data for the previous week every Wednesday,
@@ -128,6 +132,3 @@ SafeGraph's Social Distancing Metrics and Weekly Patterns are based on mobile de
 * **Geographic bias.** If some regions have a greater density of SafeGraph panel members as a percentage of the population than other regions, comparisons of metrics between regions may be biased. Regions with more SafeGraph panel members will appear to have more visits counted, even if the rate of visits in the general population is the same.
 * **Demographic bias.** SafeGraph panels may not be representative of the local population as a whole. For example, [some research suggests](https://arxiv.org/abs/2011.07194) that "older and non-white voters are less likely to be captured by mobility data", so this data will not accurately reflect behavior in those populations. Since population demographics vary across the United States, this can also contribute to geographic biases.
 
-The number of POIs coded as bars is much smaller than the number of POIs coded as restaurants. 
-SafeGraph's Weekly Patterns data consistently lacks data on bar visits for Alaska, Delaware, Maine, North Dakota, New Hampshire, South Dakota, Vermont, West Virginia, and Wyoming. 
-For certain dates, bar visits data is also missing for District of Columbia, Idaho and Washington. Restaurant visits data is available for all of the states, as well as the District of Columbia and Puerto Rico.
