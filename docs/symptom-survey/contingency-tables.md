@@ -50,6 +50,12 @@ period of either a full epiweek (or [MMWR
 week](https://wwwn.cdc.gov/nndss/document/MMWR_week_overview.pdf), a
 standardized numbering of weeks throughout the year) or a full calendar month.
 
+Note: CSVs for the month of January 2021 only use data from January 6-31 due to
+a [definitional change in a major vaccine item on January 6](./coding.md#new-items-2).
+Indicators based on [item V9 use data starting January 12](./coding.md#new-items-2).
+CSVs for the week starting January 6, 2021, only use data from January 6-9 due to the
+same definitional change.
+
 ## Aggregation
 
 The aggregates are filtered to only include estimates for a particular group if
@@ -107,7 +113,7 @@ originating question.
 
 The files contain [weighted estimates](../api/covidcast-signals/fb-survey.md#survey-weighting) of the percent of
 respondents who fulfill one or several criteria. Estimates are broken out by
-state, age, gender, race, and ethnicity.
+state, age, gender, race, ethnicity, occupation, and health conditions.
 
 We plan to expand this list of indicators based on research needs; if you have a
 public health or research need for a particular variable not listed here, please
@@ -118,10 +124,10 @@ contact us at <delphi-survey-info@lists.andrew.cmu.edu>.
 
 | Indicator | Description | Survey Item |
 | --- | --- | --- |
-| `pct_cli` | Estimated percentage of people with COVID-like illness, using the same [definition as in the API](../api/covidcast-signals/fb-survey.md#estimating-percent-ili-and-cli) <br/> **Earliest date available:** 2020-01-01 | A1 and A2 |
-| `pct_ili` | Estimated percentage of people with influenza-like illness, using the same [definition as in the API](../api/covidcast-signals/fb-survey.md#estimating-percent-ili-and-cli) <br/> **Earliest date available:** 2020-01-01 | A1 and A2 |
-| `pct_hh_cmnty_cli` | Estimated percentage of people reporting illness in their local community, including their household, using the same [definition as in the API](../api/covidcast-signals/fb-survey.m#estimating-community-cli) <br/> **Earliest date available:** 2020-01-01 | A1, A2, and A4 |
-| `pct_anosmia` | Estimated percentage of people experiencing loss of smell or taste in the last 24 hours. <br/> **Earliest date available:** 2020-01-01 | A2 |
+| `pct_cli` | Estimated percentage of people with COVID-like illness, using the same [definition as in the API](../api/covidcast-signals/fb-survey.md#estimating-percent-ili-and-cli) <br/> **Earliest date available:** 2021-01-01 | A1 and A2 |
+| `pct_ili` | Estimated percentage of people with influenza-like illness, using the same [definition as in the API](../api/covidcast-signals/fb-survey.md#estimating-percent-ili-and-cli) <br/> **Earliest date available:** 2021-01-01 | A1 and A2 |
+| `pct_hh_cmnty_cli` | Estimated percentage of people reporting illness in their local community, including their household, using the same [definition as in the API](../api/covidcast-signals/fb-survey.m#estimating-community-cli) <br/> **Earliest date available:** 2021-01-01 | A1, A2, and A4 |
+| `pct_anosmia` | Estimated percentage of people experiencing loss of smell or taste in the last 24 hours. <br/> **Earliest date available:** 2021-01-01 | A2 |
 
 ### Vaccine Uptake and Acceptance
 
@@ -205,16 +211,12 @@ This item was shown to respondents starting in Wave 8.
 
 | Indicator | Description | Survey Item |
 | --- | --- | --- |
-| `pct_hesitant_dontneed_reason_had_covid` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they already had the illness, among respondents who answered No, probably not" or "No, definitely not" when asked if they would get vaccinated if offered (item V3) and provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-02-08 | V6 |
-| `pct_hesitant_dontneed_reason_dont_spend_time` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they don't spend time with high-risk people, among respondents who answered No, probably not" or "No, definitely not" when asked if they would get vaccinated if offered (item V3) and provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-02-08 | V6 |
-| `pct_hesitant_dontneed_reason_not_high_risk` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they are not in a high-risk group, among respondents who answered No, probably not" or "No, definitely not" when asked if they would get vaccinated if offered (item V3) and provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-02-08 | V6 |
-| `pct_hesitant_dontneed_reason_precautions` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they will use other precautions, such as a mask, instead, among respondents who answered No, probably not" or "No, definitely not" when asked if they would get vaccinated if offered (item V3) and provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-02-08 | V6 |
-| `pct_hesitant_dontneed_reason_not_serious` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they don't believe COVID-19 is a serious illness, among respondents who answered No, probably not" or "No, definitely not" when asked if they would get vaccinated if offered (item V3) and provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-02-08 | V6 |
-| `pct_hesitant_dontneed_reason_not_beneficial` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they don't think vaccines are beneficial, among respondents who answered No, probably not" or "No, definitely not" when asked if they would get vaccinated if offered (item V3) and provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-02-08 | V6 |
-| `pct_hesitant_dontneed_reason_other` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine for another reason, among respondents who answered No, probably not" or "No, definitely not" when asked if they would get vaccinated if offered (item V3) and provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-02-08 | V6 |
+| `pct_hesitant_dontneed_reason_had_covid` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they already had the illness, among respondents who answered "No, probably not" or "No, definitely not" when asked if they would get vaccinated if offered (item V3) and provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-02-08 | V6 and V5bc |
+| `pct_hesitant_dontneed_reason_dont_spend_time` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they don't spend time with high-risk people, among respondents who answered "No, probably not" or "No, definitely not" when asked if they would get vaccinated if offered (item V3) and provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-02-08 | V6 and V5bc |
+| `pct_hesitant_dontneed_reason_not_high_risk` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they are not in a high-risk group, among respondents who answered "No, probably not" or "No, definitely not" when asked if they would get vaccinated if offered (item V3) and provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-02-08 | V6 and V5bc |
+| `pct_hesitant_dontneed_reason_precautions` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they will use other precautions, such as a mask, instead, among respondents who answered "No, probably not" or "No, definitely not" when asked if they would get vaccinated if offered (item V3) and provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-02-08 | V6 and V5bc |
+| `pct_hesitant_dontneed_reason_not_serious` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they don't believe COVID-19 is a serious illness, among respondents who answered "No, probably not" or "No, definitely not" when asked if they would get vaccinated if offered (item V3) and provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-02-08 | V6 and V5bc |
+| `pct_hesitant_dontneed_reason_not_beneficial` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they don't think vaccines are beneficial, among respondents who answered "No, probably not" or "No, definitely not" when asked if they would get vaccinated if offered (item V3) and provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-02-08 | V6 and V5bc |
+| `pct_hesitant_dontneed_reason_other` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine for another reason, among respondents who answered "No, probably not" or "No, definitely not" when asked if they would get vaccinated if offered (item V3) and provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-02-08 | V6 and V5bc |
 
-Note: CSVs for the month of January 2021 only use data from January 6-31 due to
-a [definitional change in a major vaccine item on January 6](./coding.md#new-items-2).
-Indicators based on [item V9 use data starting January 12](./coding.md#new-items-2).
-CSVs for the week starting January 6, 2021, only use data from January 6-9 due to the
-same definitional change.
+
