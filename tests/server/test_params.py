@@ -1,4 +1,4 @@
-"""Unit tests for granular sensor authentication in api.php."""
+"""Unit tests for parameter parsing."""
 
 # standard library
 import unittest
