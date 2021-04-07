@@ -10,6 +10,8 @@ from .._params import (
     parse_geo_arg,
     parse_source_signal_arg,
     parse_time_arg,
+    parse_day_arg,
+    parse_day_range_arg,
 )
 from .._query import QueryBuilder, execute_query, filter_integers, filter_strings, run_query, parse_row
 from .._printer import create_printer
@@ -21,7 +23,7 @@ from .._validate import (
     require_all,
     require_any,
 )
-from .covidcast_utils import compute_trend
+from .covidcast_utils import compute_trend, shift_time_value
 
 # first argument is the endpoint name
 bp = Blueprint("covidcast", __name__)
@@ -123,11 +125,13 @@ def handle():
 
 @bp.route("/trend", methods=("GET", "POST"))
 def handle_trend():
+    require_all("date", "window")
     source_signal_pairs = parse_source_signal_pairs()
     geo_pairs = parse_geo_pairs()
 
-    time_value = extract_date("date")
-    # TODO window
+    time_value = parse_day_arg("date")
+    time_window = parse_day_range_arg("window")
+    basis_time_value = extract_date("basis") or shift_time_value(time_value, -7)
 
     # build query
     q = QueryBuilder("covidcast", "t")
@@ -140,7 +144,7 @@ def handle_trend():
 
     q.where_source_signal_pairs("source", "signal", source_signal_pairs)
     q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
-    # q.where_time_pairs('time_type','time_value',time_pairs)
+    q.where_time_pairs("time_type", "time_value", [TimePair("day", [time_window])])
 
     # fetch most recent issue fast
     q.conditions.append(f"({q.alias}.is_latest_issue IS TRUE)")
@@ -149,7 +153,7 @@ def handle_trend():
 
     def gen(rows):
         for key, group in groupby((parse_row(row, fields_string, fields_int, fields_float) for row in rows), lambda row: (row["geo_type"], row["geo_value"], row["source"], row["signal"])):
-            trend = compute_trend(key[0], key[1], key[2], key[3], time_value, ((row["time_value"], row["value"]) for row in group))
+            trend = compute_trend(key[0], key[1], key[2], key[3], time_value, basis_time_value, ((row["time_value"], row["value"]) for row in group))
             yield trend.asdict()
 
     # execute first query
