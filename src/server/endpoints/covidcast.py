@@ -1,8 +1,8 @@
-from typing import List
-
+from typing import List, Iterable, Dict, Any
+from itertools import groupby
 from flask import Blueprint, request
 
-from .._exceptions import ValidationFailedException
+from .._exceptions import ValidationFailedException, DatabaseErrorException
 from .._params import (
     GeoPair,
     SourceSignalPair,
@@ -11,16 +11,17 @@ from .._params import (
     parse_source_signal_arg,
     parse_time_arg,
 )
-from .._query import QueryBuilder, execute_query, filter_integers, filter_strings
+from .._query import QueryBuilder, execute_query, filter_integers, filter_strings, run_query, parse_row
+from .._printer import create_printer
 from .._validate import (
     extract_date,
     extract_dates,
     extract_integer,
-    extract_integers,
     extract_strings,
     require_all,
     require_any,
 )
+from .covidcast_utils import compute_trend
 
 # first argument is the endpoint name
 bp = Blueprint("covidcast", __name__)
@@ -125,23 +126,37 @@ def handle_trend():
     source_signal_pairs = parse_source_signal_pairs()
     geo_pairs = parse_geo_pairs()
 
-    # TODO date
+    time_value = extract_date("date")
+    # TODO window
 
     # build query
     q = QueryBuilder("covidcast", "t")
 
-    fields_string = ["geo_value", "signal"]
+    fields_string = ["geo_type", "geo_value", "source", "signal"]
     fields_int = ["time_value"]
     fields_float = ["value"]
     q.set_fields(fields_string, fields_int, fields_float)
-    q.set_order('signal', 'time_value', 'geo_value')
+    q.set_order("source", "signal", "geo_value", "time_value")
 
-    q.where_source_signal_pairs('source','signal',source_signal_pairs)
-    q.where_geo_pairs('geo_type','geo_value',geo_pairs)
+    q.where_source_signal_pairs("source", "signal", source_signal_pairs)
+    q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
     # q.where_time_pairs('time_type','time_value',time_pairs)
 
     # fetch most recent issue fast
     q.conditions.append(f"({q.alias}.is_latest_issue IS TRUE)")
 
-    # send query
-    return execute_query(str(q), q.params, fields_string, fields_int, fields_float)
+    p = create_printer()
+
+    def gen(rows):
+        for key, group in groupby((parse_row(row, fields_string, fields_int, fields_float) for row in rows), lambda row: (row["geo_type"], row["geo_value"], row["source"], row["signal"])):
+            trend = compute_trend(key[0], key[1], key[2], key[3], time_value, ((row["time_value"], row["value"]) for row in group))
+            yield trend.asdict()
+
+    # execute first query
+    try:
+        r = run_query(p, (str(q), q.params))
+    except Exception as e:
+        raise DatabaseErrorException(str(e))
+
+    # now use a generator for sending the rows and execute all the other queries
+    return p(gen(r))
