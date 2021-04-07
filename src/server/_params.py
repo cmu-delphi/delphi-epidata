@@ -68,7 +68,7 @@ def _verify_range(start: int, end: int) -> Union[int, Tuple[int, int]]:
 
 def parse_week_value(time_value: str) -> Union[int, Tuple[int, int]]:
     count_dashes = time_value.count("-")
-    msg = f"{time_value} is not matching a known format YYYYWW or YYYYWW-YYYYWW"
+    msg = f"{time_value} does not match a known format YYYYWW or YYYYWW-YYYYWW"
 
     if count_dashes == 0:
         # plain delphi date YYYYWW
