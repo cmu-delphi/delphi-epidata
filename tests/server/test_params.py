@@ -48,9 +48,7 @@ class UnitTests(unittest.TestCase):
                 self.assertEqual(parse_geo_arg(), [GeoPair("state", ["AK", "TK"])])
         with self.subTest("multi"):
             with app.test_request_context("/?geo=state:*;nation:*"):
-                self.assertEqual(
-                    parse_geo_arg(), [GeoPair("state", True), GeoPair("nation", True)]
-                )
+                self.assertEqual(parse_geo_arg(), [GeoPair("state", True), GeoPair("nation", True)])
             with app.test_request_context("/?geo=state:AK;nation:US"):
                 self.assertEqual(
                     parse_geo_arg(),
@@ -93,13 +91,9 @@ class UnitTests(unittest.TestCase):
                 self.assertEqual(parse_source_signal_arg(), [])
         with self.subTest("single"):
             with app.test_request_context("/?signal=src1:*"):
-                self.assertEqual(
-                    parse_source_signal_arg(), [SourceSignalPair("src1", True)]
-                )
+                self.assertEqual(parse_source_signal_arg(), [SourceSignalPair("src1", True)])
             with app.test_request_context("/?signal=src1:sig1"):
-                self.assertEqual(
-                    parse_source_signal_arg(), [SourceSignalPair("src1", ["sig1"])]
-                )
+                self.assertEqual(parse_source_signal_arg(), [SourceSignalPair("src1", ["sig1"])])
         with self.subTest("single list"):
             with app.test_request_context("/?signal=src1:sig1,sig2"):
                 self.assertEqual(
@@ -161,25 +155,17 @@ class UnitTests(unittest.TestCase):
             with self.subTest("iso date"):
                 self.assertEqual(parse_day_value("2020-01-01"), 20200101)
             with self.subTest("delphi date range"):
-                self.assertEqual(
-                    parse_day_value("20200101-20210404"), (20200101, 20210404)
-                )
+                self.assertEqual(parse_day_value("20200101-20210404"), (20200101, 20210404))
             with self.subTest("iso date range"):
-                self.assertEqual(
-                    parse_day_value("2020-01-01--2021-04-04"), (20200101, 20210404)
-                )
+                self.assertEqual(parse_day_value("2020-01-01--2021-04-04"), (20200101, 20210404))
 
             with self.subTest("wrong"):
                 self.assertRaises(ValidationFailedException, parse_day_value, "")
                 self.assertRaises(ValidationFailedException, parse_day_value, "x")
                 self.assertRaises(ValidationFailedException, parse_day_value, "2020")
                 self.assertRaises(ValidationFailedException, parse_day_value, "202001")
-                self.assertRaises(
-                    ValidationFailedException, parse_day_value, "2020-03-111"
-                )
-                self.assertRaises(
-                    ValidationFailedException, parse_day_value, "2020-02-30---20200403"
-                )
+                self.assertRaises(ValidationFailedException, parse_day_value, "2020-03-111")
+                self.assertRaises(ValidationFailedException, parse_day_value, "2020-02-30---20200403")
 
     def test_parse_week_value(self):
         with app.test_request_context(""):
@@ -191,15 +177,9 @@ class UnitTests(unittest.TestCase):
                 self.assertRaises(ValidationFailedException, parse_week_value, "")
                 self.assertRaises(ValidationFailedException, parse_week_value, "x")
                 self.assertRaises(ValidationFailedException, parse_week_value, "2020")
-                self.assertRaises(
-                    ValidationFailedException, parse_week_value, "20200100"
-                )
-                self.assertRaises(
-                    ValidationFailedException, parse_week_value, "2020-03-11"
-                )
-                self.assertRaises(
-                    ValidationFailedException, parse_week_value, "2020-02-30---20200403"
-                )
+                self.assertRaises(ValidationFailedException, parse_week_value, "20200100")
+                self.assertRaises(ValidationFailedException, parse_week_value, "2020-03-11")
+                self.assertRaises(ValidationFailedException, parse_week_value, "2020-02-30---20200403")
 
     def test_parse_time_arg(self):
         with self.subTest("empty"):
@@ -212,28 +192,20 @@ class UnitTests(unittest.TestCase):
                 self.assertEqual(parse_time_arg(), [TimePair("day", [20201201])])
         with self.subTest("single list"):
             with app.test_request_context("/?time=day:20201201,20201202"):
-                self.assertEqual(
-                    parse_time_arg(), [TimePair("day", [20201201, 20201202])]
-                )
+                self.assertEqual(parse_time_arg(), [TimePair("day", [20201201, 20201202])])
         with self.subTest("single range"):
             with app.test_request_context("/?time=day:20201201-20201204"):
-                self.assertEqual(
-                    parse_time_arg(), [TimePair("day", [(20201201, 20201204)])]
-                )
+                self.assertEqual(parse_time_arg(), [TimePair("day", [(20201201, 20201204)])])
         with self.subTest("multi"):
             with app.test_request_context("/?time=day:*;week:*"):
-                self.assertEqual(
-                    parse_time_arg(), [TimePair("day", True), TimePair("week", True)]
-                )
+                self.assertEqual(parse_time_arg(), [TimePair("day", True), TimePair("week", True)])
             with app.test_request_context("/?time=day:20201201;week:202012"):
                 self.assertEqual(
                     parse_time_arg(),
                     [TimePair("day", [20201201]), TimePair("week", [202012])],
                 )
         with self.subTest("hybrid"):
-            with app.test_request_context(
-                "/?time=day:*;day:20202012;week:202101-202104"
-            ):
+            with app.test_request_context("/?time=day:*;day:20202012;week:202101-202104"):
                 self.assertEqual(
                     parse_time_arg(),
                     [

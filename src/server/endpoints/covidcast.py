@@ -36,9 +36,7 @@ def parse_source_signal_pairs() -> List[SourceSignalPair]:
         return [SourceSignalPair(ds, signals)]
 
     if ":" not in request.values.get("signal", ""):
-        raise ValidationFailedException(
-            "missing parameter: signal or (data_source and signal[s])"
-        )
+        raise ValidationFailedException("missing parameter: signal or (data_source and signal[s])")
 
     return parse_source_signal_arg()
 
@@ -54,9 +52,7 @@ def parse_geo_pairs() -> List[GeoPair]:
         return [GeoPair(geo_type, geo_values)]
 
     if ":" not in request.values.get("geo", ""):
-        raise ValidationFailedException(
-            "missing parameter: geo or (geo_type and geo_value[s])"
-        )
+        raise ValidationFailedException("missing parameter: geo or (geo_type and geo_value[s])")
 
     return parse_geo_arg()
 
@@ -70,9 +66,7 @@ def parse_time_pairs() -> List[TimePair]:
         return [TimePair(time_type, time_values)]
 
     if ":" not in request.values.get("time", ""):
-        raise ValidationFailedException(
-            "missing parameter: time or (time_type and time_values)"
-        )
+        raise ValidationFailedException("missing parameter: time or (time_type and time_values)")
 
     return parse_time_arg()
 

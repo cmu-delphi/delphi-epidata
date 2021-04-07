@@ -19,9 +19,7 @@ def _parse_common_multi_arg(key: str) -> List[Tuple[str, Union[bool, Sequence[st
     for entry in line.split(";"):
         m = pattern.match(entry)
         if not m:
-            raise ValidationFailedException(
-                f"{key} param: {entry} is not matching <{key}_type>:<{key}_values> syntax"
-            )
+            raise ValidationFailedException(f"{key} param: {entry} is not matching <{key}_type>:<{key}_values> syntax")
         group_type = m.group(1).strip()
         group_value = m.group(2).strip()
         if group_value == "*":
@@ -38,10 +36,7 @@ class GeoPair:
 
 
 def parse_geo_arg() -> List[GeoPair]:
-    return [
-        GeoPair(geo_type, geo_values)
-        for [geo_type, geo_values] in _parse_common_multi_arg("geo")
-    ]
+    return [GeoPair(geo_type, geo_values) for [geo_type, geo_values] in _parse_common_multi_arg("geo")]
 
 
 @dataclass
@@ -51,10 +46,7 @@ class SourceSignalPair:
 
 
 def parse_source_signal_arg() -> List[SourceSignalPair]:
-    return [
-        SourceSignalPair(source, signals)
-        for [source, signals] in _parse_common_multi_arg("signal")
-    ]
+    return [SourceSignalPair(source, signals) for [source, signals] in _parse_common_multi_arg("signal")]
 
 
 @dataclass
@@ -119,9 +111,7 @@ def parse_day_value(time_value: str) -> Union[int, Tuple[int, int]]:
 
     if count_dashes == 6:
         # delphi iso date range YYYY-MM-DD--YYYY-MM-DD
-        if not re.match(
-            r"^(\d{4}-\d{2}-\d{2})--(\d{4}-\d{2}-\d{2})$", time_value, re.MULTILINE
-        ):
+        if not re.match(r"^(\d{4}-\d{2}-\d{2})--(\d{4}-\d{2}-\d{2})$", time_value, re.MULTILINE):
             raise ValidationFailedException(msg)
         [first, last] = time_value.split("--", 2)
         return _verify_range(int(first.replace("-", "")), int(last.replace("-", "")))
@@ -138,11 +128,6 @@ def parse_time_arg() -> List[TimePair]:
             return TimePair("week", [parse_week_value(t) for t in time_values])
         elif time_type == "day":
             return TimePair("day", [parse_day_value(t) for t in time_values])
-        raise ValidationFailedException(
-            f'time param: {time_type} is not one of "day" or "week"'
-        )
+        raise ValidationFailedException(f'time param: {time_type} is not one of "day" or "week"')
 
-    return [
-        parse(time_type, time_values)
-        for [time_type, time_values] in _parse_common_multi_arg("time")
-    ]
+    return [parse(time_type, time_values) for [time_type, time_values] in _parse_common_multi_arg("time")]

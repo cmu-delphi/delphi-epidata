@@ -60,10 +60,7 @@ def filter_values(
     # builds a SQL expression to filter strings (ex: locations)
     #   $field: name of the field to filter
     #   $values: array of values
-    conditions = [
-        to_condition(field, v, f"{param_key}_{i}", params, formatter)
-        for i, v in enumerate(values)
-    ]
+    conditions = [to_condition(field, v, f"{param_key}_{i}", params, formatter) for i, v in enumerate(values)]
     return f"({' OR '.join(conditions)})"
 
 
@@ -221,10 +218,7 @@ def parse_result(
     """
     execute the given query and return the result as a list of dictionaries
     """
-    return [
-        parse_row(row, fields_string, fields_int, fields_float)
-        for row in db.execute(text(query), **params)
-    ]
+    return [parse_row(row, fields_string, fields_int, fields_float) for row in db.execute(text(query), **params)]
 
 
 def run_query(p: APrinter, query_tuple: Tuple[str, Dict[str, Any]]):
@@ -348,9 +342,7 @@ class QueryBuilder:
         param_key: Optional[str] = None,
     ) -> "QueryBuilder":
         fq_field = f"{self.alias}.{field}" if "." not in field else field
-        self.conditions.append(
-            filter_strings(fq_field, values, param_key or field, self.params)
-        )
+        self.conditions.append(filter_strings(fq_field, values, param_key or field, self.params))
         return self
 
     def _fq_field(self, field: str) -> str:
@@ -363,9 +355,7 @@ class QueryBuilder:
         param_key: Optional[str] = None,
     ) -> "QueryBuilder":
         fq_field = self._fq_field(field)
-        self.conditions.append(
-            filter_integers(fq_field, values, param_key or field, self.params)
-        )
+        self.conditions.append(filter_integers(fq_field, values, param_key or field, self.params))
         return self
 
     def where_dates(
@@ -375,9 +365,7 @@ class QueryBuilder:
         param_key: Optional[str] = None,
     ) -> "QueryBuilder":
         fq_field = self._fq_field(field)
-        self.conditions.append(
-            filter_dates(fq_field, values, param_key or field, self.params)
-        )
+        self.conditions.append(filter_dates(fq_field, values, param_key or field, self.params))
         return self
 
     def where_geo_pairs(
@@ -441,9 +429,7 @@ class QueryBuilder:
         return self
 
     def set_fields(self, *fields: Iterable[str]) -> "QueryBuilder":
-        self.fields = [
-            f"{self.alias}.{field}" for field_list in fields for field in field_list
-        ]
+        self.fields = [f"{self.alias}.{field}" for field_list in fields for field in field_list]
         return self
 
     def set_order(self, *args: str, **kwargs: Union[str, bool]) -> "QueryBuilder":
@@ -468,9 +454,7 @@ class QueryBuilder:
 
         subfields = f"max(issue) max_issue, {','.join(fields)}"
         group_by = ",".join(fields)
-        field_conditions = " AND ".join(
-            f"x.{field} = {self.alias}.{field}" for field in fields
-        )
+        field_conditions = " AND ".join(f"x.{field} = {self.alias}.{field}" for field in fields)
         condition = f"x.max_issue = {self.alias}.issue AND {field_conditions}"
         self.subquery = f"JOIN (SELECT {subfields} FROM {self.table} WHERE {self.conditions_clause} GROUP BY {group_by}) x ON {condition}"
         # reset conditions since for join
