@@ -55,14 +55,68 @@ class TimePair:
     time_values: Union[bool, Sequence[Union[int, Tuple[int, int]]]]
 
 
-def parse_week_values(time_values: Sequence[str]) -> Sequence[Union[int, Tuple[int, int]]]:
-    # TODO
-    return []
+def _verify_range(start: int, end: int) -> Union[int, Tuple[int, int]]:
+    if start == end:
+        # the first and last numbers are the same, just treat it as a singe value
+        return start
+    elif end > start:
+        # add the range as an array
+        return (start, end)
+    # the range is inverted, this is an error
+    raise ValidationFailedException(f"the given range {start}-{end} is inverted")
 
 
-def parse_day_values(time_values: Sequence[str]) -> Sequence[Union[int, Tuple[int, int]]]:
-    # TODO
-    return []
+def parse_week_value(time_value: str) -> Union[int, Tuple[int, int]]:
+    count_dashes = time_value.count('-')
+    msg = f"{time_value} is not matching a known format YYYYWW or YYYYWW-YYYYWW"
+
+    if count_dashes == 0:
+        # plain delphi date YYYYWW
+        if not re.match(r'^(\d{6})$', time_value, re.MULTILINE):
+            raise ValidationFailedException(msg)
+        return int(time_value)
+
+    if count_dashes == 1:
+        # delphi date range YYYYWW-YYYYWW
+        if not re.match(r'^(\d{6})-(\d{6})$', time_value, re.MULTILINE):
+            raise ValidationFailedException(msg)
+        [first, last] = time_value.split('-', 2)
+        return _verify_range(int(first), int(last))
+
+    raise ValidationFailedException(msg)
+
+
+def parse_day_value(time_value: str) -> Union[int, Tuple[int, int]]:
+    count_dashes = time_value.count('-')
+    msg = f"{time_value} is not matching a known format YYYYMMDD, YYYY-MM-DD, YYYYMMDD-YYYYMMDD, or YYYY-MM-DD--YYYY-MM-DD"
+
+    if count_dashes == 0:
+        # plain delphi date YYYYMMDD
+        if not re.match(r'^(\d{8})$', time_value, re.MULTILINE):
+            raise ValidationFailedException(msg)
+        return int(time_value)
+
+    if count_dashes == 2:
+        # iso date YYYY-MM-DD
+        if not re.match(r'^(\d{4}-\d{2}-\d{2})$', time_value, re.MULTILINE):
+            raise ValidationFailedException(msg)
+        return int(time_value.replace('-', ''))
+
+    if count_dashes == 1:
+        # delphi date range YYYYMMDD-YYYYMMDD
+        if not re.match(r'^(\d{8})-(\d{8})$', time_value, re.MULTILINE):
+            raise ValidationFailedException(msg)
+        [first, last] = time_value.split('-', 2)
+        return _verify_range(int(first), int(last))
+
+    if count_dashes == 6:
+        # delphi iso date range YYYY-MM-DD--YYYY-MM-DD
+        if not re.match(r'^(\d{4}-\d{2}-\d{2})--(\d{4}-\d{2}-\d{2})$', time_value, re.MULTILINE):
+            raise ValidationFailedException(msg)
+        [first, last] = time_value.split('--', 2)
+        return _verify_range(int(first.replace('-', '')), int(last.replace('-', '')))
+
+    raise ValidationFailedException(msg)
 
 
 def parse_time_arg() -> List[TimePair]:
@@ -71,7 +125,9 @@ def parse_time_arg() -> List[TimePair]:
             return TimePair(time_type, time_values)
 
         if time_type == 'week':
-            return TimePair('week', parse_week_values(time_values))
-        return TimePair('day', parse_day_values(time_values))
+            return TimePair('week', [parse_week_value(t) for t in time_values])
+        elif time_type == 'day':
+            return TimePair('day', [parse_day_value(t) for t in time_values])
+        raise ValidationFailedException(f'time param: {time_type} is not one of "day" or "week"')
 
     return [parse(time_type, time_values) for [time_type, time_values] in _parse_common_multi_arg('time')]
