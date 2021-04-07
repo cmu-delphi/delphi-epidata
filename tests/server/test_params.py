@@ -8,7 +8,9 @@ import base64
 from delphi.epidata.server._common import app
 from delphi.epidata.server._params import (
     parse_geo_arg,
+    parse_source_signal_arg,
     GeoPair,
+    SourceSignalPair,
 )
 from delphi.epidata.server._exceptions import (
     ValidationFailedException,
@@ -59,3 +61,35 @@ class UnitTests(unittest.TestCase):
                 self.assertRaises(ValidationFailedException, parse_geo_arg)
             with app.test_request_context("/?geo=state=4"):
                 self.assertRaises(ValidationFailedException, parse_geo_arg)
+
+    def test_parse_source_signal_arg(self):
+        with self.subTest("empty"):
+            with app.test_request_context("/"):
+                self.assertEqual(parse_source_signal_arg(), [])
+        with self.subTest("single"):
+            with app.test_request_context("/?signals=src1:*"):
+                self.assertEqual(parse_source_signal_arg(), [SourceSignalPair('src1', True)])
+            with app.test_request_context("/?signals=src1:sig1"):
+                self.assertEqual(parse_source_signal_arg(), [SourceSignalPair('src1', ['sig1'])])
+        with self.subTest("single list"):
+            with app.test_request_context("/?signals=src1:sig1,sig2"):
+                self.assertEqual(parse_source_signal_arg(), [SourceSignalPair('src1', ['sig1', 'sig2'])])
+        with self.subTest("multi"):
+            with app.test_request_context("/?signals=src1:*;src2:*"):
+                self.assertEqual(parse_source_signal_arg(), [SourceSignalPair('src1', True), SourceSignalPair('src2', True)])
+            with app.test_request_context("/?signals=src1:sig1;src2:sig3"):
+                self.assertEqual(parse_source_signal_arg(), [SourceSignalPair('src1', ['sig1']), SourceSignalPair('src2', ['sig3'])])
+            with app.test_request_context("/?signals=src1:sig1;src1:sig4"):
+                self.assertEqual(parse_source_signal_arg(), [SourceSignalPair('src1', ['sig1']), SourceSignalPair('src1', ['sig4'])])
+        with self.subTest("multi list"):
+            with app.test_request_context("/?signals=src1:sig1,sig2;county:sig5,sig6"):
+                self.assertEqual(parse_source_signal_arg(), [SourceSignalPair('src1', ['sig1', 'sig2']), SourceSignalPair('county', ['sig5', 'sig6'])])
+        with self.subTest("hybrid"):
+            with app.test_request_context("/?signals=src2:*;src1:sig4;src3:sig5,sig6"):
+                self.assertEqual(parse_source_signal_arg(), [SourceSignalPair('src2', True), SourceSignalPair('src1', ['sig4']), SourceSignalPair('src3', ['sig5', 'sig6'])])
+
+        with self.subTest("wrong"):
+            with app.test_request_context("/?signals=abc"):
+                self.assertRaises(ValidationFailedException, parse_source_signal_arg)
+            with app.test_request_context("/?signals=sig=4"):
+                self.assertRaises(ValidationFailedException, parse_source_signal_arg)
