@@ -20,6 +20,7 @@ from ._db import metadata
 from ._printer import create_printer, APrinter
 from ._exceptions import DatabaseErrorException
 from ._validate import DateRange, extract_strings
+from ._params import GeoPair, SourceSignalPair, TimePair
 
 
 def date_string(value: int) -> str:
@@ -104,6 +105,87 @@ def filter_fields(generator: Iterable[Dict[str, Any]]):
                 if field in row:
                     filtered[field] = row[field]
             yield filtered
+
+
+def filter_geo_pairs(
+    type_field: str,
+    value_field: str,
+    values: Sequence[GeoPair],
+    param_key: str,
+    params: Dict[str, Any]
+) -> str:
+    """
+    returns the SQL sub query to filter by the given geo pairs
+    """
+
+    def filter_pair(pair: GeoPair, i) -> str:
+        type_param = f'{param_key}_{i}t'
+        params[type_param] = pair.geo_type
+        if isinstance(pair.geo_values, bool) and pair.geo_values:
+            return f'{type_field} = :{type_param}'
+        return f'({type_field} = :{type_param} AND {filter_strings(value_field, cast(Sequence[str], pair.geo_values), type_param, params)})'
+
+    parts = [filter_pair(p, i) for i,p in enumerate(values)]
+
+    if not parts:
+        # something has to be selected
+        return 'FALSE'
+
+    return f"({' OR '.join(parts)})"
+
+
+def filter_source_signal_pairs(
+    source_field: str,
+    signal_field: str,
+    values: Sequence[SourceSignalPair],
+    param_key: str,
+    params: Dict[str, Any]
+) -> str:
+    """
+    returns the SQL sub query to filter by the given source signal pairs
+    """
+
+    def filter_pair(pair: SourceSignalPair, i) -> str:
+        source_param = f'{param_key}_{i}t'
+        params[source_param] = pair.source
+        if isinstance(pair.signal, bool) and pair.signal:
+            return f'{source_field} = :{source_param}'
+        return f'({source_field} = :{source_param} AND {filter_strings(signal_field, cast(Sequence[str], pair.signal), source_param, params)})'
+
+    parts = [filter_pair(p, i) for i,p in enumerate(values)]
+
+    if not parts:
+        # something has to be selected
+        return 'FALSE'
+
+    return f"({' OR '.join(parts)})"
+
+
+def filter_time_pairs(
+    type_field: str,
+    time_field: str,
+    values: Sequence[TimePair],
+    param_key: str,
+    params: Dict[str, Any]
+) -> str:
+    """
+    returns the SQL sub query to filter by the given time pairs
+    """
+
+    def filter_pair(pair: TimePair, i) -> str:
+        type_param = f'{param_key}_{i}t'
+        params[type_param] = pair.time_type
+        if isinstance(pair.time_values, bool) and pair.time_values:
+            return f'{type_field} = :{type_param}'
+        return f'({type_field} = :{type_param} AND {filter_dates(time_field, cast(Sequence[Union[int, Tuple[int,int]]], pair.time_values), type_param, params)})'
+
+    parts = [filter_pair(p, i) for i,p in enumerate(values)]
+
+    if not parts:
+        # something has to be selected
+        return 'FALSE'
+
+    return f"({' OR '.join(parts)})"
 
 
 def parse_row(
@@ -271,13 +353,16 @@ class QueryBuilder:
         )
         return self
 
+    def _fq_field(self, field: str) -> str:
+        return f"{self.alias}.{field}" if "." not in field else field
+
     def where_integers(
         self,
         field: str,
         values: Optional[Sequence[Union[Tuple[int, int], int]]],
         param_key: Optional[str] = None,
     ) -> "QueryBuilder":
-        fq_field = f"{self.alias}.{field}" if "." not in field else field
+        fq_field = self._fq_field(field)
         self.conditions.append(
             filter_integers(fq_field, values, param_key or field, self.params)
         )
@@ -289,9 +374,51 @@ class QueryBuilder:
         values: Optional[Sequence[Union[Tuple[int, int], int]]],
         param_key: Optional[str] = None,
     ) -> "QueryBuilder":
-        fq_field = f"{self.alias}.{field}" if "." not in field else field
+        fq_field = self._fq_field(field)
         self.conditions.append(
             filter_dates(fq_field, values, param_key or field, self.params)
+        )
+        return self
+
+    def where_geo_pairs(
+        self,
+        type_field: str,
+        value_field: str,
+        values: Sequence[GeoPair],
+        param_key: Optional[str] = None,
+    ) -> "QueryBuilder":
+        fq_type_field = self._fq_field(type_field)
+        fq_value_field = self._fq_field(value_field)
+        self.conditions.append(
+            filter_geo_pairs(fq_type_field, fq_value_field, values, param_key or type_field, self.params)
+        )
+        return self
+
+    def where_source_signal_pairs(
+        self,
+        type_field: str,
+        value_field: str,
+        values: Sequence[SourceSignalPair],
+        param_key: Optional[str] = None,
+    ) -> "QueryBuilder":
+        fq_type_field = self._fq_field(type_field)
+        fq_value_field = self._fq_field(value_field)
+        self.conditions.append(
+            filter_source_signal_pairs(fq_type_field, fq_value_field, values, param_key or type_field, self.params)
+        )
+        return self
+
+    def where_time_pairs(
+        self,
+        type_field: str,
+        value_field: str,
+        values: Sequence[TimePair],
+        param_key: Optional[str] = None,
+    ) -> "QueryBuilder":
+        fq_type_field = self._fq_field(type_field)
+        fq_value_field = self._fq_field(value_field)
+        self.conditions.append(
+            filter_time_pairs(fq_type_field, fq_value_field, values, param_key or type_field, self.params)
         )
         return self
 
