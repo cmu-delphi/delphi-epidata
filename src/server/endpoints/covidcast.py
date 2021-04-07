@@ -117,3 +117,30 @@ def handle():
 
     # send query
     return execute_query(str(q), q.params, fields_string, fields_int, fields_float)
+
+
+@bp.route("/trend", methods=("GET", "POST"))
+def handle_trend():
+    source_signal_pairs = parse_source_signal_pairs()
+    geo_pairs = parse_geo_pairs()
+
+    # TODO date
+
+    # build query
+    q = QueryBuilder("covidcast", "t")
+
+    fields_string = ["geo_value", "signal"]
+    fields_int = ["time_value"]
+    fields_float = ["value"]
+    q.set_fields(fields_string, fields_int, fields_float)
+    q.set_order('signal', 'time_value', 'geo_value')
+
+    q.where_source_signal_pairs('source','signal',source_signal_pairs)
+    q.where_geo_pairs('geo_type','geo_value',geo_pairs)
+    # q.where_time_pairs('time_type','time_value',time_pairs)
+
+    # fetch most recent issue fast
+    q.conditions.append(f"({q.alias}.is_latest_issue IS TRUE)")
+
+    # send query
+    return execute_query(str(q), q.params, fields_string, fields_int, fields_float)
