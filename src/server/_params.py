@@ -8,6 +8,7 @@ from ._exceptions import ValidationFailedException
 
 
 def _parse_common_multi_arg(key: str) -> List[Tuple[str, Union[bool, Sequence[str]]]]:
+    # support multiple request parameter with the same name
     line = ";".join(request.values.getlist(key))
 
     parsed: List[Tuple[str, Union[bool, Sequence[str]]]] = []
@@ -15,13 +16,13 @@ def _parse_common_multi_arg(key: str) -> List[Tuple[str, Union[bool, Sequence[st
     if not line:
         return parsed
 
-    pattern = re.compile(r"^(\w+):(.*)$", re.MULTILINE)
+    pattern: re.Pattern[str] = re.compile(r"^(\w+):(.*)$", re.MULTILINE)
     for entry in line.split(";"):
-        m = pattern.match(entry)
+        m: Optional[re.Match[str]] = pattern.match(entry)
         if not m:
             raise ValidationFailedException(f"{key} param: {entry} is not matching <{key}_type>:<{key}_values> syntax")
-        group_type = m.group(1).strip()
-        group_value = m.group(2).strip()
+        group_type: str = m.group(1).strip().lower()
+        group_value: str = m.group(2).strip().lower()
         if group_value == "*":
             parsed.append((group_type, True))
         else:
