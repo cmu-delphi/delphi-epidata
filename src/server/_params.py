@@ -88,7 +88,7 @@ def parse_week_value(time_value: str) -> Union[int, Tuple[int, int]]:
 
 def parse_day_value(time_value: str) -> Union[int, Tuple[int, int]]:
     count_dashes = time_value.count("-")
-    msg = f"{time_value} is not matching a known format YYYYMMDD, YYYY-MM-DD, YYYYMMDD-YYYYMMDD, or YYYY-MM-DD--YYYY-MM-DD"
+    msg = f"{time_value} does not match a known format YYYYMMDD, YYYY-MM-DD, YYYYMMDD-YYYYMMDD, or YYYY-MM-DD--YYYY-MM-DD"
 
     if count_dashes == 0:
         # plain delphi date YYYYMMDD
