@@ -9,6 +9,8 @@ from unittest.mock import sentinel
 from delphi.epidata.acquisition.covid_hosp.common.test_utils import TestUtils
 from delphi.epidata.acquisition.covid_hosp.state_daily.database import Database
 
+import pandas as pd
+
 # py3tester coverage target
 __test_target__ = \
     'delphi.epidata.acquisition.covid_hosp.state_daily.database'
@@ -67,4 +69,4 @@ class DatabaseTests(unittest.TestCase):
     result = database.get_max_issue()
 
     self.assertEqual(mock_cursor.execute.call_count, 1)
-    self.assertEqual(result, 0, "max issue when db is empty")
+    self.assertEqual(result, pd.Timestamp("1900/1/1"), "max issue when db is empty")

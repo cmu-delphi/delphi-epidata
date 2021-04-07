@@ -10,6 +10,9 @@ from unittest.mock import sentinel
 from delphi.epidata.acquisition.covid_hosp.common.test_utils import TestUtils
 from delphi.epidata.acquisition.covid_hosp.state_daily.network import Network
 
+# third party
+import pandas as pd
+
 # py3tester coverage target
 __test_target__ = \
     'delphi.epidata.acquisition.covid_hosp.state_daily.network'
@@ -31,23 +34,13 @@ class NetworkTests(unittest.TestCase):
       result = Network.fetch_metadata()
 
       self.assertEqual(result, sentinel.json)
-      func.assert_called_once_with(dataset_id=Network.DATASET_ID)
+      func.assert_called_once_with(dataset_id=Network.METADATA_ID)
 
   def test_fetch_revisions(self):
     """Scrape CSV files from revision pages"""
 
-    with patch.object(requests, 'get',
-                      side_effect=list(self.test_utils.load_sample_revisions())) as requests_get:
-      result = Network.fetch_revisions(20201210)
-
-      # 4: one for the revisions page, and one for each of three qualifying
-      # revisions details pages
-      self.assertEqual(requests_get.call_count, 4)
-
-      # The revisions page lists 5 revisions, but the first should be skipped
-      # and the fifth should be excluded as outside the date range
-      self.assertEqual(result, [
-        "https://healthdata.gov/sites/default/files/reported_hospital_utilization_20210130_2344.csv",
-        "https://healthdata.gov/sites/default/files/reported_hospital_utilization_20210129_1606.csv",
-        "https://healthdata.gov/sites/default/files/reported_hospital_utilization_20210128_2205.csv"
-      ])
+    test_metadata = pd.DataFrame(
+      {"Archive Link": ["test1", "test2", "test3"]},
+      index=pd.date_range("2020/1/1", "2020/1/3")
+    )
+    assert Network.fetch_revisions(test_metadata, pd.Timestamp("2020/1/1")) == ["test2", "test3"]

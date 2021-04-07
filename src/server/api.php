@@ -1003,49 +1003,74 @@ function get_covidcast($source, $signals, $time_type, $geo_type, $time_values, $
 
 function get_signal_dash_status_data() {
   $query = 'SELECT enabled_signal.`name`,
+              enabled_signal.`source`,
+              enabled_signal.`covidcast_signal`,
               status.`latest_issue`,
               status.`latest_time_value`
-            FROM (SELECT `id`, `name`
+            FROM (SELECT `id`, `name`, `source`, `covidcast_signal`, `latest_status_update`
               FROM `dashboard_signal`
               WHERE `enabled`) AS enabled_signal
-            LEFT JOIN (SELECT `signal_id`,
-                              Max(`date`) max_date
-                       FROM `dashboard_signal_status`
-                       GROUP BY `signal_id`) AS max_dates
-            ON enabled_signal.`id` = max_dates.`signal_id`
             LEFT JOIN `dashboard_signal_status` AS status
-            ON max_dates.`signal_id` = status.`signal_id`
-              AND status.`date` = max_dates.`max_date`';
+            ON enabled_signal.`latest_status_update` = status.`date`
+            AND enabled_signal.`id` = status.`signal_id`';
   
   $epidata = array();
-  $fields_string = array('name', 'latest_issue', 'latest_time_value');
+  $fields_string = array('name', 'source', 'covidcast_signal', 'latest_issue', 'latest_time_value');
   execute_query($query, $epidata, $fields_string, null /* fields_int */, null /* fields_float */);
+
+  $coverage = get_signal_dash_coverage_data();
+
+  $out = array();
+  foreach ($epidata as $signal) {
+    if (isset($coverage[$signal['name']])) {
+      $signal_with_coverage = $signal;
+      $signal_with_coverage['coverage'] = $coverage[$signal['name']];
+      $out[] = $signal_with_coverage;
+    }
+  }
+
   // return the data
-  return count($epidata) === 0 ? null : $epidata; 
+  return count($out) === 0 ? null : $out; 
 }
 
 function get_signal_dash_coverage_data() {
   $query = 'SELECT enabled_signal.`name`,
               coverage.`date`,
               coverage.`geo_type`,
-              coverage.`geo_value`
-            FROM (SELECT `id`, `name`
+              coverage.`count`
+            FROM (SELECT `id`, `name`, `latest_coverage_update`
               FROM `dashboard_signal`
               WHERE `enabled`) AS enabled_signal
-            LEFT JOIN (SELECT `signal_id`,
-                              Max(`date`) max_date
-                       FROM `dashboard_signal_coverage`
-                       GROUP BY `signal_id`) AS max_dates
-            ON enabled_signal.`id` = max_dates.`signal_id`
             LEFT JOIN `dashboard_signal_coverage` AS coverage
-            ON max_dates.`signal_id` = coverage.`signal_id`
-              AND coverage.`date` = max_dates.`max_date`';
+            ON enabled_signal.`id` = coverage.`signal_id`
+            ORDER BY `id` ASC, `date` DESC';
   
   $epidata = array();
-  $fields_string = array('name', 'date', 'geo_type', 'geo_value');
-  execute_query($query, $epidata, $fields_string, null /* fields_int */, null /* fields_float */);
+  $fields_string = array('name', 'date', 'geo_type');
+  $fields_int = array('count');
+  execute_query($query, $epidata, $fields_string, $fields_int, null /* fields_float */);
+
+  $out = array();
+  foreach ($epidata as $row) {
+    $name = $row['name'];
+    $geo_type = $row['geo_type'];
+    $timedata = array();
+    $timedata['date'] = $row['date'];
+    $timedata['count'] =$row['count'];
+
+    if (!isset($out[$name])) {
+      $out[$name] = array();
+    }
+
+    if(!isset($out[$name][$geo_type])) {
+      $out[$name][$geo_type] = array();
+    }
+
+    $out[$name][$geo_type][] = $timedata;
+  }
+
   // return the data
-  return count($epidata) === 0 ? null : $epidata; 
+  return count($out) === 0 ? null : $out; 
 }
 
 // queries the `covidcast_meta_cache` table for metadata

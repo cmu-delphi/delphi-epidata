@@ -11,6 +11,9 @@ from delphi.epidata.client.delphi_epidata import Epidata
 from delphi.epidata.acquisition.covid_hosp.state_timeseries.update import Update
 import delphi.operations.secrets as secrets
 
+# third party
+from freezegun import freeze_time
+
 # py3tester coverage target (equivalent to `import *`)
 __test_target__ = \
     'delphi.epidata.acquisition.covid_hosp.state_timeseries.update'
@@ -37,6 +40,7 @@ class AcquisitionTests(unittest.TestCase):
         cur.execute('truncate table covid_hosp_state_timeseries')
         cur.execute('truncate table covid_hosp_meta')
 
+  @freeze_time("2021-03-16")
   def test_acquire_dataset(self):
     """Acquire a new dataset."""
 
@@ -65,7 +69,7 @@ class AcquisitionTests(unittest.TestCase):
       row = response['epidata'][0]
       self.assertEqual(row['state'], 'WY')
       self.assertEqual(row['date'], 20200826)
-      self.assertEqual(row['issue'], 20201116)
+      self.assertEqual(row['issue'], 20210315)
       self.assertEqual(row['critical_staffing_shortage_today_yes'], 2)
       actual = row['inpatient_bed_covid_utilization']
       expected = 0.011946591707659873

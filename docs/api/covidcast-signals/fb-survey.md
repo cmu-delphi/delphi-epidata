@@ -338,10 +338,20 @@ unweighted signals are also available. These begin `smoothed_`, such as
 | --- | --- | --- |
 | `smoothed_wtested_14d` | Estimated percentage of people who were tested for COVID-19 in the past 14 days, regardless of their test result <br/> **Earliest date available:** 2020-09-08 | B8, B10 |
 | `smoothed_wtested_positive_14d` | Estimated test positivity rate (percent) among people tested for COVID-19 in the past 14 days <br/> **Earliest date available:** 2020-09-08 | B10a |
+| `smoothed_wscreening_tested_positive_14d` | Estimated test positivity rate (percent) among people tested for COVID-19 in the past 14 days who were being screened with no symptoms or known exposure. This includes people who said they were tested while receiving other medical care, because their employer or school required it, after attending a large outdoor gathering, or prior to visiting friends or family. <br/> **Earliest date available:** 2021-03-20 | B10a, B10b |
 | `smoothed_wwanted_test_14d` | Estimated percentage of people who *wanted* to be tested for COVID-19 in the past 14 days, out of people who were *not* tested in that time <br/> **Earliest date available:** 2020-09-08 | B12 |
 
 These indicators are based on questions in Wave 4 of the survey, introduced on
 September 8, 2020.
+
+
+## Schooling Indicators
+
+| Signal | Description | Survey Item |
+| --- | --- | --- |
+| `smoothed_winperson_school_fulltime` | Estimated percentage of people who had any children attending in-person school on a full-time basis, among people reporting any pre-K-grade 12 children in their household. <br/> **Earliest date available:** 2021-03-28 | E2 |
+| `smoothed_winperson_school_parttime` | Estimated percentage of people who had any children attending in-person school on a part-time basis, among people reporting any pre-K-grade 12 children in their household. <br/> **Earliest date available:** 2021-03-28 | E2 |
+
 
 Signals beginning `raw_w` or `smoothed_w` are adjusted using survey weights
 [as described below](#survey-weighting) to be demographically representative.
@@ -405,10 +415,11 @@ missing.
 | Signal | Description | Survey Item |
 | --- | --- | --- |
 | `smoothed_wvaccine_likely_friends` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by friends and family, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-20 | V4 |
-| `smoothed_wvaccine_likely_local_health` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by local health workers, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-20 | V4 |
+| `smoothed_wvaccine_likely_local_health` | *Discontinued as of Wave 8, Feb 8, 2021* Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by local health workers, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-20 | V4 |
 | `smoothed_wvaccine_likely_who` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by the World Health Organization, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-20 | V4 |
 | `smoothed_wvaccine_likely_govt_health` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by government health officials, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-20 | V4 |
 | `smoothed_wvaccine_likely_politicians` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by politicians, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-20 | V4 |
+| `smoothed_wvaccine_likely_doctors` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by doctors and other health professionals they go to for medical care, among respondents who have not yet been vaccinated. This item was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-08 | V4 |
 
 These indicators are based on questions added in Wave 6 of the survey,
 introduced on December 19, 2020; however, Delphi only enabled item V1 beginning
