@@ -46,7 +46,7 @@ class SourceSignalPair:
 
 
 def parse_source_signal_arg() -> List[SourceSignalPair]:
-    return [SourceSignalPair(source, signals) for [source, signals] in _parse_common_multi_arg('signals')]
+    return [SourceSignalPair(source, signals) for [source, signals] in _parse_common_multi_arg('signal')]
 
 
 @dataclass

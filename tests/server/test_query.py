@@ -165,5 +165,5 @@ class UnitTests(unittest.TestCase):
             self.assertEqual(params, {'p_0t': 'day', 'p_0t_0': 20201201, 'p_0t_1': 20201203})
         with self.subTest('range'):
             params = {}
-            self.assertEqual(filter_time_pairs('t', 'v', [TimePair('day', [(20201201, 20201203)])], 'p', params), '((t = :p_0t AND (v = BETWEEN :p_0t_0 AND v = :p_0t_0_2)))')
+            self.assertEqual(filter_time_pairs('t', 'v', [TimePair('day', [(20201201, 20201203)])], 'p', params), '((t = :p_0t AND (v BETWEEN :p_0t_0 AND :p_0t_0_2)))')
             self.assertEqual(params, {'p_0t': 'day', 'p_0t_0': 20201201, 'p_0t_0_2': 20201203})

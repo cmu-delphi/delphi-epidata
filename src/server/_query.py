@@ -177,7 +177,7 @@ def filter_time_pairs(
         params[type_param] = pair.time_type
         if isinstance(pair.time_values, bool) and pair.time_values:
             return f'{type_field} = :{type_param}'
-        return f'({type_field} = :{type_param} AND {filter_dates(time_field, cast(Sequence[Union[int, Tuple[int,int]]], pair.time_values), type_param, params)})'
+        return f'({type_field} = :{type_param} AND {filter_integers(time_field, cast(Sequence[Union[int, Tuple[int,int]]], pair.time_values), type_param, params)})'
 
     parts = [filter_pair(p, i) for i,p in enumerate(values)]
 

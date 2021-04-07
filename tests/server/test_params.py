@@ -71,31 +71,31 @@ class UnitTests(unittest.TestCase):
             with app.test_request_context("/"):
                 self.assertEqual(parse_source_signal_arg(), [])
         with self.subTest("single"):
-            with app.test_request_context("/?signals=src1:*"):
+            with app.test_request_context("/?signal=src1:*"):
                 self.assertEqual(parse_source_signal_arg(), [SourceSignalPair('src1', True)])
-            with app.test_request_context("/?signals=src1:sig1"):
+            with app.test_request_context("/?signal=src1:sig1"):
                 self.assertEqual(parse_source_signal_arg(), [SourceSignalPair('src1', ['sig1'])])
         with self.subTest("single list"):
-            with app.test_request_context("/?signals=src1:sig1,sig2"):
+            with app.test_request_context("/?signal=src1:sig1,sig2"):
                 self.assertEqual(parse_source_signal_arg(), [SourceSignalPair('src1', ['sig1', 'sig2'])])
         with self.subTest("multi"):
-            with app.test_request_context("/?signals=src1:*;src2:*"):
+            with app.test_request_context("/?signal=src1:*;src2:*"):
                 self.assertEqual(parse_source_signal_arg(), [SourceSignalPair('src1', True), SourceSignalPair('src2', True)])
-            with app.test_request_context("/?signals=src1:sig1;src2:sig3"):
+            with app.test_request_context("/?signal=src1:sig1;src2:sig3"):
                 self.assertEqual(parse_source_signal_arg(), [SourceSignalPair('src1', ['sig1']), SourceSignalPair('src2', ['sig3'])])
-            with app.test_request_context("/?signals=src1:sig1;src1:sig4"):
+            with app.test_request_context("/?signal=src1:sig1;src1:sig4"):
                 self.assertEqual(parse_source_signal_arg(), [SourceSignalPair('src1', ['sig1']), SourceSignalPair('src1', ['sig4'])])
         with self.subTest("multi list"):
-            with app.test_request_context("/?signals=src1:sig1,sig2;county:sig5,sig6"):
+            with app.test_request_context("/?signal=src1:sig1,sig2;county:sig5,sig6"):
                 self.assertEqual(parse_source_signal_arg(), [SourceSignalPair('src1', ['sig1', 'sig2']), SourceSignalPair('county', ['sig5', 'sig6'])])
         with self.subTest("hybrid"):
-            with app.test_request_context("/?signals=src2:*;src1:sig4;src3:sig5,sig6"):
+            with app.test_request_context("/?signal=src2:*;src1:sig4;src3:sig5,sig6"):
                 self.assertEqual(parse_source_signal_arg(), [SourceSignalPair('src2', True), SourceSignalPair('src1', ['sig4']), SourceSignalPair('src3', ['sig5', 'sig6'])])
 
         with self.subTest("wrong"):
-            with app.test_request_context("/?signals=abc"):
+            with app.test_request_context("/?signal=abc"):
                 self.assertRaises(ValidationFailedException, parse_source_signal_arg)
-            with app.test_request_context("/?signals=sig=4"):
+            with app.test_request_context("/?signal=sig=4"):
                 self.assertRaises(ValidationFailedException, parse_source_signal_arg)
 
     def test_parse_day_value(self):
