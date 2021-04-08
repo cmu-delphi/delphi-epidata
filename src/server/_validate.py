@@ -41,9 +41,7 @@ def require_all(*values: str) -> bool:
     """
     for value in values:
         if not request.values.get(value):
-            raise ValidationFailedException(
-                f"missing parameter: need [{', '.join(values)}]"
-            )
+            raise ValidationFailedException(f"missing parameter: need [{', '.join(values)}]")
     return True
 
 
@@ -55,9 +53,7 @@ def require_any(*values: str, empty=False) -> bool:
     for value in values:
         if request.values.get(value) or (empty and value in request.values):
             return True
-    raise ValidationFailedException(
-        f"missing parameter: need one of [{', '.join(values)}]"
-    )
+    raise ValidationFailedException(f"missing parameter: need one of [{', '.join(values)}]")
 
 
 def _extract_value(key: Union[str, Sequence[str]]) -> Optional[str]:
@@ -99,7 +95,6 @@ def extract_integer(key: Union[str, Sequence[str]]) -> Optional[int]:
         return int(s)
     except ValueError as e:
         raise ValidationFailedException(f"{key}: not a number: {s}")
-
 
 
 def extract_integers(key: Union[str, Sequence[str]]) -> Optional[List[IntRange]]:

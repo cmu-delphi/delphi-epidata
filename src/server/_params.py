@@ -132,3 +132,23 @@ def parse_time_arg() -> List[TimePair]:
         raise ValidationFailedException(f'time param: {time_type} is not one of "day" or "week"')
 
     return [parse(time_type, time_values) for [time_type, time_values] in _parse_common_multi_arg("time")]
+
+
+def parse_day_range_arg(key: str) -> Optional[Tuple[int, int]]:
+    v = request.values.get(key)
+    if not v:
+        return None
+    r = parse_day_value(v)
+    if not isinstance(r, tuple):
+        raise ValidationFailedException(f"{key} must match YYYYMMDD-YYYYMMDD or YYYY-MM-DD--YYYY-MM-DD")
+    return r
+
+
+def parse_day_arg(key: str) -> Optional[int]:
+    v = request.values.get(key)
+    if not v:
+        return None
+    r = parse_day_value(v)
+    if not isinstance(r, int):
+        raise ValidationFailedException(f"{key} must match YYYYMMDD or YYYY-MM-DD")
+    return r
