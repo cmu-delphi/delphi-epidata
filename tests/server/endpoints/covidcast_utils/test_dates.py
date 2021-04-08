@@ -1,7 +1,7 @@
 import unittest
 from datetime import date
 
-from delphi.epidata.server.endpoints.covidcast_utils.dates import time_value_to_date, date_to_time_value, shift_time_value
+from delphi.epidata.server.endpoints.covidcast_utils.dates import time_value_to_date, date_to_time_value, shift_time_value, time_value_to_iso
 
 
 class UnitTests(unittest.TestCase):
@@ -16,3 +16,7 @@ class UnitTests(unittest.TestCase):
     def test_shift_time_value(self):
         self.assertEqual(shift_time_value(20201010, -3), 20201007)
         self.assertEqual(shift_time_value(20201010, -12), 20200928)
+
+    def test_time_value_to_iso(self):
+        self.assertEqual(time_value_to_iso(20201010), "2020-10-10")
+        self.assertEqual(time_value_to_iso(20190201), "2019-02-01")
