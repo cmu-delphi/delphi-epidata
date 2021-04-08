@@ -93,7 +93,7 @@ def handle():
     else:
         # transfer also the new detail columns
         fields_string.extend(["source", "geo_type", "time_type"])
-        q.set_order("signal", "signal", "time_type", "time_value", "geo_type", "geo_value", "issue")
+        q.set_order("source", "signal", "time_type", "time_value", "geo_type", "geo_value", "issue")
     q.set_fields(fields_string, fields_int, fields_float)
 
     # basic query info
