@@ -38,7 +38,7 @@ class UnitTests(unittest.TestCase):
     mock_epidata_impl = MagicMock()
     mock_epidata_impl.covidcast_meta.return_value = api_response
     mock_database = MagicMock()
-    mock_database.get_covidcast_meta.return_value=api_response['epidata']
+    mock_database.compute_covidcast_meta.return_value=api_response['epidata']
     fake_database_impl = lambda: mock_database
 
     main(
@@ -66,9 +66,9 @@ class UnitTests(unittest.TestCase):
 
     args = MagicMock(log_file="log")
     mock_database = MagicMock()
-    mock_database.get_covidcast_meta.return_value = list()
+    mock_database.compute_covidcast_meta.return_value = list()
     fake_database_impl = lambda: mock_database
 
     main(args, epidata_impl=None, database_impl=fake_database_impl)
 
-    self.assertTrue(mock_database.get_covidcast_meta.called)
+    self.assertTrue(mock_database.compute_covidcast_meta.called)

@@ -83,7 +83,7 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     # make sure the live utility is serving something sensible
     cvc_database = live.Database()
     cvc_database.connect()
-    epidata1 = cvc_database.get_covidcast_meta()
+    epidata1 = cvc_database.compute_covidcast_meta()
     cvc_database.disconnect(False)
     self.assertEqual(len(epidata1),1)
     self.assertEqual(epidata1, [
