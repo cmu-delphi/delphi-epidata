@@ -20,6 +20,7 @@ from ._db import metadata
 from ._printer import create_printer, APrinter
 from ._exceptions import DatabaseErrorException
 from ._validate import DateRange, extract_strings
+from ._params import GeoPair, SourceSignalPair, TimePair
 
 
 def date_string(value: int) -> str:
@@ -59,10 +60,7 @@ def filter_values(
     # builds a SQL expression to filter strings (ex: locations)
     #   $field: name of the field to filter
     #   $values: array of values
-    conditions = [
-        to_condition(field, v, f"{param_key}_{i}", params, formatter)
-        for i, v in enumerate(values)
-    ]
+    conditions = [to_condition(field, v, f"{param_key}_{i}", params, formatter) for i, v in enumerate(values)]
     return f"({' OR '.join(conditions)})"
 
 
@@ -106,6 +104,87 @@ def filter_fields(generator: Iterable[Dict[str, Any]]):
             yield filtered
 
 
+def filter_geo_pairs(
+    type_field: str,
+    value_field: str,
+    values: Sequence[GeoPair],
+    param_key: str,
+    params: Dict[str, Any],
+) -> str:
+    """
+    returns the SQL sub query to filter by the given geo pairs
+    """
+
+    def filter_pair(pair: GeoPair, i) -> str:
+        type_param = f"{param_key}_{i}t"
+        params[type_param] = pair.geo_type
+        if isinstance(pair.geo_values, bool) and pair.geo_values:
+            return f"{type_field} = :{type_param}"
+        return f"({type_field} = :{type_param} AND {filter_strings(value_field, cast(Sequence[str], pair.geo_values), type_param, params)})"
+
+    parts = [filter_pair(p, i) for i, p in enumerate(values)]
+
+    if not parts:
+        # something has to be selected
+        return "FALSE"
+
+    return f"({' OR '.join(parts)})"
+
+
+def filter_source_signal_pairs(
+    source_field: str,
+    signal_field: str,
+    values: Sequence[SourceSignalPair],
+    param_key: str,
+    params: Dict[str, Any],
+) -> str:
+    """
+    returns the SQL sub query to filter by the given source signal pairs
+    """
+
+    def filter_pair(pair: SourceSignalPair, i) -> str:
+        source_param = f"{param_key}_{i}t"
+        params[source_param] = pair.source
+        if isinstance(pair.signal, bool) and pair.signal:
+            return f"{source_field} = :{source_param}"
+        return f"({source_field} = :{source_param} AND {filter_strings(signal_field, cast(Sequence[str], pair.signal), source_param, params)})"
+
+    parts = [filter_pair(p, i) for i, p in enumerate(values)]
+
+    if not parts:
+        # something has to be selected
+        return "FALSE"
+
+    return f"({' OR '.join(parts)})"
+
+
+def filter_time_pairs(
+    type_field: str,
+    time_field: str,
+    values: Sequence[TimePair],
+    param_key: str,
+    params: Dict[str, Any],
+) -> str:
+    """
+    returns the SQL sub query to filter by the given time pairs
+    """
+
+    def filter_pair(pair: TimePair, i) -> str:
+        type_param = f"{param_key}_{i}t"
+        params[type_param] = pair.time_type
+        if isinstance(pair.time_values, bool) and pair.time_values:
+            return f"{type_field} = :{type_param}"
+        return f"({type_field} = :{type_param} AND {filter_integers(time_field, cast(Sequence[Union[int, Tuple[int,int]]], pair.time_values), type_param, params)})"
+
+    parts = [filter_pair(p, i) for i, p in enumerate(values)]
+
+    if not parts:
+        # something has to be selected
+        return "FALSE"
+
+    return f"({' OR '.join(parts)})"
+
+
 def parse_row(
     row: RowProxy,
     fields_string: Optional[Sequence[str]] = None,
@@ -139,10 +218,7 @@ def parse_result(
     """
     execute the given query and return the result as a list of dictionaries
     """
-    return [
-        parse_row(row, fields_string, fields_int, fields_float)
-        for row in db.execute(text(query), **params)
-    ]
+    return [parse_row(row, fields_string, fields_int, fields_float) for row in db.execute(text(query), **params)]
 
 
 def run_query(p: APrinter, query_tuple: Tuple[str, Dict[str, Any]]):
@@ -266,10 +342,11 @@ class QueryBuilder:
         param_key: Optional[str] = None,
     ) -> "QueryBuilder":
         fq_field = f"{self.alias}.{field}" if "." not in field else field
-        self.conditions.append(
-            filter_strings(fq_field, values, param_key or field, self.params)
-        )
+        self.conditions.append(filter_strings(fq_field, values, param_key or field, self.params))
         return self
+
+    def _fq_field(self, field: str) -> str:
+        return f"{self.alias}.{field}" if "." not in field else field
 
     def where_integers(
         self,
@@ -277,10 +354,8 @@ class QueryBuilder:
         values: Optional[Sequence[Union[Tuple[int, int], int]]],
         param_key: Optional[str] = None,
     ) -> "QueryBuilder":
-        fq_field = f"{self.alias}.{field}" if "." not in field else field
-        self.conditions.append(
-            filter_integers(fq_field, values, param_key or field, self.params)
-        )
+        fq_field = self._fq_field(field)
+        self.conditions.append(filter_integers(fq_field, values, param_key or field, self.params))
         return self
 
     def where_dates(
@@ -289,16 +364,72 @@ class QueryBuilder:
         values: Optional[Sequence[Union[Tuple[int, int], int]]],
         param_key: Optional[str] = None,
     ) -> "QueryBuilder":
-        fq_field = f"{self.alias}.{field}" if "." not in field else field
+        fq_field = self._fq_field(field)
+        self.conditions.append(filter_dates(fq_field, values, param_key or field, self.params))
+        return self
+
+    def where_geo_pairs(
+        self,
+        type_field: str,
+        value_field: str,
+        values: Sequence[GeoPair],
+        param_key: Optional[str] = None,
+    ) -> "QueryBuilder":
+        fq_type_field = self._fq_field(type_field)
+        fq_value_field = self._fq_field(value_field)
         self.conditions.append(
-            filter_dates(fq_field, values, param_key or field, self.params)
+            filter_geo_pairs(
+                fq_type_field,
+                fq_value_field,
+                values,
+                param_key or type_field,
+                self.params,
+            )
+        )
+        return self
+
+    def where_source_signal_pairs(
+        self,
+        type_field: str,
+        value_field: str,
+        values: Sequence[SourceSignalPair],
+        param_key: Optional[str] = None,
+    ) -> "QueryBuilder":
+        fq_type_field = self._fq_field(type_field)
+        fq_value_field = self._fq_field(value_field)
+        self.conditions.append(
+            filter_source_signal_pairs(
+                fq_type_field,
+                fq_value_field,
+                values,
+                param_key or type_field,
+                self.params,
+            )
+        )
+        return self
+
+    def where_time_pairs(
+        self,
+        type_field: str,
+        value_field: str,
+        values: Sequence[TimePair],
+        param_key: Optional[str] = None,
+    ) -> "QueryBuilder":
+        fq_type_field = self._fq_field(type_field)
+        fq_value_field = self._fq_field(value_field)
+        self.conditions.append(
+            filter_time_pairs(
+                fq_type_field,
+                fq_value_field,
+                values,
+                param_key or type_field,
+                self.params,
+            )
         )
         return self
 
     def set_fields(self, *fields: Iterable[str]) -> "QueryBuilder":
-        self.fields = [
-            f"{self.alias}.{field}" for field_list in fields for field in field_list
-        ]
+        self.fields = [f"{self.alias}.{field}" for field_list in fields for field in field_list]
         return self
 
     def set_order(self, *args: str, **kwargs: Union[str, bool]) -> "QueryBuilder":
@@ -323,9 +454,7 @@ class QueryBuilder:
 
         subfields = f"max(issue) max_issue, {','.join(fields)}"
         group_by = ",".join(fields)
-        field_conditions = " AND ".join(
-            f"x.{field} = {self.alias}.{field}" for field in fields
-        )
+        field_conditions = " AND ".join(f"x.{field} = {self.alias}.{field}" for field in fields)
         condition = f"x.max_issue = {self.alias}.issue AND {field_conditions}"
         self.subquery = f"JOIN (SELECT {subfields} FROM {self.table} WHERE {self.conditions_clause} GROUP BY {group_by}) x ON {condition}"
         # reset conditions since for join

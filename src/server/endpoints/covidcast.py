@@ -1,7 +1,18 @@
-from flask import Blueprint, request
 from typing import List
 
-from .._query import execute_query, filter_integers, filter_strings, QueryBuilder
+from flask import Blueprint, request
+
+from .._common import is_compatibility_mode
+from .._exceptions import ValidationFailedException
+from .._params import (
+    GeoPair,
+    SourceSignalPair,
+    TimePair,
+    parse_geo_arg,
+    parse_source_signal_arg,
+    parse_time_arg,
+)
+from .._query import QueryBuilder, execute_query, filter_integers, filter_strings
 from .._validate import (
     extract_date,
     extract_dates,
@@ -16,32 +27,60 @@ from .._validate import (
 bp = Blueprint("covidcast", __name__)
 alias = None
 
-def where_geo_values(q: QueryBuilder, geo_values: List[str]):
-    if not geo_values:
-        q.conditions.append("FALSE")
-    elif len(geo_values) == 1 and geo_values[0] == "*":
-        # the wildcard query should return data for all locations in geo_type
-        pass
-    else:
-        # return data for multiple location
-        q.where_strings("geo_value", geo_values)
+
+def parse_source_signal_pairs() -> List[SourceSignalPair]:
+    ds = request.values.get("data_source")
+    if ds:
+        # old version
+        require_any("signal", "signals")
+        signals = extract_strings(("signals", "signal"))
+        return [SourceSignalPair(ds, signals)]
+
+    if ":" not in request.values.get("signal", ""):
+        raise ValidationFailedException("missing parameter: signal or (data_source and signal[s])")
+
+    return parse_source_signal_arg()
+
+
+def parse_geo_pairs() -> List[GeoPair]:
+    geo_type = request.values.get("geo_type")
+    if geo_type:
+        # old version
+        require_any("geo_value", "geo_values", empty=True)
+        geo_values = extract_strings(("geo_values", "geo_value"))
+        if len(geo_values) == 1 and geo_values[0] == "*":
+            return [GeoPair(geo_type, True)]
+        return [GeoPair(geo_type, geo_values)]
+
+    if ":" not in request.values.get("geo", ""):
+        raise ValidationFailedException("missing parameter: geo or (geo_type and geo_value[s])")
+
+    return parse_geo_arg()
+
+
+def parse_time_pairs() -> List[TimePair]:
+    time_type = request.values.get("time_type")
+    if time_type:
+        # old version
+        require_all("time_type", "time_values")
+        time_values = extract_dates("time_values")
+        return [TimePair(time_type, time_values)]
+
+    if ":" not in request.values.get("time", ""):
+        raise ValidationFailedException("missing parameter: time or (time_type and time_values)")
+
+    return parse_time_arg()
 
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    require_all("data_source", "time_type", "geo_type", "time_values")
-    require_any("signal", "signals")
-    require_any("geo_value", "geo_values", empty=True)
+    source_signal_pairs = parse_source_signal_pairs()
+    time_pairs = parse_time_pairs()
+    geo_pairs = parse_geo_pairs()
 
-    time_values = extract_dates("time_values")
     as_of = extract_date("as_of")
     issues = extract_dates("issues")
     lag = extract_integer("lag")
-    signals = extract_strings(("signals", "signal"))
-    geo_values = extract_strings(("geo_values", "geo_value"))
-    data_source = request.values["data_source"]
-    time_type = request.values["time_type"]
-    geo_type = request.values["geo_type"]
 
     # build query
     q = QueryBuilder("covidcast", "t")
@@ -49,18 +88,21 @@ def handle():
     fields_string = ["geo_value", "signal"]
     fields_int = ["time_value", "direction", "issue", "lag"]
     fields_float = ["value", "stderr", "sample_size"]
+    if is_compatibility_mode():
+        q.set_order("signal", "time_value", "geo_value", "issue")
+    else:
+        # transfer also the new detail columns
+        fields_string.extend(["source", "geo_type", "time_type"])
+        q.set_order("source", "signal", "time_type", "time_value", "geo_type", "geo_value", "issue")
     q.set_fields(fields_string, fields_int, fields_float)
-    q.set_order('signal', 'time_value', 'geo_value', 'issue')
 
     # basic query info
     # data type of each field
     # build the source, signal, time, and location (type and id) filters
 
-    q.where(source=data_source, time_type=time_type, geo_type=geo_type)
-    q.where_strings("signal", signals)
-    q.where_integers("time_value", time_values)
-
-    where_geo_values(q, geo_values)
+    q.where_source_signal_pairs("source", "signal", source_signal_pairs)
+    q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
+    q.where_time_pairs("time_type", "time_value", time_pairs)
 
     subquery = ""
     if issues:
