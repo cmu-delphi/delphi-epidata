@@ -60,24 +60,27 @@ def compute_trend(geo_type: str, geo_value: str, signal_source: str, signal_sign
         # cannot compute trend if current time is not found
         return t
 
-    t.basis_trend = compute_trend_value(t.value, t.basis_value, t.min_value) if t.basis_value else TrendEnum.unknown
-    t.min_trend = compute_trend_value(t.value, t.min_value, t.min_value)
-    t.max_trend = compute_trend_value(t.value, t.max_value, t.min_value) if t.max_value else TrendEnum.unknown
+    t.basis_trend = compute_trend_class(compute_trend_value(t.value, t.basis_value, t.min_value)) if t.basis_value else TrendEnum.unknown
+    t.min_trend = compute_trend_class(compute_trend_value(t.value, t.min_value, t.min_value))
+    t.max_trend = compute_trend_class(compute_trend_value(t.value, t.max_value, t.min_value)) if t.max_value else TrendEnum.unknown
 
     return t
 
 
-def compute_trend_value(current: float, basis: float, min_value: float) -> TrendEnum:
+def compute_trend_value(current: float, basis: float, min_value: float) -> float:
     # based on www-covidcast
     normalized_basis = basis - min_value
     normalized_current = current - min_value
     if normalized_basis == normalized_current:
-        return TrendEnum.steady
+        return 0
     if normalized_basis == 0:
+        return 1
+    return normalized_current / normalized_basis - 1
+
+
+def compute_trend_class(trend_value: float) -> TrendEnum:
+    if trend_value >= 0.1:
         return TrendEnum.increasing
-    normalized_change = normalized_current / normalized_basis - 1
-    if normalized_change >= 0.1:
-        return TrendEnum.increasing
-    if normalized_change <= -0.1:
+    if trend_value <= -0.1:
         return TrendEnum.decreasing
     return TrendEnum.steady
