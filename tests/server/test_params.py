@@ -1,4 +1,4 @@
-"""Unit tests for granular sensor authentication in api.php."""
+"""Unit tests for parameter parsing."""
 
 # standard library
 import unittest
@@ -42,29 +42,29 @@ class UnitTests(unittest.TestCase):
             with app.test_request_context("/?geo=state:*"):
                 self.assertEqual(parse_geo_arg(), [GeoPair("state", True)])
             with app.test_request_context("/?geo=state:AK"):
-                self.assertEqual(parse_geo_arg(), [GeoPair("state", ["AK"])])
+                self.assertEqual(parse_geo_arg(), [GeoPair("state", ["ak"])])
         with self.subTest("single list"):
             with app.test_request_context("/?geo=state:AK,TK"):
-                self.assertEqual(parse_geo_arg(), [GeoPair("state", ["AK", "TK"])])
+                self.assertEqual(parse_geo_arg(), [GeoPair("state", ["ak", "tk"])])
         with self.subTest("multi"):
             with app.test_request_context("/?geo=state:*;nation:*"):
                 self.assertEqual(parse_geo_arg(), [GeoPair("state", True), GeoPair("nation", True)])
             with app.test_request_context("/?geo=state:AK;nation:US"):
                 self.assertEqual(
                     parse_geo_arg(),
-                    [GeoPair("state", ["AK"]), GeoPair("nation", ["US"])],
+                    [GeoPair("state", ["ak"]), GeoPair("nation", ["us"])],
                 )
             with app.test_request_context("/?geo=state:AK;state:KY"):
                 self.assertEqual(
                     parse_geo_arg(),
-                    [GeoPair("state", ["AK"]), GeoPair("state", ["KY"])],
+                    [GeoPair("state", ["ak"]), GeoPair("state", ["ky"])],
                 )
         with self.subTest("multi list"):
             with app.test_request_context("/?geo=state:AK,TK;county:42003,40556"):
                 self.assertEqual(
                     parse_geo_arg(),
                     [
-                        GeoPair("state", ["AK", "TK"]),
+                        GeoPair("state", ["ak", "tk"]),
                         GeoPair("county", ["42003", "40556"]),
                     ],
                 )
@@ -74,7 +74,7 @@ class UnitTests(unittest.TestCase):
                     parse_geo_arg(),
                     [
                         GeoPair("nation", True),
-                        GeoPair("state", ["PA"]),
+                        GeoPair("state", ["pa"]),
                         GeoPair("county", ["42003", "42002"]),
                     ],
                 )

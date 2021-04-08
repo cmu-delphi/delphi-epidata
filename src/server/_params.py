@@ -8,6 +8,7 @@ from ._exceptions import ValidationFailedException
 
 
 def _parse_common_multi_arg(key: str) -> List[Tuple[str, Union[bool, Sequence[str]]]]:
+    # support multiple request parameter with the same name
     line = ";".join(request.values.getlist(key))
 
     parsed: List[Tuple[str, Union[bool, Sequence[str]]]] = []
@@ -15,13 +16,13 @@ def _parse_common_multi_arg(key: str) -> List[Tuple[str, Union[bool, Sequence[st
     if not line:
         return parsed
 
-    pattern = re.compile(r"^(\w+):(.*)$", re.MULTILINE)
+    pattern: re.Pattern[str] = re.compile(r"^(\w+):(.*)$", re.MULTILINE)
     for entry in line.split(";"):
-        m = pattern.match(entry)
+        m: Optional[re.Match[str]] = pattern.match(entry)
         if not m:
             raise ValidationFailedException(f"{key} param: {entry} is not matching <{key}_type>:<{key}_values> syntax")
-        group_type = m.group(1).strip()
-        group_value = m.group(2).strip()
+        group_type: str = m.group(1).strip().lower()
+        group_value: str = m.group(2).strip().lower()
         if group_value == "*":
             parsed.append((group_type, True))
         else:
@@ -68,7 +69,7 @@ def _verify_range(start: int, end: int) -> Union[int, Tuple[int, int]]:
 
 def parse_week_value(time_value: str) -> Union[int, Tuple[int, int]]:
     count_dashes = time_value.count("-")
-    msg = f"{time_value} is not matching a known format YYYYWW or YYYYWW-YYYYWW"
+    msg = f"{time_value} does not match a known format YYYYWW or YYYYWW-YYYYWW"
 
     if count_dashes == 0:
         # plain delphi date YYYYWW
@@ -88,7 +89,7 @@ def parse_week_value(time_value: str) -> Union[int, Tuple[int, int]]:
 
 def parse_day_value(time_value: str) -> Union[int, Tuple[int, int]]:
     count_dashes = time_value.count("-")
-    msg = f"{time_value} is not matching a known format YYYYMMDD, YYYY-MM-DD, YYYYMMDD-YYYYMMDD, or YYYY-MM-DD--YYYY-MM-DD"
+    msg = f"{time_value} does not match a known format YYYYMMDD, YYYY-MM-DD, YYYYMMDD-YYYYMMDD, or YYYY-MM-DD--YYYY-MM-DD"
 
     if count_dashes == 0:
         # plain delphi date YYYYMMDD
