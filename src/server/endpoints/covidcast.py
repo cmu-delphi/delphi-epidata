@@ -140,7 +140,7 @@ def handle_trend():
     fields_int = ["time_value"]
     fields_float = ["value"]
     q.set_fields(fields_string, fields_int, fields_float)
-    q.set_order("source", "signal", "geo_value", "time_value")
+    q.set_order("geo_type", "geo_value", "source", "signal", "time_value")
 
     q.where_source_signal_pairs("source", "signal", source_signal_pairs)
     q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
