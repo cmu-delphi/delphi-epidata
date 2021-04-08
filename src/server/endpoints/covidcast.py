@@ -1,9 +1,10 @@
 from typing import List, Iterable, Dict, Any
 from itertools import groupby
 from flask import Blueprint, request
+from sqlalchemy import text
 
-from .._common import is_compatibility_mode
-from .._exceptions import ValidationFailedException
+from .._common import is_compatibility_mode, db
+from .._exceptions import ValidationFailedException, DatabaseErrorException
 from .._params import (
     GeoPair,
     SourceSignalPair,
@@ -13,6 +14,7 @@ from .._params import (
     parse_time_arg,
     parse_day_arg,
     parse_day_range_arg,
+    parse_single_source_signal_arg,
 )
 from .._query import QueryBuilder, execute_query, filter_integers, filter_strings, run_query, parse_row
 from .._printer import create_printer
@@ -24,7 +26,8 @@ from .._validate import (
     require_all,
     require_any,
 )
-from .covidcast_utils import compute_trend, shift_time_value
+from .._pandas import as_pandas, print_pandas
+from .covidcast_utils import compute_trend, shift_time_value, compute_correlations
 
 # first argument is the endpoint name
 bp = Blueprint("covidcast", __name__)
@@ -170,3 +173,61 @@ def handle_trend():
 
     # now use a generator for sending the rows and execute all the other queries
     return p(gen(r))
+
+
+@bp.route("/correlation", methods=("GET", "POST"))
+def handle_correlation():
+    require_all("reference", "window", "others", "geo")
+    reference = parse_single_source_signal_arg("reference")
+    other_pairs = parse_source_signal_arg("others")
+    geo_pairs = parse_geo_arg()
+    time_window = parse_day_range_arg("window")
+    lag = extract_integer("lag") or 28
+
+    # build query
+    q = QueryBuilder("covidcast", "t")
+
+    fields_string = ["geo_type", "geo_value", "source", "signal"]
+    fields_int = ["time_value"]
+    fields_float = ["value"]
+    q.set_fields(fields_string, fields_int, fields_float)
+    q.set_order("geo_type", "geo_value", "source", "signal", "time_value")
+
+    q.where_source_signal_pairs("source", "signal", other_pairs + [reference])
+    q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
+    q.where_time_pairs("time_type", "time_value", [TimePair("day", [time_window])])
+
+    # fetch most recent issue fast
+    q.conditions.append(f"({q.alias}.is_latest_issue IS TRUE)")
+
+    df = as_pandas(str(q), q.params)
+
+    p = create_printer()
+
+    def prepare_data_frame(df):
+        return df[["time_value", "value"]].set_index("time_value")
+
+    def gen():
+        by_geo = df.groupby(["geo_type", "geo_value"])
+        for (geo_type, geo_value), group in by_geo:
+            # group by source, signal
+            by_signal = group.groupby(["source", "signal"])
+
+            # find reference group
+            # dataframe structure: index=time_value, value=value
+            reference_group = next((prepare_data_frame(group) for (source, signal), group in by_signal if source == reference.source and signal == reference.signal[0]), None)
+
+            if reference_group is None or reference_group.empty:
+                continue  # no data for reference
+
+            # dataframe structure: index=time_value, value=value
+            other_groups = [((source, signal), prepare_data_frame(group)) for (source, signal), group in by_signal if not (source == reference.source and signal == reference.signal[0])]
+            if not other_groups:
+                continue  # no other signals
+
+            for (source, signal), other_group in other_groups:
+                for cor in compute_correlations(geo_type, geo_value, source, signal, lag, reference_group, other_group):
+                    yield cor.asdict()
+
+    # now use a generator for sending the rows and execute all the other queries
+    return p(gen())

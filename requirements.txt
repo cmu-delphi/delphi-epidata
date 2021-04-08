@@ -4,3 +4,4 @@ mysqlclient==2.0.2
 python-dotenv==0.15.0
 orjson==3.4.7
 pandas==1.2.3
+scipy==1.6.2
