@@ -2,6 +2,7 @@ from typing import List
 
 from flask import Blueprint, request
 
+from .._common import is_compatibility_mode
 from .._exceptions import ValidationFailedException
 from .._params import (
     GeoPair,
@@ -87,8 +88,13 @@ def handle():
     fields_string = ["geo_value", "signal"]
     fields_int = ["time_value", "direction", "issue", "lag"]
     fields_float = ["value", "stderr", "sample_size"]
+    if is_compatibility_mode():
+        q.set_order("signal", "time_value", "geo_value", "issue")
+    else:
+        # transfer also the new detail columns
+        fields_string.extend(["source", "geo_type", "time_type"])
+        q.set_order("signal", "signal", "time_type", "time_value", "geo_type", "geo_value", "issue")
     q.set_fields(fields_string, fields_int, fields_float)
-    q.set_order("signal", "time_value", "geo_value", "issue")
 
     # basic query info
     # data type of each field
