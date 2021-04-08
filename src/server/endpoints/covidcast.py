@@ -200,7 +200,7 @@ def handle_correlation():
     # fetch most recent issue fast
     q.conditions.append(f"({q.alias}.is_latest_issue IS TRUE)")
 
-    df = as_pandas(str(q), q.params)
+    df = as_pandas(str(q), q.params, parse_dates={"time_value": "%Y%m%d"})
 
     p = create_printer()
 
