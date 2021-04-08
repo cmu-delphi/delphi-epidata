@@ -27,6 +27,10 @@ class UnitTests(unittest.TestCase):
             self.assertAlmostEqual(compute_trend_value(9.5 + 5, 10 + 5, 5), -0.05)
             self.assertAlmostEqual(compute_trend_value(9 + 5, 10 + 5, 5), -0.1)
             self.assertAlmostEqual(compute_trend_value(8 + 5, 10 + 5, 5), -0.2)
+        with self.subTest("basis is min"):
+            self.assertAlmostEqual(compute_trend_value(11, 10, 10), 1)
+        with self.subTest("current is min"):
+            self.assertAlmostEqual(compute_trend_value(10, 15, 10), -1)
 
     def test_compute_trend_class(self):
         self.assertEqual(compute_trend_class(-0.3), TrendEnum.decreasing)
