@@ -16,7 +16,7 @@ def _parse_common_multi_arg(key: str) -> List[Tuple[str, Union[bool, Sequence[st
     if not line:
         return parsed
 
-    pattern: re.Pattern[str] = re.compile(r"^(\w+):(.*)$", re.MULTILINE)
+    pattern: re.Pattern[str] = re.compile(r"^([\w\-_]+):(.*)$", re.MULTILINE)
     for entry in line.split(";"):
         m: Optional[re.Match[str]] = pattern.match(entry)
         if not m:
