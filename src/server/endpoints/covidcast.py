@@ -1,5 +1,6 @@
-from typing import List, Iterable, Dict, Any
+from typing import List, Iterable, Dict, Any, Optional, Union, Tuple
 from itertools import groupby
+from datetime import date, datetime, timedelta
 from flask import Blueprint, request
 from sqlalchemy import text
 
@@ -17,7 +18,7 @@ from .._params import (
     parse_single_source_signal_arg,
 )
 from .._query import QueryBuilder, execute_query, filter_integers, filter_strings, run_query, parse_row
-from .._printer import create_printer
+from .._printer import create_printer, CSVPrinter
 from .._validate import (
     extract_date,
     extract_dates,
@@ -27,7 +28,7 @@ from .._validate import (
     require_any,
 )
 from .._pandas import as_pandas, print_pandas
-from .covidcast_utils import compute_trend, shift_time_value, compute_correlations
+from .covidcast_utils import compute_trend, shift_time_value, date_to_time_value, time_value_to_iso, compute_correlations
 
 # first argument is the endpoint name
 bp = Blueprint("covidcast", __name__)
@@ -78,6 +79,24 @@ def parse_time_pairs() -> List[TimePair]:
     return parse_time_arg()
 
 
+def _handle_lag_issues_as_of(q: QueryBuilder, issues: Optional[List[Union[Tuple[int, int], int]]] = None, lag: Optional[int] = None, as_of: Optional[int] = None):
+    if issues:
+        q.where_integers("issue", issues)
+    elif lag is not None:
+        q.where(lag=lag)
+    elif as_of is not None:
+        # fetch most recent issues with as of
+        sub_condition_asof = "(issue <= :as_of)"
+        q.params["as_of"] = as_of
+        sub_fields = "max(issue) max_issue, time_type, time_value, `source`, `signal`, geo_type, geo_value"
+        sub_group = "time_type, time_value, `source`, `signal`, geo_type, geo_value"
+        sub_condition = f"x.max_issue = {q.alias}.issue AND x.time_type = {q.alias}.time_type AND x.time_value = {q.alias}.time_value AND x.source = {q.alias}.source AND x.signal = {q.alias}.signal AND x.geo_type = {q.alias}.geo_type AND x.geo_value = {q.alias}.geo_value"
+        q.subquery = f"JOIN (SELECT {sub_fields} FROM {q.table} WHERE {q.conditions_clause} AND {sub_condition_asof} GROUP BY {sub_group}) x ON {sub_condition}"
+    else:
+        # fetch most recent issue fast
+        q.conditions.append(f"({q.alias}.is_latest_issue IS TRUE)")
+
+
 @bp.route("/", methods=("GET", "POST"))
 def handle():
     source_signal_pairs = parse_source_signal_pairs()
@@ -110,23 +129,7 @@ def handle():
     q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
     q.where_time_pairs("time_type", "time_value", time_pairs)
 
-    subquery = ""
-    if issues:
-        q.where_integers("issue", issues)
-    elif lag:
-        q.where(lag=lag)
-    elif as_of:
-        # fetch most recent issues with as of
-        sub_condition_asof = "(issue <= :as_of)"
-        q.params["as_of"] = as_of
-        sub_fields = "max(issue) max_issue, time_type, time_value, `source`, `signal`, geo_type, geo_value"
-        sub_group = "time_type, time_value, `source`, `signal`, geo_type, geo_value"
-        sub_condition = f"x.max_issue = {q.alias}.issue AND x.time_type = {q.alias}.time_type AND x.time_value = {q.alias}.time_value AND x.source = {q.alias}.source AND x.signal = {q.alias}.signal AND x.geo_type = {q.alias}.geo_type AND x.geo_value = {q.alias}.geo_value"
-        q.subquery = f"JOIN (SELECT {sub_fields} FROM {q.table} WHERE {q.conditions_clause} AND {sub_condition_asof} GROUP BY {sub_group}) x ON {sub_condition}"
-        # condition_version = "TRUE"
-    else:
-        # fetch most recent issue fast
-        q.conditions.append(f"({q.alias}.is_latest_issue IS TRUE)")
+    _handle_lag_issues_as_of(q, issues, lag, as_of)
 
     # send query
     return execute_query(str(q), q.params, fields_string, fields_int, fields_float)
@@ -156,7 +159,7 @@ def handle_trend():
     q.where_time_pairs("time_type", "time_value", [TimePair("day", [time_window])])
 
     # fetch most recent issue fast
-    q.conditions.append(f"({q.alias}.is_latest_issue IS TRUE)")
+    _handle_lag_issues_as_of(q, None, None, None)
 
     p = create_printer()
 
@@ -231,3 +234,78 @@ def handle_correlation():
 
     # now use a generator for sending the rows and execute all the other queries
     return p(gen())
+
+
+@bp.route("/csv", methods=("GET", "POST"))
+def handle_export():
+    source, signal = request.args.get("signal", "jhu-csse:confirmed_incidence_num").split(":")
+    start_day = request.args.get("start_day", "2020-04-01")
+    end_day = request.args.get("end_day", "2020-09-01")
+    geo_type = request.args.get("geo_type", "county")
+    geo_values = request.args.get("geo_values", "*")
+
+    if geo_values != "*":
+        geo_values = geo_values.split(",")
+
+    as_of = request.args.get("as_of", None)
+
+    start_day = datetime.strptime(start_day, "%Y-%m-%d").date()
+    end_day = datetime.strptime(end_day, "%Y-%m-%d").date()
+
+    if as_of is not None:
+        as_of = datetime.strptime(as_of, "%Y-%m-%d").date()
+
+    # build query
+    q = QueryBuilder("covidcast", "t")
+
+    q.set_fields(["geo_value", "signal", "time_value", "issue", "lag", "value", "stderr", "sample_size", "geo_type", "source"], [], [])
+    q.set_order("geo_value", "time_value")
+    q.where(source=source, signal=signal, time_type="day")
+    q.conditions.append("time_value BETWEEN :start_day AND :end_day")
+    q.params["start_day"] = date_to_time_value(start_day)
+    q.params["end_day"] = date_to_time_value(end_day)
+    q.where_geo_pairs("geo_type", "geo_value", [GeoPair(geo_type, True if geo_values == "*" else geo_values)])
+
+    _handle_lag_issues_as_of(q, None, None, date_to_time_value(as_of) if as_of is not None else None)
+
+    # tag as_of in filename, if it was specified
+    as_of_str = "-asof-{as_of}".format(as_of=as_of.isoformat()) if as_of is not None else ""
+    filename = "covidcast-{source}-{signal}-{start_day}-to-{end_day}{as_of}".format(source=source, signal=signal, start_day=start_day.isoformat(), end_day=end_day.isoformat(), as_of=as_of_str)
+    p = CSVPrinter(filename)
+
+    def parse_row(i, row):
+        # '',geo_value,signal,{time_value,issue},lag,value,stderr,sample_size,geo_type,data_source
+        return {
+            "": i,
+            "geo_value": row["geo_value"],
+            "signal": row["signal"],
+            "time_value": time_value_to_iso(row["time_value"]),
+            "issue": time_value_to_iso(row["issue"]),
+            "lag": row["lag"],
+            "value": row["value"],
+            "stderr": row["stderr"],
+            "sample_size": row["sample_size"],
+            "geo_type": row["geo_type"],
+            "data_source": row["source"],
+        }
+
+    def gen(first_row, rows):
+        yield parse_row(0, first_row)
+        for i, row in enumerate(rows):
+            yield parse_row(i + 1, row)
+
+    # execute query
+    try:
+        r = run_query(p, (str(q), q.params))
+    except Exception as e:
+        raise DatabaseErrorException(str(e))
+
+    # special case for no data to be compatible with the CSV server
+    first_row = next(r, None)
+    if not first_row:
+        return "No matching data found for signal {source}:{signal} " "at {geo} level from {start_day} to {end_day}, as of {as_of}.".format(
+            source=source, signal=signal, geo=geo_type, start_day=start_day.isoformat(), end_day=end_day.isoformat(), as_of=(date.today().isoformat() if as_of is None else as_of.isoformat())
+        )
+
+    # now use a generator for sending the rows and execute all the other queries
+    return p(gen(first_row, r))

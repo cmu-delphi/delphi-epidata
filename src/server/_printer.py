@@ -52,7 +52,7 @@ class APrinter:
                     if r is not None:
                         yield r
             except Exception as e:
-                app.logger.error(f'error executing')
+                app.logger.error(f"error executing")
                 self.result = -1
                 yield self._error(e)
 
@@ -81,7 +81,7 @@ class APrinter:
 
     def _error(self, error: Exception) -> str:
         # send an generic error
-        return dumps(dict(result=self.result, message=f"unknown error occurred: {error}",error=error, epidata=[]))
+        return dumps(dict(result=self.result, message=f"unknown error occurred: {error}", error=error, epidata=[]))
 
     def _print_row(self, row: Dict) -> Optional[Union[str, bytes]]:
         first = self.count == 0
@@ -110,7 +110,7 @@ class ClassicPrinter(APrinter):
 
     def _begin(self):
         if is_compatibility_mode():
-            return '{ '
+            return "{ "
         return '{ "epidata": ['
 
     def _format_row(self, first: bool, row: Dict):
@@ -125,13 +125,13 @@ class ClassicPrinter(APrinter):
         prefix = "], "
         if self.count == 0 and is_compatibility_mode():
             # no array to end
-            prefix = ''
+            prefix = ""
 
         if self.count == 0:
             message = "no results"
         elif self.result == 2:
             message = "too many results, data truncated"
-        return f'{prefix}"result": {self.result}, "message": {dumps(message)} }}'.encode('utf-8')
+        return f'{prefix}"result": {self.result}, "message": {dumps(message)} }}'.encode("utf-8")
 
 
 class ClassicTreePrinter(ClassicPrinter):
@@ -178,13 +178,15 @@ class CSVPrinter(APrinter):
 
     _stream = StringIO()
     _writer: DictWriter
+    _filename: Optional[str]
+
+    def __init__(self, filename: Optional[str] = None):
+        super(CSVPrinter, self).__init__()
+        self._filename = filename
 
     def make_response(self, gen):
-        return Response(
-            gen,
-            mimetype="text/csv; charset=utf8",
-            # headers={"Content-Disposition": "attachment; filename=epidata.csv"},
-        )
+        headers = {"Content-Disposition": f"attachment; filename={self._filename}.csv"} if self._filename else {}
+        return Response(gen, mimetype="text/csv; charset=utf8", headers=headers)
 
     def _begin(self):
         return None
@@ -195,9 +197,7 @@ class CSVPrinter(APrinter):
 
     def _format_row(self, first: bool, row: Dict):
         if first:
-            self._writer = DictWriter(
-                self._stream, list(row.keys()), lineterminator="\n"
-            )
+            self._writer = DictWriter(self._stream, list(row.keys()), lineterminator="\n")
             self._writer.writeheader()
         self._writer.writerow(row)
 
