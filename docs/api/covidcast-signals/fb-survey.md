@@ -353,13 +353,6 @@ September 8, 2020.
 | `smoothed_winperson_school_parttime` | Estimated percentage of people who had any children attending in-person school on a part-time basis, among people reporting any pre-K-grade 12 children in their household. <br/> **Earliest date available:** 2020-11-24 | E2 |
 
 
-Signals beginning `raw_w` or `smoothed_w` are adjusted using survey weights
-[as described below](#survey-weighting) to be demographically representative.
-Weighted signals have 1-2 days of lag, so if low latency is paramount,
-unweighted signals are also available. These begin `smoothed_`, such as
-`smoothed_tested_14d` instead of `smoothed_wtested_14d`.
-
-
 ## Vaccination Indicators
 
 ### Vaccine Uptake and Acceptance
