@@ -1,10 +1,10 @@
-from typing import List, Iterable, Dict, Any, Optional, Union, Tuple
+from typing import List, Optional, Union, Tuple, Dict, Any
 from itertools import groupby
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 from flask import Blueprint, request
-from sqlalchemy import text
+from sqlalchemy.engine.result import RowProxy
 
-from .._common import is_compatibility_mode, db
+from .._common import is_compatibility_mode
 from .._exceptions import ValidationFailedException, DatabaseErrorException
 from .._params import (
     GeoPair,
@@ -16,8 +16,10 @@ from .._params import (
     parse_day_arg,
     parse_day_range_arg,
     parse_single_source_signal_arg,
+    parse_single_time_arg,
+    parse_single_geo_arg,
 )
-from .._query import QueryBuilder, execute_query, filter_integers, filter_strings, run_query, parse_row
+from .._query import QueryBuilder, execute_query, run_query, parse_row
 from .._printer import create_printer, CSVPrinter
 from .._validate import (
     extract_date,
@@ -27,7 +29,7 @@ from .._validate import (
     require_all,
     require_any,
 )
-from .._pandas import as_pandas, print_pandas
+from .._pandas import as_pandas
 from .covidcast_utils import compute_trend, shift_time_value, date_to_time_value, time_value_to_iso, compute_correlations
 
 # first argument is the endpoint name
@@ -309,3 +311,48 @@ def handle_export():
 
     # now use a generator for sending the rows and execute all the other queries
     return p(gen(first_row, r))
+
+
+@bp.route("/backfill", methods=("GET", "POST"))
+def handle_backfill():
+    """
+    example query: http://localhost:5000/covidcast/backfill?signal=fb-survey:smoothed_cli&time=day:20200101-20220101&geo=state:ny
+    """
+    require_all("geo", "time", "signal")
+    signal_pair = parse_single_source_signal_arg("signal")
+    time_pair = parse_single_time_arg("time")
+    geo_pair = parse_single_geo_arg("geo")
+
+    # build query
+    q = QueryBuilder("covidcast", "t")
+
+    fields_string = []
+    fields_int = ["time_value", "issue"]
+    fields_float = ["value", "sample_size"]
+    # sort by time value and issue desc
+    q.set_order(time_value=True, is_latest_issue=True, issue=False)
+    q.set_fields(fields_string, fields_int, fields_float, ["is_latest_issue"])
+
+    q.where_source_signal_pairs("source", "signal", [signal_pair])
+    q.where_geo_pairs("geo_type", "geo_value", [geo_pair])
+    q.where_time_pairs("time_type", "time_value", [time_pair])
+
+    # no restriction of issues or dates since we want all issues
+    # _handle_lag_issues_as_of(q, issues, lag, as_of)
+
+    def inject_confidence():
+        latest_issue = None
+
+        def transform(row: Dict[str, Any], result: RowProxy) -> Dict[str, Any]:
+            nonlocal latest_issue
+            # is_latest_issue is the first one per time_value
+            if result["is_latest_issue"]:
+                latest_issue = row
+            # confidence is percentage of sample sizes
+            row["confidence"] = row.get("sample_size", 0) / (latest_issue or row).get("sample_size", 1)
+            return row
+
+        return transform
+
+    # send query
+    return execute_query(q.query, q.params, fields_string, fields_int, fields_float, transform=inject_confidence())

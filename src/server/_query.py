@@ -340,6 +340,7 @@ class QueryBuilder:
 
         return f"SELECT {self.fields_clause} FROM {self.table} {self.subquery} {where} {group_by} {order}"
 
+    @property
     def query(self) -> str:
         """
         returns the full query
