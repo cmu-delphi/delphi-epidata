@@ -558,6 +558,7 @@ survey.
   vaccinated?”) response option 2 (“Yes, probably”). The following question
   would be V5a (“Which of the following, is any, are reasons that you only
   probably would choose to get the COVID-19 vaccine?”).
+* Item V9 was made conditional on respondents not answering "yes" to V1.
 * Item C13 was replaced with item C13b, which asks specifically whether the
   activities occurred indoors. Item C13a was similarly replaced with item C13c
   to reflect mask use during those indoor activities.
