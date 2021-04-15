@@ -231,14 +231,13 @@ class CsvImporter:
       # A missing code should never contradict the quantity being present, 
       # since that will be filtered in the export_to_csv util in 
       # covidcast-indicators; nonetheless this code is here for safety
-      if attr_quantity is not None and missing_entry > 0:
+      if attr_quantity is not None and missing_entry != Nans.NOT_MISSING.value:
         return None
       return missing_entry
     else:
-      if attr_quantity is not None:
-        return Nans.NOT_MISSING.value
-      else:
+      if attr_quantity is None:
         return Nans.UNKNOWN.value
+      return Nans.NOT_MISSING.value
 
   @staticmethod
   def extract_and_check_row(row, geo_type):
