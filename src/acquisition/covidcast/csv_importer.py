@@ -231,7 +231,7 @@ class CsvImporter:
       # A missing code should never contradict the value being present, 
       # since that will be filtered in the export_to_csv util in 
       # covidcast-indicators; nonetheless this code is here for safety
-      if attr_value is not None and missing_entry > 0:
+      if attr_value is not None and missing_entry != Nans.NOT_MISSING.value:
         return None
       return missing_entry
     else:
