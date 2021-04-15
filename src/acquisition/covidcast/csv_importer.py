@@ -235,10 +235,9 @@ class CsvImporter:
         return None
       return missing_entry
     else:
-      if attr_value is not None:
-        return Nans.NOT_MISSING.value
-      else:
+      if attr_value not None:
         return Nans.UNKNOWN.value
+      return Nans.NOT_MISSING.value
 
   @staticmethod
   def extract_and_check_row(row, geo_type):
