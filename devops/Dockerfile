@@ -20,5 +20,5 @@ COPY ./src/server/ /app/app/
 COPY --from=builder ./src/build/lib/ /app/app/lib/
 RUN rm -rf /app/app/__pycache__ /app/app/*.php && chmod -R o+r /app/app
 
-ENTRYPOINT [ "/bin/sh entrypoint.sh" ]
-CMD [ "/bin/sh start_wrapper.sh" ]
+ENTRYPOINT [ "/usr/bin/env sh /entrypoint.sh" ]
+CMD [ "/usr/bin/env sh /start_wrapper.sh" ]
