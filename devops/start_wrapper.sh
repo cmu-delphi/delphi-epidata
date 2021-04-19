@@ -6,5 +6,5 @@ set -e
 if [ -z "${NEW_RELIC_LICENSE_KEY}" ]; then
   sh /start.sh
 else
-  newrelic-admin run-command start.sh
+  newrelic-admin run-command /start.sh
 fi
