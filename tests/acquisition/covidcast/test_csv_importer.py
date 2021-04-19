@@ -193,7 +193,10 @@ class UnitTests(unittest.TestCase):
     self.assertIsNone(error)
 
     # a nominal case with missing values
-    geo_type, row = make_row(se='', sample_size='NA')
+    geo_type, row = make_row(
+      se='', sample_size='NA', 
+      missing_se=Nans.UNKNOWN, missing_sample_size=Nans.UNKNOWN
+    )
     values, error = CsvImporter.extract_and_check_row(row, geo_type)
 
     self.assertIsInstance(values, CsvImporter.RowValues)

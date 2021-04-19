@@ -230,8 +230,10 @@ class CsvImporter:
         return None
       # A missing code should never contradict the quantity being present, 
       # since that will be filtered in the export_to_csv util in 
-      # covidcast-indicators; nonetheless this code is here for safety
+      # covidcast-indicators; nonetheless this code is here for safety.
       if attr_quantity is not None and missing_entry != Nans.NOT_MISSING.value:
+        return None
+      elif attr_quantity is None and missing_entry == Nans.NOT_MISSING.value:
         return None
       return missing_entry
     else:

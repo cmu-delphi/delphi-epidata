@@ -78,6 +78,9 @@ class CovidcastTests(unittest.TestCase):
         'issue': 20200414,
         'lag': 0,
         'signal': 'sig',
+        'missing_value': Nans.NOT_MISSING,
+        'missing_stderr': Nans.NOT_MISSING,
+        'missing_sample_size': Nans.NOT_MISSING
        }],
       'message': 'success',
     })
@@ -144,12 +147,14 @@ class CovidcastTests(unittest.TestCase):
     })
     response.raise_for_status()
     response = response.text
+    expected_response = (
+      "geo_value,signal,time_value,direction,issue,lag,missing_value," + 
+      "missing_stderr,missing_sample_size,value,stderr,sample_size\n" + 
+      "01234,sig,20200414,4,20200414,0,0,0,0,1.5,2.5,3.5\n"
+    )
 
     # assert that the right data came back
-    self.assertEqual(response,
-"""geo_value,signal,time_value,direction,issue,lag,value,stderr,sample_size
-01234,sig,20200414,4,20200414,0,1.5,2.5,3.5
-""")
+    self.assertEqual(response, expected_response)
 
   def test_raw_json_format(self):
     """Test generate raw json data."""
@@ -188,6 +193,9 @@ class CovidcastTests(unittest.TestCase):
       'issue': 20200414,
       'lag': 0,
       'signal': 'sig',
+      'missing_value': Nans.NOT_MISSING,
+      'missing_stderr': Nans.NOT_MISSING,
+      'missing_sample_size': Nans.NOT_MISSING
     }])
 
   def test_fields(self):
@@ -227,7 +235,10 @@ class CovidcastTests(unittest.TestCase):
         'direction': 4,
         'issue': 20200414,
         'lag': 0,
-        'signal': 'sig'
+        'signal': 'sig',
+        'missing_value': Nans.NOT_MISSING,
+        'missing_stderr': Nans.NOT_MISSING,
+        'missing_sample_size': Nans.NOT_MISSING
        }],
       'message': 'success',
     })
@@ -334,6 +345,9 @@ class CovidcastTests(unittest.TestCase):
           'issue': 20200414,
           'lag': 0,
           'signal': 'sig',
+          'missing_value': Nans.NOT_MISSING,
+          'missing_stderr': Nans.NOT_MISSING,
+          'missing_sample_size': Nans.NOT_MISSING
         }, {
           'time_value': 20200414,
           'geo_value': '22222',
@@ -344,6 +358,9 @@ class CovidcastTests(unittest.TestCase):
           'issue': 20200414,
           'lag': 0,
           'signal': 'sig',
+          'missing_value': Nans.NOT_MISSING,
+          'missing_stderr': Nans.NOT_MISSING,
+          'missing_sample_size': Nans.NOT_MISSING
         }, {
           'time_value': 20200414,
           'geo_value': '33333',
@@ -354,6 +371,9 @@ class CovidcastTests(unittest.TestCase):
           'issue': 20200414,
           'lag': 0,
           'signal': 'sig',
+          'missing_value': Nans.NOT_MISSING,
+          'missing_stderr': Nans.NOT_MISSING,
+          'missing_sample_size': Nans.NOT_MISSING
         },
        ],
       'message': 'success',
@@ -416,6 +436,9 @@ class CovidcastTests(unittest.TestCase):
       'issue': 20200414,
       'lag': 0,
       'signal': 'sig',
+      'missing_value': Nans.NOT_MISSING,
+      'missing_stderr': Nans.NOT_MISSING,
+      'missing_sample_size': Nans.NOT_MISSING
     }, {
       'time_value': 20200414,
       'geo_value': '22222',
@@ -426,6 +449,9 @@ class CovidcastTests(unittest.TestCase):
       'issue': 20200414,
       'lag': 0,
       'signal': 'sig',
+      'missing_value': Nans.NOT_MISSING,
+      'missing_stderr': Nans.NOT_MISSING,
+      'missing_sample_size': Nans.NOT_MISSING
     }, {
       'time_value': 20200414,
       'geo_value': '33333',
@@ -436,6 +462,9 @@ class CovidcastTests(unittest.TestCase):
       'issue': 20200414,
       'lag': 0,
       'signal': 'sig',
+      'missing_value': Nans.NOT_MISSING,
+      'missing_stderr': Nans.NOT_MISSING,
+      'missing_sample_size': Nans.NOT_MISSING
     }]
 
     # test fetch all
@@ -520,6 +549,9 @@ class CovidcastTests(unittest.TestCase):
           'issue': 20200413,
           'lag': 2,
           'signal': 'sig',
+          'missing_value': Nans.NOT_MISSING,
+          'missing_stderr': Nans.NOT_MISSING,
+          'missing_sample_size': Nans.NOT_MISSING
         }, {
           'time_value': 20200412,
           'geo_value': '01234',
@@ -530,6 +562,9 @@ class CovidcastTests(unittest.TestCase):
           'issue': 20200413,
           'lag': 1,
           'signal': 'sig',
+          'missing_value': Nans.NOT_MISSING,
+          'missing_stderr': Nans.NOT_MISSING,
+          'missing_sample_size': Nans.NOT_MISSING
         }, {
           'time_value': 20200413,
           'geo_value': '01234',
@@ -540,6 +575,9 @@ class CovidcastTests(unittest.TestCase):
           'issue': 20200413,
           'lag': 0,
           'signal': 'sig',
+          'missing_value': Nans.NOT_MISSING,
+          'missing_stderr': Nans.NOT_MISSING,
+          'missing_sample_size': Nans.NOT_MISSING
         },
        ],
       'message': 'success',
@@ -598,9 +636,7 @@ class CovidcastTests(unittest.TestCase):
     })
     response.raise_for_status()
     response = response.json()
-
-    # assert that the right data came back
-    self.assertEqual(response, {
+    expected_response = {
       'result': 1,
       'epidata': [{
         'time_value': 20200414,
@@ -612,9 +648,15 @@ class CovidcastTests(unittest.TestCase):
         'issue': 20200414,
         'lag': 0,
         'signal': 'sig',
+        'missing_value': Nans.NOT_MISSING,
+        'missing_stderr': Nans.UNKNOWN,
+        'missing_sample_size': Nans.UNKNOWN
        }],
       'message': 'success',
-    })
+    }
+
+    # assert that the right data came back
+    self.assertEqual(response, expected_response)
 
   def test_temporal_partitioning(self):
     """Request a signal that's available at multiple temporal resolutions."""
@@ -666,6 +708,9 @@ class CovidcastTests(unittest.TestCase):
         'issue': 202016,
         'lag': 0,
         'signal': 'sig',
+        'missing_value': Nans.NOT_MISSING,
+        'missing_stderr': Nans.NOT_MISSING,
+        'missing_sample_size': Nans.NOT_MISSING
        }],
       'message': 'success',
     })
