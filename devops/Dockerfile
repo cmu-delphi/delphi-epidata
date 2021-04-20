@@ -15,6 +15,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 ENV PYTHONUNBUFFERED 1
 
 COPY ./devops/gunicorn_conf.py /app
+COPY ./devops/start_wrapper.sh /
 COPY ./src/server/ /app/app/
 COPY --from=builder ./src/build/lib/ /app/app/lib/
-RUN rm -rf /app/app/__pycache__ /app/app/*.php && chmod -R o+r /app/app
+RUN rm -rf /app/app/__pycache__ /app/app/*.php \
+      && chmod -R o+r /app/app \
+      && chmod 755 /start_wrapper.sh
+
+ENTRYPOINT [ "/entrypoint.sh" ]
+CMD [ "/start_wrapper.sh" ]
