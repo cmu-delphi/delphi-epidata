@@ -348,19 +348,19 @@ def handle_backfill():
         # find the row that is <= target issue
         i = bisect_right([r["issue"] for r in rows], issue)
         if i:
-            return r[i - 1]
+            return rows[i - 1]
         return None
 
     def gen(rows):
         # stream per time_value
         for time_value, group in groupby((parse_row(row, fields_string, fields_int, fields_float) for row in rows), lambda row: row["time_value"]):
             # compute data per time value
-            rows: List[Dict[str, Any]] = list(group)
-            anchor_row = find_anchor_row(rows, shift_time_value(time_value, reference_anchor_lag))
+            issues: List[Dict[str, Any]] = [r for r in group]
+            anchor_row = find_anchor_row(issues, shift_time_value(time_value, reference_anchor_lag))
 
-            for i, row in enumerate(rows):
+            for i, row in enumerate(issues):
                 if i > 0:
-                    prev_row = rows[i - 1]
+                    prev_row = issues[i - 1]
                     row["value_rel_change"] = compute_trend_value(row["value"] or 0, prev_row["value"] or 0, 0)
                     if row["sample_size"] is not None:
                         row["sample_size_rel_change"] = compute_trend_value(row["sample_size"] or 0, prev_row["sample_size"] or 0, 0)
