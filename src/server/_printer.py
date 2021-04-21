@@ -180,7 +180,7 @@ class CSVPrinter(APrinter):
     _writer: DictWriter
     _filename: Optional[str]
 
-    def __init__(self, filename: Optional[str] = None):
+    def __init__(self, filename: Optional[str] = "epidata"):
         super(CSVPrinter, self).__init__()
         self._filename = filename
 
@@ -210,7 +210,7 @@ class CSVPrinter(APrinter):
 
     def _end(self):
         self._writer = None
-        return None
+        return ""
 
 
 class JSONPrinter(APrinter):
