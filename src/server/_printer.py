@@ -241,6 +241,9 @@ class JSONLPrinter(APrinter):
         # each line is a JSON file with a new line to separate them
         return orjson.dumps(row, option=orjson.OPT_APPEND_NEWLINE)
 
+    def _end(self):
+        return b""
+
 
 def create_printer() -> APrinter:
     format: str = request.values.get("format", "classic")
