@@ -96,7 +96,7 @@ survey data, we estimate the percentage of people (age 18 or older) who have a
 COVID-like illness, or influenza-like illness, in a given location, on a given
 day.
 
-Signals beginning `raw_w` or `smoothed_w` are [adjusted using survey weights
+Signals beginning `smoothed_w` are [adjusted using survey weights
 to be demographically representative](#survey-weighting) as described below.
 Weighted signals have 1-2 days of lag, so if low latency is paramount,
 unweighted signals are also available. These begin `smoothed_` or `raw_`,
@@ -299,7 +299,7 @@ data in the estimation procedures described above.
 
 ## Behavior Indicators
 
-Signals beginning `raw_w` or `smoothed_w` are [adjusted using survey weights
+Signals beginning `smoothed_w` are [adjusted using survey weights
 to be demographically representative](#survey-weighting) as described below.
 Weighted signals have 1-2 days of lag, so if low latency is paramount,
 unweighted signals are also available. These begin `smoothed_`, such as
@@ -334,7 +334,7 @@ unweighted signals are also available. These begin `smoothed_`, such as
 
 ## Testing Indicators
 
-Signals beginning `raw_w` or `smoothed_w` are [adjusted using survey weights
+Signals beginning `smoothed_w` are [adjusted using survey weights
 to be demographically representative](#survey-weighting) as described below.
 Weighted signals have 1-2 days of lag, so if low latency is paramount,
 unweighted signals are also available. These begin `smoothed_`, such as
@@ -353,7 +353,7 @@ September 8, 2020.
 
 ## Schooling Indicators
 
-Signals beginning `raw_w` or `smoothed_w` are [adjusted using survey weights
+Signals beginning `smoothed_w` are [adjusted using survey weights
 to be demographically representative](#survey-weighting) as described below.
 Weighted signals have 1-2 days of lag, so if low latency is paramount,
 unweighted signals are also available. These begin `smoothed_`, such as
@@ -367,7 +367,7 @@ unweighted signals are also available. These begin `smoothed_`, such as
 
 ## Vaccination Indicators
 
-Signals beginning `raw_w` or `smoothed_w` are [adjusted using survey weights
+Signals beginning `smoothed_w` are [adjusted using survey weights
 to be demographically representative](#survey-weighting) as described below.
 Weighted signals have 1-2 days of lag, so if low latency is paramount,
 unweighted signals are also available. These begin `smoothed_`, such as
@@ -442,7 +442,7 @@ change significantly.
 
 ## Mental Health Indicators
 
-Signals beginning `raw_w` or `smoothed_w` are [adjusted using survey weights
+Signals beginning `smoothed_w` are [adjusted using survey weights
 to be demographically representative](#survey-weighting) as described below.
 Weighted signals have 1-2 days of lag, so if low latency is paramount,
 unweighted signals are also available. These begin `smoothed_`, such as
