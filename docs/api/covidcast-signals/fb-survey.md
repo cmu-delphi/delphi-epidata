@@ -96,7 +96,7 @@ survey data, we estimate the percentage of people (age 18 or older) who have a
 COVID-like illness, or influenza-like illness, in a given location, on a given
 day.
 
-Signals beginning `smoothed_w` are [adjusted using survey weights
+Signals beginning `raw_w` or `smoothed_w` are [adjusted using survey weights
 to be demographically representative](#survey-weighting) as described below.
 Weighted signals have 1-2 days of lag, so if low latency is paramount,
 unweighted signals are also available. These begin `smoothed_` or `raw_`,
