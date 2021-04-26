@@ -9,12 +9,12 @@ nav_order: 4
 
 This documentation describes the fine-resolution contingency tables produced by
 grouping [COVID Symptom Survey](./index.md) individual responses by various
-demographic features:
+self-reported demographic features.
 
 * [Weekly files](https://www.cmu.edu/delphi-web/surveys/weekly/)
 * [Monthly files](https://www.cmu.edu/delphi-web/surveys/monthly/)
 
-These contingency tables provide demographic breakdowns of COVID-related topics such as
+These contingency tables provide granular breakdowns of COVID-related topics such as
 vaccine uptake and acceptance. They are more detailed than the
 [coarse aggregates reported in the COVIDcast Epidata API](../api/covidcast-signals/fb-survey.md),
 which are grouped only by geographic region. [Individual response data](survey-files.md)
@@ -35,34 +35,44 @@ data is hosted.
 1. TOC
 {:toc}
 
-## Available Data Files
+## Available Data
 
-We provide two types of data files, weekly and monthly. Users who need the most
-up-to-date data or are interested in timeseries should use the weekly files,
-while those who want to study groups with smaller sample sizes should use the
+We currently provide data files at several levels of geographic and temporal
+aggregation. The reason for this is that each file is filtered to only include
+estimates for a particular group if that group includes 100 or more responses.
+Providing several levels of granularity allows us to provide coverage for a
+variety of use cases. For example, users who need the most up-to-date data or
+are interested in time series analysis should use the weekly files, while
+those who want to study groups with smaller sample sizes should use the
 monthly files. Because monthly aggregates include more responses, they have
 lower missingness when grouping by several features at a time.
 
-## Dates
+### Dates
 
 The included files provide estimates for various metrics of interest over a
 period of either a full epiweek (or [MMWR
 week](https://wwwn.cdc.gov/nndss/document/MMWR_week_overview.pdf), a
 standardized numbering of weeks throughout the year) or a full calendar month.
 
-Note: CSVs for the month of January 2021 only use data from January 6-31 due to
-a [definitional change in a major vaccine item on January 6](./coding.md#new-items-2).
-Indicators based on [item V9 use data starting January 12](./coding.md#new-items-2).
-CSVs for the week starting January 6, 2021, only use data from January 6-9 due to the
-same definitional change.
+Note: If a survey item was introduced in the middle of an aggregation period,
+derived indicators will be included in aggregations for that period but will
+only use a partial week or month of data.
 
-## Aggregation
+CSVs for the month of January 2021 only use data from January 6-31 due to a
+[definitional change in a major vaccine item on January
+6](./coding.md#new-items-2).
 
-The aggregates are filtered to only include estimates for a particular group if
-that group includes 100 or more responses. Especially in the weekly aggregates,
-many of the state-level groups have been filtered out due to low sample size. In
-such cases, the state marginal files, which group by a single demographic of
-interest at a time, will likely provide more coverage.
+### Regions
+
+At the moment, only nation-wide and state groupings are available.
+
+### Privacy
+
+The aggregates are filtered to only include estimates for a particular group
+if that group includes 100 or more responses. Especially in the weekly
+aggregates, many of the state-level groups have been filtered out due to low
+sample size. In such cases, files that group by a single demographic of
+interest will likely provide more coverage.
 
 ## File Format
 
@@ -70,19 +80,39 @@ interest at a time, will likely provide more coverage.
 
 Each CSV is named as follows:
 
-    {date}_{region}_{vars}.csv
+    {period_start}_{period_end}_{period_type}_{geo_type}_{aggregation_type}.csv
 
-Dates are of the form `YYYYmmdd`. `date` refers to the first day of the time
-period survey responses were aggregated over, in the Pacific time zone (UTC -
-7). Unless noted otherwise, the time period is always a complete month or
-epiweek. `region` is the geographic level responses were aggregated over. At the
-moment, only nation-wide and state groupings are available. `vars` is a list all
-other grouping variables used in the aggregation, ordered alphabetically.
+Dates are of the form `yyyyMMdd`. `period_start` refers to the first day of
+the time period survey responses were aggregated over, in the Pacific time
+zone (UTC - 7). Unless noted otherwise, the time period is always a complete
+month (`period_type` = `monthly`) or epiweek (`period_type` = `weekly`).
+`geo_type` is the geographic level responses were aggregated over. `aggregation_type`
+is a concatenated list of other grouping variables used, ordered
+alphabetically. Values for variables used in file naming align with those
+within files as specified in the column section below.
 
 ### Columns
 
-Within a CSV, the first few columns are the grouping variables, ordered
-alphabetically. Each aggregate reports four columns (unrounded):
+Within a CSV, the first few columns store metadata of the aggregation:
+
+| Column | Description |
+| --- | --- |
+| `survey_geo` | Survey geography ("US") |
+| `period_start` | Date of first day of time period used in aggregation |
+| `period_end` | Date of last day of time period used in aggregation |
+| `period_val` | Month or week number |
+| `geo_type` | Geography type ("state", "nation") |
+| `aggregation_type` | Concatenated list of grouping variables, ordered alphabetically |
+| `country` | Country name ("United States") |
+| `ISO_3` | Three-letter ISO country code ("USA") |
+| `GID_0` | GADM level 0 ID |
+| `state` | State name |
+| `state_fips` | State FIPS code |
+| `issue_date` | Date on which estimates were generated |
+
+These are followed by the grouping variables used in the aggregation, ordered
+alphabetically, and the indicators. Each indicator reports four columns
+(unrounded):
 
 * `val_<indicator name>`: the main value of interest, e.g., percent, average, or
   count, estimated using the [survey weights](weights.md) to better match state
@@ -96,30 +126,44 @@ alphabetically. Each aggregate reports four columns (unrounded):
   used.
 
 All aggregates using the same set of grouping variables appear in a single CSV.
-Grouping variables use prefixes to indicate the format of the column and the
-originating question.
 
-* `b_` indicates a binary variable, coded as a boolean (True/False or 1/0).
-  The originating item may be a yes/no question, or the variable may be
-  a binary interpretation of a multiple choice or multi-select item.
-* `mc_` indicates a multiple choice question, where the respondent is able to
-  select no more than one response. For example, age in D2.
-* `ms_` indicates a multi-select question, where the respondent is able to
-  select more than one response if desired. For example, pre-existing medical
-  conditions in C1.
+### Missing Values
 
+Grouping variables (including region) will be missing (`NA`) to represent
+respondents who provided one or more responses to survey items used for
+indicators (e.g., vaccine uptake) but who  did not provide a response to the
+survey item used for the particular grouping variable. For example, if
+grouping by gender, we would report the groups: male, female, other, and `NA`,
+respondents who did not provide a response to the gender question.
+
+For a given respondent group (25-34 year old healthcare workers in Nebraska,
+e.g.) sample size can vary by indicator because of the survey display logic.
+For example, all respondents are asked if they have received a COVID-19
+vaccination (item V1), but only those who say they *have* are asked how many
+doses they have received (item V2). This means that the sample size for V2 is
+smaller than that for V1. Because indicators are [censored](#privacy)
+individually, it is possible that V1-derived indicators will be reported for a
+given group while V2-derived indicators are not. In this case, the V2-derived
+indicator columns will be marked as missing (`NA`) for that group.
 
 ## Indicators
 
-The files contain [weighted estimates](../api/covidcast-signals/fb-survey.md#survey-weighting) of the percent of
-respondents who fulfill one or several criteria. Estimates are broken out by
-state, age, gender, race, ethnicity, occupation, and health conditions.
+The files contain [weighted
+estimates](../api/covidcast-signals/fb-survey.md#survey-weighting) of the
+percent of respondents who fulfill one or several criteria. Estimates are
+broken out by state, age, gender, race, ethnicity, occupation, and health
+conditions.
 
-Indicators beginning "hesitant_" (not listed) are variants of other described indicators calculated among respondents who say they would "probably not" or "definitely not" choose to get vaccinated, if offered today (item V3). Indicators beginning "defno_" (not listed) are variants of other described indicators calculated among respondents who say they would "definitely not" choose to get vaccinated, if offered today.
+Indicators beginning "hesitant_" (not listed) are variants of other described
+indicators calculated among respondents who say they would "probably not" or
+"definitely not" choose to get vaccinated, if offered today (item V3).
+Indicators beginning "defno_" (not listed) are variants of other described
+indicators calculated among respondents who say they would "definitely not"
+choose to get vaccinated, if offered today.
 
-We plan to expand this list of indicators based on research needs; if you have a
-public health or research need for a particular variable not listed here, please
-contact us at <delphi-survey-info@lists.andrew.cmu.edu>.
+We plan to expand this list of indicators based on research needs; if you have
+a public health or research need for a particular variable not listed here,
+please contact us at <delphi-survey-info@lists.andrew.cmu.edu>.
 
 
 ### Symptoms
