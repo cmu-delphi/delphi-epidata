@@ -106,8 +106,8 @@ Within a CSV, the first few columns store metadata of the aggregation:
 | `country` | Country name ("United States") |
 | `ISO_3` | Three-letter ISO country code ("USA") |
 | `GID_0` | GADM level 0 ID |
-| `state` | State name; "Overall" if aggregation not grouped at the county level |
-| `state_fips` | State FIPS code; `NA` if aggregation not grouped at the county level |
+| `state` | State name; "Overall" if aggregation not grouped at the state level |
+| `state_fips` | State FIPS code; `NA` if aggregation not grouped at the state level |
 | `county` | County name; "Overall" if aggregation not grouped at the county level |
 | `county_fips` | County FIPS code; `NA` if aggregation not grouped at the county level |
 | `issue_date` | Date on which estimates were generated |
@@ -256,4 +256,3 @@ This item was shown to respondents starting in Wave 8.
 | `pct_dontneed_reason_not_serious` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they don't believe COVID-19 is a serious illness, among respondents who answered "No, probably not" or "No, definitely not" when asked if they would get vaccinated if offered and provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-02-08 | V6 and V5bc |
 | `pct_dontneed_reason_not_beneficial` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they don't think vaccines are beneficial, among respondents who answered "No, probably not" or "No, definitely not" when asked if they would get vaccinated if offered and provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-02-08 | V6 and V5bc |
 | `pct_dontneed_reason_other` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine for another reason, among respondents who answered "No, probably not" or "No, definitely not" when asked if they would get vaccinated if offered and provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-02-08 | V6 and V5bc |
-
