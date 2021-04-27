@@ -324,7 +324,9 @@ def handle_backfill():
     signal_pair = parse_single_source_signal_arg("signal")
     time_pair = parse_single_time_arg("time")
     geo_pair = parse_single_geo_arg("geo")
-    reference_anchor_lag = extract_integer("anchor_lag") or 60  # in days
+    reference_anchor_lag = extract_integer("anchor_lag")  # in days
+    if reference_anchor_lag is None:
+        reference_anchor_lag = 60
 
     # build query
     q = QueryBuilder("covidcast", "t")
@@ -368,9 +370,9 @@ def handle_backfill():
                         row["sample_size_rel_change"] = compute_trend_value(row["sample_size"] or 0, prev_row["sample_size"] or 0, 0)
                 if anchor_row and anchor_row["value"] is not None:
                     row["is_anchor"] = row == anchor_row
-                    row["value_completeness"] = (row["value"] or 0) / anchor_row["value"]
+                    row["value_completeness"] = (row["value"] or 0) / anchor_row["value"] if anchor_row["value"] else 1
                     if row["sample_size"] is not None:
-                        row["sample_size_completeness"] = row["sample_size"] / anchor_row["sample_size"]
+                        row["sample_size_completeness"] = row["sample_size"] / anchor_row["sample_size"] if anchor_row["sample_size"] else 1
                 yield row
 
     # execute first query
