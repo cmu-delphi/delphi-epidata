@@ -30,7 +30,7 @@ def _parse_common_multi_arg(key: str) -> List[Tuple[str, Union[bool, Sequence[st
     return parsed
 
 
-def _parse_single_arg(key: str) -> (str, str):
+def _parse_single_arg(key: str) -> Tuple[str, str]:
     """
     parses a single pair
     """
@@ -164,20 +164,20 @@ def parse_time_arg(key: str = "time") -> List[TimePair]:
     return [parse(time_type, time_values) for [time_type, time_values] in _parse_common_multi_arg(key)]
 
 
-def parse_day_range_arg(key: str) -> Optional[Tuple[int, int]]:
+def parse_day_range_arg(key: str) -> Tuple[int, int]:
     v = request.values.get(key)
     if not v:
-        return None
+        raise ValidationFailedException(f"{key} param is required")
     r = parse_day_value(v)
     if not isinstance(r, tuple):
         raise ValidationFailedException(f"{key} must match YYYYMMDD-YYYYMMDD or YYYY-MM-DD--YYYY-MM-DD")
     return r
 
 
-def parse_day_arg(key: str) -> Optional[int]:
+def parse_day_arg(key: str) -> int:
     v = request.values.get(key)
     if not v:
-        return None
+        raise ValidationFailedException(f"{key} param is required")
     r = parse_day_value(v)
     if not isinstance(r, int):
         raise ValidationFailedException(f"{key} must match YYYYMMDD or YYYY-MM-DD")

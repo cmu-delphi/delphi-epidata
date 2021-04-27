@@ -2,16 +2,19 @@
 
 # standard library
 import unittest
-import base64
 
 # from flask.testing import FlaskClient
 from delphi.epidata.server._common import app
 from delphi.epidata.server._params import (
     parse_geo_arg,
+    parse_single_geo_arg,
     parse_source_signal_arg,
+    parse_single_source_signal_arg,
     parse_time_arg,
     parse_day_value,
     parse_week_value,
+    parse_day_range_arg,
+    parse_day_arg,
     GeoPair,
     TimePair,
     SourceSignalPair,
@@ -85,6 +88,25 @@ class UnitTests(unittest.TestCase):
             with app.test_request_context("/?geo=state=4"):
                 self.assertRaises(ValidationFailedException, parse_geo_arg)
 
+    def test_single_parse_geo_arg(self):
+        with self.subTest("empty"):
+            with app.test_request_context("/"):
+                self.assertRaises(ValidationFailedException, parse_single_geo_arg, "geo")
+        with self.subTest("single"):
+            with app.test_request_context("/?geo=state:AK"):
+                self.assertEqual(parse_single_geo_arg("geo"), GeoPair("state", ["ak"]))
+        with self.subTest("single list"):
+            with app.test_request_context("/?geo=state:AK,TK"):
+                self.assertRaises(ValidationFailedException, parse_single_geo_arg, "geo")
+        with self.subTest("multi"):
+            with app.test_request_context("/?geo=state:*;nation:*"):
+                self.assertRaises(ValidationFailedException, parse_single_geo_arg, "geo")
+        with self.subTest("wrong"):
+            with app.test_request_context("/?geo=abc"):
+                self.assertRaises(ValidationFailedException, parse_single_geo_arg, "geo")
+            with app.test_request_context("/?geo=state=4"):
+                self.assertRaises(ValidationFailedException, parse_single_geo_arg, "geo")
+
     def test_parse_source_signal_arg(self):
         with self.subTest("empty"):
             with app.test_request_context("/"):
@@ -148,6 +170,39 @@ class UnitTests(unittest.TestCase):
             with app.test_request_context("/?signal=sig=4"):
                 self.assertRaises(ValidationFailedException, parse_source_signal_arg)
 
+    def test_single_parse_source_signal_arg(self):
+        with self.subTest("empty"):
+            with app.test_request_context("/"):
+                self.assertRaises(ValidationFailedException, parse_single_source_signal_arg, "signal")
+        with self.subTest("single"):
+            with app.test_request_context("/?signal=src1:sig1"):
+                self.assertEqual(parse_single_source_signal_arg("signal"), SourceSignalPair("src1", ["sig1"]))
+        with self.subTest("single list"):
+            with app.test_request_context("/?signal=src1:sig1,sig2"):
+                self.assertRaises(ValidationFailedException, parse_single_source_signal_arg, "signal")
+        with self.subTest("multi"):
+            with app.test_request_context("/?signal=src2:*;src1:*"):
+                self.assertRaises(ValidationFailedException, parse_single_source_signal_arg, "signal")
+        with self.subTest("wrong"):
+            with app.test_request_context("/?signal=abc"):
+                self.assertRaises(ValidationFailedException, parse_single_source_signal_arg, "signal")
+            with app.test_request_context("/?signal=sig=4"):
+                self.assertRaises(ValidationFailedException, parse_single_source_signal_arg, "signal")
+
+    def test_parse_week_value(self):
+        with app.test_request_context(""):
+            with self.subTest("delphi week"):
+                self.assertEqual(parse_week_value("202001"), 202001)
+            with self.subTest("delphi week range"):
+                self.assertEqual(parse_week_value("202001-202104"), (202001, 202104))
+            with self.subTest("wrong"):
+                self.assertRaises(ValidationFailedException, parse_week_value, "")
+                self.assertRaises(ValidationFailedException, parse_week_value, "x")
+                self.assertRaises(ValidationFailedException, parse_week_value, "2020")
+                self.assertRaises(ValidationFailedException, parse_week_value, "20200100")
+                self.assertRaises(ValidationFailedException, parse_week_value, "2020-03-11")
+                self.assertRaises(ValidationFailedException, parse_week_value, "2020-02-30---20200403")
+
     def test_parse_day_value(self):
         with app.test_request_context(""):
             with self.subTest("delphi date"):
@@ -166,20 +221,6 @@ class UnitTests(unittest.TestCase):
                 self.assertRaises(ValidationFailedException, parse_day_value, "202001")
                 self.assertRaises(ValidationFailedException, parse_day_value, "2020-03-111")
                 self.assertRaises(ValidationFailedException, parse_day_value, "2020-02-30---20200403")
-
-    def test_parse_week_value(self):
-        with app.test_request_context(""):
-            with self.subTest("delphi week"):
-                self.assertEqual(parse_week_value("202001"), 202001)
-            with self.subTest("delphi week range"):
-                self.assertEqual(parse_week_value("202001-202104"), (202001, 202104))
-            with self.subTest("wrong"):
-                self.assertRaises(ValidationFailedException, parse_week_value, "")
-                self.assertRaises(ValidationFailedException, parse_week_value, "x")
-                self.assertRaises(ValidationFailedException, parse_week_value, "2020")
-                self.assertRaises(ValidationFailedException, parse_week_value, "20200100")
-                self.assertRaises(ValidationFailedException, parse_week_value, "2020-03-11")
-                self.assertRaises(ValidationFailedException, parse_week_value, "2020-02-30---20200403")
 
     def test_parse_time_arg(self):
         with self.subTest("empty"):
@@ -224,3 +265,53 @@ class UnitTests(unittest.TestCase):
                 self.assertRaises(ValidationFailedException, parse_time_arg)
             with app.test_request_context("/?time=week:20121010"):
                 self.assertRaises(ValidationFailedException, parse_time_arg)
+
+    def test_parse_day_range_arg(self):
+        with self.subTest("empty"):
+            with app.test_request_context("/"):
+                self.assertRaises(ValidationFailedException, parse_day_range_arg, "time")
+        with self.subTest("single"):
+            with app.test_request_context("/?time=*"):
+                self.assertRaises(ValidationFailedException, parse_day_range_arg, "time")
+            with app.test_request_context("/?time=20201201"):
+                self.assertRaises(ValidationFailedException, parse_day_range_arg, "time")
+        with self.subTest("single list"):
+            with app.test_request_context("/?time=20201201,20201202"):
+                self.assertRaises(ValidationFailedException, parse_day_range_arg, "time")
+        with self.subTest("single range"):
+            with app.test_request_context("/?time=20201201-20201204"):
+                self.assertEqual(parse_day_range_arg("time"), (20201201, 20201204))
+        with self.subTest("wrong"):
+            with app.test_request_context("/?time=abc"):
+                self.assertRaises(ValidationFailedException, parse_day_range_arg, "time")
+            with app.test_request_context("/?time=sig=4"):
+                self.assertRaises(ValidationFailedException, parse_day_range_arg, "time")
+            with app.test_request_context("/?time=month:201210"):
+                self.assertRaises(ValidationFailedException, parse_day_range_arg, "time")
+            with app.test_request_context("/?time=week:20121010"):
+                self.assertRaises(ValidationFailedException, parse_day_range_arg, "time")
+
+    def test_parse_day_arg(self):
+        with self.subTest("empty"):
+            with app.test_request_context("/"):
+                self.assertRaises(ValidationFailedException, parse_day_arg, "time")
+        with self.subTest("single"):
+            with app.test_request_context("/?time=*"):
+                self.assertRaises(ValidationFailedException, parse_day_arg, "time")
+            with app.test_request_context("/?time=20201201"):
+                self.assertEqual(parse_day_arg("time"), 20201201)
+        with self.subTest("single list"):
+            with app.test_request_context("/?time=20201201,20201202"):
+                self.assertRaises(ValidationFailedException, parse_day_arg, "time")
+        with self.subTest("single range"):
+            with app.test_request_context("/?time=20201201-20201204"):
+                self.assertRaises(ValidationFailedException, parse_day_arg, "time")
+        with self.subTest("wrong"):
+            with app.test_request_context("/?time=abc"):
+                self.assertRaises(ValidationFailedException, parse_day_arg, "time")
+            with app.test_request_context("/?time=sig=4"):
+                self.assertRaises(ValidationFailedException, parse_day_arg, "time")
+            with app.test_request_context("/?time=month:201210"):
+                self.assertRaises(ValidationFailedException, parse_day_arg, "time")
+            with app.test_request_context("/?time=week:20121010"):
+                self.assertRaises(ValidationFailedException, parse_day_arg, "time")
