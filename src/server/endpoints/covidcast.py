@@ -1,10 +1,9 @@
-from typing import List, Iterable, Dict, Any, Optional, Union, Tuple
+from typing import List, Optional, Union, Tuple
 from itertools import groupby
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 from flask import Blueprint, request
-from sqlalchemy import text
 
-from .._common import is_compatibility_mode, db
+from .._common import is_compatibility_mode
 from .._exceptions import ValidationFailedException, DatabaseErrorException
 from .._params import (
     GeoPair,
@@ -17,7 +16,7 @@ from .._params import (
     parse_day_range_arg,
     parse_single_source_signal_arg,
 )
-from .._query import QueryBuilder, execute_query, filter_integers, filter_strings, run_query, parse_row
+from .._query import QueryBuilder, execute_query, run_query, parse_row
 from .._printer import create_printer, CSVPrinter
 from .._validate import (
     extract_date,
@@ -27,7 +26,8 @@ from .._validate import (
     require_all,
     require_any,
 )
-from .._pandas import as_pandas, print_pandas
+
+from .._pandas import as_pandas
 from .covidcast_utils import compute_trend, shift_time_value, date_to_time_value, time_value_to_iso, compute_correlations
 
 # first argument is the endpoint name
