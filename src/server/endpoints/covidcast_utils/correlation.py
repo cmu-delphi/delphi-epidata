@@ -1,5 +1,5 @@
 from dataclasses import dataclass, asdict
-from typing import Optional, Iterable, Tuple
+from typing import Iterable
 from scipy.stats import linregress
 import pandas as pd
 

@@ -187,7 +187,9 @@ def handle_correlation():
     other_pairs = parse_source_signal_arg("others")
     geo_pairs = parse_geo_arg()
     time_window = parse_day_range_arg("window")
-    lag = extract_integer("lag") or 28
+    lag = extract_integer("lag")
+    if lag is None:
+        lag = 28
 
     # build query
     q = QueryBuilder("covidcast", "t")

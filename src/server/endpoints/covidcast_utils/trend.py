@@ -1,6 +1,5 @@
 from dataclasses import dataclass, asdict
 from typing import Optional, Iterable, Tuple
-from datetime import date
 from enum import Enum
 
 

@@ -173,20 +173,20 @@ def parse_single_time_arg(key: str) -> TimePair:
     return _parse_time_pair(r[0], [r[1]])
 
 
-def parse_day_range_arg(key: str) -> Optional[Tuple[int, int]]:
+def parse_day_range_arg(key: str) -> Tuple[int, int]:
     v = request.values.get(key)
     if not v:
-        return None
+        raise ValidationFailedException(f"{key} param is required")
     r = parse_day_value(v)
     if not isinstance(r, tuple):
         raise ValidationFailedException(f"{key} must match YYYYMMDD-YYYYMMDD or YYYY-MM-DD--YYYY-MM-DD")
     return r
 
 
-def parse_day_arg(key: str) -> Optional[int]:
+def parse_day_arg(key: str) -> int:
     v = request.values.get(key)
     if not v:
-        return None
+        raise ValidationFailedException(f"{key} param is required")
     r = parse_day_value(v)
     if not isinstance(r, int):
         raise ValidationFailedException(f"{key} must match YYYYMMDD or YYYY-MM-DD")
