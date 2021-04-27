@@ -224,3 +224,31 @@ class CovidcastEndpointTests(unittest.TestCase):
         df = pd.read_csv(StringIO(out), index_col=0)
         self.assertEqual(df.shape, (len(rows), 10))
         self.assertEqual(list(df.columns), ["geo_value", "signal", "time_value", "issue", "lag", "value", "stderr", "sample_size", "geo_type", "data_source"])
+
+    def test_backfill(self):
+        """Request a signal the /backfill endpoint."""
+
+        num_rows = 10
+        issue_0 = [CovidcastRow(time_value=20200401 + i, value=i, sample_size=1, lag=0, issue=20200401 + i, is_latest_issue=False) for i in range(num_rows)]
+        issue_1 = [CovidcastRow(time_value=20200401 + i, value=i + 1, sample_size=2, lag=1, issue=20200401 + i + 1, is_latest_issue=False) for i in range(num_rows)]
+        last_issue = [CovidcastRow(time_value=20200401 + i, value=i + 2, sample_size=3, lag=2, issue=20200401 + i + 2, is_latest_issue=True) for i in range(num_rows)]
+        self._insert_rows([*issue_0, *issue_1, *last_issue])
+        first = issue_0[0]
+
+        out = self._fetch("/backfill", signal=first.signal_pair, geo=first.geo_pair, time="day:20200401-20201212", anchor_lag=3)
+        self.assertEqual(out["result"], 1)
+        df = pd.DataFrame(out["epidata"])
+        self.assertEqual(len(df), 3 * num_rows)  # num issues
+        self.assertEqual(df["time_value"].unique().tolist(), [l.time_value for l in last_issue])
+
+        # check first time point only
+        df_t0 = df[df["time_value"] == first.time_value]
+        self.assertEqual(len(df_t0), 3)  # num issues
+        self.assertEqual(df_t0["issue"].tolist(), [issue_0[0].issue, issue_1[0].issue, last_issue[0].issue])
+        self.assertEqual(df_t0["value"].tolist(), [issue_0[0].value, issue_1[0].value, last_issue[0].value])
+        self.assertEqual(df_t0["sample_size"].tolist(), [issue_0[0].sample_size, issue_1[0].sample_size, last_issue[0].sample_size])
+        self.assertEqual(df_t0["value_rel_change"].astype("str").tolist(), ["nan", "1.0", "1.0"])
+        self.assertEqual(df_t0["sample_size_rel_change"].astype("str").tolist(), ["nan", "1.0", "0.5"])  #
+        self.assertEqual(df_t0["is_anchor"].tolist(), [False, False, True])
+        self.assertEqual(df_t0["value_completeness"].tolist(), [0 / 2, 1 / 2, 2 / 2])  # total 2, given 0,1,2
+        self.assertEqual(df_t0["sample_size_completeness"].tolist(), [1 / 3, 2 / 3, 3 / 3])  # total 2, given 0,1,2

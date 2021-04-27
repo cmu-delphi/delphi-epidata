@@ -1,7 +1,8 @@
-from typing import List, Optional, Union, Tuple
+from typing import List, Optional, Union, Tuple, Dict, Any
 from itertools import groupby
 from datetime import date, datetime
 from flask import Blueprint, request
+from bisect import bisect_right
 
 from .._common import is_compatibility_mode
 from .._exceptions import ValidationFailedException, DatabaseErrorException
@@ -15,6 +16,8 @@ from .._params import (
     parse_day_arg,
     parse_day_range_arg,
     parse_single_source_signal_arg,
+    parse_single_time_arg,
+    parse_single_geo_arg,
 )
 from .._query import QueryBuilder, execute_query, run_query, parse_row
 from .._printer import create_printer, CSVPrinter
@@ -26,9 +29,8 @@ from .._validate import (
     require_all,
     require_any,
 )
-
 from .._pandas import as_pandas
-from .covidcast_utils import compute_trend, shift_time_value, date_to_time_value, time_value_to_iso, compute_correlations
+from .covidcast_utils import compute_trend, shift_time_value, date_to_time_value, time_value_to_iso, compute_correlations, compute_trend_value
 
 # first argument is the endpoint name
 bp = Blueprint("covidcast", __name__)
@@ -311,3 +313,73 @@ def handle_export():
 
     # now use a generator for sending the rows and execute all the other queries
     return p(gen(first_row, r))
+
+
+@bp.route("/backfill", methods=("GET", "POST"))
+def handle_backfill():
+    """
+    example query: http://localhost:5000/covidcast/backfill?signal=fb-survey:smoothed_cli&time=day:20200101-20220101&geo=state:ny&anchor_lag=60
+    """
+    require_all("geo", "time", "signal")
+    signal_pair = parse_single_source_signal_arg("signal")
+    time_pair = parse_single_time_arg("time")
+    geo_pair = parse_single_geo_arg("geo")
+    reference_anchor_lag = extract_integer("anchor_lag")  # in days
+    if reference_anchor_lag is None:
+        reference_anchor_lag = 60
+
+    # build query
+    q = QueryBuilder("covidcast", "t")
+
+    fields_string = []
+    fields_int = ["time_value", "issue"]
+    fields_float = ["value", "sample_size"]
+    # sort by time value and issue asc
+    q.set_order(time_value=True, issue=True)
+    q.set_fields(fields_string, fields_int, fields_float, ["is_latest_issue"])
+
+    q.where_source_signal_pairs("source", "signal", [signal_pair])
+    q.where_geo_pairs("geo_type", "geo_value", [geo_pair])
+    q.where_time_pairs("time_type", "time_value", [time_pair])
+
+    # no restriction of issues or dates since we want all issues
+    # _handle_lag_issues_as_of(q, issues, lag, as_of)
+
+    p = create_printer()
+
+    def find_anchor_row(rows: List[Dict[str, Any]], issue: int) -> Optional[Dict[str, Any]]:
+        # assume sorted by issue asc
+        # find the row that is <= target issue
+        i = bisect_right([r["issue"] for r in rows], issue)
+        if i:
+            return rows[i - 1]
+        return None
+
+    def gen(rows):
+        # stream per time_value
+        for time_value, group in groupby((parse_row(row, fields_string, fields_int, fields_float) for row in rows), lambda row: row["time_value"]):
+            # compute data per time value
+            issues: List[Dict[str, Any]] = [r for r in group]
+            anchor_row = find_anchor_row(issues, shift_time_value(time_value, reference_anchor_lag))
+
+            for i, row in enumerate(issues):
+                if i > 0:
+                    prev_row = issues[i - 1]
+                    row["value_rel_change"] = compute_trend_value(row["value"] or 0, prev_row["value"] or 0, 0)
+                    if row["sample_size"] is not None:
+                        row["sample_size_rel_change"] = compute_trend_value(row["sample_size"] or 0, prev_row["sample_size"] or 0, 0)
+                if anchor_row and anchor_row["value"] is not None:
+                    row["is_anchor"] = row == anchor_row
+                    row["value_completeness"] = (row["value"] or 0) / anchor_row["value"] if anchor_row["value"] else 1
+                    if row["sample_size"] is not None:
+                        row["sample_size_completeness"] = row["sample_size"] / anchor_row["sample_size"] if anchor_row["sample_size"] else 1
+                yield row
+
+    # execute first query
+    try:
+        r = run_query(p, (q.query, q.params))
+    except Exception as e:
+        raise DatabaseErrorException(str(e))
+
+    # now use a generator for sending the rows and execute all the other queries
+    return p(gen(r))

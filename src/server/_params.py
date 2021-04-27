@@ -150,18 +150,27 @@ def parse_day_value(time_value: str) -> Union[int, Tuple[int, int]]:
     raise ValidationFailedException(msg)
 
 
+def _parse_time_pair(time_type: str, time_values: Union[bool, Sequence[str]]) -> TimePair:
+    if isinstance(time_values, bool):
+        return TimePair(time_type, time_values)
+
+    if time_type == "week":
+        return TimePair("week", [parse_week_value(t) for t in time_values])
+    elif time_type == "day":
+        return TimePair("day", [parse_day_value(t) for t in time_values])
+    raise ValidationFailedException(f'time param: {time_type} is not one of "day" or "week"')
+
+
 def parse_time_arg(key: str = "time") -> List[TimePair]:
-    def parse(time_type: str, time_values: Union[bool, Sequence[str]]) -> TimePair:
-        if isinstance(time_values, bool):
-            return TimePair(time_type, time_values)
+    return [_parse_time_pair(time_type, time_values) for [time_type, time_values] in _parse_common_multi_arg(key)]
 
-        if time_type == "week":
-            return TimePair("week", [parse_week_value(t) for t in time_values])
-        elif time_type == "day":
-            return TimePair("day", [parse_day_value(t) for t in time_values])
-        raise ValidationFailedException(f'time param: {time_type} is not one of "day" or "week"')
 
-    return [parse(time_type, time_values) for [time_type, time_values] in _parse_common_multi_arg(key)]
+def parse_single_time_arg(key: str) -> TimePair:
+    """
+    parses a single time pair with only one value
+    """
+    r = _parse_single_arg(key)
+    return _parse_time_pair(r[0], [r[1]])
 
 
 def parse_day_range_arg(key: str) -> Tuple[int, int]:
