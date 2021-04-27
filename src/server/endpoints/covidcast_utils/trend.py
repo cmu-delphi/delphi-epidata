@@ -1,6 +1,5 @@
 from dataclasses import dataclass, asdict
 from typing import Optional, Iterable, Tuple
-from datetime import date
 from enum import Enum
 
 
@@ -38,10 +37,6 @@ class Trend:
 
 def compute_trend(geo_type: str, geo_value: str, signal_source: str, signal_signal: str, current_time: int, basis_time: int, rows: Iterable[Tuple[int, float]]) -> Trend:
     t = Trend(geo_type, geo_value, signal_source, signal_signal, basis_date=basis_time)
-
-    min_row: Optional[Tuple[int, float]] = None
-    max_row: Optional[Tuple[int, float]] = None
-    basis_row: Optional[Tuple[int, float]] = None
 
     # find all needed rows
     for time, value in rows:

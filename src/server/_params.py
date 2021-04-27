@@ -30,14 +30,36 @@ def _parse_common_multi_arg(key: str) -> List[Tuple[str, Union[bool, Sequence[st
     return parsed
 
 
+def _parse_single_arg(key: str) -> Tuple[str, str]:
+    """
+    parses a single pair
+    """
+    v = request.values.get(key)
+    if not v:
+        raise ValidationFailedException(f"{key} param is required")
+    pattern: re.Pattern[str] = re.compile(r"^([\w\-_]+):([\w\-_]+)$", re.MULTILINE)
+    m: Optional[re.Match[str]] = pattern.match(v)
+    if not v or not m:
+        raise ValidationFailedException(f"{key} param: is not matching <{key}_type>:<{key}_value> syntax")
+    return m.group(1).strip().lower(), m.group(2).strip().lower()
+
+
 @dataclass
 class GeoPair:
     geo_type: str
     geo_values: Union[bool, Sequence[str]]
 
 
-def parse_geo_arg() -> List[GeoPair]:
-    return [GeoPair(geo_type, geo_values) for [geo_type, geo_values] in _parse_common_multi_arg("geo")]
+def parse_geo_arg(key: str = "geo") -> List[GeoPair]:
+    return [GeoPair(geo_type, geo_values) for [geo_type, geo_values] in _parse_common_multi_arg(key)]
+
+
+def parse_single_geo_arg(key: str) -> GeoPair:
+    """
+    parses a single geo pair with only one value
+    """
+    r = _parse_single_arg(key)
+    return GeoPair(r[0], [r[1]])
 
 
 @dataclass
@@ -46,8 +68,16 @@ class SourceSignalPair:
     signal: Union[bool, Sequence[str]]
 
 
-def parse_source_signal_arg() -> List[SourceSignalPair]:
-    return [SourceSignalPair(source, signals) for [source, signals] in _parse_common_multi_arg("signal")]
+def parse_source_signal_arg(key: str = "signal") -> List[SourceSignalPair]:
+    return [SourceSignalPair(source, signals) for [source, signals] in _parse_common_multi_arg(key)]
+
+
+def parse_single_source_signal_arg(key: str) -> SourceSignalPair:
+    """
+    parses a single source signal pair with only one value
+    """
+    r = _parse_single_arg(key)
+    return SourceSignalPair(r[0], [r[1]])
 
 
 @dataclass
@@ -120,34 +150,43 @@ def parse_day_value(time_value: str) -> Union[int, Tuple[int, int]]:
     raise ValidationFailedException(msg)
 
 
-def parse_time_arg() -> List[TimePair]:
-    def parse(time_type: str, time_values: Union[bool, Sequence[str]]) -> TimePair:
-        if isinstance(time_values, bool):
-            return TimePair(time_type, time_values)
+def _parse_time_pair(time_type: str, time_values: Union[bool, Sequence[str]]) -> TimePair:
+    if isinstance(time_values, bool):
+        return TimePair(time_type, time_values)
 
-        if time_type == "week":
-            return TimePair("week", [parse_week_value(t) for t in time_values])
-        elif time_type == "day":
-            return TimePair("day", [parse_day_value(t) for t in time_values])
-        raise ValidationFailedException(f'time param: {time_type} is not one of "day" or "week"')
-
-    return [parse(time_type, time_values) for [time_type, time_values] in _parse_common_multi_arg("time")]
+    if time_type == "week":
+        return TimePair("week", [parse_week_value(t) for t in time_values])
+    elif time_type == "day":
+        return TimePair("day", [parse_day_value(t) for t in time_values])
+    raise ValidationFailedException(f'time param: {time_type} is not one of "day" or "week"')
 
 
-def parse_day_range_arg(key: str) -> Optional[Tuple[int, int]]:
+def parse_time_arg(key: str = "time") -> List[TimePair]:
+    return [_parse_time_pair(time_type, time_values) for [time_type, time_values] in _parse_common_multi_arg(key)]
+
+
+def parse_single_time_arg(key: str) -> TimePair:
+    """
+    parses a single time pair with only one value
+    """
+    r = _parse_single_arg(key)
+    return _parse_time_pair(r[0], [r[1]])
+
+
+def parse_day_range_arg(key: str) -> Tuple[int, int]:
     v = request.values.get(key)
     if not v:
-        return None
+        raise ValidationFailedException(f"{key} param is required")
     r = parse_day_value(v)
     if not isinstance(r, tuple):
         raise ValidationFailedException(f"{key} must match YYYYMMDD-YYYYMMDD or YYYY-MM-DD--YYYY-MM-DD")
     return r
 
 
-def parse_day_arg(key: str) -> Optional[int]:
+def parse_day_arg(key: str) -> int:
     v = request.values.get(key)
     if not v:
-        return None
+        raise ValidationFailedException(f"{key} param is required")
     r = parse_day_value(v)
     if not isinstance(r, int):
         raise ValidationFailedException(f"{key} must match YYYYMMDD or YYYY-MM-DD")

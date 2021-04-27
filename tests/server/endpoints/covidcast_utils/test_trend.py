@@ -1,4 +1,4 @@
-# standard library
+from typing import Tuple
 import unittest
 
 from delphi.epidata.server.endpoints.covidcast_utils.trend import compute_trend_value, compute_trend_class, TrendEnum, compute_trend, Trend

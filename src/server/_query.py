@@ -1,6 +1,7 @@
 from datetime import date, datetime
 from typing import (
     Any,
+    Callable,
     Dict,
     Iterable,
     List,
@@ -229,15 +230,24 @@ def run_query(p: APrinter, query_tuple: Tuple[str, Dict[str, Any]]):
     return db.execution_options(stream_results=True).execute(full_query, **params)
 
 
+def _identity_transform(row: Dict[str, Any], _: RowProxy) -> Dict[str, Any]:
+    """
+    identity transform
+    """
+    return row
+
+
 def execute_queries(
     queries: Sequence[Tuple[str, Dict[str, Any]]],
     fields_string: Sequence[str],
     fields_int: Sequence[str],
     fields_float: Sequence[str],
+    transform: Callable[[Dict[str, Any], RowProxy], Dict[str, Any]] = _identity_transform,
 ):
     """
     execute the given queries and return the response to send them
     """
+
     p = create_printer()
 
     fields_to_send = set(extract_strings("fields") or [])
@@ -258,7 +268,7 @@ def execute_queries(
 
     def gen(first_rows):
         for row in first_rows:
-            yield parse_row(row, fields_string, fields_int, fields_float)
+            yield transform(parse_row(row, fields_string, fields_int, fields_float), row)
 
         for query_params in query_list:
             if p.remaining_rows <= 0:
@@ -266,7 +276,7 @@ def execute_queries(
                 break
             r = run_query(p, query_params)
             for row in r:
-                yield parse_row(row, fields_string, fields_int, fields_float)
+                yield transform(parse_row(row, fields_string, fields_int, fields_float), row)
 
     # execute first query
     try:
@@ -284,11 +294,12 @@ def execute_query(
     fields_string: Sequence[str],
     fields_int: Sequence[str],
     fields_float: Sequence[str],
+    transform: Callable[[Dict[str, Any], RowProxy], Dict[str, Any]] = _identity_transform,
 ):
     """
     execute the given query and return the response to send it
     """
-    return execute_queries([(query, params)], fields_string, fields_int, fields_float)
+    return execute_queries([(query, params)], fields_string, fields_int, fields_float, transform)
 
 
 def _join_l(value: Union[str, List[str]]):
@@ -328,6 +339,13 @@ class QueryBuilder:
         group_by = f"GROUP BY {_join_l(self.group_by)}" if self.group_by else ""
 
         return f"SELECT {self.fields_clause} FROM {self.table} {self.subquery} {where} {group_by} {order}"
+
+    @property
+    def query(self) -> str:
+        """
+        returns the full query
+        """
+        return str(self)
 
     def where(self, **kvargs: Dict[str, Any]) -> "QueryBuilder":
         for k, v in kvargs.items():
