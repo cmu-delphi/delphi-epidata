@@ -106,8 +106,10 @@ Within a CSV, the first few columns store metadata of the aggregation:
 | `country` | Country name ("United States") |
 | `ISO_3` | Three-letter ISO country code ("USA") |
 | `GID_0` | GADM level 0 ID |
-| `state` | State name |
-| `state_fips` | State FIPS code |
+| `state` | State name; "Overall" if aggregation not grouped at the county level |
+| `state_fips` | State FIPS code; `NA` if aggregation not grouped at the county level |
+| `county` | County name; "Overall" if aggregation not grouped at the county level |
+| `county_fips` | County FIPS code; `NA` if aggregation not grouped at the county level |
 | `issue_date` | Date on which estimates were generated |
 
 These are followed by the grouping variables used in the aggregation, ordered
