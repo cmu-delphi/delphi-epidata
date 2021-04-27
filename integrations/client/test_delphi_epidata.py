@@ -100,6 +100,9 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
           'issue': 20200416,
           'lag': 2,
           'signal': 'sig',
+          'missing_value': Nans.NOT_MISSING,
+          'missing_stderr': Nans.NOT_MISSING,
+          'missing_sample_size': Nans.NOT_MISSING
         }, {
           'time_value': 20200414,
           'geo_value': '01234',
@@ -110,6 +113,9 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
           'issue': 20200414,
           'lag': 0,
           'signal': 'sig2',
+          'missing_value': Nans.NOT_MISSING,
+          'missing_stderr': Nans.NOT_MISSING,
+          'missing_sample_size': Nans.NOT_MISSING
         }],
         'message': 'success',
       })
@@ -133,6 +139,9 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
             'direction': 0,
             'issue': 20200416,
             'lag': 2,
+            'missing_value': Nans.NOT_MISSING,
+            'missing_stderr': Nans.NOT_MISSING,
+            'missing_sample_size': Nans.NOT_MISSING
           }],
           'sig2': [{
             'time_value': 20200414,
@@ -143,6 +152,9 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
             'direction': 4,
             'issue': 20200414,
             'lag': 0,
+            'missing_value': Nans.NOT_MISSING,
+            'missing_stderr': Nans.NOT_MISSING,
+            'missing_sample_size': Nans.NOT_MISSING
           }],
         }],
         'message': 'success',
@@ -166,6 +178,9 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
           'issue': 20200416,
           'lag': 2,
           'signal': 'sig',
+          'missing_value': Nans.NOT_MISSING,
+          'missing_stderr': Nans.NOT_MISSING,
+          'missing_sample_size': Nans.NOT_MISSING
          }],
         'message': 'success',
       })
@@ -189,6 +204,9 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
           'issue': 20200415,
           'lag': 1,
           'signal': 'sig',
+          'missing_value': Nans.NOT_MISSING,
+          'missing_stderr': Nans.NOT_MISSING,
+          'missing_sample_size': Nans.NOT_MISSING
          }],
         'message': 'success',
       })
@@ -212,6 +230,9 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
             'issue': 20200414,
             'lag': 0,
             'signal': 'sig',
+            'missing_value': Nans.NOT_MISSING,
+            'missing_stderr': Nans.NOT_MISSING,
+            'missing_sample_size': Nans.NOT_MISSING
           }, {
             'time_value': 20200414,
             'geo_value': '01234',
@@ -222,6 +243,9 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
             'issue': 20200415,
             'lag': 1,
             'signal': 'sig',
+            'missing_value': Nans.NOT_MISSING,
+            'missing_stderr': Nans.NOT_MISSING,
+            'missing_sample_size': Nans.NOT_MISSING
           }],
           'message': 'success',
       })
@@ -245,6 +269,9 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
             'issue': 20200416,
             'lag': 2,
             'signal': 'sig',
+            'missing_value': Nans.NOT_MISSING,
+            'missing_stderr': Nans.NOT_MISSING,
+            'missing_sample_size': Nans.NOT_MISSING
           }],
           'message': 'success',
       })
@@ -315,6 +342,9 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
       'issue': 20200414,
       'lag': 0,
       'signal': 'sig',
+      'missing_value': Nans.NOT_MISSING,
+      'missing_stderr': Nans.NOT_MISSING,
+      'missing_sample_size': Nans.NOT_MISSING
     }, {
       'time_value': 20200414,
       'geo_value': '22222',
@@ -325,6 +355,9 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
       'issue': 20200414,
       'lag': 0,
       'signal': 'sig',
+      'missing_value': Nans.NOT_MISSING,
+      'missing_stderr': Nans.NOT_MISSING,
+      'missing_sample_size': Nans.NOT_MISSING
     }, {
       'time_value': 20200414,
       'geo_value': '33333',
@@ -335,6 +368,9 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
       'issue': 20200414,
       'lag': 0,
       'signal': 'sig',
+      'missing_value': Nans.NOT_MISSING,
+      'missing_stderr': Nans.NOT_MISSING,
+      'missing_sample_size': Nans.NOT_MISSING
     }]
 
     # test fetch all

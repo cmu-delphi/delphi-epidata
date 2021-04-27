@@ -190,34 +190,34 @@ class CsvImporter:
     return int_value
 
   @staticmethod
-  def maybe_apply(func, value):
-    """Apply the given function to the given value if not null-ish."""
-    if str(value).lower() in ('inf', '-inf'):
-      raise ValueError
-    elif str(value).lower() in ('', 'na', 'nan', 'none'):
+  def maybe_apply(func, quantity):
+    """Apply the given function to the given quantity if not null-ish."""
+    if str(quantity).lower() in ('inf', '-inf'):
+      raise ValueError("Quantity given was an inf.")
+    elif str(quantity).lower() in ('', 'na', 'nan', 'none'):
       return None
     else:
-      return func(value)
+      return func(quantity)
 
   @staticmethod
-  def validate_value(row, attr_value):
-    """Take a row and validate a given associated value (e.g., val, se, stderr).
+  def validate_quantity(row, attr_quantity):
+    """Take a row and validate a given associated quantity (e.g., val, se, stderr).
     
-    Returns either a float value, a None value, or "Error".
+    Returns either a float, a None, or "Error".
     """
     try:
-      value = CsvImporter.maybe_apply(float, getattr(row, attr_value))
-      return value
+      quantity = CsvImporter.maybe_apply(float, getattr(row, attr_quantity))
+      return quantity
     except (ValueError, AttributeError) as e:
       # val was a string or another data
       return "Error"
 
   @staticmethod
-  def validate_missing_code(row, attr_value, attr_name):
+  def validate_missing_code(row, attr_quantity, attr_name):
     """Take a row and validate the missing code associated with
-    a value (e.g., val, se, stderr).
+    a quantity (e.g., val, se, stderr).
     
-    Returns either a nan code for assignment to the missing value
+    Returns either a nan code for assignment to the missing quantity
     or a None to signal an error with the missing code. We decline
     to infer missing codes except for a very simple cases; the default
     is to produce an error so that the issue can be fixed in indicators.
@@ -228,17 +228,18 @@ class CsvImporter:
         missing_entry = int(missing_entry)
       except ValueError:
         return None
-      # A missing code should never contradict the value being present, 
+      # A missing code should never contradict the quantity being present, 
       # since that will be filtered in the export_to_csv util in 
-      # covidcast-indicators; nonetheless this code is here for safety
-      if attr_value is not None and missing_entry > 0:
+      # covidcast-indicators; nonetheless this code is here for safety.
+      if attr_quantity is not None and missing_entry != Nans.NOT_MISSING.value:
+        return None
+      elif attr_quantity is None and missing_entry == Nans.NOT_MISSING.value:
         return None
       return missing_entry
     else:
-      if attr_value is not None:
-        return Nans.NOT_MISSING.value
-      else:
+      if attr_quantity is None:
         return Nans.UNKNOWN.value
+      return Nans.NOT_MISSING.value
 
   @staticmethod
   def extract_and_check_row(row, geo_type):
@@ -300,21 +301,19 @@ class CsvImporter:
       return (None, 'geo_type')
 
     # Validate row values
-    value = CsvImporter.validate_value(row, "val")
+    value = CsvImporter.validate_quantity(row, "val")
     # val was a string or another dtype
     if value == "Error":
       return (None, 'val')
-    stderr = CsvImporter.validate_value(row, "se")
-    # stderr was a string or another dtype
-    if stderr == "Error":
+    stderr = CsvImporter.validate_quantity(row, "se")
+    # Case 1: stderr was a string or another dtype
+    # Case 2: stderr is negative
+    if stderr == "Error" or (stderr is not None and stderr < 0):
       return (None, 'se')
-    if stderr is not None and stderr < 0:
-      return (None, 'se')
-    sample_size = CsvImporter.validate_value(row, "sample_size")
-    # sample_size was a string or another dtype
-    if sample_size == "Error":
-      return (None, 'sample_size')
-    if sample_size is not None and sample_size < 0:
+    sample_size = CsvImporter.validate_quantity(row, "sample_size")
+    # Case 1: sample_size was a string or another dtype
+    # Case 2: sample_size was negative
+    if sample_size == "Error" or (sample_size is not None and sample_size < 0):
       return (None, 'sample_size')
 
     # Validate and write missingness codes

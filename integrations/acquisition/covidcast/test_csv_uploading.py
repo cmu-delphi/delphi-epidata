@@ -73,12 +73,24 @@ class CsvUploadingTests(unittest.TestCase):
       f.write(f'fl,3,0.3,30,{Nans.NOT_MISSING},{Nans.NOT_MISSING},{Nans.NOT_MISSING}\n')
 
     # valid, old style no missing cols should have intelligent defaults
-    # TODO: Could be expanded to test more cases
     with open(source_receiving_dir + '/20200419_state_test_no_missing.csv', 'w') as f:
       f.write('geo_id,val,se,sample_size\n')
       f.write('ca,1,0.1,10\n')
       f.write('tx,NA,0.2,20\n')
       f.write('wa,3,0.3,30\n')
+
+    # invalid, missing with an inf value and missing cols
+    with open(source_receiving_dir + '/20200419_state_test_missing1.csv', 'w') as f:
+      f.write('geo_id,val,se,sample_size,missing_val,missing_se,missing_sample_size\n')
+      f.write(f'fl,inf,0.3,30,{Nans.UNKNOWN},{Nans.NOT_MISSING},{Nans.NOT_MISSING}\n')
+
+    with open(source_receiving_dir + '/20200419_state_test_missing2.csv', 'w') as f:
+      f.write('geo_id,val,se,sample_size,missing_val,missing_se,missing_sample_size\n')
+      f.write(f'tx,NA,0.2,20,{Nans.NOT_MISSING},{Nans.NOT_MISSING},{Nans.NOT_MISSING}\n')
+
+    with open(source_receiving_dir + '/20200419_state_test_missing3.csv', 'w') as f:
+      f.write('geo_id,val,se,sample_size,missing_val,missing_se,missing_sample_size\n')
+      f.write(f'wa,3,0.3,30,{Nans.UNKNOWN},{Nans.NOT_MISSING},{Nans.NOT_MISSING}\n')
 
     # valid wip
     with open(source_receiving_dir + '/20200419_state_wip_prototype.csv', 'w') as f:
@@ -225,6 +237,26 @@ class CsvUploadingTests(unittest.TestCase):
         },
        ]),
       'message': 'success',
+    })
+
+    # invalid missing files
+    response = Epidata.covidcast(
+      'src-name', 'test_missing1', 'day', 'state', 20200419, '*')
+    self.assertEqual(response, {
+      'result': -2,
+      'message': 'no results',
+    })
+    response = Epidata.covidcast(
+      'src-name', 'test_missing2', 'day', 'state', 20200419, '*')
+    self.assertEqual(response, {
+      'result': -2,
+      'message': 'no results',
+    })
+    response = Epidata.covidcast(
+      'src-name', 'test_missing3', 'day', 'state', 20200419, '*')
+    self.assertEqual(response, {
+      'result': -2,
+      'message': 'no results',
     })
 
     # request CSV data from the API on WIP signal
