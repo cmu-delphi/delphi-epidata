@@ -9,13 +9,6 @@ bp = Blueprint("meta", __name__)
 alias = None
 
 
-def meta_api(seconds: int):
-    query = f"SELECT count(1) `num_hits`, count(distinct `ip`) `unique_ips`, sum(`num_rows`) `rows_returned` FROM `api_analytics` WHERE `datetime` >= date_sub(now(), interval {seconds} second)"
-    fields_int = ["num_hits", "unique_ips", "rows_returned"]
-
-    return parse_result(query, {}, None, fields_int, None)
-
-
 def meta_twitter():
     query = "SELECT x.`date` `latest_update`, x.`table_rows`, count(distinct t.`state`) `num_states` FROM (SELECT max(`date`) `date`, count(1) `table_rows` FROM `twitter`) x JOIN `twitter` t ON t.`date` = x.`date`"
     fields_string = ["latest_update"]
@@ -25,9 +18,7 @@ def meta_twitter():
 
 def meta_wiki():
     # $query = 'SELECT date_sub(max(`datetime`), interval 5 hour) `latest_update`, count(1) `table_rows` FROM `wiki_meta`' // GMT to EST
-    query = (
-        "SELECT max(`datetime`) `latest_update`, count(1) `table_rows` FROM `wiki_meta`"
-    )
+    query = "SELECT max(`datetime`) `latest_update`, count(1) `table_rows` FROM `wiki_meta`"
     fields_string = ["latest_update"]
     fields_int = ["table_rows"]
     return parse_result(query, {}, fields_string, fields_int, None)
@@ -50,13 +41,6 @@ def handle():
     delphi = meta_delphi()
 
     row = {
-        "_api": {
-            "minute": meta_api(60),
-            "hour": meta_api(60 * 60),
-            "day": meta_api(60 * 60 * 24),
-            "week": meta_api(60 * 60 * 24 * 7),
-            "month": meta_api(60 * 60 * 24 * 30),
-        },
         "fluview": fluview,
         "twitter": twitter,
         "wiki": wiki,

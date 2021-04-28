@@ -77,7 +77,7 @@ class APrinter:
 
     def _error(self, error: Exception) -> str:
         # send an generic error
-        return dumps(dict(result=self.result, message=f"unknown error occurred: {error}", error=error, epidata=[]))
+        return dumps(dict(result=self.result, message=f"unknown error occurred: {error}", epidata=[]))
 
     def _print_row(self, row: Dict) -> Optional[Union[str, bytes]]:
         first = self.count == 0
