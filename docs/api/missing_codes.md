@@ -17,7 +17,7 @@ corresponds to the `value` column). The integer codes are as follows
 | 1 | NOT APPLICABLE | This value is used when the field is not expected to have a value (e.g. stderr for a signal that is not estimated from a sample). |
 | 2 | REGION EXCEPTION | This value is used when the field is not reported because the particular indicator does not serve the geographical region requested. |
 | 3 | PRIVACY | This value is used when the field has been censored for data privacy reasons. This could be due to reasons such as low sample sizes or simply a requirement from our data partners. |
-| 4 | DELETED | This value is used when the field was present in previous issues, but is no longer reported. Deletions can arise due to reasons such as bug fixes or changing censorship requirements. |
+| 4 | DELETED | This value is used when the field was present in previous issues, but is no longer reported. Deletions can arise due to bug fixes, changing censorship requirements, or data corrections from the source. |
 | 5 | UNKNOWN | This value is used when the field is missing, but does not fall into any of the categories above. |
 
 These codes are supplied as part of the `delphi_utils` Python library (see [here](https://pypi.org/project/delphi-utils/)).
