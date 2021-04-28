@@ -50,7 +50,7 @@ class APrinter:
                     if r is not None:
                         yield r
             except Exception as e:
-                app.logger.error(f"error executing")
+                app.logger.exception(f"error executing: {str(e)}")
                 self.result = -1
                 yield self._error(e)
 
@@ -77,7 +77,7 @@ class APrinter:
 
     def _error(self, error: Exception) -> str:
         # send an generic error
-        return dumps(dict(result=self.result, message=f"unknown error occurred: {error}", epidata=[]))
+        return dumps(dict(result=self.result, message=f"unknown error occurred: {error}", error=str(error), epidata=[]))
 
     def _print_row(self, row: Dict) -> Optional[Union[str, bytes]]:
         first = self.count == 0
