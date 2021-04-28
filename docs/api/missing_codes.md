@@ -6,7 +6,7 @@ nav_order: 5
 
 # Missing Value Coding
 
-Occasionally, data will be missing from our database and will be explicitly coded as a NaN.
+Occasionally, data will be missing from our database and will be explicitly coded as NaN.
 In these cases, we strive to supply our best-known reason for the value to be missing by
 providing an integer code in the corresponding `missing_` column (i.e. `missing_value`
 corresponds to the `value` column). The integer codes are as follows
