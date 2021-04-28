@@ -10,10 +10,10 @@ import mysql.connector
 import pytest
 
 # first party
+from delphi_utils import Nans
 from delphi.epidata.client.delphi_epidata import Epidata
 from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import main as update_covidcast_meta_cache
 import delphi.operations.secrets as secrets
-from delphi.epidata.acquisition.covidcast.nancodes import Nans
 
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.client.delphi_epidata'
@@ -68,16 +68,16 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
     self.cur.execute(f'''
       insert into covidcast values
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 0, False, 
+          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 0, False,
           {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig2', 'day', 'county', 20200414, '01234',
-          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 1, False, 
+          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 1, False,
           {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          456, 5.5, 1.2, 10.5, 789, 0, 20200415, 1, 0, False, 
+          456, 5.5, 1.2, 10.5, 789, 0, 20200415, 1, 0, False,
           {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          345, 6.5, 2.2, 11.5, 678, 0, 20200416, 2, 1, False, 
+          345, 6.5, 2.2, 11.5, 678, 0, 20200416, 2, 1, False,
           {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
     ''')
     self.cnx.commit()
@@ -452,7 +452,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
     """Test that the covidcast_nowcast endpoint returns expected data."""
 
     # insert dummy data
-    self.cur.execute(f'''insert into covidcast_nowcast values 
+    self.cur.execute(f'''insert into covidcast_nowcast values
       (0, 'src', 'sig1', 'sensor', 'day', 'county', 20200101, '01001', 12345678, 3.5, 20200101, 2),
       (0, 'src', 'sig2', 'sensor', 'day', 'county', 20200101, '01001', 12345678, 2.5, 20200101, 2),
       (0, 'src', 'sig1', 'sensor', 'day', 'county', 20200101, '01001', 12345678, 1.5, 20200102, 2)''')

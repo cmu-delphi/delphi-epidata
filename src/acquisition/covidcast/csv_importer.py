@@ -12,8 +12,8 @@ import pandas
 import epiweeks as epi
 
 # first party
+from delphi_utils import Nans
 from delphi.utils.epiweek import delta_epiweeks
-from delphi.epidata.acquisition.covidcast.nancodes import Nans
 
 class CsvImporter:
   """Finds and parses covidcast CSV files."""
@@ -202,7 +202,7 @@ class CsvImporter:
   @staticmethod
   def validate_quantity(row, attr_quantity):
     """Take a row and validate a given associated quantity (e.g., val, se, stderr).
-    
+
     Returns either a float, a None, or "Error".
     """
     try:
@@ -216,7 +216,7 @@ class CsvImporter:
   def validate_missing_code(row, attr_quantity, attr_name):
     """Take a row and validate the missing code associated with
     a quantity (e.g., val, se, stderr).
-    
+
     Returns either a nan code for assignment to the missing quantity
     or a None to signal an error with the missing code. We decline
     to infer missing codes except for a very simple cases; the default
@@ -228,8 +228,8 @@ class CsvImporter:
         missing_entry = int(missing_entry)
       except ValueError:
         return None
-      # A missing code should never contradict the quantity being present, 
-      # since that will be filtered in the export_to_csv util in 
+      # A missing code should never contradict the quantity being present,
+      # since that will be filtered in the export_to_csv util in
       # covidcast-indicators; nonetheless this code is here for safety.
       if attr_quantity is not None and missing_entry != Nans.NOT_MISSING.value:
         return None
@@ -329,7 +329,7 @@ class CsvImporter:
 
     # return extracted and validated row values
     row_values = CsvImporter.RowValues(
-      geo_id, value, stderr, sample_size, 
+      geo_id, value, stderr, sample_size,
       missing_value, missing_stderr, missing_sample_size
     )
     return (row_values, None)

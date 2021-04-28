@@ -11,9 +11,9 @@ import numpy as np
 import pandas
 import epiweeks as epi
 
+from delphi_utils import Nans
 from delphi.epidata.acquisition.covidcast.csv_importer import CsvImporter
 from delphi.utils.epiweek import delta_epiweeks
-from delphi.epidata.acquisition.covidcast.nancodes import Nans
 
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.acquisition.covidcast.csv_importer'
@@ -194,7 +194,7 @@ class UnitTests(unittest.TestCase):
 
     # a nominal case with missing values
     geo_type, row = make_row(
-      se='', sample_size='NA', 
+      se='', sample_size='NA',
       missing_se=Nans.UNKNOWN, missing_sample_size=Nans.UNKNOWN
     )
     values, error = CsvImporter.extract_and_check_row(row, geo_type)
@@ -260,7 +260,7 @@ class UnitTests(unittest.TestCase):
     self.assertIsNone(rows[3])
 
     # now with missing values! the last missing_sample_size
-    # contains an error code while data is available, which 
+    # contains an error code while data is available, which
     # should give an error
     data = {
       'geo_id': ['ca', 'tx', 'fl', 'ak'],

@@ -10,10 +10,10 @@ from unittest.mock import MagicMock
 import mysql.connector
 
 # first party
+from delphi_utils import Nans
 from delphi.epidata.client.delphi_epidata import Epidata
 from delphi.epidata.acquisition.covidcast.csv_to_database import main
 import delphi.operations.secrets as secrets
-from delphi.epidata.acquisition.covidcast.nancodes import Nans
 
 # py3tester coverage target (equivalent to `import *`)
 __test_target__ = 'delphi.epidata.acquisition.covidcast.csv_to_database'
@@ -103,7 +103,7 @@ class CsvUploadingTests(unittest.TestCase):
     with open(source_receiving_dir + '/20200419_state_wip_really_long_name_that_will_be_accepted.csv', 'w') as f:
       f.write('geo_id,val,se,sample_size,missing_val,missing_se,missing_sample_size\n')
       f.write(f'pa,100,5.4,624,{Nans.NOT_MISSING},{Nans.NOT_MISSING},{Nans.NOT_MISSING}\n')
-      
+
     # invalid
     with open(source_receiving_dir + '/20200419_state_wip_really_long_name_that_will_get_truncated_lorem_ipsum_dolor_sit_amet.csv', 'w') as f:
       f.write('geo_id,val,se,sample_size,missing_val,missing_se,missing_sample_size\n')
@@ -144,7 +144,7 @@ class CsvUploadingTests(unittest.TestCase):
         expected_lag = (expected_issue_day - time_value_day).days
         dct['lag'] = expected_lag
       return expected_epidata
-    
+
     # verify data matches the CSV
     # NB these are ordered by geo_value
     self.assertEqual(response, {
@@ -262,7 +262,7 @@ class CsvUploadingTests(unittest.TestCase):
     # request CSV data from the API on WIP signal
     response = Epidata.covidcast(
       'src-name', 'wip_prototype', 'day', 'state', 20200419, '*')
-    
+
     # verify data matches the CSV
     # NB these are ordered by geo_value
     self.assertEqual(response, {
@@ -308,7 +308,7 @@ class CsvUploadingTests(unittest.TestCase):
       'message': 'success',
     })
 
-    
+
     # request CSV data from the API on the signal with name length 32<x<64
     response = Epidata.covidcast(
       'src-name', 'wip_really_long_name_that_will_be_accepted', 'day', 'state', 20200419, '*')
@@ -332,7 +332,7 @@ class CsvUploadingTests(unittest.TestCase):
         },
       ])
     })
-    
+
     # request CSV data from the API on the long-named signal
     response = Epidata.covidcast(
       'src-name', 'wip_really_long_name_that_will_get_truncated_lorem_ipsum_dolor_s', 'day', 'state', 20200419, '*')

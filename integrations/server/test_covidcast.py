@@ -8,7 +8,7 @@ import mysql.connector
 import requests
 
 # first party
-from delphi.epidata.acquisition.covidcast.nancodes import Nans
+from delphi_utils import Nans
 
 # use the local instance of the Epidata API
 BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
@@ -148,8 +148,8 @@ class CovidcastTests(unittest.TestCase):
     response.raise_for_status()
     response = response.text
     expected_response = (
-      "geo_value,signal,time_value,direction,issue,lag,missing_value," + 
-      "missing_stderr,missing_sample_size,value,stderr,sample_size\n" + 
+      "geo_value,signal,time_value,direction,issue,lag,missing_value," +
+      "missing_stderr,missing_sample_size,value,stderr,sample_size\n" +
       "01234,sig,20200414,4,20200414,0,0,0,0,1.5,2.5,3.5\n"
     )
 

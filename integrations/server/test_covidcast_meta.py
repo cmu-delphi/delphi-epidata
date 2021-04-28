@@ -8,8 +8,8 @@ import mysql.connector
 import requests
 
 #first party
+from delphi_utils import Nans
 from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import main as update_cache
-from delphi.epidata.acquisition.covidcast.nancodes import Nans
 
 # use the local instance of the Epidata API
 BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
@@ -48,7 +48,7 @@ class CovidcastMetaTests(unittest.TestCase):
     # insert dummy data and accumulate expected results (in sort order)
     template = '''
       insert into covidcast values
-        (0, "%s", "%s", "%s", "%s", %d, "%s", 123, 
+        (0, "%s", "%s", "%s", "%s", %d, "%s", 123,
         %d, 0, 0, 456, 0, %d, 0, 1, %d, %d, %d, %d)
     '''
     expected = []
@@ -76,7 +76,7 @@ class CovidcastMetaTests(unittest.TestCase):
             for tv in (1, 2):
               for gv, v in zip(('geo1', 'geo2'), (10, 20)):
                 self.cur.execute(template % (
-                  src, sig, tt, gt, tv, gv, v, tv, False, 
+                  src, sig, tt, gt, tv, gv, v, tv, False,
                   Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.NOT_MISSING
                 ))
     self.cnx.commit()
@@ -101,7 +101,7 @@ class CovidcastMetaTests(unittest.TestCase):
     # insert dummy data and accumulate expected results (in sort order)
     template = '''
       insert into covidcast values
-        (0, "%s", "%s", "%s", "%s", %d, "%s", 123, 
+        (0, "%s", "%s", "%s", "%s", %d, "%s", 123,
         %d, 0, 0, 456, 0, %d, 0, 1, %d, %d, %d, %d)
     '''
     expected = []
@@ -219,7 +219,7 @@ class CovidcastMetaTests(unittest.TestCase):
     # insert dummy data and accumulate expected results (in sort order)
     template = '''
       insert into covidcast values
-        (0, "%s", "%s", "%s", "%s", %d, "%s", 123, 
+        (0, "%s", "%s", "%s", "%s", %d, "%s", 123,
         %d, 0, 0, 456, 0, %d, 0, 1, %d, %d, %d, %d)
     '''
     expected = []
