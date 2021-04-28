@@ -32,18 +32,18 @@ def handle():
 
     p = create_printer()
 
-    def gen(rows):
-        coverage_data = fetch_coverage_data()
+    def gen(rows, coverage_data):
         for row in rows:
             parsed = parse_row(row, fields_string, fields_int, fields_float)
             # inject coverage data
-            parsed['coverage'] = coverage_data.get(parsed['name'], {})
+            parsed["coverage"] = coverage_data.get(parsed["name"], {})
             yield parsed
 
     try:
+        coverage_data = fetch_coverage_data()
         r = run_query(p, (query, {}))
     except Exception as e:
         raise DatabaseErrorException(str(e))
 
     # now use a generator for sending the rows and execute all the other queries
-    return p(gen(r))
+    return p(gen(r, coverage_data))
