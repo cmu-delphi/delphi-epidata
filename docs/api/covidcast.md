@@ -167,10 +167,10 @@ require knowing when we last confirmed an unchanged value, please get in touch.
 | `epidata[].stderr` | approximate standard error of the statistic with respect to its sampling distribution, `null` when not applicable | float |
 | `epidata[].sample_size` | number of "data points" used in computing the statistic, `null` when not applicable | float |
 | `epidata[].issue` | time unit (e.g. date) when this statistic was published | integer |
+| `epidata[].lag` | time delta (e.g. days) between when the underlying events happened and when this statistic was published | integer |
 | `epidata[].missing_value` | an integer code that is zero when the `value` field is present and non-zero when the data is missing (see [missing codes](missing_codes.md)) | integer |
 | `epidata[].missing_stderr` | an integer code that is zero when the `stderr` field is present and non-zero when the data is missing (see [missing codes](missing_codes.md)) | integer |
 | `epidata[].missing_sample_size` | an integer code that is zero when the `sample_size` field is present and non-zero when the data is missing (see [missing codes](missing_codes.md)) | integer |
-| `epidata[].lag` | time delta (e.g. days) between when the underlying events happened and when this statistic was published | integer |
 | `message` | `success` or error message | string |
 
 **Note:** `result` code 2, "too many results", means that the number of results
