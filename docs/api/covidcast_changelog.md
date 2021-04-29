@@ -51,9 +51,6 @@ We incorrectly treated an answer of “no” as a missing response, which affect
 
 As of Nov. 20th, the error has been corrected and all affected data reissued. 
 
-### `google-survey`
-### `ght`
-
 ### `hospital-admissions`
 #### 20 October 2020
 We went from a custom geo mapping file (for aggregating from zip->(county, msa, hrr, state)) to a central geo file based on rigorously sourced US census data.
