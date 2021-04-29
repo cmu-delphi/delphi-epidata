@@ -1,6 +1,6 @@
 ---
 title: SafeGraph
-parent: Data Sources and Signals
+parent: Inactive Signals
 grand_parent: COVIDcast Epidata API
 ---
 
@@ -15,6 +15,10 @@ This data source uses data reported by [SafeGraph](https://www.safegraph.com/)
 using anonymized location data from mobile phones. SafeGraph provides several
 different datasets to eligible researchers. We surface signals from two such
 datasets.
+
+These signals were updated until April 19th, 2021. After that date, Safegraph
+ceased updating the dataset. We may bring their weekly patterns dataset to use
+as an alternative.
 
 ## Table of Contents
 {: .no_toc .text-delta}
@@ -91,7 +95,7 @@ restaurants, etc.)  from SafeGraph's Weekly Patterns data at the 5-digit ZipCode
 level, then aggregates and reports these features to the county, MSA, HRR, and
 state levels. The aggregated data is freely available through the COVIDcast API.
 
-For precise definitions of the quantities below, consult the [SafeGraph Weekly 
+For precise definitions of the quantities below, consult the [SafeGraph Weekly
 Patterns documentation](https://docs.safegraph.com/docs/weekly-patterns).
 
 | Signal | Description |
