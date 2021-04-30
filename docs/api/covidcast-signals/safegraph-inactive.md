@@ -14,7 +14,7 @@ grand_parent: COVIDcast Epidata API
 This data source uses data reported by [SafeGraph](https://www.safegraph.com/)
 using anonymized location data from mobile phones. SafeGraph provides several
 different datasets to eligible researchers. We surface signals from two such
-datasets.
+datasets. This dataset is no longer updated after April 19th, 2021.
 
 ## Table of Contents
 {: .no_toc .text-delta}
