@@ -100,7 +100,7 @@ We went from a custom geo mapping file (for aggregating from zip->(county, msa, 
 
 #### 19 April 2021
 
-All the safegraph signals are no longer being updated.
+The Safegraph social distancing metrics are no longer being updated. Weekly patterns are still available.
 
 #### 3 November 2020
 We went from a custom geo mapping file (for aggregating from county->state) to a central geo file based on rigorously sourced US census data.
