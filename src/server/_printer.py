@@ -6,7 +6,6 @@ from flask import Response, jsonify, request, stream_with_context
 from flask.json import dumps
 import orjson
 
-from ._analytics import record_analytics
 from ._config import MAX_RESULTS, MAX_COMPATIBILITY_RESULTS
 from ._common import app, is_compatibility_mode
 
@@ -15,7 +14,6 @@ def print_non_standard(data):
     """
     prints a non standard JSON message
     """
-    record_analytics(1, len(data) if isinstance(data, list) else 0)
 
     format = request.values.get("format", "classic")
     if format == "json":
@@ -55,8 +53,6 @@ class APrinter:
                 app.logger.exception(f"error executing: {str(e)}")
                 self.result = -1
                 yield self._error(e)
-
-            record_analytics(self.result, self.count)
 
             if not began:
                 # do it manually to catch an error before we send the begin

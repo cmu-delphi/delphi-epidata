@@ -10,7 +10,7 @@ def _is_using_status_codes() -> bool:
 
 
 class EpiDataException(HTTPException):
-    def __init__(self, message: str, status_code: int = 500, analytics=True):
+    def __init__(self, message: str, status_code: int = 500):
         super(EpiDataException, self).__init__(message)
         self.code = status_code if _is_using_status_codes() else 200
         self.response = make_response(
@@ -18,18 +18,11 @@ class EpiDataException(HTTPException):
             self.code,
         )
         self.response.mimetype = "application/json"
-        if analytics:
-            # lazy to avoid circular references
-            from ._analytics import record_analytics
-
-            record_analytics(-1)
 
 
 class MissingOrWrongSourceException(EpiDataException):
     def __init__(self, endpoints: Iterable[str]):
-        super(MissingOrWrongSourceException, self).__init__(
-            f"no data source specified, possible values: {','.join(endpoints)}", 400
-        )
+        super(MissingOrWrongSourceException, self).__init__(f"no data source specified, possible values: {','.join(endpoints)}", 400)
 
 
 class UnAuthenticatedException(EpiDataException):
@@ -47,4 +40,4 @@ class DatabaseErrorException(EpiDataException):
         msg = "database error"
         if details:
             msg = f"{msg}: {details}"
-        super(DatabaseErrorException, self).__init__(msg, 500, False)
+        super(DatabaseErrorException, self).__init__(msg, 500)
