@@ -60,7 +60,7 @@
     },
     {
       "type": "move",
-      "src": "src/server/endpoints/covid_utils",
+      "src": "src/server/endpoints/covidcast_utils",
       "dst": "[[package]]/server/covid_utils/",
       "match": "^.*\\.(py)$",
       "add-header-comment": true
