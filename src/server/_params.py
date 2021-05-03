@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import Any, List, Optional, Sequence, Tuple, Union
 
 from flask import request
+from numpy import sign
 
 from ._exceptions import ValidationFailedException
 
@@ -49,6 +50,9 @@ class GeoPair:
     geo_type: str
     geo_values: Union[bool, Sequence[str]]
 
+    def matches(self, geo_type: str, geo_value: str) -> bool:
+        return self.geo_type == geo_type and (self.geo_values == True or (not isinstance(self.geo_values, bool) and geo_value in self.geo_values))
+
 
 def parse_geo_arg(key: str = "geo") -> List[GeoPair]:
     return [GeoPair(geo_type, geo_values) for [geo_type, geo_values] in _parse_common_multi_arg(key)]
@@ -66,6 +70,9 @@ def parse_single_geo_arg(key: str) -> GeoPair:
 class SourceSignalPair:
     source: str
     signal: Union[bool, Sequence[str]]
+
+    def matches(self, source: str, signal: str) -> bool:
+        return self.source == source and (self.signal == True or (not isinstance(self.signal, bool) and signal in self.signal))
 
 
 def parse_source_signal_arg(key: str = "signal") -> List[SourceSignalPair]:

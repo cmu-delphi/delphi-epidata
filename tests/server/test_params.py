@@ -37,6 +37,30 @@ class UnitTests(unittest.TestCase):
         app.config["WTF_CSRF_ENABLED"] = False
         app.config["DEBUG"] = False
 
+    def test_geo_pair(self):
+        with self.subTest("*"):
+            p = GeoPair("hrr", True)
+            self.assertTrue(p.matches("hrr", "any"))
+            self.assertFalse(p.matches("msa", "any"))
+        with self.subTest("subset"):
+            p = GeoPair("hrr", ["a", "b"])
+            self.assertTrue(p.matches("hrr", "a"))
+            self.assertTrue(p.matches("hrr", "b"))
+            self.assertFalse(p.matches("hrr", "c"))
+            self.assertFalse(p.matches("msa", "any"))
+
+    def test_source_signal_pair(self):
+        with self.subTest("*"):
+            p = SourceSignalPair("src1", True)
+            self.assertTrue(p.matches("src1", "any"))
+            self.assertFalse(p.matches("src2", "any"))
+        with self.subTest("subset"):
+            p = SourceSignalPair("src1", ["a", "b"])
+            self.assertTrue(p.matches("src1", "a"))
+            self.assertTrue(p.matches("src1", "b"))
+            self.assertFalse(p.matches("src1", "c"))
+            self.assertFalse(p.matches("src2", "any"))
+
     def test_parse_geo_arg(self):
         with self.subTest("empty"):
             with app.test_request_context("/"):
