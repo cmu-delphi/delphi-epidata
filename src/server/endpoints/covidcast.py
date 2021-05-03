@@ -401,9 +401,9 @@ class CovidcastMetaEntry:
     def intergrate(self, row: Dict[str, Any]):
         if row["min_time"] < self.min_time:
             self.min_time = row["min_time"]
-        if row["max_time"] < self.max_time:
+        if row["max_time"] > self.max_time:
             self.max_time = row["max_time"]
-        if row["max_issue"] < self.max_issue:
+        if row["max_issue"] > self.max_issue:
             self.max_issue = row["max_issue"]
         self.geo_types[row["geo_type"]] = {
             "min": row["min_value"],
