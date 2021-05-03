@@ -2,9 +2,13 @@ from typing import List, Optional, Union, Tuple, Dict, Any
 from itertools import groupby
 from datetime import date, datetime
 from flask import Blueprint, request
+from flask.json import loads, jsonify
 from bisect import bisect_right
+from dataclasses import asdict, dataclass
+from sqlalchemy import text
+import pandas as pd
 
-from .._common import is_compatibility_mode
+from .._common import is_compatibility_mode, db
 from .._exceptions import ValidationFailedException, DatabaseErrorException
 from .._params import (
     GeoPair,
@@ -383,3 +387,51 @@ def handle_backfill():
 
     # now use a generator for sending the rows and execute all the other queries
     return p(gen(r))
+
+
+@dataclass
+class CovidcastMetaEntry:
+    source: str
+    signal: str
+    min_time: int
+    max_time: int
+    max_issue: int
+    geo_types: Dict[str, Dict[str, float]]
+
+    def intergrate(self, row: Dict[str, Any]):
+        if row["min_time"] < self.min_time:
+            self.min_time = row["min_time"]
+        if row["max_time"] < self.max_time:
+            self.max_time = row["max_time"]
+        if row["max_issue"] < self.max_issue:
+            self.max_issue = row["max_issue"]
+        self.geo_types[row["geo_type"]] = {
+            "min": row["min_value"],
+            "mean": row["mean_value"],
+            "stdev": row["stdev_value"],
+            "max": row["max_value"],
+        }
+
+
+@bp.route("/meta", methods=("GET", "POST"))
+def handle_meta():
+    """
+    similar to /covidcast_meta but in a structured optimized JSON form for the app
+    """
+
+    signal = parse_source_signal_arg("signal")
+
+    row = db.execute(text("SELECT epidata FROM covidcast_meta_cache LIMIT 1")).fetchone()
+
+    data = loads(row["epidata"]) if row and row["epidata"] else []
+
+    out: Dict[str, CovidcastMetaEntry] = {}
+    for row in data:
+        if row["time_type"] != "day":
+            continue
+        if signal and all((not s.matches(row["data_source"], row["signal"]) for s in signal)):
+            continue
+        entry = out.setdefault(f"{row['data_source']}:{row['signal']}", CovidcastMetaEntry(row["data_source"], row["signal"], row["min_time"], row["max_time"], row["max_issue"], {}))
+        entry.intergrate(row)
+
+    return jsonify([asdict(r) for r in out.values()])
