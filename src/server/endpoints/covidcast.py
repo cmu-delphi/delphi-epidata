@@ -4,9 +4,7 @@ from datetime import date, datetime
 from flask import Blueprint, request
 from flask.json import loads, jsonify
 from bisect import bisect_right
-from dataclasses import asdict, dataclass
 from sqlalchemy import text
-import pandas as pd
 
 from .._common import is_compatibility_mode, db
 from .._exceptions import ValidationFailedException, DatabaseErrorException
@@ -34,7 +32,7 @@ from .._validate import (
     require_any,
 )
 from .._pandas import as_pandas
-from .covidcast_utils import compute_trend, shift_time_value, date_to_time_value, time_value_to_iso, compute_correlations, compute_trend_value
+from .covidcast_utils import compute_trend, shift_time_value, date_to_time_value, time_value_to_iso, compute_correlations, compute_trend_value, CovidcastMetaEntry
 
 # first argument is the endpoint name
 bp = Blueprint("covidcast", __name__)
@@ -389,30 +387,6 @@ def handle_backfill():
     return p(gen(r))
 
 
-@dataclass
-class CovidcastMetaEntry:
-    source: str
-    signal: str
-    min_time: int
-    max_time: int
-    max_issue: int
-    geo_types: Dict[str, Dict[str, float]]
-
-    def intergrate(self, row: Dict[str, Any]):
-        if row["min_time"] < self.min_time:
-            self.min_time = row["min_time"]
-        if row["max_time"] > self.max_time:
-            self.max_time = row["max_time"]
-        if row["max_issue"] > self.max_issue:
-            self.max_issue = row["max_issue"]
-        self.geo_types[row["geo_type"]] = {
-            "min": row["min_value"],
-            "mean": row["mean_value"],
-            "stdev": row["stdev_value"],
-            "max": row["max_value"],
-        }
-
-
 @bp.route("/meta", methods=("GET", "POST"))
 def handle_meta():
     """
@@ -434,4 +408,4 @@ def handle_meta():
         entry = out.setdefault(f"{row['data_source']}:{row['signal']}", CovidcastMetaEntry(row["data_source"], row["signal"], row["min_time"], row["max_time"], row["max_issue"], {}))
         entry.intergrate(row)
 
-    return jsonify([asdict(r) for r in out.values()])
+    return jsonify([r.asdict() for r in out.values()])
