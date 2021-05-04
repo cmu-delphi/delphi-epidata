@@ -4,7 +4,8 @@
   "paths": {
     "root_web": "/var/www/html/epidata",
     "auto_web": "/home/automation/public_html/public",
-    "package": "../delphi/epidata"
+    "package": "../delphi/epidata",
+    "stasis": "../stasis"
   },
   "actions": [
 
@@ -256,6 +257,22 @@
       "type": "move",
       "src": "src/acquisition/covidcast_nowcast/",
       "dst": "[[package]]/acquisition/covidcast_nowcast/",
+      "match": "^.*\\.(py)$",
+      "add-header-comment": true
+    },
+
+    "// move flask tests out of the way",
+    {
+      "type": "move",
+      "src": "tests/server/",
+      "dst": "[[stasis]]/tests/",
+      "match": "^.*\\.(py)$",
+      "add-header-comment": true
+    },
+    {
+      "type": "move",
+      "src": "integrations/server/",
+      "dst": "[[stasis]]/integrations/",
       "match": "^.*\\.(py)$",
       "add-header-comment": true
     },
