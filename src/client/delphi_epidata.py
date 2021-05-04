@@ -63,9 +63,11 @@ class Epidata:
     """
     try:
       # API call
-      req = requests.get(Epidata.BASE_URL, params, headers=_HEADERS)
-      if req.status_code == 414:
-        req = requests.post(Epidata.BASE_URL, params, headers=_HEADERS)
+      with requests.Session() as session:
+        req = session.request('get', Epidata.BASE_URL, params, headers=_HEADERS)
+        # req = requests.get(Epidata.BASE_URL, params, headers=_HEADERS)
+        if req.status_code == 414:
+          req = requests.post(Epidata.BASE_URL, params, headers=_HEADERS)
       return req.json()
     except Exception as e:
       # Something broke
