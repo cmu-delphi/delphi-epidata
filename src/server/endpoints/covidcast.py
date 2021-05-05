@@ -286,7 +286,7 @@ def handle_export():
     q = QueryBuilder("covidcast", "t")
 
     q.set_fields(["geo_value", "signal", "time_value", "issue", "lag", "value", "stderr", "sample_size", "geo_type", "source"], [], [])
-    q.set_order("geo_value", "time_value")
+    q.set_order("time_value", "geo_value")
     q.where(source=source, signal=signal, time_type="day")
     q.conditions.append("time_value BETWEEN :start_day AND :end_day")
     q.params["start_day"] = date_to_time_value(start_day)
