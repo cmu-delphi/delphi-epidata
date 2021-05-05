@@ -24,18 +24,29 @@ class SignalCategory(str, Enum):
 
 
 def guess_name(source: str, signal: str) -> str:
-    return f"{source.capitalize()}: {signal.capitalize()}"
+    return f"{source.upper()}: {' '.join((s.capitalize() for s in signal.split('_')))}"
 
 
 def guess_high_values_are(source: str, signal: str) -> HighValuesAre:
-    if source == "fb-survey":
-        if "mask" in signal or "vaccine" in signal:
+    if signal.endswith("_ili") or signal.endswith("_wili") or signal.endswith("_cli") or signal.endswith("_wcli"):
+        return HighValuesAre.bad
+    if source == "chng" and signal.endswith("_covid"):
+        return HighValuesAre.bad
+    if source == "covid-act-now":
+        if signal.endswith("_positivity_rate"):
+            return HighValuesAre.bad
+        if signal.endswith("_total_tests"):
             return HighValuesAre.good
-        if signal.endswith("_ili") or signal.endswith("_cli") or "tested_positive" in signal:
+    if source == "fb-survey":
+        if "tested_positive" in signal:
             return HighValuesAre.bad
         if "anxious" in signal or "depressed" in signal or "felt_isolated" in signal or "worried" in signal:
             return HighValuesAre.bad
-    if source in ["quidel", "indicator-combination", "google-symptoms", "doctor-visits", "hospital-admissions"]:
+        if "hesitancy_reason" in signal or "vaccine_likely" in signal or "dontneed_reason" in signal:
+            return HighValuesAre.neutral
+        if "mask" in signal or "vaccine" in signal or "vaccinated" in signal:
+            return HighValuesAre.good
+    if source in ["quidel", "indicator-combination", "google-symptoms", "doctor-visits", "hospital-admissions", "usa-facts", "hhs"]:
         return HighValuesAre.bad
 
     return HighValuesAre.neutral
