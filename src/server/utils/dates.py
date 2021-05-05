@@ -4,6 +4,10 @@ from datetime import date, timedelta
 
 def time_value_to_date(value: int) -> date:
     year, month, day = value // 10000, (value % 10000) // 100, value % 100
+    if year < date.min.year:
+        return date.min
+    if year > date.max.year:
+        return date.max
     return date(year=year, month=month, day=day)
 
 
@@ -27,6 +31,7 @@ def days_in_range(range: Tuple[int, int]) -> int:
     """
     returns the days within this time range
     """
+
     start = time_value_to_date(range[0])
     end = time_value_to_date(range[1])
     delta = end - start
