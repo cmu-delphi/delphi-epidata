@@ -30,7 +30,8 @@ from .._validate import (
     require_any,
 )
 from .._pandas import as_pandas
-from .covidcast_utils import compute_trend, shift_time_value, date_to_time_value, time_value_to_iso, compute_correlations, compute_trend_value
+from .covidcast_utils import compute_trend, compute_correlations, compute_trend_value
+from ..utils import shift_time_value, date_to_time_value, time_value_to_iso
 
 # first argument is the endpoint name
 bp = Blueprint("covidcast", __name__)
