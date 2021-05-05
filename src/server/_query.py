@@ -320,7 +320,7 @@ class QueryBuilder:
         self.conditions: List[str] = []
         self.params: Dict[str, Any] = {}
         self.subquery: str = ""
-        self.index: str = ""
+        self.index: Optional[str] = None
 
     @property
     def conditions_clause(self) -> str:
