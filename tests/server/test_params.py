@@ -1,6 +1,7 @@
 """Unit tests for parameter parsing."""
 
 # standard library
+from math import inf
 import unittest
 
 # from flask.testing import FlaskClient
@@ -36,6 +37,24 @@ class UnitTests(unittest.TestCase):
         app.config["TESTING"] = True
         app.config["WTF_CSRF_ENABLED"] = False
         app.config["DEBUG"] = False
+
+    def test_geo_pair(self):
+        self.assertEqual(GeoPair("a", True).count(), inf)
+        self.assertEqual(GeoPair("a", False).count(), 0)
+        self.assertEqual(GeoPair("a", ['a', 'b']).count(), 2)
+
+    def test_source_signal_pair(self):
+        self.assertEqual(SourceSignalPair("a", True).count(), inf)
+        self.assertEqual(SourceSignalPair("a", False).count(), 0)
+        self.assertEqual(SourceSignalPair("a", ['a', 'b']).count(), 2)
+
+    def test_time_pair(self):
+        self.assertEqual(TimePair("day", True).count(), inf)
+        self.assertEqual(TimePair("day", False).count(), 0)
+        self.assertEqual(TimePair("day", [20200202, 20200201]).count(), 2)
+        self.assertEqual(TimePair("day", [(20200201, 20200202)]).count(), 2)
+        self.assertEqual(TimePair("day", [(20200201, 20200205)]).count(), 5)
+        self.assertEqual(TimePair("day", [(20200201, 20200205), 20201212]).count(), 6)
 
     def test_parse_geo_arg(self):
         with self.subTest("empty"):
