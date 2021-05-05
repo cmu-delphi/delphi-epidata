@@ -87,7 +87,7 @@ jobs:
   image:
     needs: build
     # only on main and dev branch
-    if: startsWith(github.ref, 'refs/heads/main') || github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/sgratzl/flaskx'
+    if: startsWith(github.ref, 'refs/heads/main') || github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -108,14 +108,9 @@ jobs:
         run: |
           baseRef="${GITHUB_REF#*/}"
           imageTag="${baseRef#*/}"
-          case "${baseRef}" in
-          main)
+          if [ "$imageTag" = "main" ] ; then
             imageTag="latest"
-            ;;
-          *)
-            imageTag="${baseRef//\//_}" # replace `/` with `_` in branch name
-            ;;
-          esac
+          fi
           echo "::set-output name=tag::$imageTag"
           echo "::set-output name=repo::ghcr.io/${{ github.repository }}"
       - name: Push Dev Tag
