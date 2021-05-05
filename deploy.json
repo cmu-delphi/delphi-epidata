@@ -267,28 +267,14 @@
       "src": "tests/server/",
       "dst": "[[stasis]]/tests/",
       "match": "^.*\\.(py)$",
-      "add-header-comment": true
-    },
-    {
-      "type": "move",
-      "src": "tests/server/endpoints",
-      "dst": "[[stasis]]/tests/endpoints",
-      "match": "^.*\\.(py)$",
-      "add-header-comment": true
-    },
-    {
-      "type": "move",
-      "src": "tests/server/endpoints/covidcast_utils",
-      "dst": "[[stasis]]/tests/endpoints/covidcast_utils",
-      "match": "^.*\\.(py)$",
-      "add-header-comment": true
+      "recursive": true
     },
     {
       "type": "move",
       "src": "integrations/server/",
       "dst": "[[stasis]]/integrations/",
       "match": "^.*\\.(py)$",
-      "add-header-comment": true
+      "recursive": true
     },
 
     "// run unit and coverage tests",
