@@ -6,7 +6,7 @@ import unittest
 from unittest.mock import MagicMock, PropertyMock, patch
 
 # first party
-from delphi.epidata.acquisition.covid_hosp.common.test_utils import TestUtils
+from delphi.epidata.acquisition.covid_hosp.common.test_utils import UnitTestUtils
 from delphi.epidata.acquisition.covid_hosp.common.utils import Utils, CovidHospException
 
 #third party
@@ -22,7 +22,7 @@ class UtilsTests(unittest.TestCase):
     """Perform per-test setup."""
 
     # configure test data
-    self.test_utils = TestUtils(__file__)
+    self.test_utils = UnitTestUtils(__file__)
 
   def test_launch_if_main_when_main(self):
     """Launch the main entry point."""

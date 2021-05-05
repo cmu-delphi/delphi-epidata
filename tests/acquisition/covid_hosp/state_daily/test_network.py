@@ -7,7 +7,7 @@ from unittest.mock import patch
 from unittest.mock import sentinel
 
 # first party
-from delphi.epidata.acquisition.covid_hosp.common.test_utils import TestUtils
+from delphi.epidata.acquisition.covid_hosp.common.test_utils import UnitTestUtils
 from delphi.epidata.acquisition.covid_hosp.state_daily.network import Network
 
 # third party
@@ -23,7 +23,7 @@ class NetworkTests(unittest.TestCase):
     """Perform per-test setup."""
 
     # configure test data
-    self.test_utils = TestUtils(__file__)
+    self.test_utils = UnitTestUtils(__file__)
 
   def test_fetch_metadata(self):
     """Fetch metadata as JSON."""
