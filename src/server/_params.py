@@ -1,10 +1,12 @@
+from math import inf
 import re
 from dataclasses import dataclass
-from typing import Any, List, Optional, Sequence, Tuple, Union
+from typing import List, Optional, Sequence, Tuple, Union
 
 from flask import request
 
 from ._exceptions import ValidationFailedException
+from .utils import days_in_range
 
 
 def _parse_common_multi_arg(key: str) -> List[Tuple[str, Union[bool, Sequence[str]]]]:
@@ -49,6 +51,14 @@ class GeoPair:
     geo_type: str
     geo_values: Union[bool, Sequence[str]]
 
+    def count(self) -> float:
+        """
+        returns the count of items in this pair
+        """
+        if isinstance(self.geo_values, bool):
+            return inf if self.geo_values else 0
+        return len(self.geo_values)
+
 
 def parse_geo_arg(key: str = "geo") -> List[GeoPair]:
     return [GeoPair(geo_type, geo_values) for [geo_type, geo_values] in _parse_common_multi_arg(key)]
@@ -67,6 +77,14 @@ class SourceSignalPair:
     source: str
     signal: Union[bool, Sequence[str]]
 
+    def count(self) -> float:
+        """
+        returns the count of items in this pair
+        """
+        if isinstance(self.signal, bool):
+            return inf if self.signal else 0
+        return len(self.signal)
+
 
 def parse_source_signal_arg(key: str = "signal") -> List[SourceSignalPair]:
     return [SourceSignalPair(source, signals) for [source, signals] in _parse_common_multi_arg(key)]
@@ -84,6 +102,14 @@ def parse_single_source_signal_arg(key: str) -> SourceSignalPair:
 class TimePair:
     time_type: str
     time_values: Union[bool, Sequence[Union[int, Tuple[int, int]]]]
+
+    def count(self) -> float:
+        """
+        returns the count of items in this pair
+        """
+        if isinstance(self.time_values, bool):
+            return inf if self.time_values else 0
+        return sum(1 if isinstance(v, int) else days_in_range(v) for v in self.time_values)
 
 
 def _verify_range(start: int, end: int) -> Union[int, Tuple[int, int]]:
