@@ -9,6 +9,10 @@ import mysql.connector
 import numpy as np
 from math import ceil
 
+from queue import Queue, Empty
+import threading
+from multiprocessing import cpu_count
+
 # first party
 import delphi.operations.secrets as secrets
 
@@ -60,7 +64,8 @@ class Database:
     """Establish a connection to the database."""
 
     u, p = secrets.db.epi
-    self._connection = connector_impl.connect(
+    self._connector_impl = connector_impl
+    self._connection = self._connector_impl.connect(
         host=secrets.db.host,
         user=u,
         password=p,
@@ -232,32 +237,38 @@ class Database:
       self._cursor.execute(drop_tmp_table_sql)
     return total
 
-  def get_covidcast_meta(self):
+  def compute_covidcast_meta(self, table_name='covidcast', use_index=True):
     """Compute and return metadata on all non-WIP COVIDcast signals."""
 
-    meta = []
+    index_hint = ""
+    if use_index:
+      index_hint = "USE INDEX (for_metadata)"
 
-    signal_list = []
-    sql = 'SELECT `source`, `signal` FROM `covidcast` GROUP BY `source`, `signal` ORDER BY `source` ASC, `signal` ASC;'
+    n_threads = max(1, cpu_count()*9//10) # aka number of concurrent db connections, which [sh|c]ould be ~<= 90% of the #cores available to SQL server
+    # NOTE: this may present a small problem if this job runs on different hardware than the db,
+    #       but we should not run into that issue in prod.
+
+    srcsigs = Queue() # multi-consumer threadsafe!
+
+    sql = f'SELECT `source`, `signal` FROM `{table_name}` GROUP BY `source`, `signal` ORDER BY `source` ASC, `signal` ASC;'
+
     self._cursor.execute(sql)
     for source, signal in list(self._cursor): # self._cursor is a generator; this lets us use the cursor for subsequent queries inside the loop
-      sql = "SELECT `is_wip` FROM `covidcast` WHERE `source`=%s AND `signal`=%s LIMIT 1"
+      sql = f"SELECT `is_wip` FROM `{table_name}` WHERE `source`=%s AND `signal`=%s LIMIT 1"
       self._cursor.execute(sql, (source, signal))
       is_wip = int(self._cursor.fetchone()[0]) # casting to int as it comes out as a '0' or '1' bytearray; bool('0')==True :(
       if not is_wip:
-        signal_list.append((source, signal))
+        srcsigs.put((source, signal))
 
-    for source, signal in signal_list:
-
-      sql = '''
+    inner_sql = f'''
       SELECT
-        t.`source` AS `data_source`,
-        t.`signal`,
-        t.`time_type`,
-        t.`geo_type`,
-        MIN(t.`time_value`) AS `min_time`,
-        MAX(t.`time_value`) AS `max_time`,
-        COUNT(DISTINCT t.`geo_value`) AS `num_locations`,
+        `source` AS `data_source`,
+        `signal`,
+        `time_type`,
+        `geo_type`,
+        MIN(`time_value`) AS `min_time`,
+        MAX(`time_value`) AS `max_time`,
+        COUNT(DISTINCT `geo_value`) AS `num_locations`,
         MIN(`value`) AS `min_value`,
         MAX(`value`) AS `max_value`,
         ROUND(AVG(`value`),7) AS `mean_value`,
@@ -267,23 +278,65 @@ class Database:
         MIN(`lag`) as `min_lag`,
         MAX(`lag`) as `max_lag`
       FROM
-        `covidcast` t
+        `{table_name}` {index_hint}
       WHERE
         `source` = %s AND
         `signal` = %s AND
         is_latest_issue = 1
       GROUP BY
-        t.`time_type`,
-        t.`geo_type`
+        `time_type`,
+        `geo_type`
       ORDER BY
-        t.`time_type` ASC,
-        t.`geo_type` ASC
+        `time_type` ASC,
+        `geo_type` ASC
       '''
-      self._cursor.execute(sql, (source, signal))
-      meta.extend(list(dict(zip(self._cursor.column_names,x)) for x in self._cursor))
+
+    meta = []
+    meta_lock = threading.Lock()
+
+    def worker():
+      print("starting thread: " + threading.current_thread().name)
+      #  set up new db connection for thread
+      worker_dbc = Database()
+      worker_dbc.connect(connector_impl=self._connector_impl)
+      w_cursor = worker_dbc._cursor
+      try:
+        while True:
+          (source, signal) = srcsigs.get_nowait() # this will throw the Empty caught below
+          w_cursor.execute(inner_sql, (source, signal))
+          with meta_lock:
+            meta.extend(list(
+              dict(zip(w_cursor.column_names, x)) for x in w_cursor
+            ))
+          srcsigs.task_done()
+      except Empty:
+        print("no jobs left, thread terminating: " + threading.current_thread().name)
+      finally:
+        worker_dbc.disconnect(False) # cleanup
+
+    threads = []
+    for n in range(n_threads):
+      t = threading.Thread(target=worker, name='MetacacheThread-'+str(n))
+      t.start()
+      threads.append(t)
+
+    srcsigs.join()
+    print("jobs complete")
+    for t in threads:
+      t.join()
+    print("threads terminated")
+
+    # sort the metadata because threaded workers dgaf
+    sorting_fields = "data_source signal time_type geo_type".split()
+    sortable_fields_fn = lambda x: [(field, x[field]) for field in sorting_fields]
+    prepended_sortables_fn = lambda x: sortable_fields_fn(x) + list(x.items())
+    tuple_representation = list(map(prepended_sortables_fn, meta))
+    tuple_representation.sort()
+    meta = list(map(dict, tuple_representation)) # back to dict form
 
     return meta
-  
+
+
   def update_covidcast_meta_cache(self, metadata):
     """Updates the `covidcast_meta_cache` table."""
 
