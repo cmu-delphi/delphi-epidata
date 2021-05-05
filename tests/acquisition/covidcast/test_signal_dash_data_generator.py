@@ -12,6 +12,7 @@ from datetime import date
 import pandas as pd
 
 # first party
+from delphi.epidata.acquisition.covidcast import signal_dash_data_generator
 from delphi.epidata.acquisition.covidcast.signal_dash_data_generator import (
   get_argument_parser,
   Database,
@@ -89,13 +90,20 @@ class UnitTests(unittest.TestCase):
             geo_type="state",
             count=1
         )
+        coverage3 = DashboardSignalCoverage(
+            signal_id=2,
+            date=date(2021, 2, 1),
+            geo_type="state",
+            count=1
+        )
 
-        database.write_coverage([coverage1, coverage2])
+        database.write_coverage([coverage1, coverage2, coverage3])
 
         coverage_tuples = cursor.executemany.call_args_list[0].args[1]
         expected_coverage_tuples = [
             (1, date(2020, 1, 1), "state", 1),
-            (2, date(2021, 2, 2), "state", 1)
+            (2, date(2021, 2, 2), "state", 1),
+            (2, date(2021, 2, 1), "state", 1)
         ]
         self.assertListEqual(coverage_tuples, expected_coverage_tuples)
 
@@ -106,6 +114,13 @@ class UnitTests(unittest.TestCase):
         ]
         self.assertListEqual(update_tuples, expected_update_tuples)
 
+        delete_tuples = cursor.executemany.call_args_list[2].args[1]
+        expected_delete_tuples = [
+            (date(2020, 1, 1), 1),
+            (date(2021, 2, 1), 2)
+        ]
+        self.assertListEqual(delete_tuples, expected_delete_tuples)
+
     def test_get_enabled_signals_successful(self):
         """Test signals retrieved correctly."""
         mock_connector = MagicMock()
@@ -114,8 +129,8 @@ class UnitTests(unittest.TestCase):
         cursor = connection.cursor()
 
         db_rows = [
-            (1, "Change", "chng", "chng-sig", datetime.date(2020, 1, 1), datetime.date(2020, 1, 2)),
-            (2, "Quidel", "quidel", "quidel-sig", datetime.date(2020, 2, 1), datetime.date(2020, 2, 2)),
+            (1, "Change", "chng", "chng-sig", date(2020, 1, 1), date(2020, 1, 2)),
+            (2, "Quidel", "quidel", "quidel-sig", date(2020, 2, 1), date(2020, 2, 2)),
         ]
         cursor.fetchall.return_value = db_rows
 
@@ -182,8 +197,11 @@ class UnitTests(unittest.TestCase):
                 'max_time',
                 'signal'])
 
-        epidata_data = [['chng', 'chng-sig',
-                         pd.Timestamp("2020-01-01"), "state", "PA"]]
+        epidata_data = [
+            ['chng', 'chng-sig', pd.Timestamp("2020-01-01"), "state", "PA"],
+            ['chng', 'chng-sig', pd.Timestamp("2020-01-01"), "state", "NY"],
+            ['chng', 'chng-sig', pd.Timestamp("2020-01-02"), "state", "NY"],
+        ]
         epidata_df = pd.DataFrame(
             epidata_data,
             columns=[
@@ -200,23 +218,32 @@ class UnitTests(unittest.TestCase):
         expected_coverage = [
             DashboardSignalCoverage(
                 signal_id=1,
-                date=datetime.date(
+                date=date(
                     2020,
                     1,
                     1),
                 geo_type='state',
-                count=1)]
+                count=2),
+            DashboardSignalCoverage(
+                signal_id=1,
+                date=date(
+                    2020,
+                    1,
+                    2),
+                geo_type='state',
+                count=1),    
+            ]
 
         self.assertListEqual(coverage, expected_coverage)
 
     @patch("covidcast.signal")
-    def test_get_coverage_too_many_rows(self, mock_signal):
+    def test_get_coverage_megacounties_dropped(self, mock_signal):
         signal = DashboardSignal(
             db_id=1, name="Change", source="chng",
             covidcast_signal="chng-sig",
             latest_coverage_update=date(2021, 1, 1),
             latest_status_update=date(2021, 1, 1))
-        data = [['chng', pd.Timestamp("2020-01-01"), "chng_signal"]]
+        data = [['chng', pd.Timestamp("2020-01-01"), "chng-sig"]]
         metadata = pd.DataFrame(
             data,
             columns=[
@@ -224,12 +251,10 @@ class UnitTests(unittest.TestCase):
                 'max_time',
                 'signal'])
 
-        epidata_data = [['chng', 'chng_signal',
-                         pd.Timestamp("2020-01-01"), "state", "PA"],
-                        ['chng', 'chng_signal',
-                         pd.Timestamp("2020-01-01"), "county", "10001"]
-                        ]
-
+        epidata_data = [
+            ['chng', 'chng-sig', pd.Timestamp("2020-01-01"), "county", "11111"],
+            ['chng', 'chng-sig', pd.Timestamp("2020-01-01"), "county", "10000"],
+        ]
         epidata_df = pd.DataFrame(
             epidata_data,
             columns=[
@@ -241,6 +266,18 @@ class UnitTests(unittest.TestCase):
 
         mock_signal.return_value = epidata_df
 
-        self.assertRaises(ValueError, get_coverage, signal, metadata)
+        coverage = get_coverage(signal, metadata)
 
-        
+        expected_coverage = [
+            DashboardSignalCoverage(
+                signal_id=1,
+                date=date(
+                    2020,
+                    1,
+                    1),
+                geo_type='county',
+                count=1),    
+            ]
+
+        self.assertListEqual(coverage, expected_coverage)
+     

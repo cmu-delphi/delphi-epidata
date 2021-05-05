@@ -43,16 +43,13 @@ Duplicate survey weights had corrupted historical figures for the following sign
   * `hrr`: 20200406-20200415, 20200430-20200506
   * `msa`: 20200408-20200414, 20200430-20200506
   * `state`: 20200408-20200416, 20200430-20200506
-  
-#### 20 November 2020  
 
-Due to a bug in our data processing system, estimates of the percentage of people reporting that they have been tested for COVID-19 calculated before October 8th were incorrect. 
-We incorrectly treated an answer of “no” as a missing response, which affected the `smoothed_tested_14d` and `smoothed_wtested_14d` signals from the `fb-survey` source. 
+#### 20 November 2020
 
-As of Nov. 20th, the error has been corrected and all affected data reissued. 
+Due to a bug in our data processing system, estimates of the percentage of people reporting that they have been tested for COVID-19 calculated before October 8th were incorrect.
+We incorrectly treated an answer of “no” as a missing response, which affected the `smoothed_tested_14d` and `smoothed_wtested_14d` signals from the `fb-survey` source.
 
-### `google-survey`
-### `ght`
+As of Nov. 20th, the error has been corrected and all affected data reissued.
 
 ### `hospital-admissions`
 #### 20 October 2020
@@ -66,7 +63,7 @@ We now include figures on Puerto Rico for all `jhu-csse` signals at the state le
 
 #### 1 September 2020
 
-NY Boroughs county FIPS (36005, 36047, 36061, 36081, 36085) are now split in proportion to the population of each county, instead of being reported in aggregate in FIPS 36061. 
+NY Boroughs county FIPS (36005, 36047, 36061, 36081, 36085) are now split in proportion to the population of each county, instead of being reported in aggregate in FIPS 36061.
 
 #### 7 October 2020
 
@@ -97,6 +94,10 @@ The 10 October 2020 issue of all `indicator-combination` deaths signals has been
 We went from a custom geo mapping file (for aggregating from zip->(county, msa, hrr, state)) to a central geo file based on rigorously sourced US census data.
 
 ### `safegraph`
+
+#### 19 April 2021
+
+The Safegraph social distancing metrics are no longer being updated. Weekly patterns are still available.
 
 #### 3 November 2020
 We went from a custom geo mapping file (for aggregating from county->state) to a central geo file based on rigorously sourced US census data.

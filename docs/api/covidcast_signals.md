@@ -26,19 +26,23 @@ are welcome.
 ## COVIDcast Map Signals
 
 The following signals are currently displayed on [the public COVIDcast
-map](https://covidcast.cmu.edu/):
+map](https://delphi.cmu.edu/covidcast/) and available in its [data export
+tool](https://delphi.cmu.edu/covidcast/export/):
 
 | Kind             | Name                             | Source                                                                | Signal                           |
 | ----             | ----                             | ------                                                                | ------                           |
-| Public Behavior  | Away from Home 6hr+ a Day  | [`safegraph`](covidcast-signals/safegraph.md)                         | `full_time_work_prop`            |
-| Public Behavior  | Away from Home 3-6hr a Day  | [`safegraph`](covidcast-signals/safegraph.md)                         | `part_time_work_prop`            |
-| Public Behavior  | COVID Searches on Google           | [`ght`](covidcast-signals/ght.md)                                     | `smoothed_search`                |
+| Public Behavior  | At Away Location 6hr+            | [`safegraph`](covidcast-signals/safegraph.md)                         | `full_time_work_prop_7dav`       |
+| Public Behavior  | At Away Location 3-6hr           | [`safegraph`](covidcast-signals/safegraph.md)                         | `part_time_work_prop_7dav`       |
+| Public Behavior  | Bar Visits                       | [`safegraph`](covidcast-signals/safegraph.md)                         | `bars_visit_prop`                |
+| Public Behavior  | Restaurant Visits                | [`safegraph`](covidcast-signals/safegraph.md)                         | `restaurant_visit_prop`          |
+| Public Behavior  | People Wearing Masks             | [`fb-survey`](covidcast-signals/fb-survey.md)                         | `smoothed_wearing_mask_7d`       |
+| Public Behavior  | Vaccine Acceptance               | [`fb-survey`](covidcast-signals/fb-survey.md)                         | `smoothed_covid_vaccinated_or_accept` |
+| Public Behavior  | COVID Symptom Searches on Google | [`google-symptoms`](covidcast-signals/google-symptoms.md)             | `sum_anosmia_ageusia_smoothed_search` |
+| Early Indicators | COVID-Related Doctor Visits      | [`doctor-visits`](covidcast-signals/doctor-visits.md)                 | `smoothed_adj_cli`               |
 | Early Indicators | COVID-Like Symptoms              | [`fb-survey`](covidcast-signals/fb-survey.md)                         | `smoothed_cli`                   |
 | Early Indicators | COVID-Like Symptoms in Community | [`fb-survey`](covidcast-signals/fb-survey.md)                         | `smoothed_hh_cmnty_cli`          |
-| Early Indicators | COVID-Related Doctor Visits                  | [`doctor-visits`](covidcast-signals/doctor-visits.md)                 | `smoothed_adj_cli`               |
-| Early Indicators | COVID Indicator Combination                         | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `nmf_day_doc_fbc_fbs_ght`        |
-| Late Indicators  | COVID Antigen Test Positivity (Quidel)             | [`quidel`](covidcast-signals/quidel.md)                               | `covid_ag_smoothed_pct_positive` |
-| Late Indicators  | COVID Hospital Admissions              | [`hospital-admissions`](covidcast-signals/hospital-admissions.md)     | `smoothed_adj_covid19_from_claims`           |
+| Late Indicators  | COVID Antigen Test Positivity (Quidel) | [`quidel`](covidcast-signals/quidel.md)                         | `covid_ag_smoothed_pct_positive` |
+| Late Indicators  | Claims-Based COVID Hospital Admissions | [`hospital-admissions`](covidcast-signals/hospital-admissions.md) | `smoothed_adj_covid19_from_claims` |
 | Late Indicators  | Cases                            | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `confirmed_7dav_incidence_num`   |
 | Late Indicators  | Cases per 100,000 People         | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `confirmed_7dav_incidence_prop`  |
 | Late Indicators  | Deaths                           | [`indicator-combination`](covidcast-signals/indicator-combination.md) | `deaths_7dav_incidence_num`      |
