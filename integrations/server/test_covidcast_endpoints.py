@@ -14,6 +14,9 @@ import requests
 import pandas as pd
 
 
+from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import main as update_cache
+
+
 # use the local instance of the Epidata API
 BASE_URL = "http://delphi_web_epidata/epidata/covidcast"
 
@@ -101,6 +104,7 @@ class CovidcastEndpointTests(unittest.TestCase):
         cnx = mysql.connector.connect(user="user", password="pass", host="delphi_database_epidata", database="epidata")
         cur = cnx.cursor()
         cur.execute("truncate table covidcast")
+        cur.execute('update covidcast_meta_cache set timestamp = 0, epidata = ""')
         cnx.commit()
         cur.close()
 
@@ -252,3 +256,36 @@ class CovidcastEndpointTests(unittest.TestCase):
         self.assertEqual(df_t0["is_anchor"].tolist(), [False, False, True])
         self.assertEqual(df_t0["value_completeness"].tolist(), [0 / 2, 1 / 2, 2 / 2])  # total 2, given 0,1,2
         self.assertEqual(df_t0["sample_size_completeness"].tolist(), [1 / 3, 2 / 3, 3 / 3])  # total 2, given 0,1,2
+
+    def test_meta(self):
+        """Request a signal the /meta endpoint."""
+
+        num_rows = 10
+        rows = [CovidcastRow(time_value=20200401 + i, value=i) for i in range(num_rows)]
+        self._insert_rows(rows)
+        first = rows[0]
+        last = rows[-1]
+
+        update_cache(args=None)
+
+        with self.subTest("plain"):
+            out = self._fetch("/meta")
+            self.assertEqual(len(out), 1)
+            stats = out[0]
+            self.assertEqual(stats["source"], first.source)
+            self.assertEqual(stats["signal"], first.signal)
+            self.assertEqual(stats["min_time"], first.time_value)
+            self.assertEqual(stats["max_time"], last.time_value)
+            self.assertEqual(stats["max_issue"], max(d.issue for d in rows))
+            self.assertTrue(first.geo_type in stats["geo_types"])
+            stats_g = stats["geo_types"][first.geo_type]
+            self.assertEqual(stats_g["min"], first.value)
+            self.assertEqual(stats_g["max"], last.value)
+            self.assertEqual(stats_g["mean"], sum(r.value for r in rows) / len(rows))
+
+        with self.subTest("filtered"):
+            out = self._fetch("/meta", signal=f"{first.source}:*")
+            self.assertEqual(len(out), 1)
+            self.assertEqual(out[0]["source"], first.source)
+            out = self._fetch("/meta", signal=f"{first.source}:X")
+            self.assertEqual(len(out), 0)

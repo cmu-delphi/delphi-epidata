@@ -39,22 +39,45 @@ class UnitTests(unittest.TestCase):
         app.config["DEBUG"] = False
 
     def test_geo_pair(self):
-        self.assertEqual(GeoPair("a", True).count(), inf)
-        self.assertEqual(GeoPair("a", False).count(), 0)
-        self.assertEqual(GeoPair("a", ['a', 'b']).count(), 2)
+        with self.subTest("*"):
+            p = GeoPair("hrr", True)
+            self.assertTrue(p.matches("hrr", "any"))
+            self.assertFalse(p.matches("msa", "any"))
+        with self.subTest("subset"):
+            p = GeoPair("hrr", ["a", "b"])
+            self.assertTrue(p.matches("hrr", "a"))
+            self.assertTrue(p.matches("hrr", "b"))
+            self.assertFalse(p.matches("hrr", "c"))
+            self.assertFalse(p.matches("msa", "any"))
+        with self.subTest("count"):
+            self.assertEqual(GeoPair("a", True).count(), inf)
+            self.assertEqual(GeoPair("a", False).count(), 0)
+            self.assertEqual(GeoPair("a", ["a", "b"]).count(), 2)
 
     def test_source_signal_pair(self):
-        self.assertEqual(SourceSignalPair("a", True).count(), inf)
-        self.assertEqual(SourceSignalPair("a", False).count(), 0)
-        self.assertEqual(SourceSignalPair("a", ['a', 'b']).count(), 2)
+        with self.subTest("*"):
+            p = SourceSignalPair("src1", True)
+            self.assertTrue(p.matches("src1", "any"))
+            self.assertFalse(p.matches("src2", "any"))
+        with self.subTest("subset"):
+            p = SourceSignalPair("src1", ["a", "b"])
+            self.assertTrue(p.matches("src1", "a"))
+            self.assertTrue(p.matches("src1", "b"))
+            self.assertFalse(p.matches("src1", "c"))
+            self.assertFalse(p.matches("src2", "any"))
+        with self.subTest("count"):
+            self.assertEqual(SourceSignalPair("a", True).count(), inf)
+            self.assertEqual(SourceSignalPair("a", False).count(), 0)
+            self.assertEqual(SourceSignalPair("a", ["a", "b"]).count(), 2)
 
     def test_time_pair(self):
-        self.assertEqual(TimePair("day", True).count(), inf)
-        self.assertEqual(TimePair("day", False).count(), 0)
-        self.assertEqual(TimePair("day", [20200202, 20200201]).count(), 2)
-        self.assertEqual(TimePair("day", [(20200201, 20200202)]).count(), 2)
-        self.assertEqual(TimePair("day", [(20200201, 20200205)]).count(), 5)
-        self.assertEqual(TimePair("day", [(20200201, 20200205), 20201212]).count(), 6)
+        with self.subTest("count"):
+            self.assertEqual(TimePair("day", True).count(), inf)
+            self.assertEqual(TimePair("day", False).count(), 0)
+            self.assertEqual(TimePair("day", [20200202, 20200201]).count(), 2)
+            self.assertEqual(TimePair("day", [(20200201, 20200202)]).count(), 2)
+            self.assertEqual(TimePair("day", [(20200201, 20200205)]).count(), 5)
+            self.assertEqual(TimePair("day", [(20200201, 20200205), 20201212]).count(), 6)
 
     def test_parse_geo_arg(self):
         with self.subTest("empty"):

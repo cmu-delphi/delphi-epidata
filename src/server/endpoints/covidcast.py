@@ -2,9 +2,11 @@ from typing import List, Optional, Union, Tuple, Dict, Any
 from itertools import groupby
 from datetime import date, datetime
 from flask import Blueprint, request
+from flask.json import loads, jsonify
 from bisect import bisect_right
+from sqlalchemy import text
 
-from .._common import is_compatibility_mode
+from .._common import is_compatibility_mode, db
 from .._exceptions import ValidationFailedException, DatabaseErrorException
 from .._params import (
     GeoPair,
@@ -30,7 +32,7 @@ from .._validate import (
     require_any,
 )
 from .._pandas import as_pandas
-from .covidcast_utils import compute_trend, compute_correlations, compute_trend_value
+from .covidcast_utils import compute_trend, compute_correlations, compute_trend_value, CovidcastMetaEntry
 from ..utils import shift_time_value, date_to_time_value, time_value_to_iso
 
 # first argument is the endpoint name
@@ -404,3 +406,27 @@ def handle_backfill():
 
     # now use a generator for sending the rows and execute all the other queries
     return p(gen(r))
+
+
+@bp.route("/meta", methods=("GET", "POST"))
+def handle_meta():
+    """
+    similar to /covidcast_meta but in a structured optimized JSON form for the app
+    """
+
+    signal = parse_source_signal_arg("signal")
+
+    row = db.execute(text("SELECT epidata FROM covidcast_meta_cache LIMIT 1")).fetchone()
+
+    data = loads(row["epidata"]) if row and row["epidata"] else []
+
+    out: Dict[str, CovidcastMetaEntry] = {}
+    for row in data:
+        if row["time_type"] != "day":
+            continue
+        if signal and all((not s.matches(row["data_source"], row["signal"]) for s in signal)):
+            continue
+        entry = out.setdefault(f"{row['data_source']}:{row['signal']}", CovidcastMetaEntry(row["data_source"], row["signal"], row["min_time"], row["max_time"], row["max_issue"], {}))
+        entry.intergrate(row)
+
+    return jsonify([r.asdict() for r in out.values()])

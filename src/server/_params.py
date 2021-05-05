@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import List, Optional, Sequence, Tuple, Union
 
 from flask import request
+from numpy import sign
 
 from ._exceptions import ValidationFailedException
 from .utils import days_in_range
@@ -51,6 +52,9 @@ class GeoPair:
     geo_type: str
     geo_values: Union[bool, Sequence[str]]
 
+    def matches(self, geo_type: str, geo_value: str) -> bool:
+        return self.geo_type == geo_type and (self.geo_values == True or (not isinstance(self.geo_values, bool) and geo_value in self.geo_values))
+
     def count(self) -> float:
         """
         returns the count of items in this pair
@@ -76,6 +80,9 @@ def parse_single_geo_arg(key: str) -> GeoPair:
 class SourceSignalPair:
     source: str
     signal: Union[bool, Sequence[str]]
+
+    def matches(self, source: str, signal: str) -> bool:
+        return self.source == source and (self.signal == True or (not isinstance(self.signal, bool) and signal in self.signal))
 
     def count(self) -> float:
         """
