@@ -84,21 +84,29 @@ jobs:
           docker stop delphi_database_epidata delphi_web_epidata
           docker network remove delphi-net
 
-      # Deployment
+  image:
+    # only on main and dev branch
+    if: startsWith(github.ref, 'refs/heads/main') || github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/sgratzl/flaskx'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
           username: cmu-delphi-deploy-machine
           password: ${{ secrets.CMU_DELPHI_DEPLOY_MACHINE_PAT }}
-
-      - name: Build, tag, and push image to Github
+      - name: Build Image
         env:
           DEVOPS_DOCKER_FILE: ./devops/Dockerfile
         run: |
-          cd repos/delphi/delphi-epidata
+          docker build -t repo --file ${DEVOPS_DOCKER_FILE} .
+      - name: Resolve Tag
+        id: tagname
+        run: |
           baseRef="${GITHUB_REF#*/}"
-          baseRef="${baseRef#*/}"
+          imageTag="${baseRef#*/}"
           case "${baseRef}" in
           main)
             imageTag="latest"
@@ -107,12 +115,25 @@ jobs:
             imageTag="${baseRef//\//_}" # replace `/` with `_` in branch name
             ;;
           esac
-          echo "using tag: --${imageTag}--"
-          docker build -t ghcr.io/${{ github.repository }}:$imageTag --file ${DEVOPS_DOCKER_FILE} .
-          docker push ghcr.io/${{ github.repository }}:$imageTag
-
+          echo "::set-output name=tag::$imageTag"
+          echo "::set-output name=repo::ghcr.io/${{ github.repository }}"
+      - name: Push Dev Tag
+        run: |
+          docker tag repo ${{ steps.tagname.outputs.repo }}:${{ steps.tagname.outputs.tag }}
+          docker push ${{ steps.tagname.outputs.repo }}:${{ steps.tagname.outputs.tag }}
+      # - name: Extract version
+      #   if: startsWith(github.ref, 'refs/heads/main')
+      #   id: extract_version
+      #   run: node -pe "'::set-output name=version::' + require('./package.json').version"
+      - name: Trigger Webhook
+        run: |
           # trigger a webhook update
           curl -H "Authorization: Bearer ${{ secrets.DELPHI_DEPLOY_WEBHOOK_TOKEN }}" \
                -X POST ${{ secrets.DELPHI_DEPLOY_WEBHOOK_URL }} \
                -H "Content-Type: application/x-www-form-urlencoded" \
-               -d "repository=ghcr.io/${{ github.repository }}&tag=$imageTag"
+               -d "repository=${{ steps.tagname.outputs.repo }}&tag=${{ steps.tagname.outputs.tag }}"
+      # - name: Push Version Tag Tag
+      #   if: startsWith(github.ref, 'refs/heads/main')
+      #   run: |
+      #     docker tag repo ${{ steps.tagname.outputs.repo }}:v${{ steps.extract_version.outputs.version }}
+      #     docker push ${{ steps.tagname.outputs.repo }}:v${{ steps.extract_version.outputs.version }}
