@@ -21,7 +21,7 @@ from .._params import (
     parse_single_time_arg,
     parse_single_geo_arg,
 )
-from .._query import QueryBuilder, execute_query, run_query, parse_row
+from .._query import QueryBuilder, execute_query, run_query, parse_row, filter_fields
 from .._printer import create_printer, CSVPrinter
 from .._validate import (
     extract_date,
@@ -200,7 +200,7 @@ def handle_trend():
         raise DatabaseErrorException(str(e))
 
     # now use a generator for sending the rows and execute all the other queries
-    return p(gen(r))
+    return p(filter_fields(gen(r)))
 
 
 @bp.route("/correlation", methods=("GET", "POST"))
@@ -260,7 +260,7 @@ def handle_correlation():
                     yield cor.asdict()
 
     # now use a generator for sending the rows and execute all the other queries
-    return p(gen())
+    return p(filter_fields(gen()))
 
 
 @bp.route("/csv", methods=("GET", "POST"))
@@ -405,7 +405,7 @@ def handle_backfill():
         raise DatabaseErrorException(str(e))
 
     # now use a generator for sending the rows and execute all the other queries
-    return p(gen(r))
+    return p(filter_fields(gen(r)))
 
 
 @bp.route("/meta", methods=("GET", "POST"))
