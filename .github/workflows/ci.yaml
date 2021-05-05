@@ -85,6 +85,7 @@ jobs:
           docker network remove delphi-net
 
   image:
+    needs: build
     # only on main and dev branch
     if: startsWith(github.ref, 'refs/heads/main') || github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/sgratzl/flaskx'
     runs-on: ubuntu-latest
