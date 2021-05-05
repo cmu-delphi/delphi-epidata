@@ -46,7 +46,7 @@ def guess_high_values_are(source: str, signal: str) -> HighValuesAre:
             return HighValuesAre.neutral
         if "mask" in signal or "vaccine" in signal or "vaccinated" in signal:
             return HighValuesAre.good
-    if source in ["quidel", "indicator-combination", "google-symptoms", "doctor-visits", "hospital-admissions", "usa-facts", "hhs"]:
+    if source in ["quidel", "indicator-combination", "google-symptoms", "doctor-visits", "hospital-admissions", "usa-facts", "jhu-csse", "hhs"]:
         return HighValuesAre.bad
 
     return HighValuesAre.neutral
