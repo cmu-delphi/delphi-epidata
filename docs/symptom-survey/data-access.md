@@ -29,6 +29,9 @@ which sets out the basic conditions and provides a form to request access. An
 is conducted by the University of Maryland (UMD) and access can be requested
 through the same form.
 
+The United States survey protocol has been reviewed by the Carnegie Mellon
+University Institutional Review Board with IRB ID STUDY2020_00000162.
+
 Some important notes about obtaining access to the individual survey responses:
 
 * Your research purpose must be consistent with the consent language used in

@@ -20,7 +20,7 @@ calculated or composed by Delphi. It is not a primary data source.
 
 ## Statistical Combination Signals (Inactive)
 
-The NMF combination signals were deactivated on March 17, 2021. Documenation for
+The NMF combination signals were deactivated on March 17, 2021. Documentation for
 these signals is still available on the page for [inactive indicator-combination
 signals](indicator-combination-inactive.md).
 

@@ -475,6 +475,7 @@ new items were meant to capture reasons for vaccine hesitancy among respondents.
 * C14a is a revision of item C14, changed from "the past 5 days" to "the past
   7 days" to be consistent with other items on the COVID Symptom Survey.
   C14a replaces C14.
+*  C17a is a revision of item C17, which asked respondents if they have had a flu vaccination since June 2020. C17a changed the date to July 1, 2020 and simplified the wording.
 * In item V4, the "local health workers" category was changed to read "Doctors
   and other health professionals you go to for medical care".
 
@@ -557,6 +558,7 @@ survey.
   vaccinated?”) response option 2 (“Yes, probably”). The following question
   would be V5a (“Which of the following, is any, are reasons that you only
   probably would choose to get the COVID-19 vaccine?”).
+* Item V9 was made conditional on respondents not answering "yes" to V1.
 * Item C13 was replaced with item C13b, which asks specifically whether the
   activities occurred indoors. Item C13a was similarly replaced with item C13c
   to reflect mask use during those indoor activities.

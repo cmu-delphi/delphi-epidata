@@ -17,6 +17,8 @@ import delphi.operations.secrets as secrets
 from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
 
 
+LOOKBACK_DAYS_FOR_COVERAGE = 28
+
 @dataclass
 class DashboardSignal:
     """Container class for information about dashboard signals."""
@@ -109,7 +111,7 @@ class Database:
             (`signal_id`, `date`, `geo_type`, `count`)
             VALUES
             (%s, %s, %s, %s)
-            ON DUPLICATE KEY UPDATE `signal_id` = `signal_id`
+            ON DUPLICATE KEY UPDATE `count` = VALUES(`count`)
             '''
         coverage_as_tuples = [
             (x.signal_id, x.date, x.geo_type, x.count)
@@ -117,11 +119,17 @@ class Database:
         self._cursor.executemany(insert_statement, coverage_as_tuples)
 
         latest_coverage_dates = {}
+        oldest_coverage_dates = {}
         for x in coverage_list:
             latest_coverage_date = latest_coverage_dates.get(x.signal_id)
+            oldest_coverage_date = oldest_coverage_dates.get(x.signal_id)
             if not latest_coverage_date or x.date > latest_coverage_date:
                 latest_coverage_dates.update({x.signal_id: x.date})
+            if not oldest_coverage_date or x.date < oldest_coverage_date:
+                oldest_coverage_dates.update({x.signal_id: x.date})
+
         latest_coverage_tuples = [(v, k) for k, v in latest_coverage_dates.items()]
+        oldest_coverage_tuples = [(v, k) for k, v in oldest_coverage_dates.items()]
 
         update_statement = f'''UPDATE `{Database.SIGNAL_TABLE_NAME}`
             SET `latest_coverage_update` = GREATEST(`latest_coverage_update`, %s)
@@ -129,8 +137,13 @@ class Database:
             '''
         self._cursor.executemany(update_statement, latest_coverage_tuples)
 
-        self._connection.commit()
+        delete_statement = f'''DELETE FROM `{Database.COVERAGE_TABLE_NAME}`
+            WHERE `date` < %s
+            AND `signal_id` = %s
+            '''
+        self._cursor.executemany(delete_statement, oldest_coverage_tuples)
 
+        self._connection.commit()
 
     def get_enabled_signals(self) -> List[DashboardSignal]:
         """Retrieve all enabled signals from the database"""
@@ -184,25 +197,27 @@ def get_coverage(dashboard_signal: DashboardSignal,
     """Get the most recent coverage for the signal."""
     latest_time_value = get_latest_time_value_from_metadata(
         dashboard_signal, metadata)
+    start_day = latest_time_value - datetime.timedelta(days = LOOKBACK_DAYS_FOR_COVERAGE)
     latest_data = covidcast.signal(
         dashboard_signal.source,
         dashboard_signal.covidcast_signal,
-        end_day=latest_time_value,
-        start_day=latest_time_value)
-    count_by_geo_type_df = latest_data.groupby(
-        ['geo_type', 'data_source', 'time_value', 'signal']).size().to_frame('count').reset_index()
-
-    if len(count_by_geo_type_df) > 1:
-        raise ValueError(f"Expected one row for coverage, got {len(count_by_geo_type_df)}.")
+        end_day = latest_time_value,
+        start_day = start_day)
+    latest_data_without_megacounties = latest_data[~latest_data['geo_value'].str.endswith(
+        '000')]
+    count_by_geo_type_df = latest_data_without_megacounties.groupby(
+        ['geo_type', 'data_source', 'time_value', 'signal']).size().to_frame(
+        'count').reset_index()
 
     signal_coverage_list = []
     
-    signal_coverage = DashboardSignalCoverage(
-        signal_id=dashboard_signal.db_id,
-        date=latest_time_value,
-        geo_type=count_by_geo_type_df['geo_type'].iloc[0],
-        count=count_by_geo_type_df['count'].iloc[0].item())
-    signal_coverage_list.append(signal_coverage)
+    for _, row in count_by_geo_type_df.iterrows():
+        signal_coverage = DashboardSignalCoverage(
+            signal_id=dashboard_signal.db_id,
+            date=row['time_value'].date(),
+            geo_type=row['geo_type'],
+            count=row['count'])
+        signal_coverage_list.append(signal_coverage)
 
     return signal_coverage_list
 
