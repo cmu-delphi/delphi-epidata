@@ -320,6 +320,7 @@ class QueryBuilder:
         self.conditions: List[str] = []
         self.params: Dict[str, Any] = {}
         self.subquery: str = ""
+        self.index: str = ""
 
     @property
     def conditions_clause(self) -> str:
@@ -337,8 +338,9 @@ class QueryBuilder:
         where = f"WHERE {self.conditions_clause}" if self.conditions else ""
         order = f"ORDER BY {_join_l(self.order)}" if self.order else ""
         group_by = f"GROUP BY {_join_l(self.group_by)}" if self.group_by else ""
+        index = f"USE INDEX ({self.index})" if self.index else ""
 
-        return f"SELECT {self.fields_clause} FROM {self.table} {self.subquery} {where} {group_by} {order}"
+        return f"SELECT {self.fields_clause} FROM {self.table} {index} {self.subquery} {where} {group_by} {order}"
 
     @property
     def query(self) -> str:
