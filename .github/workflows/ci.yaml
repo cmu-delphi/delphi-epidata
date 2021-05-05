@@ -51,17 +51,19 @@ jobs:
 
       - name: Build docker images
         run: |
-          docker build -t delphi_web -f repos/delphi/operations/dev/docker/web/Dockerfile .
           docker build -t delphi_database -f repos/delphi/operations/dev/docker/database/Dockerfile .
           docker build -t delphi_python -f repos/delphi/operations/dev/docker/python/Dockerfile .
-          docker build -t delphi_web_epidata -f ./repos/delphi/delphi-epidata/dev/docker/web/epidata/Dockerfile .
           docker build -t delphi_database_epidata -f ./repos/delphi/delphi-epidata/dev/docker/database/epidata/Dockerfile .
+          docker build -t delphi_web_python -f repos/delphi/delphi-epidata/dev/docker/python/Dockerfile .
+          cd ./repos/delphi/delphi-epidata
+          docker build -t delphi_web_epidata -f ./devops/Dockerfile .
+          cd ../../../
 
       - name: Start services
         run: |
           docker network create --driver bridge delphi-net
           docker run --rm -d -p 13306:3306 --network delphi-net --name delphi_database_epidata delphi_database_epidata
-          docker run --rm -d -p 10080:80 --network delphi-net --name delphi_web_epidata delphi_web_epidata
+          docker run --rm -d -p 10080:80 --env "SQLALCHEMY_DATABASE_URI=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata" --env "FLASK_SECRET=abc" --env "FLASK_PREFIX=/epidata" --network delphi-net --name delphi_web_epidata delphi_web_epidata
           docker ps
 
       - run: |
@@ -71,13 +73,63 @@ jobs:
           sleep 10s
       - name: Run Unit Tests
         run: |
-          docker run --rm --network delphi-net delphi_python python3 -m undefx.py3tester.py3tester --use-exit-code repos/delphi/delphi-epidata/tests
+          docker run --rm --network delphi-net --env "SQLALCHEMY_DATABASE_URI=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata" --env "FLASK_SECRET=abc" delphi_web_python python -m pytest --import-mode importlib repos/delphi/delphi-epidata/tests
 
       - name: Run Integration Tests
         run: |
-          docker run --rm --network delphi-net delphi_python python3 -m undefx.py3tester.py3tester --use-exit-code repos/delphi/delphi-epidata/integrations
+          docker run --rm --network delphi-net delphi_web_python python -m pytest --import-mode importlib repos/delphi/delphi-epidata/integrations
 
       - name: Clean Up
         run: |
           docker stop delphi_database_epidata delphi_web_epidata
           docker network remove delphi-net
+
+  image:
+    needs: build
+    # only on main and dev branch
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: cmu-delphi-deploy-machine
+          password: ${{ secrets.CMU_DELPHI_DEPLOY_MACHINE_PAT }}
+      - name: Build Image
+        env:
+          DEVOPS_DOCKER_FILE: ./devops/Dockerfile
+        run: |
+          docker build -t repo --file ${DEVOPS_DOCKER_FILE} .
+      - name: Resolve Tag
+        id: tagname
+        run: |
+          baseRef="${GITHUB_REF#*/}"
+          imageTag="${baseRef#*/}"
+          if [ "$imageTag" = "main" ] ; then
+            imageTag="latest"
+          fi
+          echo "::set-output name=tag::$imageTag"
+          echo "::set-output name=repo::ghcr.io/${{ github.repository }}"
+      - name: Push Dev Tag
+        run: |
+          docker tag repo ${{ steps.tagname.outputs.repo }}:${{ steps.tagname.outputs.tag }}
+          docker push ${{ steps.tagname.outputs.repo }}:${{ steps.tagname.outputs.tag }}
+      # - name: Extract version
+      #   if: startsWith(github.ref, 'refs/heads/main')
+      #   id: extract_version
+      #   run: node -pe "'::set-output name=version::' + require('./package.json').version"
+      - name: Trigger Webhook
+        run: |
+          # trigger a webhook update
+          curl -H "Authorization: Bearer ${{ secrets.DELPHI_DEPLOY_WEBHOOK_TOKEN }}" \
+               -X POST ${{ secrets.DELPHI_DEPLOY_WEBHOOK_URL }} \
+               -H "Content-Type: application/x-www-form-urlencoded" \
+               -d "repository=${{ steps.tagname.outputs.repo }}&tag=${{ steps.tagname.outputs.tag }}"
+      # - name: Push Version Tag Tag
+      #   if: startsWith(github.ref, 'refs/heads/main')
+      #   run: |
+      #     docker tag repo ${{ steps.tagname.outputs.repo }}:v${{ steps.extract_version.outputs.version }}
+      #     docker push ${{ steps.tagname.outputs.repo }}:v${{ steps.extract_version.outputs.version }}

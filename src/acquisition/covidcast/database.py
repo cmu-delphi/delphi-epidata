@@ -246,8 +246,12 @@ class Database:
       self._cursor.execute(drop_tmp_table_sql)
     return total
 
-  def get_covidcast_meta(self):
+  def compute_covidcast_meta(self, table_name='covidcast', use_index=True):
     """Compute and return metadata on all non-WIP COVIDcast signals."""
+
+    index_hint = ""
+    if use_index:
+      index_hint = "USE INDEX (for_metadata)"
 
     n_threads = max(1, cpu_count()*9//10) # aka number of concurrent db connections, which [sh|c]ould be ~<= 90% of the #cores available to SQL server
     # NOTE: this may present a small problem if this job runs on different hardware than the db,
@@ -255,24 +259,25 @@ class Database:
 
     srcsigs = Queue() # multi-consumer threadsafe!
 
-    sql = 'SELECT `source`, `signal` FROM `covidcast` GROUP BY `source`, `signal` ORDER BY `source` ASC, `signal` ASC;'
+    sql = f'SELECT `source`, `signal` FROM `{table_name}` GROUP BY `source`, `signal` ORDER BY `source` ASC, `signal` ASC;'
+
     self._cursor.execute(sql)
     for source, signal in list(self._cursor): # self._cursor is a generator; this lets us use the cursor for subsequent queries inside the loop
-      sql = "SELECT `is_wip` FROM `covidcast` WHERE `source`=%s AND `signal`=%s LIMIT 1"
+      sql = f"SELECT `is_wip` FROM `{table_name}` WHERE `source`=%s AND `signal`=%s LIMIT 1"
       self._cursor.execute(sql, (source, signal))
       is_wip = int(self._cursor.fetchone()[0]) # casting to int as it comes out as a '0' or '1' bytearray; bool('0')==True :(
       if not is_wip:
         srcsigs.put((source, signal))
 
-    inner_sql = '''
+    inner_sql = f'''
       SELECT
-        t.`source` AS `data_source`,
-        t.`signal`,
-        t.`time_type`,
-        t.`geo_type`,
-        MIN(t.`time_value`) AS `min_time`,
-        MAX(t.`time_value`) AS `max_time`,
-        COUNT(DISTINCT t.`geo_value`) AS `num_locations`,
+        `source` AS `data_source`,
+        `signal`,
+        `time_type`,
+        `geo_type`,
+        MIN(`time_value`) AS `min_time`,
+        MAX(`time_value`) AS `max_time`,
+        COUNT(DISTINCT `geo_value`) AS `num_locations`,
         MIN(`value`) AS `min_value`,
         MAX(`value`) AS `max_value`,
         ROUND(AVG(`value`),7) AS `mean_value`,
@@ -282,18 +287,18 @@ class Database:
         MIN(`lag`) as `min_lag`,
         MAX(`lag`) as `max_lag`
       FROM
-        `covidcast` t
+        `{table_name}` {index_hint}
       WHERE
         `source` = %s AND
         `signal` = %s AND
         is_latest_issue = 1
       GROUP BY
-        t.`time_type`,
-        t.`geo_type`
+        `time_type`,
+        `geo_type`
       ORDER BY
-        t.`time_type` ASC,
-        t.`geo_type` ASC
-    '''
+        `time_type` ASC,
+        `geo_type` ASC
+      '''
 
     meta = []
     meta_lock = threading.Lock()

@@ -210,7 +210,7 @@ class CovidcastMetaTests(unittest.TestCase):
     res = fetch(fields='xx')
     self.assertEqual(res['result'], 1)
     self.assertEqual(len(res['epidata']), len(expected))
-    self.assertEqual(res['epidata'][0], [])
+    self.assertEqual(res['epidata'][0], {})
 
 
   def test_suppress_work_in_progress(self):

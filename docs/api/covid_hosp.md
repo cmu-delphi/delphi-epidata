@@ -6,13 +6,16 @@ parent: Epidata API (Other Diseases)
 # COVID-19 Hospitalization by State
 
 This data source is a mirror of the "COVID-19 Reported Patient Impact and
-Hospital Capacity by State Timeseries" dataset provided by the US Department of
-Health & Human Services via healthdata.gov.
+Hospital Capacity by State Timeseries" and "COVID-19 Reported Patient Impact and 
+Hospital Capacity by State" datasets provided by the US Department of
+Health & Human Services via healthdata.gov. The latter provides more frequent updates,
+so it is combined with the former to create a single dataset which is as recent as possible.
 
-See the
-[official description at healthdata.gov](https://healthdata.gov/dataset/covid-19-reported-patient-impact-and-hospital-capacity-state-timeseries)
-for more information, including a
-[data dictionary](https://healthdata.gov/covid-19-reported-patient-impact-and-hospital-capacity-state-data-dictionary).
+For more information, see the
+[official description and data dictionary at healthdata.gov](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/g62h-syeh)
+for "COVID-19 Reported Patient Impact and Hospital Capacity by State Timeseries," 
+as well as the [official description](https://healthdata.gov/dataset/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/6xf2-c3ie)
+for "COVID-19 Reported Patient Impact and Hospital Capacity by State."
 
 General topics not specific to any particular data source are discussed in the
 [API overview](README.md). Such topics include:

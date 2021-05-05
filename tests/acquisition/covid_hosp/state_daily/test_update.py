@@ -10,7 +10,7 @@ from unittest.mock import sentinel
 import pandas as pd
 
 # first party
-from delphi.epidata.acquisition.covid_hosp.common.test_utils import TestUtils
+from delphi.epidata.acquisition.covid_hosp.common.test_utils import UnitTestUtils
 from delphi.epidata.acquisition.covid_hosp.common.utils import Utils
 from delphi.epidata.acquisition.covid_hosp.state_daily.update import Update
 from delphi.epidata.acquisition.covid_hosp.state_daily.network import Network
@@ -26,7 +26,7 @@ class UpdateTests(unittest.TestCase):
     """Perform per-test setup."""
 
     # configure test data
-    self.test_utils = TestUtils(__file__)
+    self.test_utils = UnitTestUtils(__file__)
 
   def test_run(self):
     """Acquire a new dataset."""

@@ -308,7 +308,6 @@ class CsvUploadingTests(unittest.TestCase):
       'message': 'success',
     })
 
-
     # request CSV data from the API on the signal with name length 32<x<64
     response = Epidata.covidcast(
       'src-name', 'wip_really_long_name_that_will_be_accepted', 'day', 'state', 20200419, '*')

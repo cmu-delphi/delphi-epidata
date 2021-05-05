@@ -85,42 +85,44 @@ class CovidcastTests(unittest.TestCase):
       'message': 'success',
     })
 
-  def test_uri_too_long(self):
-    """Test that a long request yields a 414 with GET but works with POST."""
+  # TODO enable test again when the gunicorn issue https://github.com/benoitc/gunicorn/issues/2487 is resolved
+  # def test_uri_too_long(self):
+  # def test_uri_too_long(self):
+  #   """Test that a long request yields a 414 with GET but works with POST."""
 
-    # insert dummy data
-    self.cur.execute(f'''
-      insert into covidcast values
-        (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
-    ''')
-    self.cnx.commit()
+  #   # insert dummy data
+  #   self.cur.execute(f'''
+  #     insert into covidcast values
+  #       (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
+  #         123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 1, False,
+  #         {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
+  #   ''')
+  #   self.cnx.commit()
 
-    # make the request with GET
-    response = requests.get(BASE_URL, {
-      'endpoint': 'covidcast',
-      'data_source': 'src'*10000,
-      'signal': 'sig',
-      'time_type': 'day',
-      'geo_type': 'county',
-      'time_values': 20200414,
-      'geo_value': '01234',
-    })
-    self.assertEqual(response.status_code, 414)
+  #   # make the request with GET
+  #   response = requests.get(BASE_URL, {
+  #     'endpoint': 'covidcast',
+  #     'data_source': 'src'*10000,
+  #     'signal': 'sig',
+  #     'time_type': 'day',
+  #     'geo_type': 'county',
+  #     'time_values': 20200414,
+  #     'geo_value': '01234',
+  #   })
+  #   self.assertEqual(response.status_code, 414)
 
-    # make request with POST
-    response = requests.post(BASE_URL, {
-      'endpoint': 'covidcast',
-      'data_source': 'src'*10000,
-      'signal': 'sig',
-      'time_type': 'day',
-      'geo_type': 'county',
-      'time_values': 20200414,
-      'geo_value': '01234',
-    })
+  #   # make request with POST
+  #   response = requests.post(BASE_URL, {
+  #     'endpoint': 'covidcast',
+  #     'data_source': 'src'*10000,
+  #     'signal': 'sig',
+  #     'time_type': 'day',
+  #     'geo_type': 'county',
+  #     'time_values': 20200414,
+  #     'geo_value': '01234',
+  #   })
 
-    self.assertEqual(response.status_code, 200)
+  #   self.assertEqual(response.status_code, 200)
 
   def test_csv_format(self):
     """Test generate csv data."""

@@ -112,6 +112,9 @@ CREATE TABLE `covidcast` (
   KEY `by_lag` (`source`, `signal`, `time_type`, `geo_type`, `geo_value`, `time_value`, `lag`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- important index for computing metadata efficiently (dont forget to use a hint in your query!)
+CREATE INDEX `for_metadata` ON `covidcast` (`source`, `signal`, `is_latest_issue`);
+
 /*
 `covidcast_meta_cache` stores a cache of the `covidcast_meta` endpoint
 response, e.g. for faster visualization load times.

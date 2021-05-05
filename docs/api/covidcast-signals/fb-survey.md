@@ -96,8 +96,8 @@ survey data, we estimate the percentage of people (age 18 or older) who have a
 COVID-like illness, or influenza-like illness, in a given location, on a given
 day.
 
-Signals beginning `raw_w` or `smoothed_w` are adjusted using survey weights
-[as described below](#survey-weighting) to be demographically representative.
+Signals beginning `raw_w` or `smoothed_w` are [adjusted using survey weights
+to be demographically representative](#survey-weighting) as described below.
 Weighted signals have 1-2 days of lag, so if low latency is paramount,
 unweighted signals are also available. These begin `smoothed_` or `raw_`,
 such as `raw_cli` instead of `raw_wcli`.
@@ -299,8 +299,8 @@ data in the estimation procedures described above.
 
 ## Behavior Indicators
 
-Signals beginning `raw_w` or `smoothed_w` are adjusted using survey weights
-[as described below](#survey-weighting) to be demographically representative.
+Signals beginning `smoothed_w` are [adjusted using survey weights
+to be demographically representative](#survey-weighting) as described below.
 Weighted signals have 1-2 days of lag, so if low latency is paramount,
 unweighted signals are also available. These begin `smoothed_`, such as
 `smoothed_wearing_mask` instead of `smoothed_wwearing_mask`.
@@ -334,6 +334,12 @@ unweighted signals are also available. These begin `smoothed_`, such as
 
 ## Testing Indicators
 
+Signals beginning `smoothed_w` are [adjusted using survey weights
+to be demographically representative](#survey-weighting) as described below.
+Weighted signals have 1-2 days of lag, so if low latency is paramount,
+unweighted signals are also available. These begin `smoothed_`, such as
+`smoothed_tested_14d` instead of `smoothed_wtested_14d`.
+
 | Signal | Description | Survey Item |
 | --- | --- | --- |
 | `smoothed_wtested_14d` | Estimated percentage of people who were tested for COVID-19 in the past 14 days, regardless of their test result <br/> **Earliest date available:** 2020-09-08 | B8, B10 |
@@ -344,14 +350,28 @@ unweighted signals are also available. These begin `smoothed_`, such as
 These indicators are based on questions in Wave 4 of the survey, introduced on
 September 8, 2020.
 
-Signals beginning `raw_w` or `smoothed_w` are adjusted using survey weights
-[as described below](#survey-weighting) to be demographically representative.
+
+## Schooling Indicators
+
+Signals beginning `smoothed_w` are [adjusted using survey weights
+to be demographically representative](#survey-weighting) as described below.
 Weighted signals have 1-2 days of lag, so if low latency is paramount,
 unweighted signals are also available. These begin `smoothed_`, such as
-`smoothed_tested_14d` instead of `smoothed_wtested_14d`.
+`smoothed_inperson_school_fulltime` instead of `smoothed_winperson_school_fulltime`.
+
+| Signal | Description | Survey Item |
+| --- | --- | --- |
+| `smoothed_winperson_school_fulltime` | Estimated percentage of people who had any children attending in-person school on a full-time basis, among people reporting any pre-K-grade 12 children in their household. <br/> **Earliest date available:** 2020-11-24 | E2 |
+| `smoothed_winperson_school_parttime` | Estimated percentage of people who had any children attending in-person school on a part-time basis, among people reporting any pre-K-grade 12 children in their household. <br/> **Earliest date available:** 2020-11-24 | E2 |
 
 
 ## Vaccination Indicators
+
+Signals beginning `smoothed_w` are [adjusted using survey weights
+to be demographically representative](#survey-weighting) as described below.
+Weighted signals have 1-2 days of lag, so if low latency is paramount,
+unweighted signals are also available. These begin `smoothed_`, such as
+`smoothed_covid_vaccinated` instead of `smoothed_wcovid_vaccinated`.
 
 ### Vaccine Uptake and Acceptance
 
@@ -366,7 +386,7 @@ unweighted signals are also available. These begin `smoothed_`, such as
 
 | Signal | Description | Survey Item |
 | --- | --- | --- |
-| `smoothed_wworried_vaccine_side_effects` | Estimated percentage of respondents who are very or moderately concerned that they would "experience a side effect from a COVID-19 vaccination." (Asked of all respondents, including those who have already received one or more doses of a COVID-19 vaccine.) <br/> **Earliest date available:** 2021-01-12 | V9 |
+| `smoothed_wworried_vaccine_side_effects` | Estimated percentage of respondents who are very or moderately concerned that they would "experience a side effect from a COVID-19 vaccination." **Note:** Until March 2, 2021, all respondents answered this question, including those who had already received one or more doses of a COVID-19 vaccine; beginning on that date, only respondents who said they have not received a COVID vaccine are asked this question. <br/> **Earliest date available:** 2021-01-12 | V9 |
 | `smoothed_whesitancy_reason_sideeffects` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they are worried about side effects, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered (item V3). This series of items was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-26 | V5abc |
 | `smoothed_whesitancy_reason_allergic` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they are worried about having an allergic reaction, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered (item V3). This series of items was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-26 | V5abc |
 | `smoothed_whesitancy_reason_ineffective` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they don't know if a COVID-19 vaccine will work, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered (item V3). This series of items was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-26 | V5abc |
@@ -419,14 +439,14 @@ are being revised in preparation for later waves. We may replace the signals
 above with new signals (with different names) if the underlying survey items
 change significantly.
 
-Signals beginning `raw_w` or `smoothed_w` are adjusted using survey weights
-[as described below](#survey-weighting) to be demographically representative.
-Weighted signals have 1-2 days of lag, so if low latency is paramount,
-unweighted signals are also available. These begin `smoothed_`, such as
-`smoothed_accept_covid_vaccine` instead of `smoothed_waccept_covid_vaccine`.
-
 
 ## Mental Health Indicators
+
+Signals beginning `smoothed_w` are [adjusted using survey weights
+to be demographically representative](#survey-weighting) as described below.
+Weighted signals have 1-2 days of lag, so if low latency is paramount,
+unweighted signals are also available. These begin `smoothed_`, such as
+`smoothed_anxious_5d` instead of `smoothed_wanxious_5d`.
 
 | Signal | Description | Survey Item |
 | --- | --- | --- |
@@ -444,11 +464,6 @@ only in Wave 4 did respondents consent to our use of aggregate data to
 study other impacts of COVID, such as mental health. Hence, these aggregates only
 include respondents to Wave 4 and later waves, beginning September 8, 2020.
 
-Signals beginning `raw_w` or `smoothed_w` are adjusted using survey weights
-[as described below](#survey-weighting) to be demographically representative.
-Weighted signals have 1-2 days of lag, so if low latency is paramount,
-unweighted signals are also available. These begin `smoothed_`, such as
-`smoothed_anxious_5d` instead of `smoothed_wanxious_5d`.
 
 ## Limitations
 

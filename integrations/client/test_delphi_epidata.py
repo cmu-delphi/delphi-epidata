@@ -277,8 +277,9 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
       })
     with self.subTest(name='long request'):
       # fetch data, without specifying issue or lag
+      # TODO should also trigger a post but doesn't due to the 414 issue
       response_1 = Epidata.covidcast(
-          'src', 'sig'*3000, 'day', 'county', 20200414, '01234')
+          'src', 'sig'*1000, 'day', 'county', 20200414, '01234')
 
       # check result
       self.assertEqual(response_1, {'message': 'no results', 'result': -2})
@@ -585,7 +586,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
 
   @fake_epidata_endpoint
   def test_async_epidata_fail(self):
-    with pytest.raises(ClientResponseError, match="404, message='Not Found'"):
+    with pytest.raises(ClientResponseError, match="404, message='NOT FOUND'"):
       Epidata.async_epidata([
         {
           'source': 'covidcast',
