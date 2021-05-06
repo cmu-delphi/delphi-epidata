@@ -12,7 +12,7 @@ from dataclasses import dataclass
 import mysql.connector
 import requests
 import pandas as pd
-
+from delphi_utils import Nans
 
 # use the local instance of the Epidata API
 BASE_URL = "http://delphi_web_epidata/epidata/covidcast"
@@ -37,9 +37,9 @@ class CovidcastRow:
     lag: int = 0
     is_latest_issue: bool = True
     is_wip: bool = False
-    # missing_value: Optional[int] = None
-    # missing_std: Optional[int] = None
-    # missing_sample_size: Optional[int] = None
+    missing_value: int = Nans.NOT_MISSING
+    missing_stderr: int = Nans.NOT_MISSING
+    missing_sample_size: int = Nans.NOT_MISSING
 
     def __str__(self):
         return f"""(
@@ -59,7 +59,10 @@ class CovidcastRow:
             {self.issue},
             {self.lag},
             {self.is_latest_issue},
-            {self.is_wip}
+            {self.is_wip},
+            {self.missing_value},
+            {self.missing_stderr},
+            {self.missing_sample_size}
             )"""
 
     @staticmethod
@@ -76,6 +79,9 @@ class CovidcastRow:
             value=json["value"],
             stderr=json["stderr"],
             sample_size=json["sample_size"],
+            missing_value=json["missing_value"],
+            missing_stderr=json["missing_stderr"],
+            missing_sample_size=json["missing_sample_size"]
         )
 
     @property
@@ -138,6 +144,7 @@ class CovidcastEndpointTests(unittest.TestCase):
 
         rows = [CovidcastRow(time_value=20200401 + i, value=i) for i in range(10)]
         first = rows[0]
+        breakpoint()
         self._insert_rows(rows)
 
         with self.subTest("validation"):
@@ -156,6 +163,7 @@ class CovidcastEndpointTests(unittest.TestCase):
         first = rows[0]
         last = rows[-1]
         ref = rows[num_rows // 2]
+        breakpoint()
         self._insert_rows(rows)
 
         out = self._fetch("/trend", signal=first.signal_pair, geo=first.geo_pair, date=last.time_value, window="20200401-20201212", basis=ref.time_value)

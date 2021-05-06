@@ -79,15 +79,17 @@ class CsvUploadingTests(unittest.TestCase):
       f.write('tx,NA,0.2,20\n')
       f.write('wa,3,0.3,30\n')
 
-    # invalid, missing with an inf value and missing cols
+    # invalid, missing with an inf value
     with open(source_receiving_dir + '/20200419_state_test_missing1.csv', 'w') as f:
       f.write('geo_id,val,se,sample_size,missing_val,missing_se,missing_sample_size\n')
       f.write(f'fl,inf,0.3,30,{Nans.UNKNOWN},{Nans.NOT_MISSING},{Nans.NOT_MISSING}\n')
 
+    # invalid, missing with an incorrect missing code
     with open(source_receiving_dir + '/20200419_state_test_missing2.csv', 'w') as f:
       f.write('geo_id,val,se,sample_size,missing_val,missing_se,missing_sample_size\n')
       f.write(f'tx,NA,0.2,20,{Nans.NOT_MISSING},{Nans.NOT_MISSING},{Nans.NOT_MISSING}\n')
 
+    # invalid, no missing with an incorrect missing code
     with open(source_receiving_dir + '/20200419_state_test_missing3.csv', 'w') as f:
       f.write('geo_id,val,se,sample_size,missing_val,missing_se,missing_sample_size\n')
       f.write(f'wa,3,0.3,30,{Nans.UNKNOWN},{Nans.NOT_MISSING},{Nans.NOT_MISSING}\n')
