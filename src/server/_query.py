@@ -97,11 +97,21 @@ def filter_fields(generator: Iterable[Dict[str, Any]]):
     if not fields:
         yield from generator
     else:
+        exclude_fields = {f[1:] for f in fields if f.startswith("-")}
+        include_fields = [f for f in fields if not f.startswith("-") and f not in exclude_fields]
+
         for row in generator:
             filtered = dict()
-            for field in fields:
-                if field in row:
-                    filtered[field] = row[field]
+            if include_fields:
+                # positive list
+                for field in include_fields:
+                    if field in row:
+                        filtered[field] = row[field]
+            elif exclude_fields:
+                # negative list
+                for k, v in row.items():
+                    if k not in exclude_fields:
+                        filtered[k] = v
             yield filtered
 
 
@@ -252,9 +262,17 @@ def execute_queries(
 
     fields_to_send = set(extract_strings("fields") or [])
     if fields_to_send:
-        fields_string = [v for v in fields_string if v in fields_to_send]
-        fields_int = [v for v in fields_int if v in fields_to_send]
-        fields_float = [v for v in fields_float if v in fields_to_send]
+        exclude_fields = {f[1:] for f in fields_to_send if f.startswith("-")}
+        include_fields = {f for f in fields_to_send if not f.startswith("-") and f not in exclude_fields}
+
+        if include_fields:
+            fields_string = [v for v in fields_string if v in include_fields]
+            fields_int = [v for v in fields_int if v in include_fields]
+            fields_float = [v for v in fields_float if v in include_fields]
+        if exclude_fields:
+            fields_string = [v for v in fields_string if v not in exclude_fields]
+            fields_int = [v for v in fields_int if v not in exclude_fields]
+            fields_float = [v for v in fields_float if v not in exclude_fields]
 
     query_list = list(queries)
 
