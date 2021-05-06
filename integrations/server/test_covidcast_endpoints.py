@@ -172,6 +172,7 @@ class CovidcastEndpointTests(unittest.TestCase):
         self.assertEqual(trend["signal_source"], last.source)
         self.assertEqual(trend["signal_signal"], last.signal)
 
+        self.assertEqual(trend["date"], last.time_value)
         self.assertEqual(trend["value"], last.value)
 
         self.assertEqual(trend["basis_date"], ref.time_value)
@@ -184,6 +185,71 @@ class CovidcastEndpointTests(unittest.TestCase):
         self.assertEqual(trend["max_date"], last.time_value)
         self.assertEqual(trend["max_value"], last.value)
         self.assertEqual(trend["max_trend"], "steady")
+
+    def test_trendseries(self):
+        """Request a signal the /trendseries endpoint."""
+
+        num_rows = 3
+        rows = [CovidcastRow(time_value=20200401 + i, value=num_rows - i) for i in range(num_rows)]
+        first = rows[0]
+        last = rows[-1]
+        self._insert_rows(rows)
+
+        out = self._fetch("/trendseries", signal=first.signal_pair, geo=first.geo_pair, date=last.time_value, window="20200401-20200410", basis=1)
+
+        self.assertEqual(out["result"], 1)
+        self.assertEqual(len(out["epidata"]), 3)
+        trends = out["epidata"]
+
+        def match_row(trend, row):
+            self.assertEqual(trend["geo_type"], row.geo_type)
+            self.assertEqual(trend["geo_value"], row.geo_value)
+            self.assertEqual(trend["signal_source"], row.source)
+            self.assertEqual(trend["signal_signal"], row.signal)
+
+            self.assertEqual(trend["date"], row.time_value)
+            self.assertEqual(trend["value"], row.value)
+
+        with self.subTest("trend0"):
+            trend = trends[0]
+            match_row(trend, first)
+            self.assertEqual(trend["basis_date"], None)
+            self.assertEqual(trend["basis_value"], None)
+            self.assertEqual(trend["basis_trend"], "unknown")
+
+            self.assertEqual(trend["min_date"], last.time_value)
+            self.assertEqual(trend["min_value"], last.value)
+            self.assertEqual(trend["min_trend"], "increasing")
+            self.assertEqual(trend["max_date"], first.time_value)
+            self.assertEqual(trend["max_value"], first.value)
+            self.assertEqual(trend["max_trend"], "steady")
+        with self.subTest("trend1"):
+            trend = trends[1]
+            match_row(trend, rows[1])
+            self.assertEqual(trend["basis_date"], first.time_value)
+            self.assertEqual(trend["basis_value"], first.value)
+            self.assertEqual(trend["basis_trend"], "decreasing")
+
+            self.assertEqual(trend["min_date"], last.time_value)
+            self.assertEqual(trend["min_value"], last.value)
+            self.assertEqual(trend["min_trend"], "increasing")
+            self.assertEqual(trend["max_date"], first.time_value)
+            self.assertEqual(trend["max_value"], first.value)
+            self.assertEqual(trend["max_trend"], "decreasing")
+
+        with self.subTest("trend2"):
+            trend = trends[2]
+            match_row(trend, last)
+            self.assertEqual(trend["basis_date"], rows[1].time_value)
+            self.assertEqual(trend["basis_value"], rows[1].value)
+            self.assertEqual(trend["basis_trend"], "decreasing")
+
+            self.assertEqual(trend["min_date"], last.time_value)
+            self.assertEqual(trend["min_value"], last.value)
+            self.assertEqual(trend["min_trend"], "steady")
+            self.assertEqual(trend["max_date"], first.time_value)
+            self.assertEqual(trend["max_value"], first.value)
+            self.assertEqual(trend["max_trend"], "decreasing")
 
     def test_correlation(self):
         """Request a signal the /correlation endpoint."""
