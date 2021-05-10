@@ -134,7 +134,7 @@ def handle():
     q = QueryBuilder("covidcast", "t")
 
     fields_string = ["geo_value", "signal"]
-    fields_int = ["time_value", "direction", "issue", "lag"]
+    fields_int = ["time_value", "direction", "issue", "lag", "missing_value", "missing_stderr", "missing_sample_size"]
     fields_float = ["value", "stderr", "sample_size"]
     if is_compatibility_mode():
         q.set_order("signal", "time_value", "geo_value", "issue")
