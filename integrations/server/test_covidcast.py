@@ -274,6 +274,31 @@ class CovidcastTests(unittest.TestCase):
       'message': 'success',
     })
 
+
+    # limit exclude fields
+    response = requests.get(BASE_URL, params={
+      'endpoint': 'covidcast',
+      'data_source': 'src',
+      'signal': 'sig',
+      'time_type': 'day',
+      'geo_type': 'county',
+      'time_values': 20200414,
+      'geo_value': '01234',
+      'fields': '-value,-stderr,-sample_size,-direction,-issue,-lag,-signal'
+    })
+    response.raise_for_status()
+    response = response.json()
+
+    # assert that the right data came back
+    self.assertEqual(response, {
+      'result': 1,
+      'epidata': [{
+        'time_value': 20200414,
+        'geo_value': '01234'
+       }],
+      'message': 'success',
+    })
+
   def test_location_wildcard(self):
     """Select all locations with a wildcard query."""
 
