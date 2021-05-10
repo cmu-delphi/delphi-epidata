@@ -48,12 +48,11 @@ by their original sources at geographic resolutions which are too coarse.
 ## Small Sample Sizes and "Megacounties"
 
 Most sources do not report the same amount of data for every county; for
-example, since the survey sources rely on survey responses submitted each day, counties with small populations 
+example, since the survey sources rely on survey responses submitted each day, counties with small populations
 may have comparatively few survey responses. We do not report individual county
 estimates when small sample sizes would make estimates unreliable or would allow
 identification of respondents, violating privacy and confidentiality agreements.
-Additional considerations for specific signals are discussed in the [source and
-signal documentation](covidcast_signals.md).
+Additional considerations for specific signals are discussed in the [source and signal documentation](covidcast_signals.md).
 
 On each day, in each state, we collect the data from all counties with
 insufficient data to be individually reported. These counties are combined into
