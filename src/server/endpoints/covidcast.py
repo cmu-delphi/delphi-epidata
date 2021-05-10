@@ -32,7 +32,7 @@ from .._validate import (
     require_any,
 )
 from .._pandas import as_pandas
-from .covidcast_utils import compute_trend, compute_correlations, compute_trend_value, CovidcastMetaEntry
+from .covidcast_utils import compute_trend, compute_trends, compute_correlations, compute_trend_value, CovidcastMetaEntry
 from ..utils import shift_time_value, date_to_time_value, time_value_to_iso
 
 # first argument is the endpoint name
@@ -192,6 +192,53 @@ def handle_trend():
         for key, group in groupby((parse_row(row, fields_string, fields_int, fields_float) for row in rows), lambda row: (row["geo_type"], row["geo_value"], row["source"], row["signal"])):
             trend = compute_trend(key[0], key[1], key[2], key[3], time_value, basis_time_value, ((row["time_value"], row["value"]) for row in group))
             yield trend.asdict()
+
+    # execute first query
+    try:
+        r = run_query(p, (str(q), q.params))
+    except Exception as e:
+        raise DatabaseErrorException(str(e))
+
+    # now use a generator for sending the rows and execute all the other queries
+    return p(filter_fields(gen(r)))
+
+
+@bp.route("/trendseries", methods=("GET", "POST"))
+def handle_trendseries():
+    require_all("window")
+    source_signal_pairs = parse_source_signal_pairs()
+    geo_pairs = parse_geo_pairs()
+
+    time_window = parse_day_range_arg("window")
+    basis_shift = extract_integer("basis")
+    if basis_shift is None:
+        basis_shift = 7
+
+    # build query
+    q = QueryBuilder("covidcast", "t")
+
+    fields_string = ["geo_type", "geo_value", "source", "signal"]
+    fields_int = ["time_value"]
+    fields_float = ["value"]
+    q.set_fields(fields_string, fields_int, fields_float)
+    q.set_order("geo_type", "geo_value", "source", "signal", "time_value")
+
+    q.where_source_signal_pairs("source", "signal", source_signal_pairs)
+    q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
+    q.where_time_pairs("time_type", "time_value", [TimePair("day", [time_window])])
+
+    # fetch most recent issue fast
+    _handle_lag_issues_as_of(q, None, None, None)
+
+    p = create_printer()
+
+    shifter = lambda x: shift_time_value(x, -basis_shift)
+
+    def gen(rows):
+        for key, group in groupby((parse_row(row, fields_string, fields_int, fields_float) for row in rows), lambda row: (row["geo_type"], row["geo_value"], row["source"], row["signal"])):
+            trends = compute_trends(key[0], key[1], key[2], key[3], shifter, ((row["time_value"], row["value"]) for row in group))
+            for t in trends:
+                yield t
 
     # execute first query
     try:
