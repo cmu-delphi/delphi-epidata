@@ -171,9 +171,9 @@ class UnitTests(unittest.TestCase):
       (make_row(missing_val='missing_val'), 'missing_val'),
       (make_row(missing_se='missing_val'), 'missing_se'),
       (make_row(missing_sample_size='missing_val'), 'missing_sample_size'),
-      (make_row(val='1.2', missing_val=Nans.UNKNOWN), 'missing_val'),
-      (make_row(se='1.2', missing_se=Nans.UNKNOWN), 'missing_se'),
-      (make_row(sample_size='1.2', missing_sample_size=Nans.UNKNOWN), 'missing_sample_size')
+      (make_row(val='1.2', missing_val=Nans.OTHER), 'missing_val'),
+      (make_row(se='1.2', missing_se=Nans.OTHER), 'missing_se'),
+      (make_row(sample_size='1.2', missing_sample_size=Nans.OTHER), 'missing_sample_size')
     ]
 
     for ((geo_type, row), field) in failure_cases:
@@ -195,7 +195,7 @@ class UnitTests(unittest.TestCase):
     # a nominal case with missing values
     geo_type, row = make_row(
       se='', sample_size='NA',
-      missing_se=Nans.UNKNOWN, missing_sample_size=Nans.UNKNOWN
+      missing_se=Nans.OTHER, missing_sample_size=Nans.OTHER
     )
     values, error = CsvImporter.extract_and_check_row(row, geo_type)
 

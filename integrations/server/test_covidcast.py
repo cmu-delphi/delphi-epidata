@@ -622,7 +622,7 @@ class CovidcastTests(unittest.TestCase):
       insert into covidcast values
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
           123, 0.123, NULL, NULL, 456, NULL, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.UNKNOWN}, {Nans.UNKNOWN})
+          {Nans.NOT_MISSING}, {Nans.OTHER}, {Nans.OTHER})
     ''')
     self.cnx.commit()
 
@@ -651,8 +651,8 @@ class CovidcastTests(unittest.TestCase):
         'lag': 0,
         'signal': 'sig',
         'missing_value': Nans.NOT_MISSING,
-        'missing_stderr': Nans.UNKNOWN,
-        'missing_sample_size': Nans.UNKNOWN
+        'missing_stderr': Nans.OTHER,
+        'missing_sample_size': Nans.OTHER
        }],
       'message': 'success',
     }

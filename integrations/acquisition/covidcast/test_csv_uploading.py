@@ -82,7 +82,7 @@ class CsvUploadingTests(unittest.TestCase):
     # invalid, missing with an inf value
     with open(source_receiving_dir + '/20200419_state_test_missing1.csv', 'w') as f:
       f.write('geo_id,val,se,sample_size,missing_val,missing_se,missing_sample_size\n')
-      f.write(f'fl,inf,0.3,30,{Nans.UNKNOWN},{Nans.NOT_MISSING},{Nans.NOT_MISSING}\n')
+      f.write(f'fl,inf,0.3,30,{Nans.OTHER},{Nans.NOT_MISSING},{Nans.NOT_MISSING}\n')
 
     # invalid, missing with an incorrect missing code
     with open(source_receiving_dir + '/20200419_state_test_missing2.csv', 'w') as f:
@@ -92,7 +92,7 @@ class CsvUploadingTests(unittest.TestCase):
     # invalid, no missing with an incorrect missing code
     with open(source_receiving_dir + '/20200419_state_test_missing3.csv', 'w') as f:
       f.write('geo_id,val,se,sample_size,missing_val,missing_se,missing_sample_size\n')
-      f.write(f'wa,3,0.3,30,{Nans.UNKNOWN},{Nans.NOT_MISSING},{Nans.NOT_MISSING}\n')
+      f.write(f'wa,3,0.3,30,{Nans.OTHER},{Nans.NOT_MISSING},{Nans.NOT_MISSING}\n')
 
     # valid wip
     with open(source_receiving_dir + '/20200419_state_wip_prototype.csv', 'w') as f:
@@ -221,7 +221,7 @@ class CsvUploadingTests(unittest.TestCase):
           'sample_size': 20,
           'direction': None,
           'signal': 'test_no_missing',
-          'missing_value': Nans.UNKNOWN,
+          'missing_value': Nans.OTHER,
           'missing_stderr': Nans.NOT_MISSING,
           'missing_sample_size': Nans.NOT_MISSING,
         },

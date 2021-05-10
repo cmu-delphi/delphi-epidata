@@ -238,7 +238,7 @@ class CsvImporter:
       return missing_entry
     else:
       if attr_quantity is None:
-        return Nans.UNKNOWN.value
+        return Nans.OTHER.value
       return Nans.NOT_MISSING.value
 
   @staticmethod
