@@ -303,7 +303,10 @@ class CovidcastTests(unittest.TestCase):
       'geo_type': 'county',
       'time_values': 20200414,
       'geo_value': '01234',
-      'fields': '-value,-stderr,-sample_size,-direction,-issue,-lag,-signal'
+      'fields': (
+        '-value,-stderr,-sample_size,-direction,-issue,-lag,-signal,' +
+        '-missing_value,-missing_stderr,-missing_sample_size'
+      )
     })
     response.raise_for_status()
     response = response.json()

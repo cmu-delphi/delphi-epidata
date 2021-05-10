@@ -148,7 +148,6 @@ class CovidcastEndpointTests(unittest.TestCase):
 
         rows = [CovidcastRow(time_value=20200401 + i, value=i) for i in range(10)]
         first = rows[0]
-        breakpoint()
         self._insert_rows(rows)
 
         with self.subTest("validation"):
@@ -167,7 +166,6 @@ class CovidcastEndpointTests(unittest.TestCase):
         first = rows[0]
         last = rows[-1]
         ref = rows[num_rows // 2]
-        breakpoint()
         self._insert_rows(rows)
 
         out = self._fetch("/trend", signal=first.signal_pair, geo=first.geo_pair, date=last.time_value, window="20200401-20201212", basis=ref.time_value)
