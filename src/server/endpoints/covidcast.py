@@ -1,4 +1,4 @@
-from typing import List, Optional, Union, Tuple, Dict, Any
+from typing import List, Optional, Union, Tuple, Dict, Any, Set
 from itertools import groupby
 from datetime import date, datetime
 from flask import Blueprint, request
@@ -32,7 +32,7 @@ from .._validate import (
     require_any,
 )
 from .._pandas import as_pandas
-from .covidcast_utils import compute_trend, compute_trends, compute_correlations, compute_trend_value, CovidcastMetaEntry
+from .covidcast_utils import compute_trend, compute_trends, compute_correlations, compute_trend_value, CovidcastMetaEntry, AllSignalsMap
 from ..utils import shift_time_value, date_to_time_value, time_value_to_iso
 
 # first argument is the endpoint name
@@ -467,13 +467,22 @@ def handle_meta():
 
     data = loads(row["epidata"]) if row and row["epidata"] else []
 
+    all_signals: AllSignalsMap = {}
+    for row in data:
+        if row["time_type"] != "day":
+            continue
+        entry: Set[str] = all_signals.setdefault(row["data_source"], set())
+        entry.add(row["signal"])
+
     out: Dict[str, CovidcastMetaEntry] = {}
     for row in data:
         if row["time_type"] != "day":
             continue
         if signal and all((not s.matches(row["data_source"], row["signal"]) for s in signal)):
             continue
-        entry = out.setdefault(f"{row['data_source']}:{row['signal']}", CovidcastMetaEntry(row["data_source"], row["signal"], row["min_time"], row["max_time"], row["max_issue"], {}))
+        entry = out.setdefault(
+            f"{row['data_source']}:{row['signal']}", CovidcastMetaEntry(row["data_source"], row["signal"], row["min_time"], row["max_time"], row["max_issue"], {}, all_signals=all_signals)
+        )
         entry.intergrate(row)
 
     return jsonify([r.asdict() for r in out.values()])
