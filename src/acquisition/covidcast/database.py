@@ -109,9 +109,10 @@ class Database:
 
     """
 
-    tmp_table_name = 'tmp_insert_update_table'
+    tmp_table_name = 'tmp_insert_update_table__' + datetime.utcnow().strftime('%Y%m%d%H%M%S%f') + "_" + threading.current_thread().name
 
     # TODO: this heavily copypastas src/ddl/covidcast.sql -- theres got to be a better way
+    # TODO: do we want a 'use_metadata' index on this?  see: compute_covidcast_meta(..., use_index)
     create_tmp_table_sql = f'''
       CREATE TABLE `{tmp_table_name}` (
         `source` varchar(32) NOT NULL,
@@ -223,7 +224,7 @@ class Database:
 
         # use the temp table to compute meta just for new data, 
         # then merge with the global meta
-        meta_update = Database.cache_to_dict(self.compute_covidcast_meta(table_name=tmp_table_name))
+        meta_update = Database.cache_to_dict(self.compute_covidcast_meta(table_name=tmp_table_name, use_index=False))
         meta_cache = Database.merge_cache_dicts(meta_cache, meta_update)
 
         self._cursor.execute(insert_or_update_sql)
@@ -256,6 +257,10 @@ class Database:
     n_threads = max(1, cpu_count()*9//10) # aka number of concurrent db connections, which [sh|c]ould be ~<= 90% of the #cores available to SQL server
     # NOTE: this may present a small problem if this job runs on different hardware than the db,
     #       but we should not run into that issue in prod.
+    if table_name != 'covidcast':
+      # if we are doing this on a temporary table, it should have relatively few rows
+      # and will presumably have only one src/sig pair anyway, so dont be greedy
+      n_threads = 1
 
     srcsigs = Queue() # multi-consumer threadsafe!
 
