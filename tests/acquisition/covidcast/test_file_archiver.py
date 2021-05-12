@@ -5,6 +5,8 @@ import os
 import unittest
 from unittest.mock import MagicMock
 
+from delphi.epidata.acquisition.covidcast.file_archiver import FileArchiver
+
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.acquisition.covidcast.file_archiver'
 

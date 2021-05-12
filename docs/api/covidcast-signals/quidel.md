@@ -17,9 +17,9 @@ grand_parent: COVIDcast Epidata API
 
 ## COVID-19 Tests
 
-* **First issued:** 27 July 2020 
-* **Number of data revisions since 19 May 2020:** 1
-* **Date of last change:** 22 October 2020
+* **Earliest issue available:** July 29, 2020 
+* **Number of data revisions since May 19, 2020:** 1
+* **Date of last change:** October 22, 2020
 * **Available for:** hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
@@ -35,8 +35,8 @@ meaningful levels starting May 26, 2020.
 
 | Signal | Description |
 | --- | --- |
-| `covid_ag_raw_pct_positive` | Percentage of antigen tests that were positive for COVID-19, with no smoothing applied. |
-| `covid_ag_smoothed_pct_positive` | Percentage of antigen tests that were positive for COVID-19, smoothed by pooling together the last 7 days of tests. |
+| `covid_ag_raw_pct_positive` | Percentage of antigen tests that were positive for COVID-19, with no smoothing applied. <br/> **Earliest date available:** 2020-05-26 |
+| `covid_ag_smoothed_pct_positive` | Percentage of antigen tests that were positive for COVID-19, smoothed by pooling together the last 7 days of tests. <br/> **Earliest date available:** 2020-05-26 |
 
 ### Estimation
 
@@ -135,9 +135,9 @@ that day will not include it.
 
 ## Flu Tests
 
-* **First issued:** 20 April 2020
-* **Last issued:** 19 May 2020
-* **Number of data revisions since 19 May 2020:** 0
+* **Earliest issue available:** April 29, 2020
+* **Last issued:** May 19, 2020
+* **Number of data revisions since May 19, 2020:** 0
 * **Date of last change:** Never
 * **Available for:** msa, state (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
@@ -160,7 +160,7 @@ small. The data may be updated again when the Winter 2020 flu season begins.
 
 | Signal | Description |
 | --- | --- |
-| `raw_pct_negative` | The percentage of flu tests that are negative, suggesting the patient's illness has another cause, possibly COVID-19 |
-| `smoothed_pct_negative` | Same as above, but smoothed in time |
-| `raw_tests_per_device` | The number of flu tests conducted by each testing device; measures volume of testing |
-| `smoothed_tests_per_device` | Same as above, but smoothed in time |
+| `raw_pct_negative` | The percentage of flu tests that are negative, suggesting the patient's illness has another cause, possibly COVID-19 <br/> **Earliest date available:** 2020-01-31 |
+| `smoothed_pct_negative` | Same as above, but smoothed in time <br/> **Earliest date available:** 2020-01-31 |
+| `raw_tests_per_device` | The number of flu tests conducted by each testing device; measures volume of testing <br/> **Earliest date available:** 2020-01-31 |
+| `smoothed_tests_per_device` | Same as above, but smoothed in time <br/> **Earliest date available:** 2020-01-31 |

@@ -12,22 +12,7 @@ pandemic. We conduct revisions in collaboration with data users, fellow
 researchers, and public health officials, to ensure the survey data best serves
 public health and research goals.
 
-### Current Data Use Survey
-
-To allow us to better collaborate with our academic and non-profit research
-partners, we ask that you complete [this short
-checklist](http://cmu.ca1.qualtrics.com/jfe/form/SV_dnSQYuQZDkQhJ3f) of the
-questions currently on the CMU Delphi US symptom survey. This inquiry only needs
-to be completed by one member of your project team. You can complete it again at
-any time there are variables from this survey you'd like to add to your project.
-
-This will allow us to update you of any upcoming plans for revisions or change
-to the current variables, prioritize the questions that are currently in use,
-alleviate some response burden by eliminating unused questions, and allow us to
-connect with current data users regarding their research interests and areas of
-expertise.
-
-### Proposing Revisions
+## Proposing Revisions
 
 If there is a revision or question you would like us to consider, please fill
 out [this form requesting details about your

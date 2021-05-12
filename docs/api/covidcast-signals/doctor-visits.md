@@ -8,8 +8,9 @@ grand_parent: COVIDcast Epidata API
 {: .no_toc}
 
 * **Source name:** `doctor-visits`
-* **Number of data revisions since 19 May 2020:** 1
-* **Date of last change:** 9 November 2020
+* **Earliest issue available:** April 29, 2020
+* **Number of data revisions since May 19, 2020:** 1
+* **Date of last change:** November 9, 2020
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
@@ -23,8 +24,8 @@ percentage of COVID-related doctor's visits in a given location, on a given day.
 
 | Signal | Description |
 | --- | --- |
-| `smoothed_cli` | Estimated percentage of outpatient doctor visits primarily about COVID-related symptoms, based on data from health system partners, smoothed in time using a Gaussian linear smoother |
-| `smoothed_adj_cli` | Same, but with systematic day-of-week effects removed; see [details below](#day-of-week-adjustment) |
+| `smoothed_cli` | Estimated percentage of outpatient doctor visits primarily about COVID-related symptoms, based on data from health system partners, smoothed in time using a Gaussian linear smoother <br/> **Earliest date available:** 2020-02-01 |
+| `smoothed_adj_cli` | Same, but with systematic day-of-week effects removed; see [details below](#day-of-week-adjustment) <br/> **Earliest date available:** 2020-02-01 |
 
 ## Table of Contents
 {: .no_toc .text-delta}

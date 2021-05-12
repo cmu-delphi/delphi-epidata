@@ -13,6 +13,7 @@ Data is not intended for public consumption at the time and is undocumented, but
 | id                           | int(11)     | NO   | PRI | NULL    | auto_increment |
 | source                       | varchar(32) | NO   | MUL | NULL    |                |
 | signal                       | varchar(64) | NO   |     | NULL    |                |
+| sensor_name                  | varchar(64) | NO   |     | NULL    |                |
 | time_type                    | varchar(12) | NO   |     | NULL    |                |
 | geo_type                     | varchar(12) | NO   |     | NULL    |                |
 | time_value                   | int(11)     | NO   |     | NULL    |                |
@@ -29,6 +30,8 @@ Data is not intended for public consumption at the time and is undocumented, but
   name of upstream data souce
 - `signal`
   name of signal derived from upstream data
+- `sensor_name`
+  name of sensor derived from specific source and signal.
 - `time_type`
   temporal resolution of the signal (e.g. day, week)
 - `geo_type`
@@ -54,6 +57,7 @@ CREATE TABLE `covidcast_nowcast` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `source` varchar(32) NOT NULL,
   `signal` varchar(64) NOT NULL,
+  `sensor_name` varchar(64) NOT NULL,
   `time_type` varchar(12) NOT NULL,
   `geo_type` varchar(12) NOT NULL,
   `time_value` int(11) NOT NULL,
@@ -65,8 +69,8 @@ CREATE TABLE `covidcast_nowcast` (
   `lag` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   -- for uniqueness, and also fast lookup of all locations on a given date
-  UNIQUE KEY (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`, `issue`),
+  UNIQUE KEY (`source`, `signal`, `sensor_name`, `time_type`, `geo_type`, `time_value`, `geo_value`, `issue`),
   -- for fast lookup of a time-series for a given location
-  KEY `by_issue` (`source`, `signal`, `time_type`, `geo_type`, `geo_value`, `time_value`, `issue`),
-  KEY `by_lag` (`source`, `signal`, `time_type`, `geo_type`, `geo_value`, `time_value`, `lag`)
+  KEY `by_issue` (`source`, `signal`, `sensor_name`, `time_type`, `geo_type`, `geo_value`, `time_value`, `issue`),
+  KEY `by_lag` (`source`, `signal`, `sensor_name`, `time_type`, `geo_type`, `geo_value`, `time_value`, `lag`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

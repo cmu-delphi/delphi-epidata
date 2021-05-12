@@ -8,9 +8,9 @@ grand_parent: COVIDcast Epidata API
 {: .no_toc}
 
 * **Source name:** `hospital-admissions`
-* **First issued:** June 30, 2020
-* **Number of data revisions since 19 May 2020:** 1
-* **Date of last change:** 20 October 2020
+* **Earliest issue available:** June 21, 2020
+* **Number of data revisions since May 19, 2020:** 1
+* **Date of last change:** October 20, 2020
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
@@ -24,10 +24,10 @@ COVID-associated diagnosis code in a given location, on a given day.
 
 | Signal | Description |
 | --- | --- |
-| `smoothed_covid19_from_claims` | Estimated percentage of new hospital admissions with COVID-associated diagnoses, based on claims data from health system partners, smoothed in time using a Gaussian linear smoother |
-| `smoothed_adj_covid19_from_claims` | Same as `smoothed_covid19_from_claims`, but with systematic day-of-week effects removed using [the same mechanism as in `doctor-visits`](doctor-visits.md#day-of-week-adjustment) |
-| `smoothed_covid19` | Estimated percentage of new hospital admissions with COVID-associated diagnoses, based on electronic medical record and claims data from health system partners, smoothed in time using a Gaussian linear smoother. _This signal is no longer updated as of 1 October, 2020._  |
-| `smoothed_adj_covid19` | Same as `smoothed_covid19`, but with systematic day-of-week effects removed using [the same mechanism as in `doctor-visits`](doctor-visits.md#day-of-week-adjustment). _This signal is no longer updated as of 1 October, 2020._ |
+| `smoothed_covid19_from_claims` | Estimated percentage of new hospital admissions with COVID-associated diagnoses, based on claims data from health system partners, smoothed in time using a Gaussian linear smoother <br/> **Earliest date available:** 2020-02-01 |
+| `smoothed_adj_covid19_from_claims` | Same as `smoothed_covid19_from_claims`, but with systematic day-of-week effects removed using [the same mechanism as in `doctor-visits`](doctor-visits.md#day-of-week-adjustment) <br/> **Earliest date available:** 2020-02-01 |
+| `smoothed_covid19` | Estimated percentage of new hospital admissions with COVID-associated diagnoses, based on electronic medical record and claims data from health system partners, smoothed in time using a Gaussian linear smoother. _This signal is no longer updated as of 1 October, 2020._  <br/> **Earliest date available:** 2020-02-01 |
+| `smoothed_adj_covid19` | Same as `smoothed_covid19`, but with systematic day-of-week effects removed using [the same mechanism as in `doctor-visits`](doctor-visits.md#day-of-week-adjustment). _This signal is no longer updated as of 1 October, 2020._  <br/> **Earliest date available:** 2020-02-01 |
 
 ## Table of Contents
 {: .no_toc .text-delta}

@@ -9,6 +9,8 @@ from unittest.mock import sentinel
 # third party
 import pandas as pd
 
+from delphi.epidata.acquisition.covid_hosp.common.database import Database
+
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.acquisition.covid_hosp.common.database'
 
@@ -121,9 +123,9 @@ class DatabaseTests(unittest.TestCase):
 
     table_name = 'test_table'
     columns_and_types = [
-      ('str_col', str),
-      ('int_col', int),
-      ('float_col', float),
+      ('str_col', 'sql_str_col', str),
+      ('int_col', 'sql_int_col', int),
+      ('float_col', 'sql_float_col', float),
     ]
     mock_connection = MagicMock()
     mock_cursor = mock_connection.cursor()
@@ -144,7 +146,9 @@ class DatabaseTests(unittest.TestCase):
     self.assertEqual(mock_cursor.execute.call_count, 6)
 
     actual_sql = mock_cursor.execute.call_args[0][0]
-    self.assertIn('insert into `test_table` values', actual_sql.lower())
+    self.assertIn(
+      'INSERT INTO `test_table` (`id`, `publication_date`, `sql_str_col`, `sql_int_col`, `sql_float_col`)',
+      actual_sql)
 
     expected_values = [
       ('a', 1, 0.1),

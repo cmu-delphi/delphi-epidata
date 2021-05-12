@@ -4,6 +4,8 @@
 import unittest
 from unittest.mock import MagicMock
 
+from delphi.epidata.acquisition.covidcast.database import Database
+
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.acquisition.covidcast.database'
 
@@ -71,32 +73,6 @@ class UnitTests(unittest.TestCase):
     self.assertIn('select count(1)', sql)
     self.assertIn('from `covidcast`', sql)
 
-  def test_get_data_stdev_across_locations_query(self):
-    """Query to get signal-level standard deviation looks sensible.
-
-    NOTE: Actual behavior is tested by integration test.
-    """
-
-    args = ('max_day',)
-    mock_connector = MagicMock()
-    database = Database()
-    database.connect(connector_impl=mock_connector)
-
-    database.get_data_stdev_across_locations(*args)
-
-    connection = mock_connector.connect()
-    cursor = connection.cursor()
-    self.assertTrue(cursor.execute.called)
-
-    sql, args = cursor.execute.call_args[0]
-    expected_args = ('max_day',)
-    self.assertEqual(args, expected_args)
-
-    sql = sql.lower()
-    self.assertIn('select', sql)
-    self.assertIn('`covidcast`', sql)
-    self.assertIn('std(', sql)
-
   def test_update_covidcast_meta_cache_query(self):
     """Query to update the metadata cache looks sensible.
 
@@ -135,3 +111,29 @@ class UnitTests(unittest.TestCase):
 
     cc_rows = {MagicMock(geo_id='CA', val=1, se=0, sample_size=0)}
     self.assertRaises(Exception, database.insert_or_update_batch, cc_rows)
+  
+  def test_insert_or_update_batch_row_count_returned(self):
+    """Test that the row count is returned"""
+    mock_connector = MagicMock()
+    database = Database()
+    database.connect(connector_impl=mock_connector)
+    connection = mock_connector.connect()
+    cursor = connection.cursor() 
+    cursor.rowcount = 3
+
+    cc_rows = [MagicMock(geo_id='CA', val=1, se=0, sample_size=0)]
+    result = database.insert_or_update_batch(cc_rows)
+    self.assertEqual(result, 3)
+
+  def test_insert_or_update_batch_none_returned(self):
+    """Test that None is returned when row count cannot be returned"""
+    mock_connector = MagicMock()
+    database = Database()
+    database.connect(connector_impl=mock_connector)
+    connection = mock_connector.connect()
+    cursor = connection.cursor() 
+    cursor.rowcount = -1
+
+    cc_rows = [MagicMock(geo_id='CA', val=1, se=0, sample_size=0)]
+    result = database.insert_or_update_batch(cc_rows)
+    self.assertIsNone(result)

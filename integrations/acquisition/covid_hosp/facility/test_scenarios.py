@@ -8,7 +8,11 @@ from unittest.mock import MagicMock
 from delphi.epidata.acquisition.covid_hosp.common.database import Database
 from delphi.epidata.acquisition.covid_hosp.common.test_utils import TestUtils
 from delphi.epidata.client.delphi_epidata import Epidata
+from delphi.epidata.acquisition.covid_hosp.facility.update import Update
 import delphi.operations.secrets as secrets
+
+# third party
+from freezegun import freeze_time
 
 # py3tester coverage target (equivalent to `import *`)
 __test_target__ = 'delphi.epidata.acquisition.covid_hosp.facility.update'
@@ -35,6 +39,7 @@ class AcquisitionTests(unittest.TestCase):
         cur.execute('truncate table covid_hosp_facility')
         cur.execute('truncate table covid_hosp_meta')
 
+  @freeze_time("2021-03-16")
   def test_acquire_dataset(self):
     """Acquire a new dataset."""
 
@@ -65,7 +70,7 @@ class AcquisitionTests(unittest.TestCase):
       row = response['epidata'][0]
       self.assertEqual(row['hospital_pk'], '450822')
       self.assertEqual(row['collection_week'], 20201030)
-      self.assertEqual(row['publication_date'], 20201208)
+      self.assertEqual(row['publication_date'], 20210315)
       self.assertEqual(row['previous_day_total_ed_visits_7_day_sum'], 536)
       self.assertAlmostEqual(row['total_beds_7_day_avg'], 69.3)
       self.assertEqual(
@@ -86,6 +91,7 @@ class AcquisitionTests(unittest.TestCase):
       self.assertEqual(response['result'], 1)
       self.assertEqual(len(response['epidata']), 1)
 
+  @freeze_time("2021-03-16")
   def test_facility_lookup(self):
     """Lookup facilities using various filters."""
 

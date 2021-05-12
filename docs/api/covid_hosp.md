@@ -158,3 +158,19 @@ from delphi_epidata import Epidata
 res = Epidata.covid_hosp('MA', 20200510)
 print(res['result'], res['message'], len(res['epidata']))
 ````
+
+# Repair Log
+
+If we ever need to repair the data record due to a bug in our code (not at the
+source), we will update the list below.
+
+## January 22, 2021
+
+The following issues were repaired:
+
+* 20210113
+* 20210118
+
+These issues had been imported using the wrong column order due to an imprecise
+database migration. If you pulled these issues before January 22, you will want
+to discard that data.

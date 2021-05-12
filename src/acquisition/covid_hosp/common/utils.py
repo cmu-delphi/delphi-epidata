@@ -1,9 +1,10 @@
 """Code shared among multiple `covid_hosp` scrapers."""
 
 # standard library
-import json
+import datetime
 import re
 
+import pandas as pd
 
 class CovidHospException(Exception):
   """Exception raised exclusively by `covid_hosp` utilities."""
@@ -22,12 +23,12 @@ class Utils:
       entrypoint()
 
   def int_from_date(date):
-    """Convert a YYYY-MM-DD date from a string to a YYYYMMDD int.
+    """Convert a YYYY/MM/DD date from a string to a YYYYMMDD int.
 
     Parameters
     ----------
     date : str
-      Date in YYYY-MM-DD format.
+      Date in "YYYY/MM/DD.*" format.
 
     Returns
     -------
@@ -35,7 +36,7 @@ class Utils:
       Date in YYYYMMDD format.
     """
 
-    return int(date.replace('-', ''))
+    return int(date[:10].replace('/', '').replace('-', ''))
 
   def parse_bool(value):
     """Convert a string to a boolean.
@@ -67,99 +68,65 @@ class Utils:
       return False
     raise CovidHospException(f'cannot convert "{value}" to bool')
 
-  def get_entry(obj, *path):
-    """Get a deeply nested field from an arbitrary object.
+  def issues_to_fetch(metadata, newer_than, older_than):
+    """
+    Construct all issue dates and URLs to be ingested based on metadata.
 
     Parameters
     ----------
-    obj : dict
-      The object to traverse.
-    path : tuple of names and indices
-      Path to the desired field in the object.
-
+    metadata pd.DataFrame
+      HHS metadata indexed by issue date and with column "Archive Link"
+    newer_than Date
+      Lower bound (exclusive) of days to get issues for.
+    older_than Date
+      Upper bound (exclusive) of days to get issues for
     Returns
     -------
-    object
-      The nested object.
+      Dictionary of {issue day: list of download urls} for issues after newer_than and before older_than
+    """
+    daily_issues = {}
+    for index in sorted(set(metadata.index)):
+      day = index.date()
+      if day > newer_than and day < older_than:
+        urls = metadata.loc[index, "Archive Link"]
+        urls_list = [(urls, index)] if isinstance(urls, str) else [(url, index) for url in urls]
+        if day not in daily_issues:
+          daily_issues[day] = urls_list
+        else:
+          daily_issues[day] += urls_list
+    return daily_issues
 
-    Raises
-    ------
-    CovidHospException
-      If the field can't be found.
+  @staticmethod
+  def merge_by_key_cols(dfs, key_cols):
+    """Merge a list of data frames as a series of updates.
+
+    Parameters:
+    -----------
+      dfs : list(pd.DataFrame)
+        Data frames to merge, ordered from earliest to latest.
+      key_cols: list(str)
+        Columns to use as the index.
+
+    Returns a single data frame containing the most recent data for each state+date.
     """
 
-    try:
-      for elem in path:
-        is_index = isinstance(elem, int)
-        is_list = isinstance(obj, list)
-        if is_index != is_list:
-          raise CovidHospException('index given for non-list or vice versa')
-        obj = obj[elem]
-      return obj
-    except Exception as ex:
-      path_str = '/'.join(map(str, path))
-      msg = f'unable to access object path "/{path_str}"'
-      raise CovidHospException(msg) from ex
+    dfs = [df.set_index(key_cols) for df in dfs
+           if not all(k in df.index.names for k in key_cols)]
+    result = dfs[0]
+    for df in dfs[1:]:
+      # update values for existing keys
+      result.update(df)
+      # add any new keys.
+      ## repeated concatenation in pandas is expensive, but (1) we don't expect
+      ## batch sizes to be terribly large (7 files max) and (2) this way we can
+      ## more easily capture the next iteration's updates to any new keys
+      new_rows = df.loc[[i for i in df.index.to_list() if i not in result.index.to_list()]]
+      result = pd.concat([result, new_rows])
 
-  def get_issue_from_revision(revision):
-    """Extract and return an issue from a revision string.
+    # convert the index rows back to columns
+    return result.reset_index(level=key_cols)
 
-    Parameters
-    ----------
-    revision : str
-      The free-form revision string.
-
-    Returns
-    -------
-    int
-      The issue in YYYYMMDD format.
-
-    Raises
-    ------
-    CovidHospException
-      If the issue can't be extracted.
-    """
-
-    match = Utils.REVISION_PATTERN.match(revision)
-    if not match:
-      raise CovidHospException(f'unable to extract issue from "{revision}"')
-    y, m, d = match.group(3), match.group(1), match.group(2)
-    return int(y) * 10000 + int(m) * 100 + int(d)
-
-  def extract_resource_details(metadata):
-    """Extract resource details, like URL and revision, from metadata.
-
-    Parameters
-    ----------
-    metadata : dict
-      Metadata object as returned from healthcare.gov.
-
-    Returns
-    -------
-    url : str
-      URL of the dataset.
-    revision : str
-      Free-form revision timestamp of the dataset.
-
-    Raises
-    ------
-    CovidHospException
-      If the metadata does not match the expected format.
-    """
-
-    # check data integrity
-    if Utils.get_entry(metadata, 'success') is not True:
-      raise CovidHospException(
-          'metadata does not have `success` equal to `True`')
-    if len(Utils.get_entry(metadata, 'result')) != 1:
-      raise CovidHospException('metadata does not have exactly 1 result')
-    if len(Utils.get_entry(metadata, 'result', 0, 'resources')) != 1:
-      raise CovidHospException('metadata does not have exactly 1 resource')
-
-    # return resource details
-    resource = Utils.get_entry(metadata, 'result', 0, 'resources', 0)
-    return resource['url'], resource['revision_timestamp']
-
+  @staticmethod
   def update_dataset(database, network):
     """Acquire the most recent dataset, unless it was previously acquired.
 
@@ -175,31 +142,27 @@ class Utils:
     bool
       Whether a new dataset was acquired.
     """
-
-    # get dataset details from metadata
+    today = datetime.datetime.today().date()
     metadata = network.fetch_metadata()
-    url, revision = Utils.extract_resource_details(metadata)
-    issue = Utils.get_issue_from_revision(revision)
-    print(f'issue: {issue}')
-    print(f'revision: {revision}')
 
-    # connect to the database
     with database.connect() as db:
-
-      # bail if the dataset has already been acquired
-      if db.contains_revision(revision):
-        print('already have this revision, nothing to do')
+      max_issue = db.get_max_issue()
+      daily_issues = Utils.issues_to_fetch(metadata, max_issue, today)
+      if not daily_issues:
+        print("no new issues, nothing to do")
         return False
+      for issue, revisions in daily_issues.items():
+        issue_int = int(issue.strftime("%Y%m%d"))
+        # download the dataset and add it to the database
+        dataset = Utils.merge_by_key_cols([network.fetch_dataset(url) for url, _ in revisions],
+                                          db.KEY_COLS)
+        db.insert_dataset(issue_int, dataset)
+        # add metadata to the database using the last revision seen.
+        last_url, last_index = revisions[-1]
+        metadata_json = metadata.loc[last_index].reset_index().to_json()
+        db.insert_metadata(issue_int, last_url, metadata_json)
 
-      # add metadata to the database
-      metadata_json = json.dumps(metadata)
-      db.insert_metadata(issue, revision, metadata_json)
-
-      # download the dataset and add it to the database
-      dataset = network.fetch_dataset(url)
-      db.insert_dataset(issue, dataset)
-
-      print(f'successfully acquired {len(dataset)} rows')
+        print(f'successfully acquired {len(dataset)} rows')
 
       # note that the transaction is committed by exiting the `with` block
       return True

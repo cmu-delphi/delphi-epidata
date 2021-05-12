@@ -7,6 +7,8 @@ from unittest.mock import MagicMock
 
 # first party
 from delphi.utils.geo.locations import Locations
+from delphi.epidata.acquisition.fluview.impute_missing_values import get_argument_parser, \
+  get_lag_and_ili, impute_missing_values, StatespaceException
 
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.acquisition.fluview.impute_missing_values'
@@ -29,7 +31,7 @@ class FunctionTests(unittest.TestCase):
     for args, expected in samples:
       with self.subTest(args=args):
         actual = get_lag_and_ili(*args)
-        self.assertEquals(actual, expected)
+        self.assertEqual(actual, expected)
 
   def test_impute_missing_values(self):
     """Atoms are imputed and stored."""
@@ -48,11 +50,11 @@ class FunctionTests(unittest.TestCase):
 
     impute_missing_values(db, test_mode=True)
 
-    self.assertEquals(db.connect.call_count, 1)
+    self.assertEqual(db.connect.call_count, 1)
     self.assertTrue(db.count_rows.call_count >= 1)
     self.assertTrue(db.find_missing_rows.call_count >= 1)
-    self.assertEquals(db.add_imputed_values.call_count, 1)
-    self.assertEquals(db.close.call_count, 1)
+    self.assertEqual(db.add_imputed_values.call_count, 1)
+    self.assertEqual(db.close.call_count, 1)
     self.assertFalse(db.close.call_args[0][0])
 
     imputed = db.add_imputed_values.call_args[0][-1]
@@ -60,11 +62,11 @@ class FunctionTests(unittest.TestCase):
     for loc, (lag, n_ili, n_pat, n_prov, ili) in imputed.items():
       with self.subTest(loc=loc):
         num = len(Locations.region_map[loc])
-        self.assertEquals(lag, 0)
-        self.assertEquals(n_ili, num)
-        self.assertEquals(n_pat, num)
-        self.assertEquals(n_prov, num)
-        self.assertEquals(ili, 100)
+        self.assertEqual(lag, 0)
+        self.assertEqual(n_ili, num)
+        self.assertEqual(n_pat, num)
+        self.assertEqual(n_prov, num)
+        self.assertEqual(ili, 100)
 
   def test_impute_missing_values_vipr(self):
     """PR and VI are imputed only when appropriate."""

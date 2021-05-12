@@ -8,7 +8,11 @@ from unittest.mock import MagicMock
 from delphi.epidata.acquisition.covid_hosp.common.database import Database
 from delphi.epidata.acquisition.covid_hosp.common.test_utils import TestUtils
 from delphi.epidata.client.delphi_epidata import Epidata
+from delphi.epidata.acquisition.covid_hosp.state_timeseries.update import Update
 import delphi.operations.secrets as secrets
+
+# third party
+from freezegun import freeze_time
 
 # py3tester coverage target (equivalent to `import *`)
 __test_target__ = \
@@ -36,6 +40,7 @@ class AcquisitionTests(unittest.TestCase):
         cur.execute('truncate table covid_hosp_state_timeseries')
         cur.execute('truncate table covid_hosp_meta')
 
+  @freeze_time("2021-03-16")
   def test_acquire_dataset(self):
     """Acquire a new dataset."""
 
@@ -58,21 +63,21 @@ class AcquisitionTests(unittest.TestCase):
 
     # make sure the data now exists
     with self.subTest(name='initial data checks'):
-      response = Epidata.covid_hosp('MA', Epidata.range(20200101, 20210101))
+      response = Epidata.covid_hosp('WY', Epidata.range(20200101, 20210101))
       self.assertEqual(response['result'], 1)
       self.assertEqual(len(response['epidata']), 1)
       row = response['epidata'][0]
-      self.assertEqual(row['state'], 'MA')
-      self.assertEqual(row['date'], 20200510)
-      self.assertEqual(row['issue'], 20201116)
-      self.assertEqual(row['hospital_onset_covid'], 53)
+      self.assertEqual(row['state'], 'WY')
+      self.assertEqual(row['date'], 20200826)
+      self.assertEqual(row['issue'], 20210315)
+      self.assertEqual(row['critical_staffing_shortage_today_yes'], 2)
       actual = row['inpatient_bed_covid_utilization']
-      expected = 0.21056656682174496
+      expected = 0.011946591707659873
       self.assertAlmostEqual(actual, expected)
-      self.assertIsNone(row['adult_icu_bed_utilization'])
+      self.assertIsNone(row['critical_staffing_shortage_today_no'])
 
-      # expect 55 fields per row (56 database columns, except `id`)
-      self.assertEqual(len(row), 55)
+      # expect 61 fields per row (63 database columns, except `id` and `record_type`)
+      self.assertEqual(len(row), 61)
 
     # re-acquisition of the same dataset should be a no-op
     with self.subTest(name='second acquisition'):
@@ -81,6 +86,6 @@ class AcquisitionTests(unittest.TestCase):
 
     # make sure the data still exists
     with self.subTest(name='final data checks'):
-      response = Epidata.covid_hosp('MA', Epidata.range(20200101, 20210101))
+      response = Epidata.covid_hosp('WY', Epidata.range(20200101, 20210101))
       self.assertEqual(response['result'], 1)
       self.assertEqual(len(response['epidata']), 1)

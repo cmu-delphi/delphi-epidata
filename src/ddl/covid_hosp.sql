@@ -59,7 +59,8 @@ CREATE TABLE `covid_hosp_meta` (
 
 
 /*
-`covid_hosp_state_timeseries` stores the versioned "state timeseries" dataset.
+`covid_hosp_state_timeseries` stores the versioned "state timeseries" dataset,
+which contains data from both the time series data and the daily snapshot files.
 
 Data is public under the Open Data Commons Open Database License (ODbL).
 
@@ -70,6 +71,12 @@ Data is public under the Open Data Commons Open Database License (ODbL).
 | issue                                                            | int(11) | NO   | MUL | NULL    |                |
 | state                                                            | char(2) | NO   | MUL | NULL    |                |
 | date                                                             | int(11) | NO   |     | NULL    |                |
+| critical_staffing_shortage_today_yes                             | int(11) | YES  |     | NULL    |                |
+| critical_staffing_shortage_today_no                              | int(11) | YES  |     | NULL    |                |
+| critical_staffing_shortage_today_not_reported                    | int(11) | YES  |     | NULL    |                |
+| critical_staffing_shortage_anticipated_within_week_yes           | int(11) | YES  |     | NULL    |                |
+| critical_staffing_shortage_anticipated_within_week_no            | int(11) | YES  |     | NULL    |                |
+| critical_staffing_shortage_anticipated_within_week_not_reported  | int(11) | YES  |     | NULL    |                |
 | hospital_onset_covid                                             | int(11) | YES  |     | NULL    |                |
 | hospital_onset_covid_coverage                                    | int(11) | YES  |     | NULL    |                |
 | inpatient_beds                                                   | int(11) | YES  |     | NULL    |                |
@@ -122,6 +129,7 @@ Data is public under the Open Data Commons Open Database License (ODbL).
 | adult_icu_bed_utilization_coverage                               | int(11) | YES  |     | NULL    |                |
 | adult_icu_bed_utilization_numerator                              | int(11) | YES  |     | NULL    |                |
 | adult_icu_bed_utilization_denominator                            | int(11) | YES  |     | NULL    |                |
+| record_type                                                      | char(1) | NO   | MUL | NULL    |                |
 +------------------------------------------------------------------+---------+------+-----+---------+----------------+
 
 - `id`
@@ -157,10 +165,25 @@ total_pediatric_patients_hospitalized_confirmed_covid_coverage ->
 
 NOTE: the following data dictionary is copied from
 https://healthdata.gov/covid-19-reported-patient-impact-and-hospital-capacity-state-data-dictionary
-version entitled "November 16, 2020 release 2.3".
+version entitled "November 18, 2020 release 2.4".
 
 - `state`
   The two digit state code
+- `critical_staffing_shortage_today_yes`
+  Number of hospitals reporting a critical staffing shortage today in this state.
+- `critical_staffing_shortage_today_no`
+  Number of hospitals reporting as not having a critical staffing shortage today
+  in this state.
+- `critical_staffing_shortage_today_not_reported`
+  Number of hospitals not reporting staffing shortage today status in this state.
+- `critical_staffing_shortage_anticipated_within_week_yes`
+  Number of hospitals reporting that they anticipate a critical staffing shortage
+  within a week in this state.
+- `critical_staffing_shortage_anticipated_within_week_no`
+  Number of hospitals reporting that they do not anticipate a critical staffing
+  shortage within a week in this state.
+- `critical_staffing_shortage_anticipated_within_week_not_reported`
+  Number of hospitals not reporting staffing shortage within week status in this state.
 - `hospital_onset_covid`
   Total current inpatients with onset of suspected or laboratory-confirmed
   COVID-19 fourteen or more days after admission for a condition other than
@@ -334,12 +357,21 @@ version entitled "November 16, 2020 release 2.3".
   Sum of "total_staffed_adult_icu_beds" for hospitals reporting both
   "staffed_adult_icu_bed_occupancy" and "total_staffed_adult_icu_beds".
 
-NOTE: the following field is defined in the data dictionary but does not
-actually appear in the dataset.
+NOTES:
+There is a `date` column from the time series data which indicates the
+date corresponding to the values.
+For daily snapshot files, there is a `reporting_cutoff_start` value,
+defined as "Look back date start - The latest reports from each hospital
+is summed for this report starting with this date." We place this value
+into the `date` column.
 
-- `reporting_cutoff_start`
-  Look back date start - The latest reports from each hospital is summed for
-  this report starting with this date.
+We also add a column `record_type` that specifies if a row came from a
+time series file or a daily snapshot file. "T" = time series and
+"D" =  daily snapshot. When both a time series and a daily snapshot row
+have the same issue/date/state but different values, we tiebreak by
+taking the daily snapshot value. This is done with a window function that
+sorts by the record_type field, ascending, and so it is important that "D"
+comes before "T".
 */
 
 CREATE TABLE `covid_hosp_state_timeseries` (
@@ -347,6 +379,12 @@ CREATE TABLE `covid_hosp_state_timeseries` (
   `issue` INT NOT NULL,
   `state` CHAR(2) NOT NULL,
   `date` INT NOT NULL,
+  `critical_staffing_shortage_today_yes` INT,
+  `critical_staffing_shortage_today_no` INT,
+  `critical_staffing_shortage_today_not_reported` INT,
+  `critical_staffing_shortage_anticipated_within_week_yes` INT,
+  `critical_staffing_shortage_anticipated_within_week_no` INT,
+  `critical_staffing_shortage_anticipated_within_week_not_reported` INT,
   `hospital_onset_covid` INT,
   `hospital_onset_covid_coverage` INT,
   `inpatient_beds` INT,
@@ -399,14 +437,15 @@ CREATE TABLE `covid_hosp_state_timeseries` (
   `adult_icu_bed_utilization_coverage` INT,
   `adult_icu_bed_utilization_numerator` INT,
   `adult_icu_bed_utilization_denominator` INT,
+  `record_type` CHAR(1) NOT NULL,
   PRIMARY KEY (`id`),
   -- for uniqueness
-  -- for fast lookup of most recent issue for a given state and date
-  UNIQUE KEY `issue_by_state_and_date` (`state`, `date`, `issue`),
-  -- for fast lookup of a time-series for a given state and issue
-  KEY `date_by_issue_and_state` (`issue`, `state`, `date`),
-  -- for fast lookup of all states for a given date and issue
-  KEY `state_by_issue_and_date` (`issue`, `date`, `state`)
+  -- for fast lookup of most recent issue for a given state, date, and record type
+  UNIQUE KEY `issue_by_state_and_date` (`state`, `date`, `issue`, `record_type`),
+  -- for fast lookup of a time-series for a given state, issue, and record type
+  KEY `date_by_issue_and_state` (`issue`, `state`, `date`, `record_type`),
+  -- for fast lookup of all states for a given date, issue, and record_type
+  KEY `state_by_issue_and_date` (`issue`, `date`, `state`, `record_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 

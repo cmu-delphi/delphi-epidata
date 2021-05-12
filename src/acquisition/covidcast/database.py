@@ -9,6 +9,10 @@ import mysql.connector
 import numpy as np
 from math import ceil, sqrt
 
+from queue import Queue, Empty
+import threading
+from multiprocessing import cpu_count
+
 # first party
 import delphi.operations.secrets as secrets
 
@@ -60,7 +64,8 @@ class Database:
     """Establish a connection to the database."""
 
     u, p = secrets.db.epi
-    self._connection = connector_impl.connect(
+    self._connector_impl = connector_impl
+    self._connection = self._connector_impl.connect(
         host=secrets.db.host,
         user=u,
         password=p,
@@ -222,16 +227,17 @@ class Database:
         meta_cache = Database.merge_cache_dicts(meta_cache, meta_update)
 
         self._cursor.execute(insert_or_update_sql)
+        modified_row_count = self._cursor.rowcount
         self._cursor.execute(zero_is_latest_issue_sql)
         self._cursor.execute(set_is_latest_issue_sql)
         self._cursor.execute(truncate_tmp_table_sql)
         self.update_covidcast_meta_cache_from_dict(meta_cache)
 
-        if result is None:
-          # the SQL connector does not support returning number of rows affected
+        if modified_row_count is None or modified_row_count == -1:
+          # the SQL connector does not support returning number of rows affected (see PEP 249)
           total = None
         else:
-          total += result
+          total += modified_row_count
         if commit_partial:
           self._connection.commit()
     except Exception as e:
@@ -240,54 +246,30 @@ class Database:
       self._cursor.execute(drop_tmp_table_sql)
     return total
 
-  def get_data_stdev_across_locations(self, max_day):
-    """
-    Return the standard deviation of daily data over all locations, for all
-    (source, signal, geo_type) tuples.
-
-    `max_day`: base the standard deviation on data up to, and including, but
-      not after, this day (e.g. for a stable result over time)
-    """
-
-    sql = '''
-      SELECT
-        `source`,
-        `signal`,
-        `geo_type`,
-        COALESCE(STD(`value`), 0) AS `aggregate_stdev`
-      FROM
-        `covidcast`
-      WHERE
-        `time_type` = 'day' AND
-        `time_value` <= %s
-      GROUP BY
-        `source`,
-        `signal`,
-        `geo_type`
-    '''
-
-    args = (max_day,)
-    self._cursor.execute(sql, args)
-    return list(self._cursor)
-
-  def compute_covidcast_meta(self, table_name='covidcast'):
+  def compute_covidcast_meta(self, table_name='covidcast', use_index=True):
     """Compute and return metadata on all non-WIP COVIDcast signals."""
 
-    meta = []
+    index_hint = ""
+    if use_index:
+      index_hint = "USE INDEX (for_metadata)"
 
-    signal_list = []
+    n_threads = max(1, cpu_count()*9//10) # aka number of concurrent db connections, which [sh|c]ould be ~<= 90% of the #cores available to SQL server
+    # NOTE: this may present a small problem if this job runs on different hardware than the db,
+    #       but we should not run into that issue in prod.
+
+    srcsigs = Queue() # multi-consumer threadsafe!
+
     sql = f'SELECT `source`, `signal` FROM `{table_name}` GROUP BY `source`, `signal` ORDER BY `source` ASC, `signal` ASC;'
+
     self._cursor.execute(sql)
     for source, signal in list(self._cursor): # self._cursor is a generator; this lets us use the cursor for subsequent queries inside the loop
       sql = f"SELECT `is_wip` FROM `{table_name}` WHERE `source`=%s AND `signal`=%s LIMIT 1"
       self._cursor.execute(sql, (source, signal))
       is_wip = int(self._cursor.fetchone()[0]) # casting to int as it comes out as a '0' or '1' bytearray; bool('0')==True :(
       if not is_wip:
-        signal_list.append((source, signal))
+        srcsigs.put((source, signal))
 
-    for source, signal in signal_list:
-
-      sql = f'''
+    inner_sql = f'''
       SELECT
         `source` AS `data_source`,
         `signal`,
@@ -306,7 +288,7 @@ class Database:
         MIN(`lag`) as `min_lag`,
         MAX(`lag`) as `max_lag`
       FROM
-        `{table_name}`
+        `{table_name}` {index_hint}
       WHERE
         `source` = %s AND
         `signal` = %s AND
@@ -318,8 +300,49 @@ class Database:
         `time_type` ASC,
         `geo_type` ASC
       '''
-      self._cursor.execute(sql, (source, signal))
-      meta.extend(list(dict(zip(self._cursor.column_names,x)) for x in self._cursor))
+
+    meta = []
+    meta_lock = threading.Lock()
+
+    def worker():
+      print("starting thread: " + threading.current_thread().name)
+      #  set up new db connection for thread
+      worker_dbc = Database()
+      worker_dbc.connect(connector_impl=self._connector_impl)
+      w_cursor = worker_dbc._cursor
+      try:
+        while True:
+          (source, signal) = srcsigs.get_nowait() # this will throw the Empty caught below
+          w_cursor.execute(inner_sql, (source, signal))
+          with meta_lock:
+            meta.extend(list(
+              dict(zip(w_cursor.column_names, x)) for x in w_cursor
+            ))
+          srcsigs.task_done()
+      except Empty:
+        print("no jobs left, thread terminating: " + threading.current_thread().name)
+      finally:
+        worker_dbc.disconnect(False) # cleanup
+
+    threads = []
+    for n in range(n_threads):
+      t = threading.Thread(target=worker, name='MetacacheThread-'+str(n))
+      t.start()
+      threads.append(t)
+
+    srcsigs.join()
+    print("jobs complete")
+    for t in threads:
+      t.join()
+    print("threads terminated")
+
+    # sort the metadata because threaded workers dgaf
+    sorting_fields = "data_source signal time_type geo_type".split()
+    sortable_fields_fn = lambda x: [(field, x[field]) for field in sorting_fields]
+    prepended_sortables_fn = lambda x: sortable_fields_fn(x) + list(x.items())
+    tuple_representation = list(map(prepended_sortables_fn, meta))
+    tuple_representation.sort()
+    meta = list(map(dict, tuple_representation)) # back to dict form
 
     return meta
   

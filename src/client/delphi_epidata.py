@@ -10,7 +10,10 @@ Notes:
 
 # External modules
 import requests
+import asyncio
+import warnings
 
+from aiohttp import ClientSession, TCPConnector
 from pkg_resources import get_distribution, DistributionNotFound
 
 # Obtain package version for the user-agent. Uses the installed version by
@@ -669,12 +672,12 @@ class Epidata:
   # Fetch Delphi's COVID-19 Nowcast sensors
   @staticmethod
   def covidcast_nowcast(
-          data_source, signals, time_type, geo_type,
+          data_source, signals, sensor_names, time_type, geo_type,
           time_values, geo_value, as_of=None, issues=None, lag=None, **kwargs):
     """Fetch Delphi's COVID-19 Nowcast sensors"""
     # Check parameters
-    if data_source is None or signals is None or time_type is None or geo_type is None or time_values is None or geo_value is None:
-      raise Exception('`data_source`, `signals`, `time_type`, `geo_type`, `time_values`, and `geo_value` are all required')
+    if data_source is None or signals is None or time_type is None or geo_type is None or time_values is None or geo_value is None or sensor_names is None:
+      raise Exception('`data_source`, `signals`, `sensor_names`, `time_type`, `geo_type`, `time_values`, and `geo_value` are all required')
     if issues is not None and lag is not None:
       raise Exception('`issues` and `lag` are mutually exclusive')
     # Set up request
@@ -682,6 +685,7 @@ class Epidata:
       'source': 'covidcast_nowcast',
       'data_source': data_source,
       'signals': Epidata._list(signals),
+      'sensor_names': Epidata._list(sensor_names),
       'time_type': time_type,
       'geo_type': geo_type,
       'time_values': Epidata._list(time_values)
@@ -703,3 +707,28 @@ class Epidata:
 
     # Make the API call
     return Epidata._request(params)
+
+  @staticmethod
+  def async_epidata(param_list, batch_size=50):
+    """Make asynchronous Epidata calls for a list of parameters."""
+    async def async_get(params, session):
+      """Helper function to make Epidata GET requests."""
+      async with session.get(Epidata.BASE_URL, params=params) as response:
+        response.raise_for_status()
+        return await response.json(), params
+
+    async def async_make_calls(param_combos):
+      """Helper function to asynchronously make and aggregate Epidata GET requests."""
+      tasks = []
+      connector = TCPConnector(limit=batch_size)
+      async with ClientSession(connector=connector) as session:
+        for param in param_combos:
+          task = asyncio.ensure_future(async_get(param, session))
+          tasks.append(task)
+        responses = await asyncio.gather(*tasks)
+        return responses
+
+    loop = asyncio.get_event_loop()
+    future = asyncio.ensure_future(async_make_calls(param_list))
+    responses = loop.run_until_complete(future)
+    return responses

@@ -1001,6 +1001,78 @@ function get_covidcast($source, $signals, $time_type, $geo_type, $time_values, $
   return count($epidata) === 0 ? null : $epidata;
 }
 
+function get_signal_dash_status_data() {
+  $query = 'SELECT enabled_signal.`name`,
+              enabled_signal.`source`,
+              enabled_signal.`covidcast_signal`,
+              status.`latest_issue`,
+              status.`latest_time_value`
+            FROM (SELECT `id`, `name`, `source`, `covidcast_signal`, `latest_status_update`
+              FROM `dashboard_signal`
+              WHERE `enabled`) AS enabled_signal
+            LEFT JOIN `dashboard_signal_status` AS status
+            ON enabled_signal.`latest_status_update` = status.`date`
+            AND enabled_signal.`id` = status.`signal_id`';
+  
+  $epidata = array();
+  $fields_string = array('name', 'source', 'covidcast_signal', 'latest_issue', 'latest_time_value');
+  execute_query($query, $epidata, $fields_string, null /* fields_int */, null /* fields_float */);
+
+  $coverage = get_signal_dash_coverage_data();
+
+  $out = array();
+  foreach ($epidata as $signal) {
+    if (isset($coverage[$signal['name']])) {
+      $signal_with_coverage = $signal;
+      $signal_with_coverage['coverage'] = $coverage[$signal['name']];
+      $out[] = $signal_with_coverage;
+    }
+  }
+
+  // return the data
+  return count($out) === 0 ? null : $out; 
+}
+
+function get_signal_dash_coverage_data() {
+  $query = 'SELECT enabled_signal.`name`,
+              coverage.`date`,
+              coverage.`geo_type`,
+              coverage.`count`
+            FROM (SELECT `id`, `name`, `latest_coverage_update`
+              FROM `dashboard_signal`
+              WHERE `enabled`) AS enabled_signal
+            LEFT JOIN `dashboard_signal_coverage` AS coverage
+            ON enabled_signal.`id` = coverage.`signal_id`
+            ORDER BY `id` ASC, `date` DESC';
+  
+  $epidata = array();
+  $fields_string = array('name', 'date', 'geo_type');
+  $fields_int = array('count');
+  execute_query($query, $epidata, $fields_string, $fields_int, null /* fields_float */);
+
+  $out = array();
+  foreach ($epidata as $row) {
+    $name = $row['name'];
+    $geo_type = $row['geo_type'];
+    $timedata = array();
+    $timedata['date'] = $row['date'];
+    $timedata['count'] =$row['count'];
+
+    if (!isset($out[$name])) {
+      $out[$name] = array();
+    }
+
+    if(!isset($out[$name][$geo_type])) {
+      $out[$name][$geo_type] = array();
+    }
+
+    $out[$name][$geo_type][] = $timedata;
+  }
+
+  // return the data
+  return count($out) === 0 ? null : $out; 
+}
+
 // queries the `covidcast_meta_cache` table for metadata
 function get_covidcast_meta() {
   // complain if the cache is more than 75 minutes old
@@ -1084,6 +1156,12 @@ function get_covid_hosp_state_timeseries($states, $dates, $issues) {
     'c.`issue`',
     'c.`state`',
     'c.`date`',
+    'c.`critical_staffing_shortage_today_yes`',
+    'c.`critical_staffing_shortage_today_no`',
+    'c.`critical_staffing_shortage_today_not_reported`',
+    'c.`critical_staffing_shortage_anticipated_within_week_yes`',
+    'c.`critical_staffing_shortage_anticipated_within_week_no`',
+    'c.`critical_staffing_shortage_anticipated_within_week_not_reported`',
     'c.`hospital_onset_covid`',
     'c.`hospital_onset_covid_coverage`',
     'c.`inpatient_beds`',
@@ -1147,18 +1225,24 @@ function get_covid_hosp_state_timeseries($states, $dates, $issues) {
     // build the issue filter
     $condition_issue = filter_integers('c.`issue`', $issues);
     // final query using specific issues
-    $query = "SELECT {$fields} FROM {$table} WHERE ({$condition_date}) AND ({$condition_state}) AND ({$condition_issue}) ORDER BY {$order}";
+    $query = "WITH c as (SELECT {$fields}, ROW_NUMBER() OVER (PARTITION BY date, state, issue ORDER BY record_type) row FROM {$table} WHERE ({$condition_date}) AND ({$condition_state}) AND ({$condition_issue})) SELECT {$fields} FROM c where row = 1 ORDER BY {$order}";
   } else {
     // final query using most recent issues
     $subquery = "(SELECT max(`issue`) `max_issue`, `date`, `state` FROM {$table} WHERE ({$condition_date}) AND ({$condition_state}) GROUP BY `date`, `state`) x";
     $condition = "x.`max_issue` = c.`issue` AND x.`date` = c.`date` AND x.`state` = c.`state`";
-    $query = "SELECT {$fields} FROM {$table} JOIN {$subquery} ON {$condition} ORDER BY {$order}";
+    $query = "WITH c as (SELECT {$fields}, ROW_NUMBER() OVER (PARTITION BY date, state, issue ORDER BY record_type) row FROM {$table} JOIN {$subquery} ON {$condition}) select {$fields} FROM c WHERE row = 1 ORDER BY {$order}";
   }
   // get the data from the database
   $fields_string = array('state');
   $fields_int = array(
     'issue',
     'date',
+    'critical_staffing_shortage_today_yes',
+    'critical_staffing_shortage_today_no',
+    'critical_staffing_shortage_today_not_reported',
+    'critical_staffing_shortage_anticipated_within_week_yes',
+    'critical_staffing_shortage_anticipated_within_week_no',
+    'critical_staffing_shortage_anticipated_within_week_not_reported',
     'hospital_onset_covid',
     'hospital_onset_covid_coverage',
     'inpatient_beds',
@@ -1602,7 +1686,7 @@ function meta_delphi() {
   return count($epidata) === 0 ? null : $epidata;
 }
 
-function get_covidcast_nowcast($source, $signals, $time_type, $geo_type, $time_values, $geo_values, $as_of, $issues, $lag) {
+function get_covidcast_nowcast($source, $signals, $sensor_names, $time_type, $geo_type, $time_values, $geo_values, $as_of, $issues, $lag) {
   // required for `mysqli_real_escape_string`
   global $dbh;
   $source = mysqli_real_escape_string($dbh, $source);
@@ -1619,6 +1703,7 @@ function get_covidcast_nowcast($source, $signals, $time_type, $geo_type, $time_v
   // build the source, signal, time, and location (type and id) filters
   $condition_source = "t.`source` = '{$source}'";
   $condition_signal = filter_strings('t.`signal`', $signals);
+  $condition_sensor_name = filter_strings('t.`sensor_name`', $sensor_names);
   $condition_time_type = "t.`time_type` = '{$time_type}'";
   $condition_geo_type = "t.`geo_type` = '{$geo_type}'";
   $condition_time_value = filter_integers('t.`time_value`', $time_values);
@@ -1634,7 +1719,7 @@ function get_covidcast_nowcast($source, $signals, $time_type, $geo_type, $time_v
     $geo_escaped_value = mysqli_real_escape_string($dbh, $geo_values);
     $condition_geo_value = "t.`geo_value` = '{$geo_escaped_value}'";
   }
-  $conditions = "({$condition_source}) AND ({$condition_signal}) AND ({$condition_time_type}) AND ({$condition_geo_type}) AND ({$condition_time_value}) AND ({$condition_geo_value})";
+  $conditions = "({$condition_source}) AND ({$condition_signal}) AND ({$condition_sensor_name}) AND ({$condition_time_type}) AND ({$condition_geo_type}) AND ({$condition_time_value}) AND ({$condition_geo_value})";
 
   $subquery = "";
   if ($issues !== null) {
@@ -2064,6 +2149,12 @@ if(database_connect()) {
     // get the metadata
     $epidata = get_covidcast_meta();
     store_result($data, $epidata);
+  } else if($endpoint === 'signal_dashboard_status') {
+    $signal_dash_data = get_signal_dash_status_data();
+    store_result($data, $signal_dash_data);
+  } else if($endpoint === 'signal_dashboard_coverage') {
+    $signal_dash_data = get_signal_dash_coverage_data();
+    store_result($data, $signal_dash_data);
   } else if($endpoint === 'covid_hosp' || $source === 'covid_hosp_state_timeseries') {
     if(require_all($data, array('states', 'dates'))) {
       // parse the request
@@ -2096,7 +2187,7 @@ if(database_connect()) {
       store_result($data, $epidata);
     }
   } else if($endpoint === 'covidcast_nowcast') {
-    if(require_all($data, array('data_source', 'time_type', 'geo_type', 'time_values', 'signals'))
+    if(require_all($data, array('data_source', 'time_type', 'geo_type', 'time_values', 'signals', 'sensor_names'))
        && require_any($data, array('geo_value', 'geo_values'))) {
       // parse the request
       $time_values = extract_dates($_REQUEST['time_values']);
@@ -2104,11 +2195,13 @@ if(database_connect()) {
       $issues = isset($_REQUEST['issues']) ? extract_dates($_REQUEST['issues']) : null;
       $lag = isset($_REQUEST['lag']) ? intval($_REQUEST['lag']) : null;
       $signals = extract_values(isset($_REQUEST['signals']) ? $_REQUEST['signals'] : $_REQUEST['signal'], 'string');
+      $sensor_names = extract_values(isset($_REQUEST['sensor_names']) ? $_REQUEST['sensor_names'] : $_REQUEST['sensor_names'], 'sensor_names');
       $geo_values = isset($_REQUEST['geo_value']) ? $_REQUEST['geo_value'] : extract_values($_REQUEST['geo_values'], 'string');
       // get the data
       $epidata = get_covidcast_nowcast(
           $_REQUEST['data_source'],
           $signals,
+          $sensor_names,
           $_REQUEST['time_type'],
           $_REQUEST['geo_type'],
           $time_values,
