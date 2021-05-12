@@ -4,7 +4,8 @@
   "paths": {
     "root_web": "/var/www/html/epidata",
     "auto_web": "/home/automation/public_html/public",
-    "package": "../delphi/epidata"
+    "package": "../delphi/epidata",
+    "stasis": "../stasis"
   },
   "actions": [
 
@@ -43,11 +44,25 @@
       "add-header-comment": true
     },
 
-    "// server - API tests",
+    "// server",
     {
       "type": "move",
       "src": "src/server/",
       "dst": "[[package]]/server/",
+      "match": "^.*\\.(py)$",
+      "add-header-comment": true
+    },
+    {
+      "type": "move",
+      "src": "src/server/endpoints",
+      "dst": "[[package]]/server/endpoints/",
+      "match": "^.*\\.(py)$",
+      "add-header-comment": true
+    },
+    {
+      "type": "move",
+      "src": "src/server/endpoints/covidcast_utils",
+      "dst": "[[package]]/server/endpoints/covidcast_utils/",
       "match": "^.*\\.(py)$",
       "add-header-comment": true
     },
@@ -244,6 +259,22 @@
       "dst": "[[package]]/acquisition/covidcast_nowcast/",
       "match": "^.*\\.(py)$",
       "add-header-comment": true
+    },
+
+    "// move flask tests out of the way",
+    {
+      "type": "move",
+      "src": "tests/server/",
+      "dst": "[[stasis]]/tests/",
+      "match": "^.*\\.(py)$",
+      "recursive": true
+    },
+    {
+      "type": "move",
+      "src": "integrations/server/",
+      "dst": "[[stasis]]/integrations/",
+      "match": "^.*\\.(py)$",
+      "recursive": true
     },
 
     "// run unit and coverage tests",

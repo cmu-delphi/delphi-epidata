@@ -17,7 +17,7 @@ from unittest.mock import Mock
 import pandas
 
 
-class TestUtils:
+class UnitTestUtils:
 
   # path to `covid_hosp` test data, relative to the top of the repo
   PATH_TO_TESTDATA = 'testdata/acquisition/covid_hosp'
@@ -47,7 +47,7 @@ class TestUtils:
 
     # path dataset-specific test data, relative to the root of the repo
     self.data_dir = (
-        path_to_repo / TestUtils.PATH_TO_TESTDATA / dataset_name
+        path_to_repo / UnitTestUtils.PATH_TO_TESTDATA / dataset_name
     ).resolve()
 
   def load_sample_metadata(self):

@@ -6,8 +6,8 @@ from unittest.mock import MagicMock
 from unittest.mock import sentinel
 
 # first party
-from delphi.epidata.acquisition.covid_hosp.common.test_utils import TestUtils
 from delphi.epidata.acquisition.covid_hosp.state_daily.database import Database
+from delphi.epidata.acquisition.covid_hosp.common.test_utils import UnitTestUtils
 
 import pandas as pd
 
@@ -22,7 +22,7 @@ class DatabaseTests(unittest.TestCase):
     """Perform per-test setup."""
 
     # configure test data
-    self.test_utils = TestUtils(__file__)
+    self.test_utils = UnitTestUtils(__file__)
 
   def test_insert_dataset(self):
     """Add a new dataset to the database."""

@@ -10,9 +10,8 @@ Hospital Capacity by Facility" dataset provided by the US Department of Health
 & Human Services via healthdata.gov.
 
 See the
-[official description at healthdata.gov](https://healthdata.gov/dataset/covid-19-reported-patient-impact-and-hospital-capacity-facility)
-for more information, including a
-[data dictionary](https://healthdata.gov/covid-19-reported-patient-impact-and-hospital-capacity-facility-data-dictionary).
+[official description and data dictionary at healthdata.gov](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/anag-cw7u)
+for more information.
 
 General topics not specific to any particular data source are discussed in the
 [API overview](README.md). Such topics include:
@@ -21,7 +20,7 @@ General topics not specific to any particular data source are discussed in the
 ## Metadata
 
 This data source provides various measures of COVID-19 burden on patients and healthcare in the US.
-- Data source: [US Department of Health & Human Services](https://healthdata.gov/dataset/covid-19-reported-patient-impact-and-hospital-capacity-facility) (HHS)
+- Data source: [US Department of Health & Human Services](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/anag-cw7u) (HHS)
 - Geographic resolution: healthcare facility (address, city, zip, fips)
 - Temporal resolution: weekly (Friday -- Thursday)
 - First week: 2020-07-31
