@@ -24,8 +24,11 @@ class SignalCategory(str, Enum):
     other = "other"
 
 
-def guess_name(source: str, signal: str) -> str:
-    return f"{source.upper()}: {' '.join((s.capitalize() for s in signal.split('_')))}"
+def guess_name(source: str, signal: str, is_weighted: bool) -> str:
+    clean_signal = signal
+    if is_weighted and source == "fb-survey":
+        clean_signal = signal.replace("smoothed_w", "smoothed_weighted_")
+    return f"{source.upper()}: {' '.join((s.capitalize() for s in clean_signal.split('_')))}"
 
 
 def guess_high_values_are(source: str, signal: str) -> HighValuesAre:
@@ -243,7 +246,6 @@ class CovidcastMetaEntry:
 
     def __post_init__(self, all_signals: AllSignalsMap):
         # derive fields
-        self.name = guess_name(self.source, self.signal)
         self.high_values_are = guess_high_values_are(self.source, self.signal)
         self.format = guess_format(self.source, self.signal)
         self.category = guess_category(self.source, self.signal)
@@ -253,6 +255,7 @@ class CovidcastMetaEntry:
         self.has_stderr = guess_has_stderr(self.source)
         self.has_sample_size = guess_has_sample_size(self.source)
         self.related_signals = guess_related_signals(self, all_signals)
+        self.name = guess_name(self.source, self.signal, self.is_weighted)
 
     def intergrate(self, row: Dict[str, Any]):
         if row["min_time"] < self.min_time:
