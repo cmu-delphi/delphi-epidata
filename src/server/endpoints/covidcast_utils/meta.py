@@ -27,7 +27,7 @@ class SignalCategory(str, Enum):
 def guess_name(source: str, signal: str, is_weighted: bool) -> str:
     clean_signal = signal
     if is_weighted and source == "fb-survey":
-        clean_signal = signal.replace("smoothed_w", "smoothed_weighted_")
+        clean_signal = signal.replace("smoothed_w", "smoothed_weighted_").replace("raw_w", "raw_weighted_")
     return " ".join((s.capitalize() for s in clean_signal.split("_"))).replace(" Ili", " ILI").replace(" Cli", " CLI").replace("Dont", "Do Not")
 
 
@@ -97,6 +97,8 @@ def guess_is_weighted(source: str, signal: str) -> bool:
             # it is smoothed_wanted but the weighted one is smoothed_wwanted
             return False
         return True
+    if source == "fb-survey" and signal.startswith("raw_w"):
+        return True
     if source == "chng" and signal.startswith("smoothed_adj_"):
         return True
     return False
@@ -126,7 +128,7 @@ def guess_related_fb_survey_like(entry: "CovidcastMetaEntry", weighted_infix: st
     smoothed_version = entry.signal
     if entry.is_weighted:
         # guess the smoothed unweighted version
-        smoothed_version = entry.signal.replace("smoothed_" + weighted_infix, "smoothed_")
+        smoothed_version = entry.signal.replace("smoothed_" + weighted_infix, "smoothed_").replace("raw_" + weighted_infix, "smoothed_")
     elif not entry.is_smoothed:
         smoothed_version = entry.signal.replace("raw_", "smoothed_")
 
@@ -138,6 +140,9 @@ def guess_related_fb_survey_like(entry: "CovidcastMetaEntry", weighted_infix: st
 
     raw_signal = smoothed_version.replace("smoothed_", "raw_")
     related.add(raw_signal)
+
+    weighted_raw_signal = smoothed_version.replace("smoothed_", "raw_" + weighted_infix)
+    related.add(weighted_raw_signal)
 
     return related
 
