@@ -28,7 +28,7 @@ def guess_name(source: str, signal: str, is_weighted: bool) -> str:
     clean_signal = signal
     if is_weighted and source == "fb-survey":
         clean_signal = signal.replace("smoothed_w", "smoothed_weighted_")
-    return " ".join((s.capitalize() for s in clean_signal.split("_")))
+    return " ".join((s.capitalize() for s in clean_signal.split("_"))).replace(" Ili", " ILI").replace(" Cli", " CLI").replace("Dont", "Do Not")
 
 
 def guess_high_values_are(source: str, signal: str) -> HighValuesAre:
