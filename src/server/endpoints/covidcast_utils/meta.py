@@ -99,6 +99,14 @@ def guess_is_weighted(source: str, signal: str) -> bool:
     return False
 
 
+def guess_has_stderr(source: str) -> bool:
+    return source in ["fb-survey", "quidel"]
+
+
+def guess_has_sample_size(source: str) -> bool:
+    return source in ["fb-survey", "quidel"]
+
+
 @dataclass
 class CovidcastMetaStats:
     min: float
@@ -226,6 +234,8 @@ class CovidcastMetaEntry:
     is_smoothed: bool = field(init=False)
     is_weighted: bool = field(init=False)
     is_cumulative: bool = field(init=False)
+    has_stderr: bool = field(init=False)
+    has_sample_size: bool = field(init=False)
 
     related_signals: List[str] = field(init=False)
 
@@ -240,6 +250,8 @@ class CovidcastMetaEntry:
         self.is_smoothed = guess_is_smoothed(self.signal)
         self.is_weighted = guess_is_weighted(self.source, self.signal)
         self.is_cumulative = guess_is_cumulative(self.signal)
+        self.has_stderr = guess_has_stderr(self.source)
+        self.has_sample_size = guess_has_sample_size(self.source)
         self.related_signals = guess_related_signals(self, all_signals)
 
     def intergrate(self, row: Dict[str, Any]):
