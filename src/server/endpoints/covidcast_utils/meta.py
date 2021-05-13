@@ -77,7 +77,7 @@ def guess_category(source: str, signal: str) -> SignalCategory:
         return SignalCategory.early
     if source in ["fb-survey", "safegraph", "google-symptoms"]:
         return SignalCategory.public
-    if source in ["quidel", "hospital-admissions", "indicator-combination", "usa-facts", "jhu-csse", "hhs"]:
+    if source in ["quidel", "hospital-admissions", "indicator-combination", "usa-facts", "jhu-csse", "hhs", "chng"]:
         return SignalCategory.late
     return SignalCategory.other
 
