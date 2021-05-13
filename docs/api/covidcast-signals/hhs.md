@@ -27,8 +27,7 @@ resource usage in different ways.
 This indicator makes available several commonly-used combinations of
 those columns, aggregated geographically. In particular, we include
 the sum of all adult and pediatric COVID-19 hospital admissions. This
-sum is used as the "ground truth" for hospitalizations by the [COVID-19 
-Forecast Hub](https://github.com/reichlab/covid19-forecast-hub/blob/master/data-processed/README.md#hospitalizations).
+sum is used as the "ground truth" for hospitalizations by the [COVID-19 Forecast Hub](https://github.com/reichlab/covid19-forecast-hub/blob/master/data-processed/README.md#hospitalizations).
 
 
 | Signal | Geography | Resolution | Description |
@@ -51,7 +50,7 @@ the HHS state timeseries dataset:
 
 * `previous_day_admission_[adult|pediatric]_covid_[confirmed|suspected]`
 
-The `confirmed` signal is the sum of the two `confirmed` columns: 
+The `confirmed` signal is the sum of the two `confirmed` columns:
 
 * adult
 * pediatric
@@ -95,6 +94,6 @@ published by the U.S. Department of Health & Human Services under an
 [Open Data Commons Open Database License
 (ODbL)](https://opendatacommons.org/licenses/odbl/1-0/). The ODbL
 permits sharing, transformation, and redistribution of data or derived
-works so long as all public uses are distributed under the ODbL and 
+works so long as all public uses are distributed under the ODbL and
 attributed to the source. For more details, consult the official
 license text.

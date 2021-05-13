@@ -10,7 +10,7 @@ from freezegun import freeze_time
 
 # first party
 from delphi.epidata.acquisition.covid_hosp.common.database import Database
-from delphi.epidata.acquisition.covid_hosp.common.test_utils import TestUtils
+from delphi.epidata.acquisition.covid_hosp.common.test_utils import UnitTestUtils
 from delphi.epidata.client.delphi_epidata import Epidata
 from delphi.epidata.acquisition.covid_hosp.state_daily.update import Update
 from delphi.epidata.acquisition.covid_hosp.state_daily.network import Network
@@ -27,7 +27,7 @@ class AcquisitionTests(unittest.TestCase):
     """Perform per-test setup."""
 
     # configure test data
-    self.test_utils = TestUtils(__file__)
+    self.test_utils = UnitTestUtils(__file__)
 
     # use the local instance of the Epidata API
     Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
