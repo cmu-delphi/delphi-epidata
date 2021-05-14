@@ -285,19 +285,29 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
       self.assertEqual(response_1, {'message': 'no results', 'result': -2})
 
   @patch('requests.post')
-  @patch('requests.get')
-  def test_request_method(self, get, post):
+  @patch('requests_cache.CachedSession')
+  @patch('requests.Session')
+  def test_request_method(self, _Session, _CachedSession, post):
     """Test that a GET request is default and POST is used if a 414 is returned."""
-    with self.subTest(name='get request'):
+    with self.subTest(name='get request, no cache'):
+      Session = MagicMock()
+      _Session.return_value = Session
       Epidata.covidcast('src', 'sig', 'day', 'county', 20200414, '01234')
-      get.assert_called_once()
+      Session.request.assert_called_once()
+      post.assert_not_called()
+    with self.subTest(name='get request, cache'):
+      CachedSession = MagicMock()
+      _CachedSession.return_value = CachedSession
+      Epidata.covidcast('src', 'sig', 'day', 'county', 20200414, '01234', cache_timeout=5)
+      CachedSession.request.assert_called_once()
       post.assert_not_called()
     with self.subTest(name='post request'):
       mock_response = MagicMock()
       mock_response.status_code = 414
-      get.return_value = mock_response
+      Session = MagicMock()
+      Session.request.return_value = mock_response
+      _Session.return_value = Session
       Epidata.covidcast('src', 'sig', 'day', 'county', 20200414, '01234')
-      self.assertEqual(get.call_count, 2)  # one from post test and one from get test
       post.assert_called_once()
 
   def test_geo_value(self):
