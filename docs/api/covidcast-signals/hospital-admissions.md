@@ -22,6 +22,9 @@ hospital admissions, provided to us by health system partners. We use this
 inpatient data to estimate the percentage of new hospital admissions with a
 COVID-associated diagnosis code in a given location, on a given day.
 
+See also our [Health & Human Services](hhs.md) data source for official COVID
+hospitalization reporting from the Department of Health & Human Services.
+
 | Signal | Description |
 | --- | --- |
 | `smoothed_covid19_from_claims` | Estimated percentage of new hospital admissions with COVID-associated diagnoses, based on claims data from health system partners, smoothed in time using a Gaussian linear smoother <br/> **Earliest date available:** 2020-02-01 |
