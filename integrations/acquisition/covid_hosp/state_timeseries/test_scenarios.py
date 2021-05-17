@@ -89,3 +89,22 @@ class AcquisitionTests(unittest.TestCase):
       response = Epidata.covid_hosp('WY', Epidata.range(20200101, 20210101))
       self.assertEqual(response['result'], 1)
       self.assertEqual(len(response['epidata']), 1)
+
+    with self.subTest(name='as_of checks'):
+      # acquire new data with 3/16 issue date
+      mock_network.fetch_metadata.return_value = \
+        self.test_utils.load_sample_metadata("metadata2.csv")
+      mock_network.fetch_dataset.return_value = \
+        self.test_utils.load_sample_dataset("dataset2.csv")
+      response = Epidata.covid_hosp('WY', Epidata.range(20200101, 20210101))
+      row = response['epidata'][0]
+      self.assertEqual(row['date'], 20200827)
+
+      # previous data should have 3/15 issue date
+      response = Epidata.covid_hosp('WY', Epidata.range(20200101, 20210101), as_of=20210315)
+      row = response['epidata'][0]
+      self.assertEqual(row['date'], 20200826)
+
+      # no data before 3/15
+      response = Epidata.covid_hosp('WY', Epidata.range(20200101, 20210101), as_of=20210314)
+      self.assertEqual(response['result'], -2)

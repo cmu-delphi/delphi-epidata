@@ -1,7 +1,7 @@
 from flask import Blueprint
 
 from .._query import execute_query, QueryBuilder
-from .._validate import extract_integers, extract_strings, require_all
+from .._validate import extract_integers, extract_strings, extract_date, require_all
 
 # first argument is the endpoint name
 bp = Blueprint("covid_hosp_state_timeseries", __name__)
@@ -14,6 +14,7 @@ def handle():
     states = extract_strings("states")
     dates = extract_integers("dates")
     issues = extract_integers("issues")
+    as_of = extract_date("as_of")
 
     # build query
     q = QueryBuilder("covid_hosp_state_timeseries", "c")
@@ -95,6 +96,10 @@ def handle():
         q.where_integers("issue", issues)
         # final query using specific issues
         query = f"WITH c as (SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY date, state, issue ORDER BY record_type) row FROM {q.table} WHERE {q.conditions_clause}) SELECT {q.fields_clause} FROM {q.alias} where row = 1 ORDER BY {q.order_clause}"
+    elif as_of is not None:
+        sub_condition_asof = "(issue <= :as_of)"
+        q.params["as_of"] = as_of
+        query = f"WITH c as (SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY date, state, issue ORDER BY record_type) row FROM {q.table} WHERE {q.conditions_clause} and {sub_condition_asof}) SELECT {q.fields_clause} FROM {q.alias} where row = 1 ORDER BY {q.order_clause}"
     else:
         # final query using most recent issues
         subquery = f"(SELECT max(`issue`) `max_issue`, `date`, `state` FROM {q.table} WHERE {q.conditions_clause} GROUP BY `date`, `state`) x"
