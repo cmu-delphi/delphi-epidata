@@ -13,9 +13,9 @@ declare module 'delphi_epidata' {
     }
     export type EpiDataCallback = (result: number, message: string, epidata: EpiDataResponse['epidata']) => void;
 
-    export class Epidata {
-        BASE_URL: string;
-        constructor(baseUrl?: string);
+    export interface EpidataFunctions {
+        readonly BASE_URL: string;
+        withURL(baseUrl?: string): EpidataFunctions;
 
         fluview(callback: EpiDataCallback, regions: StringParam, epiweeks: EpiRangeParam, issues?: EpiRangeParam, lag?: number, auth?: string): Promise<EpiDataResponse>;
         fluview_meta(callback: EpiDataCallback): Promise<EpiDataResponse>;
@@ -41,9 +41,12 @@ declare module 'delphi_epidata' {
         covid_hosp_facility(callback: EpiDataCallback, hospital_pks: StringParam, collection_weeks: EpiRangeParam, publication_dates: EpiRangeParam): Promise<EpiDataResponse>;
         covid_hosp_facility_lookup(callback: EpiDataCallback, state?: string, ccn?: string, city?: string, zip?: string, fips_code?: string): Promise<EpiDataResponse>;
     }
-    export class EpidataAsync {
-        BASE_URL: string;
-        constructor(baseUrl?: string);
+
+    export const Epidata: EpidataFunctions;
+
+    export interface EpidataAsyncFunctions {
+        readonly BASE_URL: string;
+        withURL(baseUrl?: string): EpidataAsyncFunctions;
 
         fluview(regions: StringParam, epiweeks: EpiRangeParam, issues?: EpiRangeParam, lag?: number, auth?: string): Promise<EpiDataResponse>;
         fluview_meta(): Promise<EpiDataResponse>;
@@ -69,4 +72,6 @@ declare module 'delphi_epidata' {
         covid_hosp_facility(hospital_pks: StringParam, collection_weeks: EpiRangeParam, publication_dates: EpiRangeParam): Promise<EpiDataResponse>;
         covid_hosp_facility_lookup(state?: string, ccn?: string, city?: string, zip?: string, fips_code?: string): Promise<EpiDataResponse>;
     }
+
+    export const EpidataAsync: EpidataAsyncFunctions;
 }
