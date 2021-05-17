@@ -64,23 +64,7 @@ the following:
 
 # update the server
 
-Open [`api.php`](../src/server/api.php) and navigate to the bottom where we see
-line like `if($endpoint === 'NAME') { ... }`. Right below the `if` block for
-`if($endpoint === 'fluview')`, add a new `if else` block for our new endpoint:
-
-```php
-else if($endpoint === 'fluview_meta') {
- // get the data
- $epidata = meta_fluview();
- store_result($data, $epidata);
-}
-```
-
-Fortunately, the function `meta_fluview()` is already defined, so we can just
-reuse it. (It's used by the `meta` endpoint as mentioned above.) In general,
-you will likely need to define a new function named like
-`get_SOURCE(params...)`, especially if you're reading from a new database
-table.
+TODO sam
 
 # update the client libraries
 
@@ -96,26 +80,21 @@ what this looks like.
 
 Here's what we add to each client:
 
-- [`delphi_epidata.coffee`](../src/client/delphi_epidata.coffee)
-
-    ```coffeescript
-    # Fetch FluView metadata
-    @fluview_meta: (callback) ->
-      # Set up request
-      params =
+- [`delphi_epidata.js`](../src/client/delphi_epidata.js)
+    ```javascript
+    // TODO sam
+    Epidata.fluview_meta = function(callback) {
+      var params;
+      params = {
         'endpoint': 'fluview_meta'
-      # Make the API call
-      _request(callback, params)
+      };
+      return _request(callback, params);
+    };
     ```
 
-- [`delphi_epidata.js`](../src/client/delphi_epidata.js)
-
-    Note that this file _can and should be generated from
-    `delphi_epidata.coffee`_. However, for trivial changes, like the addition
-    of this very simple endpoint, it may be slightly faster, _though
-    error-prone_, to just update the JavaScript manually.
-
-    ```javascript
+- [`delphi_epidata.d.ts`](../src/client/delphi_epidata.d.ts)
+    ```typescript
+    // TODO sam
     Epidata.fluview_meta = function(callback) {
       var params;
       params = {
@@ -345,7 +324,7 @@ created in this tutorial.
 
 Once it's approved, commit the code. Within a short amount of time (usually ~30
 seconds), the API will begin serving your new endpoint. Go ahead and give it a
-try: https://delphi.midas.cs.cmu.edu/epidata/api.php?endpoint=fluview_meta
+try: https://delphi.midas.cs.cmu.edu/epidata/fluview_meta/
 
 ```
 {

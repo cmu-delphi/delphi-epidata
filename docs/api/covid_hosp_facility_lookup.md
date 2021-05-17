@@ -30,7 +30,7 @@ This data source provides metadata about healthcare facilities in the US.
 
 # The API
 
-The base URL is: https://delphi.cmu.edu/epidata/api.php?source=covid_hosp_facility_lookup
+The base URL is: https://delphi.cmu.edu/epidata/covid_hosp_facility_lookup/
 
 See [this documentation](README.md) for details on specifying locations and dates.
 
@@ -61,7 +61,7 @@ supported.
 # Example URLs
 
 ### Lookup facilities in the city of Southlake (TX)
-https://delphi.cmu.edu/epidata/api.php?source=covid_hosp_facility_lookup&city=southlake
+https://delphi.cmu.edu/epidata/covid_hosp_facility_lookup/?city=southlake
 
 ```json
 {
@@ -99,7 +99,7 @@ https://delphi.cmu.edu/epidata/api.php?source=covid_hosp_facility_lookup&city=so
 
 # Code Samples
 
-Libraries are available for [CoffeeScript](../../src/client/delphi_epidata.coffee), [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
+Libraries are available for [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
 The following sample shows how to import the library and fetch facilities in
 the city of Southlake (TX).
 
