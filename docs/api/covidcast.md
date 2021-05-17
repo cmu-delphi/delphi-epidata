@@ -9,7 +9,7 @@ nav_order: 1
 This is the documentation for accessing Delphi's COVID-19 indicators via the `covidcast` endpoint of [Delphi](https://delphi.cmu.edu/)'s
 epidemiological data API. This API provides data on the spread and impact of the COVID-19 pandemic across the United States, most of which is available at the
 county level and updated daily. This data powers our public [COVIDcast
-map](https://covidcast.cmu.edu/) which includes testing, cases, and death data,
+map](https://delphi.cmu.edu/covidcast/) which includes testing, cases, and death data,
 as well as unique healthcare and survey data Delphi acquires through its
 partners. The API allows users to select specific signals and download data for
 selected geographical areas---counties, states, metropolitan statistical areas,
@@ -43,7 +43,7 @@ in the [API overview](README.md).
 
 ## Accessing the Data
 
-Our [COVIDcast site](https://covidcast.cmu.edu) provides an interactive
+Our [COVIDcast site](https://delphi.cmu.edu/covidcast/) provides an interactive
 visualization of a select set of the data signals available in the COVIDcast
 API, and provides a data export feature to download any data range as a
 CSV file.
@@ -92,8 +92,8 @@ sources and signals.
 ## Constructing API Queries
 
 The COVIDcast API is based on HTTP GET queries and returns data in JSON form.
-The base URL is `https://api.covidcast.cmu.edu/epidata/api.php`.  The covidcast
-endpoint is `https://api.covidcast.cmu.edu/epidata/api.php?endpoint=covidcast`.
+The base URL is `https://api.covidcast.cmu.edu/epidata/`.  The covidcast
+endpoint is `https://api.covidcast.cmu.edu/epidata/covidcast/`.
 
 See [this documentation](README.md) for details on specifying epiweeks, dates,
 and lists.
@@ -139,10 +139,10 @@ Use cases:
   do not include any updates that became available after June 1, use
   `as_of=20200601`.
 * To retrieve only data that was published or updated on June 1, and exclude
-  records whose most recent update occured earlier than June 1, use
+  records whose most recent update occurred earlier than June 1, use
   `issues=20200601`.
 * To retrieve all data that was published between May 1 and June 1, and exclude
-  records whose most recent update occured earlier than May 1, use
+  records whose most recent update occurred earlier than May 1, use
   `issues=20200501-20200601`. The results will include all matching issues for
   each `time_value`, not just the most recent.
 * To retrieve only data that was published or updated exactly 3 days after the
@@ -160,11 +160,15 @@ require knowing when we last confirmed an unchanged value, please get in touch.
 | --- | --- | --- |
 | `result` | result code: 1 = success, 2 = too many results, -2 = no results | integer |
 | `epidata` | list of results, 1 per geo/time pair | array of objects |
+| `epidata[].source` | selected `data_source` | string |
+| `epidata[].signal` | selected `signal` | string |
+| `epidata[].geo_type` | selected `geo_type` | string |
 | `epidata[].geo_value` | location code, depending on `geo_type` | string |
+| `epidata[].time_type` | selected `time_type` | string |
 | `epidata[].time_value` | time unit (e.g. date) over which underlying events happened (see [date coding details](covidcast_times.md)) | integer |
-| `epidata[].direction` | trend classifier (+1 -> increasing, 0 -> steady or not determined, -1 -> decreasing) | integer |
 | `epidata[].value` | value (statistic) derived from the underlying data source | float |
 | `epidata[].stderr` | approximate standard error of the statistic with respect to its sampling distribution, `null` when not applicable | float |
+| `epidata[].direction` | trend classifier (+1 -> increasing, 0 -> steady or not determined, -1 -> decreasing) | integer |
 | `epidata[].sample_size` | number of "data points" used in computing the statistic, `null` when not applicable | float |
 | `epidata[].issue` | time unit (e.g. date) when this statistic was published | integer |
 | `epidata[].lag` | time delta (e.g. days) between when the underlying events happened and when this statistic was published | integer |
@@ -179,11 +183,32 @@ returned, but not all of the results you requested. API clients should check the
 results code and consider breaking up requests for e.g. large time intervals into multiple
 API calls.
 
+### Alternative Response Formats
+
+In addition to the default EpiData Response format, users can customize the response format using the `format=` parameters.
+
+#### JSON List Response
+
+When setting the format parameter to `format=json`, it will return a plain list of the `epidata` response objects without the `result` and `message` wrapper. The status of the query is returned via HTML status codes. For example, a status code of 400 indicates that the request has wrong or missing parameter. The returned value is a JSON message with details.
+
+#### CSV File Response
+
+When setting the format parameter to `format=csv`, it will return a CSV file with same columns as the response objects. Similar to the JSON list response status codes are used.
+
+#### JSON New Lines Response
+
+When setting the format parameter to `format=jsonl`, it will return each row as an JSON file separated by a single new line character `\n`. This format is useful for incremental streaming of the results. Similar to the JSON list response status codes are used.
+
+### Limit Returned Fields
+
+The `fields` parameter can be used to limit the number of returned fields in each returned row. This is useful in web application to reduce the amount of data that is downloaded. The `format` parameter supports two syntaxes. On the one hand, when listing field names only those field names will be returned. For example, `fields=geo_value,value` will return only those selected fields. On the other hand, when listing field names with a preceding dash, it will be interpreted to exclude those fields. For example, `fields=-direction` will not return the `direction` field.
+
+
 ## Example URLs
 
 ### Facebook Survey CLI on 2020-04-06 to 2010-04-10 (county 06001)
 
-https://api.covidcast.cmu.edu/epidata/api.php?endpoint=covidcast&data_source=fb-survey&signal=smoothed_cli&time_type=day&geo_type=county&time_values=20200406-20200410&geo_value=06001
+https://api.covidcast.cmu.edu/epidata/covidcast/?data_source=fb-survey&signal=smoothed_cli&time_type=day&geo_type=county&time_values=20200406-20200410&geo_value=06001
 
 ```json
 {
@@ -205,7 +230,7 @@ https://api.covidcast.cmu.edu/epidata/api.php?endpoint=covidcast&data_source=fb-
 
 ### Facebook Survey CLI on 2020-04-06 (all counties)
 
-https://api.covidcast.cmu.edu/epidata/api.php?endpoint=covidcast&data_source=fb-survey&signal=smoothed_cli&time_type=day&geo_type=county&time_values=20200406&geo_value=*
+https://api.covidcast.cmu.edu/epidata/covidcast/?data_source=fb-survey&signal=smoothed_cli&time_type=day&geo_type=county&time_values=20200406&geo_value=*
 
 ```json
 {
