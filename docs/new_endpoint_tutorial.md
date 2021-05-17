@@ -82,26 +82,29 @@ Here's what we add to each client:
 
 - [`delphi_epidata.js`](../src/client/delphi_epidata.js)
     ```javascript
-    // TODO sam
-    Epidata.fluview_meta = function(callback) {
-      var params;
-      params = {
-        'endpoint': 'fluview_meta'
-      };
-      return _request(callback, params);
+    // within createEpidataAsync
+    return {
+      BASE_URL: baseUrl || BASE_URL,
+      //...
+       /**
+        * Fetch FluView metadata
+        */
+      fluview_meta: () => {
+        return _request("fluview_meta", {});
+      },
     };
     ```
 
 - [`delphi_epidata.d.ts`](../src/client/delphi_epidata.d.ts)
     ```typescript
-    // TODO sam
-    Epidata.fluview_meta = function(callback) {
-      var params;
-      params = {
-        'endpoint': 'fluview_meta'
-      };
-      return _request(callback, params);
-    };
+    export interface EpidataFunctions {
+      // ...
+      fluview_meta(callback: EpiDataCallback): Promise<EpiDataResponse>;
+    }
+    export interface EpidataAsyncFunctions {
+      // ...
+      fluview_meta(): Promise<EpiDataResponse>;
+    }
     ```
 
 - [`delphi_epidata.py`](../src/client/delphi_epidata.py)
