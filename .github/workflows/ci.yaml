@@ -84,6 +84,27 @@ jobs:
           docker stop delphi_database_epidata delphi_web_epidata
           docker network remove delphi-net
 
+  build_js_clients:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/client/packaging/npm
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+      - name: Cache Node.js modules
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm # npm cache files are stored in `~/.npm` on Linux/macOS
+          key: ${{ runner.OS }}-node2-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-node2-
+      - run: npm ci
+      - run: npm test
+
   image:
     needs: build
     # only on main and dev branch
