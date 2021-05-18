@@ -9,14 +9,16 @@ Notes:
 """
 
 # External modules
-import requests
-import requests_cache
+from typing import Union, Optional
+from datetime import timedelta, datetime
+from requests import Session
+from requests_cache import CachedSession
 import asyncio
-import warnings
-from typing import Union, Iterable, Tuple, List
 
 from aiohttp import ClientSession, TCPConnector
 from pkg_resources import get_distribution, DistributionNotFound
+
+CacheTime = Union[int, datetime, timedelta]
 
 # Obtain package version for the user-agent. Uses the installed version by
 # preference, even if you've installed it and then use this script independently
@@ -56,7 +58,7 @@ class Epidata:
 
   # Helper function to request and parse epidata
   @staticmethod
-  def _request(params, cache_timeout: Union[int, None] = None):
+  def _request(params, cache_timeout: Optional[CacheTime] = None):
     """Request and parse epidata.
 
     We default to GET since it has better caching and logging
@@ -65,17 +67,13 @@ class Epidata:
     """
     try:
       # API call
-      # Use cache if cache_timeout is set
-      if cache_timeout is not None:
-        session = requests_cache.CachedSession(
-          'demo_cache', expire_after=cache_timeout
-        )
-      else:
-        session = requests.Session()
+      session = Session() if cache_timeout is None else CachedSession(
+        'covidcast_cache', expire_after=cache_timeout
+      )
       req = session.request('get', Epidata.BASE_URL, params, headers=_HEADERS)
       # Fallback to requests if we have to use POST
       if req.status_code == 414:
-        req = requests.post(Epidata.BASE_URL, params, headers=_HEADERS)
+        req = session.request('post', Epidata.BASE_URL, params, headers=_HEADERS)
       session.close()
       return req.json()
     except Exception as e:
