@@ -50,8 +50,8 @@ class UnitTestUtils:
         path_to_repo / UnitTestUtils.PATH_TO_TESTDATA / dataset_name
     ).resolve()
 
-  def load_sample_metadata(self):
-    df = pandas.read_csv(self.data_dir / 'metadata.csv', dtype=str)
+  def load_sample_metadata(self, metadata_name='metadata.csv'):
+    df = pandas.read_csv(self.data_dir / metadata_name, dtype=str)
     df["Update Date"] = pandas.to_datetime(df["Update Date"])
     df.sort_values("Update Date", inplace=True)
     df.set_index("Update Date", inplace=True)
