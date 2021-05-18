@@ -262,10 +262,10 @@ in the API](../api/covidcast-signals/fb-survey.md#reasons-for-hesitancy).
 ### Reasons for Believing Vaccine is Unnecessary
 
 Respondents who indicate that "I don't believe I need a COVID-19 vaccine" (in
-items V5a, V5b, V5c, or V5d) are asked a follow-up item asking why they don't
-believe they need the vaccine. These signals summarize the reasons selected.
-Respondents who do not select any reason (including "Other") are treated as
-missing.
+items V5a, V5b, V5c, or, prior to Wave 11, V5d) are asked a follow-up item
+asking why they don't believe they need the vaccine. These signals summarize
+the reasons selected. Respondents who do not select any reason (including
+"Other") are treated as missing.
 
 This item was shown to respondents starting in Wave 8.
 

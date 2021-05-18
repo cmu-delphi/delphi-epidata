@@ -411,15 +411,15 @@ unweighted signals are also available. These begin `smoothed_`, such as
 ### Reasons for Believing Vaccine is Unnecessary
 
 Respondents who indicate that "I don't believe I need a COVID-19 vaccine" (in
-items V5a, V5b, V5c, or V5d) are asked a follow-up item asking why they don't
-believe they need the vaccine. These signals summarize the reasons selected.
-Respondents who do not select any reason (including "Other") are treated as
-missing.
+items V5a, V5b, V5c, or, prior to Wave 11, V5d) are asked a follow-up item
+asking why they don't believe they need the vaccine. These signals summarize
+the reasons selected. Respondents who do not select any reason (including
+"Other") are treated as missing.
 
-**Note**: After Wave 11 (May 19, 2021), these indicators no longer include
-respondents who indicate in V5d that "I don't believe I need a COVID-19
-vaccine". Item V5d was shown to those who received one dose of a COVID-19
-vaccine, but are not planning to get all recommended doses.
+**Note**: Item V5d was removed in Wave 11, thus these indicators no longer
+include respondents who indicate in V5d that "I don't believe I need a
+COVID-19 vaccine". Item V5d was shown to those who received one dose of a
+COVID-19 vaccine, but are not planning to get all recommended doses.
 
 | Signal | Description | Survey Item |
 | --- | --- | --- |
@@ -452,10 +452,7 @@ vaccine, but are not planning to get all recommended doses.
 
 The "vaccine_likely_*" indicators are based on questions added in Wave 6 of
 the survey, introduced on December 19, 2020; however, Delphi only enabled item
-V1 beginning January 6, 2021. **Note:** As of January 2021, vaccination items
-on the survey are being revised in preparation for later waves. We may replace
-the signals above with new signals (with different names) if the underlying
-survey items change significantly.
+V1 beginning January 6, 2021.
 
 
 ## Mental Health Indicators
