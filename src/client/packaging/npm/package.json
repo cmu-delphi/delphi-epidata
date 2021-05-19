@@ -1,0 +1,20 @@
+{
+  "name": "delphi_epidata",
+  "description": "Delphi Epidata API Client",
+  "authors": "Delphi Group",
+  "version": "1.0.0",
+  "main": "delphi_epidata.js",
+  "types": "delphi_epidata.d.ts",
+  "browser": "delphi_epidata.js",
+  "scripts": {
+    "prepack": "npx shx cp -f ../../delphi_epidata.js ../../delphi_epidata.d.ts ./",
+    "test": "npm run prepack && jest"
+  },
+  "dependencies": {
+    "cross-fetch": "^3.1.4"
+  },
+  "devDependencies": {
+    "jest": "^25",
+    "shx": "^0.3.3"
+  }
+}

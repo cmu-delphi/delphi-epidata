@@ -621,7 +621,7 @@ class Epidata:
 
   # Fetch COVID hospitalization data
   @staticmethod
-  def covid_hosp(states, dates, issues=None):
+  def covid_hosp(states, dates, issues=None, as_of=None):
     """Fetch COVID hospitalization data."""
     # Check parameters
     if states is None or dates is None:
@@ -634,6 +634,8 @@ class Epidata:
     }
     if issues is not None:
       params['issues'] = Epidata._list(issues)
+    if as_of is not None:
+      params['as_of'] = as_of
     # Make the API call
     return Epidata._request(params)
 
