@@ -2,7 +2,7 @@
 
 # standard library
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, call
 
 # third party
 from aiohttp.client_exceptions import ClientResponseError
@@ -292,12 +292,14 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
       Session = MagicMock()
       _Session.return_value = Session
       Epidata.covidcast('src', 'sig', 'day', 'county', 20200414, '01234')
-      Session.request.assert_called_once()
+      assert call('get') in Session.request.call_args_list()
+      assert call('post') not in Session.request.call_args_list()
     with self.subTest(name='get request, cache'):
       CachedSession = MagicMock()
       _CachedSession.return_value = CachedSession
       Epidata.covidcast('src', 'sig', 'day', 'county', 20200414, '01234', cache_timeout=5)
-      CachedSession.request.assert_called_once()
+      assert call('get') in CachedSession.request.call_args_list()
+      assert call('post') not in CachedSession.request.call_args_list()
     with self.subTest(name='post request'):
       mock_response = MagicMock()
       mock_response.status_code = 414
@@ -305,7 +307,8 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
       Session.request.return_value = mock_response
       _Session.return_value = Session
       Epidata.covidcast('src', 'sig', 'day', 'county', 20200414, '01234')
-      assert Session.request.call_count == 2
+      assert call('get') in Session.request.call_args_list()
+      assert call('post') in Session.request.call_args_list()
 
   def test_geo_value(self):
     """test different variants of geo types: single, *, multi."""

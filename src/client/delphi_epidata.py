@@ -576,7 +576,7 @@ class Epidata:
   @staticmethod
   def covidcast(
           data_source, signals, time_type, geo_type,
-          time_values, geo_value, as_of=None, issues=None, lag=None, **kwargs):
+          time_values, geo_value, as_of=None, issues=None, lag=None, cache_timeout=None, **kwargs):
     """Fetch Delphi's COVID-19 Surveillance Streams"""
     # also support old parameter name
     if signals is None and 'signal' in kwargs:
@@ -609,11 +609,6 @@ class Epidata:
 
     if 'format' in kwargs:
       params['format'] = kwargs['format']
-
-    if 'cache_timeout' in kwargs:
-      cache_timeout = kwargs['cache_timeout']
-    else:
-      cache_timeout = None
 
     # Make the API call
     return Epidata._request(params, cache_timeout)
