@@ -2,15 +2,9 @@
 
 # standard library
 import unittest
-import time
-from datetime import date
-
-import pandas as pd
 
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.client.delphi_epidata'
-
-from delphi.epidata.client.delphi_epidata import Epidata
 
 class UnitTests(unittest.TestCase):
   """Basic unit tests."""
