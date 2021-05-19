@@ -9,12 +9,16 @@ Notes:
 """
 
 # External modules
-import requests
+from typing import Union, Optional
+from datetime import timedelta, datetime
+from requests import Session
+from requests_cache import CachedSession
 import asyncio
-import warnings
 
 from aiohttp import ClientSession, TCPConnector
 from pkg_resources import get_distribution, DistributionNotFound
+
+CacheTime = Union[int, datetime, timedelta]
 
 # Obtain package version for the user-agent. Uses the installed version by
 # preference, even if you've installed it and then use this script independently
@@ -54,7 +58,7 @@ class Epidata:
 
   # Helper function to request and parse epidata
   @staticmethod
-  def _request(params):
+  def _request(params, cache_timeout: Optional[CacheTime] = None):
     """Request and parse epidata.
 
     We default to GET since it has better caching and logging
@@ -63,9 +67,14 @@ class Epidata:
     """
     try:
       # API call
-      req = requests.get(Epidata.BASE_URL, params, headers=_HEADERS)
+      session = Session() if cache_timeout is None else CachedSession(
+        'covidcast_cache', expire_after=cache_timeout
+      )
+      req = session.request('get', Epidata.BASE_URL, params, headers=_HEADERS)
+      # Fallback to requests if we have to use POST
       if req.status_code == 414:
-        req = requests.post(Epidata.BASE_URL, params, headers=_HEADERS)
+        req = session.request('post', Epidata.BASE_URL, params, headers=_HEADERS)
+      session.close()
       return req.json()
     except Exception as e:
       # Something broke
@@ -567,7 +576,7 @@ class Epidata:
   @staticmethod
   def covidcast(
           data_source, signals, time_type, geo_type,
-          time_values, geo_value, as_of=None, issues=None, lag=None, **kwargs):
+          time_values, geo_value, as_of=None, issues=None, lag=None, cache_timeout=None, **kwargs):
     """Fetch Delphi's COVID-19 Surveillance Streams"""
     # also support old parameter name
     if signals is None and 'signal' in kwargs:
@@ -602,7 +611,7 @@ class Epidata:
       params['format'] = kwargs['format']
 
     # Make the API call
-    return Epidata._request(params)
+    return Epidata._request(params, cache_timeout)
 
   # Fetch Delphi's COVID-19 Surveillance Streams metadata
   @staticmethod
