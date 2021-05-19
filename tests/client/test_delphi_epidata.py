@@ -6,6 +6,7 @@ import unittest
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.client.delphi_epidata'
 
+
 class UnitTests(unittest.TestCase):
   """Basic unit tests."""
 
