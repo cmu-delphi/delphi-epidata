@@ -52,6 +52,10 @@ The following columns were added beginning when Wave 4 was deployed:
   is not more than 50% in any one county, or if their reported ZIP code cannot
   be found, `NA` is reported.
 
+Beginning in Wave 11, the `module` column indicates which module the respondent
+was randomly assigned to. See the [survey modules and randomization](modules.md)
+information for more details.
+
 Coding details for each survey wave follow.
 
 ## Privacy Restrictions
@@ -98,7 +102,7 @@ was deployed.
   coding](waves/Survey_of_COVID-Like_Illness_-_TODEPLOY__-_US_Expansion.docx)
   (Word)
 
-### Summary of Changes
+## Changed Items
 
 * Item A1 changed from
 
@@ -145,7 +149,7 @@ Files:
   coding](waves/Survey_of_COVID-Like_Illness_-_TODEPLOY-_US_Expansion_-_With_Translations.docx)
   (Word)
 
-### Summary of Changes
+## Changed Items
 
 * Now available in languages besides English, listed above. The language shown
   to the user defaults to the language they prefer on Facebook, if available,
@@ -176,13 +180,11 @@ Files:
 * [Survey text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_4.docx)
   (Word)
 
-### Summary of Changes
-
 Wave 4 is a **major change** to the survey instrument. Some items have been
 removed and several new items have been added. Please review the changes
 carefully when you use responses from both waves.
 
-#### Consent Text
+### Consent Text
 
 The survey consent text has been altered to more clearly indicate that
 
@@ -199,7 +201,7 @@ consent for the full range of uses for the survey.
 You **may need to advise your IRB** about the new consent language, depending on
 your protocol.
 
-#### New Items
+### New Items
 
 * Following item B2, item B2c now asks which reported symptoms are "new or
   unusual" for the respondent. This is intended to distinguish symptoms of
@@ -233,7 +235,7 @@ your protocol.
 * Item D10 asks if any of the respondent's work for pay in the past 4 weeks was
   outside their home.
 
-#### Changed Items
+### Changed Items
 
 * Item B2 now includes eye pain and chills as symptoms.
 * Item B2b now asks how long the respondent has had one **unusual** symptom, if
@@ -245,7 +247,7 @@ your protocol.
 * Item C8 now asks how often the respondent has "felt isolated from others",
   along with the existing items about anxiety and depression.
 
-#### Removed Items
+### Removed Items
 
 * Item A2b ("How many people are there in your household in total (including
   yourself)?") has been removed, as have items D3, D4, and D5. They have been
@@ -294,13 +296,11 @@ Files:
 * [Survey text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_5.docx)
   (Word)
 
-### Summary of Changes
-
 Wave 5 contains minor changes to the survey instrument and a few new items.
 Please review the changes carefully when you use responses from multiple waves
 of this survey.
 
-#### Consent Text
+### Consent Text
 
 The survey consent text has been altered to encourage respondents to answer the
 survey, even if they have already taken it before:
@@ -317,7 +317,7 @@ released:
 > by us and other researchers will be in aggregate and will not identify
 > individual participants or their responses.
 
-#### New Items
+### New Items
 
 * Item C16 asks respondents to estimate how many people are wearing masks in
   their community.
@@ -341,13 +341,13 @@ released:
     these translations, and are preparing updated translations that use the
     correct terms.
 
-#### Changed Items
+### Changed Items
 
 * Item B2 now includes headaches and changes in sleep as symptoms.
 * Item D8 now includes the option of Master’s degree (unfortunately omitted in
   Wave 4) and has examples of professional degree for clarification.
 
-#### Removed Items
+### Removed Items
 
 * There are no items from Wave 4 that were removed in the Wave 5 version of
   this survey.
@@ -370,14 +370,12 @@ Files:
 * [Survey text and coding](waves/CMU Survey Wave 6.pdf) (PDF)
 * [Survey text and coding](waves/CMU Survey Wave 6.docx) (Word)
 
-### Summary of Changes
-
 Wave 6 is a minor change to the survey instrument with the addition of a few new
 items regarding COVID-19 vaccine intent. We intend to expand the scope of our
 questions in the next wave after the beginning of the year. Please review the
 changes carefully when you use responses from multiple waves of this survey.
 
-#### New Items
+### New Items
 
 * Item V3 asks respondents how likely they would choose to be vaccinated, if
   they were offered a COVID vaccine.
@@ -415,26 +413,24 @@ Files:
 * [Survey text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_7.pdf) (PDF)
 * [Survey text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_7.docx) (Word)
 
-### Summary of Changes
-
 Wave 7 includes minor modifications to the existing questions regarding COVID -19
 vaccination. We intend to expand the scope of our questions in the next wave at
 the end of January 2021. Please review the changes carefully when you use
 responses from multiple waves of this survey.
 
-#### Changed Items
+### Changed Items
 
 * Slight changes to the wording of questions V1, V2, V3, and V4.
 * Item V2 was included in Wave 6 but not shown to respondents. We have enabled
   item V2 for Wave 7.
 
-#### New Items
+### New Items
 
 * Item V9 asks if respondents are concerned about a side effect from the
   COVID-19 vaccination. We ask it of all respondents, regardless of whether they
   have already received a vaccination.
 
-#### Notes
+### Notes
 
 * This wave configures numeric answer items to require answers to be ≥0. We did this
   via JavaScript by setting the `min = "0"` attribute on the input box.
@@ -459,12 +455,10 @@ Files:
 * [Survey text and coding](waves/CMU Survey Wave 8.pdf) (PDF)
 * [Survey text and coding](waves/CMU Survey Wave 8.docx) (Word)
 
-### Summary of Changes
-
 Wave 8 expands the scope of the survey items about COVID-19 vaccinations. These
 new items were meant to capture reasons for vaccine hesitancy among respondents.
 
-#### Changed Items
+### Changed Items
 
 * Answer options for items C1, on chronic medical conditions, have been revised
   and expanded.
@@ -475,11 +469,13 @@ new items were meant to capture reasons for vaccine hesitancy among respondents.
 * C14a is a revision of item C14, changed from "the past 5 days" to "the past
   7 days" to be consistent with other items on the COVID Symptom Survey.
   C14a replaces C14.
-*  C17a is a revision of item C17, which asked respondents if they have had a flu vaccination since June 2020. C17a changed the date to July 1, 2020 and simplified the wording.
+* C17a is a revision of item C17, which asked respondents if they have had a
+  flu vaccination since June 2020. C17a changed the date to July 1, 2020 and
+  simplified the wording.
 * In item V4, the "local health workers" category was changed to read "Doctors
   and other health professionals you go to for medical care".
 
-#### New Items
+### New Items
 
 * Item V2a ask respondents that have received a COVID-19 vaccine and indicated
   that they have not had 2 doses of the vaccine whether they intend to get the
@@ -515,15 +511,13 @@ Files:
 * [Survey text and coding](waves/CMU Survey Wave 10.pdf) (PDF)
 * [Survey text and coding](waves/CMU Survey Wave 10.docx) (Word)
 
-### Summary of Changes
-
 Wave 10 further expands the scope of survey items about COVID-19 vaccination.
 These new items were meant to capture reasons for vaccine hesistancy among
 respondents and gauge access. Other items were revised or replaced. Please
 review the changes carefully when you use responses from multiple waves of this
 survey.
 
-#### New Items
+### New Items
 
 * Item V11 ask respondents if they have an appointment to receive a COVID-19
   vaccine.
@@ -534,7 +528,7 @@ survey.
 * Item V14 asks respondent when they think they will be able to get a COVID-19
   vaccine.
 
-#### Changed Items
+### Changed Items
 
 * Item A1 now includes description of fever in Celsius as well as Fahrenheit.
 * Item A5 was changed to say "from 18 to 64 years old" instead of "between 18
@@ -567,7 +561,7 @@ survey.
   C6a and C8a to reflect this change.
 * Typos were fixed in Q67 and Q78.
 
-#### Removed Items
+### Removed Items
 
 * Item B2b (“For how many days have you had at least one new or unusual
   symptom?”) was removed.
@@ -578,3 +572,233 @@ survey.
 * Item A3b (“In which state are you currently staying?”) was removed.
   Respondents are asked their ZIP code in item A3, and while some ZIP codes
   cross state lines, we judged the duplication was not necessary.
+
+## Wave 11
+
+Wave 11 was deployed on May 20, 2021. For the following 14 days, 15% of
+respondents (selected at random) continued to receive Wave 10, allowing for
+comparisons of responses between the two waves. It is available in English, as
+well as
+
+* Simplified Chinese
+* English (UK)
+* Spanish (Latin America)
+* Spanish
+* French
+* Brazilian Portuguese
+* Vietnamese
+
+Files:
+
+* [Survey text and coding](waves/CMU Survey Wave 11.pdf) (PDF)
+* [Survey text and coding](waves/CMU Survey Wave 11.docx) (Word)
+
+Wave 11 is a major revision of the survey instrument. There are several new
+items expanding the scope of COVID-19 vaccines, beliefs, knowledge, and norms;
+major revisions to some of the existing items; and several minor revisions that
+consists of grammar and style changes for consistency. Please review the changes
+carefully when you use responses from multiple waves of this survey.
+
+In this wave, we introduced a module structure to the survey. All respondents
+see "daily core" items, and are then randomly selected to receive either
+questions in Module A or Module B. Half of respondents will see each module. See
+the [survey modules and randomization documentation](modules.md) for details.
+
+### New Items
+
+#### Daily Core
+
+* Item B2b was previously removed in Wave 8 and has been reinstated. It asks
+  respondents how many days they have had new and unusual symptoms.
+* Item B13 asks respondents "As far as you know, have you ever had coronavirus
+  (COVID-19)?"
+* Items V15a and V15b ask respondents the barriers they experience to getting
+  the COVID-19 vaccine.
+* Item V16 asks respondents when they will try to get a COVID-19 vaccine.
+* Item D12 asks respondents what language they most often speak at home.
+
+#### Module A
+
+Module A includes items on beliefs, norms, and knowledge & information.
+
+Belief items:
+
+* Item G1 asks respondents how much they worry about catching COVID-19.
+* Item G2 asks respondents how effective social distancing is for preventing the
+  spread of COVID-19.
+* Item G3 asks respondents how effective wearing a face mask is for preventing
+  the spread of COVID-19.
+
+Norms items:
+
+* Item H1 asks respondents when they were in public in the past 7 days, how many
+  people maintained at least 6 feet from others.
+* Item H2 asks respondents when they were in public in the past 7 days, how many
+  people wore face masks.
+* Item H3 asks respondents thinking about their friends and family, how many
+  have gotten a COVID-19 vaccine.
+
+Knowledge & information items:
+
+* Item I1 asks respondents whether they think the statement “Getting the
+  COVID-19 vaccine means that you can stop wearing a mask around people outside
+  your household” is true or false.
+* Item I2 asks respondents whether they think the statement “Children cannot get
+  COVID-19” is true or false.
+* Item I3 asks respondents whether they think the statement “COVID-19 was
+  deliberately created by a small group of people who secretly manipulate world
+  events” is true or false.
+* Item I4 asks respondents whether they think the statement “COVID-19 pandemic
+  is being exploited” is true or false.
+* Item I7 asks respondents to indicate what COVID-19 topics they would like more
+  information about.
+* Item I5 asks respondents in the past 7 days, from which sources did they
+  receive news and information about COVID-19.
+* Item I6 asks respondents to indicate how much they trust the sources to
+  provide them with accurate news and information about COVID-19.
+
+#### Module B
+
+Module B includes well-being, healthcare, and parenting items.
+
+Well-being:
+
+* Item C18a and C18b are major revisions of a previous item C8a. To improve user
+  experience on mobile devices, the matrix format was taken out and the first
+  two sub-questions were reformatted into individual Likert scale questions.
+  * Item C18a asks respondents in the past 7 days, how often they felt nervous,
+    anxious or on edge.
+  * Item C18b asks respondents in the past 7 days, how often they have felt
+    depressed.
+
+Healthcare:
+
+* Item K1 asks respondents in the past year if they have delayed or not sought
+  medical care because of cost.
+* Item K2 asks respondents how much they agree or disagree with the statement,
+  “People of my race are treated fairly in a healthcare setting.”
+
+Parenting:
+
+* Item E4 ask respondents, “Will you choose to get a COVID-19 vaccine for your
+  child or children when they are eligible?”
+
+### Changed Items
+
+Major revisions include significant wording changes, display logic changes, and
+changes to which respondents are asked the items, or any changes that are
+anticipated to change the respondent’s answer to the question. For user ease,
+the variable name will be changed (e.g. X1→X1a) if a major revision occurs, to
+distinguish the version of the variable from the previous wave and the revised
+variable in the current wave.
+
+* Item B10c asks respondents “Did your most recent test find that you have
+  COVID-19?” and replaces item B10a “You answered that you have been tested for
+  coronavirus (COVID-19) in the past 14 days. Did this test find that you have
+  coronavirus (COVID-19)?” from the previous wave.
+* Item V11a “Do you have an appointment to receive a COVID-19 vaccine?” is now
+  asked of all respondents that did not select “yes” to item V1 “Have you had a
+  COVID-19 vaccination?”
+  * In the previous wave, item V11 “Do you have an appointment to receive a
+    COVID-19 vaccine?” was asked of respondents who reported “Yes, definitely”
+    or “Yes, probably” to item V3 “If a vaccine to prevent COVID-19 were offered
+    to you today, would you choose to get vaccinated?”
+* Item V3a “If a vaccine to prevent COVID-19 were offered to you today, would
+  you choose to get vaccinated?” is now asked of all respondents that did not
+  select “yes” to item V1 “Have you had a COVID-19 vaccination?” and did not
+  select “yes” to item V11a “Do you have an appointment to receive a COVID-19
+  vaccine?”
+  * In the previous wave, item V3 “If a vaccine to prevent COVID-19 were offered
+    to you today, would you choose to get vaccinated?” was asked of all
+    respondents that did not select “yes” to item V1 “Have you had a COVID-19
+    vaccination?”
+* Item V12a asks respondents “Have you tried to a get a COVID-19 vaccine?” and
+  replaces item V12 “Have you tried to get an appointment to receive a COVID-19
+  vaccine?” from the previous wave. This item is asked of respondents who did
+  not select “yes” to item V1 “Have you had a COVID-19 vaccination?” and did not
+  select “yes” to item V11a “Do you have an appointment to receive a COVID-19
+  vaccine?” and did not select “No, definitely not” to item V3a “If a vaccine to
+  prevent COVID-19 were offered to you today, would you choose to get
+  vaccinated?”
+  * In the previous wave, item V12 “Have you tried to get an appointment to
+    receive a COVID-19 vaccine?” was asked of respondents who reported “Yes,
+    definitely” or “Yes, probably” to item V3 “If a vaccine to prevent COVID-19
+    were offered to you today, would you choose to get vaccinated?” and those
+    respondents that did not select “yes” to item V11a “Do you have an
+    appointment to receive a COVID-19 vaccine?”
+* Item C7a ask respondent “In the past 7 days, how often did you intentionally
+  avoid contact with other people?” and replaces item C7 “To what extent are you
+  intentionally avoiding contact with other people?” from the previous wave. In
+  version, this item also has a different response scale.
+
+Minor revisions include changes made to formatting, grammar, addition and/or
+removal of response options. These changes have been classified as minor as they
+are not anticipated to change the respondent’s answer.
+
+* Slight format (i.e. removing bolding) and wording changes (i.e. coronavirus
+  was changed to COVID-19) occurred for items: A2, A4, B10, B10b, B12, B12a,
+  V5a-c, V6, C6, D10, and Q64 – Q80 (occupation questions).
+* Items B2 and B2c response options: “nasal congestion”, “runny nose”, “eye
+  pain”, and “changes in sleep” were removed. The response option “stuffy or
+  runny nose” was added and coded to be a new, distinct response option.
+* Item B10b response options: “I attended a large outdoor event or gathering”
+  and “I was in a crowded indoor environment” were removed. The response option
+  “It was required for domestic or international travel” was added.
+* Item B12a response option, “I am worried about bad things happening to me or
+  my family (including discrimination, government policies, or social stigma)”
+  was removed. The response option “I am worried about being exposed to COVID-19
+  at the testing location” was added.
+* For items V5a-c, response options: “I am concerned about having an allergic
+  reaction to a COVID-19 vaccine”, “My doctor has not recommended it”, “I
+  don’t trust COVID-19 vaccines”, “I have a health condition and am concerned
+  about the safety of the vaccine for people with my condition”, and “I am
+  currently/planning to be pregnant and/or breastfeeding and do not want to get
+  vaccinated at this time” were removed.
+* Item C13c response option “none of the above” was added to allow respondents
+  who engaged in activities (C13b) to report if they did not wear a mask during
+  any of those activities.
+* Item C1 response option “auto immune disorder such as rheumatoid arthritis or
+  Crohn’s disease” was removed.
+
+### Removed Items
+
+* Item B7 (“Have you sought medical care for your recent unusual symptoms?”) has
+  been removed.
+* Item B8 (“Have you ever been tested for coronavirus (COVID-19)?”) has been
+  removed.
+* Item B11 (“Have you ever tested positive for coronavirus (COVID-19)?” has been
+  removed.
+* Item B12 (“Have you wanted to be tested for coronavirus (COVID-19) at any time
+  in the last 14 days?”) has been removed.
+* Item B12a (“Do any of the following reasons describe why you haven’t been
+  tested for coronavirus (COVID-19) in the last 14 days?”) has been removed.
+* Item V2a (“Did you receive (or do you plan to receive) all required doses?”)
+  has been removed.
+* Item V5d (“Which of the following, is any, are reasons that you don’t plan to
+  receive all recommended doses of a COVID-19 vaccine?”) has been removed.
+* Item V13 (“How informed do you feel about how you will be able to get a
+  COVID-19 vaccine?”) was removed.
+* Item V14 (“When do you think you will be able to get a COVID-19 vaccine?”) was
+  removed.
+* Item V4a (“Would you be more or less likely to get a COVID-19 vaccination if
+  it were recommended to you by each of the following: ”) was removed.
+* Item C8a, subitem 3 (“In the past 7 days, how often have you felt isolated
+  from others?”) was removed. Subitems 1 and 2 were reformatted to individual
+  Likert scale questions, see items C18a and C18b under new items.
+* Item C10 (“In the past 24 hours, with how many people have you had direct
+  contact, outside of your household?”) was removed.
+* Item C9 (“How worried do you feel that you or someone in your immediate family
+  might become seriously ill from CVOID-19?”) was removed.
+* Item C17a (“Have you had a seasonal flu vaccination since July 1, 2020?”) was
+  removed.
+
+### Notes
+
+* The following survey items were rearranged for better survey flow and/or
+  allocated to specific modules:
+  * Daily core: A3, V11a, C6a, C14a, and D8
+  * Module B: C15, C1, D11, and D1b
+* For survey items with response options in Likert scales or multiple answers,
+  random scale reversal and randomization of response options will be set where
+  applicable. Randomization of response options was added to B10b starting with
+  Wave 11.
