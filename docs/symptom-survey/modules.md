@@ -40,3 +40,8 @@ After the modules, the survey will conclude with asking respondents demographics
 and occupation questions. It is also noteworthy that after randomization to
 either Module A or B, the platform does not allow respondents to navigate back
 to change their previous responses in the Daily Core questions.
+
+Microdata files available to users with data use agreements include a `module`
+column that indicates the module the respondent was randomly assigned to; this
+column contains the values `A`, `B`, or `NA` (for respondents not assigned to a
+module, e.g. because they completed a prior survey wave).

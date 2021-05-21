@@ -52,6 +52,10 @@ The following columns were added beginning when Wave 4 was deployed:
   is not more than 50% in any one county, or if their reported ZIP code cannot
   be found, `NA` is reported.
 
+Beginning in Wave 11, the `module` column indicates which module the respondent
+was randomly assigned to. See the [survey modules and randomization](modules.md)
+information for more details.
+
 Coding details for each survey wave follow.
 
 ## Privacy Restrictions
@@ -581,7 +585,7 @@ survey.
 
 ## Wave 11
 
-Wave 11 was deployed on May 20, 2021. For the following 7 days, 15% of
+Wave 11 was deployed on May 20, 2021. For the following 14 days, 15% of
 respondents (selected at random) continued to receive Wave 10, allowing for
 comparisons of responses between the two waves. It is available in English, as
 well as
