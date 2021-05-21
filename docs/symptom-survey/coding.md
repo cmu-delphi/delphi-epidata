@@ -613,7 +613,7 @@ carefully when you use responses from multiple waves of this survey.
 
 In this wave, we introduced a module structure to the survey. All respondents
 see "daily core" items, and are then randomly selected to receive either
-questions in Module A or Module B. 50% of respondents will see each module. See
+questions in Module A or Module B. Half of respondents will see each module. See
 the [survey modules and randomization documentation](modules.md) for details.
 
 #### New Items
@@ -629,8 +629,11 @@ Daily Core:
 * Item V16 asks respondents when they will try to get a COVID-19 vaccine.
 * Item D12 asks respondents what language they most often speak at home.
 
-Module A includes items on beliefs, norms, and knowledge & information. Belief
-items:
+##### Module A
+
+Module A includes items on beliefs, norms, and knowledge & information.
+
+Belief items:
 
 * Item G1 asks respondents how much they worry about catching COVID-19.
 * Item G2 asks respondents how effective social distancing is for preventing the
@@ -659,14 +662,18 @@ Knowledge & information items:
   events” is true or false.
 * Item I4 asks respondents whether they think the statement “COVID-19 pandemic
   is being exploited” is true or false.
+* Item I7 asks respondents to indicate what COVID-19 topics they would like more
+  information about.
 * Item I5 asks respondents in the past 7 days, from which sources did they
   receive news and information about COVID-19.
 * Item I6 asks respondents to indicate how much they trust the sources to
   provide them with accurate news and information about COVID-19.
-* Item I7 asks respondents to indicate what COVID-19 topics they would like more
-  information about.
 
-Module B includes well-being, healthcare, and parenting items. Well-being:
+##### Module B
+
+Module B includes well-being, healthcare, and parenting items.
+
+Well-being:
 
 * Item C18a and C18b are major revisions of a previous item C8a. To improve user
   experience on mobile devices, the matrix format was taken out and the first
@@ -691,11 +698,11 @@ Parenting:
 #### Changed Items
 
 Major revisions include significant wording changes, display logic changes, and
-changes which respondents are asked the items and/or is anticipated to change
-the respondent’s answer the question. For user ease, the variable name will be
-changed (e.g. X1→X1a) if a major revision occurs, to distinguish the version of
-the variable from the previous wave and the revised variable in the current
-wave.
+changes to which respondents are asked the items, or any changes that are
+anticipated to change the respondent’s answer to the question. For user ease,
+the variable name will be changed (e.g. X1→X1a) if a major revision occurs, to
+distinguish the version of the variable from the previous wave and the revised
+variable in the current wave.
 
 * Item B10c asks respondents “Did your most recent test find that you have
   COVID-19?” and replaces item B10a “You answered that you have been tested for
@@ -704,21 +711,19 @@ wave.
 * Item V11a “Do you have an appointment to receive a COVID-19 vaccine?” is now
   asked of all respondents that did not select “yes” to item V1 “Have you had a
   COVID-19 vaccination?”
-
-  In the previous wave, item V11 “Do you have an appointment to receive a
-  COVID-19 vaccine?” was asked of respondents who reported “Yes, definitely” or
-  “Yes, probably” to item V3 “If a vaccine to prevent COVID-19 were offered to
-  you today, would you choose to get vaccinated?”
+  * In the previous wave, item V11 “Do you have an appointment to receive a
+    COVID-19 vaccine?” was asked of respondents who reported “Yes, definitely”
+    or “Yes, probably” to item V3 “If a vaccine to prevent COVID-19 were offered
+    to you today, would you choose to get vaccinated?”
 * Item V3a “If a vaccine to prevent COVID-19 were offered to you today, would
   you choose to get vaccinated?” is now asked of all respondents that did not
   select “yes” to item V1 “Have you had a COVID-19 vaccination?” and did not
   select “yes” to item V11a “Do you have an appointment to receive a COVID-19
   vaccine?”
-
-  In the previous wave, item V3 “If a vaccine to prevent COVID-19 were offered
-  to you today, would you choose to get vaccinated?” was asked of all
-  respondents that did not select “yes” to item V1 “Have you had a COVID-19
-  vaccination?”
+  * In the previous wave, item V3 “If a vaccine to prevent COVID-19 were offered
+    to you today, would you choose to get vaccinated?” was asked of all
+    respondents that did not select “yes” to item V1 “Have you had a COVID-19
+    vaccination?”
 * Item V12a asks respondents “Have you tried to a get a COVID-19 vaccine?” and
   replaces item V12 “Have you tried to get an appointment to receive a COVID-19
   vaccine?” from the previous wave. This item is asked of respondents who did
@@ -727,13 +732,12 @@ wave.
   vaccine?” and did not select “No, definitely not” to item V3a “If a vaccine to
   prevent COVID-19 were offered to you today, would you choose to get
   vaccinated?”
-
-  In the previous wave, item V12 “Have you tried to get an appointment to
-  receive a COVID-19 vaccine?” was asked of respondents who reported “Yes,
-  definitely” or “Yes, probably” to item V3 “If a vaccine to prevent COVID-19
-  were offered to you today, would you choose to get vaccinated?” and those
-  respondents that did not select “yes” to item V11a “Do you have an appointment
-  to receive a COVID-19 vaccine?”
+  * In the previous wave, item V12 “Have you tried to get an appointment to
+    receive a COVID-19 vaccine?” was asked of respondents who reported “Yes,
+    definitely” or “Yes, probably” to item V3 “If a vaccine to prevent COVID-19
+    were offered to you today, would you choose to get vaccinated?” and those
+    respondents that did not select “yes” to item V11a “Do you have an
+    appointment to receive a COVID-19 vaccine?”
 * Item C7a ask respondent “In the past 7 days, how often did you intentionally
   avoid contact with other people?” and replaces item C7 “To what extent are you
   intentionally avoiding contact with other people?” from the previous wave. In
