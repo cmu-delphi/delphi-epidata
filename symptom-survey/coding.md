@@ -102,7 +102,7 @@ was deployed.
   coding](waves/Survey_of_COVID-Like_Illness_-_TODEPLOY__-_US_Expansion.docx)
   (Word)
 
-## Changed Items
+### Changed Items
 
 * Item A1 changed from
 
@@ -149,7 +149,7 @@ Files:
   coding](waves/Survey_of_COVID-Like_Illness_-_TODEPLOY-_US_Expansion_-_With_Translations.docx)
   (Word)
 
-## Changed Items
+### Changed Items
 
 * Now available in languages besides English, listed above. The language shown
   to the user defaults to the language they prefer on Facebook, if available,
