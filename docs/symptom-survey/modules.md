@@ -18,7 +18,7 @@ questions. The daily core questions for Wave 11 include:
 
 * Symptoms
 * Testing
-* COVID-19 vaccine questions
+* COVID-19 vaccine
 * Behaviors
 
 After answering these questions, survey respondents will be randomly allocated

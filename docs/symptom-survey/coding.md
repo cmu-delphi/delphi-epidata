@@ -796,7 +796,7 @@ are not anticipated to change the respondent’s answer.
 
 * The following survey items were rearranged for better survey flow and/or
   allocated to specific modules:
-  * Daily core: V11a, C6, and C14a
+  * Daily core: A3, V11a, C6a, C14a, and D8
   * Module B: C15, C1, D11, and D1b
 * For survey items with response options in Likert scales or multiple answers,
   random scale reversal and randomization of response options will be set where
