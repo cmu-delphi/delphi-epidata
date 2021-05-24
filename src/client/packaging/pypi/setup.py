@@ -16,6 +16,7 @@ setuptools.setup(
   install_requires=[
     'aiohttp',
     'requests>=2.7.0',
+    'tenacity'
   ],
   classifiers=[
     'Programming Language :: Python',
