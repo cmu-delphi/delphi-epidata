@@ -11,6 +11,9 @@ This documentation describes the fine-resolution contingency tables produced by
 grouping [COVID Symptom Survey](./index.md) individual responses by various
 self-reported demographic features.
 
+* [Weekly files](https://www.cmu.edu/delphi-web/surveys/weekly-rollup/)
+* [Monthly files](https://www.cmu.edu/delphi-web/surveys/monthly-rollup/)
+
 These contingency tables provide granular breakdowns of COVID-related topics such as
 vaccine uptake and acceptance. They are more detailed than the
 [coarse aggregates reported in the COVIDcast Epidata API](../api/covidcast-signals/fb-survey.md),
@@ -44,19 +47,13 @@ those who want to study groups with smaller sample sizes should use the
 monthly files. Because monthly aggregates include more responses, they have
 lower missingness when grouping by several features at a time.
 
-Individual CSVs are provided for each time period of a given period
-type-aggregation type combination.
+* [Weekly files](https://www.cmu.edu/delphi-web/surveys/weekly-rollup/)
+* [Monthly files](https://www.cmu.edu/delphi-web/surveys/monthly-rollup/)
 
-* [Weekly individual files](https://www.cmu.edu/delphi-web/surveys/weekly/)
-* [Monthly individual files](https://www.cmu.edu/delphi-web/surveys/monthly/)
+Files contain all time periods for a given period type-aggregation
+type combination.
 
-"Rollup" files containing all time periods for a given period type-aggregation
-type combination are provided for convenience in browsing aggregation
-offerings and for downloading all historical data for a given aggregation
-type.
-
-* [Weekly rollup files](https://www.cmu.edu/delphi-web/surveys/weekly-rollup/)
-* [Monthly rollup files](https://www.cmu.edu/delphi-web/surveys/monthly-rollup/)
+Individual CSVs containing a single [week](https://www.cmu.edu/delphi-web/surveys/weekly/) or [month](https://www.cmu.edu/delphi-web/surveys/monthly/) for a given aggregation type are also available.
 
 ### Dates
 
