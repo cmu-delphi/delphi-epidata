@@ -13,7 +13,7 @@ geographic levels at which they are reported.
 
 ## The API
 
-The base URL is: https://api.covidcast.cmu.edu/epidata/
+The base URL is: https://api.covidcast.cmu.edu/epidata/covidcast_meta/
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 

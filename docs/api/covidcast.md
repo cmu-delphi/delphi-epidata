@@ -92,8 +92,7 @@ sources and signals.
 ## Constructing API Queries
 
 The COVIDcast API is based on HTTP GET queries and returns data in JSON form.
-The base URL is `https://api.covidcast.cmu.edu/epidata/`.  The covidcast
-endpoint is `https://api.covidcast.cmu.edu/epidata/covidcast/`.
+The base URL is `https://api.covidcast.cmu.edu/epidata/covidcast/`.
 
 See [this documentation](README.md) for details on specifying epiweeks, dates,
 and lists.
@@ -185,15 +184,15 @@ API calls.
 
 ### Alternative Response Formats
 
-In addition to the default EpiData Response format, users can customize the response format using the `format=` parameters.
+In addition to the default EpiData Response format, users can customize the response format using the `format=` parameter.
 
 #### JSON List Response
 
-When setting the format parameter to `format=json`, it will return a plain list of the `epidata` response objects without the `result` and `message` wrapper. The status of the query is returned via HTML status codes. For example, a status code of 400 indicates that the request has wrong or missing parameter. The returned value is a JSON message with details.
+When setting the format parameter to `format=json`, it will return a plain list of the `epidata` response objects without the `result` and `message` wrapper. The status of the query is returned via HTTP status codes. For example, a status code of 200 means the query succeeded, while 400 indicates that the query has a missing, misspelled, or otherwise invalid parameter. For all status codes != 200, the returned JSON includes details about what part of the query couldn't be interpreted.
 
 #### CSV File Response
 
-When setting the format parameter to `format=csv`, it will return a CSV file with same columns as the response objects. Similar to the JSON list response status codes are used.
+When setting the format parameter to `format=csv`, it will return a CSV file with same columns as the response objects. HTTP status codes are used to communicate success/failure, similar to `format=json`.
 
 #### JSON New Lines Response
 
@@ -201,7 +200,7 @@ When setting the format parameter to `format=jsonl`, it will return each row as 
 
 ### Limit Returned Fields
 
-The `fields` parameter can be used to limit the number of returned fields in each returned row. This is useful in web application to reduce the amount of data that is downloaded. The `format` parameter supports two syntaxes. On the one hand, when listing field names only those field names will be returned. For example, `fields=geo_value,value` will return only those selected fields. On the other hand, when listing field names with a preceding dash, it will be interpreted to exclude those fields. For example, `fields=-direction` will not return the `direction` field.
+The `fields` parameter can be used to limit which fields are included in each returned row. This is useful in web applications to reduce the amount of data transmitted. The `fields` parameter supports two syntaxes: allow and deny. Using allowlist syntax, only the listed fields will be returned. For example, `fields=geo_value,value` will drop all fields from the returned data except for `geo_value` and `value`. To use denylist syntax instead, prefix each field name with a dash (-) to exclude it from the results. For example, `fields=-direction` will include all fields in the returned data except for the `direction` field.
 
 
 ## Example URLs

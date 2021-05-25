@@ -64,9 +64,9 @@ the following:
 
 # update the server
 
-1. create a new file in `/src/server/endpoints/` e.g., `fluview_meta.py` or copy and existing one.
-2. edit the created file `Blueprint("fluview_meta", __name__)` such that the first argument should match the target endpoint name
-3. edit the existing `/src/server/endpoints/__init__.py`, add the newly created file to the imports at the top and to the list of endpoints below.
+1. create a new file in `/src/server/endpoints/` e.g., `fluview_meta.py`, or copy an existing one.
+2. edit the created file `Blueprint("fluview_meta", __name__)` such that the first argument matches the target endpoint name
+3. edit the existing `/src/server/endpoints/__init__.py` to add the newly-created file to the imports (top) and to the list of endpoints (below).
 
 
 # update the client libraries
@@ -330,7 +330,7 @@ created in this tutorial.
 
 Once it's approved, commit the code. Within a short amount of time (usually ~30
 seconds), the API will begin serving your new endpoint. Go ahead and give it a
-try: https://delphi.midas.cs.cmu.edu/epidata/fluview_meta/
+try: https://delphi.cmu.edu/epidata/fluview_meta/
 
 ```
 {
