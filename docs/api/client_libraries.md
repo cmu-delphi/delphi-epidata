@@ -7,7 +7,6 @@ nav_order: 1
 # Epidata API Client Libraries.
 
 Epidata clients are available for
-[CoffeeScript](https://github.com/cmu-delphi/delphi-epidata/blob/master/src/client/delphi_epidata.coffee),
 [JavaScript](https://github.com/cmu-delphi/delphi-epidata/blob/master/src/client/delphi_epidata.js),
 [Python](https://github.com/cmu-delphi/delphi-epidata/blob/master/src/client/delphi_epidata.py),
 and
@@ -18,29 +17,16 @@ Surveillance Streams from Facebook Survey CLI for county 06001 and days
 
 For anyone looking for COVIDCast data, please visit our [COVIDCast Libraries](covidcast_clients.md).
 
-### CoffeeScript (in Node.js)
-
-````coffeescript
-# Import
-{Epidata} = require('./delphi_epidata')
-# Fetch data
-callback = (result, message, epidata) ->
-  console.log(result, message, epidata?.length)
-Epidata.covidcast(callback, 'fb-survey', 'smoothed_cli', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001')
-````
-
 ### JavaScript (in a web browser)
 
 ````html
 <!-- Imports -->
-<script src="jquery.js"></script>
 <script src="delphi_epidata.js"></script>
 <!-- Fetch data -->
 <script>
-  var callback = function(result, message, epidata) {
-    console.log(result, message, epidata != null ? epidata.length : void 0);
-  };
-  Epidata.covidcast(callback, 'fb-survey', 'smoothed_cli', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001');
+  EpidataAsync.covidcast('fb-survey', 'smoothed_cli', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001').then((res) => {
+    console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
+  });
 </script>
 ````
 

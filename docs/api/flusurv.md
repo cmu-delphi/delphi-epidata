@@ -26,7 +26,7 @@ See also:
 
 # The API
 
-The base URL is: https://delphi.cmu.edu/epidata/api.php
+The base URL is: https://delphi.cmu.edu/epidata/flusurv/
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -79,7 +79,7 @@ Notes:
 # Example URLs
 
 ### FluSurv on 2020w01 (CA)
-https://delphi.cmu.edu/epidata/api.php?endpoint=flusurv&locations=ca&epiweeks=202001
+https://delphi.cmu.edu/epidata/flusurv/?locations=ca&epiweeks=202001
 
 ```json
 {
@@ -105,32 +105,19 @@ https://delphi.cmu.edu/epidata/api.php?endpoint=flusurv&locations=ca&epiweeks=20
 
 # Code Samples
 
-Libraries are available for [CoffeeScript](../../src/client/delphi_epidata.coffee), [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
+Libraries are available for [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
 The following samples show how to import the library and fetch CA FluView Clinical data for epiweeks `201940` and `202001-202010` (11 weeks total).
-
-### CoffeeScript (in Node.js)
-
-````coffeescript
-# Import
-{Epidata} = require('./delphi_epidata')
-# Fetch data
-callback = (result, message, epidata) ->
-  console.log(result, message, epidata?.length)
-Epidata.flusurv(callback, ['ca'], [201940, Epidata.range(202001, 202010)])
-````
 
 ### JavaScript (in a web browser)
 
 ````html
 <!-- Imports -->
-<script src="jquery.js"></script>
 <script src="delphi_epidata.js"></script>
 <!-- Fetch data -->
 <script>
-  var callback = function(result, message, epidata) {
-    console.log(result, message, epidata != null ? epidata.length : void 0);
-  };
-  Epidata.flusurv(callback, ['ca'], [201940, Epidata.range(202001, 202010)]);
+  EpidataAsync.flusurv(['ca'], [201940, Epidata.range(202001, 202010)]).then((res) => {
+    console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
+  });
 </script>
 ````
 

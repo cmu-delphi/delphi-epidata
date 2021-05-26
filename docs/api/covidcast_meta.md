@@ -13,7 +13,7 @@ geographic levels at which they are reported.
 
 ## The API
 
-The base URL is: https://api.covidcast.cmu.edu/epidata/api.php
+The base URL is: https://api.covidcast.cmu.edu/epidata/covidcast_meta/
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -45,7 +45,7 @@ None required.
 
 ## Example URLs
 
-https://api.covidcast.cmu.edu/epidata/api.php?endpoint=covidcast_meta
+https://api.covidcast.cmu.edu/epidata/covidcast_meta/
 
 ```json
 {
@@ -73,32 +73,19 @@ https://api.covidcast.cmu.edu/epidata/api.php?endpoint=covidcast_meta
 
 ## Code Samples
 
-Libraries are available for [CoffeeScript](../../src/client/delphi_epidata.coffee), [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
+Libraries are available for [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
 The following samples show how to import the library and fetch Delphi's COVID-19 Surveillance Streams metadata.
-
-### CoffeeScript (in Node.js)
-
-````coffeescript
-# Import
-{Epidata} = require('./delphi_epidata')
-# Fetch data
-callback = (result, message, epidata) ->
-  console.log(result, message, epidata?.length)
-Epidata.covidcast_meta(callback)
-````
 
 ### JavaScript (in a web browser)
 
 ````html
 <!-- Imports -->
-<script src="jquery.js"></script>
 <script src="delphi_epidata.js"></script>
 <!-- Fetch data -->
 <script>
-  var callback = function(result, message, epidata) {
-    console.log(result, message, epidata != null ? epidata.length : void 0);
-  };
-  Epidata.covidcast_meta(callback);
+  EpidataAsync.covidcast_meta().then((res) => {
+    console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
+  });
 </script>
 ````
 

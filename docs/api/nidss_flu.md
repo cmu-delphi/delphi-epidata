@@ -25,7 +25,7 @@ Outpatient ILI from Taiwan's National Infectious Disease Statistics System (NIDS
 
 # The API
 
-The base URL is: https://delphi.cmu.edu/epidata/api.php
+The base URL is: https://delphi.cmu.edu/epidata/nidss_flu/
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -67,7 +67,7 @@ If neither is specified, the current issues are used.
 # Example URLs
 
 ### NIDSS Flu on 2015w01 (nationwide)
-https://delphi.cmu.edu/epidata/api.php?endpoint=nidss_flu&regions=nationwide&epiweeks=201501
+https://delphi.cmu.edu/epidata/nidss_flu/?regions=nationwide&epiweeks=201501
 
 ```json
 {
@@ -90,32 +90,19 @@ https://delphi.cmu.edu/epidata/api.php?endpoint=nidss_flu&regions=nationwide&epi
 
 # Code Samples
 
-Libraries are available for [CoffeeScript](../../src/client/delphi_epidata.coffee), [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
+Libraries are available for [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
 The following samples show how to import the library and fetch national NIDSS Flu data for epiweeks `201440` and `201501-201510` (11 weeks total).
-
-### CoffeeScript (in Node.js)
-
-````coffeescript
-# Import
-{Epidata} = require('./delphi_epidata')
-# Fetch data
-callback = (result, message, epidata) ->
-  console.log(result, message, epidata?.length)
-Epidata.nidss_flu(callback, ['nationwide'], [201440, Epidata.range(201501, 201510)])
-````
 
 ### JavaScript (in a web browser)
 
 ````html
 <!-- Imports -->
-<script src="jquery.js"></script>
 <script src="delphi_epidata.js"></script>
 <!-- Fetch data -->
 <script>
-  var callback = function(result, message, epidata) {
-    console.log(result, message, epidata != null ? epidata.length : void 0);
-  };
-  Epidata.nidss_flu(callback, ['nationwide'], [201440, Epidata.range(201501, 201510)]);
+  EpidataAsync.nidss_flu(['nationwide'], [201440, Epidata.range(201501, 201510)]).then((res) => {
+    console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
+  });;
 </script>
 ````
 

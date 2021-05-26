@@ -25,7 +25,7 @@ Influenza-like illness (ILI) from U.S. Outpatient Influenza-like Illness Surveil
 
 # The API
 
-The base URL is: https://delphi.cmu.edu/epidata/api.php
+The base URL is: https://delphi.cmu.edu/epidata/fluview/
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -80,7 +80,7 @@ Notes:
 # Example URLs
 
 ### FluView on 2015w01 (national)
-https://delphi.cmu.edu/epidata/api.php?endpoint=fluview&regions=nat&epiweeks=201501
+https://delphi.cmu.edu/epidata/fluview/?regions=nat&epiweeks=201501
 
 ```json
 {
@@ -111,41 +111,29 @@ https://delphi.cmu.edu/epidata/api.php?endpoint=fluview&regions=nat&epiweeks=201
 
 ### FluView in HHS Regions 4 and 6 for the 2014/2015 flu season
 
-https://delphi.cmu.edu/epidata/api.php?endpoint=fluview&regions=hhs4,hhs6&epiweeks=201440-201520
+https://delphi.cmu.edu/epidata/fluview/?regions=hhs4,hhs6&epiweeks=201440-201520
 
 ### Updates to FluView on 2014w53, reported from 2015w01 through 2015w10 (national)
 
-https://delphi.cmu.edu/epidata/api.php?endpoint=fluview&regions=nat&epiweeks=201453&issues=201501-201510
+https://delphi.cmu.edu/epidata/fluview/?regions=nat&epiweeks=201453&issues=201501-201510
 
 
 # Code Samples
 
-Libraries are available for [CoffeeScript](../../src/client/delphi_epidata.coffee), [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
+Libraries are available for [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
 The following samples show how to import the library and fetch national FluView data for epiweeks `201440` and `201501-201510` (11 weeks total).
 
-### CoffeeScript (in Node.js)
-
-````coffeescript
-# Import
-{Epidata} = require('./delphi_epidata')
-# Fetch data
-callback = (result, message, epidata) ->
-  console.log(result, message, epidata?.length)
-Epidata.fluview(callback, ['nat'], [201440, Epidata.range(201501, 201510)])
-````
 
 ### JavaScript (in a web browser)
 
 ````html
 <!-- Imports -->
-<script src="jquery.js"></script>
 <script src="delphi_epidata.js"></script>
 <!-- Fetch data -->
 <script>
-  var callback = function(result, message, epidata) {
-    console.log(result, message, epidata != null ? epidata.length : void 0);
-  };
-  Epidata.fluview(callback, ['nat'], [201440, Epidata.range(201501, 201510)]);
+  EpidataAsync.fluview(['nat'], [201440, Epidata.range(201501, 201510)]).then((res) => {
+    console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
+  });
 </script>
 ````
 

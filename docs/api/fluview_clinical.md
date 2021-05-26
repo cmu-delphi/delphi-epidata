@@ -20,7 +20,7 @@ General topics not specific to any particular endpoint are discussed in the
 
 # The API
 
-The base URL is: https://delphi.cmu.edu/epidata/api.php
+The base URL is: https://delphi.cmu.edu/epidata/fluview_clinical/
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -66,7 +66,7 @@ If neither is specified, the current issues are used.
 # Example URLs
 
 ### FluView Clinical on 2020w01 (national)
-https://delphi.cmu.edu/epidata/api.php?endpoint=fluview_clinical&regions=nat&epiweeks=202001
+https://delphi.cmu.edu/epidata/fluview_clinical/?regions=nat&epiweeks=202001
 
 ```json
 {
@@ -94,32 +94,19 @@ https://delphi.cmu.edu/epidata/api.php?endpoint=fluview_clinical&regions=nat&epi
 
 # Code Samples
 
-Libraries are available for [CoffeeScript](../../src/client/delphi_epidata.coffee), [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
+Libraries are available for [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
 The following samples show how to import the library and fetch national FluView Clinical data for epiweeks `201940` and `202001-202010` (11 weeks total).
-
-### CoffeeScript (in Node.js)
-
-````coffeescript
-# Import
-{Epidata} = require('./delphi_epidata')
-# Fetch data
-callback = (result, message, epidata) ->
-  console.log(result, message, epidata?.length)
-Epidata.fluview_clinical(callback, ['nat'], [201940, Epidata.range(202001, 202010)])
-````
 
 ### JavaScript (in a web browser)
 
 ````html
 <!-- Imports -->
-<script src="jquery.js"></script>
 <script src="delphi_epidata.js"></script>
 <!-- Fetch data -->
 <script>
-  var callback = function(result, message, epidata) {
-    console.log(result, message, epidata != null ? epidata.length : void 0);
-  };
-  Epidata.fluview_clinical(callback, ['nat'], [201940, Epidata.range(202001, 202010)]);
+  EpidataAsync.fluview_clinical(['nat'], [201940, Epidata.range(202001, 202010)]).then((res) => {
+    console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
+  });
 </script>
 ````
 
