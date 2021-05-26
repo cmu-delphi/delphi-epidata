@@ -11,7 +11,7 @@ Notes:
 # External modules
 import requests
 import asyncio
-import warnings
+from tenacity import retry, stop_after_attempt
 
 from aiohttp import ClientSession, TCPConnector
 from pkg_resources import get_distribution, DistributionNotFound
@@ -52,7 +52,15 @@ class Epidata:
       values = [values]
     return ','.join([Epidata._listitem(value) for value in values])
 
-  # Helper function to request and parse epidata
+  @staticmethod
+  @retry(reraise=True, stop=stop_after_attempt(2))
+  def _request_with_retry(params):
+    """Make request with a retry if an exception is thrown."""
+    req = requests.get(Epidata.BASE_URL, params, headers=_HEADERS)
+    if req.status_code == 414:
+      req = requests.post(Epidata.BASE_URL, params, headers=_HEADERS)
+    return req
+
   @staticmethod
   def _request(params):
     """Request and parse epidata.
@@ -62,13 +70,8 @@ class Epidata:
     long and returns a 414.
     """
     try:
-      # API call
-      req = requests.get(Epidata.BASE_URL, params, headers=_HEADERS)
-      if req.status_code == 414:
-        req = requests.post(Epidata.BASE_URL, params, headers=_HEADERS)
-      return req.json()
+      return Epidata._request_with_retry(params).json()
     except Exception as e:
-      # Something broke
       return {'result': 0, 'message': 'error: ' + str(e)}
 
   # Raise an Exception on error, otherwise return epidata
