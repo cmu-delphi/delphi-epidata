@@ -15,6 +15,8 @@ Epidata <- (function() {
   # API base url
   BASE_URL <- 'https://delphi.cmu.edu/epidata/api.php'
 
+  client_version <- '0.1.0'
+
   # Helper function to cast values and/or ranges to strings
   .listitem <- function(value) {
     if(is.list(value) && 'from' %in% names(value) && 'to' %in% names(value)) {
@@ -614,6 +616,7 @@ Epidata <- (function() {
   # Export the public methods
   return(list(
     range = range,
+    client_version = client_version,
     fluview = fluview,
     fluview_meta = fluview_meta,
     fluview_clinical = fluview_clinical,
