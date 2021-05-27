@@ -1,0 +1,5 @@
+Source,Signal,Signal BaseName,Name,Short Description,Description,Time Label,Value Label,Format,Category,High Values Are,Is Smoothed,Is Weighted,Is Cumulative,Has StdErr,Has Sample Size,Link
+fb-survey,smoothed_cli,cli,COVID-like Symptoms (Smoothed),Test,Test,Date,per 100 people,percent,public,bad,TRUE,FALSE,FALSE,TRUE,TRUE,
+fb-survey,smoothed_wcli,cli,COVID-like Symptoms (Smoothed and Weighted),Test,Test,Date,per 100 people,percent,public,bad,TRUE,TRUE,FALSE,TRUE,TRUE,
+fb-survey,raw_cli,cli,COVID-like Symptoms,Test,Test,Date,per 100 people,percent,public,bad,FALSE,FALSE,FALSE,TRUE,TRUE,
+fb-survey,raw_wcli,cli,COVID-like Symptoms (Weighted),Test,Test,Date,per 100 people,percent,public,bad,FALSE,TRUE,FALSE,TRUE,TRUE,
