@@ -1,0 +1,37 @@
+name: Update Google Docs Meta Data
+on:
+  workflow_dispatch:
+jobs:
+  update_gdocs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          branch: dev
+          ssh-key: ${{ secrets.CMU_DELPHI_DEPLOY_MACHINE_SSH }}
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Install Dependencies
+        run: pip install -r requirements.txt -r requirements-dev.txt
+      - name: Update Docs
+        run: inv update-gdoc
+      - name: Create pull request into dev
+        uses: peter-evans/create-pull-request@v3
+        with:
+          branch: bot/update-docs
+          commit-message: 'chore: update docs'
+          title: Update Google Docs Meta Data
+          labels: chore
+          reviewers: krivard
+          assignees: krivard
+          body: |
+            Updating Google Docs Meta Data

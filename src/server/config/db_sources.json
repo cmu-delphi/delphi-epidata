@@ -1,0 +1,11 @@
+[
+  {
+    "source":"fb-survey",
+    "db_source":"fb-survey",
+    "name":"COVID Tracking and Impact Survey (CTIS)",
+    "description":"Test",
+    "reference_signal":"smoothed_cli",
+    "license":null,
+    "url":null
+  }
+]
