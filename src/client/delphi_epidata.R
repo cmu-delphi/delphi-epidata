@@ -617,7 +617,6 @@ Epidata <- (function() {
   return(list(
     range = range,
     client_version = client_version,
-    version = version,
     fluview = fluview,
     fluview_meta = fluview_meta,
     fluview_clinical = fluview_clinical,
