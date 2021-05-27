@@ -17,6 +17,8 @@ declare module 'delphi_epidata' {
         readonly BASE_URL: string;
         range(this: void, from: string | number, to: string | number): EpiRange;
         withURL(this: void, baseUrl?: string): EpidataFunctions;
+        client_version: string;
+        version(): Promise<{version: string, client_version: string}>;
 
         afhsb(callback: EpiDataCallback, auth: string, locations: StringParam, epiweeks: EpiRangeParam, flu_types: StringParam): Promise<EpiDataResponse>;
         cdc(callback: EpiDataCallback, auth: string, epiweeks: EpiRangeParam, locations: StringParam): Promise<EpiDataResponse>;
@@ -56,6 +58,8 @@ declare module 'delphi_epidata' {
         readonly BASE_URL: string;
         range(this: void, from: string | number, to: string | number): EpiRange;
         withURL(this: void, baseUrl?: string): EpidataAsyncFunctions;
+        client_version: string;
+        version(): Promise<{ version: string, client_version: string }>;
 
         afhsb(auth: string, locations: StringParam, epiweeks: EpiRangeParam, flu_types: StringParam): Promise<EpiDataResponse>;
         cdc(auth: string, epiweeks: EpiRangeParam, locations: StringParam): Promise<EpiDataResponse>;

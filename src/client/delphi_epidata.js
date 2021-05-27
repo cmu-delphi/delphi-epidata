@@ -22,6 +22,7 @@
   }
 })(this, function (exports, fetchImpl, jQuery) {
   const BASE_URL = "https://delphi.cmu.edu/epidata/";
+  const client_version = "0.1.0";
 
   // Helper function to cast values and/or ranges to strings
   function _listitem(value) {
@@ -118,6 +119,10 @@
       BASE_URL: baseUrl || BASE_URL,
       withURL: createEpidataAsync,
       range,
+      client_version,
+      version: () => {
+        return _request('version', {}).then((r) => Object.assign(r, {client_version}));
+      },
       /**
        * Fetch AFHSB data (point data, no min/max)
        */
@@ -552,9 +557,15 @@
       BASE_URL: api.BASE_URL,
       withURL: createEpidata,
       range,
+      client_version,
+      version: () => {
+        return _request('version', {}).then((r) => Object.assign(r, { client_version }));
+      },
     };
+    const knownKeys = Object.keys(r);
     Object.keys(api).forEach((key) => {
-      if (key === "BASE_URL" || key === "withURL" || key === 'range') {
+      if (knownKeys.indexOf(key) >= 0) {
+        // known key ignore
         return;
       }
       r[key] = function (callback) {
