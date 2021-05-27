@@ -21,8 +21,9 @@
     factory(root, root.fetch, root.jQuery || root.$);
   }
 })(this, function (exports, fetchImpl, jQuery) {
-  const BASE_URL = "https://delphi.cmu.edu/epidata/"; // Helper function to cast values and/or ranges to strings
+  const BASE_URL = "https://delphi.cmu.edu/epidata/";
 
+  // Helper function to cast values and/or ranges to strings
   function _listitem(value) {
     if (value == null) {
       return null;
@@ -103,6 +104,10 @@
     }
   }
 
+  function range(from, to) {
+    return { from, to };
+  }
+
   ////#region begin of views
 
   function createEpidataAsync(baseUrl) {
@@ -111,130 +116,8 @@
 
     return {
       BASE_URL: baseUrl || BASE_URL,
-      /**
-       * Fetch FluView data
-       */
-      fluview: (regions, epiweeks, issues, lag, auth) => {
-        requireAll({ regions, epiweeks });
-        issuesOrLag(issues, lag);
-        const params = {
-          regions: _list(regions),
-          epiweeks: _list(epiweeks),
-          issues: _list(issues),
-          lag,
-          auth,
-        };
-        return _request("fluview", params);
-      },
-      /**
-       * Fetch FluView metadata
-       */
-      fluview_meta: () => {
-        return _request("fluview_meta", {});
-      },
-      /**
-       * Fetch FluView clinical data
-       */
-      fluview_clinical: (regions, epiweeks, issues, lag) => {
-        requireAll({ regions, epiweeks });
-        issuesOrLag(issues, lag);
-        const params = {
-          regions: _list(regions),
-          epiweeks: _list(epiweeks),
-          issues: _list(issues),
-          lag,
-        };
-        return _request("fluview_clinical", params);
-      },
-
-      /**
-       * Fetch FluSurv data
-       */
-      flusurv: (locations, epiweeks, issues, lag) => {
-        requireAll({ locations, epiweeks });
-        issuesOrLag(issues, lag);
-        const params = {
-          locations: _list(locations),
-          epiweeks: _list(epiweeks),
-          issues: _list(issues),
-          lag,
-        };
-        return _request("flusurv", params);
-      },
-      /**
-       * Fetch Google Flu Trends data
-       */
-      gft: (locations, epiweeks) => {
-        requireAll({ locations, epiweeks });
-        const params = {
-          locations: _list(locations),
-          epiweeks: _list(epiweeks),
-        };
-        return _request("gft", params);
-      },
-      /**
-       * Fetch Google Health Trends data
-       */
-      ght: (auth, locations, epiweeks, query) => {
-        requireAll({ auth, locations, epiweeks, query });
-        const params = {
-          auth,
-          locations: _list(locations),
-          epiweeks: _list(epiweeks),
-          query,
-        };
-        return _request("ght", params);
-      },
-
-      /**
-       * Fetch CDC page hits
-       */
-      cdc: (auth, epiweeks, locations) => {
-        requireAll({ auth, locations, epiweeks });
-        const params = {
-          auth,
-          epiweeks: _list(epiweeks),
-          locations: _list(locations),
-        };
-        return _request("cdc", params);
-      },
-      /**
-       * Fetch Quidel data
-       */
-      quidel: (auth, epiweeks, locations) => {
-        requireAll({ auth, locations, epiweeks });
-        const params = {
-          auth,
-          epiweeks: _list(epiweeks),
-          locations: _list(locations),
-        };
-        return _request("quidel", params);
-      },
-      /**
-       * Fetch NoroSTAT data (point data, no min/max)
-       */
-      norostat: (auth, location, epiweeks) => {
-        requireAll({ auth, locations, epiweeks });
-        const params = {
-          auth,
-          location,
-          epiweeks: _list(epiweeks),
-        };
-        return _request("norostat", params);
-      },
-      /**
-       * Fetch NoroSTAT metadata
-       */
-      meta_norostat: (auth) => {
-        if (auth == null) {
-          throw new Error("`auth` is required");
-        }
-        const params = {
-          auth,
-        };
-        return _request("meta_norostat", params);
-      },
-
+      withURL: createEpidataAsync,
+      range,
       /**
        * Fetch AFHSB data (point data, no min/max)
        */
@@ -249,87 +132,127 @@
         return _request("afhsb", params);
       },
       /**
-       * Fetch AFHSB metadata
+       * Fetch CDC page hits
        */
-      meta_afhsb: (auth) => {
-        requireAll({ auth });
+      cdc: (auth, epiweeks, locations) => {
+        requireAll({ auth, locations, epiweeks });
         const params = {
           auth,
+          epiweeks: _list(epiweeks),
+          locations: _list(locations),
         };
-        return _request("meta_afhsb", params);
+        return _request("cdc", params);
       },
       /**
-       * Fetch NIDSS flu data
+       * Fetch COVID hospitalization data for specific facilities
        */
-      nidss_flu: (regions, epiweeks, issues, lag) => {
-        requireAll({ epiweeks, regions });
-        issuesOrLag(issues, lag);
+      covid_hosp_facility: (
+        hospital_pks,
+        collection_weeks,
+        publication_dates
+      ) => {
+        requireAll({ hospital_pks, collection_weeks });
         const params = {
-          regions: _list(regions),
-          epiweeks: _list(epiweeks),
+          hospital_pks: _list(hospital_pks),
+          collection_weeks: _list(collection_weeks),
+          publication_dates: _list(publication_dates),
+        };
+        return _request("covid_hosp_facility", params);
+      },
+
+      /**
+       * Lookup COVID hospitalization facility identifiers
+       */
+      covid_hosp_facility_lookup: (state, ccn, city, zip, fips_code) => {
+        const params = {};
+        if (state != null) {
+          params.state = state;
+        } else if (ccn != null) {
+          params.ccn = ccn;
+        } else if (city != null) {
+          params.city = city;
+        } else if (zip != null) {
+          params.zip = zip;
+        } else if (fips_code != null) {
+          params.fips_code = fips_code;
+        } else {
+          throw new Error(
+            "one of `state`, `ccn`, `city`, `zip`, or `fips_code` is required"
+          );
+        }
+        return _request("covid_hosp_facility", params);
+      },
+      /**
+       * Fetch COVID hospitalization data
+       */
+      covid_hosp: (states, dates, issues) => {
+        requireAll({ states, dates });
+        const params = {
+          states: _list(states),
+          dates: _list(dates),
           issues: _list(issues),
-          lag,
         };
-        return _request("nidss_flu", params);
+        return _request("covid_hosp_state_timeseries", params);
       },
-
       /**
-       * Fetch NIDSS dengue data
+       * Fetch COVID hospitalization data
        */
-      nidss_dengue: (locations, epiweeks) => {
-        requireAll({ locations, regions });
+      covid_hosp_state_timeseries: (states, dates, issues) => {
+        requireAll({ states, dates });
         const params = {
-          locations: _list(locations),
-          epiweeks: _list(epiweeks),
+          states: _list(states),
+          dates: _list(dates),
+          issues: _list(issues),
         };
-        return _request("nidss_dengue", params);
+        return _request("covid_hosp_state_timeseries", params);
       },
-
       /**
-       * Fetch Delphi's forecast
+       * Fetch Delphi's COVID-19 Surveillance Streams metadata
        */
-      delphi: (system, epiweek) => {
-        requireAll({ system, epiweek });
-        const params = {
-          system,
-          epiweek,
-        };
-        return _request("delphi", params);
+      covidcast_meta: () => {
+        return _request("covidcast_meta", {});
       },
-
       /**
-       * Fetch Delphi's digital surveillance sensors
+       * Fetch Delphi's COVID-19 Surveillance Streams
        */
-      sensors: (auth, names, locations, epiweeks) => {
-        requireAll({ auth, names, locations, epiweeks });
-        const params = {
-          auth,
-          names: _list(names),
-          locations: _list(locations),
-          epiweeks: _list(epiweeks),
-        };
-        return _request("sensors", params);
-      },
-
-      /**
-       * Fetch Delphi's ILI nowcast
-       */
-      nowcast: (locations, epiweeks) => {
-        requireAll({ locations, epiweeks });
-        const params = {
-          locations: _list(locations),
-          epiweeks: _list(epiweeks),
-        };
-        return _request("nowcast", params);
-      },
-
-      /**
-       * Fetch API metadata
-       */
-      meta: () => {
-        return _request({
-          endpoint: "meta",
+      covidcast_nowcast: (
+        data_source,
+        signals,
+        time_type,
+        geo_type,
+        time_values,
+        geo_value,
+        as_of,
+        issues,
+        lag,
+        format
+      ) => {
+        requireAll({
+          data_source,
+          signals,
+          time_type,
+          geo_type,
+          time_values,
+          geo_value,
         });
+        issuesOrLag(issues, lag);
+
+        const params = {
+          data_source,
+          signals,
+          time_type,
+          geo_type,
+          time_values: _list(time_values),
+          as_of,
+          issues: _list(issues),
+          format,
+        };
+        if (Array.isArray(geo_value)) {
+          params.geo_values = geo_value.join(",");
+        } else {
+          params.geo_value = geo_value;
+        }
+        return _request("covidcast_nowcast", params);
       },
       /**
        * Fetch Delphi's COVID-19 Surveillance Streams
@@ -374,63 +297,251 @@
         return _request("covidcast", params);
       },
       /**
-       * Fetch Delphi's COVID-19 Surveillance Streams metadata
+       * Fetch FluView data
        */
-      covidcast_meta: () => {
-        return _request("covidcast_meta", {});
-      },
-      /**
-       * Fetch COVID hospitalization data
-       */
-      covid_hosp: (states, dates, issues) => {
-        requireAll({ states, dates });
+      fluview: (regions, epiweeks, issues, lag, auth) => {
+        requireAll({ regions, epiweeks });
+        issuesOrLag(issues, lag);
         const params = {
-          states: _list(states),
-          dates: _list(dates),
+          regions: _list(regions),
+          epiweeks: _list(epiweeks),
           issues: _list(issues),
+          lag,
+          auth,
         };
-        return _request("covid_hosp", params);
+        return _request("fluview", params);
       },
       /**
-       * Fetch COVID hospitalization data for specific facilities
+       * Fetch FluView clinical data
        */
-      covid_hosp_facility: (
-        hospital_pks,
-        collection_weeks,
-        publication_dates
-      ) => {
-        requireAll({ hospital_pks, collection_weeks });
+      fluview_clinical: (regions, epiweeks, issues, lag) => {
+        requireAll({ regions, epiweeks });
+        issuesOrLag(issues, lag);
         const params = {
-          hospital_pks: _list(hospital_pks),
-          collection_weeks: _list(collection_weeks),
-          publication_dates: _list(publication_dates),
+          regions: _list(regions),
+          epiweeks: _list(epiweeks),
+          issues: _list(issues),
+          lag,
         };
-        return _request("covid_hosp_facility", params);
+        return _request("fluview_clinical", params);
+      },
+      /**
+       * Fetch FluView metadata
+       */
+      fluview_meta: () => {
+        return _request("fluview_meta", {});
+      },
+      /**
+       * Fetch FluSurv data
+       */
+      flusurv: (locations, epiweeks, issues, lag) => {
+        requireAll({ locations, epiweeks });
+        issuesOrLag(issues, lag);
+        const params = {
+          locations: _list(locations),
+          epiweeks: _list(epiweeks),
+          issues: _list(issues),
+          lag,
+        };
+        return _request("flusurv", params);
+      },
+      /**
+       * Fetch Google Flu Trends data
+       */
+      gft: (locations, epiweeks) => {
+        requireAll({ locations, epiweeks });
+        const params = {
+          locations: _list(locations),
+          epiweeks: _list(epiweeks),
+        };
+        return _request("gft", params);
+      },
+      /**
+       * Fetch Google Health Trends data
+       */
+      ght: (auth, locations, epiweeks, query) => {
+        requireAll({ auth, locations, epiweeks, query });
+        const params = {
+          auth,
+          locations: _list(locations),
+          epiweeks: _list(epiweeks),
+          query,
+        };
+        return _request("ght", params);
+      },
+      /**
+       * ?
+       */
+      kcdc_ili: (regions, epiweeks, issues, lag) => {
+        requireAll({ regions, epiweeks });
+        const params = {
+          regions: _list(regions),
+          epiweeks: _list(epiweeks),
+          issues: _list(issues),
+          lag,
+        };
+        return _request("kcdc_ili", params);
+      },
+      /**
+       * Fetch AFHSB metadata
+       */
+      meta_afhsb: (auth) => {
+        requireAll({ auth });
+        const params = {
+          auth,
+        };
+        return _request("meta_afhsb", params);
+      },
+      /**
+       * Fetch NoroSTAT metadata
+       */
+      meta_norostat: (auth) => {
+        if (auth == null) {
+          throw new Error("`auth` is required");
+        }
+        const params = {
+          auth,
+        };
+        return _request("meta_norostat", params);
+      },
+      /**
+       * Fetch API metadata
+       */
+      meta: () => {
+        return _request({
+          endpoint: "meta",
+        });
+      },
+      /**
+       * Fetch NIDSS dengue data
+       */
+      nidss_dengue: (locations, epiweeks) => {
+        requireAll({ locations, regions });
+        const params = {
+          locations: _list(locations),
+          epiweeks: _list(epiweeks),
+        };
+        return _request("nidss_dengue", params);
+      },
+      /**
+       * Fetch NIDSS flu data
+       */
+      nidss_flu: (regions, epiweeks, issues, lag) => {
+        requireAll({ epiweeks, regions });
+        issuesOrLag(issues, lag);
+        const params = {
+          regions: _list(regions),
+          epiweeks: _list(epiweeks),
+          issues: _list(issues),
+          lag,
+        };
+        return _request("nidss_flu", params);
+      },
+      /**
+       * Fetch NoroSTAT data (point data, no min/max)
+       */
+      norostat: (auth, location, epiweeks) => {
+        requireAll({ auth, locations, epiweeks });
+        const params = {
+          auth,
+          location,
+          epiweeks: _list(epiweeks),
+        };
+        return _request("norostat", params);
+      },
+      /**
+       * Fetch Delphi's ILI nowcast
+       */
+      nowcast: (locations, epiweeks) => {
+        requireAll({ locations, epiweeks });
+        const params = {
+          locations: _list(locations),
+          epiweeks: _list(epiweeks),
+        };
+        return _request("nowcast", params);
+      },
+      /**
+       * Fetch Quidel data
+       */
+      paho_denque: (regions, epiweeks, issues, lag) => {
+        requireAll({ regions, epiweeks });
+        const params = {
+          epiweeks: _list(epiweeks),
+          regions: _list(regions),
+          issues: _list(issues),
+          lag,
+        };
+        return _request("paho_denque", params);
+      },
+      /**
+       * Fetch Quidel data
+       */
+      quidel: (auth, epiweeks, locations) => {
+        requireAll({ auth, locations, epiweeks });
+        const params = {
+          auth,
+          epiweeks: _list(epiweeks),
+          locations: _list(locations),
+        };
+        return _request("quidel", params);
+      },
+      /**
+       * Fetch Delphi's forecast
+       */
+      delphi: (system, epiweek) => {
+        requireAll({ system, epiweek });
+        const params = {
+          system,
+          epiweek,
+        };
+        return _request("delphi", params);
       },
 
       /**
-       * Lookup COVID hospitalization facility identifiers
+       * Fetch Delphi's digital surveillance sensors
        */
-      covid_hosp_facility_lookup: (state, ccn, city, zip, fips_code) => {
-        const params = {};
-        if (state != null) {
-          params.state = state;
-        } else if (ccn != null) {
-          params.ccn = ccn;
-        } else if (city != null) {
-          params.city = city;
-        } else if (zip != null) {
-          params.zip = zip;
-        } else if (fips_code != null) {
-          params.fips_code = fips_code;
-        } else {
-          throw new Error(
-            "one of `state`, `ccn`, `city`, `zip`, or `fips_code` is required"
-          );
-        }
-        return _request("covid_hosp_facility", params);
+      sensors: (auth, names, locations, epiweeks) => {
+        requireAll({ auth, names, locations, epiweeks });
+        const params = {
+          auth,
+          names: _list(names),
+          locations: _list(locations),
+          epiweeks: _list(epiweeks),
+        };
+        return _request("sensors", params);
       },
-      withURL: createEpidataAsync,
+      /**
+       * Twitter data
+       */
+      twitter: (auth, locations, dates, epiweeks) => {
+        requireAll({ auth, locations });
+        if ((dates != null) !== (epiweeks != null)) {
+          throw new Error("one of `dates` and `epiweeks` are required");
+        }
+        const params = {
+          auth,
+          locations: _list(locations),
+          dates: _list(dates),
+          epiweeks: _list(epiweeks),
+        };
+        return _request("twitter", params);
+      },
+      /**
+       * Wikipedia data
+       */
+      wiki: (articles, dates, epiweeks, language) => {
+        requireAll({ articles });
+        if ((dates != null) !== (epiweeks != null)) {
+          throw new Error("one of `dates` and `epiweeks` are required");
+        }
+        const params = {
+          articles: _list(articles),
+          dates: _list(dates),
+          epiweeks: _list(epiweeks),
+          language,
+        };
+        return _request("wiki", params);
+      },
     };
   }
   exports.EpidataAsync = createEpidataAsync();
@@ -440,9 +551,10 @@
     const r = {
       BASE_URL: api.BASE_URL,
       withURL: createEpidata,
+      range,
     };
     Object.keys(api).forEach((key) => {
-      if (key === "BASE_URL" || key === "withURL") {
+      if (key === "BASE_URL" || key === "withURL" || key === 'range') {
         return;
       }
       r[key] = function (callback) {

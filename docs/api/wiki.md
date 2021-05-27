@@ -120,7 +120,7 @@ epiweeks `201940` and `202001-202010` (11 weeks total) for hours 0 and 12 in Eng
 <script src="delphi_epidata.js"></script>
 <!-- Fetch data -->
 <script>
-  EpidataAsync.wiki(['influenza'], null, [201940, Epidata.range(202001, 202010)], [0, 12]).then((res) => {
+  EpidataAsync.wiki('influenza', null, [201940, Epidata.EpidataAsync(202001, 202010)], [0, 12]).then((res) => {
     console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
   });
 </script>

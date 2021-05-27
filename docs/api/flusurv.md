@@ -115,7 +115,7 @@ The following samples show how to import the library and fetch CA FluView Clinic
 <script src="delphi_epidata.js"></script>
 <!-- Fetch data -->
 <script>
-  EpidataAsync.flusurv(['ca'], [201940, Epidata.range(202001, 202010)]).then((res) => {
+  EpidataAsync.flusurv('ca', [201940, Epidata.range(202001, 202010)]).then((res) => {
     console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
   });
 </script>

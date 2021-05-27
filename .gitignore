@@ -6,3 +6,4 @@ __pycache__/
 *.db
 /build
 /node_modules
+.mypy_cache

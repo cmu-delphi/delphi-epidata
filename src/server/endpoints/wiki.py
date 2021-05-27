@@ -10,11 +10,11 @@ alias = None
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    require_all("articles", "language")
+    require_all("articles")
     require_any("dates", "epiweeks")
 
     articles = extract_strings("articles")
-    language = request.values["language"]
+    language = request.values.get("language", "en")
     if "dates" in request.values:
         resolution = "daily"
         dates = extract_integers("dates")

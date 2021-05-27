@@ -100,7 +100,7 @@ The following samples show how to import the library and fetch national NIDSS Fl
 <script src="delphi_epidata.js"></script>
 <!-- Fetch data -->
 <script>
-  EpidataAsync.nidss_flu(['nationwide'], [201440, Epidata.range(201501, 201510)]).then((res) => {
+  EpidataAsync.nidss_flu('nationwide', [201440, EpidataAsync.range(201501, 201510)]).then((res) => {
     console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
   });;
 </script>
