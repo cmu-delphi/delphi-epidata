@@ -1,4 +1,4 @@
-from typing import List, Optional, Union, Tuple, Dict, Any, Set
+from typing import List, Optional, Union, Tuple, Dict, Any
 from itertools import groupby
 from datetime import date, datetime, timedelta
 from flask import Blueprint, request
@@ -33,8 +33,9 @@ from .._validate import (
     require_any,
 )
 from .._pandas import as_pandas, print_pandas
-from .covidcast_utils import compute_trend, compute_trends, compute_correlations, compute_trend_value, CovidcastMetaEntry, AllSignalsMap
+from .covidcast_utils import compute_trend, compute_trends, compute_correlations, compute_trend_value, CovidcastMetaEntry
 from ..utils import shift_time_value, date_to_time_value, time_value_to_iso, time_value_to_date
+from .covidcast_utils.model import data_sources
 
 # first argument is the endpoint name
 bp = Blueprint("covidcast", __name__)
@@ -463,31 +464,43 @@ def handle_meta():
     similar to /covidcast_meta but in a structured optimized JSON form for the app
     """
 
-    signal = parse_source_signal_arg("signal")
+    filter_signal = parse_source_signal_arg("signal")
 
     row = db.execute(text("SELECT epidata FROM covidcast_meta_cache LIMIT 1")).fetchone()
 
     data = loads(row["epidata"]) if row and row["epidata"] else []
 
-    all_signals: AllSignalsMap = {}
+    by_signal: Dict[Tuple[str, str], List[Dict[str, Any]]] = {}
     for row in data:
         if row["time_type"] != "day":
             continue
-        entry: Set[str] = all_signals.setdefault(row["data_source"], set())
-        entry.add(row["signal"])
+        entry = by_signal.setdefault((row["data_source"], row["signal"]), [])
+        entry.append(row)
 
-    out: Dict[str, CovidcastMetaEntry] = {}
-    for row in data:
-        if row["time_type"] != "day":
-            continue
-        if signal and all((not s.matches(row["data_source"], row["signal"]) for s in signal)):
-            continue
-        entry = out.setdefault(
-            f"{row['data_source']}:{row['signal']}", CovidcastMetaEntry(row["data_source"], row["signal"], row["min_time"], row["max_time"], row["max_issue"], {}, all_signals=all_signals)
-        )
-        entry.intergrate(row)
+    sources: List[Dict[str, Any]] = []
+    for source in data_sources:
+        meta_signals: List[Dict[str, Any]] = []
 
-    return jsonify([r.asdict() for r in out.values()])
+        for signal in source.signals:
+            if filter_signal and all((not s.matches(signal.source, signal.signal) for s in filter_signal)):
+                continue
+            meta_data = by_signal.get(signal.key)
+            if not meta_data:
+                continue
+            row = meta_data[0]
+            entry = CovidcastMetaEntry(signal, row["min_time"], row["max_time"], row["max_issue"])
+            for row in meta_data:
+                entry.intergrate(row)
+            meta_signals.append(entry.asdict())
+
+        if not meta_signals:  # none found or no signals
+            continue
+
+        s = source.asdict()
+        s["signals"] = meta_signals
+        sources.append(s)
+
+    return jsonify(sources)
 
 
 @bp.route("/coverage", methods=("GET", "POST"))
