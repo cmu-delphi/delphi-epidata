@@ -104,7 +104,7 @@ The following samples show how to import the library and fetch national FluView 
 <script src="delphi_epidata.js"></script>
 <!-- Fetch data -->
 <script>
-  EpidataAsync.fluview_clinical(['nat'], [201940, Epidata.range(202001, 202010)]).then((res) => {
+  EpidataAsync.fluview_clinical('nat', [201940, EpidataAsync.range(202001, 202010)]).then((res) => {
     console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
   });
 </script>

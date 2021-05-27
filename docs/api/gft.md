@@ -79,7 +79,7 @@ The following samples show how to import the library and fetch Google Flu Trends
 <script src="delphi_epidata.js"></script>
 <!-- Fetch data -->
 <script>
-  EpidataAsync.gft(['nat'], [201440, Epidata.range(201501, 201510)]).then((res) => {
+  EpidataAsync.gft('nat', [201440, EpidataAsync.range(201501, 201510)]).then((res) => {
     console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
   });
 </script>

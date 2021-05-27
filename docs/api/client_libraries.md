@@ -24,7 +24,7 @@ For anyone looking for COVIDCast data, please visit our [COVIDCast Libraries](co
 <script src="delphi_epidata.js"></script>
 <!-- Fetch data -->
 <script>
-  EpidataAsync.covidcast('fb-survey', 'smoothed_cli', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001').then((res) => {
+  EpidataAsync.covidcast('fb-survey', 'smoothed_cli', 'day', 'county', [20200401, EpidataAsync.range(20200405, 20200414)], '06001').then((res) => {
     console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
   });
 </script>
