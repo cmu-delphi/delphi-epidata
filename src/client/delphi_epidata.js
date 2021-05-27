@@ -21,8 +21,9 @@
     factory(root, root.fetch, root.jQuery || root.$);
   }
 })(this, function (exports, fetchImpl, jQuery) {
-  const BASE_URL = "https://delphi.cmu.edu/epidata/"; // Helper function to cast values and/or ranges to strings
+  const BASE_URL = "https://delphi.cmu.edu/epidata/";
 
+  // Helper function to cast values and/or ranges to strings
   function _listitem(value) {
     if (value == null) {
       return null;
@@ -103,6 +104,10 @@
     }
   }
 
+  function range(from, to) {
+    return {from, to};
+  }
+
   ////#region begin of views
 
   function createEpidataAsync(baseUrl) {
@@ -111,6 +116,7 @@
 
     return {
       BASE_URL: baseUrl || BASE_URL,
+      range,
       /**
        * Fetch FluView data
        */
@@ -440,9 +446,10 @@
     const r = {
       BASE_URL: api.BASE_URL,
       withURL: createEpidata,
+      range,
     };
     Object.keys(api).forEach((key) => {
-      if (key === "BASE_URL" || key === "withURL") {
+      if (key === "BASE_URL" || key === "withURL" || key === 'range') {
         return;
       }
       r[key] = function (callback) {

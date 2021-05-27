@@ -15,7 +15,8 @@ declare module 'delphi_epidata' {
 
     export interface EpidataFunctions {
         readonly BASE_URL: string;
-        withURL(baseUrl?: string): EpidataFunctions;
+        range(this: void, from: string | number, to: string | number): EpiRange;
+        withURL(this: void, baseUrl?: string): EpidataFunctions;
 
         fluview(callback: EpiDataCallback, regions: StringParam, epiweeks: EpiRangeParam, issues?: EpiRangeParam, lag?: number, auth?: string): Promise<EpiDataResponse>;
         fluview_meta(callback: EpiDataCallback): Promise<EpiDataResponse>;
@@ -46,7 +47,8 @@ declare module 'delphi_epidata' {
 
     export interface EpidataAsyncFunctions {
         readonly BASE_URL: string;
-        withURL(baseUrl?: string): EpidataAsyncFunctions;
+        range(this: void, from: string | number, to: string | number): EpiRange;
+        withURL(this: void, baseUrl?: string): EpidataAsyncFunctions;
 
         fluview(regions: StringParam, epiweeks: EpiRangeParam, issues?: EpiRangeParam, lag?: number, auth?: string): Promise<EpiDataResponse>;
         fluview_meta(): Promise<EpiDataResponse>;
