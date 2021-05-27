@@ -35,6 +35,8 @@ class Epidata:
   # API base url
   BASE_URL = 'https://delphi.cmu.edu/epidata/api.php'
 
+  client_version = _version
+
   # Helper function to cast values and/or ranges to strings
   @staticmethod
   def _listitem(value):
