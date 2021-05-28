@@ -1,9 +1,11 @@
 from dataclasses import asdict, dataclass, field
-from typing import Optional, Dict, Any, List, Tuple
+from typing import Callable, Optional, Dict, Any, List, Tuple
 from enum import Enum
 from pathlib import Path
 import pandas as pd
 import numpy as np
+
+from ..._params import SourceSignalPair
 
 
 class HighValuesAre(str, Enum):
@@ -90,10 +92,18 @@ class DataSource:
 
     signals: List[DataSignal] = field(default_factory=list)
 
+    def __post_init__(self):
+        if not self.db_source:
+            self.db_source = self.source
+
     def asdict(self):
         r = asdict(self)
         r["signals"] = [r.asdict() for r in self.signals]
         return r
+
+    @property
+    def uses_db_alias(self):
+        return self.source != self.db_source
 
 
 def _clean_column(c: str) -> str:
@@ -143,3 +153,39 @@ data_signals_by_key = {d.key: d for d in data_signals}
 
 def get_related_signals(signal: DataSignal) -> List[DataSignal]:
     return [s for s in data_signals if s != signal and s.signal_basename == signal.signal_basename]
+
+
+def create_source_signal_alias_mapper(source_signals: List[SourceSignalPair]) -> Tuple[List[SourceSignalPair], Optional[Callable[[str, str], str]]]:
+    alias_to_data_sources: Dict[str, List[DataSource]] = {}
+    transformed_pairs: List[SourceSignalPair] = []
+    for pair in source_signals:
+        source = data_source_by_id.get(pair.source)
+        if not source or not source.uses_db_alias:
+            transformed_pairs.append(pair)
+            continue
+        # uses an alias
+        alias_to_data_sources.setdefault(source.db_source, []).append(source)
+        transformed_pairs.append(SourceSignalPair(source.db_source, pair.signal))
+
+    if not alias_to_data_sources:
+        # no alias needed
+        return source_signals, None
+
+    def map_row(source: str, signal: str) -> source:
+        """
+        maps a given row source back to its alias version
+        """
+        possible_data_sources = alias_to_data_sources.get(source)
+        if not possible_data_sources:
+            # nothing to transform
+            return source
+        if len(possible_data_sources) == 1:
+            return possible_data_sources[0].source
+        # need the signal to decide
+        signal_source = next((f for f in possible_data_sources if any((s.signal == signal for s in f.signals))), None)
+        if not signal_source:
+            # take the first one
+            signal_source = possible_data_sources[0]
+        return signal_source.source
+
+    return transformed_pairs, map_row
