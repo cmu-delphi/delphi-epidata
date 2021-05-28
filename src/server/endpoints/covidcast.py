@@ -34,7 +34,7 @@ from .._validate import (
 from .._pandas import as_pandas
 from .covidcast_utils import compute_trend, compute_trends, compute_correlations, compute_trend_value, CovidcastMetaEntry
 from ..utils import shift_time_value, date_to_time_value, time_value_to_iso
-from .covidcast_utils.model import data_sources
+from .covidcast_utils.model import data_sources, create_source_signal_alias_mapper
 
 # first argument is the endpoint name
 bp = Blueprint("covidcast", __name__)
@@ -124,6 +124,7 @@ def guess_index_to_use(time: List[TimePair], geo: List[GeoPair], issues: Optiona
 @bp.route("/", methods=("GET", "POST"))
 def handle():
     source_signal_pairs = parse_source_signal_pairs()
+    source_signal_pairs, alias_mapper = create_source_signal_alias_mapper(source_signal_pairs)
     time_pairs = parse_time_pairs()
     geo_pairs = parse_geo_pairs()
 
@@ -137,7 +138,8 @@ def handle():
     fields_string = ["geo_value", "signal"]
     fields_int = ["time_value", "direction", "issue", "lag", "missing_value", "missing_stderr", "missing_sample_size"]
     fields_float = ["value", "stderr", "sample_size"]
-    if is_compatibility_mode():
+    is_compatibility = is_compatibility_mode()
+    if is_compatibility:
         q.set_order("signal", "time_value", "geo_value", "issue")
     else:
         # transfer also the new detail columns
@@ -157,14 +159,22 @@ def handle():
 
     _handle_lag_issues_as_of(q, issues, lag, as_of)
 
+    def transform_row(row, _):
+        if is_compatibility or not alias_mapper:
+            return row
+        row["source"] = alias_mapper(row["source"], row["signal"])
+        return row
+
     # send query
-    return execute_query(str(q), q.params, fields_string, fields_int, fields_float)
+    return execute_query(str(q), q.params, fields_string, fields_int, fields_float, transform=transform_row)
 
 
 @bp.route("/trend", methods=("GET", "POST"))
 def handle_trend():
     require_all("date", "window")
     source_signal_pairs = parse_source_signal_pairs()
+    source_signal_pairs, alias_mapper = create_source_signal_alias_mapper(source_signal_pairs)
+    # TODO alias
     geo_pairs = parse_geo_pairs()
 
     time_value = parse_day_arg("date")
@@ -191,7 +201,10 @@ def handle_trend():
 
     def gen(rows):
         for key, group in groupby((parse_row(row, fields_string, fields_int, fields_float) for row in rows), lambda row: (row["geo_type"], row["geo_value"], row["source"], row["signal"])):
-            trend = compute_trend(key[0], key[1], key[2], key[3], time_value, basis_time_value, ((row["time_value"], row["value"]) for row in group))
+            geo_type, geo_value, source, signal = key
+            if alias_mapper:
+                source = alias_mapper(source, signal)
+            trend = compute_trend(geo_type, geo_value, source, signal, time_value, basis_time_value, ((row["time_value"], row["value"]) for row in group))
             yield trend.asdict()
 
     # execute first query
@@ -208,6 +221,7 @@ def handle_trend():
 def handle_trendseries():
     require_all("window")
     source_signal_pairs = parse_source_signal_pairs()
+    source_signal_pairs, alias_mapper = create_source_signal_alias_mapper(source_signal_pairs)
     geo_pairs = parse_geo_pairs()
 
     time_window = parse_day_range_arg("window")
@@ -237,7 +251,10 @@ def handle_trendseries():
 
     def gen(rows):
         for key, group in groupby((parse_row(row, fields_string, fields_int, fields_float) for row in rows), lambda row: (row["geo_type"], row["geo_value"], row["source"], row["signal"])):
-            trends = compute_trends(key[0], key[1], key[2], key[3], shifter, ((row["time_value"], row["value"]) for row in group))
+            geo_type, geo_value, source, signal = key
+            if alias_mapper:
+                source = alias_mapper(source, signal)
+            trends = compute_trends(geo_type, geo_value, source, signal, shifter, ((row["time_value"], row["value"]) for row in group))
             for t in trends:
                 yield t
 
@@ -256,6 +273,7 @@ def handle_correlation():
     require_all("reference", "window", "others", "geo")
     reference = parse_single_source_signal_arg("reference")
     other_pairs = parse_source_signal_arg("others")
+    source_signal_pairs, alias_mapper = create_source_signal_alias_mapper(other_pairs + [reference])
     geo_pairs = parse_geo_arg()
     time_window = parse_day_range_arg("window")
     lag = extract_integer("lag")
@@ -271,7 +289,11 @@ def handle_correlation():
     q.set_fields(fields_string, fields_int, fields_float)
     q.set_order("geo_type", "geo_value", "source", "signal", "time_value")
 
-    q.where_source_signal_pairs("source", "signal", other_pairs + [reference])
+    q.where_source_signal_pairs(
+        "source",
+        "signal",
+        source_signal_pairs,
+    )
     q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
     q.where_time_pairs("time_type", "time_value", [TimePair("day", [time_window])])
 
@@ -304,6 +326,8 @@ def handle_correlation():
                 continue  # no other signals
 
             for (source, signal), other_group in other_groups:
+                if alias_mapper:
+                    source = alias_mapper(source, signal)
                 for cor in compute_correlations(geo_type, geo_value, source, signal, lag, reference_group, other_group):
                     yield cor.asdict()
 
@@ -314,6 +338,7 @@ def handle_correlation():
 @bp.route("/csv", methods=("GET", "POST"))
 def handle_export():
     source, signal = request.args.get("signal", "jhu-csse:confirmed_incidence_num").split(":")
+    source_signal_pairs, alias_mapper = create_source_signal_alias_mapper([SourceSignalPair(source, [signal])])
     start_day = request.args.get("start_day", "2020-04-01")
     end_day = request.args.get("end_day", "2020-09-01")
     geo_type = request.args.get("geo_type", "county")
@@ -335,7 +360,8 @@ def handle_export():
 
     q.set_fields(["geo_value", "signal", "time_value", "issue", "lag", "value", "stderr", "sample_size", "geo_type", "source"], [], [])
     q.set_order("time_value", "geo_value")
-    q.where(source=source, signal=signal, time_type="day")
+    q.where(time_type="day")
+    q.where_source_signal_pairs("source", "signal", source_signal_pairs)
     q.conditions.append("time_value BETWEEN :start_day AND :end_day")
     q.params["start_day"] = date_to_time_value(start_day)
     q.params["end_day"] = date_to_time_value(end_day)
@@ -361,7 +387,7 @@ def handle_export():
             "stderr": row["stderr"],
             "sample_size": row["sample_size"],
             "geo_type": row["geo_type"],
-            "data_source": row["source"],
+            "data_source": alias_mapper(row["source"], row["signal"]) if alias_mapper else row["source"],
         }
 
     def gen(first_row, rows):
@@ -393,6 +419,9 @@ def handle_backfill():
     """
     require_all("geo", "time", "signal")
     signal_pair = parse_single_source_signal_arg("signal")
+    source_signal_pairs, _ = create_source_signal_alias_mapper([signal_pair])
+    # don't need the alias mapper since we don't return the source
+
     time_pair = parse_single_time_arg("time")
     geo_pair = parse_single_geo_arg("geo")
     reference_anchor_lag = extract_integer("anchor_lag")  # in days
@@ -409,7 +438,7 @@ def handle_backfill():
     q.set_order(time_value=True, issue=True)
     q.set_fields(fields_string, fields_int, fields_float, ["is_latest_issue"])
 
-    q.where_source_signal_pairs("source", "signal", [signal_pair])
+    q.where_source_signal_pairs("source", "signal", source_signal_pairs)
     q.where_geo_pairs("geo_type", "geo_value", [geo_pair])
     q.where_time_pairs("time_type", "time_value", [time_pair])
 
