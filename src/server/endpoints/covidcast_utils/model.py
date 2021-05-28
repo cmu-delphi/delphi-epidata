@@ -47,6 +47,29 @@ class DataSignal:
     has_sample_size: bool = False
     link: Optional[str] = None
 
+    def derive_defaults(self, map: Dict[Tuple[str, str], "DataSignal"]):
+        base = map.get((self.source, self.signal_basename))
+        if not self.name:
+            self.name = base.name if base else self.signal
+        if not self.description:
+            if base:
+                self.description = base.description or base.short_description or "No description available"
+            else:
+                self.description = self.short_description or "No description available"
+        if not self.short_description:
+            if base:
+                self.short_description = base.short_description or (base.description[:10] if base.description else "No description available")
+            else:
+                self.short_description = self.description[:10]
+        if not self.link and base:
+            self.link = base.link
+        if not self.value_label:
+            self.value_label = base.value_label if base else "Value"
+        if not self.category:
+            self.value_label = base.category if base else SignalCategory.other
+        if not self.high_values_are:
+            self.high_values_are = base.high_values_are if base else HighValuesAre.neutral
+
     def asdict(self):
         return asdict(self)
 
@@ -101,6 +124,11 @@ def _load_data_signals(sources: List[DataSource]):
     data_signals: List[DataSignal] = [DataSignal(**d) for d in data_signals_df.to_dict(orient="records")]
     data_signals_df.set_index(["source", "signal"])
 
+    by_source_id = {d.key: d for d in data_signals}
+    for ds in data_signals:
+        # derive from base signal
+        ds.derive_defaults(by_source_id)
+
     for ds in data_signals:
         source = by_id.get(ds.source)
         if source:
@@ -111,3 +139,7 @@ def _load_data_signals(sources: List[DataSource]):
 
 data_signals, data_signals_df = _load_data_signals(data_sources)
 data_signals_by_key = {d.key: d for d in data_signals}
+
+
+def get_related_signals(signal: DataSignal) -> List[DataSignal]:
+    return [s for s in data_signals if s != signal and s.signal_basename == signal.signal_basename]

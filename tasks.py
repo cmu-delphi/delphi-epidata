@@ -22,7 +22,7 @@ def update_gdoc(
         rows = r.split("\n")
         rows = [r for r in rows if not r.startswith(",")]
         file_ = base_dir / filename
-        file_.write_text("\n".join(rows))
+        file_.write_text("\n".join(rows), encoding="utf8")
 
     _migrate_file(sources_url, "db_sources.csv")
     _migrate_file(signal_url, "db_signals.csv")
