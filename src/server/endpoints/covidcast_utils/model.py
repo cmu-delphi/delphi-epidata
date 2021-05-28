@@ -171,7 +171,7 @@ def create_source_signal_alias_mapper(source_signals: List[SourceSignalPair]) ->
         # no alias needed
         return source_signals, None
 
-    def map_row(source: str, signal: str) -> source:
+    def map_row(source: str, signal: str) -> str:
         """
         maps a given row source back to its alias version
         """
