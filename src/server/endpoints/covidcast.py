@@ -463,6 +463,23 @@ def handle_meta():
     """
 
     filter_signal = parse_source_signal_arg("signal")
+    flags = ",".join(request.values.getlist("flags")).split(",")
+    filter_smoothed: Optional[bool] = None
+    filter_weighted: Optional[bool] = None
+    filter_cumulative: Optional[bool] = None
+
+    if "smoothed" in flags:
+        filter_smoothed = True
+    elif "not_smoothed" in flags:
+        filter_smoothed = False
+    if "weighted" in flags:
+        filter_weighted = True
+    elif "not_weighted" in flags:
+        filter_weighted = False
+    if "cumulative" in flags:
+        filter_cumulative = True
+    elif "not_cumulative" in flags:
+        filter_cumulative = False
 
     row = db.execute(text("SELECT epidata FROM covidcast_meta_cache LIMIT 1")).fetchone()
 
@@ -481,6 +498,12 @@ def handle_meta():
 
         for signal in source.signals:
             if filter_signal and all((not s.matches(signal.source, signal.signal) for s in filter_signal)):
+                continue
+            if filter_smoothed is not None and signal.is_smoothed != filter_smoothed:
+                continue
+            if filter_weighted is not None and signal.is_weighted != filter_weighted:
+                continue
+            if filter_cumulative is not None and signal.is_cumulative != filter_cumulative:
                 continue
             meta_data = by_signal.get(signal.key)
             if not meta_data:
