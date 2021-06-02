@@ -86,11 +86,16 @@ interest will likely provide more coverage.
 
 ### Naming
 
-Each CSV is named as follows:
+"Rollup" files containing all time periods for a given period type-aggregation
+type combination have names of the form:
+
+    {period_type}_{geo_type}_{aggregation_type}.csv.gz
+
+CSVs for individual time periods have names of the form:
 
     {period_start}_{period_end}_{period_type}_{geo_type}_{aggregation_type}.csv
 
-Dates are of the form `yyyyMMdd`. `period_start` refers to the first day of
+Dates are in `yyyyMMdd` format. `period_start` refers to the first day of
 the time period survey responses were aggregated over, in the Pacific time
 zone (UTC - 7). Unless noted otherwise, the time period is always a complete
 month (`period_type` = `monthly`) or epiweek (`period_type` = `weekly`).
@@ -98,11 +103,6 @@ month (`period_type` = `monthly`) or epiweek (`period_type` = `weekly`).
 is a concatenated list of other grouping variables used, ordered
 alphabetically. Values for variables used in file naming align with those
 within files as specified in the column section below.
-
-"Rollup" files containing all time periods for a given period type-aggregation
-type combination have names of the form:
-
-    {period_type}_{geo_type}_{aggregation_type}.csv.gz
 
 ### Columns
 
