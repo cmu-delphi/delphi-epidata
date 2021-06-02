@@ -11,8 +11,8 @@ This documentation describes the fine-resolution contingency tables produced by
 grouping [COVID Symptom Survey](./index.md) individual responses by various
 self-reported demographic features.
 
-* [Weekly files](https://www.cmu.edu/delphi-web/surveys/weekly/)
-* [Monthly files](https://www.cmu.edu/delphi-web/surveys/monthly/)
+* [Weekly files](https://www.cmu.edu/delphi-web/surveys/weekly-rollup/)
+* [Monthly files](https://www.cmu.edu/delphi-web/surveys/monthly-rollup/)
 
 These contingency tables provide granular breakdowns of COVID-related topics such as
 vaccine uptake and acceptance. They are more detailed than the
@@ -47,6 +47,14 @@ those who want to study groups with smaller sample sizes should use the
 monthly files. Because monthly aggregates include more responses, they have
 lower missingness when grouping by several features at a time.
 
+* [Weekly files](https://www.cmu.edu/delphi-web/surveys/weekly-rollup/)
+* [Monthly files](https://www.cmu.edu/delphi-web/surveys/monthly-rollup/)
+
+Files contain all time periods for a given period type-aggregation
+type combination.
+
+Individual CSVs containing a single [week](https://www.cmu.edu/delphi-web/surveys/weekly/) or [month](https://www.cmu.edu/delphi-web/surveys/monthly/) for a given aggregation type are also available.
+
 ### Dates
 
 The included files provide estimates for various metrics of interest over a
@@ -78,11 +86,16 @@ interest will likely provide more coverage.
 
 ### Naming
 
-Each CSV is named as follows:
+"Rollup" files containing all time periods for a given period type-aggregation
+type combination have names of the form:
+
+    {period_type}_{geo_type}_{aggregation_type}.csv.gz
+
+CSVs for individual time periods have names of the form:
 
     {period_start}_{period_end}_{period_type}_{geo_type}_{aggregation_type}.csv
 
-Dates are of the form `yyyyMMdd`. `period_start` refers to the first day of
+Dates are in `yyyyMMdd` format. `period_start` refers to the first day of
 the time period survey responses were aggregated over, in the Pacific time
 zone (UTC - 7). Unless noted otherwise, the time period is always a complete
 month (`period_type` = `monthly`) or epiweek (`period_type` = `weekly`).

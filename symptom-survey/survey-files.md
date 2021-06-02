@@ -62,7 +62,7 @@ single data frame for use.
 Several days after the end of each month, we produce "rollup" files containing
 all survey responses from that month. These are in two forms.
 
-First, the monthly CSV files have filenames in the form
+First, the monthly CSV files have filenames of the form
 
     {YYYY}-{mm}.csv.gz
 
