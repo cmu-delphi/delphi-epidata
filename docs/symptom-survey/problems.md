@@ -36,6 +36,10 @@ Pacific time, we corrected the text to read:
 > Lorsque vous êtes sorti(e) au cours des 7 derniers jours, combien de personnes
 > ont maintenu une distance d’au moins 2 mètres entre elles ?
 
+This problem only affected the French translation. The `UserLanguage` column in
+the survey data files indicates the translation used by each respondent to
+complete the survey.
+
 ## Election-Related Sample Size Decreases (Nov 2020)
 
 Sample sizes decreased in the days following the 2020 US presidential election.
