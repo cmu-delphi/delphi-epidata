@@ -31,7 +31,7 @@ In French, it was translated to read as follows:
 > ont maintenu une distance d’au moins 6 mètres entre elles ?
 
 This incorrectly translated 6 feet to 6 meters. On June 7, 2021 at 9:50am
-Pacific time, we corrected the text to read
+Pacific time, we corrected the text to read:
 
 > Lorsque vous êtes sorti(e) au cours des 7 derniers jours, combien de personnes
 > ont maintenu une distance d’au moins 2 mètres entre elles ?
