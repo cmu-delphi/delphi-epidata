@@ -184,13 +184,6 @@ def get_latest_issue_from_metadata(dashboard_signal, metadata):
     max_issue = df_for_source["max_issue"].max()
     return pd.to_datetime(str(max_issue), format="%Y%m%d").date()
 
-def get_earliest_issue_from_metadata(dashboard_signal, metadata):
-    """Get the most recent issue date for the signal."""
-    df_for_source = metadata[(metadata.data_source == dashboard_signal.source) & (
-        metadata.signal == dashboard_signal.covidcast_signal)]
-    min_issue = df_for_source["max_issue"].min()
-    return pd.to_datetime(str(min_issue), format="%Y%m%d").date()
-
 
 def get_latest_time_value_from_metadata(dashboard_signal, metadata):
     """Get the most recent date with data for the signal."""

@@ -188,22 +188,3 @@ class Database:
         if result is not None:
           return pd.Timestamp(str(result))
       return pd.Timestamp("1900/1/1")
-
-  def get_min_issue(self):
-    """Fetch the most earliest issue.
-
-    This is used to bookend what updates we pull in from the HHS metadata.
-    """
-    with self.new_cursor() as cursor:
-      cursor.execute(f'''
-        SELECT
-          min(publication_date)
-        from
-          `covid_hosp_meta`
-        WHERE
-          dataset_name = "{self.table_name}"
-      ''')
-      for (result,) in cursor:
-        if result is not None:
-          return pd.Timestamp(str(result))
-      return pd.Timestamp("1900/1/1")

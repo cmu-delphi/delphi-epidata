@@ -20,7 +20,6 @@ from delphi.epidata.acquisition.covidcast.signal_dash_data_generator import (
   DashboardSignalCoverage,
   DashboardSignal,
   get_latest_issue_from_metadata,
-  get_earliest_issue_from_metadata,
   get_latest_time_value_from_metadata,
   get_coverage
  )
@@ -168,6 +167,7 @@ class UnitTests(unittest.TestCase):
         issue_date = get_latest_issue_from_metadata(signal, metadata)
         self.assertEqual(issue_date, date(2021, 1, 1))
 
+
     def test_get_earliest_issue_from_metadata(self):
         signal = DashboardSignal(
             db_id=1, name="Change", source="chng",
@@ -181,7 +181,7 @@ class UnitTests(unittest.TestCase):
 
         issue_date = get_earliest_issue_from_metadata(signal, metadata)
         self.assertEqual(issue_date, date(2020, 1, 1))
-
+        
     def test_get_latest_time_value_from_metadata(self):
         signal = DashboardSignal(
             db_id=1, name="Change", source="chng",

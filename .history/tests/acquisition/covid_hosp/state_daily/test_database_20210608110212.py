@@ -70,19 +70,3 @@ class DatabaseTests(unittest.TestCase):
 
     self.assertEqual(mock_cursor.execute.call_count, 1)
     self.assertEqual(result, pd.Timestamp("1900/1/1"), "max issue when db is empty")
-  
-  def test_min_issue(self):
-    """Get the earliest issue date added to the database"""
-    # Note that query logic is tested separately by integration tests. This
-    # test just checks that the function maps inputs to outputs as expected.
-
-    mock_connection = MagicMock()
-    mock_cursor = mock_connection.cursor()
-    database = Database(mock_connection)
-    
-    result = database.get_min_issue()
-
-    self.assertEqual(mock_cursor.execute.call_count, 1 )
-    self.assertEqual(result, pd.Timestamp("1900/1/1"), "min issue when db is empty")
-  
-  

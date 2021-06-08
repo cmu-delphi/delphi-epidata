@@ -275,7 +275,6 @@ class Database:
         ROUND(STD(`value`),7) AS `stdev_value`,
         MAX(`value_updated_timestamp`) AS `last_update`,
         MAX(`issue`) as `max_issue`,
-        MIN(`issue`) as `min_issue`,
         MIN(`lag`) as `min_lag`,
         MAX(`lag`) as `max_lag`
       FROM
@@ -368,4 +367,3 @@ class Database:
     for entry in cache:
       cache_hash[(entry['data_source'], entry['signal'], entry['time_type'], entry['geo_type'])] = entry
     return cache_hash
-
