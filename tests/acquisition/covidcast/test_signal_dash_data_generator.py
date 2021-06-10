@@ -177,7 +177,7 @@ class UnitTests(unittest.TestCase):
         data = [['chng', 'chng-sig', 20200101],
                 ['chng', 'chng-sig', 20210101],
                 ['quidel', 'quidel-sig', 20220101]]
-        metadata = pd.DataFrame(data, columns=['data_source', 'signal', 'max_issue'])
+        metadata = pd.DataFrame(data, columns=['data_source', 'signal', 'min_issue'])
 
         issue_date = get_earliest_issue_from_metadata(signal, metadata)
         self.assertEqual(issue_date, date(2020, 1, 1))
