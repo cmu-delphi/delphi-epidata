@@ -89,6 +89,7 @@ class DataSource:
     reference_signal: str
     license: Optional[str] = None
     link: Optional[str] = None
+    dua: Optional[str] = None
 
     signals: List[DataSignal] = field(default_factory=list)
 
@@ -99,6 +100,7 @@ class DataSource:
     def asdict(self):
         r = asdict(self)
         r["signals"] = [r.asdict() for r in self.signals]
+        del r["dua"]
         return r
 
     @property
