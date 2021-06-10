@@ -291,14 +291,12 @@ class Database:
         `geo_type` ASC
     
     UNION
-    #Compute the min issues date every combination
     SELECT
-
         `time_type`,
         `geo_type`.
         MIN(`issue`) as `min_issue`
     FROM 
-        `{table_name}` {index_hint}
+        `{table_name}`
     WHERE
         `source` = %s AND
         `signal` = %s AND
