@@ -275,7 +275,6 @@ class Database:
         ROUND(STD(`value`),7) AS `stdev_value`,
         MAX(`value_updated_timestamp`) AS `last_update`,
         MAX(`issue`) as `max_issue`,
-        MIN(`issue`) as `min_issue`,
         MIN(`lag`) as `min_lag`,
         MAX(`lag`) as `max_lag`
       FROM
@@ -290,7 +289,26 @@ class Database:
       ORDER BY
         `time_type` ASC,
         `geo_type` ASC
-      '''
+    
+    UNION
+    #Compute the min issues date every combination
+    SELECT
+
+        `time_type`,
+        `geo_type`.
+        MIN(`issue`) as `min_issue`
+    FROM 
+        `{table_name}` {index_hint}
+    WHERE
+        `source` = %s AND
+        `signal` = %s AND
+    GROUP BY
+        `time_type`,
+        `geo_type`
+    ORDER BY
+        `time_type` DESC,
+        `geo_type`  DESC
+    '''
 
     meta = []
     meta_lock = threading.Lock()
