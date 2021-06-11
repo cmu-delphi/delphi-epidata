@@ -34,7 +34,7 @@ from .._validate import (
 from .._db import sql_table_has_columns
 from .._pandas import as_pandas
 from .covidcast_utils import compute_trend, compute_trends, compute_correlations, compute_trend_value, CovidcastMetaEntry, AllSignalsMap
-from ..utils import shift_time_value, date_to_time_value, time_value_to_iso
+from ..utils import shift_time_value, date_to_time_value, time_value_to_iso, time_value_to_date
 
 # first argument is the endpoint name
 bp = Blueprint("covidcast", __name__)
@@ -505,7 +505,8 @@ def handle_coverage():
     if "window" in request.values:
         time_window = parse_day_range_arg("window")
     else:
-        now = date.today()
+        now_time = extract_date("latest")
+        now = date.today() if now_time is None else time_value_to_date(now_time)
         last = extract_integer("days")
         if last is None:
             last = 30
