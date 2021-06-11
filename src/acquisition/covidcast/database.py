@@ -16,7 +16,7 @@ from multiprocessing import cpu_count
 # first party
 import delphi.operations.secrets as secrets
 
-
+# testing to see if changes appear
 class CovidcastRow():
   """A container for all the values of a single covidcast row."""
 
