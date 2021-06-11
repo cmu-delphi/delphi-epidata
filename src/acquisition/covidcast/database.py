@@ -298,6 +298,23 @@ class Database:
       ORDER BY
         `time_type` ASC,
         `geo_type` ASC
+      
+      UNION
+      SELECT
+        `time_type`,
+        `geo_type`.
+        MIN(`issue`) as `min_issue`
+      FROM 
+        `{table_name}`
+      WHERE
+        `source` = %s AND
+        `signal` = %s AND
+      GROUP BY
+        `time_type`,
+        `geo_type`
+      ORDER BY
+        `time_type` DESC,
+        `geo_type`  DESC
       '''
 
     meta = []
