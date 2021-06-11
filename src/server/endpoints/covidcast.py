@@ -1,6 +1,6 @@
 from typing import List, Optional, Union, Tuple, Dict, Any, Set
 from itertools import groupby
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from flask import Blueprint, request
 from flask.json import loads, jsonify
 from bisect import bisect_right
@@ -149,7 +149,6 @@ def handle():
         fields_string.extend(["source", "geo_type", "time_type"])
         q.set_order("source", "signal", "time_type", "time_value", "geo_type", "geo_value", "issue")
     q.set_fields(fields_string, fields_int, fields_float)
-
 
     # basic query info
     # data type of each field
@@ -493,3 +492,33 @@ def handle_meta():
         entry.intergrate(row)
 
     return jsonify([r.asdict() for r in out.values()])
+
+
+@bp.route("/coverage", methods=("GET", "POST"))
+def handle_coverage():
+    """
+    similar to /signal_dashboard_coverage for a specific signal returns the coverage (number of locations for a given geo_type)
+    """
+
+    signal_pair = parse_single_source_signal_arg("signal")
+    geo_type = request.args.get("geo_type", "county")
+    if "window" in request.values:
+        time_window = parse_day_range_arg("window")
+    else:
+        now = date.today()
+        time_window = (date_to_time_value(now - timedelta(days=30)), date_to_time_value(now))
+
+    q = QueryBuilder("covidcast", "c")
+    q.fields = ["c.time_value", "count(c.geo_value) as count"]
+    if geo_type == "only-county":
+        q.where(geo_type="county")
+        q.conditions.append('geo_value not like "%000"')
+    else:
+        q.where(geo_type=geo_type)
+    q.where_source_signal_pairs("source", "signal", [signal_pair])
+    q.where_time_pairs("time_type", "time_value", [TimePair("day", [time_window])])
+    q.group_by = "c.time_value"
+
+    _handle_lag_issues_as_of(q, None, None, None)
+
+    return execute_query(q.query, q.params, [], ["time_value", "count"], [])
