@@ -506,7 +506,10 @@ def handle_coverage():
         time_window = parse_day_range_arg("window")
     else:
         now = date.today()
-        time_window = (date_to_time_value(now - timedelta(days=30)), date_to_time_value(now))
+        last = extract_integer("days")
+        if last is None:
+            last = 30
+        time_window = (date_to_time_value(now - timedelta(days=last)), date_to_time_value(now))
 
     q = QueryBuilder("covidcast", "c")
     q.fields = ["c.time_value", "count(c.geo_value) as count"]
