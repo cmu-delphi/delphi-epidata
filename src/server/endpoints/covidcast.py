@@ -136,6 +136,11 @@ def handle():
 
     fields_string = ["geo_value", "signal"]
     fields_int = ["time_value", "direction", "issue", "lag"]
+
+    missing_fields = ["missing_value", "missing_stderr", "missing_sample_size"]
+    if sql_table_has_columns("covidcast", missing_fields):
+        fields_int.extend(missing_fields)
+
     fields_float = ["value", "stderr", "sample_size"]
     if is_compatibility_mode():
         q.set_order("signal", "time_value", "geo_value", "issue")
@@ -145,14 +150,6 @@ def handle():
         q.set_order("source", "signal", "time_type", "time_value", "geo_type", "geo_value", "issue")
     q.set_fields(fields_string, fields_int, fields_float)
 
-    missing_fields = ["missing_value", "missing_stderr", "missing_sample_size"]
-    fields_int.extend(missing_fields)
-    if sql_table_has_columns("covidcast", missing_fields):
-        # real fields
-        q.fields.extend([f"{q.alias}.{field}" for field in missing_fields])
-    else:
-        # fake fields
-        q.fields.extend([f"0 as {field}" for field in missing_fields])
 
     # basic query info
     # data type of each field
