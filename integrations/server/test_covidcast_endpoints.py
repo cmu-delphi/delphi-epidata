@@ -363,10 +363,10 @@ class CovidcastEndpointTests(unittest.TestCase):
             self.assertEqual(len(out), 0)
 
     def test_coverage(self):
-        """Request a signal the /meta endpoint."""
+        """Request a signal the /coverage endpoint."""
 
         num_geos_per_date = [10, 20, 30, 40, 44]
-        dates = [20200401 + i for i in range(num_geos_per_date)]
+        dates = [20200401 + i for i in range(len(num_geos_per_date))]
         rows = [CovidcastRow(time_value=dates[i], value=i, geo_value=str(geo_value)) for i, num_geo in enumerate(num_geos_per_date) for geo_value in range(num_geo)]
         self._insert_rows(rows)
 
