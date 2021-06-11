@@ -100,7 +100,6 @@ class DataSource:
     def asdict(self):
         r = asdict(self)
         r["signals"] = [r.asdict() for r in self.signals]
-        del r["dua"]
         return r
 
     @property
