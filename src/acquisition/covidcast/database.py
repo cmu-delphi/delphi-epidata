@@ -299,6 +299,7 @@ class Database:
         `geo_type` ASC
       
       UNION
+
       SELECT
         `time_type`,
         `geo_type`.
@@ -312,8 +313,8 @@ class Database:
         `time_type`,
         `geo_type`
       ORDER BY
-        `time_type` DESC,
-        `geo_type`  DESC
+        `time_type` ASC,
+        `geo_type`  ASC
       '''
 
     meta = []
