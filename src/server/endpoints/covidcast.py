@@ -500,7 +500,7 @@ def handle_coverage():
     similar to /signal_dashboard_coverage for a specific signal returns the coverage (number of locations for a given geo_type)
     """
 
-    signal_pair = parse_single_source_signal_arg("signal")
+    signal = parse_source_signal_arg("signal")
     geo_type = request.args.get("geo_type", "county")
     if "window" in request.values:
         time_window = parse_day_range_arg("window")
@@ -513,16 +513,24 @@ def handle_coverage():
         time_window = (date_to_time_value(now - timedelta(days=last)), date_to_time_value(now))
 
     q = QueryBuilder("covidcast", "c")
-    q.fields = ["c.time_value", "count(c.geo_value) as count"]
+    fields_string = ["source", "signal"]
+    fields_int = ["time_value"]
+
+    q.set_fields(fields_string, fields_int)
+
+    # manually append the count column because of grouping
+    fields_int.append("count")
+    q.fields.append(f"count({q.alias}.geo_value) as count")
+
     if geo_type == "only-county":
         q.where(geo_type="county")
         q.conditions.append('geo_value not like "%000"')
     else:
         q.where(geo_type=geo_type)
-    q.where_source_signal_pairs("source", "signal", [signal_pair])
+    q.where_source_signal_pairs("source", "signal", signal)
     q.where_time_pairs("time_type", "time_value", [TimePair("day", [time_window])])
-    q.group_by = "c.time_value"
+    q.group_by = "c.source, c.signal, c.time_value"
 
     _handle_lag_issues_as_of(q, None, None, None)
 
-    return execute_query(q.query, q.params, [], ["time_value", "count"], [])
+    return execute_query(q.query, q.params, fields_string, fields_int, [])
