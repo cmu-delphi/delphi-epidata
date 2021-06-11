@@ -632,7 +632,9 @@ Belief items:
 Norms items:
 
 * Item H1 asks respondents when they were in public in the past 7 days, how many
-  people maintained at least 6 feet from others.
+  people maintained at least 6 feet from others. *Note:* The French translation
+  of this item was initially incorrect. See the [error log](problems.md#mistranslation-of-distances-may-2021)
+  for details on the fix.
 * Item H2 asks respondents when they were in public in the past 7 days, how many
   people wore face masks.
 * Item H3 asks respondents thinking about their friends and family, how many
