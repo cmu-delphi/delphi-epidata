@@ -1,4 +1,4 @@
-from typing import List, Optional, Union, Tuple, Dict, Any
+from typing import List, Optional, Union, Tuple, Dict, Any, Set
 from itertools import groupby
 from datetime import date, datetime
 from flask import Blueprint, request
@@ -31,6 +31,7 @@ from .._validate import (
 )
 from .._pandas import as_pandas
 from .covidcast_utils import compute_trend, shift_time_value, date_to_time_value, time_value_to_iso, compute_correlations, compute_trend_value
+from streaming import fetch_and_derive_signal
 
 # first argument is the endpoint name
 bp = Blueprint("covidcast", __name__)
@@ -127,14 +128,28 @@ def handle():
     # data type of each field
     # build the source, signal, time, and location (type and id) filters
 
+    # TODO:
+    # - Multiple source-signal pair handling and renaming
+    # - Testing
+    raw_signal, transform = fetch_and_derive_signal(source_signal_pairs.source, source_signal_pairs.signal)
+    source_signal_pairs.signal = raw_signal
+
     q.where_source_signal_pairs("source", "signal", source_signal_pairs)
     q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
     q.where_time_pairs("time_type", "time_value", time_pairs)
 
     _handle_lag_issues_as_of(q, issues, lag, as_of)
 
-    # send query
-    return execute_query(str(q), q.params, fields_string, fields_int, fields_float)
+    p = create_printer()
+
+    # execute first query
+    try:
+        r = run_query(p, (str(q), q.params))
+    except Exception as e:
+        raise DatabaseErrorException(str(e))
+
+    # now use a generator for sending the rows and execute all the other queries
+    return p(filter_fields(transform(r)))
 
 
 @bp.route("/trend", methods=("GET", "POST"))
