@@ -120,6 +120,7 @@ class UnitTests(unittest.TestCase):
     connection = mock_connector.connect()
     cursor = connection.cursor() 
     cursor.rowcount = 3
+    cursor.fetchone.return_value = ['[]']
 
     cc_rows = [MagicMock(geo_id='CA', val=1, se=0, sample_size=0)]
     result = database.insert_or_update_batch(cc_rows)
@@ -133,6 +134,7 @@ class UnitTests(unittest.TestCase):
     connection = mock_connector.connect()
     cursor = connection.cursor() 
     cursor.rowcount = -1
+    cursor.fetchone.return_value = ['[]']
 
     cc_rows = [MagicMock(geo_id='CA', val=1, se=0, sample_size=0)]
     result = database.insert_or_update_batch(cc_rows)

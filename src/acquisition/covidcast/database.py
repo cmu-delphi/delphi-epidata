@@ -7,7 +7,7 @@ See src/ddl/covidcast.sql for an explanation of each field.
 import json
 import mysql.connector
 import numpy as np
-from math import ceil
+from math import ceil, sqrt
 
 from queue import Queue, Empty
 import threading
@@ -109,9 +109,10 @@ class Database:
 
     """
 
-    tmp_table_name = 'tmp_insert_update_table'
+    tmp_table_name = 'tmp_insert_update_table__' + datetime.utcnow().strftime('%Y%m%d%H%M%S%f') + "_" + threading.current_thread().name
 
     # TODO: this heavily copypastas src/ddl/covidcast.sql -- theres got to be a better way
+    # TODO: do we want a 'use_metadata' index on this?  see: compute_covidcast_meta(..., use_index)
     create_tmp_table_sql = f'''
       CREATE TABLE `{tmp_table_name}` (
         `source` varchar(32) NOT NULL,
@@ -142,8 +143,10 @@ class Database:
         `value_updated_timestamp`, `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, `direction`,
         `issue`, `lag`, `is_latest_issue`, `is_wip`)
       VALUES
-        (%s, %s, %s, %s, %s, %s, UNIX_TIMESTAMP(NOW()), %s, %s, %s, 0, NULL, %s, %s, 0, %s)
+        (%s, %s, %s, %s, %s, %s, UNIX_TIMESTAMP(NOW()), %s, %s, %s, 0, NULL, %s, %s, 1, %s)
     '''
+    # NOTE: `is_latest_issue` is being set to 1 above to enable cache computation of temp table.
+    #       zero_is_latest_issue_sql and set_is_latest_issue_sql (below) ensure bit is properly set later in this method.
 
     insert_or_update_sql = f'''
       INSERT INTO `covidcast`
@@ -188,7 +191,7 @@ class Database:
 
     # TODO: consider handling cc_rows as a generator instead of a list
     self._cursor.execute(create_tmp_table_sql)
-
+    meta_cache = self.retrieve_covidcast_meta_cache()
     try:
 
       num_rows = len(cc_rows)
@@ -217,12 +220,19 @@ class Database:
         ) for row in cc_rows[start:end]]
 
 
-        self._cursor.executemany(insert_into_tmp_sql, args)
+        result = self._cursor.executemany(insert_into_tmp_sql, args)
+
+        # use the temp table to compute meta just for new data, 
+        # then merge with the global meta
+        meta_update = Database.cache_to_dict(self.compute_covidcast_meta(table_name=tmp_table_name, use_index=False))
+        meta_cache = Database.merge_cache_dicts(meta_cache, meta_update)
+
         self._cursor.execute(insert_or_update_sql)
         modified_row_count = self._cursor.rowcount
         self._cursor.execute(zero_is_latest_issue_sql)
         self._cursor.execute(set_is_latest_issue_sql)
         self._cursor.execute(truncate_tmp_table_sql)
+        self.update_covidcast_meta_cache_from_dict(meta_cache)
 
         if modified_row_count is None or modified_row_count == -1:
           # the SQL connector does not support returning number of rows affected (see PEP 249)
@@ -247,6 +257,10 @@ class Database:
     n_threads = max(1, cpu_count()*9//10) # aka number of concurrent db connections, which [sh|c]ould be ~<= 90% of the #cores available to SQL server
     # NOTE: this may present a small problem if this job runs on different hardware than the db,
     #       but we should not run into that issue in prod.
+    if table_name != 'covidcast':
+      # if we are doing this on a temporary table, it should have relatively few rows
+      # and will presumably have only one src/sig pair anyway, so dont be greedy
+      n_threads = 1
 
     srcsigs = Queue() # multi-consumer threadsafe!
 
@@ -269,6 +283,7 @@ class Database:
         MIN(`time_value`) AS `min_time`,
         MAX(`time_value`) AS `max_time`,
         COUNT(DISTINCT `geo_value`) AS `num_locations`,
+        COUNT(`value`) AS `num_points`,
         MIN(`value`) AS `min_value`,
         MAX(`value`) AS `max_value`,
         ROUND(AVG(`value`),7) AS `mean_value`,
@@ -335,14 +350,13 @@ class Database:
     meta = list(map(dict, tuple_representation)) # back to dict form
 
     return meta
-
-
-  def update_covidcast_meta_cache(self, metadata):
+  
+  def update_covidcast_meta_cache(self, metadata, table_name='covidcast_meta_cache'): # TODO: remove arg
     """Updates the `covidcast_meta_cache` table."""
 
-    sql = '''
+    sql = f'''
       UPDATE
-        `covidcast_meta_cache`
+        `{table_name}`
       SET
         `timestamp` = UNIX_TIMESTAMP(NOW()),
         `epidata` = %s
@@ -351,19 +365,94 @@ class Database:
 
     self._cursor.execute(sql, (epidata_json,))
 
-  def retrieve_covidcast_meta_cache(self):
+  def retrieve_covidcast_meta_cache(self, table_name='covidcast_meta_cache_test'): # TODO: remove arg
     """Useful for viewing cache entries (was used in debugging)"""
 
-    sql = '''
+    sql = f'''
       SELECT `epidata`
-      FROM `covidcast_meta_cache`
+      FROM `{table_name}` -- TODO: remove '_test' after successfully testing incremental cache updates
       ORDER BY `timestamp` DESC
       LIMIT 1;
     '''
     self._cursor.execute(sql)
     cache_json = self._cursor.fetchone()[0]
     cache = json.loads(cache_json)
+
+    if not len(cache) and table_name=='covidcast_meta_cache_test': # TODO: remove line
+      print("test cache empty -- falling back to regular cache ; this should happen ONLY ONCE (after regular cache populated)") # TODO: remove line
+      return self.retrieve_covidcast_meta_cache(table_name='covidcast_meta_cache') # TODO: remove line
+
+    # TODO: add log statements here @benjaminysmith
+    return Database.cache_to_dict(cache)
+
+  @staticmethod
+  def cache_to_dict(cache):
     cache_hash = {}
     for entry in cache:
       cache_hash[(entry['data_source'], entry['signal'], entry['time_type'], entry['geo_type'])] = entry
     return cache_hash
+
+  def update_covidcast_meta_cache_from_dict(self, cache_hash):
+    """Updates the `covidcast_meta_cache` table from the dict version of the cache, ordered by key"""
+
+    cache_list = [cache_hash[k] for k in sorted(cache_hash)]
+    self.update_covidcast_meta_cache(cache_list, table_name='covidcast_meta_cache_test') # TODO: remove arg
+
+  @staticmethod
+  def merge_cache_dicts(base_cache, cache_update):
+    """merges two covidcast metadata caches (in dict form), modifying (and returning) the first"""
+
+    for data_id in cache_update:
+      if data_id not in base_cache:
+        base_cache[data_id] = cache_update[data_id]
+        continue
+
+      mainstats = base_cache[data_id].copy() # copy this entry so we can update the whole thing in one assignment
+      updtstats = cache_update[data_id]
+
+      # combined stdev formula shamelessly stolen from:
+      # https://math.stackexchange.com/questions/2971315/how-do-i-combine-standard-deviations-of-two-groups
+      sx, xbar, n = [mainstats[i] for i in ('stdev_value', 'mean_value', 'num_points')]
+      sy, ybar, m = [updtstats[i] for i in ('stdev_value', 'mean_value', 'num_points')]
+      comb_mean = ( xbar*n + ybar*m ) / (n+m)
+      comb_sd = sqrt(
+        ( (n-1)*sx*sx + (m-1)*sy*sy ) / (n+m-1)
+        +
+        n*m*(xbar-ybar)**2 / ((n+m)*(n+m-1))
+      )
+
+      mainstats['num_points'] = m + n
+      mainstats['stdev_value'] = comb_sd
+      mainstats['mean_value'] = comb_mean
+      for stat in ('max_lag', 'max_value', 'max_time', 'max_issue', 'last_update', 'num_locations'):
+        mainstats[stat] = max(mainstats[stat], updtstats[stat])
+      for stat in ('min_lag', 'min_value', 'min_time'):
+        mainstats[stat] = min(mainstats[stat], updtstats[stat])
+
+      base_cache[data_id] = mainstats # write copy back to base_cache
+
+    return base_cache
+
+  def compare_caches(self):
+    main_cache = self.retrieve_covidcast_meta_cache('covidcast_meta_cache')
+    test_cache = self.retrieve_covidcast_meta_cache('covidcast_meta_cache_test')
+    main_set = set(main_cache)
+    test_set = set(test_cache)
+    print("only in main: \n  " + "\n  ".join(sorted(list(map(str, main_set - test_set)))))
+    print("only in test: \n  " + "\n  ".join(sorted(list(map(str, test_set - main_set)))))
+    print("in both, showing diffs:")
+    unchanged = []
+    for k in sorted(list(main_set & test_set)):
+      main_entry = main_cache[k]
+      test_entry = test_cache[k]
+      diffs = {}
+      stat_list = ['num_points', 'mean_value', 'max_lag', 'max_value', 'max_time', 'max_issue', 'last_update', 'num_locations', 'min_lag', 'min_value', 'min_time']
+      for stat in stat_list:
+        d = main_entry[stat] - test_entry[stat]
+        if abs(d) > 0.05:
+          diffs[stat] = d
+      if any(diffs.values()):
+        print("  %s cache varies: %s" % (k, diffs))
+      else:
+        unchanged.append(k)
+    print("\n\n  %s identical entries of %s total" % (len(unchanged), len(combined)))
