@@ -243,8 +243,8 @@ def handle_trendseries():
     def gen(rows):
         for key, group in groupby((parse_row(row, fields_string, fields_int, fields_float) for row in rows), lambda row: (row["geo_type"], row["geo_value"], row["source"], row["signal"])):
             trends = compute_trends(key[0], key[1], key[2], key[3], shifter, ((row["time_value"], row["value"]) for row in group))
-            for t in trends:
-                yield t
+            for trend in trends:
+                yield trend.asdict()
 
     # execute first query
     try:
@@ -500,7 +500,7 @@ def handle_coverage():
     similar to /signal_dashboard_coverage for a specific signal returns the coverage (number of locations for a given geo_type)
     """
 
-    signal = parse_source_signal_arg("signal")
+    signal = parse_source_signal_pairs()
     geo_type = request.args.get("geo_type", "county")
     if "window" in request.values:
         time_window = parse_day_range_arg("window")
