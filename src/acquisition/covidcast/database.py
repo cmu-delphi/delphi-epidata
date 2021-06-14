@@ -16,7 +16,6 @@ from multiprocessing import cpu_count
 # first party
 import delphi.operations.secrets as secrets
 
-
 class CovidcastRow():
   """A container for all the values of a single covidcast row."""
 
@@ -298,6 +297,24 @@ class Database:
       ORDER BY
         `time_type` ASC,
         `geo_type` ASC
+      
+      UNION
+
+      SELECT
+        `time_type`,
+        `geo_type`.
+        MIN(`issue`) as `min_issue`
+      FROM 
+        `{table_name}`
+      WHERE
+        `source` = %s AND
+        `signal` = %s AND
+      GROUP BY
+        `time_type`,
+        `geo_type`
+      ORDER BY
+        `time_type` ASC,
+        `geo_type`  ASC
       '''
 
     meta = []

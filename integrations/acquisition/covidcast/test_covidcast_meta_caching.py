@@ -67,14 +67,24 @@ class CovidcastMetaCacheTests(unittest.TestCase):
 
     # insert dummy data
     self.cur.execute(f'''
-      insert into covidcast values
+      INSERT INTO
+        `covidcast` (`id`, `source`, `signal`, `time_type`, 
+        `geo_type`, `time_value`, `geo_value`, `value_updated_timestamp`, 
+        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
+        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`) 
+      VALUES
         (0, 'src', 'sig', 'day', 'state', 20200422, 'pa',
           123, 1, 2, 3, 456, 1, 20200422, 0, 1, False, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'state', 20200422, 'wa',
           789, 1, 2, 3, 456, 1, 20200423, 1, 1, False, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
     ''')
     self.cur.execute(f'''
-      insert into covidcast values
+      INSERT INTO
+        `covidcast` (`id`, `source`, `signal`, `time_type`, 
+        `geo_type`, `time_value`, `geo_value`, `value_updated_timestamp`, 
+        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
+        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`) 
+      VALUES
         (100, 'src', 'wip_sig', 'day', 'state', 20200422, 'pa',
           456, 4, 5, 6, 789, -1, 20200422, 0, 1, True, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
     ''')
@@ -102,6 +112,7 @@ class CovidcastMetaCacheTests(unittest.TestCase):
         'mean_value': 1,
         'stdev_value': 0,
         'max_issue': 20200423,
+        'min_issue': 20200422,
         'min_lag': 0,
         'max_lag': 1,
       }

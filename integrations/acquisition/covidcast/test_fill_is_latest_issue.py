@@ -58,7 +58,12 @@ class FillIsLatestIssueTests(unittest.TestCase):
     # direction, issue, lag, is_latest_issue, is_wip, missing_value, missing_stderr, missing_sample_size)
 
     self.cur.execute(f'''
-      insert into covidcast values
+      INSERT INTO
+        `covidcast` (`id`, `source`, `signal`, `time_type`, 
+        `geo_type`, `time_value`, `geo_value`, `value_updated_timestamp`, 
+        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
+        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`) 
+      VALUES
         (0, 'src', 'sig', 'day', 'state', 20200228, 'ca',
           123, 2, 5, 5, 5, NULL, 20200228, 0, 1, False,
           {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
