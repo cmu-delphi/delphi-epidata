@@ -34,7 +34,8 @@ class ServerTests(unittest.TestCase):
     # insert dummy data
     def insert_issue(cur, issue, value, record_type):
       so_many_nulls = ', '.join(['null'] * 57)
-      cur.execute(f'''insert into covid_hosp_state_timeseries values (
+      cur.execute(f'''
+      INSERT INTO covid_hosp_state_timeseries VALUES (
         0, {issue}, 'PA', 20201118, {value}, {so_many_nulls}, '{record_type}'
       )''')
 

@@ -42,7 +42,12 @@ class CovidcastTests(unittest.TestCase):
     """Query nowcasts using default and specified issue."""
 
     self.cur.execute(
-      f'''insert into covidcast_nowcast values 
+      f'''
+      INSERT INTO covidcast_nowcast 
+        (id, data_source, signals, sensor_names, 
+        time_type, geo_type, time_values, geo_value, 
+        as_of, value, issues, lag)
+      VALUES
       (0, 'src', 'sig', 'sensor', 'day', 'county', 20200101, '01001', 12345678, 3.5, 20200101, 2),
       (0, 'src', 'sig', 'sensor', 'day', 'county', 20200101, '01001', 12345678, 2.5, 20200102, 2),
       (0, 'src', 'sig', 'sensor', 'day', 'county', 20200101, '01001', 12345678, 1.5, 20200103, 2)''')
