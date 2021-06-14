@@ -521,6 +521,7 @@ Epidata <- (function() {
     if(!missing(issues) && !missing(lag)) {
       stop('`issues` and `lag` are mutually exclusive')
     }
+    format <- match.arg(format)
     # Set up request
     params <- list(
       endpoint = 'covidcast',
