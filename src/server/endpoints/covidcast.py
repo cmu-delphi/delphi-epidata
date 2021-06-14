@@ -530,6 +530,7 @@ def handle_coverage():
     q.where_source_signal_pairs("source", "signal", signal)
     q.where_time_pairs("time_type", "time_value", [TimePair("day", [time_window])])
     q.group_by = "c.source, c.signal, c.time_value"
+    q.set_order("source", "signal", "time_value")
 
     _handle_lag_issues_as_of(q, None, None, None)
 
