@@ -5,6 +5,7 @@ from flask import Blueprint, request
 from flask.json import loads, jsonify
 from bisect import bisect_right
 from sqlalchemy import text
+from pandas import read_csv
 
 from .._common import is_compatibility_mode, db
 from .._exceptions import ValidationFailedException, DatabaseErrorException
@@ -32,7 +33,7 @@ from .._validate import (
     require_any,
 )
 from .._db import sql_table_has_columns
-from .._pandas import as_pandas
+from .._pandas import as_pandas, print_pandas
 from .covidcast_utils import compute_trend, compute_trends, compute_correlations, compute_trend_value, CovidcastMetaEntry, AllSignalsMap
 from ..utils import shift_time_value, date_to_time_value, time_value_to_iso, time_value_to_date
 
@@ -534,3 +535,18 @@ def handle_coverage():
     _handle_lag_issues_as_of(q, None, None, None)
 
     return execute_query(q.query, q.params, fields_string, fields_int, [])
+
+
+@bp.route("/anomalies", methods=("GET", "POST"))
+def handle_anomalies():
+    """
+    proxy to the excel sheet about data anomalies
+    """
+
+    signal = parse_source_signal_arg("signal")
+
+    df = read_csv(
+        "https://docs.google.com/spreadsheets/d/e/2PACX-1vToGcf9x5PNJg-eSrxadoR5b-LM2Cqs9UML97587OGrIX0LiQDcU1HL-L2AA8o5avbU7yod106ih0_n/pub?gid=0&single=true&output=csv", skip_blank_lines=True
+    )
+    df = df[df["source"].notnull() & df["published"]]
+    return print_pandas(df)
