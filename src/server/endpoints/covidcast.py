@@ -1,6 +1,6 @@
 from typing import List, Optional, Union, Tuple, Dict, Any, Set
 from itertools import groupby
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from flask import Blueprint, request
 from flask.json import loads, jsonify
 from bisect import bisect_right
@@ -34,7 +34,7 @@ from .._validate import (
 from .._db import sql_table_has_columns
 from .._pandas import as_pandas
 from .covidcast_utils import compute_trend, compute_trends, compute_correlations, compute_trend_value, CovidcastMetaEntry, AllSignalsMap
-from ..utils import shift_time_value, date_to_time_value, time_value_to_iso
+from ..utils import shift_time_value, date_to_time_value, time_value_to_iso, time_value_to_date
 
 # first argument is the endpoint name
 bp = Blueprint("covidcast", __name__)
@@ -149,7 +149,6 @@ def handle():
         fields_string.extend(["source", "geo_type", "time_type"])
         q.set_order("source", "signal", "time_type", "time_value", "geo_type", "geo_value", "issue")
     q.set_fields(fields_string, fields_int, fields_float)
-
 
     # basic query info
     # data type of each field
@@ -493,3 +492,45 @@ def handle_meta():
         entry.intergrate(row)
 
     return jsonify([r.asdict() for r in out.values()])
+
+
+@bp.route("/coverage", methods=("GET", "POST"))
+def handle_coverage():
+    """
+    similar to /signal_dashboard_coverage for a specific signal returns the coverage (number of locations for a given geo_type)
+    """
+
+    signal = parse_source_signal_arg("signal")
+    geo_type = request.args.get("geo_type", "county")
+    if "window" in request.values:
+        time_window = parse_day_range_arg("window")
+    else:
+        now_time = extract_date("latest")
+        now = date.today() if now_time is None else time_value_to_date(now_time)
+        last = extract_integer("days")
+        if last is None:
+            last = 30
+        time_window = (date_to_time_value(now - timedelta(days=last)), date_to_time_value(now))
+
+    q = QueryBuilder("covidcast", "c")
+    fields_string = ["source", "signal"]
+    fields_int = ["time_value"]
+
+    q.set_fields(fields_string, fields_int)
+
+    # manually append the count column because of grouping
+    fields_int.append("count")
+    q.fields.append(f"count({q.alias}.geo_value) as count")
+
+    if geo_type == "only-county":
+        q.where(geo_type="county")
+        q.conditions.append('geo_value not like "%000"')
+    else:
+        q.where(geo_type=geo_type)
+    q.where_source_signal_pairs("source", "signal", signal)
+    q.where_time_pairs("time_type", "time_value", [TimePair("day", [time_window])])
+    q.group_by = "c.source, c.signal, c.time_value"
+
+    _handle_lag_issues_as_of(q, None, None, None)
+
+    return execute_query(q.query, q.params, fields_string, fields_int, [])
