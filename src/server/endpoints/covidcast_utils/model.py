@@ -31,7 +31,7 @@ class SignalCategory(str, Enum):
 
 @dataclass
 class DataSignal:
-    source_subdivision: str
+    source: str
     signal: str
     signal_basename: str
     name: str
@@ -51,7 +51,7 @@ class DataSignal:
     based_on_other: bool = False
 
     def derive_defaults(self, map: Dict[Tuple[str, str], "DataSignal"]):
-        base = map.get((self.source_subdivision, self.signal_basename))
+        base = map.get((self.source, self.signal_basename))
         if not self.name:
             self.name = base.name if base else self.signal
         if not self.description:
@@ -78,12 +78,12 @@ class DataSignal:
 
     @property
     def key(self) -> Tuple[str, str]:
-        return (self.source_subdivision, self.signal)
+        return (self.source, self.signal)
 
 
 @dataclass
 class DataSource:
-    source_subdivision: str
+    source: str
     db_source: str
     name: str
     description: str
@@ -96,7 +96,7 @@ class DataSource:
 
     def __post_init__(self):
         if not self.db_source:
-            self.db_source = self.source_subdivision
+            self.db_source = self.source
 
     def asdict(self):
         r = asdict(self)
@@ -105,11 +105,14 @@ class DataSource:
 
     @property
     def uses_db_alias(self):
-        return self.source_subdivision != self.db_source
+        return self.source != self.db_source
 
 
 def _clean_column(c: str) -> str:
-    return c.lower().replace(" ", "_").replace("-", "_").strip()
+    r = c.lower().replace(" ", "_").replace("-", "_").strip()
+    if r == "source_subdivision":
+        return "source"
+    return r
 
 
 _base_dir = Path(__file__).parent
@@ -120,21 +123,21 @@ def _load_data_sources():
     data_sources_df = data_sources_df.replace({np.nan: None})
     data_sources_df.columns = map(_clean_column, data_sources_df.columns)
     data_sources: List[DataSource] = [DataSource(**d) for d in data_sources_df.to_dict(orient="records")]
-    data_sources_df.set_index("source_subdivision")
+    data_sources_df.set_index("source")
     return data_sources, data_sources_df
 
 
 data_sources, data_sources_df = _load_data_sources()
-data_source_by_id = {d.source_subdivision: d for d in data_sources}
+data_source_by_id = {d.source: d for d in data_sources}
 
 
 def _load_data_signals(sources: List[DataSource]):
-    by_id = {d.source_subdivision: d for d in sources}
+    by_id = {d.source: d for d in sources}
     data_signals_df: pd.DataFrame = pd.read_csv(_base_dir / "db_signals.csv")
     data_signals_df = data_signals_df.replace({np.nan: None})
     data_signals_df.columns = map(_clean_column, data_signals_df.columns)
     data_signals: List[DataSignal] = [DataSignal(**d) for d in data_signals_df.to_dict(orient="records")]
-    data_signals_df.set_index(["source_subdivision", "signal"])
+    data_signals_df.set_index(["source", "signal"])
 
     by_source_id = {d.key: d for d in data_signals}
     for ds in data_signals:
@@ -142,7 +145,7 @@ def _load_data_signals(sources: List[DataSource]):
         ds.derive_defaults(by_source_id)
 
     for ds in data_signals:
-        source = by_id.get(ds.source_subdivision)
+        source = by_id.get(ds.source)
         if source:
             source.signals.append(ds)
 
@@ -186,12 +189,12 @@ def create_source_signal_alias_mapper(source_signals: List[SourceSignalPair]) ->
             # nothing to transform
             return source
         if len(possible_data_sources) == 1:
-            return possible_data_sources[0].source_subdivision
+            return possible_data_sources[0].source
         # need the signal to decide
         signal_source = next((f for f in possible_data_sources if any((s.signal == signal for s in f.signals))), None)
         if not signal_source:
             # take the first one
             signal_source = possible_data_sources[0]
-        return signal_source.source_subdivision
+        return signal_source.source
 
     return transformed_pairs, map_row
