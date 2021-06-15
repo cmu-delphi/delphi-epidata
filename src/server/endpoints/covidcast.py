@@ -1,10 +1,11 @@
 from typing import List, Optional, Union, Tuple, Dict, Any
 from itertools import groupby
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from flask import Blueprint, request
 from flask.json import loads, jsonify
 from bisect import bisect_right
 from sqlalchemy import text
+from pandas import read_csv
 
 from .._common import is_compatibility_mode, db
 from .._exceptions import ValidationFailedException, DatabaseErrorException
@@ -32,9 +33,9 @@ from .._validate import (
     require_any,
 )
 from .._db import sql_table_has_columns
-from .._pandas import as_pandas
+from .._pandas import as_pandas, print_pandas
 from .covidcast_utils import compute_trend, compute_trends, compute_correlations, compute_trend_value, CovidcastMetaEntry
-from ..utils import shift_time_value, date_to_time_value, time_value_to_iso
+from ..utils import shift_time_value, date_to_time_value, time_value_to_iso, time_value_to_date
 from .covidcast_utils.model import data_sources, create_source_signal_alias_mapper
 
 # first argument is the endpoint name
@@ -153,7 +154,6 @@ def handle():
         q.set_order("source", "signal", "time_type", "time_value", "geo_type", "geo_value", "issue")
     q.set_fields(fields_string, fields_int, fields_float)
 
-
     # basic query info
     # data type of each field
     # build the source, signal, time, and location (type and id) filters
@@ -263,7 +263,7 @@ def handle_trendseries():
                 source = alias_mapper(source, signal)
             trends = compute_trends(geo_type, geo_value, source, signal, shifter, ((row["time_value"], row["value"]) for row in group))
             for t in trends:
-                yield t
+                yield t.asdict()
 
     # execute first query
     try:
@@ -558,3 +558,66 @@ def handle_meta():
         sources.append(s)
 
     return jsonify(sources)
+
+
+@bp.route("/coverage", methods=("GET", "POST"))
+def handle_coverage():
+    """
+    similar to /signal_dashboard_coverage for a specific signal returns the coverage (number of locations for a given geo_type)
+    """
+
+    source_signal_pairs = parse_source_signal_pairs()
+    source_signal_pairs, alias_mapper = create_source_signal_alias_mapper(source_signal_pairs)
+    geo_type = request.args.get("geo_type", "county")
+    if "window" in request.values:
+        time_window = parse_day_range_arg("window")
+    else:
+        now_time = extract_date("latest")
+        now = date.today() if now_time is None else time_value_to_date(now_time)
+        last = extract_integer("days")
+        if last is None:
+            last = 30
+        time_window = (date_to_time_value(now - timedelta(days=last)), date_to_time_value(now))
+
+    q = QueryBuilder("covidcast", "c")
+    fields_string = ["source", "signal"]
+    fields_int = ["time_value"]
+
+    q.set_fields(fields_string, fields_int)
+
+    # manually append the count column because of grouping
+    fields_int.append("count")
+    q.fields.append(f"count({q.alias}.geo_value) as count")
+
+    if geo_type == "only-county":
+        q.where(geo_type="county")
+        q.conditions.append('geo_value not like "%000"')
+    else:
+        q.where(geo_type=geo_type)
+    q.where_source_signal_pairs("source", "signal", source_signal_pairs)
+    q.where_time_pairs("time_type", "time_value", [TimePair("day", [time_window])])
+    q.group_by = "c.source, c.signal, c.time_value"
+    q.set_order("source", "signal", "time_value")
+
+    _handle_lag_issues_as_of(q, None, None, None)
+
+    def transform_row(row, _):
+        if not alias_mapper:
+            return row
+        row["source"] = alias_mapper(row["source"], row["signal"])
+        return row
+
+    return execute_query(q.query, q.params, fields_string, fields_int, [], transform=transform_row)
+
+
+@bp.route("/anomalies", methods=("GET", "POST"))
+def handle_anomalies():
+    """
+    proxy to the excel sheet about data anomalies
+    """
+
+    df = read_csv(
+        "https://docs.google.com/spreadsheets/d/e/2PACX-1vToGcf9x5PNJg-eSrxadoR5b-LM2Cqs9UML97587OGrIX0LiQDcU1HL-L2AA8o5avbU7yod106ih0_n/pub?gid=0&single=true&output=csv", skip_blank_lines=True
+    )
+    df = df[df["source"].notnull() & df["published"]]
+    return print_pandas(df)

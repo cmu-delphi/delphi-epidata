@@ -11,8 +11,8 @@ This documentation describes the fine-resolution contingency tables produced by
 grouping [COVID Symptom Survey](./index.md) individual responses by various
 self-reported demographic features.
 
-* [Weekly files](https://www.cmu.edu/delphi-web/surveys/weekly/)
-* [Monthly files](https://www.cmu.edu/delphi-web/surveys/monthly/)
+* [Weekly files](https://www.cmu.edu/delphi-web/surveys/weekly-rollup/)
+* [Monthly files](https://www.cmu.edu/delphi-web/surveys/monthly-rollup/)
 
 These contingency tables provide granular breakdowns of COVID-related topics such as
 vaccine uptake and acceptance. They are more detailed than the
@@ -47,6 +47,14 @@ those who want to study groups with smaller sample sizes should use the
 monthly files. Because monthly aggregates include more responses, they have
 lower missingness when grouping by several features at a time.
 
+* [Weekly files](https://www.cmu.edu/delphi-web/surveys/weekly-rollup/)
+* [Monthly files](https://www.cmu.edu/delphi-web/surveys/monthly-rollup/)
+
+Files contain all time periods for a given period type-aggregation
+type combination.
+
+Individual CSVs containing a single [week](https://www.cmu.edu/delphi-web/surveys/weekly/) or [month](https://www.cmu.edu/delphi-web/surveys/monthly/) for a given aggregation type are also available.
+
 ### Dates
 
 The included files provide estimates for various metrics of interest over a
@@ -77,11 +85,16 @@ interest will likely provide more coverage.
 
 ### Naming
 
-Each CSV is named as follows:
+"Rollup" files containing all time periods for a given period type-aggregation
+type combination have names of the form:
+
+    {period_type}_{geo_type}_{aggregation_type}.csv.gz
+
+CSVs for individual time periods have names of the form:
 
     {period_start}_{period_end}_{period_type}_{geo_type}_{aggregation_type}.csv
 
-Dates are of the form `yyyyMMdd`. `period_start` refers to the first day of
+Dates are in `yyyyMMdd` format. `period_start` refers to the first day of
 the time period survey responses were aggregated over, in the Pacific time
 zone (UTC - 7). Unless noted otherwise, the time period is always a complete
 month (`period_type` = `monthly`) or epiweek (`period_type` = `weekly`).
@@ -156,7 +169,12 @@ conditions.
 
 Indicators beginning "hesitant_" (not listed) are variants of other described
 indicators calculated among respondents who say they would "probably not" or
-"definitely not" choose to get vaccinated, if offered today (item V3).
+"definitely not" choose to get vaccinated, if offered today (item V3/V3a).
+**Note:** Until Wave 11 (May 19, 2021), this item was asked of everyone who
+indicated that they had not received a COVID-19 vaccine; after that date, this
+item was only asked of people who indicated that they had not received a
+COVID-19 vaccine and did not have an appointment to do so.
+
 Indicators beginning "defno_" (not listed) are variants of other described
 indicators calculated among respondents who say they would "definitely not"
 choose to get vaccinated, if offered today.
@@ -179,9 +197,9 @@ please contact us at <delphi-survey-info@lists.andrew.cmu.edu>.
 
 | Indicator | Description | Survey Item |
 | --- | --- | --- |
-| `pct_direct_contact` | Estimated percentage of people who in the past 24 hours had a non-physical interaction (like conversing) for more than 5 minutes at a distance of 6 feet or less or a physical interaction (like hand-shaking, hugging, or kissing) with anyone outside their household. <br/> **Earliest date available:** 2021-01-01 | C10 |
 | `pct_wearing_mask_7d` | Estimated percentage of people who wore a mask for most or all of the time while in public in the past 7 days; those not in public in the past 7 days are not counted. <br/> **Earliest date available:** 2021-02-08 | C14a |
 | `pct_wearing_mask_5d` | *Discontinued as of Wave 8, Feb 8, 2021* Estimated percentage of people who wore a mask for most or all of the time while in public in the past 5 days; those not in public in the past 5 days are not counted. <br/> **Earliest date available:** 2021-01-01 | C14 |
+| `pct_direct_contact` | *Discontinued as of Wave 11, May 19, 2021* Estimated percentage of people who in the past 24 hours had a non-physical interaction (like conversing) for more than 5 minutes at a distance of 6 feet or less or a physical interaction (like hand-shaking, hugging, or kissing) with anyone outside their household. <br/> **Earliest date available:** 2021-01-01 | C10 |
 
 ### Vaccine Uptake and Acceptance
 
@@ -189,26 +207,43 @@ please contact us at <delphi-survey-info@lists.andrew.cmu.edu>.
 | --- | --- | --- |
 | `pct_vaccinated` | Estimated percentage of respondents who have already received a COVID vaccine. <br/> **Earliest date available:** 2021-01-01 | V1 |
 | `pct_received_2_vaccine_doses` | Estimated percentage of respondents who have received two doses of a COVID-19 vaccine, among respondents who have received either one or two doses of a COVID-19 vaccine. <br/> **Earliest date available:** 2021-01-01 | V2 |
-| `pct_vaccinated_or_accept` | Estimated percentage of respondents who *either* have already received a COVID vaccine *or* would definitely or probably choose to get vaccinated, if a vaccine were offered to them today. <br/> **Earliest date available:** 2021-01-01 | V1 and V3 |
-| `pct_accept_vaccine` | Estimated percentage of respondents who would definitely or probably choose to get vaccinated, if a vaccine were offered to them today, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-01 | V3 |
-| `pct_hesitant_vaccine` | Estimated percentage of respondents who would definitely not or probably not choose to get vaccinated, if a vaccine were offered to them today, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-01 | V3 |
-| `pct_accept_vaccine_defyes` | Estimated percentage of respondents who would definitely choose to get vaccinated, if a vaccine were offered to them today, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-01 | V3 |
-| `pct_accept_vaccine_probyes` | Estimated percentage of respondents who would probably choose to get vaccinated, if a vaccine were offered to them today, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-01 | V3 |
-| `pct_accept_vaccine_probno` | Estimated percentage of respondents who would probably not choose to get vaccinated, if a vaccine were offered to them today, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-01 | V3 |
-| `pct_accept_vaccine_defno` | Estimated percentage of respondents who would definitely not choose to get vaccinated, if a vaccine were offered to them today, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-01 | V3 |
-| `pct_informed_access` | Estimated percentage of respondents who are very or moderately informed about how to get a COVID-19 vaccination. <br/> **Earliest date available:** 2021-02-08 | V13 |
-| `pct_appointment_have` | Estimated percentage of respondents who have an appointment to get a COVID-19 vaccine, among respondents who answered "Yes, definitely" or "Yes, probably" when asked if they would get vaccinated if offered. <br/> **Earliest date available:** 2021-03-02 | V11 |
-| `pct_appointment_tried` | Estimated percentage of respondents who have tried to make an appointment to get a COVID-19 vaccine, among respondents who answered "Yes, definitely" or "Yes, probably" when asked if they would get vaccinated if offered. <br/> **Earliest date available:** 2021-03-02 | V12 |
+| `pct_vaccinated_appointment_or_accept` | Estimated percentage of respondents who *either* have already received a COVID vaccine *or* have an appointment to get a COVID vaccine *or* would definitely or probably choose to get vaccinated, if a vaccine were offered to them today. <br/> **Earliest date available:** 2021-05-19 | V1, V11a, V3a |
+| `pct_vaccinated_or_accept` | *Discontinued as of Wave 11, May 19, 2021* Estimated percentage of respondents who *either* have already received a COVID-19 vaccine *or* would definitely or probably choose to get vaccinated, if a vaccine were offered to them today. <br/> **Earliest date available:** 2021-01-01 | V1, V3 |
+| `pct_appointment_or_accept_vaccine` | Estimated percentage of respondents who *either* have an appointment to get a COVID-19 vaccine *or* would definitely or probably choose to get vaccinated, if a vaccine were offered to them today, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-05-19 | V11a, V3a |
+| `pct_accept_vaccine_no_appointment` | Estimated percentage of respondents who would definitely or probably choose to get vaccinated, if a vaccine were offered to them today, among respondents who have not yet been vaccinated and do not have an appointment to do so. <br/> **Earliest date available:** 2021-05-19 | V3a |
+| `pct_accept_vaccine` | *Discontinued as of Wave 11, May 19, 2021* Estimated percentage of respondents who would definitely or probably choose to get vaccinated, if a vaccine were offered to them today, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-01 | V3 |
+| `pct_hesitant_vaccine` | Estimated percentage of respondents who would definitely not or probably not choose to get vaccinated, if a vaccine were offered to them today, among respondents who have not yet been vaccinated. **Note:** Until Wave 11 (May 19, 2021), this item was asked of everyone who indicated that they had not received a COVID-19 vaccine; after that date, this item was only asked of people who indicated that they had not received a COVID-19 vaccine and did not have an appointment to do so.  <br/> **Earliest date available:** 2021-01-01 | V3 or V3a |
+| `pct_accept_vaccine_no_appointment_defyes` | Estimated percentage of respondents who would definitely choose to get vaccinated, if a vaccine were offered to them today, among respondents who have not yet been vaccinated and do not have an appointment to do so. <br/> **Earliest date available:** 2021-05-19 | V3a |
+| `pct_accept_vaccine_no_appointment_probyes` | Estimated percentage of respondents who would probably choose to get vaccinated, if a vaccine were offered to them today, among respondents who have not yet been vaccinated and do not have an appointment to do so. <br/> **Earliest date available:** 2021-05-19 | V3a |
+| `pct_accept_vaccine_no_appointment_probno` | Estimated percentage of respondents who would probably not choose to get vaccinated, if a vaccine were offered to them today, among respondents who have not yet been vaccinated and do not have an appointment to do so. <br/> **Earliest date available:** 2021-05-19 | V3a |
+| `pct_accept_vaccine_no_appointment_defno` | Estimated percentage of respondents who would definitely not choose to get vaccinated, if a vaccine were offered to them today, among respondents who have not yet been vaccinated and do not have an appointment to do so. <br/> **Earliest date available:** 2021-05-19 | V3a |
+| `pct_accept_vaccine_defyes` | *Discontinued as of Wave 11, May 19, 2021* Estimated percentage of respondents who would definitely choose to get vaccinated, if a vaccine were offered to them today, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-01 | V3 |
+| `pct_accept_vaccine_probyes` | *Discontinued as of Wave 11, May 19, 2021* Estimated percentage of respondents who would probably choose to get vaccinated, if a vaccine were offered to them today, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-01 | V3 |
+| `pct_accept_vaccine_probno` | *Discontinued as of Wave 11, May 19, 2021* Estimated percentage of respondents who would probably not choose to get vaccinated, if a vaccine were offered to them today, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-01 | V3 |
+| `pct_accept_vaccine_defno` | *Discontinued as of Wave 11, May 19, 2021* Estimated percentage of respondents who would definitely not choose to get vaccinated, if a vaccine were offered to them today, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-01 | V3 |
+| `pct_informed_access` | *Discontinued as of Wave 11, May 19, 2021* Estimated percentage of respondents who are very or moderately informed about how to get a COVID-19 vaccination. <br/> **Earliest date available:** 2021-02-08 | V13 |
+| `pct_appointment_not_vaccinated` | Estimated percentage of respondents who have an appointment to get a COVID-19 vaccine, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-05-19 | V11a |
+| `pct_appointment_have` | *Discontinued as of Wave 11, May 19, 2021* Estimated percentage of respondents who have an appointment to get a COVID-19 vaccine, among respondents who answered "Yes, definitely" or "Yes, probably" when asked if they would get vaccinated if offered. <br/> **Earliest date available:** 2021-03-02 | V11 |
+| `pct_vaccine_tried` | Estimated percentage of respondents who have tried to get a COVID-19 vaccine, among respondents who answered "Yes, definitely" or "Yes, probably" when asked if they would get vaccinated if offered. <br/> **Earliest date available:** 2021-05-19 | V12a |
+| `pct_appointment_tried` | *Discontinued as of Wave 11, May 19, 2021* Estimated percentage of respondents who have tried to make an appointment to get a COVID-19 vaccine, among respondents who answered "Yes, definitely" or "Yes, probably" when asked if they would get vaccinated if offered. <br/> **Earliest date available:** 2021-03-02 | V12 |
 
 ### Outreach and Image
 
 | Indicator | Description | Survey Item |
 | --- | --- | --- |
-| `pct_vaccine_likely_friends` (formerly `pct_trust_fam`)| Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by friends and family, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-01 | V4 |
-| `pct_vaccine_likely_who` (formerly `pct_trust_who`) | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by the World Health Organization, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-01 | V4 |
-| `pct_vaccine_likely_govt_health` (formerly `pct_trust_govt`) | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by government health officials, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-01 | V4 |
-| `pct_vaccine_likely_politicians` (formerly `pct_trust_politicians`) | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by politicians, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-01 | V4 |
-| `pct_vaccine_likely_doctors` | Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by doctors and other health professionals they go to for medical care, among respondents who have not yet been vaccinated. This item was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-08 | V4 |
+| `pct_trust_covid_info_doctors` | Estimated percentage of respondents who trust doctors and other health professionals they go to for medical care to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-05-19 | I6 |
+| `pct_trust_covid_info_experts` | Estimated percentage of respondents who trust scientists and other health experts to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-05-19 | I6 |
+| `pct_trust_covid_info_cdc` | Estimated percentage of respondents who trust the CDC to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-05-19 | I6 |
+| `pct_trust_covid_info_govt_health` | Estimated percentage of respondents who trust government health officials to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-05-19 | I6 |
+| `pct_trust_covid_info_politicians` | Estimated percentage of respondents who trust politicians to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-05-19 | I6 |
+| `pct_trust_covid_info_journalists` | Estimated percentage of respondents who trust journalists to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-05-19 | I6 |
+| `pct_trust_covid_info_friends` | Estimated percentage of respondents who trust friends and family to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-05-19 | I6 |
+| `pct_trust_covid_info_religious` | Estimated percentage of respondents who trust religious leaders to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-05-19 | I6 |
+| `pct_vaccine_likely_friends` (formerly `pct_trust_fam`)| *Discontinued as of Wave 11, May 19, 2021* Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by friends and family, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-01 | V4 |
+| `pct_vaccine_likely_who` (formerly `pct_trust_who`) | *Discontinued as of Wave 11, May 19, 2021* Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by the World Health Organization, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-01 | V4 |
+| `pct_vaccine_likely_govt_health` (formerly `pct_trust_govt`) | *Discontinued as of Wave 11, May 19, 2021* Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by government health officials, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-01 | V4 |
+| `pct_vaccine_likely_politicians` (formerly `pct_trust_politicians`) | *Discontinued as of Wave 11, May 19, 2021* Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by politicians, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-01 | V4 |
+| `pct_vaccine_likely_doctors` | *Discontinued as of Wave 11, May 19, 2021* Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by doctors and other health professionals they go to for medical care, among respondents who have not yet been vaccinated. This item was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-08 | V4 |
 | `pct_vaccine_likely_local_health` (formerly `pct_trust_healthcare`) | *Discontinued as of Wave 8, Feb 8, 2021* Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by local health workers, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-01 | V4 |
 
 ### Reasons for Hesitancy
@@ -220,37 +255,37 @@ in the API](../api/covidcast-signals/fb-survey.md#reasons-for-hesitancy).
 | --- | --- | --- |
 | `pct_worried_vaccine_sideeffects` (formerly `pct_concerned_sideeffects`) | Estimated percentage of respondents who are very or moderately concerned that they would "experience a side effect from a COVID-19 vaccination." **Note:** Until March 2, 2021, all respondents answered this question, including those who had already received one or more doses of a COVID-19 vaccine; beginning on that date, only respondents who said they have not received a COVID vaccine are asked this question. <br/> **Earliest date available:** 2021-01-01 | V9 |
 | `pct_barrier_sideeffects` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they are worried about side effects, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered. <br/> **Earliest date available:** 2021-02-08 | V5abc |
-| `pct_barrier_allergic` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they are worried about having an allergic reaction, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered. <br/> **Earliest date available:** 2021-02-08 | V5abc |
+| `pct_barrier_allergic` | *Discontinued as of Wave 11, May 19, 2021* Estimated percentage of respondents who say they are hesitant to get vaccinated because they are worried about having an allergic reaction, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered. <br/> **Earliest date available:** 2021-02-08 | V5abc |
 | `pct_barrier_ineffective` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they don't know if a COVID-19 vaccine will work, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered. <br/> **Earliest date available:** 2021-02-08 | V5abc |
 | `pct_barrier_dontneed` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they don't believe they need a COVID-19 vaccine, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered. <br/> **Earliest date available:** 2021-02-08 | V5abc |
 | `pct_barrier_dislike_vaccines` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they dislike vaccines, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered. <br/> **Earliest date available:** 2021-02-08 | V5abc |
-| `pct_barrier_not_recommended` | Estimated percentage of respondents who say they are hesitant to get vaccinated because their doctor did not recommend it, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered. <br/> **Earliest date available:** 2021-02-08 | V5abc |
+| `pct_barrier_not_recommended` | *Discontinued as of Wave 11, May 19, 2021* Estimated percentage of respondents who say they are hesitant to get vaccinated because their doctor did not recommend it, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered. <br/> **Earliest date available:** 2021-02-08 | V5abc |
 | `pct_barrier_wait_safety` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they want to wait to see if the COVID-19 vaccines are safe, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered. <br/> **Earliest date available:** 2021-02-08 | V5abc |
 | `pct_barrier_low_priority` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they think other people need it more than they do, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered. <br/> **Earliest date available:** 2021-02-08 | V5abc |
 | `pct_barrier_cost` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they are worried about the cost, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered. This series of items was shown to respondents starting in Wave 8. <br/> **Earliest date available:** 2021-02-08 | V5abc |
-| `pct_barrier_distrust_vaccines` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they don't trust COVID-19 vaccines, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered. <br/> **Earliest date available:** 2021-02-08 | V5abc |
+| `pct_barrier_distrust_vaccines` | *Discontinued as of Wave 11, May 19, 2021* Estimated percentage of respondents who say they are hesitant to get vaccinated because they don't trust COVID-19 vaccines, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered. <br/> **Earliest date available:** 2021-02-08 | V5abc |
 | `pct_barrier_distrust_govt` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they don't trust the government, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered. <br/> **Earliest date available:** 2021-02-08 | V5abc |
-| `pct_barrier_health_condition` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they have a health condition that may impact the safety of a COVID-19 vaccine, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered. <br/> **Earliest date available:** 2021-02-08 | V5abc |
-| `pct_barrier_pregnant` | Estimated percentage of respondents who say they are hesitant to get vaccinated because they are currently, or are planning to be, pregnant or breastfeeding, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered. <br/> **Earliest date available:** 2021-02-08 | V5abc |
+| `pct_barrier_health_condition` | *Discontinued as of Wave 11, May 19, 2021* Estimated percentage of respondents who say they are hesitant to get vaccinated because they have a health condition that may impact the safety of a COVID-19 vaccine, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered. <br/> **Earliest date available:** 2021-02-08 | V5abc |
+| `pct_barrier_pregnant` | *Discontinued as of Wave 11, May 19, 2021* Estimated percentage of respondents who say they are hesitant to get vaccinated because they are currently, or are planning to be, pregnant or breastfeeding, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered. <br/> **Earliest date available:** 2021-02-08 | V5abc |
 | `pct_barrier_religious` | Estimated percentage of respondents who say they are hesitant to get vaccinated because it is against their religious beliefs, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered. <br/> **Earliest date available:** 2021-02-08 | V5abc |
 | `pct_barrier_other` | Estimated percentage of respondents who say they are hesitant to get vaccinated for another reason, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered. <br/> **Earliest date available:** 2021-02-08 | V5abc |
 
 ### Reasons for Believing Vaccine is Unnecessary
 
 Respondents who indicate that "I don't believe I need a COVID-19 vaccine" (in
-items V5a, V5b, V5c, or V5d) are asked a follow-up item asking why they don't
-believe they need the vaccine. These signals summarize the reasons selected.
-Respondents who do not select any reason (including "Other") are treated as
-missing.
+items V5a, V5b, V5c, or, prior to Wave 11, V5d) are asked a follow-up item
+asking why they don't believe they need the vaccine. These signals summarize
+the reasons selected. Respondents who do not select any reason (including
+"Other") are treated as missing.
 
 This item was shown to respondents starting in Wave 8.
 
 | Indicator | Description | Survey Item |
 | --- | --- | --- |
-| `pct_dontneed_reason_had_covid` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they already had the illness, among respondents who answered "No, probably not" or "No, definitely not" when asked if they would get vaccinated if offered and provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-02-08 | V6 and V5bc |
-| `pct_dontneed_reason_dont_spend_time` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they don't spend time with high-risk people, among respondents who answered "No, probably not" or "No, definitely not" when asked if they would get vaccinated if offered and provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-02-08 | V6 and V5bc |
-| `pct_dontneed_reason_not_high_risk` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they are not in a high-risk group, among respondents who answered "No, probably not" or "No, definitely not" when asked if they would get vaccinated if offered and provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-02-08 | V6 and V5bc |
-| `pct_dontneed_reason_precautions` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they will use other precautions, such as a mask, instead, among respondents who answered "No, probably not" or "No, definitely not" when asked if they would get vaccinated if offered and provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-02-08 | V6 and V5bc |
-| `pct_dontneed_reason_not_serious` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they don't believe COVID-19 is a serious illness, among respondents who answered "No, probably not" or "No, definitely not" when asked if they would get vaccinated if offered and provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-02-08 | V6 and V5bc |
-| `pct_dontneed_reason_not_beneficial` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they don't think vaccines are beneficial, among respondents who answered "No, probably not" or "No, definitely not" when asked if they would get vaccinated if offered and provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-02-08 | V6 and V5bc |
-| `pct_dontneed_reason_other` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine for another reason, among respondents who answered "No, probably not" or "No, definitely not" when asked if they would get vaccinated if offered and provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-02-08 | V6 and V5bc |
+| `pct_dontneed_reason_had_covid` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they already had the illness, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered and provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-02-08 | V6 and V5bc |
+| `pct_dontneed_reason_dont_spend_time` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they don't spend time with high-risk people, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered and provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-02-08 | V6 and V5bc |
+| `pct_dontneed_reason_not_high_risk` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they are not in a high-risk group, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered and provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-02-08 | V6 and V5bc |
+| `pct_dontneed_reason_precautions` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they will use other precautions, such as a mask, instead, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered and provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-02-08 | V6 and V5bc |
+| `pct_dontneed_reason_not_serious` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they don't believe COVID-19 is a serious illness, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered and provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-02-08 | V6 and V5bc |
+| `pct_dontneed_reason_not_beneficial` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine because they don't think vaccines are beneficial, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered and provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-02-08 | V6 and V5bc |
+| `pct_dontneed_reason_other` | Estimated percentage of respondents who say they don't need to get a COVID-19 vaccine for another reason, among respondents who answered "Yes, probably", "No, probably not", or "No, definitely not" when asked if they would get vaccinated if offered and provided at least one reason for why they believe a COVID-19 vaccine is unnecessary. <br/> **Earliest date available:** 2021-02-08 | V6 and V5bc |

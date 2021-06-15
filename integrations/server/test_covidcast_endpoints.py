@@ -368,3 +368,28 @@ class CovidcastEndpointTests(unittest.TestCase):
             self.assertEqual(stats["source"], first.source)
             out = self._fetch("/meta", signal=f"{first.source}:X")
             self.assertEqual(len(out), 0)
+
+    def test_coverage(self):
+        """Request a signal the /coverage endpoint."""
+
+        num_geos_per_date = [10, 20, 30, 40, 44]
+        dates = [20200401 + i for i in range(len(num_geos_per_date))]
+        rows = [CovidcastRow(time_value=dates[i], value=i, geo_value=str(geo_value)) for i, num_geo in enumerate(num_geos_per_date) for geo_value in range(num_geo)]
+        self._insert_rows(rows)
+        first = rows[0]
+
+        with self.subTest("default"):
+            out = self._fetch("/coverage", signal=first.signal_pair, latest=dates[-1], format="json")
+            self.assertEqual(len(out), len(num_geos_per_date))
+            self.assertEqual([o["time_value"] for o in out], dates)
+            self.assertEqual([o["count"] for o in out], num_geos_per_date)
+
+        with self.subTest("specify window"):
+            out = self._fetch("/coverage", signal=first.signal_pair, window=f"{dates[0]}-{dates[1]}", format="json")
+            self.assertEqual(len(out), 2)
+            self.assertEqual([o["time_value"] for o in out], dates[:2])
+            self.assertEqual([o["count"] for o in out], num_geos_per_date[:2])
+
+        with self.subTest("invalid geo_type"):
+            out = self._fetch("/coverage", signal=first.signal_pair, geo_type="state", format="json")
+            self.assertEqual(len(out), 0)
