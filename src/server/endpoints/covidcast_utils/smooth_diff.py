@@ -204,7 +204,7 @@ DERIVED_SIGNALS = {
     "usafacts:deaths_incidence_num": ("usafacts:deaths_cumulative_num", DIFF),
 }
 
-def fetch_and_derive_signal(source: str, signal: str) -> Callable:
+def fetch_derivable_signal(source: str, signal: str) -> Callable:
     """Fetch raw version of a signal, if available, for smoothing."""
     source_signal = source + ":" + signal
     if source_signal in DERIVED_SIGNALS:

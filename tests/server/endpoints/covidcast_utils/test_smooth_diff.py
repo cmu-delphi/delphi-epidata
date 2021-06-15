@@ -4,12 +4,13 @@ from numpy import NaN, allclose
 from itertools import chain
 from more_itertools import windowed
 
-from delphi.epidata.server.endpoints.covicast_utils.smooth_diff import generate_row_diffs, generate_smooth_rows, smoother
+from delphi.epidata.server.endpoints.covidcast_utils.smooth_diff import generate_row_diffs, generate_smooth_rows, smoother
 
 class TestStreaming:
     def test_smoother(self):
         assert smoother(list(range(7)), [1] * 7) == sum(range(7))
         assert smoother([1] * 6, list(range(7))) == sum(range(1, 7))
+
 
     def test_generate_smooth_rows(self):
         data = DataFrame({
@@ -18,7 +19,7 @@ class TestStreaming:
             "value": list(range(23)) + [NaN, 2.0, 1.0] + list(range(26, 52))
         })
 
-        # slide in window, no fill
+        # dynamic window, no fill
         smoothed_df = DataFrame.from_records(generate_smooth_rows((x for x in data.to_dict(orient='records')), fill_value=None))
         expected_df = DataFrame({
             "timestamp": to_datetime(date_range("2021-05-01", "2021-05-26").to_list() * 2),
@@ -32,7 +33,7 @@ class TestStreaming:
         })
         assert_frame_equal(smoothed_df, expected_df)
 
-        # slide in window, fill with 0s
+        # slide in window, fill on left with 0s
         smoothed_df = DataFrame.from_records(generate_smooth_rows((x for x in data.to_dict(orient='records')), fill_value=0))
         expected_df = DataFrame({
             "timestamp": to_datetime(date_range("2021-05-01", "2021-05-26").to_list() * 2),
@@ -44,6 +45,18 @@ class TestStreaming:
         })
 
         assert allclose(smoothed_df["value"].to_numpy(), expected_df["value"].to_numpy(), equal_nan=True)
+
+        # a dataframe a single entry should return unchanged, when dynamic
+        data_one = DataFrame({
+            "timestamp": to_datetime(date_range("2021-05-01", "2021-05-01").to_list()),
+            "geo": ["ca"],
+            "value": [1.0]
+        })
+        smoothed_df = DataFrame.from_records(generate_smooth_rows((x for x in data_one.to_dict(orient='records'))))
+        expected_df = data_one
+
+        assert allclose(smoothed_df["value"].to_numpy(), expected_df["value"].to_numpy(), equal_nan=True)
+
 
     def test_generate_row_diffs(self):
         data = DataFrame({
