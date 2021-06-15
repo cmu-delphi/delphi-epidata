@@ -18,8 +18,8 @@ grand_parent: COVIDcast Epidata API
 This data source of national provisional death counts is based on death
 certificate data received and coded by the National Center for Health Statistics
 [(NCHS)](https://www.cdc.gov/nchs/nvss/vsrr/COVID19/index.htm). This data is
-different from the death data available from [USAFacts](usa-facts.md) and [JHU
-CSSE](jhu-csse.md): deaths are reported by the date they occur, not the date
+different from the death data available from [USAFacts](usa-facts.md) and
+[JHU CSSE](jhu-csse.md): deaths are reported by the date they occur, not the date
 they are reported by local health departments, and data is frequently reissued
 as additional death certificates from recent weeks are received and tabulated.
 

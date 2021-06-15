@@ -25,7 +25,7 @@ A nowcast of U.S. national, regional, and state-level (weighted) %ILI, available
 
 # The API
 
-The base URL is: https://delphi.cmu.edu/epidata/api.php
+The base URL is: https://delphi.cmu.edu/epidata/nowcast/
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -53,7 +53,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 # Example URLs
 
 ### ILI Nearby on 2020w01 (national)
-https://delphi.cmu.edu/epidata/api.php?endpoint=nowcast&locations=nat&epiweeks=202001
+https://delphi.cmu.edu/epidata/nowcast/?locations=nat&epiweeks=202001
 
 ```json
 {
@@ -73,32 +73,19 @@ https://delphi.cmu.edu/epidata/api.php?endpoint=nowcast&locations=nat&epiweeks=2
 
 # Code Samples
 
-Libraries are available for [CoffeeScript](../../src/client/delphi_epidata.coffee), [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
+Libraries are available for [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
 The following samples show how to import the library and fetch national ILI Nearby data for epiweeks `201940` and `202001-202010` (11 weeks total).
-
-### CoffeeScript (in Node.js)
-
-````coffeescript
-# Import
-{Epidata} = require('./delphi_epidata')
-# Fetch data
-callback = (result, message, epidata) ->
-  console.log(result, message, epidata?.length)
-Epidata.nowcast(callback, ['nat'], [201940, Epidata.range(202001, 202010)])
-````
 
 ### JavaScript (in a web browser)
 
 ````html
 <!-- Imports -->
-<script src="jquery.js"></script>
 <script src="delphi_epidata.js"></script>
 <!-- Fetch data -->
 <script>
-  var callback = function(result, message, epidata) {
-    console.log(result, message, epidata != null ? epidata.length : void 0);
-  };
-  Epidata.nowcast(callback, ['nat'], [201940, Epidata.range(202001, 202010)]);
+  EpidataAsync.nowcast('nat', [201940, EpidataAsync.range(202001, 202010)]).then((res) => {
+    console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
+  });
 </script>
 ````
 

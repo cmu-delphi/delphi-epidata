@@ -18,7 +18,7 @@ KCDC ILI data from KCDC website. ... <!-- TODO -->
 
 # The API
 
-The base URL is: https://delphi.cmu.edu/epidata/api.php
+The base URL is: https://delphi.cmu.edu/epidata/kcdc_ili/
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 

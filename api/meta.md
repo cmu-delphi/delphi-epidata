@@ -19,7 +19,7 @@ General topics not specific to any particular endpoint are discussed in the
 
 # The API
 
-The base URL is: https://delphi.cmu.edu/epidata/api.php
+The base URL is: https://delphi.cmu.edu/epidata/meta/
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -38,50 +38,13 @@ None.
 
 # Example URLs
 
-https://delphi.cmu.edu/epidata/api.php?endpoint=meta
+https://delphi.cmu.edu/epidata/meta/
 
 ```json
 {
   "result": 1,
   "epidata": [
     {
-      "_api": {
-        "minute": [
-          {
-            "num_hits": 0,
-            "unique_ips": 0,
-            "rows_returned": null
-          }
-        ],
-        "hour": [
-          {
-            "num_hits": 63,
-            "unique_ips": 4,
-            "rows_returned": 7992
-          }
-        ],
-        "day": [
-          {
-            "num_hits": 20513,
-            "unique_ips": 71,
-            "rows_returned": 2090111
-          }
-        ],
-        "week": [
-          {
-            "num_hits": 47636,
-            "unique_ips": 473,
-            "rows_returned": 6484427
-          }
-        ],
-        "month": [
-          {
-            "num_hits": 471494,
-            "unique_ips": 5155,
-            "rows_returned": 127706722
-          }
-        ]
-      },
       "fluview": [
         {
           "latest_update": "2020-04-10",
