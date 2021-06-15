@@ -47,12 +47,7 @@ class CovidcastMetaTests(unittest.TestCase):
 
     # insert dummy data and accumulate expected results (in sort order)
     template = '''
-      INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, 
-        `geo_type`, `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
-        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`) 
-      VALUES
+      insert into covidcast values
         (0, "%s", "%s", "%s", "%s", %d, "%s", 123,
         %d, 0, 0, 456, 0, %d, 0, 1, %d, %d, %d, %d)
     '''
@@ -105,12 +100,7 @@ class CovidcastMetaTests(unittest.TestCase):
 
     # insert dummy data and accumulate expected results (in sort order)
     template = '''
-      INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, 
-        `geo_type`, `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
-        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`) 
-      VALUES
+      insert into covidcast values
         (0, "%s", "%s", "%s", "%s", %d, "%s", 123,
         %d, 0, 0, 456, 0, %d, 0, 1, %d, %d, %d, %d)
     '''
@@ -228,12 +218,7 @@ class CovidcastMetaTests(unittest.TestCase):
 
     # insert dummy data and accumulate expected results (in sort order)
     template = '''
-      INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, 
-        `geo_type`, `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
-        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`) 
-      VALUES
+      insert into covidcast values
         (0, "%s", "%s", "%s", "%s", %d, "%s", 123,
         %d, 0, 0, 456, 0, %d, 0, 1, %d, %d, %d, %d)
     '''
