@@ -7,6 +7,7 @@ import unittest
 import mysql.connector
 
 # first party
+from delphi_utils import Nans
 from delphi.epidata.client.delphi_epidata import Epidata
 from delphi.epidata.acquisition.covidcast.fill_is_latest_issue import main
 import delphi.operations.secrets as secrets
@@ -52,39 +53,54 @@ class FillIsLatestIssueTests(unittest.TestCase):
     """Update rows having a stale `direction` field and serve the results."""
 
     # NOTE: column order is:
-    #  (id, source, signal, time_type, geo_type, time_value, geo_value,
-    #  value_updated_timestamp, value, stderr, sample_size, direction_updated_timestamp, direction, issue, lag, is_latest_issue, is_wip)
+    # (id, source, signal, time_type, geo_type, time_value, geo_value,
+    # value_updated_timestamp, value, stderr, sample_size, direction_updated_timestamp,
+    # direction, issue, lag, is_latest_issue, is_wip, missing_value, missing_stderr, missing_sample_size)
 
-    self.cur.execute('''
+    self.cur.execute(f'''
       insert into covidcast values
         (0, 'src', 'sig', 'day', 'state', 20200228, 'ca',
-          123, 2, 5, 5, 5, NULL, 20200228, 0, 1, False),
+          123, 2, 5, 5, 5, NULL, 20200228, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'state', 20200228, 'ca',
-          123, 2, 0, 0, 0, NULL, 20200229, 1, 1, False),
+          123, 2, 0, 0, 0, NULL, 20200229, 1, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'state', 20200229, 'ca',
-          123, 6, 0, 0, 0, NULL, 20200301, 1, 1, False),
+          123, 6, 0, 0, 0, NULL, 20200301, 1, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'state', 20200229, 'ca',
-          123, 6, 9, 9, 9, NULL, 20200229, 0, 1, False),
+          123, 6, 9, 9, 9, NULL, 20200229, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'state', 20200301, 'ca',
-          123, 5, 0, 0, 0, NULL, 20200303, 2, 1, False),
+          123, 5, 0, 0, 0, NULL, 20200303, 2, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'state', 20200301, 'ca',
-          123, 5, 5, 5, 5, NULL, 20200302, 1, 1, False),
+          123, 5, 5, 5, 5, NULL, 20200302, 1, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'state', 20200301, 'ca',
-          123, 5, 9, 8, 7, NULL, 20200301, 0, 1, False),
+          123, 5, 9, 8, 7, NULL, 20200301, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'state', 20200228, 'ny',
-          123, 2, 5, 5, 5, NULL, 20200228, 0, 1, False),
+          123, 2, 5, 5, 5, NULL, 20200228, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'state', 20200228, 'ny',
-          123, 2, 0, 0, 0, NULL, 20200229, 1, 1, False),
+          123, 2, 0, 0, 0, NULL, 20200229, 1, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'state', 20200229, 'ny',
-          123, 6, 0, 0, 0, NULL, 20200301, 1, 1, False),
+          123, 6, 0, 0, 0, NULL, 20200301, 1, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'state', 20200229, 'ny',
-          123, 6, 9, 9, 9, NULL, 20200229, 0, 1, False),
+          123, 6, 9, 9, 9, NULL, 20200229, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'state', 20200301, 'ny',
-          123, 5, 0, 0, 0, NULL, 20200303, 2, 1, False),
+          123, 5, 0, 0, 0, NULL, 20200303, 2, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'state', 20200301, 'ny',
-          123, 5, 5, 5, 5, NULL, 20200302, 1, 1, False),
+          123, 5, 5, 5, 5, NULL, 20200302, 1, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'state', 20200301, 'ny',
-          123, 5, 9, 8, 7, NULL, 20200301, 0, 1, False)
+          123, 5, 9, 8, 7, NULL, 20200301, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
     ''')
     self.cnx.commit()
 
@@ -104,40 +120,54 @@ class FillIsLatestIssueTests(unittest.TestCase):
     result = list(self.cur)
     expected = [
         (1, 'src', 'sig', 'day', 'state', 20200228, 'ca',
-          123, 2, 5, 5, 5, None, 20200228, 0, bytearray(b'0'), bytearray(b'0')),
+          123, 2.0, 5.0, 5.0, 5, None, 20200228, 0, bytearray(b'0'), bytearray(b'0'),
+          Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.NOT_MISSING),
         (2, 'src', 'sig', 'day', 'state', 20200228, 'ca',
-          123, 2, 0, 0, 0, None, 20200229, 1, bytearray(b'1'), bytearray(b'0')),
+          123, 2.0, 0.0, 0.0, 0, None, 20200229, 1, bytearray(b'1'), bytearray(b'0'),
+          Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.NOT_MISSING),
         (3, 'src', 'sig', 'day', 'state', 20200229, 'ca',
-          123, 6, 0, 0, 0, None, 20200301, 1, bytearray(b'1'), bytearray(b'0')),
+          123, 6.0, 0.0, 0.0, 0, None, 20200301, 1, bytearray(b'1'), bytearray(b'0'),
+          Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.NOT_MISSING),
         (4, 'src', 'sig', 'day', 'state', 20200229, 'ca',
-          123, 6, 9, 9, 9, None, 20200229, 0, bytearray(b'0'), bytearray(b'0')),
+          123, 6.0, 9.0, 9.0, 9, None, 20200229, 0, bytearray(b'0'), bytearray(b'0'),
+          Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.NOT_MISSING),
         (5, 'src', 'sig', 'day', 'state', 20200301, 'ca',
-          123, 5, 0, 0, 0, None, 20200303, 2, bytearray(b'1'), bytearray(b'0')),
+          123, 5.0, 0.0, 0.0, 0, None, 20200303, 2, bytearray(b'1'), bytearray(b'0'),
+          Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.NOT_MISSING),
         (6, 'src', 'sig', 'day', 'state', 20200301, 'ca',
-          123, 5, 5, 5, 5, None, 20200302, 1, bytearray(b'0'), bytearray(b'0')),
+          123, 5.0, 5.0, 5.0, 5, None, 20200302, 1, bytearray(b'0'), bytearray(b'0'),
+          Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.NOT_MISSING),
         (7, 'src', 'sig', 'day', 'state', 20200301, 'ca',
-          123, 5, 9, 8, 7, None, 20200301, 0, bytearray(b'0'), bytearray(b'0')),
+          123, 5.0, 9.0, 8.0, 7, None, 20200301, 0, bytearray(b'0'), bytearray(b'0'),
+          Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.NOT_MISSING),
         (8, 'src', 'sig', 'day', 'state', 20200228, 'ny',
-          123, 2, 5, 5, 5, None, 20200228, 0, bytearray(b'0'), bytearray(b'0')),
+          123, 2.0, 5.0, 5.0, 5, None, 20200228, 0, bytearray(b'0'), bytearray(b'0'),
+          Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.NOT_MISSING),
         (9, 'src', 'sig', 'day', 'state', 20200228, 'ny',
-          123, 2, 0, 0, 0, None, 20200229, 1, bytearray(b'1'), bytearray(b'0')),
+          123, 2.0, 0.0, 0.0, 0, None, 20200229, 1, bytearray(b'1'), bytearray(b'0'),
+          Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.NOT_MISSING),
         (10, 'src', 'sig', 'day', 'state', 20200229, 'ny',
-          123, 6, 0, 0, 0, None, 20200301, 1, bytearray(b'1'), bytearray(b'0')),
+          123, 6.0, 0.0, 0.0, 0, None, 20200301, 1, bytearray(b'1'), bytearray(b'0'),
+          Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.NOT_MISSING),
         (11, 'src', 'sig', 'day', 'state', 20200229, 'ny',
-          123, 6, 9, 9, 9, None, 20200229, 0, bytearray(b'0'), bytearray(b'0')),
+          123, 6.0, 9.0, 9.0, 9, None, 20200229, 0, bytearray(b'0'), bytearray(b'0'),
+          Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.NOT_MISSING),
         (12, 'src', 'sig', 'day', 'state', 20200301, 'ny',
-          123, 5, 0, 0, 0, None, 20200303, 2, bytearray(b'1'), bytearray(b'0')),
+          123, 5.0, 0.0, 0.0, 0, None, 20200303, 2, bytearray(b'1'), bytearray(b'0'),
+          Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.NOT_MISSING),
         (13, 'src', 'sig', 'day', 'state', 20200301, 'ny',
-          123, 5, 5, 5, 5, None, 20200302, 1, bytearray(b'0'), bytearray(b'0')),
+          123, 5.0, 5.0, 5.0, 5, None, 20200302, 1, bytearray(b'0'), bytearray(b'0'),
+          Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.NOT_MISSING),
         (14, 'src', 'sig', 'day', 'state', 20200301, 'ny',
-          123, 5, 9, 8, 7, None, 20200301, 0, bytearray(b'0'), bytearray(b'0'))
+          123, 5.0, 9.0, 8.0, 7, None, 20200301, 0, bytearray(b'0'), bytearray(b'0'),
+          Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.NOT_MISSING)
     ]
 
     if use_filter:
       # revert ny is_latest values
       for i in range(7, 14):
         x = list(expected[i])
-        x[-2] = bytearray(b'1')
+        x[-5] = bytearray(b'1')
         expected[i] = tuple(x)
 
     self.assertEqual(result, expected)

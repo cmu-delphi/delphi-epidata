@@ -23,8 +23,8 @@ arbitrary units (its scale is meaningless); larger numbers represent higher
 numbers of COVID-related searches.
 
 These signals were updated daily until March 8, 2021. After that date, Google
-dropped support for Google Health Trends access. We recommend the [Google
-Symptoms source](google-symptoms.md) as an alternative, which provides
+dropped support for Google Health Trends access. We recommend the
+[Google Symptoms source](google-symptoms.md) as an alternative, which provides
 finer-grained measures of search volume at the symptom level.
 
 | Signal | Description |

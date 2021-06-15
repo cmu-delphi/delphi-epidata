@@ -30,7 +30,7 @@ HHS. New versions are expected to be published roughly weekly.
 
 # The API
 
-The base URL is: https://delphi.cmu.edu/epidata/api.php
+The base URL is: https://delphi.cmu.edu/epidata/covid_hosp_facility/
 
 See [this documentation](README.md) for details on specifying locations and dates.
 
@@ -80,7 +80,7 @@ has been renamed here for clarity.
 # Example URLs
 
 ### Moses Taylor Hospital (Scranton, PA) on the first collection week of December 2020 (per most recent issue)
-https://delphi.cmu.edu/epidata/api.php?source=covid_hosp_facility&hospital_pks=390119&collection_weeks=20201201-20201207
+https://delphi.cmu.edu/epidata/covid_hosp_facility/?hospital_pks=390119&collection_weeks=20201201-20201207
 
 ```json
 {
@@ -190,7 +190,7 @@ https://delphi.cmu.edu/epidata/api.php?source=covid_hosp_facility&hospital_pks=3
 
 # Code Samples
 
-Libraries are available for [CoffeeScript](../../src/client/delphi_epidata.coffee), [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
+Libraries are available for [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
 The following sample shows how to import the library and fetch Moses Taylor
 Hospital (Scranton, PA) on the first collection week of December 2020 (per most
 recent issue).

@@ -7,6 +7,8 @@ import unittest
 import mysql.connector
 import requests
 
+# first party
+from delphi_utils import Nans
 
 # use the local instance of the Epidata API
 BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
@@ -42,10 +44,11 @@ class CovidcastTests(unittest.TestCase):
     """Make a simple round-trip with some sample data."""
 
     # insert dummy data
-    self.cur.execute('''
+    self.cur.execute(f'''
       insert into covidcast values
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 1, False)
+          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
     ''')
     self.cnx.commit()
 
@@ -75,19 +78,24 @@ class CovidcastTests(unittest.TestCase):
         'issue': 20200414,
         'lag': 0,
         'signal': 'sig',
+        'missing_value': Nans.NOT_MISSING,
+        'missing_stderr': Nans.NOT_MISSING,
+        'missing_sample_size': Nans.NOT_MISSING
        }],
       'message': 'success',
     })
 
   # TODO enable test again when the gunicorn issue https://github.com/benoitc/gunicorn/issues/2487 is resolved
   # def test_uri_too_long(self):
+  # def test_uri_too_long(self):
   #   """Test that a long request yields a 414 with GET but works with POST."""
 
   #   # insert dummy data
-  #   self.cur.execute('''
+  #   self.cur.execute(f'''
   #     insert into covidcast values
   #       (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-  #         123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 1, False)
+  #         123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 1, False,
+  #         {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
   #   ''')
   #   self.cnx.commit()
 
@@ -120,10 +128,11 @@ class CovidcastTests(unittest.TestCase):
     """Test generate csv data."""
 
     # insert dummy data
-    self.cur.execute('''
+    self.cur.execute(f'''
       insert into covidcast values
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 1, False)
+          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
     ''')
     self.cnx.commit()
 
@@ -140,21 +149,24 @@ class CovidcastTests(unittest.TestCase):
     })
     response.raise_for_status()
     response = response.text
+    expected_response = (
+      "geo_value,signal,time_value,direction,issue,lag,missing_value," +
+      "missing_stderr,missing_sample_size,value,stderr,sample_size\n" +
+      "01234,sig,20200414,4,20200414,0,0,0,0,1.5,2.5,3.5\n"
+    )
 
     # assert that the right data came back
-    self.assertEqual(response,
-"""geo_value,signal,time_value,direction,issue,lag,value,stderr,sample_size
-01234,sig,20200414,4,20200414,0,1.5,2.5,3.5
-""")
+    self.assertEqual(response, expected_response)
 
   def test_raw_json_format(self):
     """Test generate raw json data."""
 
     # insert dummy data
-    self.cur.execute('''
+    self.cur.execute(f'''
       insert into covidcast values
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 1, False)
+          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
     ''')
     self.cnx.commit()
 
@@ -183,16 +195,20 @@ class CovidcastTests(unittest.TestCase):
       'issue': 20200414,
       'lag': 0,
       'signal': 'sig',
+      'missing_value': Nans.NOT_MISSING,
+      'missing_stderr': Nans.NOT_MISSING,
+      'missing_sample_size': Nans.NOT_MISSING
     }])
 
   def test_fields(self):
     """Test to limit fields field"""
 
     # insert dummy data
-    self.cur.execute('''
+    self.cur.execute(f'''
       insert into covidcast values
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 1, False)
+          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
     ''')
     self.cnx.commit()
 
@@ -221,7 +237,10 @@ class CovidcastTests(unittest.TestCase):
         'direction': 4,
         'issue': 20200414,
         'lag': 0,
-        'signal': 'sig'
+        'signal': 'sig',
+        'missing_value': Nans.NOT_MISSING,
+        'missing_stderr': Nans.NOT_MISSING,
+        'missing_sample_size': Nans.NOT_MISSING
        }],
       'message': 'success',
     })
@@ -274,24 +293,58 @@ class CovidcastTests(unittest.TestCase):
       'message': 'success',
     })
 
+
+    # limit exclude fields
+    response = requests.get(BASE_URL, params={
+      'endpoint': 'covidcast',
+      'data_source': 'src',
+      'signal': 'sig',
+      'time_type': 'day',
+      'geo_type': 'county',
+      'time_values': 20200414,
+      'geo_value': '01234',
+      'fields': (
+        '-value,-stderr,-sample_size,-direction,-issue,-lag,-signal,' +
+        '-missing_value,-missing_stderr,-missing_sample_size'
+      )
+    })
+    response.raise_for_status()
+    response = response.json()
+
+    # assert that the right data came back
+    self.assertEqual(response, {
+      'result': 1,
+      'epidata': [{
+        'time_value': 20200414,
+        'geo_value': '01234'
+       }],
+      'message': 'success',
+    })
+
   def test_location_wildcard(self):
     """Select all locations with a wildcard query."""
 
     # insert dummy data
-    self.cur.execute('''
+    self.cur.execute(f'''
       insert into covidcast values
         (0, 'src', 'sig', 'day', 'county', 20200414, '11111',
-          123, 10, 11, 12, 456, 13, 20200414, 0, 1, False),
+          123, 10, 11, 12, 456, 13, 20200414, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'county', 20200414, '22222',
-          123, 20, 21, 22, 456, 23, 20200414, 0, 1, False),
+          123, 20, 21, 22, 456, 23, 20200414, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'county', 20200414, '33333',
-          123, 30, 31, 32, 456, 33, 20200414, 0, 1, False),
+          123, 30, 31, 32, 456, 33, 20200414, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'msa', 20200414, '11111',
-          123, 40, 41, 42, 456, 43, 20200414, 0, 1, False),
+          123, 40, 41, 42, 456, 43, 20200414, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'msa', 20200414, '22222',
-          123, 50, 51, 52, 456, 53, 20200414, 0, 1, False),
+          123, 50, 51, 52, 456, 53, 20200414, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'msa', 20200414, '33333',
-          123, 60, 61, 62, 456, 634, 20200414, 0, 1, False)
+          123, 60, 61, 62, 456, 634, 20200414, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
     ''')
     self.cnx.commit()
 
@@ -322,6 +375,9 @@ class CovidcastTests(unittest.TestCase):
           'issue': 20200414,
           'lag': 0,
           'signal': 'sig',
+          'missing_value': Nans.NOT_MISSING,
+          'missing_stderr': Nans.NOT_MISSING,
+          'missing_sample_size': Nans.NOT_MISSING
         }, {
           'time_value': 20200414,
           'geo_value': '22222',
@@ -332,6 +388,9 @@ class CovidcastTests(unittest.TestCase):
           'issue': 20200414,
           'lag': 0,
           'signal': 'sig',
+          'missing_value': Nans.NOT_MISSING,
+          'missing_stderr': Nans.NOT_MISSING,
+          'missing_sample_size': Nans.NOT_MISSING
         }, {
           'time_value': 20200414,
           'geo_value': '33333',
@@ -342,6 +401,9 @@ class CovidcastTests(unittest.TestCase):
           'issue': 20200414,
           'lag': 0,
           'signal': 'sig',
+          'missing_value': Nans.NOT_MISSING,
+          'missing_stderr': Nans.NOT_MISSING,
+          'missing_sample_size': Nans.NOT_MISSING
         },
        ],
       'message': 'success',
@@ -351,20 +413,26 @@ class CovidcastTests(unittest.TestCase):
     """test different variants of geo types: single, *, multi."""
 
     # insert dummy data
-    self.cur.execute('''
+    self.cur.execute(f'''
       insert into covidcast values
         (0, 'src', 'sig', 'day', 'county', 20200414, '11111',
-          123, 10, 11, 12, 456, 13, 20200414, 0, 1, False),
+          123, 10, 11, 12, 456, 13, 20200414, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'county', 20200414, '22222',
-          123, 20, 21, 22, 456, 23, 20200414, 0, 1, False),
+          123, 20, 21, 22, 456, 23, 20200414, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'county', 20200414, '33333',
-          123, 30, 31, 32, 456, 33, 20200414, 0, 1, False),
+          123, 30, 31, 32, 456, 33, 20200414, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'msa', 20200414, '11111',
-          123, 40, 41, 42, 456, 43, 20200414, 0, 1, False),
+          123, 40, 41, 42, 456, 43, 20200414, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'msa', 20200414, '22222',
-          123, 50, 51, 52, 456, 53, 20200414, 0, 1, False),
+          123, 50, 51, 52, 456, 53, 20200414, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'msa', 20200414, '33333',
-          123, 60, 61, 62, 456, 634, 20200414, 0, 1, False)
+          123, 60, 61, 62, 456, 634, 20200414, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
     ''')
     self.cnx.commit()
 
@@ -398,6 +466,9 @@ class CovidcastTests(unittest.TestCase):
       'issue': 20200414,
       'lag': 0,
       'signal': 'sig',
+      'missing_value': Nans.NOT_MISSING,
+      'missing_stderr': Nans.NOT_MISSING,
+      'missing_sample_size': Nans.NOT_MISSING
     }, {
       'time_value': 20200414,
       'geo_value': '22222',
@@ -408,6 +479,9 @@ class CovidcastTests(unittest.TestCase):
       'issue': 20200414,
       'lag': 0,
       'signal': 'sig',
+      'missing_value': Nans.NOT_MISSING,
+      'missing_stderr': Nans.NOT_MISSING,
+      'missing_sample_size': Nans.NOT_MISSING
     }, {
       'time_value': 20200414,
       'geo_value': '33333',
@@ -418,6 +492,9 @@ class CovidcastTests(unittest.TestCase):
       'issue': 20200414,
       'lag': 0,
       'signal': 'sig',
+      'missing_value': Nans.NOT_MISSING,
+      'missing_stderr': Nans.NOT_MISSING,
+      'missing_sample_size': Nans.NOT_MISSING
     }]
 
     # test fetch all
@@ -452,20 +529,26 @@ class CovidcastTests(unittest.TestCase):
     """Select a timeline for a particular location."""
 
     # insert dummy data
-    self.cur.execute('''
+    self.cur.execute(f'''
       insert into covidcast values
         (0, 'src', 'sig', 'day', 'county', 20200411, '01234',
-          123, 10, 11, 12, 456, 13, 20200413, 2, 1, False),
+          123, 10, 11, 12, 456, 13, 20200413, 2, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'county', 20200412, '01234',
-          123, 20, 21, 22, 456, 23, 20200413, 1, 1, False),
+          123, 20, 21, 22, 456, 23, 20200413, 1, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'county', 20200413, '01234',
-          123, 30, 31, 32, 456, 33, 20200413, 0, 1, False),
+          123, 30, 31, 32, 456, 33, 20200413, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'county', 20200411, '11111',
-          123, 40, 41, 42, 456, 43, 20200413, 2, 1, False),
+          123, 40, 41, 42, 456, 43, 20200413, 2, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'county', 20200412, '22222',
-          123, 50, 51, 52, 456, 53, 20200413, 1, 1, False),
+          123, 50, 51, 52, 456, 53, 20200413, 1, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'county', 20200413, '33333',
-          123, 60, 61, 62, 456, 63, 20200413, 0, 1, False)
+          123, 60, 61, 62, 456, 63, 20200413, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
     ''')
     self.cnx.commit()
 
@@ -496,6 +579,9 @@ class CovidcastTests(unittest.TestCase):
           'issue': 20200413,
           'lag': 2,
           'signal': 'sig',
+          'missing_value': Nans.NOT_MISSING,
+          'missing_stderr': Nans.NOT_MISSING,
+          'missing_sample_size': Nans.NOT_MISSING
         }, {
           'time_value': 20200412,
           'geo_value': '01234',
@@ -506,6 +592,9 @@ class CovidcastTests(unittest.TestCase):
           'issue': 20200413,
           'lag': 1,
           'signal': 'sig',
+          'missing_value': Nans.NOT_MISSING,
+          'missing_stderr': Nans.NOT_MISSING,
+          'missing_sample_size': Nans.NOT_MISSING
         }, {
           'time_value': 20200413,
           'geo_value': '01234',
@@ -516,6 +605,9 @@ class CovidcastTests(unittest.TestCase):
           'issue': 20200413,
           'lag': 0,
           'signal': 'sig',
+          'missing_value': Nans.NOT_MISSING,
+          'missing_stderr': Nans.NOT_MISSING,
+          'missing_sample_size': Nans.NOT_MISSING
         },
        ],
       'message': 'success',
@@ -525,36 +617,40 @@ class CovidcastTests(unittest.TestCase):
     """Don't allow a row with a key collision to be inserted."""
 
     # insert dummy data
-    self.cur.execute('''
+    self.cur.execute(f'''
       insert into covidcast values
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          0, 0, 0, 0, 0, 0, 20200414, 0, 1, False)
+          0, 0, 0, 0, 0, 0, 20200414, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
     ''')
     self.cnx.commit()
 
     # fail to insert different dummy data under the same key
     with self.assertRaises(mysql.connector.errors.IntegrityError):
-      self.cur.execute('''
+      self.cur.execute(f'''
         insert into covidcast values
           (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-            1, 1, 1, 1, 1, 1, 20200414, 0, 1, False)
+            1, 1, 1, 1, 1, 1, 20200414, 0, 1, False,
+            {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
       ''')
 
     # succeed to insert different dummy data under a different issue
-    self.cur.execute('''
+    self.cur.execute(f'''
       insert into covidcast values
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          1, 1, 1, 1, 1, 1, 20200415, 1, 1, False)
+          1, 1, 1, 1, 1, 1, 20200415, 1, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
     ''')
 
   def test_nullable_columns(self):
     """Missing values should be surfaced as null."""
 
     # insert dummy data
-    self.cur.execute('''
+    self.cur.execute(f'''
       insert into covidcast values
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          123, 0.123, NULL, NULL, 456, NULL, 20200414, 0, 1, False)
+          123, 0.123, NULL, NULL, 456, NULL, 20200414, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.OTHER}, {Nans.OTHER})
     ''')
     self.cnx.commit()
 
@@ -570,9 +666,7 @@ class CovidcastTests(unittest.TestCase):
     })
     response.raise_for_status()
     response = response.json()
-
-    # assert that the right data came back
-    self.assertEqual(response, {
+    expected_response = {
       'result': 1,
       'epidata': [{
         'time_value': 20200414,
@@ -584,26 +678,37 @@ class CovidcastTests(unittest.TestCase):
         'issue': 20200414,
         'lag': 0,
         'signal': 'sig',
+        'missing_value': Nans.NOT_MISSING,
+        'missing_stderr': Nans.OTHER,
+        'missing_sample_size': Nans.OTHER
        }],
       'message': 'success',
-    })
+    }
+
+    # assert that the right data came back
+    self.assertEqual(response, expected_response)
 
   def test_temporal_partitioning(self):
     """Request a signal that's available at multiple temporal resolutions."""
 
     # insert dummy data
-    self.cur.execute('''
+    self.cur.execute(f'''
       insert into covidcast values
         (0, 'src', 'sig', 'hour', 'state', 2020041714, 'vi',
-          123, 10, 11, 12, 456, 13, 2020041714, 0, 1, False),
+          123, 10, 11, 12, 456, 13, 2020041714, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'state', 20200417, 'vi',
-          123, 20, 21, 22, 456, 23, 20200417, 00, 1, False),
+          123, 20, 21, 22, 456, 23, 20200417, 00, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'week', 'state', 202016, 'vi',
-          123, 30, 31, 32, 456, 33, 202016, 0, 1, False),
+          123, 30, 31, 32, 456, 33, 202016, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'month', 'state', 202004, 'vi',
-          123, 40, 41, 42, 456, 43, 202004, 0, 1, False),
+          123, 40, 41, 42, 456, 43, 202004, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'year', 'state', 2020, 'vi',
-          123, 50, 51, 52, 456, 53, 2020, 0, 1, False)
+          123, 50, 51, 52, 456, 53, 2020, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
     ''')
     self.cnx.commit()
 
@@ -633,6 +738,9 @@ class CovidcastTests(unittest.TestCase):
         'issue': 202016,
         'lag': 0,
         'signal': 'sig',
+        'missing_value': Nans.NOT_MISSING,
+        'missing_stderr': Nans.NOT_MISSING,
+        'missing_sample_size': Nans.NOT_MISSING
        }],
       'message': 'success',
     })
@@ -641,20 +749,26 @@ class CovidcastTests(unittest.TestCase):
     """Request a signal using different time formats."""
 
     # insert dummy data
-    self.cur.execute('''
+    self.cur.execute(f'''
       insert into covidcast values
       (0, 'src', 'sig', 'day', 'county', 20200411, '01234',
-          123, 10, 11, 12, 456, 13, 20200413, 0, 1, False),
+          123, 10, 11, 12, 456, 13, 20200413, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'county', 20200412, '01234',
-          123, 20, 21, 22, 456, 23, 20200413, 0, 1, False),
+          123, 20, 21, 22, 456, 23, 20200413, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'county', 20200413, '01234',
-          123, 30, 31, 32, 456, 33, 20200413, 0, 1, False),
+          123, 30, 31, 32, 456, 33, 20200413, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'county', 20200411, '11111',
-          123, 40, 41, 42, 456, 43, 20200413, 0, 1, False),
+          123, 40, 41, 42, 456, 43, 20200413, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'county', 20200412, '22222',
-          123, 50, 51, 52, 456, 53, 20200413, 0, 1, False),
+          123, 50, 51, 52, 456, 53, 20200413, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'county', 20200413, '33333',
-          123, 60, 61, 62, 456, 63, 20200413, 0, 1, False)
+          123, 60, 61, 62, 456, 63, 20200413, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
     ''')
     self.cnx.commit()
 

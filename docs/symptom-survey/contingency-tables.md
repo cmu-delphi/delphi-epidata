@@ -67,8 +67,7 @@ derived indicators will be included in aggregations for that period but will
 only use a partial week or month of data.
 
 CSVs for the month of January 2021 only use data from January 6-31 due to a
-[definitional change in a major vaccine item on January
-6](./coding.md#new-items-2).
+[definitional change in a major vaccine item on January 6](./coding.md#new-items-2).
 
 ### Regions
 
@@ -163,9 +162,8 @@ indicator columns will be marked as missing (`NA`) for that group.
 
 ## Indicators
 
-The files contain [weighted
-estimates](../api/covidcast-signals/fb-survey.md#survey-weighting) of the
-percent of respondents who fulfill one or several criteria. Estimates are
+The files contain [weighted estimates](../api/covidcast-signals/fb-survey.md#survey-weighting)
+of the percent of respondents who fulfill one or several criteria. Estimates are
 broken out by state, age, gender, race, ethnicity, occupation, and health
 conditions.
 
