@@ -24,14 +24,16 @@ the survey instrument or underlying data). This bug affects questions where
 response options are carried forward from the previous question.
 
 For example, item C13 on waves 4-8 asked respondents to select which activities
-they did in the previous 24 hours. Item C13a carried forward any choices they
-selected and asked if they wore a mask while doing those activities. The
-numerical coding of responses in C13 was not consecutive, but the documentation
-of C13a suggested that responses to it *were* coded consecutively.
+they did in the previous 24 hours. Since item C13a asked respondents if they wore a 
+mask while doing those activities, it was set up to carry forward response options 
+from C13 so that the wording and numerical coding of response options matched 
+between the two items.
 
-However, in the microdata made available to users with data access, the coding
-of C13 and C13a is identical. The Qualtrics-exported document giving the coding
-is in error.
+The numerical coding of responses in C13 was not consecutive, but the 
+documentation of C13a suggested that responses to it *were* coded consecutively. 
+However, in the microdata made available to users with data access, the coding of
+C13 and C13a is identical. It is the Qualtrics-exported document giving the coding 
+that is in error.
 
 We updated the [coding documentation](coding.md) on June 15, 2021 to correct the
 documented coding of all affected items. The discrepancies that were caught and
