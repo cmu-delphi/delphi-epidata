@@ -1,7 +1,8 @@
 from dataclasses import asdict, dataclass, field
-from typing import Callable, Optional, Dict, Any, List, Tuple
+from typing import Callable, Optional, Dict, List, Tuple
 from enum import Enum
 from pathlib import Path
+import re
 import pandas as pd
 import numpy as np
 
@@ -30,6 +31,31 @@ class SignalCategory(str, Enum):
 
 
 @dataclass
+class WebLink:
+    alt: str
+    href: str
+
+
+def _fix_links(link: Optional[str]) -> List[WebLink]:
+    # fix the link structure as given in (multiple) optional markdown link formats
+    if not link:
+        return []
+
+    reg = re.compile("\[(.+)\]\s*\((.*)\)")
+
+    def parse(l: str) -> Optional[WebLink]:
+        l = l.strip()
+        if not l:
+            return None
+        m = reg.match(l)
+        if not m:
+            return WebLink("API Documentation", l)
+        return WebLink(m.group(1), m.group(2))
+
+    return [l for l in map(parse, link.split(",")) if l]
+
+
+@dataclass
 class DataSignal:
     source: str
     signal: str
@@ -47,8 +73,11 @@ class DataSignal:
     is_cumulative: bool = False
     has_stderr: bool = False
     has_sample_size: bool = False
-    link: Optional[str] = None
+    link: List[WebLink] = field(default_factory=list)
     based_on_other: bool = False
+
+    def __post_init__(self):
+        self.link = _fix_links(self.link)
 
     def derive_defaults(self, map: Dict[Tuple[str, str], "DataSignal"]):
         base = map.get((self.source, self.signal_basename))
@@ -89,12 +118,13 @@ class DataSource:
     description: str
     reference_signal: str
     license: Optional[str] = None
-    link: Optional[str] = None
+    link: List[WebLink] = field(default_factory=list)
     dua: Optional[str] = None
 
     signals: List[DataSignal] = field(default_factory=list)
 
     def __post_init__(self):
+        self.link = _fix_links(self.link)
         if not self.db_source:
             self.db_source = self.source
 
