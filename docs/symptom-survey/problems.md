@@ -42,7 +42,8 @@ fixed in the documentation are listed below:
 - Items C13 and C13a, waves 4-8 and 10. The "None of the above" response option
   is affected, though this cannot normally be selected in C13a.
 - Items B2 and B2c, wave 11. The "Stuffy or runny nose" response option is
-  affected.
+  affected. The documentation suggested that it was coded as 20 in B2 and 6 on
+  B2c, but it is actually consistently coded as 20 in both items.
 
 ## Mistranslation of Distances (May 2021)
 
