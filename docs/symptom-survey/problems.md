@@ -17,6 +17,34 @@ results. All problems will be logged here.
 1. TOC
 {:toc}
 
+## Incorrect Coding in Documentation
+
+We found a Qualtrics bug that affects the exported text of the survey (but not
+the survey instrument or underlying data). This bug affects questions where
+response options are carried forward from the previous question.
+
+For example, item C13 on waves 4-8 asked respondents to select which activities
+they did in the previous 24 hours. Since item C13a asked respondents if they wore a 
+mask while doing those activities, it was set up to carry forward response options 
+from C13 so that the wording and numerical coding of response options matched 
+between the two items.
+
+The numerical coding of responses in C13 was not consecutive, but the 
+documentation of C13a suggested that responses to it *were* coded consecutively. 
+However, in the microdata made available to users with data access, the coding of
+C13 and C13a is identical. It is the Qualtrics-exported document giving the coding 
+that is in error.
+
+We updated the [coding documentation](coding.md) on June 15, 2021 to correct the
+documented coding of all affected items. The discrepancies that were caught and
+fixed in the documentation are listed below:
+
+- Items C13 and C13a, waves 4-8 and 10. The "None of the above" response option
+  is affected, though this cannot normally be selected in C13a.
+- Items B2 and B2c, wave 11. The "Stuffy or runny nose" response option is
+  affected. The documentation suggested that it was coded as 20 in B2 and 6 on
+  B2c, but it is actually consistently coded as 20 in both items.
+
 ## Mistranslation of Distances (May 2021)
 
 In Wave 11, all items were re-translated to ensure consistency of the
