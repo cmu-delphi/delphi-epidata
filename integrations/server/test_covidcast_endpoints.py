@@ -127,12 +127,7 @@ class CovidcastEndpointTests(unittest.TestCase):
         sql = ",\n".join((str(r) for r in rows))
         self.cur.execute(
             f"""
-            INSERT INTO
-                `covidcast` (`id`, `source`, `signal`, `time_type`, 
-                `geo_type`, `time_value`, `geo_value`, `value_updated_timestamp`, 
-                `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
-                `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`) 
-            VALUES
+            insert into covidcast values
             {sql}
             """
         )
