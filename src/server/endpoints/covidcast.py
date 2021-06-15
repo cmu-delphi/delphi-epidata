@@ -1,10 +1,13 @@
-from typing import List, Optional, Union, Tuple, Dict, Any
+from typing import List, Optional, Union, Tuple, Dict, Any, Set
 from itertools import groupby
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from flask import Blueprint, request
+from flask.json import loads, jsonify
 from bisect import bisect_right
+from sqlalchemy import text
+from pandas import read_csv
 
-from .._common import is_compatibility_mode
+from .._common import is_compatibility_mode, db
 from .._exceptions import ValidationFailedException, DatabaseErrorException
 from .._params import (
     GeoPair,
@@ -19,7 +22,7 @@ from .._params import (
     parse_single_time_arg,
     parse_single_geo_arg,
 )
-from .._query import QueryBuilder, execute_query, run_query, parse_row
+from .._query import QueryBuilder, execute_query, run_query, parse_row, filter_fields
 from .._printer import create_printer, CSVPrinter
 from .._validate import (
     extract_date,
@@ -29,8 +32,10 @@ from .._validate import (
     require_all,
     require_any,
 )
-from .._pandas import as_pandas
-from .covidcast_utils import compute_trend, shift_time_value, date_to_time_value, time_value_to_iso, compute_correlations, compute_trend_value
+from .._db import sql_table_has_columns
+from .._pandas import as_pandas, print_pandas
+from .covidcast_utils import compute_trend, compute_trends, compute_correlations, compute_trend_value, CovidcastMetaEntry, AllSignalsMap
+from ..utils import shift_time_value, date_to_time_value, time_value_to_iso, time_value_to_date
 
 # first argument is the endpoint name
 bp = Blueprint("covidcast", __name__)
@@ -99,6 +104,24 @@ def _handle_lag_issues_as_of(q: QueryBuilder, issues: Optional[List[Union[Tuple[
         q.conditions.append(f"({q.alias}.is_latest_issue IS TRUE)")
 
 
+def guess_index_to_use(time: List[TimePair], geo: List[GeoPair], issues: Optional[List[Union[Tuple[int, int], int]]] = None, lag: Optional[int] = None, as_of: Optional[int] = None) -> Optional[str]:
+    time_values_to_retrieve = sum((t.count() for t in time))
+    geo_values_to_retrieve = sum((g.count() for g in geo))
+
+    if geo_values_to_retrieve > 5 or time_values_to_retrieve < 30:
+        # no optimization known
+        return None
+
+    if issues:
+        return "by_issue"
+    elif lag is not None:
+        return "by_lag"
+    elif as_of is None:
+        # latest
+        return "by_issue"
+    return None
+
+
 @bp.route("/", methods=("GET", "POST"))
 def handle():
     source_signal_pairs = parse_source_signal_pairs()
@@ -114,6 +137,11 @@ def handle():
 
     fields_string = ["geo_value", "signal"]
     fields_int = ["time_value", "direction", "issue", "lag"]
+
+    missing_fields = ["missing_value", "missing_stderr", "missing_sample_size"]
+    if sql_table_has_columns("covidcast", missing_fields):
+        fields_int.extend(missing_fields)
+
     fields_float = ["value", "stderr", "sample_size"]
     if is_compatibility_mode():
         q.set_order("signal", "time_value", "geo_value", "issue")
@@ -130,6 +158,8 @@ def handle():
     q.where_source_signal_pairs("source", "signal", source_signal_pairs)
     q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
     q.where_time_pairs("time_type", "time_value", time_pairs)
+
+    q.index = guess_index_to_use(time_pairs, geo_pairs, issues, lag, as_of)
 
     _handle_lag_issues_as_of(q, issues, lag, as_of)
 
@@ -177,7 +207,54 @@ def handle_trend():
         raise DatabaseErrorException(str(e))
 
     # now use a generator for sending the rows and execute all the other queries
-    return p(gen(r))
+    return p(filter_fields(gen(r)))
+
+
+@bp.route("/trendseries", methods=("GET", "POST"))
+def handle_trendseries():
+    require_all("window")
+    source_signal_pairs = parse_source_signal_pairs()
+    geo_pairs = parse_geo_pairs()
+
+    time_window = parse_day_range_arg("window")
+    basis_shift = extract_integer("basis")
+    if basis_shift is None:
+        basis_shift = 7
+
+    # build query
+    q = QueryBuilder("covidcast", "t")
+
+    fields_string = ["geo_type", "geo_value", "source", "signal"]
+    fields_int = ["time_value"]
+    fields_float = ["value"]
+    q.set_fields(fields_string, fields_int, fields_float)
+    q.set_order("geo_type", "geo_value", "source", "signal", "time_value")
+
+    q.where_source_signal_pairs("source", "signal", source_signal_pairs)
+    q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
+    q.where_time_pairs("time_type", "time_value", [TimePair("day", [time_window])])
+
+    # fetch most recent issue fast
+    _handle_lag_issues_as_of(q, None, None, None)
+
+    p = create_printer()
+
+    shifter = lambda x: shift_time_value(x, -basis_shift)
+
+    def gen(rows):
+        for key, group in groupby((parse_row(row, fields_string, fields_int, fields_float) for row in rows), lambda row: (row["geo_type"], row["geo_value"], row["source"], row["signal"])):
+            trends = compute_trends(key[0], key[1], key[2], key[3], shifter, ((row["time_value"], row["value"]) for row in group))
+            for trend in trends:
+                yield trend.asdict()
+
+    # execute first query
+    try:
+        r = run_query(p, (str(q), q.params))
+    except Exception as e:
+        raise DatabaseErrorException(str(e))
+
+    # now use a generator for sending the rows and execute all the other queries
+    return p(filter_fields(gen(r)))
 
 
 @bp.route("/correlation", methods=("GET", "POST"))
@@ -237,7 +314,7 @@ def handle_correlation():
                     yield cor.asdict()
 
     # now use a generator for sending the rows and execute all the other queries
-    return p(gen())
+    return p(filter_fields(gen()))
 
 
 @bp.route("/csv", methods=("GET", "POST"))
@@ -263,7 +340,7 @@ def handle_export():
     q = QueryBuilder("covidcast", "t")
 
     q.set_fields(["geo_value", "signal", "time_value", "issue", "lag", "value", "stderr", "sample_size", "geo_type", "source"], [], [])
-    q.set_order("geo_value", "time_value")
+    q.set_order("time_value", "geo_value")
     q.where(source=source, signal=signal, time_type="day")
     q.conditions.append("time_value BETWEEN :start_day AND :end_day")
     q.params["start_day"] = date_to_time_value(start_day)
@@ -382,4 +459,95 @@ def handle_backfill():
         raise DatabaseErrorException(str(e))
 
     # now use a generator for sending the rows and execute all the other queries
-    return p(gen(r))
+    return p(filter_fields(gen(r)))
+
+
+@bp.route("/meta", methods=("GET", "POST"))
+def handle_meta():
+    """
+    similar to /covidcast_meta but in a structured optimized JSON form for the app
+    """
+
+    signal = parse_source_signal_arg("signal")
+
+    row = db.execute(text("SELECT epidata FROM covidcast_meta_cache LIMIT 1")).fetchone()
+
+    data = loads(row["epidata"]) if row and row["epidata"] else []
+
+    all_signals: AllSignalsMap = {}
+    for row in data:
+        if row["time_type"] != "day":
+            continue
+        entry: Set[str] = all_signals.setdefault(row["data_source"], set())
+        entry.add(row["signal"])
+
+    out: Dict[str, CovidcastMetaEntry] = {}
+    for row in data:
+        if row["time_type"] != "day":
+            continue
+        if signal and all((not s.matches(row["data_source"], row["signal"]) for s in signal)):
+            continue
+        entry = out.setdefault(
+            f"{row['data_source']}:{row['signal']}", CovidcastMetaEntry(row["data_source"], row["signal"], row["min_time"], row["max_time"], row["max_issue"], {}, all_signals=all_signals)
+        )
+        entry.intergrate(row)
+
+    return jsonify([r.asdict() for r in out.values()])
+
+
+@bp.route("/coverage", methods=("GET", "POST"))
+def handle_coverage():
+    """
+    similar to /signal_dashboard_coverage for a specific signal returns the coverage (number of locations for a given geo_type)
+    """
+
+    signal = parse_source_signal_pairs()
+    geo_type = request.args.get("geo_type", "county")
+    if "window" in request.values:
+        time_window = parse_day_range_arg("window")
+    else:
+        now_time = extract_date("latest")
+        now = date.today() if now_time is None else time_value_to_date(now_time)
+        last = extract_integer("days")
+        if last is None:
+            last = 30
+        time_window = (date_to_time_value(now - timedelta(days=last)), date_to_time_value(now))
+
+    q = QueryBuilder("covidcast", "c")
+    fields_string = ["source", "signal"]
+    fields_int = ["time_value"]
+
+    q.set_fields(fields_string, fields_int)
+
+    # manually append the count column because of grouping
+    fields_int.append("count")
+    q.fields.append(f"count({q.alias}.geo_value) as count")
+
+    if geo_type == "only-county":
+        q.where(geo_type="county")
+        q.conditions.append('geo_value not like "%000"')
+    else:
+        q.where(geo_type=geo_type)
+    q.where_source_signal_pairs("source", "signal", signal)
+    q.where_time_pairs("time_type", "time_value", [TimePair("day", [time_window])])
+    q.group_by = "c.source, c.signal, c.time_value"
+    q.set_order("source", "signal", "time_value")
+
+    _handle_lag_issues_as_of(q, None, None, None)
+
+    return execute_query(q.query, q.params, fields_string, fields_int, [])
+
+
+@bp.route("/anomalies", methods=("GET", "POST"))
+def handle_anomalies():
+    """
+    proxy to the excel sheet about data anomalies
+    """
+
+    signal = parse_source_signal_arg("signal")
+
+    df = read_csv(
+        "https://docs.google.com/spreadsheets/d/e/2PACX-1vToGcf9x5PNJg-eSrxadoR5b-LM2Cqs9UML97587OGrIX0LiQDcU1HL-L2AA8o5avbU7yod106ih0_n/pub?gid=0&single=true&output=csv", skip_blank_lines=True
+    )
+    df = df[df["source"].notnull() & df["published"]]
+    return print_pandas(df)

@@ -21,10 +21,6 @@ from delphi.epidata.server._params import (
     TimePair,
     SourceSignalPair,
 )
-from delphi.epidata.server._exceptions import (
-    ValidationFailedException,
-    UnAuthenticatedException,
-)
 
 # py3tester coverage target
 __test_target__ = "delphi.epidata.server._query"

@@ -5,16 +5,15 @@ import json
 
 load_dotenv()
 
+VERSION = "0.1.0"
 
 MAX_RESULTS = int(10e6)
 MAX_COMPATIBILITY_RESULTS = int(3650)
 
 SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI", "sqlite:///test.db")
-SQLALCHEMY_ENGINE_OPTIONS = json.loads(
-    os.environ.get("SQLALCHEMY_ENGINE_OPTIONS", "{}")
-)
-SECRET = os.environ.get("FLASK_SECRET", 'secret')
-URL_PREFIX = os.environ.get('FLASK_PREFIX', '/')
+SQLALCHEMY_ENGINE_OPTIONS = json.loads(os.environ.get("SQLALCHEMY_ENGINE_OPTIONS", "{}"))
+SECRET = os.environ.get("FLASK_SECRET", "secret")
+URL_PREFIX = os.environ.get("FLASK_PREFIX", "/")
 
 AUTH = {
     "twitter": os.environ.get("SECRET_TWITTER"),

@@ -10,6 +10,7 @@ from unittest.mock import MagicMock
 import mysql.connector
 
 # first party
+from delphi_utils import Nans
 from delphi.epidata.client.delphi_epidata import Epidata
 from delphi.epidata.acquisition.covidcast.csv_to_database import main
 import delphi.operations.secrets as secrets
@@ -66,27 +67,49 @@ class CsvUploadingTests(unittest.TestCase):
 
     # valid
     with open(source_receiving_dir + '/20200419_state_test.csv', 'w') as f:
+      f.write('geo_id,val,se,sample_size,missing_val,missing_se,missing_sample_size\n')
+      f.write(f'ca,1,0.1,10,{Nans.NOT_MISSING},{Nans.NOT_MISSING},{Nans.NOT_MISSING}\n')
+      f.write(f'tx,2,0.2,20,{Nans.NOT_MISSING},{Nans.NOT_MISSING},{Nans.NOT_MISSING}\n')
+      f.write(f'fl,3,0.3,30,{Nans.NOT_MISSING},{Nans.NOT_MISSING},{Nans.NOT_MISSING}\n')
+
+    # valid, old style no missing cols should have intelligent defaults
+    with open(source_receiving_dir + '/20200419_state_test_no_missing.csv', 'w') as f:
       f.write('geo_id,val,se,sample_size\n')
       f.write('ca,1,0.1,10\n')
-      f.write('tx,2,0.2,20\n')
-      f.write('fl,3,0.3,30\n')
+      f.write('tx,NA,0.2,20\n')
+      f.write('wa,3,0.3,30\n')
+
+    # invalid, missing with an inf value
+    with open(source_receiving_dir + '/20200419_state_test_missing1.csv', 'w') as f:
+      f.write('geo_id,val,se,sample_size,missing_val,missing_se,missing_sample_size\n')
+      f.write(f'fl,inf,0.3,30,{Nans.OTHER},{Nans.NOT_MISSING},{Nans.NOT_MISSING}\n')
+
+    # invalid, missing with an incorrect missing code
+    with open(source_receiving_dir + '/20200419_state_test_missing2.csv', 'w') as f:
+      f.write('geo_id,val,se,sample_size,missing_val,missing_se,missing_sample_size\n')
+      f.write(f'tx,NA,0.2,20,{Nans.NOT_MISSING},{Nans.NOT_MISSING},{Nans.NOT_MISSING}\n')
+
+    # invalid, no missing with an incorrect missing code
+    with open(source_receiving_dir + '/20200419_state_test_missing3.csv', 'w') as f:
+      f.write('geo_id,val,se,sample_size,missing_val,missing_se,missing_sample_size\n')
+      f.write(f'wa,3,0.3,30,{Nans.OTHER},{Nans.NOT_MISSING},{Nans.NOT_MISSING}\n')
 
     # valid wip
     with open(source_receiving_dir + '/20200419_state_wip_prototype.csv', 'w') as f:
-      f.write('geo_id,val,se,sample_size\n')
-      f.write('me,10,0.01,100\n')
-      f.write('nd,20,0.02,200\n')
-      f.write('wa,30,0.03,300\n')
+      f.write('geo_id,val,se,sample_size,missing_val,missing_se,missing_sample_size\n')
+      f.write(f'me,10,0.01,100,{Nans.NOT_MISSING},{Nans.NOT_MISSING},{Nans.NOT_MISSING}\n')
+      f.write(f'nd,20,0.02,200,{Nans.NOT_MISSING},{Nans.NOT_MISSING},{Nans.NOT_MISSING}\n')
+      f.write(f'wa,30,0.03,300,{Nans.NOT_MISSING},{Nans.NOT_MISSING},{Nans.NOT_MISSING}\n')
 
     # invalid
     with open(source_receiving_dir + '/20200419_state_wip_really_long_name_that_will_be_accepted.csv', 'w') as f:
-      f.write('geo_id,val,se,sample_size\n')
-      f.write('pa,100,5.4,624\n')
+      f.write('geo_id,val,se,sample_size,missing_val,missing_se,missing_sample_size\n')
+      f.write(f'pa,100,5.4,624,{Nans.NOT_MISSING},{Nans.NOT_MISSING},{Nans.NOT_MISSING}\n')
 
     # invalid
     with open(source_receiving_dir + '/20200419_state_wip_really_long_name_that_will_get_truncated_lorem_ipsum_dolor_sit_amet.csv', 'w') as f:
-      f.write('geo_id,val,se,sample_size\n')
-      f.write('pa,100,5.4,624\n')
+      f.write('geo_id,val,se,sample_size,missing_val,missing_se,missing_sample_size\n')
+      f.write(f'pa,100,5.4,624,{Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}\n')
 
     # invalid
     with open(source_receiving_dir + '/20200420_state_test.csv', 'w') as f:
@@ -137,6 +160,9 @@ class CsvUploadingTests(unittest.TestCase):
           'sample_size': 10,
           'direction': None,
           'signal': 'test',
+          'missing_value': Nans.NOT_MISSING,
+          'missing_stderr': Nans.NOT_MISSING,
+          'missing_sample_size': Nans.NOT_MISSING,
         },
         {
           'time_value': 20200419,
@@ -146,6 +172,9 @@ class CsvUploadingTests(unittest.TestCase):
           'sample_size': 30,
           'direction': None,
           'signal': 'test',
+          'missing_value': Nans.NOT_MISSING,
+          'missing_stderr': Nans.NOT_MISSING,
+          'missing_sample_size': Nans.NOT_MISSING,
         },
         {
           'time_value': 20200419,
@@ -155,15 +184,86 @@ class CsvUploadingTests(unittest.TestCase):
           'sample_size': 20,
           'direction': None,
           'signal': 'test',
+          'missing_value': Nans.NOT_MISSING,
+          'missing_stderr': Nans.NOT_MISSING,
+          'missing_sample_size': Nans.NOT_MISSING,
         },
     ]),
       'message': 'success',
     })
 
+    # request CSV data from the API on the test with missing values
+    response = Epidata.covidcast(
+      'src-name', 'test_no_missing', 'day', 'state', 20200419, '*')
+
+    # verify data matches the CSV
+    # NB these are ordered by geo_value
+    self.assertEqual(response, {
+      'result': 1,
+      'epidata': apply_lag([
+        {
+          'time_value': 20200419,
+          'geo_value': 'ca',
+          'value': 1,
+          'stderr': 0.1,
+          'sample_size': 10,
+          'direction': None,
+          'signal': 'test_no_missing',
+          'missing_value': Nans.NOT_MISSING,
+          'missing_stderr': Nans.NOT_MISSING,
+          'missing_sample_size': Nans.NOT_MISSING,
+        },
+        {
+          'time_value': 20200419,
+          'geo_value': 'tx',
+          'value': None,
+          'stderr': 0.2,
+          'sample_size': 20,
+          'direction': None,
+          'signal': 'test_no_missing',
+          'missing_value': Nans.OTHER,
+          'missing_stderr': Nans.NOT_MISSING,
+          'missing_sample_size': Nans.NOT_MISSING,
+        },
+        {
+          'time_value': 20200419,
+          'geo_value': 'wa',
+          'value': 3,
+          'stderr': 0.3,
+          'sample_size': 30,
+          'direction': None,
+          'signal': 'test_no_missing',
+          'missing_value': Nans.NOT_MISSING,
+          'missing_stderr': Nans.NOT_MISSING,
+          'missing_sample_size': Nans.NOT_MISSING,
+        },
+       ]),
+      'message': 'success',
+    })
+
+    # invalid missing files
+    response = Epidata.covidcast(
+      'src-name', 'test_missing1', 'day', 'state', 20200419, '*')
+    self.assertEqual(response, {
+      'result': -2,
+      'message': 'no results',
+    })
+    response = Epidata.covidcast(
+      'src-name', 'test_missing2', 'day', 'state', 20200419, '*')
+    self.assertEqual(response, {
+      'result': -2,
+      'message': 'no results',
+    })
+    response = Epidata.covidcast(
+      'src-name', 'test_missing3', 'day', 'state', 20200419, '*')
+    self.assertEqual(response, {
+      'result': -2,
+      'message': 'no results',
+    })
+
     # request CSV data from the API on WIP signal
     response = Epidata.covidcast(
       'src-name', 'wip_prototype', 'day', 'state', 20200419, '*')
-
 
     # verify data matches the CSV
     # NB these are ordered by geo_value
@@ -178,6 +278,9 @@ class CsvUploadingTests(unittest.TestCase):
           'sample_size': 100,
           'direction': None,
           'signal': 'wip_prototype',
+          'missing_value': Nans.NOT_MISSING,
+          'missing_stderr': Nans.NOT_MISSING,
+          'missing_sample_size': Nans.NOT_MISSING,
         },
         {
           'time_value': 20200419,
@@ -187,6 +290,9 @@ class CsvUploadingTests(unittest.TestCase):
           'sample_size': 200,
           'direction': None,
           'signal': 'wip_prototype',
+          'missing_value': Nans.NOT_MISSING,
+          'missing_stderr': Nans.NOT_MISSING,
+          'missing_sample_size': Nans.NOT_MISSING,
         },
         {
           'time_value': 20200419,
@@ -196,11 +302,13 @@ class CsvUploadingTests(unittest.TestCase):
           'sample_size': 300,
           'direction': None,
           'signal': 'wip_prototype',
+          'missing_value': Nans.NOT_MISSING,
+          'missing_stderr': Nans.NOT_MISSING,
+          'missing_sample_size': Nans.NOT_MISSING,
         },
        ]),
       'message': 'success',
     })
-
 
     # request CSV data from the API on the signal with name length 32<x<64
     response = Epidata.covidcast(
@@ -218,7 +326,10 @@ class CsvUploadingTests(unittest.TestCase):
           'stderr': 5.4,
           'sample_size': 624,
           'direction': None,
-          'signal': 'wip_really_long_name_that_will_be_accepted',
+          'signal': 'wip_really_long_name_that_will_be_accepted',\
+          'missing_value': Nans.NOT_MISSING,
+          'missing_stderr': Nans.NOT_MISSING,
+          'missing_sample_size': Nans.NOT_MISSING,
         },
       ])
     })

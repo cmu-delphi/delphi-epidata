@@ -3,6 +3,7 @@
 # standard library
 import unittest
 from unittest.mock import patch, MagicMock
+from json import JSONDecodeError
 
 # third party
 from aiohttp.client_exceptions import ClientResponseError
@@ -10,6 +11,7 @@ import mysql.connector
 import pytest
 
 # first party
+from delphi_utils import Nans
 from delphi.epidata.client.delphi_epidata import Epidata
 from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import main as update_covidcast_meta_cache
 import delphi.operations.secrets as secrets
@@ -64,16 +66,20 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
     """Test that the covidcast endpoint returns expected data."""
 
     # insert dummy data
-    self.cur.execute('''
+    self.cur.execute(f'''
       insert into covidcast values
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 0, False),
+          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 0, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig2', 'day', 'county', 20200414, '01234',
-          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 1, False),
+          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          456, 5.5, 1.2, 10.5, 789, 0, 20200415, 1, 0, False),
+          456, 5.5, 1.2, 10.5, 789, 0, 20200415, 1, 0, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          345, 6.5, 2.2, 11.5, 678, 0, 20200416, 2, 1, False)
+          345, 6.5, 2.2, 11.5, 678, 0, 20200416, 2, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
     ''')
     self.cnx.commit()
 
@@ -95,6 +101,9 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
           'issue': 20200416,
           'lag': 2,
           'signal': 'sig',
+          'missing_value': Nans.NOT_MISSING,
+          'missing_stderr': Nans.NOT_MISSING,
+          'missing_sample_size': Nans.NOT_MISSING
         }, {
           'time_value': 20200414,
           'geo_value': '01234',
@@ -105,6 +114,9 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
           'issue': 20200414,
           'lag': 0,
           'signal': 'sig2',
+          'missing_value': Nans.NOT_MISSING,
+          'missing_stderr': Nans.NOT_MISSING,
+          'missing_sample_size': Nans.NOT_MISSING
         }],
         'message': 'success',
       })
@@ -128,6 +140,9 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
             'direction': 0,
             'issue': 20200416,
             'lag': 2,
+            'missing_value': Nans.NOT_MISSING,
+            'missing_stderr': Nans.NOT_MISSING,
+            'missing_sample_size': Nans.NOT_MISSING
           }],
           'sig2': [{
             'time_value': 20200414,
@@ -138,6 +153,9 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
             'direction': 4,
             'issue': 20200414,
             'lag': 0,
+            'missing_value': Nans.NOT_MISSING,
+            'missing_stderr': Nans.NOT_MISSING,
+            'missing_sample_size': Nans.NOT_MISSING
           }],
         }],
         'message': 'success',
@@ -161,6 +179,9 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
           'issue': 20200416,
           'lag': 2,
           'signal': 'sig',
+          'missing_value': Nans.NOT_MISSING,
+          'missing_stderr': Nans.NOT_MISSING,
+          'missing_sample_size': Nans.NOT_MISSING
          }],
         'message': 'success',
       })
@@ -184,6 +205,9 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
           'issue': 20200415,
           'lag': 1,
           'signal': 'sig',
+          'missing_value': Nans.NOT_MISSING,
+          'missing_stderr': Nans.NOT_MISSING,
+          'missing_sample_size': Nans.NOT_MISSING
          }],
         'message': 'success',
       })
@@ -207,6 +231,9 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
             'issue': 20200414,
             'lag': 0,
             'signal': 'sig',
+            'missing_value': Nans.NOT_MISSING,
+            'missing_stderr': Nans.NOT_MISSING,
+            'missing_sample_size': Nans.NOT_MISSING
           }, {
             'time_value': 20200414,
             'geo_value': '01234',
@@ -217,6 +244,9 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
             'issue': 20200415,
             'lag': 1,
             'signal': 'sig',
+            'missing_value': Nans.NOT_MISSING,
+            'missing_stderr': Nans.NOT_MISSING,
+            'missing_sample_size': Nans.NOT_MISSING
           }],
           'message': 'success',
       })
@@ -240,6 +270,9 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
             'issue': 20200416,
             'lag': 2,
             'signal': 'sig',
+            'missing_value': Nans.NOT_MISSING,
+            'missing_stderr': Nans.NOT_MISSING,
+            'missing_sample_size': Nans.NOT_MISSING
           }],
           'message': 'success',
       })
@@ -261,31 +294,62 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
       get.assert_called_once()
       post.assert_not_called()
     with self.subTest(name='post request'):
+      get.reset_mock()
       mock_response = MagicMock()
       mock_response.status_code = 414
       get.return_value = mock_response
       Epidata.covidcast('src', 'sig', 'day', 'county', 20200414, '01234')
-      self.assertEqual(get.call_count, 2)  # one from post test and one from get test
+      get.assert_called_once()
       post.assert_called_once()
+
+  @patch('requests.get')
+  def test_retry_request(self, get):
+    """Test that a GET request is default and POST is used if a 414 is returned."""
+    with self.subTest(name='test successful retry'):
+      mock_response = MagicMock()
+      mock_response.status_code = 200
+      get.side_effect = [JSONDecodeError('Expecting value', "",  0), mock_response]
+      response = Epidata._request(None)
+      self.assertEqual(get.call_count, 2)
+      self.assertEqual(response, mock_response.json())
+
+    with self.subTest(name='test retry'):
+      get.reset_mock()
+      mock_response = MagicMock()
+      mock_response.status_code = 200
+      get.side_effect = [JSONDecodeError('Expecting value', "",  0),
+                         JSONDecodeError('Expecting value', "",  0),
+                         mock_response]
+      response = Epidata._request(None)
+      self.assertEqual(get.call_count, 2)  # 2 from previous test + 2 from this one
+      self.assertEqual(response,
+                       {'result': 0, 'message': 'error: Expecting value: line 1 column 1 (char 0)'}
+                       )
 
   def test_geo_value(self):
     """test different variants of geo types: single, *, multi."""
 
     # insert dummy data
-    self.cur.execute('''
+    self.cur.execute(f'''
       insert into covidcast values
         (0, 'src', 'sig', 'day', 'county', 20200414, '11111',
-          123, 10, 11, 12, 456, 13, 20200414, 0, 1, False),
+          123, 10, 11, 12, 456, 13, 20200414, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'county', 20200414, '22222',
-          123, 20, 21, 22, 456, 23, 20200414, 0, 1, False),
+          123, 20, 21, 22, 456, 23, 20200414, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'county', 20200414, '33333',
-          123, 30, 31, 32, 456, 33, 20200414, 0, 1, False),
+          123, 30, 31, 32, 456, 33, 20200414, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'msa', 20200414, '11111',
-          123, 40, 41, 42, 456, 43, 20200414, 0, 1, False),
+          123, 40, 41, 42, 456, 43, 20200414, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'msa', 20200414, '22222',
-          123, 50, 51, 52, 456, 53, 20200414, 0, 1, False),
+          123, 50, 51, 52, 456, 53, 20200414, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'msa', 20200414, '33333',
-          123, 60, 61, 62, 456, 634, 20200414, 0, 1, False)
+          123, 60, 61, 62, 456, 634, 20200414, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
     ''')
     self.cnx.commit()
 
@@ -305,6 +369,9 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
       'issue': 20200414,
       'lag': 0,
       'signal': 'sig',
+      'missing_value': Nans.NOT_MISSING,
+      'missing_stderr': Nans.NOT_MISSING,
+      'missing_sample_size': Nans.NOT_MISSING
     }, {
       'time_value': 20200414,
       'geo_value': '22222',
@@ -315,6 +382,9 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
       'issue': 20200414,
       'lag': 0,
       'signal': 'sig',
+      'missing_value': Nans.NOT_MISSING,
+      'missing_stderr': Nans.NOT_MISSING,
+      'missing_sample_size': Nans.NOT_MISSING
     }, {
       'time_value': 20200414,
       'geo_value': '33333',
@@ -325,6 +395,9 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
       'issue': 20200414,
       'lag': 0,
       'signal': 'sig',
+      'missing_value': Nans.NOT_MISSING,
+      'missing_stderr': Nans.NOT_MISSING,
+      'missing_sample_size': Nans.NOT_MISSING
     }]
 
     # test fetch all
@@ -358,14 +431,17 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
     """Test that the covidcast_meta endpoint returns expected data."""
 
     # insert dummy data
-    self.cur.execute('''
+    self.cur.execute(f'''
       insert into covidcast values
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 0, False),
+          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 0, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          345, 6.0, 2.2, 11.5, 678, 0, 20200416, 2, 1, False),
+          345, 6.0, 2.2, 11.5, 678, 0, 20200416, 2, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'county', 20200415, '01234',
-          345, 7.0, 2.0, 12.5, 678, 0, 20200416, 1, 1, False)
+          345, 7.0, 2.0, 12.5, 678, 0, 20200416, 1, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
     ''')
     self.cnx.commit()
 
@@ -485,20 +561,26 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
 
   def test_async_epidata(self):
     # insert dummy data
-    self.cur.execute('''
+    self.cur.execute(f'''
       insert into covidcast values
         (0, 'src', 'sig', 'day', 'county', 20200414, '11111',
-          123, 10, 11, 12, 456, 13, 20200414, 0, 1, False),
+          123, 10, 11, 12, 456, 13, 20200414, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'county', 20200414, '22222',
-          123, 20, 21, 22, 456, 23, 20200414, 0, 1, False),
+          123, 20, 21, 22, 456, 23, 20200414, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'county', 20200414, '33333',
-          123, 30, 31, 32, 456, 33, 20200414, 0, 1, False),
+          123, 30, 31, 32, 456, 33, 20200414, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'msa', 20200414, '11111',
-          123, 40, 41, 42, 456, 43, 20200414, 0, 1, False),
+          123, 40, 41, 42, 456, 43, 20200414, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'msa', 20200414, '22222',
-          123, 50, 51, 52, 456, 53, 20200414, 0, 1, False),
+          123, 50, 51, 52, 456, 53, 20200414, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'msa', 20200414, '33333',
-          123, 60, 61, 62, 456, 634, 20200414, 0, 1, False)
+          123, 60, 61, 62, 456, 634, 20200414, 0, 1, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
     ''')
     self.cnx.commit()
     test_output = Epidata.async_epidata([

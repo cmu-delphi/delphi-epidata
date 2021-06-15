@@ -4,11 +4,14 @@
 import unittest
 from unittest.mock import MagicMock
 from datetime import date
+import math
+import numpy as np
 
 # third party
 import pandas
 import epiweeks as epi
 
+from delphi_utils import Nans
 from delphi.epidata.acquisition.covidcast.csv_importer import CsvImporter
 from delphi.utils.epiweek import delta_epiweeks
 
@@ -126,12 +129,20 @@ class UnitTests(unittest.TestCase):
         geo_id='vi',
         val='1.23',
         se='4.56',
-        sample_size='100.5'):
+        sample_size='100.5',
+        missing_val=Nans.NOT_MISSING,
+        missing_se=Nans.NOT_MISSING,
+        missing_sample_size=Nans.NOT_MISSING):
       row = MagicMock(
           geo_id=geo_id,
           val=val,
           se=se,
-          sample_size=sample_size)
+          sample_size=sample_size,
+          missing_val=missing_val,
+          missing_se=missing_se,
+          missing_sample_size=missing_sample_size,
+          spec=["geo_id", "val", "se", "sample_size",
+                "missing_val", "missing_se", "missing_sample_size"])
       return geo_type, row
 
     # cases to test each failure mode
@@ -150,14 +161,19 @@ class UnitTests(unittest.TestCase):
       (make_row(se='-1'), 'se'),
       (make_row(geo_type=None), 'geo_type'),
       (make_row(geo_id=None), 'geo_id'),
-      (make_row(val=None), 'val'),
-      (make_row(val='nan'), 'val'),
-      (make_row(val='NaN'), 'val'),
       (make_row(val='inf'), 'val'),
+      (make_row(se='inf'), 'se'),
+      (make_row(sample_size='inf'), 'sample_size'),
       (make_row(geo_type='hrr', geo_id='hrr001'), 'geo_id'),
       (make_row(val='val'), 'val'),
       (make_row(se='se'), 'se'),
       (make_row(sample_size='sample_size'), 'sample_size'),
+      (make_row(missing_val='missing_val'), 'missing_val'),
+      (make_row(missing_se='missing_val'), 'missing_se'),
+      (make_row(missing_sample_size='missing_val'), 'missing_sample_size'),
+      (make_row(val='1.2', missing_val=Nans.OTHER), 'missing_val'),
+      (make_row(se='1.2', missing_se=Nans.OTHER), 'missing_se'),
+      (make_row(sample_size='1.2', missing_sample_size=Nans.OTHER), 'missing_sample_size')
     ]
 
     for ((geo_type, row), field) in failure_cases:
@@ -177,7 +193,10 @@ class UnitTests(unittest.TestCase):
     self.assertIsNone(error)
 
     # a nominal case with missing values
-    geo_type, row = make_row(se='', sample_size='NA')
+    geo_type, row = make_row(
+      se='', sample_size='NA',
+      missing_se=Nans.OTHER, missing_sample_size=Nans.OTHER
+    )
     values, error = CsvImporter.extract_and_check_row(row, geo_type)
 
     self.assertIsInstance(values, CsvImporter.RowValues)
@@ -237,5 +256,54 @@ class UnitTests(unittest.TestCase):
     self.assertEqual(rows[2].value, 1.3)
     self.assertEqual(rows[2].stderr, 2.3)
     self.assertEqual(rows[2].sample_size, 303)
+
+    self.assertIsNone(rows[3])
+
+    # now with missing values! the last missing_sample_size
+    # contains an error code while data is available, which
+    # should give an error
+    data = {
+      'geo_id': ['ca', 'tx', 'fl', 'ak'],
+      'val': [np.nan, '1.2', '1.3', '1.4'],
+      'se': ['2.1', "na", '2.3', '2.4'],
+      'sample_size': ['301', '302', None, '304'],
+      'missing_val': [Nans.NOT_APPLICABLE] + [Nans.NOT_MISSING] * 3,
+      'missing_se': [Nans.NOT_MISSING, Nans.REGION_EXCEPTION, Nans.NOT_MISSING, Nans.NOT_MISSING],
+      'missing_sample_size': [Nans.NOT_MISSING] * 2 + [Nans.REGION_EXCEPTION] * 2
+    }
+    mock_pandas = MagicMock()
+    mock_pandas.read_csv.return_value = pandas.DataFrame(data=data)
+    filepath = 'path/name.csv'
+    geo_type = 'state'
+
+    rows = list(CsvImporter.load_csv(filepath, geo_type, pandas=mock_pandas))
+
+    self.assertTrue(mock_pandas.read_csv.called)
+    self.assertTrue(mock_pandas.read_csv.call_args[0][0], filepath)
+    self.assertEqual(len(rows), 4)
+
+    self.assertEqual(rows[0].geo_value, 'ca')
+    self.assertIsNone(rows[0].value)
+    self.assertEqual(rows[0].stderr, 2.1)
+    self.assertEqual(rows[0].sample_size, 301)
+    self.assertEqual(rows[0].missing_value, Nans.NOT_APPLICABLE)
+    self.assertEqual(rows[0].missing_stderr, Nans.NOT_MISSING)
+    self.assertEqual(rows[0].missing_sample_size, Nans.NOT_MISSING)
+
+    self.assertEqual(rows[1].geo_value, 'tx')
+    self.assertEqual(rows[1].value, 1.2)
+    self.assertIsNone(rows[1].stderr)
+    self.assertEqual(rows[1].sample_size, 302)
+    self.assertEqual(rows[1].missing_value, Nans.NOT_MISSING)
+    self.assertEqual(rows[1].missing_stderr, Nans.REGION_EXCEPTION)
+    self.assertEqual(rows[1].missing_sample_size, Nans.NOT_MISSING)
+
+    self.assertEqual(rows[2].geo_value, 'fl')
+    self.assertEqual(rows[2].value, 1.3)
+    self.assertEqual(rows[2].stderr, 2.3)
+    self.assertIsNone(rows[2].sample_size)
+    self.assertEqual(rows[2].missing_value, Nans.NOT_MISSING)
+    self.assertEqual(rows[2].missing_stderr, Nans.NOT_MISSING)
+    self.assertEqual(rows[2].missing_sample_size, Nans.REGION_EXCEPTION)
 
     self.assertIsNone(rows[3])

@@ -64,23 +64,10 @@ the following:
 
 # update the server
 
-Open [`api.php`](../src/server/api.php) and navigate to the bottom where we see
-line like `if($endpoint === 'NAME') { ... }`. Right below the `if` block for
-`if($endpoint === 'fluview')`, add a new `if else` block for our new endpoint:
+1. create a new file in `/src/server/endpoints/` e.g., `fluview_meta.py`, or copy an existing one.
+2. edit the created file `Blueprint("fluview_meta", __name__)` such that the first argument matches the target endpoint name
+3. edit the existing `/src/server/endpoints/__init__.py` to add the newly-created file to the imports (top) and to the list of endpoints (below).
 
-```php
-else if($endpoint === 'fluview_meta') {
- // get the data
- $epidata = meta_fluview();
- store_result($data, $epidata);
-}
-```
-
-Fortunately, the function `meta_fluview()` is already defined, so we can just
-reuse it. (It's used by the `meta` endpoint as mentioned above.) In general,
-you will likely need to define a new function named like
-`get_SOURCE(params...)`, especially if you're reading from a new database
-table.
 
 # update the client libraries
 
@@ -96,33 +83,31 @@ what this looks like.
 
 Here's what we add to each client:
 
-- [`delphi_epidata.coffee`](../src/client/delphi_epidata.coffee)
-
-    ```coffeescript
-    # Fetch FluView metadata
-    @fluview_meta: (callback) ->
-      # Set up request
-      params =
-        'endpoint': 'fluview_meta'
-      # Make the API call
-      _request(callback, params)
+- [`delphi_epidata.js`](../src/client/delphi_epidata.js)
+    ```javascript
+    // within createEpidataAsync
+    return {
+      BASE_URL: baseUrl || BASE_URL,
+      //...
+       /**
+        * Fetch FluView metadata
+        */
+      fluview_meta: () => {
+        return _request("fluview_meta", {});
+      },
+    };
     ```
 
-- [`delphi_epidata.js`](../src/client/delphi_epidata.js)
-
-    Note that this file _can and should be generated from
-    `delphi_epidata.coffee`_. However, for trivial changes, like the addition
-    of this very simple endpoint, it may be slightly faster, _though
-    error-prone_, to just update the JavaScript manually.
-
-    ```javascript
-    Epidata.fluview_meta = function(callback) {
-      var params;
-      params = {
-        'endpoint': 'fluview_meta'
-      };
-      return _request(callback, params);
-    };
+- [`delphi_epidata.d.ts`](../src/client/delphi_epidata.d.ts)
+    ```typescript
+    export interface EpidataFunctions {
+      // ...
+      fluview_meta(callback: EpiDataCallback): Promise<EpiDataResponse>;
+    }
+    export interface EpidataAsyncFunctions {
+      // ...
+      fluview_meta(): Promise<EpiDataResponse>;
+    }
     ```
 
 - [`delphi_epidata.py`](../src/client/delphi_epidata.py)
@@ -345,7 +330,7 @@ created in this tutorial.
 
 Once it's approved, commit the code. Within a short amount of time (usually ~30
 seconds), the API will begin serving your new endpoint. Go ahead and give it a
-try: https://delphi.midas.cs.cmu.edu/epidata/api.php?endpoint=fluview_meta
+try: https://delphi.cmu.edu/epidata/fluview_meta/
 
 ```
 {

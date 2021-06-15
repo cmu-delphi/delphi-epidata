@@ -19,7 +19,7 @@ Estimate of influenza activity based on volume of certain search queries. ... <!
 
 # The API
 
-The base URL is: https://delphi.cmu.edu/epidata/api.php
+The base URL is: https://delphi.cmu.edu/epidata/ght/
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 

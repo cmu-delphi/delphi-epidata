@@ -2,9 +2,9 @@ import pathlib
 import logging
 from typing import Dict, Callable
 
-from flask import request, send_file, Response, send_from_directory
+from flask import request, send_file, Response, send_from_directory, jsonify
 
-from ._config import URL_PREFIX
+from ._config import URL_PREFIX, VERSION
 from ._common import app, set_compatibility_mode
 from ._exceptions import MissingOrWrongSourceException
 from .endpoints import endpoints
@@ -37,6 +37,11 @@ def handle_generic():
 @app.route(f"{URL_PREFIX}/index.html")
 def send_index_file():
     return send_file(pathlib.Path(__file__).parent / "index.html")
+
+
+@app.route(f"{URL_PREFIX}/version")
+def send_version():
+    return jsonify(dict(version=VERSION))
 
 
 @app.route(f"{URL_PREFIX}/lib/<path:path>")
