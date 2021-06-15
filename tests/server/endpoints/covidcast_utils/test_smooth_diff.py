@@ -1,11 +1,10 @@
-from numpy.core.defchararray import equal
 from pandas import DataFrame, to_datetime, date_range
 from pandas.testing import assert_frame_equal
 from numpy import NaN, allclose
 from itertools import chain
 from more_itertools import windowed
 
-from streaming import generate_row_diffs, generate_smooth_rows, smoother
+from delphi.epidata.server.endpoints.covicast_utils.smooth_diff import generate_row_diffs, generate_smooth_rows, smoother
 
 class TestStreaming:
     def test_smoother(self):
@@ -31,7 +30,6 @@ class TestStreaming:
                 [sum(x)/7 for x in windowed(range(26, 52), 7)]
             )
         })
-        breakpoint()
         assert_frame_equal(smoothed_df, expected_df)
 
         # slide in window, fill with 0s
