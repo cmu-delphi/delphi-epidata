@@ -23,7 +23,7 @@ Estimate of influenza activity based on volume of certain search queries. Google
 
 # The API
 
-The base URL is: https://delphi.cmu.edu/epidata/api.php
+The base URL is: https://delphi.cmu.edu/epidata/gft/
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -50,7 +50,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 # Example URLs
 
 ### Google Flu Trends on 2015w01 (national)
-https://delphi.cmu.edu/epidata/api.php?endpoint=gft&locations=nat&epiweeks=201501
+https://delphi.cmu.edu/epidata/gft/?locations=nat&epiweeks=201501
 
 ```json
 {
@@ -69,32 +69,19 @@ https://delphi.cmu.edu/epidata/api.php?endpoint=gft&locations=nat&epiweeks=20150
 
 # Code Samples
 
-Libraries are available for [CoffeeScript](../../src/client/delphi_epidata.coffee), [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
+Libraries are available for [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
 The following samples show how to import the library and fetch Google Flu Trends data for epiweeks `201440` and `201501-201510` (11 weeks total).
-
-### CoffeeScript (in Node.js)
-
-````coffeescript
-# Import
-{Epidata} = require('./delphi_epidata')
-# Fetch data
-callback = (result, message, epidata) ->
-  console.log(result, message, epidata?.length)
-Epidata.fluview(callback, ['nat'], [201440, Epidata.range(201501, 201510)])
-````
 
 ### JavaScript (in a web browser)
 
 ````html
 <!-- Imports -->
-<script src="jquery.js"></script>
 <script src="delphi_epidata.js"></script>
 <!-- Fetch data -->
 <script>
-  var callback = function(result, message, epidata) {
-    console.log(result, message, epidata != null ? epidata.length : void 0);
-  };
-  Epidata.gft(callback, ['nat'], [201440, Epidata.range(201501, 201510)]);
+  EpidataAsync.gft('nat', [201440, EpidataAsync.range(201501, 201510)]).then((res) => {
+    console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
+  });
 </script>
 ````
 

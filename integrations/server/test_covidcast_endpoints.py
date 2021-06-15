@@ -12,6 +12,9 @@ from dataclasses import dataclass
 import mysql.connector
 import requests
 import pandas as pd
+from delphi_utils import Nans
+
+from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import main as update_cache
 
 
 # use the local instance of the Epidata API
@@ -37,9 +40,9 @@ class CovidcastRow:
     lag: int = 0
     is_latest_issue: bool = True
     is_wip: bool = False
-    # missing_value: Optional[int] = None
-    # missing_std: Optional[int] = None
-    # missing_sample_size: Optional[int] = None
+    missing_value: int = Nans.NOT_MISSING
+    missing_stderr: int = Nans.NOT_MISSING
+    missing_sample_size: int = Nans.NOT_MISSING
 
     def __str__(self):
         return f"""(
@@ -59,7 +62,10 @@ class CovidcastRow:
             {self.issue},
             {self.lag},
             {self.is_latest_issue},
-            {self.is_wip}
+            {self.is_wip},
+            {self.missing_value},
+            {self.missing_stderr},
+            {self.missing_sample_size}
             )"""
 
     @staticmethod
@@ -76,6 +82,9 @@ class CovidcastRow:
             value=json["value"],
             stderr=json["stderr"],
             sample_size=json["sample_size"],
+            missing_value=json["missing_value"],
+            missing_stderr=json["missing_stderr"],
+            missing_sample_size=json["missing_sample_size"],
         )
 
     @property
@@ -101,6 +110,7 @@ class CovidcastEndpointTests(unittest.TestCase):
         cnx = mysql.connector.connect(user="user", password="pass", host="delphi_database_epidata", database="epidata")
         cur = cnx.cursor()
         cur.execute("truncate table covidcast")
+        cur.execute('update covidcast_meta_cache set timestamp = 0, epidata = ""')
         cnx.commit()
         cur.close()
 
@@ -168,6 +178,7 @@ class CovidcastEndpointTests(unittest.TestCase):
         self.assertEqual(trend["signal_source"], last.source)
         self.assertEqual(trend["signal_signal"], last.signal)
 
+        self.assertEqual(trend["date"], last.time_value)
         self.assertEqual(trend["value"], last.value)
 
         self.assertEqual(trend["basis_date"], ref.time_value)
@@ -180,6 +191,71 @@ class CovidcastEndpointTests(unittest.TestCase):
         self.assertEqual(trend["max_date"], last.time_value)
         self.assertEqual(trend["max_value"], last.value)
         self.assertEqual(trend["max_trend"], "steady")
+
+    def test_trendseries(self):
+        """Request a signal the /trendseries endpoint."""
+
+        num_rows = 3
+        rows = [CovidcastRow(time_value=20200401 + i, value=num_rows - i) for i in range(num_rows)]
+        first = rows[0]
+        last = rows[-1]
+        self._insert_rows(rows)
+
+        out = self._fetch("/trendseries", signal=first.signal_pair, geo=first.geo_pair, date=last.time_value, window="20200401-20200410", basis=1)
+
+        self.assertEqual(out["result"], 1)
+        self.assertEqual(len(out["epidata"]), 3)
+        trends = out["epidata"]
+
+        def match_row(trend, row):
+            self.assertEqual(trend["geo_type"], row.geo_type)
+            self.assertEqual(trend["geo_value"], row.geo_value)
+            self.assertEqual(trend["signal_source"], row.source)
+            self.assertEqual(trend["signal_signal"], row.signal)
+
+            self.assertEqual(trend["date"], row.time_value)
+            self.assertEqual(trend["value"], row.value)
+
+        with self.subTest("trend0"):
+            trend = trends[0]
+            match_row(trend, first)
+            self.assertEqual(trend["basis_date"], None)
+            self.assertEqual(trend["basis_value"], None)
+            self.assertEqual(trend["basis_trend"], "unknown")
+
+            self.assertEqual(trend["min_date"], last.time_value)
+            self.assertEqual(trend["min_value"], last.value)
+            self.assertEqual(trend["min_trend"], "increasing")
+            self.assertEqual(trend["max_date"], first.time_value)
+            self.assertEqual(trend["max_value"], first.value)
+            self.assertEqual(trend["max_trend"], "steady")
+        with self.subTest("trend1"):
+            trend = trends[1]
+            match_row(trend, rows[1])
+            self.assertEqual(trend["basis_date"], first.time_value)
+            self.assertEqual(trend["basis_value"], first.value)
+            self.assertEqual(trend["basis_trend"], "decreasing")
+
+            self.assertEqual(trend["min_date"], last.time_value)
+            self.assertEqual(trend["min_value"], last.value)
+            self.assertEqual(trend["min_trend"], "increasing")
+            self.assertEqual(trend["max_date"], first.time_value)
+            self.assertEqual(trend["max_value"], first.value)
+            self.assertEqual(trend["max_trend"], "decreasing")
+
+        with self.subTest("trend2"):
+            trend = trends[2]
+            match_row(trend, last)
+            self.assertEqual(trend["basis_date"], rows[1].time_value)
+            self.assertEqual(trend["basis_value"], rows[1].value)
+            self.assertEqual(trend["basis_trend"], "decreasing")
+
+            self.assertEqual(trend["min_date"], last.time_value)
+            self.assertEqual(trend["min_value"], last.value)
+            self.assertEqual(trend["min_trend"], "steady")
+            self.assertEqual(trend["max_date"], first.time_value)
+            self.assertEqual(trend["max_value"], first.value)
+            self.assertEqual(trend["max_trend"], "decreasing")
 
     def test_correlation(self):
         """Request a signal the /correlation endpoint."""
@@ -252,3 +328,61 @@ class CovidcastEndpointTests(unittest.TestCase):
         self.assertEqual(df_t0["is_anchor"].tolist(), [False, False, True])
         self.assertEqual(df_t0["value_completeness"].tolist(), [0 / 2, 1 / 2, 2 / 2])  # total 2, given 0,1,2
         self.assertEqual(df_t0["sample_size_completeness"].tolist(), [1 / 3, 2 / 3, 3 / 3])  # total 2, given 0,1,2
+
+    def test_meta(self):
+        """Request a signal the /meta endpoint."""
+
+        num_rows = 10
+        rows = [CovidcastRow(time_value=20200401 + i, value=i) for i in range(num_rows)]
+        self._insert_rows(rows)
+        first = rows[0]
+        last = rows[-1]
+
+        update_cache(args=None)
+
+        with self.subTest("plain"):
+            out = self._fetch("/meta")
+            self.assertEqual(len(out), 1)
+            stats = out[0]
+            self.assertEqual(stats["source"], first.source)
+            self.assertEqual(stats["signal"], first.signal)
+            self.assertEqual(stats["min_time"], first.time_value)
+            self.assertEqual(stats["max_time"], last.time_value)
+            self.assertEqual(stats["max_issue"], max(d.issue for d in rows))
+            self.assertTrue(first.geo_type in stats["geo_types"])
+            stats_g = stats["geo_types"][first.geo_type]
+            self.assertEqual(stats_g["min"], first.value)
+            self.assertEqual(stats_g["max"], last.value)
+            self.assertEqual(stats_g["mean"], sum(r.value for r in rows) / len(rows))
+
+        with self.subTest("filtered"):
+            out = self._fetch("/meta", signal=f"{first.source}:*")
+            self.assertEqual(len(out), 1)
+            self.assertEqual(out[0]["source"], first.source)
+            out = self._fetch("/meta", signal=f"{first.source}:X")
+            self.assertEqual(len(out), 0)
+
+    def test_coverage(self):
+        """Request a signal the /coverage endpoint."""
+
+        num_geos_per_date = [10, 20, 30, 40, 44]
+        dates = [20200401 + i for i in range(len(num_geos_per_date))]
+        rows = [CovidcastRow(time_value=dates[i], value=i, geo_value=str(geo_value)) for i, num_geo in enumerate(num_geos_per_date) for geo_value in range(num_geo)]
+        self._insert_rows(rows)
+        first = rows[0]
+
+        with self.subTest("default"):
+            out = self._fetch("/coverage", signal=first.signal_pair, latest=dates[-1], format="json")
+            self.assertEqual(len(out), len(num_geos_per_date))
+            self.assertEqual([o["time_value"] for o in out], dates)
+            self.assertEqual([o["count"] for o in out], num_geos_per_date)
+
+        with self.subTest("specify window"):
+            out = self._fetch("/coverage", signal=first.signal_pair, window=f"{dates[0]}-{dates[1]}", format="json")
+            self.assertEqual(len(out), 2)
+            self.assertEqual([o["time_value"] for o in out], dates[:2])
+            self.assertEqual([o["count"] for o in out], num_geos_per_date[:2])
+
+        with self.subTest("invalid geo_type"):
+            out = self._fetch("/coverage", signal=first.signal_pair, geo_type="state", format="json")
+            self.assertEqual(len(out), 0)

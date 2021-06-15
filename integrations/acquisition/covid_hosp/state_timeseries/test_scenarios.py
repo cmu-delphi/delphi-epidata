@@ -40,7 +40,7 @@ class AcquisitionTests(unittest.TestCase):
         cur.execute('truncate table covid_hosp_state_timeseries')
         cur.execute('truncate table covid_hosp_meta')
 
-  @freeze_time("2021-03-16")
+  @freeze_time("2021-03-17")
   def test_acquire_dataset(self):
     """Acquire a new dataset."""
 
@@ -89,3 +89,30 @@ class AcquisitionTests(unittest.TestCase):
       response = Epidata.covid_hosp('WY', Epidata.range(20200101, 20210101))
       self.assertEqual(response['result'], 1)
       self.assertEqual(len(response['epidata']), 1)
+
+    # acquire new data into local database
+    with self.subTest(name='first acquisition'):
+      # acquire new data with 3/16 issue date
+      mock_network.fetch_metadata.return_value = \
+        self.test_utils.load_sample_metadata("metadata2.csv")
+      mock_network.fetch_dataset.return_value = \
+        self.test_utils.load_sample_dataset("dataset2.csv")
+      acquired = Update.run(network=mock_network)
+      self.assertTrue(acquired)
+
+    with self.subTest(name='as_of checks'):
+
+      response = Epidata.covid_hosp('WY', Epidata.range(20200101, 20210101))
+      self.assertEqual(len(response['epidata']), 2)
+      row = response['epidata'][1]
+      self.assertEqual(row['date'], 20200827)
+
+      # previous data should have 3/15 issue date
+      response = Epidata.covid_hosp('WY', Epidata.range(20200101, 20210101), as_of=20210315)
+      self.assertEqual(len(response['epidata']), 1)
+      row = response['epidata'][0]
+      self.assertEqual(row['date'], 20200826)
+
+      # no data before 3/15
+      response = Epidata.covid_hosp('WY', Epidata.range(20200101, 20210101), as_of=20210314)
+      self.assertEqual(response['result'], -2)

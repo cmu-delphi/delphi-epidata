@@ -1,0 +1,65 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`alternative API endpoints new 1`] = `
+[MockFunction] {
+  "calls": Array [
+    Array [
+      "http://test.com/fluview/?regions=a&epiweeks=4",
+    ],
+  ],
+  "results": Array [
+    Object {
+      "type": "return",
+      "value": Promise {},
+    },
+  ],
+}
+`;
+
+exports[`alternative API endpoints php 1`] = `
+[MockFunction] {
+  "calls": Array [
+    Array [
+      "http://test.com/api.php?endpoint=fluview&regions=a&epiweeks=4",
+    ],
+  ],
+  "results": Array [
+    Object {
+      "type": "return",
+      "value": Promise {},
+    },
+  ],
+}
+`;
+
+exports[`fluview basic async 1`] = `
+[MockFunction] {
+  "calls": Array [
+    Array [
+      "https://delphi.cmu.edu/epidata/fluview/?regions=a&epiweeks=4",
+    ],
+  ],
+  "results": Array [
+    Object {
+      "type": "return",
+      "value": Promise {},
+    },
+  ],
+}
+`;
+
+exports[`fluview basic sync 1`] = `
+[MockFunction] {
+  "calls": Array [
+    Array [
+      "https://delphi.cmu.edu/epidata/fluview/?regions=a&epiweeks=4",
+    ],
+  ],
+  "results": Array [
+    Object {
+      "type": "return",
+      "value": Promise {},
+    },
+  ],
+}
+`;
