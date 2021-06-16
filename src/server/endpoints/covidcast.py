@@ -1,4 +1,4 @@
-from typing import List, Optional, Union, Tuple, Dict, Any, Set
+from typing import List, Optional, Union, Tuple, Dict, Any
 from itertools import groupby
 from datetime import date, datetime, timedelta
 from flask import Blueprint, request
@@ -36,6 +36,7 @@ from .._db import sql_table_has_columns
 from .._pandas import as_pandas, print_pandas
 from .covidcast_utils import compute_trend, compute_trends, compute_correlations, compute_trend_value, CovidcastMetaEntry, AllSignalsMap, fetch_derivable_signal, fetch_derivable_signals
 from ..utils import shift_time_value, date_to_time_value, time_value_to_iso, time_value_to_date
+from .covidcast_utils.model import data_sources, create_source_signal_alias_mapper
 
 # first argument is the endpoint name
 bp = Blueprint("covidcast", __name__)
@@ -125,6 +126,7 @@ def guess_index_to_use(time: List[TimePair], geo: List[GeoPair], issues: Optiona
 @bp.route("/", methods=("GET", "POST"))
 def handle():
     source_signal_pairs = parse_source_signal_pairs()
+    source_signal_pairs, alias_mapper = create_source_signal_alias_mapper(source_signal_pairs)
     time_pairs = parse_time_pairs()
     geo_pairs = parse_geo_pairs()
 
@@ -143,7 +145,8 @@ def handle():
         fields_int.extend(missing_fields)
 
     fields_float = ["value", "stderr", "sample_size"]
-    if is_compatibility_mode():
+    is_compatibility = is_compatibility_mode()
+    if is_compatibility:
         q.set_order("signal", "time_value", "geo_value", "issue")
     else:
         # transfer also the new detail columns
@@ -185,11 +188,22 @@ def handle():
     # now use a generator for sending the rows and execute all the other queries
     return p(filter_fields(gen(r)))
 
+    def transform_row(row, _):
+        if is_compatibility or not alias_mapper:
+            return row
+        row["source"] = alias_mapper(row["source"], row["signal"])
+        return row
+
+    # send query
+    return execute_query(str(q), q.params, fields_string, fields_int, fields_float, transform=transform_row)
+
 
 @bp.route("/trend", methods=("GET", "POST"))
 def handle_trend():
     require_all("date", "window")
     source_signal_pairs = parse_source_signal_pairs()
+    source_signal_pairs, alias_mapper = create_source_signal_alias_mapper(source_signal_pairs)
+    # TODO alias
     geo_pairs = parse_geo_pairs()
 
     time_value = parse_day_arg("date")
@@ -216,7 +230,10 @@ def handle_trend():
 
     def gen(rows):
         for key, group in groupby((parse_row(row, fields_string, fields_int, fields_float) for row in rows), lambda row: (row["geo_type"], row["geo_value"], row["source"], row["signal"])):
-            trend = compute_trend(key[0], key[1], key[2], key[3], time_value, basis_time_value, ((row["time_value"], row["value"]) for row in group))
+            geo_type, geo_value, source, signal = key
+            if alias_mapper:
+                source = alias_mapper(source, signal)
+            trend = compute_trend(geo_type, geo_value, source, signal, time_value, basis_time_value, ((row["time_value"], row["value"]) for row in group))
             yield trend.asdict()
 
     # execute first query
@@ -233,6 +250,7 @@ def handle_trend():
 def handle_trendseries():
     require_all("window")
     source_signal_pairs = parse_source_signal_pairs()
+    source_signal_pairs, alias_mapper = create_source_signal_alias_mapper(source_signal_pairs)
     geo_pairs = parse_geo_pairs()
 
     time_window = parse_day_range_arg("window")
@@ -262,9 +280,12 @@ def handle_trendseries():
 
     def gen(rows):
         for key, group in groupby((parse_row(row, fields_string, fields_int, fields_float) for row in rows), lambda row: (row["geo_type"], row["geo_value"], row["source"], row["signal"])):
-            trends = compute_trends(key[0], key[1], key[2], key[3], shifter, ((row["time_value"], row["value"]) for row in group))
-            for trend in trends:
-                yield trend.asdict()
+            geo_type, geo_value, source, signal = key
+            if alias_mapper:
+                source = alias_mapper(source, signal)
+            trends = compute_trends(geo_type, geo_value, source, signal, shifter, ((row["time_value"], row["value"]) for row in group))
+            for t in trends:
+                yield t.asdict()
 
     # execute first query
     try:
@@ -281,6 +302,7 @@ def handle_correlation():
     require_all("reference", "window", "others", "geo")
     reference = parse_single_source_signal_arg("reference")
     other_pairs = parse_source_signal_arg("others")
+    source_signal_pairs, alias_mapper = create_source_signal_alias_mapper(other_pairs + [reference])
     geo_pairs = parse_geo_arg()
     time_window = parse_day_range_arg("window")
     lag = extract_integer("lag")
@@ -296,7 +318,11 @@ def handle_correlation():
     q.set_fields(fields_string, fields_int, fields_float)
     q.set_order("geo_type", "geo_value", "source", "signal", "time_value")
 
-    q.where_source_signal_pairs("source", "signal", other_pairs + [reference])
+    q.where_source_signal_pairs(
+        "source",
+        "signal",
+        source_signal_pairs,
+    )
     q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
     q.where_time_pairs("time_type", "time_value", [TimePair("day", [time_window])])
 
@@ -329,6 +355,8 @@ def handle_correlation():
                 continue  # no other signals
 
             for (source, signal), other_group in other_groups:
+                if alias_mapper:
+                    source = alias_mapper(source, signal)
                 for cor in compute_correlations(geo_type, geo_value, source, signal, lag, reference_group, other_group):
                     yield cor.asdict()
 
@@ -339,6 +367,7 @@ def handle_correlation():
 @bp.route("/csv", methods=("GET", "POST"))
 def handle_export():
     source, signal = request.args.get("signal", "jhu-csse:confirmed_incidence_num").split(":")
+    source_signal_pairs, alias_mapper = create_source_signal_alias_mapper([SourceSignalPair(source, [signal])])
     start_day = request.args.get("start_day", "2020-04-01")
     end_day = request.args.get("end_day", "2020-09-01")
     geo_type = request.args.get("geo_type", "county")
@@ -360,7 +389,8 @@ def handle_export():
 
     q.set_fields(["geo_value", "signal", "time_value", "issue", "lag", "value", "stderr", "sample_size", "geo_type", "source"], [], [])
     q.set_order("time_value", "geo_value")
-    q.where(source=source, signal=signal, time_type="day")
+    q.where(time_type="day")
+    q.where_source_signal_pairs("source", "signal", source_signal_pairs)
     q.conditions.append("time_value BETWEEN :start_day AND :end_day")
     q.params["start_day"] = date_to_time_value(start_day)
     q.params["end_day"] = date_to_time_value(end_day)
@@ -386,7 +416,7 @@ def handle_export():
             "stderr": row["stderr"],
             "sample_size": row["sample_size"],
             "geo_type": row["geo_type"],
-            "data_source": row["source"],
+            "data_source": alias_mapper(row["source"], row["signal"]) if alias_mapper else row["source"],
         }
 
     def gen(first_row, rows):
@@ -418,6 +448,9 @@ def handle_backfill():
     """
     require_all("geo", "time", "signal")
     signal_pair = parse_single_source_signal_arg("signal")
+    source_signal_pairs, _ = create_source_signal_alias_mapper([signal_pair])
+    # don't need the alias mapper since we don't return the source
+
     time_pair = parse_single_time_arg("time")
     geo_pair = parse_single_geo_arg("geo")
     reference_anchor_lag = extract_integer("anchor_lag")  # in days
@@ -434,7 +467,7 @@ def handle_backfill():
     q.set_order(time_value=True, issue=True)
     q.set_fields(fields_string, fields_int, fields_float, ["is_latest_issue"])
 
-    q.where_source_signal_pairs("source", "signal", [signal_pair])
+    q.where_source_signal_pairs("source", "signal", source_signal_pairs)
     q.where_geo_pairs("geo_type", "geo_value", [geo_pair])
     q.where_time_pairs("time_type", "time_value", [time_pair])
 
@@ -487,31 +520,66 @@ def handle_meta():
     similar to /covidcast_meta but in a structured optimized JSON form for the app
     """
 
-    signal = parse_source_signal_arg("signal")
+    filter_signal = parse_source_signal_arg("signal")
+    flags = ",".join(request.values.getlist("flags")).split(",")
+    filter_smoothed: Optional[bool] = None
+    filter_weighted: Optional[bool] = None
+    filter_cumulative: Optional[bool] = None
+
+    if "smoothed" in flags:
+        filter_smoothed = True
+    elif "not_smoothed" in flags:
+        filter_smoothed = False
+    if "weighted" in flags:
+        filter_weighted = True
+    elif "not_weighted" in flags:
+        filter_weighted = False
+    if "cumulative" in flags:
+        filter_cumulative = True
+    elif "not_cumulative" in flags:
+        filter_cumulative = False
 
     row = db.execute(text("SELECT epidata FROM covidcast_meta_cache LIMIT 1")).fetchone()
 
     data = loads(row["epidata"]) if row and row["epidata"] else []
 
-    all_signals: AllSignalsMap = {}
+    by_signal: Dict[Tuple[str, str], List[Dict[str, Any]]] = {}
     for row in data:
         if row["time_type"] != "day":
             continue
-        entry: Set[str] = all_signals.setdefault(row["data_source"], set())
-        entry.add(row["signal"])
+        entry = by_signal.setdefault((row["data_source"], row["signal"]), [])
+        entry.append(row)
 
-    out: Dict[str, CovidcastMetaEntry] = {}
-    for row in data:
-        if row["time_type"] != "day":
-            continue
-        if signal and all((not s.matches(row["data_source"], row["signal"]) for s in signal)):
-            continue
-        entry = out.setdefault(
-            f"{row['data_source']}:{row['signal']}", CovidcastMetaEntry(row["data_source"], row["signal"], row["min_time"], row["max_time"], row["max_issue"], {}, all_signals=all_signals)
-        )
-        entry.intergrate(row)
+    sources: List[Dict[str, Any]] = []
+    for source in data_sources:
+        meta_signals: List[Dict[str, Any]] = []
 
-    return jsonify([r.asdict() for r in out.values()])
+        for signal in source.signals:
+            if filter_signal and all((not s.matches(signal.source, signal.signal) for s in filter_signal)):
+                continue
+            if filter_smoothed is not None and signal.is_smoothed != filter_smoothed:
+                continue
+            if filter_weighted is not None and signal.is_weighted != filter_weighted:
+                continue
+            if filter_cumulative is not None and signal.is_cumulative != filter_cumulative:
+                continue
+            meta_data = by_signal.get(signal.key)
+            if not meta_data:
+                continue
+            row = meta_data[0]
+            entry = CovidcastMetaEntry(signal, row["min_time"], row["max_time"], row["max_issue"])
+            for row in meta_data:
+                entry.intergrate(row)
+            meta_signals.append(entry.asdict())
+
+        if not meta_signals:  # none found or no signals
+            continue
+
+        s = source.asdict()
+        s["signals"] = meta_signals
+        sources.append(s)
+
+    return jsonify(sources)
 
 
 @bp.route("/coverage", methods=("GET", "POST"))
@@ -520,7 +588,8 @@ def handle_coverage():
     similar to /signal_dashboard_coverage for a specific signal returns the coverage (number of locations for a given geo_type)
     """
 
-    signal = parse_source_signal_pairs()
+    source_signal_pairs = parse_source_signal_pairs()
+    source_signal_pairs, alias_mapper = create_source_signal_alias_mapper(source_signal_pairs)
     geo_type = request.args.get("geo_type", "county")
     if "window" in request.values:
         time_window = parse_day_range_arg("window")
@@ -547,14 +616,20 @@ def handle_coverage():
         q.conditions.append('geo_value not like "%000"')
     else:
         q.where(geo_type=geo_type)
-    q.where_source_signal_pairs("source", "signal", signal)
+    q.where_source_signal_pairs("source", "signal", source_signal_pairs)
     q.where_time_pairs("time_type", "time_value", [TimePair("day", [time_window])])
     q.group_by = "c.source, c.signal, c.time_value"
     q.set_order("source", "signal", "time_value")
 
     _handle_lag_issues_as_of(q, None, None, None)
 
-    return execute_query(q.query, q.params, fields_string, fields_int, [])
+    def transform_row(row, _):
+        if not alias_mapper:
+            return row
+        row["source"] = alias_mapper(row["source"], row["signal"])
+        return row
+
+    return execute_query(q.query, q.params, fields_string, fields_int, [], transform=transform_row)
 
 
 @bp.route("/anomalies", methods=("GET", "POST"))
@@ -562,8 +637,6 @@ def handle_anomalies():
     """
     proxy to the excel sheet about data anomalies
     """
-
-    signal = parse_source_signal_arg("signal")
 
     df = read_csv(
         "https://docs.google.com/spreadsheets/d/e/2PACX-1vToGcf9x5PNJg-eSrxadoR5b-LM2Cqs9UML97587OGrIX0LiQDcU1HL-L2AA8o5avbU7yod106ih0_n/pub?gid=0&single=true&output=csv", skip_blank_lines=True

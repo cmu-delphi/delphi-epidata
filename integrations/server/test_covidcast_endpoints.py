@@ -333,7 +333,7 @@ class CovidcastEndpointTests(unittest.TestCase):
         """Request a signal the /meta endpoint."""
 
         num_rows = 10
-        rows = [CovidcastRow(time_value=20200401 + i, value=i) for i in range(num_rows)]
+        rows = [CovidcastRow(time_value=20200401 + i, value=i, source="fb-survey", signal="smoothed_cli") for i in range(num_rows)]
         self._insert_rows(rows)
         first = rows[0]
         last = rows[-1]
@@ -343,7 +343,10 @@ class CovidcastEndpointTests(unittest.TestCase):
         with self.subTest("plain"):
             out = self._fetch("/meta")
             self.assertEqual(len(out), 1)
-            stats = out[0]
+            data_source = out[0]
+            self.assertEqual(data_source["source"], first.source)
+            self.assertEqual(len(data_source["signals"]), 1)
+            stats = data_source["signals"][0]
             self.assertEqual(stats["source"], first.source)
             self.assertEqual(stats["signal"], first.signal)
             self.assertEqual(stats["min_time"], first.time_value)
@@ -358,7 +361,11 @@ class CovidcastEndpointTests(unittest.TestCase):
         with self.subTest("filtered"):
             out = self._fetch("/meta", signal=f"{first.source}:*")
             self.assertEqual(len(out), 1)
-            self.assertEqual(out[0]["source"], first.source)
+            data_source = out[0]
+            self.assertEqual(data_source["source"], first.source)
+            self.assertEqual(len(data_source["signals"]), 1)
+            stats = data_source["signals"][0]
+            self.assertEqual(stats["source"], first.source)
             out = self._fetch("/meta", signal=f"{first.source}:X")
             self.assertEqual(len(out), 0)
 
