@@ -22,32 +22,44 @@ class TestStreaming:
         })
 
         # dynamic window, no fill
-        smoothed_df = DataFrame.from_records(generate_smooth_rows((x for x in data.to_dict(orient='records')), fill_value=None))
+        smoothed_df = DataFrame.from_records(generate_smooth_rows((x for x in data.to_dict(orient='records')), pad_fill_value=None))
         expected_df = DataFrame({
             "timestamp": to_datetime(date_range("2021-05-01", "2021-05-26").to_list() * 2),
             "geo_type": ["state"] * 52,
             "geo_value": ["ak"] * 26 + ["ca"] * 26,
             "value": (
-                [sum(x)/len(x) for x in [range(j) for j in range(0 + 1, 0 + 7)]] +
+                [sum(x)/len(x) for x in [range(j) for j in range(0 + 1, 6 + 1)]] +
                 [sum(x)/7 for x in windowed(chain(range(23), [NaN] * 3), 7)] +
-                [sum(x)/len(x) for x in [range(26, j) for j in range(26 + 1, 26 + 7)]] +
+                [sum(x)/len(x) for x in [range(26, j) for j in range(26 + 1, 32 + 1)]] +
                 [sum(x)/7 for x in windowed(range(26, 52), 7)]
             )
         })
         assert_frame_equal(smoothed_df, expected_df)
 
         # slide in window, fill on left with 0s
-        smoothed_df = DataFrame.from_records(generate_smooth_rows((x for x in data.to_dict(orient='records')), fill_value=0))
+        smoothed_df = DataFrame.from_records(generate_smooth_rows((x for x in data.to_dict(orient='records')), pad_fill_value=0))
         expected_df = DataFrame({
             "timestamp": to_datetime(date_range("2021-05-01", "2021-05-26").to_list() * 2),
             "geo_type": ["state"] * 52,
             "geo_value": ["ak"] * 26 + ["ca"] * 26,
             "value": (
-                [sum(x)/7 for x in windowed(chain(6*[0], range(23), [NaN] * 3), 7)] +
+                [sum(x)/7 for x in windowed(chain(6*[0], range(23), [NaN, 2.0, 1.0]), 7)] +
                 [sum(x)/7 for x in windowed(chain(6*[0], range(26, 52)), 7)]
             )
         })
+        assert allclose(smoothed_df["value"].to_numpy(), expected_df["value"].to_numpy(), equal_nan=True)
 
+        # slide in window, fill on left with 0s
+        smoothed_df = DataFrame.from_records(generate_smooth_rows((x for x in data.to_dict(orient='records')), pad_fill_value=NaN, nan_fill_value=0))
+        expected_df = DataFrame({
+            "timestamp": to_datetime(date_range("2021-05-01", "2021-05-26").to_list() * 2),
+            "geo_type": ["state"] * 52,
+            "geo_value": ["ak"] * 26 + ["ca"] * 26,
+            "value": (
+                [sum(x)/7 for x in windowed(chain(6*[0], range(23), [0, 2.0, 1.0]), 7)] +
+                [sum(x)/7 for x in windowed(chain(6*[0], range(26, 52)), 7)]
+            )
+        })
         assert allclose(smoothed_df["value"].to_numpy(), expected_df["value"].to_numpy(), equal_nan=True)
 
         # a dataframe a single entry should return unchanged, when dynamic
@@ -59,7 +71,6 @@ class TestStreaming:
         })
         smoothed_df = DataFrame.from_records(generate_smooth_rows((x for x in data_one.to_dict(orient='records'))))
         expected_df = data_one
-
         assert allclose(smoothed_df["value"].to_numpy(), expected_df["value"].to_numpy(), equal_nan=True)
 
 
@@ -78,12 +89,12 @@ class TestStreaming:
         assert allclose(diffs_df["value"], expected_values, equal_nan=True)
 
         # fill NaN
-        diffs_df = DataFrame.from_records(generate_row_diffs((x for x in data.to_dict(orient='records')), fill_value=NaN))
+        diffs_df = DataFrame.from_records(generate_row_diffs((x for x in data.to_dict(orient='records')), pad_fill_value=NaN))
         expected_values = data.groupby("geo_value")["value"].diff()
         assert allclose(diffs_df["value"], expected_values, equal_nan=True)
 
         # fill 'first'
-        diffs_df = DataFrame.from_records(generate_row_diffs((x for x in data.to_dict(orient='records')), fill_value="first"))
+        diffs_df = DataFrame.from_records(generate_row_diffs((x for x in data.to_dict(orient='records')), pad_fill_value="first"))
         expected_values = data.groupby("geo_value")["value"].diff()
         expected_values.iloc[[0, 26]] = 0
         assert allclose(diffs_df["value"], expected_values, equal_nan=True)

@@ -4,7 +4,7 @@ from typing import Iterable, Dict, Callable, List, Optional, Union, Tuple
 
 from more_itertools import windowed, dotproduct, peekable
 from pandas import date_range, Timedelta
-from numpy import NaN
+from numpy import NaN, isnan
 
 from ..._params import SourceSignalPair
 
@@ -24,8 +24,8 @@ def smoother(values: List[float], kernel: List[float] = None) -> float:
     smoothed_value = dotproduct(values, kernel)
     return smoothed_value
 
-def pad_group(group: Iterable[Dict], pad_length: int, fill_value: Union[float, str] = NaN) -> Iterable[Dict]:
-    """Prepend window with pad_length many fill values."""
+def pad_group(group: Iterable[Dict], pad_length: int, pad_fill_value: Union[float, str] = NaN) -> Iterable[Dict]:
+    """Prepend window with pad_length many values."""
 
     # Peek the first element for the date, fill value, and other data entries.
     group = peekable(group)
@@ -35,34 +35,46 @@ def pad_group(group: Iterable[Dict], pad_length: int, fill_value: Union[float, s
     right_bound = start_entry["timestamp"] - Timedelta(1, unit="D")
     left_bound = start_entry["timestamp"] - Timedelta(pad_length, unit="D")
 
-    if isinstance(fill_value, str) and fill_value == "first":
+    if isinstance(pad_fill_value, str) and pad_fill_value == "first":
         padded_values = (dict(ChainMap({"timestamp": date}, start_entry)) for date in date_range(left_bound, right_bound))
-    elif isinstance(fill_value, str) and fill_value != "first":
-        raise ValueError("String value of fill_value can only be 'first'.")
-    elif isinstance(fill_value, float):
-        padded_values = (dict(ChainMap({"timestamp": date, "value": fill_value}, start_entry)) for date in date_range(left_bound, right_bound))
+    elif isinstance(pad_fill_value, str) and pad_fill_value == "drop":
+        padded_values = (dict(ChainMap({"timestamp": date, "value": "drop"}, start_entry)) for date in date_range(left_bound, right_bound))
+    elif isinstance(pad_fill_value, str):
+        raise ValueError("String value of pad_fill_value can only be 'first' or 'drop'.")
+    elif isinstance(pad_fill_value, (float, int)):
+        padded_values = (dict(ChainMap({"timestamp": date, "value": pad_fill_value}, start_entry)) for date in date_range(left_bound, right_bound))
     else:
-        raise ValueError("fill_value should be a float or 'first'.")
+        raise ValueError("pad_fill_value should be a float or 'first' or 'drop'.")
     return chain(padded_values, group)
+
+def _is_none_type(value: Optional[float]) -> bool:
+    if isinstance(value, float) and isnan(value):
+        return True
+    elif value is None:
+        return True
+    return False
 
 def generate_smooth_rows(
     rows: Iterable[Dict],
     smooth_values: Callable[[List[float]], float] = smoother,
     window_length: int = 7,
     pad_length: int = 6,
-    fill_value: Optional[float] = None) -> Iterable[Dict]:
+    pad_fill_value: Optional[float] = None,
+    nan_fill_value: float = NaN) -> Iterable[Dict]:
     """Generate smoothed row entries.
 
     There are roughly two modes of boundary handling:
     * no padding, the windows start at length 1 on the left boundary and grow to size
-      window_length (achieved with fill_value = None)
+      window_length (achieved with pad_fill_value = None)
     * value padding, window_length - 1 many fill_values are appended at the start of the
-      given date (achieved with any other fill_value)
+      given date (achieved with any other pad_fill_value)
 
     Note that this function crucially relies on the assumption that the iterable rows
     has been pre-sorted by geo_value and by timestamp. If this assumption is violated,
     the results will likely be incoherent.
 
+    Parameters
+    ----------
     rows: Iterable[Dict]
         An iterable over the rows a database query returns. The rows are assumed to be
         dicts containing the "geo_type", "geo_value", and "timestamp" keys. Assumes the
@@ -76,24 +88,28 @@ def generate_smooth_rows(
         Number of fill_value values to prepend to each group. Set to window_length-1
         to get a value for each timestamp in rows. This helps generates a slide into an iterable's
         items. Assumed to be less than window_length.
-    fill_value: Optional[float], default None
+    pad_fill_value: float, None, "first", default None
         The value to use when padding. If None, then the initial windows are made dynamic like
         (group[0]), (group[0], group[1]), ..., (group[0], group[1], ..., group[smoothed_window_length]).
+        If "first", then the value from the first entry is used for filling.
+    nan_fill_value: float, default NaN
+        The value to use when encountering nans. By default, conforms None and numpy.nan types to numpy.nan.
+        This will propagate nans. Otherwise, uses a float value.
     """
     assert pad_length < window_length
 
     for _, group in groupby(rows, lambda row: (row["geo_type"], row["geo_value"])): # Iterable[Tuple[str, Iterable[Dict]]]
-        group = pad_group(group, pad_length, fill_value) if fill_value is not None else pad_group(group, pad_length, NaN)
+        group = pad_group(group, pad_length, pad_fill_value) if pad_fill_value is not None else pad_group(group, pad_length, "drop")
         for window in windowed(group, window_length): # Iterable[List[Dict]]
             smoothed_entry = window[-1].copy() # last timestamp of window
-            if fill_value is not None:
-                values = [entry["value"] for entry in window]
+            if pad_fill_value is not None:
+                values = [entry["value"] if not _is_none_type(entry["value"]) else nan_fill_value for entry in window]
             else:
-                values = [entry["value"] for entry in window if entry["value"] is not NaN]
+                values = [entry["value"] if not _is_none_type(entry["value"]) else nan_fill_value for entry in window if entry["value"] != "drop"]
             smoothed_entry["value"] = smooth_values(values)
             yield smoothed_entry
 
-def generate_row_diffs(rows: Iterable[Dict], fill_value: Optional[Union[str, float]] = None) -> Iterable[Dict]:
+def generate_row_diffs(rows: Iterable[Dict], pad_fill_value: Optional[Union[str, float]] = None) -> Iterable[Dict]:
     """Generate differences between row values.
 
     Note that this function crucially relies on the assumption that the iterable rows
@@ -104,19 +120,19 @@ def generate_row_diffs(rows: Iterable[Dict], fill_value: Optional[Union[str, flo
         An iterable over the rows a database query returns. The rows are assumed to be
         dicts containing the "geo_type", "geo_value", and "timestamp" keys. Assumes the
         rows have been sorted by geo and timestamp beforehand.
-    fill_value: Optional[Union[str, float]] or "first", default None
+    pad_fill_value: Optional[Union[str, float]] or "first", default None
         The value used to prepend rows. If "first", then uses the first value of rows.
         If None, then no padding is used and the resulting iterable is shorter than the
         original by 1.
     """
     for _, group in groupby(rows, lambda row: (row["geo_type"], row["geo_value"])): # Iterable[Tuple[str, Iterable[Dict]]]
-        group = pad_group(group, 1, fill_value) if fill_value is not None else group
+        group = pad_group(group, 1, pad_fill_value) if pad_fill_value is not None else group
         for window in windowed(group, 2):
             incidence_entry = window[-1].copy()
             incidence_entry["value"] = window[1]["value"] - window[0]["value"]
             yield incidence_entry
 
-def generate_prop_signal(rows: Iterable[Dict], fill_value: Optional[Union[str, float]] = None) -> Iterable[Dict]:
+def generate_prop_signal(rows: Iterable[Dict], pad_fill_value: Optional[Union[str, float]] = None) -> Iterable[Dict]:
     """Generate prop signal.
 
     May be more effort than its worth, given that the included geos are source-dependent.
