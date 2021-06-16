@@ -82,7 +82,8 @@ class Utils:
       Upper bound (exclusive) of days to get issues for
     Returns
     -------
-      Dictionary of {issue day: list of download urls} for issues after newer_than and before older_than
+      Dictionary of {issue day: list of (download urls, index)}
+      for issues after newer_than and before older_than
     """
     daily_issues = {}
     for index in sorted(set(metadata.index)):
@@ -127,7 +128,7 @@ class Utils:
     return result.reset_index(level=key_cols)
 
   @staticmethod
-  def update_dataset(database, network):
+  def update_dataset(database, network, newer_than=None, older_than=None):
     """Acquire the most recent dataset, unless it was previously acquired.
 
     Parameters
@@ -136,18 +137,22 @@ class Utils:
       A `Database` subclass for a particular dataset.
     network : delphi.epidata.acquisition.covid_hosp.common.network.Network
       A `Network` subclass for a particular dataset.
+    newer_than : date
+      Lower bound (exclusive) of days to get issues for.
+    older_than : date
+      Upper bound (exclusive) of days to get issues for
 
     Returns
     -------
     bool
       Whether a new dataset was acquired.
     """
-    today = datetime.datetime.today().date()
     metadata = network.fetch_metadata()
-
     with database.connect() as db:
       max_issue = db.get_max_issue()
-      daily_issues = Utils.issues_to_fetch(metadata, max_issue, today)
+      older_than = datetime.datetime.today().date() if newer_than is None else older_than
+      newer_than = max_issue if newer_than is None else newer_than
+      daily_issues = Utils.issues_to_fetch(metadata, newer_than, older_than)
       if not daily_issues:
         print("no new issues, nothing to do")
         return False
