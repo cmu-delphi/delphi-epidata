@@ -297,9 +297,9 @@ class Database:
         `geo_type`
       ORDER BY
         `time_type` ASC,
-        `geo_type` ASC 
+        `geo_type` ASC
       '''
-      
+
     meta = []
     meta_lock = threading.Lock()
 

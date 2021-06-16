@@ -116,7 +116,6 @@ class CovidcastMetaCacheTests(unittest.TestCase):
         'max_issue': 20200423,
         'min_lag': 0,
         'max_lag': 1,
-        
       }
     ])
     epidata1={'result':1, 'message':'success', 'epidata':epidata1}
