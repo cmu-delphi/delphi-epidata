@@ -297,8 +297,18 @@ class Database:
         `geo_type`
       ORDER BY
         `time_type` ASC,
-        `geo_type` ASC
+        `geo_type` ASC 
       '''
+    min_sql = f'''
+      SELECT
+        `time_type`,
+        MIN(`issue`) as `min_issue`
+      FROM 
+        `{table_name}`
+      ORDER BY
+        `time_type` ASC
+      '''
+
 
     meta = []
     meta_lock = threading.Lock()
