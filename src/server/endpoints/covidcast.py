@@ -34,7 +34,7 @@ from .._validate import (
 )
 from .._db import sql_table_has_columns
 from .._pandas import as_pandas, print_pandas
-from .covidcast_utils import compute_trend, compute_trends, compute_correlations, compute_trend_value, CovidcastMetaEntry, AllSignalsMap, fetch_derivable_signal
+from .covidcast_utils import compute_trend, compute_trends, compute_correlations, compute_trend_value, CovidcastMetaEntry, AllSignalsMap, fetch_derivable_signal, fetch_derivable_signals
 from ..utils import shift_time_value, date_to_time_value, time_value_to_iso, time_value_to_date
 
 # first argument is the endpoint name
@@ -156,12 +156,10 @@ def handle():
     # build the source, signal, time, and location (type and id) filters
 
     # TODO:
-    # - Multiple source-signal pair handling and renaming
     # - Testing
-    raw_signal, transform = fetch_derivable_signal(source_signal_pairs.source, source_signal_pairs.signal)
-    source_signal_pairs.signal = raw_signal
+    source_signal_pairs_dict = fetch_derivable_signals(source_signal_pairs)
 
-    q.where_source_signal_pairs("source", "signal", source_signal_pairs)
+    q.where_source_signal_pairs("source", "signal", list(source_signal_pairs_dict.keys()))
     q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
     q.where_time_pairs("time_type", "time_value", time_pairs)
 
@@ -171,6 +169,13 @@ def handle():
 
     p = create_printer()
 
+    def gen(rows):
+        for key, group in groupby((parse_row(row, fields_string, fields_int, fields_float) for row in rows), lambda row: (row["source"], row["signal"])):
+            source_signal_name = key[0] + ":" + key[1]
+            transform = source_signal_pairs_dict[source_signal_name]
+            for row in transform(group):
+                yield row
+
     # execute first query
     try:
         r = run_query(p, (str(q), q.params))
@@ -178,7 +183,7 @@ def handle():
         raise DatabaseErrorException(str(e))
 
     # now use a generator for sending the rows and execute all the other queries
-    return p(filter_fields(transform(r)))
+    return p(filter_fields(gen(r)))
 
 
 @bp.route("/trend", methods=("GET", "POST"))

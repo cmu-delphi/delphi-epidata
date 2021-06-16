@@ -1,10 +1,12 @@
+from collections import ChainMap
 from itertools import groupby, chain
-from operator import itemgetter
-from typing import Iterable, Dict, Callable, List, Optional, Union
+from typing import Iterable, Dict, Callable, List, Optional, Union, Tuple
 
 from more_itertools import windowed, dotproduct, peekable
 from pandas import date_range, Timedelta
 from numpy import NaN
+
+from ..._params import SourceSignalPair
 
 
 def smoother(values: List[float], kernel: List[float] = None) -> float:
@@ -22,24 +24,25 @@ def smoother(values: List[float], kernel: List[float] = None) -> float:
     smoothed_value = dotproduct(values, kernel)
     return smoothed_value
 
-def pad_group(group: Iterable[Dict], pad_length: int, fill_value: Optional[Union[float, str]] = NaN) -> Iterable[Dict]:
+def pad_group(group: Iterable[Dict], pad_length: int, fill_value: Union[float, str] = NaN) -> Iterable[Dict]:
     """Prepend window with pad_length many fill values."""
 
-    # Peek the first window element for data and fill value.
+    # Peek the first element for the date, fill value, and other data entries.
     group = peekable(group)
-    start_entry = group.peek()
-    if isinstance(fill_value, str) and fill_value != "first":
-        raise ValueError("String value of fill_value can only be 'first'.")
-    fill_value = start_entry["value"] if fill_value == "first" else fill_value
-    group_geo = start_entry["geo"]
+    start_entry = group.peek().copy()
 
     # Get the time bounds.
     right_bound = start_entry["timestamp"] - Timedelta(1, unit="D")
     left_bound = start_entry["timestamp"] - Timedelta(pad_length, unit="D")
 
-    # TODO: May need to generalize these column entries, e.g.
-    # dict(ChainMap({"timestamp": date, "geo": group_geo, "value": fill_value}, start_entry))
-    padded_values = ({"timestamp": date, "geo": group_geo, "value": fill_value} for date in date_range(left_bound, right_bound))
+    if isinstance(fill_value, str) and fill_value == "first":
+        padded_values = (dict(ChainMap({"timestamp": date}, start_entry)) for date in date_range(left_bound, right_bound))
+    elif isinstance(fill_value, str) and fill_value != "first":
+        raise ValueError("String value of fill_value can only be 'first'.")
+    elif isinstance(fill_value, float):
+        padded_values = (dict(ChainMap({"timestamp": date, "value": fill_value}, start_entry)) for date in date_range(left_bound, right_bound))
+    else:
+        raise ValueError("fill_value should be a float or 'first'.")
     return chain(padded_values, group)
 
 def generate_smooth_rows(
@@ -61,9 +64,9 @@ def generate_smooth_rows(
     the results will likely be incoherent.
 
     rows: Iterable[Dict]
-        An iterable walking through the rows of a database query return (or a dataframe).
-        The rows are assumed to be dicts containing the "geo" and "timestamp" keys. Assumes
-        the rows have been sorted by geo and timestamp beforehand.
+        An iterable over the rows a database query returns. The rows are assumed to be
+        dicts containing the "geo_type", "geo_value", and "timestamp" keys. Assumes the
+        rows have been sorted by geo and timestamp beforehand.
     smooth_values: Callable[[List[float]], float], default smoother
         A function taking a list of floats and producing a smoothed value. The smoothed
         value is placed in the timestamp of the last entry in the list of floats.
@@ -74,13 +77,12 @@ def generate_smooth_rows(
         to get a value for each timestamp in rows. This helps generates a slide into an iterable's
         items. Assumed to be less than window_length.
     fill_value: Optional[float], default None
-        The value to use when padding. If None, then the padded values
-        are ignored, generating initial windows like (group[0]), (group[0], group[1]), ...,
-        (group[0], group[1], ..., group[smoothed_window_length]).
+        The value to use when padding. If None, then the initial windows are made dynamic like
+        (group[0]), (group[0], group[1]), ..., (group[0], group[1], ..., group[smoothed_window_length]).
     """
     assert pad_length < window_length
 
-    for key, group in groupby(rows, itemgetter("geo")): # Iterable[Tuple[str, Iterable[Dict]]]
+    for _, group in groupby(rows, lambda row: (row["geo_type"], row["geo_value"])): # Iterable[Tuple[str, Iterable[Dict]]]
         group = pad_group(group, pad_length, fill_value) if fill_value is not None else pad_group(group, pad_length, NaN)
         for window in windowed(group, window_length): # Iterable[List[Dict]]
             smoothed_entry = window[-1].copy() # last timestamp of window
@@ -94,19 +96,20 @@ def generate_smooth_rows(
 def generate_row_diffs(rows: Iterable[Dict], fill_value: Optional[Union[str, float]] = None) -> Iterable[Dict]:
     """Generate differences between row values.
 
-    rows: Iterable[Dict]
-        An iterable over the rows database query return (or a dataframe). The rows are
-        assumed to be dicts containing the "geo" and "timestamp" keys. Assumes the rows
-        have been sorted by geo and timestamp beforehand.
-    fill_value: Optional[Union[str, float]] or "first", default None
-        The value used to prepend rows. If "first", then uses the first value of rows.
-        If None, then no padding is used.
-
     Note that this function crucially relies on the assumption that the iterable rows
     has been pre-sorted by geo_value and by timestamp. If this assumption is violated,
     the results will likely be incoherent.
+
+    rows: Iterable[Dict]
+        An iterable over the rows a database query returns. The rows are assumed to be
+        dicts containing the "geo_type", "geo_value", and "timestamp" keys. Assumes the
+        rows have been sorted by geo and timestamp beforehand.
+    fill_value: Optional[Union[str, float]] or "first", default None
+        The value used to prepend rows. If "first", then uses the first value of rows.
+        If None, then no padding is used and the resulting iterable is shorter than the
+        original by 1.
     """
-    for key, group in groupby(rows, itemgetter("geo")):
+    for _, group in groupby(rows, lambda row: (row["geo_type"], row["geo_value"])): # Iterable[Tuple[str, Iterable[Dict]]]
         group = pad_group(group, 1, fill_value) if fill_value is not None else group
         for window in windowed(group, 2):
             incidence_entry = window[-1].copy()
@@ -204,12 +207,17 @@ DERIVED_SIGNALS = {
     "usafacts:deaths_incidence_num": ("usafacts:deaths_cumulative_num", DIFF),
 }
 
-def fetch_derivable_signal(source: str, signal: str) -> Callable:
+def fetch_derivable_signal(source_signal_pair: SourceSignalPair) -> Tuple[SourceSignalPair, Callable]:
     """Fetch raw version of a signal, if available, for smoothing."""
-    source_signal = source + ":" + signal
-    if source_signal in DERIVED_SIGNALS:
-        raw_source_signal, transform = DERIVED_SIGNALS[source_signal]
-        _, raw_signal = raw_source_signal.split(":")
-        return raw_signal, transform
-    else:
-        return signal, IDENTITY
+    source_signal_name = source_signal_pair.source + ":" + source_signal_pair.signal
+    try:
+        raw_source_signal, transform = DERIVED_SIGNALS[source_signal_name]
+        raw_source, raw_signal = raw_source_signal.split(":")
+        return SourceSignalPair(raw_source, raw_signal), transform
+    except KeyError:
+        return source_signal_pair, IDENTITY
+
+def fetch_derivable_signals(source_signal_pairs: List[SourceSignalPair]) -> Dict[str, Tuple[SourceSignalPair, Callable]]:
+    signals_and_transforms = [fetch_derivable_signal(source_signal_pair) for source_signal_pair in source_signal_pairs]
+    signals_and_transforms_dict = {source_signal_pair.source + ":" + source_signal_pair.signal: transform for source_signal_pair, transform in signals_and_transforms}
+    return signals_and_transforms_dict
