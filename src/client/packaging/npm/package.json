@@ -2,7 +2,7 @@
   "name": "delphi_epidata",
   "description": "Delphi Epidata API Client",
   "authors": "Delphi Group",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "delphi_epidata.js",
   "types": "delphi_epidata.d.ts",
   "browser": "delphi_epidata.js",
