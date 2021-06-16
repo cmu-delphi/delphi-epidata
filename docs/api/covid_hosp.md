@@ -25,7 +25,7 @@ General topics not specific to any particular data source are discussed in the
 
 This data source provides various measures of COVID-19 burden on patients and healthcare in the US.
 - Data source: US Department of Health & Human Services (HHS) [COVID-19 Reported Patient Impact and
-Hospital Capacity by State Timeseries](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/g62h-syeh) 
+Hospital Capacity by State Timeseries](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/g62h-syeh)
   and [COVID-19 Reported Patient Impact and Hospital Capacity by State](https://healthdata.gov/dataset/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/6xf2-c3ie)
 - Temporal Resolution: Daily, starting 2020-01-01
 - Spatial Resolution: US States plus DC, PR, and VI
@@ -36,7 +36,7 @@ weekly.
 
 # The API
 
-The base URL is: https://delphi.cmu.edu/epidata/api.php
+The base URL is: https://delphi.cmu.edu/epidata/covid_hosp_state_timeseries/
 
 See [this documentation](README.md) for details on specifying locations and dates.
 
@@ -72,7 +72,7 @@ If `issues` is not specified, then the most recent issue is used by default.
 # Example URLs
 
 ### MA on 2020-05-10 (per most recent issue)
-https://delphi.cmu.edu/epidata/covid_hosp/?states=MA&dates=20200510
+https://delphi.cmu.edu/epidata/covid_hosp_state_timeseries/?states=MA&dates=20200510
 
 ```json
 {

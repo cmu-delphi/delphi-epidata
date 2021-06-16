@@ -20,7 +20,7 @@ jobs:
       - name: Reset dev branch
         run: |
           git fetch origin dev:dev
-          git reset --hard dev
+          git reset --hard origin/dev
       - name: Set up Python 3.8
         uses: actions/setup-python@v2
         with:
