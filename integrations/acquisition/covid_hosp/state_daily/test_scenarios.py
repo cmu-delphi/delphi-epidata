@@ -1,19 +1,21 @@
 """Integration tests for acquisition of COVID hospitalization."""
 
 # standard library
+from datetime import date
 import unittest
-from unittest.mock import MagicMock
 from unittest.mock import patch
 
 # third party
 from freezegun import freeze_time
+import pandas as pd
 
 # first party
-from delphi.epidata.acquisition.covid_hosp.common.database import Database
+from delphi.epidata.acquisition.covid_hosp.state_daily.database import Database
 from delphi.epidata.acquisition.covid_hosp.common.test_utils import UnitTestUtils
 from delphi.epidata.client.delphi_epidata import Epidata
 from delphi.epidata.acquisition.covid_hosp.state_daily.update import Update
 from delphi.epidata.acquisition.covid_hosp.state_daily.network import Network
+from delphi.epidata.acquisition.covid_hosp.common.utils import Utils
 import delphi.operations.secrets as secrets
 
 # py3tester coverage target (equivalent to `import *`)
@@ -97,3 +99,31 @@ class AcquisitionTests(unittest.TestCase):
       response = Epidata.covid_hosp('WY', Epidata.range(20200101, 20210101))
       self.assertEqual(response['result'], 1)
       self.assertEqual(len(response['epidata']), 1)
+
+
+  @freeze_time("2021-03-16")
+  def test_acquire_specific_issue(self):
+    """Acquire a new dataset."""
+
+    # make sure the data does not yet exist
+    with self.subTest(name='no data yet'):
+      response = Epidata.covid_hosp('MA', Epidata.range(20200101, 20210101))
+      self.assertEqual(response['result'], -2)
+
+    # acquire sample data into local database
+    # mock out network calls to external hosts
+    with Database.connect() as db:
+      pre_max_issue = db.get_max_issue()
+    self.assertEqual(pre_max_issue, pd.Timestamp('1900-01-01 00:00:00'))
+    with self.subTest(name='first acquisition'), \
+         patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()) as mock_fetch_meta, \
+         patch.object(Network, 'fetch_dataset', side_effect=[self.test_utils.load_sample_dataset("dataset0.csv")]
+                      ) as mock_fetch:
+      acquired = Utils.update_dataset(Database,
+                                      Network,
+                                      date(2021, 3, 12),
+                                      date(2021, 3, 14))
+      with Database.connect() as db:
+        post_max_issue = db.get_max_issue()
+      self.assertEqual(post_max_issue, pd.Timestamp('2021-03-13 00:00:00'))
+      self.assertTrue(acquired)
