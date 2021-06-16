@@ -137,9 +137,9 @@ class Utils:
       A `Database` subclass for a particular dataset.
     network : delphi.epidata.acquisition.covid_hosp.common.network.Network
       A `Network` subclass for a particular dataset.
-    newer_than Date
+    newer_than : date
       Lower bound (exclusive) of days to get issues for.
-    older_than Date
+    older_than : date
       Upper bound (exclusive) of days to get issues for
 
     Returns
