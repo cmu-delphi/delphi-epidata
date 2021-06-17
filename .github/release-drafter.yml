@@ -1,13 +1,19 @@
 name-template: "v$RESOLVED_VERSION"
 tag-template: "v$RESOLVED_VERSION"
 categories:
-  - title: "🚀 Features"
+  - title: "🚀 API Changes"
     labels:
-      - "enhancement"
-      - "feature"
-  - title: "🐛 Bugs Fixes"
+      - "api change"
+  - title: "🚀 Python Client Changes"
     labels:
-      - "bug"
+      - "python client"
+  - title: "🚀 R Client Changes"
+    labels:
+      - "r client"
+  - title: "🚀 JavaScript Client Changes"
+    labels:
+      - "js client"
+      - "javascript"
   - title: "📕 Documentation"
     labels:
       - "documentation"
@@ -16,6 +22,7 @@ categories:
       - "chore"
       - "documentation"
       - "dependencies"
+      - "acquisition"
 change-template: "- #$NUMBER $TITLE"
 change-title-escapes: '\<*_&`#@'
 template: |
