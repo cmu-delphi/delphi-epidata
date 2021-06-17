@@ -83,7 +83,7 @@ class ServerTests(unittest.TestCase):
       self.assertEqual(rows[2]['critical_staffing_shortage_today_yes'], 789)
 
 
-  def test_query_by_as_f(self):
+  def test_query_by_as_of(self):
     with Database.connect() as db:
       with db.new_cursor() as cur:
         # inserting out of order to test server-side order by
