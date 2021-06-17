@@ -1,0 +1,153 @@
+name: Release Helper
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  correct_repository:
+    runs-on: ubuntu-latest
+    steps:
+      - name: fail on fork
+        if: github.repository_owner != 'cmu-delphi'
+        run: exit 1
+
+  create_release:
+    needs: correct_repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          ssh-key: ${{ secrets.CMU_DELPHI_DEPLOY_MACHINE_SSH }}
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Extract version
+        id: extract_version
+        run: |
+          python -m pip install bump2version
+          echo -n "::set-output name=version::"
+          bump2version --dry-run --list patch | grep ^current_version | sed -r s,"^.*=",,
+      - name: Create Release
+        id: create_release
+        uses: release-drafter/release-drafter@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          version: ${{ steps.extract_version.outputs.version }}
+          publish: true
+    outputs:
+      version: ${{ steps.extract_version.outputs.version }}
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      tag_name: ${{ steps.create_release.outputs.tag_name }}
+
+  release_python_client:
+    needs: create_release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install wheel twine
+      - name: Prepare package
+        run: |
+          cp src/client/*.py src/client/packaging/pypi/delphi_epidata/
+      - name: Create release
+        working-directory: src/client/packaging/pypi
+        run: |
+          python setup.py sdist bdist_wheel
+      - uses: actions/upload-artifact@v2
+        with:
+          name: delphi_epidata_py
+          path: src/client/packaging/pypi/dist/*.tar.gz
+      - name: Upload Release Asset
+        uses: AButler/upload-release-assets@v2.0
+        with:
+          files: "src/client/packaging/pypi/dist/*.tar.gz"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          release-tag: ${{ needs.create_release.outputs.tag_name }}
+      - name: Publish a Python distribution to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          packages_dir: src/client/packaging/pypi/dist/
+          skip_existing: true
+          # repository_url: https://test.pypi.org/legacy/
+
+  release_js_client:
+    needs: create_release
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/client/packaging/npm
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+      - name: Cache Node.js modules
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm # npm cache files are stored in `~/.npm` on Linux/macOS
+          key: ${{ runner.OS }}-node2-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-node2-
+      - run: npm ci
+      - run: npm test
+      - run: npm pack
+      - name: Rename to a different name
+        run: for f in *.tgz; do mv "$f" "$(echo "$f" | sed s/delphi_epidata-/delphi_epidata_js-/)"; done
+      - uses: actions/upload-artifact@v2
+        with:
+          name: delphi_epidata_js
+          path: src/client/packaging/npm/*.tgz
+      - name: Upload Release Asset
+        uses: AButler/upload-release-assets@v2.0
+        with:
+          files: "src/client/packaging/npm/*.tgz"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          release-tag: ${{ needs.create_release.outputs.tag_name }}
+      - name: Publish to NPM
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: src/client/packaging/npm/package.json
+          access: public
+          check-version: true
+
+  sync_dev:
+    needs: correct_repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          ref: dev
+          ssh-key: ${{ secrets.CMU_DELPHI_DEPLOY_MACHINE_SSH }}
+      - name: Reset dev branch
+        run: |
+          git fetch origin main:main
+          git reset --hard main
+      - name: Create pull request into dev
+        uses: peter-evans/create-pull-request@v3
+        with:
+          branch: bot/sync-main-dev
+          commit-message: "chore: sync main-dev"
+          base: dev
+          title: "chore: sync main->dev"
+          labels: chore
+          reviewers: krivard
+          assignees: krivard
+          body: |
+            Syncing Main->Dev.
