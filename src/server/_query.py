@@ -10,7 +10,6 @@ from typing import (
     Tuple,
     Union,
     cast,
-    Mapping,
 )
 
 from sqlalchemy import text
