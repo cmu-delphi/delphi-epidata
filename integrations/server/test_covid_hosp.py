@@ -86,8 +86,6 @@ class ServerTests(unittest.TestCase):
   def test_query_by_as_of(self):
     with Database.connect() as db:
       with db.new_cursor() as cur:
-        # inserting out of order to test server-side order by
-        # also inserting two for 20201201 to test tiebreaker.
         self.insert_issue(cur, 20201101, 0, 'T')
         self.insert_issue(cur, 20201102, 1, 'D')
         self.insert_issue(cur, 20201103, 2, 'D')
