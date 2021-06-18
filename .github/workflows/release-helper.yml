@@ -79,7 +79,7 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__
-          password: ${{ secrets.PYPI_API_TOKEN }}
+          password: ${{ secrets.DELPHI_PYPI_PROD_TOKEN }}
           packages_dir: src/client/packaging/pypi/dist/
           skip_existing: true
           # repository_url: https://test.pypi.org/legacy/
@@ -121,7 +121,7 @@ jobs:
       - name: Publish to NPM
         uses: JS-DevTools/npm-publish@v1
         with:
-          token: ${{ secrets.NPM_TOKEN }}
+          token: ${{ secrets.DELPHI_NPM_TOKEN }}
           package: src/client/packaging/npm/package.json
           access: public
           check-version: true
