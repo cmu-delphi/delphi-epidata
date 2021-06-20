@@ -32,7 +32,6 @@ from .._validate import (
     require_all,
     require_any,
 )
-from .._db import sql_table_has_columns
 from .._pandas import as_pandas, print_pandas
 from .covidcast_utils import compute_trend, compute_trends, compute_correlations, compute_trend_value, CovidcastMetaEntry, AllSignalsMap
 from ..utils import shift_time_value, date_to_time_value, time_value_to_iso, time_value_to_date
@@ -136,13 +135,9 @@ def handle():
     q = QueryBuilder("covidcast", "t")
 
     fields_string = ["geo_value", "signal"]
-    fields_int = ["time_value", "direction", "issue", "lag"]
-
-    missing_fields = ["missing_value", "missing_stderr", "missing_sample_size"]
-    if sql_table_has_columns("covidcast", missing_fields):
-        fields_int.extend(missing_fields)
-
+    fields_int = ["time_value", "direction", "issue", "lag", "missing_value", "missing_stderr", "missing_sample_size"]
     fields_float = ["value", "stderr", "sample_size"]
+
     if is_compatibility_mode():
         q.set_order("signal", "time_value", "geo_value", "issue")
     else:
