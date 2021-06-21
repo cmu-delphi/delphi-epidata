@@ -76,6 +76,7 @@ class CovidcastMetaTests(unittest.TestCase):
               'stdev_value': 5,
               'last_update': 123,
               'max_issue': 2,
+              'min_issue': 1,
               'min_lag': 0,
               'max_lag': 0,
             })
@@ -135,6 +136,7 @@ class CovidcastMetaTests(unittest.TestCase):
               'stdev_value': 5,
               'last_update': 123,
               'max_issue': 2,
+              'min_issue': 2,
               'min_lag': 0,
               'max_lag': 0,
             })
@@ -264,6 +266,7 @@ class CovidcastMetaTests(unittest.TestCase):
                 'stdev_value': 5,
                 'last_update': 123,
                 'max_issue': 2,
+                'min_issue': 1,
                 'min_lag': 0,
                 'max_lag': 0,
               })
