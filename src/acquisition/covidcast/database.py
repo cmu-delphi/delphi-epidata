@@ -346,20 +346,18 @@ class Database:
         print("no jobs left, thread terminating: " + threading.current_thread().name)
       finally:
         worker_dbc.disconnect(False) # cleanup
-      
 
     threads = []
     for n in range(n_threads):
       t = threading.Thread(target=worker, name='MetacacheThread-'+str(n))
       t.start()
-      threads.append(t)      
+      threads.append(t)
 
     srcsigs.join()
     print("jobs complete")
     for t in threads:
       t.join()
     print("threads terminated")
-
     # sort the metadata because threaded workers dgaf
     sorting_fields = "data_source signal time_type geo_type".split()
     sortable_fields_fn = lambda x: [(field, x[field]) for field in sorting_fields]
@@ -367,11 +365,7 @@ class Database:
     tuple_representation = list(map(prepended_sortables_fn, meta))
     tuple_representation.sort()
     meta = list(map(dict, tuple_representation)) # back to dict form
-
     return meta
-
-
-    
 
 
   def update_covidcast_meta_cache(self, metadata):
