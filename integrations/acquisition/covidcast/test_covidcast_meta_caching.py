@@ -77,7 +77,9 @@ class CovidcastMetaCacheTests(unittest.TestCase):
         (0, 'src', 'sig', 'day', 'state', 20200422, 'pa',
           123, 1, 2, 3, 456, 1, 20200422, 0, 1, False, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'state', 20200422, 'wa',
-          789, 1, 2, 3, 456, 1, 20200423, 1, 1, False, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
+          789, 1, 2, 3, 456, 1, 20200423, 1, 1, False, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
+        (0, 'src', 'sig', 'day', 'state', 20200422, 'pa',
+          123, 1, 2, 3, 456, 1, 20200417, 0, 0, False, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
     ''')
     self.cur.execute(f'''
       INSERT INTO
@@ -116,6 +118,7 @@ class CovidcastMetaCacheTests(unittest.TestCase):
         'max_issue': 20200423,
         'min_lag': 0,
         'max_lag': 1,
+        'min_issue': 20200417
       }
     ])
     epidata1={'result':1, 'message':'success', 'epidata':epidata1}

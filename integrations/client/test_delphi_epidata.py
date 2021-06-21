@@ -457,6 +457,9 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
           345, 6.0, 2.2, 11.5, 678, 0, 20200416, 2, 1, False,
           {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
+        (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
+          345, 6.0, 2.2, 11.5, 678, 0, 20200410, 2, 0, False,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
         (0, 'src', 'sig', 'day', 'county', 20200415, '01234',
           345, 7.0, 2.0, 12.5, 678, 0, 20200416, 1, 1, False,
           {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
@@ -486,6 +489,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
         'stdev_value': 0.5,
         'last_update': 345,
         'max_issue': 20200416,
+        'min_issue': 20200410,
         'min_lag': 1,
         'max_lag': 2,
        }],

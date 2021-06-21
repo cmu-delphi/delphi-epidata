@@ -270,36 +270,60 @@ class Database:
         srcsigs.put((source, signal))
 
     inner_sql = f'''
-      SELECT
-        `source` AS `data_source`,
-        `signal`,
-        `time_type`,
-        `geo_type`,
-        MIN(`time_value`) AS `min_time`,
-        MAX(`time_value`) AS `max_time`,
-        COUNT(DISTINCT `geo_value`) AS `num_locations`,
-        MIN(`value`) AS `min_value`,
-        MAX(`value`) AS `max_value`,
-        ROUND(AVG(`value`),7) AS `mean_value`,
-        ROUND(STD(`value`),7) AS `stdev_value`,
-        MAX(`value_updated_timestamp`) AS `last_update`,
-        MAX(`issue`) as `max_issue`,
-        MIN(`lag`) as `min_lag`,
-        MAX(`lag`) as `max_lag`
+      SELECT 
+        inner_main_sql.*,inner_min_sql.*     
+      FROM(
+        SELECT
+          `source` AS `data_source`,
+          `signal`,
+          `time_type`,
+          `geo_type`,
+          MIN(`time_value`) AS `min_time`,
+          MAX(`time_value`) AS `max_time`,
+          COUNT(DISTINCT `geo_value`) AS `num_locations`,
+          MIN(`value`) AS `min_value`,
+          MAX(`value`) AS `max_value`,
+          ROUND(AVG(`value`),7) AS `mean_value`,
+          ROUND(STD(`value`),7) AS `stdev_value`,
+          MAX(`value_updated_timestamp`) AS `last_update`,
+          MAX(`issue`) as `max_issue`,
+          MIN(`lag`) as `min_lag`,
+          MAX(`lag`) as `max_lag`
       FROM
-        `{table_name}` {index_hint}
+          `{table_name}` {index_hint}
       WHERE
         `source` = %s AND
         `signal` = %s AND
         is_latest_issue = 1
       GROUP BY
-        `time_type`,
-        `geo_type`
+          `time_type`,
+          `geo_type`    
       ORDER BY
-        `time_type` ASC,
-        `geo_type` ASC
-      '''
+          `time_type` ASC,
+          `geo_type` ASC 
+      )inner_main_sql
+      JOIN(
+        SELECT        
+          `time_type`,
+          `geo_type`,          
+          MIN(`issue`) as `min_issue`
+        FROM 
+          `{table_name}`
+        WHERE
+          `source` = %s AND
+          `signal` = %s
+        GROUP BY
+          `time_type`,
+          `geo_type`    
+        ORDER BY
+          `time_type` ASC,
+          `geo_type` ASC 
+      )inner_min_sql
+      ON 
+        inner_main_sql.`geo_type`=inner_min_sql.`geo_type` AND
+        inner_main_sql.`time_type`=inner_min_sql.`time_type`
 
+    '''
     meta = []
     meta_lock = threading.Lock()
 
@@ -312,7 +336,7 @@ class Database:
       try:
         while True:
           (source, signal) = srcsigs.get_nowait() # this will throw the Empty caught below
-          w_cursor.execute(inner_sql, (source, signal))
+          w_cursor.execute(inner_sql, (source, signal,source, signal))
           with meta_lock:
             meta.extend(list(
               dict(zip(w_cursor.column_names, x)) for x in w_cursor
@@ -322,12 +346,13 @@ class Database:
         print("no jobs left, thread terminating: " + threading.current_thread().name)
       finally:
         worker_dbc.disconnect(False) # cleanup
+      
 
     threads = []
     for n in range(n_threads):
       t = threading.Thread(target=worker, name='MetacacheThread-'+str(n))
       t.start()
-      threads.append(t)
+      threads.append(t)      
 
     srcsigs.join()
     print("jobs complete")
@@ -344,6 +369,9 @@ class Database:
     meta = list(map(dict, tuple_representation)) # back to dict form
 
     return meta
+
+
+    
 
 
   def update_covidcast_meta_cache(self, metadata):
