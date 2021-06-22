@@ -271,7 +271,7 @@ class Database:
 
     inner_sql = f'''
       SELECT 
-        inner_main_sql.*,inner_min_sql.*     
+        inner_main_sql.*,inner_min_sql.min_issue    
       FROM(
         SELECT
           `source` AS `data_source`,
@@ -289,19 +289,19 @@ class Database:
           MAX(`issue`) as `max_issue`,
           MIN(`lag`) as `min_lag`,
           MAX(`lag`) as `max_lag`
-      FROM
+        FROM
           `{table_name}` {index_hint}
-      WHERE
+        WHERE
         `source` = %s AND
         `signal` = %s AND
         is_latest_issue = 1
-      GROUP BY
+        GROUP BY
           `time_type`,
           `geo_type`    
-      ORDER BY
+        ORDER BY
           `time_type` ASC,
           `geo_type` ASC 
-      )inner_main_sql
+        )inner_main_sql
       JOIN(
         SELECT        
           `time_type`,
@@ -318,7 +318,7 @@ class Database:
         ORDER BY
           `time_type` ASC,
           `geo_type` ASC 
-      )inner_min_sql
+        )inner_min_sql
       ON 
         inner_main_sql.`geo_type`=inner_min_sql.`geo_type` AND
         inner_main_sql.`time_type`=inner_min_sql.`time_type`
@@ -336,7 +336,7 @@ class Database:
       try:
         while True:
           (source, signal) = srcsigs.get_nowait() # this will throw the Empty caught below
-          w_cursor.execute(inner_sql, (source, signal,source, signal))
+          w_cursor.execute(inner_sql, (source, signal, source, signal))
           with meta_lock:
             meta.extend(list(
               dict(zip(w_cursor.column_names, x)) for x in w_cursor
@@ -384,7 +384,6 @@ class Database:
 
   def retrieve_covidcast_meta_cache(self):
     """Useful for viewing cache entries (was used in debugging)"""
-
     sql = '''
       SELECT `epidata`
       FROM `covidcast_meta_cache`
