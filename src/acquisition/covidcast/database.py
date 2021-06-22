@@ -384,7 +384,6 @@ class Database:
 
   def retrieve_covidcast_meta_cache(self):
     """Useful for viewing cache entries (was used in debugging)"""
-
     sql = '''
       SELECT `epidata`
       FROM `covidcast_meta_cache`
