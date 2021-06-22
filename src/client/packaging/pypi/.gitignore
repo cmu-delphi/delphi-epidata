@@ -1,0 +1,6 @@
+delphi_epidata/*
+!delphi_epidata/__init__.py
+.eggs
+/build
+/dist
+/*.egg-info

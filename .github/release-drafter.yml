@@ -1,0 +1,31 @@
+name-template: "v$RESOLVED_VERSION"
+tag-template: "v$RESOLVED_VERSION"
+categories:
+  - title: "🚀 API Changes"
+    labels:
+      - "api change"
+  - title: "🚀 Python Client Changes"
+    labels:
+      - "python client"
+  - title: "🚀 R Client Changes"
+    labels:
+      - "r client"
+  - title: "🚀 JavaScript Client Changes"
+    labels:
+      - "js client"
+      - "javascript"
+  - title: "📕 Documentation"
+    labels:
+      - "documentation"
+  - title: "🧰 Development"
+    labels:
+      - "chore"
+      - "documentation"
+      - "dependencies"
+      - "acquisition"
+change-template: "- #$NUMBER $TITLE"
+change-title-escapes: '\<*_&`#@'
+template: |
+  $CHANGES
+
+  Thanks to $CONTRIBUTORS
