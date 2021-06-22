@@ -336,7 +336,7 @@ class Database:
       try:
         while True:
           (source, signal) = srcsigs.get_nowait() # this will throw the Empty caught below
-          w_cursor.execute(inner_sql, (source, signal,source, signal))
+          w_cursor.execute(inner_sql, (source, signal, source, signal))
           with meta_lock:
             meta.extend(list(
               dict(zip(w_cursor.column_names, x)) for x in w_cursor
