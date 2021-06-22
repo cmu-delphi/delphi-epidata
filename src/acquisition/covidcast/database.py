@@ -271,7 +271,7 @@ class Database:
 
     inner_sql = f'''
       SELECT 
-        inner_main_sql.*,inner_min_sql.*     
+        inner_main_sql.*,inner_min_sql.min_issue    
       FROM(
         SELECT
           `source` AS `data_source`,
