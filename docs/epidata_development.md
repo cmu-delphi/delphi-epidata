@@ -85,9 +85,8 @@ docker build -t delphi_web \
 docker build -t delphi_web_python \
   -f repos/delphi/delphi-epidata/dev/docker/python/Dockerfile .
 
-cd ./repos/delphi/delphi-epidata
-docker build -t delphi_web_epidata -f ./devops/Dockerfile .
-cd ../../../
+docker build -t delphi_web_epidata \
+   -f repos/delphi/delphi-epidata/devops/Dockerfile .
 
 docker build -t delphi_database \
   -f repos/delphi/operations/dev/docker/database/Dockerfile .
