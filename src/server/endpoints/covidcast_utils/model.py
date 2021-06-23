@@ -74,7 +74,8 @@ class DataSignal:
     has_stderr: bool = False
     has_sample_size: bool = False
     link: List[WebLink] = field(default_factory=list)
-    based_on_other: bool = False
+    base_is_other: bool = False
+    compute_from_base: bool = False
 
     def __post_init__(self):
         self.link = _fix_links(self.link)
@@ -115,6 +116,7 @@ class DataSource:
     source: str
     db_source: str
     name: str
+    active: bool
     description: str
     reference_signal: str
     license: Optional[str] = None
