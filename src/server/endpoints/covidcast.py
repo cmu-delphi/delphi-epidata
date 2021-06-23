@@ -497,6 +497,7 @@ def handle_meta():
     filter_smoothed: Optional[bool] = None
     filter_weighted: Optional[bool] = None
     filter_cumulative: Optional[bool] = None
+    filter_active: Optional[bool] = None
 
     if "smoothed" in flags:
         filter_smoothed = True
@@ -510,6 +511,10 @@ def handle_meta():
         filter_cumulative = True
     elif "not_cumulative" in flags:
         filter_cumulative = False
+    if "active" in flags:
+        filter_active = True
+    elif "inactive" in flags:
+        filter_active = False
 
     row = db.execute(text("SELECT epidata FROM covidcast_meta_cache LIMIT 1")).fetchone()
 
@@ -524,6 +529,9 @@ def handle_meta():
 
     sources: List[Dict[str, Any]] = []
     for source in data_sources:
+        if filter_active is not None and source.active != filter_active:
+            continue
+
         meta_signals: List[Dict[str, Any]] = []
 
         for signal in source.signals:
