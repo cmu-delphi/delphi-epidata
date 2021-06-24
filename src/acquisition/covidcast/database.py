@@ -247,9 +247,9 @@ class Database:
       self._cursor.execute(drop_tmp_table_sql)
     return total
 
-  def compute_covidcast_meta(self, logger, table_name='covidcast', use_index=True):
+  def compute_covidcast_meta(self, table_name='covidcast', use_index=True):
     """Compute and return metadata on all non-WIP COVIDcast signals."""
-
+    logger=get_structured_logger("compute_covidcast_meta")
     index_hint = ""
     if use_index:
       index_hint = "USE INDEX (for_metadata)"
@@ -304,7 +304,7 @@ class Database:
     meta = []
     meta_lock = threading.Lock()
 
-    def worker(logger):
+    def worker():
       logger.info("starting thread: " + threading.current_thread().name)
       #  set up new db connection for thread
       worker_dbc = Database()
@@ -320,7 +320,7 @@ class Database:
             ))
           srcsigs.task_done()
       except Empty:
-        logger.info("no jobs left, thread terminating: " + threading.current_thread().name)
+        logger.exception("no jobs left, thread terminating: " + threading.current_thread().name)
       finally:
         worker_dbc.disconnect(False) # cleanup
 
