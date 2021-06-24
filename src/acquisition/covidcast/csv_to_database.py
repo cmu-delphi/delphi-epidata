@@ -37,9 +37,9 @@ def get_argument_parser():
     help="filename for log output (defaults to stdout)")
   return parser
 
-def collect_files(data_dir, specific_issue_date, logger,csv_importer_impl=CsvImporter):
+def collect_files(data_dir, specific_issue_date,csv_importer_impl=CsvImporter):
   """Fetch path and data profile details for each file to upload."""
-
+  logger= get_structured_logger('collect_files')
   if specific_issue_date:
     results = list(csv_importer_impl.find_issue_specific_csv_files(data_dir))
   else:
@@ -47,14 +47,16 @@ def collect_files(data_dir, specific_issue_date, logger,csv_importer_impl=CsvImp
   logger.info(f'found {len(results)} files')
   return results
 
-def make_handlers(data_dir, specific_issue_date, logger, file_archiver_impl=FileArchiver):
+def make_handlers(data_dir, specific_issue_date, file_archiver_impl=FileArchiver):
   if specific_issue_date:
     # issue-specific uploads are always one-offs, so we can leave all
     # files in place without worrying about cleaning up
     def handle_failed(path_src, filename, source):
+      logger= get_structured_logger('handle_failed')
       logger.info(f'leaving failed file alone - {source}')
 
     def handle_successful(path_src, filename, source):
+      logger= get_structured_logger('handle_successful')
       logger.info('archiving as successful')
       file_archiver_impl.archive_inplace(path_src, filename)
   else:
@@ -65,6 +67,7 @@ def make_handlers(data_dir, specific_issue_date, logger, file_archiver_impl=File
 
     # helper to archive a failed file without compression
     def handle_failed(path_src, filename, source):
+      logger= get_structured_logger('handle_failed')
       logger.info('archiving as failed - '+source)
       path_dst = os.path.join(archive_failed_dir, source)
       compress = False
@@ -72,6 +75,7 @@ def make_handlers(data_dir, specific_issue_date, logger, file_archiver_impl=File
 
     # helper to archive a successful file with compression
     def handle_successful(path_src, filename, source):
+      logger= get_structured_logger('handle_successful')
       logger.info('archiving as successful')
       path_dst = os.path.join(archive_successful_dir, source)
       compress = True
@@ -101,7 +105,6 @@ def upload_archive(
   """
   archive_as_successful, archive_as_failed = handlers
   total_modified_row_count = 0
-
   # iterate over each file
   for path, details in path_details:
     logger.info(f'handling {path}')

@@ -85,7 +85,8 @@ class CsvImporter:
     return value
 
   @staticmethod
-  def find_issue_specific_csv_files(scan_dir, logger, glob=glob):
+  def find_issue_specific_csv_files(scan_dir, glob=glob):
+    logger= get_structured_logger('find_issue_specific_csv_files')
     for path in sorted(glob.glob(os.path.join(scan_dir, '*'))):
       issuedir_match = CsvImporter.PATTERN_ISSUE_DIR.match(path.lower())
       if issuedir_match and os.path.isdir(path):
@@ -98,7 +99,7 @@ class CsvImporter:
           logger.info(' invalid issue directory day', issue_date_value)
 
   @staticmethod
-  def find_csv_files(scan_dir, logger, issue=(date.today(), epi.Week.fromdate(date.today())), glob=glob):
+  def find_csv_files(scan_dir, issue=(date.today(), epi.Week.fromdate(date.today())), glob=glob):
     """Recursively search for and yield covidcast-format CSV files.
 
     scan_dir: the directory to scan (recursively)
@@ -107,7 +108,7 @@ class CsvImporter:
     valid, details is a tuple of (source, signal, time_type, geo_type,
     time_value, issue, lag) (otherwise None).
     """
-
+    logger= get_structured_logger('find_csv_files')
     issue_day,issue_epiweek=issue
     issue_day_value=int(issue_day.strftime("%Y%m%d"))
     issue_epiweek_value=int(str(issue_epiweek))
@@ -126,7 +127,7 @@ class CsvImporter:
       daily_match = CsvImporter.PATTERN_DAILY.match(path.lower())
       weekly_match = CsvImporter.PATTERN_WEEKLY.match(path.lower())
       if not daily_match and not weekly_match:
-        logger.error(' invalid csv path/filename', path)
+        logger.info(' invalid csv path/filename', path)
         yield (path, None)
         continue
 
@@ -137,7 +138,7 @@ class CsvImporter:
         match = daily_match
         time_value_day = CsvImporter.is_sane_day(time_value)
         if not time_value_day:
-          logger.error(' invalid filename day', time_value)
+          logger.info(' invalid filename day', time_value)
           yield (path, None)
           continue
         issue_value=issue_day_value
@@ -148,7 +149,7 @@ class CsvImporter:
         match = weekly_match
         time_value_week=CsvImporter.is_sane_week(time_value)
         if not time_value_week:
-          logger.error(' invalid filename week', time_value)
+          logger.info(' invalid filename week', time_value)
           yield (path, None)
           continue
         issue_value=issue_epiweek_value
@@ -157,7 +158,7 @@ class CsvImporter:
       # # extract and validate geographic resolution
       geo_type = match.group(3).lower()
       if geo_type not in CsvImporter.GEOGRAPHIC_RESOLUTIONS:
-        logger.error(' invalid geo_type', geo_type)
+        logger.info(' invalid geo_type', geo_type)
         yield (path, None)
         continue
 
@@ -165,7 +166,7 @@ class CsvImporter:
       source = match.group(1).lower()
       signal = match.group(4).lower()
       if len(signal) > 64:
-        logger.error(' invalid signal name (64 char limit)',signal)
+        logger.info(' invalid signal name (64 char limit)',signal)
         yield (path, None)
         continue
 
@@ -337,7 +338,7 @@ class CsvImporter:
     return (row_values, None)
 
   @staticmethod
-  def load_csv(filepath, geo_type, logger, pandas=pandas):
+  def load_csv(filepath, geo_type, pandas=pandas):
     """Load, validate, and yield data as `RowValues` from a CSV file.
 
     filepath: the CSV file to be loaded
@@ -346,7 +347,7 @@ class CsvImporter:
     In case of a validation error, `None` is yielded for the offending row,
     including the header.
     """
-
+    logger= get_structured_logger('load_csv')
     # don't use type inference, just get strings
     table = pandas.read_csv(filepath, dtype='str')
 
