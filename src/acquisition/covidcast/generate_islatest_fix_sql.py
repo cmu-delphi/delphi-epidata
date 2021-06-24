@@ -1,7 +1,10 @@
+from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
 # what data to operate on
 base_where_clause = "WHERE `source`='jhu-csse' AND `time_type`='day'"
 ### base_where_clause = "WHERE `source`='src2' AND `time_type`='day'" ###
 
+logger = get_structured_logger(
+    "generate_islatest_fix_sql")
 
 # signal name construction
 # NOTE: selecting these (unique) from the database takes 7-8 mins, so reconstructing here for efficiency
@@ -22,7 +25,7 @@ PARTITION_SPLITS = [20200101 + i*100 for i in range(10)] # first day of the mont
 ### PARTITION_SPLITS = [1,2] ###
 
 
-print('''
+logger.info('''
 -- 
 -- run this as:
 --   python3 generate_islatest_fix_sql.py > islatest_fix.sql
@@ -33,7 +36,7 @@ print('''
 ''')
 
 # create temp table
-print("CREATE TABLE `islatest_fix` (`latest_id` INT(11) NOT NULL, PRIMARY KEY (`latest_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;")
+logger.info("CREATE TABLE `islatest_fix` (`latest_id` INT(11) NOT NULL, PRIMARY KEY (`latest_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;")
 
 # find latest issue by partition (and by signal) and save primary ids into temp table
 for partition_index in range(len(PARTITION_SPLITS)+1):
@@ -44,7 +47,7 @@ for partition_index in range(len(PARTITION_SPLITS)+1):
   for sig in signals:
     where_clause = base_where_clause + " AND `signal`='%s' AND %s"  % (sig, partition_condition)
 
-    print('''
+    logger.info('''
 INSERT INTO `islatest_fix`
   SELECT id FROM
     ( SELECT `source`, `signal`, `time_type`, `geo_type`, `geo_value`, `time_value`, MAX(`issue`) AS `issue` FROM `covidcast`
@@ -56,11 +59,11 @@ INSERT INTO `islatest_fix`
 ''')
 
 # clear any current (potentially erroneous) is_latest_issue flags
-print("UPDATE `covidcast` SET `is_latest_issue`=0 " + base_where_clause + " AND `is_latest_issue`=1;")
+logger.info("UPDATE `covidcast` SET `is_latest_issue`=0 " + base_where_clause + " AND `is_latest_issue`=1;")
 
 # re-set proper is_latest_issue flags
-print("UPDATE (SELECT `latest_id` FROM `islatest_fix`) xxx LEFT JOIN `covidcast` ON `xxx`.`latest_id`=`covidcast`.`id` SET `covidcast`.`is_latest_issue`=1;")
+logger.info("UPDATE (SELECT `latest_id` FROM `islatest_fix`) xxx LEFT JOIN `covidcast` ON `xxx`.`latest_id`=`covidcast`.`id` SET `covidcast`.`is_latest_issue`=1;")
 
 # clean up temp table
-print("-- TODO: drop this table")
-print("-- DROP TABLE `islatest_fix`;")
+logger.info("-- TODO: drop this table")
+logger.info("-- DROP TABLE `islatest_fix`;")

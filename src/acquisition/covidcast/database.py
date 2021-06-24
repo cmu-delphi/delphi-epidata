@@ -16,6 +16,7 @@ from multiprocessing import cpu_count
 # first party
 import delphi.operations.secrets as secrets
 
+from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
 
 class CovidcastRow():
   """A container for all the values of a single covidcast row."""
@@ -246,7 +247,7 @@ class Database:
       self._cursor.execute(drop_tmp_table_sql)
     return total
 
-  def compute_covidcast_meta(self, table_name='covidcast', use_index=True):
+  def compute_covidcast_meta(self, logger, table_name='covidcast', use_index=True):
     """Compute and return metadata on all non-WIP COVIDcast signals."""
 
     index_hint = ""
@@ -303,8 +304,8 @@ class Database:
     meta = []
     meta_lock = threading.Lock()
 
-    def worker():
-      print("starting thread: " + threading.current_thread().name)
+    def worker(logger):
+      logger.info("starting thread: " + threading.current_thread().name)
       #  set up new db connection for thread
       worker_dbc = Database()
       worker_dbc.connect(connector_impl=self._connector_impl)
@@ -319,7 +320,7 @@ class Database:
             ))
           srcsigs.task_done()
       except Empty:
-        print("no jobs left, thread terminating: " + threading.current_thread().name)
+        logger.info("no jobs left, thread terminating: " + threading.current_thread().name)
       finally:
         worker_dbc.disconnect(False) # cleanup
 
@@ -330,10 +331,10 @@ class Database:
       threads.append(t)
 
     srcsigs.join()
-    print("jobs complete")
+    logger.info("jobs complete")
     for t in threads:
       t.join()
-    print("threads terminated")
+    logger.info("threads terminated")
 
     # sort the metadata because threaded workers dgaf
     sorting_fields = "data_source signal time_type geo_type".split()

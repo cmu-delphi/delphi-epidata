@@ -5,6 +5,8 @@ import gzip
 import os
 import shutil
 
+# first party
+from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
 
 class FileArchiver:
   """Archives files by moving and compressing."""
@@ -40,6 +42,9 @@ class FileArchiver:
     file already exists, it will be overwritten.
     """
 
+    logger =get_structured_logger(
+      "file_archiver"
+    )
     src = os.path.join(path_src, filename)
     dst = os.path.join(path_dst, filename)
 
@@ -51,7 +56,7 @@ class FileArchiver:
 
     if os.path.exists(dst):
       # warn that destination is about to be overwritten
-      print('destination exists, will overwrite (%s)' % dst)
+      logger.warning('destination exists, will overwrite (%s)' % dst)
 
     if compress:
       # make a compressed copy
