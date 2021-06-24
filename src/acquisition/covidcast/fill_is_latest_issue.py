@@ -36,8 +36,7 @@ def main(*, CLEAR_LATEST_BY_PARTITION=_CLEAR_LATEST_BY_PARTITION, FILTER_CONDITI
 
 
   logger = get_structured_logger(
-      "fill_is_lastest_issue",
-      log_exceptions=False)
+      "fill_is_lastest_issue", log_exceptions=False)
 
   u, p = secrets.db.epi
   connection = mysql.connector.connect(
