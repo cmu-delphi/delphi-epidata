@@ -14,6 +14,8 @@ import epiweeks as epi
 # first party
 from delphi_utils import Nans
 from delphi.utils.epiweek import delta_epiweeks
+from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
+
 
 class CsvImporter:
   """Finds and parses covidcast CSV files."""
@@ -83,20 +85,20 @@ class CsvImporter:
     return value
 
   @staticmethod
-  def find_issue_specific_csv_files(scan_dir, glob=glob):
+  def find_issue_specific_csv_files(scan_dir, logger, glob=glob):
     for path in sorted(glob.glob(os.path.join(scan_dir, '*'))):
       issuedir_match = CsvImporter.PATTERN_ISSUE_DIR.match(path.lower())
       if issuedir_match and os.path.isdir(path):
         issue_date_value = int(issuedir_match.group(2))
         issue_date = CsvImporter.is_sane_day(issue_date_value)
         if issue_date:
-          print(' processing csv files from issue date: "' + str(issue_date) + '", directory', path)
+          logger.info(' processing csv files from issue date: "' + str(issue_date) + '", directory', path)
           yield from CsvImporter.find_csv_files(path, issue=(issue_date, epi.Week.fromdate(issue_date)), glob=glob)
         else:
-          print(' invalid issue directory day', issue_date_value)
+          logger.info(' invalid issue directory day', issue_date_value)
 
   @staticmethod
-  def find_csv_files(scan_dir, issue=(date.today(), epi.Week.fromdate(date.today())), glob=glob):
+  def find_csv_files(scan_dir, logger, issue=(date.today(), epi.Week.fromdate(date.today())), glob=glob):
     """Recursively search for and yield covidcast-format CSV files.
 
     scan_dir: the directory to scan (recursively)
@@ -118,13 +120,13 @@ class CsvImporter:
         # safe to ignore this file
         continue
 
-      print('file:', path)
+      logger.info('file:', path)
 
       # match a daily or weekly naming pattern
       daily_match = CsvImporter.PATTERN_DAILY.match(path.lower())
       weekly_match = CsvImporter.PATTERN_WEEKLY.match(path.lower())
       if not daily_match and not weekly_match:
-        print(' invalid csv path/filename', path)
+        logger.error(' invalid csv path/filename', path)
         yield (path, None)
         continue
 
@@ -135,7 +137,7 @@ class CsvImporter:
         match = daily_match
         time_value_day = CsvImporter.is_sane_day(time_value)
         if not time_value_day:
-          print(' invalid filename day', time_value)
+          logger.error(' invalid filename day', time_value)
           yield (path, None)
           continue
         issue_value=issue_day_value
@@ -146,7 +148,7 @@ class CsvImporter:
         match = weekly_match
         time_value_week=CsvImporter.is_sane_week(time_value)
         if not time_value_week:
-          print(' invalid filename week', time_value)
+          logger.error(' invalid filename week', time_value)
           yield (path, None)
           continue
         issue_value=issue_epiweek_value
@@ -155,7 +157,7 @@ class CsvImporter:
       # # extract and validate geographic resolution
       geo_type = match.group(3).lower()
       if geo_type not in CsvImporter.GEOGRAPHIC_RESOLUTIONS:
-        print(' invalid geo_type', geo_type)
+        logger.error(' invalid geo_type', geo_type)
         yield (path, None)
         continue
 
@@ -163,7 +165,7 @@ class CsvImporter:
       source = match.group(1).lower()
       signal = match.group(4).lower()
       if len(signal) > 64:
-        print(' invalid signal name (64 char limit)',signal)
+        logger.error(' invalid signal name (64 char limit)',signal)
         yield (path, None)
         continue
 
@@ -335,7 +337,7 @@ class CsvImporter:
     return (row_values, None)
 
   @staticmethod
-  def load_csv(filepath, geo_type, pandas=pandas):
+  def load_csv(filepath, geo_type, logger, pandas=pandas):
     """Load, validate, and yield data as `RowValues` from a CSV file.
 
     filepath: the CSV file to be loaded
@@ -349,14 +351,14 @@ class CsvImporter:
     table = pandas.read_csv(filepath, dtype='str')
 
     if not CsvImporter.is_header_valid(table.columns):
-      print(' invalid header')
+      logger.error(' invalid header')
       yield None
       return
 
     for row in table.itertuples(index=False):
       row_values, error = CsvImporter.extract_and_check_row(row, geo_type)
       if error:
-        print(' invalid value for %s (%s)' % (str(row), error))
+        logger.error(' invalid value for %s (%s)' % (str(row), error))
         yield None
         continue
       yield row_values

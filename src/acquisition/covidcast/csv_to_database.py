@@ -37,25 +37,25 @@ def get_argument_parser():
     help="filename for log output (defaults to stdout)")
   return parser
 
-def collect_files(data_dir, specific_issue_date, csv_importer_impl=CsvImporter):
+def collect_files(data_dir, specific_issue_date, logger,csv_importer_impl=CsvImporter):
   """Fetch path and data profile details for each file to upload."""
 
   if specific_issue_date:
     results = list(csv_importer_impl.find_issue_specific_csv_files(data_dir))
   else:
     results = list(csv_importer_impl.find_csv_files(os.path.join(data_dir, 'receiving')))
-  print(f'found {len(results)} files')
+  logger.info(f'found {len(results)} files')
   return results
 
-def make_handlers(data_dir, specific_issue_date, file_archiver_impl=FileArchiver):
+def make_handlers(data_dir, specific_issue_date, logger, file_archiver_impl=FileArchiver):
   if specific_issue_date:
     # issue-specific uploads are always one-offs, so we can leave all
     # files in place without worrying about cleaning up
     def handle_failed(path_src, filename, source):
-      print(f'leaving failed file alone - {source}')
+      logger.info(f'leaving failed file alone - {source}')
 
     def handle_successful(path_src, filename, source):
-      print('archiving as successful')
+      logger.info('archiving as successful')
       file_archiver_impl.archive_inplace(path_src, filename)
   else:
     # normal automation runs require some shuffling to remove files
@@ -65,14 +65,14 @@ def make_handlers(data_dir, specific_issue_date, file_archiver_impl=FileArchiver
 
     # helper to archive a failed file without compression
     def handle_failed(path_src, filename, source):
-      print('archiving as failed - '+source)
+      logger.info('archiving as failed - '+source)
       path_dst = os.path.join(archive_failed_dir, source)
       compress = False
       file_archiver_impl.archive_file(path_src, path_dst, filename, compress)
 
     # helper to archive a successful file with compression
     def handle_successful(path_src, filename, source):
-      print('archiving as successful')
+      logger.info('archiving as successful')
       path_dst = os.path.join(archive_successful_dir, source)
       compress = True
       file_archiver_impl.archive_file(path_src, path_dst, filename, compress)
@@ -104,7 +104,7 @@ def upload_archive(
 
   # iterate over each file
   for path, details in path_details:
-    print('handling ', path)
+    logger.info(f'handling {path}')
     path_src, filename = os.path.split(path)
 
     if not details:
@@ -130,7 +130,7 @@ def upload_archive(
     if all_rows_valid:
       try:
         modified_row_count = database.insert_or_update_bulk(rows_list)
-        print(f"insert_or_update_bulk {filename} returned {modified_row_count}")
+        logger.info(f"insert_or_update_bulk {filename} returned {modified_row_count}")
         logger.info(
           "Inserted database rows",
           row_count = modified_row_count,
@@ -145,7 +145,7 @@ def upload_archive(
           database.commit()
       except Exception as e:
         all_rows_valid = False
-        print('exception while inserting rows:', e)
+        logger.exception('exception while inserting rows:', e)
         database.rollback()
 
     # archive the current file based on validation results
@@ -168,7 +168,7 @@ def main(
   start_time = time.time()
 
   if args.is_wip_override and args.not_wip_override:
-    print('conflicting overrides for forcing WIP option!  exiting...')
+    logger.error('conflicting overrides for forcing WIP option!  exiting...')
     return
   wip_override = None
   if args.is_wip_override:
@@ -179,7 +179,7 @@ def main(
   # shortcut escape without hitting db if nothing to do
   path_details = collect_files_impl(args.data_dir, args.specific_issue_date)
   if not path_details:
-    print('nothing to do; exiting...')
+    logger.info('nothing to do; exiting...')
     return
   
   logger.info("Ingesting CSVs", csv_count = len(path_details))
@@ -195,7 +195,8 @@ def main(
       logger,
       is_wip_override=wip_override)
     logger.info("Finished inserting database rows", row_count = modified_row_count)
-    print('inserted/updated %d rows' % modified_row_count)
+    # the following print statement serves the same function as the logger.info call above
+    # print('inserted/updated %d rows' % modified_row_count)
   finally:
     # unconditionally commit database changes since CSVs have been archived
     database.disconnect(True)
