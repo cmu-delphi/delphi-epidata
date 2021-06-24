@@ -16,7 +16,6 @@ from delphi_utils import Nans
 from delphi.utils.epiweek import delta_epiweeks
 from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
 
-
 class CsvImporter:
   """Finds and parses covidcast CSV files."""
 
@@ -93,10 +92,10 @@ class CsvImporter:
         issue_date_value = int(issuedir_match.group(2))
         issue_date = CsvImporter.is_sane_day(issue_date_value)
         if issue_date:
-          logger.info(' processing csv files from issue date: "' + str(issue_date) + '", directory', path)
+          logger.info('processing csv files from issue date: "' + str(issue_date) + '", directory', path)
           yield from CsvImporter.find_csv_files(path, issue=(issue_date, epi.Week.fromdate(issue_date)), glob=glob)
         else:
-          logger.info(' invalid issue directory day', issue_date_value)
+          logger.error('invalid issue directory day', issue_date_value)
 
   @staticmethod
   def find_csv_files(scan_dir, issue=(date.today(), epi.Week.fromdate(date.today())), glob=glob):
@@ -127,7 +126,7 @@ class CsvImporter:
       daily_match = CsvImporter.PATTERN_DAILY.match(path.lower())
       weekly_match = CsvImporter.PATTERN_WEEKLY.match(path.lower())
       if not daily_match and not weekly_match:
-        logger.info(' invalid csv path/filename', path)
+        logger.info('invalid csv path/filename', path)
         yield (path, None)
         continue
 
@@ -138,7 +137,7 @@ class CsvImporter:
         match = daily_match
         time_value_day = CsvImporter.is_sane_day(time_value)
         if not time_value_day:
-          logger.info(' invalid filename day', time_value)
+          logger.info('invalid filename day', time_value)
           yield (path, None)
           continue
         issue_value=issue_day_value
@@ -149,7 +148,7 @@ class CsvImporter:
         match = weekly_match
         time_value_week=CsvImporter.is_sane_week(time_value)
         if not time_value_week:
-          logger.info(' invalid filename week', time_value)
+          logger.info('invalid filename week', time_value)
           yield (path, None)
           continue
         issue_value=issue_epiweek_value
@@ -158,7 +157,7 @@ class CsvImporter:
       # # extract and validate geographic resolution
       geo_type = match.group(3).lower()
       if geo_type not in CsvImporter.GEOGRAPHIC_RESOLUTIONS:
-        logger.info(' invalid geo_type', geo_type)
+        logger.info('invalid geo_type', geo_type)
         yield (path, None)
         continue
 
@@ -166,7 +165,7 @@ class CsvImporter:
       source = match.group(1).lower()
       signal = match.group(4).lower()
       if len(signal) > 64:
-        logger.info(' invalid signal name (64 char limit)',signal)
+        logger.info('invalid signal name (64 char limit)',signal)
         yield (path, None)
         continue
 
@@ -352,14 +351,14 @@ class CsvImporter:
     table = pandas.read_csv(filepath, dtype='str')
 
     if not CsvImporter.is_header_valid(table.columns):
-      logger.error(' invalid header')
+      logger.error('invalid header')
       yield None
       return
 
     for row in table.itertuples(index=False):
       row_values, error = CsvImporter.extract_and_check_row(row, geo_type)
       if error:
-        logger.error(' invalid value for %s (%s)' % (str(row), error))
+        logger.error('invalid value for %s (%s)' % (str(row), error))
         yield None
         continue
       yield row_values

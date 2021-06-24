@@ -249,7 +249,7 @@ class Database:
 
   def compute_covidcast_meta(self, table_name='covidcast', use_index=True):
     """Compute and return metadata on all non-WIP COVIDcast signals."""
-    logger=get_structured_logger("compute_covidcast_meta")
+    logger=get_structured_logger("compute_covidcast_meta", log_exceptions=False)
     index_hint = ""
     if use_index:
       index_hint = "USE INDEX (for_metadata)"
@@ -334,7 +334,7 @@ class Database:
     logger.info("jobs complete")
     for t in threads:
       t.join()
-    logger.info("threads terminated")
+    logger.error("threads terminated")
 
     # sort the metadata because threaded workers dgaf
     sorting_fields = "data_source signal time_type geo_type".split()
