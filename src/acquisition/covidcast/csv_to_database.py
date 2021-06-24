@@ -75,7 +75,7 @@ def make_handlers(data_dir, specific_issue_date, file_archiver_impl=FileArchiver
 
     # helper to archive a successful file with compression
     def handle_successful(path_src, filename, source):
-      logger= get_structured_logger('handle_successful')
+      logger = get_structured_logger('handle_successful')
       logger.info('archiving as successful')
       path_dst = os.path.join(archive_successful_dir, source)
       compress = True

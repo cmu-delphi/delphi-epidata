@@ -347,7 +347,7 @@ class CsvImporter:
     In case of a validation error, `None` is yielded for the offending row,
     including the header.
     """
-    logger= get_structured_logger('load_csv')
+    logger = get_structured_logger('load_csv')
     # don't use type inference, just get strings
     table = pandas.read_csv(filepath, dtype='str')
 
