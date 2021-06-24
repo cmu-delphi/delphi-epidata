@@ -249,7 +249,7 @@ class Database:
 
   def compute_covidcast_meta(self, table_name='covidcast', use_index=True):
     """Compute and return metadata on all non-WIP COVIDcast signals."""
-    logger=get_structured_logger("compute_covidcast_meta", log_exceptions=False)
+    logger = get_structured_logger("compute_covidcast_meta", log_exceptions=False)
     index_hint = ""
     if use_index:
       index_hint = "USE INDEX (for_metadata)"
