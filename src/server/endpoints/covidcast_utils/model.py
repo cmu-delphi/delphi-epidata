@@ -30,6 +30,11 @@ class SignalCategory(str, Enum):
     other = "other"
 
 
+class TimeType(str, Enum):
+    day = "day"
+    week = "week"
+
+
 @dataclass
 class WebLink:
     alt: str
@@ -75,6 +80,7 @@ class DataSignal:
     has_sample_size: bool = False
     link: List[WebLink] = field(default_factory=list)
     compute_from_base: bool = False
+    time_type: TimeType = TimeType.day
 
     def __post_init__(self):
         self.link = _fix_links(self.link)
