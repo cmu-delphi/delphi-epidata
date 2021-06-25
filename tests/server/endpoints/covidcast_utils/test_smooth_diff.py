@@ -4,13 +4,13 @@ from numpy import NaN, allclose
 from itertools import chain
 from more_itertools import windowed
 
-from delphi.epidata.server.endpoints.covidcast_utils.smooth_diff import generate_row_diffs, generate_smooth_rows, smoother, fetch_derivable_signal
 from delphi.epidata.server._params import SourceSignalPair
+from delphi.epidata.server.endpoints.covidcast_utils.smooth_diff import generate_row_diffs, generate_smooth_rows, _smoother
 
 class TestStreaming:
-    def test_smoother(self):
-        assert smoother(list(range(7)), [1] * 7) == sum(range(7))
-        assert smoother([1] * 6, list(range(7))) == sum(range(1, 7))
+    def test__smoother(self):
+        assert _smoother(list(range(7)), [1] * 7) == sum(range(7))
+        assert _smoother([1] * 6, list(range(7))) == sum(range(1, 7))
 
 
     def test_generate_smooth_rows(self):
@@ -98,8 +98,3 @@ class TestStreaming:
         expected_values = data.groupby("geo_value")["value"].diff()
         expected_values.iloc[[0, 26]] = 0
         assert allclose(diffs_df["value"], expected_values, equal_nan=True)
-
-
-    def test_fetch_derivable_signal(self):
-        assert fetch_derivable_signal(SourceSignalPair("google-symptoms", "ageusia_smoothed_search"))[0] == SourceSignalPair("google-symptoms", "ageusia_raw_search")
-        assert fetch_derivable_signal(SourceSignalPair("google-symptoms", "not_derivable"))[0] == SourceSignalPair("google-symptoms", "not_derivable")

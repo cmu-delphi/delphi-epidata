@@ -1,6 +1,6 @@
 from math import inf
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, astuple
 from typing import List, Optional, Sequence, Tuple, Union
 
 from flask import request
@@ -91,6 +91,9 @@ class SourceSignalPair:
         if isinstance(self.signal, bool):
             return inf if self.signal else 0
         return len(self.signal)
+
+    def astuple(self):
+        return astuple(self)
 
 
 def parse_source_signal_arg(key: str = "signal") -> List[SourceSignalPair]:

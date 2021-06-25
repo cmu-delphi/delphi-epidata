@@ -1,4 +1,5 @@
 from collections import ChainMap
+from dataclasses import dataclass, asdict
 from itertools import groupby, chain
 from typing import Iterable, Dict, Callable, List, Optional, Union, Tuple
 
@@ -9,7 +10,14 @@ from numpy import NaN, isnan
 from ..._params import SourceSignalPair
 
 
-def smoother(values: List[float], kernel: List[float] = None) -> float:
+@dataclass
+class SmoothResult:
+    geo_type: str
+    geo_value: str
+    signal_source: str
+    signal_signal: str
+
+def _smoother(values: List[float], kernel: List[float] = None) -> float:
     """Basic smoother.
 
     By default, computes the standard mean. If kernel passed, uses the kernel
@@ -24,7 +32,7 @@ def smoother(values: List[float], kernel: List[float] = None) -> float:
     smoothed_value = dotproduct(values, kernel)
     return smoothed_value
 
-def pad_group(group: Iterable[Dict], pad_length: int, pad_fill_value: Union[float, str] = NaN) -> Iterable[Dict]:
+def _pad_group(group: Iterable[Dict], pad_length: int, pad_fill_value: Union[float, str] = NaN) -> Iterable[Dict]:
     """Prepend window with pad_length many values."""
 
     # Peek the first element for the date, fill value, and other data entries.
@@ -55,8 +63,10 @@ def _is_none_type(value: Optional[float]) -> bool:
     return False
 
 def generate_smooth_rows(
+    # source: str,
+    # signal: str,
     rows: Iterable[Dict],
-    smooth_values: Callable[[List[float]], float] = smoother,
+    smooth_values: Callable[[List[float]], float] = _smoother,
     window_length: int = 7,
     pad_length: int = 6,
     pad_fill_value: Optional[float] = None,
@@ -98,8 +108,8 @@ def generate_smooth_rows(
     """
     assert pad_length < window_length
 
-    for _, group in groupby(rows, lambda row: (row["geo_type"], row["geo_value"])): # Iterable[Tuple[str, Iterable[Dict]]]
-        group = pad_group(group, pad_length, pad_fill_value) if pad_fill_value is not None else pad_group(group, pad_length, "drop")
+    for key, group in groupby(rows, lambda row: (row["geo_type"], row["geo_value"])): # Iterable[Tuple[str, Iterable[Dict]]]
+        group = _pad_group(group, pad_length, pad_fill_value) if pad_fill_value is not None else _pad_group(group, pad_length, "drop")
         for window in windowed(group, window_length): # Iterable[List[Dict]]
             smoothed_entry = window[-1].copy() # last timestamp of window
             if pad_fill_value is not None:
@@ -107,6 +117,9 @@ def generate_smooth_rows(
             else:
                 values = [entry["value"] if not _is_none_type(entry["value"]) else nan_fill_value for entry in window if entry["value"] != "drop"]
             smoothed_entry["value"] = smooth_values(values)
+            # smoothed_entry["source"] = source
+            # smoothed_entry["signal"] = signal
+            breakpoint()
             yield smoothed_entry
 
 def generate_row_diffs(rows: Iterable[Dict], pad_fill_value: Optional[Union[str, float]] = None) -> Iterable[Dict]:
@@ -126,7 +139,7 @@ def generate_row_diffs(rows: Iterable[Dict], pad_fill_value: Optional[Union[str,
         original by 1.
     """
     for _, group in groupby(rows, lambda row: (row["geo_type"], row["geo_value"])): # Iterable[Tuple[str, Iterable[Dict]]]
-        group = pad_group(group, 1, pad_fill_value) if pad_fill_value is not None else group
+        group = _pad_group(group, 1, pad_fill_value) if pad_fill_value is not None else group
         for window in windowed(group, 2):
             incidence_entry = window[-1].copy()
             incidence_entry["value"] = window[1]["value"] - window[0]["value"]
@@ -152,88 +165,3 @@ def generate_prop_signal(rows: Iterable[Dict], pad_fill_value: Optional[Union[st
     reporting counties on each day, which would go against a streaming architecture.
     """
     pass
-
-
-"""
-Which raw signals can be derived from another signal by means of differencing or smoothing?
-Based on: https://docs.google.com/spreadsheets/d/1zb7ItJzY5oq1n-2xtvnPBiJu2L3AqmCKubrLkKJZVHs/edit#gid=329338228
-
-google-symptoms	ageusia_raw_search	TRUE	ageusia_raw_search
-google-symptoms	ageusia_raw_search	TRUE	ageusia_smoothed_search
-google-symptoms	anosmia_raw_search	TRUE	anosmia_raw_search
-google-symptoms	anosmia_raw_search	TRUE	anosmia_smoothed_search
-google-symptoms	sum_anosmia_ageusia_raw_search sum_anosmia_ageusia_raw_search
-google-symptoms	sum_anosmia_ageusia_raw_search sum_anosmia_ageusia_smoothed_search
-
-jhu-csse	confirmed_incidence_num	TRUE	confirmed_incidence_num
-jhu-csse	confirmed_incidence_num	TRUE	confirmed_7dav_cumulative_num
-jhu-csse	confirmed_incidence_num	TRUE	confirmed_7dav_cumulative_prop
-jhu-csse	confirmed_incidence_num	TRUE	confirmed_7dav_incidence_num
-jhu-csse	confirmed_incidence_num	TRUE	confirmed_7dav_incidence_prop
-jhu-csse	confirmed_incidence_num	TRUE	confirmed_cumulative_num
-jhu-csse	confirmed_incidence_num	TRUE	confirmed_cumulative_prop
-jhu-csse	confirmed_incidence_num	TRUE	confirmed_incidence_prop
-jhu-csse	deaths_incidence_num	TRUE	deaths_incidence_num
-jhu-csse	deaths_incidence_num	TRUE	deaths_7dav_cumulative_num
-jhu-csse	deaths_incidence_num	TRUE	deaths_7dav_cumulative_prop
-jhu-csse	deaths_incidence_num	TRUE	deaths_7dav_incidence_num
-jhu-csse	deaths_incidence_num	TRUE	deaths_7dav_incidence_prop
-jhu-csse	deaths_incidence_num	TRUE	deaths_cumulative_num
-jhu-csse	deaths_incidence_num	TRUE	deaths_cumulative_prop
-jhu-csse	deaths_incidence_num	TRUE	deaths_incidence_prop
-
-usa-facts	confirmed_incidence_num	FALSE	confirmed_incidence_num
-usa-facts	confirmed_incidence_num	TRUE	confirmed_7dav_cumulative_num
-usa-facts	confirmed_incidence_num	TRUE	confirmed_7dav_cumulative_prop
-usa-facts	confirmed_incidence_num	FALSE	confirmed_7dav_incidence_num
-usa-facts	confirmed_incidence_num	FALSE	confirmed_7dav_incidence_prop
-usa-facts	confirmed_incidence_num	FALSE	confirmed_cumulative_num
-usa-facts	confirmed_incidence_num	FALSE	confirmed_cumulative_prop
-usa-facts	confirmed_incidence_num	FALSE	confirmed_incidence_prop
-usa-facts	deaths_incidence_num	FALSE	deaths_incidence_num
-usa-facts	deaths_incidence_num	TRUE	deaths_7dav_cumulative_num
-usa-facts	deaths_incidence_num	TRUE	deaths_7dav_cumulative_prop
-usa-facts	deaths_incidence_num	FALSE	deaths_7dav_incidence_num
-usa-facts	deaths_incidence_num	FALSE	deaths_7dav_incidence_prop
-usa-facts	deaths_incidence_num	FALSE	deaths_cumulative_num
-usa-facts	deaths_incidence_num	FALSE	deaths_cumulative_prop
-usa-facts	deaths_incidence_num	FALSE	deaths_incidence_prop
-"""
-
-IDENTITY = lambda rows: rows
-DIFF = lambda rows: generate_row_diffs(rows)
-SMOOTH = lambda rows: generate_smooth_rows(rows)
-DIFF_SMOOTH = lambda rows: generate_smooth_rows(generate_row_diffs(rows))
-
-DERIVED_SIGNALS = {
-    "google-symptoms:ageusia_smoothed_search": ("google-symptoms:ageusia_raw_search", SMOOTH),
-    "google-symptoms:anosmia_smoothed_search": ("google-symptoms:anosmia_raw_search", SMOOTH),
-    "google-symptoms:sum_anosmia_ageusia_smoothed_search": ("google-symptoms:sum_anosmia_ageusia_raw_search", SMOOTH),
-    "jhu-csse:confirmed_7dav_cumulative_num": ("jhu-csse:confirmed_cumulative_num", SMOOTH),
-    "jhu-csse:confirmed_7dav_incidence_num": ("jhu-csse:confirmed_cumulative_num", DIFF_SMOOTH),
-    "jhu-csse:confirmed_incidence_num": ("jhu-csse:confirmed_cumulative_num", DIFF),
-    "jhu-csse:deaths_7dav_cumulative_num": ("jhu-csse:deaths_cumulative_num", SMOOTH),
-    "jhu-csse:deaths_7dav_incidence_num": ("jhu-csse:deaths_cumulative_num", DIFF_SMOOTH),
-    "jhu-csse:deaths_incidence_num": ("jhu-csse:deaths_cumulative_num", DIFF),
-    "usafacts:confirmed_7dav_cumulative_num": ("usafacts:confirmed_cumulative_num", SMOOTH),
-    "usafacts:confirmed_7dav_incidence_num": ("usafacts:confirmed_cumulative_num", DIFF_SMOOTH),
-    "usafacts:confirmed_incidence_num": ("usafacts:confirmed_cumulative_num", DIFF),
-    "usafacts:deaths_7dav_cumulative_num": ("usafacts:deaths_cumulative_num", SMOOTH),
-    "usafacts:deaths_7dav_incidence_num": ("usafacts:deaths_cumulative_num", DIFF_SMOOTH),
-    "usafacts:deaths_incidence_num": ("usafacts:deaths_cumulative_num", DIFF),
-}
-
-def fetch_derivable_signal(source_signal_pair: SourceSignalPair) -> Tuple[SourceSignalPair, Callable]:
-    """Fetch raw version of a signal, if available, for smoothing."""
-    source_signal_name = source_signal_pair.source + ":" + source_signal_pair.signal
-    try:
-        raw_source_signal, transform = DERIVED_SIGNALS[source_signal_name]
-        raw_source, raw_signal = raw_source_signal.split(":")
-        return SourceSignalPair(raw_source, raw_signal), transform
-    except KeyError:
-        return source_signal_pair, IDENTITY
-
-def fetch_derivable_signals(source_signal_pairs: List[SourceSignalPair]) -> Dict[str, Tuple[SourceSignalPair, Callable]]:
-    signals_and_transforms = [fetch_derivable_signal(source_signal_pair) for source_signal_pair in source_signal_pairs]
-    signals_and_transforms_dict = {source_signal_pair.source + ":" + source_signal_pair.signal: transform for source_signal_pair, transform in signals_and_transforms}
-    return signals_and_transforms_dict

@@ -1,12 +1,40 @@
 from dataclasses import asdict, dataclass, field
-from typing import Callable, Optional, Dict, List, Tuple
+from typing import Callable, Optional, Dict, List, Tuple, Iterable, Union
 from enum import Enum
 from pathlib import Path
 import re
+from numpy.lib.utils import source
 import pandas as pd
 import numpy as np
+from pandas.core import base
 
 from ..._params import SourceSignalPair
+from .smooth_diff import generate_smooth_rows, generate_row_diffs
+
+
+IDENTITY = lambda rows: rows
+DIFF = lambda rows: generate_row_diffs(rows)
+SMOOTH = lambda rows: generate_smooth_rows(rows)
+DIFF_SMOOTH = lambda rows: generate_smooth_rows(generate_row_diffs(rows))
+
+
+DERIVED_SIGNALS = {
+    "google-symptoms:ageusia_smoothed_search": ("google-symptoms:ageusia_raw_search", SMOOTH),
+    "google-symptoms:anosmia_smoothed_search": ("google-symptoms:anosmia_raw_search", SMOOTH),
+    "google-symptoms:sum_anosmia_ageusia_smoothed_search": ("google-symptoms:sum_anosmia_ageusia_raw_search", SMOOTH),
+    "jhu-csse:confirmed_7dav_cumulative_num": ("jhu-csse:confirmed_cumulative_num", SMOOTH),
+    "jhu-csse:confirmed_7dav_incidence_num": ("jhu-csse:confirmed_cumulative_num", DIFF_SMOOTH),
+    "jhu-csse:confirmed_incidence_num": ("jhu-csse:confirmed_cumulative_num", DIFF),
+    "jhu-csse:deaths_7dav_cumulative_num": ("jhu-csse:deaths_cumulative_num", SMOOTH),
+    "jhu-csse:deaths_7dav_incidence_num": ("jhu-csse:deaths_cumulative_num", DIFF_SMOOTH),
+    "jhu-csse:deaths_incidence_num": ("jhu-csse:deaths_cumulative_num", DIFF),
+    "usafacts:confirmed_7dav_cumulative_num": ("usafacts:confirmed_cumulative_num", SMOOTH),
+    "usafacts:confirmed_7dav_incidence_num": ("usafacts:confirmed_cumulative_num", DIFF_SMOOTH),
+    "usafacts:confirmed_incidence_num": ("usafacts:confirmed_cumulative_num", DIFF),
+    "usafacts:deaths_7dav_cumulative_num": ("usafacts:deaths_cumulative_num", SMOOTH),
+    "usafacts:deaths_7dav_incidence_num": ("usafacts:deaths_cumulative_num", DIFF_SMOOTH),
+    "usafacts:deaths_incidence_num": ("usafacts:deaths_cumulative_num", DIFF),
+}
 
 
 class HighValuesAre(str, Enum):
@@ -75,9 +103,11 @@ class DataSignal:
     has_sample_size: bool = False
     link: List[WebLink] = field(default_factory=list)
     based_on_other: bool = False
+    compute_from_base: bool = False
 
     def __post_init__(self):
         self.link = _fix_links(self.link)
+        self.compute_from_base = True if self.source + ":" + self.signal in DERIVED_SIGNALS else self.compute_from_base
 
     def derive_defaults(self, map: Dict[Tuple[str, str], "DataSignal"]):
         base = map.get((self.source, self.signal_basename))
@@ -108,6 +138,25 @@ class DataSignal:
     @property
     def key(self) -> Tuple[str, str]:
         return (self.source, self.signal)
+
+    def get_parent_pair(self):
+        basename_pair = SourceSignalPair(self.source, self.signal_basename)
+        return basename_pair
+
+    def get_parent_transform(self):
+        if not self.signal.is_cumulative and not self.signal.is_smoothed:
+            return DIFF
+        if self.signal.is_cumulative and self.signal.is_smoothed:
+            return SMOOTH
+        if not self.signal.is_cumulative and self.signal.is_smoothed:
+            return DIFF_SMOOTH
+        return IDENTITY
+
+    def get_parent_pair_if_derivative(self):
+        if self.compute_from_base:
+            return data_signals_by_key((self.source, self.signal_basename))
+        else:
+            return self
 
 
 @dataclass
@@ -158,7 +207,7 @@ def _load_data_sources():
 
 
 data_sources, data_sources_df = _load_data_sources()
-data_source_by_id = {d.source: d for d in data_sources}
+data_sources_by_id = {d.source: d for d in data_sources}
 
 
 def _load_data_signals(sources: List[DataSource]):
@@ -194,7 +243,7 @@ def create_source_signal_alias_mapper(source_signals: List[SourceSignalPair]) ->
     alias_to_data_sources: Dict[str, List[DataSource]] = {}
     transformed_pairs: List[SourceSignalPair] = []
     for pair in source_signals:
-        source = data_source_by_id.get(pair.source)
+        source = data_sources_by_id.get(pair.source)
         if not source or not source.uses_db_alias:
             transformed_pairs.append(pair)
             continue
@@ -228,3 +277,81 @@ def create_source_signal_alias_mapper(source_signals: List[SourceSignalPair]) ->
         return signal_source.source
 
     return transformed_pairs, map_row
+
+
+def _get_basename_derivation(signal: DataSignal):
+    basename_pair = SourceSignalPair(signal.source, signal.signal_basename)
+    if not signal.is_cumulative and not signal.is_smoothed:
+        return basename_pair, DIFF
+    if signal.is_cumulative and signal.is_smoothed:
+        return basename_pair, SMOOTH
+    if not signal.is_cumulative and signal.is_smoothed:
+        return basename_pair, DIFF_SMOOTH
+    return basename_pair, IDENTITY
+
+
+def _resolve_all_signals(source_signal_pair: SourceSignalPair) -> SourceSignalPair:
+    if source_signal_pair.signal == True:
+        source = data_sources_by_id.get(source_signal_pair.source)
+        if source:
+            return SourceSignalPair(source.source, [s.signal for s in source.signals])
+    return source_signal_pair
+
+
+def _convert_pair_list_to_pair(source_signal_pairs: List[SourceSignalPair]) -> SourceSignalPair:
+    if len({pair.source for pair in source_signal_pairs}) == 1:
+        return SourceSignalPair(source_signal_pairs[0].source, [pair.signal for pair in source_signal_pairs])
+    else:
+        raise ValueError("The signal pairs don't share the same source.")
+
+
+def create_source_signal_derivation_mapper(source_signals: List[SourceSignalPair]) -> Tuple[List[SourceSignalPair], Dict]:
+    transformed_pairs: List[SourceSignalPair] = []
+    source_signals = [_resolve_all_signals(pair) for pair in source_signals]
+
+    for pair in source_signals:
+        if not isinstance(pair.signal, tuple):
+            signal = data_signals_by_key.get(pair.astuple())
+            if signal and signal.compute_from_base:
+                transformed_pairs.append(signal.get_parent_pair())
+            else:
+                transformed_pairs.append(pair)
+        else:
+            source_signals_ = []
+            for signal_ in pair.signal:
+                source_signals_ = [data_signals_by_key.get((pair.source, signal_.signal)) if data_signals_by_key.get((pair.source, signal_.signal)) is not None else  ]
+
+            if signal and signal.compute_from_base:
+                source_signals_.append(signal.get_parent_pair())
+            else:
+                source_signals_.append(pair)
+
+    # TODO: Figure out if we need to map back
+    def map_group(source: str, signal: str, group: Iterable[Dict]) -> Iterable[Dict]:
+        """
+        maps a given row source back to its alias version
+        """
+        signal_ = data_signals_by_key.get((source, signal))
+        if signal_:
+            transform = signal_.get_parent_transform()
+            return transform(group)
+        return group
+
+    return transformed_pairs, map_group
+
+
+def fetch_derivable_signal(source_signal_pair: SourceSignalPair) -> Tuple[SourceSignalPair, Callable]:
+    """Fetch raw version of a signal, if available, for smoothing."""
+    source_signal_name = source_signal_pair.source + ":" + source_signal_pair.signal
+    try:
+        raw_source_signal, transform = DERIVED_SIGNALS[source_signal_name]
+        raw_source, raw_signal = raw_source_signal.split(":")
+        return SourceSignalPair(raw_source, raw_signal), transform
+    except KeyError:
+        return source_signal_pair, IDENTITY
+
+
+def fetch_derivable_signals(source_signal_pairs: List[SourceSignalPair]) -> Dict[str, Tuple[SourceSignalPair, Callable]]:
+    signals_and_transforms = [fetch_derivable_signal(source_signal_pair) for source_signal_pair in source_signal_pairs]
+    signals_and_transforms_dict = {source_signal_pair.source + ":" + source_signal_pair.signal: transform for source_signal_pair, transform in signals_and_transforms}
+    return signals_and_transforms_dict
