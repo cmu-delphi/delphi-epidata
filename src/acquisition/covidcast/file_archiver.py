@@ -42,9 +42,7 @@ class FileArchiver:
     file already exists, it will be overwritten.
     """
 
-    logger =get_structured_logger(
-      "file_archiver"
-    )
+    logger = get_structured_logger("file_archiver")
     src = os.path.join(path_src, filename)
     dst = os.path.join(path_dst, filename)
 
@@ -56,7 +54,7 @@ class FileArchiver:
 
     if os.path.exists(dst):
       # warn that destination is about to be overwritten
-      logger.warning('destination exists, will overwrite (%s)' % dst)
+      logger.warning(event='destination exists, will overwrite (%s)', file=dst)
 
     if compress:
       # make a compressed copy
