@@ -568,7 +568,8 @@ def handle_coverage():
     similar to /signal_dashboard_coverage for a specific signal returns the coverage (number of locations for a given geo_type)
     """
 
-    signal = parse_source_signal_pairs()
+    source_signal_pairs = parse_source_signal_pairs()
+    source_signal_pairs, alias_mapper = create_source_signal_alias_mapper(source_signal_pairs)
     geo_type = request.args.get("geo_type", "county")
     if "window" in request.values:
         time_window = parse_day_range_arg("window")
@@ -595,14 +596,20 @@ def handle_coverage():
         q.conditions.append('geo_value not like "%000"')
     else:
         q.where(geo_type=geo_type)
-    q.where_source_signal_pairs("source", "signal", signal)
+    q.where_source_signal_pairs("source", "signal", source_signal_pairs)
     q.where_time_pairs("time_type", "time_value", [TimePair("day", [time_window])])
     q.group_by = "c.source, c.signal, c.time_value"
     q.set_order("source", "signal", "time_value")
 
     _handle_lag_issues_as_of(q, None, None, None)
 
-    return execute_query(q.query, q.params, fields_string, fields_int, [])
+    def transform_row(row, _):
+        if not alias_mapper:
+            return row
+        row["source"] = alias_mapper(row["source"], row["signal"])
+        return row
+
+    return execute_query(q.query, q.params, fields_string, fields_int, [], transform=transform_row)
 
 
 @bp.route("/anomalies", methods=("GET", "POST"))
@@ -610,8 +617,6 @@ def handle_anomalies():
     """
     proxy to the excel sheet about data anomalies
     """
-
-    signal = parse_source_signal_arg("signal")
 
     df = read_csv(
         "https://docs.google.com/spreadsheets/d/e/2PACX-1vToGcf9x5PNJg-eSrxadoR5b-LM2Cqs9UML97587OGrIX0LiQDcU1HL-L2AA8o5avbU7yod106ih0_n/pub?gid=0&single=true&output=csv", skip_blank_lines=True
