@@ -51,7 +51,6 @@ def make_handlers(data_dir, specific_issue_date, file_archiver_impl=FileArchiver
   if specific_issue_date:
     # issue-specific uploads are always one-offs, so we can leave all
     # files in place without worrying about cleaning up
-    logger= get_structured_logger('h')
     def handle_failed(path_src, filename, source, logger):
       logger.info(f'leaving failed file alone - {source}')
 
