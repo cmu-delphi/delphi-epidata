@@ -3,7 +3,7 @@ from collections import Counter
 from dataclasses import asdict, dataclass, field
 from enum import Enum
 from itertools import groupby, chain
-from typing import Callable, Optional, Dict, List, Tuple, Iterable, Union, Counter
+from typing import Callable, Optional, Dict, List, Tuple, Iterable, Counter
 from pathlib import Path
 import re
 from numpy.lib.utils import source
@@ -61,6 +61,11 @@ class SignalCategory(str, Enum):
     other = "other"
 
 
+class TimeType(str, Enum):
+    day = "day"
+    week = "week"
+
+
 @dataclass
 class WebLink:
     alt: str
@@ -105,15 +110,24 @@ class DataSignal:
     has_stderr: bool = False
     has_sample_size: bool = False
     link: List[WebLink] = field(default_factory=list)
-    based_on_other: bool = False
     compute_from_base: bool = False
+    time_type: TimeType = TimeType.day
 
     def __post_init__(self):
         self.link = _fix_links(self.link)
         self.compute_from_base = True if self.source + ":" + self.signal in DERIVED_SIGNALS else self.compute_from_base
 
-    def derive_defaults(self, map: Dict[Tuple[str, str], "DataSignal"]):
+    def initialize(self, source_map: Dict[str, "DataSource"], map: Dict[Tuple[str, str], "DataSignal"], initialized: Set[Tuple[str, str]]):
+        # mark as initialized
+        initialized.add(self.key)
+
         base = map.get((self.source, self.signal_basename))
+        if base and base.key not in initialized:
+            # initialize base first
+            base.initialize(source_map, map, initialized)
+
+        source = source_map.get(self.source)
+
         if not self.name:
             self.name = base.name if base else self.signal
         if not self.description:
@@ -134,6 +148,33 @@ class DataSignal:
             self.value_label = base.category if base else SignalCategory.other
         if not self.high_values_are:
             self.high_values_are = base.high_values_are if base else HighValuesAre.neutral
+
+        self._replace_placeholders(base, source)
+
+    def _replace_placeholders(self, base: Optional["DataSignal"], source: Optional["DataSource"]):
+        text_replacements = {
+            "base_description": base.description if base else "",
+            "base_short_description": base.short_description if base else "",
+            "base_name": base.name if base else "",
+            "source_name": source.name if source else "",
+            "source_description": source.description if source else "",
+        }
+
+        def replace_group(match: re.Match) -> str:
+            key = match.group(1)
+            if key and key in text_replacements:
+                return text_replacements[key]
+            return key
+
+        def replace_replacements(text: str) -> str:
+            return re.sub(r"\{([\w_]+)\}", replace_group, text)
+
+        self.name = replace_replacements(self.name)
+        # add new replacement on the fly for the next one
+        text_replacements["name"] = self.name
+        self.short_description = replace_replacements(self.short_description)
+        text_replacements["short_description"] = self.short_description
+        self.description = replace_replacements(self.description)
 
     def asdict(self):
         return asdict(self)
@@ -156,6 +197,7 @@ class DataSource:
     source: str
     db_source: str
     name: str
+    active: bool
     description: str
     reference_signal: str
     license: Optional[str] = None
@@ -207,13 +249,14 @@ def _load_data_signals(sources: List[DataSource]):
     data_signals_df: pd.DataFrame = pd.read_csv(_base_dir / "db_signals.csv")
     data_signals_df = data_signals_df.replace({np.nan: None})
     data_signals_df.columns = map(_clean_column, data_signals_df.columns)
-    data_signals: List[DataSignal] = [DataSignal(**d) for d in data_signals_df.to_dict(orient="records")]
+    ignore_columns = {"base_is_other"}
+    data_signals: List[DataSignal] = [DataSignal(**{k: v for k, v in d.items() if k not in ignore_columns}) for d in data_signals_df.to_dict(orient="records")]
     data_signals_df.set_index(["source", "signal"])
 
     by_source_id = {d.key: d for d in data_signals}
+    initialized: Set[Tuple[str, str]] = set()
     for ds in data_signals:
-        # derive from base signal
-        ds.derive_defaults(by_source_id)
+        ds.initialize(by_id, by_source_id, initialized)
 
     for ds in data_signals:
         source = by_id.get(ds.source)

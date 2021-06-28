@@ -28,24 +28,24 @@ class ServerTests(unittest.TestCase):
         cur.execute('truncate table covid_hosp_state_timeseries')
         cur.execute('truncate table covid_hosp_meta')
 
+
+  def insert_issue(self, cur, issue, value, record_type):
+    so_many_nulls = ', '.join(['null'] * 57)
+    cur.execute(f'''insert into covid_hosp_state_timeseries values (
+      0, {issue}, 'PA', 20201118, {value}, {so_many_nulls}, '{record_type}'
+    )''')
+
   def test_query_by_issue(self):
     """Query with and without specifying an issue."""
-
-    # insert dummy data
-    def insert_issue(cur, issue, value, record_type):
-      so_many_nulls = ', '.join(['null'] * 57)
-      cur.execute(f'''insert into covid_hosp_state_timeseries values (
-        0, {issue}, 'PA', 20201118, {value}, {so_many_nulls}, '{record_type}'
-      )''')
 
     with Database.connect() as db:
       with db.new_cursor() as cur:
         # inserting out of order to test server-side order by
         # also inserting two for 20201201 to test tiebreaker.
-        insert_issue(cur, 20201201, 123, 'T')
-        insert_issue(cur, 20201201, 321, 'D')
-        insert_issue(cur, 20201203, 789, 'T')
-        insert_issue(cur, 20201202, 456, 'T')
+        self.insert_issue(cur, 20201201, 123, 'T')
+        self.insert_issue(cur, 20201201, 321, 'D')
+        self.insert_issue(cur, 20201203, 789, 'T')
+        self.insert_issue(cur, 20201202, 456, 'T')
 
     # request without issue (defaulting to latest issue)
     with self.subTest(name='no issue (latest)'):
@@ -81,3 +81,20 @@ class ServerTests(unittest.TestCase):
       self.assertEqual(rows[1]['critical_staffing_shortage_today_yes'], 456)
       self.assertEqual(rows[2]['issue'], 20201203)
       self.assertEqual(rows[2]['critical_staffing_shortage_today_yes'], 789)
+
+
+  def test_query_by_as_of(self):
+    with Database.connect() as db:
+      with db.new_cursor() as cur:
+        self.insert_issue(cur, 20201101, 0, 'T')
+        self.insert_issue(cur, 20201102, 1, 'D')
+        self.insert_issue(cur, 20201103, 2, 'D')
+        self.insert_issue(cur, 20201103, 3, 'T')
+        self.insert_issue(cur, 20201104, 4, 'T')
+
+    with self.subTest(name='as_of with multiple issues'):
+      response = Epidata.covid_hosp('PA', 20201118, as_of=20201103)
+      self.assertEqual(response['result'], 1)
+      self.assertEqual(len(response['epidata']), 1)
+      self.assertEqual(response['epidata'][0]['issue'], 20201103)
+      self.assertEqual(response['epidata'][0]['critical_staffing_shortage_today_yes'], 2)

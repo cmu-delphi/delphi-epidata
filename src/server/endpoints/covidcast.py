@@ -33,11 +33,10 @@ from .._validate import (
     require_all,
     require_any,
 )
-from .._db import sql_table_has_columns
 from .._pandas import as_pandas, print_pandas
 from .covidcast_utils import compute_trend, compute_trends, compute_correlations, compute_trend_value, CovidcastMetaEntry
 from ..utils import shift_time_value, date_to_time_value, time_value_to_iso, time_value_to_date
-from .covidcast_utils.model import data_sources, create_source_signal_alias_mapper, create_source_signal_derivation_mapper
+from .covidcast_utils.model import TimeType, data_sources, create_source_signal_alias_mapper, create_source_signal_derivation_mapper
 
 # first argument is the endpoint name
 bp = Blueprint("covidcast", __name__)
@@ -159,12 +158,7 @@ def handle():
     q = QueryBuilder("covidcast", "t")
 
     fields_string = ["geo_value", "signal"]
-    fields_int = ["time_value", "direction", "issue", "lag"]
-
-    missing_fields = ["missing_value", "missing_stderr", "missing_sample_size"]
-    if sql_table_has_columns("covidcast", missing_fields):
-        fields_int.extend(missing_fields)
-
+    fields_int = ["time_value", "direction", "issue", "lag", "missing_value", "missing_stderr", "missing_sample_size"]
     fields_float = ["value", "stderr", "sample_size"]
     is_compatibility = is_compatibility_mode()
     if is_compatibility:
@@ -535,6 +529,8 @@ def handle_meta():
     filter_smoothed: Optional[bool] = None
     filter_weighted: Optional[bool] = None
     filter_cumulative: Optional[bool] = None
+    filter_active: Optional[bool] = None
+    filter_time_type: Optional[TimeType] = None
 
     if "smoothed" in flags:
         filter_smoothed = True
@@ -548,6 +544,14 @@ def handle_meta():
         filter_cumulative = True
     elif "not_cumulative" in flags:
         filter_cumulative = False
+    if "active" in flags:
+        filter_active = True
+    elif "inactive" in flags:
+        filter_active = False
+    if "day" in flags:
+        filter_active = TimeType.day
+    elif "week" in flags:
+        filter_active = TimeType.week
 
     row = db.execute(text("SELECT epidata FROM covidcast_meta_cache LIMIT 1")).fetchone()
 
@@ -555,13 +559,14 @@ def handle_meta():
 
     by_signal: Dict[Tuple[str, str], List[Dict[str, Any]]] = {}
     for row in data:
-        if row["time_type"] != "day":
-            continue
         entry = by_signal.setdefault((row["data_source"], row["signal"]), [])
         entry.append(row)
 
     sources: List[Dict[str, Any]] = []
     for source in data_sources:
+        if filter_active is not None and source.active != filter_active:
+            continue
+
         meta_signals: List[Dict[str, Any]] = []
 
         for signal in source.signals:
@@ -572,6 +577,8 @@ def handle_meta():
             if filter_weighted is not None and signal.is_weighted != filter_weighted:
                 continue
             if filter_cumulative is not None and signal.is_cumulative != filter_cumulative:
+                continue
+            if filter_time_type is not None and signal.time_type != filter_time_type:
                 continue
             meta_data = by_signal.get(signal.key)
             if not meta_data:

@@ -67,7 +67,13 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
 
     # insert dummy data
     self.cur.execute(f'''
-      insert into covidcast values
+      INSERT INTO
+        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
+	      `time_value`, `geo_value`, `value_updated_timestamp`, 
+        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
+        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
+        `missing_stderr`,`missing_sample_size`) 
+      VALUES
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
           123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 0, False,
           {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
@@ -331,7 +337,13 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
 
     # insert dummy data
     self.cur.execute(f'''
-      insert into covidcast values
+      INSERT INTO
+        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
+	      `time_value`, `geo_value`, `value_updated_timestamp`, 
+        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
+        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
+        `missing_stderr`,`missing_sample_size`) 
+      VALUES
         (0, 'src', 'sig', 'day', 'county', 20200414, '11111',
           123, 10, 11, 12, 456, 13, 20200414, 0, 1, False,
           {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
@@ -432,7 +444,13 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
 
     # insert dummy data
     self.cur.execute(f'''
-      insert into covidcast values
+      INSERT INTO
+        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
+	      `time_value`, `geo_value`, `value_updated_timestamp`, 
+        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
+        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
+        `missing_stderr`,`missing_sample_size`) 
+      VALUES
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
           123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 0, False,
           {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
@@ -562,7 +580,13 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
   def test_async_epidata(self):
     # insert dummy data
     self.cur.execute(f'''
-      insert into covidcast values
+      INSERT INTO
+        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
+	      `time_value`, `geo_value`, `value_updated_timestamp`, 
+        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
+        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
+        `missing_stderr`,`missing_sample_size`) 
+      VALUES
         (0, 'src', 'sig', 'day', 'county', 20200414, '11111',
           123, 10, 11, 12, 456, 13, 20200414, 0, 1, False,
           {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
