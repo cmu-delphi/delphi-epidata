@@ -51,12 +51,11 @@ def make_handlers(data_dir, specific_issue_date, file_archiver_impl=FileArchiver
   if specific_issue_date:
     # issue-specific uploads are always one-offs, so we can leave all
     # files in place without worrying about cleaning up
-    def handle_failed(path_src, filename, source):
-      logger= get_structured_logger('handle_failed')
+    logger= get_structured_logger('h')
+    def handle_failed(path_src, filename, source, logger):
       logger.info(f'leaving failed file alone - {source}')
 
-    def handle_successful(path_src, filename, source):
-      logger= get_structured_logger('handle_successful')
+    def handle_successful(path_src, filename, source, logger):
       logger.info('archiving as successful')
       file_archiver_impl.archive_inplace(path_src, filename)
   else:
@@ -66,16 +65,14 @@ def make_handlers(data_dir, specific_issue_date, file_archiver_impl=FileArchiver
     archive_failed_dir = os.path.join(data_dir, 'archive', 'failed')
 
     # helper to archive a failed file without compression
-    def handle_failed(path_src, filename, source):
-      logger= get_structured_logger('handle_failed')
-      logger.info('archiving as failed - '+source)
+    def handle_failed(path_src, filename, source, logger):
+      logger.info('archiving as failed - ' + source)
       path_dst = os.path.join(archive_failed_dir, source)
       compress = False
       file_archiver_impl.archive_file(path_src, path_dst, filename, compress)
 
     # helper to archive a successful file with compression
-    def handle_successful(path_src, filename, source):
-      logger = get_structured_logger('handle_successful')
+    def handle_successful(path_src, filename, source, logger):
       logger.info('archiving as successful')
       path_dst = os.path.join(archive_successful_dir, source)
       compress = True
@@ -112,7 +109,7 @@ def upload_archive(
 
     if not details:
       # file path or name was invalid, source is unknown
-      archive_as_failed(path_src, filename, 'unknown')
+      archive_as_failed(path_src, filename, 'unknown',logger)
       continue
 
     (source, signal, time_type, geo_type, time_value, issue, lag) = details
@@ -153,9 +150,9 @@ def upload_archive(
 
     # archive the current file based on validation results
     if all_rows_valid:
-      archive_as_successful(path_src, filename, source)
+      archive_as_successful(path_src, filename, source, logger)
     else:
-      archive_as_failed(path_src, filename, source)
+      archive_as_failed(path_src, filename, source,logger)
   
   return total_modified_row_count
 
