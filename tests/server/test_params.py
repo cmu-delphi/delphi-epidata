@@ -19,6 +19,7 @@ from delphi.epidata.server._params import (
     GeoPair,
     TimePair,
     SourceSignalPair,
+    _combine_source_signal_pairs
 )
 from delphi.epidata.server._exceptions import (
     ValidationFailedException,
@@ -357,3 +358,22 @@ class UnitTests(unittest.TestCase):
                 self.assertRaises(ValidationFailedException, parse_day_arg, "time")
             with app.test_request_context("/?time=week:20121010"):
                 self.assertRaises(ValidationFailedException, parse_day_arg, "time")
+
+    def test__combine_source_signal_pairs(self):
+        source_signal_pairs = [
+            SourceSignalPair("src1", ["sig1", "sig2"]),
+            SourceSignalPair("src2", "sig1"),
+            SourceSignalPair("src1", ["sig1", "sig3"]),
+            SourceSignalPair("src3", ["sig1"]),
+            SourceSignalPair("src3", "sig2"),
+            SourceSignalPair("src3", "sig1"),
+            SourceSignalPair("src4", "sig2"),
+            SourceSignalPair("src4", True),
+        ]
+        expected_source_signal_pairs = [
+            SourceSignalPair("src1", ["sig1", "sig2", "sig3"]),
+            SourceSignalPair("src2", ["sig1"]),
+            SourceSignalPair("src3", ["sig1", "sig2"]),
+            SourceSignalPair("src4", True),
+        ]
+        assert _combine_source_signal_pairs(source_signal_pairs) == expected_source_signal_pairs

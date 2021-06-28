@@ -1,7 +1,8 @@
+from dataclasses import dataclass, astuple
+from itertools import groupby, chain
 from math import inf
 import re
-from dataclasses import dataclass, astuple
-from typing import List, Optional, Sequence, Tuple, Union
+from typing import List, Optional, Sequence, Tuple, Union, Dict
 
 from flask import request
 from numpy import sign
@@ -96,8 +97,21 @@ class SourceSignalPair:
         return astuple(self)
 
 
+def _combine_source_signal_pairs(source_signal_pairs: List[SourceSignalPair]) -> List[SourceSignalPair]:
+    """Combine SourceSignalPairs with the same source, remove duplicate signals."""
+    source_signal_pairs_grouped = groupby(sorted(source_signal_pairs, lambda x: x.source), lambda x: x.source)
+    source_signal_pairs_combined = []
+    for source, group in source_signal_pairs_grouped:
+        if any(x.signal == True for x in group):
+            source_signal_pairs_combined.append(SourceSignalPair(source, True))
+            continue
+        source_signal_pair_combined = SourceSignalPair(source, list(set(chain(*[x.signal if isinstance(x.signal, list) else [x.signal] for x in group]))))
+        source_signal_pairs_combined.append(source_signal_pair_combined)
+    return source_signal_pairs_combined
+
+
 def parse_source_signal_arg(key: str = "signal") -> List[SourceSignalPair]:
-    return [SourceSignalPair(source, signals) for [source, signals] in _parse_common_multi_arg(key)]
+    return _combine_source_signal_pairs([SourceSignalPair(source, signals) for [source, signals] in _parse_common_multi_arg(key)])
 
 
 def parse_single_source_signal_arg(key: str) -> SourceSignalPair:

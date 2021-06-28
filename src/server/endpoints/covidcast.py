@@ -1,9 +1,10 @@
-from typing import List, Optional, Union, Tuple, Dict, Any
+from typing import Callable, Iterable, List, Optional, Union, Tuple, Dict, Any
 from itertools import groupby
 from datetime import date, datetime, timedelta
 from flask import Blueprint, request
 from flask.json import loads, jsonify
 from bisect import bisect_right
+from numpy.lib.utils import source
 from sqlalchemy import text
 from pandas import read_csv
 
@@ -123,11 +124,30 @@ def guess_index_to_use(time: List[TimePair], geo: List[GeoPair], issues: Optiona
     return None
 
 
+def _buffer_and_tag_iterator(it: Iterable[Dict], repeat_dict: Dict, key_prop: Callable) -> Iterable[Dict]:
+    memory = {}
+    for x in it:
+        key = key_prop(x)
+        if repeat_dict.get(key) is not None and repeat_dict[key] > 1:
+            if memory.get(key) is None:
+                memory[key] = []
+            memory[key].append(x)
+        x["_tag"] = 0
+        yield x
+
+    for key in memory:
+        for i in range(repeat_dict[key]-1):
+            for x in memory[key]:
+                x = x.copy()
+                x["_tag"] = 1 + i
+                yield x
+
+
 @bp.route("/", methods=("GET", "POST"))
 def handle():
     source_signal_pairs = parse_source_signal_pairs()
     source_signal_pairs, alias_mapper = create_source_signal_alias_mapper(source_signal_pairs)
-    source_signal_pairs, derivation_mapper = create_source_signal_derivation_mapper(source_signal_pairs)
+    source_signal_pairs, derivation_mapper, alias_mapper2, repeat_dict = create_source_signal_derivation_mapper(source_signal_pairs)
     time_pairs = parse_time_pairs()
     geo_pairs = parse_geo_pairs()
 
@@ -169,13 +189,13 @@ def handle():
     p = create_printer()
 
     def gen(rows):
-        for key, group in groupby((parse_row(row, fields_string, fields_int, fields_float) for row in rows), lambda row: (row["source"], row["signal"])):
-            source_signal_name = key[0] + ":" + key[1]
-            derivation = derivation_mapper[source_signal_name]
+        for key, group in _buffer_and_tag_iterator((parse_row(row, fields_string, fields_int, fields_float) for row in rows), repeat_dict, lambda row: (row["source"], row["signal"], row["_tag"])):
+            derivation = derivation_mapper(key)
             for row in derivation(group):
                 if is_compatibility or not alias_mapper:
                     yield row
-                row["source"] = alias_mapper(row["source"], row["signal"])
+                row["source"] = alias_mapper(row["source"], row["signal"])  # map source back to user alias
+                row["signal"] = alias_mapper2(row["source"], row["signal"], row["_tag"])  # map signal back to user-requested vs raw signal name
                 yield row
 
     # execute first query

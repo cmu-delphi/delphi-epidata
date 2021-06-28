@@ -1,6 +1,9 @@
+
+from collections import Counter
 from dataclasses import asdict, dataclass, field
-from typing import Callable, Optional, Dict, List, Tuple, Iterable, Union
 from enum import Enum
+from itertools import groupby, chain
+from typing import Callable, Optional, Dict, List, Tuple, Iterable, Union, Counter
 from pathlib import Path
 import re
 from numpy.lib.utils import source
@@ -139,25 +142,14 @@ class DataSignal:
     def key(self) -> Tuple[str, str]:
         return (self.source, self.signal)
 
-    def get_parent_pair(self):
-        basename_pair = SourceSignalPair(self.source, self.signal_basename)
-        return basename_pair
-
     def get_parent_transform(self):
-        if not self.signal.is_cumulative and not self.signal.is_smoothed:
+        if not self.is_cumulative and not self.is_smoothed:
             return DIFF
-        if self.signal.is_cumulative and self.signal.is_smoothed:
+        if self.is_cumulative and self.is_smoothed:
             return SMOOTH
-        if not self.signal.is_cumulative and self.signal.is_smoothed:
+        if not self.is_cumulative and self.is_smoothed:
             return DIFF_SMOOTH
         return IDENTITY
-
-    def get_parent_pair_if_derivative(self):
-        if self.compute_from_base:
-            return data_signals_by_key((self.source, self.signal_basename))
-        else:
-            return self
-
 
 @dataclass
 class DataSource:
@@ -279,6 +271,19 @@ def create_source_signal_alias_mapper(source_signals: List[SourceSignalPair]) ->
     return transformed_pairs, map_row
 
 
+# class SourceSignalPairsTransform:
+#     def __init__(self, source_signal_pairs: List[SourceSignalPair]):
+#         if source_signal_pair.signal == True:
+#             source_signal_pair = _resolve_all_signals(source_signal_pair)
+#         self.repeat_dict: Dict[str, int] = Counter(source_signal_pair.signal)
+
+#     def __add__(self, source_signal_pair: Union[SourceSignalPair, SourceSignalPairRepeat]):
+#         self.signal += source_signal_pair.signal
+#         if isinstance(source_signal_pair, SourceSignalPair):
+#             source_signal_pair = SourceSignalPairRepeat(source_signal_pair)
+#         self.repeat_dict += source_signal_pair.repeat_dict
+
+
 def _get_basename_derivation(signal: DataSignal):
     basename_pair = SourceSignalPair(signal.source, signal.signal_basename)
     if not signal.is_cumulative and not signal.is_smoothed:
@@ -298,60 +303,66 @@ def _resolve_all_signals(source_signal_pair: SourceSignalPair) -> SourceSignalPa
     return source_signal_pair
 
 
-def _convert_pair_list_to_pair(source_signal_pairs: List[SourceSignalPair]) -> SourceSignalPair:
-    if len({pair.source for pair in source_signal_pairs}) == 1:
-        return SourceSignalPair(source_signal_pairs[0].source, [pair.signal for pair in source_signal_pairs])
-    else:
-        raise ValueError("The signal pairs don't share the same source.")
+def _signal_pairs_to_repeat_dict(source_signal_pairs: List[SourceSignalPair]) -> Dict:
+    """Count source-signal pair occurrences.
+
+    Assumes a reduced List[SourceSignalPair] from _params._combine_source_signal_pairs.
+    """
+    repeat_dict: Dict[str, Counter[str]] = {}
+
+    for source_signal_pair in source_signal_pairs:
+        source, signals = source_signal_pair.source, source_signal_pair.signal
+        counts = Counter(signals)
+        if not repeat_dict.get(source):
+            repeat_dict[source] = Counter()
+        repeat_dict[source] += counts
+
+    return repeat_dict
 
 
 def create_source_signal_derivation_mapper(source_signals: List[SourceSignalPair]) -> Tuple[List[SourceSignalPair], Dict]:
-    transformed_pairs: List[SourceSignalPair] = []
     source_signals = [_resolve_all_signals(pair) for pair in source_signals]
+    transformed_pairs: List[SourceSignalPair] = []
+    transform_dict: Dict[Tuple[str, str, int], Callable] = {}
+    alias_to_data_signals: Dict[Tuple[str, str, int], str] = {}
 
     for pair in source_signals:
-        if not isinstance(pair.signal, tuple):
-            signal = data_signals_by_key.get(pair.astuple())
+        source_name: str = pair.source
+        signals: List[str] = []
+        for i, signal_name in enumerate(pair.signal):
+            signal: DataSignal = data_signals_by_key.get((source_name, signal_name))
             if signal and signal.compute_from_base:
-                transformed_pairs.append(signal.get_parent_pair())
+                signals.append(signal.signal_basename)
+                transform_dict[(source_name, signal.signal_basename, i)] = signal.get_parent_transform()
+                alias_to_data_signals[(source_name, signal.signal_basename, i)] = signal_name
             else:
-                transformed_pairs.append(pair)
-        else:
-            source_signals_ = []
-            for signal_ in pair.signal:
-                source_signals_ = [data_signals_by_key.get((pair.source, signal_.signal)) if data_signals_by_key.get((pair.source, signal_.signal)) is not None else  ]
+                signals.append(signal_name)
+        transformed_pairs.append(SourceSignalPair(pair.source, signals))
 
-            if signal and signal.compute_from_base:
-                source_signals_.append(signal.get_parent_pair())
-            else:
-                source_signals_.append(pair)
-
-    # TODO: Figure out if we need to map back
-    def map_group(source: str, signal: str, group: Iterable[Dict]) -> Iterable[Dict]:
-        """
-        maps a given row source back to its alias version
-        """
-        signal_ = data_signals_by_key.get((source, signal))
-        if signal_:
-            transform = signal_.get_parent_transform()
+    # Given a (source, signal, tag) tuple and the grouped-by Iterable[Dict] of that source-signal's rows
+    # returns a transformed version of the rows (transforming the rows to what the user requested).
+    # E.g. the tuple ('jhu-csse', 'confirmed_cumulative_num', 1) may return a differenced version of the same signal
+    # if the user originally requested ('jhu-csse', 'incidence_cumulative_num').
+    def transform_group(source: str, signal: str, tag: int, group: Iterable[Dict]) -> Iterable[Dict]:
+        transform: Callable = transform_dict.get((source, signal, tag))
+        if transform:
             return transform(group)
         return group
 
-    return transformed_pairs, map_group
+    # Given a (source, signal, tag) tuple, returns the original user request signal name.
+    # E.g. the tuple ('jhu-csse', 'confirmed_cumulative_num', 1) may return 'incidence_cumulative_num'
+    # if the user originally requested ('jhu-csse', 'incidence_cumulative_num').
+    def map_row(source: str, signal: str, tag: int) -> str:
+        """
+        maps a given row source back to its alias version
+        """
+        signal_name: str = alias_to_data_signals.get((source, signal, tag))
+        if signal_name:
+            return signal_name
+        return signal
 
+    # Return a dictionary of the number of signal repeats in a List[SourceSignalPairs]. Used by
+    # _buffer_and_tag_iterator in the covidcast endpoint.
+    repeat_dict: Dict = _signal_pairs_to_repeat_dict(source_signals)
 
-def fetch_derivable_signal(source_signal_pair: SourceSignalPair) -> Tuple[SourceSignalPair, Callable]:
-    """Fetch raw version of a signal, if available, for smoothing."""
-    source_signal_name = source_signal_pair.source + ":" + source_signal_pair.signal
-    try:
-        raw_source_signal, transform = DERIVED_SIGNALS[source_signal_name]
-        raw_source, raw_signal = raw_source_signal.split(":")
-        return SourceSignalPair(raw_source, raw_signal), transform
-    except KeyError:
-        return source_signal_pair, IDENTITY
-
-
-def fetch_derivable_signals(source_signal_pairs: List[SourceSignalPair]) -> Dict[str, Tuple[SourceSignalPair, Callable]]:
-    signals_and_transforms = [fetch_derivable_signal(source_signal_pair) for source_signal_pair in source_signal_pairs]
-    signals_and_transforms_dict = {source_signal_pair.source + ":" + source_signal_pair.signal: transform for source_signal_pair, transform in signals_and_transforms}
-    return signals_and_transforms_dict
+    return transformed_pairs, transform_group, map_row, repeat_dict
