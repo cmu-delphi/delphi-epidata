@@ -107,7 +107,7 @@ class CsvImporter:
     valid, details is a tuple of (source, signal, time_type, geo_type,
     time_value, issue, lag) (otherwise None).
     """
-    logger = get_structured_logger('find_csv_files')jin
+    logger = get_structured_logger('find_csv_files')
     issue_day,issue_epiweek=issue
     issue_day_value=int(issue_day.strftime("%Y%m%d"))
     issue_epiweek_value=int(str(issue_epiweek))
@@ -119,7 +119,6 @@ class CsvImporter:
       if not path.lower().endswith('.csv'):
         # safe to ignore this file
         continue
-
       # match a daily or weekly naming pattern
       daily_match = CsvImporter.PATTERN_DAILY.match(path.lower())
       weekly_match = CsvImporter.PATTERN_WEEKLY.match(path.lower())
