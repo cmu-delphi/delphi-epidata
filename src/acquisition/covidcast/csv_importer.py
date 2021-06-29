@@ -95,7 +95,7 @@ class CsvImporter:
           logger.info('processing csv files from issue date: "' + str(issue_date) + '", directory', path)
           yield from CsvImporter.find_csv_files(path, issue=(issue_date, epi.Week.fromdate(issue_date)), glob=glob)
         else:
-          logger.warning(event='invalid issue directory day', file=issue_date_value)
+          logger.warning(event='invalid issue directory day', detail=issue_date_value, file=path)
 
   @staticmethod
   def find_csv_files(scan_dir, issue=(date.today(), epi.Week.fromdate(date.today())), glob=glob):
@@ -120,7 +120,7 @@ class CsvImporter:
         # safe to ignore this file
         continue
 
-      logger.info(event='file:', file=path)
+      logger.info(event='covidcast-format CSV file path :', file=path)
 
       # match a daily or weekly naming pattern
       daily_match = CsvImporter.PATTERN_DAILY.match(path.lower())
@@ -351,14 +351,14 @@ class CsvImporter:
     table = pandas.read_csv(filepath, dtype='str')
 
     if not CsvImporter.is_header_valid(table.columns):
-      logger.warning(event='invalid header')
+      logger.warning(event='invalid header', detail=table.columns, file=filepath)
       yield None
       return
 
     for row in table.itertuples(index=False):
       row_values, error = CsvImporter.extract_and_check_row(row, geo_type)
       if error:
-        logger.warning(event = 'invalid value for %s (%s)', file=(str(row), error))
+        logger.warning(event = 'invalid value for row', detail=(str(row), error), file=filepath)
         yield None
         continue
       yield row_values

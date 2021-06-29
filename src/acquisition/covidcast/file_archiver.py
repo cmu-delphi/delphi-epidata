@@ -54,7 +54,7 @@ class FileArchiver:
 
     if os.path.exists(dst):
       # warn that destination is about to be overwritten
-      logger.warning(event='destination exists, will overwrite (%s)', file=dst)
+      logger.warning(event='destination exists, will overwrite', file=dst)
 
     if compress:
       # make a compressed copy

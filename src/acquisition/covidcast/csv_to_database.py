@@ -52,10 +52,10 @@ def make_handlers(data_dir, specific_issue_date, file_archiver_impl=FileArchiver
     # issue-specific uploads are always one-offs, so we can leave all
     # files in place without worrying about cleaning up
     def handle_failed(path_src, filename, source, logger):
-      logger.info(f'leaving failed file alone - {source}')
+      logger.info(event='leaving failed file alone', dest=source, file=filename)
 
     def handle_successful(path_src, filename, source, logger):
-      logger.info('archiving as successful')
+      logger.info(event='archiving as successful',file=filename)
       file_archiver_impl.archive_inplace(path_src, filename)
   else:
     # normal automation runs require some shuffling to remove files
@@ -65,14 +65,14 @@ def make_handlers(data_dir, specific_issue_date, file_archiver_impl=FileArchiver
 
     # helper to archive a failed file without compression
     def handle_failed(path_src, filename, source, logger):
-      logger.info('archiving as failed - ' + source)
+      logger.info(event='archiving as failed - ', detail=source, file=filename)
       path_dst = os.path.join(archive_failed_dir, source)
       compress = False
       file_archiver_impl.archive_file(path_src, path_dst, filename, compress)
 
     # helper to archive a successful file with compression
     def handle_successful(path_src, filename, source, logger):
-      logger.info('archiving as successful')
+      logger.info(event='archiving as successful',file=filename)
       path_dst = os.path.join(archive_successful_dir, source)
       compress = True
       file_archiver_impl.archive_file(path_src, path_dst, filename, compress)
@@ -103,7 +103,7 @@ def upload_archive(
   total_modified_row_count = 0
   # iterate over each file
   for path, details in path_details:
-    logger.info(f'handling {path}')
+    logger.info(event='handling',dest=path)
     path_src, filename = os.path.split(path)
 
     if not details:
