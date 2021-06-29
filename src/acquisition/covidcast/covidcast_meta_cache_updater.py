@@ -48,10 +48,10 @@ def main(args, epidata_impl=Epidata, database_impl=Database):
   if len(metadata)==0:
     args = ("no results",-2)
 
-  print('covidcast_meta result: %s (code %d)' % args)
+  logger.info('covidcast_meta result: %s (code %d)' % args)
 
   if args[-1] != 1:
-    print('unable to cache epidata')
+    logger.error('unable to cache epidata')
     return False
 
   # update the cache
@@ -59,7 +59,7 @@ def main(args, epidata_impl=Epidata, database_impl=Database):
     metadata_update_start_time = time.time()
     database.update_covidcast_meta_cache(metadata)
     metadata_update_interval_in_seconds = time.time() - metadata_update_start_time
-    print('successfully cached epidata')
+    logger.info('successfully cached epidata')
   finally:
     # no catch block so that an exception above will cause the program to
     # fail after the following cleanup
