@@ -370,7 +370,7 @@ that is currently problematic for a couple of reasons:
   the corresponding module enabled. This causes the server to deny access to
   the API.
 2. `server/database_config.php`
-  [in the image](https://github.com/cmu-delphi/delphi-epidata/blob/main/dev//docker/web/epidata/assets/database_config.php) contains
+  [in the image](https://github.com/cmu-delphi/delphi-epidata/blob/main/dev/docker/web/epidata/assets/database_config.php) contains
   database credentials for use in conjunction with the
   `delphi_database_epidata` container during development. However, the same
   file from [the local repository](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/server/database_config.php) only
