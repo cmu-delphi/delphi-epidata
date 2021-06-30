@@ -8,10 +8,9 @@ FROM jekyll/jekyll:stable as docs_builder
 RUN mkdir /src; \
     chown -R jekyll:jekyll /src
 WORKDIR /src
-COPY docs/Gemfile* /src/
-RUN bundle update
 COPY ./docs /src
-RUN sed -i 's#baseurl: "/delphi-epidata"#baseurl: "/docs"#g' /src/_config.yml
+RUN chown -R jekyll:jekyll /src; \
+    sed -i 's#baseurl: "/delphi-epidata"#baseurl: "/docs"#g' /src/_config.yml
 RUN jekyll build
 
 FROM tiangolo/meinheld-gunicorn:python3.7
