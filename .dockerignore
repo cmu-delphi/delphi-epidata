@@ -1,6 +1,10 @@
+/.git
 /delphi-epidata
-/.mypy_cache
+/build
 /.github
-/docs
-__pycache__
-/node_modules
+**/__pycache__
+**/.pytest_cache
+**/.mypy_cache
+**/node_modules
+/.env
+/.env.example
