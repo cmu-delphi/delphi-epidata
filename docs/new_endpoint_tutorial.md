@@ -83,7 +83,7 @@ what this looks like.
 
 Here's what we add to each client:
 
-- [`delphi_epidata.js`](../src/client/delphi_epidata.js)
+- [`delphi_epidata.js`](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js)
     ```javascript
     // within createEpidataAsync
     return {
@@ -110,7 +110,7 @@ Here's what we add to each client:
     }
     ```
 
-- [`delphi_epidata.py`](../src/client/delphi_epidata.py)
+- [`delphi_epidata.py`](https://pypi.org/project/delphi-epidata/)
 
     Note that this file, unlike the others, is released as a public package,
     available to install easily through Python's `pip` tool. That package should
@@ -130,7 +130,7 @@ Here's what we add to each client:
       return Epidata._request(params)
     ```
 
-- [`delphi_epidata.R`](../src/client/delphi_epidata.R)
+- [`delphi_epidata.R`](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R)
 
     ```R
     # Fetch FluView metadata

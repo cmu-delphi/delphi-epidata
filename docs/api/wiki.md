@@ -107,7 +107,7 @@ https://delphi.cmu.edu/epidata/wiki/?language=en&articles=influenza&dates=202001
 
 # Code Samples
 
-Libraries are available for [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
+Libraries are available for [JavaScript](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js), [Python](https://pypi.org/project/delphi-epidata/), and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
 The following samples show how to import the library and fetch national Wikipedia Access data for article "influenza" on
 epiweeks `201940` and `202001-202010` (11 weeks total) for hours 0 and 12 in English.
 
