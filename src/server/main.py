@@ -49,6 +49,11 @@ def send_lib_file(path: str):
     return send_from_directory(pathlib.Path(__file__).parent / "lib", path)
 
 
+@app.route(f"{URL_PREFIX}/docs/<path:path>")
+def send_docs_file(path: str):
+    return send_from_directory(pathlib.Path(__file__).parent / "docs", path)
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
 else:
