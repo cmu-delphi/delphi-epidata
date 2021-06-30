@@ -31,7 +31,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | --- | --- | --- |
 | `auth` | password | string |
 | `epiweeks` | epiweeks | `list` of epiweeks |
-| `locations` | locations | `list` of [region](../../labels/regions.txt)/[state](../../labels/states.txt) labels <!-- TODO: check --> |
+| `locations` | locations | `list` of [region](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/regions.txt)/[state](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/states.txt) labels <!-- TODO: check --> |
 
 ## Response
 

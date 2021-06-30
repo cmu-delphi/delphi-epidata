@@ -55,7 +55,7 @@ is to extract the subset of metadata pertaining to `fluview` and return just tha
 data through a new endpoint.
 
 Each row in the `fluview` table contains
-[a lot of data](../src/ddl/fluview.sql), but we're particularly interested in
+[a lot of data](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/ddl/fluview.sql), but we're particularly interested in
 the following:
 
 - latest publication date
@@ -83,7 +83,7 @@ what this looks like.
 
 Here's what we add to each client:
 
-- [`delphi_epidata.js`](../src/client/delphi_epidata.js)
+- [`delphi_epidata.js`](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js)
     ```javascript
     // within createEpidataAsync
     return {
@@ -98,7 +98,7 @@ Here's what we add to each client:
     };
     ```
 
-- [`delphi_epidata.d.ts`](../src/client/delphi_epidata.d.ts)
+- [`delphi_epidata.d.ts`](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.d.ts)
     ```typescript
     export interface EpidataFunctions {
       // ...
@@ -110,7 +110,7 @@ Here's what we add to each client:
     }
     ```
 
-- [`delphi_epidata.py`](../src/client/delphi_epidata.py)
+- [`delphi_epidata.py`](https://pypi.org/project/delphi-epidata/)
 
     Note that this file, unlike the others, is released as a public package,
     available to install easily through Python's `pip` tool. That package should
@@ -130,7 +130,7 @@ Here's what we add to each client:
       return Epidata._request(params)
     ```
 
-- [`delphi_epidata.R`](../src/client/delphi_epidata.R)
+- [`delphi_epidata.R`](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R)
 
     ```R
     # Fetch FluView metadata
@@ -164,7 +164,7 @@ needs to be an integration test. See more about integration testing in Delphi's
 Create an integration test for the new endpoint by creating a new file,
 `integrations/server/test_fluview_meta.py`. There's a good amount of
 boilerplate, but fortunately, this can be copied _almost_ verbatim from the
-[`fluview` endpoint integration test](../integrations/server/test_fluview.py).
+[`fluview` endpoint integration test](https://github.com/cmu-delphi/delphi-epidata/blob/main/integrations/server/test_fluview.py).
 
 Include the following pieces:
 
