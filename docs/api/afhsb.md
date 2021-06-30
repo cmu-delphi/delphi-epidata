@@ -31,7 +31,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | --- | --- | --- |
 | `auth` | password | string |
 | `epiweeks` | epiweeks | `list` of epiweeks |
-| `locations` | locations | `list` of [region](../../labels/regions.txt), [state](../../labels/states.txt), or 3-letter country code labels |
+| `locations` | locations | `list` of [region](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/regions.txt), [state](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/states.txt), or 3-letter country code labels |
 | `flu_types` | flu types | `list` of disjoint (`flu1`, `flu2-flu1`, `flu3-flu2`, `ili-flu3`) or subset (`flu2`, `flu3`, `ili`) flu type labels |
 
 ## Response

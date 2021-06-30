@@ -37,7 +37,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `epiweeks` | epiweeks | `list` of epiweeks |
-| `locations` | locations | `list` of [location](../../labels/flusurv_locations.txt) labels |
+| `locations` | locations | `list` of [location](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/flusurv_locations.txt) labels |
 
 ### Optional
 

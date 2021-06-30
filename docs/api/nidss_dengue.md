@@ -18,7 +18,7 @@ General topics not specific to any particular endpoint are discussed in the
 Counts of confirmed dengue cases from Taiwan's NIDSS.
  - Data source: [Taiwan CDC](http://nidss.cdc.gov.tw/en/SingleDisease.aspx?dc=1&dt=4&disease=061&position=1)
  - Temporal Resolution: Weekly from 2003w01
- - Spatial Resolution: By [hexchotomy region](https://en.wikipedia.org/wiki/Regions_of_Taiwan#Hexchotomy) ([6+1](../../labels/nidss_regions.txt)) and by [city/county](https://en.wikipedia.org/wiki/List_of_administrative_divisions_of_Taiwan) ([22](../../labels/nidss_locations.txt))
+ - Spatial Resolution: By [hexchotomy region](https://en.wikipedia.org/wiki/Regions_of_Taiwan#Hexchotomy) ([6+1](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/nidss_regions.txt)) and by [city/county](https://en.wikipedia.org/wiki/List_of_administrative_divisions_of_Taiwan) ([22](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/nidss_locations.txt))
  - Open access
 
 # The API
@@ -34,7 +34,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `epiweeks` | epiweeks | `list` of epiweeks |
-| `locations` | locations | `list` of [region](../../labels/nidss_regions.txt) and/or [location](../../labels/nidss_locations.txt) labels |
+| `locations` | locations | `list` of [region](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/nidss_regions.txt) and/or [location](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/nidss_locations.txt) labels |
 
 ## Response
 

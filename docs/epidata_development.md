@@ -69,10 +69,10 @@ These are both based on core Delphi images as defined in the
 above. The base images are built first, followed by the derived
 `epidata`-specific images.
 
-- The [`delphi_web_epidata` image](../dev/docker/web/epidata/README.md) adds
+- The [`delphi_web_epidata` image](https://github.com/cmu-delphi/delphi-epidata/blob/main/dev/docker/web/epidata/README.md) adds
   the Epidata API to the `delphi_web` image.
 - The
-  [`delphi_database_epidata` image](../dev/docker/database/epidata/README.md)
+  [`delphi_database_epidata` image](https://github.com/cmu-delphi/delphi-epidata/blob/main/dev/docker/database/epidata/README.md)
   adds the `epi` user account, `epidata` database, and relevant tables
   (initially empty) to the `delphi_database` image.
 
@@ -246,8 +246,8 @@ Here's a full example based on the `fluview` endpoint:
 Writing an integration test is outside of the scope of this document. However,
 a number of existing integration tests exist and can be used as a good starting
 point for additional tests. For example, see the tests for the
-[`fluview` API endpoint](../integrations/server/test_fluview.py) and the
-[`covidcast` ingestion pipeline](../integrations/acquisition/covidcast).
+[`fluview` API endpoint](https://github.com/cmu-delphi/delphi-epidata/blob/main/integrations/server/test_fluview.py) and the
+[`covidcast` ingestion pipeline](https://github.com/cmu-delphi/delphi-epidata/blob/main/integrations/acquisition/covidcast).
 
 To run the existing tests and any new tests that you write, you must
 follow the
@@ -365,15 +365,15 @@ The command above mounts two specific files into the image. It may be tempting
 to bind mount the `src/server` directory rather than specific files, however
 that is currently problematic for a couple of reasons:
 
-1. `server/.htaccess` [from the local repository](../src/server/.htaccess) uses
+1. `server/.htaccess` [from the local repository](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/server/.htaccess) uses
   the `Header` directive. However, the webserver in the container doesn't have
   the corresponding module enabled. This causes the server to deny access to
   the API.
 2. `server/database_config.php`
-  [in the image](../dev/docker/web/epidata/assets/database_config.php) contains
+  [in the image](https://github.com/cmu-delphi/delphi-epidata/blob/main/dev//docker/web/epidata/assets/database_config.php) contains
   database credentials for use in conjunction with the
   `delphi_database_epidata` container during development. However, the same
-  file from [the local repository](../src/server/database_config.php) only
+  file from [the local repository](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/server/database_config.php) only
   contains placeholder values. This prevents communication with the database.
 
 There is currently no benefit to bind-mounting sources into the database

@@ -19,7 +19,7 @@ Number of page visits for selected English, Influenza-related wikipedia articles
  - Source: [Wikimedia](https://dumps.wikimedia.org/other/pagecounts-raw/)
  - Temporal Resolution: Hourly, daily, and weekly from 2007-12-09 (2007w50)
  - Spatial Resolution: N/A
- - Other resolution: By article ([54](../../labels/articles.txt))
+ - Other resolution: By article ([54](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/articles.txt))
  - Open access
 
 # The API
@@ -34,7 +34,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 | Parameter | Description | Type |
 | --- | --- | --- |
-| `articles` | articles | list of [articles](../../labels/articles.md) |
+| `articles` | articles | list of [articles](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/articles.md) |
 | `language` | language (currently `en`, `es`, and `pt` supported) | string |
 | `dates` | dates | `list` of dates |
 | `epiweeks` | epiweeks | `list` of epiweeks |

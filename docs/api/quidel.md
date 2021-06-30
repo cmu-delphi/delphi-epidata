@@ -33,7 +33,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | --- | --- | --- |
 | `auth` | password | string |
 | `epiweeks` | epiweeks | `list` of epiweeks |
-| `locations` | locations | `list` of `hhs<#>` [region](../../labels/regions.txt) labels |
+| `locations` | locations | `list` of `hhs<#>` [region](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/regions.txt) labels |
 
 ## Response
 
