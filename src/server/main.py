@@ -1,8 +1,8 @@
 import pathlib
 import logging
-from typing import Dict, Callable
+from typing import Dict, Callable, Optional
 
-from flask import request, send_file, Response, send_from_directory, jsonify
+from flask import request, send_file, Response, send_from_directory, jsonify, safe_join
 
 from ._config import URL_PREFIX, VERSION
 from ._common import app, set_compatibility_mode
@@ -49,9 +49,15 @@ def send_lib_file(path: str):
     return send_from_directory(pathlib.Path(__file__).parent / "lib", path)
 
 
+@app.route(f"{URL_PREFIX}/docs", defaults=dict(path="/"))
 @app.route(f"{URL_PREFIX}/docs/<path:path>")
-def send_docs_file(path: str):
-    return send_from_directory(pathlib.Path(__file__).parent / "docs", path)
+def send_docs_file(path: Optional[str]):
+    base_dir = pathlib.Path(__file__).parent / "docs"
+    fixed_path = path or "index.html"
+    target_file = pathlib.Path(safe_join(base_dir, fixed_path))
+    if target_file.exists() and target_file.is_dir():
+        fixed_path = fixed_path + "/index.html"
+    return send_from_directory(base_dir, fixed_path)
 
 
 if __name__ == "__main__":
