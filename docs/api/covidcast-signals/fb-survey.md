@@ -1,10 +1,10 @@
 ---
-title: Symptom Surveys
+title: COVID Trends and Impact Survey
 parent: Data Sources and Signals
 grand_parent: COVIDcast Epidata API
 ---
 
-# Symptom Surveys
+# COVID Trends and Impact Survey
 {: .no_toc}
 
 * **Source name:** `fb-survey`
@@ -17,9 +17,10 @@ grand_parent: COVIDcast Epidata API
 
 ## Overview
 
-This data source is based on symptom surveys run by the Delphi group at Carnegie
-Mellon. Facebook directs a random sample of its users to these surveys, which
-are voluntary. Users age 18 or older are eligible to complete the surveys, and
+This data source is based on the [COVID Trends and Impact Survey
+(CTIS)](../../symptom-survey/) run by the Delphi group at Carnegie Mellon.
+Facebook directs a random sample of its users to these surveys, which are
+voluntary. Users age 18 or older are eligible to complete the surveys, and
 their survey responses are held by CMU and are sharable with other health
 researchers under a data use agreement. No individual survey responses are
 shared back to Facebook. See our [surveys
@@ -575,7 +576,7 @@ $$
 
 where $$\pi_i$$ is an estimated probability (produced by Facebook) that an
 individual with the same state-by-age-gender profile as user $$i$$ would be a
-Facebook user and take our CMU survey. The adjustment we make follows a standard
+Facebook user and take our survey. The adjustment we make follows a standard
 inverse probability weighting strategy (this being a special case of importance
 sampling).
 

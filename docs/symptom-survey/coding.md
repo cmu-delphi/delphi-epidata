@@ -1,14 +1,14 @@
 ---
 title: Questions and Coding
-parent: COVID Symptom Survey
+parent: COVID Trends and Impact Survey
 nav_order: 6
 ---
 
 # Questions and Coding
 {: .no_toc}
 
-The symptom surveys have been deployed in several waves. We have tried to ensure
-the coding of waves is consistent. This page provides the full survey text and
+The surveys have been deployed in several waves. We have tried to ensure the
+coding of waves is consistent. This page provides the full survey text and
 coding schemes.
 
 

@@ -1,15 +1,15 @@
 ---
 title: Problems and Data Errors
-parent: COVID Symptom Survey
+parent: COVID Trends and Impact Survey
 nav_order: 8
 ---
 
 # Problems and Data Errors
 {: .no_toc}
 
-Given the scale of the COVID Symptom Survey, we occasionally encounter data
-errors or survey implementation problems that affect the interpretation of
-results. All problems will be logged here.
+Given the scale of the COVID Trends and Impact Survey (CTIS), we occasionally
+encounter data errors or survey implementation problems that affect the
+interpretation of results. All problems will be logged here.
 
 ## Table of contents
 {: .no_toc .text-delta}

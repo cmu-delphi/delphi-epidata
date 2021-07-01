@@ -1,16 +1,17 @@
 ---
 title: Response Files
-parent: COVID Symptom Survey
+parent: COVID Trends and Impact Survey (CTIS)
 nav_order: 3
 ---
 
 # Response Files
 {: .no_toc}
 
-Users with access to the [COVID Symptom Survey](./index.md) individual response
-data should have received SFTP credentials for a private server where the data
-are stored. To connect to the server, see the [server access documentation](server-access.md).
-This documentation describes the survey data available on that server.
+Users with access to the [COVID Trends and Impact Survey (CTIS)](./index.md)
+individual response data should have received SFTP credentials for a private
+server where the data are stored. To connect to the server, see the [server
+access documentation](server-access.md). This documentation describes the
+survey data available on that server.
 
 You must sign a Data Use Agreement with Facebook and with CMU to gain
 access to the individual survey responses. If you have not done so, aggregate

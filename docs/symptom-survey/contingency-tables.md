@@ -1,6 +1,6 @@
 ---
 title: Contingency Tables
-parent: COVID Symptom Survey
+parent: COVID Trends and Impact Survey
 nav_order: 4
 ---
 
@@ -8,7 +8,7 @@ nav_order: 4
 {: .no_toc}
 
 This documentation describes the fine-resolution contingency tables produced by
-grouping [COVID Symptom Survey](./index.md) individual responses by various
+grouping [COVID Trends and Impact Survey (CTIS)](./index.md) individual responses by various
 self-reported demographic features.
 
 * [Weekly files](https://www.cmu.edu/delphi-web/surveys/weekly-rollup/)
@@ -119,6 +119,7 @@ Within a CSV, the first few columns store metadata of the aggregation:
 | `ISO_3` | Three-letter ISO country code ("USA") |
 | `GID_0` | GADM level 0 ID |
 | `state` | State name; "Overall" if aggregation not grouped at the state level |
+| `GID_1` | GADM level 1 ID |
 | `state_fips` | State FIPS code; `NA` if aggregation not grouped at the state level |
 | `county` | County name; "Overall" if aggregation not grouped at the county level |
 | `county_fips` | County FIPS code; `NA` if aggregation not grouped at the county level |
