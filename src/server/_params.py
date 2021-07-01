@@ -5,7 +5,6 @@ import re
 from typing import List, Optional, Sequence, Tuple, Union, Dict
 
 from flask import request
-from numpy import sign
 
 from ._exceptions import ValidationFailedException
 from .utils import days_in_range

@@ -2,42 +2,21 @@
 from collections import Counter
 from dataclasses import asdict, dataclass, field
 from enum import Enum
-from itertools import groupby, chain
-from typing import Callable, Optional, Dict, List, Tuple, Iterable, Counter
+from typing import Callable, Generator, Optional, Dict, List, Set, Tuple, Iterable, Counter, Union
 from pathlib import Path
 import re
-from numpy.lib.utils import source
 import pandas as pd
 import numpy as np
-from pandas.core import base
+from pandas.core.frame import DataFrame
 
 from ..._params import SourceSignalPair
 from .smooth_diff import generate_smooth_rows, generate_row_diffs
 
 
 IDENTITY = lambda rows: rows
-DIFF = lambda rows: generate_row_diffs(rows)
-SMOOTH = lambda rows: generate_smooth_rows(rows)
-DIFF_SMOOTH = lambda rows: generate_smooth_rows(generate_row_diffs(rows))
-
-
-DERIVED_SIGNALS = {
-    "google-symptoms:ageusia_smoothed_search": ("google-symptoms:ageusia_raw_search", SMOOTH),
-    "google-symptoms:anosmia_smoothed_search": ("google-symptoms:anosmia_raw_search", SMOOTH),
-    "google-symptoms:sum_anosmia_ageusia_smoothed_search": ("google-symptoms:sum_anosmia_ageusia_raw_search", SMOOTH),
-    "jhu-csse:confirmed_7dav_cumulative_num": ("jhu-csse:confirmed_cumulative_num", SMOOTH),
-    "jhu-csse:confirmed_7dav_incidence_num": ("jhu-csse:confirmed_cumulative_num", DIFF_SMOOTH),
-    "jhu-csse:confirmed_incidence_num": ("jhu-csse:confirmed_cumulative_num", DIFF),
-    "jhu-csse:deaths_7dav_cumulative_num": ("jhu-csse:deaths_cumulative_num", SMOOTH),
-    "jhu-csse:deaths_7dav_incidence_num": ("jhu-csse:deaths_cumulative_num", DIFF_SMOOTH),
-    "jhu-csse:deaths_incidence_num": ("jhu-csse:deaths_cumulative_num", DIFF),
-    "usafacts:confirmed_7dav_cumulative_num": ("usafacts:confirmed_cumulative_num", SMOOTH),
-    "usafacts:confirmed_7dav_incidence_num": ("usafacts:confirmed_cumulative_num", DIFF_SMOOTH),
-    "usafacts:confirmed_incidence_num": ("usafacts:confirmed_cumulative_num", DIFF),
-    "usafacts:deaths_7dav_cumulative_num": ("usafacts:deaths_cumulative_num", SMOOTH),
-    "usafacts:deaths_7dav_incidence_num": ("usafacts:deaths_cumulative_num", DIFF_SMOOTH),
-    "usafacts:deaths_incidence_num": ("usafacts:deaths_cumulative_num", DIFF),
-}
+DIFF = lambda rows, **kwargs: generate_row_diffs(rows, **kwargs)
+SMOOTH = lambda rows, **kwargs: generate_smooth_rows(rows, **kwargs)
+DIFF_SMOOTH = lambda rows, **kwargs: generate_smooth_rows(generate_row_diffs(rows, **kwargs), **kwargs)
 
 
 class HighValuesAre(str, Enum):
@@ -52,6 +31,7 @@ class SignalFormat(str, Enum):
     fraction = "fraction"
     raw_count = "raw_count"
     raw = "raw"
+    count = "count"
 
 
 class SignalCategory(str, Enum):
@@ -115,7 +95,6 @@ class DataSignal:
 
     def __post_init__(self):
         self.link = _fix_links(self.link)
-        self.compute_from_base = True if self.source + ":" + self.signal in DERIVED_SIGNALS else self.compute_from_base
 
     def initialize(self, source_map: Dict[str, "DataSource"], map: Dict[Tuple[str, str], "DataSignal"], initialized: Set[Tuple[str, str]]):
         # mark as initialized
@@ -182,15 +161,6 @@ class DataSignal:
     @property
     def key(self) -> Tuple[str, str]:
         return (self.source, self.signal)
-
-    def get_parent_transform(self):
-        if not self.is_cumulative and not self.is_smoothed:
-            return DIFF
-        if self.is_cumulative and self.is_smoothed:
-            return SMOOTH
-        if not self.is_cumulative and self.is_smoothed:
-            return DIFF_SMOOTH
-        return IDENTITY
 
 @dataclass
 class DataSource:
@@ -327,23 +297,16 @@ def create_source_signal_alias_mapper(source_signals: List[SourceSignalPair]) ->
 #         self.repeat_dict += source_signal_pair.repeat_dict
 
 
-def _get_basename_derivation(signal: DataSignal):
-    basename_pair = SourceSignalPair(signal.source, signal.signal_basename)
-    if not signal.is_cumulative and not signal.is_smoothed:
-        return basename_pair, DIFF
-    if signal.is_cumulative and signal.is_smoothed:
-        return basename_pair, SMOOTH
-    if not signal.is_cumulative and signal.is_smoothed:
-        return basename_pair, DIFF_SMOOTH
-    return basename_pair, IDENTITY
-
-
-def _resolve_all_signals(source_signal_pair: SourceSignalPair) -> SourceSignalPair:
-    if source_signal_pair.signal == True:
-        source = data_sources_by_id.get(source_signal_pair.source)
-        if source:
-            return SourceSignalPair(source.source, [s.signal for s in source.signals])
-    return source_signal_pair
+def _resolve_all_signals(source_signals: Union[SourceSignalPair, List[SourceSignalPair]]) -> Union[SourceSignalPair, List[SourceSignalPair]]:
+    if isinstance(source_signals, SourceSignalPair):
+        if source_signals.signal == True:
+            source = data_sources_by_id.get(source_signals.source)
+            if source:
+                return SourceSignalPair(source.source, [s.signal for s in source.signals])
+        return source_signals
+    if isinstance(source_signals, list):
+        return [_resolve_all_signals(pair) for pair in source_signals]
+    raise TypeError("source_signals is not Union[SourceSignalPair, List[SourceSignalPair]].")
 
 
 def _signal_pairs_to_repeat_dict(source_signal_pairs: List[SourceSignalPair]) -> Dict:
@@ -363,8 +326,48 @@ def _signal_pairs_to_repeat_dict(source_signal_pairs: List[SourceSignalPair]) ->
     return repeat_dict
 
 
-def create_source_signal_derivation_mapper(source_signals: List[SourceSignalPair]) -> Tuple[List[SourceSignalPair], Dict]:
-    source_signals = [_resolve_all_signals(pair) for pair in source_signals]
+def _get_parent_signal(signal: DataSignal, data_signals_by_key: DataFrame) -> DataSignal:
+    parent_signal = data_signals_by_key.get((signal.source, signal.signal_basename))
+    if parent_signal:
+        return parent_signal
+    return signal
+
+
+def _get_parent_transform(signal: DataSignal, data_signals_by_key: DataFrame) -> Callable:
+    if signal.format not in [SignalFormat.raw, SignalFormat.raw_count, SignalFormat.count]:
+        return IDENTITY
+
+    parent_signal = _get_parent_signal(signal, data_signals_by_key)
+    if signal.is_cumulative and signal.is_smoothed:
+        return SMOOTH
+    if not signal.is_cumulative and not signal.is_smoothed:
+        return DIFF if parent_signal.is_cumulative else IDENTITY
+    if not signal.is_cumulative and signal.is_smoothed:
+        return DIFF_SMOOTH if parent_signal.is_cumulative else SMOOTH
+    return IDENTITY
+
+
+def _buffer_and_tag_iterator(it: Iterable[Dict], repeat_dict: Dict, key_prop: Callable) -> Iterable[Dict]:
+    memory = {}
+    for x in it:
+        key = key_prop(x)
+        if repeat_dict.get(key) is not None and repeat_dict[key] > 1:
+            if memory.get(key) is None:
+                memory[key] = []
+            memory[key].append(x)
+        x["_tag"] = 0
+        yield x
+
+    for key in memory:
+        for i in range(repeat_dict[key]-1):
+            for x in memory[key]:
+                x = x.copy()
+                x["_tag"] = 1 + i
+                yield x
+
+
+def create_source_signal_group_transform_mapper(source_signals: List[SourceSignalPair]) -> Tuple[List[SourceSignalPair], Dict]:
+    source_signals = _resolve_all_signals(source_signals)
     transformed_pairs: List[SourceSignalPair] = []
     transform_dict: Dict[Tuple[str, str, int], Callable] = {}
     alias_to_data_signals: Dict[Tuple[str, str, int], str] = {}
@@ -376,7 +379,7 @@ def create_source_signal_derivation_mapper(source_signals: List[SourceSignalPair
             signal: DataSignal = data_signals_by_key.get((source_name, signal_name))
             if signal and signal.compute_from_base:
                 signals.append(signal.signal_basename)
-                transform_dict[(source_name, signal.signal_basename, i)] = signal.get_parent_transform()
+                transform_dict[(source_name, signal.signal_basename, i)] = _get_parent_transform(signal, data_signals_by_key)
                 alias_to_data_signals[(source_name, signal.signal_basename, i)] = signal_name
             else:
                 signals.append(signal_name)
@@ -386,10 +389,10 @@ def create_source_signal_derivation_mapper(source_signals: List[SourceSignalPair
     # returns a transformed version of the rows (transforming the rows to what the user requested).
     # E.g. the tuple ('jhu-csse', 'confirmed_cumulative_num', 1) may return a differenced version of the same signal
     # if the user originally requested ('jhu-csse', 'incidence_cumulative_num').
-    def transform_group(source: str, signal: str, tag: int, group: Iterable[Dict]) -> Iterable[Dict]:
+    def transform_group(source: str, signal: str, tag: int, group: Iterable[Dict], **kwargs) -> Iterable[Dict]:
         transform: Callable = transform_dict.get((source, signal, tag))
         if transform:
-            return transform(group)
+            return transform(group, **kwargs)
         return group
 
     # Given a (source, signal, tag) tuple, returns the original user request signal name.
@@ -407,5 +410,6 @@ def create_source_signal_derivation_mapper(source_signals: List[SourceSignalPair
     # Return a dictionary of the number of signal repeats in a List[SourceSignalPairs]. Used by
     # _buffer_and_tag_iterator in the covidcast endpoint.
     repeat_dict: Dict = _signal_pairs_to_repeat_dict(source_signals)
+    iterator_buffer: Generator = lambda x, y: _buffer_and_tag_iterator(x, repeat_dict, y)
 
-    return transformed_pairs, transform_group, map_row, repeat_dict
+    return transformed_pairs, transform_group, map_row, iterator_buffer

@@ -4,7 +4,6 @@ from datetime import date, datetime, timedelta
 from flask import Blueprint, request
 from flask.json import loads, jsonify
 from bisect import bisect_right
-from numpy.lib.utils import source
 from sqlalchemy import text
 from pandas import read_csv
 
@@ -36,7 +35,7 @@ from .._validate import (
 from .._pandas import as_pandas, print_pandas
 from .covidcast_utils import compute_trend, compute_trends, compute_correlations, compute_trend_value, CovidcastMetaEntry
 from ..utils import shift_time_value, date_to_time_value, time_value_to_iso, time_value_to_date
-from .covidcast_utils.model import TimeType, data_sources, create_source_signal_alias_mapper, create_source_signal_derivation_mapper
+from .covidcast_utils.model import TimeType, data_sources, create_source_signal_alias_mapper, create_source_signal_group_transform_mapper
 
 # first argument is the endpoint name
 bp = Blueprint("covidcast", __name__)
@@ -123,30 +122,15 @@ def guess_index_to_use(time: List[TimePair], geo: List[GeoPair], issues: Optiona
     return None
 
 
-def _buffer_and_tag_iterator(it: Iterable[Dict], repeat_dict: Dict, key_prop: Callable) -> Iterable[Dict]:
-    memory = {}
-    for x in it:
-        key = key_prop(x)
-        if repeat_dict.get(key) is not None and repeat_dict[key] > 1:
-            if memory.get(key) is None:
-                memory[key] = []
-            memory[key].append(x)
-        x["_tag"] = 0
-        yield x
-
-    for key in memory:
-        for i in range(repeat_dict[key]-1):
-            for x in memory[key]:
-                x = x.copy()
-                x["_tag"] = 1 + i
-                yield x
+def _validate_kwargs(window_length, pad_length, pad_fill_value, nans_fill_value):
+    return {}
 
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
     source_signal_pairs = parse_source_signal_pairs()
     source_signal_pairs, alias_mapper = create_source_signal_alias_mapper(source_signal_pairs)
-    source_signal_pairs, derivation_mapper, alias_mapper2, repeat_dict = create_source_signal_derivation_mapper(source_signal_pairs)
+    source_signal_pairs, group_transform_mapper, alias_mapper_transform, iterator_buffer = create_source_signal_group_transform_mapper(source_signal_pairs)
     time_pairs = parse_time_pairs()
     geo_pairs = parse_geo_pairs()
 
@@ -182,14 +166,17 @@ def handle():
 
     p = create_printer()
 
+    # TODO: Get a smoother params args.
+    window_length, pad_length, pad_fill_value, nans_fill_value = 7, 6, None, 0.
+    kwargs = _validate_kwargs(window_length, pad_length, pad_fill_value, nans_fill_value)
+
     def gen(rows):
-        for key, group in _buffer_and_tag_iterator((parse_row(row, fields_string, fields_int, fields_float) for row in rows), repeat_dict, lambda row: (row["source"], row["signal"], row["_tag"])):
-            derivation = derivation_mapper(key)
-            for row in derivation(group):
-                if is_compatibility or not alias_mapper:
-                    yield row
-                row["source"] = alias_mapper(row["source"], row["signal"])  # map source back to user alias
-                row["signal"] = alias_mapper2(row["source"], row["signal"], row["_tag"])  # map signal back to user-requested vs raw signal name
+        for key, group in iterator_buffer((parse_row(row, fields_string, fields_int, fields_float) for row in rows), lambda row: (row["source"], row["signal"], row["_tag"])):
+            transform_group: Callable[[Iterable[Dict]], Iterable[Dict]] = group_transform_mapper(key)
+            for row in transform_group(group, **kwargs):
+                if not is_compatibility and alias_mapper:
+                    row["source"] = alias_mapper(row["source"], row["signal"])  # map source back to user alias
+                row["signal"] = alias_mapper_transform(row["source"], row["signal"], row["_tag"])  # map signal back to user-requested vs raw signal name
                 yield row
 
     # execute first query
