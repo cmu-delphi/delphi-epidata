@@ -15,7 +15,7 @@ from delphi.epidata.server.endpoints.covidcast_utils.model import (
     _get_parent_transform,
     _signal_pairs_to_repeat_dict,
     _buffer_and_tag_iterator,
-    create_source_signal_derivation_mapper,
+    create_source_signal_group_transform_mapper,
 )
 
 class TestStreaming:
@@ -124,7 +124,7 @@ class TestStreaming:
         expected_repeat_dict = {"src1": Counter({"sig1": 3, "sig2": 2}), "src2": Counter({"sig1": 1})}
         assert repeat_dict == expected_repeat_dict
 
-    def test_create_source_signal_derivation_mapper(self):
+    def test_create_source_signal_group_transform_mapper(self):
         source_signal_pair = SourceSignalPair(
             source="jhu-csse",
             signal=[
@@ -146,7 +146,7 @@ class TestStreaming:
                 "deaths_incidence_prop",
             ],
         )
-        [transformed_pairs], transform_group, map_row, repeat_dict = create_source_signal_derivation_mapper([source_signal_pair])
+        [transformed_pairs], transform_group, map_row, repeat_dict = create_source_signal_group_transform_mapper([source_signal_pair])
         dummy_iterable: Iterable[Dict] = [{"src1": 1}]
         for i, signal in enumerate(transformed_pairs.signal):
             assert map_row("jhu-csse", signal, i) == source_signal_pair.signal[i]
