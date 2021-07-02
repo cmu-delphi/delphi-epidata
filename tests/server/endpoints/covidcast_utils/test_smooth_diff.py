@@ -10,10 +10,14 @@ from delphi.epidata.server.endpoints.covidcast_utils.smooth_diff import generate
 class TestStreaming:
     def test__smoother(self):
         assert _smoother(list(range(7)), [1] * 7) == sum(range(7))
-        assert _smoother([1] * 6, list(range(7))) == sum(range(1, 7))
+        assert _smoother([1] * 6, list(range(7))) == sum([1] * 6) / 6
 
 
     def test_generate_smooth_rows(self):
+        def _windowed_slide(iterable, n):
+            for e in windowed(chain(["_"] * (n - 1), iterable), n):
+                yield tuple(filter(lambda x: x != "_", e))
+
         data = DataFrame({
             "timestamp": to_datetime(date_range("2021-05-01", "2021-05-26").to_list() * 2),
             "geo_type": ["state"] * 52,
@@ -28,10 +32,8 @@ class TestStreaming:
             "geo_type": ["state"] * 52,
             "geo_value": ["ak"] * 26 + ["ca"] * 26,
             "value": (
-                [sum(x)/len(x) for x in [range(j) for j in range(0 + 1, 6 + 1)]] +
-                [sum(x)/7 for x in windowed(chain(range(23), [NaN] * 3), 7)] +
-                [sum(x)/len(x) for x in [range(26, j) for j in range(26 + 1, 32 + 1)]] +
-                [sum(x)/7 for x in windowed(range(26, 52), 7)]
+                [_smoother(x) for x in _windowed_slide(chain(range(23), [NaN] * 3), 7)] +
+                [_smoother(x) for x in _windowed_slide(range(26, 52), 7)]
             )
         })
         assert_frame_equal(smoothed_df, expected_df)
@@ -43,21 +45,21 @@ class TestStreaming:
             "geo_type": ["state"] * 52,
             "geo_value": ["ak"] * 26 + ["ca"] * 26,
             "value": (
-                [sum(x)/7 for x in windowed(chain(6*[0], range(23), [NaN, 2.0, 1.0]), 7)] +
-                [sum(x)/7 for x in windowed(chain(6*[0], range(26, 52)), 7)]
+                [_smoother(x) for x in windowed(chain(6*[0], range(23), [NaN, 2.0, 1.0]), 7)] +
+                [_smoother(x) for x in windowed(chain(6*[0], range(26, 52)), 7)]
             )
         })
         assert allclose(smoothed_df["value"].to_numpy(), expected_df["value"].to_numpy(), equal_nan=True)
 
-        # slide in window, fill on left with 0s
+        # same, but fill nan
         smoothed_df = DataFrame.from_records(generate_smooth_rows((x for x in data.to_dict(orient='records')), pad_fill_value=NaN, nan_fill_value=0))
         expected_df = DataFrame({
             "timestamp": to_datetime(date_range("2021-05-01", "2021-05-26").to_list() * 2),
             "geo_type": ["state"] * 52,
             "geo_value": ["ak"] * 26 + ["ca"] * 26,
             "value": (
-                [sum(x)/7 for x in windowed(chain(6*[0], range(23), [0, 2.0, 1.0]), 7)] +
-                [sum(x)/7 for x in windowed(chain(6*[0], range(26, 52)), 7)]
+                [_smoother(x) for x in windowed(chain(6*[0], range(23), [0, 2.0, 1.0]), 7)] +
+                [_smoother(x) for x in windowed(chain(6*[0], range(26, 52)), 7)]
             )
         })
         assert allclose(smoothed_df["value"].to_numpy(), expected_df["value"].to_numpy(), equal_nan=True)

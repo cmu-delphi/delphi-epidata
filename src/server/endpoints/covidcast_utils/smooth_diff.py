@@ -10,15 +10,18 @@ from numpy import nan, nan_to_num, array, dot, isnan
 def _smoother(values: List[float], kernel: Optional[List[float]] = None) -> float:
     """Basic smoother.
 
-    By default, computes the standard mean. If kernel passed, uses the kernel
-    as summation weights.
+    If kernel passed, uses the kernel as summation weights. If something is wrong,
+    defaults to the mean.
     """
     try:
-        kernel = array(kernel, dtype=float, copy=False)
+        if kernel:
+            kernel = array(kernel, dtype=float, copy=False)
+        else:
+            raise ValueError
         values = array(values, dtype=float, copy=False)
         smoothed_value = dot(values, kernel)
-    except ValueError:
-        smoothed_value = values.mean()
+    except (ValueError, TypeError):
+        smoothed_value = array(values).mean()
 
     return smoothed_value
 
@@ -97,9 +100,9 @@ def generate_smooth_rows(
         pad_length = window_length - 1
     if not isinstance(nan_fill_value, (float, int)):
         nan_fill_value = 0.
-    if pad_fill_value is not isinstance(pad_fill_value, (float, int, str)) or pad_fill_value not in ["first", "drop"]:
+    if not isinstance(pad_fill_value, (float, int, str)) or (isinstance(pad_fill_value, str) and pad_fill_value not in ["first", "drop"]):
         pad_fill_value = "drop"
-    if not isinstance(smoother_kernel, list) or smoother_kernel != "average":
+    if not isinstance(smoother_kernel, list) or (isinstance(smoother_kernel, str) and smoother_kernel != "average"):
         smoother_kernel = "average"
 
     for key, group in groupby(rows, lambda row: (row["geo_type"], row["geo_value"])):  # Iterable[Tuple[str, Iterable[Dict]]]
@@ -138,11 +141,11 @@ def generate_row_diffs(rows: Iterable[Dict], pad_fill_value: Optional[Union[str,
         If None, then no padding is used and the resulting iterable is shorter than the
         original by 1.
     """
-    if pad_fill_value is None or (not isinstance(pad_fill_value, (float, int)) and pad_fill_value != "first"):
+    if not isinstance(pad_fill_value, (float, str, type(None))) or (isinstance(pad_fill_value, str) and pad_fill_value != "first"):
         pad_fill_value = "first"
 
     for _, group in groupby(rows, lambda row: (row["geo_type"], row["geo_value"])):  # Iterable[Tuple[str, Iterable[Dict]]]
-        group = _pad_group(group, 1, pad_fill_value) if (not isinstance(pad_fill_value, (float, int)) and pad_fill_value != "first") else group
+        group = _pad_group(group, 1, pad_fill_value) if pad_fill_value is not None else group
         for window in windowed(group, 2):
             incidence_entry = window[-1].copy()
             incidence_entry["value"] = window[1]["value"] - window[0]["value"]
