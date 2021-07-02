@@ -41,6 +41,27 @@ class UnitTests(unittest.TestCase):
     self.assertFalse(CsvImporter.is_sane_week(202000))
     self.assertFalse(CsvImporter.is_sane_week(202054))
     self.assertFalse(CsvImporter.is_sane_week(20200418))
+  
+  def test_find_issue_specific_csv_files(self):
+      """Recursively explore and find issue specific CSV files."""
+
+      path_prefix='prefix/to/the/data/'
+      #valid day path
+      glob_paths = [path_prefix +'/archive/failed/src-name/issue_20200408']
+      issue_path='/archive/failed/src-name/issue_20200408'
+      mock_glob = MagicMock()
+      mock_glob.glob.return_value = glob_paths
+      issuedir_match = CsvImporter.PATTERN_ISSUE_DIR.match(issue_path.lower())
+      issue_date_value = int(issuedir_match.group(2))
+
+      #check if the day is a valid issue day.
+      self.assertTrue(CsvImporter.is_sane_day(issue_date_value))
+ 
+      with self.assertRaises(Exception):
+        CsvImporter.find_issue_specific_csv_files(path_prefix, glob=mock_glob)
+
+      
+ 
 
   def test_find_csv_files(self):
     """Recursively explore and find CSV files."""
