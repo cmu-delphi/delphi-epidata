@@ -47,21 +47,19 @@ class UnitTests(unittest.TestCase):
 
       path_prefix='prefix/to/the/data/'
       #valid day path
-      glob_paths = [path_prefix +'/archive/failed/src-name/issue_20200408']
-      issue_path='/archive/failed/src-name/issue_20200408'
+      issue_path='issue_20200408'
+      glob_issue_path = path_prefix + issue_path
+      glob_file_path = path_prefix + issue_path + '/valid/20200408_nation_sig.csv'
       mock_glob = MagicMock()
-      mock_glob.glob.return_value = glob_paths
-      issuedir_match = CsvImporter.PATTERN_ISSUE_DIR.match(issue_path.lower())
+      mock_glob.glob.side_effect = ([glob_issue_path], [glob_file_path])
+      issuedir_match = CsvImporter.PATTERN_ISSUE_DIR.match(glob_issue_path.lower())
       issue_date_value = int(issuedir_match.group(2))
 
       #check if the day is a valid issue day.
       self.assertTrue(CsvImporter.is_sane_day(issue_date_value))
  
-      with self.assertRaises(Exception):
-        CsvImporter.find_issue_specific_csv_files(path_prefix, glob=mock_glob)
-
-      
- 
+      found = set(CsvImporter.find_issue_specific_csv_files(path_prefix, glob=mock_glob))
+      self.assertTrue(len(found)>0)
 
   def test_find_csv_files(self):
     """Recursively explore and find CSV files."""

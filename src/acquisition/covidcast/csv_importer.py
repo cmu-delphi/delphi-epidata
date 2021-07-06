@@ -92,7 +92,7 @@ class CsvImporter:
         issue_date_value = int(issuedir_match.group(2))
         issue_date = CsvImporter.is_sane_day(issue_date_value)
         if issue_date:
-          logger.info(event='processing csv files from issue', detail=issue_date, file=path)
+          logger.info(event='processing csv files from issue', detail=issue_date, path)
           yield from CsvImporter.find_csv_files(path, issue=(issue_date, epi.Week.fromdate(issue_date)), glob=glob)
         else:
           logger.warning(event='invalid issue directory day', detail=issue_date_value, file=path)
