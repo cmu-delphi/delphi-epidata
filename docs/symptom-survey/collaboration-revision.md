@@ -18,7 +18,7 @@ If there is a revision or question you would like us to consider, please fill
 out [this form requesting details about your
 proposal](https://forms.gle/q6NS8fPJJofKQ9mM8). This request can be submitted by
 researchers regardless of whether they have a signed Data Use Agreement for the
-individual responses to the COVID Symptom Survey.
+individual responses to the COVID Trends and Impact Survey.
 
 ## Collaboration Meetings
 
