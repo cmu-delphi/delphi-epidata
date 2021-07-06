@@ -41,23 +41,23 @@ class UnitTests(unittest.TestCase):
     self.assertFalse(CsvImporter.is_sane_week(202000))
     self.assertFalse(CsvImporter.is_sane_week(202054))
     self.assertFalse(CsvImporter.is_sane_week(20200418))
-  
+
   def test_find_issue_specific_csv_files(self):
       """Recursively explore and find issue specific CSV files."""
-
       path_prefix='prefix/to/the/data/'
       #valid day path
       issue_path='issue_20200408'
       glob_issue_path = path_prefix + issue_path
-      glob_file_path = path_prefix + issue_path + '/valid/20200408_nation_sig.csv'
+      glob_file_path = path_prefix + issue_path + '/ght/20200408_state_rawsearch.csv'
       mock_glob = MagicMock()
-      mock_glob.glob.side_effect = ([glob_issue_path], [glob_file_path])
-      issuedir_match = CsvImporter.PATTERN_ISSUE_DIR.match(glob_issue_path.lower())
-      issue_date_value = int(issuedir_match.group(2))
+      mock_glob.glob.side_effect = ([glob_issue_path], [glob_file_path], [glob_file_path])
 
       #check if the day is a valid issue day.
+      issuedir_match = CsvImporter.PATTERN_ISSUE_DIR.match(glob_issue_path.lower())
+      issue_date_value = int(issuedir_match.group(2))
+  
       self.assertTrue(CsvImporter.is_sane_day(issue_date_value))
- 
+
       found = set(CsvImporter.find_issue_specific_csv_files(path_prefix, glob=mock_glob))
       self.assertTrue(len(found)>0)
 

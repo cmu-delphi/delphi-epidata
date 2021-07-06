@@ -88,11 +88,11 @@ class CsvImporter:
     logger = get_structured_logger('find_issue_specific_csv_files')
     for path in sorted(glob.glob(os.path.join(scan_dir, '*'))):
       issuedir_match = CsvImporter.PATTERN_ISSUE_DIR.match(path.lower())
-      if issuedir_match and os.path.isdir(path):
+      if issuedir_match and glob.glob(os.path.isdir(path)):
         issue_date_value = int(issuedir_match.group(2))
         issue_date = CsvImporter.is_sane_day(issue_date_value)
         if issue_date:
-          logger.info(event='processing csv files from issue', detail=issue_date, path)
+          logger.info(event='processing csv files from issue', detail=issue_date, file=path)
           yield from CsvImporter.find_csv_files(path, issue=(issue_date, epi.Week.fromdate(issue_date)), glob=glob)
         else:
           logger.warning(event='invalid issue directory day', detail=issue_date_value, file=path)
