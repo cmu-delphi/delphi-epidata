@@ -7,9 +7,9 @@ nav_order: 6
 # Questions and Coding
 {: .no_toc}
 
-The surveys have been deployed in several waves. We have tried to ensure the
-coding of waves is consistent. This page provides the full survey text and
-coding schemes.
+The COVID-19 Trends and Impacts Survey (CTIS) has been deployed in several waves.
+We have tried to ensure the coding of waves is consistent. This page provides
+the full survey text and coding schemes.
 
 
 ## Table of contents
@@ -467,7 +467,7 @@ new items were meant to capture reasons for vaccine hesitancy among respondents.
   when you use responses from multiple waves of this survey, since they may
   shift which occupations respondents choose.
 * C14a is a revision of item C14, changed from "the past 5 days" to "the past
-  7 days" to be consistent with other items on the COVID Symptom Survey.
+  7 days" to be consistent with other items on CTIS.
   C14a replaces C14.
 * C17a is a revision of item C17, which asked respondents if they have had a
   flu vaccination since June 2020. C17a changed the date to July 1, 2020 and

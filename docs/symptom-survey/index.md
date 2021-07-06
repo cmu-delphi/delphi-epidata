@@ -6,7 +6,7 @@ nav_order: 2
 
 # COVID-19 Trends and Impact Survey
 
-Since April 2020, Delphi has conducted a voluntary COVID-19 symptom survey,
+Since April 2020, Delphi has conducted a voluntary survey about COVID-19,
 distributed daily to users in the United States via a partnership with Facebook.
 This survey asks respondents about COVID-like symptoms, their behavior (such as
 social distancing), mental health, and economic and health impacts they have
