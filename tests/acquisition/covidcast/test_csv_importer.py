@@ -50,7 +50,7 @@ class UnitTests(unittest.TestCase):
       glob_issue_path = path_prefix + issue_path
       glob_file_path = path_prefix + issue_path + '/ght/20200408_state_rawsearch.csv'
       mock_glob = MagicMock()
-      mock_glob.glob.side_effect = ([glob_issue_path], [glob_file_path], [glob_file_path])
+      mock_glob.glob.side_effect = ([glob_issue_path], [glob_file_path])
 
       #check if the day is a valid issue day.
       issuedir_match = CsvImporter.PATTERN_ISSUE_DIR.match(glob_issue_path.lower())

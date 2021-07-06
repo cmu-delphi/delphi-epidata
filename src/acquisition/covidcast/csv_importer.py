@@ -88,7 +88,7 @@ class CsvImporter:
     logger = get_structured_logger('find_issue_specific_csv_files')
     for path in sorted(glob.glob(os.path.join(scan_dir, '*'))):
       issuedir_match = CsvImporter.PATTERN_ISSUE_DIR.match(path.lower())
-      if issuedir_match and glob.glob(os.path.isdir(path)):
+      if issuedir_match:
         issue_date_value = int(issuedir_match.group(2))
         issue_date = CsvImporter.is_sane_day(issue_date_value)
         if issue_date:
