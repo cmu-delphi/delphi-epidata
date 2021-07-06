@@ -81,7 +81,7 @@ When referring to the survey in text, we prefer the following formats:
   partnership with Facebook".
 * Short form (used after the long form has been introduced): "The U.S. COVID-19
   Trends and Impact Survey"
-* Acronym form: Delphi US CTIS
+* Acronym form: "Delphi US CTIS"
 
 Prior to July 2021, the survey was known as the COVID Symptom Survey (CSS), and
 some older documentation and publication may still refer to this name. We prefer
