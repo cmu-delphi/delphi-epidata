@@ -1,4 +1,3 @@
-
 from collections import Counter
 from dataclasses import asdict, dataclass, field
 from enum import Enum
@@ -284,19 +283,6 @@ def create_source_signal_alias_mapper(source_signals: List[SourceSignalPair]) ->
     return transformed_pairs, map_row
 
 
-# class SourceSignalPairsTransform:
-#     def __init__(self, source_signal_pairs: List[SourceSignalPair]):
-#         if source_signal_pair.signal == True:
-#             source_signal_pair = _resolve_all_signals(source_signal_pair)
-#         self.repeat_dict: Dict[str, int] = Counter(source_signal_pair.signal)
-
-#     def __add__(self, source_signal_pair: Union[SourceSignalPair, SourceSignalPairRepeat]):
-#         self.signal += source_signal_pair.signal
-#         if isinstance(source_signal_pair, SourceSignalPair):
-#             source_signal_pair = SourceSignalPairRepeat(source_signal_pair)
-#         self.repeat_dict += source_signal_pair.repeat_dict
-
-
 def _resolve_all_signals(source_signals: Union[SourceSignalPair, List[SourceSignalPair]]) -> Union[SourceSignalPair, List[SourceSignalPair]]:
     if isinstance(source_signals, SourceSignalPair):
         if source_signals.signal == True:
@@ -307,23 +293,6 @@ def _resolve_all_signals(source_signals: Union[SourceSignalPair, List[SourceSign
     if isinstance(source_signals, list):
         return [_resolve_all_signals(pair) for pair in source_signals]
     raise TypeError("source_signals is not Union[SourceSignalPair, List[SourceSignalPair]].")
-
-
-def _signal_pairs_to_repeat_dict(source_signal_pairs: List[SourceSignalPair]) -> Dict:
-    """Count source-signal pair occurrences.
-
-    Assumes a reduced List[SourceSignalPair] from _params._combine_source_signal_pairs.
-    """
-    repeat_dict: Dict[str, Counter[str]] = {}
-
-    for source_signal_pair in source_signal_pairs:
-        source, signals = source_signal_pair.source, source_signal_pair.signal
-        counts = Counter(signals)
-        if not repeat_dict.get(source):
-            repeat_dict[source] = Counter()
-        repeat_dict[source] += counts
-
-    return repeat_dict
 
 
 def _get_parent_signal(signal: DataSignal, data_signals_by_key: DataFrame) -> DataSignal:
@@ -347,26 +316,64 @@ def _get_parent_transform(signal: DataSignal, data_signals_by_key: DataFrame) ->
     return IDENTITY
 
 
-def _buffer_and_tag_iterator(it: Iterable[Dict], repeat_dict: Dict, key_prop: Callable) -> Iterable[Dict]:
-    memory = {}
+def _get_signal_counts(source_signal_pairs: List[SourceSignalPair]) -> Counter[Tuple[str, str]]:
+    """Count source-signal pair occurrences.
+
+    Assumes a reduced List[SourceSignalPair] from _params._combine_source_signal_pairs.
+    Returns a Counter keyed by (source, signal) tuples.
+    """
+    counts: Counter[Tuple[str, str]] = Counter()
+
+    for source_signal_pair in source_signal_pairs:
+        source, signals = source_signal_pair.source, source_signal_pair.signal
+        if isinstance(signals, bool):
+            continue
+        counts += Counter([(source, signal) for signal in signals])
+
+    return counts
+
+
+def _buffer_and_tag_iterator(it: Iterable[Dict], counts: Counter, key_prop: Callable) -> Iterable[Dict]:
+    """Buffer an iterator for repeated passes.
+
+    Parameters
+    ----------
+    it: Iterable[Dict]
+        The iterator of dictionaries.
+    counts: Counter
+        A Counter object taking keys from key_prop and returning the number of times to run through each
+        iterable with the key_prop value. E.g. each iterable is a row value for a signal and the Counter keys
+        are (source, signal) tuples.
+    key_prop: Callable
+        A function taking an element of the iterator and returning a key of the counts. Used to identify
+        elements and store them in the buffer if needed.
+
+    Returns
+    ----------
+    An iterator that runs through the iterator at least once and repeats other values as specified by counts.
+    Additionally, sets the value of the "_tag" key for every Dict in the iterator according to the number of
+    times the given sequence of iterable values have been repeated (starting from 0).
+    """
+    buffer = {}
+    # First iterator pass.
     for x in it:
         key = key_prop(x)
-        if repeat_dict.get(key) is not None and repeat_dict[key] > 1:
-            if memory.get(key) is None:
-                memory[key] = []
-            memory[key].append(x)
+        if counts.get(key) is not None and counts[key] > 1:
+            buffer.setdefault(key, []).append(x)
         x["_tag"] = 0
         yield x
 
-    for key in memory:
-        for i in range(repeat_dict[key]-1):
-            for x in memory[key]:
+    # Buffer pass as needed.
+    for key in buffer:
+        for i in range(counts[key]-1):
+            for x in buffer[key]:
                 x = x.copy()
-                x["_tag"] = 1 + i
+                x["_tag"] = i + 1
                 yield x
 
 
 def create_source_signal_group_transform_mapper(source_signals: List[SourceSignalPair]) -> Tuple[List[SourceSignalPair], Dict]:
+    # This should resolve ("source", True) pairs to signal lists, except for sources not present in data_signals_by_key.
     source_signals = _resolve_all_signals(source_signals)
     transformed_pairs: List[SourceSignalPair] = []
     transform_dict: Dict[Tuple[str, str, int], Callable] = {}
@@ -375,14 +382,20 @@ def create_source_signal_group_transform_mapper(source_signals: List[SourceSigna
     for pair in source_signals:
         source_name: str = pair.source
         signals: List[str] = []
+
+        if isinstance(pair.signal, bool):
+            transformed_pairs.append(pair)
+            continue
+
         for i, signal_name in enumerate(pair.signal):
             signal: DataSignal = data_signals_by_key.get((source_name, signal_name))
-            if signal and signal.compute_from_base:
-                signals.append(signal.signal_basename)
-                transform_dict[(source_name, signal.signal_basename, i)] = _get_parent_transform(signal, data_signals_by_key)
-                alias_to_data_signals[(source_name, signal.signal_basename, i)] = signal_name
-            else:
+            if not signal or not signal.compute_from_base:
                 signals.append(signal_name)
+                continue
+
+            signals.append(signal.signal_basename)
+            transform_dict[(source_name, signal.signal_basename, i)] = _get_parent_transform(signal, data_signals_by_key)
+            alias_to_data_signals[(source_name, signal.signal_basename, i)] = signal_name
         transformed_pairs.append(SourceSignalPair(pair.source, signals))
 
     # Given a (source, signal, tag) tuple and the grouped-by Iterable[Dict] of that source-signal's rows
@@ -402,14 +415,11 @@ def create_source_signal_group_transform_mapper(source_signals: List[SourceSigna
         """
         maps a given row source back to its alias version
         """
-        signal_name: str = alias_to_data_signals.get((source, signal, tag))
-        if signal_name:
-            return signal_name
-        return signal
+        return alias_to_data_signals.setdefault((source, signal, tag), signal)
 
     # Return a dictionary of the number of signal repeats in a List[SourceSignalPairs]. Used by
     # _buffer_and_tag_iterator in the covidcast endpoint.
-    repeat_dict: Dict = _signal_pairs_to_repeat_dict(source_signals)
-    iterator_buffer: Generator = lambda x, y: _buffer_and_tag_iterator(x, repeat_dict, y)
+    counts: Counter = _get_signal_counts(source_signals)
+    iterator_buffer: Generator = lambda x, y: _buffer_and_tag_iterator(x, counts, y)
 
     return transformed_pairs, transform_group, map_row, iterator_buffer

@@ -13,7 +13,7 @@ from delphi.epidata.server.endpoints.covidcast_utils.model import (
     data_signals_by_key,
     _resolve_all_signals,
     _get_parent_transform,
-    _signal_pairs_to_repeat_dict,
+    _get_signal_counts,
     _buffer_and_tag_iterator,
     create_source_signal_group_transform_mapper,
 )
@@ -89,6 +89,7 @@ class TestStreaming:
                 "value": list(range(10)),
             }
         )
+        signal_counts = {("src", "sig1"): 3, ("src", "sig2"): 1, ("extra", "key"): 2}
         expected_df = DataFrame(
             {
                 "source": ["src"] * 20,
@@ -102,13 +103,13 @@ class TestStreaming:
         )
         repeat_df = DataFrame.from_records(
             _buffer_and_tag_iterator(
-                data.to_dict(orient="records"), {("src", "sig1"): 3, ("src", "sig2"): 1, ("extra", "key"): 2}, lambda x: (x["source"], x["signal"])
+                data.to_dict(orient="records"), signal_counts, lambda x: (x["source"], x["signal"])
             )
         )
         assert_frame_equal(repeat_df, expected_df)
 
         repeat_iterator = _buffer_and_tag_iterator(
-            data.to_dict(orient="records"), {("src", "sig1"): 3, ("src", "sig2"): 1, ("extra", "key"): 2}, lambda x: (x["source"], x["signal"])
+            data.to_dict(orient="records"), signal_counts, lambda x: (x["source"], x["signal"])
         )
         groups_df = []
         for key, group in groupby(repeat_iterator, lambda row: (row["source"], row["signal"], row["_tag"])):
@@ -118,11 +119,22 @@ class TestStreaming:
         assert_frame_equal(groups_df[2].reset_index(drop=True), expected_df.iloc[10:15].reset_index(drop=True))
         assert_frame_equal(groups_df[3].reset_index(drop=True), expected_df.iloc[15:20].reset_index(drop=True))
 
-    def test__signal_pairs_to_repeat_dict(self):
+        signal_counts = {}
+        repeat_iterator = _buffer_and_tag_iterator(
+            data.to_dict(orient="records"), signal_counts, lambda x: (x["source"], x["signal"])
+        )
+        repeat_df = DataFrame.from_records(repeat_iterator).drop(columns="_tag")
+        expected_df = data
+        assert_frame_equal(repeat_df, expected_df)
+
+        repeat_iterator = _buffer_and_tag_iterator({}, signal_counts, lambda x: (x["source"], x["signal"]))
+        assert list(repeat_iterator) == []
+
+    def test__get_signal_counts(self):
         source_signal_pairs1 = [SourceSignalPair("src1", ["sig1", "sig2", "sig1", "sig1", "sig2"]), SourceSignalPair("src2", ["sig1"])]
-        repeat_dict = _signal_pairs_to_repeat_dict(source_signal_pairs1)
-        expected_repeat_dict = {"src1": Counter({"sig1": 3, "sig2": 2}), "src2": Counter({"sig1": 1})}
-        assert repeat_dict == expected_repeat_dict
+        signal_counts = _get_signal_counts(source_signal_pairs1)
+        expected_signal_counts = Counter({("src1", "sig1"): 3, ("src1", "sig2"): 2, ("src2", "sig1"): 1})
+        assert signal_counts == expected_signal_counts
 
     def test_create_source_signal_group_transform_mapper(self):
         source_signal_pair = SourceSignalPair(
@@ -146,9 +158,18 @@ class TestStreaming:
                 "deaths_incidence_prop",
             ],
         )
-        [transformed_pairs], transform_group, map_row, repeat_dict = create_source_signal_group_transform_mapper([source_signal_pair])
+        [transformed_pairs], transform_group, map_row, iterator_buffer = create_source_signal_group_transform_mapper([source_signal_pair])
         dummy_iterable: Iterable[Dict] = [{"src1": 1}]
+
         for i, signal in enumerate(transformed_pairs.signal):
+            # check that map_row returns the appropriate signal names back
             assert map_row("jhu-csse", signal, i) == source_signal_pair.signal[i]
+            # if map_row does no aliasing, make sure that transform_group is the identity mapping
             if map_row("jhu-csse", signal, i) == signal[i]:
                 assert transform_group("jhu-csse", signal, i, dummy_iterable) == dummy_iterable
+
+        source_signal_pair = SourceSignalPair(
+            source="src1",
+            signal=True)
+        [transformed_pairs], transform_group, map_row, iterator_buffer = create_source_signal_group_transform_mapper([source_signal_pair])
+        assert transformed_pairs == source_signal_pair
