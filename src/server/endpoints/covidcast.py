@@ -122,8 +122,9 @@ def guess_index_to_use(time: List[TimePair], geo: List[GeoPair], issues: Optiona
     return None
 
 
-def _validate_kwargs(window_length, pad_length, pad_fill_value, nans_fill_value):
-    return {}
+# TODO: Write an actual smoother arg parser.
+def parse_smoother_args():
+    return {"window_length": 7, "pad_length": 6, "pad_fill_value": None, "nans_fill_value": 0.}
 
 
 @bp.route("/", methods=("GET", "POST"))
@@ -133,6 +134,8 @@ def handle():
     source_signal_pairs, group_transform_mapper, alias_mapper_transform, iterator_buffer = create_source_signal_group_transform_mapper(source_signal_pairs)
     time_pairs = parse_time_pairs()
     geo_pairs = parse_geo_pairs()
+    # TODO: Write an actual smoother arg parser.
+    smoother_args = parse_smoother_args()
 
     as_of = extract_date("as_of")
     issues = extract_dates("issues")
@@ -166,14 +169,12 @@ def handle():
 
     p = create_printer()
 
-    # TODO: Get a smoother params args.
-    window_length, pad_length, pad_fill_value, nans_fill_value = 7, 6, None, 0.
-    kwargs = _validate_kwargs(window_length, pad_length, pad_fill_value, nans_fill_value)
-
     def gen(rows):
-        for key, group in iterator_buffer((parse_row(row, fields_string, fields_int, fields_float) for row in rows), lambda row: (row["source"], row["signal"], row["_tag"])):
-            transform_group: Callable[[Iterable[Dict]], Iterable[Dict]] = group_transform_mapper(key)
-            for row in transform_group(group, **kwargs):
+        parsed_rows = (parse_row(row, fields_string, fields_int, fields_float) for row in rows)
+        buffered_rows = iterator_buffer(parsed_rows, lambda row: (row["source"], row["signal"]))
+        for key, group in groupby(buffered_rows, lambda row: (row["source"], row["signal"], row["_tag"])):
+            transformed_group = group_transform_mapper(key[0], key[1], group, **smoother_args)
+            for row in transformed_group:
                 if not is_compatibility and alias_mapper:
                     row["source"] = alias_mapper(row["source"], row["signal"])  # map source back to user alias
                 row["signal"] = alias_mapper_transform(row["source"], row["signal"], row["_tag"])  # map signal back to user-requested vs raw signal name
