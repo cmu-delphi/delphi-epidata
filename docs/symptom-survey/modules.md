@@ -1,6 +1,6 @@
 ---
 title: Survey Modules & Randomization
-parent: COVID Trends and Impact Survey
+parent: COVID-19 Trends and Impact Survey
 nav_order: 7
 ---
 
@@ -8,7 +8,7 @@ nav_order: 7
 {: .no_toc}
 
 To reduce the overall length of the instrument and minimize response burden,
-the COVID Trends and Impact Survey (CTIS) will consist of a block of daily
+the COVID-19 Trends and Impact Survey (CTIS) will consist of a block of daily
 core questions and will use a randomized module approach for the other topics.
 Implementation of this approach started in [Wave 11](coding.md#wave-11), which
 launched on May 20, 2021.

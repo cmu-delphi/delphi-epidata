@@ -1,6 +1,6 @@
 ---
 title: Survey Weights
-parent: COVID Trends and Impact Survey
+parent: COVID-19 Trends and Impact Survey
 nav_order: 5
 ---
 

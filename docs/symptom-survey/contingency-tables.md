@@ -1,6 +1,6 @@
 ---
 title: Contingency Tables
-parent: COVID Trends and Impact Survey
+parent: COVID-19 Trends and Impact Survey
 nav_order: 4
 ---
 
@@ -8,7 +8,7 @@ nav_order: 4
 {: .no_toc}
 
 This documentation describes the fine-resolution contingency tables produced by
-grouping [COVID Trends and Impact Survey (CTIS)](./index.md) individual responses by various
+grouping [COVID-19 Trends and Impact Survey (CTIS)](./index.md) individual responses by various
 self-reported demographic features.
 
 * [Weekly files](https://www.cmu.edu/delphi-web/surveys/weekly-rollup/)

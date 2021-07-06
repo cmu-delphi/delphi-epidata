@@ -1,12 +1,12 @@
 ---
 title: SFTP Server Access
-parent: COVID Trends and Impact Survey
+parent: COVID-19 Trends and Impact Survey
 nav_order: 2
 ---
 
 # SFTP Server Access
 
-Researchers with data use agreements to access the raw data from the COVID
+Researchers with data use agreements to access the raw data from the COVID-19
 Trends and Impact Survey (CTIS) can access the data over SFTP. (If you do not
 have a data use agreement, see the [main survey page](index.md) for
 information about getting access and about aggregate data that is available

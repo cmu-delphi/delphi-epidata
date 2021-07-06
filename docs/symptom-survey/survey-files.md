@@ -1,13 +1,13 @@
 ---
 title: Response Files
-parent: COVID Trends and Impact Survey (CTIS)
+parent: COVID-19 Trends and Impact Survey (CTIS)
 nav_order: 3
 ---
 
 # Response Files
 {: .no_toc}
 
-Users with access to the [COVID Trends and Impact Survey (CTIS)](./index.md)
+Users with access to the [COVID-19 Trends and Impact Survey (CTIS)](./index.md)
 individual response data should have received SFTP credentials for a private
 server where the data are stored. To connect to the server, see the [server
 access documentation](server-access.md). This documentation describes the

@@ -1,6 +1,6 @@
 ---
 title: Questions and Coding
-parent: COVID Trends and Impact Survey
+parent: COVID-19 Trends and Impact Survey
 nav_order: 6
 ---
 

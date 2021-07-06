@@ -1,13 +1,13 @@
 ---
 title: Getting Data Access
-parent: COVID Trends and Impact Survey
+parent: COVID-19 Trends and Impact Survey
 nav_order: 0
 ---
 
 # Getting Data Access
 
 The Delphi Research Group at Carnegie Mellon University (CMU), in partnership
-with Facebook, has conducted the COVID Trends and Impact Survey (CTIS) to
+with Facebook, has conducted the COVID-19 Trends and Impact Survey (CTIS) to
 better understand the spread of COVID-19 and its effects on public health and
 well-being. This may help improve our local and national responses to the
 pandemic and our understanding of how it has affected society.

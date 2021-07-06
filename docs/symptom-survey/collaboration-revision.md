@@ -1,16 +1,16 @@
 ---
 title: Collaboration and Survey Revision
-parent: COVID Trends and Impact Survey
+parent: COVID-19 Trends and Impact Survey
 nav_order: 1
 ---
 
 # Collaboration and Survey Revision
 
-Delphi continues to revise the COVID Trends and Impact Survey (CTIS)
-instruments in order to prioritize items that have the greatest utility for
-the response to the COVID-19 pandemic. We conduct revisions in collaboration
-with data users, fellow researchers, and public health officials, to ensure
-the survey data best serves public health and research goals.
+Delphi continues to revise the COVID-19 Trends and Impact Survey (CTIS)
+instruments in order to prioritize items that have the greatest utility for the
+response to the COVID-19 pandemic. We conduct revisions in collaboration with
+data users, fellow researchers, and public health officials, to ensure the
+survey data best serves public health and research goals.
 
 ## Proposing Revisions
 
@@ -18,7 +18,7 @@ If there is a revision or question you would like us to consider, please fill
 out [this form requesting details about your
 proposal](https://forms.gle/q6NS8fPJJofKQ9mM8). This request can be submitted by
 researchers regardless of whether they have a signed Data Use Agreement for the
-individual responses to the COVID Trends and Impact Survey.
+individual responses to the COVID-19 Trends and Impact Survey.
 
 ## Collaboration Meetings
 

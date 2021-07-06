@@ -1,10 +1,10 @@
 ---
-title: COVID Trends and Impact Survey
+title: COVID-19 Trends and Impact Survey
 parent: Data Sources and Signals
 grand_parent: COVIDcast Epidata API
 ---
 
-# COVID Trends and Impact Survey
+# COVID-19 Trends and Impact Survey
 {: .no_toc}
 
 * **Source name:** `fb-survey`
@@ -17,7 +17,7 @@ grand_parent: COVIDcast Epidata API
 
 ## Overview
 
-This data source is based on the [COVID Trends and Impact Survey
+This data source is based on the [COVID-19 Trends and Impact Survey
 (CTIS)](../../symptom-survey/) run by the Delphi group at Carnegie Mellon.
 Facebook directs a random sample of its users to these surveys, which are
 voluntary. Users age 18 or older are eligible to complete the surveys, and

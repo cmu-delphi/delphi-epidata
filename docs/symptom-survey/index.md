@@ -1,10 +1,10 @@
 ---
-title: COVID Trends and Impact Survey
+title: COVID-19 Trends and Impact Survey
 has_children: true
 nav_order: 2
 ---
 
-# COVID Trends and Impact Survey
+# COVID-19 Trends and Impact Survey
 
 Since April 2020, Delphi has conducted a voluntary COVID-19 symptom survey,
 distributed daily to users in the United States via a partnership with Facebook.
@@ -29,7 +29,7 @@ If you have questions about the survey or getting access to data, contact us at
 
 ## Credits
 
-The COVID Trends and Impact Survey (CTIS) is a project of the [Delphi
+The COVID-19 Trends and Impact Survey (CTIS) is a project of the [Delphi
 Group](https://delphi.cmu.edu/) at Carnegie Mellon University. The Principal
 Investigator is [Alex Reinhart](https://www.refsmmat.com/); Wichada La
 Motte-Kerr is Survey Coordinator. The survey protocol is reviewed by the
@@ -59,7 +59,7 @@ the survey in publications based on the data. Specifically, we ask that you:
 2. Cite this web page for details about the survey. For example, you may cite it
    as
 
-    > Delphi Group (2021). COVID Trends and Impact Survey.
+    > Delphi Group (2021). COVID-19 Trends and Impact Survey.
     > <https://cmu-delphi.github.io/delphi-epidata/symptom-survey/>
 
     A journal article describing the survey and its methods is currently in
