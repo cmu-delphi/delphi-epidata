@@ -97,15 +97,16 @@ class SourceSignalPair:
 
 
 def _combine_source_signal_pairs(source_signal_pairs: List[SourceSignalPair]) -> List[SourceSignalPair]:
-    """Combine SourceSignalPairs with the same source, remove duplicate signals."""
-    source_signal_pairs_grouped = groupby(sorted(source_signal_pairs, lambda x: x.source), lambda x: x.source)
+    """Combine SourceSignalPairs with the same source into a single SourceSignalPair object."""
+    source_signal_pairs_grouped = groupby(sorted(source_signal_pairs, key=lambda x: x.source), lambda x: x.source)
     source_signal_pairs_combined = []
     for source, group in source_signal_pairs_grouped:
+        group = list(group)
         if any(x.signal == True for x in group):
             source_signal_pairs_combined.append(SourceSignalPair(source, True))
             continue
-        source_signal_pair_combined = SourceSignalPair(source, list(set(chain(*[x.signal if isinstance(x.signal, list) else [x.signal] for x in group]))))
-        source_signal_pairs_combined.append(source_signal_pair_combined)
+        combined_signals = sorted(list(set(chain(*[x.signal if isinstance(x.signal, list) else [x.signal] for x in group]))))
+        source_signal_pairs_combined.append(SourceSignalPair(source, combined_signals))
     return source_signal_pairs_combined
 
 

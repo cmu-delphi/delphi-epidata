@@ -183,8 +183,7 @@ class UnitTests(unittest.TestCase):
                 self.assertEqual(
                     parse_source_signal_arg(),
                     [
-                        SourceSignalPair("src1", ["sig1"]),
-                        SourceSignalPair("src1", ["sig4"]),
+                        SourceSignalPair("src1", ["sig1", "sig4"]),
                     ],
                 )
         with self.subTest("multi list"):
@@ -192,17 +191,17 @@ class UnitTests(unittest.TestCase):
                 self.assertEqual(
                     parse_source_signal_arg(),
                     [
-                        SourceSignalPair("src1", ["sig1", "sig2"]),
                         SourceSignalPair("county", ["sig5", "sig6"]),
+                        SourceSignalPair("src1", ["sig1", "sig2"]),
                     ],
                 )
         with self.subTest("hybrid"):
-            with app.test_request_context("/?signal=src2:*;src1:sig4;src3:sig5,sig6"):
+            with app.test_request_context("/?signal=src2:*;src1:sig4;src3:sig5,sig6;src1:sig5;src2:sig1"):
                 self.assertEqual(
                     parse_source_signal_arg(),
                     [
+                        SourceSignalPair("src1", ["sig4", "sig5"]),
                         SourceSignalPair("src2", True),
-                        SourceSignalPair("src1", ["sig4"]),
                         SourceSignalPair("src3", ["sig5", "sig6"]),
                     ],
                 )
@@ -376,4 +375,11 @@ class UnitTests(unittest.TestCase):
             SourceSignalPair("src3", ["sig1", "sig2"]),
             SourceSignalPair("src4", True),
         ]
+        combined_pairs = _combine_source_signal_pairs(source_signal_pairs)
+        for i, x in enumerate(combined_pairs):
+            if isinstance(x, list):
+                sorted(x) == expected_source_signal_pairs[i]
+            if isinstance(x, bool):
+                x == expected_source_signal_pairs[i]
+
         assert _combine_source_signal_pairs(source_signal_pairs) == expected_source_signal_pairs
