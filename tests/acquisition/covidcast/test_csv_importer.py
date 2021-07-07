@@ -3,10 +3,12 @@
 # standard library
 import unittest
 from unittest.mock import MagicMock
+from unittest.mock import patch
 from datetime import date
 import math
 import numpy as np
 import os
+
 # third party
 import pandas
 import epiweeks as epi
@@ -42,14 +44,14 @@ class UnitTests(unittest.TestCase):
     self.assertFalse(CsvImporter.is_sane_week(202054))
     self.assertFalse(CsvImporter.is_sane_week(20200418))
 
-  def test_find_issue_specific_csv_files(self):
+  @patch("os.path.isdir")
+  def test_find_issue_specific_csv_files(self,os_isdir_mock):
       """Recursively explore and find issue specific CSV files."""
-      # valid path
+      # check valid path
       path_prefix='prefix/to/the/data/issue_20200408'
-      os.makedirs(path_prefix, exist_ok=True)
-      self.assertTrue(os.path.isdir(path_prefix))
-
+      os_isdir_mock.return_value=True
       issue_path=path_prefix+'ght/20200408_state_rawsearch.csv'
+
       mock_glob = MagicMock()
       mock_glob.glob.side_effect = ([path_prefix], [issue_path])
 
@@ -61,12 +63,13 @@ class UnitTests(unittest.TestCase):
       found = set(CsvImporter.find_issue_specific_csv_files(path_prefix, glob=mock_glob))
       self.assertTrue(len(found)>0)
 
-      # unvalid path: 
+      # check unvalid path:
       path_prefix_invalid='invalid/prefix/to/the/data/issue_20200408'
-      self.assertFalse(os.path.isdir(path_prefix_invalid))
+      os_isdir_mock.return_value=False
       issue_path_invalid=path_prefix_invalid+'ght/20200408_state_rawsearch.csv'
       mock_glob_invalid = MagicMock()
       mock_glob_invalid.glob.side_effect = ([path_prefix_invalid], [issue_path_invalid])
+
       found = set(CsvImporter.find_issue_specific_csv_files(path_prefix_invalid, glob=mock_glob_invalid))
       self.assertFalse(len(found)>0)
 
