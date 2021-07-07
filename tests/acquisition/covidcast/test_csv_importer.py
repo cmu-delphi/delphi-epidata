@@ -6,7 +6,7 @@ from unittest.mock import MagicMock
 from datetime import date
 import math
 import numpy as np
-
+import os
 # third party
 import pandas
 import epiweeks as epi
@@ -44,22 +44,32 @@ class UnitTests(unittest.TestCase):
 
   def test_find_issue_specific_csv_files(self):
       """Recursively explore and find issue specific CSV files."""
-      path_prefix='prefix/to/the/data/'
-      #valid day path
-      issue_path='issue_20200408'
-      glob_issue_path = path_prefix + issue_path
-      glob_file_path = path_prefix + issue_path + '/ght/20200408_state_rawsearch.csv'
+      # valid path
+      path_prefix='prefix/to/the/data/issue_20200408'
+      os.makedirs(path_prefix, exist_ok=True)
+      self.assertTrue(os.path.isdir(path_prefix))
+
+      issue_path=path_prefix+'ght/20200408_state_rawsearch.csv'
       mock_glob = MagicMock()
-      mock_glob.glob.side_effect = ([glob_issue_path], [glob_file_path])
+      mock_glob.glob.side_effect = ([path_prefix], [issue_path])
 
-      #check if the day is a valid issue day.
-      issuedir_match = CsvImporter.PATTERN_ISSUE_DIR.match(glob_issue_path.lower())
+      #check if the day is a valid day.
+      issuedir_match= CsvImporter.PATTERN_ISSUE_DIR.match(path_prefix.lower())
       issue_date_value = int(issuedir_match.group(2))
-  
       self.assertTrue(CsvImporter.is_sane_day(issue_date_value))
-
+      
       found = set(CsvImporter.find_issue_specific_csv_files(path_prefix, glob=mock_glob))
       self.assertTrue(len(found)>0)
+
+      # unvalid path: 
+      path_prefix_invalid='invalid/prefix/to/the/data/issue_20200408'
+      self.assertFalse(os.path.isdir(path_prefix_invalid))
+      issue_path_invalid=path_prefix_invalid+'ght/20200408_state_rawsearch.csv'
+      mock_glob_invalid = MagicMock()
+      mock_glob_invalid.glob.side_effect = ([path_prefix_invalid], [issue_path_invalid])
+      found = set(CsvImporter.find_issue_specific_csv_files(path_prefix_invalid, glob=mock_glob_invalid))
+      self.assertFalse(len(found)>0)
+
 
   def test_find_csv_files(self):
     """Recursively explore and find CSV files."""
