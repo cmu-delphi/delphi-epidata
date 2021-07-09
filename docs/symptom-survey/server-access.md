@@ -1,15 +1,16 @@
 ---
 title: SFTP Server Access
-parent: COVID Symptom Survey
+parent: COVID-19 Trends and Impact Survey
 nav_order: 2
 ---
 
 # SFTP Server Access
 
 Researchers with data use agreements to access the raw data from the COVID-19
-symptom survey can access the data over SFTP. (If you do not have a data use
-agreement, see the [main survey page](index.md) for information about getting
-access and about aggregate data that is available for public download.)
+Trends and Impact Survey (CTIS) can access the data over SFTP. (If you do not
+have a data use agreement, see the [main survey page](index.md) for
+information about getting access and about aggregate data that is available
+for public download.)
 
 If you're not familiar with SFTP, it is a protocol for securely accessing and downloading
 large amounts of data from remote servers. The instructions below explain how to

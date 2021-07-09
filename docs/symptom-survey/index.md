@@ -1,12 +1,12 @@
 ---
-title: COVID Symptom Survey
+title: COVID-19 Trends and Impact Survey
 has_children: true
 nav_order: 2
 ---
 
-# COVID Symptom Survey
+# COVID-19 Trends and Impact Survey
 
-Since April 2020, Delphi has conducted a voluntary COVID-19 symptom survey,
+Since April 2020, Delphi has conducted a voluntary survey about COVID-19,
 distributed daily to users in the United States via a partnership with Facebook.
 This survey asks respondents about COVID-like symptoms, their behavior (such as
 social distancing), mental health, and economic and health impacts they have
@@ -29,7 +29,7 @@ If you have questions about the survey or getting access to data, contact us at
 
 ## Credits
 
-The COVID Symptom Survey is a project of the [Delphi
+The COVID-19 Trends and Impact Survey (CTIS) is a project of the [Delphi
 Group](https://delphi.cmu.edu/) at Carnegie Mellon University. The Principal
 Investigator is [Alex Reinhart](https://www.refsmmat.com/); Wichada La
 Motte-Kerr is Survey Coordinator. The survey protocol is reviewed by the
@@ -59,18 +59,30 @@ the survey in publications based on the data. Specifically, we ask that you:
 2. Cite this web page for details about the survey. For example, you may cite it
    as
 
-    > Delphi Group (2021). COVID Symptom Survey.
+    > Delphi Group (2021). COVID-19 Trends and Impact Survey.
     > <https://cmu-delphi.github.io/delphi-epidata/symptom-survey/>
 
     A journal article describing the survey and its methods is currently in
     preparation, and we will update this page when it is available so that you
     can cite it instead.
-3. Send a copy of your publication, once it appears publicly as a preprint or
-   journal article, to <delphi-survey-info@lists.andrew.cmu.edu>.
+3. The data use agreement requires that if you disclose survey microdata, Delphi
+   must agree on the aggregation method that you will use to ensure reported
+   estimates do not disclose any individual identifiable information, including
+   individual survey results. If you are unsure whether a particular aggregation
+   will prevent disclosure of individual survey results, please email us at
+   <delphi-survey-info@lists.andrew.cmu.edu>.
+4. Finally, send a copy of your publication, once it appears publicly as a
+   preprint or journal article, to <delphi-survey-info@lists.andrew.cmu.edu>.
 
-Additionally, please note that the data use agreement requires that if you
-disclose survey microdata, Delphi must agree on the aggregation method that you
-will use to ensure reported estimates do not disclose any individual
-identifiable information, including individual survey results. If you are unsure
-whether a particular aggregation will prevent disclosure of individual survey
-results, please email us at <delphi-survey-info@lists.andrew.cmu.edu>.
+When referring to the survey in text, we prefer the following formats:
+
+* Long form (such as in an introduction or methods description): "The Delphi
+  Group at Carnegie Mellon University U.S. COVID-19 Trends and Impact Survey, in
+  partnership with Facebook".
+* Short form (used after the long form has been introduced): "The U.S. COVID-19
+  Trends and Impact Survey"
+* Acronym form: "Delphi US CTIS"
+
+Prior to July 2021, the survey was known as the COVID Symptom Survey (CSS), and
+some older documentation and publication may still refer to this name. We prefer
+that new publications and materials refer to the new name.
