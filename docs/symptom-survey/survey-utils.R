@@ -12,7 +12,7 @@ library(dplyr)
 #' This function extracts the date from each file, determines which files
 #' contain reissued data, and produces a single data frame representing the most
 #' recent data available for each day. It can read gzip-compressed CSV files,
-#' such as those on the SFTP site, using `readr::read_csv`.
+#' such as those on the SFTP site, using `readr::read_csv()`.
 #'
 #' This function handles column types correctly for surveys up to Wave 4.
 #'
@@ -38,57 +38,83 @@ get_survey_df <- function(directory, pattern = "*.csv.gz$") {
   big_df <- map_dfr(
     latest_files,
     function(f) {
-      # stop readr from thinking commas = thousand separators,
-      # and from inferring column types incorrectly
-      read_csv(file.path(directory, f), locale = locale(grouping_mark = ""),
+      # stop readr from thinking commas = thousand separators, and from
+      # inferring column types incorrectly
+      read_csv(file.path(directory, f),
+               locale = locale(grouping_mark = ""),
                col_types = cols(
+                 UserLanguage = col_character(),
+                 StartDatetime = col_datetime(),
+                 EndDatetime = col_datetime(),
+                 weight = col_number(),
+                 wave = col_integer(),
+                 fips = col_character(),
+                 A2 = col_number(),
+                 A5_1 = col_number(),
+                 A5_2 = col_number(),
+                 A5_3 = col_number(),
                  A2b = col_number(),
                  A3 = col_character(),
                  A4 = col_number(),
-                 B2 = col_character(),
-                 B2_14_TEXT = col_character(),
-                 B2c = col_character(),
-                 B2c_14_TEXT = col_character(),
-                 B4 = col_number(),
-                 B5 = col_number(),
-                 B7 = col_character(),
-                 B10b = col_character(),
-                 B12a = col_character(),
-                 C1 = col_character(),
-                 C3 = col_number(),
-                 C4 = col_number(),
-                 C5 = col_number(),
-                 C7 = col_number(),
-                 C13 = col_character(),
-                 C13a = col_character(),
-                 D1_4_TEXT = col_character(),
-                 E3 = col_character(),
-                 fips = col_character(),
-                 UserLanguage = col_character(),
-                 StartDatetime = col_character(),
-                 EndDatetime = col_character(),
-                 Q65 = col_integer(),
-                 Q66 = col_integer(),
-                 Q67 = col_integer(),
-                 Q68 = col_integer(),
-                 Q69 = col_integer(),
-                 Q70 = col_integer(),
-                 Q71 = col_integer(),
-                 Q72 = col_integer(),
-                 Q73 = col_integer(),
-                 Q74 = col_integer(),
-                 Q75 = col_integer(),
-                 Q76 = col_integer(),
-                 Q77 = col_integer(),
-                 Q78 = col_integer(),
-                 Q79 = col_integer(),
-                 Q80 = col_integer(),
-                 .default = col_number()))
+                 B2b = col_number(),
+                 .default = col_character()))
     }
   )
   return(big_df)
 }
 
+#' Split multiselect options into codable form
+#'
+#' Multiselect options are coded by Qualtrics as a comma-separated string of
+#' selected options, like "1,14", or the empty string if no options are
+#' selected. Split these into vectors of selected options, which can be queried
+#' using `is_selected()`.
+#'
+#' @param column vector of selections, like c("1,4", "5", ...)
+#' @return list of same length, each entry of which is a vector of selected
+#'   options
+split_options <- function(column) {
+  return(strsplit(column, ",", fixed = TRUE))
+}
+
+#' Test if a specific choice is selected in a multiselect item
+#'
+#' This is used for items that allow respondents to select multiple options from
+#' a list, such as the symptoms items. Checking whether a specific selection is
+#' selected in either "" (empty string) or `NA` responses will produce `NA`s, so
+#' that empty responses are treated as missing, rather than as the item not
+#' being selected.
+#'
+#' @param vec A list whose entries are character vectors, such as c("14", "15"),
+#'   as produced by `split_options()`.
+#' @param selection one string, such as "14", representing the answer choice of
+#'   interest
+#' @return a logical vector; for each entry in `vec`, the boolean indicates
+#'   whether `selection` is contained in the character vector.
+#' @examples
+#' \dontrun{
+#' symptoms <- split_options(data$B2)
+#'
+#' # vector of T/F/NA for each respondent's fever status
+#' fever <- is_selected(symptoms, "1")
+#' }
+is_selected <- function(vec, selection) {
+  selections <- unlist(lapply(
+    vec,
+    function(resp) {
+      if (length(resp) == 0 || all(is.na(resp))) {
+        # Qualtrics files code no selection as "" (empty string), which is
+        # parsed by `read_csv()` as `NA` (missing) by default. Since all our
+        # selection items include "None of the above" or similar, treat both no
+        # selection ("") or missing (NA) as missing, for generality.
+        NA
+      } else {
+        selection %in% resp
+      }
+    }))
+
+  return(selections)
+}
 ## Helper function to extract dates from each file's filename.
 get_file_properties <- function(filename) {
   short <- strsplit(filename, ".", fixed = TRUE)[[1]][1]
