@@ -38,6 +38,7 @@ from ..utils import shift_time_value, date_to_time_value, time_value_to_iso, tim
 
 # first argument is the endpoint name
 bp = Blueprint("covidcast", __name__)
+required_role = None
 alias = None
 
 

@@ -11,6 +11,7 @@ from .._query import filter_fields
 from .._validate import extract_strings
 
 bp = Blueprint("covidcast_meta", __name__)
+required_role = None
 
 
 class SourceSignal:

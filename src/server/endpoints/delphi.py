@@ -7,6 +7,7 @@ from .._validate import require_all
 
 # first argument is the endpoint name
 bp = Blueprint("delphi", __name__)
+required_role = None
 alias = None
 
 

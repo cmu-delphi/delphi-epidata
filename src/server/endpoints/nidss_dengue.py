@@ -7,6 +7,7 @@ from .._validate import extract_integers, extract_strings, require_all
 
 # first argument is the endpoint name
 bp = Blueprint("nidss_dengue", __name__)
+required_role = None
 alias = None
 
 

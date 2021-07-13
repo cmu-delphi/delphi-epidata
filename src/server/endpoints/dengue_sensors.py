@@ -1,17 +1,17 @@
 from flask import Blueprint
 
-from .._config import AUTH
 from .._query import execute_query, QueryBuilder
-from .._validate import check_auth_token, extract_integers, extract_strings, require_all
+from .._validate import extract_integers, extract_strings, require_all
+from .._security import UserRole
 
 # first argument is the endpoint name
 bp = Blueprint("dengue_sensors", __name__)
+required_role = UserRole.sensors
 alias = None
 
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    check_auth_token(AUTH["sensors"])
     require_all("names", "locations", "epiweeks")
 
     names = extract_strings("names")
@@ -20,14 +20,14 @@ def handle():
 
     # build query
     q = QueryBuilder("dengue_sensors", "s")
-    
+
     fields_string = ["name", "location"]
     fields_int = ["epiweek"]
     fields_float = ["value"]
     q.set_fields(fields_string, fields_int, fields_float)
-    
+
     q.set_order('epiweek', 'name', 'location')
-    
+
     q.where_strings('name', names)
     q.where_strings('location', locations)
     q.where_integers('epiweek', epiweeks)

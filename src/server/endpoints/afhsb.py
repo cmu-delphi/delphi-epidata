@@ -1,14 +1,14 @@
-import re
 from typing import Dict, List
 
 from flask import Blueprint
 
-from .._config import AUTH
 from .._query import execute_queries, filter_integers, filter_strings
-from .._validate import check_auth_token, extract_integers, extract_strings, require_all
+from .._validate import extract_integers, extract_strings, require_all
+from .._security import UserRole
 
 # first argument is the endpoint name
 bp = Blueprint("afhsb", __name__)
+required_role = UserRole.afhsb
 alias = None
 
 
@@ -54,7 +54,6 @@ FLU_MAPPING = {
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    check_auth_token(AUTH["afhsb"])
     require_all("locations", "epiweeks", "flu_types")
 
     locations = extract_strings("locations")
@@ -70,14 +69,8 @@ def handle():
     for location_type, loc in location_dict.items():
         if not loc:
             continue
-        table = (
-            "afhsb_00to13_region"
-            if location_type in ["hhs", "cen"]
-            else "afhsb_00to13_state"
-        )
-        fields = (
-            f"`epiweek`, `{location_type}` `location`, sum(`visit_sum`) `visit_sum`"
-        )
+        table = "afhsb_00to13_region" if location_type in ["hhs", "cen"] else "afhsb_00to13_state"
+        fields = f"`epiweek`, `{location_type}` `location`, sum(`visit_sum`) `visit_sum`"
         group = "`epiweek`, `location`"
         order = "`epiweek` ASC, `location` ASC"
         # build the filter
@@ -88,9 +81,7 @@ def handle():
 
         for subset_flu in subset_flus:
             flu_params = params.copy()
-            condition_flu = filter_strings(
-                "`flu_type`", FLU_MAPPING[subset_flu], "flu_type", flu_params
-            )
+            condition_flu = filter_strings("`flu_type`", FLU_MAPPING[subset_flu], "flu_type", flu_params)
             query = f"""SELECT {fields}, '{subset_flu}' `flu_type` FROM {table}
                         WHERE ({condition_epiweek}) AND ({condition_location}) AND ({condition_flu})
                         GROUP BY {group} ORDER BY {order}"""
@@ -98,9 +89,7 @@ def handle():
         # disjoint flu types: flu1, flu2-flu1, flu3-flu2, ili-flu3
         if disjoint_flus:
             flu_params = params.copy()
-            condition_flu = filter_strings(
-                "`flu_type`", disjoint_flus, "flu_type", flu_params
-            )
+            condition_flu = filter_strings("`flu_type`", disjoint_flus, "flu_type", flu_params)
             query = f"""SELECT {fields}, `flu_type` FROM {table}
                         WHERE ({condition_epiweek}) AND ({condition_location}) AND ({condition_flu})
                         GROUP BY {group},`flu_type` ORDER BY {order},`flu_type`"""

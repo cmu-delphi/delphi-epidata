@@ -1,11 +1,12 @@
 from typing import List, Dict, Any
 from flask import Blueprint
 
-from .._query import parse_result, filter_fields
+from .._query import parse_result
 from .._printer import print_non_standard
 
 # first argument is the endpoint name
 bp = Blueprint("signal_dashboard_coverage", __name__)
+required_role = None
 alias = None
 
 def fetch_coverage_data() -> Dict[str, Dict[str, List[Dict[str, Any]]]]:

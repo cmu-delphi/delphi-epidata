@@ -1,19 +1,17 @@
 from flask import Blueprint
 
-from .._config import AUTH
 from .._printer import print_non_standard
 from .._query import parse_result
-from .._validate import check_auth_token
+from .._security import UserRole
 
 # first argument is the endpoint name
 bp = Blueprint("meta_afhsb", __name__)
+required_role = UserRole.afhsb
 alias = None
 
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    check_auth_token(AUTH["afhsb"])
-
     # build query
     table1 = "afhsb_00to13_state"
     table2 = "afhsb_13to17_state"

@@ -5,6 +5,7 @@ from .._validate import extract_strings, require_any
 
 # first argument is the endpoint name
 bp = Blueprint("covid_hosp_facility_lookup", __name__)
+required_role = None
 
 
 @bp.route("/", methods=("GET", "POST"))
@@ -37,19 +38,19 @@ def handle():
     q.set_order("hospital_pk")
     # build the filter
     # these are all fast because the table has indexes on each of these fields
-    
+
     if state:
-        q.where_strings('state', state)
+        q.where_strings("state", state)
     elif ccn:
-        q.where_strings('ccn', ccn)
+        q.where_strings("ccn", ccn)
     elif city:
-        q.where_strings('city', city)
+        q.where_strings("city", city)
     elif zip:
         q.where_strings("zip", zip)
     elif fips_code:
         q.where_strings("fips_code", fips_code)
     else:
-        q.conditions.append('FALSE')
+        q.conditions.append("FALSE")
 
     fields_string = [
         "hospital_pk",

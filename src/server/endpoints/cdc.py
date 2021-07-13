@@ -1,17 +1,18 @@
 from flask import Blueprint
 
-from .._config import AUTH, NATION_REGION, REGION_TO_STATE
-from .._validate import require_all, extract_strings, extract_integers, check_auth_token
+from .._config import NATION_REGION, REGION_TO_STATE
+from .._validate import require_all, extract_strings, extract_integers
 from .._query import filter_strings, execute_queries, filter_integers
+from .._security import UserRole
 
 # first argument is the endpoint name
 bp = Blueprint("cdc", __name__)
+required_role = UserRole.cdc
 alias = None
 
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    check_auth_token(AUTH["cdc"])
     require_all("locations", "epiweeks")
 
     # parse the request
