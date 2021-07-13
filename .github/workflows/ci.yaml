@@ -84,7 +84,7 @@ jobs:
           docker stop delphi_database_epidata delphi_web_epidata
           docker network remove delphi-net
 
-  build_js_clients:
+  build_js_client:
     runs-on: ubuntu-latest
     defaults:
       run:
