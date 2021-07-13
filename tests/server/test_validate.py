@@ -2,24 +2,12 @@
 
 # standard library
 import unittest
-import base64
 
 # from flask.testing import FlaskClient
 from delphi.epidata.server._common import app
-from delphi.epidata.server._validate import (
-    resolve_auth_token,
-    check_auth_token,
-    require_all,
-    require_any,
-    extract_strings,
-    extract_integers,
-    extract_integer,
-    extract_date,
-    extract_dates
-)
+from delphi.epidata.server._validate import require_all, require_any, extract_strings, extract_integers, extract_integer, extract_date, extract_dates
 from delphi.epidata.server._exceptions import (
     ValidationFailedException,
-    UnAuthenticatedException,
 )
 
 # py3tester coverage target
@@ -36,47 +24,6 @@ class UnitTests(unittest.TestCase):
         app.config["WTF_CSRF_ENABLED"] = False
         app.config["DEBUG"] = False
 
-    def test_resolve_auth_token(self):
-        with self.subTest("no auth"):
-            with app.test_request_context("/"):
-                self.assertIsNone(resolve_auth_token())
-
-        with self.subTest("param"):
-            with app.test_request_context("/?auth=abc"):
-                self.assertEqual(resolve_auth_token(), "abc")
-
-        with self.subTest("bearer token"):
-            with app.test_request_context("/", headers={"Authorization": "Bearer abc"}):
-                self.assertEqual(resolve_auth_token(), "abc")
-
-        with self.subTest("basic token"):
-            userpass = base64.b64encode(b"epidata:abc").decode("utf-8")
-            with app.test_request_context(
-                "/", headers={"Authorization": f"Basic {userpass}"}
-            ):
-                self.assertEqual(resolve_auth_token(), "abc")
-
-    def test_check_auth_token(self):
-        with self.subTest("no auth but optional"):
-            with app.test_request_context("/"):
-                self.assertFalse(check_auth_token("abc", True))
-        with self.subTest("no auth but required"):
-            with app.test_request_context("/"):
-                self.assertRaises(
-                    ValidationFailedException, lambda: check_auth_token("abc")
-                )
-        with self.subTest("auth and required"):
-            with app.test_request_context("/?auth=abc"):
-                self.assertTrue(check_auth_token("abc"))
-        with self.subTest("auth and required but wrong"):
-            with app.test_request_context("/?auth=abc"):
-                self.assertRaises(
-                    UnAuthenticatedException, lambda: check_auth_token("def")
-                )
-        with self.subTest("auth and required but wrong but optional"):
-            with app.test_request_context("/?auth=abc"):
-                self.assertFalse(check_auth_token("def", True))
-
     def test_require_all(self):
         with self.subTest("all given"):
             with app.test_request_context("/"):
@@ -85,14 +32,10 @@ class UnitTests(unittest.TestCase):
                 self.assertTrue(require_all("abc", "def"))
         with self.subTest("missing parameter"):
             with app.test_request_context("/?abc=abc"):
-                self.assertRaises(
-                    ValidationFailedException, lambda: require_all("abc", "def")
-                )
+                self.assertRaises(ValidationFailedException, lambda: require_all("abc", "def"))
         with self.subTest("missing empty parameter"):
             with app.test_request_context("/?abc=abc&def="):
-                self.assertRaises(
-                    ValidationFailedException, lambda: require_all("abc", "def")
-                )
+                self.assertRaises(ValidationFailedException, lambda: require_all("abc", "def"))
 
     def test_require_any(self):
         with self.subTest("default given"):
@@ -148,10 +91,10 @@ class UnitTests(unittest.TestCase):
                 self.assertEqual(extract_integers("s"), [1])
         with self.subTest("multiple"):
             with app.test_request_context("/?s=1,2"):
-                self.assertEqual(extract_integers("s"), [1,2])
+                self.assertEqual(extract_integers("s"), [1, 2])
         with self.subTest("multiple param"):
             with app.test_request_context("/?s=1&s=2"):
-                self.assertEqual(extract_integers("s"), [1,2])
+                self.assertEqual(extract_integers("s"), [1, 2])
         with self.subTest("multiple param mixed"):
             with app.test_request_context("/?s=1&s=2,3"):
                 self.assertEqual(extract_integers("s"), [1, 2, 3])
@@ -235,4 +178,3 @@ class UnitTests(unittest.TestCase):
         with self.subTest("single range iso"):
             with app.test_request_context("/?s=2020-01-01:2020-01-01"):
                 self.assertEqual(extract_dates("s"), [20200101])
-
