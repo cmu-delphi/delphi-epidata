@@ -3,7 +3,7 @@ WORKDIR /src
 COPY . /src
 RUN npm ci && npm run build
 
-FROM tiangolo/meinheld-gunicorn:python3.9
+FROM tiangolo/meinheld-gunicorn:python3.8
 LABEL org.opencontainers.image.source=https://github.com/cmu-delphi/delphi-epidata
 # use delphi's timezome
 RUN ln -s -f /usr/share/zoneinfo/America/New_York /etc/localtime
