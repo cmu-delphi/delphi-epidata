@@ -1,12 +1,19 @@
 from typing import Final, Optional, Set, cast
 from enum import Enum
+from datetime import date, timedelta
 from functools import wraps
 from flask import g
 from werkzeug.local import LocalProxy
 from sqlalchemy import Table, Column, String, Integer, JSON
 from ._common import app, request, db
-from ._exceptions import MissingAPIKeyException
+from ._exceptions import MissingAPIKeyException, UnAuthenticatedException
 from ._db import metadata, TABLE_OPTIONS
+
+API_KEY_REQUIRED_STARTING_AT = date(2021, 7, 20)
+API_KEY_HARD_WARNING = API_KEY_REQUIRED_STARTING_AT - timedelta(days=14)
+API_KEY_SOFT_WARNING = API_KEY_HARD_WARNING - timedelta(days=14)
+
+API_KEY_WARNING_TEXT = "an api key will be required starting at {}, go to https://delphi.cmu.edu to request one".format(API_KEY_REQUIRED_STARTING_AT)
 
 user_table = Table(
     "api_user",
@@ -94,26 +101,54 @@ def _get_current_user() -> User:
     if "user" not in g:
         api_key = resolve_auth_token()
         if not api_key:
-            raise MissingAPIKeyException()
+            if require_api_key():
+                raise MissingAPIKeyException()
+            else:
+                g.user = ANONYMOUS_USER
+                return g.user
         stmt = user_table.select().where(user_table.c.api_key == api_key)
         user = db.execution_options(stream_results=False).execute(stmt).first()
         if user is None:
-            raise MissingAPIKeyException()
-        g.user = User(str(user.id), True, set(user.roles or []))
+            if require_api_key():
+                raise MissingAPIKeyException()
+            else:
+                g.user = ANONYMOUS_USER
+        else:
+            g.user = User(str(user.id), True, set(user.roles or []))
     return g.user
 
 
-"""
-access to the SQL Alchemy connection for this request
-"""
 current_user: User = cast(User, LocalProxy(_get_current_user))
+
+
+def require_api_key() -> bool:
+    n = date.today()
+    return n >= API_KEY_REQUIRED_STARTING_AT
+
+
+def show_soft_api_key_warning() -> bool:
+    n = date.today()
+    return not current_user.authenticated and n > API_KEY_SOFT_WARNING and n < API_KEY_HARD_WARNING
+
+
+def show_hard_api_key_warning() -> bool:
+    n = date.today()
+    return not current_user.authenticated and n > API_KEY_HARD_WARNING
 
 
 @app.before_request
 def resolve_user():
     if request.path.startswith("/lib"):
         return
-    _get_current_user()
+    # try to get the db
+    try:
+        _get_current_user()
+    except:
+        app.logger.error("user connection error", exc_info=True)
+        if require_api_key():
+            raise MissingAPIKeyException()
+        else:
+            g.user = ANONYMOUS_USER
 
 
 def require_role(required_role: Optional[UserRole]):
@@ -124,7 +159,7 @@ def require_role(required_role: Optional[UserRole]):
         @wraps(f)
         def decorated_function(*args, **kwargs):
             if not current_user or not current_user.has_role(required_role):
-                raise MissingAPIKeyException()
+                raise UnAuthenticatedException()
             return f(*args, **kwargs)
 
         return decorated_function
