@@ -1,10 +1,10 @@
-from typing import Final, Optional, Set, cast
+from typing import Optional, Set, cast
 from enum import Enum
 from datetime import date, timedelta
 from functools import wraps
 from flask import g
 from werkzeug.local import LocalProxy
-from sqlalchemy import Table, Column, String, Integer, JSON
+from sqlalchemy import Table, Column, String, Integer
 from ._common import app, request, db
 from ._exceptions import MissingAPIKeyException, UnAuthenticatedException
 from ._db import metadata, TABLE_OPTIONS
@@ -20,8 +20,8 @@ user_table = Table(
     metadata,
     Column("id", Integer, primary_key=True, autoincrement=True),
     Column("api_key", String(50)),
-    Column("email", String(100)),
-    Column("roles", JSON()),
+    Column("email", String(255)),
+    Column("roles", String(255)),
     **TABLE_OPTIONS,
 )
 
@@ -65,9 +65,9 @@ OPEN_SENSORS = [
 
 
 class User:
-    user_id: Final[str]
-    roles: Final[Set[UserRole]]
-    authenticated: Final[bool]
+    user_id: str
+    roles: Set[UserRole]
+    authenticated: bool
 
     def __init__(self, user_id: str, authenticated: bool, roles: Set[UserRole]) -> None:
         self.user_id = user_id
@@ -114,7 +114,7 @@ def _get_current_user() -> User:
             else:
                 g.user = ANONYMOUS_USER
         else:
-            g.user = User(str(user.id), True, set(user.roles or []))
+            g.user = User(str(user.id), True, set(user.roles.split(",")))
     return g.user
 
 
