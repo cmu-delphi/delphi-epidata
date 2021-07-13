@@ -18,7 +18,7 @@ from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import ma
 
 
 # use the local instance of the Epidata API
-BASE_URL = "http://delphi_web_epidata/epidata/covidcast"
+BASE_URL = "http://epidata:key@delphi_web_epidata/epidata/covidcast"
 
 
 @dataclass
@@ -110,6 +110,8 @@ class CovidcastEndpointTests(unittest.TestCase):
         cnx = mysql.connector.connect(user="user", password="pass", host="delphi_database_epidata", database="epidata")
         cur = cnx.cursor()
         cur.execute("truncate table covidcast")
+        cur.execute("truncate table api_user")
+        cur.execute('insert into api_user(api_key, email, roles) values("key", "test@test.com", "")')
         cur.execute('update covidcast_meta_cache set timestamp = 0, epidata = ""')
         cnx.commit()
         cur.close()
@@ -128,11 +130,11 @@ class CovidcastEndpointTests(unittest.TestCase):
         self.cur.execute(
             f"""
             INSERT INTO
-                `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	            `time_value`, `geo_value`, `value_updated_timestamp`, 
-                `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
+                `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`,
+	            `time_value`, `geo_value`, `value_updated_timestamp`,
+                `value`, `stderr`, `sample_size`, `direction_updated_timestamp`,
                 `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-                `missing_stderr`,`missing_sample_size`) 
+                `missing_stderr`,`missing_sample_size`)
             VALUES
             {sql}
             """

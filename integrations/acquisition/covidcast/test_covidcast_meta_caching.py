@@ -22,7 +22,7 @@ __test_target__ = (
 )
 
 # use the local instance of the Epidata API
-BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+BASE_URL = 'http://epidata:key@delphi_web_epidata/epidata/api.php'
 
 
 class CovidcastMetaCacheTests(unittest.TestCase):
@@ -41,6 +41,8 @@ class CovidcastMetaCacheTests(unittest.TestCase):
 
     # clear the `covidcast` table
     cur.execute('truncate table covidcast')
+    cur.execute("truncate table api_user")
+    cur.execute('insert into api_user(api_key, email, roles) values("key", "test@test.com", "")')
     # reset the `covidcast_meta_cache` table (it should always have one row)
     cur.execute('update covidcast_meta_cache set timestamp = 0, epidata = ""')
     cnx.commit()
@@ -68,11 +70,11 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     # insert dummy data
     self.cur.execute(f'''
       INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
+        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`,
+	      `time_value`, `geo_value`, `value_updated_timestamp`,
+        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`,
         `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
+        `missing_stderr`,`missing_sample_size`)
       VALUES
         (0, 'src', 'sig', 'day', 'state', 20200422, 'pa',
           123, 1, 2, 3, 456, 1, 20200422, 0, 1, False, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
@@ -81,11 +83,11 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     ''')
     self.cur.execute(f'''
       INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
+        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`,
+	      `time_value`, `geo_value`, `value_updated_timestamp`,
+        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`,
         `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
+        `missing_stderr`,`missing_sample_size`)
       VALUES
         (100, 'src', 'wip_sig', 'day', 'state', 20200422, 'pa',
           456, 4, 5, 6, 789, -1, 20200422, 0, 1, True, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})

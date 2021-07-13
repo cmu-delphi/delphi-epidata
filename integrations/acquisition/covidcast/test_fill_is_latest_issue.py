@@ -30,6 +30,8 @@ class FillIsLatestIssueTests(unittest.TestCase):
         database='epidata')
     cur = cnx.cursor()
     cur.execute('truncate table covidcast')
+    cur.execute("truncate table api_user")
+    cur.execute('insert into api_user(api_key, email, roles) values("key", "test@test.com", "")')
     cnx.commit()
     cur.close()
 
@@ -42,7 +44,7 @@ class FillIsLatestIssueTests(unittest.TestCase):
     secrets.db.epi = ('user', 'pass')
 
     # use the local instance of the Epidata API
-    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+    Epidata.BASE_URL = 'http://epidata:key@delphi_web_epidata/epidata/api.php'
 
   def tearDown(self):
     """Perform per-test teardown."""

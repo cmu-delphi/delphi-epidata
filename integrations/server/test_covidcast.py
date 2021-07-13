@@ -11,7 +11,7 @@ import requests
 from delphi_utils import Nans
 
 # use the local instance of the Epidata API
-BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+BASE_URL = 'http://epidata:key@delphi_web_epidata/epidata/api.php'
 
 
 class CovidcastTests(unittest.TestCase):
@@ -28,6 +28,8 @@ class CovidcastTests(unittest.TestCase):
         database='epidata')
     cur = cnx.cursor()
     cur.execute('truncate table covidcast')
+    cur.execute("truncate table api_user")
+    cur.execute('insert into api_user(api_key, email, roles) values("key", "test@test.com", "")')
     cnx.commit()
     cur.close()
 
@@ -46,11 +48,11 @@ class CovidcastTests(unittest.TestCase):
     # insert dummy data
     self.cur.execute(f'''
       INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
+        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`,
+	      `time_value`, `geo_value`, `value_updated_timestamp`,
+        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`,
         `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
+        `missing_stderr`,`missing_sample_size`)
       VALUES
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
           123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 1, False,
@@ -99,11 +101,11 @@ class CovidcastTests(unittest.TestCase):
   #   # insert dummy data
   #   self.cur.execute(f'''
   #    INSERT INTO
-  #      `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-  #      `time_value`, `geo_value`, `value_updated_timestamp`, 
-  #      `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
+  #      `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`,
+  #      `time_value`, `geo_value`, `value_updated_timestamp`,
+  #      `value`, `stderr`, `sample_size`, `direction_updated_timestamp`,
   #      `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-  #      `missing_stderr`,`missing_sample_size`) 
+  #      `missing_stderr`,`missing_sample_size`)
   #    VALUES
   #       (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
   #         123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 1, False,
@@ -142,11 +144,11 @@ class CovidcastTests(unittest.TestCase):
     # insert dummy data
     self.cur.execute(f'''
       INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
+        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`,
+	      `time_value`, `geo_value`, `value_updated_timestamp`,
+        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`,
         `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
+        `missing_stderr`,`missing_sample_size`)
       VALUES
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
           123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 1, False,
@@ -182,11 +184,11 @@ class CovidcastTests(unittest.TestCase):
     # insert dummy data
     self.cur.execute(f'''
       INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
+        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`,
+	      `time_value`, `geo_value`, `value_updated_timestamp`,
+        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`,
         `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
+        `missing_stderr`,`missing_sample_size`)
       VALUES
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
           123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 1, False,
@@ -230,11 +232,11 @@ class CovidcastTests(unittest.TestCase):
     # insert dummy data
     self.cur.execute(f'''
       INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
+        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`,
+	      `time_value`, `geo_value`, `value_updated_timestamp`,
+        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`,
         `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
+        `missing_stderr`,`missing_sample_size`)
       VALUES
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
           123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 1, False,
@@ -357,11 +359,11 @@ class CovidcastTests(unittest.TestCase):
     # insert dummy data
     self.cur.execute(f'''
       INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
+        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`,
+	      `time_value`, `geo_value`, `value_updated_timestamp`,
+        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`,
         `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
+        `missing_stderr`,`missing_sample_size`)
       VALUES
         (0, 'src', 'sig', 'day', 'county', 20200414, '11111',
           123, 10, 11, 12, 456, 13, 20200414, 0, 1, False,
@@ -451,11 +453,11 @@ class CovidcastTests(unittest.TestCase):
     # insert dummy data
     self.cur.execute(f'''
       INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
+        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`,
+	      `time_value`, `geo_value`, `value_updated_timestamp`,
+        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`,
         `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
+        `missing_stderr`,`missing_sample_size`)
       VALUES
         (0, 'src', 'sig', 'day', 'county', 20200414, '11111',
           123, 10, 11, 12, 456, 13, 20200414, 0, 1, False,
@@ -573,11 +575,11 @@ class CovidcastTests(unittest.TestCase):
     # insert dummy data
     self.cur.execute(f'''
       INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
+        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`,
+	      `time_value`, `geo_value`, `value_updated_timestamp`,
+        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`,
         `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
+        `missing_stderr`,`missing_sample_size`)
       VALUES
         (0, 'src', 'sig', 'day', 'county', 20200411, '01234',
           123, 10, 11, 12, 456, 13, 20200413, 2, 1, False,
@@ -667,11 +669,11 @@ class CovidcastTests(unittest.TestCase):
     # insert dummy data
     self.cur.execute(f'''
       INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
+        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`,
+	      `time_value`, `geo_value`, `value_updated_timestamp`,
+        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`,
         `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
+        `missing_stderr`,`missing_sample_size`)
       VALUES
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
           0, 0, 0, 0, 0, 0, 20200414, 0, 1, False,
@@ -683,11 +685,11 @@ class CovidcastTests(unittest.TestCase):
     with self.assertRaises(mysql.connector.errors.IntegrityError):
       self.cur.execute(f'''
       INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
+        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`,
+	      `time_value`, `geo_value`, `value_updated_timestamp`,
+        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`,
         `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
+        `missing_stderr`,`missing_sample_size`)
       VALUES
           (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
             1, 1, 1, 1, 1, 1, 20200414, 0, 1, False,
@@ -697,11 +699,11 @@ class CovidcastTests(unittest.TestCase):
     # succeed to insert different dummy data under a different issue
     self.cur.execute(f'''
       INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
+        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`,
+	      `time_value`, `geo_value`, `value_updated_timestamp`,
+        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`,
         `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
+        `missing_stderr`,`missing_sample_size`)
       VALUES
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
           1, 1, 1, 1, 1, 1, 20200415, 1, 1, False,
@@ -714,11 +716,11 @@ class CovidcastTests(unittest.TestCase):
     # insert dummy data
     self.cur.execute(f'''
       INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
+        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`,
+	      `time_value`, `geo_value`, `value_updated_timestamp`,
+        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`,
         `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
+        `missing_stderr`,`missing_sample_size`)
       VALUES
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
           123, 0.123, NULL, NULL, 456, NULL, 20200414, 0, 1, False,
@@ -766,11 +768,11 @@ class CovidcastTests(unittest.TestCase):
     # insert dummy data
     self.cur.execute(f'''
       INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
+        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`,
+	      `time_value`, `geo_value`, `value_updated_timestamp`,
+        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`,
         `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
+        `missing_stderr`,`missing_sample_size`)
       VALUES
         (0, 'src', 'sig', 'hour', 'state', 2020041714, 'vi',
           123, 10, 11, 12, 456, 13, 2020041714, 0, 1, False,
@@ -829,11 +831,11 @@ class CovidcastTests(unittest.TestCase):
     # insert dummy data
     self.cur.execute(f'''
       INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
+        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`,
+	      `time_value`, `geo_value`, `value_updated_timestamp`,
+        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`,
         `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
+        `missing_stderr`,`missing_sample_size`)
       VALUES
       (0, 'src', 'sig', 'day', 'county', 20200411, '01234',
           123, 10, 11, 12, 456, 13, 20200413, 0, 1, False,

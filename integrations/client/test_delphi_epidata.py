@@ -24,7 +24,7 @@ def fake_epidata_endpoint(func):
   def wrapper(*args):
     Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/fake_api.php'
     func(*args)
-    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+    Epidata.BASE_URL = 'http://epidata:key@delphi_web_epidata/epidata/api.php'
   return wrapper
 
 
@@ -43,6 +43,8 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
     cur = cnx.cursor()
     cur.execute('truncate table covidcast')
     cur.execute('truncate table covidcast_nowcast')
+    cur.execute("truncate table api_user")
+    cur.execute('insert into api_user(api_key, email, roles) values("key", "test@test.com", "")')
     cnx.commit()
     cur.close()
 
@@ -51,7 +53,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
     self.cur = cnx.cursor()
 
     # use the local instance of the Epidata API
-    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+    Epidata.BASE_URL = 'http://epidata:key@delphi_web_epidata/epidata/api.php'
 
     # use the local instance of the epidata database
     secrets.db.host = 'delphi_database_epidata'
@@ -68,11 +70,11 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
     # insert dummy data
     self.cur.execute(f'''
       INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
+        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`,
+	      `time_value`, `geo_value`, `value_updated_timestamp`,
+        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`,
         `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
+        `missing_stderr`,`missing_sample_size`)
       VALUES
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
           123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 0, False,
@@ -338,11 +340,11 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
     # insert dummy data
     self.cur.execute(f'''
       INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
+        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`,
+	      `time_value`, `geo_value`, `value_updated_timestamp`,
+        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`,
         `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
+        `missing_stderr`,`missing_sample_size`)
       VALUES
         (0, 'src', 'sig', 'day', 'county', 20200414, '11111',
           123, 10, 11, 12, 456, 13, 20200414, 0, 1, False,
@@ -445,11 +447,11 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
     # insert dummy data
     self.cur.execute(f'''
       INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
+        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`,
+	      `time_value`, `geo_value`, `value_updated_timestamp`,
+        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`,
         `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
+        `missing_stderr`,`missing_sample_size`)
       VALUES
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
           123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 0, False,
@@ -581,11 +583,11 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
     # insert dummy data
     self.cur.execute(f'''
       INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
+        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`,
+	      `time_value`, `geo_value`, `value_updated_timestamp`,
+        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`,
         `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
+        `missing_stderr`,`missing_sample_size`)
       VALUES
         (0, 'src', 'sig', 'day', 'county', 20200414, '11111',
           123, 10, 11, 12, 456, 13, 20200414, 0, 1, False,

@@ -18,7 +18,7 @@ class FluviewMetaTests(unittest.TestCase):
     """Perform one-time setup."""
 
     # use the local instance of the Epidata API
-    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+    Epidata.BASE_URL = 'http://epidata:key@delphi_web_epidata/epidata/api.php'
 
   def setUp(self):
     """Perform per-test setup."""
@@ -31,6 +31,8 @@ class FluviewMetaTests(unittest.TestCase):
         database='epidata')
     cur = cnx.cursor()
     cur.execute('truncate table fluview')
+    cur.execute("truncate table api_user")
+    cur.execute('insert into api_user(api_key, email, roles) values("key", "test@test.com", "")')
     cnx.commit()
     cur.close()
 
@@ -48,9 +50,9 @@ class FluviewMetaTests(unittest.TestCase):
 
     # insert dummy data
     self.cur.execute('''
-      INSERT INTO 
-        `fluview` (`id`, `release_date`, `issue`, `epiweek`, `region`, 
-        `lag`, `num_ili`, `num_patients`, `num_providers`, `wili`, `ili`, 
+      INSERT INTO
+        `fluview` (`id`, `release_date`, `issue`, `epiweek`, `region`,
+        `lag`, `num_ili`, `num_patients`, `num_providers`, `wili`, `ili`,
         `num_age_0`, `num_age_1`, `num_age_2`, `num_age_3`, `num_age_4`, `num_age_5`)
       VALUES
         (0, "2020-04-07", 202021, 202020, "nat", 1, 2, 3, 4, 3.14159, 1.41421,

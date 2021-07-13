@@ -9,7 +9,7 @@ import requests
 
 
 # use the local instance of the Epidata API
-BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+BASE_URL = 'http://epidata:key@delphi_web_epidata/epidata/api.php'
 
 
 class CovidcastTests(unittest.TestCase):
@@ -26,6 +26,8 @@ class CovidcastTests(unittest.TestCase):
       database='epidata')
     cur = cnx.cursor()
     cur.execute('truncate table covidcast_nowcast')
+    cur.execute("truncate table api_user")
+    cur.execute('insert into api_user(api_key, email, roles) values("key", "test@test.com", "")')
     cnx.commit()
     cur.close()
 
@@ -42,7 +44,7 @@ class CovidcastTests(unittest.TestCase):
     """Query nowcasts using default and specified issue."""
 
     self.cur.execute(
-      f'''insert into covidcast_nowcast values 
+      f'''insert into covidcast_nowcast values
       (0, 'src', 'sig', 'sensor', 'day', 'county', 20200101, '01001', 12345678, 3.5, 20200101, 2),
       (0, 'src', 'sig', 'sensor', 'day', 'county', 20200101, '01001', 12345678, 2.5, 20200102, 2),
       (0, 'src', 'sig', 'sensor', 'day', 'county', 20200101, '01001', 12345678, 1.5, 20200103, 2)''')
