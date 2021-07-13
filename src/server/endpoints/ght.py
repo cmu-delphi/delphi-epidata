@@ -2,15 +2,15 @@ from flask import Blueprint, request
 
 from .._query import execute_query, QueryBuilder
 from .._validate import extract_integers, extract_strings, require_all
-from .._security import UserRole
+from .._security import UserRole, require_role
 
 # first argument is the endpoint name
 bp = Blueprint("ght", __name__)
-required_role = UserRole.ght
 alias = None
 
 
 @bp.route("/", methods=("GET", "POST"))
+@require_role(UserRole.ght)
 def handle():
     require_all("locations", "epiweeks", "query")
 

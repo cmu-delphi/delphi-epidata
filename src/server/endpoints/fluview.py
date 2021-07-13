@@ -13,7 +13,6 @@ from .._validate import (
 
 # first argument is the endpoint name
 bp = Blueprint("fluview", __name__)
-required_role = None
 alias = None
 
 

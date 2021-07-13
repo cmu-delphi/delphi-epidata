@@ -4,11 +4,10 @@ from flask import Blueprint
 
 from .._query import execute_queries, filter_integers, filter_strings
 from .._validate import extract_integers, extract_strings, require_all
-from .._security import UserRole
+from .._security import UserRole, require_role
 
 # first argument is the endpoint name
 bp = Blueprint("afhsb", __name__)
-required_role = UserRole.afhsb
 alias = None
 
 
@@ -53,6 +52,7 @@ FLU_MAPPING = {
 
 
 @bp.route("/", methods=("GET", "POST"))
+@require_role(UserRole.afhsb)
 def handle():
     require_all("locations", "epiweeks", "flu_types")
 

@@ -5,7 +5,6 @@ from .._validate import extract_integer, extract_integers, extract_strings, requ
 
 # first argument is the endpoint name
 bp = Blueprint("ecdc_ili", __name__)
-required_role = None
 alias = None
 
 

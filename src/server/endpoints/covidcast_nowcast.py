@@ -12,7 +12,6 @@ from .._validate import (
 
 # first argument is the endpoint name
 bp = Blueprint("covidcast_nowcast", __name__)
-required_role = None
 alias = None
 
 

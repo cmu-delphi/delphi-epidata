@@ -3,15 +3,15 @@ from flask import Blueprint
 from .._config import NATION_REGION, REGION_TO_STATE
 from .._validate import require_all, extract_strings, extract_integers
 from .._query import filter_strings, execute_queries, filter_integers
-from .._security import UserRole
+from .._security import UserRole, require_role
 
 # first argument is the endpoint name
 bp = Blueprint("cdc", __name__)
-required_role = UserRole.cdc
 alias = None
 
 
 @bp.route("/", methods=("GET", "POST"))
+@require_role(UserRole.cdc)
 def handle():
     require_all("locations", "epiweeks")
 

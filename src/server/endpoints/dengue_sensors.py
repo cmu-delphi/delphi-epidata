@@ -2,15 +2,15 @@ from flask import Blueprint
 
 from .._query import execute_query, QueryBuilder
 from .._validate import extract_integers, extract_strings, require_all
-from .._security import UserRole
+from .._security import UserRole, require_role
 
 # first argument is the endpoint name
 bp = Blueprint("dengue_sensors", __name__)
-required_role = UserRole.sensors
 alias = None
 
 
 @bp.route("/", methods=("GET", "POST"))
+@require_role(UserRole.sensors)
 def handle():
     require_all("names", "locations", "epiweeks")
 

@@ -6,7 +6,6 @@ from .._printer import print_non_standard
 
 # first argument is the endpoint name
 bp = Blueprint("signal_dashboard_coverage", __name__)
-required_role = None
 alias = None
 
 def fetch_coverage_data() -> Dict[str, Dict[str, List[Dict[str, Any]]]]:

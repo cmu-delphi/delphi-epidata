@@ -2,15 +2,15 @@ from flask import Blueprint
 
 from .._printer import print_non_standard
 from .._query import parse_result
-from .._security import UserRole
+from .._security import UserRole, require_role
 
 # first argument is the endpoint name
 bp = Blueprint("meta_afhsb", __name__)
-required_role = UserRole.afhsb
 alias = None
 
 
 @bp.route("/", methods=("GET", "POST"))
+@require_role(UserRole.afhsb)
 def handle():
     # build query
     table1 = "afhsb_00to13_state"

@@ -5,6 +5,7 @@ from typing import Dict, Callable
 from flask import request, send_file, Response, send_from_directory, jsonify
 
 from ._config import URL_PREFIX, VERSION
+from ._db import metadata, engine
 from ._common import app, set_compatibility_mode
 from ._exceptions import MissingOrWrongSourceException
 from .endpoints import endpoints
@@ -48,6 +49,8 @@ def send_version():
 def send_lib_file(path: str):
     return send_from_directory(pathlib.Path(__file__).parent / "lib", path)
 
+
+metadata.create_all(engine)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
