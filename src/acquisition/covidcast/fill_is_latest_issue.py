@@ -8,7 +8,7 @@ import mysql.connector
 
 # first party
 import delphi.operations.secrets as secrets
-
+from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
 
 # partition configuration
 ###PARTITION_VARIABLE = 'geo_value'
@@ -33,6 +33,9 @@ _CLEAR_LATEST_BY_PARTITION = True
 
 
 def main(*, CLEAR_LATEST_BY_PARTITION=_CLEAR_LATEST_BY_PARTITION, FILTER_CONDITION=_FILTER_CONDITION):
+
+
+  logger = get_structured_logger("fill_is_lastest_issue")
 
   u, p = secrets.db.epi
   connection = mysql.connector.connect(
@@ -94,7 +97,7 @@ def main(*, CLEAR_LATEST_BY_PARTITION=_CLEAR_LATEST_BY_PARTITION, FILTER_CONDITI
       commit = True
   except Exception as e:
     connection.rollback()
-    print("exception raised at partition %s (partition index #%s) of column `%s`" % (PARTITION_SPLITS[partition_index], partition_index, PARTITION_VARIABLE))
+    logger.exception("exception raised at partition %s (partition index #%s) of column `%s`" % (PARTITION_SPLITS[partition_index], partition_index, PARTITION_VARIABLE))
     raise e
   finally:
     cursor.close()

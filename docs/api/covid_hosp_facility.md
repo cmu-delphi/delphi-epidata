@@ -190,7 +190,7 @@ https://delphi.cmu.edu/epidata/covid_hosp_facility/?hospital_pks=390119&collecti
 
 # Code Samples
 
-Libraries are available for [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
+Libraries are available for [JavaScript](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js), [Python](https://pypi.org/project/delphi-epidata/), and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
 The following sample shows how to import the library and fetch Moses Taylor
 Hospital (Scranton, PA) on the first collection week of December 2020 (per most
 recent issue).
