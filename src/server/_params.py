@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from typing import List, Optional, Sequence, Tuple, Union
 
 from flask import request
-from numpy import sign
 
 from ._exceptions import ValidationFailedException
 from .utils import days_in_range

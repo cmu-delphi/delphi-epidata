@@ -4,7 +4,7 @@ import pandas as pd
 from sqlalchemy import text
 
 from ._common import engine
-from ._printer import create_printer, APrinter
+from ._printer import create_printer
 from ._query import filter_fields
 from ._exceptions import DatabaseErrorException
 

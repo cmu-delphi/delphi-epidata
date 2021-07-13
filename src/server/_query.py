@@ -10,17 +10,15 @@ from typing import (
     Tuple,
     Union,
     cast,
-    Mapping,
 )
 
 from sqlalchemy import text
 from sqlalchemy.engine import RowProxy
 
 from ._common import db, app
-from ._db import metadata
 from ._printer import create_printer, APrinter
 from ._exceptions import DatabaseErrorException
-from ._validate import DateRange, extract_strings
+from ._validate import extract_strings
 from ._params import GeoPair, SourceSignalPair, TimePair
 
 
