@@ -18,7 +18,7 @@ General topics not specific to any particular endpoint are discussed in the
 Influenza-like illness (ILI) from U.S. Outpatient Influenza-like Illness Surveillance Network (ILINet).
  - Data source: [United States Centers for Disease Control and Prevention](http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html) (CDC)
  - Temporal Resolution: Weekly* from 1997w40
- - Spatial Resolution: National, [HHS regions](http://www.hhs.gov/iea/regional/), [Census divisions](http://www.census.gov/econ/census/help/geography/regions_and_divisions.html), most States and Territories, and some Cities (full list [here](../../src/acquisition/fluview/fluview_locations.py))
+ - Spatial Resolution: National, [HHS regions](http://www.hhs.gov/iea/regional/), [Census divisions](http://www.census.gov/econ/census/help/geography/regions_and_divisions.html), most States and Territories, and some Cities (full list [here](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/acquisition/fluview/fluview_locations.py))
  - Open access
 
 \* Data is usually released on Friday
@@ -36,7 +36,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `epiweeks` | epiweeks | `list` of epiweeks |
-| `regions` | regions | `list` of [region](../../labels/regions.txt) labels |
+| `regions` | regions | `list` of [region](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/regions.txt) labels |
 
 ### Optional
 
@@ -120,7 +120,7 @@ https://delphi.cmu.edu/epidata/fluview/?regions=nat&epiweeks=201453&issues=20150
 
 # Code Samples
 
-Libraries are available for [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
+Libraries are available for [JavaScript](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js), [Python](https://pypi.org/project/delphi-epidata/), and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
 The following samples show how to import the library and fetch national FluView data for epiweeks `201440` and `201501-201510` (11 weeks total).
 
 

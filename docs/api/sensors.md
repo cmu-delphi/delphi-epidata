@@ -40,7 +40,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `epiweeks` | epiweeks | `list` of epiweeks |
-| `locations` | locations | `list` of [region](../../labels/regions.txt)/[state](../../labels/states.txt) labels <!-- TODO: check --> |
+| `locations` | locations | `list` of [region](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/regions.txt)/[state](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/states.txt) labels <!-- TODO: check --> |
 | `names` | sensor names | `list` of string |
 
 Notes:
@@ -90,7 +90,7 @@ https://delphi.cmu.edu/epidata/sensors/?names=sar3&locations=nat&epiweeks=202001
 
 # Code Samples
 
-Libraries are available for [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
+Libraries are available for [JavaScript](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js), [Python](https://pypi.org/project/delphi-epidata/), and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
 The following samples show how to import the library and fetch national Delphi's Digital Surveillance SAR3 Sensor data for epiweeks `201940` and `202001-202010` (11 weeks total).
 
 ### JavaScript (in a web browser)

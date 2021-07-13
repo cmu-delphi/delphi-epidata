@@ -19,7 +19,7 @@ Number of page visits for selected English, Influenza-related wikipedia articles
  - Source: [Wikimedia](https://dumps.wikimedia.org/other/pagecounts-raw/)
  - Temporal Resolution: Hourly, daily, and weekly from 2007-12-09 (2007w50)
  - Spatial Resolution: N/A
- - Other resolution: By article ([54](../../labels/articles.txt))
+ - Other resolution: By article ([54](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/articles.txt))
  - Open access
 
 # The API
@@ -34,7 +34,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 | Parameter | Description | Type |
 | --- | --- | --- |
-| `articles` | articles | list of [articles](../../labels/articles.md) |
+| `articles` | articles | list of [articles](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/articles.md) |
 | `language` | language (currently `en`, `es`, and `pt` supported) | string |
 | `dates` | dates | `list` of dates |
 | `epiweeks` | epiweeks | `list` of epiweeks |
@@ -107,7 +107,7 @@ https://delphi.cmu.edu/epidata/wiki/?language=en&articles=influenza&dates=202001
 
 # Code Samples
 
-Libraries are available for [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
+Libraries are available for [JavaScript](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js), [Python](https://pypi.org/project/delphi-epidata/), and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
 The following samples show how to import the library and fetch national Wikipedia Access data for article "influenza" on
 epiweeks `201940` and `202001-202010` (11 weeks total) for hours 0 and 12 in English.
 

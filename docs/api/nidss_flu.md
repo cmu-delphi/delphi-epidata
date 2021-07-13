@@ -18,7 +18,7 @@ General topics not specific to any particular endpoint are discussed in the
 Outpatient ILI from Taiwan's National Infectious Disease Statistics System (NIDSS).
  - Source: [Taiwan CDC](http://nidss.cdc.gov.tw/en/CDCWNH01.aspx?dc=wnh)
  - Temporal Resolution: Weekly* from 2008w14
- - Spatial Resolution: By [hexchotomy region](https://en.wikipedia.org/wiki/Regions_of_Taiwan#Hexchotomy) ([6+1](../../labels/nidss_regions.txt))
+ - Spatial Resolution: By [hexchotomy region](https://en.wikipedia.org/wiki/Regions_of_Taiwan#Hexchotomy) ([6+1](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/nidss_regions.txt))
  - Open access
 
 \* Data is usually released on Tuesday
@@ -36,7 +36,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `epiweeks` | epiweeks | `list` of epiweeks |
-| `regions` | regions | `list` of [region](../../labels/nidss_regions.txt) labels |
+| `regions` | regions | `list` of [region](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/nidss_regions.txt) labels |
 
 ### Optional
 
@@ -90,7 +90,7 @@ https://delphi.cmu.edu/epidata/nidss_flu/?regions=nationwide&epiweeks=201501
 
 # Code Samples
 
-Libraries are available for [JavaScript](../../src/client/delphi_epidata.js), [Python](../../src/client/delphi_epidata.py), and [R](../../src/client/delphi_epidata.R).
+Libraries are available for [JavaScript](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js), [Python](https://pypi.org/project/delphi-epidata/), and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
 The following samples show how to import the library and fetch national NIDSS Flu data for epiweeks `201440` and `201501-201510` (11 weeks total).
 
 ### JavaScript (in a web browser)

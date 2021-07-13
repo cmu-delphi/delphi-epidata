@@ -30,10 +30,14 @@ the sum of all adult and pediatric COVID-19 hospital admissions. This
 sum is used as the "ground truth" for hospitalizations by the [COVID-19 Forecast Hub](https://github.com/reichlab/covid19-forecast-hub/blob/master/data-processed/README.md#hospitalizations).
 
 
-| Signal | Geography | Resolution | Description |
-| --- | --- | --- | --- |
-| `confirmed_admissions_covid_1d` | state | 1 day | Sum of adult and pediatric confirmed COVID-19 hospital admissions occurring each day. <br/> **Earliest date available:** 2019-12-31 |
-| `sum_confirmed_suspected_admissions_covid_1d` | state | 1 day | Sum of adult and pediatric confirmed and suspected COVID-19 hospital admissions occurring each day. <br/> **Earliest date available:** 2019-12-31 |
+| Signal | 7-day average signal | Geography | Resolution | Description |
+| --- | --- | --- | --- | --- |
+| `confirmed_admissions_covid_1d` | `confirmed_admissions_covid_1d_7dav`| state | 1 day | Sum of adult and pediatric confirmed COVID-19 hospital admissions occurring each day. <br/> **Earliest date available:** 2019-12-31 |
+| `sum_confirmed_suspected_admissions_covid_1d` | `sum_confirmed_suspected_admissions_covid_1d_7dav` | state | 1 day | Sum of adult and pediatric confirmed and suspected COVID-19 hospital admissions occurring each day. <br/> **Earliest date available:** 2019-12-31 |
+
+The 7-day average signals are computed by Delphi by calculating
+moving averages of the preceding 7 days, so e.g. the signal for June 7 is the
+average of the underlying data for June 1 through 7, inclusive.
 
 ## Table of contents
 {: .no_toc .text-delta}

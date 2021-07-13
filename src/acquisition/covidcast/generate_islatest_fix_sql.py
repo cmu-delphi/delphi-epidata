@@ -14,8 +14,6 @@ for case in ('confirmed_', 'deaths_'):
       for typ in ('num', 'prop'):
         signals.append(case+period+count+typ)
 ### signals = ['sig2'] ###
-
-
 # variable to split on, 'time_value' is good because its high cardinality is suitable for chunking
 PARTITION_VARIABLE = 'time_value'
 PARTITION_SPLITS = [20200101 + i*100 for i in range(10)] # first day of the month for jan - oct 2020 in YYYYMMDD form
@@ -40,7 +38,6 @@ for partition_index in range(len(PARTITION_SPLITS)+1):
   ge_condition = 'TRUE' if partition_index == 0 else f'`{PARTITION_VARIABLE}` >= {PARTITION_SPLITS[partition_index - 1]}'
   l_condition = 'TRUE' if partition_index == len(PARTITION_SPLITS) else f'`{PARTITION_VARIABLE}` < {PARTITION_SPLITS[partition_index]}'
   partition_condition = f'({ge_condition}) AND ({l_condition})'
-
   for sig in signals:
     where_clause = base_where_clause + " AND `signal`='%s' AND %s"  % (sig, partition_condition)
 
