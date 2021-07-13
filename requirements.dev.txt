@@ -5,3 +5,4 @@ mypy>=0.790
 pytest
 tenacity==7.0.0
 bump2version
+requests

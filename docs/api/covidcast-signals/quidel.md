@@ -162,5 +162,5 @@ small. The data may be updated again when the Winter 2020 flu season begins.
 | --- | --- |
 | `raw_pct_negative` | The percentage of flu tests that are negative, suggesting the patient's illness has another cause, possibly COVID-19 <br/> **Earliest date available:** 2020-01-31 |
 | `smoothed_pct_negative` | Same as above, but smoothed in time <br/> **Earliest date available:** 2020-01-31 |
-| `raw_tests_per_device` | The number of flu tests conducted by each testing device; measures volume of testing <br/> **Earliest date available:** 2020-01-31 |
+| `raw_tests_per_device` | The average number of flu tests conducted by each testing device; measures volume of testing <br/> **Earliest date available:** 2020-01-31 |
 | `smoothed_tests_per_device` | Same as above, but smoothed in time <br/> **Earliest date available:** 2020-01-31 |
