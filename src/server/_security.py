@@ -2,6 +2,7 @@ from typing import Optional, Set, cast
 from enum import Enum
 from datetime import date, timedelta
 from functools import wraps
+from os import environ
 from flask import g
 from werkzeug.local import LocalProxy
 from sqlalchemy import Table, Column, String, Integer
@@ -9,7 +10,7 @@ from ._common import app, request, db
 from ._exceptions import MissingAPIKeyException, UnAuthenticatedException
 from ._db import metadata, TABLE_OPTIONS
 
-API_KEY_REQUIRED_STARTING_AT = date(2021, 7, 20)
+API_KEY_REQUIRED_STARTING_AT = date.fromisoformat(environ.get('API_REQUIRED_STARTING_AT', '3000-01-01'))
 API_KEY_HARD_WARNING = API_KEY_REQUIRED_STARTING_AT - timedelta(days=14)
 API_KEY_SOFT_WARNING = API_KEY_HARD_WARNING - timedelta(days=14)
 
@@ -143,6 +144,10 @@ def resolve_user():
     # try to get the db
     try:
         _get_current_user()
+    except MissingAPIKeyException as e:
+        raise e
+    except UnAuthenticatedException as e:
+        raise e
     except:
         app.logger.error("user connection error", exc_info=True)
         if require_api_key():
