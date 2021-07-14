@@ -9,6 +9,7 @@ from ._db import metadata, engine
 from ._common import app, set_compatibility_mode
 from ._exceptions import MissingOrWrongSourceException
 from .endpoints import endpoints
+from .admin import bp as admin_bp, ADMIN_PASSWORD
 
 __all__ = ["app"]
 
@@ -21,6 +22,9 @@ for endpoint in endpoints:
     alias = getattr(endpoint, "alias", None)
     if alias:
         endpoint_map[alias] = endpoint.handle
+
+if ADMIN_PASSWORD:
+    app.register_blueprint(admin_bp, url_prefix=f"{URL_PREFIX}/admin")
 
 
 @app.route(f"{URL_PREFIX}/api.php", methods=["GET", "POST"])

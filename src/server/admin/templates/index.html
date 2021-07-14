@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>API Keys</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <style>
+        td, th {
+          border: 1px solid black;
+          padding: 0.5em;
+        }
+        table {
+            border: 1px solid black;
+            border-collapse: collapse;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <table>
+        <thead>
+            <th>ID</th>
+            <th>E-Mail</th>
+            <th>API Key</th>
+            <th>Roles</th>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.api_key }}</td>
+                <td>{{ user.roles }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

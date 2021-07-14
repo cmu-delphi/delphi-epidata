@@ -1,4 +1,4 @@
-from typing import Optional, Set, cast
+from typing import Dict, List, Optional, Set, Union, cast
 from enum import Enum
 from datetime import date, timedelta
 from functools import wraps
@@ -82,6 +82,20 @@ class User:
 ANONYMOUS_USER = User("anonymous", False, set())
 
 
+def _find_user(api_key: Optional[str]) -> User:
+    if not api_key:
+        return ANONYMOUS_USER
+    stmt = user_table.select().where(user_table.c.api_key == api_key)
+    user = db.execution_options(stream_results=False).execute(stmt).first()
+    if user is None:
+        return ANONYMOUS_USER
+    else:
+        return User(str(user.id), True, set(user.roles.split(",")))
+
+def list_users() -> List[Dict[str, Union[int, str]]]:
+    return [r for r in db.execution_options(stream_results=False).execute(user_table.select())]
+
+
 def resolve_auth_token() -> Optional[str]:
     # auth request param
     if "auth" in request.values:
@@ -101,21 +115,10 @@ def resolve_auth_token() -> Optional[str]:
 def _get_current_user() -> User:
     if "user" not in g:
         api_key = resolve_auth_token()
-        if not api_key:
-            if require_api_key():
-                raise MissingAPIKeyException()
-            else:
-                g.user = ANONYMOUS_USER
-                return g.user
-        stmt = user_table.select().where(user_table.c.api_key == api_key)
-        user = db.execution_options(stream_results=False).execute(stmt).first()
-        if user is None:
-            if require_api_key():
-                raise MissingAPIKeyException()
-            else:
-                g.user = ANONYMOUS_USER
-        else:
-            g.user = User(str(user.id), True, set(user.roles.split(",")))
+        user = _find_user(api_key)
+        if not user.authenticated and require_api_key():
+            raise MissingAPIKeyException()
+        g.user = user
     return g.user
 
 
@@ -139,7 +142,7 @@ def show_hard_api_key_warning() -> bool:
 
 @app.before_request
 def resolve_user():
-    if request.path.startswith("/lib"):
+    if request.path.startswith("/lib") or request.path.startswith('/admin'):
         return
     # try to get the db
     try:
