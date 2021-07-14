@@ -1,4 +1,4 @@
 from .delphi_epidata import Epidata
 
 name = 'delphi_epidata'
-__version__ = '0.1.4'
+__version__ = '0.2.0'
