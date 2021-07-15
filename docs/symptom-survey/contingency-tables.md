@@ -249,8 +249,7 @@ please contact us at <delphi-survey-info@lists.andrew.cmu.edu>.
 
 ### Reasons for Hesitancy
 
-The set of "barrier" items correspond to the set of ["hesitancy_reasons" items
-in the API](../api/covidcast-signals/fb-survey.md#reasons-for-hesitancy).
+The set of "barrier" items correspond to the set of ["hesitancy_reasons" items in the API](../api/covidcast-signals/fb-survey.md#reasons-for-hesitancy).
 
 | Indicator | Description | Survey Item |
 | --- | --- | --- |

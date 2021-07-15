@@ -1,6 +1,6 @@
 ---
 title: Response Files
-parent: COVID-19 Trends and Impact Survey (CTIS)
+parent: COVID-19 Trends and Impact Survey
 nav_order: 3
 ---
 
@@ -9,8 +9,8 @@ nav_order: 3
 
 Users with access to the [COVID-19 Trends and Impact Survey (CTIS)](./index.md)
 individual response data should have received SFTP credentials for a private
-server where the data are stored. To connect to the server, see the [server
-access documentation](server-access.md). This documentation describes the
+server where the data are stored. To connect to the server, see the [server access documentation](
+server-access.md). This documentation describes the
 survey data available on that server.
 
 You must sign a Data Use Agreement with Facebook and with CMU to gain
@@ -43,8 +43,8 @@ Each day, we write CSV files with names following this pattern:
 
 Dates in incremental filenames are of the form `YYYY_mm_dd`. `for` refers to the
 day the survey response was started, in the Pacific time zone (UTC -
-7). `recorded` refers to the day survey data was retrieved; see the [lag
-policy](#lag-policy) for more details. Each file is compressed with gzip, and
+7). `recorded` refers to the day survey data was retrieved; see the [lag policy](
+#lag-policy) for more details. Each file is compressed with gzip, and
 the standard `gunzip` command on Linux or Mac can decompress it.
 
 Every day, we write response files for all recent days of data, with today's
