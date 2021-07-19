@@ -17,7 +17,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pipd-${{ hashFiles('requirements-dev.txt') }}
+          key: ${{ runner.os }}-pipd-${{ hashFiles('requirements.dev.txt') }}
           restore-keys: |
             ${{ runner.os }}-pipd-
       - name: Install Dependencies
