@@ -17,11 +17,11 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pipd-${{ hashFiles('requirements-dev.txt') }}
+          key: ${{ runner.os }}-pipd-${{ hashFiles('requirements.dev.txt') }}
           restore-keys: |
             ${{ runner.os }}-pipd-
       - name: Install Dependencies
-        run: pip install -r requirements-dev.txt
+        run: pip install -r requirements.dev.txt
       - name: Update Docs
         run: inv update-gdoc
       - name: Create pull request into dev

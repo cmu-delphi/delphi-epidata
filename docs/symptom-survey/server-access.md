@@ -60,3 +60,12 @@ prefer.)
 3. You should then have access to the CSV files of individual responses from CMU
    Delphi COVID Survey of Facebook users. See our [response files documentation](survey-files.md)
    for information on how these files are formatted.
+
+### Cyberduuck connection problems
+
+Data users have reported receiving an error when utilizing newer versions of the
+CyberDuck SFTP client (version 7.0 and higher). A "broken pipe" or disconnection
+error is received when attempting to download larger files, such as the monthly
+data files. If you experience this problem, we found that Cyberduck version 6.9
+works as expected; this version can be downloaded
+[here](https://update.cyberduck.io/Cyberduck-6.9.4.30164.zip).
