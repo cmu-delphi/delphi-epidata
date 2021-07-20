@@ -74,9 +74,11 @@ jobs:
         run: |
           docker run -d -p 10080:80 --env "SQLALCHEMY_DATABASE_URI=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata" --env "FLASK_SECRET=abc" --env "FLASK_PREFIX=/epidata" --network delphi-net --name delphi_web_epidata delphi_web_epidata
           docker ps
+          sleep 10s
+          docker logs delphi_web_epidata
 
       - run: |
-          ./wait-for localhost:10080/epidata/version -- echo 'ready'
+          ./wait-for http://localhost:10080/epidata/version -- echo 'ready'
           sleep 10s
 
       - name: Run Unit Tests
