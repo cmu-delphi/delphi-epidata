@@ -12,7 +12,8 @@ from delphi_utils import Nans
 from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import main as update_cache
 
 # use the local instance of the Epidata API
-BASE_URL = 'http://epidata:key@delphi_web_epidata/epidata/api.php'
+BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+auth = ('epidata', 'key')
 
 
 class CovidcastMetaTests(unittest.TestCase):
@@ -91,7 +92,7 @@ class CovidcastMetaTests(unittest.TestCase):
     update_cache(args=None)
 
     # make the request
-    response = requests.get(BASE_URL, params={'endpoint': 'covidcast_meta'})
+    response = requests.get(BASE_URL, params={'endpoint': 'covidcast_meta'}, auth=auth)
     response.raise_for_status()
     response = response.json()
 
@@ -153,7 +154,7 @@ class CovidcastMetaTests(unittest.TestCase):
       # make the request
       params = kwargs.copy()
       params['endpoint'] = 'covidcast_meta'
-      response = requests.get(BASE_URL, params=params)
+      response = requests.get(BASE_URL, params=params, auth=auth)
       response.raise_for_status()
       return response.json()
 
@@ -279,7 +280,7 @@ class CovidcastMetaTests(unittest.TestCase):
     update_cache(args=None)
 
     # make the request
-    response = requests.get(BASE_URL, params={'endpoint': 'covidcast_meta'})
+    response = requests.get(BASE_URL, params={'endpoint': 'covidcast_meta'}, auth=auth)
     response.raise_for_status()
     response = response.json()
 

@@ -11,7 +11,7 @@ import requests
 from delphi_utils import Nans
 
 # use the local instance of the Epidata API
-BASE_URL = 'http://epidata:key@delphi_web_epidata/epidata/api.php'
+BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
 
 
 class CovidcastTests(unittest.TestCase):
@@ -69,7 +69,7 @@ class CovidcastTests(unittest.TestCase):
       'geo_type': 'county',
       'time_values': 20200414,
       'geo_value': '01234',
-    })
+    }, auth=('epidata', 'key'))
     response.raise_for_status()
     response = response.json()
 
@@ -122,7 +122,7 @@ class CovidcastTests(unittest.TestCase):
   #     'geo_type': 'county',
   #     'time_values': 20200414,
   #     'geo_value': '01234',
-  #   })
+  #   }, auth=('epidata', 'key')))
   #   self.assertEqual(response.status_code, 414)
 
   #   # make request with POST
@@ -134,7 +134,7 @@ class CovidcastTests(unittest.TestCase):
   #     'geo_type': 'county',
   #     'time_values': 20200414,
   #     'geo_value': '01234',
-  #   })
+  #   }, auth=('epidata', 'key')))
 
   #   self.assertEqual(response.status_code, 200)
 
@@ -166,7 +166,7 @@ class CovidcastTests(unittest.TestCase):
       'time_values': 20200414,
       'geo_value': '01234',
       'format': 'csv'
-    })
+    }, auth=('epidata', 'key'))
     response.raise_for_status()
     response = response.text
     expected_response = (
@@ -206,7 +206,7 @@ class CovidcastTests(unittest.TestCase):
       'time_values': 20200414,
       'geo_value': '01234',
       'format': 'json'
-    })
+    }, auth=('epidata', 'key'))
     response.raise_for_status()
     response = response.json()
 
@@ -253,7 +253,7 @@ class CovidcastTests(unittest.TestCase):
       'geo_type': 'county',
       'time_values': 20200414,
       'geo_value': '01234',
-    })
+    }, auth=('epidata', 'key'))
     response.raise_for_status()
     response = response.json()
 
@@ -287,7 +287,7 @@ class CovidcastTests(unittest.TestCase):
       'time_values': 20200414,
       'geo_value': '01234',
       'fields': 'time_value,geo_value'
-    })
+    }, auth=('epidata', 'key'))
     response.raise_for_status()
     response = response.json()
 
@@ -311,7 +311,7 @@ class CovidcastTests(unittest.TestCase):
       'time_values': 20200414,
       'geo_value': '01234',
       'fields': 'time_value,geo_value,dummy'
-    })
+    }, auth=('epidata', 'key'))
     response.raise_for_status()
     response = response.json()
 
@@ -339,7 +339,7 @@ class CovidcastTests(unittest.TestCase):
         '-value,-stderr,-sample_size,-direction,-issue,-lag,-signal,' +
         '-missing_value,-missing_stderr,-missing_sample_size'
       )
-    })
+    }, auth=('epidata', 'key'))
     response.raise_for_status()
     response = response.json()
 
@@ -395,7 +395,7 @@ class CovidcastTests(unittest.TestCase):
       'geo_type': 'county',
       'time_values': 20200414,
       'geo_value': '*',
-    })
+    }, auth=('epidata', 'key'))
     response.raise_for_status()
     response = response.json()
 
@@ -494,7 +494,7 @@ class CovidcastTests(unittest.TestCase):
         params['geo_values'] = ','.join(geo_value)
       else:
         params['geo_value'] = geo_value
-      response = requests.get(BASE_URL, params=params)
+      response = requests.get(BASE_URL, params=params, auth=('epidata', 'key'))
       response.raise_for_status()
       response = response.json()
 
@@ -611,7 +611,7 @@ class CovidcastTests(unittest.TestCase):
       'geo_type': 'county',
       'time_values': '20200411-20200413',
       'geo_value': '01234',
-    })
+    }, auth=('epidata', 'key'))
     response.raise_for_status()
     response = response.json()
 
@@ -737,7 +737,7 @@ class CovidcastTests(unittest.TestCase):
       'geo_type': 'county',
       'time_values': 20200414,
       'geo_value': '01234',
-    })
+    }, auth=('epidata', 'key'))
     response.raise_for_status()
     response = response.json()
     expected_response = {
@@ -801,7 +801,7 @@ class CovidcastTests(unittest.TestCase):
       'geo_type': 'state',
       'time_values': '0-9999999999',
       'geo_value': 'vi',
-    })
+    }, auth=('epidata', 'key'))
     response.raise_for_status()
     response = response.json()
 
@@ -867,7 +867,7 @@ class CovidcastTests(unittest.TestCase):
       'geo_type': 'county',
       'time_values': '20200411',
       'geo_value': '*',
-    })
+    }, auth=('epidata', 'key'))
     response.raise_for_status()
     response = response.json()
 
@@ -883,7 +883,7 @@ class CovidcastTests(unittest.TestCase):
       'geo_type': 'county',
       'time_values': '2020-04-11',
       'geo_value': '*',
-    })
+    }, auth=('epidata', 'key'))
     response.raise_for_status()
     response = response.json()
 
@@ -915,7 +915,7 @@ class CovidcastTests(unittest.TestCase):
       'geo_type': 'county',
       'time_values': '2020-04-11,2020-04-12',
       'geo_value': '*',
-    })
+    }, auth=('epidata', 'key'))
     response.raise_for_status()
     response = response.json()
 
@@ -931,7 +931,7 @@ class CovidcastTests(unittest.TestCase):
       'geo_type': 'county',
       'time_values': '20200411-20200413',
       'geo_value': '*',
-    })
+    }, auth=('epidata', 'key'))
     response.raise_for_status()
     response = response.json()
 
@@ -947,7 +947,7 @@ class CovidcastTests(unittest.TestCase):
       'geo_type': 'county',
       'time_values': '2020-04-11:2020-04-13',
       'geo_value': '*',
-    })
+    }, auth=('epidata', 'key'))
     response.raise_for_status()
     response = response.json()
 

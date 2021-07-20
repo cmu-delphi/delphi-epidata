@@ -24,7 +24,8 @@ def fake_epidata_endpoint(func):
   def wrapper(*args):
     Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/fake_api.php'
     func(*args)
-    Epidata.BASE_URL = 'http://epidata:key@delphi_web_epidata/epidata/api.php'
+    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+    Epidata.auth = ('epidata', 'key')
   return wrapper
 
 
@@ -53,7 +54,8 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
     self.cur = cnx.cursor()
 
     # use the local instance of the Epidata API
-    Epidata.BASE_URL = 'http://epidata:key@delphi_web_epidata/epidata/api.php'
+    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+    Epidata.auth = ('epidata', 'key')
 
     # use the local instance of the epidata database
     secrets.db.host = 'delphi_database_epidata'

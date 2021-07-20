@@ -44,7 +44,8 @@ class FillIsLatestIssueTests(unittest.TestCase):
     secrets.db.epi = ('user', 'pass')
 
     # use the local instance of the Epidata API
-    Epidata.BASE_URL = 'http://epidata:key@delphi_web_epidata/epidata/api.php'
+    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+    Epidata.auth = ('epidata', 'key')
 
   def tearDown(self):
     """Perform per-test teardown."""
