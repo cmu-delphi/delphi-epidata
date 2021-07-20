@@ -548,7 +548,7 @@ def handle_meta():
                 continue
             if filter_time_type is not None and signal.time_type != filter_time_type:
                 continue
-            meta_data = by_signal.get(signal.key)
+            meta_data = by_signal.get((source.db_source, signal.signal))
             if not meta_data:
                 continue
             row = meta_data[0]
