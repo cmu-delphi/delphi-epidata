@@ -18,12 +18,17 @@
     </style>
 </head>
 <body>
+    <h1>
+        API Key Admin Interface
+    </h1>
+    <h2>Registered Users</h2>
     <table>
         <thead>
             <th>ID</th>
             <th>E-Mail</th>
             <th>API Key</th>
             <th>Roles</th>
+            <th></th>
         </thead>
         <tbody>
         {% for user in users %}
@@ -32,9 +37,12 @@
                 <td>{{ user.email }}</td>
                 <td>{{ user.api_key }}</td>
                 <td>{{ user.roles }}</td>
+                <td><a href="./{{user.id}}?auth={{token}}">Details</a></td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
+    <h2>Register New User</h2>
+    TODO
 </body>
 </html>

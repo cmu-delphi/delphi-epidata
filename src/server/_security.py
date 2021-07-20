@@ -92,6 +92,10 @@ def _find_user(api_key: Optional[str]) -> User:
     else:
         return User(str(user.id), True, set(user.roles.split(",")))
 
+def find_user_by_id(user_id: int) -> Dict:
+    stmt = user_table.select().where(user_table.c.id == user_id)
+    return db.execution_options(stream_results=False).execute(stmt).first()
+
 def list_users() -> List[Dict[str, Union[int, str]]]:
     return [r for r in db.execution_options(stream_results=False).execute(user_table.select())]
 
