@@ -29,51 +29,48 @@
                         <td>{{ user.email }}</td>
                         <td>{{ user.api_key }}</td>
                         <td>{{ ','.join(user.roles) }}</td>
-                        <td><a href="./{{user.id}}?auth={{token}}">Edit</a></td>
+                        <td>
+                            <a class="btn btn-secondary btn-sm" href="./{{user.id}}?auth={{token}}">Edit</a>
+                            <a class="btn btn-secondary btn-sm" href="./{{user.id}}?auth={{token}}&delete=yes">Delete</a>
+                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
             <h2 class="mt-5 mb-3">Register New User</h2>
-            <form method="POST">
-                <input type="hidden" name="auth" value="{{token}}" />
-                <div class="form-group">
-                    <label for="email">E-Mail</label>
-                    <input type="email" class="form-control" name="email" id="email" required />
-                </div>
-                <div class="form-group">
-                    <label for="api_key">API Key</label>
-                    <input type="text" class="form-control" name="api_key" id="api_key" required />
-                </div>
-                <div class="form-group">
-                    <label for="roles">Roles</label>
-                    <textarea rows="5" class="form-control" name="roles" id="roles" placeholder="role names separated by new lines"></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block">Add</button>
-            </form>
+
         {% else %}
-            <a href="./?auth={{token}}" >Back</a>
             <h2 class="mt-5 mb-3">
+                <a href="./?auth={{token}}">&lt; Back</a>
                 Edit User {{user.id}}
             </h2>
-            <form method="POST">
-                <input type="hidden" name="auth" value="{{token}}" />
-                <div class="form-group">
-                    <label for="email">E-Mail</label>
-                    <input type="email" class="form-control" name="email" id="email" value="{{user.email}}" required />
-                </div>
-                <div class="form-group">
-                    <label for="api_key">API Key</label>
-                    <input type="text" class="form-control" name="api_key" id="api_key" value="{{user.api_key}}" required />
-                </div>
-                <div class="form-group">
-                    <label for="roles">Roles</label>
-                    <textarea rows="5" name="roles" id="roles" class="form-control" placeholder="role names separated by new lines">{{user.roles_str}}</textarea>
-                </div>
+        {% endif %}
+        <form method="POST">
+            <input type="hidden" name="auth" value="{{token}}" />
+            <div class="form-group">
+                <label for="email">E-Mail</label>
+                <input type="email" class="form-control" name="email" id="email" value="{{user.email}}" required />
+            </div>
+            <div class="form-group">
+                <label for="api_key">API Key</label>
+                <input type="text" class="form-control" name="api_key" id="api_key" value="{{user.api_key}}" required />
+            </div>
+            <div class="form-group">
+                <label for="roles">Roles</label>
+                {% for role in roles %}
+                    <label class="form-check-label form-check">
+                        <input type="checkbox" name="roles" value="{{role}}" {{'checked' if role in user.roles else ''}}>
+                        {{role}}
+                    </label>
+                {% endfor %}
+            </div>
+            {% if mode == 'overview' %}
+                <button type="submit" class="btn btn-primary btn-block">Add</button>
+            {% else %}
                 <button type="submit" class="btn btn-primary btn-block">Update</button>
                 <button type="submit" name="delete" class="btn btn-secondary btn-block">Delete</button>
-            </form>
-        {% endif %}
+            {% endif %}
+        </form>
     </div>
 </body>
 </html>
