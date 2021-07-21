@@ -12,6 +12,11 @@
         <h1>
             API Key Admin Interface
         </h1>
+        {% if flags.banner %}
+        <div class="alert alert-primary" role="alert">
+        {{ flags.banner }}
+        </div>
+        {% endif %}
         {% if mode == 'overview' %}
             <h2 class="mt-5 mb-3">Registered Users</h2>
             <table class="table table-striped">
@@ -19,6 +24,7 @@
                     <th scope="col">ID</th>
                     <th scope="col">E-Mail</th>
                     <th scope="col">API Key</th>
+                    <th scope="col">Record Usage</th>
                     <th scope="col">Roles</th>
                     <th scope="col">Actions</th>
                 </thead>
@@ -28,6 +34,7 @@
                         <th scope="row">{{ user.id }}</th>
                         <td>{{ user.email }}</td>
                         <td>{{ user.api_key }}</td>
+                        <td>{{ '✔️' if user.record else '❌'}}</td>
                         <td>{{ ','.join(user.roles) }}</td>
                         <td>
                             <a class="btn btn-secondary btn-sm" href="./{{user.id}}?auth={{token}}">Edit</a>
@@ -54,6 +61,10 @@
             <div class="form-group">
                 <label for="api_key">API Key</label>
                 <input type="text" class="form-control" name="api_key" id="api_key" value="{{user.api_key}}" required />
+            </div>
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="record" name="record" value="True" {{'checked' if user.record else ''}}>
+                <label class="form-check-label" for="record">Record API Key usage</label>
             </div>
             <div class="form-group">
                 <label for="roles">Roles</label>

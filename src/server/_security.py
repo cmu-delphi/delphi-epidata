@@ -5,7 +5,7 @@ from functools import wraps
 from os import environ
 from flask import g
 from werkzeug.local import LocalProxy
-from sqlalchemy import Table, Column, String, Integer
+from sqlalchemy import Table, Column, String, Integer, Boolean
 from ._common import app, request, db
 from ._exceptions import MissingAPIKeyException, UnAuthenticatedException
 from ._db import metadata, TABLE_OPTIONS
@@ -23,6 +23,7 @@ user_table = Table(
     Column("api_key", String(50)),
     Column("email", String(255)),
     Column("roles", String(255)),
+    Column('record', Boolean(), default=True),
     **TABLE_OPTIONS,
 )
 
@@ -31,6 +32,7 @@ class DBUser:
     api_key: str
     email: str
     roles: Set[str]
+    record: bool = True
 
     @property
     def roles_str(self):
@@ -43,6 +45,7 @@ class DBUser:
         u.api_key = r['api_key']
         u.email = r['email']
         u.roles = set(r['roles'].split(','))
+        u.record = r['record'] != False
         return u
 
     @staticmethod
@@ -55,17 +58,18 @@ class DBUser:
         return [DBUser._parse(r) for r in db.execution_options(stream_results=False).execute(user_table.select())]
 
     @staticmethod
-    def insert(email: str, api_key: str, roles: Set[str]):
-        db.execute(user_table.insert().values(api_key=api_key, email=email, roles=','.join(roles)))
+    def insert(email: str, api_key: str, roles: Set[str], record: bool = True):
+        db.execute(user_table.insert().values(api_key=api_key, email=email, roles=','.join(roles), record=record))
 
     def delete(self):
         db.execute(user_table.delete(user_table.c.id == self.id))
 
-    def update(self, email: str, api_key: str, roles: Set[str]) -> 'DBUser':
-        db.execute(user_table.update().where(user_table.c.id == self.id).values(api_key=api_key, email=email, roles=','.join(roles)))
+    def update(self, email: str, api_key: str, roles: Set[str], record: bool = True) -> 'DBUser':
+        db.execute(user_table.update().where(user_table.c.id == self.id).values(api_key=api_key, email=email, roles=','.join(roles), record=record))
         self.email = email
         self.api_key = api_key
         self.roles = roles
+        self.record = record
         return self
 
 
@@ -112,17 +116,19 @@ class User:
     user_id: str
     roles: Set[UserRole]
     authenticated: bool
+    record: bool = True
 
-    def __init__(self, user_id: str, authenticated: bool, roles: Set[UserRole]) -> None:
+    def __init__(self, user_id: str, authenticated: bool, roles: Set[UserRole], record: bool = True) -> None:
         self.user_id = user_id
         self.authenticated = authenticated
         self.roles = roles
+        self.record = record
 
     def has_role(self, role: UserRole) -> bool:
         return role in self.roles
 
 
-ANONYMOUS_USER = User("anonymous", False, set())
+ANONYMOUS_USER = User("anonymous", False, set(), False)
 
 
 def _find_user(api_key: Optional[str]) -> User:
@@ -133,7 +139,7 @@ def _find_user(api_key: Optional[str]) -> User:
     if user is None:
         return ANONYMOUS_USER
     else:
-        return User(str(user.id), True, set(user.roles.split(",")))
+        return User(str(user.id), True, set(user.roles.split(",")), user.record)
 
 def resolve_auth_token() -> Optional[str]:
     # auth request param
