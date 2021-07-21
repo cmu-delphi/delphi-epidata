@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Set, Union, cast
+from typing import Dict, List, Optional, Set, cast
 from enum import Enum
 from datetime import date, timedelta
 from functools import wraps
@@ -113,19 +113,25 @@ OPEN_SENSORS = [
 
 
 class User:
-    user_id: str
+    api_key: str
     roles: Set[UserRole]
     authenticated: bool
     record: bool = True
 
-    def __init__(self, user_id: str, authenticated: bool, roles: Set[UserRole], record: bool = True) -> None:
-        self.user_id = user_id
+    def __init__(self, api_key: str, authenticated: bool, roles: Set[UserRole], record: bool = True) -> None:
+        self.api_key = api_key
         self.authenticated = authenticated
         self.roles = roles
         self.record = record
 
     def has_role(self, role: UserRole) -> bool:
         return role in self.roles
+
+    def log_info(self, msg: str, **kwargs) -> None:
+        if self.authenticated and self.record:
+            app.logger.info(f"apikey: {self.api_key}, {msg}", **kwargs)
+        else:
+            app.logger.info(msg, **kwargs)
 
 
 ANONYMOUS_USER = User("anonymous", False, set(), False)
@@ -139,14 +145,13 @@ def _find_user(api_key: Optional[str]) -> User:
     if user is None:
         return ANONYMOUS_USER
     else:
-        return User(str(user.id), True, set(user.roles.split(",")), user.record)
+        return User(user.api_key, True, set(user.roles.split(",")), user.record)
 
 def resolve_auth_token() -> Optional[str]:
     # auth request param
-    if "auth" in request.values:
-        return request.values["auth"]
-    if "api_key" in request.values:
-        return request.values["api_key"]
+    for name in ('auth', 'api_key', 'token'):
+        if name in request.values:
+            return request.values[name]
     # user name password
     if request.authorization and request.authorization.username == "epidata":
         return request.authorization.password
@@ -163,6 +168,7 @@ def _get_current_user() -> User:
         user = _find_user(api_key)
         if not user.authenticated and require_api_key():
             raise MissingAPIKeyException()
+        user.log_info(request.full_path)
         g.user = user
     return g.user
 

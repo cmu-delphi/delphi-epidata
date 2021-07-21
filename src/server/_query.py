@@ -16,6 +16,7 @@ from sqlalchemy import text
 from sqlalchemy.engine import RowProxy
 
 from ._common import db, app
+from ._security import current_user
 from ._printer import create_printer, APrinter
 from ._exceptions import DatabaseErrorException
 from ._validate import extract_strings
@@ -234,7 +235,7 @@ def run_query(p: APrinter, query_tuple: Tuple[str, Dict[str, Any]]):
     query, params = query_tuple
     # limit rows + 1 for detecting whether we would have more
     full_query = text(f"{query} LIMIT {p.remaining_rows + 1}")
-    app.logger.info("full_query: %s, params: %s", full_query, params)
+    current_user.log_info("full_query: %s, params: %s", full_query, params)
     return db.execution_options(stream_results=True).execute(full_query, **params)
 
 
