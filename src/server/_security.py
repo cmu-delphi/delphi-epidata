@@ -20,8 +20,7 @@ user_table = Table(
     "api_user",
     metadata,
     Column("id", Integer, primary_key=True, autoincrement=True),
-    Column("api_key", String(50)),
-    Column("email", String(255)),
+    Column("api_key", String(50), unique=True),
     Column("roles", String(255)),
     Column('tracking', Boolean(), default=True),
     **TABLE_OPTIONS,
@@ -30,7 +29,6 @@ user_table = Table(
 class DBUser:
     id: int
     api_key: str
-    email: str
     roles: Set[str]
     tracking: bool = True
 
@@ -43,7 +41,6 @@ class DBUser:
         u = DBUser()
         u.id = r['id']
         u.api_key = r['api_key']
-        u.email = r['email']
         u.roles = set(r['roles'].split(','))
         u.tracking = r['tracking'] != False
         return u
@@ -58,15 +55,14 @@ class DBUser:
         return [DBUser._parse(r) for r in db.execution_options(stream_results=False).execute(user_table.select())]
 
     @staticmethod
-    def insert(email: str, api_key: str, roles: Set[str], tracking: bool = True):
-        db.execute(user_table.insert().values(api_key=api_key, email=email, roles=','.join(roles), tracking=tracking))
+    def insert(api_key: str, roles: Set[str], tracking: bool = True):
+        db.execute(user_table.insert().values(api_key=api_key, roles=','.join(roles), tracking=tracking))
 
     def delete(self):
         db.execute(user_table.delete(user_table.c.id == self.id))
 
-    def update(self, email: str, api_key: str, roles: Set[str], tracking: bool = True) -> 'DBUser':
-        db.execute(user_table.update().where(user_table.c.id == self.id).values(api_key=api_key, email=email, roles=','.join(roles), tracking=tracking))
-        self.email = email
+    def update(self, api_key: str, roles: Set[str], tracking: bool = True) -> 'DBUser':
+        db.execute(user_table.update().where(user_table.c.id == self.id).values(api_key=api_key, roles=','.join(roles), tracking=tracking))
         self.api_key = api_key
         self.roles = roles
         self.tracking = tracking

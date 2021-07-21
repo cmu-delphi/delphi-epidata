@@ -8,7 +8,6 @@ This data is private to Delphi.
 +----------+---------------+------+-----+---------+----------------+
 | id       | int(11)       | NO   | PRI | NULL    | auto_increment |
 | api_key  | varchar(50)   | NO   |     |         |                |
-| email    | varchar(255)  | NO   |     |         |                |
 | roles    | varchar(255)  | NO   |     |         |                |
 | tracking | tinyint(1)	   | YES  |     |         |                |
 +----------+---------------+------+-----+---------+----------------+
@@ -17,7 +16,6 @@ This data is private to Delphi.
 CREATE TABLE `api_user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `api_key` varchar(50) NOT NULL,
-  `email` varchar(255) NOT NULL,
   `roles` varchar(255) NOT NULL,
   `tracking` tinyint(1),
   PRIMARY KEY (`id`)

@@ -1,13 +1,14 @@
 from pathlib import Path
 from os import environ
 from typing import Dict, List, Set
-from flask import Blueprint, render_template_string, request
+from flask import Blueprint, render_template_string, request, make_response
 from werkzeug.exceptions import Unauthorized, NotFound
 from werkzeug.utils import redirect
 from .._security import resolve_auth_token, DBUser, UserRole
 
 
 ADMIN_PASSWORD = environ.get('API_KEY_ADMIN_PASSWORD')
+REGISTER_WEBHOOK_TOKEN = environ.get('API_KEY_REGISTER_WEBHOOK_TOKEN')
 
 self_dir = Path(__file__).parent
 # first argument is the endpoint name
@@ -35,7 +36,7 @@ def _index():
     flags = dict()
     if request.method == 'POST':
         # register a new user
-        DBUser.insert(request.values['email'], request.values['api_key'], _parse_roles(request.values.getlist('roles')), request.values.get('record') == 'True')
+        DBUser.insert(request.values['api_key'], _parse_roles(request.values.getlist('roles')), request.values.get('tracking') == 'True')
         flags['banner'] = 'Successfully Added'
 
     users = DBUser.list()
@@ -53,6 +54,29 @@ def _detail(user_id: int):
         return redirect(f"./?auth={token}")
     flags = dict()
     if request.method == 'PUT' or request.method == 'POST':
-        user = user.update(request.values['email'], request.values['api_key'], _parse_roles(request.values.getlist('roles')), request.values.get('record') == 'True')
+        user = user.update(request.values['api_key'], _parse_roles(request.values.getlist('roles')), request.values.get('tracking') == 'True')
         flags['banner'] = 'Successfully Saved'
     return _render('detail', token, flags, user=user)
+
+
+@bp.route('/register', methods=['POST'])
+def _register():
+    body = request.get_json()
+    token = body.get('token')
+    if token is None or token != REGISTER_WEBHOOK_TOKEN:
+        raise Unauthorized()
+
+    api_key = body['api_key']
+    roles: Set[str] = set()
+    tracking = False
+    for k,v in body.items():
+        # find the record question
+        if 'record' in k.lower():
+            tracking = 'yes' in v.lower()
+            break
+    DBUser.insert(api_key, roles, tracking)
+
+    # email = body['email']
+    # TODO handle mailing list registration handling
+    # TODO send mails here or in the google script?
+    return make_response('ok', 200)
