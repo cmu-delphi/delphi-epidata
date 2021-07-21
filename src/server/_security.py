@@ -23,7 +23,7 @@ user_table = Table(
     Column("api_key", String(50)),
     Column("email", String(255)),
     Column("roles", String(255)),
-    Column('record', Boolean(), default=True),
+    Column('tracking', Boolean(), default=True),
     **TABLE_OPTIONS,
 )
 
@@ -32,7 +32,7 @@ class DBUser:
     api_key: str
     email: str
     roles: Set[str]
-    record: bool = True
+    tracking: bool = True
 
     @property
     def roles_str(self):
@@ -45,7 +45,7 @@ class DBUser:
         u.api_key = r['api_key']
         u.email = r['email']
         u.roles = set(r['roles'].split(','))
-        u.record = r['record'] != False
+        u.tracking = r['tracking'] != False
         return u
 
     @staticmethod
@@ -58,18 +58,18 @@ class DBUser:
         return [DBUser._parse(r) for r in db.execution_options(stream_results=False).execute(user_table.select())]
 
     @staticmethod
-    def insert(email: str, api_key: str, roles: Set[str], record: bool = True):
-        db.execute(user_table.insert().values(api_key=api_key, email=email, roles=','.join(roles), record=record))
+    def insert(email: str, api_key: str, roles: Set[str], tracking: bool = True):
+        db.execute(user_table.insert().values(api_key=api_key, email=email, roles=','.join(roles), tracking=tracking))
 
     def delete(self):
         db.execute(user_table.delete(user_table.c.id == self.id))
 
-    def update(self, email: str, api_key: str, roles: Set[str], record: bool = True) -> 'DBUser':
-        db.execute(user_table.update().where(user_table.c.id == self.id).values(api_key=api_key, email=email, roles=','.join(roles), record=record))
+    def update(self, email: str, api_key: str, roles: Set[str], tracking: bool = True) -> 'DBUser':
+        db.execute(user_table.update().where(user_table.c.id == self.id).values(api_key=api_key, email=email, roles=','.join(roles), tracking=tracking))
         self.email = email
         self.api_key = api_key
         self.roles = roles
-        self.record = record
+        self.tracking = tracking
         return self
 
 
@@ -116,19 +116,19 @@ class User:
     api_key: str
     roles: Set[UserRole]
     authenticated: bool
-    record: bool = True
+    tracking: bool = True
 
-    def __init__(self, api_key: str, authenticated: bool, roles: Set[UserRole], record: bool = True) -> None:
+    def __init__(self, api_key: str, authenticated: bool, roles: Set[UserRole], tracking: bool = True) -> None:
         self.api_key = api_key
         self.authenticated = authenticated
         self.roles = roles
-        self.record = record
+        self.tracking = tracking
 
     def has_role(self, role: UserRole) -> bool:
         return role in self.roles
 
     def log_info(self, msg: str, **kwargs) -> None:
-        if self.authenticated and self.record:
+        if self.authenticated and self.tracking:
             app.logger.info(f"apikey: {self.api_key}, {msg}", **kwargs)
         else:
             app.logger.info(msg, **kwargs)
@@ -145,7 +145,7 @@ def _find_user(api_key: Optional[str]) -> User:
     if user is None:
         return ANONYMOUS_USER
     else:
-        return User(user.api_key, True, set(user.roles.split(",")), user.record)
+        return User(user.api_key, True, set(user.roles.split(",")), user.tracking)
 
 def resolve_auth_token() -> Optional[str]:
     # auth request param
