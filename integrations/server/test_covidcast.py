@@ -29,7 +29,7 @@ class CovidcastTests(unittest.TestCase):
     cur = cnx.cursor()
     cur.execute('truncate table covidcast')
     cur.execute("truncate table api_user")
-    cur.execute('insert into api_user(api_key, email, roles) values("key", "test@test.com", "")')
+    cur.execute('insert into api_user(api_key, roles, tracking) values("key", "", 1)')
     cnx.commit()
     cur.close()
 
