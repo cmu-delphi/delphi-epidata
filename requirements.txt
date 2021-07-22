@@ -7,3 +7,4 @@ pandas==1.2.3
 scipy==1.6.2
 tenacity==7.0.0
 newrelic
+requests
