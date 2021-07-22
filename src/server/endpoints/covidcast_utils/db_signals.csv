@@ -253,26 +253,26 @@ fb-survey,smoothed_wearing_mask_7d,FALSE,smoothed_wearing_mask_7d,FALSE,People W
 
 This item was shown to respondents starting in Wave 8, February 8, 2021, replacing a 5-day version of the same question.",day,Date,Percentage,percent,public,good,TRUE,FALSE,FALSE,TRUE,TRUE,https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/fb-survey.html#mask-use
 fb-survey,smoothed_wearing_mask_7d,TRUE,smoothed_wwearing_mask_7d,FALSE,{base_name} (Weighted),,,day,Date,Percentage,percent,public,good,TRUE,TRUE,FALSE,TRUE,TRUE,
-fb-survey,smoothed_wwork_outside_home_1d,FALSE,smoothed_wwork_outside_home_1d,FALSE,Work Outside Home (Last 24 Hours),Estimated percentage of respondents who worked or went to school outside their home in the past 24 hours,"{short_description}.
+fb-survey,smoothed_work_outside_home_1d,FALSE,smoothed_work_outside_home_1d,FALSE,Work Outside Home (Last 24 Hours),Estimated percentage of respondents who worked or went to school outside their home in the past 24 hours,"{short_description}.
 
 This item was shown to respondents starting in Wave 4, September 8, 2020. 
 
-Discontinued as of Wave 10, March 2, 2021.",day,Date,Percentage,percent,public,neutral,TRUE,TRUE,FALSE,TRUE,TRUE,
-fb-survey,smoothed_wwork_outside_home_1d,TRUE,smoothed_work_outside_home_1d,FALSE,{base_name} (Weighted),,,day,Date,Percentage,percent,public,neutral,TRUE,FALSE,FALSE,TRUE,TRUE,https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/fb-survey.html#social-distancing-and-travel
-fb-survey,smoothed_wwork_outside_home_indoors_1d,FALSE,smoothed_wwork_outside_home_indoors_1d,FALSE,Work Outside Home Indoors (Last 24 Hours),Estimated percentage of respondents who worked or went to school outside their home in an indoor setting in the past 24 hours,"{short_description}.
+Discontinued as of Wave 10, March 2, 2021.",day,Date,Percentage,percent,public,neutral,TRUE,FALSE,FALSE,TRUE,TRUE,https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/fb-survey.html#social-distancing-and-travel
+fb-survey,smoothed_work_outside_home_1d,TRUE,smoothed_wwork_outside_home_1d,FALSE,{base_name} (Weighted),,,day,Date,Percentage,percent,public,neutral,TRUE,TRUE,FALSE,TRUE,TRUE,
+fb-survey,smoothed_work_outside_home_indoors_1d,FALSE,smoothed_work_outside_home_indoors_1d,FALSE,Work Outside Home Indoors (Last 24 Hours),Estimated percentage of respondents who worked or went to school outside their home in an indoor setting in the past 24 hours,"{short_description}.
 
-This item was shown to respondents starting in Wave 10, March 2, 2021.",day,Date,Percentage,percent,public,neutral,TRUE,TRUE,FALSE,TRUE,TRUE,
-fb-survey,smoothed_wwork_outside_home_indoors_1d,TRUE,smoothed_work_outside_home_indoors_1d,FALSE,{base_name} (Weighted),,,day,Date,Percentage,percent,public,neutral,TRUE,FALSE,FALSE,TRUE,TRUE,https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/fb-survey.html#social-distancing-and-travel
-fb-survey,smoothed_wworried_become_ill,FALSE,smoothed_wworried_become_ill,FALSE,Worried Become Ill,"Estimated percentage of respondents who reported feeling very or somewhat worried that ""you or someone in your immediate family might become seriously ill from COVID-19""","{short_description}.
+This item was shown to respondents starting in Wave 10, March 2, 2021.",day,Date,Percentage,percent,public,neutral,TRUE,FALSE,FALSE,TRUE,TRUE,https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/fb-survey.html#social-distancing-and-travel
+fb-survey,smoothed_work_outside_home_indoors_1d,TRUE,smoothed_wwork_outside_home_indoors_1d,FALSE,{base_name} (Weighted),,,day,Date,Percentage,percent,public,neutral,TRUE,TRUE,FALSE,TRUE,TRUE,
+fb-survey,smoothed_worried_become_ill,FALSE,smoothed_worried_become_ill,FALSE,Worried Become Ill,"Estimated percentage of respondents who reported feeling very or somewhat worried that ""you or someone in your immediate family might become seriously ill from COVID-19""","{short_description}.
 
-Discontinued as of Wave 11, May 19, 2021.",day,Date,Percentage,percent,public,bad,TRUE,TRUE,FALSE,TRUE,TRUE,
-fb-survey,smoothed_wworried_become_ill,TRUE,smoothed_worried_become_ill,FALSE,{base_name} (Weighted),,,day,Date,Percentage,percent,public,bad,TRUE,FALSE,FALSE,TRUE,TRUE,https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/fb-survey.html#mental-health-indicators
-fb-survey,smoothed_wworried_finances,FALSE,smoothed_wworried_finances,FALSE,Worried Finances,"Estimated percentage of respondents who report being very or somewhat worried about their ""household's finances for the next month""",,day,Date,Percentage,percent,public,bad,TRUE,TRUE,FALSE,TRUE,TRUE,
-fb-survey,smoothed_wworried_finances,TRUE,smoothed_worried_finances,FALSE,{base_name} (Weighted),,,day,Date,Percentage,percent,public,bad,TRUE,FALSE,FALSE,TRUE,TRUE,https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/fb-survey.html#mental-health-indicators
-fb-survey,smoothed_wworried_vaccine_side_effects,FALSE,smoothed_wworried_vaccine_side_effects,FALSE,Worried Vaccine Side Effects,"Estimated percentage of respondents who are very or moderately concerned that they would ""experience a side effect from a COVID-19 vaccination.""","{short_description}
+Discontinued as of Wave 11, May 19, 2021.",day,Date,Percentage,percent,public,bad,TRUE,FALSE,FALSE,TRUE,TRUE,https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/fb-survey.html#mental-health-indicators
+fb-survey,smoothed_worried_become_ill,TRUE,smoothed_wworried_become_ill,FALSE,{base_name} (Weighted),,,day,Date,Percentage,percent,public,bad,TRUE,TRUE,FALSE,TRUE,TRUE,
+fb-survey,smoothed_worried_finances,FALSE,smoothed_worried_finances,FALSE,Worried Finances,"Estimated percentage of respondents who report being very or somewhat worried about their ""household's finances for the next month""",,day,Date,Percentage,percent,public,bad,TRUE,FALSE,FALSE,TRUE,TRUE,https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/fb-survey.html#mental-health-indicators
+fb-survey,smoothed_worried_finances,TRUE,smoothed_wworried_finances,FALSE,{base_name} (Weighted),,,day,Date,Percentage,percent,public,bad,TRUE,TRUE,FALSE,TRUE,TRUE,
+fb-survey,smoothed_worried_vaccine_side_effects,FALSE,smoothed_worried_vaccine_side_effects,FALSE,Worried Vaccine Side Effects,"Estimated percentage of respondents who are very or moderately concerned that they would ""experience a side effect from a COVID-19 vaccination.""","{short_description}
 
-Note: Until Wave 10, March 2, 2021, all respondents answered this question, including those who had already received one or more doses of a COVID-19 vaccine; beginning on that date, only respondents who said they have not received a COVID vaccine are asked this question.",day,Date,Percentage,percent,public,bad,TRUE,TRUE,FALSE,TRUE,TRUE,
-fb-survey,smoothed_wworried_vaccine_side_effects,TRUE,smoothed_worried_vaccine_side_effects,FALSE,{base_name} (Weighted),,,day,Date,Percentage,percent,public,bad,TRUE,FALSE,FALSE,TRUE,TRUE,https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/fb-survey.html#reasons-for-hesitancy
+Note: Until Wave 10, March 2, 2021, all respondents answered this question, including those who had already received one or more doses of a COVID-19 vaccine; beginning on that date, only respondents who said they have not received a COVID vaccine are asked this question.",day,Date,Percentage,percent,public,bad,TRUE,FALSE,FALSE,TRUE,TRUE,https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/fb-survey.html#reasons-for-hesitancy
+fb-survey,smoothed_worried_vaccine_side_effects,TRUE,smoothed_wworried_vaccine_side_effects,FALSE,{base_name} (Weighted),,,day,Date,Percentage,percent,public,bad,TRUE,TRUE,FALSE,TRUE,TRUE,
 ght,raw_search,,raw_search,FALSE,COVID-Related Searches,"Google search volume for COVID-related searches, in arbitrary units that are normalized for population","{short_description}
 
 Discontinued March 8, 2021.",day,Date,Value,raw,public,bad,FALSE,FALSE,FALSE,FALSE,FALSE,https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/ght.html
