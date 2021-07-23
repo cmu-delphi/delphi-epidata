@@ -342,7 +342,7 @@ released:
 > The de-identified results of this survey may be used for our future studies or
 > shared with other investigators for their research studies. Results published
 > by us and other researchers will be in aggregate and will not identify
-> individual respondents or their responses.
+> individual participants or their responses.
 
 ### New Items
 
