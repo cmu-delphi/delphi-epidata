@@ -17,8 +17,8 @@ grand_parent: COVIDcast Epidata API
 
 ## Overview
 
-This data source is based on the [COVID-19 Trends and Impact Survey
-(CTIS)](../../symptom-survey/) run by the Delphi group at Carnegie Mellon.
+This data source is based on the [COVID-19 Trends and Impact Survey (CTIS)](../../symptom-survey/)
+run by the Delphi group at Carnegie Mellon.
 Facebook directs a random sample of its users to these surveys, which are
 voluntary. Users age 18 or older are eligible to complete the surveys, and
 their survey responses are held by CMU and are sharable with other health
@@ -545,6 +545,16 @@ bias estimates on a specific day up or down -- the biases should not change
 strongly over time. This means that *changes* in signals, such as increases or
 decreases, are likely to represent true changes in the underlying population,
 even if point estimates are biased.
+
+### Declining Response Rate
+
+We have noted a steady decrease in the number of daily survey responses,
+beginning no later than January 2021. As the number of survey responses
+declines, some indicators will become unavailable once they no longer meet the
+[privacy limit for sample size](../../symptom-survey/coding.md#privacy-restrictions).
+This affects some signals, such as those based on a subset of responses, more
+than others, with finer geographic resolutions becoming unavailable first.
+
 
 ## Survey Weighting
 
