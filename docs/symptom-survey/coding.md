@@ -58,21 +58,6 @@ information for more details.
 
 Coding details for each survey wave follow.
 
-## Privacy Restrictions
-
-To prevent respondents from being identifiable in the response data, responses
-with ZIP codes with populations of 100 or fewer have their location set to `NA`.
-This affects item A3 in the individual response files. (This change was
-implemented with the introduction of Wave 4. Previously, all ZIPs were
-reported.)
-
-Invalid ZIP codes are preserved unchanged, and these rows are reported in the
-individual response files with their invalid ZIPs.
-
-Additionally, beginning in wave 4, items D6 and D7 ask respondents for race and
-ethnicity. These columns are **not** available in the microdata files due to
-reidentification concerns. However, contingency tables that aggregate by race
-and other demographic variables [are available](contingency-tables.md).
 
 ## Comprehensive Codebook
 
@@ -101,6 +86,23 @@ Available columns:
 * `display_logic`: Conditions a respondent has to satisfy to be shown an item. For example, this can require a specific answer on a single previous item or a set of previous items, or that a previous item was displayed.
 * `response_option_randomization`: How answer choices are displayed for a given question. Answer choice order can be fixed ("none"), reversed ("scale reversal", e.g. for Likert scales) or shuffled ("randomized") between respondents.
 * `group_of_respondents_item_was_shown_to`: Module-based subset of respondents item was asked of. One of "all" (if item was included in the [Daily Core](modules.md) and asked of all respondents), "Module A", or "Module B".
+
+
+## Privacy Restrictions
+
+To prevent respondents from being identifiable in the response data, responses
+with ZIP codes with populations of 100 or fewer have their location set to `NA`.
+This affects item A3 in the individual response files. (This change was
+implemented with the introduction of Wave 4. Previously, all ZIPs were
+reported.)
+
+Invalid ZIP codes are preserved unchanged, and these rows are reported in the
+individual response files with their invalid ZIPs.
+
+Additionally, beginning in wave 4, items D6 and D7 ask respondents for race and
+ethnicity. These columns are **not** available in the microdata files due to
+reidentification concerns. However, contingency tables that aggregate by race
+and other demographic variables [are available](contingency-tables.md).
 
 
 ## Wave 1
