@@ -63,7 +63,10 @@ Coding details for each survey wave follow.
 
 The [codebook](codebook.csv) describes availability of metadata and question
 fields by survey version. A row is included for each field available in the
-microdata files for a given survey wave.
+microdata files for a given survey wave. We recommend using the codebook as a
+reference while working with the survey microdata, to ensure you interpret each
+question and answer choice accurately even as items were revised between
+survey waves.
 
 If a field is available for multiple waves, it is listed separately for each
 version. Items that were included in non-contiguous survey waves have entries
@@ -81,7 +84,7 @@ Available columns:
 * `description`: Brief description of the meaning of a field or survey item.
 * `question`: Survey item text.
 * `matrix_subquestion`: Subquestion text for a matrix item.
-* `choices`: JSON-formatted map of answer codes and response choice text.
+* `choices`: JSON-formatted map of answer codes and response choice text. For example, `"5": "California"` means that responses with the value 5 correspond to the respondent selecting "California".
 * `type`: Survey item format; one of "Matrix" (several questions with the same question stem are displayed together with the same answer choices), "Text" (free text entry), "Multiple Choice" (particpant can select only one answer choice), or "Multiselect" (respondent can select one or more answer choices).
 * `display_logic`: Conditions a respondent has to satisfy to be shown an item. For example, this can require a specific answer on a single previous item or a set of previous items, or that a previous item was displayed.
 * `response_option_randomization`: How answer choices are displayed for a given question. Answer choice order can be fixed ("none"), reversed ("scale reversal", e.g. for Likert scales) or shuffled ("randomized") between respondents.
