@@ -160,10 +160,10 @@ def handle():
 
     _handle_lag_issues_as_of(q, issues, lag, as_of)
 
-    def transform_row(row, _):
-        if is_compatibility or not alias_mapper:
+    def transform_row(row, proxy):
+        if is_compatibility or not alias_mapper or 'source' not in row:
             return row
-        row["source"] = alias_mapper(row["source"], row["signal"])
+        row["source"] = alias_mapper(row["source"], proxy["signal"])
         return row
 
     # send query
@@ -608,10 +608,10 @@ def handle_coverage():
 
     _handle_lag_issues_as_of(q, None, None, None)
 
-    def transform_row(row, _):
-        if not alias_mapper:
+    def transform_row(row, proxy):
+        if not alias_mapper or 'source' not in row:
             return row
-        row["source"] = alias_mapper(row["source"], row["signal"])
+        row["source"] = alias_mapper(row["source"], proxy["signal"])
         return row
 
     return execute_query(q.query, q.params, fields_string, fields_int, [], transform=transform_row)
