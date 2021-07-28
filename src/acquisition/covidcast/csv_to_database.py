@@ -122,16 +122,21 @@ def upload_archive(
         signal = signal[4:]
 
     csv_rows = csv_importer_impl.load_csv(path, geo_type)
+    geo_value_list = csv_rows['geo_value']
+    geoval_to_dataref = get_dataref_ids(source, signal, time_type, geo_type, time_value, geo_value_list)
+    csv_rows['ref_id'] = [geoval_to_dataref[g] for g in geo_value_list]
+    # datapoint_rows = make_datapoint_rows(geoval_to_dataref, csv_rows) <-- mostly don't need this
+    
 
-    cc_rows = CovidcastRow.fromCsvRows(csv_rows, source, signal, time_type, geo_type, time_value, issue, lag, is_wip)
-    rows_list = list(cc_rows)
-    all_rows_valid = rows_list and all(r is not None for r in rows_list)
+    # cc_rows = CovidcastRow.fromCsvRows(csv_rows, source, signal, time_type, geo_type, time_value, issue, lag, is_wip)
+    # rows_list = list(cc_rows)
+    all_rows_valid = csv_rows and all(r is not None for r in datapoint_rows)
     if all_rows_valid:
       try:
-        modified_row_count = database.insert_or_update_bulk(rows_list)
-        logger.info(f"insert_or_update_bulk {filename} returned {modified_row_count}")
+        modified_row_count = database.insert_datapoints_bulk(csv_rows)
+        logger.info(f"insert_datapoints_bulk {filename} returned {modified_row_count}")
         logger.info(
-          "Inserted database rows",
+          "Inserted datapoint rows",
           row_count = modified_row_count,
           source = source,
           signal = signal,

@@ -103,7 +103,210 @@ class Database:
 
     for (num,) in self._cursor:
       return num
+  def get_dataref_ids(self, source, signal, time_type, geo_type, time_value, geo_value_list):
+    sql_insert_ref_id = f'''INSERT INTO `data_reference` 
+                          (`source`, 
+                          `signal`, 
+                          `time_type`, 
+                          `geo_type`, 
+                          `time_value`, 
+                          `geo_value`) 
+                          VALUES (%s, %s, %s, %s, %s, %s)
+                          ON DUPLICATE KEY UPDATE `ref_id` = `ref_id`;'''
+    args = [(
+          source,
+          signal,
+          time_type,
+          geo_type,
+          time_value,
+          geo_value,
+        ) for geo_value in geo_value_list]
+        
+    self._cursor.executemany(sql_insert_ref_id, args)
 
+    sql_find_ref_id = f'''SELECT `geo_value`,
+                                `ref_id`
+                          FROM `data_reference` 
+                          WHERE `source`='{source}' 
+                            AND `signal`='{signal}' 
+                            AND `time_type`='{time_type}' 
+                            AND `geo_type`='{geo_type}' 
+                            AND `time_value`={time_value}; 
+                      '''
+    self._cursor.execute(sql_find_ref_id)
+    return dict(list(self._cursor))
+
+
+  def insert_datapoints_bulk(self, csv_rows):
+    
+    tmp_table_name = 'tmp_insert_update_table'
+
+    create_tmp_table_sql = f'''
+      CREATE TABLE `{tmp_table_name}` (
+        `data_reference_id` bigint(20) unsigned NOT NULL, 
+        `asof` int(11) NOT NULL,
+        `value_first_updated_timestamp` int(11) NOT NULL,
+        `value_updated_timestamp` int(11) NOT NULL,
+        `value` double,
+        `stderr` double,
+        `sample_size` double,
+        `lag` int(11) NOT NULL,
+        `missing_value` int(1) DEFAULT 0,
+        `missing_stderr` int(1) DEFAULT 0,
+        `missing_sample_size` int(1) DEFAULT 0,
+        UNIQUE KEY(`data_reference_id`, `asof`)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    '''
+
+    truncate_tmp_table_sql = f'TRUNCATE TABLE {tmp_table_name};'
+    drop_tmp_table_sql = f'DROP TABLE {tmp_table_name}'
+
+    sql_insert_tmp_datapoints = f'''INSERT INTO `{tmp_table_name}` 
+                                  (`data_reference_id`, 
+                                  `asof`, 
+                                  `value_first_updated_timestamp`, 
+                                  `value_updated_timestamp`, 
+                                  `value`, 
+                                  `stderr`,
+                                  `sample_size`
+                                  `lag`,
+                                  `missing_value`,
+                                  `missing_stderr`,
+                                  `missing_sample_size`) 
+                                VALUES 
+                                  (%s,%s,UNIX_TIMESTAMP(NOW()),UNIX_TIMESTAMP(NOW()),%s,%s,%s,%s,%s,%s);'''
+
+    sql_find_asof = f'''SELECT `asof` 
+                        FROM `data_reference` r 
+                        JOIN `datapoint` p 
+                        ON `latest_datapoint_id`=p.`datapt_id` 
+                        WHERE r.`ref_id`=%s;
+                    '''
+    sql_find_asof = f'''SELECT `asof` 
+                        FROM `data_reference` r 
+                        JOIN `datapoint` p 
+                        ON `latest_datapoint_id`=p.`datapt_id` 
+                        WHERE r.`ref_id` IN ();
+                    '''
+
+    sql_find_datapt_id = f'''SELECT `datapt_id` 
+                              FROM `datapoint` 
+                              WHERE `data_reference_id`={data_ref_id} AND 
+                              `asof`={asof};
+                        '''
+
+    sql_update_latest_datapt_id = f'''UPDATE `data_reference` 
+                                    SET `latest_datapoint_id`={latest_datapt_id} 
+                                    WHERE `ref_id`={ref_id};
+                                  '''
+  
+    insert_or_update_datapoint_sql = f'''
+      INSERT INTO `datapoint`
+        (`data_reference_id`, `asof`, `value_first_updated_timestamp`, `value_updated_timestamp`, `value`, `stderr`,
+         `sample_size`,`lag`,`missing_value`,`missing_stderr`,`missing_sample_size`)
+      SELECT * FROM `{tmp_table_name}`
+      ON DUPLICATE KEY UPDATE
+        `value_updated_timestamp` = VALUES(`value_updated_timestamp`),
+        `value` = VALUES(`value`),
+        `stderr` = VALUES(`stderr`),
+        `sample_size` = VALUES(`sample_size`),
+        `lag` = VALUES(`lag`),
+        `missing_value` = VALUES(`missing_value`),
+        `missing_stderr` = VALUES(`missing_stderr`),
+        `missing_sample_size` = VALUES(`missing_sample_size`)
+    '''
+
+'''
+SELECT p.`datapt_id`, p.`data_reference_id`, p.`asof` 
+FROM `datapoint` p JOIN `{tmp_table}` t ON p.`data_reference_id`=t.`data_reference_id` 
+   AND p.`asof`=t.`asof`
+'''
+'''
+SELECT * FROM `data_reference` r JOIN `datapoint` p ON r.`latest_datapoint_id`=p.`datapt_id`
+'''
+
+    zero_is_latest_issue_sql = f'''
+      UPDATE
+      (
+        SELECT DISTINCT `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`
+        FROM `{tmp_table_name}`
+      ) AS TMP
+      LEFT JOIN `covidcast`
+      USING (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`)
+      SET `is_latest_issue`=0
+    '''
+    set_is_latest_issue_sql = f'''
+      UPDATE 
+      (
+        SELECT `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`, MAX(`issue`) AS `issue`
+        FROM
+        (
+          SELECT DISTINCT `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value` 
+          FROM `{tmp_table_name}`
+        ) AS TMP
+        LEFT JOIN `covidcast`
+        USING (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`)
+        GROUP BY `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`
+      ) AS TMP
+      LEFT JOIN `covidcast`
+      USING (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`, `issue`)
+      SET `is_latest_issue`=1        
+    '''
+
+
+    # TODO: consider handling cc_rows as a generator instead of a list
+    self._cursor.execute(create_tmp_table_sql)
+
+    try:
+      num_rows = len(cc_rows)
+      total = 0
+      if not batch_size:
+        batch_size = num_rows
+      num_batches = ceil(num_rows/batch_size)
+      for batch_num in range(num_batches):
+        start = batch_num * batch_size
+        end = min(num_rows, start + batch_size)
+        length = end - start
+
+        args = [(
+          row.source,
+          row.signal,
+          row.time_type,
+          row.geo_type,
+          row.time_value,
+          row.geo_value,
+          row.value,
+          row.stderr,
+          row.sample_size,
+          row.issue,
+          row.lag,
+          row.is_wip,
+          row.missing_value,
+          row.missing_stderr,
+          row.missing_sample_size
+        ) for row in cc_rows[start:end]]
+
+
+        self._cursor.executemany(insert_into_tmp_sql, args)
+        self._cursor.execute(insert_or_update_sql)
+        modified_row_count = self._cursor.rowcount
+        self._cursor.execute(zero_is_latest_issue_sql)
+        self._cursor.execute(set_is_latest_issue_sql)
+        self._cursor.execute(truncate_tmp_table_sql)
+
+        if modified_row_count is None or modified_row_count == -1:
+          # the SQL connector does not support returning number of rows affected (see PEP 249)
+          total = None
+        else:
+          total += modified_row_count
+        if commit_partial:
+          self._connection.commit()
+    except Exception as e:
+      raise e
+    finally:
+      self._cursor.execute(drop_tmp_table_sql)
+    return total  
+  
   def insert_or_update_bulk(self, cc_rows):
     return self.insert_or_update_batch(cc_rows)
 
