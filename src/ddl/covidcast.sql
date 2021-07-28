@@ -82,35 +82,47 @@ Data is public.
   ~ENUM for the reason a `sample_size` was deleted
 */
 
-CREATE TABLE `covidcast` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+CREATE TABLE `data_reference` (
+  `ref_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `latest_datapoint_id` bigint(20) unsigned DEFAULT NULL, 
   `source` varchar(32) NOT NULL,
   `signal` varchar(64) NOT NULL,
   `time_type` varchar(12) NOT NULL,
   `geo_type` varchar(12) NOT NULL,
   `time_value` int(11) NOT NULL,
   `geo_value` varchar(12) NOT NULL,
-  -- "primary" values are derived from the upstream data source
+  `is_wip` binary(1) DEFAULT NULL,
+  -- -----------`latest_value_updated_timestamp` int(11) NOT NULL,
+  PRIMARY KEY(`ref_id`),
+  UNIQUE KEY (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`)
+  -- KEY `by_issue` (`source`, `signal`, `time_type`, `geo_type`, `geo_value`, `time_value`, `issue`),
+  -- KEY `by_lag` (`source`, `signal`, `time_type`, `geo_type`, `geo_value`, `time_value`, `lag`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+​
+CREATE TABLE `datapoint` (
+  `datapt_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `data_reference_id` bigint(20) unsigned NOT NULL, 
+  `asof` int(11) NOT NULL,
+  `value_first_updated_timestamp` int(11) NOT NULL,
   `value_updated_timestamp` int(11) NOT NULL,
+  -- `asof_actual_dt` int(11) NOT NULL,
+  -- `asof_nominal_dt` int(11) NOT NULL,
   `value` double,
   `stderr` double,
   `sample_size` double,
-  `direction_updated_timestamp` int(11) NOT NULL,
-  `direction` int(11),
-  `issue` int(11) NOT NULL,
+  -- `stratification_type` int(11) DEFAULT NULL,
+  -- `stratification_value` char(11) DEFAULT NULL,
   `lag` int(11) NOT NULL,
-  `is_latest_issue` binary(1) NOT NULL,
-  `is_wip` binary(1) DEFAULT NULL,
   `missing_value` int(1) DEFAULT 0,
   `missing_stderr` int(1) DEFAULT 0,
   `missing_sample_size` int(1) DEFAULT 0,
-  PRIMARY KEY (`id`),
-  -- for uniqueness, and also fast lookup of all locations on a given date
-  UNIQUE KEY (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`, `issue`),
-  -- for fast lookup of a time-series for a given location
-  KEY `by_issue` (`source`, `signal`, `time_type`, `geo_type`, `geo_value`, `time_value`, `issue`),
-  KEY `by_lag` (`source`, `signal`, `time_type`, `geo_type`, `geo_value`, `time_value`, `lag`)
+  PRIMARY KEY (`datapt_id`),
+  UNIQUE KEY(`data_reference_id`, `asof`),
+  FOREIGN KEY (`data_reference_id`) REFERENCES data_reference(`ref_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+​
+ALTER TABLE `data_reference` ADD FOREIGN KEY(`latest_datapoint_id`) REFERENCES datapoint(`datapt_id`);
+-- if possible, find a way so we don't have to alter the table
 
 -- important index for computing metadata efficiently (dont forget to use a hint in your query!)
 CREATE INDEX `for_metadata` ON `covidcast` (`source`, `signal`, `is_latest_issue`);
