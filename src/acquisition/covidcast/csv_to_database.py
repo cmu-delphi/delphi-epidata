@@ -133,6 +133,7 @@ def upload_archive(
         geoval_to_dataref = database.get_dataref_id_map(source, signal, time_type, geo_type, time_value, geo_value_list)
         csv_rows['ref_id'] = [geoval_to_dataref[g] for g in geo_value_list]
       except Exception as e:
+        # csv_rows is None, should never reach this exception
         all_rows_valid = False
         logger.exception('csv rows invalid:', e)
         # TODO: someone confirm if we want to do a rollback on this exception
