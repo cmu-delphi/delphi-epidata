@@ -121,16 +121,23 @@ def upload_archive(
       if signal[:4].lower() == "wip_" and not is_wip:
         signal = signal[4:]
 
-    # TODO: Tara & george are not completely comfortable with database ids being referred to here...
-    #       figure out if and how we should move this stuff.
     csv_rows = csv_importer_impl.load_csv(path, geo_type)
     # TODO: figure out if this is a dataframe or what?  (it probably is)
 
     all_rows_valid = csv_rows and all(r is not None for r in csv_rows)
     if all_rows_valid:
-      geo_value_list = csv_rows['geo_value']
-      geoval_to_dataref = get_dataref_id_map(source, signal, time_type, geo_type, time_value, geo_value_list)
-      csv_rows['ref_id'] = [geoval_to_dataref[g] for g in geo_value_list]
+      try:
+        geo_value_list = csv_rows['geo_value']
+        # TODO: Tara & george are not completely comfortable with database ids being referred to here...
+        #       figure out if and how we should move this stuff.
+        geoval_to_dataref = database.get_dataref_id_map(source, signal, time_type, geo_type, time_value, geo_value_list)
+        csv_rows['ref_id'] = [geoval_to_dataref[g] for g in geo_value_list]
+      except Exception as e:
+        all_rows_valid = False
+        logger.exception('csv rows invalid:', e)
+        # TODO: someone confirm if we want to do a rollback on this exception
+        database.rollback()
+        
       try:
         modified_row_count = database.insert_datapoints_bulk(csv_rows)
         logger.info(f"insert_datapoints_bulk {filename} returned {modified_row_count}")
