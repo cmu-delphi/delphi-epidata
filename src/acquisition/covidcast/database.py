@@ -103,44 +103,38 @@ class Database:
 
     for (num,) in self._cursor:
       return num
-  def get_dataref_ids(self, source, signal, time_type, geo_type, time_value, geo_value_list):
-    sql_insert_ref_id = f'''INSERT INTO `data_reference` 
-                          (`source`, 
-                          `signal`, 
-                          `time_type`, 
-                          `geo_type`, 
-                          `time_value`, 
-                          `geo_value`) 
-                          VALUES (%s, %s, %s, %s, %s, %s)
-                          ON DUPLICATE KEY UPDATE `ref_id` = `ref_id`;'''
-    args = [(
-          source,
-          signal,
-          time_type,
-          geo_type,
-          time_value,
-          geo_value,
-        ) for geo_value in geo_value_list]
-        
-    self._cursor.executemany(sql_insert_ref_id, args)
 
-    sql_find_ref_id = f'''SELECT `geo_value`,
-                                `ref_id`
-                          FROM `data_reference` 
-                          WHERE `source`='{source}' 
-                            AND `signal`='{signal}' 
-                            AND `time_type`='{time_type}' 
-                            AND `geo_type`='{geo_type}' 
-                            AND `time_value`={time_value}; 
-                      '''
-    self._cursor.execute(sql_find_ref_id)
+  def get_dataref_id_map(self, source, signal, time_type, geo_type, time_value, geo_value_list):
+
+    # insert any non-existant references...
+    create_references_sql = f'''
+      INSERT INTO `data_reference` (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`) 
+      VALUES ({source}, {signal}, {time_type}, {geo_type}, {time_value}, %s)
+      ON DUPLICATE KEY UPDATE `id` = VALUES(`id`);
+    '''
+    self._cursor.executemany(create_references_sql, geo_value_list)
+    # NOTE: its kinda ok if we create these and then dont delete them on a failed file import or something...
+    #   they will probably end up being used later, and as long as `latest_datapoint_id` is NULL,
+    #   we will treat that row as if it essentially does not exist.
+
+    # retrieve geo_value-->ref.id mapping 
+    get_ref_ids_sql = f'''
+      SELECT `geo_value`, `id`
+      FROM `data_reference`
+      WHERE `source`='{source}' 
+        AND `signal`='{signal}' 
+        AND `time_type`='{time_type}' 
+        AND `geo_type`='{geo_type}' 
+        AND `time_value`={time_value};
+    '''
+    self._cursor.execute(get_ref_ids_sql)
     return dict(list(self._cursor))
 
 
-  def insert_datapoints_bulk(self, csv_rows):
-    
-    tmp_table_name = 'tmp_insert_update_table'
+  def insert_datapoints_bulk(self, csv_rows):    
+    tmp_table_name = 'tmp_insert_datapoint_table'
 
+    # this heavily borrows from the `datapoint` table in src/ddl/covidcast.sql, but lacks the auto_increment `id`
     create_tmp_table_sql = f'''
       CREATE TABLE `{tmp_table_name}` (
         `data_reference_id` bigint(20) unsigned NOT NULL, 
@@ -161,45 +155,36 @@ class Database:
     truncate_tmp_table_sql = f'TRUNCATE TABLE {tmp_table_name};'
     drop_tmp_table_sql = f'DROP TABLE {tmp_table_name}'
 
-    sql_insert_tmp_datapoints = f'''INSERT INTO `{tmp_table_name}` 
-                                  (`data_reference_id`, 
-                                  `asof`, 
-                                  `value_first_updated_timestamp`, 
-                                  `value_updated_timestamp`, 
-                                  `value`, 
-                                  `stderr`,
-                                  `sample_size`
-                                  `lag`,
-                                  `missing_value`,
-                                  `missing_stderr`,
-                                  `missing_sample_size`) 
-                                VALUES 
-                                  (%s,%s,UNIX_TIMESTAMP(NOW()),UNIX_TIMESTAMP(NOW()),%s,%s,%s,%s,%s,%s);'''
+    insert_tmp_datapoints_sql = f'''
+      INSERT INTO `{tmp_table_name}` 
+        (`data_reference_id`, `asof`, `value_first_updated_timestamp`, `value_updated_timestamp`, 
+         `value`, `stderr`, `sample_size`, `lag`, `missing_value`, `missing_stderr`, `missing_sample_size`) 
+      VALUES 
+        (%s, %s, UNIX_TIMESTAMP(NOW()), UNIX_TIMESTAMP(NOW()),
+         %s, %s, %s, %s, %s, %s, %s);
+    '''
+    # NOTE: see comment below on insert_or_update_datapoint_sql re: `value_first_updated_timestamp`
 
     sql_find_asof = f'''SELECT `asof` 
-                        FROM `data_reference` r 
-                        JOIN `datapoint` p 
-                        ON `latest_datapoint_id`=p.`datapt_id` 
-                        WHERE r.`ref_id`=%s;
-                    '''
-    sql_find_asof = f'''SELECT `asof` 
-                        FROM `data_reference` r 
-                        JOIN `datapoint` p 
-                        ON `latest_datapoint_id`=p.`datapt_id` 
-                        WHERE r.`ref_id` IN ();
+                        FROM `data_reference` dr JOIN `datapoint` dp 
+                          ON dr,`latest_datapoint_id`=dp.`id` 
+                        WHERE dr.`id`=%s;
+                        -- or --
+                        WHERE dr.`id` IN ();
                     '''
 
-    sql_find_datapt_id = f'''SELECT `datapt_id` 
+    sql_find_datapt_id = f'''SELECT `id` 
                               FROM `datapoint` 
-                              WHERE `data_reference_id`={data_ref_id} AND 
-                              `asof`={asof};
-                        '''
+                              WHERE `data_reference_id`={data_ref_id} 
+                                AND `asof`={asof};
+                          '''
 
     sql_update_latest_datapt_id = f'''UPDATE `data_reference` 
                                     SET `latest_datapoint_id`={latest_datapt_id} 
-                                    WHERE `ref_id`={ref_id};
+                                    WHERE `id`={ref_id};
                                   '''
-  
+
+    # TODO: enumerate * in SELECT below
     insert_or_update_datapoint_sql = f'''
       INSERT INTO `datapoint`
         (`data_reference_id`, `asof`, `value_first_updated_timestamp`, `value_updated_timestamp`, `value`, `stderr`,
@@ -215,17 +200,35 @@ class Database:
         `missing_stderr` = VALUES(`missing_stderr`),
         `missing_sample_size` = VALUES(`missing_sample_size`)
     '''
+    # NOTE: `value_first_updated_timestamp` is not in DUPLICATE case.
+    #   this is really just a sanity check, as it should never differ from `value_updated_timestamp`
+    # TODO: remove `value_first_updated_timestamp` once we are sure we are not overwriting rows
 
+    # NOTE: PAY ATTENTION TO JOIN / LEFT/RIGHT INNER/OUTER / ETC
+
+#TODO: update the latest pointers
+f'''
+SELECT new_p.`id` AS new_p_id, ref.`id` AS ref_id
+-- ^ the "latest" points that shall be pointed to by which references
+FROM `{tmp_table}` tmp_p 
+     JOIN `datapoint` new_p 
+       ON tmp_p.`data_reference_id`=new_p.`data_reference_id` AND tmp_p.`asof`=new_p.`asof` 
+     -- ^ so new_p's are what we just inserted into `datapoint`
+     JOIN `data_reference` ref 
+       ON ref.`id`=new_p.`data_reference_id` 
+     -- ^ and we get the `data_reference`s thatre associated with those new points
+     JOIN `datapoint` old_p 
+       ON old_p.`id`=ref.`latest_datapoint_id` 
+     -- ^ and we find what the current `asof`s are set to for those references
+WHERE old_p.`asof` <= new_p.`asof`; 
+-- ^ but we only care about `asof`s that are more recent and thus should be updated
 '''
-SELECT p.`datapt_id`, p.`data_reference_id`, p.`asof` 
-FROM `datapoint` p JOIN `{tmp_table}` t ON p.`data_reference_id`=t.`data_reference_id` 
-   AND p.`asof`=t.`asof`
-'''
-'''
-SELECT * FROM `data_reference` r JOIN `datapoint` p ON r.`latest_datapoint_id`=p.`datapt_id`
+# TODO: take the output of above statement and shove it into the below statement
+f'''
+UPDATE `data_reference` SET `latest_datapoint_id`=%s WHERE `id`=%s;
 '''
 
-    zero_is_latest_issue_sql = f'''
+    RIP__zero_is_latest_issue_sql = f'''
       UPDATE
       (
         SELECT DISTINCT `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`
@@ -235,7 +238,7 @@ SELECT * FROM `data_reference` r JOIN `datapoint` p ON r.`latest_datapoint_id`=p
       USING (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`)
       SET `is_latest_issue`=0
     '''
-    set_is_latest_issue_sql = f'''
+    RIP__set_is_latest_issue_sql = f'''
       UPDATE 
       (
         SELECT `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`, MAX(`issue`) AS `issue`

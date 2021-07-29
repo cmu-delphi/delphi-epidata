@@ -123,13 +123,11 @@ def upload_archive(
 
     csv_rows = csv_importer_impl.load_csv(path, geo_type)
     geo_value_list = csv_rows['geo_value']
-    geoval_to_dataref = get_dataref_ids(source, signal, time_type, geo_type, time_value, geo_value_list)
+    geoval_to_dataref = get_dataref_id_map(source, signal, time_type, geo_type, time_value, geo_value_list)
     csv_rows['ref_id'] = [geoval_to_dataref[g] for g in geo_value_list]
-    # datapoint_rows = make_datapoint_rows(geoval_to_dataref, csv_rows) <-- mostly don't need this
-    
-
-    # cc_rows = CovidcastRow.fromCsvRows(csv_rows, source, signal, time_type, geo_type, time_value, issue, lag, is_wip)
+    # TODO: figure out if this is a dataframe or what?
     # rows_list = list(cc_rows)
+
     all_rows_valid = csv_rows and all(r is not None for r in datapoint_rows)
     if all_rows_valid:
       try:
