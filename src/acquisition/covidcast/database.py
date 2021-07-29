@@ -18,6 +18,7 @@ import delphi.operations.secrets as secrets
 
 from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
 
+# TODO: i think this can be removed now?
 class CovidcastRow():
   """A container for all the values of a single covidcast row."""
 
@@ -152,7 +153,6 @@ class Database:
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
     '''
 
-    truncate_tmp_table_sql = f'TRUNCATE TABLE {tmp_table_name};'
     drop_tmp_table_sql = f'DROP TABLE {tmp_table_name}'
 
     insert_tmp_datapoints_sql = f'''
@@ -164,25 +164,6 @@ class Database:
          %s, %s, %s, %s, %s, %s, %s);
     '''
     # NOTE: see comment below on insert_or_update_datapoint_sql re: `value_first_updated_timestamp`
-
-    sql_find_asof = f'''SELECT `asof` 
-                        FROM `data_reference` dr JOIN `datapoint` dp 
-                          ON dr,`latest_datapoint_id`=dp.`id` 
-                        WHERE dr.`id`=%s;
-                        -- or --
-                        WHERE dr.`id` IN ();
-                    '''
-
-    sql_find_datapt_id = f'''SELECT `id` 
-                              FROM `datapoint` 
-                              WHERE `data_reference_id`={data_ref_id} 
-                                AND `asof`={asof};
-                          '''
-
-    sql_update_latest_datapt_id = f'''UPDATE `data_reference` 
-                                    SET `latest_datapoint_id`={latest_datapt_id} 
-                                    WHERE `id`={ref_id};
-                                  '''
 
     # TODO: enumerate * in SELECT below
     insert_or_update_datapoint_sql = f'''
@@ -206,253 +187,49 @@ class Database:
 
     # NOTE: PAY ATTENTION TO JOIN / LEFT/RIGHT INNER/OUTER / ETC
 
-#TODO: update the latest pointers
-f'''
-SELECT new_p.`id` AS new_p_id, ref.`id` AS ref_id
--- ^ the "latest" points that shall be pointed to by which references
-FROM `{tmp_table}` tmp_p 
-     JOIN `datapoint` new_p 
-       ON tmp_p.`data_reference_id`=new_p.`data_reference_id` AND tmp_p.`asof`=new_p.`asof` 
-     -- ^ so new_p's are what we just inserted into `datapoint`
-     JOIN `data_reference` ref 
-       ON ref.`id`=new_p.`data_reference_id` 
-     -- ^ and we get the `data_reference`s thatre associated with those new points
-     JOIN `datapoint` old_p 
-       ON old_p.`id`=ref.`latest_datapoint_id` 
-     -- ^ and we find what the current `asof`s are set to for those references
-WHERE old_p.`asof` <= new_p.`asof`; 
--- ^ but we only care about `asof`s that are more recent and thus should be updated
-'''
-# TODO: take the output of above statement and shove it into the below statement
-f'''
-UPDATE `data_reference` SET `latest_datapoint_id`=%s WHERE `id`=%s;
-'''
-
-    RIP__zero_is_latest_issue_sql = f'''
-      UPDATE
-      (
-        SELECT DISTINCT `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`
-        FROM `{tmp_table_name}`
-      ) AS TMP
-      LEFT JOIN `covidcast`
-      USING (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`)
-      SET `is_latest_issue`=0
+    #TODO: update the latest pointers
+    get_latest_datapoint_ids_sql = f'''
+      SELECT new_p.`id` AS new_p_id, ref.`id` AS ref_id
+      -- ^ the "latest" points that shall be pointed to by which references
+      FROM `{tmp_table}` tmp_p 
+        JOIN `datapoint` new_p 
+          ON tmp_p.`data_reference_id`=new_p.`data_reference_id` AND tmp_p.`asof`=new_p.`asof` 
+        -- ^ so new_p's are what we just inserted into `datapoint`
+        JOIN `data_reference` ref 
+          ON ref.`id`=new_p.`data_reference_id` 
+        -- ^ and we get the `data_reference`s thatre associated with those new points
+        JOIN `datapoint` old_p 
+          ON old_p.`id`=ref.`latest_datapoint_id` 
+        -- ^ and we find what the current `asof`s are set to for those references
+      WHERE old_p.`asof` <= new_p.`asof`; 
+      -- ^ but we only care about `asof`s that are more recent and thus should be updated
     '''
-    RIP__set_is_latest_issue_sql = f'''
-      UPDATE 
-      (
-        SELECT `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`, MAX(`issue`) AS `issue`
-        FROM
-        (
-          SELECT DISTINCT `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value` 
-          FROM `{tmp_table_name}`
-        ) AS TMP
-        LEFT JOIN `covidcast`
-        USING (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`)
-        GROUP BY `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`
-      ) AS TMP
-      LEFT JOIN `covidcast`
-      USING (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`, `issue`)
-      SET `is_latest_issue`=1        
-    '''
+    
+    # TODO: take the output of above statement and shove it into the below statement
+    update_latest_datapoint_ids_sql = f'''UPDATE `data_reference` SET `latest_datapoint_id`=%s WHERE `id`=%s;'''
 
+    # TODO: consider handling csv_rows as a generator instead of a list
 
-    # TODO: consider handling cc_rows as a generator instead of a list
     self._cursor.execute(create_tmp_table_sql)
 
     try:
-      num_rows = len(cc_rows)
-      total = 0
-      if not batch_size:
-        batch_size = num_rows
-      num_batches = ceil(num_rows/batch_size)
-      for batch_num in range(num_batches):
-        start = batch_num * batch_size
-        end = min(num_rows, start + batch_size)
-        length = end - start
+      args = [(r.ref_id, r.asof, r.value, r.stderr, r.sample_size,
+               r.lag, r.missing_value, r.missing_stderr, r.missing_sample_size)
+              for r in csv_rows]
+      self._cursor.executemany(insert_tmp_datapoints_sql, args)
+      self._cursor.execute(insert_or_update_datapoint_sql)
+      self._cursor.execute(get_latest_datapoint_ids_sql)
+      self._cursor.executemany(update_latest_datapoint_ids_sql, list(self._cursor))
 
-        args = [(
-          row.source,
-          row.signal,
-          row.time_type,
-          row.geo_type,
-          row.time_value,
-          row.geo_value,
-          row.value,
-          row.stderr,
-          row.sample_size,
-          row.issue,
-          row.lag,
-          row.is_wip,
-          row.missing_value,
-          row.missing_stderr,
-          row.missing_sample_size
-        ) for row in cc_rows[start:end]]
-
-
-        self._cursor.executemany(insert_into_tmp_sql, args)
-        self._cursor.execute(insert_or_update_sql)
-        modified_row_count = self._cursor.rowcount
-        self._cursor.execute(zero_is_latest_issue_sql)
-        self._cursor.execute(set_is_latest_issue_sql)
-        self._cursor.execute(truncate_tmp_table_sql)
-
-        if modified_row_count is None or modified_row_count == -1:
-          # the SQL connector does not support returning number of rows affected (see PEP 249)
-          total = None
-        else:
-          total += modified_row_count
-        if commit_partial:
-          self._connection.commit()
+      # TODO: do we care about [updated] row counts?  it may be moot because of this?
+      #       "the SQL connector does not support returning number of rows affected (see PEP 249)"
     except Exception as e:
       raise e
     finally:
       self._cursor.execute(drop_tmp_table_sql)
-    return total  
+    return None
   
-  def insert_or_update_bulk(self, cc_rows):
-    return self.insert_or_update_batch(cc_rows)
-
-  def insert_or_update_batch(self, cc_rows, batch_size=2**20, commit_partial=False):
-    """
-    Insert new rows (or update existing) into the table `covidcast`.
-
-    This has the intentional side effect of updating the primary timestamp.
-    """
-
-    tmp_table_name = 'tmp_insert_update_table'
-
-    # TODO: this heavily copypastas src/ddl/covidcast.sql -- theres got to be a better way
-    create_tmp_table_sql = f'''
-      CREATE TABLE `{tmp_table_name}` (
-        `source` varchar(32) NOT NULL,
-        `signal` varchar(64) NOT NULL,
-        `time_type` varchar(12) NOT NULL,
-        `geo_type` varchar(12) NOT NULL,
-        `time_value` int(11) NOT NULL,
-        `geo_value` varchar(12) NOT NULL,
-        `value_updated_timestamp` int(11) NOT NULL,
-        `value` double,
-        `stderr` double,
-        `sample_size` double,
-        `direction_updated_timestamp` int(11) NOT NULL,
-        `direction` int(11),
-        `issue` int(11) NOT NULL,
-        `lag` int(11) NOT NULL,
-        `is_latest_issue` BINARY(1) NOT NULL,
-        `is_wip` BINARY(1) NOT NULL,
-        `missing_value` int(1) DEFAULT 0,
-        `missing_stderr` int(1) DEFAULT 0,
-        `missing_sample_size` int(1) DEFAULT 0
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-    '''
-
-    truncate_tmp_table_sql = f'TRUNCATE TABLE {tmp_table_name};'
-    drop_tmp_table_sql = f'DROP TABLE {tmp_table_name}'
-
-    insert_into_tmp_sql = f'''
-      INSERT INTO `{tmp_table_name}`
-        (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`,
-        `value_updated_timestamp`, `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, `direction`,
-        `issue`, `lag`, `is_latest_issue`, `is_wip`, `missing_value`, `missing_stderr`, `missing_sample_size`)
-      VALUES
-        (%s, %s, %s, %s, %s, %s, UNIX_TIMESTAMP(NOW()), %s, %s, %s, 0, NULL, %s, %s, 0, %s, %s, %s, %s)
-    '''
-
-    insert_or_update_sql = f'''
-      INSERT INTO `covidcast`
-        (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`,
-        `value_updated_timestamp`, `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, `direction`,
-        `issue`, `lag`, `is_latest_issue`, `is_wip`, `missing_value`, `missing_stderr`, `missing_sample_size`)
-      SELECT * FROM `{tmp_table_name}`
-      ON DUPLICATE KEY UPDATE
-        `value_updated_timestamp` = VALUES(`value_updated_timestamp`),
-        `value` = VALUES(`value`),
-        `stderr` = VALUES(`stderr`),
-        `sample_size` = VALUES(`sample_size`)
-    '''
-    zero_is_latest_issue_sql = f'''
-      UPDATE
-      (
-        SELECT DISTINCT `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`
-        FROM `{tmp_table_name}`
-      ) AS TMP
-      LEFT JOIN `covidcast`
-      USING (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`)
-      SET `is_latest_issue`=0
-    '''
-    set_is_latest_issue_sql = f'''
-      UPDATE 
-      (
-        SELECT `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`, MAX(`issue`) AS `issue`
-        FROM
-        (
-          SELECT DISTINCT `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value` 
-          FROM `{tmp_table_name}`
-        ) AS TMP
-        LEFT JOIN `covidcast`
-        USING (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`)
-        GROUP BY `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`
-      ) AS TMP
-      LEFT JOIN `covidcast`
-      USING (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`, `issue`)
-      SET `is_latest_issue`=1        
-    '''
-
-
-    # TODO: consider handling cc_rows as a generator instead of a list
-    self._cursor.execute(create_tmp_table_sql)
-
-    try:
-      num_rows = len(cc_rows)
-      total = 0
-      if not batch_size:
-        batch_size = num_rows
-      num_batches = ceil(num_rows/batch_size)
-      for batch_num in range(num_batches):
-        start = batch_num * batch_size
-        end = min(num_rows, start + batch_size)
-        length = end - start
-
-        args = [(
-          row.source,
-          row.signal,
-          row.time_type,
-          row.geo_type,
-          row.time_value,
-          row.geo_value,
-          row.value,
-          row.stderr,
-          row.sample_size,
-          row.issue,
-          row.lag,
-          row.is_wip,
-          row.missing_value,
-          row.missing_stderr,
-          row.missing_sample_size
-        ) for row in cc_rows[start:end]]
-
-
-        self._cursor.executemany(insert_into_tmp_sql, args)
-        self._cursor.execute(insert_or_update_sql)
-        modified_row_count = self._cursor.rowcount
-        self._cursor.execute(zero_is_latest_issue_sql)
-        self._cursor.execute(set_is_latest_issue_sql)
-        self._cursor.execute(truncate_tmp_table_sql)
-
-        if modified_row_count is None or modified_row_count == -1:
-          # the SQL connector does not support returning number of rows affected (see PEP 249)
-          total = None
-        else:
-          total += modified_row_count
-        if commit_partial:
-          self._connection.commit()
-    except Exception as e:
-      raise e
-    finally:
-      self._cursor.execute(drop_tmp_table_sql)
-    return total
-
+  # TODO: !
   def compute_covidcast_meta(self, table_name='covidcast', use_index=True):
     """Compute and return metadata on all non-WIP COVIDcast signals."""
     logger = get_structured_logger("compute_covidcast_meta")
