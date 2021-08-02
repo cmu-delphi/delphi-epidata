@@ -9,6 +9,7 @@ import mysql.connector
 import pandas as pd
 
 from dataclasses import dataclass
+from epiweeks import Week
 from typing import List
 
 # first party
@@ -17,7 +18,9 @@ import delphi.operations.secrets as secrets
 from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
 
 
-LOOKBACK_DAYS_FOR_COVERAGE = 28
+LOOKBACK_DAYS_FOR_COVERAGE = 52
+BASE_COVIDCAST = covidcast.covidcast.Epidata.BASE_URL[:-len("api.php")] + "covidcast"
+COVERAGE_URL = f"{BASE_COVIDCAST}/coverage?format=csv&signal={{source}}:{{signal}}&days={LOOKBACK_DAYS_FOR_COVERAGE}"
 
 @dataclass
 class DashboardSignal:
@@ -195,19 +198,15 @@ def get_latest_time_value_from_metadata(dashboard_signal, metadata):
 def get_coverage(dashboard_signal: DashboardSignal,
                  metadata) -> List[DashboardSignalCoverage]:
     """Get the most recent coverage for the signal."""
-    latest_time_value = get_latest_time_value_from_metadata(
-        dashboard_signal, metadata)
-    start_day = latest_time_value - datetime.timedelta(days = LOOKBACK_DAYS_FOR_COVERAGE)
-    latest_data = covidcast.signal(
-        dashboard_signal.source,
-        dashboard_signal.covidcast_signal,
-        end_day = latest_time_value,
-        start_day = start_day)
-    latest_data_without_megacounties = latest_data[~latest_data['geo_value'].str.endswith(
-        '000')]
-    count_by_geo_type_df = latest_data_without_megacounties.groupby(
-        ['geo_type', 'data_source', 'time_value', 'signal']).size().to_frame(
-        'count').reset_index()
+    count_by_geo_type_df = pd.read_csv(
+        COVERAGE_URL.format(source=dashboard_signal.source,
+                            signal=dashboard_signal.covidcast_signal))
+    try:
+        count_by_geo_type_df["time_value"] = count_by_geo_type_df["time_value"].apply(
+            lambda x: pd.to_datetime(str(x), format="%Y%m%d"))
+    except:
+        count_by_geo_type_df["time_value"] = count_by_geo_type_df["time_value"].apply(
+            lambda x: pd.to_datetime(Week(x // 100, x % 100).startdate()))
 
     signal_coverage_list = []
     
@@ -215,7 +214,7 @@ def get_coverage(dashboard_signal: DashboardSignal,
         signal_coverage = DashboardSignalCoverage(
             signal_id=dashboard_signal.db_id,
             date=row['time_value'].date(),
-            geo_type=row['geo_type'],
+            geo_type='county',
             count=row['count'])
         signal_coverage_list.append(signal_coverage)
 
