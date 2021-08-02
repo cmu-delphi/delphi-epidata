@@ -4,7 +4,7 @@ import json
 
 load_dotenv()
 
-VERSION = "0.2.3"
+VERSION = "0.2.6"
 
 MAX_RESULTS = int(10e6)
 MAX_COMPATIBILITY_RESULTS = int(3650)

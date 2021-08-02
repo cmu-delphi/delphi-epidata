@@ -20,7 +20,7 @@ the full survey text and coding schemes.
 
 ## Basic Coding Rules
 
-All choice responses are recorded numerically starting from 1, in displayed
+All response choices are recorded numerically starting from 1, in displayed
 order from left to right and top to bottom. When the respondent is allowed to
 select multiple responses, these are shown separated by commas, such as `2,4,6`.
 Questions left blank or with invalid responses are recorded in the CSV files as
@@ -58,6 +58,39 @@ information for more details.
 
 Coding details for each survey wave follow.
 
+
+## Comprehensive Codebook
+
+The [codebook](codebook.csv) describes availability of metadata and question
+fields by survey version. A row is included for each field available in the
+microdata files for a given survey wave. We recommend using the codebook as a
+reference while working with the survey microdata, to ensure you interpret each
+question and answer choice accurately even as items were revised between
+survey waves.
+
+If a field is available for multiple waves, it is listed separately for each
+version. Items that were included in non-contiguous survey waves have entries
+only for those waves that they appeared in, with interceding waves not listed.
+
+Values are missing (`NA`) for columns not relevant to a given field. For
+example, metadata fields do not correspond to survey items and thus do not
+have question text or answer choices defined.
+
+Available columns:
+
+* `wave`: Integer specifying the survey wave that field is available for or item was asked in.
+* `variable`: Field name as it appears in the microdata. For most survey items, this corresponds to question name. Each subquestion of a matrix item is listed seperately. For these, `variable` is the question name followed by the subquestion number, e.g. A1_3 for the third subquestion of item A3.
+* `replaces`: Question name of previous version of survey item, if any. Different versions of a given question may vary in wording, referenced time frame, or in other ways; refer to item text for specfics.
+* `description`: Brief description of the meaning of a field or survey item.
+* `question`: Survey item text.
+* `matrix_subquestion`: Subquestion text for a matrix item.
+* `choices`: JSON-formatted map of answer codes and response choice text. For example, `"5": "California"` means that responses with the value 5 correspond to the respondent selecting "California".
+* `type`: Survey item format; one of "Matrix" (several questions with the same question stem are displayed together with the same answer choices), "Text" (free text entry), "Multiple Choice" (particpant can select only one answer choice), or "Multiselect" (respondent can select one or more answer choices).
+* `display_logic`: Conditions a respondent has to satisfy to be shown an item. For example, this can require a specific answer on a single previous item or a set of previous items, or that a previous item was displayed.
+* `response_option_randomization`: How answer choices are displayed for a given question. Answer choice order can be fixed ("none"), reversed ("scale reversal", e.g. for Likert scales) or shuffled ("randomized") between respondents.
+* `group_of_respondents_item_was_shown_to`: Module-based subset of respondents item was asked of. One of "all" (if item was included in the [Daily Core](modules.md) and asked of all respondents), "Module A", or "Module B".
+
+
 ## Privacy Restrictions
 
 To prevent respondents from being identifiable in the response data, responses
@@ -74,16 +107,15 @@ ethnicity. These columns are **not** available in the microdata files due to
 reidentification concerns. However, contingency tables that aggregate by race
 and other demographic variables [are available](contingency-tables.md).
 
+
 ## Wave 1
 
 Wave 1 was first deployed on April 6, 2020. This was replaced by Wave 2, but
 some responses still arrive from respondents who received a link before Wave 2
 was deployed.
 
-* [Survey text and
-  coding](waves/Survey_of_COVID-Like_Illness_-_TODEPLOY_2020-04-06.pdf) (PDF)
-* [Survey text and
-  coding](waves/Survey_of_COVID-Like_Illness_-_TODEPLOY_2020-04-06.docx) (Word)
+* [Survey text and coding](waves/Survey_of_COVID-Like_Illness_-_TODEPLOY_2020-04-06.pdf) (PDF)
+* [Survey text and coding](waves/Survey_of_COVID-Like_Illness_-_TODEPLOY_2020-04-06.docx) (Word)
 
 **Warning:** Item A2 shows high missingness and strange values in Wave 1,
 possibly due to incorrect validation in the Qualtrics survey. Item A2 should not

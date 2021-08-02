@@ -22,7 +22,7 @@
   }
 })(this, function (exports, fetchImpl, jQuery) {
   const BASE_URL = "https://delphi.cmu.edu/epidata/";
-  const client_version = "0.2.3";
+  const client_version = "0.2.6";
 
   // Helper function to cast values and/or ranges to strings
   function _listitem(value) {

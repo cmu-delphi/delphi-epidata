@@ -17,6 +17,14 @@ interpretation of results. All problems will be logged here.
 1. TOC
 {:toc}
 
+## Response Volume Drop (July 20-22, 2021)
+
+On July 20, 2021, a technical problem in the process that samples Facebook users
+for invitation to the survey caused lower-than-normal sample sizes. The problem
+was resolved on July 22 and users that had been incorrectly not invited were
+invited over the following several days. This caused sample sizes to temporarily
+increase, compensating for the initial drop.
+
 ## Incorrect Coding in Documentation
 
 We found a Qualtrics bug that affects the exported text of the survey (but not
