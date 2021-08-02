@@ -174,17 +174,17 @@ current_user: User = cast(User, LocalProxy(_get_current_user))
 
 def require_api_key() -> bool:
     n = date.today()
-    return n >= API_KEY_REQUIRED_STARTING_AT
+    return n >= API_KEY_REQUIRED_STARTING_AT and not app.config.get('TESTING', False)
 
 
 def show_soft_api_key_warning() -> bool:
     n = date.today()
-    return not current_user.authenticated and n > API_KEY_SOFT_WARNING and n < API_KEY_HARD_WARNING
+    return not current_user.authenticated and not app.config.get('TESTING', False) and n > API_KEY_SOFT_WARNING and n < API_KEY_HARD_WARNING
 
 
 def show_hard_api_key_warning() -> bool:
     n = date.today()
-    return not current_user.authenticated and n > API_KEY_HARD_WARNING
+    return not current_user.authenticated and not app.config.get('TESTING', False) and n > API_KEY_HARD_WARNING
 
 
 @app.before_request
