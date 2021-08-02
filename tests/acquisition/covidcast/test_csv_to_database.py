@@ -73,7 +73,7 @@ class UnitTests(unittest.TestCase):
 
     data_dir = 'data_dir'
     mock_database = MagicMock()
-    mock_database.insert_or_update_bulk.return_value = 2
+    mock_database.insert_datapoints_bulk.return_value = 2
     mock_csv_importer = MagicMock()
     mock_csv_importer.load_csv = load_csv_impl
     mock_file_archiver = MagicMock()
@@ -89,8 +89,8 @@ class UnitTests(unittest.TestCase):
 
     self.assertEqual(modified_row_count, 4)
     # verify that appropriate rows were added to the database
-    self.assertEqual(mock_database.insert_or_update_bulk.call_count, 2)
-    call_args_list = mock_database.insert_or_update_bulk.call_args_list
+    self.assertEqual(mock_database.insert_datapoints_bulk.call_count, 2)
+    call_args_list = mock_database.insert_datapoints_bulk.call_args_list
     actual_args = [[(a.source, a.signal, a.time_type, a.geo_type, a.time_value,
                      a.geo_value, a.value, a.stderr, a.sample_size, a.issue, a.lag, a.is_wip)
                     for a in call.args[0]] for call in call_args_list]
@@ -199,7 +199,7 @@ class UnitTests(unittest.TestCase):
 
     data_dir = 'data_dir'
     mock_database = MagicMock()
-    mock_database.insert_or_update_bulk.side_effect = Exception('testing')
+    mock_database.insert_datapoints_bulk.side_effect = Exception('testing')
     mock_csv_importer = MagicMock()
     mock_csv_importer.find_csv_files.return_value = [
       ('path/file.csv', ('src', 'sig', 'day', 'hrr', 20200423, 20200424, 1)),
@@ -219,7 +219,7 @@ class UnitTests(unittest.TestCase):
         )
 
     # verify that insertions were attempted
-    self.assertTrue(mock_database.insert_or_update_bulk.called)
+    self.assertTrue(mock_database.get_dataref_id_map.called)
 
     # verify that the file was archived as having failed
     self.assertTrue(mock_file_archiver.archive_file.called)

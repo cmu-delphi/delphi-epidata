@@ -125,39 +125,37 @@ def upload_archive(
     # TODO: figure out if this is a dataframe or what?  (it probably is)
 
     all_rows_valid = csv_rows and all(r is not None for r in csv_rows)
+    print("all rows valid: COMPLETE",flush=True)
     if all_rows_valid:
       try:
+        print("entering try...",flush=True)
         geo_value_list = csv_rows['geo_value']
+        print("get geo_value_list: COMPLETE",flush=True)
         # TODO: Tara & george are not completely comfortable with database ids being referred to here...
         #       figure out if and how we should move this stuff.
+        print("get_dataref_id_map: NEXT",flush=True)
         geoval_to_dataref = database.get_dataref_id_map(source, signal, time_type, geo_type, time_value, geo_value_list)
+        print("get_dataref_id_map: COMPLETE",flush=True)
         csv_rows['ref_id'] = [geoval_to_dataref[g] for g in geo_value_list]
-      except Exception as e:
-        # csv_rows is None, should never reach this exception
-        all_rows_valid = False
-        logger.exception('csv rows invalid:', e)
-        # TODO: someone confirm if we want to do a rollback on this exception
-        database.rollback()
-        
-      try:
+        print("csv_rows[\'ref_id\']: COMPLETE",flush=True)
         modified_row_count = database.insert_datapoints_bulk(csv_rows)
+        print("update modified_row_count: COMPLETE",flush=True)
         logger.info(f"insert_datapoints_bulk {filename} returned {modified_row_count}")
-        logger.info(
-          "Inserted datapoint rows",
-          row_count = modified_row_count,
-          source = source,
-          signal = signal,
-          geo_type = geo_type,
-          time_value = time_value,
-          issue = issue,
-          lag = lag)
+        logger.info("Inserted datapoint rows", row_count = modified_row_count,
+                      source = source, signal = signal, geo_type = geo_type,
+                      time_value = time_value, issue = issue, lag = lag)
+        print("logger has logged: COMPLETE",flush=True)
         if modified_row_count is None or modified_row_count: # else would indicate zero rows inserted
+          print("modified_row_count is None or not 0: COMPLETE",flush=True)
           total_modified_row_count += (modified_row_count if modified_row_count else 0)
           database.commit()
+          print("commit: COMPLETE",flush=True)
       except Exception as e:
+        print(f"YIKES, we're Excepting: {e}",flush=True)
         all_rows_valid = False
         logger.exception('exception while inserting rows:', e)
         database.rollback()
+        print("Exception: COMPLETE",flush=True)
 
     # archive the current file based on validation results
     if all_rows_valid:

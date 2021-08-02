@@ -100,7 +100,7 @@ class UnitTests(unittest.TestCase):
     self.assertIn('timestamp', sql)
     self.assertIn('epidata', sql)
 
-  def test_insert_or_update_batch_exception_reraised(self):
+  def test_insert_datapoints_bulk_exception_reraised(self):
     """Test that an exception is reraised"""
     mock_connector = MagicMock()
     database = Database()
@@ -110,9 +110,9 @@ class UnitTests(unittest.TestCase):
     cursor.executemany.side_effect = Exception('Test')
 
     cc_rows = {MagicMock(geo_id='CA', val=1, se=0, sample_size=0)}
-    self.assertRaises(Exception, database.insert_or_update_batch, cc_rows)
+    self.assertRaises(Exception, database.insert_datapoints_bulk, cc_rows)
   
-  def test_insert_or_update_batch_row_count_returned(self):
+  def test_insert_datapoints_bulk_row_count_returned(self):
     """Test that the row count is returned"""
     mock_connector = MagicMock()
     database = Database()
@@ -122,10 +122,10 @@ class UnitTests(unittest.TestCase):
     cursor.rowcount = 3
 
     cc_rows = [MagicMock(geo_id='CA', val=1, se=0, sample_size=0)]
-    result = database.insert_or_update_batch(cc_rows)
+    result = database.insert_datapoints_bulk(cc_rows)
     self.assertEqual(result, 3)
 
-  def test_insert_or_update_batch_none_returned(self):
+  def test_insert_datapoints_bulk_none_returned(self):
     """Test that None is returned when row count cannot be returned"""
     mock_connector = MagicMock()
     database = Database()
@@ -135,5 +135,5 @@ class UnitTests(unittest.TestCase):
     cursor.rowcount = -1
 
     cc_rows = [MagicMock(geo_id='CA', val=1, se=0, sample_size=0)]
-    result = database.insert_or_update_batch(cc_rows)
+    result = database.insert_datapoints_bulk(cc_rows)
     self.assertIsNone(result)

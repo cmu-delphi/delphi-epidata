@@ -18,7 +18,7 @@ import delphi.operations.secrets as secrets
 
 from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
 
-# TODO: i think this can be removed now?
+# TODO: i think this can be removed now? note: it's not referenced anymore in csv_to_database
 class CovidcastRow():
   """A container for all the values of a single covidcast row."""
 
@@ -191,13 +191,13 @@ class Database:
     get_latest_datapoint_ids_sql = f'''
       SELECT new_p.`id` AS new_p_id, ref.`id` AS ref_id
       -- ^ the "latest" points that shall be pointed to by which references
-      FROM `{tmp_table}` tmp_p 
+      FROM `{tmp_table_name}` tmp_p 
         JOIN `datapoint` new_p 
           ON tmp_p.`data_reference_id`=new_p.`data_reference_id` AND tmp_p.`asof`=new_p.`asof` 
         -- ^ so new_p's are what we just inserted into `datapoint`
         JOIN `data_reference` ref 
           ON ref.`id`=new_p.`data_reference_id` 
-        -- ^ and we get the `data_reference`s thatre associated with those new points
+        -- ^ and we get the `data_reference`s that're associated with those new points
         JOIN `datapoint` old_p 
           ON old_p.`id`=ref.`latest_datapoint_id` 
         -- ^ and we find what the current `asof`s are set to for those references
@@ -227,7 +227,7 @@ class Database:
       raise e
     finally:
       self._cursor.execute(drop_tmp_table_sql)
-    return None
+    return self._cursor.rowcount
   
   # TODO: !
   def compute_covidcast_meta(self, table_name='covidcast', use_index=True):
