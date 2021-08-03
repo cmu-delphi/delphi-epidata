@@ -126,6 +126,7 @@ class UnitTests(unittest.TestCase):
     self.assertEqual(result, 3)
 
   def test_insert_datapoints_bulk_none_returned(self):
+    # TODO: determine wtf purpose this serves??  it looks pretty pointless to me...
     """Test that None is returned when row count cannot be returned"""
     mock_connector = MagicMock()
     database = Database()

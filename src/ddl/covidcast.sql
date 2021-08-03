@@ -103,7 +103,7 @@ CREATE TABLE `data_reference` (
 CREATE TABLE `datapoint` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `data_reference_id` bigint(20) unsigned NOT NULL, 
-  `asof` int(11) NOT NULL,
+  `issue` int(11) NOT NULL,
   `value_first_updated_timestamp` int(11) NOT NULL,
   -- NOTE: see comments in src/acquisition/covidcast/database.py re: `value_first_updated_timestamp`
   `value_updated_timestamp` int(11) NOT NULL,
@@ -117,7 +117,7 @@ CREATE TABLE `datapoint` (
   `missing_stderr` int(1) DEFAULT 0,
   `missing_sample_size` int(1) DEFAULT 0,
   PRIMARY KEY (`id`),
-  UNIQUE KEY(`data_reference_id`, `asof`),
+  UNIQUE KEY(`data_reference_id`, `issue`),
   FOREIGN KEY (`data_reference_id`) REFERENCES data_reference(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

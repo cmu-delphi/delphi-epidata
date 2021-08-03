@@ -22,7 +22,7 @@ from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
 class CovidcastRow():
   """A container for all the values of a single covidcast row."""
 
-  # TODO: 'issue' has become 'asof'.  update those variable names.
+  # TODO: do we want to rename 'issue' to 'asof'???
 
   @staticmethod
   def fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag, is_wip):
@@ -44,7 +44,7 @@ class CovidcastRow():
             for row_value in row_values)
 
   def __init__(self, source, signal, time_type, geo_type, time_value, geo_value, value, stderr, 
-    sample_size, missing_value, missing_stderr, missing_sample_size, asof, lag, is_wip):
+    sample_size, missing_value, missing_stderr, missing_sample_size, issue, lag, is_wip):
     self.id = None
     self.source = source
     self.signal = signal
@@ -60,7 +60,7 @@ class CovidcastRow():
     self.missing_sample_size = missing_sample_size # from CSV row
     self.direction_updated_timestamp = 0
     self.direction = None
-    self.asof = asof
+    self.issue = issue
     self.lag = lag
     self.is_wip = is_wip
     self.ref_id = None
@@ -143,7 +143,7 @@ class Database:
     create_tmp_table_sql = f'''
       CREATE TABLE `{tmp_table_name}` (
         `data_reference_id` bigint(20) unsigned NOT NULL, 
-        `asof` int(11) NOT NULL,
+        `issue` int(11) NOT NULL,
         `value_first_updated_timestamp` int(11) NOT NULL,
         `value_updated_timestamp` int(11) NOT NULL,
         `value` double,
@@ -153,7 +153,7 @@ class Database:
         `missing_value` int(1) DEFAULT 0,
         `missing_stderr` int(1) DEFAULT 0,
         `missing_sample_size` int(1) DEFAULT 0,
-        UNIQUE KEY(`data_reference_id`, `asof`)
+        UNIQUE KEY(`data_reference_id`, `issue`)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
     '''
 
@@ -161,7 +161,7 @@ class Database:
 
     insert_tmp_datapoints_sql = f'''
       INSERT INTO `{tmp_table_name}` 
-        (`data_reference_id`, `asof`, `value_first_updated_timestamp`, `value_updated_timestamp`, 
+        (`data_reference_id`, `issue`, `value_first_updated_timestamp`, `value_updated_timestamp`, 
          `value`, `stderr`, `sample_size`, `lag`, `missing_value`, `missing_stderr`, `missing_sample_size`) 
       VALUES 
         (%s, %s, UNIX_TIMESTAMP(NOW()), UNIX_TIMESTAMP(NOW()),
@@ -172,7 +172,7 @@ class Database:
     # TODO: enumerate * in SELECT below
     insert_or_update_datapoint_sql = f'''
       INSERT INTO `datapoint`
-        (`data_reference_id`, `asof`, `value_first_updated_timestamp`, `value_updated_timestamp`, `value`, `stderr`,
+        (`data_reference_id`, `issue`, `value_first_updated_timestamp`, `value_updated_timestamp`, `value`, `stderr`,
          `sample_size`,`lag`,`missing_value`,`missing_stderr`,`missing_sample_size`)
       SELECT * FROM `{tmp_table_name}`
       ON DUPLICATE KEY UPDATE
@@ -197,17 +197,17 @@ class Database:
       -- ^ the "latest" points that shall be pointed to by which references
       FROM `{tmp_table_name}` tmp_p 
         JOIN `datapoint` new_p 
-          ON tmp_p.`data_reference_id`=new_p.`data_reference_id` AND tmp_p.`asof`=new_p.`asof` 
+          ON tmp_p.`data_reference_id`=new_p.`data_reference_id` AND tmp_p.`issue`=new_p.`issue` 
         -- ^ so new_p's are what we just inserted into `datapoint`
         JOIN `data_reference` ref 
           ON ref.`id`=new_p.`data_reference_id` 
         -- ^ and we get the `data_reference`s that're associated with those new points
         LEFT JOIN `datapoint` old_p
           ON old_p.`id`=ref.`latest_datapoint_id`
-        -- ^ and we find what the current `asof`s are set to for those references
+        -- ^ and we find what the current `issue`s are set to for those references
         --   ...and keep `data_refence`s without a latest pointer (ie NULL, hence the LEFT)
-      -- v but we only care about `asof`s that are more recent (or NULL) and thus should be updated
-      WHERE old_p.`asof` <= new_p.`asof` OR ref.`latest_datapoint_id` IS NULL;
+      -- v but we only care about `issue`s that are more recent (or NULL) and thus should be updated
+      WHERE old_p.`issue` <= new_p.`issue` OR ref.`latest_datapoint_id` IS NULL;
     '''
     
     # TODO: take the output of above statement and shove it into the below statement
@@ -218,21 +218,24 @@ class Database:
     self._cursor.execute(create_tmp_table_sql)
 
     try:
-      args = [(r.ref_id, r.asof, r.value, r.stderr, r.sample_size,
+      args = [(r.ref_id, r.issue, r.value, r.stderr, r.sample_size,
                r.lag, r.missing_value, r.missing_stderr, r.missing_sample_size)
               for r in row_list]
       self._cursor.executemany(insert_tmp_datapoints_sql, args)
       self._cursor.execute(insert_or_update_datapoint_sql)
+      modified_row_count = self._cursor.rowcount
       self._cursor.execute(get_latest_datapoint_ids_sql)
       self._cursor.executemany(update_latest_datapoint_ids_sql, list(self._cursor))
 
-      # TODO: do we care about [updated] row counts?  it may be moot because of this?
-      #       "the SQL connector does not support returning number of rows affected (see PEP 249)"
+      if  modified_row_count == -1:
+        # "the SQL connector does not support returning number of rows affected (see PEP 249)"
+        modified_row_count = None
+  
     except Exception as e:
       raise e
     finally:
       self._cursor.execute(drop_tmp_table_sql)
-    return self._cursor.rowcount
+    return modified_row_count
   
   # TODO: !
   def compute_covidcast_meta(self, table_name='covidcast', use_index=True):
