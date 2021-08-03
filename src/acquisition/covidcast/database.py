@@ -22,6 +22,8 @@ from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
 class CovidcastRow():
   """A container for all the values of a single covidcast row."""
 
+  # TODO: 'issue' has become 'asof'.  update those variable names.
+
   @staticmethod
   def fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag, is_wip):
     if row_value is None: return None
@@ -42,7 +44,7 @@ class CovidcastRow():
             for row_value in row_values)
 
   def __init__(self, source, signal, time_type, geo_type, time_value, geo_value, value, stderr, 
-    sample_size, missing_value, missing_stderr, missing_sample_size, issue, lag, is_wip):
+    sample_size, missing_value, missing_stderr, missing_sample_size, asof, lag, is_wip):
     self.id = None
     self.source = source
     self.signal = signal
@@ -58,9 +60,10 @@ class CovidcastRow():
     self.missing_sample_size = missing_sample_size # from CSV row
     self.direction_updated_timestamp = 0
     self.direction = None
-    self.issue = issue
+    self.asof = asof
     self.lag = lag
     self.is_wip = is_wip
+    self.ref_id = None
 
 
 class Database:
@@ -110,10 +113,11 @@ class Database:
     # insert any non-existant references...
     create_references_sql = f'''
       INSERT INTO `data_reference` (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`) 
-      VALUES ({source}, {signal}, {time_type}, {geo_type}, {time_value}, %s)
+      VALUES ('{source}', '{signal}', '{time_type}', '{geo_type}', {time_value}, %s)
       ON DUPLICATE KEY UPDATE `id` = VALUES(`id`);
     '''
-    self._cursor.executemany(create_references_sql, geo_value_list)
+    gvl_tuple = [(gv,) for gv in geo_value_list] # TODO: do we need a list of tuples or can we save a line??
+    self._cursor.executemany(create_references_sql, gvl_tuple) ######geo_value_list)
     # NOTE: its kinda ok if we create these and then dont delete them on a failed file import or something...
     #   they will probably end up being used later, and as long as `latest_datapoint_id` is NULL,
     #   we will treat that row as if it essentially does not exist.
@@ -132,7 +136,7 @@ class Database:
     return dict(list(self._cursor))
 
 
-  def insert_datapoints_bulk(self, csv_rows):    
+  def insert_datapoints_bulk(self, row_list):
     tmp_table_name = 'tmp_insert_datapoint_table'
 
     # this heavily borrows from the `datapoint` table in src/ddl/covidcast.sql, but lacks the auto_increment `id`
@@ -198,11 +202,12 @@ class Database:
         JOIN `data_reference` ref 
           ON ref.`id`=new_p.`data_reference_id` 
         -- ^ and we get the `data_reference`s that're associated with those new points
-        JOIN `datapoint` old_p 
-          ON old_p.`id`=ref.`latest_datapoint_id` 
+        LEFT JOIN `datapoint` old_p
+          ON old_p.`id`=ref.`latest_datapoint_id`
         -- ^ and we find what the current `asof`s are set to for those references
-      WHERE old_p.`asof` <= new_p.`asof`; 
-      -- ^ but we only care about `asof`s that are more recent and thus should be updated
+        --   ...and keep `data_refence`s without a latest pointer (ie NULL, hence the LEFT)
+      -- v but we only care about `asof`s that are more recent (or NULL) and thus should be updated
+      WHERE old_p.`asof` <= new_p.`asof` OR ref.`latest_datapoint_id` IS NULL;
     '''
     
     # TODO: take the output of above statement and shove it into the below statement
@@ -215,7 +220,7 @@ class Database:
     try:
       args = [(r.ref_id, r.asof, r.value, r.stderr, r.sample_size,
                r.lag, r.missing_value, r.missing_stderr, r.missing_sample_size)
-              for r in csv_rows]
+              for r in row_list]
       self._cursor.executemany(insert_tmp_datapoints_sql, args)
       self._cursor.execute(insert_or_update_datapoint_sql)
       self._cursor.execute(get_latest_datapoint_ids_sql)
