@@ -18,7 +18,7 @@ import delphi.operations.secrets as secrets
 from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
 
 
-LOOKBACK_DAYS_FOR_COVERAGE = 52
+LOOKBACK_DAYS_FOR_COVERAGE = 56
 BASE_COVIDCAST = covidcast.covidcast.Epidata.BASE_URL[:-len("api.php")] + "covidcast"
 COVERAGE_URL = f"{BASE_COVIDCAST}/coverage?format=csv&signal={{source}}:{{signal}}&days={LOOKBACK_DAYS_FOR_COVERAGE}"
 
