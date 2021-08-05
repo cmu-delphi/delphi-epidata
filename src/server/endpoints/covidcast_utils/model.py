@@ -66,6 +66,7 @@ class DataSignal:
     signal: str
     signal_basename: str
     name: str
+    active: bool
     short_description: str
     description: str
     time_label: str
@@ -157,7 +158,6 @@ class DataSource:
     source: str
     db_source: str
     name: str
-    active: bool
     description: str
     reference_signal: str
     license: Optional[str] = None
