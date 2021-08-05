@@ -15,8 +15,8 @@ def week_value_to_week(value: int) -> Week:
     year, week = value // 100, value % 100
     if year < date.min.year:
         return Week(date.min.year, 1)
-    if year > date.max.year:
-        return Week(date.max.year, 1)
+    if year > date.max.year - 1:
+        return Week(date.max.year - 1, 1)  # minus 1 since internally it does some checks with a year + 1
     return Week(year=year, week=week)
 
 def date_to_time_value(d: date) -> int:
