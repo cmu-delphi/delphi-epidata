@@ -7,7 +7,7 @@ import time
 
 # first party
 from delphi.epidata.acquisition.covidcast.csv_importer import CsvImporter
-from delphi.epidata.acquisition.covidcast.database import Database, CovidcastRow
+from delphi.epidata.acquisition.covidcast.database import Database
 from delphi.epidata.acquisition.covidcast.file_archiver import FileArchiver
 from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
 
@@ -122,34 +122,21 @@ def upload_archive(
         signal = signal[4:]
 
     csv_rows = csv_importer_impl.load_csv(path, geo_type)
-    cc_rows = CovidcastRow.fromCsvRows(csv_rows, source, signal, time_type, geo_type, time_value, issue, lag, is_wip)
-    rows_list = list(cc_rows) # because using a generator here isnt feasible
+    rows_list = list(csv_rows) # because using a generator here isnt feasible
     all_rows_valid = rows_list and all(r is not None for r in rows_list)
     if all_rows_valid:
       try:
-        # extract relevant geo_values
-        geo_value_list = [r.geo_value for r in rows_list]
-        # TODO: Tara & george are not completely comfortable with database ids being referred to here...
-        #       figure out if and how we should move this stuff.
-        geoval_to_dataref = database.get_dataref_id_map(source, signal, time_type, geo_type, time_value, geo_value_list)
-
-        for r in rows_list:
-          # populate reference ids for relevant geo_values
-          r.ref_id = geoval_to_dataref[r.geo_value]
-
         # TODO: this row count ignores the data_reference table.....  do we care??
-        modified_row_count = database.insert_datapoints_bulk(rows_list)
+        modified_row_count = database.insert_datapoints_bulk(rows_list, source, signal, time_type, geo_type, time_value, issue, lag, is_wip)
         logger.info(f"insert_datapoints_bulk {filename} returned {modified_row_count}")
-        logger.info("Inserted datapoint rows", row_count = modified_row_count,
-                      source = source, signal = signal, geo_type = geo_type,
-                      time_value = time_value, issue = issue, lag = lag)
-        if modified_row_count is None or modified_row_count: # else would indicate zero rows inserted
-          total_modified_row_count += (modified_row_count if modified_row_count else 0)
-          database.commit()
+        logger.info("Inserted datapoint rows", row_count=modified_row_count,
+                      source=source, signal=signal, time_type=time_type, geo_type=geo_type,
+                      time_value=time_value, issue=issue, lag=lag)
+        database.commit() # TODO: did we start a transaction?  does this even do anything??
       except Exception as e:
         all_rows_valid = False
         logger.exception('exception while inserting rows:', e)
-        database.rollback()
+        database.rollback() # TODO: did we start a transaction?  does this even do anything??
 
     # archive the current file based on validation results
     if all_rows_valid:

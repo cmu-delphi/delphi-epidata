@@ -18,53 +18,8 @@ import delphi.operations.secrets as secrets
 
 from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
 
-# TODO: i think this can be removed now? note: it's not referenced anymore in csv_to_database
-class CovidcastRow():
-  """A container for all the values of a single covidcast row."""
 
-  # TODO: do we want to rename 'issue' to 'asof'???
-
-  @staticmethod
-  def fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag, is_wip):
-    if row_value is None: return None
-    return CovidcastRow(source, signal, time_type, geo_type, time_value,
-                        row_value.geo_value,
-                        row_value.value,
-                        row_value.stderr,
-                        row_value.sample_size,
-                        row_value.missing_value,
-                        row_value.missing_stderr,
-                        row_value.missing_sample_size,
-                        issue, lag, is_wip)
-
-  @staticmethod
-  def fromCsvRows(row_values, source, signal, time_type, geo_type, time_value, issue, lag, is_wip):
-    # NOTE: returns a generator, as row_values is expected to be a generator
-    return (CovidcastRow.fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag, is_wip)
-            for row_value in row_values)
-
-  def __init__(self, source, signal, time_type, geo_type, time_value, geo_value, value, stderr, 
-    sample_size, missing_value, missing_stderr, missing_sample_size, issue, lag, is_wip):
-    self.id = None
-    self.source = source
-    self.signal = signal
-    self.time_type = time_type
-    self.geo_type = geo_type
-    self.time_value = time_value
-    self.geo_value = geo_value      # from CSV row
-    self.value = value              # ...
-    self.stderr = stderr            # ...
-    self.sample_size = sample_size  # ...
-    self.missing_value = missing_value # ...
-    self.missing_stderr = missing_stderr # ...
-    self.missing_sample_size = missing_sample_size # from CSV row
-    self.direction_updated_timestamp = 0
-    self.direction = None
-    self.issue = issue
-    self.lag = lag
-    self.is_wip = is_wip
-    self.ref_id = None
-
+# TODO: do we want to rename 'issue' to 'asof'???
 
 class Database:
   """A collection of covidcast database operations."""
@@ -110,14 +65,14 @@ class Database:
 
   def get_dataref_id_map(self, source, signal, time_type, geo_type, time_value, geo_value_list):
 
-    # insert any non-existant references...
+    # insert any non-existent references...
     create_references_sql = f'''
       INSERT INTO `data_reference` (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`) 
       VALUES ('{source}', '{signal}', '{time_type}', '{geo_type}', {time_value}, %s)
       ON DUPLICATE KEY UPDATE `id` = VALUES(`id`);
     '''
-    gvl_tuple = [(gv,) for gv in geo_value_list] # TODO: do we need a list of tuples or can we save a line??
-    self._cursor.executemany(create_references_sql, gvl_tuple) ######geo_value_list)
+    gvl_tuples = [(gv,) for gv in geo_value_list] # we need to pass executemany() a list of tuples
+    self._cursor.executemany(create_references_sql, gvl_tuples)
     # NOTE: its kinda ok if we create these and then dont delete them on a failed file import or something...
     #   they will probably end up being used later, and as long as `latest_datapoint_id` is NULL,
     #   we will treat that row as if it essentially does not exist.
@@ -136,8 +91,13 @@ class Database:
     return dict(list(self._cursor))
 
 
-  def insert_datapoints_bulk(self, row_list):
+  def insert_datapoints_bulk(self, row_list, source, signal, time_type, geo_type, time_value, issue, lag, is_wip):
+    # rows in row_list should include members:
+    #   .geo_value, .value, .stderr, .sample_size, .missing_value, .missing_stderr, .missing_sample_size
+
     tmp_table_name = 'tmp_insert_datapoint_table'
+
+    # TODO: add is_wip to SQL
 
     # this heavily borrows from the `datapoint` table in src/ddl/covidcast.sql, but lacks the auto_increment `id`
     create_tmp_table_sql = f'''
@@ -164,17 +124,19 @@ class Database:
         (`data_reference_id`, `issue`, `value_first_updated_timestamp`, `value_updated_timestamp`, 
          `value`, `stderr`, `sample_size`, `lag`, `missing_value`, `missing_stderr`, `missing_sample_size`) 
       VALUES 
-        (%s, %s, UNIX_TIMESTAMP(NOW()), UNIX_TIMESTAMP(NOW()),
-         %s, %s, %s, %s, %s, %s, %s);
+        (%s, {issue}, UNIX_TIMESTAMP(NOW()), UNIX_TIMESTAMP(NOW()),
+         %s, %s, %s, {lag}, %s, %s, %s);
     '''
     # NOTE: see comment below on insert_or_update_datapoint_sql re: `value_first_updated_timestamp`
 
-    # TODO: enumerate * in SELECT below
     insert_or_update_datapoint_sql = f'''
       INSERT INTO `datapoint`
         (`data_reference_id`, `issue`, `value_first_updated_timestamp`, `value_updated_timestamp`, `value`, `stderr`,
-         `sample_size`,`lag`,`missing_value`,`missing_stderr`,`missing_sample_size`)
-      SELECT * FROM `{tmp_table_name}`
+         `sample_size`, `lag`, `missing_value`, `missing_stderr`, `missing_sample_size`)
+      SELECT
+        `data_reference_id`, `issue`, `value_first_updated_timestamp`, `value_updated_timestamp`, `value`, `stderr`,
+        `sample_size`, `lag`, `missing_value`, `missing_stderr`, `missing_sample_size`
+        FROM `{tmp_table_name}`
       ON DUPLICATE KEY UPDATE
         `value_updated_timestamp` = VALUES(`value_updated_timestamp`),
         `value` = VALUES(`value`),
@@ -185,13 +147,10 @@ class Database:
         `missing_stderr` = VALUES(`missing_stderr`),
         `missing_sample_size` = VALUES(`missing_sample_size`)
     '''
-    # NOTE: `value_first_updated_timestamp` is not in DUPLICATE case.
+    # NOTE: `value_first_updated_timestamp` is not included in the DUPLICATE case.
     #   this is really just a sanity check, as it should never differ from `value_updated_timestamp`
     # TODO: remove `value_first_updated_timestamp` once we are sure we are not overwriting rows
 
-    # NOTE: PAY ATTENTION TO JOIN / LEFT/RIGHT INNER/OUTER / ETC
-
-    #TODO: update the latest pointers
     get_latest_datapoint_ids_sql = f'''
       SELECT new_p.`id` AS new_p_id, ref.`id` AS ref_id
       -- ^ the "latest" points that shall be pointed to by which references
@@ -210,21 +169,28 @@ class Database:
       WHERE old_p.`issue` <= new_p.`issue` OR ref.`latest_datapoint_id` IS NULL;
     '''
     
-    # TODO: take the output of above statement and shove it into the below statement
     update_latest_datapoint_ids_sql = f'''UPDATE `data_reference` SET `latest_datapoint_id`=%s WHERE `id`=%s;'''
 
-    # TODO: consider handling csv_rows as a generator instead of a list
-
-    self._cursor.execute(create_tmp_table_sql)
-
     try:
-      args = [(r.ref_id, r.issue, r.value, r.stderr, r.sample_size,
-               r.lag, r.missing_value, r.missing_stderr, r.missing_sample_size)
+      # find/create reference ids for relevant geo_values
+      geo_value_list = [r.geo_value for r in row_list]
+      geoval_to_dataref = self.get_dataref_id_map(source, signal, time_type, geo_type, time_value, geo_value_list)
+      # TODO: we are ignoring the number of rows inserted into the `data_reference` table...  do we care?
+
+      self._cursor.execute(create_tmp_table_sql)
+
+      # TODO: consider handling row_list as a generator instead of a list
+      # TODO: add is_wip to args here too when adding it to the SQL
+      args = [(geoval_to_dataref[r.geo_value], r.value, r.stderr, r.sample_size,
+               r.missing_value, r.missing_stderr, r.missing_sample_size)
               for r in row_list]
       self._cursor.executemany(insert_tmp_datapoints_sql, args)
+
       self._cursor.execute(insert_or_update_datapoint_sql)
       modified_row_count = self._cursor.rowcount
+
       self._cursor.execute(get_latest_datapoint_ids_sql)
+
       self._cursor.executemany(update_latest_datapoint_ids_sql, list(self._cursor))
 
       if  modified_row_count == -1:
@@ -237,7 +203,7 @@ class Database:
       self._cursor.execute(drop_tmp_table_sql)
     return modified_row_count
   
-  # TODO: !
+  # TODO: ! ! !
   def compute_covidcast_meta(self, table_name='covidcast', use_index=True):
     """Compute and return metadata on all non-WIP COVIDcast signals."""
     logger = get_structured_logger("compute_covidcast_meta")
