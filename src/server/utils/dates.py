@@ -19,6 +19,10 @@ def week_value_to_week(value: int) -> Week:
         return Week(date.max.year - 1, 1)  # minus 1 since internally it does some checks with a year + 1
     return Week(year=year, week=week)
 
+def guess_time_value_is_day(value: int) -> bool:
+    # YYYYMMDD type and not YYYYMM
+    return len(str(value)) > 6
+
 def date_to_time_value(d: date) -> int:
     return int(d.strftime("%Y%m%d"))
 
