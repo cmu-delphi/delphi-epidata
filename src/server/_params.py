@@ -5,8 +5,9 @@ from typing import List, Optional, Sequence, Tuple, Union
 
 from flask import request
 
+
 from ._exceptions import ValidationFailedException
-from .utils import days_in_range, weeks_in_range
+from .utils import days_in_range, weeks_in_range, guess_time_value_is_day
 
 
 def _parse_common_multi_arg(key: str) -> List[Tuple[str, Union[bool, Sequence[str]]]]:
@@ -254,9 +255,11 @@ def parse_week_range_arg(key: str) -> Tuple[int, int]:
         raise ValidationFailedException(f"{key} must match YYYYWW-YYYYWW")
     return r
 
-def parse_day_or_week_arg(key: str) -> Tuple[int, bool]:
+def parse_day_or_week_arg(key: str, default_value: Optional[int] = None) -> Tuple[int, bool]:
     v = request.values.get(key)
     if not v:
+        if default_value is not None:
+            return default_value, guess_time_value_is_day(default_value)
         raise ValidationFailedException(f"{key} param is required")
     # format is either YYYY-MM-DD or YYYYMMDD or YYYYMM
     is_week = len(v) == 6

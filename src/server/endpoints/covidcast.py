@@ -1,6 +1,6 @@
 from typing import List, Optional, Union, Tuple, Dict, Any
 from itertools import groupby
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from epiweeks import Week
 from flask import Blueprint, request
 from flask.json import loads, jsonify
@@ -366,43 +366,39 @@ def handle_correlation():
 def handle_export():
     source, signal = request.args.get("signal", "jhu-csse:confirmed_incidence_num").split(":")
     source_signal_pairs = [SourceSignalPair(source, [signal])]
-    _, weekly_signals = count_signal_time_types(source_signal_pairs)
-    if weekly_signals > 0:
-        raise ValidationFailedException('weekly signals are not supported')
+    daily_signals, weekly_signals = count_signal_time_types(source_signal_pairs)
     source_signal_pairs, alias_mapper = create_source_signal_alias_mapper(source_signal_pairs)
-    start_day = request.args.get("start_day", "2020-04-01")
-    end_day = request.args.get("end_day", "2020-09-01")
+    start_day, is_day = parse_day_or_week_arg("start_day", 202001 if weekly_signals > 0 else 20200401)
+    end_day , is_end_day = parse_day_or_week_arg("end_day", 202020 if weekly_signals > 0 else 20200901)
+    if is_day != is_end_day:
+        raise ValidationFailedException("mixing weeks with day arguments")
+    _verify_argument_time_type_matches(is_day, daily_signals, weekly_signals)
+
     geo_type = request.args.get("geo_type", "county")
     geo_values = request.args.get("geo_values", "*")
 
     if geo_values != "*":
         geo_values = geo_values.split(",")
 
-    as_of = request.args.get("as_of", None)
-
-    start_day = datetime.strptime(start_day, "%Y-%m-%d").date()
-    end_day = datetime.strptime(end_day, "%Y-%m-%d").date()
-
-    if as_of is not None:
-        as_of = datetime.strptime(as_of, "%Y-%m-%d").date()
+    as_of, is_as_of_day = parse_day_or_week_arg('as_of') if 'as_of' in request.args else None, is_day
+    if is_day != is_as_of_day:
+        raise ValidationFailedException("mixing weeks with day arguments")
 
     # build query
     q = QueryBuilder("covidcast", "t")
 
     q.set_fields(["geo_value", "signal", "time_value", "issue", "lag", "value", "stderr", "sample_size", "geo_type", "source"], [], [])
     q.set_order("time_value", "geo_value")
-    q.where(time_type="day")
     q.where_source_signal_pairs("source", "signal", source_signal_pairs)
-    q.conditions.append("time_value BETWEEN :start_day AND :end_day")
-    q.params["start_day"] = date_to_time_value(start_day)
-    q.params["end_day"] = date_to_time_value(end_day)
+    q.where_time_pairs("time_type", "time_value", [TimePair('day' if is_day else 'week', [(start_day, end_day)])])
     q.where_geo_pairs("geo_type", "geo_value", [GeoPair(geo_type, True if geo_values == "*" else geo_values)])
 
-    _handle_lag_issues_as_of(q, None, None, date_to_time_value(as_of) if as_of is not None else None)
+    _handle_lag_issues_as_of(q, None, None, as_of)
 
+    format_date = time_value_to_iso if is_day else lambda x: week_value_to_week(x).cdcformat()
     # tag as_of in filename, if it was specified
-    as_of_str = "-asof-{as_of}".format(as_of=as_of.isoformat()) if as_of is not None else ""
-    filename = "covidcast-{source}-{signal}-{start_day}-to-{end_day}{as_of}".format(source=source, signal=signal, start_day=start_day.isoformat(), end_day=end_day.isoformat(), as_of=as_of_str)
+    as_of_str = "-asof-{as_of}".format(as_of=format_date(as_of)) if as_of is not None else ""
+    filename = "covidcast-{source}-{signal}-{start_day}-to-{end_day}{as_of}".format(source=source, signal=signal, start_day=format_date(start_day), end_day=format_date(end_day), as_of=as_of_str)
     p = CSVPrinter(filename)
 
     def parse_row(i, row):
@@ -411,8 +407,8 @@ def handle_export():
             "": i,
             "geo_value": row["geo_value"],
             "signal": row["signal"],
-            "time_value": time_value_to_iso(row["time_value"]),
-            "issue": time_value_to_iso(row["issue"]),
+            "time_value": time_value_to_iso(row["time_value"]) if is_day else row["time_value"],
+            "issue": time_value_to_iso(row["issue"]) if is_day else row["issue"],
             "lag": row["lag"],
             "value": row["value"],
             "stderr": row["stderr"],
@@ -436,7 +432,7 @@ def handle_export():
     first_row = next(r, None)
     if not first_row:
         return "No matching data found for signal {source}:{signal} " "at {geo} level from {start_day} to {end_day}, as of {as_of}.".format(
-            source=source, signal=signal, geo=geo_type, start_day=start_day.isoformat(), end_day=end_day.isoformat(), as_of=(date.today().isoformat() if as_of is None else as_of.isoformat())
+            source=source, signal=signal, geo=geo_type, start_day=format_date(start_day), end_day=format_date(end_day), as_of=(date.today().isoformat() if as_of is None else format_date(as_of))
         )
 
     # now use a generator for sending the rows and execute all the other queries
