@@ -5,7 +5,7 @@ from flask import Blueprint, request
 from flask.json import loads, jsonify
 from bisect import bisect_right
 from sqlalchemy import text
-from pandas import read_csv
+from pandas import read_csv, to_datetime
 
 from .._common import is_compatibility_mode, db
 from .._exceptions import ValidationFailedException, DatabaseErrorException
@@ -16,8 +16,9 @@ from .._params import (
     parse_geo_arg,
     parse_source_signal_arg,
     parse_time_arg,
-    parse_day_arg,
+    parse_day_or_week_arg,
     parse_day_range_arg,
+    parse_day_or_week_range_arg,
     parse_single_source_signal_arg,
     parse_single_time_arg,
     parse_single_geo_arg,
@@ -34,7 +35,7 @@ from .._validate import (
 )
 from .._pandas import as_pandas, print_pandas
 from .covidcast_utils import compute_trend, compute_trends, compute_correlations, compute_trend_value, CovidcastMetaEntry
-from ..utils import shift_time_value, date_to_time_value, time_value_to_iso, time_value_to_date
+from ..utils import shift_time_value, date_to_time_value, time_value_to_iso, time_value_to_date, shift_week_value, week_value_to_week
 from .covidcast_utils.model import TimeType, data_sources, create_source_signal_alias_mapper
 
 # first argument is the endpoint name
@@ -172,15 +173,18 @@ def handle():
 
 @bp.route("/trend", methods=("GET", "POST"))
 def handle_trend():
-    require_all("date", "window")
+    require_all("window", "date")
     source_signal_pairs = parse_source_signal_pairs()
     source_signal_pairs, alias_mapper = create_source_signal_alias_mapper(source_signal_pairs)
-    # TODO alias
     geo_pairs = parse_geo_pairs()
 
-    time_value = parse_day_arg("date")
-    time_window = parse_day_range_arg("window")
-    basis_time_value = extract_date("basis") or shift_time_value(time_value, -7)
+    time_window, is_day = parse_day_or_week_range_arg("window")
+    time_value, is_also_day = parse_day_or_week_arg("date")
+    if is_day != is_also_day:
+        raise ValidationFailedException('mixing weeks with day arguments')
+    basis_time_value = extract_date("basis")
+    if basis_time_value is None:
+        basis_time_value = (shift_time_value(time_value, -7) if is_day else shift_week_value(time_value, -7))
 
     # build query
     q = QueryBuilder("covidcast", "t")
@@ -193,7 +197,7 @@ def handle_trend():
 
     q.where_source_signal_pairs("source", "signal", source_signal_pairs)
     q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
-    q.where_time_pairs("time_type", "time_value", [TimePair("day", [time_window])])
+    q.where_time_pairs("time_type", "time_value", [TimePair("day" if is_day else "week", [time_window])])
 
     # fetch most recent issue fast
     _handle_lag_issues_as_of(q, None, None, None)
@@ -225,7 +229,7 @@ def handle_trendseries():
     source_signal_pairs, alias_mapper = create_source_signal_alias_mapper(source_signal_pairs)
     geo_pairs = parse_geo_pairs()
 
-    time_window = parse_day_range_arg("window")
+    time_window, is_day = parse_day_or_week_range_arg("window")
     basis_shift = extract_integer("basis")
     if basis_shift is None:
         basis_shift = 7
@@ -241,7 +245,7 @@ def handle_trendseries():
 
     q.where_source_signal_pairs("source", "signal", source_signal_pairs)
     q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
-    q.where_time_pairs("time_type", "time_value", [TimePair("day", [time_window])])
+    q.where_time_pairs("time_type", "time_value", [TimePair("day" if is_day else 'week', [time_window])])
 
     # fetch most recent issue fast
     _handle_lag_issues_as_of(q, None, None, None)
@@ -249,6 +253,8 @@ def handle_trendseries():
     p = create_printer()
 
     shifter = lambda x: shift_time_value(x, -basis_shift)
+    if not is_day:
+        shifter = lambda x: shift_week_value(x, -basis_shift)
 
     def gen(rows):
         for key, group in groupby((parse_row(row, fields_string, fields_int, fields_float) for row in rows), lambda row: (row["geo_type"], row["geo_value"], row["source"], row["signal"])):
@@ -276,7 +282,8 @@ def handle_correlation():
     other_pairs = parse_source_signal_arg("others")
     source_signal_pairs, alias_mapper = create_source_signal_alias_mapper(other_pairs + [reference])
     geo_pairs = parse_geo_arg()
-    time_window = parse_day_range_arg("window")
+    time_window, is_day = parse_day_or_week_range_arg("window")
+
     lag = extract_integer("lag")
     if lag is None:
         lag = 28
@@ -296,12 +303,17 @@ def handle_correlation():
         source_signal_pairs,
     )
     q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
-    q.where_time_pairs("time_type", "time_value", [TimePair("day", [time_window])])
+    q.where_time_pairs("time_type", "time_value", [TimePair("day" if is_day else "week", [time_window])])
 
     # fetch most recent issue fast
     q.conditions.append(f"({q.alias}.is_latest_issue IS TRUE)")
 
-    df = as_pandas(str(q), q.params, parse_dates={"time_value": "%Y%m%d"})
+    df = as_pandas(str(q), q.params)
+    if is_day:
+        df['time_value'] = to_datetime(df['time_value'], format="%Y%m%d")
+    else:
+        # week but convert to date for simpler shifting
+        df['time_value'] = to_datetime(df['time_value'].apply(lambda v: week_value_to_week(v).startdate()))
 
     p = create_printer()
 
@@ -329,7 +341,7 @@ def handle_correlation():
             for (source, signal), other_group in other_groups:
                 if alias_mapper:
                     source = alias_mapper(source, signal)
-                for cor in compute_correlations(geo_type, geo_value, source, signal, lag, reference_group, other_group):
+                for cor in compute_correlations(geo_type, geo_value, source, signal, lag, reference_group, other_group, is_day):
                     yield cor.asdict()
 
     # now use a generator for sending the rows and execute all the other queries
@@ -344,6 +356,8 @@ def handle_export():
     end_day = request.args.get("end_day", "2020-09-01")
     geo_type = request.args.get("geo_type", "county")
     geo_values = request.args.get("geo_values", "*")
+
+    # TODO weekly signals
 
     if geo_values != "*":
         geo_values = geo_values.split(",")
@@ -424,8 +438,9 @@ def handle_backfill():
     # don't need the alias mapper since we don't return the source
 
     time_pair = parse_single_time_arg("time")
+    is_day = time_pair.is_day
     geo_pair = parse_single_geo_arg("geo")
-    reference_anchor_lag = extract_integer("anchor_lag")  # in days
+    reference_anchor_lag = extract_integer("anchor_lag")  # in days or weeks
     if reference_anchor_lag is None:
         reference_anchor_lag = 60
 
@@ -461,7 +476,8 @@ def handle_backfill():
         for time_value, group in groupby((parse_row(row, fields_string, fields_int, fields_float) for row in rows), lambda row: row["time_value"]):
             # compute data per time value
             issues: List[Dict[str, Any]] = [r for r in group]
-            anchor_row = find_anchor_row(issues, shift_time_value(time_value, reference_anchor_lag))
+            shifted_time_value = shift_time_value(time_value, reference_anchor_lag) if is_day else shift_week_value(time_value, reference_anchor_lag)
+            anchor_row = find_anchor_row(issues, shifted_time_value)
 
             for i, row in enumerate(issues):
                 if i > 0:
@@ -576,8 +592,9 @@ def handle_coverage():
     source_signal_pairs, alias_mapper = create_source_signal_alias_mapper(source_signal_pairs)
     geo_type = request.args.get("geo_type", "county")
     if "window" in request.values:
-        time_window = parse_day_range_arg("window")
+        time_window, is_day = parse_day_or_week_range_arg("window")
     else:
+        is_day = False  # TODO
         now_time = extract_date("latest")
         now = date.today() if now_time is None else time_value_to_date(now_time)
         last = extract_integer("days")
@@ -601,7 +618,7 @@ def handle_coverage():
     else:
         q.where(geo_type=geo_type)
     q.where_source_signal_pairs("source", "signal", source_signal_pairs)
-    q.where_time_pairs("time_type", "time_value", [TimePair("day", [time_window])])
+    q.where_time_pairs("time_type", "time_value", [TimePair("day" if is_day else 'week', [time_window])])
     q.group_by = "c.source, c.signal, c.time_value"
     q.set_order("source", "signal", "time_value")
 

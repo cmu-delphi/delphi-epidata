@@ -37,6 +37,12 @@ def shift_time_value(time_value: int, days: int) -> int:
     shifted = d + timedelta(days=days)
     return date_to_time_value(shifted)
 
+def shift_week_value(week_value: int, weeks: int) -> int:
+    if weeks == 0:
+        return week_value
+    week = week_value_to_week(week_value)
+    shifted = week + weeks
+    return week_to_time_value(shifted)
 
 def days_in_range(range: Tuple[int, int]) -> int:
     """
