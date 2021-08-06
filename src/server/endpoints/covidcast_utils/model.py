@@ -228,10 +228,37 @@ def _load_data_signals(sources: List[DataSource]):
 
 data_signals, data_signals_df = _load_data_signals(data_sources)
 data_signals_by_key = {d.key: d for d in data_signals}
+# also add the resolved signal version to the signal lookup
+for d in data_signals:
+    source = data_source_by_id.get(d.source)
+    if source and source.uses_db_alias:
+        data_signals_by_key[(source.db_source, d.signal)] = d
+
 
 
 def get_related_signals(signal: DataSignal) -> List[DataSignal]:
     return [s for s in data_signals if s != signal and s.signal_basename == signal.signal_basename]
+
+
+def count_signal_time_types(source_signals: List[SourceSignalPair]) -> Tuple[int, int]:
+    """
+    count the number of weekly signals in this queries
+    @returns daily counts, weekly counts
+    """
+    weekly = 0
+    daily = 0
+    for pair in source_signals:
+        if pair.signal == True:
+            continue
+        for s in pair.signal:
+            signal = data_signals_by_key.get((pair.source, s))
+            if not signal:
+                continue
+            if signal.time_type == TimeType.week:
+                weekly += 1
+            else:
+                daily += 1
+    return daily, weekly
 
 
 def create_source_signal_alias_mapper(source_signals: List[SourceSignalPair]) -> Tuple[List[SourceSignalPair], Optional[Callable[[str, str], str]]]:
