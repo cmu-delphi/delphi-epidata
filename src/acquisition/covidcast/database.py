@@ -203,9 +203,9 @@ class Database:
       self._cursor.execute(drop_tmp_table_sql)
     return modified_row_count
   
-  # TODO: ! ! !
+  # TODO: test meta query, all associated methods still require updating
   def compute_covidcast_meta(self, table_name='covidcast', use_index=True):
-    """Compute and return metadata on all non-WIP COVIDcast signals."""
+    """Compute and return metadata on all non-WIP signals."""
     logger = get_structured_logger("compute_covidcast_meta")
     index_hint = ""
     if use_index:
@@ -217,39 +217,40 @@ class Database:
 
     srcsigs = Queue() # multi-consumer threadsafe!
 
-    sql = f'SELECT `source`, `signal` FROM `{table_name}` GROUP BY `source`, `signal` ORDER BY `source` ASC, `signal` ASC;'
+    sql = f'SELECT `source`, `signal` FROM `data_reference` GROUP BY `source`, `signal` ORDER BY `source` ASC, `signal` ASC;'
 
     self._cursor.execute(sql)
     for source, signal in list(self._cursor): # self._cursor is a generator; this lets us use the cursor for subsequent queries inside the loop
-      sql = f"SELECT `is_wip` FROM `{table_name}` WHERE `source`=%s AND `signal`=%s LIMIT 1"
-      self._cursor.execute(sql, (source, signal))
-      is_wip = int(self._cursor.fetchone()[0]) # casting to int as it comes out as a '0' or '1' bytearray; bool('0')==True :(
-      if not is_wip:
+      # sql = f"SELECT `is_wip` FROM `{table_name}` WHERE `source`=%s AND `signal`=%s LIMIT 1"
+      # self._cursor.execute(sql, (source, signal))
+      # is_wip = int(self._cursor.fetchone()[0]) # casting to int as it comes out as a '0' or '1' bytearray; bool('0')==True :(
+      # if not is_wip:
         srcsigs.put((source, signal))
 
     inner_sql = f'''
-      SELECT
-        `source` AS `data_source`,
-        `signal`,
-        `time_type`,
-        `geo_type`,
-        MIN(`time_value`) AS `min_time`,
-        MAX(`time_value`) AS `max_time`,
-        COUNT(DISTINCT `geo_value`) AS `num_locations`,
-        MIN(`value`) AS `min_value`,
-        MAX(`value`) AS `max_value`,
-        ROUND(AVG(`value`),7) AS `mean_value`,
-        ROUND(STD(`value`),7) AS `stdev_value`,
-        MAX(`value_updated_timestamp`) AS `last_update`,
-        MAX(`issue`) as `max_issue`,
-        MIN(`lag`) as `min_lag`,
-        MAX(`lag`) as `max_lag`
-      FROM
-        `{table_name}` {index_hint}
-      WHERE
-        `source` = %s AND
-        `signal` = %s AND
-        is_latest_issue = 1
+      SELECT data.`id`, 
+        `data_reference_id`, 
+        `source`, 
+        `signal`, 
+        `time_type`, 
+        `geo_type`, 
+        `time_value`, 
+        `geo_value`, 
+        `issue`, 
+        `value_first_updated_timestamp`, 
+        `value_updated_timestamp`, 
+        `value`, 
+        `stderr`, 
+        `sample_size`, 
+        `lag` , 
+        `missing_value` , 
+        `missing_stderr` , 
+        `missing_sample_size` 
+      FROM data_reference ref 
+      INNER JOIN datapoint data 
+      ON ref.`latest_datapoint_id` = data.`id` 
+      WHERE ref.`source` = '{source}' AND 
+        ref.`signal` = '{signal}' AND 
       GROUP BY
         `time_type`,
         `geo_type`

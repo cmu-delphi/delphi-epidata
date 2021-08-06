@@ -132,7 +132,7 @@ def handle():
     lag = extract_integer("lag")
 
     # build query
-    q = QueryBuilder("covidcast", "t")
+    q = QueryBuilder("datapoint", "t")
 
     fields_string = ["geo_value", "signal"]
     fields_int = ["time_value", "direction", "issue", "lag", "missing_value", "missing_stderr", "missing_sample_size"]
@@ -173,7 +173,7 @@ def handle_trend():
     basis_time_value = extract_date("basis") or shift_time_value(time_value, -7)
 
     # build query
-    q = QueryBuilder("covidcast", "t")
+    q = QueryBuilder("datapoint", "t")
 
     fields_string = ["geo_type", "geo_value", "source", "signal"]
     fields_int = ["time_value"]
@@ -217,7 +217,7 @@ def handle_trendseries():
         basis_shift = 7
 
     # build query
-    q = QueryBuilder("covidcast", "t")
+    q = QueryBuilder("datapoint", "t")
 
     fields_string = ["geo_type", "geo_value", "source", "signal"]
     fields_int = ["time_value"]
@@ -264,7 +264,7 @@ def handle_correlation():
         lag = 28
 
     # build query
-    q = QueryBuilder("covidcast", "t")
+    q = QueryBuilder("datapoint", "t")
 
     fields_string = ["geo_type", "geo_value", "source", "signal"]
     fields_int = ["time_value"]
@@ -332,7 +332,7 @@ def handle_export():
         as_of = datetime.strptime(as_of, "%Y-%m-%d").date()
 
     # build query
-    q = QueryBuilder("covidcast", "t")
+    q = QueryBuilder("datapoint", "t")
 
     q.set_fields(["geo_value", "signal", "time_value", "issue", "lag", "value", "stderr", "sample_size", "geo_type", "source"], [], [])
     q.set_order("time_value", "geo_value")
@@ -401,7 +401,7 @@ def handle_backfill():
         reference_anchor_lag = 60
 
     # build query
-    q = QueryBuilder("covidcast", "t")
+    q = QueryBuilder("datapoint", "t")
 
     fields_string = []
     fields_int = ["time_value", "issue"]
