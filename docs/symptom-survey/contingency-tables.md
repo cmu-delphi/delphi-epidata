@@ -192,7 +192,26 @@ please contact us at <delphi-survey-info@lists.andrew.cmu.edu>.
 | `pct_cli` | Estimated percentage of people with COVID-like illness, using the same [definition as in the API](../api/covidcast-signals/fb-survey.md#estimating-percent-ili-and-cli). <br/> **Earliest date available:** 2021-01-01 | A1 and A2 |
 | `pct_ili` | Estimated percentage of people with influenza-like illness, using the same [definition as in the API](../api/covidcast-signals/fb-survey.md#estimating-percent-ili-and-cli). <br/> **Earliest date available:** 2021-01-01 | A1 and A2 |
 | `pct_hh_cmnty_cli` | Estimated percentage of people reporting illness in their local community, including their household, using the same [definition as in the API](../api/covidcast-signals/fb-survey.m#estimating-community-cli). <br/> **Earliest date available:** 2021-01-01 | A1, A2, and A4 |
-| `pct_anosmia` | Estimated percentage of people experiencing loss of smell or taste in the last 24 hours. <br/> **Earliest date available:** 2021-01-01 | A2 |
+| `pct_anosmia` | Estimated percentage of respondents experiencing loss of smell or taste in the last 24 hours. <br/> **Earliest date available:** 2021-01-01 | B2 |
+| `pct_symp_fever` | Estimated percentage of people experiencing a fever in the last 24 hours. <br/> **Earliest date available:** 2021-08-10 | B2 |
+| `pct_symp_cough` | Estimated percentage of people experiencing a cough in the last 24 hours. <br/> **Earliest date available:** 2021-08-10 | B2 |
+| `pct_symp_shortness_breath` | Estimated percentage of people experiencing shortness of breath in the last 24 hours. <br/> **Earliest date available:** 2021-08-10 | B2 |
+| `pct_symp_diff_breathing` | Estimated percentage of people experiencing difficulty breathing in the last 24 hours. <br/> **Earliest date available:** 2021-08-10 | B2 |
+| `pct_symp_fatigue` | Estimated percentage of people experiencing fatigue in the last 24 hours. <br/> **Earliest date available:** 2021-08-10 | B2 |
+| `pct_symp_nasal_congestion` | Estimated percentage of people experiencing nasal congestion in the last 24 hours. <br/> **Earliest date available:** 2021-08-10 | B2 |
+| `pct_symp_runny_nose` | Estimated percentage of people experiencing a stuffy or runny nose in the last 24 hours. <br/> **Earliest date available:** 2021-08-10 | B2 |
+| `pct_symp_aches` | Estimated percentage of people experiencing muscle or joint aches in the last 24 hours. <br/> **Earliest date available:** 2021-08-10 | B2 |
+| `pct_symp_sore_throat` | Estimated percentage of people experiencing a sore throat in the last 24 hours. <br/> **Earliest date available:** 2021-08-10 | B2 |
+| `pct_symp_chest_pain` | Estimated percentage of people experiencing chest pain or pressure in the last 24 hours. <br/> **Earliest date available:** 2021-08-10 | B2 |
+| `pct_symp_nausea` | Estimated percentage of people experiencing nausea or vomiting in the last 24 hours. <br/> **Earliest date available:** 2021-08-10 | B2 |
+| `pct_symp_diarrhea` | Estimated percentage of people experiencing diarrhea in the last 24 hours. <br/> **Earliest date available:** 2021-08-10 | B2 |
+| `pct_symp_other` | Estimated percentage of people experiencing other symptoms in the last 24 hours. <br/> **Earliest date available:** 2021-08-10 | B2 |
+| `pct_symp_none` | Estimated percentage of people experiencing none of the listed symptoms in the last 24 hours. <br/> **Earliest date available:** 2021-08-10 | B2 |
+| `pct_symp_eye_pain` | Estimated percentage of people experiencing eye pain in the last 24 hours. <br/> **Earliest date available:** 2021-08-10 | B2 |
+| `pct_symp_chills` | Estimated percentage of people experiencing chills in the last 24 hours. <br/> **Earliest date available:** 2021-08-10 | B2 |
+| `pct_symp_headache` | Estimated percentage of people experiencing a headache in the last 24 hours. <br/> **Earliest date available:** 2021-08-10 | B2 |
+| `pct_symp_sleep_changes` | Estimated percentage of people experiencing changes in sleep in the last 24 hours. <br/> **Earliest date available:** 2021-08-10 | B2 |
+| `pct_symp_stuffy_nose` | Estimated percentage of people experiencing a stuffy nose in the last 24 hours. <br/> **Earliest date available:** 2021-08-10 | B2 |
 
 ### Behavior
 
