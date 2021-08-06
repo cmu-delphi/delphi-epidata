@@ -311,7 +311,6 @@ unweighted signals are also available. These begin `smoothed_`, such as
 | Signal | Description | Survey Item | Introduced |
 | --- | --- | --- | --- |
 | `smoothed_wwearing_mask_7d` | Estimated percentage of people who wore a mask for most or all of the time while in public in the past 7 days; those not in public in the past 7 days are not counted. <br/> **Earliest date available:** 2021-02-08 | C14a | Wave 8, Feb 8, 2021 |
-| `smoothed_wbelief_masking_effective` | Estimated percentage of respondents who believe that wearing a face mask is either very or moderately effective for preventing the spread of COVID-19. <br/> **Earliest date available:** 2021-06-10 | G3 | Wave 11, May 19, 2021 |
 | `smoothed_wwearing_mask` | *Discontinued as of Wave 8, Feb 8, 2021* Estimated percentage of people who wore a mask for most or all of the time while in public in the past 5 days; those not in public in the past 5 days are not counted. <br/> **Earliest date available:** 2020-09-08 | C14 | Wave 4, Sept 8, 2020 |
 | `smoothed_wothers_masked_public` | Estimated percentage of respondents who say that most or all *other* people wear masks, when they are in public. <br/> **Earliest date available:** 2021-05-19 | H2 | Wave 11, May 19, 2021 |
 | `smoothed_wothers_masked` | *Discontinued as of Wave 11, May 19, 2021* Estimated percentage of respondents who say that most or all *other* people wear masks, when they are in public and social distancing is not possible. <br/> **Earliest date available:** 2020-11-24 | C16 | Wave 5, Nov 24, 2020 |
@@ -349,6 +348,7 @@ unweighted signals are also available. These begin `smoothed_`, such as
 | `smoothed_wtested_14d` | Estimated percentage of people who were tested for COVID-19 in the past 14 days, regardless of their test result <br/> **Earliest date available:** 2020-09-08 | B8, B10 |
 | `smoothed_wtested_positive_14d` | Estimated test positivity rate (percent) among people tested for COVID-19 in the past 14 days <br/> **Earliest date available:** 2020-09-08 | B10a or B10c |
 | `smoothed_wscreening_tested_positive_14d` | Estimated test positivity rate (percent) among people tested for COVID-19 in the past 14 days who were being screened with no symptoms or known exposure. **Note:** Until Wave 11 (May 19, 2021), this included people who said they were tested while receiving other medical care, because their employer or school required it, after attending a large outdoor gathering, or prior to visiting friends or family. After that date, this includes people who said they were tested while receiving other medical care, because their employer or school required it, prior to visiting friends or family, or prior to domestic or international travel. <br/> **Earliest date available:** 2021-03-20 | B10a or B10c, B10b |
+| `smoothed_whad_covid_ever` | Estimated percentage of people who report having ever had COVID-19. <br/> **Earliest date available:** 2021-08-10 | B13 |
 | `smoothed_wwanted_test_14d` | *Discontinued as of Wave 11, May 19, 2021* Estimated percentage of people who *wanted* to be tested for COVID-19 in the past 14 days, out of people who were *not* tested in that time <br/> **Earliest date available:** 2020-09-08 | B12 |
 
 These indicators are based on questions in Wave 4 of the survey, introduced on
@@ -390,6 +390,7 @@ unweighted signals are also available. These begin `smoothed_`, such as
 | `smoothed_wcovid_vaccinated` | Estimated percentage of respondents who have already received a vaccine for COVID-19. **Note:** The Centers for Disease Control compiles data on vaccine administration across the United States. This signal may differ from CDC data because of survey biases and should not be treated as authoritative. However, the survey signal is not subject to the lags and reporting problems in official vaccination data. <br/> **Earliest date available:** 2021-01-06 | V1 |
 | `smoothed_wappointment_not_vaccinated` | Estimated percentage of respondents who have an appointment to get a COVID-19 vaccine, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-05-19 | V11a |
 | `smoothed_wreceived_2_vaccine_doses` | Estimated percentage of respondents who have received two doses of a COVID-19 vaccine, among respondents who have received either one or two doses of a COVID-19 vaccine. This item was shown to respondents starting in Wave 7. <br/> **Earliest date available:** 2021-02-06 | V2 |
+| `smoothed_wcovid_vaccinated_friends` | Estimated percentage of respondents who report that most of their friends and family have received a COVID-19 vaccine. <br/> **Earliest date available:** 2021-08-10 | H3 |
 
 ### Barriers to Vaccination
 
@@ -480,14 +481,6 @@ COVID-19 vaccine, but are not planning to get all recommended doses.
 
 | Signal | Description | Survey Item |
 | --- | --- | --- |
-| `smoothed_wtrust_covid_info_doctors` | Estimated percentage of respondents who trust doctors and other health professionals they go to for medical care to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-05-19 | I6 |
-| `smoothed_wtrust_covid_info_experts` | Estimated percentage of respondents who trust scientists and other health experts to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-05-19 | I6 |
-| `smoothed_wtrust_covid_info_cdc` | Estimated percentage of respondents who trust the Centers for Disease Control (CDC) to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-05-19 | I6 |
-| `smoothed_wtrust_covid_info_govt_health` | Estimated percentage of respondents who trust government health officials to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-05-19 | I6 |
-| `smoothed_wtrust_covid_info_politicians` | Estimated percentage of respondents who trust politicians to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-05-19 | I6 |
-| `smoothed_wtrust_covid_info_journalists` | Estimated percentage of respondents who trust journalists to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-05-19 | I6 |
-| `smoothed_wtrust_covid_info_friends` | Estimated percentage of respondents who trust friends and family to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-05-19 | I6 |
-| `smoothed_wtrust_covid_info_religious` | Estimated percentage of respondents who trust religious leaders to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-05-19 | I6 |
 | `smoothed_wvaccine_likely_friends` | *Discontinued as of Wave 11, May 19, 2021* Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by friends and family, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-20 | V4 |
 | `smoothed_wvaccine_likely_local_health` | *Discontinued as of Wave 8, Feb 8, 2021* Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by local health workers, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-20 | V4 |
 | `smoothed_wvaccine_likely_who` | *Discontinued as of Wave 11, May 19, 2021* Estimated percentage of respondents who would be more likely to get a COVID-19 vaccine if it were recommended to them by the World Health Organization, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-01-20 | V4 |
@@ -513,6 +506,7 @@ unweighted signals are also available. These begin `smoothed_`, such as
 | `smoothed_wworried_finances` | Estimated percentage of respondents who report being very or somewhat worried about their "household's finances for the next month" <br/> **Earliest date available:** 2020-09-08 | C15 |
 | `smoothed_wanxious_7d` | Estimated percentage of respondents who reported feeling "nervous, anxious, or on edge" for most or all of the past 7 days. This item was shown to respondents starting in Wave 10. <br/> **Earliest date available:** 2021-03-02 | C8a or C18a |
 | `smoothed_wdepressed_7d` | Estimated percentage of respondents who reported feeling depressed for most or all of the past 7 days. This item was shown to respondents starting in Wave 10. <br/> **Earliest date available:** 2021-03-02 | C8a or C18b |
+| `smoothed_wworried_catch_covid` | Estimated percentage of respondents worrying either a great deal or a moderate amount about catching COVID-19. <br/> **Earliest date available:** 2021-08-10 | G1 |
 | `smoothed_wfelt_isolated_7d` | *Discontinued as of Wave 11, May 19, 2021* Estimated percentage of respondents who reported feeling "isolated from others" for most or all of the past 7 days. This item was shown to respondents starting in Wave 10. <br/> **Earliest date available:** 2021-03-02 | C8a |
 | `smoothed_wanxious_5d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who reported feeling "nervous, anxious, or on edge" for most or all of the past 5 days <br/> **Earliest date available:** 2020-09-08 | C8 |
 | `smoothed_wdepressed_5d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who reported feeling depressed for most or all of the past 5 days <br/> **Earliest date available:** 2020-09-08 | C8 |
@@ -523,6 +517,70 @@ Some of these questions were present in the earliest waves of the survey, but
 only in Wave 4 did respondents consent to our use of aggregate data to
 study other impacts of COVID, such as mental health. Hence, these aggregates only
 include respondents to Wave 4 and later waves, beginning September 8, 2020.
+
+
+## Beliefs Indicators
+
+| Signal | Description | Survey Item | Introduced |
+| --- | --- | --- |
+| `smoothed_wbelief_masking_effective` | Estimated percentage of respondents who believe that wearing a face mask is either very or moderately effective for preventing the spread of COVID-19. <br/> **Earliest date available:** 2021-06-10 | G3 | Wave 11, May 19, 2021 |
+| `smoothed_wbelief_distancing_effective` | Estimated percentage of respondents who believe that social distancing is either very or moderately effective for preventing the spread of COVID-19. <br/> **Earliest date available:** 2021-08-10 | G2 | Wave 11, May 19, 2021 |
+| `smoothed_wbelief_vaccinated_mask_unnecessary` | Estimated percentage of people who believe that the statement "Getting the COVID-19 vaccine means that you can stop wearing a mask around people outside your household" is definitely or probably true. <br/> **Earliest date available:** 2021-08-10 | I1 | Wave 11, May 19, 2021 |
+| `smoothed_wbelief_children_immune` | Estimated pPercentage of people who believe that the statement "Children cannot get COVID-19" is definitely or probably true. <br/> **Earliest date available:** 2021-08-10 | I2 | Wave 11, May 19, 2021 |
+| `smoothed_wbelief_created_small_group` | Estimated percentage of people who believe that the statement "COVID-19 was deliberately created by a small group of people who secretly manipulate world events" is definitely or probably true. <br/> **Earliest date available:** 2021-08-10 | I3 | Wave 11, May 19, 2021 |
+| `smoothed_wbelief_govt_exploitation` | Estimated percentage of people who indicate that the statement "The COVID-19 pandemic is being exploited by the government to control people" is definitely or probably true. <br/> **Earliest date available:** 2021-08-10 | I4 | Wave 11, May 19, 2021 |
+
+
+## Medical Care Experiences Indicators
+
+| Signal | Description | Survey Item | Introduced |
+| --- | --- | --- |
+| `smoothed_wdelayed_care_cost` | Estimated percentage of respondents who have ever delayed or not sought medical care in the past year because of cost. <br/> **Earliest date available:** 2021-08-10 | K1 | Wave 11, May 19, 2021 |
+| `smoothed_wrace_treated_fairly_healthcare` | Estimated percentage of respondents who somewhat or strongly agree that people of their race are treated fairly in a healthcare setting. <br/> **Earliest date available:** 2021-08-10 | K2 | Wave 11, May 19, 2021 |
+
+
+## News and Information Indicators
+
+### News Sources
+
+| Signal | Description | Survey Item | Introduced |
+| --- | --- | --- |
+| `smoothed_wreceived_news_local_health` | Estimated percentage of respondents who received news about COVID-19 from local health workers, clinics, and community organizations in the past 7 days. <br/> **Earliest date available:** 2021-08-10 | I5 | Wave 11, May 19, 2021 |
+| `smoothed_wreceived_news_experts` | Estimated percentage of respondents who received news about COVID-19 from scientists and other health experts in the past 7 days. <br/> **Earliest date available:** 2021-08-10 | I5 | Wave 11, May 19, 2021 |
+| `smoothed_wreceived_news_cdc` | Estimated percentage of respondents who received news about COVID-19 from the CDC in the past 7 days. <br/> **Earliest date available:** 2021-08-10 | I5 | Wave 11, May 19, 2021 |
+| `smoothed_wreceived_news_govt_health` | Estimated percentage of respondents who received news about COVID-19 from government health authorities or officials in the past 7 days. <br/> **Earliest date available:** 2021-08-10 | I5 | Wave 11, May 19, 2021 |
+| `smoothed_wreceived_news_politicians` | Estimated percentage of respondents who received news about COVID-19 from politicians in the past 7 days. <br/> **Earliest date available:** 2021-08-10 | I5 | Wave 11, May 19, 2021 |
+| `smoothed_wreceived_news_journalists` | Estimated percentage of respondents who received news about COVID-19 from journalists in the past 7 days. <br/> **Earliest date available:** 2021-08-10 | I5 | Wave 11, May 19, 2021 |
+| `smoothed_wreceived_news_friends` | Estimated percentage of respondents who received news about COVID-19 from friends and family in the past 7 days. <br/> **Earliest date available:** 2021-08-10 | I5 | Wave 11, May 19, 2021 |
+| `smoothed_wreceived_news_religious` | Estimated percentage of respondents who received news about COVID-19 from religious leaders in the past 7 days. <br/> **Earliest date available:** 2021-08-10 | I5 | Wave 11, May 19, 2021 |
+| `smoothed_wreceived_news_none` | Estimated percentage of respondents who in the past 7 days received news about COVID-19 from none of the listed sources. <br/> **Earliest date available:** 2021-08-10 | I5 | Wave 11, May 19, 2021 |
+
+### Trusted Sources
+
+| Signal | Description | Survey Item |
+| --- | --- | --- |
+| `smoothed_wtrust_covid_info_doctors` | Estimated percentage of respondents who trust doctors and other health professionals they go to for medical care to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-05-19 | I6 |
+| `smoothed_wtrust_covid_info_experts` | Estimated percentage of respondents who trust scientists and other health experts to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-05-19 | I6 |
+| `smoothed_wtrust_covid_info_cdc` | Estimated percentage of respondents who trust the Centers for Disease Control (CDC) to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-05-19 | I6 |
+| `smoothed_wtrust_covid_info_govt_health` | Estimated percentage of respondents who trust government health officials to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-05-19 | I6 |
+| `smoothed_wtrust_covid_info_politicians` | Estimated percentage of respondents who trust politicians to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-05-19 | I6 |
+| `smoothed_wtrust_covid_info_journalists` | Estimated percentage of respondents who trust journalists to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-05-19 | I6 |
+| `smoothed_wtrust_covid_info_friends` | Estimated percentage of respondents who trust friends and family to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-05-19 | I6 |
+| `smoothed_wtrust_covid_info_religious` | Estimated percentage of respondents who trust religious leaders to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-05-19 | I6 |
+
+### Desired Information
+
+| Signal | Description | Survey Item | Introduced |
+| --- | --- | --- |
+| `smoothed_wwant_info_covid_treatment` | Estimated percentage of people who want more information about the treatment of COVID-19. <br/> **Earliest date available:** 2021-08-10 | I7 | Wave 11, May 19, 2021 |
+| `smoothed_wwant_info_vaccine_access` | Estimated percentage of people who want more information about how to get a COVID-19 vaccine. <br/> **Earliest date available:** 2021-08-10 | I7 | Wave 11, May 19, 2021 |
+| `smoothed_wwant_info_vaccine_types` | Estimated percentage of people who want more information about different types of COVID-19 vaccines. <br/> **Earliest date available:** 2021-08-10 | I7 | Wave 11, May 19, 2021 |
+| `smoothed_wwant_info_covid_variants` | Estimated percentage of people who want more information about COVID-19 variants and mutations. <br/> **Earliest date available:** 2021-08-10 | I7 | Wave 11, May 19, 2021 |
+| `smoothed_wwant_info_children_education` | Estimated percentage of people who want more information about how to support their children's education. <br/> **Earliest date available:** 2021-08-10 | I7 | Wave 11, May 19, 2021 |
+| `smoothed_wwant_info_mental_health` | Estimated percentage of people who want more information about how to maintain their mental health. <br/> **Earliest date available:** 2021-08-10 | I7 | Wave 11, May 19, 2021 |
+| `smoothed_wwant_info_relationships` | Estimated percentage of people who want more information about how to maintain their social relationships despite physical distancing. <br/> **Earliest date available:** 2021-08-10 | I7 | Wave 11, May 19, 2021 |
+| `smoothed_wwant_info_employment` | Estimated percentage of people who want more information about employment and other economic and financial issues. <br/> **Earliest date available:** 2021-08-10 | I7 | Wave 11, May 19, 2021 |
+| `smoothed_wwant_info_none` | Estimated percentage of people who want more information about none of the listed topics. <br/> **Earliest date available:** 2021-08-10 | I7 | Wave 11, May 19, 2021 |
 
 
 ## Limitations
