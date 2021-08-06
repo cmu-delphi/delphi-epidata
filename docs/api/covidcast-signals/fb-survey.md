@@ -541,7 +541,7 @@ include respondents to Wave 4 and later waves, beginning September 8, 2020.
 
 ## News and Information Indicators
 
-### News Sources
+### Sources of News
 
 | Signal | Description | Survey Item | Introduced |
 | --- | --- | --- |
@@ -555,7 +555,7 @@ include respondents to Wave 4 and later waves, beginning September 8, 2020.
 | `smoothed_wreceived_news_religious` | Estimated percentage of respondents who received news about COVID-19 from religious leaders in the past 7 days. <br/> **Earliest date available:** 2021-08-10 | I5 | Wave 11, May 19, 2021 |
 | `smoothed_wreceived_news_none` | Estimated percentage of respondents who in the past 7 days received news about COVID-19 from none of the listed sources. <br/> **Earliest date available:** 2021-08-10 | I5 | Wave 11, May 19, 2021 |
 
-### Trusted Sources
+### Trusted Sources of Information
 
 | Signal | Description | Survey Item |
 | --- | --- | --- |
