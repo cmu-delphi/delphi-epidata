@@ -17,6 +17,26 @@ interpretation of results. All problems will be logged here.
 1. TOC
 {:toc}
 
+## Incorrect Wave Sampling (June-August, 2021)
+
+A sampling error caused a portion of our respondents to be accidentally sent the
+Wave 10 survey instrument instead of the newer Wave 11 survey instrument. The
+error was fixed on August 2, 2021, but as a result of this error:
+
+* A random 1% of the sample was accidentally sent the W10 instrument between
+  June 15 and July 4, 2021.
+* A random 3% of the sample was accidentally sent the W10 instrument between
+  July 5 and July 11, 2021.
+* A random 10% of the sample was accidentally sent the W10 instrument between
+  July 12 and July 21, 2021.
+* A random 50% of the sample was accidentally sent the W10 instrument between
+  July 22 and July 30, 2021.
+* A random 91-98% of the sample was accidentally sent the W10 instrument between
+  July 31 and August 1, 2021.
+
+Despite differences between the two instruments, we have not detected trend
+discontinuities as a result of the error. We will continue to investigate.
+
 ## Response Volume Drop (July 20-22, 2021)
 
 On July 20, 2021, a technical problem in the process that samples Facebook users
@@ -24,6 +44,22 @@ for invitation to the survey caused lower-than-normal sample sizes. The problem
 was resolved on July 22 and users that had been incorrectly not invited were
 invited over the following several days. This caused sample sizes to temporarily
 increase, compensating for the initial drop.
+
+## Android Sampling Problem (June 17-24, 2021)
+
+There was a bug in the in-app web browser in the Android version of the Facebook
+app released on June 17. It affected all links within the Android version of the
+Facebook app, not just the Carnegie Mellon University (CMU) and University of
+Maryland (UMD) COVID-19 Trends and Impact Surveys, which are conducted in
+partnership with Facebook. It did not affect links within other versions of
+Facebook, including iOS. The issue has been fixed in the version of the Facebook
+app released on June 24.
+
+The issue caused a decrease in total response volume across the CMU and Maryland
+surveys, since Android users who were invited could not take the surveys. As of
+June 26, 2021, 89.5% of the initial decrease in total response volume has been
+recovered. The response volume continued to recover as Android users updated to
+the fixed version of the Facebook app.
 
 ## Incorrect Coding in Documentation
 
