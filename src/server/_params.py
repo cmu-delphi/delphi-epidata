@@ -4,10 +4,9 @@ from dataclasses import dataclass
 from typing import List, Optional, Sequence, Tuple, Union
 
 from flask import request
-from numpy import sign
 
 from ._exceptions import ValidationFailedException
-from .utils import days_in_range
+from .utils import days_in_range, weeks_in_range
 
 
 def _parse_common_multi_arg(key: str) -> List[Tuple[str, Union[bool, Sequence[str]]]]:
@@ -116,6 +115,8 @@ class TimePair:
         """
         if isinstance(self.time_values, bool):
             return inf if self.time_values else 0
+        if self.time_type == 'week':
+            return sum(1 if isinstance(v, int) else weeks_in_range(v) for v in self.time_values)
         return sum(1 if isinstance(v, int) else days_in_range(v) for v in self.time_values)
 
 
