@@ -219,8 +219,7 @@ class UnitTests(unittest.TestCase):
         )
 
     # verify that insertions were attempted
-    # TODO: should probbly check that a different method is called...
-    self.assertTrue(mock_database.get_dataref_id_map.called)
+    self.assertTrue(mock_database.insert_datapoints_bulk.called)
 
     # verify that the file was archived as having failed
     self.assertTrue(mock_file_archiver.archive_file.called)

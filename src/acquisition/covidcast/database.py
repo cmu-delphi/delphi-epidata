@@ -228,7 +228,7 @@ class Database:
         srcsigs.put((source, signal))
 
     inner_sql = f'''
-      SELECT data.`id`, 
+      SELECT data.`id` AS datapoint_id, 
         `data_reference_id`, 
         `source`, 
         `signal`, 
