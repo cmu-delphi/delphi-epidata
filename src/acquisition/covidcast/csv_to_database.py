@@ -132,7 +132,9 @@ def upload_archive(
         logger.info("Inserted datapoint rows", row_count=modified_row_count,
                       source=source, signal=signal, time_type=time_type, geo_type=geo_type,
                       time_value=time_value, issue=issue, lag=lag)
-        database.commit() # TODO: did we start a transaction?  does this even do anything??
+        # database.commit() # TODO: did we start a transaction?  does this even do anything??
+        if modified_row_count is None or modified_row_count: # else would indicate zero rows inserted
+          total_modified_row_count += (modified_row_count if modified_row_count else 0)
       except Exception as e:
         all_rows_valid = False
         logger.exception('exception while inserting rows:', e)
