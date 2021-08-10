@@ -122,7 +122,7 @@ class UnitTests(unittest.TestCase):
     cursor.rowcount = 3
 
     cc_rows = [MagicMock(geo_id='CA', val=1, se=0, sample_size=0)]
-    result = database.insert_datapoints_bulk(cc_rows)
+    result = database.insert_datapoints_bulk(cc_rows, 'source', 'signal', 'time_type', 'geo_type', 'time_value', 'issue', 'lag', 'is_wip')
     self.assertEqual(result, 3)
 
   def test_insert_datapoints_bulk_none_returned(self):
@@ -136,5 +136,5 @@ class UnitTests(unittest.TestCase):
     cursor.rowcount = -1
 
     cc_rows = [MagicMock(geo_id='CA', val=1, se=0, sample_size=0)]
-    result = database.insert_datapoints_bulk(cc_rows)
+    result = database.insert_datapoints_bulk(cc_rows,'source', 'signal', 'time_type', 'geo_type', 'time_value', 'issue', 'lag', 'is_wip')
     self.assertIsNone(result)
