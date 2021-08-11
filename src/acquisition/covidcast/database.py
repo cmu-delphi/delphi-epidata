@@ -97,8 +97,6 @@ class Database:
 
     tmp_table_name = 'tmp_insert_datapoint_table'
 
-    # TODO: add is_wip to SQL
-
     # this heavily borrows from the `datapoint` table in src/ddl/covidcast.sql, but lacks the auto_increment `id`
     create_tmp_table_sql = f'''
       CREATE TABLE `{tmp_table_name}` (
@@ -180,7 +178,6 @@ class Database:
       self._cursor.execute(create_tmp_table_sql)
 
       # TODO: consider handling row_list as a generator instead of a list
-      # TODO: add is_wip to args here too when adding it to the SQL
       args = [(geoval_to_dataref[r.geo_value], r.value, r.stderr, r.sample_size,
                r.missing_value, r.missing_stderr, r.missing_sample_size)
               for r in row_list]
@@ -229,10 +226,10 @@ class Database:
 
     inner_sql = f'''
       SELECT
-        `source` AS `data_source`, 
-        `signal`, 
-        `time_type`, 
-        `geo_type`, 
+        `source` AS `data_source`,
+        `signal`,
+        `time_type`,
+        `geo_type`,
         MIN(`time_value`) AS `min_time`,
         MAX(`time_value`) AS `max_time`,
         COUNT(DISTINCT `geo_value`) AS `num_locations`,
