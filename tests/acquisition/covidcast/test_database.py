@@ -106,13 +106,15 @@ class UnitTests(unittest.TestCase):
     database = Database()
     database.connect(connector_impl=mock_connector)
     connection = mock_connector.connect()
-    cursor = connection.cursor() 
+    cursor = connection.cursor()
     cursor.executemany.side_effect = Exception('Test')
 
     cc_rows = {MagicMock(geo_id='CA', val=1, se=0, sample_size=0)}
     self.assertRaises(Exception, database.insert_datapoints_bulk, cc_rows)
   
   def test_insert_datapoints_bulk_row_count_returned(self):
+    # TODO: determine wtf purpose this serves??  it looks pretty pointless to me...
+    #   we arent even inserting 3 rows here...  just stubbing out the cursor wtf
     """Test that the row count is returned"""
     mock_connector = MagicMock()
     database = Database()
@@ -120,8 +122,9 @@ class UnitTests(unittest.TestCase):
     connection = mock_connector.connect()
     cursor = connection.cursor() 
     cursor.rowcount = 3
+    cursor.__iter__.return_value = [('CA',666)]
 
-    cc_rows = [MagicMock(geo_id='CA', val=1, se=0, sample_size=0)]
+    cc_rows = [MagicMock(geo_value='CA', value=1, stderr=0, sample_size=0)]
     result = database.insert_datapoints_bulk(cc_rows, 'source', 'signal', 'time_type', 'geo_type', 'time_value', 'issue', 'lag', 'is_wip')
     self.assertEqual(result, 3)
 
@@ -134,7 +137,8 @@ class UnitTests(unittest.TestCase):
     connection = mock_connector.connect()
     cursor = connection.cursor() 
     cursor.rowcount = -1
+    cursor.__iter__.return_value = [('CA',666)]
 
-    cc_rows = [MagicMock(geo_id='CA', val=1, se=0, sample_size=0)]
+    cc_rows = [MagicMock(geo_value='CA', value=1, stderr=0, sample_size=0)]
     result = database.insert_datapoints_bulk(cc_rows,'source', 'signal', 'time_type', 'geo_type', 'time_value', 'issue', 'lag', 'is_wip')
     self.assertIsNone(result)

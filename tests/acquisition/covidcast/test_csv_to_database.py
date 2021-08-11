@@ -91,10 +91,17 @@ class UnitTests(unittest.TestCase):
     # verify that appropriate rows were added to the database
     self.assertEqual(mock_database.insert_datapoints_bulk.call_count, 2)
     call_args_list = mock_database.insert_datapoints_bulk.call_args_list
-    actual_args = [[(a.source, a.signal, a.time_type, a.geo_type, a.time_value,
-                     a.geo_value, a.value, a.stderr, a.sample_size, a.issue, a.lag, a.is_wip)
+    print("=======")
+    print(call_args_list)
+    print("=======")
+    actual_args = [[(a.geo_value, a.value, a.stderr, a.sample_size)
                     for a in call.args[0]] for call in call_args_list]
     expected_args = [
+      [('a1', 'a1', 'a1', 'a1'), ('a2', 'a2', 'a2', 'a2'), ('a3', 'a3', 'a3', 'a3')],
+      [('d1', 'd1', 'd1', 'd1')]
+    ]
+    # TODO: clean this up by checking more than just call.args[0], like the fields found in old_expected_args
+    old_expected_args = [
       [('src_a', 'sig_a', 'day', 'hrr', 20200419, 'a1', 'a1', 'a1', 'a1', 20200420, 1, False),
        ('src_a', 'sig_a', 'day', 'hrr', 20200419, 'a2', 'a2', 'a2', 'a2', 20200420, 1, False),
        ('src_a', 'sig_a', 'day', 'hrr', 20200419, 'a3', 'a3', 'a3', 'a3', 20200420, 1, False)],

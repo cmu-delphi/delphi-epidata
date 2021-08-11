@@ -41,7 +41,12 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
         host='delphi_database_epidata',
         database='epidata')
     cur = cnx.cursor()
-    cur.execute('truncate table covidcast')
+    
+    cur.execute('SET foreign_key_checks = 0')
+    cur.execute('truncate table datapoint')
+    cur.execute('truncate table data_reference')
+    cur.execute('SET foreign_key_checks = 1')
+
     cur.execute('truncate table covidcast_nowcast')
     cnx.commit()
     cur.close()
@@ -66,7 +71,26 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
     """Test that the covidcast endpoint returns expected data."""
 
     # insert dummy data
-    self.cur.execute(f'''
+    self.cur.execute(f'''INSERT INTO `data_reference`(`id`, `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`, `is_wip`) 
+                         VALUES (1, 'src', 'sig', 'day', 'county', '20200414', '01234', False)''')
+    self.cur.execute(f'''INSERT INTO `data_reference`(`id`, `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`, `is_wip`) 
+                         VALUES (2, 'src', 'sig2', 'day', 'county', '20200414', '01234', False)''')
+
+    self.cur.execute(f'''INSERT INTO `datapoint` (`id`, `data_reference_id`, `issue`, `value_updated_timestamp`, `value_first_updated_timestamp`,
+                           `value`, `stderr`, `sample_size`, `lag`, `missing_value`, `missing_stderr`, `missing_sample_size`)
+                         VALUES (1, 1, 20200414, 123, 123, 1.5, 2.5, 3.5, 0, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})''')
+    self.cur.execute(f'''INSERT INTO `datapoint` (`id`, `data_reference_id`, `issue`, `value_updated_timestamp`, `value_first_updated_timestamp`,
+                           `value`, `stderr`, `sample_size`, `lag`, `missing_value`, `missing_stderr`, `missing_sample_size`)
+                         VALUES (2, 2, 20200414, 123, 123, 1.5, 2.5, 3.5, 0, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})''')
+    self.cur.execute(f'''UPDATE `data_reference` SET `latest_datapoint_id`=2 WHERE `id`=2''')
+    self.cur.execute(f'''INSERT INTO `datapoint` (`id`, `data_reference_id`, `issue`, `value_updated_timestamp`, `value_first_updated_timestamp`,
+                           `value`, `stderr`, `sample_size`, `lag`, `missing_value`, `missing_stderr`, `missing_sample_size`)
+                         VALUES (3, 1, 20200415, 345, 345, 5.5, 1.2, 10.5, 1, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})''')
+    self.cur.execute(f'''INSERT INTO `datapoint` (`id`, `data_reference_id`, `issue`, `value_updated_timestamp`, `value_first_updated_timestamp`,
+                           `value`, `stderr`, `sample_size`, `lag`, `missing_value`, `missing_stderr`, `missing_sample_size`)
+                         VALUES (4, 1, 20200416, 456, 456, 6.5, 2.2, 11.5, 2, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})''')
+    self.cur.execute(f'''UPDATE `data_reference` SET `latest_datapoint_id`=4 WHERE `id`=1''')
+    shitty_old_data = f'''
       INSERT INTO
         `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
 	      `time_value`, `geo_value`, `value_updated_timestamp`, 
@@ -86,7 +110,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
         (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
           345, 6.5, 2.2, 11.5, 678, 0, 20200416, 2, 1, False,
           {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
-    ''')
+    '''
     self.cnx.commit()
 
     with self.subTest(name='request two signals'):

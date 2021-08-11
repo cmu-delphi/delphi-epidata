@@ -92,8 +92,7 @@ CREATE TABLE `data_reference` (
   `geo_type` varchar(12) NOT NULL,
   `time_value` int(11) NOT NULL,
   `geo_value` varchar(12) NOT NULL,
-  -- -----------`is_wip` binary(1) DEFAULT NULL,
-  -- -----------`latest_value_updated_timestamp` int(11) NOT NULL,
+  `is_wip` binary(1) DEFAULT NULL, -- TODO: put this somewhere else, like a table with just approved src+sig
   PRIMARY KEY(`id`),
   UNIQUE KEY (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`)
   -- -----------KEY `by_issue` (`source`, `signal`, `time_type`, `geo_type`, `geo_value`, `time_value`, `issue`),

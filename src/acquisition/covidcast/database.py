@@ -63,12 +63,12 @@ class Database:
     for (num,) in self._cursor:
       return num
 
-  def get_dataref_id_map(self, source, signal, time_type, geo_type, time_value, geo_value_list):
+  def get_dataref_id_map(self, geo_value_list, source, signal, time_type, geo_type, time_value, is_wip):
 
     # insert any non-existent references...
     create_references_sql = f'''
-      INSERT INTO `data_reference` (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`) 
-      VALUES ('{source}', '{signal}', '{time_type}', '{geo_type}', {time_value}, %s)
+      INSERT INTO `data_reference` (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`, `is_wip`) 
+      VALUES ('{source}', '{signal}', '{time_type}', '{geo_type}', {time_value}, %s, {is_wip})
       ON DUPLICATE KEY UPDATE `id` = VALUES(`id`);
     '''
     gvl_tuples = [(gv,) for gv in geo_value_list] # we need to pass executemany() a list of tuples
@@ -174,7 +174,7 @@ class Database:
     try:
       # find/create reference ids for relevant geo_values
       geo_value_list = [r.geo_value for r in row_list]
-      geoval_to_dataref = self.get_dataref_id_map(source, signal, time_type, geo_type, time_value, geo_value_list)
+      geoval_to_dataref = self.get_dataref_id_map(geo_value_list, source, signal, time_type, geo_type, time_value, is_wip)
       # TODO: we are ignoring the number of rows inserted into the `data_reference` table...  do we care?
 
       self._cursor.execute(create_tmp_table_sql)
@@ -221,36 +221,34 @@ class Database:
 
     self._cursor.execute(sql)
     for source, signal in list(self._cursor): # self._cursor is a generator; this lets us use the cursor for subsequent queries inside the loop
-      # sql = f"SELECT `is_wip` FROM `{table_name}` WHERE `source`=%s AND `signal`=%s LIMIT 1"
-      # self._cursor.execute(sql, (source, signal))
-      # is_wip = int(self._cursor.fetchone()[0]) # casting to int as it comes out as a '0' or '1' bytearray; bool('0')==True :(
-      # if not is_wip:
+      sql = f"SELECT `is_wip` FROM `data_reference` WHERE `source`=%s AND `signal`=%s LIMIT 1"
+      self._cursor.execute(sql, (source, signal))
+      is_wip = int(self._cursor.fetchone()[0]) # casting to int as it comes out as a '0' or '1' bytearray; bool('0')==True :(
+      if not is_wip:
         srcsigs.put((source, signal))
 
     inner_sql = f'''
-      SELECT data.`id` AS datapoint_id, 
-        `data_reference_id`, 
-        `source`, 
+      SELECT
+        `source` AS `data_source`, 
         `signal`, 
         `time_type`, 
         `geo_type`, 
-        `time_value`, 
-        `geo_value`, 
-        `issue`, 
-        `value_first_updated_timestamp`, 
-        `value_updated_timestamp`, 
-        `value`, 
-        `stderr`, 
-        `sample_size`, 
-        `lag` , 
-        `missing_value` , 
-        `missing_stderr` , 
-        `missing_sample_size` 
+        MIN(`time_value`) AS `min_time`,
+        MAX(`time_value`) AS `max_time`,
+        COUNT(DISTINCT `geo_value`) AS `num_locations`,
+        MIN(`value`) AS `min_value`,
+        MAX(`value`) AS `max_value`,
+        ROUND(AVG(`value`),7) AS `mean_value`,
+        ROUND(STD(`value`),7) AS `stdev_value`,
+        MAX(`value_updated_timestamp`) AS `last_update`,
+        MAX(`issue`) as `max_issue`,
+        MIN(`lag`) as `min_lag`,
+        MAX(`lag`) as `max_lag`
       FROM data_reference ref 
-      INNER JOIN datapoint data 
-      ON ref.`latest_datapoint_id` = data.`id` 
-      WHERE ref.`source` = '{source}' AND 
-        ref.`signal` = '{signal}' AND 
+      INNER JOIN datapoint point 
+      ON ref.`latest_datapoint_id` = point.`id` 
+      WHERE ref.`source` = %s AND 
+        ref.`signal` = %s AND 
       GROUP BY
         `time_type`,
         `geo_type`

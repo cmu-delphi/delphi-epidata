@@ -39,8 +39,11 @@ class CovidcastMetaCacheTests(unittest.TestCase):
         database='epidata')
     cur = cnx.cursor()
 
-    # clear the `covidcast` table
-    cur.execute('truncate table covidcast')
+    # clear the datapoint and data_reference tables
+    cur.execute('SET foreign_key_checks = 0')
+    cur.execute('truncate table datapoint')
+    cur.execute('truncate table data_reference')
+    cur.execute('SET foreign_key_checks = 1')
     # reset the `covidcast_meta_cache` table (it should always have one row)
     cur.execute('update covidcast_meta_cache set timestamp = 0, epidata = ""')
     cnx.commit()

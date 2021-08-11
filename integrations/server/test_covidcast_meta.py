@@ -28,7 +28,12 @@ class CovidcastMetaTests(unittest.TestCase):
         host='delphi_database_epidata',
         database='epidata')
     cur = cnx.cursor()
-    cur.execute('truncate table covidcast')
+    # clear the datapoint and data_reference tables
+    cur.execute('SET foreign_key_checks = 0')
+    cur.execute('truncate table datapoint')
+    cur.execute('truncate table data_reference')
+    cur.execute('SET foreign_key_checks = 1') 
+    
     cur.execute('update covidcast_meta_cache set timestamp = 0, epidata = ""')
     cnx.commit()
     cur.close()
