@@ -320,7 +320,7 @@ unweighted signals are also available. These begin `smoothed_`, such as
 | Signal | Description | Survey Item | Introduced |
 | --- | --- | --- | --- |
 | `smoothed_wothers_distanced_public` | Estimated percentage of respondents who reported that all or most people they enountered in public in the past 7 days maintained a distance of at least 6 feet. Respondents who said that they have not been in public for the past 7 days are excluded. <br/> **Earliest date available:** 2021-06-10 | H1 | Wave 11, May 19, 2021 |
-| `smoothed_wpublic_transit_1d` | Estimated percentage of respondents who "used public transit" in the past 24 hours <br/> **Earliest date available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
+| `smoothed_wpublic_transit_1d` | Estimated percentage of respondents who "used public transit" in the past 24 hours <br/> **Earliest date available:** 2020-09-08 | C13, C13b | Wave 4, Sept 8, 2020 |
 | `smoothed_wtravel_outside_state_7d` | Estimated percentage of respondents who report traveling outside their state in the past 7 days. This item was asked of respondents starting in Wave 10. <br/> **Earliest date available:** 2021-03-02 | C6a | Wave 10 |
 | `smoothed_wwork_outside_home_indoors_1d` | Estimated percentage of respondents who worked or went to school indoors and outside their home in the past 24 hours <br/> **Earliest date available:** 2021-03-02 | C13b | Wave 10, Mar 2, 2021 |
 | `smoothed_wshop_indoors_1d` | Estimated percentage of respondents who went to an "indoor market, grocery store, or pharmacy" in the past 24 hours <br/> **Earliest date available:** 2021-03-02 | C13b | Wave 10, Mar 2, 2021 |
@@ -392,7 +392,7 @@ unweighted signals are also available. These begin `smoothed_`, such as
 | `smoothed_wreceived_2_vaccine_doses` | Estimated percentage of respondents who have received two doses of a COVID-19 vaccine, among respondents who have received either one or two doses of a COVID-19 vaccine. This item was shown to respondents starting in Wave 7. <br/> **Earliest date available:** 2021-02-06 | V2 |
 | `smoothed_wcovid_vaccinated_friends` | Estimated percentage of respondents who report that most of their friends and family have received a COVID-19 vaccine. <br/> **Earliest date available:** 2021-08-10 | H3 |
 
-### Barriers to Vaccination
+### Barriers to Accessing Vaccination
 
 | Signal | Description | Survey Item |
 | --- | --- | --- |
@@ -433,7 +433,7 @@ unweighted signals are also available. These begin `smoothed_`, such as
 | `smoothed_wvaccine_barrier_type_tried` | Estimated percentage of respondents who report available vaccine type as a barrier to getting the vaccine, among those who have tried to get vaccinated. <br/> **Earliest date available:** 2021-08-10 | V15b |
 | `smoothed_wvaccine_barrier_none_tried` | Estimated percentage of respondents who report experiencing none of the listed barriers to gettint the vaccing, among those who have tried to get vaccinated. <br/> **Earliest date available:** 2021-08-10 | V15b |
 
-### Reasons for Hesitancy
+### Reasons for Vaccine Hesitancy
 
 | Signal | Description | Survey Item |
 | --- | --- | --- |
@@ -519,7 +519,7 @@ study other impacts of COVID, such as mental health. Hence, these aggregates onl
 include respondents to Wave 4 and later waves, beginning September 8, 2020.
 
 
-## Beliefs Indicators
+## Belief Indicators
 
 | Signal | Description | Survey Item | Introduced |
 | --- | --- | --- |
@@ -531,7 +531,7 @@ include respondents to Wave 4 and later waves, beginning September 8, 2020.
 | `smoothed_wbelief_govt_exploitation` | Estimated percentage of people who indicate that the statement "The COVID-19 pandemic is being exploited by the government to control people" is definitely or probably true. <br/> **Earliest date available:** 2021-08-10 | I4 | Wave 11, May 19, 2021 |
 
 
-## Medical Care Experiences Indicators
+## Medical Care Experience Indicators
 
 | Signal | Description | Survey Item | Introduced |
 | --- | --- | --- |
