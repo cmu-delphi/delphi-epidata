@@ -3,6 +3,7 @@ from enum import Enum
 from datetime import date, timedelta
 from functools import wraps
 from os import environ
+from uuid import uuid4
 from flask import g
 from werkzeug.local import LocalProxy
 from sqlalchemy import Table, Column, String, Integer, Boolean
@@ -54,12 +55,26 @@ class DBUser:
         return DBUser._parse(db.execution_options(stream_results=False).execute(stmt).first())
 
     @staticmethod
+    def find_by_api_key(api_key: int) -> Optional['DBUser']:
+        stmt = user_table.select().where(user_table.c.api_key == api_key)
+        r = db.execution_options(stream_results=False).execute(stmt).first()
+        if r is None:
+            return None
+        return DBUser._parse(r)
+
+    @staticmethod
     def list() -> List['DBUser']:
         return [DBUser._parse(r) for r in db.execution_options(stream_results=False).execute(user_table.select())]
 
     @staticmethod
-    def insert(api_key: str, roles: Set[str], tracking: bool = True):
-        db.execute(user_table.insert().values(api_key=api_key, roles=','.join(roles), tracking=tracking))
+    def insert(api_key: str, roles: Set[str], tracking: bool = True, registered: bool = False):
+        db.execute(user_table.insert().values(api_key=api_key, roles=','.join(roles), tracking=tracking, registered=registered))
+
+    @staticmethod
+    def register_new_key() -> str:
+        api_key = str(uuid4())
+        DBUser.insert(api_key, set(), True, False)
+        return api_key
 
     def delete(self):
         db.execute(user_table.delete(user_table.c.id == self.id))
@@ -198,7 +213,7 @@ def show_hard_api_key_warning() -> bool:
 
 @app.before_request
 def resolve_user():
-    if request.path.startswith("/lib") or request.path.startswith('/admin'):
+    if request.path.startswith("/lib") or request.path.startswith('/admin') or request.path.startswith('/version'):
         return
     # try to get the db
     try:

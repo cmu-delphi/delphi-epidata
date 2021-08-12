@@ -2,7 +2,7 @@ from pathlib import Path
 from os import environ
 from typing import Dict, List, Set
 from flask import Blueprint, render_template_string, request, make_response
-from werkzeug.exceptions import Unauthorized, NotFound
+from werkzeug.exceptions import Unauthorized, NotFound, BadRequest
 from werkzeug.utils import redirect
 from requests import post
 from .._security import resolve_auth_token, DBUser, UserRole
@@ -10,6 +10,8 @@ from .._security import resolve_auth_token, DBUser, UserRole
 
 ADMIN_PASSWORD = environ.get('API_KEY_ADMIN_PASSWORD')
 REGISTER_WEBHOOK_TOKEN = environ.get('API_KEY_REGISTER_WEBHOOK_TOKEN')
+RECAPTCHA_SITE_KEY= environ.get('RECAPTCHA_SITE_KEY')
+RECAPTCHA_SECRET_KEY= environ.get('RECAPTCHA_SECRET_KEY')
 
 self_dir = Path(__file__).parent
 # first argument is the endpoint name
@@ -29,6 +31,8 @@ def _parse_roles(roles: List[str]) -> Set[str]:
 def _render(mode: str, token: str, flags: Dict, **kwargs):
     template = (templates_dir / 'index.html').read_text('utf8')
     return render_template_string(template, mode=mode, token=token, flags=flags, roles=[r.value for r in UserRole], **kwargs)
+
+
 
 
 @bp.route('/', methods=['GET', 'POST'])
@@ -68,12 +72,37 @@ def _register():
         raise Unauthorized()
 
     api_key = body['api_key']
-    roles: Set[str] = set()
+    db_user = DBUser.find_by_api_key(api_key)
+    if db_user is None:
+        raise BadRequest('invalid api key')
     tracking = False
     for k,v in body.items():
         # find the record question
         if 'record' in k.lower():
             tracking = 'yes' in v.lower()
             break
-    DBUser.insert(api_key, roles, tracking)
-    return make_response('ok', 200)
+
+    db_user = db_user.update(api_key, db_user.roles, tracking, True)
+    return make_response(f'Successfully registered the API key "{api_key}" and removed rate limit', 200)
+
+def _verify_recaptcha():
+    recaptcha_response = request.values['g-recaptcha-response']
+    url = 'https://www.google.com/recaptcha/api/siteverify'
+    # skip remote ip for now since behind proxy
+    res = post(url, params=dict(secret=RECAPTCHA_SECRET_KEY, response=recaptcha_response)).json()
+    if res['success'] is not True:
+        raise BadRequest('invalid recaptcha key')
+
+@bp.route('/create_key', methods=['GET', 'POST'])
+def _request_api_key():
+    if request.method  == 'GET':
+        template = (templates_dir / 'request.html').read_text('utf8')
+        return render_template_string(template, mode='request', recaptcha_key=RECAPTCHA_SITE_KEY)
+    if request.method == 'POST':
+        if RECAPTCHA_SECRET_KEY:
+            _verify_recaptcha()
+        api_key = DBUser.register_new_key()
+        template = (templates_dir / 'request.html').read_text('utf8')
+        return render_template_string(template, mode='result', api_key=api_key)
+
+
