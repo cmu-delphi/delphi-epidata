@@ -45,7 +45,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
     cur.execute('truncate table covidcast')
     cur.execute('truncate table covidcast_nowcast')
     cur.execute("truncate table api_user")
-    cur.execute('insert into api_user(api_key, roles, tracking) values("key", "", 1)')
+    cur.execute('insert into api_user(api_key, roles, tracking, registered) values("key", "", 1, 1)')
     cnx.commit()
     cur.close()
 

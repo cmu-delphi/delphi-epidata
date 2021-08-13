@@ -267,6 +267,8 @@ limiter = Limiter(app, key_func=_resolve_tracking_key, storage_uri=RATELIMIT_STO
 
 @limiter.request_filter
 def _no_rate_limit() -> bool:
+    if app.config.get('TESTING', False) or _is_public_route():
+        return False
     # no rate limit if the user is registered
     user = _get_current_user()
-    return _is_public_route() or user is not None and not user.is_rate_limited()
+    return user is not None and not user.is_rate_limited()

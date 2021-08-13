@@ -43,7 +43,7 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     # clear the `covidcast` table
     cur.execute('truncate table covidcast')
     cur.execute("truncate table api_user")
-    cur.execute('insert into api_user(api_key, roles, tracking) values("key", "", 1)')
+    cur.execute('insert into api_user(api_key, roles, tracking, registered) values("key", "", 1, 1)')
     # reset the `covidcast_meta_cache` table (it should always have one row)
     cur.execute('update covidcast_meta_cache set timestamp = 0, epidata = ""')
     cnx.commit()
