@@ -245,7 +245,7 @@ class Database:
       INNER JOIN datapoint point 
       ON ref.`latest_datapoint_id` = point.`id` 
       WHERE ref.`source` = %s AND 
-        ref.`signal` = %s AND 
+        ref.`signal` = %s
       GROUP BY
         `time_type`,
         `geo_type`
