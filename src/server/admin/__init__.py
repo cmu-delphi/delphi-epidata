@@ -6,18 +6,16 @@ from werkzeug.exceptions import Unauthorized, NotFound, BadRequest
 from werkzeug.utils import redirect
 from requests import post
 from .._security import resolve_auth_token, DBUser, UserRole
-
-
-ADMIN_PASSWORD = environ.get('API_KEY_ADMIN_PASSWORD')
-REGISTER_WEBHOOK_TOKEN = environ.get('API_KEY_REGISTER_WEBHOOK_TOKEN')
-RECAPTCHA_SITE_KEY= environ.get('RECAPTCHA_SITE_KEY')
-RECAPTCHA_SECRET_KEY= environ.get('RECAPTCHA_SECRET_KEY')
+from .._config import ADMIN_PASSWORD, RECAPTCHA_SECRET_KEY, RECAPTCHA_SITE_KEY, REGISTER_WEBHOOK_TOKEN
 
 self_dir = Path(__file__).parent
 # first argument is the endpoint name
 bp = Blueprint("admin", __name__)
 
 templates_dir = Path(__file__).parent / 'templates'
+
+def enable_admin() -> bool:
+    return bool(ADMIN_PASSWORD)
 
 def _require_admin():
     token = resolve_auth_token()
@@ -95,14 +93,13 @@ def _verify_recaptcha():
 
 @bp.route('/create_key', methods=['GET', 'POST'])
 def _request_api_key():
+    template = (templates_dir / 'request.html').read_text('utf8')
     if request.method  == 'GET':
-        template = (templates_dir / 'request.html').read_text('utf8')
         return render_template_string(template, mode='request', recaptcha_key=RECAPTCHA_SITE_KEY)
     if request.method == 'POST':
         if RECAPTCHA_SECRET_KEY:
             _verify_recaptcha()
         api_key = DBUser.register_new_key()
-        template = (templates_dir / 'request.html').read_text('utf8')
         return render_template_string(template, mode='result', api_key=api_key)
 
 
