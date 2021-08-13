@@ -90,7 +90,7 @@ class CovidcastMetaCacheTests(unittest.TestCase):
                          VALUES (1, 'src', 'sig', 'day', 'state', 20200422, 'pa', False)''')
     self.cur.execute(f'''INSERT INTO `datapoint` (`id`, `data_reference_id`, `issue`, `value_updated_timestamp`, `value_first_updated_timestamp`,
                            `value`, `stderr`, `sample_size`, `lag`, `missing_value`, `missing_stderr`, `missing_sample_size`)
-                         VALUES (1, 1, 20200422, 123, 456, 1, 2, 3, 1, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})''')
+                         VALUES (1, 1, 20200422, 123, 456, 1, 2, 3, 0, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})''')
     self.cur.execute(f'''UPDATE `data_reference` SET `latest_datapoint_id`=1 WHERE `id`=1''')
 
     self.cur.execute(f'''INSERT INTO `data_reference`(`id`, `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`, `is_wip`)
@@ -105,13 +105,6 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     self.cur.execute(f'''INSERT INTO `datapoint` (`id`, `data_reference_id`, `issue`, `value_updated_timestamp`, `value_first_updated_timestamp`,
                            `value`, `stderr`, `sample_size`, `lag`, `missing_value`, `missing_stderr`, `missing_sample_size`)
                          VALUES (100, 100, 20200422, 456, 789, 4, 5, 6, 0, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})''')
-    self.cur.execute(f'''UPDATE `data_reference` SET `latest_datapoint_id`=100 WHERE `id`=100''')
-
-    self.cur.execute(f'''INSERT INTO `data_reference`(`id`, `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`, `is_wip`)
-                         VALUES (101, 'src', 'notwip_sig', 'day', 'state', 20200422, 'pa', False)''')
-    self.cur.execute(f'''INSERT INTO `datapoint` (`id`, `data_reference_id`, `issue`, `value_updated_timestamp`, `value_first_updated_timestamp`,
-                           `value`, `stderr`, `sample_size`, `lag`, `missing_value`, `missing_stderr`, `missing_sample_size`)
-                         VALUES (101, 101, 20200422, 456, 789, 4, 5, 6, 0, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})''')
     self.cur.execute(f'''UPDATE `data_reference` SET `latest_datapoint_id`=100 WHERE `id`=100''')
 
     self.cnx.commit()
