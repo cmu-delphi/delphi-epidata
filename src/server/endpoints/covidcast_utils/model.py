@@ -242,7 +242,7 @@ def get_related_signals(signal: DataSignal) -> List[DataSignal]:
 
 def count_signal_time_types(source_signals: List[SourceSignalPair]) -> Tuple[int, int]:
     """
-    count the number of weekly signals in this queries
+    count the number of signals in this query for each time type
     @returns daily counts, weekly counts
     """
     weekly = 0
