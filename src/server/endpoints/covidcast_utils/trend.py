@@ -2,7 +2,6 @@ from dataclasses import dataclass, asdict
 from typing import Optional, Iterable, Tuple, Dict, List, Callable
 from enum import Enum
 from collections import OrderedDict
-from ...utils import shift_time_value
 
 
 class TrendEnum(str, Enum):
