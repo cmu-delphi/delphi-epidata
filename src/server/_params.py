@@ -5,8 +5,9 @@ from typing import List, Optional, Sequence, Tuple, Union
 
 from flask import request
 
+
 from ._exceptions import ValidationFailedException
-from .utils import days_in_range, weeks_in_range
+from .utils import days_in_range, weeks_in_range, guess_time_value_is_day
 
 
 def _parse_common_multi_arg(key: str) -> List[Tuple[str, Union[bool, Sequence[str]]]]:
@@ -108,6 +109,15 @@ def parse_single_source_signal_arg(key: str) -> SourceSignalPair:
 class TimePair:
     time_type: str
     time_values: Union[bool, Sequence[Union[int, Tuple[int, int]]]]
+
+    @property
+    def is_week(self) -> bool:
+        return self.time_type == 'week'
+
+    @property
+    def is_day(self) -> bool:
+        return self.time_type != 'week'
+
 
     def count(self) -> float:
         """
@@ -225,3 +235,45 @@ def parse_day_arg(key: str) -> int:
     if not isinstance(r, int):
         raise ValidationFailedException(f"{key} must match YYYYMMDD or YYYY-MM-DD")
     return r
+
+def parse_week_arg(key: str) -> int:
+    v = request.values.get(key)
+    if not v:
+        raise ValidationFailedException(f"{key} param is required")
+    r = parse_week_value(v)
+    if not isinstance(r, int):
+        raise ValidationFailedException(f"{key} must match YYYYWW")
+    return r
+
+
+def parse_week_range_arg(key: str) -> Tuple[int, int]:
+    v = request.values.get(key)
+    if not v:
+        raise ValidationFailedException(f"{key} param is required")
+    r = parse_week_value(v)
+    if not isinstance(r, tuple):
+        raise ValidationFailedException(f"{key} must match YYYYWW-YYYYWW")
+    return r
+
+def parse_day_or_week_arg(key: str, default_value: Optional[int] = None) -> Tuple[int, bool]:
+    v = request.values.get(key)
+    if not v:
+        if default_value is not None:
+            return default_value, guess_time_value_is_day(default_value)
+        raise ValidationFailedException(f"{key} param is required")
+    # format is either YYYY-MM-DD or YYYYMMDD or YYYYMM
+    is_week = len(v) == 6
+    if is_week:
+        return parse_week_arg(key), False
+    return parse_day_arg(key), True
+
+def parse_day_or_week_range_arg(key: str) -> Tuple[Tuple[int, int], bool]:
+    v = request.values.get(key)
+    if not v:
+        raise ValidationFailedException(f"{key} param is required")
+    # format is either YYYY-MM-DD--YYYY-MM-DD or YYYYMMDD-YYYYMMDD or YYYYMM-YYYYMM
+    # so if the first before the - has length 6, it must be a week
+    is_week = len(v.split('-', 2)[0]) == 6
+    if is_week:
+        return parse_week_range_arg(key), False
+    return parse_day_range_arg(key), True

@@ -19,6 +19,10 @@ def week_value_to_week(value: int) -> Week:
         return Week(date.max.year - 1, 1)  # minus 1 since internally it does some checks with a year + 1
     return Week(year=year, week=week)
 
+def guess_time_value_is_day(value: int) -> bool:
+    # YYYYMMDD type and not YYYYMM
+    return len(str(value)) > 6
+
 def date_to_time_value(d: date) -> int:
     return int(d.strftime("%Y%m%d"))
 
@@ -37,6 +41,12 @@ def shift_time_value(time_value: int, days: int) -> int:
     shifted = d + timedelta(days=days)
     return date_to_time_value(shifted)
 
+def shift_week_value(week_value: int, weeks: int) -> int:
+    if weeks == 0:
+        return week_value
+    week = week_value_to_week(week_value)
+    shifted = week + weeks
+    return week_to_time_value(shifted)
 
 def days_in_range(range: Tuple[int, int]) -> int:
     """

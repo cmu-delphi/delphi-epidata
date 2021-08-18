@@ -257,6 +257,7 @@ class Database:
     n_threads = max(1, cpu_count()*9//10) # aka number of concurrent db connections, which [sh|c]ould be ~<= 90% of the #cores available to SQL server
     # NOTE: this may present a small problem if this job runs on different hardware than the db,
     #       but we should not run into that issue in prod.
+    logger.info(f"using {n_threads} workers")
 
     srcsigs = Queue() # multi-consumer threadsafe!
 
@@ -305,7 +306,8 @@ class Database:
     meta_lock = threading.Lock()
 
     def worker():
-      logger.info("starting thread: " + threading.current_thread().name)
+      name = threading.current_thread().name
+      logger.info("starting thread", thread=name)
       #  set up new db connection for thread
       worker_dbc = Database()
       worker_dbc.connect(connector_impl=self._connector_impl)
@@ -313,6 +315,7 @@ class Database:
       try:
         while True:
           (source, signal) = srcsigs.get_nowait() # this will throw the Empty caught below
+          logger.info("starting pair", thread=name, pair=f"({source}, {signal})")
           w_cursor.execute(inner_sql, (source, signal))
           with meta_lock:
             meta.extend(list(
@@ -320,7 +323,7 @@ class Database:
             ))
           srcsigs.task_done()
       except Empty:
-        logger.info("no jobs left, thread terminating: " + threading.current_thread().name)
+        logger.info("no jobs left, thread terminating", thread=name)
       finally:
         worker_dbc.disconnect(False) # cleanup
 
@@ -334,7 +337,7 @@ class Database:
     logger.info("jobs complete")
     for t in threads:
       t.join()
-    logger.error("threads terminated")
+    logger.info("all threads terminated")
 
     # sort the metadata because threaded workers dgaf
     sorting_fields = "data_source signal time_type geo_type".split()
