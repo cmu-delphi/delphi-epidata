@@ -315,13 +315,13 @@ class Database:
       try:
         while True:
           (source, signal) = srcsigs.get_nowait() # this will throw the Empty caught below
+          logger.info("starting pair", thread=name, pair=f"({source}, {signal})")
           w_cursor.execute(inner_sql, (source, signal))
           with meta_lock:
             meta.extend(list(
               dict(zip(w_cursor.column_names, x)) for x in w_cursor
             ))
           srcsigs.task_done()
-          logger.info("completed pair", thread=name, pair=f"({source}, {signal})")
       except Empty:
         logger.info("no jobs left, thread terminating", thread=name)
       finally:
