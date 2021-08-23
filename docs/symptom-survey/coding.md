@@ -717,6 +717,10 @@ Parenting:
 * Item E4 ask respondents, “Will you choose to get a COVID-19 vaccine for your
   child or children when they are eligible?”
 
+**Note:** On July 11, 2021, questions E2 and E3 in Wave 11 were inactivated for
+the summer. Revised versions of schooling questions are planned for launch in
+Wave 12.
+
 ### Changed Items
 
 Major revisions include significant wording changes, display logic changes, and
