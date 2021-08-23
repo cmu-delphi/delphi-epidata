@@ -33,14 +33,19 @@ described in the sections below:
 1. [Influenza-like and COVID-like illness indicators](#ili-and-cli-indicators),
    based on reported symptoms
 2. [Behavior indicators](#behavior-indicators), including mask-wearing,
-   traveling, and activities outside the home
+   traveling, in-person schooling, and other activities outside the home
 3. [Testing indicators](#testing-indicators) based on respondent reporting of
    their COVID test results
 4. [Vaccination indicators](#vaccination-indicators), based on respondent
    reporting of COVID vaccinations, whether they would accept a vaccine, and
    reasons for any hesitancy to accept a vaccine
-4. [Mental health indicators](#mental-health-indicators), based on self-reports
+5. [Mental health indicators](#mental-health-indicators), based on self-reports
    of anxiety, depression, isolation, and worry about COVID
+6. [Belief, experience, and information
+   indicators](#belief-experience-and-information-indicators), about the
+   respondent's beliefs about COVID-19, their experiences of health care, their
+   sources of information about COVID-19, and their degree of trust in different
+   sources
 
 Many of these signals can also be browsed on our [survey
 dashboard](https://delphi.cmu.edu/covidcast/survey-results/) at any selected
@@ -334,6 +339,14 @@ unweighted signals are also available. These begin `smoothed_`, such as
 | `smoothed_wspent_time_1d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who "spent time with someone who isn't currently staying with you" in the past 24 hours <br/> **Earliest date available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
 | `smoothed_wlarge_event_1d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who "attended an event with more than 10 people" in the past 24 hours <br/> **Earliest date available:** 2020-09-08 | C13 | Wave 4, Sept 8, 2020 |
 
+### Schooling Indicators
+
+| Signal | Description | Survey Item |
+| --- | --- | --- |
+| `smoothed_winperson_school_fulltime` | Estimated percentage of people who had any children attending in-person school on a full-time basis, among people reporting any pre-K-grade 12 children in their household. <br/> **Earliest date available:** 2020-11-24 | E2 |
+| `smoothed_winperson_school_parttime` | Estimated percentage of people who had any children attending in-person school on a part-time basis, among people reporting any pre-K-grade 12 children in their household. <br/> **Earliest date available:** 2020-11-24 | E2 |
+
+
 
 ## Testing Indicators
 
@@ -353,20 +366,6 @@ unweighted signals are also available. These begin `smoothed_`, such as
 
 These indicators are based on questions in Wave 4 of the survey, introduced on
 September 8, 2020.
-
-
-## Schooling Indicators
-
-Signals beginning `smoothed_w` are [adjusted using survey weights
-to be demographically representative](#survey-weighting) as described below.
-Weighted signals have 1-2 days of lag, so if low latency is paramount,
-unweighted signals are also available. These begin `smoothed_`, such as
-`smoothed_inperson_school_fulltime` instead of `smoothed_winperson_school_fulltime`.
-
-| Signal | Description | Survey Item |
-| --- | --- | --- |
-| `smoothed_winperson_school_fulltime` | Estimated percentage of people who had any children attending in-person school on a full-time basis, among people reporting any pre-K-grade 12 children in their household. <br/> **Earliest date available:** 2020-11-24 | E2 |
-| `smoothed_winperson_school_parttime` | Estimated percentage of people who had any children attending in-person school on a part-time basis, among people reporting any pre-K-grade 12 children in their household. <br/> **Earliest date available:** 2020-11-24 | E2 |
 
 
 ## Vaccination Indicators
@@ -520,7 +519,15 @@ study other impacts of COVID, such as mental health. Hence, these aggregates onl
 include respondents to Wave 4 and later waves, beginning September 8, 2020.
 
 
-## Belief Indicators
+## Belief, Experience, and Information Indicators
+
+Signals beginning `smoothed_w` are [adjusted using survey weights to be
+demographically representative](#survey-weighting) as described below. Weighted
+signals have 1-2 days of lag, so if low latency is paramount, unweighted signals
+are also available. These begin `smoothed_`, such as
+`smoothed_belief_children_immune` instead of `smoothed_wbelief_children_immune`.
+
+### Beliefs About COVID-19
 
 | Signal | Description | Survey Item | Introduced |
 | --- | --- | --- |
@@ -532,15 +539,13 @@ include respondents to Wave 4 and later waves, beginning September 8, 2020.
 | `smoothed_wbelief_govt_exploitation` | Estimated percentage of people who indicate that the statement "The COVID-19 pandemic is being exploited by the government to control people" is definitely or probably true. <br/> **Earliest date available:** 2021-08-16 | I4 | Wave 11, May 19, 2021 |
 
 
-## Medical Care Experience Indicators
+### Medical Care Experiences
 
 | Signal | Description | Survey Item | Introduced |
 | --- | --- | --- |
 | `smoothed_wdelayed_care_cost` | Estimated percentage of respondents who have ever delayed or not sought medical care in the past year because of cost. <br/> **Earliest date available:** 2021-08-16 | K1 | Wave 11, May 19, 2021 |
 | `smoothed_wrace_treated_fairly_healthcare` | Estimated percentage of respondents who somewhat or strongly agree that people of their race are treated fairly in a healthcare setting. <br/> **Earliest date available:** 2021-08-16 | K2 | Wave 11, May 19, 2021 |
 
-
-## News and Information Indicators
 
 ### Sources of News
 
