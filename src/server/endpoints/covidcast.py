@@ -193,7 +193,10 @@ def handle_trend():
     _verify_argument_time_type_matches(is_day, daily_signals, weekly_signals)
     basis_time_value = extract_date("basis")
     if basis_time_value is None:
-        basis_time_value = shift_time_value(time_value, -7) if is_day else shift_week_value(time_value, -7)
+        base_shift = extract_integer("basis_shift")
+        if base_shift is None:
+            base_shift = 7
+        basis_time_value = shift_time_value(time_value, -1 * base_shift) if is_day else shift_week_value(time_value, -1 * base_shift)
 
     # build query
     q = QueryBuilder("covidcast", "t")
@@ -241,10 +244,9 @@ def handle_trendseries():
 
     time_window, is_day = parse_day_or_week_range_arg("window")
     _verify_argument_time_type_matches(is_day, daily_signals, weekly_signals)
-    basis_shift = extract_integer("basis")
+    basis_shift = extract_integer(("basis", "basis_shift"))
     if basis_shift is None:
         basis_shift = 7
-
 
     # build query
     q = QueryBuilder("covidcast", "t")
@@ -369,7 +371,7 @@ def handle_export():
     daily_signals, weekly_signals = count_signal_time_types(source_signal_pairs)
     source_signal_pairs, alias_mapper = create_source_signal_alias_mapper(source_signal_pairs)
     start_day, is_day = parse_day_or_week_arg("start_day", 202001 if weekly_signals > 0 else 20200401)
-    end_day , is_end_day = parse_day_or_week_arg("end_day", 202020 if weekly_signals > 0 else 20200901)
+    end_day, is_end_day = parse_day_or_week_arg("end_day", 202020 if weekly_signals > 0 else 20200901)
     if is_day != is_end_day:
         raise ValidationFailedException("mixing weeks with day arguments")
     _verify_argument_time_type_matches(is_day, daily_signals, weekly_signals)
@@ -380,7 +382,7 @@ def handle_export():
     if geo_values != "*":
         geo_values = geo_values.split(",")
 
-    as_of, is_as_of_day = parse_day_or_week_arg('as_of') if 'as_of' in request.args else (None, is_day)
+    as_of, is_as_of_day = parse_day_or_week_arg("as_of") if "as_of" in request.args else (None, is_day)
     if is_day != is_as_of_day:
         raise ValidationFailedException("mixing weeks with day arguments")
 
@@ -390,7 +392,7 @@ def handle_export():
     q.set_fields(["geo_value", "signal", "time_value", "issue", "lag", "value", "stderr", "sample_size", "geo_type", "source"], [], [])
     q.set_order("time_value", "geo_value")
     q.where_source_signal_pairs("source", "signal", source_signal_pairs)
-    q.where_time_pairs("time_type", "time_value", [TimePair('day' if is_day else 'week', [(start_day, end_day)])])
+    q.where_time_pairs("time_type", "time_value", [TimePair("day" if is_day else "week", [(start_day, end_day)])])
     q.where_geo_pairs("geo_type", "geo_value", [GeoPair(geo_type, True if geo_values == "*" else geo_values)])
 
     _handle_lag_issues_as_of(q, None, None, as_of)
