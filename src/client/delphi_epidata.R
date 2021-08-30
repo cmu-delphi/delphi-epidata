@@ -15,7 +15,7 @@ Epidata <- (function() {
   # API base url
   BASE_URL <- 'https://delphi.cmu.edu/epidata/api.php'
 
-  client_version <- '0.2.9'
+  client_version <- '0.2.10'
 
   # Helper function to cast values and/or ranges to strings
   .listitem <- function(value) {
