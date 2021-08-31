@@ -12,7 +12,7 @@ In this tutorial we'll create a brand new endpoint for the Epidata API:
 `fluview_meta`. At a high level, we'll do the following steps:
 
 1. understand the data that we want to surface
-2. add the new endpoint to `api.php`
+2. add the new endpoint to the API server
 3. add the new endpoint to the various client libraries
 4. write an integration test for the new endpoint
 5. update API documentation for the new endpoint
@@ -328,8 +328,7 @@ actual
 [pull request for the `fluview_meta` endpoint](https://github.com/cmu-delphi/delphi-epidata/pull/93)
 created in this tutorial.
 
-Once it's approved, commit the code. Within a short amount of time (usually ~30
-seconds), the API will begin serving your new endpoint. Go ahead and give it a
+Once it's approved, merge the PR, and contact an admin to schedule a release. Once released, the API will begin serving your new endpoint. Go ahead and give it a
 try: https://delphi.cmu.edu/epidata/fluview_meta/
 
 ```
