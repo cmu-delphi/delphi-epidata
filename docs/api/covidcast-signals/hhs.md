@@ -33,7 +33,9 @@ sum is used as the "ground truth" for hospitalizations by the [COVID-19 Forecast
 | Signal | 7-day average signal | Geography | Resolution | Description |
 | --- | --- | --- | --- | --- |
 | `confirmed_admissions_covid_1d` | `confirmed_admissions_covid_1d_7dav`| state | 1 day | Sum of adult and pediatric confirmed COVID-19 hospital admissions occurring each day. <br/> **Earliest date available:** 2019-12-31 |
+| `confirmed_admissions_covid_1d_prop` | `confirmed_admissions_covid_1d_prop_7dav`| state | 1 day | Sum of adult and pediatric confirmed COVID-19 hospital admissions occurring each day, per 100,000 population. <br/> **Earliest date available:** 2019-12-31 |
 | `sum_confirmed_suspected_admissions_covid_1d` | `sum_confirmed_suspected_admissions_covid_1d_7dav` | state | 1 day | Sum of adult and pediatric confirmed and suspected COVID-19 hospital admissions occurring each day. <br/> **Earliest date available:** 2019-12-31 |
+| `sum_confirmed_suspected_admissions_covid_1d_prop` | `sum_confirmed_suspected_admissions_covid_1d_prop_7dav` | state | 1 day | Sum of adult and pediatric confirmed and suspected COVID-19 hospital admissions occurring each day, per 100,000 population. <br/> **Earliest date available:** 2019-12-31 |
 
 The 7-day average signals are computed by Delphi by calculating
 moving averages of the preceding 7 days, so e.g. the signal for June 7 is the
