@@ -1,15 +1,19 @@
 """Unit tests for pandas helper."""
 
 # standard library
-from dataclasses import dataclass
+from dataclasses import dataclass, astuple
 from typing import Any, Dict, Iterable
 import unittest
 
-# from flask.testing import FlaskClient
+import pandas as pd
+from pandas.core.frame import DataFrame
+from sqlalchemy import text
 import mysql.connector
-from delphi_utils import Nans
 
+# from flask.testing import FlaskClient
+from delphi_utils import Nans
 from delphi.epidata.server._pandas import as_pandas
+from delphi.epidata.server._query import limit_query
 
 # py3tester coverage target
 __test_target__ = "delphi.epidata.server._query"
@@ -26,14 +30,14 @@ class CovidcastRow:
     geo_value: str = "01234"
     value_updated_timestamp: int = 20200202
     value: float = 10.0
-    stderr: float = 0
-    sample_size: float = 10
+    stderr: float = 0.
+    sample_size: float = 10.
     direction_updated_timestamp: int = 20200202
     direction: int = 0
     issue: int = 20200202
     lag: int = 0
     is_latest_issue: bool = True
-    is_wip: bool = False
+    is_wip: bool = True
     missing_value: int = Nans.NOT_MISSING
     missing_stderr: int = Nans.NOT_MISSING
     missing_sample_size: int = Nans.NOT_MISSING
@@ -93,6 +97,14 @@ class CovidcastRow:
     def time_pair(self):
         return f"{self.time_type}:{self.time_value}"
 
+    @property
+    def astuple(self):
+        return astuple(self)[1:]
+
+    @property
+    def aslist(self):
+        return list(self.astuple)
+
 
 class UnitTests(unittest.TestCase):
     """Basic unit tests."""
@@ -134,12 +146,31 @@ class UnitTests(unittest.TestCase):
         self.cnx.commit()
         return rows
 
+    def _rows_to_df(self, rows: Iterable[CovidcastRow]) -> pd.DataFrame:
+        columns = [
+            'id', 'source', 'signal', 'time_type', 'geo_type', 'time_value',
+            'geo_value', 'value_updated_timestamp', 'value', 'stderr',
+            'sample_size', 'direction_updated_timestamp', 'direction', 'issue',
+            'lag', 'is_latest_issue', 'is_wip', 'missing_value', 'missing_stderr',
+            'missing_sample_size'
+        ]
+        return pd.DataFrame.from_records([[i] + row.aslist for i, row in enumerate(rows, start=1)], columns=columns)
+
     def test_as_pandas(self):
-        rows = [CovidcastRow(time_value=20200401 + i, value=i) for i in range(10)]
+        rows = [CovidcastRow(time_value=20200401 + i, value=float(i)) for i in range(10)]
         self._insert_rows(rows)
 
         with self.subTest("simple"):
-            query = "select * from `covidcast`"
-            out = as_pandas(query, limit_rows=5)
-            self.assertEqual(len(out["epidata"]), 5)
-
+            query = """select * from `covidcast`"""
+            params = {}
+            parse_dates = None
+            engine = self.cnx
+            df = pd.read_sql_query(str(query), engine, params=params, parse_dates=parse_dates)
+            df = df.astype({"is_latest_issue": bool, "is_wip": bool})
+            expected_df = self._rows_to_df(rows)
+            pd.testing.assert_frame_equal(df, expected_df)
+            query = limit_query(query, 5)
+            df = pd.read_sql_query(str(query), engine, params=params, parse_dates=parse_dates)
+            df = df.astype({"is_latest_issue": bool, "is_wip": bool})
+            expected_df = self._rows_to_df(rows[:5])
+            pd.testing.assert_frame_equal(df, expected_df)
