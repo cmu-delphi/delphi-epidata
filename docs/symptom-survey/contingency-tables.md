@@ -66,9 +66,6 @@ Note: If a survey item was introduced in the middle of an aggregation period,
 derived indicators will be included in aggregations for that period but will
 only use a partial week or month of data.
 
-CSVs for the month of January 2021 only use data from January 6-31 due to a
-[definitional change in a major vaccine item on January 6](./coding.md#new-items-2).
-
 ### Regions
 
 At the moment, only nation-wide and state groupings are available.
