@@ -1,10 +1,10 @@
 ---
-title: Problems and Data Errors
+title: Data and Sampling Errors
 parent: COVID-19 Trends and Impact Survey
 nav_order: 8
 ---
 
-# Problems and Data Errors
+# Data and Sampling Errors
 {: .no_toc}
 
 Given the scale of the COVID-19 Trends and Impact Survey (CTIS), we occasionally
