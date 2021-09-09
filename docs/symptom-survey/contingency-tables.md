@@ -66,9 +66,6 @@ Note: If a survey item was introduced in the middle of an aggregation period,
 derived indicators will be included in aggregations for that period but will
 only use a partial week or month of data.
 
-CSVs for the month of January 2021 only use data from January 6-31 due to a
-[definitional change in a major vaccine item on January 6](./coding.md#new-items-2).
-
 ### Regions
 
 At the moment, only nation-wide and state groupings are available.
@@ -201,22 +198,22 @@ These indicators are accompanied by variants with the suffix `_unusual` reportin
 
 | Indicator | Description | Survey Item |
 | --- | --- | --- |
-| `pct_anosmia` | Estimated percentage of respondents experiencing loss of smell or taste in the last 24 hours. <br/> **Earliest date available:** 2021-01-06 | B2 |
-| `pct_symp_fever` | Estimated percentage of people experiencing a fever in the last 24 hours. <br/> **Earliest date available:** 2021-08-16 | B2 |
-| `pct_symp_cough` | Estimated percentage of people experiencing a cough in the last 24 hours. <br/> **Earliest date available:** 2021-08-16 | B2 |
-| `pct_symp_shortness_breath` | Estimated percentage of people experiencing shortness of breath in the last 24 hours. <br/> **Earliest date available:** 2021-08-16 | B2 |
-| `pct_symp_diff_breathing` | Estimated percentage of people experiencing difficulty breathing in the last 24 hours. <br/> **Earliest date available:** 2021-08-16 | B2 |
-| `pct_symp_fatigue` | Estimated percentage of people experiencing fatigue in the last 24 hours. <br/> **Earliest date available:** 2021-08-16 | B2 |
-| `pct_symp_stuffy_nose` | Estimated percentage of people experiencing a stuffy or runny nose in the last 24 hours. <br/> **Earliest date available:** 2021-08-16 | B2 |
-| `pct_symp_aches` | Estimated percentage of people experiencing muscle or joint aches in the last 24 hours. <br/> **Earliest date available:** 2021-08-16 | B2 |
-| `pct_symp_sore_throat` | Estimated percentage of people experiencing a sore throat in the last 24 hours. <br/> **Earliest date available:** 2021-08-16 | B2 |
-| `pct_symp_chest_pain` | Estimated percentage of people experiencing chest pain or pressure in the last 24 hours. <br/> **Earliest date available:** 2021-08-16 | B2 |
-| `pct_symp_nausea` | Estimated percentage of people experiencing nausea or vomiting in the last 24 hours. <br/> **Earliest date available:** 2021-08-16 | B2 |
-| `pct_symp_diarrhea` | Estimated percentage of people experiencing diarrhea in the last 24 hours. <br/> **Earliest date available:** 2021-08-16 | B2 |
-| `pct_symp_other` | Estimated percentage of people experiencing other symptoms in the last 24 hours. <br/> **Earliest date available:** 2021-08-16 | B2 |
-| `pct_symp_none` | Estimated percentage of people experiencing none of the listed symptoms in the last 24 hours. <br/> **Earliest date available:** 2021-08-16 | B2 |
-| `pct_symp_chills` | Estimated percentage of people experiencing chills in the last 24 hours. <br/> **Earliest date available:** 2021-08-16 | B2 |
-| `pct_symp_headache` | Estimated percentage of people experiencing a headache in the last 24 hours. <br/> **Earliest date available:** 2021-08-16 | B2 |
+| `pct_anosmia` | Estimated percentage of respondents experiencing loss of smell or taste in the last 24 hours. <br/> **Earliest date available:** 2021-01-01 | B2 |
+| `pct_symp_fever` | Estimated percentage of people experiencing a fever in the last 24 hours. <br/> **Earliest date available:** 2021-05-16 | B2 |
+| `pct_symp_cough` | Estimated percentage of people experiencing a cough in the last 24 hours. <br/> **Earliest date available:** 2021-05-16 | B2 |
+| `pct_symp_shortness_breath` | Estimated percentage of people experiencing shortness of breath in the last 24 hours. <br/> **Earliest date available:** 2021-05-16 | B2 |
+| `pct_symp_diff_breathing` | Estimated percentage of people experiencing difficulty breathing in the last 24 hours. <br/> **Earliest date available:** 2021-05-16 | B2 |
+| `pct_symp_fatigue` | Estimated percentage of people experiencing fatigue in the last 24 hours. <br/> **Earliest date available:** 2021-05-16 | B2 |
+| `pct_symp_stuffy_nose` | Estimated percentage of people experiencing a stuffy or runny nose in the last 24 hours. <br/> **Earliest date available:** 2021-05-16 | B2 |
+| `pct_symp_aches` | Estimated percentage of people experiencing muscle or joint aches in the last 24 hours. <br/> **Earliest date available:** 2021-05-16 | B2 |
+| `pct_symp_sore_throat` | Estimated percentage of people experiencing a sore throat in the last 24 hours. <br/> **Earliest date available:** 2021-05-16 | B2 |
+| `pct_symp_chest_pain` | Estimated percentage of people experiencing chest pain or pressure in the last 24 hours. <br/> **Earliest date available:** 2021-05-16 | B2 |
+| `pct_symp_nausea` | Estimated percentage of people experiencing nausea or vomiting in the last 24 hours. <br/> **Earliest date available:** 2021-05-16 | B2 |
+| `pct_symp_diarrhea` | Estimated percentage of people experiencing diarrhea in the last 24 hours. <br/> **Earliest date available:** 2021-05-16 | B2 |
+| `pct_symp_other` | Estimated percentage of people experiencing other symptoms in the last 24 hours. <br/> **Earliest date available:** 2021-05-16 | B2 |
+| `pct_symp_none` | Estimated percentage of people experiencing none of the listed symptoms in the last 24 hours. <br/> **Earliest date available:** 2021-05-16 | B2 |
+| `pct_symp_chills` | Estimated percentage of people experiencing chills in the last 24 hours. <br/> **Earliest date available:** 2021-05-16 | B2 |
+| `pct_symp_headache` | Estimated percentage of people experiencing a headache in the last 24 hours. <br/> **Earliest date available:** 2021-05-16 | B2 |
 | `pct_symp_nasal_congestion` | *Discontinued as of Wave 11, May 19, 2021*  Estimated percentage of people experiencing nasal congestion in the last 24 hours. | B2 |
 | `pct_symp_eye_pain` | *Discontinued as of Wave 11, May 19, 2021* Estimated percentage of people experiencing eye pain in the last 24 hours. | B2 |
 | `pct_symp_sleep_changes` | *Discontinued as of Wave 11, May 19, 2021* Estimated percentage of people experiencing changes in sleep in the last 24 hours. | B2 |
@@ -229,7 +226,7 @@ These indicators are accompanied by variants with the suffix `_unusual` reportin
 
 | Indicator | Description | Survey Item |
 | --- | --- | --- | --- |
-| `pct_others_masked_public` | Estimated percentage of respondents who say that most or all *other* people wear masks, when they are in public. <br/> **Earliest date available:** 2021-08-16 | H2 |
+| `pct_others_masked_public` | Estimated percentage of respondents who say that most or all *other* people wear masks, when they are in public. <br/> **Earliest date available:** 2021-05-16 | H2 |
 | `pct_wearing_mask_7d` | Estimated percentage of people who wore a mask for most or all of the time while in public in the past 7 days; those not in public in the past 7 days are not counted. <br/> **Earliest date available:** 2021-02-08 | C14a |
 | `pct_mask_public_transit_1d` | Estimated percentage of respondents who reported using a mask while using public transit, of all respondents who used public transit in the past 24 hours <br/> **Earliest date available:** 2020-08-16 | C13 or C13b, and C13a or C13c |
 | `pct_mask_work_outside_home_indoors_1d` | Estimated percentage of respondents who reported using a mask while working or going to school indoors and outside their home, of all resondents who worked or went to school outside their home in the past 24 hours <br/> **Earliest date available:** 2021-08-06 | C13b and C13c |
@@ -249,7 +246,7 @@ These indicators are accompanied by variants with the suffix `_unusual` reportin
 
 | Indicator | Description | Survey Item |
 | --- | --- | --- | --- |
-| `pct_others_distanced_public` | Estimated percentage of respondents who reported that all or most people they enountered in public in the past 7 days maintained a distance of at least 6 feet. Respondents who said that they have not been in public for the past 7 days are excluded. <br/> **Earliest date available:** 2021-08-16 | H1 |
+| `pct_others_distanced_public` | Estimated percentage of respondents who reported that all or most people they enountered in public in the past 7 days maintained a distance of at least 6 feet. Respondents who said that they have not been in public for the past 7 days are excluded. <br/> **Earliest date available:** 2021-05-16 | H1 |
 | `pct_public_transit_1d` | Estimated percentage of respondents who "used public transit" in the past 24 hours <br/> **Earliest date available:** 2020-08-16 | C13 or C13b |
 | `pct_work_outside_home_indoors_1d` | Estimated percentage of respondents who worked or went to school indoors and outside their home in the past 24 hours <br/> **Earliest date available:** 2021-08-06 | C13b |
 | `pct_shop_indoors_1d` | Estimated percentage of respondents who went to an "indoor market, grocery store, or pharmacy" in the past 24 hours <br/> **Earliest date available:** 2021-08-06 | C13b |
@@ -269,9 +266,9 @@ These indicators are accompanied by variants with the suffix `_unusual` reportin
 
 | Indicator | Description | Survey Item |
 | --- | --- | --- |
-| `pct_tested_14d` | Estimated percentage of people who were tested for COVID-19 in the past 14 days, regardless of their test result <br/> **Earliest date available:** 2021-08-16 | B8, B10 |
-| `pct_tested_positive_14d` | Estimated test positivity rate (percent) among people tested for COVID-19 in the past 14 days <br/> **Earliest date available:** 2021-08-16 | B10a or B10c |
-| `pct_had_covid_ever` | Estimated percentage of people who report having ever had COVID-19. <br/> **Earliest date available:** 2021-08-16 | B13 |
+| `pct_tested_14d` | Estimated percentage of people who were tested for COVID-19 in the past 14 days, regardless of their test result <br/> **Earliest date available:** 2021-05-16 | B8, B10 |
+| `pct_tested_positive_14d` | Estimated test positivity rate (percent) among people tested for COVID-19 in the past 14 days <br/> **Earliest date available:** 2021-05-16 | B10a or B10c |
+| `pct_had_covid_ever` | Estimated percentage of people who report having ever had COVID-19. <br/> **Earliest date available:** 2021-05-16 | B13 |
 | `pct_wanted_test_14d` | *Discontinued as of Wave 11, May 19, 2021* Estimated percentage of people who *wanted* to be tested for COVID-19 in the past 14 days, out of people who were *not* tested in that time. | B12 |
 | `pct_ever_tested` | *Discontinued as of Wave 11, May 19, 2021* Estimated percentage of people who have ever been tested for COVID-19. | B8 |
 
@@ -279,13 +276,13 @@ These indicators are accompanied by variants with the suffix `_unusual` reportin
 
 | Indicator | Description | Survey Item |
 | --- | --- | --- |
-| `pct_test_reason_sick` | Estimated percentage of people who were tested because they felt sick, out of all respondents tested in the last 14 days. <br/> **Earliest date available:** 2021-08-16 | B10b |
-| `pct_test_reason_contact` | Estimated percentage of people who were tested because they were in contact with someone who was sick, out of all respondents tested in the last 14 days. <br/> **Earliest date available:** 2021-08-16 | B10b |
-| `pct_test_reason_medical` | Estimated percentage of people who were tested because they were receiving medical care, out of all respondents tested in the last 14 days. <br/> **Earliest date available:** 2021-08-16 | B10b |
-| `pct_test_reason_required` | Estimated percentage of people who were tested because their work or school required it, out of all respondents tested in the last 14 days. <br/> **Earliest date available:** 2021-08-16 | B10b |
-| `pct_test_reason_visit` | Estimated percentage of people who were tested so that they could visit family and friends, out of all respondents tested in the last 14 days. <br/> **Earliest date available:** 2021-08-16 | B10b |
-| `pct_test_reason_travel` | Estimated percentage of people who were tested because it was required for travel, out of all respondents tested in the last 14 days. <br/> **Earliest date available:** 2021-08-16 | B10b |
-| `pct_test_reason_none` | Estimated percentage of people who reported that none of the listed reasons described why they were tested, out of all respondents tested in the last 14 days. <br/> **Earliest date available:** 2021-08-16 | B10b |
+| `pct_test_reason_sick` | Estimated percentage of people who were tested because they felt sick, out of all respondents tested in the last 14 days. <br/> **Earliest date available:** 2021-05-16 | B10b |
+| `pct_test_reason_contact` | Estimated percentage of people who were tested because they were in contact with someone who was sick, out of all respondents tested in the last 14 days. <br/> **Earliest date available:** 2021-05-16 | B10b |
+| `pct_test_reason_medical` | Estimated percentage of people who were tested because they were receiving medical care, out of all respondents tested in the last 14 days. <br/> **Earliest date available:** 2021-05-16 | B10b |
+| `pct_test_reason_required` | Estimated percentage of people who were tested because their work or school required it, out of all respondents tested in the last 14 days. <br/> **Earliest date available:** 2021-05-16 | B10b |
+| `pct_test_reason_visit` | Estimated percentage of people who were tested so that they could visit family and friends, out of all respondents tested in the last 14 days. <br/> **Earliest date available:** 2021-05-16 | B10b |
+| `pct_test_reason_travel` | Estimated percentage of people who were tested because it was required for travel, out of all respondents tested in the last 14 days. <br/> **Earliest date available:** 2021-05-16 | B10b |
+| `pct_test_reason_none` | Estimated percentage of people who reported that none of the listed reasons described why they were tested, out of all respondents tested in the last 14 days. <br/> **Earliest date available:** 2021-05-16 | B10b |
 | `pct_test_reason_large_event` | *Discontinued as of Wave 11, May 19, 2021* Estimated percentage of people who were tested because they attended a large outdoor event or gathering, out of all respondents tested in the last 14 days. | B10b |
 | `pct_test_reason_crowd` | *Discontinued as of Wave 11, May 19, 2021* Estimated percentage of people who were tested because they were in a crowded indoor environment, out of all respondents tested in the last 14 days. | B10b |
 
@@ -301,8 +298,8 @@ These indicators are accompanied by variants with the suffix `_unusual` reportin
 | `pct_vaccinated_appointment_or_accept` | Estimated percentage of respondents who *either* have already received a COVID vaccine *or* have an appointment to get a COVID vaccine *or* would definitely or probably choose to get vaccinated, if a vaccine were offered to them today. <br/> **Earliest date available:** 2021-05-19 | V1, V11a, V3a |
 | `pct_appointment_or_accept_vaccine` | Estimated percentage of respondents who *either* have an appointment to get a COVID-19 vaccine *or* would definitely or probably choose to get vaccinated, if a vaccine were offered to them today, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-05-19 | V11a, V3a |
 | `pct_accept_vaccine_no_appointment` | Estimated percentage of respondents who would definitely or probably choose to get vaccinated, if a vaccine were offered to them today, among respondents who have not yet been vaccinated and do not have an appointment to do so. <br/> **Earliest date available:** 2021-05-19 | V3a |
-| `pct_covid_vaccinated_friends` | Estimated percentage of respondents who report that most of their friends and family have received a COVID-19 vaccine. <br/> **Earliest date available:** 2021-08-16 | H3 |
-| `pct_vaccinate_children` | Estimated percentage of respondents with children who report that they will definitely or probably get the vaccine for their children. <br/> **Earliest date available:** 2021-08-16 | E4 |
+| `pct_covid_vaccinated_friends` | Estimated percentage of respondents who report that most of their friends and family have received a COVID-19 vaccine. <br/> **Earliest date available:** 2021-05-16 | H3 |
+| `pct_vaccinate_children` | Estimated percentage of respondents with children who report that they will definitely or probably get the vaccine for their children. <br/> **Earliest date available:** 2021-05-16 | E4 |
 | `pct_hesitant_vaccine` | Estimated percentage of respondents who would definitely not or probably not choose to get vaccinated, if a vaccine were offered to them today, among respondents who have not yet been vaccinated. **Note:** Until Wave 11 (May 19, 2021), this item was asked of everyone who indicated that they had not received a COVID-19 vaccine; after that date, this item was only asked of people who indicated that they had not received a COVID-19 vaccine and did not have an appointment to do so.  <br/> **Earliest date available:** 2021-01-01 | V3 or V3a |
 | `pct_accept_vaccine_no_appointment_defyes` | Estimated percentage of respondents who would definitely choose to get vaccinated, if a vaccine were offered to them today, among respondents who have not yet been vaccinated and do not have an appointment to do so. <br/> **Earliest date available:** 2021-05-19 | V3a |
 | `pct_accept_vaccine_no_appointment_probyes` | Estimated percentage of respondents who would probably choose to get vaccinated, if a vaccine were offered to them today, among respondents who have not yet been vaccinated and do not have an appointment to do so. <br/> **Earliest date available:** 2021-05-19 | V3a |
@@ -324,12 +321,12 @@ These indicators are accompanied by variants with the suffix `_unusual` reportin
 
 | Indicator | Description | Survey Item |
 | --- | --- | --- |
-| `pct_vaccine_timing_weeks` | Estimated percentage of respondents who say they will try to get the vaccine within a week or two, out of respondents who have not yet been vaccinated, do not have an appointment to do so, *and* are unsure if they would choose to get vaccinated (answering that they would either "yes, probably" or "no, probably not" get vaccinated if offered today). <br/> **Earliest date available:** 2021-08-16 | V16 |
-| `pct_vaccine_timing_onemonth` | Estimated percentage of respondents who say they will try to get the vaccine within a month, out of respondents who have not yet been vaccinated, do not have an appointment to do so, *and* are unsure if they would choose to get vaccinated (answering that they would either "yes, probably" or "no, probably not" get vaccinated if offered today). <br/> **Earliest date available:** 2021-08-16 | V16 |
-| `pct_vaccine_timing_threemonths` | Estimated percentage of respondents who say they will try to get the vaccine within three months, out of respondents who have not yet been vaccinated, do not have an appointment to do so, *and* are unsure if they would choose to get vaccinated (answering that they would either "yes, probably" or "no, probably not" get vaccinated if offered today). <br/> **Earliest date available:** 2021-08-16 | V16 |
-| `pct_vaccine_timing_sixmonths` | Estimated percentage of respondents who say they will try to get the vaccine within six months, out of respondents who have not yet been vaccinated, do not have an appointment to do so, *and* are unsure if they would choose to get vaccinated (answering that they would either "yes, probably" or "no, probably not" get vaccinated if offered today). <br/> **Earliest date available:** 2021-08-16 | V16 |
-| `pct_vaccine_timing_morethansix` | Estimated percentage of respondents who say they will try to get the vaccine in more than six months, out of respondents who have not yet been vaccinated, do not have an appointment to do so, *and* are unsure if they would choose to get vaccinated (answering that they would either "yes, probably" or "no, probably not" get vaccinated if offered today). <br/> **Earliest date available:** 2021-08-16 | V16 |
-| `pct_vaccine_timing_dontknow` | Estimated percentage of respondents who don't know when they will try to get the vaccine, out of respondents who have not yet been vaccinated, do not have an appointment to do so, *and* are unsure if they would choose to get vaccinated (answering that they would either "yes, probably" or "no, probably not" get vaccinated if offered today). <br/> **Earliest date available:** 2021-08-16 | V16 |
+| `pct_vaccine_timing_weeks` | Estimated percentage of respondents who say they will try to get the vaccine within a week or two, out of respondents who have not yet been vaccinated, do not have an appointment to do so, *and* are unsure if they would choose to get vaccinated (answering that they would either "yes, probably" or "no, probably not" get vaccinated if offered today). <br/> **Earliest date available:** 2021-05-16 | V16 |
+| `pct_vaccine_timing_onemonth` | Estimated percentage of respondents who say they will try to get the vaccine within a month, out of respondents who have not yet been vaccinated, do not have an appointment to do so, *and* are unsure if they would choose to get vaccinated (answering that they would either "yes, probably" or "no, probably not" get vaccinated if offered today). <br/> **Earliest date available:** 2021-05-16 | V16 |
+| `pct_vaccine_timing_threemonths` | Estimated percentage of respondents who say they will try to get the vaccine within three months, out of respondents who have not yet been vaccinated, do not have an appointment to do so, *and* are unsure if they would choose to get vaccinated (answering that they would either "yes, probably" or "no, probably not" get vaccinated if offered today). <br/> **Earliest date available:** 2021-05-16 | V16 |
+| `pct_vaccine_timing_sixmonths` | Estimated percentage of respondents who say they will try to get the vaccine within six months, out of respondents who have not yet been vaccinated, do not have an appointment to do so, *and* are unsure if they would choose to get vaccinated (answering that they would either "yes, probably" or "no, probably not" get vaccinated if offered today). <br/> **Earliest date available:** 2021-05-16 | V16 |
+| `pct_vaccine_timing_morethansix` | Estimated percentage of respondents who say they will try to get the vaccine in more than six months, out of respondents who have not yet been vaccinated, do not have an appointment to do so, *and* are unsure if they would choose to get vaccinated (answering that they would either "yes, probably" or "no, probably not" get vaccinated if offered today). <br/> **Earliest date available:** 2021-05-16 | V16 |
+| `pct_vaccine_timing_dontknow` | Estimated percentage of respondents who don't know when they will try to get the vaccine, out of respondents who have not yet been vaccinated, do not have an appointment to do so, *and* are unsure if they would choose to get vaccinated (answering that they would either "yes, probably" or "no, probably not" get vaccinated if offered today). <br/> **Earliest date available:** 2021-05-16 | V16 |
 
 #### Outreach and Image
 
@@ -391,27 +388,27 @@ Vaccine barrier items are reported in three ways: among those who have already b
 
 | Indicator | Description | Survey Item |
 | --- | --- | --- |
-| `pct_vaccine_barrier_eligible` | Estimated percentage of respondents who report eligibility requirements as a barrier to getting the vaccine, among those who have already been vaccinated or have tried to get vaccinated. <br/> **Earliest date available:** 2021-08-16 | V15a and V15b |
-| `pct_vaccine_barrier_no_appointments` | Estimated percentage of respondents who report lack of vaccine or vaccine appointments as a barrier to getting the vaccine, among those who have already been vaccinated or have tried to get vaccinated. <br/> **Earliest date available:** 2021-08-16 | V15a and V15b |
-| `pct_vaccine_barrier_appointment_time` | Estimated percentage of respondents who report available appointment times as a barrier to getting the vaccine, among those who have already been vaccinated or have tried to get vaccinated. <br/> **Earliest date available:** 2021-08-16 | V15a and V15b |
-| `pct_vaccine_barrier_technical_difficulties` | Estimated percentage of respondents who report technical difficulties with the website or phone line as a barrier to getting the vaccine, among those who have already been vaccinated or have tried to get vaccinated. <br/> **Earliest date available:** 2021-08-16 | V15a and V15b |
-| `pct_vaccine_barrier_document` | Estimated percentage of respondents who report inability to provide required documents as a barrier to getting the vaccine, among those who have already been vaccinated or have tried to get vaccinated. <br/> **Earliest date available:** 2021-08-16 | V15a and V15b |
-| `pct_vaccine_barrier_technology_access` | Estimated percentage of respondents who report limited access to internet or phone as a barrier to getting the vaccine, among those who have already been vaccinated or have tried to get vaccinated. <br/> **Earliest date available:** 2021-08-16 | V15a and V15b |
-| `pct_vaccine_barrier_travel` | Estimated percentage of respondents who report difficulty traveling to vaccination sites as a barrier to getting the vaccine, among those who have already been vaccinated or have tried to get vaccinated. <br/> **Earliest date available:** 2021-08-16 | V15a and V15b |
-| `pct_vaccine_barrier_language` | Estimated percentage of respondents who report information not being available in their native language as a barrier to getting the vaccine, among those who have already been vaccinated or have tried to get vaccinated. <br/> **Earliest date available:** 2021-08-16 | V15a and V15b |
-| `pct_vaccine_barrier_childcare` | Estimated percentage of respondents who report lack of childcare as a barrier to getting the vaccine, among those who have already been vaccinated or have tried to get vaccinated. <br/> **Earliest date available:** 2021-08-16 | V15a and V15b |
-| `pct_vaccine_barrier_time` | Estimated percentage of respondents who report difficulty getting time away from work or school as a barrier to getting the vaccine, among those who have already been vaccinated or have tried to get vaccinated. <br/> **Earliest date available:** 2021-08-16 | V15a and V15b |
-| `pct_vaccine_barrier_type` | Estimated percentage of respondents who report available vaccine type as a barrier to getting the vaccine, among those who have already been vaccinated or have tried to get vaccinated. <br/> **Earliest date available:** 2021-08-16 | V15a and V15b |
-| `pct_vaccine_barrier_none` | Estimated percentage of respondents who report experiencing none of the listed barriers to gettint the vaccing, among those who have already been vaccinated or have tried to get vaccinated. <br/> **Earliest date available:** 2021-08-16 | V15a and V15b |
+| `pct_vaccine_barrier_eligible` | Estimated percentage of respondents who report eligibility requirements as a barrier to getting the vaccine, among those who have already been vaccinated or have tried to get vaccinated. <br/> **Earliest date available:** 2021-05-16 | V15a and V15b |
+| `pct_vaccine_barrier_no_appointments` | Estimated percentage of respondents who report lack of vaccine or vaccine appointments as a barrier to getting the vaccine, among those who have already been vaccinated or have tried to get vaccinated. <br/> **Earliest date available:** 2021-05-16 | V15a and V15b |
+| `pct_vaccine_barrier_appointment_time` | Estimated percentage of respondents who report available appointment times as a barrier to getting the vaccine, among those who have already been vaccinated or have tried to get vaccinated. <br/> **Earliest date available:** 2021-05-16 | V15a and V15b |
+| `pct_vaccine_barrier_technical_difficulties` | Estimated percentage of respondents who report technical difficulties with the website or phone line as a barrier to getting the vaccine, among those who have already been vaccinated or have tried to get vaccinated. <br/> **Earliest date available:** 2021-05-16 | V15a and V15b |
+| `pct_vaccine_barrier_document` | Estimated percentage of respondents who report inability to provide required documents as a barrier to getting the vaccine, among those who have already been vaccinated or have tried to get vaccinated. <br/> **Earliest date available:** 2021-05-16 | V15a and V15b |
+| `pct_vaccine_barrier_technology_access` | Estimated percentage of respondents who report limited access to internet or phone as a barrier to getting the vaccine, among those who have already been vaccinated or have tried to get vaccinated. <br/> **Earliest date available:** 2021-05-16 | V15a and V15b |
+| `pct_vaccine_barrier_travel` | Estimated percentage of respondents who report difficulty traveling to vaccination sites as a barrier to getting the vaccine, among those who have already been vaccinated or have tried to get vaccinated. <br/> **Earliest date available:** 2021-05-16 | V15a and V15b |
+| `pct_vaccine_barrier_language` | Estimated percentage of respondents who report information not being available in their native language as a barrier to getting the vaccine, among those who have already been vaccinated or have tried to get vaccinated. <br/> **Earliest date available:** 2021-05-16 | V15a and V15b |
+| `pct_vaccine_barrier_childcare` | Estimated percentage of respondents who report lack of childcare as a barrier to getting the vaccine, among those who have already been vaccinated or have tried to get vaccinated. <br/> **Earliest date available:** 2021-05-16 | V15a and V15b |
+| `pct_vaccine_barrier_time` | Estimated percentage of respondents who report difficulty getting time away from work or school as a barrier to getting the vaccine, among those who have already been vaccinated or have tried to get vaccinated. <br/> **Earliest date available:** 2021-05-16 | V15a and V15b |
+| `pct_vaccine_barrier_type` | Estimated percentage of respondents who report available vaccine type as a barrier to getting the vaccine, among those who have already been vaccinated or have tried to get vaccinated. <br/> **Earliest date available:** 2021-05-16 | V15a and V15b |
+| `pct_vaccine_barrier_none` | Estimated percentage of respondents who report experiencing none of the listed barriers to gettint the vaccing, among those who have already been vaccinated or have tried to get vaccinated. <br/> **Earliest date available:** 2021-05-16 | V15a and V15b |
 
 ### Mental Health Indicators
 
 | Indicator | Description | Survey Item |
 | --- | --- | --- |
-| `pct_finance` | Estimated percentage of respondents who report being very or somewhat worried about their "household's finances for the next month" <br/> **Earliest date available:** 2021-08-16 | C15 |
-| `pct_anxious_7d` | Estimated percentage of respondents who reported feeling "nervous, anxious, or on edge" for most or all of the past 7 days. This item was shown to respondents starting in Wave 10. <br/> **Earliest date available:** 2021-08-16 | C8a or C18a |
-| `pct_depressed_7d` | Estimated percentage of respondents who reported feeling depressed for most or all of the past 7 days. This item was shown to respondents starting in Wave 10. <br/> **Earliest date available:** 2021-08-16 | C8a or C18b |
-| `pct_worried_catch_covid` | Estimated percentage of respondents worrying either a great deal or a moderate amount about catching COVID-19. <br/> **Earliest date available:** 2021-08-16 | G1 |
+| `pct_finance` | Estimated percentage of respondents who report being very or somewhat worried about their "household's finances for the next month" <br/> **Earliest date available:** 2021-05-16 | C15 |
+| `pct_anxious_7d` | Estimated percentage of respondents who reported feeling "nervous, anxious, or on edge" for most or all of the past 7 days. This item was shown to respondents starting in Wave 10. <br/> **Earliest date available:** 2021-05-16 | C8a or C18a |
+| `pct_depressed_7d` | Estimated percentage of respondents who reported feeling depressed for most or all of the past 7 days. This item was shown to respondents starting in Wave 10. <br/> **Earliest date available:** 2021-05-16 | C8a or C18b |
+| `pct_worried_catch_covid` | Estimated percentage of respondents worrying either a great deal or a moderate amount about catching COVID-19. <br/> **Earliest date available:** 2021-05-16 | G1 |
 | `pct_felt_isolated_7d` | *Discontinued as of Wave 11, May 19, 2021* Estimated percentage of respondents who reported feeling "isolated from others" for most or all of the past 7 days. This item was shown to respondents starting in Wave 10. | C8a |
 | `pct_anxious_5d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who reported feeling "nervous, anxious, or on edge" for most or all of the past 5 days | C8 |
 | `pct_depressed_5d` | *Discontinued as of Wave 10, Mar 2, 2021* Estimated percentage of respondents who reported feeling depressed for most or all of the past 5 days | C8 |
@@ -423,20 +420,20 @@ Vaccine barrier items are reported in three ways: among those who have already b
 
 | Indicator | Description | Survey Item |
 | --- | --- | --- |
-| `pct_belief_masking_effective` | Estimated percentage of respondents who believe that wearing a face mask is either very or moderately effective for preventing the spread of COVID-19. <br/> **Earliest date available:** 2021-08-16 | G3 |
-| `pct_belief_distancing_effective` | Estimated percentage of respondents who believe that social distancing is either very or moderately effective for preventing the spread of COVID-19. <br/> **Earliest date available:** 2021-08-16 | G2 |
-| `pct_belief_vaccinated_mask_unnecessary` | Estimated percentage of people who believe that the statement "Getting the COVID-19 vaccine means that you can stop wearing a mask around people outside your household" is definitely or probably true. <br/> **Earliest date available:** 2021-08-16 | I1 |
-| `pct_belief_children_immune` | Estimated pPercentage of people who believe that the statement "Children cannot get COVID-19" is definitely or probably true. <br/> **Earliest date available:** 2021-08-16 | I2 |
-| `pct_belief_created_small_group` | Estimated percentage of people who believe that the statement "COVID-19 was deliberately created by a small group of people who secretly manipulate world events" is definitely or probably true. <br/> **Earliest date available:** 2021-08-16 | I3 |
-| `pct_belief_govt_exploitation` | Estimated percentage of people who indicate that the statement "The COVID-19 pandemic is being exploited by the government to control people" is definitely or probably true. <br/> **Earliest date available:** 2021-08-16 | I4 |
+| `pct_belief_masking_effective` | Estimated percentage of respondents who believe that wearing a face mask is either very or moderately effective for preventing the spread of COVID-19. <br/> **Earliest date available:** 2021-05-16 | G3 |
+| `pct_belief_distancing_effective` | Estimated percentage of respondents who believe that social distancing is either very or moderately effective for preventing the spread of COVID-19. <br/> **Earliest date available:** 2021-05-16 | G2 |
+| `pct_belief_vaccinated_mask_unnecessary` | Estimated percentage of people who believe that the statement "Getting the COVID-19 vaccine means that you can stop wearing a mask around people outside your household" is definitely or probably true. <br/> **Earliest date available:** 2021-05-16 | I1 |
+| `pct_belief_children_immune` | Estimated pPercentage of people who believe that the statement "Children cannot get COVID-19" is definitely or probably true. <br/> **Earliest date available:** 2021-05-16 | I2 |
+| `pct_belief_created_small_group` | Estimated percentage of people who believe that the statement "COVID-19 was deliberately created by a small group of people who secretly manipulate world events" is definitely or probably true. <br/> **Earliest date available:** 2021-05-16 | I3 |
+| `pct_belief_govt_exploitation` | Estimated percentage of people who indicate that the statement "The COVID-19 pandemic is being exploited by the government to control people" is definitely or probably true. <br/> **Earliest date available:** 2021-05-16 | I4 |
 
 
 ### Medical Care Experiences Indicators
 
 | Indicator | Description | Survey Item |
 | --- | --- | --- |
-| `pct_delayed_care_cost` | Estimated percentage of respondents who have ever delayed or not sought medical care in the past year because of cost. <br/> **Earliest date available:** 2021-08-16 | K1 |
-| `pct_race_treated_fairly_healthcare` | Estimated percentage of respondents who somewhat or strongly agree that people of their race are treated fairly in a healthcare setting. <br/> **Earliest date available:** 2021-08-16 | K2 |
+| `pct_delayed_care_cost` | Estimated percentage of respondents who have ever delayed or not sought medical care in the past year because of cost. <br/> **Earliest date available:** 2021-05-16 | K1 |
+| `pct_race_treated_fairly_healthcare` | Estimated percentage of respondents who somewhat or strongly agree that people of their race are treated fairly in a healthcare setting. <br/> **Earliest date available:** 2021-05-16 | K2 |
 
 
 ### News and Information Indicators
@@ -445,39 +442,39 @@ Vaccine barrier items are reported in three ways: among those who have already b
 
 | Indicator | Description | Survey Item |
 | --- | --- | --- |
-| `pct_received_news_local_health` | Estimated percentage of respondents who received news about COVID-19 from local health workers, clinics, and community organizations in the past 7 days. <br/> **Earliest date available:** 2021-08-16 | I5 |
-| `pct_received_news_experts` | Estimated percentage of respondents who received news about COVID-19 from scientists and other health experts in the past 7 days. <br/> **Earliest date available:** 2021-08-16 | I5 |
-| `pct_received_news_cdc` | Estimated percentage of respondents who received news about COVID-19 from the CDC in the past 7 days. <br/> **Earliest date available:** 2021-08-16 | I5 |
-| `pct_received_news_govt_health` | Estimated percentage of respondents who received news about COVID-19 from government health authorities or officials in the past 7 days. <br/> **Earliest date available:** 2021-08-16 | I5 |
-| `pct_received_news_politicians` | Estimated percentage of respondents who received news about COVID-19 from politicians in the past 7 days. <br/> **Earliest date available:** 2021-08-16 | I5 |
-| `pct_received_news_journalists` | Estimated percentage of respondents who received news about COVID-19 from journalists in the past 7 days. <br/> **Earliest date available:** 2021-08-16 | I5 |
-| `pct_received_news_friends` | Estimated percentage of respondents who received news about COVID-19 from friends and family in the past 7 days. <br/> **Earliest date available:** 2021-08-16 | I5 |
-| `pct_received_news_religious` | Estimated percentage of respondents who received news about COVID-19 from religious leaders in the past 7 days. <br/> **Earliest date available:** 2021-08-16 | I5 |
-| `pct_received_news_none` | Estimated percentage of respondents who in the past 7 days received news about COVID-19 from none of the listed sources. <br/> **Earliest date available:** 2021-08-16 | I5 |
+| `pct_received_news_local_health` | Estimated percentage of respondents who received news about COVID-19 from local health workers, clinics, and community organizations in the past 7 days. <br/> **Earliest date available:** 2021-05-16 | I5 |
+| `pct_received_news_experts` | Estimated percentage of respondents who received news about COVID-19 from scientists and other health experts in the past 7 days. <br/> **Earliest date available:** 2021-05-16 | I5 |
+| `pct_received_news_cdc` | Estimated percentage of respondents who received news about COVID-19 from the CDC in the past 7 days. <br/> **Earliest date available:** 2021-05-16 | I5 |
+| `pct_received_news_govt_health` | Estimated percentage of respondents who received news about COVID-19 from government health authorities or officials in the past 7 days. <br/> **Earliest date available:** 2021-05-16 | I5 |
+| `pct_received_news_politicians` | Estimated percentage of respondents who received news about COVID-19 from politicians in the past 7 days. <br/> **Earliest date available:** 2021-05-16 | I5 |
+| `pct_received_news_journalists` | Estimated percentage of respondents who received news about COVID-19 from journalists in the past 7 days. <br/> **Earliest date available:** 2021-05-16 | I5 |
+| `pct_received_news_friends` | Estimated percentage of respondents who received news about COVID-19 from friends and family in the past 7 days. <br/> **Earliest date available:** 2021-05-16 | I5 |
+| `pct_received_news_religious` | Estimated percentage of respondents who received news about COVID-19 from religious leaders in the past 7 days. <br/> **Earliest date available:** 2021-05-16 | I5 |
+| `pct_received_news_none` | Estimated percentage of respondents who in the past 7 days received news about COVID-19 from none of the listed sources. <br/> **Earliest date available:** 2021-05-16 | I5 |
 
 #### Trusted Sources of Information
 
 | Indicator | Description | Survey Item |
 | --- | --- | --- |
-| `pct_trust_covid_info_doctors` | Estimated percentage of respondents who trust doctors and other health professionals they go to for medical care to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-08-16 | I6 |
-| `pct_trust_covid_info_experts` | Estimated percentage of respondents who trust scientists and other health experts to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-08-16 | I6 |
-| `pct_trust_covid_info_cdc` | Estimated percentage of respondents who trust the Centers for Disease Control (CDC) to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-08-16 | I6 |
-| `pct_trust_covid_info_govt_health` | Estimated percentage of respondents who trust government health officials to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-08-16 | I6 |
-| `pct_trust_covid_info_politicians` | Estimated percentage of respondents who trust politicians to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-08-16 | I6 |
-| `pct_trust_covid_info_journalists` | Estimated percentage of respondents who trust journalists to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-08-16 | I6 |
-| `pct_trust_covid_info_friends` | Estimated percentage of respondents who trust friends and family to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-08-16 | I6 |
-| `pct_trust_covid_info_religious` | Estimated percentage of respondents who trust religious leaders to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-08-16 | I6 |
+| `pct_trust_covid_info_doctors` | Estimated percentage of respondents who trust doctors and other health professionals they go to for medical care to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-05-16 | I6 |
+| `pct_trust_covid_info_experts` | Estimated percentage of respondents who trust scientists and other health experts to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-05-16 | I6 |
+| `pct_trust_covid_info_cdc` | Estimated percentage of respondents who trust the Centers for Disease Control (CDC) to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-05-16 | I6 |
+| `pct_trust_covid_info_govt_health` | Estimated percentage of respondents who trust government health officials to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-05-16 | I6 |
+| `pct_trust_covid_info_politicians` | Estimated percentage of respondents who trust politicians to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-05-16 | I6 |
+| `pct_trust_covid_info_journalists` | Estimated percentage of respondents who trust journalists to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-05-16 | I6 |
+| `pct_trust_covid_info_friends` | Estimated percentage of respondents who trust friends and family to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-05-16 | I6 |
+| `pct_trust_covid_info_religious` | Estimated percentage of respondents who trust religious leaders to provide accurate news and information about COVID-19. <br/> **Earliest date available:** 2021-05-16 | I6 |
 
 #### Desired Information
 
 | Indicator | Description | Survey Item |
 | --- | --- | --- |
-| `pct_want_info_covid_treatment` | Estimated percentage of people who want more information about the treatment of COVID-19. <br/> **Earliest date available:** 2021-08-16 | I7 |
-| `pct_want_info_vaccine_access` | Estimated percentage of people who want more information about how to get a COVID-19 vaccine. <br/> **Earliest date available:** 2021-08-16 | I7 |
-| `pct_want_info_vaccine_types` | Estimated percentage of people who want more information about different types of COVID-19 vaccines. <br/> **Earliest date available:** 2021-08-16 | I7 |
-| `pct_want_info_covid_variants` | Estimated percentage of people who want more information about COVID-19 variants and mutations. <br/> **Earliest date available:** 2021-08-16 | I7 |
-| `pct_want_info_children_education` | Estimated percentage of people who want more information about how to support their children's education. <br/> **Earliest date available:** 2021-08-16 | I7 |
-| `pct_want_info_mental_health` | Estimated percentage of people who want more information about how to maintain their mental health. <br/> **Earliest date available:** 2021-08-16 | I7 |
-| `pct_want_info_relationships` | Estimated percentage of people who want more information about how to maintain their social relationships despite physical distancing. <br/> **Earliest date available:** 2021-08-16 | I7 |
-| `pct_want_info_employment` | Estimated percentage of people who want more information about employment and other economic and financial issues. <br/> **Earliest date available:** 2021-08-16 | I7 |
-| `pct_want_info_none` | Estimated percentage of people who want more information about none of the listed topics. <br/> **Earliest date available:** 2021-08-16 | I7 |
+| `pct_want_info_covid_treatment` | Estimated percentage of people who want more information about the treatment of COVID-19. <br/> **Earliest date available:** 2021-05-16 | I7 |
+| `pct_want_info_vaccine_access` | Estimated percentage of people who want more information about how to get a COVID-19 vaccine. <br/> **Earliest date available:** 2021-05-16 | I7 |
+| `pct_want_info_vaccine_types` | Estimated percentage of people who want more information about different types of COVID-19 vaccines. <br/> **Earliest date available:** 2021-05-16 | I7 |
+| `pct_want_info_covid_variants` | Estimated percentage of people who want more information about COVID-19 variants and mutations. <br/> **Earliest date available:** 2021-05-16 | I7 |
+| `pct_want_info_children_education` | Estimated percentage of people who want more information about how to support their children's education. <br/> **Earliest date available:** 2021-05-16 | I7 |
+| `pct_want_info_mental_health` | Estimated percentage of people who want more information about how to maintain their mental health. <br/> **Earliest date available:** 2021-05-16 | I7 |
+| `pct_want_info_relationships` | Estimated percentage of people who want more information about how to maintain their social relationships despite physical distancing. <br/> **Earliest date available:** 2021-05-16 | I7 |
+| `pct_want_info_employment` | Estimated percentage of people who want more information about employment and other economic and financial issues. <br/> **Earliest date available:** 2021-05-16 | I7 |
+| `pct_want_info_none` | Estimated percentage of people who want more information about none of the listed topics. <br/> **Earliest date available:** 2021-05-16 | I7 |
