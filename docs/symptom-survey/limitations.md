@@ -17,9 +17,11 @@ limitations, we recommend using the data to:
   symptoms or changes in reported vaccination attitudes.
 - Make comparisons across space, such as to identify regions with much higher or
   lower values.
-- Augment data collected from smaller, more rigorously controlled surveys, such
-  as those that use representative panels and extensive demographic weighting to
-  reduce bias in estimates
+- Make comparisons between groups, such as between occupational or age groups,
+  keeping in mind any [sample limitations](#the-sample) that might affect these
+  comparisons.
+- Augment data collected from other sources, such as more rigorously controlled
+  surveys with high response rates.
 
 We do **not** recommend using CTIS data to
 
