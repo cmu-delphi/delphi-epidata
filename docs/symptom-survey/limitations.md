@@ -162,9 +162,10 @@ groups, such as having a PhD, being over age 75, and being Hispanic, all at
 rates far exceeding their overall presence in the US population, suggesting that
 people who want to disrupt the survey also pick on specific groups to troll.
 
-(Note that if a respondent completes the survey multiple times, or shares their
-unique link with friends to take it, only the first response is counted; this
-limits the impact of deliberate trolling.)
+(Note that if a respondent is invited once but completes the survey multiple
+times, or shares their unique link with friends to take it, only the first
+response is counted; this limits the impact of deliberate trolling. If the
+respondent is sampled and invited again later, they receive a new unique link.)
 
 For overall estimates, trolling is not expected to impact results in a
 meaningful way. However, given the concentration of trolls in small demographic
