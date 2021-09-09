@@ -115,7 +115,7 @@ There are some key limitations:
 2. Similarly, the non-response model used by Facebook only uses information
    available to Facebook, such as profile information. As discussed above, if
    this model is not perfect, for example if factors not included in the model
-   that affect non-response, the weights will not fully account for this
+  affect non-response, the weights will not fully account for this
    non-response bias.
 3. Facebook only invites users who it believes reside in the 50 states or
    Washington, DC. (Puerto Rico is sampled separately as part of the
