@@ -68,9 +68,9 @@ sampling bias, if the sample is construed to represent the US adult population:
    the sample will disproportionately contain people with certain attitudes and
    beliefs.
 
-Facebook calculates [survey weights](weights.md) (see below) that are intended
-to help correct for these issues. The weights adjust the age and gender
-distribution of the respondents to match Census data, and adjust for
+Facebook calculates [survey weights](weights.md) ([see below](#weighting)) that
+are intended to help correct for these issues. The weights adjust the age and
+gender distribution of the respondents to match Census data, and adjust for
 non-response by using a model for the probability of any user to click on the
 survey link. However, if that non-response model is not perfect (for example,
 non-response varies with respondent attributes not included in the model), or if
