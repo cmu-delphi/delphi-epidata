@@ -7,10 +7,10 @@ nav_order: 9
 # Survey Limitations
 {: .no_toc}
 
-The COVID-19 Trends and Impact Survey (CTIS) is large and provides exceptionally
-detailed data; however, it is not perfect, and its design means it is subject to
-several crucial limitations. Anyone using the data to make policy decisions or
-answer research questions should be aware of these limitations. Given these
+The COVID-19 Trends and Impact Survey (CTIS) gathers large amounts of detailed
+data; however, it is not perfect, and its design means it is subject to several
+crucial limitations. Anyone using the data to make policy decisions or answer
+research questions should be aware of these limitations. Given these
 limitations, we recommend using the data to:
 
 - Track changes over time, such as to monitor sudden increases in reported
