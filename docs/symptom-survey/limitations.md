@@ -48,7 +48,8 @@ The sections below explain these limitations in more detail.
 ## The Sample
 
 Facebook takes a random sample of active adult users every day and invites them
-to complete the survey. Taking the survey is voluntary, and only 1-2% of those
+to complete the survey. ("Adult" means the user has indicated they are least 18
+years old in their profile.) Taking the survey is voluntary, and only 1-2% of those
 users who are invited actually take the survey. This leaves opportunities for
 sampling bias, if the sample is construed to represent the US adult population:
 
