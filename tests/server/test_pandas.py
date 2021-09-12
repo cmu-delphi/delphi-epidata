@@ -6,14 +6,13 @@ from typing import Any, Dict, Iterable
 import unittest
 
 import pandas as pd
-from pandas.core.frame import DataFrame
-from sqlalchemy import text
-import mysql.connector
+from sqlalchemy import create_engine
 
 # from flask.testing import FlaskClient
 from delphi_utils import Nans
+from delphi.epidata.server.main import app
 from delphi.epidata.server._pandas import as_pandas
-from delphi.epidata.server._query import limit_query
+from delphi.epidata.server._query import QueryBuilder
 
 # py3tester coverage target
 __test_target__ = "delphi.epidata.server._query"
@@ -111,27 +110,26 @@ class UnitTests(unittest.TestCase):
 
     def setUp(self):
         """Perform per-test setup."""
+        app.config["TESTING"] = True
+        app.config["WTF_CSRF_ENABLED"] = False
+        app.config["DEBUG"] = False
 
         # connect to the `epidata` database and clear the `covidcast` table
-        cnx = mysql.connector.connect(user="user", password="pass", host="delphi_database_epidata", database="epidata")
-        cur = cnx.cursor()
-        cur.execute("truncate table covidcast")
-        cur.execute('update covidcast_meta_cache set timestamp = 0, epidata = ""')
-        cnx.commit()
-        cur.close()
+        engine = create_engine('mysql://user:pass@delphi_database_epidata/epidata')
+        cnx = engine.connect()
+        cnx.execute("truncate table covidcast")
+        cnx.execute('update covidcast_meta_cache set timestamp = 0, epidata = ""')
 
         # make connection and cursor available to test cases
         self.cnx = cnx
-        self.cur = cnx.cursor()
 
     def tearDown(self):
         """Perform per-test teardown."""
-        self.cur.close()
         self.cnx.close()
 
     def _insert_rows(self, rows: Iterable[CovidcastRow]):
         sql = ",\n".join((str(r) for r in rows))
-        self.cur.execute(
+        self.cnx.execute(
             f"""
             INSERT INTO
                 `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`,
@@ -143,7 +141,6 @@ class UnitTests(unittest.TestCase):
             {sql}
             """
         )
-        self.cnx.commit()
         return rows
 
     def _rows_to_df(self, rows: Iterable[CovidcastRow]) -> pd.DataFrame:
@@ -160,17 +157,12 @@ class UnitTests(unittest.TestCase):
         rows = [CovidcastRow(time_value=20200401 + i, value=float(i)) for i in range(10)]
         self._insert_rows(rows)
 
-        with self.subTest("simple"):
-            query = """select * from `covidcast`"""
-            params = {}
-            parse_dates = None
-            engine = self.cnx
-            df = pd.read_sql_query(str(query), engine, params=params, parse_dates=parse_dates)
-            df = df.astype({"is_latest_issue": bool, "is_wip": bool})
+        with app.test_request_context('/correlation'):
+            q = QueryBuilder("covidcast", "t")
+
+            df = as_pandas(str(q), params={}, db_engine=self.cnx, parse_dates=None).astype({"is_latest_issue": bool, "is_wip": bool})
             expected_df = self._rows_to_df(rows)
             pd.testing.assert_frame_equal(df, expected_df)
-            query = limit_query(query, 5)
-            df = pd.read_sql_query(str(query), engine, params=params, parse_dates=parse_dates)
-            df = df.astype({"is_latest_issue": bool, "is_wip": bool})
+            df = as_pandas(str(q), params={}, db_engine=self.cnx, parse_dates=None, limit_rows=5).astype({"is_latest_issue": bool, "is_wip": bool})
             expected_df = self._rows_to_df(rows[:5])
             pd.testing.assert_frame_equal(df, expected_df)
