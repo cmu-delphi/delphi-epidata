@@ -232,10 +232,15 @@ def parse_result(
     return [parse_row(row, fields_string, fields_int, fields_float) for row in db.execute(text(query), **params)]
 
 
+def limit_query(query: str, limit: int) -> str:
+    full_query = f"{query} LIMIT {limit}"
+    return full_query
+
+
 def run_query(p: APrinter, query_tuple: Tuple[str, Dict[str, Any]]):
     query, params = query_tuple
     # limit rows + 1 for detecting whether we would have more
-    full_query = text(f"{query} LIMIT {p.remaining_rows + 1}")
+    full_query = text(limit_query(query, p.remaining_rows + 1))
     app.logger.info("full_query: %s, params: %s", full_query, params)
     return db.execution_options(stream_results=True).execute(full_query, **params)
 
