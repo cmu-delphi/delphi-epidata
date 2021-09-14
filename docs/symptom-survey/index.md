@@ -13,10 +13,11 @@ social distancing), mental health, and economic and health impacts they have
 experienced as a result of the pandemic. A high-level overview of the survey is
 posted [on the COVIDcast website](https://delphi.cmu.edu/covidcast/surveys/).
 
-Geographically aggregated data from this survey is publicly available through
-the [COVIDcast API](../api/covidcast.md) as the [`fb-survey` data source](../api/covidcast-signals/fb-survey.md).
-Demographic breakdowns of survey data are publicly available as
-[downloadable contingency tables](contingency-tables.md).
+The [survey results dashboard](https://delphi.cmu.edu/covidcast/survey-results/)
+provides a high-level summary of survey results. Geographically aggregated data
+from this survey is publicly available through the [COVIDcast API](../api/covidcast.md)
+as the [`fb-survey` data source](../api/covidcast-signals/fb-survey.md). Demographic breakdowns of survey
+data are publicly available as [downloadable contingency tables](contingency-tables.md).
 
 This documentation describes the survey items, data coding, data distribution,
 and the survey weights computed by Facebook. It also documents the individual
@@ -30,20 +31,28 @@ If you have questions about the survey or getting access to data, contact us at
 ## Credits
 
 The COVID-19 Trends and Impact Survey (CTIS) is a project of the [Delphi
-Group](https://delphi.cmu.edu/) at Carnegie Mellon University. The Principal
-Investigator is [Alex Reinhart](https://www.refsmmat.com/); Wichada La
-Motte-Kerr is Survey Coordinator. The survey protocol is reviewed by the
-Carnegie Mellon University Institutional Review Board.
+Group](https://delphi.cmu.edu/) at Carnegie Mellon University. Team members
+include:
+
+* [Alex Reinhart](https://www.refsmmat.com/), Principal Investigator
+* Wichada La Motte-Kerr, Survey Coordinator
+* Robin Mejia, survey advisor
+* Nat DeFries, statistical developer and data engineer
+* plus support from many members of the [Delphi
+  team](https://delphi.cmu.edu/about/team/)
+
+The survey protocol is reviewed by the Carnegie Mellon University Institutional
+Review Board.
 
 The support of several institutions makes the survey possible. Facebook supports
 the survey through recruitment (participants are invited via their News Feed),
 survey sampling and weighting procedures, technical assistance in survey design
 and implementation, and coordination with researchers and public health
-officials. The University of Maryland's Joint Program in Survey Methodology
-conducts an [international version of the survey](https://covidmap.umd.edu/),
-and we coordinate closely on survey design and implementation. Delphi collects,
-aggregates, and distributes the US survey data, and retains ultimate
-responsibility for the US survey instrument and data.
+officials. The University of Maryland's Social Data Science Center conducts a
+[global version of the survey](https://covidmap.umd.edu/), and we coordinate
+closely on survey design and implementation. Delphi collects, aggregates, and
+distributes the US survey data, and retains ultimate responsibility for the US
+survey instrument and data.
 
 We develop the survey collaboratively with data users, public health officials,
 and others. If you are interested in getting involved, see our

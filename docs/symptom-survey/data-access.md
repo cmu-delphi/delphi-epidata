@@ -34,6 +34,8 @@ University Institutional Review Board with IRB ID STUDY2020_00000162.
 
 Some important notes about obtaining access to the individual survey responses:
 
+* You should be familiar with the [survey's limitations](limitations.md) and
+  ensure the survey data is suitable for your research goals.
 * Your research purpose must be consistent with the consent language used in
   [Wave 1 of the survey](coding.md#wave-1), which states the responses may be
   used to create "a better public health understanding of where the coronavirus

@@ -4,7 +4,7 @@ parent: COVID-19 Trends and Impact Survey
 nav_order: 7
 ---
 
-# Questions and Coding
+# Survey Modules & Randomization
 {: .no_toc}
 
 To reduce the overall length of the instrument and minimize response burden,
