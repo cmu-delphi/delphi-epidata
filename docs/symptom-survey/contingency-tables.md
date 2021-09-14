@@ -70,6 +70,14 @@ only use a partial week or month of data.
 
 At the moment, only nation-wide and state groupings are available.
 
+Facebook only invites users to take the survey if they appear, based on
+attributes in their Facebook profiles, to reside in the 50 states or
+Washington, DC. Puerto Rico is sampled separately as part of the
+[international version of the survey](https://covidmap.umd.edu/). If Facebook
+believes a user qualifies for the survey, but the user then replies that they
+live in Puerto Rico or another US territory, we do not include their response
+in the aggregations.
+
 ### Privacy
 
 The aggregates are filtered to only include estimates for a particular group

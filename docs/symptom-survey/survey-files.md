@@ -104,9 +104,19 @@ Responses qualify for inclusion in these files if they meet the following condit
   open-ended question (A2, A2b, B2b, Q40, C10_1_1, C10_2_1, C10_3_1, C10_4_1,
   D3, D4, D5) means to provide any number (floats okay) and to “answer” a radio
   button question is to provide a selection
+* starting September 2021, indicated that they live in the 50 states or
+  Washington, DC
 
 We do not require the user to have completed the survey, or to have seen all
 pages of the survey.
+
+Facebook only invites users to take the survey if they appear, based on
+attributes in their Facebook profiles, to reside in the 50 states or
+Washington, DC. Puerto Rico is sampled separately as part of the
+[international version of the survey](https://covidmap.umd.edu/). Starting in
+September 2021, if Facebook believes a user qualifies for the survey, but the
+user then replies that they live in Puerto Rico or another US territory, we do
+not include their response in the individual response data.
 
 ## Collisions
 
