@@ -643,6 +643,16 @@ declines, some indicators will become unavailable once they no longer meet the
 This affects some signals, such as those based on a subset of responses, more
 than others, with finer geographic resolutions becoming unavailable first.
 
+### Target Region
+
+Facebook only invites users to take the survey if they appear, based on
+attributes in their Facebook profiles, to reside in the 50 states or
+Washington, DC. Puerto Rico is sampled separately as part of the
+[international version of the survey](https://covidmap.umd.edu/). If Facebook
+believes a user qualifies for the survey, but the user then replies that they
+live in Puerto Rico or another US territory, we do not include their response
+in the aggregations.
+
 
 ## Survey Weighting
 
