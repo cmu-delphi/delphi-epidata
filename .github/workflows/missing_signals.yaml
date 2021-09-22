@@ -23,6 +23,6 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v2
         with:
-          name: missing_db_signal.csv
-          path:  missing_db_signal.csv
+          name: missing_db_signals.csv
+          path:  missing_db_signals.csv
 
