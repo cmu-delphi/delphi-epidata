@@ -1,0 +1,28 @@
+name: Missing Signal Detector
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          ref: dev
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install Dependencies
+        run: pip install requests pandas
+      - name: Run Missing Signals Detector
+        run: python scripts/report_missing_covidcast_meta.py
+      - name: Upload Missing Artifact
+        if: failure()
+        uses: actions/upload-artifact@v2
+        with:
+          name: missing_db_signal.csv
+          path:  missing_db_signal.csv
+
