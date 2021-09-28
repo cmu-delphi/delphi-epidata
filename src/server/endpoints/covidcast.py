@@ -458,9 +458,12 @@ def handle_export():
     source_signal_pairs, alias_mapper = create_source_signal_alias_mapper(source_signal_pairs)
     start_day, is_day = parse_day_or_week_arg("start_day", 202001 if weekly_signals > 0 else 20200401)
     end_day, is_end_day = parse_day_or_week_arg("end_day", 202020 if weekly_signals > 0 else 20200901)
+    time_window = (start_day, end_day)
     if is_day != is_end_day:
         raise ValidationFailedException("mixing weeks with day arguments")
     _verify_argument_time_type_matches(is_day, daily_signals, weekly_signals)
+    transform_args = parse_transform_args()
+    jit_bypass = parse_jit_bypass()
 
     geo_type = request.args.get("geo_type", "county")
     geo_values = request.args.get("geo_values", "*")
@@ -472,13 +475,22 @@ def handle_export():
     if is_day != is_as_of_day:
         raise ValidationFailedException("mixing weeks with day arguments")
 
+    use_server_side_compute = all([is_day, is_end_day]) and JIT_COMPUTE and not jit_bypass
+    if use_server_side_compute:
+        pad_length = get_pad_length(source_signal_pairs, transform_args.get("smoother_window_length"))
+        source_signal_pairs, row_transform_generator = get_basename_signals(source_signal_pairs)
+        time_window = pad_time_window(time_window, pad_length)
+
     # build query
     q = QueryBuilder("covidcast", "t")
 
-    q.set_fields(["geo_value", "signal", "time_value", "issue", "lag", "value", "stderr", "sample_size", "geo_type", "source"], [], [])
+    fields_string = ["geo_value", "signal", "geo_type", "source"]
+    fields_int = ["time_value", "issue", "lag"]
+    fields_float = ["value", "stderr", "sample_size"]
+    q.set_fields(fields_string + fields_int + fields_float, [], [])
     q.set_order("time_value", "geo_value")
     q.where_source_signal_pairs("source", "signal", source_signal_pairs)
-    q.where_time_pairs("time_type", "time_value", [TimePair("day" if is_day else "week", [(start_day, end_day)])])
+    q.where_time_pairs("time_type", "time_value", [TimePair("day" if is_day else "week", [time_window])])
     q.where_geo_pairs("geo_type", "geo_value", [GeoPair(geo_type, True if geo_values == "*" else geo_values)])
 
     _handle_lag_issues_as_of(q, None, None, as_of)
@@ -489,7 +501,7 @@ def handle_export():
     filename = "covidcast-{source}-{signal}-{start_day}-to-{end_day}{as_of}".format(source=source, signal=signal, start_day=format_date(start_day), end_day=format_date(end_day), as_of=as_of_str)
     p = CSVPrinter(filename)
 
-    def parse_row(i, row):
+    def parse_csv_row(i, row):
         # '',geo_value,signal,{time_value,issue},lag,value,stderr,sample_size,geo_type,data_source
         return {
             "": i,
@@ -505,10 +517,20 @@ def handle_export():
             "data_source": alias_mapper(row["source"], row["signal"]) if alias_mapper else row["source"],
         }
 
-    def gen(first_row, rows):
-        yield parse_row(0, first_row)
+    if use_server_side_compute:
+        def gen_transform(rows):
+            parsed_rows = (parse_row(row, fields_string, fields_int, fields_float) for row in rows)
+            transformed_rows = row_transform_generator(parsed_rows=parsed_rows, time_pairs=[TimePair("day", [time_window])], transform_args=transform_args)
+            for row in transformed_rows:
+                yield row
+    else:
+        def gen_transform(rows):
+            for row in rows:
+                yield row
+
+    def gen_parse(rows):
         for i, row in enumerate(rows):
-            yield parse_row(i + 1, row)
+            yield parse_csv_row(i, row)
 
     # execute query
     try:
@@ -517,14 +539,15 @@ def handle_export():
         raise DatabaseErrorException(str(e))
 
     # special case for no data to be compatible with the CSV server
-    first_row = next(r, None)
+    transformed_query = peekable(gen_transform(r))
+    first_row = transformed_query.peek(None)
     if not first_row:
         return "No matching data found for signal {source}:{signal} " "at {geo} level from {start_day} to {end_day}, as of {as_of}.".format(
             source=source, signal=signal, geo=geo_type, start_day=format_date(start_day), end_day=format_date(end_day), as_of=(date.today().isoformat() if as_of is None else format_date(as_of))
         )
 
     # now use a generator for sending the rows and execute all the other queries
-    return p(gen(first_row, r))
+    return p(gen_parse(transformed_query))
 
 
 @bp.route("/backfill", methods=("GET", "POST"))

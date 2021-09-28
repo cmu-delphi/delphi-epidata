@@ -530,19 +530,51 @@ class CovidcastEndpointTests(unittest.TestCase):
     def test_csv(self):
         """Request a signal the /csv endpoint."""
 
+        expected_columns = ["geo_value", "signal", "time_value", "issue", "lag", "value", "stderr", "sample_size", "geo_type", "data_source"]
         rows = [CovidcastRow(time_value=20200401 + i, value=i) for i in range(10)]
-        first = rows[0]
         self._insert_rows(rows)
+        first = rows[0]
+        with self.subTest("no server-side compute"):
+            response = requests.get(
+                f"{BASE_URL}/csv",
+                params=dict(signal=first.signal_pair, start_day="2020-04-01", end_day="2020-04-10", geo_type=first.geo_type),
+            )
+            response.raise_for_status()
+            out = response.text
+            df = pd.read_csv(StringIO(out), index_col=0)
 
-        response = requests.get(
-            f"{BASE_URL}/csv",
-            params=dict(signal=first.signal_pair, start_day="2020-04-01", end_day="2020-12-12", geo_type=first.geo_type),
-        )
-        response.raise_for_status()
-        out = response.text
-        df = pd.read_csv(StringIO(out), index_col=0)
-        self.assertEqual(df.shape, (len(rows), 10))
-        self.assertEqual(list(df.columns), ["geo_value", "signal", "time_value", "issue", "lag", "value", "stderr", "sample_size", "geo_type", "data_source"])
+            self.assertEqual(df.shape, (len(rows), 10))
+            self.assertEqual(list(df.columns), expected_columns)
+
+        num_rows = 10
+        time_value_pairs = [(20200331, 0)] + [(20200401 + i, v) for i, v in enumerate(accumulate(range(num_rows)))]
+        rows = [CovidcastRow(source="jhu-csse", signal="confirmed_cumulative_num", time_value=t, value=v) for t, v in time_value_pairs]
+        self._insert_rows(rows)
+        first = rows[0]
+        with self.subTest("use server-side compute"):
+            response = requests.get(
+                f"{BASE_URL}/csv",
+                params=dict(signal="src:sig", start_day="2020-04-01", end_day="2020-04-10", geo_type=first.geo_type),
+            )
+            response.raise_for_status()
+            out = response.text
+            df = pd.read_csv(StringIO(out), index_col=0)
+            df.stderr = np.nan
+            df.sample_size = np.nan
+
+            response = requests.get(
+                f"{BASE_URL}/csv",
+                params=dict(signal="jhu-csse:confirmed_incidence_num", start_day="2020-04-01", end_day="2020-04-10", geo_type=first.geo_type),
+            )
+            response.raise_for_status()
+            out = response.text
+            df_diffed = pd.read_csv(StringIO(out), index_col=0)
+            df_diffed.signal = "sig"
+            df_diffed.data_source = "src"
+
+            self.assertEqual(df_diffed.shape, (num_rows, 10))
+            self.assertEqual(list(df_diffed.columns), expected_columns)
+            pd.testing.assert_frame_equal(df_diffed, df)
 
     def test_backfill(self):
         """Request a signal the /backfill endpoint."""
