@@ -5,6 +5,7 @@ from typing import Iterable, Dict, List, Optional, Union
 from more_itertools import windowed
 from numpy import nan, nan_to_num, array, dot, isnan
 
+from delphi_utils.nancodes import Nans
 
 class PadFillValue(str, Enum):
     first = "first"
@@ -16,6 +17,27 @@ class SmootherKernelValue(str, Enum):
     average = "average"
 
 
+def _smoother(values: List[Number], kernel: Optional[Union[List[Number], SmootherKernelValue]] = None) -> Number:
+    """Basic smoother.
+
+    If kernel passed, uses the kernel as summation weights. If something is wrong,
+    defaults to the mean.
+    """
+    try:
+        if kernel and isinstance(kernel, list):
+            kernel = array(kernel, copy=False)
+            values = array(values, copy=False)
+            smoothed_value = dot(values, kernel)
+            return smoothed_value
+        else:
+            raise ValueError
+    except (ValueError, TypeError):
+        try:
+            smoothed_value = array(values).mean()
+        except (ValueError, TypeError):
+            smoothed_value = None
+
+    return smoothed_value
 
 
 def generate_smooth_rows(
@@ -52,8 +74,25 @@ def generate_smooth_rows(
     **kwargs:
         Container for non-shared parameters with other computation functions.
     """
-    for window in windowed(rows, smoother_window_length):
-        yield smoothed_row(window)
+    # Validate params.
+    if not isinstance(smoother_window_length, int) or (isinstance(smoother_window_length, int) and smoother_window_length < 1):
+        smoother_window_length = 7
+    if isinstance(smoother_kernel, list):
+        smoother_window_length = len(smoother_kernel)
+    if not isinstance(nan_fill_value, Number):
+        nan_fill_value = nan
+    if not isinstance(smoother_kernel, (list, SmootherKernelValue)):
+        smoother_kernel = SmootherKernelValue.average
+
+    for window in windowed(rows, smoother_window_length):  # Iterable[List[Dict]]
+        if all(e is None for e in window):
+            continue
+        value = _smoother(nan_to_num([e.get("value") if e else nan_fill_value for e in window], nan=nan_fill_value), smoother_kernel)
+        value = float(round(value, 8)) if value and not isnan(value) else None
+        last_item = list(filter(lambda e: e is not None, window))[-1]
+        item = last_item.copy() # inherit values of last time stamp
+        item.update({"value": value, "stderr": None, "sample_size": None, "missing_value": Nans.NOT_MISSING if value is not None else Nans.NOT_APPLICABLE, "missing_stderr": Nans.NOT_APPLICABLE, "missing_sample_size": Nans.NOT_APPLICABLE})
+        yield item
 
 
 def generate_row_diffs(rows: Iterable[Dict], nan_fill_value: Number = nan, **kwargs) -> Iterable[Dict]:

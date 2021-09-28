@@ -225,6 +225,33 @@ class CovidcastEndpointTests(unittest.TestCase):
             expected_values = self._diff_rows(values1) + self._diff_rows(values2)
             self.assertAlmostEqual(out_values, expected_values)
 
+        with self.subTest("smoothed signal"):
+            out = self._fetch("/", signal="jhu-csse:confirmed_7dav_incidence_num", geo=first.geo_pair, time="day:20200401-20200410")
+            self.assertEqual(len(out["epidata"]), len(rows01))
+            out_values = [row["value"] for row in out["epidata"]]
+            values = [None] * 7 + [value for _, value in time_value_pairs]
+            expected_values = self._smooth_rows(self._diff_rows(values))
+            self.assertAlmostEqual(out_values, expected_values)
+
+        with self.subTest("diffed signal and smoothed signal in one request"):
+            out = self._fetch("/", signal="jhu-csse:confirmed_incidence_num;jhu-csse:confirmed_7dav_incidence_num", geo=first.geo_pair, time="day:20200401-20200410")
+            self.assertEqual(len(out["epidata"]), 2*len(rows01) + 6)
+            out_values = [row["value"] for row in out["epidata"]]
+            values = [None] * 7 + [value for _, value in time_value_pairs]
+            expected_diff = self._diff_rows(values)
+            expected_smoothed = self._smooth_rows(expected_diff)
+            expected_values = list(interleave_longest(expected_smoothed, expected_diff))
+            self.assertAlmostEqual(out_values, expected_values)
+
+        with self.subTest("smoothing with time window resizing"):
+            # should fetch 6 extra days
+            out = self._fetch("/", signal="jhu-csse:confirmed_7dav_incidence_num", geo=first.geo_pair, time="day:20200407-20200410")
+            self.assertEqual(len(out["epidata"]), len(rows01) - 6)
+            out_values = [row["value"] for row in out["epidata"]]
+            # an extra None is added because the padding for DIFF_SMOOTH (pad_length = 8) is used
+            values = [None] + [value for _, value in time_value_pairs]
+            expected_values = self._smooth_rows(self._diff_rows(values))
+            self.assertAlmostEqual(out_values, expected_values)
 
         with self.subTest("diffing with time window resizing"):
             # should fetch 1 extra day
@@ -239,6 +266,15 @@ class CovidcastEndpointTests(unittest.TestCase):
         rows = [CovidcastRow(source="jhu-csse", signal="confirmed_cumulative_num", geo_value="03", time_value=time_value, value=value) for time_value, value in time_value_pairs]
         first = rows[0]
         self._insert_rows(rows)
+
+        with self.subTest("smoothing with a time gap"):
+            # should fetch 1 extra day
+            out = self._fetch("/", signal="jhu-csse:confirmed_7dav_incidence_num", geo=first.geo_pair, time="day:20200401-20200420")
+            self.assertEqual(len(out["epidata"]), len(rows) + 5)
+            out_values = [row["value"] for row in out["epidata"]]
+            values = [None] * 7 + [value for _, value in time_value_pairs][:10] + [None] * 5 + [value for _, value in time_value_pairs][10:]
+            expected_values = self._smooth_rows(self._diff_rows(values))
+            self.assertAlmostEqual(out_values, expected_values)
 
         with self.subTest("diffing with a time gap"):
             # should fetch 1 extra day
