@@ -296,6 +296,14 @@ class CovidcastEndpointTests(unittest.TestCase):
             out = self._fetch(is_compatibility=True, source=first.source, signal=first.signal, geo=first.geo_pair, time="day:*")
             self.assertEqual(len(out["epidata"]), len(rows))
 
+    def _diff_covidcast_rows(self, rows: List[CovidcastRow]) -> List[CovidcastRow]:
+        new_rows = list()
+        for x, y in zip(rows[1:], rows[:-1]):
+            new_row = copy(x)
+            new_row.value = x.value - y.value
+            new_rows.append(new_row)
+        return new_rows
+
     def test_trend(self):
         """Request a signal the /trend endpoint."""
 
@@ -306,29 +314,66 @@ class CovidcastEndpointTests(unittest.TestCase):
         ref = rows[num_rows // 2]
         self._insert_rows(rows)
 
-        out = self._fetch("/trend", signal=first.signal_pair, geo=first.geo_pair, date=last.time_value, window="20200401-20201212", basis=ref.time_value)
+        with self.subTest("no server-side compute"):
+            out = self._fetch("/trend", signal=first.signal_pair, geo=first.geo_pair, date=last.time_value, window="20200401-20201212", basis=ref.time_value)
 
-        self.assertEqual(out["result"], 1)
-        self.assertEqual(len(out["epidata"]), 1)
-        trend = out["epidata"][0]
-        self.assertEqual(trend["geo_type"], last.geo_type)
-        self.assertEqual(trend["geo_value"], last.geo_value)
-        self.assertEqual(trend["signal_source"], last.source)
-        self.assertEqual(trend["signal_signal"], last.signal)
+            self.assertEqual(out["result"], 1)
+            self.assertEqual(len(out["epidata"]), 1)
+            trend = out["epidata"][0]
+            self.assertEqual(trend["geo_type"], last.geo_type)
+            self.assertEqual(trend["geo_value"], last.geo_value)
+            self.assertEqual(trend["signal_source"], last.source)
+            self.assertEqual(trend["signal_signal"], last.signal)
 
-        self.assertEqual(trend["date"], last.time_value)
-        self.assertEqual(trend["value"], last.value)
+            self.assertEqual(trend["date"], last.time_value)
+            self.assertEqual(trend["value"], last.value)
 
-        self.assertEqual(trend["basis_date"], ref.time_value)
-        self.assertEqual(trend["basis_value"], ref.value)
-        self.assertEqual(trend["basis_trend"], "increasing")
+            self.assertEqual(trend["basis_date"], ref.time_value)
+            self.assertEqual(trend["basis_value"], ref.value)
+            self.assertEqual(trend["basis_trend"], "increasing")
 
-        self.assertEqual(trend["min_date"], first.time_value)
-        self.assertEqual(trend["min_value"], first.value)
-        self.assertEqual(trend["min_trend"], "increasing")
-        self.assertEqual(trend["max_date"], last.time_value)
-        self.assertEqual(trend["max_value"], last.value)
-        self.assertEqual(trend["max_trend"], "steady")
+            self.assertEqual(trend["min_date"], first.time_value)
+            self.assertEqual(trend["min_value"], first.value)
+            self.assertEqual(trend["min_trend"], "increasing")
+            self.assertEqual(trend["max_date"], last.time_value)
+            self.assertEqual(trend["max_value"], last.value)
+            self.assertEqual(trend["max_trend"], "steady")
+
+        num_rows = 30
+        time_value_pairs = [(20200331, 0)] + [(20200401 + i, v) for i, v in enumerate(accumulate(range(num_rows)))]
+        rows = [CovidcastRow(source="jhu-csse", signal="confirmed_cumulative_num", time_value=t, value=v) for t, v in time_value_pairs]
+        self._insert_rows(rows)
+        diffed_rows = self._diff_covidcast_rows(rows)
+        for row in diffed_rows:
+            row.signal = "confirmed_incidence_num"
+        first = diffed_rows[0]
+        last = diffed_rows[-1]
+        ref = diffed_rows[num_rows // 2]
+        with self.subTest("use server-side compute"):
+            out = self._fetch("/trend", signal="jhu-csse:confirmed_incidence_num", geo=first.geo_pair, date=last.time_value, window="20200401-20201212", basis=ref.time_value)
+
+            self.assertEqual(out["result"], 1)
+            self.assertEqual(len(out["epidata"]), 1)
+            trend = out["epidata"][0]
+            self.assertEqual(trend["geo_type"], last.geo_type)
+            self.assertEqual(trend["geo_value"], last.geo_value)
+            self.assertEqual(trend["signal_source"], last.source)
+            self.assertEqual(trend["signal_signal"], last.signal)
+
+            self.assertEqual(trend["date"], last.time_value)
+            self.assertEqual(trend["value"], last.value)
+
+            self.assertEqual(trend["basis_date"], ref.time_value)
+            self.assertEqual(trend["basis_value"], ref.value)
+            self.assertEqual(trend["basis_trend"], "increasing")
+
+            self.assertEqual(trend["min_date"], first.time_value)
+            self.assertEqual(trend["min_value"], first.value)
+            self.assertEqual(trend["min_trend"], "increasing")
+            self.assertEqual(trend["max_date"], last.time_value)
+            self.assertEqual(trend["max_value"], last.value)
+            self.assertEqual(trend["max_trend"], "steady")
+
 
     def test_trendseries(self):
         """Request a signal the /trendseries endpoint."""

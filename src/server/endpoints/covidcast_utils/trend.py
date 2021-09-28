@@ -42,6 +42,8 @@ def compute_trend(geo_type: str, geo_value: str, signal_source: str, signal_sign
 
     # find all needed rows
     for time, value in rows:
+        if value is None:
+            continue
         if time == current_time:
             t.value = value
         if time == basis_time:
