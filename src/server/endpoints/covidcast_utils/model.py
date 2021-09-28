@@ -16,6 +16,9 @@ from ...utils import time_value_range, shift_time_value
 
 
 IDENTITY: Callable = lambda rows, **kwargs: rows
+DIFF: Callable = lambda rows, **kwargs: generate_row_diffs(rows, **kwargs)
+SMOOTH: Callable = lambda rows, **kwargs: generate_smooth_rows(rows, **kwargs)
+DIFF_SMOOTH: Callable = lambda rows, **kwargs: generate_smooth_rows(generate_row_diffs(rows, **kwargs), **kwargs)
 
 
 class HighValuesAre(str, Enum):
@@ -245,7 +248,6 @@ for d in data_signals:
         data_signals_by_key[(source.db_source, d.signal)] = d
 
 
-
 def get_related_signals(signal: DataSignal) -> List[DataSignal]:
     return [s for s in data_signals if s != signal and s.signal_basename == signal.signal_basename]
 
@@ -316,8 +318,15 @@ def _resolve_all_signals(source_signals: Union[SourceSignalPair, List[SourceSign
 
     Example: SourceSignalPair("jhu-csse", signal=True) would return SourceSignalPair("jhu-csse", [<list of all JHU signals>]).
     """
-    return [SourceSignalPair("src", ["sig1", "sig2"])]
-
+    if isinstance(source_signals, SourceSignalPair):
+        if source_signals.signal == True:
+            source = data_sources_by_id.get(source_signals.source)
+            if source:
+                return SourceSignalPair(source.source, [s.signal for s in source.signals])
+        return source_signals
+    if isinstance(source_signals, list):
+        return [_resolve_all_signals(pair, data_sources_by_id) for pair in source_signals]
+    raise TypeError("source_signals is not Union[SourceSignalPair, List[SourceSignalPair]].")
 
 
 def _reindex_iterable(iterable: Iterable[Dict], time_pairs: List[TimePair], fill_value: Optional[int] = None) -> Iterable:
@@ -331,17 +340,47 @@ def _reindex_iterable(iterable: Iterable[Dict], time_pairs: List[TimePair], fill
     if time_pairs is None:
         return iterable
 
+    _iterable = peekable(iterable)
+    first_item = _iterable.peek()
     day_range_index = get_day_range(time_pairs)
     for day in day_range_index.time_values:
-        if day in next_value(iterable):
-            return next_value(iterable)
+        index_item = first_item.copy()
+        index_item.update({
+            "time_value": day,
+            "value": fill_value,
+            "stderr": None,
+            "sample_size": None,
+            "missing_value": Nans.NOT_MISSING if fill_value is not None else Nans.NOT_APPLICABLE,
+            "missing_stderr": Nans.NOT_APPLICABLE,
+            "missing_sample_size": Nans.NOT_APPLICABLE
+        })
+        new_item = _iterable.peek(default=index_item)
+        if day == new_item.get("time_value"):
+            yield next(_iterable, index_item)
         else:
-            yield updated_default_value
+            yield index_item
 
 
 def _get_base_signal_transform(signal: Union[DataSignal, Tuple[str, str]], data_signals_by_key: Dict[Tuple[str, str], DataSignal] = data_signals_by_key) -> Callable:
     """Given a DataSignal, return the transformation that needs to be applied to its base signal to derive the signal."""
-    return IDENTITY
+    if isinstance(signal, DataSignal):
+        parent_signal = data_signals_by_key.get((signal.source, signal.signal_basename))
+        if signal.format not in [SignalFormat.raw, SignalFormat.raw_count, SignalFormat.count] or not signal.compute_from_base or not parent_signal:
+            return IDENTITY
+        if signal.is_cumulative and signal.is_smoothed:
+            return SMOOTH
+        if not signal.is_cumulative and not signal.is_smoothed:
+            return DIFF if parent_signal.is_cumulative else IDENTITY
+        if not signal.is_cumulative and signal.is_smoothed:
+            return DIFF_SMOOTH if parent_signal.is_cumulative else SMOOTH
+        return IDENTITY
+    if isinstance(signal, tuple):
+        signal = data_signals_by_key.get(signal)
+        if signal:
+            return _get_base_signal_transform(signal, data_signals_by_key)
+        return IDENTITY
+
+    raise TypeError("signal must be either Tuple[str, str] or DataSignal.")
 
 
 def get_transform_types(source_signal_pairs: List[SourceSignalPair], data_sources_by_id: Dict[str, DataSource] = data_sources_by_id, data_signals_by_key: Dict[Tuple[str, str], DataSignal] = data_signals_by_key) -> Set[Callable]:
@@ -352,7 +391,17 @@ def get_transform_types(source_signal_pairs: List[SourceSignalPair], data_source
 
     Used to pad the user DB query with extra days.
     """
-    return set([IDENTITY])
+    source_signal_pairs = _resolve_all_signals(source_signal_pairs, data_sources_by_id)
+
+    transform_types = set()
+    for source_signal_pair in source_signal_pairs:
+        source_name = source_signal_pair.source
+        signal_names = source_signal_pair.signal
+        if isinstance(signal_names, bool):
+            continue
+        transform_types |= {_get_base_signal_transform((source_name, signal_name), data_signals_by_key=data_signals_by_key) for signal_name in signal_names}
+
+    return transform_types
 
 
 def get_pad_length(source_signal_pairs: List[SourceSignalPair], smoother_window_length: int, data_sources_by_id: Dict[str, DataSource] = data_sources_by_id, data_signals_by_key: Dict[Tuple[str, str], DataSignal] = data_signals_by_key):
@@ -364,10 +413,14 @@ def get_pad_length(source_signal_pairs: List[SourceSignalPair], smoother_window_
     Used to pad the user DB query with extra days.
     """
     transform_types = get_transform_types(source_signal_pairs, data_sources_by_id=data_sources_by_id, data_signals_by_key=data_signals_by_key)
+    pad_length = [0]
+    if DIFF_SMOOTH in transform_types:
+        pad_length.append(smoother_window_length)
     if SMOOTH in transform_types:
-        return 7
-    else:
-        return 0
+        pad_length.append(smoother_window_length - 1)
+    if DIFF in transform_types:
+        pad_length.append(1)
+    return max(pad_length)
 
 
 def pad_time_pairs(time_pairs: List[TimePair], pad_length: int) -> List[TimePair]:
@@ -378,7 +431,15 @@ def pad_time_pairs(time_pairs: List[TimePair], pad_length: int) -> List[TimePair
 
     Used to pad the user DB query with extra days.
     """
-    return [TimePair("day", [(20210401, 20210407)])]
+    if pad_length < 0:
+        raise ValueError("pad_length should non-negative.")
+    if pad_length == 0:
+        return time_pairs.copy()
+    min_time = min(time_value if isinstance(time_value, int) else time_value[0] for time_pair in time_pairs if not isinstance(time_pair.time_values, bool) for time_value in time_pair.time_values)
+    padded_time = TimePair("day", [(shift_time_value(min_time, -1 * pad_length), min_time)])
+    new_time_pairs = time_pairs.copy()
+    new_time_pairs.append(padded_time)
+    return new_time_pairs
 
 
 def pad_time_window(time_window: Tuple[int, int], pad_length: int) -> Tuple[int, int]:
@@ -389,7 +450,12 @@ def pad_time_window(time_window: Tuple[int, int], pad_length: int) -> Tuple[int,
 
     Used to pad the user DB query with extra days.
     """
-    return (20210401, 20210407)
+    if pad_length < 0:
+        raise ValueError("pad_length should non-negative.")
+    if pad_length == 0:
+        return time_window
+    min_time, max_time = time_window
+    return (shift_time_value(min_time, -1 * pad_length), max_time)
 
 
 def get_day_range(time_pairs: Union[TimePair, List[TimePair]]) -> TimePair:
@@ -401,11 +467,23 @@ def get_day_range(time_pairs: Union[TimePair, List[TimePair]]) -> TimePair:
 
     Used to produce a contiguous time index for time series operations.
     """
-    return TimePair("day", [20210407, 20210408, 20210409, 20210410])
+    if isinstance(time_pairs, TimePair):
+        time_pair = time_pairs
+        time_values = sorted(list(set().union(*(set(time_value_range(time_value)) if isinstance(time_value, tuple) else {time_value} for time_value in time_pair.time_values))))
+        if True in time_values:
+            raise ValueError("TimePair.time_value should not be a bool when calling get_day_range.")
+        return TimePair(time_pair.time_type, time_values)
+    elif isinstance(time_pairs, list):
+        if not all(time_pair.time_type == "day" for time_pair in time_pairs):
+            raise ValueError("get_day_range only supports day time_type pairs.")
+        time_values = sorted(list(set().union(*(get_day_range(time_pair).time_values for time_pair in time_pairs))))
+        return TimePair("day", time_values)
+    else:
+        raise ValueError("get_day_range received an unsupported type as input.")
 
 
 def _generate_transformed_rows(
-    parsed_rows: Iterable[Dict], time_pairs: Optional[List[TimePair]] = None, transform_dict: Optional[Dict[str, List[Tuple[str, str]]]]=None, transform_args: Optional[Dict] = None, group_keyfunc: Optional[Callable] = None, data_signals_by_key: Dict[Tuple[str, str], DataSignal] = data_signals_by_key,
+    parsed_rows: Iterable[Dict], time_pairs: Optional[List[TimePair]] = None, transform_dict: Optional[Dict[Tuple[str, str], List[Tuple[str, str]]]] = None, transform_args: Optional[Dict] = None, group_keyfunc: Optional[Callable] = None, data_signals_by_key: Dict[Tuple[str, str], DataSignal] = data_signals_by_key,
 ) -> Iterable[Dict]:
     """Applies time-series transformations to streamed rows from a database.
 
@@ -441,13 +519,19 @@ def _generate_transformed_rows(
         for key, group in groupby(parsed_rows, group_keyfunc):
             _, _, source_name, signal_name = key
             # Extract the list of derived signals.
+            derived_signals: List[Tuple[str, str]] = transform_dict.get((source_name, signal_name), [(source_name, signal_name)])
             # Create a list of source-signal pairs along with the transformation required for the signal.
+            source_signal_pairs_and_group_transforms: List[Tuple[Tuple[str, str], Callable]] = [((derived_source, derived_signal), _get_base_signal_transform((derived_source, derived_signal), data_signals_by_key)) for (derived_source, derived_signal) in derived_signals]
             # Put the current time series on a contiguous time index.
+            group_continguous_time = _reindex_iterable(group, time_pairs, fill_value=transform_args.get("pad_fill_value")) if time_pairs else group
             # Create copies of the iterable, with smart memory usage.
+            group_iter_copies: Iterable[Iterable[Dict]] = tee(group_continguous_time, len(source_signal_pairs_and_group_transforms))
             # Create a list of transformed group iterables, remembering their derived name as needed.
+            transformed_group_rows: Iterable[Iterable[Dict]] = (zip(transform(rows, **transform_args), repeat(key)) for (key, transform), rows in zip(source_signal_pairs_and_group_transforms, group_iter_copies))
             # Traverse through the transformed iterables in an interleaved fashion, which makes sure that only a small window
             # of the original iterable (group) is stored in memory.
-            for row in transform_group(group):
+            for row, (_, derived_signal) in interleave_longest(*transformed_group_rows):
+                row["signal"] = derived_signal
                 yield row
     except Exception as e:
         print(f"Tranformation encountered error of type {type(e)}, with message {e}. Yielding None and stopping.")
@@ -462,6 +546,28 @@ def get_basename_signals(source_signal_pairs: List[SourceSignalPair], data_sourc
     SourceSignalPair("src", signal=["sig_base", "sig_smoothed"]) would return SourceSignalPair("src", signal=["sig_base"]) and a transformation function
     that will take the returned database query for "sig_base" and return both the base time series and the smoothed time series.
     """
-    transform_dict = {("src", "sig_base"): [("src", "sig_base"), ("src", "sig_smoothed")]}
+    source_signal_pairs = _resolve_all_signals(source_signal_pairs, data_sources_by_id)
+    base_signal_pairs: List[SourceSignalPair] = []
+    transform_dict: Dict[Tuple[str, str], List[Tuple[str, str]]] = dict()
+
+    for pair in source_signal_pairs:
+        if isinstance(pair.signal, bool):
+            base_signal_pairs.append(pair)
+            continue
+
+        source_name = pair.source
+        signal_names = pair.signal
+        signals = []
+        for signal_name in signal_names:
+            signal = data_signals_by_key.get((source_name, signal_name))
+            if not signal or not signal.compute_from_base:
+                signals.append(signal_name)
+                transform_dict.setdefault((source_name, signal_name), []).append((source_name, signal_name))
+            else:
+                signals.append(signal.signal_basename)
+                transform_dict.setdefault((source_name, signal.signal_basename), []).append((source_name, signal_name))
+        base_signal_pairs.append(SourceSignalPair(pair.source, signals))
+
     row_transform_generator = partial(_generate_transformed_rows, transform_dict=transform_dict, data_signals_by_key=data_signals_by_key)
-    return SourceSignalPair("src", signal=["sig_base"]), row_transform_generator
+
+    return base_signal_pairs, row_transform_generator

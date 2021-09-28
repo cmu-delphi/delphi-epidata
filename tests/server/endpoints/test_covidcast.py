@@ -5,7 +5,7 @@ from flask.testing import FlaskClient
 from flask import Response
 from delphi.epidata.server.main import app
 
-from delphi.epidata.server.endpoints.covidcast import guess_index_to_use
+from delphi.epidata.server.endpoints.covidcast import guess_index_to_use, parse_transform_args
 from delphi.epidata.server._params import (
     GeoPair,
     TimePair,
@@ -55,3 +55,7 @@ class UnitTests(unittest.TestCase):
         self.assertEqual(guess_index_to_use([TimePair("day", True)], [GeoPair("county", ["a"])], issues=[20200202], lag=3, as_of=None), "by_issue")
         self.assertIsNone(guess_index_to_use([TimePair("day", [20200201])], [GeoPair("county", ["a"])], issues=[20200202], lag=3, as_of=None))
         self.assertIsNone(guess_index_to_use([TimePair("day", True)], [GeoPair("county", True)], issues=None, lag=3, as_of=None))
+
+    # TODO
+    def test_parse_transform_args(self):
+        ...

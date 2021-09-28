@@ -902,7 +902,8 @@ class CovidcastTests(unittest.TestCase):
     response = response.json()
 
     # assert that the right data came back
-    self.assertEqual(len(response['epidata']), 4)
+    # any county with data in the time range will be padded to make a consistent range
+    self.assertEqual(len(response['epidata']), 3 * 2)
 
     # make the request
     response = requests.get(BASE_URL, params={
@@ -918,7 +919,8 @@ class CovidcastTests(unittest.TestCase):
     response = response.json()
 
     # assert that the right data came back
-    self.assertEqual(len(response['epidata']), 4)
+    # any county with data in the time range will be padded to make a consistent range
+    self.assertEqual(len(response['epidata']), 3 * 2)
 
     # make the request
     response = requests.get(BASE_URL, params={
@@ -934,7 +936,8 @@ class CovidcastTests(unittest.TestCase):
     response = response.json()
 
     # assert that the right data came back
-    self.assertEqual(len(response['epidata']), 6)
+    # any county with data in the time range will be padded to make a consistent range
+    self.assertEqual(len(response['epidata']), 4 * 3)
 
     # make the request
     response = requests.get(BASE_URL, params={
@@ -950,4 +953,5 @@ class CovidcastTests(unittest.TestCase):
     response = response.json()
 
     # assert that the right data came back
-    self.assertEqual(len(response['epidata']), 6)
+    # any county with data in the time range will be padded to make a consistent range
+    self.assertEqual(len(response['epidata']), 4 * 3)

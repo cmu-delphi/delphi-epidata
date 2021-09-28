@@ -2,7 +2,7 @@ import unittest
 from datetime import date
 from epiweeks import Week
 
-from delphi.epidata.server.utils.dates import time_value_to_date, date_to_time_value, shift_time_value, time_value_to_iso, days_in_range, weeks_in_range, week_to_time_value, week_value_to_week
+from delphi.epidata.server.utils.dates import time_value_to_date, date_to_time_value, shift_time_value, time_value_to_iso, days_in_range, weeks_in_range, week_to_time_value, week_value_to_week, time_value_range
 
 
 class UnitTests(unittest.TestCase):
@@ -40,3 +40,8 @@ class UnitTests(unittest.TestCase):
     def test_week_to_time_value(self):
         self.assertEqual(week_to_time_value(Week(2021, 1)), 202101)
         self.assertEqual(week_to_time_value(Week(2020, 42)), 202042)
+
+    def test_time_value_range(self):
+        self.assertEqual(time_value_range((20210801, 20210805)), [20210801, 20210802, 20210803, 20210804, 20210805])
+        self.assertEqual(time_value_range((20210801, 20210801)), [20210801])
+        self.assertEqual(time_value_range((20210801, 20210701)), [20210801])
