@@ -307,12 +307,20 @@ def handle_trendseries():
     daily_signals, weekly_signals = count_signal_time_types(source_signal_pairs)
     source_signal_pairs, alias_mapper = create_source_signal_alias_mapper(source_signal_pairs)
     geo_pairs = parse_geo_pairs()
+    transform_args = parse_transform_args()
+    jit_bypass = parse_jit_bypass()
 
     time_window, is_day = parse_day_or_week_range_arg("window")
     _verify_argument_time_type_matches(is_day, daily_signals, weekly_signals)
     basis_shift = extract_integer(("basis", "basis_shift"))
     if basis_shift is None:
         basis_shift = 7
+
+    use_server_side_compute = is_day and JIT_COMPUTE and not jit_bypass
+    if use_server_side_compute:
+        pad_length = get_pad_length(source_signal_pairs, transform_args.get("smoother_window_length"))
+        source_signal_pairs, row_transform_generator = get_basename_signals(source_signal_pairs)
+        time_window = pad_time_window(time_window, pad_length)
 
     # build query
     q = QueryBuilder("covidcast", "t")
@@ -336,8 +344,20 @@ def handle_trendseries():
     if not is_day:
         shifter = lambda x: shift_week_value(x, -basis_shift)
 
-    def gen(rows):
-        for key, group in groupby((parse_row(row, fields_string, fields_int, fields_float) for row in rows), lambda row: (row["geo_type"], row["geo_value"], row["source"], row["signal"])):
+    if use_server_side_compute:
+        def gen_transform(rows):
+            parsed_rows = (parse_row(row, fields_string, fields_int, fields_float) for row in rows)
+            transformed_rows = row_transform_generator(parsed_rows=parsed_rows, time_pairs=[TimePair("day", [time_window])], transform_args=transform_args)
+            for row in transformed_rows:
+                yield row
+    else:
+        def gen_transform(rows):
+            parsed_rows = (parse_row(row, fields_string, fields_int, fields_float) for row in rows)
+            for row in parsed_rows:
+                yield row
+
+    def gen_trend(rows):
+        for key, group in groupby(rows, lambda row: (row["geo_type"], row["geo_value"], row["source"], row["signal"])):
             geo_type, geo_value, source, signal = key
             if alias_mapper:
                 source = alias_mapper(source, signal)
@@ -352,7 +372,7 @@ def handle_trendseries():
         raise DatabaseErrorException(str(e))
 
     # now use a generator for sending the rows and execute all the other queries
-    return p(filter_fields(gen(r)))
+    return p(filter_fields(gen_trend(gen_transform(r))))
 
 
 @bp.route("/correlation", methods=("GET", "POST"))
