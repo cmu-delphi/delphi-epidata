@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import List, Tuple
 from datetime import date, timedelta
 from epiweeks import Week, Year
 
@@ -67,3 +67,15 @@ def weeks_in_range(week_range: Tuple[int, int]) -> int:
         year = Year(y)
         acc += year.totalweeks()
     return acc + 1  # same week should lead to 1 week that will be queried
+
+def time_value_range(range: Tuple[int, int]) -> List[int]:
+    """Return a list of ints corresponding to a time range."""
+    start, end = range
+    if start >= end:
+        return [start]
+    current_date = time_value_to_date(start)
+    time_values = [start]
+    while time_values[-1] != end:
+        current_date = current_date + timedelta(days=1)
+        time_values.append(date_to_time_value(current_date))
+    return time_values

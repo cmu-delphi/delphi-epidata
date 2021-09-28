@@ -1,10 +1,11 @@
 from typing import List, Optional, Union, Tuple, Dict, Any
 from itertools import groupby
 from datetime import date, timedelta
+from bisect import bisect_right
 from epiweeks import Week
 from flask import Blueprint, request
 from flask.json import loads, jsonify
-from bisect import bisect_right
+from more_itertools import peekable
 from sqlalchemy import text
 from pandas import read_csv, to_datetime
 
@@ -36,11 +37,13 @@ from .._validate import (
 from .._pandas import as_pandas, print_pandas
 from .covidcast_utils import compute_trend, compute_trends, compute_correlations, compute_trend_value, CovidcastMetaEntry
 from ..utils import shift_time_value, date_to_time_value, time_value_to_iso, time_value_to_date, shift_week_value, week_value_to_week, guess_time_value_is_day, week_to_time_value
-from .covidcast_utils.model import TimeType, count_signal_time_types, data_sources, create_source_signal_alias_mapper
+from .covidcast_utils.model import TimeType, count_signal_time_types, data_sources, create_source_signal_alias_mapper, get_basename_signals, get_pad_length, pad_time_pairs, pad_time_window
+from .covidcast_utils.smooth_diff import PadFillValue, SmootherKernelValue
 
 # first argument is the endpoint name
 bp = Blueprint("covidcast", __name__)
 alias = None
+JIT_COMPUTE = True
 
 
 def parse_source_signal_pairs() -> List[SourceSignalPair]:
@@ -123,36 +126,53 @@ def guess_index_to_use(time: List[TimePair], geo: List[GeoPair], issues: Optiona
     return None
 
 
+# TODO: Write an actual smoother arg parser.
+def parse_transform_args():
+    return {"smoother_kernel": SmootherKernelValue.average, "smoother_window_length": 7, "pad_fill_value": None, "nans_fill_value": None}
+
+
+def parse_jit_bypass():
+    jit_bypass = request.values.get("jit_bypass")
+    if jit_bypass is not None:
+        return bool(jit_bypass)
+    else:
+        return False
+
+
 @bp.route("/", methods=("GET", "POST"))
 def handle():
     source_signal_pairs = parse_source_signal_pairs()
     source_signal_pairs, alias_mapper = create_source_signal_alias_mapper(source_signal_pairs)
     time_pairs = parse_time_pairs()
     geo_pairs = parse_geo_pairs()
+    transform_args = parse_transform_args()
+    jit_bypass = parse_jit_bypass()
 
     as_of = extract_date("as_of")
     issues = extract_dates("issues")
     lag = extract_integer("lag")
+    is_time_type_week = any(time_pair.time_type == "week" for time_pair in time_pairs)
+    is_time_value_true = any(isinstance(time_pair.time_values, bool) for time_pair in time_pairs)
+    use_server_side_compute = not any((issues, lag, is_time_type_week, is_time_value_true)) and JIT_COMPUTE and not jit_bypass
+    if use_server_side_compute:
+        pad_length = get_pad_length(source_signal_pairs, transform_args.get("smoother_window_length"))
+        source_signal_pairs, row_transform_generator = get_basename_signals(source_signal_pairs)
+        time_pairs = pad_time_pairs(time_pairs, pad_length)
 
     # build query
     q = QueryBuilder("covidcast", "t")
 
-    fields_string = ["geo_value", "signal"]
+    fields_string = ["geo_type", "geo_value", "source", "signal", "time_type"]
     fields_int = ["time_value", "direction", "issue", "lag", "missing_value", "missing_stderr", "missing_sample_size"]
     fields_float = ["value", "stderr", "sample_size"]
     is_compatibility = is_compatibility_mode()
-    if is_compatibility:
-        q.set_order("signal", "time_value", "geo_value", "issue")
-    else:
-        # transfer also the new detail columns
-        fields_string.extend(["source", "geo_type", "time_type"])
-        q.set_order("source", "signal", "time_type", "time_value", "geo_type", "geo_value", "issue")
+
+    q.set_order("geo_type", "geo_value", "source", "signal", "time_type", "time_value", "issue")
     q.set_fields(fields_string, fields_int, fields_float)
 
     # basic query info
     # data type of each field
     # build the source, signal, time, and location (type and id) filters
-
     q.where_source_signal_pairs("source", "signal", source_signal_pairs)
     q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
     q.where_time_pairs("time_type", "time_value", time_pairs)
@@ -161,14 +181,40 @@ def handle():
 
     _handle_lag_issues_as_of(q, issues, lag, as_of)
 
-    def transform_row(row, proxy):
+    p = create_printer()
+
+    def alias_row(row):
+        if is_compatibility:
+            # old api returned fewer fields
+            remove_fields = ["geo_type", "source", "time_type"]
+            for field in remove_fields:
+                if field in row:
+                    del row[field]
         if is_compatibility or not alias_mapper or "source" not in row:
             return row
-        row["source"] = alias_mapper(row["source"], proxy["signal"])
+        row["source"] = alias_mapper(row["source"], row["signal"])
         return row
 
-    # send query
-    return execute_query(str(q), q.params, fields_string, fields_int, fields_float, transform=transform_row)
+    if use_server_side_compute:
+        def gen_transform(rows):
+            parsed_rows = (parse_row(row, fields_string, fields_int, fields_float) for row in rows)
+            transformed_rows = row_transform_generator(parsed_rows=parsed_rows, time_pairs=time_pairs, transform_args=transform_args)
+            for row in transformed_rows:
+                yield alias_row(row)
+    else:
+        def gen_transform(rows):
+            parsed_rows = (parse_row(row, fields_string, fields_int, fields_float) for row in rows)
+            for row in parsed_rows:
+                yield alias_row(row)
+
+    # execute first query
+    try:
+        r = run_query(p, (str(q), q.params))
+    except Exception as e:
+        raise DatabaseErrorException(str(e))
+
+    # now use a generator for sending the rows and execute all the other queries
+    return p(filter_fields(gen_transform(r)))
 
 
 def _verify_argument_time_type_matches(is_day_argument: bool, count_daily_signal: int, count_weekly_signal: int) -> None:

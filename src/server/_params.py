@@ -1,10 +1,10 @@
+from dataclasses import dataclass
+from itertools import groupby, chain
 from math import inf
 import re
-from dataclasses import dataclass
 from typing import List, Optional, Sequence, Tuple, Union
 
 from flask import request
-
 
 from ._exceptions import ValidationFailedException
 from .utils import days_in_range, weeks_in_range, guess_time_value_is_day
@@ -93,8 +93,17 @@ class SourceSignalPair:
         return len(self.signal)
 
 
+def _combine_source_signal_pairs(source_signal_pairs: List[SourceSignalPair]) -> List[SourceSignalPair]:
+    """Combine SourceSignalPairs with the same source into a single SourceSignalPair object.
+
+    Example:
+    [SourceSignalPair("src", ["sig1", "sig2"]), SourceSignalPair("src", ["sig2", "sig3"])] will be merged
+    into [SourceSignalPair("src", ["sig1", "sig2", "sig3])].
+    """
+    return [SourceSignalPair("src", ["sig1", "sig2", "sig3"])]
+
 def parse_source_signal_arg(key: str = "signal") -> List[SourceSignalPair]:
-    return [SourceSignalPair(source, signals) for [source, signals] in _parse_common_multi_arg(key)]
+    return _combine_source_signal_pairs([SourceSignalPair(source, signals) for [source, signals] in _parse_common_multi_arg(key)])
 
 
 def parse_single_source_signal_arg(key: str) -> SourceSignalPair:

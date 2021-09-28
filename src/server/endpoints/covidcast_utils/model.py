@@ -1,12 +1,21 @@
 from dataclasses import asdict, dataclass, field
-from typing import Callable, Optional, Dict, List, Set, Tuple
 from enum import Enum
+from functools import partial
+from itertools import groupby, repeat, tee
+from typing import Callable, Generator, Optional, Dict, List, Set, Tuple, Iterable, Union
 from pathlib import Path
 import re
+from more_itertools import interleave_longest, peekable
 import pandas as pd
 import numpy as np
 
-from ..._params import SourceSignalPair
+from delphi_utils.nancodes import Nans
+from ..._params import SourceSignalPair, TimePair
+from .smooth_diff import generate_smooth_rows, generate_row_diffs
+from ...utils import time_value_range, shift_time_value
+
+
+IDENTITY: Callable = lambda rows, **kwargs: rows
 
 
 class HighValuesAre(str, Enum):
@@ -21,6 +30,7 @@ class SignalFormat(str, Enum):
     fraction = "fraction"
     raw_count = "raw_count"
     raw = "raw"
+    count = "count"
 
 
 class SignalCategory(str, Enum):
@@ -201,7 +211,7 @@ def _load_data_sources():
 
 
 data_sources, data_sources_df = _load_data_sources()
-data_source_by_id = {d.source: d for d in data_sources}
+data_sources_by_id = {d.source: d for d in data_sources}
 
 
 def _load_data_signals(sources: List[DataSource]):
@@ -230,7 +240,7 @@ data_signals, data_signals_df = _load_data_signals(data_sources)
 data_signals_by_key = {d.key: d for d in data_signals}
 # also add the resolved signal version to the signal lookup
 for d in data_signals:
-    source = data_source_by_id.get(d.source)
+    source = data_sources_by_id.get(d.source)
     if source and source.uses_db_alias:
         data_signals_by_key[(source.db_source, d.signal)] = d
 
@@ -265,7 +275,7 @@ def create_source_signal_alias_mapper(source_signals: List[SourceSignalPair]) ->
     alias_to_data_sources: Dict[str, List[DataSource]] = {}
     transformed_pairs: List[SourceSignalPair] = []
     for pair in source_signals:
-        source = data_source_by_id.get(pair.source)
+        source = data_sources_by_id.get(pair.source)
         if not source or not source.uses_db_alias:
             transformed_pairs.append(pair)
             continue
@@ -299,3 +309,159 @@ def create_source_signal_alias_mapper(source_signals: List[SourceSignalPair]) ->
         return signal_source.source
 
     return transformed_pairs, map_row
+
+
+def _resolve_all_signals(source_signals: Union[SourceSignalPair, List[SourceSignalPair]], data_sources_by_id: Dict[str, DataSource]) -> Union[SourceSignalPair, List[SourceSignalPair]]:
+    """Expand a request for all signals to an explicit list of signal names.
+
+    Example: SourceSignalPair("jhu-csse", signal=True) would return SourceSignalPair("jhu-csse", [<list of all JHU signals>]).
+    """
+    return [SourceSignalPair("src", ["sig1", "sig2"])]
+
+
+
+def _reindex_iterable(iterable: Iterable[Dict], time_pairs: List[TimePair], fill_value: Optional[int] = None) -> Iterable:
+    """Produces an iterable that fills in gaps in the time window of another iterable.
+
+    Used to produce an iterable with a contiguous time index for time series operations.
+
+    We iterate over contiguous range of days made from time_pairs. If `iterable`, which is assumed to be sorted by its "time_value" key,
+    is missing a time_value in the range, a dummy row entry is returned with the correct date and the value fields set appropriately.
+    """
+    if time_pairs is None:
+        return iterable
+
+    day_range_index = get_day_range(time_pairs)
+    for day in day_range_index.time_values:
+        if day in next_value(iterable):
+            return next_value(iterable)
+        else:
+            yield updated_default_value
+
+
+def _get_base_signal_transform(signal: Union[DataSignal, Tuple[str, str]], data_signals_by_key: Dict[Tuple[str, str], DataSignal] = data_signals_by_key) -> Callable:
+    """Given a DataSignal, return the transformation that needs to be applied to its base signal to derive the signal."""
+    return IDENTITY
+
+
+def get_transform_types(source_signal_pairs: List[SourceSignalPair], data_sources_by_id: Dict[str, DataSource] = data_sources_by_id, data_signals_by_key: Dict[Tuple[str, str], DataSignal] = data_signals_by_key) -> Set[Callable]:
+    """Return a collection of the unique transforms required for transforming a given source-signal pair list.
+
+    Example:
+    SourceSignalPair("src", ["sig", "sig_smoothed", "sig_diff"]) would return {IDENTITY, SMOOTH, DIFF}.
+
+    Used to pad the user DB query with extra days.
+    """
+    return set([IDENTITY])
+
+
+def get_pad_length(source_signal_pairs: List[SourceSignalPair], smoother_window_length: int, data_sources_by_id: Dict[str, DataSource] = data_sources_by_id, data_signals_by_key: Dict[Tuple[str, str], DataSignal] = data_signals_by_key):
+    """Returns the size of the extra date padding needed, depending on the transformations the source-signal pair list requires.
+
+    Example:
+    If smoothing is required, we fetch an extra 6 days. If both diffing and smoothing is required on the same signal, then we fetch 7 extra days.
+
+    Used to pad the user DB query with extra days.
+    """
+    transform_types = get_transform_types(source_signal_pairs, data_sources_by_id=data_sources_by_id, data_signals_by_key=data_signals_by_key)
+    if SMOOTH in transform_types:
+        return 7
+    else:
+        return 0
+
+
+def pad_time_pairs(time_pairs: List[TimePair], pad_length: int) -> List[TimePair]:
+    """Pads a list of TimePairs with another TimePair that extends the smallest time value by the pad_length, if needed.
+
+    Example:
+    [TimePair("day", [20210407])] with pad_length 6 would return [TimePair("day", [20210407]), TimePair("day", [(20210401, 20210407)])].
+
+    Used to pad the user DB query with extra days.
+    """
+    return [TimePair("day", [(20210401, 20210407)])]
+
+
+def pad_time_window(time_window: Tuple[int, int], pad_length: int) -> Tuple[int, int]:
+    """Extend a time window on the left by pad_length.
+
+    Example:
+    (20210407, 20210413) with pad_length 6 would return (20210401, 20210413).
+
+    Used to pad the user DB query with extra days.
+    """
+    return (20210401, 20210407)
+
+
+def get_day_range(time_pairs: Union[TimePair, List[TimePair]]) -> TimePair:
+    """Combine a list of TimePairs into a single contiguous, explicit TimePair object.
+
+    Example:
+    [TimePair("day", [20210407, 20210408]), TimePair("day", [(20210408, 20210410)])] would return
+    TimePair("day", [20210407, 20210408, 20210409, 20210410]).
+
+    Used to produce a contiguous time index for time series operations.
+    """
+    return TimePair("day", [20210407, 20210408, 20210409, 20210410])
+
+
+def _generate_transformed_rows(
+    parsed_rows: Iterable[Dict], time_pairs: Optional[List[TimePair]] = None, transform_dict: Optional[Dict[str, List[Tuple[str, str]]]]=None, transform_args: Optional[Dict] = None, group_keyfunc: Optional[Callable] = None, data_signals_by_key: Dict[Tuple[str, str], DataSignal] = data_signals_by_key,
+) -> Iterable[Dict]:
+    """Applies time-series transformations to streamed rows from a database.
+
+    Parameters:
+    parsed_rows: Iterable[Dict]
+        Streamed rows from the database.
+    time_pairs: Optional[List[TimePair]], default None
+        A list of TimePairs, which can be used to create a continguous time index for time-series operations.
+        The min and max dates in the TimePairs list is used.
+    transform_dict: Optional[Dict[Tuple[str, str], List[Tuple[str, str]]]], default None
+        A dictionary mapping base sources to a list of their derived signals that the user wishes to query.
+        For example, transform_dict may be {("jhu-csse", "confirmed_cumulative_num): [("jhu-csse", "confirmed_incidence_num"), ("jhu-csse", "confirmed_7dav_incidence_num")]}.
+    transform_args: Optional[Dict], default None
+        A dictionary of keyword arguments for the transformer functions.
+    group_keyfunc: Optional[Callable], default None
+        The groupby function to use to order the streamed rows. Note that Python groupby does not do any sorting, so
+        parsed_rows are assumed to be sorted in accord with this groupby.
+    data_signals_by_key: Dict[Tuple[str, str], DataSignal], default data_signals_by_key
+        The dictionary of DataSignals which is used to find the base signal transforms
+
+    Yields:
+    transformed rows: Dict
+        The transformed rows returned in an interleaved fashion. Non-transformed rows have the IDENTITY operation applied.
+    """
+    if not transform_args:
+        transform_args = dict()
+    if not transform_dict:
+        transform_dict = dict()
+    if not group_keyfunc:
+        group_keyfunc = lambda row: (row["geo_type"], row["geo_value"], row["source"], row["signal"])
+
+    try:
+        for key, group in groupby(parsed_rows, group_keyfunc):
+            _, _, source_name, signal_name = key
+            # Extract the list of derived signals.
+            # Create a list of source-signal pairs along with the transformation required for the signal.
+            # Put the current time series on a contiguous time index.
+            # Create copies of the iterable, with smart memory usage.
+            # Create a list of transformed group iterables, remembering their derived name as needed.
+            # Traverse through the transformed iterables in an interleaved fashion, which makes sure that only a small window
+            # of the original iterable (group) is stored in memory.
+            for row in transform_group(group):
+                yield row
+    except Exception as e:
+        print(f"Tranformation encountered error of type {type(e)}, with message {e}. Yielding None and stopping.")
+        yield None
+
+
+def get_basename_signals(source_signal_pairs: List[SourceSignalPair], data_sources_by_id: Dict[str, DataSource] = data_sources_by_id, data_signals_by_key: Dict[Tuple[str, str], DataSignal] = data_signals_by_key) -> Tuple[List[SourceSignalPair], Generator]:
+    """From a list of SourceSignalPairs, return the base signals required to derive them and a transformation function to take a stream
+    of the base signals and return the transformed signals.
+
+    Example:
+    SourceSignalPair("src", signal=["sig_base", "sig_smoothed"]) would return SourceSignalPair("src", signal=["sig_base"]) and a transformation function
+    that will take the returned database query for "sig_base" and return both the base time series and the smoothed time series.
+    """
+    transform_dict = {("src", "sig_base"): [("src", "sig_base"), ("src", "sig_smoothed")]}
+    row_transform_generator = partial(_generate_transformed_rows, transform_dict=transform_dict, data_signals_by_key=data_signals_by_key)
+    return SourceSignalPair("src", signal=["sig_base"]), row_transform_generator
