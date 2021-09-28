@@ -191,6 +191,75 @@ class CovidcastEndpointTests(unittest.TestCase):
             expected_values = [float(row.value) for row in rows]
             self.assertEqual(out_values, expected_values)
 
+    def test_derived_signals(self):
+        time_value_pairs = [(20200401 + i, i ** 2) for i in range(10)]
+        rows01 = [CovidcastRow(source="jhu-csse", signal="confirmed_cumulative_num", time_value=time_value, value=value, geo_value="01") for time_value, value in time_value_pairs]
+        rows02 = [CovidcastRow(source="jhu-csse", signal="confirmed_cumulative_num", time_value=time_value, value=2 * value, geo_value="02") for time_value, value in time_value_pairs]
+        first = rows01[0]
+        self._insert_rows(rows01 + rows02)
+
+        with self.subTest("diffed signal"):
+            out = self._fetch("/", signal="jhu-csse:confirmed_incidence_num", geo=first.geo_pair, time="day:*")
+            assert out['result'] == -2
+            out = self._fetch("/", signal="jhu-csse:confirmed_incidence_num", geo=first.geo_pair, time="day:20200401-20200410")
+            self.assertEqual(len(out["epidata"]), len(rows01))
+            out_values = [row["value"] for row in out["epidata"]]
+            values = [None] + [value for _, value in time_value_pairs]
+            expected_values = self._diff_rows(values)
+            self.assertAlmostEqual(out_values, expected_values)
+
+        with self.subTest("diffed signal, multiple geos"):
+            out = self._fetch("/", signal="jhu-csse:confirmed_incidence_num", geo="county:01,02", time="day:20200401-20200410")
+            self.assertEqual(len(out["epidata"]), 2*(len(rows01)))
+            out_values = [row["value"] for row in out["epidata"]]
+            values1 = [None] + [value for _, value in time_value_pairs]
+            values2 = [None] + [2 * value for _, value in time_value_pairs]
+            expected_values = self._diff_rows(values1) + self._diff_rows(values2)
+            self.assertAlmostEqual(out_values, expected_values)
+
+        with self.subTest("diffed signal, multiple geos using geo:*"):
+            out = self._fetch("/", signal="jhu-csse:confirmed_incidence_num", geo="county:*", time="day:20200401-20200410")
+            self.assertEqual(len(out["epidata"]), 2*(len(rows01)))
+            values1 = [None] + [value for _, value in time_value_pairs]
+            values2 = [None] + [2 * value for _, value in time_value_pairs]
+            expected_values = self._diff_rows(values1) + self._diff_rows(values2)
+            self.assertAlmostEqual(out_values, expected_values)
+
+
+        with self.subTest("diffing with time window resizing"):
+            # should fetch 1 extra day
+            out = self._fetch("/", signal="jhu-csse:confirmed_incidence_num", geo=first.geo_pair, time="day:20200402-20200410")
+            self.assertEqual(len(out["epidata"]), len(rows01) - 1)
+            out_values = [row["value"] for row in out["epidata"]]
+            values = [value for _, value in time_value_pairs]
+            expected_values = self._diff_rows(values)
+            self.assertAlmostEqual(out_values, expected_values)
+
+        time_value_pairs = [(20200401 + i, i ** 2) for i in chain(range(10), range(15, 20))]
+        rows = [CovidcastRow(source="jhu-csse", signal="confirmed_cumulative_num", geo_value="03", time_value=time_value, value=value) for time_value, value in time_value_pairs]
+        first = rows[0]
+        self._insert_rows(rows)
+
+        with self.subTest("diffing with a time gap"):
+            # should fetch 1 extra day
+            out = self._fetch("/", signal="jhu-csse:confirmed_incidence_num", geo=first.geo_pair, time="day:20200401-20200420")
+            self.assertEqual(len(out["epidata"]), len(rows) + 5)
+            out_values = [row["value"] for row in out["epidata"]]
+            values = [None] + [value for _, value in time_value_pairs][:10] + [None] * 5 + [value for _, value in time_value_pairs][10:]
+            expected_values = self._diff_rows(values)
+            self.assertAlmostEqual(out_values, expected_values)
+
+
+    def test_compatibility(self):
+        """Request at the /api.php endpoint."""
+        rows = [CovidcastRow(source="src", signal="sig", time_value=20200401 + i, value=i) for i in range(10)]
+        first = rows[0]
+        self._insert_rows(rows)
+
+        with self.subTest("simple"):
+            out = self._fetch(is_compatibility=True, source=first.source, signal=first.signal, geo=first.geo_pair, time="day:*")
+            self.assertEqual(len(out["epidata"]), len(rows))
+
     def test_trend(self):
         """Request a signal the /trend endpoint."""
 

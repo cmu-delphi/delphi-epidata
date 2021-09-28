@@ -72,4 +72,15 @@ def generate_row_diffs(rows: Iterable[Dict], nan_fill_value: Number = nan, **kwa
         Container for non-shared parameters with other computation functions.
     """
     for window in windowed(rows, 2):
-        yield diffed_row(window)
+        if all(e is None for e in window):
+            continue # should only occur if rows is empty
+        try:
+            first_value = window[0].get("value", nan_fill_value) if window[0] is not None else nan_fill_value
+            second_value = window[1].get("value", nan_fill_value) if window[1] is not None else nan_fill_value
+            value = round(second_value - first_value, 8)
+            value = float(value) if not isnan(value) else None
+        except TypeError:
+            value = None
+        item = list(filter(lambda e: e is not None, window))[-1].copy() # inherit values of last time stamp
+        item.update({"value": value, "stderr": None, "sample_size": None, "missing_value": Nans.NOT_MISSING if value is not None else Nans.NOT_APPLICABLE, "missing_stderr": Nans.NOT_APPLICABLE, "missing_sample_size": Nans.NOT_APPLICABLE})
+        yield item
