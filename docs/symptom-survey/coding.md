@@ -840,3 +840,83 @@ are not anticipated to change the respondent’s answer.
   random scale reversal and randomization of response options will be set where
   applicable. Randomization of response options was added to B10b starting with
   Wave 11.
+
+## Wave 12
+
+Wave 12 will be deployed on September TODO, 2021. It is available in English, as
+well as
+
+* Simplified Chinese
+* English (UK)
+* Spanish (Latin America)
+* Spanish
+* French
+* Brazilian Portuguese
+* Vietnamese
+
+Files:
+* [Survey text and coding](TODO) (PDF)
+* [Survey text and coding](TODO) (Word)
+
+Wave 12 is a revision of the schooling module of the survey instrument and adds
+questions regarding parents’ intention to vaccinate their children (under age
+18). Please review the changes carefully when you use responses from multiple
+waves of this survey.
+
+Additionally, Wave 12 will consist of three experiments with (1) demographic
+module placement, (2) vaccination uptake question, and (3) survey invitation
+text. Details of these experiments can we found [here](TODO).
+
+### New Items
+
+* Item V1alt asks respondents who they personally know has already received a
+  COVID-19 vaccine. Response options include themselves, household members, and
+  others. This is part of the vaccination uptake question experiment described
+  [here](TODO).
+* Item P1 asks if the respondent is a parent or legal guardian of a child under
+  age 18.
+* Item P2 asks respondents the age group of their oldest child. This replaces
+  item E1.
+* Item P3 asks the respondent if they will choose to have their oldest child
+  vaccinated when the vaccine is eligible. This replaces item E4.
+* Item P4 asks the respondent about the type of schooling their oldest child is
+  enrolled in.
+* Item P5 asks the respondent to describe their current schooling for their
+  oldest child.
+* Item P6 asks respondent about the preventative measures that apply if their
+  oldest child is attending in-person classes. These response options are a
+  subset of response options from E3 with several new additions.
+
+### Changed Items
+
+* Item B13a asks respondents “Have you ever had coronavirus (COVID-19)?” and
+  replaces item B13 “As far as you know, have you ever had coronavirus
+  (COVID-19)?” for ease of translation.
+* The vaccination uptake question experiment uses questions V1 and V1alt.
+  Subsequently, questions that use V1 in the display logic have been updated to
+  also include respondents who are asked V1alt. The display logic has been
+  updated for the following questions: V2, V11a, V3a, V5a, V12a, V16, and V9
+* Item V5a, V5b and V5c have the following revisions to response options:
+  * Response option 5 “I don’t like vaccines” was revised to “I don’t like
+    vaccines generally” to distinguish from a specific dislike of COVID-19
+    vaccines.
+  * Response option 10 “I don’t trust COVID-19 vaccines” is a response option
+    from Wave 8 that was added back in the current wave.
+* Item V15a was revised to ask respondents “Did you ever experience any of the
+  following barriers to getting the COVID-19 vaccine?” The word *ever* was added
+  to clarify for those who have received the vaccine but may have experienced
+  barriers prior to being vaccinated. Additionally, two response options were
+  added: “The available appointment locations did not work for me” and “Other”
+* Item V15b has two new response options: “The available appointment locations
+  did not work for me” and “Other”.
+
+### Removed Items
+
+* Item E4 “Will you choose to get a COVID-19 vaccine for your child or children
+  when they are eligible?” was removed.
+* Item E1 “Are there any children in your household in any of the following
+  grades?” was removed.
+* Item E2 “Do any of the following apply to any children in your household
+  (pre-K – grade 12)?” was removed.
+* Item E3 “Do any of the following measures apply to the children in your
+  household when they attend in-person classes (pre-K-grade 12)? was removed.
