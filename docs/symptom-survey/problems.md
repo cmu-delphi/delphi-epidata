@@ -61,6 +61,15 @@ June 26, 2021, 89.5% of the initial decrease in total response volume has been
 recovered. The response volume continued to recover as Android users updated to
 the fixed version of the Facebook app.
 
+## B13 Missing from Data Files (May-June 2021)
+
+Survey item B13 was added in Wave 11 beginning May 20, 2021. Due to a survey
+implementation bug, responses to B13 received between May 20 and June 16th were
+not included in the API or in microdata files. This problem was fixed on June
+16th; however, due to an oversight, certain microdata files were not corrected
+to contain B13 responses until September 27, 2021. All files should now contain
+responses to item B13 from the beginning of Wave 11.
+
 ## Incorrect Coding in Documentation
 
 We found a Qualtrics bug that affects the exported text of the survey (but not
