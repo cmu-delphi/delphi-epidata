@@ -843,8 +843,8 @@ are not anticipated to change the respondent’s answer.
 
 ## Wave 12
 
-Wave 12 will be deployed on September TODO, 2021. It is available in English, as
-well as
+Wave 12 was deployed on September TODO, 2021, to 15% of survey respondents. It
+is available in English, as well as
 
 * Simplified Chinese
 * English (UK)
@@ -865,14 +865,14 @@ waves of this survey.
 
 Additionally, Wave 12 will consist of three experiments with (1) demographic
 module placement, (2) vaccination uptake question, and (3) survey invitation
-text. Details of these experiments can we found [here](TODO).
+text. Details of these experiments can we found [below](#experiments).
 
 ### New Items
 
 * Item V1alt asks respondents who they personally know has already received a
   COVID-19 vaccine. Response options include themselves, household members, and
   others. This is part of the vaccination uptake question experiment described
-  [here](TODO).
+  [below](#experiments).
 * Item P1 asks if the respondent is a parent or legal guardian of a child under
   age 18.
 * Item P2 asks respondents the age group of their oldest child. This replaces
@@ -920,3 +920,46 @@ text. Details of these experiments can we found [here](TODO).
   (pre-K – grade 12)?” was removed.
 * Item E3 “Do any of the following measures apply to the children in your
   household when they attend in-person classes (pre-K-grade 12)? was removed.
+
+### Experiments
+
+Wave 12 was initially launched to 15% of respondents to collect data for the
+experiments described below. (The remaining 85% continued to receive Wave 11.)
+After the experiments have been conducted and the data analyzed; the CTIS team
+will finalize the Wave 12 instrument to be distributed to the entire sample.
+Wave 12 will consist of three experiments with (1) demographic module placement,
+(2) vaccination uptake question, and (3) survey invitation text.
+
+#### Demographic Module Placement and Vaccine Uptake Question
+
+The 15% of respondents who receive the experimental Wave 12 will be divided into
+three groups:
+
+* Group 1 (5% of respondents) will see the demographics questions after the
+  symptom module, which concludes with question B2b “For how many days have you
+  had at least one new or unusual symptom?” This group of respondents will see
+  the Wave 11 version of the vaccine uptake question (V1).
+* Group 2 (5% of respondents) will see the demographics questions after the
+  COVID vaccine module, which concludes with question V9 “How concerned are you
+  that you would experience a side effect from a COVID-19 vaccination?” This
+  group of respondents will see the Wave 11 version of the vaccine uptake
+  question (V1).
+* Group 3 (5% of respondents) will see the experimental form of the vaccination
+  uptake question (V1alt), which asks respondents “Do you personally know anyone
+  who has received the COVID-19 vaccine already?” Response options include
+  themselves, household members, and others. These respondents will not receive
+  the previous vaccine uptake question, V1. They will see the demographic
+  questions in the Wave 11 placement, at the end of Module A/B and before the
+  occupation questions.
+
+A new column `w12_treatment` in the microdata files will indicate which of the
+three groups above each respondent was assigned to.
+
+#### Survey Invitation Text
+
+Our partners at Facebook will also be conducting an experiment among those
+allocated to receive Wave 11. Among those participants, 6% will receive will
+receive one of six different invitations to the survey on their News Feed. This
+will be an internal Facebook experiment conducted with the goal of improving
+response rates and exploring additional non-response bias in the weighting
+process.
