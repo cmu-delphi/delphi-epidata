@@ -787,21 +787,28 @@ are not anticipated to change the respondent’s answer.
 
 ## Wave 12
 
-Wave 12 was deployed on September TODO, 2021, to 15% of survey respondents. It
-is available in English and the languages introduced in Wave 3.
+Wave 12 was deployed on September TODO, 2021. Deployment is in two phases:
+
+* Initially the survey was given only to 15% of survey respondents, the
+  remainder receiving Wave 11. This phase was used to conduct three experiments
+  with (1) demographic module placement, (2) vaccination uptake question, and
+  (3) survey invitation text. Details of these experiments can be found
+  [below](#experiments). In data files, this is marked as wave "12.5" to
+  distinguish from the final version.
+* After results of the experiments are analyzed, a final version will be
+  deployed using only one demographic module placement and one vaccine uptake
+  question. This will be marked as wave 12 in the data files.
+
+Wave 12 is available in English and the languages introduced in Wave 3.
 
 Files:
 * [Wave 12 text and coding](TODO) (PDF)
 * [Wave 12 text and coding](TODO) (Word)
 
-Wave 12 is a revision of the schooling module of the survey instrument and adds
-questions regarding parents’ intention to vaccinate their children (under age
-18). Please review the changes carefully when you use responses from multiple
-waves of this survey.
-
-Additionally, Wave 12 will contain three experiments with (1) demographic module
-placement, (2) vaccination uptake question, and (3) survey invitation text.
-Details of these experiments can we found [below](#experiments).
+Besides the experiments, Wave 12 revises the schooling module of the survey
+instrument and adds questions regarding parents’ intention to vaccinate their
+children (under age 18). Please review the changes carefully when you use
+responses from multiple waves of this survey.
 
 ### New Items
 
