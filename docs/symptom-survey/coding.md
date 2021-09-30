@@ -104,18 +104,18 @@ individual response files with their invalid ZIPs.
 
 Additionally, beginning in wave 4, items D6 and D7 ask respondents for race and
 ethnicity. These columns are **not** available in the microdata files due to
-reidentification concerns. However, contingency tables that aggregate by race
-and other demographic variables [are available](contingency-tables.md).
+reidentification concerns. Users with a specific need for these variables should
+contact us at <delphi-survey-info@lists.andrew.cmu.edu> to discuss options for
+obtaining them. However, contingency tables that aggregate by race and other
+demographic variables [are available](contingency-tables.md).
 
 
 ## Wave 1
 
-Wave 1 was first deployed on April 6, 2020. This was replaced by Wave 2, but
-some responses still arrive from respondents who received a link before Wave 2
-was deployed.
+Wave 1 was first deployed on April 6, 2020.
 
-* [Survey text and coding](waves/Survey_of_COVID-Like_Illness_-_TODEPLOY_2020-04-06.pdf) (PDF)
-* [Survey text and coding](waves/Survey_of_COVID-Like_Illness_-_TODEPLOY_2020-04-06.docx) (Word)
+* [Wave 1 text and coding](waves/Survey_of_COVID-Like_Illness_-_TODEPLOY_2020-04-06.pdf) (PDF)
+* [Wave 1 text and coding](waves/Survey_of_COVID-Like_Illness_-_TODEPLOY_2020-04-06.docx) (Word)
 
 **Warning:** Item A2 shows high missingness and strange values in Wave 1,
 possibly due to incorrect validation in the Qualtrics survey. Item A2 should not
@@ -123,14 +123,13 @@ be used in Wave 1 data until this problem is understood.
 
 ## Wave 2
 
-Wave 2 was first deployed on April 15, 2020. This was replaced by Wave 3, but
-some responses still arrive from respondents who received a link before Wave 3
-was deployed.
+Wave 2 was first deployed on April 15, 2020. Some Wave 1 responses were received
+after this date from respondents who received a link before Wave 2 was deployed.
 
-* [Survey text and
+* [Wave 2 text and
   coding](waves/Survey_of_COVID-Like_Illness_-_TODEPLOY__-_US_Expansion.pdf)
   (PDF)
-* [Survey text and
+* [Wave 2 text and
   coding](waves/Survey_of_COVID-Like_Illness_-_TODEPLOY__-_US_Expansion.docx)
   (Word)
 
@@ -174,10 +173,10 @@ as
 
 Files:
 
-* [Survey text and
+* [Wave 3 text and
   coding](waves/Survey_of_COVID-Like_Illness_-_TODEPLOY-_US_Expansion_-_With_Translations.pdf)
   (PDF)
-* [Survey text and
+* [Wave 3 text and
   coding](waves/Survey_of_COVID-Like_Illness_-_TODEPLOY-_US_Expansion_-_With_Translations.docx)
   (Word)
 
@@ -194,22 +193,14 @@ Files:
 
 ## Wave 4
 
-Wave 4 was first deployed September 8, 2020. It is available in English, as well
-as
-
-* Simplified Chinese
-* English (UK)
-* Spanish (Latin America)
-* Spanish
-* French
-* Brazilian Portuguese
-* Vietnamese
+Wave 4 was first deployed September 8, 2020. It is available in English and all
+the languages introduced in Wave 3.
 
 Files:
 
-* [Survey text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_4.pdf)
+* [Wave 4 text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_4.pdf)
   (PDF)
-* [Survey text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_4.docx)
+* [Wave 4 text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_4.docx)
   (Word)
 
 Wave 4 is a **major change** to the survey instrument. Some items have been
@@ -252,11 +243,11 @@ your protocol.
 * Item C14 asks "In the past 5 days, how often did you wear a mask when in
   public?"
 * Item D6 now asks if the respondent is of Hispanic, Latino, or Spanish origin.
-  Note that this item **may not be available** in individual response files
-  until procedures to prevent reidentification of respondents are finalized.
-* Item D7 now asks the respondent's race. Note that this item **may not be
-  available** in individual response files until procedures to prevent
-  reidentification of respondents are finalized.
+  Note that this item **is not available** in individual response files; see the
+  [privacy restrictions information](#privacy-restrictions) above.
+* Item D7 now asks the respondent's race. Note that this item **is not
+  available** in individual response files; see the [privacy restrictions
+  information](#privacy-restrictions) above.
 * Item D8 asks for the highest level of school the respondent has completed.
 * Item D9 asks if the respondent has worked for pay in the past 4 weeks, while
   items Q64 - Q80 ask the respondent to identify their occupation in a form
@@ -310,22 +301,14 @@ your protocol.
 Wave 5 was deployed on November 24, 2020. Deployment was phased: a fraction of
 users were invited to take Wave 4, while the majority were invited to Wave 5, so
 data users can determine if changes in responses are due to survey revisions or
-to population changes at the same time. Wave 5 is available in English, as well
-as
-
-* Simplified Chinese
-* English (UK)
-* Spanish (Latin America)
-* Spanish
-* French
-* Brazilian Portuguese
-* Vietnamese
+to population changes at the same time. Wave 5 is available in English and all
+the languages introduced in Wave 3.
 
 Files:
 
-* [Survey text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_5.pdf)
+* [Wave 5 text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_5.pdf)
   (PDF)
-* [Survey text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_5.docx)
+* [Wave 5 text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_5.docx)
   (Word)
 
 Wave 5 contains minor changes to the survey instrument and a few new items.
@@ -387,25 +370,17 @@ released:
 
 ## Wave 6
 
-Wave 6 was deployed on December 19, 2020. It is available in English, as well as
-
-* Simplified Chinese
-* English (UK)
-* Spanish (Latin America)
-* Spanish
-* French
-* Brazilian Portuguese
-* Vietnamese
+Wave 6 was deployed on December 19, 2020. It is available in English and the
+languages introduced in Wave 3.
 
 Files:
 
-* [Survey text and coding](waves/CMU Survey Wave 6.pdf) (PDF)
-* [Survey text and coding](waves/CMU Survey Wave 6.docx) (Word)
+* [Wave 6 text and coding](waves/CMU Survey Wave 6.pdf) (PDF)
+* [Wave 6 text and coding](waves/CMU Survey Wave 6.docx) (Word)
 
 Wave 6 is a minor change to the survey instrument with the addition of a few new
-items regarding COVID-19 vaccine intent. We intend to expand the scope of our
-questions in the next wave after the beginning of the year. Please review the
-changes carefully when you use responses from multiple waves of this survey.
+items regarding COVID-19 vaccine intent. Please review the changes carefully
+when you use responses from multiple waves of this survey.
 
 ### New Items
 
@@ -430,25 +405,17 @@ changes carefully when you use responses from multiple waves of this survey.
 
 ## Wave 7
 
-Wave 7 was deployed on January 12, 2021. It is available in English, as well as
-
-* Simplified Chinese
-* English (UK)
-* Spanish (Latin America)
-* Spanish
-* French
-* Brazilian Portuguese
-* Vietnamese
+Wave 7 was deployed on January 12, 2021. It is available in English and the
+languages introduced in Wave 3.
 
 Files:
 
-* [Survey text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_7.pdf) (PDF)
-* [Survey text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_7.docx) (Word)
+* [Wave 7 text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_7.pdf) (PDF)
+* [Wave 7 text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_7.docx) (Word)
 
-Wave 7 includes minor modifications to the existing questions regarding COVID -19
-vaccination. We intend to expand the scope of our questions in the next wave at
-the end of January 2021. Please review the changes carefully when you use
-responses from multiple waves of this survey.
+Wave 7 includes minor modifications to the existing questions regarding COVID
+-19 vaccination. Please review the changes carefully when you use responses from
+multiple waves of this survey.
 
 ### Changed Items
 
@@ -464,28 +431,21 @@ responses from multiple waves of this survey.
 
 ### Notes
 
-* This wave configures numeric answer items to require answers to be ≥0. We did this
-  via JavaScript by setting the `min = "0"` attribute on the input box.
+* This wave configures numeric answer items to require answers to be ≥0. We did
+  this via JavaScript by setting the `min = "0"` attribute on the input box.
   While this should prevent respondents from accidentally entering negative
   numbers, those who deliberately want to enter negative numbers can bypass the
   restriction.
 
 ## Wave 8
 
-Wave 8 was deployed on February 8, 2021. It is available in English, as well as
-
-* Simplified Chinese
-* English (UK)
-* Spanish (Latin America)
-* Spanish
-* French
-* Brazilian Portuguese
-* Vietnamese
+Wave 8 was deployed on February 8, 2021. It is available in English and the
+languages introduced in Wave 3.
 
 Files:
 
-* [Survey text and coding](waves/CMU Survey Wave 8.pdf) (PDF)
-* [Survey text and coding](waves/CMU Survey Wave 8.docx) (Word)
+* [Wave 8 text and coding](waves/CMU Survey Wave 8.pdf) (PDF)
+* [Wave 8 text and coding](waves/CMU Survey Wave 8.docx) (Word)
 
 Wave 8 expands the scope of the survey items about COVID-19 vaccinations. These
 new items were meant to capture reasons for vaccine hesitancy among respondents.
@@ -521,27 +481,19 @@ new items were meant to capture reasons for vaccine hesitancy among respondents.
 
 ## Wave 9
 
-Wave 9 was skipped to synchronize our numbering with the international survey
-administered by the University of Maryland.
+Wave 9 was skipped to synchronize our numbering with the [international survey
+administered by the University of Maryland](https://covidmap.umd.edu/).
 
 ## Wave 10
 
 Wave 10 was deployed on March 2, 2021. For the following 7 days, 15% of
 respondents (selected at random) continued to receive Wave 8, allowing for
-comparisons of responses between the two waves. Wave 10 is available in English,
-as well as
-
-* Simplified Chinese
-* English (UK)
-* Spanish (Latin America)
-* Spanish
-* French
-* Brazilian Portuguese
-* Vietnamese
+comparisons of responses between the two waves. Wave 10 is available in English
+and the languages introduced in Wave 3.
 
 Files:
-* [Survey text and coding](waves/CMU Survey Wave 10.pdf) (PDF)
-* [Survey text and coding](waves/CMU Survey Wave 10.docx) (Word)
+* [Wave 10 text and coding](waves/CMU Survey Wave 10.pdf) (PDF)
+* [Wave 10 text and coding](waves/CMU Survey Wave 10.docx) (Word)
 
 Wave 10 further expands the scope of survey items about COVID-19 vaccination.
 These new items were meant to capture reasons for vaccine hesistancy among
@@ -609,21 +561,13 @@ survey.
 
 Wave 11 was deployed on May 20, 2021. For the following 14 days, 15% of
 respondents (selected at random) continued to receive Wave 10, allowing for
-comparisons of responses between the two waves. It is available in English, as
-well as
-
-* Simplified Chinese
-* English (UK)
-* Spanish (Latin America)
-* Spanish
-* French
-* Brazilian Portuguese
-* Vietnamese
+comparisons of responses between the two waves. It is available in English and
+the languages introduced in Wave 3.
 
 Files:
 
-* [Survey text and coding](waves/CMU Survey Wave 11.pdf) (PDF)
-* [Survey text and coding](waves/CMU Survey Wave 11.docx) (Word)
+* [Wave 11 text and coding](waves/CMU Survey Wave 11.pdf) (PDF)
+* [Wave 11 text and coding](waves/CMU Survey Wave 11.docx) (Word)
 
 Wave 11 is a major revision of the survey instrument. There are several new
 items expanding the scope of COVID-19 vaccines, beliefs, knowledge, and norms;
@@ -844,28 +788,20 @@ are not anticipated to change the respondent’s answer.
 ## Wave 12
 
 Wave 12 was deployed on September TODO, 2021, to 15% of survey respondents. It
-is available in English, as well as
-
-* Simplified Chinese
-* English (UK)
-* Spanish (Latin America)
-* Spanish
-* French
-* Brazilian Portuguese
-* Vietnamese
+is available in English and the languages introduced in Wave 3.
 
 Files:
-* [Survey text and coding](TODO) (PDF)
-* [Survey text and coding](TODO) (Word)
+* [Wave 12 text and coding](TODO) (PDF)
+* [Wave 12 text and coding](TODO) (Word)
 
 Wave 12 is a revision of the schooling module of the survey instrument and adds
 questions regarding parents’ intention to vaccinate their children (under age
 18). Please review the changes carefully when you use responses from multiple
 waves of this survey.
 
-Additionally, Wave 12 will consist of three experiments with (1) demographic
-module placement, (2) vaccination uptake question, and (3) survey invitation
-text. Details of these experiments can we found [below](#experiments).
+Additionally, Wave 12 will contain three experiments with (1) demographic module
+placement, (2) vaccination uptake question, and (3) survey invitation text.
+Details of these experiments can we found [below](#experiments).
 
 ### New Items
 
