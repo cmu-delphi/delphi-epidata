@@ -215,7 +215,7 @@ class UnitTests(unittest.TestCase):
 
     success_cases = [
       (make_row(), CsvImporter.RowValues('vi', 1.23, 4.56, 100.5, Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.NOT_MISSING)),
-      (make_row(geo_type='county', geo_id='17000', val=np.nan, se=np.nan, sample_size=np.nan, missing_val=str(float(Nans.DELETED)), missing_se=str(float(Nans.DELETED)), missing_sample_size=str(float(Nans.DELETED))), CsvImporter.RowValues('17000', None, None, None, Nans.DELETED, Nans.DELETED, Nans.DELETED)),
+      (make_row(val=None, se=np.nan, sample_size='', missing_val=str(float(Nans.DELETED)), missing_se=str(float(Nans.DELETED)), missing_sample_size=str(float(Nans.DELETED))), CsvImporter.RowValues('vi', None, None, None, Nans.DELETED, Nans.DELETED, Nans.DELETED)),
       (make_row(se='', sample_size='NA', missing_se=str(float(Nans.OTHER)), missing_sample_size=str(float(Nans.OTHER))), CsvImporter.RowValues('vi', 1.23, None, None, Nans.NOT_MISSING, Nans.OTHER, Nans.OTHER))
     ]
 
