@@ -59,7 +59,7 @@ class UnitTests(unittest.TestCase):
       issuedir_match= CsvImporter.PATTERN_ISSUE_DIR.match(path_prefix.lower())
       issue_date_value = int(issuedir_match.group(2))
       self.assertTrue(CsvImporter.is_sane_day(issue_date_value))
-      
+
       found = set(CsvImporter.find_issue_specific_csv_files(path_prefix, glob=mock_glob))
       self.assertTrue(len(found)>0)
 
@@ -162,9 +162,9 @@ class UnitTests(unittest.TestCase):
         val='1.23',
         se='4.56',
         sample_size='100.5',
-        missing_val=Nans.NOT_MISSING,
-        missing_se=Nans.NOT_MISSING,
-        missing_sample_size=Nans.NOT_MISSING):
+        missing_val=str(float(Nans.NOT_MISSING)),
+        missing_se=str(float(Nans.NOT_MISSING)),
+        missing_sample_size=str(float(Nans.NOT_MISSING))):
       row = MagicMock(
           geo_id=geo_id,
           val=val,
@@ -203,9 +203,9 @@ class UnitTests(unittest.TestCase):
       (make_row(missing_val='missing_val'), 'missing_val'),
       (make_row(missing_se='missing_val'), 'missing_se'),
       (make_row(missing_sample_size='missing_val'), 'missing_sample_size'),
-      (make_row(val='1.2', missing_val=Nans.OTHER), 'missing_val'),
-      (make_row(se='1.2', missing_se=Nans.OTHER), 'missing_se'),
-      (make_row(sample_size='1.2', missing_sample_size=Nans.OTHER), 'missing_sample_size')
+      (make_row(val='1.2', missing_val=str(float(Nans.OTHER))), 'missing_val'),
+      (make_row(se='1.2', missing_se=str(float(Nans.OTHER))), 'missing_se'),
+      (make_row(sample_size='1.2', missing_sample_size=str(float(Nans.OTHER))), 'missing_sample_size'),
     ]
 
     for ((geo_type, row), field) in failure_cases:
@@ -213,30 +213,20 @@ class UnitTests(unittest.TestCase):
       self.assertIsNone(values)
       self.assertEqual(error, field)
 
-    # a nominal case without missing values
-    geo_type, row = make_row()
-    values, error = CsvImporter.extract_and_check_row(row, geo_type)
+    success_cases = [
+      (make_row(), CsvImporter.RowValues('vi', 1.23, 4.56, 100.5, Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.NOT_MISSING)),
+      (make_row(geo_type='county', geo_id='17000', val=np.nan, se=np.nan, sample_size=np.nan, missing_val=str(float(Nans.DELETED)), missing_se=str(float(Nans.DELETED)), missing_sample_size=str(float(Nans.DELETED))), CsvImporter.RowValues('17000', None, None, None, Nans.DELETED, Nans.DELETED, Nans.DELETED)),
+      (make_row(se='', sample_size='NA', missing_se=str(float(Nans.OTHER)), missing_sample_size=str(float(Nans.OTHER))), CsvImporter.RowValues('vi', 1.23, None, None, Nans.NOT_MISSING, Nans.OTHER, Nans.OTHER))
+    ]
 
-    self.assertIsInstance(values, CsvImporter.RowValues)
-    self.assertEqual(str(values.geo_value), row.geo_id)
-    self.assertEqual(str(values.value), row.val)
-    self.assertEqual(str(values.stderr), row.se)
-    self.assertEqual(str(values.sample_size), row.sample_size)
-    self.assertIsNone(error)
-
-    # a nominal case with missing values
-    geo_type, row = make_row(
-      se='', sample_size='NA',
-      missing_se=Nans.OTHER, missing_sample_size=Nans.OTHER
-    )
-    values, error = CsvImporter.extract_and_check_row(row, geo_type)
-
-    self.assertIsInstance(values, CsvImporter.RowValues)
-    self.assertEqual(str(values.geo_value), row.geo_id)
-    self.assertEqual(str(values.value), row.val)
-    self.assertIsNone(values.stderr)
-    self.assertIsNone(values.sample_size)
-    self.assertIsNone(error)
+    for ((geo_type, row), field) in success_cases:
+      values, error = CsvImporter.extract_and_check_row(row, geo_type)
+      self.assertIsNone(error)
+      self.assertIsInstance(values, CsvImporter.RowValues)
+      self.assertEqual(values.geo_value, field.geo_value)
+      self.assertEqual(values.value, field.value)
+      self.assertEqual(values.stderr, field.stderr)
+      self.assertEqual(values.sample_size, field.sample_size)
 
   def test_load_csv_with_invalid_header(self):
     """Bail loading a CSV when the header is invalid."""

@@ -224,7 +224,7 @@ class CsvImporter:
     if hasattr(row, "missing_" + attr_name):
       missing_entry = getattr(row, "missing_" + attr_name)
       try:
-        missing_entry = int(missing_entry)
+        missing_entry = int(float(missing_entry)) # convert from string to float to int
       except ValueError:
         return None
       # A missing code should never contradict the quantity being present,
