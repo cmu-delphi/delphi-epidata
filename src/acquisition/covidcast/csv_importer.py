@@ -212,7 +212,7 @@ class CsvImporter:
       return "Error"
 
   @staticmethod
-  def validate_missing_code(row, attr_quantity, attr_name):
+  def validate_missing_code(row, attr_quantity, attr_name, filepath=None, logger=None):
     """Take a row and validate the missing code associated with
     a quantity (e.g., val, se, stderr).
 
@@ -221,27 +221,30 @@ class CsvImporter:
     to infer missing codes except for a very simple cases; the default
     is to produce an error so that the issue can be fixed in indicators.
     """
-    if hasattr(row, "missing_" + attr_name):
-      missing_entry = getattr(row, "missing_" + attr_name)
-      try:
-        missing_entry = int(float(missing_entry)) # convert from string to float to int
-      except ValueError:
-        return None
-      # A missing code should never contradict the quantity being present,
-      # since that will be filtered in the export_to_csv util in
-      # covidcast-indicators; nonetheless this code is here for safety.
-      if attr_quantity is not None and missing_entry != Nans.NOT_MISSING.value:
-        return None
-      elif attr_quantity is None and missing_entry == Nans.NOT_MISSING.value:
-        return None
-      return missing_entry
-    else:
-      if attr_quantity is None:
-        return Nans.OTHER.value
+    logger = get_structured_logger('load_csv') if logger is None else logger
+    missing_entry = getattr(row, "missing_" + attr_name, None)
+
+    try:
+      missing_entry = CsvImporter.floaty_int(missing_entry) # convert from string to float to int
+    except (ValueError, TypeError):
+      missing_entry = None
+
+    if missing_entry is None and attr_quantity is not None:
       return Nans.NOT_MISSING.value
+    if missing_entry is None and attr_quantity is None:
+      return Nans.OTHER.value
+
+    if missing_entry != Nans.NOT_MISSING.value and attr_quantity is not None:
+      logger.warning(event = f"missing_{attr_name} column contradicting {attr_name} presence.", detail = (str(row)), file = filepath)
+      return Nans.NOT_MISSING.value
+    if missing_entry == Nans.NOT_MISSING.value and attr_quantity is None:
+      logger.warning(event = f"missing_{attr_name} column contradicting {attr_name} presence.", detail = (str(row)), file = filepath)
+      return Nans.OTHER.value
+
+    return missing_entry
 
   @staticmethod
-  def extract_and_check_row(row, geo_type):
+  def extract_and_check_row(row, geo_type, filepath=None):
     """Extract and return `RowValues` from a CSV row, with sanity checks.
 
     Also returns the name of the field which failed sanity check, or None.
@@ -300,31 +303,23 @@ class CsvImporter:
       return (None, 'geo_type')
 
     # Validate row values
-    value = CsvImporter.validate_quantity(row, "val")
-    # val was a string or another dtype
+    value = CsvImporter.validate_quantity(row, "value")
+    # value was a string or another dtype
     if value == "Error":
-      return (None, 'val')
-    stderr = CsvImporter.validate_quantity(row, "se")
-    # Case 1: stderr was a string or another dtype
-    # Case 2: stderr is negative
+      return (None, 'value')
+    stderr = CsvImporter.validate_quantity(row, "stderr")
+    # stderr is a string, another dtype, or negative
     if stderr == "Error" or (stderr is not None and stderr < 0):
-      return (None, 'se')
+      return (None, 'stderr')
     sample_size = CsvImporter.validate_quantity(row, "sample_size")
-    # Case 1: sample_size was a string or another dtype
-    # Case 2: sample_size was negative
+    # sample_size is a string, another dtype, or negative
     if sample_size == "Error" or (sample_size is not None and sample_size < 0):
       return (None, 'sample_size')
 
     # Validate and write missingness codes
-    missing_value = CsvImporter.validate_missing_code(row, value, "val")
-    if missing_value is None:
-      return (None, 'missing_val')
-    missing_stderr = CsvImporter.validate_missing_code(row, stderr, "se")
-    if missing_stderr is None:
-      return (None, 'missing_se')
-    missing_sample_size = CsvImporter.validate_missing_code(row, sample_size, "sample_size")
-    if missing_sample_size is None:
-      return (None, 'missing_sample_size')
+    missing_value = CsvImporter.validate_missing_code(row, value, "value", filepath)
+    missing_stderr = CsvImporter.validate_missing_code(row, stderr, "stderr", filepath)
+    missing_sample_size = CsvImporter.validate_missing_code(row, sample_size, "sample_size", filepath)
 
     # return extracted and validated row values
     row_values = CsvImporter.RowValues(
@@ -344,16 +339,24 @@ class CsvImporter:
     including the header.
     """
     logger = get_structured_logger('load_csv')
-    # don't use type inference, just get strings
-    table = pandas.read_csv(filepath, dtype='str')
+
+    try:
+      dtypes = {"geo_id": str, "val": float, "se": float, "sample_size": float, "missing_val": float, "missing_se": float, "missing_sample_size": float}
+      table = pandas.read_csv(filepath, dtype=dtypes)
+    except ValueError as e:
+      logger.warning(event='Failed to open CSV with specified dtypes, switching to str', detail=str(e), file=filepath)
+      dtypes = {"geo_id": str, "val": str, "se": str, "sample_size": str, "missing_val": float, "missing_se": float, "missing_sample_size": float}
+      table = pandas.read_csv(filepath, dtype=dtypes)
 
     if not CsvImporter.is_header_valid(table.columns):
       logger.warning(event='invalid header', detail=table.columns, file=filepath)
       yield None
       return
 
+    table.rename(columns={"val": "value", "se": "stderr", "missing_val": "missing_value", "missing_se": "missing_stderr"}, inplace=True)
+
     for row in table.itertuples(index=False):
-      row_values, error = CsvImporter.extract_and_check_row(row, geo_type)
+      row_values, error = CsvImporter.extract_and_check_row(row, geo_type, filepath)
       if error:
         logger.warning(event = 'invalid value for row', detail=(str(row), error), file=filepath)
         yield None
