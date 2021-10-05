@@ -22,8 +22,7 @@ characteristics are available for download.
 De-identified individual survey responses can be made available to researchers
 associated with universities or non-profit organizations who sign a Data Use
 Agreement (DUA). To request access to the data please submit the information
-requested in [Facebook's page on obtaining data
-access](https://dataforgood.fb.com/docs/covid-19-symptom-survey-request-for-data-access/),
+requested in [Facebook's page on obtaining data access](https://dataforgood.facebook.com/dfg/docs/covid-19-trends-and-impact-survey-request-for-data-access),
 which sets out the basic conditions and provides a form to request access. An
 [international version of CTIS](https://covidmap.umd.edu/) is conducted by the
 University of Maryland (UMD) and access can be requested through the same

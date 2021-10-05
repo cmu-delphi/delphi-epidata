@@ -85,8 +85,7 @@ survey, which go into more detail on symptoms, contacts, risk factors, and
 demographics. These are used for many of our behavior and testing indicators
 below. The full text of the survey (including all deployed versions) can be
 found on our [questions and coding page](../../symptom-survey/coding.md).
-Researchers can [request
-access](https://dataforgood.fb.com/docs/covid-19-symptom-survey-request-for-data-access/)
+Researchers can [request access](https://dataforgood.facebook.com/dfg/docs/covid-19-trends-and-impact-survey-request-for-data-access)
 to (fully de-identified) individual survey responses for research purposes.
 
 As of early March 2021, the average number of Facebook survey responses we
