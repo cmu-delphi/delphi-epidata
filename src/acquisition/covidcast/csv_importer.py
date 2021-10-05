@@ -38,6 +38,16 @@ class CsvImporter:
   MIN_YEAR = 2019
   MAX_YEAR = 2030
 
+  DTYPES = {
+    "geo_id": str,
+    "val": float,
+    "se": float,
+    "sample_size": float,
+    "missing_val": int,
+    "missing_se": int,
+    "missing_sample_size": int
+  }
+
   # NOTE: this should be a Python 3.7+ `dataclass`, but the server is on 3.4
   # See https://docs.python.org/3/library/dataclasses.html
   class RowValues:
@@ -183,10 +193,9 @@ class CsvImporter:
     """
 
     float_value = float(value)
-    int_value = round(float_value)
-    if float_value != int_value:
+    if not float_value.is_integer():
       raise ValueError('not an int: "%s"' % str(value))
-    return int_value
+    return int(float_value)
 
   @staticmethod
   def maybe_apply(func, quantity):
@@ -341,12 +350,10 @@ class CsvImporter:
     logger = get_structured_logger('load_csv')
 
     try:
-      dtypes = {"geo_id": str, "val": float, "se": float, "sample_size": float, "missing_val": float, "missing_se": float, "missing_sample_size": float}
-      table = pandas.read_csv(filepath, dtype=dtypes)
+      table = pandas.read_csv(filepath, dtype=CsvImporter.DTYPES)
     except ValueError as e:
       logger.warning(event='Failed to open CSV with specified dtypes, switching to str', detail=str(e), file=filepath)
-      dtypes = {"geo_id": str, "val": str, "se": str, "sample_size": str, "missing_val": float, "missing_se": float, "missing_sample_size": float}
-      table = pandas.read_csv(filepath, dtype=dtypes)
+      table = pandas.read_csv(filepath, dtype='str')
 
     if not CsvImporter.is_header_valid(table.columns):
       logger.warning(event='invalid header', detail=table.columns, file=filepath)
