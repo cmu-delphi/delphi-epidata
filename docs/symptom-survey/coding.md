@@ -814,20 +814,21 @@ responses from multiple waves of this survey.
 
 * Item V1alt asks respondents who they personally know has already received a
   COVID-19 vaccine. Response options include themselves, household members, and
-  others. This is part of the vaccination uptake question experiment described
+  others. This is an alternate form of the item capturing vaccine uptake, and is
+  part of the vaccination uptake question experiment described
   [below](#experiments).
 * Item P1 asks if the respondent is a parent or legal guardian of a child under
   age 18.
 * Item P2 asks respondents the age group of their oldest child. This replaces
   item E1.
 * Item P3 asks the respondent if they will choose to have their oldest child
-  vaccinated when the vaccine is eligible. This replaces item E4.
+  vaccinated when the child is eligible to be vaccinated. This replaces item E4.
 * Item P4 asks the respondent about the type of schooling their oldest child is
-  enrolled in.
+  enrolled in, such as public or private schooling.
 * Item P5 asks the respondent to describe their current schooling for their
-  oldest child.
+  oldest child: in-person, online/remote, or a mixture.
 * Item P6 asks respondent about the preventative measures that apply if their
-  oldest child is attending in-person classes. These response options are a
+  oldest child is attending any in-person classes. These response options are a
   subset of response options from E3 with several new additions.
 
 ### Changed Items
@@ -840,11 +841,11 @@ responses from multiple waves of this survey.
   also include respondents who are asked V1alt. The display logic has been
   updated for the following questions: V2, V11a, V3a, V5a, V12a, V16, and V9
 * Item V5a, V5b and V5c have the following revisions to response options:
-  * Response option 5 “I don’t like vaccines” was revised to “I don’t like
+  * The response option “I don’t like vaccines” was revised to “I don’t like
     vaccines generally” to distinguish from a specific dislike of COVID-19
     vaccines.
-  * Response option 10 “I don’t trust COVID-19 vaccines” is a response option
-    from Wave 8 that was added back in the current wave.
+  * The response option “I don’t trust COVID-19 vaccines” is a response option
+    from Wave 8 that was added back in Wave 12.
 * Item V15a was revised to ask respondents “Did you ever experience any of the
   following barriers to getting the COVID-19 vaccine?” The word *ever* was added
   to clarify for those who have received the vaccine but may have experienced
@@ -905,4 +906,4 @@ allocated to receive Wave 11. Among those participants, 6% will receive will
 receive one of six different invitations to the survey on their News Feed. This
 will be an internal Facebook experiment conducted with the goal of improving
 response rates and exploring additional non-response bias in the weighting
-process.
+process. More details will be provided when the survey invitation is finalized.
