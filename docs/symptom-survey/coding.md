@@ -787,7 +787,7 @@ are not anticipated to change the respondent’s answer.
 
 ## Wave 12
 
-Wave 12 was deployed on September TODO, 2021. Deployment is in two phases:
+Wave 12 was deployed on October 6, 2021. Deployment is in two phases:
 
 * Initially the survey was given only to 15% of survey respondents, the
   remainder receiving Wave 11. This phase was used to conduct three experiments
@@ -802,8 +802,8 @@ Wave 12 was deployed on September TODO, 2021. Deployment is in two phases:
 Wave 12 is available in English and the languages introduced in Wave 3.
 
 Files:
-* [Wave 12 text and coding](TODO) (PDF)
-* [Wave 12 text and coding](TODO) (Word)
+* [Wave 12 text and coding](waves/CMU Survey Wave 12.pdf) (PDF)
+* [Wave 12 text and coding](waves/CMU Survey Wave 12.docx) (Word)
 
 Besides the experiments, Wave 12 revises the schooling module of the survey
 instrument and adds questions regarding parents’ intention to vaccinate their
