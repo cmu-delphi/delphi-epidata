@@ -787,7 +787,7 @@ are not anticipated to change the respondent’s answer.
 
 ## Wave 12
 
-Wave 12 was deployed on October 6, 2021. Deployment is in two phases:
+Wave 12 was deployed on October 7, 2021. Deployment is in two phases:
 
 * Initially the survey was given only to 15% of survey respondents, the
   remainder receiving Wave 11. This phase was used to conduct three experiments
