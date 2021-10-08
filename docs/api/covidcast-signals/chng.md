@@ -187,7 +187,7 @@ Note that due to local differences in health record-keeping practices, estimates
 are not always comparable across locations. We are currently working on
 adjustments to correct this spatial bias.
 
-Indicator values for as-of dates before 2021-02-21 are merely estimates, as
+Indicator values for issue dates before 2021-02-21 are merely estimates, as
 these indicators were not yet available in real time. Backfill behavior of
 these estimates is erratic and not indicative of current backfill behavior.
 
