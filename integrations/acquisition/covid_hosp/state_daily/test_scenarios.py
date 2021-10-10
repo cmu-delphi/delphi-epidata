@@ -75,13 +75,14 @@ class AcquisitionTests(unittest.TestCase):
       self.assertEqual(row['date'], 20201209)
       self.assertEqual(row['issue'], 20210315)
       self.assertEqual(row['critical_staffing_shortage_today_yes'], 8)
+      self.assertEqual(row['total_patients_hospitalized_confirmed_influenza_covid_coverage'], 56)
       actual = row['inpatient_bed_covid_utilization']
       expected = 0.11729857819905214
       self.assertAlmostEqual(actual, expected)
       self.assertIsNone(row['critical_staffing_shortage_today_no'])
 
       # expect 61 fields per row (63 database columns, except `id` and `record_type`)
-      self.assertEqual(len(row), 61)
+      self.assertEqual(len(row), 118)
 
     with self.subTest(name='all date batches acquired'):
       response = Epidata.covid_hosp('WY', Epidata.range(20200101, 20210101), issues=20210313)

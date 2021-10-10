@@ -19,6 +19,8 @@ class Database(BaseDatabase):
   # except for reporting_cutoff_start (here) and date (there). If you need
   # to update a column name, do it in both places.
   ORDERED_CSV_COLUMNS = [
+      ('state', 'state', str),
+      ('reporting_cutoff_start', 'date', Utils.int_from_date),
       ('adult_icu_bed_covid_utilization', 'adult_icu_bed_covid_utilization', float),
       ('adult_icu_bed_covid_utilization_coverage', 'adult_icu_bed_covid_utilization_coverage', int),
       ('adult_icu_bed_covid_utilization_denominator', 'adult_icu_bed_covid_utilization_denominator',
@@ -39,7 +41,6 @@ class Database(BaseDatabase):
       ('critical_staffing_shortage_today_not_reported',
        'critical_staffing_shortage_today_not_reported', int),
       ('critical_staffing_shortage_today_yes', 'critical_staffing_shortage_today_yes', int),
-      ('reporting_cutoff_start', 'date', Utils.int_from_date),
       ('deaths_covid', 'deaths_covid', int),
       ('deaths_covid_coverage', 'deaths_covid_coverage', int),
       ('geocoded_state', 'geocoded_state', int),
@@ -190,7 +191,6 @@ class Database(BaseDatabase):
        int),
       ('staffed_icu_adult_patients_confirmed_covid_coverage',
        'staffed_icu_adult_patients_confirmed_covid_coverage', int),
-      ('state', 'state', str),
       ('total_adult_patients_hospitalized_confirmed_and_suspected_covid',
        'total_adult_patients_hosp_confirmed_suspected_covid', int),
       ('total_adult_patients_hospitalized_confirmed_and_suspected_covid_coverage',
