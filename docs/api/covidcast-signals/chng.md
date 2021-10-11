@@ -189,7 +189,9 @@ adjustments to correct this spatial bias.
 
 Indicator values for issue dates before 2021-02-21 are merely estimates, as
 these indicators were not yet available in real time. Backfill behavior of
-these estimates is erratic and not indicative of current backfill behavior.
+these estimates is erratic and not indicative of current backfill behavior. For more
+information on this effect and to track updates as we develop a fix, please see
+[covidcast-indicators issue #1289: CHNG historical issues are wrong before 2021-02-21](https://github.com/cmu-delphi/covidcast-indicators/issues/1289).
 
 ### Pipeline Pause
 
