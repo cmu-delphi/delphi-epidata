@@ -191,7 +191,7 @@ Indicator values for issue dates before 2021-02-21 are merely estimates, as
 these indicators were not yet available in real time. Backfill behavior of
 these estimates is erratic and not indicative of current backfill behavior.
 
-### Pipeline pause
+### Pipeline Pause
 
 Starting on October 4, 2021, a problem with the `chng` pipeline began causing it
 to mark some days of data as deleted in their most recent version. These
@@ -202,7 +202,7 @@ each day if we allowed the pipeline to continue running.
 On October 8, 2021, we paused the `chng` pipeline, and it will remain inactive
 until we can identify and implement a fix. In the meantime, the versions with
 the deletion markings have been removed, so that default (latest) queries and
-queries with as-of set to 20211004 or later will return the
+queries with as-of set to 2021-10-04 or later will return the
 next-most-recently-updated value for these dates.
 
 ## Qualifying Conditions
