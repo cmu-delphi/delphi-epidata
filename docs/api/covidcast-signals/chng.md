@@ -17,6 +17,8 @@ grand_parent: COVIDcast Epidata API
 
 ## Overview
 
+**Notice: This data source was paused on 2021-10-04 so that we can resolve some problems with the data pipeline. [Additional details on this pause are available below](#pipeline-pause).**
+
 This data source is based on Change Healthcare claims data that has been
 de-identified in accordance with HIPAA privacy regulations. Change Healthcare is
 a healthcare technology company that aggregates data from many healthcare providers.
@@ -184,6 +186,26 @@ not necessarily indicative of a true increase of COVID-19 in a location.
 Note that due to local differences in health record-keeping practices, estimates
 are not always comparable across locations. We are currently working on
 adjustments to correct this spatial bias.
+
+Indicator values for issue dates before 2021-02-21 are merely estimates, as
+these indicators were not yet available in real time. Backfill behavior of
+these estimates is erratic and not indicative of current backfill behavior. For more
+information on this effect and to track updates as we develop a fix, please see
+[covidcast-indicators issue #1289: CHNG historical issues are wrong before 2021-02-21](https://github.com/cmu-delphi/covidcast-indicators/issues/1289).
+
+### Pipeline Pause
+
+Starting on October 4, 2021, a problem with the `chng` pipeline began causing it
+to mark some days of data as deleted in their most recent version. These
+spurious deletions affected all regions and `chng` signals from July 31 to
+August 3, 2021, and the affected date range would continue to grow by one day
+each day if we allowed the pipeline to continue running.
+
+On October 8, 2021, we paused the `chng` pipeline, and it will remain inactive
+until we can identify and implement a fix. In the meantime, the versions with
+the deletion markings have been removed, so that default (latest) queries and
+queries with as-of set to 2021-10-04 or later will return the
+next-most-recently-updated value for these dates.
 
 ## Qualifying Conditions
 
