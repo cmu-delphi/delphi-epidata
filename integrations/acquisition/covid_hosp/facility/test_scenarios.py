@@ -72,12 +72,13 @@ class AcquisitionTests(unittest.TestCase):
       self.assertEqual(row['collection_week'], 20201030)
       self.assertEqual(row['publication_date'], 20210315)
       self.assertEqual(row['previous_day_total_ed_visits_7_day_sum'], 536)
+      self.assertEqual(row['total_personnel_covid_vaccinated_doses_all_7_day_sum'], 18)
       self.assertAlmostEqual(row['total_beds_7_day_avg'], 69.3)
       self.assertEqual(
           row['previous_day_admission_influenza_confirmed_7_day_sum'], -999999)
 
-      # expect 94 fields per row (95 database columns, except `id`)
-      self.assertEqual(len(row), 94)
+      # expect 113 fields per row (114 database columns, except `id`)
+      self.assertEqual(len(row), 113)
 
     # re-acquisition of the same dataset should be a no-op
     with self.subTest(name='second acquisition'):
@@ -108,7 +109,7 @@ class AcquisitionTests(unittest.TestCase):
       self.assertTrue(acquired)
 
     # texas ground truth, sorted by `hospital_pk`
-    # see sample data at testdata/acquisition/covid_hosp/facility/dataset.csv
+    # see sample data at testdata/acquisition/covid_hosp/facility/dataset_old.csv
     texas_hospitals = [{
       'hospital_pk': '450771',
       'state': 'TX',

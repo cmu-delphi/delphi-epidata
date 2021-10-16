@@ -27,6 +27,8 @@ def handle():
         "zip",
         "hospital_subtype",
         "fips_code",
+        'geocoded_hospital_address',
+        'hhs_ids'
     ]
     fields_int = [
         "publication_date",
@@ -95,6 +97,23 @@ def handle():
         "previous_day_admission_pediatric_covid_suspected_7_day_sum",
         "previous_day_total_ed_visits_7_day_sum",
         "previous_day_admission_influenza_confirmed_7_day_sum",
+        "is_corrected",
+        "previous_day_admission_adult_covid_confirmed_7_day_coverage",
+        "previous_day_admission_adult_covid_suspected_7_day_coverage",
+        "previous_day_admission_pediatric_covid_confirmed_7_day_coverage",
+        "previous_day_admission_pediatric_covid_suspected_7_day_coverage",
+        "previous_week_patients_covid_vaccinated_doses_all_7_day",
+        "previous_week_patients_covid_vaccinated_doses_all_7_day_sum",
+        "previous_week_patients_covid_vaccinated_doses_one_7_day",
+        "previous_week_patients_covid_vaccinated_doses_one_7_day_sum",
+        "previous_week_personnel_covid_vaccinated_doses_administered_7_day",
+        "previous_week_personnel_covid_vaccinated_doses_administered_7_day_sum",
+        "total_personnel_covid_vaccinated_doses_all_7_day",
+        "total_personnel_covid_vaccinated_doses_all_7_day_sum",
+        "total_personnel_covid_vaccinated_doses_none_7_day",
+        "total_personnel_covid_vaccinated_doses_none_7_day_sum",
+        "total_personnel_covid_vaccinated_doses_one_7_day",
+        "total_personnel_covid_vaccinated_doses_one_7_day_sum"
     ]
     fields_float = [
         "total_beds_7_day_avg",

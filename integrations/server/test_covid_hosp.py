@@ -32,7 +32,7 @@ class ServerTests(unittest.TestCase):
   def insert_issue(self, cur, issue, value, record_type):
     so_many_nulls = ', '.join(['null'] * 57)
     cur.execute(f'''insert into covid_hosp_state_timeseries values (
-      0, {issue}, 'PA', 20201118, {value}, {so_many_nulls}, '{record_type}'
+      0, {issue}, 'PA', 20201118, {value}, {so_many_nulls}, '{record_type}', {so_many_nulls}
     )''')
 
   def test_query_by_issue(self):
