@@ -1,4 +1,4 @@
-ALTER TABLE state_timeseries ADD
+ALTER TABLE covid_hosp_state_timeseries ADD
  `geocoded_state` INT,
  `previous_day_admission_adult_covid_confirmed_18-19` INT,
  `previous_day_admission_adult_covid_confirmed_18-19_coverage` INT,
