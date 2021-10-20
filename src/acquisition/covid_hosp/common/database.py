@@ -150,21 +150,19 @@ class Database:
     dataframe : pandas.DataFrame
       The dataset.
     """
-
-    num_columns = 2 + len(self.columns_and_types) + len(self.additional_fields)
+    dataframe_columns_and_types = [
+      x for x in self.columns_and_types if x[0] in dataframe.columns
+    ]
+    num_columns = 2 + len(dataframe_columns_and_types) + len(self.additional_fields)
     value_placeholders = ', '.join(['%s'] * num_columns)
-    columns = ', '.join(f'`{i[1]}`' for i in self.columns_and_types + self.additional_fields)
+    columns = ', '.join(f'`{i[1]}`' for i in dataframe_columns_and_types + self.additional_fields)
     sql = f'INSERT INTO `{self.table_name}` (`id`, `{self.publication_col_name}`, {columns}) ' \
           f'VALUES ({value_placeholders})'
     id_and_publication_date = (0, publication_date)
-    NEWLINE="\n"
-    for name, _, _ in self.columns_and_types:
-      if name not in dataframe.columns:
-        raise Exception(f"{name} not in dataframe columns:\n{NEWLINE.join(sorted(dataframe.columns))}")
     with self.new_cursor() as cursor:
       for _, row in dataframe.iterrows():
         values = []
-        for name, _, dtype in self.columns_and_types:
+        for name, _, dtype in dataframe_columns_and_types:
           if isinstance(row[name], float) and math.isnan(row[name]):
             values.append(None)
           else:
