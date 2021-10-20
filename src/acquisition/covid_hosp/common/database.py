@@ -157,6 +157,10 @@ class Database:
     sql = f'INSERT INTO `{self.table_name}` (`id`, `{self.publication_col_name}`, {columns}) ' \
           f'VALUES ({value_placeholders})'
     id_and_publication_date = (0, publication_date)
+    NEWLINE="\n"
+    for name, _, _ in self.columns_and_types:
+      if name not in dataframe.columns:
+        raise Exception(f"{name} not in dataframe columns:\n{NEWLINE.join(sorted(dataframe.columns))}")
     with self.new_cursor() as cursor:
       for _, row in dataframe.iterrows():
         values = []

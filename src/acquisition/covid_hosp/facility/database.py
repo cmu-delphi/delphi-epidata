@@ -7,8 +7,11 @@ class Database(BaseDatabase):
 
   TABLE_NAME = 'covid_hosp_facility'
   KEY_COLS = ['hospital_pk', 'collection_week']
-  # These are 3-tuples of (CSV header name, SQL db column name, data type) for
-  # all the columns in the CSV file.
+  # These are 3-tuples of (
+  #   CSV header name,
+  #   SQL db column name,
+  #   data type
+  # ) for all the columns in the CSV file.
   # Note that the corresponding database column names may be shorter
   # due to constraints on the length of column names. See
   # /src/ddl/covid_hosp.sql for more information.

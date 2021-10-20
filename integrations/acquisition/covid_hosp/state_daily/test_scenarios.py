@@ -51,7 +51,7 @@ class AcquisitionTests(unittest.TestCase):
     # make sure the data does not yet exist
     with self.subTest(name='no data yet'):
       response = Epidata.covid_hosp('MA', Epidata.range(20200101, 20210101))
-      self.assertEqual(response['result'], -2)
+      self.assertEqual(response['result'], -2, response)
 
     # acquire sample data into local database
     # mock out network calls to external hosts
