@@ -17,4 +17,4 @@ ALTER TABLE covid_hosp_facility ADD
     `total_personnel_covid_vaccinated_doses_none_7_day` INT,
     `total_personnel_covid_vaccinated_doses_none_7_day_sum` INT,
     `total_personnel_covid_vaccinated_doses_one_7_day` INT,
-    `total_personnel_covid_vaccinated_doses_one_7_day_sum` INT,
+    `total_personnel_covid_vaccinated_doses_one_7_day_sum` INT;
