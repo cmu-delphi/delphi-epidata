@@ -1,5 +1,5 @@
 ALTER TABLE covid_hosp_state_timeseries ADD
- `geocoded_state` INT,
+ `geocoded_state` VARCHAR(32),
  `previous_day_admission_adult_covid_confirmed_18_19` INT,
  `previous_day_admission_adult_covid_confirmed_18_19_coverage` INT,
  `previous_day_admission_adult_covid_confirmed_20_29` INT,

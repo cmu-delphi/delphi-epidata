@@ -27,8 +27,8 @@ def handle():
         "zip",
         "hospital_subtype",
         "fips_code",
-        'geocoded_hospital_address',
-        'hhs_ids'
+        "geocoded_hospital_address",
+        "hhs_ids"
     ]
     fields_int = [
         "publication_date",

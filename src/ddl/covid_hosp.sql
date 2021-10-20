@@ -439,7 +439,7 @@ CREATE TABLE `covid_hosp_state_timeseries` (
   `adult_icu_bed_utilization_denominator` INT,
   `record_type` CHAR(1) NOT NULL,
   -- new columns added Oct 10
-  `geocoded_state` INT,
+  `geocoded_state` VARCHAR(32),
   `previous_day_admission_adult_covid_confirmed_18_19` INT,
   `previous_day_admission_adult_covid_confirmed_18_19_coverage` INT,
   `previous_day_admission_adult_covid_confirmed_20_29` INT,

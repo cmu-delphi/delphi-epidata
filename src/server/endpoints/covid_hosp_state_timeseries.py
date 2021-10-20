@@ -19,7 +19,10 @@ def handle():
     # build query
     q = QueryBuilder("covid_hosp_state_timeseries", "c")
 
-    fields_string = ["state"]
+    fields_string = [
+        "state",
+        "geocoded_state"
+    ]
     fields_int = [
         "issue",
         "date",
@@ -78,7 +81,6 @@ def handle():
         "adult_icu_bed_utilization_denominator",
         "deaths_covid",
         "deaths_covid_coverage",
-        "geocoded_state",
         "icu_patients_confirmed_influenza",
         "icu_patients_confirmed_influenza_coverage",
         "on_hand_supply_therapeutic_a_casirivimab_imdevimab_courses",

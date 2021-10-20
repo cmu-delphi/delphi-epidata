@@ -40,7 +40,7 @@ class Database(BaseDatabase):
       ('critical_staffing_shortage_today_yes', 'critical_staffing_shortage_today_yes', int),
       ('deaths_covid', 'deaths_covid', int),
       ('deaths_covid_coverage', 'deaths_covid_coverage', int),
-      ('geocoded_state', 'geocoded_state', int),
+      ('geocoded_state', 'geocoded_state', str),
       ('hospital_onset_covid', 'hospital_onset_covid', int),
       ('hospital_onset_covid_coverage', 'hospital_onset_covid_coverage', int),
       ('icu_patients_confirmed_influenza', 'icu_patients_confirmed_influenza', int),
