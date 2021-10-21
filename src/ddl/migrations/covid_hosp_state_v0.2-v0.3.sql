@@ -55,4 +55,4 @@ ALTER TABLE covid_hosp_state_timeseries ADD (
  `total_patients_hospitalized_confirmed_influenza` INT,
  `total_patients_hospitalized_confirmed_influenza_covid` INT,
  `total_patients_hospitalized_confirmed_influenza_covid_coverage` INT,
- `total_patients_hospitalized_confirmed_influenza_coverage` INT;
+ `total_patients_hospitalized_confirmed_influenza_coverage` INT);
