@@ -71,13 +71,14 @@ class AcquisitionTests(unittest.TestCase):
       self.assertEqual(row['date'], 20200826)
       self.assertEqual(row['issue'], 20210315)
       self.assertEqual(row['critical_staffing_shortage_today_yes'], 2)
+      self.assertEqual(row['total_patients_hospitalized_confirmed_influenza_covid_coverage'], 56)
       actual = row['inpatient_bed_covid_utilization']
       expected = 0.011946591707659873
       self.assertAlmostEqual(actual, expected)
       self.assertIsNone(row['critical_staffing_shortage_today_no'])
 
       # expect 61 fields per row (63 database columns, except `id` and `record_type`)
-      self.assertEqual(len(row), 61)
+      self.assertEqual(len(row), 118)
 
     # re-acquisition of the same dataset should be a no-op
     with self.subTest(name='second acquisition'):
