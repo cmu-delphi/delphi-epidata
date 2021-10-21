@@ -1,4 +1,4 @@
-ALTER TABLE covid_hosp_facility ADD
+ALTER TABLE covid_hosp_facility ADD (
     `geocoded_hospital_address` VARCHAR(32),
     `hhs_ids` VARCHAR(127),
     `is_corrected` BOOLEAN,
@@ -10,11 +10,12 @@ ALTER TABLE covid_hosp_facility ADD
     `previous_week_patients_covid_vaccinated_doses_all_7_day_sum` INT,
     `previous_week_patients_covid_vaccinated_doses_one_7_day` INT,
     `previous_week_patients_covid_vaccinated_doses_one_7_day_sum` INT,
-    `previous_week_personnel_covid_vaccinated_doses_administered_7_day` INT,
-    `previous_week_personnel_covid_vaccinated_doses_administered_7_day_sum` INT,
+    `previous_week_personnel_covid_vaccd_doses_administered_7_day` INT,
+    `previous_week_personnel_covid_vaccd_doses_administered_7_day_sum` INT,
     `total_personnel_covid_vaccinated_doses_all_7_day` INT,
     `total_personnel_covid_vaccinated_doses_all_7_day_sum` INT,
     `total_personnel_covid_vaccinated_doses_none_7_day` INT,
     `total_personnel_covid_vaccinated_doses_none_7_day_sum` INT,
     `total_personnel_covid_vaccinated_doses_one_7_day` INT,
-    `total_personnel_covid_vaccinated_doses_one_7_day_sum` INT;
+    `total_personnel_covid_vaccinated_doses_one_7_day_sum` INT);
+    
