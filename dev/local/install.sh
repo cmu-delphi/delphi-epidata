@@ -7,4 +7,3 @@ git clone https://github.com/cmu-delphi/delphi-epidata
 git clone https://github.com/cmu-delphi/utils
 cd ../../
 ln -s repos/delphi/delphi-epidata/dev/local/epidata-refresh.sh
-chmod a+x epidata-refresh.sh
