@@ -5,6 +5,17 @@ nav_order: 4
 
 # Epidata API Development Guide
 
+## Quickstart
+
+```
+$ curl "https://raw.githubusercontent.com/cmu-delphi/delphi-epidata/dev/dev/local/install.sh" | bash
+$ cd driver
+$ [sudo] ./epidata-refresh.sh database web python
+```
+(sudo requirement depends on your Docker installation and operating system)
+
+## Long version
+
 **Prerequisite:** this guide assumes that you have read the
 [frontend development guide](https://github.com/cmu-delphi/operations/blob/main/docs/frontend_development.md).
 
