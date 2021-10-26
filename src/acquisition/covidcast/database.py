@@ -3,20 +3,17 @@
 See src/ddl/covidcast.sql for an explanation of each field.
 """
 
+# first party
+import delphi.operations.secrets as secrets
 # third party
 import json
 import mysql.connector
 import numpy as np
-from math import ceil
-
-from queue import Queue, Empty
 import threading
-from multiprocessing import cpu_count
-
-# first party
-import delphi.operations.secrets as secrets
-
 from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
+from math import ceil
+from multiprocessing import cpu_count
+from queue import Queue, Empty
 
 
 # TODO: do we want to rename 'issue' to 'asof'???
@@ -193,9 +190,8 @@ class Database:
       if  modified_row_count == -1:
         # "the SQL connector does not support returning number of rows affected (see PEP 249)"
         modified_row_count = None
-  
-    except Exception as e:
-      raise e
+    except:
+      pass
     finally:
       self._cursor.execute(drop_tmp_table_sql)
     return modified_row_count
