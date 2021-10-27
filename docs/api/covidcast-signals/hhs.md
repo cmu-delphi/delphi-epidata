@@ -24,10 +24,12 @@ datasets is mirrored in Epidata at the following endpoint:
 That dataset contains dozens of columns that break down hospital
 resource usage in different ways.
 
-This indicator makes available several commonly-used combinations of
-those columns, aggregated geographically. In particular, we include
-the sum of all adult and pediatric COVID-19 hospital admissions. This
-sum is used as the "ground truth" for hospitalizations by the [COVID-19 Forecast Hub](https://github.com/reichlab/covid19-forecast-hub/blob/master/data-processed/README.md#hospitalizations).
+This indicator makes available several commonly-used columns and combinations of
+columns, aggregated geographically. In particular, we include the sum of all
+adult and pediatric COVID-19 hospital admissions. This sum is used as the
+"ground truth" for hospitalizations by the 
+[COVID-19 Forecast Hub](https://github.com/reichlab/covid19-forecast-hub/blob/master/data-processed/README.md#hospitalizations).
+We also include influenza hospital admissions.
 
 
 | Signal | 7-day average signal | Geography | Resolution | Description |
@@ -36,6 +38,9 @@ sum is used as the "ground truth" for hospitalizations by the [COVID-19 Forecast
 | `confirmed_admissions_covid_1d_prop` | `confirmed_admissions_covid_1d_prop_7dav`| state | 1 day | Sum of adult and pediatric confirmed COVID-19 hospital admissions occurring each day, per 100,000 population. <br/> **Earliest date available:** 2019-12-31 |
 | `sum_confirmed_suspected_admissions_covid_1d` | `sum_confirmed_suspected_admissions_covid_1d_7dav` | state | 1 day | Sum of adult and pediatric confirmed and suspected COVID-19 hospital admissions occurring each day. <br/> **Earliest date available:** 2019-12-31 |
 | `sum_confirmed_suspected_admissions_covid_1d_prop` | `sum_confirmed_suspected_admissions_covid_1d_prop_7dav` | state | 1 day | Sum of adult and pediatric confirmed and suspected COVID-19 hospital admissions occurring each day, per 100,000 population. <br/> **Earliest date available:** 2019-12-31 |
+| `confirmed_admissions_influenza_1d` | `confirmed_admissions_influenza_1d_7dav` | state | 1 day | All confirmed influenza hospital admissions occuring each day. We made this signal available November 1, 2021. <br/> **Earliest issue available:** 2021-09-20 <br/> **Earliest date available:** 2020-01-02 |
+| `confirmed_admissions_influenza_1d_prop` | `confirmed_admissions_influenza_1d_prop_7dav` | state | 1 day | All confirmed influenza hospital admissions occuring each day, per 100,000 population. We made this signal available November 1, 2021. <br/> **Earliest issue available:** 2021-09-20 <br/> **Earliest date available:** 2020-01-02 |
+
 
 The 7-day average signals are computed by Delphi by calculating
 moving averages of the preceding 7 days, so e.g. the signal for June 7 is the
@@ -49,9 +54,9 @@ average of the underlying data for June 1 through 7, inclusive.
 
 ## Estimation
 
-### Statewise, daily resolution
+### Statewise, daily resolution, COVID-19
 
-Statewise daily resolution signals use the following four columns from
+Statewise daily resolution signals for COVID-19 use the following four columns from
 the HHS state timeseries dataset:
 
 * `previous_day_admission_[adult|pediatric]_covid_[confirmed|suspected]`
@@ -71,6 +76,17 @@ The `sum_confirmed_suspected` signal is the sum of all four columns:
 The source data specifies that admissions occurred on the previous
 day. We automatically adjust the date of each result so that
 admissions are incident on that date.
+
+### Statewise, daily resolution, influenza
+
+Statewise daily resolution signals for influenza use the following column from
+the HHS state timeseries dataset:
+
+* `previous_day_admission_influenza_confirmed`
+
+The source data specifies that admissions occurred on the previous day. We
+automatically adjust the date of each result so that admissions are incident on
+that date.
 
 ## Limitations
 
