@@ -301,8 +301,8 @@ your protocol.
 Wave 5 was deployed on November 24, 2020. Deployment was phased: a fraction of
 users were invited to take Wave 4, while the majority were invited to Wave 5, so
 data users can determine if changes in responses are due to survey revisions or
-to population changes at the same time. Wave 5 is available in English and all
-the languages introduced in Wave 3.
+to population changes at the same time. This overlap lasted roughly seven days.
+Wave 5 is available in English and all the languages introduced in Wave 3.
 
 Files:
 
@@ -370,8 +370,9 @@ released:
 
 ## Wave 6
 
-Wave 6 was deployed on December 19, 2020. It is available in English and the
-languages introduced in Wave 3.
+Wave 6 was deployed on December 19, 2020. Deployment was phased: for seven days,
+a randomly selected portion of respondents continued to receive Wave 5. Wave 6
+is available in English and the languages introduced in Wave 3.
 
 Files:
 
@@ -405,8 +406,9 @@ when you use responses from multiple waves of this survey.
 
 ## Wave 7
 
-Wave 7 was deployed on January 12, 2021. It is available in English and the
-languages introduced in Wave 3.
+Wave 7 was deployed on January 12, 2021. Because only minor changes were made in
+this wave, there was no overlap between waves 6 and 7. It is available in
+English and the languages introduced in Wave 3.
 
 Files:
 
@@ -486,7 +488,7 @@ administered by the University of Maryland](https://covidmap.umd.edu/).
 
 ## Wave 10
 
-Wave 10 was deployed on March 2, 2021. For the following 7 days, 15% of
+Wave 10 was deployed on March 2, 2021. For the following 7 days, roughly 10% of
 respondents (selected at random) continued to receive Wave 8, allowing for
 comparisons of responses between the two waves. Wave 10 is available in English
 and the languages introduced in Wave 3.
@@ -559,7 +561,7 @@ survey.
 
 ## Wave 11
 
-Wave 11 was deployed on May 20, 2021. For the following 14 days, 15% of
+Wave 11 was deployed on May 20, 2021. For the following 30 days, about 10% of
 respondents (selected at random) continued to receive Wave 10, allowing for
 comparisons of responses between the two waves. It is available in English and
 the languages introduced in Wave 3.
@@ -790,11 +792,11 @@ are not anticipated to change the respondent’s answer.
 Wave 12 was deployed on October 7, 2021. Deployment is in two phases:
 
 * Initially the survey was given only to 15% of survey respondents, the
-  remainder receiving Wave 11. This phase was used to conduct three experiments
-  with (1) demographic module placement, (2) vaccination uptake question, and
-  (3) survey invitation text. Details of these experiments can be found
-  [below](#experiments). In data files, this is marked as wave "12.5" to
-  distinguish from the final version.
+  remainder receiving Wave 11. This phase lasted until October 22. This phase
+  was used to conduct three experiments with (1) demographic module placement,
+  (2) vaccination uptake question, and (3) survey invitation text. Details of
+  these experiments can be found [below](#experiments). In data files, this is
+  marked as wave "12.5" to distinguish from the final version.
 * After results of the experiments are analyzed, a final version will be
   deployed using only one demographic module placement and one vaccine uptake
   question. This will be marked as wave 12 in the data files.
