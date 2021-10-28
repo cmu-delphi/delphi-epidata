@@ -1,6 +1,8 @@
 from typing import cast
+import time
 
 from flask import Flask, g, request
+from sqlalchemy import event
 from sqlalchemy.engine import Connection
 from werkzeug.local import LocalProxy
 
@@ -24,6 +26,25 @@ access to the SQL Alchemy connection for this request
 """
 db: Connection = cast(Connection, LocalProxy(_get_db))
 
+@event.listens_for(engine, "before_cursor_execute")
+def before_cursor_execute(conn, cursor, statement, parameters, context, executemany):
+    t = time.time()
+    # TODO: probbly just use one of these two:
+    context._query_start_time = t
+    conn.info.setdefault('query_start_time', []).append(t)
+
+
+@event.listens_for(engine, "after_cursor_execute")
+def after_cursor_execute(conn, cursor, statement, parameters, context, executemany):
+    # this timing info may be suspect, at least in terms of dmbs cpu time...
+    # it is likely that it includes that time as well as any overhead that
+    # come from throttling or flow control on the streamed data, as well as
+    # any row transform/processing time
+    t = time.time()
+    total_cntx = t - context._query_start_time
+    total_cnxn = t - conn.info['query_start_time'].pop(-1)
+    app.logger.info("SQL execute() elapsed time: " + str(dict(
+        statement=statement, total_cntx=total_cntx, total_cnxn=total_cnxn)))
 
 @app.before_request
 def connect_db():
