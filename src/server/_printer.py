@@ -18,8 +18,16 @@ def print_non_standard(data):
     format = request.values.get("format", "classic")
     if format == "json":
         return jsonify(data)
+
+    if not data:
+        message = "no results"
+        result = -1
     else:
-        return jsonify(dict(result=1, message="success", epidata=data))
+        message = "success"
+        result = 1
+    if result == -1 and is_compatibility_mode():
+        return jsonify(dict(result=result, message=message))
+    return jsonify(dict(result=result, message=message, epidata=data))
 
 
 class APrinter:
