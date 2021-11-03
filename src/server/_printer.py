@@ -21,7 +21,7 @@ def print_non_standard(data):
 
     if not data:
         message = "no results"
-        result = -1
+        result = -2
     else:
         message = "success"
         result = 1
