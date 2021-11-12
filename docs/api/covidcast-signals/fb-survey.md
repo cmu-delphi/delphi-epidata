@@ -737,13 +737,13 @@ with estimated standard errors:
 
 $$
 \begin{aligned}
-\widehat{\mathrm{se}}(\hat{p}_w) &= 100 \cdot \sqrt{
-  \left(\frac{1}{1 + n_e}\right)^2 \left(\frac12 - \frac{\hat{p}_w}{100}\right)^2 +
-  n_e \hat{s}_p^2
+\widehat{\mathrm{se}}(\hat{p}_w) &= 100 \cdot \frac{1}{1 + n_e} \sqrt{
+  \left(\frac12 - \frac{\hat{p}_w}{100}\right)^2 +
+  n_e^2 \hat{s}_p^2
 }\\
-\widehat{\mathrm{se}}(\hat{q}_w) &= 100 \cdot \sqrt{
-  \left(\frac{1}{1 + n_e}\right)^2 \left(\frac12 - \frac{\hat{q}_w}{100}\right)^2 +
-  n_e \hat{s}_q^2
+\widehat{\mathrm{se}}(\hat{q}_w) &= 100 \cdot \frac{1}{1 + n_e} \sqrt{
+  \left(\frac12 - \frac{\hat{q}_w}{100}\right)^2 +
+  n_e^2 \hat{s}_q^2
 },
 \end{aligned}
 $$
@@ -760,8 +760,8 @@ $$
 
 which are the delta method estimates of variance associated with self-normalized
 importance sampling estimators above, after combining with a pseudo-observation
-of 1/2 with weight assigned to appear like a single effective observation
-according to importance sampling diagnostics.
+of 1/2 with weight $$\frac{1}{n_e}$$, assigned to appear like a single effective
+observation according to importance sampling diagnostics.
 
 The sample size reported is calculated by rounding down $$\sum_{i=1}^{m}
 w^{\text{geodiv}}_i$$ before adding the pseudo-observations. When ZIP codes do
@@ -788,12 +788,21 @@ and $$V_i$$ denote the indicators that the survey respondent knows someone in
 their community with CLI, including and not including their household,
 respectively, for survey $$i$$, out of $$m$$ surveys collected. Also let
 $$w_i$$ be the self-normalized weight that accompanies survey $$i$$, as
-above. Then our adjusted estimates of $$a$$ and $$b$$ are:
+above. Then our initial weighted estimates of $$a$$ and $$b$$ are:
 
 $$
 \begin{aligned}
-\hat{a}_w &= 100 \cdot \sum_{i=1}^m w_i U_i \\
-\hat{b}_w &= 100 \cdot \sum_{i=1}^m w_i V_i.
+\hat{a}_{w, init} &= 100 \cdot \sum_{i=1}^m w_i U_i \\
+\hat{b}_{w, init} &= 100 \cdot \sum_{i=1}^m w_i V_i.
+\end{aligned}
+$$
+
+After combining with a pseudo-observation, defined as before,
+
+$$
+\begin{aligned}
+\hat{a}_w &= 100 \cdot \frac{n_e \frac{\hat{a}_{w, init}}{100} + \frac12}{1 + n_e} \\
+\hat{b}_w &= 100 \cdot \frac{n_e \frac{\hat{b}_{w, init}}{100} + \frac12}{1 + n_e}.
 \end{aligned}
 $$
 
@@ -801,15 +810,11 @@ with estimated standard errors:
 
 $$
 \begin{aligned}
-\widehat{\mathrm{se}}(\hat{a}_w) &= 100 \cdot \sqrt{\sum_{i=1}^m
-w_i^2 \left(U_i - \frac{\hat{a}_w}{100} \right)^2} \\
-\widehat{\mathrm{se}}(\hat{b}_w) &= 100 \cdot \sqrt{\sum_{i=1}^m
-w_i^2 \left(V_i - \frac{\hat{b}_w}{100} \right)^2},
+\widehat{\mathrm{se}}(\hat{a}_w) &= 100 \cdot \sqrt{\frac{\frac{\hat{a}_w}{100}(1-\frac{\hat{a}_w}{100})}{1 + n_e}} \\
+\widehat{\mathrm{se}}(\hat{b}_w) &= 100 \cdot \sqrt{\frac{\frac{\hat{b}_w}{100}(1-\frac{\hat{b}_w}{100})}{1 + n_e}}.
 \end{aligned}
 $$
 
-the delta method estimates of variance associated with self-normalized
-importance sampling estimators.
 
 ## Appendix
 
