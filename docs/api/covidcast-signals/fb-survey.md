@@ -94,18 +94,17 @@ found on our [questions and coding page](../../symptom-survey/coding.md).
 
 ## ILI and CLI Indicators
 
-Of primary interest for the API are the symptoms defining a COVID-like illness
-(fever, along with cough, or shortness of breath, or difficulty breathing) or
-influenza-like illness (fever, along with cough or sore throat). Using this
-survey data, we estimate the percentage of people (age 18 or older) who have a
-COVID-like illness, or influenza-like illness, in a given location, on a given
-day.
+We define COVID-like illness (fever, along with cough, or shortness of breath,
+or difficulty breathing) or influenza-like illness (fever, along with cough or
+sore throat) for use in forecasting and modeling. Using this survey data, we
+estimate the percentage of people (age 18 or older) who have a COVID-like
+illness, or influenza-like illness, in a given location, on a given day.
 
-Signals beginning `raw_w` or `smoothed_w` are [adjusted using survey weights
-to be demographically representative](#survey-weighting) as described below.
-Weighted signals have 1-2 days of lag, so if low latency is paramount,
-unweighted signals are also available. These begin `smoothed_` or `raw_`,
-such as `raw_cli` instead of `raw_wcli`.
+Signals beginning `raw_w` or `smoothed_w` are [adjusted using survey weights to
+be demographically representative](#survey-weighting-and-estimation) as
+described below. Weighted signals have 1-2 days of lag, so if low latency is
+paramount, unweighted signals are also available. These begin `smoothed_` or
+`raw_`, such as `raw_cli` instead of `raw_wcli`.
 
 | Signals | Description |
 | --- | --- |
@@ -187,28 +186,12 @@ p = 100 \cdot \frac{x}{n}
 q = 100 \cdot \frac{y}{n}.
 $$
 
-We estimate $$p$$ and $$q$$ across 4 aggregation schemes:
-
-1. daily, at the county level;
-2. daily, at the MSA (metropolitan statistical area) level;
-3. daily, at the HRR (hospital referral region) level;
-4. daily, at the state level.
-
-These are possible because we have the ZIP code of the household from Q4 of the
-survey. Our current rule-of-thumb is to discard any estimate (whether at a
-county, MSA, HRR, or state level) that is based on fewer than 100 survey
-responses. When our geographical mapping data indicates that a ZIP code is part
-of multiple geographical units in a single aggregation, we assign weights
-$$w_i^\text{geodiv}$$ to each of these units (based on the ZIP code's overlap
-with each geographical unit) and use these weights as part of the survey
-weighting, as [described below](#survey-weighting).
-
-In a given aggregation unit (for example, daily-county), let $$X_i$$ and
-$$Y_i$$ denote number of ILI and CLI cases in the household, respectively
-(computed according to the simple strategy described above), and let $$N_i$$
-denote the total number of people in the household, in survey $$i$$, out of
-$$m$$ surveys we collected. Then our estimates of $$p$$ and $$q$$ (see
-the [appendix](#appendix) for motivating details) are:
+In a given aggregation unit (for example, daily-county), let $$X_i$$ and $$Y_i$$
+denote number of ILI and CLI cases in the household, respectively (computed
+according to the simple strategy [described
+above](#defining-household-ili-and-cli)), and let $$N_i$$ denote the total
+number of people in the household, in survey $$i$$, out of $$m$$ surveys we
+collected. Then our unweighted estimates of $$p$$ and $$q$$ are:
 
 $$
 \hat{p} = 100 \cdot \frac{1}{m}\sum_{i=1}^m \frac{X_i}{N_i}
@@ -216,29 +199,8 @@ $$
 \hat{q} = 100 \cdot \frac{1}{m}\sum_{i=1}^m \frac{Y_i}{N_i}.
 $$
 
-Their estimated standard errors are:
-
-$$
-\begin{aligned}
-\widehat{\mathrm{se}}(\hat{p}) &= 100 \cdot \frac{1}{m+1}\sqrt{
-  \left(\frac{1}{2} - \frac{\hat{p}}{100}\right)^2 +
-  \sum_{i=1}^m \left(\frac{X_i}{N_i} - \frac{\hat{p}}{100}\right)^2
-} \\
-\widehat{\mathrm{se}}(\hat{q}) &= 100 \cdot \frac{1}{m+1}\sqrt{
-  \left(\frac{1}{2} - \frac{\hat{q}}{100}\right)^2 +
-  \sum_{i=1}^m \left(\frac{Y_i}{N_i} - \frac{\hat{q}}{100}\right)^2
-},
-\end{aligned}
-$$
-
-the standard deviations of the estimators after adding a single
-pseudo-observation at 1/2 (treating $$m$$ as fixed). The use of the
-pseudo-observation prevents standard error estimates of zero, and in simulations
-improves the quality of the standard error estimates.
-
-The pseudo-observation is not used in $$\hat{p}$$ and $$\hat{q}$$ themselves, to
-avoid potentially large amounts of estimation bias, as $$p$$ and $$q$$ are
-expected to be small.
+[See below](#adjusting-household-ili-and-cli) for details on weighting and
+standard errors for these estimates.
 
 ### Estimating "Community CLI"
 
@@ -254,36 +216,16 @@ a = 100 \cdot \frac{u}{n}
 b = 100 \cdot \frac{y}{n}.
 $$
 
-We will estimate $$a$$ and $$b$$ across the same 4 aggregation schemes as
-before.
-
 For a single survey, let:
 
 - $$U = 1$$ if and only if a positive number is reported for Q2 or Q5;
 - $$V = 1$$ if and only if a positive number is reported for Q2.
 
-In a given aggregation unit (for example, daily-county), let $$U_i$$ and
-$$V_i$$ denote these quantities for survey $$i$$, and $$m$$ denote the number of
-surveys total.  Then to estimate $$a$$ and $$b$$, we simply use:
-
-$$
-\hat{a} = 100 \cdot \frac{1}{m} \sum_{i=1}^m U_i
-\quad\text{and}\quad
-\hat{b} = 100 \cdot \frac{1}{m} \sum_{i=1}^m V_i.
-$$
-
-Hence $$\hat{a}$$ is reported in the `hh_cmnty_cli` signals and $$\hat{b}$$ in
-the `nohh_cmnty_cli` signals. Their estimated standard errors are:
-
-$$
-\begin{aligned}
-\widehat{\mathrm{se}}(\hat{a}) &= 100 \cdot \sqrt{\frac{\frac{\hat{a}}{100}(1-\frac{\hat{a}}{100})}{m}} \\
-\widehat{\mathrm{se}}(\hat{b}) &= 100 \cdot \sqrt{\frac{\frac{\hat{b}}{100}(1-\frac{\hat{b}}{100})}{m}},
-\end{aligned}
-$$
-
-which are the plug-in estimates of the standard errors of the binomial
-proportions (treating $$m$$ as fixed).
+Let $$U_i$$ and $$V_i$$ denote these quantities for survey $$i$$, and $$m$$
+denote the number of surveys total. We report the percentage of surveys where
+$$U_i = 1$$ as in the `hh_cmnty_cli` signals and the percentage where $$V_i =
+1$$ in the `nohh_cmnty_cli` signals. The exact estimators are [described
+below](#adjusting-other-percentage-estimators).
 
 Note that $$\sum_{i=1}^m U_i$$ is the number of survey respondents who know
 someone in their community with *either ILI or CLI*, and not CLI alone; and
