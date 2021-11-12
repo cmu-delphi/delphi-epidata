@@ -24,8 +24,12 @@ voluntary. Users age 18 or older are eligible to complete the surveys, and
 their survey responses are held by CMU and are sharable with other health
 researchers under a data use agreement. No individual survey responses are
 shared back to Facebook. See our [surveys
-page](https://delphi.cmu.edu/covidcast/surveys/) for more detail about how the
+page](https://delphi.cmu.edu/covid19/ctis/) for more detail about how the
 surveys work and how they are used outside the COVIDcast API.
+
+As of November 2021, the average number of Facebook survey responses we
+receive each day is about 40,000, and the total number of survey responses we
+have received is over 25 million.
 
 We produce several sets of signals based on the survey data, listed and
 described in the sections below:
@@ -52,7 +56,9 @@ dashboard](https://delphi.cmu.edu/covidcast/survey-results/) at any selected
 location.
 
 Additionally, contingency tables containing demographic breakdowns of survey
-data are [also available for download](../../symptom-survey/contingency-tables.md).
+data are [available for download](../../symptom-survey/contingency-tables.md).
+Researchers can [request access](../../symptom-survey/data-access.md)
+to (fully de-identified) individual survey responses for research purposes.
 
 ## Table of Contents
 {: .no_toc .text-delta}
@@ -85,12 +91,6 @@ survey, which go into more detail on symptoms, contacts, risk factors, and
 demographics. These are used for many of our behavior and testing indicators
 below. The full text of the survey (including all deployed versions) can be
 found on our [questions and coding page](../../symptom-survey/coding.md).
-Researchers can [request access](https://dataforgood.facebook.com/dfg/docs/covid-19-trends-and-impact-survey-request-for-data-access)
-to (fully de-identified) individual survey responses for research purposes.
-
-As of early March 2021, the average number of Facebook survey responses we
-receive each day is about 40,000, and the total number of survey responses we
-have received is over 17 million.
 
 ## ILI and CLI Indicators
 
