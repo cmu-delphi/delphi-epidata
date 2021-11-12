@@ -246,9 +246,9 @@ data in the estimation procedures described above.
 
 ## Behavior Indicators
 
-Signals beginning `smoothed_w` are [adjusted using survey weights
-to be demographically representative](#survey-weighting) as described below.
-Weighted signals have 1-2 days of lag, so if low latency is paramount,
+Signals beginning `smoothed_w` are [adjusted using survey weights to be
+demographically representative](#survey-weighting-and-estimation) as described
+below. Weighted signals have 1-2 days of lag, so if low latency is paramount,
 unweighted signals are also available. These begin `smoothed_`, such as
 `smoothed_wearing_mask` instead of `smoothed_wwearing_mask`.
 
@@ -291,9 +291,9 @@ unweighted signals are also available. These begin `smoothed_`, such as
 
 ## Testing Indicators
 
-Signals beginning `smoothed_w` are [adjusted using survey weights
-to be demographically representative](#survey-weighting) as described below.
-Weighted signals have 1-2 days of lag, so if low latency is paramount,
+Signals beginning `smoothed_w` are [adjusted using survey weights to be
+demographically representative](#survey-weighting-and-estimation) as described
+below. Weighted signals have 1-2 days of lag, so if low latency is paramount,
 unweighted signals are also available. These begin `smoothed_`, such as
 `smoothed_tested_14d` instead of `smoothed_wtested_14d`.
 
@@ -311,9 +311,9 @@ September 8, 2020.
 
 ## Vaccination Indicators
 
-Signals beginning `smoothed_w` are [adjusted using survey weights
-to be demographically representative](#survey-weighting) as described below.
-Weighted signals have 1-2 days of lag, so if low latency is paramount,
+Signals beginning `smoothed_w` are [adjusted using survey weights to be
+demographically representative](#survey-weighting-and-estimation) as described
+below. Weighted signals have 1-2 days of lag, so if low latency is paramount,
 unweighted signals are also available. These begin `smoothed_`, such as
 `smoothed_covid_vaccinated` instead of `smoothed_wcovid_vaccinated`.
 
@@ -436,9 +436,9 @@ V1 beginning January 6, 2021.
 
 ## Mental Health Indicators
 
-Signals beginning `smoothed_w` are [adjusted using survey weights
-to be demographically representative](#survey-weighting) as described below.
-Weighted signals have 1-2 days of lag, so if low latency is paramount,
+Signals beginning `smoothed_w` are [adjusted using survey weights to be
+demographically representative](#survey-weighting-and-estimation) as described
+below. Weighted signals have 1-2 days of lag, so if low latency is paramount,
 unweighted signals are also available. These begin `smoothed_`, such as
 `smoothed_anxious_5d` instead of `smoothed_wanxious_5d`.
 
@@ -463,9 +463,9 @@ include respondents to Wave 4 and later waves, beginning September 8, 2020.
 ## Belief, Experience, and Information Indicators
 
 Signals beginning `smoothed_w` are [adjusted using survey weights to be
-demographically representative](#survey-weighting) as described below. Weighted
-signals have 1-2 days of lag, so if low latency is paramount, unweighted signals
-are also available. These begin `smoothed_`, such as
+demographically representative](#survey-weighting-and-estimation) as described
+below. Weighted signals have 1-2 days of lag, so if low latency is paramount,
+unweighted signals are also available. These begin `smoothed_`, such as
 `smoothed_belief_children_immune` instead of `smoothed_wbelief_children_immune`.
 
 ### Beliefs About COVID-19
@@ -536,18 +536,19 @@ When interpreting the signals above, it is important to keep in mind several
 limitations of this survey data.
 
 * **Survey population.** People are eligible to participate in the survey if
-  they are age 18 or older, they are currently located in the USA, and they are an active user of Facebook. The survey
-  data does not report on children under age 18, and the Facebook adult user
-  population may differ from the United States population generally in important
-  ways. We use our [survey weighting](#survey-weighting) to adjust the estimates
-  to match age and gender demographics by state, but this process doesn't adjust
-  for other demographic biases we may not be aware of.
+  they are age 18 or older, they are currently located in the USA, and they are
+  an active user of Facebook. The survey data does not report on children under
+  age 18, and the Facebook adult user population may differ from the United
+  States population generally in important ways. We use our [survey
+  weighting](#survey-weighting-and-estimation) to adjust the estimates to match
+  age and gender demographics by state, but this process doesn't adjust for
+  other demographic biases we may not be aware of.
 * **Non-response bias.** The survey is voluntary, and people who accept the
   invitation when it is presented to them on Facebook may be different from
-  those who do not. The [survey weights provided by Facebook](#survey-weighting)
-  attempt to model the probability of response for each user and hence adjust
-  for this, but it is difficult to tell if these weights account for all
-  possible non-response bias.
+  those who do not. The [survey weights provided by
+  Facebook](#survey-weighting-and-estimation) attempt to model the probability
+  of response for each user and hence adjust for this, but it is difficult to
+  tell if these weights account for all possible non-response bias.
 * **Social desirability.** Previous survey research has shown that people's
   responses to surveys are often biased by what responses they believe are
   socially desirable or acceptable. For example, if it there is widespread
@@ -557,10 +558,11 @@ limitations of this survey data.
   present.
 * **False responses.** As with anything on the Internet, a small percentage of
   users give deliberately incorrect responses. We discard a small number of
-  responses that are obviously false, but do not perform extensive filtering.
-  However, the large size of the study, and our procedure for ensuring that each
-  respondent can only be counted once when they are invited to take the survey,
-  prevents individual respondents from having a large effect on results.
+  responses that are obviously false, but do **not** perform extensive
+  filtering. However, the large size of the study, and our procedure for
+  ensuring that each respondent can only be counted once when they are invited
+  to take the survey, prevents individual respondents from having a large effect
+  on results.
 * **Repeat invitations.** Individual respondents can be invited by Facebook to
   take the survey several times. Usually Facebook only re-invites a respondent
   after one month. Hence estimates of values on a single day are calculated
@@ -575,14 +577,30 @@ strongly over time. This means that *changes* in signals, such as increases or
 decreases, are likely to represent true changes in the underlying population,
 even if point estimates are biased.
 
+### Privacy Restrictions
+
+To protect respondent privacy, we discard any estimate (whether at a county,
+MSA, HRR, or state level) that is based on fewer than 100 survey responses. For
+signals reported using a 7-day average (those beginning with `smoothed_`), this
+means a geographic area must have at least 100 responses in 7 days to be
+reported.
+
+This affects some items more than others. For instance, items about vaccine
+hesitancy reasons are only asked of respondents who are unvaccinated and
+hesitant, not to all survey respondents. It also affects some geographic areas
+more than others, particularly rural areas with low population densities. When
+doing analysis of county-level data, one should be aware that missing counties
+are typically more rural and less populous than those present in the data, which
+may introduce bias into the analysis.
+
 ### Declining Response Rate
 
 We have noted a steady decrease in the number of daily survey responses,
 beginning no later than January 2021. As the number of survey responses
 declines, some indicators will become unavailable once they no longer meet the
-[privacy limit for sample size](../../symptom-survey/coding.md#privacy-restrictions).
-This affects some signals, such as those based on a subset of responses, more
-than others, with finer geographic resolutions becoming unavailable first.
+privacy limit for sample size. This affects some signals, such as those based on
+a subset of responses, more than others, with finer geographic resolutions
+becoming unavailable first.
 
 ### Target Region
 
@@ -595,21 +613,15 @@ live in Puerto Rico or another US territory, we do not include their response
 in the aggregations.
 
 
-## Survey Weighting
-
-Notice that the estimates defined in the previous sections are calculated with
-respect to the population of US Facebook users. (To be precise, the ILI and CLI
-indicators reflect the population of US Facebook users *and* their household
-members). In reality, our estimates are even further skewed by the varying
-propensity of people in the population of US Facebook users to take our survey
-in the first place.
+## Survey Weighting and Estimation
 
 When Facebook sends a user to our survey, it generates a random ID number and
 sends this to us as well. Once the user completes the survey, we pass this ID
-number back to Facebook to confirm completion, and in return receive a
-weight---call it $$w_i$$ for user $$i$$. (The random ID number is completely
-meaningless for any other purpose than receiving this weight, and does not allow
-us to access any information about the user's Facebook profile.)
+number back to Facebook to confirm completion, and in return receive a weight.
+(The random ID number is completely meaningless for any other purpose than
+receiving this weight, and does not allow us to access any information about the
+user's Facebook profile. Nor does it provide Facebook any information about the
+survey responses.)
 
 We can use these weights to adjust our estimates so that they are representative
 of the US population---adjusting both for the differences between the US
@@ -626,34 +638,40 @@ $$
 where $$\pi_i$$ is an estimated probability (produced by Facebook) that an
 individual with the same state-by-age-gender profile as user $$i$$ would be a
 Facebook user and take our survey. The adjustment we make follows a standard
-inverse probability weighting strategy (this being a special case of importance
-sampling).
+inverse probability weighting strategy.
 
-Detailed documentation on how Facebook calculates these weights is available on
-our [survey weight documentation page](../../symptom-survey/weights.md).
+Detailed documentation on how Facebook calculates these weights is available in
+our [survey weight documentation](../../symptom-survey/weights.md).
+
+For unweighted survey signals, we set $$w^\text{part}_i = 1$$ for all
+respondents.
+
+### Geographic Weighting and Mixing
+
+Besides the participation weight $$w^\text{part}_i$$, each survey response
+receives a geographical-division weight $$w^{\text{geodiv}}_i$$ describing how
+much a participant's ZIP code "belongs" in the spatial unit of interest. For
+example, a ZIP code may overlap with multiple counties, so the weight describes
+what proportion of the ZIP code's population is in each county.
+
+Each survey's weight is hence $$w^{\text{init}}_i = w^{\text{part}}_i
+w^{\text{geodiv}}_i$$. When a ZIP code spans multiple counties or states, a
+single survey may have different weights when used to calculate different
+geographic aggregates.
 
 ### Adjusting Household ILI and CLI
 
-As before, for a given aggregation unit (for example, daily-county), let $$X_i$$
-and $$Y_i$$ denote the numbers of ILI and CLI cases in household $$i$$,
-respectively (computed according to the simple strategy above), and let $$N_i$$
-denote the total number of people in the household. Let $$i = 1, \dots, m$$
-denote the surveys started during the time period of interest and reported in a
-ZIP code intersecting the spatial unit of interest.
+For a given aggregation unit (for example, daily-county), let $$X_i$$ and
+$$Y_i$$ denote the numbers of ILI and CLI cases in household $$i$$, respectively
+(computed according to the simple strategy above), and let $$N_i$$ denote the
+total number of people in the household. Let $$i = 1, \dots, m$$ denote the
+surveys started during the time period of interest and reported in a ZIP code
+intersecting the spatial unit of interest.
 
-Each of these surveys is assigned two weights: the participation weight
-$$w^{\text{part}}_i$$, and a geographical-division weight
-$$w^{\text{geodiv}}_i$$ describing how much a participant's ZIP code "belongs"
-in the spatial unit of interest. (For example, a ZIP code may overlap with
-multiple counties, so the weight describes what proportion of the ZIP code's
-population is in each county.)
-
-Let $$w^{\text{init}}_i=w^{\text{part}}_i w^{\text{geodiv}}_i$$ denote the
-initial weight assigned to this survey. First, we adjust these initial weights
-to reduce sensitivity to any individual survey by "mixing" them with a uniform
-weighting across all relevant surveys. This prevents specific survey respondents
-with high survey weights having disproportionate influence on the weighted
-estimates.
+First, we adjust the initial weights $$w^\text{init}$$ to reduce sensitivity to
+any individual survey by "mixing" them with a uniform weighting across all
+relevant surveys. This prevents specific survey respondents with high survey
+weights having disproportionate influence on the weighted estimates.
 
 Specifically, we select the smallest value of $$a \in [0.05, 1]$$ such that
 
@@ -702,8 +720,15 @@ $$
 
 which are the delta method estimates of variance associated with self-normalized
 importance sampling estimators above, after combining with a pseudo-observation
-of 1/2 with weight $$\frac{1}{n_e}$$, assigned to appear like a single effective
-observation according to importance sampling diagnostics.
+of 1/2 with weight $$1/n_e$$, assigned to appear like a single effective
+observation. The use of the pseudo-observation prevents standard error estimates
+of zero, and in simulations improves the quality of the standard error
+estimates. See the [Appendix](#appendix) for further motivation for these
+estimators.
+
+The pseudo-observation is not used in $$\hat{p}$$ and $$\hat{q}$$ themselves, to
+avoid potentially large amounts of estimation bias, as $$p$$ and $$q$$ are
+expected to be small.
 
 The sample size reported is calculated by rounding down $$\sum_{i=1}^{m}
 w^{\text{geodiv}}_i$$ before adding the pseudo-observations. When ZIP codes do
@@ -725,37 +750,33 @@ knowing someone in their community who is sick. In this subsection we will
 describe how survey weights are used to construct weighted estimates for these
 indicators, using community CLI as an example.
 
-As before, in a given aggregation unit (for example, daily-county), let $$U_i$$
-and $$V_i$$ denote the indicators that the survey respondent knows someone in
-their community with CLI, including and not including their household,
-respectively, for survey $$i$$, out of $$m$$ surveys collected. Also let
-$$w_i$$ be the self-normalized weight that accompanies survey $$i$$, as
-above. Then our initial weighted estimates of $$a$$ and $$b$$ are:
+In a given aggregation unit (for example, daily-county), let $$U_i$$ the
+indicator that the survey respondent knows someone in their community with CLI,
+including their household, for survey $$i$$, out of $$m$$ surveys collected.
+Also let $$w_i$$ be the weight that accompanies survey $$i$$, normalized to sum
+to 1 as above. Then our initial weighted estimate of the population proportion
+$$a$$ is:
 
 $$
-\begin{aligned}
-\hat{a}_{w, init} &= 100 \cdot \sum_{i=1}^m w_i U_i \\
-\hat{b}_{w, init} &= 100 \cdot \sum_{i=1}^m w_i V_i.
-\end{aligned}
+\hat{a}_{w, \text{init}} = 100 \cdot \sum_{i=1}^m w_i U_i
 $$
 
-After combining with a pseudo-observation, defined as before,
+To prevent observations and standard errors from being zero, we add a
+pseudo-observation of 1/2 with weight $$1/n_e$$. (This psuedo-observation can be
+thought of as equivalent to using a Bayesian estimate of the proportion, with a
+Jeffreys prior.) The estimate is hence:
 
 $$
-\begin{aligned}
-\hat{a}_w &= 100 \cdot \frac{n_e \frac{\hat{a}_{w, init}}{100} + \frac12}{1 + n_e} \\
-\hat{b}_w &= 100 \cdot \frac{n_e \frac{\hat{b}_{w, init}}{100} + \frac12}{1 + n_e}.
-\end{aligned}
+\hat{a}_w = 100 \cdot \frac{n_e \frac{\hat{a}_{w, \text{init}}}{100} + \frac12}{1 + n_e},
 $$
 
-with estimated standard errors:
+with estimated standard error:
 
 $$
-\begin{aligned}
-\widehat{\mathrm{se}}(\hat{a}_w) &= 100 \cdot \sqrt{\frac{\frac{\hat{a}_w}{100}(1-\frac{\hat{a}_w}{100})}{1 + n_e}} \\
-\widehat{\mathrm{se}}(\hat{b}_w) &= 100 \cdot \sqrt{\frac{\frac{\hat{b}_w}{100}(1-\frac{\hat{b}_w}{100})}{1 + n_e}}.
-\end{aligned}
+\widehat{\mathrm{se}}(\hat{a}_w) = 100 \cdot \sqrt{\frac{\frac{\hat{a}_w}{100}(1-\frac{\hat{a}_w}{100})}{1 + n_e}}
 $$
+
+which is the plug-in estimate of the standard error of the binomial proportion.
 
 
 ## Appendix
