@@ -88,12 +88,13 @@ There is a lag in time between when the death occurred and when the death
 certificate is completed, submitted to NCHS, and processed for reporting
 purposes. The death counts for recent weeks are continually revised and may
 increase or decrease as new and updated death certificate data are received from
-the states by NCHS. This delay can range from 1 to 8 weeks or even more.
-Some states report deaths on a daily basis, while other states report deaths weekly
-or monthly. State vital record reporting may also be affected or delayed by
-COVID-19 related response activities which make death counts not comparable
-across states. We check for updates reported by NCHS every weekday but will
-report the signals weekly (on Monday).
+the states by NCHS. This delay can range from 1 to 8 weeks or even more; review
+[this detailed analysis of reporting delays](https://doi.org/10.1057/s41271-021-00309-7)
+for more information. Some states report deaths on a daily basis, while other 
+states report deaths weekly or monthly. State vital record reporting may also be 
+affected or delayed by COVID-19 related response activities which make death 
+counts not comparable across states. We check for updates reported by NCHS every
+weekday but will report the signals weekly (on Monday).
 
 ## Source and Licensing
 
