@@ -48,6 +48,22 @@ def to_condition(
     params[param_key] = formatter(value)
     return f"{field} = :{param_key}"
 
+# TODO: does this work for conditioning on latest issue? who knows
+def to_indicator(
+    field: str,
+    value: Tuple[str,str],
+    param_key: str,
+    params: Dict[str, Any],
+    formatter=lambda x: x,
+) -> str:
+    if isinstance(value, tuple):
+        # params[param_key] = formatter(value[0])
+        # params[f"{param_key}_2"] = formatter(value[1])
+        return f"CASE WHEN {value[0]} = {value[1]} THEN 1 ELSE 0 END AS `is_latest_issue`"
+
+    # params[param_key] = formatter(value)
+    # return f"{field} = :{param_key}"
+
 
 def filter_values(
     field: str,
@@ -131,7 +147,8 @@ def filter_geo_pairs(
         params[type_param] = pair.geo_type
         if isinstance(pair.geo_values, bool) and pair.geo_values:
             return f"{type_field} = :{type_param}"
-        return f"({type_field} = :{type_param} AND {filter_strings(value_field, cast(Sequence[str], pair.geo_values), type_param, params)})"
+        return f"({type_field} = :{type_param} AND \
+            {filter_strings(value_field, cast(Sequence[str], pair.geo_values), type_param, params)})"
 
     parts = [filter_pair(p, i) for i, p in enumerate(values)]
 
@@ -185,7 +202,8 @@ def filter_time_pairs(
         params[type_param] = pair.time_type
         if isinstance(pair.time_values, bool) and pair.time_values:
             return f"{type_field} = :{type_param}"
-        return f"({type_field} = :{type_param} AND {filter_integers(time_field, cast(Sequence[Union[int, Tuple[int,int]]], pair.time_values), type_param, params)})"
+        return f"({type_field} = :{type_param} AND\
+             {filter_integers(time_field, cast(Sequence[Union[int, Tuple[int,int]]], pair.time_values), type_param, params)})"
 
     parts = [filter_pair(p, i) for i, p in enumerate(values)]
 
@@ -329,9 +347,11 @@ class QueryBuilder:
     query builder helper class for simplified conditions
     """
 
-    def __init__(self, table: str, alias: str):
-        self.table: str = f"{table} {alias}"
-        self.alias: str = alias
+    def __init__(self, reftable:Union[str,"QueryBuilder"], refalias: str, datatable: str, dataalias: str):
+        self.reftable: Union[str,"QueryBuilder"] = ""
+        self.refalias: str = refalias
+        self.datatable: str = ""
+        self.dataalia: str = ""
         self.group_by: Union[str, List[str]] = ""
         self.order: Union[str, List[str]] = ""
         self.fields: Union[str, List[str]] = "*"
@@ -353,6 +373,7 @@ class QueryBuilder:
         return _join_l(self.order)
 
     def __str__(self):
+        table = self.table if isinstance(self.table,str) else f"({str(self.table)})"
         where = f"WHERE {self.conditions_clause}" if self.conditions else ""
         order = f"ORDER BY {_join_l(self.order)}" if self.order else ""
         group_by = f"GROUP BY {_join_l(self.group_by)}" if self.group_by else ""

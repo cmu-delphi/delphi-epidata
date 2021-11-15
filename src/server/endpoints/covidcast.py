@@ -132,34 +132,47 @@ def handle():
     lag = extract_integer("lag")
 
     # build query
-    q = QueryBuilder("datapoint", "t")
+    q = QueryBuilder("data_reference", "ref", "datapoint", "point")
 
-    fields_string = ["geo_value", "signal"]
-    fields_int = ["time_value", "direction", "issue", "lag", "missing_value", "missing_stderr", "missing_sample_size"]
-    fields_float = ["value", "stderr", "sample_size"]
+    fields_string = ["ref.geo_value", "ref.signal"]
+    fields_int = ["ref.time_value", "point.issue", "point.lag", "point.missing_value", "point.missing_stderr", "point.missing_sample_size"]
+    fields_float = ["point.value", "point.stderr", "point.sample_size"]
 
     if is_compatibility_mode():
-        q.set_order("signal", "time_value", "geo_value", "issue")
+        q.set_order("ref.signal", "ref.time_value", "ref.geo_value", "point.issue")
     else:
         # transfer also the new detail columns
-        fields_string.extend(["source", "geo_type", "time_type"])
-        q.set_order("source", "signal", "time_type", "time_value", "geo_type", "geo_value", "issue")
+        fields_string.extend(["ref.source", "ref.geo_type", "ref.time_type"])
+        q.set_order("ref.source", "ref.signal", "ref.time_type", "ref.time_value", "ref.geo_type", "ref.geo_value", "point.issue")
     q.set_fields(fields_string, fields_int, fields_float)
 
     # basic query info
     # data type of each field
     # build the source, signal, time, and location (type and id) filters
 
-    q.where_source_signal_pairs("source", "signal", source_signal_pairs)
-    q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
-    q.where_time_pairs("time_type", "time_value", time_pairs)
+    q.where_source_signal_pairs("ref.source", "ref.signal", source_signal_pairs)
+    q.where_geo_pairs("ref.geo_type", "ref.geo_value", geo_pairs)
+    q.where_time_pairs("ref.time_type", "ref.time_value", time_pairs)
 
-    q.index = guess_index_to_use(time_pairs, geo_pairs, issues, lag, as_of)
+    # TODO: Reevaluate the guess_index_to_use function since it tends to choose incorrectly
+    # q.index = guess_index_to_use(time_pairs, geo_pairs, issues, lag, as_of)
 
     _handle_lag_issues_as_of(q, issues, lag, as_of)
 
     # send query
-    return execute_query(str(q), q.params, fields_string, fields_int, fields_float)
+    # TODO: establish a boolean for indicating is_latest_query vs as_of
+    is_latest_query = True
+    if is_latest_query:
+        return execute_query(str(q), q.params, fields_string, fields_int, fields_float)
+    else:
+        all_issues = execute_query(str(q), q.params, fields_string, fields_int, fields_float)
+        # TODO: Calls query builder again around the returned values giving it alias all_issues
+       
+        # q = QueryBuilder(all_issues, "all_issues", "data_reference", "ref")
+        f'''SELECT * FROM( {all_issues}) all_issues
+        WHERE all_issues.issue <= all_issues.max_issue
+        ORDER BY source ASC, `signal` ASC, time_type ASC, time_value ASC, geo_type ASC, 
+        geo_value ASC, issue ASC'''
 
 
 @bp.route("/trend", methods=("GET", "POST"))

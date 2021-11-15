@@ -45,7 +45,7 @@ correlation_sql = f'''
     ON ref.`latest_datapoint_id` = data.`id`  
     WHERE 
         ((ref.`source` = "jhu-csse" AND (ref.`signal` = "deaths_incidence_prop")) OR (ref.`source` = "jhu-csse" AND 
-        (ref.`signal` = "deaths_incidence_prop"))) AND ((ref.`geo_type` = "county" AND (ref.`geo_value` = 01001))) AND 
+        (ref.`signal` = "deaths_incidence_prop"))) AND ((ref.`geo_tgit ype` = "county" AND (ref.`geo_value` = 01001))) AND 
         ((ref.`time_type` = "day" AND (ref.`time_value` BETWEEN 20200122 AND 20200122))) 
     ORDER BY ref.`geo_type` ASC, ref.`geo_value` ASC, ref.`source` ASC, ref.`signal` ASC, ref.`time_value` ASC
 '''
