@@ -29,7 +29,7 @@ Attribution license](https://creativecommons.org/licenses/by/4.0/):
 
 * [Doctor Visits](covidcast-signals/doctor-visits.md)
 * [Hospital Admissions](covidcast-signals/hospital-admissions.md)
-* [Indicator Combination](covidcast-signals/indicator-combination.md): signals
+* [Indicator Combination](covidcast-signals/indicator-combination-inactive.md): signals
   with names beginning `nmf_*`
 * [Quidel](covidcast-signals/quidel.md)
 * [Symptom Surveys](covidcast-signals/fb-survey.md)
@@ -54,7 +54,7 @@ These data streams are essentially mirrors of their respective sources, and are
 published here subject to the original license provided by the source:
 
 * [Google Health Trends](covidcast-signals/ght.md)
-* [Indicator Combination](covidcast-signals/indicator-combination.md): cases and
+* [Indicator Combination](covidcast-signals/indicator-combination-inactive.md): cases and
   deaths signals
 * [JHU Cases and Deaths](covidcast-signals/jhu-csse.md)
 * [SafeGraph Mobility](covidcast-signals/safegraph.md)
