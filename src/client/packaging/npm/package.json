@@ -2,7 +2,7 @@
   "name": "delphi_epidata",
   "description": "Delphi Epidata API Client",
   "authors": "Delphi Group",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "license": "MIT",
   "homepage": "https://github.com/cmu-delphi/delphi-epidata",
   "bugs": {
