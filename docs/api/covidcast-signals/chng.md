@@ -33,7 +33,8 @@ commercial purposes.
 | `smoothed_adj_outpatient_covid` | Same, but with systematic day-of-week effects removed; see [details below](#day-of-week-adjustment) <br/> **Earliest date available:** 2020-02-01 |
 | `smoothed_outpatient_cli` | Estimated percentage of outpatient doctor visits primarily about COVID-related symptoms, based on Change Healthcare claims data that has been de-identified in accordance with HIPAA privacy regulations, smoothed in time using a Gaussian linear smoother <br/> **Earliest date available:** 2020-02-01 |
 | `smoothed_adj_outpatient_cli` | Same, but with systematic day-of-week effects removed; see [details below](#day-of-week-adjustment) <br/> **Earliest date available:** 2020-02-01 |
-
+| `smoothed_outpatient_flu` | Estimated percentage of outpatient doctor visits with confirmed influenza, based on Change Healthcare claims data that has been de-identified in accordance with HIPAA privacy regulations, smoothed in time using a Gaussian linear smoother <br/> **Earliest date available:** 2021-10-01 |
+| `smoothed_adj_outpatient_flu` | Same, but with systematic day-of-week effects removed; see [details below](#day-of-week-adjustment) <br/> **Earliest date available:** 2021-10-01 |
 ## Table of Contents
 {: .no_toc .text-delta}
 
@@ -69,6 +70,19 @@ $$
 \hat p_{it} = 100 \cdot  \frac{Y_{it}^{\text{Covid-like}} +
 	\left((Y_{it}^{\text{Flu-like}} + Y_{it}^{\text{Mixed}}) -
 	Y_{it}^{\text{Flu}}\right)}{N_{it}}
+$$
+
+### Influenza Illness
+
+The following estimation method is used for the `*_outpatient_flu` signals.
+
+For a fixed location $$i$$ and time $$t$$, let $$Y_{it}$$
+denote the Flu counts and let $$N_{it}$$ be the
+total count of visits (the *Denominator*). Our estimate of the influenza
+percentage is given by
+
+$$
+\hat p_{it} = 100 \cdot  \frac{Y_{it}}{N_{it}}
 $$
 
 ### Day-of-Week Adjustment
