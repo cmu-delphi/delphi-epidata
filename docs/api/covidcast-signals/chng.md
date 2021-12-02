@@ -17,7 +17,7 @@ grand_parent: COVIDcast Epidata API
 
 ## Overview
 
-**Notice: This data source was paused on 2021-10-04 so that we can resolve some problems with the data pipeline. [Additional details on this pause are available below](#pipeline-pause).**
+**Notice: This data source was inactive between 2021-10-04 and 2021-12-02 to allow us resolve some problems with the data pipeline. We have resumed daily updates and are working on a data patch to fill the gap. [Additional details on this inactive period are available below](#pipeline-pause).**
 
 This data source is based on Change Healthcare claims data that has been
 de-identified in accordance with HIPAA privacy regulations. Change Healthcare is
@@ -201,11 +201,15 @@ spurious deletions affected all regions and `chng` signals from July 31 to
 August 3, 2021, and the affected date range would continue to grow by one day
 each day if we allowed the pipeline to continue running.
 
-On October 8, 2021, we paused the `chng` pipeline, and it will remain inactive
-until we can identify and implement a fix. In the meantime, the versions with
-the deletion markings have been removed, so that default (latest) queries and
-queries with as-of set to 2021-10-04 or later will return the
-next-most-recently-updated value for these dates.
+On October 8, 2021, we paused the `chng` pipeline, and it remained inactive
+while we completed a fix. In the meantime, the versions with
+the deletion markings were removed, so that default (latest) queries and
+queries with as-of set to 2021-10-04 or later submitted during the inactive 
+period returned the next-most-recently-updated value for these dates.
+
+On December 2, we resumed the `chng` pipeline. We will soon be reconstructing
+the missed issues from October 7-December 1, and will update here once that
+process is complete.
 
 ## Qualifying Conditions
 
