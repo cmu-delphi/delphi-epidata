@@ -28,6 +28,6 @@
   },
   "devDependencies": {
     "jest": "^27",
-    "shx": "^0.3.4"
+    "shx": "^0.3.3"
   }
 }
