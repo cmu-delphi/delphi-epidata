@@ -11,7 +11,7 @@ grand_parent: COVIDcast Epidata API
 * **Earliest issue available:** November 30, 2020
 * **Number of data revisions since May 19, 2020:** 0
 * **Date of last change:** Never
-* **Available for:** county, MSA, HRR, state (see [geography coding docs](../covidcast_geography.md))
+* **Available for:** county, MSA, HRR, state, HHS, nation (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** To download or use the data, you must agree to the Google [Terms of Service](https://policies.google.com/terms)
 
@@ -57,13 +57,22 @@ The state-level and county-level `raw_search` signals for specific symptoms such
 as _anosmia_ and _ageusia_ are taken directly from the [COVID-19 Search Trends
 symptoms
 dataset](https://github.com/google-research/open-covid-19-data/tree/master/data/exports/search_trends_symptoms_dataset)
-without changes. We aggregate the county-level data to the MSA and HRR levels
-using the population-weighted average. For MSAs/HRRs that include counties that
-have no data provided due to quality or privacy issues for a certain day, we
-simply assume the values to be 0 during aggregation. The values for MSAs/HRRs
-with no counties having non-NaN values will not be reported. Thus, the resulting
-MSA/HRR level data does not fully match the _actual_ MSA/HRR level data (which
-we are not provided).
+without changes. 
+
+We aggregate county and state data to other geographic levels using
+population-weighted averaging. 
+
+| Source level | Aggregated level |
+| ------------ | ---------------- |
+| county       | MSA, HRR         |
+| state        | HHS, nation      |
+
+For aggregation purposes only, we assign a value of 0 to source regions that
+have no data provided due to quality or privacy issues for a certain day (see
+Limitations for details). We do not report aggregated regions if none of their
+source regions have data. Because of this censoring behavior, the resulting data
+for aggregated regions does not fully match the _actual_ search volume for these
+regions (which is not provided to us).
 
 ## Lag and Backfill
 Google does not currently update the search data daily, but usually twice a week.
