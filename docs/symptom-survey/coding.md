@@ -56,8 +56,40 @@ Beginning in Wave 11, the `module` column indicates which module the respondent
 was randomly assigned to. See the [survey modules and randomization](modules.md)
 information for more details.
 
-Coding details for each survey wave follow.
+### Privacy Restrictions
 
+To prevent respondents from being identifiable in the response data, responses
+with ZIP codes with populations of 100 or fewer have their location set to `NA`.
+This affects item A3 in the individual response files. (This change was
+implemented with the introduction of Wave 4. Previously, all ZIPs were
+reported.)
+
+Invalid ZIP codes are preserved unchanged, and these rows are reported in the
+individual response files with their invalid ZIPs.
+
+### Race and Ethnicity
+
+Beginning in wave 4, items D6 and D7 ask respondents for race and ethnicity.
+These columns are **not** available in the microdata files due to
+reidentification concerns. Public contingency tables that aggregate by race and
+other demographic variables [are available](contingency-tables.md).
+
+Users with a specific need for these variables in microdata should contact us at
+<delphi-survey-info@lists.andrew.cmu.edu> to discuss options for obtaining them,
+as access can be provided under some restrictions.
+
+In the contingency tables, and in the microdata files for users who have gained
+permission to access this data, the `raceethnicity` column is coded based on the
+following rules:
+
+* If the respondent answers "Yes" to item D6, they are coded as Hispanic,
+  regardless of their answer to D7. If the respondent answers "No" to D6, the
+  following rules apply.
+* Respondents who selected more than one racial group in D7, or who selected
+  "Some other race", are coded as "NonHispanicMultipleOther".
+* Respondents who selected only one racial group in D7 are coded according to
+  that race, such as "NonHispanicAsian" or
+  "NonHispanicAmericanIndianAlaskaNative".
 
 ## Comprehensive Codebook
 
@@ -91,23 +123,6 @@ Available columns:
 * `group_of_respondents_item_was_shown_to`: Module-based subset of respondents item was asked of. One of "all" (if item was included in the [Daily Core](modules.md) and asked of all respondents), "Module A", or "Module B".
 
 
-## Privacy Restrictions
-
-To prevent respondents from being identifiable in the response data, responses
-with ZIP codes with populations of 100 or fewer have their location set to `NA`.
-This affects item A3 in the individual response files. (This change was
-implemented with the introduction of Wave 4. Previously, all ZIPs were
-reported.)
-
-Invalid ZIP codes are preserved unchanged, and these rows are reported in the
-individual response files with their invalid ZIPs.
-
-Additionally, beginning in wave 4, items D6 and D7 ask respondents for race and
-ethnicity. These columns are **not** available in the microdata files due to
-reidentification concerns. Users with a specific need for these variables should
-contact us at <delphi-survey-info@lists.andrew.cmu.edu> to discuss options for
-obtaining them. However, contingency tables that aggregate by race and other
-demographic variables [are available](contingency-tables.md).
 
 
 ## Wave 1
