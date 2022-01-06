@@ -44,7 +44,7 @@
 11,UserLanguage,NA,survey language,NA,NA,NA,NA,NA,NA,NA
 12,UserLanguage,NA,survey language,NA,NA,NA,NA,NA,NA,NA
 12.5,UserLanguage,NA,survey language,NA,NA,NA,NA,NA,NA,NA
-12,w12_treatment,NA,experimental treatment respondent was assigned to,NA,NA,NA,NA,NA,NA,NA
+12.5,w12_treatment,NA,experimental treatment respondent was assigned to,NA,NA,NA,NA,NA,NA,NA
 4,wave,NA,survey version,NA,NA,NA,NA,NA,NA,NA
 5,wave,NA,survey version,NA,NA,NA,NA,NA,NA,NA
 6,wave,NA,survey version,NA,NA,NA,NA,NA,NA,NA
