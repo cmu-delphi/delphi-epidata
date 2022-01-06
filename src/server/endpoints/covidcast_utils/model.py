@@ -27,6 +27,7 @@ class SignalCategory(str, Enum):
     public = "public"
     early = "early"
     late = "late"
+    cases_testing = "cases_testing"
     other = "other"
 
 
