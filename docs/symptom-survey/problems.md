@@ -17,6 +17,12 @@ interpretation of results. All problems will be logged here.
 1. TOC
 {:toc}
 
+## Temporary Suspension (December 16-17, 2021)
+
+Due to a temporary problem affecting Facebook's systems, survey invitations were
+suspended between 11:39am PT on December 16, 2021 and 1:20am PT on December
+17, 2021. Invitations resumed as usual once the problem was resolved.
+
 ## Incorrect Wave Sampling (June-August, 2021)
 
 A sampling error caused a portion of our respondents to be accidentally sent the

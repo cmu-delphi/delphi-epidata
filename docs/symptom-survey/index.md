@@ -65,15 +65,16 @@ the survey in publications based on the data. Specifically, we ask that you:
 
 1. Include the acknowledgment "This research is based on survey results from
    Carnegie Mellon University’s Delphi Group."
-2. Cite this web page for details about the survey. For example, you may cite it
-   as
+2. Cite our paper describing the survey:
 
-    > Delphi Group (2021). COVID-19 Trends and Impact Survey.
-    > <https://cmu-delphi.github.io/delphi-epidata/symptom-survey/>
+    > Joshua A. Salomon, Alex Reinhart, Alyssa Bilinski, Eu Jing Chua, Wichada
+    > La Motte-Kerr, Minttu M. Rönn, Marissa Reitsma, Katherine Ann Morris,
+    > Sarah LaRocca, Tamar Farag, Frauke Kreuter, Roni Rosenfeld, and Ryan J.
+    > Tibshirani (2021). "The US COVID-19 Trends and Impact Survey: Continuous
+    > real-time measurement of COVID-19 symptoms, risks, protective behaviors,
+    > testing, and vaccination", *Proceedings of the National Academy of
+    > Sciences* 118 (51) e2111454118. <https://doi.org/10.1073/pnas.2111454118>
 
-    A journal article describing the survey and its methods is currently in
-    preparation, and we will update this page when it is available so that you
-    can cite it instead.
 3. The data use agreement requires that if you disclose survey microdata, Delphi
    must agree on the aggregation method that you will use to ensure reported
    estimates do not disclose any individual identifiable information, including
