@@ -486,7 +486,7 @@ new items were meant to capture reasons for vaccine hesitancy among respondents.
 
 ### New Items
 
-* Item V2a ask respondents that have received a COVID-19 vaccine and indicated
+* Item V2a asks respondents that have received a COVID-19 vaccine and indicated
   that they have not had 2 doses of the vaccine whether they intend to get the
   required doses.
 * Items V5a-V5d and V6 were added to capture reasons for respondents not
