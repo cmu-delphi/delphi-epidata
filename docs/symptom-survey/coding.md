@@ -831,7 +831,8 @@ Files:
 
 Besides the experiments, Wave 12 revised the schooling module of the survey
 instrument and adds questions regarding parents’ intention to vaccinate their
-children (under age 18). Please review the changes carefully when you use
+children (under age 18). These schooling items are part of [Module B](modules.md)
+of the survey. Please review the changes carefully when you use
 responses from multiple waves of this survey.
 
 ### Demographic Module Placement
@@ -883,10 +884,11 @@ their survey analyses.
   added: “The available appointment locations did not work for me” and “Other”
 * Item V15b has two new response options: “The available appointment locations
   did not work for me” and “Other”.
-* The vaccination uptake question experiment uses questions V1 and V1alt. During
-  the experiment, questions that use V1 in the display logic were updated to
-  also include respondents who are asked V1alt. The display logic was updated
-  for the following questions: V2, V11a, V3a, V5a, V12a, V16, and V9.
+* The vaccination uptake question experiment, part of the experimental version
+  of Wave 12, used questions V1 and V1alt. During the experiment, questions that
+  use V1 in the display logic were updated to also include respondents who are
+  asked V1alt. The display logic was updated for the following questions: V2,
+  V11a, V3a, V5a, V12a, V16, and V9.
 
 ### Removed Items
 
