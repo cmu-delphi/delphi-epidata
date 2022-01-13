@@ -132,7 +132,7 @@ jobs:
           if [ "$imageTag" = "main" ] ; then
             imageTag="latest"
           fi
-          echo "::set-output name=tag::$imageTag"
+          echo "::set-output name=tag::${imageTag/\//-}"
           echo "::set-output name=repo::ghcr.io/${{ github.repository }}"
       - name: Push Dev Tag
         run: |
