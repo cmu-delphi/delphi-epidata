@@ -14,9 +14,6 @@ from ._exceptions import MissingAPIKeyException, UnAuthenticatedException
 from ._db import metadata, TABLE_OPTIONS
 from ._logger import get_structured_logger
 
-# Change to False to test API Key requirement setting
-#app.config['TESTING'] = True
-
 API_KEY_HARD_WARNING = API_KEY_REQUIRED_STARTING_AT - timedelta(days=14)
 API_KEY_SOFT_WARNING = API_KEY_HARD_WARNING - timedelta(days=14)
 
@@ -179,7 +176,7 @@ def _find_user(api_key: Optional[str]) -> User:
     if not api_key:
         return ANONYMOUS_USER
     stmt = user_table.select().where(user_table.c.api_key == api_key)
-    user = db.execution_options(stream_results=False).execute(stmt).first()    
+    user = db.execution_options(stream_results=False).execute(stmt).first()
     if user is None:
         return ANONYMOUS_USER
     else:
