@@ -12,6 +12,10 @@ from ._config import API_KEY_REQUIRED_STARTING_AT, RATELIMIT_STORAGE_URL
 from ._common import app, request, db
 from ._exceptions import MissingAPIKeyException, UnAuthenticatedException
 from ._db import metadata, TABLE_OPTIONS
+from ._logger import get_structured_logger
+
+# Change to False to test API Key requirement setting
+#app.config['TESTING'] = True
 
 API_KEY_HARD_WARNING = API_KEY_REQUIRED_STARTING_AT - timedelta(days=14)
 API_KEY_SOFT_WARNING = API_KEY_HARD_WARNING - timedelta(days=14)
@@ -130,8 +134,8 @@ OPEN_SENSORS = [
 
 class User:
     api_key: str
-    roles: Set[UserRole]
     authenticated: bool
+    roles: Set[UserRole]
     tracking: bool = True
     registered: bool = True
 
@@ -141,18 +145,31 @@ class User:
         self.roles = roles
         self.tracking = tracking
         self.registered = registered
+        
+    def is_authenticated(self) -> bool:
+        return self.authenticated
 
     def has_role(self, role: UserRole) -> bool:
         return role in self.roles
 
-    def log_info(self, msg: str, *args, **kwargs) -> None:
-        if self.authenticated and self.tracking:
-            app.logger.info(f"apikey: {self.api_key}, {msg}", *args, **kwargs)
-        else:
-            app.logger.info(msg, *args, **kwargs)
-
     def is_rate_limited(self) -> bool:
         return not self.registered
+    
+    def is_tracking(self) -> bool:
+        return self.tracking
+
+    def log_info(self, msg: str, *args, **kwargs) -> None:
+        # Use structured logger instead of base logger
+        logger = get_structured_logger("api_key_logs", filename="api_key_logs.log")
+        if self.is_authenticated():
+            if self.is_tracking():
+                #app.logger.info(f"api_key: {self.api_key}, {msg}", *args, **kwargs)
+                logger.info({"api_key" : self.api_key, "request" : msg}, *args, **kwargs)
+            else:
+                logger.info({"api_key" : "*****", "request" : msg}, *args, **kwargs)
+        else:
+            #app.logger.info(msg, *args, **kwargs)
+            logger.info(msg, *args, **kwargs)
 
 
 ANONYMOUS_USER = User("anonymous", False, set())
@@ -162,14 +179,13 @@ def _find_user(api_key: Optional[str]) -> User:
     if not api_key:
         return ANONYMOUS_USER
     stmt = user_table.select().where(user_table.c.api_key == api_key)
-    user = db.execution_options(stream_results=False).execute(stmt).first()
+    user = db.execution_options(stream_results=False).execute(stmt).first()    
     if user is None:
         return ANONYMOUS_USER
     else:
         return User(user.api_key, True, set(user.roles.split(",")), user.tracking, user.registered)
 
 def resolve_auth_token() -> Optional[str]:
-    # auth request param
     for name in ('auth', 'api_key', 'token'):
         if name in request.values:
             return request.values[name]
@@ -187,7 +203,7 @@ def _get_current_user() -> User:
     if "user" not in g:
         api_key = resolve_auth_token()
         user = _find_user(api_key)
-        if not user.authenticated and require_api_key():
+        if not user.is_authenticated() and require_api_key():
             raise MissingAPIKeyException()
         user.log_info(request.full_path)
         g.user = user
@@ -204,12 +220,12 @@ def require_api_key() -> bool:
 
 def show_soft_api_key_warning() -> bool:
     n = date.today()
-    return not current_user.authenticated and not app.config.get('TESTING', False) and n > API_KEY_SOFT_WARNING and n < API_KEY_HARD_WARNING
+    return not current_user.is_authenticated() and not app.config.get('TESTING', False) and n > API_KEY_SOFT_WARNING and n < API_KEY_HARD_WARNING
 
 
 def show_hard_api_key_warning() -> bool:
     n = date.today()
-    return not current_user.authenticated and not app.config.get('TESTING', False) and n > API_KEY_HARD_WARNING
+    return not current_user.is_authenticated() and not app.config.get('TESTING', False) and n > API_KEY_HARD_WARNING
 
 
 def _is_public_route() -> bool:
