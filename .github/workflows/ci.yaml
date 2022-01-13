@@ -108,7 +108,7 @@ jobs:
   image:
     needs: build
     # only on main and dev branch
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/joe/v4-schema-revisions'
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
