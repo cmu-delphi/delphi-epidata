@@ -63,19 +63,25 @@ We estimate p across 3 temporal-spatial aggregation schemes:
 
 **MSA and HRR levels**: In a given MSA or HRR, suppose $$N$$ COVID tests are taken
 in a certain time period, $$X$$ is the number of tests taken with positive
-results. If $$N \geq 50$$, we simply use:
+results. 
+
+For raw signals:
+- if $$N \geq 50$$, we simply use:
 
 $$
 p = \frac{100 X}{N}
 $$
 
-If $$N < 50$$, we lend $$50 - N$$ fake samples from its home state to shrink the
+For smoothed signals, before taking the temporal pooling average,
+- if $$N \geq 50$$, we also use:
+$$
+p = \frac{100 X}{N}
+$$
+- if $$25 \leq N < 50$$, we lend $$50 - N$$ fake samples from its home state to shrink the
 estimate to the state's mean, which means:
-
 $$
 p = 100 \left( \frac{N}{50} \frac{X}{N} + \frac{50 - N}{50}  \frac{X_s}{N_s} \right) 
 $$
-
 where $$N_s, X_s$$ are the number of COVID tests and the number of COVID tests
 taken with positive results taken in its home state in the same time period.
 
