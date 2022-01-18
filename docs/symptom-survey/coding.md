@@ -826,8 +826,13 @@ October:
 Wave 12 is available in English and the languages introduced in Wave 3.
 
 Files:
-* [Wave 12 text and coding](waves/CMU Survey Wave 12.pdf) (PDF)
-* [Wave 12 text and coding](waves/CMU Survey Wave 12.docx) (Word)
+* Experimental wave 12:
+  * [Experimental Wave 12 text and coding](waves/CMU Survey Wave 12.pdf) (PDF)
+  * [Experimental Wave 12 text and coding](waves/CMU Survey Wave 12.docx) (Word)
+* Final version of Wave 12:
+  * [Final Wave 12 text and coding](waves/CMU CTIS Wave 12 Full Launch.pdf) (PDF)
+  * [Final Wave 12 text and coding](waves/CMU CTIS Wave 12 Full Launch.docx) (Word)
+
 
 Besides the experiments, Wave 12 revised the schooling module of the survey
 instrument and adds questions regarding parents’ intention to vaccinate their
