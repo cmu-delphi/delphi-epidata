@@ -35,8 +35,20 @@ meaningful levels starting May 26, 2020.
 
 | Signal | Description |
 | --- | --- |
-| `covid_ag_raw_pct_positive` | Percentage of antigen tests that were positive for COVID-19, with no smoothing applied. <br/> **Earliest date available:** 2020-05-26 |
-| `covid_ag_smoothed_pct_positive` | Percentage of antigen tests that were positive for COVID-19, smoothed by pooling together the last 7 days of tests. <br/> **Earliest date available:** 2020-05-26 |
+| `covid_ag_raw_pct_positive` | Percentage of antigen tests that were positive for COVID-19 (all ages), with no smoothing applied. <br/> **Earliest date available:** 2020-05-26 |
+| `covid_ag_raw_pct_positive_age_0_4` | Percentage of antigen tests that were positive for COVID-19 (ages 0-4), with no smoothing applied. <br/> **Earliest date available:** 2020-05-26 |
+| `covid_ag_raw_pct_positive_age_5_17` | Percentage of antigen tests that were positive for COVID-19 (ages 5-17), with no smoothing applied. <br/> **Earliest date available:** 2020-05-26 |
+| `covid_ag_raw_pct_positive_age_18_49` | Percentage of antigen tests that were positive for COVID-19 (ages 18-49), with no smoothing applied. <br/> **Earliest date available:** 2020-05-26 |
+| `covid_ag_raw_pct_positive_age_50_64` | Percentage of antigen tests that were positive for COVID-19 (ages 50-64), with no smoothing applied. <br/> **Earliest date available:** 2020-05-26 |
+| `covid_ag_raw_pct_positive_age_65plus` | Percentage of antigen tests that were positive for COVID-19 (ages 65+), with no smoothing applied. <br/> **Earliest date available:** 2020-05-26 |
+| `covid_ag_raw_pct_positive_age_0_17` | Percentage of antigen tests that were positive for COVID-19 (ages 0-17), with no smoothing applied. <br/> **Earliest date available:** 2020-05-26 |
+| `covid_ag_smoothed_pct_positive` | Percentage of antigen tests that were positive for COVID-19 (all ages), smoothed by pooling together the last 7 days of tests. <br/> **Earliest date available:** 2020-05-26 |
+| `covid_ag_smoothed_pct_positive_age_0_4` | Percentage of antigen tests that were positive for COVID-19 (ages 0-4), smoothed by pooling together the last 7 days of tests. <br/> **Earliest date available:** 2020-05-26 |
+| `covid_ag_smoothed_pct_positive_age_5_17` | Percentage of antigen tests that were positive for COVID-19 (ages 5-17), smoothed by pooling together the last 7 days of tests. <br/> **Earliest date available:** 2020-05-26 |
+| `covid_ag_smoothed_pct_positive_age_18_49` | Percentage of antigen tests that were positive for COVID-19 (ages 18-49), smoothed by pooling together the last 7 days of tests. <br/> **Earliest date available:** 2020-05-26 |
+| `covid_ag_smoothed_pct_positive_age_50_64` | Percentage of antigen tests that were positive for COVID-19 (ages 50-64), smoothed by pooling together the last 7 days of tests. <br/> **Earliest date available:** 2020-05-26 |
+| `covid_ag_smoothed_pct_positive_age_65plus` | Percentage of antigen tests that were positive for COVID-19 (ages 65+), smoothed by pooling together the last 7 days of tests. <br/> **Earliest date available:** 2020-05-26 |
+| `covid_ag_smoothed_pct_positive_age_0_17` | Percentage of antigen tests that were positive for COVID-19 (ages 0-17), smoothed by pooling together the last 7 days of tests. <br/> **Earliest date available:** 2020-05-26 |
 
 ### Estimation
 
