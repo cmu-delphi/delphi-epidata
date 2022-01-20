@@ -1,4 +1,4 @@
-"""Structured logger utility for creating JSON logs in Delphi pipelines."""
+"""Structured logger utility for creating JSON logs in web server logs"""
 import logging
 import sys
 import threading
