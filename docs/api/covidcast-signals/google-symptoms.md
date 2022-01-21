@@ -20,7 +20,7 @@ grand_parent: COVIDcast Epidata API
 This data source is based on the [COVID-19 Search Trends symptoms
 dataset](http://goo.gle/covid19symptomdataset). Using
 this search data, we estimate the volume of searches mapped to symptom sets related
-to COVID-19. The resulting daily dataset for each region shows the average relative frequency of searches for each symptom set. The signals are measured in arbitrary units that are normalized for overall search users in the region and scaled by the maximum value of the normalized popularity within a geographic region across a specific time range. **Values are comparable across signals but NOT across geographic regions**. Larger numbers represent increased relative popularity of symptom-related searches.
+to COVID-19. The resulting daily dataset for each region shows the average relative frequency of searches for each symptom set. The signals are measured in arbitrary units that are normalized for overall search users in the region and scaled by the maximum value of the normalized popularity within a geographic region across a specific time range. **Values are comparable across signals in the same location but NOT across geographic regions**. For example, within a state, we can compare `s01_smoothed_search` and `s02_smoothed_search`. However, we cannot compare `s01_smoothed_search` between states. Larger numbers represent increased relative popularity of symptom-related searches.
 
 #### Symptom sets
 
@@ -72,16 +72,14 @@ Each signal is the average of the
  anosmia, ageusia, and dysgeusia related searches divided by 3, because the data volume for each symptom is calculated based on search queries. A single search query can be mapped to more than one symptom. Currently, Google does not provide _intersection/union_
  data. Users should be careful when considering such signals.
 
- For each symptom set: when search trends for all symptoms are missing, the signal is reported as missing. When search trends are available for at least one of the symptoms, we fill the missing trends for other symptoms with 0 and compute the average. We use this approach because the missing observations in the Google Symptoms search trends dataset do not occur randomly; they represent low popularity and are censored for quality and/or privacy reasons. The same approach is used for smoothed signals. A 7 day moving average is used, and missing raw signals are filled with 0 as long as there is at least one day available within the 7 day window. 
+ For each symptom set: when search trends for all symptoms are missing, the signal is reported as missing. When search trends are available for at least one of the symptoms, we fill the missing trends for other symptoms with 0 and compute the average. We use this approach because the missing observations in the Google Symptoms search trends dataset do not occur randomly; they represent low popularity and are censored for quality and/or privacy reasons. The same approach is used for smoothed signals. A 7 day moving average is used, and missing raw signals are filled with 0 as long as there is at least one day available within the 7 day window.
 
 
 
 ## Geographical Aggregation
-The state-level and county-level `raw_search` signals for specific symptoms such
-as _anosmia_ and _ageusia_ are taken directly from the [COVID-19 Search Trends
+The state-level and county-level `raw_search` signals for each symptoms set are the average of its individual symptoms search trends, taken directly from the [COVID-19 Search Trends
 symptoms
-dataset](https://github.com/google-research/open-covid-19-data/tree/master/data/exports/search_trends_symptoms_dataset)
-without changes.
+dataset](https://github.com/google-research/open-covid-19-data/tree/master/data/exports/search_trends_symptoms_dataset).
 
 We aggregate county and state data to other geographic levels using
 population-weighted averaging.
@@ -115,8 +113,8 @@ quality of results.
 
 Google normalizes and scales time series values to determine the relative
 popularity of symptoms in searches within each geographical region individually.
-This means that the resulting values of symptom popularity are **NOT**
-comparable across geographic regions.
+This means that the resulting values of symptom set popularity are **NOT**
+comparable across geographic regions, while the values of different symptom sets are comparable within the same location.
 
 More details about the limitations of this dataset are available in [Google's Search
 Trends symptoms dataset documentation](https://storage.googleapis.com/gcp-public-data-symptom-search/COVID-19%20Search%20Trends%20symptoms%20dataset%20documentation%20.pdf).
