@@ -72,7 +72,7 @@ Each signal is the average of the
  anosmia, ageusia, and dysgeusia related searches divided by 3, because the data volume for each symptom is calculated based on search queries. A single search query can be mapped to more than one symptom. Currently, Google does not provide _intersection/union_
  data. Users should be careful when considering such signals.
 
- For each symptom set: when search trends for all symptoms are missing, the signal is be reported missing. When search trends are available for at least one of the symptos, we fill the missing trends for other symptoms with 0 and compute the average. The same approach is used for smoothed signals. A 7 day moving average is used, and missing raw signals are filled with 0 as long as there is at least one day available among the 7 day window. We use this approach because the missing observations in the Google Symptoms search trends dataset are not filled randomly; they represent low popularity and are not reported due to quality and/or privacy reasons.
+ For each symptom set: when search trends for all symptoms are missing, the signal is reported as missing. When search trends are available for at least one of the symptoms, we fill the missing trends for other symptoms with 0 and compute the average. We use this approach because the missing observations in the Google Symptoms search trends dataset do not occur randomly; they represent low popularity and are censored for quality and/or privacy reasons. The same approach is used for smoothed signals. A 7 day moving average is used, and missing raw signals are filled with 0 as long as there is at least one day available within the 7 day window. 
 
 
 
