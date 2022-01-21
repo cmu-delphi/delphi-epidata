@@ -34,7 +34,7 @@ to COVID-19. The resulting daily dataset for each region shows the average relat
 
 The symptoms were combined in sets that showed positive correlation with cases, especially after Omicron was declared a variant of concern by the WHO. Note that symptoms in _scontrol_ are not Covid-19 related, and this symptom set can be used as a negative control.
 
-Until January 20, 2022, we had separate signals for symptoms Anosmia and Ageusia, and a signal for their sum.
+Until January 20, 2022, we had separate signals for symptoms Anosmia, Ageusia, and their sum.
 
 | Signal | Description |
 | --- | --- |
