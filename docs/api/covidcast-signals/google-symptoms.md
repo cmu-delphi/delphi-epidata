@@ -29,7 +29,7 @@ to COVID-19. The resulting daily dataset for each region shows the average relat
 * _s03_: Fever, Hyperthermia, Chills, Shivering, Low grade fever
 * _s05_: Shortness of breath, Wheeze, Croup, Pneumonia, Asthma, Crackles, Acute bronchitis, Bronchitis
 * _s06_: Anosmia, Dysgeusia, Ageusia
-* _s8_: Laryngitis, Sore throat,Throat irritation,
+* _s08_: Laryngitis, Sore throat, Throat irritation
 * _scontrol_: Type 2 diabetes, Urinary tract infection, Hair loss, Candidiasis, Weight gain
 
 The symptoms were combined in sets that showed positive correlation with cases, especially after Omicron was declared a variant of concern by the WHO. Note that symptoms in _scontrol_ are not Covid-19 related, and this symptom set can be used as a negative control.
