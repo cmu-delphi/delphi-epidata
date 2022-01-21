@@ -20,7 +20,7 @@ grand_parent: COVIDcast Epidata API
 This data source is based on the [COVID-19 Search Trends symptoms
 dataset](http://goo.gle/covid19symptomdataset). Using
 this search data, we estimate the volume of searches mapped to symptom sets related
-to COVID-19. The resulting daily dataset for each region shows the average relative frequency of searches for each symptom set. The signals are measured in arbitrary units that are normalized for overall search users in the region and scaled by the maximum value of the normalized popularity within a geographic region across a specific time range. **Thus, values are NOT comparable across geographic regions**. Larger numbers represent increased releative popularity of symptom-related searches.
+to COVID-19. The resulting daily dataset for each region shows the average relative frequency of searches for each symptom set. The signals are measured in arbitrary units that are normalized for overall search users in the region and scaled by the maximum value of the normalized popularity within a geographic region across a specific time range. **Values are comparable across signals but NOT across geographic regions**. Larger numbers represent increased relative popularity of symptom-related searches.
 
 #### Symptom sets
 
