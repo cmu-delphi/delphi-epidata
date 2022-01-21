@@ -25,7 +25,7 @@ to COVID-19. The resulting daily dataset for each region shows the average relat
 #### Symptom sets
 
 * _s01_: Cough, Phlegm, Sputum, Upper respiratory tract infection
-* _s02_: Nasal congestion, Post nasal drip, Rhinorrhea, Sinusitis, Rhinitis,Common cold
+* _s02_: Nasal congestion, Post nasal drip, Rhinorrhea, Sinusitis, Rhinitis, Common cold
 * _s03_: Fever, Hyperthermia, Chills, Shivering, Low grade fever
 * _s05_: Shortness of breath, Wheeze, Croup, Pneumonia, Asthma, Crackles, Acute bronchitis, Bronchitis
 * _s06_: Anosmia, Dysgeusia, Ageusia
