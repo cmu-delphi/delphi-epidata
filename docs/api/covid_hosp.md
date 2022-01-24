@@ -25,14 +25,13 @@ General topics not specific to any particular data source are discussed in the
 
 This data source provides various measures of COVID-19 burden on patients and healthcare in the US.
 - Data source: US Department of Health & Human Services (HHS) [COVID-19 Reported Patient Impact and
-Hospital Capacity by State Timeseries](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/g62h-syeh)
-  and [COVID-19 Reported Patient Impact and Hospital Capacity by State](https://healthdata.gov/dataset/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/6xf2-c3ie)
+Hospital Capacity by State Timeseries](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/g62h-syeh) (published weekly)
+  and [COVID-19 Reported Patient Impact and Hospital Capacity by State](https://healthdata.gov/dataset/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/6xf2-c3ie) (published on an irregular schedule, every 1-6 days)
 - Temporal Resolution: Daily, starting 2020-01-01
 - Spatial Resolution: US States plus DC, PR, and VI
 - Open access via [Open Data Commons Open Database License (ODbL)](https://opendatacommons.org/licenses/odbl/1.0/)
 - Versioned by Delphi according to "issue" date, which is the date that the
-dataset was published by HHS. New issues are expected to be released roughly
-weekly.
+dataset was published by HHS.
 
 # The API
 
