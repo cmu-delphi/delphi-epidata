@@ -47,7 +47,7 @@ Because DSEW does not provide updates on weekends, estimates are not available f
 
 The report is currently updated daily, excluding weekends. However, this is subject to change; DSEW previously issued updates on a twice-weekly schedule. We check for updates daily.
 
-Hospital admissions is reported with a lag of 2 days, but since CPR is not updated on weekends, lag effectively varies from 2-4 days.
+Hospital admissions are reported with a lag of 2 days, but since the CPR is not updated on weekends, lag effectively varies from 2-4 days.
 
 ## Source and Licensing
 
