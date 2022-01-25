@@ -27,9 +27,9 @@ to COVID-19. The resulting daily dataset for each region shows the average relat
 * _s01_: Cough, Phlegm, Sputum, Upper respiratory tract infection
 * _s02_: Nasal congestion, Post nasal drip, Rhinorrhea, Sinusitis, Rhinitis, Common cold
 * _s03_: Fever, Hyperthermia, Chills, Shivering, Low grade fever
-* _s05_: Shortness of breath, Wheeze, Croup, Pneumonia, Asthma, Crackles, Acute bronchitis, Bronchitis
-* _s06_: Anosmia, Dysgeusia, Ageusia
-* _s08_: Laryngitis, Sore throat, Throat irritation
+* _s04_: Shortness of breath, Wheeze, Croup, Pneumonia, Asthma, Crackles, Acute bronchitis, Bronchitis
+* _s05_: Anosmia, Dysgeusia, Ageusia
+* _s06_: Laryngitis, Sore throat, Throat irritation
 * _scontrol_: Type 2 diabetes, Urinary tract infection, Hair loss, Candidiasis, Weight gain
 
 The symptoms were combined in sets that showed positive correlation with cases, especially after Omicron was declared a variant of concern by the WHO. Note that symptoms in _scontrol_ are not COVID-19 related, and this symptom set can be used as a negative control.
@@ -44,12 +44,12 @@ Until January 20, 2022, we had separate signals for symptoms Anosmia, Ageusia, a
 | `s02_smoothed_search` | The average of Google search volume for related searches of symptom set _s02_, in an arbitrary units that are normalized for overall search users, smoothed by 7-day average. <br/> **Earliest date available:** 2020-01-07 |
 | `s03_raw_search` | The average of Google search volume for related searches of symptom set _s03_, in an arbitrary units that are normalized for overall search users. <br/> **Earliest date available:** 2020-01-01 |
 | `s03_smoothed_search` | The average of Google search volume for related searches of symptom set _s03_, in an arbitrary units that are normalized for overall search users, smoothed by 7-day average. <br/> **Earliest date available:** 2020-01-07 |
+| `s04_raw_search` | The average of Google search volume for related searches of symptom set _s04_, in an arbitrary units that are normalized for overall search users. <br/> **Earliest date available:** 2020-01-01 |
+| `s04_smoothed_search` | The average of Google search volume for related searches of symptom set _s04_, in an arbitrary units that are normalized for overall search users, smoothed by 7-day average. <br/> **Earliest date available:** 2020-01-07 |
 | `s05_raw_search` | The average of Google search volume for related searches of symptom set _s05_, in an arbitrary units that are normalized for overall search users. <br/> **Earliest date available:** 2020-01-01 |
 | `s05_smoothed_search` | The average of Google search volume for related searches of symptom set _s05_, in an arbitrary units that are normalized for overall search users, smoothed by 7-day average. <br/> **Earliest date available:** 2020-01-07 |
 | `s06_raw_search` | The average of Google search volume for related searches of symptom set _s06_, in an arbitrary units that are normalized for overall search users. <br/> **Earliest date available:** 2020-01-01 |
 | `s06_smoothed_search` | The average of Google search volume for related searches of symptom set _s06_, in an arbitrary units that are normalized for overall search users, smoothed by 7-day average. <br/> **Earliest date available:** 2020-01-07 |
-| `s08_raw_search` | The average of Google search volume for related searches of symptom set _s08_, in an arbitrary units that are normalized for overall search users. <br/> **Earliest date available:** 2020-01-01 |
-| `s08_smoothed_search` | The average of Google search volume for related searches of symptom set _s08_, in an arbitrary units that are normalized for overall search users, smoothed by 7-day average. <br/> **Earliest date available:** 2020-01-07 |
 | `scontrol_raw_search` | The average of Google search volume for related searches of symptom set _scontrol_, in an arbitrary units that are normalized for overall search users. <br/> **Earliest date available:** 2020-01-01 |
 | `scontrol_smoothed_search` | The average of Google search volume for related searches of symptom set _scontrol_, in an arbitrary units that are normalized for overall search users, smoothed by 7-day average. <br/> **Earliest date available:** 2020-02-20 |
 | `anosmia_raw_search` |  Google search volume for anosmia-related searches, in arbitrary units that are normalized for overall search users. _This signal is no longer updated as of 20 January, 2022._ <br/> **Earliest date available:** 2020-02-13 |
@@ -68,7 +68,7 @@ Until January 20, 2022, we had separate signals for symptoms Anosmia, Ageusia, a
 
 ## Estimation
 Each signal is the average of the
- values of search trends for each symptom in the symptom set. For example, `s06_raw_search` is the average of the search trend values of anosmia, ageusia, and dysgeusia. Note that this is different from the union of
+ values of search trends for each symptom in the symptom set. For example, `s05_raw_search` is the average of the search trend values of anosmia, ageusia, and dysgeusia. Note that this is different from the union of
  anosmia, ageusia, and dysgeusia related searches divided by 3, because the data volume for each symptom is calculated based on search queries. A single search query can be mapped to more than one symptom. Currently, Google does not provide _intersection/union_
  data. Users should be careful when considering such signals.
 
