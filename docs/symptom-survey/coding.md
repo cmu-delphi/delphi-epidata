@@ -947,8 +947,71 @@ groups above each respondent was assigned to.
 
 During the Wave 12 experiment period, our partners at Facebook conducted an
 experiment among those respondents allocated to receive Wave 11. Among those
-participants, 6% will receive will receive one of six different invitations to
-the survey on their News Feed. This will be an internal Facebook experiment
-conducted with the goal of improving response rates and exploring additional
-non-response bias in the weighting process. More details will be provided when
-the survey invitation is finalized.
+participants, 6% received one of six different invitations to the survey on
+their News Feed. This was an internal Facebook experiment conducted with the
+goal of improving response rates and exploring additional non-response bias in
+the weighting process. More details will be provided when the survey invitation
+is finalized.
+
+## Wave 13
+
+Wave 13 was deployed on January 28, 2022. For the following two weeks, about 15%
+of respondents (selected at random) continued to receive Wave 12, allowing for
+comparisons of responses between the two waves. Wave 13 is available in English
+and the languages introduced in Wave 3.
+
+There are two objectives of this revision. First, we modified the COVID-19
+vaccination questions to collect information about additional doses and booster
+shots. We also removed questions that are not being used to reduce response
+burden.
+
+### New Items
+
+* Introductory text was added for respondents that responded “yes” to item V2,
+  “Have you had a COVID-19 vaccination?”. This text explains initial, booster,
+  and additional doses of the COVID-19 vaccination. The following three
+  questions collect information regarding the COVID-19 vaccinations the
+  respondent received. The introductory text reads:
+
+    > Initial doses of the COVID-19 vaccination are a one or two shot sequence,
+    > depending on the brand of vaccine.
+
+    > Booster shots or additional doses are doses received following that
+    > initial sequence.
+
+    To interpret data from these questions, we recommend reviewing the [CDC's
+    guidelines on vaccination for immunocompromised
+    people](https://www.cdc.gov/coronavirus/2019-ncov/vaccines/recommendations/immuno.html).
+    As of January 2022, immunocompromised people can receive up to four doses:
+    two primary doses (for Pfizer and Moderna vaccines), an additional primary
+    dose 28 days later, and a booster dose 5 months afterward. However,
+    awareness of this is uneven, which is why item V2b (below) does not
+    distinguish between booster and additional doses.
+
+* Item V2a asks respondents about the doses of the COVID-19 vaccination they
+  received in their initial sequence. This is a revision from previous item V2
+  and the response options distinguish between one dose vaccines, two dose
+  vaccines, and incomplete 2 dose vaccine sequences.
+* Item V2b asks respondents if they have received an additional dose or booster
+  shot of the COVID-19 vaccination.
+* Item V2c asks respondents that have not yet received an additional dose or
+  booster shot whether they plan to get one.
+* Item V17 asks respondents when they received their most recent COVID-19
+  vaccination.
+* Item C17b asks respondents if they received a flu vaccination since July 2021.
+  This is an updated version of item C17a (wave 8-10) and C17 (wave 1-3 and
+  4-7).
+
+### Removed Items
+
+* Item B10b (“Do any of the following reasons describe why you were tested for
+  COVID-19 in the past 14 days?”) has been removed.
+* Item V2 (“How many COVID-19 vaccinations have you received?”) has been
+  removed.
+* Item V15c (“Did you ever experience any of the following barriers to getting
+  the COVID-19 vaccine?”) has been removed
+* Item C6a (“In the past 7 days, have you traveled outside of your state?”) has
+  been removed.
+* Item I1 (“Getting the COVID-19 vaccine means that you can stop wearing a mask
+  around people outside your household.”) has been removed.
+* Item I2 (“Children cannot get COVID-19.") has been removed.
