@@ -999,8 +999,15 @@ burden.
 * Item V17 asks respondents when they received their most recent COVID-19
   vaccination.
 * Item C17b asks respondents if they received a flu vaccination since July 2021.
-  This is an updated version of item C17a (wave 8-10) and C17 (wave 1-3 and
-  4-7).
+  This is an updated version of item C17a (waves 8-10) and C17 (waves 5-7),
+  which descended from item C2 (waves 1-3).
+
+### Changed Items
+
+* Item D1 was changed in the Spanish translation to ask “¿Con qué género te
+  identificas?” to keep consistency between survey instruments, and to match the
+  Spanish (Latin America) translation. (The Spanish translation previously read
+  “¿De qué sexo eres?”)
 
 ### Removed Items
 
