@@ -956,9 +956,9 @@ is finalized.
 ## Wave 13
 
 Wave 13 was deployed on January 28, 2022. For the following two weeks, about 15%
-of respondents (selected at random) continued to receive Wave 12, allowing for
-comparisons of responses between the two waves. Wave 13 is available in English
-and the languages introduced in Wave 3.
+of respondents (selected at random) received Wave 13 and the remainder received
+Wave 12, allowing for comparisons of responses between the two waves. Wave 13 is
+available in English and the languages introduced in Wave 3.
 
 There are two objectives of this revision. First, we modified the COVID-19
 vaccination questions to collect information about additional doses and booster
