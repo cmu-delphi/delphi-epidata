@@ -35,8 +35,20 @@ meaningful levels starting May 26, 2020.
 
 | Signal | Description |
 | --- | --- |
-| `covid_ag_raw_pct_positive` | Percentage of antigen tests that were positive for COVID-19, with no smoothing applied. <br/> **Earliest date available:** 2020-05-26 |
-| `covid_ag_smoothed_pct_positive` | Percentage of antigen tests that were positive for COVID-19, smoothed by pooling together the last 7 days of tests. <br/> **Earliest date available:** 2020-05-26 |
+| `covid_ag_raw_pct_positive` | Percentage of antigen tests that were positive for COVID-19 (all ages), with no smoothing applied. <br/> **Earliest date available:** 2020-05-26 |
+| `covid_ag_raw_pct_positive_age_0_4` | Percentage of antigen tests that were positive for COVID-19 (ages 0-4), with no smoothing applied. <br/> **Earliest date available:** 2020-05-26 |
+| `covid_ag_raw_pct_positive_age_5_17` | Percentage of antigen tests that were positive for COVID-19 (ages 5-17), with no smoothing applied. <br/> **Earliest date available:** 2020-05-26 |
+| `covid_ag_raw_pct_positive_age_18_49` | Percentage of antigen tests that were positive for COVID-19 (ages 18-49), with no smoothing applied. <br/> **Earliest date available:** 2020-05-26 |
+| `covid_ag_raw_pct_positive_age_50_64` | Percentage of antigen tests that were positive for COVID-19 (ages 50-64), with no smoothing applied. <br/> **Earliest date available:** 2020-05-26 |
+| `covid_ag_raw_pct_positive_age_65plus` | Percentage of antigen tests that were positive for COVID-19 (ages 65+), with no smoothing applied. <br/> **Earliest date available:** 2020-05-26 |
+| `covid_ag_raw_pct_positive_age_0_17` | Percentage of antigen tests that were positive for COVID-19 (ages 0-17), with no smoothing applied. <br/> **Earliest date available:** 2020-05-26 |
+| `covid_ag_smoothed_pct_positive` | Percentage of antigen tests that were positive for COVID-19 (all ages), smoothed by pooling together the last 7 days of tests. <br/> **Earliest date available:** 2020-05-26 |
+| `covid_ag_smoothed_pct_positive_age_0_4` | Percentage of antigen tests that were positive for COVID-19 (ages 0-4), smoothed by pooling together the last 7 days of tests. <br/> **Earliest date available:** 2020-05-26 |
+| `covid_ag_smoothed_pct_positive_age_5_17` | Percentage of antigen tests that were positive for COVID-19 (ages 5-17), smoothed by pooling together the last 7 days of tests. <br/> **Earliest date available:** 2020-05-26 |
+| `covid_ag_smoothed_pct_positive_age_18_49` | Percentage of antigen tests that were positive for COVID-19 (ages 18-49), smoothed by pooling together the last 7 days of tests. <br/> **Earliest date available:** 2020-05-26 |
+| `covid_ag_smoothed_pct_positive_age_50_64` | Percentage of antigen tests that were positive for COVID-19 (ages 50-64), smoothed by pooling together the last 7 days of tests. <br/> **Earliest date available:** 2020-05-26 |
+| `covid_ag_smoothed_pct_positive_age_65plus` | Percentage of antigen tests that were positive for COVID-19 (ages 65+), smoothed by pooling together the last 7 days of tests. <br/> **Earliest date available:** 2020-05-26 |
+| `covid_ag_smoothed_pct_positive_age_0_17` | Percentage of antigen tests that were positive for COVID-19 (ages 0-17), smoothed by pooling together the last 7 days of tests. <br/> **Earliest date available:** 2020-05-26 |
 
 ### Estimation
 
@@ -63,19 +75,25 @@ We estimate p across 3 temporal-spatial aggregation schemes:
 
 **MSA and HRR levels**: In a given MSA or HRR, suppose $$N$$ COVID tests are taken
 in a certain time period, $$X$$ is the number of tests taken with positive
-results. If $$N \geq 50$$, we simply use:
+results. 
+
+For raw signals:
+- if $$N \geq 50$$, we simply use:
 
 $$
 p = \frac{100 X}{N}
 $$
 
-If $$N < 50$$, we lend $$50 - N$$ fake samples from its home state to shrink the
+For smoothed signals, before taking the temporal pooling average,
+- if $$N \geq 50$$, we also use:
+$$
+p = \frac{100 X}{N}
+$$
+- if $$25 \leq N < 50$$, we lend $$50 - N$$ fake samples from its home state to shrink the
 estimate to the state's mean, which means:
-
 $$
 p = 100 \left( \frac{N}{50} \frac{X}{N} + \frac{50 - N}{50}  \frac{X_s}{N_s} \right) 
 $$
-
 where $$N_s, X_s$$ are the number of COVID tests and the number of COVID tests
 taken with positive results taken in its home state in the same time period.
 
