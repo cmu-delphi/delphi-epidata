@@ -17,7 +17,8 @@ grand_parent: COVIDcast Epidata API
 
 The Community Profile Report (CPR) is published by the Data Strategy and Execution Workgroup (DSEW) of the White House COVID-19 Team. For more information, see the [official description and data dictionary at healthdata.gov](https://healthdata.gov/Health/COVID-19-Community-Profile-Report/gqxm-d9w9) for "COVID-19 Community Profile Report".
 
-This data source provides various COVID-19 related metrics, of which we report hospital admissions.
+This data source provides various COVID-19 related metrics, of which we report hospital admissions. Other sources of hospital admissions data in COVIDcast include [HHS](hhs.md) and [medical insurance claims](hospital-admissions.md). The CPR differs from these sources in that it is part of the public health surveillance stream (like HHS, unlike claims) but is available at a daily-county level (like claims, unlike HHS). CPR hospital admissions figures at the state level and above are meant to match those from HHS, but are known to differ. See the Limitations section for details.
+
 County, MSA, state, and HHS-level values are pulled directly from CPR; nation-level values are aggregated up from the state level.
 
 | Signal | Description |
