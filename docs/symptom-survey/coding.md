@@ -56,8 +56,40 @@ Beginning in Wave 11, the `module` column indicates which module the respondent
 was randomly assigned to. See the [survey modules and randomization](modules.md)
 information for more details.
 
-Coding details for each survey wave follow.
+### Privacy Restrictions
 
+To prevent respondents from being identifiable in the response data, responses
+with ZIP codes with populations of 100 or fewer have their location set to `NA`.
+This affects item A3 in the individual response files. (This change was
+implemented with the introduction of Wave 4. Previously, all ZIPs were
+reported.)
+
+Invalid ZIP codes are preserved unchanged, and these rows are reported in the
+individual response files with their invalid ZIPs.
+
+### Race and Ethnicity
+
+Beginning in wave 4, items D6 and D7 ask respondents for race and ethnicity.
+These columns are **not** available in the microdata files due to
+reidentification concerns. Public contingency tables that aggregate by race and
+other demographic variables [are available](contingency-tables.md).
+
+Users with a specific need for these variables in microdata should contact us at
+<delphi-survey-info@lists.andrew.cmu.edu> to discuss options for obtaining them,
+as access can be provided under some restrictions.
+
+In the contingency tables, and in the microdata files for users who have gained
+permission to access this data, the `raceethnicity` column is coded based on the
+following rules:
+
+* If the respondent answers "Yes" to item D6, they are coded as Hispanic,
+  regardless of their answer to D7. If the respondent answers "No" to D6, the
+  following rules apply.
+* Respondents who selected more than one racial group in D7, or who selected
+  "Some other race", are coded as "NonHispanicMultipleOther".
+* Respondents who selected only one racial group in D7 are coded according to
+  that race, such as "NonHispanicAsian" or
+  "NonHispanicAmericanIndianAlaskaNative".
 
 ## Comprehensive Codebook
 
@@ -91,23 +123,6 @@ Available columns:
 * `group_of_respondents_item_was_shown_to`: Module-based subset of respondents item was asked of. One of "all" (if item was included in the [Daily Core](modules.md) and asked of all respondents), "Module A", or "Module B".
 
 
-## Privacy Restrictions
-
-To prevent respondents from being identifiable in the response data, responses
-with ZIP codes with populations of 100 or fewer have their location set to `NA`.
-This affects item A3 in the individual response files. (This change was
-implemented with the introduction of Wave 4. Previously, all ZIPs were
-reported.)
-
-Invalid ZIP codes are preserved unchanged, and these rows are reported in the
-individual response files with their invalid ZIPs.
-
-Additionally, beginning in wave 4, items D6 and D7 ask respondents for race and
-ethnicity. These columns are **not** available in the microdata files due to
-reidentification concerns. Users with a specific need for these variables should
-contact us at <delphi-survey-info@lists.andrew.cmu.edu> to discuss options for
-obtaining them. However, contingency tables that aggregate by race and other
-demographic variables [are available](contingency-tables.md).
 
 
 ## Wave 1
@@ -471,7 +486,7 @@ new items were meant to capture reasons for vaccine hesitancy among respondents.
 
 ### New Items
 
-* Item V2a ask respondents that have received a COVID-19 vaccine and indicated
+* Item V2a asks respondents that have received a COVID-19 vaccine and indicated
   that they have not had 2 doses of the vaccine whether they intend to get the
   required doses.
 * Items V5a-V5d and V6 were added to capture reasons for respondents not
@@ -775,6 +790,11 @@ are not anticipated to change the respondent’s answer.
   might become seriously ill from CVOID-19?”) was removed.
 * Item C17a (“Have you had a seasonal flu vaccination since July 1, 2020?”) was
   removed.
+* On November 8, 2021, item V2 “How many vaccinations have you received?” was
+  removed from Wave 11, as the response options did not allow for respondents to
+  report booster shots and additional doses. Booster doses were becoming more
+  common at this time, making the lack of booster response options jarring to
+  respondents.
 
 ### Notes
 
@@ -789,17 +809,19 @@ are not anticipated to change the respondent’s answer.
 
 ## Wave 12
 
-Wave 12 was deployed on October 7, 2021. Deployment is in two phases:
+Wave 12 was deployed on December 19, 2021, after an experimental phase in
+October:
 
-* Initially the survey was given only to 15% of survey respondents, the
-  remainder receiving Wave 11. This phase lasted until October 22. This phase
-  was used to conduct three experiments with (1) demographic module placement,
-  (2) vaccination uptake question, and (3) survey invitation text. Details of
-  these experiments can be found [below](#experiments). In data files, this is
-  marked as wave "12.5" to distinguish from the final version.
-* After results of the experiments are analyzed, a final version will be
-  deployed using only one demographic module placement and one vaccine uptake
-  question. This will be marked as wave 12 in the data files.
+* From October 7 to October 22, 2021, an experimental Wave 12 was given only to
+  15% of survey respondents, the remainder receiving Wave 11. This phase was
+  used to conduct three experiments with (1) demographic module placement, (2)
+  vaccination uptake question, and (3) survey invitation text. Details of these
+  experiments can be found [below](#experiments). In data files, this is marked
+  as wave "12.5" to distinguish from the final version. Data from the
+  experimental wave 12 was not included in the aggregates published in the
+  COVIDcast API or in our [contingency tables](contingency-tables.md).
+* After results of the experiments were analyzed, the final version was deployed
+  on December 19, 2021. In data files, this is marked as wave 12.
 
 Wave 12 is available in English and the languages introduced in Wave 3.
 
@@ -807,18 +829,23 @@ Files:
 * [Wave 12 text and coding](waves/CMU Survey Wave 12.pdf) (PDF)
 * [Wave 12 text and coding](waves/CMU Survey Wave 12.docx) (Word)
 
-Besides the experiments, Wave 12 revises the schooling module of the survey
+Besides the experiments, Wave 12 revised the schooling module of the survey
 instrument and adds questions regarding parents’ intention to vaccinate their
-children (under age 18). Please review the changes carefully when you use
+children (under age 18). These schooling items are part of [Module B](modules.md)
+of the survey. Please review the changes carefully when you use
 responses from multiple waves of this survey.
+
+### Demographic Module Placement
+
+In the prior waves of CTIS, respondent demographics were collected towards the
+end of the survey. These questions are now asked after the vaccine module of the
+survey. This placement was chosen after the [order experiments described
+below](#experiments) found that this ordering improved response rates to the
+demographic items. We expect this will aid users who need demographic data for
+their survey analyses.
 
 ### New Items
 
-* Item V1alt asks respondents who they personally know has already received a
-  COVID-19 vaccine. Response options include themselves, household members, and
-  others. This is an alternate form of the item capturing vaccine uptake, and is
-  part of the vaccination uptake question experiment described
-  [below](#experiments).
 * Item P1 asks if the respondent is a parent or legal guardian of a child under
   age 18.
 * Item P2 asks respondents the age group of their oldest child. This replaces
@@ -832,16 +859,18 @@ responses from multiple waves of this survey.
 * Item P6 asks respondent about the preventative measures that apply if their
   oldest child is attending any in-person classes. These response options are a
   subset of response options from E3 with several new additions.
+* In the experimental phase, item V1alt asked respondents who they personally
+  know has already received a COVID-19 vaccine. Response options include
+  themselves, household members, and others. This is an alternate form of item
+  V1 capturing vaccine uptake, and is part of the vaccination uptake question
+  experiment described [below](#experiments). In the final version of Wave 12,
+  item V1alt is not used and item V1 remains unchanged.
 
 ### Changed Items
 
 * Item B13a asks respondents “Have you ever had coronavirus (COVID-19)?” and
   replaces item B13 “As far as you know, have you ever had coronavirus
   (COVID-19)?” for ease of translation.
-* The vaccination uptake question experiment uses questions V1 and V1alt.
-  Subsequently, questions that use V1 in the display logic have been updated to
-  also include respondents who are asked V1alt. The display logic has been
-  updated for the following questions: V2, V11a, V3a, V5a, V12a, V16, and V9
 * Item V5a, V5b and V5c have the following revisions to response options:
   * The response option “I don’t like vaccines” was revised to “I don’t like
     vaccines generally” to distinguish from a specific dislike of COVID-19
@@ -855,6 +884,11 @@ responses from multiple waves of this survey.
   added: “The available appointment locations did not work for me” and “Other”
 * Item V15b has two new response options: “The available appointment locations
   did not work for me” and “Other”.
+* The vaccination uptake question experiment, part of the experimental version
+  of Wave 12, used questions V1 and V1alt. During the experiment, questions that
+  use V1 in the display logic were updated to also include respondents who are
+  asked V1alt. The display logic was updated for the following questions: V2,
+  V11a, V3a, V5a, V12a, V16, and V9.
 
 ### Removed Items
 
@@ -871,41 +905,45 @@ responses from multiple waves of this survey.
 
 Wave 12 was initially launched to 15% of respondents to collect data for the
 experiments described below. (The remaining 85% continued to receive Wave 11.)
-After the experiments have been conducted and the data analyzed; the CTIS team
-will finalize the Wave 12 instrument to be distributed to the entire sample.
-Wave 12 will consist of three experiments with (1) demographic module placement,
-(2) vaccination uptake question, and (3) survey invitation text.
+This experiment was run from October 7 to October 22, 2021. After the
+experiments were conducted and the data analyzed, the CTIS team finalized the
+Wave 12 instrument to be distributed to the entire sample. This finalized
+version was deployed on December 19, 2021.
+
+The Wave 12 trial phase consisted of three experiments with (1) demographic
+module placement, (2) vaccination uptake question, and (3) survey invitation
+text.
 
 #### Demographic Module Placement and Vaccine Uptake Question
 
-The 15% of respondents who receive the experimental Wave 12 will be divided into
+The 15% of respondents who received the experimental Wave 12 were divided into
 three groups:
 
-* Group 1 (5% of respondents) will see the demographics questions after the
-  symptom module, which concludes with question B2b “For how many days have you
-  had at least one new or unusual symptom?” This group of respondents will see
-  the Wave 11 version of the vaccine uptake question (V1).
-* Group 2 (5% of respondents) will see the demographics questions after the
-  COVID vaccine module, which concludes with question V9 “How concerned are you
-  that you would experience a side effect from a COVID-19 vaccination?” This
-  group of respondents will see the Wave 11 version of the vaccine uptake
-  question (V1).
-* Group 3 (5% of respondents) will see the experimental form of the vaccination
+* Group 1 (5% of respondents) saw the demographics questions after the symptom
+  module, which concludes with question B2b “For how many days have you had at
+  least one new or unusual symptom?” This group of respondents saw the Wave 11
+  version of the vaccine uptake question (V1).
+* Group 2 (5% of respondents) saw the demographics questions after the COVID
+  vaccine module, which concludes with question V9 “How concerned are you that
+  you would experience a side effect from a COVID-19 vaccination?” This group of
+  respondents saw the Wave 11 version of the vaccine uptake question (V1).
+* Group 3 (5% of respondents) saw the experimental form of the vaccination
   uptake question (V1alt), which asks respondents “Do you personally know anyone
   who has received the COVID-19 vaccine already?” Response options include
-  themselves, household members, and others. These respondents will not receive
-  the previous vaccine uptake question, V1. They will see the demographic
-  questions in the Wave 11 placement, at the end of Module A/B and before the
-  occupation questions.
+  themselves, household members, and others. These respondents did not receive
+  the previous vaccine uptake question, V1. They saw the demographic questions
+  in the Wave 11 placement, at the end of Module A/B and before the occupation
+  questions.
 
-A new column `w12_treatment` in the microdata files will indicate which of the
-three groups above each respondent was assigned to.
+A new column `w12_treatment` in the microdata files indicates which of the three
+groups above each respondent was assigned to.
 
 #### Survey Invitation Text
 
-Our partners at Facebook will also be conducting an experiment among those
-allocated to receive Wave 11. Among those participants, 6% will receive will
-receive one of six different invitations to the survey on their News Feed. This
-will be an internal Facebook experiment conducted with the goal of improving
-response rates and exploring additional non-response bias in the weighting
-process. More details will be provided when the survey invitation is finalized.
+During the Wave 12 experiment period, our partners at Facebook conducted an
+experiment among those respondents allocated to receive Wave 11. Among those
+participants, 6% will receive will receive one of six different invitations to
+the survey on their News Feed. This will be an internal Facebook experiment
+conducted with the goal of improving response rates and exploring additional
+non-response bias in the weighting process. More details will be provided when
+the survey invitation is finalized.
