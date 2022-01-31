@@ -50,9 +50,7 @@ An analysis comparing the
 [CPR labeled January 5, 2022](https://healthdata.gov/api/views/gqxm-d9w9/files/14ee1150-edf1-4b54-b225-500c8954e6a8?download=true&filename=Community%20Profile%20Report%2020220105.xlsx) 
 (newest file as of January 6, 2022) with the HHS 
 [COVID-19 Reported Patient Impact and Hospital Capacity by State Timeseries](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/g62h-syeh) 
-(downloaded January 6, 2022) suggests that the CPR report undercounts the hospital admissions published by HHS by 10-15% or more.
-
-A copy of this analysis is available in Python Notebook format. We are waiting from clarification from the data provider, but until then, exercise caution when comparing work based on the CPR with work based on HHS reports.
+(downloaded January 6, 2022) suggests that the CPR undercounts the hospital admissions published by HHS by 10-15% or more. We are waiting from clarification from the data provider, but until then, exercise caution when comparing work based on the CPR with work based on HHS reports.
 
 
 
