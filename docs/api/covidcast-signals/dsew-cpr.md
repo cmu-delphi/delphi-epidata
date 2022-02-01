@@ -23,7 +23,9 @@ County, MSA, state, and HHS-level values are pulled directly from CPR; nation-le
 
 | Signal | Description |
 | --- | --- |
-| `confirmed_admissions_covid_1d_7dav` | Seven-day average of adult and pediatric confirmed COVID-19 hospital admissions occurring each day.
+| `confirmed_admissions_covid_1d_7dav` | Number of adult and pediatric confirmed COVID-19 hospital admissions occurring each day. Smoothed using a 7-day average.
+Earliest date available: 2019-12-16 for state, HHS, and nation; 2021-01-06 for MSA and county |
+| `confirmed_admissions_covid_1d_prop_7dav` | Number of adult and pediatric confirmed COVID-19 hospital admissions occurring each day, per 100,000 population. Smoothed using a 7-day average.
 Earliest date available: 2019-12-16 for state, HHS, and nation; 2021-01-06 for MSA and county |
 
 ## Table of contents
@@ -51,9 +53,6 @@ An analysis comparing the
 (newest file as of January 6, 2022) with the HHS 
 [COVID-19 Reported Patient Impact and Hospital Capacity by State Timeseries](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/g62h-syeh) 
 (downloaded January 6, 2022) suggests that the CPR undercounts the hospital admissions published by HHS by 10-15% or more. We are waiting from clarification from the data provider, but until then, exercise caution when comparing work based on the CPR with work based on HHS reports.
-
-
-
 
 ## Lag and Backfill
 
