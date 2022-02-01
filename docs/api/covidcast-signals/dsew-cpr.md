@@ -13,7 +13,7 @@ grand_parent: COVIDcast Epidata API
 * **Date of last change:** Never
 * **Available for:** county, msa, state, hhs, nation (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
-* **License:** [Open Data Commons Open Database License (ODbL)](https://opendatacommons.org/licenses/odbl/1-0/)
+* **License:** [Public Domain US Government](https://www.usa.gov/government-works)
 
 The Community Profile Report (CPR) is published by the Data Strategy and Execution Workgroup (DSEW) of the White House COVID-19 Team. For more information, see the [official description and data dictionary at healthdata.gov](https://healthdata.gov/Health/COVID-19-Community-Profile-Report/gqxm-d9w9) for "COVID-19 Community Profile Report".
 
@@ -63,5 +63,5 @@ Hospital admissions are reported with a lag of 2 days, but since the CPR is not 
 
 ## Source and Licensing
 
-This indicator mirrors and lightly aggregates data originally published by the Data Strategy and Execution Workgroup via [HealthData.gov](https://healthdata.gov/) under an [Open Data Commons Open Database License (ODbL)](https://opendatacommons.org/licenses/odbl/1-0/). The ODbL permits sharing, transformation, and redistribution of data or derived works so long as all public uses are distributed under the ODbL and attributed to the source. For more details, consult the official license text.
+This indicator mirrors and lightly aggregates data originally published by the Data Strategy and Execution Workgroup via [HealthData.gov](https://healthdata.gov/). As a work of the US government, the original data is in the [public domain](https://www.usa.gov/government-works).
 
