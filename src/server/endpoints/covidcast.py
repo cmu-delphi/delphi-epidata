@@ -42,8 +42,8 @@ from .covidcast_utils.model import TimeType, count_signal_time_types, data_sourc
 bp = Blueprint("covidcast", __name__)
 alias = None
 
-latest_table = "covidcast" # TODO: become "signal_latest_v"
-history_table = "covidcast" # TODO: become "signal_history_v"
+latest_table = "signal_latest_v"
+history_table = "signal_history_v"
 
 def parse_source_signal_pairs() -> List[SourceSignalPair]:
     ds = request.values.get("data_source")
