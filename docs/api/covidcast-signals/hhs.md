@@ -13,7 +13,7 @@ grand_parent: COVIDcast Epidata API
 * **Date of last change:** Never
 * **Available for:** state, hhs, nation (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
-* **License:** [Open Data Commons Open Database License (ODbL)](https://opendatacommons.org/licenses/odbl/1-0/)
+* **License:** [Public Domain US Government](https://www.usa.gov/government-works)
 
 The U.S. Department of Health & Human Services (HHS) publishes several
 datasets on patient impact and hospital capacity. One of these
@@ -112,10 +112,6 @@ is first published.
 ## Source and Licensing
 
 This indicator mirrors and lightly aggregates data originally
-published by the U.S. Department of Health & Human Services under an
-[Open Data Commons Open Database License
-(ODbL)](https://opendatacommons.org/licenses/odbl/1-0/). The ODbL
-permits sharing, transformation, and redistribution of data or derived
-works so long as all public uses are distributed under the ODbL and
-attributed to the source. For more details, consult the official
-license text.
+published by the U.S. Department of Health & Human Services. 
+As a work of the US government, the original data is in the 
+[public domain](https://www.usa.gov/government-works).
