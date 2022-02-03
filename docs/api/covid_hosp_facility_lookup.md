@@ -26,7 +26,7 @@ General topics not specific to any particular data source are discussed in the
 This data source provides metadata about healthcare facilities in the US.
 - Data source: [US Department of Health & Human Services](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/anag-cw7u) (HHS)
 - Total number of facilities: 4922
-- Open access via [Open Data Commons Open Database License (ODbL)](https://opendatacommons.org/licenses/odbl/1.0/)
+- Open Access: [Public Domain US Government](https://www.usa.gov/government-works)
 
 # The API
 
