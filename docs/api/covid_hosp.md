@@ -29,7 +29,7 @@ Hospital Capacity by State Timeseries](https://healthdata.gov/Hospital/COVID-19-
   and [COVID-19 Reported Patient Impact and Hospital Capacity by State](https://healthdata.gov/dataset/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/6xf2-c3ie) (published on an irregular schedule, every 1-6 days)
 - Temporal Resolution: Daily, starting 2020-01-01
 - Spatial Resolution: US States plus DC, PR, and VI
-- Open access via [Open Data Commons Open Database License (ODbL)](https://opendatacommons.org/licenses/odbl/1.0/)
+- Open Access: [Public Domain US Government](https://www.usa.gov/government-works)
 - Versioned by Delphi according to "issue" date, which is the date that the
 dataset was published by HHS.
 
