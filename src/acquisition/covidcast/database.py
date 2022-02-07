@@ -67,7 +67,7 @@ class Database:
   DATABASE_NAME = 'epidata'
 
   latest_table = "signal_latest_v" # technically VIEW and not a TABLE, but...
-  history_table = "signal_history_v" # also a VIEW
+  history_table = "signal_history_v" # ...also a VIEW
   load_table = "signal_load"
 
   def connect(self, connector_impl=mysql.connector):
@@ -125,25 +125,28 @@ class Database:
     Data inserted this way will not be available to clients until the appropriate steps from src/dbjobs/ have run
     """
 
-    # NOTE: `is_latest_issue` is hardcoded to 1, `value_update_timestamp` to "NOW"
+    # NOTE: `value_update_timestamp` is hardcoded to "NOW" (which is appropriate) and 
+    #       `is_latest_issue` is hardcoded to 1 (which is temporary and addressed later in this method)
     insert_into_loader_sql = f'''
       INSERT INTO `{self.load_table}`
         (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`,
-        `value_updated_timestamp`, `value`, `stderr`, `sample_size`,
-        `issue`, `lag`, `is_latest_issue`, `missing_value`, `missing_stderr`, `missing_sample_size`)
+        `value_updated_timestamp`, `value`, `stderr`, `sample_size`, `issue`, `lag`, 
+        `is_latest_issue`, `missing_value`, `missing_stderr`, `missing_sample_size`)
       VALUES
-        (%s, %s, %s, %s, %s, %s, UNIX_TIMESTAMP(NOW()), %s, %s, %s, %s, %s, 1, %s, %s, %s)
+        (%s, %s, %s, %s, %s, %s, 
+        UNIX_TIMESTAMP(NOW()), %s, %s, %s, %s, %s, 
+        1, %s, %s, %s)
     '''
 
     # all load table entries are already marked "is_latest_issue".
-    # if an entry in the load table is NOT in the latest table, it is clearly now the latest value for that key (so we do nothing).
+    # if an entry in the load table is NOT in the latest table, it is clearly now the latest value for that key (so we do nothing (thanks to INNER join)).
     # if an entry *IS* in both load and latest tables, but latest table issue is newer, unmark is_latest_issue in load.
     fix_is_latest_issue_sql = f'''
         UPDATE `{self.load_table}` SET `is_latest_issue`=0 WHERE `signal_data_id` IN (
             SELECT `{self.load_table}`.`signal_data_id` AS `signal_data_id` 
             FROM `{self.load_table}` JOIN `{self.latest_table}`
                 USING (`source`, `signal`, `geo_type`, `geo_value`, `time_type`, `time_value`) 
-            WHERE `{self.load_table}`.`issue` < `{self.latest_table}`.issue
+            WHERE `{self.load_table}`.`issue` < `{self.latest_table}`.`issue`
         )
     '''
 
