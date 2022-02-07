@@ -71,7 +71,7 @@ class UnitTests(unittest.TestCase):
 
     sql = cursor.execute.call_args[0][0].lower()
     self.assertIn('select count(1)', sql)
-    self.assertIn('from `covidcast`', sql)
+    self.assertIn('from `signal_', sql) # note that this table name is incomplete
 
   def test_update_covidcast_meta_cache_query(self):
     """Query to update the metadata cache looks sensible.

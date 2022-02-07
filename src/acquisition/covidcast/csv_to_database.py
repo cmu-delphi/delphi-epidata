@@ -22,16 +22,7 @@ def get_argument_parser():
   parser.add_argument(
     '--specific_issue_date',
     action='store_true',
-    help='indicates <data_dir> argument is where issuedate-specific subdirectories can be found.  also enables --*_wip_override arguments.')
-  # TODO: better options for wip overriding, such sa mutual exclusion and such
-  parser.add_argument(
-    '--is_wip_override',
-    action='store_true',
-    help='overrides all signals to mark them as WIP.  NOTE: specify neither or only one of --is_wip_override and --not_wip_override.')
-  parser.add_argument(
-    '--not_wip_override',
-    action='store_true',
-    help='overrides all signals to mark them as *not* WIP.  NOTE: specify neither or only one of --is_wip_override and --not_wip_override.')
+    help='indicates <data_dir> argument is where issuedate-specific subdirectories can be found.')
   parser.add_argument(
     '--log_file',
     help="filename for log output (defaults to stdout)")
@@ -83,7 +74,6 @@ def upload_archive(
     database,
     handlers,
     logger,
-    is_wip_override=None,
     csv_importer_impl=CsvImporter):
   """Upload CSVs to the database and archive them using the specified handlers.
 
@@ -93,10 +83,6 @@ def upload_archive(
 
   :handlers: functions for archiving (successful, failed) files
   
-  :is_wip_override: default None (detect WIP status using
-  filename). If boolean, whether to force WIP status (True) or
-  production status (False) regardless of what the filename says
-
   :return: the number of modified rows
   """
   archive_as_successful, archive_as_failed = handlers
@@ -113,17 +99,9 @@ def upload_archive(
 
     (source, signal, time_type, geo_type, time_value, issue, lag) = details
 
-    if is_wip_override is None:
-      is_wip = signal[:4].lower() == "wip_"
-    else:
-      is_wip = is_wip_override
-      # strip wip from signal name if we're forcing production status
-      if signal[:4].lower() == "wip_" and not is_wip:
-        signal = signal[4:]
-
     csv_rows = csv_importer_impl.load_csv(path, geo_type)
 
-    cc_rows = CovidcastRow.fromCsvRows(csv_rows, source, signal, time_type, geo_type, time_value, issue, lag, is_wip)
+    cc_rows = CovidcastRow.fromCsvRows(csv_rows, source, signal, time_type, geo_type, time_value, issue, lag)
     rows_list = list(cc_rows)
     all_rows_valid = rows_list and all(r is not None for r in rows_list)
     if all_rows_valid:
@@ -166,15 +144,6 @@ def main(
   logger = get_structured_logger("csv_ingestion", filename=args.log_file)
   start_time = time.time()
 
-  if args.is_wip_override and args.not_wip_override:
-    logger.error('conflicting overrides for forcing WIP option!  exiting...')
-    return
-  wip_override = None
-  if args.is_wip_override:
-    wip_override = True
-  if args.not_wip_override:
-    wip_override = False
-
   # shortcut escape without hitting db if nothing to do
   path_details = collect_files_impl(args.data_dir, args.specific_issue_date)
   if not path_details:
@@ -191,8 +160,7 @@ def main(
       path_details,
       database,
       make_handlers(args.data_dir, args.specific_issue_date),
-      logger,
-      is_wip_override=wip_override)
+      logger)
     logger.info("Finished inserting database rows", row_count = modified_row_count)
     # the following print statement serves the same function as the logger.info call above
     # print('inserted/updated %d rows' % modified_row_count)

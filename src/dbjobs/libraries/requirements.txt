@@ -1,0 +1,7 @@
+asn1crypto
+dateutil
+pymysql
+PySimpleGUI
+redshift_connector
+scramp
+six
