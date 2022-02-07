@@ -110,6 +110,9 @@ def _handle_lag_issues_as_of(q: QueryBuilder, issues: Optional[List[Union[Tuple[
 
 
 def guess_index_to_use(time: List[TimePair], geo: List[GeoPair], issues: Optional[List[Union[Tuple[int, int], int]]] = None, lag: Optional[int] = None, as_of: Optional[int] = None) -> Optional[str]:
+    #TODO: remove this method?
+    return None
+
     time_values_to_retrieve = sum((t.count() for t in time))
     geo_values_to_retrieve = sum((g.count() for g in geo))
 

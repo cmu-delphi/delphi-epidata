@@ -22,7 +22,7 @@ class CovidcastRow():
   """A container for all the values of a single covidcast row."""
 
   @staticmethod
-  def fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag, is_wip):
+  def fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag):
     if row_value is None: return None
     return CovidcastRow(source, signal, time_type, geo_type, time_value,
                         row_value.geo_value,
@@ -32,16 +32,16 @@ class CovidcastRow():
                         row_value.missing_value,
                         row_value.missing_stderr,
                         row_value.missing_sample_size,
-                        issue, lag, is_wip)
+                        issue, lag)
 
   @staticmethod
-  def fromCsvRows(row_values, source, signal, time_type, geo_type, time_value, issue, lag, is_wip):
+  def fromCsvRows(row_values, source, signal, time_type, geo_type, time_value, issue, lag):
     # NOTE: returns a generator, as row_values is expected to be a generator
-    return (CovidcastRow.fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag, is_wip)
+    return (CovidcastRow.fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag)
             for row_value in row_values)
 
   def __init__(self, source, signal, time_type, geo_type, time_value, geo_value, value, stderr, 
-    sample_size, missing_value, missing_stderr, missing_sample_size, issue, lag, is_wip):
+               sample_size, missing_value, missing_stderr, missing_sample_size, issue, lag):
     self.id = None
     self.source = source
     self.signal = signal
@@ -59,13 +59,16 @@ class CovidcastRow():
     self.direction = None
     self.issue = issue
     self.lag = lag
-    self.is_wip = is_wip
 
 
 class Database:
   """A collection of covidcast database operations."""
 
   DATABASE_NAME = 'epidata'
+
+  latest_table = "signal_latest_v" # technically VIEW and not a TABLE, but...
+  history_table = "signal_history_v" # also a VIEW
+  load_table = "signal_load"
 
   def connect(self, connector_impl=mysql.connector):
     """Establish a connection to the database."""
@@ -96,106 +99,60 @@ class Database:
       self._connection.commit()
     self._connection.close()
 
-  def count_all_rows(self):
+  def count_all_rows(self, tablename=None):
     """Return the total number of rows in table `covidcast`."""
 
-    self._cursor.execute(f'SELECT count(1) FROM `covidcast`')
+    if tablename is None:
+      tablename = self.history_table
+
+    self._cursor.execute(f'SELECT count(1) FROM `{tablename}`')
 
     for (num,) in self._cursor:
       return num
+
+  def count_all_history_rows(self):
+    return self.count_all_rows(self.history_table)
+
+  def count_all_latest_rows(self):
+    return self.count_all_rows(self.latest_table)
 
   def insert_or_update_bulk(self, cc_rows):
     return self.insert_or_update_batch(cc_rows)
 
   def insert_or_update_batch(self, cc_rows, batch_size=2**20, commit_partial=False):
     """
-    Insert new rows (or update existing) into the table `covidcast`.
-
-    This has the intentional side effect of updating the primary timestamp.
+    Insert new rows (or update existing) into the load table.
+    Data inserted this way will not be available to clients until the appropriate steps from src/dbjobs/ have run
     """
 
-    tmp_table_name = 'tmp_insert_update_table'
-
-    # TODO: this heavily copypastas src/ddl/covidcast.sql -- theres got to be a better way
-    create_tmp_table_sql = f'''
-      CREATE TABLE `{tmp_table_name}` (
-        `source` varchar(32) NOT NULL,
-        `signal` varchar(64) NOT NULL,
-        `time_type` varchar(12) NOT NULL,
-        `geo_type` varchar(12) NOT NULL,
-        `time_value` int(11) NOT NULL,
-        `geo_value` varchar(12) NOT NULL,
-        `value_updated_timestamp` int(11) NOT NULL,
-        `value` double,
-        `stderr` double,
-        `sample_size` double,
-        `direction_updated_timestamp` int(11) NOT NULL,
-        `direction` int(11),
-        `issue` int(11) NOT NULL,
-        `lag` int(11) NOT NULL,
-        `is_latest_issue` BINARY(1) NOT NULL,
-        `is_wip` BINARY(1) NOT NULL,
-        `missing_value` int(1) DEFAULT 0,
-        `missing_stderr` int(1) DEFAULT 0,
-        `missing_sample_size` int(1) DEFAULT 0
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-    '''
-
-    truncate_tmp_table_sql = f'TRUNCATE TABLE {tmp_table_name};'
-    drop_tmp_table_sql = f'DROP TABLE {tmp_table_name}'
-
-    insert_into_tmp_sql = f'''
-      INSERT INTO `{tmp_table_name}`
+    # NOTE: `is_latest_issue` is hardcoded to 1, `value_update_timestamp` to "NOW"
+    insert_into_loader_sql = f'''
+      INSERT INTO `{self.load_table}`
         (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`,
-        `value_updated_timestamp`, `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, `direction`,
-        `issue`, `lag`, `is_latest_issue`, `is_wip`, `missing_value`, `missing_stderr`, `missing_sample_size`)
+        `value_updated_timestamp`, `value`, `stderr`, `sample_size`,
+        `issue`, `lag`, `is_latest_issue`, `missing_value`, `missing_stderr`, `missing_sample_size`)
       VALUES
-        (%s, %s, %s, %s, %s, %s, UNIX_TIMESTAMP(NOW()), %s, %s, %s, 0, NULL, %s, %s, 0, %s, %s, %s, %s)
+        (%s, %s, %s, %s, %s, %s, UNIX_TIMESTAMP(NOW()), %s, %s, %s, %s, %s, 1, %s, %s, %s)
     '''
 
-    insert_or_update_sql = f'''
-      INSERT INTO `covidcast`
-        (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`,
-        `value_updated_timestamp`, `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, `direction`,
-        `issue`, `lag`, `is_latest_issue`, `is_wip`, `missing_value`, `missing_stderr`, `missing_sample_size`)
-      SELECT * FROM `{tmp_table_name}`
-      ON DUPLICATE KEY UPDATE
-        `value_updated_timestamp` = VALUES(`value_updated_timestamp`),
-        `value` = VALUES(`value`),
-        `stderr` = VALUES(`stderr`),
-        `sample_size` = VALUES(`sample_size`)
-    '''
-    zero_is_latest_issue_sql = f'''
-      UPDATE
-      (
-        SELECT DISTINCT `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`
-        FROM `{tmp_table_name}`
-      ) AS TMP
-      LEFT JOIN `covidcast`
-      USING (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`)
-      SET `is_latest_issue`=0
-    '''
-    set_is_latest_issue_sql = f'''
-      UPDATE 
-      (
-        SELECT `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`, MAX(`issue`) AS `issue`
-        FROM
-        (
-          SELECT DISTINCT `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value` 
-          FROM `{tmp_table_name}`
-        ) AS TMP
-        LEFT JOIN `covidcast`
-        USING (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`)
-        GROUP BY `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`
-      ) AS TMP
-      LEFT JOIN `covidcast`
-      USING (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`, `issue`)
-      SET `is_latest_issue`=1        
+    # all load table entries are already marked "is_latest_issue".
+    # if an entry in the load table is NOT in the latest table, it is clearly now the latest value for that key (so we do nothing).
+    # if an entry *IS* in both load and latest tables, but latest table issue is newer, unmark is_latest_issue in load.
+    fix_is_latest_issue_sql = f'''
+        UPDATE `{self.load_table}` SET `is_latest_issue`=0 WHERE `signal_data_id` IN (
+            SELECT `{self.load_table}`.`signal_data_id` AS `signal_data_id` 
+            FROM `{self.load_table}` JOIN `{self.latest_table}`
+                USING (`source`, `signal`, `geo_type`, `geo_value`, `time_type`, `time_value`) 
+            WHERE `{self.load_table}`.`issue` < `{self.latest_table}`.issue
+        )
     '''
 
+    if 0 != self.count_all_rows(self.load_table):
+      # TODO: determine if this should be fatal?!
+      logger = get_structured_logger("compute_covidcast_meta")
+      logger.warn("Non-zero count in the load table!!!  This indicates scheduling of acqusition and dbjobs may be out of sync.")
 
     # TODO: consider handling cc_rows as a generator instead of a list
-    self._cursor.execute(create_tmp_table_sql)
 
     try:
       num_rows = len(cc_rows)
@@ -220,19 +177,15 @@ class Database:
           row.sample_size,
           row.issue,
           row.lag,
-          row.is_wip,
           row.missing_value,
           row.missing_stderr,
           row.missing_sample_size
         ) for row in cc_rows[start:end]]
 
 
-        self._cursor.executemany(insert_into_tmp_sql, args)
-        self._cursor.execute(insert_or_update_sql)
+        self._cursor.executemany(insert_into_loader_sql, args)
         modified_row_count = self._cursor.rowcount
-        self._cursor.execute(zero_is_latest_issue_sql)
-        self._cursor.execute(set_is_latest_issue_sql)
-        self._cursor.execute(truncate_tmp_table_sql)
+        self._cursor.execute(fix_is_latest_issue_sql)
 
         if modified_row_count is None or modified_row_count == -1:
           # the SQL connector does not support returning number of rows affected (see PEP 249)
@@ -242,17 +195,16 @@ class Database:
         if commit_partial:
           self._connection.commit()
     except Exception as e:
+      # TODO: rollback???  truncate table???  something???
       raise e
-    finally:
-      self._cursor.execute(drop_tmp_table_sql)
     return total
 
-  def compute_covidcast_meta(self, table_name='covidcast', use_index=True):
-    """Compute and return metadata on all non-WIP COVIDcast signals."""
+  def compute_covidcast_meta(self, table_name=None):
+    """Compute and return metadata on all COVIDcast signals."""
     logger = get_structured_logger("compute_covidcast_meta")
-    index_hint = ""
-    if use_index:
-      index_hint = "USE INDEX (for_metadata)"
+
+    if table_name is None:
+      table_name = self.latest_table
 
     n_threads = max(1, cpu_count()*9//10) # aka number of concurrent db connections, which [sh|c]ould be ~<= 90% of the #cores available to SQL server
     # NOTE: this may present a small problem if this job runs on different hardware than the db,
@@ -260,16 +212,10 @@ class Database:
     logger.info(f"using {n_threads} workers")
 
     srcsigs = Queue() # multi-consumer threadsafe!
-
     sql = f'SELECT `source`, `signal` FROM `{table_name}` GROUP BY `source`, `signal` ORDER BY `source` ASC, `signal` ASC;'
-
     self._cursor.execute(sql)
-    for source, signal in list(self._cursor): # self._cursor is a generator; this lets us use the cursor for subsequent queries inside the loop
-      sql = f"SELECT `is_wip` FROM `{table_name}` WHERE `source`=%s AND `signal`=%s LIMIT 1"
-      self._cursor.execute(sql, (source, signal))
-      is_wip = int(self._cursor.fetchone()[0]) # casting to int as it comes out as a '0' or '1' bytearray; bool('0')==True :(
-      if not is_wip:
-        srcsigs.put((source, signal))
+    for source, signal in self._cursor:
+      srcsigs.put((source, signal))
 
     inner_sql = f'''
       SELECT
@@ -289,7 +235,7 @@ class Database:
         MIN(`lag`) as `min_lag`,
         MAX(`lag`) as `max_lag`
       FROM
-        `{table_name}` {index_hint}
+        `{table_name}`
       WHERE
         `source` = %s AND
         `signal` = %s AND

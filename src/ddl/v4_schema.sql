@@ -116,7 +116,7 @@ CREATE TABLE signal_load (
 
 CREATE OR REPLACE VIEW signal_history_v AS
     SELECT
-        1 AS is_latest_issue, -- provides column-compatibility to match `covidcast` table
+        0 AS is_latest_issue, -- provides column-compatibility to match `covidcast` table -- this value is essentially undefined here...
         0 AS direction, -- provides column-compatibility to match `covidcast` table
         `t2`.`source` AS `source`,
         `t2`.`signal` AS `signal`,

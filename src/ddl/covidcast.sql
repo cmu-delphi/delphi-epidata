@@ -28,7 +28,7 @@ Data is public.
 | issue                        | int(11)     | NO   |     | NULL    |                |
 | lag                          | int(11)     | NO   |     | NULL    |                |
 | is_latest_issue              | binary(1)   | NO   |     | NULL    |                |
-| is_wip                       | binary(1)   | YES  |     | NULL    |                |
+| is_wip                       | binary(1)   | YES  |     | NULL    | deprecated     |
 | missing_value                | int(1)      | YES  |     | NULL    |                |
 | missing_stderr               | int(1)      | YES  |     | NULL    |                |
 | missing_sample_size          | int(1)      | YES  |     | NULL    |                |
@@ -73,7 +73,7 @@ Data is public.
 - `is_latest_issue`
   flag which indicates whether or not the row corresponds to the latest issue for its key
 - `is_wip`
-  flag indicating that the signal is a 'work in progress'.  this should be True iff `signal` has a 'wip_' prefix.
+  (deprecated) NULL
 - `missing_value`
   ~ENUM for the reason a `value` was deleted
 - `missing_stderr`
