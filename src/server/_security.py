@@ -160,12 +160,10 @@ class User:
         logger = get_structured_logger("api_key_logs", filename="api_key_logs.log")
         if self.is_authenticated():
             if self.is_tracking():
-                #app.logger.info(f"api_key: {self.api_key}, {msg}", *args, **kwargs)
                 logger.info({"api_key" : self.api_key, "request" : msg}, *args, **kwargs)
             else:
                 logger.info({"api_key" : "*****", "request" : msg}, *args, **kwargs)
         else:
-            #app.logger.info(msg, *args, **kwargs)
             logger.info(msg, *args, **kwargs)
 
 
