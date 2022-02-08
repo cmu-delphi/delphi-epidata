@@ -59,6 +59,40 @@ jobs:
           docker build -t delphi_web_epidata -f ./devops/Dockerfile .
           cd ../../../
 
+      - name: Upload db image as workflow artifact
+        uses: ishworkh/docker-image-artifact-upload@v1
+        with:
+          image: "delphi_database_epidata:latest"
+
+      - name: Upload web image as workflow artifact
+        uses: ishworkh/docker-image-artifact-upload@v1
+        with:
+          image: "delphi_web_epidata:latest"
+
+      - name: Upload py image as workflow artifact
+        uses: ishworkh/docker-image-artifact-upload@v1
+        with:
+          image: "delphi_web_python:latest"
+
+  run_tests:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download db image as workflow artifact
+        uses: ishworkh/docker-image-artifact-download@v1
+        with:
+          image: "delphi_database_epidata:latest"
+
+      - name: Download web image as workflow artifact
+        uses: ishworkh/docker-image-artifact-download@v1
+        with:
+          image: "delphi_web_epidata:latest"
+
+      - name: Download py image as workflow artifact
+        uses: ishworkh/docker-image-artifact-download@v1
+        with:
+          image: "delphi_web_python:latest"
+
       - name: Start services
         run: |
           docker network create --driver bridge delphi-net
@@ -83,7 +117,7 @@ jobs:
         run: |
           docker stop delphi_database_epidata delphi_web_epidata
           docker network remove delphi-net
-
+  
   build_js_client:
     runs-on: ubuntu-latest
     defaults:
