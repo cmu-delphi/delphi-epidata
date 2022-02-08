@@ -152,7 +152,7 @@ class Database:
 
     if 0 != self.count_all_rows(self.load_table):
       # TODO: determine if this should be fatal?!
-      logger = get_structured_logger("compute_covidcast_meta")
+      logger = get_structured_logger("insert_or_update_batch")
       logger.warn("Non-zero count in the load table!!!  This indicates scheduling of acqusition and dbjobs may be out of sync.")
 
     # TODO: consider handling cc_rows as a generator instead of a list
