@@ -94,9 +94,6 @@ Smoothed estimates are formed by pooling data over time. That is, daily, for
 each location, we first pool all data available in that location over the last 7
 days, and we then recompute everything described in the two subsections above. 
 
-The sample size provided for smoothed signals is different from that for raw signals. 
-The former one is re-definied to be the cumulative sample size in the rolling 7 day 
-window while the latter one is simply the sample size for that corresponding date. 
 Pooling in this way makes estimates available in more geographic areas, as many areas 
 report very few tests per day, but have enough data to report when 7 days are considered.
 
