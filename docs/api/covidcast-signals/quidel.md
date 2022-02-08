@@ -68,41 +68,13 @@ $$
 p = \frac{100 x}{n}
 $$
 
-We estimate p across 3 temporal-spatial aggregation schemes:
+We estimate p across 6 temporal-spatial aggregation schemes:
+- daily, at the county level;
 - daily, at the MSA (metropolitan statistical area) level;
 - daily, at the HRR (hospital referral region) level;
-- daily, at the state level.
-
-**MSA and HRR levels**: In a given MSA or HRR, suppose $$N$$ COVID tests are taken
-in a certain time period, $$X$$ is the number of tests taken with positive
-results. 
-
-For raw signals:
-- if $$N \geq 50$$, we simply use:
-
-$$
-p = \frac{100 X}{N}
-$$
-
-For smoothed signals, before taking the temporal pooling average,
-- if $$N \geq 50$$, we also use:
-$$
-p = \frac{100 X}{N}
-$$
-- if $$25 \leq N < 50$$, we lend $$50 - N$$ fake samples from its home state to shrink the
-estimate to the state's mean, which means:
-$$
-p = 100 \left( \frac{N}{50} \frac{X}{N} + \frac{50 - N}{50}  \frac{X_s}{N_s} \right) 
-$$
-where $$N_s, X_s$$ are the number of COVID tests and the number of COVID tests
-taken with positive results taken in its home state in the same time period.
-
-**State level**: the states with fewer than 50 tests are discarded. For the
-rest of the states with sufficient samples,
-
-$$
-p = \frac{100 X}{N}
-$$
+- daily, at the state level;
+- daily, at the HHS level;
+- daily, at the US national level.
 
 #### Standard Error
 
@@ -115,12 +87,48 @@ $$
 
 #### Smoothing
 
+We add two kinds of smoothing to the smoothed signals:
+
+##### Temporal Smoothing
 Smoothed estimates are formed by pooling data over time. That is, daily, for
 each location, we first pool all data available in that location over the last 7
-days, and we then recompute everything described in the last two
-subsections. Pooling in this way makes estimates available in more geographic
-areas, as many areas report very few tests per day, but have enough data to
-report when 7 days are considered.
+days, and we then recompute everything described in the two subsections above. 
+
+The sample size provided for smoothed signals is different from that for raw signals. 
+The former one is re-definied to be the cumulative sample size in the rolling 7 day 
+window while the latter one is simply the sample size for that corresponding date. 
+Pooling in this way makes estimates available in more geographic areas, as many areas 
+report very few tests per day, but have enough data to report when 7 days are considered.
+
+##### Geographical Smoothing
+
+**County, MSA and HRR levels**: In a given County, MSA or HRR, suppose $$N$$ COVID tests 
+are taken in a certain time period, $$X$$ is the number of tests taken with positive
+results. 
+
+
+For smoothed signals, after taking the temporal pooling,
+- if $$N \geq 50$$, we still use:
+$$
+p = \frac{100 X}{N}
+$$
+- if $$25 \leq N < 50$$, we lend $$50 - N$$ fake samples from its parent state to shrink the
+estimate to the state's mean, which means:
+$$
+p = 100 \left( \frac{N}{50} \frac{X}{N} + \frac{50 - N}{50}  \frac{X_s}{N_s} \right) 
+$$
+where $$N_s, X_s$$ are the number of COVID tests and the number of COVID tests
+taken with positive results taken in its parent state in the same time period.
+
+To be noticed, counties with sample sizes smaller than 50 are merged into megacounties for 
+the raw signals; counties with sample sizes smaller than 25 are merged into megacounties for
+the smoothed signals.
+
+**State level, HHS level, Nationa level**: the location with fewer than 50 tests are discarded. 
+For the rest of the location with sufficient samples,
+$$
+p = \frac{100 X}{N}
+$$
 
 ### Lag and Backfill
 
@@ -142,13 +150,13 @@ This data source is based on data provided to us by a lab testing company. They 
 
 ### Missingness
 
-When fewer than 50 tests are reported in a state on a specific day, no data is
+When fewer than 50 tests are reported in a state/a HHS region/US on a specific day, no data is
 reported for that area on that day; an API query for all reported states on that
 day will not include it.
 
-When fewer than 50 tests are reported in an HRR or MSA on a specific day, and
-not enough samples can be filled in from the parent state, no data is reported
-for that area on that day; an API query for all reported geographic areas on
+When fewer than 50 tests are reported in a county, HRR or MSA on a specific day, and
+not enough samples can be filled in from the parent state for smoothed signals specifically, 
+no data is reported for that area on that day; an API query for all reported geographic areas on
 that day will not include it.
 
 ## Flu Tests
