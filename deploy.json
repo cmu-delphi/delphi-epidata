@@ -234,6 +234,22 @@
       "add-header-comment": true
     },
 
+    "// dbjobs",
+    {
+      "type": "copy",
+      "src": "src/dbjobs/",
+      "dst": "[[package]]/dbjobs/",
+      "match": "^.*\\.(py)$",
+      "recursive": true
+    },
+    {
+      "type": "copy",
+      "src": "src/dbjobs/",
+      "dst": "[[package]]/dbjobs/",
+      "match": "^.*\\.(txt)$",
+      "recursive": true
+    },
+
     "// move flask tests out of the way",
     {
       "type": "move",
