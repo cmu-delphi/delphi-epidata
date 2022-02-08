@@ -116,6 +116,8 @@ p = 100 \left( \frac{N}{50} \frac{X}{N} + \frac{50 - N}{50}  \frac{X_s}{N_s} \ri
 $$
 where $$N_s, X_s$$ are the number of COVID tests and the number of COVID tests
 taken with positive results taken in its parent state in the same time period.
+A parent state is defined as the state with the largest proportion of the population 
+in this county/MSA/HRR.
 
 Counties with sample sizes smaller than 50 are merged into megacounties for 
 the raw signals; counties with sample sizes smaller than 25 are merged into megacounties for
