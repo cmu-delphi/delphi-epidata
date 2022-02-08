@@ -124,8 +124,7 @@ Counties with sample sizes smaller than 50 are merged into megacounties for
 the raw signals; counties with sample sizes smaller than 25 are merged into megacounties for
 the smoothed signals.
 
-**State level, HHS level, Nationa level**: the location with fewer than 50 tests are discarded. 
-For the rest of the location with sufficient samples,
+**State level, HHS level, National level**: locations with fewer than 50 tests are discarded. For the remaining locations,
 $$
 p = \frac{100 X}{N}
 $$
