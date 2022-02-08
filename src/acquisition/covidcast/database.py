@@ -64,7 +64,7 @@ class CovidcastRow():
 class Database:
   """A collection of covidcast database operations."""
 
-  DATABASE_NAME = 'epidata'
+  DATABASE_NAME = 'covid'
 
   latest_table = "signal_latest_v" # technically VIEW and not a TABLE, but...
   history_table = "signal_history_v" # ...also a VIEW
