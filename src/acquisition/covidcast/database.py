@@ -146,8 +146,7 @@ class Database:
             `{self.load_table}` JOIN `{self.latest_table}` 
                 USING (`source`, `signal`, `geo_type`, `geo_value`, `time_type`, `time_value`) 
             SET `{self.load_table}`.`is_latest_issue`=0 
-            WHERE `{self.load_table}`.`issue` < `{self.latest_table}`.`issue`;
-        )
+            WHERE `{self.load_table}`.`issue` < `{self.latest_table}`.`issue`
     '''
 
     if 0 != self.count_all_rows(self.load_table):
