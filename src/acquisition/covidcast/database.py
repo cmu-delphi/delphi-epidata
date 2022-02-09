@@ -142,11 +142,11 @@ class Database:
     # if an entry in the load table is NOT in the latest table, it is clearly now the latest value for that key (so we do nothing (thanks to INNER join)).
     # if an entry *IS* in both load and latest tables, but latest table issue is newer, unmark is_latest_issue in load.
     fix_is_latest_issue_sql = f'''
-        UPDATE `{self.load_table}` SET `is_latest_issue`=0 WHERE `signal_data_id` IN (
-            SELECT `{self.load_table}`.`signal_data_id` AS `signal_data_id` 
-            FROM `{self.load_table}` JOIN `{self.latest_table}`
+        UPDATE 
+            `{self.load_table}` JOIN `{self.latest_table}` 
                 USING (`source`, `signal`, `geo_type`, `geo_value`, `time_type`, `time_value`) 
-            WHERE `{self.load_table}`.`issue` < `{self.latest_table}`.`issue`
+            SET `{self.load_table}`.`is_latest_issue`=0 
+            WHERE `{self.load_table}`.`issue` < `{self.latest_table}`.`issue`;
         )
     '''
 
