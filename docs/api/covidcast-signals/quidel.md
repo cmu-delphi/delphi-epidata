@@ -20,7 +20,7 @@ grand_parent: COVIDcast Epidata API
 * **Earliest issue available:** July 29, 2020 
 * **Number of data revisions since May 19, 2020:** 1
 * **Date of last change:** October 22, 2020
-* **Available for:** hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
+* **Available for:** county, hrr, msa, state, HHS, nation (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
 
