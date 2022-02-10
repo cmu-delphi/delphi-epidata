@@ -250,7 +250,7 @@ class Database:
     """
     Remove rows specified by a csv file or list of tuples.
 
-    File should include a header row and use the following field order:
+    If cc_deletions is a filename, the file should include a header row and use the following field order:
     - geo_id
     - value (ignored)
     - stderr (ignored)
@@ -261,7 +261,7 @@ class Database:
     - signal
     - source
 
-    List of tuples should use the following field order (same as above, plus time_type):
+    If cc_deletions is a list of tuples, the tuples should use the following field order (=same as above, plus time_type):
     - geo_id
     - value (ignored)
     - stderr (ignored)
