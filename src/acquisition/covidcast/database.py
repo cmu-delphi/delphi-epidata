@@ -69,7 +69,6 @@ class Database:
 
   def connect(self, connector_impl=mysql.connector):
     """Establish a connection to the database."""
-    print(secrets.db.host, secrets.db.epi)
     u, p = secrets.db.epi
     self._connector_impl = connector_impl
     self._connection = self._connector_impl.connect(
