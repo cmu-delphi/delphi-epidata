@@ -31,7 +31,7 @@ dashboard](https://delphi.cmu.edu/covidcast/):
 | Kind             | Name                             | Source                                                                | Signal                           |
 | ----             | ----                             | ------                                                                | ------                           |
 | Public Behavior  | People Wearing Masks             | [`fb-survey`](covidcast-signals/fb-survey.md)                         | `smoothed_wwearing_mask_7d`      |
-| Public Behavior  | Vaccine Acceptance               | [`fb-survey`](covidcast-signals/fb-survey.md)                   | `smoothed_wcovid_vaccinated_or_accept` |
+| Public Behavior  | Vaccine Acceptance               | [`fb-survey`](covidcast-signals/fb-survey.md)                   | `smoothed_wcovid_vaccinated_appointment_or_accept` |
 | Public Behavior  | COVID Symptom Searches on Google | [`google-symptoms`](covidcast-signals/google-symptoms.md)        | `sum_anosmia_ageusia_smoothed_search` |
 | Early Indicators | COVID-Like Symptoms              | [`fb-survey`](covidcast-signals/fb-survey.md)                         | `smoothed_wcli`                  |
 | Early Indicators | COVID-Like Symptoms in Community | [`fb-survey`](covidcast-signals/fb-survey.md)                         | `smoothed_whh_cmnty_cli`         |
