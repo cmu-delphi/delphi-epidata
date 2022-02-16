@@ -24,7 +24,7 @@ This data source provides various measures of COVID-19 burden on patients and he
 - Geographic resolution: healthcare facility (address, city, zip, fips)
 - Temporal resolution: weekly (Friday -- Thursday)
 - First week: 2020-07-31
-- Open access via [Open Data Commons Open Database License (ODbL)](https://opendatacommons.org/licenses/odbl/1.0/)
+- Open Access: [Public Domain US Government](https://www.usa.gov/government-works)
 - Versioned by Delphi according to the date that the dataset was published by
 HHS. New versions are expected to be published roughly weekly.
 

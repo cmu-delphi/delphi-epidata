@@ -23,10 +23,8 @@ County, MSA, state, and HHS-level values are pulled directly from CPR; nation-le
 
 | Signal | Description |
 | --- | --- |
-| `confirmed_admissions_covid_1d_7dav` | Number of adult and pediatric confirmed COVID-19 hospital admissions occurring each day. Smoothed using a 7-day average.
-Earliest date available: 2019-12-16 for state, HHS, and nation; 2021-01-06 for MSA and county |
-| `confirmed_admissions_covid_1d_prop_7dav` | Number of adult and pediatric confirmed COVID-19 hospital admissions occurring each day, per 100,000 population. Smoothed using a 7-day average.
-Earliest date available: 2019-12-16 for state, HHS, and nation; 2021-01-06 for MSA and county |
+| `confirmed_admissions_covid_1d_7dav` | Number of adult and pediatric confirmed COVID-19 hospital admissions occurring each day. Smoothed using a 7-day average.  <br/> **Earliest date available:** 2019-12-16 for state, HHS, and nation; 2021-01-06 for MSA and county |
+| `confirmed_admissions_covid_1d_prop_7dav` | Number of adult and pediatric confirmed COVID-19 hospital admissions occurring each day, per 100,000 population. Smoothed using a 7-day average. <br/> **Earliest date available:** 2019-12-16 for state, HHS, and nation; 2021-01-06 for MSA and county |
 
 ## Table of contents
 {: .no_toc .text-delta}
