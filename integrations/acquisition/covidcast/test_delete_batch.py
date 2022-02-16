@@ -60,6 +60,7 @@ class DeleteBatch(unittest.TestCase):
     @unittest.skip("Database user would require FILE privileges")
     def test_delete_from_file(self):
         self._test_delete_batch(path.join(path.dirname(__file__), "delete_batch.csv"))
+
     def test_delete_from_tuples(self):
         with open(path.join(path.dirname(__file__), "delete_batch.csv")) as f:
             rows=[]
@@ -67,6 +68,7 @@ class DeleteBatch(unittest.TestCase):
                 rows.append(line.strip().split(","))
         rows = [r + ["day"] for r in rows[1:]]
         self._test_delete_batch(rows)
+
     def _test_delete_batch(self, cc_deletions):
         # load sample data
         rows = [
