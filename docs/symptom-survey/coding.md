@@ -965,6 +965,11 @@ vaccination questions to collect information about additional doses and booster
 shots. We also removed questions that are not being used to reduce response
 burden.
 
+Files:
+
+* [Wave 13 text and coding](waves/CTIS US Wave 13.pdf) (PDF)
+* [Wave 13 text and coding](waves/CTIS US Wave 13.docx) (Word)
+
 ### New Items
 
 * Introductory text was added for respondents that responded “yes” to item V2,
