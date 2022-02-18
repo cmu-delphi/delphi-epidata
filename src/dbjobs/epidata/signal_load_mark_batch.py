@@ -1,22 +1,17 @@
 # *******************************************************************************************************
-# File:     geo_dim_add_new_load.py
-# Purpose:  Add entries from signal_load that are unmatched to geo_dim
+# File:     signal_load_mark_batch.py
+# Purpose:  Marks current rows in signal_load as part of this batch
 # *******************************************************************************************************
 # *******************************************************************************************************
 # Command to be run
 
 command = '''
-INSERT INTO <param1>.geo_dim 
-(`geo_type`,`geo_value`,`compressed_geo_key`) 
-SELECT DISTINCT `geo_type`,`geo_value`,compressed_geo_key 
-FROM <param1>.signal_load 
-WHERE compressed_geo_key NOT IN 
-(SELECT distinct compressed_geo_key 
-FROM <param1>.geo_dim)
+update <param1>.signal_load 
+set process_status = 'b'
 '''
 
 usage = '''
-Usage:  --target=<db_alias> --param1=<schema>
+Usage:  --target=<db_alias>
 '''
 
 params = '''

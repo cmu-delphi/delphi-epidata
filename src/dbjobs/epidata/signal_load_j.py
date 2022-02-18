@@ -1,25 +1,23 @@
 # *******************************************************************************************************
-# File:     geo_dim_add_new_load.py
-# Purpose:  Add entries from signal_load that are unmatched to geo_dim
+# File:     signal_load_j.py
+# Purpose:  Job to task data loaded into signal_load by acquisition and populate schema
 # *******************************************************************************************************
 # *******************************************************************************************************
 # Command to be run
 
-command = '''
-INSERT INTO <param1>.geo_dim 
-(`geo_type`,`geo_value`,`compressed_geo_key`) 
-SELECT DISTINCT `geo_type`,`geo_value`,compressed_geo_key 
-FROM <param1>.signal_load 
-WHERE compressed_geo_key NOT IN 
-(SELECT distinct compressed_geo_key 
-FROM <param1>.geo_dim)
-'''
-
-usage = '''
-Usage:  --target=<db_alias> --param1=<schema>
-'''
-
 params = '''
+'''
+
+tasks = '''
+dbtask task=signal_load_set_comp_keys param1=covid
+dbtask task=signal_load_mark_batch param1=covid
+#
+dbtask task=signal_dim_add_new_load param1=covid
+dbtask task=geo_dim_add_new_load param1=covid
+dbtask task=signal_history_load param1=covid
+dbtask task=signal_latest_load param1=covid
+#
+dbtask task=signal_load_delete_processed param1=covid
 '''
 
 # *******************************************************************************************************

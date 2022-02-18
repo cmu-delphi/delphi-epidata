@@ -1,18 +1,23 @@
 # *******************************************************************************************************
-# File:     geo_dim_add_new_load.py
-# Purpose:  Add entries from signal_load that are unmatched to geo_dim
+# cr_tbl_temp_keys.py
 # *******************************************************************************************************
 # *******************************************************************************************************
 # Command to be run
 
 command = '''
-INSERT INTO <param1>.geo_dim 
-(`geo_type`,`geo_value`,`compressed_geo_key`) 
-SELECT DISTINCT `geo_type`,`geo_value`,compressed_geo_key 
-FROM <param1>.signal_load 
-WHERE compressed_geo_key NOT IN 
-(SELECT distinct compressed_geo_key 
-FROM <param1>.geo_dim)
+CREATE TABLE <param1>.temp_keys (
+	`key_id` bigint(20),
+	`col1` varchar(100),
+	`col2` varchar(100),
+	`col3` varchar(100),
+	`col4` varchar(100),
+	`col5` varchar(100),
+	`col6` varchar(100),
+	`col7` varchar(100),
+	`col8` varchar(100),
+	`compressed_key` varchar(100)
+)
+ENGINE=InnoDB
 '''
 
 usage = '''
@@ -20,6 +25,7 @@ Usage:  --target=<db_alias> --param1=<schema>
 '''
 
 params = '''
+param1=prompt target=prompt
 '''
 
 # *******************************************************************************************************

@@ -468,7 +468,7 @@ def getDbConfigs():
     except Exception as err2:
 
         outerror = str(err2)
-        print("getDbConfigs:  " + outerror)
+        print("ERROR getDbConfigs:  " + outerror)
 
 # *******************************************************************************************************
 

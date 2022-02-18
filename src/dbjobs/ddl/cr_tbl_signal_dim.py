@@ -1,18 +1,19 @@
 # *******************************************************************************************************
-# File:     geo_dim_add_new_load.py
-# Purpose:  Add entries from signal_load that are unmatched to geo_dim
+# cr_tbl_signal_dim.py
 # *******************************************************************************************************
 # *******************************************************************************************************
 # Command to be run
 
 command = '''
-INSERT INTO <param1>.geo_dim 
-(`geo_type`,`geo_value`,`compressed_geo_key`) 
-SELECT DISTINCT `geo_type`,`geo_value`,compressed_geo_key 
-FROM <param1>.signal_load 
-WHERE compressed_geo_key NOT IN 
-(SELECT distinct compressed_geo_key 
-FROM <param1>.geo_dim)
+CREATE TABLE <param1>.signal_dim (
+	`signal_key_id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT, 
+	`source` varchar(32),
+	`signal` varchar(64),
+	`compressed_signal_key` varchar(100),
+	PRIMARY KEY (`signal_key_id`) USING BTREE,
+	unique INDEX `compressed_signal_key_ind` (`compressed_signal_key`) USING BTREE
+)
+ENGINE=InnoDB
 '''
 
 usage = '''
@@ -20,6 +21,7 @@ Usage:  --target=<db_alias> --param1=<schema>
 '''
 
 params = '''
+param1=prompt target=prompt
 '''
 
 # *******************************************************************************************************

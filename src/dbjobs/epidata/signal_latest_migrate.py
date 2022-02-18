@@ -1,11 +1,11 @@
 # *******************************************************************************************************
-# signal_history_load.py
+# signal_latest_migrate.py
 # *******************************************************************************************************
 # *******************************************************************************************************
 # Command to be run
 
 command = '''
-insert into <param1>.signal_history 
+insert into covid.signal_latest 
 (
 signal_data_id,
 signal_key_id,
@@ -21,12 +21,10 @@ sample_size,
 `lag`,
 value_updated_timestamp,
 computation_as_of_dt,
-is_latest_issue,
 missing_value,
 missing_stderr,
-missing_sample_size,
-`id`
-)
+missing_sample_size
+) 
 select 
 signal_data_id,
 sd.signal_key_id,
@@ -42,20 +40,18 @@ sample_size,
 `lag`,
 value_updated_timestamp,
 computation_as_of_dt,
-is_latest_issue,
 missing_value,
 missing_stderr,
-missing_sample_size,
-`id`
-from <param1>.signal_load sl
-INNER JOIN <param1>.signal_dim sd
-USE INDEX(`compressed_signal_key_ind`)
-ON sd.compressed_signal_key = sl.compressed_signal_key
-INNER JOIN <param1>.geo_dim gd
-USE INDEX(`compressed_geo_key_ind`)
-ON gd.compressed_geo_key = sl.compressed_geo_key
-where process_status='b'
-on duplicate key update
+missing_sample_size
+from covid.signal_load sl 
+INNER JOIN covid.signal_dim sd 
+USE INDEX(`compressed_signal_key_ind`) 
+ON sd.compressed_signal_key = sl.compressed_signal_key 
+INNER JOIN covid.geo_dim gd 
+USE INDEX(`compressed_geo_key_ind`) 
+ON gd.compressed_geo_key = sl.compressed_geo_key 
+where is_latest_issue = 1
+on duplicate key update 
 `value_updated_timestamp` = sl.`value_updated_timestamp`,
 `value` = sl.`value`,
 `stderr` = sl.`stderr`,
@@ -63,7 +59,7 @@ on duplicate key update
 `lag` = sl.`lag`,
 `missing_value` = sl.`missing_value`,
 `missing_stderr` = sl.`missing_stderr`,
-`missing_sample_size` = sl.`missing_sample_size`
+`missing_sample_size` = sl.`missing_sample_size` 
 '''
 
 usage = '''

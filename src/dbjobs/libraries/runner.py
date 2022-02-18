@@ -1,14 +1,10 @@
 # ************************************************************************************
 #
 # Module:  runner.py
-#
 # Purpose: Executable to run job, task or batch based on parameters & config
 #
 # ************************************************************************************
 # Imports
-
-#import osutil
-import jobutil
 
 import sys
 import os
@@ -22,6 +18,7 @@ gMessage = ""
 
 job = ""
 task = ""
+log = "none"
 batch = False
 prompt = ""
 
@@ -37,7 +34,13 @@ threads = "1"
 # ************************************************************************************
 # ***** Set path to include current directory
 
-sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/..')
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) )
+addPath = os.path.dirname(os.path.realpath(__file__)) + "/.."
+sys.path.append(addPath)
+addPath = os.path.dirname(os.path.realpath(__file__)) + "delphi\\epidata\\dbjobs\\libraries"
+sys.path.append(addPath)
+
+import jobutil
 
 # *******************************************************************************************************
 # Process command line arguments
@@ -47,6 +50,7 @@ def processRunnerArgs():
     global batch
     global job
     global task
+    global log
     global prompt
 
     global directory
@@ -67,6 +71,7 @@ def processRunnerArgs():
         parser.add_argument('--batch', help='', action='store_true', required=False)
         parser.add_argument('--job', type=str, help='', default='none', required=False)
         parser.add_argument('--task', type=str, help='', default='none', required=False)
+        parser.add_argument('--log', type=str, help='', default='none', required=False)
         parser.add_argument('--prompt', help='', action='store_true', required=False)
 
         parser.add_argument('--dir', type=str, help='', default='none', required=False)
@@ -83,6 +88,7 @@ def processRunnerArgs():
         batch = args.batch
         job = args.job
         task = args.task
+        log = args.log
         prompt = args.prompt
 
         directory = args.dir
@@ -98,7 +104,7 @@ def processRunnerArgs():
 
     except Exception as err2:
 
-        print("processRunnerArgs error: " + str(err2))
+        jobutil.printAndLog("processRunnerArgs error: " + str(err2))
         return False
 
 # ************************************************************************************
@@ -116,15 +122,8 @@ def promptUser(strPrompt):
 
     except Exception as err2:
 
-        print("promptUser error: " + str(err2))
+        jobutil.printAndLog("promptUser error: " + str(err2))
         return "error"
-
-
-# ************************************************************************************
-# ***** Print heading, set status
-
-print("**************************************************\n")
-print("Run Job, Task or Batch\n")
 
 # ************************************************************************************
 # ***** Process command line arguments & set jobutil parameters
@@ -135,6 +134,7 @@ if (processRunnerArgs() == False):
 
 jobutil.gTaskFile = task
 jobutil.gJobFile = job
+jobutil.gLogFile = log
 
 if(job != "none"):
     jobutil.gJParfile = parfile
@@ -151,13 +151,13 @@ jobutil.gJParam3 = param3
 if startpar.isdigit() == True:
     jobutil.gJStartpar = startpar
 else:
-    print("Error- starting parameter must be integer")
+    jobutil.printAndLog("Error- starting parameter must be integer")
     exit()
 
 if threads.isdigit() == True:
     jobutil.gJThreads = threads
 else:
-    print("Error- threads must be integer")
+    jobutil.printAndLog("Error- threads must be integer")
     exit()
 
 # ************************************************************************************
@@ -184,11 +184,21 @@ if ((prompt == True or jobutil.gTaskFile == "prompt" or jobutil.gTaskFile == "no
     task = promptUser("Task file name (in dir specified above)")
     jobutil.gTaskFile = task
 
+if (prompt == True or jobutil.gLogFile == "prompt"):
+    logfile = promptUser("Log file name (adds .log to end)")
+    jobutil.gLogFile = logfile
+
 if (prompt == True or jobutil.gJParfile == "prompt"):
     parfile = promptUser("Parameter file name (in dir specified above)")
     jobutil.gJParfile = parfile
 
-print("")
+jobutil.printAndLog("")
+
+# ************************************************************************************
+# ***** Print heading, set status
+
+jobutil.printAndLog("**************************************************\n")
+jobutil.printAndLog("Run Job, Task or Batch\n")
 
 # ************************************************************************************
 # Process job file if specified
@@ -196,7 +206,7 @@ print("")
 if (jobutil.gTaskFile == "none" and jobutil.gJobFile != "none" and gStatus == "ok"):
 
     result = jobutil.processJobFile()
-    print("--> " + result)
+    jobutil.printAndLog(result)
 
 # ************************************************************************************
 # Process the task file if specified to build a single task job
@@ -204,24 +214,24 @@ if (jobutil.gTaskFile == "none" and jobutil.gJobFile != "none" and gStatus == "o
 if (jobutil.gTaskFile != "none" and gStatus == "ok"):
 
     result = jobutil.processTaskFile()
-    print("--> " + str(result))
+    jobutil.printAndLog(str(result))
 
 # ************************************************************************************
 # Process the job parmeter file if specified for the job
 
 if (jobutil.gJobFile != "none" and jobutil.gJParfile != "none" and gStatus == "ok"):
     result = jobutil.processParfile("job")
-    print("--> " + result)
+    jobutil.printAndLog("--> " + result)
 
 if (jobutil.gTaskFile != "none" and jobutil.gTParfile != "none" and gStatus == "ok"):
     result = jobutil.processParfile("task")
-    print("--> " + result)
+    jobutil.printAndLog("--> " + result)
 
 # ************************************************************************************
 # Handle prompt settings for non-control job parameters
 
 if (prompt == True or jobutil.gTParam1 == "prompt" or jobutil.gTParam2 == "prompt" or jobutil.gTParam3 == "prompt"):
-    print(jobutil.gTUsage)
+    jobutil.printAndLog(jobutil.gTUsage)
 
 # ***** Job settings *****
 
@@ -298,20 +308,21 @@ if (gStatus == "ok"):
 
     result = jobutil.processJobTasks()
 
-    if (len(jobutil.gData) > 0):
+    rData = jobutil.gData
+    rData = rData.replace("{[","[")
+    rData = rData.replace("]}","]")
 
-        job_output = "Results:\n"
-        job_output += jobutil.gData
+    if (len(rData) > 0):
+
+        job_output = "Results:\n\n"
+        job_output += rData
         job_output = job_output.replace("],[", "]\n[")
-        print(job_output)
+        jobutil.printAndLog(job_output)
 
 # ************************************************************************************
-# Output
+# Final output
 
-
-
-
-print("\n**************************************************\n")
+jobutil.printAndLog("\n**************************************************\n")
 
 # *******************************************************************************************************
 # *******************************************************************************************************

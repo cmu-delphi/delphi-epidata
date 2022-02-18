@@ -1,17 +1,18 @@
 # *******************************************************************************************************
-# File:     signal_load_migrate.py
-# Purpose:  Migrate data from covidcast using signal load in batches
+# mig_history_load.py
 # *******************************************************************************************************
 # *******************************************************************************************************
 # Command to be run
 
 command = '''
-insert into covid.signal_load 
-(`issue`,
-`source`,
-`signal`,
-geo_type,
-geo_value,
+insert into covid.signal_history 
+(
+signal_data_id,
+signal_key_id,
+geo_key_id,
+demog_key_id,
+issue,
+data_as_of_dt,
 time_type,
 time_value,
 `value`,
@@ -19,19 +20,20 @@ stderr,
 sample_size,
 `lag`,
 value_updated_timestamp,
+computation_as_of_dt,
 is_latest_issue,
 missing_value,
 missing_stderr,
 missing_sample_size,
-`id`,
-process_status,
-`compressed_signal_key`, 
-`compressed_geo_key`) 
-select `issue`,
-`source`,
-`signal`,
-geo_type,
-geo_value,
+`id`
+)
+select 
+signal_data_id,
+sd.signal_key_id,
+gd.geo_key_id,
+0,
+issue,
+data_as_of_dt,
 time_type,
 time_value,
 `value`,
@@ -39,22 +41,32 @@ stderr,
 sample_size,
 `lag`,
 value_updated_timestamp,
+computation_as_of_dt,
 is_latest_issue,
 missing_value,
 missing_stderr,
 missing_sample_size,
-`id`,
-'b',
-md5(CONCAT(`source`,`signal`)), 
-md5(CONCAT(`geo_type`,`geo_value`)) 
-from epidata.covidcast cc
-use index(`primary`)
-where cc.id >= <param1> 
-and cc.id <= <param2>
+`id`
+from covid.signal_load sl
+INNER JOIN covid.signal_dim sd
+USE INDEX(`compressed_signal_key_ind`)
+ON sd.compressed_signal_key = sl.compressed_signal_key
+INNER JOIN covid.geo_dim gd
+USE INDEX(`compressed_geo_key_ind`)
+ON gd.compressed_geo_key = sl.compressed_geo_key
+on duplicate key update
+`value_updated_timestamp` = sl.`value_updated_timestamp`,
+`value` = sl.`value`,
+`stderr` = sl.`stderr`,
+`sample_size` = sl.`sample_size`,
+`lag` = sl.`lag`,
+`missing_value` = sl.`missing_value`,
+`missing_stderr` = sl.`missing_stderr`,
+`missing_sample_size` = sl.`missing_sample_size`
 '''
 
 usage = '''
-Usage:  --target=<db_alias> --param1=<start_id> --param2=<end_id>
+Usage:  --target=<db_alias> --param1=<schema>
 '''
 
 params = '''

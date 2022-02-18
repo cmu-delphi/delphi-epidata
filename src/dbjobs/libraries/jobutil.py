@@ -24,6 +24,7 @@ gData = ""
 
 gTaskFile = "none"
 gJobFile = "none"
+gLogFile = "none"
 gPrompt = False
 gBatch = False
 
@@ -596,11 +597,30 @@ def startDbThread(thread_index,run_sql):
     global thread_results
     global gTTarget
 
+    printAndLog("--> Starting thread:" + str(thread_index))
+
     dbutil.getDbConnection(gTTarget)
     results = dbutil.execSql(run_sql)
 
     thread_results += "--> Thread " + str(thread_index) + " : "
     thread_results += results + "\n"
+
+# *******************************************************************************************************
+
+def printAndLog(strEntry):
+
+    global gLogFile
+
+    if (gLogFile != "none"):
+
+        out_file = gLogFile
+
+        if len(out_file) > 0:
+            f = open(out_file, 'a')
+            f.write(strEntry + "\n")
+            f.close()
+
+    print(strEntry)
 
 # *******************************************************************************************************
 
@@ -611,6 +631,7 @@ def processJobTasks():
     global job_tasks
     global thread_results
     global gData
+    global gPParlist
 
     global gPParlist1
     global gPParlist2
@@ -631,6 +652,7 @@ def processJobTasks():
     global gTaskFile
     global gTCommand
     global gTTarget
+    global gTParfile
 
     global wparam1
     global wparam2
@@ -638,13 +660,19 @@ def processJobTasks():
 
     try:
 
-        wnumtasks = len(job_tasks)
         status_ok = True
         wtarget = "none"
 
         wparam1 = []
         wparam2 = []
         wparam3 = []
+
+        # Remove commented lines from list
+
+        for index, wtaskline in reversed(list(enumerate(job_tasks))):
+
+            if (wtaskline[0] == "#"):
+                job_tasks.pop(index)
 
         # Process the job parameter list if applicable
 
@@ -658,15 +686,22 @@ def processJobTasks():
 
             if (wOutput[0:5] == "ERROR"):
                 status_ok = False
-                print(wOutput)
+                printAndLog(wOutput)
 
         # Loop through job_tasks
 
-        print("--> Tasks to process: " + str(wnumtasks) + "\n")
+        wnumtasks = len(job_tasks)
 
-        for item, wtaskline in enumerate(job_tasks, start=1):
+        outString = "Tasks to process: " + str(wnumtasks) + "\n"
+        printAndLog(outString)
+        outString = ""
 
-            print("--> Processing task " + str(item) + ": " + wtaskline)
+        for item, wtaskline in enumerate(job_tasks):
+
+            start_time = datetime.datetime.now()
+
+            outString += "Processing task " + str(item+1) + ": " + wtaskline + "\n"
+            outString += "--> Starting at: " + start_time.strftime("%b %d %Y %H:%M:%S") + "\n"
 
             # Load job parameters by default
 
@@ -696,12 +731,13 @@ def processJobTasks():
 
             if (wOutput[0:5] == "ERROR"):
                 status_ok = False
-                print(wOutput)
+                outString += wOutput
 
             # Parse out task line and update parameters
 
             wtask = ""
             wtype = "none"
+            wparfile = ""
 
             wtaskline = wtaskline.replace(" --", " ")
             pItems = wtaskline.split(" ")
@@ -737,7 +773,7 @@ def processJobTasks():
                         wparam3.append(parValue[1])
 
                     elif (parValue[0] == "parfile"):
-                        wparfile = parValue[1]
+                        gTParfile = parValue[1]
                     elif (parValue[0] == "startpar"):
                         wstartpar = parValue[1]
                     elif (parValue[0] == "threads"):
@@ -752,7 +788,12 @@ def processJobTasks():
 
             if (wOutput[0:5] == "ERROR"):
                 status_ok = False
-                print(wOutput)
+                outString += wOutput
+
+            # Process parfile if set for task
+
+            processParfile("task")
+            gTParfile = "none"
 
             # Load task parlist items if applicable
 
@@ -762,26 +803,34 @@ def processJobTasks():
 
                 if (wOutput[0:5] == "ERROR"):
                     status_ok = False
-                    print(wOutput)
+                    outString += wOutput
 
                 wparam1 = gPParlist1
                 wparam2 = gPParlist2
                 wparam3 = gPParlist3
+
+            else:
+
+                wstartpar = 1
 
             # Update command with parameters
 
             wstartpar = int(wstartpar)
             wthreads = int(wthreads)
             wOutput = processCommandParam(wstartpar)
+            gPParlist = ""
+
+            outString += "--> Starting parameter: " + str(wstartpar)
 
             if (wOutput[0:5] == "ERROR"):
                 status_ok = False
-                print(wOutput)
+                outString +=wOutput
+
+            printAndLog(outString)
+            outString = ""
 
             # *************************************************
             # single threaded task- connect to target
-
-            job_output = ""
 
             if (status_ok == True and wthreads == 1):
 
@@ -789,10 +838,10 @@ def processJobTasks():
 
                 if (wOutput[0:5] == "ERROR"):
                     status_ok = False
-                    job_output += "--> ERROR connecting to alias " + wtarget + " (check db_config)\n"
-                    job_output += "--> " + wOutput + "\n"
+                    outString += "--> ERROR connecting to alias " + wtarget + " (check db_config)\n"
+                    outString += "--> " + wOutput
                 else:
-                    job_output += "--> Connected to database " + wtarget + "\n"
+                    outString += "--> Connected to database " + wtarget + "\n"
 
             # *************************************************
             # single threaded task- execute SQL
@@ -803,9 +852,9 @@ def processJobTasks():
 
                 if (wOutput[0:5] == "ERROR"):
                     status_ok = False
-                    job_output += "--> " + wOutput + "\n"
+                    outString += "--> " + wOutput + "\n"
                 else:
-                    job_output += "--> Result: " + wOutput + "\n"
+                    outString += "--> Result: " + wOutput + "\n"
 
             # *************************************************
             # spawn threads for multi-threaded task
@@ -827,27 +876,42 @@ def processJobTasks():
                         threads.append(t)
                         t.start()
                     else:
-                        job_output += "--> Insufficient parameters for thread " + str(index) + "\n"
+                        outString += "--> Insufficient parameters for thread " + str(index) + "\n"
 
                 for t in threads:
                     t.join()
 
-                job_output += thread_results
+                outString += thread_results
+
+            # *************************************************
+            # End of task output
+
+            end_time = datetime.datetime.now()
+
+            diff_time = end_time - start_time
+            diff_time = diff_time.total_seconds()
+
+            diff_hours = int(diff_time / 3600)
+            diff_time = diff_time - diff_hours * 3600
+            diff_minutes = int(diff_time / 60)
+            diff_time = diff_time - diff_minutes * 60
+            diff_seconds = "{:2.3f}".format(diff_time)
+
+            diff_string = str(diff_hours) + " hours "
+            diff_string += str(diff_minutes) + " minutes "
+            diff_string += str(diff_seconds) + " seconds"
+
+            outString += "--> Ended at: " + end_time.strftime("%b %d %Y %H:%M:%S")
+            outString += " (" + diff_string + ")\n"
+
+            printAndLog(outString)
+            outString = ""
 
             # *************************************************
             # Output and logging
 
-            print(job_output)
-
-            gData = dbutil.getJsonData()
-
-
-
-
-
-
-
-
+            if (dbutil.getJsonData() != "{}"):
+                gData += dbutil.getJsonData()
 
         # ================================================================
         # Return results
@@ -860,11 +924,10 @@ def processJobTasks():
     except Exception as err2:
 
         outerror = str(err2)
-        print("ERROR processJobTasks error: " + outerror)
+        printAndLog("ERROR processJobTasks error: " + outerror)
         return False
 
 # *******************************************************************************************************
-
 
 
 
