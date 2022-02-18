@@ -322,7 +322,7 @@ UPDATE
 ) AS TMP
 LEFT JOIN `covidcast`
 USING (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`, `issue`)
-SET `is_latest_issue`=1;
+SET `covidcast`.`is_latest_issue`=1;
 '''
 
     drop_tmp_table_sql = f'DROP TABLE {tmp_table_name}'
