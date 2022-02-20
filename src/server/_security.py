@@ -159,12 +159,6 @@ class User:
     def is_tracking(self) -> bool:
         return self.tracking
 
-    def mask_apikey(self, msg: str) -> str:
-        regexp = re.compile(r'[\\?&]api_key=([^&#]*)')
-        if regexp.search(msg):
-            msg = re.sub(regexp, "&api_key=*****", msg)
-        return msg
-
     def log_info(self, msg: str, *args, **kwargs) -> None:
         logger = get_structured_logger("api_key_logs", filename="api_key_logs.log")
         if self.is_authenticated():
@@ -210,12 +204,19 @@ def _get_current_user() -> User:
         request_path = request.full_path
         if not user.is_authenticated() and require_api_key():
             raise MissingAPIKeyException()
-        # If user has no-track option, mask the API key
+        # If the user configured no-track option, mask the API key
         if not user.is_tracking():
-            request_path = user.mask_apikey(request_path)
+            request_path = mask_apikey(request_path)
         user.log_info("Get path", path=request_path)
         g.user = user
     return g.user
+
+def mask_apikey(msg: str) -> str:
+    # Function to mask API key query string from a URL
+    regexp = re.compile(r'[\\?&]api_key=([^&#]*)')
+    if regexp.search(msg):
+        msg = re.sub(regexp, "&api_key=*****", msg)
+    return msg
 
 
 current_user: User = cast(User, LocalProxy(_get_current_user))
