@@ -142,7 +142,10 @@ class User:
         self.roles = roles
         self.tracking = tracking
         self.registered = registered
-        
+    
+    def get_apikey(self) -> str:
+        return self.api_key
+
     def is_authenticated(self) -> bool:
         return self.authenticated
 
@@ -160,9 +163,9 @@ class User:
         logger = get_structured_logger("api_key_logs", filename="api_key_logs.log")
         if self.is_authenticated():
             if self.is_tracking():
-                logger.info({"api_key" : self.api_key, "request" : msg}, *args, **kwargs)
+                logger.info(msg, *args, **dict(kwargs, apikey=self.get_apikey()))
             else:
-                logger.info({"api_key" : "*****", "request" : msg}, *args, **kwargs)
+                logger.info(msg, *args, **dict(kwargs, apikey="*****"))
         else:
             logger.info(msg, *args, **kwargs)
 
@@ -200,7 +203,7 @@ def _get_current_user() -> User:
         user = _find_user(api_key)
         if not user.is_authenticated() and require_api_key():
             raise MissingAPIKeyException()
-        user.log_info(request.full_path)
+        user.log_info(request.full_path, test="HERE")
         g.user = user
     return g.user
 
