@@ -13,6 +13,7 @@ from ._common import app, request, db
 from ._exceptions import MissingAPIKeyException, UnAuthenticatedException
 from ._db import metadata, TABLE_OPTIONS
 from ._logger import get_structured_logger
+import re
 
 API_KEY_HARD_WARNING = API_KEY_REQUIRED_STARTING_AT - timedelta(days=14)
 API_KEY_SOFT_WARNING = API_KEY_HARD_WARNING - timedelta(days=14)
@@ -158,8 +159,13 @@ class User:
     def is_tracking(self) -> bool:
         return self.tracking
 
+    def mask_apikey(self, msg: str) -> str:
+        regexp = re.compile(r'[\\?&]api_key=([^&#]*)')
+        if regexp.search(msg):
+            msg = re.sub(regexp, "&api_key=*****", msg)
+        return msg
+
     def log_info(self, msg: str, *args, **kwargs) -> None:
-        # Use structured logger instead of base logger
         logger = get_structured_logger("api_key_logs", filename="api_key_logs.log")
         if self.is_authenticated():
             if self.is_tracking():
@@ -201,9 +207,13 @@ def _get_current_user() -> User:
     if "user" not in g:
         api_key = resolve_auth_token()
         user = _find_user(api_key)
+        request_path = request.full_path
         if not user.is_authenticated() and require_api_key():
             raise MissingAPIKeyException()
-        user.log_info(request.full_path, test="HERE")
+        # If user has no-track option, mask the API key
+        if not user.is_tracking():
+            request_path = user.mask_apikey(request_path)
+        user.log_info("Get path", path=request_path)
         g.user = user
     return g.user
 
