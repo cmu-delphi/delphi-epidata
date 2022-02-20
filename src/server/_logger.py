@@ -23,7 +23,7 @@ def get_structured_logger(name=__name__,
                           log_exceptions=True):
     """Create a new structlog logger.
 
-    Use the logger returned from this in indicator code using the standard
+    Use the logger returned from this in server code using the standard
     wrapper calls, e.g.:
 
     logger = get_structured_logger(__name__)
