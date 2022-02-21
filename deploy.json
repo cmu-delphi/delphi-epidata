@@ -240,6 +240,7 @@
       "src": "src/dbjobs/",
       "dst": "[[package]]/dbjobs/",
       "match": "^.*\\.(py)$",
+      "add-header-comment": true,
       "recursive": true
     },
     {
@@ -247,6 +248,15 @@
       "src": "src/dbjobs/",
       "dst": "[[package]]/dbjobs/",
       "match": "^.*\\.(txt)$",
+      "add-header-comment": true,
+      "recursive": true
+    },
+    {
+      "type": "copy",
+      "src": "src/dbjobs/",
+      "dst": "[[package]]/dbjobs/",
+      "match": "^.*\\.(sh)$",
+      "add-header-comment": true,
       "recursive": true
     },
 
