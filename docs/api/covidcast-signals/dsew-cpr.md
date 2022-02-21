@@ -17,7 +17,7 @@ grand_parent: COVIDcast Epidata API
 
 The Community Profile Report (CPR) is published by the Data Strategy and Execution Workgroup (DSEW) of the White House COVID-19 Team. For more information, see the [official description and data dictionary at healthdata.gov](https://healthdata.gov/Health/COVID-19-Community-Profile-Report/gqxm-d9w9) for "COVID-19 Community Profile Report".
 
-This data source provides various COVID-19 related metrics, of which we report hospital admissions. Other sources of hospital admissions data in COVIDcast include [HHS](hhs.md) and [medical insurance claims](hospital-admissions.md). The CPR differs from these sources in that it is part of the public health surveillance stream (like HHS, unlike claims) but is available at a daily-county level (like claims, unlike HHS). CPR hospital admissions figures at the state level and above are meant to match those from HHS, but are known to differ. See the Limitations section for details.
+This data source provides various COVID-19 related metrics, of which we report hospital admissions and vaccinations. Other sources of hospital admissions data in COVIDcast include [HHS](hhs.md) and [medical insurance claims](hospital-admissions.md).  The CPR differs from these sources in that it is part of the public health surveillance stream (like HHS, unlike claims) but is available at a daily-county level (like claims, unlike HHS). CPR hospital admissions figures at the state level and above are meant to match those from HHS, but are known to differ. See the Limitations section for details. We have no other sources for vaccinations currently.
 
 County, MSA, state, and HHS-level values are pulled directly from CPR; nation-level values are aggregated up from the state level.
 
@@ -25,6 +25,10 @@ County, MSA, state, and HHS-level values are pulled directly from CPR; nation-le
 | --- | --- |
 | `confirmed_admissions_covid_1d_7dav` | Number of adult and pediatric confirmed COVID-19 hospital admissions occurring each day. Smoothed using a 7-day average.  <br/> **Earliest date available:** 2019-12-16 for state, HHS, and nation; 2021-01-06 for MSA and county |
 | `confirmed_admissions_covid_1d_prop_7dav` | Number of adult and pediatric confirmed COVID-19 hospital admissions occurring each day, per 100,000 population. Smoothed using a 7-day average. <br/> **Earliest date available:** 2019-12-16 for state, HHS, and nation; 2021-01-06 for MSA and county |
+| `people_full_vaccinated` | 'People fully vaccinated includes those who have received two doses of the Pfizer-BioNTech or Moderna vaccine and those who have received one dose of the J&J/Janssen vaccine' from the CPR data dictionary.  <br/> **Earliest date available:** 2021-01-15 at any geo level and 2021-04-01 at the CBSA level.|
+| `people_booster_doses` |'The count of people who received a booster dose includes anyone who is fully vaccinated and has received another dose of COVID-19 vaccine since 2021-08-13. This includes people who received booster doses and people who received additional doses.' from the CPR data dictionary <br/> **Earliest date available:** 2021-11-01 for state, HHS, and nation. Not available below state level |
+| `doses_admin_7dav` | 'Doses administered shown by date of report, not date of administration. Beginning August 9, 2021, submitting entities will have the ability to update or delete previously submitted records using new functionality available in CDC’s Data Clearinghouse. Use of this new functionality may result in fluctuations across metrics as historical data are updated or deleted' - from the CPR data dictionary.  Smoothed using a 7-day average. <br/> **Earliest date available:** 2021-04-29 for state, HHS, and nation. Not available below state level|
+| `booster doses_admin_7dav` | "Doses administered shown by date of report, not date of administration. Beginning August 9, 2021, submitting entities will have the ability to update or delete previously submitted records using new functionality available in CDC’s Data Clearinghouse. Use of this new functionality may result in fluctuations across metrics as historical data are updated or deleted' - from the CPR data dictionary. [A] booster dose includes anyone who is fully vaccinated and has received another dose of COVID-19 vaccine since August 13, 2021. This includes people who received booster doses and people who received additional doses." - from the CPR data dictionary. Smoothed using a 7-day average.<br/> **Earliest date available:** 2021-11-01 for state, HHS, and nation. Not available below state level |
 
 ## Table of contents
 {: .no_toc .text-delta}
@@ -36,13 +40,15 @@ County, MSA, state, and HHS-level values are pulled directly from CPR; nation-le
 
 For counts-based fields like hospital admissions, CPR reports rolling sums for the preceding 7 days. The 7-day average signals are computed by Delphi by dividing each sum by 7 and assigning it to the last date in the included range, so e.g. the signal for June 7 is the average of the underlying data for June 1 through 7, inclusive.
 
-The `confirmed_admissions_covid_1d_7dav` signal mirrors the `Confirmed COVID-19 admissions - last 7 days` CPR field for all geographic resolutions except nation. Nation-level admissions is calculated by summing state-level values.
+The `confirmed_admissions_covid_1d_7dav` signal mirrors the `Confirmed COVID-19 admissions - last 7 days` CPR field for all geographic resolutions except nation. Nation-level admissions is calculated by summing state-level values. The same holds for `doses_admin_7dav` and `booster doses_admin_7dav` mirroring `Doses administered - last 7 days` and `Booster doses administered - last 7 days`.
 
 ## Limitations
 
 Nation-level estimates may be inaccurate since aggregations are done using state-level smoothed values instead of raw values. Ideally we would aggregate raw values before smoothing, but the raw values are not accessible in this case.
 
 Because DSEW does not provide updates on weekends, estimates are not available for all dates.
+
+Currently, county-level data is only available for `people_full_vaccinated` of all the vaccination signals. Until 2021-11-15, there were unallocated counts reported for different states, which are noted by '000' at the end of the FIPs code in the county level. There are many high-visibility data notes from the CPR spreadsheets that explain corrections like decresases in cumulative values for state/HHS/national counts. For example 'On 02/09/2022, SC issued corrections to their vaccination data, resulting in negative values for those initiating vaccination ages 65+.'
 
 ### Differences with HHS reports
 
@@ -57,6 +63,7 @@ An analysis comparing the
 The report is currently updated daily, excluding weekends. However, this is subject to change; DSEW previously issued updates on a twice-weekly schedule. We check for updates daily.
 
 Hospital admissions are reported with a lag of 2 days, but since the CPR is not updated on weekends, lag effectively varies from 2-4 days.
+
 
 ## Source and Licensing
 
