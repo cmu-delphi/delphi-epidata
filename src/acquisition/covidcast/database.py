@@ -72,7 +72,6 @@ class Database:
 
   def connect(self, connector_impl=mysql.connector):
     """Establish a connection to the database."""
-
     u, p = secrets.db.epi
     self._connector_impl = connector_impl
     self._connection = self._connector_impl.connect(
@@ -200,6 +199,104 @@ class Database:
       # TODO: rollback???  truncate table???  something???
       raise e
     return total
+
+  def delete_batch(self, cc_deletions):
+    """
+    Remove rows specified by a csv file or list of tuples.
+
+    If cc_deletions is a filename, the file should include a header row and use the following field order:
+    - geo_id
+    - value (ignored)
+    - stderr (ignored)
+    - sample_size (ignored)
+    - issue (YYYYMMDD format)
+    - time_value (YYYYMMDD format)
+    - geo_type
+    - signal
+    - source
+
+    If cc_deletions is a list of tuples, the tuples should use the following field order (=same as above, plus time_type):
+    - geo_id
+    - value (ignored)
+    - stderr (ignored)
+    - sample_size (ignored)
+    - issue (YYYYMMDD format)
+    - time_value (YYYYMMDD format)
+    - geo_type
+    - signal
+    - source
+    - time_type
+    """
+    tmp_table_name = "tmp_delete_table"
+    create_tmp_table_sql = f'''
+CREATE OR REPLACE TABLE {tmp_table_name} LIKE covidcast;
+'''
+
+    amend_tmp_table_sql = f'''
+ALTER TABLE {tmp_table_name} ADD COLUMN covidcast_id bigint unsigned;
+'''
+
+    load_tmp_table_infile_sql = f'''
+LOAD DATA INFILE "{cc_deletions}"
+INTO TABLE {tmp_table_name}
+FIELDS TERMINATED BY ","
+IGNORE 1 LINES
+(`geo_value`, `value`, `stderr`, `sample_size`, `issue`, `time_value`, `geo_type`, `signal`, `source`)
+SET time_type="day";
+'''
+
+    load_tmp_table_insert_sql = f'''
+INSERT INTO {tmp_table_name}
+(`geo_value`, `value`, `stderr`, `sample_size`, `issue`, `time_value`, `geo_type`, `signal`, `source`, `time_type`,
+`value_updated_timestamp`, `direction_updated_timestamp`, `lag`, `direction`, `is_latest_issue`)
+VALUES
+(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+0, 0, 0, 0, 0)
+'''
+
+    add_id_sql = f'''
+UPDATE {tmp_table_name} d INNER JOIN covidcast c USING
+(`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`, `issue`)
+SET d.covidcast_id=c.id, d.is_latest_issue=c.is_latest_issue;
+'''
+
+    delete_sql = f'''
+DELETE c FROM {tmp_table_name} d INNER JOIN covidcast c WHERE d.covidcast_id=c.id;
+'''
+
+    fix_latest_issue_sql = f'''
+UPDATE
+(SELECT `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`, MAX(`issue`) AS `issue`
+    FROM
+    (SELECT DISTINCT `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`
+        FROM {tmp_table_name} WHERE `is_latest_issue`=1) AS was_latest
+    LEFT JOIN covidcast c
+    USING (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`)
+    GROUP BY `source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`
+) AS TMP
+LEFT JOIN `covidcast`
+USING (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`, `issue`)
+SET `covidcast`.`is_latest_issue`=1;
+'''
+
+    drop_tmp_table_sql = f'DROP TABLE {tmp_table_name}'
+    try:
+      self._cursor.execute(create_tmp_table_sql)
+      self._cursor.execute(amend_tmp_table_sql)
+      if isinstance(cc_deletions, str):
+        self._cursor.execute(load_tmp_table_infile_sql)
+      elif isinstance(cc_deletions, list):
+        self._cursor.executemany(load_tmp_table_insert_sql, cc_deletions)
+      else:
+        raise Exception(f"Bad deletions argument: need a filename or a list of tuples; got a {type(cc_deletions)}")
+      self._cursor.execute(add_id_sql)
+      self._cursor.execute(delete_sql)
+      self._cursor.execute(fix_latest_issue_sql)
+      self._connection.commit()
+    except Exception as e:
+      raise e
+    finally:
+      self._cursor.execute(drop_tmp_table_sql)
 
   def compute_covidcast_meta(self, table_name=None):
     """Compute and return metadata on all COVIDcast signals."""
