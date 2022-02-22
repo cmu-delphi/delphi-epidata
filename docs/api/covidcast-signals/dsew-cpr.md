@@ -50,7 +50,7 @@ Nation-level estimates may be inaccurate since aggregations are done using state
 
 Because DSEW does not provide updates on weekends, estimates are not available for all dates.
 
-Currently, of all the vaccination signals, county-level data is only available for `people_full_vaccinated`. Until 2021-11-15, there were unallocated vaccinated people reported for different states, which are noted by '000' at the end of the FIPs code in the county level. 
+Currently, of all the vaccination signals, county-level data is only available for `people_full_vaccinated`. Until 2021-11-15, several states reported vaccinated people not allocated to any individual county. These unallocated counts were reported using a FIPS code ending with `000` for that state, which is never a FIPS code for a real county.
 
 There are many high-visibility data notes from the CPR spreadsheets that explain corrections like decresases in cumulative values for state/HHS/national counts. For example 'On 02/09/2022, SC issued corrections to their vaccination data, resulting in negative values for those initiating vaccination ages 65+.' These can be accessed through the first tab on downloaded CPR worksheets from relevant date ranges (if available)
 
