@@ -69,4 +69,5 @@ else:
     app.logger.setLevel(gunicorn_logger.level)
     sqlalchemy_logger = logging.getLogger("sqlalchemy")
     sqlalchemy_logger.handlers = gunicorn_logger.handlers
-    sqlalchemy_logger.setLevel(gunicorn_logger.level)
+    # Change SQLAlchemy logging level to "ERROR" in order to prevent query details of API keys from being logged 
+    sqlalchemy_logger.setLevel(logging.ERROR)

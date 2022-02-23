@@ -11,3 +11,4 @@ requests==2.26.0
 epiweeks==2.1.2
 Flask-Limiter==1.4
 redis==3.5.3
+structlog
