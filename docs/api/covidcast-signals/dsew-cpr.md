@@ -68,9 +68,7 @@ An analysis comparing the
 
 The report is currently updated daily, excluding weekends. However, this is subject to change; DSEW previously issued updates on a twice-weekly schedule. We check for updates daily.
 
-Hospital admissions are reported with a lag of 2 days, but since the CPR is not updated on weekends, lag effectively varies from 2-4 days.
-
-Vaccination signals are reported with a lag of 1 day (current data available as of 6:00am ET on the day of reporting), but since the CPR is not updated on weekends, lag effectively varies from 1-3 days. 
+Most signals are reported with a lag of 1-2 days. 
 
 ## Source and Licensing
 
