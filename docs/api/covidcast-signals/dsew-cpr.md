@@ -44,7 +44,7 @@ For counts-based fields like hospital admissions, CPR reports rolling sums for t
 
 The `confirmed_admissions_covid_1d_7dav` signal mirrors the `Confirmed COVID-19 admissions - last 7 days` CPR field for all geographic resolutions except nation. Nation-level admissions is calculated by summing state-level values. 
 
-The `doses_admin_7dav` and `booster doses_admin_7dav` signals mirror the `Doses administered - last 7 days` and `Booster doses administered - last 7 days` CPR fields for all geographic resolutions except nation. Nation-level doses are calculated by summing state-level values.
+The `doses_admin_7dav` and `booster_doses_admin_7dav` signals mirror the `Doses administered - last 7 days` and `Booster doses administered - last 7 days` CPR fields for all geographic resolutions except nation. Nation-level doses are calculated by summing state-level values.
 
 ## Limitations
 
