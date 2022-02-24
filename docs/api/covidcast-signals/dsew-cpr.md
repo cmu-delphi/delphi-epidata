@@ -75,7 +75,7 @@ An analysis comparing the
 
 The report is currently updated daily, excluding weekends. However, this is subject to change; DSEW previously issued updates on a twice-weekly schedule. We check for updates daily.
 
-Most signals are reported with a lag of 1-2 days. 
+The CPR is prepared with an internal lag of 1-2 days for most signals. The file is usually posted to healthdata.gov the day after the date listed in the filename, excluding weekends and federal holidays. This results in an effective lag in COVIDcast of 2-4 days, or 5 days when Monday is a holiday.
 
 ## Source and Licensing
 
