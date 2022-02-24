@@ -54,7 +54,14 @@ Because DSEW does not provide updates on weekends, estimates are not available f
 
 Currently, of all the vaccination signals, county-level data is only available for `people_full_vaccinated`. Until 2021-11-15, several states reported vaccinated people not allocated to any individual county. These unallocated counts were reported using a FIPS code ending with `000` for that state, which is never a FIPS code for a real county.
 
-There are many high-visibility data notes from the CPR spreadsheets that explain corrections like decresases in cumulative values for state/HHS/national counts. For example 'On 02/09/2022, SC issued corrections to their vaccination data, resulting in negative values for those initiating vaccination ages 65+.' These can be accessed through the first tab on downloaded CPR worksheets from relevant date ranges (if available)
+This data source is susceptible to large corrections that can create strange data effects such as negative counts and sudden changes of 1M+ counts from one day to the next. Many of these corrections are documented in the "High-Visibility Data Notes" section in the first tab of the CPR spreadsheet for that day. To locate the correct spreadsheet for some `time_value` R, consult the following table:
+
+| Signal type | CPR date |
+| - | - |
+| Hospital Admissions | usually R+2, sometimes R+1 |
+| Vaccinations | usually R+1, sometimes R+2 |
+
+Not all CPRs have the same lag between the CPR date (listed in the filename) and the date for a particular signal.
 
 ### Differences with HHS reports
 
