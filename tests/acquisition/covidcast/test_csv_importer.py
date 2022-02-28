@@ -278,13 +278,13 @@ class UnitTests(unittest.TestCase):
 
     # now with missing values!
     data = {
-      'geo_id': ['ca', 'tx', 'fl', 'ak'],
-      'val': [np.nan, '1.2', '1.3', '1.4'],
-      'se': ['2.1', "na", '2.3', '2.4'],
-      'sample_size': ['301', '302', None, '304'],
-      'missing_value': [Nans.NOT_APPLICABLE] + [Nans.NOT_MISSING] * 3,
-      'missing_stderr': [Nans.NOT_MISSING, Nans.REGION_EXCEPTION, Nans.NOT_MISSING, Nans.NOT_MISSING],
-      'missing_sample_size': [Nans.NOT_MISSING] * 2 + [Nans.REGION_EXCEPTION] * 2
+      'geo_id': ['ca', 'tx', 'fl', 'ak', 'wa'],
+      'val': [np.nan, '1.2', '1.3', '1.4', '1.5'],
+      'se': ['2.1', "na", '2.3', '2.4', '2.5'],
+      'sample_size': ['301', '302', None, '304', None],
+      'missing_value': [Nans.NOT_APPLICABLE] + [Nans.NOT_MISSING] * 3 + [None],
+      'missing_stderr': [Nans.NOT_MISSING, Nans.REGION_EXCEPTION, Nans.NOT_MISSING, Nans.NOT_MISSING] + [None],
+      'missing_sample_size': [Nans.NOT_MISSING] * 2 + [Nans.REGION_EXCEPTION] * 2 + [None]
     }
     mock_pandas = MagicMock()
     mock_pandas.read_csv.return_value = pandas.DataFrame(data=data)
@@ -295,7 +295,7 @@ class UnitTests(unittest.TestCase):
 
     self.assertTrue(mock_pandas.read_csv.called)
     self.assertTrue(mock_pandas.read_csv.call_args[0][0], filepath)
-    self.assertEqual(len(rows), 4)
+    self.assertEqual(len(rows), 5)
 
     self.assertEqual(rows[0].geo_value, 'ca')
     self.assertIsNone(rows[0].value)
@@ -328,3 +328,11 @@ class UnitTests(unittest.TestCase):
     self.assertEqual(rows[3].missing_value, Nans.NOT_MISSING)
     self.assertEqual(rows[3].missing_stderr, Nans.NOT_MISSING)
     self.assertEqual(rows[3].missing_sample_size, Nans.NOT_MISSING)
+
+    self.assertEqual(rows[4].geo_value, 'wa')
+    self.assertEqual(rows[4].value, 1.5)
+    self.assertEqual(rows[4].stderr, 2.5)
+    self.assertEqual(rows[4].sample_size, None)
+    self.assertEqual(rows[4].missing_value, Nans.NOT_MISSING)
+    self.assertEqual(rows[4].missing_stderr, Nans.NOT_MISSING)
+    self.assertEqual(rows[4].missing_sample_size, Nans.OTHER)
