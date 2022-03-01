@@ -70,6 +70,8 @@ class Database:
   history_table = "signal_history_v" # ...also a VIEW
   load_table = "signal_load"
 
+  process_status = {'inserting': 'i', 'loaded': 'l', 'batching': 'b'}
+
   def connect(self, connector_impl=mysql.connector):
     """Establish a connection to the database."""
 
@@ -99,6 +101,7 @@ class Database:
       self._connection.commit()
     self._connection.close()
 
+
   def count_all_rows(self, tablename=None):
     """Return the total number of rows in table `covidcast`."""
 
@@ -116,6 +119,13 @@ class Database:
   def count_all_latest_rows(self):
     return self.count_all_rows(self.latest_table)
 
+  def count_insertstatus_rows(self):
+    self._cursor.execute(f"SELECT count(1) from `{self.load_table}` where `process_status`='{self.process_status['inserting']}'")
+
+    for (num,) in self._cursor:
+      return num
+
+
   def insert_or_update_bulk(self, cc_rows):
     return self.insert_or_update_batch(cc_rows)
 
@@ -131,11 +141,13 @@ class Database:
       INSERT INTO `{self.load_table}`
         (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`,
         `value_updated_timestamp`, `value`, `stderr`, `sample_size`, `issue`, `lag`, 
-        `is_latest_issue`, `missing_value`, `missing_stderr`, `missing_sample_size`)
+        `is_latest_issue`, `missing_value`, `missing_stderr`, `missing_sample_size`,
+        `process_status`)
       VALUES
         (%s, %s, %s, %s, %s, %s, 
         UNIX_TIMESTAMP(NOW()), %s, %s, %s, %s, %s, 
-        1, %s, %s, %s)
+        1, %s, %s, %s, 
+        '{self.process_status['inserting']}')
     '''
 
     # all load table entries are already marked "is_latest_issue".
@@ -146,10 +158,15 @@ class Database:
             `{self.load_table}` JOIN `{self.latest_table}` 
                 USING (`source`, `signal`, `geo_type`, `geo_value`, `time_type`, `time_value`) 
             SET `{self.load_table}`.`is_latest_issue`=0 
-            WHERE `{self.load_table}`.`issue` < `{self.latest_table}`.`issue`
+            WHERE `{self.load_table}`.`issue` < `{self.latest_table}`.`issue` 
+                  AND `process_status` = '{self.process_status['inserting']}'
     '''
 
-    if 0 != self.count_all_rows(self.load_table):
+    update_status_sql = f'''
+        UPDATE `{self.load_table}` SET `process_status` = '{self.process_status['loaded']}' WHERE `process_status` = '{self.process_status['inserting']}'
+    '''
+
+    if 0 != self.count_insertstatus_rows()
       # TODO: determine if this should be fatal?!
       logger = get_structured_logger("insert_or_update_batch")
       logger.warn("Non-zero count in the load table!!!  This indicates scheduling of acqusition and dbjobs may be out of sync.")
@@ -188,6 +205,7 @@ class Database:
         self._cursor.executemany(insert_into_loader_sql, args)
         modified_row_count = self._cursor.rowcount
         self._cursor.execute(fix_is_latest_issue_sql)
+        self._cursor.execute(update_status_sql)
 
         if modified_row_count is None or modified_row_count == -1:
           # the SQL connector does not support returning number of rows affected (see PEP 249)
@@ -240,8 +258,7 @@ class Database:
         `{table_name}`
       WHERE
         `source` = %s AND
-        `signal` = %s AND
-        is_latest_issue = 1
+        `signal` = %s
       GROUP BY
         `time_type`,
         `geo_type`

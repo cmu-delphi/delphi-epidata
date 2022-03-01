@@ -28,10 +28,6 @@ CREATE TABLE signal_history (
     `demog_key_id` BIGINT(20) UNSIGNED,
     `issue` INT(11),
     `data_as_of_dt` DATETIME(0),
-    `source` VARCHAR(32) NOT NULL ,-- #TODO: do we need these? COLLATE 'utf8mb4_0900_ai_ci',
-    `signal` VARCHAR(64) NOT NULL ,-- COLLATE 'utf8mb4_0900_ai_ci',
-    `geo_type` VARCHAR(12) NOT NULL ,-- COLLATE 'utf8mb4_0900_ai_ci',
-    `geo_value` VARCHAR(12) NOT NULL ,-- COLLATE 'utf8mb4_0900_ai_ci',
     `time_type` VARCHAR(12) NOT NULL,
     `time_value` INT(11) NOT NULL,
     `reference_dt` DATETIME(0),
@@ -73,7 +69,7 @@ CREATE TABLE signal_latest (
     `missing_sample_size` INT(1) NULL DEFAULT '0',
     
     PRIMARY KEY (`signal_data_id`) USING BTREE,
-    INDEX `comp_geo_key` (`signal_key_id`,`geo_key_id`,`issue`,`time_type`,`time_value`) USING BTREE
+    INDEX `comp_geo_key` (`signal_key_id`,`geo_key_id`,`time_type`,`time_value`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=4000000001;
 
 
@@ -107,6 +103,7 @@ CREATE TABLE signal_load (
     `compressed_demog_key` VARCHAR(100),
     `action_latest` VARCHAR(5),
     `latest_replace_data_id` BIGINT,
+    `process_status` varchar(2) default 'l',
 
     PRIMARY KEY (`signal_data_id`) USING BTREE,
     INDEX `comp_signal_key` (`compressed_signal_key`) USING BTREE,
@@ -184,3 +181,11 @@ CREATE OR REPLACE VIEW signal_latest_v AS
             USE INDEX (PRIMARY) 
             ON `t1`.`geo_key_id` = `t3`.`geo_key_id`);
 
+
+CREATE TABLE `covidcast_meta_cache` (
+    `timestamp` int(11) NOT NULL,
+    `epidata` LONGTEXT NOT NULL,
+
+    PRIMARY KEY (`timestamp`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+INSERT INTO covidcast_meta_cache VALUES (0, '[]');

@@ -94,6 +94,8 @@ def _handle_lag_issues_as_of(q: QueryBuilder, issues: Optional[List[Union[Tuple[
         q.retable(history_table)
         q.where_integers("issue", issues)
     elif lag is not None:
+        q.retable(history_table)
+        # history_table has full spectrum of lag values to search from whereas the latest_table does not
         q.where(lag=lag)
     elif as_of is not None:
         # fetch most recent issues with as of
@@ -105,8 +107,8 @@ def _handle_lag_issues_as_of(q: QueryBuilder, issues: Optional[List[Union[Tuple[
         sub_condition = f"x.max_issue = {q.alias}.issue AND x.time_type = {q.alias}.time_type AND x.time_value = {q.alias}.time_value AND x.source = {q.alias}.source AND x.signal = {q.alias}.signal AND x.geo_type = {q.alias}.geo_type AND x.geo_value = {q.alias}.geo_value"
         q.subquery = f"JOIN (SELECT {sub_fields} FROM {q.table} WHERE {q.conditions_clause} AND {sub_condition_asof} GROUP BY {sub_group}) x ON {sub_condition}"
     else:
-        # fetch most recent issue fast
-        q.conditions.append(f"({q.alias}.is_latest_issue IS TRUE)")
+        # fetch most recent issue fast, using standard latest_table
+        pass
 
 
 def guess_index_to_use(time: List[TimePair], geo: List[GeoPair], issues: Optional[List[Union[Tuple[int, int], int]]] = None, lag: Optional[int] = None, as_of: Optional[int] = None) -> Optional[str]:
@@ -311,7 +313,7 @@ def handle_correlation():
     if lag is None:
         lag = 28
 
-    # build query
+    # build query -- TODO: should this be using most recent issue but also specifying a lag?
     q = QueryBuilder(latest_table, "t")
 
     fields_string = ["geo_type", "geo_value", "source", "signal"]
@@ -327,9 +329,6 @@ def handle_correlation():
     )
     q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
     q.where_time_pairs("time_type", "time_value", [TimePair("day" if is_day else "week", [time_window])])
-
-    # fetch most recent issue fast
-    q.conditions.append(f"({q.alias}.is_latest_issue IS TRUE)")
 
     df = as_pandas(str(q), q.params)
     if is_day:
