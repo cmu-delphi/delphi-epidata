@@ -166,7 +166,7 @@ class Database:
         UPDATE `{self.load_table}` SET `process_status` = '{self.process_status['loaded']}' WHERE `process_status` = '{self.process_status['inserting']}'
     '''
 
-    if 0 != self.count_insertstatus_rows()
+    if 0 != self.count_insertstatus_rows():
       # TODO: determine if this should be fatal?!
       logger = get_structured_logger("insert_or_update_batch")
       logger.warn("Non-zero count in the load table!!!  This indicates scheduling of acqusition and dbjobs may be out of sync.")
