@@ -44,7 +44,7 @@ CREATE TABLE signal_history (
     `id` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
     
     PRIMARY KEY (`signal_data_id`) USING BTREE,
-    INDEX `comp_geo_key` (`signal_key_id`,`geo_key_id`,`issue`,`time_type`,`time_value`) USING BTREE
+    UNIQUE INDEX `value_key` (`signal_key_id`,`geo_key_id`,`issue`,`time_type`,`time_value`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=4000000001;
 
 
@@ -69,7 +69,7 @@ CREATE TABLE signal_latest (
     `missing_sample_size` INT(1) NULL DEFAULT '0',
     
     PRIMARY KEY (`signal_data_id`) USING BTREE,
-    INDEX `comp_geo_key` (`signal_key_id`,`geo_key_id`,`time_type`,`time_value`) USING BTREE
+    UNIQUE INDEX `value_key` (`signal_key_id`,`geo_key_id`,`time_type`,`time_value`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=4000000001;
 
 
@@ -101,9 +101,7 @@ CREATE TABLE signal_load (
     `compressed_signal_key` VARCHAR(100),
     `compressed_geo_key` VARCHAR(100),
     `compressed_demog_key` VARCHAR(100),
-    `action_latest` VARCHAR(5),
-    `latest_replace_data_id` BIGINT,
-    `process_status` varchar(2) default 'l',
+    `process_status` VARCHAR(2) DEFAULT 'l',
 
     PRIMARY KEY (`signal_data_id`) USING BTREE,
     INDEX `comp_signal_key` (`compressed_signal_key`) USING BTREE,
