@@ -314,13 +314,21 @@ class Database:
         WHERE  process_status <> 'l'
     '''
 
+    print('signal_load_set_comp_keys:')
     self._cursor.execute(signal_load_set_comp_keys)
+    print('signal_load_mark_batch:')
     self._cursor.execute(signal_load_mark_batch)
+    print('signal_dim_add_new_load:')
     self._cursor.execute(signal_dim_add_new_load)
+    print('geo_dim_add_new_load:')
     self._cursor.execute(geo_dim_add_new_load)
+    print('signal_history_load:')
     self._cursor.execute(signal_history_load)
+    print('signal_latest_load:')
     self._cursor.execute(signal_latest_load)
+    print('signal_load_delete_processed:')
     self._cursor.execute(signal_load_delete_processed)
+    print("done.")
 
     return self
 
