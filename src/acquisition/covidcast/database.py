@@ -342,7 +342,7 @@ SET `covidcast`.`is_latest_issue`=1;
       self._cursor.execute(fix_latest_issue_sql)
       self._connection.commit()
 
-      if total is None or total == -1:
+      if total == -1:
         # the SQL connector does not support returning number of rows affected (see PEP 249)
         total = None
     except Exception as e:
