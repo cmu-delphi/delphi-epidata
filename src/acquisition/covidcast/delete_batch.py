@@ -29,7 +29,7 @@ def handle_file(deletion_file, database, logger):
     with open(deletion_file) as f:
         for line in f:
             fields = line.strip().split(",")
-            if len(field) < 9: continue
+            if len(fields) < 9: continue
             rows.append(fields + ["day"])
     rows = rows[1:]
     try:
