@@ -43,9 +43,9 @@ class CsvImporter:
     "val": float,
     "se": float,
     "sample_size": float,
-    "missing_val": int,
-    "missing_se": int,
-    "missing_sample_size": int
+    "missing_val": "Int64",
+    "missing_se": "Int64",
+    "missing_sample_size": "Int64"
   }
 
   # NOTE: this should be a Python 3.7+ `dataclass`, but the server is on 3.4

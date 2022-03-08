@@ -326,6 +326,7 @@ SET `covidcast`.`is_latest_issue`=1;
 '''
 
     drop_tmp_table_sql = f'DROP TABLE {tmp_table_name}'
+    total = None
     try:
       self._cursor.execute(create_tmp_table_sql)
       self._cursor.execute(amend_tmp_table_sql)
@@ -337,12 +338,18 @@ SET `covidcast`.`is_latest_issue`=1;
         raise Exception(f"Bad deletions argument: need a filename or a list of tuples; got a {type(cc_deletions)}")
       self._cursor.execute(add_id_sql)
       self._cursor.execute(delete_sql)
+      total = self._cursor.rowcount
       self._cursor.execute(fix_latest_issue_sql)
       self._connection.commit()
+
+      if total == -1:
+        # the SQL connector does not support returning number of rows affected (see PEP 249)
+        total = None
     except Exception as e:
       raise e
     finally:
       self._cursor.execute(drop_tmp_table_sql)
+    return total
 
   def compute_covidcast_meta(self, table_name='covidcast', use_index=True):
     """Compute and return metadata on all non-WIP COVIDcast signals."""

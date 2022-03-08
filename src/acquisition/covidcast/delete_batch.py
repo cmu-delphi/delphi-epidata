@@ -2,6 +2,7 @@
 
 # standard library
 import argparse
+import glob
 import os
 import time
 
@@ -22,19 +23,21 @@ def get_argument_parser():
       help="filename for log output (defaults to stdout)")
     return parser
 
-def handle_file(deletion_file, database):
+def handle_file(deletion_file, database, logger):
     logger.info("Deleting from csv file", filename=deletion_file)
     rows = []
     with open(deletion_file) as f:
         for line in f:
-            rows.append(line.strip().split(","))
+            fields = line.strip().split(",")
+            if len(fields) < 9: continue
+            rows.append(fields + ["day"])
     rows = rows[1:]
     try:
         n = database.delete_batch(rows)
         logger.info("Deleted database rows", row_count=n)
         return n
     except Exception as e:
-        logger.exception('Exception while deleting rows:', e)
+        logger.exception('Exception while deleting rows', exception=e)
         database.rollback()
     return 0
 
@@ -49,7 +52,11 @@ def main(args):
 
     try:
         for deletion_file in sorted(glob.glob(os.path.join(args.deletion_dir, '*.csv'))):
-            all_n += handle_file(deletion_file)
+            n = handle_file(deletion_file, database, logger)
+            if n is not None:
+                all_n += n
+            else:
+                all_n = "rowcount unsupported"
     finally:
         database.disconnect(True)
 
