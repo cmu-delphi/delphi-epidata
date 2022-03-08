@@ -1,6 +1,6 @@
 #!/bin/bash
 
-mkdir -p driver/repos/delphi driver-logs
+mkdir -p driver/repos/delphi driver-logs/delphi_database_epidata driver-logs/delphi_web_epidata
 cd driver/repos/delphi
 git clone https://github.com/cmu-delphi/operations
 git clone https://github.com/cmu-delphi/delphi-epidata

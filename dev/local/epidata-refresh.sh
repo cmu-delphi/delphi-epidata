@@ -50,7 +50,7 @@ docker images -f "dangling=true" -q | xargs docker rmi >/dev/null 2>&1
 docker network ls | grep delphi-net || docker network create --driver bridge delphi-net
 
 LOGS=../driver-logs
-NOW=`date "+%Y-%m-%d`
+NOW=`date "+%Y-%m-%d"`
 
 if [ "$1" == "database" ]; then
     shift
@@ -60,7 +60,9 @@ if [ "$1" == "database" ]; then
     docker images delphi_database | grep delphi || \
         docker build -t delphi_database -f repos/delphi/operations/dev/docker/database/Dockerfile . || exit 1
     docker build -t delphi_database_epidata -f repos/delphi/delphi-epidata/dev/docker/database/epidata/Dockerfile . || exit 1
-    docker run --rm -p 127.0.0.1:13306:3306 --network delphi-net --name delphi_database_epidata delphi_database_epidata \
+    docker run --rm -p 127.0.0.1:13306:3306 --network delphi-net --name delphi_database_epidata \
+           --mount type=bind,source="$(pwd)"/repos/delphi/delphi-epidata,target=/usr/src/app/repos/delphi/delphi-epidata,readonly \
+           delphi_database_epidata \
            >${LOGFILE} 2>&1 &
     while true; do
         sed -n '/Temporary server stopped/,/mysqld: ready for connections/p' ${LOGFILE} | grep "ready for connections" && break
