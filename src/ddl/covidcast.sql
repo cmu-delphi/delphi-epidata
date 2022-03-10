@@ -136,9 +136,11 @@ This table must always contain exactly one row.
   JSON string containing a successful API response for `covidcast_meta`
 */
 
-CREATE TABLE `covidcast_meta_cache` (
+-- TODO: `covidcast_meta_cache` table creation here is deprecated in favor of ./v4_schema.sql ; remove this `__old` instance
+
+CREATE TABLE `covidcast_meta_cache__old` (
   `timestamp` int(11) NOT NULL,
   `epidata` LONGTEXT NOT NULL,
   PRIMARY KEY (`timestamp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-INSERT INTO covidcast_meta_cache VALUES (0, '');
+INSERT INTO covidcast_meta_cache__old VALUES (0, '');
