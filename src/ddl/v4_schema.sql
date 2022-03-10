@@ -22,7 +22,7 @@ CREATE TABLE signal_dim (
 
 
 CREATE TABLE signal_history (
-    `signal_data_id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `signal_data_id` BIGINT(20) UNSIGNED NOT NULL,
     `signal_key_id` BIGINT(20) UNSIGNED,
     `geo_key_id` BIGINT(20) UNSIGNED,
     `demog_key_id` BIGINT(20) UNSIGNED,  -- TODO: for future use ; also rename s/demog/stratification/  ...remove?
@@ -45,11 +45,11 @@ CREATE TABLE signal_history (
  
     PRIMARY KEY (`signal_data_id`) USING BTREE,
     UNIQUE INDEX `value_key` (`signal_key_id`,`geo_key_id`,`issue`,`time_type`,`time_value`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=4000000001;
+) ENGINE=InnoDB;
 
 
 CREATE TABLE signal_latest (
-    `signal_data_id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `signal_data_id` BIGINT(20) UNSIGNED NOT NULL,
     `signal_key_id` BIGINT(20) UNSIGNED,
     `geo_key_id` BIGINT(20) UNSIGNED,
     `demog_key_id` BIGINT(20) UNSIGNED,  -- TODO: for future use ; also rename s/demog/stratification/  ...remove?
@@ -70,7 +70,7 @@ CREATE TABLE signal_latest (
     
     PRIMARY KEY (`signal_data_id`) USING BTREE,
     UNIQUE INDEX `value_key` (`signal_key_id`,`geo_key_id`,`time_type`,`time_value`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=4000000001;
+) ENGINE=InnoDB;
 
 
 CREATE TABLE signal_load (
