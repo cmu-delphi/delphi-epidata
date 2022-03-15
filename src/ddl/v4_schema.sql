@@ -25,23 +25,23 @@ CREATE TABLE signal_history (
     `signal_data_id` BIGINT(20) UNSIGNED NOT NULL,
     `signal_key_id` BIGINT(20) UNSIGNED,
     `geo_key_id` BIGINT(20) UNSIGNED,
-    `demog_key_id` BIGINT(20) UNSIGNED,  -- TODO: for future use ; also rename s/demog/stratification/  ...remove?
+    `demog_key_id` BIGINT(20) UNSIGNED,  -- TODO: for future use ; also rename s/demog/stratification/
     `issue` INT(11),
-    `data_as_of_dt` DATETIME(0),  -- TODO: for future use ; also "as_of" is problematic and should be renamed  ...remove?
+    `data_as_of_dt` DATETIME(0),  -- TODO: for future use ; also "as_of" is problematic and should be renamed
     `time_type` VARCHAR(12) NOT NULL,
     `time_value` INT(11) NOT NULL,
-    `reference_dt` DATETIME(0),  -- TODO: for future use  ...remove?
+    `reference_dt` DATETIME(0),  -- TODO: for future use
     `value` DOUBLE NULL DEFAULT NULL,
     `stderr` DOUBLE NULL DEFAULT NULL,
     `sample_size` DOUBLE NULL DEFAULT NULL,
     `lag` INT(11) NOT NULL,
     `value_updated_timestamp` INT(11) NOT NULL,
-    `computation_as_of_dt` DATETIME(0),  -- TODO: for future use ; also "as_of" is problematic and should be renamed  ...remove?
+    `computation_as_of_dt` DATETIME(0),  -- TODO: for future use ; also "as_of" is problematic and should be renamed
     `is_latest_issue` BINARY(1) NOT NULL DEFAULT '0', -- TODO: delete this, its hard to keep updated and its not currently used
     `missing_value` INT(1) NULL DEFAULT '0',
     `missing_stderr` INT(1) NULL DEFAULT '0',
     `missing_sample_size` INT(1) NULL DEFAULT '0',
-    `id` BIGINT(20) UNSIGNED NULL DEFAULT NULL, -- TODO: delete this, it is not used or needed
+    `legacy_id` BIGINT(20) UNSIGNED NULL DEFAULT NULL, -- not used beyond import of previous data into the v4 schema
  
     PRIMARY KEY (`signal_data_id`) USING BTREE,
     UNIQUE INDEX `value_key` (`signal_key_id`,`geo_key_id`,`issue`,`time_type`,`time_value`) USING BTREE
@@ -52,18 +52,18 @@ CREATE TABLE signal_latest (
     `signal_data_id` BIGINT(20) UNSIGNED NOT NULL,
     `signal_key_id` BIGINT(20) UNSIGNED,
     `geo_key_id` BIGINT(20) UNSIGNED,
-    `demog_key_id` BIGINT(20) UNSIGNED,  -- TODO: for future use ; also rename s/demog/stratification/  ...remove?
+    `demog_key_id` BIGINT(20) UNSIGNED,  -- TODO: for future use ; also rename s/demog/stratification/
     `issue` INT(11),
-    `data_as_of_dt` DATETIME(0),  -- TODO: for future use ; also "as_of" is problematic and should be renamed  ...remove?
+    `data_as_of_dt` DATETIME(0),  -- TODO: for future use ; also "as_of" is problematic and should be renamed
     `time_type` VARCHAR(12) NOT NULL,
     `time_value` INT(11) NOT NULL,
-    `reference_dt` DATETIME(0),  -- TODO: for future use  ...remove?
+    `reference_dt` DATETIME(0),  -- TODO: for future use
     `value` DOUBLE NULL DEFAULT NULL,
     `stderr` DOUBLE NULL DEFAULT NULL,
     `sample_size` DOUBLE NULL DEFAULT NULL,
     `lag` INT(11) NOT NULL,
     `value_updated_timestamp` INT(11) NOT NULL,
-    `computation_as_of_dt` DATETIME(0),  -- TODO: for future use ; also "as_of" is problematic and should be renamed  ...remove?
+    `computation_as_of_dt` DATETIME(0),  -- TODO: for future use ; also "as_of" is problematic and should be renamed
     `missing_value` INT(1) NULL DEFAULT '0',
     `missing_stderr` INT(1) NULL DEFAULT '0',
     `missing_sample_size` INT(1) NULL DEFAULT '0',
@@ -77,30 +77,30 @@ CREATE TABLE signal_load (
     `signal_data_id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
     `signal_key_id` BIGINT(20) UNSIGNED,
     `geo_key_id` BIGINT(20) UNSIGNED,
-    `demog_key_id` BIGINT(20) UNSIGNED,  -- TODO: for future use ; also rename s/demog/stratification/  ...remove?
+    `demog_key_id` BIGINT(20) UNSIGNED,  -- TODO: for future use ; also rename s/demog/stratification/
     `issue` INT(11),
-    `data_as_of_dt` DATETIME(0),  -- TODO: for future use ; also "as_of" is problematic and should be renamed  ...remove?
+    `data_as_of_dt` DATETIME(0),  -- TODO: for future use ; also "as_of" is problematic and should be renamed
     `source` VARCHAR(32) NOT NULL,
     `signal` VARCHAR(64) NOT NULL,
     `geo_type` VARCHAR(12) NOT NULL,
     `geo_value` VARCHAR(12) NOT NULL,
     `time_type` VARCHAR(12) NOT NULL,
     `time_value` INT(11) NOT NULL,
-    `reference_dt` DATETIME(0),  -- TODO: for future use  ...remove?
+    `reference_dt` DATETIME(0),  -- TODO: for future use
     `value` DOUBLE NULL DEFAULT NULL,
     `stderr` DOUBLE NULL DEFAULT NULL,
     `sample_size` DOUBLE NULL DEFAULT NULL,
     `lag` INT(11) NOT NULL,
     `value_updated_timestamp` INT(11) NOT NULL,
-    `computation_as_of_dt` DATETIME(0),  -- TODO: for future use ; also "as_of" is problematic and should be renamed  ...remove?
+    `computation_as_of_dt` DATETIME(0),  -- TODO: for future use ; also "as_of" is problematic and should be renamed
     `is_latest_issue` BINARY(1) NOT NULL DEFAULT '0',
     `missing_value` INT(1) NULL DEFAULT '0',
     `missing_stderr` INT(1) NULL DEFAULT '0',
     `missing_sample_size` INT(1) NULL DEFAULT '0',
-    `id` BIGINT(20) UNSIGNED, -- TODO: delete this, it is not needed or used
+    `legacy_id` BIGINT(20) UNSIGNED, -- not used beyond import of previous data into the v4 schema
     `compressed_signal_key` VARCHAR(100),
     `compressed_geo_key` VARCHAR(100),
-    `compressed_demog_key` VARCHAR(100),  -- TODO: for future use ; also rename s/demog/stratification/  ...remove?
+    `compressed_demog_key` VARCHAR(100),  -- TODO: for future use ; also rename s/demog/stratification/
     `process_status` VARCHAR(2) DEFAULT 'l', -- using codes: 'i' (I) for "inserting", 'l' (L) for "loaded", and 'b' for "batching"
         -- TODO: change `process_status` default to 'i' (I) "inserting" or even 'x'/'u' "undefined" ?
 
