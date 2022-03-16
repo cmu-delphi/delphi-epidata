@@ -1,3 +1,18 @@
+-- --------------------------------
+-- TODO: REMOVE THESE HACKS!!!  (find a better way to do this
+-- 
+-- the database schema `epidata` is created by ENV variables specified in the docker image definition found at:
+--     ../../dev/docker/database/epidata/Dockerfile
+-- and the user 'user' is created with permissions on that database.
+-- here we create the `covid` schema and extend permissions to the same user,
+-- as the ENV options do not appear to be expressive enough to do this as well.
+-- this is incredibly permissive and easily guessable, but is reqd for testing our environment.
+--
+CREATE DATABASE covid;
+USE covid;
+GRANT ALL ON covid.* TO 'user';
+-- END TODO
+-- --------------------------------
 
 CREATE TABLE geo_dim (
     `geo_key_id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,

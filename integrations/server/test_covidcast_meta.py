@@ -26,7 +26,7 @@ class CovidcastMetaTests(unittest.TestCase):
         user='user',
         password='pass',
         host='delphi_database_epidata',
-        database='epidata')
+        database='covid')
     cur = cnx.cursor()
     cur.execute('truncate table covidcast')
     cur.execute('update covidcast_meta_cache set timestamp = 0, epidata = ""')

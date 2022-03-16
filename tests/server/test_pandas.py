@@ -115,7 +115,7 @@ class UnitTests(unittest.TestCase):
         app.config["DEBUG"] = False
 
         # connect to the `epidata` database and clear the `covidcast` table
-        engine = create_engine('mysql://user:pass@delphi_database_epidata/epidata')
+        engine = create_engine('mysql://user:pass@delphi_database_epidata/covid')
         cnx = engine.connect()
         cnx.execute("truncate table covidcast")
         cnx.execute('update covidcast_meta_cache set timestamp = 0, epidata = ""')

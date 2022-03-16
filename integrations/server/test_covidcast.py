@@ -25,7 +25,7 @@ class CovidcastTests(unittest.TestCase):
         user='user',
         password='pass',
         host='delphi_database_epidata',
-        database='epidata')
+        database='covid')
     cur = cnx.cursor()
     cur.execute('truncate table covidcast')
     cnx.commit()
