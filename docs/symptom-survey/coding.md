@@ -882,7 +882,7 @@ their survey analyses.
     vaccines.
   * The response option “I don’t trust COVID-19 vaccines” is a response option
     from Wave 8 that was added back in Wave 12.
-* Item V15a was revised to ask respondents “Did you ever experience any of the
+* Item V15a was replaced with V15c, which asks respondents “Did you ever experience any of the
   following barriers to getting the COVID-19 vaccine?” The word *ever* was added
   to clarify for those who have received the vaccine but may have experienced
   barriers prior to being vaccinated. Additionally, two response options were
