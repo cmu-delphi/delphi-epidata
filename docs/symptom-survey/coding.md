@@ -1001,8 +1001,6 @@ Files:
   shot of the COVID-19 vaccination.
 * Item V2c asks respondents that have not yet received an additional dose or
   booster shot whether they plan to get one.
-* Item V17 asks respondents when they received their most recent COVID-19
-  vaccination.
 * Item C17b asks respondents if they received a flu vaccination since July 2021.
   This is an updated version of item C17a (waves 8-10) and C17 (waves 5-7),
   which descended from item C2 (waves 1-3).
