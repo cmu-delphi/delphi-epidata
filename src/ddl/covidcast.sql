@@ -82,7 +82,9 @@ Data is public.
   ~ENUM for the reason a `sample_size` was deleted
 */
 
-CREATE TABLE `covidcast` (
+-- TODO: this table is now deprecated.  it shall be removed in the near future.
+
+CREATE TABLE `covidcast__old` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `source` varchar(32) NOT NULL,
   `signal` varchar(64) NOT NULL,
@@ -113,7 +115,7 @@ CREATE TABLE `covidcast` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- important index for computing metadata efficiently (dont forget to use a hint in your query!)
-CREATE INDEX `for_metadata` ON `covidcast` (`source`, `signal`, `is_latest_issue`);
+CREATE INDEX `for_metadata` ON `covidcast__old` (`source`, `signal`, `is_latest_issue`);
 
 /*
 `covidcast_meta_cache` stores a cache of the `covidcast_meta` endpoint

@@ -129,7 +129,7 @@ CREATE OR REPLACE VIEW signal_history_v AS
     SELECT
         0 AS is_latest_issue, -- provides column-compatibility to match `covidcast` table
         -- ^ this value is essentially undefined in this view, the notion of a 'latest' issue is not encoded here and must be drawn from the 'latest' table or view or otherwise computed...
-        0 AS direction, -- provides column-compatibility to match `covidcast` table
+        NULL AS direction, -- provides column-compatibility to match `covidcast` table
         `t2`.`source` AS `source`,
         `t2`.`signal` AS `signal`,
         `t3`.`geo_type` AS `geo_type`,
@@ -164,7 +164,7 @@ CREATE OR REPLACE VIEW signal_history_v AS
 CREATE OR REPLACE VIEW signal_latest_v AS 
     SELECT
         1 AS is_latest_issue, -- provides column-compatibility to match `covidcast` table
-        0 AS direction, -- provides column-compatibility to match `covidcast` table
+        NULL AS direction, -- provides column-compatibility to match `covidcast` table
         `t2`.`source` AS `source`,
         `t2`.`signal` AS `signal`,
         `t3`.`geo_type` AS `geo_type`,
