@@ -36,7 +36,6 @@ class CovidcastRow:
     issue: int = 20200202
     lag: int = 0
     is_latest_issue: bool = True
-    is_wip: bool = True
     missing_value: int = Nans.NOT_MISSING
     missing_stderr: int = Nans.NOT_MISSING
     missing_sample_size: int = Nans.NOT_MISSING
@@ -59,7 +58,6 @@ class CovidcastRow:
             {self.issue},
             {self.lag},
             {self.is_latest_issue},
-            {self.is_wip},
             {self.missing_value},
             {self.missing_stderr},
             {self.missing_sample_size}
@@ -114,11 +112,15 @@ class UnitTests(unittest.TestCase):
         app.config["WTF_CSRF_ENABLED"] = False
         app.config["DEBUG"] = False
 
-        # connect to the `epidata` database and clear the `covidcast` table
-        engine = create_engine('mysql://user:pass@delphi_database_epidata/covid')
+        # connect to the `epidata` database and clear all tables
+        engine = create_engine('mysql://user:pass@delphi_database_epidata/epidata')
         cnx = engine.connect()
-        cnx.execute("truncate table covidcast")
-        cnx.execute('update covidcast_meta_cache set timestamp = 0, epidata = ""')
+        cnx.execute("truncate table signal_load")
+        cnx.execute("truncate table signal_history")
+        cnx.execute("truncate table signal_latest")
+        cnx.execute("truncate table geo_dim")
+        cnx.execute("truncate table signal_dim")
+        cnx.execute('update covidcast_meta_cache set timestamp = 0, epidata = "[]"')
 
         # make connection and cursor available to test cases
         self.cnx = cnx
@@ -135,7 +137,7 @@ class UnitTests(unittest.TestCase):
                 `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`,
 	            `time_value`, `geo_value`, `value_updated_timestamp`,
                 `value`, `stderr`, `sample_size`, `direction_updated_timestamp`,
-                `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
+                `direction`, `issue`, `lag`, `is_latest_issue`, `missing_value`,
                 `missing_stderr`,`missing_sample_size`)
             VALUES
             {sql}
@@ -148,7 +150,7 @@ class UnitTests(unittest.TestCase):
             'id', 'source', 'signal', 'time_type', 'geo_type', 'time_value',
             'geo_value', 'value_updated_timestamp', 'value', 'stderr',
             'sample_size', 'direction_updated_timestamp', 'direction', 'issue',
-            'lag', 'is_latest_issue', 'is_wip', 'missing_value', 'missing_stderr',
+            'lag', 'is_latest_issue', 'missing_value', 'missing_stderr',
             'missing_sample_size'
         ]
         return pd.DataFrame.from_records([[i] + row.aslist for i, row in enumerate(rows, start=1)], columns=columns)
@@ -160,9 +162,9 @@ class UnitTests(unittest.TestCase):
         with app.test_request_context('/correlation'):
             q = QueryBuilder("covidcast", "t")
 
-            df = as_pandas(str(q), params={}, db_engine=self.cnx, parse_dates=None).astype({"is_latest_issue": bool, "is_wip": bool})
+            df = as_pandas(str(q), params={}, db_engine=self.cnx, parse_dates=None).astype({"is_latest_issue": bool})
             expected_df = self._rows_to_df(rows)
             pd.testing.assert_frame_equal(df, expected_df)
-            df = as_pandas(str(q), params={}, db_engine=self.cnx, parse_dates=None, limit_rows=5).astype({"is_latest_issue": bool, "is_wip": bool})
+            df = as_pandas(str(q), params={}, db_engine=self.cnx, parse_dates=None, limit_rows=5).astype({"is_latest_issue": bool})
             expected_df = self._rows_to_df(rows[:5])
             pd.testing.assert_frame_equal(df, expected_df)

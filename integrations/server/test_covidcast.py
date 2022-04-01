@@ -17,6 +17,7 @@ BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
 class CovidcastTests(unittest.TestCase):
   """Tests the `covidcast` endpoint."""
 
+
   def setUp(self):
     """Perform per-test setup."""
 
@@ -27,7 +28,16 @@ class CovidcastTests(unittest.TestCase):
         host='delphi_database_epidata',
         database='covid')
     cur = cnx.cursor()
-    cur.execute('truncate table covidcast')
+
+    # clear all tables
+    cur.execute("truncate table signal_load")
+    cur.execute("truncate table signal_history")
+    cur.execute("truncate table signal_latest")
+    cur.execute("truncate table geo_dim")
+    cur.execute("truncate table signal_dim")
+    # reset the `covidcast_meta_cache` table (it should always have one row)
+    cur.execute('update covidcast_meta_cache set timestamp = 0, epidata = "[]"')
+
     cnx.commit()
     cur.close()
 
@@ -40,22 +50,65 @@ class CovidcastTests(unittest.TestCase):
     self.cur.close()
     self.cnx.close()
 
+  def _insert_dummy_data_set_one(self):
+    self.cur.execute(f'''  INSERT INTO `signal_dim` (`signal_key_id`, `source`, `signal`) VALUES (42, 'src', 'sig');  ''')
+    self.cur.execute(f'''  INSERT INTO `geo_dim` (`geo_key_id`, `geo_type`, `geo_value`) VALUES (96, 'county', '01234');  ''')
+    self.cur.execute(f'''
+      INSERT INTO `signal_latest` (`signal_data_id`, `signal_key_id`, `geo_key_id`,
+        `time_type`, `time_value`, `value_updated_timestamp`,
+        `value`, `stderr`, `sample_size`, `issue`, `lag`, `missing_value`, `missing_stderr`,`missing_sample_size`)
+      VALUES (0, 42, 96,
+        'day', 20200414, 123, 1.5, 2.5, 3.5, 20200414, 0,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING});
+    ''')
+
+  def _insert_dummy_data_set_two(self):
+    self.cur.execute(f'''  INSERT INTO `signal_dim` (`signal_key_id`, `source`, `signal`) VALUES (42, 'src', 'sig');  ''')
+    self.cur.execute(f'''
+      INSERT INTO `geo_dim` (`geo_key_id`, `geo_type`, `geo_value`) VALUES
+          (101, 'county', '11111'),
+          (202, 'county', '22222'),
+          (303, 'county', '33333'),
+          (1001, 'msa',   '11111'),
+          (2002, 'msa',   '22222'),
+          (3003, 'msa',   '33333');  ''')
+    self.cur.execute(f'''
+      INSERT INTO `signal_latest` (`signal_data_id`, `signal_key_id`, `geo_key_id`,
+        `time_type`, `time_value`, `value_updated_timestamp`,
+        `value`, `stderr`, `sample_size`, `issue`, `lag`, `missing_value`, `missing_stderr`,`missing_sample_size`)
+      VALUES
+          (1, 42, 101, 'day', 20200414, 123, 10, 11, 12, 20200414, 0, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
+          (2, 42, 202, 'day', 20200414, 123, 20, 21, 22, 20200414, 0, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
+          (3, 42, 303, 'day', 20200414, 123, 30, 31, 32, 20200414, 0, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
+          (4, 42, 1001, 'day', 20200414, 123, 40, 41, 42, 20200414, 0, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
+          (5, 42, 2002, 'day', 20200414, 123, 50, 51, 52, 20200414, 0, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
+          (6, 42, 3003, 'day', 20200414, 123, 60, 61, 62, 20200414, 0, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING});  ''')
+
+  def _insert_dummy_data_set_three(self):
+    self.cur.execute(f'''  INSERT INTO `signal_dim` (`signal_key_id`, `source`, `signal`) VALUES (42, 'src', 'sig');  ''')
+    self.cur.execute(f'''
+      INSERT INTO `geo_dim` (`geo_key_id`, `geo_type`, `geo_value`) VALUES
+          (101, 'county', '11111'),
+          (202, 'county', '22222'),
+          (303, 'county', '33333'),
+          (444, 'county', '01234');  ''')
+    self.cur.execute(f'''
+      INSERT INTO `signal_latest` (`signal_data_id`, `signal_key_id`, `geo_key_id`,
+        `time_type`, `time_value`, `value_updated_timestamp`,
+        `value`, `stderr`, `sample_size`, `issue`, `lag`, `missing_value`, `missing_stderr`,`missing_sample_size`)
+      VALUES
+          (1, 42, 444, 'day', 20200411, 123, 10, 11, 12, 20200413, 2, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
+          (2, 42, 444, 'day', 20200412, 123, 20, 21, 22, 20200413, 1, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
+          (3, 42, 444, 'day', 20200413, 123, 30, 31, 32, 20200413, 0, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
+          (4, 42, 101, 'day', 20200411, 123, 40, 41, 42, 20200413, 2, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
+          (5, 42, 202, 'day', 20200412, 123, 50, 51, 52, 20200413, 1, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
+          (6, 42, 303, 'day', 20200413, 123, 60, 61, 62, 20200413, 0, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING});  ''')
+
   def test_round_trip(self):
     """Make a simple round-trip with some sample data."""
 
     # insert dummy data
-    self.cur.execute(f'''
-      INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
-        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
-      VALUES
-        (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
-    ''')
+    self._insert_dummy_data_set_one()
     self.cnx.commit()
 
     # make the request
@@ -80,7 +133,7 @@ class CovidcastTests(unittest.TestCase):
         'value': 1.5,
         'stderr': 2.5,
         'sample_size': 3.5,
-        'direction': 4,
+        'direction': 0,
         'issue': 20200414,
         'lag': 0,
         'signal': 'sig',
@@ -140,18 +193,7 @@ class CovidcastTests(unittest.TestCase):
     """Test generate csv data."""
 
     # insert dummy data
-    self.cur.execute(f'''
-      INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
-        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
-      VALUES
-        (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
-    ''')
+    self._insert_dummy_data_set_one()
     self.cnx.commit()
 
     # make the request
@@ -170,7 +212,7 @@ class CovidcastTests(unittest.TestCase):
     expected_response = (
       "geo_value,signal,time_value,direction,issue,lag,missing_value," +
       "missing_stderr,missing_sample_size,value,stderr,sample_size\n" +
-      "01234,sig,20200414,4,20200414,0,0,0,0,1.5,2.5,3.5\n"
+      "01234,sig,20200414,0,20200414,0,0,0,0,1.5,2.5,3.5\n"
     )
 
     # assert that the right data came back
@@ -180,18 +222,7 @@ class CovidcastTests(unittest.TestCase):
     """Test generate raw json data."""
 
     # insert dummy data
-    self.cur.execute(f'''
-      INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
-        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
-      VALUES
-        (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
-    ''')
+    self._insert_dummy_data_set_one()
     self.cnx.commit()
 
     # make the request
@@ -215,7 +246,7 @@ class CovidcastTests(unittest.TestCase):
       'value': 1.5,
       'stderr': 2.5,
       'sample_size': 3.5,
-      'direction': 4,
+      'direction': 0,
       'issue': 20200414,
       'lag': 0,
       'signal': 'sig',
@@ -228,18 +259,7 @@ class CovidcastTests(unittest.TestCase):
     """Test to limit fields field"""
 
     # insert dummy data
-    self.cur.execute(f'''
-      INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
-        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
-      VALUES
-        (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
-    ''')
+    self._insert_dummy_data_set_one()
     self.cnx.commit()
 
     # make the request
@@ -264,7 +284,7 @@ class CovidcastTests(unittest.TestCase):
         'value': 1.5,
         'stderr': 2.5,
         'sample_size': 3.5,
-        'direction': 4,
+        'direction': 0,
         'issue': 20200414,
         'lag': 0,
         'signal': 'sig',
@@ -355,33 +375,7 @@ class CovidcastTests(unittest.TestCase):
     """Select all locations with a wildcard query."""
 
     # insert dummy data
-    self.cur.execute(f'''
-      INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
-        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
-      VALUES
-        (0, 'src', 'sig', 'day', 'county', 20200414, '11111',
-          123, 10, 11, 12, 456, 13, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'county', 20200414, '22222',
-          123, 20, 21, 22, 456, 23, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'county', 20200414, '33333',
-          123, 30, 31, 32, 456, 33, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'msa', 20200414, '11111',
-          123, 40, 41, 42, 456, 43, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'msa', 20200414, '22222',
-          123, 50, 51, 52, 456, 53, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'msa', 20200414, '33333',
-          123, 60, 61, 62, 456, 634, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
-    ''')
+    self._insert_dummy_data_set_two()
     self.cnx.commit()
 
     # make the request
@@ -407,7 +401,7 @@ class CovidcastTests(unittest.TestCase):
           'value': 10,
           'stderr': 11,
           'sample_size': 12,
-          'direction': 13,
+          'direction': 0,
           'issue': 20200414,
           'lag': 0,
           'signal': 'sig',
@@ -420,7 +414,7 @@ class CovidcastTests(unittest.TestCase):
           'value': 20,
           'stderr': 21,
           'sample_size': 22,
-          'direction': 23,
+          'direction': 0,
           'issue': 20200414,
           'lag': 0,
           'signal': 'sig',
@@ -433,7 +427,7 @@ class CovidcastTests(unittest.TestCase):
           'value': 30,
           'stderr': 31,
           'sample_size': 32,
-          'direction': 33,
+          'direction': 0,
           'issue': 20200414,
           'lag': 0,
           'signal': 'sig',
@@ -449,33 +443,7 @@ class CovidcastTests(unittest.TestCase):
     """test different variants of geo types: single, *, multi."""
 
     # insert dummy data
-    self.cur.execute(f'''
-      INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
-        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
-      VALUES
-        (0, 'src', 'sig', 'day', 'county', 20200414, '11111',
-          123, 10, 11, 12, 456, 13, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'county', 20200414, '22222',
-          123, 20, 21, 22, 456, 23, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'county', 20200414, '33333',
-          123, 30, 31, 32, 456, 33, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'msa', 20200414, '11111',
-          123, 40, 41, 42, 456, 43, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'msa', 20200414, '22222',
-          123, 50, 51, 52, 456, 53, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'msa', 20200414, '33333',
-          123, 60, 61, 62, 456, 634, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
-    ''')
+    self._insert_dummy_data_set_two()
     self.cnx.commit()
 
     def fetch(geo_value):
@@ -504,7 +472,7 @@ class CovidcastTests(unittest.TestCase):
       'value': 10,
       'stderr': 11,
       'sample_size': 12,
-      'direction': 13,
+      'direction': 0,
       'issue': 20200414,
       'lag': 0,
       'signal': 'sig',
@@ -517,7 +485,7 @@ class CovidcastTests(unittest.TestCase):
       'value': 20,
       'stderr': 21,
       'sample_size': 22,
-      'direction': 23,
+      'direction': 0,
       'issue': 20200414,
       'lag': 0,
       'signal': 'sig',
@@ -530,7 +498,7 @@ class CovidcastTests(unittest.TestCase):
       'value': 30,
       'stderr': 31,
       'sample_size': 32,
-      'direction': 33,
+      'direction': 0,
       'issue': 20200414,
       'lag': 0,
       'signal': 'sig',
@@ -571,33 +539,7 @@ class CovidcastTests(unittest.TestCase):
     """Select a timeline for a particular location."""
 
     # insert dummy data
-    self.cur.execute(f'''
-      INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
-        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
-      VALUES
-        (0, 'src', 'sig', 'day', 'county', 20200411, '01234',
-          123, 10, 11, 12, 456, 13, 20200413, 2, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'county', 20200412, '01234',
-          123, 20, 21, 22, 456, 23, 20200413, 1, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'county', 20200413, '01234',
-          123, 30, 31, 32, 456, 33, 20200413, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'county', 20200411, '11111',
-          123, 40, 41, 42, 456, 43, 20200413, 2, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'county', 20200412, '22222',
-          123, 50, 51, 52, 456, 53, 20200413, 1, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'county', 20200413, '33333',
-          123, 60, 61, 62, 456, 63, 20200413, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
-    ''')
+    self._insert_dummy_data_set_three()
     self.cnx.commit()
 
     # make the request
@@ -623,7 +565,7 @@ class CovidcastTests(unittest.TestCase):
           'value': 10,
           'stderr': 11,
           'sample_size': 12,
-          'direction': 13,
+          'direction': 0,
           'issue': 20200413,
           'lag': 2,
           'signal': 'sig',
@@ -636,7 +578,7 @@ class CovidcastTests(unittest.TestCase):
           'value': 20,
           'stderr': 21,
           'sample_size': 22,
-          'direction': 23,
+          'direction': 0,
           'issue': 20200413,
           'lag': 1,
           'signal': 'sig',
@@ -649,7 +591,7 @@ class CovidcastTests(unittest.TestCase):
           'value': 30,
           'stderr': 31,
           'sample_size': 32,
-          'direction': 33,
+          'direction': 0,
           'issue': 20200413,
           'lag': 0,
           'signal': 'sig',
@@ -812,7 +754,7 @@ class CovidcastTests(unittest.TestCase):
         'value': 30,
         'stderr': 31,
         'sample_size': 32,
-        'direction': 33,
+        'direction': 0,
         'issue': 202016,
         'lag': 0,
         'signal': 'sig',
@@ -827,33 +769,7 @@ class CovidcastTests(unittest.TestCase):
     """Request a signal using different time formats."""
 
     # insert dummy data
-    self.cur.execute(f'''
-      INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
-        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
-      VALUES
-      (0, 'src', 'sig', 'day', 'county', 20200411, '01234',
-          123, 10, 11, 12, 456, 13, 20200413, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'county', 20200412, '01234',
-          123, 20, 21, 22, 456, 23, 20200413, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'county', 20200413, '01234',
-          123, 30, 31, 32, 456, 33, 20200413, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'county', 20200411, '11111',
-          123, 40, 41, 42, 456, 43, 20200413, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'county', 20200412, '22222',
-          123, 50, 51, 52, 456, 53, 20200413, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'county', 20200413, '33333',
-          123, 60, 61, 62, 456, 63, 20200413, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
-    ''')
+    self._insert_dummy_data_set_three()
     self.cnx.commit()
 
     # make the request

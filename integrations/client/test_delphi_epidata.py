@@ -41,8 +41,19 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
         host='delphi_database_epidata',
         database='epidata')
     cur = cnx.cursor()
-    cur.execute('truncate table covidcast')
+
+    # TODO: ???  what to do with this table?!?!
     cur.execute('truncate table covidcast_nowcast')
+
+    # clear all tables
+    cur.execute("truncate table signal_load")
+    cur.execute("truncate table signal_history")
+    cur.execute("truncate table signal_latest")
+    cur.execute("truncate table geo_dim")
+    cur.execute("truncate table signal_dim")
+    # reset the `covidcast_meta_cache` table (it should always have one row)
+    cur.execute('update covidcast_meta_cache set timestamp = 0, epidata = "[]"')
+
     cnx.commit()
     cur.close()
 

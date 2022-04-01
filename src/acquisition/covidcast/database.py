@@ -256,11 +256,11 @@ class Database:
         INSERT INTO signal_history 
             (signal_data_id, signal_key_id, geo_key_id, demog_key_id, issue, data_as_of_dt, 
              time_type, time_value, `value`, stderr, sample_size, `lag`, value_updated_timestamp, 
-             computation_as_of_dt, is_latest_issue, missing_value, missing_stderr, missing_sample_size, `id`)
+             computation_as_of_dt, is_latest_issue, missing_value, missing_stderr, missing_sample_size, `legacy_id`)
         SELECT
             signal_data_id, sd.signal_key_id, gd.geo_key_id, 0, issue, data_as_of_dt, 
                 time_type, time_value, `value`, stderr, sample_size, `lag`, value_updated_timestamp, 
-                computation_as_of_dt, is_latest_issue, missing_value, missing_stderr, missing_sample_size, `id`
+                computation_as_of_dt, is_latest_issue, missing_value, missing_stderr, missing_sample_size, `legacy_id`
             FROM `{self.load_table}` sl
                 INNER JOIN signal_dim sd
                     USE INDEX(`compressed_signal_key_ind`)

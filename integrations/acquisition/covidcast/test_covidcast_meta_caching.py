@@ -39,10 +39,14 @@ class CovidcastMetaCacheTests(unittest.TestCase):
         database='covid')
     cur = cnx.cursor()
 
-    # clear the `covidcast` table
-    cur.execute('truncate table covidcast')
+    # clear all tables
+    cur.execute("truncate table signal_load")
+    cur.execute("truncate table signal_history")
+    cur.execute("truncate table signal_latest")
+    cur.execute("truncate table geo_dim")
+    cur.execute("truncate table signal_dim")
     # reset the `covidcast_meta_cache` table (it should always have one row)
-    cur.execute('update covidcast_meta_cache set timestamp = 0, epidata = ""')
+    cur.execute('update covidcast_meta_cache set timestamp = 0, epidata = "[]"')
     cnx.commit()
     cur.close()
 
@@ -67,30 +71,24 @@ class CovidcastMetaCacheTests(unittest.TestCase):
 
     # insert dummy data
     self.cur.execute(f'''
-      INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
-        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
-      VALUES
-        (0, 'src', 'sig', 'day', 'state', 20200422, 'pa',
-          123, 1, 2, 3, 456, 1, 20200422, 0, 1, False, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'state', 20200422, 'wa',
-          789, 1, 2, 3, 456, 1, 20200423, 1, 1, False, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
+      INSERT INTO `signal_dim` (`signal_key_id`, `source`, `signal`) VALUES (42, 'src', 'sig');
+    ''')
+    self.cur.execute(f'''
+      INSERT INTO `geo_dim` (`geo_key_id`, `geo_type`, `geo_value`) VALUES (96, 'state', 'pa'), (97, 'state', 'wa');
     ''')
     self.cur.execute(f'''
       INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
-        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
+        `signal_latest` (`signal_data_id`, `signal_key_id`, `geo_key_id`, `time_type`,
+	      `time_value`, `value_updated_timestamp`,
+        `value`, `stderr`, `sample_size`,
+        `issue`, `lag`, `missing_value`,
+        `missing_stderr`,`missing_sample_size`)
       VALUES
-        (100, 'src', 'wip_sig', 'day', 'state', 20200422, 'pa',
-          456, 4, 5, 6, 789, -1, 20200422, 0, 1, True, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
+        (15, 42, 96, 'day', 20200422,
+          123, 1, 2, 3, 20200422, 0, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
+        (16, 42, 97, 'day', 20200422,
+          789, 1, 2, 3, 20200423, 1, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
     ''')
-
     self.cnx.commit()
 
     # make sure the live utility is serving something sensible

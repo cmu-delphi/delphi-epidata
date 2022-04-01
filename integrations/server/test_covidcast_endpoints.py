@@ -109,8 +109,16 @@ class CovidcastEndpointTests(unittest.TestCase):
         # connect to the `epidata` database and clear the `covidcast` table
         cnx = mysql.connector.connect(user="user", password="pass", host="delphi_database_epidata", database="covid")
         cur = cnx.cursor()
-        cur.execute("truncate table covidcast")
-        cur.execute('update covidcast_meta_cache set timestamp = 0, epidata = ""')
+
+        # clear all tables
+        cur.execute("truncate table signal_load")
+        cur.execute("truncate table signal_history")
+        cur.execute("truncate table signal_latest")
+        cur.execute("truncate table geo_dim")
+        cur.execute("truncate table signal_dim")
+        # reset the `covidcast_meta_cache` table (it should always have one row)
+        cur.execute('update covidcast_meta_cache set timestamp = 0, epidata = "[]"')
+
         cnx.commit()
         cur.close()
 

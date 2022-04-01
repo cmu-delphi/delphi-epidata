@@ -15,6 +15,7 @@ import numpy as np
 from delphi_utils import Nans
 from delphi.epidata.client.delphi_epidata import Epidata
 from delphi.epidata.acquisition.covidcast.csv_to_database import main
+from delphi.epidata.acquisition.covidcast.dbjobs_runner import main as dbjobs_main
 import delphi.operations.secrets as secrets
 
 # py3tester coverage target (equivalent to `import *`)
@@ -34,7 +35,16 @@ class CsvUploadingTests(unittest.TestCase):
         host='delphi_database_epidata',
         database='covid')
     cur = cnx.cursor()
-    cur.execute('truncate table covidcast')
+
+    # clear all tables
+    cur.execute("truncate table signal_load")
+    cur.execute("truncate table signal_history")
+    cur.execute("truncate table signal_latest")
+    cur.execute("truncate table geo_dim")
+    cur.execute("truncate table signal_dim")
+    # reset the `covidcast_meta_cache` table (it should always have one row)
+    cur.execute('update covidcast_meta_cache set timestamp = 0, epidata = "[]"')
+
     cnx.commit()
     cur.close()
 
@@ -112,6 +122,7 @@ class CsvUploadingTests(unittest.TestCase):
 
       # upload CSVs
       main(args)
+      dbjobs_main()
       response = Epidata.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
 
       expected_values = pd.concat([values, pd.DataFrame({ "time_value": [20200419] * 3, "signal": [signal_name] * 3, "direction": [None] * 3})], axis=1).rename(columns=uploader_column_rename).to_dict(orient="records")
@@ -140,6 +151,7 @@ class CsvUploadingTests(unittest.TestCase):
 
       # upload CSVs
       main(args)
+      dbjobs_main()
       response = Epidata.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
 
       expected_values = pd.concat([values, pd.DataFrame({
@@ -174,6 +186,7 @@ class CsvUploadingTests(unittest.TestCase):
 
       # upload CSVs
       main(args)
+      dbjobs_main()
       response = Epidata.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
 
       expected_response = {'result': -2, 'message': 'no results'}
@@ -199,6 +212,7 @@ class CsvUploadingTests(unittest.TestCase):
 
       # upload CSVs
       main(args)
+      dbjobs_main()
       response = Epidata.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
 
       expected_values_df = pd.concat([values, pd.DataFrame({
@@ -232,6 +246,7 @@ class CsvUploadingTests(unittest.TestCase):
 
       # upload CSVs
       main(args)
+      dbjobs_main()
       response = Epidata.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
 
       expected_values = pd.concat([values, pd.DataFrame({
@@ -267,6 +282,7 @@ class CsvUploadingTests(unittest.TestCase):
 
       # upload CSVs
       main(args)
+      dbjobs_main()
       response = Epidata.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
 
       expected_values = pd.concat([values, pd.DataFrame({
@@ -298,6 +314,7 @@ class CsvUploadingTests(unittest.TestCase):
 
       # upload CSVs
       main(args)
+      dbjobs_main()
       response = Epidata.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
 
       expected_response = {'result': -2, 'message': 'no results'}
@@ -314,6 +331,7 @@ class CsvUploadingTests(unittest.TestCase):
         f.write('this,header,is,wrong\n')
 
       main(args)
+      dbjobs_main()
 
       path = data_dir + '/archive/failed/src-name/20200420_state_test.csv'
       self.assertIsNotNone(os.stat(path))
@@ -327,6 +345,7 @@ class CsvUploadingTests(unittest.TestCase):
         f.write('file name is wrong\n')
 
       main(args)
+      dbjobs_main()
 
       path = data_dir + '/archive/failed/unknown/hello.csv'
       self.assertIsNotNone(os.stat(path))
