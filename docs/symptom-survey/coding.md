@@ -993,7 +993,7 @@ Files:
     awareness of this is uneven, which is why item V2b (below) does not
     distinguish between booster and additional doses.
 
-* Item V2a asks respondents about the doses of the COVID-19 vaccination they
+* Item V2d asks respondents about the doses of the COVID-19 vaccination they
   received in their initial sequence. This is a revision from previous item V2
   and the response options distinguish between one dose vaccines, two dose
   vaccines, and incomplete 2 dose vaccine sequences.
