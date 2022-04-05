@@ -78,11 +78,12 @@ class CsvUploadingTests(unittest.TestCase):
     return expected_epidata
 
   def verify_timestamps_and_defaults(self):
-    self.cur.execute('select value_updated_timestamp, direction_updated_timestamp, direction from covidcast')
-    for value_updated_timestamp, direction_updated_timestamp, direction in self.cur:
+    self.cur.execute('''
+select value_updated_timestamp from signal_history
+UNION ALL
+select value_updated_timestamp from signal_latest''')
+    for (value_updated_timestamp,) in self.cur:
       self.assertGreater(value_updated_timestamp, 0)
-      self.assertEqual(direction_updated_timestamp, 0)
-      self.assertIsNone(direction)
 
   def test_uploading(self):
     """Scan, parse, upload, archive, serve, and fetch a covidcast signal."""
