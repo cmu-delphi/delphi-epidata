@@ -39,7 +39,8 @@ ensure the data remain available to academic and nonprofit researchers.
 
 Sampling will be suspended in the United States on June 25, 2022. For details on
 the schedule of the international version administered by the University of
-Maryland, see TODO.
+Maryland, see [their end-of-survey
+announcement](https://gisumd.github.io/COVID-19-API-Documentation/docs/notice/end_of_survey.html).
 
 
 ## Availability of Data After the Conclusion of CTIS
