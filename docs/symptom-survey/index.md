@@ -11,7 +11,8 @@ distributed daily to users in the United States via a partnership with Facebook.
 This survey asks respondents about COVID-like symptoms, their behavior (such as
 social distancing), mental health, and economic and health impacts they have
 experienced as a result of the pandemic. A high-level overview of the survey is
-posted [on the COVIDcast website](https://delphi.cmu.edu/covidcast/surveys/).
+posted [on the COVIDcast website](https://delphi.cmu.edu/covid19/ctis/). Data
+collection [will cease on June 25, 2022](end-of-survey.md).
 
 The [survey results dashboard](https://delphi.cmu.edu/covidcast/survey-results/)
 provides a high-level summary of survey results. Geographically aggregated data
@@ -94,5 +95,5 @@ When referring to the survey in text, we prefer the following formats:
 * Acronym form: "Delphi US CTIS"
 
 Prior to July 2021, the survey was known as the COVID Symptom Survey (CSS), and
-some older documentation and publication may still refer to this name. We prefer
-that new publications and materials refer to the new name.
+some older documentation and publications may still refer to this name. We
+prefer that new publications and materials refer to the new name.
