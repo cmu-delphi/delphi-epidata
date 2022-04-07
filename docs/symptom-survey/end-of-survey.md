@@ -25,7 +25,7 @@ well as other topics covered in the survey from mask wearing to COVID-related
 job loss. See [below](#ctis-impact) to learn more about how CTIS has supported
 the COVID-19 response.
 
-At this point in the pandemic, reliable data tracking similar topics as CTIS
+At this point in the pandemic, reliable data to track similar topics as CTIS
 have become more widely available. Additionally, CTIS response rates have
 declined over time, and as COVID-19 has evolved, there is less need for large,
 daily data collection and greater need for measurement of topics that do not
@@ -56,7 +56,7 @@ Delphi Group at CMU’s US CTIS websites. Academic and nonprofit researchers may
 continue to [request access](./data-access.md) to non-public, non-aggregated
 survey data for their research, and current approved data users will be able to
 continue accessing the non-aggregated data until their current data use
-agreements (DUA) expire. Researchers currently with a fully executed DUA will
+agreements (DUA) expire. Researchers currently holding a fully executed DUA will
 have the option to extend their DUA after it expires. Though no new data will be
 collected after June 25, 2022, [Meta’s CTIS
 visualizations](https://dataforgood.facebook.com/covid-survey/) will continue to
