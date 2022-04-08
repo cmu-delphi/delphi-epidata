@@ -882,7 +882,7 @@ their survey analyses.
     vaccines.
   * The response option “I don’t trust COVID-19 vaccines” is a response option
     from Wave 8 that was added back in Wave 12.
-* Item V15a was revised to ask respondents “Did you ever experience any of the
+* Item V15a was replaced with V15c, which asks respondents “Did you ever experience any of the
   following barriers to getting the COVID-19 vaccine?” The word *ever* was added
   to clarify for those who have received the vaccine but may have experienced
   barriers prior to being vaccinated. Additionally, two response options were
@@ -993,7 +993,7 @@ Files:
     awareness of this is uneven, which is why item V2b (below) does not
     distinguish between booster and additional doses.
 
-* Item V2a asks respondents about the doses of the COVID-19 vaccination they
+* Item V2d asks respondents about the doses of the COVID-19 vaccination they
   received in their initial sequence. This is a revision from previous item V2
   and the response options distinguish between one dose vaccines, two dose
   vaccines, and incomplete 2 dose vaccine sequences.
@@ -1001,8 +1001,6 @@ Files:
   shot of the COVID-19 vaccination.
 * Item V2c asks respondents that have not yet received an additional dose or
   booster shot whether they plan to get one.
-* Item V17 asks respondents when they received their most recent COVID-19
-  vaccination.
 * Item C17b asks respondents if they received a flu vaccination since July 2021.
   This is an updated version of item C17a (waves 8-10) and C17 (waves 5-7),
   which descended from item C2 (waves 1-3).
