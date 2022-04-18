@@ -17,7 +17,6 @@ BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
 class CovidcastTests(unittest.TestCase):
   """Tests the `covidcast` endpoint."""
 
-
   def setUp(self):
     """Perform per-test setup."""
 
@@ -607,66 +606,47 @@ class CovidcastTests(unittest.TestCase):
     """Don't allow a row with a key collision to be inserted."""
 
     # insert dummy data
-    self.cur.execute(f'''
-      INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
-        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
-      VALUES
-        (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          0, 0, 0, 0, 0, 0, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
-    ''')
+    self._insert_dummy_data_set_one()
     self.cnx.commit()
 
     # fail to insert different dummy data under the same key
     with self.assertRaises(mysql.connector.errors.IntegrityError):
-      self.cur.execute(f'''
-      INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
-        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
-      VALUES
-          (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-            1, 1, 1, 1, 1, 1, 20200414, 0, 1, False,
-            {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
-      ''')
+          self.cur.execute(f'''
+            INSERT INTO `signal_latest` (`signal_data_id`, `signal_key_id`, `geo_key_id`,
+              `time_type`, `time_value`, `value_updated_timestamp`,
+              `value`, `stderr`, `sample_size`, `issue`, `lag`, `missing_value`, `missing_stderr`,`missing_sample_size`)
+            VALUES (1, 42, 96,
+              'day', 20200414, 123, 991.5, 992.5, 993.5, 20200414, 0,
+              {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING});
+          ''')
 
-    # succeed to insert different dummy data under a different issue
+    # succeed to insert different dummy data under a different time_type
     self.cur.execute(f'''
-      INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
-        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
-      VALUES
-        (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          1, 1, 1, 1, 1, 1, 20200415, 1, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
+            INSERT INTO `signal_latest` (`signal_data_id`, `signal_key_id`, `geo_key_id`,
+              `time_type`, `time_value`, `value_updated_timestamp`,
+              `value`, `stderr`, `sample_size`, `issue`, `lag`, `missing_value`, `missing_stderr`,`missing_sample_size`)
+            VALUES (2, 42, 96,
+              'score', 20200414, 123, 991.5, 992.5, 993.5, 20200415, 1,
+              {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING});
     ''')
 
   def test_nullable_columns(self):
     """Missing values should be surfaced as null."""
 
     # insert dummy data
+    self.cur.execute(f'''  INSERT INTO `signal_dim` (`signal_key_id`, `source`, `signal`) VALUES (42, 'src', 'sig');  ''')
+    self.cur.execute(f'''  INSERT INTO `geo_dim` (`geo_key_id`, `geo_type`, `geo_value`) VALUES (96, 'county', '01234');  ''')
     self.cur.execute(f'''
-      INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
-        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
-      VALUES
-        (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          123, 0.123, NULL, NULL, 456, NULL, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.OTHER}, {Nans.OTHER})
+      INSERT INTO `signal_latest` (`signal_data_id`, `signal_key_id`, `geo_key_id`,
+        `time_type`, `time_value`, `value_updated_timestamp`,
+        `value`, `stderr`, `sample_size`, `issue`, `lag`, `missing_value`, `missing_stderr`,`missing_sample_size`)
+      VALUES (0, 42, 96,
+        'day', 20200414, 123, 0.123, NULL, NULL, 20200414, 0,
+          {Nans.NOT_MISSING}, {Nans.OTHER}, {Nans.OTHER});
     ''')
     self.cnx.commit()
+
+    # TODO: should this show that even if numeric values go into the fields, that if they are marked w/ a MISSING reason, they show up as NULL anyway?
 
     # make the request
     response = requests.get(BASE_URL, params={
@@ -706,29 +686,24 @@ class CovidcastTests(unittest.TestCase):
     """Request a signal that's available at multiple temporal resolutions."""
 
     # insert dummy data
+    self._insert_dummy_data_set_one() # this creates a record w/ temporal type of 'day'
     self.cur.execute(f'''
-      INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
-        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
-      VALUES
-        (0, 'src', 'sig', 'hour', 'state', 2020041714, 'vi',
-          123, 10, 11, 12, 456, 13, 2020041714, 0, 1, False,
+      INSERT INTO `signal_latest` (`signal_data_id`, `signal_key_id`, `geo_key_id`,
+        `time_type`, `time_value`, `value_updated_timestamp`,
+        `value`, `stderr`, `sample_size`, `issue`, `lag`, `missing_value`, `missing_stderr`,`missing_sample_size`)
+      VALUES 
+        (1, 42, 96,
+        'hour', 2020041423, 123, 15, 25, 35, 20200414, 0,
           {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'state', 20200417, 'vi',
-          123, 20, 21, 22, 456, 23, 20200417, 00, 1, False,
+        (2, 42, 96,
+        'week', 202016, 123, 115, 125, 135, 202016, 0,
           {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'week', 'state', 202016, 'vi',
-          123, 30, 31, 32, 456, 33, 202016, 0, 1, False,
+        (3, 42, 96,
+        'month', 202004, 123, 215, 225, 235, 20200414, 0,
           {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'month', 'state', 202004, 'vi',
-          123, 40, 41, 42, 456, 43, 202004, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'year', 'state', 2020, 'vi',
-          123, 50, 51, 52, 456, 53, 2020, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
+        (4, 42, 96,
+        'year', 2020, 123, 315, 325, 335, 20200414, 0,
+          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING});
     ''')
     self.cnx.commit()
 
@@ -738,9 +713,9 @@ class CovidcastTests(unittest.TestCase):
       'data_source': 'src',
       'signal': 'sig',
       'time_type': 'week',
-      'geo_type': 'state',
+      'geo_type': 'county',
       'time_values': '0-9999999999',
-      'geo_value': 'vi',
+      'geo_value': '01234',
     })
     response.raise_for_status()
     response = response.json()
@@ -750,10 +725,10 @@ class CovidcastTests(unittest.TestCase):
       'result': 1,
       'epidata': [{
         'time_value': 202016,
-        'geo_value': 'vi',
-        'value': 30,
-        'stderr': 31,
-        'sample_size': 32,
+        'geo_value': '01234',
+        'value': 115,
+        'stderr': 125,
+        'sample_size': 135,
         'direction': None,
         'issue': 202016,
         'lag': 0,

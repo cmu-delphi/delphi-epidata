@@ -303,6 +303,7 @@ class Database:
             `value` = sl.`value`,
             `stderr` = sl.`stderr`,
             `sample_size` = sl.`sample_size`,
+            `issue` = sl.`issue`,
             `lag` = sl.`lag`,
             `missing_value` = sl.`missing_value`,
             `missing_stderr` = sl.`missing_stderr`,

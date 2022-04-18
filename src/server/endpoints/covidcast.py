@@ -468,7 +468,7 @@ def handle_backfill():
         reference_anchor_lag = 60
 
     # build query
-    q = QueryBuilder(latest_table, "t")
+    q = QueryBuilder(history_table, "t")
 
     fields_string = []
     fields_int = ["time_value", "issue"]
