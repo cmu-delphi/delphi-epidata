@@ -11,6 +11,11 @@ The COVID-19 Trends and Impacts Survey (CTIS) has been deployed in several waves
 We have tried to ensure the coding of waves is consistent. This page provides
 the full survey text and coding schemes.
 
+<div style="background-color:#f5f6fa; padding: 10px 30px;"><strong>Comprehensive
+codebook:</strong> Our [codebook (CSV)](codebook.csv) lists all questions and
+answer choices across all waves of the survey. See below for details on the
+[basic coding rules](#basic-coding-rules) and the [formatting of the
+codebook](#comprehensive-codebook).</div>
 
 ## Table of contents
 {: .no_toc .text-delta}
