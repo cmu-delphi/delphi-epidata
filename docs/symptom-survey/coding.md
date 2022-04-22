@@ -7,15 +7,17 @@ nav_order: 6
 # Questions and Coding
 {: .no_toc}
 
-The COVID-19 Trends and Impacts Survey (CTIS) has been deployed in several waves.
-We have tried to ensure the coding of waves is consistent. This page provides
-the full survey text and coding schemes.
+The COVID-19 Trends and Impacts Survey (CTIS) has been deployed in several
+waves. We have tried to ensure the coding of waves is consistent. This page
+provides the full survey text, coding schemes, and history of survey waves and
+revisions.
 
 <div style="background-color:#f5f6fa; padding: 10px 30px;"><strong>Comprehensive
-codebook:</strong> Our [codebook (CSV)](codebook.csv) lists all questions and
-answer choices across all waves of the survey. See below for details on the
-[basic coding rules](#basic-coding-rules) and the [formatting of the
-codebook](#comprehensive-codebook).</div>
+codebook:</strong> Our <a href="codebook.csv">codebook (CSV)</a> lists all
+questions and answer choices across all waves of the survey. See below for
+details on the <a href="#basic-coding-rules">basic coding rules</a> and the <a
+href="#comprehensive-codebook">formatting of the codebook</a>, and narrative
+explanations of the reasons for each instrument change.</div>
 
 ## Table of contents
 {: .no_toc .text-delta}
@@ -50,12 +52,13 @@ The following columns were added beginning when Wave 4 was deployed:
 * `wave`: Integer specifying the survey wave this respondent completed; see
   below for the full list.
 * `UserLanguage`: Language the respondent completed the survey in.
-- `fips`: The *primary* county FIPS code corresponding to the ZIP code selected
-  by the respondent. Note that ZIP codes can cross county and even state
-  boundaries; if a respondent's ZIP is in multiple counties, the FIPS reported
-  in this column corresponds to the county the ZIP overlaps most with. If a ZIP
-  is not more than 50% in any one county, or if their reported ZIP code cannot
-  be found, `NA` is reported.
+- `fips`: The *primary* county [FIPS
+  code](https://en.wikipedia.org/wiki/FIPS_county_code) corresponding to the ZIP
+  code selected by the respondent. Note that ZIP codes can cross county and even
+  state boundaries; if a respondent's ZIP is in multiple counties, the FIPS
+  reported in this column corresponds to the county the ZIP overlaps most with.
+  If a ZIP is not more than 50% in any one county, or if their reported ZIP code
+  cannot be found, `NA` is reported.
 
 Beginning in Wave 11, the `module` column indicates which module the respondent
 was randomly assigned to. See the [survey modules and randomization](modules.md)
@@ -98,11 +101,11 @@ following rules:
 
 ## Comprehensive Codebook
 
-The [codebook](codebook.csv) describes availability of metadata and question
-fields by survey version. A row is included for each field available in the
-microdata files for a given survey wave. We recommend using the codebook as a
-reference while working with the survey microdata, to ensure you interpret each
-question and answer choice accurately even as items were revised between
+The [codebook (CSV)](codebook.csv) describes availability of metadata and
+question fields by survey version. A row is included for each field available in
+the microdata files for a given survey wave. We recommend using the codebook as
+a reference while working with the survey microdata, to ensure you interpret
+each question and answer choice accurately even as items were revised between
 survey waves.
 
 If a field is available for multiple waves, it is listed separately for each
