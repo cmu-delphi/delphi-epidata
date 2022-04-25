@@ -11,3 +11,5 @@ scipy==1.6.2
 tenacity==7.0.0
 newrelic
 epiweeks==2.1.2
+prettytable
+# mysql-connector-python==8.0.17
