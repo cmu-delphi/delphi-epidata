@@ -11,8 +11,9 @@ distributed daily to users in the United States via a partnership with Facebook.
 This survey asks respondents about COVID-like symptoms, their behavior (such as
 social distancing), mental health, and economic and health impacts they have
 experienced as a result of the pandemic. A high-level overview of the survey is
-posted [on the COVIDcast website](https://delphi.cmu.edu/covid19/ctis/). Data
-collection [will cease on June 25, 2022](end-of-survey.md).
+posted [on the COVIDcast website](https://delphi.cmu.edu/covid19/ctis/), and an
+international version is [conducted by the University of
+Maryland](https://covidmap.umd.edu/). Data collection [will cease on June 25, 2022](end-of-survey.md).
 
 The [survey results dashboard](https://delphi.cmu.edu/covidcast/survey-results/)
 provides a high-level summary of survey results. Geographically aggregated data
@@ -31,7 +32,7 @@ If you have questions about the survey or getting access to data, contact us at
 
 ## Credits
 
-The COVID-19 Trends and Impact Survey (CTIS) is a project of the [Delphi
+The US COVID-19 Trends and Impact Survey (CTIS) is a project of the [Delphi
 Group](https://delphi.cmu.edu/) at Carnegie Mellon University. Team members
 include:
 
@@ -39,6 +40,8 @@ include:
 * Wichada La Motte-Kerr, Survey Coordinator
 * Robin Mejia, survey advisor
 * Nat DeFries, statistical developer and data engineer
+* Eu Jing Chua (2020-2021) and Mashrin Srivastava (2021-2022), data analysis
+  interns
 * plus support from many members of the [Delphi
   team](https://delphi.cmu.edu/about/team/)
 
@@ -61,7 +64,7 @@ and others. If you are interested in getting involved, see our
 
 ## Citing the Survey
 
-Researchers who use the survey data for research are asked to credit and cite
+Researchers who use the US survey data for research are asked to credit and cite
 the survey in publications based on the data. Specifically, we ask that you:
 
 1. Include the acknowledgment "This research is based on survey results from
