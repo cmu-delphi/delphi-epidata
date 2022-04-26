@@ -40,6 +40,8 @@ include:
 * Wichada La Motte-Kerr, Survey Coordinator
 * Robin Mejia, survey advisor
 * Nat DeFries, statistical developer and data engineer
+* Eu Jing Chua (2020-2021) and Mashrin Srivastava (2021-2022), data analysis
+  interns
 * plus support from many members of the [Delphi
   team](https://delphi.cmu.edu/about/team/)
 
