@@ -61,6 +61,14 @@ class CovidcastRow():
     self.lag = lag
 
 
+# constants for the codes used in the `process_status` column of `signal_load`
+class _PROCESS_STATUS(object):
+  INSERTING = 'i'
+  LOADED = 'l'
+  BATCHING = 'b'
+PROCESS_STATUS = _PROCESS_STATUS()
+
+
 class Database:
   """A collection of covidcast database operations."""
 
@@ -70,7 +78,6 @@ class Database:
   history_table = "signal_history_v" # ...also a VIEW
   load_table = "signal_load"
 
-  process_status = {'inserting': 'i', 'loaded': 'l', 'batching': 'b'}
 
   def connect(self, connector_impl=mysql.connector):
     """Establish a connection to the database."""
@@ -120,7 +127,7 @@ class Database:
     return self.count_all_rows(self.latest_table)
 
   def count_insertstatus_rows(self):
-    self._cursor.execute(f"SELECT count(1) from `{self.load_table}` where `process_status`='{self.process_status['inserting']}'")
+    self._cursor.execute(f"SELECT count(1) from `{self.load_table}` where `process_status`='{PROCESS_STATUS.INSERTING}'")
 
     for (num,) in self._cursor:
       return num
@@ -147,7 +154,7 @@ class Database:
         (%s, %s, %s, %s, %s, %s, 
         UNIX_TIMESTAMP(NOW()), %s, %s, %s, %s, %s, 
         1, %s, %s, %s, 
-        '{self.process_status['inserting']}')
+        '{PROCESS_STATUS.INSERTING}')
     '''
 
     # all load table entries are already marked "is_latest_issue".
@@ -159,13 +166,13 @@ class Database:
                 USING (`source`, `signal`, `geo_type`, `geo_value`, `time_type`, `time_value`) 
             SET `{self.load_table}`.`is_latest_issue`=0 
             WHERE `{self.load_table}`.`issue` < `{self.latest_table}`.`issue` 
-                  AND `process_status` = '{self.process_status['inserting']}'
+                  AND `process_status` = '{PROCESS_STATUS.INSERTING}'
     '''
 
     update_status_sql = f'''
         UPDATE `{self.load_table}`
-            SET `process_status` = '{self.process_status['loaded']}'
-            WHERE `process_status` = '{self.process_status['inserting']}'
+            SET `process_status` = '{PROCESS_STATUS.LOADED}'
+            WHERE `process_status` = '{PROCESS_STATUS.INSERTING}'
     '''
 
     if 0 != self.count_insertstatus_rows():
@@ -231,7 +238,7 @@ class Database:
 
     signal_load_mark_batch = f'''
         UPDATE `{self.load_table}` 
-        SET process_status = 'b'
+        SET process_status = '{PROCESS_STATUS.BATCHING}'
     '''
 
     signal_dim_add_new_load = f'''
@@ -268,7 +275,7 @@ class Database:
                 INNER JOIN geo_dim gd
                     USE INDEX(`compressed_geo_key_ind`)
                     ON gd.compressed_geo_key = sl.compressed_geo_key
-            WHERE process_status = 'b'
+            WHERE process_status = '{PROCESS_STATUS.BATCHING}'
         ON DUPLICATE KEY UPDATE
             `value_updated_timestamp` = sl.`value_updated_timestamp`,
             `value` = sl.`value`,
@@ -296,7 +303,7 @@ class Database:
                 INNER JOIN geo_dim gd 
                     USE INDEX(`compressed_geo_key_ind`) 
                     ON gd.compressed_geo_key = sl.compressed_geo_key 
-            WHERE process_status = 'b'
+            WHERE process_status = '{PROCESS_STATUS.BATCHING}'
                 AND is_latest_issue = 1
         ON DUPLICATE KEY UPDATE
             `value_updated_timestamp` = sl.`value_updated_timestamp`,
@@ -312,7 +319,7 @@ class Database:
 
     signal_load_delete_processed = f'''
         DELETE FROM `{self.load_table}` 
-        WHERE  process_status <> 'l'
+        WHERE  process_status <> '{PROCESS_STATUS.LOADED}'
     '''
 
     print('signal_load_set_comp_keys:')
