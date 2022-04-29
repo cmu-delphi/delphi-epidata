@@ -98,7 +98,7 @@ def _handle_lag_issues_as_of(q: QueryBuilder, issues: Optional[List[Union[Tuple[
         # history_table has full spectrum of lag values to search from whereas the latest_table does not
         q.where(lag=lag)
     elif as_of is not None:
-        # fetch most recent issues with as of
+        # fetch the most recent issue as of a certain date (not to be confused w/ plain-old "most recent issue"
         q.retable(history_table)
         sub_condition_asof = "(issue <= :as_of)"
         q.params["as_of"] = as_of
@@ -107,7 +107,7 @@ def _handle_lag_issues_as_of(q: QueryBuilder, issues: Optional[List[Union[Tuple[
         sub_condition = f"x.max_issue = {q.alias}.issue AND x.time_type = {q.alias}.time_type AND x.time_value = {q.alias}.time_value AND x.source = {q.alias}.source AND x.signal = {q.alias}.signal AND x.geo_type = {q.alias}.geo_type AND x.geo_value = {q.alias}.geo_value"
         q.subquery = f"JOIN (SELECT {sub_fields} FROM {q.table} WHERE {q.conditions_clause} AND {sub_condition_asof} GROUP BY {sub_group}) x ON {sub_condition}"
     else:
-        # fetch most recent issue fast, using standard latest_table
+        # else we are using the (standard/default) `latest_table`, to fetch the most recent issue quickly
         pass
 
 
