@@ -88,6 +88,13 @@ CREATE TABLE signal_latest (
 ) ENGINE=InnoDB;
 
 
+-- NOTE: In production or any non-testing system that should maintain consistency,
+--       **DO NOT** 'TRUNCATE' this table.
+--       Doing so will function as a DROP/CREATE and reset the AUTO_INCREMENT counter for the `signal_data_id` field.
+--       This field is used to populate the non-AUTO_INCREMENT fields of the same name in `signal_latest` and `signal_history`,
+--       and resetting it will ultimately cause PK collisions.
+--       To restore the counter, a row must be written with a `signal_data_id` value greater than the maximum
+--       of its values in the other tables.
 CREATE TABLE signal_load (
     `signal_data_id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
     `signal_key_id` BIGINT(20) UNSIGNED,

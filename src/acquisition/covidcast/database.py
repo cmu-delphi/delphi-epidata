@@ -224,7 +224,7 @@ class Database:
         if commit_partial:
           self._connection.commit()
     except Exception as e:
-      # TODO: rollback???  truncate table???  something???
+      # TODO: rollback???  something???
       raise e
     return total
 
@@ -277,6 +277,7 @@ class Database:
                     ON gd.compressed_geo_key = sl.compressed_geo_key
             WHERE process_status = '{PROCESS_STATUS.BATCHING}'
         ON DUPLICATE KEY UPDATE
+            `signal_data_id` = sl.`signal_data_id`,
             `value_updated_timestamp` = sl.`value_updated_timestamp`,
             `value` = sl.`value`,
             `stderr` = sl.`stderr`,
@@ -306,6 +307,7 @@ class Database:
             WHERE process_status = '{PROCESS_STATUS.BATCHING}'
                 AND is_latest_issue = 1
         ON DUPLICATE KEY UPDATE
+            `signal_data_id` = sl.`signal_data_id`,
             `value_updated_timestamp` = sl.`value_updated_timestamp`,
             `value` = sl.`value`,
             `stderr` = sl.`stderr`,
