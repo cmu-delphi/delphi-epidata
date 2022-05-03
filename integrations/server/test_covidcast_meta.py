@@ -10,6 +10,7 @@ import requests
 #first party
 from delphi_utils import Nans
 from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import main as update_cache
+import delphi.operations.secrets as secrets
 
 # use the local instance of the Epidata API
 BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
@@ -17,6 +18,31 @@ BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
 
 class CovidcastMetaTests(unittest.TestCase):
   """Tests the `covidcast_meta` endpoint."""
+
+  src_sig_lookups = {
+    ('src1', 'sig1'): 101,
+    ('src1', 'sig2'): 102,
+    ('src2', 'sig1'): 201,
+    ('src2', 'sig2'): 202,
+  }
+  geo_lookups = {
+    ('hrr', 'geo1'): 10001,
+    ('hrr', 'geo2'): 10002,
+    ('msa', 'geo1'): 20001,
+    ('msa', 'geo2'): 20002,
+  }
+
+  template = '''
+      INSERT INTO
+        `signal_latest` (`signal_data_id`, `signal_key_id`, `geo_key_id`,
+	      `time_type`, `time_value`, `value_updated_timestamp`,
+        `value`, `stderr`, `sample_size`,
+        `issue`, `lag`, `missing_value`,
+        `missing_stderr`,`missing_sample_size`)
+      VALUES
+        (%d, %d, %d, "%s", %d, 123,
+        %d, 0, 0, %d, 0, %d, %d, %d)
+  '''
 
   def setUp(self):
     """Perform per-test setup."""
@@ -26,37 +52,56 @@ class CovidcastMetaTests(unittest.TestCase):
         user='user',
         password='pass',
         host='delphi_database_epidata',
-        database='epidata')
+        database='covid')
     cur = cnx.cursor()
-    cur.execute('truncate table covidcast')
-    cur.execute('update covidcast_meta_cache set timestamp = 0, epidata = ""')
+
+    # clear all tables
+    cur.execute("truncate table signal_load")
+    cur.execute("truncate table signal_history")
+    cur.execute("truncate table signal_latest")
+    cur.execute("truncate table geo_dim")
+    cur.execute("truncate table signal_dim")
+    # reset the `covidcast_meta_cache` table (it should always have one row)
+    cur.execute('update covidcast_meta_cache set timestamp = 0, epidata = "[]"')
+
+    # populate dimension tables for convenience
+    for (src,sig) in self.src_sig_lookups:
+        cur.execute('''
+            INSERT INTO `signal_dim` (`signal_key_id`, `source`, `signal`)
+            VALUES (%d, '%s', '%s'); ''' % ( self.src_sig_lookups[(src,sig)], src, sig ))
+    for (gt,gv) in self.geo_lookups:
+        cur.execute('''
+            INSERT INTO `geo_dim` (`geo_key_id`, `geo_type`, `geo_value`)
+            VALUES (%d, '%s', '%s'); ''' % ( self.geo_lookups[(gt,gv)], gt, gv ))
+
     cnx.commit()
     cur.close()
+
+    # initialize counter for tables without non-autoincrement id
+    self.id_counter = 666
 
     # make connection and cursor available to test cases
     self.cnx = cnx
     self.cur = cnx.cursor()
+
+    # use the local instance of the epidata database
+    secrets.db.host = 'delphi_database_epidata'
+    secrets.db.epi = ('user', 'pass')
+
 
   def tearDown(self):
     """Perform per-test teardown."""
     self.cur.close()
     self.cnx.close()
 
+  def _get_id(self):
+    self.id_counter += 1
+    return self.id_counter
+
   def test_round_trip(self):
     """Make a simple round-trip with some sample data."""
 
     # insert dummy data and accumulate expected results (in sort order)
-    template = '''
-      INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
-        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
-      VALUES
-        (0, "%s", "%s", "%s", "%s", %d, "%s", 123,
-        %d, 0, 0, 456, 0, %d, 0, 1, %d, %d, %d, %d)
-    '''
     expected = []
     for src in ('src1', 'src2'):
       for sig in ('sig1', 'sig2'):
@@ -81,8 +126,9 @@ class CovidcastMetaTests(unittest.TestCase):
             })
             for tv in (1, 2):
               for gv, v in zip(('geo1', 'geo2'), (10, 20)):
-                self.cur.execute(template % (
-                  src, sig, tt, gt, tv, gv, v, tv, False,
+                self.cur.execute(self.template % (
+                  self._get_id(),
+                  self.src_sig_lookups[(src,sig)], self.geo_lookups[(gt,gv)], tt, tv, v, tv,
                   Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.NOT_MISSING
                 ))
     self.cnx.commit()
@@ -105,17 +151,6 @@ class CovidcastMetaTests(unittest.TestCase):
     """Test filtering options some sample data."""
 
     # insert dummy data and accumulate expected results (in sort order)
-    template = '''
-      INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
-        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
-      VALUES
-        (0, "%s", "%s", "%s", "%s", %d, "%s", 123,
-        %d, 0, 0, 456, 0, %d, 0, 1, %d, %d, %d, %d)
-    '''
     expected = []
     for src in ('src1', 'src2'):
       for sig in ('sig1', 'sig2'):
@@ -140,8 +175,9 @@ class CovidcastMetaTests(unittest.TestCase):
             })
             for tv in (1, 2):
               for gv, v in zip(('geo1', 'geo2'), (10, 20)):
-                self.cur.execute(template % (
-                  src, sig, tt, gt, tv, gv, v, tv, False,
+                self.cur.execute(self.template % (
+                  self._get_id(),
+                  self.src_sig_lookups[(src,sig)], self.geo_lookups[(gt,gv)], tt, tv, v, tv,
                   Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.NOT_MISSING
                 ))
     self.cnx.commit()
