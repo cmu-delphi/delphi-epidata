@@ -22,7 +22,7 @@ class CovidcastRow():
   """A container for all the values of a single covidcast row."""
 
   @staticmethod
-  def fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag, is_wip):
+  def fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag):
     if row_value is None: return None
     return CovidcastRow(source, signal, time_type, geo_type, time_value,
                         row_value.geo_value,
@@ -32,16 +32,16 @@ class CovidcastRow():
                         row_value.missing_value,
                         row_value.missing_stderr,
                         row_value.missing_sample_size,
-                        issue, lag, is_wip)
+                        issue, lag)
 
   @staticmethod
-  def fromCsvRows(row_values, source, signal, time_type, geo_type, time_value, issue, lag, is_wip):
+  def fromCsvRows(row_values, source, signal, time_type, geo_type, time_value, issue, lag):
     # NOTE: returns a generator, as row_values is expected to be a generator
-    return (CovidcastRow.fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag, is_wip)
+    return (CovidcastRow.fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag)
             for row_value in row_values)
 
   def __init__(self, source, signal, time_type, geo_type, time_value, geo_value, value, stderr, 
-    sample_size, missing_value, missing_stderr, missing_sample_size, issue, lag, is_wip):
+               sample_size, missing_value, missing_stderr, missing_sample_size, issue, lag):
     self.id = None
     self.source = source
     self.signal = signal
@@ -59,7 +59,6 @@ class CovidcastRow():
     self.direction = None
     self.issue = issue
     self.lag = lag
-    self.is_wip = is_wip
 
 
 class Database:
@@ -219,7 +218,6 @@ class Database:
           row.sample_size,
           row.issue,
           row.lag,
-          row.is_wip,
           row.missing_value,
           row.missing_stderr,
           row.missing_sample_size
@@ -364,16 +362,10 @@ SET `covidcast`.`is_latest_issue`=1;
     logger.info(f"using {n_threads} workers")
 
     srcsigs = Queue() # multi-consumer threadsafe!
-
     sql = f'SELECT `source`, `signal` FROM `{table_name}` GROUP BY `source`, `signal` ORDER BY `source` ASC, `signal` ASC;'
-
     self._cursor.execute(sql)
-    for source, signal in list(self._cursor): # self._cursor is a generator; this lets us use the cursor for subsequent queries inside the loop
-      sql = f"SELECT `is_wip` FROM `{table_name}` WHERE `source`=%s AND `signal`=%s LIMIT 1"
-      self._cursor.execute(sql, (source, signal))
-      is_wip = int(self._cursor.fetchone()[0]) # casting to int as it comes out as a '0' or '1' bytearray; bool('0')==True :(
-      if not is_wip:
-        srcsigs.put((source, signal))
+    for source, signal in self._cursor:
+      srcsigs.put((source, signal))
 
     inner_sql = f'''
       SELECT
