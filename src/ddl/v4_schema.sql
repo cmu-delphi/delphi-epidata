@@ -36,6 +36,8 @@ CREATE TABLE signal_dim (
 ) ENGINE=InnoDB;
 
 
+-- Merged dim table combines geo_dim and signal_dim
+-- merged_key_id added to signal tables and views
 CREATE TABLE covid.merged_dim
 (`merged_key_id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 `signal_key_id` INT,
