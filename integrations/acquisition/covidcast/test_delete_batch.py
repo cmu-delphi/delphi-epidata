@@ -10,7 +10,7 @@ import mysql.connector
 
 # first party
 from delphi_utils import Nans
-from delphi.epidata.client.delphi_epidata import Epidata
+from delphi.epidata.acquisition.covidcast.database import Database, CovidcastRow
 import delphi.operations.secrets as secrets
 
 # py3tester coverage target (equivalent to `import *`)
@@ -25,37 +25,22 @@ class DeleteBatch(unittest.TestCase):
     def setUp(self):
         """Perform per-test setup."""
 
-        # connect to the `epidata` database and clear the `covidcast` table
-        cnx = mysql.connector.connect(
-            user='user',
-            password='pass',
-            host='delphi_database_epidata',
-            database='epidata')
-        cur = cnx.cursor()
-        cur.execute('truncate table covidcast')
-        cnx.commit()
-        cur.close()
-
-        # make connection and cursor available to test cases
-        self.cnx = cnx
-        self.cur = cnx.cursor()
-
         # use the local instance of the epidata database
         secrets.db.host = 'delphi_database_epidata'
         secrets.db.epi = ('user', 'pass')
 
-        # use the local instance of the Epidata API
-        Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
-
         # will use secrets as set above
-        from delphi.epidata.acquisition.covidcast.database import Database
-        self.database = Database()
-        self.database.connect()
+        self._db = Database()
+        self._db.connect()
+
+        for table in "signal_load  signal_latest  signal_history  geo_dim  signal_dim".split():
+            self._db._cursor.execute(f"TRUNCATE TABLE {table}")
+
 
     def tearDown(self):
         """Perform per-test teardown."""
-        self.cur.close()
-        self.cnx.close()
+        self._db.disconnect(False)
+        del self._db
 
     @unittest.skip("Database user would require FILE privileges")
     def test_delete_from_file(self):
@@ -71,54 +56,53 @@ class DeleteBatch(unittest.TestCase):
 
     def _test_delete_batch(self, cc_deletions):
         # load sample data
-        rows = [
-            # geo_value issue is_latest
-            ["d_nonlatest", 1, 0],
-            ["d_nonlatest", 2, 1],
-            ["d_latest", 1, 0],
-            ["d_latest", 2, 0],
-            ["d_latest", 3, 1]
-        ]
+        rows = []
         for time_value in [0, 1]:
-            self.cur.executemany(f'''
-            INSERT INTO covidcast
-            (`geo_value`, `issue`, `is_latest_issue`, `time_value`,
-            `source`, `signal`, `time_type`, `geo_type`,
-            value_updated_timestamp, direction_updated_timestamp, value, stderr, sample_size, lag, direction)
-            VALUES
-            (%s, %s, %s, {time_value},
-            "src", "sig", "day", "geo",
-            0, 0, 0, 0, 0, 0, 0)
-            ''', rows)
-        self.cnx.commit()
+            rows += [
+                # varying numeric column here (2nd to last) is `issue`
+                CovidcastRow('src', 'sig', 'day', 'geo', time_value, "d_nonlatest", 0,0,0,0,0,0, 1, 0),
+                CovidcastRow('src', 'sig', 'day', 'geo', time_value, "d_nonlatest", 0,0,0,0,0,0, 2, 0),
+                CovidcastRow('src', 'sig', 'day', 'geo', time_value, "d_latest", 0,0,0,0,0,0, 1, 0),
+                CovidcastRow('src', 'sig', 'day', 'geo', time_value, "d_latest", 0,0,0,0,0,0, 2, 0),
+                CovidcastRow('src', 'sig', 'day', 'geo', time_value, "d_latest",  0,0,0,0,0,0, 3, 0)
+            ]
+        rows.append(CovidcastRow('src', 'sig', 'day', 'geo', 0, "d_justone",  0,0,0,0,0,0, 1, 0))
+        self._db.insert_or_update_bulk(rows)
+        self._db.run_dbjobs()
 
         # delete entries
-        self.database.delete_batch(cc_deletions)
+        self._db.delete_batch(cc_deletions)
+
+        cur = self._db._cursor
 
         # verify remaining data is still there
-        self.cur.execute("select * from covidcast")
-        result = list(self.cur)
-        self.assertEqual(len(result), 2*len(rows)-2)
+        cur.execute(f"select * from {self._db.history_view}")
+        result = list(cur)
+        self.assertEqual(len(result), len(rows)-3)
 
         examples = [
             # verify deletions are gone
             Example(
-                'select * from covidcast where time_value=0 and geo_value="d_nonlatest" and issue=1',
+                f'select * from {self._db.history_view} where time_value=0 and geo_value="d_nonlatest" and issue=1',
                 []
             ),
             Example(
-                'select * from covidcast where time_value=0 and geo_value="d_latest" and issue=3',
+                f'select * from {self._db.history_view} where time_value=0 and geo_value="d_latest" and issue=3',
                 []
             ),
-            # verify is_latest_issue flag was corrected
             Example(
-                'select geo_value, issue from covidcast where time_value=0 and is_latest_issue=1',
+                f'select * from {self._db.history_view} where geo_value="d_justone"',
+                []
+            ),
+            # verify latest issue was corrected
+            Example(
+                f'select geo_value, issue from {self._db.latest_view} where time_value=0',
                 [('d_nonlatest', 2),
                  ('d_latest', 2)]
             )
         ]
 
         for ex in examples:
-            self.cur.execute(ex.given)
-            result = list(self.cur)
+            cur.execute(ex.given)
+            result = list(cur)
             self.assertEqual(result, ex.expected, ex.given)
