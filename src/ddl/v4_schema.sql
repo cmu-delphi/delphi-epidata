@@ -10,7 +10,7 @@
 --
 CREATE DATABASE covid;
 USE covid;
-GRANT ALL ON covid.* TO 'user@%';
+GRANT ALL ON covid.* TO 'user';
 -- END TODO
 -- --------------------------------
 
@@ -36,26 +36,22 @@ CREATE TABLE signal_dim (
 ) ENGINE=InnoDB;
 
 
-<<<<<<< HEAD
 -- Merged dim table combines geo_dim and signal_dim
 -- merged_key_id added to signal tables and views
-=======
->>>>>>> 952743ee... schema changes for merged dim
-CREATE TABLE covid.merged_dim
-(`merged_key_id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-`signal_key_id` INT,
-`geo_key_id` INT,
-`source` VARCHAR(32),
-`signal` VARCHAR(64),
-`geo_type` VARCHAR(12),
-`geo_value` VARCHAR(12),
-PRIMARY KEY (`merged_key_id`) USING BTREE,
-UNIQUE INDEX `values` (`source`, `signal`, `geo_type`, `geo_value`) USING BTREE);
+CREATE TABLE merged_dim
+    (`merged_key_id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `signal_key_id` INT,
+    `geo_key_id` INT,
+    `source` VARCHAR(32),
+    `signal` VARCHAR(64),
+    `geo_type` VARCHAR(12),
+    `geo_value` VARCHAR(12),
+    PRIMARY KEY (`merged_key_id`) USING BTREE,
+    UNIQUE INDEX `values` (`source`, `signal`, `geo_type`, `geo_value`) USING BTREE,
+    INDEX `dim_ids` (`signal_key_id`, `geo_key_id`) USING BTREE
+) COLLATE='utf8mb4_0900_ai_ci' ENGINE=InnoDB;
 
-<<<<<<< HEAD
-=======
 
->>>>>>> 952743ee... schema changes for merged dim
 CREATE TABLE signal_history (
     `signal_data_id` BIGINT(20) UNSIGNED NOT NULL,
     `merged_key_id` BIGINT(19) NULL DEFAULT NULL,
@@ -158,7 +154,7 @@ CREATE TABLE signal_load (
 CREATE OR REPLACE VIEW covid.signal_history_v AS
     SELECT
         0 AS `is_latest_issue`,
-        0 AS `direction`,
+        NULL AS `direction`,
         `t2`.`source` AS `source`,
         `t2`.`signal` AS `signal`,
         `t2`.`geo_type` AS `geo_type`,
@@ -190,7 +186,7 @@ CREATE OR REPLACE VIEW covid.signal_history_v AS
 CREATE OR REPLACE VIEW covid.signal_latest_v AS
     SELECT
         1 AS `is_latest_issue`,
-        0 AS `direction`,
+        NULL AS `direction`,
         `t2`.`source` AS `source`,
         `t2`.`signal` AS `signal`,
         `t2`.`geo_type` AS `geo_type`,
