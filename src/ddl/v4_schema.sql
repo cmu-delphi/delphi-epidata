@@ -40,8 +40,8 @@ CREATE TABLE signal_dim (
 -- merged_key_id added to signal tables and views
 CREATE TABLE merged_dim
     (`merged_key_id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-    `signal_key_id` INT,
-    `geo_key_id` INT,
+    `signal_key_id` INT NOT NULL,
+    `geo_key_id` INT NOT NULL,
     `source` VARCHAR(32),
     `signal` VARCHAR(64),
     `geo_type` VARCHAR(12),
@@ -176,7 +176,8 @@ CREATE OR REPLACE VIEW covid.signal_history_v AS
         `t1`.`missing_stderr` AS `missing_stderr`,
         `t1`.`missing_sample_size` AS `missing_sample_size`,
         `t1`.`signal_key_id` AS `signal_key_id`,
-        `t1`.`geo_key_id` AS `geo_key_id`
+        `t1`.`geo_key_id` AS `geo_key_id`,
+        `t1`.`merged_key_id` AS `merged_key_id`
     FROM covid.`signal_history` `t1`
          JOIN covid.`merged_dim` `t2`
              USE INDEX (PRIMARY)
@@ -208,7 +209,8 @@ CREATE OR REPLACE VIEW covid.signal_latest_v AS
         `t1`.`missing_stderr` AS `missing_stderr`,
         `t1`.`missing_sample_size` AS `missing_sample_size`,
         `t1`.`signal_key_id` AS `signal_key_id`,
-        `t1`.`geo_key_id` AS `geo_key_id`
+        `t1`.`geo_key_id` AS `geo_key_id`,
+        `t1`.`merged_key_id` AS `merged_key_id`
     FROM covid.`signal_latest` `t1`
         JOIN covid.`merged_dim` `t2`
             USE INDEX (PRIMARY)
