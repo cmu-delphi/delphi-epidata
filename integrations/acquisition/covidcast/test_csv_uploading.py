@@ -42,6 +42,7 @@ class CsvUploadingTests(unittest.TestCase):
     cur.execute("truncate table signal_latest")
     cur.execute("truncate table geo_dim")
     cur.execute("truncate table signal_dim")
+    cur.execute("truncate table merged_dim")
     # reset the `covidcast_meta_cache` table (it should always have one row)
     cur.execute('update covidcast_meta_cache set timestamp = 0, epidata = "[]"')
 

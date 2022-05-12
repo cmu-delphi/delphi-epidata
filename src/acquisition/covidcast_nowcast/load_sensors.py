@@ -92,7 +92,12 @@ def _move_after_processing(filepath, success):
 
 def _create_upsert_method(meta):
     def method(table, conn, keys, data_iter):
-        sql_table = sqlalchemy.Table(table.name, meta, autoload=True)
+        sql_table = sqlalchemy.Table(
+            table.name,
+            meta,
+            # specify lag column explicitly; lag is a reserved word sqlalchemy doesn't know about
+            sqlalchemy.Column("lag", sqlalchemy.Integer, quote=True),
+            autoload=True)
         insert_stmt = sqlalchemy.dialects.mysql.insert(sql_table).values([dict(zip(keys, data)) for data in data_iter])
         upsert_stmt = insert_stmt.on_duplicate_key_update({x.name: x for x in insert_stmt.inserted})
         conn.execute(upsert_stmt)

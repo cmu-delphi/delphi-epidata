@@ -60,6 +60,12 @@ class CovidcastRow():
     self.issue = issue
     self.lag = lag
 
+  def signal_pair(self):
+    return f"{self.source}:{self.signal}"
+
+  def geo_pair(self):
+    return f"{self.geo_type}:{self.geo_value}"
+
 
 # constants for the codes used in the `process_status` column of `signal_load`
 class _PROCESS_STATUS(object):
@@ -251,15 +257,22 @@ class Database:
              `source`, `signal`,
              `geo_type`, `geo_value`)
         SELECT DISTINCT
-            signal_key_id, geo_key_id,
-                `source`, `signal`,
-                `geo_type`,`geo_value`
-            FROM `{self.load_table}`
-            WHERE (signal_key_id, geo_key_id) NOT IN
+            sd.signal_key_id, gd.geo_key_id,
+                sl.`source`, sl.`signal`,
+                sl.`geo_type`,sl.`geo_value`
+            FROM `{self.load_table}` sl
+                INNER JOIN signal_dim sd
+                    USE INDEX(`compressed_signal_key_ind`)
+                    ON sd.compressed_signal_key = sl.compressed_signal_key
+                INNER JOIN geo_dim gd
+                    USE INDEX(`compressed_geo_key_ind`)
+                    ON gd.compressed_geo_key = sl.compressed_geo_key
+            WHERE (sd.signal_key_id, gd.geo_key_id) NOT IN
                 (SELECT signal_key_id, geo_key_id
                 FROM covid.merged_dim)
     '''
 
+    # TODO: only need the merged_dim join; can do the sig and geo lookups based on the literals
     signal_history_load = f'''
         INSERT INTO signal_history 
             (signal_data_id, merged_key_id, signal_key_id, geo_key_id, demog_key_id, issue, data_as_of_dt,
@@ -270,16 +283,16 @@ class Database:
                 time_type, time_value, `value`, stderr, sample_size, `lag`, value_updated_timestamp, 
                 computation_as_of_dt, is_latest_issue, missing_value, missing_stderr, missing_sample_size
             FROM `{self.load_table}` sl
-                INNER JOIN merged_dim md
-                    USE INDEX(`dim_ids`)
-                    ON md.signal_key_id = sl.signal_key_id
-                        AND md.geo_key_id = sl.geo_key_id
                 INNER JOIN signal_dim sd
                     USE INDEX(`compressed_signal_key_ind`)
                     ON sd.compressed_signal_key = sl.compressed_signal_key
                 INNER JOIN geo_dim gd
                     USE INDEX(`compressed_geo_key_ind`)
                     ON gd.compressed_geo_key = sl.compressed_geo_key
+                INNER JOIN merged_dim md
+                    USE INDEX(`dim_ids`)
+                    ON md.signal_key_id = sd.signal_key_id
+                        AND md.geo_key_id = gd.geo_key_id
             WHERE process_status = '{PROCESS_STATUS.BATCHING}'
         ON DUPLICATE KEY UPDATE
             `signal_data_id` = sl.`signal_data_id`,
@@ -295,20 +308,24 @@ class Database:
 
     signal_latest_load = f'''
         INSERT INTO signal_latest 
-            (signal_data_id, signal_key_id, geo_key_id, demog_key_id, issue, data_as_of_dt, 
+            (signal_data_id, merged_key_id, signal_key_id, geo_key_id, demog_key_id, issue, data_as_of_dt, 
              time_type, time_value, `value`, stderr, sample_size, `lag`, value_updated_timestamp, 
              computation_as_of_dt, missing_value, missing_stderr, missing_sample_size)
         SELECT
-            signal_data_id, sd.signal_key_id, gd.geo_key_id, 0, issue, data_as_of_dt, 
+            signal_data_id, md.merged_key_id, sd.signal_key_id, gd.geo_key_id, 0, issue, data_as_of_dt, 
                 time_type, time_value, `value`, stderr, sample_size, `lag`, value_updated_timestamp, 
                 computation_as_of_dt, missing_value, missing_stderr, missing_sample_size
-            FROM `{self.load_table}` sl 
+            FROM `{self.load_table}` sl
                 INNER JOIN signal_dim sd 
                     USE INDEX(`compressed_signal_key_ind`) 
                     ON sd.compressed_signal_key = sl.compressed_signal_key 
                 INNER JOIN geo_dim gd 
                     USE INDEX(`compressed_geo_key_ind`) 
                     ON gd.compressed_geo_key = sl.compressed_geo_key 
+                INNER JOIN merged_dim md
+                    USE INDEX(`dim_ids`)
+                    ON md.signal_key_id = sd.signal_key_id
+                        AND md.geo_key_id = gd.geo_key_id
             WHERE process_status = '{PROCESS_STATUS.BATCHING}'
                 AND is_latest_issue = 1
         ON DUPLICATE KEY UPDATE
@@ -330,23 +347,27 @@ class Database:
     '''
 
     logger = get_structured_logger("run_dbjobs")
-    logger.info('executing signal_load_set_comp_keys:')
-    self._cursor.execute(signal_load_set_comp_keys)
-    logger.info('executing signal_load_mark_batch:')
-    self._cursor.execute(signal_load_mark_batch)
-    logger.info('executing signal_dim_add_new_load:')
-    self._cursor.execute(signal_dim_add_new_load)
-    logger.info('executing geo_dim_add_new_load:')
-    self._cursor.execute(geo_dim_add_new_load)
-    logger.info('merged_dim_add_new_load:')
-    self._cursor.execute(merged_dim_add_new_load)
-    logger.info('executing signal_history_load:')
-    self._cursor.execute(signal_history_load)
-    logger.info('executing signal_latest_load:')
-    self._cursor.execute(signal_latest_load)
-    logger.info('executing signal_load_delete_processed:')
-    self._cursor.execute(signal_load_delete_processed)
-    logger.info('done')
+    try:
+      self._cursor.execute(signal_load_set_comp_keys)
+      logger.info('signal_load_set_comp_keys', rows=self._cursor.rowcount)
+      self._cursor.execute(signal_load_mark_batch)
+      logger.info('signal_load_mark_batch', rows=self._cursor.rowcount)
+      self._cursor.execute(signal_dim_add_new_load)
+      logger.info('signal_dim_add_new_load', rows=self._cursor.rowcount)
+      self._cursor.execute(geo_dim_add_new_load)
+      logger.info('geo_dim_add_new_load', rows=self._cursor.rowcount)
+      self._cursor.execute(merged_dim_add_new_load)
+      logger.info('merged_dim_add_new_load', rows=self._cursor.rowcount)
+      self._cursor.execute(signal_history_load)
+      logger.info('signal_history_load', rows=self._cursor.rowcount)
+      self._cursor.execute(signal_latest_load)
+      logger.info('signal_latest_load', rows=self._cursor.rowcount)
+      self._cursor.execute(signal_load_delete_processed)
+      logger.info('signal_load_delete_processed', rows=self._cursor.rowcount)
+      self._connection.commit()
+      logger.info('done')
+    except Exception as e:
+      raise e
 
     return self
 
@@ -437,37 +458,49 @@ DELETE ell FROM {tmp_table_name} d INNER JOIN {self.latest_table} ell ON d.delet
     update_latest_sql = f'''
 INSERT INTO signal_latest
   (issue,
-  signal_data_id, signal_key_id, geo_key_id, time_type, time_value,
+  signal_data_id, signal_key_id, geo_key_id, merged_key_id, time_type, time_value,
   value, stderr, sample_size, `lag`, value_updated_timestamp,
   missing_value, missing_stderr, missing_sample_size)
 SELECT
-  MAX(h.issue),
-  h.signal_data_id, h.signal_key_id, h.geo_key_id, h.time_type, h.time_value,
-  h.value, h.stderr, h.sample_size, h.`lag`, h.value_updated_timestamp,
-  h.missing_value, h.missing_stderr, h.missing_sample_size
-FROM {self.history_view} h JOIN {tmp_table_name} d USING ({short_comp_key})
-WHERE d.update_latest=1 GROUP BY {short_comp_key};
+  h.issue,
+  signal_data_id, signal_key_id, geo_key_id, merged_key_id, time_type, time_value,
+  value, stderr, sample_size, `lag`, value_updated_timestamp,
+  missing_value, missing_stderr, missing_sample_size
+FROM (
+    SELECT
+      MAX(h.issue) issue, h.merged_key_id, h.time_type, h.time_value
+    FROM {self.history_view} h JOIN {tmp_table_name} d USING ({short_comp_key})
+    WHERE d.update_latest=1 GROUP BY merged_key_id, time_type, time_value
+  ) m
+JOIN {self.history_view} h USING (issue, merged_key_id, time_type, time_value);
 '''
 
-    drop_tmp_table_sql = f'DROP TABLE {tmp_table_name}'
+    drop_tmp_table_sql = f'DROP TABLE IF EXISTS {tmp_table_name};'
 
     total = None
     try:
+      self._cursor.execute(drop_tmp_table_sql)
       self._cursor.execute(create_tmp_table_sql)
       self._cursor.execute(amend_tmp_table_sql)
       if isinstance(cc_deletions, str):
         self._cursor.execute(load_tmp_table_infile_sql)
       elif isinstance(cc_deletions, list):
         self._cursor.executemany(load_tmp_table_insert_sql, cc_deletions)
+        print(f"load_tmp_table_insert_sql:{self._cursor.rowcount}")
       else:
         raise Exception(f"Bad deletions argument: need a filename or a list of tuples; got a {type(cc_deletions)}")
       self._cursor.execute(add_history_id_sql)
+      print(f"add_history_id_sql:{self._cursor.rowcount}")
       self._cursor.execute(mark_for_update_latest_sql)
+      print(f"mark_for_update_latest_sql:{self._cursor.rowcount}")
       self._cursor.execute(delete_history_sql)
+      print(f"delete_history_sql:{self._cursor.rowcount}")
       total = self._cursor.rowcount
       # TODO: consider reporting rows removed and/or replaced in latest table as well
       self._cursor.execute(delete_latest_sql)
+      print(f"delete_latest_sql:{self._cursor.rowcount}")
       self._cursor.execute(update_latest_sql)
+      print(f"update_latest_sql:{self._cursor.rowcount}")
       self._connection.commit()
 
       if total == -1:

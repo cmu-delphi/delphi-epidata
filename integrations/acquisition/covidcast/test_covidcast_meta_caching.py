@@ -45,6 +45,7 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     cur.execute("truncate table signal_latest")
     cur.execute("truncate table geo_dim")
     cur.execute("truncate table signal_dim")
+    cur.execute("truncate table merged_dim")
     # reset the `covidcast_meta_cache` table (it should always have one row)
     cur.execute('update covidcast_meta_cache set timestamp = 0, epidata = "[]"')
     cnx.commit()
@@ -71,22 +72,34 @@ class CovidcastMetaCacheTests(unittest.TestCase):
 
     # insert dummy data
     self.cur.execute(f'''
-      INSERT INTO `signal_dim` (`signal_key_id`, `source`, `signal`) VALUES (42, 'src', 'sig');
+      INSERT INTO `signal_dim` (`signal_key_id`, `source`, `signal`)
+      VALUES
+        (42, 'src', 'sig');
     ''')
     self.cur.execute(f'''
-      INSERT INTO `geo_dim` (`geo_key_id`, `geo_type`, `geo_value`) VALUES (96, 'state', 'pa'), (97, 'state', 'wa');
+      INSERT INTO `geo_dim` (`geo_key_id`, `geo_type`, `geo_value`)
+      VALUES
+        (96, 'state', 'pa'),
+        (97, 'state', 'wa');
+    ''')
+    self.cur.execute(f'''
+      INSERT INTO `merged_dim` (`merged_key_id`, `signal_key_id`, `geo_key_id`, `source`, `signal`, `geo_type`, `geo_value`)
+      VALUES
+        (100, 42, 96, 'src', 'sig', 'state', 'pa'),
+        (101, 42, 97, 'src', 'sig', 'state', 'wa');
     ''')
     self.cur.execute(f'''
       INSERT INTO
-        `signal_latest` (`signal_data_id`, `signal_key_id`, `geo_key_id`, `time_type`,
-	      `time_value`, `value_updated_timestamp`,
+        `signal_latest` (
+            `signal_data_id`, `signal_key_id`, `geo_key_id`, `merged_key_id`,
+            `time_type`, `time_value`, `value_updated_timestamp`,
         `value`, `stderr`, `sample_size`,
         `issue`, `lag`, `missing_value`,
         `missing_stderr`,`missing_sample_size`)
       VALUES
-        (15, 42, 96, 'day', 20200422,
+        (15, 42, 96, 100, 'day', 20200422,
           123, 1, 2, 3, 20200422, 0, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (16, 42, 97, 'day', 20200422,
+        (16, 42, 97, 101, 'day', 20200422,
           789, 1, 2, 3, 20200423, 1, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
     ''')
     self.cnx.commit()

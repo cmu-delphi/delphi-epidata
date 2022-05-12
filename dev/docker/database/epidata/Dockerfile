@@ -23,9 +23,6 @@ COPY repos/delphi/delphi-epidata/dev/docker/database/epidata/_init.sql /docker-e
 # provide DDL which will create empty tables at container startup
 COPY repos/delphi/delphi-epidata/src/ddl/*.sql /docker-entrypoint-initdb.d/
 
-# fix password encryption
-COPY repos/delphi/delphi-epidata/dev/docker/database/epidata/init.sql /docker-entrypoint-initdb.d/
-
 # provide additional configuration needed for percona
 COPY repos/delphi/delphi-epidata/dev/docker/database/mysql.d/*.cnf /etc/my.cnf.d/
 
