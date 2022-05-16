@@ -173,7 +173,7 @@ for download, and specifies the survey questions on which they are based. See
 the <a href="coding.html">survey instrument codebook</a> for the full text of
 all questions.</div>
 
-The files contain [weighted estimates](../api/covidcast-signals/fb-survey.md#survey-weighting)
+The files contain [weighted estimates](../api/covidcast-signals/fb-survey.md#survey-weighting-and-estimation)
 of the percent of respondents who fulfill one or several criteria. Estimates are
 broken out by state, age, gender, race, ethnicity, occupation, and health
 conditions.
