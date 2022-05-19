@@ -1,6 +1,7 @@
 """Integration tests for the `covidcast` endpoint."""
 
 # standard library
+import json
 import unittest
 
 # third party
@@ -9,85 +10,70 @@ import requests
 
 # first party
 from delphi_utils import Nans
+from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase
 
 # use the local instance of the Epidata API
 BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
 
+    
 
-class CovidcastTests(unittest.TestCase):
+class CovidcastTests(CovidcastBase):
   """Tests the `covidcast` endpoint."""
 
-  def setUp(self):
+  def localSetUp(self):
     """Perform per-test setup."""
+    self._db._cursor.execute('update covidcast_meta_cache set timestamp = 0, epidata = "[]"')
+    
+  def request_based_on_row(self, row, extract_response=lambda x: x.json(), **kwargs):
+    params = self.params_from_row(row, endpoint='covidcast', **kwargs)
+    response = requests.get(BASE_URL, params=params)
+    response.raise_for_status()
+    response = extract_response(response)
 
-    # connect to the `epidata` database and clear the `covidcast` table
-    cnx = mysql.connector.connect(
-        user='user',
-        password='pass',
-        host='delphi_database_epidata',
-        database='epidata')
-    cur = cnx.cursor()
-    cur.execute('truncate table covidcast')
-    cnx.commit()
-    cur.close()
+    expected = self.expected_from_row(row)
 
-    # make connection and cursor available to test cases
-    self.cnx = cnx
-    self.cur = cnx.cursor()
+    return response, expected
+    
+  def _insert_placeholder_set_one(self):
+    row, settings = self._make_placeholder_row()
+    self._insert_rows([row])
+    return row
 
-  def tearDown(self):
-    """Perform per-test teardown."""
-    self.cur.close()
-    self.cnx.close()
+  def _insert_placeholder_set_two(self):
+    rows = [
+      self._make_placeholder_row(geo_type='county', geo_value=str(i)*5, value=i*1., stderr=i*10., sample_size=i*100.)[0]
+      for i in [1, 2, 3]
+    ] + [
+      # geo value intended to overlap with counties above
+      self._make_placeholder_row(geo_type='msa', geo_value=str(i-3)*5, value=i*1., stderr=i*10., sample_size=i*100.)[0]
+      for i in [4, 5, 6]
+    ]
+    self._insert_rows(rows)
+    return rows
+
+  def _insert_placeholder_set_three(self):
+    rows = [
+      self._make_placeholder_row(geo_type='county', geo_value='11111', time_value=2000_01_01+i, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03, lag=2-i)[0]
+      for i in [1, 2, 3]
+    ] + [
+      # time value intended to overlap with 11111 above, with disjoint geo values
+      self._make_placeholder_row(geo_type='county', geo_value=str(i)*5, time_value=2000_01_01+i-3, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03, lag=5-i)[0]
+      for i in [4, 5, 6]
+    ]
+    self._insert_rows(rows)
+    return rows
 
   def test_round_trip(self):
     """Make a simple round-trip with some sample data."""
 
-    # insert dummy data
-    self.cur.execute(f'''
-      INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
-        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
-      VALUES
-        (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
-    ''')
-    self.cnx.commit()
-
+    # insert placeholder data
+    row = self._insert_placeholder_set_one()
+    
     # make the request
-    response = requests.get(BASE_URL, params={
-      'endpoint': 'covidcast',
-      'data_source': 'src',
-      'signal': 'sig',
-      'time_type': 'day',
-      'geo_type': 'county',
-      'time_values': 20200414,
-      'geo_value': '01234',
-    })
-    response.raise_for_status()
-    response = response.json()
-
-    # assert that the right data came back
+    response, expected = self.request_based_on_row(row)
     self.assertEqual(response, {
       'result': 1,
-      'epidata': [{
-        'time_value': 20200414,
-        'geo_value': '01234',
-        'value': 1.5,
-        'stderr': 2.5,
-        'sample_size': 3.5,
-        'direction': 4,
-        'issue': 20200414,
-        'lag': 0,
-        'signal': 'sig',
-        'missing_value': Nans.NOT_MISSING,
-        'missing_stderr': Nans.NOT_MISSING,
-        'missing_sample_size': Nans.NOT_MISSING
-       }],
+      'epidata': [expected],
       'message': 'success',
     })
 
@@ -96,7 +82,7 @@ class CovidcastTests(unittest.TestCase):
   # def test_uri_too_long(self):
   #   """Test that a long request yields a 414 with GET but works with POST."""
 
-  #   # insert dummy data
+  #   # insert placeholder data
   #   self.cur.execute(f'''
   #    INSERT INTO
   #      `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
@@ -139,38 +125,33 @@ class CovidcastTests(unittest.TestCase):
   def test_csv_format(self):
     """Test generate csv data."""
 
-    # insert dummy data
-    self.cur.execute(f'''
-      INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
-        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
-      VALUES
-        (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
-    ''')
-    self.cnx.commit()
+    # insert placeholder data
+    row = self._insert_placeholder_set_one()
 
     # make the request
-    response = requests.get(BASE_URL, params={
-      'endpoint': 'covidcast',
-      'data_source': 'src',
-      'signal': 'sig',
-      'time_type': 'day',
-      'geo_type': 'county',
-      'time_values': 20200414,
-      'geo_value': '01234',
-      'format': 'csv'
-    })
-    response.raise_for_status()
-    response = response.text
+    # NB 'format' is a Python reserved word
+    response, _ = self.request_based_on_row(
+      row,
+      extract_response=lambda resp: resp.text,
+      **{'format':'csv'}
+    )
     expected_response = (
       "geo_value,signal,time_value,direction,issue,lag,missing_value," +
       "missing_stderr,missing_sample_size,value,stderr,sample_size\n" +
-      "01234,sig,20200414,4,20200414,0,0,0,0,1.5,2.5,3.5\n"
+      ",".join("" if x is None else str(x) for x in [
+        row.geo_value,
+        row.signal,
+        row.time_value,
+        row.direction,
+        row.issue,
+        row.lag,
+        row.missing_value,
+        row.missing_stderr,
+        row.missing_sample_size,
+        row.value,
+        row.stderr,
+        row.sample_size
+      ]) + "\n"
     )
 
     # assert that the right data came back
@@ -179,775 +160,220 @@ class CovidcastTests(unittest.TestCase):
   def test_raw_json_format(self):
     """Test generate raw json data."""
 
-    # insert dummy data
-    self.cur.execute(f'''
-      INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
-        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
-      VALUES
-        (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
-    ''')
-    self.cnx.commit()
+    # insert placeholder data
+    row = self._insert_placeholder_set_one()
 
     # make the request
-    response = requests.get(BASE_URL, params={
-      'endpoint': 'covidcast',
-      'data_source': 'src',
-      'signal': 'sig',
-      'time_type': 'day',
-      'geo_type': 'county',
-      'time_values': 20200414,
-      'geo_value': '01234',
-      'format': 'json'
-    })
-    response.raise_for_status()
-    response = response.json()
+    response, expected = self.request_based_on_row(row, **{'format':'json'})
 
     # assert that the right data came back
-    self.assertEqual(response, [{
-      'time_value': 20200414,
-      'geo_value': '01234',
-      'value': 1.5,
-      'stderr': 2.5,
-      'sample_size': 3.5,
-      'direction': 4,
-      'issue': 20200414,
-      'lag': 0,
-      'signal': 'sig',
-      'missing_value': Nans.NOT_MISSING,
-      'missing_stderr': Nans.NOT_MISSING,
-      'missing_sample_size': Nans.NOT_MISSING
-    }])
+    self.assertEqual(response, [expected])
 
   def test_fields(self):
-    """Test to limit fields field"""
+    """Test fields parameter"""
 
-    # insert dummy data
-    self.cur.execute(f'''
-      INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
-        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
-      VALUES
-        (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
-    ''')
-    self.cnx.commit()
-
-    # make the request
-    response = requests.get(BASE_URL, params={
-      'endpoint': 'covidcast',
-      'data_source': 'src',
-      'signal': 'sig',
-      'time_type': 'day',
-      'geo_type': 'county',
-      'time_values': 20200414,
-      'geo_value': '01234',
-    })
-    response.raise_for_status()
-    response = response.json()
-
-    # assert that the right data came back
-    self.assertEqual(response, {
-      'result': 1,
-      'epidata': [{
-        'time_value': 20200414,
-        'geo_value': '01234',
-        'value': 1.5,
-        'stderr': 2.5,
-        'sample_size': 3.5,
-        'direction': 4,
-        'issue': 20200414,
-        'lag': 0,
-        'signal': 'sig',
-        'missing_value': Nans.NOT_MISSING,
-        'missing_stderr': Nans.NOT_MISSING,
-        'missing_sample_size': Nans.NOT_MISSING
-       }],
-      'message': 'success',
-    })
+    # insert placeholder data
+    row = self._insert_placeholder_set_one()
 
     # limit fields
-    response = requests.get(BASE_URL, params={
-      'endpoint': 'covidcast',
-      'data_source': 'src',
-      'signal': 'sig',
-      'time_type': 'day',
-      'geo_type': 'county',
-      'time_values': 20200414,
-      'geo_value': '01234',
-      'fields': 'time_value,geo_value'
-    })
-    response.raise_for_status()
-    response = response.json()
-
-    # assert that the right data came back
-    self.assertEqual(response, {
+    response, expected = self.request_based_on_row(row, fields='time_value,geo_value')
+    expected_all = {
       'result': 1,
       'epidata': [{
-        'time_value': 20200414,
-        'geo_value': '01234'
+        k: expected[k] for k in ['time_value', 'geo_value']
        }],
       'message': 'success',
-    })
-
-    # limit invalid values
-    response = requests.get(BASE_URL, params={
-      'endpoint': 'covidcast',
-      'data_source': 'src',
-      'signal': 'sig',
-      'time_type': 'day',
-      'geo_type': 'county',
-      'time_values': 20200414,
-      'geo_value': '01234',
-      'fields': 'time_value,geo_value,dummy'
-    })
-    response.raise_for_status()
-    response = response.json()
-
+    }
+    
     # assert that the right data came back
-    self.assertEqual(response, {
-      'result': 1,
-      'epidata': [{
-        'time_value': 20200414,
-        'geo_value': '01234'
-       }],
-      'message': 'success',
-    })
+    self.assertEqual(response, expected_all)
+
+    # limit using invalid fields
+    response, _ = self.request_based_on_row(row, fields='time_value,geo_value,doesnt_exist')
+
+    # assert that the right data came back (only valid fields)
+    self.assertEqual(response, expected_all)
 
 
-    # limit exclude fields
-    response = requests.get(BASE_URL, params={
-      'endpoint': 'covidcast',
-      'data_source': 'src',
-      'signal': 'sig',
-      'time_type': 'day',
-      'geo_type': 'county',
-      'time_values': 20200414,
-      'geo_value': '01234',
-      'fields': (
+    # limit exclude fields: exclude all except time_value and geo_value
+    
+    response, _ = self.request_based_on_row(row, fields=(
         '-value,-stderr,-sample_size,-direction,-issue,-lag,-signal,' +
         '-missing_value,-missing_stderr,-missing_sample_size'
-      )
-    })
-    response.raise_for_status()
-    response = response.json()
-
+    ))
+    
     # assert that the right data came back
-    self.assertEqual(response, {
-      'result': 1,
-      'epidata': [{
-        'time_value': 20200414,
-        'geo_value': '01234'
-       }],
-      'message': 'success',
-    })
+    self.assertEqual(response, expected_all)
 
   def test_location_wildcard(self):
     """Select all locations with a wildcard query."""
 
-    # insert dummy data
-    self.cur.execute(f'''
-      INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
-        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
-      VALUES
-        (0, 'src', 'sig', 'day', 'county', 20200414, '11111',
-          123, 10, 11, 12, 456, 13, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'county', 20200414, '22222',
-          123, 20, 21, 22, 456, 23, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'county', 20200414, '33333',
-          123, 30, 31, 32, 456, 33, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'msa', 20200414, '11111',
-          123, 40, 41, 42, 456, 43, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'msa', 20200414, '22222',
-          123, 50, 51, 52, 456, 53, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'msa', 20200414, '33333',
-          123, 60, 61, 62, 456, 634, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
-    ''')
-    self.cnx.commit()
+    # insert placeholder data
+    rows = self._insert_placeholder_set_two()
+    expected_counties = [
+      self.expected_from_row(r) for r in rows[:3]
+    ]
 
     # make the request
-    response = requests.get(BASE_URL, params={
-      'endpoint': 'covidcast',
-      'data_source': 'src',
-      'signal': 'sig',
-      'time_type': 'day',
-      'geo_type': 'county',
-      'time_values': 20200414,
-      'geo_value': '*',
-    })
-    response.raise_for_status()
-    response = response.json()
+    response, _ = self.request_based_on_row(rows[0], geo_value="*")
 
+    self.maxDiff = None
     # assert that the right data came back
     self.assertEqual(response, {
       'result': 1,
-      'epidata': [
-        {
-          'time_value': 20200414,
-          'geo_value': '11111',
-          'value': 10,
-          'stderr': 11,
-          'sample_size': 12,
-          'direction': 13,
-          'issue': 20200414,
-          'lag': 0,
-          'signal': 'sig',
-          'missing_value': Nans.NOT_MISSING,
-          'missing_stderr': Nans.NOT_MISSING,
-          'missing_sample_size': Nans.NOT_MISSING
-        }, {
-          'time_value': 20200414,
-          'geo_value': '22222',
-          'value': 20,
-          'stderr': 21,
-          'sample_size': 22,
-          'direction': 23,
-          'issue': 20200414,
-          'lag': 0,
-          'signal': 'sig',
-          'missing_value': Nans.NOT_MISSING,
-          'missing_stderr': Nans.NOT_MISSING,
-          'missing_sample_size': Nans.NOT_MISSING
-        }, {
-          'time_value': 20200414,
-          'geo_value': '33333',
-          'value': 30,
-          'stderr': 31,
-          'sample_size': 32,
-          'direction': 33,
-          'issue': 20200414,
-          'lag': 0,
-          'signal': 'sig',
-          'missing_value': Nans.NOT_MISSING,
-          'missing_stderr': Nans.NOT_MISSING,
-          'missing_sample_size': Nans.NOT_MISSING
-        },
-       ],
+      'epidata': expected_counties,
       'message': 'success',
     })
-
+  
   def test_geo_value(self):
     """test different variants of geo types: single, *, multi."""
 
-    # insert dummy data
-    self.cur.execute(f'''
-      INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
-        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
-      VALUES
-        (0, 'src', 'sig', 'day', 'county', 20200414, '11111',
-          123, 10, 11, 12, 456, 13, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'county', 20200414, '22222',
-          123, 20, 21, 22, 456, 23, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'county', 20200414, '33333',
-          123, 30, 31, 32, 456, 33, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'msa', 20200414, '11111',
-          123, 40, 41, 42, 456, 43, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'msa', 20200414, '22222',
-          123, 50, 51, 52, 456, 53, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'msa', 20200414, '33333',
-          123, 60, 61, 62, 456, 634, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
-    ''')
-    self.cnx.commit()
+    # insert placeholder data
+    rows = self._insert_placeholder_set_two()
+    expected_counties = [
+      self.expected_from_row(r) for r in rows[:3]
+    ]
 
     def fetch(geo_value):
       # make the request
-      params = {
-        'endpoint': 'covidcast',
-        'data_source': 'src',
-        'signal': 'sig',
-        'time_type': 'day',
-        'geo_type': 'county',
-        'time_values': 20200414,
-      }
-      if isinstance(geo_value, list):
-        params['geo_values'] = ','.join(geo_value)
-      else:
-        params['geo_value'] = geo_value
-      response = requests.get(BASE_URL, params=params)
-      response.raise_for_status()
-      response = response.json()
+      response, _ = self.request_based_on_row(rows[0], geo_value=geo_value)
 
       return response
 
-    counties = [{
-      'time_value': 20200414,
-      'geo_value': '11111',
-      'value': 10,
-      'stderr': 11,
-      'sample_size': 12,
-      'direction': 13,
-      'issue': 20200414,
-      'lag': 0,
-      'signal': 'sig',
-      'missing_value': Nans.NOT_MISSING,
-      'missing_stderr': Nans.NOT_MISSING,
-      'missing_sample_size': Nans.NOT_MISSING
-    }, {
-      'time_value': 20200414,
-      'geo_value': '22222',
-      'value': 20,
-      'stderr': 21,
-      'sample_size': 22,
-      'direction': 23,
-      'issue': 20200414,
-      'lag': 0,
-      'signal': 'sig',
-      'missing_value': Nans.NOT_MISSING,
-      'missing_stderr': Nans.NOT_MISSING,
-      'missing_sample_size': Nans.NOT_MISSING
-    }, {
-      'time_value': 20200414,
-      'geo_value': '33333',
-      'value': 30,
-      'stderr': 31,
-      'sample_size': 32,
-      'direction': 33,
-      'issue': 20200414,
-      'lag': 0,
-      'signal': 'sig',
-      'missing_value': Nans.NOT_MISSING,
-      'missing_stderr': Nans.NOT_MISSING,
-      'missing_sample_size': Nans.NOT_MISSING
-    }]
-
-    # test fetch all
-    r = fetch('*')
-    self.assertEqual(r['message'], 'success')
-    self.assertEqual(r['epidata'], counties)
     # test fetch a specific region
     r = fetch('11111')
     self.assertEqual(r['message'], 'success')
-    self.assertEqual(r['epidata'], [counties[0]])
+    self.assertEqual(r['epidata'], [expected_counties[0]])
     # test fetch a specific yet not existing region
     r = fetch('55555')
     self.assertEqual(r['message'], 'no results')
-    # test fetch a multiple regions
-    r = fetch(['11111', '22222'])
+    # test fetch multiple regions
+    r = fetch('11111,22222')
     self.assertEqual(r['message'], 'success')
-    self.assertEqual(r['epidata'], [counties[0], counties[1]])
-    # test fetch a multiple regions in another variant
-    r = fetch(['11111', '33333'])
+    self.assertEqual(r['epidata'], [expected_counties[0], expected_counties[1]])
+    # test fetch multiple noncontiguous regions
+    r = fetch('11111,33333')
     self.assertEqual(r['message'], 'success')
-    self.assertEqual(r['epidata'], [counties[0], counties[2]])
-    # test fetch a multiple regions but one is not existing
-    r = fetch(['11111', '55555'])
+    self.assertEqual(r['epidata'], [expected_counties[0], expected_counties[2]])
+    # test fetch multiple regions but one is not existing
+    r = fetch('11111,55555')
     self.assertEqual(r['message'], 'success')
-    self.assertEqual(r['epidata'], [counties[0]])
-    # test fetch a multiple regions but specify no region
-    r = fetch([])
+    self.assertEqual(r['epidata'], [expected_counties[0]])
+    # test fetch empty region
+    r = fetch('')
     self.assertEqual(r['message'], 'no results')
-
-
+  
   def test_location_timeline(self):
     """Select a timeline for a particular location."""
 
-    # insert dummy data
-    self.cur.execute(f'''
-      INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
-        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
-      VALUES
-        (0, 'src', 'sig', 'day', 'county', 20200411, '01234',
-          123, 10, 11, 12, 456, 13, 20200413, 2, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'county', 20200412, '01234',
-          123, 20, 21, 22, 456, 23, 20200413, 1, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'county', 20200413, '01234',
-          123, 30, 31, 32, 456, 33, 20200413, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'county', 20200411, '11111',
-          123, 40, 41, 42, 456, 43, 20200413, 2, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'county', 20200412, '22222',
-          123, 50, 51, 52, 456, 53, 20200413, 1, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'county', 20200413, '33333',
-          123, 60, 61, 62, 456, 63, 20200413, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
-    ''')
-    self.cnx.commit()
+    # insert placeholder data
+    rows = self._insert_placeholder_set_three()
+    expected_timeseries = [
+      self.expected_from_row(r) for r in rows[:3]
+    ]
 
     # make the request
-    response = requests.get(BASE_URL, params={
-      'endpoint': 'covidcast',
-      'data_source': 'src',
-      'signal': 'sig',
-      'time_type': 'day',
-      'geo_type': 'county',
-      'time_values': '20200411-20200413',
-      'geo_value': '01234',
-    })
-    response.raise_for_status()
-    response = response.json()
+    response, _ = self.request_based_on_row(rows[0], time_values='20000101-20000105')
 
     # assert that the right data came back
     self.assertEqual(response, {
       'result': 1,
-      'epidata': [
-        {
-          'time_value': 20200411,
-          'geo_value': '01234',
-          'value': 10,
-          'stderr': 11,
-          'sample_size': 12,
-          'direction': 13,
-          'issue': 20200413,
-          'lag': 2,
-          'signal': 'sig',
-          'missing_value': Nans.NOT_MISSING,
-          'missing_stderr': Nans.NOT_MISSING,
-          'missing_sample_size': Nans.NOT_MISSING
-        }, {
-          'time_value': 20200412,
-          'geo_value': '01234',
-          'value': 20,
-          'stderr': 21,
-          'sample_size': 22,
-          'direction': 23,
-          'issue': 20200413,
-          'lag': 1,
-          'signal': 'sig',
-          'missing_value': Nans.NOT_MISSING,
-          'missing_stderr': Nans.NOT_MISSING,
-          'missing_sample_size': Nans.NOT_MISSING
-        }, {
-          'time_value': 20200413,
-          'geo_value': '01234',
-          'value': 30,
-          'stderr': 31,
-          'sample_size': 32,
-          'direction': 33,
-          'issue': 20200413,
-          'lag': 0,
-          'signal': 'sig',
-          'missing_value': Nans.NOT_MISSING,
-          'missing_stderr': Nans.NOT_MISSING,
-          'missing_sample_size': Nans.NOT_MISSING
-        },
-       ],
+      'epidata': expected_timeseries,
       'message': 'success',
     })
 
+  @unittest.skip("v4 now uses ON DUPLICATE KEY UPDATE which prevents this key collision. Consider moving this test to a database integration test which runs SQL without the ON DUPLICATE KEY UPDATE clause to verify constraints are set correctly.")
   def test_unique_key_constraint(self):
     """Don't allow a row with a key collision to be inserted."""
 
-    # insert dummy data
-    self.cur.execute(f'''
-      INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
-        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
-      VALUES
-        (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          0, 0, 0, 0, 0, 0, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
-    ''')
-    self.cnx.commit()
+    # insert placeholder data
+    row = self._insert_placeholder_set_one()
 
-    # fail to insert different dummy data under the same key
+    # fail to insert different placeholder data under the same key
     with self.assertRaises(mysql.connector.errors.IntegrityError):
-      self.cur.execute(f'''
-      INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
-        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
-      VALUES
-          (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-            1, 1, 1, 1, 1, 1, 20200414, 0, 1, False,
-            {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
-      ''')
+      self._insert_placeholder_set_one()
 
-    # succeed to insert different dummy data under a different issue
-    self.cur.execute(f'''
-      INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
-        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
-      VALUES
-        (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          1, 1, 1, 1, 1, 1, 20200415, 1, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
-    ''')
+    # succeed to insert different placeholder data under a different time_type
+    self._insert_placeholder_set_one(time_type='week')
 
   def test_nullable_columns(self):
     """Missing values should be surfaced as null."""
 
-    # insert dummy data
-    self.cur.execute(f'''
-      INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
-        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
-      VALUES
-        (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
-          123, 0.123, NULL, NULL, 456, NULL, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.OTHER}, {Nans.OTHER})
-    ''')
-    self.cnx.commit()
+    row, _ = self._make_placeholder_row(
+      stderr=None, sample_size=None,
+      missing_stderr=Nans.OTHER.value, missing_sample_size=Nans.OTHER.value
+    )
+    self._insert_rows([row])
 
     # make the request
-    response = requests.get(BASE_URL, params={
-      'endpoint': 'covidcast',
-      'data_source': 'src',
-      'signal': 'sig',
-      'time_type': 'day',
-      'geo_type': 'county',
-      'time_values': 20200414,
-      'geo_value': '01234',
-    })
-    response.raise_for_status()
-    response = response.json()
-    expected_response = {
-      'result': 1,
-      'epidata': [{
-        'time_value': 20200414,
-        'geo_value': '01234',
-        'value': 0.123,
-        'stderr': None,
-        'sample_size': None,
-        'direction': None,
-        'issue': 20200414,
-        'lag': 0,
-        'signal': 'sig',
-        'missing_value': Nans.NOT_MISSING,
-        'missing_stderr': Nans.OTHER,
-        'missing_sample_size': Nans.OTHER
-       }],
-      'message': 'success',
-    }
-
-    # assert that the right data came back
-    self.assertEqual(response, expected_response)
-
-  def test_temporal_partitioning(self):
-    """Request a signal that's available at multiple temporal resolutions."""
-
-    # insert dummy data
-    self.cur.execute(f'''
-      INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
-        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
-      VALUES
-        (0, 'src', 'sig', 'hour', 'state', 2020041714, 'vi',
-          123, 10, 11, 12, 456, 13, 2020041714, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'state', 20200417, 'vi',
-          123, 20, 21, 22, 456, 23, 20200417, 00, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'week', 'state', 202016, 'vi',
-          123, 30, 31, 32, 456, 33, 202016, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'month', 'state', 202004, 'vi',
-          123, 40, 41, 42, 456, 43, 202004, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'year', 'state', 2020, 'vi',
-          123, 50, 51, 52, 456, 53, 2020, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
-    ''')
-    self.cnx.commit()
-
-    # make the request
-    response = requests.get(BASE_URL, params={
-      'endpoint': 'covidcast',
-      'data_source': 'src',
-      'signal': 'sig',
-      'time_type': 'week',
-      'geo_type': 'state',
-      'time_values': '0-9999999999',
-      'geo_value': 'vi',
-    })
-    response.raise_for_status()
-    response = response.json()
+    response, expected = self.request_based_on_row(row)
+    expected.update(stderr=None, sample_size=None)
 
     # assert that the right data came back
     self.assertEqual(response, {
       'result': 1,
-      'epidata': [{
-        'time_value': 202016,
-        'geo_value': 'vi',
-        'value': 30,
-        'stderr': 31,
-        'sample_size': 32,
-        'direction': 33,
-        'issue': 202016,
-        'lag': 0,
-        'signal': 'sig',
-        'missing_value': Nans.NOT_MISSING,
-        'missing_stderr': Nans.NOT_MISSING,
-        'missing_sample_size': Nans.NOT_MISSING
-       }],
+      'epidata': [expected],
       'message': 'success',
     })
+  
+  def test_temporal_partitioning(self):
+    """Request a signal that's available at multiple temporal resolutions."""
 
+    # insert placeholder data
+    rows = [
+      self._make_placeholder_row(time_type=tt)[0]
+      for tt in "hour day week month year".split()
+    ]
+    self._insert_rows(rows)
+
+    # make the request
+    response, expected = self.request_based_on_row(rows[1], time_values="0-99999999")
+
+    # assert that the right data came back
+    self.assertEqual(response, {
+      'result': 1,
+      'epidata': [expected],
+      'message': 'success',
+    })
+  
   def test_date_formats(self):
     """Request a signal using different time formats."""
 
-    # insert dummy data
-    self.cur.execute(f'''
-      INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
-        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
-      VALUES
-      (0, 'src', 'sig', 'day', 'county', 20200411, '01234',
-          123, 10, 11, 12, 456, 13, 20200413, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'county', 20200412, '01234',
-          123, 20, 21, 22, 456, 23, 20200413, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'county', 20200413, '01234',
-          123, 30, 31, 32, 456, 33, 20200413, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'county', 20200411, '11111',
-          123, 40, 41, 42, 456, 43, 20200413, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'county', 20200412, '22222',
-          123, 50, 51, 52, 456, 53, 20200413, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'county', 20200413, '33333',
-          123, 60, 61, 62, 456, 63, 20200413, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
-    ''')
-    self.cnx.commit()
+    # insert placeholder data
+    rows = self._insert_placeholder_set_three()
 
     # make the request
-    response = requests.get(BASE_URL, params={
-      'endpoint': 'covidcast',
-      'data_source': 'src',
-      'signal': 'sig',
-      'time_type': 'day',
-      'geo_type': 'county',
-      'time_values': '20200411',
-      'geo_value': '*',
-    })
-    response.raise_for_status()
-    response = response.json()
+    response, expected = self.request_based_on_row(rows[0], time_values="20000102", geo_value="*")
 
     # assert that the right data came back
     self.assertEqual(len(response['epidata']), 2)
 
     # make the request
-    response = requests.get(BASE_URL, params={
-      'endpoint': 'covidcast',
-      'data_source': 'src',
-      'signal': 'sig',
-      'time_type': 'day',
-      'geo_type': 'county',
-      'time_values': '2020-04-11',
-      'geo_value': '*',
-    })
-    response.raise_for_status()
-    response = response.json()
+    response, expected = self.request_based_on_row(rows[0], time_values="2000-01-02", geo_value="*")
 
     # assert that the right data came back
     self.assertEqual(len(response['epidata']), 2)
 
     # make the request
-    response = requests.get(BASE_URL, params={
-      'endpoint': 'covidcast',
-      'data_source': 'src',
-      'signal': 'sig',
-      'time_type': 'day',
-      'geo_type': 'county',
-      'time_values': '20200411,20200412',
-      'geo_value': '*',
-    })
-    response.raise_for_status()
-    response = response.json()
+    response, expected = self.request_based_on_row(rows[0], time_values="20000102,20000103", geo_value="*")
 
     # assert that the right data came back
     self.assertEqual(len(response['epidata']), 4)
 
     # make the request
-    response = requests.get(BASE_URL, params={
-      'endpoint': 'covidcast',
-      'data_source': 'src',
-      'signal': 'sig',
-      'time_type': 'day',
-      'geo_type': 'county',
-      'time_values': '2020-04-11,2020-04-12',
-      'geo_value': '*',
-    })
-    response.raise_for_status()
-    response = response.json()
+    response, expected = self.request_based_on_row(rows[0], time_values="2000-01-02,2000-01-03", geo_value="*")
 
     # assert that the right data came back
     self.assertEqual(len(response['epidata']), 4)
 
     # make the request
-    response = requests.get(BASE_URL, params={
-      'endpoint': 'covidcast',
-      'data_source': 'src',
-      'signal': 'sig',
-      'time_type': 'day',
-      'geo_type': 'county',
-      'time_values': '20200411-20200413',
-      'geo_value': '*',
-    })
-    response.raise_for_status()
-    response = response.json()
+    response, expected = self.request_based_on_row(rows[0], time_values="20000102-20000104", geo_value="*")
 
     # assert that the right data came back
     self.assertEqual(len(response['epidata']), 6)
 
     # make the request
-    response = requests.get(BASE_URL, params={
-      'endpoint': 'covidcast',
-      'data_source': 'src',
-      'signal': 'sig',
-      'time_type': 'day',
-      'geo_type': 'county',
-      'time_values': '2020-04-11:2020-04-13',
-      'geo_value': '*',
-    })
-    response.raise_for_status()
-    response = response.json()
+    response, expected = self.request_based_on_row(rows[0], time_values="2000-01-02:2000-01-04", geo_value="*")
 
     # assert that the right data came back
     self.assertEqual(len(response['epidata']), 6)

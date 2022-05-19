@@ -61,6 +61,20 @@ class CovidcastRow():
     self.lag = lag
     self.is_wip = is_wip
 
+  def signal_pair(self):
+    return f"{self.source}:{self.signal}"
+
+  def geo_pair(self):
+    return f"{self.geo_type}:{self.geo_value}"
+
+
+# constants for the codes used in the `process_status` column of `signal_load`
+class _PROCESS_STATUS(object):
+  INSERTING = 'i'
+  LOADED = 'l'
+  BATCHING = 'b'
+PROCESS_STATUS = _PROCESS_STATUS()
+
 
 class Database:
   """A collection of covidcast database operations."""
