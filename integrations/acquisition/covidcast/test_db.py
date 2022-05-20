@@ -40,7 +40,7 @@ class TestTest(CovidcastBase):
         latest_view = 'signal_latest_v'
 
         # add a data point
-        base_row = self._make_dummy_row()
+        base_row, _ = self._make_placeholder_row()
         self._insert_rows([base_row])
         # ensure the primary keys match in the latest and history tables
         matches = self._find_matches_for_row(base_row)
@@ -50,7 +50,7 @@ class TestTest(CovidcastBase):
         old_pk_id = matches[latest_view][pk_column]
 
         # add a reissue for said data point
-        next_row = self._make_dummy_row()
+        next_row, _ = self._make_placeholder_row()
         next_row.issue += 1
         self._insert_rows([next_row])
         # ensure the new keys also match
