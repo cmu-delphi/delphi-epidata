@@ -60,6 +60,12 @@ class CovidcastRow():
     self.issue = issue
     self.lag = lag
 
+  def signal_pair(self):
+    return f"{self.source}:{self.signal}"
+
+  def geo_pair(self):
+    return f"{self.geo_type}:{self.geo_value}"
+
 
 # constants for the codes used in the `process_status` column of `signal_load`
 class _PROCESS_STATUS(object):
