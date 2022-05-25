@@ -3,6 +3,16 @@ WORKDIR /src
 COPY . /src
 RUN npm ci && npm run build
 
+FROM jekyll/jekyll:stable as docs_builder
+# see also https://github.com/envygeeks/jekyll-docker/issues/280
+RUN mkdir /src; \
+    chown -R jekyll:jekyll /src
+WORKDIR /src
+COPY ./docs /src
+RUN chown -R jekyll:jekyll /src; \
+    sed -i 's#baseurl: "/delphi-epidata"#baseurl: "/docs"#g' /src/_config.yml
+RUN jekyll build
+
 FROM tiangolo/meinheld-gunicorn:python3.7
 LABEL org.opencontainers.image.source=https://github.com/cmu-delphi/delphi-epidata
 # use delphi's timezome
@@ -17,7 +27,8 @@ ENV PYTHONUNBUFFERED 1
 COPY ./devops/gunicorn_conf.py /app
 COPY ./devops/start_wrapper.sh /
 COPY ./src/server/ /app/app/
-COPY --from=builder ./src/build/lib/ /app/app/lib/
+COPY --from=builder /src/build/lib/ /app/app/lib/
+COPY --from=docs_builder /src/_site /app/app/docs/
 RUN rm -rf /app/app/__pycache__ /app/app/*.php \
       && chmod -R o+r /app/app \
       && chmod 755 /start_wrapper.sh

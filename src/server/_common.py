@@ -27,13 +27,13 @@ db: Connection = cast(Connection, LocalProxy(_get_db))
 
 @app.before_request
 def connect_db():
-    if request.path.startswith('/lib'):
+    if request.path.startswith("/lib") or request.path.startswith("/docs"):
         return
     # try to get the db
     try:
         _get_db()
     except:
-        app.logger.error('database connection error', exc_info=True)
+        app.logger.error("database connection error", exc_info=True)
         raise DatabaseErrorException()
 
 
@@ -50,7 +50,7 @@ def is_compatibility_mode() -> bool:
     """
     checks whether this request is in compatibility mode
     """
-    return 'compatibility' in g and g.compatibility
+    return "compatibility" in g and g.compatibility
 
 
 def set_compatibility_mode():
