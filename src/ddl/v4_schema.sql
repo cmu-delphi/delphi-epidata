@@ -48,7 +48,7 @@ CREATE TABLE merged_dim
     `geo_value` VARCHAR(12),
     PRIMARY KEY (`merged_key_id`) USING BTREE,
     UNIQUE INDEX `values` (`source`, `signal`, `geo_type`, `geo_value`) USING BTREE,
-    INDEX `dim_ids` (`signal_key_id`, `geo_key_id`) USING BTREE
+    UNIQUE INDEX `dim_ids` (`signal_key_id`, `geo_key_id`) USING BTREE
 ) COLLATE='utf8mb4_0900_ai_ci' ENGINE=InnoDB;
 
 

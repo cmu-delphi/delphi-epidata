@@ -288,6 +288,7 @@ class Database:
                 FROM covid.merged_dim)
     '''
 
+    # TODO: only need the merged_dim join; can do the sig and geo lookups based on the literals
     signal_history_load = f'''
         INSERT INTO signal_history 
             (signal_data_id, merged_key_id, signal_key_id, geo_key_id, demog_key_id, issue, data_as_of_dt,

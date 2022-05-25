@@ -16,6 +16,7 @@ from delphi_utils import Nans
 from delphi.epidata.client.delphi_epidata import Epidata
 from delphi.epidata.acquisition.covidcast.database import Database, CovidcastRow
 from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import main as update_covidcast_meta_cache
+from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase
 import delphi.operations.secrets as secrets
 
 # py3tester coverage target
@@ -32,36 +33,14 @@ def fake_epidata_endpoint(func):
 # all the Nans we use here are just one value, so this is a shortcut to it:
 nmv = Nans.NOT_MISSING.value
 
-class DelphiEpidataPythonClientTests(unittest.TestCase):
+class DelphiEpidataPythonClientTests(CovidcastBase):
   """Tests the Python client."""
 
-  def setUp(self):
+  def localSetUp(self):
     """Perform per-test setup."""
 
-    # connect to the `epidata` database and clear relevant tables
-    cnx = mysql.connector.connect(
-        user='user',
-        password='pass',
-        host='delphi_database_epidata',
-        database='covid')
-    cur = cnx.cursor()
-
-    # clear all tables
-    cur.execute("truncate table signal_load")
-    cur.execute("truncate table signal_history")
-    cur.execute("truncate table signal_latest")
-    cur.execute("truncate table geo_dim")
-    cur.execute("truncate table signal_dim")
     # reset the `covidcast_meta_cache` table (it should always have one row)
-    cur.execute('update covidcast_meta_cache set timestamp = 0, epidata = "[]"')
-
-    cnx.commit()
-    cur.close()
-
-    # make connection and cursor available to the Database object
-    self._db = Database()
-    self._db._connection = cnx
-    self._db._cursor = cnx.cursor()
+    self._db._cursor.execute('update covidcast_meta_cache set timestamp = 0, epidata = "[]"')
 
     # use the local instance of the Epidata API
     Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
@@ -70,227 +49,129 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
     secrets.db.host = 'delphi_database_epidata'
     secrets.db.epi = ('user', 'pass')
 
-  def tearDown(self):
-    """Perform per-test teardown."""
-    self._db._cursor.close()
-    self._db._connection.close()
-
   def test_covidcast(self):
     """Test that the covidcast endpoint returns expected data."""
 
-    # insert dummy data
+    # insert placeholder data: three issues of one signal, one issue of another
     rows = [
-      CovidcastRow('src', 'sig', 'day', 'county', 20200414, '01234',
-                   1.5, 2.5, 3.5, nmv, nmv, nmv, 20200414, 0),
-      CovidcastRow('src', 'sig2', 'day', 'county', 20200414, '01234',
-                   1.5, 2.5, 3.5, nmv, nmv, nmv, 20200414, 0),
-      CovidcastRow('src', 'sig', 'day', 'county', 20200414, '01234',
-                   5.5, 1.2, 10.5, nmv, nmv, nmv, 20200415, 1),
-      CovidcastRow('src', 'sig', 'day', 'county', 20200414, '01234',
-                   6.5, 2.2, 11.5, nmv, nmv, nmv, 20200416, 2),
+      self._make_placeholder_row(issue=self.DEFAULT_ISSUE + i, value=i, lag=i)[0]
+      for i in range(3)
     ]
-    self._db.insert_or_update_bulk(rows)
-    self._db.run_dbjobs()
-    self._db._connection.commit()
+    row_latest_issue = rows[-1]
+    rows.append(
+      self._make_placeholder_row(signal="sig2")[0]
+    )
+    self._insert_rows(rows)
 
     with self.subTest(name='request two signals'):
       # fetch data
       response = Epidata.covidcast(
-          'src', ['sig', 'sig2'], 'day', 'county', 20200414, '01234')
+        **self.params_from_row(rows[0], signals=[rows[0].signal, rows[-1].signal])
+      )
+
+      expected = [
+        self.expected_from_row(row_latest_issue),
+        self.expected_from_row(rows[-1])
+      ]
 
       # check result
       self.assertEqual(response, {
         'result': 1,
-        'epidata': [{
-          'time_value': 20200414,
-          'geo_value': '01234',
-          'value': 6.5,
-          'stderr': 2.2,
-          'sample_size': 11.5,
-          'direction': None,
-          'issue': 20200416,
-          'lag': 2,
-          'signal': 'sig',
-          'missing_value': Nans.NOT_MISSING,
-          'missing_stderr': Nans.NOT_MISSING,
-          'missing_sample_size': Nans.NOT_MISSING
-        }, {
-          'time_value': 20200414,
-          'geo_value': '01234',
-          'value': 1.5,
-          'stderr': 2.5,
-          'sample_size': 3.5,
-          'direction': None,
-          'issue': 20200414,
-          'lag': 0,
-          'signal': 'sig2',
-          'missing_value': Nans.NOT_MISSING,
-          'missing_stderr': Nans.NOT_MISSING,
-          'missing_sample_size': Nans.NOT_MISSING
-        }],
+        'epidata': expected,
         'message': 'success',
       })
 
     with self.subTest(name='request two signals with tree format'):
       # fetch data
       response = Epidata.covidcast(
-          'src', ['sig', 'sig2'], 'day', 'county', 20200414, '01234',
-          format='tree')
+        **self.params_from_row(rows[0], signals=[rows[0].signal, rows[-1].signal], format='tree')
+      )
+
+      expected = [{
+        rows[0].signal: [
+          self.expected_from_row(row_latest_issue, ['signal']),
+        ],
+        rows[-1].signal: [
+          self.expected_from_row(rows[-1], ['signal']),
+        ],
+      }]
 
       # check result
       self.assertEqual(response, {
         'result': 1,
-        'epidata': [{
-          'sig': [{
-            'time_value': 20200414,
-            'geo_value': '01234',
-            'value': 6.5,
-            'stderr': 2.2,
-            'sample_size': 11.5,
-            'direction': None,
-            'issue': 20200416,
-            'lag': 2,
-            'missing_value': Nans.NOT_MISSING,
-            'missing_stderr': Nans.NOT_MISSING,
-            'missing_sample_size': Nans.NOT_MISSING
-          }],
-          'sig2': [{
-            'time_value': 20200414,
-            'geo_value': '01234',
-            'value': 1.5,
-            'stderr': 2.5,
-            'sample_size': 3.5,
-            'direction': None,
-            'issue': 20200414,
-            'lag': 0,
-            'missing_value': Nans.NOT_MISSING,
-            'missing_stderr': Nans.NOT_MISSING,
-            'missing_sample_size': Nans.NOT_MISSING
-          }],
-        }],
+        'epidata': expected,
         'message': 'success',
       })
 
     with self.subTest(name='request most recent'):
       # fetch data, without specifying issue or lag
       response_1 = Epidata.covidcast(
-          'src', 'sig', 'day', 'county', 20200414, '01234')
+        **self.params_from_row(rows[0])
+      )
+
+      expected = self.expected_from_row(row_latest_issue)
 
       # check result
       self.assertEqual(response_1, {
         'result': 1,
-        'epidata': [{
-          'time_value': 20200414,
-          'geo_value': '01234',
-          'value': 6.5,
-          'stderr': 2.2,
-          'sample_size': 11.5,
-          'direction': None,
-          'issue': 20200416,
-          'lag': 2,
-          'signal': 'sig',
-          'missing_value': Nans.NOT_MISSING,
-          'missing_stderr': Nans.NOT_MISSING,
-          'missing_sample_size': Nans.NOT_MISSING
-         }],
+        'epidata': [expected],
         'message': 'success',
       })
 
     with self.subTest(name='request as-of a date'):
       # fetch data, specifying as_of
       response_1a = Epidata.covidcast(
-          'src', 'sig', 'day', 'county', 20200414, '01234',
-          as_of=20200415)
+        **self.params_from_row(rows[0], as_of=rows[1].issue)
+      )
+
+      expected = self.expected_from_row(rows[1])
 
       # check result
+      self.maxDiff=None
       self.assertEqual(response_1a, {
         'result': 1,
-        'epidata': [{
-          'time_value': 20200414,
-          'geo_value': '01234',
-          'value': 5.5,
-          'stderr': 1.2,
-          'sample_size': 10.5,
-          'direction': None,
-          'issue': 20200415,
-          'lag': 1,
-          'signal': 'sig',
-          'missing_value': Nans.NOT_MISSING,
-          'missing_stderr': Nans.NOT_MISSING,
-          'missing_sample_size': Nans.NOT_MISSING
-         }],
+        'epidata': [expected],
         'message': 'success',
       })
 
     with self.subTest(name='request a range of issues'):
       # fetch data, specifying issue range, not lag
       response_2 = Epidata.covidcast(
-          'src', 'sig', 'day', 'county', 20200414, '01234',
-          issues=Epidata.range(20200414, 20200415))
+        **self.params_from_row(rows[0], issues=Epidata.range(rows[0].issue, rows[1].issue))
+      )
+
+      expected = [
+        self.expected_from_row(rows[0]),
+        self.expected_from_row(rows[1])
+      ]
 
       # check result
       self.assertDictEqual(response_2, {
           'result': 1,
-          'epidata': [{
-            'time_value': 20200414,
-            'geo_value': '01234',
-            'value': 1.5,
-            'stderr': 2.5,
-            'sample_size': 3.5,
-            'direction': None,
-            'issue': 20200414,
-            'lag': 0,
-            'signal': 'sig',
-            'missing_value': Nans.NOT_MISSING,
-            'missing_stderr': Nans.NOT_MISSING,
-            'missing_sample_size': Nans.NOT_MISSING
-          }, {
-            'time_value': 20200414,
-            'geo_value': '01234',
-            'value': 5.5,
-            'stderr': 1.2,
-            'sample_size': 10.5,
-            'direction': None,
-            'issue': 20200415,
-            'lag': 1,
-            'signal': 'sig',
-            'missing_value': Nans.NOT_MISSING,
-            'missing_stderr': Nans.NOT_MISSING,
-            'missing_sample_size': Nans.NOT_MISSING
-          }],
+          'epidata': expected,
           'message': 'success',
       })
 
     with self.subTest(name='request at a given lag'):
       # fetch data, specifying lag, not issue range
       response_3 = Epidata.covidcast(
-          'src', 'sig', 'day', 'county', 20200414, '01234',
-          lag=2)
+        **self.params_from_row(rows[0], lag=2)
+      )
+
+      expected = self.expected_from_row(row_latest_issue)
 
       # check result
       self.assertDictEqual(response_3, {
           'result': 1,
-          'epidata': [{
-            'time_value': 20200414,
-            'geo_value': '01234',
-            'value': 6.5,
-            'stderr': 2.2,
-            'sample_size': 11.5,
-            'direction': None,
-            'issue': 20200416,
-            'lag': 2,
-            'signal': 'sig',
-            'missing_value': Nans.NOT_MISSING,
-            'missing_stderr': Nans.NOT_MISSING,
-            'missing_sample_size': Nans.NOT_MISSING
-          }],
+          'epidata': [expected],
           'message': 'success',
       })
     with self.subTest(name='long request'):
       # fetch data, without specifying issue or lag
       # TODO should also trigger a post but doesn't due to the 414 issue
       response_1 = Epidata.covidcast(
-          'src', 'sig'*1000, 'day', 'county', 20200414, '01234')
+        **self.params_from_row(rows[0], signals='sig'*1000)
+      )
 
       # check result
       self.assertEqual(response_1, {'message': 'no results', 'result': -2})

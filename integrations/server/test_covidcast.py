@@ -23,26 +23,9 @@ class CovidcastTests(CovidcastBase):
   def localSetUp(self):
     """Perform per-test setup."""
     self._db._cursor.execute('update covidcast_meta_cache set timestamp = 0, epidata = "[]"')
-
-  def expected_from_row(self, row):
-    expected = dict(vars(row))
-    # remove columns commonly excluded from output
-    # nb may need to add source or *_type back in for multiplexed queries
-    for key in ['id', 'direction_updated_timestamp', 'time_type', 'geo_type', 'source']:
-      del expected[key]
-    return expected
     
   def request_based_on_row(self, row, extract_response=lambda x: x.json(), **kwargs):
-    params = {
-      'endpoint': 'covidcast',
-      'data_source': row.source,
-      'signal': row.signal,
-      'time_type': row.time_type,
-      'geo_type': row.geo_type,
-      'time_values': row.time_value,
-      'geo_value': row.geo_value,
-    }
-    params.update(kwargs)
+    params = self.params_from_row(row, endpoint='covidcast', **kwargs)
     response = requests.get(BASE_URL, params=params)
     response.raise_for_status()
     response = extract_response(response)
