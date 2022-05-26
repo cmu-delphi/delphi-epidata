@@ -230,6 +230,38 @@ select value_updated_timestamp from signal_latest''')
       self.setUp()
 
 
+    with self.subTest("Valid signal with name length 32<x<64"):
+      values = pd.DataFrame({
+        "geo_id": ["pa"],
+        "val": [100.0],
+        "se": [5.4],
+        "sample_size": [624.0],
+        "missing_val": [Nans.NOT_MISSING],
+        "missing_se": [Nans.NOT_MISSING],
+        "missing_sample_size": [Nans.NOT_MISSING]
+      })
+      signal_name = "really_long_name_that_will_be_accepted"
+      values.to_csv(source_receiving_dir + f'/20200419_state_{signal_name}.csv', index=False)
+
+      # upload CSVs
+      main(args)
+      dbjobs_main()
+      response = Epidata.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
+
+      expected_values = pd.concat([values, pd.DataFrame({
+        "time_value": [20200419],
+        "signal": [signal_name],
+        "direction": [None]
+      })], axis=1).rename(columns=uploader_column_rename).to_dict(orient="records")
+      expected_response = {'result': 1, 'epidata': self.apply_lag(expected_values), 'message': 'success'}
+
+      self.assertEqual(response, expected_response)
+      self.verify_timestamps_and_defaults()
+
+      self.tearDown()
+      self.setUp()
+
+
     with self.subTest("Invalid signal with a too-long name"):
       values = pd.DataFrame({
         "geo_id": ["pa"],
