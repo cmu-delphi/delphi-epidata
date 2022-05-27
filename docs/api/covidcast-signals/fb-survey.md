@@ -282,12 +282,33 @@ unweighted signals are also available. These begin `smoothed_`, such as
 
 ### Schooling Indicators
 
+#### Schooling Type
+
 | Signal | Description | Survey Item |
 | --- | --- | --- |
-| `smoothed_winperson_school_fulltime` | Estimated percentage of people who had any children attending in-person school on a full-time basis, among people reporting any pre-K-grade 12 children in their household. <br/> **Earliest date available:** 2020-11-24 | E2 |
-| `smoothed_winperson_school_parttime` | Estimated percentage of people who had any children attending in-person school on a part-time basis, among people reporting any pre-K-grade 12 children in their household. <br/> **Earliest date available:** 2020-11-24 | E2 |
+| `smoothed_winperson_school_fulltime_oldest` | Estimated percentage of people whose oldest child attends in-person school on a full-time basis, among people with any children younger than 18 reporting that their oldest child is currently in school, but not homeschooled. <br/> **Earliest date available:** 2022-03-23 | P5 |
+| `smoothed_winperson_school_parttime_oldest` | Estimated percentage of people whose oldest child attends in-person school on a part-time basis, among people with any children younger than 18 reporting that their oldest child is currently in school, but not homeschooled. <br/> **Earliest date available:** 2022-03-23 | P5 |
+| `smoothed_wremote_school_fulltime_oldest` | Estimated percentage of people whose oldest child attends remote school on a full-time basis, among people with any children younger than 18 reporting that their oldest child is currently in school, but not homeschooled. <br/> **Earliest date available:** 2022-03-23 | P5 |
+| `smoothed_winperson_school_fulltime` | *Discontinued as of Wave 12, Dec 19, 2022* Estimated percentage of people who had any children attending in-person school on a full-time basis, among people reporting any pre-K-grade 12 children in their household. <br/> **Earliest date available:** 2020-11-24 | E2 |
+| `smoothed_winperson_school_parttime` | *Discontinued as of Wave 12, Dec 19, 2022* Estimated percentage of people who had any children attending in-person school on a part-time basis, among people reporting any pre-K-grade 12 children in their household. <br/> **Earliest date available:** 2020-11-24 | E2 |
 
+#### School Safety Measures
 
+| Signal | Description | Survey Item |
+| --- | --- | --- |
+| `smoothed_wschool_safety_measures_mask_students` | Estimated percentage of people whose oldest child's school mandates mask-wearing for students, among people with any children younger than 18 whose oldest child attends in-person school on a full-time or part-time basis. <br/> **Earliest date available:** 2022-03-23 | P6 |
+| `smoothed_wschool_safety_measures_mask_teachers` | Estimated percentage of people whose oldest child's school mandates mask-wearing for teachers, among people with any children younger than 18 whose oldest child attends in-person school on a full-time or part-time basis. <br/> **Earliest date available:** 2022-03-23 | P6 |
+| `smoothed_wschool_safety_measures_restricted_entry` | Estimated percentage of people whose oldest child's school restricts entry into school, among people with any children younger than 18 whose oldest child attends in-person school on a full-time or part-time basis. <br/> **Earliest date available:** 2022-03-23 | P6 |
+| `smoothed_wschool_safety_measures_separators` | Estimated percentage of people whose oldest child's school uses separators or desk shields in classrooms, among people with any children younger than 18 whose oldest child attends in-person school on a full-time or part-time basis. <br/> **Earliest date available:** 2022-03-23 | P6 |
+| `smoothed_wschool_safety_measures_extracurricular` | Estimated percentage of people whose oldest child's school has no school-based extracurricular activities, among people with any children younger than 18 whose oldest child attends in-person school on a full-time or part-time basis. <br/> **Earliest date available:** 2022-03-23 | P6 |
+| `smoothed_wschool_safety_measures_symptom_screen` | Estimated percentage of people whose oldest child's school has daily symptom screening, among people with any children younger than 18 whose oldest child attends in-person school on a full-time or part-time basis. <br/> **Earliest date available:** 2022-03-23 | P6 |
+| `smoothed_wschool_safety_measures_ventilation` | Estimated percentage of people whose oldest child's school improved ventilation, among people with any children younger than 18 whose oldest child attends in-person school on a full-time or part-time basis. <br/> **Earliest date available:** 2022-03-23 | P6 |
+| `smoothed_wschool_safety_measures_testing_staff` | Estimated percentage of people whose oldest child's school regularly tests teachers and staff, among people with any children younger than 18 whose oldest child attends in-person school on a full-time or part-time basis. <br/> **Earliest date available:** 2022-03-23 | P6 |
+| `smoothed_wschool_safety_measures_testing_students` | Estimated percentage of people whose oldest child's school regularly tests students, among people with any children younger than 18 whose oldest child attends in-person school on a full-time or part-time basis. <br/> **Earliest date available:** 2022-03-23 | P6 |
+| `smoothed_wschool_safety_measures_vaccine_staff` | Estimated percentage of people whose oldest child's school has a vaccine requirement for teachers and staff, among people with any children younger than 18 whose oldest child attends in-person school on a full-time or part-time basis. <br/> **Earliest date available:** 2022-03-23 | P6 |
+| `smoothed_wschool_safety_measures_vaccine_students` | Estimated percentage of people whose oldest child's school has a vaccine requirement for eligible students, among people with any children younger than 18 whose oldest child attends in-person school on a full-time or part-time basis. <br/> **Earliest date available:** 2022-03-23 | P6 |
+| `smoothed_wschool_safety_measures_cafeteria` | Estimated percentage of people whose oldest child's school had modified cafeteria usage, among people with any children younger than 18 whose oldest child attends in-person school on a full-time or part-time basis. <br/> **Earliest date available:** 2022-03-23 | P6 |
+| `smoothed_wschool_safety_measures_dont_know` | Estimated percentage of people who don't know what safety measure their oldest child's school has taken, among people with any children younger than 18 whose oldest child attends in-person school on a full-time or part-time basis. <br/> **Earliest date available:** 2022-03-23 | P6 |
 
 ## Testing Indicators
 
@@ -332,6 +353,16 @@ unweighted signals are also available. These begin `smoothed_`, such as
 | `smoothed_wreceived_2_vaccine_doses` | Estimated percentage of respondents who have received two doses of a COVID-19 vaccine, among respondents who have received either one or two doses of a COVID-19 vaccine. This item was shown to respondents starting in Wave 7. <br/> **Earliest date available:** 2021-02-06 | V2 |
 | `smoothed_wcovid_vaccinated_friends` | Estimated percentage of respondents who report that most of their friends and family have received a COVID-19 vaccine. <br/> **Earliest date available:** 2021-05-20 | H3 |
 | `smoothed_wtry_vaccinate_1m` | Estimated percentage of respondents who report that they will try to get the COVID-19 vaccine within a week to a month, among unvaccinated respondents who do not have a vaccination appointment and who are uncertain about getting vaccinated (i.e. did not say they definitely would get vaccinated, nor that they definitely would not). <br/> **Earliest date available:** 2021-06-10 | V16 |
+
+### Vaccine Uptake and Acceptance for Children
+
+| Signal | Description | Survey Item |
+| --- | --- | --- |
+| `smoothed_wchild_vaccine_already` | Estimated percentage of people whose oldest child is already vaccinated against COVID-19, among people with any children younger than 18. <br/> **Earliest date available:** 2022-03-23 | P3 |
+| `smoothed_wchild_vaccine_yes_def` | Estimated percentage of people who would "definitely" get their oldest child vaccinated against COVID-19 when eligible, among people with any children younger than 18. <br/> **Earliest date available:** 2022-03-23 | P3 |
+| `smoothed_wchild_vaccine_yes_prob` | Estimated percentage of people who would "probably" get their oldest child vaccinated against COVID-19 when eligible, among people with any children younger than 18. <br/> **Earliest date available:** 2022-03-23 | P3 |
+| `smoothed_wchild_vaccine_no_prob` | Estimated percentage of people who would "probably not" get their oldest child vaccinated against COVID-19 when eligible, among people with any children younger than 18. <br/> **Earliest date available:** 2022-03-23 | P3 |
+| `smoothed_wchild_vaccine_no_def` | Estimated percentage of people who would "definitely not" get their oldest child vaccinated against COVID-19 when eligible, among people with any children younger than 18. <br/> **Earliest date available:** 2022-03-23 | P3 |
 
 ### Barriers to Accessing Vaccination
 
