@@ -727,8 +727,9 @@ estimates. See the [Appendix](#appendix) for further motivation for these
 estimators.
 
 <div style="background-color:#FCC; padding: 10px 30px;"><strong>Note:</strong>
-Currently the standard errors are calculated as though all respondent weights are
-equal. The result is that reported standard errors are artificially narrow. This
+Currently the standard errors are calculated as though all survey weights are
+equal, that is \(w^\text{part}_i = 1\) for all respondents. The result is that
+reported standard errors are artificially narrow for weighted estimates. This
 will be corrected in a future update to the API.
 </div>
 
@@ -756,7 +757,7 @@ knowing someone in their community who is sick. In this subsection we will
 describe how survey weights are used to construct weighted estimates for these
 indicators, using community CLI as an example.
 
-In a given aggregation unit (for example, daily-county), let $$U_i$$ the
+In a given aggregation unit (for example, daily-county), let $$U_i$$ denote the
 indicator that the survey respondent knows someone in their community with CLI,
 including their household, for survey $$i$$, out of $$m$$ surveys collected.
 Also let $$w_i$$ be the weight that accompanies survey $$i$$, normalized to sum
