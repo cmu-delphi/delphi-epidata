@@ -286,8 +286,8 @@ unweighted signals are also available. These begin `smoothed_`, such as
 
 | Signal | Description | Survey Item |
 | --- | --- | --- |
-| `smoothed_winperson_school_fulltime_oldest` | Estimated percentage of people whose oldest child attends in-person school on a full-time basis, among people with any children younger than 18 reporting that their oldest child is currently in school, but not homeschooled. <br/> **Earliest date available:** 2022-03-23 | P5 |
-| `smoothed_winperson_school_parttime_oldest` | Estimated percentage of people whose oldest child attends in-person school on a part-time basis, among people with any children younger than 18 reporting that their oldest child is currently in school, but not homeschooled. <br/> **Earliest date available:** 2022-03-23 | P5 |
+| `smoothed_winperson_school_fulltime_oldest` | Estimated percentage of people whose oldest child attends in-person school on a full-time basis, among people with any children younger than 18 reporting that their oldest child is currently in school, but not homeschooled. <br/> **Earliest date available:** 2021-12-19 | P5 |
+| `smoothed_winperson_school_parttime_oldest` | Estimated percentage of people whose oldest child attends in-person school on a part-time basis, among people with any children younger than 18 reporting that their oldest child is currently in school, but not homeschooled. <br/> **Earliest date available:** 2021-12-19 | P5 |
 | `smoothed_wremote_school_fulltime_oldest` | Estimated percentage of people whose oldest child attends remote school on a full-time basis, among people with any children younger than 18 reporting that their oldest child is currently in school, but not homeschooled. <br/> **Earliest date available:** 2022-03-23 | P5 |
 | `smoothed_winperson_school_fulltime` | *Discontinued as of Wave 12, Dec 19, 2021* Estimated percentage of people who had any children attending in-person school on a full-time basis, among people reporting any pre-K-grade 12 children in their household. <br/> **Earliest date available:** 2020-11-24 | E2 |
 | `smoothed_winperson_school_parttime` | *Discontinued as of Wave 12, Dec 19, 2021* Estimated percentage of people who had any children attending in-person school on a part-time basis, among people reporting any pre-K-grade 12 children in their household. <br/> **Earliest date available:** 2020-11-24 | E2 |
@@ -357,6 +357,7 @@ unweighted signals are also available. These begin `smoothed_`, such as
 
 | Signal | Description | Survey Item |
 | --- | --- | --- |
+| `smoothed_wvaccinate_child_oldest` | Estimated percentage of people who would "definitely" or "probably" get their oldest child vaccinated against COVID-19 when eligible or already have, among people with any children younger than 18. <br/> **Earliest date available:** 2021-12-19 | P3 |
 | `smoothed_wchild_vaccine_already` | Estimated percentage of people whose oldest child is already vaccinated against COVID-19, among people with any children younger than 18. <br/> **Earliest date available:** 2022-03-23 | P3 |
 | `smoothed_wchild_vaccine_yes_def` | Estimated percentage of people who would "definitely" get their oldest child vaccinated against COVID-19 when eligible, among people with any children younger than 18. <br/> **Earliest date available:** 2022-03-23 | P3 |
 | `smoothed_wchild_vaccine_yes_prob` | Estimated percentage of people who would "probably" get their oldest child vaccinated against COVID-19 when eligible, among people with any children younger than 18. <br/> **Earliest date available:** 2022-03-23 | P3 |
