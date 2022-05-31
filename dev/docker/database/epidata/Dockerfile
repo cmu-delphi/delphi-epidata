@@ -20,6 +20,9 @@ ENV MYSQL_PASSWORD pass
 # provide DDL which will create empty tables at container startup
 COPY repos/delphi/delphi-epidata/src/ddl/*.sql /docker-entrypoint-initdb.d/
 
+# provide additional configuration needed for percona
+COPY repos/delphi/delphi-epidata/dev/docker/database/mysql.d/*.cnf /etc/my.cnf.d/
+
 # grant access to SQL scripts
 RUN chmod o+r /docker-entrypoint-initdb.d/*.sql
 
