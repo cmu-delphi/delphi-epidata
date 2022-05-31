@@ -349,9 +349,9 @@ unweighted signals are also available. These begin `smoothed_`, such as
 | `smoothed_waccept_covid_vaccine` | *Discontinued as of Wave 11, May 19, 2021* Estimated percentage of respondents who would definitely or probably choose to get vaccinated, if a COVID-19 vaccine were offered to them today. **Note:** Until January 6, 2021, all respondents answered this question; beginning on that date, only respondents who said they have not received a COVID vaccine are asked this question. <br/> **Earliest date available:** 2021-01-01 | V3 |
 | `smoothed_wcovid_vaccinated` | Estimated percentage of respondents who have already received a vaccine for COVID-19. **Note:** The Centers for Disease Control compiles data on vaccine administration across the United States. This signal may differ from CDC data because of survey biases and should not be treated as authoritative. However, the survey signal is not subject to the lags and reporting problems in official vaccination data. <br/> **Earliest date available:** 2021-01-06 | V1 |
 | `smoothed_wappointment_not_vaccinated` | Estimated percentage of respondents who have an appointment to get a COVID-19 vaccine, among respondents who have not yet been vaccinated. <br/> **Earliest date available:** 2021-05-19 | V11a |
-| `smoothed_wreceived_2_vaccine_doses` | Estimated percentage of respondents who have received two doses of a COVID-19 vaccine, among respondents who have received either one or two doses of a COVID-19 vaccine. This item was shown to respondents starting in Wave 7. <br/> **Earliest date available:** 2021-02-06 | V2 |
 | `smoothed_wcovid_vaccinated_friends` | Estimated percentage of respondents who report that most of their friends and family have received a COVID-19 vaccine. <br/> **Earliest date available:** 2021-05-20 | H3 |
-| `smoothed_wtry_vaccinate_1m` | Estimated percentage of respondents who report that they will try to get the COVID-19 vaccine within a week to a month, among unvaccinated respondents who do not have a vaccination appointment and who are uncertain about getting vaccinated (i.e. did not say they definitely would get vaccinated, nor that they definitely would not). <br/> **Earliest date available:** 2021-06-04 | V16 |
+| `smoothed_wtry_vaccinate_1m` | Estimated percentage of respondents who report that they will try to get the COVID-19 vaccine within a week to a month, among unvaccinated respondents who do not have a vaccination appointment and who are uncertain about getting vaccinated (i.e. did not say they definitely would get vaccinated, nor that they definitely would not). <br/> **Earliest date available:** 2021-06-10 | V16 |
+| `smoothed_wflu_vaccinated_2021` | Estimated percentage of respondents who have received a season flu vaccine since July 1, 2021, among all respondents. <br/> **Earliest date available:** 2022-03-04 | C17b |
 
 ### Vaccine Uptake and Acceptance for Children
 
@@ -364,6 +364,25 @@ unweighted signals are also available. These begin `smoothed_`, such as
 | `smoothed_wchild_vaccine_no_prob` | Estimated percentage of people who would "probably not" get their oldest child vaccinated against COVID-19 when eligible, among people with any children younger than 18. <br/> **Earliest date available:** 2022-03-23 | P3 |
 | `smoothed_wchild_vaccine_no_def` | Estimated percentage of people who would "definitely not" get their oldest child vaccinated against COVID-19 when eligible, among people with any children younger than 18. <br/> **Earliest date available:** 2022-03-23 | P3 |
 | `smoothed_wvaccinate_children` | *Discontinued as of Wave 12, Dec 19, 2021* Estimated percentage of respondents with children who report that they will definitely or probably get the vaccine for their children. <br/> **Earliest date available:** 2021-06-04 | E4 |
+
+### Vaccine Doses
+
+| Signal | Description | Survey Item |
+| --- | --- | --- |
+| `smoothed_winitial_dose_one_of_one` | Estimated percentage of respondents who initially received one dose of a one-dose COVID-19 vaccine, among respondents who have received any COVID-19 vaccine. <br/> **Earliest date available:** 2022-03-04 | V2d |
+| `smoothed_winitial_dose_one_of_two` | Estimated percentage of respondents who initially received one dose of a two-dose COVID-19 vaccine, among respondents who have received any COVID-19 vaccine. <br/> **Earliest date available:** 2022-03-04 | V2d |
+| `smoothed_winitial_dose_two_of_two` | Estimated percentage of respondents who initially received two doses of a two-dose COVID-19 vaccine, among respondents who have received any COVID-19 vaccine. <br/> **Earliest date available:** 2022-03-04 | V2d |
+| `smoothed_wvaccinated_one_booster` | Estimated percentage of respondents who have received one booster dose of a COVID-19 vaccine, among respondents who have received any COVID-19 vaccine. <br/> **Earliest date available:** 2022-03-04 | V2b |
+| `smoothed_wvaccinated_two_or_more_boosters` | Estimated percentage of respondents who have received two or more booster doses of a COVID-19 vaccine, among respondents who have received any COVID-19 vaccine. <br/> **Earliest date available:** 2022-03-04 | V2b |
+| `smoothed_wvaccinated_no_booster` | Estimated percentage of respondents who have not received any COVID-19 vaccine booster doses, among respondents who have received any COVID-19 vaccine. <br/> **Earliest date available:** 2022-03-04 | V2b |
+| `smoothed_wvaccinated_at_least_one_booster` | Estimated percentage of respondents who have received one or more dose of a COVID-19 vaccine, among respondents who have received any COVID-19 vaccine. <br/> **Earliest date available:** 2022-03-04 | V2b |
+| `smoothed_wvaccinated_booster_accept` | Estimated percentage of respondents who either "definitely" or "probably" plan to get a booster shot of the COVID-19 vaccine, among respondents who have received any COVID-19 vaccine and who indicated that they have not yet received any COVID-19 boosters. <br/> **Earliest date available:** 2022-03-04 | V2c |
+| `smoothed_wvaccinated_booster_hesitant` | Estimated percentage of respondents who either "definitely" don't or "probably" don't plan to get a booster shot of the COVID-19 vaccine, among respondents who have received any COVID-19 vaccine and who indicated that they have not yet received any COVID-19 boosters. <br/> **Earliest date available:** 2022-03-04 | V2c |
+| `smoothed_wvaccinated_booster_defyes` | Estimated percentage of respondents who "definitely" plan to get a booster shot of the COVID-19 vaccine, among respondents who have received any COVID-19 vaccine and who indicated that they have not yet received any COVID-19 boosters. <br/> **Earliest date available:** 2022-03-04 | V2c |
+| `smoothed_wvaccinated_booster_probyes` | Estimated percentage of respondents who "probably" plan to get a booster shot of the COVID-19 vaccine, among respondents who have received any COVID-19 vaccine and who indicated that they have not yet received any COVID-19 boosters. <br/> **Earliest date available:** 2022-03-04 | V2c |
+| `smoothed_wvaccinated_booster_probno` | Estimated percentage of respondents who "probably" don't plan to get a booster shot of the COVID-19 vaccine, among respondents who have received any COVID-19 vaccine and who indicated that they have not yet received any COVID-19 boosters. <br/> **Earliest date available:** 2022-03-04 | V2c |
+| `smoothed_wvaccinated_booster_defno` | Estimated percentage of respondents who "definitely" don't plan to get a booster shot of the COVID-19 vaccine, among respondents who have received any COVID-19 vaccine and who indicated that they have not yet received any COVID-19 boosters. <br/> **Earliest date available:** 2022-03-04 | V2c |
+| `smoothed_wreceived_2_vaccine_doses` | *Discontinued mid-Wave 11, Nov 8, 2021* Estimated percentage of respondents who have received two doses of a COVID-19 vaccine, among respondents who have received either one or two doses of a COVID-19 vaccine. This item was shown to respondents starting in Wave 7. <br/> **Earliest date available:** 2021-02-06 | V2 |
 
 ### Barriers to Accessing Vaccination
 
@@ -765,6 +784,13 @@ of zero, and in simulations improves the quality of the standard error
 estimates. See the [Appendix](#appendix) for further motivation for these
 estimators.
 
+<div style="background-color:#FCC; padding: 10px 30px;"><strong>Note:</strong>
+Currently the standard errors are calculated as though all survey weights are
+equal, that is \(w^\text{part}_i = 1\) for all respondents. The result is that
+reported standard errors are artificially narrow for weighted estimates. This
+will be corrected in a future update to the API.
+</div>
+
 The pseudo-observation is not used in $$\hat{p}$$ and $$\hat{q}$$ themselves, to
 avoid potentially large amounts of estimation bias, as $$p$$ and $$q$$ are
 expected to be small.
@@ -789,7 +815,7 @@ knowing someone in their community who is sick. In this subsection we will
 describe how survey weights are used to construct weighted estimates for these
 indicators, using community CLI as an example.
 
-In a given aggregation unit (for example, daily-county), let $$U_i$$ the
+In a given aggregation unit (for example, daily-county), let $$U_i$$ denote the
 indicator that the survey respondent knows someone in their community with CLI,
 including their household, for survey $$i$$, out of $$m$$ surveys collected.
 Also let $$w_i$$ be the weight that accompanies survey $$i$$, normalized to sum
