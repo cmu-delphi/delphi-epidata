@@ -234,21 +234,19 @@ class Database:
     '''
 
     signal_dim_add_new_load = f'''
-        INSERT INTO signal_dim (`source`, `signal`, `compressed_signal_key`) 
-            SELECT DISTINCT `source`, `signal`, compressed_signal_key 
-                FROM `{self.load_table}` 
-                WHERE compressed_signal_key NOT IN 
-                    (SELECT DISTINCT compressed_signal_key 
-                     FROM signal_dim)
+        INSERT INTO signal_dim (`source`, `signal`)
+            SELECT DISTINCT sl.source, sl.signal
+                FROM `{self.load_table}` sl
+                LEFT JOIN signal_dim sd USING (`source`, `signal`)
+                WHERE sd.source IS NULL
     '''
 
     geo_dim_add_new_load = f'''
-        INSERT INTO geo_dim (`geo_type`, `geo_value`, `compressed_geo_key`) 
-            SELECT DISTINCT `geo_type`, `geo_value`, compressed_geo_key 
-                FROM `{self.load_table}` 
-                WHERE compressed_geo_key NOT IN 
-                    (SELECT DISTINCT compressed_geo_key 
-                     FROM geo_dim)
+        INSERT INTO geo_dim (`geo_type`, `geo_value`)
+            SELECT DISTINCT sl.geo_type, sl.geo_value
+                FROM `{self.load_table}` sl
+                LEFT JOIN geo_dim gd USING (`geo_type`, `geo_value`)
+                WHERE gd.geo_type IS NULL
     '''
 
     merged_dim_add_new_load = f'''
@@ -261,38 +259,26 @@ class Database:
                 sl.`source`, sl.`signal`,
                 sl.`geo_type`,sl.`geo_value`
             FROM `{self.load_table}` sl
-                INNER JOIN signal_dim sd
-                    USE INDEX(`compressed_signal_key_ind`)
-                    ON sd.compressed_signal_key = sl.compressed_signal_key
-                INNER JOIN geo_dim gd
-                    USE INDEX(`compressed_geo_key_ind`)
-                    ON gd.compressed_geo_key = sl.compressed_geo_key
-            WHERE (sd.signal_key_id, gd.geo_key_id) NOT IN
-                (SELECT signal_key_id, geo_key_id
-                FROM covid.merged_dim)
+                INNER JOIN signal_dim sd USING (`source`, `signal`)
+                INNER JOIN geo_dim gd USING (`geo_type`, `geo_value`)
+                LEFT JOIN merged_dim md ON
+                    md.signal_key_id = sd.signal_key_id AND
+                    md.geo_key_id = gd.geo_key_id
+                WHERE md.source IS NULL
     '''
 
-    # TODO: only need the merged_dim join; can do the sig and geo lookups based on the literals
     signal_history_load = f'''
         INSERT INTO signal_history 
             (signal_data_id, merged_key_id, signal_key_id, geo_key_id, demog_key_id, issue, data_as_of_dt,
              time_type, time_value, `value`, stderr, sample_size, `lag`, value_updated_timestamp, 
              computation_as_of_dt, is_latest_issue, missing_value, missing_stderr, missing_sample_size)
         SELECT
-            signal_data_id, md.merged_key_id, sd.signal_key_id, gd.geo_key_id, 0, issue, data_as_of_dt,
+            signal_data_id, md.merged_key_id, md.signal_key_id, md.geo_key_id, 0, issue, data_as_of_dt,
                 time_type, time_value, `value`, stderr, sample_size, `lag`, value_updated_timestamp, 
                 computation_as_of_dt, is_latest_issue, missing_value, missing_stderr, missing_sample_size
             FROM `{self.load_table}` sl
-                INNER JOIN signal_dim sd
-                    USE INDEX(`compressed_signal_key_ind`)
-                    ON sd.compressed_signal_key = sl.compressed_signal_key
-                INNER JOIN geo_dim gd
-                    USE INDEX(`compressed_geo_key_ind`)
-                    ON gd.compressed_geo_key = sl.compressed_geo_key
                 INNER JOIN merged_dim md
-                    USE INDEX(`dim_ids`)
-                    ON md.signal_key_id = sd.signal_key_id
-                        AND md.geo_key_id = gd.geo_key_id
+                    USING (`source`, `signal`, `geo_type`, `geo_value`)
             WHERE process_status = '{PROCESS_STATUS.BATCHING}'
         ON DUPLICATE KEY UPDATE
             `signal_data_id` = sl.`signal_data_id`,
@@ -312,20 +298,12 @@ class Database:
              time_type, time_value, `value`, stderr, sample_size, `lag`, value_updated_timestamp, 
              computation_as_of_dt, missing_value, missing_stderr, missing_sample_size)
         SELECT
-            signal_data_id, md.merged_key_id, sd.signal_key_id, gd.geo_key_id, 0, issue, data_as_of_dt, 
+            signal_data_id, md.merged_key_id, md.signal_key_id, md.geo_key_id, 0, issue, data_as_of_dt,
                 time_type, time_value, `value`, stderr, sample_size, `lag`, value_updated_timestamp, 
                 computation_as_of_dt, missing_value, missing_stderr, missing_sample_size
             FROM `{self.load_table}` sl
-                INNER JOIN signal_dim sd 
-                    USE INDEX(`compressed_signal_key_ind`) 
-                    ON sd.compressed_signal_key = sl.compressed_signal_key 
-                INNER JOIN geo_dim gd 
-                    USE INDEX(`compressed_geo_key_ind`) 
-                    ON gd.compressed_geo_key = sl.compressed_geo_key 
                 INNER JOIN merged_dim md
-                    USE INDEX(`dim_ids`)
-                    ON md.signal_key_id = sd.signal_key_id
-                        AND md.geo_key_id = gd.geo_key_id
+                    USING (`source`, `signal`, `geo_type`, `geo_value`)
             WHERE process_status = '{PROCESS_STATUS.BATCHING}'
                 AND is_latest_issue = 1
         ON DUPLICATE KEY UPDATE
