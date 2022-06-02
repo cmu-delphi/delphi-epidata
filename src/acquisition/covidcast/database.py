@@ -79,6 +79,8 @@ class Database:
   latest_view = latest_table + "_v"
   history_table = "signal_history" # NOTE: careful!  probably want to use variable `history_view` instead for semantics purposes
   history_view = history_table + "_v"
+  # TODO: consider using class variables like this for dimension table names too
+  # TODO: also consider that for composite key tuples, like short_comp_key and long_comp_key as used in delete_batch()
 
 
   def connect(self, connector_impl=mysql.connector):
@@ -115,7 +117,7 @@ class Database:
     """Return the total number of rows in table `covidcast`."""
 
     if tablename is None:
-      tablename = self.history_view
+      tablename = self.history_table
 
     self._cursor.execute(f'SELECT count(1) FROM `{tablename}`')
 
@@ -123,10 +125,10 @@ class Database:
       return num
 
   def count_all_history_rows(self):
-    return self.count_all_rows(self.history_view)
+    return self.count_all_rows(self.history_table)
 
   def count_all_latest_rows(self):
-    return self.count_all_rows(self.latest_view)
+    return self.count_all_rows(self.latest_table)
 
   def count_insertstatus_rows(self):
     self._cursor.execute(f"SELECT count(1) from `{self.load_table}` where `process_status`='{PROCESS_STATUS.INSERTING}'")
@@ -237,7 +239,7 @@ class Database:
     signal_dim_add_new_load = f'''
         INSERT INTO signal_dim (`source`, `signal`)
             SELECT DISTINCT sl.source, sl.signal
-                FROM signal_load AS sl LEFT JOIN signal_dim AS sd
+                FROM {self.load_table} AS sl LEFT JOIN signal_dim AS sd
                 ON sl.source=sd.source AND sl.signal=sd.signal
                 WHERE sd.source IS NULL
     '''
@@ -246,13 +248,13 @@ class Database:
     geo_dim_add_new_load = f'''
         INSERT INTO geo_dim (`geo_type`, `geo_value`)
             SELECT DISTINCT sl.geo_type, sl.geo_value
-                FROM signal_load AS sl LEFT JOIN geo_dim AS gd
+                FROM {self.load_table} AS sl LEFT JOIN geo_dim AS gd
                 ON sl.geo_type=gd.geo_type AND sl.geo_value=gd.geo_value
                 WHERE gd.geo_type IS NULL
     '''
 
     signal_history_load = f'''
-        INSERT INTO signal_history
+        INSERT INTO {self.history_table}
             (signal_data_id, signal_key_id, geo_key_id, issue, data_as_of_dt,
              time_type, time_value, `value`, stderr, sample_size, `lag`, value_updated_timestamp,
              computation_as_of_dt, missing_value, missing_stderr, missing_sample_size, `legacy_id`)
@@ -276,7 +278,7 @@ class Database:
     '''
 
     signal_latest_load = f'''
-        INSERT INTO signal_latest
+        INSERT INTO {self.latest_table}
             (signal_data_id, signal_key_id, geo_key_id, issue, data_as_of_dt,
              time_type, time_value, `value`, stderr, sample_size, `lag`, value_updated_timestamp,
              computation_as_of_dt, missing_value, missing_stderr, missing_sample_size)
@@ -338,145 +340,6 @@ class Database:
 
     return self
 
-
-  def run_dbjobs_old(self):
-
-    signal_load_set_comp_keys = f'''
-        UPDATE `{self.load_table}`
-        SET compressed_signal_key = md5(CONCAT(`source`,`signal`)),
-            compressed_geo_key = md5(CONCAT(`geo_type`,`geo_value`))
-    '''
-
-    signal_load_mark_batch = f'''
-        UPDATE `{self.load_table}` 
-        SET process_status = '{PROCESS_STATUS.BATCHING}'
-    '''
-
-    signal_dim_add_new_load = f'''
-        INSERT INTO signal_dim (`source`, `signal`, `compressed_signal_key`) 
-            SELECT DISTINCT `source`, `signal`, compressed_signal_key 
-                FROM `{self.load_table}` 
-                WHERE compressed_signal_key NOT IN 
-                    (SELECT DISTINCT compressed_signal_key 
-                     FROM signal_dim)
-    '''
-
-    geo_dim_add_new_load = f'''
-        INSERT INTO geo_dim (`geo_type`, `geo_value`, `compressed_geo_key`) 
-            SELECT DISTINCT `geo_type`, `geo_value`, compressed_geo_key 
-                FROM `{self.load_table}` 
-                WHERE compressed_geo_key NOT IN 
-                    (SELECT DISTINCT compressed_geo_key 
-                     FROM geo_dim)
-    '''
-
-    signal_history_load = f'''
-        INSERT INTO signal_history 
-            (signal_data_id, signal_key_id, geo_key_id, issue, data_as_of_dt, 
-             time_type, time_value, `value`, stderr, sample_size, `lag`, value_updated_timestamp, 
-             computation_as_of_dt, is_latest_issue, missing_value, missing_stderr, missing_sample_size, `legacy_id`)
-        SELECT
-            signal_data_id, sd.signal_key_id, gd.geo_key_id, issue, data_as_of_dt, 
-                time_type, time_value, `value`, stderr, sample_size, `lag`, value_updated_timestamp, 
-                computation_as_of_dt, is_latest_issue, missing_value, missing_stderr, missing_sample_size, `legacy_id`
-            FROM `{self.load_table}` sl
-                INNER JOIN signal_dim sd
-                    USE INDEX(`compressed_signal_key_ind`)
-                    ON sd.compressed_signal_key = sl.compressed_signal_key
-                INNER JOIN geo_dim gd
-                    USE INDEX(`compressed_geo_key_ind`)
-                    ON gd.compressed_geo_key = sl.compressed_geo_key
-            WHERE process_status = '{PROCESS_STATUS.BATCHING}'
-        ON DUPLICATE KEY UPDATE
-            `signal_data_id` = sl.`signal_data_id`,
-            `value_updated_timestamp` = sl.`value_updated_timestamp`,
-            `value` = sl.`value`,
-            `stderr` = sl.`stderr`,
-            `sample_size` = sl.`sample_size`,
-            `lag` = sl.`lag`,
-            `missing_value` = sl.`missing_value`,
-            `missing_stderr` = sl.`missing_stderr`,
-            `missing_sample_size` = sl.`missing_sample_size`
-    '''
-
-    signal_latest_load = f'''
-        INSERT INTO signal_latest 
-            (signal_data_id, signal_key_id, geo_key_id, issue, data_as_of_dt, 
-             time_type, time_value, `value`, stderr, sample_size, `lag`, value_updated_timestamp, 
-             computation_as_of_dt, missing_value, missing_stderr, missing_sample_size)
-        SELECT
-            signal_data_id, sd.signal_key_id, gd.geo_key_id, issue, data_as_of_dt, 
-                time_type, time_value, `value`, stderr, sample_size, `lag`, value_updated_timestamp, 
-                computation_as_of_dt, missing_value, missing_stderr, missing_sample_size
-            FROM `{self.load_table}` sl 
-                INNER JOIN signal_dim sd 
-                    USE INDEX(`compressed_signal_key_ind`) 
-                    ON sd.compressed_signal_key = sl.compressed_signal_key 
-                INNER JOIN geo_dim gd 
-                    USE INDEX(`compressed_geo_key_ind`) 
-                    ON gd.compressed_geo_key = sl.compressed_geo_key 
-            WHERE process_status = '{PROCESS_STATUS.BATCHING}'
-                AND is_latest_issue = 1
-        ON DUPLICATE KEY UPDATE
-            `signal_data_id` = sl.`signal_data_id`,
-            `value_updated_timestamp` = sl.`value_updated_timestamp`,
-            `value` = sl.`value`,
-            `stderr` = sl.`stderr`,
-            `sample_size` = sl.`sample_size`,
-            `issue` = sl.`issue`,
-            `lag` = sl.`lag`,
-            `missing_value` = sl.`missing_value`,
-            `missing_stderr` = sl.`missing_stderr`,
-            `missing_sample_size` = sl.`missing_sample_size` 
-    '''
-
-    signal_load_delete_processed = f'''
-        DELETE FROM `{self.load_table}` 
-        WHERE  process_status <> '{PROCESS_STATUS.LOADED}'
-    '''
-
-    import time
-    time_q = []
-    time_q.append(time.time())
-
-    print('signal_load_set_comp_keys:', end='')
-    self._cursor.execute(signal_load_set_comp_keys)
-    time_q.append(time.time())
-    print(f" elapsed: {time_q[-1]-time_q[-2]}s")
-
-    print('signal_load_mark_batch:', end='')
-    self._cursor.execute(signal_load_mark_batch)
-    time_q.append(time.time())
-    print(f" elapsed: {time_q[-1]-time_q[-2]}s")
-
-    print('signal_dim_add_new_load:', end='')
-    self._cursor.execute(signal_dim_add_new_load)
-    time_q.append(time.time())
-    print(f" elapsed: {time_q[-1]-time_q[-2]}s")
-
-    print('geo_dim_add_new_load:', end='')
-    self._cursor.execute(geo_dim_add_new_load)
-    time_q.append(time.time())
-    print(f" elapsed: {time_q[-1]-time_q[-2]}s")
-
-    print('signal_history_load:', end='')
-    self._cursor.execute(signal_history_load)
-    time_q.append(time.time())
-    print(f" elapsed: {time_q[-1]-time_q[-2]}s")
-
-    print('signal_latest_load:', end='')
-    self._cursor.execute(signal_latest_load)
-    time_q.append(time.time())
-    print(f" elapsed: {time_q[-1]-time_q[-2]}s")
-
-    print('signal_load_delete_processed:', end='')
-    self._cursor.execute(signal_load_delete_processed)
-    time_q.append(time.time())
-    print(f" elapsed: {time_q[-1]-time_q[-2]}s")
-
-    print("done.")
-
-    return self
 
   def delete_batch(self, cc_deletions):
     """
@@ -563,7 +426,7 @@ DELETE ell FROM {tmp_table_name} d INNER JOIN {self.latest_table} ell ON d.delet
     # NOTE: this must be executed *AFTER* `delete_history_sql` to ensure we get the correct `issue`
     #       AND also after `delete_latest_sql` so that we dont get a key collision on insert.
     update_latest_sql = f'''
-INSERT INTO signal_latest
+INSERT INTO {self.latest_table}
   (issue,
   signal_data_id, signal_key_id, geo_key_id, time_type, time_value,
   value, stderr, sample_size, `lag`, value_updated_timestamp,
