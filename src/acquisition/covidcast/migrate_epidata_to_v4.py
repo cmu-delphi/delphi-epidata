@@ -93,10 +93,10 @@ def do_batches(db, start, upper_lim):
     batch_sql = f"""
       INSERT INTO {destination_schema}.signal_load (
         `issue`, `source`, `signal`, geo_type, geo_value, time_type, time_value, `value`, stderr, sample_size, `lag`, value_updated_timestamp, is_latest_issue, missing_value, missing_stderr, missing_sample_size,
-        `legacy_id`, process_status
+        `legacy_id`
       ) SELECT
         `issue`, `source`, `signal`, geo_type, geo_value, time_type, time_value, `value`, stderr, sample_size, `lag`, value_updated_timestamp, is_latest_issue, missing_value, missing_stderr, missing_sample_size,
-        `id`, 'l'
+        `id`
       FROM epidata.covidcast AS cc
       USE INDEX(`PRIMARY`)
       WHERE {batch_lower} <= cc.id AND cc.id < {batch_upper}; """

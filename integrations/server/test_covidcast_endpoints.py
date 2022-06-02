@@ -125,7 +125,6 @@ class CovidcastEndpointTests(unittest.TestCase):
 
     def _insert_rows(self, rows: Iterable[CovidcastRow]):
         self._db.insert_or_update_bulk(rows)
-        self._db.run_dbjobs()
         self._db._connection.commit()
         return rows
 

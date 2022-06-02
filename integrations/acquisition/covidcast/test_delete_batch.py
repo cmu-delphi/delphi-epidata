@@ -68,7 +68,6 @@ class DeleteBatch(unittest.TestCase):
             ]
         rows.append(CovidcastRow('src', 'sig', 'day', 'geo', 0, "d_justone",  0,0,0,0,0,0, 1, 0))
         self._db.insert_or_update_bulk(rows)
-        self._db.run_dbjobs()
 
         # delete entries
         self._db.delete_batch(cc_deletions)

@@ -120,8 +120,6 @@ CREATE TABLE signal_load (
     `missing_stderr` INT(1) DEFAULT '0',
     `missing_sample_size` INT(1) DEFAULT '0',
     `legacy_id` BIGINT(20) UNSIGNED, -- not used beyond import of previous data into the v4 schema
-    `process_status` VARCHAR(2) DEFAULT 'l', -- using codes: 'i' (I) for "inserting", 'l' (L) for "loaded", and 'b' for "batching"
-        -- TODO: change `process_status` default to 'i' (I) "inserting" or even 'x'/'u' "undefined" ?
 
     UNIQUE INDEX (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`, `issue`)
 ) ENGINE=InnoDB;

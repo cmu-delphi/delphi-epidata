@@ -61,13 +61,6 @@ class CovidcastRow():
     self.lag = lag
 
 
-# constants for the codes used in the `process_status` column of `signal_load`
-class _PROCESS_STATUS(object):
-  INSERTING = 'i'
-  LOADED = 'l'
-  BATCHING = 'b'
-PROCESS_STATUS = _PROCESS_STATUS()
-
 
 class Database:
   """A collection of covidcast database operations."""
@@ -130,11 +123,8 @@ class Database:
   def count_all_latest_rows(self):
     return self.count_all_rows(self.latest_table)
 
-  def count_insertstatus_rows(self):
-    self._cursor.execute(f"SELECT count(1) from `{self.load_table}` where `process_status`='{PROCESS_STATUS.INSERTING}'")
-
-    for (num,) in self._cursor:
-      return num
+  def count_all_load_rows(self):
+    return self.count_all_rows(self.load_table)
 
 
   def insert_or_update_bulk(self, cc_rows):
@@ -143,7 +133,6 @@ class Database:
   def insert_or_update_batch(self, cc_rows, batch_size=2**20, commit_partial=False):
     """
     Insert new rows (or update existing) into the load table.
-    Data inserted this way will not be available to clients until the appropriate steps from src/dbjobs/ have run
     """
 
     # NOTE: `value_update_timestamp` is hardcoded to "NOW" (which is appropriate) and 
@@ -152,13 +141,11 @@ class Database:
       INSERT INTO `{self.load_table}`
         (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`,
         `value_updated_timestamp`, `value`, `stderr`, `sample_size`, `issue`, `lag`, 
-        `is_latest_issue`, `missing_value`, `missing_stderr`, `missing_sample_size`,
-        `process_status`)
+        `is_latest_issue`, `missing_value`, `missing_stderr`, `missing_sample_size`)
       VALUES
         (%s, %s, %s, %s, %s, %s, 
         UNIX_TIMESTAMP(NOW()), %s, %s, %s, %s, %s, 
-        1, %s, %s, %s, 
-        '{PROCESS_STATUS.INSERTING}')
+        1, %s, %s, %s)
     '''
 
     # all load table entries are already marked "is_latest_issue".
@@ -170,19 +157,12 @@ class Database:
                 USING (`source`, `signal`, `geo_type`, `geo_value`, `time_type`, `time_value`) 
             SET `{self.load_table}`.`is_latest_issue`=0 
             WHERE `{self.load_table}`.`issue` < `{self.latest_view}`.`issue` 
-                  AND `process_status` = '{PROCESS_STATUS.INSERTING}'
     '''
 
-    update_status_sql = f'''
-        UPDATE `{self.load_table}`
-            SET `process_status` = '{PROCESS_STATUS.LOADED}'
-            WHERE `process_status` = '{PROCESS_STATUS.INSERTING}'
-    '''
-
-    if 0 != self.count_insertstatus_rows():
-      # TODO: determine if this should be fatal?!
+    if 0 != self.count_all_load_rows():
+      # TODO: add a test for this
       logger = get_structured_logger("insert_or_update_batch")
-      logger.warn("Non-zero count in the load table!!!  This indicates scheduling of acqusition and dbjobs may be out of sync.")
+      logger.fatal("Non-zero count in the load table!!!  This indicates a previous acquisition run may have failed, another acquisition is in progress, or this process does not otherwise have exclusive access to the db!")
 
     # TODO: consider handling cc_rows as a generator instead of a list
 
@@ -218,7 +198,7 @@ class Database:
         self._cursor.executemany(insert_into_loader_sql, args)
         modified_row_count = self._cursor.rowcount
         self._cursor.execute(fix_is_latest_issue_sql)
-        self._cursor.execute(update_status_sql)
+        self.run_dbjobs() # TODO: consider incorporating the logic of dbjobs() into this method [once calls to dbjobs() are no longer needed for migrations]
 
         if modified_row_count is None or modified_row_count == -1:
           # the SQL connector does not support returning number of rows affected (see PEP 249)
@@ -303,6 +283,7 @@ class Database:
             `missing_sample_size` = sl.`missing_sample_size`
     '''
 
+    # NOTE: DO NOT `TRUNCATE` THIS TABLE!  doing so will ruin the AUTO_INCREMENT counter that the history and latest tables depend on...
     signal_load_delete_processed = f'''
         DELETE FROM `{self.load_table}`
     '''
@@ -469,7 +450,6 @@ WHERE d.update_latest=1 GROUP BY {short_comp_key};
     finally:
       self._cursor.execute(drop_tmp_table_sql)
     return total
-
 
 
   def compute_covidcast_meta(self, table_name=None):
