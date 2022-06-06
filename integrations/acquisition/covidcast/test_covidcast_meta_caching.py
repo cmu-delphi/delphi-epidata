@@ -94,12 +94,8 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     # make sure the live utility is serving something sensible
     cvc_database = live.Database()
     cvc_database.connect()
-<<<<<<< HEAD
-    epidata1 = cvc_database.compute_covidcast_meta()
-=======
     epidata1 = cvc_database.compute_covidcast_meta() 
     #tests the regular interval (runs daily, computes for each source and signal and stores into epiddata1
->>>>>>> 4ec6431a (added integrations test for database for is_latest_issue)
     cvc_database.disconnect(False)
     self.assertEqual(len(epidata1),1)
     self.assertEqual(epidata1, [
@@ -122,7 +118,7 @@ class CovidcastMetaCacheTests(unittest.TestCase):
       }
     ])
     epidata1={'result':1, 'message':'success', 'epidata':epidata1}
-
+    
     # make sure the API covidcast_meta is still blank, since it only serves
     # the cached version and we haven't cached anything yet
     epidata2 = Epidata.covidcast_meta()
