@@ -327,7 +327,7 @@ class CovidcastTests(CovidcastBase):
     self._insert_rows(rows)
 
     # make the request
-    response, expected = self.request_based_on_row(rows[1], time_values="0-99999999")
+    response, expected = self.request_based_on_row(rows[1], time_values="00010101-99990101")
 
     # assert that the right data came back
     self.assertEqual(response, {

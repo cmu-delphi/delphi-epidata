@@ -17,7 +17,7 @@ class CovidcastBase(unittest.TestCase):
         self._db.connect()
 
         # empty all of the data tables
-        for table in "signal_load  signal_latest  signal_history  geo_dim  signal_dim  merged_dim".split():
+        for table in "covidcast".split():
             self._db._cursor.execute(f"TRUNCATE TABLE {table};")
         self.localSetUp()
         self._db._connection.commit()
@@ -47,7 +47,8 @@ class CovidcastBase(unittest.TestCase):
             'missing_stderr': nmv,
             'missing_sample_size': nmv,
             'issue': self.DEFAULT_ISSUE,
-            'lag': 0
+            'lag': 0,
+            'is_wip': False # TODO: Remove in v4
         }
         settings.update(kwargs)
         return (CovidcastRow(**settings), settings)
@@ -56,7 +57,8 @@ class CovidcastBase(unittest.TestCase):
         # inserts rows into the database using the full acquisition process, including 'dbjobs' load into history & latest tables
         n = self._db.insert_or_update_bulk(rows)
         print(f"{n} rows added to load table. dispatching to v4 schema")
-        self._db.run_dbjobs()
+        # TODO: Add in v4
+        # self._db.run_dbjobs()  
         self._db._connection.commit()
         ###db._connection.commit()  # NOTE: this isnt needed here, but would be if using external access (like through client lib)
 
@@ -72,7 +74,8 @@ class CovidcastBase(unittest.TestCase):
         ret.update(kwargs)
         return ret
 
-    DEFAULT_MINUS=['time_type', 'geo_type', 'source']
+    # TODO: remove is_wip in v4
+    DEFAULT_MINUS=['time_type', 'geo_type', 'source', 'is_wip']
     def expected_from_row(self, row, minus=DEFAULT_MINUS):
         expected = dict(vars(row))
         # remove columns commonly excluded from output

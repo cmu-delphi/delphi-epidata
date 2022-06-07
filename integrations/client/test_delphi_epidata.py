@@ -2,6 +2,7 @@
 
 # standard library
 import unittest
+import time
 from unittest.mock import patch, MagicMock
 from json import JSONDecodeError
 
@@ -243,22 +244,22 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     # test fetch a specific region
     r = fetch('11111')
     self.assertEqual(r['message'], 'success')
-    self.assertEqual(r['epidata'], [counties[0]])
+    self.assertEqual(r['epidata'], [counties[1]])
     # test fetch a specific yet not existing region
     r = fetch('55555')
     self.assertEqual(r['message'], 'no results')
     # test fetch a multiple regions
     r = fetch(['11111', '22222'])
     self.assertEqual(r['message'], 'success')
-    self.assertEqual(r['epidata'], [counties[0], counties[1]])
+    self.assertEqual(r['epidata'], [counties[1], counties[2]])
     # test fetch a multiple regions in another variant
-    r = fetch(['11111', '33333'])
+    r = fetch(['00000', '22222'])
     self.assertEqual(r['message'], 'success')
     self.assertEqual(r['epidata'], [counties[0], counties[2]])
     # test fetch a multiple regions but one is not existing
     r = fetch(['11111', '55555'])
     self.assertEqual(r['message'], 'success')
-    self.assertEqual(r['epidata'], [counties[0]])
+    self.assertEqual(r['epidata'], [counties[1]])
     # test fetch a multiple regions but specify no region
     r = fetch([])
     self.assertEqual(r['message'], 'no results')
@@ -326,85 +327,6 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     ]
     self._insert_rows(rows)
 
-    # request range of issues
-    response = Epidata.covidcast_nowcast(
-      'src', 'sig1', 'sensor', 'day', 'county', 20200101, '01001',
-      issues=Epidata.range(20200101, 20200102))
-
-    self.assertEqual(response, {
-      'result': 1,
-      'epidata': [{
-        'time_value': 20200101,
-        'geo_value': '01001',
-        'value': 3.5,
-        'issue': 20200101,
-        'lag': 2,
-        'signal': 'sig1',
-      }, {
-        'time_value': 20200101,
-        'geo_value': '01001',
-        'value': 1.5,
-        'issue': 20200102,
-        'lag': 2,
-        'signal': 'sig1',
-      }],
-      'message': 'success',
-    })
-
-    # request as_of
-    response = Epidata.covidcast_nowcast(
-      'src', 'sig1', 'sensor', 'day', 'county', 20200101, '01001',
-      as_of=20200101)
-
-    self.assertEqual(response, {
-      'result': 1,
-      'epidata': [{
-        'time_value': 20200101,
-        'geo_value': '01001',
-        'value': 3.5,
-        'issue': 20200101,
-        'lag': 2,
-        'signal': 'sig1',
-      }],
-      'message': 'success',
-    })
-
-    # request unavailable data
-    response = Epidata.covidcast_nowcast(
-      'src', 'sig1', 'sensor', 'day', 'county', 22222222, '01001')
-
-    self.assertEqual(response, {'result': -2, 'message': 'no results'})
-
-  def test_async_epidata(self):
-    # insert dummy data
-    self.cur.execute(f'''
-      INSERT INTO
-        `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	      `time_value`, `geo_value`, `value_updated_timestamp`, 
-        `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
-        `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        `missing_stderr`,`missing_sample_size`) 
-      VALUES
-        (0, 'src', 'sig', 'day', 'county', 20200414, '11111',
-          123, 10, 11, 12, 456, 13, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'county', 20200414, '22222',
-          123, 20, 21, 22, 456, 23, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'county', 20200414, '33333',
-          123, 30, 31, 32, 456, 33, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'msa', 20200414, '11111',
-          123, 40, 41, 42, 456, 43, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'msa', 20200414, '22222',
-          123, 50, 51, 52, 456, 53, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (0, 'src', 'sig', 'day', 'msa', 20200414, '33333',
-          123, 60, 61, 62, 456, 634, 20200414, 0, 1, False,
-          {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
-    ''')
-    self.cnx.commit()
     test_output = Epidata.async_epidata([
       self.params_from_row(rows[0], source='covidcast'),
       self.params_from_row(rows[1], source='covidcast')
@@ -413,10 +335,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     # check response is same as standard covidcast call, using 24 calls to test batch sizing
     self.assertEqual(
       responses,
-      [
-        Epidata.covidcast(**self.params_from_row(rows[0])),
-        Epidata.covidcast(**self.params_from_row(rows[1])),
-      ]*12
+      [Epidata.covidcast(**self.params_from_row(rows[0])),Epidata.covidcast(**self.params_from_row(rows[1]))]*12
     )
 
   @fake_epidata_endpoint
