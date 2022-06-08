@@ -31,9 +31,6 @@ import delphi.operations.secrets as secrets
 __test_target__ = 'delphi.epidata.acquisition.covidcast.database'
 
 
-# use the local instance of the Epidata API
-BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
-
 nmv = Nans.NOT_MISSING.value
 class CovidcastLatestIssueTests(unittest.TestCase):
   """Tests covidcast is_latest_issue caching."""
