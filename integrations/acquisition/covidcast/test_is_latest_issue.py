@@ -82,9 +82,6 @@ class CovidcastLatestIssueTests(unittest.TestCase):
 
 
   def test_signal_latest(self):
-    #  def __init__(source, signal, time_type, geo_type, time_value, geo_value, 
-    #               value, stderr, sample_size, missing_value, missing_stderr, missing_sample_size, 
-    #               issue, lag, is_wip):
     rows = [
       CovidcastRow('src', 'sig', 'day', 'state', 20200414, 'pa', 
                    1.5, 2.5, 3.5, nmv, nmv, nmv, 20200414, 0),
