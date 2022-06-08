@@ -27,16 +27,14 @@ from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import ma
 import delphi.operations.secrets as secrets
 
 # py3tester coverage target (equivalent to `import *`)
-#  
+#
 __test_target__ = 'delphi.epidata.acquisition.covidcast.database'
-
 
 nmv = Nans.NOT_MISSING.value
 class CovidcastLatestIssueTests(unittest.TestCase):
   """Tests covidcast is_latest_issue caching."""
 
-  maxDiff = None #access full output of differences for debugging
-
+  
   def setUp(self):
     """Perform per-test setup."""
 
@@ -66,19 +64,24 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     self._db._cursor = cnx.cursor()
 
     # use the local instance of the Epidata API
-    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+    BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
 
     # use the local instance of the epidata database
     secrets.db.host = 'delphi_database_epidata'
     secrets.db.epi = ('user', 'pass')
 
+    #Commonly used SQL commands:
+    self.viewSignalLatest = '''SELECT * FROM `signal_latest`'''
+    self.viewSignalHistory = '''SELECT * FROM `signal_history`'''
+    self.viewSignalDim = '''SELECT `source`, `signal` FROM `signal_dim`'''
+    self.viewGeoDim = '''SELECT `geo_type`,`geo_value` FROM `geo_dim`'''
   def tearDown(self):
     """Perform per-test teardown."""
     self._db._cursor.close()
     self._db._connection.close()
 
-
   def test_signal_latest(self):
+
     rows = [
       CovidcastRow('src', 'sig', 'day', 'state', 20200414, 'pa', 
                    1.5, 2.5, 3.5, nmv, nmv, nmv, 20200414, 0),
@@ -90,29 +93,6 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     #preview
     self._db._cursor.execute('''SELECT * FROM `signal_history`''')
     self.totalRows = len(list(self._db._cursor.fetchall()))
-    self._db._cursor.execute('''SELECT * FROM `signal_latest`''')
-    record = self._db._cursor.fetchall()
-    x = PrettyTable()
-    x.field_names = ['signal_data_id',
-    'signal_key_id',
-    'geo_key_id',
-    'demog_key_id' ,
-    'issue' ,
-    'data_as_of_dt',
-    'time_type',
-    'time_value' ,
-    'reference_dt' ,
-    'value' ,
-    'stderr' ,
-    'sample_size',
-    'lag' ,
-    'value_updated_timestamp' ,
-    'computation_as_of_dt']
-    print("SIGNAL_LATEST TABLE")
-    for row in record:
-      x.add_row(list(row)[:len(x.field_names)])
-    print(x)
-    print("Finish with 1st Set of Data")
 
     #sanity check for adding dummy data
     sql = '''SELECT `issue` FROM `signal_latest` where `time_value` = 20200414'''
@@ -148,9 +128,8 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     record2 = self._db._cursor.fetchall()
     self.assertEqual(record, record2) #same as previous as is_latest did not change
 
-    #dynamic check
-    sql2 = '''SELECT `issue` FROM `signal_history` where `time_value` '''
-    self._db._cursor.execute(sql2)
+    #dynamic check for signal_history
+    self._db._cursor.execute('''SELECT `issue` FROM `signal_history`''')
     record3 = self._db._cursor.fetchall()
     self.assertEqual(3,self.totalRows + 1) #ensure 3 added (1 of which refreshed)
     self.assertEqual(20200416,max(list(record3))[0]) #max of the outputs is 20200416 , extracting from tuple
@@ -162,7 +141,7 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     empty = []
     self.assertEqual(empty, emptyRecord)
       
-  # make sure rows are added to *_dim only when needed
+  # We want to test src_sig to make sure rows are added to *_dim only when needed
     #new src, sig (ensure that it is added into *_dim)
     #old src, sig (ensure that it is NOT added into *_dim)
     #new geo (added)
@@ -170,7 +149,6 @@ class CovidcastLatestIssueTests(unittest.TestCase):
   def test_src_sig(self):
     #BASE CASES
     rows = [
-      # CovidcastRow('src', 'sig', 'day', 'county', 20200416, 'wa', #not seen
       CovidcastRow('src', 'sig', 'day', 'state', 20200414, 'pa', # 
       2, 2, 2, nmv, nmv, nmv, 20200414, 0),
       CovidcastRow('src', 'sig', 'day', 'county', 20200414, 'ca', # updating previous entry
@@ -178,16 +156,15 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     ]
     self._db.insert_or_update_bulk(rows)
     self._db.run_dbjobs()
-    #setting baseline variables
-    self._db._cursor.execute('''SELECT * FROM `geo_dim`''')
+    self._db._cursor.execute(self.viewGeoDim)
     record = self._db._cursor.fetchall()
     self.geoDimRows = len(list(record))
 
-    self._db._cursor.execute('''SELECT * FROM `signal_dim`''')
+    self._db._cursor.execute(self.viewSignalDim)
     record = self._db._cursor.fetchall()
     self.sigDimRows = len(list(record))
 
-    self._db._cursor.execute('''SELECT * FROM `signal_latest`''')
+    self._db._cursor.execute(self.viewSignalLatest)
     record = self._db._cursor.fetchall()
     self.sigLatestRows = len(list(record))
 
@@ -202,20 +179,19 @@ class CovidcastLatestIssueTests(unittest.TestCase):
       self._db.insert_or_update_bulk(oldSrcSig)
       self._db.run_dbjobs()
 
-      #testing src, sig
-      self._db._cursor.execute('''SELECT `source`, `signal` FROM `signal_dim`''')
+      #testing src, sig 
+      self._db._cursor.execute(self.viewSignalDim)
       record = self._db._cursor.fetchall()
       res = [('src','sig')] #output
       self.assertEqual(res , list(record))
 
-      #ensure new entries are added 
-      sql = '''SELECT * FROM `signal_latest`'''
-      self._db._cursor.execute(sql)
+      #ensure new entries are added in latest
+      self._db._cursor.execute(self.viewSignalLatest)
       record = self._db._cursor.fetchall()
       self.assertEqual(len(list(record)), self.sigLatestRows + 2) #2 original, 2 added
       
       #ensure nothing in geo
-      self._db._cursor.execute('''SELECT * FROM `geo_dim`''')
+      self._db._cursor.execute(self.viewGeoDim)
       record = self._db._cursor.fetchall()
       self.assertEqual(len(list(record)),self.geoDimRows)
 
@@ -230,12 +206,12 @@ class CovidcastLatestIssueTests(unittest.TestCase):
       self._db.run_dbjobs()
 
       #testing src, sig
-      self._db._cursor.execute('''SELECT `source`, `signal` FROM `signal_dim`''')
+      self._db._cursor.execute(self.viewSignalDim)
       record = self._db._cursor.fetchall()
       res = [('src', 'sig'), ('new_src', 'sig'), ('src', 'new_sig')]
       self.assertEqual(res , (record))
       #ensure nothing in geo
-      self._db._cursor.execute('''SELECT * FROM `geo_dim`''')
+      self._db._cursor.execute(self.viewGeoDim)
       record = self._db._cursor.fetchall()
       self.assertEqual(len(list(record)),self.geoDimRows)
 
@@ -249,12 +225,11 @@ class CovidcastLatestIssueTests(unittest.TestCase):
       self._db.insert_or_update_bulk(repeatedGeoValues)
       self._db.run_dbjobs()
 
-      self._db._cursor.execute('''SELECT `geo_type`,`geo_value` FROM `geo_dim`''')
+      self._db._cursor.execute(self.viewGeoDim)
       record = self._db._cursor.fetchall()
       self.assertEqual(len(list(record)),self.geoDimRows) #geoDimRows unchanged
 
-
-      self._db._cursor.execute('''SELECT * FROM `signal_latest`''')
+      self._db._cursor.execute(self.viewSignalLatest)
       record = self._db._cursor.fetchall()
       self.assertEqual(len(list(record)),self.sigLatestRows + 6) #total entries = 2(initial) + 6(test)
 
@@ -274,55 +249,13 @@ class CovidcastLatestIssueTests(unittest.TestCase):
       record = self._db._cursor.fetchall()
       self.assertEqual(len(list(record)),self.geoDimRows + 3) #2 + 3 new
 
-      self._db._cursor.execute('''SELECT * FROM `signal_latest`''')
+      self._db._cursor.execute(self.viewSignalLatest)
       record = self._db._cursor.fetchall()
-      self.assertEqual(len(list(record)),self.sigLatestRows + 6 + 3) #total entries = 2(initial) + 6(test)
-
-  @unittest.skip("helper function")
-  def view_table(table_name):
-    #TODO: abstract into function
-    y = PrettyTable()
-    y.field_names = ['signal_data_id',
-    'signal_key_id',
-    'geo_key_id',
-    'demog_key_id' ,
-    'issue' ,
-    'data_as_of_dt',
-    'time_type',
-    'time_value' ,
-    'reference_dt' ,
-    'value' ,
-    'stderr' ,
-    'sample_size',
-    'lag' ,
-    'value_updated_timestamp' ,
-    'computation_as_of_dt']
-   
-    print('\n')
-    self._db._cursor.execute('''SELECT * FROM `signal_latest`''')
-    record = self._db._cursor.fetchall()
-    print(record)
-    # assert(len(record) == )
-    for row in record:
-      y.add_row(list(row)[:len(y.field_names)])
-    print(y)
-    print("signal_latest updated")
-    # self._db._cursor.execute('''SELECT * FROM `signal_dim`''')
-    # record = self._db._cursor.fetchall()
-    # print(record)
-    # self._db._cursor.execute('''SELECT * FROM `geo_dim`''')
-    # record = self._db._cursor.fetchall()
-    # print(record)
-    
-    # sig_hist = PrettyTable()
-    # sig_hist.field_names = [('signal_data_id',), ('signal_key_id',), ('geo_key_id',), ('demog_key_id',), ('issue',), ('data_as_of_dt',), ('time_type',), ('time_value',), ('reference_dt',), ('value',), ('stderr',), ('sample_size',), ('lag',), ('value_updated_timestamp',), ('computation_as_of_dt',), ('is_latest_issue',), ('missing_value',), ('missing_stderr',), ('missing_sample_size',), ('legacy_id',)]
-    
-    # sig_load = PrettyTable()
-    # sig_load.field_names = [('signal_data_id',), ('signal_key_id',), ('geo_key_id',), ('demog_key_id',), ('issue',), ('data_as_of_dt',), ('source',), ('signal',), ('geo_type',), ('geo_value',), ('time_type',), ('time_value',), ('reference_dt',), ('value',), ('stderr',), ('sample_size',), ('lag',), ('value_updated_timestamp',), ('computation_as_of_dt',), ('is_latest_issue',), ('missing_value',), ('missing_stderr',), ('missing_sample_size',), ('legacy_id',), ('compressed_signal_key',), ('compressed_geo_key',), ('compressed_demog_key',), ('process_status',)]
+      self.assertEqual(len(list(record)),self.sigLatestRows + 6 + 3) #total entries = 2(initial) + 6(test)  
     
     #when uploading data patches (data in signal load has < issue than data in signal_latest)
     #when signal_load is older than signal_latest, we patch old data (i.e changed some old entries)
-    pass
+  
 
   @unittest.skip("Having different (time_value,issue) pairs in one call to db pipeline does not happen in practice")
   def test_diff_timevalue_issue(self):
@@ -335,6 +268,5 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     self._db.insert_or_update_bulk(rows) 
     self._db.run_dbjobs()
     self._db._cursor.execute('''SELECT `issue` FROM `signal_latest` ''')
-    record = self._db._cursor.fetchall()
-    print(record[0][0])
+    record = self._db._cursor.fetchall()  
     self.assertEqual(record[0][0], 20200417) #20200416 != 20200417
