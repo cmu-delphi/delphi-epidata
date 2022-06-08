@@ -2,14 +2,8 @@
 # standard library
 import unittest
 import time
-from unittest.mock import patch, MagicMock
-from json import JSONDecodeError
-import numpy as np
-from math import ceil
 
-from queue import Queue, Empty
 import threading
-from multiprocessing import cpu_count
 
 
 # third party
@@ -252,9 +246,6 @@ class CovidcastLatestIssueTests(unittest.TestCase):
       self._db._cursor.execute(self.viewSignalLatest)
       record = self._db._cursor.fetchall()
       self.assertEqual(len(list(record)),self.sigLatestRows + 6 + 3) #total entries = 2(initial) + 6(test)  
-    
-    #when uploading data patches (data in signal load has < issue than data in signal_latest)
-    #when signal_load is older than signal_latest, we patch old data (i.e changed some old entries)
   
 
   @unittest.skip("Having different (time_value,issue) pairs in one call to db pipeline does not happen in practice")
