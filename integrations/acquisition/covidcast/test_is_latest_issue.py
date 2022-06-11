@@ -83,7 +83,7 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     self._db.run_dbjobs()
     #preview
     self._db._cursor.execute('''SELECT * FROM `signal_history`''')
-    self.totalRows = len(list(self._db._cursor.fetchall()))
+    totalRows = len(list(self._db._cursor.fetchall()))
 
     #sanity check for adding dummy data
     sql = '''SELECT `issue` FROM `signal_latest` where `time_value` = 20200414'''
@@ -124,7 +124,7 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     #dynamic check for signal_history
     self._db._cursor.execute('''SELECT `issue` FROM `signal_history`''')
     record3 = self._db._cursor.fetchall()
-    self.assertEqual(2,self.totalRows + 1) #ensure 3 added (1 of which refreshed)
+    self.assertEqual(2,totalRows + 1) #ensure 3 added (1 of which refreshed)
     self.assertEqual(20200416,max(list(record3))[0]) #max of the outputs is 20200416 , extracting from tuple
     
     #check older issue not inside latest, empty field
@@ -151,15 +151,15 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     self._db.run_dbjobs()
     self._db._cursor.execute(self.viewGeoDim)
     record = self._db._cursor.fetchall()
-    self.geoDimRows = len(list(record))
+    geoDimRows = len(list(record))
 
     self._db._cursor.execute(self.viewSignalDim)
     record = self._db._cursor.fetchall()
-    self.sigDimRows = len(list(record))
+    sigDimRows = len(list(record))
 
     self._db._cursor.execute(self.viewSignalLatest)
     record = self._db._cursor.fetchall()
-    self.sigLatestRows = len(list(record))
+    sigLatestRows = len(list(record))
 
     #test not added first
     with self.subTest(name='older src and sig not added into sig_dim'):
@@ -181,12 +181,12 @@ class CovidcastLatestIssueTests(unittest.TestCase):
       #ensure new entries are added in latest
       self._db._cursor.execute(self.viewSignalLatest)
       record = self._db._cursor.fetchall()
-      self.assertEqual(len(list(record)), self.sigLatestRows + 2) #2 original, 2 added
+      self.assertEqual(len(list(record)), sigLatestRows + 2) #2 original, 2 added
       
       #ensure nothing in geo
       self._db._cursor.execute(self.viewGeoDim)
       record = self._db._cursor.fetchall()
-      self.assertEqual(len(list(record)),self.geoDimRows)
+      self.assertEqual(len(list(record)),geoDimRows)
 
     with self.subTest(name='newer src and sig added in sig_dim'):
       newSrcSig = [
@@ -206,7 +206,7 @@ class CovidcastLatestIssueTests(unittest.TestCase):
       #ensure nothing in geo
       self._db._cursor.execute(self.viewGeoDim)
       record = self._db._cursor.fetchall()
-      self.assertEqual(len(list(record)),self.geoDimRows)
+      self.assertEqual(len(list(record)),geoDimRows)
 
     with self.subTest(name='old geo not added in geo_dim'): 
       repeatedGeoValues = [                   #geo_type          #geo_value
@@ -220,11 +220,11 @@ class CovidcastLatestIssueTests(unittest.TestCase):
 
       self._db._cursor.execute(self.viewGeoDim)
       record = self._db._cursor.fetchall()
-      self.assertEqual(len(list(record)),self.geoDimRows) #geoDimRows unchanged
+      self.assertEqual(len(list(record)),geoDimRows) #geoDimRows unchanged
 
       self._db._cursor.execute(self.viewSignalLatest)
       record = self._db._cursor.fetchall()
-      self.assertEqual(len(list(record)),self.sigLatestRows + 6) #total entries = 2(initial) + 6(test)
+      self.assertEqual(len(list(record)),sigLatestRows + 6) #total entries = 2(initial) + 6(test)
 
     with self.subTest(name='newer geo added in geo_dim'): 
       newGeoValues = [                   #geo_type          #geo_value
@@ -240,11 +240,11 @@ class CovidcastLatestIssueTests(unittest.TestCase):
 
       self._db._cursor.execute('''SELECT `geo_type`,`geo_value` FROM `geo_dim`''')
       record = self._db._cursor.fetchall()
-      self.assertEqual(len(list(record)),self.geoDimRows + 3) #2 + 3 new
+      self.assertEqual(len(list(record)),geoDimRows + 3) #2 + 3 new
 
       self._db._cursor.execute(self.viewSignalLatest)
       record = self._db._cursor.fetchall()
-      self.assertEqual(len(list(record)),self.sigLatestRows + 6 + 3) #total entries = 2(initial) + 6(test)  
+      self.assertEqual(len(list(record)),sigLatestRows + 6 + 3) #total entries = 2(initial) + 6(test)  
   
 
   @unittest.skip("Having different (time_value,issue) pairs in one call to db pipeline does not happen in practice")
