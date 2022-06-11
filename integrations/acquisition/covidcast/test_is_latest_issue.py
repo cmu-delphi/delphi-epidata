@@ -2,7 +2,6 @@
 # standard library
 import unittest
 import time
-
 import threading
 
 
@@ -78,9 +77,7 @@ class CovidcastLatestIssueTests(unittest.TestCase):
 
     rows = [
       CovidcastRow('src', 'sig', 'day', 'state', 20200414, 'pa', 
-                   1.5, 2.5, 3.5, nmv, nmv, nmv, 20200414, 0),
-      CovidcastRow('src', 'sig', 'day', 'state', 20200415, 'wa', 
-                   3, 2, 1, nmv, nmv, nmv, 20200415, 0)
+                   1.5, 2.5, 3.5, nmv, nmv, nmv, 20200414, 0)
     ]
     self._db.insert_or_update_bulk(rows)
     self._db.run_dbjobs()
@@ -93,6 +90,7 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     self._db._cursor.execute(sql)
     record = self._db._cursor.fetchall()
     self.assertEqual(record[0][0], 20200414)
+    self.assertEqual(len(record), 1) #check 1 entry
 
     #when uploading data patches (data in signal load has < issue than data in signal_latest)
       #INSERT OLDER issue (does not end up in latest table)
@@ -109,6 +107,7 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     self._db._cursor.execute(sql)
     record = self._db._cursor.fetchall()
     self.assertEqual(record[0][0], 20200416) #new data added
+    self.assertEqual(len(record), 1) #check 1 entry 
 
     updateRow = [
       CovidcastRow('src', 'sig', 'day', 'state', 20200414, 'pa', 
@@ -125,11 +124,11 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     #dynamic check for signal_history
     self._db._cursor.execute('''SELECT `issue` FROM `signal_history`''')
     record3 = self._db._cursor.fetchall()
-    self.assertEqual(3,self.totalRows + 1) #ensure 3 added (1 of which refreshed)
+    self.assertEqual(2,self.totalRows + 1) #ensure 3 added (1 of which refreshed)
     self.assertEqual(20200416,max(list(record3))[0]) #max of the outputs is 20200416 , extracting from tuple
     
     #check older issue not inside latest, empty field
-    sql = '''SELECT * FROM `signal_latest` where `time_value` = 20200414 and `issue` = 20200415 '''
+    sql = '''SELECT * FROM `signal_latest` where `time_value` = 20200414 and `issue` = 20200414 '''
     self._db._cursor.execute(sql)
     emptyRecord = list(self._db._cursor.fetchall())
     empty = []
