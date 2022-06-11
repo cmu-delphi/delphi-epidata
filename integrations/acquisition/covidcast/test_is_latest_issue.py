@@ -144,7 +144,7 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     rows = [
       CovidcastRow('src', 'sig', 'day', 'state', 20200414, 'pa', # 
       2, 2, 2, nmv, nmv, nmv, 20200414, 0),
-      CovidcastRow('src', 'sig', 'day', 'county', 20200414, 'ca', # updating previous entry
+      CovidcastRow('src', 'sig', 'day', 'county', 20200414, '11111', # updating previous entry
       3, 3, 3, nmv, nmv, nmv, 20200414, 0)
     ]
     self._db.insert_or_update_bulk(rows)
@@ -166,7 +166,7 @@ class CovidcastLatestIssueTests(unittest.TestCase):
       oldSrcSig = [
         CovidcastRow('src', 'sig', 'day', 'state', 20211111, 'pa', #new src, new sig
                     99, 99, 99, nmv, nmv, nmv, 20211111, 1),
-        CovidcastRow('src', 'sig', 'day', 'county', 20211111, 'ca', #new src, new sig
+        CovidcastRow('src', 'sig', 'day', 'county', 20211111, '11111', #new src, new sig, same geo
                     99, 99, 99, nmv, nmv, nmv, 20211111, 1)
           ]  
       self._db.insert_or_update_bulk(oldSrcSig)
@@ -212,7 +212,7 @@ class CovidcastLatestIssueTests(unittest.TestCase):
       repeatedGeoValues = [                   #geo_type          #geo_value
           CovidcastRow('src', 'sig', 'day', 'state', 20200415, 'pa', # same geo_type, geo_value
                 2, 2, 2, nmv, nmv, nmv, 20200415, 0),
-          CovidcastRow('src', 'sig', 'day', 'county', 20200415, 'ca', # same geo_type, geo_value
+          CovidcastRow('src', 'sig', 'day', 'county', 20200415, '11111', # same geo_type, geo_value
                 3, 3, 3, nmv, nmv, nmv, 20200415, 0),
           ]  
       self._db.insert_or_update_bulk(repeatedGeoValues)
@@ -230,9 +230,9 @@ class CovidcastLatestIssueTests(unittest.TestCase):
       newGeoValues = [                   #geo_type          #geo_value
         CovidcastRow('src', 'sig', 'day', 'state', 20200414, 'nj', # everything same except, state = nj
             2, 2, 2, nmv, nmv, nmv, 20200414, 0),
-        CovidcastRow('src', 'sig', 'day', 'county', 20200414, 'al', # everything same except, county = al
+        CovidcastRow('src', 'sig', 'day', 'county', 20200414, '15217', # everything same except, county = al
               3, 3, 3, nmv, nmv, nmv, 20200414, 0),
-        CovidcastRow('src', 'sig', 'day', 'county', 20200414, 'nj', # everything same except, county = nj
+        CovidcastRow('src', 'sig', 'day', 'county', 20200414, '15451', # everything same except, county = nj
               3, 3, 3, nmv, nmv, nmv, 20200414, 0)
           ]  
       self._db.insert_or_update_bulk(newGeoValues)
