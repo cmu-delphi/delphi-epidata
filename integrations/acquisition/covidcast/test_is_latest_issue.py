@@ -47,7 +47,6 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     cur.execute("truncate table signal_dim")
     # reset the `covidcast_meta_cache` table (it should always have one row)
     cur.execute('update covidcast_meta_cache set timestamp = 0, epidata = "[]"')
-    
     cnx.commit()
     cur.close()
 
@@ -81,7 +80,6 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     ]
     self._db.insert_or_update_bulk(rows)
     self._db.run_dbjobs()
-    #preview
     self._db._cursor.execute('''SELECT * FROM `signal_history`''')
     totalRows = len(list(self._db._cursor.fetchall()))
 
@@ -246,7 +244,29 @@ class CovidcastLatestIssueTests(unittest.TestCase):
       record = self._db._cursor.fetchall()
       self.assertEqual(len(list(record)),sigLatestRows + 6 + 3) #total entries = 2(initial) + 6(test)  
   
-
+    def showTable(self, table_name):
+      x = PrettyTable()
+      x.field_names = ['signal_data_id',
+      'signal_key_id',
+      'geo_key_id',
+      'demog_key_id' ,
+      'issue' ,
+      'data_as_of_dt',
+      'time_type',
+      'time_value' ,
+      'reference_dt' ,
+      'value' ,
+      'stderr' ,
+      'sample_size',
+      'lag' ,
+      'value_updated_timestamp' ,
+      'computation_as_of_dt']
+      print("SIGNAL_LATEST TABLE")
+      for row in record:
+        x.add_row(list(row)[:len(x.field_names)])
+      print(x)
+      print("Finish with 1st Set of Data")
+      
   @unittest.skip("Having different (time_value,issue) pairs in one call to db pipeline does not happen in practice")
   def test_diff_timevalue_issue(self):
     rows = [
