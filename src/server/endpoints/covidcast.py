@@ -313,7 +313,7 @@ def handle_correlation():
     if lag is None:
         lag = 28
 
-    # build query -- TODO: should this be using most recent issue but also specifying a lag?
+    # `lag` above is used in post-processing, not in the database query, so we can use latest here
     q = QueryBuilder(latest_table, "t")
 
     fields_string = ["geo_type", "geo_value", "source", "signal"]
