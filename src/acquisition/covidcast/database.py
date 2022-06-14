@@ -140,8 +140,8 @@ class Database:
 
   def insert_or_update_batch(self, cc_rows, batch_size=2**20, commit_partial=False):
     """
-    Insert new rows (or update existing) into the load table.
-    Data inserted this way will not be available to clients until the appropriate steps from src/dbjobs/ have run
+    Insert new rows into the load table.
+    After completing this step, run `self.run_dbjobs()` to move data into the live tables.
     """
 
     # NOTE: `value_update_timestamp` is hardcoded to "NOW" (which is appropriate) and 
