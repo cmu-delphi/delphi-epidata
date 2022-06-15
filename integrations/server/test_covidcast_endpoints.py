@@ -16,6 +16,7 @@ from delphi_utils import Nans
 
 from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import main as update_cache
 
+from delphi.epidata.acquisition.covidcast.database import Database
 
 # use the local instance of the Epidata API
 BASE_URL = "http://delphi_web_epidata/epidata/covidcast"
@@ -23,7 +24,8 @@ BASE_URL = "http://delphi_web_epidata/epidata/covidcast"
 
 @dataclass
 class CovidcastRow:
-    id: int = 0
+    # TODO in https://github.com/cmu-delphi/delphi-epidata/issues/897
+    # this heavily resembles delphi.epidata.acquisition.covidcast.database.CovidcastRow and should be refactored out
     source: str = "src"
     signal: str = "sig"
     time_type: str = "day"
@@ -34,19 +36,14 @@ class CovidcastRow:
     value: float = 10.0
     stderr: float = 0
     sample_size: float = 10
-    direction_updated_timestamp: int = 20200202
-    direction: int = 0
     issue: int = 20200202
     lag: int = 0
-    is_latest_issue: bool = True
-    is_wip: bool = False
-    missing_value: int = Nans.NOT_MISSING
-    missing_stderr: int = Nans.NOT_MISSING
-    missing_sample_size: int = Nans.NOT_MISSING
+    missing_value: int = Nans.NOT_MISSING.value
+    missing_stderr: int = Nans.NOT_MISSING.value
+    missing_sample_size: int = Nans.NOT_MISSING.value
 
     def __str__(self):
         return f"""(
-            {self.id},
             '{self.source}',
             '{self.signal}',
             '{self.time_type}',
@@ -57,12 +54,8 @@ class CovidcastRow:
             {self.value},
             {self.stderr},
             {self.sample_size},
-            {self.direction_updated_timestamp},
-            {self.direction},
             {self.issue},
             {self.lag},
-            {self.is_latest_issue},
-            {self.is_wip},
             {self.missing_value},
             {self.missing_stderr},
             {self.missing_sample_size}
@@ -76,7 +69,6 @@ class CovidcastRow:
             time_type=json["time_type"],
             geo_type=json["geo_type"],
             geo_value=json["geo_value"],
-            direction=json["direction"],
             issue=json["issue"],
             lag=json["lag"],
             value=json["value"],
@@ -106,38 +98,36 @@ class CovidcastEndpointTests(unittest.TestCase):
     def setUp(self):
         """Perform per-test setup."""
 
-        # connect to the `epidata` database and clear the `covidcast` table
-        cnx = mysql.connector.connect(user="user", password="pass", host="delphi_database_epidata", database="epidata")
+        # connect to the database and clear the tables
+        cnx = mysql.connector.connect(user="user", password="pass", host="delphi_database_epidata", database="covid")
         cur = cnx.cursor()
-        cur.execute("truncate table covidcast")
-        cur.execute('update covidcast_meta_cache set timestamp = 0, epidata = ""')
+
+        # clear all tables
+        cur.execute("truncate table signal_load")
+        cur.execute("truncate table signal_history")
+        cur.execute("truncate table signal_latest")
+        cur.execute("truncate table geo_dim")
+        cur.execute("truncate table signal_dim")
+        # reset the `covidcast_meta_cache` table (it should always have one row)
+        cur.execute('update covidcast_meta_cache set timestamp = 0, epidata = "[]"')
+
         cnx.commit()
         cur.close()
 
-        # make connection and cursor available to test cases
-        self.cnx = cnx
-        self.cur = cnx.cursor()
+        # make connection and cursor available to the Database object
+        self._db = Database()
+        self._db._connection = cnx
+        self._db._cursor = cnx.cursor()
 
     def tearDown(self):
         """Perform per-test teardown."""
-        self.cur.close()
-        self.cnx.close()
+        self._db._cursor.close()
+        self._db._connection.close()
 
     def _insert_rows(self, rows: Iterable[CovidcastRow]):
-        sql = ",\n".join((str(r) for r in rows))
-        self.cur.execute(
-            f"""
-            INSERT INTO
-                `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-	            `time_value`, `geo_value`, `value_updated_timestamp`, 
-                `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
-                `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-                `missing_stderr`,`missing_sample_size`) 
-            VALUES
-            {sql}
-            """
-        )
-        self.cnx.commit()
+        self._db.insert_or_update_bulk(rows)
+        self._db.run_dbjobs()
+        self._db._connection.commit()
         return rows
 
     def _fetch(self, endpoint="/", **params):
@@ -311,9 +301,9 @@ class CovidcastEndpointTests(unittest.TestCase):
         """Request a signal the /backfill endpoint."""
 
         num_rows = 10
-        issue_0 = [CovidcastRow(time_value=20200401 + i, value=i, sample_size=1, lag=0, issue=20200401 + i, is_latest_issue=False) for i in range(num_rows)]
-        issue_1 = [CovidcastRow(time_value=20200401 + i, value=i + 1, sample_size=2, lag=1, issue=20200401 + i + 1, is_latest_issue=False) for i in range(num_rows)]
-        last_issue = [CovidcastRow(time_value=20200401 + i, value=i + 2, sample_size=3, lag=2, issue=20200401 + i + 2, is_latest_issue=True) for i in range(num_rows)]
+        issue_0 = [CovidcastRow(time_value=20200401 + i, value=i, sample_size=1, lag=0, issue=20200401 + i) for i in range(num_rows)]
+        issue_1 = [CovidcastRow(time_value=20200401 + i, value=i + 1, sample_size=2, lag=1, issue=20200401 + i + 1) for i in range(num_rows)]
+        last_issue = [CovidcastRow(time_value=20200401 + i, value=i + 2, sample_size=3, lag=2, issue=20200401 + i + 2) for i in range(num_rows)] # <-- the latest issues
         self._insert_rows([*issue_0, *issue_1, *last_issue])
         first = issue_0[0]
 

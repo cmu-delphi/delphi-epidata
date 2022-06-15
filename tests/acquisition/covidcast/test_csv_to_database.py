@@ -92,13 +92,13 @@ class UnitTests(unittest.TestCase):
     self.assertEqual(mock_database.insert_or_update_bulk.call_count, 2)
     call_args_list = mock_database.insert_or_update_bulk.call_args_list
     actual_args = [[(a.source, a.signal, a.time_type, a.geo_type, a.time_value,
-                     a.geo_value, a.value, a.stderr, a.sample_size, a.issue, a.lag, a.is_wip)
+                     a.geo_value, a.value, a.stderr, a.sample_size, a.issue, a.lag)
                     for a in call.args[0]] for call in call_args_list]
     expected_args = [
-      [('src_a', 'sig_a', 'day', 'hrr', 20200419, 'a1', 'a1', 'a1', 'a1', 20200420, 1, False),
-       ('src_a', 'sig_a', 'day', 'hrr', 20200419, 'a2', 'a2', 'a2', 'a2', 20200420, 1, False),
-       ('src_a', 'sig_a', 'day', 'hrr', 20200419, 'a3', 'a3', 'a3', 'a3', 20200420, 1, False)],
-      [('src_d', 'wip_sig_d', 'week', 'msa', 202016, 'd1', 'd1', 'd1', 'd1', 202017, 1, True)]
+      [('src_a', 'sig_a', 'day', 'hrr', 20200419, 'a1', 'a1', 'a1', 'a1', 20200420, 1),
+       ('src_a', 'sig_a', 'day', 'hrr', 20200419, 'a2', 'a2', 'a2', 'a2', 20200420, 1),
+       ('src_a', 'sig_a', 'day', 'hrr', 20200419, 'a3', 'a3', 'a3', 'a3', 20200420, 1)],
+      [('src_d', 'wip_sig_d', 'week', 'msa', 202016, 'd1', 'd1', 'd1', 'd1', 202017, 1)]
     ]
     self.assertEqual(actual_args, expected_args)
 
@@ -118,7 +118,7 @@ class UnitTests(unittest.TestCase):
     """Run the main program successfully, then commit changes."""
 
     # TODO: use an actual argparse object for the args instead of a MagicMock
-    args = MagicMock(log_file=None, data_dir='data', is_wip_override=False, not_wip_override=False, specific_issue_date=False)
+    args = MagicMock(log_file=None, data_dir='data', specific_issue_date=False)
     mock_database = MagicMock()
     mock_database.count_all_rows.return_value = 0
     fake_database_impl = lambda: mock_database
@@ -146,7 +146,7 @@ class UnitTests(unittest.TestCase):
     """Run the main program with failure, then commit changes."""
 
     # TODO: use an actual argparse object for the args instead of a MagicMock
-    args = MagicMock(log_file=None, data_dir='data', is_wip_override=False, not_wip_override=False, specific_issue_date=False)
+    args = MagicMock(log_file=None, data_dir='data', specific_issue_date=False)
     mock_database = MagicMock()
     mock_database.count_all_rows.return_value = 0
     fake_database_impl = lambda: mock_database
@@ -172,7 +172,7 @@ class UnitTests(unittest.TestCase):
     """Run the main program with an empty receiving directory."""
 
     # TODO: use an actual argparse object for the args instead of a MagicMock
-    args = MagicMock(log_file=None, data_dir='data', is_wip_override=False, not_wip_override=False, specific_issue_date=False)
+    args = MagicMock(log_file=None, data_dir='data', specific_issue_date=False)
     mock_database = MagicMock()
     mock_database.count_all_rows.return_value = 0
     fake_database_impl = lambda: mock_database
