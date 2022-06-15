@@ -11,4 +11,3 @@ scipy==1.6.2
 tenacity==7.0.0
 newrelic
 epiweeks==2.1.2
-prettytable
