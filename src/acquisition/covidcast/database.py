@@ -110,24 +110,6 @@ class Database:
       self._connection.commit()
     self._connection.close()
 
-
-  def count_all_rows(self, tablename=None):
-    """Return the total number of rows in table `covidcast`."""
-
-    if tablename is None:
-      tablename = self.history_view
-
-    self._cursor.execute(f'SELECT count(1) FROM `{tablename}`')
-
-    for (num,) in self._cursor:
-      return num
-
-  def count_all_history_rows(self):
-    return self.count_all_rows(self.history_view)
-
-  def count_all_latest_rows(self):
-    return self.count_all_rows(self.latest_view)
-
   def count_insertstatus_rows(self):
     self._cursor.execute(f"SELECT count(1) from `{self.load_table}` where `process_status`='{PROCESS_STATUS.INSERTING}'")
 
@@ -265,11 +247,11 @@ class Database:
         INSERT INTO signal_history 
             (signal_data_id, signal_key_id, geo_key_id, demog_key_id, issue, data_as_of_dt, 
              time_type, time_value, `value`, stderr, sample_size, `lag`, value_updated_timestamp, 
-             computation_as_of_dt, is_latest_issue, missing_value, missing_stderr, missing_sample_size, `legacy_id`)
+             computation_as_of_dt, is_latest_issue, missing_value, missing_stderr, missing_sample_size)
         SELECT
             signal_data_id, sd.signal_key_id, gd.geo_key_id, 0, issue, data_as_of_dt, 
                 time_type, time_value, `value`, stderr, sample_size, `lag`, value_updated_timestamp, 
-                computation_as_of_dt, is_latest_issue, missing_value, missing_stderr, missing_sample_size, `legacy_id`
+                computation_as_of_dt, is_latest_issue, missing_value, missing_stderr, missing_sample_size
             FROM `{self.load_table}` sl
                 INNER JOIN signal_dim sd
                     USE INDEX(`compressed_signal_key_ind`)
@@ -326,19 +308,20 @@ class Database:
         WHERE  process_status <> '{PROCESS_STATUS.LOADED}'
     '''
 
-    print('signal_load_set_comp_keys:')
+    logger = get_structured_logger("run_dbjobs")
+    logger.info('executing signal_load_set_comp_keys:')
     self._cursor.execute(signal_load_set_comp_keys)
-    print('signal_load_mark_batch:')
+    logger.info('executing signal_load_mark_batch:')
     self._cursor.execute(signal_load_mark_batch)
-    print('signal_dim_add_new_load:')
+    logger.info('executing signal_dim_add_new_load:')
     self._cursor.execute(signal_dim_add_new_load)
-    print('geo_dim_add_new_load:')
+    logger.info('executing geo_dim_add_new_load:')
     self._cursor.execute(geo_dim_add_new_load)
-    print('signal_history_load:')
+    logger.info('executing signal_history_load:')
     self._cursor.execute(signal_history_load)
-    print('signal_latest_load:')
+    logger.info('executing signal_latest_load:')
     self._cursor.execute(signal_latest_load)
-    print('signal_load_delete_processed:')
+    logger.info('executing signal_load_delete_processed:')
     self._cursor.execute(signal_load_delete_processed)
     print("done.")
 
@@ -378,7 +361,7 @@ class Database:
     long_comp_key = short_comp_key + ", `issue`"
 
     create_tmp_table_sql = f'''
-CREATE OR REPLACE TABLE {tmp_table_name} LIKE {self.load_table};
+CREATE TABLE {tmp_table_name} LIKE {self.load_table};
 '''
 
     amend_tmp_table_sql = f'''

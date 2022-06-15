@@ -56,7 +56,6 @@ CREATE TABLE signal_history (
     `missing_value` INT(1) NULL DEFAULT '0',
     `missing_stderr` INT(1) NULL DEFAULT '0',
     `missing_sample_size` INT(1) NULL DEFAULT '0',
-    `legacy_id` BIGINT(20) UNSIGNED NULL DEFAULT NULL, -- not used beyond import of previous data into the v4 schema
  
     PRIMARY KEY (`signal_data_id`) USING BTREE,
     UNIQUE INDEX `value_key` (`signal_key_id`,`geo_key_id`,`issue`,`time_type`,`time_value`) USING BTREE
@@ -119,7 +118,6 @@ CREATE TABLE signal_load (
     `missing_value` INT(1) NULL DEFAULT '0',
     `missing_stderr` INT(1) NULL DEFAULT '0',
     `missing_sample_size` INT(1) NULL DEFAULT '0',
-    `legacy_id` BIGINT(20) UNSIGNED, -- not used beyond import of previous data into the v4 schema
     `compressed_signal_key` VARCHAR(100),
     `compressed_geo_key` VARCHAR(100),
     `compressed_demog_key` VARCHAR(100),  -- TODO: for future use ; also rename s/demog/stratification/
