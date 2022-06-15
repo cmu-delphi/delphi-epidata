@@ -75,9 +75,11 @@ class Database:
   DATABASE_NAME = 'covid'
 
   load_table = "signal_load"
-  latest_table = "signal_latest" # NOTE: careful!  probably want to use variable `latest_view` instead for semantics purposes
+  # if you want to deal with foreign key ids: use table
+  # if you want to deal with source/signal names, geo type/values, etc: use view
+  latest_table = "signal_latest"
   latest_view = latest_table + "_v"
-  history_table = "signal_history" # NOTE: careful!  probably want to use variable `history_view` instead for semantics purposes
+  history_table = "signal_history"
   history_view = history_table + "_v"
 
 
@@ -208,7 +210,7 @@ class Database:
         if commit_partial:
           self._connection.commit()
     except Exception as e:
-      # TODO: rollback???  something???
+      # rollback is handled in csv_to_database; if you're calling this yourself, handle your own rollback
       raise e
     return total
 
@@ -323,7 +325,7 @@ class Database:
     self._cursor.execute(signal_latest_load)
     logger.info('executing signal_load_delete_processed:')
     self._cursor.execute(signal_load_delete_processed)
-    print("done.")
+    logger.info('done')
 
     return self
 

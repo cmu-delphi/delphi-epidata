@@ -38,7 +38,6 @@ class TestTest(unittest.TestCase):
 
     def _find_matches_for_row(self, row):
         # finds (if existing) row from both history and latest views that matches long-key of provided CovidcastRow
-        # TODO: consider making `issue` an optional match...  this will break the at-most-1-row-returned assumption for signal_history
         cols = "source signal time_type time_value geo_type geo_value issue".split()
         results = {}
         cur = self._db._cursor

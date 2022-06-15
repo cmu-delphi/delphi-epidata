@@ -646,8 +646,6 @@ class CovidcastTests(unittest.TestCase):
     ''')
     self.cnx.commit()
 
-    # TODO: should this show that even if numeric values go into the fields, that if they are marked w/ a MISSING reason, they show up as NULL anyway?
-
     # make the request
     response = requests.get(BASE_URL, params={
       'endpoint': 'covidcast',

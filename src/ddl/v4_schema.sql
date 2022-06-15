@@ -139,7 +139,7 @@ CREATE OR REPLACE VIEW signal_history_v AS
         `t2`.`signal` AS `signal`,
         `t3`.`geo_type` AS `geo_type`,
         `t3`.`geo_value` AS `geo_value`,
-        `t1`.`signal_data_id` AS `signal_data_id`, -- TODO: unnecessary  ...remove?
+        `t1`.`signal_data_id` AS `signal_data_id`,
         `t1`.`demog_key_id` AS `demog_key_id`, -- TODO: for future use ; also rename s/demog/stratification/  ...remove?
         `t1`.`issue` AS `issue`,
         `t1`.`data_as_of_dt` AS `data_as_of_dt`, -- TODO: for future use ; also "as_of" is problematic and should be renamed  ...remove?
@@ -155,8 +155,8 @@ CREATE OR REPLACE VIEW signal_history_v AS
         `t1`.`missing_value` AS `missing_value`,
         `t1`.`missing_stderr` AS `missing_stderr`,
         `t1`.`missing_sample_size` AS `missing_sample_size`,
-        `t1`.`signal_key_id` AS `signal_key_id`, -- TODO: unnecessary  ...remove?
-        `t1`.`geo_key_id` AS `geo_key_id`  -- TODO: unnecessary  ...remove?
+        `t1`.`signal_key_id` AS `signal_key_id`,
+        `t1`.`geo_key_id` AS `geo_key_id`
     FROM ((`signal_history` `t1` 
         JOIN `signal_dim` `t2` 
             USE INDEX (PRIMARY) 
@@ -174,7 +174,7 @@ CREATE OR REPLACE VIEW signal_latest_v AS
         `t2`.`signal` AS `signal`,
         `t3`.`geo_type` AS `geo_type`,
         `t3`.`geo_value` AS `geo_value`,
-        `t1`.`signal_data_id` AS `signal_data_id`, -- TODO: unnecessary  ...remove?
+        `t1`.`signal_data_id` AS `signal_data_id`,
         `t1`.`demog_key_id` AS `demog_key_id`, -- TODO: for future use ; also rename s/demog/stratification/  ...remove?
         `t1`.`issue` AS `issue`,
         `t1`.`data_as_of_dt` AS `data_as_of_dt`, -- TODO: for future use ; also "as_of" is problematic and should be renamed  ...remove?
@@ -190,8 +190,8 @@ CREATE OR REPLACE VIEW signal_latest_v AS
         `t1`.`missing_value` AS `missing_value`,
         `t1`.`missing_stderr` AS `missing_stderr`,
         `t1`.`missing_sample_size` AS `missing_sample_size`,
-        `t1`.`signal_key_id` AS `signal_key_id`, -- TODO: unnecessary  ...remove?
-        `t1`.`geo_key_id` AS `geo_key_id`  -- TODO: unnecessary  ...remove?
+        `t1`.`signal_key_id` AS `signal_key_id`,
+        `t1`.`geo_key_id` AS `geo_key_id`
     FROM ((`signal_latest` `t1` 
         JOIN `signal_dim` `t2` 
             USE INDEX (PRIMARY) 
