@@ -75,6 +75,8 @@ class Database:
   # TODO: consider using class variables like this for dimension table names too
   # TODO: also consider that for composite key tuples, like short_comp_key and long_comp_key as used in delete_batch()
 
+  def __init__(self):
+    self.caches_initialized = False
 
   def connect(self, connector_impl=mysql.connector):
     """Establish a connection to the database."""
@@ -145,6 +147,35 @@ class Database:
          '1', '1', '1', '1', '1', 1, 1, 1, 1);""")
     self._cursor.execute(f'DELETE FROM signal_load')
 
+  def prep_dim_caches(self, force=False):
+    if self.caches_initialized and not force:
+      return
+    self.geo_cache = {}
+    self._cursor.execute("SELECT geo_key_id, geo_type, geo_value FROM geo_dim")
+    for geo_key_id, geo_type, geo_value in self._cursor:
+      self.geo_cache[(geo_type, geo_value)] = geo_key_id
+    self.signal_cache = {}
+    self._cursor.execute("SELECT signal_key_id, source, `signal` FROM signal_dim")
+    for signal_key_id, source, signal in self._cursor:
+      self.signal_cache[(source, signal)] = signal_key_id
+    self.caches_initialized = True
+
+  def get_geo_fk_id(self, geo_type, geo_value):
+    if (geo_type, geo_value) not in self.geo_cache:
+      self._cursor.execute(f"INSERT INTO geo_dim (geo_type, geo_value) VALUES ('{geo_type}', '{geo_value}')")
+      self._cursor.execute(f"SELECT geo_key_id FROM geo_dim WHERE geo_type='{geo_type}' AND geo_value='{geo_value}' LIMIT 1")
+      for (geo_key_id,) in self._cursor:
+        self.geo_cache[(geo_type, geo_value)] = geo_key_id
+    return self.geo_cache[(geo_type, geo_value)]
+
+  def get_signal_fk_id(self, source, signal):
+    if (source, signal) not in self.signal_cache:
+      self._cursor.execute(f"INSERT INTO signal_dim (source, `signal`) VALUES ('{source}', '{signal}')")
+      self._cursor.execute(f"SELECT signal_key_id FROM signal_dim WHERE source='{source}' AND `signal`='{signal}' LIMIT 1")
+      for (signal_key_id,) in self._cursor:
+        self.signal_cache[(source, signal)] = signal_key_id
+    return self.signal_cache[(source, signal)]
+
   def insert_or_update_bulk(self, cc_rows):
     return self.insert_or_update_batch(cc_rows)
 
@@ -153,17 +184,21 @@ class Database:
     Insert new rows (or update existing) into the load table.
     """
 
+    self.prep_dim_caches()
+
     # NOTE: `value_update_timestamp` is hardcoded to "NOW" (which is appropriate) and 
     #       `is_latest_issue` is hardcoded to 1 (which is temporary and addressed later in this method)
     insert_into_loader_sql = f'''
       INSERT INTO `{self.load_table}`
         (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`,
         `value_updated_timestamp`, `value`, `stderr`, `sample_size`, `issue`, `lag`, 
-        `is_latest_issue`, `missing_value`, `missing_stderr`, `missing_sample_size`)
+        `is_latest_issue`, `missing_value`, `missing_stderr`, `missing_sample_size`,
+        `geo_key_id`, `signal_key_id`)
       VALUES
         (%s, %s, %s, %s, %s, %s, 
         UNIX_TIMESTAMP(NOW()), %s, %s, %s, %s, %s, 
-        1, %s, %s, %s)
+        1, %s, %s, %s,
+        %s, %s)
     '''
 
     # all load table entries are already marked "is_latest_issue".
@@ -171,10 +206,10 @@ class Database:
     # if an entry *IS* in both load and latest tables, but latest table issue is newer, unmark is_latest_issue in load.
     fix_is_latest_issue_sql = f'''
         UPDATE 
-            `{self.load_table}` JOIN `{self.latest_view}` 
-                USING (`source`, `signal`, `geo_type`, `geo_value`, `time_type`, `time_value`) 
+            `{self.load_table}` JOIN `{self.latest_table}` 
+                USING (`signal_key_id`, `geo_key_id`, `time_type`, `time_value`) 
             SET `{self.load_table}`.`is_latest_issue`=0 
-            WHERE `{self.load_table}`.`issue` < `{self.latest_view}`.`issue` 
+            WHERE `{self.load_table}`.`issue` < `{self.latest_table}`.`issue` 
     '''
 
     if 0 != self.count_all_load_rows():
@@ -209,7 +244,9 @@ class Database:
           row.lag,
           row.missing_value,
           row.missing_stderr,
-          row.missing_sample_size
+          row.missing_sample_size,
+          self.get_geo_fk_id(row.geo_type, row.geo_value),
+          self.get_signal_fk_id(row.source, row.signal)
         ) for row in cc_rows[start:end]]
 
 
@@ -232,37 +269,16 @@ class Database:
 
   def run_dbjobs(self):
 
-    # we do this LEFT JOIN trick because mysql cant do set difference (aka EXCEPT or MINUS)
-    # (as in " select distinct source, signal from signal_dim minus select distinct source, signal from signal_load ")
-    signal_dim_add_new_load = f'''
-        INSERT INTO signal_dim (`source`, `signal`)
-            SELECT DISTINCT sl.source, sl.signal
-                FROM {self.load_table} AS sl LEFT JOIN signal_dim AS sd
-                ON sl.source=sd.source AND sl.signal=sd.signal
-                WHERE sd.source IS NULL
-    '''
-
-    # again, same trick to get around lack of EXCEPT/MINUS
-    geo_dim_add_new_load = f'''
-        INSERT INTO geo_dim (`geo_type`, `geo_value`)
-            SELECT DISTINCT sl.geo_type, sl.geo_value
-                FROM {self.load_table} AS sl LEFT JOIN geo_dim AS gd
-                ON sl.geo_type=gd.geo_type AND sl.geo_value=gd.geo_value
-                WHERE gd.geo_type IS NULL
-    '''
-
     signal_history_load = f'''
         INSERT INTO {self.history_table}
             (signal_data_id, signal_key_id, geo_key_id, issue, data_as_of_dt,
              time_type, time_value, `value`, stderr, sample_size, `lag`, value_updated_timestamp,
              computation_as_of_dt, missing_value, missing_stderr, missing_sample_size, `legacy_id`)
         SELECT
-            signal_data_id, sd.signal_key_id, gd.geo_key_id, issue, data_as_of_dt,
+            signal_data_id, signal_key_id, geo_key_id, issue, data_as_of_dt,
                 time_type, time_value, `value`, stderr, sample_size, `lag`, value_updated_timestamp,
                 computation_as_of_dt, missing_value, missing_stderr, missing_sample_size, `legacy_id`
             FROM `{self.load_table}` sl
-                INNER JOIN signal_dim sd USING (source, `signal`)
-                INNER JOIN geo_dim gd USING (geo_type, geo_value)
         ON DUPLICATE KEY UPDATE
             `signal_data_id` = sl.`signal_data_id`,
             `value_updated_timestamp` = sl.`value_updated_timestamp`,
@@ -281,12 +297,10 @@ class Database:
              time_type, time_value, `value`, stderr, sample_size, `lag`, value_updated_timestamp,
              computation_as_of_dt, missing_value, missing_stderr, missing_sample_size)
         SELECT
-            signal_data_id, sd.signal_key_id, gd.geo_key_id, issue, data_as_of_dt,
+            signal_data_id, signal_key_id, geo_key_id, issue, data_as_of_dt,
                 time_type, time_value, `value`, stderr, sample_size, `lag`, value_updated_timestamp,
                 computation_as_of_dt, missing_value, missing_stderr, missing_sample_size
             FROM `{self.load_table}` sl
-                INNER JOIN signal_dim sd USING (source, `signal`)
-                INNER JOIN geo_dim gd USING (geo_type, geo_value)
             WHERE is_latest_issue = 1
         ON DUPLICATE KEY UPDATE
             `signal_data_id` = sl.`signal_data_id`,
@@ -309,16 +323,6 @@ class Database:
     import time
     time_q = []
     time_q.append(time.time())
-
-    print('signal_dim_add_new_load:', end='')
-    self._cursor.execute(signal_dim_add_new_load)
-    time_q.append(time.time())
-    print(f" elapsed: {time_q[-1]-time_q[-2]}s")
-
-    print('geo_dim_add_new_load:', end='')
-    self._cursor.execute(geo_dim_add_new_load)
-    time_q.append(time.time())
-    print(f" elapsed: {time_q[-1]-time_q[-2]}s")
 
     print('signal_history_load:', end='')
     self._cursor.execute(signal_history_load)
