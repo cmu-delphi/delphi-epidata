@@ -8,6 +8,9 @@ ENV MYSQL_DATABASE epidata
 ENV MYSQL_USER user
 ENV MYSQL_PASSWORD pass
 
+# provide DDL which will configure dev environment at container startup
+COPY repos/delphi/delphi-epidata/dev/docker/database/epidata/_init.sql /docker-entrypoint-initdb.d/
+
 # provide DDL which will create empty tables at container startup
 COPY repos/delphi/delphi-epidata/src/ddl/*.sql /docker-entrypoint-initdb.d/
 
