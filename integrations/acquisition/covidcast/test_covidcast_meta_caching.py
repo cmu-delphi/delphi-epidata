@@ -26,7 +26,7 @@ BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
 
 
 class CovidcastMetaCacheTests(unittest.TestCase):
-  """Tests covidcast metadata caching.  """
+  """Tests covidcast metadata caching."""
 
   def setUp(self):
     """Perform per-test setup."""
@@ -95,8 +95,9 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     cvc_database = live.Database()
     cvc_database.connect()
     epidata1 = cvc_database.compute_covidcast_meta() 
-    #tests the regular interval (runs daily, computes for each source and signal and stores into epiddata1
     cvc_database.disconnect(False)
+    
+    # Testing Set
     self.assertEqual(len(epidata1),1)
     self.assertEqual(epidata1, [
       {
@@ -118,9 +119,6 @@ class CovidcastMetaCacheTests(unittest.TestCase):
       }
     ])
     epidata1={'result':1, 'message':'success', 'epidata':epidata1}
-    
-    # make sure the API covidcast_meta is still blank, since it only serves
-    # the cached version and we haven't cached anything yet
     epidata2 = Epidata.covidcast_meta()
     self.assertEqual(epidata2['result'], -2, json.dumps(epidata2))
 
