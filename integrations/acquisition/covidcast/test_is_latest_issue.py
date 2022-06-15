@@ -9,8 +9,7 @@ import threading
 from aiohttp.client_exceptions import ClientResponseError
 import mysql.connector
 import pytest
-from prettytable import PrettyTable, from_db_cursor
-    
+
 # first party
 from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
 from delphi_utils import Nans
