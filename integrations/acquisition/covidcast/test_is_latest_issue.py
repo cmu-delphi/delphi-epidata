@@ -57,7 +57,7 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     self._db._cursor = cnx.cursor()
 
     # use the local instance of the Epidata API
-    BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
 
     # use the local instance of the epidata database
     secrets.db.host = 'delphi_database_epidata'
