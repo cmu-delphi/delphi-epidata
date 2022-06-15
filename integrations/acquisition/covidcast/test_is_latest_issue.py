@@ -26,7 +26,6 @@ nmv = Nans.NOT_MISSING.value
 class CovidcastLatestIssueTests(unittest.TestCase):
   """Tests covidcast is_latest_issue caching."""
 
-  
   def setUp(self):
     """Perform per-test setup."""
 
@@ -62,10 +61,10 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     secrets.db.epi = ('user', 'pass')
 
     #Commonly used SQL commands:
-    self.viewSignalLatest = '''SELECT * FROM `signal_latest`'''
-    self.viewSignalHistory = '''SELECT * FROM `signal_history`'''
-    self.viewSignalDim = '''SELECT `source`, `signal` FROM `signal_dim`'''
-    self.viewGeoDim = '''SELECT `geo_type`,`geo_value` FROM `geo_dim`'''
+    self.viewSignalLatest = f'SELECT * FROM {Database.latest_table}'
+    self.viewSignalHistory = f'SELECT * FROM {Database.history_table}'
+    self.viewSignalDim = f'SELECT `source`, `signal` FROM `signal_dim`'
+    self.viewGeoDim = f'SELECT `geo_type`,`geo_value` FROM `geo_dim`'
   def tearDown(self):
     """Perform per-test teardown."""
     self._db._cursor.close()
@@ -79,11 +78,11 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     ]
     self._db.insert_or_update_bulk(rows)
     self._db.run_dbjobs()
-    self._db._cursor.execute('''SELECT * FROM `signal_history`''')
+    self._db._cursor.execute(self.viewSignalHistory)
     totalRows = len(list(self._db._cursor.fetchall()))
 
     #sanity check for adding dummy data
-    sql = '''SELECT `issue` FROM `signal_latest` where `time_value` = 20200414'''
+    sql = f'SELECT `issue` FROM {Database.latest_table} where `time_value` = 20200414'
     self._db._cursor.execute(sql)
     record = self._db._cursor.fetchall()
     self.assertEqual(record[0][0], 20200414)
@@ -100,7 +99,7 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     self._db.run_dbjobs()
     
     #check newer issue in signal_latest
-    sql = '''SELECT `issue` FROM `signal_latest` where `time_value` = 20200414 '''
+    sql = f'SELECT `issue` FROM {Database.latest_table} where `time_value` = 20200414 '
     self._db._cursor.execute(sql)
     record = self._db._cursor.fetchall()
     self.assertEqual(record[0][0], 20200416) #new data added
@@ -113,19 +112,19 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     self._db.run_dbjobs()
     
     #check newer issue in signal_latest
-    sql = '''SELECT `issue` FROM `signal_latest` where `time_value` = 20200414  '''
+    sql = f'SELECT `issue` FROM {Database.latest_table} where `time_value` = 20200414  '
     self._db._cursor.execute(sql)
     record2 = self._db._cursor.fetchall()
     self.assertEqual(record, record2) #same as previous as is_latest did not change
 
-    #dynamic check for signal_history
-    self._db._cursor.execute('''SELECT `issue` FROM `signal_history`''')
+    #dynamic check for signal_history's list of issue
+    self._db._cursor.execute(f'SELECT `issue` FROM {Database.history_table}')
     record3 = self._db._cursor.fetchall()
-    self.assertEqual(2,totalRows + 1) #ensure 3 added (1 of which refreshed)
-    self.assertEqual(20200416,max(list(record3))[0]) #max of the outputs is 20200416 , extracting from tuple
+    self.assertEqual(len(record3),totalRows + 1) #ensure 3 added (1 of which refreshed)
+    self.assertEqual(20200416,max(record3)[0]) #max of the outputs is 20200416 , extracting from tuple
     
     #check older issue not inside latest, empty field
-    sql = '''SELECT * FROM `signal_latest` where `time_value` = 20200414 and `issue` = 20200414 '''
+    sql = f'SELECT * FROM {Database.latest_table} where `time_value` = 20200414 and `issue` = 20200414 '
     self._db._cursor.execute(sql)
     emptyRecord = list(self._db._cursor.fetchall())
     empty = []
@@ -139,9 +138,9 @@ class CovidcastLatestIssueTests(unittest.TestCase):
   def test_src_sig(self):
     #BASE CASES
     rows = [
-      CovidcastRow('src', 'sig', 'day', 'state', 20200414, 'pa', # 
+      CovidcastRow('src', 'sig', 'day', 'state', 20200414, 'pa', 
       2, 2, 2, nmv, nmv, nmv, 20200414, 0),
-      CovidcastRow('src', 'sig', 'day', 'county', 20200414, '11111', # updating previous entry
+      CovidcastRow('src', 'sig', 'day', 'county', 20200414, '11111',
       3, 3, 3, nmv, nmv, nmv, 20200414, 0)
     ]
     self._db.insert_or_update_bulk(rows)
@@ -235,36 +234,13 @@ class CovidcastLatestIssueTests(unittest.TestCase):
       self._db.insert_or_update_bulk(newGeoValues)
       self._db.run_dbjobs()
 
-      self._db._cursor.execute('''SELECT `geo_type`,`geo_value` FROM `geo_dim`''')
+      self._db._cursor.execute(f'SELECT `geo_type`,`geo_value` FROM `geo_dim`')
       record = self._db._cursor.fetchall()
       self.assertEqual(len(list(record)),geoDimRows + 3) #2 + 3 new
 
       self._db._cursor.execute(self.viewSignalLatest)
       record = self._db._cursor.fetchall()
       self.assertEqual(len(list(record)),sigLatestRows + 6 + 3) #total entries = 2(initial) + 6(test)  
-  
-    def showTable(self, table_name):
-      x = PrettyTable()
-      x.field_names = ['signal_data_id',
-      'signal_key_id',
-      'geo_key_id',
-      'demog_key_id' ,
-      'issue' ,
-      'data_as_of_dt',
-      'time_type',
-      'time_value' ,
-      'reference_dt' ,
-      'value' ,
-      'stderr' ,
-      'sample_size',
-      'lag' ,
-      'value_updated_timestamp' ,
-      'computation_as_of_dt']
-      print("SIGNAL_LATEST TABLE")
-      for row in record:
-        x.add_row(list(row)[:len(x.field_names)])
-      print(x)
-      print("Finish with 1st Set of Data")
       
   @unittest.skip("Having different (time_value,issue) pairs in one call to db pipeline does not happen in practice")
   def test_diff_timevalue_issue(self):
@@ -276,6 +252,6 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     ]
     self._db.insert_or_update_bulk(rows) 
     self._db.run_dbjobs()
-    self._db._cursor.execute('''SELECT `issue` FROM `signal_latest` ''')
+    self._db._cursor.execute(f'SELECT `issue` FROM {Database.latest_table} ')
     record = self._db._cursor.fetchall()  
     self.assertEqual(record[0][0], 20200417) #20200416 != 20200417
