@@ -63,28 +63,9 @@ CREATE TABLE signal_history (
 
 
 CREATE TABLE signal_latest (
-    `signal_data_id` BIGINT(20) UNSIGNED NOT NULL,
-    `signal_key_id` BIGINT(20) UNSIGNED,
-    `geo_key_id` BIGINT(20) UNSIGNED,
-    `demog_key_id` BIGINT(20) UNSIGNED,  -- TODO: for future use ; also rename s/demog/stratification/
-    `issue` INT(11),
-    `data_as_of_dt` DATETIME(0),  -- TODO: for future use ; also "as_of" is problematic and should be renamed
-    `time_type` VARCHAR(12) NOT NULL,
-    `time_value` INT(11) NOT NULL,
-    `reference_dt` DATETIME(0),  -- TODO: for future use
-    `value` DOUBLE NULL DEFAULT NULL,
-    `stderr` DOUBLE NULL DEFAULT NULL,
-    `sample_size` DOUBLE NULL DEFAULT NULL,
-    `lag` INT(11) NOT NULL,
-    `value_updated_timestamp` INT(11) NOT NULL,
-    `computation_as_of_dt` DATETIME(0),  -- TODO: for future use ; also "as_of" is problematic and should be renamed
-    `missing_value` INT(1) NULL DEFAULT '0',
-    `missing_stderr` INT(1) NULL DEFAULT '0',
-    `missing_sample_size` INT(1) NULL DEFAULT '0',
-    
     PRIMARY KEY (`signal_data_id`) USING BTREE,
     UNIQUE INDEX `value_key` (`signal_key_id`,`geo_key_id`,`time_type`,`time_value`) USING BTREE
-) ENGINE=InnoDB;
+) ENGINE=InnoDB SELECT * FROM signal_history;
 
 
 -- NOTE: In production or any non-testing system that should maintain consistency,
