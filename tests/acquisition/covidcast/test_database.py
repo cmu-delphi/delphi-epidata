@@ -2,7 +2,7 @@
 
 # standard library
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, Mock
 
 from delphi.epidata.acquisition.covidcast.database import Database
 
@@ -73,6 +73,9 @@ class UnitTests(unittest.TestCase):
     self.assertIn('select count(1)', sql)
     self.assertIn('from `signal_', sql) # note that this table name is incomplete
 
+  def test_prep_dim_caches(self):
+    pass
+
   def test_update_covidcast_meta_cache_query(self):
     """Query to update the metadata cache looks sensible.
 
@@ -111,7 +114,12 @@ class UnitTests(unittest.TestCase):
 
     cc_rows = {MagicMock(geo_id='CA', val=1, se=0, sample_size=0)}
     self.assertRaises(Exception, database.insert_or_update_batch, cc_rows)
-  
+
+  def _set_cache(self, database, geo_cache=None, signal_cache=None):
+    database.geo_cache = geo_cache if geo_cache else MagicMock(__getitem__=Mock(return_value=1))
+    database.signal_cache = signal_cache if signal_cache else MagicMock(__getitem__=Mock(return_value=1))
+    database.caches_initialized = True
+
   def test_insert_or_update_batch_row_count_returned(self):
     """Test that the row count is returned"""
     mock_connector = MagicMock()
@@ -120,6 +128,8 @@ class UnitTests(unittest.TestCase):
     connection = mock_connector.connect()
     cursor = connection.cursor() 
     cursor.rowcount = 3
+
+    self._set_cache(database)
 
     cc_rows = [MagicMock(geo_id='CA', val=1, se=0, sample_size=0)]
     result = database.insert_or_update_batch(cc_rows)
@@ -133,6 +143,8 @@ class UnitTests(unittest.TestCase):
     connection = mock_connector.connect()
     cursor = connection.cursor() 
     cursor.rowcount = -1
+
+    self._set_cache(database)
 
     cc_rows = [MagicMock(geo_id='CA', val=1, se=0, sample_size=0)]
     result = database.insert_or_update_batch(cc_rows)
