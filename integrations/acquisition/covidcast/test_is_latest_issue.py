@@ -1,20 +1,14 @@
 """Integration tests for covidcast's is_latest_issue boolean."""
 # standard library
 import unittest
-import time
-import threading
 
 
 # third party
-from aiohttp.client_exceptions import ClientResponseError
 import mysql.connector
-import pytest
 # first party
-from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
 from delphi_utils import Nans
 from delphi.epidata.client.delphi_epidata import Epidata
 from delphi.epidata.acquisition.covidcast.database import Database, CovidcastRow
-from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import main as update_covidcast_meta_cache
 import delphi.operations.secrets as secrets
 
 # py3tester coverage target (equivalent to `import *`)
