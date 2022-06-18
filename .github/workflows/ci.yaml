@@ -5,18 +5,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - run: mkdir -p repos/undefx
-      - name: Checkout undefx/py3tester
-        uses: actions/checkout@v2
-        with:
-          repository: undefx/py3tester
-          path: repos/undefx/py3tester
-      - name: Checkout undefx/undef-analysis
-        uses: actions/checkout@v2
-        with:
-          repository: undefx/undef-analysis
-          path: repos/undefx/undef-analysis
-
       - run: mkdir -p repos/delphi
 
       - name: Checkoutcmu-delphi/operations
