@@ -51,6 +51,14 @@ jobs:
           repository: cmu-delphi/nowcast
           path: repos/delphi/nowcast
 
+      - name: Cache Python packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip # npm cache files are stored in `~/.npm` on Linux/macOS
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.OS }}-pip-
+
       - name: Build docker images
         run: |
           docker build -t delphi_database -f repos/delphi/operations/dev/docker/database/Dockerfile .
