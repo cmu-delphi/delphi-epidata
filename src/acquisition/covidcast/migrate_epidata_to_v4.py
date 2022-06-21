@@ -9,18 +9,13 @@
 # ^ these are already set appropriately on qa-automation in/by the operations module ^
 
 
-batch_size = 20_000_000
-upper_lim_override = False ##### 60_000_000
+# TODO: make cli flags for these two variables:
 use_transaction_wrappers = False
 use_autocommit = False
 
-# used to continue to experiment with this module on the same DBMS but *not* muck up an already complete and valid 'covid' schema migration
-destination_schema = 'covid' ##### 'covid'
-
 # TODO: maybe output: was autocommit enabled?  was table locking used?  what isolation type was used?  were indexes enabled?  were uniqueness checks enabled?
-# TODO: make cli flags for various things listed in "outputs" suggestions above, plus: starting id, id upper limit (which id to stop at), batch size, and dbjobs "version"
 
-
+# TODO: consider dropping indexes before moving data and recreating them afterward
 
 '''
 
@@ -63,6 +58,7 @@ mysql> select now();
 
 from delphi.epidata.acquisition.covidcast.database import Database
 import time
+import argparse
 
 def start_tx(cursor):
   cursor.execute('SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;')
@@ -82,7 +78,7 @@ def finish_tx(cursor):
   cursor.execute('UNLOCK TABLES;')
 
 
-def do_batches(db, start, upper_lim):
+def do_batches(db, start, upper_lim, batch_size):
   # NOTE: upper_lim is not actually selected for ; make sure it exceeds any ids you want to include
   batch_lower = start
 
@@ -91,12 +87,10 @@ def do_batches(db, start, upper_lim):
 
     # NOTE: first rows of column names are identical, second rows are for specifying a rename and a literal
     batch_sql = f"""
-      INSERT INTO {destination_schema}.signal_load (
-        `issue`, `source`, `signal`, geo_type, geo_value, time_type, time_value, `value`, stderr, sample_size, `lag`, value_updated_timestamp, is_latest_issue, missing_value, missing_stderr, missing_sample_size,
-        `legacy_id`
+      INSERT INTO signal_load (
+        `issue`, `source`, `signal`, geo_type, geo_value, time_type, time_value, `value`, stderr, sample_size, `lag`, value_updated_timestamp, is_latest_issue, missing_value, missing_stderr, missing_sample_size
       ) SELECT
-        `issue`, `source`, `signal`, geo_type, geo_value, time_type, time_value, `value`, stderr, sample_size, `lag`, value_updated_timestamp, is_latest_issue, missing_value, missing_stderr, missing_sample_size,
-        `id`
+        `issue`, `source`, `signal`, geo_type, geo_value, time_type, time_value, `value`, stderr, sample_size, `lag`, value_updated_timestamp, is_latest_issue, missing_value, missing_stderr, missing_sample_size
       FROM epidata.covidcast AS cc
       USE INDEX(`PRIMARY`)
       WHERE {batch_lower} <= cc.id AND cc.id < {batch_upper}; """
@@ -115,8 +109,6 @@ def do_batches(db, start, upper_lim):
     t = time.time()
     db.run_dbjobs()
     print(f"-=-=-=-=-=-=-=- RAN db_jobs()... elapsed: {time.time()-t} sec -=-=-=-=-=-=-=-")
-    #####db.run_dbjobs_old()
-    #####print(f"-=-=-=-=-=-=-=- RAN db_jobs_old()... elapsed: {time.time()-t} sec -=-=-=-=-=-=-=-")
 
     print("-=-=-=-=-=-=-=- RUNNING commit()... ", end="")
     t = time.time()
@@ -130,27 +122,12 @@ def do_batches(db, start, upper_lim):
     batch_lower = batch_upper
 
 
-def main():
+def main(destination_schema, batch_size, start_id, upper_lim_override):
   Database.DATABASE_NAME = destination_schema
   db = Database()
   db.connect()
   if use_autocommit:
     db._connection.autocommit = True
-
-  print(f"starting run at: {time.strftime('%c')}")
-
-  # clear tables in the v4 schema
-  # TODO: potentially drop and recreate all tables
-  print("truncating tables...")
-  for table in "signal_load  signal_latest  signal_history  geo_dim  signal_dim".split():
-    db._cursor.execute(f"TRUNCATE TABLE {table}")
-  db.commit()
-
-  # TODO: if using "compressed" keys, this operation saves a significant amount of time...  dont forget to restore them afterward!
-  #####db._cursor.execute(f"DROP INDEX comp_signal_key ON {destination_schema}.signal_load")
-  #####db._cursor.execute(f"DROP INDEX comp_geo_key ON {destination_schema}.signal_load")
-  #####db.commit()
-  # TODO: should we drop indexes on other tables?  this may not save time in the long run, as the indexes must be rebuilt before going live
 
   if upper_lim_override:
     upper_lim = upper_lim_override
@@ -160,24 +137,52 @@ def main():
     for (max_id,) in db._cursor:
       upper_lim = 1 + max_id
 
+  print(f"migrating data to schema '{destination_schema}', with batch size {batch_size} and {start_id} <= ids < {upper_lim}")
+  if start_id==0:
+    print("this WILL truncate any existing v4 tables")
+  print()
+  if input("type 'yes' to continue: ") != 'yes':
+    import sys
+    sys.exit('operation cancelled!')
+
+  print(f"starting run at: {time.strftime('%c')}")
+
+  if start_id==0:
+    # clear tables in the v4 schema
+    print("truncating tables...")
+    for table in "signal_load  signal_latest  signal_history  geo_dim  signal_dim".split():
+      db._cursor.execute(f"TRUNCATE TABLE {table}")
+    db.commit()
+    start_id = 1
+
   # run batch loop
-  do_batches(db, 1, upper_lim)
+  do_batches(db, start_id, upper_lim, batch_size)
 
   # get table counts [the quick and dirty way]
   print("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-")
-  db._cursor.execute(f"SELECT MAX(signal_data_id) FROM {destination_schema}.signal_history;")
+  db._cursor.execute(f"SELECT MAX(signal_data_id) FROM signal_history;")
   for (max_id,) in db._cursor:
     print(f"signal_history: {max_id}")
-  db._cursor.execute(f"SELECT MAX(signal_data_id) FROM {destination_schema}.signal_latest;")
+  db._cursor.execute(f"SELECT MAX(signal_data_id) FROM signal_latest;")
   for (max_id,) in db._cursor:
-    print(f"signal_latest: {max_id}")
-  db._cursor.execute(f"SELECT COUNT(signal_key_id), MAX(signal_key_id) FROM {destination_schema}.signal_dim;")
+    print(f"signal_latest: {max_id} (this should be <= the number above)")
+  db._cursor.execute(f"SELECT COUNT(signal_key_id), MAX(signal_key_id) FROM signal_dim;")
   for (count_id, max_id) in db._cursor:
-    print(f"signal_dim: {count_id}/{max_id}")
-  db._cursor.execute(f"SELECT COUNT(geo_key_id), MAX(geo_key_id) FROM {destination_schema}.geo_dim;")
+    print(f"signal_dim: count {count_id} / max {max_id}")
+  db._cursor.execute(f"SELECT COUNT(geo_key_id), MAX(geo_key_id) FROM geo_dim;")
   for (count_id, max_id) in db._cursor:
-    print(f"geo_dim: {count_id}/{max_id}")
+    print(f"geo_dim: count {count_id} / max {max_id}")
+
+  return upper_lim
 
 
 if __name__ == '__main__':
-  main()
+  argparser = argparse.ArgumentParser()
+  argparser.add_argument('--destination_schema', type=str, default='covid')
+  argparser.add_argument('--batch_size', type=int, default=20_000_000)
+  argparser.add_argument('--start_id', type=int, default=0)
+  argparser.add_argument('--upper_lim_override', type=int) # should default to None
+  args = argparser.parse_args()
+
+  upper_lim = main(args.destination_schema, args.batch_size, args.start_id, args.upper_lim_override)
+  print(f"the next execution of this program should include argument: --start_id={upper_lim}")
