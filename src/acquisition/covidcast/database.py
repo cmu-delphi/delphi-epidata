@@ -140,13 +140,12 @@ class Database:
       INSERT INTO `{self.load_table}`
         (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`,
         `value_updated_timestamp`, `value`, `stderr`, `sample_size`, `issue`, `lag`, 
-        `is_latest_issue`, `missing_value`, `missing_stderr`, `missing_sample_size`,
-        `process_status`)
+        `is_latest_issue`, `missing_value`, `missing_stderr`, `missing_sample_size`
+        )
       VALUES
         (%s, %s, %s, %s, %s, %s, 
         UNIX_TIMESTAMP(NOW()), %s, %s, %s, %s, %s, 
-        1, %s, %s, %s, 
-        '{PROCESS_STATUS.INSERTING}')
+        1, %s, %s, %s)
     '''
 
     # all load table entries are already marked "is_latest_issue".
@@ -158,19 +157,7 @@ class Database:
                 USING (`source`, `signal`, `geo_type`, `geo_value`, `time_type`, `time_value`) 
             SET `{self.load_table}`.`is_latest_issue`=0 
             WHERE `{self.load_table}`.`issue` < `{self.latest_view}`.`issue`
-                  AND `process_status` = '{PROCESS_STATUS.INSERTING}'
     '''
-
-    update_status_sql = f'''
-        UPDATE `{self.load_table}`
-            SET `process_status` = '{PROCESS_STATUS.LOADED}'
-            WHERE `process_status` = '{PROCESS_STATUS.INSERTING}'
-    '''
-
-    if 0 != self.count_insertstatus_rows():
-      # TODO: determine if this should be fatal?!
-      logger = get_structured_logger("insert_or_update_batch")
-      logger.warn("Non-zero count in the load table!!!  This indicates scheduling of acqusition and dbjobs may be out of sync.")
 
     # TODO: consider handling cc_rows as a generator instead of a list
 
@@ -206,7 +193,6 @@ class Database:
         self._cursor.executemany(insert_into_loader_sql, args)
         modified_row_count = self._cursor.rowcount
         self._cursor.execute(fix_is_latest_issue_sql)
-        self._cursor.execute(update_status_sql)
 
         if modified_row_count is None or modified_row_count == -1:
           # the SQL connector does not support returning number of rows affected (see PEP 249)
@@ -221,17 +207,6 @@ class Database:
     return total
 
   def run_dbjobs(self):
-
-    signal_load_set_comp_keys = f'''
-        UPDATE `{self.load_table}`
-        SET compressed_signal_key = md5(CONCAT(`source`,`signal`)),
-            compressed_geo_key = md5(CONCAT(`geo_type`,`geo_value`))
-    '''
-
-    signal_load_mark_batch = f'''
-        UPDATE `{self.load_table}` 
-        SET process_status = '{PROCESS_STATUS.BATCHING}'
-    '''
 
     signal_dim_add_new_load = f'''
         INSERT INTO signal_dim (`source`, `signal`)
@@ -279,7 +254,6 @@ class Database:
             FROM `{self.load_table}` sl
                 INNER JOIN merged_dim md
                     USING (`source`, `signal`, `geo_type`, `geo_value`)
-            WHERE process_status = '{PROCESS_STATUS.BATCHING}'
         ON DUPLICATE KEY UPDATE
             `signal_data_id` = sl.`signal_data_id`,
             `value_updated_timestamp` = sl.`value_updated_timestamp`,
@@ -304,8 +278,7 @@ class Database:
             FROM `{self.load_table}` sl
                 INNER JOIN merged_dim md
                     USING (`source`, `signal`, `geo_type`, `geo_value`)
-            WHERE process_status = '{PROCESS_STATUS.BATCHING}'
-                AND is_latest_issue = 1
+            WHERE is_latest_issue = 1
         ON DUPLICATE KEY UPDATE
             `signal_data_id` = sl.`signal_data_id`,
             `value_updated_timestamp` = sl.`value_updated_timestamp`,
@@ -320,16 +293,11 @@ class Database:
     '''
 
     signal_load_delete_processed = f'''
-        DELETE FROM `{self.load_table}` 
-        WHERE  process_status <> '{PROCESS_STATUS.LOADED}'
+        DELETE FROM `{self.load_table}`
     '''
 
     logger = get_structured_logger("run_dbjobs")
     try:
-      self._cursor.execute(signal_load_set_comp_keys)
-      logger.info('signal_load_set_comp_keys', rows=self._cursor.rowcount)
-      self._cursor.execute(signal_load_mark_batch)
-      logger.info('signal_load_mark_batch', rows=self._cursor.rowcount)
       self._cursor.execute(signal_dim_add_new_load)
       logger.info('signal_dim_add_new_load', rows=self._cursor.rowcount)
       self._cursor.execute(geo_dim_add_new_load)
