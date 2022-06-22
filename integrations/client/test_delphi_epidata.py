@@ -27,7 +27,21 @@ def fake_epidata_endpoint(func):
     Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
   return wrapper
 
+def _request(params):
+  """Request and parse epidata.
 
+  We default to GET since it has better caching and logging
+  capabilities, but fall back to POST if the request is too
+  long and returns a 414.
+  """
+  params.update({'meta_key': 'meta_secret'})
+  try:
+    return Epidata._request_with_retry(params).json()
+  except Exception as e:
+    return {'result': 0, 'message': 'error: ' + str(e)}
+
+
+@patch.object(Epidata, '_request', _request)
 class DelphiEpidataPythonClientTests(unittest.TestCase):
   """Tests the Python client."""
 
@@ -315,7 +329,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
       mock_response = MagicMock()
       mock_response.status_code = 200
       get.side_effect = [JSONDecodeError('Expecting value', "",  0), mock_response]
-      response = Epidata._request(None)
+      response = Epidata._request({})
       self.assertEqual(get.call_count, 2)
       self.assertEqual(response, mock_response.json())
 
@@ -326,7 +340,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
       get.side_effect = [JSONDecodeError('Expecting value', "",  0),
                          JSONDecodeError('Expecting value', "",  0),
                          mock_response]
-      response = Epidata._request(None)
+      response = Epidata._request({})
       self.assertEqual(get.call_count, 2)  # 2 from previous test + 2 from this one
       self.assertEqual(response,
                        {'result': 0, 'message': 'error: Expecting value: line 1 column 1 (char 0)'}
@@ -615,7 +629,8 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
         'time_type': 'day',
         'geo_type': 'county',
         'geo_value': '11111',
-        'time_values': '20200414'
+        'time_values': '20200414',
+        'meta_key': 'meta_secret'
       },
       {
         'source': 'covidcast',
@@ -624,7 +639,8 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
         'time_type': 'day',
         'geo_type': 'county',
         'geo_value': '00000',
-        'time_values': '20200414'
+        'time_values': '20200414',
+        'meta_key': 'meta_secret'
       }
     ]*12, batch_size=10)
     responses = [i[0] for i in test_output]
@@ -634,7 +650,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
                       Epidata.covidcast('src', 'sig', 'day', 'county', 20200414, '00000')]*12
                      )
 
-  @fake_epidata_endpoint
+  @patch.object(Epidata, "BASE_URL", 'http://delphi_web_epidata/epidata/fake_api.php')
   def test_async_epidata_fail(self):
     with pytest.raises(ClientResponseError, match="404, message='NOT FOUND'"):
       Epidata.async_epidata([
@@ -645,6 +661,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
           'time_type': 'day',
           'geo_type': 'county',
           'geo_value': '11111',
-          'time_values': '20200414'
+          'time_values': '20200414',
+          'meta_key': 'meta_secret'
         }
       ])

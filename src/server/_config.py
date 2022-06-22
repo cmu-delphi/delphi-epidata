@@ -13,6 +13,7 @@ MAX_COMPATIBILITY_RESULTS = int(3650)
 SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI", "sqlite:///test.db")
 SQLALCHEMY_ENGINE_OPTIONS = json.loads(os.environ.get("SQLALCHEMY_ENGINE_OPTIONS", "{}"))
 SECRET = os.environ.get("FLASK_SECRET", "secret")
+META_SECRET = os.environ.get("META_SECRET", "meta_secret")
 URL_PREFIX = os.environ.get("FLASK_PREFIX", "/")
 
 AUTH = {

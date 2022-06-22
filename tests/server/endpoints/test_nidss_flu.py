@@ -26,20 +26,20 @@ class UnitTests(unittest.TestCase):
 
     def test_urls(self):
         with self.subTest('direct url'):
-            rv: Response = self.client.get('/nidss_flu', follow_redirects=True)
+            rv: Response = self.client.get('/nidss_flu', query_string = dict(meta_key="meta_secret"), follow_redirects=True)
             msg = rv.get_json()
             self.assertEqual(rv.status_code, 200)
             self.assertEqual(msg['result'], -1)
             self.assertRegex(msg['message'], r"missing parameter.*")
         with self.subTest('with wrapper'):
-            rv: Response = self.client.get('/api.php?endpoint=nidss_flu', follow_redirects=True)
+            rv: Response = self.client.get('/api.php?endpoint=nidss_flu&meta_key=meta_secret', follow_redirects=True)
             msg = rv.get_json()
             self.assertEqual(rv.status_code, 200)
             self.assertEqual(msg['result'], -1)
             self.assertRegex(msg['message'], r"missing parameter.*")
     
     def test_(self):
-        rv: Response = self.client.get('/nidss_flu/', query_string=dict(regions="A", epiweeks="12"))
+        rv: Response = self.client.get('/nidss_flu/', query_string=dict(regions="A", epiweeks="12", meta_key="meta_secret"))
         msg = rv.get_json()
         self.assertEqual(rv.status_code, 200)
         self.assertEqual(msg['result'], -2)  # no result

@@ -3,6 +3,7 @@
 # standard library
 import json
 import unittest
+from unittest.mock import patch
 
 # third party
 import mysql.connector
@@ -24,7 +25,21 @@ __test_target__ = (
 # use the local instance of the Epidata API
 BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
 
+def _request(params):
+  """Request and parse epidata.
 
+  We default to GET since it has better caching and logging
+  capabilities, but fall back to POST if the request is too
+  long and returns a 414.
+  """
+  params.update({'meta_key': 'meta_secret'})
+  try:
+    return Epidata._request_with_retry(params).json()
+  except Exception as e:
+    return {'result': 0, 'message': 'error: ' + str(e)}
+
+
+@patch.object(Epidata, '_request', _request)
 class CovidcastMetaCacheTests(unittest.TestCase):
   """Tests covidcast metadata caching."""
 
@@ -144,7 +159,7 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     self.cnx.commit()
 
     # fetch the cached version (manually)
-    params = {'endpoint': 'covidcast_meta', 'cached': 'true'}
+    params = {'endpoint': 'covidcast_meta', 'cached': 'true', 'meta_key': 'meta_secret'}
     response = requests.get(BASE_URL, params=params)
     response.raise_for_status()
     epidata4 = response.json()
@@ -167,7 +182,7 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     self.cnx.commit()
 
     # fetch the cached version (manually)
-    params = {'endpoint': 'covidcast_meta', 'cached': 'true'}
+    params = {'endpoint': 'covidcast_meta', 'cached': 'true', 'meta_key': 'meta_secret'}
     response = requests.get(BASE_URL, params=params)
     response.raise_for_status()
     epidata5 = response.json()

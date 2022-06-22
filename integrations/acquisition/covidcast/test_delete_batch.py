@@ -3,6 +3,7 @@
 # standard library
 from collections import namedtuple
 import unittest
+from unittest.mock import patch
 from os import path
 
 # third party
@@ -18,6 +19,21 @@ __test_target__ = 'delphi.epidata.acquisition.covidcast.database'
 
 Example = namedtuple("example", "given expected")
 
+def _request(params):
+  """Request and parse epidata.
+
+  We default to GET since it has better caching and logging
+  capabilities, but fall back to POST if the request is too
+  long and returns a 414.
+  """
+  params.update({'meta_key': 'meta_secret'})
+  try:
+    return Epidata._request_with_retry(params).json()
+  except Exception as e:
+    return {'result': 0, 'message': 'error: ' + str(e)}
+
+
+@patch.object(Epidata, '_request', _request)
 class DeleteBatch(unittest.TestCase):
     """Tests batch deletions"""
 

@@ -58,7 +58,8 @@ class CovidcastTests(unittest.TestCase):
       'geo_type': 'county',
       'time_values': 20200101,
       'geo_value': '01001',
-      'issues': 20200101
+      'issues': 20200101,
+      'meta_key': 'meta_secret'
     })
     response.raise_for_status()
     response = response.json()
@@ -85,6 +86,7 @@ class CovidcastTests(unittest.TestCase):
       'geo_type': 'county',
       'time_values': 20200101,
       'geo_value': '01001',
+      'meta_key': 'meta_secret'
     })
     response.raise_for_status()
     response = response.json()
@@ -111,7 +113,8 @@ class CovidcastTests(unittest.TestCase):
       'geo_type': 'county',
       'time_values': 20200101,
       'geo_value': '01001',
-      'as_of': 20200101
+      'as_of': 20200101,
+      'meta_key': 'meta_secret'
     })
     response.raise_for_status()
     response = response.json()

@@ -142,6 +142,8 @@ class CovidcastEndpointTests(unittest.TestCase):
 
     def _fetch(self, endpoint="/", **params):
         # make the request
+        if params:
+            params.update({'meta_key': 'meta_secret'})
         response = requests.get(
             f"{BASE_URL}{endpoint}",
             params=params,
@@ -297,9 +299,10 @@ class CovidcastEndpointTests(unittest.TestCase):
         first = rows[0]
         self._insert_rows(rows)
 
+        params = dict(signal=first.signal_pair, start_day="2020-04-01", end_day="2020-12-12", geo_type=first.geo_type, meta_key='meta_secret')
         response = requests.get(
             f"{BASE_URL}/csv",
-            params=dict(signal=first.signal_pair, start_day="2020-04-01", end_day="2020-12-12", geo_type=first.geo_type),
+            params=params,
         )
         response.raise_for_status()
         out = response.text

@@ -67,6 +67,7 @@ class CovidcastTests(unittest.TestCase):
       'geo_type': 'county',
       'time_values': 20200414,
       'geo_value': '01234',
+      'meta_key': 'meta_secret'
     })
     response.raise_for_status()
     response = response.json()
@@ -163,7 +164,8 @@ class CovidcastTests(unittest.TestCase):
       'geo_type': 'county',
       'time_values': 20200414,
       'geo_value': '01234',
-      'format': 'csv'
+      'format': 'csv',
+      'meta_key': 'meta_secret'
     })
     response.raise_for_status()
     response = response.text
@@ -203,7 +205,8 @@ class CovidcastTests(unittest.TestCase):
       'geo_type': 'county',
       'time_values': 20200414,
       'geo_value': '01234',
-      'format': 'json'
+      'format': 'json',
+      'meta_key': 'meta_secret'
     })
     response.raise_for_status()
     response = response.json()
@@ -251,6 +254,7 @@ class CovidcastTests(unittest.TestCase):
       'geo_type': 'county',
       'time_values': 20200414,
       'geo_value': '01234',
+      'meta_key': 'meta_secret'
     })
     response.raise_for_status()
     response = response.json()
@@ -284,7 +288,8 @@ class CovidcastTests(unittest.TestCase):
       'geo_type': 'county',
       'time_values': 20200414,
       'geo_value': '01234',
-      'fields': 'time_value,geo_value'
+      'fields': 'time_value,geo_value',
+      'meta_key': 'meta_secret'
     })
     response.raise_for_status()
     response = response.json()
@@ -308,7 +313,8 @@ class CovidcastTests(unittest.TestCase):
       'geo_type': 'county',
       'time_values': 20200414,
       'geo_value': '01234',
-      'fields': 'time_value,geo_value,dummy'
+      'fields': 'time_value,geo_value,dummy',
+      'meta_key': 'meta_secret'
     })
     response.raise_for_status()
     response = response.json()
@@ -336,7 +342,8 @@ class CovidcastTests(unittest.TestCase):
       'fields': (
         '-value,-stderr,-sample_size,-direction,-issue,-lag,-signal,' +
         '-missing_value,-missing_stderr,-missing_sample_size'
-      )
+      ),
+      'meta_key': 'meta_secret'
     })
     response.raise_for_status()
     response = response.json()
@@ -393,6 +400,7 @@ class CovidcastTests(unittest.TestCase):
       'geo_type': 'county',
       'time_values': 20200414,
       'geo_value': '*',
+      'meta_key': 'meta_secret'
     })
     response.raise_for_status()
     response = response.json()
@@ -487,6 +495,7 @@ class CovidcastTests(unittest.TestCase):
         'time_type': 'day',
         'geo_type': 'county',
         'time_values': 20200414,
+        'meta_key': 'meta_secret'
       }
       if isinstance(geo_value, list):
         params['geo_values'] = ','.join(geo_value)
@@ -609,6 +618,7 @@ class CovidcastTests(unittest.TestCase):
       'geo_type': 'county',
       'time_values': '20200411-20200413',
       'geo_value': '01234',
+      'meta_key': 'meta_secret'
     })
     response.raise_for_status()
     response = response.json()
@@ -735,6 +745,7 @@ class CovidcastTests(unittest.TestCase):
       'geo_type': 'county',
       'time_values': 20200414,
       'geo_value': '01234',
+      'meta_key': 'meta_secret'
     })
     response.raise_for_status()
     response = response.json()
@@ -799,6 +810,7 @@ class CovidcastTests(unittest.TestCase):
       'geo_type': 'state',
       'time_values': '0-9999999999',
       'geo_value': 'vi',
+      'meta_key': 'meta_secret'
     })
     response.raise_for_status()
     response = response.json()
@@ -865,6 +877,7 @@ class CovidcastTests(unittest.TestCase):
       'geo_type': 'county',
       'time_values': '20200411',
       'geo_value': '*',
+      'meta_key': 'meta_secret'
     })
     response.raise_for_status()
     response = response.json()
@@ -881,6 +894,7 @@ class CovidcastTests(unittest.TestCase):
       'geo_type': 'county',
       'time_values': '2020-04-11',
       'geo_value': '*',
+      'meta_key': 'meta_secret'
     })
     response.raise_for_status()
     response = response.json()
@@ -897,6 +911,7 @@ class CovidcastTests(unittest.TestCase):
       'geo_type': 'county',
       'time_values': '20200411,20200412',
       'geo_value': '*',
+      'meta_key': 'meta_secret'
     })
     response.raise_for_status()
     response = response.json()
@@ -913,6 +928,7 @@ class CovidcastTests(unittest.TestCase):
       'geo_type': 'county',
       'time_values': '2020-04-11,2020-04-12',
       'geo_value': '*',
+      'meta_key': 'meta_secret'
     })
     response.raise_for_status()
     response = response.json()
@@ -929,6 +945,7 @@ class CovidcastTests(unittest.TestCase):
       'geo_type': 'county',
       'time_values': '20200411-20200413',
       'geo_value': '*',
+      'meta_key': 'meta_secret'
     })
     response.raise_for_status()
     response = response.json()
@@ -945,6 +962,7 @@ class CovidcastTests(unittest.TestCase):
       'geo_type': 'county',
       'time_values': '2020-04-11:2020-04-13',
       'geo_value': '*',
+      'meta_key': 'meta_secret'
     })
     response.raise_for_status()
     response = response.json()

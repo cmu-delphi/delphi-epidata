@@ -15,7 +15,21 @@ import delphi.operations.secrets as secrets
 # py3tester coverage target (equivalent to `import *`)
 __test_target__ = 'delphi.epidata.acquisition.covidcast.fill_is_latest_issue'
 
+def _request(params):
+  """Request and parse epidata.
 
+  We default to GET since it has better caching and logging
+  capabilities, but fall back to POST if the request is too
+  long and returns a 414.
+  """
+  params.update({'meta_key': 'meta_secret'})
+  try:
+    return Epidata._request_with_retry(params).json()
+  except Exception as e:
+    return {'result': 0, 'message': 'error: ' + str(e)}
+
+
+@unittest.mock.patch.object(Epidata, '_request', _request)
 class FillIsLatestIssueTests(unittest.TestCase):
   """Tests filling is_latest_issue column"""
 

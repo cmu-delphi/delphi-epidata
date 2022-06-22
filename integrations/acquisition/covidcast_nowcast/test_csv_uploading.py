@@ -26,7 +26,21 @@ FIXED_ISSUE_IMPORTER = partialmethod(CsvImporter.find_csv_files,
                                      issue=(date(2020, 4, 21), epi.Week.fromdate(date(2020, 4, 21)))
                                      )
 
+def _request(params):
+  """Request and parse epidata.
 
+  We default to GET since it has better caching and logging
+  capabilities, but fall back to POST if the request is too
+  long and returns a 414.
+  """
+  params.update({'meta_key': 'meta_secret'})
+  try:
+    return Epidata._request_with_retry(params).json()
+  except Exception as e:
+    return {'result': 0, 'message': 'error: ' + str(e)}
+
+
+@patch.object(Epidata, '_request', _request)
 class CsvUploadingTests(unittest.TestCase):
   """Tests covidcast nowcast CSV uploading."""
 

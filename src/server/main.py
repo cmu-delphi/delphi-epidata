@@ -7,6 +7,7 @@ from flask import request, send_file, Response, send_from_directory, jsonify
 from ._config import URL_PREFIX, VERSION
 from ._common import app, set_compatibility_mode
 from ._exceptions import MissingOrWrongSourceException
+from ._security import check_meta_key
 from .endpoints import endpoints
 
 __all__ = ["app"]
@@ -21,11 +22,16 @@ for endpoint in endpoints:
     if alias:
         endpoint_map[alias] = endpoint.handle
 
+# Add meta security hook before any request
+@app.before_request
+def check_key():
+    check_meta_key()
 
 @app.route(f"{URL_PREFIX}/api.php", methods=["GET", "POST"])
 def handle_generic():
     # mark as compatibility mode
     set_compatibility_mode()
+    check_meta_key()
     endpoint = request.values.get("endpoint", request.values.get("source"))
     if not endpoint or endpoint not in endpoint_map:
         raise MissingOrWrongSourceException(endpoint_map.keys())

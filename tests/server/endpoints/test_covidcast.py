@@ -34,7 +34,7 @@ class UnitTests(unittest.TestCase):
         self.assertRegex(msg["message"], r"missing parameter.*")
 
     def test_time(self):
-        rv: Response = self.client.get("/covidcast/", query_string=dict(signal="src1:*", time="day:20200101", geo="state:*"))
+        rv: Response = self.client.get("/covidcast/", query_string=dict(signal="src1:*", time="day:20200101", geo="state:*", meta_key="meta_secret"))
         msg = rv.get_json()
         self.assertEqual(rv.status_code, 200)
         self.assertEqual(msg["result"], -2)  # no result

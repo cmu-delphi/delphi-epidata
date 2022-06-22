@@ -2,6 +2,7 @@
 
 # standard library
 import unittest
+from unittest.mock import patch
 
 # third party
 import mysql.connector
@@ -9,7 +10,21 @@ import mysql.connector
 # first party
 from delphi.epidata.client.delphi_epidata import Epidata
 
+def _request(params):
+  """Request and parse epidata.
 
+  We default to GET since it has better caching and logging
+  capabilities, but fall back to POST if the request is too
+  long and returns a 414.
+  """
+  params.update({'meta_key': 'meta_secret'})
+  try:
+    return Epidata._request_with_retry(params).json()
+  except Exception as e:
+    return {'result': 0, 'message': 'error: ' + str(e)}
+
+
+@patch.object(Epidata, '_request', _request)
 class FluviewTests(unittest.TestCase):
   """Tests the `fluview` endpoint."""
 
