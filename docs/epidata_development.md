@@ -12,11 +12,11 @@ In the directory where you want to work run the following
 ```
 $ curl "https://raw.githubusercontent.com/cmu-delphi/delphi-epidata/dev/dev/local/install.sh" | bash
 $ [sudo] make all
-$ make test
+$ [sudo] make test
 # To drop into debugger on error
-$ make test pdb=1
+$ [sudo] make test pdb=1
 # To test only a subset of tests
-$ make test test-subdir=repos/delphi/delphi-epidata/integrations/acquisition
+$ [sudo] make test test-subdir=repos/delphi/delphi-epidata/integrations/acquisition
 ```
 (sudo requirement depends on your Docker installation and operating system)
 
