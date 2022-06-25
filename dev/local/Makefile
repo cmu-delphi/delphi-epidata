@@ -38,7 +38,7 @@
 # 
 # Optional arguments:
 #   pdb=1         Drops you into debug mode upon test failure, if running tests.
-#   test=         Only runs tests in the directory provided here, e.g.
+#   test=         Only runs tests in the directories provided here, e.g.
 #                 repos/delphi/delphi-epidata/tests/acquisition/covidcast
 
 
