@@ -16,7 +16,7 @@ $ [sudo] make test
 # To drop into debugger on error
 $ [sudo] make test pdb=1
 # To test only a subset of tests
-$ [sudo] make test test-subdir=repos/delphi/delphi-epidata/integrations/acquisition
+$ [sudo] make test test=repos/delphi/delphi-epidata/integrations/acquisition
 ```
 (sudo requirement depends on your Docker installation and operating system)
 
