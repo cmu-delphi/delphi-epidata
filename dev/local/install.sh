@@ -1,11 +1,32 @@
 #!/bin/bash
-# Bootstrap delphi-epidata
+# Bootstrap delphi-epidata development
 #
 # Downloads the repos needed for local delphi-epidata development into current dir 
 # and provides a Makefile with Docker control commands.
+#
+# Creates the directory structure:
+#
+#   driver/
+#     .dockerignore
+#     Makefile
+#     repos/
+#       delphi/
+#         operations/
+#         delphi-epidata/
+#         utils/
+#         flu-contest/
+#         nowcast/
+#         github-deploy-repo/
+#       undefx/
+#         py3tester/
+#         undef-analysis/
+#
+# Leaves you in driver, the main workdir.
+#
 
-mkdir -p repos/delphi
-cd repos/delphi
+
+mkdir -p driver/repos/delphi
+cd driver/repos/delphi
 git clone https://github.com/cmu-delphi/operations
 git clone https://github.com/cmu-delphi/delphi-epidata
 git clone https://github.com/cmu-delphi/utils
@@ -19,8 +40,6 @@ cd repos/undefx
 git clone https://github.com/undefx/py3tester
 git clone https://github.com/undefx/undef-analysis
 cd ../../
-
-mkdir -p docker-logs
 
 ln -s repos/delphi/delphi-epidata/dev/local/Makefile
 ln -s repos/delphi/delphi-epidata/dev/local/.dockerignore

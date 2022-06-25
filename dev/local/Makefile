@@ -1,6 +1,6 @@
-# Docker control panel for delphi-epidata development
+# Docker control panel for delphi-epidata development.
 #
-# Usage: make <command> [pdb=1] [test-subdir=<test-subdir>]
+# Usage: make <command> [pdb=1] [test=<test-subdir>]
 #
 # Assumes you have installed your environment using
 # delphi-epidata/dev/local/install.sh.
@@ -29,7 +29,7 @@
 #
 #   all:     Runs the commands 'web' 'db' and 'python'.
 #
-#   test:    Runs test and integrations in delphi-epidata. If test-subdir 
+#   test:    Runs test and integrations in delphi-epidata. If test 
 #            optional arg is provided, then only the tests in that subdir
 #            are run.
 #
@@ -38,7 +38,7 @@
 # 
 # Optional arguments:
 #   pdb=1         Drops you into debug mode upon test failure, if running tests.
-#   test-subdir=  Only runs tests in the directory provided here, e.g.
+#   test=         Only runs tests in the directory provided here, e.g.
 #                 repos/delphi/delphi-epidata/tests/acquisition/covidcast
 
 
@@ -49,20 +49,18 @@ else
 	pdb=
 endif
 
-ifdef test-subdir
-else
-	test-subdir=repos/delphi/delphi-epidata/tests repos/delphi/delphi-epidata/integrations
+ifndef test
+	test=repos/delphi/delphi-epidata/tests repos/delphi/delphi-epidata/integrations
 endif
 
-# Set your shell here
 SHELL:=/bin/sh
 
 # Get the Makefile's absolute path: https://stackoverflow.com/a/324782/4784655
-# (if called from symlink, the path is the location of the symlink)
-NOW:=$(shell date "+%Y-%m-%d")
+# (if called from a symlink, the path is the location of the symlink)
 CWD:=$(dir $(abspath $(lastword $(MAKEFILE_LIST))))
-LOG_WEB:=$(CWD)docker-logs/delphi_web_epidata_$(NOW).log
-LOG_DB:=$(CWD)docker-logs/delphi_database_epidata_$(NOW).log
+NOW:=$(shell date "+%Y-%m-%d")
+LOG_WEB:=delphi_web_epidata_$(NOW).log
+LOG_DB:=delphi_database_epidata_$(NOW).log
 
 
 .PHONY=web
@@ -75,8 +73,8 @@ web:
 
 	@# Build the web_epidata image
 	@cd repos/delphi/delphi-epidata;\
-	docker build -t delphi_web_epidata -f ./devops/Dockerfile .;\
-	cd ../../../
+		docker build -t delphi_web_epidata -f ./devops/Dockerfile .;\
+		cd ../../../
 
 	@# Run the web server
 	@docker run --rm -p 127.0.0.1:10080:80 \
@@ -114,10 +112,10 @@ db:
 py:
 	@# Build the python image
 	@docker build -t delphi_python \
-	-f repos/delphi/operations/dev/docker/python/Dockerfile .
+		-f repos/delphi/operations/dev/docker/python/Dockerfile .
 
 	@docker build -t delphi_web_python \
-	-f repos/delphi/delphi-epidata/dev/docker/python/Dockerfile .
+		-f repos/delphi/delphi-epidata/dev/docker/python/Dockerfile .
 
 .PHONY=all
 all: web db py
@@ -129,8 +127,8 @@ test:
 		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata/src,target=/usr/src/app/delphi/epidata,readonly \
 		--env "SQLALCHEMY_DATABASE_URI=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata" \
 		--env "FLASK_SECRET=abc" \
-		delphi_web_python python -m pytest --import-mode importlib $(pdb) $(test-subdir) | tee -a output.txt
+		delphi_web_python python -m pytest --import-mode importlib $(pdb) $(test) | tee test_output_$(NOW).log
 
 .PHONY=clean
 clean:
-	docker images -f "dangling=true" -q | xargs docker rmi >/dev/null 2>&1
+	@docker images -f "dangling=true" -q | xargs docker rmi >/dev/null 2>&1
