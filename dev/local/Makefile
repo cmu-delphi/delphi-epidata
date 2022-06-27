@@ -61,15 +61,19 @@ CWD:=$(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 NOW:=$(shell date "+%Y-%m-%d")
 LOG_WEB:=delphi_web_epidata_$(NOW).log
 LOG_DB:=delphi_database_epidata_$(NOW).log
+WEB_CONTAINER_ID:=$(shell docker ps -q --filter 'name=delphi_web_epidata')
+DATABASE_CONTAINER_ID:=$(shell docker ps -q --filter 'name=delphi_database_epidata')
 
 
 .PHONY=web
 web:
 	@# Stop container if running
-	@-docker ps | grep delphi_web_epidata && docker stop delphi_web_epidata
+	@if [ $(WEB_CONTAINER_ID) ]; then\
+		docker stop $(WEB_CONTAINER_ID);\
+	fi
 
 	@# Setup virtual network if it doesn't exist
-	@-docker network ls | grep delphi-net || docker network create --driver bridge delphi-net
+	@docker network ls | grep delphi-net || docker network create --driver bridge delphi-net
 
 	@# Build the web_epidata image
 	@cd repos/delphi/delphi-epidata;\
@@ -86,10 +90,12 @@ web:
 .PHONY=db
 db:
 	@# Stop container if running
-	@-docker ps | grep delphi_database_epidata && docker stop delphi_database_epidata
+	@if [ $(DATABASE_CONTAINER_ID) ]; then\
+		docker stop $(DATABASE_CONTAINER_ID);\
+	fi
 
 	@# Only build prereqs if we need them
-	@-docker images delphi_database | grep delphi || \
+	@docker images delphi_database | grep delphi || \
 		docker build -t delphi_database -f repos/delphi/operations/dev/docker/database/Dockerfile .
 
 	@# Build the database_epidata image
