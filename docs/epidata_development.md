@@ -7,10 +7,16 @@ nav_order: 4
 
 ## Quickstart
 
+In the directory where you want to work run the following
+
 ```
 $ curl "https://raw.githubusercontent.com/cmu-delphi/delphi-epidata/dev/dev/local/install.sh" | bash
-$ cd driver
-$ [sudo] ./epidata-refresh.sh database web python
+$ [sudo] make all
+$ [sudo] make test
+# To drop into debugger on error
+$ [sudo] make test pdb=1
+# To test only a subset of tests
+$ [sudo] make test test=repos/delphi/delphi-epidata/integrations/acquisition
 ```
 (sudo requirement depends on your Docker installation and operating system)
 
