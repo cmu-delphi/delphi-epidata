@@ -154,12 +154,12 @@ class Database:
         UPDATE 
             `{self.load_table}`
             JOIN `merged_dim` USING (`source`, `signal`, `geo_type`, `geo_value`)
-            JOIN `{self.latest_view}` ON
-                `{self.latest_view}`.`merged_key_id` = `merged_dim`.`merged_key_id` AND
-                `{self.latest_view}`.`time_type` = `{self.load_table}`.`time_type` AND
-                `{self.latest_view}`.`time_value` = `{self.load_table}`.`time_value`
+            JOIN `{self.latest_table}` ON
+                `{self.latest_table}`.`merged_key_id` = `merged_dim`.`merged_key_id` AND
+                `{self.latest_table}`.`time_type` = `{self.load_table}`.`time_type` AND
+                `{self.latest_table}`.`time_value` = `{self.load_table}`.`time_value`
             SET `{self.load_table}`.`is_latest_issue`=0 
-            WHERE `{self.load_table}`.`issue` < `{self.latest_view}`.`issue`
+            WHERE `{self.load_table}`.`issue` < `{self.latest_table}`.`issue`
     '''
 
     # TODO: consider handling cc_rows as a generator instead of a list
