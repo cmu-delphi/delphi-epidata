@@ -122,7 +122,7 @@ def upload_archive(
           database.commit()
       except Exception as e:
         all_rows_valid = False
-        logger.exception('exception while inserting rows:', e)
+        logger.exception('exception while inserting rows', exc_info=e)
         database.rollback()
 
     # archive the current file based on validation results

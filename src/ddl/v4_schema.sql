@@ -61,13 +61,15 @@ CREATE TABLE signal_history (
     `missing_sample_size` INT(1) NULL DEFAULT '0',
  
     PRIMARY KEY (`signal_data_id`) USING BTREE,
-    UNIQUE INDEX `value_key` (`signal_key_id`,`geo_key_id`,`issue`,`time_type`,`time_value`) USING BTREE
+    UNIQUE INDEX `value_key` (`signal_key_id`,`geo_key_id`,`issue`,`time_type`,`time_value`) USING BTREE,
+    UNIQUE INDEX `value_key_merged` (`merged_key_id`,`issue`,`time_type`,`time_value`) USING BTREE
 ) ENGINE=InnoDB;
 
 
 CREATE TABLE signal_latest (
     PRIMARY KEY (`signal_data_id`) USING BTREE,
-    UNIQUE INDEX `value_key` (`signal_key_id`,`geo_key_id`,`time_type`,`time_value`) USING BTREE
+    UNIQUE INDEX `value_key` (`signal_key_id`,`geo_key_id`,`time_type`,`time_value`) USING BTREE,
+    UNIQUE INDEX `value_key_merged` (`merged_key_id`,`time_type`,`time_value`) USING BTREE
 ) ENGINE=InnoDB SELECT * FROM signal_history;
 
 
@@ -109,9 +111,7 @@ CREATE TABLE signal_load (
     `process_status` VARCHAR(2) DEFAULT 'l', -- using codes: 'i' (I) for "inserting", 'l' (L) for "loaded", and 'b' for "batching"
         -- TODO: change `process_status` default to 'i' (I) "inserting" or even 'x'/'u' "undefined" ?
 
-    PRIMARY KEY (`signal_data_id`) USING BTREE,
-    INDEX `comp_signal_key` (`compressed_signal_key`) USING BTREE,
-    INDEX `comp_geo_key` (`compressed_geo_key`) USING BTREE
+    PRIMARY KEY (`signal_data_id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=4000000001;
 
 

@@ -128,10 +128,9 @@ class Database:
   def insert_or_update_bulk(self, cc_rows):
     return self.insert_or_update_batch(cc_rows)
 
-  def insert_or_update_batch(self, cc_rows, batch_size=2**20, commit_partial=False):
+  def insert_or_update_batch(self, cc_rows, batch_size=2**20, commit_partial=False, suppress_jobs=False):
     """
-    Insert new rows into the load table.
-    After completing this step, run `self.run_dbjobs()` to move data into the live tables.
+    Insert new rows into the load table and dispatch into dimension and fact tables.
     """
 
     # NOTE: `value_update_timestamp` is hardcoded to "NOW" (which is appropriate) and 
@@ -153,8 +152,12 @@ class Database:
     # if an entry *IS* in both load and latest tables, but latest table issue is newer, unmark is_latest_issue in load.
     fix_is_latest_issue_sql = f'''
         UPDATE 
-            `{self.load_table}` JOIN `{self.latest_view}`
-                USING (`source`, `signal`, `geo_type`, `geo_value`, `time_type`, `time_value`) 
+            `{self.load_table}`
+            JOIN `merged_dim` USING (`source`, `signal`, `geo_type`, `geo_value`)
+            JOIN `{self.latest_view}` ON
+                `{self.latest_view}`.`merged_key_id` = `merged_dim`.`merged_key_id` AND
+                `{self.latest_view}`.`time_type` = `{self.load_table}`.`time_type` AND
+                `{self.latest_view}`.`time_value` = `{self.load_table}`.`time_value`
             SET `{self.load_table}`.`is_latest_issue`=0 
             WHERE `{self.load_table}`.`issue` < `{self.latest_view}`.`issue`
     '''
@@ -204,6 +207,8 @@ class Database:
     except Exception as e:
       # rollback is handled in csv_to_database; if you're calling this yourself, handle your own rollback
       raise e
+    if not suppress_jobs:
+      self.run_dbjobs()
     return total
 
   def run_dbjobs(self):
