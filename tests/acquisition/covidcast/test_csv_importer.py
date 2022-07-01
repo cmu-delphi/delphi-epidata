@@ -59,7 +59,7 @@ class UnitTests(unittest.TestCase):
       issuedir_match= CsvImporter.PATTERN_ISSUE_DIR.match(path_prefix.lower())
       issue_date_value = int(issuedir_match.group(2))
       self.assertTrue(CsvImporter.is_sane_day(issue_date_value))
-      
+
       found = set(CsvImporter.find_issue_specific_csv_files(path_prefix, glob=mock_glob))
       self.assertTrue(len(found)>0)
 
@@ -159,22 +159,22 @@ class UnitTests(unittest.TestCase):
     def make_row(
         geo_type='state',
         geo_id='vi',
-        val='1.23',
-        se='4.56',
+        value='1.23',
+        stderr='4.56',
         sample_size='100.5',
-        missing_val=Nans.NOT_MISSING,
-        missing_se=Nans.NOT_MISSING,
-        missing_sample_size=Nans.NOT_MISSING):
+        missing_value=str(float(Nans.NOT_MISSING)),
+        missing_stderr=str(float(Nans.NOT_MISSING)),
+        missing_sample_size=str(float(Nans.NOT_MISSING))):
       row = MagicMock(
           geo_id=geo_id,
-          val=val,
-          se=se,
+          value=value,
+          stderr=stderr,
           sample_size=sample_size,
-          missing_val=missing_val,
-          missing_se=missing_se,
+          missing_value=missing_value,
+          missing_stderr=missing_stderr,
           missing_sample_size=missing_sample_size,
-          spec=["geo_id", "val", "se", "sample_size",
-                "missing_val", "missing_se", "missing_sample_size"])
+          spec=["geo_id", "value", "stderr", "sample_size",
+                "missing_value", "missing_stderr", "missing_sample_size"])
       return geo_type, row
 
     # cases to test each failure mode
@@ -190,22 +190,16 @@ class UnitTests(unittest.TestCase):
       (make_row(geo_type='nation', geo_id='0000'), 'geo_id'),
       (make_row(geo_type='hhs', geo_id='0'), 'geo_id'),
       (make_row(geo_type='province', geo_id='ab'), 'geo_type'),
-      (make_row(se='-1'), 'se'),
+      (make_row(stderr='-1'), 'stderr'),
       (make_row(geo_type=None), 'geo_type'),
       (make_row(geo_id=None), 'geo_id'),
-      (make_row(val='inf'), 'val'),
-      (make_row(se='inf'), 'se'),
+      (make_row(value='inf'), 'value'),
+      (make_row(stderr='inf'), 'stderr'),
       (make_row(sample_size='inf'), 'sample_size'),
       (make_row(geo_type='hrr', geo_id='hrr001'), 'geo_id'),
-      (make_row(val='val'), 'val'),
-      (make_row(se='se'), 'se'),
+      (make_row(value='value'), 'value'),
+      (make_row(stderr='stderr'), 'stderr'),
       (make_row(sample_size='sample_size'), 'sample_size'),
-      (make_row(missing_val='missing_val'), 'missing_val'),
-      (make_row(missing_se='missing_val'), 'missing_se'),
-      (make_row(missing_sample_size='missing_val'), 'missing_sample_size'),
-      (make_row(val='1.2', missing_val=Nans.OTHER), 'missing_val'),
-      (make_row(se='1.2', missing_se=Nans.OTHER), 'missing_se'),
-      (make_row(sample_size='1.2', missing_sample_size=Nans.OTHER), 'missing_sample_size')
     ]
 
     for ((geo_type, row), field) in failure_cases:
@@ -213,30 +207,21 @@ class UnitTests(unittest.TestCase):
       self.assertIsNone(values)
       self.assertEqual(error, field)
 
-    # a nominal case without missing values
-    geo_type, row = make_row()
-    values, error = CsvImporter.extract_and_check_row(row, geo_type)
+    success_cases = [
+      (make_row(), CsvImporter.RowValues('vi', 1.23, 4.56, 100.5, Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.NOT_MISSING)),
+      (make_row(value=None, stderr=np.nan, sample_size='', missing_value=str(float(Nans.DELETED)), missing_stderr=str(float(Nans.DELETED)), missing_sample_size=str(float(Nans.DELETED))), CsvImporter.RowValues('vi', None, None, None, Nans.DELETED, Nans.DELETED, Nans.DELETED)),
+      (make_row(stderr='', sample_size='NA', missing_stderr=str(float(Nans.OTHER)), missing_sample_size=str(float(Nans.OTHER))), CsvImporter.RowValues('vi', 1.23, None, None, Nans.NOT_MISSING, Nans.OTHER, Nans.OTHER)),
+      (make_row(sample_size=None, missing_value='missing_value', missing_stderr=str(float(Nans.OTHER)), missing_sample_size=str(float(Nans.NOT_MISSING))), CsvImporter.RowValues('vi', 1.23, 4.56, None, Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.OTHER)),
+    ]
 
-    self.assertIsInstance(values, CsvImporter.RowValues)
-    self.assertEqual(str(values.geo_value), row.geo_id)
-    self.assertEqual(str(values.value), row.val)
-    self.assertEqual(str(values.stderr), row.se)
-    self.assertEqual(str(values.sample_size), row.sample_size)
-    self.assertIsNone(error)
-
-    # a nominal case with missing values
-    geo_type, row = make_row(
-      se='', sample_size='NA',
-      missing_se=Nans.OTHER, missing_sample_size=Nans.OTHER
-    )
-    values, error = CsvImporter.extract_and_check_row(row, geo_type)
-
-    self.assertIsInstance(values, CsvImporter.RowValues)
-    self.assertEqual(str(values.geo_value), row.geo_id)
-    self.assertEqual(str(values.value), row.val)
-    self.assertIsNone(values.stderr)
-    self.assertIsNone(values.sample_size)
-    self.assertIsNone(error)
+    for ((geo_type, row), field) in success_cases:
+      values, error = CsvImporter.extract_and_check_row(row, geo_type)
+      self.assertIsNone(error)
+      self.assertIsInstance(values, CsvImporter.RowValues)
+      self.assertEqual(values.geo_value, field.geo_value)
+      self.assertEqual(values.value, field.value)
+      self.assertEqual(values.stderr, field.stderr)
+      self.assertEqual(values.sample_size, field.sample_size)
 
   def test_load_csv_with_invalid_header(self):
     """Bail loading a CSV when the header is invalid."""
@@ -291,17 +276,15 @@ class UnitTests(unittest.TestCase):
 
     self.assertIsNone(rows[3])
 
-    # now with missing values! the last missing_sample_size
-    # contains an error code while data is available, which
-    # should give an error
+    # now with missing values!
     data = {
-      'geo_id': ['ca', 'tx', 'fl', 'ak'],
-      'val': [np.nan, '1.2', '1.3', '1.4'],
-      'se': ['2.1', "na", '2.3', '2.4'],
-      'sample_size': ['301', '302', None, '304'],
-      'missing_val': [Nans.NOT_APPLICABLE] + [Nans.NOT_MISSING] * 3,
-      'missing_se': [Nans.NOT_MISSING, Nans.REGION_EXCEPTION, Nans.NOT_MISSING, Nans.NOT_MISSING],
-      'missing_sample_size': [Nans.NOT_MISSING] * 2 + [Nans.REGION_EXCEPTION] * 2
+      'geo_id': ['ca', 'tx', 'fl', 'ak', 'wa'],
+      'val': [np.nan, '1.2', '1.3', '1.4', '1.5'],
+      'se': ['2.1', "na", '2.3', '2.4', '2.5'],
+      'sample_size': ['301', '302', None, '304', None],
+      'missing_value': [Nans.NOT_APPLICABLE] + [Nans.NOT_MISSING] * 3 + [None],
+      'missing_stderr': [Nans.NOT_MISSING, Nans.REGION_EXCEPTION, Nans.NOT_MISSING, Nans.NOT_MISSING] + [None],
+      'missing_sample_size': [Nans.NOT_MISSING] * 2 + [Nans.REGION_EXCEPTION] * 2 + [None]
     }
     mock_pandas = MagicMock()
     mock_pandas.read_csv.return_value = pandas.DataFrame(data=data)
@@ -312,7 +295,7 @@ class UnitTests(unittest.TestCase):
 
     self.assertTrue(mock_pandas.read_csv.called)
     self.assertTrue(mock_pandas.read_csv.call_args[0][0], filepath)
-    self.assertEqual(len(rows), 4)
+    self.assertEqual(len(rows), 5)
 
     self.assertEqual(rows[0].geo_value, 'ca')
     self.assertIsNone(rows[0].value)
@@ -338,4 +321,18 @@ class UnitTests(unittest.TestCase):
     self.assertEqual(rows[2].missing_stderr, Nans.NOT_MISSING)
     self.assertEqual(rows[2].missing_sample_size, Nans.REGION_EXCEPTION)
 
-    self.assertIsNone(rows[3])
+    self.assertEqual(rows[3].geo_value, 'ak')
+    self.assertEqual(rows[3].value, 1.4)
+    self.assertEqual(rows[3].stderr, 2.4)
+    self.assertEqual(rows[3].sample_size, 304)
+    self.assertEqual(rows[3].missing_value, Nans.NOT_MISSING)
+    self.assertEqual(rows[3].missing_stderr, Nans.NOT_MISSING)
+    self.assertEqual(rows[3].missing_sample_size, Nans.NOT_MISSING)
+
+    self.assertEqual(rows[4].geo_value, 'wa')
+    self.assertEqual(rows[4].value, 1.5)
+    self.assertEqual(rows[4].stderr, 2.5)
+    self.assertEqual(rows[4].sample_size, None)
+    self.assertEqual(rows[4].missing_value, Nans.NOT_MISSING)
+    self.assertEqual(rows[4].missing_stderr, Nans.NOT_MISSING)
+    self.assertEqual(rows[4].missing_sample_size, Nans.OTHER)

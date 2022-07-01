@@ -40,6 +40,7 @@ class SignalCategory(str, Enum):
     public = "public"
     early = "early"
     late = "late"
+    cases_testing = "cases_testing"
     other = "other"
 
 
@@ -59,7 +60,7 @@ def _fix_links(link: Optional[str]) -> List[WebLink]:
     if not link:
         return []
 
-    reg = re.compile("\[(.+)\]\s*\((.*)\)")
+    reg = re.compile(r"\[(.+)\]\s*\((.*)\)")
 
     def parse(l: str) -> Optional[WebLink]:
         l = l.strip()

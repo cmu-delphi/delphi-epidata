@@ -56,8 +56,40 @@ Beginning in Wave 11, the `module` column indicates which module the respondent
 was randomly assigned to. See the [survey modules and randomization](modules.md)
 information for more details.
 
-Coding details for each survey wave follow.
+### Privacy Restrictions
 
+To prevent respondents from being identifiable in the response data, responses
+with ZIP codes with populations of 100 or fewer have their location set to `NA`.
+This affects item A3 in the individual response files. (This change was
+implemented with the introduction of Wave 4. Previously, all ZIPs were
+reported.)
+
+Invalid ZIP codes are preserved unchanged, and these rows are reported in the
+individual response files with their invalid ZIPs.
+
+### Race and Ethnicity
+
+Beginning in wave 4, items D6 and D7 ask respondents for race and ethnicity.
+These columns are **not** available in the microdata files due to
+reidentification concerns. Public contingency tables that aggregate by race and
+other demographic variables [are available](contingency-tables.md).
+
+Users with a specific need for these variables in microdata should contact us at
+<delphi-survey-info@lists.andrew.cmu.edu> to discuss options for obtaining them,
+as access can be provided under some restrictions.
+
+In the contingency tables, and in the microdata files for users who have gained
+permission to access this data, the `raceethnicity` column is coded based on the
+following rules:
+
+* If the respondent answers "Yes" to item D6, they are coded as Hispanic,
+  regardless of their answer to D7. If the respondent answers "No" to D6, the
+  following rules apply.
+* Respondents who selected more than one racial group in D7, or who selected
+  "Some other race", are coded as "NonHispanicMultipleOther".
+* Respondents who selected only one racial group in D7 are coded according to
+  that race, such as "NonHispanicAsian" or
+  "NonHispanicAmericanIndianAlaskaNative".
 
 ## Comprehensive Codebook
 
@@ -91,31 +123,14 @@ Available columns:
 * `group_of_respondents_item_was_shown_to`: Module-based subset of respondents item was asked of. One of "all" (if item was included in the [Daily Core](modules.md) and asked of all respondents), "Module A", or "Module B".
 
 
-## Privacy Restrictions
-
-To prevent respondents from being identifiable in the response data, responses
-with ZIP codes with populations of 100 or fewer have their location set to `NA`.
-This affects item A3 in the individual response files. (This change was
-implemented with the introduction of Wave 4. Previously, all ZIPs were
-reported.)
-
-Invalid ZIP codes are preserved unchanged, and these rows are reported in the
-individual response files with their invalid ZIPs.
-
-Additionally, beginning in wave 4, items D6 and D7 ask respondents for race and
-ethnicity. These columns are **not** available in the microdata files due to
-reidentification concerns. However, contingency tables that aggregate by race
-and other demographic variables [are available](contingency-tables.md).
 
 
 ## Wave 1
 
-Wave 1 was first deployed on April 6, 2020. This was replaced by Wave 2, but
-some responses still arrive from respondents who received a link before Wave 2
-was deployed.
+Wave 1 was first deployed on April 6, 2020.
 
-* [Survey text and coding](waves/Survey_of_COVID-Like_Illness_-_TODEPLOY_2020-04-06.pdf) (PDF)
-* [Survey text and coding](waves/Survey_of_COVID-Like_Illness_-_TODEPLOY_2020-04-06.docx) (Word)
+* [Wave 1 text and coding](waves/Survey_of_COVID-Like_Illness_-_TODEPLOY_2020-04-06.pdf) (PDF)
+* [Wave 1 text and coding](waves/Survey_of_COVID-Like_Illness_-_TODEPLOY_2020-04-06.docx) (Word)
 
 **Warning:** Item A2 shows high missingness and strange values in Wave 1,
 possibly due to incorrect validation in the Qualtrics survey. Item A2 should not
@@ -123,14 +138,13 @@ be used in Wave 1 data until this problem is understood.
 
 ## Wave 2
 
-Wave 2 was first deployed on April 15, 2020. This was replaced by Wave 3, but
-some responses still arrive from respondents who received a link before Wave 3
-was deployed.
+Wave 2 was first deployed on April 15, 2020. Some Wave 1 responses were received
+after this date from respondents who received a link before Wave 2 was deployed.
 
-* [Survey text and
+* [Wave 2 text and
   coding](waves/Survey_of_COVID-Like_Illness_-_TODEPLOY__-_US_Expansion.pdf)
   (PDF)
-* [Survey text and
+* [Wave 2 text and
   coding](waves/Survey_of_COVID-Like_Illness_-_TODEPLOY__-_US_Expansion.docx)
   (Word)
 
@@ -174,10 +188,10 @@ as
 
 Files:
 
-* [Survey text and
+* [Wave 3 text and
   coding](waves/Survey_of_COVID-Like_Illness_-_TODEPLOY-_US_Expansion_-_With_Translations.pdf)
   (PDF)
-* [Survey text and
+* [Wave 3 text and
   coding](waves/Survey_of_COVID-Like_Illness_-_TODEPLOY-_US_Expansion_-_With_Translations.docx)
   (Word)
 
@@ -194,22 +208,14 @@ Files:
 
 ## Wave 4
 
-Wave 4 was first deployed September 8, 2020. It is available in English, as well
-as
-
-* Simplified Chinese
-* English (UK)
-* Spanish (Latin America)
-* Spanish
-* French
-* Brazilian Portuguese
-* Vietnamese
+Wave 4 was first deployed September 8, 2020. It is available in English and all
+the languages introduced in Wave 3.
 
 Files:
 
-* [Survey text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_4.pdf)
+* [Wave 4 text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_4.pdf)
   (PDF)
-* [Survey text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_4.docx)
+* [Wave 4 text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_4.docx)
   (Word)
 
 Wave 4 is a **major change** to the survey instrument. Some items have been
@@ -252,11 +258,11 @@ your protocol.
 * Item C14 asks "In the past 5 days, how often did you wear a mask when in
   public?"
 * Item D6 now asks if the respondent is of Hispanic, Latino, or Spanish origin.
-  Note that this item **may not be available** in individual response files
-  until procedures to prevent reidentification of respondents are finalized.
-* Item D7 now asks the respondent's race. Note that this item **may not be
-  available** in individual response files until procedures to prevent
-  reidentification of respondents are finalized.
+  Note that this item **is not available** in individual response files; see the
+  [privacy restrictions information](#privacy-restrictions) above.
+* Item D7 now asks the respondent's race. Note that this item **is not
+  available** in individual response files; see the [privacy restrictions
+  information](#privacy-restrictions) above.
 * Item D8 asks for the highest level of school the respondent has completed.
 * Item D9 asks if the respondent has worked for pay in the past 4 weeks, while
   items Q64 - Q80 ask the respondent to identify their occupation in a form
@@ -310,22 +316,14 @@ your protocol.
 Wave 5 was deployed on November 24, 2020. Deployment was phased: a fraction of
 users were invited to take Wave 4, while the majority were invited to Wave 5, so
 data users can determine if changes in responses are due to survey revisions or
-to population changes at the same time. Wave 5 is available in English, as well
-as
-
-* Simplified Chinese
-* English (UK)
-* Spanish (Latin America)
-* Spanish
-* French
-* Brazilian Portuguese
-* Vietnamese
+to population changes at the same time. This overlap lasted roughly seven days.
+Wave 5 is available in English and all the languages introduced in Wave 3.
 
 Files:
 
-* [Survey text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_5.pdf)
+* [Wave 5 text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_5.pdf)
   (PDF)
-* [Survey text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_5.docx)
+* [Wave 5 text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_5.docx)
   (Word)
 
 Wave 5 contains minor changes to the survey instrument and a few new items.
@@ -387,25 +385,18 @@ released:
 
 ## Wave 6
 
-Wave 6 was deployed on December 19, 2020. It is available in English, as well as
-
-* Simplified Chinese
-* English (UK)
-* Spanish (Latin America)
-* Spanish
-* French
-* Brazilian Portuguese
-* Vietnamese
+Wave 6 was deployed on December 19, 2020. Deployment was phased: for seven days,
+a randomly selected portion of respondents continued to receive Wave 5. Wave 6
+is available in English and the languages introduced in Wave 3.
 
 Files:
 
-* [Survey text and coding](waves/CMU Survey Wave 6.pdf) (PDF)
-* [Survey text and coding](waves/CMU Survey Wave 6.docx) (Word)
+* [Wave 6 text and coding](waves/CMU Survey Wave 6.pdf) (PDF)
+* [Wave 6 text and coding](waves/CMU Survey Wave 6.docx) (Word)
 
 Wave 6 is a minor change to the survey instrument with the addition of a few new
-items regarding COVID-19 vaccine intent. We intend to expand the scope of our
-questions in the next wave after the beginning of the year. Please review the
-changes carefully when you use responses from multiple waves of this survey.
+items regarding COVID-19 vaccine intent. Please review the changes carefully
+when you use responses from multiple waves of this survey.
 
 ### New Items
 
@@ -430,25 +421,18 @@ changes carefully when you use responses from multiple waves of this survey.
 
 ## Wave 7
 
-Wave 7 was deployed on January 12, 2021. It is available in English, as well as
-
-* Simplified Chinese
-* English (UK)
-* Spanish (Latin America)
-* Spanish
-* French
-* Brazilian Portuguese
-* Vietnamese
+Wave 7 was deployed on January 12, 2021. Because only minor changes were made in
+this wave, there was no overlap between waves 6 and 7. It is available in
+English and the languages introduced in Wave 3.
 
 Files:
 
-* [Survey text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_7.pdf) (PDF)
-* [Survey text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_7.docx) (Word)
+* [Wave 7 text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_7.pdf) (PDF)
+* [Wave 7 text and coding](waves/Survey_of_COVID-Like_Illness_-_Wave_7.docx) (Word)
 
-Wave 7 includes minor modifications to the existing questions regarding COVID -19
-vaccination. We intend to expand the scope of our questions in the next wave at
-the end of January 2021. Please review the changes carefully when you use
-responses from multiple waves of this survey.
+Wave 7 includes minor modifications to the existing questions regarding COVID
+-19 vaccination. Please review the changes carefully when you use responses from
+multiple waves of this survey.
 
 ### Changed Items
 
@@ -464,28 +448,21 @@ responses from multiple waves of this survey.
 
 ### Notes
 
-* This wave configures numeric answer items to require answers to be ≥0. We did this
-  via JavaScript by setting the `min = "0"` attribute on the input box.
+* This wave configures numeric answer items to require answers to be ≥0. We did
+  this via JavaScript by setting the `min = "0"` attribute on the input box.
   While this should prevent respondents from accidentally entering negative
   numbers, those who deliberately want to enter negative numbers can bypass the
   restriction.
 
 ## Wave 8
 
-Wave 8 was deployed on February 8, 2021. It is available in English, as well as
-
-* Simplified Chinese
-* English (UK)
-* Spanish (Latin America)
-* Spanish
-* French
-* Brazilian Portuguese
-* Vietnamese
+Wave 8 was deployed on February 8, 2021. It is available in English and the
+languages introduced in Wave 3.
 
 Files:
 
-* [Survey text and coding](waves/CMU Survey Wave 8.pdf) (PDF)
-* [Survey text and coding](waves/CMU Survey Wave 8.docx) (Word)
+* [Wave 8 text and coding](waves/CMU Survey Wave 8.pdf) (PDF)
+* [Wave 8 text and coding](waves/CMU Survey Wave 8.docx) (Word)
 
 Wave 8 expands the scope of the survey items about COVID-19 vaccinations. These
 new items were meant to capture reasons for vaccine hesitancy among respondents.
@@ -509,7 +486,7 @@ new items were meant to capture reasons for vaccine hesitancy among respondents.
 
 ### New Items
 
-* Item V2a ask respondents that have received a COVID-19 vaccine and indicated
+* Item V2a asks respondents that have received a COVID-19 vaccine and indicated
   that they have not had 2 doses of the vaccine whether they intend to get the
   required doses.
 * Items V5a-V5d and V6 were added to capture reasons for respondents not
@@ -521,27 +498,19 @@ new items were meant to capture reasons for vaccine hesitancy among respondents.
 
 ## Wave 9
 
-Wave 9 was skipped to synchronize our numbering with the international survey
-administered by the University of Maryland.
+Wave 9 was skipped to synchronize our numbering with the [international survey
+administered by the University of Maryland](https://covidmap.umd.edu/).
 
 ## Wave 10
 
-Wave 10 was deployed on March 2, 2021. For the following 7 days, 15% of
+Wave 10 was deployed on March 2, 2021. For the following 7 days, roughly 10% of
 respondents (selected at random) continued to receive Wave 8, allowing for
-comparisons of responses between the two waves. Wave 10 is available in English,
-as well as
-
-* Simplified Chinese
-* English (UK)
-* Spanish (Latin America)
-* Spanish
-* French
-* Brazilian Portuguese
-* Vietnamese
+comparisons of responses between the two waves. Wave 10 is available in English
+and the languages introduced in Wave 3.
 
 Files:
-* [Survey text and coding](waves/CMU Survey Wave 10.pdf) (PDF)
-* [Survey text and coding](waves/CMU Survey Wave 10.docx) (Word)
+* [Wave 10 text and coding](waves/CMU Survey Wave 10.pdf) (PDF)
+* [Wave 10 text and coding](waves/CMU Survey Wave 10.docx) (Word)
 
 Wave 10 further expands the scope of survey items about COVID-19 vaccination.
 These new items were meant to capture reasons for vaccine hesistancy among
@@ -607,23 +576,15 @@ survey.
 
 ## Wave 11
 
-Wave 11 was deployed on May 20, 2021. For the following 14 days, 15% of
+Wave 11 was deployed on May 20, 2021. For the following 30 days, about 10% of
 respondents (selected at random) continued to receive Wave 10, allowing for
-comparisons of responses between the two waves. It is available in English, as
-well as
-
-* Simplified Chinese
-* English (UK)
-* Spanish (Latin America)
-* Spanish
-* French
-* Brazilian Portuguese
-* Vietnamese
+comparisons of responses between the two waves. It is available in English and
+the languages introduced in Wave 3.
 
 Files:
 
-* [Survey text and coding](waves/CMU Survey Wave 11.pdf) (PDF)
-* [Survey text and coding](waves/CMU Survey Wave 11.docx) (Word)
+* [Wave 11 text and coding](waves/CMU Survey Wave 11.pdf) (PDF)
+* [Wave 11 text and coding](waves/CMU Survey Wave 11.docx) (Word)
 
 Wave 11 is a major revision of the survey instrument. There are several new
 items expanding the scope of COVID-19 vaccines, beliefs, knowledge, and norms;
@@ -829,6 +790,11 @@ are not anticipated to change the respondent’s answer.
   might become seriously ill from CVOID-19?”) was removed.
 * Item C17a (“Have you had a seasonal flu vaccination since July 1, 2020?”) was
   removed.
+* On November 8, 2021, item V2 “How many vaccinations have you received?” was
+  removed from Wave 11, as the response options did not allow for respondents to
+  report booster shots and additional doses. Booster doses were becoming more
+  common at this time, making the lack of booster response options jarring to
+  respondents.
 
 ### Notes
 
@@ -840,3 +806,224 @@ are not anticipated to change the respondent’s answer.
   random scale reversal and randomization of response options will be set where
   applicable. Randomization of response options was added to B10b starting with
   Wave 11.
+
+## Wave 12
+
+Wave 12 was deployed on December 19, 2021, after an experimental phase in
+October:
+
+* From October 7 to October 22, 2021, an experimental Wave 12 was given only to
+  15% of survey respondents, the remainder receiving Wave 11. This phase was
+  used to conduct three experiments with (1) demographic module placement, (2)
+  vaccination uptake question, and (3) survey invitation text. Details of these
+  experiments can be found [below](#experiments). In data files, this is marked
+  as wave "12.5" to distinguish from the final version. Data from the
+  experimental wave 12 was not included in the aggregates published in the
+  COVIDcast API or in our [contingency tables](contingency-tables.md).
+* After results of the experiments were analyzed, the final version was deployed
+  on December 19, 2021. In data files, this is marked as wave 12.
+
+Wave 12 is available in English and the languages introduced in Wave 3.
+
+Files:
+* Experimental wave 12:
+  * [Experimental Wave 12 text and coding](waves/CMU Survey Wave 12.pdf) (PDF)
+  * [Experimental Wave 12 text and coding](waves/CMU Survey Wave 12.docx) (Word)
+* Final version of Wave 12:
+  * [Final Wave 12 text and coding](waves/CMU CTIS Wave 12 Full Launch.pdf) (PDF)
+  * [Final Wave 12 text and coding](waves/CMU CTIS Wave 12 Full Launch.docx) (Word)
+
+
+Besides the experiments, Wave 12 revised the schooling module of the survey
+instrument and adds questions regarding parents’ intention to vaccinate their
+children (under age 18). These schooling items are part of [Module B](modules.md)
+of the survey. Please review the changes carefully when you use
+responses from multiple waves of this survey.
+
+### Demographic Module Placement
+
+In the prior waves of CTIS, respondent demographics were collected towards the
+end of the survey. These questions are now asked after the vaccine module of the
+survey. This placement was chosen after the [order experiments described
+below](#experiments) found that this ordering improved response rates to the
+demographic items. We expect this will aid users who need demographic data for
+their survey analyses.
+
+### New Items
+
+* Item P1 asks if the respondent is a parent or legal guardian of a child under
+  age 18.
+* Item P2 asks respondents the age group of their oldest child. This replaces
+  item E1.
+* Item P3 asks the respondent if they will choose to have their oldest child
+  vaccinated when the child is eligible to be vaccinated. This replaces item E4.
+* Item P4 asks the respondent about the type of schooling their oldest child is
+  enrolled in, such as public or private schooling.
+* Item P5 asks the respondent to describe their current schooling for their
+  oldest child: in-person, online/remote, or a mixture.
+* Item P6 asks respondent about the preventative measures that apply if their
+  oldest child is attending any in-person classes. These response options are a
+  subset of response options from E3 with several new additions.
+* In the experimental phase, item V1alt asked respondents who they personally
+  know has already received a COVID-19 vaccine. Response options include
+  themselves, household members, and others. This is an alternate form of item
+  V1 capturing vaccine uptake, and is part of the vaccination uptake question
+  experiment described [below](#experiments). In the final version of Wave 12,
+  item V1alt is not used and item V1 remains unchanged.
+
+### Changed Items
+
+* Item B13a asks respondents “Have you ever had coronavirus (COVID-19)?” and
+  replaces item B13 “As far as you know, have you ever had coronavirus
+  (COVID-19)?” for ease of translation.
+* Item V5a, V5b and V5c have the following revisions to response options:
+  * The response option “I don’t like vaccines” was revised to “I don’t like
+    vaccines generally” to distinguish from a specific dislike of COVID-19
+    vaccines.
+  * The response option “I don’t trust COVID-19 vaccines” is a response option
+    from Wave 8 that was added back in Wave 12.
+* Item V15a was revised to ask respondents “Did you ever experience any of the
+  following barriers to getting the COVID-19 vaccine?” The word *ever* was added
+  to clarify for those who have received the vaccine but may have experienced
+  barriers prior to being vaccinated. Additionally, two response options were
+  added: “The available appointment locations did not work for me” and “Other”
+* Item V15b has two new response options: “The available appointment locations
+  did not work for me” and “Other”.
+* The vaccination uptake question experiment, part of the experimental version
+  of Wave 12, used questions V1 and V1alt. During the experiment, questions that
+  use V1 in the display logic were updated to also include respondents who are
+  asked V1alt. The display logic was updated for the following questions: V2,
+  V11a, V3a, V5a, V12a, V16, and V9.
+
+### Removed Items
+
+* Item E4 “Will you choose to get a COVID-19 vaccine for your child or children
+  when they are eligible?” was removed.
+* Item E1 “Are there any children in your household in any of the following
+  grades?” was removed.
+* Item E2 “Do any of the following apply to any children in your household
+  (pre-K – grade 12)?” was removed.
+* Item E3 “Do any of the following measures apply to the children in your
+  household when they attend in-person classes (pre-K-grade 12)? was removed.
+
+### Experiments
+
+Wave 12 was initially launched to 15% of respondents to collect data for the
+experiments described below. (The remaining 85% continued to receive Wave 11.)
+This experiment was run from October 7 to October 22, 2021. After the
+experiments were conducted and the data analyzed, the CTIS team finalized the
+Wave 12 instrument to be distributed to the entire sample. This finalized
+version was deployed on December 19, 2021.
+
+The Wave 12 trial phase consisted of three experiments with (1) demographic
+module placement, (2) vaccination uptake question, and (3) survey invitation
+text.
+
+#### Demographic Module Placement and Vaccine Uptake Question
+
+The 15% of respondents who received the experimental Wave 12 were divided into
+three groups:
+
+* Group 1 (5% of respondents) saw the demographics questions after the symptom
+  module, which concludes with question B2b “For how many days have you had at
+  least one new or unusual symptom?” This group of respondents saw the Wave 11
+  version of the vaccine uptake question (V1).
+* Group 2 (5% of respondents) saw the demographics questions after the COVID
+  vaccine module, which concludes with question V9 “How concerned are you that
+  you would experience a side effect from a COVID-19 vaccination?” This group of
+  respondents saw the Wave 11 version of the vaccine uptake question (V1).
+* Group 3 (5% of respondents) saw the experimental form of the vaccination
+  uptake question (V1alt), which asks respondents “Do you personally know anyone
+  who has received the COVID-19 vaccine already?” Response options include
+  themselves, household members, and others. These respondents did not receive
+  the previous vaccine uptake question, V1. They saw the demographic questions
+  in the Wave 11 placement, at the end of Module A/B and before the occupation
+  questions.
+
+A new column `w12_treatment` in the microdata files indicates which of the three
+groups above each respondent was assigned to.
+
+#### Survey Invitation Text
+
+During the Wave 12 experiment period, our partners at Facebook conducted an
+experiment among those respondents allocated to receive Wave 11. Among those
+participants, 6% received one of six different invitations to the survey on
+their News Feed. This was an internal Facebook experiment conducted with the
+goal of improving response rates and exploring additional non-response bias in
+the weighting process. More details will be provided when the survey invitation
+is finalized.
+
+## Wave 13
+
+Wave 13 was deployed on January 30, 2022. For the following two weeks, about 15%
+of respondents (selected at random) received Wave 12 and the remainder received
+Wave 13, allowing for comparisons of responses between the two waves. Wave 13 is
+available in English and the languages introduced in Wave 3.
+
+There are two objectives of this revision. First, we modified the COVID-19
+vaccination questions to collect information about additional doses and booster
+shots. We also removed questions that are not being used to reduce response
+burden.
+
+Files:
+
+* [Wave 13 text and coding](waves/CTIS US Wave 13.pdf) (PDF)
+* [Wave 13 text and coding](waves/CTIS US Wave 13.docx) (Word)
+
+### New Items
+
+* Introductory text was added for respondents that responded “yes” to item V2,
+  “Have you had a COVID-19 vaccination?”. This text explains initial, booster,
+  and additional doses of the COVID-19 vaccination. The following three
+  questions collect information regarding the COVID-19 vaccinations the
+  respondent received. The introductory text reads:
+
+    > Initial doses of the COVID-19 vaccination are a one or two shot sequence,
+    > depending on the brand of vaccine.
+
+    > Booster shots or additional doses are doses received following that
+    > initial sequence.
+
+    To interpret data from these questions, we recommend reviewing the [CDC's
+    guidelines on vaccination for immunocompromised
+    people](https://www.cdc.gov/coronavirus/2019-ncov/vaccines/recommendations/immuno.html).
+    As of January 2022, immunocompromised people can receive up to four doses:
+    two primary doses (for Pfizer and Moderna vaccines), an additional primary
+    dose 28 days later, and a booster dose 5 months afterward. However,
+    awareness of this is uneven, which is why item V2b (below) does not
+    distinguish between booster and additional doses.
+
+* Item V2a asks respondents about the doses of the COVID-19 vaccination they
+  received in their initial sequence. This is a revision from previous item V2
+  and the response options distinguish between one dose vaccines, two dose
+  vaccines, and incomplete 2 dose vaccine sequences.
+* Item V2b asks respondents if they have received an additional dose or booster
+  shot of the COVID-19 vaccination.
+* Item V2c asks respondents that have not yet received an additional dose or
+  booster shot whether they plan to get one.
+* Item V17 asks respondents when they received their most recent COVID-19
+  vaccination.
+* Item C17b asks respondents if they received a flu vaccination since July 2021.
+  This is an updated version of item C17a (waves 8-10) and C17 (waves 5-7),
+  which descended from item C2 (waves 1-3).
+
+### Changed Items
+
+* Item D1 was changed in the Spanish translation to ask “¿Con qué género te
+  identificas?” to keep consistency between survey instruments, and to match the
+  Spanish (Latin America) translation. (The Spanish translation previously read
+  “¿De qué sexo eres?”)
+
+### Removed Items
+
+* Item B10b (“Do any of the following reasons describe why you were tested for
+  COVID-19 in the past 14 days?”) has been removed.
+* Item V2 (“How many COVID-19 vaccinations have you received?”) has been
+  removed.
+* Item V15c (“Did you ever experience any of the following barriers to getting
+  the COVID-19 vaccine?”) has been removed
+* Item C6a (“In the past 7 days, have you traveled outside of your state?”) has
+  been removed.
+* Item I1 (“Getting the COVID-19 vaccine means that you can stop wearing a mask
+  around people outside your household.”) has been removed.
+* Item I2 (“Children cannot get COVID-19.") has been removed.

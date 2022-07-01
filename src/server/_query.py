@@ -345,6 +345,15 @@ class QueryBuilder:
         self.subquery: str = ""
         self.index: Optional[str] = None
 
+    def retable(self, new_table: str):
+        """
+        updates this QueryBuilder to point to another table.
+        useful for switching to a different view of the data...
+        """
+        # TODO: consider creating a copy of the QueryBuilder, modifying that, and returning the new one.
+        self.table: str = f"{new_table} {self.alias}"
+        return self
+
     @property
     def conditions_clause(self) -> str:
         return " AND ".join(self.conditions)

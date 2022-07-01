@@ -148,25 +148,34 @@ class Utils:
       Whether a new dataset was acquired.
     """
     metadata = network.fetch_metadata()
+    datasets = []
     with database.connect() as db:
       max_issue = db.get_max_issue()
-      older_than = datetime.datetime.today().date() if newer_than is None else older_than
-      newer_than = max_issue if newer_than is None else newer_than
-      daily_issues = Utils.issues_to_fetch(metadata, newer_than, older_than)
-      if not daily_issues:
-        print("no new issues, nothing to do")
-        return False
-      for issue, revisions in daily_issues.items():
-        issue_int = int(issue.strftime("%Y%m%d"))
-        # download the dataset and add it to the database
-        dataset = Utils.merge_by_key_cols([network.fetch_dataset(url) for url, _ in revisions],
-                                          db.KEY_COLS)
-        db.insert_dataset(issue_int, dataset)
-        # add metadata to the database using the last revision seen.
-        last_url, last_index = revisions[-1]
-        metadata_json = metadata.loc[last_index].reset_index().to_json()
-        db.insert_metadata(issue_int, last_url, metadata_json)
 
+    older_than = datetime.datetime.today().date() if newer_than is None else older_than
+    newer_than = max_issue if newer_than is None else newer_than
+    daily_issues = Utils.issues_to_fetch(metadata, newer_than, older_than)
+    if not daily_issues:
+      print("no new issues, nothing to do")
+      return False
+    for issue, revisions in daily_issues.items():
+      issue_int = int(issue.strftime("%Y%m%d"))
+      # download the dataset and add it to the database
+      dataset = Utils.merge_by_key_cols([network.fetch_dataset(url) for url, _ in revisions],
+                                        db.KEY_COLS)
+      # add metadata to the database using the last revision seen.
+      last_url, last_index = revisions[-1]
+      metadata_json = metadata.loc[last_index].reset_index().to_json()
+      datasets.append((
+        issue_int,
+        dataset,
+        last_url,
+        metadata_json
+      ))
+    with database.connect() as db:
+      for issue_int, dataset, last_url, metadata_json in datasets:
+        db.insert_dataset(issue_int, dataset)
+        db.insert_metadata(issue_int, last_url, metadata_json)
         print(f'successfully acquired {len(dataset)} rows')
 
       # note that the transaction is committed by exiting the `with` block

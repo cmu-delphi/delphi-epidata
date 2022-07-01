@@ -25,9 +25,9 @@ general public.
 Please see our survey [credits](index.md#credits) and [citation information](index.md#citing-the-survey)
 for information on how to cite this data if you use it in a publication.
 
-Important updates for data users, including corrections to data or updates on
-data processing delays, are posted as `OUTAGES.txt` in the directory where the
-data is hosted.
+Our [Data and Sampling Errors](problems.md) documentation lists important
+updates for data users, including corrections to data or updates on data
+processing delays.
 
 ## Table of contents
 {: .no_toc .text-delta}

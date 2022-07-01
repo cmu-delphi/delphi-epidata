@@ -2,7 +2,7 @@
   "name": "delphi_epidata",
   "description": "Delphi Epidata API Client",
   "authors": "Delphi Group",
-  "version": "0.2.14",
+  "version": "0.3.12",
   "license": "MIT",
   "homepage": "https://github.com/cmu-delphi/delphi-epidata",
   "bugs": {
@@ -27,7 +27,7 @@
     "cross-fetch": "^3.1.4"
   },
   "devDependencies": {
-    "jest": "^25",
+    "jest": "^27",
     "shx": "^0.3.3"
   }
 }

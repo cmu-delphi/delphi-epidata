@@ -22,6 +22,13 @@ We request you attribute our data as follows:
 > Data from Delphi COVIDcast. Obtained via the Delphi Epidata API.
 > <https://cmu-delphi.github.io/delphi-epidata/api/covidcast.html>
 
+Academic publications may cite our paper:
+
+> Alex Reinhart, Logan Brooks, Maria Jahja, Aaron Rumack, Jingjing Tang, et al.
+> (2021). "An open repository of real-time COVID-19 indicators". *Proceedings of
+> the National Academy of Sciences* 118 (51) e2111452118.
+> <https://doi.org/10.1073/pnas.2111452118>
+
 ### Creative Commons: Attribution
 
 These data sources are provided under the terms of the [Creative Commons
@@ -29,10 +36,10 @@ Attribution license](https://creativecommons.org/licenses/by/4.0/):
 
 * [Doctor Visits](covidcast-signals/doctor-visits.md)
 * [Hospital Admissions](covidcast-signals/hospital-admissions.md)
-* [Indicator Combination](covidcast-signals/indicator-combination.md): signals
+* [Indicator Combination](covidcast-signals/indicator-combination-inactive.md): signals
   with names beginning `nmf_*`
 * [Quidel](covidcast-signals/quidel.md)
-* [Symptom Surveys](covidcast-signals/fb-survey.md)
+* [COVID-19 Trends and Impact Survey](covidcast-signals/fb-survey.md)
 
 You may use this data for any purpose, provided you attribute us as the original
 source, as shown above.
@@ -54,7 +61,7 @@ These data streams are essentially mirrors of their respective sources, and are
 published here subject to the original license provided by the source:
 
 * [Google Health Trends](covidcast-signals/ght.md)
-* [Indicator Combination](covidcast-signals/indicator-combination.md): cases and
+* [Indicator Combination](covidcast-signals/indicator-combination-inactive.md): cases and
   deaths signals
 * [JHU Cases and Deaths](covidcast-signals/jhu-csse.md)
 * [SafeGraph Mobility](covidcast-signals/safegraph.md)

@@ -17,6 +17,8 @@ grand_parent: COVIDcast Epidata API
 
 ## Overview
 
+**Notice: This data source was inactive between 2021-10-04 and 2021-12-02 to allow us resolve some problems with the data pipeline. We have resumed daily updates and are working on a data patch to fill the gap. [Additional details on this inactive period are available below](#pipeline-pause).**
+
 This data source is based on Change Healthcare claims data that has been
 de-identified in accordance with HIPAA privacy regulations. Change Healthcare is
 a healthcare technology company that aggregates data from many healthcare providers.
@@ -31,6 +33,8 @@ commercial purposes.
 | `smoothed_adj_outpatient_covid` | Same, but with systematic day-of-week effects removed; see [details below](#day-of-week-adjustment) <br/> **Earliest date available:** 2020-02-01 |
 | `smoothed_outpatient_cli` | Estimated percentage of outpatient doctor visits primarily about COVID-related symptoms, based on Change Healthcare claims data that has been de-identified in accordance with HIPAA privacy regulations, smoothed in time using a Gaussian linear smoother <br/> **Earliest date available:** 2020-02-01 |
 | `smoothed_adj_outpatient_cli` | Same, but with systematic day-of-week effects removed; see [details below](#day-of-week-adjustment) <br/> **Earliest date available:** 2020-02-01 |
+| `smoothed_outpatient_flu` | Estimated percentage of outpatient doctor visits with confirmed influenza, based on Change Healthcare claims data that has been de-identified in accordance with HIPAA privacy regulations, smoothed in time using a Gaussian linear smoother <br/> **Earliest issue available:** 2021-12-06 <br/> **Earliest date available:** 2020-02-01 |
+| `smoothed_adj_outpatient_flu` | Same, but with systematic day-of-week effects removed; see [details below](#day-of-week-adjustment) <br/> **Earliest issue available:** 2021-12-06 <br/> **Earliest date available:** 2020-02-01 |
 
 ## Table of Contents
 {: .no_toc .text-delta}
@@ -67,6 +71,19 @@ $$
 \hat p_{it} = 100 \cdot  \frac{Y_{it}^{\text{Covid-like}} +
 	\left((Y_{it}^{\text{Flu-like}} + Y_{it}^{\text{Mixed}}) -
 	Y_{it}^{\text{Flu}}\right)}{N_{it}}
+$$
+
+### Influenza Illness
+
+The following estimation method is used for the `*_outpatient_flu` signals.
+
+For a fixed location $$i$$ and time $$t$$, let $$Y_{it}$$
+denote the Flu counts and let $$N_{it}$$ be the
+total count of visits (the *Denominator*). Our estimate of the influenza
+percentage is given by
+
+$$
+\hat p_{it} = 100 \cdot  \frac{Y_{it}}{N_{it}}
 $$
 
 ### Day-of-Week Adjustment
@@ -184,6 +201,30 @@ not necessarily indicative of a true increase of COVID-19 in a location.
 Note that due to local differences in health record-keeping practices, estimates
 are not always comparable across locations. We are currently working on
 adjustments to correct this spatial bias.
+
+Indicator values for issue dates before 2021-02-21 are merely estimates, as
+these indicators were not yet available in real time. Backfill behavior of
+these estimates is erratic and not indicative of current backfill behavior. For more
+information on this effect and to track updates as we develop a fix, please see
+[covidcast-indicators issue #1289: CHNG historical issues are wrong before 2021-02-21](https://github.com/cmu-delphi/covidcast-indicators/issues/1289).
+
+### Pipeline Pause
+
+Starting on October 4, 2021, a problem with the `chng` pipeline began causing it
+to mark some days of data as deleted in their most recent version. These
+spurious deletions affected all regions and `chng` signals from July 31 to
+August 3, 2021, and the affected date range would continue to grow by one day
+each day if we allowed the pipeline to continue running.
+
+On October 8, 2021, we paused the `chng` pipeline, and it remained inactive
+while we completed a fix. In the meantime, the versions with
+the deletion markings were removed, so that default (latest) queries and
+queries with as-of set to 2021-10-04 or later submitted during the inactive 
+period returned the next-most-recently-updated value for these dates.
+
+On December 2, we resumed the `chng` pipeline. We will soon be reconstructing
+the missed issues from October 7-December 1, and will update here once that
+process is complete.
 
 ## Qualifying Conditions
 
