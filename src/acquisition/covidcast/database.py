@@ -145,7 +145,7 @@ class Database:
          '1', '1', '1', '1', '1', 1, 1, 1, 1);""")
     self._cursor.execute(f'DELETE FROM signal_load')
 
-  def insert_or_update_bulk(self, cc_rows):
+  def insert_or_update_batch(self, cc_rows):
     return self.insert_or_update_batch(cc_rows)
 
   def insert_or_update_batch(self, cc_rows, batch_size=2**20, commit_partial=False):

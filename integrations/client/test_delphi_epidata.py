@@ -89,7 +89,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
       CovidcastRow('src', 'sig', 'day', 'county', 20200414, '01234',
                    6.5, 2.2, 11.5, nmv, nmv, nmv, 20200416, 2),
     ]
-    self._db.insert_or_update_bulk(rows)
+    self._db.insert_or_update_batch(rows)
     self._db._connection.commit()
 
     with self.subTest(name='request two signals'):
@@ -353,7 +353,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
       CovidcastRow('src', 'sig', 'day', 'msa', 20200414, '33333',
                    60, 61, 62, nmv, nmv, nmv, 20200414, 0),
     ]
-    self._db.insert_or_update_bulk(rows)
+    self._db.insert_or_update_batch(rows)
     self._db._connection.commit()
 
     def fetch(geo_value):
@@ -442,7 +442,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
       CovidcastRow('src', 'sig', 'day', 'county', 20200415, '01234',
                    7.0, 2.0, 12.5, nmv, nmv, nmv, 20200416, 1),
     ]
-    self._db.insert_or_update_bulk(rows)
+    self._db.insert_or_update_batch(rows)
     self._db._connection.commit()
 
     # cache it
@@ -497,7 +497,7 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
       CovidcastRow('src', 'sig', 'day', 'msa', 20200414, '33333',
                    60, 61, 62, nmv, nmv, nmv, 20200414, 0)
     ]
-    self._db.insert_or_update_bulk(rows)
+    self._db.insert_or_update_batch(rows)
     self._db._connection.commit()
 
     test_output = Epidata.async_epidata([

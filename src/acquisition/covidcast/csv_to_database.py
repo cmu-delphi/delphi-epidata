@@ -106,8 +106,8 @@ def upload_archive(
     all_rows_valid = rows_list and all(r is not None for r in rows_list)
     if all_rows_valid:
       try:
-        modified_row_count = database.insert_or_update_bulk(rows_list)
-        logger.info(f"insert_or_update_bulk {filename} returned {modified_row_count}")
+        modified_row_count = database.insert_or_update_batch(rows_list)
+        logger.info(f"insert_or_update_batch {filename} returned {modified_row_count}")
         logger.info(
           "Inserted database rows",
           row_count = modified_row_count,
