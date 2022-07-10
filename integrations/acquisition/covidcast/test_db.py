@@ -87,3 +87,24 @@ class TestTest(unittest.TestCase):
 
         # verify old issue is no longer in latest table
         self.assertIsNone(self._find_matches_for_row(base_row)[latest_view])
+    
+    def test_empty_load_table(self):
+
+        self._db._cursor.execute(f'SELECT COUNT(*) FROM `{self._db.load_table}`')
+        before = self._db._cursor.fetchall()[0][0]
+        self.assertEqual(before,0)
+
+        self._db._cursor.execute(f"""
+            INSERT INTO signal_load
+                (signal_data_id, source, `signal`, geo_type, 
+                geo_value, time_type, time_value, issue, `lag`, value_updated_timestamp)
+            VALUES
+                (100, 1, 1, 1, 1, 1, 1, 1, 1, 1);""")
+
+        self._db._cursor.execute(f'SELECT COUNT(*) FROM `{self._db.load_table}`')
+        after = self._db._cursor.fetchall()[0][0]
+        self.assertEqual(after,1)
+        sample_rows = self._make_dummy_row()
+        self._db.insert_or_update_batch(sample_rows) #Throw error
+
+        # self.assertEqual(val, self._db.count_all_load_rows())
