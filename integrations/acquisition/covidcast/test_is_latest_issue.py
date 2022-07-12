@@ -2,7 +2,6 @@
 # standard library
 import unittest
 
-
 # third party
 import mysql.connector
 # first party
@@ -11,12 +10,12 @@ from delphi.epidata.client.delphi_epidata import Epidata
 from delphi.epidata.acquisition.covidcast.database import Database, CovidcastRow
 import delphi.operations.secrets as secrets
 
-# py3tester coverage target (equivalent to `import *`)
 #
 __test_target__ = 'delphi.epidata.acquisition.covidcast.database'
 
 nmv = Nans.NOT_MISSING.value
 class CovidcastLatestIssueTests(unittest.TestCase):
+
   """Tests covidcast is_latest_issue caching."""
 
   def setUp(self):
@@ -123,119 +122,7 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     emptyRecord = list(self._db._cursor.fetchall())
     empty = []
     self.assertEqual(empty, emptyRecord)
-      
-  # We want to test src_sig to make sure rows are added to *_dim only when needed
-    #new src, sig (ensure that it is added into *_dim)
-    #old src, sig (ensure that it is NOT added into *_dim)
-    #new geo (added)
-    #old geo (not added)
-  def test_src_sig(self):
-    #BASE CASES
-    rows = [
-      CovidcastRow('src', 'sig', 'day', 'state', 20200414, 'pa', 
-      2, 2, 2, nmv, nmv, nmv, 20200414, 0),
-      CovidcastRow('src', 'sig', 'day', 'county', 20200414, '11111',
-      3, 3, 3, nmv, nmv, nmv, 20200414, 0)
-    ]
-    self._db.insert_or_update_bulk(rows)
-    self._db.run_dbjobs()
-    self._db._cursor.execute(self.viewGeoDim)
-    record = self._db._cursor.fetchall()
-    geoDimRows = len(list(record))
-
-    self._db._cursor.execute(self.viewSignalDim)
-    record = self._db._cursor.fetchall()
-    sigDimRows = len(list(record))
-
-    self._db._cursor.execute(self.viewSignalLatest)
-    record = self._db._cursor.fetchall()
-    sigLatestRows = len(list(record))
-
-    #test not added first
-    with self.subTest(name='older src and sig not added into sig_dim'):
-      oldSrcSig = [
-        CovidcastRow('src', 'sig', 'day', 'state', 20211111, 'pa', #new src, new sig
-                    99, 99, 99, nmv, nmv, nmv, 20211111, 1),
-        CovidcastRow('src', 'sig', 'day', 'county', 20211111, '11111', #new src, new sig, same geo
-                    99, 99, 99, nmv, nmv, nmv, 20211111, 1)
-          ]  
-      self._db.insert_or_update_bulk(oldSrcSig)
-      self._db.run_dbjobs()
-
-      #testing src, sig 
-      self._db._cursor.execute(self.viewSignalDim)
-      record = self._db._cursor.fetchall()
-      res = [('src','sig')] #output
-      self.assertEqual(res , list(record))
-
-      #ensure new entries are added in latest
-      self._db._cursor.execute(self.viewSignalLatest)
-      record = self._db._cursor.fetchall()
-      self.assertEqual(len(list(record)), sigLatestRows + 2) #2 original, 2 added
-      
-      #ensure nothing in geo
-      self._db._cursor.execute(self.viewGeoDim)
-      record = self._db._cursor.fetchall()
-      self.assertEqual(len(list(record)),geoDimRows)
-
-    with self.subTest(name='newer src and sig added in sig_dim'):
-      newSrcSig = [
-        CovidcastRow('new_src', 'sig', 'day', 'state', 20200414, 'pa', # new_src
-                    2, 2, 2, nmv, nmv, nmv, 20200414, 0),
-        CovidcastRow('src', 'new_sig', 'day', 'state', 20200414, 'pa', # new_sig
-                      2, 2, 2, nmv, nmv, nmv, 20200414, 0)
-      ]  
-      self._db.insert_or_update_bulk(newSrcSig)
-      self._db.run_dbjobs()
-
-      #testing src, sig
-      self._db._cursor.execute(self.viewSignalDim)
-      record = self._db._cursor.fetchall()
-      res = [('src', 'sig'), ('new_src', 'sig'), ('src', 'new_sig')]
-      self.assertEqual(res , (record))
-      #ensure nothing in geo
-      self._db._cursor.execute(self.viewGeoDim)
-      record = self._db._cursor.fetchall()
-      self.assertEqual(len(list(record)),geoDimRows)
-
-    with self.subTest(name='old geo not added in geo_dim'): 
-      repeatedGeoValues = [                   #geo_type          #geo_value
-          CovidcastRow('src', 'sig', 'day', 'state', 20200415, 'pa', # same geo_type, geo_value
-                2, 2, 2, nmv, nmv, nmv, 20200415, 0),
-          CovidcastRow('src', 'sig', 'day', 'county', 20200415, '11111', # same geo_type, geo_value
-                3, 3, 3, nmv, nmv, nmv, 20200415, 0),
-          ]  
-      self._db.insert_or_update_bulk(repeatedGeoValues)
-      self._db.run_dbjobs()
-
-      self._db._cursor.execute(self.viewGeoDim)
-      record = self._db._cursor.fetchall()
-      self.assertEqual(len(list(record)),geoDimRows) #geoDimRows unchanged
-
-      self._db._cursor.execute(self.viewSignalLatest)
-      record = self._db._cursor.fetchall()
-      self.assertEqual(len(list(record)),sigLatestRows + 6) #total entries = 2(initial) + 6(test)
-
-    with self.subTest(name='newer geo added in geo_dim'): 
-      newGeoValues = [                   #geo_type          #geo_value
-        CovidcastRow('src', 'sig', 'day', 'state', 20200414, 'nj', # everything same except, state = nj
-            2, 2, 2, nmv, nmv, nmv, 20200414, 0),
-        CovidcastRow('src', 'sig', 'day', 'county', 20200414, '15217', # everything same except, county = al
-              3, 3, 3, nmv, nmv, nmv, 20200414, 0),
-        CovidcastRow('src', 'sig', 'day', 'county', 20200414, '15451', # everything same except, county = nj
-              3, 3, 3, nmv, nmv, nmv, 20200414, 0)
-          ]  
-      self._db.insert_or_update_bulk(newGeoValues)
-      self._db.run_dbjobs()
-
-      self._db._cursor.execute(f'SELECT `geo_type`,`geo_value` FROM `geo_dim`')
-      record = self._db._cursor.fetchall()
-      self.assertEqual(len(list(record)),geoDimRows + 3) #2 + 3 new
-
-      self._db._cursor.execute(self.viewSignalLatest)
-      record = self._db._cursor.fetchall()
-      self.assertEqual(len(list(record)),sigLatestRows + 6 + 3) #total entries = 2(initial) + 6(test)  
-      
+  
   @unittest.skip("Having different (time_value,issue) pairs in one call to db pipeline does not happen in practice")
   def test_diff_timevalue_issue(self):
     rows = [
