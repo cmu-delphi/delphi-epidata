@@ -113,7 +113,8 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     #dynamic check for signal_history's list of issue
     self._db._cursor.execute(f'SELECT `issue` FROM {Database.history_table}')
     record3 = self._db._cursor.fetchall()
-    self.assertEqual(len(record3),totalRows + 1) #ensure 3 added (1 of which refreshed)
+    self.assertEqual(len(record3),totalRows + 1) 
+    self.assertEqual(3,totalRows + 1) #ensure len(record3) = totalRows + 1 = 3
     self.assertEqual(20200416,max(record3)[0]) #max of the outputs is 20200416 , extracting from tuple
     
     #check older issue not inside latest, empty field
