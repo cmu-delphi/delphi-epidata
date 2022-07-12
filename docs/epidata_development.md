@@ -5,6 +5,23 @@ nav_order: 4
 
 # Epidata API Development Guide
 
+## Quickstart
+
+In the directory where you want to work run the following
+
+```
+$ curl "https://raw.githubusercontent.com/cmu-delphi/delphi-epidata/dev/dev/local/install.sh" | bash
+$ [sudo] make all
+$ [sudo] make test
+# To drop into debugger on error
+$ [sudo] make test pdb=1
+# To test only a subset of tests
+$ [sudo] make test test=repos/delphi/delphi-epidata/integrations/acquisition
+```
+(sudo requirement depends on your Docker installation and operating system)
+
+## Long version
+
 **Prerequisite:** this guide assumes that you have read the
 [frontend development guide](https://github.com/cmu-delphi/operations/blob/main/docs/frontend_development.md).
 

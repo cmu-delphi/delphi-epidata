@@ -7,10 +7,17 @@ nav_order: 6
 # Questions and Coding
 {: .no_toc}
 
-The COVID-19 Trends and Impacts Survey (CTIS) has been deployed in several waves.
-We have tried to ensure the coding of waves is consistent. This page provides
-the full survey text and coding schemes.
+The COVID-19 Trends and Impacts Survey (CTIS) has been deployed in several
+waves. We have tried to ensure the coding of waves is consistent. This page
+provides the full survey text, coding schemes, and history of survey waves and
+revisions.
 
+<div style="background-color:#f5f6fa; padding: 10px 30px;"><strong>Comprehensive
+codebook:</strong> Our <a href="codebook.csv">codebook (CSV)</a> lists all
+questions and answer choices across all waves of the survey. See below for
+details on the <a href="#basic-coding-rules">basic coding rules</a> and the <a
+href="#comprehensive-codebook">formatting of the codebook</a>, and narrative
+explanations of the reasons for each instrument change.</div>
 
 ## Table of contents
 {: .no_toc .text-delta}
@@ -45,12 +52,13 @@ The following columns were added beginning when Wave 4 was deployed:
 * `wave`: Integer specifying the survey wave this respondent completed; see
   below for the full list.
 * `UserLanguage`: Language the respondent completed the survey in.
-- `fips`: The *primary* county FIPS code corresponding to the ZIP code selected
-  by the respondent. Note that ZIP codes can cross county and even state
-  boundaries; if a respondent's ZIP is in multiple counties, the FIPS reported
-  in this column corresponds to the county the ZIP overlaps most with. If a ZIP
-  is not more than 50% in any one county, or if their reported ZIP code cannot
-  be found, `NA` is reported.
+- `fips`: The *primary* county [FIPS
+  code](https://en.wikipedia.org/wiki/FIPS_county_code) corresponding to the ZIP
+  code selected by the respondent. Note that ZIP codes can cross county and even
+  state boundaries; if a respondent's ZIP is in multiple counties, the FIPS
+  reported in this column corresponds to the county the ZIP overlaps most with.
+  If a ZIP is not more than 50% in any one county, or if their reported ZIP code
+  cannot be found, `NA` is reported.
 
 Beginning in Wave 11, the `module` column indicates which module the respondent
 was randomly assigned to. See the [survey modules and randomization](modules.md)
@@ -93,11 +101,11 @@ following rules:
 
 ## Comprehensive Codebook
 
-The [codebook](codebook.csv) describes availability of metadata and question
-fields by survey version. A row is included for each field available in the
-microdata files for a given survey wave. We recommend using the codebook as a
-reference while working with the survey microdata, to ensure you interpret each
-question and answer choice accurately even as items were revised between
+The [codebook (CSV)](codebook.csv) describes availability of metadata and
+question fields by survey version. A row is included for each field available in
+the microdata files for a given survey wave. We recommend using the codebook as
+a reference while working with the survey microdata, to ensure you interpret
+each question and answer choice accurately even as items were revised between
 survey waves.
 
 If a field is available for multiple waves, it is listed separately for each
@@ -110,18 +118,19 @@ have question text or answer choices defined.
 
 Available columns:
 
-* `wave`: Integer specifying the survey wave that field is available for or item was asked in.
+* `version`: Integer specifying the survey version ("wave") that field is available for or item was asked in.
 * `variable`: Field name as it appears in the microdata. For most survey items, this corresponds to question name. Each subquestion of a matrix item is listed seperately. For these, `variable` is the question name followed by the subquestion number, e.g. A1_3 for the third subquestion of item A3.
+* `qid`: Unique identifier of the format `QID<number>` assigned by Qualtrics to each survey item.
+* `matrix_base_name`: For matrix items, the question name without the subquestion indicated.
 * `replaces`: Question name of previous version of survey item, if any. Different versions of a given question may vary in wording, referenced time frame, or in other ways; refer to item text for specfics.
 * `description`: Brief description of the meaning of a field or survey item.
 * `question`: Survey item text.
 * `matrix_subquestion`: Subquestion text for a matrix item.
-* `choices`: JSON-formatted map of answer codes and response choice text. For example, `"5": "California"` means that responses with the value 5 correspond to the respondent selecting "California".
-* `type`: Survey item format; one of "Matrix" (several questions with the same question stem are displayed together with the same answer choices), "Text" (free text entry), "Multiple Choice" (particpant can select only one answer choice), or "Multiselect" (respondent can select one or more answer choices).
+* `response_options`: JSON-formatted map of answer codes and response choice text. For example, `"5": "California"` means that responses with the value 5 correspond to the respondent selecting "California".
+* `question_type`: Survey item format; one of "Matrix" (several questions with the same question stem are displayed together with the same answer choices), "Text" (free text entry), "Multiple Choice" (particpant can select only one answer choice), or "Multiselect" (respondent can select one or more answer choices).
 * `display_logic`: Conditions a respondent has to satisfy to be shown an item. For example, this can require a specific answer on a single previous item or a set of previous items, or that a previous item was displayed.
 * `response_option_randomization`: How answer choices are displayed for a given question. Answer choice order can be fixed ("none"), reversed ("scale reversal", e.g. for Likert scales) or shuffled ("randomized") between respondents.
-* `group_of_respondents_item_was_shown_to`: Module-based subset of respondents item was asked of. One of "all" (if item was included in the [Daily Core](modules.md) and asked of all respondents), "Module A", or "Module B".
-
+* `respondent_group`: Module-based subset of respondents item was asked of. One of "all" (if item was included in the [Daily Core](modules.md) and asked of all respondents), "Module A", or "Module B".
 
 
 
@@ -882,7 +891,7 @@ their survey analyses.
     vaccines.
   * The response option “I don’t trust COVID-19 vaccines” is a response option
     from Wave 8 that was added back in Wave 12.
-* Item V15a was revised to ask respondents “Did you ever experience any of the
+* Item V15a was replaced with V15c, which asks respondents “Did you ever experience any of the
   following barriers to getting the COVID-19 vaccine?” The word *ever* was added
   to clarify for those who have received the vaccine but may have experienced
   barriers prior to being vaccinated. Additionally, two response options were
@@ -993,7 +1002,7 @@ Files:
     awareness of this is uneven, which is why item V2b (below) does not
     distinguish between booster and additional doses.
 
-* Item V2a asks respondents about the doses of the COVID-19 vaccination they
+* Item V2d asks respondents about the doses of the COVID-19 vaccination they
   received in their initial sequence. This is a revision from previous item V2
   and the response options distinguish between one dose vaccines, two dose
   vaccines, and incomplete 2 dose vaccine sequences.
@@ -1001,11 +1010,12 @@ Files:
   shot of the COVID-19 vaccination.
 * Item V2c asks respondents that have not yet received an additional dose or
   booster shot whether they plan to get one.
-* Item V17 asks respondents when they received their most recent COVID-19
-  vaccination.
 * Item C17b asks respondents if they received a flu vaccination since July 2021.
   This is an updated version of item C17a (waves 8-10) and C17 (waves 5-7),
   which descended from item C2 (waves 1-3).
+* Item V17 asks respondents when they received their most recent COVID-19
+  vaccination. Due to programming issues, the launch of this question was
+  delayed. The question was deployed on February 27, 2022.
 
 ### Changed Items
 
