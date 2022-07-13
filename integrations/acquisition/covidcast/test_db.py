@@ -2,6 +2,8 @@ import unittest
 
 from delphi_utils import Nans
 from delphi.epidata.acquisition.covidcast.database import Database, CovidcastRow
+from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
+
 import delphi.operations.secrets as secrets
 
 # all the Nans we use here are just one value, so this is a shortcut to it:
@@ -20,6 +22,8 @@ class TestTest(unittest.TestCase):
         # empty all of the data tables
         for table in "signal_load  signal_latest  signal_history  geo_dim  signal_dim".split():
             self._db._cursor.execute(f"TRUNCATE TABLE {table}")
+
+        self.sample_rows = self._make_dummy_row()
 
     def tearDown(self):
         # close and destroy conenction to the database
@@ -88,12 +92,22 @@ class TestTest(unittest.TestCase):
         # verify old issue is no longer in latest table
         self.assertIsNone(self._find_matches_for_row(base_row)[latest_view])
     
+    @unittest.expectedFailure
     def test_empty_load_table(self):
 
         self._db._cursor.execute(f'SELECT COUNT(*) FROM `{self._db.load_table}`')
         before = self._db._cursor.fetchall()[0][0]
         self.assertEqual(before,0)
 
+        #check that logs are empty when trying insert_of_update_batch with empty table
+        logger = get_structured_logger("insert_or_update_batch")
+        self.loggerName = "insert_or_update_batch"
+        with self.assertLogs(self.loggerName, level='CRITICAL') as msg1:
+            self._db.insert_or_update_batch([self.sample_rows]) #Throw error
+            # logger.fatal("Non-zero count in the load table!!!  This indicates a previous acquisition run may have failed, another acquisition is in progress, or this process does not otherwise have exclusive access to the db!")
+            # logger.fatal(self.errorMsg)
+
+    def test_loading_into_nonempty_table(self):
         self._db._cursor.execute(f"""
             INSERT INTO signal_load
                 (signal_data_id, source, `signal`, geo_type, 
@@ -104,7 +118,11 @@ class TestTest(unittest.TestCase):
         self._db._cursor.execute(f'SELECT COUNT(*) FROM `{self._db.load_table}`')
         after = self._db._cursor.fetchall()[0][0]
         self.assertEqual(after,1)
-        sample_rows = self._make_dummy_row()
-        self._db.insert_or_update_batch(sample_rows) #Throw error
+        logger = get_structured_logger("insert_or_update_batch")
+        self.loggerName2 = "insert_or_update_batch"
+        #asserts that a log of CRITICAL or above is present
+        with self.assertLogs(self.loggerName2, level='CRITICAL') as msg2:
+            self._db.insert_or_update_batch([self.sample_rows]) #Throw error
+        
 
-        # self.assertEqual(val, self._db.count_all_load_rows())
+       
