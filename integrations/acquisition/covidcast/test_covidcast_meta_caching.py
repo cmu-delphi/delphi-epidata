@@ -94,8 +94,10 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     # make sure the live utility is serving something sensible
     cvc_database = live.Database()
     cvc_database.connect()
-    epidata1 = cvc_database.compute_covidcast_meta()
+    epidata1 = cvc_database.compute_covidcast_meta() 
     cvc_database.disconnect(False)
+    
+    # Testing Set
     self.assertEqual(len(epidata1),1)
     self.assertEqual(epidata1, [
       {
@@ -117,9 +119,6 @@ class CovidcastMetaCacheTests(unittest.TestCase):
       }
     ])
     epidata1={'result':1, 'message':'success', 'epidata':epidata1}
-
-    # make sure the API covidcast_meta is still blank, since it only serves
-    # the cached version and we haven't cached anything yet
     epidata2 = Epidata.covidcast_meta()
     self.assertEqual(epidata2['result'], -2, json.dumps(epidata2))
 
