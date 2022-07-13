@@ -71,7 +71,7 @@ class CovidcastDimensionTablesTests(unittest.TestCase):
         CovidcastRow('src', 'sig', 'day', 'county', 20200414, '11111',
         3, 3, 3, nmv, nmv, nmv, 20200414, 0)
         ]
-        self._db.insert_or_update_bulk(rows)
+        self._db.insert_or_update_batch(rows)
         self._db.run_dbjobs()
         self._db._cursor.execute(self.viewGeoDim)
         record = self._db._cursor.fetchall()
@@ -93,7 +93,7 @@ class CovidcastDimensionTablesTests(unittest.TestCase):
                 CovidcastRow('src', 'sig', 'day', 'county', 20211111, '11111', #new src, new sig, same geo
                             99, 99, 99, nmv, nmv, nmv, 20211111, 1)
                 ]  
-            self._db.insert_or_update_bulk(oldSrcSig)
+            self._db.insert_or_update_batch(oldSrcSig)
             self._db.run_dbjobs()
 
             #testing src, sig 
@@ -119,7 +119,7 @@ class CovidcastDimensionTablesTests(unittest.TestCase):
                 CovidcastRow('src', 'new_sig', 'day', 'state', 20200414, 'pa', # new_sig
                             2, 2, 2, nmv, nmv, nmv, 20200414, 0)
             ]  
-            self._db.insert_or_update_bulk(newSrcSig)
+            self._db.insert_or_update_batch(newSrcSig)
             self._db.run_dbjobs()
 
             #testing src, sig
@@ -139,7 +139,7 @@ class CovidcastDimensionTablesTests(unittest.TestCase):
                 CovidcastRow('src', 'sig', 'day', 'county', 20200415, '11111', # same geo_type, geo_value
                         3, 3, 3, nmv, nmv, nmv, 20200415, 0),
                 ]  
-            self._db.insert_or_update_bulk(repeatedGeoValues)
+            self._db.insert_or_update_batch(repeatedGeoValues)
             self._db.run_dbjobs()
 
             self._db._cursor.execute(self.viewGeoDim)
@@ -159,7 +159,7 @@ class CovidcastDimensionTablesTests(unittest.TestCase):
                 CovidcastRow('src', 'sig', 'day', 'county', 20200414, '15451', # everything same except, county = nj
                     3, 3, 3, nmv, nmv, nmv, 20200414, 0)
                 ]  
-            self._db.insert_or_update_bulk(newGeoValues)
+            self._db.insert_or_update_batch(newGeoValues)
             self._db.run_dbjobs()
 
             self._db._cursor.execute(f'SELECT `geo_type`,`geo_value` FROM `geo_dim`')

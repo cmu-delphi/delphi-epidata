@@ -68,7 +68,7 @@ class CovidcastLatestIssueTests(unittest.TestCase):
       CovidcastRow('src', 'sig', 'day', 'state', 20200414, 'pa', 
                    1.5, 2.5, 3.5, nmv, nmv, nmv, 20200414, 0)
     ]
-    self._db.insert_or_update_bulk(rows)
+    self._db.insert_or_update_batch(rows)
     self._db.run_dbjobs()
     self._db._cursor.execute(self.viewSignalHistory)
     totalRows = len(list(self._db._cursor.fetchall()))
@@ -87,7 +87,7 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     newRow = [
     CovidcastRow('src', 'sig', 'day', 'state', 20200414, 'pa', 
                   4.4, 4.4, 4.4, nmv, nmv, nmv, 20200416, 2)] #should show up
-    self._db.insert_or_update_bulk(newRow)
+    self._db.insert_or_update_batch(newRow)
     self._db.run_dbjobs()
     
     #check newer issue in signal_latest
@@ -100,7 +100,7 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     updateRow = [
       CovidcastRow('src', 'sig', 'day', 'state', 20200414, 'pa', 
                   6.5, 2.2, 11.5, nmv, nmv, nmv, 20200414, 2)]  #should not showup
-    self._db.insert_or_update_bulk(updateRow)
+    self._db.insert_or_update_batch(updateRow)
     self._db.run_dbjobs()
     
     #check newer issue in signal_latest
@@ -131,7 +131,7 @@ class CovidcastLatestIssueTests(unittest.TestCase):
       CovidcastRow('src', 'sig', 'day', 'state', 20200414, 'pa', # updating previous entry
                 2, 2, 3, nmv, nmv, nmv, 20200416, 2)
     ]
-    self._db.insert_or_update_bulk(rows) 
+    self._db.insert_or_update_batch(rows) 
     self._db.run_dbjobs()
     self._db._cursor.execute(f'SELECT `issue` FROM {Database.latest_table} ')
     record = self._db._cursor.fetchall()  
