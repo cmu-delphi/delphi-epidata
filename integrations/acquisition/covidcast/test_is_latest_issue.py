@@ -55,8 +55,9 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     #Commonly used SQL commands:
     self.viewSignalLatest = f'SELECT * FROM {Database.latest_table}'
     self.viewSignalHistory = f'SELECT * FROM {Database.history_table}'
-    self.viewSignalDim = f'SELECT `source`, `signal` FROM `signal_dim`'
-    self.viewGeoDim = f'SELECT `geo_type`,`geo_value` FROM `geo_dim`'
+    # self.viewSignalDim = f'SELECT `source`, `signal` FROM `signal_dim`'
+    # self.viewGeoDim = f'SELECT `geo_type`,`geo_value` FROM `geo_dim`'
+
   def tearDown(self):
     """Perform per-test teardown."""
     self._db._cursor.close()
@@ -112,7 +113,8 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     #dynamic check for signal_history's list of issue
     self._db._cursor.execute(f'SELECT `issue` FROM {Database.history_table}')
     record3 = self._db._cursor.fetchall()
-    self.assertEqual(len(record3),totalRows + 1) 
+    totalRows = len(list(record3)) #updating totalRows
+    self.assertEqual(len(record3),totalRows) 
     self.assertEqual(3,totalRows + 1) #ensure len(record3) = totalRows + 1 = 3
     self.assertEqual(20200416,max(record3)[0]) #max of the outputs is 20200416 , extracting from tuple
     
