@@ -130,7 +130,8 @@ class CovidcastDimensionTablesTests(unittest.TestCase):
             self._db._cursor.execute(self.viewSignalDim)
             record = self._db._cursor.fetchall()
             self.sigDimRows = len(list(record))
-            res = [('src', 'sig'), ('new_src', 'sig'), ('src', 'new_sig')]
+            # res = [('src', 'sig'), ('new_src', 'sig'), ('src', 'new_sig')]
+            res = [('new_src', 'sig'), ('src', 'new_sig'), ('src', 'sig')] # the sequence of adding changed
             self.assertEqual(res , (record))
             self.assertEqual(3, self.sigDimRows)
             #ensure nothing in geo
