@@ -181,7 +181,7 @@ class Database:
       # TODO: add a test for this
       logger = get_structured_logger("insert_or_update_batch")
       logger.fatal("Non-zero count in the load table!!!  This indicates a previous acquisition run may have failed, another acquisition is in progress, or this process does not otherwise have exclusive access to the db!")
-
+      raise Exception
     # TODO: consider handling cc_rows as a generator instead of a list
 
     try:
