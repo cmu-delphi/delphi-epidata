@@ -92,22 +92,14 @@ class TestTest(unittest.TestCase):
         # verify old issue is no longer in latest table
         self.assertIsNone(self._find_matches_for_row(base_row)[latest_view])
     
-    @unittest.expectedFailure
     def test_empty_load_table(self):
-
+        #tests that load_table is empty and we can insert a sample row without failing
         self._db._cursor.execute(f'SELECT COUNT(*) FROM `{self._db.load_table}`')
         before = self._db._cursor.fetchall()[0][0]
         self.assertEqual(before,0)
+        self._db.insert_or_update_batch([self.sample_rows])
 
-        #check that logs are empty when trying insert_of_update_batch with empty table
-        logger = get_structured_logger("insert_or_update_batch")
-        self.loggerName = "insert_or_update_batch"
-        with self.assertLogs(self.loggerName, level='CRITICAL') as msg1:
-            self._db.insert_or_update_batch([self.sample_rows]) #Throw error
-            # logger.fatal("Non-zero count in the load table!!!  This indicates a previous acquisition run may have failed, another acquisition is in progress, or this process does not otherwise have exclusive access to the db!")
-            # logger.fatal(self.errorMsg)
-
-    def test_loading_into_nonempty_table(self):
+        #inserts sample data into load_table
         self._db._cursor.execute(f"""
             INSERT INTO signal_load
                 (signal_data_id, source, `signal`, geo_type, 
@@ -118,11 +110,11 @@ class TestTest(unittest.TestCase):
         self._db._cursor.execute(f'SELECT COUNT(*) FROM `{self._db.load_table}`')
         after = self._db._cursor.fetchall()[0][0]
         self.assertEqual(after,1)
-        logger = get_structured_logger("insert_or_update_batch")
-        self.loggerName2 = "insert_or_update_batch"
+
+        #raises Exception when load_table is not empty 
         #asserts that a log of CRITICAL or above is present
-        with self.assertLogs(self.loggerName2, level='CRITICAL') as msg2:
+        with self.assertRaises(Exception) as e:
             self._db.insert_or_update_batch([self.sample_rows]) #Throw error
         
 
-       
+    #    
