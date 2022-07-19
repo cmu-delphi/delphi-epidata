@@ -108,7 +108,7 @@ class UnitTests(unittest.TestCase):
     connection = mock_connector.connect()
     cursor = connection.cursor() 
     cursor.executemany.side_effect = Exception('Test')
-
+    
     cc_rows = {MagicMock(geo_id='CA', val=1, se=0, sample_size=0)}
     self.assertRaises(Exception, database.insert_or_update_batch, cc_rows)
   
@@ -120,7 +120,7 @@ class UnitTests(unittest.TestCase):
     connection = mock_connector.connect()
     cursor = connection.cursor() 
     cursor.rowcount = 3
-
+    database.count_all_load_rows = MagicMock(return_value = 0)
     cc_rows = [MagicMock(geo_id='CA', val=1, se=0, sample_size=0)]
     result = database.insert_or_update_batch(cc_rows)
     self.assertEqual(result, 3)
@@ -133,7 +133,7 @@ class UnitTests(unittest.TestCase):
     connection = mock_connector.connect()
     cursor = connection.cursor() 
     cursor.rowcount = -1
-
+    database.count_all_load_rows = MagicMock(return_value = 0)
     cc_rows = [MagicMock(geo_id='CA', val=1, se=0, sample_size=0)]
     result = database.insert_or_update_batch(cc_rows)
     self.assertIsNone(result)
