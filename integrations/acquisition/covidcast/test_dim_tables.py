@@ -125,16 +125,11 @@ class CovidcastDimensionTablesTests(unittest.TestCase):
             #testing src, sig
             self._db._cursor.execute(self.viewSignalDim)
             record = self._db._cursor.fetchall()
-<<<<<<< HEAD
-            res = [('src', 'sig'), ('new_src', 'sig'), ('src', 'new_sig')]
-            self.assertEqual(res , (record))
-=======
             self.sigDimRows = len(list(record))
             
             res = set([('new_src', 'sig'), ('src', 'new_sig'), ('src', 'sig')])
             self.assertEqual(res , set(record))
             self.assertEqual(3, self.sigDimRows)
->>>>>>> 8a39f36b (used set to remove ordering of elements in return list)
             #ensure nothing in geo
             self._db._cursor.execute(self.viewGeoDim)
             record = self._db._cursor.fetchall()
