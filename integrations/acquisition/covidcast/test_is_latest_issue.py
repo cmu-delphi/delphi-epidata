@@ -10,7 +10,7 @@ from delphi.epidata.client.delphi_epidata import Epidata
 from delphi.epidata.acquisition.covidcast.database import Database, CovidcastRow
 import delphi.operations.secrets as secrets
 
-#
+
 __test_target__ = 'delphi.epidata.acquisition.covidcast.database'
 
 nmv = Nans.NOT_MISSING.value
@@ -55,8 +55,7 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     #Commonly used SQL commands:
     self.viewSignalLatest = f'SELECT * FROM {Database.latest_table}'
     self.viewSignalHistory = f'SELECT * FROM {Database.history_table}'
-    self.viewSignalDim = f'SELECT `source`, `signal` FROM `signal_dim`'
-    self.viewGeoDim = f'SELECT `geo_type`,`geo_value` FROM `geo_dim`'
+
   def tearDown(self):
     """Perform per-test teardown."""
     self._db._cursor.close()
@@ -68,7 +67,7 @@ class CovidcastLatestIssueTests(unittest.TestCase):
       CovidcastRow('src', 'sig', 'day', 'state', 20200414, 'pa', 
                    1.5, 2.5, 3.5, nmv, nmv, nmv, 20200414, 0)
     ]
-    self._db.insert_or_update_bulk(rows)
+    self._db.insert_or_update_batch(rows)
     self._db.run_dbjobs()
     self._db._cursor.execute(self.viewSignalHistory)
     totalRows = len(list(self._db._cursor.fetchall()))
@@ -78,7 +77,7 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     self._db._cursor.execute(sql)
     record = self._db._cursor.fetchall()
     self.assertEqual(record[0][0], 20200414)
-    self.assertEqual(len(record), 1) #check 1 entry
+    self.assertEqual(len(record), 1) #check 1 entry present
 
     #when uploading data patches (data in signal load has < issue than data in signal_latest)
       #INSERT OLDER issue (does not end up in latest table)
@@ -87,7 +86,7 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     newRow = [
     CovidcastRow('src', 'sig', 'day', 'state', 20200414, 'pa', 
                   4.4, 4.4, 4.4, nmv, nmv, nmv, 20200416, 2)] #should show up
-    self._db.insert_or_update_bulk(newRow)
+    self._db.insert_or_update_batch(newRow)
     self._db.run_dbjobs()
     
     #check newer issue in signal_latest
@@ -95,12 +94,12 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     self._db._cursor.execute(sql)
     record = self._db._cursor.fetchall()
     self.assertEqual(record[0][0], 20200416) #new data added
-    self.assertEqual(len(record), 1) #check 1 entry 
+    self.assertEqual(len(record), 1) #check 1 entry present
 
     updateRow = [
       CovidcastRow('src', 'sig', 'day', 'state', 20200414, 'pa', 
                   6.5, 2.2, 11.5, nmv, nmv, nmv, 20200414, 2)]  #should not showup
-    self._db.insert_or_update_bulk(updateRow)
+    self._db.insert_or_update_batch(updateRow)
     self._db.run_dbjobs()
     
     #check newer issue in signal_latest
@@ -112,7 +111,8 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     #dynamic check for signal_history's list of issue
     self._db._cursor.execute(f'SELECT `issue` FROM {Database.history_table}')
     record3 = self._db._cursor.fetchall()
-    self.assertEqual(len(record3),totalRows + 1) 
+    totalRows = len(list(record3)) #updating totalRows
+    self.assertEqual(len(record3),totalRows) 
     self.assertEqual(3,totalRows + 1) #ensure len(record3) = totalRows + 1 = 3
     self.assertEqual(20200416,max(record3)[0]) #max of the outputs is 20200416 , extracting from tuple
     
@@ -131,7 +131,7 @@ class CovidcastLatestIssueTests(unittest.TestCase):
       CovidcastRow('src', 'sig', 'day', 'state', 20200414, 'pa', # updating previous entry
                 2, 2, 3, nmv, nmv, nmv, 20200416, 2)
     ]
-    self._db.insert_or_update_bulk(rows) 
+    self._db.insert_or_update_batch(rows) 
     self._db.run_dbjobs()
     self._db._cursor.execute(f'SELECT `issue` FROM {Database.latest_table} ')
     record = self._db._cursor.fetchall()  
