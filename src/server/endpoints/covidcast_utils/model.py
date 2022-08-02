@@ -1,8 +1,12 @@
 from dataclasses import asdict, dataclass, field
+from datetime import timedelta
 from enum import Enum
 from functools import partial
 from itertools import groupby, repeat, tee
-from typing import Callable, Generator, Optional, Dict, List, Set, Tuple, Iterable, Union
+from numbers import Number
+import traceback
+from typing import Any, Callable, Generator, Iterator, Optional, Dict, List, Set, Tuple, Union
+
 from pathlib import Path
 import re
 from more_itertools import interleave_longest, peekable
@@ -11,14 +15,15 @@ import numpy as np
 
 from delphi_utils.nancodes import Nans
 from ..._params import SourceSignalPair, TimePair
-from .smooth_diff import generate_smooth_rows, generate_row_diffs
-from ...utils import time_value_range, shift_time_value
+from .smooth_diff import generate_smoothed_rows, generate_diffed_rows
+from ...utils import date_to_time_value, shift_time_value, time_value_to_date, time_value_range
+from ..._config import MAX_SMOOTHER_WINDOW
 
 
 IDENTITY: Callable = lambda rows, **kwargs: rows
-DIFF: Callable = lambda rows, **kwargs: generate_row_diffs(rows, **kwargs)
-SMOOTH: Callable = lambda rows, **kwargs: generate_smooth_rows(rows, **kwargs)
-DIFF_SMOOTH: Callable = lambda rows, **kwargs: generate_smooth_rows(generate_row_diffs(rows, **kwargs), **kwargs)
+DIFF: Callable = lambda rows, **kwargs: generate_diffed_rows(rows, **kwargs)
+SMOOTH: Callable = lambda rows, **kwargs: generate_smoothed_rows(rows, **kwargs)
+DIFF_SMOOTH: Callable = lambda rows, **kwargs: generate_smoothed_rows(generate_diffed_rows(rows, **kwargs), **kwargs)
 
 
 class HighValuesAre(str, Enum):
@@ -330,36 +335,63 @@ def _resolve_all_signals(source_signals: Union[SourceSignalPair, List[SourceSign
     raise TypeError("source_signals is not Union[SourceSignalPair, List[SourceSignalPair]].")
 
 
-def _reindex_iterable(iterable: Iterable[Dict], time_pairs: List[TimePair], fill_value: Optional[int] = None) -> Iterable:
-    """Produces an iterable that fills in gaps in the time window of another iterable.
+def _reindex_iterable(iterator: Iterator[Dict], time_pairs: Optional[List[TimePair]], fill_value: Optional[Number] = None) -> Iterator[Dict]:
+    """Produces an iterator that fills in gaps in the time window of another iterator.
 
-    Used to produce an iterable with a contiguous time index for time series operations.
+    Used to produce an iterator with a contiguous time index for time series operations.
 
-    We iterate over contiguous range of days made from time_pairs. If `iterable`, which is assumed to be sorted by its "time_value" key,
-    is missing a time_value in the range, a dummy row entry is returned with the correct date and the value fields set appropriately.
+    We iterate over contiguous range of days made from time_pairs. If `iterator`, which is assumed to be sorted by its "time_value" key,
+    is missing a time_value in the range, a row is returned with the missing date and dummy fields.
     """
-    if time_pairs is None:
-        return iterable
+    # Iterate as normal if time_pairs is empty or None.
+    if not time_pairs:
+        for item in iterator:
+            yield item
+        return
 
-    _iterable = peekable(iterable)
-    first_item = _iterable.peek()
-    day_range_index = get_day_range(time_pairs)
-    for day in day_range_index.time_values:
-        index_item = first_item.copy()
-        index_item.update({
-            "time_value": day,
-            "value": fill_value,
-            "stderr": None,
-            "sample_size": None,
-            "missing_value": Nans.NOT_MISSING if fill_value is not None else Nans.NOT_APPLICABLE,
-            "missing_stderr": Nans.NOT_APPLICABLE,
-            "missing_sample_size": Nans.NOT_APPLICABLE
-        })
-        new_item = _iterable.peek(default=index_item)
-        if day == new_item.get("time_value"):
-            yield next(_iterable, index_item)
-        else:
-            yield index_item
+    _iterator = peekable(iterator)
+
+    # If the iterator is empty, we halt immediately.
+    try:
+        first_item = _iterator.peek()
+    except StopIteration:
+        return
+
+    _default_item = first_item.copy()
+    _default_item.update({
+        "stderr": None,
+        "sample_size": None,
+        "issue": None,
+        "lag": None,
+        "missing_stderr": Nans.NOT_APPLICABLE,
+        "missing_sample_size": Nans.NOT_APPLICABLE
+    })
+
+    # Non-trivial operations otherwise.
+    min_time_value = first_item.get("time_value")
+    for day in get_day_range(time_pairs):
+        if day < min_time_value:
+            continue
+
+        try:
+            # This will stay the same until the iterator is iterated.
+            # When _iterator is exhausted, it will raise StopIteration, ending this loop.
+            new_item = _iterator.peek()
+            if day == new_item.get("time_value"):
+                # Get the value we just peeked.
+                yield next(_iterator)
+            else:
+                # Return a default row instead.
+                # Copy to avoid Python by-reference memory issues.
+                default_item = _default_item.copy()
+                default_item.update({
+                    "time_value": day,
+                    "value": fill_value,
+                    "missing_value": Nans.NOT_MISSING if fill_value and not np.isnan(fill_value) else Nans.NOT_APPLICABLE
+                })
+                yield default_item
+        except StopIteration:
+            return
 
 
 def _get_base_signal_transform(signal: Union[DataSignal, Tuple[str, str]], data_signals_by_key: Dict[Tuple[str, str], DataSignal] = data_signals_by_key) -> Callable:
@@ -408,8 +440,8 @@ def get_transform_types(source_signal_pairs: List[SourceSignalPair], data_source
 def get_pad_length(source_signal_pairs: List[SourceSignalPair], smoother_window_length: int, data_sources_by_id: Dict[str, DataSource] = data_sources_by_id, data_signals_by_key: Dict[Tuple[str, str], DataSignal] = data_signals_by_key):
     """Returns the size of the extra date padding needed, depending on the transformations the source-signal pair list requires.
 
-    Example:
-    If smoothing is required, we fetch an extra 6 days. If both diffing and smoothing is required on the same signal, then we fetch 7 extra days.
+    If smoothing is required, we fetch an extra smoother_window_length - 1 days (6 by default). If both diffing and smoothing is required on the same signal, 
+    then we fetch extra smoother_window_length days (7 by default).
 
     Used to pad the user DB query with extra days.
     """
@@ -427,10 +459,10 @@ def get_pad_length(source_signal_pairs: List[SourceSignalPair], smoother_window_
 def pad_time_pairs(time_pairs: List[TimePair], pad_length: int) -> List[TimePair]:
     """Pads a list of TimePairs with another TimePair that extends the smallest time value by the pad_length, if needed.
 
+    Assumes day time_type, since this function is only called for JIT computations which share the same assumption.
+
     Example:
     [TimePair("day", [20210407])] with pad_length 6 would return [TimePair("day", [20210407]), TimePair("day", [(20210401, 20210407)])].
-
-    Used to pad the user DB query with extra days.
     """
     if pad_length < 0:
         raise ValueError("pad_length should non-negative.")
@@ -438,9 +470,8 @@ def pad_time_pairs(time_pairs: List[TimePair], pad_length: int) -> List[TimePair
         return time_pairs.copy()
     min_time = min(time_value if isinstance(time_value, int) else time_value[0] for time_pair in time_pairs if not isinstance(time_pair.time_values, bool) for time_value in time_pair.time_values)
     padded_time = TimePair("day", [(shift_time_value(min_time, -1 * pad_length), min_time)])
-    new_time_pairs = time_pairs.copy()
-    new_time_pairs.append(padded_time)
-    return new_time_pairs
+
+    return time_pairs + [padded_time]
 
 
 def pad_time_window(time_window: Tuple[int, int], pad_length: int) -> Tuple[int, int]:
@@ -459,37 +490,65 @@ def pad_time_window(time_window: Tuple[int, int], pad_length: int) -> Tuple[int,
     return (shift_time_value(min_time, -1 * pad_length), max_time)
 
 
-def get_day_range(time_pairs: Union[TimePair, List[TimePair]]) -> TimePair:
-    """Combine a list of TimePairs into a single contiguous, explicit TimePair object.
+def _iterate_over_ints_and_ranges(lst: Iterator[Union[int, Tuple[int, int]]], use_dates: bool = True) -> Iterator[int]:
+    """A generator that iterates over the unique values in a list of integers and ranges in ascending order.
+
+    The tuples are assumed to be left- and right-inclusive. If use_dates is True, then the integers are interpreted as
+    dates.
+    
+    Examples:
+        iterate_over_ints_and_ranges([(5, 8), 0]) would iterate over [0, 5, 6, 7, 8].
+        iterate_over_ints_and_ranges([(5, 8), (4, 6), (3, 5)]) would iterate over [3, 4, 5, 6, 7, 8].
+        iterate_over_ints_and_ranges([(7, 8), (5, 7), (3, 8), 8]) would iterate over [3, 4, 5, 6, 7, 8].
+    """
+    lst = sorted((x, x) if isinstance(x, int) else x for x in lst)
+    if not lst:
+        return
+
+    if use_dates:
+        increment = lambda x, y: date_to_time_value(time_value_to_date(x) + timedelta(days=y))
+        range_handler = time_value_range
+    else:
+        increment = lambda x, y: x + y
+        range_handler = range
+
+    biggest_seen = increment(lst[0][0], -1)
+    for a, b in lst:
+        for y in range_handler(max(a, increment(biggest_seen, 1)), increment(b, 1)):
+            yield y
+        biggest_seen = max(biggest_seen, b)
+
+
+def get_day_range(time_pairs: List[TimePair]) -> Iterator[int]:
+    """Iterate over a list of TimePair time_values, including the values contained in the ranges.
 
     Example:
-    [TimePair("day", [20210407, 20210408]), TimePair("day", [(20210408, 20210410)])] would return
-    TimePair("day", [20210407, 20210408, 20210409, 20210410]).
-
-    Used to produce a contiguous time index for time series operations.
+    [TimePair("day", [20210407, 20210408]), TimePair("day", [20210405, (20210408, 20210411)])] would iterate over
+    [20210405, 20210407, 20210408, 20210409, 20210410, 20210411].
     """
-    if isinstance(time_pairs, TimePair):
-        time_pair = time_pairs
-        time_values = sorted(list(set().union(*(set(time_value_range(time_value)) if isinstance(time_value, tuple) else {time_value} for time_value in time_pair.time_values))))
-        if True in time_values:
-            raise ValueError("TimePair.time_value should not be a bool when calling get_day_range.")
-        return TimePair(time_pair.time_type, time_values)
-    elif isinstance(time_pairs, list):
-        if not all(time_pair.time_type == "day" for time_pair in time_pairs):
-            raise ValueError("get_day_range only supports day time_type pairs.")
-        time_values = sorted(list(set().union(*(get_day_range(time_pair).time_values for time_pair in time_pairs))))
-        return TimePair("day", time_values)
-    else:
-        raise ValueError("get_day_range received an unsupported type as input.")
+    time_values_flattened = []
+
+    for time_pair in time_pairs:
+        if time_pair.time_type != "day":
+            raise ValueError("get_day_range only supports 'day' time_type.")
+
+        if isinstance(time_pair.time_values, int):
+            time_values_flattened.append(time_pair.time_values)
+        elif isinstance(time_pair.time_values, list):
+            time_values_flattened.extend(time_pair.time_values)
+        else:
+            raise ValueError("get_day_range only supports int or list time_values.")
+
+    return _iterate_over_ints_and_ranges(time_values_flattened)
 
 
 def _generate_transformed_rows(
-    parsed_rows: Iterable[Dict], time_pairs: Optional[List[TimePair]] = None, transform_dict: Optional[Dict[Tuple[str, str], List[Tuple[str, str]]]] = None, transform_args: Optional[Dict] = None, group_keyfunc: Optional[Callable] = None, data_signals_by_key: Dict[Tuple[str, str], DataSignal] = data_signals_by_key,
-) -> Iterable[Dict]:
+    parsed_rows: Iterator[Dict], time_pairs: Optional[List[TimePair]] = None, transform_dict: Optional[Dict[Tuple[str, str], List[Tuple[str, str]]]] = None, transform_args: Optional[Dict] = None, group_keyfunc: Optional[Callable] = None, data_signals_by_key: Dict[Tuple[str, str], DataSignal] = data_signals_by_key,
+) -> Iterator[Dict]:
     """Applies time-series transformations to streamed rows from a database.
 
     Parameters:
-    parsed_rows: Iterable[Dict]
+    parsed_rows: Iterator[Dict]
         Streamed rows from the database.
     time_pairs: Optional[List[TimePair]], default None
         A list of TimePairs, which can be used to create a continguous time index for time-series operations.
@@ -516,30 +575,28 @@ def _generate_transformed_rows(
     if not group_keyfunc:
         group_keyfunc = lambda row: (row["geo_type"], row["geo_value"], row["source"], row["signal"])
 
-    try:
-        for key, group in groupby(parsed_rows, group_keyfunc):
-            _, _, source_name, signal_name = key
-            # Extract the list of derived signals.
-            derived_signals: List[Tuple[str, str]] = transform_dict.get((source_name, signal_name), [(source_name, signal_name)])
-            # Create a list of source-signal pairs along with the transformation required for the signal.
-            source_signal_pairs_and_group_transforms: List[Tuple[Tuple[str, str], Callable]] = [((derived_source, derived_signal), _get_base_signal_transform((derived_source, derived_signal), data_signals_by_key)) for (derived_source, derived_signal) in derived_signals]
-            # Put the current time series on a contiguous time index.
-            group_continguous_time = _reindex_iterable(group, time_pairs, fill_value=transform_args.get("pad_fill_value")) if time_pairs else group
-            # Create copies of the iterable, with smart memory usage.
-            group_iter_copies: Iterable[Iterable[Dict]] = tee(group_continguous_time, len(source_signal_pairs_and_group_transforms))
-            # Create a list of transformed group iterables, remembering their derived name as needed.
-            transformed_group_rows: Iterable[Iterable[Dict]] = (zip(transform(rows, **transform_args), repeat(key)) for (key, transform), rows in zip(source_signal_pairs_and_group_transforms, group_iter_copies))
-            # Traverse through the transformed iterables in an interleaved fashion, which makes sure that only a small window
-            # of the original iterable (group) is stored in memory.
-            for row, (_, derived_signal) in interleave_longest(*transformed_group_rows):
-                row["signal"] = derived_signal
-                yield row
-    except Exception as e:
-        print(f"Tranformation encountered error of type {type(e)}, with message {e}. Yielding None and stopping.")
-        yield None
+    for key, group in groupby(parsed_rows, group_keyfunc):
+        group = [x for x in group]
+        _, _, source_name, signal_name = key
+        # Extract the list of derived signals.
+        derived_signals: List[Tuple[str, str]] = transform_dict.get((source_name, signal_name), [(source_name, signal_name)])
+        # Create a list of source-signal pairs along with the transformation required for the signal.
+        source_signal_pairs_and_group_transforms: List[Tuple[Tuple[str, str], Callable]] = [((derived_source, derived_signal), _get_base_signal_transform((derived_source, derived_signal), data_signals_by_key)) for (derived_source, derived_signal) in derived_signals]
+        # Put the current time series on a contiguous time index.
+        group_contiguous_time = _reindex_iterable(group, time_pairs, fill_value=transform_args.get("pad_fill_value"))
+        # Create copies of the iterable, with smart memory usage.
+        group_iter_copies: Iterator[Iterator[Dict]] = tee(group_contiguous_time, len(source_signal_pairs_and_group_transforms))
+        # Create a list of transformed group iterables, remembering their derived name as needed.
+        transformed_group_rows: Iterator[Iterator[Dict]] = (zip(transform(rows, **transform_args), repeat(key)) for (key, transform), rows in zip(source_signal_pairs_and_group_transforms, group_iter_copies))
+        # Traverse through the transformed iterables in an interleaved fashion, which makes sure that only a small window
+        # of the original iterable (group) is stored in memory.
+        for row, (_, derived_signal) in interleave_longest(*transformed_group_rows):
+            row["signal"] = derived_signal
+            yield row
 
 
-def get_basename_signals(source_signal_pairs: List[SourceSignalPair], data_sources_by_id: Dict[str, DataSource] = data_sources_by_id, data_signals_by_key: Dict[Tuple[str, str], DataSignal] = data_signals_by_key) -> Tuple[List[SourceSignalPair], Generator]:
+
+def get_basename_signal_and_jit_generator(source_signal_pairs: List[SourceSignalPair], transform_args: Optional[Dict[str, Union[str, int]]] = None, data_sources_by_id: Dict[str, DataSource] = data_sources_by_id, data_signals_by_key: Dict[Tuple[str, str], DataSignal] = data_signals_by_key) -> Tuple[List[SourceSignalPair], Generator]:
     """From a list of SourceSignalPairs, return the base signals required to derive them and a transformation function to take a stream
     of the base signals and return the transformed signals.
 
@@ -569,6 +626,6 @@ def get_basename_signals(source_signal_pairs: List[SourceSignalPair], data_sourc
                 transform_dict.setdefault((source_name, signal.signal_basename), []).append((source_name, signal_name))
         base_signal_pairs.append(SourceSignalPair(pair.source, signals))
 
-    row_transform_generator = partial(_generate_transformed_rows, transform_dict=transform_dict, data_signals_by_key=data_signals_by_key)
+    row_transform_generator = partial(_generate_transformed_rows, transform_dict=transform_dict, transform_args=transform_args, data_signals_by_key=data_signals_by_key)
 
     return base_signal_pairs, row_transform_generator

@@ -1,128 +1,163 @@
 from pandas import DataFrame, date_range
 from pandas.testing import assert_frame_equal
-from numpy import nan
+from numpy import nan, isnan
 from itertools import chain
-from more_itertools import windowed
+from pytest import raises
+import unittest
 
-from delphi.epidata.server.utils import date_to_time_value, CovidcastRecords
-from delphi.epidata.server.endpoints.covidcast_utils.smooth_diff import generate_row_diffs, generate_smooth_rows, _smoother
+from .....src.acquisition.covidcast.covidcast_row import CovidcastRows
+from .....src.server.endpoints.covidcast_utils.smooth_diff import generate_diffed_rows, generate_smoothed_rows, _smoother
+from .test_model import _diff_rows, _smooth_rows, _reindex_windowed
 
 
-class TestStreaming:
+class TestStreaming(unittest.TestCase):
     def test__smoother(self):
-        assert _smoother(list(range(7)), [1] * 7) == sum(range(7))
-        assert _smoother([1] * 6, list(range(7))) == sum([1] * 6) / 6
+        assert _smoother(list(range(1, 7)), [1] * 6) == sum(range(1, 7))
+        assert _smoother([1] * 6, list(range(1, 7))) == sum(range(1, 7))
+        assert isnan(_smoother([1, nan, nan]))
+        with raises(TypeError, match=r"unsupported operand type*"):
+            _smoother([1, nan, None])
 
 
-    def test_generate_smooth_rows(self):
-        # an empty dataframe should return an empty dataframe
-        data = DataFrame({})
-        smoothed_df = DataFrame.from_records(generate_smooth_rows(data.to_dict(orient='records')))
-        expected_df = DataFrame({})
-        assert_frame_equal(smoothed_df, expected_df)
+    def test_generate_smoothed_rows(self):
+        with self.subTest("an empty dataframe should return an empty dataframe"):
+            data = DataFrame({})
+            smoothed_df = CovidcastRows.from_records(generate_smoothed_rows(data.to_dict(orient='records'))).api_row_df
+            expected_df = CovidcastRows(rows=[]).api_row_df
+            assert_frame_equal(smoothed_df, expected_df)
 
-        # a dataframe with a single entry should return a single nan value
-        data = CovidcastRecords(
-            time_values=[20210501],
-            values=[1.0]
-        ).as_dataframe()
-        smoothed_df = DataFrame.from_records(generate_smooth_rows(data.to_dict(orient='records')))
-        expected_df = CovidcastRecords(
-            time_values=[20210501],
-            values=[None],
-            stderrs=[None],
-            sample_sizes=[None]
-        ).as_dataframe()
-        assert_frame_equal(smoothed_df, expected_df)
+        with self.subTest("a dataframe with not enough entries to make a single smoothed value, should return an empty dataframe"):
+            data = CovidcastRows.from_args(
+                time_value=[20210501] * 6,
+                value=[1.0] * 6
+            ).api_row_df
 
-        data = CovidcastRecords(
-            time_values=date_range("2021-05-01", "2021-05-10"),
-            values=chain(range(7), [None, 2., 1.])
-        ).as_dataframe()
+            smoothed_df = CovidcastRows.from_records(generate_smoothed_rows(data.to_dict(orient='records'))).api_row_df
+            expected_df = CovidcastRows(rows=[]).api_row_df
+            assert_frame_equal(smoothed_df, expected_df)
 
-        # regular window, nan fill
-        smoothed_df = DataFrame.from_records(generate_smooth_rows(data.to_dict(orient='records')))
-        expected_df = CovidcastRecords(
-            time_values=date_range("2021-05-07", "2021-05-10"),
-            values=(sum(x)/len(x) if None not in x else None for x in windowed(chain(range(7), [None, 2., 1.]), 7)),
-            stderrs=[None]*4,
-            sample_sizes=[None]*4,
-        ).as_dataframe()
-        assert_frame_equal(smoothed_df, expected_df)
+        data = CovidcastRows.from_args(
+            time_value=date_range("2021-05-01", "2021-05-13"),
+            value=list(chain(range(10), [None, 2., 1.]))
+        ).api_row_df
 
-        # regular window, 0 fill
-        smoothed_df = DataFrame.from_records(generate_smooth_rows(data.to_dict(orient='records'), nan_fill_value=0.))
-        expected_df = CovidcastRecords(
-            time_values=date_range("2021-05-07", "2021-05-10"),
-            values=(sum(x)/len(x) if None not in x else None for x in windowed(chain(range(7), [0., 2., 1.]), 7)),
-            stderrs=[None]*4,
-            sample_sizes=[None]*4,
-        ).as_dataframe()
-        assert_frame_equal(smoothed_df, expected_df)
+        with self.subTest("regular window, nan fill"):
+            smoothed_df = CovidcastRows.from_records(generate_smoothed_rows(data.to_dict(orient='records'))).api_row_df
 
-        # regular window, different window length
-        smoothed_df = DataFrame.from_records(generate_smooth_rows(data.to_dict(orient='records'), smoother_window_length = 8))
-        expected_df = CovidcastRecords(
-            time_values=date_range("2021-05-08", "2021-05-10"),
-            values=(sum(x)/len(x) if None not in x else None for x in windowed(chain(range(7), [None, 2., 1.]), 8)),
-            stderrs=[None]*3,
-            sample_sizes=[None]*3,
-        ).as_dataframe()
-        assert_frame_equal(smoothed_df, expected_df)
+            smoothed_values = _smooth_rows(data.value.to_list())
+            reduced_time_values = data.time_value.to_list()[-len(smoothed_values):]
 
-        # regular window, different kernel
-        smoothed_df = DataFrame.from_records(generate_smooth_rows(data.to_dict(orient='records'), smoother_kernel = list(range(8))))
-        expected_df = CovidcastRecords(
-            time_values=date_range("2021-05-08", "2021-05-10"),
-            values=(sum([i * j for i, j in zip(x, range(8))])/len(x) if None not in x else None for x in windowed(chain(range(7), [None, 2., 1.]), 8)),
-            stderrs=[None]*3,
-            sample_sizes=[None]*3,
-        ).as_dataframe()
-        assert_frame_equal(smoothed_df, expected_df)
+            expected_df = CovidcastRows.from_args(
+                time_value=reduced_time_values,
+                value=smoothed_values,
+                stderr=[None] * len(smoothed_values),
+                sample_size=[None] * len(smoothed_values),
+            ).api_row_df
 
-        # conflicting smoother args validation
-        smoothed_df = DataFrame.from_records(generate_smooth_rows(data.to_dict(orient='records'), smoother_kernel=[1/7.]*7, smoother_window_length=10))
-        expected_df = CovidcastRecords(
-            time_values=date_range("2021-05-07", "2021-05-10"),
-            values=(sum([i * j for i, j in zip(x, [1/7.]*7)]) if None not in x else None for x in windowed(chain(range(7), [None, 2., 1.]), 7)),
-            stderrs=[None]*4,
-            sample_sizes=[None]*4,
-        ).as_dataframe()
-        assert_frame_equal(smoothed_df, expected_df)
+            assert_frame_equal(smoothed_df, expected_df)
+
+        with self.subTest("regular window, 0 fill"):
+            smoothed_df = CovidcastRows.from_records(generate_smoothed_rows(data.to_dict(orient='records'), nan_fill_value=0.)).api_row_df
+    
+            smoothed_values = _smooth_rows([v if v is not None and not isnan(v) else 0. for v in data.value.to_list()])
+            reduced_time_values = data.time_value.to_list()[-len(smoothed_values):]
+
+            expected_df = CovidcastRows.from_args(
+                time_value=reduced_time_values,
+                value=smoothed_values,
+                stderr=[None] * len(smoothed_values),
+                sample_size=[None] * len(smoothed_values),
+            ).api_row_df
+
+            assert_frame_equal(smoothed_df, expected_df)
+
+        with self.subTest("regular window, different window length"):
+            smoothed_df = CovidcastRows.from_records(generate_smoothed_rows(data.to_dict(orient='records'), smoother_window_length=8)).api_row_df
+
+            smoothed_values = _smooth_rows(data.value.to_list(), window_length=8)
+            reduced_time_values = data.time_value.to_list()[-len(smoothed_values):]
+
+            expected_df = CovidcastRows.from_args(
+                time_value=reduced_time_values,
+                value=smoothed_values,
+                stderr=[None] * len(smoothed_values),
+                sample_size=[None] * len(smoothed_values),
+            ).api_row_df
+            assert_frame_equal(smoothed_df, expected_df)
+
+        with self.subTest("regular window, different kernel"):
+            smoothed_df = CovidcastRows.from_records(generate_smoothed_rows(data.to_dict(orient='records'), smoother_kernel=list(range(8)))).api_row_df
+
+            smoothed_values = _smooth_rows(data.value.to_list(), kernel=list(range(8)))
+            reduced_time_values = data.time_value.to_list()[-len(smoothed_values):]
+
+            expected_df = CovidcastRows.from_args(
+                time_value=reduced_time_values,
+                value=smoothed_values,
+                stderr=[None] * len(smoothed_values),
+                sample_size=[None] * len(smoothed_values),
+            ).api_row_df
+            assert_frame_equal(smoothed_df, expected_df)
+
+        with self.subTest("conflicting smoother args validation, smoother kernel should overwrite window length"):
+            smoothed_df = CovidcastRows.from_records(generate_smoothed_rows(data.to_dict(orient='records'), smoother_kernel=[1/7.]*7, smoother_window_length=10)).api_row_df
+
+            smoothed_values = _smooth_rows(data.value.to_list(), kernel=[1/7.]*7)
+            reduced_time_values = data.time_value.to_list()[-len(smoothed_values):]
+
+            expected_df = CovidcastRows.from_args(
+                time_value=reduced_time_values,
+                value=smoothed_values,
+                stderr=[None] * len(smoothed_values),
+                sample_size=[None] * len(smoothed_values),
+            ).api_row_df
+            assert_frame_equal(smoothed_df, expected_df)
 
 
-    def test_generate_row_diffs(self):
-        # an empty dataframe should return an empty dataframe
-        data = DataFrame({})
-        diffs_df = DataFrame.from_records(generate_row_diffs(data.to_dict(orient='records')))
-        expected_df = DataFrame({})
-        assert_frame_equal(diffs_df, expected_df)
+    def test_generate_diffed_rows(self):
+        with self.subTest("an empty dataframe should return an empty dataframe"):
+            data = DataFrame({})
+            diffs_df = CovidcastRows.from_records(generate_diffed_rows(data.to_dict(orient='records'))).api_row_df
+            expected_df = CovidcastRows(rows=[]).api_row_df
+            assert_frame_equal(diffs_df, expected_df)
 
-        # a dataframe with a single entry should return a single nan value
-        data = CovidcastRecords(
-            time_values=[20210501],
-            values=[1.0]
-        ).as_dataframe()
-        diffs_df = DataFrame.from_records(generate_row_diffs(data.to_dict(orient='records')))
-        expected_df = CovidcastRecords(
-            time_values=[20210501],
-            values=[None],
-            stderrs=[None],
-            sample_sizes=[None]
-        ).as_dataframe()
-        assert_frame_equal(diffs_df, expected_df)
+        with self.subTest("a dataframe with not enough data to make one row should return an empty dataframe"):
+            data = CovidcastRows.from_args(time_value=[20210501], value=[1.0]).api_row_df
+            diffs_df = CovidcastRows.from_records(generate_diffed_rows(data.to_dict(orient='records'))).api_row_df
+            expected_df = CovidcastRows(rows=[]).api_row_df
+            assert_frame_equal(diffs_df, expected_df)
 
-        data = CovidcastRecords(
-            time_values=date_range("2021-05-01", "2021-05-10"),
-            values=chain(range(7), [None, 2., 1.])
-        ).as_dataframe()
+        data = CovidcastRows.from_args(
+            time_value=date_range("2021-05-01", "2021-05-10"),
+            value=chain(range(7), [None, 2., 1.])
+        ).api_row_df
 
-        # no fill
-        diffs_df = DataFrame.from_records(generate_row_diffs(data.to_dict(orient='records')))
-        expected_df = CovidcastRecords(
-            time_values=date_range("2021-05-02", "2021-05-10"),
-            values=[1.] * 6 + [None, None, -1.],
-            stderrs=[None] * 9,
-            sample_sizes=[None] * 9
-        ).as_dataframe()
-        assert_frame_equal(diffs_df, expected_df)
+        with self.subTest("no fill"):
+            diffs_df = CovidcastRows.from_records(generate_diffed_rows(data.to_dict(orient='records'))).api_row_df
+
+            diffed_values = _diff_rows(data.value.to_list())
+            reduced_time_values = data.time_value.to_list()[-len(diffed_values):]
+
+            expected_df = CovidcastRows.from_args(
+                time_value=reduced_time_values,
+                value=diffed_values,
+                stderr=[None] * len(diffed_values),
+                sample_size=[None] * len(diffed_values),
+            ).api_row_df
+
+            assert_frame_equal(diffs_df, expected_df)
+
+        with self.subTest("yes fill"):
+            diffs_df = CovidcastRows.from_records(generate_diffed_rows(data.to_dict(orient='records'), nan_fill_value=2.)).api_row_df
+
+            diffed_values = _diff_rows([v if v is not None and not isnan(v) else 2. for v in data.value.to_list()])
+            reduced_time_values = data.time_value.to_list()[-len(diffed_values):]
+
+            expected_df = CovidcastRows.from_args(
+                time_value=reduced_time_values,
+                value=diffed_values,
+                stderr=[None] * len(diffed_values),
+                sample_size=[None] * len(diffed_values),
+            ).api_row_df
+
+            assert_frame_equal(diffs_df, expected_df)

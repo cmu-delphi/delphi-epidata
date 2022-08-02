@@ -3,99 +3,32 @@
 # standard library
 from copy import copy
 from itertools import accumulate, chain
-from typing import Iterable, Dict, Any, List, Sequence
+from typing import Iterable, List, Sequence
 import unittest
 from io import StringIO
-
-# from typing import Optional
-from dataclasses import dataclass
 
 # third party
 import mysql.connector
 from more_itertools import interleave_longest, windowed
 import requests
 import pandas as pd
-import numpy as np
-from delphi_utils import Nans
 
-from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import main as update_cache
-from delphi.epidata.server.endpoints.covidcast_utils.model import DataSignal, DataSource
-
-from delphi.epidata.acquisition.covidcast.database import Database
+from ...src.acquisition.covidcast.covidcast_meta_cache_updater import main as update_cache
+from ...src.acquisition.covidcast.database import Database
+from ...src.acquisition.covidcast.covidcast_row import CovidcastRow, CovidcastRows, set_df_dtypes
 
 # use the local instance of the Epidata API
 BASE_URL = "http://delphi_web_epidata/epidata/covidcast"
 BASE_URL_OLD = "http://delphi_web_epidata/epidata/api.php"
 
 
-@dataclass
-class CovidcastRow:
-    # TODO: this heavily resembles delphi.epidata.acquisition.covidcast.database.CovidcastRow ... merge!
-    source: str = "src"
-    signal: str = "sig"
-    time_type: str = "day"
-    geo_type: str = "county"
-    time_value: int = 20200411
-    geo_value: str = "01234"
-    value_updated_timestamp: int = 20200202
-    value: float = 10.0
-    stderr: float = 0
-    sample_size: float = 10
-    issue: int = 20200202
-    lag: int = 0
-    missing_value: int = Nans.NOT_MISSING.value
-    missing_stderr: int = Nans.NOT_MISSING.value
-    missing_sample_size: int = Nans.NOT_MISSING.value
-
-    def __str__(self):
-        return f"""(
-            '{self.source}',
-            '{self.signal}',
-            '{self.time_type}',
-            '{self.geo_type}',
-            {self.time_value},
-            '{self.geo_value}',
-            {self.value_updated_timestamp},
-            {self.value},
-            {self.stderr},
-            {self.sample_size},
-            {self.issue},
-            {self.lag},
-            {self.missing_value},
-            {self.missing_stderr},
-            {self.missing_sample_size}
-            )"""
-
-    @staticmethod
-    def from_json(json: Dict[str, Any]) -> "CovidcastRow":
-        return CovidcastRow(
-            source=json["source"],
-            signal=json["signal"],
-            time_type=json["time_type"],
-            geo_type=json["geo_type"],
-            geo_value=json["geo_value"],
-            issue=json["issue"],
-            lag=json["lag"],
-            value=json["value"],
-            stderr=json["stderr"],
-            sample_size=json["sample_size"],
-            missing_value=json["missing_value"],
-            missing_stderr=json["missing_stderr"],
-            missing_sample_size=json["missing_sample_size"],
-        )
-
-    @property
-    def signal_pair(self):
-        return f"{self.source}:{self.signal}"
-
-    @property
-    def geo_pair(self):
-        return f"{self.geo_type}:{self.geo_value}"
-
-    @property
-    def time_pair(self):
-        return f"{self.time_type}:{self.time_value}"
-
+def _read_csv(txt: str) -> pd.DataFrame:
+    df = pd.read_csv(StringIO(txt), index_col=0).rename(columns={"data_source": "source"})
+    df.time_value = pd.to_datetime(df.time_value).dt.strftime("%Y%m%d").astype(int)
+    df.issue = pd.to_datetime(df.issue).dt.strftime("%Y%m%d").astype(int)
+    df = set_df_dtypes(df, CovidcastRows()._DTYPES)
+    df.geo_value = df.geo_value.str.zfill(5)
+    return df
 
 class CovidcastEndpointTests(unittest.TestCase):
     """Tests the `covidcast/*` endpoint."""
@@ -130,20 +63,6 @@ class CovidcastEndpointTests(unittest.TestCase):
         self._db._connection.close()
 
     def _insert_rows(self, rows: Iterable[CovidcastRow]):
-        # sql = ",\n".join((str(r) for r in rows))
-        # self.cur.execute(
-        #     f"""
-        #     INSERT INTO
-        #         `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`,
-	    #         `time_value`, `geo_value`, `value_updated_timestamp`,
-        #         `value`, `stderr`, `sample_size`, `direction_updated_timestamp`,
-        #         `direction`, `issue`, `lag`, `is_latest_issue`, `is_wip`,`missing_value`,
-        #         `missing_stderr`,`missing_sample_size`)
-        #     VALUES
-        #     {sql}
-        #     """
-        # )
-        # self.cnx.commit()
         self._db.insert_or_update_bulk(rows)
         self._db.run_dbjobs()
         self._db._connection.commit()
@@ -189,7 +108,6 @@ class CovidcastEndpointTests(unittest.TestCase):
             self._insert_rows(rows)
 
             out = self._fetch("/", signal="jhu-csse:confirmed_unknown", geo=first.geo_pair, time="day:*")
-            self.assertEqual(len(out["epidata"]), len(rows))
             out_values = [row["value"] for row in out["epidata"]]
             expected_values = [float(row.value) for row in rows]
             self.assertEqual(out_values, expected_values)
@@ -205,64 +123,40 @@ class CovidcastEndpointTests(unittest.TestCase):
             out = self._fetch("/", signal="jhu-csse:confirmed_incidence_num", geo=first.geo_pair, time="day:*")
             assert out['result'] == -2
             out = self._fetch("/", signal="jhu-csse:confirmed_incidence_num", geo=first.geo_pair, time="day:20200401-20200410")
-            self.assertEqual(len(out["epidata"]), len(rows01))
             out_values = [row["value"] for row in out["epidata"]]
-            values = [None] + [value for _, value in time_value_pairs]
+            values = [value for _, value in time_value_pairs]
             expected_values = self._diff_rows(values)
             self.assertAlmostEqual(out_values, expected_values)
 
         with self.subTest("diffed signal, multiple geos"):
             out = self._fetch("/", signal="jhu-csse:confirmed_incidence_num", geo="county:01,02", time="day:20200401-20200410")
-            self.assertEqual(len(out["epidata"]), 2*(len(rows01)))
             out_values = [row["value"] for row in out["epidata"]]
-            values1 = [None] + [value for _, value in time_value_pairs]
-            values2 = [None] + [2 * value for _, value in time_value_pairs]
+            values1 = [value for _, value in time_value_pairs]
+            values2 = [2 * value for _, value in time_value_pairs]
             expected_values = self._diff_rows(values1) + self._diff_rows(values2)
             self.assertAlmostEqual(out_values, expected_values)
 
         with self.subTest("diffed signal, multiple geos using geo:*"):
             out = self._fetch("/", signal="jhu-csse:confirmed_incidence_num", geo="county:*", time="day:20200401-20200410")
-            self.assertEqual(len(out["epidata"]), 2*(len(rows01)))
-            values1 = [None] + [value for _, value in time_value_pairs]
-            values2 = [None] + [2 * value for _, value in time_value_pairs]
+            values1 = [value for _, value in time_value_pairs]
+            values2 = [2 * value for _, value in time_value_pairs]
             expected_values = self._diff_rows(values1) + self._diff_rows(values2)
             self.assertAlmostEqual(out_values, expected_values)
 
-        with self.subTest("smoothed signal"):
+        with self.subTest("smooth diffed signal"):
             out = self._fetch("/", signal="jhu-csse:confirmed_7dav_incidence_num", geo=first.geo_pair, time="day:20200401-20200410")
-            self.assertEqual(len(out["epidata"]), len(rows01))
             out_values = [row["value"] for row in out["epidata"]]
-            values = [None] * 7 + [value for _, value in time_value_pairs]
+            values = [value for _, value in time_value_pairs]
             expected_values = self._smooth_rows(self._diff_rows(values))
             self.assertAlmostEqual(out_values, expected_values)
 
         with self.subTest("diffed signal and smoothed signal in one request"):
             out = self._fetch("/", signal="jhu-csse:confirmed_incidence_num;jhu-csse:confirmed_7dav_incidence_num", geo=first.geo_pair, time="day:20200401-20200410")
-            self.assertEqual(len(out["epidata"]), 2*len(rows01) + 6)
             out_values = [row["value"] for row in out["epidata"]]
-            values = [None] * 7 + [value for _, value in time_value_pairs]
+            values = [value for _, value in time_value_pairs]
             expected_diff = self._diff_rows(values)
             expected_smoothed = self._smooth_rows(expected_diff)
             expected_values = list(interleave_longest(expected_smoothed, expected_diff))
-            self.assertAlmostEqual(out_values, expected_values)
-
-        with self.subTest("smoothing with time window resizing"):
-            # should fetch 6 extra days
-            out = self._fetch("/", signal="jhu-csse:confirmed_7dav_incidence_num", geo=first.geo_pair, time="day:20200407-20200410")
-            self.assertEqual(len(out["epidata"]), len(rows01) - 6)
-            out_values = [row["value"] for row in out["epidata"]]
-            # an extra None is added because the padding for DIFF_SMOOTH (pad_length = 8) is used
-            values = [None] + [value for _, value in time_value_pairs]
-            expected_values = self._smooth_rows(self._diff_rows(values))
-            self.assertAlmostEqual(out_values, expected_values)
-
-        with self.subTest("diffing with time window resizing"):
-            # should fetch 1 extra day
-            out = self._fetch("/", signal="jhu-csse:confirmed_incidence_num", geo=first.geo_pair, time="day:20200402-20200410")
-            self.assertEqual(len(out["epidata"]), len(rows01) - 1)
-            out_values = [row["value"] for row in out["epidata"]]
-            values = [value for _, value in time_value_pairs]
-            expected_values = self._diff_rows(values)
             self.assertAlmostEqual(out_values, expected_values)
 
         time_value_pairs = [(20200401 + i, i ** 2) for i in chain(range(10), range(15, 20))]
@@ -270,24 +164,21 @@ class CovidcastEndpointTests(unittest.TestCase):
         first = rows[0]
         self._insert_rows(rows)
 
-        with self.subTest("smoothing with a time gap"):
-            # should fetch 1 extra day
-            out = self._fetch("/", signal="jhu-csse:confirmed_7dav_incidence_num", geo=first.geo_pair, time="day:20200401-20200420")
-            self.assertEqual(len(out["epidata"]), len(rows) + 5)
-            out_values = [row["value"] for row in out["epidata"]]
-            values = [None] * 7 + [value for _, value in time_value_pairs][:10] + [None] * 5 + [value for _, value in time_value_pairs][10:]
-            expected_values = self._smooth_rows(self._diff_rows(values))
-            self.assertAlmostEqual(out_values, expected_values)
-
         with self.subTest("diffing with a time gap"):
             # should fetch 1 extra day
             out = self._fetch("/", signal="jhu-csse:confirmed_incidence_num", geo=first.geo_pair, time="day:20200401-20200420")
-            self.assertEqual(len(out["epidata"]), len(rows) + 5)
             out_values = [row["value"] for row in out["epidata"]]
-            values = [None] + [value for _, value in time_value_pairs][:10] + [None] * 5 + [value for _, value in time_value_pairs][10:]
+            values = [value for _, value in time_value_pairs][:10] + [None] * 5 + [value for _, value in time_value_pairs][10:]
             expected_values = self._diff_rows(values)
             self.assertAlmostEqual(out_values, expected_values)
 
+        with self.subTest("smoothing and diffing with a time gap"):
+            # should fetch 1 extra day
+            out = self._fetch("/", signal="jhu-csse:confirmed_7dav_incidence_num", geo=first.geo_pair, time="day:20200401-20200420")
+            out_values = [row["value"] for row in out["epidata"]]
+            values = [value for _, value in time_value_pairs][:10] + [None] * 5 + [value for _, value in time_value_pairs][10:]
+            expected_values = self._smooth_rows(self._diff_rows(values))
+            self.assertAlmostEqual(out_values, expected_values)
 
     def test_compatibility(self):
         """Request at the /api.php endpoint."""
@@ -534,9 +425,12 @@ class CovidcastEndpointTests(unittest.TestCase):
         """Request a signal the /csv endpoint."""
 
         expected_columns = ["geo_value", "signal", "time_value", "issue", "lag", "value", "stderr", "sample_size", "geo_type", "data_source"]
-        rows = [CovidcastRow(time_value=20200401 + i, value=i) for i in range(10)]
-        self._insert_rows(rows)
-        first = rows[0]
+        data = CovidcastRows.from_args(
+            time_value=pd.date_range("2020-04-01", "2020-04-10"),
+            value=range(10)
+        )
+        self._insert_rows(data.rows)
+        first = data.rows[0]
         with self.subTest("no server-side compute"):
             response = requests.get(
                 f"{BASE_URL}/csv",
@@ -546,38 +440,47 @@ class CovidcastEndpointTests(unittest.TestCase):
             out = response.text
             df = pd.read_csv(StringIO(out), index_col=0)
 
-            self.assertEqual(df.shape, (len(rows), 10))
+            self.assertEqual(df.shape, (len(data.rows), 10))
             self.assertEqual(list(df.columns), expected_columns)
 
-        num_rows = 10
-        time_value_pairs = [(20200331, 0)] + [(20200401 + i, v) for i, v in enumerate(accumulate(range(num_rows)))]
-        rows = [CovidcastRow(source="jhu-csse", signal="confirmed_cumulative_num", time_value=t, value=v) for t, v in time_value_pairs]
-        self._insert_rows(rows)
-        first = rows[0]
+        data = CovidcastRows.from_args(
+            source=["jhu-csse"] * 11,
+            signal=["confirmed_cumulative_num"] * 11,
+            time_value=pd.date_range("2020-03-31", "2020-04-10"),
+            value=accumulate(range(11)),
+        )
+        self._insert_rows(data.rows)
+        first = data.rows[0]
         with self.subTest("use server-side compute"):
             response = requests.get(
                 f"{BASE_URL}/csv",
-                params=dict(signal="src:sig", start_day="2020-04-01", end_day="2020-04-10", geo_type=first.geo_type),
+                params=dict(signal="jhu-csse:confirmed_cumulative_num", start_day="2020-04-01", end_day="2020-04-10", geo_type=first.geo_type),
             )
             response.raise_for_status()
-            out = response.text
-            df = pd.read_csv(StringIO(out), index_col=0)
-            df.stderr = np.nan
-            df.sample_size = np.nan
+            df = _read_csv(response.text)
+            expected_df = CovidcastRows.from_args(
+                source=["jhu-csse"] * 10,
+                signal=["confirmed_cumulative_num"] * 10,
+                time_value=pd.date_range("2020-04-01", "2020-04-10"),
+                value=list(accumulate(range(11)))[1:],
+            ).api_row_df[df.columns]
+            pd.testing.assert_frame_equal(df, expected_df)
 
             response = requests.get(
                 f"{BASE_URL}/csv",
                 params=dict(signal="jhu-csse:confirmed_incidence_num", start_day="2020-04-01", end_day="2020-04-10", geo_type=first.geo_type),
             )
             response.raise_for_status()
-            out = response.text
-            df_diffed = pd.read_csv(StringIO(out), index_col=0)
-            df_diffed.signal = "sig"
-            df_diffed.data_source = "src"
-
-            self.assertEqual(df_diffed.shape, (num_rows, 10))
-            self.assertEqual(list(df_diffed.columns), expected_columns)
-            pd.testing.assert_frame_equal(df_diffed, df)
+            df_diffed = _read_csv(response.text)
+            expected_df = CovidcastRows.from_args(
+                source=["jhu-csse"] * 10,
+                signal=["confirmed_incidence_num"] * 10,
+                time_value=pd.date_range("2020-04-01", "2020-04-10"),
+                value=range(1, 11),
+                stderr=[None] * 10,
+                sample_size=[None] * 10
+            ).api_row_df[df_diffed.columns]
+            pd.testing.assert_frame_equal(df_diffed, expected_df)
 
     def test_backfill(self):
         """Request a signal the /backfill endpoint."""

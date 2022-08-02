@@ -1,3 +1,4 @@
+from numbers import Number
 from typing import List, Optional, Union, Tuple, Dict, Any
 from itertools import groupby
 from datetime import date, timedelta
@@ -6,10 +7,12 @@ from epiweeks import Week
 from flask import Blueprint, request
 from flask.json import loads, jsonify
 from more_itertools import peekable
+from numpy import nan
 from sqlalchemy import text
 from pandas import read_csv, to_datetime
 
 from .._common import is_compatibility_mode, db
+from .._config import MAX_SMOOTHER_WINDOW
 from .._exceptions import ValidationFailedException, DatabaseErrorException
 from .._params import (
     GeoPair,
@@ -37,8 +40,8 @@ from .._validate import (
 from .._pandas import as_pandas, print_pandas
 from .covidcast_utils import compute_trend, compute_trends, compute_correlations, compute_trend_value, CovidcastMetaEntry
 from ..utils import shift_time_value, date_to_time_value, time_value_to_iso, time_value_to_date, shift_week_value, week_value_to_week, guess_time_value_is_day, week_to_time_value
-from .covidcast_utils.model import TimeType, count_signal_time_types, data_sources, create_source_signal_alias_mapper, get_basename_signals, get_pad_length, pad_time_pairs, pad_time_window
-from .covidcast_utils.smooth_diff import PadFillValue, SmootherKernelValue
+from .covidcast_utils.model import TimeType, count_signal_time_types, data_sources, create_source_signal_alias_mapper, get_basename_signal_and_jit_generator, get_pad_length, pad_time_pairs, pad_time_window
+from .covidcast_utils.smooth_diff import SmootherKernelValue
 
 # first argument is the endpoint name
 bp = Blueprint("covidcast", __name__)
@@ -84,12 +87,19 @@ def parse_time_pairs() -> List[TimePair]:
         # old version
         require_all("time_type", "time_values")
         time_values = extract_dates("time_values")
+        # TODO: Put a bound on the number of time_values?
+        # if time_values and len(time_values) > 30:
+        #     raise ValidationFailedException("parameter value exceed: too many time pairs requested, consider using a timerange instead YYYYMMDD-YYYYMMDD")
         return [TimePair(time_type, time_values)]
 
     if ":" not in request.values.get("time", ""):
         raise ValidationFailedException("missing parameter: time or (time_type and time_values)")
 
-    return parse_time_arg()
+    time_pairs = parse_time_arg()
+    # TODO: Put a bound on the number of time_values?
+    # if sum(len(time_pair.time_values) for time_pair in time_pairs if not isinstance(time_pair.time_values, bool)) > 30:
+    #     raise ValidationFailedException("parameter value exceed: too many time pairs requested, consider using a timerange instead YYYYMMDD-YYYYMMDD")
+    return time_pairs
 
 
 def _handle_lag_issues_as_of(q: QueryBuilder, issues: Optional[List[Union[Tuple[int, int], int]]] = None, lag: Optional[int] = None, as_of: Optional[int] = None):
@@ -135,17 +145,25 @@ def guess_index_to_use(time: List[TimePair], geo: List[GeoPair], issues: Optiona
     return None
 
 
-# TODO: Write an actual smoother arg parser.
 def parse_transform_args():
-    return {"smoother_kernel": SmootherKernelValue.average, "smoother_window_length": 7, "pad_fill_value": None, "nans_fill_value": None}
+    # The length of the window to smooth over.
+    smoother_window_length = request.values.get("smoother_window_length", 7)
+    # The value to fill for missing date values.
+    pad_fill_value = request.values.get("pad_fill_value", nan)
+    # The value to fill for None or nan values.
+    nan_fill_value = request.values.get("nans_fill_value", nan)
+    smoother_args = {
+        "smoother_kernel": SmootherKernelValue.average,
+        "smoother_window_length": smoother_window_length if isinstance(smoother_window_length, Number) and smoother_window_length <= MAX_SMOOTHER_WINDOW else MAX_SMOOTHER_WINDOW,
+        "pad_fill_value": pad_fill_value if isinstance(pad_fill_value, Number) else nan,
+        "nans_fill_value": nan_fill_value if isinstance(nan_fill_value, Number) else nan
+    }
+    return smoother_args
 
 
 def parse_jit_bypass():
     jit_bypass = request.values.get("jit_bypass")
-    if jit_bypass is not None:
-        return bool(jit_bypass)
-    else:
-        return False
+    return bool(jit_bypass) if jit_bypass else False
 
 
 @bp.route("/", methods=("GET", "POST"))
@@ -154,7 +172,6 @@ def handle():
     source_signal_pairs, alias_mapper = create_source_signal_alias_mapper(source_signal_pairs)
     time_pairs = parse_time_pairs()
     geo_pairs = parse_geo_pairs()
-    transform_args = parse_transform_args()
     jit_bypass = parse_jit_bypass()
 
     as_of = extract_date("as_of")
@@ -164,9 +181,10 @@ def handle():
     is_time_value_true = any(isinstance(time_pair.time_values, bool) for time_pair in time_pairs)
     use_server_side_compute = not any((issues, lag, is_time_type_week, is_time_value_true)) and JIT_COMPUTE and not jit_bypass
     if use_server_side_compute:
+        transform_args = parse_transform_args()
         pad_length = get_pad_length(source_signal_pairs, transform_args.get("smoother_window_length"))
-        source_signal_pairs, row_transform_generator = get_basename_signals(source_signal_pairs)
         time_pairs = pad_time_pairs(time_pairs, pad_length)
+        source_signal_pairs, row_transform_generator = get_basename_signal_and_jit_generator(source_signal_pairs, transform_args=transform_args)
 
     # build query
     q = QueryBuilder(latest_table, "t")
@@ -258,7 +276,7 @@ def handle_trend():
     use_server_side_compute = not any((not is_day, not is_also_day)) and JIT_COMPUTE and not jit_bypass
     if use_server_side_compute:
         pad_length = get_pad_length(source_signal_pairs, transform_args.get("smoother_window_length"))
-        source_signal_pairs, row_transform_generator = get_basename_signals(source_signal_pairs)
+        source_signal_pairs, row_transform_generator = get_basename_signal_and_jit_generator(source_signal_pairs)
         time_window = pad_time_window(time_window, pad_length)
 
     # build query
@@ -328,7 +346,7 @@ def handle_trendseries():
     use_server_side_compute = is_day and JIT_COMPUTE and not jit_bypass
     if use_server_side_compute:
         pad_length = get_pad_length(source_signal_pairs, transform_args.get("smoother_window_length"))
-        source_signal_pairs, row_transform_generator = get_basename_signals(source_signal_pairs)
+        source_signal_pairs, row_transform_generator = get_basename_signal_and_jit_generator(source_signal_pairs)
         time_window = pad_time_window(time_window, pad_length)
 
     # build query
@@ -484,7 +502,7 @@ def handle_export():
     use_server_side_compute = all([is_day, is_end_day]) and JIT_COMPUTE and not jit_bypass
     if use_server_side_compute:
         pad_length = get_pad_length(source_signal_pairs, transform_args.get("smoother_window_length"))
-        source_signal_pairs, row_transform_generator = get_basename_signals(source_signal_pairs)
+        source_signal_pairs, row_transform_generator = get_basename_signal_and_jit_generator(source_signal_pairs)
         time_window = pad_time_window(time_window, pad_length)
 
     # build query
