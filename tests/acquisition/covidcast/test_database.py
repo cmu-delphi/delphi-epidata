@@ -4,7 +4,7 @@
 import unittest
 from unittest.mock import MagicMock
 
-from delphi.epidata.acquisition.covidcast.database import Database
+from ....src.acquisition.covidcast.database import Database
 
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.acquisition.covidcast.database'
@@ -72,33 +72,6 @@ class UnitTests(unittest.TestCase):
     sql = cursor.execute.call_args[0][0].lower()
     self.assertIn('select count(1)', sql)
     self.assertIn('from `signal_', sql) # note that this table name is incomplete
-
-  def test_update_covidcast_meta_cache_query(self):
-    """Query to update the metadata cache looks sensible.
-
-    NOTE: Actual behavior is tested by integration test.
-    """
-
-    args = ('epidata_json_str',)
-    mock_connector = MagicMock()
-    database = Database()
-    database.connect(connector_impl=mock_connector)
-
-    database.update_covidcast_meta_cache(*args)
-
-    connection = mock_connector.connect()
-    cursor = connection.cursor()
-    self.assertTrue(cursor.execute.called)
-
-    sql, args = cursor.execute.call_args[0]
-    expected_args = ('"epidata_json_str"',)
-    self.assertEqual(args, expected_args)
-
-    sql = sql.lower()
-    self.assertIn('update', sql)
-    self.assertIn('`covidcast_meta_cache`', sql)
-    self.assertIn('timestamp', sql)
-    self.assertIn('epidata', sql)
 
   def test_insert_or_update_batch_exception_reraised(self):
     """Test that an exception is reraised"""

@@ -6,7 +6,7 @@ import sys
 import time
 
 # first party
-from delphi.epidata.acquisition.covidcast.database import Database
+from .database_meta import DatabaseMeta
 from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
 from delphi.epidata.client.delphi_epidata import Epidata
 
@@ -18,7 +18,7 @@ def get_argument_parser():
   return parser
 
 
-def main(args, epidata_impl=Epidata, database_impl=Database):
+def main(args, epidata_impl: Epidata = Epidata, database_impl: DatabaseMeta = DatabaseMeta):
   """Update the covidcast metadata cache.
 
   `args`: parsed command-line arguments
