@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import Iterator, Tuple
 from datetime import date, timedelta
 from epiweeks import Week, Year
 
@@ -26,13 +26,11 @@ def guess_time_value_is_day(value: int) -> bool:
 def date_to_time_value(d: date) -> int:
     return int(d.strftime("%Y%m%d"))
 
-
 def week_to_time_value(w: Week) -> int:
     return w.year * 100 + w.week
 
 def time_value_to_iso(value: int) -> str:
     return time_value_to_date(value).strftime("%Y-%m-%d")
-
 
 def shift_time_value(time_value: int, days: int) -> int:
     if days == 0:
@@ -68,14 +66,15 @@ def weeks_in_range(week_range: Tuple[int, int]) -> int:
         acc += year.totalweeks()
     return acc + 1  # same week should lead to 1 week that will be queried
 
-def time_value_range(range: Tuple[int, int]) -> List[int]:
-    """Return a list of ints corresponding to a time range."""
-    start, end = range
-    if start >= end:
-        return [start]
-    current_date = time_value_to_date(start)
-    time_values = [start]
-    while time_values[-1] != end:
+def time_value_range(start: int, end: int) -> Iterator[int]:
+    """Iterate over ints corresponding to dates in a time range.
+    
+    Left inclusive, right exclusive to mimic behavior of Python's built-in range.
+    """
+    if start > end:
+        return
+
+    current_date, final_date = time_value_to_date(start), time_value_to_date(end)
+    while current_date < final_date:
+        yield date_to_time_value(current_date)
         current_date = current_date + timedelta(days=1)
-        time_values.append(date_to_time_value(current_date))
-    return time_values
