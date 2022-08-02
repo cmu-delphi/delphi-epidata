@@ -6,7 +6,7 @@ from delphi_utils import Nans
 from numpy import isnan
 from pandas import DataFrame, concat
 
-from .csv_importer import CsvRowValues
+from .csv_importer import CsvImporter
 from ...server.utils.dates import date_to_time_value, time_value_to_date
 
 
@@ -79,7 +79,7 @@ class CovidcastRow:
         return self
 
     @staticmethod
-    def fromCsvRowValue(row_value: Optional[CsvRowValues], source: str, signal: str, time_type: str, geo_type: str, time_value: int, issue: int, lag: int):
+    def fromCsvRowValue(row_value: Optional[CsvImporter.RowValues], source: str, signal: str, time_type: str, geo_type: str, time_value: int, issue: int, lag: int):
         if row_value is None:
             return None
         return CovidcastRow(
@@ -100,7 +100,7 @@ class CovidcastRow:
         )
 
     @staticmethod
-    def fromCsvRows(row_values: Iterable[Optional[CsvRowValues]], source: str, signal: str, time_type: str, geo_type: str, time_value: int, issue: int, lag: int):
+    def fromCsvRows(row_values: Iterable[Optional[CsvImporter.RowValues]], source: str, signal: str, time_type: str, geo_type: str, time_value: int, issue: int, lag: int):
         # NOTE: returns a generator, as row_values is expected to be a generator
         return (CovidcastRow.fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag) for row_value in row_values)
 
