@@ -1,19 +1,31 @@
 """Collects and reads covidcast data from a set of local CSV files."""
 
 # standard library
+from dataclasses import dataclass
 from datetime import date
 import glob
 import os
 import re
 
 # third party
-import pandas
+import pandas as pd
 import epiweeks as epi
 
 # first party
 from delphi_utils import Nans
 from delphi.utils.epiweek import delta_epiweeks
-from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
+from .logger import get_structured_logger
+
+@dataclass
+class CsvRowValue:
+  """A container for the values of a single validated covidcast CSV row."""
+  geo_value: str
+  value: float
+  stderr: float
+  sample_size: float
+  missing_value: int
+  missing_stderr: int
+  missing_sample_size: int
 
 class CsvImporter:
   """Finds and parses covidcast CSV files."""
@@ -37,6 +49,7 @@ class CsvImporter:
   MIN_YEAR = 2019
   MAX_YEAR = 2030
 
+  # The datatypes expected by pandas.read_csv. Int64 is like float in that it can handle both numbers and nans.
   DTYPES = {
     "geo_id": str,
     "val": float,
@@ -46,20 +59,6 @@ class CsvImporter:
     "missing_se": "Int64",
     "missing_sample_size": "Int64"
   }
-
-  # NOTE: this should be a Python 3.7+ `dataclass`, but the server is on 3.4
-  # See https://docs.python.org/3/library/dataclasses.html
-  class RowValues:
-    """A container for the values of a single covidcast row."""
-
-    def __init__(self, geo_value, value, stderr, sample_size, missing_value, missing_stderr, missing_sample_size):
-      self.geo_value = geo_value
-      self.value = value
-      self.stderr = stderr
-      self.sample_size = sample_size
-      self.missing_value = missing_value
-      self.missing_stderr = missing_stderr
-      self.missing_sample_size = missing_sample_size
 
   @staticmethod
   def is_sane_day(value):
@@ -184,7 +183,7 @@ class CsvImporter:
     return set(columns) >= CsvImporter.REQUIRED_COLUMNS
 
   @staticmethod
-  def floaty_int(value):
+  def floaty_int(value: str) -> int:
     """Cast a string to an int, even if it looks like a float.
 
     For example, "-1" and "-1.0" should both result in -1. Non-integer floats
@@ -253,7 +252,7 @@ class CsvImporter:
 
   @staticmethod
   def extract_and_check_row(row, geo_type, filepath=None):
-    """Extract and return `RowValues` from a CSV row, with sanity checks.
+    """Extract and return `CsvRowValue` from a CSV row, with sanity checks.
 
     Also returns the name of the field which failed sanity check, or None.
 
@@ -330,14 +329,10 @@ class CsvImporter:
     missing_sample_size = CsvImporter.validate_missing_code(row, sample_size, "sample_size", filepath)
 
     # return extracted and validated row values
-    row_values = CsvImporter.RowValues(
-      geo_id, value, stderr, sample_size,
-      missing_value, missing_stderr, missing_sample_size
-    )
-    return (row_values, None)
+    return (CsvRowValue(geo_id, value, stderr, sample_size, missing_value, missing_stderr, missing_sample_size), None)
 
   @staticmethod
-  def load_csv(filepath, geo_type, pandas=pandas):
+  def load_csv(filepath, geo_type):
     """Load, validate, and yield data as `RowValues` from a CSV file.
 
     filepath: the CSV file to be loaded
@@ -349,10 +344,10 @@ class CsvImporter:
     logger = get_structured_logger('load_csv')
 
     try:
-      table = pandas.read_csv(filepath, dtype=CsvImporter.DTYPES)
+      table = pd.read_csv(filepath, dtype=CsvImporter.DTYPES)
     except ValueError as e:
       logger.warning(event='Failed to open CSV with specified dtypes, switching to str', detail=str(e), file=filepath)
-      table = pandas.read_csv(filepath, dtype='str')
+      table = pd.read_csv(filepath, dtype='str')
 
     if not CsvImporter.is_header_valid(table.columns):
       logger.warning(event='invalid header', detail=table.columns, file=filepath)
