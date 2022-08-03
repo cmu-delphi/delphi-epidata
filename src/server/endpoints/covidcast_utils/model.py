@@ -4,8 +4,7 @@ from enum import Enum
 from functools import partial
 from itertools import groupby, repeat, tee
 from numbers import Number
-import traceback
-from typing import Any, Callable, Generator, Iterator, Optional, Dict, List, Set, Tuple, Union
+from typing import Callable, Generator, Iterator, Optional, Dict, List, Set, Tuple, Union
 
 from pathlib import Path
 import re
@@ -17,7 +16,6 @@ from delphi_utils.nancodes import Nans
 from ..._params import SourceSignalPair, TimePair
 from .smooth_diff import generate_smoothed_rows, generate_diffed_rows
 from ...utils import date_to_time_value, shift_time_value, time_value_to_date, time_value_range
-from ..._config import MAX_SMOOTHER_WINDOW
 
 
 IDENTITY: Callable = lambda rows, **kwargs: rows
