@@ -3,7 +3,7 @@ import unittest
 from delphi_utils import Nans
 import delphi.operations.secrets as secrets
 
-from ....src.acquisition.covidcast.database import Database, CovidcastRow
+from delphi.epidata.acquisition.covidcast.database import Database, CovidcastRow
 
 # all the Nans we use here are just one value, so this is a shortcut to it:
 nmv = Nans.NOT_MISSING.value

@@ -11,9 +11,9 @@ import requests
 # first party
 from delphi_utils import Nans
 import delphi.operations.secrets as secrets
-from ....src.client.delphi_epidata import Epidata
-from ....src.acquisition.covidcast.database_meta import DatabaseMeta
-from ....src.acquisition.covidcast.covidcast_meta_cache_updater import main
+from delphi.epidata.client.delphi_epidata import Epidata
+from delphi.epidata.acquisition.covidcast.database_meta import DatabaseMeta
+from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import main
 
 # py3tester coverage target (equivalent to `import *`)
 __test_target__ = (

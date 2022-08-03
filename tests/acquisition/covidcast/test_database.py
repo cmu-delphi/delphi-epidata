@@ -4,7 +4,7 @@
 import unittest
 from unittest.mock import MagicMock
 
-from ....src.acquisition.covidcast.database import Database
+from delphi.epidata.acquisition.covidcast.database import Database
 
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.acquisition.covidcast.database'

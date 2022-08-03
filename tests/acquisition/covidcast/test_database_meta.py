@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import MagicMock
 
-from ....src.acquisition.covidcast.database_meta import DatabaseMeta
+from delphi.epidata.acquisition.covidcast.database_meta import DatabaseMeta
 
 class UnitTests(unittest.TestCase):
     """Basic unit tests."""

@@ -11,13 +11,11 @@ from unittest.mock import MagicMock
 
 # third party
 import pandas as pd
-import pandas.testing as pdt
 import numpy as np
-import requests
 
-from ....src.acquisition.covidcast.covidcast_meta_cache_updater import get_argument_parser, main
-from ....src.acquisition.covidcast.database import CovidcastRow
-from ....src.acquisition.covidcast.database_meta import DatabaseMeta
+from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import get_argument_parser, main
+from delphi.epidata.acquisition.covidcast.database import CovidcastRow
+from delphi.epidata.acquisition.covidcast.database_meta import DatabaseMeta
 
 
 def _df_to_covidcastrows(df: pd.DataFrame) -> Iterable[CovidcastRow]:
