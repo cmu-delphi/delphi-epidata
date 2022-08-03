@@ -8,7 +8,7 @@ from os import path
 # first party
 import delphi.operations.secrets as secrets
 
-from ....src.acquisition.covidcast.database import Database, CovidcastRow
+from delphi.epidata.acquisition.covidcast.database import Database, CovidcastRow
 
 # py3tester coverage target (equivalent to `import *`)
 __test_target__ = 'delphi.epidata.acquisition.covidcast.database'

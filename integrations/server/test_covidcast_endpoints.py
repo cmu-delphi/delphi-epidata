@@ -13,9 +13,9 @@ from more_itertools import interleave_longest, windowed
 import requests
 import pandas as pd
 
-from ...src.acquisition.covidcast.covidcast_meta_cache_updater import main as update_cache
-from ...src.acquisition.covidcast.database import Database
-from ...src.acquisition.covidcast.covidcast_row import CovidcastRow, CovidcastRows, set_df_dtypes
+from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import main as update_cache
+from delphi.epidata.acquisition.covidcast.database import Database
+from delphi.epidata.acquisition.covidcast.covidcast_row import CovidcastRow, CovidcastRows, set_df_dtypes
 
 # use the local instance of the Epidata API
 BASE_URL = "http://delphi_web_epidata/epidata/covidcast"

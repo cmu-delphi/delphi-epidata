@@ -15,9 +15,9 @@ import pytest
 from delphi_utils import Nans
 import delphi.operations.secrets as secrets
 
-from ...src.client.delphi_epidata import Epidata
-from ...src.acquisition.covidcast.database import Database, CovidcastRow
-from ...src.acquisition.covidcast.covidcast_meta_cache_updater import main as update_covidcast_meta_cache
+from delphi.epidata.client.delphi_epidata import Epidata
+from delphi.epidata.acquisition.covidcast.database import Database, CovidcastRow
+from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import main as update_covidcast_meta_cache
 
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.client.delphi_epidata'

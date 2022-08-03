@@ -9,9 +9,9 @@ from pandas.testing import assert_frame_equal
 
 from delphi_utils.nancodes import Nans
 
-from .....src.acquisition.covidcast.covidcast_row import CovidcastRow, CovidcastRows, set_df_dtypes
-from .....src.server._params import SourceSignalPair, TimePair
-from .....src.server.endpoints.covidcast_utils.model import (
+from delphi.epidata.acquisition.covidcast.covidcast_row import CovidcastRow, CovidcastRows, set_df_dtypes
+from delphi.epidata.server._params import SourceSignalPair, TimePair
+from delphi.epidata.server.endpoints.covidcast_utils.model import (
     IDENTITY,
     DIFF,
     SMOOTH,

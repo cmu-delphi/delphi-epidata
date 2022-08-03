@@ -4,8 +4,8 @@ from pandas import DataFrame, date_range
 from pandas.testing import assert_frame_equal
 
 from delphi_utils.nancodes import Nans
-from ....src.server.utils.dates import date_to_time_value
-from ....src.acquisition.covidcast.covidcast_row import set_df_dtypes, transpose_dict, CovidcastRow, CovidcastRows
+from delphi.epidata.server.utils.dates import date_to_time_value
+from delphi.epidata.acquisition.covidcast.covidcast_row import set_df_dtypes, transpose_dict, CovidcastRow, CovidcastRows
 
 class TestCovidcastRows(unittest.TestCase):
     def test_transpose_dict(self):
@@ -16,6 +16,7 @@ class TestCovidcastRows(unittest.TestCase):
         expected_df = DataFrame.from_records([{
             "source": "src",
             "signal": "sig",
+            "time_type": "day",
             "geo_type": "county",
             "time_value": 20200202,
             "geo_value": "01234",
@@ -33,6 +34,7 @@ class TestCovidcastRows(unittest.TestCase):
         df = CovidcastRow(value=5.0).api_compatibility_row_df
         expected_df = DataFrame.from_records([{
             "signal": "sig",
+            "time_type": "day",
             "geo_type": "county",
             "time_value": 20200202,
             "geo_value": "01234",
@@ -52,6 +54,7 @@ class TestCovidcastRows(unittest.TestCase):
         expected_df = set_df_dtypes(DataFrame({
             "source": ["src"] * 10,
             "signal": ["sig_base"] * 5 + ["sig_other"] * 5,
+            "time_type": ["day"] * 10,
             "geo_type": ["county"] * 10,
             "time_value": map(date_to_time_value, date_range("2021-05-01", "2021-05-5").to_list() * 2),
             "geo_value": ["01234"] * 10,
@@ -71,6 +74,7 @@ class TestCovidcastRows(unittest.TestCase):
         ).api_compatibility_row_df
         expected_df = set_df_dtypes(DataFrame({
             "signal": ["sig_base"] * 5 + ["sig_other"] * 5,
+            "time_type": ["day"] * 10,
             "geo_type": ["county"] * 10,
             "time_value": map(date_to_time_value, date_range("2021-05-01", "2021-05-5").to_list() * 2),
             "geo_value": ["01234"] * 10,
