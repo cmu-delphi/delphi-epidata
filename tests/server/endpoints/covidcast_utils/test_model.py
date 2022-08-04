@@ -18,7 +18,7 @@ from delphi.epidata.server.endpoints.covidcast_utils.model import (
     DIFF_SMOOTH,
     DataSource,
     DataSignal,
-    _resolve_all_signals,
+    _resolve_bool_source_signals,
     _reindex_iterable,
     _get_base_signal_transform,
     get_transform_types,
@@ -127,9 +127,9 @@ def _reindex_windowed(lst: list, window_length: int) -> list:
 
 
 class TestModel(unittest.TestCase):
-    def test__resolve_all_signals(self):
+    def test__resolve_bool_source_signals(self):
         source_signal_pair = [SourceSignalPair(source="src", signal=True), SourceSignalPair(source="src", signal=["sig_unknown"])]
-        resolved_source_signal_pair = _resolve_all_signals(source_signal_pair, DATA_SOURCES_BY_ID)
+        resolved_source_signal_pair = _resolve_bool_source_signals(source_signal_pair, DATA_SOURCES_BY_ID)
         expected_source_signal_pair = [
             SourceSignalPair(source="src", signal=["sig_diff", "sig_smooth", "sig_diff_smooth", "sig_base"]),
             SourceSignalPair(source="src", signal=["sig_unknown"]),

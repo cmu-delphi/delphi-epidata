@@ -50,7 +50,7 @@ def generate_smoothed_rows(
         Container for non-shared parameters with other computation functions.
     """
     # Validate params.
-    if not isinstance(smoother_window_length, int) or (isinstance(smoother_window_length, int) and smoother_window_length < 1):
+    if not isinstance(smoother_window_length, int) or smoother_window_length < 1:
         smoother_window_length = 7
     if isinstance(smoother_kernel, list):
         smoother_window_length = len(smoother_kernel)
@@ -123,7 +123,7 @@ def _smoother(values: List[Number], kernel: Union[List[Number], SmootherKernelVa
         smoothed_value = dot(values, kernel)
     elif kernel and isinstance(kernel, SmootherKernelValue):
         if kernel == SmootherKernelValue.average:
-            smoothed_value = array(values).mean()
+            smoothed_value = array(values, copy=False).mean()
         else:
             raise ValueError("Unimplemented SmootherKernelValue.")
     else:

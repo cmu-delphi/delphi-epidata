@@ -9,7 +9,7 @@ from typing import Any, Callable, Generator, Iterator, Optional, Dict, List, Set
 
 from pathlib import Path
 import re
-from more_itertools import interleave_longest, peekable
+from more_itertools import flatten, interleave_longest, peekable
 import pandas as pd
 import numpy as np
 
@@ -319,7 +319,7 @@ def create_source_signal_alias_mapper(source_signals: List[SourceSignalPair]) ->
     return transformed_pairs, map_row
 
 
-def _resolve_all_signals(source_signals: Union[SourceSignalPair, List[SourceSignalPair]], data_sources_by_id: Dict[str, DataSource]) -> Union[SourceSignalPair, List[SourceSignalPair]]:
+def _resolve_bool_source_signals(source_signals: Union[SourceSignalPair, List[SourceSignalPair]], data_sources_by_id: Dict[str, DataSource]) -> Union[SourceSignalPair, List[SourceSignalPair]]:
     """Expand a request for all signals to an explicit list of signal names.
 
     Example: SourceSignalPair("jhu-csse", signal=True) would return SourceSignalPair("jhu-csse", [<list of all JHU signals>]).
@@ -331,7 +331,7 @@ def _resolve_all_signals(source_signals: Union[SourceSignalPair, List[SourceSign
                 return SourceSignalPair(source.source, [s.signal for s in source.signals])
         return source_signals
     if isinstance(source_signals, list):
-        return [_resolve_all_signals(pair, data_sources_by_id) for pair in source_signals]
+        return [_resolve_bool_source_signals(pair, data_sources_by_id) for pair in source_signals]
     raise TypeError("source_signals is not Union[SourceSignalPair, List[SourceSignalPair]].")
 
 
@@ -345,8 +345,7 @@ def _reindex_iterable(iterator: Iterator[Dict], time_pairs: Optional[List[TimePa
     """
     # Iterate as normal if time_pairs is empty or None.
     if not time_pairs:
-        for item in iterator:
-            yield item
+        yield from iterator
         return
 
     _iterator = peekable(iterator)
@@ -424,7 +423,7 @@ def get_transform_types(source_signal_pairs: List[SourceSignalPair], data_source
 
     Used to pad the user DB query with extra days.
     """
-    source_signal_pairs = _resolve_all_signals(source_signal_pairs, data_sources_by_id)
+    source_signal_pairs = _resolve_bool_source_signals(source_signal_pairs, data_sources_by_id)
 
     transform_types = set()
     for source_signal_pair in source_signal_pairs:
@@ -468,7 +467,10 @@ def pad_time_pairs(time_pairs: List[TimePair], pad_length: int) -> List[TimePair
         raise ValueError("pad_length should non-negative.")
     if pad_length == 0:
         return time_pairs.copy()
-    min_time = min(time_value if isinstance(time_value, int) else time_value[0] for time_pair in time_pairs if not isinstance(time_pair.time_values, bool) for time_value in time_pair.time_values)
+
+    extracted_non_bool_time_values = flatten(time_pair.time_values for time_pair in time_pairs if not isinstance(time_pair.time_values, bool))
+    min_time = min(time_value if isinstance(time_value, int) else time_value[0] for time_value in extracted_non_bool_time_values)
+
     padded_time = TimePair("day", [(shift_time_value(min_time, -1 * pad_length), min_time)])
 
     return time_pairs + [padded_time]
@@ -494,8 +496,8 @@ def _iterate_over_ints_and_ranges(lst: Iterator[Union[int, Tuple[int, int]]], us
     """A generator that iterates over the unique values in a list of integers and ranges in ascending order.
 
     The tuples are assumed to be left- and right-inclusive. If use_dates is True, then the integers are interpreted as
-    dates.
-    
+    YYYYMMDD dates.
+
     Examples:
         iterate_over_ints_and_ranges([(5, 8), 0]) would iterate over [0, 5, 6, 7, 8].
         iterate_over_ints_and_ranges([(5, 8), (4, 6), (3, 5)]) would iterate over [3, 4, 5, 6, 7, 8].
@@ -549,7 +551,7 @@ def _generate_transformed_rows(
 
     Parameters:
     parsed_rows: Iterator[Dict]
-        Streamed rows from the database.
+        An iterator streaming rows from a database query. Assumed to be sorted by geo_type, geo_value, source, signal, time_type, and time_value.
     time_pairs: Optional[List[TimePair]], default None
         A list of TimePairs, which can be used to create a continguous time index for time-series operations.
         The min and max dates in the TimePairs list is used.
@@ -604,7 +606,7 @@ def get_basename_signal_and_jit_generator(source_signal_pairs: List[SourceSignal
     SourceSignalPair("src", signal=["sig_base", "sig_smoothed"]) would return SourceSignalPair("src", signal=["sig_base"]) and a transformation function
     that will take the returned database query for "sig_base" and return both the base time series and the smoothed time series.
     """
-    source_signal_pairs = _resolve_all_signals(source_signal_pairs, data_sources_by_id)
+    source_signal_pairs = _resolve_bool_source_signals(source_signal_pairs, data_sources_by_id)
     base_signal_pairs: List[SourceSignalPair] = []
     transform_dict: Dict[Tuple[str, str], List[Tuple[str, str]]] = dict()
 

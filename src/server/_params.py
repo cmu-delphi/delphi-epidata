@@ -1,10 +1,11 @@
 from dataclasses import dataclass
-from itertools import groupby, chain
+from itertools import groupby
 from math import inf
 import re
 from typing import List, Optional, Sequence, Tuple, Union
 
 from flask import request
+from more_itertools import flatten
 
 from ._exceptions import ValidationFailedException
 from .utils import days_in_range, weeks_in_range, guess_time_value_is_day
@@ -105,9 +106,9 @@ def _combine_source_signal_pairs(source_signal_pairs: List[SourceSignalPair]) ->
     for source, group in source_signal_pairs_grouped:
         group = list(group)
         if any(x.signal == True for x in group):
-            source_signal_pairs_combined.append(SourceSignalPair(source, True))
-            continue
-        combined_signals = sorted(list(set(chain(*[x.signal for x in group]))))
+            combined_signals = True
+        else:
+            combined_signals = sorted(set(flatten(x.signal for x in group)))
         source_signal_pairs_combined.append(SourceSignalPair(source, combined_signals))
     return source_signal_pairs_combined
 
