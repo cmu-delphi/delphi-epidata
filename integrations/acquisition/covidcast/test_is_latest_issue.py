@@ -70,7 +70,7 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     self._db.insert_or_update_batch(rows)
     self._db.run_dbjobs()
     self._db._cursor.execute(self.viewSignalHistory)
-    totalRows = len(list(self._db._cursor.fetchall()))
+    self.totalRows = len(list(self._db._cursor.fetchall()))
 
     #sanity check for adding dummy data
     sql = f'SELECT `issue` FROM {Database.latest_table} where `time_value` = 20200414'
@@ -111,9 +111,8 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     #dynamic check for signal_history's list of issue
     self._db._cursor.execute(f'SELECT `issue` FROM {Database.history_table}')
     record3 = self._db._cursor.fetchall()
-    totalRows = len(list(record3)) #updating totalRows
-    self.assertEqual(len(record3),totalRows) 
-    self.assertEqual(3,totalRows + 1) #ensure len(record3) = totalRows + 1 = 3
+    self.totalRows = len(list(record3)) #updating totalRows
+    self.assertEqual(2,self.totalRows) #ensure len(record3) = 2
     self.assertEqual(20200416,max(record3)[0]) #max of the outputs is 20200416 , extracting from tuple
     
     #check older issue not inside latest, empty field
