@@ -98,7 +98,7 @@ class CovidcastLatestIssueTests(unittest.TestCase):
 
     updateRow = [
       CovidcastRow('src', 'sig', 'day', 'state', 20200414, 'pa', 
-                  6.5, 2.2, 11.5, nmv, nmv, nmv, 20200414, 2)]  #should not showup
+                  6.5, 2.2, 11.5, nmv, nmv, nmv, 20200414, 2)]  #update previous entry
     self._db.insert_or_update_batch(updateRow)
     self._db.run_dbjobs()
     
@@ -111,7 +111,7 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     #dynamic check for signal_history's list of issue
     self._db._cursor.execute(f'SELECT `issue` FROM {Database.history_table}')
     record3 = self._db._cursor.fetchall()
-    totalRows = len(list(record3)) #updating totalRows
+    totalRows = len(list(record3)) 
     self.assertEqual(2, totalRows) #added 1 new row, updated old row. Total = 2
     self.assertEqual(20200416,max(record3)[0]) #max of the outputs is 20200416 , extracting from tuple
     

@@ -75,9 +75,11 @@ class CovidcastDimensionTablesTests(unittest.TestCase):
         ]
         self._db.insert_or_update_batch(rows)
         self._db.run_dbjobs()
+        
+        #initializing local variables to be used throughout later
         self._db._cursor.execute(self.viewGeoDim)
         record = self._db._cursor.fetchall()
-        geoDimRowCount = len(list(record))
+        geoDimRowCount = len(list(record)) 
 
         self._db._cursor.execute(self.viewSignalDim)
         record = self._db._cursor.fetchall()
@@ -107,8 +109,8 @@ class CovidcastDimensionTablesTests(unittest.TestCase):
             #ensure new entries are added in latest
             self._db._cursor.execute(self.viewSignalLatest)
             record = self._db._cursor.fetchall()
-            sigLatestRowCount = len(list(record)) #updating sigLatestRowCount
-            self.assertEqual(4 , sigLatestRowCount) #diff timevalue and issue, 2 older + 2 newer = 4
+            sigLatestRowCount = len(list(record)) 
+            self.assertEqual(4 , sigLatestRowCount) #added diff timevalue and issue, 2 older + 2 newer = 4
             
             #ensure nothing changed in geoDim
             self._db._cursor.execute(self.viewGeoDim)
@@ -137,8 +139,8 @@ class CovidcastDimensionTablesTests(unittest.TestCase):
             #ensure new entries are added in latest
             self._db._cursor.execute(self.viewSignalLatest)
             record = self._db._cursor.fetchall()
-            sigLatestRowCount = len(list(record)) #updating sigLatestRowCount
-            self.assertEqual(6 , sigLatestRowCount) #diff timevalue and issue, 2 more added ontop of 4 previously
+            sigLatestRowCount = len(list(record)) 
+            self.assertEqual(6 , sigLatestRowCount) #added diff timevalue and issue, 2 more added ontop of 4 previously
 
             #ensure nothing changed in geoDim
             self._db._cursor.execute(self.viewGeoDim)
@@ -158,7 +160,7 @@ class CovidcastDimensionTablesTests(unittest.TestCase):
 
             self._db._cursor.execute(self.viewSignalLatest)
             record = self._db._cursor.fetchall()
-            sigLatestRowCount = len(list(record)) #update
+            sigLatestRowCount = len(list(record)) 
             self.assertEqual(8, sigLatestRowCount) #total entries = 2 + 6 in previous subtest
 
             #ensure nothing changed in geoDim with repeated geo_type, geo_value pairs
