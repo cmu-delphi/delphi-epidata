@@ -77,7 +77,7 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     self._db._cursor.execute(sql)
     record = self._db._cursor.fetchall()
     self.assertEqual(record[0][0], 20200414)
-    self.assertEqual(len(record), 1) #check 1 entry present
+    self.assertEqual(len(record), 1) #placeholder data only has one issue for 20200414
 
     #when uploading data patches (data in signal load has < issue than data in signal_latest)
       #INSERT OLDER issue (does not end up in latest table)
@@ -85,7 +85,7 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     #when signal_load is older than signal_latest, we patch old data (i.e changed some old entries)
     newRow = [
     CovidcastRow('src', 'sig', 'day', 'state', 20200414, 'pa', 
-                  4.4, 4.4, 4.4, nmv, nmv, nmv, 20200416, 2)] #should show up
+                  4.4, 4.4, 4.4, nmv, nmv, nmv, 20200416, 2)] #new row to be added
     self._db.insert_or_update_batch(newRow)
     self._db.run_dbjobs()
     
@@ -93,8 +93,8 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     sql = f'SELECT `issue` FROM {Database.latest_table} where `time_value` = 20200414 '
     self._db._cursor.execute(sql)
     record = self._db._cursor.fetchall()
-    self.assertEqual(record[0][0], 20200416) #new data added
-    self.assertEqual(len(record), 1) #check 1 entry present
+    self.assertEqual(record[0][0], 20200416) #new data added, reflected in latest table
+    self.assertEqual(len(record), 1) # no. of record is still one, since we have latest issue with 20200416
 
     updateRow = [
       CovidcastRow('src', 'sig', 'day', 'state', 20200414, 'pa', 
@@ -112,7 +112,7 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     self._db._cursor.execute(f'SELECT `issue` FROM {Database.history_table}')
     record3 = self._db._cursor.fetchall()
     totalRows = len(list(record3)) #updating totalRows
-    self.assertEqual(2, totalRows) #ensure len(record3) = 2
+    self.assertEqual(2, totalRows) #added 1 new row, updated old row. Total = 2
     self.assertEqual(20200416,max(record3)[0]) #max of the outputs is 20200416 , extracting from tuple
     
     #check older issue not inside latest, empty field
