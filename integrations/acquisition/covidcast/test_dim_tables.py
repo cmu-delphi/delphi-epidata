@@ -77,15 +77,15 @@ class CovidcastDimensionTablesTests(unittest.TestCase):
         self._db.run_dbjobs()
         self._db._cursor.execute(self.viewGeoDim)
         record = self._db._cursor.fetchall()
-        self.geoDimRows = len(list(record))
+        geoDimRowCount = len(list(record))
 
         self._db._cursor.execute(self.viewSignalDim)
         record = self._db._cursor.fetchall()
-        self.sigDimRows = len(list(record))
+        sigDimRowCount = len(list(record))
 
         self._db._cursor.execute(self.viewSignalLatest)
         record = self._db._cursor.fetchall()
-        self.sigLatestRows = len(list(record))
+        sigLatestRowCount = len(list(record))
 
         #test not added first
         with self.subTest(name='older src and sig not added into sig_dim'):
@@ -107,13 +107,13 @@ class CovidcastDimensionTablesTests(unittest.TestCase):
             #ensure new entries are added in latest
             self._db._cursor.execute(self.viewSignalLatest)
             record = self._db._cursor.fetchall()
-            self.sigLatestRows = len(list(record))
-            self.assertEqual(len(list(record)), self.sigLatestRows) #2 original, 2 added (updated)
+            sigLatestRowCount = len(list(record))
+            self.assertEqual(len(list(record)), sigLatestRowCount) #2 original, 2 added (updated)
             
             #ensure nothing in geo
             self._db._cursor.execute(self.viewGeoDim)
             record = self._db._cursor.fetchall()
-            self.assertEqual(len(list(record)),self.geoDimRows)
+            self.assertEqual(len(list(record)),geoDimRowCount)
 
         with self.subTest(name='newer src and sig added in sig_dim'):
             newSrcSig = [
@@ -128,14 +128,14 @@ class CovidcastDimensionTablesTests(unittest.TestCase):
             #testing src, sig
             self._db._cursor.execute(self.viewSignalDim)
             record = self._db._cursor.fetchall()
-            self.sigDimRows = len(list(record))
+            sigDimRowCount = len(list(record))
             res = set([('new_src', 'sig'), ('src', 'new_sig'), ('src', 'sig')]) # the sequence of adding changed
             self.assertEqual(res , set(record))
-            self.assertEqual(3, self.sigDimRows)
+            self.assertEqual(3, sigDimRowCount)
             #ensure nothing in geo
             self._db._cursor.execute(self.viewGeoDim)
             record = self._db._cursor.fetchall()
-            self.assertEqual(len(list(record)),self.geoDimRows)
+            self.assertEqual(len(list(record)),geoDimRowCount)
 
         with self.subTest(name='old geo not added in geo_dim'): 
             repeatedGeoValues = [                   #geo_type          #geo_value
@@ -149,12 +149,12 @@ class CovidcastDimensionTablesTests(unittest.TestCase):
 
             self._db._cursor.execute(self.viewGeoDim)
             record = self._db._cursor.fetchall()
-            self.assertEqual(len(list(record)),self.geoDimRows) #self.geoDimRows unchanged
+            self.assertEqual(len(list(record)),geoDimRowCount) #geoDimRowCount unchanged
 
             self._db._cursor.execute(self.viewSignalLatest)
             record = self._db._cursor.fetchall()
-            self.sigLatestRows = len(list(record)) #update
-            self.assertEqual(8,self.sigLatestRows) #total entries = 2(initial) + 6(test)
+            sigLatestRowCount = len(list(record)) #update
+            self.assertEqual(8,sigLatestRowCount) #total entries = 2(initial) + 6(test)
 
         with self.subTest(name='newer geo added in geo_dim'): 
             newGeoValues = [                   #geo_type          #geo_value
@@ -170,11 +170,11 @@ class CovidcastDimensionTablesTests(unittest.TestCase):
 
             self._db._cursor.execute(f'SELECT `geo_type`,`geo_value` FROM `geo_dim`')
             record = self._db._cursor.fetchall()
-            self.geoDimRows = len(list(record))
-            self.assertEqual(5,self.geoDimRows) #2 + 3 new
+            geoDimRowCount = len(list(record))
+            self.assertEqual(5,geoDimRowCount) #2 + 3 new
 
             self._db._cursor.execute(self.viewSignalLatest)
             record = self._db._cursor.fetchall()
-            self.sigLatestRows = len(list(record)) #update
-            self.assertEqual(11,self.sigLatestRows) #total entries = 2(initial) + 6(test) + 3
+            sigLatestRowCount = len(list(record)) #update
+            self.assertEqual(11,sigLatestRowCount) #total entries = 2(initial) + 6(test) + 3
         
