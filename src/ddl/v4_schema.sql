@@ -59,8 +59,12 @@ CREATE TABLE signal_history (
     `missing_sample_size` INT(1) DEFAULT '0',
     `legacy_id` BIGINT(20) UNSIGNED, -- not used beyond import of previous data into the v4 schema
 
-    UNIQUE INDEX `value_key` (`signal_key_id`, `time_type`, `time_value`, `issue`, `geo_key_id`),
-    UNIQUE INDEX `val_2_key` (`signal_key_id`, `time_type`, `time_value`, `geo_key_id`, `issue`)
+    UNIQUE INDEX `value_key_tig` (`signal_key_id`, `time_type`, `time_value`, `issue`, `geo_key_id`),
+    UNIQUE INDEX `value_key_tgi` (`signal_key_id`, `time_type`, `time_value`, `geo_key_id`, `issue`),
+    UNIQUE INDEX `value_key_itg` (`signal_key_id`, `issue`, `time_type`, `time_value`, `geo_key_id`),
+    UNIQUE INDEX `value_key_igt` (`signal_key_id`, `issue`, `geo_key_id`, `time_type`, `time_value`),
+    UNIQUE INDEX `value_key_git` (`signal_key_id`, `geo_key_id`, `issue`, `time_type`, `time_value`),
+    UNIQUE INDEX `value_key_gti` (`signal_key_id`, `geo_key_id`, `time_type`, `time_value`, `issue`)
 ) ENGINE=InnoDB;
 
 
@@ -84,7 +88,8 @@ CREATE TABLE signal_latest (
     `missing_stderr` INT(1) DEFAULT '0',
     `missing_sample_size` INT(1) DEFAULT '0',
 
-    UNIQUE INDEX `value_key` (`signal_key_id`, `time_type`, `time_value`, `geo_key_id`)
+    UNIQUE INDEX `value_key` (`signal_key_id`, `time_type`, `time_value`, `geo_key_id`),
+    UNIQUE INDEX `value_key_also` (`signal_key_id`, `geo_key_id`, `time_type`, `time_value`)
 ) ENGINE=InnoDB;
 
 
@@ -154,10 +159,8 @@ CREATE OR REPLACE VIEW signal_history_v AS
         `t1`.`geo_key_id` AS `geo_key_id`  -- TODO: unnecessary  ...remove?
     FROM `signal_history` `t1`
         JOIN `signal_dim` `t2`
-            USE INDEX (PRIMARY)
             ON `t1`.`signal_key_id` = `t2`.`signal_key_id`
         JOIN `geo_dim` `t3`
-            USE INDEX (PRIMARY)
             ON `t1`.`geo_key_id` = `t3`.`geo_key_id`;
 
 
@@ -189,10 +192,8 @@ CREATE OR REPLACE VIEW signal_latest_v AS
         `t1`.`geo_key_id` AS `geo_key_id`  -- TODO: unnecessary  ...remove?
     FROM `signal_latest` `t1`
         JOIN `signal_dim` `t2`
-            USE INDEX (PRIMARY)
             ON `t1`.`signal_key_id` = `t2`.`signal_key_id`
         JOIN `geo_dim` `t3`
-            USE INDEX (PRIMARY)
             ON `t1`.`geo_key_id` = `t3`.`geo_key_id`;
 
 
