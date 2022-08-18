@@ -57,7 +57,6 @@ CREATE TABLE signal_history (
     `missing_value` INT(1) DEFAULT '0',
     `missing_stderr` INT(1) DEFAULT '0',
     `missing_sample_size` INT(1) DEFAULT '0',
-    `legacy_id` BIGINT(20) UNSIGNED, -- not used beyond import of previous data into the v4 schema
 
     UNIQUE INDEX `value_key_tig` (`signal_key_id`, `time_type`, `time_value`, `issue`, `geo_key_id`),
     UNIQUE INDEX `value_key_tgi` (`signal_key_id`, `time_type`, `time_value`, `geo_key_id`, `issue`),
@@ -124,7 +123,6 @@ CREATE TABLE signal_load (
     `missing_value` INT(1) DEFAULT '0',
     `missing_stderr` INT(1) DEFAULT '0',
     `missing_sample_size` INT(1) DEFAULT '0',
-    `legacy_id` BIGINT(20) UNSIGNED, -- not used beyond import of previous data into the v4 schema
 
     UNIQUE INDEX (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`, `issue`)
 ) ENGINE=InnoDB;

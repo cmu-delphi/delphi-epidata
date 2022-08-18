@@ -255,11 +255,11 @@ class Database:
         INSERT INTO {self.history_table}
             (signal_data_id, signal_key_id, geo_key_id, issue, data_as_of_dt,
              time_type, time_value, `value`, stderr, sample_size, `lag`, value_updated_timestamp,
-             computation_as_of_dt, missing_value, missing_stderr, missing_sample_size, `legacy_id`)
+             computation_as_of_dt, missing_value, missing_stderr, missing_sample_size)
         SELECT
             signal_data_id, sd.signal_key_id, gd.geo_key_id, issue, data_as_of_dt,
                 time_type, time_value, `value`, stderr, sample_size, `lag`, value_updated_timestamp,
-                computation_as_of_dt, missing_value, missing_stderr, missing_sample_size, `legacy_id`
+                computation_as_of_dt, missing_value, missing_stderr, missing_sample_size
             FROM `{self.load_table}` sl
                 INNER JOIN signal_dim sd USING (source, `signal`)
                 INNER JOIN geo_dim gd USING (geo_type, geo_value)
@@ -306,36 +306,32 @@ class Database:
         DELETE FROM `{self.load_table}`
     '''
 
+    logger = get_structured_logger("run_dbjobs")
     import time
-    time_q = []
-    time_q.append(time.time())
+    time_q = [time.time()]
 
-    print('signal_dim_add_new_load:', end='')
-    self._cursor.execute(signal_dim_add_new_load)
-    time_q.append(time.time())
-    print(f" elapsed: {time_q[-1]-time_q[-2]}s")
+    try:
+      self._cursor.execute(signal_dim_add_new_load)
+      time_q.append(time.time())
+      logger.debug('signal_dim_add_new_load', rows=self._cursor.rowcount, elapsed=time_q[-1]-time_q[-2])
 
-    print('geo_dim_add_new_load:', end='')
-    self._cursor.execute(geo_dim_add_new_load)
-    time_q.append(time.time())
-    print(f" elapsed: {time_q[-1]-time_q[-2]}s")
+      self._cursor.execute(geo_dim_add_new_load)
+      time_q.append(time.time())
+      logger.debug('geo_dim_add_new_load', rows=self._cursor.rowcount, elapsed=time_q[-1]-time_q[-2])
 
-    print('signal_history_load:', end='')
-    self._cursor.execute(signal_history_load)
-    time_q.append(time.time())
-    print(f" elapsed: {time_q[-1]-time_q[-2]}s")
+      self._cursor.execute(signal_history_load)
+      time_q.append(time.time())
+      logger.debug('signal_history_load', rows=self._cursor.rowcount, elapsed=time_q[-1]-time_q[-2])
 
-    print('signal_latest_load:', end='')
-    self._cursor.execute(signal_latest_load)
-    time_q.append(time.time())
-    print(f" elapsed: {time_q[-1]-time_q[-2]}s")
+      self._cursor.execute(signal_latest_load)
+      time_q.append(time.time())
+      logger.debug('signal_latest_load', rows=self._cursor.rowcount, elapsed=time_q[-1]-time_q[-2])
 
-    print('signal_load_delete_processed:', end='')
-    self._cursor.execute(signal_load_delete_processed)
-    time_q.append(time.time())
-    print(f" elapsed: {time_q[-1]-time_q[-2]}s")
-
-    print("done.")
+      self._cursor.execute(signal_load_delete_processed)
+      time_q.append(time.time())
+      logger.debug('signal_load_delete_processed', rows=self._cursor.rowcount, elapsed=time_q[-1]-time_q[-2])
+    except Exception as e:
+      raise e
 
     return self
 
