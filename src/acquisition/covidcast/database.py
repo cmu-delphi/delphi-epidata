@@ -106,25 +106,10 @@ class Database:
     self._connection.close()
 
 
-  def count_all_rows(self, tablename=None):
-    """Return the total number of rows in table `covidcast`."""
-
-    if tablename is None:
-      tablename = self.history_table
-
-    self._cursor.execute(f'SELECT count(1) FROM `{tablename}`')
-
+  def count_all_load_rows(self):
+    self._cursor.execute(f'SELECT count(1) FROM `{self.load_table}`')
     for (num,) in self._cursor:
       return num
-
-  def count_all_history_rows(self):
-    return self.count_all_rows(self.history_table)
-
-  def count_all_latest_rows(self):
-    return self.count_all_rows(self.latest_table)
-
-  def count_all_load_rows(self):
-    return self.count_all_rows(self.load_table)
 
   def _reset_load_table_ai_counter(self):
     """Corrects the AUTO_INCREMENT counter in the load table.
@@ -150,7 +135,7 @@ class Database:
 
   def insert_or_update_batch(self, cc_rows, batch_size=2**20, commit_partial=False):
     """
-    Insert new rows (or update existing) into the load table.
+    Insert new rows into the load table and dispatch into dimension and fact tables.
     """
 
     # NOTE: `value_update_timestamp` is hardcoded to "NOW" (which is appropriate) and 

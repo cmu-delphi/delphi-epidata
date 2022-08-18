@@ -66,30 +66,12 @@ CREATE TABLE signal_history (
     UNIQUE INDEX `value_key_gti` (`signal_key_id`, `geo_key_id`, `time_type`, `time_value`, `issue`)
 ) ENGINE=InnoDB;
 
-
 CREATE TABLE signal_latest (
-    `signal_data_id` BIGINT(20) UNSIGNED NOT NULL PRIMARY KEY,
-    `signal_key_id` BIGINT(20) UNSIGNED NOT NULL,
-    `geo_key_id` BIGINT(20) UNSIGNED NOT NULL,
-    `strat_key_id` BIGINT(20) UNSIGNED NOT NULL DEFAULT 1,  -- TODO: for future use
-    `issue` INT(11) NOT NULL,
-    `data_as_of_dt` DATETIME(0),  -- TODO: for future use ; also "as_of" is problematic and should be renamed
-    `time_type` VARCHAR(12) NOT NULL,
-    `time_value` INT(11) NOT NULL,
-    `reference_dt` DATETIME(0),  -- TODO: for future use
-    `value` DOUBLE,
-    `stderr` DOUBLE,
-    `sample_size` DOUBLE,
-    `lag` INT(11) NOT NULL,
-    `value_updated_timestamp` INT(11) NOT NULL,
-    `computation_as_of_dt` DATETIME(0),  -- TODO: for future use ; also "as_of" is problematic and should be renamed
-    `missing_value` INT(1) DEFAULT '0',
-    `missing_stderr` INT(1) DEFAULT '0',
-    `missing_sample_size` INT(1) DEFAULT '0',
-
+    PRIMARY KEY (`signal_data_id`),
     UNIQUE INDEX `value_key` (`signal_key_id`, `time_type`, `time_value`, `geo_key_id`),
     UNIQUE INDEX `value_key_also` (`signal_key_id`, `geo_key_id`, `time_type`, `time_value`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB
+SELECT * FROM signal_history;
 
 
 -- NOTE: In production or any non-testing system that should maintain consistency,
