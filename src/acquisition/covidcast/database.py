@@ -437,7 +437,11 @@ WHERE d.update_latest=1 GROUP BY {short_comp_key};
       if isinstance(cc_deletions, str):
         self._cursor.execute(load_tmp_table_infile_sql)
       elif isinstance(cc_deletions, list):
-        self._cursor.executemany(load_tmp_table_insert_sql, cc_deletions)
+        def split_list(lst, n):
+          for i in range(0, len(lst), n):
+            yield lst[i:(i+n)]
+        for deletions_batch in split_list(cc_deletions, 100000):
+          self._cursor.executemany(load_tmp_table_insert_sql, deletions_batch)
       else:
         raise Exception(f"Bad deletions argument: need a filename or a list of tuples; got a {type(cc_deletions)}")
       self._cursor.execute(add_history_id_sql)

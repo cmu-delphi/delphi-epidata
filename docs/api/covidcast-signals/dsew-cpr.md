@@ -15,7 +15,7 @@ grand_parent: COVIDcast Epidata API
 * **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** [Public Domain US Government](https://www.usa.gov/government-works)
 
-The Community Profile Report (CPR) is published by the Data Strategy and Execution Workgroup (DSEW) of the White House COVID-19 Team. For more information, see the [official description and data dictionary at healthdata.gov](https://healthdata.gov/Health/COVID-19-Community-Profile-Report/gqxm-d9w9) for "COVID-19 Community Profile Report".
+The Community Profile Report (CPR) is published by the Data Strategy and Execution Workgroup (DSEW) of the White House COVID-19 Team. For more information, see the [official description at healthdata.gov](https://healthdata.gov/Health/COVID-19-Community-Profile-Report/gqxm-d9w9) for "COVID-19 Community Profile Report". Each issue of the CPR is made available as an attachment on that page. You can view all attachments by scrolling to the bottom of the "About this dataset" panel and clicking "Show more".
 
 This data source provides various COVID-19 related metrics, of which we report hospital admissions and vaccinations. 
 

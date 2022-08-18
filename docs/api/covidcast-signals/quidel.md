@@ -144,7 +144,7 @@ June 14th and subsequently revised on June 16th.
 
 ### Limitations
 
-This data source is based on data provided to us by a lab testing company. They can report on a portion of United States COVID-19 Antigen tests, but not all of them, and so this source only represents those tests known to them. Their coverage may vary across the United States.
+This data source is based on data provided to us by a lab testing company. They can report on a portion of United States COVID-19 Antigen tests, but not all of them, and so this source only represents those tests known to them. Their coverage may vary across the United States. The coverage of the signals for some age groups (e.g. age 0-4 and age 65+) are extremely limited at HRR and MSA level, and can even be limited at state level on weekends. 
 
 ### Missingness
 
