@@ -1,3 +1,4 @@
+USE epidata;
 /*
 
 This table stores the signals used in the public signal dashboard.

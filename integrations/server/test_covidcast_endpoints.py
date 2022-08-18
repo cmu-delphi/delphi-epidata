@@ -24,7 +24,8 @@ BASE_URL = "http://delphi_web_epidata/epidata/covidcast"
 
 @dataclass
 class CovidcastRow:
-    # TODO: this heavily resembles delphi.epidata.acquisition.covidcast.database.CovidcastRow ... merge!
+    # TODO in https://github.com/cmu-delphi/delphi-epidata/issues/897
+    # this heavily resembles delphi.epidata.acquisition.covidcast.database.CovidcastRow and should be refactored out
     source: str = "src"
     signal: str = "sig"
     time_type: str = "day"
