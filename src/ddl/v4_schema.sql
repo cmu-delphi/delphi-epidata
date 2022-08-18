@@ -68,8 +68,8 @@ CREATE TABLE signal_history (
 
 CREATE TABLE signal_latest (
     PRIMARY KEY (`signal_data_id`),
-    UNIQUE INDEX `value_key` (`signal_key_id`, `time_type`, `time_value`, `geo_key_id`),
-    UNIQUE INDEX `value_key_also` (`signal_key_id`, `geo_key_id`, `time_type`, `time_value`)
+    UNIQUE INDEX `value_key_tg` (`signal_key_id`, `time_type`, `time_value`, `geo_key_id`),
+    UNIQUE INDEX `value_key_gt` (`signal_key_id`, `geo_key_id`, `time_type`, `time_value`)
 ) ENGINE=InnoDB
 SELECT * FROM signal_history;
 
