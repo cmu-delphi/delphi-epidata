@@ -31,9 +31,7 @@ class TestTest(unittest.TestCase):
         #             cols:                               ^ timeval         v  se  ssz               ^issue      ^lag
 
     def _insert_rows(self, rows):
-        # inserts rows into the database using the full acquisition process, including 'dbjobs' load into history & latest tables
         self._db.insert_or_update_bulk(rows)
-        self._db.run_dbjobs()
         ###db._connection.commit()  # NOTE: this isnt needed here, but would be if using external access (like through client lib)
 
     def _find_matches_for_row(self, row):

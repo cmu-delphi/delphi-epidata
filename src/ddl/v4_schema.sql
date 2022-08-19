@@ -1,57 +1,63 @@
 USE covid;
 
 CREATE TABLE geo_dim (
-    `geo_key_id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-    `geo_type` VARCHAR(12),
-    `geo_value` VARCHAR(12),
-    `compressed_geo_key` VARCHAR(100),
-    
-    PRIMARY KEY (`geo_key_id`) USING BTREE,
-    UNIQUE INDEX `compressed_geo_key_ind` (`compressed_geo_key`) USING BTREE
-);
+    `geo_key_id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `geo_type` VARCHAR(12) NOT NULL,
+    `geo_value` VARCHAR(12) NOT NULL,
 
-
-CREATE TABLE signal_dim (
-    `signal_key_id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT, 
-    `source` VARCHAR(32),
-    `signal` VARCHAR(64),
-    `compressed_signal_key` VARCHAR(100),
-    
-    PRIMARY KEY (`signal_key_id`) USING BTREE,
-    UNIQUE INDEX `compressed_signal_key_ind` (`compressed_signal_key`) USING BTREE
+    UNIQUE INDEX `geo_dim_index` (`geo_type`, `geo_value`)
 ) ENGINE=InnoDB;
 
 
+CREATE TABLE signal_dim (
+    `signal_key_id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `source` VARCHAR(32) NOT NULL,
+    `signal` VARCHAR(64) NOT NULL,
+
+    UNIQUE INDEX `signal_dim_index` (`source`, `signal`)
+) ENGINE=InnoDB;
+
+CREATE TABLE strat_dim (
+    `strat_key_id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `stratification_name` VARCHAR(64) NOT NULL UNIQUE,
+    `stratification_descr` VARCHAR(64) NOT NULL
+) ENGINE=InnoDB;
+INSERT INTO strat_dim VALUES (1, 'NO_STRATIFICATION', '');
+
 CREATE TABLE signal_history (
-    `signal_data_id` BIGINT(20) UNSIGNED NOT NULL,
-    `signal_key_id` BIGINT(20) UNSIGNED,
-    `geo_key_id` BIGINT(20) UNSIGNED,
-    `demog_key_id` BIGINT(20) UNSIGNED,  -- TODO: for future use ; also rename s/demog/stratification/
-    `issue` INT(11),
+    `signal_data_id` BIGINT(20) UNSIGNED NOT NULL PRIMARY KEY,
+    `signal_key_id` BIGINT(20) UNSIGNED NOT NULL,
+    `geo_key_id` BIGINT(20) UNSIGNED NOT NULL,
+    `strat_key_id` BIGINT(20) UNSIGNED NOT NULL DEFAULT 1,  -- TODO: for future use
+    `issue` INT(11) NOT NULL,
     `data_as_of_dt` DATETIME(0),  -- TODO: for future use ; also "as_of" is problematic and should be renamed
     `time_type` VARCHAR(12) NOT NULL,
     `time_value` INT(11) NOT NULL,
     `reference_dt` DATETIME(0),  -- TODO: for future use
-    `value` DOUBLE NULL DEFAULT NULL,
-    `stderr` DOUBLE NULL DEFAULT NULL,
-    `sample_size` DOUBLE NULL DEFAULT NULL,
+    `value` DOUBLE,
+    `stderr` DOUBLE,
+    `sample_size` DOUBLE,
     `lag` INT(11) NOT NULL,
     `value_updated_timestamp` INT(11) NOT NULL,
     `computation_as_of_dt` DATETIME(0),  -- TODO: for future use ; also "as_of" is problematic and should be renamed
-    `is_latest_issue` BINARY(1) NOT NULL DEFAULT '0', -- TODO: delete this, its hard to keep updated and its not currently used
-    `missing_value` INT(1) NULL DEFAULT '0',
-    `missing_stderr` INT(1) NULL DEFAULT '0',
-    `missing_sample_size` INT(1) NULL DEFAULT '0',
- 
-    PRIMARY KEY (`signal_data_id`) USING BTREE,
-    UNIQUE INDEX `value_key` (`signal_key_id`,`geo_key_id`,`issue`,`time_type`,`time_value`) USING BTREE
+    `missing_value` INT(1) DEFAULT '0',
+    `missing_stderr` INT(1) DEFAULT '0',
+    `missing_sample_size` INT(1) DEFAULT '0',
+
+    UNIQUE INDEX `value_key_tig` (`signal_key_id`, `time_type`, `time_value`, `issue`, `geo_key_id`),
+    UNIQUE INDEX `value_key_tgi` (`signal_key_id`, `time_type`, `time_value`, `geo_key_id`, `issue`),
+    UNIQUE INDEX `value_key_itg` (`signal_key_id`, `issue`, `time_type`, `time_value`, `geo_key_id`),
+    UNIQUE INDEX `value_key_igt` (`signal_key_id`, `issue`, `geo_key_id`, `time_type`, `time_value`),
+    UNIQUE INDEX `value_key_git` (`signal_key_id`, `geo_key_id`, `issue`, `time_type`, `time_value`),
+    UNIQUE INDEX `value_key_gti` (`signal_key_id`, `geo_key_id`, `time_type`, `time_value`, `issue`)
 ) ENGINE=InnoDB;
 
-
 CREATE TABLE signal_latest (
-    PRIMARY KEY (`signal_data_id`) USING BTREE,
-    UNIQUE INDEX `value_key` (`signal_key_id`,`geo_key_id`,`time_type`,`time_value`) USING BTREE
-) ENGINE=InnoDB SELECT * FROM signal_history;
+    PRIMARY KEY (`signal_data_id`),
+    UNIQUE INDEX `value_key_tg` (`signal_key_id`, `time_type`, `time_value`, `geo_key_id`),
+    UNIQUE INDEX `value_key_gt` (`signal_key_id`, `geo_key_id`, `time_type`, `time_value`)
+) ENGINE=InnoDB
+SELECT * FROM signal_history;
 
 
 -- NOTE: In production or any non-testing system that should maintain consistency,
@@ -62,11 +68,11 @@ CREATE TABLE signal_latest (
 --       To restore the counter, a row must be written with a `signal_data_id` value greater than the maximum
 --       of its values in the other tables.
 CREATE TABLE signal_load (
-    `signal_data_id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `signal_data_id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `signal_key_id` BIGINT(20) UNSIGNED,
     `geo_key_id` BIGINT(20) UNSIGNED,
-    `demog_key_id` BIGINT(20) UNSIGNED,  -- TODO: for future use ; also rename s/demog/stratification/
-    `issue` INT(11),
+    `strat_key_id` BIGINT(20) UNSIGNED NOT NULL DEFAULT 1,  -- TODO: for future use
+    `issue` INT(11) NOT NULL,
     `data_as_of_dt` DATETIME(0),  -- TODO: for future use ; also "as_of" is problematic and should be renamed
     `source` VARCHAR(32) NOT NULL,
     `signal` VARCHAR(64) NOT NULL,
@@ -75,26 +81,19 @@ CREATE TABLE signal_load (
     `time_type` VARCHAR(12) NOT NULL,
     `time_value` INT(11) NOT NULL,
     `reference_dt` DATETIME(0),  -- TODO: for future use
-    `value` DOUBLE NULL DEFAULT NULL,
-    `stderr` DOUBLE NULL DEFAULT NULL,
-    `sample_size` DOUBLE NULL DEFAULT NULL,
+    `value` DOUBLE,
+    `stderr` DOUBLE,
+    `sample_size` DOUBLE,
     `lag` INT(11) NOT NULL,
     `value_updated_timestamp` INT(11) NOT NULL,
     `computation_as_of_dt` DATETIME(0),  -- TODO: for future use ; also "as_of" is problematic and should be renamed
     `is_latest_issue` BINARY(1) NOT NULL DEFAULT '0',
-    `missing_value` INT(1) NULL DEFAULT '0',
-    `missing_stderr` INT(1) NULL DEFAULT '0',
-    `missing_sample_size` INT(1) NULL DEFAULT '0',
-    `compressed_signal_key` VARCHAR(100),
-    `compressed_geo_key` VARCHAR(100),
-    `compressed_demog_key` VARCHAR(100),  -- TODO: for future use ; also rename s/demog/stratification/
-    `process_status` VARCHAR(2) DEFAULT 'l', -- using codes: 'i' (I) for "inserting", 'l' (L) for "loaded", and 'b' for "batching"
-        -- TODO: change `process_status` default to 'i' (I) "inserting" or even 'x'/'u' "undefined" ?
+    `missing_value` INT(1) DEFAULT '0',
+    `missing_stderr` INT(1) DEFAULT '0',
+    `missing_sample_size` INT(1) DEFAULT '0',
 
-    PRIMARY KEY (`signal_data_id`) USING BTREE,
-    INDEX `comp_signal_key` (`compressed_signal_key`) USING BTREE,
-    INDEX `comp_geo_key` (`compressed_geo_key`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=4000000001;
+    UNIQUE INDEX (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`, `issue`)
+) ENGINE=InnoDB;
 
 
 CREATE OR REPLACE VIEW signal_history_v AS
@@ -106,8 +105,8 @@ CREATE OR REPLACE VIEW signal_history_v AS
         `t2`.`signal` AS `signal`,
         `t3`.`geo_type` AS `geo_type`,
         `t3`.`geo_value` AS `geo_value`,
-        `t1`.`signal_data_id` AS `signal_data_id`,
-        `t1`.`demog_key_id` AS `demog_key_id`, -- TODO: for future use ; also rename s/demog/stratification/  ...remove?
+        `t1`.`signal_data_id` AS `signal_data_id`, -- TODO: unnecessary  ...remove?
+        `t1`.`strat_key_id` AS `strat_key_id`, -- TODO: for future
         `t1`.`issue` AS `issue`,
         `t1`.`data_as_of_dt` AS `data_as_of_dt`, -- TODO: for future use ; also "as_of" is problematic and should be renamed  ...remove?
         `t1`.`time_type` AS `time_type`,
@@ -122,18 +121,15 @@ CREATE OR REPLACE VIEW signal_history_v AS
         `t1`.`missing_value` AS `missing_value`,
         `t1`.`missing_stderr` AS `missing_stderr`,
         `t1`.`missing_sample_size` AS `missing_sample_size`,
-        `t1`.`signal_key_id` AS `signal_key_id`,
-        `t1`.`geo_key_id` AS `geo_key_id`
-    FROM ((`signal_history` `t1` 
-        JOIN `signal_dim` `t2` 
-            USE INDEX (PRIMARY) 
-            ON `t1`.`signal_key_id` = `t2`.`signal_key_id`)
-        JOIN `geo_dim` `t3` 
-            USE INDEX (PRIMARY) 
-            ON `t1`.`geo_key_id` = `t3`.`geo_key_id`);
+        `t1`.`signal_key_id` AS `signal_key_id`, -- TODO: unnecessary  ...remove?
+        `t1`.`geo_key_id` AS `geo_key_id`  -- TODO: unnecessary  ...remove?
+    FROM `signal_history` `t1`
+        JOIN `signal_dim` `t2`
+            ON `t1`.`signal_key_id` = `t2`.`signal_key_id`
+        JOIN `geo_dim` `t3`
+            ON `t1`.`geo_key_id` = `t3`.`geo_key_id`;
 
-
-CREATE OR REPLACE VIEW signal_latest_v AS 
+CREATE OR REPLACE VIEW signal_latest_v AS
     SELECT
         1 AS is_latest_issue, -- provides column-compatibility to match `covidcast` table
         NULL AS direction, -- provides column-compatibility to match `covidcast` table
@@ -141,8 +137,8 @@ CREATE OR REPLACE VIEW signal_latest_v AS
         `t2`.`signal` AS `signal`,
         `t3`.`geo_type` AS `geo_type`,
         `t3`.`geo_value` AS `geo_value`,
-        `t1`.`signal_data_id` AS `signal_data_id`,
-        `t1`.`demog_key_id` AS `demog_key_id`, -- TODO: for future use ; also rename s/demog/stratification/  ...remove?
+        `t1`.`signal_data_id` AS `signal_data_id`, -- TODO: unnecessary  ...remove?
+        `t1`.`strat_key_id` AS `strat_key_id`, -- TODO: for future use
         `t1`.`issue` AS `issue`,
         `t1`.`data_as_of_dt` AS `data_as_of_dt`, -- TODO: for future use ; also "as_of" is problematic and should be renamed  ...remove?
         `t1`.`time_type` AS `time_type`,
@@ -157,15 +153,13 @@ CREATE OR REPLACE VIEW signal_latest_v AS
         `t1`.`missing_value` AS `missing_value`,
         `t1`.`missing_stderr` AS `missing_stderr`,
         `t1`.`missing_sample_size` AS `missing_sample_size`,
-        `t1`.`signal_key_id` AS `signal_key_id`,
-        `t1`.`geo_key_id` AS `geo_key_id`
-    FROM ((`signal_latest` `t1` 
-        JOIN `signal_dim` `t2` 
-            USE INDEX (PRIMARY) 
-            ON `t1`.`signal_key_id` = `t2`.`signal_key_id`) 
-        JOIN `geo_dim` `t3` 
-            USE INDEX (PRIMARY) 
-            ON `t1`.`geo_key_id` = `t3`.`geo_key_id`);
+        `t1`.`signal_key_id` AS `signal_key_id`, -- TODO: unnecessary  ...remove?
+        `t1`.`geo_key_id` AS `geo_key_id`  -- TODO: unnecessary  ...remove?
+    FROM `signal_latest` `t1`
+        JOIN `signal_dim` `t2`
+            ON `t1`.`signal_key_id` = `t2`.`signal_key_id`
+        JOIN `geo_dim` `t3`
+            ON `t1`.`geo_key_id` = `t3`.`geo_key_id`;
 
 
 CREATE TABLE `covidcast_meta_cache` (
@@ -173,5 +167,5 @@ CREATE TABLE `covidcast_meta_cache` (
     `epidata` LONGTEXT NOT NULL,
 
     PRIMARY KEY (`timestamp`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 INSERT INTO covidcast_meta_cache VALUES (0, '[]');

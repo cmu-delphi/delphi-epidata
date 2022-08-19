@@ -90,7 +90,6 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
                    6.5, 2.2, 11.5, nmv, nmv, nmv, 20200416, 2),
     ]
     self._db.insert_or_update_bulk(rows)
-    self._db.run_dbjobs()
     self._db._connection.commit()
 
     with self.subTest(name='request two signals'):
@@ -355,7 +354,6 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
                    60, 61, 62, nmv, nmv, nmv, 20200414, 0),
     ]
     self._db.insert_or_update_bulk(rows)
-    self._db.run_dbjobs()
     self._db._connection.commit()
 
     def fetch(geo_value):
@@ -445,7 +443,6 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
                    7.0, 2.0, 12.5, nmv, nmv, nmv, 20200416, 1),
     ]
     self._db.insert_or_update_bulk(rows)
-    self._db.run_dbjobs()
     self._db._connection.commit()
 
     # cache it
@@ -501,7 +498,6 @@ class DelphiEpidataPythonClientTests(unittest.TestCase):
                    60, 61, 62, nmv, nmv, nmv, 20200414, 0)
     ]
     self._db.insert_or_update_bulk(rows)
-    self._db.run_dbjobs()
     self._db._connection.commit()
 
     test_output = Epidata.async_epidata([
