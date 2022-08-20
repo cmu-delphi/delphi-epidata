@@ -1,6 +1,6 @@
 ---
 title: Google Health Trends
-parent: Epidata API (Other Diseases)
+parent: Other Endpoints (COVID-19 and Other Diseases)
 ---
 
 # Google Health Trends
