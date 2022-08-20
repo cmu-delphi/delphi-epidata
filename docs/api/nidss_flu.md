@@ -1,6 +1,6 @@
 ---
 title: NIDSS Flu
-parent: Epidata API (Other Diseases)
+parent: Other Endpoints (COVID-19 and Other Diseases)
 ---
 
 # NIDSS Flu
