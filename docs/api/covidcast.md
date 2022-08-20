@@ -1,5 +1,5 @@
 ---
-title: COVIDcast Epidata API
+title: COVIDcast Main Endpoint
 has_children: true
 nav_order: 1
 ---
