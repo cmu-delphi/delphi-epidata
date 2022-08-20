@@ -1,7 +1,7 @@
 ---
 title: SafeGraph
 parent: Inactive Signals
-grand_parent: COVIDcast Epidata API
+grand_parent: COVIDcast Main Endpoint
 ---
 
 # SafeGraph

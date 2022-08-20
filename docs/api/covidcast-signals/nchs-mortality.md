@@ -1,7 +1,7 @@
 ---
 title: NCHS Mortality Data
 parent: Data Sources and Signals
-grand_parent: COVIDcast Epidata API
+grand_parent: COVIDcast Main Endpoint
 ---
 
 # NCHS Mortality Data
