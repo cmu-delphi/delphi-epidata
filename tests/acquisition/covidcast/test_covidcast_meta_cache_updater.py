@@ -9,33 +9,10 @@ from unittest.mock import MagicMock
 # third party
 
 from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import get_argument_parser, main
-from delphi.epidata.acquisition.covidcast.database_meta import DatabaseMeta
 
 
 class UnitTests(unittest.TestCase):
     """Basic unit tests."""
-
-    def setUp(self):
-        """Perform per-test setup."""
-
-        # connect to the `epidata` database
-        self.db = DatabaseMeta(base_url="http://delphi_web_epidata/epidata")
-        self.db.connect(user="user", password="pass", host="delphi_database_epidata")
-
-        # TODO: Switch when delphi_epidata client is released.
-        self.db.delphi_epidata = False
-
-        # clear all tables
-        self.db._cursor.execute("truncate table signal_load")
-        self.db._cursor.execute("truncate table signal_history")
-        self.db._cursor.execute("truncate table signal_latest")
-        self.db._cursor.execute("truncate table geo_dim")
-        self.db._cursor.execute("truncate table signal_dim")
-        self.db.commit()
-
-    def tearDown(self):
-        """Perform per-test teardown."""
-        self.db.disconnect(None)
 
     def test_get_argument_parser(self):
         """Return a parser for command-line arguments."""
