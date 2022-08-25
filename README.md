@@ -25,9 +25,34 @@ For a high-level introduction to the COVIDcast API, see our recent
 
 # Contributing
 
-If you are interested in contributing:
+If you are interested in contributing, we have a quick way for you to make a dev environment.
 
-- For development of the API itself, see the
+## Development Quickstart
+
+Requires: Docker, possibly sudo access (depending on your Docker installation and OS).
+
+In the directory where you want to work run the following:
+
+```sh
+# Make folder structure, download dependent repos, and symlink Makefile
+$ curl "https://raw.githubusercontent.com/cmu-delphi/delphi-epidata/dev/dev/local/install.sh" | bash
+
+# Create all docker containers: db, web, and python
+$ [sudo] make all
+
+# Run tests
+$ [sudo] make test
+
+# To drop into debugger on error
+$ [sudo] make test pdb=1
+
+# To test only a subset of tests
+$ [sudo] make test test=repos/delphi/delphi-epidata/integrations/acquisition
+```
+
+## Further Documentation
+
+- For more details on the dev environment and the API itself, see the
   [development guide](docs/epidata_development.md).
 - To suggest changes, additions, or other ways to improve,
   [open an issue](https://github.com/cmu-delphi/delphi-epidata/issues/new)

@@ -5,16 +5,23 @@ nav_order: 4
 
 # Epidata API Development Guide
 
-## Quickstart
+## Development Quickstart
 
 In the directory where you want to work run the following
 
-```
+```sh
+# Make folder structure, download dependent repos, and symlink Makefile
 $ curl "https://raw.githubusercontent.com/cmu-delphi/delphi-epidata/dev/dev/local/install.sh" | bash
+
+# Create all docker containers: db, web, and python
 $ [sudo] make all
+
+# Run tests
 $ [sudo] make test
+
 # To drop into debugger on error
 $ [sudo] make test pdb=1
+
 # To test only a subset of tests
 $ [sudo] make test test=repos/delphi/delphi-epidata/integrations/acquisition
 ```
