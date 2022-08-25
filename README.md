@@ -36,7 +36,28 @@ In the directory where you want to work run the following:
 ```sh
 # Make folder structure, download dependent repos, and symlink Makefile
 $ curl "https://raw.githubusercontent.com/cmu-delphi/delphi-epidata/dev/dev/local/install.sh" | bash
+```
 
+You should now have the following directory structure:
+
+```sh
+├── driver
+│   ├── .dockerignore -> repos/delphi/delphi-epidata/dev/local/.dockerignore
+│   ├── Makefile -> repos/delphi/delphi-epidata/dev/local/Makefile
+│   ├── repos
+│   │   └── delphi
+│   │       ├── delphi-epidata
+│   │       ├── flu-contest
+│   │       ├── github-deploy-repo
+│   │       ├── nowcast
+│   │       ├── operations
+│   │       └── utils
+```
+
+and you should now be in the `driver` directory.
+You can now execute make commands
+
+```sh
 # Create all docker containers: db, web, and python
 $ [sudo] make all
 
