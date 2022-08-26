@@ -23,6 +23,8 @@ class CovidcastBase(unittest.TestCase):
         self._db._connection.commit()
 
     def localSetUp(self):
+        # stub; override in subclasses to perform custom setup. 
+        # runs after tables have been truncated but before database changes have been committed
         pass
 
     def tearDown(self):
