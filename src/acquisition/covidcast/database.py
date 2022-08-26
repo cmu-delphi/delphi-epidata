@@ -60,6 +60,11 @@ class CovidcastRow():
     self.issue = issue
     self.lag = lag
 
+  def signal_pair(self):
+    return f"{self.source}:{self.signal}"
+
+  def geo_pair(self):
+    return f"{self.geo_type}:{self.geo_value}"
 
 
 class Database:
@@ -136,7 +141,7 @@ class Database:
   def insert_or_update_bulk(self, cc_rows):
     return self.insert_or_update_batch(cc_rows)
 
-  def insert_or_update_batch(self, cc_rows, batch_size=2**20, commit_partial=False):
+  def insert_or_update_batch(self, cc_rows, batch_size=2**20, commit_partial=False, suppress_jobs=False):
     """
     Insert new rows into the load table and dispatch into dimension and fact tables.
     """
@@ -204,7 +209,8 @@ class Database:
         self._cursor.executemany(insert_into_loader_sql, args)
         modified_row_count = self._cursor.rowcount
         self._cursor.execute(fix_is_latest_issue_sql)
-        self.run_dbjobs() # TODO: consider incorporating the logic of dbjobs() into this method [once calls to dbjobs() are no longer needed for migrations]
+        if not suppress_jobs:
+          self.run_dbjobs() # TODO: incorporate the logic of dbjobs() into this method [once calls to dbjobs() are no longer needed for migrations]
 
         if modified_row_count is None or modified_row_count == -1:
           # the SQL connector does not support returning number of rows affected (see PEP 249)
@@ -226,7 +232,7 @@ class Database:
         INSERT INTO signal_dim (`source`, `signal`)
             SELECT DISTINCT sl.source, sl.signal
                 FROM {self.load_table} AS sl LEFT JOIN signal_dim AS sd
-                ON sl.source=sd.source AND sl.signal=sd.signal
+                USING (`source`, `signal`)
                 WHERE sd.source IS NULL
     '''
 
@@ -235,7 +241,7 @@ class Database:
         INSERT INTO geo_dim (`geo_type`, `geo_value`)
             SELECT DISTINCT sl.geo_type, sl.geo_value
                 FROM {self.load_table} AS sl LEFT JOIN geo_dim AS gd
-                ON sl.geo_type=gd.geo_type AND sl.geo_value=gd.geo_value
+                USING (`geo_type`, `geo_value`)
                 WHERE gd.geo_type IS NULL
     '''
 
@@ -356,6 +362,8 @@ class Database:
     # composite keys:
     short_comp_key = "`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`"
     long_comp_key = short_comp_key + ", `issue`"
+    short_comp_ref_key = "`signal_key_id`, `geo_key_id`, `time_type`, `time_value`"
+    long_comp_ref_key = short_comp_ref_key + ", `issue`"
 
     create_tmp_table_sql = f'''
 CREATE TABLE {tmp_table_name} LIKE {self.load_table};
@@ -410,23 +418,27 @@ DELETE ell FROM {tmp_table_name} d INNER JOIN {self.latest_table} ell ON d.delet
     #       AND also after `delete_latest_sql` so that we dont get a key collision on insert.
     update_latest_sql = f'''
 INSERT INTO {self.latest_table}
-  (issue,
-  signal_data_id, signal_key_id, geo_key_id, time_type, time_value,
+  (signal_data_id,
+  signal_key_id, geo_key_id, time_type, time_value, issue,
   value, stderr, sample_size, `lag`, value_updated_timestamp,
   missing_value, missing_stderr, missing_sample_size)
 SELECT
-  MAX(h.issue),
-  h.signal_data_id, h.signal_key_id, h.geo_key_id, h.time_type, h.time_value,
+  h.signal_data_id,
+  h.signal_key_id, h.geo_key_id, h.time_type, h.time_value, h.issue,
   h.value, h.stderr, h.sample_size, h.`lag`, h.value_updated_timestamp,
   h.missing_value, h.missing_stderr, h.missing_sample_size
-FROM {self.history_view} h JOIN {tmp_table_name} d USING ({short_comp_key})
-WHERE d.update_latest=1 GROUP BY {short_comp_key};
+FROM {self.history_view} h JOIN (
+    SELECT {short_comp_key}, MAX(hh.issue) AS issue
+    FROM {self.history_view} hh JOIN {tmp_table_name} dd USING ({short_comp_key})
+    WHERE dd.update_latest=1 GROUP BY {short_comp_key}
+  ) d USING ({long_comp_key});
 '''
 
-    drop_tmp_table_sql = f'DROP TABLE {tmp_table_name}'
+    drop_tmp_table_sql = f'DROP TABLE IF EXISTS {tmp_table_name}'
 
     total = None
     try:
+      self._cursor.execute(drop_tmp_table_sql)
       self._cursor.execute(create_tmp_table_sql)
       self._cursor.execute(amend_tmp_table_sql)
       if isinstance(cc_deletions, str):
@@ -437,15 +449,21 @@ WHERE d.update_latest=1 GROUP BY {short_comp_key};
             yield lst[i:(i+n)]
         for deletions_batch in split_list(cc_deletions, 100000):
           self._cursor.executemany(load_tmp_table_insert_sql, deletions_batch)
+          print(f"load_tmp_table_insert_sql:{self._cursor.rowcount}")
       else:
         raise Exception(f"Bad deletions argument: need a filename or a list of tuples; got a {type(cc_deletions)}")
       self._cursor.execute(add_history_id_sql)
+      print(f"add_history_id_sql:{self._cursor.rowcount}")
       self._cursor.execute(mark_for_update_latest_sql)
+      print(f"mark_for_update_latest_sql:{self._cursor.rowcount}")
       self._cursor.execute(delete_history_sql)
+      print(f"delete_history_sql:{self._cursor.rowcount}")
       total = self._cursor.rowcount
       # TODO: consider reporting rows removed and/or replaced in latest table as well
       self._cursor.execute(delete_latest_sql)
+      print(f"delete_latest_sql:{self._cursor.rowcount}")
       self._cursor.execute(update_latest_sql)
+      print(f"update_latest_sql:{self._cursor.rowcount}")
       self._connection.commit()
 
       if total == -1:
