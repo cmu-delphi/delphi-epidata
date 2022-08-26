@@ -59,6 +59,8 @@ can also change reporting standards in ways that dramatically increase the
 number of cumulative deaths, resulting in an apparent spike in incidence. This
 should be interpreted purely as an artifact of data reporting and correction.
 
+Standard errors and sample sizes are not applicable to these metrics.
+
 ## Geographical Exceptions
 
 Due to differences in state reporting standards, certain counties are not

@@ -63,6 +63,8 @@ Due to differences in state reporting standards, certain counties are not
 reported in the USAFacts data or are reported combined with other counties;
 these exceptions are explained below.
 
+Standard errors and sample sizes are not applicable to these metrics.
+
 ## Geographical Exceptions
 
 ### New York City

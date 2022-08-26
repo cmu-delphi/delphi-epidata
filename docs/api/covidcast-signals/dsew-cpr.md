@@ -63,6 +63,8 @@ This data source is susceptible to large corrections that can create strange dat
 
 Not all CPRs have the same lag between the CPR date (listed in the filename) and the date for a particular signal.
 
+Standard errors and sample sizes are not applicable to these metrics.
+
 ### Differences with HHS reports
 
 An analysis comparing the 

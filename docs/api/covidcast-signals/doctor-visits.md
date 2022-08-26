@@ -160,7 +160,7 @@ outpatient doctor's visits, but not all of them, and so this source only
 represents those visits known to them. Their coverage may vary across the United
 States.
 
-Standard errors are not available for this data source.
+Standard errors and sample sizes are not available for this data source.
 
 Due to changes in medical-seeking behavior on holidays, this data source has
 upward spikes in the fraction of doctor's visits that are COVID-related around
