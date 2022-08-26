@@ -122,8 +122,6 @@ class CovidcastMetaTests(unittest.TestCase):
             })
             for tv in (1, 2):
               for gv, v in zip(('geo1', 'geo2'), (10, 20)):
-                sig_key = self.src_sig_lookups[(src,sig)]
-                geo_key = self.geo_lookups[(gt,gv)]
                 self.cur.execute(self.template % (
                   self._get_id(),
                   self.src_sig_lookups[(src,sig)], self.geo_lookups[(gt,gv)],
