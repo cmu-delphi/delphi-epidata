@@ -1,3 +1,4 @@
+USE epidata;
 /*
 These tables store the collection of datasets relating to COVID-19 patient
 impact and hospital capacity. Data is provided by the US Department of Health &

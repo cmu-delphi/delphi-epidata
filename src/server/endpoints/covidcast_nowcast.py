@@ -94,7 +94,7 @@ def handle():
         query = f"SELECT {fields} FROM {table} {subquery} WHERE {conditions} AND ({condition_version}) ORDER BY {order}"
     else:
         # fetch most recent issue fast
-        query = f"WITH t as (SELECT {fields}, ROW_NUMBER() OVER (PARTITION BY t.`time_type`, t.`time_value`, t.`source`, t.`signal`, t.`geo_type`, t.`geo_value` ORDER BY t.`issue` DESC) row FROM {table}  {subquery} WHERE {conditions}) SELECT {fields} FROM t where row = 1 ORDER BY {order}"
+        query = f"WITH t as (SELECT {fields}, ROW_NUMBER() OVER (PARTITION BY t.`time_type`, t.`time_value`, t.`source`, t.`signal`, t.`geo_type`, t.`geo_value` ORDER BY t.`issue` DESC) `row` FROM {table}  {subquery} WHERE {conditions}) SELECT {fields} FROM t where `row` = 1 ORDER BY {order}"
 
     fields_string = ["geo_value", "signal"]
     fields_int = ["time_value", "issue", "lag"]

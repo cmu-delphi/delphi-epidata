@@ -71,10 +71,15 @@ class CovidcastMetaCacheTests(unittest.TestCase):
 
     # insert dummy data
     self.cur.execute(f'''
-      INSERT INTO `signal_dim` (`signal_key_id`, `source`, `signal`) VALUES (42, 'src', 'sig');
+      INSERT INTO `signal_dim` (`signal_key_id`, `source`, `signal`)
+      VALUES
+        (42, 'src', 'sig');
     ''')
     self.cur.execute(f'''
-      INSERT INTO `geo_dim` (`geo_key_id`, `geo_type`, `geo_value`) VALUES (96, 'state', 'pa'), (97, 'state', 'wa');
+      INSERT INTO `geo_dim` (`geo_key_id`, `geo_type`, `geo_value`)
+      VALUES
+        (96, 'state', 'pa'), 
+        (97, 'state', 'wa');
     ''')
     self.cur.execute(f'''
       INSERT INTO

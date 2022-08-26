@@ -1,3 +1,4 @@
+USE epidata;
 /*
 These tables are generally a mirror of what CDC publishes through the
 interactive FluView web app at:

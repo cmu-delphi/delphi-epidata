@@ -95,9 +95,9 @@ class DeleteBatch(unittest.TestCase):
             ),
             # verify latest issue was corrected
             Example(
-                f'select geo_value, issue from {self._db.latest_view} where time_value=0',
-                [('d_nonlatest', 2),
-                 ('d_latest', 2)]
+                f'select geo_value, issue from {self._db.latest_view} where time_value=0 order by geo_value',
+                [('d_latest', 2),
+                 ('d_nonlatest', 2)]
             )
         ]
 
