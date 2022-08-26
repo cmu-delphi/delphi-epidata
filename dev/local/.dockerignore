@@ -1,0 +1,6 @@
+# Ignore everything by default
+*
+# Don't ignore repos dir
+!repos
+# Ignore everything to do with git
+**/*.git

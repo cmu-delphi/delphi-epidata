@@ -75,9 +75,9 @@ class Database:
   load_table = "signal_load"
   # if you want to deal with foreign key ids: use table
   # if you want to deal with source/signal names, geo type/values, etc: use view
-  latest_table = "signal_latest" # NOTE: careful!  probably want to use variable `latest_view` instead for semantics purposes
+  latest_table = "signal_latest"
   latest_view = latest_table + "_v"
-  history_table = "signal_history" # NOTE: careful!  probably want to use variable `history_view` instead for semantics purposes
+  history_table = "signal_history"
   history_view = history_table + "_v"
   # TODO: consider using class variables like this for dimension table names too
   # TODO: also consider that for composite key tuples, like short_comp_key and long_comp_key as used in delete_batch()
@@ -111,6 +111,7 @@ class Database:
     if commit:
       self._connection.commit()
     self._connection.close()
+
 
 
   def count_all_load_rows(self):
@@ -219,7 +220,7 @@ class Database:
         if commit_partial:
           self._connection.commit()
     except Exception as e:
-      # TODO: rollback is handled in csv_to_database; if you're calling this yourself, handle your own rollback
+      # rollback is handled in csv_to_database; if you're calling this yourself, handle your own rollback
       raise e
     return total
 
@@ -443,8 +444,12 @@ FROM {self.history_view} h JOIN (
       if isinstance(cc_deletions, str):
         self._cursor.execute(load_tmp_table_infile_sql)
       elif isinstance(cc_deletions, list):
-        self._cursor.executemany(load_tmp_table_insert_sql, cc_deletions)
-        print(f"load_tmp_table_insert_sql:{self._cursor.rowcount}")
+        def split_list(lst, n):
+          for i in range(0, len(lst), n):
+            yield lst[i:(i+n)]
+        for deletions_batch in split_list(cc_deletions, 100000):
+          self._cursor.executemany(load_tmp_table_insert_sql, deletions_batch)
+          print(f"load_tmp_table_insert_sql:{self._cursor.rowcount}")
       else:
         raise Exception(f"Bad deletions argument: need a filename or a list of tuples; got a {type(cc_deletions)}")
       self._cursor.execute(add_history_id_sql)

@@ -129,7 +129,6 @@ CREATE OR REPLACE VIEW signal_history_v AS
         JOIN `geo_dim` `t3`
             ON `t1`.`geo_key_id` = `t3`.`geo_key_id`;
 
-
 CREATE OR REPLACE VIEW signal_latest_v AS
     SELECT
         1 AS `is_latest_issue`, -- provides column-compatibility to match `covidcast` table

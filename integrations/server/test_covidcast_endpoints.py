@@ -24,6 +24,7 @@ BASE_URL = "http://delphi_web_epidata/epidata/covidcast"
 
 
 class CovidcastEndpointTests(CovidcastBase):
+
     """Tests the `covidcast/*` endpoint."""
 
     def localSetUp(self):
