@@ -1,28 +1,27 @@
-
 -- drop VIEWs in `epidata` that act as aliases to (ie, they reference) VIEWs in `covid`
 USE epidata;
 DROP VIEW
-    epimetric_full_v,
-    epimetric_latest_v;
+    signal_history_v,
+    signal_latest_v;
 
 -- return to v4 schema namespace
 USE covid;
 
 -- drop VIEWs that reference main TABLEs
 DROP VIEW
-    epimetric_full_v,
-    epimetric_latest_v;
+    signal_history_v,
+    signal_latest_v;
 
 -- rename main TABLEs
 RENAME TABLE
-    epimetric_full TO epimetric_full,
-    epimetric_latest  TO epimetric_latest,
-    epimetric_load    TO epimetric_load;
+    signal_history TO epimetric_full,
+    signal_latest  TO epimetric_latest,
+    signal_load    TO epimetric_load;
 
 -- rename id COLUMNs in main TABLEs
-ALTER TABLE epimetric_full   RENAME COLUMN epimetric_id TO epimetric_id;
-ALTER TABLE epimetric_latest RENAME COLUMN epimetric_id TO epimetric_id;
-ALTER TABLE epimetric_load   RENAME COLUMN epimetric_id TO epimetric_id;
+ALTER TABLE epimetric_full   RENAME COLUMN signal_data_id TO epimetric_id;
+ALTER TABLE epimetric_latest RENAME COLUMN signal_data_id TO epimetric_id;
+ALTER TABLE epimetric_load   RENAME COLUMN signal_data_id TO epimetric_id;
 
 -- -- -- TODO: rename `value_key_*` INDEXes in `epimetric_*` TABLEs to `???_idx_*`?
 
@@ -96,4 +95,3 @@ CREATE OR REPLACE VIEW epimetric_latest_v AS
 USE epidata;
 CREATE VIEW epidata.epimetric_full_v   AS SELECT * FROM covid.epimetric_full_v;
 CREATE VIEW epidata.epimetric_latest_v AS SELECT * FROM covid.epimetric_latest_v;
-
