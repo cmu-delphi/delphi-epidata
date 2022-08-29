@@ -65,9 +65,9 @@ def start_tx(cursor):
   cursor.execute('SET autocommit=0;') # starts a transaction as suggested in https://dev.mysql.com/doc/refman/8.0/en/lock-tables.html
   # NOTE: locks must be specified for any aliases of table names that are used
   cursor.execute('''LOCK TABLES epidata.covidcast AS cc READ,
-                                signal_load WRITE, signal_load AS sl WRITE,
-                                signal_history WRITE,
-                                signal_latest WRITE,
+                                epimetric_load WRITE, epimetric_load AS sl WRITE,
+                                epimetric_full WRITE,
+                                epimetric_latest WRITE,
                                 signal_dim WRITE, signal_dim AS sd READ,
                                 geo_dim WRITE, geo_dim AS gd READ;''')
   cursor.execute('SET unique_checks=0;')
@@ -87,7 +87,7 @@ def do_batches(db, start, upper_lim, batch_size):
 
     # NOTE: first rows of column names are identical, second rows are for specifying a rename and a literal
     batch_sql = f"""
-      INSERT INTO signal_load (
+      INSERT INTO epimetric_load (
         `issue`, `source`, `signal`, geo_type, geo_value, time_type, time_value, `value`, stderr, sample_size, `lag`, value_updated_timestamp, is_latest_issue, missing_value, missing_stderr, missing_sample_size
       ) SELECT
         `issue`, `source`, `signal`, geo_type, geo_value, time_type, time_value, `value`, stderr, sample_size, `lag`, value_updated_timestamp, is_latest_issue, missing_value, missing_stderr, missing_sample_size
@@ -150,7 +150,7 @@ def main(destination_schema, batch_size, start_id, upper_lim_override):
   if start_id==0:
     # clear tables in the v4 schema
     print("truncating tables...")
-    for table in "signal_load  signal_latest  signal_history  geo_dim  signal_dim".split():
+    for table in "epimetric_load  epimetric_latest  epimetric_full  geo_dim  signal_dim".split():
       db._cursor.execute(f"TRUNCATE TABLE {table}")
     db.commit()
     start_id = 1
@@ -160,12 +160,12 @@ def main(destination_schema, batch_size, start_id, upper_lim_override):
 
   # get table counts [the quick and dirty way]
   print("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-")
-  db._cursor.execute(f"SELECT MAX(signal_data_id) FROM signal_history;")
+  db._cursor.execute(f"SELECT MAX(epimetric_id) FROM epimetric_full;")
   for (max_id,) in db._cursor:
-    print(f"signal_history: {max_id}")
-  db._cursor.execute(f"SELECT MAX(signal_data_id) FROM signal_latest;")
+    print(f"epimetric_full: {max_id}")
+  db._cursor.execute(f"SELECT MAX(epimetric_id) FROM epimetric_latest;")
   for (max_id,) in db._cursor:
-    print(f"signal_latest: {max_id} (this should be <= the number above)")
+    print(f"epimetric_latest: {max_id} (this should be <= the number above)")
   db._cursor.execute(f"SELECT COUNT(signal_key_id), MAX(signal_key_id) FROM signal_dim;")
   for (count_id, max_id) in db._cursor:
     print(f"signal_dim: count {count_id} / max {max_id}")
