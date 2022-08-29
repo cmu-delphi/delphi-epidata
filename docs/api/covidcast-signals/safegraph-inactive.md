@@ -12,7 +12,7 @@ grand_parent: COVIDcast Epidata API
 * **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
 
 This data source uses data reported by [SafeGraph](https://www.safegraph.com/)
-using anonymized location data from mobile phones. From June 2022-July 2022,
+using anonymized location data from mobile phones. From June 2020-July 2022,
 SafeGraph provided several different datasets to eligible researchers. We
 surface signals from two such datasets.
 
@@ -28,7 +28,7 @@ surface signals from two such datasets.
 * **Number of data revisions since June 23, 2020:** 1
 * **Date of last change:** November 3, 2020
 
-This dataset is no longer updated after April 19th, 2021.
+**This dataset is no longer updated after April 19th, 2021.**
 
 Data source based on [social distancing
 metrics](https://docs.safegraph.com/docs/social-distancing-metrics).  SafeGraph
@@ -80,7 +80,7 @@ additional day for SafeGraph's data to be ingested into the COVIDcast API.
 * **Number of data revisions since June 23, 2020:** 0
 * **Date of last change:** never
 
-This dataset is no longer updated after July 15th, 2022.
+**This dataset is no longer updated after July 15th, 2022.**
 
 Data source based on [Weekly
 Patterns](https://docs.safegraph.com/docs/weekly-patterns) dataset. SafeGraph
@@ -104,7 +104,7 @@ Patterns documentation](https://docs.safegraph.com/docs/weekly-patterns).
 | `restaurants_visit_num` | The number of daily visits made by those with SafeGraph's apps to restaurant-related POIs in a certain region <br/> **Earliest date available:** 01/01/2019 |
 | `restaurants_visit_prop` | The number of daily visits made by those with SafeGraph's apps to restaurant-related POIs in a certain region, per 100,000 population <br/> **Earliest date available:** 01/01/2019 |
 
-SafeGraph delivers the number of daily visits to U.S. POIs, the details of which
+SafeGraph delivered the number of daily visits to U.S. POIs, the details of which
 are described in the [Places
 Manual](https://readme.safegraph.com/docs/places-manual#section-placekey)
 dataset.  Delphi aggregates the number of visits to certain types of places,
@@ -123,7 +123,7 @@ For certain dates, bar visits data is also missing for District of Columbia, Ida
 
 ### Lag
 
-SafeGraph provides newly updated data for the previous week every Wednesday,
+SafeGraph provided newly updated data for the previous week every Wednesday,
 meaning estimates for a specific day are only available 3-9 days later. It may
 take up to an additional day for SafeGraph's data to be ingested into the
 COVIDcast API.
