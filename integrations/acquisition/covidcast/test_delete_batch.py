@@ -33,7 +33,7 @@ class DeleteBatch(unittest.TestCase):
         self._db = Database()
         self._db.connect()
 
-        for table in "signal_load  signal_latest  signal_history  geo_dim  signal_dim".split():
+        for table in "epimetric_load  epimetric_latest  epimetric_full  geo_dim  signal_dim".split():
             self._db._cursor.execute(f"TRUNCATE TABLE {table}")
 
 

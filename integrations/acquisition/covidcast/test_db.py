@@ -15,7 +15,7 @@ class TestTest(CovidcastBase):
         cols = "source signal time_type time_value geo_type geo_value issue".split()
         results = {}
         cur = self._db._cursor
-        for table in ['signal_latest_v', 'signal_history_v']:
+        for table in ['epimetric_latest_v', 'epimetric_full_v']:
             q = f"SELECT * FROM {table} WHERE "
             # NOTE: repr() puts str values in single quotes but simply 'string-ifies' numerics;
             #       getattr() accesses members by string of their name
@@ -34,9 +34,9 @@ class TestTest(CovidcastBase):
         # AUTOINCREMENT pk id from the load table.  this test is intended to make sure that they
         # appropriately stay in sync with each other
 
-        pk_column = 'signal_data_id'
-        histor_view = 'signal_history_v'
-        latest_view = 'signal_latest_v'
+        pk_column = 'epimetric_id'
+        histor_view = 'epimetric_full_v'
+        latest_view = 'epimetric_latest_v'
 
         # add a data point
         base_row, _ = self._make_placeholder_row()

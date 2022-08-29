@@ -33,8 +33,8 @@ class CovidcastMetaTests(unittest.TestCase):
   }
 
   template = '''
-      INSERT INTO `signal_latest` (
-        `signal_data_id`, `signal_key_id`, `geo_key_id`,
+      INSERT INTO `epimetric_latest` (
+        `epimetric_id`, `signal_key_id`, `geo_key_id`,
         `time_type`, `time_value`, `value_updated_timestamp`,
         `value`, `stderr`, `sample_size`,
         `issue`, `lag`, `missing_value`,
@@ -59,9 +59,9 @@ class CovidcastMetaTests(unittest.TestCase):
     cur = cnx.cursor()
 
     # clear all tables
-    cur.execute("truncate table signal_load")
-    cur.execute("truncate table signal_history")
-    cur.execute("truncate table signal_latest")
+    cur.execute("truncate table epimetric_load")
+    cur.execute("truncate table epimetric_full")
+    cur.execute("truncate table epimetric_latest")
     cur.execute("truncate table geo_dim")
     cur.execute("truncate table signal_dim")
     # reset the `covidcast_meta_cache` table (it should always have one row)

@@ -36,9 +36,9 @@ class CsvUploadingTests(unittest.TestCase):
     cur = cnx.cursor()
 
     # clear all tables
-    cur.execute("truncate table signal_load")
-    cur.execute("truncate table signal_history")
-    cur.execute("truncate table signal_latest")
+    cur.execute("truncate table epimetric_load")
+    cur.execute("truncate table epimetric_full")
+    cur.execute("truncate table epimetric_latest")
     cur.execute("truncate table geo_dim")
     cur.execute("truncate table signal_dim")
     # reset the `covidcast_meta_cache` table (it should always have one row)
@@ -78,9 +78,9 @@ class CsvUploadingTests(unittest.TestCase):
 
   def verify_timestamps_and_defaults(self):
     self.cur.execute('''
-select value_updated_timestamp from signal_history
+select value_updated_timestamp from epimetric_full
 UNION ALL
-select value_updated_timestamp from signal_latest''')
+select value_updated_timestamp from epimetric_latest''')
     for (value_updated_timestamp,) in self.cur:
       self.assertGreater(value_updated_timestamp, 0)
 
