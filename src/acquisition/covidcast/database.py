@@ -476,16 +476,18 @@ FROM {self.history_view} h JOIN (
     return total
 
 
-  def compute_covidcast_meta(self, table_name=None):
+  def compute_covidcast_meta(self, table_name=None, n_threads=None):
     """Compute and return metadata on all COVIDcast signals."""
     logger = get_structured_logger("compute_covidcast_meta")
 
     if table_name is None:
       table_name = self.latest_view
 
-    n_threads = max(1, cpu_count()*9//10) # aka number of concurrent db connections, which [sh|c]ould be ~<= 90% of the #cores available to SQL server
-    # NOTE: this may present a small problem if this job runs on different hardware than the db,
-    #       but we should not run into that issue in prod.
+    if n_threads is None:
+      logger.info("n_threads unspecified, automatically choosing based on number of detected cores...")
+      n_threads = max(1, cpu_count()*9//10) # aka number of concurrent db connections, which [sh|c]ould be ~<= 90% of the #cores available to SQL server
+      # NOTE: this may present a small problem if this job runs on different hardware than the db,
+      #       which is why this value can be overriden by optional argument.
     logger.info(f"using {n_threads} workers")
 
     srcsigs = Queue() # multi-consumer threadsafe!

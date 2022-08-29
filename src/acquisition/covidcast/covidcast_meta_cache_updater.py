@@ -15,6 +15,7 @@ def get_argument_parser():
 
   parser = argparse.ArgumentParser()
   parser.add_argument("--log_file", help="filename for log output")
+  parser.add_argument("--num_threads", type=int, help="number of worker threads to spawn for processing of each source/signal pair")
   return parser
 
 
@@ -24,8 +25,10 @@ def main(args, epidata_impl=Epidata, database_impl=Database):
   `args`: parsed command-line arguments
   """
   log_file = None
+  num_threads = None
   if (args):
     log_file = args.log_file
+    num_threads = args.num_threads
 
   logger = get_structured_logger(
       "metadata_cache_updater",
@@ -37,7 +40,7 @@ def main(args, epidata_impl=Epidata, database_impl=Database):
   # fetch metadata
   try:
     metadata_calculation_start_time = time.time()
-    metadata = database.compute_covidcast_meta()
+    metadata = database.compute_covidcast_meta(n_threads=num_threads)
     metadata_calculation_interval_in_seconds = time.time() - metadata_calculation_start_time
   except:
     # clean up before failing
