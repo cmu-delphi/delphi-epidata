@@ -6,5 +6,5 @@
 -- ----------------------------------
 
 CREATE VIEW `epidata`.`epimetric_full_v`     AS SELECT * FROM `covid`.`epimetric_full_v`;
-CREATE VIEW `epidata`.`epimetric_latest_v`      AS SELECT * FROM `covid`.`epimetric_latest_v`;
+CREATE VIEW `epidata`.`epimetric_latest_v`   AS SELECT * FROM `covid`.`epimetric_latest_v`;
 CREATE VIEW `epidata`.`covidcast_meta_cache` AS SELECT * FROM `covid`.`covidcast_meta_cache`;
