@@ -77,12 +77,12 @@ def upload_archive(
     csv_importer_impl=CsvImporter):
   """Upload CSVs to the database and archive them using the specified handlers.
 
-  :path_details: output from CsvImporter.find*_csv_files 
-  
+  :path_details: output from CsvImporter.find*_csv_files
+
   :database: an open connection to the epidata database
 
   :handlers: functions for archiving (successful, failed) files
-  
+
   :return: the number of modified rows
   """
   archive_as_successful, archive_as_failed = handlers
@@ -130,7 +130,7 @@ def upload_archive(
       archive_as_successful(path_src, filename, source, logger)
     else:
       archive_as_failed(path_src, filename, source,logger)
-  
+
   return total_modified_row_count
 
 
@@ -149,7 +149,7 @@ def main(
   if not path_details:
     logger.info('nothing to do; exiting...')
     return
-  
+
   logger.info("Ingesting CSVs", csv_count = len(path_details))
 
   database = database_impl()
@@ -161,13 +161,12 @@ def main(
       database,
       make_handlers(args.data_dir, args.specific_issue_date),
       logger)
-    logger.info("Finished inserting database rows", row_count = modified_row_count)
-    # the following print statement serves the same function as the logger.info call above
-    # print('inserted/updated %d rows' % modified_row_count)
+    logger.info("Finished inserting/updating database rows", row_count = modified_row_count)
   finally:
+    database.do_analyze()
     # unconditionally commit database changes since CSVs have been archived
     database.disconnect(True)
-  
+
   logger.info(
       "Ingested CSVs into database",
       total_runtime_in_seconds=round(time.time() - start_time, 2))

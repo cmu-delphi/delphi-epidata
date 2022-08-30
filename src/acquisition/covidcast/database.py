@@ -138,6 +138,17 @@ class Database:
          '1', '1', '1', '1', '1', 1, 1, 1, 1);""")
     self._cursor.execute(f'DELETE FROM epimetric_load')
 
+  def do_analyze(self):
+    """performs and stores key distribution analyses, used for join order and index selection"""
+    # TODO: consider expanding this to update columns' histograms
+    #       https://dev.mysql.com/doc/refman/8.0/en/analyze-table.html#analyze-table-histogram-statistics-analysis
+    self._cursor.execute(
+      f'''ANALYZE TABLE
+          signal_dim, geo_dim,
+          {self.load_table}, {self.history_table}, {self.latest_table}''')
+    output = [self._cursor.column_names] + self._cursor.fetchall()
+    get_structured_logger('do_analyze').info("ANALYZE results", results=str(output))
+
   def insert_or_update_bulk(self, cc_rows):
     return self.insert_or_update_batch(cc_rows)
 
@@ -476,16 +487,18 @@ FROM {self.history_view} h JOIN (
     return total
 
 
-  def compute_covidcast_meta(self, table_name=None):
+  def compute_covidcast_meta(self, table_name=None, n_threads=None):
     """Compute and return metadata on all COVIDcast signals."""
     logger = get_structured_logger("compute_covidcast_meta")
 
     if table_name is None:
       table_name = self.latest_view
 
-    n_threads = max(1, cpu_count()*9//10) # aka number of concurrent db connections, which [sh|c]ould be ~<= 90% of the #cores available to SQL server
-    # NOTE: this may present a small problem if this job runs on different hardware than the db,
-    #       but we should not run into that issue in prod.
+    if n_threads is None:
+      logger.info("n_threads unspecified, automatically choosing based on number of detected cores...")
+      n_threads = max(1, cpu_count()*9//10) # aka number of concurrent db connections, which [sh|c]ould be ~<= 90% of the #cores available to SQL server
+      # NOTE: this may present a small problem if this job runs on different hardware than the db,
+      #       which is why this value can be overriden by optional argument.
     logger.info(f"using {n_threads} workers")
 
     srcsigs = Queue() # multi-consumer threadsafe!
