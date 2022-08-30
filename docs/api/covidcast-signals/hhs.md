@@ -97,6 +97,8 @@ psychiatric and rehabilitation facilities, Indian Health Service (IHS)
 facilities, U.S. Department of Veterans Affairs (VA) facilities, Defense Health
 Agency (DHA) facilities, and religious non-medical facilities.
 
+Standard errors and sample sizes are not applicable to these metrics.
+
 ## Lag and Backfill
 
 HHS issues updates to this timeseries once a week, and occasionally more
