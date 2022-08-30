@@ -147,7 +147,7 @@ class Database:
           signal_dim, geo_dim,
           {self.load_table}, {self.history_table}, {self.latest_table}''')
     output = [self._cursor.column_names] + self._cursor.fetchall()
-    get_structured_logger('do_analyze').info("ANALYZE results: "+str(output))
+    get_structured_logger('do_analyze').info("ANALYZE results", results=str(output))
 
   def insert_or_update_bulk(self, cc_rows):
     return self.insert_or_update_batch(cc_rows)
