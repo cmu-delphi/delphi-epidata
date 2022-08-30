@@ -10,19 +10,19 @@
 # Creates all prereq images (delphi_database, delphi_python) only if they don't
 # exist. If you need to rebuild a prereq, you're probably doing something
 # complicated, and can figure out the rebuild command on your own.
-# 
-# 
+#
+#
 # Commands:
-#            
+#
 #   web:     Stops currently-running delphi_web_epidata instances, if any.
 #            Rebuilds delphi_web_epidata image.
 #            Runs image in the background and pipes stdout to a log file.
-# 
+#
 #   db:      Stops currently-running delphi_database_epidata instances, if any.
 #            Rebuilds delphi_database_epidata image.
 #            Runs image in the background and pipes stdout to a log file.
 #            Blocks until database is ready to receive connections.
-# 
+#
 #   python:  Rebuilds delphi_web_python image. You shouldn't need to do this
 #            often; only if you are installing a new environment, or have
 #            made changes to delphi-epidata/dev/docker/python/Dockerfile.
@@ -35,7 +35,7 @@
 #
 #   clean:   Cleans up dangling Docker images.
 #
-# 
+#
 # Optional arguments:
 #   pdb=1         Drops you into debug mode upon test failure, if running tests.
 #   test=         Only runs tests in the directories provided here, e.g.
@@ -105,6 +105,7 @@ db:
 	@# Run the database
 	@docker run --rm -p 127.0.0.1:13306:3306 \
 		--network delphi-net --name delphi_database_epidata \
+                --cap-add=sys_nice \
 		delphi_database_epidata >$(LOG_DB) 2>&1 &
 
 	@# Block until DB is ready
@@ -127,7 +128,7 @@ py:
 all: web db py
 
 .PHONY=test
-test: 
+test:
 	@docker run -i --rm --network delphi-net \
 		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata,target=/usr/src/app/repos/delphi/delphi-epidata,readonly \
 		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata/src,target=/usr/src/app/delphi/epidata,readonly \
