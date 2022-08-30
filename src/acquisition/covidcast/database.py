@@ -138,6 +138,17 @@ class Database:
          '1', '1', '1', '1', '1', 1, 1, 1, 1);""")
     self._cursor.execute(f'DELETE FROM epimetric_load')
 
+  def do_analyze(self):
+    """performs and stores key distribution analyses, used for join order and index selection"""
+    # TODO: consider expanding this to update columns' histograms
+    #       https://dev.mysql.com/doc/refman/8.0/en/analyze-table.html#analyze-table-histogram-statistics-analysis
+    self._cursor.execute(
+      f'''ANALYZE TABLE
+          signal_dim, geo_dim,
+          {self.load_table}, {self.history_table}, {self.latest_table}''')
+    output = [self._cursor.column_names] + self._cursor.fetchall()
+    get_structured_logger('do_analyze').info("ANALYZE results: "+str(output))
+
   def insert_or_update_bulk(self, cc_rows):
     return self.insert_or_update_batch(cc_rows)
 
