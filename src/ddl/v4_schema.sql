@@ -8,7 +8,6 @@ CREATE TABLE geo_dim (
     UNIQUE INDEX `geo_dim_index` (`geo_type`, `geo_value`)
 ) ENGINE=InnoDB;
 
-
 CREATE TABLE signal_dim (
     `signal_key_id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `source` VARCHAR(32) NOT NULL,
@@ -124,10 +123,8 @@ CREATE OR REPLACE VIEW epimetric_full_v AS
         `t1`.`signal_key_id` AS `signal_key_id`,
         `t1`.`geo_key_id` AS `geo_key_id`
     FROM `epimetric_full` `t1`
-        JOIN `signal_dim` `t2`
-            ON `t1`.`signal_key_id` = `t2`.`signal_key_id`
-        JOIN `geo_dim` `t3`
-            ON `t1`.`geo_key_id` = `t3`.`geo_key_id`;
+        JOIN `signal_dim` `t2` USING (`signal_key_id`)
+        JOIN `geo_dim` `t3` USING (`geo_key_id`);
 
 CREATE OR REPLACE VIEW epimetric_latest_v AS
     SELECT
@@ -156,10 +153,8 @@ CREATE OR REPLACE VIEW epimetric_latest_v AS
         `t1`.`signal_key_id` AS `signal_key_id`,
         `t1`.`geo_key_id` AS `geo_key_id`
     FROM `epimetric_latest` `t1`
-        JOIN `signal_dim` `t2`
-            ON `t1`.`signal_key_id` = `t2`.`signal_key_id`
-        JOIN `geo_dim` `t3`
-            ON `t1`.`geo_key_id` = `t3`.`geo_key_id`;
+        JOIN `signal_dim` `t2` USING (`signal_key_id`)
+        JOIN `geo_dim` `t3` USING (`geo_key_id`);
 
 
 CREATE TABLE `covidcast_meta_cache` (
