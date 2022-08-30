@@ -5,20 +5,49 @@ nav_order: 4
 
 # Epidata API Development Guide
 
-## Quickstart
+## Development Quickstart
 
-In the directory where you want to work run the following
+Requires: Docker, possibly sudo access (depending on your Docker installation and OS).
 
-```
+In the directory where you want to work run the following:
+
+```sh
+# Make folder structure, download dependent repos, and symlink Makefile
 $ curl "https://raw.githubusercontent.com/cmu-delphi/delphi-epidata/dev/dev/local/install.sh" | bash
+```
+
+You should now have the following directory structure:
+
+```sh
+├── driver
+│   ├── .dockerignore -> repos/delphi/delphi-epidata/dev/local/.dockerignore
+│   ├── Makefile -> repos/delphi/delphi-epidata/dev/local/Makefile
+│   ├── repos
+│   │   └── delphi
+│   │       ├── delphi-epidata
+│   │       ├── flu-contest
+│   │       ├── github-deploy-repo
+│   │       ├── nowcast
+│   │       ├── operations
+│   │       └── utils
+```
+
+and you should now be in the `driver` directory.
+You can now execute make commands
+
+```sh
+# Create all docker containers: db, web, and python
 $ [sudo] make all
+
+# Run tests
 $ [sudo] make test
+
 # To drop into debugger on error
 $ [sudo] make test pdb=1
+
 # To test only a subset of tests
 $ [sudo] make test test=repos/delphi/delphi-epidata/integrations/acquisition
 ```
-(sudo requirement depends on your Docker installation and operating system)
 
 ## Long version
 
