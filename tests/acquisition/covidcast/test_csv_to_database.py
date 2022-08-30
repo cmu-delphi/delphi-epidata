@@ -2,6 +2,7 @@
 
 # standard library
 import argparse
+from typing import Iterable
 import unittest
 from unittest.mock import MagicMock
 
@@ -67,9 +68,12 @@ class UnitTests(unittest.TestCase):
         # fail the test for any other path
         raise Exception('unexpected path')
 
+    def iter_len(l: Iterable) -> int:
+      return len(list(l))
+
     data_dir = 'data_dir'
     mock_database = MagicMock()
-    mock_database.insert_or_update_bulk.return_value = 1
+    mock_database.insert_or_update_bulk = MagicMock(wraps=iter_len)
     mock_csv_importer = MagicMock()
     mock_csv_importer.load_csv = load_csv_impl
     mock_file_archiver = MagicMock()
@@ -83,7 +87,7 @@ class UnitTests(unittest.TestCase):
       mock_logger,
       csv_importer_impl=mock_csv_importer)
 
-    self.assertEqual(modified_row_count, 1)
+    self.assertEqual(modified_row_count, 3)
     # verify that appropriate rows were added to the database
     self.assertEqual(mock_database.insert_or_update_bulk.call_count, 1)
     call_args_list = mock_database.insert_or_update_bulk.call_args_list
