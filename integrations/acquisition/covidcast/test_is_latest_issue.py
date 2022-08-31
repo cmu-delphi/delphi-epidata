@@ -55,8 +55,6 @@ class CovidcastLatestIssueTests(unittest.TestCase):
     #Commonly used SQL commands:
     self.viewSignalLatest = f'SELECT * FROM {Database.latest_table}'
     self.viewSignalHistory = f'SELECT * FROM {Database.history_table}'
-    # self.viewSignalDim = f'SELECT `source`, `signal` FROM `signal_dim`'
-    # self.viewGeoDim = f'SELECT `geo_type`,`geo_value` FROM `geo_dim`'
 
   def tearDown(self):
     """Perform per-test teardown."""
