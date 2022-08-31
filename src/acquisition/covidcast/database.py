@@ -67,6 +67,10 @@ class CovidcastRow():
     return f"{self.geo_type}:{self.geo_value}"
 
 
+class DBLoadStateException(Exception):
+  pass
+
+
 class Database:
   """A collection of covidcast database operations."""
 
@@ -157,6 +161,11 @@ class Database:
     Insert new rows into the load table and dispatch into dimension and fact tables.
     """
 
+    if 0 != self.count_all_load_rows():
+      err_msg = "Non-zero count in the load table!!!  This indicates a previous acquisition run may have failed, another acquisition is in progress, or this process does not otherwise have exclusive access to the db!"
+      get_structured_logger("insert_or_update_batch").fatal(err_msg)
+      raise DBLoadStateException(err_msg)
+
     # NOTE: `value_update_timestamp` is hardcoded to "NOW" (which is appropriate) and 
     #       `is_latest_issue` is hardcoded to 1 (which is temporary and addressed later in this method)
     insert_into_loader_sql = f'''
@@ -180,11 +189,6 @@ class Database:
             SET `{self.load_table}`.`is_latest_issue`=0 
             WHERE `{self.load_table}`.`issue` < `{self.latest_view}`.`issue` 
     '''
-
-    if 0 != self.count_all_load_rows():
-      # TODO: add a test for this
-      logger = get_structured_logger("insert_or_update_batch")
-      logger.fatal("Non-zero count in the load table!!!  This indicates a previous acquisition run may have failed, another acquisition is in progress, or this process does not otherwise have exclusive access to the db!")
 
     # TODO: consider handling cc_rows as a generator instead of a list
 

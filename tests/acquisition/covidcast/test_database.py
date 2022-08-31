@@ -94,6 +94,7 @@ class UnitTests(unittest.TestCase):
     """Test that the row count is returned"""
     mock_connector = MagicMock()
     database = Database()
+    database.count_all_load_rows = lambda:0 # simulate an empty load table
     database.connect(connector_impl=mock_connector)
     connection = mock_connector.connect()
     cursor = connection.cursor() 
@@ -107,6 +108,7 @@ class UnitTests(unittest.TestCase):
     """Test that None is returned when row count cannot be returned"""
     mock_connector = MagicMock()
     database = Database()
+    database.count_all_load_rows = lambda:0 # simulate an empty load table
     database.connect(connector_impl=mock_connector)
     connection = mock_connector.connect()
     cursor = connection.cursor() 

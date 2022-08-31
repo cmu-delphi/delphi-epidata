@@ -7,7 +7,7 @@ import time
 
 # first party
 from delphi.epidata.acquisition.covidcast.csv_importer import CsvImporter
-from delphi.epidata.acquisition.covidcast.database import Database, CovidcastRow
+from delphi.epidata.acquisition.covidcast.database import Database, CovidcastRow, DBLoadStateException
 from delphi.epidata.acquisition.covidcast.file_archiver import FileArchiver
 from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
 
@@ -120,6 +120,10 @@ def upload_archive(
         if modified_row_count is None or modified_row_count: # else would indicate zero rows inserted
           total_modified_row_count += (modified_row_count if modified_row_count else 0)
           database.commit()
+      except DBLoadStateException as e:
+        # if the db is in a state that is not fit for loading new data,
+        # then we should stop processing any more files
+        raise e
       except Exception as e:
         all_rows_valid = False
         logger.exception('exception while inserting rows', exc_info=e)
