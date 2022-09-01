@@ -1,7 +1,7 @@
 import unittest
 
 from delphi_utils import Nans
-from delphi.epidata.acquisition.covidcast.database import Database, CovidcastRow
+from delphi.epidata.acquisition.covidcast.database import Database, CovidcastRow, DBLoadStateException
 from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase
 import delphi.operations.secrets as secrets
 
@@ -28,6 +28,28 @@ class TestTest(CovidcastBase):
             else:
                 results[table] = None
         return results
+
+    def test_insert_or_update_with_nonempty_load_table(self):
+        # make rows
+        a_row = self._make_placeholder_row()[0]
+        another_row = self._make_placeholder_row(time_value=self.DEFAULT_TIME_VALUE+1, issue=self.DEFAULT_ISSUE+1)[0]
+        # insert one
+        self._db.insert_or_update_bulk([a_row])
+        # put something into the load table
+        self._db._cursor.execute(f'''
+            INSERT INTO {self._db.load_table}
+            (source, `signal`, geo_type, geo_value, time_type, time_value, issue, `lag`, value_updated_timestamp)
+            VALUES
+            ('sr',   'si',     'gt',     'gv',      'tt',      3,          8,     5,     13)''')
+        # ensure inserting the other row fails
+        with self.assertRaises(DBLoadStateException):
+            self._db.insert_or_update_bulk([another_row])
+        # make sure the one row is still in there but the other is not
+        nones = [None] * 2
+        present_values = list(self._find_matches_for_row(a_row).values())
+        self.assertNotEqual(present_values, nones)
+        absent_values = list(self._find_matches_for_row(another_row).values())
+        self.assertEqual(absent_values, nones)
 
     def test_id_sync(self):
         # the history and latest tables have a non-AUTOINCREMENT primary key id that is fed by the
