@@ -1,3 +1,4 @@
+USE epidata;
 /*
 This table stores various sensors of Delphi's COVID-19 surveillance streams for nowcasting.
 */
