@@ -13,7 +13,8 @@ social distancing), mental health, and economic and health impacts they have
 experienced as a result of the pandemic. A high-level overview of the survey is
 posted [on the COVIDcast website](https://delphi.cmu.edu/covid19/ctis/), and an
 international version is [conducted by the University of
-Maryland](https://covidmap.umd.edu/). Data collection [will cease on June 25, 2022](end-of-survey.md).
+Maryland](https://covidmap.umd.edu/). Data collection [ceased on June 25,
+2022](end-of-survey.md).
 
 The [survey results dashboard](https://delphi.cmu.edu/covidcast/survey-results/)
 provides a high-level summary of survey results. Geographically aggregated data
@@ -21,11 +22,14 @@ from this survey is publicly available through the [COVIDcast API](../api/covidc
 as the [`fb-survey` data source](../api/covidcast-signals/fb-survey.md). Demographic breakdowns of survey
 data are publicly available as [downloadable contingency tables](contingency-tables.md).
 
-This documentation describes the survey items, data coding, data distribution,
-and the survey weights computed by Facebook. It also documents the individual
-response data, which is available to researchers with a signed Data Use
-Agreement. If you are a researcher and would like to get access to the data, see
-our page on getting [data access](data-access.md).
+The [CTIS Methodology
+Report](https://dataforgood.facebook.com/dfg/resources/CTIS-methodology-report)
+describes the survey design, data collection process, weighting, and aggregation
+processes, and is the primary reference for researchers working with the survey
+data. This website describes details specific to the US version of the survey
+and documents the individual response data, which is available to researchers
+with a signed Data Use Agreement. If you are a researcher and would like to get
+access to the data, see our page on getting [data access](data-access.md).
 
 If you have questions about the survey or getting access to data, contact us at
 <delphi-survey-info@lists.andrew.cmu.edu>.
@@ -37,7 +41,7 @@ Group](https://delphi.cmu.edu/) at Carnegie Mellon University. Team members
 include:
 
 * [Alex Reinhart](https://www.refsmmat.com/), Principal Investigator
-* Wichada La Motte-Kerr, Survey Coordinator
+* Wichada La Motte-Kerr, Survey Coordinator (2020-2022)
 * Robin Mejia, survey advisor
 * Nat DeFries, statistical developer and data engineer
 * Eu Jing Chua (2020-2021) and Mashrin Srivastava (2021-2022), data analysis

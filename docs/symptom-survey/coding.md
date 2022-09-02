@@ -13,9 +13,12 @@ provides the full survey text, coding schemes, and history of survey waves and
 revisions.
 
 <div style="background-color:#f5f6fa; padding: 10px 30px;"><strong>Comprehensive
-codebook:</strong> Our <a href="codebook.csv">codebook (CSV)</a> lists all
-questions and answer choices across all waves of the survey. See below for
-details on the <a href="#basic-coding-rules">basic coding rules</a> and the <a
+documentation:</strong> The <a
+href="https://dataforgood.facebook.com/dfg/resources/CTIS-methodology-report">CTIS
+Methodology Report</a> describes the sampling, data collection, and weighting
+process. Our <a href="codebook.csv">codebook (CSV)</a> lists all questions and
+answer choices across all waves of the survey. See below for details on the <a
+href="#basic-coding-rules">basic coding rules</a> and the <a
 href="#comprehensive-codebook">formatting of the codebook</a>, and narrative
 explanations of the reasons for each instrument change.</div>
 
