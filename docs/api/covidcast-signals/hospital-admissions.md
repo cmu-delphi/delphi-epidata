@@ -68,6 +68,8 @@ hospitalizations, but not all of them, and so this source only represents those
 hospitalizations known to them. Their coverage may vary across the United
 States.
 
+Standard errors and sample sizes are not available for this data source.
+
 ## Qualifying Admissions
 
 We receive two daily data streams of new hospital admissions recorded by the health system partners at each location. One stream is based on electronic medical records, and the other comes from claims records.
