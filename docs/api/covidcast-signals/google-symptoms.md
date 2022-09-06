@@ -116,6 +116,8 @@ popularity of symptoms in searches within each geographical region individually.
 This means that the resulting values of symptom set popularity are **NOT**
 comparable across geographic regions, while the values of different symptom sets are comparable within the same location.
 
+Standard errors and sample sizes are not available for this data source.
+
 More details about the limitations of this dataset are available in [Google's Search
 Trends symptoms dataset documentation](https://storage.googleapis.com/gcp-public-data-symptom-search/COVID-19%20Search%20Trends%20symptoms%20dataset%20documentation%20.pdf).
 

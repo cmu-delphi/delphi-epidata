@@ -19,8 +19,8 @@ grand_parent: COVIDcast Epidata API
 
 This data source is based on the [COVID-19 Trends and Impact Survey (CTIS)](../../symptom-survey/)
 run by the Delphi group at Carnegie Mellon.
-Facebook directs a random sample of its users to these surveys, which are
-voluntary. Users age 18 or older are eligible to complete the surveys, and
+Facebook directed a random sample of its users to these surveys, which were
+voluntary. Users age 18 or older were eligible to complete the surveys, and
 their survey responses are held by CMU and are sharable with other health
 researchers under a data use agreement. No individual survey responses are
 shared back to Facebook. See our [surveys
@@ -28,8 +28,9 @@ page](https://delphi.cmu.edu/covid19/ctis/) for more detail about how the
 surveys work and how they are used outside the COVIDcast API.
 
 As of November 2021, the average number of Facebook survey responses we
-receive each day is about 40,000, and the total number of survey responses we
-have received is over 25 million.
+received each day was about 40,000. The survey ran from April 6, 2020 to June
+25, 2022, collecting roughly 29.5 million responses in the United States in that
+time.
 
 We produce several sets of signals based on the survey data, listed and
 described in the sections below:

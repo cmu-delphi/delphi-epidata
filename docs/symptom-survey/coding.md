@@ -13,9 +13,12 @@ provides the full survey text, coding schemes, and history of survey waves and
 revisions.
 
 <div style="background-color:#f5f6fa; padding: 10px 30px;"><strong>Comprehensive
-codebook:</strong> Our <a href="codebook.csv">codebook (CSV)</a> lists all
-questions and answer choices across all waves of the survey. See below for
-details on the <a href="#basic-coding-rules">basic coding rules</a> and the <a
+documentation:</strong> The <a
+href="https://dataforgood.facebook.com/dfg/resources/CTIS-methodology-report">CTIS
+Methodology Report</a> describes the sampling, data collection, and weighting
+process. Our <a href="codebook.csv">codebook (CSV)</a> lists all questions and
+answer choices across all waves of the survey. See below for details on the <a
+href="#basic-coding-rules">basic coding rules</a> and the <a
 href="#comprehensive-codebook">formatting of the codebook</a>, and narrative
 explanations of the reasons for each instrument change.</div>
 
@@ -118,18 +121,19 @@ have question text or answer choices defined.
 
 Available columns:
 
-* `wave`: Integer specifying the survey wave that field is available for or item was asked in.
+* `version`: Integer specifying the survey version ("wave") that field is available for or item was asked in.
 * `variable`: Field name as it appears in the microdata. For most survey items, this corresponds to question name. Each subquestion of a matrix item is listed seperately. For these, `variable` is the question name followed by the subquestion number, e.g. A1_3 for the third subquestion of item A3.
+* `qid`: Unique identifier of the format `QID<number>` assigned by Qualtrics to each survey item.
+* `matrix_base_name`: For matrix items, the question name without the subquestion indicated.
 * `replaces`: Question name of previous version of survey item, if any. Different versions of a given question may vary in wording, referenced time frame, or in other ways; refer to item text for specfics.
 * `description`: Brief description of the meaning of a field or survey item.
 * `question`: Survey item text.
 * `matrix_subquestion`: Subquestion text for a matrix item.
-* `choices`: JSON-formatted map of answer codes and response choice text. For example, `"5": "California"` means that responses with the value 5 correspond to the respondent selecting "California".
-* `type`: Survey item format; one of "Matrix" (several questions with the same question stem are displayed together with the same answer choices), "Text" (free text entry), "Multiple Choice" (particpant can select only one answer choice), or "Multiselect" (respondent can select one or more answer choices).
+* `response_options`: JSON-formatted map of answer codes and response choice text. For example, `"5": "California"` means that responses with the value 5 correspond to the respondent selecting "California".
+* `question_type`: Survey item format; one of "Matrix" (several questions with the same question stem are displayed together with the same answer choices), "Text" (free text entry), "Multiple Choice" (particpant can select only one answer choice), or "Multiselect" (respondent can select one or more answer choices).
 * `display_logic`: Conditions a respondent has to satisfy to be shown an item. For example, this can require a specific answer on a single previous item or a set of previous items, or that a previous item was displayed.
 * `response_option_randomization`: How answer choices are displayed for a given question. Answer choice order can be fixed ("none"), reversed ("scale reversal", e.g. for Likert scales) or shuffled ("randomized") between respondents.
-* `group_of_respondents_item_was_shown_to`: Module-based subset of respondents item was asked of. One of "all" (if item was included in the [Daily Core](modules.md) and asked of all respondents), "Module A", or "Module B".
-
+* `respondent_group`: Module-based subset of respondents item was asked of. One of "all" (if item was included in the [Daily Core](modules.md) and asked of all respondents), "Module A", or "Module B".
 
 
 

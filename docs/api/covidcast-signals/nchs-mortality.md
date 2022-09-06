@@ -96,6 +96,10 @@ affected or delayed by COVID-19 related response activities which make death
 counts not comparable across states. We check for updates reported by NCHS every
 weekday but will report the signals weekly (on Monday).
 
+## Limitations
+
+Standard errors and sample sizes are not applicable to these metrics.
+
 ## Source and Licensing
 
 This data was originally published by the National Center for Health Statistics,
