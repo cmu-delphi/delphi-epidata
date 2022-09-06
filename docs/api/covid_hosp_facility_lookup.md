@@ -1,6 +1,6 @@
 ---
 title: COVID-19 Reported Patient Impact and Hospital Capacity - Facility lookup
-parent: Epidata API (Other Diseases)
+parent: Other Endpoints (COVID-19 and Other Diseases)
 ---
 
 # COVID-19 Hospitalization: Facility Lookup

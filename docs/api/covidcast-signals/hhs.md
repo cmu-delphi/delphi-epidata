@@ -1,7 +1,7 @@
 ---
 title: Department of Health & Human Services
 parent: Data Sources and Signals
-grand_parent: COVIDcast Epidata API
+grand_parent: COVIDcast Main Endpoint
 ---
 
 # Department of Health & Human Services

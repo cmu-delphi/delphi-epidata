@@ -1,7 +1,7 @@
 ---
 title: Google Search Trends symptoms dataset
 parent: Data Sources and Signals
-grand_parent: COVIDcast Epidata API
+grand_parent: COVIDcast Main Endpoint
 ---
 
 # Google Symptoms

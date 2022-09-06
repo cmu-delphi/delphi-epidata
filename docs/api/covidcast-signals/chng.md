@@ -1,7 +1,7 @@
 ---
 title: Change Healthcare
 parent: Data Sources and Signals
-grand_parent: COVIDcast Epidata API
+grand_parent: COVIDcast Main Endpoint
 ---
 
 # Change Healthcare

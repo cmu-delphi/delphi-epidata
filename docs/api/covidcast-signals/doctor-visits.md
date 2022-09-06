@@ -1,7 +1,7 @@
 ---
 title: Doctor Visits
 parent: Data Sources and Signals
-grand_parent: COVIDcast Epidata API
+grand_parent: COVIDcast Main Endpoint
 ---
 
 # Doctor Visits

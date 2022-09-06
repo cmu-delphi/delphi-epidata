@@ -1,6 +1,6 @@
 ---
-title: Epidata API (Other Diseases)
-nav_order: 3
+title: Other Endpoints (COVID-19 and Other Diseases)
+nav_order: 2
 has_children: true
 ---
 

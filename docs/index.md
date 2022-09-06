@@ -1,5 +1,5 @@
 ---
-title: Home
+title: Epidata API Home
 nav_order: 0
 ---
 

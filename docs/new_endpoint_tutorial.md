@@ -1,6 +1,6 @@
 ---
 title: New Endpoint Tutorial
-nav_order: 5
+nav_order: 4
 ---
 
 # Tutorial: Adding a new API endpoint

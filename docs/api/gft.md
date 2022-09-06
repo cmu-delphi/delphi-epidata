@@ -1,6 +1,6 @@
 ---
 title: Google Flu Trends
-parent: Epidata API (Other Diseases)
+parent: Other Endpoints (COVID-19 and Other Diseases)
 ---
 
 # Google Flu Trends

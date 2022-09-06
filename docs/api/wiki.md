@@ -1,6 +1,6 @@
 ---
 title: Wikipedia Access
-parent: Epidata API (Other Diseases)
+parent: Other Endpoints (COVID-19 and Other Diseases)
 ---
 
 # Wikipedia Access
