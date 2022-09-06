@@ -7,11 +7,11 @@ nav_order: 10
 # End of CTIS Data Collection
 {: .no_toc}
 
-The US COVID-19 Trends and Impact Survey will stop inviting new respondents to
+The US COVID-19 Trends and Impact Survey stopped inviting new respondents to
 complete the survey on June 25, 2022. All aggregate data will remain publicly
 available, and microdata will continue to be available to academic and nonprofit
-researchers. We provide details below on this decision and how it will affect
-users of the data.
+researchers. Below is the information we provided users of the data as the
+we prepared to end the survey.
 
 
 ## Why CTIS Data Collection is Concluding
