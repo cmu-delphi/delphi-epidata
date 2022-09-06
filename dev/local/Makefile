@@ -94,6 +94,9 @@ db:
 		docker stop $(DATABASE_CONTAINER_ID);\
 	fi
 
+	@# Setup virtual network if it doesn't exist
+	@docker network ls | grep delphi-net || docker network create --driver bridge delphi-net
+
 	@# Only build prereqs if we need them
 	@docker images delphi_database | grep delphi || \
 		docker build -t delphi_database -f repos/delphi/operations/dev/docker/database/Dockerfile .
@@ -124,7 +127,7 @@ py:
 		-f repos/delphi/delphi-epidata/dev/docker/python/Dockerfile .
 
 .PHONY=all
-all: web db py
+all: db web py
 
 .PHONY=test
 test: 
