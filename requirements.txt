@@ -1,6 +1,6 @@
 itsdangerous<2.1
 jinja2==3.0.3
-werkzeug<2.1
+werkzeug==2.2.2
 Flask==2.2.2
 SQLAlchemy==1.4.40
 mysqlclient==2.0.2
