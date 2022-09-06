@@ -9,7 +9,7 @@ LABEL org.opencontainers.image.source=https://github.com/cmu-delphi/delphi-epida
 RUN ln -s -f /usr/share/zoneinfo/America/New_York /etc/localtime
 
 COPY requirements.txt /app
-RUN pip install --no-cache-dir -r requirements.txt
+RUN --mount=type=cache,target=/root/.cache/pip pip install -r requirements.txt
 
 # disable python stdout buffering
 ENV PYTHONUNBUFFERED 1
