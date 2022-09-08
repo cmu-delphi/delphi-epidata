@@ -152,7 +152,7 @@ class DatabaseMeta(Database):
         # TODO: Switch to delphi_epidata_py when we release it https://github.com/cmu-delphi/delphi-epidata/issues/942.
         self.delphi_epidata = False
 
-    def compute_covidcast_meta(self, table_name=None, jit=False, parallel=False):
+    def compute_covidcast_meta(self, table_name=None, jit=False, parallel=False, n_threads=None):
         """This wrapper is here for A/B testing the JIT and non-JIT metadata computation.
         
         TODO: Remove after code review.

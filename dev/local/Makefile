@@ -110,7 +110,7 @@ db:
 
 	@# Block until DB is ready
 	@while true; do \
-		sed -n '/Temporary server stopped/,/mysqld: ready for connections/p' $(LOG_DB) | grep "ready for connections" && break; \
+		sed -n '/mysqld: ready for connections/p' $(LOG_DB) | grep "ready for connections" && break; \
 		tail -1 $(LOG_DB); \
 		sleep 1; \
 	done
