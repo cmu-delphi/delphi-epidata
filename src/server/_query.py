@@ -350,7 +350,7 @@ class QueryBuilder:
         updates this QueryBuilder to point to another table.
         useful for switching to a different view of the data...
         """
-        # TODO: consider creating a copy of the QueryBuilder, modifying that, and returning the new one.
+        # WARNING: if we ever switch to re-using QueryBuilder, we should change this to return a copy.
         self.table: str = f"{new_table} {self.alias}"
         return self
 

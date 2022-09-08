@@ -15,7 +15,6 @@ import numpy as np
 from delphi_utils import Nans
 from delphi.epidata.client.delphi_epidata import Epidata
 from delphi.epidata.acquisition.covidcast.csv_to_database import main
-from delphi.epidata.acquisition.covidcast.dbjobs_runner import main as dbjobs_main
 import delphi.operations.secrets as secrets
 
 # py3tester coverage target (equivalent to `import *`)
@@ -37,9 +36,9 @@ class CsvUploadingTests(unittest.TestCase):
     cur = cnx.cursor()
 
     # clear all tables
-    cur.execute("truncate table signal_load")
-    cur.execute("truncate table signal_history")
-    cur.execute("truncate table signal_latest")
+    cur.execute("truncate table epimetric_load")
+    cur.execute("truncate table epimetric_full")
+    cur.execute("truncate table epimetric_latest")
     cur.execute("truncate table geo_dim")
     cur.execute("truncate table signal_dim")
     # reset the `covidcast_meta_cache` table (it should always have one row)
@@ -79,9 +78,9 @@ class CsvUploadingTests(unittest.TestCase):
 
   def verify_timestamps_and_defaults(self):
     self.cur.execute('''
-select value_updated_timestamp from signal_history
+select value_updated_timestamp from epimetric_full
 UNION ALL
-select value_updated_timestamp from signal_latest''')
+select value_updated_timestamp from epimetric_latest''')
     for (value_updated_timestamp,) in self.cur:
       self.assertGreater(value_updated_timestamp, 0)
 
@@ -102,8 +101,6 @@ select value_updated_timestamp from signal_latest''')
           log_file=log_file_directory +
           "output.log",
           data_dir=data_dir,
-          is_wip_override=False,
-          not_wip_override=False,
           specific_issue_date=False)
     uploader_column_rename = {"geo_id": "geo_value", "val": "value", "se": "stderr", "missing_val": "missing_value", "missing_se": "missing_stderr"}
 
@@ -123,7 +120,6 @@ select value_updated_timestamp from signal_latest''')
 
       # upload CSVs
       main(args)
-      dbjobs_main()
       response = Epidata.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
 
       expected_values = pd.concat([values, pd.DataFrame({ "time_value": [20200419] * 3, "signal": [signal_name] * 3, "direction": [None] * 3})], axis=1).rename(columns=uploader_column_rename).to_dict(orient="records")
@@ -152,7 +148,6 @@ select value_updated_timestamp from signal_latest''')
 
       # upload CSVs
       main(args)
-      dbjobs_main()
       response = Epidata.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
 
       expected_values = pd.concat([values, pd.DataFrame({
@@ -187,7 +182,6 @@ select value_updated_timestamp from signal_latest''')
 
       # upload CSVs
       main(args)
-      dbjobs_main()
       response = Epidata.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
 
       expected_response = {'result': -2, 'message': 'no results'}
@@ -213,7 +207,6 @@ select value_updated_timestamp from signal_latest''')
 
       # upload CSVs
       main(args)
-      dbjobs_main()
       response = Epidata.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
 
       expected_values_df = pd.concat([values, pd.DataFrame({
@@ -232,42 +225,6 @@ select value_updated_timestamp from signal_latest''')
       self.setUp()
 
 
-    with self.subTest("Valid wip"):
-      values = pd.DataFrame({
-        "geo_id": ["me", "nd", "wa"],
-        "val": [10.0, 20.0, 30.0],
-        "se": [0.01, 0.02, 0.03],
-        "sample_size": [100.0, 200.0, 300.0],
-        "missing_val": [Nans.NOT_MISSING] * 3,
-        "missing_se": [Nans.NOT_MISSING] * 3,
-        "missing_sample_size": [Nans.NOT_MISSING] * 3
-      })
-      signal_name = "wip_prototype"
-      values.to_csv(source_receiving_dir + f'/20200419_state_{signal_name}.csv', index=False)
-
-      # upload CSVs
-      main(args)
-      dbjobs_main()
-      response = Epidata.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
-
-      expected_values = pd.concat([values, pd.DataFrame({
-        "time_value": [20200419] * 3,
-        "signal": [signal_name] * 3,
-        "direction": [None] * 3
-      })], axis=1).rename(columns=uploader_column_rename).to_dict(orient="records")
-      expected_response = {'result': 1, 'epidata': self.apply_lag(expected_values), 'message': 'success'}
-
-      self.assertEqual(response, expected_response)
-      self.verify_timestamps_and_defaults()
-
-      # Verify that files were archived
-      path = data_dir + f'/archive/successful/src-name/20200419_state_wip_prototype.csv.gz'
-      self.assertIsNotNone(os.stat(path))
-
-      self.tearDown()
-      self.setUp()
-
-
     with self.subTest("Valid signal with name length 32<x<64"):
       values = pd.DataFrame({
         "geo_id": ["pa"],
@@ -278,12 +235,11 @@ select value_updated_timestamp from signal_latest''')
         "missing_se": [Nans.NOT_MISSING],
         "missing_sample_size": [Nans.NOT_MISSING]
       })
-      signal_name = "wip_really_long_name_that_will_be_accepted"
+      signal_name = "really_long_name_that_will_be_accepted"
       values.to_csv(source_receiving_dir + f'/20200419_state_{signal_name}.csv', index=False)
 
       # upload CSVs
       main(args)
-      dbjobs_main()
       response = Epidata.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
 
       expected_values = pd.concat([values, pd.DataFrame({
@@ -310,12 +266,11 @@ select value_updated_timestamp from signal_latest''')
         "missing_se": [Nans.NOT_MISSING],
         "missing_sample_size": [Nans.NOT_MISSING]
       })
-      signal_name = "wip_really_long_name_that_will_get_truncated_lorem_ipsum_dolor_sit_amet"
+      signal_name = "really_long_name_that_will_get_truncated_lorem_ipsum_dolor_sit_amet"
       values.to_csv(source_receiving_dir + f'/20200419_state_{signal_name}.csv', index=False)
 
       # upload CSVs
       main(args)
-      dbjobs_main()
       response = Epidata.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
 
       expected_response = {'result': -2, 'message': 'no results'}
@@ -332,7 +287,6 @@ select value_updated_timestamp from signal_latest''')
         f.write('this,header,is,wrong\n')
 
       main(args)
-      dbjobs_main()
 
       path = data_dir + '/archive/failed/src-name/20200420_state_test.csv'
       self.assertIsNotNone(os.stat(path))
@@ -346,7 +300,6 @@ select value_updated_timestamp from signal_latest''')
         f.write('file name is wrong\n')
 
       main(args)
-      dbjobs_main()
 
       path = data_dir + '/archive/failed/unknown/hello.csv'
       self.assertIsNotNone(os.stat(path))

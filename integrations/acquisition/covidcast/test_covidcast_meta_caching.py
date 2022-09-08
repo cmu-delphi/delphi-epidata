@@ -40,9 +40,9 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     cur = cnx.cursor()
 
     # clear all tables
-    cur.execute("truncate table signal_load")
-    cur.execute("truncate table signal_history")
-    cur.execute("truncate table signal_latest")
+    cur.execute("truncate table epimetric_load")
+    cur.execute("truncate table epimetric_full")
+    cur.execute("truncate table epimetric_latest")
     cur.execute("truncate table geo_dim")
     cur.execute("truncate table signal_dim")
     # reset the `covidcast_meta_cache` table (it should always have one row)
@@ -71,14 +71,19 @@ class CovidcastMetaCacheTests(unittest.TestCase):
 
     # insert dummy data
     self.cur.execute(f'''
-      INSERT INTO `signal_dim` (`signal_key_id`, `source`, `signal`) VALUES (42, 'src', 'sig');
+      INSERT INTO `signal_dim` (`signal_key_id`, `source`, `signal`)
+      VALUES
+        (42, 'src', 'sig');
     ''')
     self.cur.execute(f'''
-      INSERT INTO `geo_dim` (`geo_key_id`, `geo_type`, `geo_value`) VALUES (96, 'state', 'pa'), (97, 'state', 'wa');
+      INSERT INTO `geo_dim` (`geo_key_id`, `geo_type`, `geo_value`)
+      VALUES
+        (96, 'state', 'pa'), 
+        (97, 'state', 'wa');
     ''')
     self.cur.execute(f'''
       INSERT INTO
-        `signal_latest` (`signal_data_id`, `signal_key_id`, `geo_key_id`, `time_type`,
+        `epimetric_latest` (`epimetric_id`, `signal_key_id`, `geo_key_id`, `time_type`,
 	      `time_value`, `value_updated_timestamp`,
         `value`, `stderr`, `sample_size`,
         `issue`, `lag`, `missing_value`,

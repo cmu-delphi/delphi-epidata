@@ -30,7 +30,7 @@ class DeleteBatch(unittest.TestCase):
         self._db = Database()
         self._db.connect()
 
-        for table in "signal_load  signal_latest  signal_history  geo_dim  signal_dim".split():
+        for table in "epimetric_load  epimetric_latest  epimetric_full  geo_dim  signal_dim".split():
             self._db._cursor.execute(f"TRUNCATE TABLE {table}")
 
 
@@ -65,7 +65,6 @@ class DeleteBatch(unittest.TestCase):
             ]
         rows.append(CovidcastRow('src', 'sig', 'day', 'geo', 0, "d_justone",  0,0,0,0,0,0, 1, 0))
         self._db.insert_or_update_bulk(rows)
-        self._db.run_dbjobs()
 
         # delete entries
         self._db.delete_batch(cc_deletions)
@@ -93,9 +92,9 @@ class DeleteBatch(unittest.TestCase):
             ),
             # verify latest issue was corrected
             Example(
-                f'select geo_value, issue from {self._db.latest_view} where time_value=0',
-                [('d_nonlatest', 2),
-                 ('d_latest', 2)]
+                f'select geo_value, issue from {self._db.latest_view} where time_value=0 order by geo_value',
+                [('d_latest', 2),
+                 ('d_nonlatest', 2)]
             )
         ]
 

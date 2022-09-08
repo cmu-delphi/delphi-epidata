@@ -3,47 +3,20 @@ import unittest
 from delphi_utils import Nans
 import delphi.operations.secrets as secrets
 
-from delphi.epidata.acquisition.covidcast.database import Database, CovidcastRow
+from delphi.epidata.acquisition.covidcast.database import Database, CovidcastRow, DBLoadStateException
+from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase
 
 # all the Nans we use here are just one value, so this is a shortcut to it:
 nmv = Nans.NOT_MISSING.value
 
-class TestTest(unittest.TestCase):
-
-    def setUp(self):
-        # use the local test instance of the database
-        secrets.db.host = 'delphi_database_epidata'
-        secrets.db.epi = ('user', 'pass')
-
-        self._db = Database()
-        self._db.connect()
-
-        # empty all of the data tables
-        for table in "signal_load  signal_latest  signal_history  geo_dim  signal_dim".split():
-            self._db._cursor.execute(f"TRUNCATE TABLE {table}")
-
-    def tearDown(self):
-        # close and destroy conenction to the database
-        self._db.disconnect(False)
-        del self._db
-
-    def _make_dummy_row(self):
-        return CovidcastRow('src', 'sig', 'day', 'state', 2022_02_22, 'pa', 2, 22, 222, nmv,nmv,nmv, 2022_02_22, 0)
-        #             cols:                               ^ timeval         v  se  ssz               ^issue      ^lag
-
-    def _insert_rows(self, rows):
-        # inserts rows into the database using the full acquisition process, including 'dbjobs' load into history & latest tables
-        self._db.insert_or_update_bulk(rows)
-        self._db.run_dbjobs()
-        ###db._connection.commit()  # NOTE: this isnt needed here, but would be if using external access (like through client lib)
+class TestTest(CovidcastBase):
 
     def _find_matches_for_row(self, row):
         # finds (if existing) row from both history and latest views that matches long-key of provided CovidcastRow
-        # TODO: consider making `issue` an optional match...  this will break the at-most-1-row-returned assumption for signal_history
         cols = "source signal time_type time_value geo_type geo_value issue".split()
         results = {}
         cur = self._db._cursor
-        for table in ['signal_latest_v', 'signal_history_v']:
+        for table in ['epimetric_latest_v', 'epimetric_full_v']:
             q = f"SELECT * FROM {table} WHERE "
             # NOTE: repr() puts str values in single quotes but simply 'string-ifies' numerics;
             #       getattr() accesses members by string of their name
@@ -57,17 +30,39 @@ class TestTest(unittest.TestCase):
                 results[table] = None
         return results
 
+    def test_insert_or_update_with_nonempty_load_table(self):
+        # make rows
+        a_row = self._make_placeholder_row()[0]
+        another_row = self._make_placeholder_row(time_value=self.DEFAULT_TIME_VALUE+1, issue=self.DEFAULT_ISSUE+1)[0]
+        # insert one
+        self._db.insert_or_update_bulk([a_row])
+        # put something into the load table
+        self._db._cursor.execute(f'''
+            INSERT INTO {self._db.load_table}
+            (source, `signal`, geo_type, geo_value, time_type, time_value, issue, `lag`, value_updated_timestamp)
+            VALUES
+            ('sr',   'si',     'gt',     'gv',      'tt',      3,          8,     5,     13)''')
+        # ensure inserting the other row fails
+        with self.assertRaises(DBLoadStateException):
+            self._db.insert_or_update_bulk([another_row])
+        # make sure the one row is still in there but the other is not
+        nones = [None] * 2
+        present_values = list(self._find_matches_for_row(a_row).values())
+        self.assertNotEqual(present_values, nones)
+        absent_values = list(self._find_matches_for_row(another_row).values())
+        self.assertEqual(absent_values, nones)
+
     def test_id_sync(self):
         # the history and latest tables have a non-AUTOINCREMENT primary key id that is fed by the
         # AUTOINCREMENT pk id from the load table.  this test is intended to make sure that they
         # appropriately stay in sync with each other
 
-        pk_column = 'signal_data_id'
-        histor_view = 'signal_history_v'
-        latest_view = 'signal_latest_v'
+        pk_column = 'epimetric_id'
+        histor_view = 'epimetric_full_v'
+        latest_view = 'epimetric_latest_v'
 
         # add a data point
-        base_row = self._make_dummy_row()
+        base_row, _ = self._make_placeholder_row()
         self._insert_rows([base_row])
         # ensure the primary keys match in the latest and history tables
         matches = self._find_matches_for_row(base_row)
@@ -77,7 +72,7 @@ class TestTest(unittest.TestCase):
         old_pk_id = matches[latest_view][pk_column]
 
         # add a reissue for said data point
-        next_row = self._make_dummy_row()
+        next_row, _ = self._make_placeholder_row()
         next_row.issue += 1
         self._insert_rows([next_row])
         # ensure the new keys also match

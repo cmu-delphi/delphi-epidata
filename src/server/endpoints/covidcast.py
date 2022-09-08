@@ -48,8 +48,8 @@ bp = Blueprint("covidcast", __name__)
 alias = None
 JIT_COMPUTE = True
 
-latest_table = "signal_latest_v"
-history_table = "signal_history_v"
+latest_table = "epimetric_latest_v"
+history_table = "epimetric_full_v"
 
 def parse_source_signal_pairs() -> List[SourceSignalPair]:
     ds = request.values.get("data_source")
@@ -122,27 +122,6 @@ def _handle_lag_issues_as_of(q: QueryBuilder, issues: Optional[List[Union[Tuple[
     else:
         # else we are using the (standard/default) `latest_table`, to fetch the most recent issue quickly
         pass
-
-
-def guess_index_to_use(time: List[TimePair], geo: List[GeoPair], issues: Optional[List[Union[Tuple[int, int], int]]] = None, lag: Optional[int] = None, as_of: Optional[int] = None) -> Optional[str]:
-    #TODO: remove this method?
-    return None
-
-    time_values_to_retrieve = sum((t.count() for t in time))
-    geo_values_to_retrieve = sum((g.count() for g in geo))
-
-    if geo_values_to_retrieve > 5 or time_values_to_retrieve < 30:
-        # no optimization known
-        return None
-
-    if issues:
-        return "by_issue"
-    elif lag is not None:
-        return "by_lag"
-    elif as_of is None:
-        # latest
-        return "by_issue"
-    return None
 
 
 def parse_transform_args():
@@ -227,8 +206,6 @@ def handle():
     q.where_source_signal_pairs("source", "signal", source_signal_pairs)
     q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
     q.where_time_pairs("time_type", "time_value", time_pairs)
-
-    q.index = guess_index_to_use(time_pairs, geo_pairs, issues, lag, as_of)
 
     _handle_lag_issues_as_of(q, issues, lag, as_of)
 
@@ -423,7 +400,7 @@ def handle_correlation():
     if lag is None:
         lag = 28
 
-    # build query -- TODO: should this be using most recent issue but also specifying a lag?
+    # `lag` above is used in post-processing, not in the database query, so we can use latest here
     q = QueryBuilder(latest_table, "t")
 
     fields_string = ["geo_type", "geo_value", "source", "signal"]

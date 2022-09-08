@@ -15,6 +15,7 @@ import pandas as pd
 
 from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import main as update_cache
 from delphi.epidata.acquisition.covidcast.database import Database
+from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase
 from delphi.epidata.acquisition.covidcast.covidcast_row import CovidcastRow, CovidcastRows, set_df_dtypes
 
 # use the local instance of the Epidata API
@@ -30,43 +31,14 @@ def _read_csv(txt: str) -> pd.DataFrame:
     df.geo_value = df.geo_value.str.zfill(5)
     return df
 
-class CovidcastEndpointTests(unittest.TestCase):
+class CovidcastEndpointTests(CovidcastBase):
+
     """Tests the `covidcast/*` endpoint."""
 
-    def setUp(self):
+    def localSetUp(self):
         """Perform per-test setup."""
-
-        # connect to the database and clear the tables
-        cnx = mysql.connector.connect(user="user", password="pass", host="delphi_database_epidata", database="covid")
-        cur = cnx.cursor()
-
-        # clear all tables
-        cur.execute("truncate table signal_load")
-        cur.execute("truncate table signal_history")
-        cur.execute("truncate table signal_latest")
-        cur.execute("truncate table geo_dim")
-        cur.execute("truncate table signal_dim")
         # reset the `covidcast_meta_cache` table (it should always have one row)
-        cur.execute('update covidcast_meta_cache set timestamp = 0, epidata = "[]"')
-
-        cnx.commit()
-        cur.close()
-
-        # make connection and cursor available to the Database object
-        self._db = Database()
-        self._db._connection = cnx
-        self._db._cursor = cnx.cursor()
-
-    def tearDown(self):
-        """Perform per-test teardown."""
-        self._db._cursor.close()
-        self._db._connection.close()
-
-    def _insert_rows(self, rows: Iterable[CovidcastRow]):
-        self._db.insert_or_update_bulk(rows)
-        self._db.run_dbjobs()
-        self._db._connection.commit()
-        return rows
+        self._db._cursor.execute('update covidcast_meta_cache set timestamp = 0, epidata = "[]"')
 
     def _fetch(self, endpoint="/", is_compatibility=False, **params):
         # make the request
@@ -88,18 +60,36 @@ class CovidcastEndpointTests(unittest.TestCase):
         return [sum(e)/len(e) if None not in e else None for e in windowed(rows, 7)]
 
     def test_basic(self):
-        """Request a signal the / endpoint."""
+        """Request a signal from the / endpoint."""
 
-        rows = [CovidcastRow(time_value=20200401 + i, value=i) for i in range(10)]
+        rows = [self._make_placeholder_row(time_value=20200401 + i, value=i)[0] for i in range(10)]
         first = rows[0]
         self._insert_rows(rows)
 
-        with self.subTest("validation"):
-            out = self._fetch("/")
-            self.assertEqual(out["result"], -1)
+        with self.subTest("diffing with a time gap"):
+            # should fetch 1 extra day
+            out = self._fetch("/", signal="jhu-csse:confirmed_incidence_num", geo=first.geo_pair, time="day:20200401-20200420")
+            out_values = [row["value"] for row in out["epidata"]]
+            values = [value for _, value in time_value_pairs][:10] + [None] * 5 + [value for _, value in time_value_pairs][10:]
+            expected_values = self._diff_rows(values)
+            self.assertAlmostEqual(out_values, expected_values)
+
+        with self.subTest("smoothing and diffing with a time gap"):
+            # should fetch 1 extra day
+            out = self._fetch("/", signal="jhu-csse:confirmed_7dav_incidence_num", geo=first.geo_pair, time="day:20200401-20200420")
+            out_values = [row["value"] for row in out["epidata"]]
+            values = [value for _, value in time_value_pairs][:10] + [None] * 5 + [value for _, value in time_value_pairs][10:]
+            expected_values = self._smooth_rows(self._diff_rows(values))
+            self.assertAlmostEqual(out_values, expected_values)
+
+    def test_compatibility(self):
+        """Request at the /api.php endpoint."""
+        rows = [CovidcastRow(source="src", signal="sig", time_value=20200401 + i, value=i) for i in range(10)]
+        first = rows[0]
+        self._insert_rows(rows)
 
         with self.subTest("simple"):
-            out = self._fetch("/", signal=first.signal_pair, geo=first.geo_pair, time="day:*")
+            out = self._fetch("/", signal=first.signal_pair(), geo=first.geo_pair(), time="day:*")
             self.assertEqual(len(out["epidata"]), len(rows))
 
         with self.subTest("unknown signal"):
@@ -199,10 +189,10 @@ class CovidcastEndpointTests(unittest.TestCase):
         return new_rows
 
     def test_trend(self):
-        """Request a signal the /trend endpoint."""
+        """Request a signal from the /trend endpoint."""
 
         num_rows = 30
-        rows = [CovidcastRow(time_value=20200401 + i, value=i) for i in range(num_rows)]
+        rows = [self._make_placeholder_row(time_value=20200401 + i, value=i)[0] for i in range(num_rows)]
         first = rows[0]
         last = rows[-1]
         ref = rows[num_rows // 2]
@@ -270,15 +260,15 @@ class CovidcastEndpointTests(unittest.TestCase):
 
 
     def test_trendseries(self):
-        """Request a signal the /trendseries endpoint."""
+        """Request a signal from the /trendseries endpoint."""
 
         num_rows = 3
-        rows = [CovidcastRow(time_value=20200401 + i, value=num_rows - i) for i in range(num_rows)]
+        rows = [self._make_placeholder_row(time_value=20200401 + i, value=num_rows - i)[0] for i in range(num_rows)]
         first = rows[0]
         last = rows[-1]
         self._insert_rows(rows)
 
-        out = self._fetch("/trendseries", signal=first.signal_pair, geo=first.geo_pair, date=last.time_value, window="20200401-20200410", basis=1)
+        out = self._fetch("/trendseries", signal=first.signal_pair(), geo=first.geo_pair(), date=last.time_value, window="20200401-20200410", basis=1)
 
         self.assertEqual(out["result"], 1)
         self.assertEqual(len(out["epidata"]), 3)
@@ -395,18 +385,18 @@ class CovidcastEndpointTests(unittest.TestCase):
 
 
     def test_correlation(self):
-        """Request a signal the /correlation endpoint."""
+        """Request a signal from the /correlation endpoint."""
 
         num_rows = 30
-        reference_rows = [CovidcastRow(signal="ref", time_value=20200401 + i, value=i) for i in range(num_rows)]
+        reference_rows = [self._make_placeholder_row(signal="ref", time_value=20200401 + i, value=i)[0] for i in range(num_rows)]
         first = reference_rows[0]
         self._insert_rows(reference_rows)
-        other_rows = [CovidcastRow(signal="other", time_value=20200401 + i, value=i) for i in range(num_rows)]
+        other_rows = [self._make_placeholder_row(signal="other", time_value=20200401 + i, value=i)[0] for i in range(num_rows)]
         other = other_rows[0]
         self._insert_rows(other_rows)
         max_lag = 3
 
-        out = self._fetch("/correlation", reference=first.signal_pair, others=other.signal_pair, geo=first.geo_pair, window="20200401-20201212", lag=max_lag)
+        out = self._fetch("/correlation", reference=first.signal_pair(), others=other.signal_pair(), geo=first.geo_pair(), window="20200401-20201212", lag=max_lag)
         self.assertEqual(out["result"], 1)
         df = pd.DataFrame(out["epidata"])
         self.assertEqual(len(df), max_lag * 2 + 1)  # -...0...+
@@ -422,7 +412,7 @@ class CovidcastEndpointTests(unittest.TestCase):
         self.assertEqual(df["samples"].tolist(), [num_rows - abs(l) for l in range(-max_lag, max_lag + 1)])
 
     def test_csv(self):
-        """Request a signal the /csv endpoint."""
+        """Request a signal from the /csv endpoint."""
 
         expected_columns = ["geo_value", "signal", "time_value", "issue", "lag", "value", "stderr", "sample_size", "geo_type", "data_source"]
         data = CovidcastRows.from_args(
@@ -483,16 +473,16 @@ class CovidcastEndpointTests(unittest.TestCase):
             pd.testing.assert_frame_equal(df_diffed, expected_df)
 
     def test_backfill(self):
-        """Request a signal the /backfill endpoint."""
+        """Request a signal from the /backfill endpoint."""
 
         num_rows = 10
-        issue_0 = [CovidcastRow(time_value=20200401 + i, value=i, sample_size=1, lag=0, issue=20200401 + i) for i in range(num_rows)]
-        issue_1 = [CovidcastRow(time_value=20200401 + i, value=i + 1, sample_size=2, lag=1, issue=20200401 + i + 1) for i in range(num_rows)]
-        last_issue = [CovidcastRow(time_value=20200401 + i, value=i + 2, sample_size=3, lag=2, issue=20200401 + i + 2) for i in range(num_rows)] # <-- the latest issues
+        issue_0 = [self._make_placeholder_row(time_value=20200401 + i, value=i, sample_size=1, lag=0, issue=20200401 + i)[0] for i in range(num_rows)]
+        issue_1 = [self._make_placeholder_row(time_value=20200401 + i, value=i + 1, sample_size=2, lag=1, issue=20200401 + i + 1)[0] for i in range(num_rows)]
+        last_issue = [self._make_placeholder_row(time_value=20200401 + i, value=i + 2, sample_size=3, lag=2, issue=20200401 + i + 2)[0] for i in range(num_rows)] # <-- the latest issues
         self._insert_rows([*issue_0, *issue_1, *last_issue])
         first = issue_0[0]
 
-        out = self._fetch("/backfill", signal=first.signal_pair, geo=first.geo_pair, time="day:20200401-20201212", anchor_lag=3)
+        out = self._fetch("/backfill", signal=first.signal_pair(), geo=first.geo_pair(), time="day:20200401-20201212", anchor_lag=3)
         self.assertEqual(out["result"], 1)
         df = pd.DataFrame(out["epidata"])
         self.assertEqual(len(df), 3 * num_rows)  # num issues
@@ -511,10 +501,10 @@ class CovidcastEndpointTests(unittest.TestCase):
         self.assertEqual(df_t0["sample_size_completeness"].tolist(), [1 / 3, 2 / 3, 3 / 3])  # total 2, given 0,1,2
 
     def test_meta(self):
-        """Request a signal the /meta endpoint."""
+        """Request a signal from the /meta endpoint."""
 
         num_rows = 10
-        rows = [CovidcastRow(time_value=20200401 + i, value=i, source="fb-survey", signal="smoothed_cli") for i in range(num_rows)]
+        rows = [self._make_placeholder_row(time_value=20200401 + i, value=i, source="fb-survey", signal="smoothed_cli")[0] for i in range(num_rows)]
         self._insert_rows(rows)
         first = rows[0]
         last = rows[-1]
@@ -551,26 +541,26 @@ class CovidcastEndpointTests(unittest.TestCase):
             self.assertEqual(len(out), 0)
 
     def test_coverage(self):
-        """Request a signal the /coverage endpoint."""
+        """Request a signal from the /coverage endpoint."""
 
         num_geos_per_date = [10, 20, 30, 40, 44]
         dates = [20200401 + i for i in range(len(num_geos_per_date))]
-        rows = [CovidcastRow(time_value=dates[i], value=i, geo_value=str(geo_value)) for i, num_geo in enumerate(num_geos_per_date) for geo_value in range(num_geo)]
+        rows = [self._make_placeholder_row(time_value=dates[i], value=i, geo_value=str(geo_value))[0] for i, num_geo in enumerate(num_geos_per_date) for geo_value in range(num_geo)]
         self._insert_rows(rows)
         first = rows[0]
 
         with self.subTest("default"):
-            out = self._fetch("/coverage", signal=first.signal_pair, latest=dates[-1], format="json")
+            out = self._fetch("/coverage", signal=first.signal_pair(), geo_type=first.geo_type, latest=dates[-1], format="json")
             self.assertEqual(len(out), len(num_geos_per_date))
             self.assertEqual([o["time_value"] for o in out], dates)
             self.assertEqual([o["count"] for o in out], num_geos_per_date)
 
         with self.subTest("specify window"):
-            out = self._fetch("/coverage", signal=first.signal_pair, window=f"{dates[0]}-{dates[1]}", format="json")
+            out = self._fetch("/coverage", signal=first.signal_pair(), geo_type=first.geo_type, window=f"{dates[0]}-{dates[1]}", format="json")
             self.assertEqual(len(out), 2)
             self.assertEqual([o["time_value"] for o in out], dates[:2])
             self.assertEqual([o["count"] for o in out], num_geos_per_date[:2])
 
         with self.subTest("invalid geo_type"):
-            out = self._fetch("/coverage", signal=first.signal_pair, geo_type="state", format="json")
+            out = self._fetch("/coverage", signal=first.signal_pair(), geo_type="doesnt_exist", format="json")
             self.assertEqual(len(out), 0)

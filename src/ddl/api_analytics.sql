@@ -1,3 +1,4 @@
+USE epidata;
 /*
 `api_analytics` logs API usage, which Delphi uses to improve the API.
 

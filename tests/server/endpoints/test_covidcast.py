@@ -5,7 +5,6 @@ from flask.testing import FlaskClient
 from flask import Response
 from delphi.epidata.server.main import app
 
-from delphi.epidata.server.endpoints.covidcast import guess_index_to_use, parse_transform_args
 from delphi.epidata.server._params import (
     GeoPair,
     TimePair,
@@ -39,25 +38,6 @@ class UnitTests(unittest.TestCase):
         self.assertEqual(rv.status_code, 200)
         self.assertEqual(msg["result"], -2)  # no result
         self.assertEqual(msg["message"], "no results")
-
-    def test_guess_index_to_use(self):
-        self.assertFalse(False, "deprecated tests...")
-        return
-        # TODO: remove this as we are no longer planning to hint at indexes...
-        self.assertEqual(guess_index_to_use([TimePair("day", True)], [GeoPair("county", ["a"])], issues=None, lag=None, as_of=None), "by_issue")
-        self.assertEqual(guess_index_to_use([TimePair("day", True)], [GeoPair("county", ["a", "b"])], issues=None, lag=None, as_of=None), "by_issue")
-        self.assertEqual(guess_index_to_use([TimePair("day", True)], [GeoPair("county", ["a", "b"])], issues=None, lag=None, as_of=None), "by_issue")
-        self.assertEqual(guess_index_to_use([TimePair("day", True)], [GeoPair("county", ["a", "b", "c"])], issues=None, lag=None, as_of=None), "by_issue")
-
-        # to many geo
-        self.assertIsNone(guess_index_to_use([TimePair("day", True)], [GeoPair("county", ["a", "b", "c", "d", "e", "f"])], issues=None, lag=None, as_of=None))
-        # to short time frame
-        self.assertIsNone(guess_index_to_use([TimePair("day", [(20200101, 20200115)])], [GeoPair("county", ["a", "b", "c", "d", "e", "f"])], issues=None, lag=None, as_of=None))
-
-        self.assertEqual(guess_index_to_use([TimePair("day", True)], [GeoPair("county", ["a"])], issues=None, lag=3, as_of=None), "by_lag")
-        self.assertEqual(guess_index_to_use([TimePair("day", True)], [GeoPair("county", ["a"])], issues=[20200202], lag=3, as_of=None), "by_issue")
-        self.assertIsNone(guess_index_to_use([TimePair("day", [20200201])], [GeoPair("county", ["a"])], issues=[20200202], lag=3, as_of=None))
-        self.assertIsNone(guess_index_to_use([TimePair("day", True)], [GeoPair("county", True)], issues=None, lag=3, as_of=None))
 
     # TODO
     def test_parse_transform_args(self):
