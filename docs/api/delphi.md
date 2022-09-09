@@ -27,10 +27,10 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 ### Required
 
-| Parameter | Description | Type |
-| --- | --- | --- |
-| `system` | system | system name from (...) <!-- TODO --> |
-| `epiweek` | epiweek | epiweek when forecast was made |
+| Parameter | Description | Type                                 |
+|-----------|-------------|--------------------------------------|
+| `system`  | system      | system name from (...) <!-- TODO --> |
+| `epiweek` | epiweek     | epiweek when forecast was made       |
 
 ## Response
 

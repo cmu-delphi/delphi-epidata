@@ -44,24 +44,24 @@ Note:
 
 ### Optional
 
-| Parameter | Description | Type |
-| --- | --- | --- |
-| `hours` | hours | `list` of hours (0-23) |
+| Parameter | Description | Type                   |
+|-----------|-------------|------------------------|
+| `hours`   | hours       | `list` of hours (0-23) |
 
 ## Response
 
-| Field | Description | Type |
-| --- | --- | --- |
-| `result` | result code: 1 = success, 2 = too many results, -2 = no results | integer |
-| `epidata` | list of results | array of objects |
-| `epidata[].article` | | string |
-| `epidata[].count` | | integer |
-| `epidata[].total` | | integer |
-| `epidata[].hour` | hour (-1 if `hour` not used) | integer |
-| `epidata[].date` | date (yyyy-MM-dd) (only included if `date` used) | string |
-| `epidata[].epiweek` | epiweek (only included if `epiweek` used) | integer |
-| `epidata[].value` | | float |
-| `message` | `success` or error message | string |
+| Field               | Description                                                     | Type             |
+|---------------------|-----------------------------------------------------------------|------------------|
+| `result`            | result code: 1 = success, 2 = too many results, -2 = no results | integer          |
+| `epidata`           | list of results                                                 | array of objects |
+| `epidata[].article` |                                                                 | string           |
+| `epidata[].count`   |                                                                 | integer          |
+| `epidata[].total`   |                                                                 | integer          |
+| `epidata[].hour`    | hour (-1 if `hour` not used)                                    | integer          |
+| `epidata[].date`    | date (yyyy-MM-dd) (only included if `date` used)                | string           |
+| `epidata[].epiweek` | epiweek (only included if `epiweek` used)                       | integer          |
+| `epidata[].value`   |                                                                 | float            |
+| `message`           | `success` or error message                                      | string           |
 
 # Example URLs
 

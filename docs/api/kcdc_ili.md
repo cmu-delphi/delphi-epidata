@@ -26,10 +26,10 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 ### Required
 
-| Parameter  | Description | Type                             |
-|------------|-------------|----------------------------------|
-| `epiweeks` | epiweeks    | `list` of epiweeks               |
-| `regions`  | regions     | `list` of 3-letter country codes |
+| Parameter  | Description | Type               |
+|------------|-------------|--------------------|
+| `epiweeks` | epiweeks    | `list` of epiweeks |
+| `regions`  | regions     | `ROK`              |
 
 ### Optional
 
