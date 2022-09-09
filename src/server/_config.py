@@ -11,16 +11,7 @@ MAX_RESULTS = int(10e6)
 MAX_COMPATIBILITY_RESULTS = int(3650)
 
 SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI", "sqlite:///test.db")
-
-# defaults
-SQLALCHEMY_ENGINE_OPTIONS = {
-    "pool_pre_ping": True, # enable ping test for validity of recycled pool connections on connect() calls
-    "pool_recycle": 5      # seconds after which a recycled pool connection is considered invalid
-}
-# update with overrides of defaults or additions from external configs
-SQLALCHEMY_ENGINE_OPTIONS.update(
-    json.loads(os.environ.get("SQLALCHEMY_ENGINE_OPTIONS", "{}")))
-
+SQLALCHEMY_ENGINE_OPTIONS = json.loads(os.environ.get("SQLALCHEMY_ENGINE_OPTIONS", "{}"))
 SECRET = os.environ.get("FLASK_SECRET", "secret")
 URL_PREFIX = os.environ.get("FLASK_PREFIX", "/")
 
