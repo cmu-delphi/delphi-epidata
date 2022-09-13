@@ -2,10 +2,11 @@ from typing import Dict, List
 from sqlalchemy import MetaData, create_engine, inspect
 from sqlalchemy.engine import Engine
 from sqlalchemy.engine.reflection import Inspector
+from sqlalchemy.pool import NullPool
 
 from ._config import SQLALCHEMY_DATABASE_URI, SQLALCHEMY_ENGINE_OPTIONS
 
-engine: Engine = create_engine(SQLALCHEMY_DATABASE_URI, **SQLALCHEMY_ENGINE_OPTIONS)
+engine: Engine = create_engine(SQLALCHEMY_DATABASE_URI, poolclass=NullPool, **SQLALCHEMY_ENGINE_OPTIONS)
 metadata = MetaData(bind=engine)
 
 TABLE_OPTIONS = dict(
