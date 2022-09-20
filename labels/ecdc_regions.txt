@@ -17,3 +17,29 @@ Kazakhstan
 Kosovo*
 Kyrgyzstan
 Latvia
+Lithuania
+Luxembourg
+Malta
+Moldova
+Montenegro
+Netherlands
+North Macedonia
+Norway
+Poland
+Portugal
+Romania
+Russia
+Serbia
+Slovakia
+Slovenia
+Spain
+Switzerland
+Tajikistan
+Turkey
+Turkmenistan
+Ukraine
+United Kingdom - England
+United Kingdom - Northern Irel
+United Kingdom - Scotland
+United Kingdom - Wales
+Uzbekistan
