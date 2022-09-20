@@ -49,23 +49,23 @@ Notes:
 
 ### Optional
 
-| Parameter | Description | Type |
-| --- | --- | --- |
-| `auth` | sensor authentication tokens (currently restricted to 1); can be global or granular | `list` of string |
+| Parameter | Description                                                                         | Type             |
+|-----------|-------------------------------------------------------------------------------------|------------------|
+| `auth`    | sensor authentication tokens (currently restricted to 1); can be global or granular | `list` of string |
 
 ## Response
 
 <!-- TODO: fix -->
 
-| Field | Description | Type |
-| --- | --- | --- |
-| `result` | result code: 1 = success, 2 = too many results, -2 = no results | integer |
-| `epidata` | list of results | array of objects |
-| `epidata[].name` | sensor name | string |
-| `epidata[].location` | | string |
-| `epidata[].epiweek` | | integer |
-| `epidata[].value` | | float |
-| `message` | `success` or error message | string |
+| Field                | Description                                                     | Type             |
+|----------------------|-----------------------------------------------------------------|------------------|
+| `result`             | result code: 1 = success, 2 = too many results, -2 = no results | integer          |
+| `epidata`            | list of results                                                 | array of objects |
+| `epidata[].name`     | sensor name                                                     | string           |
+| `epidata[].location` |                                                                 | string           |
+| `epidata[].epiweek`  |                                                                 | integer          |
+| `epidata[].value`    |                                                                 | float            |
+| `message`            | `success` or error message                                      | string           |
 
 # Example URLs
 

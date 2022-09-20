@@ -17,8 +17,8 @@ grand_parent: COVIDcast Main Endpoint
 
 A brief description of what this source measures.
 
-| Signal | Description |
-| --- | --- |
+| Signal        | Description                                                                                              |
+|---------------|----------------------------------------------------------------------------------------------------------|
 | `signal_name` | Brief description of the signal, including the units it is measured in and any smoothing that is applied |
 
 ## Table of contents

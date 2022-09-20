@@ -40,10 +40,10 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 ### Optional
 
-| Parameter | Description | Type |
-| --- | --- | --- |
-| `issues` | issues | `list` of epiweeks |
-| `lag` | # weeks between each epiweek and its issue | integer |
+| Parameter | Description                                | Type               |
+|-----------|--------------------------------------------|--------------------|
+| `issues`  | issues                                     | `list` of epiweeks |
+| `lag`     | # weeks between each epiweek and its issue | integer            |
 
 Notes:
 - If both `issues` and `lag` are specified, only `issues` is used.
@@ -51,18 +51,18 @@ If neither is specified, the current issues are used.
 
 ## Response
 
-| Field | Description | Type |
-| --- | --- | --- |
-| `result` | result code: 1 = success, 2 = too many results, -2 = no results | integer |
-| `epidata` | list of results | array of objects |
-| `epidata[].release_date` | date when record was first published (yyyy-MM-dd) | string |
-| `epidata[].region` | region | string |
-| `epidata[].issue` | epiweek of publication | integer |
-| `epidata[].epiweek` | epiweek during which the data was collected | integer |
-| `epidata[].lag` | number of weeks between `epiweek` and `issue` | integer |
-| `epidata[].visits` | total number of patients with ILI | integer |
-| `epidata[].ili` | percent ILI | float |
-| `message` | `success` or error message | string |
+| Field                    | Description                                                     | Type             |
+|--------------------------|-----------------------------------------------------------------|------------------|
+| `result`                 | result code: 1 = success, 2 = too many results, -2 = no results | integer          |
+| `epidata`                | list of results                                                 | array of objects |
+| `epidata[].release_date` | date when record was first published (yyyy-MM-dd)               | string           |
+| `epidata[].region`       | region                                                          | string           |
+| `epidata[].issue`        | epiweek of publication                                          | integer          |
+| `epidata[].epiweek`      | epiweek during which the data was collected                     | integer          |
+| `epidata[].lag`          | number of weeks between `epiweek` and `issue`                   | integer          |
+| `epidata[].visits`       | total number of patients with ILI                               | integer          |
+| `epidata[].ili`          | percent ILI                                                     | float            |
+| `message`                | `success` or error message                                      | string           |
 
 # Example URLs
 

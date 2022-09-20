@@ -43,16 +43,16 @@ See [this documentation](README.md) for details on specifying locations and date
 
 ### Required
 
-| Parameter | Description | Type |
-| --- | --- | --- |
-| `states` | two-letter state abbreviations | `list` of states |
-| `dates` | dates | `list` of dates or date ranges |
+| Parameter | Description                    | Type                           |
+|-----------|--------------------------------|--------------------------------|
+| `states`  | two-letter state abbreviations | `list` of states               |
+| `dates`   | dates                          | `list` of dates or date ranges |
 
 ### Optional
 
-| Parameter | Description | Type |
-| --- | --- | --- |
-| `issues` | issues | `list` of "issue" dates or date ranges |
+| Parameter | Description | Type                                   |
+|-----------|-------------|----------------------------------------|
+| `issues`  | issues      | `list` of "issue" dates or date ranges |
 
 If `issues` is not specified, then the most recent issue is used by default.
 

@@ -38,14 +38,14 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 ## Response
 
-| Field | Description | Type |
-| --- | --- | --- |
-| `result` | result code: 1 = success, 2 = too many results, -2 = no results | integer |
-| `epidata` | list of results | array of objects |
-| `epidata[].location` | location | string |
-| `epidata[].epiweek` | epiweek during which the data was collected | integer |
-| `epidata[].count` | number of cases | integer |
-| `message` | `success` or error message | string |
+| Field                | Description                                                     | Type             |
+|----------------------|-----------------------------------------------------------------|------------------|
+| `result`             | result code: 1 = success, 2 = too many results, -2 = no results | integer          |
+| `epidata`            | list of results                                                 | array of objects |
+| `epidata[].location` | location                                                        | string           |
+| `epidata[].epiweek`  | epiweek during which the data was collected                     | integer          |
+| `epidata[].count`    | number of cases                                                 | integer          |
+| `message`            | `success` or error message                                      | string           |
 
 # Example URLs
 

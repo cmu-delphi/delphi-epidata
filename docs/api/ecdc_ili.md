@@ -27,17 +27,17 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 ### Required
 
-| Parameter | Description | Type |
-| --- | --- | --- |
-| `epiweeks` | epiweeks | `list` of epiweeks |
-| `regions` | regions | `list` of 3-letter country codes |
+| Parameter  | Description | Type                                                                                                        |
+|------------|-------------|-------------------------------------------------------------------------------------------------------------|
+| `epiweeks` | epiweeks    | `list` of epiweeks                                                                                          |
+| `regions`  | regions     | `list` of [location](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/ecdc_regions.txt) labels |
 
 ### Optional
 
-| Parameter | Description | Type |
-| --- | --- | --- |
-| `issues` | issues | `list` of epiweeks |
-| `lag` | # weeks between each epiweek and its issue | integer |
+| Parameter | Description                                | Type               |
+|-----------|--------------------------------------------|--------------------|
+| `issues`  | issues                                     | `list` of epiweeks |
+| `lag`     | # weeks between each epiweek and its issue | integer            |
 
 Notes:
 - If both `issues` and `lag` are specified, only `issues` is used.
@@ -45,12 +45,12 @@ If neither is specified, the current issues are used.
 
 ## Response
 
-| Field | Description | Type |
-| --- | --- | --- |
-| `result` | result code: 1 = success, 2 = too many results, -2 = no results | integer |
-| `epidata` | list of results | array of objects |
-| ... | ... | ... | <!-- TODO -->
-| `message` | `success` or error message | string |
+| Field     | Description                                                     | Type             |
+|-----------|-----------------------------------------------------------------|------------------|
+| `result`  | result code: 1 = success, 2 = too many results, -2 = no results | integer          |
+| `epidata` | list of results                                                 | array of objects |
+| ...       | ...                                                             | ...              | <!-- TODO -->
+| `message` | `success` or error message                                      | string           |
 
 # Example URLs
 
