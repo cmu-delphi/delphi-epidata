@@ -85,11 +85,14 @@ def dates_to_ranges(values: Optional[Sequence[Union[Tuple[int, int], int]]]) -> 
         return values
 
     # determine whether the list is of days (YYYYMMDD) or weeks (YYYYWW) based on first element
-    if (isinstance(values[0], tuple) and guess_time_value_is_day(values[0][0]))\
-        or (isinstance(values[0], int) and guess_time_value_is_day(values[0])):
-        return days_to_ranges(values)
-    else:
-        return weeks_to_ranges(values)
+    try:
+        if (isinstance(values[0], tuple) and guess_time_value_is_day(values[0][0]))\
+            or (isinstance(values[0], int) and guess_time_value_is_day(values[0])):
+            return days_to_ranges(values)
+        else:
+            return weeks_to_ranges(values)
+    except:
+        return values
 
 def days_to_ranges(values: Sequence[Union[Tuple[int, int], int]]) -> Sequence[Union[Tuple[int, int], int]]:
     dates = []
