@@ -43,9 +43,7 @@ Criteria for a valid filename:
 - Minimum year: 2019
 - Maximum year: 2030
 - `geo` one of: county, hrr, msa, dma, state, nation
-- `signal` must be matched by a `/\w+/` regex. If you do not want this signal to
-  be surfaced in the metadata information, the signal name should start with
-  `wip_`.
+- `signal` must be matched by a `/\w+/` regex.
 
 If a filename is invalid, it does not get ingested, and will be listed in the
 failed archive.

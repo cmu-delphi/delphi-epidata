@@ -1,3 +1,4 @@
+USE epidata;
 /*
 These tables coordinate scraping of Wikipedia page visit stats and store page
 visit counts for pages of interest (i.e. those which are epidemiologically
