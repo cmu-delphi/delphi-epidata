@@ -22,6 +22,7 @@ from ._printer import create_printer, APrinter
 from ._exceptions import DatabaseErrorException
 from ._validate import DateRange, extract_strings
 from ._params import GeoPair, SourceSignalPair, TimePair
+from .utils import dates_to_ranges
 
 
 def date_string(value: int) -> str:
@@ -89,7 +90,8 @@ def filter_dates(
     param_key: str,
     params: Dict[str, Any],
 ):
-    return filter_values(field, values, param_key, params, date_string)
+    ranges = dates_to_ranges(values)
+    return filter_values(field, ranges, param_key, params, date_string)
 
 
 def filter_fields(generator: Iterable[Dict[str, Any]]):
@@ -185,7 +187,8 @@ def filter_time_pairs(
         params[type_param] = pair.time_type
         if isinstance(pair.time_values, bool) and pair.time_values:
             return f"{type_field} = :{type_param}"
-        return f"({type_field} = :{type_param} AND {filter_integers(time_field, cast(Sequence[Union[int, Tuple[int,int]]], pair.time_values), type_param, params)})"
+        ranges = dates_to_ranges(pair.time_values)
+        return f"({type_field} = :{type_param} AND {filter_integers(time_field, cast(Sequence[Union[int, Tuple[int,int]]], ranges), type_param, params)})"
 
     parts = [filter_pair(p, i) for i, p in enumerate(values)]
 

@@ -1,5 +1,12 @@
-from typing import Tuple
+from typing import (
+    Optional,
+    Sequence,
+    Tuple,
+    Union
+)
 from datetime import date, timedelta
+from operator import itemgetter
+from itertools import groupby
 from epiweeks import Week, Year
 
 
@@ -67,3 +74,79 @@ def weeks_in_range(week_range: Tuple[int, int]) -> int:
         year = Year(y)
         acc += year.totalweeks()
     return acc + 1  # same week should lead to 1 week that will be queried
+
+def dates_to_ranges(values: Optional[Sequence[Union[Tuple[int, int], int]]]) -> Optional[Sequence[Union[Tuple[int, int], int]]]:
+    """
+    Converts a mixed list of dates and date ranges to an optimized list where dates are merged into ranges where possible.
+    e.g. [20200101, 20200102, (20200101, 20200104), 20200106] -> [(20200101, 20200104), 20200106]
+    (the first two values of the original list are merged into a single range)
+    """
+    if not values or len(values) == 0:
+        return values
+
+    # determine whether the list is of days (YYYYMMDD) or weeks (YYYYWW) based on first element
+    if (isinstance(values[0], tuple) and guess_time_value_is_day(values[0][0]))\
+        or (isinstance(values[0], int) and guess_time_value_is_day(values[0])):
+        return days_to_ranges(values)
+    else:
+        return weeks_to_ranges(values)
+
+def days_to_ranges(values: Sequence[Union[Tuple[int, int], int]]) -> Sequence[Union[Tuple[int, int], int]]:
+    dates = []
+
+    # populate list of days
+    for v in values:
+        if isinstance(v, int):
+            dates.append(time_value_to_date(v))
+        else: # tuple
+            start_date = time_value_to_date(v[0])
+            end_date = time_value_to_date(v[1])
+            # add all dates between start and end, inclusive of end date
+            dates.extend([start_date + timedelta(n) for n in range(int((end_date - start_date).days) + 1)])
+
+    # remove duplicates then sort
+    dates = sorted(list(set(dates)))
+
+    # group consecutive values together https://docs.python.org/2.6/library/itertools.html#examples then iterate through the groups
+    ranges = []
+    keyfunc = lambda t: t[1] - timedelta(days=t[0])
+    for _, group in groupby(enumerate(dates), keyfunc):
+        group = list(group)
+        if len(group) == 1:
+            # group with a single date: just add that date
+            ranges.append(date_to_time_value(group[0][1]))
+        else:
+            # group with multiple date: add first and last dates as a tuple, omit other dates as they are included within the range
+            ranges.append((date_to_time_value(group[0][1]), date_to_time_value(group[-1][1])))
+    return ranges
+
+def weeks_to_ranges(values: Sequence[Union[Tuple[int, int], int]]) -> Sequence[Union[Tuple[int, int], int]]:
+    weeks = []
+
+    # populate list of weeks
+    for v in values:
+        if isinstance(v, int):
+            weeks.append(week_value_to_week(v))
+        else: # tuple
+            start_week = week_value_to_week(v[0])
+            end_week = week_value_to_week(v[1])
+            # add all weeks between start and end, inclusive of end week
+            while start_week <= end_week:
+                weeks.append(start_week)
+                start_week += 1
+    
+    # remove duplicates then sort
+    weeks = sorted(list(set(weeks)))
+
+    # group consecutive values together https://docs.python.org/2.6/library/itertools.html#examples then iterate through the groups
+    ranges = []
+    keyfunc = lambda t: t[1] - t[0]
+    for _, group in groupby(enumerate(weeks), keyfunc):
+        group = list(group)
+        if len(group) == 1:
+            # group with a single date: just add that date
+            ranges.append(week_to_time_value(group[0][1]))
+        else:
+            # group with multiple date: add first and last dates as a tuple, omit other dates as they are included within the range
+            ranges.append((week_to_time_value(group[0][1]), week_to_time_value(group[-1][1])))
+    return ranges
