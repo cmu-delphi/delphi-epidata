@@ -89,6 +89,9 @@ class UnitTests(unittest.TestCase):
         self.assertEqual(filter_dates("a", [20200101], "a", params), "(a = :a_0)")
         self.assertEqual(params, {"a_0": "2020-01-01"})
         params = {}
+        self.assertEqual(filter_dates("a", [20200101, 20200101, (20200101, 20200101), 20200101], "a", params), "(a = :a_0)")
+        self.assertEqual(params, {"a_0": "2020-01-01"})
+        params = {}
         self.assertEqual(
             filter_dates("a", [20200101, 20200102], "a", params),
             "(a BETWEEN :a_0 AND :a_0_2)",

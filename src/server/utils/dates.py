@@ -95,61 +95,71 @@ def dates_to_ranges(values: Optional[Sequence[Union[Tuple[int, int], int]]]) -> 
         return values
 
 def days_to_ranges(values: Sequence[Union[Tuple[int, int], int]]) -> Sequence[Union[Tuple[int, int], int]]:
-    dates = []
+    intervals = []
 
-    # populate list of days
+    # populate list of intervals based on original values
     for v in values:
         if isinstance(v, int):
-            dates.append(time_value_to_date(v))
+            # 20200101 -> [20200101, 20200101]
+            intervals.append([time_value_to_date(v), time_value_to_date(v)])
         else: # tuple
-            start_date = time_value_to_date(v[0])
-            end_date = time_value_to_date(v[1])
-            # add all dates between start and end, inclusive of end date
-            dates.extend([start_date + timedelta(n) for n in range(int((end_date - start_date).days) + 1)])
+            # (20200101, 20200102) -> [20200101, 20200102]
+            intervals.append([time_value_to_date(v[0]), time_value_to_date(v[1])])
 
-    # remove duplicates then sort
-    dates = sorted(list(set(dates)))
+    intervals.sort(key=lambda x: x[0])
 
-    # group consecutive values together https://docs.python.org/2.6/library/itertools.html#examples then iterate through the groups
-    ranges = []
-    keyfunc = lambda t: t[1] - timedelta(days=t[0])
-    for _, group in groupby(enumerate(dates), keyfunc):
-        group = list(group)
-        if len(group) == 1:
-            # group with a single date: just add that date
-            ranges.append(date_to_time_value(group[0][1]))
+    # merge overlapping intervals https://leetcode.com/problems/merge-intervals/
+    merged = []
+    for interval in intervals:
+        # no overlap, append the interval
+        # caveat: we subtract 1 from interval[0] so that contiguous intervals are considered overlapping. i.e. [1, 1], [2, 2] -> [1, 2]
+        if not merged or merged[-1][1] < interval[0] - timedelta(days=1):
+            merged.append(interval)
+        # overlap, merge the current and previous intervals
         else:
-            # group with multiple date: add first and last dates as a tuple, omit other dates as they are included within the range
-            ranges.append((date_to_time_value(group[0][1]), date_to_time_value(group[-1][1])))
+            merged[-1][1] = max(merged[-1][1], interval[1])
+
+    # convert intervals from dates back to integers
+    ranges = []
+    for m in merged:
+        if m[0] == m[1]:
+            ranges.append(date_to_time_value(m[0]))
+        else:
+            ranges.append((date_to_time_value(m[0]), date_to_time_value(m[1])))
+
     return ranges
 
 def weeks_to_ranges(values: Sequence[Union[Tuple[int, int], int]]) -> Sequence[Union[Tuple[int, int], int]]:
-    weeks = []
+    intervals = []
 
-    # populate list of weeks
+    # populate list of intervals based on original values
     for v in values:
         if isinstance(v, int):
-            weeks.append(week_value_to_week(v))
+            # 202001 -> [202001, 202001]
+            intervals.append([week_value_to_week(v), week_value_to_week(v)])
         else: # tuple
-            start_week = week_value_to_week(v[0])
-            end_week = week_value_to_week(v[1])
-            # add all weeks between start and end, inclusive of end week
-            while start_week <= end_week:
-                weeks.append(start_week)
-                start_week += 1
-    
-    # remove duplicates then sort
-    weeks = sorted(list(set(weeks)))
+            # (202001, 202002) -> [202001, 202002]
+            intervals.append([week_value_to_week(v[0]), week_value_to_week(v[1])])
 
-    # group consecutive values together https://docs.python.org/2.6/library/itertools.html#examples then iterate through the groups
-    ranges = []
-    keyfunc = lambda t: t[1] - t[0]
-    for _, group in groupby(enumerate(weeks), keyfunc):
-        group = list(group)
-        if len(group) == 1:
-            # group with a single date: just add that date
-            ranges.append(week_to_time_value(group[0][1]))
+    intervals.sort(key=lambda x: x[0])
+
+    # merge overlapping intervals https://leetcode.com/problems/merge-intervals/
+    merged = []
+    for interval in intervals:
+        # no overlap, append the interval
+        # caveat: we subtract 1 from interval[0] so that contiguous intervals are considered overlapping. i.e. [1, 1], [2, 2] -> [1, 2]
+        if not merged or merged[-1][1] < interval[0] - 1:
+            merged.append(interval)
+        # overlap, merge the current and previous intervals
         else:
-            # group with multiple date: add first and last dates as a tuple, omit other dates as they are included within the range
-            ranges.append((week_to_time_value(group[0][1]), week_to_time_value(group[-1][1])))
+            merged[-1][1] = max(merged[-1][1], interval[1])
+
+    # convert intervals from weeks back to integers
+    ranges = []
+    for m in merged:
+        if m[0] == m[1]:
+            ranges.append(week_to_time_value(m[0]))
+        else:
+            ranges.append((week_to_time_value(m[0]), week_to_time_value(m[1])))
+
     return ranges
