@@ -89,23 +89,44 @@ class UnitTests(unittest.TestCase):
         self.assertEqual(filter_dates("a", [20200101], "a", params), "(a = :a_0)")
         self.assertEqual(params, {"a_0": "2020-01-01"})
         params = {}
+        self.assertEqual(filter_dates("a", [20200101, 20200101, (20200101, 20200101), 20200101], "a", params), "(a = :a_0)")
+        self.assertEqual(params, {"a_0": "2020-01-01"})
+        params = {}
         self.assertEqual(
             filter_dates("a", [20200101, 20200102], "a", params),
+            "(a BETWEEN :a_0 AND :a_0_2)",
+        )
+        self.assertEqual(params, {"a_0": "2020-01-01", "a_0_2": "2020-01-02"})
+        params = {}
+        self.assertEqual(
+            filter_dates("a", [20200101, 20200103], "a", params),
             "(a = :a_0 OR a = :a_1)",
         )
-        self.assertEqual(params, {"a_0": "2020-01-01", "a_1": "2020-01-02"})
+        self.assertEqual(params, {"a_0": "2020-01-01", "a_1": "2020-01-03"})
         params = {}
         self.assertEqual(
             filter_dates("a", [20200101, 20200102, (20200101, 20200104)], "a", params),
+            "(a BETWEEN :a_0 AND :a_0_2)",
+        )
+        self.assertEqual(
+            params,
+            {
+                "a_0": "2020-01-01",
+                "a_0_2": "2020-01-04"
+            },
+        )
+        params = {}
+        self.assertEqual(
+            filter_dates("a", [20200101, 20200103, (20200105, 20200107)], "a", params),
             "(a = :a_0 OR a = :a_1 OR a BETWEEN :a_2 AND :a_2_2)",
         )
         self.assertEqual(
             params,
             {
                 "a_0": "2020-01-01",
-                "a_1": "2020-01-02",
-                "a_2": "2020-01-01",
-                "a_2_2": "2020-01-04",
+                "a_1": "2020-01-03",
+                "a_2": "2020-01-05",
+                "a_2_2": "2020-01-07",
             },
         )
 
