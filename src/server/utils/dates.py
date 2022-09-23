@@ -28,6 +28,10 @@ def guess_time_value_is_day(value: int) -> bool:
     # YYYYMMDD type and not YYYYMM
     return len(str(value)) > 6
 
+def guess_time_value_is_week(value: int) -> bool:
+    # YYYYWW type and not YYYYMMDD
+    return len(str(value)) == 6
+
 def date_to_time_value(d: date) -> int:
     return int(d.strftime("%Y%m%d"))
 
@@ -87,8 +91,11 @@ def dates_to_ranges(values: Optional[Sequence[Union[Tuple[int, int], int]]]) -> 
         if (isinstance(values[0], tuple) and guess_time_value_is_day(values[0][0]))\
             or (isinstance(values[0], int) and guess_time_value_is_day(values[0])):
             return days_to_ranges(values)
-        else:
+        elif (isinstance(values[0], tuple) and guess_time_value_is_week(values[0][0]))\
+            or (isinstance(values[0], int) and guess_time_value_is_week(values[0])):
             return weeks_to_ranges(values)
+        else:
+            return values
     except:
         return values
 
