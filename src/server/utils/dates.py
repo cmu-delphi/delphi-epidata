@@ -83,7 +83,7 @@ def dates_to_ranges(values: Optional[Sequence[Union[Tuple[int, int], int]]]) -> 
     e.g. [20200101, 20200102, (20200101, 20200104), 20200106] -> [(20200101, 20200104), 20200106]
     (the first two values of the original list are merged into a single range)
     """
-    if not values or len(values) == 0:
+    if not values or len(values) <= 1:
         return values
 
     # determine whether the list is of days (YYYYMMDD) or weeks (YYYYWW) based on first element
