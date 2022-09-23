@@ -5,8 +5,6 @@ from typing import (
     Union
 )
 from datetime import date, timedelta
-from operator import itemgetter
-from itertools import groupby
 from epiweeks import Week, Year
 
 
