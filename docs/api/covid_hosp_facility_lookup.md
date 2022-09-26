@@ -1,6 +1,6 @@
 ---
 title: COVID-19 Reported Patient Impact and Hospital Capacity - Facility lookup
-parent: Epidata API (Other Diseases)
+parent: Other Endpoints (COVID-19 and Other Diseases)
 ---
 
 # COVID-19 Hospitalization: Facility Lookup
@@ -36,13 +36,13 @@ See [this documentation](README.md) for details on specifying locations and date
 
 ## Parameters
 
-| Parameter | Description | Type |
-| --- | --- | --- |
-| `state` | two-letter state abbreviation | string |
-| `ccn` | facility CMS Certification Number | string |
-| `city` | city name | string |
-| `zip` | 5-digit ZIP code | string |
-| `fips_code` | 5-digit FIPS county code | string |
+| Parameter   | Description                       | Type   |
+|-------------|-----------------------------------|--------|
+| `state`     | two-letter state abbreviation     | string |
+| `ccn`       | facility CMS Certification Number | string |
+| `city`      | city name                         | string |
+| `zip`       | 5-digit ZIP code                  | string |
+| `fips_code` | 5-digit FIPS county code          | string |
 
 NOTE: Exactly one of the above parameters must be present in requests.
 Combinations of parameters (e.g. specifying both `city` and `state`) are not

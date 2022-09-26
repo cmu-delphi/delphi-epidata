@@ -1,7 +1,7 @@
 ---
 title: SOURCE NAME
 parent: Data Sources and Signals
-grand_parent: COVIDcast Epidata API
+grand_parent: COVIDcast Main Endpoint
 ---
 
 # SOURCE NAME
@@ -17,8 +17,8 @@ grand_parent: COVIDcast Epidata API
 
 A brief description of what this source measures.
 
-| Signal | Description |
-| --- | --- |
+| Signal        | Description                                                                                              |
+|---------------|----------------------------------------------------------------------------------------------------------|
 | `signal_name` | Brief description of the signal, including the units it is measured in and any smoothing that is applied |
 
 ## Table of contents

@@ -51,28 +51,6 @@ class UnitTests(unittest.TestCase):
     self.assertTrue(connection.commit.called)
     self.assertTrue(connection.close.called)
 
-  def test_count_all_rows_query(self):
-    """Query to count all rows looks sensible.
-
-    NOTE: Actual behavior is tested by integration test.
-    """
-
-    mock_connector = MagicMock()
-    database = Database()
-    database.connect(connector_impl=mock_connector)
-    connection = mock_connector.connect()
-    cursor = connection.cursor()
-    cursor.__iter__.return_value = [(123,)]
-
-    num = database.count_all_rows()
-
-    self.assertEqual(num, 123)
-    self.assertTrue(cursor.execute.called)
-
-    sql = cursor.execute.call_args[0][0].lower()
-    self.assertIn('select count(1)', sql)
-    self.assertIn('from `covidcast`', sql)
-
   def test_update_covidcast_meta_cache_query(self):
     """Query to update the metadata cache looks sensible.
 
@@ -116,6 +94,7 @@ class UnitTests(unittest.TestCase):
     """Test that the row count is returned"""
     mock_connector = MagicMock()
     database = Database()
+    database.count_all_load_rows = lambda:0 # simulate an empty load table
     database.connect(connector_impl=mock_connector)
     connection = mock_connector.connect()
     cursor = connection.cursor() 
@@ -129,6 +108,7 @@ class UnitTests(unittest.TestCase):
     """Test that None is returned when row count cannot be returned"""
     mock_connector = MagicMock()
     database = Database()
+    database.count_all_load_rows = lambda:0 # simulate an empty load table
     database.connect(connector_impl=mock_connector)
     connection = mock_connector.connect()
     cursor = connection.cursor() 

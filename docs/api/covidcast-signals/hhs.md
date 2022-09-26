@@ -1,7 +1,7 @@
 ---
 title: Department of Health & Human Services
 parent: Data Sources and Signals
-grand_parent: COVIDcast Epidata API
+grand_parent: COVIDcast Main Endpoint
 ---
 
 # Department of Health & Human Services
@@ -32,14 +32,14 @@ adult and pediatric COVID-19 hospital admissions. This sum is used as the
 We also include influenza hospital admissions.
 
 
-| Signal and 7-day average signal                                                                                | Description                                                                                                                                                                                                                          |
-|:---------------------------------------------------------------------------------------------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `confirmed_admissions_covid_1d` and `confirmed_admissions_covid_1d_7dav`                                       | Sum of adult and pediatric confirmed COVID-19 hospital admissions occurring each day. <br/> **Earliest date available:** 2019-12-31                                                                                                  |
-| `confirmed_admissions_covid_1d_prop` and `confirmed_admissions_covid_1d_prop_7dav`                             | Sum of adult and pediatric confirmed COVID-19 hospital admissions occurring each day, per 100,000 population. <br/> **Earliest date available:** 2019-12-31                                                                          |
-| `sum_confirmed_suspected_admissions_covid_1d` and `sum_confirmed_suspected_admissions_covid_1d_7dav`           | Sum of adult and pediatric confirmed and suspected COVID-19 hospital admissions occurring each day. <br/> **Earliest date available:** 2019-12-31                                                                                    |
-| `sum_confirmed_suspected_admissions_covid_1d_prop` and <br/> `sum_confirmed_suspected_admissions_covid_1d_prop_7dav` | Sum of adult and pediatric confirmed and suspected COVID-19 hospital admissions occurring each day, per 100,000 population. <br/> **Earliest date available:** 2019-12-31                                                            |
-| `confirmed_admissions_influenza_1d` and `confirmed_admissions_influenza_1d_7dav`                               | All confirmed influenza hospital admissions occurring each day. We made this signal available November 1, 2021. <br/> **Earliest issue available:** 2021-09-20 <br/> **Earliest date available:** 2020-01-02                         |
-| `confirmed_admissions_influenza_1d_prop` and `confirmed_admissions_influenza_1d_prop_7dav`                     | All confirmed influenza hospital admissions occurring each day, per 100,000 population. We made this signal available November 1, 2021. <br/> **Earliest issue available:** 2021-09-20 <br/> **Earliest date available:** 2020-01-02 |
+| Signal and 7-day average signal | Description |
+|---|---|
+| `confirmed_admissions_covid_1d` and `confirmed_admissions_covid_1d_7dav` | Sum of adult and pediatric confirmed COVID-19 hospital admissions occurring each day. <br/> **Earliest date available:** 2019-12-31 |
+| `confirmed_admissions_covid_1d_prop` and `confirmed_admissions_covid_1d_prop_7dav` | Sum of adult and pediatric confirmed COVID-19 hospital admissions occurring each day, per 100,000 population. <br/> **Earliest date available:** 2019-12-31 |
+| `sum_confirmed_suspected_admissions_covid_1d` and `sum_confirmed_suspected_admissions_covid_1d_7dav` | Sum of adult and pediatric confirmed and suspected COVID-19 hospital admissions occurring each day. <br/> **Earliest date available:** 2019-12-31 |
+| `sum_confirmed_suspected_admissions_covid_1d_prop` and <br/> `sum_confirmed_suspected_admissions_covid_1d_prop_7dav` | Sum of adult and pediatric confirmed and suspected COVID-19 hospital admissions occurring each day, per 100,000 population. <br/> **Earliest date available:** 2019-12-31 |
+| `confirmed_admissions_influenza_1d` and `confirmed_admissions_influenza_1d_7dav` | All confirmed influenza hospital admissions occurring each day. We made this signal available November 1, 2021. <br/> **Earliest issue available:** 2021-09-20 <br/> **Earliest date available:** 2020-01-02 |
+| `confirmed_admissions_influenza_1d_prop` and `confirmed_admissions_influenza_1d_prop_7dav` | All confirmed influenza hospital admissions occurring each day, per 100,000 population. We made this signal available November 1, 2021. <br/> **Earliest issue available:** 2021-09-20 <br/> **Earliest date available:** 2020-01-02 |
 
 *for all the above signals & 7-day average signals, their geography is state, and resolution is 1 day.
 

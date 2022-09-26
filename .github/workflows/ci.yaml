@@ -62,7 +62,7 @@ jobs:
       - name: Start services
         run: |
           docker network create --driver bridge delphi-net
-          docker run --rm -d -p 13306:3306 --network delphi-net --name delphi_database_epidata delphi_database_epidata
+          docker run --rm -d -p 13306:3306 --network delphi-net --name delphi_database_epidata --cap-add=sys_nice delphi_database_epidata
           docker run --rm -d -p 10080:80 --env "SQLALCHEMY_DATABASE_URI=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata" --env "FLASK_SECRET=abc" --env "FLASK_PREFIX=/epidata" --network delphi-net --name delphi_web_epidata delphi_web_epidata
           docker ps
 
@@ -109,6 +109,7 @@ jobs:
     needs: build
     # only on main and dev branch
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
+
     runs-on: ubuntu-latest
     steps:
       - name: Check out code

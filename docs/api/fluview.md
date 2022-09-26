@@ -1,6 +1,6 @@
 ---
 title: FluView
-parent: Epidata API (Other Diseases)
+parent: Other Endpoints (COVID-19 and Other Diseases)
 ---
 
 # FluView
@@ -40,11 +40,11 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 ### Optional
 
-| Parameter | Description | Type |
-| --- | --- | --- |
-| `issues` | issues | `list` of epiweeks |
-| `lag` | # weeks between each epiweek and its issue | integer |
-| `auth` | password for private imputed data | string |
+| Parameter | Description                                | Type               |
+|-----------|--------------------------------------------|--------------------|
+| `issues`  | issues                                     | `list` of epiweeks |
+| `lag`     | # weeks between each epiweek and its issue | integer            |
+| `auth`    | password for private imputed data          | string             |
 
 Notes:
 - If both `issues` and `lag` are specified, only `issues` is used.
@@ -52,27 +52,27 @@ If neither is specified, the current issues are used.
 
 ## Response
 
-| Field | Description | Type |
-| --- | --- | --- |
-| `result` | result code: 1 = success, 2 = too many results, -2 = no results | integer |
-| `epidata` | list of results | array of objects |
-| `epidata[].release_date` | | string or null |
-| `epidata[].region` | | string |
-| `epidata[].issue` | | integer |
-| `epidata[].epiweek` | | integer |
-| `epidata[].lag` | | integer |
-| `epidata[].num_ili` | | integer |
-| `epidata[].num_patients` | | integer |
-| `epidata[].num_providers` | | integer |
-| `epidata[].num_age_0` | | integer or null |
-| `epidata[].num_age_1` | | integer or null |
-| `epidata[].num_age_2` | | integer or null |
-| `epidata[].num_age_3` | | integer or null |
-| `epidata[].num_age_4` | | integer or null |
-| `epidata[].num_age_5` | | integer or null |
-| `epidata[].wili` | weighted percent influenza-like illness | float |
-| `epidata[].ili` | percent influenza-like illness| float |
-| `message` | `success` or error message | string |
+| Field                     | Description                                                     | Type             |
+|---------------------------|-----------------------------------------------------------------|------------------|
+| `result`                  | result code: 1 = success, 2 = too many results, -2 = no results | integer          |
+| `epidata`                 | list of results                                                 | array of objects |
+| `epidata[].release_date`  |                                                                 | string or null   |
+| `epidata[].region`        |                                                                 | string           |
+| `epidata[].issue`         |                                                                 | integer          |
+| `epidata[].epiweek`       |                                                                 | integer          |
+| `epidata[].lag`           |                                                                 | integer          |
+| `epidata[].num_ili`       |                                                                 | integer          |
+| `epidata[].num_patients`  |                                                                 | integer          |
+| `epidata[].num_providers` |                                                                 | integer          |
+| `epidata[].num_age_0`     |                                                                 | integer or null  |
+| `epidata[].num_age_1`     |                                                                 | integer or null  |
+| `epidata[].num_age_2`     |                                                                 | integer or null  |
+| `epidata[].num_age_3`     |                                                                 | integer or null  |
+| `epidata[].num_age_4`     |                                                                 | integer or null  |
+| `epidata[].num_age_5`     |                                                                 | integer or null  |
+| `epidata[].wili`          | weighted percent influenza-like illness                         | float            |
+| `epidata[].ili`           | percent influenza-like illness                                  | float            |
+| `message`                 | `success` or error message                                      | string           |
 
 Notes:
 - If authorized via `auth`, private data is not included.

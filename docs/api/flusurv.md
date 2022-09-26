@@ -1,6 +1,6 @@
 ---
 title: Flusurv
-parent: Epidata API (Other Diseases)
+parent: Other Endpoints (COVID-19 and Other Diseases)
 ---
 
 # FluSurv
@@ -41,10 +41,10 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 ### Optional
 
-| Parameter | Description | Type |
-| --- | --- | --- |
-| `issues` | issues | `list` of epiweeks |
-| `lag` | # weeks between each epiweek and its issue | integer |
+| Parameter | Description                                | Type               |
+|-----------|--------------------------------------------|--------------------|
+| `issues`  | issues                                     | `list` of epiweeks |
+| `lag`     | # weeks between each epiweek and its issue | integer            |
 
 Notes:
 - If both `issues` and `lag` are specified, only `issues` is used.
@@ -52,22 +52,22 @@ If neither is specified, the current issues are used.
 
 ## Response
 
-| Field | Description | Type |
-| --- | --- | --- |
-| `result` | result code: 1 = success, 2 = too many results, -2 = no results | integer |
-| `epidata` | list of results | array of objects |
-| `epidata[].release_date` | | string |
-| `epidata[].location` | | string |
-| `epidata[].issue` | | integer |
-| `epidata[].epiweek` | | integer |
-| `epidata[].lag` | | integer |
-| `epidata[].rate_age_0` | | float |
-| `epidata[].rate_age_1` | | float |
-| `epidata[].rate_age_2` | | float |
-| `epidata[].rate_age_3` | | float |
-| `epidata[].rate_age_4` | | float |
-| `epidata[].rate_overall` | | float |
-| `message` | `success` or error message | string |
+| Field                    | Description                                                     | Type             |
+|--------------------------|-----------------------------------------------------------------|------------------|
+| `result`                 | result code: 1 = success, 2 = too many results, -2 = no results | integer          |
+| `epidata`                | list of results                                                 | array of objects |
+| `epidata[].release_date` |                                                                 | string           |
+| `epidata[].location`     |                                                                 | string           |
+| `epidata[].issue`        |                                                                 | integer          |
+| `epidata[].epiweek`      |                                                                 | integer          |
+| `epidata[].lag`          |                                                                 | integer          |
+| `epidata[].rate_age_0`   |                                                                 | float            |
+| `epidata[].rate_age_1`   |                                                                 | float            |
+| `epidata[].rate_age_2`   |                                                                 | float            |
+| `epidata[].rate_age_3`   |                                                                 | float            |
+| `epidata[].rate_age_4`   |                                                                 | float            |
+| `epidata[].rate_overall` |                                                                 | float            |
+| `message`                | `success` or error message                                      | string           |
 
 Notes:
 * The `flusurv` age groups are, in general, not the same as the ILINet

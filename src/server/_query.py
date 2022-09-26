@@ -14,7 +14,7 @@ from typing import (
 )
 
 from sqlalchemy import text
-from sqlalchemy.engine import RowProxy
+from sqlalchemy.engine import Row
 
 from ._common import db, app
 from ._db import metadata
@@ -22,6 +22,7 @@ from ._printer import create_printer, APrinter
 from ._exceptions import DatabaseErrorException
 from ._validate import DateRange, extract_strings
 from ._params import GeoPair, SourceSignalPair, TimePair
+from .utils import dates_to_ranges
 
 
 def date_string(value: int) -> str:
@@ -89,7 +90,8 @@ def filter_dates(
     param_key: str,
     params: Dict[str, Any],
 ):
-    return filter_values(field, values, param_key, params, date_string)
+    ranges = dates_to_ranges(values)
+    return filter_values(field, ranges, param_key, params, date_string)
 
 
 def filter_fields(generator: Iterable[Dict[str, Any]]):
@@ -185,7 +187,8 @@ def filter_time_pairs(
         params[type_param] = pair.time_type
         if isinstance(pair.time_values, bool) and pair.time_values:
             return f"{type_field} = :{type_param}"
-        return f"({type_field} = :{type_param} AND {filter_integers(time_field, cast(Sequence[Union[int, Tuple[int,int]]], pair.time_values), type_param, params)})"
+        ranges = dates_to_ranges(pair.time_values)
+        return f"({type_field} = :{type_param} AND {filter_integers(time_field, cast(Sequence[Union[int, Tuple[int,int]]], ranges), type_param, params)})"
 
     parts = [filter_pair(p, i) for i, p in enumerate(values)]
 
@@ -197,7 +200,7 @@ def filter_time_pairs(
 
 
 def parse_row(
-    row: RowProxy,
+    row: Row,
     fields_string: Optional[Sequence[str]] = None,
     fields_int: Optional[Sequence[str]] = None,
     fields_float: Optional[Sequence[str]] = None,
@@ -245,7 +248,7 @@ def run_query(p: APrinter, query_tuple: Tuple[str, Dict[str, Any]]):
     return db.execution_options(stream_results=True).execute(full_query, **params)
 
 
-def _identity_transform(row: Dict[str, Any], _: RowProxy) -> Dict[str, Any]:
+def _identity_transform(row: Dict[str, Any], _: Row) -> Dict[str, Any]:
     """
     identity transform
     """
@@ -257,7 +260,7 @@ def execute_queries(
     fields_string: Sequence[str],
     fields_int: Sequence[str],
     fields_float: Sequence[str],
-    transform: Callable[[Dict[str, Any], RowProxy], Dict[str, Any]] = _identity_transform,
+    transform: Callable[[Dict[str, Any], Row], Dict[str, Any]] = _identity_transform,
 ):
     """
     execute the given queries and return the response to send them
@@ -317,7 +320,7 @@ def execute_query(
     fields_string: Sequence[str],
     fields_int: Sequence[str],
     fields_float: Sequence[str],
-    transform: Callable[[Dict[str, Any], RowProxy], Dict[str, Any]] = _identity_transform,
+    transform: Callable[[Dict[str, Any], Row], Dict[str, Any]] = _identity_transform,
 ):
     """
     execute the given query and return the response to send it
@@ -344,6 +347,15 @@ class QueryBuilder:
         self.params: Dict[str, Any] = {}
         self.subquery: str = ""
         self.index: Optional[str] = None
+
+    def retable(self, new_table: str):
+        """
+        updates this QueryBuilder to point to another table.
+        useful for switching to a different view of the data...
+        """
+        # WARNING: if we ever switch to re-using QueryBuilder, we should change this to return a copy.
+        self.table: str = f"{new_table} {self.alias}"
+        return self
 
     @property
     def conditions_clause(self) -> str:

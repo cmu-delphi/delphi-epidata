@@ -42,6 +42,8 @@ from .covidcast_utils.model import TimeType, count_signal_time_types, data_sourc
 bp = Blueprint("covidcast", __name__)
 alias = None
 
+latest_table = "epimetric_latest_v"
+history_table = "epimetric_full_v"
 
 def parse_source_signal_pairs() -> List[SourceSignalPair]:
     ds = request.values.get("data_source")
@@ -89,11 +91,15 @@ def parse_time_pairs() -> List[TimePair]:
 
 def _handle_lag_issues_as_of(q: QueryBuilder, issues: Optional[List[Union[Tuple[int, int], int]]] = None, lag: Optional[int] = None, as_of: Optional[int] = None):
     if issues:
+        q.retable(history_table)
         q.where_integers("issue", issues)
     elif lag is not None:
+        q.retable(history_table)
+        # history_table has full spectrum of lag values to search from whereas the latest_table does not
         q.where(lag=lag)
     elif as_of is not None:
-        # fetch most recent issues with as of
+        # fetch the most recent issue as of a certain date (not to be confused w/ plain-old "most recent issue"
+        q.retable(history_table)
         sub_condition_asof = "(issue <= :as_of)"
         q.params["as_of"] = as_of
         sub_fields = "max(issue) max_issue, time_type, time_value, `source`, `signal`, geo_type, geo_value"
@@ -101,26 +107,8 @@ def _handle_lag_issues_as_of(q: QueryBuilder, issues: Optional[List[Union[Tuple[
         sub_condition = f"x.max_issue = {q.alias}.issue AND x.time_type = {q.alias}.time_type AND x.time_value = {q.alias}.time_value AND x.source = {q.alias}.source AND x.signal = {q.alias}.signal AND x.geo_type = {q.alias}.geo_type AND x.geo_value = {q.alias}.geo_value"
         q.subquery = f"JOIN (SELECT {sub_fields} FROM {q.table} WHERE {q.conditions_clause} AND {sub_condition_asof} GROUP BY {sub_group}) x ON {sub_condition}"
     else:
-        # fetch most recent issue fast
-        q.conditions.append(f"({q.alias}.is_latest_issue IS TRUE)")
-
-
-def guess_index_to_use(time: List[TimePair], geo: List[GeoPair], issues: Optional[List[Union[Tuple[int, int], int]]] = None, lag: Optional[int] = None, as_of: Optional[int] = None) -> Optional[str]:
-    time_values_to_retrieve = sum((t.count() for t in time))
-    geo_values_to_retrieve = sum((g.count() for g in geo))
-
-    if geo_values_to_retrieve > 5 or time_values_to_retrieve < 30:
-        # no optimization known
-        return None
-
-    if issues:
-        return "by_issue"
-    elif lag is not None:
-        return "by_lag"
-    elif as_of is None:
-        # latest
-        return "by_issue"
-    return None
+        # else we are using the (standard/default) `latest_table`, to fetch the most recent issue quickly
+        pass
 
 
 @bp.route("/", methods=("GET", "POST"))
@@ -135,7 +123,7 @@ def handle():
     lag = extract_integer("lag")
 
     # build query
-    q = QueryBuilder("covidcast", "t")
+    q = QueryBuilder(latest_table, "t")
 
     fields_string = ["geo_value", "signal"]
     fields_int = ["time_value", "direction", "issue", "lag", "missing_value", "missing_stderr", "missing_sample_size"]
@@ -156,8 +144,6 @@ def handle():
     q.where_source_signal_pairs("source", "signal", source_signal_pairs)
     q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
     q.where_time_pairs("time_type", "time_value", time_pairs)
-
-    q.index = guess_index_to_use(time_pairs, geo_pairs, issues, lag, as_of)
 
     _handle_lag_issues_as_of(q, issues, lag, as_of)
 
@@ -199,7 +185,7 @@ def handle_trend():
         basis_time_value = shift_time_value(time_value, -1 * base_shift) if is_day else shift_week_value(time_value, -1 * base_shift)
 
     # build query
-    q = QueryBuilder("covidcast", "t")
+    q = QueryBuilder(latest_table, "t")
 
     fields_string = ["geo_type", "geo_value", "source", "signal"]
     fields_int = ["time_value"]
@@ -249,7 +235,7 @@ def handle_trendseries():
         basis_shift = 7
 
     # build query
-    q = QueryBuilder("covidcast", "t")
+    q = QueryBuilder(latest_table, "t")
 
     fields_string = ["geo_type", "geo_value", "source", "signal"]
     fields_int = ["time_value"]
@@ -304,8 +290,8 @@ def handle_correlation():
     if lag is None:
         lag = 28
 
-    # build query
-    q = QueryBuilder("covidcast", "t")
+    # `lag` above is used in post-processing, not in the database query, so we can use latest here
+    q = QueryBuilder(latest_table, "t")
 
     fields_string = ["geo_type", "geo_value", "source", "signal"]
     fields_int = ["time_value"]
@@ -320,9 +306,6 @@ def handle_correlation():
     )
     q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
     q.where_time_pairs("time_type", "time_value", [TimePair("day" if is_day else "week", [time_window])])
-
-    # fetch most recent issue fast
-    q.conditions.append(f"({q.alias}.is_latest_issue IS TRUE)")
 
     df = as_pandas(str(q), q.params)
     if is_day:
@@ -387,7 +370,7 @@ def handle_export():
         raise ValidationFailedException("mixing weeks with day arguments")
 
     # build query
-    q = QueryBuilder("covidcast", "t")
+    q = QueryBuilder(latest_table, "t")
 
     q.set_fields(["geo_value", "signal", "time_value", "issue", "lag", "value", "stderr", "sample_size", "geo_type", "source"], [], [])
     q.set_order("time_value", "geo_value")
@@ -462,7 +445,7 @@ def handle_backfill():
         reference_anchor_lag = 60
 
     # build query
-    q = QueryBuilder("covidcast", "t")
+    q = QueryBuilder(history_table, "t")
 
     fields_string = []
     fields_int = ["time_value", "issue"]
@@ -632,7 +615,7 @@ def handle_coverage():
             time_window = (date_to_time_value(now - timedelta(days=last)), date_to_time_value(now))
     _verify_argument_time_type_matches(is_day, daily_signals, weekly_signals)
 
-    q = QueryBuilder("covidcast", "c")
+    q = QueryBuilder(latest_table, "c")
     fields_string = ["source", "signal"]
     fields_int = ["time_value"]
 

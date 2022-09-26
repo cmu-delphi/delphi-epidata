@@ -1,6 +1,6 @@
 ---
 title: COVIDcast Data Licensing
-parent: COVIDcast Epidata API
+parent: COVIDcast Main Endpoint
 nav_order: 2
 ---
 

@@ -1,6 +1,6 @@
 ---
 title: FluView metadata
-parent: Epidata API (Other Diseases)
+parent: Other Endpoints (COVID-19 and Other Diseases)
 ---
 
 # FluView metadata
@@ -30,14 +30,14 @@ There are no parameters for this endpoint.
 
 ## Response
 
-| Field | Description | Type |
-| --- | --- | --- |
-| `result` | result code: 1 = success, 2 = too many results, -2 = no results | integer |
-| `epidata` | list of results | array of objects |
-| `epidata[].latest_update` | date when data was last updated | string |
-| `epidata[].latest_issue` | most recent "issue" (epiweek) in the data | integer |
-| `epidata[].table_rows` | total number of rows in the table | integer |
-| `message` | `success` or error message | string |
+| Field                     | Description                                                     | Type             |
+|---------------------------|-----------------------------------------------------------------|------------------|
+| `result`                  | result code: 1 = success, 2 = too many results, -2 = no results | integer          |
+| `epidata`                 | list of results                                                 | array of objects |
+| `epidata[].latest_update` | date when data was last updated                                 | string           |
+| `epidata[].latest_issue`  | most recent "issue" (epiweek) in the data                       | integer          |
+| `epidata[].table_rows`    | total number of rows in the table                               | integer          |
+| `message`                 | `success` or error message                                      | string           |
 
 # Example URLs
 

@@ -1,6 +1,6 @@
 ---
 title: Data Sources and Signals
-parent: COVIDcast Epidata API
+parent: COVIDcast Main Endpoint
 nav_order: 2
 has_children: true
 ---
@@ -28,18 +28,18 @@ and contributions are welcome.
 The following signals are currently displayed on [the public COVIDcast
 dashboard](https://delphi.cmu.edu/covidcast/):
 
-| Kind             | Name                             | Source                                                                | Signal                           |
-| ----             | ----                             | ------                                                                | ------                           |
-| Public Behavior  | People Wearing Masks             | [`fb-survey`](covidcast-signals/fb-survey.md)                         | `smoothed_wwearing_mask_7d`      |
-| Public Behavior  | Vaccine Acceptance               | [`fb-survey`](covidcast-signals/fb-survey.md)                   | `smoothed_wcovid_vaccinated_appointment_or_accept` |
-| Public Behavior  | COVID Symptom Searches on Google | [`google-symptoms`](covidcast-signals/google-symptoms.md)        | `sum_anosmia_ageusia_smoothed_search` |
-| Early Indicators | COVID-Like Symptoms              | [`fb-survey`](covidcast-signals/fb-survey.md)                         | `smoothed_wcli`                  |
-| Early Indicators | COVID-Like Symptoms in Community | [`fb-survey`](covidcast-signals/fb-survey.md)                         | `smoothed_whh_cmnty_cli`         |
-| Early Indicators | COVID-Related Doctor Visits      | [`doctor-visits`](covidcast-signals/doctor-visits.md)                 | `smoothed_adj_cli`               |
-| Cases and Testing| COVID Antigen Test Positivity (Quidel) | [`quidel`](covidcast-signals/quidel.md)                         | `covid_ag_smoothed_pct_positive` |
-| Cases and Testing| COVID Cases                      | [`jhu-csse`](covidcast-signals/jhu-csse.md)                           | `confirmed_7dav_incidence_prop`  |
-| Late Indicators  | COVID Hospital Admissions        | [`hhs`](covidcast-signals/hhs.md)                            | `confirmed_admissions_covid_1d_prop_7dav` |
-| Late Indicators  | Deaths                           | [`jhu-csse`](covidcast-signals/jhu-csse.md)                           | `deaths_7dav_incidence_prop`     |
+| Kind | Name | Source | Signal |
+|---|---|---|---|
+| Public Behavior | People Wearing Masks | [`fb-survey`](covidcast-signals/fb-survey.md) | `smoothed_wwearing_mask_7d` |
+| Public Behavior | Vaccine Acceptance | [`fb-survey`](covidcast-signals/fb-survey.md) | `smoothed_wcovid_vaccinated_appointment_or_accept` |
+| Public Behavior | COVID Symptom Searches on Google | [`google-symptoms`](covidcast-signals/google-symptoms.md) | `sum_anosmia_ageusia_smoothed_search` |
+| Early Indicators | COVID-Like Symptoms | [`fb-survey`](covidcast-signals/fb-survey.md) | `smoothed_wcli` |
+| Early Indicators | COVID-Like Symptoms in Community | [`fb-survey`](covidcast-signals/fb-survey.md) | `smoothed_whh_cmnty_cli` |
+| Early Indicators | COVID-Related Doctor Visits | [`doctor-visits`](covidcast-signals/doctor-visits.md) | `smoothed_adj_cli` |
+| Cases and Testing | COVID Antigen Test Positivity (Quidel) | [`quidel`](covidcast-signals/quidel.md) | `covid_ag_smoothed_pct_positive` |
+| Cases and Testing | COVID Cases | [`jhu-csse`](covidcast-signals/jhu-csse.md) | `confirmed_7dav_incidence_prop` |
+| Late Indicators | COVID Hospital Admissions | [`hhs`](covidcast-signals/hhs.md) | `confirmed_admissions_covid_1d_prop_7dav` |
+| Late Indicators | Deaths | [`jhu-csse`](covidcast-signals/jhu-csse.md) | `deaths_7dav_incidence_prop` |
 
 ## All Available Sources and Signals
 

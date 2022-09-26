@@ -1,6 +1,6 @@
 ---
 title: AFHSB Metadata
-parent: Epidata API (Other Diseases)
+parent: Other Endpoints (COVID-19 and Other Diseases)
 ---
 
 # AFHSB Metadata
@@ -27,18 +27,18 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 ### Required
 
-| Parameter | Description | Type |
-| --- | --- | --- |
-| `auth` | password | string |
+| Parameter | Description | Type   |
+|-----------|-------------|--------|
+| `auth`    | password    | string |
 
 ## Response
 
-| Field | Description | Type |
-| --- | --- | --- |
-| `result` | result code: 1 = success, 2 = too many results, -2 = no results | integer |
-| `epidata` | list of results | array of objects |
-| ... | ... | ... | <!-- TODO -->
-| `message` | `success` or error message | string |
+| Field     | Description                                                     | Type             |
+|-----------|-----------------------------------------------------------------|------------------|
+| `result`  | result code: 1 = success, 2 = too many results, -2 = no results | integer          |
+| `epidata` | list of results                                                 | array of objects |
+| ...       | ...                                                             | ...              | <!-- TODO -->
+| `message` | `success` or error message                                      | string           |
 
 # Example URLs
 

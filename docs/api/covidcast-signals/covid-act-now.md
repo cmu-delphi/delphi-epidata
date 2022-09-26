@@ -1,7 +1,7 @@
 ---
 title: COVID Act Now
 parent: Data Sources and Signals
-grand_parent: COVIDcast Epidata API
+grand_parent: COVIDcast Main Endpoint
 ---
 
 # COVID Act Now (CAN)
@@ -21,10 +21,10 @@ While CAN provides this data potentially from multiple sources, we only use data
 [CDC's COVID-19 Integrated County View](https://covid.cdc.gov/covid-data-tracker/#county-view).
 
 
-| Signal | Description |
-| --- | --- |
+| Signal                         | Description                                                    |
+|--------------------------------|----------------------------------------------------------------|
 | `pcr_specimen_positivity_rate` | Proportion of PCR specimens tested that have a positive result |
-| `pcr_specimen_total_tests` | Total number of PCR specimens tested |
+| `pcr_specimen_total_tests`     | Total number of PCR specimens tested                           |
 
 ## Table of contents
 {: .no_toc .text-delta}

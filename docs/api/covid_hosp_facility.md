@@ -1,6 +1,6 @@
 ---
 title: COVID-19 Reported Patient Impact and Hospital Capacity by Facility
-parent: Epidata API (Other Diseases)
+parent: Other Endpoints (COVID-19 and Other Diseases)
 ---
 
 # COVID-19 Hospitalization by Facility
@@ -38,10 +38,10 @@ See [this documentation](README.md) for details on specifying locations and date
 
 ### Required
 
-| Parameter | Description | Type |
-| --- | --- | --- |
-| `hospital_pks` | facility unique identifiers | `list` of identifiers |
-| `collection_weeks` | dates | `list` of dates or date ranges |
+| Parameter          | Description                 | Type                           |
+|--------------------|-----------------------------|--------------------------------|
+| `hospital_pks`     | facility unique identifiers | `list` of identifiers          |
+| `collection_weeks` | dates                       | `list` of dates or date ranges |
 
 NOTE: The companion
 [`covid_hosp_facility_lookup` endpoint](covid_hosp_facility_lookup.md) can be
@@ -54,8 +54,8 @@ dates) rather than an "epiweek" as in other endpoints.
 
 ### Optional
 
-| Parameter | Description | Type |
-| --- | --- | --- |
+| Parameter           | Description         | Type                                   |
+|---------------------|---------------------|----------------------------------------|
 | `publication_dates` | date of publication | `list` of "issue" dates or date ranges |
 
 If `publication_dates` is not specified, then the most recent issue is used by

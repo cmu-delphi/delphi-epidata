@@ -1,6 +1,6 @@
 ---
 title: Dengue Digital Surveillance
-parent: Epidata API (Other Diseases)
+parent: Other Endpoints (COVID-19 and Other Diseases)
 ---
 
 # Dengue Digital Surveillance Sensors
@@ -32,12 +32,12 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 ## Response
 
-| Field | Description | Type |
-| --- | --- | --- |
-| `result` | result code: 1 = success, 2 = too many results, -2 = no results | integer |
-| `epidata` | list of results | array of objects |
-| ... | ... | ... | <!-- TODO -->
-| `message` | `success` or error message | string |
+| Field     | Description                                                     | Type             |
+|-----------|-----------------------------------------------------------------|------------------|
+| `result`  | result code: 1 = success, 2 = too many results, -2 = no results | integer          |
+| `epidata` | list of results                                                 | array of objects |
+| ...       | ...                                                             | ...              | <!-- TODO -->
+| `message` | `success` or error message                                      | string           |
 
 # Example URLs
 

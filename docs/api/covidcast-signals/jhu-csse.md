@@ -1,7 +1,7 @@
 ---
 title: JHU Cases and Deaths
 parent: Data Sources and Signals
-grand_parent: COVIDcast Epidata API
+grand_parent: COVIDcast Main Endpoint
 ---
 
 # JHU Cases and Deaths
@@ -21,16 +21,16 @@ This data source of confirmed COVID-19 cases and deaths is based on reports made
 available by the Center for Systems Science and Engineering at Johns Hopkins
 University.
 
-| Signal and 7-day average signal                                | Description                                                                                                                             |
-|----------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
-| `confirmed_cumulative_num`                                     | Cumulative number of confirmed COVID-19 cases <br/> **Earliest date available:** 2020-01-22 & 2020-02-20                                |
-| `confirmed_cumulative_prop`                                    | Cumulative number of confirmed COVID-19 cases per 100,000 population <br/> **Earliest date available:** 2020-01-22 & 2020-02-20         |
-| `confirmed_incidence_num` and `confirmed_7dav_incidence_num`   | Number of new confirmed COVID-19 cases, daily <br/> **Earliest date available:** 2020-01-22 & 2020-02-20                                |
-| `confirmed_incidence_prop` and `confirmed_7dav_incidence_prop` | Number of new confirmed COVID-19 cases per 100,000 population, daily <br/> **Earliest date available:** 2020-01-22 & 2020-02-20         |
-| `deaths_cumulative_num`                                        | Cumulative number of confirmed deaths due to COVID-19 <br/> **Earliest date available:** 2020-01-22 & 2020-02-20                        |
-| `deaths_cumulative_prop`                                       | Cumulative number of confirmed due to COVID-19, per 100,000 population <br/> **Earliest date available:** 2020-01-22 & 2020-02-20       |
-| `deaths_incidence_num` and `deaths_7dav_incidence_num`         | Number of new confirmed deaths due to COVID-19, daily <br/> **Earliest date available:** 2020-01-22 & 2020-02-20                        |
-| `deaths_incidence_prop` and `deaths_7dav_incidence_prop`       | Number of new confirmed deaths due to COVID-19 per 100,000 population, daily <br/> **Earliest date available:** 2020-01-22 & 2020-02-20 |
+| Signal and 7-day average signal | Description |
+|---|---|
+| `confirmed_cumulative_num` | Cumulative number of confirmed COVID-19 cases <br/> **Earliest date available:** 2020-01-22 & 2020-02-20 |
+| `confirmed_cumulative_prop` | Cumulative number of confirmed COVID-19 cases per 100,000 population <br/> **Earliest date available:** 2020-01-22 & 2020-02-20 |
+| `confirmed_incidence_num` and `confirmed_7dav_incidence_num` | Number of new confirmed COVID-19 cases, daily <br/> **Earliest date available:** 2020-01-22 & 2020-02-20 |
+| `confirmed_incidence_prop` and `confirmed_7dav_incidence_prop` | Number of new confirmed COVID-19 cases per 100,000 population, daily <br/> **Earliest date available:** 2020-01-22 & 2020-02-20 |
+| `deaths_cumulative_num` | Cumulative number of confirmed deaths due to COVID-19 <br/> **Earliest date available:** 2020-01-22 & 2020-02-20 |
+| `deaths_cumulative_prop` | Cumulative number of confirmed due to COVID-19, per 100,000 population <br/> **Earliest date available:** 2020-01-22 & 2020-02-20 |
+| `deaths_incidence_num` and `deaths_7dav_incidence_num` | Number of new confirmed deaths due to COVID-19, daily <br/> **Earliest date available:** 2020-01-22 & 2020-02-20 |
+| `deaths_incidence_prop` and `deaths_7dav_incidence_prop` | Number of new confirmed deaths due to COVID-19 per 100,000 population, daily <br/> **Earliest date available:** 2020-01-22 & 2020-02-20 |
 
 These signals are taken directly from the JHU CSSE [COVID-19 GitHub
 repository](https://github.com/CSSEGISandData/COVID-19) without changes. The
