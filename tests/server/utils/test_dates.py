@@ -54,3 +54,8 @@ class UnitTests(unittest.TestCase):
         self.assertEqual(dates_to_ranges([(202001, 202005)]), [(202001, 202005)])
         self.assertEqual(dates_to_ranges([202051, (202050, 202102), 202101]), [(202050, 202102)])
         self.assertEqual(dates_to_ranges([202050, 202051, (202050, 202101), 202103]), [(202050, 202101), 202103])
+        # non-contiguous integers that represent actually contiguous time objects should join to become a range:
+        self.assertEqual(dates_to_ranges([20200228, 20200301]), [20200228, 20200301]) # this is NOT a range because 2020 was a leap year
+        self.assertEqual(dates_to_ranges([20210228, 20210301]), [(20210228, 20210301)]) # this becomes a range because these dates are indeed consecutive
+        # individual weeks become a range (2020 is a rare year with 53 weeks)
+        self.assertEqual(dates_to_ranges([202051, 202052, 202053, 202101, 202102]), [(202051, 202102)])
