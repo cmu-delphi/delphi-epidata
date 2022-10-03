@@ -187,7 +187,7 @@ def filter_time_pairs(
         params[type_param] = pair.time_type
         if isinstance(pair.time_values, bool) and pair.time_values:
             return f"{type_field} = :{type_param}"
-        ranges = weeks_to_ranges(pair.time_values) if pair.is_week else days_to_ranges(pair.time_values)
+        ranges = dates_to_ranges(pair.time_values)
         return f"({type_field} = :{type_param} AND {filter_integers(time_field, cast(Sequence[Union[int, Tuple[int,int]]], ranges), type_param, params)})"
 
     parts = [filter_pair(p, i) for i, p in enumerate(values)]
