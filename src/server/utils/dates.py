@@ -141,4 +141,4 @@ def _to_ranges(values: Sequence[Union[Tuple[int, int], int]], value_to_date: Cal
 
         return ranges
     except:
-        return ranges
+        return values
