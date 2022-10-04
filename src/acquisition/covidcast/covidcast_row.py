@@ -19,7 +19,9 @@ class CovidcastRow:
 
     Used for:
     - inserting rows into the database
-    - quickly creating rows with default fields for testing
+    - creating test rows with default fields for testing 
+    - created from many formats (dict, csv, df, kwargs)
+    - can be viewed in many formats (dict, csv, df)
 
     The rows are specified in 'v4_schema.sql'.
     """
@@ -57,7 +59,7 @@ class CovidcastRow:
         # - 3. If this row was returned by the database.
         self._db_row_ignore_fields = []
 
-    def _sanity_check_fields(self, test_mode: bool = True):
+    def _sanity_check_fields(self, extra_checks: bool = True):
         if self.issue and self.issue < self.time_value:
             self.issue = self.time_value
 
@@ -68,13 +70,13 @@ class CovidcastRow:
 
         # This sanity checking is already done in CsvImporter, but it's here so the testing class gets it too.
         if _is_none(self.value) and self.missing_value == Nans.NOT_MISSING:
-            self.missing_value = Nans.NOT_APPLICABLE.value if test_mode else Nans.OTHER.value
+            self.missing_value = Nans.NOT_APPLICABLE.value if extra_checks else Nans.OTHER.value
 
         if _is_none(self.stderr) and self.missing_stderr == Nans.NOT_MISSING:
-            self.missing_stderr = Nans.NOT_APPLICABLE.value if test_mode else Nans.OTHER.value
+            self.missing_stderr = Nans.NOT_APPLICABLE.value if extra_checks else Nans.OTHER.value
 
         if _is_none(self.sample_size) and self.missing_sample_size == Nans.NOT_MISSING:
-            self.missing_sample_size = Nans.NOT_APPLICABLE.value if test_mode else Nans.OTHER.value
+            self.missing_sample_size = Nans.NOT_APPLICABLE.value if extra_checks else Nans.OTHER.value
 
         return self
 
@@ -159,7 +161,8 @@ class CovidcastRow:
     def time_pair(self):
         return f"{self.time_type}:{self.time_value}"
 
-
+# TODO: Deprecate this class in favor of functions over the List[CovidcastRow] datatype.
+# All the inner variables of this class are derived from the CovidcastRow class.
 @dataclass
 class CovidcastRows:
     rows: List[CovidcastRow] = field(default_factory=list)
@@ -198,7 +201,7 @@ class CovidcastRows:
         # All the arg values must be lists of the same length.
         assert len(set(len(lst) for lst in kwargs.values())) == 1
 
-        return CovidcastRows(rows=[CovidcastRow(**_kwargs)._sanity_check_fields(test_mode=test_mode) if sanity_check else CovidcastRow(**_kwargs) for _kwargs in transpose_dict(kwargs)])
+        return CovidcastRows(rows=[CovidcastRow(**_kwargs)._sanity_check_fields(extra_checks=test_mode) if sanity_check else CovidcastRow(**_kwargs) for _kwargs in transpose_dict(kwargs)])
 
     @staticmethod
     def from_records(records: Iterable[dict], sanity_check: bool = False):

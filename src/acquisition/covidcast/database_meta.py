@@ -9,8 +9,8 @@ from typing import Dict, List, Tuple
 import pandas as pd
 from requests import get
 
-# TODO: Switch to delphi_epidata_py when we release it https://github.com/cmu-delphi/delphi-epidata/issues/942.
-# from delphi_epidata.request import Epidata, EpiRange
+# TODO: Switch to epidatpy when we release it https://github.com/cmu-delphi/delphi-epidata/issues/942.
+# from epidatpy.request import Epidata, EpiRange
 
 from .logger import get_structured_logger
 from .covidcast_row import CovidcastRow, set_df_dtypes
@@ -149,7 +149,7 @@ class DatabaseMeta(Database):
     def __init__(self, base_url: str = "http://localhost/epidata") -> "DatabaseMeta":
         Database.__init__(self)
         self.epidata_base_url = base_url
-        # TODO: Switch to delphi_epidata_py when we release it https://github.com/cmu-delphi/delphi-epidata/issues/942.
+        # TODO: Switch to epidatpy when we release it https://github.com/cmu-delphi/delphi-epidata/issues/942.
         self.delphi_epidata = False
 
     def compute_covidcast_meta(self, table_name=None, jit=False, parallel=False, n_threads=None):
@@ -328,7 +328,7 @@ class DatabaseMeta(Database):
             return pd.DataFrame(columns=meta_table_columns)
 
         # Request all the data for the derived signal.
-        # TODO: Use when delphi_epidata_py is released https://github.com/cmu-delphi/delphi-epidata/issues/942.
+        # TODO: Use when epidatpy is released https://github.com/cmu-delphi/delphi-epidata/issues/942.
         if self.delphi_epidata:
             raise NotImplemented("Use the old epidata client for now.")
             # TODO: Consider refactoring to combine multiple signal requests in one call.

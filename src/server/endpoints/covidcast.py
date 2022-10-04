@@ -96,9 +96,7 @@ def parse_time_pairs() -> List[TimePair]:
         raise ValidationFailedException("missing parameter: time or (time_type and time_values)")
 
     time_pairs = parse_time_arg()
-    # TODO: Put a bound on the number of time_values?
-    # if sum(len(time_pair.time_values) for time_pair in time_pairs if not isinstance(time_pair.time_values, bool)) > 30:
-    #     raise ValidationFailedException("parameter value exceed: too many time pairs requested, consider using a timerange instead YYYYMMDD-YYYYMMDD")
+    # TODO: Put a bound on the number of time_values? (see above)
     return time_pairs
 
 
@@ -179,6 +177,7 @@ def handle():
     fields_int = ["time_value", "direction", "issue", "lag", "missing_value", "missing_stderr", "missing_sample_size"]
     fields_float = ["value", "stderr", "sample_size"]
 
+    # TODO: JIT computations don't support time_value = *; there may be a clever way to implement this.
     use_server_side_compute = not any((issues, lag, is_time_type_week, is_time_value_true)) and JIT_COMPUTE and not jit_bypass
     if use_server_side_compute:
         transform_args = parse_transform_args()

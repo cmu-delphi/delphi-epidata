@@ -23,6 +23,7 @@ DIFF: Callable = lambda rows, **kwargs: generate_diffed_rows(rows, **kwargs)
 SMOOTH: Callable = lambda rows, **kwargs: generate_smoothed_rows(rows, **kwargs)
 DIFF_SMOOTH: Callable = lambda rows, **kwargs: generate_smoothed_rows(generate_diffed_rows(rows, **kwargs), **kwargs)
 
+SignalTransforms = Dict[SourceSignalPair, SourceSignalPair]
 
 class HighValuesAre(str, Enum):
     bad = "bad"
@@ -366,29 +367,29 @@ def _reindex_iterable(iterator: Iterator[Dict], time_pairs: Optional[List[TimePa
 
     # Non-trivial operations otherwise.
     min_time_value = first_item.get("time_value")
-    for day in get_day_range(time_pairs):
-        if day < min_time_value:
+    for expected_time_value in get_day_range(time_pairs):
+        if expected_time_value < min_time_value:
             continue
 
         try:
-            # This will stay the same until the iterator is iterated.
-            # When _iterator is exhausted, it will raise StopIteration, ending this loop.
+            # This will stay the same until the peeked element is consumed.
             new_item = _iterator.peek()
-            if day == new_item.get("time_value"):
-                # Get the value we just peeked.
-                yield next(_iterator)
-            else:
-                # Return a default row instead.
-                # Copy to avoid Python by-reference memory issues.
-                default_item = _default_item.copy()
-                default_item.update({
-                    "time_value": day,
-                    "value": fill_value,
-                    "missing_value": Nans.NOT_MISSING if fill_value and not np.isnan(fill_value) else Nans.NOT_APPLICABLE
-                })
-                yield default_item
         except StopIteration:
             return
+
+        if expected_time_value == new_item.get("time_value"):
+            # Get the value we just peeked.
+            yield next(_iterator)
+        else:
+            # Return a default row instead.
+            # Copy to avoid Python by-reference memory issues.
+            default_item = _default_item.copy()
+            default_item.update({
+                "time_value": expected_time_value,
+                "value": fill_value,
+                "missing_value": Nans.NOT_MISSING if fill_value and not np.isnan(fill_value) else Nans.NOT_APPLICABLE
+            })
+            yield default_item
 
 
 def _get_base_signal_transform(signal: Union[DataSignal, Tuple[str, str]], data_signals_by_key: Dict[Tuple[str, str], DataSignal] = data_signals_by_key) -> Callable:
@@ -543,7 +544,7 @@ def get_day_range(time_pairs: List[TimePair]) -> Iterator[int]:
 
 
 def _generate_transformed_rows(
-    parsed_rows: Iterator[Dict], time_pairs: Optional[List[TimePair]] = None, transform_dict: Optional[Dict[Tuple[str, str], List[Tuple[str, str]]]] = None, transform_args: Optional[Dict] = None, group_keyfunc: Optional[Callable] = None, data_signals_by_key: Dict[Tuple[str, str], DataSignal] = data_signals_by_key,
+    parsed_rows: Iterator[Dict], time_pairs: Optional[List[TimePair]] = None, transform_dict: Optional[SignalTransforms] = None, transform_args: Optional[Dict] = None, group_keyfunc: Optional[Callable] = None, data_signals_by_key: Dict[Tuple[str, str], DataSignal] = data_signals_by_key,
 ) -> Iterator[Dict]:
     """Applies time-series transformations to streamed rows from a database.
 
@@ -553,7 +554,7 @@ def _generate_transformed_rows(
     time_pairs: Optional[List[TimePair]], default None
         A list of TimePairs, which can be used to create a continguous time index for time-series operations.
         The min and max dates in the TimePairs list is used.
-    transform_dict: Optional[Dict[Tuple[str, str], List[Tuple[str, str]]]], default None
+    transform_dict: Optional[SignalTransforms], default None
         A dictionary mapping base sources to a list of their derived signals that the user wishes to query.
         For example, transform_dict may be {("jhu-csse", "confirmed_cumulative_num): [("jhu-csse", "confirmed_incidence_num"), ("jhu-csse", "confirmed_7dav_incidence_num")]}.
     transform_args: Optional[Dict], default None
@@ -576,24 +577,22 @@ def _generate_transformed_rows(
         group_keyfunc = lambda row: (row["geo_type"], row["geo_value"], row["source"], row["signal"])
 
     for key, group in groupby(parsed_rows, group_keyfunc):
-        group = [x for x in group]
         _, _, source_name, signal_name = key
-        # Extract the list of derived signals.
-        derived_signals: List[Tuple[str, str]] = transform_dict.get((source_name, signal_name), [(source_name, signal_name)])
+        # Extract the list of derived signals; if a signal is not in the dictionary, then use the identity map.
+        derived_signals: SourceSignalPair = transform_dict.get(SourceSignalPair(source_name, [signal_name]), SourceSignalPair(source_name, [signal_name]))
         # Create a list of source-signal pairs along with the transformation required for the signal.
-        source_signal_pairs_and_group_transforms: List[Tuple[Tuple[str, str], Callable]] = [((derived_source, derived_signal), _get_base_signal_transform((derived_source, derived_signal), data_signals_by_key)) for (derived_source, derived_signal) in derived_signals]
+        signal_and_group_transforms: List[Tuple[Tuple[str, str], Callable]] = [(signal, _get_base_signal_transform((source_name, signal), data_signals_by_key)) for signal in derived_signals.signal]
         # Put the current time series on a contiguous time index.
         group_contiguous_time = _reindex_iterable(group, time_pairs, fill_value=transform_args.get("pad_fill_value"))
         # Create copies of the iterable, with smart memory usage.
-        group_iter_copies: Iterator[Iterator[Dict]] = tee(group_contiguous_time, len(source_signal_pairs_and_group_transforms))
+        group_iter_copies: Iterator[Iterator[Dict]] = tee(group_contiguous_time, len(signal_and_group_transforms))
         # Create a list of transformed group iterables, remembering their derived name as needed.
-        transformed_group_rows: Iterator[Iterator[Dict]] = (zip(transform(rows, **transform_args), repeat(key)) for (key, transform), rows in zip(source_signal_pairs_and_group_transforms, group_iter_copies))
+        transformed_group_rows: Iterator[Iterator[Dict]] = (zip(transform(rows, **transform_args), repeat(derived_signal)) for (derived_signal, transform), rows in zip(signal_and_group_transforms, group_iter_copies))
         # Traverse through the transformed iterables in an interleaved fashion, which makes sure that only a small window
         # of the original iterable (group) is stored in memory.
-        for row, (_, derived_signal) in interleave_longest(*transformed_group_rows):
+        for row, derived_signal in interleave_longest(*transformed_group_rows):
             row["signal"] = derived_signal
             yield row
-
 
 
 def get_basename_signal_and_jit_generator(source_signal_pairs: List[SourceSignalPair], transform_args: Optional[Dict[str, Union[str, int]]] = None, data_sources_by_id: Dict[str, DataSource] = data_sources_by_id, data_signals_by_key: Dict[Tuple[str, str], DataSignal] = data_signals_by_key) -> Tuple[List[SourceSignalPair], Generator]:
@@ -602,28 +601,28 @@ def get_basename_signal_and_jit_generator(source_signal_pairs: List[SourceSignal
 
     Example:
     SourceSignalPair("src", signal=["sig_base", "sig_smoothed"]) would return SourceSignalPair("src", signal=["sig_base"]) and a transformation function
-    that will take the returned database query for "sig_base" and return both the base time series and the smoothed time series.
+    that will take the returned database query for "sig_base" and return both the base time series and the smoothed time series. transform_dict in this case
+    would be {("src", "sig_base"): [("src", "sig_base"), ("src", "sig_smooth")]}.
     """
     source_signal_pairs = _resolve_bool_source_signals(source_signal_pairs, data_sources_by_id)
     base_signal_pairs: List[SourceSignalPair] = []
-    transform_dict: Dict[Tuple[str, str], List[Tuple[str, str]]] = dict()
+    transform_dict: SignalTransforms = dict()
 
     for pair in source_signal_pairs:
+        # Should only occur when the SourceSignalPair was unrecognized by _resolve_bool_source_signals. Useful for testing with fake signal names.
         if isinstance(pair.signal, bool):
             base_signal_pairs.append(pair)
             continue
 
-        source_name = pair.source
-        signal_names = pair.signal
         signals = []
-        for signal_name in signal_names:
-            signal = data_signals_by_key.get((source_name, signal_name))
+        for signal_name in pair.signal:
+            signal = data_signals_by_key.get((pair.source, signal_name))
             if not signal or not signal.compute_from_base:
+                transform_dict.setdefault(SourceSignalPair(source=pair.source, signal=[signal_name]), SourceSignalPair(source=pair.source, signal=[])).add_signal(signal_name)
                 signals.append(signal_name)
-                transform_dict.setdefault((source_name, signal_name), []).append((source_name, signal_name))
             else:
+                transform_dict.setdefault(SourceSignalPair(source=pair.source, signal=[signal.signal_basename]), SourceSignalPair(source=pair.source, signal=[])).add_signal(signal_name)
                 signals.append(signal.signal_basename)
-                transform_dict.setdefault((source_name, signal.signal_basename), []).append((source_name, signal_name))
         base_signal_pairs.append(SourceSignalPair(pair.source, signals))
 
     row_transform_generator = partial(_generate_transformed_rows, transform_dict=transform_dict, transform_args=transform_args, data_signals_by_key=data_signals_by_key)

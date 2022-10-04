@@ -93,6 +93,13 @@ class SourceSignalPair:
             return inf if self.signal else 0
         return len(self.signal)
 
+    def add_signal(self, signal: str) -> None:
+        if not isinstance(self.signal, bool):
+            self.signal.append(signal)
+
+    def __hash__(self) -> int:
+        return hash((self.source, self.signal if self.signal is isinstance(self.signal, bool) else tuple(self.signal)))
+
 
 def _combine_source_signal_pairs(source_signal_pairs: List[SourceSignalPair]) -> List[SourceSignalPair]:
     """Combine SourceSignalPairs with the same source into a single SourceSignalPair object.
@@ -111,6 +118,7 @@ def _combine_source_signal_pairs(source_signal_pairs: List[SourceSignalPair]) ->
             combined_signals = sorted(set(flatten(x.signal for x in group)))
         source_signal_pairs_combined.append(SourceSignalPair(source, combined_signals))
     return source_signal_pairs_combined
+
 
 def parse_source_signal_arg(key: str = "signal") -> List[SourceSignalPair]:
     return _combine_source_signal_pairs([SourceSignalPair(source, signals) for [source, signals] in _parse_common_multi_arg(key)])
