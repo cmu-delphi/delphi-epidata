@@ -7,7 +7,7 @@ from typing import (
 )
 from datetime import date, timedelta
 from epiweeks import Week, Year
-
+import logging
 
 def time_value_to_date(value: int) -> date:
     year, month, day = value // 10000, (value % 10000) // 100, value % 100
@@ -88,15 +88,12 @@ def time_values_to_ranges(values: Optional[Sequence[Union[Tuple[int, int], int]]
         return values
 
     # determine whether the list is of days (YYYYMMDD) or weeks (YYYYWW) based on first element
-    try:
-        first_element = values[0][0] if isinstance(values[0], tuple) else values[0]
-        if guess_time_value_is_day(first_element):
-            return days_to_ranges(values)
-        elif guess_time_value_is_week(first_element):
-            return weeks_to_ranges(values)
-        else:
-            return values
-    except:
+    first_element = values[0][0] if isinstance(values[0], tuple) else values[0]
+    if guess_time_value_is_day(first_element):
+        return days_to_ranges(values)
+    elif guess_time_value_is_week(first_element):
+        return weeks_to_ranges(values)
+    else:
         return values
 
 def days_to_ranges(values: Sequence[Union[Tuple[int, int], int]]) -> Sequence[Union[Tuple[int, int], int]]:
@@ -141,4 +138,5 @@ def _to_ranges(values: Sequence[Union[Tuple[int, int], int]], value_to_date: Cal
 
         return ranges
     except:
+        logging.info('bad input to date ranges', detail=values)
         return values
