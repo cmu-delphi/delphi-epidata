@@ -26,11 +26,11 @@ def week_value_to_week(value: int) -> Week:
     return Week(year=year, week=week)
 
 def guess_time_value_is_day(value: int) -> bool:
-    # YYYYMMDD or YYYY-MM-DD type and not YYYYMM
-    return len(str(value)) > 6
+    # YYYYMMDD type and not YYYYMM
+    return len(str(value)) == 8
 
 def guess_time_value_is_week(value: int) -> bool:
-    # YYYYWW type and not YYYYMMDD or YYYY-MM-DD
+    # YYYYWW type and not YYYYMMDD
     return len(str(value)) == 6
 
 def date_to_time_value(d: date) -> int:
@@ -78,7 +78,7 @@ def weeks_in_range(week_range: Tuple[int, int]) -> int:
         acc += year.totalweeks()
     return acc + 1  # same week should lead to 1 week that will be queried
 
-def dates_to_ranges(values: Optional[Sequence[Union[Tuple[int, int], int]]]) -> Optional[Sequence[Union[Tuple[int, int], int]]]:
+def time_values_to_ranges(values: Optional[Sequence[Union[Tuple[int, int], int]]]) -> Optional[Sequence[Union[Tuple[int, int], int]]]:
     """
     Converts a mixed list of dates and date ranges to an optimized list where dates are merged into ranges where possible.
     e.g. [20200101, 20200102, (20200101, 20200104), 20200106] -> [(20200101, 20200104), 20200106]
@@ -100,12 +100,12 @@ def dates_to_ranges(values: Optional[Sequence[Union[Tuple[int, int], int]]]) -> 
         return values
 
 def days_to_ranges(values: Sequence[Union[Tuple[int, int], int]]) -> Sequence[Union[Tuple[int, int], int]]:
-    return _to_ranges(values, time_value_to_date, date_to_time_value, lambda x: x - timedelta(days=1))
+    return _to_ranges(values, time_value_to_date, date_to_time_value, timedelta(days=1))
 
 def weeks_to_ranges(values: Sequence[Union[Tuple[int, int], int]]) -> Sequence[Union[Tuple[int, int], int]]:
-    return _to_ranges(values, week_value_to_week, week_to_time_value, lambda x: x - 1)
+    return _to_ranges(values, week_value_to_week, week_to_time_value, 1)
 
-def _to_ranges(values: Sequence[Union[Tuple[int, int], int]], value_to_date: Callable, date_to_value: Callable, decrement: Callable) -> Sequence[Union[Tuple[int, int], int]]:
+def _to_ranges(values: Sequence[Union[Tuple[int, int], int]], value_to_date: Callable, date_to_value: Callable, time_unit: Union[int, timedelta]) -> Sequence[Union[Tuple[int, int], int]]:
     intervals = []
 
     # populate list of intervals based on original date/week values
@@ -117,14 +117,14 @@ def _to_ranges(values: Sequence[Union[Tuple[int, int], int]], value_to_date: Cal
             # (20200101, 20200102) -> [20200101, 20200102]
             intervals.append([value_to_date(v[0]), value_to_date(v[1])])
 
-    intervals.sort(key=lambda x: x[0])
+    intervals.sort()
 
     # merge overlapping intervals https://leetcode.com/problems/merge-intervals/
     merged = []
     for interval in intervals:
         # no overlap, append the interval
         # caveat: we subtract 1 from interval[0] so that contiguous intervals are considered overlapping. i.e. [1, 1], [2, 2] -> [1, 2]
-        if not merged or merged[-1][1] < decrement(interval[0]):
+        if not merged or merged[-1][1] < interval[0] - time_unit:
             merged.append(interval)
         # overlap, merge the current and previous intervals
         else:
