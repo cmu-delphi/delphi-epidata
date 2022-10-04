@@ -88,15 +88,12 @@ def time_values_to_ranges(values: Optional[Sequence[Union[Tuple[int, int], int]]
         return values
 
     # determine whether the list is of days (YYYYMMDD) or weeks (YYYYWW) based on first element
-    try:
-        first_element = values[0][0] if isinstance(values[0], tuple) else values[0]
-        if guess_time_value_is_day(first_element):
-            return days_to_ranges(values)
-        elif guess_time_value_is_week(first_element):
-            return weeks_to_ranges(values)
-        else:
-            return values
-    except:
+    first_element = values[0][0] if isinstance(values[0], tuple) else values[0]
+    if guess_time_value_is_day(first_element):
+        return days_to_ranges(values)
+    elif guess_time_value_is_week(first_element):
+        return weeks_to_ranges(values)
+    else:
         return values
 
 def days_to_ranges(values: Sequence[Union[Tuple[int, int], int]]) -> Sequence[Union[Tuple[int, int], int]]:
@@ -106,36 +103,39 @@ def weeks_to_ranges(values: Sequence[Union[Tuple[int, int], int]]) -> Sequence[U
     return _to_ranges(values, week_value_to_week, week_to_time_value, 1)
 
 def _to_ranges(values: Sequence[Union[Tuple[int, int], int]], value_to_date: Callable, date_to_value: Callable, time_unit: Union[int, timedelta]) -> Sequence[Union[Tuple[int, int], int]]:
-    intervals = []
+    try:
+        intervals = []
 
-    # populate list of intervals based on original date/week values
-    for v in values:
-        if isinstance(v, int):
-            # 20200101 -> [20200101, 20200101]
-            intervals.append([value_to_date(v), value_to_date(v)])
-        else: # tuple
-            # (20200101, 20200102) -> [20200101, 20200102]
-            intervals.append([value_to_date(v[0]), value_to_date(v[1])])
+        # populate list of intervals based on original date/week values
+        for v in values:
+            if isinstance(v, int):
+                # 20200101 -> [20200101, 20200101]
+                intervals.append([value_to_date(v), value_to_date(v)])
+            else: # tuple
+                # (20200101, 20200102) -> [20200101, 20200102]
+                intervals.append([value_to_date(v[0]), value_to_date(v[1])])
 
-    intervals.sort()
+        intervals.sort()
 
-    # merge overlapping intervals https://leetcode.com/problems/merge-intervals/
-    merged = []
-    for interval in intervals:
-        # no overlap, append the interval
-        # caveat: we subtract 1 from interval[0] so that contiguous intervals are considered overlapping. i.e. [1, 1], [2, 2] -> [1, 2]
-        if not merged or merged[-1][1] < interval[0] - time_unit:
-            merged.append(interval)
-        # overlap, merge the current and previous intervals
-        else:
-            merged[-1][1] = max(merged[-1][1], interval[1])
+        # merge overlapping intervals https://leetcode.com/problems/merge-intervals/
+        merged = []
+        for interval in intervals:
+            # no overlap, append the interval
+            # caveat: we subtract 1 from interval[0] so that contiguous intervals are considered overlapping. i.e. [1, 1], [2, 2] -> [1, 2]
+            if not merged or merged[-1][1] < interval[0] - time_unit:
+                merged.append(interval)
+            # overlap, merge the current and previous intervals
+            else:
+                merged[-1][1] = max(merged[-1][1], interval[1])
 
-    # convert intervals from dates/weeks back to integers
-    ranges = []
-    for m in merged:
-        if m[0] == m[1]:
-            ranges.append(date_to_value(m[0]))
-        else:
-            ranges.append((date_to_value(m[0]), date_to_value(m[1])))
+        # convert intervals from dates/weeks back to integers
+        ranges = []
+        for m in merged:
+            if m[0] == m[1]:
+                ranges.append(date_to_value(m[0]))
+            else:
+                ranges.append((date_to_value(m[0]), date_to_value(m[1])))
 
-    return ranges
+        return ranges
+    except:
+        return ranges
