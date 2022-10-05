@@ -137,6 +137,6 @@ def _to_ranges(values: Sequence[Union[Tuple[int, int], int]], value_to_date: Cal
                 ranges.append((date_to_value(m[0]), date_to_value(m[1])))
 
         return ranges
-    except:
-        logging.info('bad input to date ranges', detail=values)
+    except Exception as e:
+        logging.info('bad input to date ranges', input=values, exception=e)
         return values
