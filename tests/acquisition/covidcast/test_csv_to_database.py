@@ -39,6 +39,7 @@ class UnitTests(unittest.TestCase):
     collect_files(
       "fake_data_dir",
       False, # no specific issue
+      None, # csv_importer can set issue itself
       csv_importer_impl=mock_csv_importer)
     self.assertEqual(mock_csv_importer.find_csv_files.call_count, 1)
     
@@ -209,7 +210,7 @@ class UnitTests(unittest.TestCase):
     mock_logger = MagicMock()
 
     upload_archive(
-        collect_files(data_dir, False, csv_importer_impl=mock_csv_importer),
+        collect_files(data_dir, False, None, csv_importer_impl=mock_csv_importer),
         mock_database,
         make_handlers(data_dir, False, file_archiver_impl=mock_file_archiver),
         mock_logger,
