@@ -9,7 +9,6 @@ from delphi.epidata.server.main import app
 from delphi.epidata.server._pandas import as_pandas
 from delphi.epidata.server._config import MAX_RESULTS
 
-
 # py3tester coverage target
 __test_target__ = "delphi.epidata.server._pandas"
 
