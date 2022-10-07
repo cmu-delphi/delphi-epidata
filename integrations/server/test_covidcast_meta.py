@@ -1,22 +1,36 @@
 """Integration tests for the `covidcast_meta` endpoint."""
 
 # standard library
-import unittest
+from datetime import date
+from itertools import chain
+from typing import Iterable, Optional
 
 # third party
-import mysql.connector
+import numpy as np
+import pandas as pd
+import pytest
 import requests
 
-#first party
+# first party
+import delphi.operations.secrets as secrets
 from delphi_utils import Nans
 from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import main as update_cache
-import delphi.operations.secrets as secrets
+from delphi.epidata.acquisition.covidcast.covidcast_row import CovidcastRow
+from delphi.epidata.acquisition.covidcast.database_meta import DatabaseMeta
+from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase
+
 
 # use the local instance of the Epidata API
 BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
 
 
-class CovidcastMetaTests(unittest.TestCase):
+def _dicts_equal(d1: dict, d2: dict, ignore_keys: Optional[list] = None, rel: Optional[float] = None, abs: Optional[float] = None) -> bool:
+    """Compare dictionary values using floating point comparison for numeric values."""
+    assert set(d1.keys()) == set(d2.keys()), "Dictionary keys should be the same."
+    return all(d1.get(key) == pytest.approx(d2.get(key), rel=rel, abs=abs, nan_ok=True) for key in d1.keys() if (ignore_keys and key not in ignore_keys))
+
+
+class TestCovidcastMeta(CovidcastBase):
   """Tests the `covidcast_meta` endpoint."""
 
   src_sig_lookups = {
@@ -47,55 +61,45 @@ class CovidcastMetaTests(unittest.TestCase):
          %d, %d)
   '''
 
-  def setUp(self):
+  def localSetUp(self):
     """Perform per-test setup."""
 
-    # connect to the `epidata` database and clear the `covidcast` table
-    cnx = mysql.connector.connect(
-        user='user',
-        password='pass',
-        host='delphi_database_epidata',
-        database='covid')
-    cur = cnx.cursor()
+    # connect to the `epidata` database
+    self.db = DatabaseMeta(base_url="http://delphi_web_epidata/epidata")
+    self.db.connect(user="user", password="pass", host="delphi_database_epidata", database="covid")
 
-    # clear all tables
-    cur.execute("truncate table epimetric_load")
-    cur.execute("truncate table epimetric_full")
-    cur.execute("truncate table epimetric_latest")
-    cur.execute("truncate table geo_dim")
-    cur.execute("truncate table signal_dim")
-    # reset the `covidcast_meta_cache` table (it should always have one row)
-    cur.execute('update covidcast_meta_cache set timestamp = 0, epidata = "[]"')
+    # TODO: Switch when delphi_epidata client is released.
+    self.db.delphi_epidata = False
 
     # populate dimension tables
     for (src,sig) in self.src_sig_lookups:
-        cur.execute('''
+        self.db._cursor.execute('''
             INSERT INTO `signal_dim` (`signal_key_id`, `source`, `signal`)
             VALUES (%d, '%s', '%s'); ''' % ( self.src_sig_lookups[(src,sig)], src, sig ))
     for (gt,gv) in self.geo_lookups:
-        cur.execute('''
+        self.db._cursor.execute('''
             INSERT INTO `geo_dim` (`geo_key_id`, `geo_type`, `geo_value`)
             VALUES (%d, '%s', '%s'); ''' % ( self.geo_lookups[(gt,gv)], gt, gv ))
 
-    cnx.commit()
-    cur.close()
+    self.db._connection.commit()
 
     # initialize counter for tables without non-autoincrement id
     self.id_counter = 666
-
-    # make connection and cursor available to test cases
-    self.cnx = cnx
-    self.cur = cnx.cursor()
 
     # use the local instance of the epidata database
     secrets.db.host = 'delphi_database_epidata'
     secrets.db.epi = ('user', 'pass')
 
-
-  def tearDown(self):
+  def localTearDown(self):
     """Perform per-test teardown."""
-    self.cur.close()
-    self.cnx.close()
+    self.db._cursor.close()
+    self.db._connection.close()
+
+  def _insert_rows(self, rows: Iterable[CovidcastRow]):
+      self.db.insert_or_update_bulk(list(rows))
+      self.db.run_dbjobs()
+      self.db._connection.commit()
+      return rows
 
   def insert_placeholder_data(self):
     expected = []
@@ -122,13 +126,13 @@ class CovidcastMetaTests(unittest.TestCase):
             })
             for tv in (1, 2):
               for gv, v in zip(('geo1', 'geo2'), (10, 20)):
-                self.cur.execute(self.template % (
+                self.db._cursor.execute(self.template % (
                   self._get_id(),
                   self.src_sig_lookups[(src,sig)], self.geo_lookups[(gt,gv)],
                   tt, tv, v, tv, # re-use time value for issue
                   Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.NOT_MISSING
                 ))
-    self.cnx.commit()
+    self.db._connection.commit()
     update_cache(args=None)
     return expected
 
@@ -237,3 +241,62 @@ class CovidcastMetaTests(unittest.TestCase):
     self.assertEqual(len(res['epidata']), len(expected))
     self.assertEqual(res['epidata'][0], {})
 
+  def test_meta_values(self):
+    """This is an A/B test between the old meta compute approach and the new one which relies on an API call for JIT signals.
+
+    It relies on synthetic data.
+    """
+
+    def get_rows_gen(df: pd.DataFrame, filter_nans: bool = False) -> Iterable[CovidcastRow]:
+      for row in df.itertuples(index=False):
+        row_dict = row._asdict()
+        if not filter_nans or (filter_nans and not any(map(pd.isna, row_dict.values()))):
+          yield CovidcastRow(**row_dict)
+
+    start_date = date(2022, 4, 1)
+    end_date = date(2022, 6, 1)
+    n = (end_date - start_date).days + 1
+
+    # TODO: Build a more complex synthetic dataset here.
+    # fmt: off
+    cumulative_df = pd.DataFrame(
+      {
+        "source": ["jhu-csse"] * n + ["usa-facts"] * n,
+        "signal": ["confirmed_cumulative_num"] * n + ["confirmed_cumulative_num"] * (n // 2 - 1) +  [np.nan] + ["confirmed_cumulative_num"] * (n // 2),
+        "time_value": chain(pd.date_range(start_date, end_date), pd.date_range(start_date, end_date)),
+        "issue": chain(pd.date_range(start_date, end_date), pd.date_range(start_date, end_date)),
+        "value": chain(range(n), range(n))
+      }
+    )
+    incidence_df = (
+      cumulative_df.set_index(["source", "time_value"])
+        .groupby("source")
+        .apply(lambda df: df.assign(
+          signal="confirmed_incidence_num",
+          value=df.value.diff(),
+          issue=[max(window) if window.size >= 2 else np.nan for window in df.issue.rolling(2)]
+        )
+      )
+    ).reset_index()
+    smoothed_incidence_df = (
+      cumulative_df.set_index(["source", "time_value"])
+        .groupby("source")
+        .apply(lambda df: df.assign(
+          signal="confirmed_7dav_incidence_num",
+          value=df.value.rolling(7).mean().diff(),
+          issue=[max(window) if window.size >= 7 else np.nan for window in df.issue.rolling(7)]
+        )
+      )
+    ).reset_index()
+    # fmt: on
+
+    self._insert_rows(get_rows_gen(cumulative_df, filter_nans=True))
+    self._insert_rows(get_rows_gen(incidence_df, filter_nans=True))
+    self._insert_rows(get_rows_gen(smoothed_incidence_df, filter_nans=True))
+
+    meta_values = self.db.compute_covidcast_meta(jit=False)
+    meta_values2 = self.db.compute_covidcast_meta(jit=True)
+
+    out = [_dicts_equal(x, y, ignore_keys=["max_lag"]) for x, y in zip(meta_values, meta_values2)]
+
+    assert all(out)

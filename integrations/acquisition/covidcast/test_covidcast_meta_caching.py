@@ -10,9 +10,9 @@ import requests
 
 # first party
 from delphi_utils import Nans
-from delphi.epidata.client.delphi_epidata import Epidata
 import delphi.operations.secrets as secrets
-import delphi.epidata.acquisition.covidcast.database as live
+from delphi.epidata.client.delphi_epidata import Epidata
+from delphi.epidata.acquisition.covidcast.database_meta import DatabaseMeta
 from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import main
 
 # py3tester coverage target (equivalent to `import *`)
@@ -97,7 +97,7 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     self.cnx.commit()
 
     # make sure the live utility is serving something sensible
-    cvc_database = live.Database()
+    cvc_database = DatabaseMeta()
     cvc_database.connect()
     epidata1 = cvc_database.compute_covidcast_meta()
     cvc_database.disconnect(False)

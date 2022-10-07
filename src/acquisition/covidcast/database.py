@@ -4,67 +4,14 @@ See src/ddl/covidcast.sql for an explanation of each field.
 """
 
 # third party
-import json
+from typing import Iterable, Sequence
 import mysql.connector
-import numpy as np
 from math import ceil
 
-from queue import Queue, Empty
-import threading
-from multiprocessing import cpu_count
-
-# first party
 import delphi.operations.secrets as secrets
 
-from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
-
-class CovidcastRow():
-  """A container for all the values of a single covidcast row."""
-
-  @staticmethod
-  def fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag):
-    if row_value is None: return None
-    return CovidcastRow(source, signal, time_type, geo_type, time_value,
-                        row_value.geo_value,
-                        row_value.value,
-                        row_value.stderr,
-                        row_value.sample_size,
-                        row_value.missing_value,
-                        row_value.missing_stderr,
-                        row_value.missing_sample_size,
-                        issue, lag)
-
-  @staticmethod
-  def fromCsvRows(row_values, source, signal, time_type, geo_type, time_value, issue, lag):
-    # NOTE: returns a generator, as row_values is expected to be a generator
-    return (CovidcastRow.fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag)
-            for row_value in row_values)
-
-  def __init__(self, source, signal, time_type, geo_type, time_value, geo_value, value, stderr, 
-               sample_size, missing_value, missing_stderr, missing_sample_size, issue, lag):
-    self.id = None
-    self.source = source
-    self.signal = signal
-    self.time_type = time_type
-    self.geo_type = geo_type
-    self.time_value = time_value
-    self.geo_value = geo_value      # from CSV row
-    self.value = value              # ...
-    self.stderr = stderr            # ...
-    self.sample_size = sample_size  # ...
-    self.missing_value = missing_value # ...
-    self.missing_stderr = missing_stderr # ...
-    self.missing_sample_size = missing_sample_size # from CSV row
-    self.direction_updated_timestamp = 0
-    self.direction = None
-    self.issue = issue
-    self.lag = lag
-
-  def signal_pair(self):
-    return f"{self.source}:{self.signal}"
-
-  def geo_pair(self):
-    return f"{self.geo_type}:{self.geo_value}"
+from .logger import get_structured_logger
+from .covidcast_row import CovidcastRow
 
 
 class DBLoadStateException(Exception):
@@ -74,29 +21,36 @@ class DBLoadStateException(Exception):
 class Database:
   """A collection of covidcast database operations."""
 
-  DATABASE_NAME = 'covid'
+  def __init__(self):
+    self.load_table = "epimetric_load"
+    # if you want to deal with foreign key ids: use table
+    # if you want to deal with source/signal names, geo type/values, etc: use view
+    self.latest_table = "epimetric_latest"
+    self.latest_view = self.latest_table + "_v"
+    self.history_table = "epimetric_full"
+    self.history_view = self.history_table + "_v"
+    # TODO: consider using class variables like this for dimension table names too
+    # TODO: also consider that for composite key tuples, like short_comp_key and long_comp_key as used in delete_batch()
 
-  load_table = "epimetric_load"
-  # if you want to deal with foreign key ids: use table
-  # if you want to deal with source/signal names, geo type/values, etc: use view
-  latest_table = "epimetric_latest"
-  latest_view = latest_table + "_v"
-  history_table = "epimetric_full"
-  history_view = history_table + "_v"
-  # TODO: consider using class variables like this for dimension table names too
-  # TODO: also consider that for composite key tuples, like short_comp_key and long_comp_key as used in delete_batch()
+    self._connector_impl = mysql.connector
+    self._db_credential_user, self._db_credential_password = secrets.db.epi
+    self._db_host = secrets.db.host
+    self._db_database = 'covid'
 
-
-  def connect(self, connector_impl=mysql.connector):
+  def connect(self, connector_impl=None, host=None, user=None, password=None, database=None):
     """Establish a connection to the database."""
+    self._connector_impl = connector_impl if connector_impl is not None else self._connector_impl
+    self._db_host = host if host is not None else self._db_host
+    self._db_credential_user = user if user is not None else self._db_credential_user
+    self._db_credential_password = password if password is not None else self._db_credential_password
+    self._db_database = database if database is not None else self._db_database
 
-    u, p = secrets.db.epi
-    self._connector_impl = connector_impl
     self._connection = self._connector_impl.connect(
-        host=secrets.db.host,
-        user=u,
-        password=p,
-        database=Database.DATABASE_NAME)
+        host=self._db_host,
+        user=self._db_credential_user,
+        password=self._db_credential_password,
+        database=self._db_database
+    )
     self._cursor = self._connection.cursor()
 
   def commit(self):
@@ -115,8 +69,6 @@ class Database:
     if commit:
       self._connection.commit()
     self._connection.close()
-
-
 
   def count_all_load_rows(self):
     self._cursor.execute(f'SELECT count(1) FROM `{self.load_table}`')
@@ -153,10 +105,10 @@ class Database:
     output = [self._cursor.column_names] + self._cursor.fetchall()
     get_structured_logger('do_analyze').info("ANALYZE results", results=str(output))
 
-  def insert_or_update_bulk(self, cc_rows):
+  def insert_or_update_bulk(self, cc_rows: Iterable[CovidcastRow]):
     return self.insert_or_update_batch(cc_rows)
 
-  def insert_or_update_batch(self, cc_rows, batch_size=2**20, commit_partial=False, suppress_jobs=False):
+  def insert_or_update_batch(self, cc_rows: Sequence[CovidcastRow], batch_size: int = 2**20, commit_partial: bool = False, suppress_jobs: bool = False):
     """
     Insert new rows into the load table and dispatch into dimension and fact tables.
     """
@@ -489,133 +441,3 @@ FROM {self.history_view} h JOIN (
     finally:
       self._cursor.execute(drop_tmp_table_sql)
     return total
-
-
-  def compute_covidcast_meta(self, table_name=None, n_threads=None):
-    """Compute and return metadata on all COVIDcast signals."""
-    logger = get_structured_logger("compute_covidcast_meta")
-
-    if table_name is None:
-      table_name = self.latest_view
-
-    if n_threads is None:
-      logger.info("n_threads unspecified, automatically choosing based on number of detected cores...")
-      n_threads = max(1, cpu_count()*9//10) # aka number of concurrent db connections, which [sh|c]ould be ~<= 90% of the #cores available to SQL server
-      # NOTE: this may present a small problem if this job runs on different hardware than the db,
-      #       which is why this value can be overriden by optional argument.
-    logger.info(f"using {n_threads} workers")
-
-    srcsigs = Queue() # multi-consumer threadsafe!
-    sql = f'SELECT `source`, `signal` FROM `{table_name}` GROUP BY `source`, `signal` ORDER BY `source` ASC, `signal` ASC;'
-    self._cursor.execute(sql)
-    for source, signal in self._cursor:
-      srcsigs.put((source, signal))
-
-    inner_sql = f'''
-      SELECT
-        `source` AS `data_source`,
-        `signal`,
-        `time_type`,
-        `geo_type`,
-        MIN(`time_value`) AS `min_time`,
-        MAX(`time_value`) AS `max_time`,
-        COUNT(DISTINCT `geo_value`) AS `num_locations`,
-        MIN(`value`) AS `min_value`,
-        MAX(`value`) AS `max_value`,
-        ROUND(AVG(`value`),7) AS `mean_value`,
-        ROUND(STD(`value`),7) AS `stdev_value`,
-        MAX(`value_updated_timestamp`) AS `last_update`,
-        MAX(`issue`) as `max_issue`,
-        MIN(`lag`) as `min_lag`,
-        MAX(`lag`) as `max_lag`
-      FROM
-        `{table_name}`
-      WHERE
-        `source` = %s AND
-        `signal` = %s
-      GROUP BY
-        `time_type`,
-        `geo_type`
-      ORDER BY
-        `time_type` ASC,
-        `geo_type` ASC
-      '''
-
-    meta = []
-    meta_lock = threading.Lock()
-
-    def worker():
-      name = threading.current_thread().name
-      logger.info("starting thread", thread=name)
-      #  set up new db connection for thread
-      worker_dbc = Database()
-      worker_dbc.connect(connector_impl=self._connector_impl)
-      w_cursor = worker_dbc._cursor
-      try:
-        while True:
-          (source, signal) = srcsigs.get_nowait() # this will throw the Empty caught below
-          logger.info("starting pair", thread=name, pair=f"({source}, {signal})")
-          w_cursor.execute(inner_sql, (source, signal))
-          with meta_lock:
-            meta.extend(list(
-              dict(zip(w_cursor.column_names, x)) for x in w_cursor
-            ))
-          srcsigs.task_done()
-      except Empty:
-        logger.info("no jobs left, thread terminating", thread=name)
-      finally:
-        worker_dbc.disconnect(False) # cleanup
-
-    threads = []
-    for n in range(n_threads):
-      t = threading.Thread(target=worker, name='MetacacheThread-'+str(n))
-      t.start()
-      threads.append(t)
-
-    srcsigs.join()
-    logger.info("jobs complete")
-    for t in threads:
-      t.join()
-    logger.info("all threads terminated")
-
-    # sort the metadata because threaded workers dgaf
-    sorting_fields = "data_source signal time_type geo_type".split()
-    sortable_fields_fn = lambda x: [(field, x[field]) for field in sorting_fields]
-    prepended_sortables_fn = lambda x: sortable_fields_fn(x) + list(x.items())
-    tuple_representation = list(map(prepended_sortables_fn, meta))
-    tuple_representation.sort()
-    meta = list(map(dict, tuple_representation)) # back to dict form
-
-    return meta
-
-
-  def update_covidcast_meta_cache(self, metadata):
-    """Updates the `covidcast_meta_cache` table."""
-
-    sql = '''
-      UPDATE
-        `covidcast_meta_cache`
-      SET
-        `timestamp` = UNIX_TIMESTAMP(NOW()),
-        `epidata` = %s
-    '''
-    epidata_json = json.dumps(metadata)
-
-    self._cursor.execute(sql, (epidata_json,))
-
-  def retrieve_covidcast_meta_cache(self):
-    """Useful for viewing cache entries (was used in debugging)"""
-
-    sql = '''
-      SELECT `epidata`
-      FROM `covidcast_meta_cache`
-      ORDER BY `timestamp` DESC
-      LIMIT 1;
-    '''
-    self._cursor.execute(sql)
-    cache_json = self._cursor.fetchone()[0]
-    cache = json.loads(cache_json)
-    cache_hash = {}
-    for entry in cache:
-      cache_hash[(entry['data_source'], entry['signal'], entry['time_type'], entry['geo_type'])] = entry
-    return cache_hash
