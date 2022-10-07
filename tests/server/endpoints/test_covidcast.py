@@ -5,10 +5,6 @@ from flask.testing import FlaskClient
 from flask import Response
 from delphi.epidata.server.main import app
 
-from delphi.epidata.server._params import (
-    GeoPair,
-    TimePair,
-)
 
 # py3tester coverage target
 __test_target__ = "delphi.epidata.server.endpoints.covidcast"
