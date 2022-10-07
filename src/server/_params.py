@@ -1,10 +1,11 @@
-from math import inf
 import re
 from dataclasses import dataclass
+from itertools import groupby
+from math import inf
 from typing import List, Optional, Sequence, Tuple, Union
 
 from flask import request
-
+from more_itertools import flatten
 
 from ._exceptions import ValidationFailedException
 from .utils import days_in_range, weeks_in_range, guess_time_value_is_day
@@ -92,9 +93,35 @@ class SourceSignalPair:
             return inf if self.signal else 0
         return len(self.signal)
 
+    def add_signal(self, signal: str) -> None:
+        if not isinstance(self.signal, bool):
+            self.signal.append(signal)
+
+    def __hash__(self) -> int:
+        return hash((self.source, self.signal if self.signal is isinstance(self.signal, bool) else tuple(self.signal)))
+
+
+def _combine_source_signal_pairs(source_signal_pairs: List[SourceSignalPair]) -> List[SourceSignalPair]:
+    """Combine SourceSignalPairs with the same source into a single SourceSignalPair object.
+
+    Example:
+    [SourceSignalPair("src", ["sig1", "sig2"]), SourceSignalPair("src", ["sig2", "sig3"])] will be merged
+    into [SourceSignalPair("src", ["sig1", "sig2", "sig3])].
+    """
+    source_signal_pairs_grouped = groupby(sorted(source_signal_pairs, key=lambda x: x.source), lambda x: x.source)
+    source_signal_pairs_combined = []
+    for source, group in source_signal_pairs_grouped:
+        group = list(group)
+        if any(x.signal == True for x in group):
+            combined_signals = True
+        else:
+            combined_signals = sorted(set(flatten(x.signal for x in group)))
+        source_signal_pairs_combined.append(SourceSignalPair(source, combined_signals))
+    return source_signal_pairs_combined
+
 
 def parse_source_signal_arg(key: str = "signal") -> List[SourceSignalPair]:
-    return [SourceSignalPair(source, signals) for [source, signals] in _parse_common_multi_arg(key)]
+    return _combine_source_signal_pairs([SourceSignalPair(source, signals) for [source, signals] in _parse_common_multi_arg(key)])
 
 
 def parse_single_source_signal_arg(key: str) -> SourceSignalPair:

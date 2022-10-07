@@ -1,5 +1,6 @@
 from typing import (
     Callable,
+    Iterator,
     Optional,
     Sequence,
     Tuple,
@@ -138,3 +139,47 @@ def _to_ranges(values: Sequence[Union[Tuple[int, int], int]], value_to_date: Cal
     except Exception as e:
         logging.info('bad input to date ranges', input=values, exception=e)
         return values
+
+def iterate_over_range(start: int, end: int) -> Iterator[int]:
+    """Iterate over ints corresponding to dates in a time range.
+    
+    Left inclusive, right exclusive to mimic behavior of Python's built-in range.
+    """
+    if start > end:
+        return
+
+    current_date, final_date = time_value_to_date(start), time_value_to_date(end)
+    while current_date < final_date:
+        yield date_to_time_value(current_date)
+        current_date = current_date + timedelta(days=1)
+
+def iterate_over_ints_and_ranges(lst: Iterator[Union[int, Tuple[int, int]]], use_dates: bool = True) -> Iterator[int]:
+    """A generator that iterates over the unique values in a list of integers and ranges in ascending order.
+
+    The tuples are assumed to be left- and right-inclusive. If use_dates is True, then the integers are interpreted as
+    YYYYMMDD dates.
+
+    Examples:
+    >>> list(iterate_over_ints_and_ranges([(5, 8), 0], False)) 
+    [0, 5, 6, 7, 8]
+    >>> list(iterate_over_ints_and_ranges([(5, 8), (4, 6), (3, 5)], False)) 
+    [3, 4, 5, 6, 7, 8]
+    >>> list(iterate_over_ints_and_ranges([(7, 8), (5, 7), (3, 8), 8], False))
+    [3, 4, 5, 6, 7, 8]
+    """
+    lst = sorted((x, x) if isinstance(x, int) else x for x in lst)
+    if not lst:
+        return
+
+    if use_dates:
+        increment = lambda x, y: date_to_time_value(time_value_to_date(x) + timedelta(days=y))
+        range_handler = iterate_over_range
+    else:
+        increment = lambda x, y: x + y
+        range_handler = range
+
+    biggest_seen = increment(lst[0][0], -1)
+    for a, b in lst:
+        for y in range_handler(max(a, increment(biggest_seen, 1)), increment(b, 1)):
+            yield y
+        biggest_seen = max(biggest_seen, b)
