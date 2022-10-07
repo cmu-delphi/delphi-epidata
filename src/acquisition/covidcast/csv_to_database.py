@@ -6,7 +6,7 @@ import os
 import time
 
 # first party
-from delphi.epidata.acquisition.covidcast.csv_importer import CsvImporter
+from delphi.epidata.acquisition.covidcast.csv_importer import CsvImporter, todays_issue
 from delphi.epidata.acquisition.covidcast.database import Database, CovidcastRow, DBLoadStateException
 from delphi.epidata.acquisition.covidcast.file_archiver import FileArchiver
 from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
@@ -28,13 +28,13 @@ def get_argument_parser():
     help="filename for log output (defaults to stdout)")
   return parser
 
-def collect_files(data_dir, specific_issue_date,csv_importer_impl=CsvImporter):
+def collect_files(data_dir, specific_issue_date, import_as_issue, csv_importer_impl=CsvImporter):
   """Fetch path and data profile details for each file to upload."""
   logger= get_structured_logger('collect_files')
   if specific_issue_date:
     results = list(csv_importer_impl.find_issue_specific_csv_files(data_dir))
   else:
-    results = list(csv_importer_impl.find_csv_files(os.path.join(data_dir, 'receiving')))
+    results = list(csv_importer_impl.find_csv_files(os.path.join(data_dir, 'receiving'), import_as_issue))
   logger.info(f'found {len(results)} files')
   return results
 
@@ -147,9 +147,10 @@ def main(
 
   logger = get_structured_logger("csv_ingestion", filename=args.log_file)
   start_time = time.time()
+  today = todays_issue()
 
   # shortcut escape without hitting db if nothing to do
-  path_details = collect_files_impl(args.data_dir, args.specific_issue_date)
+  path_details = collect_files_impl(args.data_dir, args.specific_issue_date, today)
   if not path_details:
     logger.info('nothing to do; exiting...')
     return
