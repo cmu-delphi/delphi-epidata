@@ -1,9 +1,10 @@
-import unittest
-
 from delphi_utils import Nans
-from delphi.epidata.acquisition.covidcast.database import Database, CovidcastRow, DBLoadStateException
+
+from delphi.epidata.acquisition.covidcast.database import DBLoadStateException
+from delphi.epidata.acquisition.covidcast.covidcast_row import CovidcastRow
 from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase
 import delphi.operations.secrets as secrets
+
 
 # all the Nans we use here are just one value, so this is a shortcut to it:
 nmv = Nans.NOT_MISSING.value
@@ -31,8 +32,8 @@ class TestTest(CovidcastBase):
 
     def test_insert_or_update_with_nonempty_load_table(self):
         # make rows
-        a_row = self._make_placeholder_row()[0]
-        another_row = self._make_placeholder_row(time_value=self.DEFAULT_TIME_VALUE+1, issue=self.DEFAULT_ISSUE+1)[0]
+        a_row = CovidcastRow(time_value=20200202)
+        another_row = CovidcastRow(time_value=20200203, issue=20200203)
         # insert one
         self._db.insert_or_update_bulk([a_row])
         # put something into the load table
@@ -61,7 +62,7 @@ class TestTest(CovidcastBase):
         latest_view = 'epimetric_latest_v'
 
         # add a data point
-        base_row, _ = self._make_placeholder_row()
+        base_row = CovidcastRow()
         self._insert_rows([base_row])
         # ensure the primary keys match in the latest and history tables
         matches = self._find_matches_for_row(base_row)
@@ -71,7 +72,7 @@ class TestTest(CovidcastBase):
         old_pk_id = matches[latest_view][pk_column]
 
         # add a reissue for said data point
-        next_row, _ = self._make_placeholder_row()
+        next_row = CovidcastRow()
         next_row.issue += 1
         self._insert_rows([next_row])
         # ensure the new keys also match
