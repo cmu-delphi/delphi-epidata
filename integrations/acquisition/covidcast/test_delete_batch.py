@@ -5,13 +5,10 @@ from collections import namedtuple
 import unittest
 from os import path
 
-# third party
-import mysql.connector
-
 # first party
-from delphi_utils import Nans
-from delphi.epidata.acquisition.covidcast.database import Database, CovidcastRow
 import delphi.operations.secrets as secrets
+from delphi.epidata.acquisition.covidcast.database import Database
+from delphi.epidata.acquisition.covidcast.covidcast_row import CovidcastRow, covidcast_rows_from_args
 
 # py3tester coverage target (equivalent to `import *`)
 __test_target__ = 'delphi.epidata.acquisition.covidcast.database'
@@ -56,17 +53,12 @@ class DeleteBatch(unittest.TestCase):
 
     def _test_delete_batch(self, cc_deletions):
         # load sample data
-        rows = []
-        for time_value in [0, 1]:
-            rows += [
-                # varying numeric column here (2nd to last) is `issue`
-                CovidcastRow('src', 'sig', 'day', 'geo', time_value, "d_nonlatest", 0,0,0,0,0,0, 1, 0),
-                CovidcastRow('src', 'sig', 'day', 'geo', time_value, "d_nonlatest", 0,0,0,0,0,0, 2, 0),
-                CovidcastRow('src', 'sig', 'day', 'geo', time_value, "d_latest", 0,0,0,0,0,0, 1, 0),
-                CovidcastRow('src', 'sig', 'day', 'geo', time_value, "d_latest", 0,0,0,0,0,0, 2, 0),
-                CovidcastRow('src', 'sig', 'day', 'geo', time_value, "d_latest",  0,0,0,0,0,0, 3, 0)
-            ]
-        rows.append(CovidcastRow('src', 'sig', 'day', 'geo', 0, "d_justone",  0,0,0,0,0,0, 1, 0))
+        rows = covidcast_rows_from_args(
+            time_value = [0] * 5 + [1] * 5 + [0],
+            geo_value = ["d_nonlatest"] * 2 + ["d_latest"] * 3 + ["d_nonlatest"] * 2 + ["d_latest"] * 3 + ["d_justone"],
+            issue = [1, 2] + [1, 2, 3] + [1, 2] + [1, 2, 3] + [1],
+        )
+
         self._db.insert_or_update_bulk(rows)
 
         # delete entries

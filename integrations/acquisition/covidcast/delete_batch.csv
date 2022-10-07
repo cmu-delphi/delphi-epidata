@@ -1,4 +1,4 @@
 geo_id,value,stderr,sample_size,issue,time_value,geo_type,signal,source
-d_nonlatest,0,0,0,1,0,geo,sig,src
-d_latest,   0,0,0,3,0,geo,sig,src
-d_justone,  0,0,0,1,0,geo,sig,src
+d_nonlatest,0,0,0,1,0,county,sig,src
+d_latest,   0,0,0,3,0,county,sig,src
+d_justone,  0,0,0,1,0,county,sig,src
