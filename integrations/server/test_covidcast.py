@@ -358,22 +358,22 @@ class CovidcastTests(CovidcastBase):
     response, expected = self.request_based_on_row(rows[0], time_values="20000102,20000103", geo_value="*")
 
     # assert that the right data came back
-    self.assertEqual(len(response['epidata']), 4)
+    self.assertEqual(len(response['epidata']), 2 * 2)
 
     # make the request
     response, expected = self.request_based_on_row(rows[0], time_values="2000-01-02,2000-01-03", geo_value="*")
 
     # assert that the right data came back
-    self.assertEqual(len(response['epidata']), 4)
+    self.assertEqual(len(response['epidata']), 2 * 2)
 
     # make the request
     response, expected = self.request_based_on_row(rows[0], time_values="20000102-20000104", geo_value="*")
 
     # assert that the right data came back
-    self.assertEqual(len(response['epidata']), 6)
+    self.assertEqual(len(response['epidata']), 2 * 3)
 
     # make the request
     response, expected = self.request_based_on_row(rows[0], time_values="2000-01-02:2000-01-04", geo_value="*")
 
     # assert that the right data came back
-    self.assertEqual(len(response['epidata']), 6)
+    self.assertEqual(len(response['epidata']), 2 * 3)
