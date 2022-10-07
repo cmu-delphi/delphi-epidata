@@ -2,20 +2,18 @@
 
 See src/ddl/covidcast.sql for an explanation of each field.
 """
+import threading
+from math import ceil
+from multiprocessing import cpu_count
+from queue import Queue, Empty
+from typing import List
 
 # third party
 import json
 import mysql.connector
-import numpy as np
-from math import ceil
-
-from queue import Queue, Empty
-import threading
-from multiprocessing import cpu_count
 
 # first party
 import delphi.operations.secrets as secrets
-
 from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
 
 class CovidcastRow():

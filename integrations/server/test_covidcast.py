@@ -77,11 +77,11 @@ class CovidcastTests(CovidcastBase):
 
   def _insert_placeholder_set_five(self):
     rows = [
-      self._make_placeholder_row(time_value=2000_01_01, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03+i)[0]
+      CovidcastRow(time_value=2000_01_01, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03+i)
       for i in [1, 2, 3]
     ] + [
       # different time_values, same issues
-      self._make_placeholder_row(time_value=2000_01_01+i-3, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03+i-3)[0]
+      CovidcastRow(time_value=2000_01_01+i-3, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03+i-3)
       for i in [4, 5, 6]
     ]
     self._insert_rows(rows)
@@ -254,18 +254,16 @@ class CovidcastTests(CovidcastBase):
 
     # insert placeholder data
     rows = self._insert_placeholder_set_three()
-    expected_time_values = [
-      self.expected_from_row(r) for r in rows[:3]
-    ]
+    expected = [row.as_dict(ignore_fields=IGNORE_FIELDS) for row in rows[:3]]
 
     # make the request
-    response, _ = self.request_based_on_row(rows[0], time_values="*")
+    response = self.request_based_on_row(rows[0], time_values="*")
 
     self.maxDiff = None
     # assert that the right data came back
     self.assertEqual(response, {
       'result': 1,
-      'epidata': expected_time_values,
+      'epidata': expected,
       'message': 'success',
     })
 
@@ -274,18 +272,16 @@ class CovidcastTests(CovidcastBase):
 
     # insert placeholder data
     rows = self._insert_placeholder_set_five()
-    expected_issues = [
-      self.expected_from_row(r) for r in rows[:3]
-    ]
+    expected = [row.as_dict(ignore_fields=IGNORE_FIELDS) for row in rows[:3]]
 
     # make the request
-    response, _ = self.request_based_on_row(rows[0], issues="*")
+    response = self.request_based_on_row(rows[0], issues="*")
 
     self.maxDiff = None
     # assert that the right data came back
     self.assertEqual(response, {
       'result': 1,
-      'epidata': expected_issues,
+      'epidata': expected,
       'message': 'success',
     })
 
