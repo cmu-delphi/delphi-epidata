@@ -5,13 +5,10 @@ from collections import namedtuple
 import unittest
 from os import path
 
-# third party
-import mysql.connector
-
 # first party
-from delphi_utils import Nans
-from delphi.epidata.acquisition.covidcast.database import Database, CovidcastRow
 import delphi.operations.secrets as secrets
+from delphi.epidata.acquisition.covidcast.database import Database
+from delphi.epidata.acquisition.covidcast.covidcast_row import CovidcastRow
 
 # py3tester coverage target (equivalent to `import *`)
 __test_target__ = 'delphi.epidata.acquisition.covidcast.database'
