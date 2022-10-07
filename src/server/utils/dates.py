@@ -36,13 +36,11 @@ def guess_time_value_is_week(value: int) -> bool:
 def date_to_time_value(d: date) -> int:
     return int(d.strftime("%Y%m%d"))
 
-
 def week_to_time_value(w: Week) -> int:
     return w.year * 100 + w.week
 
 def time_value_to_iso(value: int) -> str:
     return time_value_to_date(value).strftime("%Y-%m-%d")
-
 
 def shift_time_value(time_value: int, days: int) -> int:
     if days == 0:
