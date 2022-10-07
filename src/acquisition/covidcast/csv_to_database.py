@@ -7,7 +7,8 @@ import time
 
 # first party
 from delphi.epidata.acquisition.covidcast.csv_importer import CsvImporter
-from delphi.epidata.acquisition.covidcast.database import Database, CovidcastRow, DBLoadStateException
+from delphi.epidata.acquisition.covidcast.covidcast_row import CovidcastRow
+from delphi.epidata.acquisition.covidcast.database import Database, DBLoadStateException
 from delphi.epidata.acquisition.covidcast.file_archiver import FileArchiver
 from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
 
