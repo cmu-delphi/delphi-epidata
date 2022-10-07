@@ -202,7 +202,7 @@ def _load_data_sources():
 
 
 data_sources, data_sources_df = _load_data_sources()
-data_source_by_id = {d.source: d for d in data_sources}
+data_sources_by_id = {d.source: d for d in data_sources}
 
 
 def _load_data_signals(sources: List[DataSource]):
@@ -231,10 +231,9 @@ data_signals, data_signals_df = _load_data_signals(data_sources)
 data_signals_by_key = {d.key: d for d in data_signals}
 # also add the resolved signal version to the signal lookup
 for d in data_signals:
-    source = data_source_by_id.get(d.source)
+    source = data_sources_by_id.get(d.source)
     if source and source.uses_db_alias:
         data_signals_by_key[(source.db_source, d.signal)] = d
-
 
 
 def get_related_signals(signal: DataSignal) -> List[DataSignal]:
@@ -266,7 +265,7 @@ def create_source_signal_alias_mapper(source_signals: List[SourceSignalPair]) ->
     alias_to_data_sources: Dict[str, List[DataSource]] = {}
     transformed_pairs: List[SourceSignalPair] = []
     for pair in source_signals:
-        source = data_source_by_id.get(pair.source)
+        source = data_sources_by_id.get(pair.source)
         if not source or not source.uses_db_alias:
             transformed_pairs.append(pair)
             continue
