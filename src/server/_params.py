@@ -110,6 +110,10 @@ class TimePair:
     time_type: str
     time_values: Union[bool, TimeValues]
 
+    def __post_init__(self):
+        if isinstance(self.time_values, list):
+            self.time_values = [(min(time_value), max(time_value)) if isinstance(time_value, tuple) else time_value for time_value in self.time_values]
+
     @property
     def is_week(self) -> bool:
         return self.time_type == 'week'
