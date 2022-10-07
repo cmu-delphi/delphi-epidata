@@ -2,7 +2,7 @@ import unittest
 from datetime import date
 from epiweeks import Week
 
-from delphi.epidata.server.utils.dates import time_value_to_date, date_to_time_value, shift_time_value, time_value_to_iso, days_in_range, weeks_in_range, week_to_time_value, week_value_to_week, time_values_to_ranges
+from delphi.epidata.server.utils.dates import time_value_to_date, date_to_time_value, shift_time_value, time_value_to_iso, days_in_range, weeks_in_range, week_to_time_value, week_value_to_week, time_values_to_ranges, iterate_over_range, iterate_over_ints_and_ranges
 
 
 class UnitTests(unittest.TestCase):
@@ -59,3 +59,19 @@ class UnitTests(unittest.TestCase):
         self.assertEqual(time_values_to_ranges([20210228, 20210301]), [(20210228, 20210301)]) # this becomes a range because these dates are indeed consecutive
         # individual weeks become a range (2020 is a rare year with 53 weeks)
         self.assertEqual(time_values_to_ranges([202051, 202052, 202053, 202101, 202102]), [(202051, 202102)])
+
+    def test_iterate_over_range(self):
+        self.assertEqual(list(iterate_over_range(20210801, 20210805)), [20210801, 20210802, 20210803, 20210804])
+        self.assertEqual(list(iterate_over_range(20210801, 20210801)), [])
+        self.assertEqual(list(iterate_over_range(20210801, 20210701)), [])
+
+    def test_iterate_over_ints_and_ranges(self):
+        assert list(iterate_over_ints_and_ranges([0, (5, 8)], use_dates=False)) == [0, 5, 6, 7, 8]
+        assert list(iterate_over_ints_and_ranges([(5, 8), (4, 6), (3, 5)], use_dates=False)) == [3, 4, 5, 6, 7, 8]
+        assert list(iterate_over_ints_and_ranges([(7, 8), (5, 7), (3, 8), 8], use_dates=False)) == [3, 4, 5, 6, 7, 8]
+        assert list(iterate_over_ints_and_ranges([2, (2, 3)], use_dates=False)) == [2, 3]
+        assert list(iterate_over_ints_and_ranges([20, 50, 25, (21, 25), 23, 30, 31, (24, 26)], use_dates=False)) == [20, 21, 22, 23, 24, 25, 26, 30, 31, 50]
+
+        assert list(iterate_over_ints_and_ranges([20210817])) == [20210817]
+        assert list(iterate_over_ints_and_ranges([20210817, (20210810, 20210815)])) == [20210810, 20210811, 20210812, 20210813, 20210814, 20210815, 20210817]
+        assert list(iterate_over_ints_and_ranges([(20210801, 20210905), (20210815, 20210915)])) == list(iterate_over_range(20210801, 20210916)) # right-exclusive

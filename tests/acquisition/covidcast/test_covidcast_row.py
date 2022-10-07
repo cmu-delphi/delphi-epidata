@@ -7,6 +7,9 @@ from delphi_utils.nancodes import Nans
 from delphi.epidata.server.utils.dates import date_to_time_value
 from delphi.epidata.acquisition.covidcast.covidcast_row import set_df_dtypes, transpose_dict, CovidcastRow, CovidcastRows
 
+# py3tester coverage target (equivalent to `import *`)
+__test_target__ = 'delphi.epidata.acquisition.covidcast.covidcast_row'
+
 class TestCovidcastRows(unittest.TestCase):
     def test_transpose_dict(self):
         assert transpose_dict(dict([["a", [2, 4, 6]], ["b", [3, 5, 7]], ["c", [10, 20, 30]]])) == [{"a": 2, "b": 3, "c": 10}, {"a": 4, "b": 5, "c": 20}, {"a": 6, "b": 7, "c": 30}]

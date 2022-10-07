@@ -6,8 +6,8 @@ from delphi_utils import Nans
 from numpy import isnan
 from pandas import DataFrame, concat
 
-from .csv_importer import CsvImporter
-from ...server.utils.dates import date_to_time_value, time_value_to_date
+from delphi.epidata.acquisition.covidcast.csv_importer import CsvImporter
+from delphi.epidata.server.utils.dates import date_to_time_value, time_value_to_date
 
 
 def _is_none(v: Optional[float]) -> bool:

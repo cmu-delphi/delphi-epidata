@@ -189,3 +189,13 @@ def extract_dates(key: Union[str, Sequence[str]]) -> Optional[List[DateRange]]:
         values.append(parse_date(part))
     # success, return the list
     return values
+
+def extract_bool(key: Union[str, Sequence[str]]) -> Optional[bool]:
+    s = _extract_value(key)
+    if not s:
+        return None
+    if s.lower() == "true":
+        return True
+    if s.lower() == "false":
+        return False
+    raise ValidationFailedException(f"{key}: not a boolean: {s}")
