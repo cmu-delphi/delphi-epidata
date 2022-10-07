@@ -1,7 +1,9 @@
 """Integration tests for the custom `covidcast/*` endpoints."""
 
 # standard library
-from typing import Iterable, Dict, Any
+from copy import copy
+from itertools import accumulate, chain
+from typing import Iterable, Dict, Any, List, Sequence
 import unittest
 from io import StringIO
 
@@ -10,17 +12,21 @@ from dataclasses import dataclass
 
 # third party
 import mysql.connector
+from more_itertools import interleave_longest, windowed
 import requests
 import pandas as pd
+import numpy as np
 from delphi_utils import Nans
 
 from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import main as update_cache
+from delphi.epidata.server.endpoints.covidcast_utils.model import DataSignal, DataSource
 
 from delphi.epidata.acquisition.covidcast.database import Database
 from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase
 
 # use the local instance of the Epidata API
 BASE_URL = "http://delphi_web_epidata/epidata/covidcast"
+BASE_URL_OLD = "http://delphi_web_epidata/epidata/api.php"
 
 
 class CovidcastEndpointTests(CovidcastBase):
@@ -32,14 +38,24 @@ class CovidcastEndpointTests(CovidcastBase):
         # reset the `covidcast_meta_cache` table (it should always have one row)
         self._db._cursor.execute('update covidcast_meta_cache set timestamp = 0, epidata = "[]"')
 
-    def _fetch(self, endpoint="/", **params):
+    def _fetch(self, endpoint="/", is_compatibility=False, **params):
         # make the request
-        response = requests.get(
-            f"{BASE_URL}{endpoint}",
-            params=params,
-        )
+        if is_compatibility:
+            url = BASE_URL_OLD
+            params.setdefault("endpoint", "covidcast")
+            if params.get("source"):
+                params.setdefault("data_source", params.get("source"))
+        else:
+            url = f"{BASE_URL}{endpoint}"
+        response = requests.get(url, params=params)
         response.raise_for_status()
         return response.json()
+
+    def _diff_rows(self, rows: Sequence[float]):
+        return [float(x - y) if x is not None and y is not None else None for x, y in zip(rows[1:], rows[:-1])]
+
+    def _smooth_rows(self, rows: Sequence[float]):
+        return [sum(e)/len(e) if None not in e else None for e in windowed(rows, 7)]
 
     def test_basic(self):
         """Request a signal from the / endpoint."""
@@ -55,6 +71,17 @@ class CovidcastEndpointTests(CovidcastBase):
         with self.subTest("simple"):
             out = self._fetch("/", signal=first.signal_pair(), geo=first.geo_pair(), time="day:*")
             self.assertEqual(len(out["epidata"]), len(rows))
+
+        with self.subTest("unknown signal"):
+            rows = [CovidcastRow(source="jhu-csse", signal="confirmed_unknown", time_value=20200401 + i, value=i) for i in range(10)]
+            first = rows[0]
+            self._insert_rows(rows)
+
+            out = self._fetch("/", signal="jhu-csse:confirmed_unknown", geo=first.geo_pair, time="day:*")
+            self.assertEqual(len(out["epidata"]), len(rows))
+            out_values = [row["value"] for row in out["epidata"]]
+            expected_values = [float(row.value) for row in rows]
+            self.assertEqual(out_values, expected_values)
 
     def test_trend(self):
         """Request a signal from the /trend endpoint."""
