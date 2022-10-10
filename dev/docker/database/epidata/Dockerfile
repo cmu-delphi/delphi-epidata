@@ -13,7 +13,7 @@ ENV MYSQL_ROOT_PASSWORD pass
 # create the `epidata` database
 ENV MYSQL_DATABASE epidata
 
-# create the `epi` user account with a development-only password
+# create the `user` account with a development-only password
 ENV MYSQL_USER user
 ENV MYSQL_PASSWORD pass
 

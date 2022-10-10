@@ -1,10 +1,10 @@
 # `delphi_database_epidata`
 
-This image extends Delphi's database by:
+This image extends a Percona database by:
 
-- adding the `epi` user account
-- adding the `epidata` database
-- creating empty tables in `epidata`
+- adding the `user` account
+- adding the `epidata` &  other appropriate databases
+- creating empty tables in those databases
 
 To start a container from this image, run:
 
