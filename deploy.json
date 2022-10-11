@@ -46,7 +46,6 @@
       "match": "^.*\\.(py)$",
       "add-header-comment": true
     },
-
     "// acquisition - fluview",
     {
       "type": "move",
