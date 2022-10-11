@@ -108,7 +108,8 @@ jobs:
   image:
     needs: build
     # only on main and dev branch
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
+    #if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/jit_computations'
 
     runs-on: ubuntu-latest
     steps:
