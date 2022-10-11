@@ -6,7 +6,7 @@ from delphi_utils import Nans
 from numpy import isnan
 from pandas import DataFrame, concat
 
-from delphi.epidata.acquisition.csv_importer import CsvImporter
+from delphi.epidata.acquisition.covidcast.csv_importer import CsvImporter
 from delphi.epidata.server.utils.dates import date_to_time_value, time_value_to_date
 
 
