@@ -213,8 +213,8 @@ select value_updated_timestamp from epimetric_latest''')
         "time_value": [20200419],
         "signal": [signal_name],
         "direction": [None]})], axis=1).rename(columns=uploader_column_rename)
-      expected_values_df["missing_value"].iloc[0] = Nans.OTHER
-      expected_values_df["missing_sample_size"].iloc[0] = Nans.NOT_MISSING
+      expected_values_df.loc[0, "missing_value"] = Nans.OTHER
+      expected_values_df.loc[0, "missing_sample_size"] = Nans.NOT_MISSING
       expected_values = expected_values_df.to_dict(orient="records")
       expected_response = {'result': 1, 'epidata': self.apply_lag(expected_values), 'message': 'success'}
 
