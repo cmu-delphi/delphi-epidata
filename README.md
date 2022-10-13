@@ -26,6 +26,8 @@ You should now have the following directory structure:
 │   ├── .dockerignore -> repos/delphi/delphi-epidata/dev/local/.dockerignore
 │   ├── Makefile -> repos/delphi/delphi-epidata/dev/local/Makefile
 │   ├── repos
+│   │   ├── pyproject.toml -> delphi/delphi-epidata/dev/local/pyproject.toml
+│   │   ├── setup.cfg -> delphi/delphi-epidata/dev/local/setup.cfg
 │   │   └── delphi
 │   │       ├── delphi-epidata
 │   │       ├── flu-contest
@@ -50,6 +52,16 @@ $ [sudo] make test pdb=1
 
 # To test only a subset of tests
 $ [sudo] make test test=repos/delphi/delphi-epidata/integrations/acquisition
+```
+
+Enabling features like code autocompletion and linting in your editor
+requires one extra step (prerequisites: up-to-date pip and setuptools v64+):
+
+```sh
+$ cd repos
+
+# Installs the  as an "editable package"
+$ pip install -e . --config-settings editable_mode=strict
 ```
 
 # COVIDcast

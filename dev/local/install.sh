@@ -2,7 +2,8 @@
 # Bootstrap delphi-epidata development
 #
 # Downloads the repos needed for local delphi-epidata development into current dir 
-# and provides a Makefile with Docker control commands.
+# and provides a Makefile with Docker control commands
+# as well as pyproject/setup.cfg files for IDE mappings.
 #
 # Creates the directory structure:
 #
@@ -10,6 +11,8 @@
 #     .dockerignore
 #     Makefile
 #     repos/
+#       pyproject.toml
+#       setup.cfg
 #       delphi/
 #         operations/
 #         delphi-epidata/
@@ -43,3 +46,6 @@ cd ../../
 
 ln -s repos/delphi/delphi-epidata/dev/local/Makefile
 ln -s repos/delphi/delphi-epidata/dev/local/.dockerignore
+cd repos
+ln -s delphi/delphi-epidata/dev/local/pyproject.toml
+    ln -s delphi/delphi-epidata/dev/local/setup.cfg
