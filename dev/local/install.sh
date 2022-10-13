@@ -48,4 +48,4 @@ ln -s repos/delphi/delphi-epidata/dev/local/Makefile
 ln -s repos/delphi/delphi-epidata/dev/local/.dockerignore
 cd repos
 ln -s delphi/delphi-epidata/dev/local/pyproject.toml
-    ln -s delphi/delphi-epidata/dev/local/setup.cfg
+ln -s delphi/delphi-epidata/dev/local/setup.cfg
