@@ -60,7 +60,7 @@ requires one extra step (prerequisites: up-to-date pip and setuptools v64+):
 ```sh
 $ cd repos
 
-# Installs the  as an "editable package"
+# Installs the working directory as an "editable package"
 $ pip install -e . --config-settings editable_mode=strict
 ```
 
