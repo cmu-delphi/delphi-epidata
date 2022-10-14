@@ -11,7 +11,7 @@ from numpy import nan
 from sqlalchemy import text
 from pandas import read_csv, to_datetime
 
-from .._common import is_compatibility_mode, db
+from .._common import is_compatibility_mode, app, db
 from .._config import MAX_SMOOTHER_WINDOW
 from .._exceptions import ValidationFailedException, DatabaseErrorException
 from .._params import (
@@ -197,7 +197,9 @@ def handle():
         transform_args = parse_transform_args()
         pad_length = get_pad_length(source_signal_pairs, transform_args.get("smoother_window_length"))
         time_pairs = pad_time_pairs(time_pairs, pad_length)
+        app.logger.info(f"JIT compute enabled for route '/': {source_signal_pairs}")
         source_signal_pairs, row_transform_generator = get_basename_signal_and_jit_generator(source_signal_pairs, transform_args=transform_args)
+        app.logger.info(f"JIT base signals: {source_signal_pairs}")
 
         def gen_transform(rows):
             parsed_rows = (parse_row(row, fields_string, fields_int, fields_float) for row in rows)
@@ -284,7 +286,9 @@ def handle_trend():
     use_server_side_compute = all((is_day, is_also_day)) and JIT_COMPUTE and not jit_bypass
     if use_server_side_compute:
         pad_length = get_pad_length(source_signal_pairs, transform_args.get("smoother_window_length"))
+        app.logger.info(f"JIT compute enabled for route '/trend': {source_signal_pairs}")
         source_signal_pairs, row_transform_generator = get_basename_signal_and_jit_generator(source_signal_pairs)
+        app.logger.info(f"JIT base signals: {source_signal_pairs}")
         time_window = pad_time_window(time_window, pad_length)
 
         def gen_transform(rows):
@@ -362,7 +366,9 @@ def handle_trendseries():
     use_server_side_compute = is_day and JIT_COMPUTE and not jit_bypass
     if use_server_side_compute:
         pad_length = get_pad_length(source_signal_pairs, transform_args.get("smoother_window_length"))
+        app.logger.info(f"JIT compute enabled for route '/trendseries': {source_signal_pairs}")
         source_signal_pairs, row_transform_generator = get_basename_signal_and_jit_generator(source_signal_pairs)
+        app.logger.info(f"JIT base signals: {source_signal_pairs}")
         time_window = pad_time_window(time_window, pad_length)
 
         def gen_transform(rows):
@@ -507,7 +513,9 @@ def handle_export():
     use_server_side_compute = all([is_day, is_end_day]) and JIT_COMPUTE and not jit_bypass
     if use_server_side_compute:
         pad_length = get_pad_length(source_signal_pairs, transform_args.get("smoother_window_length"))
+        app.logger.info(f"JIT compute enabled for route '/csv': {source_signal_pairs}")
         source_signal_pairs, row_transform_generator = get_basename_signal_and_jit_generator(source_signal_pairs)
+        app.logger.info(f"JIT base signals: {source_signal_pairs}")
         time_window = pad_time_window(time_window, pad_length)
 
         def gen_transform(rows):
