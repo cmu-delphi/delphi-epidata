@@ -47,7 +47,7 @@ from .covidcast_utils.smooth_diff import SmootherKernelValue
 # first argument is the endpoint name
 bp = Blueprint("covidcast", __name__)
 alias = None
-JIT_COMPUTE = True
+JIT_COMPUTE_ON = True
 
 latest_table = "epimetric_latest_v"
 history_table = "epimetric_full_v"
@@ -192,8 +192,8 @@ def handle():
     fields_float = ["value", "stderr", "sample_size"]
 
     # TODO: JIT computations don't support time_value = *; there may be a clever way to implement this.
-    use_server_side_compute = not any((issues, lag, is_time_type_week, is_time_value_true)) and JIT_COMPUTE and not jit_bypass
-    if use_server_side_compute:
+    use_jit_compute = not any((issues, lag, is_time_type_week, is_time_value_true)) and JIT_COMPUTE_ON and not jit_bypass
+    if use_jit_compute:
         transform_args = parse_transform_args()
         pad_length = get_pad_length(source_signal_pairs, transform_args.get("smoother_window_length"))
         time_pairs = pad_time_pairs(time_pairs, pad_length)
@@ -283,8 +283,8 @@ def handle_trend():
     fields_int = ["time_value"]
     fields_float = ["value"]
 
-    use_server_side_compute = all((is_day, is_also_day)) and JIT_COMPUTE and not jit_bypass
-    if use_server_side_compute:
+    use_jit_compute = all((is_day, is_also_day)) and JIT_COMPUTE_ON and not jit_bypass
+    if use_jit_compute:
         pad_length = get_pad_length(source_signal_pairs, transform_args.get("smoother_window_length"))
         app.logger.info(f"JIT compute enabled for route '/trend': {source_signal_pairs}")
         source_signal_pairs, row_transform_generator = get_basename_signal_and_jit_generator(source_signal_pairs)
@@ -363,8 +363,8 @@ def handle_trendseries():
     fields_int = ["time_value"]
     fields_float = ["value"]
 
-    use_server_side_compute = is_day and JIT_COMPUTE and not jit_bypass
-    if use_server_side_compute:
+    use_jit_compute = is_day and JIT_COMPUTE_ON and not jit_bypass
+    if use_jit_compute:
         pad_length = get_pad_length(source_signal_pairs, transform_args.get("smoother_window_length"))
         app.logger.info(f"JIT compute enabled for route '/trendseries': {source_signal_pairs}")
         source_signal_pairs, row_transform_generator = get_basename_signal_and_jit_generator(source_signal_pairs)
@@ -510,8 +510,8 @@ def handle_export():
     fields_int = ["time_value", "issue", "lag"]
     fields_float = ["value", "stderr", "sample_size"]
 
-    use_server_side_compute = all([is_day, is_end_day]) and JIT_COMPUTE and not jit_bypass
-    if use_server_side_compute:
+    use_jit_compute = all([is_day, is_end_day]) and JIT_COMPUTE_ON and not jit_bypass
+    if use_jit_compute:
         pad_length = get_pad_length(source_signal_pairs, transform_args.get("smoother_window_length"))
         app.logger.info(f"JIT compute enabled for route '/csv': {source_signal_pairs}")
         source_signal_pairs, row_transform_generator = get_basename_signal_and_jit_generator(source_signal_pairs)
