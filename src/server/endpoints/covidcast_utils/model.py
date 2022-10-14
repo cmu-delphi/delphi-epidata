@@ -528,7 +528,7 @@ def _generate_transformed_rows(
 
     Parameters:
     parsed_rows: Iterator[Dict]
-        An iterator streaming rows from a database query. Assumed to be sorted by geo_type, geo_value, source, signal, time_type, and time_value.
+        An iterator streaming rows from a database query. Assumed to be sorted by source, signal, geo_type, geo_value, time_type, and time_value.
     time_pairs: Optional[List[TimePair]], default None
         A list of TimePairs, which can be used to create a continguous time index for time-series operations.
         The min and max dates in the TimePairs list is used.
@@ -552,14 +552,14 @@ def _generate_transformed_rows(
     if not transform_dict:
         transform_dict = dict()
     if not group_keyfunc:
-        group_keyfunc = lambda row: (row["geo_type"], row["geo_value"], row["source"], row["signal"])
+        group_keyfunc = lambda row: (row["source"], row["signal"], row["geo_type"], row["geo_value"])
 
     for key, source_signal_geo_rows in groupby(parsed_rows, group_keyfunc):
-        _, _, base_source_name, base_signal_name = key
+        base_source_name, base_signal_name, _, _ = key
         # Extract the list of derived signals; if a signal is not in the dictionary, then use the identity map.
         derived_signal_transform_map: SourceSignalPair = transform_dict.get(SourceSignalPair(base_source_name, [base_signal_name]), SourceSignalPair(base_source_name, [base_signal_name]))
         # Create a list of source-signal pairs along with the transformation required for the signal.
-        signal_names_and_transforms: List[Tuple[Tuple[str, str], Callable]] = [(signal, _get_base_signal_transform((base_source_name, signal), data_signals_by_key)) for signal in derived_signal_transform_map.signal]
+        signal_names_and_transforms: List[Tuple[Tuple[str, str], Callable]] = [(derived_signal, _get_base_signal_transform((base_source_name, derived_signal), data_signals_by_key)) for derived_signal in derived_signal_transform_map.signal]
         # Put the current time series on a contiguous time index.
         source_signal_geo_rows = _reindex_iterable(source_signal_geo_rows, time_pairs, fill_value=transform_args.get("pad_fill_value"))
         # Create copies of the iterable, with smart memory usage.

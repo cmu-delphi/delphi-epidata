@@ -210,7 +210,7 @@ def handle():
             for row in parsed_rows:
                 yield alias_row(row)
 
-    q.set_order("geo_type", "geo_value", "source", "signal", "time_type", "time_value", "issue")
+    q.set_order("source", "signal", "geo_type", "geo_value", "time_type", "time_value", "issue")
     q.set_fields(fields_string, fields_int, fields_float)
 
     # basic query info
@@ -267,8 +267,8 @@ def handle_trend():
         basis_time_value = shift_time_value(time_value, -1 * base_shift) if is_day else shift_week_value(time_value, -1 * base_shift)
 
     def gen_trend(rows):
-        for key, group in groupby(rows, lambda row: (row["geo_type"], row["geo_value"], row["source"], row["signal"])):
-            geo_type, geo_value, source, signal = key
+        for key, group in groupby(rows, lambda row: (row["source"], row["signal"], row["geo_type"], row["geo_value"])):
+            source, signal, geo_type, geo_value = key
             if alias_mapper:
                 source = alias_mapper(source, signal)
             trend = compute_trend(geo_type, geo_value, source, signal, time_value, basis_time_value, ((row["time_value"], row["value"]) for row in group))
@@ -299,7 +299,7 @@ def handle_trend():
                 yield row
 
     q.set_fields(fields_string, fields_int, fields_float)
-    q.set_order("geo_type", "geo_value", "source", "signal", "time_value")
+    q.set_order("source", "signal", "geo_type", "geo_value", "time_value")
 
     q.where_source_signal_pairs("source", "signal", source_signal_pairs)
     q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
@@ -344,8 +344,8 @@ def handle_trendseries():
         shifter = lambda x: shift_week_value(x, -basis_shift)
 
     def gen_trend(rows):
-        for key, group in groupby(rows, lambda row: (row["geo_type"], row["geo_value"], row["source"], row["signal"])):
-            geo_type, geo_value, source, signal = key
+        for key, group in groupby(rows, lambda row: (row["source"], row["signal"], row["geo_type"], row["geo_value"])):
+            source, signal, geo_type, geo_value = key
             if alias_mapper:
                 source = alias_mapper(source, signal)
             trends = compute_trends(geo_type, geo_value, source, signal, shifter, ((row["time_value"], row["value"]) for row in group))
@@ -377,7 +377,7 @@ def handle_trendseries():
                 yield row
 
     q.set_fields(fields_string, fields_int, fields_float)
-    q.set_order("geo_type", "geo_value", "source", "signal", "time_value")
+    q.set_order("source", "signal", "geo_type", "geo_value", "time_value")
 
     q.where_source_signal_pairs("source", "signal", source_signal_pairs)
     q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
@@ -521,7 +521,7 @@ def handle_export():
                 yield row
 
     q.set_fields(fields_string, fields_int, fields_float)
-    q.set_order("time_value", "geo_value")
+    q.set_order("geo_value", "time_value")
     q.where_source_signal_pairs("source", "signal", source_signal_pairs)
     q.where_time_pairs("time_type", "time_value", [TimePair("day" if is_day else "week", [time_window])])
     q.where_geo_pairs("geo_type", "geo_value", [GeoPair(geo_type, True if geo_values == "*" else geo_values)])
