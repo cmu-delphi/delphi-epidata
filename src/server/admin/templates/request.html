@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>API Keys</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    {% if recaptcha_key %}
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    {% endif %}
+  </head>
+  <body>
+    <div class="container">
+    {% if mode == 'request' %}
+      <h1>Register New Delphi Epidata Key</h1>
+      <form method="POST">
+        {% if recaptcha_key %}
+        <div class="g-recaptcha" data-sitekey="{{recaptcha_key}}"></div>
+        {% endif %}
+        <button class="btn btn-primary" type="submit">
+          Request API Key
+        </button>
+      </form>
+    {% else %}
+      <h1>Successfully requested a new API key</h1>
+      <p>
+          Your API key is
+      </p>
+      <textarea readonly class="form-control">{{api_key}}</textarea>
+
+      <h2>Authentication options</h2>
+
+      <h3>Via request parameter</h3>
+      <p>
+      The request parameter <code>api_key</code> can be used to pass the api key to the server. Example:
+      </p>
+      </p>
+        <a href="https://delphi.cmu.edu/epidata/covidcast/meta?api_key={{api_key}}">http://delphi.cmu.edu/epidata/covidcast/meta?api_key={{api_key}}</a>
+        </p>
+      <h3>Via Basic Authentication</h3>
+      <p>
+          Another method is providing basic authorization with the username <code>epidata</code> and the password the api key
+      </p>
+      <pre>
+          <code>curl -u 'epidata:{{api_key}}' https://delphi.cmu.edu/epidata/covidcast/meta</code>
+      </pre>
+      <h3>Via Bearer Token</h3>
+      <p>
+          Another method is providing bearer token in the header
+      </p>
+      <pre>
+          <code>curl -H 'Authorization: Bearer {{api_key}}' https://delphi.cmu.edu/epidata/covidcast/meta</code>
+      </pre>
+    {% endif %}
+    </div>
+  </body>
+</html>
