@@ -13,6 +13,7 @@ from ._common import app, request, db
 from ._exceptions import MissingAPIKeyException, UnAuthenticatedException
 from ._db import metadata, TABLE_OPTIONS
 from ._logger import get_structured_logger
+import re
 
 API_KEY_HARD_WARNING = API_KEY_REQUIRED_STARTING_AT - timedelta(days=14)
 API_KEY_SOFT_WARNING = API_KEY_HARD_WARNING - timedelta(days=14)
@@ -208,11 +209,22 @@ def _get_current_user() -> User:
     if "user" not in g:
         api_key = resolve_auth_token()
         user = _find_user(api_key)
+        request_path = request.full_path
         if not user.is_authenticated() and require_api_key():
             raise MissingAPIKeyException()
-        user.log_info(request.full_path, test="HERE")
+        # If the user configured no-track option, mask the API key
+        if not user.is_tracking():
+            request_path = mask_apikey(request_path)
+        user.log_info("Get path", path=request_path)
         g.user = user
     return g.user
+
+def mask_apikey(msg: str) -> str:
+    # Function to mask API key query string from a URL
+    regexp = re.compile(r'[\\?&]api_key=([^&#]*)')
+    if regexp.search(msg):
+        msg = re.sub(regexp, "&api_key=*****", msg)
+    return msg
 
 
 current_user: User = cast(User, LocalProxy(_get_current_user))
