@@ -24,7 +24,7 @@
         <div class="g-recaptcha" data-sitekey="{{recaptcha_key}}"></div>
         {% endif %}
         <button class="btn btn-primary" type="submit">
-          Request API Key
+          Generate New API Key
         </button>
       </form>
     {% else %}
@@ -34,29 +34,37 @@
       </p>
       <textarea readonly class="form-control">{{api_key}}</textarea>
 
-      <h2>Authentication options</h2>
-
-      <h3>Via request parameter</h3>
-      <p>
-      The request parameter <code>api_key</code> can be used to pass the api key to the server. Example:
-      </p>
-      </p>
-        <a href="https://delphi.cmu.edu/epidata/covidcast/meta?api_key={{api_key}}">http://delphi.cmu.edu/epidata/covidcast/meta?api_key={{api_key}}</a>
+      <section>
+        <h2>Authentication options</h2>
+        <h3>Via request parameter</h3>
+        <p>
+        The request parameter <code>api_key</code> can be used to pass the api key to the server. Example:
         </p>
-      <h3>Via Basic Authentication</h3>
-      <p>
-          Another method is providing basic authorization with the username <code>epidata</code> and the password the api key
-      </p>
-      <pre>
-          <code>curl -u 'epidata:{{api_key}}' https://delphi.cmu.edu/epidata/covidcast/meta</code>
-      </pre>
-      <h3>Via Bearer Token</h3>
-      <p>
-          Another method is providing bearer token in the header
-      </p>
-      <pre>
-          <code>curl -H 'Authorization: Bearer {{api_key}}' https://delphi.cmu.edu/epidata/covidcast/meta</code>
-      </pre>
+        </p>
+          <a href="https://delphi.cmu.edu/epidata/covidcast/meta?api_key={{api_key}}">http://delphi.cmu.edu/epidata/covidcast/meta?api_key={{api_key}}</a>
+          </p>
+        <h3>Via Basic Authentication</h3>
+        <p>
+            Another method is providing basic authorization with the username <code>epidata</code> and the password the api key
+        </p>
+        <code>
+            <pre>curl -u 'epidata:{{api_key}}' https://delphi.cmu.edu/epidata/covidcast/meta</pre>
+        </code>
+        <h3>Via Bearer Token</h3>
+        <p>
+            Another method is providing bearer token in the header
+        </p>
+        <code>
+            <pre>curl -H 'Authorization: Bearer {{api_key}}' https://delphi.cmu.edu/epidata/covidcast/meta</pre>
+        </code>
+      </section>
+      <section>
+        <h2>Important Notes</h2>
+        <p>
+          This API key is rate limited to XXX requests per hour.
+          In order to lift this limit you need to register your API key using this <a href="https://docs.google.com/forms/d/e/1FAIpQLSe5i-lgb9hcMVepntMIeEo8LUZUMTUnQD3hbrQI3vSteGsl4w/viewform?usp=pp_url&entry.1976959461={{api_key}}">Register my API key</a> form.
+        </p>
+      </section>
     {% endif %}
     </div>
   </body>
