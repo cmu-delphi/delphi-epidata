@@ -4,6 +4,7 @@ from typing import Dict, List, Set
 from flask import Blueprint, render_template_string, request, make_response
 from werkzeug.exceptions import Unauthorized, NotFound
 from werkzeug.utils import redirect
+from requests import post
 from .._security import resolve_auth_token, DBUser, UserRole
 
 
@@ -57,6 +58,22 @@ def _detail(user_id: int):
         user = user.update(request.values['api_key'], _parse_roles(request.values.getlist('roles')), request.values.get('tracking') == 'True')
         flags['banner'] = 'Successfully Saved'
     return _render('detail', token, flags, user=user)
+
+
+def _send_mail(sender: str, receiver: str, subject: str, body: str) -> bool:
+    # send via mail gun
+    auth = ('api', environ.get('MAILGUN_KEY'))
+    data = {
+        'from': sender,
+        'to': receiver,
+        'subject': subject,
+        'text': body
+    }
+    try:
+        r = post('https://api.mailgun.net/v2/epicast.net/messages', auth=auth, data=data)
+        return (r.status_code == 200) and (r.json()['message'] == 'Queued. Thank you.')
+    except Exception:
+        return False
 
 
 @bp.route('/register', methods=['POST'])
