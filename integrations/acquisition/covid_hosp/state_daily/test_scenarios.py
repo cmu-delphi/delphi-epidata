@@ -43,6 +43,8 @@ class AcquisitionTests(unittest.TestCase):
       with db.new_cursor() as cur:
         cur.execute('truncate table covid_hosp_state_timeseries')
         cur.execute('truncate table covid_hosp_meta')
+        cur.execute("truncate table api_user")
+        cur.execute('insert into api_user(api_key, email, roles) values("key", "test@test.com", "")')
 
   @freeze_time("2021-03-16")
   def test_acquire_dataset(self):

@@ -41,6 +41,8 @@ class CsvUploadingTests(unittest.TestCase):
         database='epidata')
     cur = cnx.cursor()
     cur.execute('truncate table covidcast_nowcast')
+    cur.execute("truncate table api_user")
+    cur.execute('insert into api_user(api_key, email, roles) values("key", "test@test.com", "")')
     cnx.commit()
     cur.close()
 

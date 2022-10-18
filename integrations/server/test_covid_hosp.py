@@ -27,6 +27,8 @@ class ServerTests(unittest.TestCase):
       with db.new_cursor() as cur:
         cur.execute('truncate table covid_hosp_state_timeseries')
         cur.execute('truncate table covid_hosp_meta')
+        cur.execute("truncate table api_user")
+        cur.execute('insert into api_user(api_key, email, roles) values("key", "test@test.com", "")')
 
 
   def insert_issue(self, cur, issue, value, record_type):
