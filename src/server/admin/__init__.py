@@ -44,7 +44,6 @@ def _index():
 def _detail(user_id: int):
     token = _require_admin()
     user = DBUser.find(user_id)
-    print(request.values.to_dict(False), flush=True)
     if not user:
         raise NotFound()
     if request.method == 'DELETE' or 'delete' in request.values:
