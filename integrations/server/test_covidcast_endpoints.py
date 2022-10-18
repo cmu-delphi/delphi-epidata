@@ -37,6 +37,7 @@ class CovidcastEndpointTests(CovidcastBase):
         response = requests.get(
             f"{BASE_URL}{endpoint}",
             params=params,
+            auth=('epidata', 'key')
         )
         response.raise_for_status()
         return response.json()
@@ -192,6 +193,7 @@ class CovidcastEndpointTests(CovidcastBase):
         response = requests.get(
             f"{BASE_URL}/csv",
             params=dict(signal=first.signal_pair(), start_day="2020-04-01", end_day="2020-12-12", geo_type=first.geo_type),
+            auth=('epidata', 'key')
         )
         response.raise_for_status()
         out = response.text

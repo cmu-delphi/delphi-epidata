@@ -17,6 +17,7 @@ class ServerTests(unittest.TestCase):
 
     # use the local instance of the Epidata API
     Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+    Epidata.auth = ('epidata', 'key')
 
     # use the local instance of the epidata database
     secrets.db.host = 'delphi_database_epidata'

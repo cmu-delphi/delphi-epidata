@@ -13,7 +13,7 @@ import requests
 import asyncio
 from tenacity import retry, stop_after_attempt
 
-from aiohttp import ClientSession, TCPConnector
+from aiohttp import ClientSession, TCPConnector, BasicAuth
 from pkg_resources import get_distribution, DistributionNotFound
 
 # Obtain package version for the user-agent. Uses the installed version by
@@ -34,6 +34,7 @@ class Epidata:
 
   # API base url
   BASE_URL = 'https://delphi.cmu.edu/epidata/api.php'
+  auth = None
 
   client_version = _version
 
@@ -58,9 +59,9 @@ class Epidata:
   @retry(reraise=True, stop=stop_after_attempt(2))
   def _request_with_retry(params):
     """Make request with a retry if an exception is thrown."""
-    req = requests.get(Epidata.BASE_URL, params, headers=_HEADERS)
+    req = requests.get(Epidata.BASE_URL, params, auth=Epidata.auth, headers=_HEADERS)
     if req.status_code == 414:
-      req = requests.post(Epidata.BASE_URL, params, headers=_HEADERS)
+      req = requests.post(Epidata.BASE_URL, params, auth=Epidata.auth, headers=_HEADERS)
     return req
 
   @staticmethod
@@ -720,7 +721,8 @@ class Epidata:
     """Make asynchronous Epidata calls for a list of parameters."""
     async def async_get(params, session):
       """Helper function to make Epidata GET requests."""
-      async with session.get(Epidata.BASE_URL, params=params) as response:
+      auth = BasicAuth(Epidata.auth[0], Epidata.auth[1]) if Epidata.auth else None
+      async with session.get(Epidata.BASE_URL, params=params, auth=auth) as response:
         response.raise_for_status()
         return await response.json(), params
 
@@ -728,7 +730,7 @@ class Epidata:
       """Helper function to asynchronously make and aggregate Epidata GET requests."""
       tasks = []
       connector = TCPConnector(limit=batch_size)
-      async with ClientSession(connector=connector, headers=_HEADERS) as session:
+      async with ClientSession(connector=connector) as session:
         for param in param_combos:
           task = asyncio.ensure_future(async_get(param, session))
           tasks.append(task)

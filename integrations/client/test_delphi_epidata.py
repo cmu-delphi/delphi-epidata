@@ -28,6 +28,7 @@ def fake_epidata_endpoint(func):
     Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/fake_api.php'
     func(*args)
     Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+    Epidata.auth = ('epidata', 'key')
   return wrapper
 
 # all the Nans we use here are just one value, so this is a shortcut to it:
@@ -44,6 +45,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
 
     # use the local instance of the Epidata API
     Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+    Epidata.auth = ('epidata', 'key')
 
     # use the local instance of the epidata database
     secrets.db.host = 'delphi_database_epidata'

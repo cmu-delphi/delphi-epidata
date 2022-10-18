@@ -26,7 +26,7 @@ class CovidcastTests(CovidcastBase):
 
   def request_based_on_row(self, row, extract_response=lambda x: x.json(), **kwargs):
     params = self.params_from_row(row, endpoint='covidcast', **kwargs)
-    response = requests.get(BASE_URL, params=params)
+    response = requests.get(BASE_URL, params=params, auth=('epidata', 'key'))
     response.raise_for_status()
     response = extract_response(response)
 

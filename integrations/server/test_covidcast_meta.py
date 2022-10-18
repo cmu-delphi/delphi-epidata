@@ -14,6 +14,7 @@ import delphi.operations.secrets as secrets
 
 # use the local instance of the Epidata API
 BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+auth = ('epidata', 'key')
 
 
 class CovidcastMetaTests(unittest.TestCase):
@@ -143,7 +144,7 @@ class CovidcastMetaTests(unittest.TestCase):
     expected = self.insert_placeholder_data()
 
     # make the request
-    response = requests.get(BASE_URL, params={'endpoint': 'covidcast_meta'})
+    response = requests.get(BASE_URL, params={'endpoint': 'covidcast_meta'}, auth=auth)
     response.raise_for_status()
     response = response.json()
 
@@ -153,6 +154,7 @@ class CovidcastMetaTests(unittest.TestCase):
       'epidata': expected,
       'message': 'success',
     })
+
 
   def test_filter(self):
     """Test filtering options some sample data."""
@@ -164,7 +166,7 @@ class CovidcastMetaTests(unittest.TestCase):
       # make the request
       params = kwargs.copy()
       params['endpoint'] = 'covidcast_meta'
-      response = requests.get(BASE_URL, params=params)
+      response = requests.get(BASE_URL, params=params, auth=auth)
       response.raise_for_status()
       return response.json()
 
