@@ -9,7 +9,8 @@ This data is private to Delphi.
 | id       | int(11)       | NO   | PRI | NULL    | auto_increment |
 | api_key  | varchar(50)   | NO   |     |         |                |
 | email    | varchar(255)  | NO   |     |         |                |
-| roles    | varchar(255) | NO   |     |         |                |
+| roles    | varchar(255)  | NO   |     |         |                |
+| tracking | tinyint(1)	   | YES  |     |         |                |
 +----------+---------------+------+-----+---------+----------------+
 */
 
@@ -18,5 +19,6 @@ CREATE TABLE `api_user` (
   `api_key` varchar(50) NOT NULL,
   `email` varchar(255) NOT NULL,
   `roles` varchar(255) NOT NULL,
+  `tracking` tinyint(1),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
