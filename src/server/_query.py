@@ -242,8 +242,8 @@ def limit_query(query: str, limit: int) -> str:
 def run_query(p: APrinter, query_tuple: Tuple[str, Dict[str, Any]]):
     query, params = query_tuple
     # limit rows + 1 for detecting whether we would have more
-    full_query = text(limit_query(query, p.remaining_rows + 1))
-    app.logger.info("full_query: %s, params: %s", full_query, params)
+    full_query = text(f"{query} LIMIT {p.remaining_rows + 1}")
+    current_user.log_info({"full_query" : str(full_query), "params" : params})
     return db.execution_options(stream_results=True).execute(full_query, **params)
 
 
