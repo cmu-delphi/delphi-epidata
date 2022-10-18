@@ -219,12 +219,12 @@ def _get_current_user() -> User:
         g.user = user
     return g.user
 
-def mask_apikey(msg: str) -> str:
-    # Function to mask API key query string from a URL
+def mask_apikey(path: str) -> str:
+    # Function to mask API key query string from a request path
     regexp = re.compile(r'[\\?&]api_key=([^&#]*)')
-    if regexp.search(msg):
-        msg = re.sub(regexp, "&api_key=*****", msg)
-    return msg
+    if regexp.search(path):
+        path = re.sub(regexp, "&api_key=*****", path)
+    return path
 
 
 current_user: User = cast(User, LocalProxy(_get_current_user))
