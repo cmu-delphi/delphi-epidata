@@ -123,11 +123,11 @@ class User:
     def has_role(self, role: UserRole) -> bool:
         return role in self.roles
 
-    def log_info(self, msg: str, **kwargs) -> None:
+    def log_info(self, msg: str, *args, **kwargs) -> None:
         if self.authenticated and self.tracking:
-            app.logger.info(f"apikey: {self.api_key}, {msg}", **kwargs)
+            app.logger.info(f"apikey: {self.api_key}, {msg}", *args, **kwargs)
         else:
-            app.logger.info(msg, **kwargs)
+            app.logger.info(msg, *args, **kwargs)
 
 
 ANONYMOUS_USER = User("anonymous", False, set(), False)
