@@ -106,7 +106,7 @@ class CovidcastTests(CovidcastBase):
   #     'geo_type': 'county',
   #     'time_values': 20200414,
   #     'geo_value': '01234',
-  #   })
+  #   }, auth=('epidata', 'key')))
   #   self.assertEqual(response.status_code, 414)
 
   #   # make request with POST
@@ -118,7 +118,7 @@ class CovidcastTests(CovidcastBase):
   #     'geo_type': 'county',
   #     'time_values': 20200414,
   #     'geo_value': '01234',
-  #   })
+  #   }, auth=('epidata', 'key')))
 
   #   self.assertEqual(response.status_code, 200)
 
