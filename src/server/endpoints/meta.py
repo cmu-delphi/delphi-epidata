@@ -6,7 +6,6 @@ from .fluview_meta import meta_fluview
 
 # first argument is the endpoint name
 bp = Blueprint("meta", __name__)
-required_role = None
 alias = None
 
 

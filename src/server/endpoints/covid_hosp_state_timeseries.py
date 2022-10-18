@@ -5,7 +5,6 @@ from .._validate import extract_integers, extract_strings, extract_date, require
 
 # first argument is the endpoint name
 bp = Blueprint("covid_hosp_state_timeseries", __name__)
-required_role = None
 alias = "covid_hosp"
 
 

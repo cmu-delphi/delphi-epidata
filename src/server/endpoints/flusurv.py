@@ -4,7 +4,6 @@ from .._query import execute_query, QueryBuilder
 from .._validate import extract_integer, extract_integers, extract_strings, require_all
 
 bp = Blueprint("flusurv", __name__)
-required_role = None
 
 
 @bp.route("/", methods=("GET", "POST"))

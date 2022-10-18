@@ -12,7 +12,6 @@ from typing import List
 
 # first argument is the endpoint name
 bp = Blueprint("sensors", __name__)
-required_role = None
 alias = "signals"
 
 

@@ -40,7 +40,6 @@ from .covidcast_utils.model import TimeType, count_signal_time_types, data_sourc
 
 # first argument is the endpoint name
 bp = Blueprint("covidcast", __name__)
-required_role = None
 alias = None
 
 latest_table = "epimetric_latest_v"

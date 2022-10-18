@@ -1,8 +1,22 @@
-from typing import Final, Set, cast
+from typing import Final, Optional, Set, cast
 from enum import Enum
+from functools import wraps
 from flask import g
 from werkzeug.local import LocalProxy
-from ._common import app, request
+from sqlalchemy import Table, Column, String, Integer, JSON
+from ._common import app, request, db
+from ._exceptions import MissingAPIKeyException
+from ._db import metadata, TABLE_OPTIONS
+
+user_table = Table(
+    "api_user",
+    metadata,
+    Column("id", Integer, primary_key=True, autoincrement=True),
+    Column("api_key", String(50)),
+    Column("email", String(100)),
+    Column("roles", JSON()),
+    **TABLE_OPTIONS,
+)
 
 
 class UserRole(str, Enum):
@@ -60,10 +74,32 @@ class User:
 ANONYMOUS_USER = User("anonymous", False, set())
 
 
+def resolve_auth_token() -> Optional[str]:
+    # auth request param
+    if "auth" in request.values:
+        return request.values["auth"]
+    if "api_key" in request.values:
+        return request.values["api_key"]
+    # user name password
+    if request.authorization and request.authorization.username == "epidata":
+        return request.authorization.password
+    # bearer token authentication
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        return auth_header[len("Bearer ") :]
+    return None
+
+
 def _get_current_user() -> User:
     if "user" not in g:
-        # TODO
-        g.user = ANONYMOUS_USER
+        api_key = resolve_auth_token()
+        if not api_key:
+            raise MissingAPIKeyException()
+        stmt = user_table.select().where(user_table.c.api_key == api_key)
+        user = db.execution_options(stream_results=False).execute(stmt).first()
+        if user is None:
+            raise MissingAPIKeyException()
+        g.user = User(str(user.id), True, set(user.roles or []))
     return g.user
 
 
@@ -77,4 +113,20 @@ current_user: User = cast(User, LocalProxy(_get_current_user))
 def resolve_user():
     if request.path.startswith("/lib"):
         return
-    # TODO
+    _get_current_user()
+
+
+def require_role(required_role: Optional[UserRole]):
+    def decorator_wrapper(f):
+        if not required_role:
+            return f
+
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            if not current_user or not current_user.has_role(required_role):
+                raise MissingAPIKeyException()
+            return f(*args, **kwargs)
+
+        return decorated_function
+
+    return decorator_wrapper
