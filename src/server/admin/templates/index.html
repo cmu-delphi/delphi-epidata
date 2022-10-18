@@ -5,44 +5,75 @@
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
     <title>API Keys</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <style>
-        td, th {
-          border: 1px solid black;
-          padding: 0.5em;
-        }
-        table {
-            border: 1px solid black;
-            border-collapse: collapse;
-            width: 100%;
-        }
-    </style>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
 <body>
-    <h1>
-        API Key Admin Interface
-    </h1>
-    <h2>Registered Users</h2>
-    <table>
-        <thead>
-            <th>ID</th>
-            <th>E-Mail</th>
-            <th>API Key</th>
-            <th>Roles</th>
-            <th></th>
-        </thead>
-        <tbody>
-        {% for user in users %}
-            <tr>
-                <td>{{ user.id }}</td>
-                <td>{{ user.email }}</td>
-                <td>{{ user.api_key }}</td>
-                <td>{{ user.roles }}</td>
-                <td><a href="./{{user.id}}?auth={{token}}">Details</a></td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-    <h2>Register New User</h2>
-    TODO
+    <div class="container">
+        <h1>
+            API Key Admin Interface
+        </h1>
+        {% if mode == 'overview' %}
+            <h2 class="mt-5 mb-3">Registered Users</h2>
+            <table class="table table-striped">
+                <thead>
+                    <th scope="col">ID</th>
+                    <th scope="col">E-Mail</th>
+                    <th scope="col">API Key</th>
+                    <th scope="col">Roles</th>
+                    <th scope="col">Actions</th>
+                </thead>
+                <tbody>
+                {% for user in users %}
+                    <tr>
+                        <th scope="row">{{ user.id }}</th>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.api_key }}</td>
+                        <td>{{ ','.join(user.roles) }}</td>
+                        <td><a href="./{{user.id}}?auth={{token}}">Edit</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <h2 class="mt-5 mb-3">Register New User</h2>
+            <form method="POST">
+                <input type="hidden" name="auth" value="{{token}}" />
+                <div class="form-group">
+                    <label for="email">E-Mail</label>
+                    <input type="email" class="form-control" name="email" id="email" required />
+                </div>
+                <div class="form-group">
+                    <label for="api_key">API Key</label>
+                    <input type="text" class="form-control" name="api_key" id="api_key" required />
+                </div>
+                <div class="form-group">
+                    <label for="roles">Roles</label>
+                    <textarea rows="5" class="form-control" name="roles" id="roles" placeholder="role names separated by new lines"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Add</button>
+            </form>
+        {% else %}
+            <a href="./?auth={{token}}" >Back</a>
+            <h2 class="mt-5 mb-3">
+                Edit User {{user.id}}
+            </h2>
+            <form method="POST">
+                <input type="hidden" name="auth" value="{{token}}" />
+                <div class="form-group">
+                    <label for="email">E-Mail</label>
+                    <input type="email" class="form-control" name="email" id="email" value="{{user.email}}" required />
+                </div>
+                <div class="form-group">
+                    <label for="api_key">API Key</label>
+                    <input type="text" class="form-control" name="api_key" id="api_key" value="{{user.api_key}}" required />
+                </div>
+                <div class="form-group">
+                    <label for="roles">Roles</label>
+                    <textarea rows="5" name="roles" id="roles" class="form-control" placeholder="role names separated by new lines">{{user.roles_str}}</textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Update</button>
+                <button type="submit" name="delete" class="btn btn-secondary btn-block">Delete</button>
+            </form>
+        {% endif %}
+    </div>
 </body>
 </html>

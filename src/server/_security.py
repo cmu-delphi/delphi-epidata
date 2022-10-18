@@ -26,6 +26,49 @@ user_table = Table(
     **TABLE_OPTIONS,
 )
 
+class DBUser:
+    id: int
+    api_key: str
+    email: str
+    roles: Set[str]
+
+    @property
+    def roles_str(self):
+        return '\n'.join(self.roles)
+
+    @staticmethod
+    def _parse(r: Dict) -> 'DBUser':
+        u = DBUser()
+        u.id = r['id']
+        u.api_key = r['api_key']
+        u.email = r['email']
+        u.roles = set(r['roles'].split(','))
+        return u
+
+    @staticmethod
+    def find(user_id: int) -> 'DBUser':
+        stmt = user_table.select().where(user_table.c.id == user_id)
+        return DBUser._parse(db.execution_options(stream_results=False).execute(stmt).first())
+
+    @staticmethod
+    def list() -> List['DBUser']:
+        return [DBUser._parse(r) for r in db.execution_options(stream_results=False).execute(user_table.select())]
+
+    @staticmethod
+    def insert(email: str, api_key: str, roles: Set[str]):
+        db.execute(user_table.insert().values(api_key=api_key, email=email, roles=','.join(roles)))
+
+    def delete(self):
+        db.execute(user_table.delete(user_table.c.id == self.id))
+
+    def update(self, email: str, api_key: str, roles: Set[str]) -> 'DBUser':
+        db.execute(user_table.update().where(user_table.c.id == self.id).values(api_key=api_key, email=email, roles=','.join(roles)))
+        self.email = email
+        self.api_key = api_key
+        self.roles = roles
+        return self
+
+
 
 class UserRole(str, Enum):
     afhsb = "afhsb"
@@ -91,10 +134,6 @@ def _find_user(api_key: Optional[str]) -> User:
         return ANONYMOUS_USER
     else:
         return User(str(user.id), True, set(user.roles.split(",")))
-
-def list_users() -> List[Dict[str, Union[int, str]]]:
-    return [r for r in db.execution_options(stream_results=False).execute(user_table.select())]
-
 
 def resolve_auth_token() -> Optional[str]:
     # auth request param
