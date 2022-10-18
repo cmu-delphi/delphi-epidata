@@ -22,7 +22,6 @@
             <table class="table table-striped">
                 <thead>
                     <th scope="col">ID</th>
-                    <th scope="col">E-Mail</th>
                     <th scope="col">API Key</th>
                     <th scope="col">Track Usage</th>
                     <th scope="col">Roles</th>
@@ -32,7 +31,6 @@
                 {% for user in users %}
                     <tr>
                         <th scope="row">{{ user.id }}</th>
-                        <td>{{ user.email }}</td>
                         <td>{{ user.api_key }}</td>
                         <td>{{ '✔️' if user.tracking else '❌'}}</td>
                         <td>{{ ','.join(user.roles) }}</td>
@@ -54,10 +52,6 @@
         {% endif %}
         <form method="POST">
             <input type="hidden" name="auth" value="{{token}}" />
-            <div class="form-group">
-                <label for="email">E-Mail</label>
-                <input type="email" class="form-control" name="email" id="email" value="{{user.email}}" required />
-            </div>
             <div class="form-group">
                 <label for="api_key">API Key</label>
                 <input type="text" class="form-control" name="api_key" id="api_key" value="{{user.api_key}}" required />
