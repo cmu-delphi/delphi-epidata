@@ -9,5 +9,8 @@ orjson==3.4.7
 pandas==1.2.3
 scipy==1.6.2
 tenacity==7.0.0
-newrelic
+newrelic==6.8.0.163
+requests==2.26.0
 epiweeks==2.1.2
+Flask-Limiter==1.4
+redis==3.5.3

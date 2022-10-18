@@ -1,6 +1,9 @@
 import os
 from dotenv import load_dotenv
 import json
+from datetime import date
+
+from flask.app import Flask
 
 load_dotenv()
 
@@ -10,16 +13,7 @@ MAX_RESULTS = int(10e6)
 MAX_COMPATIBILITY_RESULTS = int(3650)
 
 SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI", "sqlite:///test.db")
-
-# defaults
-SQLALCHEMY_ENGINE_OPTIONS = {
-    "pool_pre_ping": True, # enable ping test for validity of recycled pool connections on connect() calls
-    "pool_recycle": 5      # seconds after which a recycled pool connection is considered invalid
-}
-# update with overrides of defaults or additions from external configs
-SQLALCHEMY_ENGINE_OPTIONS.update(
-    json.loads(os.environ.get("SQLALCHEMY_ENGINE_OPTIONS", "{}")))
-
+SQLALCHEMY_ENGINE_OPTIONS = json.loads(os.environ.get("SQLALCHEMY_ENGINE_OPTIONS", "{}"))
 SECRET = os.environ.get("FLASK_SECRET", "secret")
 URL_PREFIX = os.environ.get("FLASK_PREFIX", "/")
 
@@ -45,3 +39,37 @@ REGION_TO_STATE = {
     "cen9": ["AK", "CA", "HI", "OR", "WA"],
 }
 NATION_REGION = "nat"
+
+API_KEY_REQUIRED_STARTING_AT = date.fromisoformat(os.environ.get('API_REQUIRED_STARTING_AT', '3000-01-01'))
+
+# password needed for the admin application if not set the admin routes won't be available
+ADMIN_PASSWORD = os.environ.get('API_KEY_ADMIN_PASSWORD')
+# secret for the google form to give to the admin/register endpoint
+REGISTER_WEBHOOK_TOKEN = os.environ.get('API_KEY_REGISTER_WEBHOOK_TOKEN')
+# see recaptcha
+RECAPTCHA_SITE_KEY= os.environ.get('RECAPTCHA_SITE_KEY')
+RECAPTCHA_SECRET_KEY= os.environ.get('RECAPTCHA_SECRET_KEY')
+
+# https://flask-limiter.readthedocs.io/en/stable/#rate-limit-string-notation
+RATE_LIMIT = os.environ.get('RATE_LIMIT', '10/hour')
+# fixed-window, fixed-window-elastic-expiry, or moving-window
+# see also https://flask-limiter.readthedocs.io/en/stable/#rate-limiting-strategies
+RATELIMIT_STRATEGY = os.environ.get('RATELIMIT_STRATEGY', 'fixed-window')
+# see https://flask-limiter.readthedocs.io/en/stable/#configuration
+RATELIMIT_STORAGE_URL = os.environ.get('RATELIMIT_STORAGE_URL', 'memory://')
+
+
+def patch_flask_config(app: Flask):
+    """
+    patch the configration with some environment variables
+    """
+    sub = {}
+    for k,v in os.environ.items():
+        if k.startswith('RATELIMIT'):
+            sub[k] = v
+    sub.update({
+        'SECRET': SECRET,
+        'RATELIMIT_STRATEGY': RATELIMIT_STRATEGY,
+        'RATELIMIT_STORAGE_URL': RATELIMIT_STORAGE_URL
+    })
+    app.config.update(sub)

@@ -4,12 +4,13 @@ from typing import Dict, Callable
 
 from flask import request, send_file, Response, send_from_directory, jsonify
 
-from ._config import URL_PREFIX, VERSION
+from ._config import URL_PREFIX, VERSION, RATE_LIMIT
 from ._db import metadata, engine
 from ._common import app, set_compatibility_mode
 from ._exceptions import MissingOrWrongSourceException
 from .endpoints import endpoints
-from .admin import bp as admin_bp, ADMIN_PASSWORD
+from .admin import bp as admin_bp, enable_admin
+from ._security import limiter, deduct_on_success
 
 __all__ = ["app"]
 
@@ -17,17 +18,20 @@ endpoint_map: Dict[str, Callable[[], Response]] = {}
 
 for endpoint in endpoints:
     endpoint_map[endpoint.bp.name] = endpoint.handle
+    limiter.limit(RATE_LIMIT, deduct_when=deduct_on_success)(endpoint.bp)
     app.register_blueprint(endpoint.bp, url_prefix=f"{URL_PREFIX}/{endpoint.bp.name}")
 
     alias = getattr(endpoint, "alias", None)
     if alias:
         endpoint_map[alias] = endpoint.handle
 
-if ADMIN_PASSWORD:
+if enable_admin():
+    limiter.exempt(admin_bp)
     app.register_blueprint(admin_bp, url_prefix=f"{URL_PREFIX}/admin")
 
 
 @app.route(f"{URL_PREFIX}/api.php", methods=["GET", "POST"])
+@limiter.limit(RATE_LIMIT, deduct_when=deduct_on_success)
 def handle_generic():
     # mark as compatibility mode
     set_compatibility_mode()

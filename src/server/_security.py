@@ -4,14 +4,16 @@ from datetime import date, timedelta
 from functools import wraps
 from os import environ
 from uuid import uuid4
-from flask import g
+from flask import g, Response
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from werkzeug.local import LocalProxy
 from sqlalchemy import Table, Column, String, Integer, Boolean
+from ._config import API_KEY_REQUIRED_STARTING_AT, RATELIMIT_STORAGE_URL
 from ._common import app, request, db
 from ._exceptions import MissingAPIKeyException, UnAuthenticatedException
 from ._db import metadata, TABLE_OPTIONS
 
-API_KEY_REQUIRED_STARTING_AT = date.fromisoformat(environ.get('API_REQUIRED_STARTING_AT', '3000-01-01'))
 API_KEY_HARD_WARNING = API_KEY_REQUIRED_STARTING_AT - timedelta(days=14)
 API_KEY_SOFT_WARNING = API_KEY_HARD_WARNING - timedelta(days=14)
 
@@ -211,9 +213,12 @@ def show_hard_api_key_warning() -> bool:
     return not current_user.authenticated and not app.config.get('TESTING', False) and n > API_KEY_HARD_WARNING
 
 
+def _is_public_route() -> bool:
+    return request.path.startswith("/lib") or request.path.startswith('/admin') or request.path.startswith('/version')
+
 @app.before_request
 def resolve_user():
-    if request.path.startswith("/lib") or request.path.startswith('/admin') or request.path.startswith('/version'):
+    if _is_public_route():
         return
     # try to get the db
     try:
@@ -244,3 +249,25 @@ def require_role(required_role: Optional[UserRole]):
         return decorated_function
 
     return decorator_wrapper
+
+def _resolve_tracking_key() -> str:
+    token = resolve_auth_token()
+    return token or get_remote_address()
+
+def deduct_on_success(response: Response) -> bool:
+    if response.status_code != 200:
+        return False
+    # check if we have the classic format
+    if not response.is_streamed and response.is_json:
+        out = response.json
+        if out and isinstance(out, dict) and out.get('result') == -1:
+            return False
+    return True
+
+limiter = Limiter(app, key_func=_resolve_tracking_key, storage_uri=RATELIMIT_STORAGE_URL)
+
+@limiter.request_filter
+def _no_rate_limit() -> bool:
+    # no rate limit if the user is registered
+    user = _get_current_user()
+    return _is_public_route() or user is not None and not user.is_rate_limited()
