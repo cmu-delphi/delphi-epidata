@@ -1,6 +1,6 @@
-from typing import List, Optional, Union, Tuple, Dict, Any
+from typing import List, Optional, Union, Tuple, Dict, Any, Set
 from itertools import groupby
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from epiweeks import Week
 from flask import Blueprint, request
 from flask.json import loads, jsonify
@@ -40,6 +40,7 @@ from .covidcast_utils.model import TimeType, count_signal_time_types, data_sourc
 
 # first argument is the endpoint name
 bp = Blueprint("covidcast", __name__)
+required_role = None
 alias = None
 
 latest_table = "epimetric_latest_v"

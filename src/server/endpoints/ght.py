@@ -1,17 +1,17 @@
 from flask import Blueprint, request
 
-from .._config import AUTH
 from .._query import execute_query, QueryBuilder
-from .._validate import check_auth_token, extract_integers, extract_strings, require_all
+from .._validate import extract_integers, extract_strings, require_all
+from .._security import UserRole
 
 # first argument is the endpoint name
 bp = Blueprint("ght", __name__)
+required_role = UserRole.ght
 alias = None
 
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    check_auth_token(AUTH["ght"])
     require_all("locations", "epiweeks", "query")
 
     locations = extract_strings("locations")

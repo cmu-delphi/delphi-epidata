@@ -4,6 +4,7 @@ from .._exceptions import EpiDataException
 
 # first argument is the endpoint name
 bp = Blueprint("ilinet", __name__)
+required_role = None
 alias = "stateili"
 
 

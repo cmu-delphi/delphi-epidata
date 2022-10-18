@@ -1,14 +1,14 @@
-import re
 from typing import Dict, List
 
 from flask import Blueprint
 
-from .._config import AUTH
 from .._query import execute_queries, filter_integers, filter_strings
-from .._validate import check_auth_token, extract_integers, extract_strings, require_all
+from .._validate import extract_integers, extract_strings, require_all
+from .._security import UserRole
 
 # first argument is the endpoint name
 bp = Blueprint("afhsb", __name__)
+required_role = UserRole.afhsb
 alias = None
 
 
@@ -54,7 +54,6 @@ FLU_MAPPING = {
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    check_auth_token(AUTH["afhsb"])
     require_all("locations", "epiweeks", "flu_types")
 
     locations = extract_strings("locations")

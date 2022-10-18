@@ -5,6 +5,7 @@ from .._validate import extract_strings, require_any
 
 # first argument is the endpoint name
 bp = Blueprint("covid_hosp_facility_lookup", __name__)
+required_role = None
 
 
 @bp.route("/", methods=("GET", "POST"))

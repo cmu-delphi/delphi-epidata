@@ -7,6 +7,7 @@ from .._exceptions import DatabaseErrorException
 
 # first argument is the endpoint name
 bp = Blueprint("signal_dashboard_status", __name__)
+required_role = None
 alias = None
 
 

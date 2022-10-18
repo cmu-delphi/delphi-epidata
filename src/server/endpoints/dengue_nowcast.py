@@ -5,6 +5,7 @@ from .._validate import extract_integers, extract_strings, require_all
 
 # first argument is the endpoint name
 bp = Blueprint("dengue_nowcast", __name__)
+required_role = None
 alias = None
 
 
