@@ -60,22 +60,6 @@ def _detail(user_id: int):
     return _render('detail', token, flags, user=user)
 
 
-def _send_mail(sender: str, receiver: str, subject: str, body: str) -> bool:
-    # send via mail gun
-    auth = ('api', environ.get('MAILGUN_KEY'))
-    data = {
-        'from': sender,
-        'to': receiver,
-        'subject': subject,
-        'text': body
-    }
-    try:
-        r = post('https://api.mailgun.net/v2/epicast.net/messages', auth=auth, data=data)
-        return (r.status_code == 200) and (r.json()['message'] == 'Queued. Thank you.')
-    except Exception:
-        return False
-
-
 @bp.route('/register', methods=['POST'])
 def _register():
     body = request.get_json()
@@ -92,8 +76,4 @@ def _register():
             tracking = 'yes' in v.lower()
             break
     DBUser.insert(api_key, roles, tracking)
-
-    # email = body['email']
-    # TODO handle mailing list registration handling
-    # TODO send mails here or in the google script?
     return make_response('ok', 200)
