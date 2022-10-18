@@ -16,6 +16,7 @@ from sqlalchemy import text
 from sqlalchemy.engine import Row
 
 from ._common import db, app
+from ._security import current_user
 from ._printer import create_printer, APrinter
 from ._exceptions import DatabaseErrorException
 from ._validate import extract_strings
