@@ -9,9 +9,16 @@ This data source is a mirror of the "COVID-19 Reported Patient Impact and
 Hospital Capacity by Facility" dataset provided by the US Department of Health
 & Human Services via healthdata.gov.
 
+HHS performs up to four days of forward-fill for missing values.
+
+Starting October 1, 2022, some facilities are only required to report annually.
+
 See the
 [official description and data dictionary at healthdata.gov](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/anag-cw7u)
-for more information.
+for more information. The data elements, cadence, and how the data are being used in the
+federal response are documented in
+[a FAQ published by Health & Human Services](https://www.hhs.gov/sites/default/files/covid-19-faqs-hospitals-hospital-laboratory-acute-care-facility-data-reporting.pdf).
+
 
 General topics not specific to any particular data source are discussed in the
 [API overview](README.md). Such topics include:

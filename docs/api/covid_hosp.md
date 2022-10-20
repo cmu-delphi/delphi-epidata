@@ -11,11 +11,19 @@ Hospital Capacity by State" datasets provided by the US Department of
 Health & Human Services via healthdata.gov. The latter provides more frequent updates,
 so it is combined with the former to create a single dataset which is as recent as possible.
 
+HHS performs up to four days of forward-fill for missing values. One day of forward-fill
+is common, affecting 28 states in each issue on average. More than one day of forward-fill
+is rare, affecting one state for every five issues on average.
+
+Starting October 1, 2022, some facilities are only required to report annually.
+
 For more information, see the
 [official description and data dictionary at healthdata.gov](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/g62h-syeh)
 for "COVID-19 Reported Patient Impact and Hospital Capacity by State Timeseries,"
 as well as the [official description](https://healthdata.gov/dataset/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/6xf2-c3ie)
-for "COVID-19 Reported Patient Impact and Hospital Capacity by State."
+for "COVID-19 Reported Patient Impact and Hospital Capacity by State." The data elements,
+cadence, and how the data are being used in the federal response are documented in
+[a FAQ published by Health & Human Services](https://www.hhs.gov/sites/default/files/covid-19-faqs-hospitals-hospital-laboratory-acute-care-facility-data-reporting.pdf).
 
 General topics not specific to any particular data source are discussed in the
 [API overview](README.md). Such topics include:
@@ -65,7 +73,7 @@ If `issues` is not specified, then the most recent issue is used by default.
 | `epidata[].state` | state pertaining to this row | string |
 | `epidata[].date` | date pertaining to this row | integer |
 | `epidata[].issue` | the date on which the dataset containing this row was published | integer |
-| `epidata[].*` | see the [data dictionary](https://healthdata.gov/covid-19-reported-patient-impact-and-hospital-capacity-state-data-dictionary) |  |
+| `epidata[].*` | see the [data dictionary](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/g62h-syeh). Last synced: 2021-10-21 |  |
 | `message` | `success` or error message | string |
 
 # Example URLs
@@ -149,24 +157,30 @@ The following sample shows how to import the library and fetch MA on 2020-05-10
 ### Python
 
 Optionally install the package using pip(env):
-````bash
+```bash
 pip install delphi-epidata
-````
+```
 
 Otherwise, place `delphi_epidata.py` from this repo next to your python script.
 
-````python
+```python
 # Import
 from delphi_epidata import Epidata
 # Fetch data
 res = Epidata.covid_hosp('MA', 20200510)
 print(res['result'], res['message'], len(res['epidata']))
-````
+```
 
 # Repair Log
 
 If we ever need to repair the data record due to a bug in our code (not at the
 source), we will update the list below.
+
+## October 21, 2021
+
+All issues between 20210430 and 20211021 were re-uploaded to include new columns added by
+HHS. If you pulled these issues before October 21, the data you received was correct, but
+was missing the added columns.
 
 ## January 22, 2021
 
