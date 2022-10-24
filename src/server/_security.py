@@ -8,7 +8,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from werkzeug.local import LocalProxy
 from sqlalchemy import Table, Column, String, Integer, Boolean
-from ._config import API_KEY_REQUIRED_STARTING_AT, RATELIMIT_STORAGE_URL
+from ._config import API_KEY_REQUIRED_STARTING_AT, RATELIMIT_STORAGE_URL, URL_PREFIX
 from ._common import app, request, db
 from ._exceptions import MissingAPIKeyException, UnAuthenticatedException
 from ._db import metadata, TABLE_OPTIONS
@@ -246,7 +246,7 @@ def show_hard_api_key_warning() -> bool:
 
 
 def _is_public_route() -> bool:
-    return request.path.startswith("/lib") or request.path.startswith('/admin') or request.path.startswith('/version')
+    return request.path.startswith(f"{URL_PREFIX}/lib") or request.path.startswith(f'{URL_PREFIX}/admin') or request.path.startswith(f'{URL_PREFIX}/version')
 
 @app.before_request
 def resolve_user():
