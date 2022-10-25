@@ -25,6 +25,7 @@ user_table = Table(
     metadata,
     Column("id", Integer, primary_key=True, autoincrement=True),
     Column("api_key", String(50), unique=True),
+    Column("email", String(100)),
     Column("roles", String(255)),
     Column('tracking', Boolean(), default=True),
     Column('registered', Boolean(), default=False),
@@ -34,6 +35,7 @@ user_table = Table(
 class DBUser:
     id: int
     api_key: str
+    email: str
     roles: Set[str]
     tracking: bool = True
     registered: bool = False
@@ -47,6 +49,7 @@ class DBUser:
         u = DBUser()
         u.id = r['id']
         u.api_key = r['api_key']
+        u.email = r['email']
         u.roles = set(r['roles'].split(','))
         u.tracking = r['tracking'] != False
         u.registered = r['registered'] == True
@@ -70,8 +73,8 @@ class DBUser:
         return [DBUser._parse(r) for r in db.execution_options(stream_results=False).execute(user_table.select())]
 
     @staticmethod
-    def insert(api_key: str, roles: Set[str], tracking: bool = True, registered: bool = False):
-        db.execute(user_table.insert().values(api_key=api_key, roles=','.join(roles), tracking=tracking, registered=registered))
+    def insert(api_key: str, email: str, roles: Set[str], tracking: bool = True, registered: bool = False):
+        db.execute(user_table.insert().values(api_key=api_key, email=email, roles=','.join(roles), tracking=tracking, registered=registered))
 
     @staticmethod
     def register_new_key() -> str:
@@ -82,9 +85,10 @@ class DBUser:
     def delete(self):
         db.execute(user_table.delete(user_table.c.id == self.id))
 
-    def update(self, api_key: str, roles: Set[str], tracking: bool = True, registered: bool = False) -> 'DBUser':
-        db.execute(user_table.update().where(user_table.c.id == self.id).values(api_key=api_key, roles=','.join(roles), tracking=tracking, registered=registered))
+    def update(self, api_key: str, email: str, roles: Set[str], tracking: bool = True, registered: bool = False) -> 'DBUser':
+        db.execute(user_table.update().where(user_table.c.id == self.id).values(api_key=api_key, email=email, roles=','.join(roles), tracking=tracking, registered=registered))
         self.api_key = api_key
+        self.email = email
         self.roles = roles
         self.tracking = tracking
         self.registered = registered
@@ -132,13 +136,15 @@ OPEN_SENSORS = [
 
 class User:
     api_key: str
+    email: str
     authenticated: bool
     roles: Set[UserRole]
     tracking: bool = True
     registered: bool = True
 
-    def __init__(self, api_key: str, authenticated: bool, roles: Set[UserRole], tracking: bool = True, registered: bool = False) -> None:
+    def __init__(self, api_key: str, email: str, authenticated: bool, roles: Set[UserRole], tracking: bool = True, registered: bool = False) -> None:
         self.api_key = api_key
+        self.email = email
         self.authenticated = authenticated
         self.roles = roles
         self.tracking = tracking
@@ -178,7 +184,7 @@ class User:
             logger.info(msg, *args, **kwargs)
 
 
-ANONYMOUS_USER = User("anonymous", False, set())
+ANONYMOUS_USER = User("anonymous", "", False, set())
 
 
 def _find_user(api_key: Optional[str]) -> User:
@@ -189,7 +195,7 @@ def _find_user(api_key: Optional[str]) -> User:
     if user is None:
         return ANONYMOUS_USER
     else:
-        return User(user.api_key, True, set(user.roles.split(",")), user.tracking, user.registered)
+        return User(user.api_key, True, user.email, set(user.roles.split(",")), user.tracking, user.registered)
 
 def resolve_auth_token() -> Optional[str]:
     for name in ('auth', 'api_key', 'token'):
