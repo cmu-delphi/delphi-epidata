@@ -17,7 +17,7 @@ This data is private to Delphi.
 CREATE TABLE `api_user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `api_key` varchar(50) NOT NULL,
-  `email` varchar(100) NOT NULL,
+  `email` varchar(100) NULL,
   `roles` varchar(255) NOT NULL,
   `tracking` tinyint(1) NULL,
   `registered` tinyint(1) NULL,
