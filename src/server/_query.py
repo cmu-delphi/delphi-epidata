@@ -22,7 +22,7 @@ from ._printer import create_printer, APrinter
 from ._exceptions import DatabaseErrorException
 from ._validate import DateRange, extract_strings
 from ._params import GeoPair, SourceSignalPair, TimePair
-from .utils import time_values_to_ranges, days_to_ranges, weeks_to_ranges
+from .utils import time_values_to_ranges, days_to_ranges, weeks_to_ranges, TimeValues
 
 
 def date_string(value: int) -> str:
@@ -86,7 +86,7 @@ def filter_integers(
 
 def filter_dates(
     field: str,
-    values: Optional[Sequence[Union[Tuple[int, int], int]]],
+    values: Optional[TimeValues],
     param_key: str,
     params: Dict[str, Any],
 ):
@@ -411,16 +411,6 @@ class QueryBuilder:
     ) -> "QueryBuilder":
         fq_field = self._fq_field(field)
         self.conditions.append(filter_integers(fq_field, values, param_key or field, self.params))
-        return self
-
-    def where_dates(
-        self,
-        field: str,
-        values: Optional[Sequence[Union[Tuple[int, int], int]]],
-        param_key: Optional[str] = None,
-    ) -> "QueryBuilder":
-        fq_field = self._fq_field(field)
-        self.conditions.append(filter_dates(fq_field, values, param_key or field, self.params))
         return self
 
     def where_geo_pairs(
