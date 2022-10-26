@@ -79,7 +79,7 @@ class DBUser:
     @staticmethod
     def register_new_key() -> str:
         api_key = str(uuid4())
-        DBUser.insert(api_key, set(), True, False)
+        DBUser.insert(api_key, '', set(), True, False)
         return api_key
 
     def delete(self):

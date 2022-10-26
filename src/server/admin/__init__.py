@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 from os import environ
 from typing import Dict, List, Set
 from flask import Blueprint, render_template_string, request, make_response
@@ -13,6 +14,15 @@ self_dir = Path(__file__).parent
 bp = Blueprint("admin", __name__)
 
 templates_dir = Path(__file__).parent / 'templates'
+
+def validate_email(email: str) -> bool:
+    regex = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
+    if re.fullmatch(regex, email):
+        return True
+    else:
+        return False
+    
+    
 
 def enable_admin() -> bool:
     return bool(ADMIN_PASSWORD)
@@ -39,9 +49,15 @@ def _index():
     flags = dict()
     if request.method == 'POST':
         # register a new user
-        DBUser.insert(request.values['api_key'], request.values['email'], _parse_roles(request.values.getlist('roles')), request.values.get('tracking') == 'True', request.values.get('registered') == 'True')
-        flags['banner'] = 'Successfully Added'
-
+        if request.values['email'] is not (None or ''):
+            if validate_email(request.values['email']):
+                DBUser.insert(request.values['api_key'], request.values['email'], _parse_roles(request.values.getlist('roles')), request.values.get('tracking') == 'True', request.values.get('registered') == 'True')
+                flags['banner'] = 'Successfully Added'
+            else:
+                flags['banner'] = 'E-mail address is not valid, please check it and try again.'
+        else:
+            DBUser.insert(request.values['api_key'], request.values['email'], _parse_roles(request.values.getlist('roles')), request.values.get('tracking') == 'True', request.values.get('registered') == 'True')
+            flags['banner'] = 'Successfully Added'
     users = DBUser.list()
     return _render('overview', token, flags, users=users, user=dict())
 
@@ -57,8 +73,14 @@ def _detail(user_id: int):
         return redirect(f"./?auth={token}")
     flags = dict()
     if request.method == 'PUT' or request.method == 'POST':
-        user = user.update(request.values['api_key'], request.values['email'], _parse_roles(request.values.getlist('roles')), request.values.get('tracking') == 'True', request.values.get('registered') == 'True')
-        flags['banner'] = 'Successfully Saved'
+        if request.values['email'] is not (None or ''):
+            if validate_email(request.values['email']):
+                user = user.update(request.values['api_key'], request.values['email'], _parse_roles(request.values.getlist('roles')), request.values.get('tracking') == 'True', request.values.get('registered') == 'True')
+                flags['banner'] = 'Successfully Saved'
+            else:
+                flags['banner'] = 'E-mail address is not valid, please check it and try again.'
+        else:
+            user = user.update(request.values['api_key'], request.values['email'], _parse_roles(request.values.getlist('roles')), request.values.get('tracking') == 'True', request.values.get('registered') == 'True')
     return _render('detail', token, flags, user=user)
 
 
