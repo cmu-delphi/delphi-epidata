@@ -92,6 +92,7 @@ def _register():
         raise Unauthorized()
 
     api_key = body['api_key']
+    email = body['email']
     db_user = DBUser.find_by_api_key(api_key)
     if db_user is None:
         raise BadRequest('invalid api key')
@@ -102,7 +103,7 @@ def _register():
             tracking = 'yes' in v.lower()
             break
 
-    db_user = db_user.update(api_key, db_user.roles, tracking, True)
+    db_user = db_user.update(api_key, email, db_user.roles, tracking, True)
     return make_response(f'Successfully registered the API key "{api_key}" and removed rate limit', 200)
 
 def _verify_recaptcha():
