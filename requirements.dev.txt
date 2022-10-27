@@ -6,3 +6,4 @@ pytest
 tenacity==7.0.0
 bump2version
 requests
+mo_sql_parsing
