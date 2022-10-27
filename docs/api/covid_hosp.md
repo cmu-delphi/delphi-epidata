@@ -76,7 +76,7 @@ If `issues` is not specified, then the most recent issue is used by default.
 | `epidata[].state` | state pertaining to this row | string |
 | `epidata[].date` | date pertaining to this row | integer |
 | `epidata[].issue` | the date on which the dataset containing this row was published | integer |
-| `epidata[].*` | see the [data dictionary](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/g62h-syeh). Last synced: 2022-10-21 |  |
+| `epidata[].*` | see the [data dictionary](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/g62h-syeh). Last synced: 2021-10-21 |  |
 | `message` | `success` or error message | string |
 
 # Example URLs
