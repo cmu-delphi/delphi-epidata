@@ -11,9 +11,12 @@ Hospital Capacity by State" datasets provided by the US Department of
 Health & Human Services via healthdata.gov. The latter provides more frequent updates,
 so it is combined with the former to create a single dataset which is as recent as possible.
 
-HHS performs up to four days of forward-fill for missing values. One day of forward-fill
-is common, affecting 28 states in each issue on average. More than one day of forward-fill
-is rare, affecting one state for every five issues on average.
+HHS performs up to four days of forward-fill for missing values in the
+[facility-level data](covid_hosp_facility.md) which are aggregated to make this
+state-level dataset. This sometimes results in repeated values in the state-level data.
+A sequence of two repeated values is extremely common, and longer sequences are rare.
+Repeated values added in this way are sometimes updated if the underlying missing data can
+be completed at a later date.
 
 Starting October 1, 2022, some facilities are only required to report annually.
 
@@ -73,7 +76,7 @@ If `issues` is not specified, then the most recent issue is used by default.
 | `epidata[].state` | state pertaining to this row | string |
 | `epidata[].date` | date pertaining to this row | integer |
 | `epidata[].issue` | the date on which the dataset containing this row was published | integer |
-| `epidata[].*` | see the [data dictionary](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/g62h-syeh). Last synced: 2021-10-21 |  |
+| `epidata[].*` | see the [data dictionary](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/g62h-syeh). Last synced: 2022-10-21 |  |
 | `message` | `success` or error message | string |
 
 # Example URLs
