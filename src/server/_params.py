@@ -7,7 +7,7 @@ from flask import request
 
 
 from ._exceptions import ValidationFailedException
-from .utils import days_in_range, weeks_in_range, guess_time_value_is_day
+from .utils import days_in_range, weeks_in_range, guess_time_value_is_day, TimeValues
 
 
 def _parse_common_multi_arg(key: str) -> List[Tuple[str, Union[bool, Sequence[str]]]]:
@@ -108,7 +108,7 @@ def parse_single_source_signal_arg(key: str) -> SourceSignalPair:
 @dataclass
 class TimePair:
     time_type: str
-    time_values: Union[bool, Sequence[Union[int, Tuple[int, int]]]]
+    time_values: Union[bool, TimeValues]
 
     @property
     def is_week(self) -> bool:
