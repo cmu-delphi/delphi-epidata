@@ -172,7 +172,8 @@ def handle_trend():
     source_signal_pairs, alias_mapper = create_source_signal_alias_mapper(source_signal_pairs)
     geo_pairs = parse_geo_pairs()
 
-    time_window, is_day = parse_day_or_week_range_arg("window")
+    time_window = parse_day_or_week_range_arg("window")
+    is_day = time_window.is_day
     time_value, is_also_day = parse_day_or_week_arg("date")
     if is_day != is_also_day:
         raise ValidationFailedException("mixing weeks with day arguments")
@@ -195,7 +196,7 @@ def handle_trend():
 
     q.where_source_signal_pairs("source", "signal", source_signal_pairs)
     q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
-    q.where_time_pairs("time_type", "time_value", [TimePair("day" if is_day else "week", [time_window])])
+    q.where_time_pairs("time_type", "time_value", [time_window])
 
     # fetch most recent issue fast
     _handle_lag_issues_as_of(q, None, None, None)
@@ -228,7 +229,8 @@ def handle_trendseries():
     source_signal_pairs, alias_mapper = create_source_signal_alias_mapper(source_signal_pairs)
     geo_pairs = parse_geo_pairs()
 
-    time_window, is_day = parse_day_or_week_range_arg("window")
+    time_window = parse_day_or_week_range_arg("window")
+    is_day = time_window.is_day
     _verify_argument_time_type_matches(is_day, daily_signals, weekly_signals)
     basis_shift = extract_integer(("basis", "basis_shift"))
     if basis_shift is None:
@@ -245,7 +247,7 @@ def handle_trendseries():
 
     q.where_source_signal_pairs("source", "signal", source_signal_pairs)
     q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
-    q.where_time_pairs("time_type", "time_value", [TimePair("day" if is_day else "week", [time_window])])
+    q.where_time_pairs("time_type", "time_value", [time_window])
 
     # fetch most recent issue fast
     _handle_lag_issues_as_of(q, None, None, None)
@@ -283,7 +285,8 @@ def handle_correlation():
     daily_signals, weekly_signals = count_signal_time_types(other_pairs + [reference])
     source_signal_pairs, alias_mapper = create_source_signal_alias_mapper(other_pairs + [reference])
     geo_pairs = parse_geo_arg()
-    time_window, is_day = parse_day_or_week_range_arg("window")
+    time_window = parse_day_or_week_range_arg("window")
+    is_day = time_window.is_day
     _verify_argument_time_type_matches(is_day, daily_signals, weekly_signals)
 
     lag = extract_integer("lag")
@@ -305,7 +308,7 @@ def handle_correlation():
         source_signal_pairs,
     )
     q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
-    q.where_time_pairs("time_type", "time_value", [TimePair("day" if is_day else "week", [time_window])])
+    q.where_time_pairs("time_type", "time_value", [time_window])
 
     df = as_pandas(str(q), q.params)
     if is_day:
@@ -594,7 +597,8 @@ def handle_coverage():
 
     geo_type = request.args.get("geo_type", "county")
     if "window" in request.values:
-        time_window, is_day = parse_day_or_week_range_arg("window")
+        time_window = parse_day_or_week_range_arg("window")
+        is_day = time_window.is_day
     else:
         now_time = extract_date("latest")
         last = extract_integer("days")
@@ -606,13 +610,13 @@ def handle_coverage():
                 last_weeks = last or 30
             is_day = False
             now_week = Week.thisweek() if now_time is None else time_value_to_week(now_time)
-            time_window = (week_to_time_value(now_week - last_weeks), week_to_time_value(now_week))
+            time_window = TimePair("week", [(week_to_time_value(now_week - last_weeks), week_to_time_value(now_week))])
         else:
             is_day = True
             if last is None:
                 last = 30
             now = date.today() if now_time is None else time_value_to_day(now_time)
-            time_window = (day_to_time_value(now - timedelta(days=last)), day_to_time_value(now))
+            time_window = TimePair("day", [(day_to_time_value(now - timedelta(days=last)), day_to_time_value(now))])
     _verify_argument_time_type_matches(is_day, daily_signals, weekly_signals)
 
     q = QueryBuilder(latest_table, "c")
@@ -631,7 +635,7 @@ def handle_coverage():
     else:
         q.where(geo_type=geo_type)
     q.where_source_signal_pairs("source", "signal", source_signal_pairs)
-    q.where_time_pairs("time_type", "time_value", [TimePair("day" if is_day else "week", [time_window])])
+    q.where_time_pairs("time_type", "time_value", [time_window])
     q.group_by = "c.source, c.signal, c.time_value"
     q.set_order("source", "signal", "time_value")
 

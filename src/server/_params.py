@@ -267,7 +267,7 @@ def parse_day_or_week_arg(key: str, default_value: Optional[int] = None) -> Tupl
         return parse_week_arg(key), False
     return parse_day_arg(key), True
 
-def parse_day_or_week_range_arg(key: str) -> Tuple[Tuple[int, int], bool]:
+def parse_day_or_week_range_arg(key: str) -> TimePair: # Tuple[Tuple[int, int], bool]:
     v = request.values.get(key)
     if not v:
         raise ValidationFailedException(f"{key} param is required")
@@ -275,5 +275,5 @@ def parse_day_or_week_range_arg(key: str) -> Tuple[Tuple[int, int], bool]:
     # so if the first before the - has length 6, it must be a week
     is_week = len(v.split('-', 2)[0]) == 6
     if is_week:
-        return parse_week_range_arg(key), False
-    return parse_day_range_arg(key), True
+        return TimePair("week", [parse_week_range_arg(key)])
+    return TimePair("day", [parse_day_range_arg(key)])
