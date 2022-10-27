@@ -81,7 +81,7 @@ has been renamed here for clarity.
 | `epidata[].hospital_pk` | facility identified by this row | string |
 | `epidata[].collection_week` | Friday's date in the week pertaining to this row | integer |
 | `epidata[].publication_date` | the date on which the dataset containing this row was published | integer |
-| `epidata[].*` | see the [data dictionary](https://healthdata.gov/covid-19-reported-patient-impact-and-hospital-capacity-facility-data-dictionary) |  |
+| `epidata[].*` | see the [data dictionary](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/anag-cw7u) |  |
 | `message` | `success` or error message | string |
 
 # Example URLs
