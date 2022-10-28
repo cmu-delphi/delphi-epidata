@@ -54,9 +54,20 @@ supported.
 | --- | --- | --- |
 | `result` | result code: 1 = success, 2 = too many results, -2 = no results | integer |
 | `epidata` | list of results | array of objects |
-| `epidata[].hospital_pk` | facility identified by this row | string |
-| `epidata[].*` | see the [data dictionary](https://healthdata.gov/covid-19-reported-patient-impact-and-hospital-capacity-facility-data-dictionary) |  |
+| `epidata[].hospital_pk` | unique identifier for this facility (will match CCN if CCN exists) | string |
+| `epidata[].state` | two-letter state code | string |
+| `epidata[].ccn` | CMS Certification Number for this facility | string |
+| `epidata[].hospital_name` | facility name | string |
+| `epidata[].address` | facility address | string |
+| `epidata[].city` | facility city | string |
+| `epidata[].zip` | 5-digit ZIP code | string |
+| `epidata[].hospital_subtype` | one of: Childrens Hospitals, Critical Access Hospitals, Long Term, Psychiatric, Rehabilitation, Short Term  | string |
+| `epidata[].fips_code` | 5-digit FIPS county code | string |
+| `epidata[].is_metro_micro` | 1 if this facility serves a metropolitan or micropolitan area, 0 otherwise | integer |
 | `message` | `success` or error message | string |
+
+Use the `hospital_pk` value when querying
+[the COVID-19 Reported Patient Impact and Hospital Capacity by Facility endpoint](covid_hosp_facility.md).
 
 # Example URLs
 
