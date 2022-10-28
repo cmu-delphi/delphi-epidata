@@ -15,6 +15,7 @@ bp = Blueprint("admin", __name__)
 
 templates_dir = Path(__file__).parent / 'templates'
 
+
 def validate_email(email: str) -> bool:
     regex = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
     if re.fullmatch(regex, email):
@@ -22,10 +23,10 @@ def validate_email(email: str) -> bool:
     else:
         return False
     
-    
 
 def enable_admin() -> bool:
     return bool(ADMIN_PASSWORD)
+
 
 def _require_admin():
     token = resolve_auth_token()
@@ -33,14 +34,13 @@ def _require_admin():
         raise Unauthorized()
     return token
 
+
 def _parse_roles(roles: List[str]) -> Set[str]:
     return set(sorted(roles))
 
 def _render(mode: str, token: str, flags: Dict, **kwargs):
     template = (templates_dir / 'index.html').read_text('utf8')
     return render_template_string(template, mode=mode, token=token, flags=flags, roles=[r.value for r in UserRole], **kwargs)
-
-
 
 
 @bp.route('/', methods=['GET', 'POST'])
@@ -91,15 +91,16 @@ def _register():
     if token is None or token != REGISTER_WEBHOOK_TOKEN:
         raise Unauthorized()
 
-    api_key = body['api_key']
-    db_user = DBUser.find_by_api_key(api_key)
+    old_api_key = body['user_old_api_key']
+    db_user = DBUser.find_by_api_key(old_api_key)
     if db_user is None:
         raise BadRequest('invalid api key')
     
+    new_api_key = body['user_new_api_key']
     email = body['email']
     tracking = True if body['tracking'] == 'Yes' else False
-    db_user = db_user.update(api_key, email, db_user.roles, tracking, True)
-    return make_response(f'Successfully registered the API key "{api_key}" and removed rate limit', 200)
+    db_user = db_user.update(new_api_key, email, db_user.roles, tracking, True)
+    return make_response(f'Successfully registered the API key "{new_api_key}" and removed rate limit', 200)
 
 def _verify_recaptcha():
     recaptcha_response = request.values['g-recaptcha-response']
