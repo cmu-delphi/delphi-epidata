@@ -8,6 +8,7 @@ from typing import (
 )
 from datetime import date, timedelta
 from epiweeks import Week, Year
+from operator import lt, le
 import logging
 
 def time_value_to_date(value: int) -> date:
@@ -140,16 +141,21 @@ def _to_ranges(values: Sequence[Union[Tuple[int, int], int]], value_to_date: Cal
         logging.info('bad input to date ranges', input=values, exception=e)
         return values
 
-def iterate_over_range(start: int, end: int) -> Iterator[int]:
+def iterate_over_range(start: int, end: int, inclusive: bool = False) -> Iterator[int]:
     """Iterate over ints corresponding to dates in a time range.
     
-    Left inclusive, right exclusive to mimic behavior of Python's built-in range.
+    By default left inclusive, right exclusive to mimic the behavior of the built-in range.
     """
+    if inclusive:
+        op = le
+    else:
+        op = lt
+
     if start > end:
         return
 
     current_date, final_date = time_value_to_date(start), time_value_to_date(end)
-    while current_date < final_date:
+    while op(current_date, final_date):
         yield date_to_time_value(current_date)
         current_date = current_date + timedelta(days=1)
 
