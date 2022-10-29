@@ -5,6 +5,7 @@ from typing import Any, Dict, Iterable, List, Optional, Union, get_args, get_ori
 from delphi_utils import Nans
 from numpy import isnan
 from pandas import DataFrame, concat
+from pandas.testing import assert_frame_equal
 
 from delphi.epidata.acquisition.covidcast.csv_importer import CsvImporter
 from delphi.epidata.server.utils.dates import date_to_time_value, time_value_to_date
@@ -267,3 +268,11 @@ def set_df_dtypes(df: DataFrame, dtypes: Dict[str, Any]) -> DataFrame:
         if k in df.columns:
             df[k] = df[k].astype(v)
     return df
+
+
+def assert_frame_equal_no_order(df1: DataFrame, df2: DataFrame, index: List[str], **kwargs: Any) -> None:
+    """Assert that two DataFrames are equal, ignoring the order of rows."""
+    # Remove any existing index. If it wasn't named, drop it. Set a new index and sort it.
+    df1 = df1.reset_index().drop(columns="index").set_index(index).sort_index()
+    df2 = df2.reset_index().drop(columns="index").set_index(index).sort_index()
+    assert_frame_equal(df1, df2, **kwargs)
