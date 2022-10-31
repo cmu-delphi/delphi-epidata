@@ -134,6 +134,9 @@ jobs:
           if [ "$imageTag" = "main" ] ; then
             imageTag="latest"
           fi
+          if [ "$imageTag" = "ds/jit-multi-sql" ] ; then
+            imageTag="jit-multi-sql"
+          fi
           echo "::set-output name=tag::$imageTag"
           echo "::set-output name=repo::ghcr.io/${{ github.repository }}"
       - name: Push Dev Tag
