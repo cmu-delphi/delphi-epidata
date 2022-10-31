@@ -7,6 +7,7 @@ class Database(BaseDatabase):
 
   TABLE_NAME = 'covid_hosp_facility'
   KEY_COLS = ['hospital_pk', 'collection_week']
+  AGGREGATE_KEY_COLS = ['address', 'ccn', 'city', 'fips_code', 'geocoded_hospital_address', 'hhs_ids', 'hospital_name', 'hospital_pk', 'hospital_subtype', 'is_metro_micro', 'state', 'zip']
   # These are 3-tuples of (
   #   CSV header name,
   #   SQL db column name,

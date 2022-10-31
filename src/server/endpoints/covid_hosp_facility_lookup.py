@@ -17,9 +17,9 @@ def handle():
     fips_code = extract_strings("fips_code")
 
     # build query
-    q = QueryBuilder("covid_hosp_facility", "c")
+    q = QueryBuilder("covid_hosp_facility_key", "c")
     q.fields = ", ".join(
-        [
+        [ # NOTE: fields `geocoded_hospital_address` and `hhs_ids` are available but not being provided by this endpoint.
             f"{q.alias}.hospital_pk",
             f"MAX({q.alias}.state) state",
             f"MAX({q.alias}.ccn) ccn",

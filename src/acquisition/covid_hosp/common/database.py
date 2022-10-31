@@ -172,6 +172,33 @@ class Database:
                        tuple(values) +
                        tuple(i[0] for i in self.additional_fields))
 
+    if hasattr(self, 'AGGREGATE_KEY_COLS'):
+      ak_cols = self.AGGREGATE_KEY_COLS
+
+      # restrict data to just the key columns and remove duplicate rows
+      ak_data = dataframe[ak_cols].drop_duplicates()
+      # cast types (bools and NULLables)
+      for col in ak_cols:
+        if col.startswith('is_'): # TODO: this is hacky af
+          ak_data[col] = (ak_data[col] == 'true')
+      ak_data = ak_data.to_numpy(na_value=None).tolist()
+
+      # create string of tick-quoted and comma-seperated column list
+      ak_cols_str = ','.join([ '`'+col+'`' for col in ak_cols ])
+      # ...and ticked and comma-sep'd "column=column" list for ON UPDATE (to keep only the most recent values for each pk)
+      ak_updates_str = ','.join([ '`'+col+'`=`'+col+'`' for col in ak_cols ])
+      # ...and string of VALUES placeholders
+      values_str = ','.join( ['%s'] * len(ak_cols) )
+      # use aggregate key table alias
+      ak_table = self.table_name + '_key'
+      # assemble full SQL statement
+      ak_insert_sql = f'INSERT INTO `{ak_table}` ({ak_cols_str}) VALUES ({values_str}) ON DUPLICATE KEY UPDATE {ak_updates_str}'
+
+      # commit the data
+      with self.new_cursor() as cur:
+        cur.executemany(ak_insert_sql, ak_data)
+
+
   def get_max_issue(self):
     """Fetch the most recent issue.
 

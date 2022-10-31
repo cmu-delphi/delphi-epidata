@@ -179,3 +179,8 @@ class AcquisitionTests(unittest.TestCase):
     with self.subTest(name='no results'):
       response = Epidata.covid_hosp_facility_lookup(state='not a state')
       self.assertEqual(response['result'], -2)
+
+  @unittest.skip("unimplemented")
+  def test_update_facility_info(self):
+    # TODO: load dataset used above, query a hospital, load another dataset which has a different street adress for the same `hospital_pk`, query again and make sure hospital address is updated
+    pass
