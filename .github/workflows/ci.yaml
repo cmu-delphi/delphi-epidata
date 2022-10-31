@@ -109,7 +109,7 @@ jobs:
     needs: build
     # only on main and dev branch
     #if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/jit_computations'
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/jit_computations' || github.ref == 'refs/heads/ds/jit-multi-sql'
 
     runs-on: ubuntu-latest
     steps:
