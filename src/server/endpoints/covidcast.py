@@ -88,16 +88,12 @@ def parse_time_pairs() -> List[TimePair]:
         # old version
         require_all("time_type", "time_values")
         time_values = extract_dates("time_values")
-        # TODO: Put a bound on the number of time_values?
-        # if time_values and len(time_values) > 30:
-        #     raise ValidationFailedException("parameter value exceed: too many time pairs requested, consider using a timerange instead YYYYMMDD-YYYYMMDD")
         return [TimePair(time_type, time_values)]
 
     if ":" not in request.values.get("time", ""):
         raise ValidationFailedException("missing parameter: time or (time_type and time_values)")
 
     time_pairs = parse_time_arg()
-    # TODO: Put a bound on the number of time_values? (see above)
     return time_pairs
 
 
