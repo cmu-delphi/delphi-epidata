@@ -41,7 +41,7 @@ from .._validate import (
 from .._pandas import as_pandas, print_pandas
 from .covidcast_utils import compute_trend, compute_trends, compute_correlations, compute_trend_value, CovidcastMetaEntry
 from ..utils import shift_time_value, date_to_time_value, time_value_to_iso, time_value_to_date, shift_week_value, week_value_to_week, guess_time_value_is_day, week_to_time_value
-from .covidcast_utils.model import TimeType, count_signal_time_types, data_sources, create_source_signal_alias_mapper, get_basename_signal_and_jit_generator, get_pad_length, pad_time_pairs, pad_time_window
+from .covidcast_utils.model import TimeType, TransformType, count_signal_time_types, data_sources, data_sources_by_id, create_source_signal_alias_mapper, get_pad_length, pad_time_pairs, pad_time_window, get_basename_signal_and_jit_generator
 from .covidcast_utils.smooth_diff import SmootherKernelValue
 
 # first argument is the endpoint name
@@ -63,7 +63,18 @@ def parse_source_signal_pairs() -> List[SourceSignalPair]:
     if ":" not in request.values.get("signal", ""):
         raise ValidationFailedException("missing parameter: signal or (data_source and signal[s])")
 
-    return parse_source_signal_arg()
+    # Convert source_signal_pairs with signal == True out to an explicit list of signals.
+    expanded_bool_source_signal_pairs = []
+    for source_signal_pair in parse_source_signal_arg():
+        if source_signal_pair.signal is True:
+            if data_source := data_sources_by_id.get(source_signal_pair.source):
+                expanded_bool_source_signal_pairs.append(SourceSignalPair(data_source.source, [s.signal for s in data_source.signals]))
+            else:
+                expanded_bool_source_signal_pairs.append(source_signal_pair)
+        else:
+            expanded_bool_source_signal_pairs.append(source_signal_pair)
+
+    return expanded_bool_source_signal_pairs
 
 
 def parse_geo_pairs() -> List[GeoPair]:

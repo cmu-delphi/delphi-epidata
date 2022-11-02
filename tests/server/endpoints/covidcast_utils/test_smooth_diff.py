@@ -7,7 +7,7 @@ import unittest
 
 from delphi.epidata.acquisition.covidcast.covidcast_row import CovidcastRows
 from delphi.epidata.server.endpoints.covidcast_utils.smooth_diff import generate_diffed_rows, generate_smoothed_rows, _smoother
-from .test_model import _diff_rows, _smooth_rows
+from delphi.epidata.server.endpoints.covidcast_utils.test_utils import _diff_rows, _smooth_rows
 
 
 class TestStreaming(unittest.TestCase):

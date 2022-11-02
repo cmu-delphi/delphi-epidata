@@ -3,6 +3,7 @@
 # standard library
 from math import inf
 import unittest
+from unittest.mock import patch
 
 # from flask.testing import FlaskClient
 from delphi.epidata.server._common import app
@@ -24,11 +25,14 @@ from delphi.epidata.server._params import (
 from delphi.epidata.server._exceptions import (
     ValidationFailedException,
 )
+from delphi.epidata.server.endpoints.covidcast_utils.test_utils import DATA_SOURCES_BY_ID, DATA_SIGNALS_BY_KEY
 
 # py3tester coverage target
 __test_target__ = "delphi.epidata.server._params"
 
 
+@patch("delphi.epidata.server.endpoints.covidcast_utils.model.data_sources_by_id", DATA_SOURCES_BY_ID)
+@patch("delphi.epidata.server.endpoints.covidcast_utils.model.data_signals_by_key", DATA_SIGNALS_BY_KEY)
 class UnitTests(unittest.TestCase):
     """Basic unit tests."""
 
