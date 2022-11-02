@@ -1,6 +1,5 @@
 from pathlib import Path
 import re
-from os import environ
 from typing import Dict, List, Set
 from flask import Blueprint, render_template_string, request, make_response
 from werkzeug.exceptions import Unauthorized, NotFound, BadRequest
@@ -22,7 +21,7 @@ def validate_email(email: str) -> bool:
         return True
     else:
         return False
-    
+
 
 def enable_admin() -> bool:
     return bool(ADMIN_PASSWORD)
@@ -37,6 +36,7 @@ def _require_admin():
 
 def _parse_roles(roles: List[str]) -> Set[str]:
     return set(sorted(roles))
+
 
 def _render(mode: str, token: str, flags: Dict, **kwargs):
     template = (templates_dir / 'index.html').read_text('utf8')
@@ -95,12 +95,12 @@ def _register():
     db_user = DBUser.find_by_api_key(old_api_key)
     if db_user is None:
         raise BadRequest('invalid api key')
-    
     new_api_key = body['user_new_api_key']
     email = body['email']
     tracking = True if body['tracking'] == 'Yes' else False
     db_user = db_user.update(new_api_key, email, db_user.roles, tracking, True)
     return make_response(f'Successfully registered the API key "{new_api_key}" and removed rate limit', 200)
+
 
 def _verify_recaptcha():
     recaptcha_response = request.values['g-recaptcha-response']
@@ -110,15 +110,14 @@ def _verify_recaptcha():
     if res['success'] is not True:
         raise BadRequest('invalid recaptcha key')
 
+
 @bp.route('/create_key', methods=['GET', 'POST'])
 def _request_api_key():
     template = (templates_dir / 'request.html').read_text('utf8')
-    if request.method  == 'GET':
+    if request.method == 'GET':
         return render_template_string(template, mode='request', recaptcha_key=RECAPTCHA_SITE_KEY)
     if request.method == 'POST':
         if RECAPTCHA_SECRET_KEY:
             _verify_recaptcha()
         api_key = DBUser.register_new_key()
         return render_template_string(template, mode='result', api_key=api_key)
-
-

@@ -15,7 +15,7 @@ def resolve_auth_token() -> Optional[str]:
     # bearer token authentication
     auth_header = request.headers.get("Authorization")
     if auth_header and auth_header.startswith("Bearer "):
-        return auth_header[len("Bearer ") :]
+        return auth_header[len("Bearer "):]
     return None
 
 
@@ -26,7 +26,7 @@ def check_auth_token(token: str, optional=False) -> bool:
         if optional:
             return False
         else:
-            raise ValidationFailedException(f"missing parameter: auth")
+            raise ValidationFailedException("missing parameter: auth")
 
     valid_token = value == token
     if not valid_token and not optional:
@@ -93,7 +93,7 @@ def extract_integer(key: Union[str, Sequence[str]]) -> Optional[int]:
         return None
     try:
         return int(s)
-    except ValueError as e:
+    except ValueError:
         raise ValidationFailedException(f"{key}: not a number: {s}")
 
 

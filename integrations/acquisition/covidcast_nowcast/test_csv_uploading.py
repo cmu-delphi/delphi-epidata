@@ -22,6 +22,9 @@ import delphi.operations.secrets as secrets
 # py3tester coverage target (equivalent to `import *`)
 __test_target__ = 'delphi.epidata.acquisition.covidcast_nowcast.load_sensors'
 
+BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+AUTH = ('epidata', 'key')
+
 FIXED_ISSUE_IMPORTER = partialmethod(CsvImporter.find_csv_files,
                                      issue=(date(2020, 4, 21), epi.Week.fromdate(date(2020, 4, 21)))
                                      )
@@ -55,8 +58,8 @@ class CsvUploadingTests(unittest.TestCase):
     secrets.db.epi = ('user', 'pass')
 
     # use the local instance of the Epidata API
-    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
-    Epidata.auth = ('epidata', 'key')
+    Epidata.BASE_URL = BASE_URL
+    Epidata.auth = AUTH
 
   def tearDown(self):
     """Perform per-test teardown."""

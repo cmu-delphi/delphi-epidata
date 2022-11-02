@@ -8,6 +8,9 @@ from delphi.epidata.acquisition.covid_hosp.state_timeseries.database import Data
 from delphi.epidata.client.delphi_epidata import Epidata
 import delphi.operations.secrets as secrets
 
+BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+AUTH = ('epidata', 'key')
+
 
 class ServerTests(unittest.TestCase):
   """Tests the `covid_hosp` endpoint."""
@@ -16,8 +19,8 @@ class ServerTests(unittest.TestCase):
     """Perform per-test setup."""
 
     # use the local instance of the Epidata API
-    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
-    Epidata.auth = ('epidata', 'key')
+    Epidata.BASE_URL = BASE_URL
+    Epidata.auth = AUTH
 
     # use the local instance of the epidata database
     secrets.db.host = 'delphi_database_epidata'

@@ -9,6 +9,8 @@ import mysql.connector
 # first party
 from delphi.epidata.client.delphi_epidata import Epidata
 
+BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+AUTH = ('epidata', 'key')
 
 class FluviewMetaTests(unittest.TestCase):
   """Tests the `fluview_meta` endpoint."""
@@ -18,8 +20,8 @@ class FluviewMetaTests(unittest.TestCase):
     """Perform one-time setup."""
 
     # use the local instance of the Epidata API
-    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
-    Epidata.auth = ('epidata', 'key')
+    Epidata.BASE_URL = BASE_URL
+    Epidata.auth = AUTH
 
   def setUp(self):
     """Perform per-test setup."""

@@ -1,6 +1,6 @@
-from typing import List, Optional, Union, Tuple, Dict, Any, Set
+from typing import List, Optional, Union, Tuple, Dict, Any
 from itertools import groupby
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from epiweeks import Week
 from flask import Blueprint, request
 from flask.json import loads, jsonify
@@ -44,6 +44,7 @@ alias = None
 
 latest_table = "epimetric_latest_v"
 history_table = "epimetric_full_v"
+
 
 def parse_source_signal_pairs() -> List[SourceSignalPair]:
     ds = request.values.get("data_source")

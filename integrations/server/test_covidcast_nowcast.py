@@ -10,6 +10,7 @@ import requests
 
 # use the local instance of the Epidata API
 BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+AUTH = ('epidata', 'key')
 
 
 class CovidcastTests(unittest.TestCase):
@@ -61,7 +62,7 @@ class CovidcastTests(unittest.TestCase):
       'time_values': 20200101,
       'geo_value': '01001',
       'issues': 20200101
-    }, auth=('epidata', 'key'))
+    }, auth=AUTH)
     response.raise_for_status()
     response = response.json()
     self.assertEqual(response, {
@@ -87,7 +88,7 @@ class CovidcastTests(unittest.TestCase):
       'geo_type': 'county',
       'time_values': 20200101,
       'geo_value': '01001',
-    }, auth=('epidata', 'key'))
+    }, auth=AUTH)
     response.raise_for_status()
     response = response.json()
 
@@ -114,7 +115,7 @@ class CovidcastTests(unittest.TestCase):
       'time_values': 20200101,
       'geo_value': '01001',
       'as_of': 20200101
-    }, auth=('epidata', 'key'))
+    }, auth=AUTH)
     response.raise_for_status()
     response = response.json()
 

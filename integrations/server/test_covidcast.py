@@ -14,6 +14,7 @@ from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase
 
 # use the local instance of the Epidata API
 BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+AUTH = ('epidata', 'key')
 
 
 
@@ -26,7 +27,7 @@ class CovidcastTests(CovidcastBase):
 
   def request_based_on_row(self, row, extract_response=lambda x: x.json(), **kwargs):
     params = self.params_from_row(row, endpoint='covidcast', **kwargs)
-    response = requests.get(BASE_URL, params=params, auth=('epidata', 'key'))
+    response = requests.get(BASE_URL, params=params, auth=AUTH)
     response.raise_for_status()
     response = extract_response(response)
 
@@ -106,7 +107,7 @@ class CovidcastTests(CovidcastBase):
   #     'geo_type': 'county',
   #     'time_values': 20200414,
   #     'geo_value': '01234',
-  #   }, auth=('epidata', 'key')))
+  #   }, auth=AUTH))
   #   self.assertEqual(response.status_code, 414)
 
   #   # make request with POST
@@ -118,7 +119,7 @@ class CovidcastTests(CovidcastBase):
   #     'geo_type': 'county',
   #     'time_values': 20200414,
   #     'geo_value': '01234',
-  #   }, auth=('epidata', 'key')))
+  #   }, auth=AUTH))
 
   #   self.assertEqual(response.status_code, 200)
 

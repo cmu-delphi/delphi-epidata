@@ -21,6 +21,7 @@ import delphi.operations.secrets as secrets
 
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.client.delphi_epidata'
+AUTH = ('epidata', 'key')
 
 def fake_epidata_endpoint(func):
   """This can be used as a decorator to enable a bogus Epidata endpoint to return 404 responses."""
@@ -28,7 +29,7 @@ def fake_epidata_endpoint(func):
     Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/fake_api.php'
     func(*args)
     Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
-    Epidata.auth = ('epidata', 'key')
+    Epidata.auth = AUTH
   return wrapper
 
 # all the Nans we use here are just one value, so this is a shortcut to it:
@@ -45,7 +46,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
 
     # use the local instance of the Epidata API
     Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
-    Epidata.auth = ('epidata', 'key')
+    Epidata.auth = AUTH
 
     # use the local instance of the epidata database
     secrets.db.host = 'delphi_database_epidata'

@@ -21,6 +21,7 @@ from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase
 
 # use the local instance of the Epidata API
 BASE_URL = "http://delphi_web_epidata/epidata/covidcast"
+AUTH = ('epidata', 'key')
 
 
 class CovidcastEndpointTests(CovidcastBase):
@@ -37,7 +38,7 @@ class CovidcastEndpointTests(CovidcastBase):
         response = requests.get(
             f"{BASE_URL}{endpoint}",
             params=params,
-            auth=('epidata', 'key')
+            auth=AUTH
         )
         response.raise_for_status()
         return response.json()
@@ -193,7 +194,7 @@ class CovidcastEndpointTests(CovidcastBase):
         response = requests.get(
             f"{BASE_URL}/csv",
             params=dict(signal=first.signal_pair(), start_day="2020-04-01", end_day="2020-12-12", geo_type=first.geo_type),
-            auth=('epidata', 'key')
+            auth=AUTH
         )
         response.raise_for_status()
         out = response.text

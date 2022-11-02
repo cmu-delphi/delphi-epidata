@@ -32,6 +32,7 @@ user_table = Table(
     **TABLE_OPTIONS,
 )
 
+
 class DBUser:
     id: int
     api_key: str
@@ -93,7 +94,6 @@ class DBUser:
         self.tracking = tracking
         self.registered = registered
         return self
-
 
 
 class UserRole(str, Enum):
@@ -159,12 +159,6 @@ class User:
     def has_role(self, role: UserRole) -> bool:
         return role in self.roles
 
-    def log_info(self, msg: str, *args, **kwargs) -> None:
-        if self.authenticated and self.tracking:
-            app.logger.info(f"apikey: {self.api_key}, {msg}", *args, **kwargs)
-        else:
-            app.logger.info(msg, *args, **kwargs)
-
     def is_rate_limited(self) -> bool:
         return not self.registered
 
@@ -180,7 +174,7 @@ class User:
             else:
                 logger.info(msg, *args, **dict(kwargs, apikey="*****"))
         else:
-            #app.logger.info(msg, *args, **kwargs)
+            # app.logger.info(msg, *args, **kwargs)
             logger.info(msg, *args, **kwargs)
 
 
@@ -195,7 +189,8 @@ def _find_user(api_key: Optional[str]) -> User:
     if user is None:
         return ANONYMOUS_USER
     else:
-        return User(user.api_key, True, user.email, set(user.roles.split(",")), user.tracking, user.registered)
+        return User(user.api_key, user.email, True, set(user.roles.split(",")), user.tracking, user.registered)
+
 
 def resolve_auth_token() -> Optional[str]:
     for name in ('auth', 'api_key', 'token'):
@@ -207,7 +202,7 @@ def resolve_auth_token() -> Optional[str]:
     # bearer token authentication
     auth_header = request.headers.get("Authorization")
     if auth_header and auth_header.startswith("Bearer "):
-        return auth_header[len("Bearer ") :]
+        return auth_header[len("Bearer "):]
     return None
 
 
@@ -224,6 +219,7 @@ def _get_current_user() -> User:
         user.log_info("Get path", path=request_path)
         g.user = user
     return g.user
+
 
 def mask_apikey(path: str) -> str:
     # Function to mask API key query string from a request path
@@ -253,6 +249,7 @@ def show_hard_api_key_warning() -> bool:
 
 def _is_public_route() -> bool:
     return request.path.startswith(f"{URL_PREFIX}/lib") or request.path.startswith(f'{URL_PREFIX}/admin') or request.path.startswith(f'{URL_PREFIX}/version')
+
 
 @app.before_request
 def resolve_user():
@@ -288,9 +285,11 @@ def require_role(required_role: Optional[UserRole]):
 
     return decorator_wrapper
 
+
 def _resolve_tracking_key() -> str:
     token = resolve_auth_token()
     return token or get_remote_address()
+
 
 def deduct_on_success(response: Response) -> bool:
     if response.status_code != 200:
@@ -302,7 +301,9 @@ def deduct_on_success(response: Response) -> bool:
             return False
     return True
 
+
 limiter = Limiter(app, key_func=_resolve_tracking_key, storage_uri=RATELIMIT_STORAGE_URL)
+
 
 @limiter.request_filter
 def _no_rate_limit() -> bool:
