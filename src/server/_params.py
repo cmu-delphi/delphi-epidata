@@ -266,7 +266,7 @@ def parse_day_or_week_arg(key: str, default_value: Optional[int] = None) -> Time
     is_week = guess_time_value_is_week(v)
     if is_week:
         return TimePair("week", [parse_week_arg(key)])
-    return TimePair("week", [parse_day_arg(key)])
+    return TimePair("day", [parse_day_arg(key)])
 
 def parse_day_or_week_range_arg(key: str) -> TimePair:
     v = request.values.get(key)
