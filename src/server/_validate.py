@@ -3,20 +3,7 @@ from typing import List, Optional, Sequence, Tuple, Union
 from flask import request
 
 from ._exceptions import UnAuthenticatedException, ValidationFailedException
-
-
-def resolve_auth_token() -> Optional[str]:
-    # auth request param
-    if "auth" in request.values:
-        return request.values["auth"]
-    # user name password
-    if request.authorization and request.authorization.username == "epidata":
-        return request.authorization.password
-    # bearer token authentication
-    auth_header = request.headers.get("Authorization")
-    if auth_header and auth_header.startswith("Bearer "):
-        return auth_header[len("Bearer "):]
-    return None
+from ._security import resolve_auth_token
 
 
 def check_auth_token(token: str, optional=False) -> bool:
