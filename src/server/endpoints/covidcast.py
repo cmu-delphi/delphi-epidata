@@ -371,7 +371,7 @@ def handle_export():
     if geo_values != "*":
         geo_values = geo_values.split(",")
 
-    as_of, is_as_of_day = parse_day_or_week_arg("as_of").time_values[0], parse_day_or_week_arg("as_of").is_day if "as_of" in request.args else (None, is_day)
+    as_of, is_as_of_day = (parse_day_or_week_arg("as_of").time_values[0], parse_day_or_week_arg("as_of").is_day) if "as_of" in request.args else (None, is_day)
     if is_day != is_as_of_day:
         raise ValidationFailedException("mixing weeks with day arguments")
 
