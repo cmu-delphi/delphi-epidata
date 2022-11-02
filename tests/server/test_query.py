@@ -195,21 +195,21 @@ class UnitTests(unittest.TestCase):
             params = {}
             self.assertEqual(
                 filter_source_signal_pairs("t", "v", [SourceSignalPair("src1", True)], "p", params),
-                "(t = :p_0t)",
+                ["t = :p_0t"]
             )
             self.assertEqual(params, {"p_0t": "src1"})
         with self.subTest("single"):
             params = {}
             self.assertEqual(
                 filter_source_signal_pairs("t", "v", [SourceSignalPair("src1", ["sig1"])], "p", params),
-                "((t = :p_0t AND (v = :p_0t_0)))",
+                ["(t = :p_0t AND v = :p_0t_0)"]
             )
             self.assertEqual(params, {"p_0t": "src1", "p_0t_0": "sig1"})
         with self.subTest("multi"):
             params = {}
             self.assertEqual(
                 filter_source_signal_pairs("t", "v", [SourceSignalPair("src1", ["sig1", "sig2"])], "p", params),
-                "((t = :p_0t AND (v = :p_0t_0 OR v = :p_0t_1)))",
+                ["(t = :p_0t AND v = :p_0t_0)", "(t = :p_0t AND v = :p_0t_1)"]
             )
             self.assertEqual(params, {"p_0t": "src1", "p_0t_0": "sig1", "p_0t_1": "sig2"})
         with self.subTest("multiple pairs"):
@@ -222,7 +222,7 @@ class UnitTests(unittest.TestCase):
                     "p",
                     params,
                 ),
-                "(t = :p_0t OR t = :p_1t)",
+                ["t = :p_0t", "t = :p_1t"]
             )
             self.assertEqual(params, {"p_0t": "src1", "p_1t": "src2"})
         with self.subTest("multiple pairs with value"):
@@ -238,7 +238,7 @@ class UnitTests(unittest.TestCase):
                     "p",
                     params,
                 ),
-                "((t = :p_0t AND (v = :p_0t_0)) OR (t = :p_1t AND (v = :p_1t_0)))",
+                ["(t = :p_0t AND v = :p_0t_0)", "(t = :p_1t AND v = :p_1t_0)"]
             )
             self.assertEqual(
                 params,
