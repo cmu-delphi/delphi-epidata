@@ -174,7 +174,8 @@ def handle_trend():
 
     time_window = parse_day_or_week_range_arg("window")
     is_day = time_window.is_day
-    time_value, is_also_day = parse_day_or_week_arg("date")
+    time_pair = parse_day_or_week_arg("date")
+    time_value, is_also_day = time_pair.time_values[0], time_pair.is_day
     if is_day != is_also_day:
         raise ValidationFailedException("mixing weeks with day arguments")
     _verify_argument_time_type_matches(is_day, daily_signals, weekly_signals)
@@ -356,8 +357,10 @@ def handle_export():
     source_signal_pairs = [SourceSignalPair(source, [signal])]
     daily_signals, weekly_signals = count_signal_time_types(source_signal_pairs)
     source_signal_pairs, alias_mapper = create_source_signal_alias_mapper(source_signal_pairs)
-    start_day, is_day = parse_day_or_week_arg("start_day", 202001 if weekly_signals > 0 else 20200401)
-    end_day, is_end_day = parse_day_or_week_arg("end_day", 202020 if weekly_signals > 0 else 20200901)
+    start_pair = parse_day_or_week_arg("start_day", 202001 if weekly_signals > 0 else 20200401)
+    start_day, is_day = start_pair.time_values[0], start_pair.is_day
+    end_pair = parse_day_or_week_arg("end_day", 202020 if weekly_signals > 0 else 20200901)
+    end_day, is_end_day = end_pair.time_values[0], end_pair.is_day
     if is_day != is_end_day:
         raise ValidationFailedException("mixing weeks with day arguments")
     _verify_argument_time_type_matches(is_day, daily_signals, weekly_signals)
@@ -368,7 +371,8 @@ def handle_export():
     if geo_values != "*":
         geo_values = geo_values.split(",")
 
-    as_of, is_as_of_day = parse_day_or_week_arg("as_of") if "as_of" in request.args else (None, is_day)
+    as_of_pair = parse_day_or_week_arg("as_of") if "as_of" in request.args else (None, is_day)
+    as_of, is_as_of_day = as_of_pair.time_values[0], as_of_pair.is_day
     if is_day != is_as_of_day:
         raise ValidationFailedException("mixing weeks with day arguments")
 

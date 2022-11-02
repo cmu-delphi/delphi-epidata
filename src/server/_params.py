@@ -7,7 +7,7 @@ from flask import request
 
 
 from ._exceptions import ValidationFailedException
-from .utils import days_in_range, weeks_in_range, guess_time_value_is_day, TimeValues
+from .utils import days_in_range, weeks_in_range, guess_time_value_is_day, guess_time_value_is_week, TimeValues
 
 
 def _parse_common_multi_arg(key: str) -> List[Tuple[str, Union[bool, Sequence[str]]]]:
@@ -255,25 +255,26 @@ def parse_week_range_arg(key: str) -> Tuple[int, int]:
         raise ValidationFailedException(f"{key} must match YYYYWW-YYYYWW")
     return r
 
-def parse_day_or_week_arg(key: str, default_value: Optional[int] = None) -> Tuple[int, bool]:
+def parse_day_or_week_arg(key: str, default_value: Optional[int] = None) -> TimePair:
     v = request.values.get(key)
     if not v:
         if default_value is not None:
-            return default_value, guess_time_value_is_day(default_value)
+            time_type = "day" if guess_time_value_is_day(default_value) else "week"
+            return TimePair(time_type, [default_value])
         raise ValidationFailedException(f"{key} param is required")
     # format is either YYYY-MM-DD or YYYYMMDD or YYYYMM
-    is_week = len(v) == 6
+    is_week = guess_time_value_is_week(v)
     if is_week:
-        return parse_week_arg(key), False
-    return parse_day_arg(key), True
+        return TimePair("week", [parse_week_arg(key)])
+    return TimePair("week", [parse_day_arg(key)])
 
-def parse_day_or_week_range_arg(key: str) -> TimePair: # Tuple[Tuple[int, int], bool]:
+def parse_day_or_week_range_arg(key: str) -> TimePair:
     v = request.values.get(key)
     if not v:
         raise ValidationFailedException(f"{key} param is required")
     # format is either YYYY-MM-DD--YYYY-MM-DD or YYYYMMDD-YYYYMMDD or YYYYMM-YYYYMM
     # so if the first before the - has length 6, it must be a week
-    is_week = len(v.split('-', 2)[0]) == 6
+    is_week = guess_time_value_is_week(v.split('-', 2)[0])
     if is_week:
         return TimePair("week", [parse_week_range_arg(key)])
     return TimePair("day", [parse_day_range_arg(key)])
