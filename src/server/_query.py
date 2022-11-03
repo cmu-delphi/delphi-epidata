@@ -36,7 +36,7 @@ def date_string(value: int) -> str:
 
 def to_condition(
     field: str,
-    value: Union[Tuple[str, str], str, Tuple[int, int], int],
+    value: Union[str, Tuple[int, int], int],
     param_key: str,
     params: Dict[str, Any],
     formatter=lambda x: x,
@@ -52,7 +52,7 @@ def to_condition(
 
 def filter_values(
     field: str,
-    values: Optional[Sequence[Union[Tuple[str, str], str, Tuple[int, int], int]]],
+    values: Optional[Sequence[Union[str, Tuple[int, int], int]]],
     param_key: str,
     params: Dict[str, Any],
     formatter=lambda x: x,
@@ -68,7 +68,7 @@ def filter_values(
 
 def filter_strings(
     field: str,
-    values: Optional[Sequence[Union[Tuple[str, str], str]]],
+    values: Optional[Sequence[str]],
     param_key: str,
     params: Dict[str, Any],
 ):
@@ -393,7 +393,7 @@ class QueryBuilder:
     def where_strings(
         self,
         field: str,
-        values: Optional[Sequence[Union[Tuple[str, str], str]]],
+        values: Optional[Sequence[str]],
         param_key: Optional[str] = None,
     ) -> "QueryBuilder":
         fq_field = f"{self.alias}.{field}" if "." not in field else field
