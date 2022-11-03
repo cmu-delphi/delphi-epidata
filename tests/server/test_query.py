@@ -248,54 +248,54 @@ class UnitTests(unittest.TestCase):
     def test_filter_time_pairs(self):
         with self.subTest("empty"):
             params = {}
-            self.assertEqual(filter_time_pairs("t", "v", [], "p", params), "FALSE")
+            self.assertEqual(filter_time_pairs("t", "v", None, "p", params), "FALSE")
             self.assertEqual(params, {})
         with self.subTest("*"):
             params = {}
             self.assertEqual(
-                filter_time_pairs("t", "v", [TimePair("day", True)], "p", params),
+                filter_time_pairs("t", "v", TimePair("day", True), "p", params),
                 "(t = :p_0t)",
             )
             self.assertEqual(params, {"p_0t": "day"})
         with self.subTest("single"):
             params = {}
             self.assertEqual(
-                filter_time_pairs("t", "v", [TimePair("day", [20201201])], "p", params),
+                filter_time_pairs("t", "v", TimePair("day", [20201201]), "p", params),
                 "((t = :p_0t AND (v = :p_0t_0)))",
             )
             self.assertEqual(params, {"p_0t": "day", "p_0t_0": 20201201})
         with self.subTest("multi"):
             params = {}
             self.assertEqual(
-                filter_time_pairs("t", "v", [TimePair("day", [20201201, 20201203])], "p", params),
+                filter_time_pairs("t", "v", TimePair("day", [20201201, 20201203]), "p", params),
                 "((t = :p_0t AND (v = :p_0t_0 OR v = :p_0t_1)))",
             )
             self.assertEqual(params, {"p_0t": "day", "p_0t_0": 20201201, "p_0t_1": 20201203})
         with self.subTest("range"):
             params = {}
             self.assertEqual(
-                filter_time_pairs("t", "v", [TimePair("day", [(20201201, 20201203)])], "p", params),
+                filter_time_pairs("t", "v", TimePair("day", [(20201201, 20201203)]), "p", params),
                 "((t = :p_0t AND (v BETWEEN :p_0t_0 AND :p_0t_0_2)))",
             )
             self.assertEqual(params, {"p_0t": "day", "p_0t_0": 20201201, "p_0t_0_2": 20201203})
         with self.subTest("dedupe"):
             params = {}
             self.assertEqual(
-                filter_time_pairs("t", "v", [TimePair("day", [20200101, 20200101, (20200101, 20200101), 20200101])], "p", params),
+                filter_time_pairs("t", "v", TimePair("day", [20200101, 20200101, (20200101, 20200101), 20200101]), "p", params),
                 "((t = :p_0t AND (v = :p_0t_0)))",
             )
             self.assertEqual(params, {"p_0t": "day", "p_0t_0": 20200101})
         with self.subTest("merge single range"):
             params = {}
             self.assertEqual(
-                filter_time_pairs("t", "v", [TimePair("day", [20200101, 20200102, (20200101, 20200104)])], "p", params),
+                filter_time_pairs("t", "v", TimePair("day", [20200101, 20200102, (20200101, 20200104)]), "p", params),
                 "((t = :p_0t AND (v BETWEEN :p_0t_0 AND :p_0t_0_2)))",
             )
             self.assertEqual(params, {"p_0t": "day", "p_0t_0": 20200101, "p_0t_0_2": 20200104})
         with self.subTest("merge ranges and singles"):
             params = {}
             self.assertEqual(
-                filter_time_pairs("t", "v", [TimePair("day", [20200101, 20200103, (20200105, 20200107)])], "p", params),
+                filter_time_pairs("t", "v", TimePair("day", [20200101, 20200103, (20200105, 20200107)]), "p", params),
                 "((t = :p_0t AND (v = :p_0t_0 OR v = :p_0t_1 OR v BETWEEN :p_0t_2 AND :p_0t_2_2)))",
             )
             self.assertEqual(params, {"p_0t": "day", "p_0t_0": 20200101, "p_0t_1": 20200103, 'p_0t_2': 20200105, 'p_0t_2_2': 20200107})           

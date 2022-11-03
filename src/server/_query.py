@@ -174,29 +174,25 @@ def filter_source_signal_pairs(
 def filter_time_pairs(
     type_field: str,
     time_field: str,
-    values: Sequence[TimePair],
+    pair: Optional[TimePair],
     param_key: str,
     params: Dict[str, Any],
 ) -> str:
     """
-    returns the SQL sub query to filter by the given time pairs
+    returns the SQL sub query to filter by the given time pair
     """
-
-    def filter_pair(pair: TimePair, i) -> str:
-        type_param = f"{param_key}_{i}t"
-        params[type_param] = pair.time_type
-        if isinstance(pair.time_values, bool) and pair.time_values:
-            return f"{type_field} = :{type_param}"
-        ranges = weeks_to_ranges(pair.time_values) if pair.is_week else days_to_ranges(pair.time_values)
-        return f"({type_field} = :{type_param} AND {filter_integers(time_field, ranges, type_param, params)})"
-
-    parts = [filter_pair(p, i) for i, p in enumerate(values)]
-
-    if not parts:
-        # something has to be selected
+    if not pair:
         return "FALSE"
 
-    return f"({' OR '.join(parts)})"
+    type_param = f"{param_key}_0t"
+    params[type_param] = pair.time_type
+    if isinstance(pair.time_values, bool) and pair.time_values:
+        parts =  f"{type_field} = :{type_param}"
+    else:
+        ranges = weeks_to_ranges(pair.time_values) if pair.is_week else days_to_ranges(pair.time_values)
+        parts = f"({type_field} = :{type_param} AND {filter_integers(time_field, ranges, type_param, params)})"
+
+    return f"({parts})"
 
 
 def parse_row(
@@ -457,7 +453,7 @@ class QueryBuilder:
         self,
         type_field: str,
         value_field: str,
-        values: Sequence[TimePair],
+        values: Optional[TimePair],
         param_key: Optional[str] = None,
     ) -> "QueryBuilder":
         fq_type_field = self._fq_field(type_field)

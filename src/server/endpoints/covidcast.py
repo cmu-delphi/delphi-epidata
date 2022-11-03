@@ -115,7 +115,7 @@ def _handle_lag_issues_as_of(q: QueryBuilder, issues: Optional[TimeValues] = Non
 def handle():
     source_signal_pairs = parse_source_signal_pairs()
     source_signal_pairs, alias_mapper = create_source_signal_alias_mapper(source_signal_pairs)
-    time_pairs = parse_time_pairs()
+    time_pair = parse_time_pairs()
     geo_pairs = parse_geo_pairs()
 
     as_of = extract_date("as_of")
@@ -143,7 +143,7 @@ def handle():
 
     q.where_source_signal_pairs("source", "signal", source_signal_pairs)
     q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
-    q.where_time_pairs("time_type", "time_value", [time_pairs])
+    q.where_time_pairs("time_type", "time_value", time_pair)
 
     _handle_lag_issues_as_of(q, issues, lag, as_of)
 
@@ -197,7 +197,7 @@ def handle_trend():
 
     q.where_source_signal_pairs("source", "signal", source_signal_pairs)
     q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
-    q.where_time_pairs("time_type", "time_value", [time_window])
+    q.where_time_pairs("time_type", "time_value", time_window)
 
     # fetch most recent issue fast
     _handle_lag_issues_as_of(q, None, None, None)
@@ -248,7 +248,7 @@ def handle_trendseries():
 
     q.where_source_signal_pairs("source", "signal", source_signal_pairs)
     q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
-    q.where_time_pairs("time_type", "time_value", [time_window])
+    q.where_time_pairs("time_type", "time_value", time_window)
 
     # fetch most recent issue fast
     _handle_lag_issues_as_of(q, None, None, None)
@@ -309,7 +309,7 @@ def handle_correlation():
         source_signal_pairs,
     )
     q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
-    q.where_time_pairs("time_type", "time_value", [time_window])
+    q.where_time_pairs("time_type", "time_value", time_window)
 
     df = as_pandas(str(q), q.params)
     if is_day:
@@ -381,7 +381,7 @@ def handle_export():
     q.set_fields(["geo_value", "signal", "time_value", "issue", "lag", "value", "stderr", "sample_size", "geo_type", "source"], [], [])
     q.set_order("time_value", "geo_value")
     q.where_source_signal_pairs("source", "signal", source_signal_pairs)
-    q.where_time_pairs("time_type", "time_value", [TimePair("day" if is_day else "week", [(start_day, end_day)])])
+    q.where_time_pairs("time_type", "time_value", TimePair("day" if is_day else "week", [(start_day, end_day)]))
     q.where_geo_pairs("geo_type", "geo_value", [GeoPair(geo_type, True if geo_values == "*" else geo_values)])
 
     _handle_lag_issues_as_of(q, None, None, as_of)
@@ -462,7 +462,7 @@ def handle_backfill():
 
     q.where_source_signal_pairs("source", "signal", source_signal_pairs)
     q.where_geo_pairs("geo_type", "geo_value", [geo_pair])
-    q.where_time_pairs("time_type", "time_value", [time_pair])
+    q.where_time_pairs("time_type", "time_value", time_pair)
 
     # no restriction of issues or dates since we want all issues
     # _handle_lag_issues_as_of(q, issues, lag, as_of)
@@ -638,7 +638,7 @@ def handle_coverage():
     else:
         q.where(geo_type=geo_type)
     q.where_source_signal_pairs("source", "signal", source_signal_pairs)
-    q.where_time_pairs("time_type", "time_value", [time_window])
+    q.where_time_pairs("time_type", "time_value", time_window)
     q.group_by = "c.source, c.signal, c.time_value"
     q.set_order("source", "signal", "time_value")
 
