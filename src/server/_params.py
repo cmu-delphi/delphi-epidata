@@ -205,12 +205,14 @@ def _parse_time_pair(time_type: str, time_values: Union[bool, Sequence[str]]) ->
     raise ValidationFailedException(f'time param: {time_type} is not one of "day" or "week"')
 
 
-def parse_time_arg(key: str = "time") -> List[TimePair]:
+def parse_time_arg(key: str = "time") -> Optional[TimePair]:
     time_pairs = [_parse_time_pair(time_type, time_values) for [time_type, time_values] in _parse_common_multi_arg(key)]
 
     # single value
-    if len(time_pairs) <= 1:
-        return time_pairs
+    if len(time_pairs) == 0:
+        return None
+    if len(time_pairs) == 1:
+        return time_pairs[0]
     
     # make sure 'day' and 'week' aren't mixed
     time_types = set([time_pair.time_type for time_pair in time_pairs])
@@ -221,10 +223,10 @@ def parse_time_arg(key: str = "time") -> List[TimePair]:
     merged = []    
     for time_pair in time_pairs:
         if time_pair.time_values == True:
-            return [time_pair]
+            return time_pair
         else:
             merged.extend(time_pair.time_values)
-    return [TimePair(time_pairs[0].time_type, time_values_to_ranges(merged))]
+    return TimePair(time_pairs[0].time_type, time_values_to_ranges(merged))
 
 
 def parse_single_time_arg(key: str) -> TimePair:

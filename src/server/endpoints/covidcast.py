@@ -75,13 +75,13 @@ def parse_geo_pairs() -> List[GeoPair]:
     return parse_geo_arg()
 
 
-def parse_time_pairs() -> List[TimePair]:
+def parse_time_pairs() -> TimePair:
     time_type = request.values.get("time_type")
     if time_type:
         # old version
         require_all("time_type", "time_values")
         time_values = extract_dates("time_values")
-        return [TimePair(time_type, time_values)]
+        return TimePair(time_type, time_values)
 
     if ":" not in request.values.get("time", ""):
         raise ValidationFailedException("missing parameter: time or (time_type and time_values)")
@@ -143,7 +143,7 @@ def handle():
 
     q.where_source_signal_pairs("source", "signal", source_signal_pairs)
     q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
-    q.where_time_pairs("time_type", "time_value", time_pairs)
+    q.where_time_pairs("time_type", "time_value", [time_pairs])
 
     _handle_lag_issues_as_of(q, issues, lag, as_of)
 

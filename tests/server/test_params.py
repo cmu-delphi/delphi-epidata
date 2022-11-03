@@ -267,38 +267,38 @@ class UnitTests(unittest.TestCase):
     def test_parse_time_arg(self):
         with self.subTest("empty"):
             with app.test_request_context("/"):
-                self.assertEqual(parse_time_arg(), [])
+                self.assertEqual(parse_time_arg(), None)
         with self.subTest("single"):
             with app.test_request_context("/?time=day:*"):
-                self.assertEqual(parse_time_arg(), [TimePair("day", True)])
+                self.assertEqual(parse_time_arg(), TimePair("day", True))
             with app.test_request_context("/?time=day:20201201"):
-                self.assertEqual(parse_time_arg(), [TimePair("day", [20201201])])
+                self.assertEqual(parse_time_arg(), TimePair("day", [20201201]))
         with self.subTest("single list"):
             with app.test_request_context("/?time=day:20201201,20201202"):
-                self.assertEqual(parse_time_arg(), [TimePair("day", [20201201, 20201202])])
+                self.assertEqual(parse_time_arg(), TimePair("day", [20201201, 20201202]))
         with self.subTest("single range"):
             with app.test_request_context("/?time=day:20201201-20201204"):
-                self.assertEqual(parse_time_arg(), [TimePair("day", [(20201201, 20201204)])])
+                self.assertEqual(parse_time_arg(), TimePair("day", [(20201201, 20201204)]))
         with self.subTest("multi"):
             with app.test_request_context("/?time=day:*;day:20201201"):
                 self.assertEqual(
                     parse_time_arg(),
-                    [TimePair("day", True)]
+                    TimePair("day", True)
                 )
             with app.test_request_context("/?time=week:*;week:202012"):
                 self.assertEqual(
                     parse_time_arg(),
-                    [TimePair("week", True)]
+                    TimePair("week", True)
                 )
             with app.test_request_context("/?time=day:20201201;day:20201202-20201205"):
                 self.assertEqual(
                     parse_time_arg(),
-                    [TimePair("day", [(20201201, 20201205)])]
+                    TimePair("day", [(20201201, 20201205)])
                 )
             with app.test_request_context("/?time=week:202012;week:202013-202015"):
                 self.assertEqual(
                     parse_time_arg(),
-                    [TimePair("week", [(202012, 202015)])]
+                    TimePair("week", [(202012, 202015)])
                 )
 
         with self.subTest("wrong"):
