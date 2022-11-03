@@ -311,11 +311,11 @@ class UnitTests(unittest.TestCase):
             with app.test_request_context("/?time=week:20121010"):
                 self.assertRaises(ValidationFailedException, parse_time_arg)
             with app.test_request_context("/?time=day:*;week:*"):
-                self.assertRaises(ValidationFailedException, parse_time_arg)
+                self.assertRaisesRegex(ValidationFailedException, "mixes \"day\" and \"week\" time types", parse_time_arg)
             with app.test_request_context("/?time=day:20201201;week:202012"):
-                self.assertRaises(ValidationFailedException, parse_time_arg)
+                self.assertRaisesRegex(ValidationFailedException, "mixes \"day\" and \"week\" time types", parse_time_arg)
             with app.test_request_context("/?time=day:*;day:20202012;week:202101-202104"):
-                self.assertRaises(ValidationFailedException, parse_time_arg)
+                self.assertRaisesRegex(ValidationFailedException, "mixes \"day\" and \"week\" time types", parse_time_arg)
 
     def test_parse_day_range_arg(self):
         with self.subTest("empty"):

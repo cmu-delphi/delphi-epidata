@@ -171,7 +171,7 @@ def filter_source_signal_pairs(
     return f"({' OR '.join(parts)})"
 
 
-def filter_time_pairs(
+def filter_time_pair(
     type_field: str,
     time_field: str,
     pair: Optional[TimePair],
@@ -449,7 +449,7 @@ class QueryBuilder:
         )
         return self
 
-    def where_time_pairs(
+    def where_time_pair(
         self,
         type_field: str,
         value_field: str,
@@ -459,7 +459,7 @@ class QueryBuilder:
         fq_type_field = self._fq_field(type_field)
         fq_value_field = self._fq_field(value_field)
         self.conditions.append(
-            filter_time_pairs(
+            filter_time_pair(
                 fq_type_field,
                 fq_value_field,
                 values,

@@ -215,7 +215,7 @@ def parse_time_arg(key: str = "time") -> Optional[TimePair]:
         return time_pairs[0]
     
     # make sure 'day' and 'week' aren't mixed
-    time_types = set([time_pair.time_type for time_pair in time_pairs])
+    time_types = set(time_pair.time_type for time_pair in time_pairs)
     if len(time_types) >= 2:
         raise ValidationFailedException(f'{key}: {time_pairs} mixes "day" and "week" time types')
 
