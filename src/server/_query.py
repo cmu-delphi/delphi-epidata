@@ -12,6 +12,7 @@ from typing import (
     cast,
     Mapping,
 )
+from flask import Response
 
 from sqlalchemy import text
 from sqlalchemy.engine import Row
@@ -56,7 +57,7 @@ def filter_values(
     param_key: str,
     params: Dict[str, Any],
     formatter=lambda x: x,
-):
+) -> str:
     if not values:
         return "FALSE"
     # builds a SQL expression to filter strings (ex: locations)
@@ -71,7 +72,7 @@ def filter_strings(
     values: Optional[Sequence[Union[Tuple[str, str], str]]],
     param_key: str,
     params: Dict[str, Any],
-):
+) -> str:
     return filter_values(field, values, param_key, params)
 
 
@@ -80,7 +81,7 @@ def filter_integers(
     values: Optional[Sequence[Union[Tuple[int, int], int]]],
     param_key: str,
     params: Dict[str, Any],
-):
+) -> str:
     return filter_values(field, values, param_key, params)
 
 
@@ -89,7 +90,7 @@ def filter_dates(
     values: Optional[Sequence[Union[Tuple[int, int], int]]],
     param_key: str,
     params: Dict[str, Any],
-):
+) -> str:
     ranges = time_values_to_ranges(values)
     return filter_values(field, ranges, param_key, params, date_string)
 
@@ -204,7 +205,7 @@ def parse_row(
     fields_string: Optional[Sequence[str]] = None,
     fields_int: Optional[Sequence[str]] = None,
     fields_float: Optional[Sequence[str]] = None,
-):
+) -> Dict[str, Any]:
     keys = set(row.keys())
     parsed = dict()
     if fields_string:
@@ -240,7 +241,7 @@ def limit_query(query: str, limit: int) -> str:
     return full_query
 
 
-def run_query(p: APrinter, query_tuple: Tuple[str, Dict[str, Any]]):
+def run_query(p: APrinter, query_tuple: Tuple[str, Dict[str, Any]]) -> Iterable[Row]:
     query, params = query_tuple
     # limit rows + 1 for detecting whether we would have more
     full_query = text(limit_query(query, p.remaining_rows + 1))
@@ -261,7 +262,7 @@ def execute_queries(
     fields_int: Sequence[str],
     fields_float: Sequence[str],
     transform: Callable[[Dict[str, Any], Row], Dict[str, Any]] = _identity_transform,
-):
+) -> Response:
     """
     execute the given queries and return the response to send them
     """
@@ -321,14 +322,14 @@ def execute_query(
     fields_int: Sequence[str],
     fields_float: Sequence[str],
     transform: Callable[[Dict[str, Any], Row], Dict[str, Any]] = _identity_transform,
-):
+) -> Response:
     """
     execute the given query and return the response to send it
     """
     return execute_queries([(query, params)], fields_string, fields_int, fields_float, transform)
 
 
-def _join_l(value: Union[str, List[str]]):
+def _join_l(value: Union[str, List[str]]) -> str:
     return ", ".join(value) if isinstance(value, (list, tuple)) else value
 
 
