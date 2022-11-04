@@ -60,7 +60,6 @@ class CovidcastMetaCacheTests(unittest.TestCase):
         secrets.db.epi = ("user", "pass")
 
         # use the local instance of the Epidata API
-        Epidata.BASE_URL = "http://delphi_web_epidata/epidata/api.php"
         Epidata.auth = ("epidata", "key")
 
     def tearDown(self):
@@ -161,7 +160,9 @@ class CovidcastMetaCacheTests(unittest.TestCase):
 
         # fetch the cached version (manually)
         params = {"endpoint": "covidcast_meta", "cached": "true"}
-        response = requests.get(Epidata.BASE_URL, params=params, auth=Epidata.auth)
+        response = requests.get(
+            Epidata.BASE_URL, params=params, auth=Epidata.auth
+        )
         response.raise_for_status()
         epidata4 = response.json()
 
@@ -191,7 +192,9 @@ class CovidcastMetaCacheTests(unittest.TestCase):
 
         # fetch the cached version (manually)
         params = {"endpoint": "covidcast_meta", "cached": "true"}
-        response = requests.get(Epidata.BASE_URL, params=params, auth=Epidata.auth)
+        response = requests.get(
+            Epidata.BASE_URL, params=params, auth=Epidata.auth
+        )
         response.raise_for_status()
         epidata5 = response.json()
 
