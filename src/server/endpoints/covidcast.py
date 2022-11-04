@@ -1,14 +1,15 @@
 from numbers import Number
-from typing import List, Optional, Union, Tuple, Dict, Any
+from typing import Callable, Iterable, List, Optional, Union, Tuple, Dict, Any
 from itertools import groupby
 from datetime import date, timedelta
 from bisect import bisect_right
 from epiweeks import Week
-from flask import Blueprint, request
+from flask import Blueprint, Response, request
 from flask.json import loads, jsonify
 from more_itertools import peekable
 from numpy import nan
 from sqlalchemy import text
+from sqlalchemy.engine import Row
 from pandas import read_csv, to_datetime
 
 from .._common import is_compatibility_mode, app, db
@@ -28,8 +29,9 @@ from .._params import (
     parse_single_geo_arg,
 )
 from .._query import QueryBuilder, execute_query, run_query, parse_row, filter_fields
-from .._printer import create_printer, CSVPrinter
+from .._printer import create_printer, CSVPrinter, APrinter
 from .._validate import (
+    DateRange,
     extract_bool,
     extract_date,
     extract_dates,
@@ -41,7 +43,7 @@ from .._validate import (
 from .._pandas import as_pandas, print_pandas
 from .covidcast_utils import compute_trend, compute_trends, compute_correlations, compute_trend_value, CovidcastMetaEntry
 from ..utils import shift_time_value, date_to_time_value, time_value_to_iso, time_value_to_date, shift_week_value, week_value_to_week, guess_time_value_is_day, week_to_time_value
-from .covidcast_utils.model import TimeType, TransformType, count_signal_time_types, data_sources, data_sources_by_id, create_source_signal_alias_mapper, get_pad_length, pad_time_pairs, pad_time_window, get_basename_signal_and_jit_generator
+from .covidcast_utils.model import TimeType, TransformType, count_signal_time_types, data_sources, data_sources_by_id, create_source_signal_alias_mapper, get_pad_length, pad_time_pairs, is_derived, get_base_signal_transform, reindex_iterable
 from .covidcast_utils.smooth_diff import SmootherKernelValue
 
 # first argument is the endpoint name
@@ -164,83 +166,210 @@ def parse_jit_bypass():
         return jit_bypass
 
 
+def get_response(
+    source_signal_pairs: List[SourceSignalPair],
+    geo_pairs: List[GeoPair],
+    time_pairs: List[TimePair],
+    issues: List[DateRange],
+    lag: int,
+    as_of: int,
+    jit_bypass: bool,
+    fields_string: List[str],
+    fields_int: List[str],
+    fields_float: List[str],
+    fields_order: List[str],
+    extra_transform: Optional[TransformType],
+    printer: Optional[APrinter] = None,
+) -> Response:
+    """Iterate over signals, get their queries and transforms, and execute them one by one to get the response for the API."""
+    is_time_type_week = any(time_pair.time_type == "week" for time_pair in time_pairs)
+    is_time_value_true = any(isinstance(time_pair.time_values, bool) for time_pair in time_pairs)
+    use_jit_compute = not any((issues, lag, is_time_type_week, is_time_value_true)) and JIT_COMPUTE_ON and not jit_bypass
+
+    query_transforms: List[Tuple[QueryBuilder, TransformType]] = []
+    for source_signal_pair in source_signal_pairs:
+        if isinstance(source_signal_pair.signal, bool):
+            query_transforms.append(base_signal_handler(SourceSignalPair(source_signal_pair.source, True), geo_pairs, time_pairs, issues, lag, as_of, fields_string, fields_int, fields_float, fields_order))
+            continue
+
+        for signal in source_signal_pair.signal:
+            if use_jit_compute and is_derived(source_signal_pair.source, signal):
+                query_transforms.append(derived_signal_handler(SourceSignalPair(source_signal_pair.source, [signal]), geo_pairs, time_pairs, issues, lag, as_of, fields_string, fields_int, fields_float, fields_order))
+            else:
+                query_transforms.append(base_signal_handler(SourceSignalPair(source_signal_pair.source, [signal]), geo_pairs, time_pairs, issues, lag, as_of, fields_string, fields_int, fields_float, fields_order))
+
+    p = create_printer() if not printer else printer
+
+    def gen() -> Iterable[Dict]:
+        for query, transform in query_transforms:
+            try:
+                if p.remaining_rows <= 0:
+                    break
+                r = run_query(p, (str(query), query.params))
+            except Exception as e:
+                raise DatabaseErrorException(str(e) + "\n" + str(query))
+
+            parsed_rows = (parse_row(row, fields_string, fields_int, fields_float) for row in r)
+ 
+            if transform:
+                parsed_rows = transform(parsed_rows)
+
+            if extra_transform:
+                parsed_rows = extra_transform(parsed_rows)
+
+            yield from parsed_rows
+
+    return p(gen())
+
+
+def base_signal_handler(
+    source_signal_pair: SourceSignalPair,
+    geo_pairs: List[GeoPair],
+    time_pairs: List[TimePair],
+    issues: List[DateRange],
+    lag: int,
+    as_of: int,
+    fields_string: List[str],
+    fields_int: List[str],
+    fields_float: List[str],
+    fields_order: List[str],
+) -> Tuple[QueryBuilder, Optional[TransformType]]:
+    """Handles a base signal."""
+
+    # build query
+    q = QueryBuilder(latest_table, "t")
+
+    q.set_order(*fields_order)
+    q.set_fields(fields_string, fields_int, fields_float)
+
+    # basic query info
+    # data type of each field
+    # build the source, signal, time, and location (type and id) filters
+    q.where_source_signal_pairs("source", "signal", [source_signal_pair])
+    q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
+    q.where_time_pairs("time_type", "time_value", time_pairs)
+
+    _handle_lag_issues_as_of(q, issues, lag, as_of)
+
+    return q, None
+
+
+def derived_signal_handler(
+    source_signal_pair: SourceSignalPair,
+    geo_pairs: List[GeoPair],
+    time_pairs: List[TimePair],
+    issues: List[DateRange],
+    lag: int,
+    as_of: int,
+    fields_string: List[str],
+    fields_int: List[str],
+    fields_float: List[str],
+    fields_order: List[str],
+) -> Tuple[QueryBuilder, Optional[TransformType]]:
+    """Handles a derived signal."""
+    transform_args = parse_transform_args()
+
+    # TODO: JIT computations don't support time_value = *; there may be a clever way to implement this.
+    app.logger.info(f"JIT compute enabled for signal: {source_signal_pair}")
+    try:
+        base_source_signal_pair, base_signal_transform = get_base_signal_transform(source_signal_pair)
+        app.logger.info(f"JIT transformation enabled for derived signal: {source_signal_pair} and using base signal: {base_source_signal_pair}.")
+    except ValueError as e:
+        app.logger.error("JIT transformation could not be found.", exc_info=e)
+        # TODO: fail gracefully, exit out with an empty iterator.
+        return "SELECT * FROM epimetric_latest_v LIMIT 0;", lambda x: x
+    app.logger.info(f"JIT base signals: {base_source_signal_pair}")
+
+    pad_length = get_pad_length(base_signal_transform, transform_args.get("smoother_window_length"))
+    time_pairs = pad_time_pairs(time_pairs, pad_length)
+
+    def gen_jit_transform(rows: Iterable[Dict]) -> Iterable[Dict]:
+        for _, grouped_rows in groupby(rows, lambda row: row["geo_value"]):
+            # Put the current time series on a contiguous time index.
+            grouped_rows = reindex_iterable(grouped_rows, time_pairs=time_pairs, fill_value=transform_args.get("pad_fill_value"))
+            for row in base_signal_transform(grouped_rows):
+                row["signal"] = source_signal_pair.signal[0]
+                yield row
+
+    # build query
+    q = QueryBuilder(latest_table, "t")
+
+    q.set_order(*fields_order)
+    q.set_fields(fields_string, fields_int, fields_float)
+
+    # basic query info
+    # data type of each field
+    # build the source, signal, time, and location (type and id) filters
+    q.where_source_signal_pairs("source", "signal", [base_source_signal_pair])
+    q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
+    q.where_time_pairs("time_type", "time_value", time_pairs)
+
+    _handle_lag_issues_as_of(q, issues, lag, as_of)
+
+    return q, gen_jit_transform
+
+
+def compose_funcs(f: Callable, g: Callable) -> Callable:
+    """Compose two functions.
+    
+    Functions are applied from left to right.
+    """
+    return lambda x: g(f(x))
+
+
 @bp.route("/", methods=("GET", "POST"))
 def handle():
+    """Base route for the API."""
     source_signal_pairs = parse_source_signal_pairs()
     source_signal_pairs, alias_mapper = create_source_signal_alias_mapper(source_signal_pairs)
     time_pairs = parse_time_pairs()
     geo_pairs = parse_geo_pairs()
     jit_bypass = parse_jit_bypass()
-
     as_of = extract_date("as_of")
     issues = extract_dates("issues")
     lag = extract_integer("lag")
-    is_time_type_week = any(time_pair.time_type == "week" for time_pair in time_pairs)
-    is_time_value_true = any(isinstance(time_pair.time_values, bool) for time_pair in time_pairs)
-
     is_compatibility = is_compatibility_mode()
-    def alias_row(row):
+
+    fields_string = ["geo_type", "geo_value", "source", "signal", "time_type"]
+    fields_int = ["time_value", "direction", "issue", "lag", "missing_value", "missing_stderr", "missing_sample_size"]
+    fields_float = ["value", "stderr", "sample_size"]
+    fields_order = ["source", "signal", "geo_type", "geo_value", "time_type", "time_value", "issue"]
+
+    def alias_row(row: Dict) -> Dict:
         if is_compatibility:
             # old api returned fewer fields
             remove_fields = ["geo_type", "source", "time_type"]
             for field in remove_fields:
                 if field in row:
                     del row[field]
-        if is_compatibility or not alias_mapper or "source" not in row:
             return row
-        row["source"] = alias_mapper(row["source"], row["signal"])
-        return row
 
-    # build query
-    q = QueryBuilder(latest_table, "t")
+        if not alias_mapper or "source" not in row:
+            return row
+        else:
+            row["source"] = alias_mapper(row["source"], row["signal"])
+            return row
 
-    fields_string = ["geo_type", "geo_value", "source", "signal", "time_type"]
-    fields_int = ["time_value", "direction", "issue", "lag", "missing_value", "missing_stderr", "missing_sample_size"]
-    fields_float = ["value", "stderr", "sample_size"]
+    def gen_transform(rows: Iterable[Dict]) -> Iterable[Dict]:
+        for row in rows:
+            yield alias_row(row)
 
-    # TODO: JIT computations don't support time_value = *; there may be a clever way to implement this.
-    use_jit_compute = not any((issues, lag, is_time_type_week, is_time_value_true)) and JIT_COMPUTE_ON and not jit_bypass
-    if use_jit_compute:
-        transform_args = parse_transform_args()
-        pad_length = get_pad_length(source_signal_pairs, transform_args.get("smoother_window_length"))
-        time_pairs = pad_time_pairs(time_pairs, pad_length)
-        app.logger.info(f"JIT compute enabled for route '/': {source_signal_pairs}")
-        source_signal_pairs, row_transform_generator = get_basename_signal_and_jit_generator(source_signal_pairs, transform_args=transform_args)
-        app.logger.info(f"JIT base signals: {source_signal_pairs}")
+    filter_gen_transform = compose_funcs(gen_transform, filter_fields)
 
-        def gen_transform(rows):
-            parsed_rows = (parse_row(row, fields_string, fields_int, fields_float) for row in rows)
-            transformed_rows = row_transform_generator(parsed_rows=parsed_rows, time_pairs=time_pairs, transform_args=transform_args)
-            for row in transformed_rows:
-                yield alias_row(row)
-    else:
-        def gen_transform(rows):
-            parsed_rows = (parse_row(row, fields_string, fields_int, fields_float) for row in rows)
-            for row in parsed_rows:
-                yield alias_row(row)
-
-    q.set_order("source", "signal", "geo_type", "geo_value", "time_type", "time_value", "issue")
-    q.set_fields(fields_string, fields_int, fields_float)
-
-    # basic query info
-    # data type of each field
-    # build the source, signal, time, and location (type and id) filters
-    q.where_source_signal_pairs("source", "signal", source_signal_pairs)
-    q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
-    q.where_time_pairs("time_type", "time_value", time_pairs)
-
-    _handle_lag_issues_as_of(q, issues, lag, as_of)
-
-    p = create_printer()
-
-    # execute first query
-    try:
-        r = run_query(p, (str(q), q.params))
-    except Exception as e:
-        raise DatabaseErrorException(str(e))
-
-    # now use a generator for sending the rows and execute all the other queries
-    return p(filter_fields(gen_transform(r)))
+    return get_response(
+        source_signal_pairs,
+        geo_pairs,
+        time_pairs,
+        issues,
+        lag,
+        as_of,
+        jit_bypass,
+        fields_string,
+        fields_int,
+        fields_float,
+        fields_order,
+        filter_gen_transform
+    )
 
 
 def _verify_argument_time_type_matches(is_day_argument: bool, count_daily_signal: int, count_weekly_signal: int) -> None:
@@ -257,7 +386,6 @@ def handle_trend():
     daily_signals, weekly_signals = count_signal_time_types(source_signal_pairs)
     source_signal_pairs, alias_mapper = create_source_signal_alias_mapper(source_signal_pairs)
     geo_pairs = parse_geo_pairs()
-    transform_args = parse_transform_args()
     jit_bypass = parse_jit_bypass()
 
     time_window, is_day = parse_day_or_week_range_arg("window")
@@ -275,7 +403,7 @@ def handle_trend():
             base_shift = 7
         basis_time_value = shift_time_value(time_value, -1 * base_shift) if is_day else shift_week_value(time_value, -1 * base_shift)
 
-    def gen_trend(rows):
+    def gen_trend(rows: Iterable[Dict]) -> Iterable[Dict]:
         for key, group in groupby(rows, lambda row: (row["source"], row["signal"], row["geo_type"], row["geo_value"])):
             source, signal, geo_type, geo_value = key
             if alias_mapper:
@@ -283,54 +411,28 @@ def handle_trend():
             trend = compute_trend(geo_type, geo_value, source, signal, time_value, basis_time_value, ((row["time_value"], row["value"]) for row in group))
             yield trend.asdict()
 
-    # build query
-    q = QueryBuilder(latest_table, "t")
+    filter_gen_trend = compose_funcs(gen_trend, filter_fields)
 
     fields_string = ["geo_type", "geo_value", "source", "signal"]
     fields_int = ["time_value"]
     fields_float = ["value"]
+    fields_order = ["source", "signal", "geo_type", "geo_value", "time_type", "time_value"]
+    time_pairs = [TimePair("day", [time_window])] if is_day else [TimePair("week", [time_window])]
 
-    use_jit_compute = all((is_day, is_also_day)) and JIT_COMPUTE_ON and not jit_bypass
-    if use_jit_compute:
-        pad_length = get_pad_length(source_signal_pairs, transform_args.get("smoother_window_length"))
-        app.logger.info(f"JIT compute enabled for route '/trend': {source_signal_pairs}")
-        source_signal_pairs, row_transform_generator = get_basename_signal_and_jit_generator(source_signal_pairs)
-        app.logger.info(f"JIT base signals: {source_signal_pairs}")
-        time_window = pad_time_window(time_window, pad_length)
-
-        def gen_transform(rows):
-            parsed_rows = (parse_row(row, fields_string, fields_int, fields_float) for row in rows)
-            transformed_rows = row_transform_generator(parsed_rows=parsed_rows, time_pairs=[TimePair("day", [time_window])], transform_args=transform_args)
-            for row in transformed_rows:
-                yield row
-    else:
-        def gen_transform(rows):
-            parsed_rows = (parse_row(row, fields_string, fields_int, fields_float) for row in rows)
-            for row in parsed_rows:
-                yield row
-
-    q.set_fields(fields_string, fields_int, fields_float)
-    q.set_order("source", "signal", "geo_type", "geo_value", "time_value")
-
-    q.where_source_signal_pairs("source", "signal", source_signal_pairs)
-    q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
-    q.where_time_pairs("time_type", "time_value", [TimePair("day" if is_day else "week", [time_window])])
-
-    # fetch most recent issue fast
-    _handle_lag_issues_as_of(q, None, None, None)
-
-    p = create_printer()
-
-
-    # execute first query
-    try:
-        r = run_query(p, (str(q), q.params))
-    except Exception as e:
-        raise DatabaseErrorException(str(e))
-
-    # now use a generator for sending the rows and execute all the other queries
-    return p(filter_fields(gen_trend(gen_transform(r))))
-
+    return get_response(
+        source_signal_pairs,
+        geo_pairs,
+        time_pairs,
+        None,
+        None,
+        None,
+        jit_bypass,
+        fields_string,
+        fields_int,
+        fields_float,
+        fields_order,
+        filter_gen_trend
+    )
 
 @bp.route("/trendseries", methods=("GET", "POST"))
 def handle_trendseries():
@@ -339,7 +441,6 @@ def handle_trendseries():
     daily_signals, weekly_signals = count_signal_time_types(source_signal_pairs)
     source_signal_pairs, alias_mapper = create_source_signal_alias_mapper(source_signal_pairs)
     geo_pairs = parse_geo_pairs()
-    transform_args = parse_transform_args()
     jit_bypass = parse_jit_bypass()
 
     time_window, is_day = parse_day_or_week_range_arg("window")
@@ -354,7 +455,7 @@ def handle_trendseries():
     if not is_day:
         shifter = lambda x: shift_week_value(x, -basis_shift)
 
-    def gen_trend(rows):
+    def gen_trend(rows: Iterable[Dict]) -> Iterable[Dict]:
         for key, group in groupby(rows, lambda row: (row["source"], row["signal"], row["geo_type"], row["geo_value"])):
             source, signal, geo_type, geo_value = key
             if alias_mapper:
@@ -363,54 +464,31 @@ def handle_trendseries():
             for t in trends:
                 yield t.asdict()
 
-    # build query
-    q = QueryBuilder(latest_table, "t")
+    filter_gen_trend = compose_funcs(gen_trend, filter_fields)
 
     fields_string = ["geo_type", "geo_value", "source", "signal"]
     fields_int = ["time_value"]
     fields_float = ["value"]
+    fields_order = ["source", "signal", "geo_type", "geo_value", "time_type", "time_value"]
+    time_pairs = [TimePair("day", [time_window])] if is_day else [TimePair("week", [time_window])]
 
-    use_jit_compute = is_day and JIT_COMPUTE_ON and not jit_bypass
-    if use_jit_compute:
-        pad_length = get_pad_length(source_signal_pairs, transform_args.get("smoother_window_length"))
-        app.logger.info(f"JIT compute enabled for route '/trendseries': {source_signal_pairs}")
-        source_signal_pairs, row_transform_generator = get_basename_signal_and_jit_generator(source_signal_pairs)
-        app.logger.info(f"JIT base signals: {source_signal_pairs}")
-        time_window = pad_time_window(time_window, pad_length)
-
-        def gen_transform(rows):
-            parsed_rows = (parse_row(row, fields_string, fields_int, fields_float) for row in rows)
-            transformed_rows = row_transform_generator(parsed_rows=parsed_rows, time_pairs=[TimePair("day", [time_window])], transform_args=transform_args)
-            for row in transformed_rows:
-                yield row
-    else:
-        def gen_transform(rows):
-            parsed_rows = (parse_row(row, fields_string, fields_int, fields_float) for row in rows)
-            for row in parsed_rows:
-                yield row
-
-    q.set_fields(fields_string, fields_int, fields_float)
-    q.set_order("source", "signal", "geo_type", "geo_value", "time_value")
-
-    q.where_source_signal_pairs("source", "signal", source_signal_pairs)
-    q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
-    q.where_time_pairs("time_type", "time_value", [TimePair("day" if is_day else "week", [time_window])])
-
-    # fetch most recent issue fast
-    _handle_lag_issues_as_of(q, None, None, None)
-
-    p = create_printer()
-
-    # execute first query
-    try:
-        r = run_query(p, (str(q), q.params))
-    except Exception as e:
-        raise DatabaseErrorException(str(e))
-
-    # now use a generator for sending the rows and execute all the other queries
-    return p(filter_fields(gen_trend(gen_transform(r))))
+    return get_response(
+        source_signal_pairs,
+        geo_pairs,
+        time_pairs,
+        None,
+        None,
+        None,
+        jit_bypass,
+        fields_string,
+        fields_int,
+        fields_float,
+        fields_order,
+        filter_gen_trend
+    )
 
 
+# TODO: Update this endpoint if we don't use streaming in JIT.
 @bp.route("/correlation", methods=("GET", "POST"))
 def handle_correlation():
     require_all("reference", "window", "others", "geo")
@@ -486,6 +564,8 @@ def handle_correlation():
 @bp.route("/csv", methods=("GET", "POST"))
 def handle_export():
     source, signal = request.args.get("signal", "jhu-csse:confirmed_incidence_num").split(":")
+    if "," in signal:
+        raise ValidationFailedException("Only one signal can be exported at a time")
     source_signal_pairs = [SourceSignalPair(source, [signal])]
     daily_signals, weekly_signals = count_signal_time_types(source_signal_pairs)
     source_signal_pairs, alias_mapper = create_source_signal_alias_mapper(source_signal_pairs)
@@ -497,7 +577,6 @@ def handle_export():
 
     _verify_argument_time_type_matches(is_day, daily_signals, weekly_signals)
 
-    transform_args = parse_transform_args()
     jit_bypass = parse_jit_bypass()
 
     geo_type = request.args.get("geo_type", "county")
@@ -510,46 +589,21 @@ def handle_export():
     if is_day != is_as_of_day:
         raise ValidationFailedException("mixing weeks with day arguments")
 
-    # build query
-    q = QueryBuilder(latest_table, "t")
-
     fields_string = ["geo_value", "signal", "geo_type", "source"]
     fields_int = ["time_value", "issue", "lag"]
     fields_float = ["value", "stderr", "sample_size"]
-
-    use_jit_compute = all([is_day, is_end_day]) and JIT_COMPUTE_ON and not jit_bypass
-    if use_jit_compute:
-        pad_length = get_pad_length(source_signal_pairs, transform_args.get("smoother_window_length"))
-        app.logger.info(f"JIT compute enabled for route '/csv': {source_signal_pairs}")
-        source_signal_pairs, row_transform_generator = get_basename_signal_and_jit_generator(source_signal_pairs)
-        app.logger.info(f"JIT base signals: {source_signal_pairs}")
-        time_window = pad_time_window(time_window, pad_length)
-
-        def gen_transform(rows):
-            parsed_rows = (parse_row(row, fields_string, fields_int, fields_float) for row in rows)
-            transformed_rows = row_transform_generator(parsed_rows=parsed_rows, time_pairs=[TimePair("day", [time_window])], transform_args=transform_args)
-            for row in transformed_rows:
-                yield row
-    else:
-        def gen_transform(rows):
-            for row in rows:
-                yield row
-
-    q.set_fields(fields_string, fields_int, fields_float)
-    q.set_order("geo_value", "time_value")
-    q.where_source_signal_pairs("source", "signal", source_signal_pairs)
-    q.where_time_pairs("time_type", "time_value", [TimePair("day" if is_day else "week", [time_window])])
-    q.where_geo_pairs("geo_type", "geo_value", [GeoPair(geo_type, True if geo_values == "*" else geo_values)])
-
-    _handle_lag_issues_as_of(q, None, None, as_of)
+    fields_order = ["source", "signal", "geo_type", "geo_value", "time_type", "time_value"]
+    time_pairs = [TimePair("day", [time_window])] if is_day else [TimePair("week", [time_window])]
+    geo_pairs = [GeoPair(geo_type, True if geo_values == "*" else geo_values)]
 
     format_date = time_value_to_iso if is_day else lambda x: week_value_to_week(x).cdcformat()
     # tag as_of in filename, if it was specified
     as_of_str = "-asof-{as_of}".format(as_of=format_date(as_of)) if as_of is not None else ""
     filename = "covidcast-{source}-{signal}-{start_day}-to-{end_day}{as_of}".format(source=source, signal=signal, start_day=format_date(start_day), end_day=format_date(end_day), as_of=as_of_str)
+    # TODO: We might have to pass printer to get_response
     p = CSVPrinter(filename)
 
-    def parse_csv_row(i, row):
+    def parse_csv_row(i: int, row: Row) -> Dict[str, Any]:
         # '',geo_value,signal,{time_value,issue},lag,value,stderr,sample_size,geo_type,data_source
         return {
             "": i,
@@ -565,26 +619,39 @@ def handle_export():
             "data_source": alias_mapper(row["source"], row["signal"]) if alias_mapper else row["source"],
         }
 
-    def gen_parse(rows):
+    def gen_parse(rows: Iterable[Row]) -> Iterable[Dict[str, Any]]:
         for i, row in enumerate(rows):
             yield parse_csv_row(i, row)
 
-    # execute query
-    try:
-        r = run_query(p, (str(q), q.params))
-    except Exception as e:
-        raise DatabaseErrorException(str(e))
+    def gen_peek(rows: Iterable[Dict[str, Any]]) -> Iterable[Dict[str, Any]]:
+        # special case for no data to be compatible with the CSV server
+        rows = peekable(rows)
+        first_row = rows.peek(None)
+        if not first_row:
+            return "No matching data found for signal {source}:{signal} " "at {geo} level from {start_day} to {end_day}, as of {as_of}.".format(
+                source=source, signal=signal, geo=geo_type, start_day=format_date(start_day), end_day=format_date(end_day), as_of=(date.today().isoformat() if as_of is None else format_date(as_of))
+            )
 
-    # special case for no data to be compatible with the CSV server
-    transformed_query = peekable(gen_transform(r))
-    first_row = transformed_query.peek(None)
-    if not first_row:
-        return "No matching data found for signal {source}:{signal} " "at {geo} level from {start_day} to {end_day}, as of {as_of}.".format(
-            source=source, signal=signal, geo=geo_type, start_day=format_date(start_day), end_day=format_date(end_day), as_of=(date.today().isoformat() if as_of is None else format_date(as_of))
-        )
+        for row in rows:
+            yield row
 
-    # now use a generator for sending the rows and execute all the other queries
-    return p(gen_parse(transformed_query))
+    gen_parse_gen_peek = compose_funcs(gen_parse, gen_peek)
+
+    return get_response(
+        source_signal_pairs,
+        geo_pairs,
+        time_pairs,
+        None,
+        None,
+        None,
+        jit_bypass,
+        fields_string,
+        fields_int,
+        fields_float,
+        fields_order,
+        gen_parse_gen_peek,
+        p
+    )
 
 
 @bp.route("/backfill", methods=("GET", "POST"))

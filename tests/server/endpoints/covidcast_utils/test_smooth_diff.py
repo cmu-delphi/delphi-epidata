@@ -58,7 +58,7 @@ class TestStreaming(unittest.TestCase):
 
         with self.subTest("regular window, 0 fill"):
             smoothed_df = CovidcastRows.from_records(generate_smoothed_rows(data.to_dict(orient='records'), nan_fill_value=0.)).api_row_df
-    
+
             smoothed_values = _smooth_rows([v if v is not None and not isnan(v) else 0. for v in data.value.to_list()])
             reduced_time_values = data.time_value.to_list()[-len(smoothed_values):]
 
