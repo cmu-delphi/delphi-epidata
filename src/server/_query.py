@@ -10,7 +10,8 @@ from typing import (
     Tuple,
     Union,
     cast,
-    Mapping, Type,
+    Mapping, 
+    Type,
     )
 
 from sqlalchemy import text
@@ -174,7 +175,7 @@ def filter_source_signal_pairs(
     params: Dict[str, Any],
 ) -> Union[str, list]:
     """
-    returns the SQL sub queries in an array to filter by the given source signal pairs
+    returns an array of SQL sub queries to filter by the given source signal pairs
     """
 
     def filter_pair(pair: SourceSignalPair, i) -> Union[str, list]:
@@ -191,11 +192,11 @@ def filter_source_signal_pairs(
 
     parts = []
     for i, p in enumerate(values):
-        array = filter_pair(p, i)
-        if isinstance(array, str):
-            parts.append(filter_pair(p, i))
+        array_or_str = filter_pair(p, i)
+        if isinstance(array_or_str, str):
+            parts.append(array_or_str)
         else:
-            for x in array:
+            for x in array_or_str:
                 parts.append(x)
 
     if not parts:
@@ -412,16 +413,15 @@ class QueryBuilder:
 
         # if no signal array, assemble the sql and return
         if not self.signal_array:
-            command = f"SELECT {self.fields_clause} FROM {self.table} {index} {self.subquery} {where} {group_by}" 
+            command = f"SELECT {self.fields_clause} FROM {self.table} {index} {self.subquery} {where}" 
         else:
             # if there is a signal array, concatenate signals with UNION ALL
-            command = f"SELECT {self.fields_clause} FROM {self.table} {index} {self.subquery} {where} AND {self.signal_array[0]} {group_by}"
-            i = 1
-            while i < len(self.signal_array):
-                command += f"\nUNION ALL\nSELECT {self.fields_clause} FROM {self.table} {index} {self.subquery} {where} AND {self.signal_array[i]} {group_by}"
-                i += 1
+            command = " UNION ALL ".join(
+                f"SELECT {self.fields_clause} FROM {self.table} {index} {self.subquery} {where} AND {signal_clause}"
+                for signal_clause in self.signal_array
+            )
 
-        command = command + f" {order}"
+        command += f" {group_by} {order}"
         return command
 
     @property
@@ -547,14 +547,8 @@ class QueryBuilder:
             return cast(str, v)
 
         # Use the column name without their table name for the Order By clause since Union All is used
-        args_order = []
-        for i in range(len(args)):
-            # avoid conflict with the reserved word
-            if args[i] == 'signal':
-                args_order.append(f"`signal` ASC")
-            else:
-                args_order.append(f"{args[i]} ASC")
-        kw_order = [f"{self.alias}.{k} {to_asc(v)}" for k, v in kwargs.items()]
+        args_order = [f"`{k}` ASC" for k in args]
+        kw_order = [f"{k} {to_asc(v)}" for k, v in kwargs.items()]
         self.order = args_order + kw_order
         return self
 
