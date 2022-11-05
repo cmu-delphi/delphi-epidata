@@ -2,25 +2,27 @@
 
 # standard library
 from copy import copy
+from io import StringIO
 from itertools import accumulate, chain
 from typing import List, Sequence
-from io import StringIO
+from delphi.epidata.server.utils.dates import iterate_over_range
 
 # third party
-from more_itertools import interleave_longest, windowed
-import requests
 import pandas as pd
+import pytest
+import requests
+from more_itertools import windowed
 
 from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import main as update_cache
+from delphi.epidata.acquisition.covidcast.covidcast_row import CovidcastRow, CovidcastRows, set_df_dtypes, assert_frame_equal_no_order
 from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase
-from delphi.epidata.acquisition.covidcast.covidcast_row import CovidcastRow, CovidcastRows, set_df_dtypes
 
 # use the local instance of the Epidata API
 BASE_URL = "http://delphi_web_epidata/epidata/covidcast"
 BASE_URL_OLD = "http://delphi_web_epidata/epidata/api.php"
 
 
-def _read_csv(txt: str) -> pd.DataFrame:
+def _read_csv_str(txt: str) -> pd.DataFrame:
     df = pd.read_csv(StringIO(txt), index_col=0).rename(columns={"data_source": "source"})
     df.time_value = pd.to_datetime(df.time_value).dt.strftime("%Y%m%d").astype(int)
     df.issue = pd.to_datetime(df.issue).dt.strftime("%Y%m%d").astype(int)
@@ -88,6 +90,7 @@ class CovidcastEndpointTests(CovidcastBase):
         self._insert_rows(rows)
 
         with self.subTest("simple"):
+            # TODO: These tests aren't actually testing the compatibility endpoint.
             out = self._fetch("/", signal=first.signal_pair, geo=first.geo_pair, time="day:*")
             self.assertEqual(len(out["epidata"]), len(rows))
 
@@ -103,72 +106,81 @@ class CovidcastEndpointTests(CovidcastBase):
 
     # JIT tests
     def test_derived_signals(self):
-        time_value_pairs = [(20200401 + i, i ** 2) for i in range(10)]
-        rows01 = [CovidcastRow(source="jhu-csse", signal="confirmed_cumulative_num", time_value=time_value, value=value, geo_value="01") for time_value, value in time_value_pairs]
-        rows02 = [CovidcastRow(source="jhu-csse", signal="confirmed_cumulative_num", time_value=time_value, value=2 * value, geo_value="02") for time_value, value in time_value_pairs]
-        first = rows01[0]
-        self._insert_rows(rows01 + rows02)
+        # The base signal data.
+        data1 = CovidcastRows.from_args(
+            source = ["jhu-csse"] * 10,
+            signal = ["confirmed_cumulative_num"] * 10,
+            time_value = iterate_over_range(20200401, 20200410, inclusive=True),
+            geo_value = ["01"] * 10,
+            value = [i ** 2 for i in range(10)],
+        )
+        data2 = CovidcastRows.from_args(
+            source = ["jhu-csse"] * 10,
+            signal = ["confirmed_cumulative_num"] * 10,
+            time_value = iterate_over_range(20200401, 20200410, inclusive=True),
+            geo_value = ["02"] * 10,
+            value = [2 * i ** 2 for i in range(10)],
+        )
+        # A base signal with a time gap.
+        data3 = CovidcastRows.from_args(
+            source = ["jhu-csse"] * 15,
+            signal = ["confirmed_cumulative_num"] * 15,
+            time_value = chain(iterate_over_range(20200401, 20200410, inclusive=True), iterate_over_range(20200416, 20200420, inclusive=True)),
+            geo_value = ["03"] * 15,
+            value = [i ** 2 for i in chain(range(10), range(15, 20))],
+        )
+        self._insert_rows(data1.rows + data2.rows + data3.rows)
+        data3_reindexed = data3.api_row_df.set_index("time_value").reindex(iterate_over_range(20200401, 20200420, inclusive=True)).assign(
+            source = lambda df: df.source.fillna(method="ffill"),
+            signal = lambda df: df.signal.fillna(method="ffill"),
+            geo_value = lambda df: df.geo_value.fillna(method="ffill")
+        ).reset_index()
+        # Get the expected derived signal values.
+        data_df = pd.concat([data1.api_row_df, data2.api_row_df, data3_reindexed]).reset_index().set_index(["signal", "geo_value", "time_value"])
+        expected_diffed_df = data_df.groupby(["geo_value"]).value.diff()
+        expected_diffed_df.index.set_levels(["confirmed_incidence_num"], level=0, inplace=True)
+        expected_smoothed_df = data_df.groupby(["geo_value"]).value.diff().rolling(7).mean()
+        expected_smoothed_df.index.set_levels(["confirmed_7dav_incidence_num"], level=0, inplace=True)
+        expected_df = pd.concat([data_df.value, expected_diffed_df, expected_smoothed_df])
 
         with self.subTest("diffed signal"):
-            out = self._fetch("/", signal="jhu-csse:confirmed_incidence_num", geo=first.geo_pair, time="day:*")
+            out = self._fetch("/", signal="jhu-csse:confirmed_incidence_num", geo="county:01", time="day:*")
+            # TODO: This test will be updated when JIT can handle *.
             assert out['result'] == -2
-            out = self._fetch("/", signal="jhu-csse:confirmed_incidence_num", geo=first.geo_pair, time="day:20200401-20200410")
-            out_values = [row["value"] for row in out["epidata"]]
-            values = [value for _, value in time_value_pairs]
-            expected_values = _diff_rows(values)
-            self.assertAlmostEqual(out_values, expected_values)
+            out = self._fetch("/", signal="jhu-csse:confirmed_incidence_num", geo="county:01", time="day:20200401-20200410")
+            out_df = pd.DataFrame.from_records(out["epidata"]).set_index(["signal", "time_value", "geo_value"])
+            merged_df = pd.merge(out_df, expected_df, left_index=True, right_index=True, suffixes=["_out", "_expected"])[["value_out", "value_expected"]]
+            assert merged_df.empty is False
+            assert merged_df.value_out.to_numpy() == pytest.approx(merged_df.value_expected, nan_ok=True)
 
         with self.subTest("diffed signal, multiple geos"):
             out = self._fetch("/", signal="jhu-csse:confirmed_incidence_num", geo="county:01,02", time="day:20200401-20200410")
-            out_values = [row["value"] for row in out["epidata"]]
-            values1 = [value for _, value in time_value_pairs]
-            values2 = [2 * value for _, value in time_value_pairs]
-            expected_values = _diff_rows(values1) + _diff_rows(values2)
-            self.assertAlmostEqual(out_values, expected_values)
-
-        with self.subTest("diffed signal, multiple geos using geo:*"):
-            out = self._fetch("/", signal="jhu-csse:confirmed_incidence_num", geo="county:*", time="day:20200401-20200410")
-            values1 = [value for _, value in time_value_pairs]
-            values2 = [2 * value for _, value in time_value_pairs]
-            expected_values = _diff_rows(values1) + _diff_rows(values2)
-            self.assertAlmostEqual(out_values, expected_values)
+            out_df = pd.DataFrame.from_records(out["epidata"]).set_index(["signal", "time_value", "geo_value"])
+            merged_df = pd.merge(out_df, expected_df, left_index=True, right_index=True, suffixes=["_out", "_expected"])[["value_out", "value_expected"]]
+            assert merged_df.empty is False
+            assert merged_df.value_out.to_numpy() == pytest.approx(merged_df.value_expected, nan_ok=True)
 
         with self.subTest("smooth diffed signal"):
-            out = self._fetch("/", signal="jhu-csse:confirmed_7dav_incidence_num", geo=first.geo_pair, time="day:20200401-20200410")
-            out_values = [row["value"] for row in out["epidata"]]
-            values = [value for _, value in time_value_pairs]
-            expected_values = _smooth_rows(_diff_rows(values))
-            self.assertAlmostEqual(out_values, expected_values)
+            out = self._fetch("/", signal="jhu-csse:confirmed_7dav_incidence_num", geo="county:01", time="day:20200401-20200410")
+            out_df = pd.DataFrame.from_records(out["epidata"]).set_index(["signal", "time_value", "geo_value"])
+            merged_df = pd.merge(out_df, expected_df, left_index=True, right_index=True, suffixes=["_out", "_expected"])[["value_out", "value_expected"]]
+            assert merged_df.empty is False
+            assert merged_df.value_out.to_numpy() == pytest.approx(merged_df.value_expected, nan_ok=True)
 
         with self.subTest("diffed signal and smoothed signal in one request"):
-            out = self._fetch("/", signal="jhu-csse:confirmed_incidence_num;jhu-csse:confirmed_7dav_incidence_num", geo=first.geo_pair, time="day:20200401-20200410")
-            out_values = [row["value"] for row in out["epidata"]]
-            values = [value for _, value in time_value_pairs]
-            expected_diff = _diff_rows(values)
-            expected_smoothed = _smooth_rows(expected_diff)
-            expected_values = list(interleave_longest(expected_smoothed, expected_diff))
-            self.assertAlmostEqual(out_values, expected_values)
+            out = self._fetch("/", signal="jhu-csse:confirmed_incidence_num;jhu-csse:confirmed_7dav_incidence_num", geo="county:01", time="day:20200401-20200410")
+            out_df = pd.DataFrame.from_records(out["epidata"]).set_index(["signal", "time_value", "geo_value"])
+            merged_df = pd.merge(out_df, expected_df, left_index=True, right_index=True, suffixes=["_out", "_expected"])[["value_out", "value_expected"]]
+            assert merged_df.empty is False
+            assert merged_df.value_out.to_numpy() == pytest.approx(merged_df.value_expected, nan_ok=True)
 
-        time_value_pairs = [(20200401 + i, i ** 2) for i in chain(range(10), range(15, 20))]
-        rows = [CovidcastRow(source="jhu-csse", signal="confirmed_cumulative_num", geo_value="03", time_value=time_value, value=value) for time_value, value in time_value_pairs]
-        first = rows[0]
-        self._insert_rows(rows)
-
-        with self.subTest("diffing with a time gap"):
-            # should fetch 1 extra day
-            out = self._fetch("/", signal="jhu-csse:confirmed_incidence_num", geo=first.geo_pair, time="day:20200401-20200420")
-            out_values = [row["value"] for row in out["epidata"]]
-            values = [value for _, value in time_value_pairs][:10] + [None] * 5 + [value for _, value in time_value_pairs][10:]
-            expected_values = _diff_rows(values)
-            self.assertAlmostEqual(out_values, expected_values)
-
-        with self.subTest("smoothing and diffing with a time gap"):
-            # should fetch 1 extra day
-            out = self._fetch("/", signal="jhu-csse:confirmed_7dav_incidence_num", geo=first.geo_pair, time="day:20200401-20200420")
-            out_values = [row["value"] for row in out["epidata"]]
-            values = [value for _, value in time_value_pairs][:10] + [None] * 5 + [value for _, value in time_value_pairs][10:]
-            expected_values = _smooth_rows(_diff_rows(values))
-            self.assertAlmostEqual(out_values, expected_values)
+        with self.subTest("smoothing and diffing with a time gap and geo=*"):
+            # should fetch 7 extra day
+            out = self._fetch("/", signal="jhu-csse:confirmed_7dav_incidence_num", geo="county:*", time="day:20200407-20200420")
+            out_df = pd.DataFrame.from_records(out["epidata"]).set_index(["signal", "time_value", "geo_value"])
+            merged_df = pd.merge(out_df, expected_df, left_index=True, right_index=True, suffixes=["_out", "_expected"])[["value_out", "value_expected"]]
+            assert merged_df.empty is False
+            assert merged_df.value_out.to_numpy() == pytest.approx(merged_df.value_expected, nan_ok=True)
 
     def test_compatibility(self):
         """Request at the /api.php endpoint."""
@@ -447,7 +459,7 @@ class CovidcastEndpointTests(CovidcastBase):
                 params=dict(signal="jhu-csse:confirmed_cumulative_num", start_day="2020-04-01", end_day="2020-04-10", geo_type=first.geo_type),
             )
             response.raise_for_status()
-            df = _read_csv(response.text)
+            df = _read_csv_str(response.text)
             expected_df = CovidcastRows.from_args(
                 source=["jhu-csse"] * 10,
                 signal=["confirmed_cumulative_num"] * 10,
@@ -461,7 +473,7 @@ class CovidcastEndpointTests(CovidcastBase):
                 params=dict(signal="jhu-csse:confirmed_incidence_num", start_day="2020-04-01", end_day="2020-04-10", geo_type=first.geo_type),
             )
             response.raise_for_status()
-            df_diffed = _read_csv(response.text)
+            df_diffed = _read_csv_str(response.text)
             expected_df = CovidcastRows.from_args(
                 source=["jhu-csse"] * 10,
                 signal=["confirmed_incidence_num"] * 10,
