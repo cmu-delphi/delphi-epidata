@@ -121,7 +121,7 @@ def _combine_source_signal_pairs(source_signal_pairs: List[SourceSignalPair]) ->
 
 
 def parse_source_signal_arg(key: str = "signal") -> List[SourceSignalPair]:
-    return _combine_source_signal_pairs([SourceSignalPair(source, signals) for [source, signals] in _parse_common_multi_arg(key)])
+    return _combine_source_signal_pairs([SourceSignalPair(source, signals) for source, signals in _parse_common_multi_arg(key)])
 
 
 def parse_single_source_signal_arg(key: str) -> SourceSignalPair:
