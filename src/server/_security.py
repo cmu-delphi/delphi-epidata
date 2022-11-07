@@ -12,13 +12,17 @@ from ._config import API_KEY_REQUIRED_STARTING_AT, RATELIMIT_STORAGE_URL, URL_PR
 from ._common import app, request, db
 from ._exceptions import MissingAPIKeyException, UnAuthenticatedException
 from ._db import metadata, TABLE_OPTIONS
-from ._logger import get_structured_logger
+from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
 import re
 
 API_KEY_HARD_WARNING = API_KEY_REQUIRED_STARTING_AT - timedelta(days=14)
 API_KEY_SOFT_WARNING = API_KEY_HARD_WARNING - timedelta(days=14)
 
-API_KEY_WARNING_TEXT = "an api key will be required starting at {}, go to https://delphi.cmu.edu to request one".format(API_KEY_REQUIRED_STARTING_AT)
+API_KEY_WARNING_TEXT = (
+    "an api key will be required starting at {}, go to https://delphi.cmu.edu to request one".format(
+        API_KEY_REQUIRED_STARTING_AT
+    )
+)
 
 user_table = Table(
     "api_user",
@@ -27,8 +31,8 @@ user_table = Table(
     Column("api_key", String(50), unique=True),
     Column("email", String(100)),
     Column("roles", String(255)),
-    Column('tracking', Boolean(), default=True),
-    Column('registered', Boolean(), default=False),
+    Column("tracking", Boolean(), default=True),
+    Column("registered", Boolean(), default=False),
     **TABLE_OPTIONS,
 )
 
@@ -43,26 +47,26 @@ class DBUser:
 
     @property
     def roles_str(self):
-        return '\n'.join(self.roles)
+        return "\n".join(self.roles)
 
     @staticmethod
-    def _parse(r: Dict) -> 'DBUser':
+    def _parse(r: Dict) -> "DBUser":
         u = DBUser()
-        u.id = r['id']
-        u.api_key = r['api_key']
-        u.email = r['email']
-        u.roles = set(r['roles'].split(','))
-        u.tracking = r['tracking'] != False
-        u.registered = r['registered'] == True
+        u.id = r["id"]
+        u.api_key = r["api_key"]
+        u.email = r["email"]
+        u.roles = set(r["roles"].split(","))
+        u.tracking = r["tracking"] != False
+        u.registered = r["registered"] == True
         return u
 
     @staticmethod
-    def find(user_id: int) -> 'DBUser':
+    def find(user_id: int) -> "DBUser":
         stmt = user_table.select().where(user_table.c.id == user_id)
         return DBUser._parse(db.execution_options(stream_results=False).execute(stmt).first())
 
     @staticmethod
-    def find_by_api_key(api_key: int) -> Optional['DBUser']:
+    def find_by_api_key(api_key: int) -> Optional["DBUser"]:
         stmt = user_table.select().where(user_table.c.api_key == api_key)
         r = db.execution_options(stream_results=False).execute(stmt).first()
         if r is None:
@@ -70,24 +74,34 @@ class DBUser:
         return DBUser._parse(r)
 
     @staticmethod
-    def list() -> List['DBUser']:
+    def list() -> List["DBUser"]:
         return [DBUser._parse(r) for r in db.execution_options(stream_results=False).execute(user_table.select())]
 
     @staticmethod
     def insert(api_key: str, email: str, roles: Set[str], tracking: bool = True, registered: bool = False):
-        db.execute(user_table.insert().values(api_key=api_key, email=email, roles=','.join(roles), tracking=tracking, registered=registered))
+        db.execute(
+            user_table.insert().values(
+                api_key=api_key, email=email, roles=",".join(roles), tracking=tracking, registered=registered
+            )
+        )
 
     @staticmethod
     def register_new_key() -> str:
         api_key = str(uuid4())
-        DBUser.insert(api_key, '', set(), True, False)
+        DBUser.insert(api_key, "", set(), True, False)
         return api_key
 
     def delete(self):
         db.execute(user_table.delete(user_table.c.id == self.id))
 
-    def update(self, api_key: str, email: str, roles: Set[str], tracking: bool = True, registered: bool = False) -> 'DBUser':
-        db.execute(user_table.update().where(user_table.c.id == self.id).values(api_key=api_key, email=email, roles=','.join(roles), tracking=tracking, registered=registered))
+    def update(
+        self, api_key: str, email: str, roles: Set[str], tracking: bool = True, registered: bool = False
+    ) -> "DBUser":
+        db.execute(
+            user_table.update()
+            .where(user_table.c.id == self.id)
+            .values(api_key=api_key, email=email, roles=",".join(roles), tracking=tracking, registered=registered)
+        )
         self.api_key = api_key
         self.email = email
         self.roles = roles
@@ -142,7 +156,15 @@ class User:
     tracking: bool = True
     registered: bool = True
 
-    def __init__(self, api_key: str, email: str, authenticated: bool, roles: Set[UserRole], tracking: bool = True, registered: bool = False) -> None:
+    def __init__(
+        self,
+        api_key: str,
+        email: str,
+        authenticated: bool,
+        roles: Set[UserRole],
+        tracking: bool = True,
+        registered: bool = False,
+    ) -> None:
         self.api_key = api_key
         self.email = email
         self.authenticated = authenticated
@@ -193,7 +215,7 @@ def _find_user(api_key: Optional[str]) -> User:
 
 
 def resolve_auth_token() -> Optional[str]:
-    for name in ('auth', 'api_key', 'token'):
+    for name in ("auth", "api_key", "token"):
         if name in request.values:
             return request.values[name]
     # user name password
@@ -202,7 +224,7 @@ def resolve_auth_token() -> Optional[str]:
     # bearer token authentication
     auth_header = request.headers.get("Authorization")
     if auth_header and auth_header.startswith("Bearer "):
-        return auth_header[len("Bearer "):]
+        return auth_header[len("Bearer ") :]
     return None
 
 
@@ -223,7 +245,7 @@ def _get_current_user() -> User:
 
 def mask_apikey(path: str) -> str:
     # Function to mask API key query string from a request path
-    regexp = re.compile(r'[\\?&]api_key=([^&#]*)')
+    regexp = re.compile(r"[\\?&]api_key=([^&#]*)")
     if regexp.search(path):
         path = re.sub(regexp, "&api_key=*****", path)
     return path
@@ -234,21 +256,30 @@ current_user: User = cast(User, LocalProxy(_get_current_user))
 
 def require_api_key() -> bool:
     n = date.today()
-    return n >= API_KEY_REQUIRED_STARTING_AT and not app.config.get('TESTING', False)
+    return n >= API_KEY_REQUIRED_STARTING_AT and not app.config.get("TESTING", False)
 
 
 def show_soft_api_key_warning() -> bool:
     n = date.today()
-    return not current_user.is_authenticated() and not app.config.get('TESTING', False) and n > API_KEY_SOFT_WARNING and n < API_KEY_HARD_WARNING
+    return (
+        not current_user.is_authenticated()
+        and not app.config.get("TESTING", False)
+        and n > API_KEY_SOFT_WARNING
+        and n < API_KEY_HARD_WARNING
+    )
 
 
 def show_hard_api_key_warning() -> bool:
     n = date.today()
-    return not current_user.is_authenticated() and not app.config.get('TESTING', False) and n > API_KEY_HARD_WARNING
+    return not current_user.is_authenticated() and not app.config.get("TESTING", False) and n > API_KEY_HARD_WARNING
 
 
 def _is_public_route() -> bool:
-    return request.path.startswith(f"{URL_PREFIX}/lib") or request.path.startswith(f'{URL_PREFIX}/admin') or request.path.startswith(f'{URL_PREFIX}/version')
+    return (
+        request.path.startswith(f"{URL_PREFIX}/lib")
+        or request.path.startswith(f"{URL_PREFIX}/admin")
+        or request.path.startswith(f"{URL_PREFIX}/version")
+    )
 
 
 @app.before_request
@@ -297,7 +328,7 @@ def deduct_on_success(response: Response) -> bool:
     # check if we have the classic format
     if not response.is_streamed and response.is_json:
         out = response.json
-        if out and isinstance(out, dict) and out.get('result') == -1:
+        if out and isinstance(out, dict) and out.get("result") == -1:
             return False
     return True
 
@@ -307,7 +338,7 @@ limiter = Limiter(app, key_func=_resolve_tracking_key, storage_uri=RATELIMIT_STO
 
 @limiter.request_filter
 def _no_rate_limit() -> bool:
-    if app.config.get('TESTING', False) or _is_public_route():
+    if app.config.get("TESTING", False) or _is_public_route():
         return False
     # no rate limit if the user is registered
     user = _get_current_user()
