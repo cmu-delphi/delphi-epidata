@@ -4,7 +4,7 @@ from flask import Flask, g, request
 from sqlalchemy.engine import Connection
 from werkzeug.local import LocalProxy
 
-from ._config import patch_flask_config
+from ._config import SECRET
 from ._db import engine
 from ._exceptions import DatabaseErrorException
 
@@ -12,7 +12,7 @@ app = Flask("EpiData", static_url_path="")
 # for example if the request goes through one proxy
 # before hitting your application server
 # app.wsgi_app = ProxyFix(app.wsgi_app, num_proxies=1)
-patch_flask_config(app)
+app.config["SECRET"] = SECRET
 
 
 def _get_db() -> Connection:

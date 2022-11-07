@@ -3,8 +3,6 @@ from dotenv import load_dotenv
 import json
 from datetime import date
 
-from flask.app import Flask
-
 load_dotenv()
 
 VERSION = "0.4.0"
@@ -66,19 +64,3 @@ RATE_LIMIT = os.environ.get('RATE_LIMIT', '10/hour')
 RATELIMIT_STRATEGY = os.environ.get('RATELIMIT_STRATEGY', 'fixed-window')
 # see https://flask-limiter.readthedocs.io/en/stable/#configuration
 RATELIMIT_STORAGE_URL = os.environ.get('RATELIMIT_STORAGE_URL', 'memory://')
-
-
-def patch_flask_config(app: Flask):
-    """
-    patch the configration with some environment variables
-    """
-    sub = {}
-    for k,v in os.environ.items():
-        if k.startswith('RATELIMIT'):
-            sub[k] = v
-    sub.update({
-        'SECRET': SECRET,
-        'RATELIMIT_STRATEGY': RATELIMIT_STRATEGY,
-        'RATELIMIT_STORAGE_URL': RATELIMIT_STORAGE_URL
-    })
-    app.config.update(sub)
