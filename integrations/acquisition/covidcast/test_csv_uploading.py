@@ -59,6 +59,8 @@ class CsvUploadingTests(unittest.TestCase):
         secrets.db.epi = ("user", "pass")
 
         # use the local instance of the Epidata API
+        # Default value for BASE_URL is "https://delphi.cmu.edu/epidata/api.php" and None for auth
+        Epidata.BASE_URL = "http://delphi_web_epidata/epidata/api.php"
         Epidata.auth = ("epidata", "key")
 
     def tearDown(self):
@@ -169,8 +171,7 @@ select value_updated_timestamp from epimetric_latest"""
 
             # Verify that files were archived
             path = (
-                data_dir
-                + f"/archive/successful/src-name/20200419_state_test.csv.gz"
+                data_dir + "/archive/successful/src-name/20200419_state_test.csv.gz"
             )
             self.assertIsNotNone(os.stat(path))
 
@@ -210,15 +211,13 @@ select value_updated_timestamp from epimetric_latest"""
                                 "time_value": [20200419] * 3,
                                 "signal": [signal_name] * 3,
                                 "direction": [None] * 3,
-                                "missing_value": [Nans.OTHER]
-                                + [Nans.NOT_MISSING] * 2,
+                                "missing_value": [Nans.OTHER] + [Nans.NOT_MISSING] * 2,
                                 "missing_stderr": [
                                     Nans.NOT_MISSING,
                                     Nans.OTHER,
                                     Nans.NOT_MISSING,
                                 ],
-                                "missing_sample_size": [Nans.NOT_MISSING] * 2
-                                + [Nans.OTHER],
+                                "missing_sample_size": [Nans.NOT_MISSING] * 2 + [Nans.OTHER],
                             }
                         ),
                     ],

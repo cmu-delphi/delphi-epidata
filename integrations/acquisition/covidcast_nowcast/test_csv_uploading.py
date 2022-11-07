@@ -60,6 +60,8 @@ class CsvUploadingTests(unittest.TestCase):
         secrets.db.epi = ("user", "pass")
 
         # use the local instance of the Epidata API
+        # Default value for BASE_URL is "https://delphi.cmu.edu/epidata/api.php" and None for auth
+        Epidata.BASE_URL = "http://delphi_web_epidata/epidata/api.php"
         Epidata.auth = ("epidata", "key")
 
     def tearDown(self):
@@ -77,15 +79,9 @@ class CsvUploadingTests(unittest.TestCase):
         # print full diff if something unexpected comes out
         self.maxDiff = None
 
-        receiving_dir = (
-            "/common/covidcast_nowcast/receiving/issue_20200421/src/"
-        )
-        success_dir = (
-            "/common/covidcast_nowcast/archive/successful/issue_20200421/src/"
-        )
-        failed_dir = (
-            "/common/covidcast_nowcast/archive/failed/issue_20200421/src/"
-        )
+        receiving_dir = "/common/covidcast_nowcast/receiving/issue_20200421/src/"
+        success_dir = "/common/covidcast_nowcast/archive/successful/issue_20200421/src/"
+        failed_dir = "/common/covidcast_nowcast/archive/failed/issue_20200421/src/"
         os.makedirs(receiving_dir, exist_ok=True)
 
         # valid
@@ -108,14 +104,10 @@ class CsvUploadingTests(unittest.TestCase):
             with open(receiving_dir + "20200419_state_empty.csv", "w") as f:
                 f.write("")
             main()
-        self.assertTrue(
-            os.path.isfile(failed_dir + "20200419_state_empty.csv")
-        )
+        self.assertTrue(os.path.isfile(failed_dir + "20200419_state_empty.csv"))
 
         # check data uploaded
-        response = Epidata.covidcast_nowcast(
-            "src", "sig", "testsensor", "day", "state", 20200419, "ca"
-        )
+        response = Epidata.covidcast_nowcast("src", "sig", "testsensor", "day", "state", 20200419, "ca")
         self.assertEqual(
             response,
             {
@@ -144,9 +136,7 @@ class CsvUploadingTests(unittest.TestCase):
         # print full diff if something unexpected comes out
         self.maxDiff = None
 
-        receiving_dir = (
-            "/common/covidcast_nowcast/receiving/issue_20200425/src/"
-        )
+        receiving_dir = "/common/covidcast_nowcast/receiving/issue_20200425/src/"
         os.makedirs(receiving_dir, exist_ok=True)
 
         with open(receiving_dir + "20200419_state_sig.csv", "w") as f:
@@ -159,9 +149,7 @@ class CsvUploadingTests(unittest.TestCase):
         main()
 
         # most most recent value is the one stored
-        response = Epidata.covidcast_nowcast(
-            "src", "sig", "testsensor", "day", "state", 20200419, "ca"
-        )
+        response = Epidata.covidcast_nowcast("src", "sig", "testsensor", "day", "state", 20200419, "ca")
         self.assertEqual(
             response,
             {

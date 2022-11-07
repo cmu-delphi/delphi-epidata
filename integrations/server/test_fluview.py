@@ -18,6 +18,8 @@ class FluviewTests(unittest.TestCase):
         """Perform one-time setup."""
 
         # use the local instance of the Epidata API
+        # Default value for BASE_URL is "https://delphi.cmu.edu/epidata/api.php" and None for auth
+        Epidata.BASE_URL = "http://delphi_web_epidata/epidata/api.php"
         Epidata.auth = ("epidata", "key")
 
     def setUp(self):

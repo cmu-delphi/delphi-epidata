@@ -49,7 +49,9 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
         )
 
         # use the local instance of the Epidata API
-        Epidata.auth = ('epidata', 'key')
+        # Default value for BASE_URL is "https://delphi.cmu.edu/epidata/api.php" and None for auth
+        Epidata.BASE_URL = "http://delphi_web_epidata/epidata/api.php"
+        Epidata.auth = ("epidata", "key")
 
         # use the local instance of the epidata database
         secrets.db.host = "delphi_database_epidata"
