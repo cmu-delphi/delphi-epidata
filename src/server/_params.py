@@ -7,7 +7,7 @@ from flask import request
 
 
 from ._exceptions import ValidationFailedException
-from .utils import days_in_range, weeks_in_range, guess_time_value_is_day, guess_time_value_is_week, TimeValues, time_values_to_ranges
+from .utils import days_in_range, weeks_in_range, guess_time_value_is_day, guess_time_value_is_week, TimeValues, days_to_ranges, weeks_to_ranges
 
 
 def _parse_common_multi_arg(key: str) -> List[Tuple[str, Union[bool, Sequence[str]]]]:
@@ -129,6 +129,16 @@ class TimePair:
             return sum(1 if isinstance(v, int) else weeks_in_range(v) for v in self.time_values)
         return sum(1 if isinstance(v, int) else days_in_range(v) for v in self.time_values)
 
+    def to_ranges(self):
+        """
+        returns this pair with times converted to ranges
+        """
+        if isinstance(self.time_values, bool):
+            return TimePair(self.time_type, self.time_values)
+        if self.time_type == 'week':
+            return TimePair(self.time_type, weeks_to_ranges(self.time_values))
+        return TimePair(self.time_type, days_to_ranges(self.time_values))
+
 
 def _verify_range(start: int, end: int) -> Union[int, Tuple[int, int]]:
     if start == end:
@@ -226,7 +236,7 @@ def parse_time_arg(key: str = "time") -> Optional[TimePair]:
             return time_pair
         else:
             merged.extend(time_pair.time_values)
-    return TimePair(time_pairs[0].time_type, time_values_to_ranges(merged))
+    return TimePair(time_pairs[0].time_type, merged).to_ranges()
 
 
 def parse_single_time_arg(key: str) -> TimePair:

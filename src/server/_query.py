@@ -22,7 +22,7 @@ from ._printer import create_printer, APrinter
 from ._exceptions import DatabaseErrorException
 from ._validate import extract_strings
 from ._params import GeoPair, SourceSignalPair, TimePair
-from .utils import time_values_to_ranges, days_to_ranges, weeks_to_ranges, TimeValues
+from .utils import time_values_to_ranges, TimeValues
 
 
 def date_string(value: int) -> str:
@@ -181,6 +181,7 @@ def filter_time_pair(
     """
     returns the SQL sub query to filter by the given time pair
     """
+    # safety path; should normally not be reached as time pairs are enforced by the API
     if not pair:
         return "FALSE"
 
@@ -189,7 +190,7 @@ def filter_time_pair(
     if isinstance(pair.time_values, bool) and pair.time_values:
         parts =  f"{type_field} = :{type_param}"
     else:
-        ranges = weeks_to_ranges(pair.time_values) if pair.is_week else days_to_ranges(pair.time_values)
+        ranges = pair.to_ranges().time_values
         parts = f"({type_field} = :{type_param} AND {filter_integers(time_field, ranges, type_param, params)})"
 
     return f"({parts})"
