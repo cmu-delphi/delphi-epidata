@@ -2,23 +2,7 @@ from typing import List, Optional, Sequence, Tuple, Union
 
 from flask import request
 
-from ._exceptions import UnAuthenticatedException, ValidationFailedException
-from ._security import resolve_auth_token
-
-
-def check_auth_token(token: str, optional=False) -> bool:
-    value = resolve_auth_token()
-
-    if value is None:
-        if optional:
-            return False
-        else:
-            raise ValidationFailedException("missing parameter: auth")
-
-    valid_token = value == token
-    if not valid_token and not optional:
-        raise UnAuthenticatedException()
-    return valid_token
+from ._exceptions import ValidationFailedException
 
 
 def require_all(*values: str) -> bool:
