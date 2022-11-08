@@ -26,7 +26,7 @@ class CovidcastEndpointTests(CovidcastBase):
             'update covidcast_meta_cache set timestamp = 0, epidata = "[]"'
         )
 
-    def _fetch(self, endpoint="/", **params):
+    def _fetch(self, endpoint="/", to_json=True, **params):
         # make the request
         response = requests.get(
             f"http://delphi_web_epidata/epidata/covidcast{endpoint}",
@@ -34,7 +34,7 @@ class CovidcastEndpointTests(CovidcastBase):
             auth=("epidata", "key"),
         )
         response.raise_for_status()
-        return response.json()
+        return response.json() if to_json else response
 
     def test_basic(self):
         """Request a signal from the / endpoint."""
@@ -243,12 +243,12 @@ class CovidcastEndpointTests(CovidcastBase):
 
         response = self._fetch(
             "/csv",
+            False,
             signal=first.signal_pair(),
             start_day="2020-04-01",
             end_day="2020-12-12",
             geo_type=first.geo_type,
         )
-        response.raise_for_status()
         out = response.text
         df = pd.read_csv(StringIO(out), index_col=0)
         self.assertEqual(df.shape, (len(rows), 10))
