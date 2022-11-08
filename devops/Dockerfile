@@ -13,13 +13,13 @@ RUN pip install --no-cache-dir -r /tmp/requirements.txt -r requirements_also.txt
 # the file /tmp/requirements.txt is created in the parent docker definition.  (see:
 #   https://github.com/tiangolo/meinheld-gunicorn-docker/blob/master/docker-images/python3.8.dockerfile#L5 )
 # this combined requirements installation ensures all version constrants are accounted for.
-
 # disable python stdout buffering
 ENV PYTHONUNBUFFERED 1
 
 COPY ./devops/gunicorn_conf.py /app
 COPY ./devops/start_wrapper.sh /
 COPY ./src/server/ /app/app/
+COPY ./src/acquisition/covidcast/logger.py /app/app/_logger.py
 COPY --from=builder ./src/build/lib/ /app/app/lib/
 RUN rm -rf /app/app/__pycache__ /app/app/*.php \
       && chmod -R o+r /app/app \
