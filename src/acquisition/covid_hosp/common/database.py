@@ -172,15 +172,25 @@ class Database:
                        tuple(values) +
                        tuple(i[0] for i in self.additional_fields))
 
+    # deal with non/seldomly updated columns used like a fk table (if this database needs it)
     if hasattr(self, 'AGGREGATE_KEY_COLS'):
       ak_cols = self.AGGREGATE_KEY_COLS
 
       # restrict data to just the key columns and remove duplicate rows
       ak_data = dataframe[ak_cols].drop_duplicates()
-      # cast types (bools and NULLables)
+      # cast types
+      dataframe_typemap = {
+        name: dtype
+        for name, _, dtype in dataframe_columns_and_types
+      }
       for col in ak_cols:
-        if col.startswith('is_'): # TODO: this is hacky af
-          ak_data[col] = (ak_data[col] == 'true')
+          def cast_but_sidestep_nans(i):
+            # not the prettiest, but it works to avoid the NaN values that show up in many columns
+            if isinstance(i, float) and math.isnan(i):
+              return None
+            return dataframe_typemap[col](i)
+          ak_data[col] = ak_data[col].apply(cast_but_sidestep_nans)
+      # fix NULLs
       ak_data = ak_data.to_numpy(na_value=None).tolist()
 
       # create string of tick-quoted and comma-seperated column list
