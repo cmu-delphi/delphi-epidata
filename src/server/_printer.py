@@ -208,7 +208,8 @@ class CSVPrinter(APrinter):
 
     def _format_row(self, first: bool, row: Dict):
         if first:
-            self._writer = DictWriter(self._stream, list(row.keys()), lineterminator="\n")
+            columns = list(row.keys())
+            self._writer = DictWriter(self._stream, columns, lineterminator="\n")
             self._writer.writeheader()
             if show_hard_api_key_warning() and columns:
                 self._writer.writerow({columns[0]: API_KEY_WARNING_TEXT})
