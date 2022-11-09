@@ -2,7 +2,8 @@ from typing import Any, Dict, List, Tuple
 
 from flask import Blueprint
 
-from .._security import current_user, UserRole
+from .._security import current_user
+from .._config import UserRole
 from .._query import execute_queries, filter_integers, filter_strings
 from .._validate import (
     extract_integer,

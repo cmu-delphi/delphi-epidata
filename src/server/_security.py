@@ -1,5 +1,4 @@
 from typing import Dict, List, Optional, Set, cast
-from enum import Enum
 from datetime import date, timedelta
 from functools import wraps
 from uuid import uuid4
@@ -8,11 +7,13 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from werkzeug.local import LocalProxy
 from sqlalchemy import Table, Column, String, Integer, Boolean
-from ._config import API_KEY_REQUIRED_STARTING_AT, RATELIMIT_STORAGE_URL, URL_PREFIX
+from ._config import API_KEY_REQUIRED_STARTING_AT, RATELIMIT_STORAGE_URL, URL_PREFIX, UserRole
 from ._common import app, request, db
 from ._exceptions import MissingAPIKeyException, UnAuthenticatedException
 from ._db import metadata, TABLE_OPTIONS
-from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
+
+# This module is delivered by Dockerfile (devops/Dockerfile)
+from ._logger import get_structured_logger
 import re
 
 API_KEY_HARD_WARNING = API_KEY_REQUIRED_STARTING_AT - timedelta(days=14)
@@ -24,6 +25,10 @@ API_KEY_WARNING_TEXT = (
     )
 )
 
+TESTING_MODE = app.config.get("TESTING", False)
+
+
+# This user_table is defined here to interact with it inside DBUser class.
 user_table = Table(
     "api_user",
     metadata,
@@ -37,13 +42,31 @@ user_table = Table(
 )
 
 
-class DBUser:
+class AbstractUser:
+    """
+    This is common user class
+    """
+
     id: int
     api_key: str
     email: str
     roles: Set[str]
     tracking: bool = True
     registered: bool = False
+
+    @staticmethod
+    def find_by_api_key(api_key: int):
+        stmt = user_table.select().where(user_table.c.api_key == api_key)
+        user = db.execution_options(stream_results=False).execute(stmt).first()
+        return user
+
+
+class DBUser(AbstractUser):
+
+    """
+    This class is just a wrapper to ineract with `api_user` table.
+    It contains all needed methods to execute CRUD queries and to find/list users.
+    """
 
     @property
     def roles_str(self):
@@ -66,12 +89,11 @@ class DBUser:
         return DBUser._parse(db.execution_options(stream_results=False).execute(stmt).first())
 
     @staticmethod
-    def find_by_api_key(api_key: int) -> Optional["DBUser"]:
-        stmt = user_table.select().where(user_table.c.api_key == api_key)
-        r = db.execution_options(stream_results=False).execute(stmt).first()
-        if r is None:
+    def find_by_api_key(api_key: int):
+        user = AbstractUser.find_by_api_key(api_key)
+        if user is None:
             return None
-        return DBUser._parse(r)
+        return DBUser._parse(user)
 
     @staticmethod
     def list() -> List["DBUser"]:
@@ -85,14 +107,14 @@ class DBUser:
             )
         )
 
+    def delete(self):
+        db.execute(user_table.delete(user_table.c.id == self.id))
+
     @staticmethod
     def register_new_key() -> str:
         api_key = str(uuid4())
         DBUser.insert(api_key, "", set(), True, False)
         return api_key
-
-    def delete(self):
-        db.execute(user_table.delete(user_table.c.id == self.id))
 
     def update(
         self, api_key: str, email: str, roles: Set[str], tracking: bool = True, registered: bool = False
@@ -110,58 +132,13 @@ class DBUser:
         return self
 
 
-class UserRole(str, Enum):
-    afhsb = "afhsb"
-    cdc = "cdc"
-    fluview = "fluview"
-    ght = "ght"
-    norostat = "norostat"
-    quidel = "quidel"
-    sensors = "sensors"
-    sensor_twtr = "sensor_twtr"
-    sensor_gft = "sensor_gft"
-    sensor_ght = "sensor_ght"
-    sensor_ghtj = "sensor_ghtj"
-    sensor_cdc = "sensor_cdc"
-    sensor_quid = "sensor_quid"
-    sensor_wiki = "sensor_wiki"
-    twitter = "twitter"
-
-
-# begin sensor query authentication configuration
-#   A multimap of sensor names to the "granular" auth tokens that can be used to access them; excludes the "global" sensor auth key that works for all sensors:
-GRANULAR_SENSOR_ROLES = {
-    "twtr": UserRole.sensor_twtr,
-    "gft": UserRole.sensor_gft,
-    "ght": UserRole.sensor_ght,
-    "ghtj": UserRole.sensor_ghtj,
-    "cdc": UserRole.sensor_cdc,
-    "quid": UserRole.sensor_quid,
-    "wiki": UserRole.sensor_wiki,
-}
-
-#   A set of sensors that do not require an auth key to access:
-OPEN_SENSORS = [
-    "sar3",
-    "epic",
-    "arch",
-]
-
-
-class User:
-    api_key: str
-    email: str
-    authenticated: bool
-    roles: Set[UserRole]
-    tracking: bool = True
-    registered: bool = True
-
+class APIUser(AbstractUser):
     def __init__(
         self,
         api_key: str,
         email: str,
         authenticated: bool,
-        roles: Set[UserRole],
+        roles: Set[str],
         tracking: bool = True,
         registered: bool = False,
     ) -> None:
@@ -171,6 +148,17 @@ class User:
         self.roles = roles
         self.tracking = tracking
         self.registered = registered
+
+    @staticmethod
+    def get_anonymous_user():
+        return APIUser("anonymous", "", False, set())
+
+    @staticmethod
+    def find_by_api_key(api_key: int):
+        user = AbstractUser.find_by_api_key(api_key)
+        if user is None:
+            return APIUser.get_anonymous_user()
+        return APIUser(user.api_key, user.email, True, set(user.roles.split(",")), user.tracking, user.registered)
 
     def get_apikey(self) -> str:
         return self.api_key
@@ -200,20 +188,6 @@ class User:
             logger.info(msg, *args, **kwargs)
 
 
-ANONYMOUS_USER = User("anonymous", "", False, set())
-
-
-def _find_user(api_key: Optional[str]) -> User:
-    if not api_key:
-        return ANONYMOUS_USER
-    stmt = user_table.select().where(user_table.c.api_key == api_key)
-    user = db.execution_options(stream_results=False).execute(stmt).first()
-    if user is None:
-        return ANONYMOUS_USER
-    else:
-        return User(user.api_key, user.email, True, set(user.roles.split(",")), user.tracking, user.registered)
-
-
 def resolve_auth_token() -> Optional[str]:
     for name in ("auth", "api_key", "token"):
         if name in request.values:
@@ -228,10 +202,23 @@ def resolve_auth_token() -> Optional[str]:
     return None
 
 
-def _get_current_user() -> User:
+def mask_apikey(path: str) -> str:
+    # Function to mask API key query string from a request path
+    regexp = re.compile(r"[\\?&]api_key=([^&#]*)")
+    if regexp.search(path):
+        path = re.sub(regexp, "&api_key=*****", path)
+    return path
+
+
+def require_api_key() -> bool:
+    n = date.today()
+    return n >= API_KEY_REQUIRED_STARTING_AT and not TESTING_MODE
+
+
+def _get_current_user() -> APIUser:
     if "user" not in g:
         api_key = resolve_auth_token()
-        user = _find_user(api_key)
+        user = APIUser.find_by_api_key(api_key)
         request_path = request.full_path
         if not user.is_authenticated() and require_api_key():
             raise MissingAPIKeyException()
@@ -243,27 +230,14 @@ def _get_current_user() -> User:
     return g.user
 
 
-def mask_apikey(path: str) -> str:
-    # Function to mask API key query string from a request path
-    regexp = re.compile(r"[\\?&]api_key=([^&#]*)")
-    if regexp.search(path):
-        path = re.sub(regexp, "&api_key=*****", path)
-    return path
-
-
-current_user: User = cast(User, LocalProxy(_get_current_user))
-
-
-def require_api_key() -> bool:
-    n = date.today()
-    return n >= API_KEY_REQUIRED_STARTING_AT and not app.config.get("TESTING", False)
+current_user: APIUser = cast(APIUser, LocalProxy(_get_current_user))
 
 
 def show_soft_api_key_warning() -> bool:
     n = date.today()
     return (
         not current_user.is_authenticated()
-        and not app.config.get("TESTING", False)
+        and not TESTING_MODE
         and n > API_KEY_SOFT_WARNING
         and n < API_KEY_HARD_WARNING
     )
@@ -271,7 +245,7 @@ def show_soft_api_key_warning() -> bool:
 
 def show_hard_api_key_warning() -> bool:
     n = date.today()
-    return not current_user.is_authenticated() and not app.config.get("TESTING", False) and n > API_KEY_HARD_WARNING
+    return not current_user.is_authenticated() and n > API_KEY_HARD_WARNING and not TESTING_MODE
 
 
 def _is_public_route() -> bool:
@@ -298,7 +272,7 @@ def resolve_user():
         if require_api_key():
             raise MissingAPIKeyException()
         else:
-            g.user = ANONYMOUS_USER
+            g.user = APIUser.get_anonymous_user()
 
 
 def require_role(required_role: Optional[UserRole]):
@@ -338,7 +312,7 @@ limiter = Limiter(app, key_func=_resolve_tracking_key, storage_uri=RATELIMIT_STO
 
 @limiter.request_filter
 def _no_rate_limit() -> bool:
-    if app.config.get("TESTING", False) or _is_public_route():
+    if TESTING_MODE or _is_public_route():
         return False
     # no rate limit if the user is registered
     user = _get_current_user()

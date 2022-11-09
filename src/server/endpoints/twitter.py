@@ -8,7 +8,8 @@ from .._validate import (
     require_all,
     require_any,
 )
-from .._security import UserRole, require_role
+from .._security import require_role
+from .._config import UserRole
 
 # first argument is the endpoint name
 bp = Blueprint("twitter", __name__)

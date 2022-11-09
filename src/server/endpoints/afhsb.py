@@ -4,7 +4,8 @@ from flask import Blueprint
 
 from .._query import execute_queries, filter_integers, filter_strings
 from .._validate import extract_integers, extract_strings, require_all
-from .._security import UserRole, require_role
+from .._security import require_role
+from .._config import UserRole
 
 # first argument is the endpoint name
 bp = Blueprint("afhsb", __name__)

@@ -3,7 +3,8 @@ from flask import Blueprint
 from .._config import NATION_REGION, REGION_TO_STATE
 from .._validate import require_all, extract_strings, extract_integers
 from .._query import filter_strings, execute_queries, filter_integers
-from .._security import UserRole, require_role
+from .._security import require_role
+from .._config import UserRole
 
 # first argument is the endpoint name
 bp = Blueprint("cdc", __name__)

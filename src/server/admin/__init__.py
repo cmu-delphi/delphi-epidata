@@ -5,8 +5,8 @@ from flask import Blueprint, render_template_string, request, make_response
 from werkzeug.exceptions import Unauthorized, NotFound, BadRequest
 from werkzeug.utils import redirect
 from requests import post
-from .._security import resolve_auth_token, DBUser, UserRole
-from .._config import ADMIN_PASSWORD, RECAPTCHA_SECRET_KEY, RECAPTCHA_SITE_KEY, REGISTER_WEBHOOK_TOKEN
+from .._security import resolve_auth_token, DBUser
+from .._config import ADMIN_PASSWORD, RECAPTCHA_SECRET_KEY, RECAPTCHA_SITE_KEY, REGISTER_WEBHOOK_TOKEN, UserRole
 
 self_dir = Path(__file__).parent
 # first argument is the endpoint name

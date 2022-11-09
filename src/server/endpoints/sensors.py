@@ -5,7 +5,8 @@ from .._validate import (
     extract_strings,
     extract_integers,
 )
-from .._security import current_user, GRANULAR_SENSOR_ROLES, OPEN_SENSORS, UserRole
+from .._security import current_user
+from .._config import GRANULAR_SENSOR_ROLES, OPEN_SENSORS, UserRole
 from .._query import filter_strings, execute_query, filter_integers
 from .._exceptions import EpiDataException
 from typing import List

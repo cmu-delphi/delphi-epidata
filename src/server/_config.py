@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 import json
+from enum import Enum
 from datetime import date
 
 load_dotenv()
@@ -64,3 +65,41 @@ RATE_LIMIT = os.environ.get('RATE_LIMIT', '10/hour')
 RATELIMIT_STRATEGY = os.environ.get('RATELIMIT_STRATEGY', 'fixed-window')
 # see https://flask-limiter.readthedocs.io/en/stable/#configuration
 RATELIMIT_STORAGE_URL = os.environ.get('RATELIMIT_STORAGE_URL', 'memory://')
+
+
+class UserRole(str, Enum):
+    afhsb = "afhsb"
+    cdc = "cdc"
+    fluview = "fluview"
+    ght = "ght"
+    norostat = "norostat"
+    quidel = "quidel"
+    sensors = "sensors"
+    sensor_twtr = "sensor_twtr"
+    sensor_gft = "sensor_gft"
+    sensor_ght = "sensor_ght"
+    sensor_ghtj = "sensor_ghtj"
+    sensor_cdc = "sensor_cdc"
+    sensor_quid = "sensor_quid"
+    sensor_wiki = "sensor_wiki"
+    twitter = "twitter"
+
+# Begin sensor query authentication configuration
+# A multimap of sensor names to the "granular" auth tokens that can be used to access them;
+# excludes the "global" sensor auth key that works for all sensors:
+GRANULAR_SENSOR_ROLES = {
+    "twtr": UserRole.sensor_twtr,
+    "gft": UserRole.sensor_gft,
+    "ght": UserRole.sensor_ght,
+    "ghtj": UserRole.sensor_ghtj,
+    "cdc": UserRole.sensor_cdc,
+    "quid": UserRole.sensor_quid,
+    "wiki": UserRole.sensor_wiki,
+}
+
+# A set of sensors that do not require an auth key to access:
+OPEN_SENSORS = [
+    "sar3",
+    "epic",
+    "arch",
+]
