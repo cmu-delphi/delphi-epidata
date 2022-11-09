@@ -184,9 +184,9 @@ class Database:
       ak_data = ak_data.to_numpy(na_value=None).tolist()
 
       # create string of tick-quoted and comma-seperated column list
-      ak_cols_str = ','.join([ '`'+col+'`' for col in ak_cols ])
+      ak_cols_str = ','.join(f'`{col}`' for col in ak_cols)
       # ...and ticked and comma-sep'd "column=column" list for ON UPDATE (to keep only the most recent values for each pk)
-      ak_updates_str = ','.join([ '`'+col+'`=`'+col+'`' for col in ak_cols ])
+      ak_updates_str = ','.join(f'`{col}`=`{col}`' for col in ak_cols)
       # ...and string of VALUES placeholders
       values_str = ','.join( ['%s'] * len(ak_cols) )
       # use aggregate key table alias
