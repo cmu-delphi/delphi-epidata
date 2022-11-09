@@ -118,6 +118,7 @@ RE_NUMBERED_PREFIX = re.compile(r'^[0-9]*\.')
 #RE_TYPE=re.compile("^([A-Z]*)(\([0-9]*\))*")
 
 def infer_type(col):
+    """Guess the type of a new column read from HHS JSON."""
     sqltys = -1
     if col['dataTypeName'] == 'text':
         if col['cachedContents']['cardinality'] == "2":
@@ -136,7 +137,6 @@ def infer_type(col):
     if col['dataTypeName'] == 'calendar_date':
         pyty = "Utils.int_from_date"
         sqlty = "INT"
-        #sqltys = 11
     if col['dataTypeName'] == 'number':
         if col['cachedContents']['largest'].find('.') < 0:
             pyty = "int"
@@ -161,6 +161,7 @@ def infer_type(col):
 
 
 def extend_columns_with_current_json(columns, json_data):
+    """Add new columns found in json_data to existing set of columns read from python/SQL files."""
     hits = []
     misses = []
     for json_column in json_data:
@@ -172,15 +173,60 @@ def extend_columns_with_current_json(columns, json_data):
         if json_column['name'] in columns:
             hits.append(json_column['name'])
         else:
-            misses.append(Column(
+            new_column = Column(
                 csv_name=json_column['name'],
                 csv_order=json_column['position'],
                 desc=re.sub(RE_NUMBERED_PREFIX, "", json_column['description']).strip(),
                 sql_name=json_column['fieldName'].lower(),
                 **infer_type(json_column)
-            ))
+            )
+            misses.append(new_column)
+            columns[new_column.csv_name] = new_column
     return hits, misses
 
+TRIE_END = object()
+class TrieNode:
+    def __init__(self, name, parent=None):
+        self.name = name
+        self.short_name = name
+        self.children = dict()
+        self.parent = parent
+    def insert(self, words):
+        if not words:
+            self.children.setdefault(TRIE_END, TRIE_END)
+            return self
+        return self.children.setdefault(words[0], TrieNode(words[0], self)).insert(words[1:])
+    def as_shortened_name(self, end=None):
+        if end is None: end = list()
+        if self.short_name:
+            end.insert(0, self.short_name)
+        if self.parent is None:
+            return "_".join(end)
+        return self.parent.as_shortened_name(end)
+    def longest(self, longest=(0, None)):
+        if len(self.short_name) > longest[0]:
+            longest = (len(self.short_name), self)
+        if parent:
+            return parent.longest(longest)
+        else:
+            return longest[-1]
+    def make_shorter(self):
+        strategies = {
+            "and": "",
+            "hospitalized": "hosp",
+            "vaccinated": "vaccd",
+            "coverage": "cov"
+        }
+        if self.short_name in strategies:
+            self.short_name = strategies[self.short_name]
+        elif self.short_name == "7": # i.e. from "7_day"
+            if "day" in self.children and len(self.children) == 1:
+                self.short_name = "7d"
+                self.children["day"].short_name = ""
+    def make_all_shorter(self):
+        self.make_shorter()
+        if self.parent:
+            self.parent.make_all_shorter()
 
 @dataclass
 class Column:

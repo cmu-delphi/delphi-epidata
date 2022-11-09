@@ -6,15 +6,17 @@ from delphi.epidata.acquisition.covid_hosp.auto_update_schema import \
     annotate_columns_using_ddl, \
     extend_columns_with_current_json, \
     infer_type, \
+    TrieNode, TRIE_END, \
     Column
 from delphi.epidata.acquisition.covid_hosp.common.utils import Utils
 import pytest
 
-Case = namedtuple("testcase","given expected")
+Case = namedtuple("testcase","name given expected")
 
 @pytest.fixture
 def split_sql_example():
     return Case(
+        "split_sql",
         """
 USE covidcast;
 
@@ -325,3 +327,78 @@ def test_extend_columns_with_current_json(columns_as_Columns, old_columns_as_JSO
         "date_csv"
     ]
     assert misses == [new_columns.expected_column]
+
+
+@pytest.fixture
+def empty_trie():
+    return TrieNode("empty")
+
+def test_trie_insert(empty_trie):
+    empty_trie.insert([])
+    assert TRIE_END in empty_trie.children
+    empty_trie.insert(["x"])
+    assert "x" in empty_trie.children
+    assert isinstance(empty_trie.children["x"], TrieNode)
+    assert empty_trie.children["x"].name == "x"
+    assert empty_trie.children["x"].parent == empty_trie
+
+def test_trie_as_shortened_name(empty_trie):
+    assert empty_trie.as_shortened_name() == "empty"
+    x = empty_trie.insert("x")
+    assert x.as_shortened_name() == "empty_x"
+    empty_trie.short_name = "e"
+    assert x.as_shortened_name() == "e_x"
+
+
+LONG_ELEMENTS = [
+    Case('hospitalized',
+         'hospitalized',
+         'hosp'),
+    Case('vaccinated',
+         'vaccinated',
+         'vaccd'),
+    Case('coverage',
+         'coverage',
+         'cov')
+]        
+@pytest.fixture(
+    params=LONG_ELEMENTS,
+    ids=[el.name for el in LONG_ELEMENTS]
+)
+def long_name_elements(request):
+    return request.param
+
+def test_trie_make_shorter(long_name_elements):
+    trie = TrieNode(long_name_elements.given)
+    trie.make_shorter()
+    assert trie.short_name == long_name_elements.expected
+
+    LONG_COLUMN_NAMES = [
+    Case('hosp_and_cov',
+         'total_pediatric_patients_hospitalized_confirmed_and_suspected_covid_coverage',
+         'total_pediatric_patients_hosp_confirmed_suspected_covid_cov'),
+    Case('vaccd_7d',
+         'previous_week_personnel_covid_vaccinated_doses_administered_7_day_sum',
+         'previous_week_personnel_covid_vaccd_doses_administered_7d_sum'),
+    Case('and_7d_cov',
+         'staffed_icu_adult_patients_confirmed_and_suspected_covid_7_day_coverage',
+         'staffed_icu_adult_patients_confirmed_suspected_covid_7d_cov'),
+    Case('hosp_and_7d_cov',
+         'total_adult_patients_hospitalized_confirmed_and_suspected_covid_7_day_coverage',
+         'total_adult_patients_hosp_confirmed_suspected_covid_7d_cov')
+]
+@pytest.fixture(
+    params=LONG_COLUMN_NAMES,
+    ids=[el.name for el in LONG_COLUMN_NAMES]
+)
+def long_column_names(request):
+    return Case(
+        request.param.name,
+        request.param.given.split("_"),
+        request.param.expected
+    )
+
+def test_trie_make_all_shorter(long_column_names):
+    trie = TrieNode(long_column_names.given[0]).insert(long_column_names.given[1:])
+    trie.make_all_shorter()
+    assert trie.as_shortened_name() == long_column_names.expected
