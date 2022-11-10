@@ -20,6 +20,9 @@ def _get_db() -> Connection:
         g.db = conn
     return g.db
 
+def log_and_raise_exception(message):
+    app.logger.error(message)
+    log_and_raise_exception(message)
 
 """
 access to the SQL Alchemy connection for this request
@@ -43,7 +46,10 @@ def after_cursor_execute(conn, cursor, statement, parameters, context, executema
     t = time.time()
     total_cntx = t - context._query_start_time
     total_cnxn = t - conn.info['query_start_time'].pop(-1)
-    app.logger.info("SQL execute() elapsed time: " + str(dict(
+    # Convert to milliseconds
+    total_cntx = total_cntx * 1000
+    total_cnxn = total_cnxn * 1000
+    app.logger.info("SQL execute() elapsed time: %s", str(dict(
         statement=statement, total_cntx=total_cntx, total_cnxn=total_cnxn)))
 
 @app.before_request
@@ -56,6 +62,24 @@ def connect_db():
     except:
         app.logger.error('database connection error', exc_info=True)
         raise DatabaseErrorException()
+
+@app.before_request
+def log_request_info():
+    app.logger.info('Received API request: %s', str(dict(method=request.method, path=request.full_path, args=request.args)))
+
+@app.before_request
+def time_request_start():
+    t = time.time()
+    g._request_start_time = t
+
+@app.after_request
+def time_request_end(response):
+    t = time.time()
+    total_time = t - g._request_start_time
+    # Convert to milliseconds
+    total_time = total_time * 1000
+    app.logger.info('API request elapsed time: %s', str(dict(method=request.method, path=request.full_path, args=request.args, time=total_time)))
+    return response
 
 
 @app.teardown_appcontext

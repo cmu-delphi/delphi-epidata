@@ -41,6 +41,7 @@ def fetch_data(
     ).fetchone()
 
     if not row or not row["epidata"]:
+        app.logger.warning("no data in covidcast_meta cache")
         return
 
     age = row["age"]

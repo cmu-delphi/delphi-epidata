@@ -6,6 +6,7 @@ from typing import List, Optional, Sequence, Tuple, Union
 from flask import request
 
 
+from ._common import log_and_raise_exception
 from ._exceptions import ValidationFailedException
 from .utils import days_in_range, weeks_in_range, guess_time_value_is_day, guess_time_value_is_week, TimeValues, days_to_ranges, weeks_to_ranges
 
@@ -23,7 +24,7 @@ def _parse_common_multi_arg(key: str) -> List[Tuple[str, Union[bool, Sequence[st
     for entry in line.split(";"):
         m: Optional[re.Match[str]] = pattern.match(entry)
         if not m:
-            raise ValidationFailedException(f"{key} param: {entry} is not matching <{key}_type>:<{key}_values> syntax")
+            log_and_raise_exception(f"{key} param: {entry} is not matching <{key}_type>:<{key}_values> syntax")
         group_type: str = m.group(1).strip().lower()
         group_value: str = m.group(2).strip().lower()
         if group_value == "*":
@@ -39,11 +40,11 @@ def _parse_single_arg(key: str) -> Tuple[str, str]:
     """
     v = request.values.get(key)
     if not v:
-        raise ValidationFailedException(f"{key} param is required")
+        log_and_raise_exception(f"{key} param is required")
     pattern: re.Pattern[str] = re.compile(r"^([\w\-_]+):([\w\-_]+)$", re.MULTILINE)
     m: Optional[re.Match[str]] = pattern.match(v)
     if not v or not m:
-        raise ValidationFailedException(f"{key} param: is not matching <{key}_type>:<{key}_value> syntax")
+        log_and_raise_exception(f"{key} param: is not matching <{key}_type>:<{key}_value> syntax")
     return m.group(1).strip().lower(), m.group(2).strip().lower()
 
 
@@ -148,7 +149,7 @@ def _verify_range(start: int, end: int) -> Union[int, Tuple[int, int]]:
         # add the range as an array
         return (start, end)
     # the range is inverted, this is an error
-    raise ValidationFailedException(f"the given range {start}-{end} is inverted")
+    log_and_raise_exception(f"the given range {start}-{end} is inverted")
 
 
 def parse_week_value(time_value: str) -> Union[int, Tuple[int, int]]:
@@ -158,17 +159,17 @@ def parse_week_value(time_value: str) -> Union[int, Tuple[int, int]]:
     if count_dashes == 0:
         # plain delphi date YYYYWW
         if not re.match(r"^(\d{6})$", time_value, re.MULTILINE):
-            raise ValidationFailedException(msg)
+            log_and_raise_exception(msg)
         return int(time_value)
 
     if count_dashes == 1:
         # delphi date range YYYYWW-YYYYWW
         if not re.match(r"^(\d{6})-(\d{6})$", time_value, re.MULTILINE):
-            raise ValidationFailedException(msg)
+            log_and_raise_exception(msg)
         [first, last] = time_value.split("-", 2)
         return _verify_range(int(first), int(last))
 
-    raise ValidationFailedException(msg)
+    log_and_raise_exception(msg)
 
 
 def parse_day_value(time_value: str) -> Union[int, Tuple[int, int]]:
@@ -178,30 +179,30 @@ def parse_day_value(time_value: str) -> Union[int, Tuple[int, int]]:
     if count_dashes == 0:
         # plain delphi date YYYYMMDD
         if not re.match(r"^(\d{8})$", time_value, re.MULTILINE):
-            raise ValidationFailedException(msg)
+            log_and_raise_exception(msg)
         return int(time_value)
 
     if count_dashes == 2:
         # iso date YYYY-MM-DD
         if not re.match(r"^(\d{4}-\d{2}-\d{2})$", time_value, re.MULTILINE):
-            raise ValidationFailedException(msg)
+            log_and_raise_exception(msg)
         return int(time_value.replace("-", ""))
 
     if count_dashes == 1:
         # delphi date range YYYYMMDD-YYYYMMDD
         if not re.match(r"^(\d{8})-(\d{8})$", time_value, re.MULTILINE):
-            raise ValidationFailedException(msg)
+            log_and_raise_exception(msg)
         [first, last] = time_value.split("-", 2)
         return _verify_range(int(first), int(last))
 
     if count_dashes == 6:
         # delphi iso date range YYYY-MM-DD--YYYY-MM-DD
         if not re.match(r"^(\d{4}-\d{2}-\d{2})--(\d{4}-\d{2}-\d{2})$", time_value, re.MULTILINE):
-            raise ValidationFailedException(msg)
+            log_and_raise_exception(msg)
         [first, last] = time_value.split("--", 2)
         return _verify_range(int(first.replace("-", "")), int(last.replace("-", "")))
 
-    raise ValidationFailedException(msg)
+    log_and_raise_exception(msg)
 
 
 def _parse_time_pair(time_type: str, time_values: Union[bool, Sequence[str]]) -> TimePair:
@@ -212,7 +213,7 @@ def _parse_time_pair(time_type: str, time_values: Union[bool, Sequence[str]]) ->
         return TimePair("week", [parse_week_value(t) for t in time_values])
     elif time_type == "day":
         return TimePair("day", [parse_day_value(t) for t in time_values])
-    raise ValidationFailedException(f'time param: {time_type} is not one of "day" or "week"')
+    log_and_raise_exception(f'time param: {time_type} is not one of "day" or "week"')
 
 
 def parse_time_arg(key: str = "time") -> Optional[TimePair]:
@@ -227,7 +228,7 @@ def parse_time_arg(key: str = "time") -> Optional[TimePair]:
     # make sure 'day' and 'week' aren't mixed
     time_types = set(time_pair.time_type for time_pair in time_pairs)
     if len(time_types) >= 2:
-        raise ValidationFailedException(f'{key}: {time_pairs} mixes "day" and "week" time types')
+        log_and_raise_exception(f'{key}: {time_pairs} mixes "day" and "week" time types')
 
     # merge all time pairs into one
     merged = []    
@@ -250,39 +251,39 @@ def parse_single_time_arg(key: str) -> TimePair:
 def parse_day_range_arg(key: str) -> Tuple[int, int]:
     v = request.values.get(key)
     if not v:
-        raise ValidationFailedException(f"{key} param is required")
+        log_and_raise_exception(f"{key} param is required")
     r = parse_day_value(v)
     if not isinstance(r, tuple):
-        raise ValidationFailedException(f"{key} must match YYYYMMDD-YYYYMMDD or YYYY-MM-DD--YYYY-MM-DD")
+        log_and_raise_exception(f"{key} must match YYYYMMDD-YYYYMMDD or YYYY-MM-DD--YYYY-MM-DD")
     return r
 
 
 def parse_day_arg(key: str) -> int:
     v = request.values.get(key)
     if not v:
-        raise ValidationFailedException(f"{key} param is required")
+        log_and_raise_exception(f"{key} param is required")
     r = parse_day_value(v)
     if not isinstance(r, int):
-        raise ValidationFailedException(f"{key} must match YYYYMMDD or YYYY-MM-DD")
+        log_and_raise_exception(f"{key} must match YYYYMMDD or YYYY-MM-DD")
     return r
 
 def parse_week_arg(key: str) -> int:
     v = request.values.get(key)
     if not v:
-        raise ValidationFailedException(f"{key} param is required")
+        log_and_raise_exception(f"{key} param is required")
     r = parse_week_value(v)
     if not isinstance(r, int):
-        raise ValidationFailedException(f"{key} must match YYYYWW")
+        log_and_raise_exception(f"{key} must match YYYYWW")
     return r
 
 
 def parse_week_range_arg(key: str) -> Tuple[int, int]:
     v = request.values.get(key)
     if not v:
-        raise ValidationFailedException(f"{key} param is required")
+        log_and_raise_exception(f"{key} param is required")
     r = parse_week_value(v)
     if not isinstance(r, tuple):
-        raise ValidationFailedException(f"{key} must match YYYYWW-YYYYWW")
+        log_and_raise_exception(f"{key} must match YYYYWW-YYYYWW")
     return r
 
 def parse_day_or_week_arg(key: str, default_value: Optional[int] = None) -> TimePair:
@@ -291,7 +292,7 @@ def parse_day_or_week_arg(key: str, default_value: Optional[int] = None) -> Time
         if default_value is not None:
             time_type = "day" if guess_time_value_is_day(default_value) else "week"
             return TimePair(time_type, [default_value])
-        raise ValidationFailedException(f"{key} param is required")
+        log_and_raise_exception(f"{key} param is required")
     # format is either YYYY-MM-DD or YYYYMMDD or YYYYMM
     is_week = guess_time_value_is_week(v)
     if is_week:
@@ -301,7 +302,7 @@ def parse_day_or_week_arg(key: str, default_value: Optional[int] = None) -> Time
 def parse_day_or_week_range_arg(key: str) -> TimePair:
     v = request.values.get(key)
     if not v:
-        raise ValidationFailedException(f"{key} param is required")
+        log_and_raise_exception(f"{key} param is required")
     # format is either YYYY-MM-DD--YYYY-MM-DD or YYYYMMDD-YYYYMMDD or YYYYMM-YYYYMM
     # so if the first before the - has length 6, it must be a week
     is_week = guess_time_value_is_week(v.split('-', 2)[0])
