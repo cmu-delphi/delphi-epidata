@@ -8,7 +8,7 @@ from werkzeug.local import LocalProxy
 
 from ._config import SECRET
 from ._db import engine
-from ._exceptions import DatabaseErrorException
+from ._exceptions import DatabaseErrorException, ValidationFailedException
 
 app = Flask("EpiData", static_url_path="")
 app.config["SECRET"] = SECRET
@@ -22,7 +22,7 @@ def _get_db() -> Connection:
 
 def log_and_raise_exception(message):
     app.logger.error(message)
-    log_and_raise_exception(message)
+    raise ValidationFailedException(message)
 
 """
 access to the SQL Alchemy connection for this request
