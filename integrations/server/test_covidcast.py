@@ -68,7 +68,7 @@ class CovidcastTests(CovidcastBase):
       self._make_placeholder_row(source='src1', signal=str(i)*5, value=i*1., stderr=i*10., sample_size=i*100.)[0]
       for i in [1, 2, 3]
     ] + [
-      # signal intended to overlap with source above
+      # signal intended to overlap with the signal above
       self._make_placeholder_row(source='src2', signal=str(i-3)*5, value=i*1., stderr=i*10., sample_size=i*100.)[0]
       for i in [4, 5, 6]
     ]
