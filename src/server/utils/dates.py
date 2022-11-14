@@ -5,11 +5,10 @@ from typing import (
     Tuple,
     Union
 )
-from .._common import app
+from .logger import get_structured_logger
 from datetime import date, timedelta
 from epiweeks import Week, Year
 from typing_extensions import TypeAlias
-import logging
 
 # Alias for a sequence of date ranges (int, int) or date integers
 TimeValues: TypeAlias = Sequence[Union[Tuple[int, int], int]]
@@ -87,32 +86,31 @@ def time_values_to_ranges(values: Optional[TimeValues]) -> Optional[TimeValues]:
     e.g. [20200101, 20200102, (20200101, 20200104), 20200106] -> [(20200101, 20200104), 20200106]
     (the first two values of the original list are merged into a single range)
     """
+    logger = get_structured_logger('server_utils')
     if not values or len(values) <= 1:
-        app.logger.info("List of dates %s looks like 0-1 elements, nothing to optimize", values)
+        logger.info("List of dates looks like 0-1 elements, nothing to optimize", time_values=values)
         return values
 
     # determine whether the list is of days (YYYYMMDD) or weeks (YYYYWW) based on first element
     first_element = values[0][0] if isinstance(values[0], tuple) else values[0]
     if guess_time_value_is_day(first_element):
-        app.logger.info("Treating time value %s as day", first_element)
+        logger.info("Treating time value as day", time_value=first_element)
         return days_to_ranges(values)
     elif guess_time_value_is_week(first_element):
-        app.logger.info("Treating time value %s as week", first_element)
+        logger.info("Treating time value as week", time_value=first_element)
         return weeks_to_ranges(values)
     else:
-        app.logger.info("Time value %s looks unclear, not optimizing", first_element)
+        logger.info("Time value unclear, not optimizing", time_value=first_element)
         return values
 
 def days_to_ranges(values: TimeValues) -> TimeValues:
-    app.logger.info("Optimizing list of time values %s...", values)
     ranges = _to_ranges(values, time_value_to_day, day_to_time_value, timedelta(days=1))
-    app.logger.info("Day list length: initial %s; optimized %s", len(values), len(ranges))
+    get_structured_logger('server_utils').info("Optimized list of day values", original=values, optimized=ranges, original_length=len(values), optimized_length=len(ranges))
     return ranges
 
 def weeks_to_ranges(values: TimeValues) -> TimeValues:
-    app.logger.info("Optimizing list of time values %s...", values)
     ranges = _to_ranges(values, time_value_to_week, week_to_time_value, 1)
-    app.logger.info("Week list length: initial %s; optimized %s", len(values), len(ranges))
+    get_structured_logger('server_utils').info("Optimized list of week values", original=values, optimized=ranges, original_length=len(values), optimized_length=len(ranges))
     return ranges
 
 def _to_ranges(values: TimeValues, value_to_date: Callable, date_to_value: Callable, time_unit: Union[int, timedelta]) -> TimeValues:
@@ -151,5 +149,6 @@ def _to_ranges(values: TimeValues, value_to_date: Callable, date_to_value: Calla
 
         return ranges
     except Exception as e:
-        app.logger.error('bad input %s to date ranges: %s', values, e)
+        logger = get_structured_logger('server_utils')
+        logger.error('bad input to date ranges', time_values=values, exception=e)
         return values

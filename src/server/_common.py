@@ -6,6 +6,7 @@ from sqlalchemy import event
 from sqlalchemy.engine import Connection
 from werkzeug.local import LocalProxy
 
+from .utils.logger import get_structured_logger
 from ._config import SECRET
 from ._db import engine
 from ._exceptions import DatabaseErrorException, ValidationFailedException
@@ -21,7 +22,7 @@ def _get_db() -> Connection:
     return g.db
 
 def log_and_raise_exception(message):
-    app.logger.error(message)
+    get_structured_logger('server_error').error(message)
     raise ValidationFailedException(message)
 
 """
@@ -32,53 +33,49 @@ db: Connection = cast(Connection, LocalProxy(_get_db))
 @event.listens_for(engine, "before_cursor_execute")
 def before_cursor_execute(conn, cursor, statement, parameters, context, executemany):
     t = time.time()
-    # TODO: probbly just use one of these two:
     context._query_start_time = t
-    conn.info.setdefault('query_start_time', []).append(t)
 
 
 @event.listens_for(engine, "after_cursor_execute")
 def after_cursor_execute(conn, cursor, statement, parameters, context, executemany):
-    # this timing info may be suspect, at least in terms of dmbs cpu time...
+    # this timing info may be suspect, at least in terms of dbms cpu time...
     # it is likely that it includes that time as well as any overhead that
-    # come from throttling or flow control on the streamed data, as well as
+    # comes from throttling or flow control on the streamed data, as well as
     # any row transform/processing time
     t = time.time()
-    total_cntx = t - context._query_start_time
-    total_cnxn = t - conn.info['query_start_time'].pop(-1)
+    total_time = t - context._query_start_time
+
     # Convert to milliseconds
-    total_cntx = total_cntx * 1000
-    total_cnxn = total_cnxn * 1000
-    app.logger.info("SQL execute() elapsed time: %s", str(dict(
-        statement=statement, total_cntx=total_cntx, total_cnxn=total_cnxn)))
+    total_time = total_time * 1000
+    get_structured_logger('server_api').info("Executed timed SQL query", statement=statement, total_time=total_time)
+
 
 @app.before_request
-def connect_db():
+def before_request_execute():
     if request.path.startswith('/lib'):
         return
     # try to get the db
     try:
         _get_db()
-    except:
-        app.logger.error('database connection error', exc_info=True)
+    except Exception as e:
+        get_structured_logger('server_error').error('database connection error', exception=e)
         raise DatabaseErrorException()
 
-@app.before_request
-def log_request_info():
-    app.logger.info('Received API request: %s', str(dict(method=request.method, path=request.full_path, args=request.args)))
+    # Log statement
+    get_structured_logger('server_api').info("Received API request", method=request.method, path=request.full_path, args=request.args)
 
-@app.before_request
-def time_request_start():
+    # Set timer for statement
     t = time.time()
     g._request_start_time = t
 
+
 @app.after_request
-def time_request_end(response):
+def after_request_execute(response):
     t = time.time()
     total_time = t - g._request_start_time
     # Convert to milliseconds
     total_time = total_time * 1000
-    app.logger.info('API request elapsed time: %s', str(dict(method=request.method, path=request.full_path, args=request.args, time=total_time)))
+    get_structured_logger('server_api').info('Executed timed API request', method=request.method, path=request.full_path, args=request.args, time=total_time)
     return response
 
 

@@ -5,10 +5,11 @@ from flask import Blueprint
 from flask.json import loads
 from sqlalchemy import text
 
-from .._common import db, app
+from .._common import db
 from .._printer import create_printer
 from .._query import filter_fields
 from .._validate import extract_strings
+from ..utils.logger import get_structured_logger
 
 bp = Blueprint("covidcast_meta", __name__)
 
@@ -41,12 +42,12 @@ def fetch_data(
     ).fetchone()
 
     if not row or not row["epidata"]:
-        app.logger.warning("no data in covidcast_meta cache")
+        get_structured_logger('server_api').warning("no data in covidcast_meta cache")
         return
 
     age = row["age"]
     if age > max_age and row["epidata"]:
-        app.logger.warning("covidcast_meta cache is stale: %d", age)
+        get_structured_logger('server_api').warning("covidcast_meta cache is stale", cache_age=age)
         pass
 
     epidata = loads(row["epidata"])
