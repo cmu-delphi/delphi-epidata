@@ -21,7 +21,7 @@ def _get_db() -> Connection:
         g.db = conn
     return g.db
 
-def log_and_raise_exception(message):
+def log_and_raise_validation_exception(message):
     get_structured_logger('server_error').error(message)
     raise ValidationFailedException(message)
 
@@ -75,7 +75,7 @@ def after_request_execute(response):
     total_time = t - g._request_start_time
     # Convert to milliseconds
     total_time = total_time * 1000
-    get_structured_logger('server_api').info('Executed timed API request', method=request.method, path=request.full_path, args=request.args, time=total_time)
+    get_structured_logger('server_api').info('Executed timed API request', method=request.method, path=request.full_path, args=request.args, response_status=response.status, response_body=response.response, time=total_time)
     return response
 
 
