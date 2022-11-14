@@ -20,9 +20,9 @@ from ._common import db, app
 from ._db import metadata
 from ._printer import create_printer, APrinter
 from ._exceptions import DatabaseErrorException
-from ._validate import DateRange, extract_strings
+from ._validate import extract_strings
 from ._params import GeoPair, SourceSignalPair, TimePair
-from .utils import time_values_to_ranges, days_to_ranges, weeks_to_ranges
+from .utils import time_values_to_ranges, TimeValues
 
 
 def date_string(value: int) -> str:
@@ -36,7 +36,7 @@ def date_string(value: int) -> str:
 
 def to_condition(
     field: str,
-    value: Union[Tuple[str, str], str, Tuple[int, int], int],
+    value: Union[str, Tuple[int, int], int],
     param_key: str,
     params: Dict[str, Any],
     formatter=lambda x: x,
@@ -52,7 +52,7 @@ def to_condition(
 
 def filter_values(
     field: str,
-    values: Optional[Sequence[Union[Tuple[str, str], str, Tuple[int, int], int]]],
+    values: Optional[Sequence[Union[str, Tuple[int, int], int]]],
     param_key: str,
     params: Dict[str, Any],
     formatter=lambda x: x,
@@ -68,7 +68,7 @@ def filter_values(
 
 def filter_strings(
     field: str,
-    values: Optional[Sequence[Union[Tuple[str, str], str]]],
+    values: Optional[Sequence[str]],
     param_key: str,
     params: Dict[str, Any],
 ):
@@ -86,7 +86,7 @@ def filter_integers(
 
 def filter_dates(
     field: str,
-    values: Optional[Sequence[Union[Tuple[int, int], int]]],
+    values: Optional[TimeValues],
     param_key: str,
     params: Dict[str, Any],
 ):
@@ -171,32 +171,29 @@ def filter_source_signal_pairs(
     return f"({' OR '.join(parts)})"
 
 
-def filter_time_pairs(
+def filter_time_pair(
     type_field: str,
     time_field: str,
-    values: Sequence[TimePair],
+    pair: Optional[TimePair],
     param_key: str,
     params: Dict[str, Any],
 ) -> str:
     """
-    returns the SQL sub query to filter by the given time pairs
+    returns the SQL sub query to filter by the given time pair
     """
-
-    def filter_pair(pair: TimePair, i) -> str:
-        type_param = f"{param_key}_{i}t"
-        params[type_param] = pair.time_type
-        if isinstance(pair.time_values, bool) and pair.time_values:
-            return f"{type_field} = :{type_param}"
-        ranges = weeks_to_ranges(pair.time_values) if pair.is_week else days_to_ranges(pair.time_values)
-        return f"({type_field} = :{type_param} AND {filter_integers(time_field, cast(Sequence[Union[int, Tuple[int,int]]], ranges), type_param, params)})"
-
-    parts = [filter_pair(p, i) for i, p in enumerate(values)]
-
-    if not parts:
-        # something has to be selected
+    # safety path; should normally not be reached as time pairs are enforced by the API
+    if not pair:
         return "FALSE"
 
-    return f"({' OR '.join(parts)})"
+    type_param = f"{param_key}_0t"
+    params[type_param] = pair.time_type
+    if isinstance(pair.time_values, bool) and pair.time_values:
+        parts =  f"{type_field} = :{type_param}"
+    else:
+        ranges = pair.to_ranges().time_values
+        parts = f"({type_field} = :{type_param} AND {filter_integers(time_field, ranges, type_param, params)})"
+
+    return f"({parts})"
 
 
 def parse_row(
@@ -393,7 +390,7 @@ class QueryBuilder:
     def where_strings(
         self,
         field: str,
-        values: Optional[Sequence[Union[Tuple[str, str], str]]],
+        values: Optional[Sequence[str]],
         param_key: Optional[str] = None,
     ) -> "QueryBuilder":
         fq_field = f"{self.alias}.{field}" if "." not in field else field
@@ -411,16 +408,6 @@ class QueryBuilder:
     ) -> "QueryBuilder":
         fq_field = self._fq_field(field)
         self.conditions.append(filter_integers(fq_field, values, param_key or field, self.params))
-        return self
-
-    def where_dates(
-        self,
-        field: str,
-        values: Optional[Sequence[Union[Tuple[int, int], int]]],
-        param_key: Optional[str] = None,
-    ) -> "QueryBuilder":
-        fq_field = self._fq_field(field)
-        self.conditions.append(filter_dates(fq_field, values, param_key or field, self.params))
         return self
 
     def where_geo_pairs(
@@ -463,17 +450,17 @@ class QueryBuilder:
         )
         return self
 
-    def where_time_pairs(
+    def where_time_pair(
         self,
         type_field: str,
         value_field: str,
-        values: Sequence[TimePair],
+        values: Optional[TimePair],
         param_key: Optional[str] = None,
     ) -> "QueryBuilder":
         fq_type_field = self._fq_field(type_field)
         fq_value_field = self._fq_field(value_field)
         self.conditions.append(
-            filter_time_pairs(
+            filter_time_pair(
                 fq_type_field,
                 fq_value_field,
                 values,
