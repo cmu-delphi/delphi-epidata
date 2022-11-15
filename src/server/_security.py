@@ -6,7 +6,7 @@ from flask import g, Response
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from werkzeug.local import LocalProxy
-from sqlalchemy import Table, Column, String, Integer, Boolean
+from sqlalchemy import Table, Column, String, Integer, Boolean, delete, update
 from ._config import API_KEY_REQUIRED_STARTING_AT, RATELIMIT_STORAGE_URL, URL_PREFIX, UserRole
 from ._common import app, request, db
 from ._exceptions import MissingAPIKeyException, UnAuthenticatedException
@@ -107,8 +107,8 @@ class DBUser(AbstractUser):
             )
         )
 
-    def delete(self):
-        db.execute(user_table.delete(user_table.c.id == self.id))
+    def delete_user(self):
+        delete(user_table).where(user_table.c.id == self.id).execute()
 
     @staticmethod
     def register_new_key() -> str:
@@ -116,14 +116,12 @@ class DBUser(AbstractUser):
         DBUser.insert(api_key, "", set(), True, False)
         return api_key
 
-    def update(
+    def update_user(
         self, api_key: str, email: str, roles: Set[str], tracking: bool = True, registered: bool = False
     ) -> "DBUser":
-        db.execute(
-            user_table.update()
-            .where(user_table.c.id == self.id)
-            .values(api_key=api_key, email=email, roles=",".join(roles), tracking=tracking, registered=registered)
-        )
+        update(user_table).where(user_table.c.id == self.id).values(
+            api_key=api_key, email=email, roles=",".join(roles), tracking=tracking, registered=registered
+        ).execute()
         self.api_key = api_key
         self.email = email
         self.roles = roles

@@ -83,13 +83,13 @@ def _detail(user_id: int):
     if not user:
         raise NotFound()
     if request.method == "DELETE" or "delete" in request.values:
-        user.delete()
+        user.delete_user()
         return redirect(f"./?auth={token}")
     flags = dict()
     if request.method == "PUT" or request.method == "POST":
         if request.values["email"] is not (None or ""):
             if validate_email(request.values["email"]):
-                user = user.update(
+                user = user.update_user(
                     request.values["api_key"],
                     request.values["email"],
                     _parse_roles(request.values.getlist("roles")),
@@ -100,7 +100,7 @@ def _detail(user_id: int):
             else:
                 flags["banner"] = "E-mail address is not valid, please check it and try again."
         else:
-            user = user.update(
+            user = user.update_user(
                 request.values["api_key"],
                 request.values["email"],
                 _parse_roles(request.values.getlist("roles")),
@@ -124,7 +124,7 @@ def _register():
     new_api_key = body["user_new_api_key"]
     email = body["email"]
     tracking = True if body["tracking"] == "Yes" else False
-    db_user = db_user.update(new_api_key, email, db_user.roles, tracking, True)
+    db_user = db_user.update_user(new_api_key, email, db_user.roles, tracking, True)
     return make_response(f'Successfully registered the API key "{new_api_key}" and removed rate limit', 200)
 
 
