@@ -23,7 +23,6 @@
                 <thead>
                     <th scope="col">ID</th>
                     <th scope="col">API Key</th>
-                    <th scope="col">E-mail</th>
                     <th scope="col">Registered</th>
                     <th scope="col">Track Usage</th>
                     <th scope="col">Roles</th>
@@ -34,7 +33,6 @@
                     <tr>
                         <th scope="row">{{ user.id }}</th>
                         <td>{{ user.api_key }}</td>
-                        <td>{{ user.email }}</td>
                         <td>{{ '✔️' if user.registered else '❌'}}</td>
                         <td>{{ '✔️' if user.tracking else '❌'}}</td>
                         <td>{{ ','.join(user.roles) }}</td>
@@ -59,10 +57,6 @@
             <div class="form-group">
                 <label for="api_key">API Key</label>
                 <input type="text" class="form-control" name="api_key" id="api_key" value="{{user.api_key}}" required />
-            </div>
-            <div class="form-group">
-                <label for="email">E-mail</label>
-                <input type="text" class="form-control" name="email" id="email" value="{{user.email}}" />
             </div>
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" id="registered" name="registered" value="True" {{'checked' if user.registered else ''}}>

@@ -34,7 +34,6 @@ user_table = Table(
     metadata,
     Column("id", Integer, primary_key=True, autoincrement=True),
     Column("api_key", String(50), unique=True),
-    Column("email", String(100)),
     Column("roles", String(255)),
     Column("tracking", Boolean(), default=True),
     Column("registered", Boolean(), default=False),
@@ -49,7 +48,6 @@ class AbstractUser:
 
     id: int
     api_key: str
-    email: str
     roles: Set[str]
     tracking: bool = True
     registered: bool = False
@@ -77,7 +75,6 @@ class DBUser(AbstractUser):
         u = DBUser()
         u.id = r["id"]
         u.api_key = r["api_key"]
-        u.email = r["email"]
         u.roles = set(r["roles"].split(","))
         u.tracking = r["tracking"] != False
         u.registered = r["registered"] == True
@@ -100,10 +97,10 @@ class DBUser(AbstractUser):
         return [DBUser._parse(r) for r in db.execution_options(stream_results=False).execute(user_table.select())]
 
     @staticmethod
-    def insert(api_key: str, email: str, roles: Set[str], tracking: bool = True, registered: bool = False):
+    def insert(api_key: str, roles: Set[str], tracking: bool = True, registered: bool = False):
         db.execute(
             user_table.insert().values(
-                api_key=api_key, email=email, roles=",".join(roles), tracking=tracking, registered=registered
+                api_key=api_key, roles=",".join(roles), tracking=tracking, registered=registered
             )
         )
 
@@ -113,17 +110,16 @@ class DBUser(AbstractUser):
     @staticmethod
     def register_new_key() -> str:
         api_key = str(uuid4())
-        DBUser.insert(api_key, "", set(), True, False)
+        DBUser.insert(api_key, set(), True, False)
         return api_key
 
     def update_user(
-        self, api_key: str, email: str, roles: Set[str], tracking: bool = True, registered: bool = False
+        self, api_key: str, roles: Set[str], tracking: bool = True, registered: bool = False
     ) -> "DBUser":
         update(user_table).where(user_table.c.id == self.id).values(
-            api_key=api_key, email=email, roles=",".join(roles), tracking=tracking, registered=registered
+            api_key=api_key, roles=",".join(roles), tracking=tracking, registered=registered
         ).execute()
         self.api_key = api_key
-        self.email = email
         self.roles = roles
         self.tracking = tracking
         self.registered = registered
@@ -134,14 +130,12 @@ class APIUser(AbstractUser):
     def __init__(
         self,
         api_key: str,
-        email: str,
         authenticated: bool,
         roles: Set[str],
         tracking: bool = True,
         registered: bool = False,
     ) -> None:
         self.api_key = api_key
-        self.email = email
         self.authenticated = authenticated
         self.roles = roles
         self.tracking = tracking
@@ -149,14 +143,14 @@ class APIUser(AbstractUser):
 
     @staticmethod
     def get_anonymous_user():
-        return APIUser("anonymous", "", False, set())
+        return APIUser("anonymous", False, set())
 
     @staticmethod
     def find_by_api_key(api_key: int):
         user = AbstractUser.find_by_api_key(api_key)
         if user is None:
             return APIUser.get_anonymous_user()
-        return APIUser(user.api_key, user.email, True, set(user.roles.split(",")), user.tracking, user.registered)
+        return APIUser(user.api_key, True, set(user.roles.split(",")), user.tracking, user.registered)
 
     def get_apikey(self) -> str:
         return self.api_key
