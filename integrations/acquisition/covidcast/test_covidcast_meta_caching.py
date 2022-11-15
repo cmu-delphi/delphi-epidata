@@ -18,9 +18,7 @@ from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import (
 )
 
 # py3tester coverage target (equivalent to `import *`)
-__test_target__ = (
-    "delphi.epidata.acquisition.covidcast." "covidcast_meta_cache_updater"
-)
+__test_target__ = "delphi.epidata.acquisition.covidcast." "covidcast_meta_cache_updater"
 
 
 class CovidcastMetaCacheTests(unittest.TestCase):
@@ -45,9 +43,7 @@ class CovidcastMetaCacheTests(unittest.TestCase):
         cur.execute("truncate table geo_dim")
         cur.execute("truncate table signal_dim")
         # reset the `covidcast_meta_cache` table (it should always have one row)
-        cur.execute(
-            'update covidcast_meta_cache set timestamp = 0, epidata = "[]"'
-        )
+        cur.execute('update covidcast_meta_cache set timestamp = 0, epidata = "[]"')
         cnx.commit()
         cur.close()
 
