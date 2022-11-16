@@ -19,7 +19,6 @@ def split_sql_example():
         "split_sql",
         """
 USE covidcast;
-
 /*
 xyzzy
 */
@@ -38,6 +37,22 @@ CREATE TABLE `maze` (
 `turn` INT NOT NULL AUTO_INCREMENT,
 `direction` CHAR(2) NOT NULL,
 -- test comment
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `corners` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `issue` INT NOT NULL,
+  `state` CHAR(2) NOT NULL,
+  `date` INT NOT NULL,
+  `record_type` CHAR(1) NOT NULL,
+  PRIMARY KEY (`id`),
+  -- for uniqueness
+  -- for fast lookup of most recent issue for a given state, date, and record type
+  UNIQUE KEY `issue_by_state_and_date` (`state`, `date`, `issue`, `record_type`),
+  -- for fast lookup of a time-series for a given state, issue, and record type
+  KEY `date_by_issue_and_state` (`issue`, `state`, `date`, `record_type`),
+  -- for fast lookup of all states for a given date, issue, and record_type
+  KEY `state_by_issue_and_date` (`issue`, `date`, `state`, `record_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 """,
         # x[1:] to drop the initial newline (included for readability)
@@ -59,6 +74,22 @@ CREATE TABLE `maze` (
 `turn` INT NOT NULL AUTO_INCREMENT,
 `direction` CHAR(2) NOT NULL,
 -- test comment
+) ENGINE=InnoDB DEFAULT CHARSET=utf8""",
+            """
+CREATE TABLE `corners` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `issue` INT NOT NULL,
+  `state` CHAR(2) NOT NULL,
+  `date` INT NOT NULL,
+  `record_type` CHAR(1) NOT NULL,
+  PRIMARY KEY (`id`),
+  -- for uniqueness
+  -- for fast lookup of most recent issue for a given state, date, and record type
+  UNIQUE KEY `issue_by_state_and_date` (`state`, `date`, `issue`, `record_type`),
+  -- for fast lookup of a time-series for a given state, issue, and record type
+  KEY `date_by_issue_and_state` (`issue`, `state`, `date`, `record_type`),
+  -- for fast lookup of all states for a given date, issue, and record_type
+  KEY `state_by_issue_and_date` (`issue`, `date`, `state`, `record_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8"""
         ]))
 
@@ -115,7 +146,8 @@ CREATE TABLE `table1` (
   `float_sql` DOUBLE,
   `date_sql` INT(8) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `str_by_date` (`str_sql`, `date_sql`)
+  UNIQUE KEY `str_by_date` (`str_sql`, `date_sql`),
+  KEY `date_by_str` (`date_sql`, `str_sql`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 """
 
@@ -312,6 +344,16 @@ def new_columns(request):
         ),
     )
 
+@pytest.fixture()
+def new_ignore_column():
+    return Case(
+        "ignore this column",
+        {
+            "computationStrategy": {}
+        },
+        []
+    )
+
 def test_infer_type(new_columns):
     assert infer_type(new_columns.given) == new_columns.expected_type    
 
@@ -328,6 +370,12 @@ def test_extend_columns_with_current_json(columns_as_Columns, old_columns_as_JSO
     ]
     assert misses == [new_columns.expected_column]
 
+def test_extend_columns_ignore_column(columns_as_Columns, new_ignore_column):
+    hits, misses = extend_columns_with_current_json(
+        columns_as_Columns,
+        [new_ignore_column.given]
+    )
+    assert misses == new_ignore_column.expected
 
 @pytest.fixture
 def empty_trie():
@@ -370,14 +418,14 @@ def long_name_elements(request):
 
 def test_trie_make_shorter(long_name_elements):
     trie = TrieNode(long_name_elements.given)
-    trie.make_shorter()
+    TrieNew.try_make_shorter(trie)
     assert trie.short_name == long_name_elements.expected
 
-    LONG_COLUMN_NAMES = [
-    Case('hosp_and_cov',
+LONG_COLUMN_NAMES = [
+    Case('hosp_and_no_cov',
          'total_pediatric_patients_hospitalized_confirmed_and_suspected_covid_coverage',
-         'total_pediatric_patients_hosp_confirmed_suspected_covid_cov'),
-    Case('vaccd_7d',
+         'total_pediatric_patients_hosp_confirmed_suspected_covid_coverage'),
+    Case('vaccd_no_7d',
          'previous_week_personnel_covid_vaccinated_doses_administered_7_day_sum',
          'previous_week_personnel_covid_vaccd_doses_administered_7d_sum'),
     Case('and_7d_cov',
@@ -402,3 +450,30 @@ def test_trie_make_all_shorter(long_column_names):
     trie = TrieNode(long_column_names.given[0]).insert(long_column_names.given[1:])
     trie.make_all_shorter()
     assert trie.as_shortened_name() == long_column_names.expected
+
+
+@pytest.fixture
+def oversize_new_columns():
+    oversize_name = "x" * 65
+    return Case(
+        "oversize new column",
+        {
+            "id": 500,
+            "name": oversize_name,
+            "dataTypeName": "number",
+            "description": "Description of oversize column",
+            "fieldName": oversize_name,
+            "position": 10,
+            "cachedContents": {
+                "largest": "0"
+            }
+        },
+        Exception
+    )
+
+def test_extend_columns_with_current_json_oversize_column(columns_as_Columns, oversize_new_columns):
+    with pytest.raises(Exception):
+        hits, misses = extend_columns_with_current_json(
+            columns_as_Columns,
+            [oversize_new_columns.given]
+        )

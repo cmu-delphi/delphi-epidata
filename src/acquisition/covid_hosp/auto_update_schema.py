@@ -10,10 +10,13 @@ import itertools
 from collections import defaultdict
 from typing import Callable
 from mo_sql_parsing import parse_mysql
+from mo_parsing.exceptions import ParseException
 
 from delphi.epidata.acquisition.covid_hosp.state_timeseries.database import Database as STDatabase
 from delphi.epidata.acquisition.covid_hosp.state_daily.database import Database as SDDatabase
 from delphi.epidata.acquisition.covid_hosp.facility.database import Database as FDatabase
+
+MAX_SQL_NAME_LENGTH = 64
 
 #    state: "https://healthdata.gov/api/views/g62h-syeh.json"
 # facility: "https://healthdata.gov/api/views/anag-cw7u.json"
@@ -50,7 +53,14 @@ def annotate_columns_using_ddl(all_columns, sql):
     result = defaultdict(dict)
     for stmt in split_sql(sql):
         if stmt[:15].lower().startswith("create table"):
-            ast = parse_mysql(sql)['create table']
+            try:
+                ast = parse_mysql(stmt)['create table']
+            except ParseException:
+                print(
+                    "\n".join(f"{i} {x}" for i,x in enumerate(stmt.split("\n"))),
+                    file=sys.stderr
+                )
+                raise
             if ast['name'] not in all_columns:
                 continue
             for pydb_module in all_columns[ast['name']]:
@@ -159,17 +169,24 @@ def infer_type(col):
         ret["sql_type_size"] = sqltys
     return ret
 
+def trie_dict_safe_insert(trie_dict, name):
+    segmented_name = name.split("_")
+    if segmented_name[0] not in trie_dict:
+        trie_dict[segmented_name[0]] = TrieNode(segmented_name[0])
+    return tree_dict[segmented_name[0]].insert(segmented_name[1:])
+
 
 def extend_columns_with_current_json(columns, json_data):
     """Add new columns found in json_data to existing set of columns read from python/SQL files."""
     hits = []
     misses = []
+    new_names = {}
     for json_column in json_data:
         if 'computationStrategy' in json_column:
-            next
+            continue
         if not all(key in json_column for key in KEYS):
             print(f"Bad column: {json.dumps(json_column, indent=2)}")
-            next
+            continue
         if json_column['name'] in columns:
             hits.append(json_column['name'])
         else:
@@ -182,6 +199,19 @@ def extend_columns_with_current_json(columns, json_data):
             )
             misses.append(new_column)
             columns[new_column.csv_name] = new_column
+            new_column.trie = trie_dict_safe_insert(new_names, new_column.sql_name)
+    n_oversize = 0
+    for miss in misses:
+        miss.trie.make_all_shorter()
+        miss.sql_name = miss.trie.as_shortened_name()
+        if len(miss.sql_name) > MAX_SQL_NAME_LENGTH:
+            n_oversize += 1
+            print(
+                "Oversize column name:\n{miss.csv_name}\n{miss.sql_name}\n{len(miss_sql_name)}",
+                file=sys.stderr
+            )
+    if n_oversize > 0:
+        raise Exception("Oversize column names found; find another name-shortening strategy")
     return hits, misses
 
 TRIE_END = object()
@@ -210,7 +240,7 @@ class TrieNode:
             return parent.longest(longest)
         else:
             return longest[-1]
-    def make_shorter(self):
+    def xmake_shorter(self):
         strategies = {
             "and": "",
             "hospitalized": "hosp",
@@ -223,10 +253,41 @@ class TrieNode:
             if "day" in self.children and len(self.children) == 1:
                 self.short_name = "7d"
                 self.children["day"].short_name = ""
-    def make_all_shorter(self):
+    def xmake_all_shorter(self):
         self.make_shorter()
         if self.parent:
             self.parent.make_all_shorter()
+    @classmethod
+    def try_make_shorter(self, trie):
+        strategies = [
+            (lambda c: c.short_name == "and",
+             lambda c: c.short_name = ""),
+            (lambda c: c.short_name == "hospitalized",
+             lambda c: c.short_name = "hosp"),
+            (lambda c: c.short_name == "vaccinated",
+             lambda c: c.short_name = "vaccd"),
+            (lambda c: (
+                c.short_name == "7" and
+                "day" in c.children and
+                len(c.children) == 1
+            ),
+             lambda c: (
+                 c.short_name = "7d" and
+                 c.children["day"].short_name = ""
+             )),
+            (lambda c: c.short_name == "coverage",
+             lambda c: c.short_name = "cov")
+        ]
+        while len(trie.as_shortened_name()) > MAX_SQL_NAME_LENGTH:
+            if not strategies:
+                raise Exception(f"Couldn't shorten '{trie.as_shortened_name()}' using known strategies")
+            strat = strategies.pop(0)
+            cursor = trie
+            while cursor and not strat[0](cursor):
+                cursor = cursor.parent
+            if cursor:
+                strat[1](cursor)
+            
 
 @dataclass
 class Column:
@@ -287,7 +348,7 @@ class Column:
 # state daily: "https://healthdata.gov/api/views/6xf2-c3ie.json"
 #    facility: "https://healthdata.gov/api/views/anag-cw7u.json"
 
-def main():
+def main(path_to_epidata):
     all_columns = {
         "covid_hosp_state_timeseries": {
             "state_timeseries": db_to_columns(STDatabase),
@@ -297,7 +358,10 @@ def main():
             "facility": db_to_columns(FDatabase)
         }
     }
-    with open("src/ddl/covid_hosp.sql") as f:
+    with open(f"{path_to_epidata}/src/ddl/covid_hosp.sql") as f:
         ddl = f.read()
     annotate_columns_using_ddl(all_columns, ddl)
-    
+    hits, misses = extend_columns_with_current_json(
+        all_columns["covid_hosp_state_timeseries"]["state_timeseries"],
+        url_as_json_data("https://healthdata.gov/api/views/g62h-syeh.json")
+    )
