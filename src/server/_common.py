@@ -45,7 +45,7 @@ def after_cursor_execute(conn, cursor, statement, parameters, context, executema
 
     # Convert to milliseconds
     total_time *= 1000
-    get_structured_logger('server_api').info("Executed timed SQL query", statement=statement, elapsed_time_ms=total_time)
+    get_structured_logger('server_api').info("Executed timed SQL query", statement=statement, params=parameters, elapsed_time_ms=total_time)
 
 
 @app.before_request
