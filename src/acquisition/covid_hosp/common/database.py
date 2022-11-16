@@ -177,7 +177,9 @@ class Database:
       ak_cols = self.AGGREGATE_KEY_COLS
 
       # restrict data to just the key columns and remove duplicate rows
-      ak_data = dataframe[ak_cols].drop_duplicates()
+      ak_data = (dataframe[set(ak_cols + self.KEY_COLS)]
+                 .sort_values(self.KEY_COLS)[ak_cols]
+                 .drop_duplicates())
       # cast types
       dataframe_typemap = {
         name: dtype
@@ -196,13 +198,13 @@ class Database:
       # create string of tick-quoted and comma-seperated column list
       ak_cols_str = ','.join(f'`{col}`' for col in ak_cols)
       # ...and ticked and comma-sep'd "column=column" list for ON UPDATE (to keep only the most recent values for each pk)
-      ak_updates_str = ','.join(f'`{col}`=`{col}`' for col in ak_cols)
+      ak_updates_str = ','.join(f'`{col}`=v.{col}' for col in ak_cols)
       # ...and string of VALUES placeholders
       values_str = ','.join( ['%s'] * len(ak_cols) )
       # use aggregate key table alias
       ak_table = self.table_name + '_key'
       # assemble full SQL statement
-      ak_insert_sql = f'INSERT INTO `{ak_table}` ({ak_cols_str}) VALUES ({values_str}) ON DUPLICATE KEY UPDATE {ak_updates_str}'
+      ak_insert_sql = f'INSERT INTO `{ak_table}` ({ak_cols_str}) VALUES ({values_str}) as v ON DUPLICATE KEY UPDATE {ak_updates_str}'
 
       # commit the data
       with self.new_cursor() as cur:

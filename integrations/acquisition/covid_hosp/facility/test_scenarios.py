@@ -76,7 +76,7 @@ class AcquisitionTests(unittest.TestCase):
       response = Epidata.covid_hosp_facility(
           '450822', Epidata.range(20200101, 20210101))
       self.assertEqual(response['result'], 1)
-      self.assertEqual(len(response['epidata']), 1)
+      self.assertEqual(len(response['epidata']), 2)
       row = response['epidata'][0]
       for k,v in expected_spotchecks.items():
         self.assertTrue(
@@ -101,9 +101,9 @@ class AcquisitionTests(unittest.TestCase):
       response = Epidata.covid_hosp_facility(
           '450822', Epidata.range(20200101, 20210101))
       self.assertEqual(response['result'], 1)
-      self.assertEqual(len(response['epidata']), 1)
+      self.assertEqual(len(response['epidata']), 2)
 
-  @freeze_time("2021-03-16")
+  @freeze_time("2021-03-17")
   def test_facility_lookup(self):
     """Lookup facilities using various filters."""
 
@@ -188,7 +188,7 @@ class AcquisitionTests(unittest.TestCase):
         self.test_utils.load_sample_dataset('dataset_update_facility.csv')
 
     # acquire sample data into local database
-    with self.subTest(name='first acquisition'):
+    with self.subTest(name='second acquisition'):
       acquired = Update.run(network=mock_network)
       self.assertTrue(acquired)
 

@@ -86,6 +86,7 @@ class Utils:
       for issues after newer_than and before older_than
     """
     daily_issues = {}
+    n_beyond = 0
     for index in sorted(set(metadata.index)):
       day = index.date()
       if day > newer_than and day < older_than:
@@ -95,6 +96,10 @@ class Utils:
           daily_issues[day] = urls_list
         else:
           daily_issues[day] += urls_list
+      elif day >= older_than:
+        n_beyond += 1
+    if n_beyond > 0:
+      print(f"{n_beyond} issues available on {older_than} or newer")
     return daily_issues
 
   @staticmethod
