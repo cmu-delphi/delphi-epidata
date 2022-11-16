@@ -104,14 +104,10 @@ def time_values_to_ranges(values: Optional[TimeValues]) -> Optional[TimeValues]:
         return values
 
 def days_to_ranges(values: TimeValues) -> TimeValues:
-    ranges = _to_ranges(values, time_value_to_day, day_to_time_value, timedelta(days=1))
-    get_structured_logger('server_utils').info("Optimized list of day values", original=values, optimized=ranges, original_length=len(values), optimized_length=len(ranges))
-    return ranges
+    return _to_ranges(values, time_value_to_day, day_to_time_value, timedelta(days=1))
 
 def weeks_to_ranges(values: TimeValues) -> TimeValues:
-    ranges = _to_ranges(values, time_value_to_week, week_to_time_value, 1)
-    get_structured_logger('server_utils').info("Optimized list of week values", original=values, optimized=ranges, original_length=len(values), optimized_length=len(ranges))
-    return ranges
+    return _to_ranges(values, time_value_to_week, week_to_time_value, 1)
 
 def _to_ranges(values: TimeValues, value_to_date: Callable, date_to_value: Callable, time_unit: Union[int, timedelta]) -> TimeValues:
     try:
@@ -147,8 +143,9 @@ def _to_ranges(values: TimeValues, value_to_date: Callable, date_to_value: Calla
             else:
                 ranges.append((date_to_value(m[0]), date_to_value(m[1])))
 
+        get_structured_logger('server_utils').info("Optimized list of date values", original=values, optimized=ranges, original_length=len(values), optimized_length=len(ranges))
+
         return ranges
     except Exception as e:
-        logger = get_structured_logger('server_utils')
-        logger.error('bad input to date ranges', time_values=values, exception=e)
+        get_structured_logger('server_utils').error('bad input to date ranges', time_values=values, exception=e)
         return values

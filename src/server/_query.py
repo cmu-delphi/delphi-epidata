@@ -242,7 +242,7 @@ def run_query(p: APrinter, query_tuple: Tuple[str, Dict[str, Any]]):
     query, params = query_tuple
     # limit rows + 1 for detecting whether we would have more
     full_query = text(limit_query(query, p.remaining_rows + 1))
-    get_structured_logger('server_query').info("Ran SQL query", full_query=str(full_query), params=params)
+    get_structured_logger('server_query').info("Running SQL query", full_query=str(full_query), params=params)
     return db.execution_options(stream_results=True).execute(full_query, **params)
 
 

@@ -32,8 +32,7 @@ db: Connection = cast(Connection, LocalProxy(_get_db))
 
 @event.listens_for(engine, "before_cursor_execute")
 def before_cursor_execute(conn, cursor, statement, parameters, context, executemany):
-    t = time.time()
-    context._query_start_time = t
+    context._query_start_time = time.time()
 
 
 @event.listens_for(engine, "after_cursor_execute")
@@ -42,16 +41,21 @@ def after_cursor_execute(conn, cursor, statement, parameters, context, executema
     # it is likely that it includes that time as well as any overhead that
     # comes from throttling or flow control on the streamed data, as well as
     # any row transform/processing time
-    t = time.time()
-    total_time = t - context._query_start_time
+    total_time = time.time() - context._query_start_time
 
     # Convert to milliseconds
-    total_time = total_time * 1000
-    get_structured_logger('server_api').info("Executed timed SQL query", statement=statement, total_time=total_time)
+    total_time *= 1000
+    get_structured_logger('server_api').info("Executed timed SQL query", statement=statement, elapsed_time_ms=total_time)
 
 
 @app.before_request
 def before_request_execute():
+    # Set timer for statement
+    g._request_start_time = time.time()
+
+    # Log statement
+    get_structured_logger('server_api').info("Received API request", method=request.method, path=request.full_path, args=request.args)
+
     if request.path.startswith('/lib'):
         return
     # try to get the db
@@ -61,21 +65,13 @@ def before_request_execute():
         get_structured_logger('server_error').error('database connection error', exception=e)
         raise DatabaseErrorException()
 
-    # Log statement
-    get_structured_logger('server_api').info("Received API request", method=request.method, path=request.full_path, args=request.args)
-
-    # Set timer for statement
-    t = time.time()
-    g._request_start_time = t
-
 
 @app.after_request
 def after_request_execute(response):
-    t = time.time()
-    total_time = t - g._request_start_time
+    total_time = time.time() - g._request_start_time
     # Convert to milliseconds
-    total_time = total_time * 1000
-    get_structured_logger('server_api').info('Executed timed API request', method=request.method, path=request.full_path, args=request.args, response_status=response.status, response_length=len(response.data), time=total_time)
+    total_time *= 1000
+    get_structured_logger('server_api').info('Executed timed API request', method=request.method, path=request.full_path, args=request.args, response_status=response.status, response_length=len(response.data), elapsed_time_ms=total_time)
     return response
 
 
