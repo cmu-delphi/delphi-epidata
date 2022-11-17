@@ -353,7 +353,7 @@ def handle_correlation():
 
 @bp.route("/csv", methods=("GET", "POST"))
 def handle_export():
-    source, signal = request.args.get("signal", "jhu-csse:confirmed_incidence_num").split(":")
+    source, signal = request.values.get("signal", "jhu-csse:confirmed_incidence_num").split(":")
     source_signal_pairs = [SourceSignalPair(source, [signal])]
     daily_signals, weekly_signals = count_signal_time_types(source_signal_pairs)
     source_signal_pairs, alias_mapper = create_source_signal_alias_mapper(source_signal_pairs)
@@ -365,13 +365,13 @@ def handle_export():
         raise ValidationFailedException("mixing weeks with day arguments")
     _verify_argument_time_type_matches(is_day, daily_signals, weekly_signals)
 
-    geo_type = request.args.get("geo_type", "county")
-    geo_values = request.args.get("geo_values", "*")
+    geo_type = request.values.get("geo_type", "county")
+    geo_values = request.values.get("geo_values", "*")
 
     if geo_values != "*":
         geo_values = geo_values.split(",")
 
-    as_of, is_as_of_day = (parse_day_or_week_arg("as_of").time_values[0], parse_day_or_week_arg("as_of").is_day) if "as_of" in request.args else (None, is_day)
+    as_of, is_as_of_day = (parse_day_or_week_arg("as_of").time_values[0], parse_day_or_week_arg("as_of").is_day) if "as_of" in request.values else (None, is_day)
     if is_day != is_as_of_day:
         raise ValidationFailedException("mixing weeks with day arguments")
 
@@ -598,7 +598,7 @@ def handle_coverage():
     daily_signals, weekly_signals = count_signal_time_types(source_signal_pairs)
     source_signal_pairs, alias_mapper = create_source_signal_alias_mapper(source_signal_pairs)
 
-    geo_type = request.args.get("geo_type", "county")
+    geo_type = request.values.get("geo_type", "county")
     if "window" in request.values:
         time_window = parse_day_or_week_range_arg("window")
         is_day = time_window.is_day
