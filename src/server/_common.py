@@ -5,6 +5,7 @@ from flask import Flask, g, request
 from sqlalchemy import event
 from sqlalchemy.engine import Connection
 from werkzeug.local import LocalProxy
+from werkzeug.exceptions import HTTPException
 
 from .utils.logger import get_structured_logger
 from ._config import SECRET
@@ -21,9 +22,6 @@ def _get_db() -> Connection:
         g.db = conn
     return g.db
 
-def log_and_raise_validation_exception(message):
-    get_structured_logger('server_error').error(message)
-    raise ValidationFailedException(message)
 
 """
 access to the SQL Alchemy connection for this request
@@ -45,7 +43,7 @@ def after_cursor_execute(conn, cursor, statement, parameters, context, executema
 
     # Convert to milliseconds
     total_time *= 1000
-    get_structured_logger('server_api').info("Executed timed SQL query", statement=statement, params=parameters, elapsed_time_ms=total_time)
+    get_structured_logger('server_api').info("Executed SQL", statement=statement, params=parameters, elapsed_time_ms=total_time)
 
 
 @app.before_request
@@ -54,7 +52,7 @@ def before_request_execute():
     g._request_start_time = time.time()
 
     # Log statement
-    get_structured_logger('server_api').info("Received API request", method=request.method, path=request.full_path, args=request.args)
+    get_structured_logger('server_api').info("Received API request", method=request.method, headers=request.headers, path=request.full_path, args=request.args, user_agent=request.user_agent)
 
     if request.path.startswith('/lib'):
         return
@@ -71,7 +69,7 @@ def after_request_execute(response):
     total_time = time.time() - g._request_start_time
     # Convert to milliseconds
     total_time *= 1000
-    get_structured_logger('server_api').info('Executed timed API request', method=request.method, path=request.full_path, args=request.args, response_status=response.status, response_length=len(response.data), elapsed_time_ms=total_time)
+    get_structured_logger('server_api').info('Served API request', method=request.method, headers=request.headers, path=request.full_path, args=request.args, user_agent=request.user_agent, response_status=response.status, response_length=response.content_length, elapsed_time_ms=total_time)
     return response
 
 
@@ -82,6 +80,16 @@ def teardown_db(exception=None):
 
     if db is not None:
         db.close()
+
+
+@app.errorhandler(HTTPException)
+def handle_exception(e):
+    # Log error and pass through
+    if isinstance(e, HTTPException):
+        get_structured_logger('server_error').error('Received HTTP exception', code=e.code, name=e.name, description=e.description)
+    else:
+        get_structured_logger('server_error').error('Received generic exception', exception=str(e))
+    return e
 
 
 def is_compatibility_mode() -> bool:

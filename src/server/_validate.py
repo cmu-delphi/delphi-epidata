@@ -2,7 +2,6 @@ from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple, Union
 
 from flask import request
 
-from ._common import log_and_raise_validation_exception
 from ._exceptions import UnAuthenticatedException, ValidationFailedException
 from .utils import TimeValues
 
@@ -28,7 +27,7 @@ def check_auth_token(token: str, optional=False) -> bool:
         if optional:
             return False
         else:
-            log_and_raise_validation_exception(f"missing parameter: auth")
+            raise ValidationFailedException(f"missing parameter: auth")
 
     valid_token = value == token
     if not valid_token and not optional:
@@ -43,7 +42,7 @@ def require_all(*values: str) -> bool:
     """
     for value in values:
         if not request.values.get(value):
-            log_and_raise_validation_exception(f"missing parameter: need [{', '.join(values)}]")
+            raise ValidationFailedException(f"missing parameter: need [{', '.join(values)}]")
     return True
 
 
@@ -55,7 +54,7 @@ def require_any(*values: str, empty=False) -> bool:
     for value in values:
         if request.values.get(value) or (empty and value in request.values):
             return True
-    log_and_raise_validation_exception(f"missing parameter: need one of [{', '.join(values)}]")
+    raise ValidationFailedException(f"missing parameter: need one of [{', '.join(values)}]")
 
 
 def _extract_value(key: Union[str, Sequence[str]]) -> Optional[str]:
@@ -96,7 +95,7 @@ def extract_integer(key: Union[str, Sequence[str]]) -> Optional[int]:
     try:
         return int(s)
     except ValueError as e:
-        log_and_raise_validation_exception(f"{key}: not a number: {s}")
+        raise ValidationFailedException(f"{key}: not a number: {s}")
 
 
 def extract_integers(key: Union[str, Sequence[str]]) -> Optional[List[IntRange]]:
@@ -118,14 +117,14 @@ def extract_integers(key: Union[str, Sequence[str]]) -> Optional[List[IntRange]]
             # add the range as an array
             return (first, last)
         # the range is inverted, this is an error
-        log_and_raise_validation_exception(f"{key}: the given range is inverted")
+        raise ValidationFailedException(f"{key}: the given range is inverted")
 
     try:
         values = [_parse_range(part) for part in parts]
         # check for invalid values
         return None if any(v is None for v in values) else values
     except ValueError as e:
-        log_and_raise_validation_exception(f"{key}: not a number: {str(e)}")
+        raise ValidationFailedException(f"{key}: not a number: {str(e)}")
 
 
 def parse_date(s: str) -> int:
@@ -133,7 +132,7 @@ def parse_date(s: str) -> int:
     try:
         return int(s.replace("-", ""))
     except ValueError:
-        log_and_raise_validation_exception(f"not a valid date: {s}")
+        raise ValidationFailedException(f"not a valid date: {s}")
 
 
 def extract_date(key: Union[str, Sequence[str]]) -> Optional[int]:
@@ -159,7 +158,7 @@ def extract_dates(key: Union[str, Sequence[str]]) -> Optional[TimeValues]:
             # add the range as an array
             return (first_d, last_d)
         # the range is inverted, this is an error
-        log_and_raise_validation_exception(f"{key}: the given range is inverted")
+        raise ValidationFailedException(f"{key}: the given range is inverted")
 
     for part in parts:
         if "-" not in part and ":" not in part:

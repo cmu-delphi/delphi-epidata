@@ -57,5 +57,4 @@ else:
     app.logger.handlers = gunicorn_logger.handlers
     app.logger.setLevel(gunicorn_logger.level)
     sqlalchemy_logger = logging.getLogger("sqlalchemy")
-    sqlalchemy_logger.handlers = gunicorn_logger.handlers
-    sqlalchemy_logger.setLevel(gunicorn_logger.level)
+    sqlalchemy_logger.disabled = True

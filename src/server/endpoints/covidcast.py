@@ -8,7 +8,7 @@ from bisect import bisect_right
 from sqlalchemy import text
 from pandas import read_csv, to_datetime
 
-from .._common import is_compatibility_mode, db, log_and_raise_validation_exception
+from .._common import is_compatibility_mode, db
 from .._exceptions import ValidationFailedException, DatabaseErrorException
 from .._params import (
     GeoPair,
@@ -54,7 +54,7 @@ def parse_source_signal_pairs() -> List[SourceSignalPair]:
         return [SourceSignalPair(ds, signals)]
 
     if ":" not in request.values.get("signal", ""):
-        log_and_raise_validation_exception("missing parameter: signal or (data_source and signal[s])")
+        raise ValidationFailedException("missing parameter: signal or (data_source and signal[s])")
 
     return parse_source_signal_arg()
 
@@ -70,7 +70,7 @@ def parse_geo_pairs() -> List[GeoPair]:
         return [GeoPair(geo_type, geo_values)]
 
     if ":" not in request.values.get("geo", ""):
-        log_and_raise_validation_exception("missing parameter: geo or (geo_type and geo_value[s])")
+        raise ValidationFailedException("missing parameter: geo or (geo_type and geo_value[s])")
 
     return parse_geo_arg()
 
@@ -84,7 +84,7 @@ def parse_time_pairs() -> TimePair:
         return TimePair(time_type, time_values)
 
     if ":" not in request.values.get("time", ""):
-        log_and_raise_validation_exception("missing parameter: time or (time_type and time_values)")
+        raise ValidationFailedException("missing parameter: time or (time_type and time_values)")
 
     return parse_time_arg()
 
@@ -159,9 +159,9 @@ def handle():
 
 def _verify_argument_time_type_matches(is_day_argument: bool, count_daily_signal: int, count_weekly_signal: int) -> None:
     if is_day_argument and count_weekly_signal > 0:
-        log_and_raise_validation_exception("day arguments for weekly signals")
+        raise ValidationFailedException("day arguments for weekly signals")
     if not is_day_argument and count_daily_signal > 0:
-        log_and_raise_validation_exception("week arguments for daily signals")
+        raise ValidationFailedException("week arguments for daily signals")
 
 
 @bp.route("/trend", methods=("GET", "POST"))
@@ -177,7 +177,7 @@ def handle_trend():
     time_pair = parse_day_or_week_arg("date")
     time_value, is_also_day = time_pair.time_values[0], time_pair.is_day
     if is_day != is_also_day:
-        log_and_raise_validation_exception("mixing weeks with day arguments")
+        raise ValidationFailedException("mixing weeks with day arguments")
     _verify_argument_time_type_matches(is_day, daily_signals, weekly_signals)
     basis_time_value = extract_date("basis")
     if basis_time_value is None:
@@ -362,7 +362,7 @@ def handle_export():
     end_pair = parse_day_or_week_arg("end_day", 202020 if weekly_signals > 0 else 20200901)
     end_day, is_end_day = end_pair.time_values[0], end_pair.is_day
     if is_day != is_end_day:
-        log_and_raise_validation_exception("mixing weeks with day arguments")
+        raise ValidationFailedException("mixing weeks with day arguments")
     _verify_argument_time_type_matches(is_day, daily_signals, weekly_signals)
 
     geo_type = request.args.get("geo_type", "county")
@@ -373,7 +373,7 @@ def handle_export():
 
     as_of, is_as_of_day = (parse_day_or_week_arg("as_of").time_values[0], parse_day_or_week_arg("as_of").is_day) if "as_of" in request.args else (None, is_day)
     if is_day != is_as_of_day:
-        log_and_raise_validation_exception("mixing weeks with day arguments")
+        raise ValidationFailedException("mixing weeks with day arguments")
 
     # build query
     q = QueryBuilder(latest_table, "t")
