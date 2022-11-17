@@ -76,7 +76,7 @@ class AcquisitionTests(unittest.TestCase):
       response = Epidata.covid_hosp_facility(
           '450822', Epidata.range(20200101, 20210101))
       self.assertEqual(response['result'], 1)
-      self.assertEqual(len(response['epidata']), 1)
+      self.assertEqual(len(response['epidata']), 2)
       row = response['epidata'][0]
       for k,v in expected_spotchecks.items():
         self.assertTrue(
@@ -101,9 +101,9 @@ class AcquisitionTests(unittest.TestCase):
       response = Epidata.covid_hosp_facility(
           '450822', Epidata.range(20200101, 20210101))
       self.assertEqual(response['result'], 1)
-      self.assertEqual(len(response['epidata']), 1)
+      self.assertEqual(len(response['epidata']), 2)
 
-  @freeze_time("2021-03-16")
+  @freeze_time("2021-03-17")
   def test_facility_lookup(self):
     """Lookup facilities using various filters."""
 
@@ -120,7 +120,7 @@ class AcquisitionTests(unittest.TestCase):
       self.assertTrue(acquired)
 
     # texas ground truth, sorted by `hospital_pk`
-    # see sample data at testdata/acquisition/covid_hosp/facility/dataset_old.csv
+    # see sample data at testdata/acquisition/covid_hosp/facility/dataset.csv
     texas_hospitals = [{
       'hospital_pk': '450771',
       'state': 'TX',
@@ -139,7 +139,7 @@ class AcquisitionTests(unittest.TestCase):
       'hospital_name': 'MEDICAL CITY LAS COLINAS',
       'address': '6800 N MACARTHUR BLVD',
       'city': 'IRVING',
-      'zip': '75039',
+      'zip': '77777', # most-recent collection week should take precedence
       'hospital_subtype': 'Short Term',
       'fips_code': '48113',
       'is_metro_micro': 1,
@@ -150,7 +150,7 @@ class AcquisitionTests(unittest.TestCase):
       'hospital_name': 'RANKIN HOSPITAL MEDICAL CLINIC',
       'address': '1611 SPUR 576',
       'city': 'RANKIN',
-      'zip': '79778',
+      'zip': '99999', # most-recent collection week should take precedence
       'hospital_subtype': 'Critical Access Hospitals',
       'fips_code': '48461',
       'is_metro_micro': 0,
@@ -160,16 +160,16 @@ class AcquisitionTests(unittest.TestCase):
       response = Epidata.covid_hosp_facility_lookup(state='tx')
       self.assertEqual(response['epidata'], texas_hospitals)
 
-    with self.subTest(name='by ccn'):
-      response = Epidata.covid_hosp_facility_lookup(ccn='450771')
+    with self.subTest(name='by zip'):
+      response = Epidata.covid_hosp_facility_lookup(zip='75093')
       self.assertEqual(response['epidata'], texas_hospitals[0:1])
 
     with self.subTest(name='by city'):
       response = Epidata.covid_hosp_facility_lookup(city='irving')
       self.assertEqual(response['epidata'], texas_hospitals[1:2])
 
-    with self.subTest(name='by zip'):
-      response = Epidata.covid_hosp_facility_lookup(zip='79778')
+    with self.subTest(name='by ccn'):
+      response = Epidata.covid_hosp_facility_lookup(ccn='451329')
       self.assertEqual(response['epidata'], texas_hospitals[2:3])
 
     with self.subTest(name='by fips_code'):
@@ -180,7 +180,19 @@ class AcquisitionTests(unittest.TestCase):
       response = Epidata.covid_hosp_facility_lookup(state='not a state')
       self.assertEqual(response['result'], -2)
 
-  @unittest.skip("unimplemented")
-  def test_update_facility_info(self):
-    # TODO: load dataset used above, query a hospital, load another dataset which has a different street adress for the same `hospital_pk`, query again and make sure hospital address is updated
-    pass
+    # update facility info
+    mock_network = MagicMock()
+    mock_network.fetch_metadata.return_value = \
+        self.test_utils.load_sample_metadata('metadata_update_facility.csv')
+    mock_network.fetch_dataset.return_value = \
+        self.test_utils.load_sample_dataset('dataset_update_facility.csv')
+
+    # acquire sample data into local database
+    with self.subTest(name='second acquisition'):
+      acquired = Update.run(network=mock_network)
+      self.assertTrue(acquired)
+
+    texas_hospitals[1]['zip'] = '88888'
+    with self.subTest(name='by city after update'):
+      response = Epidata.covid_hosp_facility_lookup(city='irving')
+      self.assertEqual(response['epidata'], texas_hospitals[1:2])
