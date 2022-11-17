@@ -1039,6 +1039,30 @@ version entitled "Wed, 12/09/2020 - 17:23".
   influenza at the time of admission reported in 7-day period.
 */
 
+CREATE TABLE `covid_hosp_facility_key` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `address` VARCHAR(128),
+  `ccn` VARCHAR(20),
+  `city` VARCHAR(64),
+  `fips_code` CHAR(5),
+  `geocoded_hospital_address` VARCHAR(32), --  <--- not currently exposed by endpoint
+  `hhs_ids` VARCHAR(127), --  <--- not currently exposed by endpoint
+  `hospital_name` VARCHAR(256),
+  `hospital_pk` VARCHAR(128) NOT NULL,
+  `hospital_subtype` VARCHAR(64),
+  `is_metro_micro` BOOLEAN,
+  `state` CHAR(2) NOT NULL,
+  `zip` CHAR(5),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY (`hospital_pk`),
+  -- for fast lookup of hospitals in a given location
+  KEY (`state`, `hospital_pk`),
+  KEY (`ccn`, `hospital_pk`),
+  KEY (`city`, `hospital_pk`),
+  KEY (`zip`, `hospital_pk`),
+  KEY (`fips_code`, `hospital_pk`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE `covid_hosp_facility` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `publication_date` INT NOT NULL,
