@@ -35,8 +35,9 @@ class Utils:
     int
       Date in YYYYMMDD format.
     """
-
-    return int(date[:10].replace('/', '').replace('-', ''))
+    if isinstance(date, str):
+      return int(date[:10].replace('/', '').replace('-', ''))
+    return date
 
   def parse_bool(value):
     """Convert a string to a boolean.
