@@ -44,9 +44,14 @@ def get_structured_logger(name=__name__,
     if filename:
         handlers.append(logging.FileHandler(filename))
 
+    if "LOG_DEBUG" in os.environ:
+        log_level = logging.DEBUG
+    else:
+        log_level = logging.INFO
+
     logging.basicConfig(
         format="%(message)s",
-        level=logging.INFO,
+        level=log_level,
         handlers=handlers
         )
 
