@@ -35,11 +35,11 @@ class DatabaseTests(unittest.TestCase):
     result = database.insert_dataset(sentinel.publication_date, dataset)
 
     self.assertIsNone(result)
-    self.assertEqual(mock_cursor.execute.call_count, 20)
+    self.assertEqual(mock_cursor.execute.call_count, 22)
 
     last_query_values = mock_cursor.execute.call_args[0][-1]
     expected_query_values = (
-        0, sentinel.publication_date, '450822', 20201030,
+        0, sentinel.publication_date, '450822', 20201130,
         '6800 N MACARTHUR BLVD', 61.1, 7, 428, 60.9, 7, 426, 61.1, 7, 428,
         '450822', 'IRVING', '48113', '15', '6', 'MEDICAL CITY LAS COLINAS',
         'Short Term', 14.0, 7, 98, -999999.0, 7, -999999, 69.3, 7, 485, 69.0,
@@ -50,7 +50,7 @@ class DatabaseTests(unittest.TestCase):
         7, 41, -999999.0, 7, 16, -999999.0, 7, 14, 'TX', 6.9, 7, 48, 6.1, 7,
         43, 69.3, 7, 485, 14.3, 7, 100, -999999.0, 7, -999999, -999999.0, 7,
         -999999, -999999.0, 7, -999999, -999999.0, 7, -999999, 9, 18, 14, 0,
-        1, 4, 6.1, 7, 43, '75039')
+        1, 4, 6.1, 7, 43, '77777')
     self.assertEqual(len(last_query_values), len(expected_query_values))
 
     for actual, expected in zip(last_query_values, expected_query_values):

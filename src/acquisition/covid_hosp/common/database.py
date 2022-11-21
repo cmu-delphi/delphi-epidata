@@ -1,6 +1,7 @@
 """Common database code used by multiple `covid_hosp` scrapers."""
 
 # standard library
+from collections import namedtuple
 from contextlib import contextmanager
 import math
 
@@ -11,6 +12,7 @@ import pandas as pd
 # first party
 import delphi.operations.secrets as secrets
 
+Columndef = namedtuple("Columndef", "csv_name sql_name dtype")
 
 class Database:
 
@@ -18,6 +20,7 @@ class Database:
                connection,
                table_name=None,
                columns_and_types=None,
+               key_columns=None,
                additional_fields=None):
     """Create a new Database object.
 
@@ -39,7 +42,11 @@ class Database:
     self.table_name = table_name
     self.publication_col_name = "issue" if table_name == 'covid_hosp_state_timeseries' else \
       'publication_date'
-    self.columns_and_types = columns_and_types
+    self.columns_and_types = {
+      c.csv_name: c
+      for c in (columns_and_types if columns_and_types is not None else [])
+    }
+    self.key_columns = key_columns if key_columns is not None else []
     self.additional_fields = additional_fields if additional_fields is not None else []
 
   @classmethod
@@ -151,26 +158,67 @@ class Database:
       The dataset.
     """
     dataframe_columns_and_types = [
-      x for x in self.columns_and_types if x[0] in dataframe.columns
+      x for x in self.columns_and_types.values() if x.csv_name in dataframe.columns
     ]
+
+    def nan_safe_dtype(dtype, value):
+      if isinstance(value, float) and math.isnan(value):
+        return None
+      return dtype(value)
+
+    # first convert keys and save the results; we'll need them later
+    for csv_name in self.key_columns:
+      dataframe.loc[:, csv_name] = dataframe[csv_name].map(self.columns_and_types[csv_name].dtype)
+
     num_columns = 2 + len(dataframe_columns_and_types) + len(self.additional_fields)
     value_placeholders = ', '.join(['%s'] * num_columns)
-    columns = ', '.join(f'`{i[1]}`' for i in dataframe_columns_and_types + self.additional_fields)
+    columns = ', '.join(f'`{i.sql_name}`' for i in dataframe_columns_and_types + self.additional_fields)
     sql = f'INSERT INTO `{self.table_name}` (`id`, `{self.publication_col_name}`, {columns}) ' \
           f'VALUES ({value_placeholders})'
     id_and_publication_date = (0, publication_date)
     with self.new_cursor() as cursor:
       for _, row in dataframe.iterrows():
         values = []
-        for name, _, dtype in dataframe_columns_and_types:
-          if isinstance(row[name], float) and math.isnan(row[name]):
-            values.append(None)
-          else:
-            values.append(dtype(row[name]))
+        for c in dataframe_columns_and_types:
+          values.append(nan_safe_dtype(c.dtype, row[c.csv_name]))
         cursor.execute(sql,
                        id_and_publication_date +
                        tuple(values) +
-                       tuple(i[0] for i in self.additional_fields))
+                       tuple(i.csv_name for i in self.additional_fields))
+
+    # deal with non/seldomly updated columns used like a fk table (if this database needs it)
+    if hasattr(self, 'AGGREGATE_KEY_COLS'):
+      ak_cols = self.AGGREGATE_KEY_COLS
+
+      # restrict data to just the key columns and remove duplicate rows
+      # sort by key columns to ensure that the last ON DUPLICATE KEY overwrite
+      # uses the most-recent aggregate key information
+      ak_data = (dataframe[set(ak_cols + self.key_columns)]
+                 .sort_values(self.key_columns)[ak_cols]
+                 .drop_duplicates())
+      # cast types
+      for col in ak_cols:
+          ak_data[col] = ak_data[col].map(
+            lambda value: nan_safe_dtype(self.columns_and_types[col].dtype, value)
+          )
+      # fix NULLs
+      ak_data = ak_data.to_numpy(na_value=None).tolist()
+
+      # create string of tick-quoted and comma-seperated column list
+      ak_cols_str = ','.join(f'`{col}`' for col in ak_cols)
+      # ...and ticked and comma-sep'd "column=column" list for ON UPDATE (to keep only the most recent values for each pk)
+      ak_updates_str = ','.join(f'`{col}`=v.{col}' for col in ak_cols)
+      # ...and string of VALUES placeholders
+      values_str = ','.join( ['%s'] * len(ak_cols) )
+      # use aggregate key table alias
+      ak_table = self.table_name + '_key'
+      # assemble full SQL statement
+      ak_insert_sql = f'INSERT INTO `{ak_table}` ({ak_cols_str}) VALUES ({values_str}) AS v ON DUPLICATE KEY UPDATE {ak_updates_str}'
+
+      # commit the data
+      with self.new_cursor() as cur:
+        cur.executemany(ak_insert_sql, ak_data)
+
 
   def get_max_issue(self):
     """Fetch the most recent issue.

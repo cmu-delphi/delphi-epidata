@@ -17,27 +17,25 @@ def handle():
     fips_code = extract_strings("fips_code")
 
     # build query
-    q = QueryBuilder("covid_hosp_facility", "c")
+    q = QueryBuilder("covid_hosp_facility_key", "c")
     q.fields = ", ".join(
-        [
+        [ # NOTE: fields `geocoded_hospital_address` and `hhs_ids` are available but not being provided by this endpoint.
             f"{q.alias}.hospital_pk",
-            f"MAX({q.alias}.state) state",
-            f"MAX({q.alias}.ccn) ccn",
-            f"MAX({q.alias}.hospital_name) hospital_name",
-            f"MAX({q.alias}.address) address",
-            f"MAX({q.alias}.city) city",
-            f"MAX({q.alias}.zip) zip",
-            f"MAX({q.alias}.hospital_subtype) hospital_subtype",
-            f"MAX({q.alias}.fips_code) fips_code",
-            f"MAX({q.alias}.is_metro_micro) is_metro_micro",
+            f"{q.alias}.state",
+            f"{q.alias}.ccn",
+            f"{q.alias}.hospital_name",
+            f"{q.alias}.address",
+            f"{q.alias}.city",
+            f"{q.alias}.zip",
+            f"{q.alias}.hospital_subtype",
+            f"{q.alias}.fips_code",
+            f"{q.alias}.is_metro_micro",
         ]
     )
     # basic query info
-    q.group_by = f"{q.alias}.hospital_pk"
     q.set_order("hospital_pk")
     # build the filter
     # these are all fast because the table has indexes on each of these fields
-    
     if state:
         q.where_strings('state', state)
     elif ccn:
