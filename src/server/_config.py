@@ -49,6 +49,7 @@ REGION_TO_STATE = {
 NATION_REGION = "nat"
 
 API_KEY_REQUIRED_STARTING_AT = date.fromisoformat(os.environ.get('API_REQUIRED_STARTING_AT', '3000-01-01'))
+API_KEY_EXPIRE_AFTER = 90
 
 # password needed for the admin application if not set the admin routes won't be available
 ADMIN_PASSWORD = os.environ.get('API_KEY_ADMIN_PASSWORD')
