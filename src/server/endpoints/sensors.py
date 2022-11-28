@@ -29,7 +29,7 @@ def _authenticate(names: List[str]):
     for name in names:
         sensor_is_open = name in OPEN_SENSORS
         # test whether they provided the "global" auth token that works for all sensors:
-        sensor_authenticated_globally = current_user.has_role(UserRole.sensors)
+        sensor_authenticated_globally = current_user.has_role("sensors")
         # test whether they provided a "granular" auth token for one of the
         # sensor_subsets containing this sensor (if any):
         sensor_authenticated_granularly = False

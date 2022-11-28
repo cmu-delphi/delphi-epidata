@@ -4,13 +4,14 @@ from flask import Blueprint
 
 from .._query import execute_queries, filter_integers, filter_strings
 from .._validate import extract_integers, extract_strings, require_all
-from .._security import require_role
+from .._security import require_role, create_user_role
 from .._config import UserRole
 
 # first argument is the endpoint name
 bp = Blueprint("afhsb", __name__)
 alias = None
 
+create_user_role("afhsb")
 
 def _split_locations(locations: List[str]):
     # split locations into national/regional/state
@@ -53,7 +54,7 @@ FLU_MAPPING = {
 
 
 @bp.route("/", methods=("GET", "POST"))
-@require_role(UserRole.afhsb)
+@require_role("afhsb")
 def handle():
     require_all("locations", "epiweeks", "flu_types")
 

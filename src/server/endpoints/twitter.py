@@ -8,16 +8,18 @@ from .._validate import (
     require_all,
     require_any,
 )
-from .._security import require_role
+from .._security import require_role, create_user_role
 from .._config import UserRole
 
 # first argument is the endpoint name
 bp = Blueprint("twitter", __name__)
 alias = None
 
+create_user_role("twitter")
+
 
 @bp.route("/", methods=("GET", "POST"))
-@require_role(UserRole.twitter)
+@require_role("twitter")
 def handle():
     require_all("locations")
     require_any("dates", "epiweeks")

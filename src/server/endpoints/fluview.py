@@ -2,7 +2,7 @@ from typing import Any, Dict, List, Tuple
 
 from flask import Blueprint
 
-from .._security import current_user
+from .._security import current_user, create_user_role
 from .._config import UserRole
 from .._query import execute_queries, filter_integers, filter_strings
 from .._validate import (
@@ -16,10 +16,12 @@ from .._validate import (
 bp = Blueprint("fluview", __name__)
 alias = None
 
+create_user_role("fluview")
+
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    authorized = current_user.has_role(UserRole.fluview)
+    authorized = current_user.has_role("fluview")
 
     require_all("epiweeks", "regions")
 
