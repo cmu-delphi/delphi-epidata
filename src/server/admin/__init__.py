@@ -1,12 +1,11 @@
 from pathlib import Path
-import re
 from typing import Dict, List, Set
 from flask import Blueprint, render_template_string, request, make_response
 from werkzeug.exceptions import Unauthorized, NotFound, BadRequest
 from werkzeug.utils import redirect
 from requests import post
-from .._security import resolve_auth_token, DBUser
-from .._config import ADMIN_PASSWORD, RECAPTCHA_SECRET_KEY, RECAPTCHA_SITE_KEY, REGISTER_WEBHOOK_TOKEN, UserRole
+from .._security import resolve_auth_token, DBUser, session, UserRole
+from .._config import ADMIN_PASSWORD, RECAPTCHA_SECRET_KEY, RECAPTCHA_SITE_KEY, REGISTER_WEBHOOK_TOKEN
 
 self_dir = Path(__file__).parent
 # first argument is the endpoint name
@@ -32,8 +31,9 @@ def _parse_roles(roles: List[str]) -> Set[str]:
 
 def _render(mode: str, token: str, flags: Dict, **kwargs):
     template = (templates_dir / "index.html").read_text("utf8")
+    available_roles = session.query(UserRole).all()
     return render_template_string(
-        template, mode=mode, token=token, flags=flags, roles=[r.value for r in UserRole], **kwargs
+        template, mode=mode, token=token, flags=flags, roles=[r.name for r in available_roles], **kwargs
     )
 
 
@@ -57,7 +57,7 @@ def _index():
 @bp.route("/<int:user_id>", methods=["GET", "PUT", "POST", "DELETE"])
 def _detail(user_id: int):
     token = _require_admin()
-    user = DBUser.find(user_id)
+    user = DBUser.find_user(user_id=user_id)
     if not user:
         raise NotFound()
     if request.method == "DELETE" or "delete" in request.values:
@@ -83,11 +83,10 @@ def _register():
         raise Unauthorized()
 
     old_api_key = body["user_old_api_key"]
-    db_user = DBUser.find_by_api_key(old_api_key)
+    db_user = DBUser.find_user(api_key=old_api_key)
     if db_user is None:
         raise BadRequest("invalid api key")
     new_api_key = body["user_new_api_key"]
-    email = body["email"]
     tracking = True if body["tracking"] == "Yes" else False
     db_user = db_user.update_user(new_api_key, db_user.roles, tracking, True)
     return make_response(f'Successfully registered the API key "{new_api_key}" and removed rate limit', 200)
