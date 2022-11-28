@@ -15,14 +15,46 @@ import delphi.operations.secrets as secrets
 
 # third party
 from freezegun import freeze_time
+import mysql.connector
 
 # py3tester coverage target (equivalent to `import *`)
 __test_target__ = "delphi.epidata.acquisition.covid_hosp.facility.update"
 
 NEWLINE = "\n"
 
+def setup_db():
+    cnx = mysql.connector.connect(
+            user="user",
+            password="pass",
+            host="delphi_database_epidata",
+            database="epidata",
+        )
+    cur = cnx.cursor()
+    return cnx, cur
+    
+def tear_down_db(cnx, cur):
+    cur.close()
+    cnx.close()
+
 
 class AcquisitionTests(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cnx, cur = setup_db()
+        cur.execute('insert into api_user(api_key, tracking, registered) values ("key", 1, 1)')
+        cnx.commit()
+        tear_down_db(cnx, cur)
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cnx, cur = setup_db()
+        cur.execute("set foreign_key_checks = 0")
+        cur.execute("delete from api_user")
+        cur.execute("set foreign_key_checks = 1")
+        cnx.commit()
+        tear_down_db(cnx, cur)
+        
     def setUp(self):
         """Perform per-test setup."""
 
@@ -43,10 +75,7 @@ class AcquisitionTests(unittest.TestCase):
             with db.new_cursor() as cur:
                 cur.execute("truncate table covid_hosp_facility")
                 cur.execute("truncate table covid_hosp_meta")
-                cur.execute("truncate table api_user")
-                cur.execute(
-                    'insert into api_user(api_key, email, roles, tracking, registered) values("key","test@gmail.com", "", 1, 1)'
-                )
+                
 
     @freeze_time("2021-03-16")
     def test_acquire_dataset(self):

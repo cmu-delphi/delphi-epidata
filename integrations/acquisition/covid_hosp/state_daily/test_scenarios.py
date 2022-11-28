@@ -8,6 +8,7 @@ from unittest.mock import patch
 # third party
 from freezegun import freeze_time
 import pandas as pd
+import mysql.connector
 
 # first party
 from delphi.epidata.acquisition.covid_hosp.state_daily.database import Database
@@ -24,7 +25,39 @@ import delphi.operations.secrets as secrets
 __test_target__ = "delphi.epidata.acquisition.covid_hosp.state_daily.update"
 
 
+def setup_db():
+    cnx = mysql.connector.connect(
+        user="user",
+        password="pass",
+        host="delphi_database_epidata",
+        database="epidata",
+    )
+    cur = cnx.cursor()
+    return cnx, cur
+
+
+def tear_down_db(cnx, cur):
+    cur.close()
+    cnx.close()
+
+
 class AcquisitionTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cnx, cur = setup_db()
+        cur.execute('insert into api_user(api_key, tracking, registered) values ("key", 1, 1)')
+        cnx.commit()
+        tear_down_db(cnx, cur)
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cnx, cur = setup_db()
+        cur.execute("set foreign_key_checks = 0")
+        cur.execute("delete from api_user")
+        cur.execute("set foreign_key_checks = 1")
+        cnx.commit()
+        tear_down_db(cnx, cur)
+        
     def setUp(self):
         """Perform per-test setup."""
 
@@ -45,10 +78,6 @@ class AcquisitionTests(unittest.TestCase):
             with db.new_cursor() as cur:
                 cur.execute("truncate table covid_hosp_state_timeseries")
                 cur.execute("truncate table covid_hosp_meta")
-                cur.execute("truncate table api_user")
-                cur.execute(
-                    'insert into api_user(api_key, email, roles, tracking, registered) values("key", "test@gmail.com", "", 1, 1)'
-                )
 
     @freeze_time("2021-03-16")
     def test_acquire_dataset(self):
@@ -56,9 +85,7 @@ class AcquisitionTests(unittest.TestCase):
 
         # make sure the data does not yet exist
         with self.subTest(name="no data yet"):
-            response = Epidata.covid_hosp(
-                "MA", Epidata.range(20200101, 20210101)
-            )
+            response = Epidata.covid_hosp("MA", Epidata.range(20200101, 20210101))
             self.assertEqual(response["result"], -2, response)
 
         # acquire sample data into local database
@@ -71,12 +98,8 @@ class AcquisitionTests(unittest.TestCase):
             Network,
             "fetch_dataset",
             side_effect=[
-                self.test_utils.load_sample_dataset(
-                    "dataset0.csv"
-                ),  # dataset for 3/13
-                self.test_utils.load_sample_dataset(
-                    "dataset0.csv"
-                ),  # first dataset for 3/15
+                self.test_utils.load_sample_dataset("dataset0.csv"),  # dataset for 3/13
+                self.test_utils.load_sample_dataset("dataset0.csv"),  # first dataset for 3/15
                 self.test_utils.load_sample_dataset(),
             ],  # second dataset for 3/15
         ) as mock_fetch:
@@ -86,9 +109,7 @@ class AcquisitionTests(unittest.TestCase):
 
         # make sure the data now exists
         with self.subTest(name="initial data checks"):
-            response = Epidata.covid_hosp(
-                "WY", Epidata.range(20200101, 20210101)
-            )
+            response = Epidata.covid_hosp("WY", Epidata.range(20200101, 20210101))
             self.assertEqual(response["result"], 1)
             self.assertEqual(len(response["epidata"]), 1)
             row = response["epidata"][0]
@@ -97,9 +118,7 @@ class AcquisitionTests(unittest.TestCase):
             self.assertEqual(row["issue"], 20210315)
             self.assertEqual(row["critical_staffing_shortage_today_yes"], 8)
             self.assertEqual(
-                row[
-                    "total_patients_hospitalized_confirmed_influenza_covid_coverage"
-                ],
+                row["total_patients_hospitalized_confirmed_influenza_covid_coverage"],
                 56,
             )
             actual = row["inpatient_bed_covid_utilization"]
@@ -111,9 +130,7 @@ class AcquisitionTests(unittest.TestCase):
             self.assertEqual(len(row), 118)
 
         with self.subTest(name="all date batches acquired"):
-            response = Epidata.covid_hosp(
-                "WY", Epidata.range(20200101, 20210101), issues=20210313
-            )
+            response = Epidata.covid_hosp("WY", Epidata.range(20200101, 20210101), issues=20210313)
             self.assertEqual(response["result"], 1)
 
         # re-acquisition of the same dataset should be a no-op
@@ -131,9 +148,7 @@ class AcquisitionTests(unittest.TestCase):
 
         # make sure the data still exists
         with self.subTest(name="final data checks"):
-            response = Epidata.covid_hosp(
-                "WY", Epidata.range(20200101, 20210101)
-            )
+            response = Epidata.covid_hosp("WY", Epidata.range(20200101, 20210101))
             self.assertEqual(response["result"], 1)
             self.assertEqual(len(response["epidata"]), 1)
 
@@ -143,9 +158,7 @@ class AcquisitionTests(unittest.TestCase):
 
         # make sure the data does not yet exist
         with self.subTest(name="no data yet"):
-            response = Epidata.covid_hosp(
-                "MA", Epidata.range(20200101, 20210101)
-            )
+            response = Epidata.covid_hosp("MA", Epidata.range(20200101, 20210101))
             self.assertEqual(response["result"], -2)
 
         # acquire sample data into local database
@@ -162,12 +175,8 @@ class AcquisitionTests(unittest.TestCase):
             "fetch_dataset",
             side_effect=[self.test_utils.load_sample_dataset("dataset0.csv")],
         ) as mock_fetch:
-            acquired = Utils.update_dataset(
-                Database, Network, date(2021, 3, 12), date(2021, 3, 14)
-            )
+            acquired = Utils.update_dataset(Database, Network, date(2021, 3, 12), date(2021, 3, 14))
             with Database.connect() as db:
                 post_max_issue = db.get_max_issue()
-            self.assertEqual(
-                post_max_issue, pd.Timestamp("2021-03-13 00:00:00")
-            )
+            self.assertEqual(post_max_issue, pd.Timestamp("2021-03-13 00:00:00"))
             self.assertTrue(acquired)

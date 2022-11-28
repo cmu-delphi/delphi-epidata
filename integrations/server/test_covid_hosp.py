@@ -10,9 +10,41 @@ from delphi.epidata.acquisition.covid_hosp.state_timeseries.database import (
 from delphi.epidata.client.delphi_epidata import Epidata
 import delphi.operations.secrets as secrets
 
+# third party
+import mysql.connector
+
+def setup_db():
+    cnx = mysql.connector.connect(
+            user="user",
+            password="pass",
+            host="delphi_database_epidata",
+            database="epidata",
+        )
+    cur = cnx.cursor()
+    return cnx, cur
+    
+def tear_down_db(cnx, cur):
+    cur.close()
+    cnx.close()
+
 
 class ServerTests(unittest.TestCase):
     """Tests the `covid_hosp` endpoint."""
+    @classmethod
+    def setUpClass(cls) -> None:
+        cnx, cur = setup_db()
+        cur.execute('insert into api_user(api_key, tracking, registered) values ("key", 1, 1)')
+        cnx.commit()
+        tear_down_db(cnx, cur)
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cnx, cur = setup_db()
+        cur.execute("set foreign_key_checks = 0")
+        cur.execute("delete from api_user")
+        cur.execute("set foreign_key_checks = 1")
+        cnx.commit()
+        tear_down_db(cnx, cur)
 
     def setUp(self):
         """Perform per-test setup."""
@@ -31,10 +63,6 @@ class ServerTests(unittest.TestCase):
             with db.new_cursor() as cur:
                 cur.execute("truncate table covid_hosp_state_timeseries")
                 cur.execute("truncate table covid_hosp_meta")
-                cur.execute("truncate table api_user")
-                cur.execute(
-                    'insert into api_user(api_key, email, roles, tracking, registered) values("key", "test@gmail.com", "", 1, 1)'
-                )
 
     def insert_issue(self, cur, issue, value, record_type):
         so_many_nulls = ", ".join(["null"] * 57)
