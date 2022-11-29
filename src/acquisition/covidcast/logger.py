@@ -1,9 +1,9 @@
 """Structured logger utility for creating JSON logs in Delphi pipelines."""
 import logging
+import os
 import sys
 import threading
 import structlog
-
 
 def handle_exceptions(logger):
     """Handle exceptions using the provided logger."""
@@ -45,11 +45,23 @@ def get_structured_logger(name=__name__,
     if filename:
         handlers.append(logging.FileHandler(filename))
 
+    if "LOG_DEBUG" in os.environ:
+        log_level = logging.DEBUG
+    else:
+        log_level = logging.INFO
+
     logging.basicConfig(
         format="%(message)s",
-        level=logging.INFO,
+        level=log_level,
         handlers=handlers
         )
+
+    def add_pid(logger, method_name, event_dict):
+        """
+        Add current PID to the event dict.
+        """
+        event_dict["pid"] = os.getpid()
+        return event_dict
 
     # Configure structlog. This uses many of the standard suggestions from
     # the structlog documentation.
@@ -61,6 +73,8 @@ def get_structured_logger(name=__name__,
             structlog.stdlib.add_logger_name,
             # Include log level in output.
             structlog.stdlib.add_log_level,
+            # Include PID in output.
+            add_pid,
             # Allow formatting into arguments e.g., logger.info("Hello, %s",
             # name)
             structlog.stdlib.PositionalArgumentsFormatter(),

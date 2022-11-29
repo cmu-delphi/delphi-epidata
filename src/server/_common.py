@@ -5,12 +5,11 @@ from flask import Flask, g, request
 from sqlalchemy import event
 from sqlalchemy.engine import Connection
 from werkzeug.local import LocalProxy
-from werkzeug.exceptions import HTTPException
 
 from .utils.logger import get_structured_logger
 from ._config import SECRET
 from ._db import engine
-from ._exceptions import DatabaseErrorException, ValidationFailedException
+from ._exceptions import DatabaseErrorException, EpiDataException
 
 app = Flask("EpiData", static_url_path="")
 app.config["SECRET"] = SECRET
@@ -52,7 +51,7 @@ def before_request_execute():
     g._request_start_time = time.time()
 
     # Log statement
-    get_structured_logger('server_api').info("Received API request", method=request.method, url=request.url, remote_addr=request.remote_addr, user_agent=request.user_agent.string)
+    get_structured_logger('server_api').info("Received API request", method=request.method, url=request.url, form_args=request.form, req_length=request.content_length, remote_addr=request.remote_addr, user_agent=request.user_agent.string)
 
     if request.path.startswith('/lib'):
         return
@@ -69,7 +68,9 @@ def after_request_execute(response):
     total_time = time.time() - g._request_start_time
     # Convert to milliseconds
     total_time *= 1000
-    get_structured_logger('server_api').info('Served API request', method=request.method, url=request.url, form_args=request.args, remote_addr=request.remote_addr, user_agent=request.user_agent.string, blueprint=request.blueprint, endpoint=request.endpoint, param_values=request.values, response_status=response.status, content_length=response.content_length, elapsed_time_ms=total_time)
+    get_structured_logger('server_api').info('Served API request', method=request.method, url=request.url, form_args=request.form, req_length=request.content_length, remote_addr=request.remote_addr, user_agent=request.user_agent.string,
+                                             values=request.values.to_dict(flat=False), blueprint=request.blueprint, endpoint=request.endpoint,
+                                             response_status=response.status, content_length=response.calculate_content_length(), elapsed_time_ms=total_time)
     return response
 
 
@@ -82,15 +83,13 @@ def teardown_db(exception=None):
         db.close()
 
 
-@app.errorhandler(HTTPException)
+@app.errorhandler(EpiDataException)
 def handle_exception(e):
-    # Log error and pass through
-    if isinstance(e, HTTPException):
-        get_structured_logger('server_error').error('Received HTTP exception', code=e.code, name=e.name, description=e.description)
-    elif isinstance(e, ValidationFailedException):
-        get_structured_logger('server_error').warn('Received validation exception', exception=str(e))
+    # Log error and pass through; EpiDataExceptions are HTTPExceptions which are valid WSGI responses (see https://werkzeug.palletsprojects.com/en/2.2.x/exceptions/ )
+    if isinstance(e, DatabaseErrorException):
+        get_structured_logger('server_error').error('Received DatabaseErrorException', exception=str(e), exc_info=True)
     else:
-        get_structured_logger('server_error').error('Received generic exception', exception=str(e))
+        get_structured_logger('server_error').warn('Encountered user-side error', exception=str(e))
     return e
 
 
