@@ -83,7 +83,7 @@ web:
 	@# Run the web server
 	@docker run --rm -p 127.0.0.1:10080:80 \
 		--env "SQLALCHEMY_DATABASE_URI=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata" \
-		--env "FLASK_SECRET=abc" --env "FLASK_PREFIX=/epidata" \
+		--env "FLASK_SECRET=abc" --env "FLASK_PREFIX=/epidata" --env "LOG_DEBUG" \
 		--network delphi-net --name delphi_web_epidata \
 		delphi_web_epidata >$(LOG_WEB) 2>&1 &
 

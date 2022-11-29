@@ -1,4 +1,3 @@
-"""Structured logger utility for creating JSON logs in Delphi pipelines."""
 import logging
 import os
 import sys
