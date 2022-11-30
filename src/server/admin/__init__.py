@@ -4,8 +4,9 @@ from flask import Blueprint, render_template_string, request, make_response
 from werkzeug.exceptions import Unauthorized, NotFound, BadRequest
 from werkzeug.utils import redirect
 from requests import post
-from .._security import resolve_auth_token, DBUser, session, UserRole
+from .._security import resolve_auth_token, APIUser, user_role_table
 from .._config import ADMIN_PASSWORD, RECAPTCHA_SECRET_KEY, RECAPTCHA_SITE_KEY, REGISTER_WEBHOOK_TOKEN
+from .._common import db
 
 self_dir = Path(__file__).parent
 # first argument is the endpoint name
@@ -31,7 +32,7 @@ def _parse_roles(roles: List[str]) -> Set[str]:
 
 def _render(mode: str, token: str, flags: Dict, **kwargs):
     template = (templates_dir / "index.html").read_text("utf8")
-    available_roles = session.query(UserRole).all()
+    available_roles = db.execute(user_role_table.select()).fetchall()
     return render_template_string(
         template, mode=mode, token=token, flags=flags, roles=[r.name for r in available_roles], **kwargs
     )
@@ -43,21 +44,24 @@ def _index():
     flags = dict()
     if request.method == "POST":
         # register a new user
-        DBUser.insert(
+        user = APIUser.insert_user(
             request.values["api_key"],
             _parse_roles(request.values.getlist("roles")),
             request.values.get("tracking") == "True",
             request.values.get("registered") == "True",
         )
+        roles = _parse_roles(request.values.getlist("roles"))
+        APIUser.assign_user_roles(user.id, roles)
+
         flags["banner"] = "Successfully Added"
-    users = DBUser.list()
+    users = APIUser.list()
     return _render("overview", token, flags, users=users, user=dict())
 
 
 @bp.route("/<int:user_id>", methods=["GET", "PUT", "POST", "DELETE"])
 def _detail(user_id: int):
     token = _require_admin()
-    user = DBUser.find_user(user_id=user_id)
+    user = APIUser.find_user(user_id=user_id)
     if not user:
         raise NotFound()
     if request.method == "DELETE" or "delete" in request.values:
@@ -83,7 +87,7 @@ def _register():
         raise Unauthorized()
 
     old_api_key = body["user_old_api_key"]
-    db_user = DBUser.find_user(api_key=old_api_key)
+    db_user = APIUser.find_user(api_key=old_api_key)
     if db_user is None:
         raise BadRequest("invalid api key")
     new_api_key = body["user_new_api_key"]
@@ -109,5 +113,5 @@ def _request_api_key():
     if request.method == "POST":
         if RECAPTCHA_SECRET_KEY:
             _verify_recaptcha()
-        api_key = DBUser.register_new_key()
+        api_key = APIUser.register_new_key()
         return render_template_string(template, mode="result", api_key=api_key)
