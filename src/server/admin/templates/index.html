@@ -26,9 +26,6 @@
                     <th scope="col">Registered</th>
                     <th scope="col">Track Usage</th>
                     <th scope="col">Roles</th>
-                    <th scope="col">Creation date</th>
-                    <th scope="col">Expiration date</th>
-                    <th scope="col">Last API access date</th>
                     <th scope="col">Actions</th>
                 </thead>
                 <tbody>
@@ -39,9 +36,6 @@
                         <td>{{ '✔️' if user.registered else '❌'}}</td>
                         <td>{{ '✔️' if user.tracking else '❌'}}</td>
                         <td>{{ ','.join(user.roles) }}</td>
-                        <td>{{ user.creation_date }}</td>
-                        <td>{{ user.expiration_date }}</td>
-                        <td>{{ user.last_api_access_date }}</td>
                         <td>
                             <a class="btn btn-secondary btn-sm" href="./{{user.id}}?auth={{token}}">Edit</a>
                             <a class="btn btn-secondary btn-sm" href="./{{user.id}}?auth={{token}}&delete=yes">Delete</a>
