@@ -8,7 +8,6 @@ from json import JSONDecodeError
 # third party
 from aiohttp.client_exceptions import ClientResponseError
 import pytest
-import mysql.connector
 
 # first party
 from delphi_utils import Nans
@@ -37,39 +36,9 @@ def fake_epidata_endpoint(func):
 # all the Nans we use here are just one value, so this is a shortcut to it:
 nmv = Nans.NOT_MISSING.value
 
-def setup_db():
-    cnx = mysql.connector.connect(
-            user="user",
-            password="pass",
-            host="delphi_database_epidata",
-            database="epidata",
-        )
-    cur = cnx.cursor()
-    return cnx, cur
-    
-def tear_down_db(cnx, cur):
-    cur.close()
-    cnx.close()
-
 
 class DelphiEpidataPythonClientTests(CovidcastBase):
     """Tests the Python client."""
-    @classmethod
-    def setUpClass(cls) -> None:
-        cnx, cur = setup_db()
-        cur.execute('insert into api_user(api_key, tracking, registered) values ("key", 1, 1)')
-        cnx.commit()
-        tear_down_db(cnx, cur)
-
-    @classmethod
-    def tearDownClass(cls) -> None:
-        cnx, cur = setup_db()
-        cur.execute("set foreign_key_checks = 0")
-        cur.execute("delete from api_user")
-        cur.execute("set foreign_key_checks = 1")
-        cnx.commit()
-        tear_down_db(cnx, cur)
-
     def localSetUp(self):
         """Perform per-test setup."""
 

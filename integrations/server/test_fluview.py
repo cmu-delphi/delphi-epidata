@@ -3,26 +3,12 @@
 # standard library
 import unittest
 
-# third party
-import mysql.connector
-
 # first party
 from delphi.epidata.client.delphi_epidata import Epidata
 
+#third party
+import mysql.connector
 
-def setup_db():
-    cnx = mysql.connector.connect(
-            user="user",
-            password="pass",
-            host="delphi_database_epidata",
-            database="epidata",
-        )
-    cur = cnx.cursor()
-    return cnx, cur
-    
-def tear_down_db(cnx, cur):
-    cur.close()
-    cnx.close()
 
 class FluviewTests(unittest.TestCase):
     """Tests the `fluview` endpoint."""
@@ -35,19 +21,6 @@ class FluviewTests(unittest.TestCase):
         # Default value for BASE_URL is "https://delphi.cmu.edu/epidata/api.php" and None for auth
         Epidata.BASE_URL = "http://delphi_web_epidata/epidata/api.php"
         Epidata.auth = ("epidata", "key")
-        cnx, cur = setup_db()
-        cur.execute('insert into api_user(api_key, tracking, registered) values ("key", 1, 1)')
-        cnx.commit()
-        tear_down_db(cnx, cur)
-
-    @classmethod
-    def tearDownClass(cls) -> None:
-        cnx, cur = setup_db()
-        cur.execute("set foreign_key_checks = 0")
-        cur.execute("delete from api_user")
-        cur.execute("set foreign_key_checks = 1")
-        cnx.commit()
-        tear_down_db(cnx, cur)
 
     def setUp(self):
         """Perform per-test setup."""
@@ -61,6 +34,8 @@ class FluviewTests(unittest.TestCase):
         )
         cur = cnx.cursor()
         cur.execute("truncate table fluview")
+        cur.execute("truncate table api_user")
+        cur.execute('insert into api_user(api_key, tracking, registered) values ("key", 1, 1)')
         cnx.commit()
         cur.close()
 
