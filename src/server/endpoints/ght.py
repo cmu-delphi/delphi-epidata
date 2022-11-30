@@ -2,14 +2,11 @@ from flask import Blueprint, request
 
 from .._query import execute_query, QueryBuilder
 from .._validate import extract_integers, extract_strings, require_all
-from .._security import require_role, create_user_role
-from .._config import UserRole
+from .._security import require_role
 
 # first argument is the endpoint name
 bp = Blueprint("ght", __name__)
 alias = None
-
-create_user_role("ght")
 
 
 @bp.route("/", methods=("GET", "POST"))

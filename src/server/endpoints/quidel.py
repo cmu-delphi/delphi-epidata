@@ -2,13 +2,11 @@ from flask import Blueprint
 
 from .._query import execute_query, QueryBuilder
 from .._validate import extract_integers, extract_strings, require_all
-from .._security import require_role, create_user_role
-from .._config import UserRole
+from .._security import require_role
 
 # first argument is the endpoint name
 bp = Blueprint("quidel", __name__)
 alias = None
-create_user_role("quidel")
 
 
 @bp.route("/", methods=("GET", "POST"))

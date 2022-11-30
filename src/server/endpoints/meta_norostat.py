@@ -2,8 +2,7 @@ from flask import Blueprint
 
 from .._printer import print_non_standard
 from .._query import parse_result
-from .._security import require_role, create_user_role
-from .._config import UserRole
+from .._security import require_role
 
 # first argument is the endpoint name
 bp = Blueprint("meta_norostat", __name__)
