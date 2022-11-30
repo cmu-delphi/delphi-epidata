@@ -5,10 +5,10 @@ from typing import (
     Tuple,
     Union
 )
+from .logger import get_structured_logger
 from datetime import date, timedelta
 from epiweeks import Week, Year
 from typing_extensions import TypeAlias
-import logging
 
 # Alias for a sequence of date ranges (int, int) or date integers
 TimeValues: TypeAlias = Sequence[Union[Tuple[int, int], int]]
@@ -86,16 +86,22 @@ def time_values_to_ranges(values: Optional[TimeValues]) -> Optional[TimeValues]:
     e.g. [20200101, 20200102, (20200101, 20200104), 20200106] -> [(20200101, 20200104), 20200106]
     (the first two values of the original list are merged into a single range)
     """
+    logger = get_structured_logger('server_utils')
     if not values or len(values) <= 1:
+        logger.info("List of dates looks like 0-1 elements, nothing to optimize", time_values=values)
         return values
 
     # determine whether the list is of days (YYYYMMDD) or weeks (YYYYWW) based on first element
     first_element = values[0][0] if isinstance(values[0], tuple) else values[0]
     if guess_time_value_is_day(first_element):
+        # TODO: reduce this and other date logging to DEBUG after prod metrics gathered
+        logger.info("Treating time value as day", time_value=first_element)
         return days_to_ranges(values)
     elif guess_time_value_is_week(first_element):
+        logger.info("Treating time value as week", time_value=first_element)
         return weeks_to_ranges(values)
     else:
+        logger.info("Time value unclear, not optimizing", time_value=first_element)
         return values
 
 def days_to_ranges(values: TimeValues) -> TimeValues:
@@ -138,7 +144,9 @@ def _to_ranges(values: TimeValues, value_to_date: Callable, date_to_value: Calla
             else:
                 ranges.append((date_to_value(m[0]), date_to_value(m[1])))
 
+        get_structured_logger('server_utils').info("Optimized list of date values", original=values, optimized=ranges, original_length=len(values), optimized_length=len(ranges))
+
         return ranges
     except Exception as e:
-        logging.info('bad input to date ranges', input=values, exception=e)
+        get_structured_logger('server_utils').error('bad input to date ranges', time_values=values, exception=e)
         return values
