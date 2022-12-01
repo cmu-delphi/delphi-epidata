@@ -401,7 +401,7 @@ def handle_export():
             "geo_value": row["geo_value"],
             "signal": row["signal"],
             "time_value": time_value_to_iso(row["time_value"]) if is_day else row["time_value"],
-            "issue": time_value_to_iso(row["issue"]) if is_day else row["issue"],
+            "issue": time_value_to_iso(row["issue"]) if is_day and row["issue"] is not None else row["issue"],
             "lag": row["lag"],
             "value": row["value"],
             "stderr": row["stderr"],
