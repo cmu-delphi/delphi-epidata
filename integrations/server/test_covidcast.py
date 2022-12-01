@@ -63,6 +63,18 @@ class CovidcastTests(CovidcastBase):
     self._insert_rows(rows)
     return rows
 
+  def _insert_placeholder_set_four(self):
+    rows = [
+      self._make_placeholder_row(source='src1', signal=str(i)*5, value=i*1., stderr=i*10., sample_size=i*100.)[0]
+      for i in [1, 2, 3]
+    ] + [
+      # signal intended to overlap with the signal above
+      self._make_placeholder_row(source='src2', signal=str(i-3)*5, value=i*1., stderr=i*10., sample_size=i*100.)[0]
+      for i in [4, 5, 6]
+    ]
+    self._insert_rows(rows)
+    return rows 
+
   def test_round_trip(self):
     """Make a simple round-trip with some sample data."""
 
@@ -222,6 +234,26 @@ class CovidcastTests(CovidcastBase):
     self.assertEqual(response, {
       'result': 1,
       'epidata': expected_counties,
+      'message': 'success',
+    })
+
+  def test_signal_wildcard(self):
+    """Select all signals with a wildcard query."""
+
+    # insert placeholder data
+    rows = self._insert_placeholder_set_four()
+    expected_signals = [
+      self.expected_from_row(r) for r in rows[:3]
+    ]
+
+    # make the request
+    response, _ = self.request_based_on_row(rows[0], signals="*")
+
+    self.maxDiff = None
+    # assert that the right data came back
+    self.assertEqual(response, {
+      'result': 1,
+      'epidata': expected_signals,
       'message': 'success',
     })
 
