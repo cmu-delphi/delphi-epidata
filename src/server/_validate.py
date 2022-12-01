@@ -2,6 +2,7 @@ from typing import List, Optional, Sequence, Tuple, Union
 
 from flask import request
 
+from .utils import TimeValues
 from ._exceptions import ValidationFailedException
 
 
