@@ -130,7 +130,10 @@ def extract_integers(key: Union[str, Sequence[str]]) -> Optional[List[IntRange]]
 def parse_date(s: str) -> int:
     # parses a given string in format YYYYMMDD or YYYY-MM-DD to a number in the form YYYYMMDD
     try:
-        return int(s.replace("-", ""))
+        if s is "*":
+            return s
+        else:
+            return int(s.replace("-", ""))
     except ValueError:
         raise ValidationFailedException(f"not a valid date: {s}")
 

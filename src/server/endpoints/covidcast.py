@@ -81,6 +81,8 @@ def parse_time_pairs() -> TimePair:
         # old version
         require_all("time_type", "time_values")
         time_values = extract_dates("time_values")
+        if len(time_values) == 1 and time_values[0] == "*":
+            return TimePair(time_type, True)
         return TimePair(time_type, time_values)
 
     if ":" not in request.values.get("time", ""):

@@ -225,6 +225,26 @@ class CovidcastTests(CovidcastBase):
       'message': 'success',
     })
 
+  def test_time_values_wildcard(self):
+    """Select all time_values with a wildcard query."""
+
+    # insert placeholder data
+    rows = self._insert_placeholder_set_three()
+    expected_time_values = [
+      self.expected_from_row(r) for r in rows[:3]
+    ]
+
+    # make the request
+    response, _ = self.request_based_on_row(rows[0], time_values="*")
+
+    self.maxDiff = None
+    # assert that the right data came back
+    self.assertEqual(response, {
+      'result': 1,
+      'epidata': expected_time_values,
+      'message': 'success',
+    })
+
   def test_geo_value(self):
     """test different variants of geo types: single, *, multi."""
 
