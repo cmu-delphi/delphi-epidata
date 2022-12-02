@@ -107,7 +107,7 @@ class TestModel(unittest.TestCase):
             transform_dict = {SourceSignalPair("src", ["sig_base"]): SourceSignalPair("src", ["sig_diff"])}
             df = CovidcastRows.from_records(_generate_transformed_rows(data.as_dicts(), transform_dict=transform_dict)).db_row_df
 
-            expected_df = diff_df(data.db_row_df, "sig_diff", omit_left_boundary=True)
+            expected_df = diff_df(data.db_row_df, "sig_diff")
             assert_frame_equal_no_order(df, expected_df, index=["signal", "geo_value", "time_value"])
 
         with self.subTest("smoothed and diffed signals on one base test"):
@@ -121,7 +121,7 @@ class TestModel(unittest.TestCase):
             transform_dict = {SourceSignalPair("src", ["sig_base"]): SourceSignalPair("src", ["sig_diff", "sig_smooth"])}
             df = CovidcastRows.from_records(_generate_transformed_rows(data.as_dicts(), transform_dict=transform_dict)).db_row_df
 
-            expected_df = pd.concat([diff_df(data.db_row_df, "sig_diff", omit_left_boundary=True), smooth_df(data.db_row_df, "sig_smooth", omit_left_boundary=True)])
+            expected_df = pd.concat([diff_df(data.db_row_df, "sig_diff"), smooth_df(data.db_row_df, "sig_smooth")])
             assert_frame_equal_no_order(df, expected_df, index=["signal", "geo_value", "time_value"])
 
         with self.subTest("smoothed and diffed signal on two non-continguous regions"):
@@ -137,7 +137,7 @@ class TestModel(unittest.TestCase):
                 _generate_transformed_rows(data.as_dicts(), transform_dict=transform_dict)
             ).db_row_df
 
-            expected_df = pd.concat([diff_df(data.db_row_df, "sig_diff", omit_left_boundary=True), smooth_df(data.db_row_df, "sig_smooth", omit_left_boundary=True)])
+            expected_df = pd.concat([diff_df(data.db_row_df, "sig_diff"), smooth_df(data.db_row_df, "sig_smooth")])
             compare_cols = ["signal", "geo_value", "time_value", "time_type", "geo_type", "value", "stderr", "sample_size", "missing_value", "missing_stderr", "missing_sample_size", "direction"]
             assert_frame_equal_no_order(df[compare_cols], expected_df[compare_cols], index=["signal", "geo_value", "time_value"])
 
@@ -154,7 +154,7 @@ class TestModel(unittest.TestCase):
                 _generate_transformed_rows(data.as_dicts(), transform_dict=transform_dict)
             ).db_row_df
 
-            expected_df = diff_smooth_df(data.db_row_df, "sig_diff_smooth", omit_left_boundary=True)
+            expected_df = diff_smooth_df(data.db_row_df, "sig_diff_smooth")
             compare_cols = ["signal", "geo_value", "time_value", "time_type", "geo_type", "value", "stderr", "sample_size", "missing_value", "missing_stderr", "missing_sample_size", "direction"]
             assert_frame_equal_no_order(df[compare_cols], expected_df[compare_cols], index=["signal", "geo_value", "time_value"])
             # fmt: on
@@ -198,7 +198,7 @@ class TestModel(unittest.TestCase):
             df = CovidcastRows.from_records(row_transform_generator(data.as_dicts())).db_row_df
 
             data_df = data.db_row_df
-            expected_df = pd.concat([reindex_df(data_df), diff_df(data_df[data_df["signal"] == "sig_base"], "sig_diff", omit_left_boundary=True), smooth_df(data_df[data_df["signal"] == "sig_base"], "sig_smooth", omit_left_boundary=True)])
+            expected_df = pd.concat([reindex_df(data_df), diff_df(data_df[data_df["signal"] == "sig_base"], "sig_diff"), smooth_df(data_df[data_df["signal"] == "sig_base"], "sig_smooth")])
             compare_cols = ["signal", "geo_value", "time_value", "time_type", "geo_type", "value", "stderr", "sample_size", "missing_value", "missing_stderr", "missing_sample_size", "direction"]
             assert_frame_equal_no_order(df[compare_cols], expected_df[compare_cols], index=["signal", "geo_value", "time_value"])
             # fmt: on
@@ -217,7 +217,7 @@ class TestModel(unittest.TestCase):
             _, row_transform_generator = get_basename_signal_and_jit_generator(source_signal_pairs)
             df = CovidcastRows.from_records(row_transform_generator(data.as_dicts())).db_row_df
 
-            expected_df = pd.concat([reindex_df(data.db_row_df), diff_df(data.db_row_df, "sig_diff", omit_left_boundary=True), smooth_df(data.db_row_df, "sig_smooth", omit_left_boundary=True)])
+            expected_df = pd.concat([reindex_df(data.db_row_df), diff_df(data.db_row_df, "sig_diff"), smooth_df(data.db_row_df, "sig_smooth")])
             compare_cols = ["signal", "geo_value", "time_value", "time_type", "geo_type", "value", "stderr", "sample_size", "missing_value", "missing_stderr", "missing_sample_size", "direction"]
             assert_frame_equal_no_order(df[compare_cols], expected_df[compare_cols], index=["signal", "geo_value", "time_value"])
             # fmt: on

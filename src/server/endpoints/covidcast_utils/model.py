@@ -2,20 +2,20 @@ from dataclasses import asdict, dataclass, field
 from datetime import timedelta
 from enum import Enum
 from functools import partial
-from itertools import groupby, repeat, tee
+from itertools import chain, groupby
 from numbers import Number
-from typing import Callable, Generator, Iterator, Optional, Dict, List, Set, Tuple, Union
+from typing import Any, Callable, Generator, Iterable, Iterator, Optional, Dict, List, Set, Tuple, Union
 
 from pathlib import Path
 import re
-from more_itertools import interleave_longest, peekable
+from more_itertools import peekable
 import pandas as pd
 import numpy as np
 
 from delphi_utils.nancodes import Nans
 from ..._params import SourceSignalPair, TimePair
 from .smooth_diff import generate_smoothed_rows, generate_diffed_rows
-from ...utils import shift_day_value, day_to_time_value, time_value_to_day
+from ...utils import shift_day_value, day_to_time_value, time_value_to_day, iterate_over_ints_and_ranges
 
 
 PANDAS_DTYPES = {
@@ -509,25 +509,79 @@ def pad_time_window(time_window: TimePair, pad_length: int) -> TimePair:
     return TimePair("day", [(shift_day_value(min_time, -1 * pad_length), max_time)])
 
 
+def to_dict_custom(df: pd.DataFrame, cols: List[str]) -> Iterable[Dict[str, Any]]:
+    """This is a workaround a performance bug in Pandas.
+    
+    - See this issue: https://github.com/pandas-dev/pandas/issues/46470,
+    - The first if branch is to avoid using reset_index(), which I found to be a good deal slower than just reading the index,
+    - All the dtype conversions are to avoid JSON serialization errors (e.g. numpy.int64).
+    """
+    if df.index.names != [None]:
+        non_index_cols = set(cols) - set(df.index.names)
+        col_arr_map = {col: df[col].to_numpy(dtype=object, na_value=None) for col in non_index_cols}
+        col_arr_map.update({name: df.index.get_level_values(name).to_numpy() for name in df.index.names})
+    else:
+        col_arr_map = {col: df[col].to_numpy(dtype=object, na_value=None) for col in cols}
+
+    for i in range(len(df)):
+        yield {col: col_arr_map[col][i] for col in cols}
+
+
+def _check_valid_dtype(dtype):
+    try:
+        pd.api.types.pandas_dtype(dtype)
+    except TypeError:
+        raise ValueError(f"Invalid dtype {dtype}")
+
+
+def _set_df_dtypes(df: pd.DataFrame, dtypes: Dict[str, Any]) -> pd.DataFrame:
+    """Set the dataframe column datatypes."""
+    [_check_valid_dtype(d) for d in dtypes.values()]
+
+    df = df.copy()
+    for k, v in dtypes.items():
+        if k in df.columns:
+            df[k] = df[k].astype(v)
+    return df
+
+
+PANDAS_DTYPES = {
+    "source": str,
+    "signal": str,
+    "time_type": str,
+    "time_value": "Int64",
+    "geo_type": str,
+    "geo_value": str,
+    "value": float,
+    "stderr": float,
+    "sample_size": float,
+    "missing_value": "Int8",
+    "missing_stderr": "Int8",
+    "missing_sample_size": "Int8",
+    "issue": "Int64",
+    "lag": "Int64",
+    "id": "Int64",
+    "direction": "Int8",
+    "direction_updated_timestamp": "Int64",
+    "value_updated_timestamp": "Int64",
+}
+
+
 def _generate_transformed_rows(
-    parsed_rows: Iterator[Dict],
+    rows: Iterator[Dict],
     transform_dict: Optional[SignalTransforms] = None,
     transform_args: Optional[Dict] = None,
-    group_keyfunc: Optional[Callable] = None,
 ) -> Iterator[Dict]:
     """Applies time-series transformations to streamed rows from a database.
 
     Parameters:
-    parsed_rows: Iterator[Dict]
+    rows: Iterator[Dict]
         An iterator streaming rows from a database query. Assumed to be sorted by source, signal, geo_type, geo_value, time_type, and time_value.
     transform_dict: Optional[SignalTransforms], default None
         A dictionary mapping base sources to a list of their derived signals that the user wishes to query.
         For example, transform_dict may be {("jhu-csse", "confirmed_cumulative_num): [("jhu-csse", "confirmed_incidence_num"), ("jhu-csse", "confirmed_7dav_incidence_num")]}.
     transform_args: Optional[Dict], default None
         A dictionary of keyword arguments for the transformer functions.
-    group_keyfunc: Optional[Callable], default None
-        The groupby function to use to order the streamed rows. Note that Python groupby does not do any sorting, so
-        parsed_rows are assumed to be sorted in accord with this groupby.
 
     Yields:
     transformed rows: Dict
@@ -537,26 +591,67 @@ def _generate_transformed_rows(
         transform_args = dict()
     if not transform_dict:
         transform_dict = dict()
-    if not group_keyfunc:
-        group_keyfunc = lambda row: (row["source"], row["signal"], row["geo_type"], row["geo_value"])
+ 
+    # TODO: Fix these to come as an argument?
+    fields_string = ["geo_type", "geo_value", "source", "signal", "time_type"]
+    fields_int = ["time_value", "direction", "issue", "lag", "missing_value", "missing_stderr", "missing_sample_size"]
+    fields_float = ["value", "stderr", "sample_size"]
+    columns = fields_string + fields_int + fields_float
 
-    for key, source_signal_geo_rows in groupby(parsed_rows, group_keyfunc):
-        base_source_name, base_signal_name, _, _ = key
+    # Put every signal, every geo on a contiguous time index, with default values.
+    df = pd.DataFrame(chain.from_iterable(_reindex_iterable(v) for _, v in groupby(rows, key=lambda x: (x["source"], x["signal"], x["geo_value"]))), columns=columns)
+    # Set dtypes. Int8/Int64 are needed to allow null values.
+    # TODO: Try using StringDType instead of object. Or categorical. This is mostly for memory usage. No worries about to_dict.
+
+    # TODO: Consider categoricals.
+    df = _set_df_dtypes(df, PANDAS_DTYPES)
+
+    derived_df_full = pd.DataFrame(columns=columns).set_index(["geo_value", "time_value"])
+    for key, group_df in df.groupby(["source", "signal"], sort=False):
+        base_source_name, base_signal_name = key
+
         # Extract the list of derived signals; if a signal is not in the dictionary, then use the identity map.
         derived_signal_transform_map: SourceSignalPair = transform_dict.get(SourceSignalPair(base_source_name, [base_signal_name]), SourceSignalPair(base_source_name, [base_signal_name]))
         # Create a list of source-signal pairs along with the transformation required for the signal.
-        signal_names_and_transforms: List[Tuple[Tuple[str, str], Callable]] = [(derived_signal, _get_base_signal_transform((base_source_name, derived_signal))) for derived_signal in derived_signal_transform_map.signal]
-        # Put the current time series on a contiguous time index.
-        source_signal_geo_rows = _reindex_iterable(source_signal_geo_rows, fill_value=transform_args.get("pad_fill_value"))
-        # Create copies of the iterable, with smart memory usage.
-        source_signal_geo_rows_copies: Iterator[Iterator[Dict]] = tee(source_signal_geo_rows, len(signal_names_and_transforms))
-        # Create a list of transformed group iterables, remembering their derived name as needed.
-        transformed_signals_iterator: Iterator[Tuple[str, Iterator[Dict]]] = (zip(repeat(derived_signal), transform(rows, **transform_args)) for (derived_signal, transform), rows in zip(signal_names_and_transforms, source_signal_geo_rows_copies))
-        # Traverse through the transformed iterables in an interleaved fashion, which makes sure that only a small window
-        # of the original iterable (group) is stored in memory.
-        for derived_signal_name, row in interleave_longest(*transformed_signals_iterator):
-            row["signal"] = derived_signal_name
-            yield row
+        signal_names_and_transforms = [(derived_signal, _get_base_signal_transform((base_source_name, derived_signal))) for derived_signal in derived_signal_transform_map.signal]
+
+        for derived_signal, transform in signal_names_and_transforms:
+            derived_df = group_df.set_index(["geo_value", "time_value"])
+            if transform == IDENTITY:
+                derived_df_full = pd.concat([derived_df_full, derived_df])
+                continue
+
+            # TODO: Add sort=false to these groupbys.
+            if transform == DIFF:
+                # TODO: Fix these to use transform_args.
+                derived_df["value"] = derived_df["value"].groupby("geo_value").diff()
+                derived_df["issue"] = derived_df["issue"].groupby("geo_value").rolling(2).max().droplevel(level=0)
+                derived_df["lag"] = derived_df["lag"].groupby("geo_value").rolling(2).max().droplevel(level=0)
+            elif transform == SMOOTH:
+                derived_df["value"] = derived_df["value"].groupby("geo_value").rolling(7).mean().droplevel(level=0)
+                derived_df["issue"] = derived_df["issue"].groupby("geo_value").rolling(7).max().droplevel(level=0)
+                derived_df["lag"] = derived_df["lag"].groupby("geo_value").rolling(7).max().droplevel(level=0)
+            elif transform == DIFF_SMOOTH:
+                derived_df["value"] = derived_df["value"].groupby("geo_value").diff()
+                derived_df["value"] = derived_df["value"].groupby("geo_value").rolling(7).mean().droplevel(level=0)
+                derived_df["issue"] = derived_df["issue"].groupby("geo_value").rolling(8).max().droplevel(level=0)
+                derived_df["lag"] = derived_df["lag"].groupby("geo_value").rolling(8).max().droplevel(level=0)
+            else:
+                raise ValueError(f"Unknown transform for {derived_signal}.")
+
+            derived_df["missing_value"] = np.where(derived_df["value"].isna(), Nans.NOT_APPLICABLE, Nans.NOT_MISSING)
+            derived_df["signal"] = derived_signal
+            derived_df["stderr"] = np.nan
+            derived_df["sample_size"] = np.nan
+            derived_df["missing_stderr"] = Nans.NOT_APPLICABLE
+            derived_df["missing_sample_size"] = Nans.NOT_APPLICABLE
+            derived_df["issue"] = derived_df["issue"].astype("Int64")
+            derived_df["lag"] = derived_df["lag"].astype("Int64")
+
+            derived_df_full = pd.concat([derived_df_full, derived_df])
+
+    for row in to_dict_custom(derived_df_full, columns):
+        yield row
 
 
 def get_basename_signal_and_jit_generator(source_signal_pairs: List[SourceSignalPair], transform_args: Optional[Dict[str, Union[str, int]]] = None) -> Tuple[List[SourceSignalPair], Generator]:

@@ -150,7 +150,7 @@ class CovidcastTests(CovidcastBase):
       **{'format':'csv'}
     )
 
-    # TODO: This is a mess because of api.php.
+    # TODO: This is a mess because of api.php. Or maybe it's just a mess.
     column_order = [
       "geo_value", "signal", "time_value", "direction", "issue", "lag", "missing_value",
       "missing_stderr", "missing_sample_size", "value", "stderr", "sample_size"

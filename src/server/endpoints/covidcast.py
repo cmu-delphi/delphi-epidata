@@ -9,6 +9,7 @@ from more_itertools import peekable
 from numpy import nan
 from sqlalchemy import text
 from pandas import read_csv, to_datetime
+from numbers import Number
 
 from .._common import is_compatibility_mode, app, db
 from .._config import MAX_SMOOTHER_WINDOW
