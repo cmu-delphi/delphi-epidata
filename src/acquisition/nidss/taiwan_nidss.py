@@ -203,6 +203,12 @@ class NIDSS:
       fields = line.split(',')
       location_b64 = base64.b64encode(fields[3].encode('utf-8'))
       location = NIDSS._TRANSLATED[location_b64]
+      # Fields currently unused:
+      # region = NIDSS.LOCATION_TO_REGION[location]
+      # imported_b64 = base64.b64encode(fields[6].encode('utf-8'))
+      # imported = imported_b64 == b'5piv'
+      # sex = fields[5]
+      # age = fields[7]
       count = int(fields[8])
       year = int(fields[1])
       week = int(fields[2])

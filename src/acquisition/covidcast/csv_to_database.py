@@ -42,10 +42,10 @@ def make_handlers(data_dir, specific_issue_date, file_archiver_impl=FileArchiver
   if specific_issue_date:
     # issue-specific uploads are always one-offs, so we can leave all
     # files in place without worrying about cleaning up
-    def handle_failed(_, filename, source, logger):
+    def handle_failed(path_src, filename, source, logger):
       logger.info(event='leaving failed file alone', dest=source, file=filename)
 
-    def handle_successful(path_src, filename, _, logger):
+    def handle_successful(path_src, filename, source, logger):
       logger.info(event='archiving as successful',file=filename)
       file_archiver_impl.archive_inplace(path_src, filename)
   else:
