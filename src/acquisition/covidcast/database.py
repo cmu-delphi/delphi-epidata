@@ -131,16 +131,16 @@ class Database:
     This is also destructive to any data in the load table.
     """
 
-    self._cursor.execute(f'DELETE FROM epimetric_load')
+    self._cursor.execute('DELETE FROM epimetric_load')
     # NOTE: 'ones' are used as filler here for the (required) NOT NULL columns.
-    self._cursor.execute(f"""
+    self._cursor.execute("""
       INSERT INTO epimetric_load
         (epimetric_id,
          source, `signal`, geo_type, geo_value, time_type, time_value, issue, `lag`, value_updated_timestamp)
       VALUES
         ((SELECT 1+MAX(epimetric_id) FROM epimetric_full),
          '1', '1', '1', '1', '1', 1, 1, 1, 1);""")
-    self._cursor.execute(f'DELETE FROM epimetric_load')
+    self._cursor.execute('DELETE FROM epimetric_load')
 
   def do_analyze(self):
     """performs and stores key distribution analyses, used for join order and index selection"""
@@ -201,7 +201,6 @@ class Database:
       for batch_num in range(num_batches):
         start = batch_num * batch_size
         end = min(num_rows, start + batch_size)
-        length = end - start
 
         args = [(
           row.source,
@@ -377,8 +376,6 @@ class Database:
     # composite keys:
     short_comp_key = "`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`"
     long_comp_key = short_comp_key + ", `issue`"
-    short_comp_ref_key = "`signal_key_id`, `geo_key_id`, `time_type`, `time_value`"
-    long_comp_ref_key = short_comp_ref_key + ", `issue`"
 
     create_tmp_table_sql = f'''
 CREATE TABLE {tmp_table_name} LIKE {self.load_table};

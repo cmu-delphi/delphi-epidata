@@ -3,12 +3,6 @@ Acquires the "COVID-19 Reported Patient Impact and Hospital Capacity by State"
 dataset provided by the US Department of Health & Human Services
 via healthdata.gov.
 """
-# standard library
-import json
-
-# third party
-import pandas as pd
-
 # first party
 from delphi.epidata.acquisition.covid_hosp.common.utils import Utils
 from delphi.epidata.acquisition.covid_hosp.state_daily.database import Database
@@ -28,6 +22,7 @@ class Update:
     """
 
     return Utils.update_dataset(Database, network)
+
 
 # main entry point
 Utils.launch_if_main(Update.run, __name__)

@@ -17,7 +17,6 @@ See also:
 """
 
 # standard library
-import argparse
 import datetime
 from zipfile import ZIP_DEFLATED, ZipFile
 
@@ -149,10 +148,6 @@ def fetch_data():
 
 
 def main():
-  # args and usage
-  parser = argparse.ArgumentParser()
-  args = parser.parse_args()
-
   # fetch new data
   fetch_data()
 

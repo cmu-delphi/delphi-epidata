@@ -5,7 +5,6 @@ from .._validate import (
     extract_date,
     extract_dates,
     extract_integer,
-    extract_integers,
     extract_strings,
     require_all,
     require_any,

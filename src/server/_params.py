@@ -53,7 +53,7 @@ class GeoPair:
     geo_values: Union[bool, Sequence[str]]
 
     def matches(self, geo_type: str, geo_value: str) -> bool:
-        return self.geo_type == geo_type and (self.geo_values == True or (not isinstance(self.geo_values, bool) and geo_value in self.geo_values))
+        return self.geo_type == geo_type and (self.geo_values is True or (not isinstance(self.geo_values, bool) and geo_value in self.geo_values))
 
     def count(self) -> float:
         """
@@ -82,7 +82,7 @@ class SourceSignalPair:
     signal: Union[bool, Sequence[str]]
 
     def matches(self, source: str, signal: str) -> bool:
-        return self.source == source and (self.signal == True or (not isinstance(self.signal, bool) and signal in self.signal))
+        return self.source == source and (self.signal is True or (not isinstance(self.signal, bool) and signal in self.signal))
 
     def count(self) -> float:
         """
@@ -223,16 +223,16 @@ def parse_time_arg(key: str = "time") -> Optional[TimePair]:
         return None
     if len(time_pairs) == 1:
         return time_pairs[0]
-    
+
     # make sure 'day' and 'week' aren't mixed
     time_types = set(time_pair.time_type for time_pair in time_pairs)
     if len(time_types) >= 2:
         raise ValidationFailedException(f'{key}: {time_pairs} mixes "day" and "week" time types')
 
     # merge all time pairs into one
-    merged = []    
+    merged = []
     for time_pair in time_pairs:
-        if time_pair.time_values == True:
+        if time_pair.time_values is True:
             return time_pair
         else:
             merged.extend(time_pair.time_values)

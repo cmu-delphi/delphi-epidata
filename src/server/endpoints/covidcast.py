@@ -1,4 +1,4 @@
-from typing import List, Optional, Union, Tuple, Dict, Any
+from typing import List, Optional, Tuple, Dict, Any
 from itertools import groupby
 from datetime import date, timedelta
 from epiweeks import Week

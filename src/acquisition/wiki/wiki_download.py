@@ -95,7 +95,7 @@ def extract_article_counts(filename, language, articles, debug_mode):
       if content[0] == language:
         total += article_count
       if content[0] == language and article_title in articles_set:
-        if(debug_mode):
+        if debug_mode:
           print("Find article {0}: {1}".format(article_title, line))
         counts[article_title] = article_count
   if debug_mode:
