@@ -48,7 +48,7 @@ def fetch_data(
     age = row["age"]
     if age > max_age and row["epidata"]:
         get_structured_logger('server_api').warning("covidcast_meta cache is stale", cache_age=age)
-        pass
+        return
 
     epidata = loads(row["epidata"])
 

@@ -58,7 +58,7 @@ class APrinter:
                     r = self._print_row(row)
                     if r is not None:
                         yield r
-            except Exception as e:
+            except:
                 get_structured_logger('server_error').error("Exception while executing printer", exception=e)
                 self.result = -1
                 yield self._error(e)

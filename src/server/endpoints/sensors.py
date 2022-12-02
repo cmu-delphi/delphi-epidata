@@ -1,4 +1,4 @@
-from flask import request, Blueprint
+from flask import Blueprint
 
 from .._config import AUTH, GRANULAR_SENSOR_AUTH_TOKENS, OPEN_SENSORS
 from .._validate import (
