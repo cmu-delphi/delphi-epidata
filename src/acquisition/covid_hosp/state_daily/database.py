@@ -3,8 +3,6 @@ from delphi.epidata.acquisition.covid_hosp.common.database import Database as Ba
 from delphi.epidata.acquisition.covid_hosp.common.database import Columndef
 from delphi.epidata.acquisition.covid_hosp.common.utils import Utils
 
-import pandas as pd
-
 
 class Database(BaseDatabase):
 

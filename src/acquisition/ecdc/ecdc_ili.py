@@ -3,20 +3,21 @@ Created on Tue Mar 17 12:41:03 2020
 @author: jingjingtang and rumackaaron
 """
 
-import requests
+import os
 import re
+import requests
+import time
+
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
-import time
-import os
+
 
 def download_ecdc_data(download_dir = "downloads"):
     url = 'https://flunewseurope.org/PrimaryCareData'
-    header = {'User-Agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36"}
     resp = requests.get(url)
     soup = BeautifulSoup(resp.content, 'lxml')
     mydivs = soup.findAll('div')
@@ -39,7 +40,7 @@ def download_ecdc_data(download_dir = "downloads"):
         for i in range(2, 54):
             # select country
             try:
-                elt = WebDriverWait(driver,30).until(EC.element_to_be_clickable((By.ID,'fluNewsReportViewer_ctl04_ctl03_ddValue')))
+                WebDriverWait(driver,30).until(EC.element_to_be_clickable((By.ID,'fluNewsReportViewer_ctl04_ctl03_ddValue')))
                 Select(driver.find_element_by_tag_name('select')).select_by_value(str(i))
                 time.sleep(3)
                 soup = BeautifulSoup(driver.page_source, 'html.parser')
@@ -52,11 +53,11 @@ def download_ecdc_data(download_dir = "downloads"):
                         break
                 if type(ind) == str:
                     # select clinical tyle
-                    elt = WebDriverWait(driver,30).until(EC.element_to_be_clickable((By.ID,'fluNewsReportViewer_ctl04_ctl05_ddValue')))
+                    WebDriverWait(driver,30).until(EC.element_to_be_clickable((By.ID,'fluNewsReportViewer_ctl04_ctl05_ddValue')))
                     Select(driver.find_element_by_id('fluNewsReportViewer_ctl04_ctl05_ddValue')).select_by_value(ind)
-                    elt = WebDriverWait(driver,30).until(EC.element_to_be_clickable((By.ID,'btnSelectExportType')))
+                    WebDriverWait(driver,30).until(EC.element_to_be_clickable((By.ID,'btnSelectExportType')))
                     driver.find_element_by_id('btnSelectExportType').click()
-                    elt = WebDriverWait(driver,30).until(EC.element_to_be_clickable((By.ID,'btnExportToCsv')))
+                    WebDriverWait(driver,30).until(EC.element_to_be_clickable((By.ID,'btnExportToCsv')))
                     driver.find_element_by_id('btnExportToCsv').click()
                 time.sleep(3)
             except:

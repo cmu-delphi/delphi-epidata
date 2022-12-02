@@ -17,8 +17,8 @@ headerheight = 0
 
 def wait_for(browser, css_selector, delay=10):
     try:
-        myElem = WebDriverWait(browser, delay).until(EC.presence_of_element_located((By.CSS_SELECTOR, css_selector)))
-        myElem = WebDriverWait(browser, delay).until(EC.element_to_be_clickable((By.CSS_SELECTOR, css_selector)))
+        WebDriverWait(browser, delay).until(EC.presence_of_element_located((By.CSS_SELECTOR, css_selector)))
+        WebDriverWait(browser, delay).until(EC.element_to_be_clickable((By.CSS_SELECTOR, css_selector)))
         print('Success Loading %s' % (css_selector))
     except TimeoutException:
         print("Loading %s took too much time!" % (css_selector))
@@ -104,7 +104,7 @@ def get_paho_data(offset=0, dir='downloads'):
         if i.text == "(All)":
             y = i
     find_and_click(browser, y)
-    
+
     for i in range(offset):
         gp = browser.find_element_by_css_selector("div.wcGlassPane")
         #print gp.is_enabled()
