@@ -1,4 +1,3 @@
-# start with the `delphi_python` image
 FROM python:3.8-buster
 
 # use delphi's timezome
