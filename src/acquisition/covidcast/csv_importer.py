@@ -15,6 +15,9 @@ from delphi_utils import Nans
 from delphi.utils.epiweek import delta_epiweeks
 from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
 
+def todays_issue():
+ return (date.today(), epi.Week.fromdate(date.today()))
+
 class CsvImporter:
   """Finds and parses covidcast CSV files."""
 
@@ -107,7 +110,7 @@ class CsvImporter:
           logger.warning(event='invalid issue directory day', detail=issue_date_value, file=path)
 
   @staticmethod
-  def find_csv_files(scan_dir, issue=(date.today(), epi.Week.fromdate(date.today())), glob=glob):
+  def find_csv_files(scan_dir, issue=None, glob=glob):
     """Recursively search for and yield covidcast-format CSV files.
 
     scan_dir: the directory to scan (recursively)
@@ -117,6 +120,9 @@ class CsvImporter:
     time_value, issue, lag) (otherwise None).
     """
     logger = get_structured_logger('find_csv_files')
+
+    if issue is None:
+      issue = todays_issue()
     issue_day,issue_epiweek=issue
     issue_day_value=int(issue_day.strftime("%Y%m%d"))
     issue_epiweek_value=int(str(issue_epiweek))
