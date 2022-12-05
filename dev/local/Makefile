@@ -7,10 +7,6 @@
 #
 # Checks for the delphi-net bridge and creates if it doesn't exist.
 #
-# Creates all prereq images (delphi_database, delphi_python) only if they don't
-# exist. If you need to rebuild a prereq, you're probably doing something
-# complicated, and can figure out the rebuild command on your own.
-#
 #
 # Commands:
 #
@@ -97,10 +93,6 @@ db:
 	@# Setup virtual network if it doesn't exist
 	@docker network ls | grep delphi-net || docker network create --driver bridge delphi-net
 
-	@# Only build prereqs if we need them
-	@docker images delphi_database | grep delphi || \
-		docker build -t delphi_database -f repos/delphi/operations/dev/docker/database/Dockerfile .
-
 	@# Build the database_epidata image
 	@docker build -t delphi_database_epidata \
 		-f repos/delphi/delphi-epidata/dev/docker/database/epidata/Dockerfile .
@@ -120,10 +112,6 @@ db:
 
 .PHONY=py
 py:
-	@# Build the python image
-	@docker build -t delphi_python \
-		-f repos/delphi/operations/dev/docker/python/Dockerfile .
-
 	@docker build -t delphi_web_python \
 		-f repos/delphi/delphi-epidata/dev/docker/python/Dockerfile .
 
