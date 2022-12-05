@@ -6,7 +6,7 @@ more_itertools==8.4.0
 mysqlclient==2.1.1
 newrelic
 orjson==3.4.7
-pandas==1.2.3
+pandas==1.5.1
 python-dotenv==0.15.0
 scipy==1.6.2
 SQLAlchemy==1.4.40
