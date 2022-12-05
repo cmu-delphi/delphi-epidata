@@ -5,8 +5,8 @@ See src/ddl/covidcast.sql for an explanation of each field.
 
 # third party
 import json
+from typing import List
 import mysql.connector
-import numpy as np
 from math import ceil
 
 from queue import Queue, Empty
@@ -17,54 +17,7 @@ from multiprocessing import cpu_count
 import delphi.operations.secrets as secrets
 
 from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
-
-class CovidcastRow():
-  """A container for all the values of a single covidcast row."""
-
-  @staticmethod
-  def fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag):
-    if row_value is None: return None
-    return CovidcastRow(source, signal, time_type, geo_type, time_value,
-                        row_value.geo_value,
-                        row_value.value,
-                        row_value.stderr,
-                        row_value.sample_size,
-                        row_value.missing_value,
-                        row_value.missing_stderr,
-                        row_value.missing_sample_size,
-                        issue, lag)
-
-  @staticmethod
-  def fromCsvRows(row_values, source, signal, time_type, geo_type, time_value, issue, lag):
-    # NOTE: returns a generator, as row_values is expected to be a generator
-    return (CovidcastRow.fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag)
-            for row_value in row_values)
-
-  def __init__(self, source, signal, time_type, geo_type, time_value, geo_value, value, stderr, 
-               sample_size, missing_value, missing_stderr, missing_sample_size, issue, lag):
-    self.id = None
-    self.source = source
-    self.signal = signal
-    self.time_type = time_type
-    self.geo_type = geo_type
-    self.time_value = time_value
-    self.geo_value = geo_value      # from CSV row
-    self.value = value              # ...
-    self.stderr = stderr            # ...
-    self.sample_size = sample_size  # ...
-    self.missing_value = missing_value # ...
-    self.missing_stderr = missing_stderr # ...
-    self.missing_sample_size = missing_sample_size # from CSV row
-    self.direction_updated_timestamp = 0
-    self.direction = None
-    self.issue = issue
-    self.lag = lag
-
-  def signal_pair(self):
-    return f"{self.source}:{self.signal}"
-
-  def geo_pair(self):
-    return f"{self.geo_type}:{self.geo_value}"
+from delphi.epidata.acquisition.covidcast.covidcast_row import CovidcastRow
 
 
 class DBLoadStateException(Exception):
@@ -156,7 +109,7 @@ class Database:
   def insert_or_update_bulk(self, cc_rows):
     return self.insert_or_update_batch(cc_rows)
 
-  def insert_or_update_batch(self, cc_rows, batch_size=2**20, commit_partial=False, suppress_jobs=False):
+  def insert_or_update_batch(self, cc_rows: List[CovidcastRow], batch_size=2**20, commit_partial=False, suppress_jobs=False):
     """
     Insert new rows into the load table and dispatch into dimension and fact tables.
     """
