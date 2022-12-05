@@ -6,10 +6,6 @@ RUN ln -s -f /usr/share/zoneinfo/America/New_York /etc/localtime
 # specify a working directory inside the container
 WORKDIR /usr/src/app
 
-# install python packages
-COPY repos/delphi/delphi-epidata/dev/docker/python/requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
 # copy over all source files
 COPY repos repos
 RUN chmod -R o+r repos/
@@ -18,4 +14,5 @@ RUN chmod -R o+r repos/
 COPY repos/delphi/delphi-epidata/dev/docker/python/setup.sh .
 RUN bash setup.sh
 
-RUN pip install --no-cache-dir -r repos/delphi/delphi-epidata/requirements.txt -r repos/delphi/delphi-epidata/requirements.dev.txt
+# install python packages
+RUN pip install --no-cache-dir -r repos/delphi/delphi-epidata/requirements.api.txt -r repos/delphi/delphi-epidata/requirements.dev.txt
