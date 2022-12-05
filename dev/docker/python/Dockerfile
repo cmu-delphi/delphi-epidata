@@ -15,4 +15,4 @@ COPY repos/delphi/delphi-epidata/dev/docker/python/setup.sh .
 RUN bash setup.sh
 
 # install python packages
-RUN pip install --no-cache-dir -r repos/delphi/delphi-epidata/dev/docker/python/requirements.txt -r repos/delphi/delphi-epidata/requirements.txt -r repos/delphi/delphi-epidata/requirements.dev.txt
+RUN pip install --no-cache-dir -r repos/delphi/delphi-epidata/requirements.api.txt -r repos/delphi/delphi-epidata/requirements.dev.txt
