@@ -10,8 +10,8 @@ freezegun
 google-api-python-client
 lxml
 matplotlib
-mysql-connector
 mysqlclient==2.0.2
+mysql-connector
 newrelic
 numpy
 orjson==3.4.7
