@@ -1,4 +1,22 @@
 # start with the `delphi_python` image
-FROM delphi_python
+FROM python:3.8-buster
+
+# use delphi's timezome
+RUN ln -s -f /usr/share/zoneinfo/America/New_York /etc/localtime
+
+# specify a working directory inside the container
+WORKDIR /usr/src/app
+
+# install python packages
+COPY repos/delphi/delphi-epidata/dev/docker/python/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# copy over all source files
+COPY repos repos
+RUN chmod -R o+r repos/
+
+# configure the image to match the delphi server
+COPY repos/delphi/delphi-epidata/dev/docker/python/setup.sh .
+RUN bash setup.sh
 
 RUN pip install --no-cache-dir -r repos/delphi/delphi-epidata/requirements.txt -r repos/delphi/delphi-epidata/requirements.dev.txt
