@@ -98,6 +98,17 @@ def extract_integer(key: Union[str, Sequence[str]]) -> Optional[int]:
         raise ValidationFailedException(f"{key}: not a number: {s}")
 
 
+def extract_float(key: Union[str, Sequence[str]]) -> Optional[float]:
+    s = _extract_value(key)
+    if not s:
+        # nothing to do
+        return None
+    try:
+        return float(s)
+    except ValueError as e:
+        raise ValidationFailedException(f"{key}: not a number: {s}")
+
+
 def extract_integers(key: Union[str, Sequence[str]]) -> Optional[List[IntRange]]:
     parts = extract_strings(key)
     if not parts:
@@ -187,3 +198,13 @@ def extract_dates(key: Union[str, Sequence[str]]) -> Optional[TimeValues]:
         values.append(parse_date(part))
     # success, return the list
     return values
+
+def extract_bool(key: Union[str, Sequence[str]]) -> Optional[bool]:
+    s = _extract_value(key)
+    if not s:
+        return None
+    if s.lower() == "true":
+        return True
+    if s.lower() == "false":
+        return False
+    raise ValidationFailedException(f"{key}: not a boolean: {s}")

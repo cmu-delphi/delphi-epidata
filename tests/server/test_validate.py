@@ -1,8 +1,9 @@
 """Unit tests for granular sensor authentication in api.php."""
 
 # standard library
-import unittest
 import base64
+import math
+import unittest
 
 # from flask.testing import FlaskClient
 from delphi.epidata.server._common import app
@@ -14,6 +15,7 @@ from delphi.epidata.server._validate import (
     extract_strings,
     extract_integers,
     extract_integer,
+    extract_float,
     extract_date,
     extract_dates
 )
@@ -138,6 +140,20 @@ class UnitTests(unittest.TestCase):
         with self.subTest("not a number"):
             with app.test_request_context("/?s=a"):
                 self.assertRaises(ValidationFailedException, lambda: extract_integer("s"))
+
+    def test_extract_float(self):
+        with self.subTest("empty"):
+            with app.test_request_context("/"):
+                self.assertIsNone(extract_float("s"))
+        with self.subTest("single"):
+            with app.test_request_context("/?s=1.0"):
+                self.assertEqual(extract_float("s"), 1.0)
+        with self.subTest("not a number"):
+            with app.test_request_context("/?s=a"):
+                self.assertRaises(ValidationFailedException, lambda: extract_float("s"))
+        with self.subTest("nan"):
+            with app.test_request_context("/?s=nan"):
+                self.assertTrue(math.isnan(extract_float("s")))
 
     def test_extract_integers(self):
         with self.subTest("empty"):

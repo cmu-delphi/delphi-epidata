@@ -219,7 +219,8 @@ class CovidcastRows:
             df = pd.concat([row.as_dataframe(ignore_fields=ignore_fields) for row in self.rows], ignore_index=True)
             return df[columns]
         else:
-            return pd.DataFrame(columns=columns)
+            df = pd.DataFrame(columns=columns)
+            return set_df_dtypes(df, self._pandas_dtypes)
 
     @property
     def api_row_df(self) -> pd.DataFrame:

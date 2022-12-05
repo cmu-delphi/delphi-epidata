@@ -34,12 +34,18 @@
     },
     {
       "type": "move",
+      "src": "src/server/utils",
+      "dst": "[[package]]/server/utils/",
+      "match": "^.*\\.(py)$",
+      "add-header-comment": true
+    },
+    {
+      "type": "move",
       "src": "src/server/endpoints/covidcast_utils",
       "dst": "[[package]]/server/endpoints/covidcast_utils/",
       "match": "^.*\\.(py)$",
       "add-header-comment": true
     },
-
     "// acquisition - fluview",
     {
       "type": "move",
