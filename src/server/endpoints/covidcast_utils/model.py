@@ -272,7 +272,7 @@ def create_source_signal_alias_mapper(source_signals: List[SourceSignalPair]) ->
             continue
         # uses an alias
         alias_to_data_sources.setdefault(source.db_source, []).append(source)
-        if pair.signal == True:
+        if pair.signal is True:
             # list all signals of this source (*) so resolve to a plain list of all in this alias
             transformed_pairs.append(SourceSignalPair(source.db_source, [s.signal for s in source.signals]))
         else:

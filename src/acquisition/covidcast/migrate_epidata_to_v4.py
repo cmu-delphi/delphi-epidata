@@ -1,3 +1,8 @@
+import argparse
+import sys
+import time
+from delphi.epidata.acquisition.covidcast.database import Database
+
 # run as:
 #    python3 -u -m delphi.epidata.acquisition.covidcast.migrate_epidata_to_v4
 # ("-u" allows unbuffered print statements so we can watch timing in closer-to-real-time)
@@ -54,11 +59,6 @@ mysql> select now();
 1 row in set (0.00 sec)
 
 '''
-
-
-from delphi.epidata.acquisition.covidcast.database import Database
-import time
-import argparse
 
 def start_tx(cursor):
   cursor.execute('SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;')
@@ -142,7 +142,6 @@ def main(destination_schema, batch_size, start_id, upper_lim_override):
     print("this WILL truncate any existing v4 tables")
   print()
   if input("type 'yes' to continue: ") != 'yes':
-    import sys
     sys.exit('operation cancelled!')
 
   print(f"starting run at: {time.strftime('%c')}")

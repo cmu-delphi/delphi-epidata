@@ -77,7 +77,6 @@ from apiclient.discovery import build
 from .google_health_trends import GHT
 from .google_health_trends import NO_LOCATION_STR
 import delphi.operations.secrets as secrets
-from delphi.utils.epidate import EpiDate
 import delphi.utils.epiweek as flu
 
 

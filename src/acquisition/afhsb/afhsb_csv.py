@@ -14,60 +14,73 @@ All intermediate files and final csv files will be stored in TARGET_DIR
 import csv
 import os
 
-import sas7bdat
 import pickle
+import sas7bdat
 import epiweeks as epi
 
 
 DATAPATH = '/home/automation/afhsb_data'
-SOURCE_DIR = DATAPATH 
-TARGET_DIR = DATAPATH 
+SOURCE_DIR = DATAPATH
+TARGET_DIR = DATAPATH
 
 INVALID_DMISIDS = set()
 
 def get_flu_cat(dx):
 	# flu1 (influenza)
-	if (len(dx) == 0): return None
+	if len(dx) == 0:
+		return None
 	dx = dx.capitalize()
-	if (dx.isnumeric()):
+	if dx.isnumeric():
 		for prefix in ["487", "488"]:
-			if (dx.startswith(prefix)): return 1
+			if dx.startswith(prefix):
+				return 1
 		for i in range(0, 7):
 			prefix = str(480 + i)
-			if (dx.startswith(prefix)): return 2
+			if dx.startswith(prefix):
+				return 2
 		for i in range(0, 7):
 			prefix = str(460 + i)
-			if (dx.startswith(prefix)): return 3
+			if dx.startswith(prefix):
+				return 3
 		for prefix in ["07999", "3829", "7806", "7862"]:
-			if (dx.startswith(prefix)): return 3
+			if dx.startswith(prefix):
+				return 3
 	elif (dx[0].isalpha() and dx[1:].isnumeric()):
 		for prefix in ["J09", "J10", "J11"]:
-			if (dx.startswith(prefix)): return 1
+			if dx.startswith(prefix):
+				return 1
 		for i in range(12, 19):
 			prefix = "J{}".format(i)
-			if (dx.startswith(prefix)): return 2
+			if dx.startswith(prefix):
+				return 2
 		for i in range(0, 7):
 			prefix = "J0{}".format(i)
-			if (dx.startswith(prefix)): return 3
+			if dx.startswith(prefix):
+				return 3
 		for i in range(20, 23):
 			prefix = "J{}".format(i)
-			if (dx.startswith(prefix)): return 3
+			if dx.startswith(prefix):
+				return 3
 		for prefix in ["J40", "R05", "H669", "R509", "B9789"]:
-			if (dx.startswith(prefix)): return 3
+			if dx.startswith(prefix):
+				return 3
 	else:
 		return None
 
 def aggregate_data(sourcefile, targetfile):
 	reader = sas7bdat.SAS7BDAT(os.path.join(SOURCE_DIR, sourcefile), skip_header=True) 
 	# map column names to column indices
-	COL2IDX = {column.name.decode('utf-8'): column.col_id for column in reader.columns}
-	def get_field(row, column): return row[COL2IDX[column]]
+	col_2_idx = {column.name.decode('utf-8'): column.col_id for column in reader.columns}
+
+	def get_field(row, column):
+		return row[col_2_idx[column]]
 
 	def row2flu(row):
 		for i in range(1, 9):
 			dx = get_field(row, "dx{}".format(i))
 			flu_cat = get_flu_cat(dx)
-			if (flu_cat != None): return flu_cat
+			if flu_cat is not None:
+				return flu_cat
 		return 0
 
 	def row2epiweek(row):
@@ -77,10 +90,11 @@ def aggregate_data(sourcefile, targetfile):
 		year, week_num = week_tuple[0], week_tuple[1]
 		return year, week_num
 
-	results_dict = dict()
-	for r, row in enumerate(reader):
+	results_dict = {}
+	for _, row in enumerate(reader):
 		# if (r >= 1000000): break
-		if (get_field(row, 'type') != "Outpt"): continue
+		if get_field(row, 'type') != "Outpt":
+			continue
 		year, week_num = row2epiweek(row)
 		dmisid = get_field(row, 'DMISID')
 		flu_cat = row2flu(row)
@@ -88,17 +102,18 @@ def aggregate_data(sourcefile, targetfile):
 		key_list = [year, week_num, dmisid, flu_cat]
 		curr_dict = results_dict
 		for i, key in enumerate(key_list):
-			if (i == len(key_list) - 1):
-				if (not key in curr_dict): curr_dict[key] = 0
+			if i == len(key_list) - 1:
+				if key not in curr_dict:
+					curr_dict[key] = 0
 				curr_dict[key] += 1
 			else:
-				if (not key in curr_dict): curr_dict[key] = dict()
+				if key not in curr_dict:
+					curr_dict[key] = {}
 				curr_dict = curr_dict[key]
 
 	results_path = os.path.join(TARGET_DIR, targetfile)
 	with open(results_path, 'wb') as f:
 		pickle.dump(results_dict, f, pickle.HIGHEST_PROTOCOL)
-	return
 
 
 ################# Functions for geographical information ####################
@@ -122,7 +137,7 @@ def format_dmisid_csv(filename, target_name):
 
 	src_csv = open(src_path, "r", encoding='utf-8-sig')
 	reader = csv.DictReader(src_csv)
-	
+
 	dst_csv = open(dst_path, "w")
 	fieldnames = ['dmisid', 'country', 'state', 'zip5']
 	writer = csv.DictWriter(dst_csv, fieldnames=fieldnames)
@@ -132,9 +147,11 @@ def format_dmisid_csv(filename, target_name):
 
 	for row in reader:
 		country2 = row['Facility ISO Country Code']
-		if (country2 == ""): country3 = ""
-		elif (not country2 in country_mapping): 
-			for key in row.keys(): print(key, row[key])
+		if country2 == "":
+			country3 = ""
+		elif country2 not in country_mapping:
+			for key in row.keys():
+				print(key, row[key])
 			continue
 		else:
 			country3 = country_mapping[country2]
@@ -148,6 +165,7 @@ def dmisid():
 	filename = 'DMISID_FY2018'
 	target_name = "simple_DMISID_FY2018.csv"
 	format_dmisid_csv(filename, target_name)
+
 
 cen2states = {'cen1': {'CT', 'ME', 'MA', 'NH', 'RI', 'VT'},
             'cen2': {'NJ', 'NY', 'PA'},
@@ -175,7 +193,7 @@ def state2region(D):
     for region in D.keys():
         states = D[region]
         for state in states:
-            assert(not state in results)
+            assert state not in results
             results[state] = region
     return results
 
@@ -204,7 +222,7 @@ def write_afhsb_csv(period):
 	with open(os.path.join(TARGET_DIR, "{}.csv".format(period)), 'w') as csvfile:
 		writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 		writer.writeheader()
-		
+
 		i = 0
 		for year in sorted(results_dict.keys()):
 			year_dict = results_dict[year]
@@ -217,11 +235,12 @@ def write_afhsb_csv(period):
 						i += 1
 						epiweek = int("{}{:02d}".format(year, week))
 						flu_type = flu_mapping[flu]
-						
+
 						row = {"epiweek": epiweek, "dmisid": None if (not dmisid.isnumeric()) else dmisid, 
 							"flu_type": flu_type, "visit_sum": visit_sum, "id": i}
 						writer.writerow(row)
-						if (i % 100000 == 0): print(row)
+						if i % 100000 == 0:
+							print(row)
 
 def dmisid_start_time_from_file(filename):
 	starttime_record = dict()
@@ -230,7 +249,7 @@ def dmisid_start_time_from_file(filename):
 		for row in reader:
 			dmisid = row['dmisid']
 			epiweek = int(row['epiweek'])
-			if (not dmisid in starttime_record): 
+			if dmisid not in starttime_record:
 				starttime_record[dmisid] = epiweek
 			else:
 				starttime_record[dmisid] = min(epiweek, starttime_record[dmisid])
@@ -241,7 +260,7 @@ def dmisid_start_time():
 	record2 = dmisid_start_time_from_file(os.path.join(TARGET_DIR, "13to17.csv"))
 	record = record1
 	for dmisid, epiweek in record2.items():
-		if (dmisid in record):
+		if dmisid in record:
 			record[dmisid] = min(record[dmisid], epiweek)
 		else:
 			record[dmisid] = epiweek
@@ -261,10 +280,10 @@ def fillin_zero_to_csv(period, dmisid_start_record):
 		dmisid = row['dmisid']
 		flu_type = row['flu_type']
 		visit_sum = row['visit_sum']
-		if (not epiweek in results_dict):
+		if epiweek not in results_dict:
 			results_dict[epiweek] = dict()
 		week_dict = results_dict[epiweek]
-		if (not dmisid in week_dict):
+		if dmisid not in week_dict:
 			week_dict[dmisid] = dict()
 		dmisid_dict = week_dict[dmisid]
 		dmisid_dict[flu_type] = visit_sum
@@ -277,14 +296,15 @@ def fillin_zero_to_csv(period, dmisid_start_record):
 		week_dict = results_dict[epiweek]
 		for dmisid in dmisid_group:
 			start_week = dmisid_start_record[dmisid]
-			if (start_week > epiweek): continue
+			if start_week > epiweek:
+				continue
 
-			if (not dmisid in week_dict):
+			if dmisid not in week_dict:
 				week_dict[dmisid] = dict()
 
 			dmisid_dict = week_dict[dmisid]
 			for flutype in flutype_group:
-				if (not flutype in dmisid_dict):
+				if flutype not in dmisid_dict:
 					dmisid_dict[flutype] = 0
 
 	# Write to csv files
@@ -301,7 +321,7 @@ def fillin_zero_to_csv(period, dmisid_start_record):
 				row = {"id": i, "epiweek": epiweek, "dmisid": dmisid,
 						"flu_type": flutype, "visit_sum": visit_sum}
 				writer.writerow(row)
-				if (i % 100000 == 0):
+				if i % 100000 == 0:
 					print(row)
 				i += 1
 	print("Wrote {} rows".format(i))

@@ -8,23 +8,9 @@ Fetch NoroSTAT data table from
 process and record it in the appropriate databases.
 """
 
-# standard library
-import datetime
-import re
-import os
-import time
-import collections
-
-# third party
-import pandas as pd
-import mysql.connector
-
 # first party
 from . import norostat_sql
 from . import norostat_raw
-from delphi.utils.epidate import EpiDate
-import delphi.operations.secrets as secrets
-
 
 
 def main():

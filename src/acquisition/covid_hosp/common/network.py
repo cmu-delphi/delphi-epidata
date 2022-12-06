@@ -1,6 +1,5 @@
 # third party
 import pandas
-import requests
 
 
 class Network:

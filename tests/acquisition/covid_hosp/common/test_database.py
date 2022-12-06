@@ -9,7 +9,7 @@ from unittest.mock import sentinel
 # third party
 import pandas as pd
 
-from delphi.epidata.acquisition.covid_hosp.common.database import Database
+from delphi.epidata.acquisition.covid_hosp.common.database import Database, Columndef
 
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.acquisition.covid_hosp.common.database'
@@ -123,9 +123,9 @@ class DatabaseTests(unittest.TestCase):
 
     table_name = 'test_table'
     columns_and_types = [
-      ('str_col', 'sql_str_col', str),
-      ('int_col', 'sql_int_col', int),
-      ('float_col', 'sql_float_col', float),
+      Columndef('str_col', 'sql_str_col', str),
+      Columndef('int_col', 'sql_int_col', int),
+      Columndef('float_col', 'sql_float_col', float),
     ]
     mock_connection = MagicMock()
     mock_cursor = mock_connection.cursor()

@@ -30,16 +30,16 @@ lag: number of weeks between `epiweek` and `issue`
 ili: num_ili / 1000 outpatient visits
 """
 
-import requests
 import argparse
 import datetime
+import requests
 
 # third party
 import mysql.connector
 
 # first party
 import delphi.operations.secrets as secrets
-from delphi.utils.epiweek import delta_epiweeks, range_epiweeks, join_epiweek, check_epiweek, add_epiweeks
+from delphi.utils.epiweek import delta_epiweeks, range_epiweeks, add_epiweeks
 from delphi.utils.epidate import EpiDate
 
 def ensure_tables_exist():
@@ -66,13 +66,13 @@ def ensure_tables_exist():
 def safe_float(f):
     try:
         return float(f.replace(',',''))
-    except Exception:
+    except:
         return 0
 
 def safe_int(i):
     try:
         return int(i.replace(',',''))
-    except Exception:
+    except:
         return 0
 
 def get_rows(cnx, table='kcdc_ili'):
@@ -173,7 +173,7 @@ def main():
     ews,ilis = get_kcdc_data()
 
     update_from_data(ews, ilis, date, issue, test_mode=args.test)
-    
+
 
 if __name__ == '__main__':
     main()

@@ -104,12 +104,12 @@ similar to fluview table. data taken right from the WHO_NREVSS dataset.
 similar to fluview table. data taken right from the WHO_NREVSS dataset.
 NOTE:
   for state-wise data, public health labs do not report by epiweek, but
-  by season (e.g. season 2016/17). calculating the lag is not very 
-  meaningful with this. in addition, the epiweek field will be set to 
+  by season (e.g. season 2016/17). calculating the lag is not very
+  meaningful with this. in addition, the epiweek field will be set to
   201640 for season 2016/17, and so on.
 
 Changelog:
-- 10/05/18: add/modify functions to also process clinical lab and public 
+- 10/05/18: add/modify functions to also process clinical lab and public
   health lab data.
 """
 
@@ -118,18 +118,16 @@ import argparse
 import csv
 import datetime
 import io
-import os
-import re
 import zipfile
 
 # third party
 import mysql.connector
 
 # first party
-from . import fluview
-from . import fluview_locations
 import delphi.operations.secrets as secrets
 from delphi.utils.epiweek import delta_epiweeks, join_epiweek
+from . import fluview
+from . import fluview_locations
 
 # sheet names
 ILINET_SHEET = 'ILINet.csv'
@@ -191,15 +189,15 @@ def get_ilinet_data(row):
 
 def get_clinical_data(row):
   if row[0] == 'REGION TYPE' and row != [
-    'REGION TYPE', 
-    'REGION', 
-    'YEAR', 
-    'WEEK', 
-    'TOTAL SPECIMENS', 
+    'REGION TYPE',
+    'REGION',
+    'YEAR',
+    'WEEK',
+    'TOTAL SPECIMENS',
     'TOTAL A',
-    'TOTAL B', 
-    'PERCENT POSITIVE', 
-    'PERCENT A', 
+    'TOTAL B',
+    'PERCENT POSITIVE',
+    'PERCENT A',
     'PERCENT B'
   ]:
     raise Exception('header row has changed for clinical lab data.')
@@ -223,30 +221,30 @@ def get_clinical_data(row):
 
 def get_public_data(row):
   hrow1 = [
-    'REGION TYPE', 
-    'REGION', 
-    'SEASON_DESCRIPTION', 
+    'REGION TYPE',
+    'REGION',
+    'SEASON_DESCRIPTION',
     'TOTAL SPECIMENS',
-    'A (2009 H1N1)', 
-    'A (H3)', 
-    'A (Subtyping not Performed)', 
-    'B', 
+    'A (2009 H1N1)',
+    'A (H3)',
+    'A (Subtyping not Performed)',
+    'B',
     'BVic',
-    'BYam', 
+    'BYam',
     'H3N2v'
   ]
   hrow2 = [
-    'REGION TYPE', 
-    'REGION', 
+    'REGION TYPE',
+    'REGION',
     'YEAR',
     'WEEK',
     'TOTAL SPECIMENS',
-    'A (2009 H1N1)', 
-    'A (H3)', 
-    'A (Subtyping not Performed)', 
-    'B', 
+    'A (2009 H1N1)',
+    'A (H3)',
+    'A (Subtyping not Performed)',
+    'B',
     'BVic',
-    'BYam', 
+    'BYam',
     'H3N2v'
   ]
   if row[0] == 'REGION TYPE' and row != hrow1 and row != hrow2:
@@ -256,7 +254,7 @@ def get_public_data(row):
     return None
   if row[3] == 'X':
     # data is not reported, ignore this row
-    return None 
+    return None
   # handle case where data is reported by season, not by epiweek
   is_weekly = len(row) == len(hrow2)
   # set epiweek
@@ -402,7 +400,7 @@ def update_from_file_public(issue, date, filename, test_mode=False):
     lag = delta_epiweeks(row['epiweek'], issue)
     args = [
       row['total_specimens'], row['total_a_h1n1'], row['total_a_h3'],
-      row['total_a_h3n2v'], row['total_a_no_sub'], row['total_b'], 
+      row['total_a_h3n2v'], row['total_a_no_sub'], row['total_b'],
       row['total_b_vic'], row['total_b_yam']
     ]
     ins_args = [date, issue, row['epiweek'], row['location'], lag] + args
