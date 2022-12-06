@@ -119,8 +119,8 @@ above. The base images are built first, followed by the derived
   the Epidata API to the `delphi_web` image.
 - The
   [`delphi_database_epidata` image](https://github.com/cmu-delphi/delphi-epidata/blob/main/dev/docker/database/epidata/README.md)
-  adds the `epi` user account, `epidata` database, and relevant tables
-  (initially empty) to the `delphi_database` image.
+  adds user accounts, `epidata` & other appropriate databases, and relevant tables
+  (initially empty) to a Percona database image.
 
 From the root of your workspace, all of the images can be built as follows:
 

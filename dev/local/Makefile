@@ -74,7 +74,7 @@ web:
 	@# Build the web_epidata image
 	@cd repos/delphi/delphi-epidata;\
 		docker build -t delphi_web_epidata -f ./devops/Dockerfile .;\
-		cd ../../../
+		cd -
 
 	@# Run the web server
 	@docker run --rm -p 127.0.0.1:10080:80 \
