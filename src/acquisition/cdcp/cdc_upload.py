@@ -77,7 +77,6 @@ import glob
 import io
 import os
 import shutil
-import sys
 from zipfile import ZipFile
 
 # third party
@@ -85,7 +84,6 @@ import mysql.connector
 
 # first party
 import delphi.operations.secrets as secrets
-import delphi.utils.epiweek as flu
 
 
 STATES = {

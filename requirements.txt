@@ -11,3 +11,5 @@ scipy==1.6.2
 tenacity==7.0.0
 newrelic
 epiweeks==2.1.2
+typing-extensions
+structlog==22.1.0

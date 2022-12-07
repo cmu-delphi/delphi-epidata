@@ -19,14 +19,11 @@ by quidel_update.py
 
 # standard library
 from collections import defaultdict
-import datetime
 import email
-import getpass
 import imaplib
 import os
 from os import listdir
 from os.path import isfile, join
-import math
 import re
 
 # third party
@@ -36,7 +33,6 @@ import pandas as pd
 # first party
 import delphi.operations.secrets as secrets
 import delphi.utils.epidate as ED
-import delphi.utils.epiweek as EW
 from delphi.utils.geo.locations import Locations
 
 def word_map(row,terms):
@@ -44,7 +40,7 @@ def word_map(row,terms):
         row = row.replace(k,v)
     return row
 
-def date_less_than(d1,d2,delimiter='-'):
+def date_less_than(d1,d2):
     y1,m1,d1 = [int(x) for x in d1.split('-')]
     y2,m2,d2 = [int(x) for x in d2.split('-')]
 
@@ -56,7 +52,7 @@ def date_less_than(d1,d2,delimiter='-'):
         return -1
 
 # shift>0: shifted to future
-def date_to_epiweek(date, delimiter='-', shift=0):
+def date_to_epiweek(date, shift=0):
     y,m,d = [int(x) for x in date.split('-')]
 
     epidate = ED.EpiDate(y,m,d)
@@ -118,12 +114,12 @@ class QuidelData:
         m.login(secrets.quidel.email_addr,secrets.quidel.email_pwd)
         m.select("INBOX") # here you a can choose a mail box like INBOX instead
         # use m.list() to get all the mailboxes
-        resp, items = m.search(None, "ALL") # you could filter using the IMAP rules here (check http://www.example-code.com/csharp/imap-search-critera.asp)
+        _, items = m.search(None, "ALL") # you could filter using the IMAP rules here (check http://www.example-code.com/csharp/imap-search-critera.asp)
         items = items[0].split() # getting the mails id
 
         # The emailids are ordered from past to now
         for emailid in items:
-            resp, data = m.fetch(emailid, "(RFC822)") # fetching the mail, "`(RFC822)`" means "get the whole stuff", but you can ask for headers only, etc
+            _, data = m.fetch(emailid, "(RFC822)") # fetching the mail, "`(RFC822)`" means "get the whole stuff", but you can ask for headers only, etc
             email_body = data[0][1].decode('utf-8') # getting the mail content
             mail = email.message_from_string(email_body) # parsing the mail content to get a mail object
 
@@ -222,13 +218,13 @@ class QuidelData:
           return atom
 
         day_shift = 6 - start_weekday
-        time_map = lambda x:date_to_epiweek(x,'-',shift=day_shift)
+        time_map = lambda x:date_to_epiweek(x,shift=day_shift)
         region_map = lambda x:get_hhs_region(x) \
                     if use_hhs and x not in Locations.hhs_list else x # a bit hacky
 
         end_date = sorted(data_dict.keys())[-1]
         # count the latest week in only if Thurs data is included
-        end_epiweek = date_to_epiweek(end_date,'-',shift=-4)
+        end_epiweek = date_to_epiweek(end_date,shift=-4)
         # first pass: prepare device_id set
         device_dict = {}
         for (date,daily_dict) in data_dict.items():

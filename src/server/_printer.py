@@ -7,7 +7,8 @@ from flask.json import dumps
 import orjson
 
 from ._config import MAX_RESULTS, MAX_COMPATIBILITY_RESULTS
-from ._common import app, is_compatibility_mode
+from ._common import is_compatibility_mode
+from .utils.logger import get_structured_logger
 
 
 def print_non_standard(data):
@@ -57,8 +58,8 @@ class APrinter:
                     r = self._print_row(row)
                     if r is not None:
                         yield r
-            except Exception as e:
-                app.logger.exception(f"error executing: {str(e)}")
+            except:
+                get_structured_logger('server_error').error("Exception while executing printer", exception=e)
                 self.result = -1
                 yield self._error(e)
 

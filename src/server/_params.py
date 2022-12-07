@@ -7,7 +7,7 @@ from flask import request
 
 
 from ._exceptions import ValidationFailedException
-from .utils import days_in_range, weeks_in_range, guess_time_value_is_day
+from .utils import days_in_range, weeks_in_range, guess_time_value_is_day, guess_time_value_is_week, TimeValues, days_to_ranges, weeks_to_ranges
 
 
 def _parse_common_multi_arg(key: str) -> List[Tuple[str, Union[bool, Sequence[str]]]]:
@@ -53,7 +53,7 @@ class GeoPair:
     geo_values: Union[bool, Sequence[str]]
 
     def matches(self, geo_type: str, geo_value: str) -> bool:
-        return self.geo_type == geo_type and (self.geo_values == True or (not isinstance(self.geo_values, bool) and geo_value in self.geo_values))
+        return self.geo_type == geo_type and (self.geo_values is True or (not isinstance(self.geo_values, bool) and geo_value in self.geo_values))
 
     def count(self) -> float:
         """
@@ -82,7 +82,7 @@ class SourceSignalPair:
     signal: Union[bool, Sequence[str]]
 
     def matches(self, source: str, signal: str) -> bool:
-        return self.source == source and (self.signal == True or (not isinstance(self.signal, bool) and signal in self.signal))
+        return self.source == source and (self.signal is True or (not isinstance(self.signal, bool) and signal in self.signal))
 
     def count(self) -> float:
         """
@@ -108,7 +108,7 @@ def parse_single_source_signal_arg(key: str) -> SourceSignalPair:
 @dataclass
 class TimePair:
     time_type: str
-    time_values: Union[bool, Sequence[Union[int, Tuple[int, int]]]]
+    time_values: Union[bool, TimeValues]
 
     @property
     def is_week(self) -> bool:
@@ -128,6 +128,16 @@ class TimePair:
         if self.time_type == 'week':
             return sum(1 if isinstance(v, int) else weeks_in_range(v) for v in self.time_values)
         return sum(1 if isinstance(v, int) else days_in_range(v) for v in self.time_values)
+
+    def to_ranges(self):
+        """
+        returns this pair with times converted to ranges
+        """
+        if isinstance(self.time_values, bool):
+            return TimePair(self.time_type, self.time_values)
+        if self.time_type == 'week':
+            return TimePair(self.time_type, weeks_to_ranges(self.time_values))
+        return TimePair(self.time_type, days_to_ranges(self.time_values))
 
 
 def _verify_range(start: int, end: int) -> Union[int, Tuple[int, int]]:
@@ -205,8 +215,28 @@ def _parse_time_pair(time_type: str, time_values: Union[bool, Sequence[str]]) ->
     raise ValidationFailedException(f'time param: {time_type} is not one of "day" or "week"')
 
 
-def parse_time_arg(key: str = "time") -> List[TimePair]:
-    return [_parse_time_pair(time_type, time_values) for [time_type, time_values] in _parse_common_multi_arg(key)]
+def parse_time_arg(key: str = "time") -> Optional[TimePair]:
+    time_pairs = [_parse_time_pair(time_type, time_values) for [time_type, time_values] in _parse_common_multi_arg(key)]
+
+    # single value
+    if len(time_pairs) == 0:
+        return None
+    if len(time_pairs) == 1:
+        return time_pairs[0]
+
+    # make sure 'day' and 'week' aren't mixed
+    time_types = set(time_pair.time_type for time_pair in time_pairs)
+    if len(time_types) >= 2:
+        raise ValidationFailedException(f'{key}: {time_pairs} mixes "day" and "week" time types')
+
+    # merge all time pairs into one
+    merged = []
+    for time_pair in time_pairs:
+        if time_pair.time_values is True:
+            return time_pair
+        else:
+            merged.extend(time_pair.time_values)
+    return TimePair(time_pairs[0].time_type, merged).to_ranges()
 
 
 def parse_single_time_arg(key: str) -> TimePair:
@@ -255,25 +285,26 @@ def parse_week_range_arg(key: str) -> Tuple[int, int]:
         raise ValidationFailedException(f"{key} must match YYYYWW-YYYYWW")
     return r
 
-def parse_day_or_week_arg(key: str, default_value: Optional[int] = None) -> Tuple[int, bool]:
+def parse_day_or_week_arg(key: str, default_value: Optional[int] = None) -> TimePair:
     v = request.values.get(key)
     if not v:
         if default_value is not None:
-            return default_value, guess_time_value_is_day(default_value)
+            time_type = "day" if guess_time_value_is_day(default_value) else "week"
+            return TimePair(time_type, [default_value])
         raise ValidationFailedException(f"{key} param is required")
     # format is either YYYY-MM-DD or YYYYMMDD or YYYYMM
-    is_week = len(v) == 6
+    is_week = guess_time_value_is_week(v)
     if is_week:
-        return parse_week_arg(key), False
-    return parse_day_arg(key), True
+        return TimePair("week", [parse_week_arg(key)])
+    return TimePair("day", [parse_day_arg(key)])
 
-def parse_day_or_week_range_arg(key: str) -> Tuple[Tuple[int, int], bool]:
+def parse_day_or_week_range_arg(key: str) -> TimePair:
     v = request.values.get(key)
     if not v:
         raise ValidationFailedException(f"{key} param is required")
     # format is either YYYY-MM-DD--YYYY-MM-DD or YYYYMMDD-YYYYMMDD or YYYYMM-YYYYMM
     # so if the first before the - has length 6, it must be a week
-    is_week = len(v.split('-', 2)[0]) == 6
+    is_week = guess_time_value_is_week(v.split('-', 2)[0])
     if is_week:
-        return parse_week_range_arg(key), False
-    return parse_day_range_arg(key), True
+        return TimePair("week", [parse_week_range_arg(key)])
+    return TimePair("day", [parse_day_range_arg(key)])

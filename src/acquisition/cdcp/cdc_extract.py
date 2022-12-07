@@ -67,13 +67,11 @@ import sys
 
 # third party
 import mysql.connector
-import numpy as np
 
 # first party
-from . import cdc_upload
 import delphi.operations.secrets as secrets
-from delphi.utils.epidate import EpiDate
 import delphi.utils.epiweek as flu
+from . import cdc_upload
 
 
 def get_num_hits(cur, epiweek, state, page):
@@ -95,8 +93,7 @@ def get_num_hits(cur, epiweek, state, page):
     pass
   if num is None:
     return 0
-  else:
-    return num
+  return num
 
 
 def get_total_hits(cur, epiweek, state):
@@ -114,8 +111,7 @@ def get_total_hits(cur, epiweek, state):
     pass
   if total is None:
     raise Exception('missing data for %d-%s' % (epiweek, state))
-  else:
-    return total
+  return total
 
 
 def store_result(cur, epiweek, state, num1, num2, num3, num4, num5, num6, num7, num8, total):

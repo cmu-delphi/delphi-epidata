@@ -6,7 +6,6 @@ import mysql.connector
 
 # first party
 from .norostat_utils import *
-from delphi.utils.epidate import EpiDate
 import delphi.operations.secrets as secrets
 
 # Column names:
@@ -73,25 +72,25 @@ def ensure_tables_exist():
         `parse_time` DATETIME(6) NOT NULL,
         PRIMARY KEY (`release_date`, `parse_time`)
       );
-    ''');
+    ''')
     cursor.execute('''
       CREATE TABLE IF NOT EXISTS `norostat_raw_datatable_measurement_type_pool` (
         `measurement_type_id` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
         `measurement_type` NVARCHAR(255) NOT NULL UNIQUE KEY
       );
-    ''');
+    ''')
     cursor.execute('''
       CREATE TABLE IF NOT EXISTS `norostat_raw_datatable_location_pool` (
         `location_id` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
         `location` NVARCHAR(255) NOT NULL UNIQUE KEY
       );
-    ''');
+    ''')
     cursor.execute('''
       CREATE TABLE IF NOT EXISTS `norostat_raw_datatable_week_pool` (
         `week_id` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
         `week` NVARCHAR(255) NOT NULL UNIQUE KEY
       );
-    ''');
+    ''')
     cursor.execute('''
       CREATE TABLE IF NOT EXISTS `norostat_raw_datatable_diffs` (
         `release_date` DATE NOT NULL,
@@ -355,7 +354,7 @@ def record_long_raw(long_raw):
         FOREIGN KEY (`release_date`,`parse_time`) REFERENCES `norostat_raw_datatable_version_list` (`release_date`,`parse_time`),
         PRIMARY KEY (`release_date`, `parse_time`)
       );
-    ''');
+    ''')
     cursor.execute('''
       CREATE TABLE IF NOT EXISTS `norostat_point_diffs` (
         `release_date` DATE NOT NULL,

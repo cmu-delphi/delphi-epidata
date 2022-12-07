@@ -1,8 +1,9 @@
-from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple, Union
+from typing import List, Optional, Sequence, Tuple, Union
 
 from flask import request
 
 from ._exceptions import UnAuthenticatedException, ValidationFailedException
+from .utils import TimeValues
 
 
 def resolve_auth_token() -> Optional[str]:
@@ -93,7 +94,7 @@ def extract_integer(key: Union[str, Sequence[str]]) -> Optional[int]:
         return None
     try:
         return int(s)
-    except ValueError as e:
+    except ValueError:
         raise ValidationFailedException(f"{key}: not a number: {s}")
 
 
@@ -141,14 +142,11 @@ def extract_date(key: Union[str, Sequence[str]]) -> Optional[int]:
     return parse_date(s)
 
 
-DateRange = Union[Tuple[int, int], int]
-
-
-def extract_dates(key: Union[str, Sequence[str]]) -> Optional[List[DateRange]]:
+def extract_dates(key: Union[str, Sequence[str]]) -> Optional[TimeValues]:
     parts = extract_strings(key)
     if not parts:
         return None
-    values: List[Union[Tuple[int, int], int]] = []
+    values: TimeValues = []
 
     def push_range(first: str, last: str):
         first_d = parse_date(first)
