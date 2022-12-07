@@ -173,7 +173,7 @@ def trie_dict_safe_insert(trie_dict, name):
     segmented_name = name.split("_")
     if segmented_name[0] not in trie_dict:
         trie_dict[segmented_name[0]] = TrieNode(segmented_name[0])
-    return tree_dict[segmented_name[0]].insert(segmented_name[1:])
+    return trie_dict[segmented_name[0]].insert(segmented_name[1:])
 
 
 def extend_columns_with_current_json(columns, json_data):
@@ -202,7 +202,8 @@ def extend_columns_with_current_json(columns, json_data):
             new_column.trie = trie_dict_safe_insert(new_names, new_column.sql_name)
     n_oversize = 0
     for miss in misses:
-        miss.trie.make_all_shorter()
+        TrieNode.try_make_shorter(miss.trie)
+    for miss in misses:
         miss.sql_name = miss.trie.as_shortened_name()
         if len(miss.sql_name) > MAX_SQL_NAME_LENGTH:
             n_oversize += 1
@@ -211,7 +212,7 @@ def extend_columns_with_current_json(columns, json_data):
                 file=sys.stderr
             )
     if n_oversize > 0:
-        raise Exception("Oversize column names found; find another name-shortening strategy")
+        raise Exception("Oversize column names found; add another name-shortening strategy")
     return hits, misses
 
 TRIE_END = object()
@@ -226,6 +227,9 @@ class TrieNode:
             self.children.setdefault(TRIE_END, TRIE_END)
             return self
         return self.children.setdefault(words[0], TrieNode(words[0], self)).insert(words[1:])
+    def set_short_name(self, new_name):
+        self.short_name = new_name
+        return True # permit chaining with `and`
     def as_shortened_name(self, end=None):
         if end is None: end = list()
         if self.short_name:
@@ -240,43 +244,26 @@ class TrieNode:
             return parent.longest(longest)
         else:
             return longest[-1]
-    def xmake_shorter(self):
-        strategies = {
-            "and": "",
-            "hospitalized": "hosp",
-            "vaccinated": "vaccd",
-            "coverage": "cov"
-        }
-        if self.short_name in strategies:
-            self.short_name = strategies[self.short_name]
-        elif self.short_name == "7": # i.e. from "7_day"
-            if "day" in self.children and len(self.children) == 1:
-                self.short_name = "7d"
-                self.children["day"].short_name = ""
-    def xmake_all_shorter(self):
-        self.make_shorter()
-        if self.parent:
-            self.parent.make_all_shorter()
     @classmethod
     def try_make_shorter(self, trie):
         strategies = [
             (lambda c: c.short_name == "and",
-             lambda c: c.short_name = ""),
+             lambda c: c.set_short_name("")),
             (lambda c: c.short_name == "hospitalized",
-             lambda c: c.short_name = "hosp"),
+             lambda c: c.set_short_name("hosp")),
             (lambda c: c.short_name == "vaccinated",
-             lambda c: c.short_name = "vaccd"),
+             lambda c: c.set_short_name("vaccd")),
             (lambda c: (
                 c.short_name == "7" and
                 "day" in c.children and
                 len(c.children) == 1
             ),
              lambda c: (
-                 c.short_name = "7d" and
-                 c.children["day"].short_name = ""
+                 c.set_short_name("7d") and
+                 c.children["day"].set_short_name("")
              )),
             (lambda c: c.short_name == "coverage",
-             lambda c: c.short_name = "cov")
+             lambda c: c.set_short_name("cov"))
         ]
         while len(trie.as_shortened_name()) > MAX_SQL_NAME_LENGTH:
             if not strategies:
@@ -287,8 +274,14 @@ class TrieNode:
                 cursor = cursor.parent
             if cursor:
                 strat[1](cursor)
-            
 
+def create_migration(table, misses, migrations_file):
+    migrations_file.write(f"ALTER TABLE {table} ADD COLUMN (\n")
+    migrations_file.write(",\n".join(
+        miss.render_sql() for miss in misses
+    ))
+    migrations_file.write("\n);")
+        
 @dataclass
 class Column:
     """Store column information ready to output in either Python database.py or DDL .sql format."""
@@ -325,7 +318,7 @@ class Column:
         if not hasattr(self, "full_sql_type"):
             self.set_full_sql_type()
         parts = []
-        parts.append(self.sql_name)
+        parts.append(f"`{self.sql_name}`")
         parts.append(self.full_sql_type.upper())
         parts.append('NOT NULL' if self.required else '')
         parts.append(self.sql_extra.upper())
@@ -365,3 +358,11 @@ def main(path_to_epidata):
         all_columns["covid_hosp_state_timeseries"]["state_timeseries"],
         url_as_json_data("https://healthdata.gov/api/views/g62h-syeh.json")
     )
+    return (hits, misses, all_columns)
+
+if __name__=='__main__':
+    import sys
+    if len(sys.argv)<1:
+        print(f"Usage: {sys.argv[0]} path/to/delphi-epidata")
+        exit(0)
+    (hits, misses, all_columns) = main(sys.argv[-1])

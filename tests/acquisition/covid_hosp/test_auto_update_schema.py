@@ -1,5 +1,7 @@
 from collections import namedtuple
 from dataclasses import dataclass
+from io import StringIO
+from unittest.mock import patch
 from delphi.epidata.acquisition.covid_hosp.auto_update_schema import \
     split_sql, \
     db_to_columns, \
@@ -7,7 +9,8 @@ from delphi.epidata.acquisition.covid_hosp.auto_update_schema import \
     extend_columns_with_current_json, \
     infer_type, \
     TrieNode, TRIE_END, \
-    Column
+    Column, \
+    create_migration
 from delphi.epidata.acquisition.covid_hosp.common.utils import Utils
 import pytest
 
@@ -416,24 +419,25 @@ LONG_ELEMENTS = [
 def long_name_elements(request):
     return request.param
 
+@patch('delphi.epidata.acquisition.covid_hosp.auto_update_schema.MAX_SQL_NAME_LENGTH', 5)
 def test_trie_make_shorter(long_name_elements):
     trie = TrieNode(long_name_elements.given)
-    TrieNew.try_make_shorter(trie)
+    TrieNode.try_make_shorter(trie)
     assert trie.short_name == long_name_elements.expected
 
 LONG_COLUMN_NAMES = [
     Case('hosp_and_no_cov',
          'total_pediatric_patients_hospitalized_confirmed_and_suspected_covid_coverage',
          'total_pediatric_patients_hosp_confirmed_suspected_covid_coverage'),
-    Case('vaccd_no_7d',
+    Case('vaccd_no7d',
          'previous_week_personnel_covid_vaccinated_doses_administered_7_day_sum',
-         'previous_week_personnel_covid_vaccd_doses_administered_7d_sum'),
-    Case('and_7d_cov',
+         'previous_week_personnel_covid_vaccd_doses_administered_7_day_sum',),
+    Case('and_7d_nocov',
          'staffed_icu_adult_patients_confirmed_and_suspected_covid_7_day_coverage',
-         'staffed_icu_adult_patients_confirmed_suspected_covid_7d_cov'),
-    Case('hosp_and_7d_cov',
+         'staffed_icu_adult_patients_confirmed_suspected_covid_7d_coverage'),
+    Case('hosp_and_7d_nocov',
          'total_adult_patients_hospitalized_confirmed_and_suspected_covid_7_day_coverage',
-         'total_adult_patients_hosp_confirmed_suspected_covid_7d_cov')
+         'total_adult_patients_hosp_confirmed_suspected_covid_7d_coverage')
 ]
 @pytest.fixture(
     params=LONG_COLUMN_NAMES,
@@ -448,7 +452,7 @@ def long_column_names(request):
 
 def test_trie_make_all_shorter(long_column_names):
     trie = TrieNode(long_column_names.given[0]).insert(long_column_names.given[1:])
-    trie.make_all_shorter()
+    TrieNode.try_make_shorter(trie)
     assert trie.as_shortened_name() == long_column_names.expected
 
 
@@ -477,3 +481,45 @@ def test_extend_columns_with_current_json_oversize_column(columns_as_Columns, ov
             columns_as_Columns,
             [oversize_new_columns.given]
         )
+
+SQL_COLUMNS = [
+    Case("int",
+         Column(sql_name="x_int", sql_type="INT"),
+         "`x_int` INT"
+    ),
+    Case("int required auto increment",
+         Column(sql_name="x_auto", sql_type="INT", required=True, sql_extra="AUTO_INCREMENT"),
+         "`x_auto` INT NOT NULL AUTO_INCREMENT"
+    ),
+    Case("varchar",
+         Column(sql_name="x_varchar", sql_type="VARCHAR", sql_type_size="1"),
+         "`x_varchar` VARCHAR(1)"
+    ),
+    Case("varchar required",
+         Column(sql_name="x_varchar_required", sql_type="VARCHAR", sql_type_size="1", required=True),
+         "`x_varchar_required` VARCHAR(1) NOT NULL"
+    ),
+]
+@pytest.fixture(params=SQL_COLUMNS)
+def sql_column(request):
+    yield request.param
+
+def test_column_render_sql(sql_column):
+    assert sql_column.given.render_sql() == sql_column.expected
+
+@pytest.fixture
+def column_misses():
+    return Case(
+        "misses",
+        ["xyzzy", [case.given for case in SQL_COLUMNS]],
+        "\n".join([
+            "ALTER TABLE xyzzy ADD COLUMN (",
+            ",\n".join(case.expected for case in SQL_COLUMNS),
+            ");"
+        ])
+    )
+
+def test_create_migration(column_misses):
+    mock_migrations_file = StringIO()
+    create_migration(*column_misses.given, mock_migrations_file)
+    assert mock_migrations_file.getvalue() == column_misses.expected
