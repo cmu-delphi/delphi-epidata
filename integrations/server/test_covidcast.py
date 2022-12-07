@@ -72,7 +72,7 @@ class CovidcastTests(CovidcastBase):
       for i in [4, 5, 6]
     ]
     self._insert_rows(rows)
-    return rows 
+    return rows
 
   def test_round_trip(self):
     """Make a simple round-trip with some sample data."""
@@ -99,11 +99,11 @@ class CovidcastTests(CovidcastBase):
   #   # insert placeholder data
   #   self.cur.execute(f'''
   #    INSERT INTO
-  #      `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`, 
-  #      `time_value`, `geo_value`, `value_updated_timestamp`, 
-  #      `value`, `stderr`, `sample_size`, `direction_updated_timestamp`, 
+  #      `covidcast` (`id`, `source`, `signal`, `time_type`, `geo_type`,
+  #      `time_value`, `geo_value`, `value_updated_timestamp`,
+  #      `value`, `stderr`, `sample_size`, `direction_updated_timestamp`,
   #      `direction`, `issue`, `lag`, `is_latest_issue`, `missing_value`,
-  #      `missing_stderr`,`missing_sample_size`) 
+  #      `missing_stderr`,`missing_sample_size`)
   #    VALUES
   #       (0, 'src', 'sig', 'day', 'county', 20200414, '01234',
   #         123, 1.5, 2.5, 3.5, 456, 4, 20200414, 0, 1,
