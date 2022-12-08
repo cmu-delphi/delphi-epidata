@@ -475,7 +475,7 @@ class CovidcastEndpointTests(CovidcastBase):
             )
             response.raise_for_status()
             df_diffed = _read_csv_str(response.text)
-            expected_df = diff_df(data.db_row_df, "confirmed_incidence_num", omit_left_boundary=True)
+            expected_df = diff_df(data.db_row_df, "confirmed_incidence_num")
             assert_frame_equal_no_order(df_diffed[compare_cols], expected_df[compare_cols], index=["source", "signal", "geo_value", "time_value"])
 
     def test_backfill(self):

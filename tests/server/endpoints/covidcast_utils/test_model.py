@@ -13,10 +13,11 @@ from delphi.epidata.server.endpoints.covidcast_utils.model import (
     DIFF_SMOOTH,
     IDENTITY,
     SMOOTH,
-    _generate_transformed_rows,
-    _get_base_signal_transform,
-    _reindex_iterable,
-    get_basename_signal_and_jit_generator,
+    generate_transformed_rows,
+    generate_transformed_rows2,
+    get_base_signal_transform,
+    reindex_iterable,
+    get_basename_signals_and_derived_map,
     get_pad_length,
     get_transform_types,
     pad_time_pair,
@@ -27,27 +28,27 @@ from delphi.epidata.server.endpoints.covidcast_utils.test_utils import DATA_SOUR
 @patch("delphi.epidata.server.endpoints.covidcast_utils.model.data_sources_by_id", DATA_SOURCES_BY_ID)
 @patch("delphi.epidata.server.endpoints.covidcast_utils.model.data_signals_by_key", DATA_SIGNALS_BY_KEY)
 class TestModel(unittest.TestCase):
-    def test__reindex_iterable(self):
+    def test_reindex_iterable(self):
         with self.subTest(f"Identity operations."):
-            assert list(_reindex_iterable([])) == []
+            assert list(reindex_iterable([])) == []
 
             data = CovidcastRows.from_args(time_value=pd.date_range("2021-05-03", "2021-05-08").to_list())
-            df = CovidcastRows.from_records(_reindex_iterable(data.as_dicts())).db_row_df
+            df = CovidcastRows.from_records(reindex_iterable(data.as_dicts())).db_row_df
             assert_frame_equal(df, data.db_row_df)
 
         with self.subTest("Non-trivial operations"):
             data = CovidcastRows.from_args(time_value=pd.date_range("2021-05-03", "2021-05-08").to_list() + pd.date_range("2021-05-11", "2021-05-14").to_list())
-            df = CovidcastRows.from_records(_reindex_iterable(data.as_dicts())).db_row_df
+            df = CovidcastRows.from_records(reindex_iterable(data.as_dicts())).db_row_df
             expected_df = reindex_df(data.db_row_df)
             assert_frame_equal_no_order(df, expected_df, index=["source", "signal", "geo_value", "time_value"])
 
-    def test__get_base_signal_transform(self):
-        assert _get_base_signal_transform(("src", "sig_smooth")) == SMOOTH
-        assert _get_base_signal_transform(("src", "sig_diff_smooth")) == DIFF_SMOOTH
-        assert _get_base_signal_transform(("src", "sig_diff")) == DIFF
-        assert _get_base_signal_transform(("src", "sig_diff")) == DIFF
-        assert _get_base_signal_transform(("src", "sig_base")) == IDENTITY
-        assert _get_base_signal_transform(("src", "sig_unknown")) == IDENTITY
+    def test_get_base_signal_transform(self):
+        assert get_base_signal_transform(("src", "sig_smooth")) == SMOOTH
+        assert get_base_signal_transform(("src", "sig_diff_smooth")) == DIFF_SMOOTH
+        assert get_base_signal_transform(("src", "sig_diff")) == DIFF
+        assert get_base_signal_transform(("src", "sig_diff")) == DIFF
+        assert get_base_signal_transform(("src", "sig_base")) == IDENTITY
+        assert get_base_signal_transform(("src", "sig_unknown")) == IDENTITY
 
     def test_get_transform_types(self):
         source_signal_pairs = [SourceSignalPair(source="src", signal=["sig_diff"])]
@@ -96,7 +97,7 @@ class TestModel(unittest.TestCase):
         assert pad_time_pair(time_pairs, pad_length=0) == time_pairs
         # fmt: on
 
-    def test__generate_transformed_rows(self):
+    def test_generate_transformed_rows(self):
         # fmt: off
         with self.subTest("diffed signal test"):
             data = CovidcastRows.from_args(
@@ -104,24 +105,24 @@ class TestModel(unittest.TestCase):
                 time_value=range(20210501, 20210506),
                 value=range(5)
             )
-            transform_dict = {SourceSignalPair("src", ["sig_base"]): SourceSignalPair("src", ["sig_diff"])}
-            df = CovidcastRows.from_records(_generate_transformed_rows(data.as_dicts(), transform_dict=transform_dict)).db_row_df
+            derived_signals_map = {SourceSignalPair("src", ["sig_base"]): SourceSignalPair("src", ["sig_diff"])}
+            df = CovidcastRows.from_records(generate_transformed_rows(data.as_dicts(), derived_signals_map)).db_row_df
 
-            expected_df = diff_df(data.db_row_df, "sig_diff", omit_left_boundary=True)
+            expected_df = diff_df(data.db_row_df, "sig_diff")
             assert_frame_equal_no_order(df, expected_df, index=["signal", "geo_value", "time_value"])
 
         with self.subTest("smoothed and diffed signals on one base test"):
             data = CovidcastRows.from_args(
-                signal=["sig_base"] * 10, 
-                time_value=pd.date_range("2021-05-01", "2021-05-10"), 
-                value=range(10), 
-                stderr=range(10), 
+                signal=["sig_base"] * 10,
+                time_value=pd.date_range("2021-05-01", "2021-05-10"),
+                value=range(10),
+                stderr=range(10),
                 sample_size=range(10)
             )
-            transform_dict = {SourceSignalPair("src", ["sig_base"]): SourceSignalPair("src", ["sig_diff", "sig_smooth"])}
-            df = CovidcastRows.from_records(_generate_transformed_rows(data.as_dicts(), transform_dict=transform_dict)).db_row_df
+            derived_signals_map = {SourceSignalPair("src", ["sig_base"]): SourceSignalPair("src", ["sig_diff", "sig_smooth"])}
+            df = CovidcastRows.from_records(generate_transformed_rows(data.as_dicts(), derived_signals_map)).db_row_df
 
-            expected_df = pd.concat([diff_df(data.db_row_df, "sig_diff", omit_left_boundary=True), smooth_df(data.db_row_df, "sig_smooth", omit_left_boundary=True)])
+            expected_df = pd.concat([diff_df(data.db_row_df, "sig_diff"), smooth_df(data.db_row_df, "sig_smooth")])
             assert_frame_equal_no_order(df, expected_df, index=["signal", "geo_value", "time_value"])
 
         with self.subTest("smoothed and diffed signal on two non-continguous regions"):
@@ -132,16 +133,14 @@ class TestModel(unittest.TestCase):
                 stderr=range(15),
                 sample_size=range(15),
             )
-            transform_dict = {SourceSignalPair("src", ["sig_base"]): SourceSignalPair("src", ["sig_diff", "sig_smooth"])}
-            df = CovidcastRows.from_records(
-                _generate_transformed_rows(data.as_dicts(), transform_dict=transform_dict)
-            ).db_row_df
+            derived_signals_map = {SourceSignalPair("src", ["sig_base"]): SourceSignalPair("src", ["sig_diff", "sig_smooth"])}
+            df = CovidcastRows.from_records(generate_transformed_rows(data.as_dicts(), derived_signals_map)).db_row_df
 
-            expected_df = pd.concat([diff_df(data.db_row_df, "sig_diff", omit_left_boundary=True), smooth_df(data.db_row_df, "sig_smooth", omit_left_boundary=True)])
+            expected_df = pd.concat([diff_df(data.db_row_df, "sig_diff"), smooth_df(data.db_row_df, "sig_smooth")])
             compare_cols = ["signal", "geo_value", "time_value", "time_type", "geo_type", "value", "stderr", "sample_size", "missing_value", "missing_stderr", "missing_sample_size", "direction"]
             assert_frame_equal_no_order(df[compare_cols], expected_df[compare_cols], index=["signal", "geo_value", "time_value"])
 
-        with self.subTest("smooth_diffed signal on two non-continguous regions"):
+        with self.subTest("diff_smoothed signal on two non-continguous regions"):
             data = CovidcastRows.from_args(
                 signal=["sig_base"] * 15,
                 time_value=chain(pd.date_range("2021-05-01", "2021-05-10"), pd.date_range("2021-05-16", "2021-05-20")),
@@ -149,12 +148,10 @@ class TestModel(unittest.TestCase):
                 stderr=range(15),
                 sample_size=range(15),
             )
-            transform_dict = {SourceSignalPair("src", ["sig_base"]): SourceSignalPair("src", ["sig_diff_smooth"])}
-            df = CovidcastRows.from_records(
-                _generate_transformed_rows(data.as_dicts(), transform_dict=transform_dict)
-            ).db_row_df
+            derived_signals_map = {SourceSignalPair("src", ["sig_base"]): SourceSignalPair("src", ["sig_diff_smooth"])}
+            df = CovidcastRows.from_records(generate_transformed_rows(data.as_dicts(), derived_signals_map)).db_row_df
 
-            expected_df = diff_smooth_df(data.db_row_df, "sig_diff_smooth", omit_left_boundary=True)
+            expected_df = diff_smooth_df(data.db_row_df, "sig_diff_smooth")
             compare_cols = ["signal", "geo_value", "time_value", "time_type", "geo_type", "value", "stderr", "sample_size", "missing_value", "missing_stderr", "missing_sample_size", "direction"]
             assert_frame_equal_no_order(df[compare_cols], expected_df[compare_cols], index=["signal", "geo_value", "time_value"])
             # fmt: on
@@ -162,13 +159,13 @@ class TestModel(unittest.TestCase):
     def test_get_basename_signals(self):
         with self.subTest("none to transform"):
             source_signal_pairs = [SourceSignalPair(source="src", signal=["sig_base"])]
-            basename_pairs, _ = get_basename_signal_and_jit_generator(source_signal_pairs)
+            basename_pairs, _ = get_basename_signals_and_derived_map(source_signal_pairs)
             expected_basename_pairs = [SourceSignalPair(source="src", signal=["sig_base"])]
             assert basename_pairs == expected_basename_pairs
 
         with self.subTest("unrecognized signal"):
             source_signal_pairs = [SourceSignalPair(source="src", signal=["sig_unknown"])]
-            basename_pairs, _ = get_basename_signal_and_jit_generator(source_signal_pairs)
+            basename_pairs, _ = get_basename_signals_and_derived_map(source_signal_pairs)
             expected_basename_pairs = [SourceSignalPair(source="src", signal=["sig_unknown"])]
             assert basename_pairs == expected_basename_pairs
 
@@ -177,7 +174,7 @@ class TestModel(unittest.TestCase):
                 SourceSignalPair(source="src", signal=["sig_diff", "sig_smooth", "sig_diff_smooth", "sig_base"]),
                 SourceSignalPair(source="src2", signal=["sig"]),
             ]
-            basename_pairs, _ = get_basename_signal_and_jit_generator(source_signal_pairs)
+            basename_pairs, _ = get_basename_signals_and_derived_map(source_signal_pairs)
             expected_basename_pairs = [
                 SourceSignalPair(source="src", signal=["sig_base", "sig_base", "sig_base", "sig_base"]),
                 SourceSignalPair(source="src2", signal=["sig"]),
@@ -194,11 +191,11 @@ class TestModel(unittest.TestCase):
                 sample_size=chain(range(20), range(5)),
             )
             source_signal_pairs = [SourceSignalPair("src", ["sig_base", "sig_diff", "sig_other", "sig_smooth"])]
-            _, row_transform_generator = get_basename_signal_and_jit_generator(source_signal_pairs)
-            df = CovidcastRows.from_records(row_transform_generator(data.as_dicts())).db_row_df
+            _, derived_signals_map = get_basename_signals_and_derived_map(source_signal_pairs)
+            df = CovidcastRows.from_records(generate_transformed_rows(data.as_dicts(), derived_signals_map)).db_row_df
 
             data_df = data.db_row_df
-            expected_df = pd.concat([reindex_df(data_df), diff_df(data_df[data_df["signal"] == "sig_base"], "sig_diff", omit_left_boundary=True), smooth_df(data_df[data_df["signal"] == "sig_base"], "sig_smooth", omit_left_boundary=True)])
+            expected_df = pd.concat([reindex_df(data_df), diff_df(data_df[data_df["signal"] == "sig_base"], "sig_diff"), smooth_df(data_df[data_df["signal"] == "sig_base"], "sig_smooth")])
             compare_cols = ["signal", "geo_value", "time_value", "time_type", "geo_type", "value", "stderr", "sample_size", "missing_value", "missing_stderr", "missing_sample_size", "direction"]
             assert_frame_equal_no_order(df[compare_cols], expected_df[compare_cols], index=["signal", "geo_value", "time_value"])
             # fmt: on
@@ -214,15 +211,143 @@ class TestModel(unittest.TestCase):
                 sample_size=chain(range(20), range(0, 40, 2)),
             )
             source_signal_pairs = [SourceSignalPair("src", ["sig_base", "sig_diff", "sig_other", "sig_smooth"])]
-            _, row_transform_generator = get_basename_signal_and_jit_generator(source_signal_pairs)
-            df = CovidcastRows.from_records(row_transform_generator(data.as_dicts())).db_row_df
+            _, derived_signals_map = get_basename_signals_and_derived_map(source_signal_pairs)
+            df = CovidcastRows.from_records(generate_transformed_rows(data.as_dicts(), derived_signals_map)).db_row_df
 
-            expected_df = pd.concat([reindex_df(data.db_row_df), diff_df(data.db_row_df, "sig_diff", omit_left_boundary=True), smooth_df(data.db_row_df, "sig_smooth", omit_left_boundary=True)])
+            expected_df = pd.concat([reindex_df(data.db_row_df), diff_df(data.db_row_df, "sig_diff"), smooth_df(data.db_row_df, "sig_smooth")])
             compare_cols = ["signal", "geo_value", "time_value", "time_type", "geo_type", "value", "stderr", "sample_size", "missing_value", "missing_stderr", "missing_sample_size", "direction"]
             assert_frame_equal_no_order(df[compare_cols], expected_df[compare_cols], index=["signal", "geo_value", "time_value"])
             # fmt: on
 
         with self.subTest("empty iterator"):
             source_signal_pairs = [SourceSignalPair("src", ["sig_base", "sig_diff", "sig_smooth"])]
-            _, row_transform_generator = get_basename_signal_and_jit_generator(source_signal_pairs)
-            assert list(row_transform_generator({})) == []
+            _, derived_signals_map = get_basename_signals_and_derived_map(source_signal_pairs)
+            assert list(generate_transformed_rows({}, derived_signals_map)) == []
+
+
+    def test_generate_transformed_rows2(self):
+        # fmt: off
+        with self.subTest("diffed signal test"):
+            data = CovidcastRows.from_args(
+                signal=["sig_base"] * 5,
+                time_value=range(20210501, 20210506),
+                value=range(5)
+            )
+            transform_dict = {SourceSignalPair("src", ["sig_base"]): SourceSignalPair("src", ["sig_diff"])}
+            df = generate_transformed_rows2(data.db_row_df, transform_dict=transform_dict)
+
+            expected_df = diff_df(data.db_row_df, "sig_diff")
+            assert_frame_equal_no_order(df, expected_df, index=["signal", "geo_value", "time_value"])
+
+        with self.subTest("smoothed and diffed signals on one base test"):
+            data = CovidcastRows.from_args(
+                signal=["sig_base"] * 10,
+                time_value=pd.date_range("2021-05-01", "2021-05-10"),
+                value=range(10),
+                stderr=range(10),
+                sample_size=range(10)
+            )
+            transform_dict = {SourceSignalPair("src", ["sig_base"]): SourceSignalPair("src", ["sig_diff", "sig_smooth"])}
+            df = generate_transformed_rows2(data.db_row_df, transform_dict=transform_dict)
+
+            expected_df = pd.concat([diff_df(data.db_row_df, "sig_diff"), smooth_df(data.db_row_df, "sig_smooth")])
+            assert_frame_equal_no_order(df, expected_df, index=["signal", "geo_value", "time_value"])
+
+        with self.subTest("smoothed and diffed signal on two non-continguous regions"):
+            data = CovidcastRows.from_args(
+                signal=["sig_base"] * 15,
+                time_value=chain(pd.date_range("2021-05-01", "2021-05-10"), pd.date_range("2021-05-16", "2021-05-20")),
+                value=range(15),
+                stderr=range(15),
+                sample_size=range(15),
+            )
+            transform_dict = {SourceSignalPair("src", ["sig_base"]): SourceSignalPair("src", ["sig_diff", "sig_smooth"])}
+            df = generate_transformed_rows2(data.db_row_df, transform_dict=transform_dict)
+
+            expected_df = pd.concat([diff_df(data.db_row_df, "sig_diff"), smooth_df(data.db_row_df, "sig_smooth")])
+            compare_cols = ["signal", "geo_value", "time_value", "time_type", "geo_type", "value", "stderr", "sample_size", "missing_value", "missing_stderr", "missing_sample_size", "direction"]
+            assert_frame_equal_no_order(df[compare_cols], expected_df[compare_cols], index=["signal", "geo_value", "time_value"])
+
+        with self.subTest("smooth_diffed signal on two non-continguous regions"):
+            data = CovidcastRows.from_args(
+                signal=["sig_base"] * 15,
+                time_value=chain(pd.date_range("2021-05-01", "2021-05-10"), pd.date_range("2021-05-16", "2021-05-20")),
+                value=range(15),
+                stderr=range(15),
+                sample_size=range(15),
+            )
+            transform_dict = {SourceSignalPair("src", ["sig_base"]): SourceSignalPair("src", ["sig_diff_smooth"])}
+            df = generate_transformed_rows2(data.db_row_df, transform_dict=transform_dict)
+
+            expected_df = diff_smooth_df(data.db_row_df, "sig_diff_smooth")
+            compare_cols = ["signal", "geo_value", "time_value", "time_type", "geo_type", "value", "stderr", "sample_size", "missing_value", "missing_stderr", "missing_sample_size", "direction"]
+            assert_frame_equal_no_order(df[compare_cols], expected_df[compare_cols], index=["signal", "geo_value", "time_value"])
+            # fmt: on
+
+    def test_get_basename_signals2(self):
+        with self.subTest("none to transform"):
+            source_signal_pairs = [SourceSignalPair(source="src", signal=["sig_base"])]
+            basename_pairs, _ = get_basename_signals_and_derived_map(source_signal_pairs)
+            expected_basename_pairs = [SourceSignalPair(source="src", signal=["sig_base"])]
+            assert basename_pairs == expected_basename_pairs
+
+        with self.subTest("unrecognized signal"):
+            source_signal_pairs = [SourceSignalPair(source="src", signal=["sig_unknown"])]
+            basename_pairs, _ = get_basename_signals_and_derived_map(source_signal_pairs)
+            expected_basename_pairs = [SourceSignalPair(source="src", signal=["sig_unknown"])]
+            assert basename_pairs == expected_basename_pairs
+
+        with self.subTest("plain"):
+            source_signal_pairs = [
+                SourceSignalPair(source="src", signal=["sig_diff", "sig_smooth", "sig_diff_smooth", "sig_base"]),
+                SourceSignalPair(source="src2", signal=["sig"]),
+            ]
+            basename_pairs, _ = get_basename_signals_and_derived_map(source_signal_pairs)
+            expected_basename_pairs = [
+                SourceSignalPair(source="src", signal=["sig_base", "sig_base", "sig_base", "sig_base"]),
+                SourceSignalPair(source="src2", signal=["sig"]),
+            ]
+            assert basename_pairs == expected_basename_pairs
+
+        with self.subTest("test base, diff, smooth"):
+            # fmt: off
+            data = CovidcastRows.from_args(
+                signal=["sig_base"] * 20 + ["sig_other"] * 5,
+                time_value=chain(pd.date_range("2021-05-01", "2021-05-10"), pd.date_range("2021-05-21", "2021-05-30"), pd.date_range("2021-05-01", "2021-05-05")),
+                value=chain(range(20), range(5)),
+                stderr=chain(range(20), range(5)),
+                sample_size=chain(range(20), range(5)),
+            )
+            source_signal_pairs = [SourceSignalPair("src", ["sig_base", "sig_diff", "sig_other", "sig_smooth"])]
+            _, derived_signals_map = get_basename_signals_and_derived_map(source_signal_pairs)
+            df = generate_transformed_rows2(data.db_row_df, derived_signals_map)
+
+            data_df = data.db_row_df
+            expected_df = pd.concat([data_df, diff_df(data_df[data_df["signal"] == "sig_base"], "sig_diff"), smooth_df(data_df[data_df["signal"] == "sig_base"], "sig_smooth")])
+            compare_cols = ["signal", "geo_value", "time_value", "time_type", "geo_type", "value", "stderr", "sample_size", "missing_value", "missing_stderr", "missing_sample_size", "direction"]
+            assert_frame_equal_no_order(df[compare_cols], expected_df[compare_cols], index=["signal", "geo_value", "time_value"])
+            # fmt: on
+
+        with self.subTest("test base, diff, smooth; multiple geos"):
+            # fmt: off
+            data = CovidcastRows.from_args(
+                signal=["sig_base"] * 40,
+                geo_value=["ak"] * 20 + ["ca"] * 20,
+                time_value=chain(pd.date_range("2021-05-01", "2021-05-20"), pd.date_range("2021-05-01", "2021-05-20")),
+                value=chain(range(20), range(0, 40, 2)),
+                stderr=chain(range(20), range(0, 40, 2)),
+                sample_size=chain(range(20), range(0, 40, 2)),
+            )
+            source_signal_pairs = [SourceSignalPair("src", ["sig_base", "sig_diff", "sig_other", "sig_smooth"])]
+            _, derived_signals_map = get_basename_signals_and_derived_map(source_signal_pairs)
+            df = generate_transformed_rows2(data.db_row_df, derived_signals_map)
+
+            expected_df = pd.concat([reindex_df(data.db_row_df), diff_df(data.db_row_df, "sig_diff"), smooth_df(data.db_row_df, "sig_smooth")])
+            compare_cols = ["signal", "geo_value", "time_value", "time_type", "geo_type", "value", "stderr", "sample_size", "missing_value", "missing_stderr", "missing_sample_size", "direction"]
+            assert_frame_equal_no_order(df[compare_cols], expected_df[compare_cols], index=["signal", "geo_value", "time_value"])
+            # fmt: on
+
+        with self.subTest("empty iterator"):
+            source_signal_pairs = [SourceSignalPair("src", ["sig_base", "sig_diff", "sig_smooth"])]
+            _, derived_signals_map = get_basename_signals_and_derived_map(source_signal_pairs)
+            assert list(generate_transformed_rows2(pd.DataFrame(), derived_signals_map)) == []

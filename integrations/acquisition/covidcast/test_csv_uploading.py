@@ -21,6 +21,25 @@ import delphi.operations.secrets as secrets
 __test_target__ = 'delphi.epidata.acquisition.covidcast.csv_to_database'
 
 
+def get_dict_diff(dict1, dict2):
+  """Return the difference between two dictionaries."""
+  from dataclasses import dataclass
+  @dataclass
+  class MissingValue:
+    key: str
+
+  diff = {}
+  for key in dict1:
+    if key not in dict2:
+      diff[key] = (dict1[key], MissingValue(key))
+    elif dict1[key] != dict2[key]:
+      diff[key] = (dict1[key], dict2[key])
+  for key in dict2:
+    if key not in dict1:
+      diff[key] = (MissingValue(key), dict2[key])
+  return diff
+
+
 class CsvUploadingTests(unittest.TestCase):
   """Tests covidcast CSV uploading."""
 

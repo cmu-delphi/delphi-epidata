@@ -4,6 +4,7 @@
 import time
 from json import JSONDecodeError
 from unittest.mock import MagicMock, patch
+import unittest
 
 # first party
 import pytest
@@ -48,6 +49,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     secrets.db.host = 'delphi_database_epidata'
     secrets.db.epi = ('user', 'pass')
 
+  @unittest.skip
   def test_covidcast(self):
     """Test that the covidcast endpoint returns expected data."""
 

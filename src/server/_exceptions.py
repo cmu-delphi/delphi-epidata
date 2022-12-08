@@ -41,3 +41,8 @@ class DatabaseErrorException(EpiDataException):
         if details:
             msg = f"{msg}: {details}"
         super(DatabaseErrorException, self).__init__(msg, 500)
+
+
+class TransformErrorException(EpiDataException):
+    def __init__(self, message):
+        super(TransformErrorException, self).__init__(message, 400)
