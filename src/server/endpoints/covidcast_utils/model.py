@@ -543,9 +543,9 @@ def _generate_transformed_rows(
     for key, source_signal_geo_rows in groupby(parsed_rows, group_keyfunc):
         base_source_name, base_signal_name, _, _ = key
         # Extract the list of derived signals; if a signal is not in the dictionary, then use the identity map.
-        derived_signal_transform_map: SourceSignalPair = transform_dict.get(SourceSignalPair(base_source_name, [base_signal_name]), SourceSignalPair(base_source_name, [base_signal_name]))
+        derived_signals: SourceSignalPair = transform_dict.get(SourceSignalPair(base_source_name, [base_signal_name]), SourceSignalPair(base_source_name, [base_signal_name]))
         # Create a list of source-signal pairs along with the transformation required for the signal.
-        signal_names_and_transforms: List[Tuple[Tuple[str, str], Callable]] = [(derived_signal, _get_base_signal_transform((base_source_name, derived_signal))) for derived_signal in derived_signal_transform_map.signal]
+        signal_names_and_transforms: List[Tuple[Tuple[str, str], Callable]] = [(derived_signal, _get_base_signal_transform((base_source_name, derived_signal))) for derived_signal in derived_signals.signal]
         # Put the current time series on a contiguous time index.
         source_signal_geo_rows = _reindex_iterable(source_signal_geo_rows, fill_value=transform_args.get("pad_fill_value"))
         # Create copies of the iterable, with smart memory usage.
