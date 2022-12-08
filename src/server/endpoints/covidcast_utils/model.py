@@ -708,6 +708,91 @@ def generate_transformed_rows2(
     return derived_df_full.reset_index()
 
 
+def generate_transformed_rows3(
+    rows: Iterable[Dict],
+    transform_dict: Optional[SignalTransforms] = None,
+    transform_args: Optional[Dict] = None,
+) -> pd.DataFrame:
+    """Applies time-series transformations to streamed rows from a database.
+
+    Parameters:
+    rows: Iterator[Dict]
+        An iterator streaming rows from a database query. Assumed to be sorted by source, signal, geo_type, geo_value, time_type, and time_value.
+    transform_dict: Optional[SignalTransforms], default None
+        A dictionary mapping base sources to a list of their derived signals that the user wishes to query.
+        For example, transform_dict may be {("jhu-csse", "confirmed_cumulative_num): [("jhu-csse", "confirmed_incidence_num"), ("jhu-csse", "confirmed_7dav_incidence_num")]}.
+    transform_args: Optional[Dict], default None
+        A dictionary of keyword arguments for the transformer functions.
+
+    Yields:
+    transformed rows: Dict
+        The transformed rows returned in an interleaved fashion. Non-transformed rows have the IDENTITY operation applied.
+    """
+    if not transform_args:
+        transform_args = dict()
+    if not transform_dict:
+        transform_dict = dict()
+
+    # Put every signal, every geo on a contiguous time index, with default values.
+    df = pd.DataFrame(chain.from_iterable(reindex_iterable(v) for _, v in groupby(rows, key=lambda x: (x["source"], x["signal"], x["geo_value"]))))
+
+    if df.empty:
+        return
+
+    # Set dtypes. Int8/Int64 are needed to allow null values.
+    # TODO: Try using StringDType instead of object. Or categorical. This is mostly for memory usage. No worries about to_dict.
+    df = _set_df_dtypes(df, PANDAS_DTYPES)
+
+    derived_df_full = pd.DataFrame()
+    for key, group_df in df.groupby(["source", "signal"], sort=False):
+        base_source_name, base_signal_name = key
+        # Extract the list of derived signals; if a signal is not in the dictionary, then use the identity map.
+        derived_signal_transform_map: SourceSignalPair = transform_dict.get(SourceSignalPair(base_source_name, [base_signal_name]), SourceSignalPair(base_source_name, [base_signal_name]))
+        # Create a list of source-signal pairs along with the transformation required for the signal.
+        signal_names_and_transforms = [(derived_signal, get_base_signal_transform((base_source_name, derived_signal))) for derived_signal in derived_signal_transform_map.signal]
+
+        for derived_signal, transform in signal_names_and_transforms:
+            derived_df = group_df.set_index(["geo_value", "time_value"])
+
+            # TODO: Add sort=false to these groupbys.
+            if transform == IDENTITY:
+                derived_df_full = pd.concat([derived_df_full, derived_df])
+                continue
+            elif transform == DIFF:
+                # TODO: Fix these to use transform_args.
+                derived_df["value"] = derived_df["value"].groupby("geo_value").diff()
+                window_length = 2
+            elif transform == SMOOTH:
+                derived_df["value"] = derived_df["value"].groupby("geo_value").rolling(7).mean().droplevel(level=0)
+                window_length = 7
+            elif transform == DIFF_SMOOTH:
+                derived_df["value"] = derived_df["value"].groupby("geo_value").diff()
+                derived_df["value"] = derived_df["value"].groupby("geo_value").rolling(7).mean().droplevel(level=0)
+                window_length = 8
+            else:
+                raise ValueError(f"Unknown transform for {derived_signal}.")
+
+            derived_df["signal"] = derived_signal
+            if "issue" in derived_df.columns:
+                derived_df["issue"] = derived_df["issue"].groupby("geo_value").rolling(window_length).max().droplevel(level=0).astype("Int64")
+            if "lag" in derived_df.columns:
+                derived_df["lag"] = derived_df["lag"].groupby("geo_value").rolling(window_length).max().droplevel(level=0).astype("Int64")
+            if "stderr" in derived_df.columns:
+                derived_df["stderr"] = np.nan
+            if "sample_size" in derived_df.columns:
+                derived_df["sample_size"] = np.nan
+            if "missing_value" in derived_df.columns:
+                derived_df["missing_value"] = np.where(derived_df["value"].isna(), Nans.NOT_APPLICABLE, Nans.NOT_MISSING)
+            if "missing_stderr" in derived_df.columns:
+                derived_df["missing_stderr"] = Nans.NOT_APPLICABLE
+            if "missing_sample_size" in derived_df.columns:
+                derived_df["missing_sample_size"] = Nans.NOT_APPLICABLE
+
+            derived_df_full = pd.concat([derived_df_full, derived_df])
+
+    return derived_df_full.reset_index()
+
+
 def get_basename_signals_and_derived_map(source_signal_pairs: List[SourceSignalPair]) -> Tuple[List[SourceSignalPair], Generator]:
     """From a list of SourceSignalPairs, return the base signals required to derive them and a transformation function to take a stream
     of the base signals and return the transformed signals.

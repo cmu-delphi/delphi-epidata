@@ -12,7 +12,7 @@ from pandas import read_csv, to_datetime
 from numbers import Number
 
 from .._common import is_compatibility_mode, app, db
-from .._config import MAX_SMOOTHER_WINDOW
+from .._config import MAX_SMOOTHER_WINDOW, MAX_RESULTS
 from .._exceptions import ValidationFailedException, DatabaseErrorException, TransformErrorException
 from .._params import (
     GeoPair,
@@ -42,7 +42,7 @@ from .._validate import (
 from .._pandas import as_pandas, print_pandas
 from .covidcast_utils import compute_trend, compute_trends, compute_correlations, compute_trend_value, CovidcastMetaEntry
 from ..utils import shift_day_value, day_to_time_value, time_value_to_iso, time_value_to_day, shift_week_value, time_value_to_week, guess_time_value_is_day, week_to_time_value, TimeValues
-from .covidcast_utils.model import TimeType, count_signal_time_types, data_sources, data_sources_by_id, create_source_signal_alias_mapper, get_pad_length, pad_time_pair, pad_time_window, get_basename_signals_and_derived_map, generate_transformed_rows, generate_transformed_rows2
+from .covidcast_utils.model import TimeType, count_signal_time_types, data_sources, data_sources_by_id, create_source_signal_alias_mapper, get_pad_length, pad_time_pair, pad_time_window, get_basename_signals_and_derived_map, generate_transformed_rows, generate_transformed_rows3
 
 # first argument is the endpoint name
 bp = Blueprint("covidcast", __name__)
@@ -227,13 +227,17 @@ def handle():
         _handle_lag_issues_as_of(q, issues, lag, as_of)
 
         try:
-            # TODO: Do the columns need to be specified or does it figure it out?
-            df = as_pandas(str(q), q.params)
+            # query = text(f"{str(q)} LIMIT {MAX_RESULTS}")
+            query = text(str(q))
+            params = q.params
+            rows = peekable(parse_row(row, fields_string, fields_int, fields_float) for row in db.execute(query, **params))
         except Exception as e:
-            raise DatabaseErrorException(str(e))
+            raise DatabaseErrorException(repr(e))
 
         format = request.values.get("format", "classic")
-        if df.empty:
+        try:
+            rows.peek()
+        except StopIteration:
             if is_compatibility:
                 return Response(
                     """{"result": -2, "message": "no results"}""",
@@ -246,9 +250,9 @@ def handle():
                 )
 
         try:
-            df = generate_transformed_rows2(df, derived_signals_map, transform_args)
+            df = generate_transformed_rows3(rows, derived_signals_map, transform_args)
         except Exception as e:
-            raise TransformErrorException(str(e))
+            raise TransformErrorException("Transform exception occurred: " + repr(e))
 
         if is_compatibility:
             df.drop(columns=["source", "geo_type", "time_type"], inplace=True)
