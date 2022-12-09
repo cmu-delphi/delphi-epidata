@@ -1,3 +1,4 @@
+import itertools
 from enum import Enum
 from logging import getLogger
 from numbers import Number
@@ -5,9 +6,18 @@ from typing import Dict, Iterable, List
 
 import numpy as np
 from delphi_utils.nancodes import Nans
-from more_itertools import windowed
 
 from ...utils.dates import time_value_to_day
+
+
+def windowed(iterable, n):
+    it = iter(iterable)
+    result = tuple(itertools.islice(it, n))
+    if len(result) == n:
+        yield result
+    for elem in it:
+        result = result[1:] + (elem,)
+        yield result
 
 
 class SmootherKernelValue(str, Enum):
@@ -52,10 +62,6 @@ def generate_smoothed_rows(
         nan_fill_value = np.nan
 
     for window in windowed(rows, smoother_window_length):  # Iterable[List[Dict]]
-        # This occurs only if len(rows) < smoother_window_length.
-        if None in window:
-            continue
-
         new_value = 0
         for row in window:
             if row.get("value") is not None:
@@ -90,10 +96,6 @@ def generate_diffed_rows(rows: Iterable[Dict], nan_fill_value: Number = np.nan, 
         nan_fill_value = np.nan
 
     for window in windowed(rows, 2):
-        # This occurs only if len(rows) < 2.
-        if None in window:
-            continue 
-
         first_value = window[0]["value"] if window[0].get("value") is not None else nan_fill_value
         second_value = window[1]["value"] if window[1].get("value") is not None else nan_fill_value
         new_value = float(round(second_value - first_value, 7))
