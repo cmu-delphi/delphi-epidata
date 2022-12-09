@@ -7,7 +7,6 @@ from typing import Any, Callable, Generator, Iterable, Iterator, Optional, Dict,
 
 from pathlib import Path
 import re
-from more_itertools import peekable
 import pandas as pd
 import numpy as np
 
@@ -341,17 +340,19 @@ def create_source_signal_alias_mapper(source_signals: List[SourceSignalPair]) ->
 
 def reindex_iterable(iterator: Iterator[Dict], fill_value: Optional[Number] = None) -> Iterator[Dict]:
     """Produces an iterator that fills in gaps in the time values of another iterator.
-
     Used to produce an iterator with a contiguous time index for time series operations.
     The iterator is assumed to be sorted by time_value in ascending order.
     The min and max time_values are determined from the first and last rows of the iterator.
     The fill_value is used to fill in gaps in the time index.
     """
-    _iterator = peekable(iterator)
+    # Since we're looking ahead, we need to keep a buffer of the last item.
+    peek_memory = []
 
     # If the iterator is empty, we halt immediately.
+    iterator = iter(iterator)
     try:
-        first_item = _iterator.peek()
+        first_item = next(iterator)
+        peek_memory.append(first_item)
     except StopIteration:
         return
 
@@ -373,15 +374,21 @@ def reindex_iterable(iterator: Iterator[Dict], fill_value: Optional[Number] = No
     # Non-trivial operations otherwise.
     while True:
         try:
-            # This will stay the same until the peeked element is consumed.
-            new_item = _iterator.peek()
+            if peek_memory:
+                new_item = peek_memory.pop()
+            else:
+                new_item = next(iterator)
         except StopIteration:
             return
 
         if expected_time_value == new_item.get("time_value"):
-            # Get the value we just peeked.
-            yield next(_iterator)
+            # Return the row we just peeked.
+            yield new_item 
         else:
+            # We've found a gap in the time index.
+            # Put the new item back in the buffer.
+            peek_memory.append(new_item)
+
             # Return a default row instead.
             # Copy to avoid Python by-reference memory issues.
             default_item = _default_item.copy()
