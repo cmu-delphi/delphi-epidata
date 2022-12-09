@@ -12,8 +12,7 @@ from aiohttp.client_exceptions import ClientResponseError
 # third party
 import delphi.operations.secrets as secrets
 from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import main as update_covidcast_meta_cache
-from delphi.epidata.acquisition.covidcast.covidcast_row import CovidcastRow
-from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase
+from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase, CovidcastTestRow
 from delphi.epidata.client.delphi_epidata import Epidata
 from delphi_utils import Nans
 
@@ -52,13 +51,11 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
 
     # insert placeholder data: three issues of one signal, one issue of another
     rows = [
-      CovidcastRow.make_default_row(issue=2020_02_02 + i, value=i, lag=i)
+      CovidcastTestRow.make_default_row(issue=2020_02_02 + i, value=i, lag=i)
       for i in range(3)
     ]
     row_latest_issue = rows[-1]
-    rows.append(
-      CovidcastRow.make_default_row(signal="sig2")
-    )
+    rows.append(CovidcastTestRow.make_default_row(signal="sig2"))
     self._insert_rows(rows)
 
     with self.subTest(name='request two signals'):
@@ -68,8 +65,8 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
       )
 
       expected = [
-        row_latest_issue.as_dict(ignore_fields=CovidcastRow._api_row_compatibility_ignore_fields),
-        rows[-1].as_dict(ignore_fields=CovidcastRow._api_row_compatibility_ignore_fields)
+        row_latest_issue.as_api_compatibility_row_dict(),
+        rows[-1].as_api_compatibility_row_dict()
       ]
 
       self.assertEqual(response['epidata'], expected)
@@ -88,10 +85,10 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
 
       expected = [{
         rows[0].signal: [
-          row_latest_issue.as_dict(ignore_fields=CovidcastRow._api_row_compatibility_ignore_fields + ['signal']),
+          row_latest_issue.as_api_compatibility_row_dict(ignore_fields=['signal']),
         ],
         rows[-1].signal: [
-          rows[-1].as_dict(ignore_fields=CovidcastRow._api_row_compatibility_ignore_fields + ['signal']),
+          rows[-1].as_api_compatibility_row_dict(ignore_fields=['signal']),
         ],
       }]
 
@@ -108,7 +105,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
         **self.params_from_row(rows[0])
       )
 
-      expected = [row_latest_issue.as_dict(ignore_fields=CovidcastRow._api_row_compatibility_ignore_fields)]
+      expected = [row_latest_issue.as_api_compatibility_row_dict()]
 
       # check result
       self.assertEqual(response_1, {
@@ -123,7 +120,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
         **self.params_from_row(rows[0], as_of=rows[1].issue)
       )
 
-      expected = [rows[1].as_dict(ignore_fields=CovidcastRow._api_row_compatibility_ignore_fields)]
+      expected = [rows[1].as_api_compatibility_row_dict()]
 
       # check result
       self.maxDiff=None
@@ -140,8 +137,8 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
       )
 
       expected = [
-        rows[0].as_dict(ignore_fields=CovidcastRow._api_row_compatibility_ignore_fields),
-        rows[1].as_dict(ignore_fields=CovidcastRow._api_row_compatibility_ignore_fields)
+        rows[0].as_api_compatibility_row_dict(),
+        rows[1].as_api_compatibility_row_dict()
       ]
 
       # check result
@@ -157,7 +154,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
         **self.params_from_row(rows[0], lag=2)
       )
 
-      expected = [row_latest_issue.as_dict(ignore_fields=CovidcastRow._api_row_compatibility_ignore_fields)]
+      expected = [row_latest_issue.as_api_compatibility_row_dict()]
 
       # check result
       self.assertDictEqual(response_3, {
@@ -222,16 +219,16 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     # insert placeholder data: three counties, three MSAs
     N = 3
     rows = [
-      CovidcastRow.make_default_row(geo_type="county", geo_value=str(i)*5, value=i)
+      CovidcastTestRow.make_default_row(geo_type="county", geo_value=str(i)*5, value=i)
       for i in range(N)
     ] + [
-      CovidcastRow.make_default_row(geo_type="msa", geo_value=str(i)*5, value=i*10)
+      CovidcastTestRow.make_default_row(geo_type="msa", geo_value=str(i)*5, value=i*10)
       for i in range(N)
     ]
     self._insert_rows(rows)
 
     counties = [
-      rows[i].as_dict(ignore_fields=CovidcastRow._api_row_compatibility_ignore_fields) for i in range(N)
+      rows[i].as_api_compatibility_row_dict() for i in range(N)
     ]
 
     def fetch(geo):
@@ -277,7 +274,11 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     # 2nd issue: 1 11 21
     # 3rd issue: 2 12 22
     rows = [
-      CovidcastRow.make_default_row(time_value=DEFAULT_TIME_VALUE + t, issue=DEFAULT_ISSUE + i, value=t*10 + i)
+      CovidcastTestRow.make_default_row(
+        time_value=DEFAULT_TIME_VALUE + t,
+        issue=DEFAULT_ISSUE + i,
+        value=t*10 + i
+      )
       for i in range(3) for t in range(3)
     ]
     self._insert_rows(rows)
@@ -324,10 +325,10 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     # insert placeholder data: three counties, three MSAs
     N = 3
     rows = [
-      CovidcastRow.make_default_row(geo_type="county", geo_value=str(i)*5, value=i)
+      CovidcastTestRow.make_default_row(geo_type="county", geo_value=str(i)*5, value=i)
       for i in range(N)
     ] + [
-      CovidcastRow.make_default_row(geo_type="msa", geo_value=str(i)*5, value=i*10)
+      CovidcastTestRow.make_default_row(geo_type="msa", geo_value=str(i)*5, value=i*10)
       for i in range(N)
     ]
     self._insert_rows(rows)

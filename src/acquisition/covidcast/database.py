@@ -10,7 +10,6 @@ from typing import List
 
 # third party
 import json
-from typing import List
 import mysql.connector
 
 # first party

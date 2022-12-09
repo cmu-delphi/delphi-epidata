@@ -10,8 +10,7 @@ import requests
 
 # first party
 from delphi_utils import Nans
-from delphi.epidata.acquisition.covidcast.covidcast_row import CovidcastRow
-from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase
+from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase, CovidcastTestRow
 
 # use the local instance of the Epidata API
 BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
@@ -23,7 +22,7 @@ class CovidcastTests(CovidcastBase):
     """Perform per-test setup."""
     self._db._cursor.execute('update covidcast_meta_cache set timestamp = 0, epidata = "[]"')
 
-  def request_based_on_row(self, row: CovidcastRow, extract_response: Callable = lambda x: x.json(), **kwargs):
+  def request_based_on_row(self, row: CovidcastTestRow, extract_response: Callable = lambda x: x.json(), **kwargs):
     params = self.params_from_row(row, endpoint='covidcast', **kwargs)
     response = requests.get(BASE_URL, params=params)
     response.raise_for_status()
@@ -32,17 +31,17 @@ class CovidcastTests(CovidcastBase):
     return response
 
   def _insert_placeholder_set_one(self):
-    row = CovidcastRow.make_default_row()
+    row = CovidcastTestRow.make_default_row()
     self._insert_rows([row])
     return row
 
   def _insert_placeholder_set_two(self):
     rows = [
-      CovidcastRow.make_default_row(geo_type='county', geo_value=str(i)*5, value=i*1., stderr=i*10., sample_size=i*100.)
+      CovidcastTestRow.make_default_row(geo_type='county', geo_value=str(i)*5, value=i*1., stderr=i*10., sample_size=i*100.)
       for i in [1, 2, 3]
     ] + [
       # geo value intended to overlap with counties above
-      CovidcastRow.make_default_row(geo_type='msa', geo_value=str(i-3)*5, value=i*1., stderr=i*10., sample_size=i*100.)
+      CovidcastTestRow.make_default_row(geo_type='msa', geo_value=str(i-3)*5, value=i*1., stderr=i*10., sample_size=i*100.)
       for i in [4, 5, 6]
     ]
     self._insert_rows(rows)
@@ -50,11 +49,11 @@ class CovidcastTests(CovidcastBase):
 
   def _insert_placeholder_set_three(self):
     rows = [
-      CovidcastRow.make_default_row(geo_type='county', geo_value='11111', time_value=2000_01_01+i, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03, lag=2-i)
+      CovidcastTestRow.make_default_row(geo_type='county', geo_value='11111', time_value=2000_01_01+i, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03, lag=2-i)
       for i in [1, 2, 3]
     ] + [
       # time value intended to overlap with 11111 above, with disjoint geo values
-      CovidcastRow.make_default_row(geo_type='county', geo_value=str(i)*5, time_value=2000_01_01+i-3, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03, lag=5-i)
+      CovidcastTestRow.make_default_row(geo_type='county', geo_value=str(i)*5, time_value=2000_01_01+i-3, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03, lag=5-i)
       for i in [4, 5, 6]
     ]
     self._insert_rows(rows)
@@ -62,11 +61,11 @@ class CovidcastTests(CovidcastBase):
 
   def _insert_placeholder_set_four(self):
     rows = [
-      CovidcastRow.make_default_row(source='src1', signal=str(i)*5, value=i*1., stderr=i*10., sample_size=i*100.)
+      CovidcastTestRow.make_default_row(source='src1', signal=str(i)*5, value=i*1., stderr=i*10., sample_size=i*100.)
       for i in [1, 2, 3]
     ] + [
       # signal intended to overlap with the signal above
-      CovidcastRow.make_default_row(source='src2', signal=str(i-3)*5, value=i*1., stderr=i*10., sample_size=i*100.)
+      CovidcastTestRow.make_default_row(source='src2', signal=str(i-3)*5, value=i*1., stderr=i*10., sample_size=i*100.)
       for i in [4, 5, 6]
     ]
     self._insert_rows(rows)
@@ -74,11 +73,11 @@ class CovidcastTests(CovidcastBase):
 
   def _insert_placeholder_set_five(self):
     rows = [
-      CovidcastRow.make_default_row(time_value=2000_01_01, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03+i)
+      CovidcastTestRow.make_default_row(time_value=2000_01_01, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03+i)
       for i in [1, 2, 3]
     ] + [
       # different time_values, same issues
-      CovidcastRow.make_default_row(time_value=2000_01_01+i-3, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03+i-3)
+      CovidcastTestRow.make_default_row(time_value=2000_01_01+i-3, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03+i-3)
       for i in [4, 5, 6]
     ]
     self._insert_rows(rows)
@@ -93,7 +92,7 @@ class CovidcastTests(CovidcastBase):
     # make the request
     response = self.request_based_on_row(row)
 
-    expected = [row.as_dict(ignore_fields=CovidcastRow._api_row_compatibility_ignore_fields)]
+    expected = [row.as_api_compatibility_row_dict()]
 
     self.assertEqual(response, {
       'result': 1,
@@ -160,13 +159,13 @@ class CovidcastTests(CovidcastBase):
       **{'format':'csv'}
     )
 
-    # TODO: This is a mess because of api.php.
+    # This is a hardcoded mess because of api.php.
     column_order = [
       "geo_value", "signal", "time_value", "direction", "issue", "lag", "missing_value",
       "missing_stderr", "missing_sample_size", "value", "stderr", "sample_size"
     ]
     expected = (
-      row.api_compatibility_row_df
+      row.as_api_compatibility_row_df()
          .assign(direction = None)
          .to_csv(columns=column_order, index=False)
     )
@@ -183,7 +182,7 @@ class CovidcastTests(CovidcastBase):
     # make the request
     response = self.request_based_on_row(row, **{'format':'json'})
 
-    expected = [row.as_dict(ignore_fields=CovidcastRow._api_row_compatibility_ignore_fields)]
+    expected = [row.as_api_compatibility_row_dict()]
 
     # assert that the right data came back
     self.assertEqual(response, expected)
@@ -197,7 +196,7 @@ class CovidcastTests(CovidcastBase):
     # limit fields
     response = self.request_based_on_row(row, fields='time_value,geo_value')
 
-    expected = row.as_dict(ignore_fields=CovidcastRow._api_row_compatibility_ignore_fields)
+    expected = row.as_api_compatibility_row_dict()
     expected_all = {
       'result': 1,
       'epidata': [{
@@ -230,7 +229,7 @@ class CovidcastTests(CovidcastBase):
 
     # insert placeholder data
     rows = self._insert_placeholder_set_two()
-    expected = [row.as_dict(ignore_fields=CovidcastRow._api_row_compatibility_ignore_fields) for row in rows[:3]]
+    expected = [row.as_api_compatibility_row_dict() for row in rows[:3]]
     # make the request
     response = self.request_based_on_row(rows[0], geo_value="*")
 
@@ -247,7 +246,7 @@ class CovidcastTests(CovidcastBase):
 
     # insert placeholder data
     rows = self._insert_placeholder_set_three()
-    expected = [row.as_dict(ignore_fields=CovidcastRow._api_row_compatibility_ignore_fields) for row in rows[:3]]
+    expected = [row.as_api_compatibility_row_dict() for row in rows[:3]]
 
     # make the request
     response = self.request_based_on_row(rows[0], time_values="*")
@@ -265,7 +264,7 @@ class CovidcastTests(CovidcastBase):
 
     # insert placeholder data
     rows = self._insert_placeholder_set_five()
-    expected = [row.as_dict(ignore_fields=CovidcastRow._api_row_compatibility_ignore_fields) for row in rows[:3]]
+    expected = [row.as_api_compatibility_row_dict() for row in rows[:3]]
 
     # make the request
     response = self.request_based_on_row(rows[0], issues="*")
@@ -283,7 +282,7 @@ class CovidcastTests(CovidcastBase):
 
     # insert placeholder data
     rows = self._insert_placeholder_set_four()
-    expected_signals = [row.as_dict(ignore_fields=CovidcastRow._api_row_compatibility_ignore_fields) for row in rows[:3]]
+    expected_signals = [row.as_api_compatibility_row_dict() for row in rows[:3]]
 
     # make the request
     response = self.request_based_on_row(rows[0], signals="*")
@@ -301,7 +300,7 @@ class CovidcastTests(CovidcastBase):
 
     # insert placeholder data
     rows = self._insert_placeholder_set_two()
-    expected = [row.as_dict(ignore_fields=CovidcastRow._api_row_compatibility_ignore_fields) for row in rows[:3]]
+    expected = [row.as_api_compatibility_row_dict() for row in rows[:3]]
 
     def fetch(geo_value):
       # make the request
@@ -337,7 +336,7 @@ class CovidcastTests(CovidcastBase):
 
     # insert placeholder data
     rows = self._insert_placeholder_set_three()
-    expected_timeseries = [row.as_dict(ignore_fields=CovidcastRow._api_row_compatibility_ignore_fields) for row in rows[:3]]
+    expected_timeseries = [row.as_api_compatibility_row_dict() for row in rows[:3]]
 
     # make the request
     response = self.request_based_on_row(rows[0], time_values='20000101-20000105')
@@ -366,7 +365,7 @@ class CovidcastTests(CovidcastBase):
   def test_nullable_columns(self):
     """Missing values should be surfaced as null."""
 
-    row = CovidcastRow.make_default_row(
+    row = CovidcastTestRow.make_default_row(
       stderr=None, sample_size=None,
       missing_stderr=Nans.OTHER.value, missing_sample_size=Nans.OTHER.value
     )
@@ -374,8 +373,7 @@ class CovidcastTests(CovidcastBase):
 
     # make the request
     response = self.request_based_on_row(row)
-    expected = row.as_dict(ignore_fields=CovidcastRow._api_row_compatibility_ignore_fields)
-    # expected.update(stderr=None, sample_size=None)
+    expected = row.as_api_compatibility_row_dict()
 
     # assert that the right data came back
     self.assertEqual(response, {
@@ -389,14 +387,14 @@ class CovidcastTests(CovidcastBase):
 
     # insert placeholder data
     rows = [
-      CovidcastRow.make_default_row(time_type=tt)
+      CovidcastTestRow.make_default_row(time_type=tt)
       for tt in "hour day week month year".split()
     ]
     self._insert_rows(rows)
 
     # make the request
-    response = self.request_based_on_row(rows[1], time_values="20000101-30010201")
-    expected = [rows[1].as_dict(ignore_fields=CovidcastRow._api_row_compatibility_ignore_fields)]
+    response = self.request_based_on_row(rows[1], time_values="*")
+    expected = [rows[1].as_api_compatibility_row_dict()]
 
     # assert that the right data came back
     self.assertEqual(response, {

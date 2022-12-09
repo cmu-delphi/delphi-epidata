@@ -8,7 +8,7 @@ from os import path
 # first party
 import delphi.operations.secrets as secrets
 from delphi.epidata.acquisition.covidcast.database import Database
-from delphi.epidata.acquisition.covidcast.covidcast_row import CovidcastRow, covidcast_rows_from_args
+from delphi.epidata.acquisition.covidcast.test_utils import covidcast_rows_from_args
 
 # py3tester coverage target (equivalent to `import *`)
 __test_target__ = 'delphi.epidata.acquisition.covidcast.database'
@@ -57,6 +57,7 @@ class DeleteBatch(unittest.TestCase):
             time_value = [0] * 5 + [1] * 5 + [0],
             geo_value = ["d_nonlatest"] * 2 + ["d_latest"] * 3 + ["d_nonlatest"] * 2 + ["d_latest"] * 3 + ["d_justone"],
             issue = [1, 2] + [1, 2, 3] + [1, 2] + [1, 2, 3] + [1],
+            sanitize_fields = True
         )
 
         self._db.insert_or_update_bulk(rows)

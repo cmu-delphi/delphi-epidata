@@ -1,8 +1,7 @@
 from delphi_utils import Nans
 
 from delphi.epidata.acquisition.covidcast.database import DBLoadStateException
-from delphi.epidata.acquisition.covidcast.covidcast_row import CovidcastRow
-from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase
+from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase, CovidcastTestRow
 
 
 # all the Nans we use here are just one value, so this is a shortcut to it:
@@ -11,7 +10,7 @@ nmv = Nans.NOT_MISSING.value
 class TestTest(CovidcastBase):
 
     def _find_matches_for_row(self, row):
-        # finds (if existing) row from both history and latest views that matches long-key of provided CovidcastRow
+        # finds (if existing) row from both history and latest views that matches long-key of provided CovidcastTestRow
         cols = "source signal time_type time_value geo_type geo_value issue".split()
         results = {}
         cur = self._db._cursor
@@ -31,8 +30,8 @@ class TestTest(CovidcastBase):
 
     def test_insert_or_update_with_nonempty_load_table(self):
         # make rows
-        a_row = CovidcastRow.make_default_row(time_value=20200202)
-        another_row = CovidcastRow.make_default_row(time_value=20200203, issue=20200203)
+        a_row = CovidcastTestRow.make_default_row(time_value=2020_02_02)
+        another_row = CovidcastTestRow.make_default_row(time_value=2020_02_03, issue=2020_02_03)
         # insert one
         self._db.insert_or_update_bulk([a_row])
         # put something into the load table
@@ -61,7 +60,7 @@ class TestTest(CovidcastBase):
         latest_view = 'epimetric_latest_v'
 
         # add a data point
-        base_row = CovidcastRow.make_default_row()
+        base_row = CovidcastTestRow.make_default_row()
         self._insert_rows([base_row])
         # ensure the primary keys match in the latest and history tables
         matches = self._find_matches_for_row(base_row)
@@ -71,7 +70,7 @@ class TestTest(CovidcastBase):
         old_pk_id = matches[latest_view][pk_column]
 
         # add a reissue for said data point
-        next_row = CovidcastRow.make_default_row()
+        next_row = CovidcastTestRow.make_default_row()
         next_row.issue += 1
         self._insert_rows([next_row])
         # ensure the new keys also match

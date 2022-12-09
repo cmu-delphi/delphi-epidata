@@ -9,28 +9,6 @@ import numpy as np
 from ..._params import SourceSignalSet
 
 
-PANDAS_DTYPES = {
-    "source": str,
-    "signal": str,
-    "time_type": str,
-    "time_value": "Int64",
-    "geo_type": str,
-    "geo_value": str,
-    "value": float,
-    "stderr": float,
-    "sample_size": float,
-    "missing_value": "Int8",
-    "missing_stderr": "Int8",
-    "missing_sample_size": "Int8",
-    "issue": "Int64",
-    "lag": "Int64",
-    "id": "Int64",
-    "direction": "Int8",
-    "direction_updated_timestamp": "Int64",
-    "value_updated_timestamp": "Int64",
-}
-
-
 class HighValuesAre(str, Enum):
     bad = "bad"
     good = "good"
