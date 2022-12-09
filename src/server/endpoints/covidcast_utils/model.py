@@ -2,13 +2,12 @@ from dataclasses import asdict, dataclass, field
 from datetime import timedelta
 from enum import Enum
 from functools import partial
-from itertools import groupby, repeat, tee
+from itertools import groupby, tee
 from numbers import Number
 from typing import Callable, Generator, Iterator, Optional, Dict, List, Set, Tuple, Union
 
 from pathlib import Path
 import re
-from more_itertools import interleave_longest, peekable
 import pandas as pd
 import numpy as np
 
@@ -348,11 +347,14 @@ def _reindex_iterable(iterator: Iterator[Dict], fill_value: Optional[Number] = N
     The min and max time_values are determined from the first and last rows of the iterator.
     The fill_value is used to fill in gaps in the time index.
     """
-    _iterator = peekable(iterator)
+    # Since we're looking ahead, we need to keep a buffer of the last item.
+    peek_memory = []
 
     # If the iterator is empty, we halt immediately.
+    iterator = iter(iterator)
     try:
-        first_item = _iterator.peek()
+        first_item = next(iterator)
+        peek_memory.append(first_item)
     except StopIteration:
         return
 
@@ -374,15 +376,21 @@ def _reindex_iterable(iterator: Iterator[Dict], fill_value: Optional[Number] = N
     # Non-trivial operations otherwise.
     while True:
         try:
-            # This will stay the same until the peeked element is consumed.
-            new_item = _iterator.peek()
+            if peek_memory:
+                new_item = peek_memory.pop()
+            else:
+                new_item = next(iterator)
         except StopIteration:
             return
 
         if expected_time_value == new_item.get("time_value"):
-            # Get the value we just peeked.
-            yield next(_iterator)
+            # Return the row we just peeked.
+            yield new_item 
         else:
+            # We've found a gap in the time index.
+            # Put the new item back in the buffer.
+            peek_memory.append(new_item)
+
             # Return a default row instead.
             # Copy to avoid Python by-reference memory issues.
             default_item = _default_item.copy()
@@ -551,12 +559,18 @@ def _generate_transformed_rows(
         # Create copies of the iterable, with smart memory usage.
         source_signal_geo_rows_copies: Iterator[Iterator[Dict]] = tee(source_signal_geo_rows, len(signal_names_and_transforms))
         # Create a list of transformed group iterables, remembering their derived name as needed.
-        transformed_signals_iterator: Iterator[Tuple[str, Iterator[Dict]]] = (zip(repeat(derived_signal), transform(rows, **transform_args)) for (derived_signal, transform), rows in zip(signal_names_and_transforms, source_signal_geo_rows_copies))
+        transformed_signals_iterators: List[Tuple[str, Iterator[Dict]]] = [(derived_signal, transform(rows, **transform_args)) for (derived_signal, transform), rows in zip(signal_names_and_transforms, source_signal_geo_rows_copies)]
+ 
         # Traverse through the transformed iterables in an interleaved fashion, which makes sure that only a small window
         # of the original iterable (group) is stored in memory.
-        for derived_signal_name, row in interleave_longest(*transformed_signals_iterator):
-            row["signal"] = derived_signal_name
-            yield row
+        while transformed_signals_iterators:
+            for derived_signal_name, transformed_signal_iterator in transformed_signals_iterators:
+                try:
+                    row = next(transformed_signal_iterator)
+                    row["signal"] = derived_signal_name
+                    yield row
+                except StopIteration:
+                    transformed_signals_iterators.remove((derived_signal_name, transformed_signal_iterator))
 
 
 def get_basename_signal_and_jit_generator(source_signal_pairs: List[SourceSignalPair], transform_args: Optional[Dict[str, Union[str, int]]] = None) -> Tuple[List[SourceSignalPair], Generator]:
