@@ -1,4 +1,4 @@
-from typing import List, Optional, Union, Tuple, Dict, Any
+from typing import List, Optional, Tuple, Dict, Any
 from itertools import groupby
 from datetime import date, timedelta
 from epiweeks import Week
@@ -49,8 +49,10 @@ def parse_source_signal_pairs() -> List[SourceSignalPair]:
     ds = request.values.get("data_source")
     if ds:
         # old version
-        require_any("signal", "signals")
+        require_any("signal", "signals", empty=True)
         signals = extract_strings(("signals", "signal"))
+        if len(signals) == 1 and signals[0] == "*":
+            return [SourceSignalPair(ds, True)]
         return [SourceSignalPair(ds, signals)]
 
     if ":" not in request.values.get("signal", ""):

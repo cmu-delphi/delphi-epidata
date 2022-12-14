@@ -159,7 +159,7 @@ def init_all_tables(datapath):
         raw_table_name = 'afhsb_{}_raw'.format(period)
         state_table_name = 'afhsb_{}_state'.format(period)
         region_table_name = 'afhsb_{}_region'.format(period)
-        
+
         init_raw_data(raw_table_name, os.path.join(datapath, "filled_{}.csv".format(period)))
         agg_by_state(raw_table_name, state_table_name)
         agg_by_region(state_table_name, region_table_name)

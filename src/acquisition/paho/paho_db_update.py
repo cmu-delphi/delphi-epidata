@@ -50,7 +50,6 @@ import argparse
 import csv
 import datetime
 import glob
-import sys
 import subprocess
 import random
 from io import StringIO
@@ -62,7 +61,7 @@ import pycountry
 # first party
 import delphi.operations.secrets as secrets
 from delphi.epidata.acquisition.paho.paho_download import get_paho_data
-from delphi.utils.epiweek import delta_epiweeks, join_epiweek, check_epiweek
+from delphi.utils.epiweek import delta_epiweeks, check_epiweek
 from delphi.utils.epidate import EpiDate
 
 def ensure_tables_exist():
@@ -94,13 +93,13 @@ def ensure_tables_exist():
 def safe_float(f):
     try:
         return float(f.replace(',',''))
-    except Exception:
+    except:
         return 0
 
 def safe_int(i):
     try:
         return int(i.replace(',',''))
-    except Exception:
+    except:
         return 0
 
 def get_rows(cnx, table='paho_dengue'):
@@ -120,17 +119,17 @@ def get_paho_row(row):
         return None
     try:
         country = pycountry.countries.get(name=row[4]).alpha_2
-    except Exception:
+    except:
         try:
             country = pycountry.countries.get(common_name=row[4]).alpha_2
-        except Exception:
+        except:
             try:
                 country = pycountry.countries.get(official_name=row[4]).alpha_2
-            except Exception:
+            except:
                 return None
     try:
         check_epiweek(safe_int(row[13])*100 + safe_int(row[8]), safe_int(row[13])*100 + safe_int(row[6]))
-    except Exception:
+    except:
         return None
     return {
         'issue': safe_int(row[13])*100 + safe_int(row[6]),
@@ -196,7 +195,7 @@ def update_from_file(issue, date, filename, test_mode=False):
         lag = delta_epiweeks(row['epiweek'], issue)
         data_args = [row['total_pop'], row['serotype'], row['num_dengue'],
                      row['incidence_rate'], row['num_severe'], row['num_deaths']]
-        
+
         insert_args = [date,issue,row['epiweek'],row['region'],lag] + data_args
         update_args = [date] + data_args
         insert.execute(sql % tuple(insert_args + update_args))
@@ -269,7 +268,7 @@ def main():
                     try:
                         update_from_file(issue, date, filename, test_mode=args.test)
                         subprocess.call(["rm",filename])
-                    except Exception:
+                    except:
                         db_error = True
                 subprocess.call(["rm","-r",tmp_dir])
                 if not db_error:

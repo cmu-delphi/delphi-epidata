@@ -158,7 +158,7 @@ def extract_from_object(data_in):
       continue
     age_index = obj['age'] - 1
     # iterage over weeks
-    for mmwrid, week, overall, rate in obj['data']:
+    for mmwrid, _, _, rate in obj['data']:
       epiweek = mmwrid_to_epiweek(mmwrid)
       if epiweek not in data_out:
         # weekly rate of each age group

@@ -34,5 +34,6 @@ def main():
     afhsb_sql.init_all_tables(tmp_datapath)
     #   (Temporary parent directory should be deleted automatically.)
 
+
 if __name__ == '__main__':
     main()

@@ -3,7 +3,6 @@
 # standard library
 from datetime import date
 import glob
-import math
 import os
 import re
 
@@ -216,7 +215,7 @@ class CsvImporter:
     try:
       quantity = CsvImporter.maybe_apply(float, getattr(row, attr_quantity))
       return quantity
-    except (ValueError, AttributeError) as e:
+    except (ValueError, AttributeError):
       # val was a string or another data
       return "Error"
 
@@ -265,7 +264,7 @@ class CsvImporter:
     # use consistent capitalization (e.g. for states)
     try:
       geo_id = row.geo_id.lower()
-    except AttributeError as e:
+    except AttributeError:
       # geo_id was `None`
       return (None, 'geo_id')
 
