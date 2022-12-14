@@ -195,8 +195,7 @@ def get_latest_time_value_from_metadata(dashboard_signal, metadata):
     return df_for_source["max_time"].max().date()
 
 
-def get_coverage(dashboard_signal: DashboardSignal,
-                 metadata) -> List[DashboardSignalCoverage]:
+def get_coverage(dashboard_signal: DashboardSignal) -> List[DashboardSignalCoverage]:
     """Get the most recent coverage for the signal."""
     count_by_geo_type_df = pd.read_csv(
         COVERAGE_URL.format(source=dashboard_signal.source,
@@ -252,7 +251,7 @@ def main(args):
             metadata)
         latest_time_value = get_latest_time_value_from_metadata(
             dashboard_signal, metadata)
-        latest_coverage = get_coverage(dashboard_signal, metadata)
+        latest_coverage = get_coverage(dashboard_signal)
 
         signal_status_list.append(
             DashboardSignalStatus(

@@ -212,7 +212,7 @@ class UnitTests(unittest.TestCase):
 
         mock_signal.return_value = epidata_df
 
-        coverage = get_coverage(signal, metadata)
+        coverage = get_coverage(signal)
 
         expected_coverage = [
             DashboardSignalCoverage(

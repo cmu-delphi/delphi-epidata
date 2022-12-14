@@ -51,8 +51,6 @@ jobs:
 
       - name: Build docker images
         run: |
-          docker build -t delphi_database -f repos/delphi/operations/dev/docker/database/Dockerfile .
-          docker build -t delphi_python -f repos/delphi/operations/dev/docker/python/Dockerfile .
           docker build -t delphi_database_epidata -f ./repos/delphi/delphi-epidata/dev/docker/database/epidata/Dockerfile .
           docker build -t delphi_web_python -f repos/delphi/delphi-epidata/dev/docker/python/Dockerfile .
           cd ./repos/delphi/delphi-epidata

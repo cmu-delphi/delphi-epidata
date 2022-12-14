@@ -9,15 +9,13 @@ from typing import (
     Sequence,
     Tuple,
     Union,
-    cast,
-    Mapping,
+    cast
 )
 
 from sqlalchemy import text
 from sqlalchemy.engine import Row
 
-from ._common import db, app
-from ._db import metadata
+from ._common import db
 from ._printer import create_printer, APrinter
 from ._exceptions import DatabaseErrorException
 from ._validate import extract_strings
@@ -283,7 +281,6 @@ def execute_queries(
     def dummy_gen():
         if 3 > 4:
             yield {}
-        pass
 
     if not query_list or p.remaining_rows <= 0:
         return p(dummy_gen)
@@ -479,9 +476,9 @@ class QueryBuilder:
         """
 
         def to_asc(v: Union[str, bool]) -> str:
-            if v == True:
+            if v is True:
                 return "ASC"
-            elif v == False:
+            elif v is False:
                 return "DESC"
             return cast(str, v)
 

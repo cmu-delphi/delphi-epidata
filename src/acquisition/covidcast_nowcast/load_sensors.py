@@ -1,11 +1,11 @@
 from shutil import move
-from datetime import datetime
 import os
 import time
 
-import delphi.operations.secrets as secrets
 import pandas as pd
 import sqlalchemy
+
+import delphi.operations.secrets as secrets
 from delphi.epidata.acquisition.covidcast.csv_importer import CsvImporter
 
 SENSOR_CSV_PATH = "/common/covidcast_nowcast/receiving/"

@@ -1,3 +1,4 @@
+from datetime import date, timedelta
 from typing import (
     Callable,
     Optional,
@@ -5,10 +6,11 @@ from typing import (
     Tuple,
     Union
 )
-from .logger import get_structured_logger
-from datetime import date, timedelta
+
 from epiweeks import Week, Year
 from typing_extensions import TypeAlias
+
+from .logger import get_structured_logger
 
 # Alias for a sequence of date ranges (int, int) or date integers
 TimeValues: TypeAlias = Sequence[Union[Tuple[int, int], int]]

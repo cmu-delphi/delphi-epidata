@@ -1,4 +1,4 @@
-from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple, Union
+from typing import List, Optional, Sequence, Tuple, Union
 
 from flask import request
 
@@ -94,7 +94,7 @@ def extract_integer(key: Union[str, Sequence[str]]) -> Optional[int]:
         return None
     try:
         return int(s)
-    except ValueError as e:
+    except ValueError:
         raise ValidationFailedException(f"{key}: not a number: {s}")
 
 
