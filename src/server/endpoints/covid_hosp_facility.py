@@ -136,18 +136,18 @@ def handle():
         "icu_patients_confirmed_influenza_7_day_avg",
         "total_patients_hosp_confirmed_influenza_and_covid_7d_avg",
     ]
-    q.set_fields(fields_string, fields_int, fields_float)
+    q.set_select_fields(fields_string, fields_int, fields_float)
 
     # basic query info
     q.set_sort_order("collection_week", "hospital_pk", "publication_date")
 
     # build the filter
-    q.where_integers("collection_week", collection_weeks)
-    q.where_strings("hospital_pk", hospital_pks)
+    q.apply_integer_filters("collection_week", collection_weeks)
+    q.apply_string_filters("hospital_pk", hospital_pks)
 
     if publication_dates:
         # build the issue filter
-        q.where_integers("publication_date", publication_dates)
+        q.apply_integer_filters("publication_date", publication_dates)
     else:
         # final query using most recent issues
         condition = f"x.max_publication_date = {q.alias}.publication_date AND x.collection_week = {q.alias}.collection_week AND x.hospital_pk = {q.alias}.hospital_pk"

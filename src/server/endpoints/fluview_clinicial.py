@@ -21,19 +21,19 @@ def handle():
     fields_string = ["release_date", "region"]
     fields_int = ["issue", "epiweek", "lag", "total_specimens", "total_a", "total_b"]
     fields_float = ["percent_positive", "percent_a", "percent_b"]
-    q.set_fields(fields_string, fields_int, fields_float)
+    q.set_select_fields(fields_string, fields_int, fields_float)
     q.set_sort_order("epiweek", "region", "issue")
 
-    q.where_integers("epiweek", epiweeks)
-    q.where_strings("region", regions)
+    q.apply_integer_filters("epiweek", epiweeks)
+    q.apply_string_filters("region", regions)
 
     if issues is not None:
-        q.where_integers("issue", issues)
+        q.apply_integer_filters("issue", issues)
     elif lag is not None:
-        q.where(lag=lag)
+        q.apply_filter(lag=lag)
     else:
         # final query using most recent issues
-        q.with_max_issue("epiweek", "region")
+        q.use_most_recent_issue("epiweek", "region")
 
     # send query
     return execute_query(str(q), q.params, fields_string, fields_int, fields_float)

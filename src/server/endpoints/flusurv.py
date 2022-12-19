@@ -28,18 +28,18 @@ def handle():
         "rate_age_4",
         "rate_overall",
     ]
-    q.set_fields(fields_string, fields_int, fields_float)
+    q.set_select_fields(fields_string, fields_int, fields_float)
     q.set_sort_order("epiweek", "location", "issue")
 
-    q.where_integers("epiweek", epiweeks)
-    q.where_strings("location", locations)
+    q.apply_integer_filters("epiweek", epiweeks)
+    q.apply_string_filters("location", locations)
 
     if issues is not None:
-        q.where_integers("issue", issues)
+        q.apply_integer_filters("issue", issues)
     elif lag is not None:
-        q.where(lag=lag)
+        q.apply_filter(lag=lag)
     else:
-        q.with_max_issue("epiweek", "location")
+        q.use_most_recent_issue("epiweek", "location")
 
     # send query
     return execute_query(str(q), q.params, fields_string, fields_int, fields_float)

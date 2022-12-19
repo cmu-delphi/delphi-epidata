@@ -24,13 +24,13 @@ def handle():
     fields_string = ["name", "location"]
     fields_int = ["epiweek"]
     fields_float = ["value"]
-    q.set_fields(fields_string, fields_int, fields_float)
+    q.set_select_fields(fields_string, fields_int, fields_float)
     
     q.set_sort_order('epiweek', 'name', 'location')
     
-    q.where_strings('name', names)
-    q.where_strings('location', locations)
-    q.where_integers('epiweek', epiweeks)
+    q.apply_string_filters('name', names)
+    q.apply_string_filters('location', locations)
+    q.apply_integer_filters('epiweek', epiweeks)
 
     # send query
     return execute_query(str(q), q.params, fields_string, fields_int, fields_float)

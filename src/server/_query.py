@@ -377,13 +377,13 @@ class QueryBuilder:
         """
         return str(self)
 
-    def where(self, **kvargs: Dict[str, Any]) -> "QueryBuilder":
+    def apply_filter(self, **kvargs: Dict[str, Any]) -> "QueryBuilder":
         for k, v in kvargs.items():
             self.conditions.append(f"{self.alias}.{k} = :{k}")
             self.params[k] = v
         return self
 
-    def where_strings(
+    def apply_string_filters(
         self,
         field: str,
         values: Optional[Sequence[str]],
@@ -396,7 +396,7 @@ class QueryBuilder:
     def _fq_field(self, field: str) -> str:
         return f"{self.alias}.{field}" if "." not in field else field
 
-    def where_integers(
+    def apply_integer_filters(
         self,
         field: str,
         values: Optional[Sequence[Union[Tuple[int, int], int]]],
@@ -466,7 +466,7 @@ class QueryBuilder:
         )
         return self
 
-    def set_fields(self, *fields: Iterable[str]) -> "QueryBuilder":
+    def set_select_fields(self, *fields: Iterable[str]) -> "QueryBuilder":
         self.fields = [f"{self.alias}.{field}" for field_list in fields for field in field_list]
         return self
 
@@ -478,7 +478,7 @@ class QueryBuilder:
         self.order = [f"{self.alias}.{k} ASC" for k in args]
         return self
 
-    def with_max_issue(self, *args: str) -> "QueryBuilder":
+    def use_most_recent_issue(self, *args: str) -> "QueryBuilder":
         fields: List[str] = [f for f in args]
 
         subfields = f"max(issue) max_issue, {','.join(fields)}"

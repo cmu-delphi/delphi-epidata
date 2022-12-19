@@ -95,13 +95,13 @@ def _apply_lag_filter(q: QueryBuilder, lag: Optional[int]):
     if lag is not None:
         q.retable(history_table)
         # history_table has full spectrum of lag values to search from whereas the latest_table does not
-        q.where(lag=lag)
+        q.apply_filter(lag=lag)
 
 
 def _apply_issues_filter(q: QueryBuilder, issues: Optional[TimeValues]):
     if issues is not None:
         q.retable(history_table)
-        q.where_integers("issue", issues)
+        q.apply_integer_filters("issue", issues)
 
 def _apply_as_of_filter(q: QueryBuilder, as_of: Optional[int]):
     if as_of is not None:
@@ -139,7 +139,7 @@ def handle():
         # transfer also the new detail columns
         fields_string.extend(["source", "geo_type", "time_type"])
         q.set_sort_order("source", "signal", "time_type", "time_value", "geo_type", "geo_value", "issue")
-    q.set_fields(fields_string, fields_int, fields_float)
+    q.set_select_fields(fields_string, fields_int, fields_float)
 
     # basic query info
     # data type of each field
@@ -203,7 +203,7 @@ def handle_trend():
     fields_string = ["geo_type", "geo_value", "source", "signal"]
     fields_int = ["time_value"]
     fields_float = ["value"]
-    q.set_fields(fields_string, fields_int, fields_float)
+    q.set_select_fields(fields_string, fields_int, fields_float)
     q.set_sort_order("geo_type", "geo_value", "source", "signal", "time_value")
 
     q.apply_source_signal_filters("source", "signal", source_signal_filters)
@@ -252,7 +252,7 @@ def handle_trendseries():
     fields_string = ["geo_type", "geo_value", "source", "signal"]
     fields_int = ["time_value"]
     fields_float = ["value"]
-    q.set_fields(fields_string, fields_int, fields_float)
+    q.set_select_fields(fields_string, fields_int, fields_float)
     q.set_sort_order("geo_type", "geo_value", "source", "signal", "time_value")
 
     q.apply_source_signal_filters("source", "signal", source_signal_filters)
@@ -307,7 +307,7 @@ def handle_correlation():
     fields_string = ["geo_type", "geo_value", "source", "signal"]
     fields_int = ["time_value"]
     fields_float = ["value"]
-    q.set_fields(fields_string, fields_int, fields_float)
+    q.set_select_fields(fields_string, fields_int, fields_float)
     q.set_sort_order("geo_type", "geo_value", "source", "signal", "time_value")
 
     q.apply_source_signal_filters(
@@ -385,7 +385,7 @@ def handle_export():
     # build query
     q = QueryBuilder(latest_table, "t")
 
-    q.set_fields(["geo_value", "signal", "time_value", "issue", "lag", "value", "stderr", "sample_size", "geo_type", "source"], [], [])
+    q.set_select_fields(["geo_value", "signal", "time_value", "issue", "lag", "value", "stderr", "sample_size", "geo_type", "source"], [], [])
     q.set_sort_order("time_value", "geo_value")
     q.apply_source_signal_filters("source", "signal", source_signal_filters)
     q.apply_time_filter("time_type", "time_value", TimeFilter("day" if is_day else "week", [(start_day, end_day)]))
@@ -465,7 +465,7 @@ def handle_backfill():
     fields_float = ["value", "sample_size"]
     # sort by time value and issue asc
     q.set_sort_order("time_value", "issue")
-    q.set_fields(fields_string, fields_int, fields_float, ["is_latest_issue"])
+    q.set_select_fields(fields_string, fields_int, fields_float, ["is_latest_issue"])
 
     q.apply_source_signal_filters("source", "signal", source_signal_filters)
     q.apply_geo_filters("geo_type", "geo_value", [geo_filters])
@@ -630,17 +630,17 @@ def handle_coverage():
     fields_string = ["source", "signal"]
     fields_int = ["time_value"]
 
-    q.set_fields(fields_string, fields_int)
+    q.set_select_fields(fields_string, fields_int)
 
     # manually append the count column because of grouping
     fields_int.append("count")
     q.fields.append(f"count({q.alias}.geo_value) as count")
 
     if geo_type == "only-county":
-        q.where(geo_type="county")
+        q.apply_filter(geo_type="county")
         q.conditions.append('geo_value not like "%000"')
     else:
-        q.where(geo_type=geo_type)
+        q.apply_filter(geo_type=geo_type)
     q.apply_source_signal_filters("source", "signal", source_signal_filters)
     q.apply_time_filter("time_type", "time_value", time_window)
     q.group_by = "c.source, c.signal, c.time_value"

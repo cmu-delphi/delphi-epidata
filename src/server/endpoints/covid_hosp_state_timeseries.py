@@ -144,15 +144,15 @@ def handle():
         "adult_icu_bed_utilization",
     ]
 
-    q.set_fields(fields_string, fields_int, fields_float)
+    q.set_select_fields(fields_string, fields_int, fields_float)
     q.set_sort_order("date", "state", "issue")
 
     # build the filter
-    q.where_integers("date", dates)
-    q.where_strings("state", states)
+    q.apply_integer_filters("date", dates)
+    q.apply_string_filters("state", states)
 
     if issues is not None:
-        q.where_integers("issue", issues)
+        q.apply_integer_filters("issue", issues)
         # final query using specific issues
         query = f"WITH c as (SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY date, state, issue ORDER BY record_type) `row` FROM {q.table} WHERE {q.conditions_clause}) SELECT {q.fields_clause} FROM {q.alias} WHERE `row` = 1 ORDER BY {q.order_clause}"
     elif as_of is not None:

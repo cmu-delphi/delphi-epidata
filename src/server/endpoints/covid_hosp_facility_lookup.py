@@ -37,15 +37,15 @@ def handle():
     # build the filter
     # these are all fast because the table has indexes on each of these fields
     if state:
-        q.where_strings('state', state)
+        q.apply_string_filters('state', state)
     elif ccn:
-        q.where_strings('ccn', ccn)
+        q.apply_string_filters('ccn', ccn)
     elif city:
-        q.where_strings('city', city)
+        q.apply_string_filters('city', city)
     elif zip:
-        q.where_strings("zip", zip)
+        q.apply_string_filters("zip", zip)
     elif fips_code:
-        q.where_strings("fips_code", fips_code)
+        q.apply_string_filters("fips_code", fips_code)
     else:
         q.conditions.append('FALSE')
 
