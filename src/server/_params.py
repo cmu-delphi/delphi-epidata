@@ -8,7 +8,12 @@ from flask import request
 
 from ._exceptions import ValidationFailedException
 from .utils import days_in_range, weeks_in_range, guess_time_value_is_day, guess_time_value_is_week, TimeValues, days_to_ranges, weeks_to_ranges
-
+from ._validate import (
+    extract_dates,
+    extract_strings,
+    require_all,
+    require_any,
+)
 
 def _parse_common_multi_arg(key: str) -> List[Tuple[str, Union[bool, Sequence[str]]]]:
     # support multiple request parameter with the same name
@@ -308,3 +313,48 @@ def parse_day_or_week_range_arg(key: str) -> TimeFilter:
     if is_week:
         return TimeFilter("week", [parse_week_range_arg(key)])
     return TimeFilter("day", [parse_day_range_arg(key)])
+
+def parse_source_signal_filters() -> List[SourceSignalFilter]:
+    ds = request.values.get("data_source")
+    if ds:
+        # old version
+        require_any("signal", "signals", empty=True)
+        signals = extract_strings(("signals", "signal"))
+        if len(signals) == 1 and signals[0] == "*":
+            return [SourceSignalFilter(ds, True)]
+        return [SourceSignalFilter(ds, signals)]
+
+    if ":" not in request.values.get("signal", ""):
+        raise ValidationFailedException("missing parameter: signal or (data_source and signal[s])")
+
+    return parse_source_signal_arg()
+
+
+def parse_geo_filters() -> List[GeoFilter]:
+    geo_type = request.values.get("geo_type")
+    if geo_type:
+        # old version
+        require_any("geo_value", "geo_values", empty=True)
+        geo_values = extract_strings(("geo_values", "geo_value"))
+        if len(geo_values) == 1 and geo_values[0] == "*":
+            return [GeoFilter(geo_type, True)]
+        return [GeoFilter(geo_type, geo_values)]
+
+    if ":" not in request.values.get("geo", ""):
+        raise ValidationFailedException("missing parameter: geo or (geo_type and geo_value[s])")
+
+    return parse_geo_arg()
+
+
+def parse_time_filters() -> TimeFilter:
+    time_type = request.values.get("time_type")
+    if time_type:
+        # old version
+        require_all("time_type", "time_values")
+        time_values = extract_dates("time_values")
+        return TimeFilter(time_type, time_values)
+
+    if ":" not in request.values.get("time", ""):
+        raise ValidationFailedException("missing parameter: time or (time_type and time_values)")
+
+    return parse_time_arg()
