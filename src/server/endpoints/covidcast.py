@@ -91,15 +91,20 @@ def parse_time_pairs() -> TimePair:
     return parse_time_arg()
 
 
-def _handle_lag_issues_as_of(q: QueryBuilder, issues: Optional[TimeValues] = None, lag: Optional[int] = None, as_of: Optional[int] = None):
-    if issues:
-        q.retable(history_table)
-        q.where_integers("issue", issues)
-    elif lag is not None:
+def _filter_by_lag(q: QueryBuilder, lag: Optional[int]):
+    if lag is not None:
         q.retable(history_table)
         # history_table has full spectrum of lag values to search from whereas the latest_table does not
         q.where(lag=lag)
-    elif as_of is not None:
+
+
+def _filter_by_issues(q: QueryBuilder, issues: Optional[TimeValues]):
+    if issues is not None:
+        q.retable(history_table)
+        q.where_integers("issue", issues)
+
+def _filter_by_as_of(q: QueryBuilder, as_of: Optional[int]):
+    if as_of is not None:
         # fetch the most recent issue as of a certain date (not to be confused w/ plain-old "most recent issue"
         q.retable(history_table)
         sub_condition_asof = "(issue <= :as_of)"
@@ -108,9 +113,6 @@ def _handle_lag_issues_as_of(q: QueryBuilder, issues: Optional[TimeValues] = Non
         sub_group = "time_type, time_value, `source`, `signal`, geo_type, geo_value"
         sub_condition = f"x.max_issue = {q.alias}.issue AND x.time_type = {q.alias}.time_type AND x.time_value = {q.alias}.time_value AND x.source = {q.alias}.source AND x.signal = {q.alias}.signal AND x.geo_type = {q.alias}.geo_type AND x.geo_value = {q.alias}.geo_value"
         q.subquery = f"JOIN (SELECT {sub_fields} FROM {q.table} WHERE {q.conditions_clause} AND {sub_condition_asof} GROUP BY {sub_group}) x ON {sub_condition}"
-    else:
-        # else we are using the (standard/default) `latest_table`, to fetch the most recent issue quickly
-        pass
 
 
 @bp.route("/", methods=("GET", "POST"))
@@ -147,7 +149,14 @@ def handle():
     q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
     q.where_time_pair("time_type", "time_value", time_pair)
 
-    _handle_lag_issues_as_of(q, issues, lag, as_of)
+    # Handle history table in this priority order: issues > lag > as_of
+    # if all are None, we are using the (standard/default) `latest_table`, to fetch the most recent issue quickly
+    if issues:
+        _filter_by_issues(q, issues)
+    elif lag is not None:
+        _filter_by_lag(q, lag)
+    elif as_of is not None:
+        _filter_by_as_of(q, as_of)
 
     def transform_row(row, proxy):
         if is_compatibility or not alias_mapper or "source" not in row:
@@ -201,8 +210,6 @@ def handle_trend():
     q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
     q.where_time_pair("time_type", "time_value", time_window)
 
-    # fetch most recent issue fast
-    _handle_lag_issues_as_of(q, None, None, None)
 
     p = create_printer()
 
@@ -252,8 +259,6 @@ def handle_trendseries():
     q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
     q.where_time_pair("time_type", "time_value", time_window)
 
-    # fetch most recent issue fast
-    _handle_lag_issues_as_of(q, None, None, None)
 
     p = create_printer()
 
@@ -386,7 +391,7 @@ def handle_export():
     q.where_time_pair("time_type", "time_value", TimePair("day" if is_day else "week", [(start_day, end_day)]))
     q.where_geo_pairs("geo_type", "geo_value", [GeoPair(geo_type, True if geo_values == "*" else geo_values)])
 
-    _handle_lag_issues_as_of(q, None, None, as_of)
+    _filter_by_as_of(q, as_of)
 
     format_date = time_value_to_iso if is_day else lambda x: time_value_to_week(x).cdcformat()
     # tag as_of in filename, if it was specified
@@ -465,9 +470,6 @@ def handle_backfill():
     q.where_source_signal_pairs("source", "signal", source_signal_pairs)
     q.where_geo_pairs("geo_type", "geo_value", [geo_pair])
     q.where_time_pair("time_type", "time_value", time_pair)
-
-    # no restriction of issues or dates since we want all issues
-    # _handle_lag_issues_as_of(q, issues, lag, as_of)
 
     p = create_printer()
 
@@ -643,8 +645,6 @@ def handle_coverage():
     q.where_time_pair("time_type", "time_value", time_window)
     q.group_by = "c.source, c.signal, c.time_value"
     q.set_order("source", "signal", "time_value")
-
-    _handle_lag_issues_as_of(q, None, None, None)
 
     def transform_row(row, proxy):
         if not alias_mapper or "source" not in row:
