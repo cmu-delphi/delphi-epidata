@@ -60,10 +60,10 @@ class CovidcastRow():
     self.issue = issue
     self.lag = lag
 
-  def signal_pair(self):
+  def signal_filter(self):
     return f"{self.source}:{self.signal}"
 
-  def geo_pair(self):
+  def geo_filter(self):
     return f"{self.geo_type}:{self.geo_value}"
 
 
@@ -551,7 +551,7 @@ FROM {self.history_view} h JOIN (
       try:
         while True:
           (source, signal) = srcsigs.get_nowait() # this will throw the Empty caught below
-          logger.info("starting pair", thread=name, pair=f"({source}, {signal})")
+          logger.info("starting filter", thread=name, filter=f"({source}, {signal})")
           w_cursor.execute(inner_sql, (source, signal))
           with meta_lock:
             meta.extend(list(

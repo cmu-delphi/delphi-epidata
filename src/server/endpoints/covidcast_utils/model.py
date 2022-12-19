@@ -243,11 +243,11 @@ def count_signal_time_types(source_signals: List[SourceSignalFilter]) -> Tuple[i
     """
     weekly = 0
     daily = 0
-    for pair in source_signals:
-        if pair.signal == True:
+    for filter in source_signals:
+        if filter.signal == True:
             continue
-        for s in pair.signal:
-            signal = data_signals_by_key.get((pair.source, s))
+        for s in filter.signal:
+            signal = data_signals_by_key.get((filter.source, s))
             if not signal:
                 continue
             if signal.time_type == TimeType.week:
@@ -259,19 +259,19 @@ def count_signal_time_types(source_signals: List[SourceSignalFilter]) -> Tuple[i
 
 def create_source_signal_alias_mapper(source_signals: List[SourceSignalFilter]) -> Tuple[List[SourceSignalFilter], Optional[Callable[[str, str], str]]]:
     alias_to_data_sources: Dict[str, List[DataSource]] = {}
-    transformed_pairs: List[SourceSignalFilter] = []
-    for pair in source_signals:
-        source = data_source_by_id.get(pair.source)
+    transformed_filters: List[SourceSignalFilter] = []
+    for filter in source_signals:
+        source = data_source_by_id.get(filter.source)
         if not source or not source.uses_db_alias:
-            transformed_pairs.append(pair)
+            transformed_filters.append(filter)
             continue
         # uses an alias
         alias_to_data_sources.setdefault(source.db_source, []).append(source)
-        if pair.signal is True:
+        if filter.signal is True:
             # list all signals of this source (*) so resolve to a plain list of all in this alias
-            transformed_pairs.append(SourceSignalFilter(source.db_source, [s.signal for s in source.signals]))
+            transformed_filters.append(SourceSignalFilter(source.db_source, [s.signal for s in source.signals]))
         else:
-            transformed_pairs.append(SourceSignalFilter(source.db_source, pair.signal))
+            transformed_filters.append(SourceSignalFilter(source.db_source, filter.signal))
 
     if not alias_to_data_sources:
         # no alias needed
@@ -294,4 +294,4 @@ def create_source_signal_alias_mapper(source_signals: List[SourceSignalFilter]) 
             signal_source = possible_data_sources[0]
         return signal_source.source
 
-    return transformed_pairs, map_row
+    return transformed_filters, map_row

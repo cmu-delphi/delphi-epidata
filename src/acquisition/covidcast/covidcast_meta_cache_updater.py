@@ -15,7 +15,7 @@ def get_argument_parser():
 
   parser = argparse.ArgumentParser()
   parser.add_argument("--log_file", help="filename for log output")
-  parser.add_argument("--num_threads", type=int, help="number of worker threads to spawn for processing source/signal pairs")
+  parser.add_argument("--num_threads", type=int, help="number of worker threads to spawn for processing source/signal filters")
   return parser
 
 

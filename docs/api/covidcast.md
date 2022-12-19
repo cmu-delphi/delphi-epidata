@@ -158,7 +158,7 @@ require knowing when we last confirmed an unchanged value, please get in touch.
 | Field | Description | Type |
 | --- | --- | --- |
 | `result` | result code: 1 = success, 2 = too many results, -2 = no results | integer |
-| `epidata` | list of results, 1 per geo/time pair | array of objects |
+| `epidata` | list of results, 1 per geo/time filter | array of objects |
 | `epidata[].source` | selected `data_source` | string |
 | `epidata[].signal` | selected `signal` | string |
 | `epidata[].geo_type` | selected `geo_type` | string |

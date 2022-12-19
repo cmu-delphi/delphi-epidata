@@ -53,7 +53,7 @@ class CovidcastEndpointTests(CovidcastBase):
             self.assertEqual(out["result"], -1)
 
         with self.subTest("simple"):
-            out = self._fetch("/", signal=first.signal_pair(), geo=first.geo_pair(), time="day:*")
+            out = self._fetch("/", signal=first.signal_filter(), geo=first.geo_filter(), time="day:*")
             self.assertEqual(len(out["epidata"]), len(rows))
 
     def test_trend(self):
@@ -66,7 +66,7 @@ class CovidcastEndpointTests(CovidcastBase):
         ref = rows[num_rows // 2]
         self._insert_rows(rows)
 
-        out = self._fetch("/trend", signal=first.signal_pair(), geo=first.geo_pair(), date=last.time_value, window="20200401-20201212", basis=ref.time_value)
+        out = self._fetch("/trend", signal=first.signal_filter(), geo=first.geo_filter(), date=last.time_value, window="20200401-20201212", basis=ref.time_value)
 
         self.assertEqual(out["result"], 1)
         self.assertEqual(len(out["epidata"]), 1)
@@ -99,7 +99,7 @@ class CovidcastEndpointTests(CovidcastBase):
         last = rows[-1]
         self._insert_rows(rows)
 
-        out = self._fetch("/trendseries", signal=first.signal_pair(), geo=first.geo_pair(), date=last.time_value, window="20200401-20200410", basis=1)
+        out = self._fetch("/trendseries", signal=first.signal_filter(), geo=first.geo_filter(), date=last.time_value, window="20200401-20200410", basis=1)
 
         self.assertEqual(out["result"], 1)
         self.assertEqual(len(out["epidata"]), 3)
@@ -167,7 +167,7 @@ class CovidcastEndpointTests(CovidcastBase):
         self._insert_rows(other_rows)
         max_lag = 3
 
-        out = self._fetch("/correlation", reference=first.signal_pair(), others=other.signal_pair(), geo=first.geo_pair(), window="20200401-20201212", lag=max_lag)
+        out = self._fetch("/correlation", reference=first.signal_filter(), others=other.signal_filter(), geo=first.geo_filter(), window="20200401-20201212", lag=max_lag)
         self.assertEqual(out["result"], 1)
         df = pd.DataFrame(out["epidata"])
         self.assertEqual(len(df), max_lag * 2 + 1)  # -...0...+
@@ -191,7 +191,7 @@ class CovidcastEndpointTests(CovidcastBase):
 
         response = requests.get(
             f"{BASE_URL}/csv",
-            params=dict(signal=first.signal_pair(), start_day="2020-04-01", end_day="2020-12-12", geo_type=first.geo_type),
+            params=dict(signal=first.signal_filter(), start_day="2020-04-01", end_day="2020-12-12", geo_type=first.geo_type),
         )
         response.raise_for_status()
         out = response.text
@@ -209,7 +209,7 @@ class CovidcastEndpointTests(CovidcastBase):
         self._insert_rows([*issue_0, *issue_1, *last_issue])
         first = issue_0[0]
 
-        out = self._fetch("/backfill", signal=first.signal_pair(), geo=first.geo_pair(), time="day:20200401-20201212", anchor_lag=3)
+        out = self._fetch("/backfill", signal=first.signal_filter(), geo=first.geo_filter(), time="day:20200401-20201212", anchor_lag=3)
         self.assertEqual(out["result"], 1)
         df = pd.DataFrame(out["epidata"])
         self.assertEqual(len(df), 3 * num_rows)  # num issues
@@ -277,17 +277,17 @@ class CovidcastEndpointTests(CovidcastBase):
         first = rows[0]
 
         with self.subTest("default"):
-            out = self._fetch("/coverage", signal=first.signal_pair(), geo_type=first.geo_type, latest=dates[-1], format="json")
+            out = self._fetch("/coverage", signal=first.signal_filter(), geo_type=first.geo_type, latest=dates[-1], format="json")
             self.assertEqual(len(out), len(num_geos_per_date))
             self.assertEqual([o["time_value"] for o in out], dates)
             self.assertEqual([o["count"] for o in out], num_geos_per_date)
 
         with self.subTest("specify window"):
-            out = self._fetch("/coverage", signal=first.signal_pair(), geo_type=first.geo_type, window=f"{dates[0]}-{dates[1]}", format="json")
+            out = self._fetch("/coverage", signal=first.signal_filter(), geo_type=first.geo_type, window=f"{dates[0]}-{dates[1]}", format="json")
             self.assertEqual(len(out), 2)
             self.assertEqual([o["time_value"] for o in out], dates[:2])
             self.assertEqual([o["count"] for o in out], num_geos_per_date[:2])
 
         with self.subTest("invalid geo_type"):
-            out = self._fetch("/coverage", signal=first.signal_pair(), geo_type="doesnt_exist", format="json")
+            out = self._fetch("/coverage", signal=first.signal_filter(), geo_type="doesnt_exist", format="json")
             self.assertEqual(len(out), 0)

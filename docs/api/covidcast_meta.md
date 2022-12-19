@@ -26,7 +26,7 @@ None required.
 | Field                     | Description                                                         | Type             |
 |---------------------------|---------------------------------------------------------------------|------------------|
 | `result`                  | result code: 1 = success, 2 = too many results, -2 = no results     | integer          |
-| `epidata`                 | list of results, one per name/geo_type pair                         | array of objects |
+| `epidata`                 | list of results, one per name/geo_type filter                       | array of objects |
 | `epidata[].data_source`   | data source                                                         | string           |
 | `epidata[].signal`        | signal name                                                         | string           |
 | `epidata[].time_type`     | temporal resolution of the signal (e.g., `day`, `week`)             | string           |

@@ -35,7 +35,7 @@ def _parse_common_multi_arg(key: str) -> List[Tuple[str, Union[bool, Sequence[st
 
 def _parse_single_arg(key: str) -> Tuple[str, str]:
     """
-    parses a single pair
+    parses a single filter
     """
     v = request.values.get(key)
     if not v:
@@ -57,7 +57,7 @@ class GeoFilter:
 
     def count(self) -> float:
         """
-        returns the count of items in this pair
+        returns the count of items in this filter
         """
         if isinstance(self.geo_values, bool):
             return inf if self.geo_values else 0
@@ -70,7 +70,7 @@ def parse_geo_arg(key: str = "geo") -> List[GeoFilter]:
 
 def parse_single_geo_arg(key: str) -> GeoFilter:
     """
-    parses a single geo pair with only one value
+    parses a single geo filter with only one value
     """
     r = _parse_single_arg(key)
     return GeoFilter(r[0], [r[1]])
@@ -86,7 +86,7 @@ class SourceSignalFilter:
 
     def count(self) -> float:
         """
-        returns the count of items in this pair
+        returns the count of items in this filter
         """
         if isinstance(self.signal, bool):
             return inf if self.signal else 0
@@ -99,7 +99,7 @@ def parse_source_signal_arg(key: str = "signal") -> List[SourceSignalFilter]:
 
 def parse_single_source_signal_arg(key: str) -> SourceSignalFilter:
     """
-    parses a single source signal pair with only one value
+    parses a single source signal filter with only one value
     """
     r = _parse_single_arg(key)
     return SourceSignalFilter(r[0], [r[1]])
@@ -121,7 +121,7 @@ class TimeFilter:
 
     def count(self) -> float:
         """
-        returns the count of items in this pair
+        returns the count of items in this filter
         """
         if isinstance(self.time_values, bool):
             return inf if self.time_values else 0
@@ -131,7 +131,7 @@ class TimeFilter:
 
     def to_ranges(self):
         """
-        returns this pair with times converted to ranges
+        returns this filter with times converted to ranges
         """
         if isinstance(self.time_values, bool):
             return TimeFilter(self.time_type, self.time_values)
@@ -204,7 +204,7 @@ def parse_day_value(time_value: str) -> Union[int, Tuple[int, int]]:
     raise ValidationFailedException(msg)
 
 
-def _parse_time_pair(time_type: str, time_values: Union[bool, Sequence[str]]) -> TimeFilter:
+def _parse_time_filter(time_type: str, time_values: Union[bool, Sequence[str]]) -> TimeFilter:
     if isinstance(time_values, bool):
         return TimeFilter(time_type, time_values)
 
@@ -216,35 +216,35 @@ def _parse_time_pair(time_type: str, time_values: Union[bool, Sequence[str]]) ->
 
 
 def parse_time_arg(key: str = "time") -> Optional[TimeFilter]:
-    time_pairs = [_parse_time_pair(time_type, time_values) for [time_type, time_values] in _parse_common_multi_arg(key)]
+    time_filters = [_parse_time_filter(time_type, time_values) for [time_type, time_values] in _parse_common_multi_arg(key)]
 
     # single value
-    if len(time_pairs) == 0:
+    if len(time_filters) == 0:
         return None
-    if len(time_pairs) == 1:
-        return time_pairs[0]
+    if len(time_filters) == 1:
+        return time_filters[0]
 
     # make sure 'day' and 'week' aren't mixed
-    time_types = set(time_pair.time_type for time_pair in time_pairs)
+    time_types = set(time_filter.time_type for time_filter in time_filters)
     if len(time_types) >= 2:
-        raise ValidationFailedException(f'{key}: {time_pairs} mixes "day" and "week" time types')
+        raise ValidationFailedException(f'{key}: {time_filters} mixes "day" and "week" time types')
 
-    # merge all time pairs into one
+    # merge all time filters into one
     merged = []
-    for time_pair in time_pairs:
-        if time_pair.time_values is True:
-            return time_pair
+    for time_filter in time_filters:
+        if time_filter.time_values is True:
+            return time_filter
         else:
-            merged.extend(time_pair.time_values)
-    return TimeFilter(time_pairs[0].time_type, merged).to_ranges()
+            merged.extend(time_filter.time_values)
+    return TimeFilter(time_filters[0].time_type, merged).to_ranges()
 
 
 def parse_single_time_arg(key: str) -> TimeFilter:
     """
-    parses a single time pair with only one value
+    parses a single time filter with only one value
     """
     r = _parse_single_arg(key)
-    return _parse_time_pair(r[0], [r[1]])
+    return _parse_time_filter(r[0], [r[1]])
 
 
 def parse_day_range_arg(key: str) -> Tuple[int, int]:
