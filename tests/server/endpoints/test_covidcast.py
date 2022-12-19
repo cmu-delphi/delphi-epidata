@@ -6,8 +6,8 @@ from flask import Response
 from delphi.epidata.server.main import app
 
 from delphi.epidata.server._params import (
-    GeoPair,
-    TimePair,
+    GeoFilter,
+    TimeFilter,
 )
 
 # py3tester coverage target

@@ -17,9 +17,9 @@ from delphi.epidata.server._query import (
     filter_time_pair,
 )
 from delphi.epidata.server._params import (
-    GeoPair,
-    TimePair,
-    SourceSignalPair,
+    GeoFilter,
+    TimeFilter,
+    SourceSignalFilter,
 )
 
 # py3tester coverage target
@@ -138,21 +138,21 @@ class UnitTests(unittest.TestCase):
         with self.subTest("*"):
             params = {}
             self.assertEqual(
-                filter_geo_pairs("t", "v", [GeoPair("state", True)], "p", params),
+                filter_geo_pairs("t", "v", [GeoFilter("state", True)], "p", params),
                 "(t = :p_0t)",
             )
             self.assertEqual(params, {"p_0t": "state"})
         with self.subTest("single"):
             params = {}
             self.assertEqual(
-                filter_geo_pairs("t", "v", [GeoPair("state", ["KY"])], "p", params),
+                filter_geo_pairs("t", "v", [GeoFilter("state", ["KY"])], "p", params),
                 "((t = :p_0t AND (v = :p_0t_0)))",
             )
             self.assertEqual(params, {"p_0t": "state", "p_0t_0": "KY"})
         with self.subTest("multi"):
             params = {}
             self.assertEqual(
-                filter_geo_pairs("t", "v", [GeoPair("state", ["KY", "AK"])], "p", params),
+                filter_geo_pairs("t", "v", [GeoFilter("state", ["KY", "AK"])], "p", params),
                 "((t = :p_0t AND (v = :p_0t_0 OR v = :p_0t_1)))",
             )
             self.assertEqual(params, {"p_0t": "state", "p_0t_0": "KY", "p_0t_1": "AK"})
@@ -162,7 +162,7 @@ class UnitTests(unittest.TestCase):
                 filter_geo_pairs(
                     "t",
                     "v",
-                    [GeoPair("state", True), GeoPair("nation", True)],
+                    [GeoFilter("state", True), GeoFilter("nation", True)],
                     "p",
                     params,
                 ),
@@ -175,7 +175,7 @@ class UnitTests(unittest.TestCase):
                 filter_geo_pairs(
                     "t",
                     "v",
-                    [GeoPair("state", ["AK"]), GeoPair("nation", ["US"])],
+                    [GeoFilter("state", ["AK"]), GeoFilter("nation", ["US"])],
                     "p",
                     params,
                 ),
@@ -194,21 +194,21 @@ class UnitTests(unittest.TestCase):
         with self.subTest("*"):
             params = {}
             self.assertEqual(
-                filter_source_signal_pairs("t", "v", [SourceSignalPair("src1", True)], "p", params),
+                filter_source_signal_pairs("t", "v", [SourceSignalFilter("src1", True)], "p", params),
                 "(t = :p_0t)",
             )
             self.assertEqual(params, {"p_0t": "src1"})
         with self.subTest("single"):
             params = {}
             self.assertEqual(
-                filter_source_signal_pairs("t", "v", [SourceSignalPair("src1", ["sig1"])], "p", params),
+                filter_source_signal_pairs("t", "v", [SourceSignalFilter("src1", ["sig1"])], "p", params),
                 "((t = :p_0t AND (v = :p_0t_0)))",
             )
             self.assertEqual(params, {"p_0t": "src1", "p_0t_0": "sig1"})
         with self.subTest("multi"):
             params = {}
             self.assertEqual(
-                filter_source_signal_pairs("t", "v", [SourceSignalPair("src1", ["sig1", "sig2"])], "p", params),
+                filter_source_signal_pairs("t", "v", [SourceSignalFilter("src1", ["sig1", "sig2"])], "p", params),
                 "((t = :p_0t AND (v = :p_0t_0 OR v = :p_0t_1)))",
             )
             self.assertEqual(params, {"p_0t": "src1", "p_0t_0": "sig1", "p_0t_1": "sig2"})
@@ -218,7 +218,7 @@ class UnitTests(unittest.TestCase):
                 filter_source_signal_pairs(
                     "t",
                     "v",
-                    [SourceSignalPair("src1", True), SourceSignalPair("src2", True)],
+                    [SourceSignalFilter("src1", True), SourceSignalFilter("src2", True)],
                     "p",
                     params,
                 ),
@@ -232,8 +232,8 @@ class UnitTests(unittest.TestCase):
                     "t",
                     "v",
                     [
-                        SourceSignalPair("src1", ["sig2"]),
-                        SourceSignalPair("src2", ["srcx"]),
+                        SourceSignalFilter("src1", ["sig2"]),
+                        SourceSignalFilter("src2", ["srcx"]),
                     ],
                     "p",
                     params,
@@ -253,49 +253,49 @@ class UnitTests(unittest.TestCase):
         with self.subTest("*"):
             params = {}
             self.assertEqual(
-                filter_time_pair("t", "v", TimePair("day", True), "p", params),
+                filter_time_pair("t", "v", TimeFilter("day", True), "p", params),
                 "(t = :p_0t)",
             )
             self.assertEqual(params, {"p_0t": "day"})
         with self.subTest("single"):
             params = {}
             self.assertEqual(
-                filter_time_pair("t", "v", TimePair("day", [20201201]), "p", params),
+                filter_time_pair("t", "v", TimeFilter("day", [20201201]), "p", params),
                 "((t = :p_0t AND (v = :p_0t_0)))",
             )
             self.assertEqual(params, {"p_0t": "day", "p_0t_0": 20201201})
         with self.subTest("multi"):
             params = {}
             self.assertEqual(
-                filter_time_pair("t", "v", TimePair("day", [20201201, 20201203]), "p", params),
+                filter_time_pair("t", "v", TimeFilter("day", [20201201, 20201203]), "p", params),
                 "((t = :p_0t AND (v = :p_0t_0 OR v = :p_0t_1)))",
             )
             self.assertEqual(params, {"p_0t": "day", "p_0t_0": 20201201, "p_0t_1": 20201203})
         with self.subTest("range"):
             params = {}
             self.assertEqual(
-                filter_time_pair("t", "v", TimePair("day", [(20201201, 20201203)]), "p", params),
+                filter_time_pair("t", "v", TimeFilter("day", [(20201201, 20201203)]), "p", params),
                 "((t = :p_0t AND (v BETWEEN :p_0t_0 AND :p_0t_0_2)))",
             )
             self.assertEqual(params, {"p_0t": "day", "p_0t_0": 20201201, "p_0t_0_2": 20201203})
         with self.subTest("dedupe"):
             params = {}
             self.assertEqual(
-                filter_time_pair("t", "v", TimePair("day", [20200101, 20200101, (20200101, 20200101), 20200101]), "p", params),
+                filter_time_pair("t", "v", TimeFilter("day", [20200101, 20200101, (20200101, 20200101), 20200101]), "p", params),
                 "((t = :p_0t AND (v = :p_0t_0)))",
             )
             self.assertEqual(params, {"p_0t": "day", "p_0t_0": 20200101})
         with self.subTest("merge single range"):
             params = {}
             self.assertEqual(
-                filter_time_pair("t", "v", TimePair("day", [20200101, 20200102, (20200101, 20200104)]), "p", params),
+                filter_time_pair("t", "v", TimeFilter("day", [20200101, 20200102, (20200101, 20200104)]), "p", params),
                 "((t = :p_0t AND (v BETWEEN :p_0t_0 AND :p_0t_0_2)))",
             )
             self.assertEqual(params, {"p_0t": "day", "p_0t_0": 20200101, "p_0t_0_2": 20200104})
         with self.subTest("merge ranges and singles"):
             params = {}
             self.assertEqual(
-                filter_time_pair("t", "v", TimePair("day", [20200101, 20200103, (20200105, 20200107)]), "p", params),
+                filter_time_pair("t", "v", TimeFilter("day", [20200101, 20200103, (20200105, 20200107)]), "p", params),
                 "((t = :p_0t AND (v = :p_0t_0 OR v = :p_0t_1 OR v BETWEEN :p_0t_2 AND :p_0t_2_2)))",
             )
             self.assertEqual(params, {"p_0t": "day", "p_0t_0": 20200101, "p_0t_1": 20200103, 'p_0t_2': 20200105, 'p_0t_2_2': 20200107})           

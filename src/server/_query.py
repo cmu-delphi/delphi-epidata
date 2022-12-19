@@ -19,7 +19,7 @@ from ._common import db
 from ._printer import create_printer, APrinter
 from ._exceptions import DatabaseErrorException
 from ._validate import extract_strings
-from ._params import GeoPair, SourceSignalPair, TimePair
+from ._params import GeoFilter, SourceSignalFilter, TimeFilter
 from .utils import time_values_to_ranges, TimeValues
 
 
@@ -118,7 +118,7 @@ def filter_fields(generator: Iterable[Dict[str, Any]]):
 def filter_geo_pairs(
     type_field: str,
     value_field: str,
-    values: Sequence[GeoPair],
+    values: Sequence[GeoFilter],
     param_key: str,
     params: Dict[str, Any],
 ) -> str:
@@ -126,7 +126,7 @@ def filter_geo_pairs(
     returns the SQL sub query to filter by the given geo pairs
     """
 
-    def filter_pair(pair: GeoPair, i) -> str:
+    def filter_pair(pair: GeoFilter, i) -> str:
         type_param = f"{param_key}_{i}t"
         params[type_param] = pair.geo_type
         if isinstance(pair.geo_values, bool) and pair.geo_values:
@@ -145,7 +145,7 @@ def filter_geo_pairs(
 def filter_source_signal_pairs(
     source_field: str,
     signal_field: str,
-    values: Sequence[SourceSignalPair],
+    values: Sequence[SourceSignalFilter],
     param_key: str,
     params: Dict[str, Any],
 ) -> str:
@@ -153,7 +153,7 @@ def filter_source_signal_pairs(
     returns the SQL sub query to filter by the given source signal pairs
     """
 
-    def filter_pair(pair: SourceSignalPair, i) -> str:
+    def filter_pair(pair: SourceSignalFilter, i) -> str:
         source_param = f"{param_key}_{i}t"
         params[source_param] = pair.source
         if isinstance(pair.signal, bool) and pair.signal:
@@ -172,7 +172,7 @@ def filter_source_signal_pairs(
 def filter_time_pair(
     type_field: str,
     time_field: str,
-    pair: Optional[TimePair],
+    pair: Optional[TimeFilter],
     param_key: str,
     params: Dict[str, Any],
 ) -> str:
@@ -410,7 +410,7 @@ class QueryBuilder:
         self,
         type_field: str,
         value_field: str,
-        values: Sequence[GeoPair],
+        values: Sequence[GeoFilter],
         param_key: Optional[str] = None,
     ) -> "QueryBuilder":
         fq_type_field = self._fq_field(type_field)
@@ -430,7 +430,7 @@ class QueryBuilder:
         self,
         type_field: str,
         value_field: str,
-        values: Sequence[SourceSignalPair],
+        values: Sequence[SourceSignalFilter],
         param_key: Optional[str] = None,
     ) -> "QueryBuilder":
         fq_type_field = self._fq_field(type_field)
@@ -450,7 +450,7 @@ class QueryBuilder:
         self,
         type_field: str,
         value_field: str,
-        values: Optional[TimePair],
+        values: Optional[TimeFilter],
         param_key: Optional[str] = None,
     ) -> "QueryBuilder":
         fq_type_field = self._fq_field(type_field)

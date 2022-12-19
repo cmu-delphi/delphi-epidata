@@ -16,9 +16,9 @@ from delphi.epidata.server._params import (
     parse_week_value,
     parse_day_range_arg,
     parse_day_arg,
-    GeoPair,
-    TimePair,
-    SourceSignalPair,
+    GeoFilter,
+    TimeFilter,
+    SourceSignalFilter,
 )
 from delphi.epidata.server._exceptions import (
     ValidationFailedException,
@@ -40,44 +40,44 @@ class UnitTests(unittest.TestCase):
 
     def test_geo_pair(self):
         with self.subTest("*"):
-            p = GeoPair("hrr", True)
+            p = GeoFilter("hrr", True)
             self.assertTrue(p.matches("hrr", "any"))
             self.assertFalse(p.matches("msa", "any"))
         with self.subTest("subset"):
-            p = GeoPair("hrr", ["a", "b"])
+            p = GeoFilter("hrr", ["a", "b"])
             self.assertTrue(p.matches("hrr", "a"))
             self.assertTrue(p.matches("hrr", "b"))
             self.assertFalse(p.matches("hrr", "c"))
             self.assertFalse(p.matches("msa", "any"))
         with self.subTest("count"):
-            self.assertEqual(GeoPair("a", True).count(), inf)
-            self.assertEqual(GeoPair("a", False).count(), 0)
-            self.assertEqual(GeoPair("a", ["a", "b"]).count(), 2)
+            self.assertEqual(GeoFilter("a", True).count(), inf)
+            self.assertEqual(GeoFilter("a", False).count(), 0)
+            self.assertEqual(GeoFilter("a", ["a", "b"]).count(), 2)
 
     def test_source_signal_pair(self):
         with self.subTest("*"):
-            p = SourceSignalPair("src1", True)
+            p = SourceSignalFilter("src1", True)
             self.assertTrue(p.matches("src1", "any"))
             self.assertFalse(p.matches("src2", "any"))
         with self.subTest("subset"):
-            p = SourceSignalPair("src1", ["a", "b"])
+            p = SourceSignalFilter("src1", ["a", "b"])
             self.assertTrue(p.matches("src1", "a"))
             self.assertTrue(p.matches("src1", "b"))
             self.assertFalse(p.matches("src1", "c"))
             self.assertFalse(p.matches("src2", "any"))
         with self.subTest("count"):
-            self.assertEqual(SourceSignalPair("a", True).count(), inf)
-            self.assertEqual(SourceSignalPair("a", False).count(), 0)
-            self.assertEqual(SourceSignalPair("a", ["a", "b"]).count(), 2)
+            self.assertEqual(SourceSignalFilter("a", True).count(), inf)
+            self.assertEqual(SourceSignalFilter("a", False).count(), 0)
+            self.assertEqual(SourceSignalFilter("a", ["a", "b"]).count(), 2)
 
     def test_time_pair(self):
         with self.subTest("count"):
-            self.assertEqual(TimePair("day", True).count(), inf)
-            self.assertEqual(TimePair("day", False).count(), 0)
-            self.assertEqual(TimePair("day", [20200202, 20200201]).count(), 2)
-            self.assertEqual(TimePair("day", [(20200201, 20200202)]).count(), 2)
-            self.assertEqual(TimePair("day", [(20200201, 20200205)]).count(), 5)
-            self.assertEqual(TimePair("day", [(20200201, 20200205), 20201212]).count(), 6)
+            self.assertEqual(TimeFilter("day", True).count(), inf)
+            self.assertEqual(TimeFilter("day", False).count(), 0)
+            self.assertEqual(TimeFilter("day", [20200202, 20200201]).count(), 2)
+            self.assertEqual(TimeFilter("day", [(20200201, 20200202)]).count(), 2)
+            self.assertEqual(TimeFilter("day", [(20200201, 20200205)]).count(), 5)
+            self.assertEqual(TimeFilter("day", [(20200201, 20200205), 20201212]).count(), 6)
 
     def test_parse_geo_arg(self):
         with self.subTest("empty"):
@@ -85,32 +85,32 @@ class UnitTests(unittest.TestCase):
                 self.assertEqual(parse_geo_arg(), [])
         with self.subTest("single"):
             with app.test_request_context("/?geo=state:*"):
-                self.assertEqual(parse_geo_arg(), [GeoPair("state", True)])
+                self.assertEqual(parse_geo_arg(), [GeoFilter("state", True)])
             with app.test_request_context("/?geo=state:AK"):
-                self.assertEqual(parse_geo_arg(), [GeoPair("state", ["ak"])])
+                self.assertEqual(parse_geo_arg(), [GeoFilter("state", ["ak"])])
         with self.subTest("single list"):
             with app.test_request_context("/?geo=state:AK,TK"):
-                self.assertEqual(parse_geo_arg(), [GeoPair("state", ["ak", "tk"])])
+                self.assertEqual(parse_geo_arg(), [GeoFilter("state", ["ak", "tk"])])
         with self.subTest("multi"):
             with app.test_request_context("/?geo=state:*;nation:*"):
-                self.assertEqual(parse_geo_arg(), [GeoPair("state", True), GeoPair("nation", True)])
+                self.assertEqual(parse_geo_arg(), [GeoFilter("state", True), GeoFilter("nation", True)])
             with app.test_request_context("/?geo=state:AK;nation:US"):
                 self.assertEqual(
                     parse_geo_arg(),
-                    [GeoPair("state", ["ak"]), GeoPair("nation", ["us"])],
+                    [GeoFilter("state", ["ak"]), GeoFilter("nation", ["us"])],
                 )
             with app.test_request_context("/?geo=state:AK;state:KY"):
                 self.assertEqual(
                     parse_geo_arg(),
-                    [GeoPair("state", ["ak"]), GeoPair("state", ["ky"])],
+                    [GeoFilter("state", ["ak"]), GeoFilter("state", ["ky"])],
                 )
         with self.subTest("multi list"):
             with app.test_request_context("/?geo=state:AK,TK;county:42003,40556"):
                 self.assertEqual(
                     parse_geo_arg(),
                     [
-                        GeoPair("state", ["ak", "tk"]),
-                        GeoPair("county", ["42003", "40556"]),
+                        GeoFilter("state", ["ak", "tk"]),
+                        GeoFilter("county", ["42003", "40556"]),
                     ],
                 )
         with self.subTest("hybrid"):
@@ -118,9 +118,9 @@ class UnitTests(unittest.TestCase):
                 self.assertEqual(
                     parse_geo_arg(),
                     [
-                        GeoPair("nation", True),
-                        GeoPair("state", ["pa"]),
-                        GeoPair("county", ["42003", "42002"]),
+                        GeoFilter("nation", True),
+                        GeoFilter("state", ["pa"]),
+                        GeoFilter("county", ["42003", "42002"]),
                     ],
                 )
 
@@ -136,7 +136,7 @@ class UnitTests(unittest.TestCase):
                 self.assertRaises(ValidationFailedException, parse_single_geo_arg, "geo")
         with self.subTest("single"):
             with app.test_request_context("/?geo=state:AK"):
-                self.assertEqual(parse_single_geo_arg("geo"), GeoPair("state", ["ak"]))
+                self.assertEqual(parse_single_geo_arg("geo"), GeoFilter("state", ["ak"]))
         with self.subTest("single list"):
             with app.test_request_context("/?geo=state:AK,TK"):
                 self.assertRaises(ValidationFailedException, parse_single_geo_arg, "geo")
@@ -155,35 +155,35 @@ class UnitTests(unittest.TestCase):
                 self.assertEqual(parse_source_signal_arg(), [])
         with self.subTest("single"):
             with app.test_request_context("/?signal=src1:*"):
-                self.assertEqual(parse_source_signal_arg(), [SourceSignalPair("src1", True)])
+                self.assertEqual(parse_source_signal_arg(), [SourceSignalFilter("src1", True)])
             with app.test_request_context("/?signal=src1:sig1"):
-                self.assertEqual(parse_source_signal_arg(), [SourceSignalPair("src1", ["sig1"])])
+                self.assertEqual(parse_source_signal_arg(), [SourceSignalFilter("src1", ["sig1"])])
         with self.subTest("single list"):
             with app.test_request_context("/?signal=src1:sig1,sig2"):
                 self.assertEqual(
                     parse_source_signal_arg(),
-                    [SourceSignalPair("src1", ["sig1", "sig2"])],
+                    [SourceSignalFilter("src1", ["sig1", "sig2"])],
                 )
         with self.subTest("multi"):
             with app.test_request_context("/?signal=src1:*;src2:*"):
                 self.assertEqual(
                     parse_source_signal_arg(),
-                    [SourceSignalPair("src1", True), SourceSignalPair("src2", True)],
+                    [SourceSignalFilter("src1", True), SourceSignalFilter("src2", True)],
                 )
             with app.test_request_context("/?signal=src1:sig1;src2:sig3"):
                 self.assertEqual(
                     parse_source_signal_arg(),
                     [
-                        SourceSignalPair("src1", ["sig1"]),
-                        SourceSignalPair("src2", ["sig3"]),
+                        SourceSignalFilter("src1", ["sig1"]),
+                        SourceSignalFilter("src2", ["sig3"]),
                     ],
                 )
             with app.test_request_context("/?signal=src1:sig1;src1:sig4"):
                 self.assertEqual(
                     parse_source_signal_arg(),
                     [
-                        SourceSignalPair("src1", ["sig1"]),
-                        SourceSignalPair("src1", ["sig4"]),
+                        SourceSignalFilter("src1", ["sig1"]),
+                        SourceSignalFilter("src1", ["sig4"]),
                     ],
                 )
         with self.subTest("multi list"):
@@ -191,8 +191,8 @@ class UnitTests(unittest.TestCase):
                 self.assertEqual(
                     parse_source_signal_arg(),
                     [
-                        SourceSignalPair("src1", ["sig1", "sig2"]),
-                        SourceSignalPair("county", ["sig5", "sig6"]),
+                        SourceSignalFilter("src1", ["sig1", "sig2"]),
+                        SourceSignalFilter("county", ["sig5", "sig6"]),
                     ],
                 )
         with self.subTest("hybrid"):
@@ -200,9 +200,9 @@ class UnitTests(unittest.TestCase):
                 self.assertEqual(
                     parse_source_signal_arg(),
                     [
-                        SourceSignalPair("src2", True),
-                        SourceSignalPair("src1", ["sig4"]),
-                        SourceSignalPair("src3", ["sig5", "sig6"]),
+                        SourceSignalFilter("src2", True),
+                        SourceSignalFilter("src1", ["sig4"]),
+                        SourceSignalFilter("src3", ["sig5", "sig6"]),
                     ],
                 )
 
@@ -218,7 +218,7 @@ class UnitTests(unittest.TestCase):
                 self.assertRaises(ValidationFailedException, parse_single_source_signal_arg, "signal")
         with self.subTest("single"):
             with app.test_request_context("/?signal=src1:sig1"):
-                self.assertEqual(parse_single_source_signal_arg("signal"), SourceSignalPair("src1", ["sig1"]))
+                self.assertEqual(parse_single_source_signal_arg("signal"), SourceSignalFilter("src1", ["sig1"]))
         with self.subTest("single list"):
             with app.test_request_context("/?signal=src1:sig1,sig2"):
                 self.assertRaises(ValidationFailedException, parse_single_source_signal_arg, "signal")
@@ -270,35 +270,35 @@ class UnitTests(unittest.TestCase):
                 self.assertEqual(parse_time_arg(), None)
         with self.subTest("single"):
             with app.test_request_context("/?time=day:*"):
-                self.assertEqual(parse_time_arg(), TimePair("day", True))
+                self.assertEqual(parse_time_arg(), TimeFilter("day", True))
             with app.test_request_context("/?time=day:20201201"):
-                self.assertEqual(parse_time_arg(), TimePair("day", [20201201]))
+                self.assertEqual(parse_time_arg(), TimeFilter("day", [20201201]))
         with self.subTest("single list"):
             with app.test_request_context("/?time=day:20201201,20201202"):
-                self.assertEqual(parse_time_arg(), TimePair("day", [20201201, 20201202]))
+                self.assertEqual(parse_time_arg(), TimeFilter("day", [20201201, 20201202]))
         with self.subTest("single range"):
             with app.test_request_context("/?time=day:20201201-20201204"):
-                self.assertEqual(parse_time_arg(), TimePair("day", [(20201201, 20201204)]))
+                self.assertEqual(parse_time_arg(), TimeFilter("day", [(20201201, 20201204)]))
         with self.subTest("multi"):
             with app.test_request_context("/?time=day:*;day:20201201"):
                 self.assertEqual(
                     parse_time_arg(),
-                    TimePair("day", True)
+                    TimeFilter("day", True)
                 )
             with app.test_request_context("/?time=week:*;week:202012"):
                 self.assertEqual(
                     parse_time_arg(),
-                    TimePair("week", True)
+                    TimeFilter("week", True)
                 )
             with app.test_request_context("/?time=day:20201201;day:20201202-20201205"):
                 self.assertEqual(
                     parse_time_arg(),
-                    TimePair("day", [(20201201, 20201205)])
+                    TimeFilter("day", [(20201201, 20201205)])
                 )
             with app.test_request_context("/?time=week:202012;week:202013-202015"):
                 self.assertEqual(
                     parse_time_arg(),
-                    TimePair("week", [(202012, 202015)])
+                    TimeFilter("week", [(202012, 202015)])
                 )
 
         with self.subTest("wrong"):

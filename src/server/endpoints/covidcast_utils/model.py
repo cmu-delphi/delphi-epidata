@@ -6,7 +6,7 @@ import re
 import pandas as pd
 import numpy as np
 
-from ..._params import SourceSignalPair
+from ..._params import SourceSignalFilter
 
 
 class HighValuesAre(str, Enum):
@@ -236,7 +236,7 @@ for d in data_signals:
         data_signals_by_key[(source.db_source, d.signal)] = d
 
 
-def count_signal_time_types(source_signals: List[SourceSignalPair]) -> Tuple[int, int]:
+def count_signal_time_types(source_signals: List[SourceSignalFilter]) -> Tuple[int, int]:
     """
     count the number of signals in this query for each time type
     @returns daily counts, weekly counts
@@ -257,9 +257,9 @@ def count_signal_time_types(source_signals: List[SourceSignalPair]) -> Tuple[int
     return daily, weekly
 
 
-def create_source_signal_alias_mapper(source_signals: List[SourceSignalPair]) -> Tuple[List[SourceSignalPair], Optional[Callable[[str, str], str]]]:
+def create_source_signal_alias_mapper(source_signals: List[SourceSignalFilter]) -> Tuple[List[SourceSignalFilter], Optional[Callable[[str, str], str]]]:
     alias_to_data_sources: Dict[str, List[DataSource]] = {}
-    transformed_pairs: List[SourceSignalPair] = []
+    transformed_pairs: List[SourceSignalFilter] = []
     for pair in source_signals:
         source = data_source_by_id.get(pair.source)
         if not source or not source.uses_db_alias:
@@ -269,9 +269,9 @@ def create_source_signal_alias_mapper(source_signals: List[SourceSignalPair]) ->
         alias_to_data_sources.setdefault(source.db_source, []).append(source)
         if pair.signal is True:
             # list all signals of this source (*) so resolve to a plain list of all in this alias
-            transformed_pairs.append(SourceSignalPair(source.db_source, [s.signal for s in source.signals]))
+            transformed_pairs.append(SourceSignalFilter(source.db_source, [s.signal for s in source.signals]))
         else:
-            transformed_pairs.append(SourceSignalPair(source.db_source, pair.signal))
+            transformed_pairs.append(SourceSignalFilter(source.db_source, pair.signal))
 
     if not alias_to_data_sources:
         # no alias needed
