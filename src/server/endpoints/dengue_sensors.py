@@ -26,7 +26,7 @@ def handle():
     fields_float = ["value"]
     q.set_fields(fields_string, fields_int, fields_float)
     
-    q.set_order('epiweek', 'name', 'location')
+    q.set_sort_order('epiweek', 'name', 'location')
     
     q.where_strings('name', names)
     q.where_strings('location', locations)

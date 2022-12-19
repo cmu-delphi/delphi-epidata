@@ -32,7 +32,7 @@ def handle():
     fields_float = ["incidence_rate"]
     q.set_fields(fields_string, fields_int, fields_float)
 
-    q.set_order(epiweek=True, region=True, issue=True)
+    q.set_sort_order("epiweek", "region", "issue")
 
     # build the filter
     q.where_integers("epiweek", epiweeks)

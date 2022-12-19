@@ -23,7 +23,7 @@ def handle():
     fields_int = ["issue", "epiweek", "lag", "visits"]
     fields_float = ["ili"]
     q.set_fields(fields_string, fields_int, fields_float)
-    q.set_order("epiweek", "region", "issue")
+    q.set_sort_order("epiweek", "region", "issue")
 
     # build the filter
     q.where_integers("epiweek", epiweeks)

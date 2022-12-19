@@ -134,11 +134,11 @@ def handle():
     fields_float = ["value", "stderr", "sample_size"]
     is_compatibility = is_compatibility_mode()
     if is_compatibility:
-        q.set_order("signal", "time_value", "geo_value", "issue")
+        q.set_sort_order("signal", "time_value", "geo_value", "issue")
     else:
         # transfer also the new detail columns
         fields_string.extend(["source", "geo_type", "time_type"])
-        q.set_order("source", "signal", "time_type", "time_value", "geo_type", "geo_value", "issue")
+        q.set_sort_order("source", "signal", "time_type", "time_value", "geo_type", "geo_value", "issue")
     q.set_fields(fields_string, fields_int, fields_float)
 
     # basic query info
@@ -204,7 +204,7 @@ def handle_trend():
     fields_int = ["time_value"]
     fields_float = ["value"]
     q.set_fields(fields_string, fields_int, fields_float)
-    q.set_order("geo_type", "geo_value", "source", "signal", "time_value")
+    q.set_sort_order("geo_type", "geo_value", "source", "signal", "time_value")
 
     q.where_source_signal_pairs("source", "signal", source_signal_pairs)
     q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
@@ -253,7 +253,7 @@ def handle_trendseries():
     fields_int = ["time_value"]
     fields_float = ["value"]
     q.set_fields(fields_string, fields_int, fields_float)
-    q.set_order("geo_type", "geo_value", "source", "signal", "time_value")
+    q.set_sort_order("geo_type", "geo_value", "source", "signal", "time_value")
 
     q.where_source_signal_pairs("source", "signal", source_signal_pairs)
     q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
@@ -308,7 +308,7 @@ def handle_correlation():
     fields_int = ["time_value"]
     fields_float = ["value"]
     q.set_fields(fields_string, fields_int, fields_float)
-    q.set_order("geo_type", "geo_value", "source", "signal", "time_value")
+    q.set_sort_order("geo_type", "geo_value", "source", "signal", "time_value")
 
     q.where_source_signal_pairs(
         "source",
@@ -386,7 +386,7 @@ def handle_export():
     q = QueryBuilder(latest_table, "t")
 
     q.set_fields(["geo_value", "signal", "time_value", "issue", "lag", "value", "stderr", "sample_size", "geo_type", "source"], [], [])
-    q.set_order("time_value", "geo_value")
+    q.set_sort_order("time_value", "geo_value")
     q.where_source_signal_pairs("source", "signal", source_signal_pairs)
     q.where_time_pair("time_type", "time_value", TimePair("day" if is_day else "week", [(start_day, end_day)]))
     q.where_geo_pairs("geo_type", "geo_value", [GeoPair(geo_type, True if geo_values == "*" else geo_values)])
@@ -464,7 +464,7 @@ def handle_backfill():
     fields_int = ["time_value", "issue"]
     fields_float = ["value", "sample_size"]
     # sort by time value and issue asc
-    q.set_order(time_value=True, issue=True)
+    q.set_sort_order("time_value", "issue")
     q.set_fields(fields_string, fields_int, fields_float, ["is_latest_issue"])
 
     q.where_source_signal_pairs("source", "signal", source_signal_pairs)
@@ -644,7 +644,7 @@ def handle_coverage():
     q.where_source_signal_pairs("source", "signal", source_signal_pairs)
     q.where_time_pair("time_type", "time_value", time_window)
     q.group_by = "c.source, c.signal, c.time_value"
-    q.set_order("source", "signal", "time_value")
+    q.set_sort_order("source", "signal", "time_value")
 
     def transform_row(row, proxy):
         if not alias_mapper or "source" not in row:

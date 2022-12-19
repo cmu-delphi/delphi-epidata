@@ -139,7 +139,7 @@ def handle():
     q.set_fields(fields_string, fields_int, fields_float)
 
     # basic query info
-    q.set_order("collection_week", "hospital_pk", "publication_date")
+    q.set_sort_order("collection_week", "hospital_pk", "publication_date")
 
     # build the filter
     q.where_integers("collection_week", collection_weeks)

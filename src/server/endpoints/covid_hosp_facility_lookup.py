@@ -33,7 +33,7 @@ def handle():
         ]
     )
     # basic query info
-    q.set_order("hospital_pk")
+    q.set_sort_order("hospital_pk")
     # build the filter
     # these are all fast because the table has indexes on each of these fields
     if state:

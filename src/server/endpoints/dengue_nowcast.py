@@ -22,7 +22,7 @@ def handle():
     fields_float = ["value", "std"]
     q.set_fields(fields_string, fields_int, fields_float)
 
-    q.set_order("epiweek", "location")
+    q.set_sort_order("epiweek", "location")
 
     # build the filter
     q.where_strings("location", locations)

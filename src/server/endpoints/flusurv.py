@@ -29,7 +29,7 @@ def handle():
         "rate_overall",
     ]
     q.set_fields(fields_string, fields_int, fields_float)
-    q.set_order("epiweek", "location", "issue")
+    q.set_sort_order("epiweek", "location", "issue")
 
     q.where_integers("epiweek", epiweeks)
     q.where_strings("location", locations)
