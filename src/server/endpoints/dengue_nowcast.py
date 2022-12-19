@@ -1,7 +1,11 @@
 from flask import Blueprint
 
 from .._query import execute_query, QueryBuilder
-from .._validate import extract_integers, extract_strings, require_all
+from .._params import (
+    extract_integers,
+    extract_strings,
+)
+from .._validate import require_all
 
 # first argument is the endpoint name
 bp = Blueprint("dengue_nowcast", __name__)

@@ -2,7 +2,8 @@ from flask import Blueprint, request
 
 from .._config import AUTH
 from .._query import execute_query, filter_integers, filter_strings
-from .._validate import check_auth_token, extract_integers, require_all
+from .._params import extract_integers
+from .._validate import check_auth_token, require_all
 
 # first argument is the endpoint name
 bp = Blueprint("norostat", __name__)

@@ -1,7 +1,11 @@
 from flask import Blueprint, request
 
 from .._query import execute_query, filter_dates, filter_integers, filter_strings
-from .._validate import extract_integers, extract_strings, require_all, require_any
+from .._params import (
+    extract_integers,
+    extract_strings,
+)
+from .._validate import require_all, require_any
 
 # first argument is the endpoint name
 bp = Blueprint("wiki", __name__)

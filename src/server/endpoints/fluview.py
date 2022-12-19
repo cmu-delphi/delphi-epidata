@@ -4,11 +4,13 @@ from flask import Blueprint
 
 from .._config import AUTH
 from .._query import execute_queries, filter_integers, filter_strings
-from .._validate import (
-    check_auth_token,
+from .._params import (
     extract_integer,
     extract_integers,
     extract_strings,
+)
+from .._validate import (
+    check_auth_token,
     require_all,
 )
 

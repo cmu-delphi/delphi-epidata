@@ -8,7 +8,7 @@ from sqlalchemy import text
 from .._common import db
 from .._printer import create_printer
 from .._query import filter_fields
-from .._validate import extract_strings
+from .._params import extract_strings
 from ..utils.logger import get_structured_logger
 
 bp = Blueprint("covidcast_meta", __name__)

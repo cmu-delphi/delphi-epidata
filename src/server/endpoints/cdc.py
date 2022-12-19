@@ -1,7 +1,8 @@
 from flask import Blueprint
 
 from .._config import AUTH, NATION_REGION, REGION_TO_STATE
-from .._validate import require_all, extract_strings, extract_integers, check_auth_token
+from .._params import extract_strings, extract_integers
+from .._validate import require_all, check_auth_token
 from .._query import filter_strings, execute_queries, filter_integers
 
 # first argument is the endpoint name

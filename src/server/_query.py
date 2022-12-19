@@ -18,8 +18,7 @@ from sqlalchemy.engine import Row
 from ._common import db
 from ._printer import create_printer, APrinter
 from ._exceptions import DatabaseErrorException
-from ._validate import extract_strings
-from ._params import GeoFilter, SourceSignalFilter, TimeFilter
+from ._params import extract_strings, GeoFilter, SourceSignalFilter, TimeFilter
 from .utils import time_values_to_ranges, TimeValues
 
 

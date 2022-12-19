@@ -28,13 +28,13 @@ from .._params import (
 )
 from .._query import QueryBuilder, execute_query, run_query, parse_row, filter_fields
 from .._printer import create_printer, CSVPrinter
-from .._validate import (
+from .._params import (
     extract_date,
     extract_dates,
     extract_integer,
-    extract_strings,
+)
+from .._validate import (
     require_all,
-    require_any,
 )
 from .._pandas import as_pandas, print_pandas
 from .covidcast_utils import compute_trend, compute_trends, compute_correlations, compute_trend_value, CovidcastMetaEntry
