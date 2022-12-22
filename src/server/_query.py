@@ -20,7 +20,7 @@ from ._printer import create_printer, APrinter
 from ._exceptions import DatabaseErrorException
 from ._validate import extract_strings
 from ._params import GeoPair, SourceSignalPair, TimePair
-from .utils import time_values_to_ranges, TimeValues
+from .utils import time_values_to_ranges, IntRange, TimeValues
 
 
 def date_string(value: int) -> str:
@@ -75,7 +75,7 @@ def filter_strings(
 
 def filter_integers(
     field: str,
-    values: Optional[Sequence[Union[Tuple[int, int], int]]],
+    values: Optional[Sequence[IntRange]],
     param_key: str,
     params: Dict[str, Any],
 ):
@@ -399,7 +399,7 @@ class QueryBuilder:
     def where_integers(
         self,
         field: str,
-        values: Optional[Sequence[Union[Tuple[int, int], int]]],
+        values: Optional[Sequence[IntRange]],
         param_key: Optional[str] = None,
     ) -> "QueryBuilder":
         fq_field = self._fq_field(field)
