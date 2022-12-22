@@ -243,11 +243,11 @@ def count_signal_time_types(source_signals: List[SourceSignalSet]) -> Tuple[int,
     """
     weekly = 0
     daily = 0
-    for set in source_signals:
-        if set.signal == True:
+    for ssset in source_signals:
+        if ssset.signal == True:
             continue
-        for s in set.signal:
-            signal = data_signals_by_key.get((set.source, s))
+        for s in ssset.signal:
+            signal = data_signals_by_key.get((ssset.source, s))
             if not signal:
                 continue
             if signal.time_type == TimeType.week:
@@ -260,18 +260,18 @@ def count_signal_time_types(source_signals: List[SourceSignalSet]) -> Tuple[int,
 def create_source_signal_alias_mapper(source_signals: List[SourceSignalSet]) -> Tuple[List[SourceSignalSet], Optional[Callable[[str, str], str]]]:
     alias_to_data_sources: Dict[str, List[DataSource]] = {}
     transformed_sets: List[SourceSignalSet] = []
-    for set in source_signals:
-        source = data_source_by_id.get(set.source)
+    for ssset in source_signals:
+        source = data_source_by_id.get(ssset.source)
         if not source or not source.uses_db_alias:
-            transformed_sets.append(set)
+            transformed_sets.append(ssset)
             continue
         # uses an alias
         alias_to_data_sources.setdefault(source.db_source, []).append(source)
-        if set.signal is True:
+        if ssset.signal is True:
             # list all signals of this source (*) so resolve to a plain list of all in this alias
             transformed_sets.append(SourceSignalSet(source.db_source, [s.signal for s in source.signals]))
         else:
-            transformed_sets.append(SourceSignalSet(source.db_source, set.signal))
+            transformed_sets.append(SourceSignalSet(source.db_source, ssset.signal))
 
     if not alias_to_data_sources:
         # no alias needed

@@ -126,12 +126,12 @@ def filter_geo_sets(
     returns the SQL sub query to filter by the given geo sets
     """
 
-    def filter_set(set: GeoSet, i) -> str:
+    def filter_set(gset: GeoSet, i) -> str:
         type_param = f"{param_key}_{i}t"
-        params[type_param] = set.geo_type
-        if isinstance(set.geo_values, bool) and set.geo_values:
+        params[type_param] = gset.geo_type
+        if isinstance(gset.geo_values, bool) and gset.geo_values:
             return f"{type_field} = :{type_param}"
-        return f"({type_field} = :{type_param} AND {filter_strings(value_field, cast(Sequence[str], set.geo_values), type_param, params)})"
+        return f"({type_field} = :{type_param} AND {filter_strings(value_field, cast(Sequence[str], gset.geo_values), type_param, params)})"
 
     parts = [filter_set(p, i) for i, p in enumerate(values)]
 
@@ -153,12 +153,12 @@ def filter_source_signal_sets(
     returns the SQL sub query to filter by the given source signal sets
     """
 
-    def filter_set(set: SourceSignalSet, i) -> str:
+    def filter_set(ssset: SourceSignalSet, i) -> str:
         source_param = f"{param_key}_{i}t"
-        params[source_param] = set.source
-        if isinstance(set.signal, bool) and set.signal:
+        params[source_param] = ssset.source
+        if isinstance(ssset.signal, bool) and ssset.signal:
             return f"{source_field} = :{source_param}"
-        return f"({source_field} = :{source_param} AND {filter_strings(signal_field, cast(Sequence[str], set.signal), source_param, params)})"
+        return f"({source_field} = :{source_param} AND {filter_strings(signal_field, cast(Sequence[str], ssset.signal), source_param, params)})"
 
     parts = [filter_set(p, i) for i, p in enumerate(values)]
 
@@ -172,7 +172,7 @@ def filter_source_signal_sets(
 def filter_time_set(
     type_field: str,
     time_field: str,
-    set: Optional[TimeSet],
+    tset: Optional[TimeSet],
     param_key: str,
     params: Dict[str, Any],
 ) -> str:
@@ -180,15 +180,15 @@ def filter_time_set(
     returns the SQL sub query to filter by the given time set
     """
     # safety path; should normally not be reached as time sets are enforced by the API
-    if not set:
+    if not tset:
         return "FALSE"
 
     type_param = f"{param_key}_0t"
-    params[type_param] = set.time_type
-    if isinstance(set.time_values, bool) and set.time_values:
+    params[type_param] = tset.time_type
+    if isinstance(tset.time_values, bool) and tset.time_values:
         parts =  f"{type_field} = :{type_param}"
     else:
-        ranges = set.to_ranges().time_values
+        ranges = tset.to_ranges().time_values
         parts = f"({type_field} = :{type_param} AND {filter_integers(time_field, ranges, type_param, params)})"
 
     return f"({parts})"
