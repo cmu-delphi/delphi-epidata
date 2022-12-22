@@ -22,7 +22,7 @@ def handle():
     fields_int = ["issue", "epiweek", "lag", "total_specimens", "total_a", "total_b"]
     fields_float = ["percent_positive", "percent_a", "percent_b"]
     q.set_fields(fields_string, fields_int, fields_float)
-    q.set_order("epiweek", "region", "issue")
+    q.set_sort_order("epiweek", "region", "issue")
 
     q.where_integers("epiweek", epiweeks)
     q.where_strings("region", regions)

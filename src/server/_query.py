@@ -491,22 +491,12 @@ class QueryBuilder:
         self.fields = [f"{self.alias}.{field}" for field_list in fields for field in field_list]
         return self
 
-    def set_order(self, *args: str, **kwargs: Union[str, bool]) -> "QueryBuilder":
+    def set_sort_order(self, *args: str):
         """
         sets the order for the given fields (as key word arguments), True = ASC, False = DESC
         """
 
-        def to_asc(v: Union[str, bool]) -> str:
-            if v is True:
-                return "ASC"
-            elif v is False:
-                return "DESC"
-            return cast(str, v)
-
-        args_order = [f"{self.alias}.{k} ASC" for k in args]
-        kw_order = [f"{self.alias}.{k} {to_asc(v)}" for k, v in kwargs.items()]
-        self.order = args_order + kw_order
-        return self
+        self.order = [f"{self.alias}.{k} ASC" for k in args]
 
     def with_max_issue(self, *args: str) -> "QueryBuilder":
         fields: List[str] = [f for f in args]
