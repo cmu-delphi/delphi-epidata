@@ -57,7 +57,7 @@ class GeoSet:
 
     def count(self) -> float:
         """
-        returns the count of items in this pair
+        returns the count of items in this set
         """
         if isinstance(self.geo_values, bool):
             return inf if self.geo_values else 0
@@ -70,7 +70,7 @@ def parse_geo_arg(key: str = "geo") -> List[GeoSet]:
 
 def parse_single_geo_arg(key: str) -> GeoSet:
     """
-    parses a single geo pair with only one value
+    parses a single geo set with only one value
     """
     r = _parse_single_arg(key)
     return GeoSet(r[0], [r[1]])
@@ -86,7 +86,7 @@ class SourceSignalSet:
 
     def count(self) -> float:
         """
-        returns the count of items in this pair
+        returns the count of items in this set
         """
         if isinstance(self.signal, bool):
             return inf if self.signal else 0
@@ -99,7 +99,7 @@ def parse_source_signal_arg(key: str = "signal") -> List[SourceSignalSet]:
 
 def parse_single_source_signal_arg(key: str) -> SourceSignalSet:
     """
-    parses a single source signal pair with only one value
+    parses a single source signal set with only one value
     """
     r = _parse_single_arg(key)
     return SourceSignalSet(r[0], [r[1]])
@@ -121,7 +121,7 @@ class TimeSet:
 
     def count(self) -> float:
         """
-        returns the count of items in this pair
+        returns the count of items in this set
         """
         if isinstance(self.time_values, bool):
             return inf if self.time_values else 0
@@ -131,7 +131,7 @@ class TimeSet:
 
     def to_ranges(self):
         """
-        returns this pair with times converted to ranges
+        returns this set with times converted to ranges
         """
         if isinstance(self.time_values, bool):
             return TimeSet(self.time_type, self.time_values)
@@ -204,7 +204,7 @@ def parse_day_value(time_value: str) -> IntRange:
     raise ValidationFailedException(msg)
 
 
-def _parse_time_pair(time_type: str, time_values: Union[bool, Sequence[str]]) -> TimeSet:
+def _parse_time_set(time_type: str, time_values: Union[bool, Sequence[str]]) -> TimeSet:
     if isinstance(time_values, bool):
         return TimeSet(time_type, time_values)
 
@@ -216,35 +216,35 @@ def _parse_time_pair(time_type: str, time_values: Union[bool, Sequence[str]]) ->
 
 
 def parse_time_arg(key: str = "time") -> Optional[TimeSet]:
-    time_pairs = [_parse_time_pair(time_type, time_values) for [time_type, time_values] in _parse_common_multi_arg(key)]
+    time_sets = [_parse_time_set(time_type, time_values) for [time_type, time_values] in _parse_common_multi_arg(key)]
 
     # single value
-    if len(time_pairs) == 0:
+    if len(time_sets) == 0:
         return None
-    if len(time_pairs) == 1:
-        return time_pairs[0]
+    if len(time_sets) == 1:
+        return time_sets[0]
 
     # make sure 'day' and 'week' aren't mixed
-    time_types = set(time_pair.time_type for time_pair in time_pairs)
+    time_types = set(time_set.time_type for time_set in time_sets)
     if len(time_types) >= 2:
-        raise ValidationFailedException(f'{key}: {time_pairs} mixes "day" and "week" time types')
+        raise ValidationFailedException(f'{key}: {time_sets} mixes "day" and "week" time types')
 
-    # merge all time pairs into one
+    # merge all time sets into one
     merged = []
-    for time_pair in time_pairs:
-        if time_pair.time_values is True:
-            return time_pair
+    for time_set in time_sets:
+        if time_set.time_values is True:
+            return time_set
         else:
-            merged.extend(time_pair.time_values)
-    return TimeSet(time_pairs[0].time_type, merged).to_ranges()
+            merged.extend(time_set.time_values)
+    return TimeSet(time_sets[0].time_type, merged).to_ranges()
 
 
 def parse_single_time_arg(key: str) -> TimeSet:
     """
-    parses a single time pair with only one value
+    parses a single time set with only one value
     """
     r = _parse_single_arg(key)
-    return _parse_time_pair(r[0], [r[1]])
+    return _parse_time_set(r[0], [r[1]])
 
 
 def parse_day_range_arg(key: str) -> Tuple[int, int]:

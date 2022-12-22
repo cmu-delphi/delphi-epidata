@@ -115,7 +115,7 @@ def filter_fields(generator: Iterable[Dict[str, Any]]):
             yield filtered
 
 
-def filter_geo_pairs(
+def filter_geo_sets(
     type_field: str,
     value_field: str,
     values: Sequence[GeoSet],
@@ -123,17 +123,17 @@ def filter_geo_pairs(
     params: Dict[str, Any],
 ) -> str:
     """
-    returns the SQL sub query to filter by the given geo pairs
+    returns the SQL sub query to filter by the given geo sets
     """
 
-    def filter_pair(pair: GeoSet, i) -> str:
+    def filter_set(set: GeoSet, i) -> str:
         type_param = f"{param_key}_{i}t"
-        params[type_param] = pair.geo_type
-        if isinstance(pair.geo_values, bool) and pair.geo_values:
+        params[type_param] = set.geo_type
+        if isinstance(set.geo_values, bool) and set.geo_values:
             return f"{type_field} = :{type_param}"
-        return f"({type_field} = :{type_param} AND {filter_strings(value_field, cast(Sequence[str], pair.geo_values), type_param, params)})"
+        return f"({type_field} = :{type_param} AND {filter_strings(value_field, cast(Sequence[str], set.geo_values), type_param, params)})"
 
-    parts = [filter_pair(p, i) for i, p in enumerate(values)]
+    parts = [filter_set(p, i) for i, p in enumerate(values)]
 
     if not parts:
         # something has to be selected
@@ -142,7 +142,7 @@ def filter_geo_pairs(
     return f"({' OR '.join(parts)})"
 
 
-def filter_source_signal_pairs(
+def filter_source_signal_sets(
     source_field: str,
     signal_field: str,
     values: Sequence[SourceSignalSet],
@@ -150,17 +150,17 @@ def filter_source_signal_pairs(
     params: Dict[str, Any],
 ) -> str:
     """
-    returns the SQL sub query to filter by the given source signal pairs
+    returns the SQL sub query to filter by the given source signal sets
     """
 
-    def filter_pair(pair: SourceSignalSet, i) -> str:
+    def filter_set(set: SourceSignalSet, i) -> str:
         source_param = f"{param_key}_{i}t"
-        params[source_param] = pair.source
-        if isinstance(pair.signal, bool) and pair.signal:
+        params[source_param] = set.source
+        if isinstance(set.signal, bool) and set.signal:
             return f"{source_field} = :{source_param}"
-        return f"({source_field} = :{source_param} AND {filter_strings(signal_field, cast(Sequence[str], pair.signal), source_param, params)})"
+        return f"({source_field} = :{source_param} AND {filter_strings(signal_field, cast(Sequence[str], set.signal), source_param, params)})"
 
-    parts = [filter_pair(p, i) for i, p in enumerate(values)]
+    parts = [filter_set(p, i) for i, p in enumerate(values)]
 
     if not parts:
         # something has to be selected
@@ -169,26 +169,26 @@ def filter_source_signal_pairs(
     return f"({' OR '.join(parts)})"
 
 
-def filter_time_pair(
+def filter_time_set(
     type_field: str,
     time_field: str,
-    pair: Optional[TimeSet],
+    set: Optional[TimeSet],
     param_key: str,
     params: Dict[str, Any],
 ) -> str:
     """
-    returns the SQL sub query to filter by the given time pair
+    returns the SQL sub query to filter by the given time set
     """
-    # safety path; should normally not be reached as time pairs are enforced by the API
-    if not pair:
+    # safety path; should normally not be reached as time sets are enforced by the API
+    if not set:
         return "FALSE"
 
     type_param = f"{param_key}_0t"
-    params[type_param] = pair.time_type
-    if isinstance(pair.time_values, bool) and pair.time_values:
+    params[type_param] = set.time_type
+    if isinstance(set.time_values, bool) and set.time_values:
         parts =  f"{type_field} = :{type_param}"
     else:
-        ranges = pair.to_ranges().time_values
+        ranges = set.to_ranges().time_values
         parts = f"({type_field} = :{type_param} AND {filter_integers(time_field, ranges, type_param, params)})"
 
     return f"({parts})"
@@ -406,17 +406,17 @@ class QueryBuilder:
         self.conditions.append(filter_integers(fq_field, values, param_key or field, self.params))
         return self
 
-    def where_geo_pairs(
+    def apply_geo_filters(
         self,
         type_field: str,
         value_field: str,
         values: Sequence[GeoSet],
-        param_key: Optional[str] = None,
-    ) -> "QueryBuilder":
+        param_key: Optional[str] = None
+    ):
         fq_type_field = self._fq_field(type_field)
         fq_value_field = self._fq_field(value_field)
         self.conditions.append(
-            filter_geo_pairs(
+            filter_geo_sets(
                 fq_type_field,
                 fq_value_field,
                 values,
@@ -424,19 +424,18 @@ class QueryBuilder:
                 self.params,
             )
         )
-        return self
 
-    def where_source_signal_pairs(
+    def apply_source_signal_filters(
         self,
         type_field: str,
         value_field: str,
         values: Sequence[SourceSignalSet],
-        param_key: Optional[str] = None,
-    ) -> "QueryBuilder":
+        param_key: Optional[str] = None
+    ):
         fq_type_field = self._fq_field(type_field)
         fq_value_field = self._fq_field(value_field)
         self.conditions.append(
-            filter_source_signal_pairs(
+            filter_source_signal_sets(
                 fq_type_field,
                 fq_value_field,
                 values,
@@ -444,19 +443,18 @@ class QueryBuilder:
                 self.params,
             )
         )
-        return self
 
-    def where_time_pair(
+    def apply_time_filter(
         self,
         type_field: str,
         value_field: str,
         values: Optional[TimeSet],
         param_key: Optional[str] = None,
-    ) -> "QueryBuilder":
+    ):
         fq_type_field = self._fq_field(type_field)
         fq_value_field = self._fq_field(value_field)
         self.conditions.append(
-            filter_time_pair(
+            filter_time_set(
                 fq_type_field,
                 fq_value_field,
                 values,
@@ -464,7 +462,6 @@ class QueryBuilder:
                 self.params,
             )
         )
-        return self
 
     def apply_lag_filter(self, history_table: str, lag: Optional[int]):
         if lag is not None:

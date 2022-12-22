@@ -38,7 +38,7 @@ class UnitTests(unittest.TestCase):
         app.config["WTF_CSRF_ENABLED"] = False
         app.config["DEBUG"] = False
 
-    def test_geo_pair(self):
+    def test_geo_set(self):
         with self.subTest("*"):
             p = GeoSet("hrr", True)
             self.assertTrue(p.matches("hrr", "any"))
@@ -54,7 +54,7 @@ class UnitTests(unittest.TestCase):
             self.assertEqual(GeoSet("a", False).count(), 0)
             self.assertEqual(GeoSet("a", ["a", "b"]).count(), 2)
 
-    def test_source_signal_pair(self):
+    def test_source_signal_set(self):
         with self.subTest("*"):
             p = SourceSignalSet("src1", True)
             self.assertTrue(p.matches("src1", "any"))
@@ -70,7 +70,7 @@ class UnitTests(unittest.TestCase):
             self.assertEqual(SourceSignalSet("a", False).count(), 0)
             self.assertEqual(SourceSignalSet("a", ["a", "b"]).count(), 2)
 
-    def test_time_pair(self):
+    def test_time_set(self):
         with self.subTest("count"):
             self.assertEqual(TimeSet("day", True).count(), inf)
             self.assertEqual(TimeSet("day", False).count(), 0)
