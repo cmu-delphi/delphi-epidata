@@ -411,8 +411,8 @@ class QueryBuilder:
         type_field: str,
         value_field: str,
         values: Sequence[GeoSet],
-        param_key: Optional[str] = None
-    ):
+        param_key: Optional[str] = None,
+    ) -> "QueryBuilder":
         fq_type_field = self._fq_field(type_field)
         fq_value_field = self._fq_field(value_field)
         self.conditions.append(
@@ -431,8 +431,8 @@ class QueryBuilder:
         type_field: str,
         value_field: str,
         values: Sequence[SourceSignalSet],
-        param_key: Optional[str] = None
-    ):
+        param_key: Optional[str] = None,
+    ) -> "QueryBuilder":
         fq_type_field = self._fq_field(type_field)
         fq_value_field = self._fq_field(value_field)
         self.conditions.append(
@@ -452,7 +452,7 @@ class QueryBuilder:
         value_field: str,
         values: Optional[TimeSet],
         param_key: Optional[str] = None,
-    ):
+    ) -> "QueryBuilder":
         fq_type_field = self._fq_field(type_field)
         fq_value_field = self._fq_field(value_field)
         self.conditions.append(
@@ -466,20 +466,20 @@ class QueryBuilder:
         )
         return self
 
-    def apply_lag_filter(self, history_table: str, lag: Optional[int]):
+    def apply_lag_filter(self, history_table: str, lag: Optional[int]) -> "QueryBuilder":
         if lag is not None:
             self.retable(history_table)
             # history_table has full spectrum of lag values to search from whereas the latest_table does not
             self.where(lag=lag)
         return self
 
-    def apply_issues_filter(self, history_table: str, issues: Optional[TimeValues]):
+    def apply_issues_filter(self, history_table: str, issues: Optional[TimeValues]) -> "QueryBuilder":
         if issues:
             self.retable(history_table)
             self.where_integers("issue", issues)
         return self
 
-    def apply_as_of_filter(self, history_table: str, as_of: Optional[int]):
+    def apply_as_of_filter(self, history_table: str, as_of: Optional[int]) -> "QueryBuilder":
         if as_of is not None:
             self.retable(history_table)
             sub_condition_asof = "(issue <= :as_of)"
@@ -495,7 +495,7 @@ class QueryBuilder:
         self.fields = [f"{self.alias}.{field}" for field_list in fields for field in field_list]
         return self
 
-    def set_sort_order(self, *args: str):
+    def set_sort_order(self, *args: str) -> "QueryBuilder":
         """
         sets the order for the given fields (as key word arguments), True = ASC, False = DESC
         """
