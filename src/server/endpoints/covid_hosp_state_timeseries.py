@@ -145,7 +145,7 @@ def handle():
     ]
 
     q.set_fields(fields_string, fields_int, fields_float)
-    q.set_order("date", "state", "issue")
+    q.set_sort_order("date", "state", "issue")
 
     # build the filter
     q.where_integers("date", dates)

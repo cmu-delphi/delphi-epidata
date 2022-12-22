@@ -236,11 +236,6 @@ for d in data_signals:
         data_signals_by_key[(source.db_source, d.signal)] = d
 
 
-
-def get_related_signals(signal: DataSignal) -> List[DataSignal]:
-    return [s for s in data_signals if s != signal and s.signal_basename == signal.signal_basename]
-
-
 def count_signal_time_types(source_signals: List[SourceSignalPair]) -> Tuple[int, int]:
     """
     count the number of signals in this query for each time type

@@ -20,7 +20,7 @@ from ._printer import create_printer, APrinter
 from ._exceptions import DatabaseErrorException
 from ._validate import extract_strings
 from ._params import GeoPair, SourceSignalPair, TimePair
-from .utils import time_values_to_ranges, TimeValues
+from .utils import time_values_to_ranges, IntRange, TimeValues
 
 
 def date_string(value: int) -> str:
@@ -34,7 +34,7 @@ def date_string(value: int) -> str:
 
 def to_condition(
     field: str,
-    value: Union[str, Tuple[int, int], int],
+    value: Union[str, IntRange],
     param_key: str,
     params: Dict[str, Any],
     formatter=lambda x: x,
@@ -50,7 +50,7 @@ def to_condition(
 
 def filter_values(
     field: str,
-    values: Optional[Sequence[Union[str, Tuple[int, int], int]]],
+    values: Optional[Sequence[Union[str, IntRange]]],
     param_key: str,
     params: Dict[str, Any],
     formatter=lambda x: x,
@@ -75,7 +75,7 @@ def filter_strings(
 
 def filter_integers(
     field: str,
-    values: Optional[Sequence[Union[Tuple[int, int], int]]],
+    values: Optional[Sequence[IntRange]],
     param_key: str,
     params: Dict[str, Any],
 ):
@@ -399,7 +399,7 @@ class QueryBuilder:
     def where_integers(
         self,
         field: str,
-        values: Optional[Sequence[Union[Tuple[int, int], int]]],
+        values: Optional[Sequence[IntRange]],
         param_key: Optional[str] = None,
     ) -> "QueryBuilder":
         fq_field = self._fq_field(field)
@@ -466,25 +466,41 @@ class QueryBuilder:
         )
         return self
 
+    def apply_lag_filter(self, history_table: str, lag: Optional[int]):
+        if lag is not None:
+            self.retable(history_table)
+            # history_table has full spectrum of lag values to search from whereas the latest_table does not
+            self.where(lag=lag)
+        return self
+
+    def apply_issues_filter(self, history_table: str, issues: Optional[TimeValues]):
+        if issues:
+            self.retable(history_table)
+            self.where_integers("issue", issues)
+        return self
+
+    def apply_as_of_filter(self, history_table: str, as_of: Optional[int]):
+        if as_of is not None:
+            self.retable(history_table)
+            sub_condition_asof = "(issue <= :as_of)"
+            self.params["as_of"] = as_of
+            sub_fields = "max(issue) max_issue, time_type, time_value, `source`, `signal`, geo_type, geo_value"
+            sub_group = "time_type, time_value, `source`, `signal`, geo_type, geo_value"
+            alias = self.alias
+            sub_condition = f"x.max_issue = {alias}.issue AND x.time_type = {alias}.time_type AND x.time_value = {alias}.time_value AND x.source = {alias}.source AND x.signal = {alias}.signal AND x.geo_type = {alias}.geo_type AND x.geo_value = {alias}.geo_value"
+            self.subquery = f"JOIN (SELECT {sub_fields} FROM {self.table} WHERE {self.conditions_clause} AND {sub_condition_asof} GROUP BY {sub_group}) x ON {sub_condition}"
+        return self
+
     def set_fields(self, *fields: Iterable[str]) -> "QueryBuilder":
         self.fields = [f"{self.alias}.{field}" for field_list in fields for field in field_list]
         return self
 
-    def set_order(self, *args: str, **kwargs: Union[str, bool]) -> "QueryBuilder":
+    def set_sort_order(self, *args: str):
         """
         sets the order for the given fields (as key word arguments), True = ASC, False = DESC
         """
 
-        def to_asc(v: Union[str, bool]) -> str:
-            if v is True:
-                return "ASC"
-            elif v is False:
-                return "DESC"
-            return cast(str, v)
-
-        args_order = [f"{self.alias}.{k} ASC" for k in args]
-        kw_order = [f"{self.alias}.{k} {to_asc(v)}" for k, v in kwargs.items()]
-        self.order = args_order + kw_order
+        self.order = [f"{self.alias}.{k} ASC" for k in args]
         return self
 
     def with_max_issue(self, *args: str) -> "QueryBuilder":

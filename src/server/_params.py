@@ -7,7 +7,7 @@ from flask import request
 
 
 from ._exceptions import ValidationFailedException
-from .utils import days_in_range, weeks_in_range, guess_time_value_is_day, guess_time_value_is_week, TimeValues, days_to_ranges, weeks_to_ranges
+from .utils import days_in_range, weeks_in_range, guess_time_value_is_day, guess_time_value_is_week, IntRange, TimeValues, days_to_ranges, weeks_to_ranges
 
 
 def _parse_common_multi_arg(key: str) -> List[Tuple[str, Union[bool, Sequence[str]]]]:
@@ -140,7 +140,7 @@ class TimePair:
         return TimePair(self.time_type, days_to_ranges(self.time_values))
 
 
-def _verify_range(start: int, end: int) -> Union[int, Tuple[int, int]]:
+def _verify_range(start: int, end: int) -> IntRange:
     if start == end:
         # the first and last numbers are the same, just treat it as a singe value
         return start
@@ -151,7 +151,7 @@ def _verify_range(start: int, end: int) -> Union[int, Tuple[int, int]]:
     raise ValidationFailedException(f"the given range {start}-{end} is inverted")
 
 
-def parse_week_value(time_value: str) -> Union[int, Tuple[int, int]]:
+def parse_week_value(time_value: str) -> IntRange:
     count_dashes = time_value.count("-")
     msg = f"{time_value} does not match a known format YYYYWW or YYYYWW-YYYYWW"
 
@@ -171,7 +171,7 @@ def parse_week_value(time_value: str) -> Union[int, Tuple[int, int]]:
     raise ValidationFailedException(msg)
 
 
-def parse_day_value(time_value: str) -> Union[int, Tuple[int, int]]:
+def parse_day_value(time_value: str) -> IntRange:
     count_dashes = time_value.count("-")
     msg = f"{time_value} does not match a known format YYYYMMDD, YYYY-MM-DD, YYYYMMDD-YYYYMMDD, or YYYY-MM-DD--YYYY-MM-DD"
 
