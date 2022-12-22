@@ -424,6 +424,7 @@ class QueryBuilder:
                 self.params,
             )
         )
+        return self
 
     def apply_source_signal_filters(
         self,
@@ -443,6 +444,7 @@ class QueryBuilder:
                 self.params,
             )
         )
+        return self
 
     def apply_time_filter(
         self,
@@ -462,6 +464,7 @@ class QueryBuilder:
                 self.params,
             )
         )
+        return self
 
     def apply_lag_filter(self, history_table: str, lag: Optional[int]):
         if lag is not None:

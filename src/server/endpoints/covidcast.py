@@ -422,7 +422,7 @@ def handle_backfill():
     is_day = time_set.is_day
     _verify_argument_time_type_matches(is_day, daily_signals, weekly_signals)
 
-    get_set = parse_single_geo_arg("geo")
+    geo_set = parse_single_geo_arg("geo")
     reference_anchor_lag = extract_integer("anchor_lag")  # in days or weeks
     if reference_anchor_lag is None:
         reference_anchor_lag = 60
@@ -438,7 +438,7 @@ def handle_backfill():
     q.set_fields(fields_string, fields_int, fields_float, ["is_latest_issue"])
 
     q.apply_source_signal_filters("source", "signal", source_signal_sets)
-    q.apply_geo_filters("geo_type", "geo_value", [get_set])
+    q.apply_geo_filters("geo_type", "geo_value", [geo_set])
     q.apply_time_filter("time_type", "time_value", time_set)
 
     p = create_printer()
