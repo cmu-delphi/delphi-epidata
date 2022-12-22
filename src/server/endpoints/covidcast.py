@@ -11,9 +11,9 @@ from pandas import read_csv, to_datetime
 from .._common import is_compatibility_mode, db
 from .._exceptions import ValidationFailedException, DatabaseErrorException
 from .._params import (
-    GeoPair,
-    SourceSignalPair,
-    TimePair,
+    GeoSet,
+    SourceSignalSet,
+    TimeSet,
     parse_geo_arg,
     parse_source_signal_arg,
     parse_time_arg,
@@ -45,15 +45,15 @@ alias = None
 latest_table = "epimetric_latest_v"
 history_table = "epimetric_full_v"
 
-def parse_source_signal_pairs() -> List[SourceSignalPair]:
+def parse_source_signal_pairs() -> List[SourceSignalSet]:
     ds = request.values.get("data_source")
     if ds:
         # old version
         require_any("signal", "signals", empty=True)
         signals = extract_strings(("signals", "signal"))
         if len(signals) == 1 and signals[0] == "*":
-            return [SourceSignalPair(ds, True)]
-        return [SourceSignalPair(ds, signals)]
+            return [SourceSignalSet(ds, True)]
+        return [SourceSignalSet(ds, signals)]
 
     if ":" not in request.values.get("signal", ""):
         raise ValidationFailedException("missing parameter: signal or (data_source and signal[s])")
@@ -61,15 +61,15 @@ def parse_source_signal_pairs() -> List[SourceSignalPair]:
     return parse_source_signal_arg()
 
 
-def parse_geo_pairs() -> List[GeoPair]:
+def parse_geo_pairs() -> List[GeoSet]:
     geo_type = request.values.get("geo_type")
     if geo_type:
         # old version
         require_any("geo_value", "geo_values", empty=True)
         geo_values = extract_strings(("geo_values", "geo_value"))
         if len(geo_values) == 1 and geo_values[0] == "*":
-            return [GeoPair(geo_type, True)]
-        return [GeoPair(geo_type, geo_values)]
+            return [GeoSet(geo_type, True)]
+        return [GeoSet(geo_type, geo_values)]
 
     if ":" not in request.values.get("geo", ""):
         raise ValidationFailedException("missing parameter: geo or (geo_type and geo_value[s])")
@@ -77,13 +77,13 @@ def parse_geo_pairs() -> List[GeoPair]:
     return parse_geo_arg()
 
 
-def parse_time_pairs() -> TimePair:
+def parse_time_pairs() -> TimeSet:
     time_type = request.values.get("time_type")
     if time_type:
         # old version
         require_all("time_type", "time_values")
         time_values = extract_dates("time_values")
-        return TimePair(time_type, time_values)
+        return TimeSet(time_type, time_values)
 
     if ":" not in request.values.get("time", ""):
         raise ValidationFailedException("missing parameter: time or (time_type and time_values)")
@@ -330,7 +330,7 @@ def handle_correlation():
 @bp.route("/csv", methods=("GET", "POST"))
 def handle_export():
     source, signal = request.values.get("signal", "jhu-csse:confirmed_incidence_num").split(":")
-    source_signal_pairs = [SourceSignalPair(source, [signal])]
+    source_signal_pairs = [SourceSignalSet(source, [signal])]
     daily_signals, weekly_signals = count_signal_time_types(source_signal_pairs)
     source_signal_pairs, alias_mapper = create_source_signal_alias_mapper(source_signal_pairs)
     start_pair = parse_day_or_week_arg("start_day", 202001 if weekly_signals > 0 else 20200401)
@@ -357,8 +357,8 @@ def handle_export():
     q.set_fields(["geo_value", "signal", "time_value", "issue", "lag", "value", "stderr", "sample_size", "geo_type", "source"], [], [])
     q.set_sort_order("time_value", "geo_value")
     q.where_source_signal_pairs("source", "signal", source_signal_pairs)
-    q.where_time_pair("time_type", "time_value", TimePair("day" if is_day else "week", [(start_day, end_day)]))
-    q.where_geo_pairs("geo_type", "geo_value", [GeoPair(geo_type, True if geo_values == "*" else geo_values)])
+    q.where_time_pair("time_type", "time_value", TimeSet("day" if is_day else "week", [(start_day, end_day)]))
+    q.where_geo_pairs("geo_type", "geo_value", [GeoSet(geo_type, True if geo_values == "*" else geo_values)])
 
     q.apply_as_of_filter(history_table, as_of)
 
@@ -586,13 +586,13 @@ def handle_coverage():
                 last_weeks = last or 30
             is_day = False
             now_week = Week.thisweek() if now_time is None else time_value_to_week(now_time)
-            time_window = TimePair("week", [(week_to_time_value(now_week - last_weeks), week_to_time_value(now_week))])
+            time_window = TimeSet("week", [(week_to_time_value(now_week - last_weeks), week_to_time_value(now_week))])
         else:
             is_day = True
             if last is None:
                 last = 30
             now = date.today() if now_time is None else time_value_to_day(now_time)
-            time_window = TimePair("day", [(day_to_time_value(now - timedelta(days=last)), day_to_time_value(now))])
+            time_window = TimeSet("day", [(day_to_time_value(now - timedelta(days=last)), day_to_time_value(now))])
     _verify_argument_time_type_matches(is_day, daily_signals, weekly_signals)
 
     q = QueryBuilder(latest_table, "c")

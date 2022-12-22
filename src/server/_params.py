@@ -48,7 +48,7 @@ def _parse_single_arg(key: str) -> Tuple[str, str]:
 
 
 @dataclass
-class GeoPair:
+class GeoSet:
     geo_type: str
     geo_values: Union[bool, Sequence[str]]
 
@@ -64,20 +64,20 @@ class GeoPair:
         return len(self.geo_values)
 
 
-def parse_geo_arg(key: str = "geo") -> List[GeoPair]:
-    return [GeoPair(geo_type, geo_values) for [geo_type, geo_values] in _parse_common_multi_arg(key)]
+def parse_geo_arg(key: str = "geo") -> List[GeoSet]:
+    return [GeoSet(geo_type, geo_values) for [geo_type, geo_values] in _parse_common_multi_arg(key)]
 
 
-def parse_single_geo_arg(key: str) -> GeoPair:
+def parse_single_geo_arg(key: str) -> GeoSet:
     """
     parses a single geo pair with only one value
     """
     r = _parse_single_arg(key)
-    return GeoPair(r[0], [r[1]])
+    return GeoSet(r[0], [r[1]])
 
 
 @dataclass
-class SourceSignalPair:
+class SourceSignalSet:
     source: str
     signal: Union[bool, Sequence[str]]
 
@@ -93,20 +93,20 @@ class SourceSignalPair:
         return len(self.signal)
 
 
-def parse_source_signal_arg(key: str = "signal") -> List[SourceSignalPair]:
-    return [SourceSignalPair(source, signals) for [source, signals] in _parse_common_multi_arg(key)]
+def parse_source_signal_arg(key: str = "signal") -> List[SourceSignalSet]:
+    return [SourceSignalSet(source, signals) for [source, signals] in _parse_common_multi_arg(key)]
 
 
-def parse_single_source_signal_arg(key: str) -> SourceSignalPair:
+def parse_single_source_signal_arg(key: str) -> SourceSignalSet:
     """
     parses a single source signal pair with only one value
     """
     r = _parse_single_arg(key)
-    return SourceSignalPair(r[0], [r[1]])
+    return SourceSignalSet(r[0], [r[1]])
 
 
 @dataclass
-class TimePair:
+class TimeSet:
     time_type: str
     time_values: Union[bool, TimeValues]
 
@@ -134,10 +134,10 @@ class TimePair:
         returns this pair with times converted to ranges
         """
         if isinstance(self.time_values, bool):
-            return TimePair(self.time_type, self.time_values)
+            return TimeSet(self.time_type, self.time_values)
         if self.time_type == 'week':
-            return TimePair(self.time_type, weeks_to_ranges(self.time_values))
-        return TimePair(self.time_type, days_to_ranges(self.time_values))
+            return TimeSet(self.time_type, weeks_to_ranges(self.time_values))
+        return TimeSet(self.time_type, days_to_ranges(self.time_values))
 
 
 def _verify_range(start: int, end: int) -> IntRange:
@@ -204,18 +204,18 @@ def parse_day_value(time_value: str) -> IntRange:
     raise ValidationFailedException(msg)
 
 
-def _parse_time_pair(time_type: str, time_values: Union[bool, Sequence[str]]) -> TimePair:
+def _parse_time_pair(time_type: str, time_values: Union[bool, Sequence[str]]) -> TimeSet:
     if isinstance(time_values, bool):
-        return TimePair(time_type, time_values)
+        return TimeSet(time_type, time_values)
 
     if time_type == "week":
-        return TimePair("week", [parse_week_value(t) for t in time_values])
+        return TimeSet("week", [parse_week_value(t) for t in time_values])
     elif time_type == "day":
-        return TimePair("day", [parse_day_value(t) for t in time_values])
+        return TimeSet("day", [parse_day_value(t) for t in time_values])
     raise ValidationFailedException(f'time param: {time_type} is not one of "day" or "week"')
 
 
-def parse_time_arg(key: str = "time") -> Optional[TimePair]:
+def parse_time_arg(key: str = "time") -> Optional[TimeSet]:
     time_pairs = [_parse_time_pair(time_type, time_values) for [time_type, time_values] in _parse_common_multi_arg(key)]
 
     # single value
@@ -236,10 +236,10 @@ def parse_time_arg(key: str = "time") -> Optional[TimePair]:
             return time_pair
         else:
             merged.extend(time_pair.time_values)
-    return TimePair(time_pairs[0].time_type, merged).to_ranges()
+    return TimeSet(time_pairs[0].time_type, merged).to_ranges()
 
 
-def parse_single_time_arg(key: str) -> TimePair:
+def parse_single_time_arg(key: str) -> TimeSet:
     """
     parses a single time pair with only one value
     """
@@ -285,20 +285,20 @@ def parse_week_range_arg(key: str) -> Tuple[int, int]:
         raise ValidationFailedException(f"{key} must match YYYYWW-YYYYWW")
     return r
 
-def parse_day_or_week_arg(key: str, default_value: Optional[int] = None) -> TimePair:
+def parse_day_or_week_arg(key: str, default_value: Optional[int] = None) -> TimeSet:
     v = request.values.get(key)
     if not v:
         if default_value is not None:
             time_type = "day" if guess_time_value_is_day(default_value) else "week"
-            return TimePair(time_type, [default_value])
+            return TimeSet(time_type, [default_value])
         raise ValidationFailedException(f"{key} param is required")
     # format is either YYYY-MM-DD or YYYYMMDD or YYYYMM
     is_week = guess_time_value_is_week(v)
     if is_week:
-        return TimePair("week", [parse_week_arg(key)])
-    return TimePair("day", [parse_day_arg(key)])
+        return TimeSet("week", [parse_week_arg(key)])
+    return TimeSet("day", [parse_day_arg(key)])
 
-def parse_day_or_week_range_arg(key: str) -> TimePair:
+def parse_day_or_week_range_arg(key: str) -> TimeSet:
     v = request.values.get(key)
     if not v:
         raise ValidationFailedException(f"{key} param is required")
@@ -306,5 +306,5 @@ def parse_day_or_week_range_arg(key: str) -> TimePair:
     # so if the first before the - has length 6, it must be a week
     is_week = guess_time_value_is_week(v.split('-', 2)[0])
     if is_week:
-        return TimePair("week", [parse_week_range_arg(key)])
-    return TimePair("day", [parse_day_range_arg(key)])
+        return TimeSet("week", [parse_week_range_arg(key)])
+    return TimeSet("day", [parse_day_range_arg(key)])
