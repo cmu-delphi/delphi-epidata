@@ -9,8 +9,9 @@ from ._db import metadata, engine
 from ._common import app, set_compatibility_mode
 from ._exceptions import MissingOrWrongSourceException
 from .endpoints import endpoints
-from .admin import bp as admin_bp, enable_admin
+from .endpoints.admin import bp as admin_bp, enable_admin
 from ._security import limiter, deduct_on_success, register_user_role
+from ._config import UserRole
 
 __all__ = ["app"]
 
@@ -20,12 +21,13 @@ for endpoint in endpoints:
     endpoint_map[endpoint.bp.name] = endpoint.handle
     limiter.limit(RATE_LIMIT, deduct_when=deduct_on_success)(endpoint.bp)
     app.register_blueprint(endpoint.bp, url_prefix=f"{URL_PREFIX}/{endpoint.bp.name}")
-    with app.app_context():
-        register_user_role(endpoint.bp.name)
-
     alias = getattr(endpoint, "alias", None)
     if alias:
         endpoint_map[alias] = endpoint.handle
+
+with app.app_context():
+    for role in UserRole:
+        register_user_role(role.name)
 
 if enable_admin():
     limiter.exempt(admin_bp)
