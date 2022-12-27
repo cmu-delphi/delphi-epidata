@@ -14,7 +14,7 @@ This data is private to Delphi.
 +------------+---------------+------+-----+---------+------------------------------------+
 */
 
-CREATE TABLE `api_user` (
+CREATE TABLE IF NOT EXISTS `api_user` (
   `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
   `api_key` varchar(50) NOT NULL,
   `tracking` tinyint(1) NULL,

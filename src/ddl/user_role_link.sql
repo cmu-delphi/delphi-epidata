@@ -10,7 +10,7 @@ This data is private to Delphi.
 +------------+---------------+------+-----+---------+----------------+
 */
 
-CREATE TABLE `user_role_link` (
+CREATE TABLE IF NOT EXISTS `user_role_link` (
   `user_id` int(11) NOT NULL,
   `role_id` int(11) NOT NULL,
   PRIMARY KEY (`user_id`, `role_id`)

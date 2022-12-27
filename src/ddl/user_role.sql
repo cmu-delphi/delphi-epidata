@@ -10,7 +10,7 @@ This data is private to Delphi.
 +------------+---------------+------+-----+---------+----------------+
 */
 
-CREATE TABLE `user_role` (
+CREATE TABLE IF NOT EXISTS `user_role` (
   `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
   UNIQUE KEY `name` (`name`)
