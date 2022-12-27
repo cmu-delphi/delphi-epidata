@@ -30,8 +30,8 @@ class ServerTests(unittest.TestCase):
             with db.new_cursor() as cur:
                 cur.execute("truncate table covid_hosp_state_timeseries")
                 cur.execute("truncate table covid_hosp_meta")
-                # cur.execute("truncate table api_user")
-                # cur.execute('insert into api_user(api_key, tracking, registered) values ("key", 1, 1)')
+                cur.execute("delete from api_user")
+                cur.execute('insert into api_user(api_key, tracking, registered) values ("key", 1, 1)')
 
     def insert_issue(self, cur, issue, value, record_type):
         so_many_nulls = ", ".join(["null"] * 57)
