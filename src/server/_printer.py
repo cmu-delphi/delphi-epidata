@@ -9,6 +9,7 @@ import orjson
 from ._config import MAX_RESULTS, MAX_COMPATIBILITY_RESULTS
 from ._security import show_hard_api_key_warning, show_soft_api_key_warning, API_KEY_WARNING_TEXT
 from ._common import is_compatibility_mode
+from .utils.logger import get_structured_logger
 
 
 def print_non_standard(data):
