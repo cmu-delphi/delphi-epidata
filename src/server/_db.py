@@ -2,11 +2,18 @@ from typing import Dict, List
 from sqlalchemy import MetaData, create_engine, inspect
 from sqlalchemy.engine import Engine
 from sqlalchemy.engine.reflection import Inspector
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
 from ._config import SQLALCHEMY_DATABASE_URI, SQLALCHEMY_ENGINE_OPTIONS
 
 engine: Engine = create_engine(SQLALCHEMY_DATABASE_URI, **SQLALCHEMY_ENGINE_OPTIONS)
 metadata = MetaData(bind=engine)
+
+Base = declarative_base()
+Session = sessionmaker(bind=engine)
+session = Session()
+
 
 TABLE_OPTIONS = dict(
     mysql_engine="InnoDB",
