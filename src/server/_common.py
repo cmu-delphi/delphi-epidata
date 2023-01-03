@@ -2,14 +2,15 @@ from typing import cast
 import time
 
 from flask import Flask, g, request
-from sqlalchemy import event
-from sqlalchemy.engine import Connection
+from sqlalchemy import create_engine, event
+from sqlalchemy.engine import Connection, Engine
 from werkzeug.local import LocalProxy
 
 from .utils.logger import get_structured_logger
-from ._config import SECRET
-from ._db import engine
+from ._config import SECRET, SQLALCHEMY_DATABASE_URI, SQLALCHEMY_ENGINE_OPTIONS
 from ._exceptions import DatabaseErrorException, EpiDataException
+
+engine: Engine = create_engine(SQLALCHEMY_DATABASE_URI, **SQLALCHEMY_ENGINE_OPTIONS)
 
 app = Flask("EpiData", static_url_path="")
 app.config["SECRET"] = SECRET

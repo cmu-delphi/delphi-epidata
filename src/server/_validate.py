@@ -3,7 +3,7 @@ from typing import List, Optional, Sequence, Tuple, Union
 from flask import request
 
 from ._exceptions import UnAuthenticatedException, ValidationFailedException
-from .utils import TimeValues
+from .utils import IntRange, TimeValues
 
 
 def resolve_auth_token() -> Optional[str]:
@@ -82,9 +82,6 @@ def extract_strings(key: Union[str, Sequence[str]]) -> Optional[List[str]]:
         return None
     # we can have multiple values
     return [v for vs in s for v in vs.split(",")]
-
-
-IntRange = Union[Tuple[int, int], int]
 
 
 def extract_integer(key: Union[str, Sequence[str]]) -> Optional[int]:
