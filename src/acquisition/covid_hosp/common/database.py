@@ -19,6 +19,7 @@ class Database:
   def __init__(self,
                connection,
                table_name=None,
+               dataset_name=None,
                columns_and_types=None,
                key_columns=None,
                additional_fields=None):
@@ -40,6 +41,7 @@ class Database:
 
     self.connection = connection
     self.table_name = table_name
+    self.dataset_name = dataset_name
     self.publication_col_name = "issue" if table_name == 'covid_hosp_state_timeseries' else \
       'publication_date'
     self.columns_and_types = {
@@ -116,7 +118,7 @@ class Database:
           `covid_hosp_meta`
         WHERE
           `dataset_name` = %s AND `revision_timestamp` = %s
-      ''', (self.table_name, revision))
+      ''', (self.dataset_name, revision))
       for (result,) in cursor:
         return bool(result)
 
@@ -145,7 +147,7 @@ class Database:
           )
         VALUES
           (%s, %s, %s, %s, NOW())
-      ''', (self.table_name, publication_date, revision, meta_json))
+      ''', (self.dataset_name, publication_date, revision, meta_json))
 
   def insert_dataset(self, publication_date, dataframe):
     """Add a dataset to the database.
@@ -232,7 +234,7 @@ class Database:
         from
           `covid_hosp_meta`
         WHERE
-          dataset_name = "{self.table_name}"
+          dataset_name = "{self.dataset_name}"
       ''')
       for (result,) in cursor:
         if result is not None:

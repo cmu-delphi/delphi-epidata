@@ -68,7 +68,7 @@ class DatabaseTests(unittest.TestCase):
 
     mock_connection = MagicMock()
     mock_cursor = mock_connection.cursor()
-    database = Database(mock_connection, table_name=sentinel.table_name)
+    database = Database(mock_connection, table_name=sentinel.table_name, dataset_name=sentinel.dataset_name)
 
     with self.subTest(name='new revision'):
       mock_cursor.__iter__.return_value = [(0,)]
@@ -78,7 +78,7 @@ class DatabaseTests(unittest.TestCase):
       # compare with boolean literal to test the type cast
       self.assertIs(result, False)
       query_values = mock_cursor.execute.call_args[0][-1]
-      self.assertEqual(query_values, (sentinel.table_name, sentinel.revision))
+      self.assertEqual(query_values, (sentinel.dataset_name, sentinel.revision))
 
     with self.subTest(name='old revision'):
       mock_cursor.__iter__.return_value = [(1,)]
@@ -88,7 +88,7 @@ class DatabaseTests(unittest.TestCase):
       # compare with boolean literal to test the type cast
       self.assertIs(result, True)
       query_values = mock_cursor.execute.call_args[0][-1]
-      self.assertEqual(query_values, (sentinel.table_name, sentinel.revision))
+      self.assertEqual(query_values, (sentinel.dataset_name, sentinel.revision))
 
   def test_insert_metadata(self):
     """Add new metadata to the database."""
@@ -98,7 +98,7 @@ class DatabaseTests(unittest.TestCase):
 
     mock_connection = MagicMock()
     mock_cursor = mock_connection.cursor()
-    database = Database(mock_connection, table_name=sentinel.dataset_name)
+    database = Database(mock_connection, table_name=sentinel.table_name, dataset_name=sentinel.dataset_name)
 
     result = database.insert_metadata(
         sentinel.publication_date,
