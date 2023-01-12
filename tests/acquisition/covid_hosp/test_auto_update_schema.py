@@ -10,7 +10,8 @@ from delphi.epidata.acquisition.covid_hosp.auto_update_schema import \
     infer_type, \
     TrieNode, TRIE_END, \
     Column, \
-    create_migration
+    create_migration, \
+    merge_missing
 from delphi.epidata.acquisition.covid_hosp.common.utils import Utils
 import pytest
 
@@ -286,12 +287,34 @@ json_columns = [
         }
     ),
     Case_new_column(
+        "ints_nocache", # number: integer
+        {
+            "name": "xyzzy_sum",
+            "dataTypeName": "number",
+        },
+        {
+            "py_type": "int",
+            "sql_type": "INT",
+        }
+    ),
+    Case_new_column(
         "floats", # number: float
         {
             "dataTypeName": "number",
             "cachedContents": {
                 "largest": "0.0"
             }
+        },
+        {
+            "py_type": "float",
+                "sql_type": "DOUBLE",
+        }
+    ),
+    Case_new_column(
+        "floats_nocache", # number: float
+        {
+            "name": "xyzzy_avg",
+            "dataTypeName": "number",
         },
         {
             "py_type": "float",
@@ -326,23 +349,23 @@ json_columns = [
     ids=[j.name for j in json_columns]
 )
 def new_columns(request):
+    request.param.expected_type.setdefault("csv_name", "xyzzy_csv")
+    request.param.expected_type.setdefault("sql_name", "xyzzy_csv")
     return Case_new_column(
         request.param.name,
         {
             "id": 500,
-            "name": f"xyzzy_csv",
+            "name": request.param.given.get("name", "xyzzy_csv"),
             "dataTypeName": request.param.given["dataTypeName"],
             "description": "Description of xyzzy",
-            "fieldName": f"xyzzy_csv",
+            "fieldName": request.param.given.get("fieldName", "xyzzy_csv"),
             "position": 10,
             "cachedContents": request.param.given.get("cachedContents", {}),
         },
         request.param.expected_type,
         Column(
-            csv_name="xyzzy_csv",
             csv_order=10,
             desc="Description of xyzzy",
-            sql_name="xyzzy_csv",
             **request.param.expected_type
         ),
     )
@@ -488,8 +511,8 @@ SQL_COLUMNS = [
          "`x_int` INT"
     ),
     Case("int required auto increment",
-         Column(sql_name="x_auto", sql_type="INT", required=True, sql_extra="AUTO_INCREMENT"),
-         "`x_auto` INT NOT NULL AUTO_INCREMENT"
+         Column(sql_name="x_int_auto", sql_type="INT", required=True, sql_extra="AUTO_INCREMENT"),
+         "`x_int_auto` INT NOT NULL AUTO_INCREMENT"
     ),
     Case("varchar",
          Column(sql_name="x_varchar", sql_type="VARCHAR", sql_type_size="1"),
@@ -513,9 +536,9 @@ def column_misses():
         "misses",
         ["xyzzy", [case.given for case in SQL_COLUMNS]],
         "\n".join([
-            "ALTER TABLE xyzzy ADD COLUMN (",
+            "\nALTER TABLE xyzzy ADD COLUMN (",
             ",\n".join(case.expected for case in SQL_COLUMNS),
-            ");"
+            ");\n"
         ])
     )
 
@@ -523,3 +546,35 @@ def test_create_migration(column_misses):
     mock_migrations_file = StringIO()
     create_migration(*column_misses.given, mock_migrations_file)
     assert mock_migrations_file.getvalue() == column_misses.expected
+
+
+@pytest.fixture(params=[
+    Case("same",
+         [[case.given for case in SQL_COLUMNS], [case.given for case in SQL_COLUMNS]],
+         [case.given for case in SQL_COLUMNS]
+    ),
+    Case("overlapping",
+         [[case.given for case in SQL_COLUMNS[0:-1]], [case.given for case in SQL_COLUMNS[1:]]],
+         [case.given for case in SQL_COLUMNS]
+    ),
+    Case("disjoint",
+         [[case.given for case in SQL_COLUMNS[0:2]], [case.given for case in SQL_COLUMNS[2:]]],
+         [case.given for case in SQL_COLUMNS]
+    )])  
+def merge_columns_valid(request):
+    yield request.param
+
+def test_merge_missing_valid(merge_columns_valid):
+    assert merge_missing(merge_columns_valid.given) == merge_columns_valid.expected
+
+@pytest.fixture
+def merge_columns_invalid():
+    return Case(
+        "invalid",
+        [[case.given for case in SQL_COLUMNS], [Column(sql_name="x_varchar", sql_type="VARCHAR", sql_type_size="20")]],
+        None
+    )
+
+def test_merge_missing_invalid(merge_columns_invalid):
+    with pytest.raises(AssertionError):
+        merge_missing(merge_columns_invalid.given)
