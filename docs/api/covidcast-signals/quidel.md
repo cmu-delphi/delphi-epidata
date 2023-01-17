@@ -158,4 +158,4 @@ no data is reported for that area on that day; an API query for all reported geo
 that day will not include it.
 
 ## Flu Tests (inactive)
-These signals were updated until May 19, 2020. Documentation is still available on the [inactive Safegraph page](quidel-inactive.md).
+These signals were updated until May 19, 2020. Documentation is still available on the [inactive Quidel page](quidel-inactive.md).
