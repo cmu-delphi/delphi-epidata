@@ -127,7 +127,7 @@ def extract_integers(key: Union[str, Sequence[str]]) -> Optional[List[IntRange]]
 def parse_date(s: str) -> int:
     # parses a given string in format YYYYMMDD or YYYY-MM-DD to a number in the form YYYYMMDD
     try:
-        if s is "*":
+        if s == "*":
             return s
         else:
             return int(s.replace("-", ""))

@@ -73,6 +73,18 @@ class CovidcastTests(CovidcastBase):
       for i in [4, 5, 6]
     ]
     self._insert_rows(rows)
+    return rows
+
+  def _insert_placeholder_set_five(self):
+    rows = [
+      self._make_placeholder_row(time_value=2000_01_01, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03+i)[0]
+      for i in [1, 2, 3]
+    ] + [
+      # issue intended to overlap with the issue above
+      self._make_placeholder_row(time_value=2000_01_01+i-3, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03+i-3)[0]
+      for i in [4, 5, 6]
+    ]
+    self._insert_rows(rows)
     return rows 
 
   def test_round_trip(self):
@@ -254,6 +266,26 @@ class CovidcastTests(CovidcastBase):
     self.assertEqual(response, {
       'result': 1,
       'epidata': expected_time_values,
+      'message': 'success',
+    })
+
+  def test_issues_wildcard(self):
+    """Select all issues with a wildcard query."""
+
+    # insert placeholder data
+    rows = self._insert_placeholder_set_five()
+    expected_issues = [
+      self.expected_from_row(r) for r in rows[:3]
+    ]
+
+    # make the request
+    response, _ = self.request_based_on_row(rows[0], issues="*")
+
+    self.maxDiff = None
+    # assert that the right data came back
+    self.assertEqual(response, {
+      'result': 1,
+      'epidata': expected_issues,
       'message': 'success',
     })
 
