@@ -1,6 +1,6 @@
 ---
 title: Quidel
-parent: Inactive Signals
+parent: Data Sources and Signals
 grand_parent: COVIDcast Main Endpoint
 ---
 
