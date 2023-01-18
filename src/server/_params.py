@@ -381,7 +381,10 @@ def extract_integers(key: Union[str, Sequence[str]]) -> Optional[List[IntRange]]
 def parse_date(s: str) -> int:
     # parses a given string in format YYYYMMDD or YYYY-MM-DD to a number in the form YYYYMMDD
     try:
-        return int(s.replace("-", ""))
+        if s == "*":
+            return s
+        else:
+            return int(s.replace("-", ""))
     except ValueError:
         raise ValidationFailedException(f"not a valid date: {s}")
 
@@ -477,6 +480,8 @@ def parse_time_set() -> TimeSet:
         # old version
         require_all("time_type", "time_values")
         time_values = extract_dates("time_values")
+        if len(time_values) == 1 and time_values[0] == "*":
+            return TimeSet(time_type, True)
         return TimeSet(time_type, time_values)
 
     if ":" not in request.values.get("time", ""):
