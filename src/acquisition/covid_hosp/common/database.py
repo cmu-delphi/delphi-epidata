@@ -19,7 +19,7 @@ class Database:
   def __init__(self,
                connection,
                table_name=None,
-               dataset_name=None,
+               hhs_dataset_id=None,
                columns_and_types=None,
                key_columns=None,
                additional_fields=None):
@@ -31,6 +31,8 @@ class Database:
       An open connection to a database.
     table_name : str
       The name of the table which holds the dataset.
+    hhs_dataset_id : str
+      The 9-character healthdata.gov identifier for this dataset.
     columns_and_types : tuple[str, str, Callable]
       List of 3-tuples of (CSV header name, SQL column name, data type) for
       all the columns in the CSV file.
@@ -41,7 +43,7 @@ class Database:
 
     self.connection = connection
     self.table_name = table_name
-    self.dataset_name = dataset_name
+    self.hhs_dataset_id = hhs_dataset_id
     self.publication_col_name = "issue" if table_name == 'covid_hosp_state_timeseries' else \
       'publication_date'
     self.columns_and_types = {
@@ -117,8 +119,8 @@ class Database:
         FROM
           `covid_hosp_meta`
         WHERE
-          `dataset_name` = %s AND `revision_timestamp` = %s
-      ''', (self.dataset_name, revision))
+          `hhs_dataset_id` = %s AND `revision_timestamp` = %s
+      ''', (self.hhs_dataset_id, revision))
       for (result,) in cursor:
         return bool(result)
 
@@ -140,14 +142,15 @@ class Database:
         INSERT INTO
           `covid_hosp_meta` (
             `dataset_name`,
+            `hhs_dataset_id`,
             `publication_date`,
             `revision_timestamp`,
             `metadata_json`,
             `acquisition_datetime`
           )
         VALUES
-          (%s, %s, %s, %s, NOW())
-      ''', (self.dataset_name, publication_date, revision, meta_json))
+          (%s, %s, %s, %s, %s, NOW())
+      ''', (self.table_name, self.hhs_dataset_id, publication_date, revision, meta_json))
 
   def insert_dataset(self, publication_date, dataframe):
     """Add a dataset to the database.
@@ -234,7 +237,7 @@ class Database:
         from
           `covid_hosp_meta`
         WHERE
-          dataset_name = "{self.dataset_name}"
+          hhs_dataset_id = "{self.hhs_dataset_id}"
       ''')
       for (result,) in cursor:
         if result is not None:

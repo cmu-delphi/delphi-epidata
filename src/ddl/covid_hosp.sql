@@ -48,6 +48,7 @@ surfaced through the Epidata API.
 CREATE TABLE `covid_hosp_meta` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `dataset_name` VARCHAR(64) NOT NULL,
+  `hhs_dataset_id` CHAR(9) NOT NULL DEFAULT "????-????",
   `publication_date` INT NOT NULL,
   `revision_timestamp` VARCHAR(512) NOT NULL,
   `metadata_json` JSON NOT NULL,

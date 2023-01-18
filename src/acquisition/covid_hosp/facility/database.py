@@ -214,6 +214,6 @@ class Database(BaseDatabase):
         *args,
         **kwargs,
         table_name=Database.TABLE_NAME,
-        dataset_name=Network.DATASET_ID,
+        hhs_dataset_id=Network.DATASET_ID,
         key_columns=Database.KEY_COLS,
         columns_and_types=Database.ORDERED_CSV_COLUMNS)
