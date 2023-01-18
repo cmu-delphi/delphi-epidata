@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, request
 
 from .._params import extract_integer, extract_integers, extract_strings
 from .._query import execute_query, QueryBuilder
@@ -11,7 +11,7 @@ alias = None
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    require_all("regions", "epiweeks")
+    require_all(request, "regions", "epiweeks")
     regions = extract_strings("regions")
     epiweeks = extract_integers("epiweeks")
     issues = extract_integers("issues")

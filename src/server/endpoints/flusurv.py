@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, request
 
 from .._params import extract_integer, extract_integers, extract_strings
 from .._query import execute_query, QueryBuilder
@@ -9,7 +9,7 @@ bp = Blueprint("flusurv", __name__)
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    require_all("epiweeks", "locations")
+    require_all(request, "epiweeks", "locations")
 
     epiweeks = extract_integers("epiweeks")
     locations = extract_strings("locations")

@@ -4,6 +4,8 @@
 import unittest
 import base64
 
+from flask import request
+
 # from flask.testing import FlaskClient
 from delphi.epidata.server._common import app
 from delphi.epidata.server._validate import (
@@ -34,74 +36,74 @@ class UnitTests(unittest.TestCase):
     def test_resolve_auth_token(self):
         with self.subTest("no auth"):
             with app.test_request_context("/"):
-                self.assertIsNone(resolve_auth_token())
+                self.assertIsNone(resolve_auth_token(request))
 
         with self.subTest("param"):
             with app.test_request_context("/?auth=abc"):
-                self.assertEqual(resolve_auth_token(), "abc")
+                self.assertEqual(resolve_auth_token(request), "abc")
 
         with self.subTest("bearer token"):
             with app.test_request_context("/", headers={"Authorization": "Bearer abc"}):
-                self.assertEqual(resolve_auth_token(), "abc")
+                self.assertEqual(resolve_auth_token(request), "abc")
 
         with self.subTest("basic token"):
             userpass = base64.b64encode(b"epidata:abc").decode("utf-8")
             with app.test_request_context(
                 "/", headers={"Authorization": f"Basic {userpass}"}
             ):
-                self.assertEqual(resolve_auth_token(), "abc")
+                self.assertEqual(resolve_auth_token(request), "abc")
 
     def test_check_auth_token(self):
         with self.subTest("no auth but optional"):
             with app.test_request_context("/"):
-                self.assertFalse(check_auth_token("abc", True))
+                self.assertFalse(check_auth_token(request, "abc", True))
         with self.subTest("no auth but required"):
             with app.test_request_context("/"):
                 self.assertRaises(
-                    ValidationFailedException, lambda: check_auth_token("abc")
+                    ValidationFailedException, lambda: check_auth_token(request, "abc")
                 )
         with self.subTest("auth and required"):
             with app.test_request_context("/?auth=abc"):
-                self.assertTrue(check_auth_token("abc"))
+                self.assertTrue(check_auth_token(request, "abc"))
         with self.subTest("auth and required but wrong"):
             with app.test_request_context("/?auth=abc"):
                 self.assertRaises(
-                    UnAuthenticatedException, lambda: check_auth_token("def")
+                    UnAuthenticatedException, lambda: check_auth_token(request, "def")
                 )
         with self.subTest("auth and required but wrong but optional"):
             with app.test_request_context("/?auth=abc"):
-                self.assertFalse(check_auth_token("def", True))
+                self.assertFalse(check_auth_token(request, "def", True))
 
     def test_require_all(self):
         with self.subTest("all given"):
             with app.test_request_context("/"):
-                self.assertTrue(require_all())
+                self.assertTrue(require_all(request))
             with app.test_request_context("/?abc=abc&def=3"):
-                self.assertTrue(require_all("abc", "def"))
+                self.assertTrue(require_all(request, "abc", "def"))
         with self.subTest("missing parameter"):
             with app.test_request_context("/?abc=abc"):
                 self.assertRaises(
-                    ValidationFailedException, lambda: require_all("abc", "def")
+                    ValidationFailedException, lambda: require_all(request, "abc", "def")
                 )
         with self.subTest("missing empty parameter"):
             with app.test_request_context("/?abc=abc&def="):
                 self.assertRaises(
-                    ValidationFailedException, lambda: require_all("abc", "def")
+                    ValidationFailedException, lambda: require_all(request, "abc", "def")
                 )
 
     def test_require_any(self):
         with self.subTest("default given"):
             with app.test_request_context("/"):
-                self.assertRaises(ValidationFailedException, lambda: require_any("abc"))
+                self.assertRaises(ValidationFailedException, lambda: require_any(request, "abc"))
         with self.subTest("one option give"):
             with app.test_request_context("/?abc=abc"):
-                self.assertTrue(require_any("abc", "def"))
+                self.assertTrue(require_any(request, "abc", "def"))
         with self.subTest("multiple options given"):
             with app.test_request_context("/?abc=abc&def=d"):
-                self.assertTrue(require_any("abc", "def"))
+                self.assertTrue(require_any(request, "abc", "def"))
         with self.subTest("one options given with is empty"):
             with app.test_request_context("/?abc="):
-                self.assertRaises(ValidationFailedException, lambda: require_any("abc"))
+                self.assertRaises(ValidationFailedException, lambda: require_any(request, "abc"))
         with self.subTest("one options given with is empty but ok"):
             with app.test_request_context("/?abc="):
-                self.assertTrue(require_any("abc", empty=True))
+                self.assertTrue(require_any(request, "abc", empty=True))

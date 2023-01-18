@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, request
 
 from .._params import extract_integers, extract_strings
 from .._query import execute_query, QueryBuilder
@@ -10,7 +10,7 @@ bp = Blueprint("covid_hosp_facility", __name__)
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    require_all("hospital_pks", "collection_weeks")
+    require_all(request, "hospital_pks", "collection_weeks")
     hospital_pks = extract_strings("hospital_pks")
     collection_weeks = extract_integers("collection_weeks")
     publication_dates = extract_integers("publication_dates")

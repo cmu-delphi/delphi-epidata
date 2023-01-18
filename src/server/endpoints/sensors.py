@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, Request, request
 
 from .._config import AUTH, GRANULAR_SENSOR_AUTH_TOKENS, OPEN_SENSORS
 from .._exceptions import EpiDataException
@@ -27,8 +27,8 @@ MAX_AUTH_KEYS_PROVIDED_PER_SENSOR_QUERY = 1
 PHP_INT_MAX = 2147483647
 
 
-def _authenticate(names: List[str]):
-    auth_tokens_presented = (resolve_auth_token() or "").split(",")
+def _authenticate(r: Request, names: List[str]):
+    auth_tokens_presented = (resolve_auth_token(r) or "").split(",")
 
     names = extract_strings("names")
     n_names = len(names)
@@ -103,10 +103,10 @@ def _authenticate(names: List[str]):
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    require_all("names", "locations", "epiweeks")
+    require_all(request, "names", "locations", "epiweeks")
 
     names = extract_strings("names") or []
-    _authenticate(names)
+    _authenticate(request, names)
 
     # parse the request
     locations = extract_strings("locations")

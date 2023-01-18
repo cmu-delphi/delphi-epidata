@@ -20,9 +20,9 @@ alias = None
 @bp.route("/", methods=("GET", "POST"))
 def handle():
     require_all(
-        "data_source", "time_type", "geo_type", "time_values", "signals", "sensor_names"
+        request, "data_source", "time_type", "geo_type", "time_values", "signals", "sensor_names"
     )
-    require_any("geo_value", "geo_values", empty=True)
+    require_any(request, "geo_value", "geo_values", empty=True)
 
     time_values = extract_dates("time_values")
     as_of = extract_date("as_of")

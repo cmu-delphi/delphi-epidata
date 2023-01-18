@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, request
 
 from .._config import AUTH
 from .._printer import print_non_standard
@@ -12,7 +12,7 @@ alias = None
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    check_auth_token(AUTH["norostat"])
+    check_auth_token(request, AUTH["norostat"])
 
     # build query
     query = "SELECT DISTINCT `release_date` FROM `norostat_raw_datatable_version_list`"

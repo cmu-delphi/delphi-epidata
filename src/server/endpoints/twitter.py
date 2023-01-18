@@ -19,9 +19,9 @@ alias = None
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    check_auth_token(AUTH["twitter"])
-    require_all("locations")
-    require_any("dates", "epiweeks")
+    check_auth_token(request, AUTH["twitter"])
+    require_all(request, "locations")
+    require_any(request, "dates", "epiweeks")
 
     locations = extract_strings("locations")
     if "dates" in request.values:

@@ -100,7 +100,7 @@ def _verify_argument_time_type_matches(is_day_argument: bool, count_daily_signal
 
 @bp.route("/trend", methods=("GET", "POST"))
 def handle_trend():
-    require_all("window", "date")
+    require_all(request, "window", "date")
     source_signal_sets = parse_source_signal_sets()
     daily_signals, weekly_signals = count_signal_time_types(source_signal_sets)
     source_signal_sets, alias_mapper = create_source_signal_alias_mapper(source_signal_sets)
@@ -155,7 +155,7 @@ def handle_trend():
 
 @bp.route("/trendseries", methods=("GET", "POST"))
 def handle_trendseries():
-    require_all("window")
+    require_all(request, "window")
     source_signal_sets = parse_source_signal_sets()
     daily_signals, weekly_signals = count_signal_time_types(source_signal_sets)
     source_signal_sets, alias_mapper = create_source_signal_alias_mapper(source_signal_sets)
@@ -208,7 +208,7 @@ def handle_trendseries():
 
 @bp.route("/correlation", methods=("GET", "POST"))
 def handle_correlation():
-    require_all("reference", "window", "others", "geo")
+    require_all(request, "reference", "window", "others", "geo")
     reference = parse_single_source_signal_arg("reference")
     other_sets = parse_source_signal_arg("others")
     daily_signals, weekly_signals = count_signal_time_types(other_sets + [reference])
@@ -364,7 +364,7 @@ def handle_backfill():
     """
     example query: http://localhost:5000/covidcast/backfill?signal=fb-survey:smoothed_cli&time=day:20200101-20220101&geo=state:ny&anchor_lag=60
     """
-    require_all("geo", "time", "signal")
+    require_all(request, "geo", "time", "signal")
     source_signal_set = parse_single_source_signal_arg("signal")
     daily_signals, weekly_signals = count_signal_time_types([source_signal_set])
     source_signal_sets, _ = create_source_signal_alias_mapper([source_signal_set])

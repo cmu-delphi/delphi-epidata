@@ -12,7 +12,7 @@ alias = None
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    require_all("system", "epiweek")
+    require_all(request, "system", "epiweek")
     system = request.values["system"]
     epiweek = int(request.values["epiweek"])
 

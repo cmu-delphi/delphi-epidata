@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, Tuple
 
-from flask import Blueprint
+from flask import Blueprint, request
 
 from .._config import AUTH
 from .._params import (
@@ -21,9 +21,9 @@ alias = None
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    authorized = check_auth_token(AUTH["fluview"], optional=True)
+    authorized = check_auth_token(request, AUTH["fluview"], optional=True)
 
-    require_all("epiweeks", "regions")
+    require_all(request, "epiweeks", "regions")
 
     epiweeks = extract_integers("epiweeks")
     regions = extract_strings("regions")
