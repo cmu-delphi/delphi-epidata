@@ -1,7 +1,8 @@
 from flask import Blueprint
 
+from .._params import extract_strings
 from .._query import execute_query, QueryBuilder
-from .._validate import extract_strings, require_any
+from .._validate import require_any
 
 # first argument is the endpoint name
 bp = Blueprint("covid_hosp_facility_lookup", __name__)

@@ -14,25 +14,23 @@ from .._params import (
     GeoSet,
     SourceSignalSet,
     TimeSet,
+    extract_date,
+    extract_dates,
+    extract_integer,
     parse_geo_arg,
     parse_source_signal_arg,
-    parse_time_arg,
     parse_day_or_week_arg,
     parse_day_or_week_range_arg,
     parse_single_source_signal_arg,
     parse_single_time_arg,
     parse_single_geo_arg,
+    parse_geo_sets,
+    parse_source_signal_sets,
+    parse_time_set,
 )
 from .._query import QueryBuilder, execute_query, run_query, parse_row, filter_fields
 from .._printer import create_printer, CSVPrinter
-from .._validate import (
-    extract_date,
-    extract_dates,
-    extract_integer,
-    extract_strings,
-    require_all,
-    require_any,
-)
+from .._validate import require_all
 from .._pandas import as_pandas, print_pandas
 from .covidcast_utils import compute_trend, compute_trends, compute_correlations, compute_trend_value, CovidcastMetaEntry
 from ..utils import shift_day_value, day_to_time_value, time_value_to_iso, time_value_to_day, shift_week_value, time_value_to_week, guess_time_value_is_day, week_to_time_value, TimeValues
@@ -44,54 +42,6 @@ alias = None
 
 latest_table = "epimetric_latest_v"
 history_table = "epimetric_full_v"
-
-def parse_source_signal_sets() -> List[SourceSignalSet]:
-    ds = request.values.get("data_source")
-    if ds:
-        # old version
-        require_any("signal", "signals", empty=True)
-        signals = extract_strings(("signals", "signal"))
-        if len(signals) == 1 and signals[0] == "*":
-            return [SourceSignalSet(ds, True)]
-        return [SourceSignalSet(ds, signals)]
-
-    if ":" not in request.values.get("signal", ""):
-        raise ValidationFailedException("missing parameter: signal or (data_source and signal[s])")
-
-    return parse_source_signal_arg()
-
-
-def parse_geo_sets() -> List[GeoSet]:
-    geo_type = request.values.get("geo_type")
-    if geo_type:
-        # old version
-        require_any("geo_value", "geo_values", empty=True)
-        geo_values = extract_strings(("geo_values", "geo_value"))
-        if len(geo_values) == 1 and geo_values[0] == "*":
-            return [GeoSet(geo_type, True)]
-        return [GeoSet(geo_type, geo_values)]
-
-    if ":" not in request.values.get("geo", ""):
-        raise ValidationFailedException("missing parameter: geo or (geo_type and geo_value[s])")
-
-    return parse_geo_arg()
-
-
-def parse_time_set() -> TimeSet:
-    time_type = request.values.get("time_type")
-    if time_type:
-        # old version
-        require_all("time_type", "time_values")
-        time_values = extract_dates("time_values")
-        if len(time_values) == 1 and time_values[0] == "*":
-            return TimeSet(time_type, True)
-        return TimeSet(time_type, time_values)
-
-    if ":" not in request.values.get("time", ""):
-        raise ValidationFailedException("missing parameter: time or (time_type and time_values)")
-
-    return parse_time_arg()
-
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():

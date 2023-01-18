@@ -7,6 +7,11 @@ import unittest
 # from flask.testing import FlaskClient
 from delphi.epidata.server._common import app
 from delphi.epidata.server._params import (
+    extract_strings,
+    extract_integers,
+    extract_integer,
+    extract_date,
+    extract_dates,
     parse_geo_arg,
     parse_single_geo_arg,
     parse_source_signal_arg,
@@ -366,3 +371,128 @@ class UnitTests(unittest.TestCase):
                 self.assertRaises(ValidationFailedException, parse_day_arg, "time")
             with app.test_request_context("/?time=week:20121010"):
                 self.assertRaises(ValidationFailedException, parse_day_arg, "time")
+
+    def test_extract_strings(self):
+        with self.subTest("empty"):
+            with app.test_request_context("/"):
+                self.assertIsNone(extract_strings("s"))
+        with self.subTest("single"):
+            with app.test_request_context("/?s=a"):
+                self.assertEqual(extract_strings("s"), ["a"])
+        with self.subTest("multiple"):
+            with app.test_request_context("/?s=a,b"):
+                self.assertEqual(extract_strings("s"), ["a", "b"])
+        with self.subTest("multiple param"):
+            with app.test_request_context("/?s=a&s=b"):
+                self.assertEqual(extract_strings("s"), ["a", "b"])
+        with self.subTest("multiple param mixed"):
+            with app.test_request_context("/?s=a&s=b,c"):
+                self.assertEqual(extract_strings("s"), ["a", "b", "c"])
+
+    def test_extract_integer(self):
+        with self.subTest("empty"):
+            with app.test_request_context("/"):
+                self.assertIsNone(extract_integer("s"))
+        with self.subTest("single"):
+            with app.test_request_context("/?s=1"):
+                self.assertEqual(extract_integer("s"), 1)
+        with self.subTest("not a number"):
+            with app.test_request_context("/?s=a"):
+                self.assertRaises(ValidationFailedException, lambda: extract_integer("s"))
+
+    def test_extract_integers(self):
+        with self.subTest("empty"):
+            with app.test_request_context("/"):
+                self.assertIsNone(extract_integers("s"))
+        with self.subTest("single"):
+            with app.test_request_context("/?s=1"):
+                self.assertEqual(extract_integers("s"), [1])
+        with self.subTest("multiple"):
+            with app.test_request_context("/?s=1,2"):
+                self.assertEqual(extract_integers("s"), [1,2])
+        with self.subTest("multiple param"):
+            with app.test_request_context("/?s=1&s=2"):
+                self.assertEqual(extract_integers("s"), [1,2])
+        with self.subTest("multiple param mixed"):
+            with app.test_request_context("/?s=1&s=2,3"):
+                self.assertEqual(extract_integers("s"), [1, 2, 3])
+
+        with self.subTest("not a number"):
+            with app.test_request_context("/?s=a"):
+                self.assertRaises(ValidationFailedException, lambda: extract_integers("s"))
+
+        with self.subTest("simple range"):
+            with app.test_request_context("/?s=1-2"):
+                self.assertEqual(extract_integers("s"), [(1, 2)])
+        with self.subTest("inverted range"):
+            with app.test_request_context("/?s=2-1"):
+                self.assertRaises(ValidationFailedException, lambda: extract_integers("s"))
+        with self.subTest("single range"):
+            with app.test_request_context("/?s=1-1"):
+                self.assertEqual(extract_integers("s"), [1])
+
+    def test_extract_date(self):
+        with self.subTest("empty"):
+            with app.test_request_context("/"):
+                self.assertIsNone(extract_date("s"))
+        with self.subTest("single"):
+            with app.test_request_context("/?s=2020-01-01"):
+                self.assertEqual(extract_date("s"), 20200101)
+            with app.test_request_context("/?s=20200101"):
+                self.assertEqual(extract_date("s"), 20200101)
+        with self.subTest("not a date"):
+            with app.test_request_context("/?s=abc"):
+                self.assertRaises(ValidationFailedException, lambda: extract_date("s"))
+
+    def test_extract_dates(self):
+        with self.subTest("empty"):
+            with app.test_request_context("/"):
+                self.assertIsNone(extract_dates("s"))
+        with self.subTest("single"):
+            with app.test_request_context("/?s=20200101"):
+                self.assertEqual(extract_dates("s"), [20200101])
+        with self.subTest("multiple"):
+            with app.test_request_context("/?s=20200101,20200102"):
+                self.assertEqual(extract_dates("s"), [20200101, 20200102])
+        with self.subTest("multiple param"):
+            with app.test_request_context("/?s=20200101&s=20200102"):
+                self.assertEqual(extract_dates("s"), [20200101, 20200102])
+        with self.subTest("multiple param mixed"):
+            with app.test_request_context("/?s=20200101&s=20200102,20200103"):
+                self.assertEqual(extract_dates("s"), [20200101, 20200102, 20200103])
+        with self.subTest("single iso"):
+            with app.test_request_context("/?s=2020-01-01"):
+                self.assertEqual(extract_dates("s"), [20200101])
+        with self.subTest("multiple iso"):
+            with app.test_request_context("/?s=2020-01-01,2020-01-02"):
+                self.assertEqual(extract_dates("s"), [20200101, 20200102])
+        with self.subTest("multiple param iso"):
+            with app.test_request_context("/?s=2020-01-01&s=2020-01-02"):
+                self.assertEqual(extract_dates("s"), [20200101, 20200102])
+        with self.subTest("multiple param mixed iso"):
+            with app.test_request_context("/?s=2020-01-01&s=2020-01-02,2020-01-03"):
+                self.assertEqual(extract_dates("s"), [20200101, 20200102, 20200103])
+
+        with self.subTest("not a date"):
+            with app.test_request_context("/?s=a"):
+                self.assertRaises(ValidationFailedException, lambda: extract_dates("s"))
+
+        with self.subTest("simple range"):
+            with app.test_request_context("/?s=20200101-20200102"):
+                self.assertEqual(extract_dates("s"), [(20200101, 20200102)])
+        with self.subTest("inverted range"):
+            with app.test_request_context("/?s=20200102-20200101"):
+                self.assertRaises(ValidationFailedException, lambda: extract_dates("s"))
+        with self.subTest("single range"):
+            with app.test_request_context("/?s=20200101-20200101"):
+                self.assertEqual(extract_dates("s"), [20200101])
+
+        with self.subTest("simple range iso"):
+            with app.test_request_context("/?s=2020-01-01:2020-01-02"):
+                self.assertEqual(extract_dates("s"), [(20200101, 20200102)])
+        with self.subTest("inverted range iso"):
+            with app.test_request_context("/?s=2020-01-02:2020-01-01"):
+                self.assertRaises(ValidationFailedException, lambda: extract_dates("s"))
+        with self.subTest("single range iso"):
+            with app.test_request_context("/?s=2020-01-01:2020-01-01"):
+                self.assertEqual(extract_dates("s"), [20200101])
