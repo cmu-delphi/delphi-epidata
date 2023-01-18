@@ -1,7 +1,8 @@
 from flask import Blueprint
 
+from .._params import extract_integer, extract_integers, extract_strings
 from .._query import execute_query, QueryBuilder
-from .._validate import extract_integer, extract_integers, extract_strings, require_all
+from .._validate import require_all
 
 # first argument is the endpoint name
 bp = Blueprint("nidss_flu", __name__)

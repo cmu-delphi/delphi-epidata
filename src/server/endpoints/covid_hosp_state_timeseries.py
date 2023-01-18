@@ -1,7 +1,8 @@
 from flask import Blueprint
 
+from .._params import extract_integers, extract_strings, extract_date
 from .._query import execute_query, QueryBuilder
-from .._validate import extract_integers, extract_strings, extract_date, require_all
+from .._validate import require_all
 
 # first argument is the endpoint name
 bp = Blueprint("covid_hosp_state_timeseries", __name__)
