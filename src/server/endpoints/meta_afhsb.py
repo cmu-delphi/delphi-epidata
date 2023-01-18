@@ -29,4 +29,4 @@ def handle():
         query = f"SELECT DISTINCT `{key}` FROM (select `{key}` from `{table1}` union select `{key}` from `{table2}`) t"
         data[key] = parse_result(query, {}, [], [key])
 
-    return print_non_standard(data)
+    return print_non_standard(request, data)

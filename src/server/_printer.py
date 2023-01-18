@@ -2,7 +2,7 @@ from csv import DictWriter
 from io import StringIO
 from typing import Any, Dict, Iterable, List, Optional, Union
 
-from flask import Response, jsonify, request, stream_with_context
+from flask import Request, Response, jsonify, stream_with_context
 from flask.json import dumps
 import orjson
 
@@ -11,7 +11,7 @@ from ._common import is_compatibility_mode
 from .utils.logger import get_structured_logger
 
 
-def print_non_standard(data):
+def print_non_standard(request: Request, data):
     """
     prints a non standard JSON message
     """
@@ -250,7 +250,7 @@ class JSONLPrinter(APrinter):
         return b""
 
 
-def create_printer() -> APrinter:
+def create_printer(request: Request) -> APrinter:
     format: str = request.values.get("format", "classic")
     if format == "tree":
         return ClassicTreePrinter("signal")

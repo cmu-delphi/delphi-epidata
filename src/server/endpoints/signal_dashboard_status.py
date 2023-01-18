@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, request
 
 from .signal_dashboard_coverage import fetch_coverage_data
 from .._query import parse_row, run_query
@@ -30,7 +30,7 @@ def handle():
     AND enabled_signal.`id` = status.`signal_id`
     """
 
-    p = create_printer()
+    p = create_printer(request)
 
     def gen(rows, coverage_data):
         for row in rows:

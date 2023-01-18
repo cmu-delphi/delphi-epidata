@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, request
 
 from .._printer import print_non_standard
 from .._query import parse_result
@@ -46,4 +46,4 @@ def handle():
         "wiki": wiki,
         "delphi": delphi,
     }
-    return print_non_standard([row])
+    return print_non_standard(request, [row])

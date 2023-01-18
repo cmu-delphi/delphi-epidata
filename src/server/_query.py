@@ -12,6 +12,7 @@ from typing import (
     cast
 )
 
+from flask import request
 from sqlalchemy import text
 from sqlalchemy.engine import Row
 
@@ -259,7 +260,7 @@ def execute_queries(
     execute the given queries and return the response to send them
     """
 
-    p = create_printer()
+    p = create_printer(request)
 
     fields_to_send = set(extract_strings("fields") or [])
     if fields_to_send:

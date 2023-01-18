@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, request
 
 from .._printer import create_printer
 from .._query import filter_fields, parse_result
@@ -23,4 +23,4 @@ def handle():
         for row in meta_fluview():
             yield row
 
-    return create_printer()(filter_fields(gen()))
+    return create_printer(request)(filter_fields(gen()))

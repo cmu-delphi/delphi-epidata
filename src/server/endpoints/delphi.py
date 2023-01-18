@@ -29,4 +29,4 @@ def handle():
         row["forecast"] = loads(row["json"])
         del row["json"]
     # send query
-    return print_non_standard(rows)
+    return print_non_standard(request, rows)
