@@ -80,7 +80,7 @@ class CovidcastTests(CovidcastBase):
       self._make_placeholder_row(time_value=2000_01_01, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03+i)[0]
       for i in [1, 2, 3]
     ] + [
-      # issue intended to overlap with the issue above
+      # different time_values, same issues
       self._make_placeholder_row(time_value=2000_01_01+i-3, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03+i-3)[0]
       for i in [4, 5, 6]
     ]
