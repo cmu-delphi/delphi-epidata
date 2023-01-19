@@ -474,8 +474,11 @@ class QueryBuilder:
 
     def apply_issues_filter(self, history_table: str, issues: Optional[TimeValues]) -> "QueryBuilder":
         if issues:
-            self.retable(history_table)
-            self.where_integers("issue", issues)
+            if issues == ["*"]:
+                self.retable(history_table)
+            else:
+                self.retable(history_table)
+                self.where_integers("issue", issues)
         return self
 
     def apply_as_of_filter(self, history_table: str, as_of: Optional[int]) -> "QueryBuilder":
