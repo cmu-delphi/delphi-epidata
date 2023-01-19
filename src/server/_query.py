@@ -18,9 +18,8 @@ from sqlalchemy.engine import Row
 from ._common import db
 from ._printer import create_printer, APrinter
 from ._exceptions import DatabaseErrorException
-from ._validate import extract_strings
-from ._params import GeoPair, SourceSignalPair, TimePair
-from .utils import time_values_to_ranges, TimeValues
+from ._params import extract_strings, GeoSet, SourceSignalSet, TimeSet
+from .utils import time_values_to_ranges, IntRange, TimeValues
 
 
 def date_string(value: int) -> str:
@@ -34,7 +33,7 @@ def date_string(value: int) -> str:
 
 def to_condition(
     field: str,
-    value: Union[str, Tuple[int, int], int],
+    value: Union[str, IntRange],
     param_key: str,
     params: Dict[str, Any],
     formatter=lambda x: x,
@@ -50,7 +49,7 @@ def to_condition(
 
 def filter_values(
     field: str,
-    values: Optional[Sequence[Union[str, Tuple[int, int], int]]],
+    values: Optional[Sequence[Union[str, IntRange]]],
     param_key: str,
     params: Dict[str, Any],
     formatter=lambda x: x,
@@ -75,7 +74,7 @@ def filter_strings(
 
 def filter_integers(
     field: str,
-    values: Optional[Sequence[Union[Tuple[int, int], int]]],
+    values: Optional[Sequence[IntRange]],
     param_key: str,
     params: Dict[str, Any],
 ):
@@ -115,25 +114,25 @@ def filter_fields(generator: Iterable[Dict[str, Any]]):
             yield filtered
 
 
-def filter_geo_pairs(
+def filter_geo_sets(
     type_field: str,
     value_field: str,
-    values: Sequence[GeoPair],
+    values: Sequence[GeoSet],
     param_key: str,
     params: Dict[str, Any],
 ) -> str:
     """
-    returns the SQL sub query to filter by the given geo pairs
+    returns the SQL sub query to filter by the given geo sets
     """
 
-    def filter_pair(pair: GeoPair, i) -> str:
+    def filter_set(gset: GeoSet, i) -> str:
         type_param = f"{param_key}_{i}t"
-        params[type_param] = pair.geo_type
-        if isinstance(pair.geo_values, bool) and pair.geo_values:
+        params[type_param] = gset.geo_type
+        if isinstance(gset.geo_values, bool) and gset.geo_values:
             return f"{type_field} = :{type_param}"
-        return f"({type_field} = :{type_param} AND {filter_strings(value_field, cast(Sequence[str], pair.geo_values), type_param, params)})"
+        return f"({type_field} = :{type_param} AND {filter_strings(value_field, cast(Sequence[str], gset.geo_values), type_param, params)})"
 
-    parts = [filter_pair(p, i) for i, p in enumerate(values)]
+    parts = [filter_set(p, i) for i, p in enumerate(values)]
 
     if not parts:
         # something has to be selected
@@ -142,25 +141,25 @@ def filter_geo_pairs(
     return f"({' OR '.join(parts)})"
 
 
-def filter_source_signal_pairs(
+def filter_source_signal_sets(
     source_field: str,
     signal_field: str,
-    values: Sequence[SourceSignalPair],
+    values: Sequence[SourceSignalSet],
     param_key: str,
     params: Dict[str, Any],
 ) -> str:
     """
-    returns the SQL sub query to filter by the given source signal pairs
+    returns the SQL sub query to filter by the given source signal sets
     """
 
-    def filter_pair(pair: SourceSignalPair, i) -> str:
+    def filter_set(ssset: SourceSignalSet, i) -> str:
         source_param = f"{param_key}_{i}t"
-        params[source_param] = pair.source
-        if isinstance(pair.signal, bool) and pair.signal:
+        params[source_param] = ssset.source
+        if isinstance(ssset.signal, bool) and ssset.signal:
             return f"{source_field} = :{source_param}"
-        return f"({source_field} = :{source_param} AND {filter_strings(signal_field, cast(Sequence[str], pair.signal), source_param, params)})"
+        return f"({source_field} = :{source_param} AND {filter_strings(signal_field, cast(Sequence[str], ssset.signal), source_param, params)})"
 
-    parts = [filter_pair(p, i) for i, p in enumerate(values)]
+    parts = [filter_set(p, i) for i, p in enumerate(values)]
 
     if not parts:
         # something has to be selected
@@ -169,26 +168,26 @@ def filter_source_signal_pairs(
     return f"({' OR '.join(parts)})"
 
 
-def filter_time_pair(
+def filter_time_set(
     type_field: str,
     time_field: str,
-    pair: Optional[TimePair],
+    tset: Optional[TimeSet],
     param_key: str,
     params: Dict[str, Any],
 ) -> str:
     """
-    returns the SQL sub query to filter by the given time pair
+    returns the SQL sub query to filter by the given time set
     """
-    # safety path; should normally not be reached as time pairs are enforced by the API
-    if not pair:
+    # safety path; should normally not be reached as time sets are enforced by the API
+    if not tset:
         return "FALSE"
 
     type_param = f"{param_key}_0t"
-    params[type_param] = pair.time_type
-    if isinstance(pair.time_values, bool) and pair.time_values:
+    params[type_param] = tset.time_type
+    if isinstance(tset.time_values, bool) and tset.time_values:
         parts =  f"{type_field} = :{type_param}"
     else:
-        ranges = pair.to_ranges().time_values
+        ranges = tset.to_ranges().time_values
         parts = f"({type_field} = :{type_param} AND {filter_integers(time_field, ranges, type_param, params)})"
 
     return f"({parts})"
@@ -399,24 +398,24 @@ class QueryBuilder:
     def where_integers(
         self,
         field: str,
-        values: Optional[Sequence[Union[Tuple[int, int], int]]],
+        values: Optional[Sequence[IntRange]],
         param_key: Optional[str] = None,
     ) -> "QueryBuilder":
         fq_field = self._fq_field(field)
         self.conditions.append(filter_integers(fq_field, values, param_key or field, self.params))
         return self
 
-    def where_geo_pairs(
+    def apply_geo_filters(
         self,
         type_field: str,
         value_field: str,
-        values: Sequence[GeoPair],
+        values: Sequence[GeoSet],
         param_key: Optional[str] = None,
     ) -> "QueryBuilder":
         fq_type_field = self._fq_field(type_field)
         fq_value_field = self._fq_field(value_field)
         self.conditions.append(
-            filter_geo_pairs(
+            filter_geo_sets(
                 fq_type_field,
                 fq_value_field,
                 values,
@@ -426,17 +425,17 @@ class QueryBuilder:
         )
         return self
 
-    def where_source_signal_pairs(
+    def apply_source_signal_filters(
         self,
         type_field: str,
         value_field: str,
-        values: Sequence[SourceSignalPair],
+        values: Sequence[SourceSignalSet],
         param_key: Optional[str] = None,
     ) -> "QueryBuilder":
         fq_type_field = self._fq_field(type_field)
         fq_value_field = self._fq_field(value_field)
         self.conditions.append(
-            filter_source_signal_pairs(
+            filter_source_signal_sets(
                 fq_type_field,
                 fq_value_field,
                 values,
@@ -446,17 +445,17 @@ class QueryBuilder:
         )
         return self
 
-    def where_time_pair(
+    def apply_time_filter(
         self,
         type_field: str,
         value_field: str,
-        values: Optional[TimePair],
+        values: Optional[TimeSet],
         param_key: Optional[str] = None,
     ) -> "QueryBuilder":
         fq_type_field = self._fq_field(type_field)
         fq_value_field = self._fq_field(value_field)
         self.conditions.append(
-            filter_time_pair(
+            filter_time_set(
                 fq_type_field,
                 fq_value_field,
                 values,
@@ -464,27 +463,46 @@ class QueryBuilder:
                 self.params,
             )
         )
+        return self
+
+    def apply_lag_filter(self, history_table: str, lag: Optional[int]) -> "QueryBuilder":
+        if lag is not None:
+            self.retable(history_table)
+            # history_table has full spectrum of lag values to search from whereas the latest_table does not
+            self.where(lag=lag)
+        return self
+
+    def apply_issues_filter(self, history_table: str, issues: Optional[TimeValues]) -> "QueryBuilder":
+        if issues:
+            if issues == ["*"]:
+                self.retable(history_table)
+            else:
+                self.retable(history_table)
+                self.where_integers("issue", issues)
+        return self
+
+    def apply_as_of_filter(self, history_table: str, as_of: Optional[int]) -> "QueryBuilder":
+        if as_of is not None:
+            self.retable(history_table)
+            sub_condition_asof = "(issue <= :as_of)"
+            self.params["as_of"] = as_of
+            sub_fields = "max(issue) max_issue, time_type, time_value, `source`, `signal`, geo_type, geo_value"
+            sub_group = "time_type, time_value, `source`, `signal`, geo_type, geo_value"
+            alias = self.alias
+            sub_condition = f"x.max_issue = {alias}.issue AND x.time_type = {alias}.time_type AND x.time_value = {alias}.time_value AND x.source = {alias}.source AND x.signal = {alias}.signal AND x.geo_type = {alias}.geo_type AND x.geo_value = {alias}.geo_value"
+            self.subquery = f"JOIN (SELECT {sub_fields} FROM {self.table} WHERE {self.conditions_clause} AND {sub_condition_asof} GROUP BY {sub_group}) x ON {sub_condition}"
         return self
 
     def set_fields(self, *fields: Iterable[str]) -> "QueryBuilder":
         self.fields = [f"{self.alias}.{field}" for field_list in fields for field in field_list]
         return self
 
-    def set_order(self, *args: str, **kwargs: Union[str, bool]) -> "QueryBuilder":
+    def set_sort_order(self, *args: str) -> "QueryBuilder":
         """
         sets the order for the given fields (as key word arguments), True = ASC, False = DESC
         """
 
-        def to_asc(v: Union[str, bool]) -> str:
-            if v is True:
-                return "ASC"
-            elif v is False:
-                return "DESC"
-            return cast(str, v)
-
-        args_order = [f"{self.alias}.{k} ASC" for k in args]
-        kw_order = [f"{self.alias}.{k} {to_asc(v)}" for k, v in kwargs.items()]
-        self.order = args_order + kw_order
+        self.order = [f"{self.alias}.{k} ASC" for k in args]
         return self
 
     def with_max_issue(self, *args: str) -> "QueryBuilder":

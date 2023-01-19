@@ -129,7 +129,10 @@ class UtilsTests(unittest.TestCase):
 
     self.assertTrue(result)
 
-    mock_connection.insert_metadata.assert_called_once()
+    # should have been called twice
+    mock_connection.insert_metadata.assert_called()
+    assert mock_connection.insert_metadata.call_count == 2
+    # most recent call should be for the final revision at url2
     args = mock_connection.insert_metadata.call_args[0]
     self.assertEqual(args[:2], (20210315, "url2"))
     pd.testing.assert_frame_equal(

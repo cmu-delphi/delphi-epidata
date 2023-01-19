@@ -1,7 +1,8 @@
 from flask import Blueprint
 
+from .._params import extract_integer, extract_integers, extract_strings
 from .._query import execute_query, QueryBuilder
-from .._validate import extract_integer, extract_integers, extract_strings, require_all
+from .._validate import require_all
 
 bp = Blueprint("flusurv", __name__)
 
@@ -29,7 +30,7 @@ def handle():
         "rate_overall",
     ]
     q.set_fields(fields_string, fields_int, fields_float)
-    q.set_order("epiweek", "location", "issue")
+    q.set_sort_order("epiweek", "location", "issue")
 
     q.where_integers("epiweek", epiweeks)
     q.where_strings("location", locations)

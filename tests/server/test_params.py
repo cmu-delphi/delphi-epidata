@@ -7,6 +7,11 @@ import unittest
 # from flask.testing import FlaskClient
 from delphi.epidata.server._common import app
 from delphi.epidata.server._params import (
+    extract_strings,
+    extract_integers,
+    extract_integer,
+    extract_date,
+    extract_dates,
     parse_geo_arg,
     parse_single_geo_arg,
     parse_source_signal_arg,
@@ -16,9 +21,9 @@ from delphi.epidata.server._params import (
     parse_week_value,
     parse_day_range_arg,
     parse_day_arg,
-    GeoPair,
-    TimePair,
-    SourceSignalPair,
+    GeoSet,
+    TimeSet,
+    SourceSignalSet,
 )
 from delphi.epidata.server._exceptions import (
     ValidationFailedException,
@@ -38,46 +43,46 @@ class UnitTests(unittest.TestCase):
         app.config["WTF_CSRF_ENABLED"] = False
         app.config["DEBUG"] = False
 
-    def test_geo_pair(self):
+    def test_geo_set(self):
         with self.subTest("*"):
-            p = GeoPair("hrr", True)
+            p = GeoSet("hrr", True)
             self.assertTrue(p.matches("hrr", "any"))
             self.assertFalse(p.matches("msa", "any"))
         with self.subTest("subset"):
-            p = GeoPair("hrr", ["a", "b"])
+            p = GeoSet("hrr", ["a", "b"])
             self.assertTrue(p.matches("hrr", "a"))
             self.assertTrue(p.matches("hrr", "b"))
             self.assertFalse(p.matches("hrr", "c"))
             self.assertFalse(p.matches("msa", "any"))
         with self.subTest("count"):
-            self.assertEqual(GeoPair("a", True).count(), inf)
-            self.assertEqual(GeoPair("a", False).count(), 0)
-            self.assertEqual(GeoPair("a", ["a", "b"]).count(), 2)
+            self.assertEqual(GeoSet("a", True).count(), inf)
+            self.assertEqual(GeoSet("a", False).count(), 0)
+            self.assertEqual(GeoSet("a", ["a", "b"]).count(), 2)
 
-    def test_source_signal_pair(self):
+    def test_source_signal_set(self):
         with self.subTest("*"):
-            p = SourceSignalPair("src1", True)
+            p = SourceSignalSet("src1", True)
             self.assertTrue(p.matches("src1", "any"))
             self.assertFalse(p.matches("src2", "any"))
         with self.subTest("subset"):
-            p = SourceSignalPair("src1", ["a", "b"])
+            p = SourceSignalSet("src1", ["a", "b"])
             self.assertTrue(p.matches("src1", "a"))
             self.assertTrue(p.matches("src1", "b"))
             self.assertFalse(p.matches("src1", "c"))
             self.assertFalse(p.matches("src2", "any"))
         with self.subTest("count"):
-            self.assertEqual(SourceSignalPair("a", True).count(), inf)
-            self.assertEqual(SourceSignalPair("a", False).count(), 0)
-            self.assertEqual(SourceSignalPair("a", ["a", "b"]).count(), 2)
+            self.assertEqual(SourceSignalSet("a", True).count(), inf)
+            self.assertEqual(SourceSignalSet("a", False).count(), 0)
+            self.assertEqual(SourceSignalSet("a", ["a", "b"]).count(), 2)
 
-    def test_time_pair(self):
+    def test_time_set(self):
         with self.subTest("count"):
-            self.assertEqual(TimePair("day", True).count(), inf)
-            self.assertEqual(TimePair("day", False).count(), 0)
-            self.assertEqual(TimePair("day", [20200202, 20200201]).count(), 2)
-            self.assertEqual(TimePair("day", [(20200201, 20200202)]).count(), 2)
-            self.assertEqual(TimePair("day", [(20200201, 20200205)]).count(), 5)
-            self.assertEqual(TimePair("day", [(20200201, 20200205), 20201212]).count(), 6)
+            self.assertEqual(TimeSet("day", True).count(), inf)
+            self.assertEqual(TimeSet("day", False).count(), 0)
+            self.assertEqual(TimeSet("day", [20200202, 20200201]).count(), 2)
+            self.assertEqual(TimeSet("day", [(20200201, 20200202)]).count(), 2)
+            self.assertEqual(TimeSet("day", [(20200201, 20200205)]).count(), 5)
+            self.assertEqual(TimeSet("day", [(20200201, 20200205), 20201212]).count(), 6)
 
     def test_parse_geo_arg(self):
         with self.subTest("empty"):
@@ -85,32 +90,32 @@ class UnitTests(unittest.TestCase):
                 self.assertEqual(parse_geo_arg(), [])
         with self.subTest("single"):
             with app.test_request_context("/?geo=state:*"):
-                self.assertEqual(parse_geo_arg(), [GeoPair("state", True)])
+                self.assertEqual(parse_geo_arg(), [GeoSet("state", True)])
             with app.test_request_context("/?geo=state:AK"):
-                self.assertEqual(parse_geo_arg(), [GeoPair("state", ["ak"])])
+                self.assertEqual(parse_geo_arg(), [GeoSet("state", ["ak"])])
         with self.subTest("single list"):
             with app.test_request_context("/?geo=state:AK,TK"):
-                self.assertEqual(parse_geo_arg(), [GeoPair("state", ["ak", "tk"])])
+                self.assertEqual(parse_geo_arg(), [GeoSet("state", ["ak", "tk"])])
         with self.subTest("multi"):
             with app.test_request_context("/?geo=state:*;nation:*"):
-                self.assertEqual(parse_geo_arg(), [GeoPair("state", True), GeoPair("nation", True)])
+                self.assertEqual(parse_geo_arg(), [GeoSet("state", True), GeoSet("nation", True)])
             with app.test_request_context("/?geo=state:AK;nation:US"):
                 self.assertEqual(
                     parse_geo_arg(),
-                    [GeoPair("state", ["ak"]), GeoPair("nation", ["us"])],
+                    [GeoSet("state", ["ak"]), GeoSet("nation", ["us"])],
                 )
             with app.test_request_context("/?geo=state:AK;state:KY"):
                 self.assertEqual(
                     parse_geo_arg(),
-                    [GeoPair("state", ["ak"]), GeoPair("state", ["ky"])],
+                    [GeoSet("state", ["ak"]), GeoSet("state", ["ky"])],
                 )
         with self.subTest("multi list"):
             with app.test_request_context("/?geo=state:AK,TK;county:42003,40556"):
                 self.assertEqual(
                     parse_geo_arg(),
                     [
-                        GeoPair("state", ["ak", "tk"]),
-                        GeoPair("county", ["42003", "40556"]),
+                        GeoSet("state", ["ak", "tk"]),
+                        GeoSet("county", ["42003", "40556"]),
                     ],
                 )
         with self.subTest("hybrid"):
@@ -118,9 +123,9 @@ class UnitTests(unittest.TestCase):
                 self.assertEqual(
                     parse_geo_arg(),
                     [
-                        GeoPair("nation", True),
-                        GeoPair("state", ["pa"]),
-                        GeoPair("county", ["42003", "42002"]),
+                        GeoSet("nation", True),
+                        GeoSet("state", ["pa"]),
+                        GeoSet("county", ["42003", "42002"]),
                     ],
                 )
 
@@ -136,7 +141,7 @@ class UnitTests(unittest.TestCase):
                 self.assertRaises(ValidationFailedException, parse_single_geo_arg, "geo")
         with self.subTest("single"):
             with app.test_request_context("/?geo=state:AK"):
-                self.assertEqual(parse_single_geo_arg("geo"), GeoPair("state", ["ak"]))
+                self.assertEqual(parse_single_geo_arg("geo"), GeoSet("state", ["ak"]))
         with self.subTest("single list"):
             with app.test_request_context("/?geo=state:AK,TK"):
                 self.assertRaises(ValidationFailedException, parse_single_geo_arg, "geo")
@@ -155,35 +160,35 @@ class UnitTests(unittest.TestCase):
                 self.assertEqual(parse_source_signal_arg(), [])
         with self.subTest("single"):
             with app.test_request_context("/?signal=src1:*"):
-                self.assertEqual(parse_source_signal_arg(), [SourceSignalPair("src1", True)])
+                self.assertEqual(parse_source_signal_arg(), [SourceSignalSet("src1", True)])
             with app.test_request_context("/?signal=src1:sig1"):
-                self.assertEqual(parse_source_signal_arg(), [SourceSignalPair("src1", ["sig1"])])
+                self.assertEqual(parse_source_signal_arg(), [SourceSignalSet("src1", ["sig1"])])
         with self.subTest("single list"):
             with app.test_request_context("/?signal=src1:sig1,sig2"):
                 self.assertEqual(
                     parse_source_signal_arg(),
-                    [SourceSignalPair("src1", ["sig1", "sig2"])],
+                    [SourceSignalSet("src1", ["sig1", "sig2"])],
                 )
         with self.subTest("multi"):
             with app.test_request_context("/?signal=src1:*;src2:*"):
                 self.assertEqual(
                     parse_source_signal_arg(),
-                    [SourceSignalPair("src1", True), SourceSignalPair("src2", True)],
+                    [SourceSignalSet("src1", True), SourceSignalSet("src2", True)],
                 )
             with app.test_request_context("/?signal=src1:sig1;src2:sig3"):
                 self.assertEqual(
                     parse_source_signal_arg(),
                     [
-                        SourceSignalPair("src1", ["sig1"]),
-                        SourceSignalPair("src2", ["sig3"]),
+                        SourceSignalSet("src1", ["sig1"]),
+                        SourceSignalSet("src2", ["sig3"]),
                     ],
                 )
             with app.test_request_context("/?signal=src1:sig1;src1:sig4"):
                 self.assertEqual(
                     parse_source_signal_arg(),
                     [
-                        SourceSignalPair("src1", ["sig1"]),
-                        SourceSignalPair("src1", ["sig4"]),
+                        SourceSignalSet("src1", ["sig1"]),
+                        SourceSignalSet("src1", ["sig4"]),
                     ],
                 )
         with self.subTest("multi list"):
@@ -191,8 +196,8 @@ class UnitTests(unittest.TestCase):
                 self.assertEqual(
                     parse_source_signal_arg(),
                     [
-                        SourceSignalPair("src1", ["sig1", "sig2"]),
-                        SourceSignalPair("county", ["sig5", "sig6"]),
+                        SourceSignalSet("src1", ["sig1", "sig2"]),
+                        SourceSignalSet("county", ["sig5", "sig6"]),
                     ],
                 )
         with self.subTest("hybrid"):
@@ -200,9 +205,9 @@ class UnitTests(unittest.TestCase):
                 self.assertEqual(
                     parse_source_signal_arg(),
                     [
-                        SourceSignalPair("src2", True),
-                        SourceSignalPair("src1", ["sig4"]),
-                        SourceSignalPair("src3", ["sig5", "sig6"]),
+                        SourceSignalSet("src2", True),
+                        SourceSignalSet("src1", ["sig4"]),
+                        SourceSignalSet("src3", ["sig5", "sig6"]),
                     ],
                 )
 
@@ -218,7 +223,7 @@ class UnitTests(unittest.TestCase):
                 self.assertRaises(ValidationFailedException, parse_single_source_signal_arg, "signal")
         with self.subTest("single"):
             with app.test_request_context("/?signal=src1:sig1"):
-                self.assertEqual(parse_single_source_signal_arg("signal"), SourceSignalPair("src1", ["sig1"]))
+                self.assertEqual(parse_single_source_signal_arg("signal"), SourceSignalSet("src1", ["sig1"]))
         with self.subTest("single list"):
             with app.test_request_context("/?signal=src1:sig1,sig2"):
                 self.assertRaises(ValidationFailedException, parse_single_source_signal_arg, "signal")
@@ -270,35 +275,35 @@ class UnitTests(unittest.TestCase):
                 self.assertEqual(parse_time_arg(), None)
         with self.subTest("single"):
             with app.test_request_context("/?time=day:*"):
-                self.assertEqual(parse_time_arg(), TimePair("day", True))
+                self.assertEqual(parse_time_arg(), TimeSet("day", True))
             with app.test_request_context("/?time=day:20201201"):
-                self.assertEqual(parse_time_arg(), TimePair("day", [20201201]))
+                self.assertEqual(parse_time_arg(), TimeSet("day", [20201201]))
         with self.subTest("single list"):
             with app.test_request_context("/?time=day:20201201,20201202"):
-                self.assertEqual(parse_time_arg(), TimePair("day", [20201201, 20201202]))
+                self.assertEqual(parse_time_arg(), TimeSet("day", [20201201, 20201202]))
         with self.subTest("single range"):
             with app.test_request_context("/?time=day:20201201-20201204"):
-                self.assertEqual(parse_time_arg(), TimePair("day", [(20201201, 20201204)]))
+                self.assertEqual(parse_time_arg(), TimeSet("day", [(20201201, 20201204)]))
         with self.subTest("multi"):
             with app.test_request_context("/?time=day:*;day:20201201"):
                 self.assertEqual(
                     parse_time_arg(),
-                    TimePair("day", True)
+                    TimeSet("day", True)
                 )
             with app.test_request_context("/?time=week:*;week:202012"):
                 self.assertEqual(
                     parse_time_arg(),
-                    TimePair("week", True)
+                    TimeSet("week", True)
                 )
             with app.test_request_context("/?time=day:20201201;day:20201202-20201205"):
                 self.assertEqual(
                     parse_time_arg(),
-                    TimePair("day", [(20201201, 20201205)])
+                    TimeSet("day", [(20201201, 20201205)])
                 )
             with app.test_request_context("/?time=week:202012;week:202013-202015"):
                 self.assertEqual(
                     parse_time_arg(),
-                    TimePair("week", [(202012, 202015)])
+                    TimeSet("week", [(202012, 202015)])
                 )
 
         with self.subTest("wrong"):
@@ -366,3 +371,128 @@ class UnitTests(unittest.TestCase):
                 self.assertRaises(ValidationFailedException, parse_day_arg, "time")
             with app.test_request_context("/?time=week:20121010"):
                 self.assertRaises(ValidationFailedException, parse_day_arg, "time")
+
+    def test_extract_strings(self):
+        with self.subTest("empty"):
+            with app.test_request_context("/"):
+                self.assertIsNone(extract_strings("s"))
+        with self.subTest("single"):
+            with app.test_request_context("/?s=a"):
+                self.assertEqual(extract_strings("s"), ["a"])
+        with self.subTest("multiple"):
+            with app.test_request_context("/?s=a,b"):
+                self.assertEqual(extract_strings("s"), ["a", "b"])
+        with self.subTest("multiple param"):
+            with app.test_request_context("/?s=a&s=b"):
+                self.assertEqual(extract_strings("s"), ["a", "b"])
+        with self.subTest("multiple param mixed"):
+            with app.test_request_context("/?s=a&s=b,c"):
+                self.assertEqual(extract_strings("s"), ["a", "b", "c"])
+
+    def test_extract_integer(self):
+        with self.subTest("empty"):
+            with app.test_request_context("/"):
+                self.assertIsNone(extract_integer("s"))
+        with self.subTest("single"):
+            with app.test_request_context("/?s=1"):
+                self.assertEqual(extract_integer("s"), 1)
+        with self.subTest("not a number"):
+            with app.test_request_context("/?s=a"):
+                self.assertRaises(ValidationFailedException, lambda: extract_integer("s"))
+
+    def test_extract_integers(self):
+        with self.subTest("empty"):
+            with app.test_request_context("/"):
+                self.assertIsNone(extract_integers("s"))
+        with self.subTest("single"):
+            with app.test_request_context("/?s=1"):
+                self.assertEqual(extract_integers("s"), [1])
+        with self.subTest("multiple"):
+            with app.test_request_context("/?s=1,2"):
+                self.assertEqual(extract_integers("s"), [1,2])
+        with self.subTest("multiple param"):
+            with app.test_request_context("/?s=1&s=2"):
+                self.assertEqual(extract_integers("s"), [1,2])
+        with self.subTest("multiple param mixed"):
+            with app.test_request_context("/?s=1&s=2,3"):
+                self.assertEqual(extract_integers("s"), [1, 2, 3])
+
+        with self.subTest("not a number"):
+            with app.test_request_context("/?s=a"):
+                self.assertRaises(ValidationFailedException, lambda: extract_integers("s"))
+
+        with self.subTest("simple range"):
+            with app.test_request_context("/?s=1-2"):
+                self.assertEqual(extract_integers("s"), [(1, 2)])
+        with self.subTest("inverted range"):
+            with app.test_request_context("/?s=2-1"):
+                self.assertRaises(ValidationFailedException, lambda: extract_integers("s"))
+        with self.subTest("single range"):
+            with app.test_request_context("/?s=1-1"):
+                self.assertEqual(extract_integers("s"), [1])
+
+    def test_extract_date(self):
+        with self.subTest("empty"):
+            with app.test_request_context("/"):
+                self.assertIsNone(extract_date("s"))
+        with self.subTest("single"):
+            with app.test_request_context("/?s=2020-01-01"):
+                self.assertEqual(extract_date("s"), 20200101)
+            with app.test_request_context("/?s=20200101"):
+                self.assertEqual(extract_date("s"), 20200101)
+        with self.subTest("not a date"):
+            with app.test_request_context("/?s=abc"):
+                self.assertRaises(ValidationFailedException, lambda: extract_date("s"))
+
+    def test_extract_dates(self):
+        with self.subTest("empty"):
+            with app.test_request_context("/"):
+                self.assertIsNone(extract_dates("s"))
+        with self.subTest("single"):
+            with app.test_request_context("/?s=20200101"):
+                self.assertEqual(extract_dates("s"), [20200101])
+        with self.subTest("multiple"):
+            with app.test_request_context("/?s=20200101,20200102"):
+                self.assertEqual(extract_dates("s"), [20200101, 20200102])
+        with self.subTest("multiple param"):
+            with app.test_request_context("/?s=20200101&s=20200102"):
+                self.assertEqual(extract_dates("s"), [20200101, 20200102])
+        with self.subTest("multiple param mixed"):
+            with app.test_request_context("/?s=20200101&s=20200102,20200103"):
+                self.assertEqual(extract_dates("s"), [20200101, 20200102, 20200103])
+        with self.subTest("single iso"):
+            with app.test_request_context("/?s=2020-01-01"):
+                self.assertEqual(extract_dates("s"), [20200101])
+        with self.subTest("multiple iso"):
+            with app.test_request_context("/?s=2020-01-01,2020-01-02"):
+                self.assertEqual(extract_dates("s"), [20200101, 20200102])
+        with self.subTest("multiple param iso"):
+            with app.test_request_context("/?s=2020-01-01&s=2020-01-02"):
+                self.assertEqual(extract_dates("s"), [20200101, 20200102])
+        with self.subTest("multiple param mixed iso"):
+            with app.test_request_context("/?s=2020-01-01&s=2020-01-02,2020-01-03"):
+                self.assertEqual(extract_dates("s"), [20200101, 20200102, 20200103])
+
+        with self.subTest("not a date"):
+            with app.test_request_context("/?s=a"):
+                self.assertRaises(ValidationFailedException, lambda: extract_dates("s"))
+
+        with self.subTest("simple range"):
+            with app.test_request_context("/?s=20200101-20200102"):
+                self.assertEqual(extract_dates("s"), [(20200101, 20200102)])
+        with self.subTest("inverted range"):
+            with app.test_request_context("/?s=20200102-20200101"):
+                self.assertRaises(ValidationFailedException, lambda: extract_dates("s"))
+        with self.subTest("single range"):
+            with app.test_request_context("/?s=20200101-20200101"):
+                self.assertEqual(extract_dates("s"), [20200101])
+
+        with self.subTest("simple range iso"):
+            with app.test_request_context("/?s=2020-01-01:2020-01-02"):
+                self.assertEqual(extract_dates("s"), [(20200101, 20200102)])
+        with self.subTest("inverted range iso"):
+            with app.test_request_context("/?s=2020-01-02:2020-01-01"):
+                self.assertRaises(ValidationFailedException, lambda: extract_dates("s"))
+        with self.subTest("single range iso"):
+            with app.test_request_context("/?s=2020-01-01:2020-01-01"):
+                self.assertEqual(extract_dates("s"), [20200101])

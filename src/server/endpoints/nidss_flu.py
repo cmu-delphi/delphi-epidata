@@ -1,7 +1,8 @@
 from flask import Blueprint
 
+from .._params import extract_integer, extract_integers, extract_strings
 from .._query import execute_query, QueryBuilder
-from .._validate import extract_integer, extract_integers, extract_strings, require_all
+from .._validate import require_all
 
 # first argument is the endpoint name
 bp = Blueprint("nidss_flu", __name__)
@@ -23,7 +24,7 @@ def handle():
     fields_int = ["issue", "epiweek", "lag", "visits"]
     fields_float = ["ili"]
     q.set_fields(fields_string, fields_int, fields_float)
-    q.set_order("epiweek", "region", "issue")
+    q.set_sort_order("epiweek", "region", "issue")
 
     # build the filter
     q.where_integers("epiweek", epiweeks)

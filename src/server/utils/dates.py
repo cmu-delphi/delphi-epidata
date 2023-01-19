@@ -13,7 +13,8 @@ from typing_extensions import TypeAlias
 from .logger import get_structured_logger
 
 # Alias for a sequence of date ranges (int, int) or date integers
-TimeValues: TypeAlias = Sequence[Union[Tuple[int, int], int]]
+IntRange: TypeAlias = Union[Tuple[int, int], int]
+TimeValues: TypeAlias = Sequence[IntRange]
 
 def time_value_to_day(value: int) -> date:
     year, month, day = value // 10000, (value % 10000) // 100, value % 100

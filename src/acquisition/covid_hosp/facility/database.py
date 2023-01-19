@@ -2,6 +2,7 @@
 from delphi.epidata.acquisition.covid_hosp.common.database import Database as BaseDatabase
 from delphi.epidata.acquisition.covid_hosp.common.database import Columndef
 from delphi.epidata.acquisition.covid_hosp.common.utils import Utils
+from delphi.epidata.acquisition.covid_hosp.facility.network import Network
 
 
 class Database(BaseDatabase):
@@ -213,5 +214,6 @@ class Database(BaseDatabase):
         *args,
         **kwargs,
         table_name=Database.TABLE_NAME,
+        hhs_dataset_id=Network.DATASET_ID,
         key_columns=Database.KEY_COLS,
         columns_and_types=Database.ORDERED_CSV_COLUMNS)
