@@ -750,7 +750,7 @@ def generate_transformed_rows3(
     # TODO: Try using StringDType instead of object. Or categorical. This is mostly for memory usage. No worries about to_dict.
     df = _set_df_dtypes(df, PANDAS_DTYPES)
 
-    derived_df_full = pd.DataFrame()
+    dfs = []
     for key, group_df in df.groupby(["source", "signal"], sort=False):
         base_source_name, base_signal_name = key
         # Extract the list of derived signals; if a signal is not in the dictionary, then use the identity map.
@@ -763,7 +763,7 @@ def generate_transformed_rows3(
 
             # TODO: Add sort=false to these groupbys.
             if transform == IDENTITY:
-                derived_df_full = pd.concat([derived_df_full, derived_df])
+                dfs.append(derived_df)
                 continue
             elif transform == DIFF:
                 # TODO: Fix these to use transform_args.
@@ -795,8 +795,9 @@ def generate_transformed_rows3(
             if "missing_sample_size" in derived_df.columns:
                 derived_df["missing_sample_size"] = Nans.NOT_APPLICABLE
 
-            derived_df_full = pd.concat([derived_df_full, derived_df])
+            dfs.append(derived_df)
 
+    derived_df_full = pd.concat(dfs)
     return derived_df_full.reset_index()
 
 
