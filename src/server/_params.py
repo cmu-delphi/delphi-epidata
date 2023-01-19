@@ -480,7 +480,7 @@ def parse_time_set() -> TimeSet:
         # old version
         require_all("time_type", "time_values")
         time_values = extract_dates("time_values")
-        if len(time_values) == 1 and time_values[0] == "*":
+        if time_values == ["*"]:
             return TimeSet(time_type, True)
         return TimeSet(time_type, time_values)
 
