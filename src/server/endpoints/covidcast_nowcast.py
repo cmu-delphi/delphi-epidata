@@ -19,8 +19,8 @@ alias = None
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    require_all(
-        request, "data_source", "time_type", "geo_type", "time_values", "signals", "sensor_names"
+    require_all(request,
+        "data_source", "time_type", "geo_type", "time_values", "signals", "sensor_names"
     )
     require_any(request, "geo_value", "geo_values", empty=True)
 

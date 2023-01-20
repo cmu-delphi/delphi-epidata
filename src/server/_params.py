@@ -3,7 +3,7 @@ import re
 from dataclasses import dataclass
 from typing import List, Optional, Sequence, Tuple, Union
 
-from flask import Request, request
+from flask import request
 
 
 from ._exceptions import ValidationFailedException

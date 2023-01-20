@@ -27,8 +27,8 @@ MAX_AUTH_KEYS_PROVIDED_PER_SENSOR_QUERY = 1
 PHP_INT_MAX = 2147483647
 
 
-def _authenticate(r: Request, names: List[str]):
-    auth_tokens_presented = (resolve_auth_token(r) or "").split(",")
+def _authenticate(req: Request, names: List[str]):
+    auth_tokens_presented = (resolve_auth_token(req) or "").split(",")
 
     names = extract_strings("names")
     n_names = len(names)
