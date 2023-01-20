@@ -6,8 +6,7 @@ from typing import Iterable
 import unittest
 from unittest.mock import MagicMock
 
-from delphi.epidata.acquisition.covidcast.csv_to_database import get_argument_parser, main, \
-  collect_files, upload_archive, make_handlers
+from delphi.epidata.acquisition.covidcast.csv_to_database import get_argument_parser, main, collect_files, upload_archive, make_handlers
 
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.acquisition.covidcast.csv_to_database'

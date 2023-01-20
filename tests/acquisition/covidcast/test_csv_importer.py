@@ -5,17 +5,15 @@ import unittest
 from unittest.mock import MagicMock
 from unittest.mock import patch
 from datetime import date
-import math
 import numpy as np
-import os
 
 # third party
-import pandas
+import pandas as pd
 import epiweeks as epi
 
 from delphi_utils import Nans
-from delphi.epidata.acquisition.covidcast.csv_importer import CsvImporter
 from delphi.utils.epiweek import delta_epiweeks
+from delphi.epidata.acquisition.covidcast.csv_importer import CsvImporter, CsvRowValue
 
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.acquisition.covidcast.csv_importer'
@@ -208,37 +206,38 @@ class UnitTests(unittest.TestCase):
       self.assertEqual(error, field)
 
     success_cases = [
-      (make_row(), CsvImporter.RowValues('vi', 1.23, 4.56, 100.5, Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.NOT_MISSING)),
-      (make_row(value=None, stderr=np.nan, sample_size='', missing_value=str(float(Nans.DELETED)), missing_stderr=str(float(Nans.DELETED)), missing_sample_size=str(float(Nans.DELETED))), CsvImporter.RowValues('vi', None, None, None, Nans.DELETED, Nans.DELETED, Nans.DELETED)),
-      (make_row(stderr='', sample_size='NA', missing_stderr=str(float(Nans.OTHER)), missing_sample_size=str(float(Nans.OTHER))), CsvImporter.RowValues('vi', 1.23, None, None, Nans.NOT_MISSING, Nans.OTHER, Nans.OTHER)),
-      (make_row(sample_size=None, missing_value='missing_value', missing_stderr=str(float(Nans.OTHER)), missing_sample_size=str(float(Nans.NOT_MISSING))), CsvImporter.RowValues('vi', 1.23, 4.56, None, Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.OTHER)),
+      (make_row(), CsvRowValue('vi', 1.23, 4.56, 100.5, Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.NOT_MISSING)),
+      (make_row(value=None, stderr=np.nan, sample_size='', missing_value=str(float(Nans.DELETED)), missing_stderr=str(float(Nans.DELETED)), missing_sample_size=str(float(Nans.DELETED))), CsvRowValue('vi', None, None, None, Nans.DELETED, Nans.DELETED, Nans.DELETED)),
+      (make_row(stderr='', sample_size='NA', missing_stderr=str(float(Nans.OTHER)), missing_sample_size=str(float(Nans.OTHER))), CsvRowValue('vi', 1.23, None, None, Nans.NOT_MISSING, Nans.OTHER, Nans.OTHER)),
+      (make_row(sample_size=None, missing_value='missing_value', missing_stderr=str(float(Nans.OTHER)), missing_sample_size=str(float(Nans.NOT_MISSING))), CsvRowValue('vi', 1.23, 4.56, None, Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.OTHER)),
     ]
 
     for ((geo_type, row), field) in success_cases:
       values, error = CsvImporter.extract_and_check_row(row, geo_type)
       self.assertIsNone(error)
-      self.assertIsInstance(values, CsvImporter.RowValues)
+      self.assertIsInstance(values, CsvRowValue)
       self.assertEqual(values.geo_value, field.geo_value)
       self.assertEqual(values.value, field.value)
       self.assertEqual(values.stderr, field.stderr)
       self.assertEqual(values.sample_size, field.sample_size)
 
-  def test_load_csv_with_invalid_header(self):
+  @patch("pandas.read_csv")
+  def test_load_csv_with_invalid_header(self, mock_read_csv):
     """Bail loading a CSV when the header is invalid."""
 
     data = {'foo': [1, 2, 3]}
-    mock_pandas = MagicMock()
-    mock_pandas.read_csv.return_value = pandas.DataFrame(data=data)
     filepath = 'path/name.csv'
     geo_type = 'state'
 
-    rows = list(CsvImporter.load_csv(filepath, geo_type, pandas=mock_pandas))
+    mock_read_csv.return_value = pd.DataFrame(data)
+    rows = list(CsvImporter.load_csv(filepath, geo_type))
 
-    self.assertTrue(mock_pandas.read_csv.called)
-    self.assertTrue(mock_pandas.read_csv.call_args[0][0], filepath)
+    self.assertTrue(mock_read_csv.called)
+    self.assertTrue(mock_read_csv.call_args[0][0], filepath)
     self.assertEqual(rows, [None])
 
-  def test_load_csv_with_valid_header(self):
+  @patch("pandas.read_csv")
+  def test_load_csv_with_valid_header(self, mock_read_csv):
     """Yield sanity checked `RowValues` from a valid CSV file."""
 
     # one invalid geo_id, but otherwise valid
@@ -248,15 +247,14 @@ class UnitTests(unittest.TestCase):
       'se': ['2.1', '2.2', '2.3', '2.4'],
       'sample_size': ['301', '302', '303', '304'],
     }
-    mock_pandas = MagicMock()
-    mock_pandas.read_csv.return_value = pandas.DataFrame(data=data)
     filepath = 'path/name.csv'
     geo_type = 'state'
 
-    rows = list(CsvImporter.load_csv(filepath, geo_type, pandas=mock_pandas))
+    mock_read_csv.return_value = pd.DataFrame(data=data)
+    rows = list(CsvImporter.load_csv(filepath, geo_type))
 
-    self.assertTrue(mock_pandas.read_csv.called)
-    self.assertTrue(mock_pandas.read_csv.call_args[0][0], filepath)
+    self.assertTrue(mock_read_csv.called)
+    self.assertTrue(mock_read_csv.call_args[0][0], filepath)
     self.assertEqual(len(rows), 4)
 
     self.assertEqual(rows[0].geo_value, 'ca')
@@ -286,15 +284,14 @@ class UnitTests(unittest.TestCase):
       'missing_stderr': [Nans.NOT_MISSING, Nans.REGION_EXCEPTION, Nans.NOT_MISSING, Nans.NOT_MISSING] + [None],
       'missing_sample_size': [Nans.NOT_MISSING] * 2 + [Nans.REGION_EXCEPTION] * 2 + [None]
     }
-    mock_pandas = MagicMock()
-    mock_pandas.read_csv.return_value = pandas.DataFrame(data=data)
     filepath = 'path/name.csv'
     geo_type = 'state'
 
-    rows = list(CsvImporter.load_csv(filepath, geo_type, pandas=mock_pandas))
+    mock_read_csv.return_value = pd.DataFrame(data)
+    rows = list(CsvImporter.load_csv(filepath, geo_type))
 
-    self.assertTrue(mock_pandas.read_csv.called)
-    self.assertTrue(mock_pandas.read_csv.call_args[0][0], filepath)
+    self.assertTrue(mock_read_csv.called)
+    self.assertTrue(mock_read_csv.call_args[0][0], filepath)
     self.assertEqual(len(rows), 5)
 
     self.assertEqual(rows[0].geo_value, 'ca')
