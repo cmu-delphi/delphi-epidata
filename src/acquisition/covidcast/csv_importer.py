@@ -398,9 +398,8 @@ class CsvImporter:
         details.issue,
         details.lag,
         # These four fields are unused by database acquisition
-        # TODO: These will be used when CovidcastRow is updated.
-        # id=None,
-        # direction=None,
-        # direction_updated_timestamp=0,
-        # value_updated_timestamp=0,
+        id=None,
+        direction=None,
+        direction_updated_timestamp=0,
+        value_updated_timestamp=0,
       )
