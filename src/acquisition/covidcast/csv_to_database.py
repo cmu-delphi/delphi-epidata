@@ -103,12 +103,8 @@ def upload_archive(
       archive_as_failed(path_src, filename, 'unknown',logger)
       continue
 
-    (source, signal, time_type, geo_type, time_value, issue, lag) = details
-
-    csv_rows = csv_importer_impl.load_csv(path, geo_type)
-
-    cc_rows = CovidcastRow.fromCsvRows(csv_rows, source, signal, time_type, geo_type, time_value, issue, lag)
-    rows_list = list(cc_rows)
+    csv_rows = CsvImporter.load_csv(path, details)
+    rows_list = list(csv_rows)
     all_rows_valid = rows_list and all(r is not None for r in rows_list)
     if all_rows_valid:
       try:
@@ -117,12 +113,13 @@ def upload_archive(
         logger.info(
           "Inserted database rows",
           row_count = modified_row_count,
-          source = source,
-          signal = signal,
-          geo_type = geo_type,
-          time_value = time_value,
-          issue = issue,
-          lag = lag)
+          source = details.source,
+          signal = details.signal,
+          geo_type = details.geo_type,
+          time_value = details.time_value,
+          issue = details.issue,
+          lag = details.lag
+        )
         if modified_row_count is None or modified_row_count: # else would indicate zero rows inserted
           total_modified_row_count += (modified_row_count if modified_row_count else 0)
           database.commit()
@@ -137,9 +134,9 @@ def upload_archive(
 
     # archive the current file based on validation results
     if all_rows_valid:
-      archive_as_successful(path_src, filename, source, logger)
+      archive_as_successful(path_src, filename, details.source, logger)
     else:
-      archive_as_failed(path_src, filename, source,logger)
+      archive_as_failed(path_src, filename, details.source, logger)
 
   return total_modified_row_count
 

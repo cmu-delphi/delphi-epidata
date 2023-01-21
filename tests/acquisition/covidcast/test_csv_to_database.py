@@ -15,6 +15,14 @@ __test_target__ = 'delphi.epidata.acquisition.covidcast.csv_to_database'
 
 class UnitTests(unittest.TestCase):
   """Basic unit tests."""
+  _path_details = [
+    # a good file
+    ('path/a.csv', PathDetails('src_a', 'sig_a', 'day', 'hrr', 20200419, 20200420, 1)),
+    # a file with a data error
+    ('path/b.csv', PathDetails('src_b', 'sig_b', 'week', 'msa', 202016, 202017, 1)),
+    # emulate a file that's named incorrectly
+    ('path/c.csv', None)
+  ]
 
   def test_get_argument_parser(self):
     """Return a parser for command-line arguments."""
@@ -37,25 +45,32 @@ class UnitTests(unittest.TestCase):
   def test_upload_archive(self, mock_file_archiver: MagicMock, mock_csv_importer: MagicMock, mock_database: MagicMock):
     """Upload to the database, and archive."""
 
-    def make_row(value):
+    def make_row(value: float, details: PathDetails):
       return MagicMock(
+        source=details.source,
+        signal=details.signal,
+        time_type=details.time_type,
+        geo_type=details.geo_type,
+        time_value=details.time_value,
+        issue=details.issue,
+        lag=details.lag,
         geo_value=value,
         value=value,
         stderr=value,
         sample_size=value,
       )
 
-    def load_csv_impl(path, *args):
+    def load_csv_impl(path, details):
       if path == 'path/a.csv':
         # no validation errors
-        yield make_row('a1')
-        yield make_row('a2')
-        yield make_row('a3')
+        yield make_row('a1', details)
+        yield make_row('a2', details)
+        yield make_row('a3', details)
       elif path == 'path/b.csv':
         # one validation error
-        yield make_row('b1')
+        yield make_row('b1', details)
         yield None
-        yield make_row('b3')
+        yield make_row('b3', details)
       else:
         # fail the test for any other path
         raise Exception('unexpected path')
@@ -69,7 +84,7 @@ class UnitTests(unittest.TestCase):
     mock_logger = MagicMock()
 
     modified_row_count = upload_archive(
-      self._path_details(),
+      self._path_details,
       mock_database,
       make_handlers(data_dir, False),
       mock_logger
@@ -179,7 +194,7 @@ class UnitTests(unittest.TestCase):
     data_dir = 'data_dir'
     mock_database.insert_or_update_bulk.side_effect = Exception('testing')
     mock_csv_importer.find_csv_files.return_value = [
-      ('path/file.csv', ('src', 'sig', 'day', 'hrr', 20200423, 20200424, 1)),
+      ('path/file.csv', PathDetails('src', 'sig', 'day', 'hrr', 20200423, 20200424, 1)),
     ]
     mock_csv_importer.load_csv.return_value = [
       MagicMock(geo_value='geo', value=1, stderr=1, sample_size=1),

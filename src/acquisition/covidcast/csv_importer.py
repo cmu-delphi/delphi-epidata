@@ -6,6 +6,7 @@ import re
 from dataclasses import dataclass
 from datetime import date
 from glob import glob
+from typing import Iterator, NamedTuple, Optional, Tuple
 
 # third party
 import epiweeks as epi
@@ -14,6 +15,10 @@ import pandas as pd
 # first party
 from delphi_utils import Nans
 from delphi.utils.epiweek import delta_epiweeks
+from delphi.epidata.acquisition.covidcast.database import CovidcastRow
+from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
+
+DFRow = NamedTuple('DFRow', [('geo_id', str), ('value', float), ('stderr', float), ('sample_size', float), ('missing_value', int), ('missing_stderr', int), ('missing_sample_size', int)])
 PathDetails = NamedTuple('PathDetails', [('source', str), ("signal", str), ('time_type', str), ('geo_type', str), ('time_value', int), ('issue', int), ('lag', int)])
 
 
@@ -180,7 +185,8 @@ class CsvImporter:
         yield (path, None)
         continue
 
-      yield (path, (source, signal, time_type, geo_type, time_value, issue_value, lag_value))
+      yield (path, PathDetails(source, signal, time_type, geo_type, time_value, issue_value, lag_value))
+
 
   @staticmethod
   def is_header_valid(columns):
@@ -344,7 +350,7 @@ class CsvImporter:
 
 
   @staticmethod
-  def load_csv(filepath, geo_type):
+  def load_csv(filepath: str, details: PathDetails) -> Iterator[Optional[CovidcastRow]]:
     """Load, validate, and yield data as `RowValues` from a CSV file.
 
     filepath: the CSV file to be loaded
@@ -369,9 +375,32 @@ class CsvImporter:
     table.rename(columns={"val": "value", "se": "stderr", "missing_val": "missing_value", "missing_se": "missing_stderr"}, inplace=True)
 
     for row in table.itertuples(index=False):
-      row_values, error = CsvImporter.extract_and_check_row(row, geo_type, filepath)
+      csv_row_values, error = CsvImporter.extract_and_check_row(row, details.geo_type, filepath)
+
       if error:
         logger.warning(event = 'invalid value for row', detail=(str(row), error), file=filepath)
         yield None
         continue
-      yield row_values
+
+      yield CovidcastRow(
+        details.source,
+        details.signal,
+        details.time_type,
+        details.geo_type,
+        details.time_value,
+        csv_row_values.geo_value,
+        csv_row_values.value,
+        csv_row_values.stderr,
+        csv_row_values.sample_size,
+        csv_row_values.missing_value,
+        csv_row_values.missing_stderr,
+        csv_row_values.missing_sample_size,
+        details.issue,
+        details.lag,
+        # These four fields are unused by database acquisition
+        # TODO: These will be used when CovidcastRow is updated.
+        # id=None,
+        # direction=None,
+        # direction_updated_timestamp=0,
+        # value_updated_timestamp=0,
+      )

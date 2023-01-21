@@ -233,10 +233,10 @@ class UnitTests(unittest.TestCase):
 
     data = {'foo': [1, 2, 3]}
     filepath = 'path/name.csv'
-    geo_type = 'state'
+    details = PathDetails("src", "name", "day", "state", 20200101, 20200101, 0)
 
     mock_read_csv.return_value = pd.DataFrame(data)
-    rows = list(CsvImporter.load_csv(filepath, geo_type))
+    rows = list(CsvImporter.load_csv(filepath, details))
 
     self.assertTrue(mock_read_csv.called)
     self.assertTrue(mock_read_csv.call_args[0][0], filepath)
@@ -255,10 +255,10 @@ class UnitTests(unittest.TestCase):
       'sample_size': ['301', '302', '303', '304'],
     }
     filepath = 'path/name.csv'
-    geo_type = 'state'
+    details = PathDetails("src", "name", "day", "state", 20200101, 20200101, 0)
 
     mock_read_csv.return_value = pd.DataFrame(data=data)
-    rows = list(CsvImporter.load_csv(filepath, geo_type))
+    rows = list(CsvImporter.load_csv(filepath, details))
 
     self.assertTrue(mock_read_csv.called)
     self.assertTrue(mock_read_csv.call_args[0][0], filepath)
@@ -292,10 +292,10 @@ class UnitTests(unittest.TestCase):
       'missing_sample_size': [Nans.NOT_MISSING] * 2 + [Nans.REGION_EXCEPTION] * 2 + [None]
     }
     filepath = 'path/name.csv'
-    geo_type = 'state'
+    details = PathDetails("src", "name", "day", "state", 20200101, 20200101, 0)
 
     mock_read_csv.return_value = pd.DataFrame(data)
-    rows = list(CsvImporter.load_csv(filepath, geo_type))
+    rows = list(CsvImporter.load_csv(filepath, details))
 
     self.assertTrue(mock_read_csv.called)
     self.assertTrue(mock_read_csv.call_args[0][0], filepath)
