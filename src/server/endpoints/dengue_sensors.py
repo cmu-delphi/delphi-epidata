@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, request
 
 from .._config import AUTH
 from .._params import extract_integers, extract_strings
@@ -12,8 +12,8 @@ alias = None
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    check_auth_token(AUTH["sensors"])
-    require_all("names", "locations", "epiweeks")
+    check_auth_token(request, AUTH["sensors"])
+    require_all(request, "names", "locations", "epiweeks")
 
     names = extract_strings("names")
     locations = extract_strings("locations")

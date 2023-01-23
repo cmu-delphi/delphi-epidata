@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, request
 
 from .._config import AUTH
 from .._printer import print_non_standard
@@ -12,7 +12,7 @@ alias = None
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    check_auth_token(AUTH["afhsb"])
+    check_auth_token(request, AUTH["afhsb"])
 
     # build query
     table1 = "afhsb_00to13_state"
@@ -29,4 +29,4 @@ def handle():
         query = f"SELECT DISTINCT `{key}` FROM (select `{key}` from `{table1}` union select `{key}` from `{table2}`) t"
         data[key] = parse_result(query, {}, [], [key])
 
-    return print_non_standard(data)
+    return print_non_standard(request.values.get("format"), data)

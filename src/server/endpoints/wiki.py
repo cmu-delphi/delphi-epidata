@@ -11,8 +11,8 @@ alias = None
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    require_all("articles")
-    require_any("dates", "epiweeks")
+    require_all(request, "articles")
+    require_any(request, "dates", "epiweeks")
 
     articles = extract_strings("articles")
     language = request.values.get("language", "en")

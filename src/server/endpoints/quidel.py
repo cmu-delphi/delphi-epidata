@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, request
 
 from .._config import AUTH
 from .._params import extract_integers, extract_strings
@@ -12,8 +12,8 @@ alias = None
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    check_auth_token(AUTH["quidel"])
-    require_all("locations", "epiweeks")
+    check_auth_token(request, AUTH["quidel"])
+    require_all(request, "locations", "epiweeks")
 
     locations = extract_strings("locations")
     epiweeks = extract_integers("epiweeks")
