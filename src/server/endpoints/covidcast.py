@@ -133,7 +133,7 @@ def handle_trend():
     q.apply_geo_filters("geo_type", "geo_value", geo_sets)
     q.apply_time_filter("time_type", "time_value", time_window)
 
-    p = create_printer(request)
+    p = create_printer(request.values.get("format"))
 
     def gen(rows):
         for key, group in groupby((parse_row(row, fields_string, fields_int, fields_float) for row in rows), lambda row: (row["geo_type"], row["geo_value"], row["source"], row["signal"])):
@@ -181,7 +181,7 @@ def handle_trendseries():
     q.apply_geo_filters("geo_type", "geo_value", geo_sets)
     q.apply_time_filter("time_type", "time_value", time_window)
 
-    p = create_printer(request)
+    p = create_printer(request.values.get("format"))
 
     shifter = lambda x: shift_day_value(x, -basis_shift)
     if not is_day:
@@ -246,7 +246,7 @@ def handle_correlation():
         # week but convert to date for simpler shifting
         df["time_value"] = to_datetime(df["time_value"].apply(lambda v: time_value_to_week(v).startdate()))
 
-    p = create_printer(request)
+    p = create_printer(request.values.get("format"))
 
     def prepare_data_frame(df):
         return df[["time_value", "value"]].set_index("time_value")
@@ -393,7 +393,7 @@ def handle_backfill():
     q.apply_geo_filters("geo_type", "geo_value", [geo_set])
     q.apply_time_filter("time_type", "time_value", time_set)
 
-    p = create_printer(request)
+    p = create_printer(request.values.get("format"))
 
     def find_anchor_row(rows: List[Dict[str, Any]], issue: int) -> Optional[Dict[str, Any]]:
         # assume sorted by issue asc

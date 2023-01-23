@@ -22,4 +22,4 @@ def handle():
     locations = parse_result(query, {}, ["location"])
 
     data = {"releases": releases, "locations": locations}
-    return print_non_standard(request, data)
+    return print_non_standard(request.values.get("format"), data)

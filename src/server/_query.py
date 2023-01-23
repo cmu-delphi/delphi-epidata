@@ -260,7 +260,7 @@ def execute_queries(
     execute the given queries and return the response to send them
     """
 
-    p = create_printer(request)
+    p = create_printer(request.values.get("format"))
 
     fields_to_send = set(extract_strings("fields") or [])
     if fields_to_send:

@@ -46,4 +46,4 @@ def handle():
         "wiki": wiki,
         "delphi": delphi,
     }
-    return print_non_standard(request, [row])
+    return print_non_standard(request.values.get("format"), [row])

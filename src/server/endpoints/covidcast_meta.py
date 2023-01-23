@@ -79,4 +79,4 @@ def handle():
     signals = [SourceSignal(v) for v in (extract_strings("signals") or [])]
     geo_types = extract_strings("geo_types")
 
-    return create_printer(request)(filter_fields(fetch_data(time_types, geo_types, signals)))
+    return create_printer(request.values.get("format"))(filter_fields(fetch_data(time_types, geo_types, signals)))

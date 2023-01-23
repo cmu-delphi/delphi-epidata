@@ -21,7 +21,7 @@ def as_pandas(query: str, params: Dict[str, Any], db_engine: Engine = engine, pa
 
 
 def print_pandas(df: pd.DataFrame):
-    p = create_printer(request)
+    p = create_printer(request.values.get("format"))
 
     def gen():
         for row in df.to_dict(orient="records"):

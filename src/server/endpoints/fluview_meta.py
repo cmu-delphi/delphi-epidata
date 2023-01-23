@@ -23,4 +23,4 @@ def handle():
         for row in meta_fluview():
             yield row
 
-    return create_printer(request)(filter_fields(gen()))
+    return create_printer(request.values.get("format"))(filter_fields(gen()))

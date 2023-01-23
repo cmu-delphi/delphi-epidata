@@ -42,4 +42,4 @@ def fetch_coverage_data() -> Dict[str, Dict[str, List[Dict[str, Any]]]]:
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    return print_non_standard(request, fetch_coverage_data())
+    return print_non_standard(request.values.get("format"), fetch_coverage_data())

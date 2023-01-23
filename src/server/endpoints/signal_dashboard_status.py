@@ -30,7 +30,7 @@ def handle():
     AND enabled_signal.`id` = status.`signal_id`
     """
 
-    p = create_printer(request)
+    p = create_printer(request.values.get("format"))
 
     def gen(rows, coverage_data):
         for row in rows:
