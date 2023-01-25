@@ -35,7 +35,7 @@ class UnitTests(unittest.TestCase):
     """Scan the data directory."""
 
     mock_csv_importer.find_csv_files.return_value = self._path_details
-    collect_files("fake_data_dir",False) # no specific issue
+    collect_files("fake_data_dir", False) # no specific issue
     self.assertEqual(mock_csv_importer.find_csv_files.call_count, 1)
 
 
