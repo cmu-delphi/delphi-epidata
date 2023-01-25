@@ -19,7 +19,7 @@ from delphi.epidata.acquisition.covidcast.database import CovidcastRow
 from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
 
 DFRow = NamedTuple('DFRow', [('geo_id', str), ('value', float), ('stderr', float), ('sample_size', float), ('missing_value', int), ('missing_stderr', int), ('missing_sample_size', int)])
-PathDetails = NamedTuple('PathDetails', [('source', str), ("signal", str), ('time_type', str), ('geo_type', str), ('time_value', int), ('issue', int), ('lag', int)])
+PathDetails = NamedTuple('PathDetails', [('source', str), ('signal', str), ('time_type', str), ('geo_type', str), ('time_value', int), ('issue', int), ('lag', int)])
 
 
 @dataclass
