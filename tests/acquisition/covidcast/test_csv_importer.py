@@ -105,10 +105,10 @@ class UnitTests(unittest.TestCase):
     expected_issue_week=int(str(epi.Week.fromdate(date.today())))
     time_value_day = 20200408
     expected = set([
-      (glob_paths[0], ('fb_survey', 'cli', 'week', 'county', 202015, expected_issue_week, delta_epiweeks(202015, expected_issue_week))),
-      (glob_paths[1], ('ght', 'rawsearch', 'day', 'state', time_value_day, expected_issue_day, (date.today() - date(year=time_value_day // 10000, month=(time_value_day // 100) % 100, day=time_value_day % 100)).days)),
-      (glob_paths[2], ('valid', 'sig', 'day', 'nation', time_value_day, expected_issue_day, (date.today() - date(year=time_value_day // 10000, month=(time_value_day // 100) % 100, day=time_value_day % 100)).days)),
-      (glob_paths[3], ('valid', 'sig', 'day', 'hhs', time_value_day, expected_issue_day, (date.today() - date(year=time_value_day // 10000, month=(time_value_day // 100) % 100, day=time_value_day % 100)).days)),
+      (glob_paths[0], PathDetails(expected_issue_week, delta_epiweeks(202015, expected_issue_week), 'fb_survey', 'cli', 'week', 202015, 'county')),
+      (glob_paths[1], PathDetails(expected_issue_day, (date.today() - date(year=time_value_day // 10000, month=(time_value_day // 100) % 100, day=time_value_day % 100)).days, 'ght', 'rawsearch', 'day', time_value_day, 'state')),
+      (glob_paths[2], PathDetails(expected_issue_day, (date.today() - date(year=time_value_day // 10000, month=(time_value_day // 100) % 100, day=time_value_day % 100)).days, 'valid', 'sig', 'day', time_value_day, 'nation')),
+      (glob_paths[3], PathDetails(expected_issue_day, (date.today() - date(year=time_value_day // 10000, month=(time_value_day // 100) % 100, day=time_value_day % 100)).days, 'valid', 'sig', 'day', time_value_day, 'hhs')),
       (glob_paths[4], None),
       (glob_paths[5], None),
       (glob_paths[6], None),
@@ -233,7 +233,7 @@ class UnitTests(unittest.TestCase):
 
     data = {'foo': [1, 2, 3]}
     filepath = 'path/name.csv'
-    details = PathDetails("src", "name", "day", "state", 20200101, 20200101, 0)
+    details = PathDetails(20200101, 0, "src", "name", "day", 20200101, "state")
 
     mock_read_csv.return_value = pd.DataFrame(data)
     rows = list(CsvImporter.load_csv(filepath, details))
@@ -255,7 +255,7 @@ class UnitTests(unittest.TestCase):
       'sample_size': ['301', '302', '303', '304'],
     }
     filepath = 'path/name.csv'
-    details = PathDetails("src", "name", "day", "state", 20200101, 20200101, 0)
+    details = PathDetails(20200101, 0, "src", "name", "day", 20200101, "state")
 
     mock_read_csv.return_value = pd.DataFrame(data=data)
     rows = list(CsvImporter.load_csv(filepath, details))
@@ -292,7 +292,7 @@ class UnitTests(unittest.TestCase):
       'missing_sample_size': [Nans.NOT_MISSING] * 2 + [Nans.REGION_EXCEPTION] * 2 + [None]
     }
     filepath = 'path/name.csv'
-    details = PathDetails("src", "name", "day", "state", 20200101, 20200101, 0)
+    details = PathDetails(20200101, 0, "src", "name", "day", 20200101, "state")
 
     mock_read_csv.return_value = pd.DataFrame(data)
     rows = list(CsvImporter.load_csv(filepath, details))

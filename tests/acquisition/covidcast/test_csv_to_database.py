@@ -17,9 +17,9 @@ class UnitTests(unittest.TestCase):
   """Basic unit tests."""
   _path_details = [
     # a good file
-    ('path/a.csv', PathDetails('src_a', 'sig_a', 'day', 'hrr', 20200419, 20200420, 1)),
+    ('path/a.csv', PathDetails(20200420, 1, 'src_a', 'sig_a', 'day', 20200419, 'hrr')),
     # a file with a data error
-    ('path/b.csv', PathDetails('src_b', 'sig_b', 'week', 'msa', 202016, 202017, 1)),
+    ('path/b.csv', PathDetails(202017, 1, 'src_b', 'sig_b', 'week', 202016, 'msa')),
     # emulate a file that's named incorrectly
     ('path/c.csv', None)
   ]
@@ -194,7 +194,7 @@ class UnitTests(unittest.TestCase):
     data_dir = 'data_dir'
     mock_database.insert_or_update_bulk.side_effect = Exception('testing')
     mock_csv_importer.find_csv_files.return_value = [
-      ('path/file.csv', PathDetails('src', 'sig', 'day', 'hrr', 20200423, 20200424, 1)),
+      ('path/file.csv', PathDetails(20200424, 1, 'src', 'sig', 'day', 20200423, 'hrr')),
     ]
     mock_csv_importer.load_csv.return_value = [
       MagicMock(geo_value='geo', value=1, stderr=1, sample_size=1),
