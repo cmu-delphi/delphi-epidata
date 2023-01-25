@@ -403,6 +403,55 @@ def reindex_iterable(iterator: Iterator[Dict], fill_value: Optional[Number] = No
         expected_time_value = day_to_time_value(time_value_to_day(expected_time_value) + timedelta(days=1))
 
 
+def _reindex_iterable2(iterator: Iterator[dict], fill_value: Optional[Number] = None) -> Iterator[dict]:
+    """Produces an iterator that fills in gaps in the time values of another iterator.
+
+    Used to produce an iterator with a contiguous time index for time series operations.
+    The iterator is assumed to be sorted by time_value in ascending order.
+    The min and max time_values are determined from the first and last rows of the iterator.
+    The fill_value is used to fill in gaps in the time index.
+    """
+    _iterator = peekable(iterator)
+
+    # If the iterator is empty, we halt immediately.
+    try:
+        first_item = _iterator.peek()
+    except StopIteration:
+        return
+
+    expected_time_value = first_item["time_value"]
+    # Non-trivial operations otherwise.
+    while True:
+        try:
+            # This will stay the same until the peeked element is consumed.
+            new_item = _iterator.peek()
+        except StopIteration:
+            return
+
+        if expected_time_value == new_item.get("time_value"):
+            # Get the value we just peeked.
+            t_ = next(_iterator)
+            yield {
+                "time_value": t_["time_value"],
+                "value": t_["value"],
+                "geo_value": t_["geo_value"],
+                "source": t_["source"],
+                "signal": t_["signal"],
+                "geo_type": t_["geo_type"],
+            }
+        else:
+            # Return a default row instead.
+            yield {
+                "time_value": expected_time_value,
+                "value": fill_value,
+                "geo_value": first_item["geo_value"],
+                "source": first_item["source"],
+                "signal": first_item["signal"],
+                "geo_type": first_item["geo_type"],
+            }
+        expected_time_value = day_to_time_value(time_value_to_day(expected_time_value) + timedelta(days=1))
+
+
 def get_base_signal_transform(signal: Union[DataSignal, Tuple[str, str]]) -> Callable:
     """Given a DataSignal, return the transformation that needs to be applied to its base signal to derive the signal."""
     if isinstance(signal, DataSignal):
