@@ -6,7 +6,7 @@ import pandas as pd
 import sqlalchemy
 
 import delphi.operations.secrets as secrets
-from delphi.epidata.acquisition.covidcast.csv_importer import CsvImporter
+from delphi.epidata.acquisition.covidcast.csv_importer import CsvImporter, PathDetails
 
 SENSOR_CSV_PATH = "/common/covidcast_nowcast/receiving/"
 SUCCESS_DIR = "archive/successful"
@@ -52,7 +52,7 @@ def main(csv_path: str = SENSOR_CSV_PATH) -> None:
         _move_after_processing(filepath, success=True)
 
 
-def load_and_prepare_file(filepath: str, attributes: tuple) -> pd.DataFrame:
+def load_and_prepare_file(filepath: str, attributes: PathDetails) -> pd.DataFrame:
     """
     Read CSV file into a DataFrame and add relevant attributes as new columns to match DB table.
 
@@ -68,15 +68,14 @@ def load_and_prepare_file(filepath: str, attributes: tuple) -> pd.DataFrame:
     -------
         DataFrame with additional attributes added as columns based on filename and current date.
     """
-    source, signal, time_type, geo_type, time_value, issue_value, lag_value = attributes
     data = pd.read_csv(filepath, dtype=CSV_DTYPES)
-    data["source"] = source
-    data["signal"] = signal
-    data["time_type"] = time_type
-    data["geo_type"] = geo_type
-    data["time_value"] = time_value
-    data["issue"] = issue_value
-    data["lag"] = lag_value
+    data["source"] = attributes.source
+    data["signal"] = attributes.signal
+    data["time_type"] = attributes.time_type
+    data["geo_type"] = attributes.geo_type
+    data["time_value"] = attributes.time_value
+    data["issue"] = attributes.issue
+    data["lag"] = attributes.lag
     data["value_updated_timestamp"] = int(time.time())
     return data
 

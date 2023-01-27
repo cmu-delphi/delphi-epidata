@@ -1,20 +1,26 @@
 """Collects and reads covidcast data from a set of local CSV files."""
 
 # standard library
-from dataclasses import dataclass
-from datetime import date
-import glob
 import os
 import re
+from dataclasses import dataclass
+from datetime import date
+from glob import glob
+from typing import Iterator, NamedTuple, Optional, Tuple
 
 # third party
-import pandas as pd
 import epiweeks as epi
+import pandas as pd
 
 # first party
 from delphi_utils import Nans
 from delphi.utils.epiweek import delta_epiweeks
-from .logger import get_structured_logger
+from delphi.epidata.acquisition.covidcast.database import CovidcastRow
+from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
+
+DFRow = NamedTuple('DFRow', [('geo_id', str), ('value', float), ('stderr', float), ('sample_size', float), ('missing_value', int), ('missing_stderr', int), ('missing_sample_size', int)])
+PathDetails = NamedTuple('PathDetails', [('issue', int), ('lag', int), ('source', str), ('signal', str), ('time_type', str), ('time_value', int), ('geo_type', str)])
+
 
 @dataclass
 class CsvRowValue:
@@ -26,6 +32,7 @@ class CsvRowValue:
   missing_value: int
   missing_stderr: int
   missing_sample_size: int
+
 
 class CsvImporter:
   """Finds and parses covidcast CSV files."""
@@ -60,6 +67,7 @@ class CsvImporter:
     "missing_sample_size": "Int64"
   }
 
+
   @staticmethod
   def is_sane_day(value):
     """Return whether `value` is a sane (maybe not valid) YYYYMMDD date.
@@ -76,6 +84,7 @@ class CsvImporter:
       return False
     return date(year=year,month=month,day=day)
 
+
   @staticmethod
   def is_sane_week(value):
     """Return whether `value` is a sane (maybe not valid) YYYYWW epiweek.
@@ -91,22 +100,24 @@ class CsvImporter:
       return False
     return value
 
+
   @staticmethod
-  def find_issue_specific_csv_files(scan_dir, glob=glob):
+  def find_issue_specific_csv_files(scan_dir):
     logger = get_structured_logger('find_issue_specific_csv_files')
-    for path in sorted(glob.glob(os.path.join(scan_dir, '*'))):
+    for path in sorted(glob(os.path.join(scan_dir, '*'))):
       issuedir_match = CsvImporter.PATTERN_ISSUE_DIR.match(path.lower())
       if issuedir_match and os.path.isdir(path):
         issue_date_value = int(issuedir_match.group(2))
         issue_date = CsvImporter.is_sane_day(issue_date_value)
         if issue_date:
           logger.info(event='processing csv files from issue', detail=issue_date, file=path)
-          yield from CsvImporter.find_csv_files(path, issue=(issue_date, epi.Week.fromdate(issue_date)), glob=glob)
+          yield from CsvImporter.find_csv_files(path, issue=(issue_date, epi.Week.fromdate(issue_date)))
         else:
           logger.warning(event='invalid issue directory day', detail=issue_date_value, file=path)
 
+
   @staticmethod
-  def find_csv_files(scan_dir, issue=(date.today(), epi.Week.fromdate(date.today())), glob=glob):
+  def find_csv_files(scan_dir, issue=(date.today(), epi.Week.fromdate(date.today()))):
     """Recursively search for and yield covidcast-format CSV files.
 
     scan_dir: the directory to scan (recursively)
@@ -122,11 +133,11 @@ class CsvImporter:
     issue_value=-1
     lag_value=-1
 
-    for path in sorted(glob.glob(os.path.join(scan_dir, '*', '*'))):
-
+    for path in sorted(glob(os.path.join(scan_dir, '*', '*'))):
+      # safe to ignore this file
       if not path.lower().endswith('.csv'):
-        # safe to ignore this file
         continue
+
       # match a daily or weekly naming pattern
       daily_match = CsvImporter.PATTERN_DAILY.match(path.lower())
       weekly_match = CsvImporter.PATTERN_WEEKLY.match(path.lower())
@@ -174,13 +185,15 @@ class CsvImporter:
         yield (path, None)
         continue
 
-      yield (path, (source, signal, time_type, geo_type, time_value, issue_value, lag_value))
+      yield (path, PathDetails(issue_value, lag_value, source, signal, time_type, time_value, geo_type))
+
 
   @staticmethod
   def is_header_valid(columns):
     """Return whether the given pandas columns contains the required fields."""
 
     return set(columns) >= CsvImporter.REQUIRED_COLUMNS
+
 
   @staticmethod
   def floaty_int(value: str) -> int:
@@ -195,6 +208,7 @@ class CsvImporter:
       raise ValueError('not an int: "%s"' % str(value))
     return int(float_value)
 
+
   @staticmethod
   def maybe_apply(func, quantity):
     """Apply the given function to the given quantity if not null-ish."""
@@ -204,6 +218,7 @@ class CsvImporter:
       return None
     else:
       return func(quantity)
+
 
   @staticmethod
   def validate_quantity(row, attr_quantity):
@@ -217,6 +232,7 @@ class CsvImporter:
     except (ValueError, AttributeError):
       # val was a string or another data
       return "Error"
+
 
   @staticmethod
   def validate_missing_code(row, attr_quantity, attr_name, filepath=None, logger=None):
@@ -250,8 +266,9 @@ class CsvImporter:
 
     return missing_entry
 
+
   @staticmethod
-  def extract_and_check_row(row, geo_type, filepath=None):
+  def extract_and_check_row(row: DFRow, geo_type: str, filepath: Optional[str] = None) -> Tuple[Optional[CsvRowValue], Optional[str]]:
     """Extract and return `CsvRowValue` from a CSV row, with sanity checks.
 
     Also returns the name of the field which failed sanity check, or None.
@@ -331,8 +348,9 @@ class CsvImporter:
     # return extracted and validated row values
     return (CsvRowValue(geo_id, value, stderr, sample_size, missing_value, missing_stderr, missing_sample_size), None)
 
+
   @staticmethod
-  def load_csv(filepath, geo_type):
+  def load_csv(filepath: str, details: PathDetails) -> Iterator[Optional[CovidcastRow]]:
     """Load, validate, and yield data as `RowValues` from a CSV file.
 
     filepath: the CSV file to be loaded
@@ -357,9 +375,32 @@ class CsvImporter:
     table.rename(columns={"val": "value", "se": "stderr", "missing_val": "missing_value", "missing_se": "missing_stderr"}, inplace=True)
 
     for row in table.itertuples(index=False):
-      row_values, error = CsvImporter.extract_and_check_row(row, geo_type, filepath)
+      csv_row_values, error = CsvImporter.extract_and_check_row(row, details.geo_type, filepath)
+
       if error:
         logger.warning(event = 'invalid value for row', detail=(str(row), error), file=filepath)
         yield None
         continue
-      yield row_values
+
+      yield CovidcastRow(
+        details.source,
+        details.signal,
+        details.time_type,
+        details.geo_type,
+        details.time_value,
+        csv_row_values.geo_value,
+        csv_row_values.value,
+        csv_row_values.stderr,
+        csv_row_values.sample_size,
+        csv_row_values.missing_value,
+        csv_row_values.missing_stderr,
+        csv_row_values.missing_sample_size,
+        details.issue,
+        details.lag,
+        # These four fields are unused by database acquisition
+        # TODO: These will be used when CovidcastRow is updated.
+        # id=None,
+        # direction=None,
+        # direction_updated_timestamp=0,
+        # value_updated_timestamp=0,
+      )
