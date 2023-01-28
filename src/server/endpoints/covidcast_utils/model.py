@@ -1,3 +1,4 @@
+from collections import defaultdict
 from dataclasses import asdict, dataclass, field
 from datetime import timedelta
 from enum import Enum
@@ -41,9 +42,15 @@ IDENTITY: Callable = lambda rows, **kwargs: rows
 DIFF: Callable = lambda rows, **kwargs: generate_diffed_rows(rows, **kwargs)
 SMOOTH: Callable = lambda rows, **kwargs: generate_smoothed_rows(rows, **kwargs)
 DIFF_SMOOTH: Callable = lambda rows, **kwargs: generate_smoothed_rows(generate_diffed_rows(rows, **kwargs), **kwargs)
-
-SignalTransforms = Dict[SourceSignalPair, SourceSignalPair]
 TransformType = Callable[[Iterator[Dict]], Iterator[Dict]]
+
+@dataclass(frozen=True)
+class SourceSignal:
+    source: str
+    signal: str
+
+SignalTransforms = Dict[SourceSignal, List[SourceSignal]]
+
 
 class HighValuesAre(str, Enum):
     bad = "bad"
@@ -608,8 +615,9 @@ def generate_transformed_rows(
     rows: Iterator[Dict]
         An iterator streaming rows from a database query. Assumed to be sorted by source, signal, geo_type, geo_value, time_type, and time_value.
     transform_dict: Optional[SignalTransforms], default None
-        A dictionary mapping base sources to a list of their derived signals that the user wishes to query.
-        For example, transform_dict may be {("jhu-csse", "confirmed_cumulative_num): [("jhu-csse", "confirmed_incidence_num"), ("jhu-csse", "confirmed_7dav_incidence_num")]}.
+        A dictionary mapping a base source-signal to a list of their derived source-signals that the user wishes to query.
+        For example, transform_dict may be 
+            {SourceSignal("jhu-csse", "confirmed_cumulative_num): [SourceSignal("jhu-csse", "confirmed_incidence_num"), SourceSignal("jhu-csse", "confirmed_7dav_incidence_num")]}.
     transform_args: Optional[Dict], default None
         A dictionary of keyword arguments for the transformer functions.
 
@@ -623,28 +631,28 @@ def generate_transformed_rows(
         transform_dict = dict()
 
     # Put every signal, every geo on a contiguous time index, with default values.
-    df = pd.DataFrame(chain.from_iterable(reindex_iterable(v) for _, v in groupby(rows, key=lambda x: (x["source"], x["signal"], x["geo_value"]))))
+    df = pd.DataFrame(chain.from_iterable(_reindex_iterable2(v) for _, v in groupby(rows, key=lambda x: (x["source"], x["signal"], x["geo_value"]))))
 
     if df.empty:
-        return
+        return pd.DataFrame()
 
     # Set dtypes. Int8/Int64 are needed to allow null values.
     # TODO: Try using StringDType instead of object. Or categorical. This is mostly for memory usage. No worries about to_dict.
     df = _set_df_dtypes(df, PANDAS_DTYPES)
 
     dfs = []
-    for key, group_df in df.groupby(["source", "signal"], sort=False):
-        base_source_name, base_signal_name = key
-        # Extract the list of derived signals; if a signal is not in the dictionary, then use the identity map.
-        derived_signal_transform_map: SourceSignalPair = transform_dict.get(SourceSignalPair(base_source_name, [base_signal_name]), SourceSignalPair(base_source_name, [base_signal_name]))
-        # Create a list of source-signal pairs along with the transformation required for the signal.
-        signal_names_and_transforms = [(derived_signal, get_base_signal_transform((base_source_name, derived_signal))) for derived_signal in derived_signal_transform_map.signal]
+    for (base_source_name, base_signal_name), group_df in df.groupby(["source", "signal"], sort=False):
+        derived_signals = transform_dict.get(SourceSignal(base_source_name, base_signal_name), [])
 
-        for derived_signal, transform in signal_names_and_transforms:
+        for derived_signal in derived_signals:
+            derived_signal_name = derived_signal.signal
+            transform = get_base_signal_transform((base_source_name, derived_signal_name))
+
             derived_df = group_df.set_index(["geo_value", "time_value"])
 
             # TODO: Add sort=false to these groupbys.
             if transform == IDENTITY:
+                raise ValueError("Identity transform should not be in transform_dict.")
                 dfs.append(derived_df)
                 continue
             elif transform == DIFF:
@@ -662,7 +670,7 @@ def generate_transformed_rows(
                 raise ValueError(f"Unknown transform for {derived_signal}.")
 
             derived_df = derived_df.assign(
-                signal=derived_signal,
+                signal=derived_signal_name,
                 issue=derived_df["issue"].groupby("geo_value", sort=False).rolling(window_length).max().droplevel(level=0).astype("Int64") if "issue" in derived_df.columns else None,
                 lag=derived_df["lag"].groupby("geo_value", sort=False).rolling(window_length).max().droplevel(level=0).astype("Int64") if "lag" in derived_df.columns else None,
                 stderr=np.nan,
@@ -677,20 +685,21 @@ def generate_transformed_rows(
             dfs.append(derived_df)
 
     derived_df_full = pd.concat(dfs)
+    derived_df_full = _set_df_dtypes(derived_df_full, PANDAS_DTYPES)
     return derived_df_full.reset_index()
 
 
-def get_basename_signals_and_derived_map(source_signal_pairs: List[SourceSignalPair]) -> Tuple[List[SourceSignalPair], Generator]:
+def get_basename_signals_and_derived_map(source_signal_pairs: List[SourceSignalPair]) -> Tuple[List[SourceSignalPair], SignalTransforms]:
     """From a list of SourceSignalPairs, return the base signals required to derive them and a transformation function to take a stream
     of the base signals and return the transformed signals.
 
     Example:
-    SourceSignalPair("src", signal=["sig_base", "sig_smoothed"]) would return SourceSignalPair("src", signal=["sig_base"]) and a transformation function
-    that will take the returned database query for "sig_base" and return both the base time series and the smoothed time series. transform_dict in this case
-    would be {("src", "sig_base"): [("src", "sig_base"), ("src", "sig_smooth")]}.
+    SourceSignalPair("src", signal=["sig_base", "sig_smoothed"]) would return SourceSignalPair("src", signal=["sig_base"]) and a transformation dictionary
+    that maps all required base source-signals to the requested derived source-signals. transform_dict in the case above would be
+    {SourceSignal("src", "sig_base"): [SourceSignal("src", "sig_base"), SourceSignal("src", "sig_smooth")]}.
     """
     base_signal_pairs: List[SourceSignalPair] = []
-    derived_signal_map: SignalTransforms = dict()
+    derived_signal_map: SignalTransforms = defaultdict(list)
 
     for pair in source_signal_pairs:
         # Should only occur when the SourceSignalPair was unrecognized by _resolve_bool_source_signals. Useful for testing with fake signal names.
@@ -701,12 +710,12 @@ def get_basename_signals_and_derived_map(source_signal_pairs: List[SourceSignalP
         signals = []
         for signal_name in pair.signal:
             signal = data_signals_by_key.get((pair.source, signal_name))
-            if not signal or not signal.compute_from_base:
-                derived_signal_map.setdefault(SourceSignalPair(source=pair.source, signal=[signal_name]), SourceSignalPair(source=pair.source, signal=[])).add_signal(signal_name)
-                signals.append(signal_name)
-            else:
-                derived_signal_map.setdefault(SourceSignalPair(source=pair.source, signal=[signal.signal_basename]), SourceSignalPair(source=pair.source, signal=[])).add_signal(signal_name)
+            if signal and signal.compute_from_base:
+                derived_signal_map[SourceSignal(pair.source, signal.signal_basename)].append(SourceSignal(pair.source, signal_name))
                 signals.append(signal.signal_basename)
+            else:
+                derived_signal_map[SourceSignal(pair.source, signal_name)].append(SourceSignal(pair.source, signal_name))
+                signals.append(signal_name)
         base_signal_pairs.append(SourceSignalPair(pair.source, signals))
 
     return base_signal_pairs, derived_signal_map
