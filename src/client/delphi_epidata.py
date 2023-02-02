@@ -499,16 +499,17 @@ class Epidata:
   def sensors(auth, names, locations, epiweeks):
     """Fetch Delphi's digital surveillance sensors."""
     # Check parameters
-    if auth is None or names is None or locations is None or epiweeks is None:
-      raise Exception('`auth`, `names`, `locations`, and `epiweeks` are all required')
+    if names is None or locations is None or epiweeks is None:
+      raise Exception('`names`, `locations`, and `epiweeks` are all required')
     # Set up request
     params = {
       'endpoint': 'sensors',
-      'auth': auth,
       'names': Epidata._list(names),
       'locations': Epidata._list(locations),
       'epiweeks': Epidata._list(epiweeks),
     }
+    if auth is not None:
+      params['auth'] = auth
     # Make the API call
     return Epidata._request(params)
 
