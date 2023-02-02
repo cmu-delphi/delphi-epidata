@@ -36,6 +36,7 @@
 #   pdb=1         Drops you into debug mode upon test failure, if running tests.
 #   test=         Only runs tests in the directories provided here, e.g.
 #                 repos/delphi/delphi-epidata/tests/acquisition/covidcast
+#   sql=          Overrides the default SQL connection string.
 
 
 # Set optional argument defaults
@@ -47,6 +48,12 @@ endif
 
 ifndef test
 	test=repos/delphi/delphi-epidata/tests repos/delphi/delphi-epidata/integrations
+endif
+
+ifdef sql
+	sqlalchemy_uri:=$(sql)
+else
+	sqlalchemy_uri:=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata
 endif
 
 SHELL:=/bin/sh
@@ -78,7 +85,7 @@ web:
 
 	@# Run the web server
 	@docker run --rm -p 127.0.0.1:10080:80 \
-		--env "SQLALCHEMY_DATABASE_URI=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata" \
+		--env "SQLALCHEMY_DATABASE_URI=$(sqlalchemy_uri)" \
 		--env "FLASK_SECRET=abc" --env "FLASK_PREFIX=/epidata" --env "LOG_DEBUG" \
 		--network delphi-net --name delphi_web_epidata \
 		delphi_web_epidata >$(LOG_WEB) 2>&1 &
@@ -123,7 +130,7 @@ test:
 	@docker run -i --rm --network delphi-net \
 		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata,target=/usr/src/app/repos/delphi/delphi-epidata,readonly \
 		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata/src,target=/usr/src/app/delphi/epidata,readonly \
-		--env "SQLALCHEMY_DATABASE_URI=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata" \
+		--env "SQLALCHEMY_DATABASE_URI=$(sqlalchemy_uri)" \
 		--env "FLASK_SECRET=abc" \
 		delphi_web_python python -m pytest --import-mode importlib $(pdb) $(test) | tee test_output_$(NOW).log
 
@@ -132,7 +139,7 @@ bash:
 	@docker run -it --rm --network delphi-net \
 		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata,target=/usr/src/app/repos/delphi/delphi-epidata,readonly \
 		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata/src,target=/usr/src/app/delphi/epidata,readonly \
-		--env "SQLALCHEMY_DATABASE_URI=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata" \
+		--env "SQLALCHEMY_DATABASE_URI=$(sqlalchemy_uri)" \
 		--env "FLASK_SECRET=abc" \
 		delphi_web_python bash
 
