@@ -606,7 +606,7 @@ def _set_df_dtypes(df: pd.DataFrame, dtypes: Dict[str, Any]) -> pd.DataFrame:
 
 def generate_transformed_rows(
     rows: Iterable[Dict],
-    transform_dict: Optional[SignalTransforms] = None,
+    transform_dict: Optional[Dict[SourceSignal, List[SourceSignal]]] = None,
     transform_args: Optional[Dict] = None,
 ) -> pd.DataFrame:
     """Applies time-series transformations to streamed rows from a database.
@@ -614,7 +614,7 @@ def generate_transformed_rows(
     Parameters:
     rows: Iterator[Dict]
         An iterator streaming rows from a database query. Assumed to be sorted by source, signal, geo_type, geo_value, time_type, and time_value.
-    transform_dict: Optional[SignalTransforms], default None
+    transform_dict: Dict[SourceSignal, List[SourceSignal]], default None
         A dictionary mapping a base source-signal to a list of their derived source-signals that the user wishes to query.
         For example, transform_dict may be 
             {SourceSignal("jhu-csse", "confirmed_cumulative_num): [SourceSignal("jhu-csse", "confirmed_incidence_num"), SourceSignal("jhu-csse", "confirmed_7dav_incidence_num")]}.
@@ -689,7 +689,7 @@ def generate_transformed_rows(
     return derived_df_full.reset_index()
 
 
-def get_basename_signals_and_derived_map(source_signal_pairs: List[SourceSignalPair]) -> Tuple[List[SourceSignalPair], SignalTransforms]:
+def get_basename_signals_and_derived_map(source_signal_pairs: List[SourceSignalPair]) -> Tuple[List[SourceSignalPair], Dict[SourceSignal, List[SourceSignal]]]:
     """From a list of SourceSignalPairs, return the base signals required to derive them and a transformation function to take a stream
     of the base signals and return the transformed signals.
 
@@ -699,7 +699,7 @@ def get_basename_signals_and_derived_map(source_signal_pairs: List[SourceSignalP
     {SourceSignal("src", "sig_base"): [SourceSignal("src", "sig_base"), SourceSignal("src", "sig_smooth")]}.
     """
     base_signal_pairs: List[SourceSignalPair] = []
-    derived_signal_map: SignalTransforms = defaultdict(list)
+    derived_signal_map: Dict[SourceSignal, List[SourceSignal]] = defaultdict(list)
 
     for pair in source_signal_pairs:
         # Should only occur when the SourceSignalPair was unrecognized by _resolve_bool_source_signals. Useful for testing with fake signal names.
