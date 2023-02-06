@@ -15,11 +15,27 @@ import pandas as pd
 # first party
 from delphi_utils import Nans
 from delphi.utils.epiweek import delta_epiweeks
-from delphi.epidata.acquisition.covidcast.database import CovidcastRow
+from delphi.epidata.acquisition.covidcast.covidcast_row import CovidcastRow
 from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
 
-DFRow = NamedTuple('DFRow', [('geo_id', str), ('value', float), ('stderr', float), ('sample_size', float), ('missing_value', int), ('missing_stderr', int), ('missing_sample_size', int)])
-PathDetails = NamedTuple('PathDetails', [('issue', int), ('lag', int), ('source', str), ('signal', str), ('time_type', str), ('time_value', int), ('geo_type', str)])
+DataFrameRow = NamedTuple('DFRow', [
+  ('geo_id', str),
+  ('value', float),
+  ('stderr', float),
+  ('sample_size', float),
+  ('missing_value', int),
+  ('missing_stderr', int),
+  ('missing_sample_size', int)
+])
+PathDetails = NamedTuple('PathDetails', [
+  ('issue', int),
+  ('lag', int),
+  ('source', str),
+  ("signal", str),
+  ('time_type', str),
+  ('time_value', int),
+  ('geo_type', str),
+])
 
 
 @dataclass
@@ -268,7 +284,7 @@ class CsvImporter:
 
 
   @staticmethod
-  def extract_and_check_row(row: DFRow, geo_type: str, filepath: Optional[str] = None) -> Tuple[Optional[CsvRowValue], Optional[str]]:
+  def extract_and_check_row(row: DataFrameRow, geo_type: str, filepath: Optional[str] = None) -> Tuple[Optional[CsvRowValue], Optional[str]]:
     """Extract and return `CsvRowValue` from a CSV row, with sanity checks.
 
     Also returns the name of the field which failed sanity check, or None.
@@ -397,10 +413,4 @@ class CsvImporter:
         csv_row_values.missing_sample_size,
         details.issue,
         details.lag,
-        # These four fields are unused by database acquisition
-        # TODO: These will be used when CovidcastRow is updated.
-        # id=None,
-        # direction=None,
-        # direction_updated_timestamp=0,
-        # value_updated_timestamp=0,
       )
