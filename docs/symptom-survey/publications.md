@@ -24,6 +24,10 @@ Pandemic"](https://www.pnas.org/topic/548) in *PNAS*:
 
 Other research publications using the survey data include:
 
+- Rebecca L. Weintraub et al (2023). [Identifying COVID-19 Vaccine Deserts and
+  Ways to Reduce Them: A Digital Tool to Support Public Health
+  Decision-Making](https://doi.org/10.2105/AJPH.2022.307198). *American Journal
+  of Public Health*.
 - Anzalone AJ, Sun J, Vinson AJ, Beasley WH, Hillegass WB, Murray K, et al.
   (2023). [Community risks for SARS-CoV-2 infection among fully vaccinated US
   adults by rurality: A retrospective cohort study from the National COVID
