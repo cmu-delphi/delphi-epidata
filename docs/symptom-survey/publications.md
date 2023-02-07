@@ -22,7 +22,9 @@ Pandemic"](https://www.pnas.org/topic/548) in *PNAS*:
   vaccination](https://doi.org/10.1073/pnas.2111454118). *Proceedings of the
   National Academy of Sciences* 118 (51) e2111454118.
 
-Other research publications using the survey data include:
+## Peer Reviewed Papers
+
+Research publications using the survey data include:
 
 - Rebecca L. Weintraub et al (2023). [Identifying COVID-19 Vaccine Deserts and
   Ways to Reduce Them: A Digital Tool to Support Public Health
@@ -177,6 +179,45 @@ Other research publications using the survey data include:
   research and public policy
   making](https://doi.org/10.18148/srm/2020.v14i2.7761). *Survey Research
   Methods*, 14 (2), 159-163.
+
+## Blog Posts and Reports
+
+* Surgo Ventures, Resolve to Save Lives (2021). [COVID-19 Vaccine Precision
+  Response Toolkit: An End-to-End Vaccination Improvement Framework to Improve
+  COVID-19 Vaccine
+  Uptake](https://surgoventures.org/resource-library/increasing-covid-19vaccine-uptake-a-four-step-framework-to-promote-access-acceptance-and-equity).
+* Alejandra Arrieta, Emmanuela Gakidou, Heidi Larson, Erin Mullany, and
+  Christopher Troeger, April 1, 2021. [Through Understanding and Empathy, We Can
+  Convince Women to Get the COVID-19
+  Vaccine](https://www.thinkglobalhealth.org/article/through-understanding-and-empathy-we-can-convince-women-get-covid-19-vaccine).
+  Think Global Health.
+* Joseph Friedman, Silvia Montoya and Emmanuela Gakidou, March 8, 2021. [Gender
+  Equality in the Global Return to
+  School](https://www.thinkglobalhealth.org/article/gender-equality-global-return-school).
+  Think Global Health.
+* Leanna Morinishi, Kris Barkume, Esther Kim, and Alex Reinhart, February
+  2, 2021. [Home for the Holidays? The Impact of US Holidays on Social Behaviors
+  and Preventative
+  Measures](https://delphi.cmu.edu/blog/2021/02/02/home-for-the-holidays-the-impact-of-us-holidays-on-social-behaviors-and-preventative-measures/).
+  Delphi blog.
+* Alex Reinhart, Esther Kim, Andy Garcia, and Sarah LaRocca, January 28, 2021.
+  [Using the COVID-19 Symptom Survey to Track Vaccination Uptake and Sentiment
+  in the United
+  States](https://delphi.cmu.edu/blog/2021/01/28/using-the-covid-19-symptom-survey-to-track-vaccination-uptake-and-sentiment-in-the-united-states/).
+  Delphi blog.
+* Alex Reinhart, October 12, 2020. [New and Improved COVID Symptom Survey Tracks
+  Testing and
+  Mask-Wearing](https://delphi.cmu.edu/blog/2020/10/12/new-and-improved-covid-symptom-survey-tracks-testing-and-mask-wearing/).
+  Delphi blog.
+* Ryan Tibshirani, September 21, 2020. [Can Symptom Surveys Improve COVID-19
+  Forecasts?](https://delphi.cmu.edu/blog/2020/09/21/can-symptoms-surveys-improve-covid-19-forecasts/)
+  Delphi blog.
+* Alex Reinhart and Ryan Tibshirani, August 26, 2020. [COVID-19 Symptom Surveys
+  through
+  Facebook](https://delphi.cmu.edu/blog/2020/08/26/covid-19-symptom-surveys-through-facebook/).
+  Delphi blog.
+
+## Send Your Publications
 
 If you have used the survey data, or the aggregate data available in the
 COVIDcast API, to publish research results, please contact us at
