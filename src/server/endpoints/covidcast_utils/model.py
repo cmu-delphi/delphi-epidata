@@ -702,7 +702,7 @@ def get_basename_signals_and_derived_map(source_signal_pairs: List[SourceSignalP
     derived_signal_map: Dict[SourceSignal, List[SourceSignal]] = defaultdict(list)
 
     for pair in source_signal_pairs:
-        # Should only occur when the SourceSignalPair was unrecognized by _resolve_bool_source_signals. Useful for testing with fake signal names.
+        # Should only occur when the the source could not be found in data_source_by_id. Useful for testing with fake signal names.
         if isinstance(pair.signal, bool):
             base_signal_pairs.append(pair)
             continue

@@ -324,8 +324,9 @@ def handle():
             return row
         row["source"] = alias_mapper(row["source"], row["signal"])
         return row
+    has_unrecognized_source = any(isinstance(source_signal_pair.signal, bool) for source_signal_pair in source_signal_pairs)
 
-    use_jit_compute = not any((issues, lag, is_time_type_week)) and JIT_COMPUTE_ON and not jit_bypass
+    use_jit_compute = not any((issues, lag, is_time_type_week, has_unrecognized_source)) and JIT_COMPUTE_ON and not jit_bypass
     if use_jit_compute:
         # TODO: Need to thread alias_row through jit_request_to_df
         df = jit_request_to_df(source_signal_pairs, geo_pairs, time_pair, as_of, issues, lag)
