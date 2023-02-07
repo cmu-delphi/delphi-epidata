@@ -1,5 +1,5 @@
 # start with a standard percona mysql image
-FROM percona:ps-8
+FROM mysql:latest
 
 # percona exits with the mysql user but we need root for additional setup
 USER root
