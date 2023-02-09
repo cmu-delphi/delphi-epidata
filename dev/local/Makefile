@@ -80,11 +80,14 @@ web:
 
 	@# Build the web_epidata image
 	@cd repos/delphi/delphi-epidata;\
-		docker build -t delphi_web_epidata -f ./devops/Dockerfile .;\
+		docker build -t delphi_web_epidata\
+			--platform linux/amd64\
+			-f ./devops/Dockerfile .;\
 		cd -
 
 	@# Run the web server
 	@docker run --rm -p 127.0.0.1:10080:80 \
+		--platform linux/amd64\
 		--env "SQLALCHEMY_DATABASE_URI=$(sqlalchemy_uri)" \
 		--env "FLASK_SECRET=abc" --env "FLASK_PREFIX=/epidata" --env "LOG_DEBUG" \
 		--network delphi-net --name delphi_web_epidata \
@@ -102,10 +105,12 @@ db:
 
 	@# Build the database_epidata image
 	@docker build -t delphi_database_epidata \
+		--platform linux/amd64\
 		-f repos/delphi/delphi-epidata/dev/docker/database/epidata/Dockerfile .
 
 	@# Run the database
 	@docker run --rm -p 127.0.0.1:13306:3306 \
+		--platform linux/amd64\
 		--network delphi-net --name delphi_database_epidata \
                 --cap-add=sys_nice \
 		delphi_database_epidata >$(LOG_DB) 2>&1 &
@@ -120,6 +125,7 @@ db:
 .PHONY=py
 py:
 	@docker build -t delphi_web_python \
+		--platform linux/amd64\
 		-f repos/delphi/delphi-epidata/dev/docker/python/Dockerfile .
 
 .PHONY=all
@@ -128,6 +134,7 @@ all: db web py
 .PHONY=test
 test:
 	@docker run -i --rm --network delphi-net \
+		--platform linux/amd64\
 		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata,target=/usr/src/app/repos/delphi/delphi-epidata,readonly \
 		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata/src,target=/usr/src/app/delphi/epidata,readonly \
 		--env "SQLALCHEMY_DATABASE_URI=$(sqlalchemy_uri)" \
@@ -137,6 +144,7 @@ test:
 .PHONY=bash
 bash:
 	@docker run -it --rm --network delphi-net \
+		--platform linux/amd64\
 		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata,target=/usr/src/app/repos/delphi/delphi-epidata,readonly \
 		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata/src,target=/usr/src/app/delphi/epidata,readonly \
 		--env "SQLALCHEMY_DATABASE_URI=$(sqlalchemy_uri)" \
