@@ -138,8 +138,7 @@ class CovidcastEndpointTests(CovidcastBase):
         # Insert rows into database.
         self._insert_rows(data1.rows + data2.rows + data3.rows)
         # Fill the gap in data3.
-        data3_reindexed = reindex_df(data3.api_row_df)
-        data_df = pd.concat([data1.api_row_df, data2.api_row_df, data3_reindexed])
+        data_df = pd.concat([data1.api_row_df, data2.api_row_df, data3.api_row_df])
         # Get the expected derived signal values.
         expected_diffed_df = diff_df(data_df, "confirmed_incidence_num").set_index(["signal", "geo_value", "time_value"])
         expected_smoothed_df = diff_smooth_df(data_df, "confirmed_7dav_incidence_num").set_index(["signal", "geo_value", "time_value"])

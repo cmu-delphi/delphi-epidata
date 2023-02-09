@@ -10,10 +10,7 @@ from pandas.testing import assert_frame_equal
 from delphi.epidata.acquisition.covidcast.covidcast_row import CovidcastRows, assert_frame_equal_no_order
 from delphi.epidata.server._params import SourceSignalPair, TimePair
 from delphi.epidata.server.endpoints.covidcast_utils.model import (
-    DIFF,
-    DIFF_SMOOTH,
-    IDENTITY,
-    SMOOTH,
+    SeriesTransform,
     SourceSignal,
     generate_transformed_rows,
     get_base_signal_transform,
@@ -44,27 +41,27 @@ class TestModel(unittest.TestCase):
             assert_frame_equal_no_order(df, expected_df, index=["source", "signal", "geo_value", "time_value"])
 
     def test_get_base_signal_transform(self):
-        assert get_base_signal_transform(("src", "sig_smooth")) == SMOOTH
-        assert get_base_signal_transform(("src", "sig_diff_smooth")) == DIFF_SMOOTH
-        assert get_base_signal_transform(("src", "sig_diff")) == DIFF
-        assert get_base_signal_transform(("src", "sig_diff")) == DIFF
-        assert get_base_signal_transform(("src", "sig_base")) == IDENTITY
-        assert get_base_signal_transform(("src", "sig_unknown")) == IDENTITY
+        assert get_base_signal_transform(("src", "sig_smooth")) == SeriesTransform.smooth
+        assert get_base_signal_transform(("src", "sig_diff_smooth")) == SeriesTransform.diff_smooth
+        assert get_base_signal_transform(("src", "sig_diff")) == SeriesTransform.diff
+        assert get_base_signal_transform(("src", "sig_diff")) == SeriesTransform.diff
+        assert get_base_signal_transform(("src", "sig_base")) == SeriesTransform.identity
+        assert get_base_signal_transform(("src", "sig_unknown")) == SeriesTransform.identity
 
     def test_get_transform_types(self):
         source_signal_pairs = [SourceSignalPair(source="src", signal=["sig_diff"])]
         transform_types = get_transform_types(source_signal_pairs)
-        expected_transform_types = {DIFF}
+        expected_transform_types = {SeriesTransform.diff}
         assert transform_types == expected_transform_types
 
         source_signal_pairs = [SourceSignalPair(source="src", signal=["sig_smooth"])]
         transform_types = get_transform_types(source_signal_pairs)
-        expected_transform_types = {SMOOTH}
+        expected_transform_types = {SeriesTransform.smooth}
         assert transform_types == expected_transform_types
 
         source_signal_pairs = [SourceSignalPair(source="src", signal=["sig_diff_smooth"])]
         transform_types = get_transform_types(source_signal_pairs)
-        expected_transform_types = {DIFF_SMOOTH}
+        expected_transform_types = {SeriesTransform.diff_smooth}
         assert transform_types == expected_transform_types
 
     def test_get_pad_length(self):

@@ -13,7 +13,6 @@ import numpy as np
 
 from delphi_utils.nancodes import Nans
 from ..._params import SourceSignalPair, TimePair
-from .smooth_diff import generate_smoothed_rows, generate_diffed_rows
 from ...utils import shift_day_value, day_to_time_value, time_value_to_day, iterate_over_range
 
 
@@ -38,11 +37,13 @@ PANDAS_DTYPES = {
     "value_updated_timestamp": "Int64",
 }
 
-IDENTITY: Callable = lambda rows, **kwargs: rows
-DIFF: Callable = lambda rows, **kwargs: generate_diffed_rows(rows, **kwargs)
-SMOOTH: Callable = lambda rows, **kwargs: generate_smoothed_rows(rows, **kwargs)
-DIFF_SMOOTH: Callable = lambda rows, **kwargs: generate_smoothed_rows(generate_diffed_rows(rows, **kwargs), **kwargs)
-TransformType = Callable[[Iterator[Dict]], Iterator[Dict]]
+
+class SeriesTransform(str, Enum):
+    identity = "identity"
+    diff = "diff"
+    smooth = "smooth"
+    diff_smooth = "diff_smooth"
+
 
 @dataclass(frozen=True)
 class SourceSignal:
@@ -476,29 +477,29 @@ def _reindex_iterable2(iterator: Iterator[dict], fill_value: Optional[Number] = 
         expected_time_value = day_to_time_value(time_value_to_day(expected_time_value) + timedelta(days=1))
 
 
-def get_base_signal_transform(signal: Union[DataSignal, Tuple[str, str]]) -> Callable:
+def get_base_signal_transform(signal: Union[DataSignal, Tuple[str, str]]) -> SeriesTransform:
     """Given a DataSignal, return the transformation that needs to be applied to its base signal to derive the signal."""
     if isinstance(signal, DataSignal):
         base_signal = data_signals_by_key.get((signal.source, signal.signal_basename))
         if signal.format not in [SignalFormat.raw, SignalFormat.raw_count, SignalFormat.count] or not signal.compute_from_base or not base_signal:
-            return IDENTITY
+            return SeriesTransform.identity
         if signal.is_cumulative and signal.is_smoothed:
-            return SMOOTH
+            return SeriesTransform.smooth
         if not signal.is_cumulative and not signal.is_smoothed:
-            return DIFF if base_signal.is_cumulative else IDENTITY
+            return SeriesTransform.diff if base_signal.is_cumulative else SeriesTransform.identity
         if not signal.is_cumulative and signal.is_smoothed:
-            return DIFF_SMOOTH if base_signal.is_cumulative else SMOOTH
-        return IDENTITY
+            return SeriesTransform.diff_smooth if base_signal.is_cumulative else SeriesTransform.smooth
+        return SeriesTransform.identity
 
     if isinstance(signal, tuple):
         if signal := data_signals_by_key.get(signal):
             return get_base_signal_transform(signal)
-        return IDENTITY
+        return SeriesTransform.identity
 
     raise TypeError("signal must be either Tuple[str, str] or DataSignal.")
 
 
-def get_transform_types(source_signal_pairs: List[SourceSignalPair]) -> Set[Callable]:
+def get_transform_types(source_signal_pairs: List[SourceSignalPair]) -> Set[SeriesTransform]:
     """Return a collection of the unique transforms required for transforming a given source-signal pair list.
 
     Example:
@@ -529,11 +530,11 @@ def get_pad_length(source_signal_pairs: List[SourceSignalPair], smoother_window_
     """
     transform_types = get_transform_types(source_signal_pairs)
     pad_length = [0]
-    if DIFF_SMOOTH in transform_types:
+    if SeriesTransform.diff_smooth in transform_types:
         pad_length.append(smoother_window_length)
-    if SMOOTH in transform_types:
+    if SeriesTransform.smooth in transform_types:
         pad_length.append(smoother_window_length - 1)
-    if DIFF in transform_types:
+    if SeriesTransform.diff in transform_types:
         pad_length.append(1)
     return max(pad_length)
 
@@ -651,38 +652,35 @@ def generate_transformed_rows(
     if not alias_mapper:
         alias_mapper = lambda source, signal: source
 
-    # Put every signal, every geo on a contiguous time index, with default values.
-    df = pd.DataFrame(chain.from_iterable(_reindex_iterable2(v) for _, v in groupby(rows, key=lambda x: (x["source"], x["signal"], x["geo_value"]))))
-
-    if df.empty:
-        return pd.DataFrame()
-
-    # Set dtypes. Int8/Int64 are needed to allow null values.
-    # TODO: Try using StringDType instead of object. Or categorical. This is mostly for memory usage. No worries about to_dict.
-    df = _set_df_dtypes(df, PANDAS_DTYPES)
-
     dfs = []
-    for (base_source_name, base_signal_name), group_df in df.groupby(["source", "signal"], sort=False):
-        derived_signals = transform_dict.get(SourceSignal(base_source_name, base_signal_name), [])
+    for (base_source_name, base_signal_name, geo_type), grouped_rows in groupby(rows, lambda x: (x["source"], x["signal"], x["geo_type"])):
+        # Put every signal, every geo on a contiguous time index, with default values.
+        group_df = pd.DataFrame(grouped_rows, columns=["time_value", "geo_value", "value"])
 
+        # Set dtypes. Int8/Int64 are needed to allow null values.
+        # TODO: Try using StringDType instead of object. Or categorical. This is mostly for memory usage. No worries about to_dict.
+        group_df = _set_df_dtypes(group_df, PANDAS_DTYPES)
+        group_df["time_value"] = pd.to_datetime(group_df["time_value"], format="%Y%m%d")
+
+        derived_signals = transform_dict.get(SourceSignal(base_source_name, base_signal_name), [])
         for derived_signal in derived_signals:
             derived_signal_name = derived_signal.signal
             transform = get_base_signal_transform((base_source_name, derived_signal_name))
 
-            derived_df = group_df.set_index(["geo_value", "time_value"])
+            derived_df = group_df.set_index("time_value")
 
-            if transform == IDENTITY:
+            if transform == SeriesTransform.identity:
                 raise ValueError(f"Identity transform not allowed in generate_transformed_rows.")
-            elif transform == DIFF:
-                derived_df["value"] = derived_df["value"].groupby("geo_value", sort=False).diff()
+            elif transform == SeriesTransform.diff:
+                derived_df["value"] = derived_df.groupby("geo_value", sort=False)["value"].diff()
                 window_length = 2
-            elif transform == SMOOTH:
+            elif transform == SeriesTransform.smooth:
                 window_length = transform_args.get("smoother_window_length", 7)
-                derived_df["value"] = derived_df["value"].groupby("geo_value", sort=False).rolling(window_length).mean().droplevel(level=0)
-            elif transform == DIFF_SMOOTH:
+                derived_df["value"] = derived_df.groupby("geo_value", sort=False)["value"].rolling(f"{window_length}D").mean().droplevel(level=0)
+            elif transform == SeriesTransform.diff_smooth:
                 window_length = transform_args.get("smoother_window_length", 7)
-                derived_df["value"] = derived_df["value"].groupby("geo_value", sort=False).diff()
-                derived_df["value"] = derived_df["value"].groupby("geo_value", sort=False).rolling(window_length).mean().droplevel(level=0)
+                derived_df["value"] = derived_df.groupby("geo_value", sort=False)["value"].diff()
+                derived_df["value"] = derived_df.groupby("geo_value", sort=False)["value"].rolling(f"{window_length}D").mean().droplevel(level=0)
                 window_length += 1
             else:
                 raise ValueError(f"Unknown transform for {derived_signal}.")
@@ -698,14 +696,20 @@ def generate_transformed_rows(
                 missing_stderr=Nans.NOT_APPLICABLE,
                 missing_sample_size=Nans.NOT_APPLICABLE,
                 time_type="day",
+                geo_type=geo_type,
                 direction=None,
             )
 
             dfs.append(derived_df)
 
+    if not dfs:
+        return pd.DataFrame()
+
     derived_df_full = pd.concat(dfs)
+    derived_df_full = derived_df_full.reset_index()
+    derived_df_full["time_value"] = derived_df_full["time_value"].dt.strftime("%Y%m%d")
     derived_df_full = _set_df_dtypes(derived_df_full, PANDAS_DTYPES)
-    return derived_df_full.reset_index()
+    return derived_df_full
 
 
 def get_basename_signals_and_derived_map(source_signal_pairs: List[SourceSignalPair]) -> Tuple[List[SourceSignalPair], Dict[SourceSignal, List[SourceSignal]]]:

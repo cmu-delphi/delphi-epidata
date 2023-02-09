@@ -7,10 +7,8 @@ from epiweeks import Week
 from flask import Blueprint, request, Response
 from flask.json import loads, jsonify
 from more_itertools import peekable
-from numpy import nan
 from sqlalchemy import text
 from pandas import read_csv, to_datetime, concat, DataFrame
-from numbers import Number
 
 from .._common import is_compatibility_mode, app, db
 from .._config import MAX_SMOOTHER_WINDOW, MAX_RESULTS
@@ -35,7 +33,6 @@ from .._validate import (
     extract_date,
     extract_dates,
     extract_integer,
-    extract_float,
     extract_strings,
     require_all,
     require_any,
