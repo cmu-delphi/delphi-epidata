@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, request
 
 from .._params import extract_integers, extract_strings, extract_date
 from .._query import execute_query, QueryBuilder
@@ -11,7 +11,7 @@ alias = "covid_hosp"
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    require_all("states", "dates")
+    require_all(request, "states", "dates")
     states = extract_strings("states")
     dates = extract_integers("dates")
     issues = extract_integers("issues")

@@ -9,6 +9,7 @@ from io import StringIO
 import pandas as pd
 
 # first party
+from delphi.epidata.acquisition.covidcast.csv_importer import PathDetails
 from delphi.epidata.acquisition.covidcast_nowcast.load_sensors import main, load_and_prepare_file
 
 # py3tester coverage target
@@ -20,13 +21,15 @@ class UpdateTests(unittest.TestCase):
   @mock.patch('time.time', mock.MagicMock(return_value=12345))
   def test_load_and_prepare_file(self):
     
-    test_attributes = ("test_source",
-                       "test_signal",
-                       "test_time_type",
-                       "test_geo_type",
-                       20201231,
-                       20210102,
-                       3)
+    test_attributes = PathDetails(
+      20210102,
+      3,
+      "test_source",
+      "test_signal",
+      "test_time_type",
+      20201231,
+      "test_geo_type",
+    )
 
     test_df = load_and_prepare_file(StringIO("sensor_name,geo_value,value\ntestname,01001,1.5"), test_attributes)
     pd.testing.assert_frame_equal(test_df,

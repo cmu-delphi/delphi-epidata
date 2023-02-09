@@ -12,8 +12,8 @@ alias = None
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    check_auth_token(AUTH["norostat"])
-    require_all("location", "epiweeks")
+    check_auth_token(request, AUTH["norostat"])
+    require_all(request, "location", "epiweeks")
 
     location = request.values["location"]
     epiweeks = extract_integers("epiweeks")

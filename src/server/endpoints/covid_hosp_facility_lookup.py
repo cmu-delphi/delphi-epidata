@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, request
 
 from .._params import extract_strings
 from .._query import execute_query, QueryBuilder
@@ -10,7 +10,7 @@ bp = Blueprint("covid_hosp_facility_lookup", __name__)
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    require_any("state", "ccn", "city", "zip", "fips_code")
+    require_any(request, "state", "ccn", "city", "zip", "fips_code")
     state = extract_strings("state")
     ccn = extract_strings("ccn")
     city = extract_strings("city")

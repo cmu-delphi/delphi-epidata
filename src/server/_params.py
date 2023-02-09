@@ -446,7 +446,7 @@ def parse_source_signal_sets() -> List[SourceSignalSet]:
     ds = request.values.get("data_source")
     if ds:
         # old version
-        require_any("signal", "signals", empty=True)
+        require_any(request, "signal", "signals", empty=True)
         signals = extract_strings(("signals", "signal"))
         if len(signals) == 1 and signals[0] == "*":
             return [SourceSignalSet(ds, True)]
@@ -462,7 +462,7 @@ def parse_geo_sets() -> List[GeoSet]:
     geo_type = request.values.get("geo_type")
     if geo_type:
         # old version
-        require_any("geo_value", "geo_values", empty=True)
+        require_any(request, "geo_value", "geo_values", empty=True)
         geo_values = extract_strings(("geo_values", "geo_value"))
         if len(geo_values) == 1 and geo_values[0] == "*":
             return [GeoSet(geo_type, True)]
@@ -478,7 +478,7 @@ def parse_time_set() -> TimeSet:
     time_type = request.values.get("time_type")
     if time_type:
         # old version
-        require_all("time_type", "time_values")
+        require_all(request, "time_type", "time_values")
         time_values = extract_dates("time_values")
         if time_values == ["*"]:
             return TimeSet(time_type, True)

@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-from flask import Blueprint
+from flask import Blueprint, request
 
 from .._config import AUTH
 from .._params import extract_integers, extract_strings
@@ -54,8 +54,8 @@ FLU_MAPPING = {
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    check_auth_token(AUTH["afhsb"])
-    require_all("locations", "epiweeks", "flu_types")
+    check_auth_token(request, AUTH["afhsb"])
+    require_all(request, "locations", "epiweeks", "flu_types")
 
     locations = extract_strings("locations")
     epiweeks = extract_integers("epiweeks")

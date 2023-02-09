@@ -1,12 +1,11 @@
-from typing import List, Optional, Sequence, Tuple, Union
+from typing import Optional
 
-from flask import request
+from flask import Request
 
 from ._exceptions import UnAuthenticatedException, ValidationFailedException
-from .utils import IntRange, TimeValues
 
 
-def resolve_auth_token() -> Optional[str]:
+def resolve_auth_token(request: Request) -> Optional[str]:
     # auth request param
     if "auth" in request.values:
         return request.values["auth"]
@@ -20,8 +19,8 @@ def resolve_auth_token() -> Optional[str]:
     return None
 
 
-def check_auth_token(token: str, optional=False) -> bool:
-    value = resolve_auth_token()
+def check_auth_token(request: Request, token: str, optional=False) -> bool:
+    value = resolve_auth_token(request)
 
     if value is None:
         if optional:
@@ -35,7 +34,7 @@ def check_auth_token(token: str, optional=False) -> bool:
     return valid_token
 
 
-def require_all(*values: str) -> bool:
+def require_all(request: Request, *values: str) -> bool:
     """
     returns true if all fields are present in the request otherwise raises an exception
     :returns bool
@@ -46,7 +45,7 @@ def require_all(*values: str) -> bool:
     return True
 
 
-def require_any(*values: str, empty=False) -> bool:
+def require_any(request: Request, *values: str, empty=False) -> bool:
     """
     returns true if any fields are present in the request otherwise raises an exception
     :returns bool

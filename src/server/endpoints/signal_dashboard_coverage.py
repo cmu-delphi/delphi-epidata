@@ -1,7 +1,7 @@
 from typing import List, Dict, Any
-from flask import Blueprint
+from flask import Blueprint, request
 
-from .._query import parse_result, filter_fields
+from .._query import parse_result
 from .._printer import print_non_standard
 
 # first argument is the endpoint name
@@ -42,4 +42,4 @@ def fetch_coverage_data() -> Dict[str, Dict[str, List[Dict[str, Any]]]]:
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    return print_non_standard(fetch_coverage_data())
+    return print_non_standard(request.values.get("format"), fetch_coverage_data())

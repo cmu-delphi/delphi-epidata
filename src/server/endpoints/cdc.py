@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, request
 
 from .._config import AUTH, NATION_REGION, REGION_TO_STATE
 from .._params import extract_strings, extract_integers
@@ -12,8 +12,8 @@ alias = None
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    check_auth_token(AUTH["cdc"])
-    require_all("locations", "epiweeks")
+    check_auth_token(request, AUTH["cdc"])
+    require_all(request, "locations", "epiweeks")
 
     # parse the request
     locations = extract_strings("locations")
