@@ -49,8 +49,6 @@ class SourceSignal:
     source: str
     signal: str
 
-SignalTransforms = Dict[SourceSignal, List[SourceSignal]]
-
 
 class HighValuesAre(str, Enum):
     bad = "bad"
@@ -306,6 +304,24 @@ def count_signal_time_types(source_signals: List[SourceSignalPair]) -> Tuple[int
 
 
 def create_source_signal_alias_mapper(source_signals: List[SourceSignalPair]) -> Tuple[List[SourceSignalPair], Optional[Callable[[str, str], str]]]:
+    """Create a mapper function that maps a source and signal to the actual source and signal in the database.
+    
+    Some sources have a different name in the API than in the database: 
+
+        db name                 | api name
+        ------------------------|----------------
+        indicator-combination   | indicator-combination-cases-deaths
+        quidel                  | quidel-covid-ag
+        safegraph               | safegraph-weekly
+        indicator-combination   | indicator-combination-nmf
+        quidel                  | quidel-flu
+        safegraph               | safegraph-daily
+
+    (Double check the db_sources.csv file as this comment may be out of date; first column is the db name, second column is the api name.
+    That file is sourced from a Google Sheet in tasks.py at the root of this repo.)
+
+    This function creates a mapper function that maps the source and signal from the database name back to the API name when returning the request.
+    """
     alias_to_data_sources: Dict[str, List[DataSource]] = {}
     transformed_pairs: List[SourceSignalPair] = []
     for pair in source_signals:
@@ -608,6 +624,7 @@ def generate_transformed_rows(
     rows: Iterable[Dict],
     transform_dict: Optional[Dict[SourceSignal, List[SourceSignal]]] = None,
     transform_args: Optional[Dict] = None,
+    alias_mapper: Callable = None,
 ) -> pd.DataFrame:
     """Applies time-series transformations to streamed rows from a database.
 
@@ -620,6 +637,8 @@ def generate_transformed_rows(
             {SourceSignal("jhu-csse", "confirmed_cumulative_num): [SourceSignal("jhu-csse", "confirmed_incidence_num"), SourceSignal("jhu-csse", "confirmed_7dav_incidence_num")]}.
     transform_args: Optional[Dict], default None
         A dictionary of keyword arguments for the transformer functions.
+    alias_mapper: Callable, default None
+        A function that maps a source-signal to an alias. This is used to bridge the source naming gap between the database and the API.
 
     Yields:
     transformed rows: Dict
@@ -629,6 +648,8 @@ def generate_transformed_rows(
         transform_args = dict()
     if not transform_dict:
         transform_dict = dict()
+    if not alias_mapper:
+        alias_mapper = lambda source, signal: source
 
     # Put every signal, every geo on a contiguous time index, with default values.
     df = pd.DataFrame(chain.from_iterable(_reindex_iterable2(v) for _, v in groupby(rows, key=lambda x: (x["source"], x["signal"], x["geo_value"]))))
@@ -650,26 +671,24 @@ def generate_transformed_rows(
 
             derived_df = group_df.set_index(["geo_value", "time_value"])
 
-            # TODO: Add sort=false to these groupbys.
             if transform == IDENTITY:
-                raise ValueError("Identity transform should not be in transform_dict.")
-                dfs.append(derived_df)
-                continue
+                raise ValueError(f"Identity transform not allowed in generate_transformed_rows.")
             elif transform == DIFF:
-                # TODO: Fix these to use transform_args.
-                derived_df["value"] = derived_df["value"].groupby("geo_value").diff()
+                derived_df["value"] = derived_df["value"].groupby("geo_value", sort=False).diff()
                 window_length = 2
             elif transform == SMOOTH:
-                derived_df["value"] = derived_df["value"].groupby("geo_value").rolling(7).mean().droplevel(level=0)
-                window_length = 7
+                window_length = transform_args.get("smoother_window_length", 7)
+                derived_df["value"] = derived_df["value"].groupby("geo_value", sort=False).rolling(window_length).mean().droplevel(level=0)
             elif transform == DIFF_SMOOTH:
-                derived_df["value"] = derived_df["value"].groupby("geo_value").diff()
-                derived_df["value"] = derived_df["value"].groupby("geo_value").rolling(7).mean().droplevel(level=0)
-                window_length = 8
+                window_length = transform_args.get("smoother_window_length", 7)
+                derived_df["value"] = derived_df["value"].groupby("geo_value", sort=False).diff()
+                derived_df["value"] = derived_df["value"].groupby("geo_value", sort=False).rolling(window_length).mean().droplevel(level=0)
+                window_length += 1
             else:
                 raise ValueError(f"Unknown transform for {derived_signal}.")
 
             derived_df = derived_df.assign(
+                source=alias_mapper(base_source_name, derived_signal_name),
                 signal=derived_signal_name,
                 issue=derived_df["issue"].groupby("geo_value", sort=False).rolling(window_length).max().droplevel(level=0).astype("Int64") if "issue" in derived_df.columns else None,
                 lag=derived_df["lag"].groupby("geo_value", sort=False).rolling(window_length).max().droplevel(level=0).astype("Int64") if "lag" in derived_df.columns else None,

@@ -1,6 +1,7 @@
 import unittest
 from itertools import chain
 from unittest.mock import patch
+from delphi.epidata.server.utils.dates import iterate_over_range
 
 import pandas as pd
 import pytest
@@ -229,63 +230,3 @@ class TestModel(unittest.TestCase):
             source_signal_pairs = [SourceSignalPair("src", ["sig_diff", "sig_smooth"])]
             _, derived_signals_map = get_basename_signals_and_derived_map(source_signal_pairs)
             assert generate_transformed_rows([], derived_signals_map).empty
-
-
-    # def test_generate_transformed_rows2(self):
-    #     # fmt: off
-    #     with self.subTest("diffed signal test"):
-    #         data = CovidcastRows.from_args(
-    #             signal=["sig_base"] * 5,
-    #             time_value=range(20210501, 20210506),
-    #             value=range(5)
-    #         )
-    #         transform_dict = {SourceSignalPair("src", ["sig_base"]): SourceSignalPair("src", ["sig_diff"])}
-    #         df = generate_transformed_rows2(data.db_row_df, transform_dict=transform_dict)
-
-    #         expected_df = diff_df(data.db_row_df, "sig_diff")
-    #         assert_frame_equal_no_order(df, expected_df, index=["signal", "geo_value", "time_value"])
-
-    #     with self.subTest("smoothed and diffed signals on one base test"):
-    #         data = CovidcastRows.from_args(
-    #             signal=["sig_base"] * 10,
-    #             time_value=pd.date_range("2021-05-01", "2021-05-10"),
-    #             value=range(10),
-    #             stderr=range(10),
-    #             sample_size=range(10)
-    #         )
-    #         transform_dict = {SourceSignalPair("src", ["sig_base"]): SourceSignalPair("src", ["sig_diff", "sig_smooth"])}
-    #         df = generate_transformed_rows2(data.db_row_df, transform_dict=transform_dict)
-
-    #         expected_df = pd.concat([diff_df(data.db_row_df, "sig_diff"), smooth_df(data.db_row_df, "sig_smooth")])
-    #         assert_frame_equal_no_order(df, expected_df, index=["signal", "geo_value", "time_value"])
-
-    #     with self.subTest("smoothed and diffed signal on two non-continguous regions"):
-    #         data = CovidcastRows.from_args(
-    #             signal=["sig_base"] * 15,
-    #             time_value=chain(pd.date_range("2021-05-01", "2021-05-10"), pd.date_range("2021-05-16", "2021-05-20")),
-    #             value=range(15),
-    #             stderr=range(15),
-    #             sample_size=range(15),
-    #         )
-    #         transform_dict = {SourceSignalPair("src", ["sig_base"]): SourceSignalPair("src", ["sig_diff", "sig_smooth"])}
-    #         df = generate_transformed_rows2(data.db_row_df, transform_dict=transform_dict)
-
-    #         expected_df = pd.concat([diff_df(data.db_row_df, "sig_diff"), smooth_df(data.db_row_df, "sig_smooth")])
-    #         compare_cols = ["signal", "geo_value", "time_value", "time_type", "geo_type", "value", "stderr", "sample_size", "missing_value", "missing_stderr", "missing_sample_size", "direction"]
-    #         assert_frame_equal_no_order(df[compare_cols], expected_df[compare_cols], index=["signal", "geo_value", "time_value"])
-
-    #     with self.subTest("smooth_diffed signal on two non-continguous regions"):
-    #         data = CovidcastRows.from_args(
-    #             signal=["sig_base"] * 15,
-    #             time_value=chain(pd.date_range("2021-05-01", "2021-05-10"), pd.date_range("2021-05-16", "2021-05-20")),
-    #             value=range(15),
-    #             stderr=range(15),
-    #             sample_size=range(15),
-    #         )
-    #         transform_dict = {SourceSignalPair("src", ["sig_base"]): SourceSignalPair("src", ["sig_diff_smooth"])}
-    #         df = generate_transformed_rows2(data.db_row_df, transform_dict=transform_dict)
-
-    #         expected_df = diff_smooth_df(data.db_row_df, "sig_diff_smooth")
-    #         compare_cols = ["signal", "geo_value", "time_value", "time_type", "geo_type", "value", "stderr", "sample_size", "missing_value", "missing_stderr", "missing_sample_size", "direction"]
-    #         assert_frame_equal_no_order(df[compare_cols], expected_df[compare_cols], index=["signal", "geo_value", "time_value"])
-    #         # fmt: on

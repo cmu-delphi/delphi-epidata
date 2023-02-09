@@ -186,6 +186,13 @@ class CovidcastEndpointTests(CovidcastBase):
             merged_df = pd.merge(out_df, expected_df, left_index=True, right_index=True, suffixes=["_out", "_expected"])[["value_out", "value_expected"]]
             assert merged_df.empty is False
             assert merged_df.value_out.to_numpy() == pytest.approx(merged_df.value_expected, nan_ok=True)
+        
+        with self.subTest("test everything with signal=*, time=*, geo=*"):
+            out = self._fetch("/", signal="jhu-csse:*", geo="county:*", time="day:*")
+            out_df = pd.DataFrame.from_records(out["epidata"]).set_index(["signal", "time_value", "geo_value"])
+            merged_df = pd.merge(out_df, expected_df, left_index=True, right_index=True, suffixes=["_out", "_expected"])[["value_out", "value_expected"]]
+            assert merged_df.empty is False
+            assert merged_df.value_out.to_numpy() == pytest.approx(merged_df.value_expected, nan_ok=True)
 
     def test_compatibility(self):
         """Request at the /api.php endpoint."""
@@ -205,7 +212,7 @@ class CovidcastEndpointTests(CovidcastBase):
             new_rows.append(new_row)
         return new_rows
 
-    # TODO: Fix.
+    # TODO: fix.
     # def test_trend(self):
     #     """Request a signal from the /trend endpoint."""
 

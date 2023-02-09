@@ -1,4 +1,5 @@
-from typing import List, Optional, Tuple, Dict, Any
+import traceback
+from typing import Callable, List, Optional, Tuple, Dict, Any
 from itertools import groupby, tee
 from datetime import date, timedelta
 from bisect import bisect_right
@@ -142,24 +143,8 @@ def parse_transform_args():
     elif smoother_window_length > MAX_SMOOTHER_WINDOW:
         raise ValidationFailedException(f"smoother_window_length must be <= {MAX_SMOOTHER_WINDOW}")
 
-    # The value to fill for missing date values.
-    pad_fill_value = extract_float("pad_fill_value")
-    if pad_fill_value is None:
-        pad_fill_value = nan
-    elif not isinstance(pad_fill_value, Number):
-        raise ValidationFailedException("pad_fill_value must be a number")
-
-    # The value to fill for None or nan values.
-    nan_fill_value = extract_float("nans_fill_value")
-    if nan_fill_value is None:
-        nan_fill_value = nan
-    elif not isinstance(nan_fill_value, Number):
-        raise ValidationFailedException("nans_fill_value must be a number")
-
     smoother_args = {
         "smoother_window_length": smoother_window_length,
-        "pad_fill_value": pad_fill_value,
-        "nans_fill_value": nan_fill_value,
     }
     return smoother_args
 
@@ -209,14 +194,14 @@ def df_to_response(
 
     return_format = request.values.get("format", "classic")
     if return_format == "classic":
+        json_str = df.to_json(orient="records")
         return Response(
-            """{"epidata":""" +
-            df.to_json(orient="records") +
-            """, "result": 1, "message": "success"}""",
+            """{"epidata":""" + json_str + """, "result": 1, "message": "success"}""",
             mimetype=MIMETYPE_JSON
         )
     elif return_format == "json":
-        return Response(df.to_json(orient="records"), mimetype=MIMETYPE_JSON)
+        json_str = df.to_json(orient="records")
+        return Response(json_str, mimetype=MIMETYPE_JSON)
     elif return_format == "csv":
         column_order = [
             "geo_value", "signal", "time_value", "direction", "issue", "lag", "missing_value",
@@ -234,69 +219,85 @@ def df_to_response(
 
 def jit_request_to_df(
     source_signal_pairs: List[SourceSignalPair],
+    derived_signals_map: Dict[SourceSignal, List[SourceSignal]],
     geo_pairs: List[GeoPair],
     time_pair: TimePair,
     as_of: Optional[int],
     issues: List[int],
     lag: Optional[int],
+    alias_mapper: Optional[Callable[[str, str], str]],
+    transform_args: Dict[str, Any],
 ) -> DataFrame:
-    transform_args = parse_transform_args()
-    pad_length = get_pad_length(source_signal_pairs, transform_args.get("smoother_window_length"))
-    time_pair = pad_time_pair(time_pair, pad_length)
-    app.logger.info(f"JIT compute enabled for route '/': {source_signal_pairs}")
-    source_signal_pairs, derived_signals_map = get_basename_signals_and_derived_map(source_signal_pairs)
-    app.logger.info(f"JIT base signals: {source_signal_pairs}")
+    """Fetches data from the database, performs JIT transformations, and returns a DataFrame.
+    
+    Assumptions: 
+    - there is at least one derived signal in the pair list
+    - none of the source_signal_pairs have a signal field that is "True" (i.e. * queries were resolved to a list)
+    """
+    if alias_mapper is None:
+        alias_mapper = lambda source, signal: source
 
-    dfs = []
+    # build query
+    q = QueryBuilder(latest_table, "t")
+
+    fields_string = ["geo_type", "geo_value", "source", "signal", "time_type"]
+    fields_int = ["time_value", "direction", "issue", "lag", "missing_value", "missing_stderr", "missing_sample_size"]
+    fields_float = ["value", "stderr", "sample_size"]
+    q.set_order("source", "signal", "geo_type", "geo_value", "time_type", "time_value", "issue")
+    q.set_fields(fields_string, fields_int, fields_float)
+    # basic query info
+    # data type of each field
+    # build the source, signal, time, and location (type and id) filters
+    q.where_source_signal_pairs("source", "signal", source_signal_pairs)
+    q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
+    q.where_time_pair("time_type", "time_value", time_pair)
+
+    _handle_lag_issues_as_of(q, issues, lag, as_of)
+
+    try:
+        # TODO: Add LIMIT to query
+        # query = text(f"{str(q)} LIMIT {MAX_RESULTS}")
+        query = text(str(q))
+        params = q.params
+        rows = (parse_row(row, fields_string, fields_int, fields_float) for row in db.execute(query, **params))
+    except Exception:
+        raise DatabaseErrorException(repr(e))
+
+    # Base signals
+    base_signals = set()
     for source_signal_pair in source_signal_pairs:
         for signal in source_signal_pair.signal:
-            # build query
-            q = QueryBuilder(latest_table, "t")
+            source_signal = SourceSignal(source_signal_pair.source, signal)
+            if source_signal in derived_signals_map[source_signal]:
+                base_signals.add(source_signal)
+ 
+    # Derived signals
+    for source_signal in base_signals:
+        derived_signals_map[source_signal].remove(source_signal)
 
-            fields_string = ["geo_type", "geo_value", "source", "signal", "time_type"]
-            fields_int = ["time_value", "direction", "issue", "lag", "missing_value", "missing_stderr", "missing_sample_size"]
-            fields_float = ["value", "stderr", "sample_size"]
-            q.set_order("source", "signal", "geo_type", "geo_value", "time_type", "time_value", "issue")
-            q.set_fields(fields_string, fields_int, fields_float)
-            # basic query info
-            # data type of each field
-            # build the source, signal, time, and location (type and id) filters
-            q.where_source_signal_pairs("source", "signal", [source_signal_pair])
-            q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
-            q.where_time_pair("time_type", "time_value", time_pair)
+    # This will store all rows to memory, which is not ideal.
+    base_rows, derived_rows = tee(rows, 2)
 
-            _handle_lag_issues_as_of(q, issues, lag, as_of)
+    def base_row_filter(rows):
+        for row in rows:
+            if SourceSignal(row["source"], row["signal"]) in base_signals:
+                row["source"] = alias_mapper(row["source"], row["signal"])
+                yield row
 
-            try:
-                # TODO: Add LIMIT to query
-                # query = text(f"{str(q)} LIMIT {MAX_RESULTS}")
-                query = text(str(q))
-                params = q.params
-                rows = (parse_row(row, fields_string, fields_int, fields_float) for row in db.execute(query, **params))
-            except Exception as e:
-                raise DatabaseErrorException(repr(e))
+    base_df = DataFrame(base_row_filter(base_rows))
 
-            try:
-                source_signal = SourceSignal(source_signal_pair.source, signal)
-                print(f"Now processing derived signal: {source_signal} with derived_signals_map: {derived_signals_map}")
-                if [source_signal] == derived_signals_map[source_signal]:
-                    df = DataFrame(rows)
-                elif source_signal in derived_signals_map[source_signal]:
-                    rows1, rows2 = tee(rows, 2)
-                    df1 = DataFrame(rows1)
-                    derived_signals_map[source_signal].remove(source_signal)
-                    df2 = generate_transformed_rows(rows2, derived_signals_map, transform_args)
-                    df = concat([df1, df2])
-                elif source_signal not in derived_signals_map[source_signal]:
-                    df = generate_transformed_rows(rows, derived_signals_map, transform_args)
-                else:
-                    df = DataFrame(rows)
-            except Exception as e:
-                raise TransformErrorException("Transform exception occurred: " + repr(e))
+    # Split the source_signal_pairs into base and derived signals.
+    # Handle base signals first.
+    # If there are no base signals, then we can skip the database query.
+    # If there are base signals, then we need to query the database for them.
+    # Then handle the derived signals.
+
+    try:
+        derived_df = generate_transformed_rows(derived_rows, derived_signals_map, transform_args, alias_mapper)
+    except Exception as e:
+        raise TransformErrorException("Transform exception occurred: " + repr(e) + traceback.format_exc())
             
-            dfs.append(df)
-
-    return concat(dfs)
+    return concat([base_df, derived_df], sort=False)
 
 
 @bp.route("/", methods=("GET", "POST"))
@@ -325,11 +326,20 @@ def handle():
         row["source"] = alias_mapper(row["source"], row["signal"])
         return row
     has_unrecognized_source = any(isinstance(source_signal_pair.signal, bool) for source_signal_pair in source_signal_pairs)
+    
+    # Check if any JIT signals present
+    original_source_signal_pairs = source_signal_pairs
+    source_signal_pairs, derived_signals_map = get_basename_signals_and_derived_map(source_signal_pairs)
+    all_base_signals = all([k] == v for k, v in derived_signals_map.items())
 
     use_jit_compute = not any((issues, lag, is_time_type_week, has_unrecognized_source)) and JIT_COMPUTE_ON and not jit_bypass
-    if use_jit_compute:
-        # TODO: Need to thread alias_row through jit_request_to_df
-        df = jit_request_to_df(source_signal_pairs, geo_pairs, time_pair, as_of, issues, lag)
+    if use_jit_compute and not all_base_signals:
+        app.logger.info(f"JIT compute enabled for route '/': {original_source_signal_pairs}")
+        app.logger.info(f"JIT base signals: {source_signal_pairs}")
+        transform_args = parse_transform_args()
+        pad_length = get_pad_length(original_source_signal_pairs, transform_args.get("smoother_window_length"))
+        time_pair = pad_time_pair(time_pair, pad_length)
+        df = jit_request_to_df(source_signal_pairs, derived_signals_map, geo_pairs, time_pair, as_of, issues, lag, alias_mapper, transform_args)
         return df_to_response(df)
     else:
         q = QueryBuilder(latest_table, "t")
