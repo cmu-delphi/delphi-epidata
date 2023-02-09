@@ -69,16 +69,13 @@ value: relative search volume; the exact definition is still unclear
 import argparse
 import time
 
-# third party
-import mysql.connector
-from apiclient.discovery import build
-
-# first party
-from .google_health_trends import GHT
-from .google_health_trends import NO_LOCATION_STR
 import delphi.operations.secrets as secrets
 import delphi.utils.epiweek as flu
+# third party
+import mysql.connector
 
+# first party
+from .google_health_trends import GHT, NO_LOCATION_STR
 
 # secret key for accessing Google's health trends APIs
 # see: https://console.developers.google.com/apis/credentials?project=delphi-epi-trends
@@ -249,143 +246,143 @@ LOCATIONS = [
 
 
 def update(locations, terms, first=None, last=None, countries=['US']):
-  # connect to the database
-  u, p = secrets.db.epi
-  cnx = mysql.connector.connect(user=u, password=p, database='epidata')
-  cur = cnx.cursor()
+    # connect to the database
+    u, p = secrets.db.epi
+    cnx = mysql.connector.connect(user=u, password=p, database='epidata')
+    cur = cnx.cursor()
 
-  def get_num_rows():
-    cur.execute('SELECT count(1) `num` FROM `ght`')
-    for (num,) in cur:
-      pass
-    return num
+    def get_num_rows():
+        cur.execute('SELECT count(1) `num` FROM `ght`')
+        for (num,) in cur:
+            pass
+        return num
 
-  # check from 4 weeks preceeding the last week with data through this week
-  cur.execute('SELECT max(`epiweek`) `ew0`, yearweek(now(), 6) `ew1` FROM `ght`')
-  for (ew0, ew1) in cur:
-    ew0 = 200401 if ew0 is None else flu.add_epiweeks(ew0, -4)
-  ew0 = ew0 if first is None else first
-  ew1 = ew1 if last is None else last
-  print('Checking epiweeks between %d and %d...' % (ew0, ew1))
+    # check from 4 weeks preceeding the last week with data through this week
+    cur.execute('SELECT max(`epiweek`) `ew0`, yearweek(now(), 6) `ew1` FROM `ght`')
+    for (ew0, ew1) in cur:
+        ew0 = 200401 if ew0 is None else flu.add_epiweeks(ew0, -4)
+    ew0 = ew0 if first is None else first
+    ew1 = ew1 if last is None else last
+    print('Checking epiweeks between %d and %d...' % (ew0, ew1))
 
-  # keep track of how many rows were added
-  rows_before = get_num_rows()
+    # keep track of how many rows were added
+    rows_before = get_num_rows()
 
-  # check Google Trends for new and/or revised data
-  sql = '''
-    INSERT INTO
-      `ght` (`query`, `location`, `epiweek`, `value`)
-    VALUES
-      (%s, %s, %s, %s)
-    ON DUPLICATE KEY UPDATE
-      `value` = %s
-  '''
-  total_rows = 0
-  ght = GHT(API_KEY)
-  for term in terms:
-    print(' [%s] using term' % term)
-    ll, cl = len(locations), len(countries)
-    for i in range(max(ll,cl)):
-      location = locations[i] if i < ll else locations[0]
-      country = countries[i] if i < cl else countries[0]
-      try:
-        #term2 = ('"%s"' % term) if ' ' in term else term
-        term2 = term
-        attempt = 0
-        while True:
-          attempt += 1
-          try:
-            result = ght.get_data(ew0, ew1, location, term2, country=country)
-            break
-          except Exception as ex:
-            if attempt >= 5:
-              raise ex
-            else:
-              delay = 2 ** attempt
-              print(' [%s|%s] caught exception (will retry in %ds):' % (term, location, delay), ex)
-              time.sleep(delay)
-        values = [p['value'] for p in result['data']['lines'][0]['points']]
-        ew = result['start_week']
-        num_missing = 0
-        for v in values:
-          # Default SQL location value for US country for backwards compatibility
-          # i.e. California's location is still stored as 'CA',
-          # and having location == 'US' is still stored as 'US'
-          sql_location = location if location != NO_LOCATION_STR else country
+    # check Google Trends for new and/or revised data
+    sql = '''
+            INSERT INTO
+            `ght` (`query`, `location`, `epiweek`, `value`)
+            VALUES
+            (%s, %s, %s, %s)
+            ON DUPLICATE KEY UPDATE
+            `value` = %s
+        '''
+    total_rows = 0
+    ght = GHT(API_KEY)
+    for term in terms:
+        print(' [%s] using term' % term)
+        ll, cl = len(locations), len(countries)
+        for i in range(max(ll, cl)):
+            location = locations[i] if i < ll else locations[0]
+            country = countries[i] if i < cl else countries[0]
+            try:
+                # term2 = ('"%s"' % term) if ' ' in term else term
+                term2 = term
+                attempt = 0
+                while True:
+                    attempt += 1
+                    try:
+                        result = ght.get_data(ew0, ew1, location, term2, country=country)
+                        break
+                    except Exception as ex:
+                        if attempt >= 5:
+                            raise ex
+                        else:
+                            delay = 2 ** attempt
+                            print(' [%s|%s] caught exception (will retry in %ds):' % (term, location, delay), ex)
+                            time.sleep(delay)
+                values = [p['value'] for p in result['data']['lines'][0]['points']]
+                ew = result['start_week']
+                num_missing = 0
+                for v in values:
+                    # Default SQL location value for US country for backwards compatibility
+                    # i.e. California's location is still stored as 'CA',
+                    # and having location == 'US' is still stored as 'US'
+                    sql_location = location if location != NO_LOCATION_STR else country
 
-          # Change SQL location for non-US countries
-          if country != 'US':
-            # Underscore added to distinguish countries from 2-letter US states
-            sql_location = country + "_"
-            if location != NO_LOCATION_STR:
-              sql_location = sql_location + location
-          sql_data = (term, sql_location, ew, v, v)
-          cur.execute(sql, sql_data)
-          total_rows += 1
-          if v == 0:
-            num_missing += 1
-            #print(' [%s|%s|%d] missing value' % (term, location, ew))
-          ew = flu.add_epiweeks(ew, 1)
-        if num_missing > 0:
-          print(' [%s|%s] missing %d/%d value(s)' % (term, location, num_missing, len(values)))
-      except Exception as ex:
-        print(' [%s|%s] caught exception (will NOT retry):' % (term, location), ex)
+                    # Change SQL location for non-US countries
+                    if country != 'US':
+                        # Underscore added to distinguish countries from 2-letter US states
+                        sql_location = country + "_"
+                        if location != NO_LOCATION_STR:
+                            sql_location = sql_location + location
+                    sql_data = (term, sql_location, ew, v, v)
+                    cur.execute(sql, sql_data)
+                    total_rows += 1
+                    if v == 0:
+                        num_missing += 1
+                        # print(' [%s|%s|%d] missing value' % (term, location, ew))
+                    ew = flu.add_epiweeks(ew, 1)
+                    if num_missing > 0:
+                        print(' [%s|%s] missing %d/%d value(s)' % (term, location, num_missing, len(values)))
+            except Exception as ex:
+                print(' [%s|%s] caught exception (will NOT retry):' % (term, location), ex)
 
-  # keep track of how many rows were added
-  rows_after = get_num_rows()
-  print('Inserted %d/%d row(s)'%(rows_after - rows_before, total_rows))
+    # keep track of how many rows were added
+    rows_after = get_num_rows()
+    print('Inserted %d/%d row(s)' % (rows_after - rows_before, total_rows))
 
-  # cleanup
-  cur.close()
-  cnx.commit()
-  cnx.close()
+    # cleanup
+    cur.close()
+    cnx.commit()
+    cnx.close()
 
 
 def main():
-  # args and usage
-  parser = argparse.ArgumentParser()
-  parser.add_argument('location', action='store', type=str, default=None, help='location(s) (ex: all; US; TX; CA,LA,WY)')
-  parser.add_argument('term', action='store', type=str, default=None, help='term/query/topic (ex: all; /m/0cycc; "flu fever")')
-  parser.add_argument('--first', '-f', default=None, type=int, help='first epiweek override')
-  parser.add_argument('--last', '-l', default=None, type=int, help='last epiweek override')
-  parser.add_argument('--country', '-c', default='US', type=str, help='location country (ex: US; BR)')
-  args = parser.parse_args()
+    # args and usage
+    parser = argparse.ArgumentParser()
+    parser.add_argument('location', action='store', type=str, default=None, help='location(s) (ex: all; US; TX; CA,LA,WY)')
+    parser.add_argument('term', action='store', type=str, default=None, help='term/query/topic (ex: all; /m/0cycc; "flu fever")')
+    parser.add_argument('--first', '-f', default=None, type=int, help='first epiweek override')
+    parser.add_argument('--last', '-l', default=None, type=int, help='last epiweek override')
+    parser.add_argument('--country', '-c', default='US', type=str, help='location country (ex: US; BR)')
+    args = parser.parse_args()
 
-  # sanity check
-  first, last = args.first, args.last
-  if first is not None:
-    flu.check_epiweek(first)
-  if last is not None:
-    flu.check_epiweek(last)
-  if first is not None and last is not None and first > last:
-    raise Exception('epiweeks in the wrong order')
+    # sanity check
+    first, last = args.first, args.last
+    if first is not None:
+        flu.check_epiweek(first)
+    if last is not None:
+        flu.check_epiweek(last)
+    if first is not None and last is not None and first > last:
+        raise Exception('epiweeks in the wrong order')
 
-  # decide what to update
-  if args.location.lower() == 'all':
-    locations = LOCATIONS
-  elif args.location.lower() == 'none':
-    locations = [NO_LOCATION_STR]
-  else:
-    locations = args.location.upper().split(',')
-  if args.term.lower() == 'all':
-    terms = TERMS
-  else:
-    terms = [args.term]
+    # decide what to update
+    if args.location.lower() == 'all':
+        locations = LOCATIONS
+    elif args.location.lower() == 'none':
+        locations = [NO_LOCATION_STR]
+    else:
+        locations = args.location.upper().split(',')
+    if args.term.lower() == 'all':
+        terms = TERMS
+    else:
+        terms = [args.term]
 
-  # country argument
-  # Check that country follows ISO 1366 Alpha-2 code. 
-  # See https://www.iso.org/obp/ui/#search.
-  countries = args.country.upper().split(',')
-  if not all(map(lambda x: len(x) == 2, countries)):
-    raise Exception('country name must be two letters (ISO 1366 Alpha-2)')
+    # country argument
+    # Check that country follows ISO 1366 Alpha-2 code.
+    # See https://www.iso.org/obp/ui/#search.
+    countries = args.country.upper().split(',')
+    if not all(map(lambda x: len(x) == 2, countries)):
+        raise Exception('country name must be two letters (ISO 1366 Alpha-2)')
 
-  # if length of locations and countries is > 1, need to be the same
-  if len(locations) > 1 and len(countries) > 1 and len(locations) != len(countries):
-    raise Exception('locations and countries must be length 1, or same length')
+    # if length of locations and countries is > 1, need to be the same
+    if len(locations) > 1 and len(countries) > 1 and len(locations) != len(countries):
+        raise Exception('locations and countries must be length 1, or same length')
 
-  # run the update
-  update(locations, terms, first, last, countries)
+    # run the update
+    update(locations, terms, first, last, countries)
 
 
 if __name__ == '__main__':
-  main()
+    main()
