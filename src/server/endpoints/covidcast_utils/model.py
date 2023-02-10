@@ -36,6 +36,26 @@ PANDAS_DTYPES = {
     "direction_updated_timestamp": "Int64",
     "value_updated_timestamp": "Int64",
 }
+PANDAS_DTYPES_TIME = {
+    "source": str,
+    "signal": str,
+    "time_type": str,
+    "time_value": "datetime64[ns]",
+    "geo_type": str,
+    "geo_value": str,
+    "value": float,
+    "stderr": float,
+    "sample_size": float,
+    "missing_value": "Int8",
+    "missing_stderr": "Int8",
+    "missing_sample_size": "Int8",
+    "issue": "Int64",
+    "lag": "Int64",
+    "id": "Int64",
+    "direction": "Int8",
+    "direction_updated_timestamp": "Int64",
+    "value_updated_timestamp": "Int64",
+}
 
 
 class SeriesTransform(str, Enum):
@@ -603,22 +623,16 @@ def to_dict_custom(df: pd.DataFrame) -> Iterable[Dict[str, Any]]:
         yield {col: col_arr_map[col][i] for col in df.columns}
 
 
-def _check_valid_dtype(dtype):
-    try:
-        pd.api.types.pandas_dtype(dtype)
-    except TypeError:
-        raise ValueError(f"Invalid dtype {dtype}")
-
-
 def _set_df_dtypes(df: pd.DataFrame, dtypes: Dict[str, Any]) -> pd.DataFrame:
     """Set the dataframe column datatypes."""
-    [_check_valid_dtype(d) for d in dtypes.values()]
+    for d in dtypes.values():
+        try:
+            pd.api.types.pandas_dtype(d)
+        except TypeError:
+            raise ValueError(f"Invalid dtype {d}")
 
-    df = df.copy()
-    for k, v in dtypes.items():
-        if k in df.columns:
-            df[k] = df[k].astype(v)
-    return df
+    sub_dtypes = {k: v for k, v in dtypes.items() if k in df.columns}
+    return df.astype(sub_dtypes)
 
 
 def generate_transformed_rows(
@@ -656,11 +670,11 @@ def generate_transformed_rows(
     for (base_source_name, base_signal_name, geo_type), grouped_rows in groupby(rows, lambda x: (x["source"], x["signal"], x["geo_type"])):
         # Put every signal, every geo on a contiguous time index, with default values.
         group_df = pd.DataFrame(grouped_rows, columns=["time_value", "geo_value", "value"])
+        group_df["time_value"] = pd.to_datetime(group_df["time_value"], format="%Y%m%d")
 
         # Set dtypes. Int8/Int64 are needed to allow null values.
         # TODO: Try using StringDType instead of object. Or categorical. This is mostly for memory usage. No worries about to_dict.
-        group_df = _set_df_dtypes(group_df, PANDAS_DTYPES)
-        group_df["time_value"] = pd.to_datetime(group_df["time_value"], format="%Y%m%d")
+        group_df = _set_df_dtypes(group_df, PANDAS_DTYPES_TIME)
 
         derived_signals = transform_dict.get(SourceSignal(base_source_name, base_signal_name), [])
         for derived_signal in derived_signals:
@@ -676,11 +690,11 @@ def generate_transformed_rows(
                 window_length = 2
             elif transform == SeriesTransform.smooth:
                 window_length = transform_args.get("smoother_window_length", 7)
-                derived_df["value"] = derived_df.groupby("geo_value", sort=False)["value"].rolling(f"{window_length}D").mean().droplevel(level=0)
+                derived_df["value"] = derived_df.groupby("geo_value", sort=False)["value"].rolling(f"{window_length}D", min_periods=window_length-1).mean().droplevel(level=0)
             elif transform == SeriesTransform.diff_smooth:
                 window_length = transform_args.get("smoother_window_length", 7)
                 derived_df["value"] = derived_df.groupby("geo_value", sort=False)["value"].diff()
-                derived_df["value"] = derived_df.groupby("geo_value", sort=False)["value"].rolling(f"{window_length}D").mean().droplevel(level=0)
+                derived_df["value"] = derived_df.groupby("geo_value", sort=False)["value"].rolling(f"{window_length}D", min_periods=window_length-1).mean().droplevel(level=0)
                 window_length += 1
             else:
                 raise ValueError(f"Unknown transform for {derived_signal}.")
@@ -706,9 +720,11 @@ def generate_transformed_rows(
         return pd.DataFrame()
 
     derived_df_full = pd.concat(dfs)
-    derived_df_full = derived_df_full.reset_index()
-    derived_df_full["time_value"] = derived_df_full["time_value"].dt.strftime("%Y%m%d")
-    derived_df_full = _set_df_dtypes(derived_df_full, PANDAS_DTYPES)
+    # Ok to do in place because nothing else depends on this memory chunk.
+    derived_df_full.reset_index(inplace=True)
+    derived_df_full["time_value"] = derived_df_full["time_value"].dt.strftime("%Y%m%d").astype("Int64")
+    # TODO: Testing whether we really need this. It's an expensive operation.
+    # derived_df_full = _set_df_dtypes(derived_df_full, PANDAS_DTYPES)
     return derived_df_full
 
 

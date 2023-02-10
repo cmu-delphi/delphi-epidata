@@ -156,7 +156,7 @@ def smooth_df(df: pd.DataFrame, signal_name: str, nan_fill_value: float = np.nan
 
     for key, group_df in df.groupby(["source", "signal", "geo_value"]):
         group_df = group_df.set_index("time_value").sort_index()
-        group_df["value"] = group_df["value"].fillna(nan_fill_value).rolling(f"{window_length}D").mean()
+        group_df["value"] = group_df["value"].fillna(nan_fill_value).rolling(f"{window_length}D", min_periods=window_length-1).mean()
         group_df["stderr"] = np.nan
         group_df["sample_size"] = np.nan
         group_df["missing_value"] = np.where(group_df["value"].isna(), Nans.NOT_APPLICABLE, Nans.NOT_MISSING)
