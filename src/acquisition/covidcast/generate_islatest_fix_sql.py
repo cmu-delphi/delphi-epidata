@@ -1,6 +1,6 @@
 # what data to operate on
 base_where_clause = "WHERE `source`='jhu-csse' AND `time_type`='day'"
-# base_where_clause = "WHERE `source`='src2' AND `time_type`='day'" 
+# base_where_clause = "WHERE `source`='src2' AND `time_type`='day'"
 
 
 # signal name construction
