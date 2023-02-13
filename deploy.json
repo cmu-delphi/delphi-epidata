@@ -40,6 +40,15 @@
       "add-header-comment": true
     },
 
+    "// acquisition - common",
+    {
+      "type": "move",
+      "src": "src/acquisition/common/",
+      "dst": "[[package]]/acquisition/common/",
+      "match": "^.*\\.(py)$",
+      "add-header-comment": true
+    },
+
     "// acquisition - fluview",
     {
       "type": "move",
