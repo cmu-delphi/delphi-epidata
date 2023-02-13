@@ -1,11 +1,13 @@
-from typing import Dict, List, Tuple, Union
-from requests import get
 import sys
-import pandas as pd
 from pathlib import Path
+from typing import Dict, List, Tuple
+
+import pandas as pd
+from requests import get
 
 base_dir = Path(__file__).parent.parent
 base_url = 'https://delphi.cmu.edu/epidata'
+
 
 def is_known_missing(source: str, signal: str) -> bool:
     if '7dav_cumulative' in signal:
@@ -13,6 +15,7 @@ def is_known_missing(source: str, signal: str) -> bool:
     if source in ('youtube-survey', 'indicator-combination'):
         return True
     return False
+
 
 def compute_missing_signals() -> List[Tuple[Tuple[str, str], Dict]]:
     defined_meta = get(f"{base_url}/covidcast/meta").json()
@@ -27,7 +30,7 @@ def compute_missing_signals() -> List[Tuple[Tuple[str, str], Dict]]:
     for entry in computed_meta:
         computed_signals.setdefault((entry['data_source'], entry['signal']), []).append(entry)
 
-    missing_signals: List[Tuple[Tuple[str, str], Dict]]  = []
+    missing_signals: List[Tuple[Tuple[str, str], Dict]] = []
 
     for key, infos in computed_signals.items():
         defined_info = defined_signals.get(key)
@@ -38,9 +41,9 @@ def compute_missing_signals() -> List[Tuple[Tuple[str, str], Dict]]:
 
 
 def gen_row(source: str, signal: str, info: Dict) -> Dict:
-    is_weighted = signal.startswith('smoothed_w') and not (signal.startswith('smoothed_wa') or signal.startswith('smoothed_we') or signal.startswith('smoothed_wi') or signal.startswith('smoothed_wo') or signal.startswith('smoothed_wu'))
+    is_weighted = signal.startswith('smoothed_w') and not signal.startswith(('smoothed_wa', 'smoothed_we', 'smoothed_wi', 'smoothed_wo', 'smoothed_wu'))
     base_name = signal.replace('smoothed_w', 'smoothed_') if is_weighted else signal
-    bool_str = lambda x: 'TRUE' if x else 'FALSE'
+    bool_str = lambda x: 'TRUE' if x else 'FALSE'  # noqa
 
     return {
         'Source Subdivision': source,
@@ -66,6 +69,7 @@ def gen_row(source: str, signal: str, info: Dict) -> Dict:
         'Link': 'TODO'
     }
 
+
 def generate_missing_info_hint(missing_signals: List[Tuple[Tuple[str, str], Dict]]) -> None:
     missing = pd.DataFrame.from_records([gen_row(s[0], s[1], info) for s, info in missing_signals])
 
@@ -76,12 +80,12 @@ def generate_missing_info_hint(missing_signals: List[Tuple[Tuple[str, str], Dict
     guessed: pd.DataFrame = pd.concat([current, missing])
     guessed.to_csv(base_dir / 'missing_db_signals.csv', index=False)
 
+
 missing = compute_missing_signals()
 if missing:
     print(f'found {len(missing)} missing signals')
     generate_missing_info_hint(missing)
     sys.exit(1)
 else:
-    print(f'all signals found')
+    print('all signals found')
     sys.exit(0)
-
