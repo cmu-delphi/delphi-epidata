@@ -37,15 +37,11 @@
 #   test=         Only runs tests in the directories provided here, e.g.
 #                 repos/delphi/delphi-epidata/tests/acquisition/covidcast
 #   sql=          Overrides the default SQL connection string.
-#   m1=1          Mandatory if your local system uses Apple M1 chip
 
 # Set optional argument defaults
-ifdef m1
-	override m1 =--platform linux/amd64
-endif
 
 ifdef pdb
-	override =--pdb
+	override pdb =--pdb
 else
 	pdb=
 endif
@@ -71,6 +67,11 @@ LOG_DB:=delphi_database_epidata_$(NOW).log
 WEB_CONTAINER_ID:=$(shell docker ps -q --filter 'name=delphi_web_epidata')
 DATABASE_CONTAINER_ID:=$(shell docker ps -q --filter 'name=delphi_database_epidata')
 
+M1= 
+UNAME := $(shell uname -smp)
+ifeq ($(UNAME), Darwin arm64 arm)
+	override M1 =--platform linux/amd64
+endif
 
 .PHONY=web
 web:
@@ -85,13 +86,13 @@ web:
 	@# Build the web_epidata image
 	@cd repos/delphi/delphi-epidata;\
 		docker build -t delphi_web_epidata\
-			$(m1) \
+			$(M1) \
 			-f ./devops/Dockerfile .;\
 		cd -
 
 	@# Run the web server
 	@docker run --rm -p 127.0.0.1:10080:80 \
-		$(m1) \
+		$(M1) \
 		--env "SQLALCHEMY_DATABASE_URI=$(sqlalchemy_uri)" \
 		--env "FLASK_SECRET=abc" --env "FLASK_PREFIX=/epidata" --env "LOG_DEBUG" \
 		--network delphi-net --name delphi_web_epidata \
@@ -109,12 +110,12 @@ db:
 
 	@# Build the database_epidata image
 	@docker build -t delphi_database_epidata \
-		$(m1) \
+		$(M1) \
 		-f repos/delphi/delphi-epidata/dev/docker/database/epidata/Dockerfile .
 
 	@# Run the database
 	@docker run --rm -p 127.0.0.1:13306:3306 \
-		$(m1) \
+		$(M1) \
 		--network delphi-net --name delphi_database_epidata \
                 --cap-add=sys_nice \
 		delphi_database_epidata >$(LOG_DB) 2>&1 &
@@ -129,7 +130,7 @@ db:
 .PHONY=py
 py:
 	@docker build -t delphi_web_python \
-		$(m1) \
+		$(M1) \
 		-f repos/delphi/delphi-epidata/dev/docker/python/Dockerfile .
 
 .PHONY=all
@@ -138,7 +139,7 @@ all: db web py
 .PHONY=test
 test:
 	@docker run -i --rm --network delphi-net \
-		$(m1) \
+		$(M1) \
 		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata,target=/usr/src/app/repos/delphi/delphi-epidata,readonly \
 		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata/src,target=/usr/src/app/delphi/epidata,readonly \
 		--env "SQLALCHEMY_DATABASE_URI=$(sqlalchemy_uri)" \
@@ -148,7 +149,7 @@ test:
 .PHONY=bash
 bash:
 	@docker run -it --rm --network delphi-net \
-		$(m1) \
+		$(M1) \
 		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata,target=/usr/src/app/repos/delphi/delphi-epidata,readonly \
 		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata/src,target=/usr/src/app/delphi/epidata,readonly \
 		--env "SQLALCHEMY_DATABASE_URI=$(sqlalchemy_uri)" \
