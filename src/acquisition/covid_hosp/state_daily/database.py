@@ -115,7 +115,11 @@ class Database(BaseDatabase):
         Columndef('previous_day_deaths_influenza_coverage', 'previous_day_deaths_influenza_coverage', int),
         Columndef('previous_week_therapeutic_a_casirivimab_imdevimab_courses_used', 'previous_week_therapeutic_a_casirivimab_imdevimab_courses_used', int),
         Columndef('previous_week_therapeutic_b_bamlanivimab_courses_used', 'previous_week_therapeutic_b_bamlanivimab_courses_used', int),
-        Columndef('previous_week_therapeutic_c_bamlanivimab_etesevimab_courses_used', 'previous_week_therapeutic_c_bamlanivimab_etesevimab_courses_used', int),
+        Columndef(
+            'previous_week_therapeutic_c_bamlanivimab_etesevimab_courses_used',
+            'previous_week_therapeutic_c_bamlanivimab_etesevimab_courses_used',
+            int
+        ),
         Columndef('staffed_adult_icu_bed_occupancy', 'staffed_adult_icu_bed_occupancy', int),
         Columndef('staffed_adult_icu_bed_occupancy_coverage', 'staffed_adult_icu_bed_occupancy_coverage', int),
         Columndef('staffed_icu_adult_patients_confirmed_and_suspected_covid', 'staffed_icu_adult_patients_confirmed_suspected_covid', int),
@@ -123,7 +127,11 @@ class Database(BaseDatabase):
         Columndef('staffed_icu_adult_patients_confirmed_covid', 'staffed_icu_adult_patients_confirmed_covid', int),
         Columndef('staffed_icu_adult_patients_confirmed_covid_coverage', 'staffed_icu_adult_patients_confirmed_covid_coverage', int),
         Columndef('total_adult_patients_hospitalized_confirmed_and_suspected_covid', 'total_adult_patients_hosp_confirmed_suspected_covid', int),
-        Columndef('total_adult_patients_hospitalized_confirmed_and_suspected_covid_coverage', 'total_adult_patients_hosp_confirmed_suspected_covid_coverage', int),
+        Columndef(
+            'total_adult_patients_hospitalized_confirmed_and_suspected_covid_coverage',
+            'total_adult_patients_hosp_confirmed_suspected_covid_coverage',
+            int
+        ),
         Columndef('total_adult_patients_hospitalized_confirmed_covid', 'total_adult_patients_hosp_confirmed_covid', int),
         Columndef('total_adult_patients_hospitalized_confirmed_covid_coverage', 'total_adult_patients_hosp_confirmed_covid_coverage', int),
         Columndef('total_patients_hospitalized_confirmed_influenza', 'total_patients_hospitalized_confirmed_influenza', int),
