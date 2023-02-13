@@ -1,18 +1,25 @@
 # standard library
 import argparse
-import tempfile
 import os
-import stat
 import shutil
+import stat
+import tempfile
 
 # first party
 from . import afhsb_sql
 
 DEFAULT_DATAPATH = '/home/automation/afhsb_data'
 
+
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--datapath', action='store', type=str, default=DEFAULT_DATAPATH, help='filepath to directory containing csv files to input into database')
+    parser.add_argument(
+        '--datapath',
+        action='store',
+        type=str,
+        default=DEFAULT_DATAPATH,
+        help='filepath to directory containing csv files to input into database'
+    )
     args = parser.parse_args()
     # MariaDB appears to refuse to LOAD DATA INFILE except on files under
     # /var/lib/mysql (which seems dedicated to its own files) or /tmp; create a
