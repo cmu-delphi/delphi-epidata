@@ -67,11 +67,10 @@ LOG_DB:=delphi_database_epidata_$(NOW).log
 WEB_CONTAINER_ID:=$(shell docker ps -q --filter 'name=delphi_web_epidata')
 DATABASE_CONTAINER_ID:=$(shell docker ps -q --filter 'name=delphi_database_epidata')
 
-M1= 
-UNAME := $(shell uname -smp)
-ifeq ($(UNAME), Darwin arm64 arm)
+M1=
+ifeq ($(shell uname -smp), Darwin arm64 arm)
+$(info M1 system detected, changing docker platform to linux/amd64.)
 	override M1 =--platform linux/amd64
-	@echo M1 system detected, changing docker platform to linux/amd64.
 endif
 
 .PHONY=web
