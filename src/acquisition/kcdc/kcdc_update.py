@@ -14,7 +14,7 @@ Stores versioned KCDC ILI data from KCDC website.
 | Field        | Type        | Null | Key | Default | Extra          |
 +--------------+-------------+------+-----+---------+----------------+
 | id           | int(11)     | NO   | PRI | NULL    | auto_increment |
-| release_date | date        | NO   | MUL | NULL    |                | 
+| release_date | date        | NO   | MUL | NULL    |                |
 | issue        | int(11)     | NO   | MUL | NULL    |                |
 | epiweek      | int(11)     | NO   | MUL | NULL    |                |
 | region       | varchar(12) | NO   | MUL | NULL    |                |
@@ -32,19 +32,17 @@ ili: num_ili / 1000 outpatient visits
 
 import argparse
 import datetime
-import requests
 
-# third party
-import mysql.connector
-
-# first party
 import delphi.operations.secrets as secrets
-from delphi.utils.epiweek import delta_epiweeks, range_epiweeks, add_epiweeks
+import mysql.connector
+import requests
 from delphi.utils.epidate import EpiDate
+from delphi.utils.epiweek import add_epiweeks, delta_epiweeks, range_epiweeks
+
 
 def ensure_tables_exist():
-    (u,p) = secrets.db.epi
-    cnx = mysql.connector.connect(user=u,password=p,database='epidata')
+    (u, p) = secrets.db.epi
+    cnx = mysql.connector.connect(user=u, password=p, database='epidata')
     try:
         cursor = cnx.cursor()
         cursor.execute('''
@@ -58,40 +56,44 @@ def ensure_tables_exist():
                 `ili` DOUBLE NOT NULL,
                 UNIQUE KEY (`issue`, `epiweek`, `region`)
             );
-        ''');
+        ''')
         cnx.commit()
     finally:
         cnx.close()
 
+
 def safe_float(f):
     try:
-        return float(f.replace(',',''))
-    except:
+        return float(f.replace(',', ''))
+    except:  # noqa
         return 0
+
 
 def safe_int(i):
     try:
-        return int(i.replace(',',''))
-    except:
+        return int(i.replace(',', ''))
+    except:  # noqa
         return 0
 
+
 def get_rows(cnx, table='kcdc_ili'):
-  # Count and return the number of rows in the `kcdc_ili` table.
-  select = cnx.cursor()
-  select.execute('SELECT count(1) num FROM %s' % table)
-  for (num,) in select:
-    pass
-  select.close()
-  return num
+    # Count and return the number of rows in the `kcdc_ili` table.
+    select = cnx.cursor()
+    select.execute('SELECT count(1) num FROM %s' % table)
+    for (num,) in select:
+        pass
+    select.close()
+    return num
+
 
 def get_kcdc_data():
     issue = EpiDate.today().get_ew()
     last_season = issue//100 + (1 if issue % 100 > 35 else 0)
     url = 'http://www.cdc.go.kr/npt/biz/npp/iss/influenzaListAjax.do'
     params = {
-    'icdNm': 'influenza',
-    'startYear': '2004', # Started in 2004
-    'endYear': str(last_season)
+        'icdNm': 'influenza',
+        'startYear': '2004',  # Started in 2004
+        'endYear': str(last_season)
     }
     response = requests.post(url, params)
     datas = response.json()
@@ -99,19 +101,20 @@ def get_kcdc_data():
     ews = []
     ilis = []
     ew1 = 200436
-    for year in range(2004,last_season):
+    for year in range(2004, last_season):
         year_data = data[year-2004]
         if year > 2004:
             ew1 = ews[-1] + 1
         ili_yr = year_data["VALUE"].split('`')
         ili_yr = [float(f) for f in ili_yr if f != '']
-        ew2 = add_epiweeks(ew1,len(ili_yr))
-        new_ews = list(range_epiweeks(ew1,ew2))
+        ew2 = add_epiweeks(ew1, len(ili_yr))
+        new_ews = list(range_epiweeks(ew1, ew2))
         for i in range(len(new_ews)):
             j = float(ili_yr[i])
             ilis.append(j)
             ews.append(new_ews[i])
     return ews, ilis
+
 
 def update_from_data(ews, ilis, date, issue, test_mode=False):
     u, p = secrets.db.epi
@@ -136,8 +139,8 @@ def update_from_data(ews, ilis, date, issue, test_mode=False):
         ili = ilis[i]
         lag = delta_epiweeks(ews[i], issue)
 
-        insert_args = [date,issue,ew,'ROK',lag,ili]
-        update_args = [date,ili]
+        insert_args = [date, issue, ew, 'ROK', lag, ili]
+        update_args = [date, ili]
         try:
             insert.execute(sql % tuple(insert_args + update_args))
         except Exception:
@@ -151,8 +154,9 @@ def update_from_data(ews, ilis, date, issue, test_mode=False):
     else:
         cnx.commit()
         rows2 = get_rows(cnx)
-    print('rows after: %d (added %d)' % (rows2,rows2-rows1))
+    print('rows after: %d (added %d)' % (rows2, rows2-rows1))
     cnx.close()
+
 
 def main():
     # args and usage
@@ -170,7 +174,7 @@ def main():
 
     ensure_tables_exist()
 
-    ews,ilis = get_kcdc_data()
+    ews, ilis = get_kcdc_data()
 
     update_from_data(ews, ilis, date, issue, test_mode=args.test)
 
