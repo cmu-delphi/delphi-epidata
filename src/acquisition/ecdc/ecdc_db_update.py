@@ -14,7 +14,7 @@ Stores versioned ECDC ILI data from ECDC website.
 | Field          | Type        | Null | Key | Default | Extra          |
 +----------------+-------------+------+-----+---------+----------------+
 | id             | int(11)     | NO   | PRI | NULL    | auto_increment |
-| release_date   | date        | NO   | MUL | NULL    |                | 
+| release_date   | date        | NO   | MUL | NULL    |                |
 | issue          | int(11)     | NO   | MUL | NULL    |                |
 | epiweek        | int(11)     | NO   | MUL | NULL    |                |
 | region         | varchar(12) | NO   | MUL | NULL    |                |
@@ -37,9 +37,7 @@ import os
 import random
 import subprocess
 
-# first party
 import delphi.operations.secrets as secrets
-# third party
 import mysql.connector
 from delphi.epidata.acquisition.ecdc.ecdc_ili import download_ecdc_data
 from delphi.utils.epidate import EpiDate
@@ -71,14 +69,14 @@ def ensure_tables_exist():
 def safe_float(f):
     try:
         return float(f.replace(',', ''))
-    except:
+    except:  # noqa
         return 0
 
 
 def safe_int(i):
     try:
         return int(i.replace(',', ''))
-    except:
+    except: # noqa
         return 0
 
 
@@ -106,7 +104,7 @@ def update_from_file(issue, date, dir, test_mode=False):
     rows = []
     for filename in files:
         with open(filename, 'r') as f:
-            for l in f:
+            for l in f:  # noqa
                 data = list(map(lambda s: s.strip().replace('"', ''), l.split(',')))
                 row = {}
                 row['epiweek'] = int(data[1][:4] + data[1][5:])
@@ -136,7 +134,7 @@ def update_from_file(issue, date, dir, test_mode=False):
         update_args = [date] + data_args
         try:
             insert.execute(sql % tuple(insert_args + update_args))
-        except:
+        except:  # noqa
             pass
 
     # cleanup
@@ -189,7 +187,7 @@ def main():
             flag = flag + 1
             tmp_dir = ''.join(random.choice('0123456789abcdefghijklmnopqrstuvwxyz') for i in range(8))
             tmp_dir = 'downloads_' + tmp_dir
-            subprocess.call(["mkdir",tmp_dir])
+            subprocess.call(["mkdir", tmp_dir])
             # Use temporary directory to avoid data from different time
             #   downloaded to same folder
             download_ecdc_data(download_dir=tmp_dir)
@@ -203,7 +201,7 @@ def main():
                 try:
                     update_from_file(issue, date, filename, test_mode=args.test)
                     subprocess.call(["rm", filename])
-                except:
+                except:  # noqa
                     db_error = True
             subprocess.call(["rm", "-r", tmp_dir])
             if not db_error:
