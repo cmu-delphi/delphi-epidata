@@ -89,7 +89,7 @@ def fetch_json(path, payload, call_count=1, requests_impl=requests):
     if payload is not None:
         headers['Content-Type'] = 'application/json;charset=UTF-8'
 
-  # send the request and read the response
+    # send the request and read the response
     if payload is None:
         method = requests_impl.get
         data = None
