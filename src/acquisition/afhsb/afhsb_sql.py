@@ -1,11 +1,7 @@
-# standard library
 import os
 
-# third party
-import mysql.connector as connector
-
-# first party
 import delphi.operations.secrets as secrets
+import mysql.connector as connector
 
 
 def init_dmisid_table(sourcefile):
@@ -18,21 +14,21 @@ def init_dmisid_table(sourcefile):
         `country` CHAR(3) NULL,
         `state` CHAR(2) NULL
         );
-        '''.format(table_name)
+    '''.format(table_name)
     populate_table_cmd = '''
         LOAD DATA INFILE '{}'
         INTO TABLE {}
-        FIELDS TERMINATED BY ',' 
+        FIELDS TERMINATED BY ','
         ENCLOSED BY '"'
         LINES TERMINATED BY '\r\n'
         IGNORE 1 ROWS
         (@dmisid, @country, @state, @zip5)
-        SET    
+        SET
             dmisid = @dmisid,
             country = nullif(@country, ''),
             state = nullif(@state, '')
         ;
-	'''.format(sourcefile, table_name)
+    '''.format(sourcefile, table_name)
     try:
         cursor = cnx.cursor()
         cursor.execute(create_table_cmd)
@@ -40,6 +36,7 @@ def init_dmisid_table(sourcefile):
         cnx.commit()
     finally:
         cnx.close()
+
 
 def init_region_table(sourcefile):
     (u, p) = secrets.db.epi
@@ -55,13 +52,13 @@ def init_region_table(sourcefile):
     populate_table_cmd = '''
         LOAD DATA INFILE '{}'
         INTO TABLE {}
-        FIELDS TERMINATED BY ',' 
+        FIELDS TERMINATED BY ','
         ENCLOSED BY '"'
         LINES TERMINATED BY '\r\n'
         IGNORE 1 ROWS
         (@state, @hhs, @cen)
         SET state=@state, hhs=@hhs, cen=@cen;
-	'''.format(sourcefile, table_name)
+    '''.format(sourcefile, table_name)
     try:
         cursor = cnx.cursor()
         cursor.execute(create_table_cmd)
@@ -82,28 +79,28 @@ def init_raw_data(table_name, sourcefile):
         `dmisid` CHAR(4) NULL,
         `flu_type` CHAR(9) NOT NULL,
         `visit_sum` INT(11) NOT NULL,
-        
+
         KEY `epiweek` (`epiweek`),
         KEY `dmisid` (`dmisid`),
         KEY `flu_type` (`flu_type`)
         );
-        '''.format(table_name)
+    '''.format(table_name)
     populate_table_cmd = '''
         LOAD DATA INFILE '{}'
         INTO TABLE {}
-        FIELDS TERMINATED BY ',' 
+        FIELDS TERMINATED BY ','
         ENCLOSED BY '"'
         LINES TERMINATED BY '\r\n'
         IGNORE 1 ROWS
         (@id, @epiweek, @dmisid, @flu, @visits)
-        SET 
+        SET
             id = @id,
             epiweek = @epiweek,
             dmisid = nullif(@dmisid, 'ZZZZ'),
             flu_type = @flu,
             visit_sum = @visits
         ;
-        '''.format(sourcefile, table_name)
+    '''.format(sourcefile, table_name)
     try:
         cursor = cnx.cursor()
         cursor.execute(create_table_cmd)
@@ -111,6 +108,7 @@ def init_raw_data(table_name, sourcefile):
         cnx.commit()
     finally:
         cnx.close()
+
 
 def agg_by_state(src_table, dest_table):
     print("Aggregating records by states...")
@@ -120,8 +118,8 @@ def agg_by_state(src_table, dest_table):
         CREATE TABLE {}
         SELECT a.epiweek, a.flu_type, d.state, d.country, sum(a.visit_sum) visit_sum
         FROM {} a
-        LEFT JOIN dmisid_table d 
-        ON a.dmisid = d.dmisid 
+        LEFT JOIN dmisid_table d
+        ON a.dmisid = d.dmisid
         GROUP BY a.epiweek, a.flu_type, d.state, d.country;
     '''.format(dest_table, src_table)
     try:
@@ -130,6 +128,7 @@ def agg_by_state(src_table, dest_table):
         cnx.commit()
     finally:
         cnx.close()
+
 
 def agg_by_region(src_table, dest_table):
     print("Aggregating records by regions...")
@@ -150,6 +149,7 @@ def agg_by_region(src_table, dest_table):
     finally:
         cnx.close()
 
+
 def init_all_tables(datapath):
     init_dmisid_table(os.path.join(datapath, "simple_DMISID_FY2018.csv"))
     init_region_table(os.path.join(datapath, "state2region.csv"))
@@ -163,6 +163,7 @@ def init_all_tables(datapath):
         init_raw_data(raw_table_name, os.path.join(datapath, "filled_{}.csv".format(period)))
         agg_by_state(raw_table_name, state_table_name)
         agg_by_region(state_table_name, region_table_name)
+
 
 def dangerously_drop_all_afhsb_tables():
     (u, p) = secrets.db.epi
@@ -179,9 +180,10 @@ def dangerously_drop_all_afhsb_tables():
                                `state2region_table`,
                                `dmisid_table`;
         ''')
-        cnx.commit() # (might do nothing; each DROP commits itself anyway)
+        cnx.commit()  # (might do nothing; each DROP commits itself anyway)
     finally:
         cnx.close()
+
 
 def run_cmd(cmd):
     (u, p) = secrets.db.epi
