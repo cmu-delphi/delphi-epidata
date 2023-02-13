@@ -84,7 +84,7 @@ def run():
     cur.execute('SELECT max(`name`) FROM `wiki_raw`')
     for (max_name,) in cur:
         pass
-    print('Last known file: %s'%(max_name))
+    print('Last known file: %s' % (max_name))
     timestamp = get_timestamp(max_name)
 
     # crawl dumps.wikimedia.org to find more recent access logs
