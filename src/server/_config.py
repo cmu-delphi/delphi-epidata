@@ -1,5 +1,6 @@
 import json
 import os
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -13,8 +14,8 @@ SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI", "sqlite:///t
 
 # defaults
 SQLALCHEMY_ENGINE_OPTIONS = {
-    "pool_pre_ping": True, # enable ping test for validity of recycled pool connections on connect() calls
-    "pool_recycle": 5      # seconds after which a recycled pool connection is considered invalid
+    "pool_pre_ping": True,  # enable ping test for validity of recycled pool connections on connect() calls
+    "pool_recycle": 5       # seconds after which a recycled pool connection is considered invalid
 }
 # update with overrides of defaults or additions from external configs
 SQLALCHEMY_ENGINE_OPTIONS.update(
@@ -35,7 +36,8 @@ AUTH = {
 }
 
 # begin sensor query authentication configuration
-#   A multimap of sensor names to the "granular" auth tokens that can be used to access them; excludes the "global" sensor auth key that works for all sensors:
+# A multimap of sensor names to the "granular" auth tokens that can be used to access them;
+# excludes the "global" sensor auth key that works for all sensors:
 GRANULAR_SENSOR_AUTH_TOKENS = {
     "twtr": os.environ.get("SECRET_SENSOR_TWTR", "").split(","),
     "gft": os.environ.get("SECRET_SENSOR_GFT", "").split(","),
@@ -46,7 +48,7 @@ GRANULAR_SENSOR_AUTH_TOKENS = {
     "wiki": os.environ.get("SECRET_SENSOR_WIKI", "").split(","),
 }
 
-#   A set of sensors that do not require an auth key to access:
+# A set of sensors that do not require an auth key to access:
 OPEN_SENSORS = [
     "sar3",
     "epic",
