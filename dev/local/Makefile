@@ -38,10 +38,10 @@
 #                 repos/delphi/delphi-epidata/tests/acquisition/covidcast
 #   sql=          Overrides the default SQL connection string.
 
-# Set optional argument defaults
 
+# Set optional argument defaults
 ifdef pdb
-	override pdb =--pdb
+	override pdb=--pdb
 else
 	pdb=
 endif
