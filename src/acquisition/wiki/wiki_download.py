@@ -158,7 +158,7 @@ def run(secret, download_limit=None, job_limit=None, sleep_time=1, job_type=0, d
     while (download_limit is None or total_download < download_limit) and (job_limit is None or (passed_jobs + failed_jobs) < job_limit):
         try:
             time_start = datetime.datetime.now()
-            req = urlopen(MASTER_URL + '?get=x&type=%s'%(job_type))
+            req = urlopen(MASTER_URL + '?get=x&type=%s' % (job_type))
             code = req.getcode()
             if code != 200:
                 if code == 201:
@@ -170,7 +170,7 @@ def run(secret, download_limit=None, job_limit=None, sleep_time=1, job_type=0, d
                         print('nothing to do, exiting')
                         return
                 else:
-                    raise Exception('server response code (get) was %d'%(code))
+                    raise Exception('server response code (get) was %d' % (code))
             # Make the code compatible with mac os system
             if platform == "darwin":
                 job_content = text(req.readlines()[1])
@@ -205,7 +205,7 @@ def run(secret, download_limit=None, job_limit=None, sleep_time=1, job_type=0, d
                 out = text(subprocess.check_output('md5sum raw.gz', shell=True))
                 result = out[0:32]
                 if result != job['hash']:
-                    raise Exception('wrong hash [expected %s, got %s]'%(job['hash'], result))
+                    raise Exception('wrong hash [expected %s, got %s]' % (job['hash'], result))
                 if debug_mode:
                     print(result)
             print('decompressing...')
@@ -247,7 +247,7 @@ def run(secret, download_limit=None, job_limit=None, sleep_time=1, job_type=0, d
             req = urlopen(MASTER_URL, data=data(post_data))
             code = req.getcode()
             if code != 200:
-                raise Exception('server response code (put) was %d'%(code))
+                raise Exception('server response code (put) was %d' % (code))
             print('done! (dl=%d)' % (total_download))
             passed_jobs += 1
         except Exception as ex:
