@@ -21,7 +21,7 @@ See also:
 
 Changes:
   - 10/03/18: added field for 'WHO_NREVSS' data to download data from clinical
-    labs as well as public health labs. 
+    labs as well as public health labs.
 """
 
 
