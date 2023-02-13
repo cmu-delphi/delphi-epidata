@@ -273,7 +273,7 @@ def get_public_data(row):
         'location': fluview_locations.get_location_name(*row[:2]),
         'epiweek': epiweek,
         'total_specimens': int(row[3 + offset]),
-        'total_a_h1n1': optional_int(row[4+ offset]),
+        'total_a_h1n1': optional_int(row[4 + offset]),
         'total_a_h3': optional_int(row[5 + offset]),
         'total_a_h3n2v': optional_int(row[10 + offset]),
         'total_a_no_sub': optional_int(row[6 + offset]),
@@ -325,8 +325,8 @@ def update_from_file_clinical(issue, date, filename, test_mode=False):
 
     sql = '''
         INSERT INTO
-            `fluview_clinical` (`release_date`, `issue`, `epiweek`, `region`, `lag`, 
-            `total_specimens`, `total_a`, `total_b`, `percent_positive`, `percent_a`, 
+            `fluview_clinical` (`release_date`, `issue`, `epiweek`, `region`, `lag`,
+            `total_specimens`, `total_a`, `total_b`, `percent_positive`, `percent_a`,
             `percent_b`)
         VALUES
             (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
@@ -399,7 +399,7 @@ def update_from_file_public(issue, date, filename, test_mode=False):
         `total_a_h3n2v` = %s,
         `total_a_no_sub` = %s,
         `total_b` = %s,
-        `total_b_vic` = %s, 
+        `total_b_vic` = %s,
         `total_b_yam` = %s
     '''
 
@@ -529,10 +529,11 @@ def main():
     else:
         issue, files = fluview.save_latest(path='flu_data')
         for filename in files:
-        update_from_file(issue, date, filename, test_mode=args.test)
-        update_from_file_clinical(issue, date, filename, test_mode=args.test)
-        # TODO: header row has changed for public health lab data
-        # update_from_file_public(issue, date, filename, test_mode=args.test)
+            update_from_file(issue, date, filename, test_mode=args.test)
+            update_from_file_clinical(issue, date, filename, test_mode=args.test)
+            # TODO: header row has changed for public health lab data
+            # update_from_file_public(issue, date, filename, test_mode=args.test)
+
 
 if __name__ == '__main__':
     main()
