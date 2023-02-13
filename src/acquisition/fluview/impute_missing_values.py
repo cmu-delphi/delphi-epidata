@@ -252,7 +252,7 @@ def get_fusion_parameters(known_locations):
     fuser = np.dot(W, H_pseudo_inv)
 
     locations = np.array(regions)
-    filter_locations = lambda selected: list(map(str, locations[selected]))
+    filter_locations = lambda selected: list(map(str, locations[selected]))  # noqa
     return fuser, filter_locations(is_known), filter_locations(is_unknown)
 
 
