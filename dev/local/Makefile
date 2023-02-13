@@ -71,6 +71,7 @@ M1=
 UNAME := $(shell uname -smp)
 ifeq ($(UNAME), Darwin arm64 arm)
 	override M1 =--platform linux/amd64
+	@echo M1 system detected, changing docker platform to linux/amd64.
 endif
 
 .PHONY=web
