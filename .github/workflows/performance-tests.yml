@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   run-perftests:
-    # Make sure 1. this is a PR, not an issue 2. it contains "/run lint" anywhere in the body
+    # Make sure 1. this is a PR, not an issue 2. it contains "/run performance test" anywhere in the body
     if: github.event.issue.pull_request && contains(github.event.comment.body, '/run performance test')
     runs-on: ubuntu-latest
     steps:
@@ -27,7 +27,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
       # Previous step checks out default branch, so we check out the pull request's branch
-      - name: Switch to PR branch # TODO: in delphi-epidata we won't need the renaming stuff anymore
+      - name: Switch to PR branch
         run: |
           hub pr checkout ${{ github.event.issue.number }}
         env:
@@ -41,13 +41,6 @@ jobs:
           git clone https://github.com/cmu-delphi/utils
           git clone https://github.com/cmu-delphi/flu-contest
           git clone https://github.com/cmu-delphi/nowcast
-          git clone https://github.com/cmu-delphi/github-deploy-repo
-          cd ../../
-
-          mkdir -p repos/undefx
-          cd repos/undefx
-          git clone https://github.com/undefx/py3tester
-          git clone https://github.com/undefx/undef-analysis
           cd ../../
 
           cd ..
@@ -55,16 +48,11 @@ jobs:
           cd -
 
           ln -s repos/delphi/delphi-epidata/dev/local/Makefile
-          ln -s repos/delphi/delphi-epidata/dev/local/.dockerignore
-          cd repos
-          ln -s delphi/delphi-epidata/dev/local/pyproject.toml
-          ln -s delphi/delphi-epidata/dev/local/setup.cfg
-          cd -
-      - name: Build epidata
+      - name: Build & run epidata
         run: |
           cd ../driver
           sudo make web sql="${{ secrets.DB_CONN_STRING }}"
-      - name: Run Locust
+      - name: Build & run Locust
         run: |
           cd ../driver/repos/delphi/delphi-epidata/tests/performance
           docker build -t locust .
