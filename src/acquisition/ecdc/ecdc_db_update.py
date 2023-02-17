@@ -14,7 +14,7 @@ Stores versioned ECDC ILI data from ECDC website.
 | Field          | Type        | Null | Key | Default | Extra          |
 +----------------+-------------+------+-----+---------+----------------+
 | id             | int(11)     | NO   | PRI | NULL    | auto_increment |
-| release_date   | date        | NO   | MUL | NULL    |                | 
+| release_date   | date        | NO   | MUL | NULL    |                |
 | issue          | int(11)     | NO   | MUL | NULL    |                |
 | epiweek        | int(11)     | NO   | MUL | NULL    |                |
 | region         | varchar(12) | NO   | MUL | NULL    |                |
@@ -33,22 +33,20 @@ incidence_rate: num_ili/100k
 import argparse
 import datetime
 import glob
-import subprocess
-import random
 import os
+import random
+import subprocess
 
-# third party
-import mysql.connector
-
-# first party
 import delphi.operations.secrets as secrets
+import mysql.connector
 from delphi.epidata.acquisition.ecdc.ecdc_ili import download_ecdc_data
-from delphi.utils.epiweek import delta_epiweeks
 from delphi.utils.epidate import EpiDate
+from delphi.utils.epiweek import delta_epiweeks
+
 
 def ensure_tables_exist():
-    (u,p) = secrets.db.epi
-    cnx = mysql.connector.connect(user=u,password=p,database='epidata')
+    (u, p) = secrets.db.epi
+    cnx = mysql.connector.connect(user=u, password=p, database='epidata')
     try:
         cursor = cnx.cursor()
         cursor.execute('''
@@ -62,31 +60,35 @@ def ensure_tables_exist():
                 `incidence_rate` DOUBLE NOT NULL,
                 UNIQUE KEY (`issue`, `epiweek`, `region`)
             );
-        ''');
+        ''')
         cnx.commit()
     finally:
         cnx.close()
 
+
 def safe_float(f):
     try:
-        return float(f.replace(',',''))
-    except:
+        return float(f.replace(',', ''))
+    except:  # noqa
         return 0
+
 
 def safe_int(i):
     try:
-        return int(i.replace(',',''))
-    except:
+        return int(i.replace(',', ''))
+    except: # noqa
         return 0
 
+
 def get_rows(cnx, table='ecdc_ili'):
-  # Count and return the number of rows in the `ecdc_ili` table.
-  select = cnx.cursor()
-  select.execute('SELECT count(1) num FROM %s' % table)
-  for (num,) in select:
-    pass
-  select.close()
-  return num
+    # Count and return the number of rows in the `ecdc_ili` table.
+    select = cnx.cursor()
+    select.execute('SELECT count(1) num FROM %s' % table)
+    for (num,) in select:
+        pass
+    select.close()
+    return num
+
 
 def update_from_file(issue, date, dir, test_mode=False):
     # Read ECDC data from CSVs and insert into (or update) the database.
@@ -98,12 +100,12 @@ def update_from_file(issue, date, dir, test_mode=False):
     insert = cnx.cursor()
 
     # load the data, ignoring empty rows
-    files = glob.glob(os.path.join(dir,"*.csv"))
+    files = glob.glob(os.path.join(dir, "*.csv"))
     rows = []
     for filename in files:
-        with open(filename,'r') as f:
-            for l in f:
-                data = list(map(lambda s: s.strip().replace('"',''),l.split(',')))
+        with open(filename, 'r') as f:
+            for l in f:  # noqa
+                data = list(map(lambda s: s.strip().replace('"', ''), l.split(',')))
                 row = {}
                 row['epiweek'] = int(data[1][:4] + data[1][5:])
                 row['region'] = data[4]
@@ -114,25 +116,25 @@ def update_from_file(issue, date, dir, test_mode=False):
     print(' found %d entries' % len(entries))
 
     sql = '''
-    INSERT INTO
-        `ecdc_ili` (`release_date`, `issue`, `epiweek`, `region`, `lag`,
-        `incidence_rate`)
-    VALUES
-        ('%s', %s, %s, '%s', %s, %s)
-    ON DUPLICATE KEY UPDATE
-        `release_date` = least(`release_date`, '%s'),
-        `incidence_rate` = %s
+        INSERT INTO
+            `ecdc_ili` (`release_date`, `issue`, `epiweek`, `region`, `lag`,
+            `incidence_rate`)
+        VALUES
+            ('%s', %s, %s, '%s', %s, %s)
+        ON DUPLICATE KEY UPDATE
+            `release_date` = least(`release_date`, '%s'),
+            `incidence_rate` = %s
     '''
 
     for row in entries:
         lag = delta_epiweeks(row['epiweek'], issue)
         data_args = [row['incidence_rate']]
 
-        insert_args = [date,issue,row['epiweek'],row['region'],lag] + data_args
+        insert_args = [date, issue, row['epiweek'], row['region'], lag] + data_args
         update_args = [date] + data_args
         try:
             insert.execute(sql % tuple(insert_args + update_args))
-        except:
+        except:  # noqa
             pass
 
     # cleanup
@@ -143,8 +145,9 @@ def update_from_file(issue, date, dir, test_mode=False):
     else:
         cnx.commit()
         rows2 = get_rows(cnx)
-    print('rows after: %d (added %d)' % (rows2,rows2-rows1))
+    print('rows after: %d (added %d)' % (rows2, rows2-rows1))
     cnx.close()
+
 
 def main():
     # args and usage
@@ -184,27 +187,28 @@ def main():
             flag = flag + 1
             tmp_dir = ''.join(random.choice('0123456789abcdefghijklmnopqrstuvwxyz') for i in range(8))
             tmp_dir = 'downloads_' + tmp_dir
-            subprocess.call(["mkdir",tmp_dir])
+            subprocess.call(["mkdir", tmp_dir])
             # Use temporary directory to avoid data from different time
             #   downloaded to same folder
             download_ecdc_data(download_dir=tmp_dir)
             issue = EpiDate.today().get_ew()
             files = glob.glob('%s/*.csv' % tmp_dir)
             for filename in files:
-                with open(filename,'r') as f:
+                with open(filename, 'r') as f:
                     _ = f.readline()
             db_error = False
             for filename in files:
                 try:
                     update_from_file(issue, date, filename, test_mode=args.test)
-                    subprocess.call(["rm",filename])
-                except:
+                    subprocess.call(["rm", filename])
+                except:  # noqa
                     db_error = True
-            subprocess.call(["rm","-r",tmp_dir])
+            subprocess.call(["rm", "-r", tmp_dir])
             if not db_error:
-                break # Exit loop with success
+                break  # Exit loop with success
         if flag >= max_tries:
             print('WARNING: Database `ecdc_ili` did not update successfully')
+
 
 if __name__ == '__main__':
     main()

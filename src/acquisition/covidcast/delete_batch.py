@@ -23,13 +23,15 @@ def get_argument_parser():
       help="filename for log output (defaults to stdout)")
     return parser
 
+
 def handle_file(deletion_file, database, logger):
     logger.info("Deleting from csv file", filename=deletion_file)
     rows = []
     with open(deletion_file) as f:
         for line in f:
             fields = line.strip().split(",")
-            if len(fields) < 9: continue
+            if len(fields) < 9:
+                continue
             rows.append(fields + ["day"])
     rows = rows[1:]
     try:
@@ -40,6 +42,7 @@ def handle_file(deletion_file, database, logger):
         logger.exception('Exception while deleting rows', exception=e)
         database.rollback()
     return 0
+
 
 def main(args):
     """Delete rows from covidcast."""
@@ -63,6 +66,7 @@ def main(args):
     logger.info(
         "Deleted CSVs from database",
         total_runtime_in_seconds=round(time.time() - start_time, 2), row_count=all_n)
+
 
 if __name__ == '__main__':
     main(get_argument_parser().parse_args())

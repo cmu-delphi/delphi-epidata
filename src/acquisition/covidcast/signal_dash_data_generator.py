@@ -1,26 +1,23 @@
 """Updates the signal dashboard data."""
 
-# standard library
 import argparse
+import datetime
 import sys
 import time
-import datetime
-import mysql.connector
-import pandas as pd
-
 from dataclasses import dataclass
-from epiweeks import Week
 from typing import List
 
-# first party
 import covidcast
 import delphi.operations.secrets as secrets
+import mysql.connector
+import pandas as pd
 from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
-
+from epiweeks import Week
 
 LOOKBACK_DAYS_FOR_COVERAGE = 56
 BASE_COVIDCAST = covidcast.covidcast.Epidata.BASE_URL[:-len("api.php")] + "covidcast"
 COVERAGE_URL = f"{BASE_COVIDCAST}/coverage?format=csv&signal={{source}}:{{signal}}&days={LOOKBACK_DAYS_FOR_COVERAGE}"
+
 
 @dataclass
 class DashboardSignal:
@@ -150,11 +147,11 @@ class Database:
 
     def get_enabled_signals(self) -> List[DashboardSignal]:
         """Retrieve all enabled signals from the database"""
-        select_statement = f'''SELECT `id`, 
+        select_statement = f'''SELECT `id`,
             `name`,
             `source`,
             `covidcast_signal`,
-            `latest_coverage_update`, 
+            `latest_coverage_update`,
             `latest_status_update`
             FROM `{Database.SIGNAL_TABLE_NAME}`
             WHERE `enabled`
@@ -203,12 +200,12 @@ def get_coverage(dashboard_signal: DashboardSignal) -> List[DashboardSignalCover
     try:
         count_by_geo_type_df["time_value"] = count_by_geo_type_df["time_value"].apply(
             lambda x: pd.to_datetime(str(x), format="%Y%m%d"))
-    except:
+    except: # noqa
         count_by_geo_type_df["time_value"] = count_by_geo_type_df["time_value"].apply(
             lambda x: pd.to_datetime(Week(x // 100, x % 100).startdate()))
 
     signal_coverage_list = []
-    
+
     for _, row in count_by_geo_type_df.iterrows():
         signal_coverage = DashboardSignalCoverage(
             signal_id=dashboard_signal.db_id,

@@ -1,15 +1,14 @@
+import unittest
 from dataclasses import fields
 from datetime import date
 from typing import Any, Dict, Iterable, List, Optional, Sequence
-import unittest
 
+import delphi.operations.secrets as secrets
 import pandas as pd
-
-from delphi_utils import Nans
 from delphi.epidata.acquisition.covidcast.covidcast_row import CovidcastRow
 from delphi.epidata.acquisition.covidcast.database import Database
 from delphi.epidata.server.utils.dates import day_to_time_value, time_value_to_day
-import delphi.operations.secrets as secrets
+from delphi_utils import Nans
 
 # all the Nans we use here are just one value, so this is a shortcut to it:
 nmv = Nans.NOT_MISSING.value
@@ -73,8 +72,8 @@ def covidcast_rows_from_args(sanitize_fields: bool = False, test_mode: bool = Tr
 
     Example:
     covidcast_rows_from_args(value=[1, 2, 3], time_value=[1, 2, 3]) will yield
-    [CovidcastTestRow.make_default_row(value=1, time_value=1), CovidcastTestRow.make_default_row(value=2, time_value=2), CovidcastTestRow.make_default_row(value=3, time_value=3)]
-    with all the defaults from CovidcastTestRow.
+    [CovidcastTestRow.make_default_row(value=1, time_value=1), CovidcastTestRow.make_default_row(value=2, time_value=2),
+    CovidcastTestRow.make_default_row(value=3, time_value=3)] with all the defaults from CovidcastTestRow.
     """
     # If any iterables were passed instead of lists, convert them to lists.
     kwargs = {key: list(value) for key, value in kwargs.items()}
@@ -96,7 +95,8 @@ def covidcast_rows_from_records(records: Iterable[dict], sanity_check: bool = Fa
     You can use csv.DictReader before this to read a CSV file.
     """
     records = list(records)
-    return [CovidcastTestRow.make_default_row(**record) if not sanity_check else CovidcastTestRow.make_default_row(**record)._sanitize_fields() for record in records]
+    return [CovidcastTestRow.make_default_row(**record) if not sanity_check else
+            CovidcastTestRow.make_default_row(**record)._sanitize_fields() for record in records]
 
 
 def covidcast_rows_as_dicts(rows: Iterable[CovidcastTestRow], ignore_fields: Optional[List[str]] = None) -> List[dict]:
@@ -168,12 +168,12 @@ class CovidcastBase(unittest.TestCase):
         del self._db
 
     def localSetUp(self):
-        # stub; override in subclasses to perform custom setup. 
+        # stub; override in subclasses to perform custom setup.
         # runs after tables have been truncated but before database changes have been committed
         pass
 
     def localTearDown(self):
-        # stub; override in subclasses to perform custom teardown. 
+        # stub; override in subclasses to perform custom teardown.
         # runs after database changes have been committed
         pass
 
@@ -181,7 +181,9 @@ class CovidcastBase(unittest.TestCase):
         # inserts rows into the database using the full acquisition process, including 'dbjobs' load into history & latest tables
         n = self._db.insert_or_update_bulk(rows)
         print(f"{n} rows added to load table & dispatched to v4 schema")
-        self._db._connection.commit() # NOTE: this isnt expressly needed for our test cases, but would be if using external access (like through client lib) to ensure changes are visible outside of this db session
+        # NOTE: this isnt expressly needed for our test cases, but would be if using external access (like through client lib)
+        # To ensure changes are visible outside of this db session
+        self._db._connection.commit()
 
     def params_from_row(self, row: CovidcastTestRow, **kwargs):
         ret = {

@@ -50,23 +50,21 @@ import argparse
 import csv
 import datetime
 import glob
-import subprocess
 import random
+import subprocess
 from io import StringIO
 
-# third party
+import delphi.operations.secrets as secrets
 import mysql.connector
 import pycountry
-
-# first party
-import delphi.operations.secrets as secrets
 from delphi.epidata.acquisition.paho.paho_download import get_paho_data
-from delphi.utils.epiweek import delta_epiweeks, check_epiweek
 from delphi.utils.epidate import EpiDate
+from delphi.utils.epiweek import check_epiweek, delta_epiweeks
+
 
 def ensure_tables_exist():
-    (u,p) = secrets.db.epi
-    cnx = mysql.connector.connect(user=u,password=p,database='epidata')
+    (u, p) = secrets.db.epi
+    cnx = mysql.connector.connect(user=u, password=p, database='epidata')
     try:
         cursor = cnx.cursor()
         cursor.execute('''
@@ -85,10 +83,11 @@ def ensure_tables_exist():
                 `num_deaths` INT(11) NOT NULL,
                 UNIQUE KEY (`issue`, `epiweek`, `region`)
             );
-        ''');
+        ''')
         cnx.commit()
     finally:
         cnx.close()
+
 
 def safe_float(f):
     try:
@@ -96,23 +95,26 @@ def safe_float(f):
     except:
         return 0
 
+
 def safe_int(i):
     try:
         return int(i.replace(',',''))
     except:
         return 0
 
+
 def get_rows(cnx, table='paho_dengue'):
-  # Count and return the number of rows in the `fluview` table.
-  select = cnx.cursor()
-  select.execute('SELECT count(1) num FROM %s' % table)
-  for (num,) in select:
-    pass
-  select.close()
-  return num
+    # Count and return the number of rows in the `fluview` table.
+    select = cnx.cursor()
+    select.execute('SELECT count(1) num FROM %s' % table)
+    for (num,) in select:
+        pass
+    select.close()
+    return num
+
 
 def get_paho_row(row):
-    if row[0] == "\ufeffIncidence Rate (c)" and row != "\ufeffIncidence Rate (c),(SD/D) x100 (e),CFR (f),ID,Country or Subregion,Deaths,EW,Confirmed,Epidemiological Week (a),Pop (no usar),Serotype,Severe Dengue (d),Total of Dengue Cases (b),Year,Population x 1000".split(","):
+    if row[0] == "\ufeffIncidence Rate (c)" and row != "\ufeffIncidence Rate (c),(SD/D) x100 (e),CFR (f),ID,Country or Subregion,Deaths,EW,Confirmed,Epidemiological Week (a),Pop (no usar),Serotype,Severe Dengue (d),Total of Dengue Cases (b),Year,Population x 1000".split(","): # noqa
         raise Exception('PAHO header row has changed')
     if len(row) == 1 or row[0] == "Incidence Rate (c)":
         # this is a header row
@@ -145,6 +147,7 @@ def get_paho_row(row):
         'cfr': safe_float(row[2])
     }
 
+
 def update_from_file(issue, date, filename, test_mode=False):
     # Read PAHO data from CSV and insert into (or update) the database.
 
@@ -163,10 +166,10 @@ def update_from_file(issue, date, filename, test_mode=False):
 
     # load the data, ignoring empty rows
     print('loading data from %s as issued on %d' % (filename, issue))
-    with open(filename,'r',encoding='utf-8') as f:
+    with open(filename, 'r', encoding='utf-8') as f:
         c = f.read()
     rows = []
-    for l in csv.reader(StringIO(c), delimiter=','):
+    for l in csv.reader(StringIO(c), delimiter=','):  # noqa
         rows.append(get_paho_row(l))
     print(' loaded %d rows' % len(rows))
     entries = [obj for obj in rows if obj]
@@ -190,13 +193,13 @@ def update_from_file(issue, date, filename, test_mode=False):
     '''
 
     for row in entries:
-        if row['issue'] > issue: # Issued in a week that hasn't happened yet
+        if row['issue'] > issue:  # Issued in a week that hasn't happened yet
             continue
         lag = delta_epiweeks(row['epiweek'], issue)
         data_args = [row['total_pop'], row['serotype'], row['num_dengue'],
                      row['incidence_rate'], row['num_severe'], row['num_deaths']]
 
-        insert_args = [date,issue,row['epiweek'],row['region'],lag] + data_args
+        insert_args = [date, issue, row['epiweek'], row['region'], lag] + data_args
         update_args = [date] + data_args
         insert.execute(sql % tuple(insert_args + update_args))
 
@@ -208,8 +211,9 @@ def update_from_file(issue, date, filename, test_mode=False):
     else:
         cnx.commit()
         rows2 = get_rows(cnx)
-    print('rows after: %d (added %d)' % (rows2,rows2-rows1))
+    print('rows after: %d (added %d)' % (rows2, rows2-rows1))
     cnx.close()
+
 
 def main():
     # args and usage
@@ -249,7 +253,7 @@ def main():
             flag = flag + 1
             tmp_dir = ''.join(random.choice('0123456789abcdefghijklmnopqrstuvwxyz') for i in range(8))
             tmp_dir = 'downloads_' + tmp_dir
-            subprocess.call(["mkdir",tmp_dir])
+            subprocess.call(["mkdir", tmp_dir])
             # Use temporary directory to avoid data from different time
             #   downloaded to same folder
             get_paho_data(dir=tmp_dir)
@@ -258,23 +262,24 @@ def main():
             issueset = set()
             files = glob.glob('%s/*.csv' % tmp_dir)
             for filename in files:
-                with open(filename,'r') as f:
+                with open(filename, 'r') as f:
                     _ = f.readline()
                     data = f.readline().split(',')
                     issueset.add(data[6])
             db_error = False
-            if len(issueset) >= 53: # Shouldn't be more than 53
+            if len(issueset) >= 53:  # Shouldn't be more than 53
                 for filename in files:
                     try:
                         update_from_file(issue, date, filename, test_mode=args.test)
-                        subprocess.call(["rm",filename])
+                        subprocess.call(["rm", filename])
                     except:
                         db_error = True
-                subprocess.call(["rm","-r",tmp_dir])
+                subprocess.call(["rm", "-r", tmp_dir])
                 if not db_error:
-                    break # Exit loop with success
+                    break  # Exit loop with success
             if flag >= max_tries:
                 print('WARNING: Database `paho_dengue` did not update successfully')
+
 
 if __name__ == '__main__':
     main()

@@ -3,7 +3,6 @@ from typing import Any, ClassVar, Dict, List, Optional
 
 import pandas as pd
 
-
 PANDAS_DTYPES = {
     "source": str,
     "signal": str,
@@ -24,6 +23,7 @@ PANDAS_DTYPES = {
     "direction_updated_timestamp": "Int64",
     "value_updated_timestamp": "Int64",
 }
+
 
 @dataclass
 class CovidcastRow:
@@ -72,7 +72,7 @@ class CovidcastRow:
             for key in ignore_fields:
                 del d[key]
         return d
-    
+
     def as_api_row_dict(self, ignore_fields: Optional[List[str]] = None) -> dict:
         """Returns a dict view into the row with the fields returned by the API server."""
         return self.as_dict(ignore_fields=self._api_row_ignore_fields + (ignore_fields or []))
@@ -111,7 +111,6 @@ class CovidcastRow:
 
     def time_pair(self):
         return f"{self.time_type}:{self.time_value}"
-
 
 
 def check_valid_dtype(dtype):
