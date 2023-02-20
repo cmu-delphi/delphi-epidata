@@ -2,6 +2,7 @@ from math import inf
 import re
 from dataclasses import dataclass
 from typing import List, Optional, Sequence, Tuple, Union
+import delphi_utils    
 
 from flask import request
 
@@ -460,13 +461,20 @@ def parse_source_signal_sets() -> List[SourceSignalSet]:
 
 def parse_geo_sets() -> List[GeoSet]:
     geo_type = request.values.get("geo_type")
+
     if geo_type:
         # old version
         require_any(request, "geo_value", "geo_values", empty=True)
         geo_values = extract_strings(("geo_values", "geo_value"))
         if len(geo_values) == 1 and geo_values[0] == "*":
             return [GeoSet(geo_type, True)]
+
+        for geo_value in geo_values:
+            if geo_value not in delphi_utils.geomap.GeoMapper().get_geo_values(geo_type):
+                raise ValidationFailedException("invalid geo_value for the requested geo_type")
+
         return [GeoSet(geo_type, geo_values)]
+
 
     if ":" not in request.values.get("geo", ""):
         raise ValidationFailedException("missing parameter: geo or (geo_type and geo_value[s])")
