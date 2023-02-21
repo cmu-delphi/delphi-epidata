@@ -56,7 +56,7 @@ jobs:
         run: |
           cd ../driver/repos/delphi/delphi-epidata/tests/performance
           docker build -t locust .
-          docker run --net=host -v $PWD:/mnt/locust -e CSV=/mnt/locust/v4-requests-smaller.csv locust -f /mnt/locust/v4.py --host http://127.0.0.1:8080/ --users 10 --spawn-rate 1 --headless -t 15m
+          docker run --net=host -v $PWD:/mnt/locust -e CSV=/mnt/locust/v4-requests-smaller.csv locust -f /mnt/locust/v4.py --host http://127.0.0.1:10080/ --users 10 --spawn-rate 1 --headless -t 15m
 
   comment-output:
     runs-on: ubuntu-latest
