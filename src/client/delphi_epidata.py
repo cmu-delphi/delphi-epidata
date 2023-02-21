@@ -72,6 +72,8 @@ class Epidata:
     long and returns a 414.
     """
     try:
+      if "format" in params and params["format"]=="csv":
+        return Epidata._request_with_retry(params).text
       return Epidata._request_with_retry(params).json()
     except Exception as e:
       return {'result': 0, 'message': 'error: ' + str(e)}
