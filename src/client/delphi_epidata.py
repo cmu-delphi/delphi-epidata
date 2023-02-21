@@ -72,7 +72,11 @@ class Epidata:
     long and returns a 414.
     """
     try:
-      return Epidata._request_with_retry(params).json()
+      result = Epidata._request_with_retry(params)
+      if params is not None and "format" in params and params["format"]=="csv":
+        return result.text
+      else:
+        return result.json()
     except Exception as e:
       return {'result': 0, 'message': 'error: ' + str(e)}
 
@@ -605,6 +609,9 @@ class Epidata:
 
     if 'format' in kwargs:
       params['format'] = kwargs['format']
+
+    if 'fields' in kwargs:
+      params['fields'] = kwargs['fields']
 
     # Make the API call
     return Epidata._request(params)

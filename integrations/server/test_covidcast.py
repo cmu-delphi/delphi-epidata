@@ -11,6 +11,7 @@ import requests
 # first party
 from delphi_utils import Nans
 from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase, CovidcastTestRow
+from delphi.epidata.client.delphi_epidata import Epidata
 
 # use the local instance of the Epidata API
 BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
@@ -22,11 +23,10 @@ class CovidcastTests(CovidcastBase):
     """Perform per-test setup."""
     self._db._cursor.execute('update covidcast_meta_cache set timestamp = 0, epidata = "[]"')
 
-  def request_based_on_row(self, row: CovidcastTestRow, extract_response: Callable = lambda x: x.json(), **kwargs):
+  def request_based_on_row(self, row: CovidcastTestRow, **kwargs):
     params = self.params_from_row(row, endpoint='covidcast', **kwargs)
-    response = requests.get(BASE_URL, params=params)
-    response.raise_for_status()
-    response = extract_response(response)
+    Epidata.BASE_URL = BASE_URL
+    response = Epidata.covidcast(**params) 
 
     return response
 
@@ -155,7 +155,6 @@ class CovidcastTests(CovidcastBase):
     # NB 'format' is a Python reserved word
     response = self.request_based_on_row(
       row,
-      extract_response=lambda resp: resp.text,
       **{'format':'csv'}
     )
 
@@ -194,7 +193,7 @@ class CovidcastTests(CovidcastBase):
     row = self._insert_placeholder_set_one()
 
     # limit fields
-    response = self.request_based_on_row(row, fields='time_value,geo_value')
+    response = self.request_based_on_row(row, **{"fields":"time_value,geo_value"})
 
     expected = row.as_api_compatibility_row_dict()
     expected_all = {
