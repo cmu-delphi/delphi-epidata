@@ -608,6 +608,9 @@ class Epidata:
     if 'format' in kwargs:
       params['format'] = kwargs['format']
 
+    if 'fields' in kwargs:
+      params['fields'] = kwargs['fields']
+
     # Make the API call
     return Epidata._request(params)
 
