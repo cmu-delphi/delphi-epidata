@@ -107,7 +107,7 @@ jobs:
     needs: build
     # only on main and dev branch
     #if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/jit_computations' || github.ref == 'refs/heads/ds/jit-pandas-mutli-sql'
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/jit_computations' || github.ref == 'refs/heads/ds/jit-pandas'
 
     runs-on: ubuntu-latest
     steps:
@@ -132,8 +132,8 @@ jobs:
           if [ "$imageTag" = "main" ] ; then
             imageTag="latest"
           fi
-          if [ "$imageTag" = "ds/jit-pandas-mutli-sql" ] ; then
-            imageTag="jit-pandas-mutli-sql"
+          if [ "$imageTag" = "ds/jit-pandas" ] ; then
+            imageTag="jit-pandas"
           fi 
           echo "::set-output name=tag::$imageTag"
           echo "::set-output name=repo::ghcr.io/${{ github.repository }}"
