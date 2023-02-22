@@ -3,6 +3,7 @@
 # standard library
 from math import inf
 import unittest
+from unittest.mock import patch
 
 # from flask.testing import FlaskClient
 from delphi.epidata.server._common import app
@@ -19,15 +20,19 @@ from delphi.epidata.server._params import (
     GeoPair,
     TimePair,
     SourceSignalPair,
+    _combine_source_signal_pairs
 )
 from delphi.epidata.server._exceptions import (
     ValidationFailedException,
 )
+from delphi.epidata.server.endpoints.covidcast_utils.test_utils import DATA_SOURCES_BY_ID, DATA_SIGNALS_BY_KEY
 
 # py3tester coverage target
 __test_target__ = "delphi.epidata.server._params"
 
 
+@patch("delphi.epidata.server.endpoints.covidcast_utils.model.data_sources_by_id", DATA_SOURCES_BY_ID)
+@patch("delphi.epidata.server.endpoints.covidcast_utils.model.data_signals_by_key", DATA_SIGNALS_BY_KEY)
 class UnitTests(unittest.TestCase):
     """Basic unit tests."""
 
@@ -182,8 +187,7 @@ class UnitTests(unittest.TestCase):
                 self.assertEqual(
                     parse_source_signal_arg(),
                     [
-                        SourceSignalPair("src1", ["sig1"]),
-                        SourceSignalPair("src1", ["sig4"]),
+                        SourceSignalPair("src1", ["sig1", "sig4"]),
                     ],
                 )
         with self.subTest("multi list"):
@@ -191,17 +195,17 @@ class UnitTests(unittest.TestCase):
                 self.assertEqual(
                     parse_source_signal_arg(),
                     [
-                        SourceSignalPair("src1", ["sig1", "sig2"]),
                         SourceSignalPair("county", ["sig5", "sig6"]),
+                        SourceSignalPair("src1", ["sig1", "sig2"]),
                     ],
                 )
         with self.subTest("hybrid"):
-            with app.test_request_context("/?signal=src2:*;src1:sig4;src3:sig5,sig6"):
+            with app.test_request_context("/?signal=src2:*;src1:sig4;src3:sig5,sig6;src1:sig5;src2:sig1"):
                 self.assertEqual(
                     parse_source_signal_arg(),
                     [
+                        SourceSignalPair("src1", ["sig4", "sig5"]),
                         SourceSignalPair("src2", True),
-                        SourceSignalPair("src1", ["sig4"]),
                         SourceSignalPair("src3", ["sig5", "sig6"]),
                     ],
                 )
@@ -366,3 +370,29 @@ class UnitTests(unittest.TestCase):
                 self.assertRaises(ValidationFailedException, parse_day_arg, "time")
             with app.test_request_context("/?time=week:20121010"):
                 self.assertRaises(ValidationFailedException, parse_day_arg, "time")
+
+    def test__combine_source_signal_pairs(self):
+        source_signal_pairs = [
+            SourceSignalPair("src1", ["sig1", "sig2"]),
+            SourceSignalPair("src2", ["sig1"]),
+            SourceSignalPair("src1", ["sig1", "sig3"]),
+            SourceSignalPair("src3", ["sig1"]),
+            SourceSignalPair("src3", ["sig2"]),
+            SourceSignalPair("src3", ["sig1"]),
+            SourceSignalPair("src4", ["sig2"]),
+            SourceSignalPair("src4", True),
+        ]
+        expected_source_signal_pairs = [
+            SourceSignalPair("src1", ["sig1", "sig2", "sig3"]),
+            SourceSignalPair("src2", ["sig1"]),
+            SourceSignalPair("src3", ["sig1", "sig2"]),
+            SourceSignalPair("src4", True),
+        ]
+        combined_pairs = _combine_source_signal_pairs(source_signal_pairs)
+        for i, x in enumerate(combined_pairs):
+            if isinstance(x, list):
+                sorted(x) == expected_source_signal_pairs[i]
+            if isinstance(x, bool):
+                x == expected_source_signal_pairs[i]
+
+        assert _combine_source_signal_pairs(source_signal_pairs) == expected_source_signal_pairs
