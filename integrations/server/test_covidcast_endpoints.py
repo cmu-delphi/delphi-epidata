@@ -147,49 +147,104 @@ class CovidcastEndpointTests(CovidcastBase):
         with self.subTest("diffed signal"):
             out = self._fetch("/", signal="jhu-csse:confirmed_incidence_num", geo="county:01", time="day:20200401-20200410")
             out_df = CovidcastRows.from_records(out["epidata"]).api_row_df.set_index(["signal", "geo_value", "time_value"])
-            merged_df = pd.merge(out_df, expected_df, left_index=True, right_index=True, suffixes=["_out", "_expected"])[["value_out", "value_expected"]]
+            merged_df = pd.merge(
+                expected_df.query("signal == 'confirmed_incidence_num' and geo_value == '01' and time_value >= 20200401 and time_value <= 20200410"),
+                out_df,
+                how="outer",
+                left_index=True,
+                right_index=True,
+                suffixes=["_out", "_expected"]
+            )[["value_out", "value_expected"]]
             assert merged_df.empty is False
             assert merged_df.value_out.to_numpy() == pytest.approx(merged_df.value_expected, nan_ok=True)
 
         with self.subTest("diffed signal, multiple geos"):
             out = self._fetch("/", signal="jhu-csse:confirmed_incidence_num", geo="county:01,02", time="day:20200401-20200410")
             out_df = CovidcastRows.from_records(out["epidata"]).api_row_df.set_index(["signal", "geo_value", "time_value"])
-            merged_df = pd.merge(out_df, expected_df, left_index=True, right_index=True, suffixes=["_out", "_expected"])[["value_out", "value_expected"]]
+            merged_df = pd.merge(
+                expected_df.query("signal == 'confirmed_incidence_num' and geo_value in ('01', '02') and time_value >= 20200401 and time_value <= 20200410"),
+                out_df,
+                how="outer",
+                left_index=True,
+                right_index=True,
+                suffixes=["_out", "_expected"]
+            )[["value_out", "value_expected"]]
             assert merged_df.empty is False
             assert merged_df.value_out.to_numpy() == pytest.approx(merged_df.value_expected, nan_ok=True)
 
-        with self.subTest("smooth diffed signal"):
+        with self.subTest("smooth diffed signal, multiple geos"):
             out = self._fetch("/", signal="jhu-csse:confirmed_7dav_incidence_num", geo="county:01,02", time="day:20200401-20200410")
             out_df = CovidcastRows.from_records(out["epidata"]).api_row_df.set_index(["signal", "geo_value", "time_value"])
+            merged_df = pd.merge(
+                expected_df.query("signal == 'confirmed_7dav_incidence_num' and geo_value in ('01', '02') and time_value >= 20200401 and time_value <= 20200410"),
+                out_df,
+                how="outer",
+                left_index=True,
+                right_index=True,
+                suffixes=["_out", "_expected"]
+            )[["value_out", "value_expected"]]
             assert merged_df.empty is False
             assert merged_df.value_out.to_numpy() == pytest.approx(merged_df.value_expected, nan_ok=True)
 
         with self.subTest("diffed signal and smoothed signal in one request"):
             out = self._fetch("/", signal="jhu-csse:confirmed_incidence_num;jhu-csse:confirmed_7dav_incidence_num", geo="county:01", time="day:20200401-20200410")
             out_df = CovidcastRows.from_records(out["epidata"]).api_row_df.set_index(["signal", "geo_value", "time_value"])
-            merged_df = pd.merge(out_df, expected_df, left_index=True, right_index=True, suffixes=["_out", "_expected"])[["value_out", "value_expected"]]
+            merged_df = pd.merge(
+                expected_df.query("signal in ('confirmed_incidence_num', 'confirmed_7dav_incidence_num') and geo_value == '01' and time_value >= 20200401 and time_value <= 20200410"),
+                out_df,
+                how="outer",
+                left_index=True,
+                right_index=True,
+                suffixes=["_out", "_expected"]
+            )[["value_out", "value_expected"]]
             assert merged_df.empty is False
             assert merged_df.value_out.to_numpy() == pytest.approx(merged_df.value_expected, nan_ok=True)
 
-        with self.subTest("smoothing and diffing with a time gap and geo=*"):
+        with self.subTest("smoothing diff with a time gap"):
             # should fetch 7 extra day to make this work
-            out = self._fetch("/", signal="jhu-csse:confirmed_7dav_incidence_num", geo="county:*", time="day:20200407-20200420")
+            out = self._fetch("/", signal="jhu-csse:confirmed_7dav_incidence_num", geo="county:01", time="day:20200407-20200420")
             out_df = CovidcastRows.from_records(out["epidata"]).api_row_df.set_index(["signal", "geo_value", "time_value"])
-            merged_df = pd.merge(out_df, expected_df, left_index=True, right_index=True, suffixes=["_out", "_expected"])[["value_out", "value_expected"]]
+            merged_df = pd.merge(
+                expected_df.query("signal == 'confirmed_7dav_incidence_num' and geo_value == '01' and time_value >= 20200407 and time_value <= 20200420"),
+                out_df,
+                how="outer",
+                left_index=True,
+                right_index=True,
+                suffixes=["_out", "_expected"]
+            )[["value_out", "value_expected"]]
             assert merged_df.empty is False
             assert merged_df.value_out.to_numpy() == pytest.approx(merged_df.value_expected, nan_ok=True)
 
         with self.subTest("smoothing and diffing with a time gap and geo=* and time=*"):
             out = self._fetch("/", signal="jhu-csse:confirmed_7dav_incidence_num", geo="county:*", time="day:*")
             out_df = pd.DataFrame.from_records(out["epidata"]).set_index(["signal", "time_value", "geo_value"])
-            merged_df = pd.merge(out_df, expected_df, left_index=True, right_index=True, suffixes=["_out", "_expected"])[["value_out", "value_expected"]]
+            merged_df = pd.merge(
+                expected_df.query("signal == 'confirmed_7dav_incidence_num' and time_value >= 20200407 and time_value <= 20200420"),
+                out_df,
+                how="outer",
+                left_index=True,
+                right_index=True,
+                suffixes=["_out", "_expected"]
+            )[["value_out", "value_expected"]]
             assert merged_df.empty is False
             assert merged_df.value_out.to_numpy() == pytest.approx(merged_df.value_expected, nan_ok=True)
         
         with self.subTest("test everything with signal=*, time=*, geo=*"):
             out = self._fetch("/", signal="jhu-csse:*", geo="county:*", time="day:*")
             out_df = pd.DataFrame.from_records(out["epidata"]).set_index(["signal", "time_value", "geo_value"])
-            merged_df = pd.merge(out_df, expected_df, left_index=True, right_index=True, suffixes=["_out", "_expected"])[["value_out", "value_expected"]]
+            query_lines = [
+                "(signal == 'confirmed_cumulative_num')",
+                "(signal == 'confirmed_incidence_num' and time_value >= 20200402 and time_value <= 20200420)",
+                "(signal == 'confirmed_7dav_incidence_num' and time_value >= 20200407 and time_value <= 20200420)",
+            ]
+            merged_df = pd.merge(
+                expected_df.query(" or ".join(query_lines)),
+                out_df,
+                how="outer",
+                left_index=True,
+                right_index=True,
+                suffixes=["_out", "_expected"]
+            )[["value_out", "value_expected"]]
             assert merged_df.empty is False
             assert merged_df.value_out.to_numpy() == pytest.approx(merged_df.value_expected, nan_ok=True)
 

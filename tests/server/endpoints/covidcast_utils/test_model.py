@@ -11,6 +11,7 @@ from delphi.epidata.acquisition.covidcast.covidcast_row import CovidcastRows, as
 from delphi.epidata.server._params import SourceSignalPair, TimePair
 from delphi.epidata.server.endpoints.covidcast_utils.model import (
     PANDAS_DTYPES,
+    PANDAS_DTYPES_TIME,
     SeriesTransform,
     SourceSignal,
     generate_transformed_rows,
@@ -102,14 +103,15 @@ class TestModel(unittest.TestCase):
         with self.subTest("diffed signal test"):
             data = CovidcastRows.from_args(
                 signal=["sig_base"] * 5,
-                time_value=range(20210501, 20210506),
+                time_value=pd.date_range("2021-05-01", "2021-05-05"),
                 value=range(5)
             )
-            derived_signals_map = {SourceSignal("src", "sig_base"): [SourceSignal("src", "sig_diff")]}
+            derived_signals_map = {SourceSignal("src", "sig_base"): [SourceSignal("src", "sig_base"), SourceSignal("src", "sig_diff")]}
             df = generate_transformed_rows(data.as_dicts(), derived_signals_map)
             df = set_df_dtypes(df, PANDAS_DTYPES)
 
-            expected_df = diff_df(data.db_row_df, "sig_diff")
+            data_df = data.db_row_df
+            expected_df = pd.concat([data_df, diff_df(data_df, "sig_diff")])
             assert_frame_equal_no_order(df[compare_cols], expected_df[compare_cols], index=["signal", "geo_value", "time_value"])
 
         with self.subTest("smoothed and diffed signals on one base test"):
@@ -120,11 +122,12 @@ class TestModel(unittest.TestCase):
                 stderr=range(10),
                 sample_size=range(10)
             )
-            derived_signals_map = {SourceSignal("src", "sig_base"): [SourceSignal("src", "sig_diff"), SourceSignal("src", "sig_smooth")]}
+            derived_signals_map = {SourceSignal("src", "sig_base"): [SourceSignal("src", "sig_base"), SourceSignal("src", "sig_diff"), SourceSignal("src", "sig_smooth")]}
             df = generate_transformed_rows(data.as_dicts(), derived_signals_map)
             df = set_df_dtypes(df, PANDAS_DTYPES)
 
-            expected_df = pd.concat([diff_df(data.db_row_df, "sig_diff"), smooth_df(data.db_row_df, "sig_smooth")])
+            data_df = data.db_row_df
+            expected_df = pd.concat([data_df, diff_df(data_df, "sig_diff"), smooth_df(data_df, "sig_smooth")])
             assert_frame_equal_no_order(df[compare_cols], expected_df[compare_cols], index=["signal", "geo_value", "time_value"])
 
         with self.subTest("smoothed and diffed signal on two non-continguous regions"):
@@ -135,11 +138,12 @@ class TestModel(unittest.TestCase):
                 stderr=range(15),
                 sample_size=range(15),
             )
-            derived_signals_map = {SourceSignal("src", "sig_base"): [SourceSignal("src", "sig_diff"), SourceSignal("src", "sig_smooth")]}
+            derived_signals_map = {SourceSignal("src", "sig_base"): [SourceSignal("src", "sig_base"), SourceSignal("src", "sig_diff"), SourceSignal("src", "sig_smooth")]}
             df = generate_transformed_rows(data.as_dicts(), derived_signals_map)
             df = set_df_dtypes(df, PANDAS_DTYPES)
 
-            expected_df = pd.concat([diff_df(data.db_row_df, "sig_diff"), smooth_df(data.db_row_df, "sig_smooth")])
+            data_df = data.db_row_df
+            expected_df = pd.concat([data_df, diff_df(data_df, "sig_diff"), smooth_df(data_df, "sig_smooth")])
             assert_frame_equal_no_order(df[compare_cols], expected_df[compare_cols], index=["signal", "geo_value", "time_value"])
 
         with self.subTest("diff_smoothed signal on two non-continguous regions"):
@@ -150,11 +154,29 @@ class TestModel(unittest.TestCase):
                 stderr=range(15),
                 sample_size=range(15),
             )
-            derived_signals_map = {SourceSignal("src", "sig_base"): [SourceSignal("src", "sig_diff_smooth")]}
+            derived_signals_map = {SourceSignal("src", "sig_base"): [SourceSignal("src", "sig_base"), SourceSignal("src", "sig_diff_smooth")]}
             df = generate_transformed_rows(data.as_dicts(), derived_signals_map)
             df = set_df_dtypes(df, PANDAS_DTYPES)
 
-            expected_df = diff_smooth_df(data.db_row_df, "sig_diff_smooth")
+            data_df = data.db_row_df
+            expected_df = pd.concat([data_df, diff_smooth_df(data_df, "sig_diff_smooth")])
+            assert_frame_equal_no_order(df[compare_cols], expected_df[compare_cols], index=["signal", "geo_value", "time_value"])
+        
+        with self.subTest("diff_smoothed signal on two geos"):
+            data = CovidcastRows.from_args(
+                signal=["sig_base"] * 15 * 2,
+                time_value=chain(pd.date_range("2021-05-01", "2021-05-15"), pd.date_range("2021-05-01", "2021-05-15")),
+                value=list(range(15)) * 2,
+                stderr=list(range(15)) * 2,
+                sample_size=list(range(15)) * 2,
+                geo_value=["geo1"] * 15 + ["geo2"] * 15
+            )
+            derived_signals_map = {SourceSignal("src", "sig_base"): [SourceSignal("src", "sig_base"), SourceSignal("src", "sig_diff_smooth")]}
+            df = generate_transformed_rows(data.as_dicts(), derived_signals_map)
+            df = set_df_dtypes(df, PANDAS_DTYPES)
+
+            data_df = data.db_row_df
+            expected_df = pd.concat([data_df, diff_smooth_df(data_df, "sig_diff_smooth")])
             assert_frame_equal_no_order(df[compare_cols], expected_df[compare_cols], index=["signal", "geo_value", "time_value"])
             # fmt: on
 
@@ -192,19 +214,13 @@ class TestModel(unittest.TestCase):
                 stderr=chain(range(20), range(5)),
                 sample_size=chain(range(20), range(5)),
             )
-            source_signal_pairs = [SourceSignalPair("src", ["sig_base", "sig_diff", "sig_other", "sig_smooth"])]
-            _, derived_signals_map = get_basename_signals_and_derived_map(source_signal_pairs)
-
-            with pytest.raises(ValueError):
-                CovidcastRows.from_records(generate_transformed_rows(data.as_dicts(), derived_signals_map)).db_row_df
- 
-            source_signal_pairs = [SourceSignalPair("src", ["sig_diff", "sig_smooth"])]
+            source_signal_pairs = [SourceSignalPair("src", ["sig_base", "sig_diff", "sig_smooth"])]
             _, derived_signals_map = get_basename_signals_and_derived_map(source_signal_pairs)
             df = generate_transformed_rows(data.as_dicts(), derived_signals_map)
             df = set_df_dtypes(df, PANDAS_DTYPES)
 
             data_df = data.db_row_df
-            expected_df = pd.concat([diff_df(data_df[data_df["signal"] == "sig_base"], "sig_diff"), smooth_df(data_df[data_df["signal"] == "sig_base"], "sig_smooth")])
+            expected_df = pd.concat([data_df[data_df["signal"] == "sig_base"], diff_df(data_df[data_df["signal"] == "sig_base"], "sig_diff"), smooth_df(data_df[data_df["signal"] == "sig_base"], "sig_smooth")])
             compare_cols = ["signal", "geo_value", "time_value", "time_type", "geo_type", "value", "stderr", "sample_size", "missing_value", "missing_stderr", "missing_sample_size", "direction"]
             assert_frame_equal_no_order(df[compare_cols], expected_df[compare_cols], index=["signal", "geo_value", "time_value"])
             # fmt: on
@@ -219,13 +235,13 @@ class TestModel(unittest.TestCase):
                 stderr=chain(range(20), range(0, 40, 2)),
                 sample_size=chain(range(20), range(0, 40, 2)),
             )
-            source_signal_pairs = [SourceSignalPair("src", ["sig_diff", "sig_smooth"])]
+            source_signal_pairs = [SourceSignalPair("src", ["sig_base", "sig_diff", "sig_smooth"])]
             _, derived_signals_map = get_basename_signals_and_derived_map(source_signal_pairs)
             df = generate_transformed_rows(data.as_dicts(), derived_signals_map)
             df = set_df_dtypes(df, PANDAS_DTYPES)
 
             data_df = data.db_row_df
-            expected_df = pd.concat([diff_df(data_df[data_df["signal"] == "sig_base"], "sig_diff"), smooth_df(data_df[data_df["signal"] == "sig_base"], "sig_smooth")])
+            expected_df = pd.concat([data_df[data_df["signal"] == "sig_base"], diff_df(data_df[data_df["signal"] == "sig_base"], "sig_diff"), smooth_df(data_df[data_df["signal"] == "sig_base"], "sig_smooth")])
             compare_cols = ["signal", "geo_value", "time_value", "time_type", "geo_type", "value", "stderr", "sample_size", "missing_value", "missing_stderr", "missing_sample_size", "direction"]
             assert_frame_equal_no_order(df[compare_cols], expected_df[compare_cols], index=["signal", "geo_value", "time_value"])
             # fmt: on

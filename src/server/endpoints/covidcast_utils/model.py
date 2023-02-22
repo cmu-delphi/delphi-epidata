@@ -2,7 +2,7 @@ from collections import defaultdict
 from dataclasses import asdict, dataclass, field
 from datetime import timedelta
 from enum import Enum
-from itertools import chain, groupby
+from itertools import chain, groupby, tee
 from numbers import Number
 from typing import Any, Callable, Generator, Iterable, Iterator, Optional, Dict, List, Set, Tuple, Union
 
@@ -643,6 +643,10 @@ def generate_transformed_rows(
 ) -> pd.DataFrame:
     """Applies time-series transformations to streamed rows from a database.
 
+    This function is written for performance, so many components are very fragile. Be careful.
+    The codepaths for identity transform is so different because it needs to preserve the data in more columns than JIT methods,
+    such as sample_size and stderr. Data loading is one of two key bottlenecks here (data unloading being the other), so we focus on it here.
+
     Parameters:
     rows: Iterator[Dict]
         An iterator streaming rows from a database query. Assumed to be sorted by source, signal, geo_type, geo_value, time_type, and time_value.
@@ -668,30 +672,49 @@ def generate_transformed_rows(
 
     dfs = []
     for (base_source_name, base_signal_name, geo_type), grouped_rows in groupby(rows, lambda x: (x["source"], x["signal"], x["geo_type"])):
-        # Put every signal, every geo on a contiguous time index, with default values.
-        group_df = pd.DataFrame(grouped_rows, columns=["time_value", "geo_value", "value"])
-        group_df["time_value"] = pd.to_datetime(group_df["time_value"], format="%Y%m%d")
-
-        # Set dtypes. Int8/Int64 are needed to allow null values.
-        # TODO: Try using StringDType instead of object. Or categorical. This is mostly for memory usage. No worries about to_dict.
-        group_df = _set_df_dtypes(group_df, PANDAS_DTYPES_TIME)
-
         derived_signals = transform_dict.get(SourceSignal(base_source_name, base_signal_name), [])
-        for derived_signal in derived_signals:
+        grouped_rows_tee = tee(grouped_rows, len(derived_signals))
+        for (derived_signal, grouped_rows_copy) in zip(derived_signals, grouped_rows_tee):
             derived_signal_name = derived_signal.signal
-            transform = get_base_signal_transform((base_source_name, derived_signal_name))
+            transform_type = get_base_signal_transform((base_source_name, derived_signal_name))
 
-            derived_df = group_df.set_index("time_value")
+            if transform_type == SeriesTransform.identity:
+                identity_row_cols = ["time_value", "geo_value", "value", "sample_size", "stderr", "missing_value", "missing_sample_size", "missing_stderr", "issue", "lag"]
+                derived_df = pd.DataFrame(grouped_rows_copy, columns=identity_row_cols)
+                derived_df["time_value"] = pd.to_datetime(derived_df["time_value"], format="%Y%m%d")
 
-            if transform == SeriesTransform.identity:
-                raise ValueError(f"Identity transform not allowed in generate_transformed_rows.")
-            elif transform == SeriesTransform.diff:
+                # Set dtypes. Int8/Int64 are needed to allow null values.
+                # TODO: Try using StringDType instead of object. Or categorical. This is mostly for memory usage. No worries about to_dict.
+                derived_df = _set_df_dtypes(derived_df, PANDAS_DTYPES_TIME)
+
+                derived_df = derived_df.set_index("time_value")
+
+                derived_df = derived_df.assign(
+                    source=alias_mapper(base_source_name, derived_signal_name),
+                    signal=derived_signal_name,
+                    geo_type=geo_type,
+                    time_type="day",
+                    direction=None
+                )
+                dfs.append(derived_df)
+                continue
+
+            derived_df = pd.DataFrame(grouped_rows_copy, columns=["time_value", "geo_value", "value", "issue", "lag"])
+            derived_df["time_value"] = pd.to_datetime(derived_df["time_value"], format="%Y%m%d")
+
+            # Set dtypes. Int8/Int64 are needed to allow null values.
+            # TODO: Try using StringDType instead of object. Or categorical. This is mostly for memory usage. No worries about to_dict.
+            derived_df = _set_df_dtypes(derived_df, PANDAS_DTYPES_TIME)
+
+            derived_df = derived_df.set_index("time_value")
+
+            if transform_type == SeriesTransform.diff:
                 derived_df["value"] = derived_df.groupby("geo_value", sort=False)["value"].diff()
                 window_length = 2
-            elif transform == SeriesTransform.smooth:
+            elif transform_type == SeriesTransform.smooth:
                 window_length = transform_args.get("smoother_window_length", 7)
                 derived_df["value"] = derived_df.groupby("geo_value", sort=False)["value"].rolling(f"{window_length}D", min_periods=window_length-1).mean().droplevel(level=0)
-            elif transform == SeriesTransform.diff_smooth:
+            elif transform_type == SeriesTransform.diff_smooth:
                 window_length = transform_args.get("smoother_window_length", 7)
                 derived_df["value"] = derived_df.groupby("geo_value", sort=False)["value"].diff()
                 derived_df["value"] = derived_df.groupby("geo_value", sort=False)["value"].rolling(f"{window_length}D", min_periods=window_length-1).mean().droplevel(level=0)
@@ -702,8 +725,8 @@ def generate_transformed_rows(
             derived_df = derived_df.assign(
                 source=alias_mapper(base_source_name, derived_signal_name),
                 signal=derived_signal_name,
-                issue=derived_df["issue"].groupby("geo_value", sort=False).rolling(window_length).max().droplevel(level=0).astype("Int64") if "issue" in derived_df.columns else None,
-                lag=derived_df["lag"].groupby("geo_value", sort=False).rolling(window_length).max().droplevel(level=0).astype("Int64") if "lag" in derived_df.columns else None,
+                issue=derived_df.groupby("geo_value", sort=False)["issue"].rolling(window_length).max().droplevel(level=0).astype("Int64") if "issue" in derived_df.columns else None,
+                lag=derived_df.groupby("geo_value", sort=False)["lag"].rolling(window_length).max().droplevel(level=0).astype("Int64") if "lag" in derived_df.columns else None,
                 stderr=np.nan,
                 sample_size=np.nan,
                 missing_value=np.where(derived_df["value"].isna(), Nans.NOT_APPLICABLE, Nans.NOT_MISSING),
@@ -713,7 +736,6 @@ def generate_transformed_rows(
                 geo_type=geo_type,
                 direction=None,
             )
-
             dfs.append(derived_df)
 
     if not dfs:

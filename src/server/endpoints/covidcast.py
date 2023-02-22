@@ -256,45 +256,17 @@ def jit_request_to_df(
         # query = text(f"{str(q)} LIMIT {MAX_RESULTS}")
         query = text(str(q))
         params = q.params
+        # TODO: Do we need parse_row here? All it does is ensure types, which can be done in the DataFrame constructor.
         rows = (parse_row(row, fields_string, fields_int, fields_float) for row in db.execute(query, **params))
     except Exception:
         raise DatabaseErrorException(repr(e))
 
-    # Base signals
-    base_signals = set()
-    for source_signal_pair in source_signal_pairs:
-        for signal in source_signal_pair.signal:
-            source_signal = SourceSignal(source_signal_pair.source, signal)
-            if source_signal in derived_signals_map[source_signal]:
-                base_signals.add(source_signal)
- 
-    # Derived signals
-    for source_signal in base_signals:
-        derived_signals_map[source_signal].remove(source_signal)
-
-    # This will store all rows to memory, which is not ideal.
-    base_rows, derived_rows = tee(rows, 2)
-
-    def base_row_filter(rows):
-        for row in rows:
-            if SourceSignal(row["source"], row["signal"]) in base_signals:
-                row["source"] = alias_mapper(row["source"], row["signal"])
-                yield row
-
-    base_df = DataFrame(base_row_filter(base_rows))
-
-    # Split the source_signal_pairs into base and derived signals.
-    # Handle base signals first.
-    # If there are no base signals, then we can skip the database query.
-    # If there are base signals, then we need to query the database for them.
-    # Then handle the derived signals.
-
     try:
-        derived_df = generate_transformed_rows(derived_rows, derived_signals_map, transform_args, alias_mapper)
+        derived_df = generate_transformed_rows(rows, derived_signals_map, transform_args, alias_mapper)
     except Exception as e:
         raise TransformErrorException("Transform exception occurred: " + repr(e) + traceback.format_exc())
-            
-    return concat([base_df, derived_df], sort=False)
+ 
+    return derived_df
 
 
 @bp.route("/", methods=("GET", "POST"))
@@ -323,14 +295,14 @@ def handle():
         row["source"] = alias_mapper(row["source"], row["signal"])
         return row
     has_unrecognized_source = any(isinstance(source_signal_pair.signal, bool) for source_signal_pair in source_signal_pairs)
-    
+ 
     # Check if any JIT signals present
     original_source_signal_pairs = source_signal_pairs
     source_signal_pairs, derived_signals_map = get_basename_signals_and_derived_map(source_signal_pairs)
-    all_base_signals = all([k] == v for k, v in derived_signals_map.items())
+    no_derived_signals = all([k] == v for k, v in derived_signals_map.items())
 
-    use_jit_compute = not any((issues, lag, is_time_type_week, has_unrecognized_source)) and JIT_COMPUTE_ON and not jit_bypass
-    if use_jit_compute and not all_base_signals:
+    use_jit_compute = not any((issues, lag, is_time_type_week, has_unrecognized_source, no_derived_signals)) and JIT_COMPUTE_ON and not jit_bypass
+    if use_jit_compute:
         app.logger.info(f"JIT compute enabled for route '/': {original_source_signal_pairs}")
         app.logger.info(f"JIT base signals: {source_signal_pairs}")
         transform_args = parse_transform_args()

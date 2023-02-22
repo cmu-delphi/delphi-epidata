@@ -131,6 +131,7 @@ def reindex_df(df: pd.DataFrame) -> pd.DataFrame:
     return ndf
 
 def diff_df(df: pd.DataFrame, signal_name: str, nan_fill_value: float = np.nan, omit_left_boundary: bool = False) -> pd.DataFrame:
+    df = df.copy()
     dfs = []
     for key, group_df in df.groupby(["source", "signal", "geo_value"]):
         group_df = group_df.set_index("time_value").sort_index()
@@ -151,6 +152,7 @@ def diff_df(df: pd.DataFrame, signal_name: str, nan_fill_value: float = np.nan, 
     return ndf
 
 def smooth_df(df: pd.DataFrame, signal_name: str, nan_fill_value: float = np.nan, window_length: int = 7, omit_left_boundary: bool = False) -> pd.DataFrame:
+    df = df.copy()
     df["time_value"] = pd.to_datetime(df["time_value"], format="%Y%m%d")
     dfs = []
 
