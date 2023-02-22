@@ -552,6 +552,10 @@ def _generate_transformed_rows(
         base_source_name, base_signal_name, _, _ = key
         # Extract the list of derived signals; if a signal is not in the dictionary, then use the identity map.
         derived_signals: SourceSignalPair = transform_dict.get(SourceSignalPair(base_source_name, [base_signal_name]), SourceSignalPair(base_source_name, [base_signal_name]))
+        # Speed up base signals by not transforming them.
+        if derived_signals.signal == [base_signal_name]:
+            yield from source_signal_geo_rows
+            continue
         # Create a list of source-signal pairs along with the transformation required for the signal.
         signal_names_and_transforms: List[Tuple[Tuple[str, str], Callable]] = [(derived_signal, _get_base_signal_transform((base_source_name, derived_signal))) for derived_signal in derived_signals.signal]
         # Put the current time series on a contiguous time index.
