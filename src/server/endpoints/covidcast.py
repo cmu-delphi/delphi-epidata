@@ -1,15 +1,14 @@
-from typing import List, Optional, Tuple, Dict, Any
-from itertools import groupby
+import traceback
+from typing import Callable, List, Optional, Tuple, Dict, Any
+from itertools import groupby, tee
 from datetime import date, timedelta
 from bisect import bisect_right
 from epiweeks import Week
 from flask import Blueprint, request, Response
 from flask.json import loads, jsonify
 from more_itertools import peekable
-from numpy import nan
 from sqlalchemy import text
-from pandas import read_csv, to_datetime
-from numbers import Number
+from pandas import read_csv, to_datetime, concat, DataFrame
 
 from .._common import is_compatibility_mode, app, db
 from .._config import MAX_SMOOTHER_WINDOW, MAX_RESULTS
@@ -34,7 +33,6 @@ from .._validate import (
     extract_date,
     extract_dates,
     extract_integer,
-    extract_float,
     extract_strings,
     require_all,
     require_any,
@@ -42,7 +40,7 @@ from .._validate import (
 from .._pandas import as_pandas, print_pandas
 from .covidcast_utils import compute_trend, compute_trends, compute_correlations, compute_trend_value, CovidcastMetaEntry
 from ..utils import shift_day_value, day_to_time_value, time_value_to_iso, time_value_to_day, shift_week_value, time_value_to_week, guess_time_value_is_day, week_to_time_value, TimeValues
-from .covidcast_utils.model import TimeType, count_signal_time_types, data_sources, data_sources_by_id, create_source_signal_alias_mapper, get_pad_length, pad_time_pair, pad_time_window, get_basename_signals_and_derived_map, generate_transformed_rows, generate_transformed_rows3, generate_transformed_rows4
+from .covidcast_utils.model import SourceSignal, TimeType, count_signal_time_types, data_sources, data_sources_by_id, create_source_signal_alias_mapper, get_pad_length, pad_time_pair, pad_time_window, get_basename_signals_and_derived_map, generate_transformed_rows
 
 # first argument is the endpoint name
 bp = Blueprint("covidcast", __name__)
@@ -142,24 +140,8 @@ def parse_transform_args():
     elif smoother_window_length > MAX_SMOOTHER_WINDOW:
         raise ValidationFailedException(f"smoother_window_length must be <= {MAX_SMOOTHER_WINDOW}")
 
-    # The value to fill for missing date values.
-    pad_fill_value = extract_float("pad_fill_value")
-    if pad_fill_value is None:
-        pad_fill_value = nan
-    elif not isinstance(pad_fill_value, Number):
-        raise ValidationFailedException("pad_fill_value must be a number")
-
-    # The value to fill for None or nan values.
-    nan_fill_value = extract_float("nans_fill_value")
-    if nan_fill_value is None:
-        nan_fill_value = nan
-    elif not isinstance(nan_fill_value, Number):
-        raise ValidationFailedException("nans_fill_value must be a number")
-
     smoother_args = {
         "smoother_window_length": smoother_window_length,
-        "pad_fill_value": pad_fill_value,
-        "nans_fill_value": nan_fill_value,
     }
     return smoother_args
 
@@ -170,6 +152,149 @@ def parse_jit_bypass():
         return False
     else:
         return jit_bypass
+
+
+MIMETYPE_JSON = "application/json"
+
+def df_to_response(
+    df: DataFrame,
+    filename: Optional[str] = None,
+) -> Response:
+    is_compatibility = is_compatibility_mode()
+    if df.empty:
+        if is_compatibility:
+            return Response(
+                """{"result": -2, "message": "no results"}""",
+                mimetype=MIMETYPE_JSON
+            )
+        else:
+            return Response(
+                """{"epidata": [], "result": -2, "message": "no results"}""",
+                mimetype=MIMETYPE_JSON
+            )
+
+    if is_compatibility:
+        df.drop(columns=["source", "geo_type", "time_type"], inplace=True, errors="ignore")
+
+    fields = request.values.get("fields")
+    if fields:
+        keep_fields = []
+        for field in fields.split(","):
+            if field.startswith("-") and field[1:] in df.columns:
+                df.drop(columns=[field[1:]], inplace=True)
+            elif field in df.columns:
+                keep_fields.append(field)
+        if keep_fields:
+            df = df[keep_fields]
+    else:
+        keep_fields = df.columns
+
+    return_format = request.values.get("format", "classic")
+    if return_format == "classic":
+        json_str = df.to_json(orient="records")
+        return Response(
+            """{"epidata":""" + json_str + """, "result": 1, "message": "success"}""",
+            mimetype=MIMETYPE_JSON
+        )
+    elif return_format == "json":
+        json_str = df.to_json(orient="records")
+        return Response(json_str, mimetype=MIMETYPE_JSON)
+    elif return_format == "csv":
+        column_order = [
+            "geo_value", "signal", "time_value", "direction", "issue", "lag", "missing_value",
+            "missing_stderr", "missing_sample_size", "value", "stderr", "sample_size"
+        ]
+        cols = [col for col in column_order if col in keep_fields]
+        filename = "epidata" if not filename else filename
+        headers = {"Content-Disposition": f"attachment; filename={filename}.csv"}
+        return Response(
+            df[cols].to_csv(index=False),
+            mimetype="text/csv; charset=utf8",
+            headers=headers
+        )
+
+
+def jit_request_to_df(
+    source_signal_pairs: List[SourceSignalPair],
+    derived_signals_map: Dict[SourceSignal, List[SourceSignal]],
+    geo_pairs: List[GeoPair],
+    time_pair: TimePair,
+    as_of: Optional[int],
+    issues: List[int],
+    lag: Optional[int],
+    alias_mapper: Optional[Callable[[str, str], str]],
+    transform_args: Dict[str, Any],
+) -> DataFrame:
+    """Fetches data from the database, performs JIT transformations, and returns a DataFrame.
+    
+    Assumptions: 
+    - there is at least one derived signal in the pair list
+    - none of the source_signal_pairs have a signal field that is "True" (i.e. * queries were resolved to a list)
+    """
+    if alias_mapper is None:
+        alias_mapper = lambda source, signal: source
+
+    # build query
+    q = QueryBuilder(latest_table, "t")
+
+    fields_string = ["geo_type", "geo_value", "source", "signal", "time_type"]
+    fields_int = ["time_value", "direction", "issue", "lag", "missing_value", "missing_stderr", "missing_sample_size"]
+    fields_float = ["value", "stderr", "sample_size"]
+    q.set_order("source", "signal", "geo_type", "geo_value", "time_type", "time_value", "issue")
+    q.set_fields(fields_string, fields_int, fields_float)
+    # basic query info
+    # data type of each field
+    # build the source, signal, time, and location (type and id) filters
+    q.where_source_signal_pairs("source", "signal", source_signal_pairs)
+    q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
+    q.where_time_pair("time_type", "time_value", time_pair)
+
+    _handle_lag_issues_as_of(q, issues, lag, as_of)
+
+    try:
+        # TODO: Add LIMIT to query
+        # query = text(f"{str(q)} LIMIT {MAX_RESULTS}")
+        query = text(str(q))
+        params = q.params
+        rows = (parse_row(row, fields_string, fields_int, fields_float) for row in db.execute(query, **params))
+    except Exception:
+        raise DatabaseErrorException(repr(e))
+
+    # Base signals
+    base_signals = set()
+    for source_signal_pair in source_signal_pairs:
+        for signal in source_signal_pair.signal:
+            source_signal = SourceSignal(source_signal_pair.source, signal)
+            if source_signal in derived_signals_map[source_signal]:
+                base_signals.add(source_signal)
+ 
+    # Derived signals
+    for source_signal in base_signals:
+        derived_signals_map[source_signal].remove(source_signal)
+
+    # This will store all rows to memory, which is not ideal.
+    base_rows, derived_rows = tee(rows, 2)
+
+    def base_row_filter(rows):
+        for row in rows:
+            if SourceSignal(row["source"], row["signal"]) in base_signals:
+                row["source"] = alias_mapper(row["source"], row["signal"])
+                yield row
+
+    base_df = DataFrame(base_row_filter(base_rows))
+
+    # Split the source_signal_pairs into base and derived signals.
+    # Handle base signals first.
+    # If there are no base signals, then we can skip the database query.
+    # If there are base signals, then we need to query the database for them.
+    # Then handle the derived signals.
+
+    try:
+        derived_df = generate_transformed_rows(derived_rows, derived_signals_map, transform_args, alias_mapper)
+    except Exception as e:
+        raise TransformErrorException("Transform exception occurred: " + repr(e) + traceback.format_exc())
+            
+    return concat([base_df, derived_df], sort=False)
 
 
 @bp.route("/", methods=("GET", "POST"))
@@ -197,102 +322,29 @@ def handle():
             return row
         row["source"] = alias_mapper(row["source"], row["signal"])
         return row
+    has_unrecognized_source = any(isinstance(source_signal_pair.signal, bool) for source_signal_pair in source_signal_pairs)
+    
+    # Check if any JIT signals present
+    original_source_signal_pairs = source_signal_pairs
+    source_signal_pairs, derived_signals_map = get_basename_signals_and_derived_map(source_signal_pairs)
+    all_base_signals = all([k] == v for k, v in derived_signals_map.items())
 
-    # build query
-    q = QueryBuilder(latest_table, "t")
-
-    fields_string = ["geo_type", "geo_value", "source", "signal", "time_type"]
-    fields_int = ["time_value", "direction", "issue", "lag", "missing_value", "missing_stderr", "missing_sample_size"]
-    fields_float = ["value", "stderr", "sample_size"]
-
-    use_jit_compute = not any((issues, lag, is_time_type_week)) and JIT_COMPUTE_ON and not jit_bypass
-    if use_jit_compute:
-        transform_args = parse_transform_args()
-        pad_length = get_pad_length(source_signal_pairs, transform_args.get("smoother_window_length"))
-        time_pair = pad_time_pair(time_pair, pad_length)
-        app.logger.info(f"JIT compute enabled for route '/': {source_signal_pairs}")
-        source_signal_pairs, derived_signals_map = get_basename_signals_and_derived_map(source_signal_pairs)
+    use_jit_compute = not any((issues, lag, is_time_type_week, has_unrecognized_source)) and JIT_COMPUTE_ON and not jit_bypass
+    if use_jit_compute and not all_base_signals:
+        app.logger.info(f"JIT compute enabled for route '/': {original_source_signal_pairs}")
         app.logger.info(f"JIT base signals: {source_signal_pairs}")
-
-        q.set_order("source", "signal", "geo_type", "geo_value", "time_type", "time_value", "issue")
-        q.set_fields(fields_string, fields_int, fields_float)
-
-        # basic query info
-        # data type of each field
-        # build the source, signal, time, and location (type and id) filters
-        q.where_source_signal_pairs("source", "signal", source_signal_pairs)
-        q.where_geo_pairs("geo_type", "geo_value", geo_pairs)
-        q.where_time_pair("time_type", "time_value", time_pair)
-
-        _handle_lag_issues_as_of(q, issues, lag, as_of)
-
-        try:
-            # query = text(f"{str(q)} LIMIT {MAX_RESULTS}")
-            query = text(str(q))
-            params = q.params
-            rows = peekable(parse_row(row, fields_string, fields_int, fields_float) for row in db.execute(query, **params))
-        except Exception as e:
-            raise DatabaseErrorException(repr(e))
-
-        format = request.values.get("format", "classic")
-        try:
-            rows.peek()
-        except StopIteration:
-            if is_compatibility:
-                return Response(
-                    """{"result": -2, "message": "no results"}""",
-                    mimetype="application/json"
-                )
-            else:
-                return Response(
-                    """{"epidata": [], "result": -2, "message": "no results"}""",
-                    mimetype="application/json"
-                )
-
-        try:
-            df = generate_transformed_rows3(rows, derived_signals_map, transform_args)
-        except Exception as e:
-            raise TransformErrorException("Transform exception occurred: " + repr(e))
-
-        if is_compatibility:
-            df.drop(columns=["source", "geo_type", "time_type"], inplace=True)
-
-        fields = request.values.get("fields")
-        if fields:
-            keep_fields = []
-            for field in fields.split(","):
-                if field.startswith("-") and field[1:] in df.columns:
-                    df.drop(columns=[field[1:]], inplace=True)
-                elif field in df.columns:
-                    keep_fields.append(field)
-            if keep_fields:
-                df = df[keep_fields]
-        else:
-            keep_fields = df.columns
-
-        if format == "classic":
-            return Response(
-                """{"epidata":""" +
-                df.to_json(orient="records") +
-                """, "result": 1, "message": "success"}""",
-                mimetype="application/json"
-            )
-        elif format == "json":
-            return Response(df.to_json(orient="records"), mimetype="application/json")
-        elif format == "csv":
-            column_order = [
-                "geo_value", "signal", "time_value", "direction", "issue", "lag", "missing_value",
-                "missing_stderr", "missing_sample_size", "value", "stderr", "sample_size"
-            ]
-            cols = [col for col in column_order if col in keep_fields]
-            filename = "epidata"
-            headers = {"Content-Disposition": f"attachment; filename={filename}.csv"} if filename else {}
-            return Response(
-                df[cols].to_csv(index=False),
-                mimetype="text/csv; charset=utf8",
-                headers=headers
-            )
+        transform_args = parse_transform_args()
+        pad_length = get_pad_length(original_source_signal_pairs, transform_args.get("smoother_window_length"))
+        time_pair = pad_time_pair(time_pair, pad_length)
+        df = jit_request_to_df(source_signal_pairs, derived_signals_map, geo_pairs, time_pair, as_of, issues, lag, alias_mapper, transform_args)
+        return df_to_response(df)
     else:
+        q = QueryBuilder(latest_table, "t")
+
+        fields_string = ["geo_type", "geo_value", "source", "signal", "time_type"]
+        fields_int = ["time_value", "direction", "issue", "lag", "missing_value", "missing_stderr", "missing_sample_size"]
+        fields_float = ["value", "stderr", "sample_size"]
+
         def gen_transform(rows):
             parsed_rows = (parse_row(row, fields_string, fields_int, fields_float) for row in rows)
             for row in parsed_rows:
@@ -329,6 +381,7 @@ def _verify_argument_time_type_matches(is_day_argument: bool, count_daily_signal
         raise ValidationFailedException("week arguments for daily signals")
 
 
+# TODO: Fix.
 @bp.route("/trend", methods=("GET", "POST"))
 def handle_trend():
     require_all("window", "date")

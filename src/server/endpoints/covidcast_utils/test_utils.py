@@ -131,7 +131,6 @@ def reindex_df(df: pd.DataFrame) -> pd.DataFrame:
     return ndf
 
 def diff_df(df: pd.DataFrame, signal_name: str, nan_fill_value: float = np.nan, omit_left_boundary: bool = False) -> pd.DataFrame:
-    df = reindex_df(df)
     dfs = []
     for key, group_df in df.groupby(["source", "signal", "geo_value"]):
         group_df = group_df.set_index("time_value").sort_index()
@@ -152,11 +151,12 @@ def diff_df(df: pd.DataFrame, signal_name: str, nan_fill_value: float = np.nan, 
     return ndf
 
 def smooth_df(df: pd.DataFrame, signal_name: str, nan_fill_value: float = np.nan, window_length: int = 7, omit_left_boundary: bool = False) -> pd.DataFrame:
-    df = reindex_df(df)
+    df["time_value"] = pd.to_datetime(df["time_value"], format="%Y%m%d")
     dfs = []
+
     for key, group_df in df.groupby(["source", "signal", "geo_value"]):
         group_df = group_df.set_index("time_value").sort_index()
-        group_df["value"] = group_df["value"].fillna(nan_fill_value).rolling(window_length).mean()
+        group_df["value"] = group_df["value"].fillna(nan_fill_value).rolling(f"{window_length}D", min_periods=window_length-1).mean()
         group_df["stderr"] = np.nan
         group_df["sample_size"] = np.nan
         group_df["missing_value"] = np.where(group_df["value"].isna(), Nans.NOT_APPLICABLE, Nans.NOT_MISSING)
@@ -169,6 +169,7 @@ def smooth_df(df: pd.DataFrame, signal_name: str, nan_fill_value: float = np.nan
             group_df = group_df.iloc[window_length - 1:]
         dfs.append(group_df.reset_index())
     ndf = pd.concat(dfs)
+    ndf["time_value"] = ndf["time_value"].dt.strftime("%Y%m%d")
     ndf = set_df_dtypes(ndf, CovidcastRows._pandas_dtypes)
     return ndf
 
