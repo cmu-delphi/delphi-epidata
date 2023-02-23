@@ -25,7 +25,7 @@ class TestPandas(unittest.TestCase):
     @patch("delphi.epidata.server._pandas.text")
     @patch("pandas.read_sql_query")
     def test_as_pandas(self, mock_read_sql_query, mock_sqlalch_text):
-        with app.test_request_context('/correlation'):
+        with app.test_request_context('covidcast/'):
 
             mock_sqlalch_text.return_value = sentinel.default_limit
             as_pandas("", params=None, db_engine=None)
