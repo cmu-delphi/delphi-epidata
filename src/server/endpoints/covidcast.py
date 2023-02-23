@@ -8,7 +8,8 @@ from flask import Blueprint, request, Response
 from flask.json import loads, jsonify
 from more_itertools import peekable
 from sqlalchemy import text
-from pandas import read_csv, to_datetime, concat, DataFrame
+from pandas import read_csv, to_datetime 
+import polars as pl
 
 from .._common import is_compatibility_mode, app, db
 from .._config import MAX_SMOOTHER_WINDOW, MAX_RESULTS
@@ -157,11 +158,11 @@ def parse_jit_bypass():
 MIMETYPE_JSON = "application/json"
 
 def df_to_response(
-    df: DataFrame,
+    df: pl.DataFrame,
     filename: Optional[str] = None,
 ) -> Response:
     is_compatibility = is_compatibility_mode()
-    if df.empty:
+    if df.is_empty():
         if is_compatibility:
             return Response(
                 """{"result": -2, "message": "no results"}""",
@@ -174,30 +175,31 @@ def df_to_response(
             )
 
     if is_compatibility:
-        df.drop(columns=["source", "geo_type", "time_type"], inplace=True, errors="ignore")
+        columns_to_drop = [x for x in ["source", "geo_type", "time_type"] if x in df.columns]
+        df = df.drop(columns=columns_to_drop)
 
     fields = request.values.get("fields")
     if fields:
         keep_fields = []
         for field in fields.split(","):
             if field.startswith("-") and field[1:] in df.columns:
-                df.drop(columns=[field[1:]], inplace=True)
+                df.drop_in_place(field[1:])
             elif field in df.columns:
                 keep_fields.append(field)
         if keep_fields:
-            df = df[keep_fields]
+            df = df.select([keep_fields])
     else:
         keep_fields = df.columns
 
     return_format = request.values.get("format", "classic")
     if return_format == "classic":
-        json_str = df.to_json(orient="records")
+        json_str = df.write_json(row_oriented=True)
         return Response(
             """{"epidata":""" + json_str + """, "result": 1, "message": "success"}""",
             mimetype=MIMETYPE_JSON
         )
     elif return_format == "json":
-        json_str = df.to_json(orient="records")
+        json_str = df.write_json(row_oriented=True)
         return Response(json_str, mimetype=MIMETYPE_JSON)
     elif return_format == "csv":
         column_order = [
@@ -208,7 +210,7 @@ def df_to_response(
         filename = "epidata" if not filename else filename
         headers = {"Content-Disposition": f"attachment; filename={filename}.csv"}
         return Response(
-            df[cols].to_csv(index=False),
+            df[cols].write_csv(),
             mimetype="text/csv; charset=utf8",
             headers=headers
         )
@@ -224,7 +226,7 @@ def jit_request_to_df(
     lag: Optional[int],
     alias_mapper: Optional[Callable[[str, str], str]],
     transform_args: Dict[str, Any],
-) -> DataFrame:
+) -> pl.DataFrame:
     """Fetches data from the database, performs JIT transformations, and returns a DataFrame.
     
     Assumptions: 

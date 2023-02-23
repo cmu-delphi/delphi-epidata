@@ -9,6 +9,7 @@ from typing import Any, Callable, Generator, Iterable, Iterator, Optional, Dict,
 from pathlib import Path
 import re
 import pandas as pd
+import polars as pl
 import numpy as np
 
 from delphi_utils.nancodes import Nans
@@ -609,38 +610,12 @@ def pad_time_window(time_window: TimePair, pad_length: int) -> TimePair:
     return TimePair("day", [(shift_day_value(min_time, -1 * pad_length), max_time)])
 
 
-def to_dict_custom(df: pd.DataFrame) -> Iterable[Dict[str, Any]]:
-    """This is a workaround a performance bug in Pandas.
-
-    - See this issue: https://github.com/pandas-dev/pandas/issues/46470,
-    - The first if branch is to avoid using reset_index(), which I found to be a good deal slower than just reading the index,
-    - All the dtype conversions are to avoid JSON serialization errors (e.g. numpy.int64).
-    """
-    df = df.reset_index()
-    col_arr_map = {col: df[col].to_numpy(dtype=object, na_value=None) for col in df.columns}
-
-    for i in range(len(df)):
-        yield {col: col_arr_map[col][i] for col in df.columns}
-
-
-def _set_df_dtypes(df: pd.DataFrame, dtypes: Dict[str, Any]) -> pd.DataFrame:
-    """Set the dataframe column datatypes."""
-    for d in dtypes.values():
-        try:
-            pd.api.types.pandas_dtype(d)
-        except TypeError:
-            raise ValueError(f"Invalid dtype {d}")
-
-    sub_dtypes = {k: v for k, v in dtypes.items() if k in df.columns}
-    return df.astype(sub_dtypes)
-
-
 def generate_transformed_rows(
     rows: Iterable[Dict],
     transform_dict: Optional[Dict[SourceSignal, List[SourceSignal]]] = None,
     transform_args: Optional[Dict] = None,
     alias_mapper: Callable = None,
-) -> pd.DataFrame:
+) -> pl.DataFrame:
     """Applies time-series transformations to streamed rows from a database.
 
     This function is written for performance, so many components are very fragile. Be careful.
@@ -679,74 +654,103 @@ def generate_transformed_rows(
             transform_type = get_base_signal_transform((base_source_name, derived_signal_name))
 
             if transform_type == SeriesTransform.identity:
-                identity_row_cols = ["time_value", "geo_value", "value", "sample_size", "stderr", "missing_value", "missing_sample_size", "missing_stderr", "issue", "lag"]
-                derived_df = pd.DataFrame(grouped_rows_copy, columns=identity_row_cols)
-                derived_df["time_value"] = pd.to_datetime(derived_df["time_value"], format="%Y%m%d")
+                IDENTITY_POLARS_SCHEMA = {
+                    "time_value": pl.Utf8,
+                    "geo_value": pl.Utf8,
+                    "value": pl.Float64,
+                    "stderr": pl.Float64,
+                    "sample_size": pl.Float64,
+                    "missing_value": pl.Int8,
+                    "missing_stderr": pl.Int8,
+                    "missing_sample_size": pl.Int8,
+                    "issue": pl.Int64,
+                    "lag": pl.Int8,
+                }
+                derived_df = pl.DataFrame(grouped_rows_copy, IDENTITY_POLARS_SCHEMA)
+                derived_df = derived_df.with_columns(pl.col("time_value").str.strptime(pl.Date, fmt="%Y%m%d"))
 
-                # Set dtypes. Int8/Int64 are needed to allow null values.
-                # TODO: Try using StringDType instead of object. Or categorical. This is mostly for memory usage. No worries about to_dict.
-                derived_df = _set_df_dtypes(derived_df, PANDAS_DTYPES_TIME)
-
-                derived_df = derived_df.set_index("time_value")
-
-                derived_df = derived_df.assign(
-                    source=alias_mapper(base_source_name, derived_signal_name),
-                    signal=derived_signal_name,
-                    geo_type=geo_type,
-                    time_type="day",
-                    direction=None
-                )
-                dfs.append(derived_df)
+                derived_df = derived_df.with_columns([
+                    pl.lit(alias_mapper(base_source_name, derived_signal_name)).alias("source"),
+                    pl.lit(derived_signal_name).alias("signal"),
+                    pl.lit(geo_type).alias("geo_type"),
+                    pl.lit("day").alias("time_type"),
+                    pl.lit(None).alias("direction")
+                ])
+                # Reorder here to match with the order of the derived schema.
+                dfs.append(derived_df.select([
+                    "time_value", "geo_value", "value", "issue", "lag", 
+                    "source", "signal", "stderr", "sample_size",
+                    "missing_value", "missing_stderr", "missing_sample_size",
+                    "geo_type", "time_type", "direction"
+                ]))
                 continue
 
-            derived_df = pd.DataFrame(grouped_rows_copy, columns=["time_value", "geo_value", "value", "issue", "lag"])
-            derived_df["time_value"] = pd.to_datetime(derived_df["time_value"], format="%Y%m%d")
-
-            # Set dtypes. Int8/Int64 are needed to allow null values.
-            # TODO: Try using StringDType instead of object. Or categorical. This is mostly for memory usage. No worries about to_dict.
-            derived_df = _set_df_dtypes(derived_df, PANDAS_DTYPES_TIME)
-
-            derived_df = derived_df.set_index("time_value")
+            # breakpoint()
+            DERIVED_POLARS_SCHEMA = {
+                "time_value": pl.Utf8,
+                "geo_value": pl.Utf8,
+                "value": pl.Float64,
+                "issue": pl.Int64,
+                "lag": pl.Int8,
+            }
+            derived_df = pl.DataFrame(grouped_rows_copy, DERIVED_POLARS_SCHEMA)
+            derived_df = derived_df.with_columns(pl.col("time_value").str.strptime(pl.Date, fmt="%Y%m%d"))
 
             if transform_type == SeriesTransform.diff:
-                derived_df["value"] = derived_df.groupby("geo_value", sort=False)["value"].diff()
-                window_length = 2
+                derived_df = derived_df.with_columns(pl.col("value").diff().over("geo_value").alias("value"))
+                derived_df = derived_df.with_columns(
+                    derived_df.groupby_rolling("time_value", period="2d", by=["geo_value"]).agg([
+                        pl.col("issue").max().alias("issue"),
+                        pl.col("lag").max().alias("lag")
+                    ]) 
+                )
             elif transform_type == SeriesTransform.smooth:
                 window_length = transform_args.get("smoother_window_length", 7)
-                derived_df["value"] = derived_df.groupby("geo_value", sort=False)["value"].rolling(f"{window_length}D", min_periods=window_length-1).mean().droplevel(level=0)
+                derived_df = derived_df.with_columns(
+                    derived_df.groupby_rolling("time_value", period=f"{window_length}d", by=["geo_value"]).agg([
+                        pl.col("value").mean().alias("value"),
+                        pl.col("issue").max().alias("issue"),
+                        pl.col("lag").max().alias("lag"),
+                    ])
+                )
             elif transform_type == SeriesTransform.diff_smooth:
                 window_length = transform_args.get("smoother_window_length", 7)
-                derived_df["value"] = derived_df.groupby("geo_value", sort=False)["value"].diff()
-                derived_df["value"] = derived_df.groupby("geo_value", sort=False)["value"].rolling(f"{window_length}D", min_periods=window_length-1).mean().droplevel(level=0)
-                window_length += 1
+                derived_df = derived_df.with_columns(pl.col("value").diff().over("geo_value").alias("value"))
+                derived_df = derived_df.with_columns(
+                    derived_df.groupby_rolling("time_value", period="2d", by=["geo_value"]).agg([
+                        pl.col("issue").max().alias("issue"),
+                        pl.col("lag").max().alias("lag")
+                    ]) 
+                )
+                derived_df = derived_df.with_columns(
+                    derived_df.groupby_rolling("time_value", period=f"{window_length}d", by=["geo_value"]).agg([
+                        pl.col("value").mean().alias("value"),
+                        pl.col("issue").max().alias("issue"),
+                        pl.col("lag").max().alias("lag"),
+                    ])
+                )
             else:
                 raise ValueError(f"Unknown transform for {derived_signal}.")
 
-            derived_df = derived_df.assign(
-                source=alias_mapper(base_source_name, derived_signal_name),
-                signal=derived_signal_name,
-                issue=derived_df.groupby("geo_value", sort=False)["issue"].rolling(window_length).max().droplevel(level=0).astype("Int64") if "issue" in derived_df.columns else None,
-                lag=derived_df.groupby("geo_value", sort=False)["lag"].rolling(window_length).max().droplevel(level=0).astype("Int64") if "lag" in derived_df.columns else None,
-                stderr=np.nan,
-                sample_size=np.nan,
-                missing_value=np.where(derived_df["value"].isna(), Nans.NOT_APPLICABLE, Nans.NOT_MISSING),
-                missing_stderr=Nans.NOT_APPLICABLE,
-                missing_sample_size=Nans.NOT_APPLICABLE,
-                time_type="day",
-                geo_type=geo_type,
-                direction=None,
-            )
+            derived_df = derived_df.with_columns([
+                pl.lit(alias_mapper(base_source_name, derived_signal_name)).alias("source"),
+                pl.lit(derived_signal_name).alias("signal"),
+                pl.lit(np.nan).alias("stderr"),
+                pl.lit(np.nan).alias("sample_size"),
+                pl.when(pl.col("value").is_null()).then(Nans.NOT_APPLICABLE).otherwise(Nans.NOT_MISSING).alias("missing_value").cast(pl.Int8),
+                pl.lit(Nans.NOT_APPLICABLE).alias("missing_stderr").cast(pl.Int8),
+                pl.lit(Nans.NOT_APPLICABLE).alias("missing_sample_size").cast(pl.Int8),
+                pl.lit(geo_type).alias("geo_type"),
+                pl.lit("day").alias("time_type"),
+                pl.lit(None).alias("direction"),
+            ])
             dfs.append(derived_df)
 
     if not dfs:
-        return pd.DataFrame()
+        return pl.DataFrame()
 
-    derived_df_full = pd.concat(dfs)
-    # Ok to do in place because nothing else depends on this memory chunk.
-    derived_df_full.reset_index(inplace=True)
-    derived_df_full["time_value"] = derived_df_full["time_value"].dt.strftime("%Y%m%d").astype("Int64")
-    # TODO: Testing whether we really need this. It's an expensive operation.
-    # derived_df_full = _set_df_dtypes(derived_df_full, PANDAS_DTYPES)
+    derived_df_full = pl.concat(dfs)
+    derived_df_full = derived_df_full.with_columns(pl.col("time_value").dt.strftime("%Y%m%d").cast(pl.Int64))
     return derived_df_full
 
 

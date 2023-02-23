@@ -205,13 +205,14 @@ class CovidcastEndpointTests(CovidcastBase):
             out = self._fetch("/", signal="jhu-csse:confirmed_7dav_incidence_num", geo="county:01", time="day:20200407-20200420")
             out_df = CovidcastRows.from_records(out["epidata"]).api_row_df.set_index(["signal", "geo_value", "time_value"])
             merged_df = pd.merge(
-                expected_df.query("signal == 'confirmed_7dav_incidence_num' and geo_value == '01' and time_value >= 20200407 and time_value <= 20200420"),
+                expected_df.query("signal == 'confirmed_7dav_incidence_num' and geo_value == '01' and time_value >= 20200401 and time_value <= 20200420"),
                 out_df,
                 how="outer",
                 left_index=True,
                 right_index=True,
                 suffixes=["_out", "_expected"]
             )[["value_out", "value_expected"]]
+            expected_df.query("signal == 'confirmed_7dav_incidence_num' and geo_value == '01' and time_value >= 20200407 and time_value <= 20200420").value
             assert merged_df.empty is False
             assert merged_df.value_out.to_numpy() == pytest.approx(merged_df.value_expected, nan_ok=True)
 
@@ -219,7 +220,7 @@ class CovidcastEndpointTests(CovidcastBase):
             out = self._fetch("/", signal="jhu-csse:confirmed_7dav_incidence_num", geo="county:*", time="day:*")
             out_df = pd.DataFrame.from_records(out["epidata"]).set_index(["signal", "time_value", "geo_value"])
             merged_df = pd.merge(
-                expected_df.query("signal == 'confirmed_7dav_incidence_num' and time_value >= 20200407 and time_value <= 20200420"),
+                expected_df.query("signal == 'confirmed_7dav_incidence_num' and time_value >= 20200401 and time_value <= 20200420"),
                 out_df,
                 how="outer",
                 left_index=True,
@@ -234,8 +235,8 @@ class CovidcastEndpointTests(CovidcastBase):
             out_df = pd.DataFrame.from_records(out["epidata"]).set_index(["signal", "time_value", "geo_value"])
             query_lines = [
                 "(signal == 'confirmed_cumulative_num')",
-                "(signal == 'confirmed_incidence_num' and time_value >= 20200402 and time_value <= 20200420)",
-                "(signal == 'confirmed_7dav_incidence_num' and time_value >= 20200407 and time_value <= 20200420)",
+                "(signal == 'confirmed_incidence_num' and time_value >= 20200401 and time_value <= 20200420)",
+                "(signal == 'confirmed_7dav_incidence_num' and time_value >= 20200401 and time_value <= 20200420)",
             ]
             merged_df = pd.merge(
                 expected_df.query(" or ".join(query_lines)),

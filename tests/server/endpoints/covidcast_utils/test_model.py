@@ -107,7 +107,7 @@ class TestModel(unittest.TestCase):
                 value=range(5)
             )
             derived_signals_map = {SourceSignal("src", "sig_base"): [SourceSignal("src", "sig_base"), SourceSignal("src", "sig_diff")]}
-            df = generate_transformed_rows(data.as_dicts(), derived_signals_map)
+            df = generate_transformed_rows(data.as_dicts(), derived_signals_map).to_pandas()
             df = set_df_dtypes(df, PANDAS_DTYPES)
 
             data_df = data.db_row_df
@@ -123,7 +123,7 @@ class TestModel(unittest.TestCase):
                 sample_size=range(10)
             )
             derived_signals_map = {SourceSignal("src", "sig_base"): [SourceSignal("src", "sig_base"), SourceSignal("src", "sig_diff"), SourceSignal("src", "sig_smooth")]}
-            df = generate_transformed_rows(data.as_dicts(), derived_signals_map)
+            df = generate_transformed_rows(data.as_dicts(), derived_signals_map).to_pandas()
             df = set_df_dtypes(df, PANDAS_DTYPES)
 
             data_df = data.db_row_df
@@ -139,7 +139,7 @@ class TestModel(unittest.TestCase):
                 sample_size=range(15),
             )
             derived_signals_map = {SourceSignal("src", "sig_base"): [SourceSignal("src", "sig_base"), SourceSignal("src", "sig_diff"), SourceSignal("src", "sig_smooth")]}
-            df = generate_transformed_rows(data.as_dicts(), derived_signals_map)
+            df = generate_transformed_rows(data.as_dicts(), derived_signals_map).to_pandas()
             df = set_df_dtypes(df, PANDAS_DTYPES)
 
             data_df = data.db_row_df
@@ -155,7 +155,7 @@ class TestModel(unittest.TestCase):
                 sample_size=range(15),
             )
             derived_signals_map = {SourceSignal("src", "sig_base"): [SourceSignal("src", "sig_base"), SourceSignal("src", "sig_diff_smooth")]}
-            df = generate_transformed_rows(data.as_dicts(), derived_signals_map)
+            df = generate_transformed_rows(data.as_dicts(), derived_signals_map).to_pandas()
             df = set_df_dtypes(df, PANDAS_DTYPES)
 
             data_df = data.db_row_df
@@ -172,7 +172,7 @@ class TestModel(unittest.TestCase):
                 geo_value=["geo1"] * 15 + ["geo2"] * 15
             )
             derived_signals_map = {SourceSignal("src", "sig_base"): [SourceSignal("src", "sig_base"), SourceSignal("src", "sig_diff_smooth")]}
-            df = generate_transformed_rows(data.as_dicts(), derived_signals_map)
+            df = generate_transformed_rows(data.as_dicts(), derived_signals_map).to_pandas()
             df = set_df_dtypes(df, PANDAS_DTYPES)
 
             data_df = data.db_row_df
@@ -216,7 +216,7 @@ class TestModel(unittest.TestCase):
             )
             source_signal_pairs = [SourceSignalPair("src", ["sig_base", "sig_diff", "sig_smooth"])]
             _, derived_signals_map = get_basename_signals_and_derived_map(source_signal_pairs)
-            df = generate_transformed_rows(data.as_dicts(), derived_signals_map)
+            df = generate_transformed_rows(data.as_dicts(), derived_signals_map).to_pandas()
             df = set_df_dtypes(df, PANDAS_DTYPES)
 
             data_df = data.db_row_df
@@ -237,7 +237,7 @@ class TestModel(unittest.TestCase):
             )
             source_signal_pairs = [SourceSignalPair("src", ["sig_base", "sig_diff", "sig_smooth"])]
             _, derived_signals_map = get_basename_signals_and_derived_map(source_signal_pairs)
-            df = generate_transformed_rows(data.as_dicts(), derived_signals_map)
+            df = generate_transformed_rows(data.as_dicts(), derived_signals_map).to_pandas()
             df = set_df_dtypes(df, PANDAS_DTYPES)
 
             data_df = data.db_row_df
@@ -249,4 +249,4 @@ class TestModel(unittest.TestCase):
         with self.subTest("empty iterator"):
             source_signal_pairs = [SourceSignalPair("src", ["sig_diff", "sig_smooth"])]
             _, derived_signals_map = get_basename_signals_and_derived_map(source_signal_pairs)
-            assert generate_transformed_rows([], derived_signals_map).empty
+            assert generate_transformed_rows([], derived_signals_map).is_empty()
