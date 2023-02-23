@@ -1,23 +1,21 @@
 """Integration tests for delphi_epidata.py."""
 
 # standard library
-import unittest
 import time
-from unittest.mock import patch, MagicMock
 from json import JSONDecodeError
-
-# third party
-from aiohttp.client_exceptions import ClientResponseError
-import mysql.connector
-import pytest
+from unittest.mock import MagicMock, patch
 
 # first party
-from delphi_utils import Nans
-from delphi.epidata.client.delphi_epidata import Epidata
-from delphi.epidata.acquisition.covidcast.database import Database, CovidcastRow
-from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import main as update_covidcast_meta_cache
-from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase
+import pytest
+from aiohttp.client_exceptions import ClientResponseError
+
+# third party
 import delphi.operations.secrets as secrets
+from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import main as update_covidcast_meta_cache
+from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase, CovidcastTestRow
+from delphi.epidata.client.delphi_epidata import Epidata
+from delphi_utils import Nans
+
 
 # TODO replace these real geo_values with fake values, and use patch and mock to mock the return values of 
 # delphi_utils.geomap.GeoMapper().get_geo_values(geo_type) in parse_geo_sets() of _params.py
@@ -29,6 +27,8 @@ msa = ['40660', '44180', '48620'] # Example list of valid MSAs as strings
 
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.client.delphi_epidata'
+# all the Nans we use here are just one value, so this is a shortcut to it:
+nmv = Nans.NOT_MISSING.value
 
 def fake_epidata_endpoint(func):
   """This can be used as a decorator to enable a bogus Epidata endpoint to return 404 responses."""
@@ -37,9 +37,6 @@ def fake_epidata_endpoint(func):
     func(*args)
     Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
   return wrapper
-
-# all the Nans we use here are just one value, so this is a shortcut to it:
-nmv = Nans.NOT_MISSING.value
 
 class DelphiEpidataPythonClientTests(CovidcastBase):
   """Tests the Python client."""
@@ -62,13 +59,11 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
 
     # insert placeholder data: three issues of one signal, one issue of another
     rows = [
-      self._make_placeholder_row(geo_type='msa', geo_value=msa[0], issue=self.DEFAULT_ISSUE + i, value=i, lag=i)[0]
+      CovidcastTestRow.make_default_row(geo_type='msa', geo_value=msa[0], issue=2020_02_02 + i, value=i, lag=i)
       for i in range(3)
     ]
     row_latest_issue = rows[-1]
-    rows.append(
-      self._make_placeholder_row(geo_type='msa', geo_value=msa[0], signal="sig2")[0]
-    )
+    rows.append(CovidcastTestRow.make_default_row(geo_type='msa', geo_value=msa[0], signal="sig2"))
     self._insert_rows(rows)
 
     with self.subTest(name='request two signals'):
@@ -78,11 +73,11 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
       )
 
       expected = [
-        self.expected_from_row(row_latest_issue),
-        self.expected_from_row(rows[-1])
+        row_latest_issue.as_api_compatibility_row_dict(),
+        rows[-1].as_api_compatibility_row_dict()
       ]
 
-      self.maxDiff = None
+      self.assertEqual(response['epidata'], expected)
       # check result
       self.assertEqual(response, {
         'result': 1,
@@ -98,10 +93,10 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
 
       expected = [{
         rows[0].signal: [
-          self.expected_from_row(row_latest_issue, self.DEFAULT_MINUS + ['signal']),
+          row_latest_issue.as_api_compatibility_row_dict(ignore_fields=['signal']),
         ],
         rows[-1].signal: [
-          self.expected_from_row(rows[-1], self.DEFAULT_MINUS + ['signal']),
+          rows[-1].as_api_compatibility_row_dict(ignore_fields=['signal']),
         ],
       }]
 
@@ -118,12 +113,12 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
         **self.params_from_row(rows[0])
       )
 
-      expected = self.expected_from_row(row_latest_issue)
+      expected = [row_latest_issue.as_api_compatibility_row_dict()]
 
       # check result
       self.assertEqual(response_1, {
         'result': 1,
-        'epidata': [expected],
+        'epidata': expected,
         'message': 'success',
       })
 
@@ -133,13 +128,13 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
         **self.params_from_row(rows[0], as_of=rows[1].issue)
       )
 
-      expected = self.expected_from_row(rows[1])
+      expected = [rows[1].as_api_compatibility_row_dict()]
 
       # check result
       self.maxDiff=None
       self.assertEqual(response_1a, {
         'result': 1,
-        'epidata': [expected],
+        'epidata': expected,
         'message': 'success',
       })
 
@@ -150,8 +145,8 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
       )
 
       expected = [
-        self.expected_from_row(rows[0]),
-        self.expected_from_row(rows[1])
+        rows[0].as_api_compatibility_row_dict(),
+        rows[1].as_api_compatibility_row_dict()
       ]
 
       # check result
@@ -167,12 +162,12 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
         **self.params_from_row(rows[0], lag=2)
       )
 
-      expected = self.expected_from_row(row_latest_issue)
+      expected = [row_latest_issue.as_api_compatibility_row_dict()]
 
       # check result
       self.assertDictEqual(response_3, {
           'result': 1,
-          'epidata': [expected],
+          'epidata': expected,
           'message': 'success',
       })
     with self.subTest(name='long request'):
@@ -232,16 +227,16 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     # insert placeholder data: three counties, three MSAs
     N = 3
     rows = [
-      self._make_placeholder_row(geo_type="fips", geo_value=fips[i], value=i)[0]
+      CovidcastTestRow.make_default_row(geo_type="fips", geo_value=fips[i], value=i)
       for i in range(N)
     ] + [
-      self._make_placeholder_row(geo_type="msa", geo_value=msa[i], value=i*10)[0]
+      CovidcastTestRow.make_default_row(geo_type="msa", geo_value=msa[i], value=i*10)
       for i in range(N)
     ]
     self._insert_rows(rows)
 
     counties = [
-      self.expected_from_row(rows[i]) for i in range(N)
+      rows[i].as_api_compatibility_row_dict() for i in range(N)
     ]
 
     def fetch(geo):
@@ -251,40 +246,47 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
 
     self.maxDiff = None
     # test fetch all
-    r = fetch('*')
-    self.assertEqual(r['message'], 'success')
-    self.assertEqual(r['epidata'], counties)
+    request = fetch('*')
+    self.assertEqual(request['message'], 'success')
+    self.assertEqual(request['epidata'], counties)
     # test fetch a specific region
-    r = fetch('{}'.format(fips[0]))
-    self.assertEqual(r['message'], 'success')
-    self.assertEqual(r['epidata'], [counties[0]])
+    request = fetch('{}'.format(fips[0]))
+    self.assertEqual(request['message'], 'success')
+    self.assertEqual(request['epidata'], [counties[0]])
     # test fetch a specific yet not existing region
-    r = fetch('55555')
-    self.assertEqual(r['message'], 'invalid geo_value for the requested geo_type')
+    request = fetch('55555')
+    self.assertEqual(request['message'], 'invalid geo_value for the requested geo_type')
     # test fetch a multiple regions
-    r = fetch(['{}'.format(fips[0]), '{}'.format(fips[1])])
-    self.assertEqual(r['message'], 'success')
-    self.assertEqual(r['epidata'], [counties[0], counties[1]])
+    request = fetch(['{}'.format(fips[0]), '{}'.format(fips[1])])
+    self.assertEqual(request['message'], 'success')
+    self.assertEqual(request['epidata'], [counties[0], counties[1]])
     # test fetch a multiple regions in another variant
-    r = fetch(['{}'.format(fips[0]), '{}'.format(fips[2])])
-    self.assertEqual(r['message'], 'success')
-    self.assertEqual(r['epidata'], [counties[0], counties[2]])
+    request = fetch(['{}'.format(fips[0]), '{}'.format(fips[2])])
+    self.assertEqual(request['message'], 'success')
+    self.assertEqual(request['epidata'], [counties[0], counties[2]])
     # test fetch a multiple regions but one is not existing
-    r = fetch(['{}'.format(fips[0]), '55555'])
-    self.assertEqual(r['message'], 'invalid geo_value for the requested geo_type')
+    request = fetch(['{}'.format(fips[0]), '55555'])
+    self.assertEqual(request['message'], 'invalid geo_value for the requested geo_type')
     # test fetch a multiple regions but specify no region
-    r = fetch([])
-    self.assertEqual(r['message'], 'invalid geo_value for the requested geo_type')
+    request = fetch([])
+    self.assertEqual(request['message'], 'invalid geo_value for the requested geo_type')
 
   def test_covidcast_meta(self):
     """Test that the covidcast_meta endpoint returns expected data."""
+
+    DEFAULT_TIME_VALUE = 2020_02_02
+    DEFAULT_ISSUE = 2020_02_02
 
     # insert placeholder data: three dates, three issues. values are:
     # 1st issue: 0 10 20
     # 2nd issue: 1 11 21
     # 3rd issue: 2 12 22
     rows = [
-      self._make_placeholder_row(time_value=self.DEFAULT_TIME_VALUE + t, issue=self.DEFAULT_ISSUE + i, value=t*10 + i)[0]
+      CovidcastTestRow.make_default_row(
+        time_value=DEFAULT_TIME_VALUE + t,
+        issue=DEFAULT_ISSUE + i,
+        value=t*10 + i
+      )
       for i in range(3) for t in range(3)
     ]
     self._insert_rows(rows)
@@ -308,14 +310,14 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
       signal=rows[0].signal,
       time_type=rows[0].time_type,
       geo_type=rows[0].geo_type,
-      min_time=self.DEFAULT_TIME_VALUE,
-      max_time=self.DEFAULT_TIME_VALUE + 2,
+      min_time=DEFAULT_TIME_VALUE,
+      max_time=DEFAULT_TIME_VALUE + 2,
       num_locations=1,
       min_value=2.,
       mean_value=12.,
       max_value=22.,
       stdev_value=8.1649658, # population stdev, not sample, which is 10.
-      max_issue=self.DEFAULT_ISSUE + 2,
+      max_issue=DEFAULT_ISSUE + 2,
       min_lag=0,
       max_lag=0, # we didn't set lag when inputting data
     )
@@ -331,10 +333,10 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     # insert placeholder data: three counties, three MSAs
     N = 3
     rows = [
-      self._make_placeholder_row(geo_type="fips", geo_value=fips[i-1], value=i)[0]
+      CovidcastTestRow.make_default_row(geo_type="fips", geo_value=fips[i-1], value=i)
       for i in range(N)
     ] + [
-      self._make_placeholder_row(geo_type="msa", geo_value=msa[i-1], value=i*10)[0]
+      CovidcastTestRow.make_default_row(geo_type="msa", geo_value=msa[i-1], value=i*10)
       for i in range(N)
     ]
     self._insert_rows(rows)

@@ -2,8 +2,7 @@
 
 # standard library
 import unittest
-from unittest.mock import MagicMock
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 from datetime import date
 import numpy as np
 
@@ -13,7 +12,7 @@ import epiweeks as epi
 
 from delphi_utils import Nans
 from delphi.utils.epiweek import delta_epiweeks
-from delphi.epidata.acquisition.covidcast.csv_importer import CsvImporter, CsvRowValue
+from delphi.epidata.acquisition.covidcast.csv_importer import CsvImporter, CsvRowValue, PathDetails
 
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.acquisition.covidcast.csv_importer'
@@ -32,6 +31,7 @@ class UnitTests(unittest.TestCase):
     self.assertFalse(CsvImporter.is_sane_day(20200199))
     self.assertFalse(CsvImporter.is_sane_day(202015))
 
+
   def test_is_sane_week(self):
     """Sanity check some weeks."""
 
@@ -42,37 +42,38 @@ class UnitTests(unittest.TestCase):
     self.assertFalse(CsvImporter.is_sane_week(202054))
     self.assertFalse(CsvImporter.is_sane_week(20200418))
 
+
+  @patch("delphi.epidata.acquisition.covidcast.csv_importer.glob")
   @patch("os.path.isdir")
-  def test_find_issue_specific_csv_files(self,os_isdir_mock):
+  def test_find_issue_specific_csv_files(self, mock_os_isdir: MagicMock, mock_glob: MagicMock):
       """Recursively explore and find issue specific CSV files."""
       # check valid path
       path_prefix='prefix/to/the/data/issue_20200408'
-      os_isdir_mock.return_value=True
+      mock_os_isdir.return_value=True
       issue_path=path_prefix+'ght/20200408_state_rawsearch.csv'
 
-      mock_glob = MagicMock()
-      mock_glob.glob.side_effect = ([path_prefix], [issue_path])
+      mock_glob.side_effect = ([path_prefix], [issue_path])
 
       #check if the day is a valid day.
       issuedir_match= CsvImporter.PATTERN_ISSUE_DIR.match(path_prefix.lower())
       issue_date_value = int(issuedir_match.group(2))
       self.assertTrue(CsvImporter.is_sane_day(issue_date_value))
 
-      found = set(CsvImporter.find_issue_specific_csv_files(path_prefix, glob=mock_glob))
-      self.assertTrue(len(found)>0)
+      found = set(CsvImporter.find_issue_specific_csv_files(path_prefix))
+      self.assertTrue(len(found) > 0)
 
       # check unvalid path:
       path_prefix_invalid='invalid/prefix/to/the/data/issue_20200408'
-      os_isdir_mock.return_value=False
+      mock_os_isdir.return_value=False
       issue_path_invalid=path_prefix_invalid+'ght/20200408_state_rawsearch.csv'
-      mock_glob_invalid = MagicMock()
-      mock_glob_invalid.glob.side_effect = ([path_prefix_invalid], [issue_path_invalid])
+      mock_glob.side_effect = ([path_prefix_invalid], [issue_path_invalid])
 
-      found = set(CsvImporter.find_issue_specific_csv_files(path_prefix_invalid, glob=mock_glob_invalid))
+      found = set(CsvImporter.find_issue_specific_csv_files(path_prefix_invalid))
       self.assertFalse(len(found)>0)
 
 
-  def test_find_csv_files(self):
+  @patch("delphi.epidata.acquisition.covidcast.csv_importer.glob")
+  def test_find_csv_files(self, mock_glob: MagicMock):
     """Recursively explore and find CSV files."""
 
     path_prefix = 'prefix/to/the/data/'
@@ -96,25 +97,25 @@ class UnitTests(unittest.TestCase):
       # ignored
       path_prefix + 'ignored/README.md',
     ]
-    mock_glob = MagicMock()
-    mock_glob.glob.return_value = glob_paths
+    mock_glob.return_value = glob_paths
 
-    found = set(CsvImporter.find_csv_files(path_prefix, glob=mock_glob))
+    found = set(CsvImporter.find_csv_files(path_prefix))
 
     expected_issue_day=int(date.today().strftime("%Y%m%d"))
     expected_issue_week=int(str(epi.Week.fromdate(date.today())))
     time_value_day = 20200408
     expected = set([
-      (glob_paths[0], ('fb_survey', 'cli', 'week', 'county', 202015, expected_issue_week, delta_epiweeks(202015, expected_issue_week))),
-      (glob_paths[1], ('ght', 'rawsearch', 'day', 'state', time_value_day, expected_issue_day, (date.today() - date(year=time_value_day // 10000, month=(time_value_day // 100) % 100, day=time_value_day % 100)).days)),
-      (glob_paths[2], ('valid', 'sig', 'day', 'nation', time_value_day, expected_issue_day, (date.today() - date(year=time_value_day // 10000, month=(time_value_day // 100) % 100, day=time_value_day % 100)).days)),
-      (glob_paths[3], ('valid', 'sig', 'day', 'hhs', time_value_day, expected_issue_day, (date.today() - date(year=time_value_day // 10000, month=(time_value_day // 100) % 100, day=time_value_day % 100)).days)),
+      (glob_paths[0], PathDetails(expected_issue_week, delta_epiweeks(202015, expected_issue_week), 'fb_survey', 'cli', 'week', 202015, 'county')),
+      (glob_paths[1], PathDetails(expected_issue_day, (date.today() - date(year=time_value_day // 10000, month=(time_value_day // 100) % 100, day=time_value_day % 100)).days, 'ght', 'rawsearch', 'day', time_value_day, 'state')),
+      (glob_paths[2], PathDetails(expected_issue_day, (date.today() - date(year=time_value_day // 10000, month=(time_value_day // 100) % 100, day=time_value_day % 100)).days, 'valid', 'sig', 'day', time_value_day, 'nation')),
+      (glob_paths[3], PathDetails(expected_issue_day, (date.today() - date(year=time_value_day // 10000, month=(time_value_day // 100) % 100, day=time_value_day % 100)).days, 'valid', 'sig', 'day', time_value_day, 'hhs')),
       (glob_paths[4], None),
       (glob_paths[5], None),
       (glob_paths[6], None),
       (glob_paths[7], None),
     ])
     self.assertEqual(found, expected)
+
 
   def test_is_header_valid_allows_extra_columns(self):
     """Allow and ignore extra columns in the header."""
@@ -124,6 +125,7 @@ class UnitTests(unittest.TestCase):
     self.assertTrue(CsvImporter.is_header_valid(columns))
     self.assertTrue(CsvImporter.is_header_valid(columns | {'foo', 'bar'}))
 
+
   def test_is_header_valid_does_not_depend_on_column_order(self):
     """Allow columns to appear in any order."""
 
@@ -131,6 +133,7 @@ class UnitTests(unittest.TestCase):
     columns = sorted(CsvImporter.REQUIRED_COLUMNS)
 
     self.assertTrue(CsvImporter.is_header_valid(columns))
+
 
   def test_floaty_int(self):
     """Parse ints that may look like floats."""
@@ -141,6 +144,7 @@ class UnitTests(unittest.TestCase):
     with self.assertRaises(ValueError):
       CsvImporter.floaty_int('-1.1')
 
+
   def test_maybe_apply(self):
     """Apply a function to a value as long as it's not null-like."""
 
@@ -150,6 +154,7 @@ class UnitTests(unittest.TestCase):
     self.assertIsNone(CsvImporter.maybe_apply(int, 'NaN'))
     self.assertIsNone(CsvImporter.maybe_apply(float, ''))
     self.assertIsNone(CsvImporter.maybe_apply(float, None))
+
 
   def test_extract_and_check_row(self):
     """Apply various sanity checks to a row of data."""
@@ -221,20 +226,22 @@ class UnitTests(unittest.TestCase):
       self.assertEqual(values.stderr, field.stderr)
       self.assertEqual(values.sample_size, field.sample_size)
 
+
   @patch("pandas.read_csv")
   def test_load_csv_with_invalid_header(self, mock_read_csv):
     """Bail loading a CSV when the header is invalid."""
 
     data = {'foo': [1, 2, 3]}
     filepath = 'path/name.csv'
-    geo_type = 'state'
+    details = PathDetails(20200101, 0, "src", "name", "day", 20200101, "state")
 
     mock_read_csv.return_value = pd.DataFrame(data)
-    rows = list(CsvImporter.load_csv(filepath, geo_type))
+    rows = list(CsvImporter.load_csv(filepath, details))
 
     self.assertTrue(mock_read_csv.called)
     self.assertTrue(mock_read_csv.call_args[0][0], filepath)
     self.assertEqual(rows, [None])
+
 
   @patch("pandas.read_csv")
   def test_load_csv_with_valid_header(self, mock_read_csv):
@@ -248,10 +255,10 @@ class UnitTests(unittest.TestCase):
       'sample_size': ['301', '302', '303', '304'],
     }
     filepath = 'path/name.csv'
-    geo_type = 'state'
+    details = PathDetails(20200101, 0, "src", "name", "day", 20200101, "state")
 
     mock_read_csv.return_value = pd.DataFrame(data=data)
-    rows = list(CsvImporter.load_csv(filepath, geo_type))
+    rows = list(CsvImporter.load_csv(filepath, details))
 
     self.assertTrue(mock_read_csv.called)
     self.assertTrue(mock_read_csv.call_args[0][0], filepath)
@@ -285,10 +292,10 @@ class UnitTests(unittest.TestCase):
       'missing_sample_size': [Nans.NOT_MISSING] * 2 + [Nans.REGION_EXCEPTION] * 2 + [None]
     }
     filepath = 'path/name.csv'
-    geo_type = 'state'
+    details = PathDetails(20200101, 0, "src", "name", "day", 20200101, "state")
 
     mock_read_csv.return_value = pd.DataFrame(data)
-    rows = list(CsvImporter.load_csv(filepath, geo_type))
+    rows = list(CsvImporter.load_csv(filepath, details))
 
     self.assertTrue(mock_read_csv.called)
     self.assertTrue(mock_read_csv.call_args[0][0], filepath)
