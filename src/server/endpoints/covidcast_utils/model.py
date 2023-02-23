@@ -742,11 +742,9 @@ def generate_transformed_rows(
         return pd.DataFrame()
 
     derived_df_full = pd.concat(dfs)
-    # Ok to do in place because nothing else depends on this memory chunk.
+    # Ok to do in place because there are no other references to this memory chunk.
     derived_df_full.reset_index(inplace=True)
     derived_df_full["time_value"] = derived_df_full["time_value"].dt.strftime("%Y%m%d").astype("Int64")
-    # TODO: Testing whether we really need this. It's an expensive operation.
-    # derived_df_full = _set_df_dtypes(derived_df_full, PANDAS_DTYPES)
     return derived_df_full
 
 
