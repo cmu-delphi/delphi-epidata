@@ -8,8 +8,10 @@ mysqlclient==2.1.1
 newrelic
 orjson==3.4.7
 pandas==1.5.1
+polars==0.16.2
+pyarrow==11.0.0
 python-dotenv==0.15.0
-scipy==1.6.2
+scipy==1.7.2
 SQLAlchemy==1.4.40
 structlog==22.1.0
 tenacity==7.0.0
