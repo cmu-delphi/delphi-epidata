@@ -64,7 +64,7 @@ class CovidcastTests(CovidcastBase):
       self._make_placeholder_row(geo_type='msa', geo_value=msa[0], time_value=2000_01_01+i, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03, lag=2-i)[0]
       for i in [1, 2, 3]
     ] + [
-      # time value intended to overlap with 11111 above, with disjoint geo values
+      # time value intended to overlap with the time values above, with disjoint geo values
       self._make_placeholder_row(geo_type='msa', geo_value=str(i)*5, time_value=2000_01_01+i-3, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03, lag=5-i)[0]
       for i in [4, 5, 6]
     ]
