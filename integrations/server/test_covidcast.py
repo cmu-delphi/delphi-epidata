@@ -3,8 +3,6 @@
 # standard library
 from typing import Callable
 import unittest
-# from unittest.mock import MagicMock
-# from unittest.mock import patch
 
 # third party
 import mysql.connector
