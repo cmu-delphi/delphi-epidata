@@ -116,7 +116,7 @@ above. The base images are built first, followed by the derived
 `epidata`-specific images.
 
 - The [`delphi_web_epidata` image](https://github.com/cmu-delphi/delphi-epidata/blob/main/dev/docker/web/epidata/README.md) adds
-  the Epidata API to the `delphi_web` image.
+  the Epidata API to the `delphi_web_epidata` image.
 - The
   [`delphi_database_epidata` image](https://github.com/cmu-delphi/delphi-epidata/blob/main/dev/docker/database/epidata/README.md)
   adds user accounts, `epidata` & other appropriate databases, and relevant tables
@@ -125,14 +125,8 @@ above. The base images are built first, followed by the derived
 From the root of your workspace, all of the images can be built as follows:
 
 ```bash
-docker build -t delphi_web \
-  -f repos/delphi/operations/dev/docker/web/Dockerfile .
-
-docker build -t delphi_web_epidata \
-  -f repos/delphi/delphi-epidata/dev/docker/web/epidata/Dockerfile .
-
-docker build -t delphi_database \
-  -f repos/delphi/operations/dev/docker/database/Dockerfile .
+docker build -t delphi_web_epidata\
+			-f ./devops/Dockerfile .;\
 
 docker build -t delphi_database_epidata \
   -f repos/delphi/delphi-epidata/dev/docker/database/epidata/Dockerfile .
