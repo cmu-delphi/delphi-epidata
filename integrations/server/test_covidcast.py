@@ -315,7 +315,6 @@ class CovidcastTests(CovidcastBase):
 
       return response
 
-    self.maxDiff = None
     # test fetch a specific region
     r = fetch(msa[0])
     self.assertEqual(r['message'], 'success')
