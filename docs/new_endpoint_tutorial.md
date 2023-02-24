@@ -273,10 +273,8 @@ already built the `delphi_python` image above:
 
 ```bash
 # build web and database images for epidata
-docker build -t delphi_web \
-  -f repos/delphi/operations/dev/docker/web/Dockerfile .
-docker build -t delphi_web_epidata \
-  -f repos/delphi/delphi-epidata/dev/docker/web/epidata/Dockerfile .
+docker build -t delphi_web_epidata\
+			-f ./devops/Dockerfile .;\
 docker build -t delphi_database_epidata \
   -f repos/delphi/delphi-epidata/dev/docker/database/epidata/Dockerfile .
 
