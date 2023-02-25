@@ -11,6 +11,7 @@ from pandas import read_csv, to_datetime, DataFrame, concat
 import pandas as pd
 
 from .._common import is_compatibility_mode, db
+from .._config import MAX_RESULTS
 from .._exceptions import ValidationFailedException, DatabaseErrorException
 from .._params import (
     GeoSet,
@@ -45,6 +46,25 @@ alias = None
 latest_table = "epimetric_latest_v"
 history_table = "epimetric_full_v"
 MIMETYPE_JSON = "application/json"
+PANDAS_DTYPES = {
+    "source": "category",
+    "signal": "category",
+    "time_type": "category",
+    "time_value": int,
+    "geo_type": "category",
+    "geo_value": "category",
+    "value": float,
+    "stderr": float,
+    "sample_size": float,
+    "missing_value": "Int8",
+    "missing_stderr": "Int8",
+    "missing_sample_size": "Int8",
+    "issue": "Int64",
+    "lag": "Int64",
+    "id": "Int64",
+    "direction": "Int8",
+}
+
 
 def df_to_response(
     df: DataFrame,
@@ -107,24 +127,6 @@ def df_to_response(
             headers=headers
         )
 
-PANDAS_DTYPES = {
-    "source": str,
-    "signal": str,
-    "time_type": "category",
-    "time_value": int,
-    "geo_type": "category",
-    "geo_value": str,
-    "value": float,
-    "stderr": float,
-    "sample_size": float,
-    "missing_value": "Int8",
-    "missing_stderr": "Int8",
-    "missing_sample_size": "Int8",
-    "issue": "Int64",
-    "lag": "Int64",
-    "id": "Int64",
-    "direction": "Int64",
-}
 
 def _set_df_dtypes(df: pd.DataFrame, dtypes: Dict[str, Any]) -> pd.DataFrame:
     """Set the dataframe column datatypes."""
@@ -137,6 +139,7 @@ def _set_df_dtypes(df: pd.DataFrame, dtypes: Dict[str, Any]) -> pd.DataFrame:
     sub_dtypes = {k: v for k, v in dtypes.items() if k in df.columns}
     return df.astype(sub_dtypes)
 
+
 def query_to_df(
     q: QueryBuilder,
     fields_string: List[str],
@@ -144,29 +147,39 @@ def query_to_df(
     fields_float: List[str],
     alias_mapper: Optional[Callable[[str, str], str]] = None,
 ) -> DataFrame:
-    if "source" not in fields_string:
-        fields_string.append("source")
-
     try:
-        query, params = text(str(q)), q.params
+        query, params = text(f"{str(q)} LIMIT {MAX_RESULTS}"), q.params
         rows = (parse_row(row, fields_string, fields_int, fields_float) for row in db.execute(query, params))
     except Exception as e:
         raise DatabaseErrorException(str(e))
 
     # parse rows
+    all_columns = set(PANDAS_DTYPES.keys())
+    selected_columns = set(fields_string + fields_int + fields_float)
     dfs = []
-    for (source_name, signal_name), rows in groupby(rows, lambda row: (row["source"], row["signal"])):
-        try:
-            columns = [x for x in PANDAS_DTYPES.keys() if x in fields_string + fields_int + fields_float]
-            df = DataFrame(rows, columns=columns)
-            df = _set_df_dtypes(df, PANDAS_DTYPES)
-        except:
-            print("THE ERROR:", rows)
-            raise Exception("Error parsing rows")
-        if not is_compatibility_mode():
-            df["source"] = alias_mapper(source_name, signal_name) if alias_mapper else source_name
+    if is_compatibility_mode():
+        remove_columns = set(["source", "direction"])
+        columns = list(all_columns.intersection(selected_columns).difference(remove_columns))
+
+        df = DataFrame(rows, columns=columns)
+        df = _set_df_dtypes(df, PANDAS_DTYPES)
+
         df["direction"] = None
         dfs.append(df)
+    else:
+        remove_columns = set(["direction"])
+        columns = list(all_columns.intersection(selected_columns).difference(remove_columns))
+
+        for (source_name, signal_name), rows in groupby(rows, lambda row: (row["source"], row["signal"])):
+            df = DataFrame(rows, columns=columns)
+            df = _set_df_dtypes(df, PANDAS_DTYPES)
+
+            df.assign(
+                source = alias_mapper(source_name, signal_name) if alias_mapper else source_name,
+                signal = signal_name,
+                direction = None
+            )
+            dfs.append(df)
 
     if dfs:
         return concat(dfs, sort=False)
