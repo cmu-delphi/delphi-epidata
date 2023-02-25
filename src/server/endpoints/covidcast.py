@@ -47,12 +47,12 @@ latest_table = "epimetric_latest_v"
 history_table = "epimetric_full_v"
 MIMETYPE_JSON = "application/json"
 PANDAS_DTYPES = {
-    "source": "category",
-    "signal": "category",
-    "time_type": "category",
+    "source": str,
+    "signal": str,
+    "time_type": str,
     "time_value": int,
-    "geo_type": "category",
-    "geo_value": "category",
+    "geo_type": str,
+    "geo_value": str,
     "value": float,
     "stderr": float,
     "sample_size": float,
