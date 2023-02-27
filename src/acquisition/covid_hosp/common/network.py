@@ -13,6 +13,8 @@ class Network:
     ----------
     dataset_id : str
       healthdata.gov dataset identifier of the dataset.
+    logger : structlog.Logger [optional; default False]
+      Logger to receive messages.
 
     Returns
     -------
@@ -39,6 +41,8 @@ class Network:
     ----------
     url : str
       URL to the dataset in CSV format.
+    logger : structlog.Logger [optional; default False]
+      Logger to receive messages.
 
     Returns
     -------

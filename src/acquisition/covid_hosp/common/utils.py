@@ -79,6 +79,17 @@ class Utils:
       return value
     return limited_string
 
+  GEOCODE_LENGTH = 32
+  GEOCODE_PATTERN = re.compile(r'POINT \(([0-9.-]*) ([0-9.-]*)\)')
+  def limited_geocode(value):
+    if len(value) < Utils.GEOCODE_LENGTH:
+      return value
+    # otherwise parse and reduce precision to 5
+    m = Utils.GEOCODE_PATTERN.match(value)
+    if not m:
+      raise CovidHospException(f"Couldn't parse geocode '{value}'")
+    return f'POINT ({" ".join(map(lambda x: f"{float(x):.6f}", m.groups()))})'
+
   def issues_to_fetch(metadata, newer_than, older_than, logger=False):
     """
     Construct all issue dates and URLs to be ingested based on metadata.
@@ -100,6 +111,7 @@ class Utils:
     """
     daily_issues = {}
     n_beyond = 0
+    n_selected = 0
     for index in sorted(set(metadata.index)):
       day = index.date()
       if day > newer_than and day < older_than:
@@ -109,11 +121,13 @@ class Utils:
           daily_issues[day] = urls_list
         else:
           daily_issues[day] += urls_list
+        n_selected += len(urls_list)
       elif day >= older_than:
         n_beyond += 1
-    if n_beyond > 0:
-      if logger:
-        logger.info("issues available", on_or_newer=older_than, count=n_beyond)
+    if logger:
+      if n_beyond > 0:
+        logger.info("issues available beyond selection", on_or_newer=older_than, count=n_beyond)
+      logger.info("issues selected", newer_than=str(newer_than), older_than=str(older_than), count=n_selected)
     return daily_issues
 
   @staticmethod
@@ -173,7 +187,7 @@ class Utils:
     bool
       Whether a new dataset was acquired.
     """
-    logger = get_structured_logger(f"{database.__class__.__module__}.{database.__class__.__name__}.update_dataset")
+    logger = get_structured_logger(f"{database.__module__}.{database.__name__}.update_dataset")
     
     metadata = network.fetch_metadata(logger=logger)
     datasets = []
@@ -189,7 +203,7 @@ class Utils:
     for issue, revisions in daily_issues.items():
       issue_int = int(issue.strftime("%Y%m%d"))
       # download the dataset and add it to the database
-      dataset = Utils.merge_by_key_cols([network.fetch_dataset(url) for url, _ in revisions],
+      dataset = Utils.merge_by_key_cols([network.fetch_dataset(url, logger=logger) for url, _ in revisions],
                                         db.KEY_COLS,
                                         logger=logger)
       # add metadata to the database

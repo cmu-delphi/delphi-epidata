@@ -40,7 +40,7 @@ class Database(BaseDatabase):
       Columndef('ccn', 'ccn', str),
       Columndef('city', 'city', str),
       Columndef('fips_code', 'fips_code', str),
-      Columndef('geocoded_hospital_address', 'geocoded_hospital_address', Utils.limited_string_fn(32)),
+      Columndef('geocoded_hospital_address', 'geocoded_hospital_address', Utils.limited_geocode),
       Columndef('hhs_ids', 'hhs_ids', str),
       Columndef('hospital_name', 'hospital_name', str),
       Columndef('hospital_subtype', 'hospital_subtype', str),

@@ -186,21 +186,37 @@ class Database:
           f'VALUES ({value_placeholders})'
     id_and_publication_date = (0, publication_date)
     if logger:
-      logger.info("updating values")
+      logger.info('updating values', count=len(dataframe.index))
+    n = 0
+    many_values = []
     with self.new_cursor() as cursor:
-      for _, row in dataframe.iterrows():
+      for index, row in dataframe.iterrows():
         values = []
         for c in dataframe_columns_and_types:
           values.append(nan_safe_dtype(c.dtype, row[c.csv_name]))
-        cursor.execute(sql,
-                       id_and_publication_date +
-                       tuple(values) +
-                       tuple(i.csv_name for i in self.additional_fields))
+        many_values.append(id_and_publication_date +
+          tuple(values) +
+          tuple(i.csv_name for i in self.additional_fields))
+        n += 1
+        # insert in batches because one at a time is slow and all at once makes
+        # the connection drop :(
+        if n % 5_000 == 0:
+          try:
+            cursor.executemany(sql, many_values)
+            many_values = []
+          except Exception as e:
+            if logger:
+              logger.info('error on insert', index=index, values=values)
+              logger.error(e)
+            raise e
+      # insert final batch
+      if many_values:
+        cursor.executemany(sql, many_values)
 
     # deal with non/seldomly updated columns used like a fk table (if this database needs it)
     if hasattr(self, 'AGGREGATE_KEY_COLS'):
       if logger:
-        logger.info("updating keys")
+        logger.info('updating keys')
       ak_cols = self.AGGREGATE_KEY_COLS
 
       # restrict data to just the key columns and remove duplicate rows
@@ -227,6 +243,8 @@ class Database:
       ak_table = self.table_name + '_key'
       # assemble full SQL statement
       ak_insert_sql = f'INSERT INTO `{ak_table}` ({ak_cols_str}) VALUES ({values_str}) AS v ON DUPLICATE KEY UPDATE {ak_updates_str}'
+      if logger:
+        logger.info("database query", sql=ak_insert_sql)
 
       # commit the data
       with self.new_cursor() as cur:
