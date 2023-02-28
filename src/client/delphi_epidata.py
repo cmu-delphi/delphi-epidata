@@ -13,7 +13,7 @@ import requests
 import asyncio
 from tenacity import retry, stop_after_attempt
 
-from aiohttp import ClientSession, TCPConnector
+from aiohttp import ClientSession, TCPConnector, BasicAuth
 from pkg_resources import get_distribution, DistributionNotFound
 
 # Obtain package version for the user-agent. Uses the installed version by
@@ -736,7 +736,8 @@ class Epidata:
       """Helper function to asynchronously make and aggregate Epidata GET requests."""
       tasks = []
       connector = TCPConnector(limit=batch_size)
-      async with ClientSession(connector=connector, headers=_HEADERS) as session:
+      auth = BasicAuth(login=Epidata.auth[0], password=Epidata.auth[1], encoding='utf-8')
+      async with ClientSession(connector=connector, headers=_HEADERS, auth=auth) as session:
         for param in param_combos:
           task = asyncio.ensure_future(async_get(param, session))
           tasks.append(task)
