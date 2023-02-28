@@ -1,3 +1,4 @@
+import json
 import os
 from dotenv import load_dotenv
 import json
@@ -6,7 +7,7 @@ from datetime import date
 
 load_dotenv()
 
-VERSION = "0.4.2"
+VERSION = "0.4.6"
 
 MAX_RESULTS = int(10e6)
 MAX_COMPATIBILITY_RESULTS = int(3650)

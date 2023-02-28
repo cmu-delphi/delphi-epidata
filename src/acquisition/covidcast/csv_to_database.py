@@ -4,10 +4,12 @@
 import argparse
 import os
 import time
+from logging import Logger
+from typing import Callable, Iterable, Optional, Tuple
 
 # first party
-from delphi.epidata.acquisition.covidcast.csv_importer import CsvImporter
-from delphi.epidata.acquisition.covidcast.database import Database, CovidcastRow, DBLoadStateException
+from delphi.epidata.acquisition.covidcast.csv_importer import CsvImporter, PathDetails
+from delphi.epidata.acquisition.covidcast.database import Database, DBLoadStateException
 from delphi.epidata.acquisition.covidcast.file_archiver import FileArchiver
 from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
 
@@ -28,17 +30,19 @@ def get_argument_parser():
     help="filename for log output (defaults to stdout)")
   return parser
 
-def collect_files(data_dir, specific_issue_date,csv_importer_impl=CsvImporter):
+
+def collect_files(data_dir: str, specific_issue_date: bool):
   """Fetch path and data profile details for each file to upload."""
   logger= get_structured_logger('collect_files')
   if specific_issue_date:
-    results = list(csv_importer_impl.find_issue_specific_csv_files(data_dir))
+    results = list(CsvImporter.find_issue_specific_csv_files(data_dir))
   else:
-    results = list(csv_importer_impl.find_csv_files(os.path.join(data_dir, 'receiving')))
+    results = list(CsvImporter.find_csv_files(os.path.join(data_dir, 'receiving')))
   logger.info(f'found {len(results)} files')
   return results
 
-def make_handlers(data_dir, specific_issue_date, file_archiver_impl=FileArchiver):
+
+def make_handlers(data_dir: str, specific_issue_date: bool):
   if specific_issue_date:
     # issue-specific uploads are always one-offs, so we can leave all
     # files in place without worrying about cleaning up
@@ -47,7 +51,7 @@ def make_handlers(data_dir, specific_issue_date, file_archiver_impl=FileArchiver
 
     def handle_successful(path_src, filename, source, logger):
       logger.info(event='archiving as successful',file=filename)
-      file_archiver_impl.archive_inplace(path_src, filename)
+      FileArchiver.archive_inplace(path_src, filename)
   else:
     # normal automation runs require some shuffling to remove files
     # from receiving and place them in the archive
@@ -59,22 +63,24 @@ def make_handlers(data_dir, specific_issue_date, file_archiver_impl=FileArchiver
       logger.info(event='archiving as failed - ', detail=source, file=filename)
       path_dst = os.path.join(archive_failed_dir, source)
       compress = False
-      file_archiver_impl.archive_file(path_src, path_dst, filename, compress)
+      FileArchiver.archive_file(path_src, path_dst, filename, compress)
 
     # helper to archive a successful file with compression
     def handle_successful(path_src, filename, source, logger):
       logger.info(event='archiving as successful',file=filename)
       path_dst = os.path.join(archive_successful_dir, source)
       compress = True
-      file_archiver_impl.archive_file(path_src, path_dst, filename, compress)
+      FileArchiver.archive_file(path_src, path_dst, filename, compress)
+
   return handle_successful, handle_failed
 
+
 def upload_archive(
-    path_details,
-    database,
-    handlers,
-    logger,
-    csv_importer_impl=CsvImporter):
+  path_details: Iterable[Tuple[str, Optional[PathDetails]]],
+  database: Database,
+  handlers: Tuple[Callable],
+  logger: Logger
+  ):
   """Upload CSVs to the database and archive them using the specified handlers.
 
   :path_details: output from CsvImporter.find*_csv_files
@@ -89,20 +95,16 @@ def upload_archive(
   total_modified_row_count = 0
   # iterate over each file
   for path, details in path_details:
-    logger.info(event='handling',dest=path)
+    logger.info(event='handling', dest=path)
     path_src, filename = os.path.split(path)
 
+    # file path or name was invalid, source is unknown
     if not details:
-      # file path or name was invalid, source is unknown
       archive_as_failed(path_src, filename, 'unknown',logger)
       continue
 
-    (source, signal, time_type, geo_type, time_value, issue, lag) = details
-
-    csv_rows = csv_importer_impl.load_csv(path, geo_type)
-
-    cc_rows = CovidcastRow.fromCsvRows(csv_rows, source, signal, time_type, geo_type, time_value, issue, lag)
-    rows_list = list(cc_rows)
+    csv_rows = CsvImporter.load_csv(path, details)
+    rows_list = list(csv_rows)
     all_rows_valid = rows_list and all(r is not None for r in rows_list)
     if all_rows_valid:
       try:
@@ -111,12 +113,13 @@ def upload_archive(
         logger.info(
           "Inserted database rows",
           row_count = modified_row_count,
-          source = source,
-          signal = signal,
-          geo_type = geo_type,
-          time_value = time_value,
-          issue = issue,
-          lag = lag)
+          source = details.source,
+          signal = details.signal,
+          geo_type = details.geo_type,
+          time_value = details.time_value,
+          issue = details.issue,
+          lag = details.lag
+        )
         if modified_row_count is None or modified_row_count: # else would indicate zero rows inserted
           total_modified_row_count += (modified_row_count if modified_row_count else 0)
           database.commit()
@@ -131,40 +134,37 @@ def upload_archive(
 
     # archive the current file based on validation results
     if all_rows_valid:
-      archive_as_successful(path_src, filename, source, logger)
+      archive_as_successful(path_src, filename, details.source, logger)
     else:
-      archive_as_failed(path_src, filename, source,logger)
+      archive_as_failed(path_src, filename, details.source, logger)
 
   return total_modified_row_count
 
 
-def main(
-    args,
-    database_impl=Database,
-    collect_files_impl=collect_files,
-    upload_archive_impl=upload_archive):
+def main(args):
   """Find, parse, and upload covidcast signals."""
 
   logger = get_structured_logger("csv_ingestion", filename=args.log_file)
   start_time = time.time()
 
   # shortcut escape without hitting db if nothing to do
-  path_details = collect_files_impl(args.data_dir, args.specific_issue_date)
+  path_details = collect_files(args.data_dir, args.specific_issue_date)
   if not path_details:
     logger.info('nothing to do; exiting...')
     return
 
   logger.info("Ingesting CSVs", csv_count = len(path_details))
 
-  database = database_impl()
+  database = Database()
   database.connect()
 
   try:
-    modified_row_count = upload_archive_impl(
+    modified_row_count = upload_archive(
       path_details,
       database,
       make_handlers(args.data_dir, args.specific_issue_date),
-      logger)
+      logger
+    )
     logger.info("Finished inserting/updating database rows", row_count = modified_row_count)
   finally:
     database.do_analyze()
@@ -174,6 +174,7 @@ def main(
   logger.info(
       "Ingested CSVs into database",
       total_runtime_in_seconds=round(time.time() - start_time, 2))
+
 
 if __name__ == '__main__':
   main(get_argument_parser().parse_args())

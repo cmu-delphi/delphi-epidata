@@ -1,14 +1,14 @@
-from flask import Blueprint
+from flask import Blueprint, request
 
-from .._validate import (
-    require_all,
+from .._exceptions import EpiDataException
+from .._params import (
     extract_strings,
     extract_integers,
 )
 from .._security import current_user
-from .._config import GRANULAR_SENSOR_ROLES, OPEN_SENSORS, UserRole
+from .._config import GRANULAR_SENSOR_ROLES, OPEN_SENSORS
 from .._query import filter_strings, execute_query, filter_integers
-from .._exceptions import EpiDataException
+from .._validate import require_all
 from typing import List
 
 # first argument is the endpoint name
@@ -51,10 +51,10 @@ def _authenticate(names: List[str]):
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    require_all("names", "locations", "epiweeks")
+    require_all(request, "names", "locations", "epiweeks")
 
     names = extract_strings("names") or []
-    _authenticate(names)
+    _authenticate(request, names)
 
     # parse the request
     locations = extract_strings("locations")

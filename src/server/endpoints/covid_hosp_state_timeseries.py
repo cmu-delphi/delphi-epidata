@@ -1,7 +1,8 @@
-from flask import Blueprint
+from flask import Blueprint, request
 
+from .._params import extract_integers, extract_strings, extract_date
 from .._query import execute_query, QueryBuilder
-from .._validate import extract_integers, extract_strings, extract_date, require_all
+from .._validate import require_all
 
 # first argument is the endpoint name
 bp = Blueprint("covid_hosp_state_timeseries", __name__)
@@ -10,7 +11,7 @@ alias = "covid_hosp"
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    require_all("states", "dates")
+    require_all(request, "states", "dates")
     states = extract_strings("states")
     dates = extract_integers("dates")
     issues = extract_integers("issues")
@@ -145,7 +146,7 @@ def handle():
     ]
 
     q.set_fields(fields_string, fields_int, fields_float)
-    q.set_order("date", "state", "issue")
+    q.set_sort_order("date", "state", "issue")
 
     # build the filter
     q.where_integers("date", dates)

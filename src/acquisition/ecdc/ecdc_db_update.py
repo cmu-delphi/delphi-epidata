@@ -31,23 +31,19 @@ incidence_rate: num_ili/100k
 """
 
 import argparse
-import csv
 import datetime
 import glob
-import sys
 import subprocess
 import random
-from io import StringIO
 import os
 
 # third party
 import mysql.connector
-#import pycountry
 
 # first party
 import delphi.operations.secrets as secrets
 from delphi.epidata.acquisition.ecdc.ecdc_ili import download_ecdc_data
-from delphi.utils.epiweek import delta_epiweeks, join_epiweek, check_epiweek
+from delphi.utils.epiweek import delta_epiweeks
 from delphi.utils.epidate import EpiDate
 
 def ensure_tables_exist():
@@ -74,13 +70,13 @@ def ensure_tables_exist():
 def safe_float(f):
     try:
         return float(f.replace(',',''))
-    except Exception:
+    except:
         return 0
 
 def safe_int(i):
     try:
         return int(i.replace(',',''))
-    except Exception:
+    except:
         return 0
 
 def get_rows(cnx, table='ecdc_ili'):
@@ -106,7 +102,6 @@ def update_from_file(issue, date, dir, test_mode=False):
     rows = []
     for filename in files:
         with open(filename,'r') as f:
-            header = map(lambda s: s.strip(),f.readline().split(','))
             for l in f:
                 data = list(map(lambda s: s.strip().replace('"',''),l.split(',')))
                 row = {}
@@ -137,7 +132,7 @@ def update_from_file(issue, date, dir, test_mode=False):
         update_args = [date] + data_args
         try:
             insert.execute(sql % tuple(insert_args + update_args))
-        except Exception:
+        except:
             pass
 
     # cleanup
@@ -203,7 +198,7 @@ def main():
                 try:
                     update_from_file(issue, date, filename, test_mode=args.test)
                     subprocess.call(["rm",filename])
-                except Exception:
+                except:
                     db_error = True
             subprocess.call(["rm","-r",tmp_dir])
             if not db_error:

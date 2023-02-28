@@ -6,7 +6,6 @@ import unittest
 
 # third party
 import mysql.connector
-import requests
 
 # first party
 from delphi_utils import Nans

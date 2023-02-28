@@ -116,23 +116,17 @@ above. The base images are built first, followed by the derived
 `epidata`-specific images.
 
 - The [`delphi_web_epidata` image](https://github.com/cmu-delphi/delphi-epidata/blob/main/dev/docker/web/epidata/README.md) adds
-  the Epidata API to the `delphi_web` image.
+  the Epidata API to the `delphi_web_epidata` image.
 - The
   [`delphi_database_epidata` image](https://github.com/cmu-delphi/delphi-epidata/blob/main/dev/docker/database/epidata/README.md)
-  adds the `epi` user account, `epidata` database, and relevant tables
-  (initially empty) to the `delphi_database` image.
+  adds user accounts, `epidata` & other appropriate databases, and relevant tables
+  (initially empty) to a Percona database image.
 
 From the root of your workspace, all of the images can be built as follows:
 
 ```bash
-docker build -t delphi_web \
-  -f repos/delphi/operations/dev/docker/web/Dockerfile .
-
-docker build -t delphi_web_epidata \
-  -f repos/delphi/delphi-epidata/dev/docker/web/epidata/Dockerfile .
-
-docker build -t delphi_database \
-  -f repos/delphi/operations/dev/docker/database/Dockerfile .
+docker build -t delphi_web_epidata\
+			-f ./devops/Dockerfile .;\
 
 docker build -t delphi_database_epidata \
   -f repos/delphi/delphi-epidata/dev/docker/database/epidata/Dockerfile .
@@ -394,33 +388,3 @@ The command above maps two local directories into the container:
 - `/repos/delphi/delphi-epidata/src`: Just the source code, which forms the
   container's `delphi.epidata` python package.
 
-### server code
-
-Local web sources (e.g. PHP files) can be bind-mounted into a
-`delphi_web_epidata` container as follows:
-
-```bash
-docker run --rm -p 127.0.0.1:10080:80 \
-  --mount type=bind,source="$(pwd)"/repos/delphi/delphi-epidata/src/server/api.php,target=/var/www/html/epidata/api.php,readonly \
-  --mount type=bind,source="$(pwd)"/repos/delphi/delphi-epidata/src/server/api_helpers.php,target=/var/www/html/epidata/api_helpers.php,readonly \
-  --network delphi-net --name delphi_web_epidata \
-  delphi_web_epidata
-```
-
-The command above mounts two specific files into the image. It may be tempting
-to bind mount the `src/server` directory rather than specific files, however
-that is currently problematic for a couple of reasons:
-
-1. `server/.htaccess` [from the local repository](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/server/.htaccess) uses
-  the `Header` directive. However, the webserver in the container doesn't have
-  the corresponding module enabled. This causes the server to deny access to
-  the API.
-2. `server/database_config.php`
-  [in the image](https://github.com/cmu-delphi/delphi-epidata/blob/main/dev/docker/web/epidata/assets/database_config.php) contains
-  database credentials for use in conjunction with the
-  `delphi_database_epidata` container during development. However, the same
-  file from [the local repository](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/server/database_config.php) only
-  contains placeholder values. This prevents communication with the database.
-
-There is currently no benefit to bind-mounting sources into the database
-container because schema changes require restarting the container anyway.

@@ -53,7 +53,6 @@ import mysql.connector
 import numpy as np
 
 # first party
-from delphi.epidata.acquisition.fluview import fluview_locations
 import delphi.operations.secrets as secrets
 from delphi.utils.epiweek import delta_epiweeks
 from delphi.utils.geo.locations import Locations

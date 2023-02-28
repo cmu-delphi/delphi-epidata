@@ -1,7 +1,8 @@
-from flask import Blueprint
+from flask import Blueprint, request
 
+from .._params import extract_integer, extract_integers, extract_strings
 from .._query import execute_query, QueryBuilder
-from .._validate import extract_integer, extract_integers, extract_strings, require_all
+from .._validate import require_all
 
 # first argument is the endpoint name
 bp = Blueprint("kcdc_ili", __name__)
@@ -10,7 +11,7 @@ alias = None
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    require_all("regions", "epiweeks")
+    require_all(request, "regions", "epiweeks")
     regions = extract_strings("regions")
     epiweeks = extract_integers("epiweeks")
     issues = extract_integers("issues")
@@ -24,7 +25,7 @@ def handle():
     fields_float = ["ili"]
     q.set_fields(fields_string, fields_int, fields_float)
 
-    q.set_order("epiweek", "region", "issue")
+    q.set_sort_order("epiweek", "region", "issue")
     # build the filter
     q.where_integers("epiweek", epiweeks)
     q.where_strings("region", regions)

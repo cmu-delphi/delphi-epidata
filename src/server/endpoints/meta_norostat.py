@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, request
 
 from .._printer import print_non_standard
 from .._query import parse_result
@@ -20,4 +20,4 @@ def handle():
     locations = parse_result(query, {}, ["location"])
 
     data = {"releases": releases, "locations": locations}
-    return print_non_standard(data)
+    return print_non_standard(request.values.get("format"), data)

@@ -1,9 +1,10 @@
 import re
 
-from flask import Blueprint
+from flask import Blueprint, request
 
+from .._params import extract_integers, extract_strings
 from .._query import execute_queries, filter_integers
-from .._validate import extract_integers, extract_strings, require_all
+from .._validate import require_all
 
 # first argument is the endpoint name
 bp = Blueprint("nidss_dengue", __name__)
@@ -12,7 +13,7 @@ alias = None
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    require_all("locations", "epiweeks")
+    require_all(request, "locations", "epiweeks")
     locations = extract_strings("locations")
     epiweeks = extract_integers("epiweeks")
 

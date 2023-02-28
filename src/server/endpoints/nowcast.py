@@ -1,7 +1,8 @@
-from flask import Blueprint
+from flask import Blueprint, request
 
+from .._params import extract_integers, extract_strings
 from .._query import execute_query, QueryBuilder
-from .._validate import extract_integers, extract_strings, require_all
+from .._validate import require_all
 
 # first argument is the endpoint name
 bp = Blueprint("nowcast", __name__)
@@ -10,7 +11,7 @@ alias = None
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    require_all("locations", "epiweeks")
+    require_all(request, "locations", "epiweeks")
     locations = extract_strings("locations")
     epiweeks = extract_integers("epiweeks")
 
@@ -22,7 +23,7 @@ def handle():
     fields_float = ["value", "std"]
     q.set_fields(fields_string, fields_int, fields_float)
 
-    q.set_order(epiweek=True, location=True)
+    q.set_sort_order("epiweek", "location")
 
     # build the filter
     q.where_strings("location", locations)

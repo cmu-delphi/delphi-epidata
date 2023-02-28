@@ -1,0 +1,16 @@
+epiweeks==2.1.2
+Flask==2.2.2
+itsdangerous<2.1
+jinja2==3.0.3
+more_itertools==8.4.0
+mysqlclient==2.1.1
+newrelic
+orjson==3.4.7
+pandas==1.2.3
+python-dotenv==0.15.0
+scipy==1.6.2
+SQLAlchemy==1.4.40
+structlog==22.1.0
+tenacity==7.0.0
+typing-extensions
+werkzeug==2.2.2

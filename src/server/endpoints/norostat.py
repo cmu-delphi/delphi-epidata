@@ -1,9 +1,9 @@
 from flask import Blueprint, request
 
+from .._params import extract_integers
 from .._query import execute_query, filter_integers, filter_strings
-from .._validate import extract_integers, require_all
+from .._validate import require_all
 from .._security import require_role
-
 
 # first argument is the endpoint name
 bp = Blueprint("norostat", __name__)

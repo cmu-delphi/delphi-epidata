@@ -62,6 +62,16 @@ geographic coverage, limits in its interpretation (symptoms in a survey aren't
 always caused by COVID, our healthcare partner only is part of the market, there
 may be a demographic bias in respondents, etc.), known inaccuracies, etc.
 
+## Missingness
+
+Describe *all* situations under which a value may not be reported, and what that
+means. If the signal ever reports NA, describe what that means and how it is
+different from missingness. For example:
+
+When fewer than 100 survey responses are received in a geographic area on a
+specific day, no data is reported for that area on that day; an API query for
+all reported geographic areas on that day will not include it.
+
 ## Lag and Backfill
 
 If this signal is reported with a consistent lag, describe it here.

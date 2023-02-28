@@ -1,7 +1,8 @@
 from flask import Blueprint, request
 
+from .._params import extract_integers, extract_strings
 from .._query import execute_query, filter_dates, filter_integers, filter_strings
-from .._validate import extract_integers, extract_strings, require_all, require_any
+from .._validate import require_all, require_any
 
 # first argument is the endpoint name
 bp = Blueprint("wiki", __name__)
@@ -10,8 +11,8 @@ alias = None
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    require_all("articles")
-    require_any("dates", "epiweeks")
+    require_all(request, "articles")
+    require_any(request, "dates", "epiweeks")
 
     articles = extract_strings("articles")
     language = request.values.get("language", "en")

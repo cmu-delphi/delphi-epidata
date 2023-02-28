@@ -1,7 +1,8 @@
-from flask import Blueprint
+from flask import Blueprint, request
 
+from .._params import extract_strings
 from .._query import execute_query, QueryBuilder
-from .._validate import extract_strings, require_any
+from .._validate import require_any
 
 # first argument is the endpoint name
 bp = Blueprint("covid_hosp_facility_lookup", __name__)
@@ -9,7 +10,7 @@ bp = Blueprint("covid_hosp_facility_lookup", __name__)
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    require_any("state", "ccn", "city", "zip", "fips_code")
+    require_any(request, "state", "ccn", "city", "zip", "fips_code")
     state = extract_strings("state")
     ccn = extract_strings("ccn")
     city = extract_strings("city")
@@ -33,7 +34,7 @@ def handle():
         ]
     )
     # basic query info
-    q.set_order("hospital_pk")
+    q.set_sort_order("hospital_pk")
     # build the filter
     # these are all fast because the table has indexes on each of these fields
     if state:

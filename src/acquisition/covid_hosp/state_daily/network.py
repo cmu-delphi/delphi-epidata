@@ -1,7 +1,3 @@
-# third party
-
-import requests
-
 # first party
 from delphi.epidata.acquisition.covid_hosp.common.network import Network as BaseNetwork
 

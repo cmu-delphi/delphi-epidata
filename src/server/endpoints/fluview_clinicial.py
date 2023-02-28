@@ -1,14 +1,15 @@
-from flask import Blueprint
+from flask import Blueprint, request
 
+from .._params import extract_integer, extract_integers, extract_strings
 from .._query import execute_query, QueryBuilder
-from .._validate import extract_integer, extract_integers, extract_strings, require_all
+from .._validate import require_all
 
 bp = Blueprint("fluview_clinical", __name__)
 
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    require_all("epiweeks", "regions")
+    require_all(request, "epiweeks", "regions")
 
     epiweeks = extract_integers("epiweeks")
     regions = extract_strings("regions")
@@ -22,7 +23,7 @@ def handle():
     fields_int = ["issue", "epiweek", "lag", "total_specimens", "total_a", "total_b"]
     fields_float = ["percent_positive", "percent_a", "percent_b"]
     q.set_fields(fields_string, fields_int, fields_float)
-    q.set_order("epiweek", "region", "issue")
+    q.set_sort_order("epiweek", "region", "issue")
 
     q.where_integers("epiweek", epiweeks)
     q.where_strings("region", regions)

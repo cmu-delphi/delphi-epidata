@@ -1,7 +1,7 @@
 ---
 title: End of CTIS Data Collection
 parent: COVID-19 Trends and Impact Survey
-nav_order: 10
+nav_order: 11
 ---
 
 # End of CTIS Data Collection

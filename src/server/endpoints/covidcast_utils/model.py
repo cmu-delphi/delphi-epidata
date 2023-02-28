@@ -6,7 +6,7 @@ import re
 import pandas as pd
 import numpy as np
 
-from ..._params import SourceSignalPair
+from ..._params import SourceSignalSet
 
 
 class HighValuesAre(str, Enum):
@@ -202,7 +202,7 @@ def _load_data_sources():
 
 
 data_sources, data_sources_df = _load_data_sources()
-data_source_by_id = {d.source: d for d in data_sources}
+data_sources_by_id = {d.source: d for d in data_sources}
 
 
 def _load_data_signals(sources: List[DataSource]):
@@ -231,28 +231,23 @@ data_signals, data_signals_df = _load_data_signals(data_sources)
 data_signals_by_key = {d.key: d for d in data_signals}
 # also add the resolved signal version to the signal lookup
 for d in data_signals:
-    source = data_source_by_id.get(d.source)
+    source = data_sources_by_id.get(d.source)
     if source and source.uses_db_alias:
         data_signals_by_key[(source.db_source, d.signal)] = d
 
 
-
-def get_related_signals(signal: DataSignal) -> List[DataSignal]:
-    return [s for s in data_signals if s != signal and s.signal_basename == signal.signal_basename]
-
-
-def count_signal_time_types(source_signals: List[SourceSignalPair]) -> Tuple[int, int]:
+def count_signal_time_types(source_signals: List[SourceSignalSet]) -> Tuple[int, int]:
     """
     count the number of signals in this query for each time type
     @returns daily counts, weekly counts
     """
     weekly = 0
     daily = 0
-    for pair in source_signals:
-        if pair.signal == True:
+    for ssset in source_signals:
+        if ssset.signal == True:
             continue
-        for s in pair.signal:
-            signal = data_signals_by_key.get((pair.source, s))
+        for s in ssset.signal:
+            signal = data_signals_by_key.get((ssset.source, s))
             if not signal:
                 continue
             if signal.time_type == TimeType.week:
@@ -262,21 +257,21 @@ def count_signal_time_types(source_signals: List[SourceSignalPair]) -> Tuple[int
     return daily, weekly
 
 
-def create_source_signal_alias_mapper(source_signals: List[SourceSignalPair]) -> Tuple[List[SourceSignalPair], Optional[Callable[[str, str], str]]]:
+def create_source_signal_alias_mapper(source_signals: List[SourceSignalSet]) -> Tuple[List[SourceSignalSet], Optional[Callable[[str, str], str]]]:
     alias_to_data_sources: Dict[str, List[DataSource]] = {}
-    transformed_pairs: List[SourceSignalPair] = []
-    for pair in source_signals:
-        source = data_source_by_id.get(pair.source)
+    transformed_sets: List[SourceSignalSet] = []
+    for ssset in source_signals:
+        source = data_sources_by_id.get(ssset.source)
         if not source or not source.uses_db_alias:
-            transformed_pairs.append(pair)
+            transformed_sets.append(ssset)
             continue
         # uses an alias
         alias_to_data_sources.setdefault(source.db_source, []).append(source)
-        if pair.signal == True:
+        if ssset.signal is True:
             # list all signals of this source (*) so resolve to a plain list of all in this alias
-            transformed_pairs.append(SourceSignalPair(source.db_source, [s.signal for s in source.signals]))
+            transformed_sets.append(SourceSignalSet(source.db_source, [s.signal for s in source.signals]))
         else:
-            transformed_pairs.append(SourceSignalPair(source.db_source, pair.signal))
+            transformed_sets.append(SourceSignalSet(source.db_source, ssset.signal))
 
     if not alias_to_data_sources:
         # no alias needed
@@ -299,4 +294,4 @@ def create_source_signal_alias_mapper(source_signals: List[SourceSignalPair]) ->
             signal_source = possible_data_sources[0]
         return signal_source.source
 
-    return transformed_pairs, map_row
+    return transformed_sets, map_row

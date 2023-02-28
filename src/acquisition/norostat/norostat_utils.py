@@ -2,9 +2,6 @@
 import re
 import datetime
 
-# third party
-import pandas as pd
-
 # first party
 from delphi.utils.epidate import EpiDate
 

@@ -1,14 +1,13 @@
-import sys
 from typing import Dict, List, Optional
 
-from flask import Blueprint
+from flask import Blueprint, request
 from flask.json import loads
 from sqlalchemy import text
 
 from .._common import db
+from .._params import extract_strings
 from .._printer import create_printer
 from .._query import filter_fields
-from .._validate import extract_strings
 from ..utils.logger import get_structured_logger
 
 bp = Blueprint("covidcast_meta", __name__)
@@ -48,7 +47,6 @@ def fetch_data(
     age = row["age"]
     if age > max_age and row["epidata"]:
         get_structured_logger('server_api').warning("covidcast_meta cache is stale", cache_age=age)
-        pass
 
     epidata = loads(row["epidata"])
 
@@ -81,4 +79,4 @@ def handle():
     signals = [SourceSignal(v) for v in (extract_strings("signals") or [])]
     geo_types = extract_strings("geo_types")
 
-    return create_printer()(filter_fields(fetch_data(time_types, geo_types, signals)))
+    return create_printer(request.values.get("format"))(filter_fields(fetch_data(time_types, geo_types, signals)))

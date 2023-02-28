@@ -1,6 +1,6 @@
+from typing import Iterable, Optional
 from flask import make_response, request
 from flask.json import dumps
-from typing import Iterable, Optional
 from werkzeug.exceptions import HTTPException
 
 

@@ -1,9 +1,10 @@
 from typing import Dict, List
 
-from flask import Blueprint
+from flask import Blueprint, request
 
+from .._params import extract_integers, extract_strings
 from .._query import execute_queries, filter_integers, filter_strings
-from .._validate import extract_integers, extract_strings, require_all
+from .._validate import require_all
 from .._security import require_role
 
 # first argument is the endpoint name
@@ -54,7 +55,7 @@ FLU_MAPPING = {
 @bp.route("/", methods=("GET", "POST"))
 @require_role("afhsb")
 def handle():
-    require_all("locations", "epiweeks", "flu_types")
+    require_all(request, "locations", "epiweeks", "flu_types")
 
     locations = extract_strings("locations")
     epiweeks = extract_integers("epiweeks")

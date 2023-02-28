@@ -7,10 +7,6 @@
 #
 # Checks for the delphi-net bridge and creates if it doesn't exist.
 #
-# Creates all prereq images (delphi_database, delphi_python) only if they don't
-# exist. If you need to rebuild a prereq, you're probably doing something
-# complicated, and can figure out the rebuild command on your own.
-#
 #
 # Commands:
 #
@@ -40,6 +36,7 @@
 #   pdb=1         Drops you into debug mode upon test failure, if running tests.
 #   test=         Only runs tests in the directories provided here, e.g.
 #                 repos/delphi/delphi-epidata/tests/acquisition/covidcast
+#   sql=          Overrides the default SQL connection string.
 
 
 # Set optional argument defaults
@@ -53,6 +50,12 @@ ifndef test
 	test=repos/delphi/delphi-epidata/tests repos/delphi/delphi-epidata/integrations
 endif
 
+ifdef sql
+	sqlalchemy_uri:=$(sql)
+else
+	sqlalchemy_uri:=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata
+endif
+
 SHELL:=/bin/sh
 
 # Get the Makefile's absolute path: https://stackoverflow.com/a/324782/4784655
@@ -64,6 +67,11 @@ LOG_DB:=delphi_database_epidata_$(NOW).log
 WEB_CONTAINER_ID:=$(shell docker ps -q --filter 'name=delphi_web_epidata')
 DATABASE_CONTAINER_ID:=$(shell docker ps -q --filter 'name=delphi_database_epidata')
 
+M1=
+ifeq ($(shell uname -smp), Darwin arm64 arm)
+$(info M1 system detected, changing docker platform to linux/amd64.)
+	override M1 =--platform linux/amd64
+endif
 
 .PHONY=web
 web:
@@ -77,12 +85,15 @@ web:
 
 	@# Build the web_epidata image
 	@cd repos/delphi/delphi-epidata;\
-		docker build -t delphi_web_epidata -f ./devops/Dockerfile .;\
-		cd ../../../
+		docker build -t delphi_web_epidata\
+			$(M1) \
+			-f ./devops/Dockerfile .;\
+		cd -
 
 	@# Run the web server
 	@docker run --rm -p 127.0.0.1:10080:80 \
-		--env "SQLALCHEMY_DATABASE_URI=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata" \
+		$(M1) \
+		--env "SQLALCHEMY_DATABASE_URI=$(sqlalchemy_uri)" \
 		--env "FLASK_SECRET=abc" --env "FLASK_PREFIX=/epidata" --env "LOG_DEBUG" \
 		--network delphi-net --name delphi_web_epidata \
 		delphi_web_epidata >$(LOG_WEB) 2>&1 &
@@ -97,16 +108,14 @@ db:
 	@# Setup virtual network if it doesn't exist
 	@docker network ls | grep delphi-net || docker network create --driver bridge delphi-net
 
-	@# Only build prereqs if we need them
-	@docker images delphi_database | grep delphi || \
-		docker build -t delphi_database -f repos/delphi/operations/dev/docker/database/Dockerfile .
-
 	@# Build the database_epidata image
 	@docker build -t delphi_database_epidata \
+		$(M1) \
 		-f repos/delphi/delphi-epidata/dev/docker/database/epidata/Dockerfile .
 
 	@# Run the database
 	@docker run --rm -p 127.0.0.1:13306:3306 \
+		$(M1) \
 		--network delphi-net --name delphi_database_epidata \
                 --cap-add=sys_nice \
 		delphi_database_epidata >$(LOG_DB) 2>&1 &
@@ -120,11 +129,8 @@ db:
 
 .PHONY=py
 py:
-	@# Build the python image
-	@docker build -t delphi_python \
-		-f repos/delphi/operations/dev/docker/python/Dockerfile .
-
 	@docker build -t delphi_web_python \
+		$(M1) \
 		-f repos/delphi/delphi-epidata/dev/docker/python/Dockerfile .
 
 .PHONY=all
@@ -133,18 +139,20 @@ all: db web py
 .PHONY=test
 test:
 	@docker run -i --rm --network delphi-net \
+		$(M1) \
 		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata,target=/usr/src/app/repos/delphi/delphi-epidata,readonly \
 		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata/src,target=/usr/src/app/delphi/epidata,readonly \
-		--env "SQLALCHEMY_DATABASE_URI=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata" \
+		--env "SQLALCHEMY_DATABASE_URI=$(sqlalchemy_uri)" \
 		--env "FLASK_SECRET=abc" \
 		delphi_web_python python -m pytest --import-mode importlib $(pdb) $(test) | tee test_output_$(NOW).log
 
 .PHONY=bash
 bash:
 	@docker run -it --rm --network delphi-net \
+		$(M1) \
 		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata,target=/usr/src/app/repos/delphi/delphi-epidata,readonly \
 		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata/src,target=/usr/src/app/delphi/epidata,readonly \
-		--env "SQLALCHEMY_DATABASE_URI=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata" \
+		--env "SQLALCHEMY_DATABASE_URI=$(sqlalchemy_uri)" \
 		--env "FLASK_SECRET=abc" \
 		delphi_web_python bash
 

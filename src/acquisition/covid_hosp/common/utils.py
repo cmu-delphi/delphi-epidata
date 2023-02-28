@@ -169,19 +169,20 @@ class Utils:
       # download the dataset and add it to the database
       dataset = Utils.merge_by_key_cols([network.fetch_dataset(url) for url, _ in revisions],
                                         db.KEY_COLS)
-      # add metadata to the database using the last revision seen.
-      last_url, last_index = revisions[-1]
-      metadata_json = metadata.loc[last_index].reset_index().to_json()
+      # add metadata to the database
+      all_metadata = []
+      for url, index in revisions:
+        all_metadata.append((url, metadata.loc[index].reset_index().to_json()))
       datasets.append((
         issue_int,
         dataset,
-        last_url,
-        metadata_json
+        all_metadata
       ))
     with database.connect() as db:
-      for issue_int, dataset, last_url, metadata_json in datasets:
+      for issue_int, dataset, all_metadata in datasets:
         db.insert_dataset(issue_int, dataset)
-        db.insert_metadata(issue_int, last_url, metadata_json)
+        for url, metadata_json in all_metadata:
+          db.insert_metadata(issue_int, url, metadata_json)
         print(f'successfully acquired {len(dataset)} rows')
 
       # note that the transaction is committed by exiting the `with` block

@@ -1,10 +1,12 @@
 from flask import Blueprint, request
 
 from .._config import NATION_REGION, REGION_TO_STATE
-from .._query import execute_queries, filter_dates, filter_integers, filter_strings
-from .._validate import (
+from .._params import (
     extract_integers,
     extract_strings,
+)
+from .._query import execute_queries, filter_dates, filter_integers, filter_strings
+from .._validate import (
     require_all,
     require_any,
 )
@@ -18,8 +20,8 @@ alias = None
 @bp.route("/", methods=("GET", "POST"))
 @require_role("twitter")
 def handle():
-    require_all("locations")
-    require_any("dates", "epiweeks")
+    require_all(request, "locations")
+    require_any(request, "dates", "epiweeks")
 
     locations = extract_strings("locations")
     if "dates" in request.values:

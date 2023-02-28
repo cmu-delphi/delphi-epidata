@@ -2,69 +2,20 @@
 
 See src/ddl/covidcast.sql for an explanation of each field.
 """
+import threading
+from math import ceil
+from multiprocessing import cpu_count
+from queue import Queue, Empty
+from typing import List
 
 # third party
 import json
 import mysql.connector
-import numpy as np
-from math import ceil
-
-from queue import Queue, Empty
-import threading
-from multiprocessing import cpu_count
 
 # first party
 import delphi.operations.secrets as secrets
-
 from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
-
-class CovidcastRow():
-  """A container for all the values of a single covidcast row."""
-
-  @staticmethod
-  def fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag):
-    if row_value is None: return None
-    return CovidcastRow(source, signal, time_type, geo_type, time_value,
-                        row_value.geo_value,
-                        row_value.value,
-                        row_value.stderr,
-                        row_value.sample_size,
-                        row_value.missing_value,
-                        row_value.missing_stderr,
-                        row_value.missing_sample_size,
-                        issue, lag)
-
-  @staticmethod
-  def fromCsvRows(row_values, source, signal, time_type, geo_type, time_value, issue, lag):
-    # NOTE: returns a generator, as row_values is expected to be a generator
-    return (CovidcastRow.fromCsvRowValue(row_value, source, signal, time_type, geo_type, time_value, issue, lag)
-            for row_value in row_values)
-
-  def __init__(self, source, signal, time_type, geo_type, time_value, geo_value, value, stderr, 
-               sample_size, missing_value, missing_stderr, missing_sample_size, issue, lag):
-    self.id = None
-    self.source = source
-    self.signal = signal
-    self.time_type = time_type
-    self.geo_type = geo_type
-    self.time_value = time_value
-    self.geo_value = geo_value      # from CSV row
-    self.value = value              # ...
-    self.stderr = stderr            # ...
-    self.sample_size = sample_size  # ...
-    self.missing_value = missing_value # ...
-    self.missing_stderr = missing_stderr # ...
-    self.missing_sample_size = missing_sample_size # from CSV row
-    self.direction_updated_timestamp = 0
-    self.direction = None
-    self.issue = issue
-    self.lag = lag
-
-  def signal_pair(self):
-    return f"{self.source}:{self.signal}"
-
-  def geo_pair(self):
-    return f"{self.geo_type}:{self.geo_value}"
+from delphi.epidata.acquisition.covidcast.covidcast_row import CovidcastRow
 
 
 class DBLoadStateException(Exception):
@@ -131,16 +82,16 @@ class Database:
     This is also destructive to any data in the load table.
     """
 
-    self._cursor.execute(f'DELETE FROM epimetric_load')
+    self._cursor.execute('DELETE FROM epimetric_load')
     # NOTE: 'ones' are used as filler here for the (required) NOT NULL columns.
-    self._cursor.execute(f"""
+    self._cursor.execute("""
       INSERT INTO epimetric_load
         (epimetric_id,
          source, `signal`, geo_type, geo_value, time_type, time_value, issue, `lag`, value_updated_timestamp)
       VALUES
         ((SELECT 1+MAX(epimetric_id) FROM epimetric_full),
          '1', '1', '1', '1', '1', 1, 1, 1, 1);""")
-    self._cursor.execute(f'DELETE FROM epimetric_load')
+    self._cursor.execute('DELETE FROM epimetric_load')
 
   def do_analyze(self):
     """performs and stores key distribution analyses, used for join order and index selection"""
@@ -156,7 +107,7 @@ class Database:
   def insert_or_update_bulk(self, cc_rows):
     return self.insert_or_update_batch(cc_rows)
 
-  def insert_or_update_batch(self, cc_rows, batch_size=2**20, commit_partial=False, suppress_jobs=False):
+  def insert_or_update_batch(self, cc_rows: List[CovidcastRow], batch_size=2**20, commit_partial=False, suppress_jobs=False):
     """
     Insert new rows into the load table and dispatch into dimension and fact tables.
     """
@@ -201,7 +152,6 @@ class Database:
       for batch_num in range(num_batches):
         start = batch_num * batch_size
         end = min(num_rows, start + batch_size)
-        length = end - start
 
         args = [(
           row.source,
@@ -377,8 +327,6 @@ class Database:
     # composite keys:
     short_comp_key = "`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`"
     long_comp_key = short_comp_key + ", `issue`"
-    short_comp_ref_key = "`signal_key_id`, `geo_key_id`, `time_type`, `time_value`"
-    long_comp_ref_key = short_comp_ref_key + ", `issue`"
 
     create_tmp_table_sql = f'''
 CREATE TABLE {tmp_table_name} LIKE {self.load_table};

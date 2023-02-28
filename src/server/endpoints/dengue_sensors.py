@@ -1,7 +1,8 @@
 from flask import Blueprint
 
+from .._params import extract_integers, extract_strings
 from .._query import execute_query, QueryBuilder
-from .._validate import extract_integers, extract_strings, require_all
+from .._validate import require_all
 from .._security import require_role
 
 # first argument is the endpoint name
@@ -25,9 +26,9 @@ def handle():
     fields_int = ["epiweek"]
     fields_float = ["value"]
     q.set_fields(fields_string, fields_int, fields_float)
-
-    q.set_order('epiweek', 'name', 'location')
-
+    
+    q.set_sort_order('epiweek', 'name', 'location')
+    
     q.where_strings('name', names)
     q.where_strings('location', locations)
     q.where_integers('epiweek', epiweeks)

@@ -69,9 +69,8 @@ class PageParser(HTMLParser):
     '''Inherited - called when an end tag is found'''
     if tag in PageParser.banlist():
         return
-    x = self.stack.pop()
-    #if x['type'] != tag:
-    #  print('Unclosed tag!  Parent/Child:', x['type'], tag)
+    self.stack.pop()
+
 
   def handle_data(self, data):
     '''Inherited - called when a data string is found'''

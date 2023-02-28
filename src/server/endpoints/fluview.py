@@ -1,14 +1,15 @@
 from typing import Any, Dict, List, Tuple
 
-from flask import Blueprint
+from flask import Blueprint, request
 
 from .._security import current_user
-
-from .._query import execute_queries, filter_integers, filter_strings
-from .._validate import (
+from .._params import (
     extract_integer,
     extract_integers,
     extract_strings,
+)
+from .._query import execute_queries, filter_integers, filter_strings
+from .._validate import (
     require_all,
 )
 
@@ -21,7 +22,7 @@ alias = None
 def handle():
     authorized = current_user.has_role("fluview")
 
-    require_all("epiweeks", "regions")
+    require_all(request, "epiweeks", "regions")
 
     epiweeks = extract_integers("epiweeks")
     regions = extract_strings("regions")

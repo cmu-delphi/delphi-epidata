@@ -1,11 +1,13 @@
 from flask import Blueprint, request
 
-from .._query import execute_query, filter_integers, filter_strings
-from .._validate import (
+from .._params import (
     extract_date,
     extract_dates,
     extract_integer,
-    extract_strings,
+    extract_strings
+)
+from .._query import execute_query, filter_integers, filter_strings
+from .._validate import (
     require_all,
     require_any,
 )
@@ -17,10 +19,10 @@ alias = None
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    require_all(
+    require_all(request,
         "data_source", "time_type", "geo_type", "time_values", "signals", "sensor_names"
     )
-    require_any("geo_value", "geo_values", empty=True)
+    require_any(request, "geo_value", "geo_values", empty=True)
 
     time_values = extract_dates("time_values")
     as_of = extract_date("as_of")

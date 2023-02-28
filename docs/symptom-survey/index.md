@@ -16,12 +16,6 @@ international version is [conducted by the University of
 Maryland](https://covidmap.umd.edu/). Data collection [ceased on June 25,
 2022](end-of-survey.md).
 
-The [survey results dashboard](https://delphi.cmu.edu/covidcast/survey-results/)
-provides a high-level summary of survey results. Geographically aggregated data
-from this survey is publicly available through the [COVIDcast API](../api/covidcast.md)
-as the [`fb-survey` data source](../api/covidcast-signals/fb-survey.md). Demographic breakdowns of survey
-data are publicly available as [downloadable contingency tables](contingency-tables.md).
-
 The [CTIS Methodology
 Report](https://dataforgood.facebook.com/dfg/resources/CTIS-methodology-report)
 describes the survey design, data collection process, weighting, and aggregation
@@ -33,6 +27,16 @@ access to the data, see our page on getting [data access](data-access.md).
 
 If you have questions about the survey or getting access to data, contact us at
 <delphi-survey-info@lists.andrew.cmu.edu>.
+
+## Results
+
+The [survey results dashboard](https://delphi.cmu.edu/covidcast/survey-results/)
+provides a high-level summary of survey results. Geographically aggregated data
+from this survey is publicly available through the [COVIDcast API](../api/covidcast.md)
+as the [`fb-survey` data source](../api/covidcast-signals/fb-survey.md). Demographic breakdowns of survey
+data are publicly available as [downloadable contingency tables](contingency-tables.md).
+
+CTIS data has been used in [numerous peer-reviewed publications](publications.md).
 
 ## Credits
 
