@@ -5,7 +5,6 @@ WORKDIR /usr/src/app
 COPY repos repos
 COPY repos/delphi/delphi-epidata/dev/docker/python/setup.sh .
 
-COPY repos/delphi/delphi-epidata/src/acquisition/covidcast/logger.py /usr/src/app/delphi/epidata/server/_logger.py
 
 RUN ln -s -f /usr/share/zoneinfo/America/New_York /etc/localtime && \
     chmod -R o+r repos/ && \
