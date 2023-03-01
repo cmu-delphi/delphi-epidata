@@ -1,6 +1,5 @@
 """Collects and reads covidcast data from a set of local CSV files."""
 
-# standard library
 import os
 import re
 from dataclasses import dataclass
@@ -8,15 +7,12 @@ from datetime import date
 from glob import glob
 from typing import Iterator, NamedTuple, Optional, Tuple
 
-# third party
 import epiweeks as epi
 import pandas as pd
-
-# first party
-from delphi_utils import Nans
-from delphi.utils.epiweek import delta_epiweeks
 from delphi.epidata.acquisition.covidcast.covidcast_row import CovidcastRow
 from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
+from delphi.utils.epiweek import delta_epiweeks
+from delphi_utils import Nans
 
 DataFrameRow = NamedTuple('DFRow', [
   ('geo_id', str),
@@ -208,7 +204,8 @@ class CsvImporter:
   def is_header_valid(columns):
     """Return whether the given pandas columns contains the required fields."""
 
-    return set(columns) >= CsvImporter.REQUIRED_COLUMNS
+    # return set(columns) >= CsvImporter.REQUIRED_COLUMNS
+    return CsvImporter.REQUIRED_COLUMNS.issubset(set(columns))
 
 
   @staticmethod
@@ -282,10 +279,64 @@ class CsvImporter:
 
     return missing_entry
 
+  @staticmethod
+  def geo_id_sanity_check(geo_type, geo_id):
+    """
+    Sanity check geo_id with respect to geo_type
+    """
+    def check_county():
+      if len(geo_id) != 5 or not '01000' <= geo_id <= '80000':
+        return (None, 'geo_id')
+      return geo_id
+    
+    def check_hrr():
+      if not 1 <= int(geo_id) <= 500:
+        return (None, 'geo_id')
+      return geo_id
+    
+    def check_msa():
+      if len(geo_id) != 5 or not '10000' <= geo_id <= '99999':
+        return (None, 'geo_id')
+      return geo_id
+    
+    def check_dma():
+      if not 450 <= int(geo_id) <= 950:
+        return (None, 'geo_id')
+      return geo_id
+
+    def check_state():
+      # note that geo_id is lowercase
+      if len(geo_id) != 2 or not 'aa' <= geo_id <= 'zz':
+        return (None, 'geo_id')
+      return geo_id
+
+    def check_hhs():
+      if not 1 <= int(geo_id) <= 10:
+        return (None, 'geo_id')
+      return geo_id
+
+    def check_nation():
+      # geo_id is lowercase
+      if len(geo_id) != 2 or not 'aa' <= geo_id <= 'zz':
+        return (None, 'geo_id')
+      return geo_id
+
+    geo_type_dict = {
+      'county': check_county(),
+      'hrr': check_hrr(),
+      'msa': check_msa(),
+      'dma': check_dma(),
+      'state': check_state(),
+      'hhs': check_hhs(),
+      'nation': check_nation(),
+    }
+
+    return geo_type_dict.get(geo_type, (None, 'geo_id'))
 
   @staticmethod
   def extract_and_check_row(row: DataFrameRow, geo_type: str, filepath: Optional[str] = None) -> Tuple[Optional[CsvRowValue], Optional[str]]:
-    """Extract and return `CsvRowValue` from a CSV row, with sanity checks.
+    """
+    Extract and return `CsvRowValue` from a CSV row, with sanity checks.
 
     Also returns the name of the field which failed sanity check, or None.
 
@@ -293,6 +344,7 @@ class CsvImporter:
     geo_type: the geographic resolution of the file
     """
 
+    
     # use consistent capitalization (e.g. for states)
     try:
       geo_id = row.geo_id.lower()
@@ -309,38 +361,7 @@ class CsvImporter:
         return (None, 'geo_id')
 
     # sanity check geo_id with respect to geo_type
-    if geo_type == 'county':
-      if len(geo_id) != 5 or not '01000' <= geo_id <= '80000':
-        return (None, 'geo_id')
-
-    elif geo_type == 'hrr':
-      if not 1 <= int(geo_id) <= 500:
-        return (None, 'geo_id')
-
-    elif geo_type == 'msa':
-      if len(geo_id) != 5 or not '10000' <= geo_id <= '99999':
-        return (None, 'geo_id')
-
-    elif geo_type == 'dma':
-      if not 450 <= int(geo_id) <= 950:
-        return (None, 'geo_id')
-
-    elif geo_type == 'state':
-      # note that geo_id is lowercase
-      if len(geo_id) != 2 or not 'aa' <= geo_id <= 'zz':
-        return (None, 'geo_id')
-
-    elif geo_type == 'hhs':
-      if not 1 <= int(geo_id) <= 10:
-        return (None, 'geo_id')
-
-    elif geo_type == 'nation':
-      # geo_id is lowercase
-      if len(geo_id) != 2 or not 'aa' <= geo_id <= 'zz':
-        return (None, 'geo_id')
-
-    else:
-      return (None, 'geo_type')
+    CsvImporter.geo_id_sanity_check(geo_type=geo_type, geo_id=geo_id)
 
     # Validate row values
     value = CsvImporter.validate_quantity(row, "value")
@@ -379,9 +400,17 @@ class CsvImporter:
 
     try:
       table = pd.read_csv(filepath, dtype=CsvImporter.DTYPES)
-    except ValueError as e:
+    except pd.errors.DtypeWarning as e:
       logger.warning(event='Failed to open CSV with specified dtypes, switching to str', detail=str(e), file=filepath)
-      table = pd.read_csv(filepath, dtype='str')
+      try:
+        table = pd.read_csv(filepath, dtype='str')
+      except pd.errors.DtypeWarning as e:
+        logger.warning(event='Failed to open CSV with str dtype', detail=str(e), file=filepath)
+        return
+    except pd.errors.EmptyDataError as e:
+      logger.warning(event='Empty data or header is encountered', detail=str(e), file=filepath)
+      return
+
 
     if not CsvImporter.is_header_valid(table.columns):
       logger.warning(event='invalid header', detail=table.columns, file=filepath)
