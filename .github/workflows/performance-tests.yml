@@ -116,13 +116,6 @@ jobs:
       - name: Comment run results
         env:
           GITHUB_WORKFLOW_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          REQUEST_COUNT: ${{ needs.run-perftests.outputs.request_count }}
-          FAILURE_COUNT: ${{ needs.run-perftests.outputs.failure_count }}
-          MED_TIME: ${{ needs.run-perftests.outputs.med_time }}
-          AVG_TIME: ${{ needs.run-perftests.outputs.avg_time }}
-          MIN_TIME: ${{ needs.run-perftests.outputs.min_time }}
-          MAX_TIME: ${{ needs.run-perftests.outputs.max_time }}
-          REQUESTS_PER_SEC: ${{ needs.run-perftests.outputs.requests_per_sec }}
         uses: actions/github-script@v5
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
@@ -132,13 +125,13 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: `✅ Performance tests complete! Result summary:
-              - Total requests: **${{ env.REQUEST_COUNT }}**
-              - Total failures: **${{ env.FAILURE_COUNT }}**
-              - Min response time: **${{ env.MIN_TIME }} ms**
-              - Max response time: **${{ env.MAX_TIME }} ms**
-              - Average response time: **${{ env.AVG_TIME }} ms**
-              - Median response time: **${{ env.MED_TIME }} ms**
-              - Requests per second: **${{ env.REQUESTS_PER_SEC }}**
+              - Total requests: **${{ needs.run-perftests.outputs.request_count }}**
+              - Total failures: **${{ needs.run-perftests.outputs.failure_count }}**
+              - Min response time: **${{ needs.run-perftests.outputs.min_time }} ms**
+              - Max response time: **${{ needs.run-perftests.outputs.max_time }} ms**
+              - Average response time: **${{ needs.run-perftests.outputs.avg_time }} ms**
+              - Median response time: **${{ needs.run-perftests.outputs.med_time }} ms**
+              - Requests per second: **${{ needs.run-perftests.outputs.requests_per_sec }}**
               
               Click here to view full results: ${{ env.GITHUB_WORKFLOW_URL }}.`
             })
