@@ -20,8 +20,6 @@ from delphi_utils import Nans
 # TODO replace these real geo_values with fake values, and use patch and mock to mock the return values of 
 # delphi_utils.geomap.GeoMapper().get_geo_values(geo_type) in parse_geo_sets() of _params.py
 
-global fips, msa # add two global lists of valid geo_values of these types to pass the validation in parse_geo_sets() of _params.py
-
 fips = ['04019', '19143', '29063'] # Example list of valid FIPS codes as strings
 msa = ['40660', '44180', '48620'] # Example list of valid MSAs as strings
 
