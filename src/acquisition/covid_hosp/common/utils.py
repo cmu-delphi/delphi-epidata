@@ -6,7 +6,6 @@ import re
 
 import pandas as pd
 
-from delphi.epidata.acquisition.common.logger import get_structured_logger
 
 class CovidHospException(Exception):
   """Exception raised exclusively by `covid_hosp` utilities."""
@@ -187,7 +186,7 @@ class Utils:
     bool
       Whether a new dataset was acquired.
     """
-    logger = get_structured_logger(f"{database.__module__}.{database.__name__}.update_dataset")
+    logger = database.logger()
     
     metadata = network.fetch_metadata(logger=logger)
     datasets = []

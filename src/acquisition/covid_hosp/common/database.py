@@ -11,6 +11,7 @@ import pandas as pd
 
 # first party
 import delphi.operations.secrets as secrets
+from delphi.epidata.acquisition.common.logger import get_structured_logger
 
 Columndef = namedtuple("Columndef", "csv_name sql_name dtype")
 
@@ -52,6 +53,10 @@ class Database:
     }
     self.key_columns = key_columns if key_columns is not None else []
     self.additional_fields = additional_fields if additional_fields is not None else []
+
+  @classmethod
+  def logger(database_class):
+    return get_structured_logger(f"{database_class.__module__}")
 
   @classmethod
   @contextmanager
@@ -269,5 +274,5 @@ class Database:
         if result is not None:
           return pd.Timestamp(str(result))
       if logger:
-        logger.info("get_max_issue", msg="no matching results in meta table; returning 1900/1/1 epoch")
+        logger.warn("get_max_issue", msg="no matching results in meta table; returning 1900/1/1 epoch")
       return pd.Timestamp("1900/1/1")

@@ -97,7 +97,7 @@ class UtilsTests(unittest.TestCase):
     mock_network = MagicMock()
     mock_network.fetch_metadata.return_value = \
         self.test_utils.load_sample_metadata()
-    mock_database = MagicMock(**{"__module__":"test_module", "__name__":"test_name"})
+    mock_database = MagicMock()
     with mock_database.connect() as mock_connection:
       pass
     mock_connection.get_max_issue.return_value = pd.Timestamp("2200/1/1")
@@ -117,7 +117,7 @@ class UtilsTests(unittest.TestCase):
         self.test_utils.load_sample_metadata()
     fake_dataset = pd.DataFrame({"date": [pd.Timestamp("2020/1/1")], "state": ["ca"]})
     mock_network.fetch_dataset.return_value = fake_dataset
-    mock_database = MagicMock(**{"__module__":"test_module", "__name__":"test_name"})
+    mock_database = MagicMock()
     with mock_database.connect() as mock_connection:
       pass
     type(mock_connection).KEY_COLS = PropertyMock(return_value=["state", "date"])
