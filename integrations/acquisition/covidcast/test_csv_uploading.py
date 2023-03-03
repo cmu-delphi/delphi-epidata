@@ -14,11 +14,11 @@ import numpy as np
 # first party
 from delphi_utils import Nans
 from delphi.epidata.client.delphi_epidata import Epidata
-from delphi.epidata.acquisition.covidcast.csv_to_database import main
+from delphi.epidata.acquisition.covidcast.csv_importer import main
 import delphi.operations.secrets as secrets
 
 # py3tester coverage target (equivalent to `import *`)
-__test_target__ = 'delphi.epidata.acquisition.covidcast.csv_to_database'
+__test_target__ = 'delphi.epidata.acquisition.covidcast.csv_importer'
 
 
 class CsvUploadingTests(unittest.TestCase):

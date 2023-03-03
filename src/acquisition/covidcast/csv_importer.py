@@ -1,18 +1,28 @@
-"""Collects and reads covidcast data from a set of local CSV files."""
+"""
+Collects and reads covidcast data from a set of local CSV files.
 
+Imports covidcast CSVs and stores them in the epidata database.
+"""
+
+import argparse
 import os
 import re
+import time
 from dataclasses import dataclass
 from datetime import date
 from glob import glob
-from typing import Iterator, NamedTuple, Optional, Tuple
+from logging import Logger
+from typing import Callable, Iterable, Iterator, NamedTuple, Optional, Tuple
 
 import epiweeks as epi
 import pandas as pd
 from delphi.epidata.acquisition.covidcast.covidcast_row import CovidcastRow
+from delphi.epidata.acquisition.covidcast.database import Database, DBLoadStateException
+from delphi.epidata.acquisition.covidcast.file_archiver import FileArchiver
 from delphi.epidata.acquisition.covidcast.logger import get_structured_logger
 from delphi.utils.epiweek import delta_epiweeks
 from delphi_utils import Nans
+
 
 DataFrameRow = NamedTuple('DFRow', [
   ('geo_id', str),
@@ -204,7 +214,6 @@ class CsvImporter:
   def is_header_valid(columns):
     """Return whether the given pandas columns contains the required fields."""
 
-    # return set(columns) >= CsvImporter.REQUIRED_COLUMNS
     return CsvImporter.REQUIRED_COLUMNS.issubset(set(columns))
 
 
@@ -280,63 +289,8 @@ class CsvImporter:
     return missing_entry
 
   @staticmethod
-  def geo_id_sanity_check(geo_type, geo_id):
-    """
-    Sanity check geo_id with respect to geo_type
-    """
-    def check_county():
-      if len(geo_id) != 5 or not '01000' <= geo_id <= '80000':
-        return (None, 'geo_id')
-      return geo_id
-    
-    def check_hrr():
-      if not 1 <= int(geo_id) <= 500:
-        return (None, 'geo_id')
-      return geo_id
-    
-    def check_msa():
-      if len(geo_id) != 5 or not '10000' <= geo_id <= '99999':
-        return (None, 'geo_id')
-      return geo_id
-    
-    def check_dma():
-      if not 450 <= int(geo_id) <= 950:
-        return (None, 'geo_id')
-      return geo_id
-
-    def check_state():
-      # note that geo_id is lowercase
-      if len(geo_id) != 2 or not 'aa' <= geo_id <= 'zz':
-        return (None, 'geo_id')
-      return geo_id
-
-    def check_hhs():
-      if not 1 <= int(geo_id) <= 10:
-        return (None, 'geo_id')
-      return geo_id
-
-    def check_nation():
-      # geo_id is lowercase
-      if len(geo_id) != 2 or not 'aa' <= geo_id <= 'zz':
-        return (None, 'geo_id')
-      return geo_id
-
-    geo_type_dict = {
-      'county': check_county(),
-      'hrr': check_hrr(),
-      'msa': check_msa(),
-      'dma': check_dma(),
-      'state': check_state(),
-      'hhs': check_hhs(),
-      'nation': check_nation(),
-    }
-
-    return geo_type_dict.get(geo_type, (None, 'geo_id'))
-
-  @staticmethod
   def extract_and_check_row(row: DataFrameRow, geo_type: str, filepath: Optional[str] = None) -> Tuple[Optional[CsvRowValue], Optional[str]]:
-    """
-    Extract and return `CsvRowValue` from a CSV row, with sanity checks.
+    """Extract and return `CsvRowValue` from a CSV row, with sanity checks.
 
     Also returns the name of the field which failed sanity check, or None.
 
@@ -344,7 +298,6 @@ class CsvImporter:
     geo_type: the geographic resolution of the file
     """
 
-    
     # use consistent capitalization (e.g. for states)
     try:
       geo_id = row.geo_id.lower()
@@ -361,7 +314,38 @@ class CsvImporter:
         return (None, 'geo_id')
 
     # sanity check geo_id with respect to geo_type
-    CsvImporter.geo_id_sanity_check(geo_type=geo_type, geo_id=geo_id)
+    if geo_type == 'county':
+      if len(geo_id) != 5 or not '01000' <= geo_id <= '80000':
+        return (None, 'geo_id')
+
+    elif geo_type == 'hrr':
+      if not 1 <= int(geo_id) <= 500:
+        return (None, 'geo_id')
+
+    elif geo_type == 'msa':
+      if len(geo_id) != 5 or not '10000' <= geo_id <= '99999':
+        return (None, 'geo_id')
+
+    elif geo_type == 'dma':
+      if not 450 <= int(geo_id) <= 950:
+        return (None, 'geo_id')
+
+    elif geo_type == 'state':
+      # note that geo_id is lowercase
+      if len(geo_id) != 2 or not 'aa' <= geo_id <= 'zz':
+        return (None, 'geo_id')
+
+    elif geo_type == 'hhs':
+      if not 1 <= int(geo_id) <= 10:
+        return (None, 'geo_id')
+
+    elif geo_type == 'nation':
+      # geo_id is lowercase
+      if len(geo_id) != 2 or not 'aa' <= geo_id <= 'zz':
+        return (None, 'geo_id')
+
+    else:
+      return (None, 'geo_type')
 
     # Validate row values
     value = CsvImporter.validate_quantity(row, "value")
@@ -411,7 +395,6 @@ class CsvImporter:
       logger.warning(event='Empty data or header is encountered', detail=str(e), file=filepath)
       return
 
-
     if not CsvImporter.is_header_valid(table.columns):
       logger.warning(event='invalid header', detail=table.columns, file=filepath)
       yield None
@@ -443,3 +426,169 @@ class CsvImporter:
         details.issue,
         details.lag,
       )
+
+
+def get_argument_parser():
+  """Define command line arguments."""
+
+  parser = argparse.ArgumentParser()
+  parser.add_argument(
+    '--data_dir',
+    help='top-level directory where CSVs are stored')
+  parser.add_argument(
+    '--specific_issue_date',
+    action='store_true',
+    help='indicates <data_dir> argument is where issuedate-specific subdirectories can be found.')
+  parser.add_argument(
+    '--log_file',
+    help="filename for log output (defaults to stdout)")
+  return parser
+
+
+def collect_files(data_dir: str, specific_issue_date: bool):
+  """Fetch path and data profile details for each file to upload."""
+  logger= get_structured_logger('collect_files')
+  if specific_issue_date:
+    results = list(CsvImporter.find_issue_specific_csv_files(data_dir))
+  else:
+    results = list(CsvImporter.find_csv_files(os.path.join(data_dir, 'receiving')))
+  logger.info(f'found {len(results)} files')
+  return results
+
+
+def make_handlers(data_dir: str, specific_issue_date: bool):
+  if specific_issue_date:
+    # issue-specific uploads are always one-offs, so we can leave all
+    # files in place without worrying about cleaning up
+    def handle_failed(path_src, filename, source, logger):
+      logger.info(event='leaving failed file alone', dest=source, file=filename)
+
+    def handle_successful(path_src, filename, source, logger):
+      logger.info(event='archiving as successful',file=filename)
+      FileArchiver.archive_inplace(path_src, filename)
+  else:
+    # normal automation runs require some shuffling to remove files
+    # from receiving and place them in the archive
+    archive_successful_dir = os.path.join(data_dir, 'archive', 'successful')
+    archive_failed_dir = os.path.join(data_dir, 'archive', 'failed')
+
+    # helper to archive a failed file without compression
+    def handle_failed(path_src, filename, source, logger):
+      logger.info(event='archiving as failed - ', detail=source, file=filename)
+      path_dst = os.path.join(archive_failed_dir, source)
+      compress = False
+      FileArchiver.archive_file(path_src, path_dst, filename, compress)
+
+    # helper to archive a successful file with compression
+    def handle_successful(path_src, filename, source, logger):
+      logger.info(event='archiving as successful',file=filename)
+      path_dst = os.path.join(archive_successful_dir, source)
+      compress = True
+      FileArchiver.archive_file(path_src, path_dst, filename, compress)
+
+  return handle_successful, handle_failed
+
+
+def upload_archive(
+  path_details: Iterable[Tuple[str, Optional[PathDetails]]],
+  database: Database,
+  handlers: Tuple[Callable],
+  logger: Logger
+  ):
+  """Upload CSVs to the database and archive them using the specified handlers.
+
+  :path_details: output from CsvImporter.find*_csv_files
+
+  :database: an open connection to the epidata database
+
+  :handlers: functions for archiving (successful, failed) files
+
+  :return: the number of modified rows
+  """
+  archive_as_successful, archive_as_failed = handlers
+  total_modified_row_count = 0
+  # iterate over each file
+  for path, details in path_details:
+    logger.info(event='handling', dest=path)
+    path_src, filename = os.path.split(path)
+
+    # file path or name was invalid, source is unknown
+    if not details:
+      archive_as_failed(path_src, filename, 'unknown',logger)
+      continue
+
+    csv_rows = CsvImporter.load_csv(path, details)
+    rows_list = list(csv_rows)
+    all_rows_valid = rows_list and all(r is not None for r in rows_list)
+    if all_rows_valid:
+      try:
+        modified_row_count = database.insert_or_update_bulk(rows_list)
+        logger.info(f"insert_or_update_bulk {filename} returned {modified_row_count}")
+        logger.info(
+          "Inserted database rows",
+          row_count = modified_row_count,
+          source = details.source,
+          signal = details.signal,
+          geo_type = details.geo_type,
+          time_value = details.time_value,
+          issue = details.issue,
+          lag = details.lag
+        )
+        if modified_row_count is None or modified_row_count: # else would indicate zero rows inserted
+          total_modified_row_count += (modified_row_count if modified_row_count else 0)
+          database.commit()
+      except DBLoadStateException as e:
+        # if the db is in a state that is not fit for loading new data,
+        # then we should stop processing any more files
+        raise e
+      except Exception as e:
+        all_rows_valid = False
+        logger.exception('exception while inserting rows', exc_info=e)
+        database.rollback()
+
+    # archive the current file based on validation results
+    if all_rows_valid:
+      archive_as_successful(path_src, filename, details.source, logger)
+    else:
+      archive_as_failed(path_src, filename, details.source, logger)
+
+  return total_modified_row_count
+
+
+def main(args):
+  """Find, parse, and upload covidcast signals."""
+
+  logger = get_structured_logger("csv_ingestion", filename=args.log_file)
+  start_time = time.time()
+
+  # shortcut escape without hitting db if nothing to do
+  path_details = collect_files(args.data_dir, args.specific_issue_date)
+  if not path_details:
+    logger.info('nothing to do; exiting...')
+    return
+
+  logger.info("Ingesting CSVs", csv_count = len(path_details))
+
+  database = Database()
+  database.connect()
+
+  try:
+    modified_row_count = upload_archive(
+      path_details,
+      database,
+      make_handlers(args.data_dir, args.specific_issue_date),
+      logger
+    )
+    logger.info("Finished inserting/updating database rows", row_count = modified_row_count)
+  finally:
+    database.do_analyze()
+    # unconditionally commit database changes since CSVs have been archived
+    database.disconnect(True)
+
+  logger.info(
+      "Ingested CSVs into database",
+      total_runtime_in_seconds=round(time.time() - start_time, 2))
+
+
+if __name__ == '__main__':
+  main(get_argument_parser().parse_args())
