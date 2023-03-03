@@ -35,9 +35,14 @@ class DatabaseTests(unittest.TestCase):
     result = database.insert_dataset(sentinel.publication_date, dataset)
 
     self.assertIsNone(result)
-    self.assertEqual(mock_cursor.execute.call_count, 22)
+    # once for the values, once for the keys
+    self.assertEqual(mock_cursor.executemany.call_count, 2)
 
-    last_query_values = mock_cursor.execute.call_args[0][-1]
+    # [0]: the first call() object
+    # [0]: get the positional args out of the call() object
+    # [-1]: the last arg of the executemany call
+    # [-1]: the last row inserted in the executemany
+    last_query_values = mock_cursor.executemany.call_args_list[0][0][-1][-1]
     expected_query_values = (
         0, sentinel.publication_date, '450822', 20201130,
         '6800 N MACARTHUR BLVD', 61.1, 7, 428, 60.9, 7, 426, 61.1, 7, 428,
