@@ -7,10 +7,10 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 from delphi.epidata.acquisition.covidcast.csv_importer import PathDetails
-from delphi.epidata.acquisition.covidcast.csv_to_database import get_argument_parser, main, collect_files, upload_archive, make_handlers
+from delphi.epidata.acquisition.covidcast.csv_importer import get_argument_parser, main, collect_files, upload_archive, make_handlers
 
 # py3tester coverage target
-__test_target__ = 'delphi.epidata.acquisition.covidcast.csv_to_database'
+__test_target__ = 'delphi.epidata.acquisition.covidcast.csv_importer'
 
 
 class UnitTests(unittest.TestCase):
@@ -30,7 +30,7 @@ class UnitTests(unittest.TestCase):
     self.assertIsInstance(get_argument_parser(), argparse.ArgumentParser)
 
 
-  @patch("delphi.epidata.acquisition.covidcast.csv_to_database.CsvImporter")
+  @patch("delphi.epidata.acquisition.covidcast.csv_importer.CsvImporter")
   def test_collect_files(self, mock_csv_importer: MagicMock):
     """Scan the data directory."""
 
@@ -39,9 +39,9 @@ class UnitTests(unittest.TestCase):
     self.assertEqual(mock_csv_importer.find_csv_files.call_count, 1)
 
 
-  @patch("delphi.epidata.acquisition.covidcast.csv_to_database.Database")
-  @patch("delphi.epidata.acquisition.covidcast.csv_to_database.CsvImporter")
-  @patch("delphi.epidata.acquisition.covidcast.csv_to_database.FileArchiver")
+  @patch("delphi.epidata.acquisition.covidcast.csv_importer.Database")
+  @patch("delphi.epidata.acquisition.covidcast.csv_importer.CsvImporter")
+  @patch("delphi.epidata.acquisition.covidcast.csv_importer.FileArchiver")
   def test_upload_archive(self, mock_file_archiver: MagicMock, mock_csv_importer: MagicMock, mock_database: MagicMock):
     """Upload to the database, and archive."""
 
@@ -117,9 +117,9 @@ class UnitTests(unittest.TestCase):
     self.assertEqual(actual_args, expected_args)
 
 
-  @patch("delphi.epidata.acquisition.covidcast.csv_to_database.Database")
-  @patch("delphi.epidata.acquisition.covidcast.csv_to_database.upload_archive")
-  @patch("delphi.epidata.acquisition.covidcast.csv_to_database.collect_files")
+  @patch("delphi.epidata.acquisition.covidcast.csv_importer.Database")
+  @patch("delphi.epidata.acquisition.covidcast.csv_importer.upload_archive")
+  @patch("delphi.epidata.acquisition.covidcast.csv_importer.collect_files")
   def test_main_successful(self, mock_collect_files: MagicMock, mock_upload_archive: MagicMock, mock_database: MagicMock):
     """Run the main program successfully, then commit changes."""
 
@@ -141,9 +141,9 @@ class UnitTests(unittest.TestCase):
     self.assertTrue(mock_database.return_value.disconnect.call_args[0][0])
 
 
-  @patch("delphi.epidata.acquisition.covidcast.csv_to_database.Database")
-  @patch("delphi.epidata.acquisition.covidcast.csv_to_database.upload_archive", side_effect=Exception('testing'))
-  @patch("delphi.epidata.acquisition.covidcast.csv_to_database.collect_files")
+  @patch("delphi.epidata.acquisition.covidcast.csv_importer.Database")
+  @patch("delphi.epidata.acquisition.covidcast.csv_importer.upload_archive", side_effect=Exception('testing'))
+  @patch("delphi.epidata.acquisition.covidcast.csv_importer.collect_files")
   def test_main_unsuccessful(self, mock_collect_files: MagicMock, mock_upload_archive: MagicMock, mock_database: MagicMock):
     """Run the main program with failure, then commit changes."""
 
@@ -163,9 +163,9 @@ class UnitTests(unittest.TestCase):
     self.assertTrue(mock_database.return_value.disconnect.call_args[0][0])
 
 
-  @patch("delphi.epidata.acquisition.covidcast.csv_to_database.Database")
-  @patch("delphi.epidata.acquisition.covidcast.csv_to_database.upload_archive")
-  @patch("delphi.epidata.acquisition.covidcast.csv_to_database.collect_files")
+  @patch("delphi.epidata.acquisition.covidcast.csv_importer.Database")
+  @patch("delphi.epidata.acquisition.covidcast.csv_importer.upload_archive")
+  @patch("delphi.epidata.acquisition.covidcast.csv_importer.collect_files")
   def test_main_early_exit(self, mock_collect_files: MagicMock, mock_upload_archive: MagicMock, mock_database: MagicMock):
     """Run the main program with an empty receiving directory."""
 
@@ -185,9 +185,9 @@ class UnitTests(unittest.TestCase):
     self.assertFalse(mock_database.return_value.disconnect.called)
 
 
-  @patch("delphi.epidata.acquisition.covidcast.csv_to_database.Database")
-  @patch("delphi.epidata.acquisition.covidcast.csv_to_database.CsvImporter")
-  @patch("delphi.epidata.acquisition.covidcast.csv_to_database.FileArchiver")
+  @patch("delphi.epidata.acquisition.covidcast.csv_importer.Database")
+  @patch("delphi.epidata.acquisition.covidcast.csv_importer.CsvImporter")
+  @patch("delphi.epidata.acquisition.covidcast.csv_importer.FileArchiver")
   def test_database_exception_is_handled(self, mock_file_archiver: MagicMock, mock_csv_importer: MagicMock, mock_database: MagicMock):
     """Gracefully handle database exceptions."""
 
