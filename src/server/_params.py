@@ -54,6 +54,17 @@ class GeoSet:
     geo_type: str
     geo_values: Union[bool, Sequence[str]]
 
+    def __init__(self, geo_type: str, geo_values: Union[bool, Sequence[str]]):
+        if not isinstance(geo_values, bool):
+            if geo_values == ['']:
+                raise ValidationFailedException(f"geo_value is empty for the requested geo_type {geo_type}!")
+            allowed_values = delphi_utils.geomap.GeoMapper().get_geo_values(geo_type)
+            invalid_values = set(geo_values) - set(allowed_values)
+            if invalid_values:
+                raise ValidationFailedException(f"Invalid geo_value(s) {', '.join(invalid_values)} for the requested geo_type {geo_type}")
+        self.geo_type = geo_type
+        self.geo_values = geo_values
+
     def matches(self, geo_type: str, geo_value: str) -> bool:
         return self.geo_type == geo_type and (self.geo_values is True or (not isinstance(self.geo_values, bool) and geo_value in self.geo_values))
 
@@ -469,9 +480,9 @@ def parse_geo_sets() -> List[GeoSet]:
         if len(geo_values) == 1 and geo_values[0] == "*":
             return [GeoSet(geo_type, True)]
 
-        for geo_value in geo_values:
-            if geo_value not in delphi_utils.geomap.GeoMapper().get_geo_values(geo_type):
-                raise ValidationFailedException("invalid geo_value for the requested geo_type")
+        # for geo_value in geo_values:
+        #     if geo_value not in delphi_utils.geomap.GeoMapper().get_geo_values(geo_type):
+        #         raise ValidationFailedException("invalid geo_value for the requested geo_type")
 
         return [GeoSet(geo_type, geo_values)]
 

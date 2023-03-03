@@ -3,8 +3,6 @@
 # standard library
 from typing import Callable
 import unittest
-# from unittest.mock import MagicMock
-# from unittest.mock import patch
 
 # third party
 import mysql.connector
@@ -12,20 +10,11 @@ import requests
 
 # first party
 from delphi_utils import Nans
-from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase, CovidcastTestRow
+from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase, CovidcastTestRow, FIPS, MSA
 from delphi.epidata.client.delphi_epidata import Epidata
 
 # use the local instance of the Epidata API
 BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
-
-# TODO replace these real geo_values with fake values, and use patch and mock to mock the return values of 
-# delphi_utils.geomap.GeoMapper().get_geo_values(geo_type) in parse_geo_sets() of _params.py
-
-global fips, msa # add two global lists of valid geo_values of these types to pass the validation in parse_geo_sets() of _params.py
-
-fips = ['04019', '19143', '29063'] # Example list of valid FIPS codes as strings
-msa = ['40660', '44180', '48620'] # Example list of valid MSAs as strings
-
 
 class CovidcastTests(CovidcastBase):
   """Tests the `covidcast` endpoint."""
@@ -42,16 +31,16 @@ class CovidcastTests(CovidcastBase):
     return response
 
   def _insert_placeholder_set_one(self):
-    row = CovidcastTestRow.make_default_row(geo_type='msa', geo_value=msa[0])
+    row = CovidcastTestRow.make_default_row()
     self._insert_rows([row])
     return row
 
   def _insert_placeholder_set_two(self):
     rows = [
-      CovidcastTestRow.make_default_row(geo_type='msa', geo_value=msa[i-1], value=i*1., stderr=i*10., sample_size=i*100.)
+      CovidcastTestRow.make_default_row(geo_type='msa', geo_value=MSA[i-1], value=i*1., stderr=i*10., sample_size=i*100.)
       for i in [1, 2, 3]
     ] + [
-      CovidcastTestRow.make_default_row(geo_type='fips', geo_value=fips[i-4], value=i*1., stderr=i*10., sample_size=i*100.)
+      CovidcastTestRow.make_default_row(geo_type='fips', geo_value=FIPS[i-4], value=i*1., stderr=i*10., sample_size=i*100.)
       for i in [4, 5, 6]
     ]
     self._insert_rows(rows)
@@ -59,11 +48,11 @@ class CovidcastTests(CovidcastBase):
 
   def _insert_placeholder_set_three(self):
     rows = [
-      CovidcastTestRow.make_default_row(geo_type='msa', geo_value=msa[0], time_value=2000_01_01+i, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03, lag=2-i)
+      CovidcastTestRow.make_default_row(geo_value=MSA[0], time_value=2000_01_01+i, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03, lag=2-i)
       for i in [1, 2, 3]
     ] + [
       # time value intended to overlap with the time values above, with disjoint geo values
-      CovidcastTestRow.make_default_row(geo_type='msa', geo_value=str(i)*5, time_value=2000_01_01+i-3, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03, lag=5-i)
+      CovidcastTestRow.make_default_row(geo_value=str(i)*5, time_value=2000_01_01+i-3, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03, lag=5-i)
       for i in [4, 5, 6]
     ]
     self._insert_rows(rows)
@@ -71,11 +60,11 @@ class CovidcastTests(CovidcastBase):
 
   def _insert_placeholder_set_four(self):
     rows = [
-      CovidcastTestRow.make_default_row(geo_type='msa', geo_value=msa[0], source='src1', signal=str(i)*5, value=i*1., stderr=i*10., sample_size=i*100.)
+      CovidcastTestRow.make_default_row(source='src1', signal=str(i)*5, value=i*1., stderr=i*10., sample_size=i*100.)
       for i in [1, 2, 3]
     ] + [
       # signal intended to overlap with the signal above
-      CovidcastTestRow.make_default_row(geo_type='msa', geo_value=msa[0], source='src2', signal=str(i-3)*5, value=i*1., stderr=i*10., sample_size=i*100.)
+      CovidcastTestRow.make_default_row(source='src2', signal=str(i-3)*5, value=i*1., stderr=i*10., sample_size=i*100.)
       for i in [4, 5, 6]
     ]
     self._insert_rows(rows)
@@ -83,11 +72,11 @@ class CovidcastTests(CovidcastBase):
 
   def _insert_placeholder_set_five(self):
     rows = [
-      CovidcastTestRow.make_default_row(geo_type='msa', geo_value=msa[0], time_value=2000_01_01, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03+i)
+      CovidcastTestRow.make_default_row(time_value=2000_01_01, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03+i)
       for i in [1, 2, 3]
     ] + [
       # different time_values, same issues
-      CovidcastTestRow.make_default_row(geo_type='msa', geo_value=msa[0], time_value=2000_01_01+i-3, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03+i-3)
+      CovidcastTestRow.make_default_row(time_value=2000_01_01+i-3, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03+i-3)
       for i in [4, 5, 6]
     ]
     self._insert_rows(rows)
@@ -317,30 +306,30 @@ class CovidcastTests(CovidcastBase):
 
       return response
 
-    self.maxDiff = None
     # test fetch a specific region
-    r = fetch(msa[0])
+    r = fetch(MSA[0])
     self.assertEqual(r['message'], 'success')
     self.assertEqual(r['epidata'], expected[0:1])
     # test fetch a specific yet not existing region
     r = fetch('11111')
-    self.assertEqual(r['message'], 'invalid geo_value for the requested geo_type')
-
+    self.assertEqual(r['message'], 'Invalid geo_value(s) 11111 for the requested geo_type msa')
     # test fetch multiple regions
-    r = fetch('{},{}'.format(msa[0], msa[1]))
+    r = fetch('{},{}'.format(MSA[0], MSA[1]))
     self.assertEqual(r['message'], 'success')
     self.assertEqual(r['epidata'], expected[0:2])
     # test fetch multiple noncontiguous regions
-    r = fetch('{},{}'.format(msa[0], msa[2]))
+    r = fetch('{},{}'.format(MSA[0], MSA[2]))
     self.assertEqual(r['message'], 'success')
     self.assertEqual(r['epidata'], [expected[0], expected[2]])
     # test fetch multiple regions but one is not existing
-    r = fetch('{},11111'.format(msa[0]))
-    self.assertEqual(r['message'], 'invalid geo_value for the requested geo_type')
-
+    r = fetch('{},11111'.format(MSA[0]))
+    self.assertEqual(r['message'], 'Invalid geo_value(s) 11111 for the requested geo_type msa')
     # test fetch empty region
     r = fetch('')
-    self.assertEqual(r['message'], 'invalid geo_value for the requested geo_type')
+    self.assertEqual(r['message'], 'geo_value is empty for the requested geo_type msa!')
+    # test a region that has no results
+    r = fetch(MSA[3])
+    self.assertEqual(r['message'], 'no results')
 
   def test_location_timeline(self):
     """Select a timeline for a particular location."""
@@ -377,7 +366,7 @@ class CovidcastTests(CovidcastBase):
     """Missing values should be surfaced as null."""
 
     row = CovidcastTestRow.make_default_row(
-      geo_type='msa', geo_value=msa[0], stderr=None, sample_size=None,
+      stderr=None, sample_size=None,
       missing_stderr=Nans.OTHER.value, missing_sample_size=Nans.OTHER.value
     )
     self._insert_rows([row])
@@ -398,7 +387,7 @@ class CovidcastTests(CovidcastBase):
 
     # insert placeholder data
     rows = [
-      CovidcastTestRow.make_default_row(geo_type='msa', geo_value=msa[0], time_type=tt)
+      CovidcastTestRow.make_default_row(time_type=tt)
       for tt in "hour day week month year".split()
     ]
     self._insert_rows(rows)
