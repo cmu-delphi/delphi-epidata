@@ -206,8 +206,7 @@ class Database:
             many_values = []
           except Exception as e:
             if logger:
-              logger.info('error on insert', index=index, values=values)
-              logger.error(e)
+              logger.error('error on insert', publ_date=publication_date, in_lines=(n-5_000, n), index=index, values=values, exception=e)
             raise e
       # insert final batch
       if many_values:

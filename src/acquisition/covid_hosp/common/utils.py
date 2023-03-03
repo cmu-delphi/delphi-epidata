@@ -80,15 +80,15 @@ class Utils:
     return limited_string
 
   GEOCODE_LENGTH = 32
-  GEOCODE_PATTERN = re.compile(r'POINT \(([0-9.-]*) ([0-9.-]*)\)')
+  GEOCODE_PATTERN = re.compile(r'POINT \((-?[0-9.]+) (-?[0-9.]+)\)')
   def limited_geocode(value):
     if len(value) < Utils.GEOCODE_LENGTH:
       return value
-    # otherwise parse and reduce precision to 5
+    # otherwise parse and set precision to 6 decimal places
     m = Utils.GEOCODE_PATTERN.match(value)
     if not m:
       raise CovidHospException(f"Couldn't parse geocode '{value}'")
-    return f'POINT ({" ".join(map(lambda x: f"{float(x):.6f}", m.groups()))})'
+    return f'POINT ({" ".join(f"{float(x):.6f}" for x in m.groups())})'
 
   def issues_to_fetch(metadata, newer_than, older_than, logger=False):
     """
