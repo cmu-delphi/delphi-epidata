@@ -384,15 +384,12 @@ class CsvImporter:
 
     try:
       table = pd.read_csv(filepath, dtype=CsvImporter.DTYPES)
-    except pd.errors.DtypeWarning as e:
+    except (ValueError, pd.errors.DtypeWarning) as e:
       logger.warning(event='Failed to open CSV with specified dtypes, switching to str', detail=str(e), file=filepath)
-      try:
-        table = pd.read_csv(filepath, dtype='str')
-      except pd.errors.DtypeWarning as e:
-        logger.warning(event='Failed to open CSV with str dtype', detail=str(e), file=filepath)
-        return
+      table = pd.read_csv(filepath, dtype='str')
     except pd.errors.EmptyDataError as e:
       logger.warning(event='Empty data or header is encountered', detail=str(e), file=filepath)
+      yield None
       return
 
     if not CsvImporter.is_header_valid(table.columns):
@@ -426,23 +423,6 @@ class CsvImporter:
         details.issue,
         details.lag,
       )
-
-
-def get_argument_parser():
-  """Define command line arguments."""
-
-  parser = argparse.ArgumentParser()
-  parser.add_argument(
-    '--data_dir',
-    help='top-level directory where CSVs are stored')
-  parser.add_argument(
-    '--specific_issue_date',
-    action='store_true',
-    help='indicates <data_dir> argument is where issuedate-specific subdirectories can be found.')
-  parser.add_argument(
-    '--log_file',
-    help="filename for log output (defaults to stdout)")
-  return parser
 
 
 def collect_files(data_dir: str, specific_issue_date: bool):
@@ -589,6 +569,22 @@ def main(args):
       "Ingested CSVs into database",
       total_runtime_in_seconds=round(time.time() - start_time, 2))
 
+
+def get_argument_parser():
+  """Define command line arguments."""
+
+  parser = argparse.ArgumentParser()
+  parser.add_argument(
+    '--data_dir',
+    help='top-level directory where CSVs are stored')
+  parser.add_argument(
+    '--specific_issue_date',
+    action='store_true',
+    help='indicates <data_dir> argument is where issuedate-specific subdirectories can be found.')
+  parser.add_argument(
+    '--log_file',
+    help="filename for log output (defaults to stdout)")
+  return parser
 
 if __name__ == '__main__':
   main(get_argument_parser().parse_args())
