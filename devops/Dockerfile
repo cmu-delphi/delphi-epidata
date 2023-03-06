@@ -8,14 +8,16 @@ LABEL org.opencontainers.image.source=https://github.com/cmu-delphi/delphi-epida
 
 COPY ./devops/gunicorn_conf.py /app
 COPY ./devops/start_wrapper.sh /
-COPY ./src/server/ /app/app/
-COPY --from=builder ./src/build/lib/ /app/app/lib/
+RUN mkdir -p /app/delphi/epidata
+COPY ./src/server /app/delphi/epidata/server
+COPY ./src/common /app/delphi/epidata/common
+COPY --from=builder ./src/build/lib/ /app/delphi/epidata/lib/
 
 COPY requirements.api.txt /app/requirements_also.txt
 
 RUN ln -s -f /usr/share/zoneinfo/America/New_York /etc/localtime \
-      && rm -rf /app/app/__pycache__ /app/app/*.php \
-      && chmod -R o+r /app/app \
+      && rm -rf /app/delphi/epidata/__pycache__ /app/delphi/epidata/*.php \
+      && chmod -R o+r /app/delphi/epidata \
       && chmod 755 /start_wrapper.sh \
       && pip install --no-cache-dir -r /tmp/requirements.txt -r requirements_also.txt
 # the file /tmp/requirements.txt is created in the parent docker definition.  (see:

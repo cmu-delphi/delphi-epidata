@@ -93,6 +93,7 @@ web:
 	@# Run the web server
 	@docker run --rm -p 127.0.0.1:10080:80 \
 		$(M1) \
+		--env "MODULE_NAME=delphi.epidata.server.main" \
 		--env "SQLALCHEMY_DATABASE_URI=$(sqlalchemy_uri)" \
 		--env "FLASK_SECRET=abc" --env "FLASK_PREFIX=/epidata" --env "LOG_DEBUG" \
 		--network delphi-net --name delphi_web_epidata \

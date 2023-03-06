@@ -14,7 +14,7 @@ import mysql.connector
 
 # first party
 import delphi.operations.secrets as secrets
-from delphi.epidata.acquisition.common.logger import get_structured_logger
+from delphi.epidata.common.logger import get_structured_logger
 from delphi.epidata.acquisition.covidcast.covidcast_row import CovidcastRow
 
 

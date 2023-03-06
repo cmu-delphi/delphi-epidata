@@ -1,4 +1,3 @@
-"""Structured logger utility for creating JSON logs in Delphi pipelines."""
 import logging
 import os
 import sys
@@ -56,7 +55,7 @@ def get_structured_logger(name=__name__,
         handlers=handlers
         )
 
-    def add_pid(_logger, _method_name, event_dict):
+    def add_pid(logger, method_name, event_dict):
         """
         Add current PID to the event dict.
         """

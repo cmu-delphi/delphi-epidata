@@ -16,7 +16,7 @@ import pandas as pd
 from delphi_utils import Nans
 from delphi.utils.epiweek import delta_epiweeks
 from delphi.epidata.acquisition.covidcast.covidcast_row import CovidcastRow
-from delphi.epidata.acquisition.common.logger import get_structured_logger
+from delphi.epidata.common.logger import get_structured_logger
 
 DataFrameRow = NamedTuple('DFRow', [
   ('geo_id', str),

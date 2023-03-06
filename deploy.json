@@ -17,6 +17,15 @@
       "add-header-comment": true
     },
 
+    "// common",
+    {
+      "type": "move",
+      "src": "src/common/",
+      "dst": "[[package]]/common/",
+      "match": "^.*\\.(py)$",
+      "add-header-comment": true
+    },
+
     "// server",
     {
       "type": "move",
