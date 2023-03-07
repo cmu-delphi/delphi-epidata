@@ -72,7 +72,11 @@ class Epidata:
     long and returns a 414.
     """
     try:
-      return Epidata._request_with_retry(params).json()
+      result = Epidata._request_with_retry(params)
+      if params is not None and "format" in params and params["format"]=="csv":
+        return result.text
+      else:
+        return result.json()
     except Exception as e:
       return {'result': 0, 'message': 'error: ' + str(e)}
 
@@ -499,16 +503,17 @@ class Epidata:
   def sensors(auth, names, locations, epiweeks):
     """Fetch Delphi's digital surveillance sensors."""
     # Check parameters
-    if auth is None or names is None or locations is None or epiweeks is None:
-      raise Exception('`auth`, `names`, `locations`, and `epiweeks` are all required')
+    if names is None or locations is None or epiweeks is None:
+      raise Exception('`names`, `locations`, and `epiweeks` are all required')
     # Set up request
     params = {
       'endpoint': 'sensors',
-      'auth': auth,
       'names': Epidata._list(names),
       'locations': Epidata._list(locations),
       'epiweeks': Epidata._list(epiweeks),
     }
+    if auth is not None:
+      params['auth'] = auth
     # Make the API call
     return Epidata._request(params)
 
@@ -605,6 +610,9 @@ class Epidata:
 
     if 'format' in kwargs:
       params['format'] = kwargs['format']
+
+    if 'fields' in kwargs:
+      params['fields'] = kwargs['fields']
 
     # Make the API call
     return Epidata._request(params)

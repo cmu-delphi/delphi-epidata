@@ -38,6 +38,7 @@ class AcquisitionTests(unittest.TestCase):
     with Database.connect() as db:
       with db.new_cursor() as cur:
         cur.execute('truncate table covid_hosp_facility')
+        cur.execute('truncate table covid_hosp_facility_key')
         cur.execute('truncate table covid_hosp_meta')
 
   @freeze_time("2021-03-16")
