@@ -34,7 +34,7 @@ def get_argument_parser():
   return parser
 
 
-def collect_files(data_dir: str, specific_issue_date: bool, indicator_name: str):
+def collect_files(data_dir: str, specific_issue_date: bool, indicator_name = "*"):
   """Fetch path and data profile details for each file to upload."""
   logger= get_structured_logger('collect_files')
   if specific_issue_date:
@@ -151,7 +151,7 @@ def main(args):
   start_time = time.time()
 
   # shortcut escape without hitting db if nothing to do
-  path_details = collect_files(args.data_dir, args.specific_issue_date, args.indicator_name)
+  path_details = collect_files(args.data_dir, args.specific_issue_date, indicator_name = args.indicator_name)
   if not path_details:
     logger.info('nothing to do; exiting...')
     return
