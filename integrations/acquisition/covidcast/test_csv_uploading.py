@@ -5,7 +5,6 @@ from datetime import date
 import os
 import unittest
 from unittest.mock import MagicMock
-import pdb
 
 # third party
 import mysql.connector
