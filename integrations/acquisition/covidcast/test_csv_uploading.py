@@ -5,6 +5,7 @@ from datetime import date
 import os
 import unittest
 from unittest.mock import MagicMock
+import pdb
 
 # third party
 import mysql.connector
@@ -101,6 +102,7 @@ select value_updated_timestamp from epimetric_latest''')
           log_file=log_file_directory +
           "output.log",
           data_dir=data_dir,
+          indicator_name="src-name", #or indicator_name="*"
           specific_issue_date=False)
     uploader_column_rename = {"geo_id": "geo_value", "val": "value", "se": "stderr", "missing_val": "missing_value", "missing_se": "missing_stderr"}
 

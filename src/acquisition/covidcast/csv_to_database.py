@@ -30,6 +30,8 @@ def get_argument_parser():
     help="filename for log output (defaults to stdout)")
   parser.add_argument(
     '--indicator_name',
+    nargs='?',
+    default='*',
     help='Name of one indicator directory to run acquisition on')
   return parser
 
@@ -149,7 +151,6 @@ def main(args):
 
   logger = get_structured_logger("csv_ingestion", filename=args.log_file)
   start_time = time.time()
-
   # shortcut escape without hitting db if nothing to do
   path_details = collect_files(args.data_dir, args.specific_issue_date, indicator_name = args.indicator_name)
   if not path_details:
