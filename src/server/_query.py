@@ -488,8 +488,8 @@ class QueryBuilder:
             self.retable(history_table)
             sub_condition_asof = "(issue <= :as_of)"
             self.params["as_of"] = as_of
-            sub_fields = "max(issue) max_issue, time_type, time_value, `source`, `signal`, geo_type, geo_value"
-            sub_group = "time_type, time_value, `source`, `signal`, geo_type, geo_value"
+            sub_fields = "max(issue) max_issue, time_type, time_value, `source`, `signal`, geo_type, geo_value, signal_key_id, geo_key_id"
+            sub_group = "time_type, time_value, signal_key_id, geo_key_id"
             alias = self.alias
             sub_condition = f"x.max_issue = {alias}.issue AND x.time_type = {alias}.time_type AND x.time_value = {alias}.time_value AND x.signal_key_id = {alias}.signal_key_id AND x.geo_key_id = {alias}.geo_key_id"
             self.subquery = f"JOIN (SELECT {sub_fields} FROM {self.table} WHERE {self.conditions_clause} AND {sub_condition_asof} GROUP BY {sub_group}) x ON {sub_condition}"
