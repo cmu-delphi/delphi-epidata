@@ -16,7 +16,7 @@ COPY --from=builder ./src/build/lib/ /app/delphi/epidata/lib/
 COPY requirements.api.txt /app/requirements_also.txt
 
 RUN ln -s -f /usr/share/zoneinfo/America/New_York /etc/localtime \
-      && rm -rf /app/delphi/epidata/__pycache__ /app/delphi/epidata/*.php \
+      && rm -rf /app/delphi/epidata/__pycache__ \
       && chmod -R o+r /app/delphi/epidata \
       && chmod 755 /start_wrapper.sh \
       && pip install --no-cache-dir -r /tmp/requirements.txt -r requirements_also.txt

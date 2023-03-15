@@ -4,7 +4,7 @@ from pandas import DataFrame
 from pandas.testing import assert_frame_equal
 
 from delphi_utils.nancodes import Nans
-from delphi.epidata.acquisition.covidcast.covidcast_row import CovidcastRow, set_df_dtypes
+from delphi.epidata.common.covidcast_row import CovidcastRow, set_df_dtypes
 from delphi.epidata.acquisition.covidcast.test_utils import (
     CovidcastTestRow,
     covidcast_rows_as_api_compatibility_row_df, 

@@ -91,6 +91,7 @@ web:
 		cd -
 
 	@# Run the web server
+	@# MODULE_NAME is used to set the location of the main.py file, see https://github.com/tiangolo/meinheld-gunicorn-docker#module_name
 	@docker run --rm -p 127.0.0.1:10080:80 \
 		$(M1) \
 		--env "MODULE_NAME=delphi.epidata.server.main" \

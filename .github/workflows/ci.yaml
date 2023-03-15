@@ -57,6 +57,7 @@ jobs:
           docker build -t delphi_web_epidata -f ./devops/Dockerfile .
           cd ../../../
 
+      # MODULE_NAME is used to set the location of the main.py file, see https://github.com/tiangolo/meinheld-gunicorn-docker#module_name
       - name: Start services
         run: |
           docker network create --driver bridge delphi-net
