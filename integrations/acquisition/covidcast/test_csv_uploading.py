@@ -4,7 +4,7 @@
 from datetime import date
 import os
 import unittest
-from unittest.mock import MagicMock
+import argparse
 
 # third party
 import mysql.connector
@@ -14,7 +14,7 @@ import numpy as np
 # first party
 from delphi_utils import Nans
 from delphi.epidata.client.delphi_epidata import Epidata
-from delphi.epidata.acquisition.covidcast.csv_to_database import main
+from delphi.epidata.acquisition.covidcast.csv_to_database import main, get_argument_parser
 import delphi.operations.secrets as secrets
 
 # py3tester coverage target (equivalent to `import *`)
@@ -96,13 +96,7 @@ select value_updated_timestamp from epimetric_latest''')
     log_file_directory = "/var/log/"
     os.makedirs(source_receiving_dir, exist_ok=True)
     os.makedirs(log_file_directory, exist_ok=True)
-    # TODO: use an actual argparse object for the args instead of a MagicMock
-    args = MagicMock(
-          log_file=log_file_directory +
-          "output.log",
-          data_dir=data_dir,
-          indicator_name="src-name", #or indicator_name="*"
-          specific_issue_date=False)
+    args = get_argument_parser().parse_args(["--log_file", log_file_directory + "output.log", "--data_dir", data_dir])
     uploader_column_rename = {"geo_id": "geo_value", "val": "value", "se": "stderr", "missing_val": "missing_value", "missing_se": "missing_stderr"}
 
 
