@@ -6,7 +6,7 @@ import unittest
 import pandas as pd
 
 from delphi_utils import Nans
-from delphi.epidata.acquisition.covidcast.covidcast_row import CovidcastRow
+from delphi.epidata.common.covidcast_row import CovidcastRow
 from delphi.epidata.acquisition.covidcast.database import Database
 from delphi.epidata.server.utils.dates import day_to_time_value, time_value_to_day
 import delphi.operations.secrets as secrets

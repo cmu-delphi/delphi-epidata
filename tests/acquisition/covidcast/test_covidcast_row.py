@@ -14,7 +14,7 @@ from delphi.epidata.acquisition.covidcast.test_utils import (
 )
 
 # py3tester coverage target (equivalent to `import *`)
-__test_target__ = 'delphi.epidata.acquisition.covidcast.covidcast_row'
+__test_target__ = 'delphi.epidata.common.covidcast_row'
 
 
 class TestCovidcastRows(unittest.TestCase):
