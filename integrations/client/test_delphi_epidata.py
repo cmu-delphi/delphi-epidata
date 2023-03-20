@@ -235,7 +235,6 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
         **self.params_from_row(rows[0], geo_value=geo)
       )
 
-    self.maxDiff = None
     # test fetch all
     request = fetch('*')
     self.assertEqual(request['message'], 'success')
