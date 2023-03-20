@@ -29,7 +29,7 @@ class CovidcastTestRow(CovidcastRow):
             "time_type": "day",
             "geo_type": "msa",
             "time_value": 2020_02_02,
-            "geo_value": "40660",       # a valid geo_value for msa
+            "geo_value": MSA[0],
             "value": 10.0,
             "stderr": 10.0,
             "sample_size": 10.0,
