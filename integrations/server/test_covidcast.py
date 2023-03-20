@@ -318,7 +318,7 @@ class CovidcastTests(CovidcastBase):
     self.assertEqual(r['message'], 'success')
     self.assertEqual(r['epidata'], expected[0:2])
     # test fetch multiple noncontiguous regions
-    r = fetch('{},{}'.format(MSA[0], MSA[2]))
+    r = fetch(f'{MSA[0]},{MSA[2]}'
     self.assertEqual(r['message'], 'success')
     self.assertEqual(r['epidata'], [expected[0], expected[2]])
     # test fetch multiple regions but one is not existing
