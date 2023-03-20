@@ -92,7 +92,7 @@ class UnitTests(unittest.TestCase):
         with self.subTest("single"):
             with app.test_request_context("/?geo=fips:*"):
                 self.assertEqual(parse_geo_arg(), [GeoSet("fips", True)])
-            with app.test_request_context("/?geo=fips:{}".format(FIPS[0])):
+            with app.test_request_context(f"/?geo=fips:{FIPS[0]}"):
                 self.assertEqual(parse_geo_arg(), [GeoSet("fips", [FIPS[0]])])
         with self.subTest("single list"):
             with app.test_request_context("/?geo=fips:{},{}".format(FIPS[0], FIPS[1])):
