@@ -36,9 +36,9 @@ class DatabaseTests(unittest.TestCase):
     result = database.insert_dataset(sentinel.issue, dataset)
 
     self.assertIsNone(result)
-    self.assertEqual(mock_cursor.execute.call_count, 22)
+    self.assertEqual(mock_cursor.executemany.call_count, 1)
 
-    last_query_values = mock_cursor.execute.call_args[0][-1]
+    last_query_values = mock_cursor.executemany.call_args[0][-1][-1]
     expected_query_values = (
         0, sentinel.issue, 'WY', 20200826, 0.0934579439252336, 26, 107, 10,
         0.4298245614035088, 28, 114, 49, 19, 7, 2, None, 4, 2, 0, 1, '2', 0, 26,

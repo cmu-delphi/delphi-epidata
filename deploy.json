@@ -27,6 +27,13 @@
     },
     {
       "type": "move",
+      "src": "src/server/utils",
+      "dst": "[[package]]/server/utils/",
+      "match": "^.*\\.(py)$",
+      "add-header-comment": true
+    },
+    {
+      "type": "move",
       "src": "src/server/endpoints",
       "dst": "[[package]]/server/endpoints/",
       "match": "^.*\\.(py)$",
@@ -36,6 +43,15 @@
       "type": "move",
       "src": "src/server/endpoints/covidcast_utils",
       "dst": "[[package]]/server/endpoints/covidcast_utils/",
+      "match": "^.*\\.(py)$",
+      "add-header-comment": true
+    },
+
+    "// acquisition - common",
+    {
+      "type": "move",
+      "src": "src/acquisition/common/",
+      "dst": "[[package]]/acquisition/common/",
       "match": "^.*\\.(py)$",
       "add-header-comment": true
     },
@@ -64,11 +80,6 @@
       "src": "src/acquisition/cdcp/",
       "dst": "[[package]]/acquisition/cdcp/",
       "match": "^.*\\.(py)$",
-      "add-header-comment": true
-    },{
-      "type": "move",
-      "src": "src/acquisition/cdcp/cdc_upload.php",
-      "dst": "[[auto_web]]/cdc_upload/index.php",
       "add-header-comment": true
     },
 
@@ -106,16 +117,6 @@
       "src": "src/acquisition/wiki/",
       "dst": "[[package]]/acquisition/wiki/",
       "match": "^.*\\.(py)$",
-      "add-header-comment": true
-    },{
-      "type": "move",
-      "src": "src/acquisition/wiki/master.php",
-      "dst": "[[auto_web]]/wiki/master.php",
-      "add-header-comment": true
-    },{
-      "type": "move",
-      "src": "src/acquisition/wiki/dashboard.php",
-      "dst": "[[auto_web]]/wiki/index.php",
       "add-header-comment": true
     },
 
