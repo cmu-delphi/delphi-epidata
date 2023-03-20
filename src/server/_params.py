@@ -481,7 +481,6 @@ def parse_geo_sets() -> List[GeoSet]:
             return [GeoSet(geo_type, True)]
         return [GeoSet(geo_type, geo_values)]
 
-
     if ":" not in request.values.get("geo", ""):
         raise ValidationFailedException("missing parameter: geo or (geo_type and geo_value[s])")
 
