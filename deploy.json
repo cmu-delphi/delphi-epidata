@@ -17,6 +17,15 @@
       "add-header-comment": true
     },
 
+    "// common",
+    {
+      "type": "move",
+      "src": "src/common/",
+      "dst": "[[package]]/common/",
+      "match": "^.*\\.(py)$",
+      "add-header-comment": true
+    },
+
     "// server",
     {
       "type": "move",
@@ -43,15 +52,6 @@
       "type": "move",
       "src": "src/server/endpoints/covidcast_utils",
       "dst": "[[package]]/server/endpoints/covidcast_utils/",
-      "match": "^.*\\.(py)$",
-      "add-header-comment": true
-    },
-
-    "// acquisition - common",
-    {
-      "type": "move",
-      "src": "src/acquisition/common/",
-      "dst": "[[package]]/acquisition/common/",
       "match": "^.*\\.(py)$",
       "add-header-comment": true
     },
