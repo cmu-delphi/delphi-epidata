@@ -479,11 +479,6 @@ def parse_geo_sets() -> List[GeoSet]:
         geo_values = extract_strings(("geo_values", "geo_value"))
         if len(geo_values) == 1 and geo_values[0] == "*":
             return [GeoSet(geo_type, True)]
-
-        # for geo_value in geo_values:
-        #     if geo_value not in delphi_utils.geomap.GeoMapper().get_geo_values(geo_type):
-        #         raise ValidationFailedException("invalid geo_value for the requested geo_type")
-
         return [GeoSet(geo_type, geo_values)]
 
 
