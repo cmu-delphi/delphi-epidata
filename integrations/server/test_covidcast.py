@@ -322,7 +322,7 @@ class CovidcastTests(CovidcastBase):
     self.assertEqual(r['message'], 'success')
     self.assertEqual(r['epidata'], [expected[0], expected[2]])
     # test fetch multiple regions but one is not existing
-    r = fetch('{},11111'.format(MSA[0]))
+    r = fetch(f'{MSA[0]},11111')
     self.assertEqual(r['message'], 'Invalid geo_value(s) 11111 for the requested geo_type msa')
     # test fetch empty region
     r = fetch('')
