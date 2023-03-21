@@ -314,7 +314,7 @@ class CovidcastTests(CovidcastBase):
     r = fetch('11111')
     self.assertEqual(r['message'], 'Invalid geo_value(s) 11111 for the requested geo_type msa')
     # test fetch multiple regions
-    r = fetch('{},{}'.format(MSA[0], MSA[1]))
+    r = fetch(f'{MSA[0]},{MSA[1]}')
     self.assertEqual(r['message'], 'success')
     self.assertEqual(r['epidata'], expected[0:2])
     # test fetch multiple noncontiguous regions
