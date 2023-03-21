@@ -48,7 +48,7 @@ class CovidcastTests(CovidcastBase):
 
   def _insert_placeholder_set_three(self):
     rows = [
-      CovidcastTestRow.make_default_row(geo_value=MSA[0], time_value=2000_01_01+i, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03, lag=2-i)
+      CovidcastTestRow.make_default_row(time_value=2000_01_01+i, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03, lag=2-i)
       for i in [1, 2, 3]
     ] + [
       # time value intended to overlap with the time values above, with disjoint geo values
