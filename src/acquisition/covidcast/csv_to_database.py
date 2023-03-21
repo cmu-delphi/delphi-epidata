@@ -42,7 +42,7 @@ def collect_files(data_dir: str, specific_issue_date: bool, indicator_name="*"):
   if specific_issue_date:
     results = list(CsvImporter.find_issue_specific_csv_files(data_dir))
   else:
-    results = list(CsvImporter.find_csv_files(os.path.join(data_dir, 'receiving'), indicator_dir = indicator_name))
+    results = list(CsvImporter.find_csv_files(os.path.join(data_dir, 'receiving'), indicator_dir=indicator_name))
   logger.info(f'found {len(results)} files')
   return results
 
