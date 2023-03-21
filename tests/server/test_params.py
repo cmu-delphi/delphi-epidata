@@ -144,7 +144,7 @@ class UnitTests(unittest.TestCase):
             with app.test_request_context("/?geo=fips:{}".format(FIPS[0])):
                 self.assertEqual(parse_single_geo_arg("geo"), GeoSet("fips", [FIPS[0]]))
         with self.subTest("single list"):
-            with app.test_request_context("/?geo=fips:{},{}".format(FIPS[0], FIPS[1])):
+            with app.test_request_context(f"/?geo=fips:{FIPS[0]},{FIPS[1]}"):
                 self.assertRaises(ValidationFailedException, parse_single_geo_arg, "geo")
         with self.subTest("multi"):
             with app.test_request_context("/?geo=state:*;nation:*"):
