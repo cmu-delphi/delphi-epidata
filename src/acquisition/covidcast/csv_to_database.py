@@ -152,7 +152,7 @@ def main(args):
   logger = get_structured_logger("csv_ingestion", filename=args.log_file)
   start_time = time.time()
   # shortcut escape without hitting db if nothing to do
-  path_details = collect_files(args.data_dir, args.specific_issue_date, indicator_name = args.indicator_name)
+  path_details=collect_files(args.data_dir, args.specific_issue_date, indicator_name = args.indicator_name)
   if not path_details:
     logger.info('nothing to do; exiting...')
     return
