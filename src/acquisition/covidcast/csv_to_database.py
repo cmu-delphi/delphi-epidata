@@ -36,7 +36,7 @@ def get_argument_parser():
   return parser
 
 
-def collect_files(data_dir: str, specific_issue_date: bool, indicator_name = "*"):
+def collect_files(data_dir: str, specific_issue_date: bool, indicator_name="*"):
   """Fetch path and data profile details for each file to upload."""
   logger= get_structured_logger('collect_files')
   if specific_issue_date:
