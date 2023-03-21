@@ -1,8 +1,9 @@
 
-from sqlalchemy import Table, ForeignKey, Column, Integer, String, Boolean, delete, update
+from sqlalchemy import Table, ForeignKey, Column, Integer, String, Boolean, Date, delete, update
 from sqlalchemy.orm import relationship
 from .._db import Base, session
 from typing import Set, Optional, List
+from datetime import datetime as dtime
 
 association_table = Table(
     "user_role_link",
@@ -17,8 +18,11 @@ class User(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     roles = relationship("UserRole", secondary=association_table)
     api_key = Column(String(50), unique=True)
+    email = Column(String(50), unique=True, nullable=True)
     tracking = Column(Boolean, default=True)
     registered = Column(Boolean, default=False)
+    created = Column(Date, default=dtime.strftime(dtime.now(), "%Y-%m-%d"))
+    last_time_used = Column(Date, default=dtime.strftime(dtime.now(), "%Y-%m-%d"))
 
     def __init__(self, api_key: str, tracking: bool = True, registered: bool = False) -> None:
         self.api_key = api_key
