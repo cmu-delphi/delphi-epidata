@@ -120,7 +120,7 @@ class UnitTests(unittest.TestCase):
                     ],
                 )
         with self.subTest("hybrid"):
-            with app.test_request_context("/?geo=nation:*;fips:{};msa:{},{}".format(FIPS[0], MSA[0], MSA[1])):
+            with app.test_request_context(f"/?geo=nation:*;fips:{FIPS[0]};msa:{MSA[0]},{MSA[1]}"):
                 self.assertEqual(
                     parse_geo_arg(),
                     [
