@@ -105,7 +105,7 @@ class UnitTests(unittest.TestCase):
                     parse_geo_arg(),
                     [GeoSet("fips", [FIPS[0]]), GeoSet("msa", [MSA[0]])],
                 )
-            with app.test_request_context("/?geo=fips:{};fips:{}".format(FIPS[0], FIPS[1])):
+            with app.test_request_context(f"/?geo=fips:{FIPS[0]};fips:{FIPS[1]}"):
                 self.assertEqual(
                     parse_geo_arg(),
                     [GeoSet("fips", [FIPS[0]]), GeoSet("fips", [FIPS[1]])],
