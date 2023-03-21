@@ -1,5 +1,5 @@
 import re
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from functools import wraps
 from typing import Optional, cast
 from uuid import uuid4
@@ -8,6 +8,7 @@ from flask import Response, g
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from werkzeug.local import LocalProxy
+import redis
 
 from ._common import app, request
 from ._config import (API_KEY_REQUIRED_STARTING_AT, RATELIMIT_STORAGE_URL,
@@ -174,4 +175,20 @@ def _no_rate_limit() -> bool:
         return False
     # no rate limit if user is registered
     user = _get_current_user()
-    return user is not None and user.registered
+    return user is not None and user.registered  # type: ignore
+
+
+# TODO: fix function below 
+
+# @app.after_request
+# def update_key_last_time_used(response):
+#     if _is_public_route():
+#         return response
+#     try:
+#         r = redis.Redis(host="delphi_redis_instance")
+#         api_key = g.user.api_key
+#         r.set(f"LAST_USED/{api_key}", datetime.strftime(datetime.now(), "%Y-%m-%d"))
+#     except Exception as e:
+#         print(e)  # TODO: should be handled properly
+#     finally:
+#         return response
