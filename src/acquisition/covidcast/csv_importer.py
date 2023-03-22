@@ -133,10 +133,11 @@ class CsvImporter:
 
 
   @staticmethod
-  def find_csv_files(scan_dir, issue=(date.today(), epi.Week.fromdate(date.today()))):
+  def find_csv_files(scan_dir, issue=(date.today(), epi.Week.fromdate(date.today())), indicator_dir= "*"):
     """Recursively search for and yield covidcast-format CSV files.
 
     scan_dir: the directory to scan (recursively)
+    indicator_dir: specify one indicator with .csv files inside
 
     The return value is a tuple of (path, details), where, if the path was
     valid, details is a tuple of (source, signal, time_type, geo_type,
@@ -149,7 +150,7 @@ class CsvImporter:
     issue_value=-1
     lag_value=-1
 
-    for path in sorted(glob(os.path.join(scan_dir, '*', '*'))):
+    for path in sorted(glob(os.path.join(scan_dir, indicator_dir, '*'))):
       # safe to ignore this file
       if not path.lower().endswith('.csv'):
         continue
