@@ -160,7 +160,8 @@ class Utils:
       ## repeated concatenation in pandas is expensive, but (1) we don't expect
       ## batch sizes to be terribly large (7 files max) and (2) this way we can
       ## more easily capture the next iteration's updates to any new keys
-      new_rows = df.loc[[i for i in df.index.to_list() if i not in result.index.to_list()]]
+      result_index_set = set(result.index.to_list())
+      new_rows = df.loc[[i for i in df.index.to_list() if i not in result_index_set]]
       result = pd.concat([result, new_rows])
 
     # convert the index rows back to columns
