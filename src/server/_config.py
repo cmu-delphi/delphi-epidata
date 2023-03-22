@@ -66,6 +66,8 @@ RATELIMIT_STRATEGY = os.environ.get('RATELIMIT_STRATEGY', 'fixed-window')
 # see https://flask-limiter.readthedocs.io/en/stable/#configuration
 RATELIMIT_STORAGE_URL = os.environ.get('RATELIMIT_STORAGE_URL', 'memory://')
 
+REDIS_HOST = os.environ.get('REDIS_HOST', "delphi_redis_instance")
+
 
 class UserRole(str, Enum):
     afhsb = "afhsb"
