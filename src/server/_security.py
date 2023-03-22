@@ -4,15 +4,15 @@ from functools import wraps
 from typing import Optional, cast
 from uuid import uuid4
 
-from flask import Response, g
+from flask import Response, g, request
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from werkzeug.local import LocalProxy
 import redis
 
-from ._common import app, request
+from ._common import app
 from ._config import (API_KEY_REQUIRED_STARTING_AT, RATELIMIT_STORAGE_URL,
-                      URL_PREFIX)
+                      URL_PREFIX, REDIS_HOST)
 from ._exceptions import MissingAPIKeyException, UnAuthenticatedException
 from .admin.models import User, UserRole
 # from ._logger import get_structured_logger
@@ -178,17 +178,15 @@ def _no_rate_limit() -> bool:
     return user is not None and user.registered  # type: ignore
 
 
-# TODO: fix function below 
-
-# @app.after_request
-# def update_key_last_time_used(response):
-#     if _is_public_route():
-#         return response
-#     try:
-#         r = redis.Redis(host="delphi_redis_instance")
-#         api_key = g.user.api_key
-#         r.set(f"LAST_USED/{api_key}", datetime.strftime(datetime.now(), "%Y-%m-%d"))
-#     except Exception as e:
-#         print(e)  # TODO: should be handled properly
-#     finally:
-#         return response
+@app.after_request
+def update_key_last_time_used(response):
+    if _is_public_route():
+        return response
+    try:
+        r = redis.Redis(host=REDIS_HOST)
+        api_key = g.user.api_key
+        r.set(f"LAST_USED/{api_key}", datetime.strftime(datetime.now(), "%Y-%m-%d"))
+    except Exception as e:
+        print(e)  # TODO: should be handled properly
+    finally:
+        return response
