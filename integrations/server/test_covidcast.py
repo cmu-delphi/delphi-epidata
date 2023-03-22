@@ -52,7 +52,7 @@ class CovidcastTests(CovidcastBase):
       for i in [1, 2, 3]
     ] + [
       # time value intended to overlap with the time values above, with disjoint geo values
-      CovidcastTestRow.make_default_row(geo_value=FIPS[i-4], time_value=2000_01_01+i-3, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03, lag=5-i)
+      CovidcastTestRow.make_default_row(geo_value=MSA[i-3], time_value=2000_01_01+i-3, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03, lag=5-i)
       for i in [4, 5, 6]
     ]
     self._insert_rows(rows)
