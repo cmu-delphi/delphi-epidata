@@ -3,6 +3,15 @@ covid_hosp_facility:
   DATASET_ID: 'anag-cw7u'
   METADATA_ID: 'j4ip-wfsv'
   KEY_COLS: ['hospital_pk', 'collection_week']
+  UNIQUE_INDEXES:
+    hospital_pk: ['hospital_pk', 'collection_week', 'publication_date']
+  INDEXES:
+    publication_date: ['publication_date', 'hospital_pk', 'collection_week']
+    state: ['state', 'hospital_pk']
+    ccn: ['ccn', 'hospital_pk']
+    city: ['city', 'hospital_pk']
+    zip: ['zip', 'hospital_pk']
+    fips_code: ['fips_code', 'hospital_pk']
   AGGREGATE_KEY_COLS: ['address', 'ccn', 'city', 'fips_code', 'geocoded_hospital_address', 'hhs_ids', 'hospital_name', 'hospital_pk', 'hospital_subtype', 'is_metro_micro', 'state', 'zip']
   ORDERED_CSV_COLUMNS:
     - ['hospital_pk', 'hospital_pk', str]
@@ -123,6 +132,11 @@ state_timeseries:
   DATASET_ID: 'g62h-syeh'
   METADATA_ID: 'qqte-vkut'
   KEY_COLS: ['state', 'date']
+  UNIQUE_INDEXES:
+    issue_by_state_and_date: ['state', 'date', 'issue', 'record_type']
+  INDEXES:
+    date_by_issue_and_state: ['issue', 'state', 'date', 'record_type']
+    state_by_issue_and_date: ['issue', 'date', 'state', 'record_type']
   ORDERED_CSV_COLUMNS:
     - ['state', 'state', str]
     - ['date', 'date', intdate]
@@ -247,6 +261,11 @@ state_daily:
   DATASET_ID: '6xf2-c3ie'
   METADATA_ID: '4cnb-m4rz'
   KEY_COLS: ['state', 'reporting_cutoff_start']
+  UNIQUE_INDEXES:
+    issue_by_state_and_date: ['state', 'date', 'issue', 'record_type']
+  INDEXES:
+    date_by_issue_and_state: ['issue', 'state', 'date', 'record_type']
+    state_by_issue_and_date: ['issue', 'date', 'state', 'record_type']
   ORDERED_CSV_COLUMNS:
     - ['state', 'state', str]
     - ['reporting_cutoff_start', 'date', intdate]
