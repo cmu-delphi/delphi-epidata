@@ -172,6 +172,17 @@ test:
 		--env "FLASK_SECRET=abc" \
 		delphi_web_python python -m pytest --import-mode importlib $(pdb) $(test) | tee test_output_$(NOW).log
 
+.PHONY=r-test
+r-test:
+	@docker run -i --rm --network delphi-net \
+		$(M1) \
+		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata,target=/usr/src/app/repos/delphi/delphi-epidata,readonly \
+		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata/src,target=/usr/src/app/delphi/epidata,readonly \
+		--env "SQLALCHEMY_DATABASE_URI=$(sqlalchemy_uri)" \
+		--env "FLASK_SECRET=abc" \
+		delphi_web_python Rscript repos/delphi/delphi-epidata/integrations/client/test_delphi_epidata.R | tee r-test_output_$(NOW).log
+
+
 .PHONY=bash
 bash:
 	@docker run -it --rm --network delphi-net \
