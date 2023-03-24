@@ -18,8 +18,8 @@ def read_schemadefs():
     yaml_content = yaml_load(yaml_file, preserve_quotes=True)
   return yaml_content
 
-  
-def write_schemadefs():
+
+def write_schemadefs(yaml_content):
   # this block replaces duplicated column names with null/None/~
   # (when same name is shared between SQL representation and python/source representation)
   for dataset in yaml_content:
@@ -33,6 +33,6 @@ def write_schemadefs():
 
 
 yaml_content = read_schemadefs()
-write_schemadefs()
+write_schemadefs(yaml_content)
 
 # TODO: figure out what to do wrt splitting lines (maybe split line inside ORDERED_CSV_COLUMNS list between column name and column rename?!)
