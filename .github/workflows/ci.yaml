@@ -53,6 +53,7 @@ jobs:
         run: |
           docker build -t delphi_database_epidata -f ./repos/delphi/delphi-epidata/dev/docker/database/epidata/Dockerfile .
           docker build -t delphi_web_python -f repos/delphi/delphi-epidata/dev/docker/python/Dockerfile .
+          sudo docker build -t delphi_redis_instance -f repos/delphi/delphi-epidata/dev/docker/redis/Dockerfile .
           cd ./repos/delphi/delphi-epidata
           docker build -t delphi_web_epidata -f ./devops/Dockerfile .
           cd ../../../
@@ -61,7 +62,8 @@ jobs:
         run: |
           docker network create --driver bridge delphi-net
           docker run --rm -d -p 13306:3306 --network delphi-net --name delphi_database_epidata --cap-add=sys_nice delphi_database_epidata
-          docker run --rm -d -p 10080:80 --env "SQLALCHEMY_DATABASE_URI=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata" --env "FLASK_SECRET=abc" --env "FLASK_PREFIX=/epidata" --network delphi-net --name delphi_web_epidata delphi_web_epidata
+          docker run --rm -d -p 10080:80 --env "SQLALCHEMY_DATABASE_URI=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata" --env "FLASK_SECRET=abc" --env "FLASK_PREFIX=/epidata" --env "RATELIMIT_STORAGE_URL=redis://delphi_redis_instance:6379" --env "API_KEY_REGISTER_WEBHOOK_TOKEN=abc" --env "API_KEY_ADMIN_PASSWORD=test_admin_password" --network delphi-net --name delphi_web_epidata delphi_web_epidata
+          docker run --rm -p 6379:6379 --network delphi-net --name delphi_redis_instance delphi_redis_instance
           docker ps
 
       - run: |
