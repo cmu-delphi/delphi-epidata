@@ -39,6 +39,7 @@ class AcquisitionTests(unittest.TestCase):
     with Database.connect() as db:
       with db.new_cursor() as cur:
         cur.execute('truncate table covid_hosp_facility')
+        cur.execute('truncate table covid_hosp_facility_key')
         cur.execute('truncate table covid_hosp_meta')
         cur.execute('delete from api_user')
         cur.execute('insert into api_user(api_key, tracking, registered) values ("key", 1, 1)')

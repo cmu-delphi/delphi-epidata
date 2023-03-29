@@ -17,11 +17,27 @@
       "add-header-comment": true
     },
 
+    "// common",
+    {
+      "type": "move",
+      "src": "src/common/",
+      "dst": "[[package]]/common/",
+      "match": "^.*\\.(py)$",
+      "add-header-comment": true
+    },
+
     "// server",
     {
       "type": "move",
       "src": "src/server/",
       "dst": "[[package]]/server/",
+      "match": "^.*\\.(py)$",
+      "add-header-comment": true
+    },
+    {
+      "type": "move",
+      "src": "src/server/utils",
+      "dst": "[[package]]/server/utils/",
       "match": "^.*\\.(py)$",
       "add-header-comment": true
     },

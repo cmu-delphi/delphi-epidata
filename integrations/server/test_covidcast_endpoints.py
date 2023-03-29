@@ -183,32 +183,6 @@ class CovidcastEndpointTests(CovidcastBase):
             self.assertEqual(trend["max_value"], first.value)
             self.assertEqual(trend["max_trend"], "decreasing")
 
-    def test_correlation(self):
-        """Request a signal from the /correlation endpoint."""
-
-        num_rows = 30
-        reference_rows = [CovidcastTestRow.make_default_row(signal="ref", time_value=20200401 + i, value=i) for i in range(num_rows)]
-        first = reference_rows[0]
-        self._insert_rows(reference_rows)
-        other_rows = [CovidcastTestRow.make_default_row(signal="other", time_value=20200401 + i, value=i) for i in range(num_rows)]
-        other = other_rows[0]
-        self._insert_rows(other_rows)
-        max_lag = 3
-
-        out = self._fetch("/correlation", reference=first.signal_pair(), others=other.signal_pair(), geo=first.geo_pair(), window="20200401-20201212", lag=max_lag)
-        self.assertEqual(out["result"], 1)
-        df = pd.DataFrame(out["epidata"])
-        self.assertEqual(len(df), max_lag * 2 + 1)  # -...0...+
-        self.assertEqual(df["geo_type"].unique().tolist(), [first.geo_type])
-        self.assertEqual(df["geo_value"].unique().tolist(), [first.geo_value])
-        self.assertEqual(df["signal_source"].unique().tolist(), [other.source])
-        self.assertEqual(df["signal_signal"].unique().tolist(), [other.signal])
-
-        self.assertEqual(df["lag"].tolist(), list(range(-max_lag, max_lag + 1)))
-        self.assertEqual(df["r2"].unique().tolist(), [1.0])
-        self.assertEqual(df["slope"].unique().tolist(), [1.0])
-        self.assertEqual(df["intercept"].tolist(), [3.0, 2.0, 1.0, 0.0, -1.0, -2.0, -3.0])
-        self.assertEqual(df["samples"].tolist(), [num_rows - abs(l) for l in range(-max_lag, max_lag + 1)])
 
     def test_csv(self):
         """Request a signal from the /csv endpoint."""

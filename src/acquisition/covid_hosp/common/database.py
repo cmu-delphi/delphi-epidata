@@ -11,6 +11,7 @@ import pandas as pd
 
 # first party
 import delphi.operations.secrets as secrets
+from delphi.epidata.common.logger import get_structured_logger
 
 Columndef = namedtuple("Columndef", "csv_name sql_name dtype")
 
@@ -52,6 +53,10 @@ class Database:
     }
     self.key_columns = key_columns if key_columns is not None else []
     self.additional_fields = additional_fields if additional_fields is not None else []
+
+  @classmethod
+  def logger(database_class):
+    return get_structured_logger(f"{database_class.__module__}")
 
   @classmethod
   @contextmanager
@@ -124,7 +129,7 @@ class Database:
       for (result,) in cursor:
         return bool(result)
 
-  def insert_metadata(self, publication_date, revision, meta_json):
+  def insert_metadata(self, publication_date, revision, meta_json, logger=False):
     """Add revision metadata to the database.
 
     Parameters
@@ -135,6 +140,8 @@ class Database:
       Unique revision string.
     meta_json : str
       Metadata serialized as a JSON string.
+    logger structlog.Logger [optional; default False]
+      Logger to receive messages
     """
 
     with self.new_cursor() as cursor:
@@ -152,7 +159,7 @@ class Database:
           (%s, %s, %s, %s, %s, NOW())
       ''', (self.table_name, self.hhs_dataset_id, publication_date, revision, meta_json))
 
-  def insert_dataset(self, publication_date, dataframe):
+  def insert_dataset(self, publication_date, dataframe, logger=False):
     """Add a dataset to the database.
 
     Parameters
@@ -161,6 +168,8 @@ class Database:
       Date when the dataset was published in YYYYMMDD format.
     dataframe : pandas.DataFrame
       The dataset.
+    logger structlog.Logger [optional; default False]
+      Logger to receive messages.
     """
     dataframe_columns_and_types = [
       x for x in self.columns_and_types.values() if x.csv_name in dataframe.columns
@@ -181,18 +190,37 @@ class Database:
     sql = f'INSERT INTO `{self.table_name}` (`id`, `{self.publication_col_name}`, {columns}) ' \
           f'VALUES ({value_placeholders})'
     id_and_publication_date = (0, publication_date)
+    if logger:
+      logger.info('updating values', count=len(dataframe.index))
+    n = 0
+    many_values = []
     with self.new_cursor() as cursor:
-      for _, row in dataframe.iterrows():
+      for index, row in dataframe.iterrows():
         values = []
         for c in dataframe_columns_and_types:
           values.append(nan_safe_dtype(c.dtype, row[c.csv_name]))
-        cursor.execute(sql,
-                       id_and_publication_date +
-                       tuple(values) +
-                       tuple(i.csv_name for i in self.additional_fields))
+        many_values.append(id_and_publication_date +
+          tuple(values) +
+          tuple(i.csv_name for i in self.additional_fields))
+        n += 1
+        # insert in batches because one at a time is slow and all at once makes
+        # the connection drop :(
+        if n % 5_000 == 0:
+          try:
+            cursor.executemany(sql, many_values)
+            many_values = []
+          except Exception as e:
+            if logger:
+              logger.error('error on insert', publ_date=publication_date, in_lines=(n-5_000, n), index=index, values=values, exception=e)
+            raise e
+      # insert final batch
+      if many_values:
+        cursor.executemany(sql, many_values)
 
     # deal with non/seldomly updated columns used like a fk table (if this database needs it)
     if hasattr(self, 'AGGREGATE_KEY_COLS'):
+      if logger:
+        logger.info('updating keys')
       ak_cols = self.AGGREGATE_KEY_COLS
 
       # restrict data to just the key columns and remove duplicate rows
@@ -219,13 +247,15 @@ class Database:
       ak_table = self.table_name + '_key'
       # assemble full SQL statement
       ak_insert_sql = f'INSERT INTO `{ak_table}` ({ak_cols_str}) VALUES ({values_str}) AS v ON DUPLICATE KEY UPDATE {ak_updates_str}'
+      if logger:
+        logger.info("database query", sql=ak_insert_sql)
 
       # commit the data
       with self.new_cursor() as cur:
         cur.executemany(ak_insert_sql, ak_data)
 
 
-  def get_max_issue(self):
+  def get_max_issue(self, logger=False):
     """Fetch the most recent issue.
 
     This is used to bookend what updates we pull in from the HHS metadata.
@@ -242,4 +272,6 @@ class Database:
       for (result,) in cursor:
         if result is not None:
           return pd.Timestamp(str(result))
+      if logger:
+        logger.warn("get_max_issue", msg="no matching results in meta table; returning 1900/1/1 epoch")
       return pd.Timestamp("1900/1/1")

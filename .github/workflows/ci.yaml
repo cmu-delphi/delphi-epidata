@@ -58,11 +58,13 @@ jobs:
           docker build -t delphi_web_epidata -f ./devops/Dockerfile .
           cd ../../../
 
+      # MODULE_NAME specifies the location of the `app` variable, the actual WSGI application object to run.
+      # see https://github.com/tiangolo/meinheld-gunicorn-docker#module_name
       - name: Start services
         run: |
           docker network create --driver bridge delphi-net
           docker run --rm -d -p 13306:3306 --network delphi-net --name delphi_database_epidata --cap-add=sys_nice delphi_database_epidata
-          docker run --rm -d -p 10080:80 --env "SQLALCHEMY_DATABASE_URI=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata" --env "FLASK_SECRET=abc" --env "FLASK_PREFIX=/epidata" --env "RATELIMIT_STORAGE_URL=redis://delphi_redis_instance:6379" --env "API_KEY_REGISTER_WEBHOOK_TOKEN=abc" --env "API_KEY_ADMIN_PASSWORD=test_admin_password" --network delphi-net --name delphi_web_epidata delphi_web_epidata
+          docker run --rm -d -p 10080:80 --env "MODULE_NAME=delphi.epidata.server.main" --env "SQLALCHEMY_DATABASE_URI=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata" --env "FLASK_SECRET=abc" --env "FLASK_PREFIX=/epidata" --env "RATELIMIT_STORAGE_URL=redis://delphi_redis_instance:6379" --env "API_KEY_REGISTER_WEBHOOK_TOKEN=abc" --env "API_KEY_ADMIN_PASSWORD=test_admin_password" --network delphi-net --name delphi_web_epidata delphi_web_epidata
           docker run --rm -p 6379:6379 --network delphi-net --name delphi_redis_instance delphi_redis_instance
           docker ps
 
@@ -108,7 +110,8 @@ jobs:
   image:
     needs: build
     # only on main and dev branch
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
+    # TODO: #1112 Remove `|| github.ref == 'refs/heads/api-keys'` after transition to production status.
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/api-keys'
 
     runs-on: ubuntu-latest
     steps:

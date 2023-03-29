@@ -6,7 +6,7 @@ from sqlalchemy import create_engine, event
 from sqlalchemy.engine import Connection, Engine
 from werkzeug.local import LocalProxy
 
-from .utils.logger import get_structured_logger
+from delphi.epidata.common.logger import get_structured_logger
 from ._config import SECRET, SQLALCHEMY_DATABASE_URI, SQLALCHEMY_ENGINE_OPTIONS
 from ._exceptions import DatabaseErrorException, EpiDataException
 
