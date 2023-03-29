@@ -30,8 +30,8 @@ covid_hosp_facility:
   - [str:20, ccn, ~]
   - [str:64, city, ~]
   - [fixedstr:5, fips_code, ~]
-  - [geocode, geocoded_hospital_address, ~]
-  - [str, hhs_ids, ~]
+  - [geocode:32, geocoded_hospital_address, ~]
+  - [str:127, hhs_ids, ~]
   - [str:256, hospital_name, ~]
   - [str:64, hospital_subtype, ~]
   - [float, icu_beds_used_7_day_avg, ~]
@@ -269,7 +269,7 @@ state_daily:
     date_by_issue_and_state: [issue, state, date, record_type]
     state_by_issue_and_date: [issue, date, state, record_type]
   ORDERED_CSV_COLUMNS:
-  - [str, state, ~]
+  - [fixedstr:2, state, ~]
   - [intdate, reporting_cutoff_start, date]       # omgwtfbbq weird rename
   - [float, adult_icu_bed_covid_utilization, ~]
   - [int, adult_icu_bed_covid_utilization_coverage, ~]
@@ -287,7 +287,7 @@ state_daily:
   - [int, critical_staffing_shortage_today_yes, ~]
   - [int, deaths_covid, ~]
   - [int, deaths_covid_coverage, ~]
-  - [str, geocoded_state, ~]
+  - [str:32, geocoded_state, ~]
   - [int, hospital_onset_covid, ~]
   - [int, hospital_onset_covid_coverage, ~]
   - [int, icu_patients_confirmed_influenza, ~]
