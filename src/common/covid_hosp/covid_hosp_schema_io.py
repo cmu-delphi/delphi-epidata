@@ -2,7 +2,8 @@ from datetime import datetime
 import re
 import sys
 
-# UNCOMMENT: from delphi.epidata.acquisition.covid_hosp.common.utils import Utils
+from delphi.epidata.acquisition.covid_hosp.common.utils import Utils
+from delphi.epidata.acquisition.covid_hosp.common.database import Columndef
 
 # ruamel preserves key ordering, comments, and some formatting for a "round trip" of a yaml file import-->export
 from ruamel.yaml.main import (
@@ -25,10 +26,10 @@ class CovidHospSomething:
     'int': int,
     'float': float,
     'str': str,
-    'fixedstr', str,
-    'bool': int, # UNCOMMENT: Utils.parse_bool,
-    'intdate': int, # UNCOMMENT: Utils.int_from_date,
-    'geocode': str, # UNCOMMENT: Utils.limited_geocode,
+    'fixedstr': str,
+    'bool': Utils.parse_bool,
+    'intdate': Utils.int_from_date,
+    'geocode': Utils.limited_geocode,
   }
 
   SQL_TYPE_MAPPING = {
@@ -68,7 +69,7 @@ class CovidHospSomething:
     return self.yaml_content
 
 
-  def write_schemadefs(self, filename=CovidHospSomething.YAML_FILENAME):
+  def write_schemadefs(self, filename=YAML_FILENAME):
     with open(filename, 'w') as yaml_file:
       # NOTE: `width` specification is to prevent dump from splitting long lines
       # TODO: consider `block_seq_indent=2` to make list under ORDERED_CSV_COLUMNS look a little better
@@ -93,7 +94,7 @@ class CovidHospSomething:
       else:
         dtype = dtype_cplx
         col_width = None
-      yield {'name': name, 'sql_name': sql_name, 'dtype': dtype, 'col_width:' col_width, 'marshaller': CovidHospSomething.PYTHON_TYPE_MAPPING[dtype]}
+      yield {'name': name, 'sql_name': sql_name, 'dtype': dtype, 'col_width': col_width, 'marshaller': CovidHospSomething.PYTHON_TYPE_MAPPING[dtype]}
 
 
   def add_column(self, ds_name, col_name, dtype, sql_name=None, col_width=None):
@@ -117,6 +118,23 @@ class CovidHospSomething:
 
     # add new column to end of current column list
     self.dataset(ds_name)['ORDERED_CSV_COLUMNS'].append([dtype_cplx, col_name, sql_name])
+
+
+  def get_ds_info(self, ds_name):
+    ds = self.dataset(ds_name)
+    TABLE_NAME = ds['TABLE_NAME']
+    KEY_COLS = ds['KEY_COLS']
+    ORDERED_CSV_COLUMNS = [
+      Columndef(
+        # Original name for the column
+        column[1],
+        # Updated name for the column; same name if it's not specified in the YAML files
+        column[2] if column[2] is not None else column[1],
+        # Datatype for the column, ignoring SQL column lengths: e.g. fixedstr:1 -> fixedstr -> str
+        self.PYTHON_TYPE_MAPPING[column[0].split(":")[0]]
+      )
+      for column in ds['ORDERED_CSV_COLUMNS']]
+    return TABLE_NAME, KEY_COLS, ORDERED_CSV_COLUMNS
 
 
   def detect_changes(self, ds_name):
@@ -168,7 +186,7 @@ if __name__ == "__main__":
   chs = CovidHospSomething()
   changed = False
 
-  for ds_name in chs.datasets():
+  for ds_name in chs.yaml_content:
     ds = chs.dataset(ds_name)
     new_cols = chs.detect_changes(ds_name)
     if new_cols:
