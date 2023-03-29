@@ -124,6 +124,7 @@ class CovidHospSomething:
     ds = self.dataset(ds_name)
     TABLE_NAME = ds['TABLE_NAME']
     KEY_COLS = ds['KEY_COLS']
+    AGGREGATE_KEY_COLS = ds.get('AGGREGATE_KEY_COLS')
     ORDERED_CSV_COLUMNS = [
       Columndef(
         # Original name for the column
@@ -134,7 +135,7 @@ class CovidHospSomething:
         self.PYTHON_TYPE_MAPPING[column[0].split(":")[0]]
       )
       for column in ds['ORDERED_CSV_COLUMNS']]
-    return TABLE_NAME, KEY_COLS, ORDERED_CSV_COLUMNS
+    return TABLE_NAME, KEY_COLS, AGGREGATE_KEY_COLS, ORDERED_CSV_COLUMNS
 
 
   def detect_changes(self, ds_name):
