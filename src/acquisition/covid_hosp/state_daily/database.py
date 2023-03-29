@@ -1,7 +1,6 @@
 # first party
 from delphi.epidata.acquisition.covid_hosp.common.database import Database as BaseDatabase
 from delphi.epidata.acquisition.covid_hosp.common.database import Columndef
-from delphi.epidata.acquisition.covid_hosp.common.utils import Utils
 from delphi.epidata.acquisition.covid_hosp.state_daily.network import Network
 from delphi.epidata.common.covid_hosp.covid_hosp_schema_io import CovidHospSomething
 
@@ -18,7 +17,7 @@ class Database(BaseDatabase):
   # Note that the corresponding database column names may be shorter
   # due to constraints on the length of column names. See
   # /src/ddl/covid_hosp.sql for more information.
-  TABLE_NAME, KEY_COLS, ORDERED_CSV_COLUMNS = CovidHospSomething().get_ds_info('state_daily')
+  TABLE_NAME, KEY_COLS, ORDERED_CSV_COLUMNS = CovidHospSomething("../../../common/covid_hosp/covid_hosp_schemadefs.yaml").get_ds_info('state_daily')
 
   def __init__(self, *args, **kwargs):
     super().__init__(

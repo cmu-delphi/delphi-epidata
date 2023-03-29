@@ -20,8 +20,6 @@ RoundTripRepresenter.add_representer(type(None), RoundTripRepresenter.represent_
 
 class CovidHospSomething:
 
-  YAML_FILENAME = 'covid_hosp_schemadefs.yaml'
-
   PYTHON_TYPE_MAPPING = {
     'int': int,
     'float': float,
@@ -55,7 +53,8 @@ class CovidHospSomething:
   MYSQL_COL_NAME_PATTERN = re.compile(r'^[a-zA-Z0-9_]{3,64}$')
 
 
-  def __init__(self):
+  def __init__(self, yaml_filename='covid_hosp_schemadefs.yaml'):
+    self.yaml_filename = yaml_filename
     self.read_schemadefs()
 
 
@@ -64,13 +63,13 @@ class CovidHospSomething:
     #   from importlib import resources
     #   import delphi.epidata.common.covid_hosp
     #   self.yaml_content = resources.read_text(delphi.epidata.common.covid_hosp, YAML_FILENAME)
-    with open(CovidHospSomething.YAML_FILENAME, 'r') as yaml_file:
+    with open(self.yaml_filename, 'r') as yaml_file:
       self.yaml_content = yaml_load(yaml_file, preserve_quotes=True)
     return self.yaml_content
 
 
-  def write_schemadefs(self, filename=YAML_FILENAME):
-    with open(filename, 'w') as yaml_file:
+  def write_schemadefs(self):
+    with open(self.yaml_filename, 'w') as yaml_file:
       # NOTE: `width` specification is to prevent dump from splitting long lines
       # TODO: consider `block_seq_indent=2` to make list under ORDERED_CSV_COLUMNS look a little better
       yaml_dump(self.yaml_content, yaml_file, width=200)
@@ -151,7 +150,7 @@ class CovidHospSomething:
   def write_new_definitions(self):
     today_str = datetime.now().strftime("%Y_%m_%d")
 
-    yaml_file = CovidHospSomething.YAML_FILENAME
+    yaml_file = self.yaml_filename
     ddl_file = 'covid_hosp.sql'
     migration_file = f"covid_hosp_v{today_str}.sql"
 
