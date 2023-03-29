@@ -41,6 +41,8 @@ class CsvUploadingTests(unittest.TestCase):
         database='epidata')
     cur = cnx.cursor()
     cur.execute('truncate table covidcast_nowcast')
+    cur.execute('delete from api_user')
+    cur.execute('insert into api_user(api_key, tracking, registered) values ("key", 1, 1)')
     cnx.commit()
     cur.close()
 
@@ -54,6 +56,7 @@ class CsvUploadingTests(unittest.TestCase):
 
     # use the local instance of the Epidata API
     Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+    Epidata.auth = ('epidata', 'key')
 
   def tearDown(self):
     """Perform per-test teardown."""

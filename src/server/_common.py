@@ -13,6 +13,9 @@ from ._exceptions import DatabaseErrorException, EpiDataException
 engine: Engine = create_engine(SQLALCHEMY_DATABASE_URI, **SQLALCHEMY_ENGINE_OPTIONS)
 
 app = Flask("EpiData", static_url_path="")
+# for example if the request goes through one proxy
+# before hitting your application server
+# app.wsgi_app = ProxyFix(app.wsgi_app, num_proxies=1)
 app.config["SECRET"] = SECRET
 
 

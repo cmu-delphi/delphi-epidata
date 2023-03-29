@@ -60,11 +60,19 @@ class CovidcastMetaCacheTests(unittest.TestCase):
 
     # use the local instance of the Epidata API
     Epidata.BASE_URL = BASE_URL
+    Epidata.auth = ('epidata', 'key')
 
   def tearDown(self):
     """Perform per-test teardown."""
     self.cur.close()
     self.cnx.close()
+
+  @staticmethod
+  def _make_request():
+    params = {'endpoint': 'covidcast_meta', 'cached': 'true'}
+    response = requests.get(Epidata.BASE_URL, params=params, auth=Epidata.auth)
+    response.raise_for_status()
+    return response.json()
 
   def test_caching(self):
     """Populate, query, cache, query, and verify the cache."""
@@ -147,10 +155,7 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     self.cnx.commit()
 
     # fetch the cached version (manually)
-    params = {'endpoint': 'covidcast_meta', 'cached': 'true'}
-    response = requests.get(BASE_URL, params=params)
-    response.raise_for_status()
-    epidata4 = response.json()
+    epidata4 = self._make_request()
 
     # make sure the cache was actually served
     self.assertEqual(epidata4, {
@@ -170,10 +175,7 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     self.cnx.commit()
 
     # fetch the cached version (manually)
-    params = {'endpoint': 'covidcast_meta', 'cached': 'true'}
-    response = requests.get(BASE_URL, params=params)
-    response.raise_for_status()
-    epidata5 = response.json()
+    epidata5 = self._make_request()
 
     # make sure the cache was returned anyhow
     self.assertEqual(epidata4, epidata5)

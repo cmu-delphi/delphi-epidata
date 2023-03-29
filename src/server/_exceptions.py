@@ -30,6 +30,11 @@ class UnAuthenticatedException(EpiDataException):
         super(UnAuthenticatedException, self).__init__("unauthenticated", 401)
 
 
+class MissingAPIKeyException(EpiDataException):
+    def __init__(self):
+        super(MissingAPIKeyException, self).__init__("missing api key", 401)
+
+
 class ValidationFailedException(EpiDataException):
     def __init__(self, message: str):
         super(ValidationFailedException, self).__init__(message, 400)

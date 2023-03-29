@@ -7,6 +7,7 @@ from flask.json import dumps
 import orjson
 
 from ._config import MAX_RESULTS, MAX_COMPATIBILITY_RESULTS
+from ._security import show_hard_api_key_warning, show_soft_api_key_warning, API_KEY_WARNING_TEXT
 from ._common import is_compatibility_mode
 from delphi.epidata.common.logger import get_structured_logger
 
@@ -22,7 +23,7 @@ def print_non_standard(format: str, data):
         message = "no results"
         result = -2
     else:
-        message = "success"
+        message = API_KEY_WARNING_TEXT if show_soft_api_key_warning() else "success"
         result = 1
     if result == -1 and is_compatibility_mode():
         return jsonify(dict(result=result, message=message))
@@ -112,21 +113,24 @@ class ClassicPrinter(APrinter):
     """
 
     def _begin(self):
-        if is_compatibility_mode():
+        if is_compatibility_mode() and not show_hard_api_key_warning():
             return "{ "
-        return '{ "epidata": ['
+        r = '{ "epidata": ['
+        if show_hard_api_key_warning():
+            r = f'{r} "{API_KEY_WARNING_TEXT}" '
+        return r
 
     def _format_row(self, first: bool, row: Dict):
-        if first and is_compatibility_mode():
+        if first and is_compatibility_mode() and not show_hard_api_key_warning():
             sep = b'"epidata": ['
         else:
-            sep = b"," if not first else b""
+            sep = b"," if not first or show_hard_api_key_warning() else b""
         return sep + orjson.dumps(row)
 
     def _end(self):
-        message = "success"
+        message = API_KEY_WARNING_TEXT if show_soft_api_key_warning() else "success"
         prefix = "], "
-        if self.count == 0 and is_compatibility_mode():
+        if self.count == 0 and is_compatibility_mode() and not show_hard_api_key_warning():
             # no array to end
             prefix = ""
 
@@ -160,7 +164,7 @@ class ClassicTreePrinter(ClassicPrinter):
             self._tree[group].append(row)
         else:
             self._tree[group] = [row]
-        if first and is_compatibility_mode():
+        if first and is_compatibility_mode() and not show_hard_api_key_warning():
             return b'"epidata": ['
         return None
 
@@ -171,7 +175,10 @@ class ClassicTreePrinter(ClassicPrinter):
         tree = orjson.dumps(self._tree)
         self._tree = dict()
         r = super(ClassicTreePrinter, self)._end()
-        return tree + r
+        r = tree + r
+        if show_hard_api_key_warning():
+            r = b", " + r
+        return r
 
 
 class CSVPrinter(APrinter):
@@ -200,8 +207,12 @@ class CSVPrinter(APrinter):
 
     def _format_row(self, first: bool, row: Dict):
         if first:
-            self._writer = DictWriter(self._stream, list(row.keys()), lineterminator="\n")
+            columns = list(row.keys())
+            self._writer = DictWriter(self._stream, columns, lineterminator="\n")
             self._writer.writeheader()
+            if show_hard_api_key_warning() and columns:
+                self._writer.writerow({columns[0]: API_KEY_WARNING_TEXT})
+
         self._writer.writerow(row)
 
         # remove the stream content to print just one line at a time
@@ -222,10 +233,13 @@ class JSONPrinter(APrinter):
     """
 
     def _begin(self):
-        return b"["
+        r = b"["
+        if show_hard_api_key_warning():
+            r = b'["' + bytes(API_KEY_WARNING_TEXT, "utf-8") + b'"'
+        return r
 
     def _format_row(self, first: bool, row: Dict):
-        sep = b"," if not first else b""
+        sep = b"," if not first or show_hard_api_key_warning() else b""
         return sep + orjson.dumps(row)
 
     def _end(self):
@@ -239,6 +253,11 @@ class JSONLPrinter(APrinter):
 
     def make_response(self, gen):
         return Response(gen, mimetype=" text/plain; charset=utf8")
+
+    def _begin(self):
+        if show_hard_api_key_warning():
+            return bytes(API_KEY_WARNING_TEXT, "utf-8") + b"\n"
+        return None
 
     def _format_row(self, first: bool, row: Dict):
         # each line is a JSON file with a new line to separate them
