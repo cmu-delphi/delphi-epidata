@@ -23,13 +23,34 @@ class CovidHospSomething:
 
   YAML_FILENAME = 'covid_hosp_schemadefs.yaml'
 
-  TYPE_MAPPING = {
+  PYTHON_TYPE_MAPPING = {
     'int': int,
     'float': float,
     'str': str,
     'fixedstr', str,
+    'bool': int, # UNCOMMENT: Utils.parse_bool,
     'intdate': int, # UNCOMMENT: Utils.int_from_date,
-    'point': str, # UNCOMMENT: Utils.limited_geocode,
+    'geocode': str, # UNCOMMENT: Utils.limited_geocode,
+  }
+
+  SQL_TYPE_MAPPING = {
+    'int': 'INT',
+    'float': 'DOUBLE',
+    'str': 'VARCHAR',
+    'fixedstr': 'CHAR',
+    'bool': 'TINYINT(1)',
+    'intdate': 'INT(11)',
+    'geocode': 'VARCHAR(32)',
+  }
+
+  SOURCE_METADATA_TYPE_MAPPING = {
+    'int': 'number',
+    'float': 'number',
+    'str': 'text',
+    'fixedstr': 'text',
+    'bool': 'checkbox/text',
+    'intdate': 'calendar_date',
+    'geocode': 'point',
   }
 
   MYSQL_COL_NAME_PATTERN = re.compile(r'^[a-zA-Z0-9_]{3,64}$')
@@ -74,7 +95,7 @@ class CovidHospSomething:
       else:
         dtype = dtype_cplx
         col_width = None
-      yield {'name': name, 'sql_name': sql_name, 'dtype': dtype, 'col_width:' col_width, 'marshaller': CovidHospSomething.TYPE_MAPPING[dtype]}
+      yield {'name': name, 'sql_name': sql_name, 'dtype': dtype, 'col_width:' col_width, 'marshaller': CovidHospSomething.PYTHON_TYPE_MAPPING[dtype]}
 
 
   def add_column(self, ds_name, col_name, dtype, sql_name=None, col_width=None):
@@ -135,6 +156,7 @@ class CovidHospSomething:
     # write migration file for new columns
     with open(migration_file, 'w') as f:
       # TODO
+      # NOTE: we dont have column differences here, this cant stay here without that
       f.write("\n")
 
     # move files into proper locations
