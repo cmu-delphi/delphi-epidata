@@ -124,7 +124,7 @@ class CovidHospSomething:
     ds = self.dataset(ds_name)
     TABLE_NAME = ds['TABLE_NAME']
     KEY_COLS = ds['KEY_COLS']
-    AGGREGATE_KEY_COLS = ds.get('AGGREGATE_KEY_COLS')
+    AGGREGATE_KEY_COLS = ds['AGGREGATE_KEY_COLS'] if 'AGGREGATE_KEY_COLS' in ds else None
     ORDERED_CSV_COLUMNS = [
       Columndef(
         # Original name for the column
