@@ -55,6 +55,13 @@ class CsvRowValue:
   missing_stderr: int
   missing_sample_size: int
 
+class GeoIdSanityCheckException(ValueError):
+
+  def __init__(self, message, geo_id=None):
+      self.message = message
+      self.geo_id = geo_id
+
+
 
 class CsvImporter:
   """Finds and parses covidcast CSV files."""
@@ -280,16 +287,16 @@ class CsvImporter:
       return Nans.OTHER.value
 
     if missing_entry != Nans.NOT_MISSING.value and attr_quantity is not None:
-      logger.warning(event = f"missing_{attr_name} column contradicting {attr_name} presence.", detail = (str(row)), file = filepath)
+      logger.warning(event = f"missing_{attr_name} column contradicting {attr_name} presence.", detail=(str(row)), file=filepath)
       return Nans.NOT_MISSING.value
     if missing_entry == Nans.NOT_MISSING.value and attr_quantity is None:
-      logger.warning(event = f"missing_{attr_name} column contradicting {attr_name} presence.", detail = (str(row)), file = filepath)
+      logger.warning(event = f"missing_{attr_name} column contradicting {attr_name} presence.", detail=(str(row)), file=filepath)
       return Nans.OTHER.value
 
     return missing_entry
 
   @staticmethod
-  def extract_and_check_row(row: DataFrameRow, geo_type: str, filepath: Optional[str] = None) -> Tuple[Optional[CsvRowValue], Optional[str]]:
+  def extract_and_check_row(geo_type, table):
     """Extract and return `CsvRowValue` from a CSV row, with sanity checks.
 
     Also returns the name of the field which failed sanity check, or None.
@@ -298,76 +305,120 @@ class CsvImporter:
     geo_type: the geographic resolution of the file
     """
 
-    # use consistent capitalization (e.g. for states)
-    try:
-      geo_id = row.geo_id.lower()
-    except AttributeError:
-      # geo_id was `None`
-      return (None, 'geo_id')
+    def check_county(geo_id):
+      if len(geo_id) != 5 or not '01000' <= geo_id <= '80000':
+          raise GeoIdSanityCheckException(f'len({geo_id}) != 5 or not "01000" <= {geo_id} <= "80000"', geo_id=geo_id)
+      return geo_id
 
-    if geo_type in ('hrr', 'msa', 'dma', 'hhs'):
-      # these particular ids are prone to be written as ints -- and floats
-      try:
-        geo_id = str(CsvImporter.floaty_int(geo_id))
-      except ValueError:
-        # expected a number, but got a string
-        return (None, 'geo_id')
+    def check_hrr(geo_id):
+      if not 1 <= int(geo_id) <= 500:
+          raise GeoIdSanityCheckException(f'1 <= int({geo_id}) <= 500', geo_id=geo_id)
+      return geo_id
+
+    def check_msa(geo_id):
+      if len(geo_id) != 5 or not '10000' <= geo_id <= '99999':
+          raise GeoIdSanityCheckException(f'len({geo_id}) != 5 or not "10000" <= {geo_id} <= "99999"', geo_id=geo_id)
+      return geo_id
+
+    def check_dma(geo_id):
+      if not 450 <= int(geo_id) <= 950:
+          raise GeoIdSanityCheckException(f'not 450 <= int({geo_id}) <= 950', geo_id=geo_id)
+      return geo_id
+
+    def check_state(geo_id):
+      if len(geo_id) != 2 or not 'aa' <= geo_id <= 'zz':
+          raise GeoIdSanityCheckException(f'len({geo_id}) != 2 or not "aa" <= {geo_id} <= "zz"', geo_id=geo_id)
+      return geo_id
+
+    def check_hhs(geo_id):
+      if not 1 <= int(geo_id) <= 10:
+          raise GeoIdSanityCheckException(f'not 1 <= int({geo_id}) <= 10', geo_id=geo_id)
+      return geo_id
+
+    def check_nation(geo_id):
+      if len(geo_id) != 2 or not 'aa' <= geo_id <= 'zz':
+          raise GeoIdSanityCheckException(f'len({geo_id}) != 2 or not "aa" <= {geo_id} <= "zz"', geo_id=geo_id)
+      return geo_id
+
+    def validate_quantity(quantity):
+      """
+      Take a row and validate a given associated quantity (e.g., val, se, stderr).
+      Returns float, raise `GeoIdSanityCheckException`.
+      """
+      if str(quantity).lower() in ('inf', '-inf'):
+        raise GeoIdSanityCheckException("Quantity given was an inf.")
+      elif str(quantity).lower() in ('', 'na', 'nan', 'none'):
+        return None
+      if quantity < 0:
+          raise GeoIdSanityCheckException(f'{quantity} is not None and {quantity} < 0')
+      else:
+        return quantity
+
+    def validate_missing_code(data):
+      """Take a row and validate the missing code associated with
+      a quantity (e.g., val, se, stderr).
+
+      Returns either a nan code for assignment to the missing quantity
+      or a None to signal an error with the missing code. We decline
+      to infer missing codes except for a very simple cases; the default
+      is to produce an error so that the issue can be fixed in indicators.
+      """
+      # logger = get_structured_logger('load_csv') if logger is None else logger
+
+      attr = data[0]
+      missing_attr = data[1]
+      # print(dir(data))Ц
+      if missing_attr is pd.NA and attr is not pd.NA:
+        return Nans.NOT_MISSING.value
+      if missing_attr is pd.NA and attr is pd.NA:
+        return Nans.OTHER.value
+      if missing_attr != Nans.NOT_MISSING.value and attr is not pd.NA:
+        # logger.warning(event = f"{data.index[1]} column contradicting {data.index[0]} presence.")
+        return Nans.NOT_MISSING.value
+      if missing_attr == Nans.NOT_MISSING.value and attr is pd.NA:
+        # logger.warning(event = f"{data.index[1]} column contradicting {data.index[0]} presence.")
+        return Nans.OTHER.value
+      return missing_attr
+
+    # use consistent capitalization (e.g. for states)
+    table['geo_id'] = table['geo_id'].map(lambda x: x.lower())
 
     # sanity check geo_id with respect to geo_type
     if geo_type == 'county':
-      if len(geo_id) != 5 or not '01000' <= geo_id <= '80000':
-        return (None, 'geo_id')
+      table['geo_id'].apply(check_county)
 
     elif geo_type == 'hrr':
-      if not 1 <= int(geo_id) <= 500:
-        return (None, 'geo_id')
+      table['geo_id'].apply(check_hrr)
 
     elif geo_type == 'msa':
-      if len(geo_id) != 5 or not '10000' <= geo_id <= '99999':
-        return (None, 'geo_id')
+      table['geo_id'].apply(check_msa)
 
     elif geo_type == 'dma':
-      if not 450 <= int(geo_id) <= 950:
-        return (None, 'geo_id')
+      table['geo_id'].apply(check_dma)
 
     elif geo_type == 'state':
       # note that geo_id is lowercase
-      if len(geo_id) != 2 or not 'aa' <= geo_id <= 'zz':
-        return (None, 'geo_id')
+      table['geo_id'].apply(check_state)
 
     elif geo_type == 'hhs':
-      if not 1 <= int(geo_id) <= 10:
-        return (None, 'geo_id')
+      table['geo_id'].apply(check_hhs)
 
     elif geo_type == 'nation':
       # geo_id is lowercase
-      if len(geo_id) != 2 or not 'aa' <= geo_id <= 'zz':
-        return (None, 'geo_id')
-
-    else:
-      return (None, 'geo_type')
+      table['geo_id'].apply(check_nation)
 
     # Validate row values
-    value = CsvImporter.validate_quantity(row, "value")
-    # value was a string or another dtype
-    if value == "Error":
-      return (None, 'value')
-    stderr = CsvImporter.validate_quantity(row, "stderr")
-    # stderr is a string, another dtype, or negative
-    if stderr == "Error" or (stderr is not None and stderr < 0):
-      return (None, 'stderr')
-    sample_size = CsvImporter.validate_quantity(row, "sample_size")
-    # sample_size is a string, another dtype, or negative
-    if sample_size == "Error" or (sample_size is not None and sample_size < 0):
-      return (None, 'sample_size')
+    table['value'].apply(validate_quantity) 
+    table['stderr'].apply(validate_quantity) 
+    table['sample_size'].apply(validate_quantity)
 
     # Validate and write missingness codes
-    missing_value = CsvImporter.validate_missing_code(row, value, "value", filepath)
-    missing_stderr = CsvImporter.validate_missing_code(row, stderr, "stderr", filepath)
-    missing_sample_size = CsvImporter.validate_missing_code(row, sample_size, "sample_size", filepath)
+    table['missing_value'] = table[['value', 'missing_value']].apply(validate_missing_code, axis=1)
+    table['missing_stderr'] = table[['stderr', 'missing_stderr']].apply(validate_missing_code, axis=1)
+    table['missing_sample_size'] = table[['sample_size', 'missing_sample_size']].apply(validate_missing_code, axis=1)
 
-    # return extracted and validated row values
-    return (CsvRowValue(geo_id, value, stderr, sample_size, missing_value, missing_stderr, missing_sample_size), None)
+    # return validated table
+    return table
 
 
   @staticmethod
@@ -389,40 +440,39 @@ class CsvImporter:
       table = pd.read_csv(filepath, dtype='str')
     except pd.errors.EmptyDataError as e:
       logger.warning(event='Empty data or header is encountered', detail=str(e), file=filepath)
-      yield None
       return
 
     if not CsvImporter.is_header_valid(table.columns):
       logger.warning(event='invalid header', detail=table.columns, file=filepath)
-      yield None
       return
 
     table.rename(columns={"val": "value", "se": "stderr", "missing_val": "missing_value", "missing_se": "missing_stderr"}, inplace=True)
 
-    for row in table.itertuples(index=False):
-      csv_row_values, error = CsvImporter.extract_and_check_row(row, details.geo_type, filepath)
-
-      if error:
-        logger.warning(event = 'invalid value for row', detail=(str(row), error), file=filepath)
-        yield None
-        continue
-
-      yield CovidcastRow(
-        details.source,
-        details.signal,
-        details.time_type,
-        details.geo_type,
-        details.time_value,
-        csv_row_values.geo_value,
-        csv_row_values.value,
-        csv_row_values.stderr,
-        csv_row_values.sample_size,
-        csv_row_values.missing_value,
-        csv_row_values.missing_stderr,
-        csv_row_values.missing_sample_size,
-        details.issue,
-        details.lag,
-      )
+    try:
+      table = CsvImporter.extract_and_check_row(details.geo_type, table)
+    except GeoIdSanityCheckException as err:
+        row = table.loc[table['geo_id'] == err.geo_id]
+        logger.warning(event='invalid value for row', detail=(row.to_csv(header=False, index=False, na_rep='NA')), file=filepath)
+        return
+    return[
+        CovidcastRow(
+            source=details.source,
+            signal=details.signal,
+            time_type=details.time_type,
+            geo_type=details.geo_type,
+            time_value=details.time_value,
+            geo_value=row.geo_id,
+            value=row.value,
+            stderr=row.stderr,
+            sample_size=row.sample_size,
+            missing_value = row.missing_value,
+            missing_stderr = row.missing_stderr,
+            missing_sample_size = row.missing_sample_size,
+            issue=details.issue,
+            lag=details.lag
+        ) for row in table.itertuples(index=False)
+    ]
+    
 
 
 def collect_files(data_dir: str, specific_issue_date: bool):
