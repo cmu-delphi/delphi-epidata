@@ -258,7 +258,7 @@ state_timeseries:
   - [int, total_staffed_adult_icu_beds_coverage, ~]
 
 state_daily:
-  TABLE_NAME: covid_hosp_state_daily
+  TABLE_NAME: covid_hosp_state_timeseries
   DATASET_ID: 6xf2-c3ie
   METADATA_ID: 4cnb-m4rz
   KEY_COLS: [state, reporting_cutoff_start]
