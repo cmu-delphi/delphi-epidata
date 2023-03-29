@@ -1,5 +1,3 @@
-# TODO: this file and the associated yaml file probably belong in src/common/covid_hosp/ or at least src/common/acquisition/covid_hosp/common/
-
 from datetime import datetime
 import re
 import sys
@@ -179,7 +177,9 @@ if __name__ == "__main__":
         chs.add_column(ds_name, col.name, col.dtype)
 
   if changed:
+    print("column changes detected, writing new definition files")
     chs.write_new_definitions()
     sys.exit(1)
 
+  print("no changes detected, exiting")
   sys.exit(0)
