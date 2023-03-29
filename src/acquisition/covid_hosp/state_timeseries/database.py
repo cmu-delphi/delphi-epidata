@@ -15,7 +15,7 @@ class Database(BaseDatabase):
   # Note that the corresponding database column names may be shorter
   # due to constraints on the length of column names. See
   # /src/ddl/covid_hosp.sql for more information.
-  TABLE_NAME, KEY_COLS, ORDERED_CSV_COLUMNS = CovidHospSomething("../../../common/covid_hosp/covid_hosp_schemadefs.yaml").get_ds_info('state_timeseries')
+  TABLE_NAME, KEY_COLS, ORDERED_CSV_COLUMNS = CovidHospSomething().get_ds_info('state_timeseries')
 
   def __init__(self, *args, **kwargs):
     super().__init__(

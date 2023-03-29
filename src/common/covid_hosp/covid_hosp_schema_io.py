@@ -1,4 +1,5 @@
 from datetime import datetime
+from pathlib import Path
 import re
 import sys
 
@@ -53,8 +54,8 @@ class CovidHospSomething:
   MYSQL_COL_NAME_PATTERN = re.compile(r'^[a-zA-Z0-9_]{3,64}$')
 
 
-  def __init__(self, yaml_filename='covid_hosp_schemadefs.yaml'):
-    self.yaml_filename = yaml_filename
+  def __init__(self):
+    self.yaml_filename = str(Path(__file__).parent.absolute()) + "/covid_hosp_schemadefs.yaml"
     self.read_schemadefs()
 
 
@@ -183,6 +184,7 @@ class CovidHospSomething:
 
 if __name__ == "__main__":
   chs = CovidHospSomething()
+  print(chs.yaml_filename)
   changed = False
 
   for ds_name in chs.yaml_content:
