@@ -54,8 +54,8 @@ class CovidHospSomething:
   MYSQL_COL_NAME_PATTERN = re.compile(r'^[a-zA-Z0-9_]{3,64}$')
 
 
-  def __init__(self):
-    self.yaml_filename = str(Path(__file__).parent.absolute()) + "/covid_hosp_schemadefs.yaml"
+  def __init__(self, yaml_filename=str(Path(__file__).parent.absolute()) + "/covid_hosp_schemadefs.yaml"):
+    self.yaml_filename = yaml_filename
     self.read_schemadefs()
 
 
