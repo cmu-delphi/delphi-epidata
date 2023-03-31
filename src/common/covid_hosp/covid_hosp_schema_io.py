@@ -1,5 +1,4 @@
 from datetime import datetime
-from pathlib import Path
 import pkgutil
 import re
 import sys
@@ -59,15 +58,6 @@ class CovidHospSomething:
     if yaml_file is None:
       yaml_file = pkgutil.get_data(__name__, "covid_hosp_schemadefs.yaml")
     self.yaml_content = yaml_load(yaml_file, preserve_quotes=True)
-
-  def read_schemadefs(self):
-    # TODO: put the yaml file inside the package structure and access it there, with something like:
-    #   from importlib import resources
-    #   import delphi.epidata.common.covid_hosp
-    #   self.yaml_content = resources.read_text(delphi.epidata.common.covid_hosp, YAML_FILENAME)
-    with open(self.yaml_filename, 'r') as yaml_file:
-      self.yaml_content = yaml_load(yaml_file, preserve_quotes=True)
-    return self.yaml_content
 
 
   def write_schemadefs(self):
