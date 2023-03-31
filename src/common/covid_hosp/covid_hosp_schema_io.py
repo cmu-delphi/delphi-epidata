@@ -128,13 +128,14 @@ class CovidHospSomething:
     ORDERED_CSV_COLUMNS = [
       Columndef(
         # Original name for the column
-        column[1],
+        column['name'],
         # Updated name for the column; same name if it's not specified in the YAML files
-        column[2] if column[2] is not None else column[1],
+        column['sql_name'],
         # Datatype for the column, ignoring SQL column lengths: e.g. fixedstr:1 -> fixedstr -> str
-        self.PYTHON_TYPE_MAPPING[column[0].split(":")[0]]
+        column['marshaller']
       )
-      for column in ds['ORDERED_CSV_COLUMNS']]
+      for column in self.columns(ds_name)
+    ]
     return TABLE_NAME, KEY_COLS, AGGREGATE_KEY_COLS, ORDERED_CSV_COLUMNS
 
 
