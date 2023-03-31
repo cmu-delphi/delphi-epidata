@@ -175,60 +175,61 @@ class UnitTests(unittest.TestCase):
         "missing_sample_size": [missing_sample_size]
       })
       return row
+    
+    details = PathDetails(20200408, 0, 'src', 'sig', 'day', 20200408, 'state')
 
     # Failure cases.
     with pytest.raises(GeoIdSanityCheckException):
-      CsvImporter.extract_and_check_row('county', make_row(geo_id='1234'))
+      CsvImporter.extract_and_check_row('county', make_row(geo_id='1234'), details)
     with pytest.raises(GeoIdSanityCheckException):
-      CsvImporter.extract_and_check_row('county', make_row(geo_id='00000'))
+      CsvImporter.extract_and_check_row('county', make_row(geo_id='00000'), details)
     with pytest.raises(GeoIdSanityCheckException):
-      CsvImporter.extract_and_check_row('hrr', make_row(geo_id='600'))
+      CsvImporter.extract_and_check_row('hrr', make_row(geo_id='600'), details)
     with pytest.raises(GeoIdSanityCheckException):
-      CsvImporter.extract_and_check_row('msa', make_row(geo_id='1234'))
+      CsvImporter.extract_and_check_row('msa', make_row(geo_id='1234'), details)
     with pytest.raises(GeoIdSanityCheckException):
-      CsvImporter.extract_and_check_row('msa', make_row(geo_id='01234'))
+      CsvImporter.extract_and_check_row('msa', make_row(geo_id='01234'), details)
     with pytest.raises(GeoIdSanityCheckException):
-      CsvImporter.extract_and_check_row('dma', make_row(geo_id='400'))
+      CsvImporter.extract_and_check_row('dma', make_row(geo_id='400'), details)
     with pytest.raises(GeoIdSanityCheckException):
-      CsvImporter.extract_and_check_row('state', make_row(geo_id='48'))
+      CsvImporter.extract_and_check_row('state', make_row(geo_id='48'), details)
     with pytest.raises(GeoIdSanityCheckException):
-      CsvImporter.extract_and_check_row('state', make_row(geo_id='iowa'))
+      CsvImporter.extract_and_check_row('state', make_row(geo_id='iowa'), details)
     with pytest.raises(GeoIdSanityCheckException):
-      CsvImporter.extract_and_check_row('nation', make_row(geo_id='0000'))
+      CsvImporter.extract_and_check_row('nation', make_row(geo_id='0000'), details)
     with pytest.raises(GeoIdSanityCheckException):
-      CsvImporter.extract_and_check_row('hhs', make_row(geo_id='0'))
+      CsvImporter.extract_and_check_row('hhs', make_row(geo_id='0'), details)
     with pytest.raises(GeoIdSanityCheckException):
-      CsvImporter.extract_and_check_row('county', make_row(geo_id=None))
+      CsvImporter.extract_and_check_row('county', make_row(geo_id=None), details)
 
     with pytest.raises(Exception):
-      CsvImporter.extract_and_check_row('hrr', make_row(geo_id='hrr001'))
+      CsvImporter.extract_and_check_row('hrr', make_row(geo_id='hrr001'), details)
 
     with pytest.raises(GeoTypeSanityCheckException):
-      CsvImporter.extract_and_check_row('province', make_row(geo_id='ab'))
+      CsvImporter.extract_and_check_row('province', make_row(geo_id='ab'), details)
     with pytest.raises(GeoTypeSanityCheckException):
-      CsvImporter.extract_and_check_row(None, make_row())
+      CsvImporter.extract_and_check_row(None, make_row(), details)
 
     with pytest.raises(ValueSanityCheckException):
-      CsvImporter.extract_and_check_row('state', make_row(stderr=-1))
+      CsvImporter.extract_and_check_row('state', make_row(stderr=-1), details)
     with pytest.raises(ValueSanityCheckException):
-      CsvImporter.extract_and_check_row('state', make_row(value=float('inf')))
+      CsvImporter.extract_and_check_row('state', make_row(value=float('inf')), details)
     with pytest.raises(ValueSanityCheckException):
-      CsvImporter.extract_and_check_row('state', make_row(stderr=float('inf')))
+      CsvImporter.extract_and_check_row('state', make_row(stderr=float('inf')), details)
     with pytest.raises(ValueSanityCheckException):
-      CsvImporter.extract_and_check_row('state', make_row(sample_size=float('inf')))
-
+      CsvImporter.extract_and_check_row('state', make_row(sample_size=float('inf')), details)
 
     # Success cases with NANs.
-    table = CsvImporter.extract_and_check_row('state', make_row())
+    table = CsvImporter.extract_and_check_row('state', make_row(), details)
     assert table.compare(make_row('vi', 1.23, 4.56, 100.5, Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.NOT_MISSING)).empty
 
-    table = CsvImporter.extract_and_check_row('state', make_row(value=None, stderr=np.nan, sample_size=None, missing_value=Nans.DELETED, missing_stderr=Nans.DELETED, missing_sample_size=Nans.DELETED))
+    table = CsvImporter.extract_and_check_row('state', make_row(value=None, stderr=np.nan, sample_size=None, missing_value=Nans.DELETED, missing_stderr=Nans.DELETED, missing_sample_size=Nans.DELETED), details)
     assert table.compare(make_row('vi', None, None, None, Nans.DELETED, Nans.DELETED, Nans.DELETED)).empty
 
-    table = CsvImporter.extract_and_check_row('state', make_row(stderr=None, sample_size=np.nan, missing_stderr=Nans.OTHER, missing_sample_size=Nans.OTHER))
+    table = CsvImporter.extract_and_check_row('state', make_row(stderr=None, sample_size=np.nan, missing_stderr=Nans.OTHER, missing_sample_size=Nans.OTHER), details)
     assert table.compare(make_row('vi', 1.23, None, None, Nans.NOT_MISSING, Nans.OTHER, Nans.OTHER)).empty
 
-    table = CsvImporter.extract_and_check_row('state', make_row(sample_size=None, missing_value=Nans.NOT_MISSING, missing_stderr=Nans.OTHER, missing_sample_size=Nans.NOT_MISSING))
+    table = CsvImporter.extract_and_check_row('state', make_row(sample_size=None, missing_value=Nans.NOT_MISSING, missing_stderr=Nans.OTHER, missing_sample_size=Nans.NOT_MISSING), details)
     assert table.compare(make_row('vi', 1.23, 4.56, None, Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.OTHER)).empty
 
 

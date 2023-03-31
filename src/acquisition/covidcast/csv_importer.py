@@ -237,7 +237,7 @@ class CsvImporter:
 
 
   @staticmethod
-  def extract_and_check_row(geo_type: str, table: pd.DataFrame) -> pd.DataFrame:
+  def extract_and_check_row(geo_type: str, table: pd.DataFrame, details: PathDetails) -> pd.DataFrame:
     """Extract and return `CsvRowValue` from a CSV row, with sanity checks.
 
     Also returns the name of the field which failed sanity check, or None.
@@ -250,19 +250,19 @@ class CsvImporter:
       validation_fails = table[fail_mask]
       if not validation_fails.empty:
         first_fail = validation_fails.iloc[0]
-        raise GeoIdSanityCheckException(f'{geo_type} does not satisfy validation check', geo_id=first_fail["geo_id"])
+        raise GeoIdSanityCheckException(f'Invalid geo_id for {geo_type}', geo_id=first_fail["geo_id"])
 
     def validate_quantity(column: pd.Series):
       """Validate a column of a table using a validation function."""
       infinities = column[column.isin([float('inf'), float('-inf')])]
       if not infinities.empty:
         first_fail = infinities.iloc[0]
-        raise ValueSanityCheckException(f'Found infinity in {column.name}: {first_fail}')
+        raise ValueSanityCheckException(f'Invalid infinite value in {column.name}: {first_fail}', first_fail)
 
       negative_values = column[column.lt(0)]
       if not negative_values.empty:
         first_fail = negative_values.iloc[0]
-        raise ValueSanityCheckException(f'Found negative value in {column.name}: {first_fail}')
+        raise ValueSanityCheckException(f'Invalid negative value in {column.name}: {first_fail}', first_fail)
 
       return column
 
@@ -283,13 +283,13 @@ class CsvImporter:
       contradict_mask = missing_code.ne(Nans.NOT_MISSING.value) & column.notna()
       if contradict_mask.any():
         first_fail = missing_code[contradict_mask].iloc[0]
-        logger.warning(f'Correcting contradicting missing code: {first_fail}')
+        logger.warning(f'Correcting contradicting missing code: {first_fail} in {details.source}:{details.signal} {details.time_value} {details.geo_type}')
       missing_code[contradict_mask] = Nans.NOT_MISSING.value
 
       contradict_mask = missing_code.eq(Nans.NOT_MISSING.value) & column.isna()
       if contradict_mask.any():
         first_fail = missing_code[contradict_mask].iloc[0]
-        logger.warning(f'Correcting contradicting missing code: {first_fail}')
+        logger.warning(f'Correcting contradicting missing code: {first_fail} in {details.source}:{details.signal} {details.time_value} {details.geo_type}')
       missing_code[contradict_mask] = Nans.OTHER.value
 
       return missing_code
@@ -313,7 +313,7 @@ class CsvImporter:
     elif geo_type == 'nation':
       fail_mask = table['geo_id'] != 'us'
     else:
-      raise GeoTypeSanityCheckException(f'Unknown geo_type: {geo_type}')
+      raise GeoTypeSanityCheckException(f'Invalid geo_type: {geo_type}')
 
     validate_geo_code(fail_mask, geo_type)
 
@@ -362,7 +362,7 @@ class CsvImporter:
         table[key] = np.nan
 
     try:
-      table = CsvImporter.extract_and_check_row(details.geo_type, table)
+      table = CsvImporter.extract_and_check_row(details.geo_type, table, details)
     except GeoIdSanityCheckException as err:
       row = table.loc[table['geo_id'] == err.geo_id]
       logger.warning(event='invalid value for row', detail=(row.to_csv(header=False, index=False, na_rep='NA')), file=filepath)
@@ -371,7 +371,8 @@ class CsvImporter:
       logger.warning(event='invalid value for row', detail=err, file=filepath)
       return None
     except ValueSanityCheckException as err:
-      logger.warning(event='invalid value for row', file=filepath)
+      row = table.loc[table['value'] == err.value]
+      logger.warning(event='invalid value for row', detail=(row.to_csv(header=False, index=False, na_rep='NA')), file=filepath)
       return None
     except Exception as err:
       logger.warning(event='unknown error occured in extract_and_check_row', detail=err, file=filepath)
