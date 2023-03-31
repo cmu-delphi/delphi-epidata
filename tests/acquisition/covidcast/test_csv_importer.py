@@ -9,16 +9,20 @@ from unittest.mock import MagicMock, patch
 import epiweeks as epi
 import numpy as np
 import pandas as pd
+import pytest
 from delphi.epidata.acquisition.covidcast.csv_importer import (
     CsvImporter,
-    CsvRowValue,
     PathDetails,
     collect_files,
     get_argument_parser,
     main,
     make_handlers,
     upload_archive,
+    GeoIdSanityCheckException,
+    GeoTypeSanityCheckException,
+    ValueSanityCheckException
 )
+from delphi.epidata.acquisition.covidcast.covidcast_row import CovidcastRow 
 from delphi.utils.epiweek import delta_epiweeks
 from delphi_utils import Nans
 
@@ -149,96 +153,83 @@ class UnitTests(unittest.TestCase):
     self.assertTrue(CsvImporter.is_header_valid(columns))
 
 
-  def test_floaty_int(self):
-    """Parse ints that may look like floats."""
-
-    self.assertEqual(CsvImporter.floaty_int('-1'), -1)
-    self.assertEqual(CsvImporter.floaty_int('-1.0'), -1)
-
-    with self.assertRaises(ValueError):
-      CsvImporter.floaty_int('-1.1')
-
-
-  def test_maybe_apply(self):
-    """Apply a function to a value as long as it's not null-like."""
-
-    self.assertEqual(CsvImporter.maybe_apply(float, '3.14'), 3.14)
-    self.assertEqual(CsvImporter.maybe_apply(int, '1'), 1)
-    self.assertIsNone(CsvImporter.maybe_apply(int, 'NA'))
-    self.assertIsNone(CsvImporter.maybe_apply(int, 'NaN'))
-    self.assertIsNone(CsvImporter.maybe_apply(float, ''))
-    self.assertIsNone(CsvImporter.maybe_apply(float, None))
-
-
   def test_extract_and_check_row(self):
     """Apply various sanity checks to a row of data."""
 
     def make_row(
-        geo_type='state',
-        geo_id='vi',
-        value='1.23',
-        stderr='4.56',
-        sample_size='100.5',
-        missing_value=str(float(Nans.NOT_MISSING)),
-        missing_stderr=str(float(Nans.NOT_MISSING)),
-        missing_sample_size=str(float(Nans.NOT_MISSING))):
-      row = MagicMock(
-          geo_id=geo_id,
-          value=value,
-          stderr=stderr,
-          sample_size=sample_size,
-          missing_value=missing_value,
-          missing_stderr=missing_stderr,
-          missing_sample_size=missing_sample_size,
-          spec=["geo_id", "value", "stderr", "sample_size",
-                "missing_value", "missing_stderr", "missing_sample_size"])
-      return geo_type, row
+      geo_id='vi',
+      value=1.23,
+      stderr=4.56,
+      sample_size=100.5,
+      missing_value=Nans.NOT_MISSING,
+      missing_stderr=Nans.NOT_MISSING,
+      missing_sample_size=Nans.NOT_MISSING
+    ):
+      row = pd.DataFrame({
+        "geo_id": [geo_id],
+        "value": [value],
+        "stderr": [stderr],
+        "sample_size": [sample_size],
+        "missing_value": [missing_value],
+        "missing_stderr": [missing_stderr],
+        "missing_sample_size": [missing_sample_size]
+      })
+      return row
 
-    # cases to test each failure mode
-    failure_cases = [
-      (make_row(geo_type='county', geo_id='1234'), 'geo_id'),
-      (make_row(geo_type='county', geo_id='00000'), 'geo_id'),
-      (make_row(geo_type='hrr', geo_id='600'), 'geo_id'),
-      (make_row(geo_type='msa', geo_id='1234'), 'geo_id'),
-      (make_row(geo_type='msa', geo_id='01234'), 'geo_id'),
-      (make_row(geo_type='dma', geo_id='400'), 'geo_id'),
-      (make_row(geo_type='state', geo_id='48'), 'geo_id'),
-      (make_row(geo_type='state', geo_id='iowa'), 'geo_id'),
-      (make_row(geo_type='nation', geo_id='0000'), 'geo_id'),
-      (make_row(geo_type='hhs', geo_id='0'), 'geo_id'),
-      (make_row(geo_type='province', geo_id='ab'), 'geo_type'),
-      (make_row(stderr='-1'), 'stderr'),
-      (make_row(geo_type=None), 'geo_type'),
-      (make_row(geo_id=None), 'geo_id'),
-      (make_row(value='inf'), 'value'),
-      (make_row(stderr='inf'), 'stderr'),
-      (make_row(sample_size='inf'), 'sample_size'),
-      (make_row(geo_type='hrr', geo_id='hrr001'), 'geo_id'),
-      (make_row(value='value'), 'value'),
-      (make_row(stderr='stderr'), 'stderr'),
-      (make_row(sample_size='sample_size'), 'sample_size'),
-    ]
+    # Failure cases.
+    with pytest.raises(GeoIdSanityCheckException):
+      CsvImporter.extract_and_check_row('county', make_row(geo_id='1234'))
+    with pytest.raises(GeoIdSanityCheckException):
+      CsvImporter.extract_and_check_row('county', make_row(geo_id='00000'))
+    with pytest.raises(GeoIdSanityCheckException):
+      CsvImporter.extract_and_check_row('hrr', make_row(geo_id='600'))
+    with pytest.raises(GeoIdSanityCheckException):
+      CsvImporter.extract_and_check_row('msa', make_row(geo_id='1234'))
+    with pytest.raises(GeoIdSanityCheckException):
+      CsvImporter.extract_and_check_row('msa', make_row(geo_id='01234'))
+    with pytest.raises(GeoIdSanityCheckException):
+      CsvImporter.extract_and_check_row('dma', make_row(geo_id='400'))
+    with pytest.raises(GeoIdSanityCheckException):
+      CsvImporter.extract_and_check_row('state', make_row(geo_id='48'))
+    with pytest.raises(GeoIdSanityCheckException):
+      CsvImporter.extract_and_check_row('state', make_row(geo_id='iowa'))
+    with pytest.raises(GeoIdSanityCheckException):
+      CsvImporter.extract_and_check_row('nation', make_row(geo_id='0000'))
+    with pytest.raises(GeoIdSanityCheckException):
+      CsvImporter.extract_and_check_row('hhs', make_row(geo_id='0'))
+    with pytest.raises(GeoIdSanityCheckException):
+      CsvImporter.extract_and_check_row('county', make_row(geo_id=None))
 
-    for ((geo_type, row), field) in failure_cases:
-      values, error = CsvImporter.extract_and_check_row(row, geo_type)
-      self.assertIsNone(values)
-      self.assertEqual(error, field)
+    with pytest.raises(Exception):
+      CsvImporter.extract_and_check_row('hrr', make_row(geo_id='hrr001'))
 
-    success_cases = [
-      (make_row(), CsvRowValue('vi', 1.23, 4.56, 100.5, Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.NOT_MISSING)),
-      (make_row(value=None, stderr=np.nan, sample_size='', missing_value=str(float(Nans.DELETED)), missing_stderr=str(float(Nans.DELETED)), missing_sample_size=str(float(Nans.DELETED))), CsvRowValue('vi', None, None, None, Nans.DELETED, Nans.DELETED, Nans.DELETED)),
-      (make_row(stderr='', sample_size='NA', missing_stderr=str(float(Nans.OTHER)), missing_sample_size=str(float(Nans.OTHER))), CsvRowValue('vi', 1.23, None, None, Nans.NOT_MISSING, Nans.OTHER, Nans.OTHER)),
-      (make_row(sample_size=None, missing_value='missing_value', missing_stderr=str(float(Nans.OTHER)), missing_sample_size=str(float(Nans.NOT_MISSING))), CsvRowValue('vi', 1.23, 4.56, None, Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.OTHER)),
-    ]
+    with pytest.raises(GeoTypeSanityCheckException):
+      CsvImporter.extract_and_check_row('province', make_row(geo_id='ab'))
+    with pytest.raises(GeoTypeSanityCheckException):
+      CsvImporter.extract_and_check_row(None, make_row())
 
-    for ((geo_type, row), field) in success_cases:
-      values, error = CsvImporter.extract_and_check_row(row, geo_type)
-      self.assertIsNone(error)
-      self.assertIsInstance(values, CsvRowValue)
-      self.assertEqual(values.geo_value, field.geo_value)
-      self.assertEqual(values.value, field.value)
-      self.assertEqual(values.stderr, field.stderr)
-      self.assertEqual(values.sample_size, field.sample_size)
+    with pytest.raises(ValueSanityCheckException):
+      CsvImporter.extract_and_check_row('state', make_row(stderr=-1))
+    with pytest.raises(ValueSanityCheckException):
+      CsvImporter.extract_and_check_row('state', make_row(value=float('inf')))
+    with pytest.raises(ValueSanityCheckException):
+      CsvImporter.extract_and_check_row('state', make_row(stderr=float('inf')))
+    with pytest.raises(ValueSanityCheckException):
+      CsvImporter.extract_and_check_row('state', make_row(sample_size=float('inf')))
+
+
+    # Success cases with NANs.
+    table = CsvImporter.extract_and_check_row('state', make_row())
+    assert table.compare(make_row('vi', 1.23, 4.56, 100.5, Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.NOT_MISSING)).empty
+
+    table = CsvImporter.extract_and_check_row('state', make_row(value=None, stderr=np.nan, sample_size=None, missing_value=Nans.DELETED, missing_stderr=Nans.DELETED, missing_sample_size=Nans.DELETED))
+    assert table.compare(make_row('vi', None, None, None, Nans.DELETED, Nans.DELETED, Nans.DELETED)).empty
+
+    table = CsvImporter.extract_and_check_row('state', make_row(stderr=None, sample_size=np.nan, missing_stderr=Nans.OTHER, missing_sample_size=Nans.OTHER))
+    assert table.compare(make_row('vi', 1.23, None, None, Nans.NOT_MISSING, Nans.OTHER, Nans.OTHER)).empty
+
+    table = CsvImporter.extract_and_check_row('state', make_row(sample_size=None, missing_value=Nans.NOT_MISSING, missing_stderr=Nans.OTHER, missing_sample_size=Nans.NOT_MISSING))
+    assert table.compare(make_row('vi', 1.23, 4.56, None, Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.OTHER)).empty
 
 
   @patch("pandas.read_csv")
@@ -250,18 +241,18 @@ class UnitTests(unittest.TestCase):
     details = PathDetails(20200101, 0, "src", "name", "day", 20200101, "state")
 
     mock_read_csv.return_value = pd.DataFrame(data)
-    rows = list(CsvImporter.load_csv(filepath, details))
+    rows = CsvImporter.load_csv(filepath, details)
 
     self.assertTrue(mock_read_csv.called)
     self.assertTrue(mock_read_csv.call_args[0][0], filepath)
-    self.assertEqual(rows, [None])
+    self.assertEqual(rows, None)
 
 
   @patch("pandas.read_csv")
   def test_load_csv_with_valid_header(self, mock_read_csv):
-    """Yield sanity checked `RowValues` from a valid CSV file."""
+    """Yield sanity checked `CsvRowValues` from a valid CSV file."""
 
-    # one invalid geo_id, but otherwise valid
+    # valid header, but invalid geo_id
     data = {
       'geo_id': ['ca', 'tx', 'fl', '123'],
       'val': ['1.1', '1.2', '1.3', '1.4'],
@@ -272,35 +263,35 @@ class UnitTests(unittest.TestCase):
     details = PathDetails(20200101, 0, "src", "name", "day", 20200101, "state")
 
     mock_read_csv.return_value = pd.DataFrame(data=data)
-    rows = list(CsvImporter.load_csv(filepath, details))
+    rows = CsvImporter.load_csv(filepath, details)
 
     self.assertTrue(mock_read_csv.called)
     self.assertTrue(mock_read_csv.call_args[0][0], filepath)
-    self.assertEqual(len(rows), 4)
-
-    self.assertEqual(rows[0].geo_value, 'ca')
-    self.assertEqual(rows[0].value, 1.1)
-    self.assertEqual(rows[0].stderr, 2.1)
-    self.assertEqual(rows[0].sample_size, 301)
-
-    self.assertEqual(rows[1].geo_value, 'tx')
-    self.assertEqual(rows[1].value, 1.2)
-    self.assertEqual(rows[1].stderr, 2.2)
-    self.assertEqual(rows[1].sample_size, 302)
-
-    self.assertEqual(rows[2].geo_value, 'fl')
-    self.assertEqual(rows[2].value, 1.3)
-    self.assertEqual(rows[2].stderr, 2.3)
-    self.assertEqual(rows[2].sample_size, 303)
-
-    self.assertIsNone(rows[3])
+    self.assertEqual(rows, None)
 
     # now with missing values!
+    def make_covidcast_row(geo_value, value, stderr, sample_size, missing_value, missing_stderr, missing_sample_size):
+      return CovidcastRow(
+        source=details.source,
+        signal=details.signal,
+        time_type=details.time_type,
+        geo_type=details.geo_type,
+        issue=details.issue,
+        lag=details.lag,
+        time_value=details.time_value,
+        geo_value=geo_value,
+        value=value,
+        stderr=stderr,
+        sample_size=sample_size,
+        missing_value=missing_value,
+        missing_stderr=missing_stderr,
+        missing_sample_size=missing_sample_size,
+      )
     data = {
       'geo_id': ['ca', 'tx', 'fl', 'ak', 'wa'],
-      'val': [np.nan, '1.2', '1.3', '1.4', '1.5'],
-      'se': ['2.1', "na", '2.3', '2.4', '2.5'],
-      'sample_size': ['301', '302', None, '304', None],
+      'val': [np.nan, 1.2, 1.3, 1.4, 1.5],
+      'se': [2.1, None, 2.3, 2.4, 2.5],
+      'sample_size': [301, 302, None, 304, None],
       'missing_value': [Nans.NOT_APPLICABLE] + [Nans.NOT_MISSING] * 3 + [None],
       'missing_stderr': [Nans.NOT_MISSING, Nans.REGION_EXCEPTION, Nans.NOT_MISSING, Nans.NOT_MISSING] + [None],
       'missing_sample_size': [Nans.NOT_MISSING] * 2 + [Nans.REGION_EXCEPTION] * 2 + [None]
@@ -309,51 +300,61 @@ class UnitTests(unittest.TestCase):
     details = PathDetails(20200101, 0, "src", "name", "day", 20200101, "state")
 
     mock_read_csv.return_value = pd.DataFrame(data)
-    rows = list(CsvImporter.load_csv(filepath, details))
+    rows = CsvImporter.load_csv(filepath, details)
 
     self.assertTrue(mock_read_csv.called)
     self.assertTrue(mock_read_csv.call_args[0][0], filepath)
     self.assertEqual(len(rows), 5)
 
-    self.assertEqual(rows[0].geo_value, 'ca')
-    self.assertIsNone(rows[0].value)
-    self.assertEqual(rows[0].stderr, 2.1)
-    self.assertEqual(rows[0].sample_size, 301)
-    self.assertEqual(rows[0].missing_value, Nans.NOT_APPLICABLE)
-    self.assertEqual(rows[0].missing_stderr, Nans.NOT_MISSING)
-    self.assertEqual(rows[0].missing_sample_size, Nans.NOT_MISSING)
+    self.assertEqual(rows[0], make_covidcast_row(
+      geo_value='ca',
+      value=None,
+      stderr=2.1,
+      sample_size=301,
+      missing_value=Nans.NOT_APPLICABLE,
+      missing_stderr=Nans.NOT_MISSING,
+      missing_sample_size=Nans.NOT_MISSING
+    ))
+    
+    self.assertEqual(rows[1], make_covidcast_row(
+      geo_value='tx',
+      value=1.2,
+      stderr=None,
+      sample_size=302,
+      missing_value=Nans.NOT_MISSING,
+      missing_stderr=Nans.REGION_EXCEPTION,
+      missing_sample_size=Nans.NOT_MISSING,
+    ))
 
-    self.assertEqual(rows[1].geo_value, 'tx')
-    self.assertEqual(rows[1].value, 1.2)
-    self.assertIsNone(rows[1].stderr)
-    self.assertEqual(rows[1].sample_size, 302)
-    self.assertEqual(rows[1].missing_value, Nans.NOT_MISSING)
-    self.assertEqual(rows[1].missing_stderr, Nans.REGION_EXCEPTION)
-    self.assertEqual(rows[1].missing_sample_size, Nans.NOT_MISSING)
+    self.assertEqual(rows[2], make_covidcast_row(
+      geo_value='fl',
+      value=1.3,
+      stderr=2.3,
+      sample_size=None,
+      missing_value=Nans.NOT_MISSING,
+      missing_stderr=Nans.NOT_MISSING,
+      missing_sample_size=Nans.REGION_EXCEPTION,
+    ))
 
-    self.assertEqual(rows[2].geo_value, 'fl')
-    self.assertEqual(rows[2].value, 1.3)
-    self.assertEqual(rows[2].stderr, 2.3)
-    self.assertIsNone(rows[2].sample_size)
-    self.assertEqual(rows[2].missing_value, Nans.NOT_MISSING)
-    self.assertEqual(rows[2].missing_stderr, Nans.NOT_MISSING)
-    self.assertEqual(rows[2].missing_sample_size, Nans.REGION_EXCEPTION)
+    self.assertEqual(rows[3], make_covidcast_row(
+      geo_value='ak',
+      value=1.4,
+      stderr=2.4,
+      sample_size=304,
+      missing_value=Nans.NOT_MISSING,
+      missing_stderr=Nans.NOT_MISSING,
+      missing_sample_size=Nans.NOT_MISSING,
+    ))
 
-    self.assertEqual(rows[3].geo_value, 'ak')
-    self.assertEqual(rows[3].value, 1.4)
-    self.assertEqual(rows[3].stderr, 2.4)
-    self.assertEqual(rows[3].sample_size, 304)
-    self.assertEqual(rows[3].missing_value, Nans.NOT_MISSING)
-    self.assertEqual(rows[3].missing_stderr, Nans.NOT_MISSING)
-    self.assertEqual(rows[3].missing_sample_size, Nans.NOT_MISSING)
-
-    self.assertEqual(rows[4].geo_value, 'wa')
-    self.assertEqual(rows[4].value, 1.5)
-    self.assertEqual(rows[4].stderr, 2.5)
-    self.assertEqual(rows[4].sample_size, None)
-    self.assertEqual(rows[4].missing_value, Nans.NOT_MISSING)
-    self.assertEqual(rows[4].missing_stderr, Nans.NOT_MISSING)
-    self.assertEqual(rows[4].missing_sample_size, Nans.OTHER)
+    self.assertEqual(rows[4], make_covidcast_row(
+      geo_value='wa',
+      value=1.5,
+      stderr=2.5,
+      sample_size=None,
+      missing_value=Nans.NOT_MISSING,
+      missing_stderr=Nans.NOT_MISSING,
+      missing_sample_size=Nans.OTHER,
+    ))
 
 
   def test_get_argument_parser(self):
@@ -395,14 +396,14 @@ class UnitTests(unittest.TestCase):
     def load_csv_impl(path, details):
       if path == 'path/a.csv':
         # no validation errors
-        yield make_row('a1', details)
-        yield make_row('a2', details)
-        yield make_row('a3', details)
+        return [
+          make_row('a1', details),
+          make_row('a2', details),
+          make_row('a3', details)
+        ]
       elif path == 'path/b.csv':
         # one validation error
-        yield make_row('b1', details)
-        yield None
-        yield make_row('b3', details)
+        return None
       else:
         # fail the test for any other path
         raise Exception('unexpected path')
