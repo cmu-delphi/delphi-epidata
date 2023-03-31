@@ -1,5 +1,6 @@
 from datetime import datetime
 from pathlib import Path
+import pkgutil
 import re
 import sys
 
@@ -54,10 +55,10 @@ class CovidHospSomething:
   MYSQL_COL_NAME_PATTERN = re.compile(r'^[a-zA-Z0-9_]{3,64}$')
 
 
-  def __init__(self, yaml_filename=str(Path(__file__).parent.absolute()) + "/covid_hosp_schemadefs.yaml"):
-    self.yaml_filename = yaml_filename
-    self.read_schemadefs()
-
+  def __init__(self, yaml_file=None):
+    if yaml_file is None:
+      yaml_file = pkgutil.get_data(__name__, "covid_hosp_schemadefs.yaml")
+    self.yaml_content = yaml_load(yaml_file, preserve_quotes=True)
 
   def read_schemadefs(self):
     # TODO: put the yaml file inside the package structure and access it there, with something like:

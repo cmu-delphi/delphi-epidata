@@ -1,5 +1,5 @@
 from pathlib import Path
-
+import pkgutil
 import unittest
 
 from delphi.epidata.acquisition.covid_hosp.common.database import Columndef
@@ -12,7 +12,7 @@ __test_target__ = "delphi.epidata.common.covid_hosp.covid_hosp_schema_io"
 
 
 class TestCovidHospSchemaIo(unittest.TestCase):
-    chs = CovidHospSomething(str(Path(__file__).parent.absolute()) + "/test_covid_hosp_schemadefs.yaml")
+    chs = CovidHospSomething(pkgutil.get_data(__name__, "test_covid_hosp_schemadefs.yaml"))
 
     def test_get_ds_info(self):
         TABLE_NAME, KEY_COLS, AGGREGATE_KEY_COLS, ORDERED_CSV_COLUMNS = self.chs.get_ds_info("covid_hosp_facility")
