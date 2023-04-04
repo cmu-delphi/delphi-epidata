@@ -57,11 +57,13 @@ jobs:
           docker build -t delphi_web_epidata -f ./devops/Dockerfile .
           cd ../../../
 
+      # MODULE_NAME specifies the location of the `app` variable, the actual WSGI application object to run.
+      # see https://github.com/tiangolo/meinheld-gunicorn-docker#module_name
       - name: Start services
         run: |
           docker network create --driver bridge delphi-net
           docker run --rm -d -p 13306:3306 --network delphi-net --name delphi_database_epidata --cap-add=sys_nice delphi_database_epidata
-          docker run --rm -d -p 10080:80 --env "SQLALCHEMY_DATABASE_URI=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata" --env "FLASK_SECRET=abc" --env "FLASK_PREFIX=/epidata" --network delphi-net --name delphi_web_epidata delphi_web_epidata
+          docker run --rm -d -p 10080:80 --env "MODULE_NAME=delphi.epidata.server.main" --env "SQLALCHEMY_DATABASE_URI=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata" --env "FLASK_SECRET=abc" --env "FLASK_PREFIX=/epidata" --network delphi-net --name delphi_web_epidata delphi_web_epidata
           docker ps
 
       - run: |

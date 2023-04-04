@@ -28,6 +28,7 @@ from delphi.epidata.server._params import (
 from delphi.epidata.server._exceptions import (
     ValidationFailedException,
 )
+from delphi.epidata.acquisition.covidcast.test_utils import FIPS, MSA
 
 # py3tester coverage target
 __test_target__ = "delphi.epidata.server._params"
@@ -45,19 +46,19 @@ class UnitTests(unittest.TestCase):
 
     def test_geo_set(self):
         with self.subTest("*"):
-            p = GeoSet("hrr", True)
-            self.assertTrue(p.matches("hrr", "any"))
+            p = GeoSet("fips", True)
+            self.assertTrue(p.matches("fips", "any"))
             self.assertFalse(p.matches("msa", "any"))
         with self.subTest("subset"):
-            p = GeoSet("hrr", ["a", "b"])
-            self.assertTrue(p.matches("hrr", "a"))
-            self.assertTrue(p.matches("hrr", "b"))
-            self.assertFalse(p.matches("hrr", "c"))
+            p = GeoSet("fips", [FIPS[0], FIPS[1]])
+            self.assertTrue(p.matches("fips", FIPS[0]))
+            self.assertTrue(p.matches("fips", FIPS[1]))
+            self.assertFalse(p.matches("fips", "c"))
             self.assertFalse(p.matches("msa", "any"))
         with self.subTest("count"):
             self.assertEqual(GeoSet("a", True).count(), inf)
             self.assertEqual(GeoSet("a", False).count(), 0)
-            self.assertEqual(GeoSet("a", ["a", "b"]).count(), 2)
+            self.assertEqual(GeoSet("fips", [FIPS[0], FIPS[1]]).count(), 2)
 
     def test_source_signal_set(self):
         with self.subTest("*"):
@@ -89,43 +90,43 @@ class UnitTests(unittest.TestCase):
             with app.test_request_context("/"):
                 self.assertEqual(parse_geo_arg(), [])
         with self.subTest("single"):
-            with app.test_request_context("/?geo=state:*"):
-                self.assertEqual(parse_geo_arg(), [GeoSet("state", True)])
-            with app.test_request_context("/?geo=state:AK"):
-                self.assertEqual(parse_geo_arg(), [GeoSet("state", ["ak"])])
+            with app.test_request_context("/?geo=fips:*"):
+                self.assertEqual(parse_geo_arg(), [GeoSet("fips", True)])
+            with app.test_request_context(f"/?geo=fips:{FIPS[0]}"):
+                self.assertEqual(parse_geo_arg(), [GeoSet("fips", [FIPS[0]])])
         with self.subTest("single list"):
-            with app.test_request_context("/?geo=state:AK,TK"):
-                self.assertEqual(parse_geo_arg(), [GeoSet("state", ["ak", "tk"])])
+            with app.test_request_context(f"/?geo=fips:{FIPS[0]},{FIPS[1]}"):
+                self.assertEqual(parse_geo_arg(), [GeoSet("fips", [FIPS[0], FIPS[1]])])
         with self.subTest("multi"):
-            with app.test_request_context("/?geo=state:*;nation:*"):
-                self.assertEqual(parse_geo_arg(), [GeoSet("state", True), GeoSet("nation", True)])
-            with app.test_request_context("/?geo=state:AK;nation:US"):
+            with app.test_request_context("/?geo=fips:*;msa:*"):
+                self.assertEqual(parse_geo_arg(), [GeoSet("fips", True), GeoSet("msa", True)])
+            with app.test_request_context(f"/?geo=fips:{FIPS[0]};msa:{MSA[0]}"):
                 self.assertEqual(
                     parse_geo_arg(),
-                    [GeoSet("state", ["ak"]), GeoSet("nation", ["us"])],
+                    [GeoSet("fips", [FIPS[0]]), GeoSet("msa", [MSA[0]])],
                 )
-            with app.test_request_context("/?geo=state:AK;state:KY"):
+            with app.test_request_context(f"/?geo=fips:{FIPS[0]};fips:{FIPS[1]}"):
                 self.assertEqual(
                     parse_geo_arg(),
-                    [GeoSet("state", ["ak"]), GeoSet("state", ["ky"])],
+                    [GeoSet("fips", [FIPS[0]]), GeoSet("fips", [FIPS[1]])],
                 )
         with self.subTest("multi list"):
-            with app.test_request_context("/?geo=state:AK,TK;county:42003,40556"):
+            with app.test_request_context(f"/?geo=fips:{FIPS[0]},{FIPS[1]};msa:{MSA[0]},{MSA[1]}"):
                 self.assertEqual(
                     parse_geo_arg(),
                     [
-                        GeoSet("state", ["ak", "tk"]),
-                        GeoSet("county", ["42003", "40556"]),
+                        GeoSet("fips", [FIPS[0], FIPS[1]]),
+                        GeoSet("msa", [MSA[0], MSA[1]]),
                     ],
                 )
         with self.subTest("hybrid"):
-            with app.test_request_context("/?geo=nation:*;state:PA;county:42003,42002"):
+            with app.test_request_context(f"/?geo=nation:*;fips:{FIPS[0]};msa:{MSA[0]},{MSA[1]}"):
                 self.assertEqual(
                     parse_geo_arg(),
                     [
                         GeoSet("nation", True),
-                        GeoSet("state", ["pa"]),
-                        GeoSet("county", ["42003", "42002"]),
+                        GeoSet("fips", [FIPS[0]]),
+                        GeoSet("msa", [MSA[0], MSA[1]]),
                     ],
                 )
 
@@ -140,10 +141,10 @@ class UnitTests(unittest.TestCase):
             with app.test_request_context("/"):
                 self.assertRaises(ValidationFailedException, parse_single_geo_arg, "geo")
         with self.subTest("single"):
-            with app.test_request_context("/?geo=state:AK"):
-                self.assertEqual(parse_single_geo_arg("geo"), GeoSet("state", ["ak"]))
+            with app.test_request_context(f"/?geo=fips:{FIPS[0]}"):
+                self.assertEqual(parse_single_geo_arg("geo"), GeoSet("fips", [FIPS[0]]))
         with self.subTest("single list"):
-            with app.test_request_context("/?geo=state:AK,TK"):
+            with app.test_request_context(f"/?geo=fips:{FIPS[0]},{FIPS[1]}"):
                 self.assertRaises(ValidationFailedException, parse_single_geo_arg, "geo")
         with self.subTest("multi"):
             with app.test_request_context("/?geo=state:*;nation:*"):

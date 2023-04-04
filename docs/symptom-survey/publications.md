@@ -26,10 +26,14 @@ Pandemic"](https://www.pnas.org/topic/548) in *PNAS*:
 
 Research publications using the survey data include:
 
+- Taube JC, Susswein Z, Bansal S (2023). [Spatiotemporal Trends in Self-Reported
+  Mask-Wearing Behavior in the United States: Analysis of a Large
+  Cross-sectional Survey](https://doi.org/10.2196/42128). *JMIR Public Health
+  and Surveillance* 9:e42128.
 - Rebecca L. Weintraub et al (2023). [Identifying COVID-19 Vaccine Deserts and
   Ways to Reduce Them: A Digital Tool to Support Public Health
   Decision-Making](https://doi.org/10.2105/AJPH.2022.307198). *American Journal
-  of Public Health*.
+  of Public Health* 113 (4), 363-367.
 - Anzalone AJ, Sun J, Vinson AJ, Beasley WH, Hillegass WB, Murray K, et al.
   (2023). [Community risks for SARS-CoV-2 infection among fully vaccinated US
   adults by rurality: A retrospective cohort study from the National COVID
@@ -38,7 +42,7 @@ Research publications using the survey data include:
 - Rufino, J., Baquero, C., Frey, D. et al (2023). [Using survey data to estimate
   the impact of the omicron variant on vaccine efficacy against COVID-19
   infection](https://doi.org/10.1038/s41598-023-27951-3). *Scientific Reports*
-  13, 900 (2023).
+  13, 900.
 - Rader, B., Astley, C.M., Sewalk, K. et al (2022). [Spatial modeling of vaccine
   deserts as barriers to controlling
   SARS-CoV-2](https://doi.org/10.1038/s43856-022-00183-8). *Communications

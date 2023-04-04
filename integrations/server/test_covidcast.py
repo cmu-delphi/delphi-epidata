@@ -10,7 +10,7 @@ import requests
 
 # first party
 from delphi_utils import Nans
-from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase, CovidcastTestRow
+from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase, CovidcastTestRow, FIPS, MSA
 from delphi.epidata.client.delphi_epidata import Epidata
 
 # use the local instance of the Epidata API
@@ -37,11 +37,10 @@ class CovidcastTests(CovidcastBase):
 
   def _insert_placeholder_set_two(self):
     rows = [
-      CovidcastTestRow.make_default_row(geo_type='county', geo_value=str(i)*5, value=i*1., stderr=i*10., sample_size=i*100.)
+      CovidcastTestRow.make_default_row(geo_type='msa', geo_value=MSA[i-1], value=i*1., stderr=i*10., sample_size=i*100.)
       for i in [1, 2, 3]
     ] + [
-      # geo value intended to overlap with counties above
-      CovidcastTestRow.make_default_row(geo_type='msa', geo_value=str(i-3)*5, value=i*1., stderr=i*10., sample_size=i*100.)
+      CovidcastTestRow.make_default_row(geo_type='fips', geo_value=FIPS[i-4], value=i*1., stderr=i*10., sample_size=i*100.)
       for i in [4, 5, 6]
     ]
     self._insert_rows(rows)
@@ -49,11 +48,11 @@ class CovidcastTests(CovidcastBase):
 
   def _insert_placeholder_set_three(self):
     rows = [
-      CovidcastTestRow.make_default_row(geo_type='county', geo_value='11111', time_value=2000_01_01+i, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03, lag=2-i)
+      CovidcastTestRow.make_default_row(time_value=2000_01_01+i, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03, lag=2-i)
       for i in [1, 2, 3]
     ] + [
-      # time value intended to overlap with 11111 above, with disjoint geo values
-      CovidcastTestRow.make_default_row(geo_type='county', geo_value=str(i)*5, time_value=2000_01_01+i-3, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03, lag=5-i)
+      # time value intended to overlap with the time values above, with disjoint geo values
+      CovidcastTestRow.make_default_row(geo_value=MSA[i-3], time_value=2000_01_01+i-3, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03, lag=5-i)
       for i in [4, 5, 6]
     ]
     self._insert_rows(rows)
@@ -295,7 +294,7 @@ class CovidcastTests(CovidcastBase):
     })
 
   def test_geo_value(self):
-    """test different variants of geo types: single, *, multi."""
+    """test whether geo values are valid for specific geo types"""
 
     # insert placeholder data
     rows = self._insert_placeholder_set_two()
@@ -308,26 +307,28 @@ class CovidcastTests(CovidcastBase):
       return response
 
     # test fetch a specific region
-    r = fetch('11111')
+    r = fetch(MSA[0])
     self.assertEqual(r['message'], 'success')
     self.assertEqual(r['epidata'], expected[0:1])
     # test fetch a specific yet not existing region
-    r = fetch('55555')
-    self.assertEqual(r['message'], 'no results')
+    r = fetch('11111')
+    self.assertEqual(r['message'], 'Invalid geo_value(s) 11111 for the requested geo_type msa')
     # test fetch multiple regions
-    r = fetch('11111,22222')
+    r = fetch(f'{MSA[0]},{MSA[1]}')
     self.assertEqual(r['message'], 'success')
     self.assertEqual(r['epidata'], expected[0:2])
     # test fetch multiple noncontiguous regions
-    r = fetch('11111,33333')
+    r = fetch(f'{MSA[0]},{MSA[2]}')
     self.assertEqual(r['message'], 'success')
     self.assertEqual(r['epidata'], [expected[0], expected[2]])
     # test fetch multiple regions but one is not existing
-    r = fetch('11111,55555')
-    self.assertEqual(r['message'], 'success')
-    self.assertEqual(r['epidata'], expected[0:1])
+    r = fetch(f'{MSA[0]},11111')
+    self.assertEqual(r['message'], 'Invalid geo_value(s) 11111 for the requested geo_type msa')
     # test fetch empty region
     r = fetch('')
+    self.assertEqual(r['message'], 'geo_value is empty for the requested geo_type msa!')
+    # test a region that has no results
+    r = fetch(MSA[3])
     self.assertEqual(r['message'], 'no results')
 
   def test_location_timeline(self):
