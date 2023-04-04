@@ -259,7 +259,7 @@ class CovidHospSomething:
     ds = self.dataset(ds_name)
     columns = []
     for column in self.columns(ds_name):
-      sql_column_name = column['name'] if column.get('sql_name') is None else column['name']
+      sql_column_name = column['name'] if column.get('sql_name') is None else column['sql_name']
       sql_column_type = CovidHospSomething.SQL_TYPE_MAPPING[column['dtype']]
       sql_column_width = column.get('column_width')
       if sql_column_width:
@@ -294,7 +294,7 @@ class CovidHospSomething:
     aggregate_key_cols = [column for column in self.columns(ds_name) if column.get("sql_name") in AGGREGATE_KEY_COLS]
     columns = []
     for column in aggregate_key_cols:
-      sql_column_name = column['name'] if column.get('sql_name') is None else column['name']
+      sql_column_name = column['name'] if column.get('sql_name') is None else column['sql_name']
       sql_column_type = CovidHospSomething.SQL_TYPE_MAPPING[column['dtype']]
       sql_column_width = column.get('column_width')
       if sql_column_width:
