@@ -94,6 +94,10 @@ class UnitTests(unittest.TestCase):
                 self.assertEqual(parse_geo_arg(), [GeoSet("fips", True)])
             with app.test_request_context(f"/?geo=fips:{FIPS[0]}"):
                 self.assertEqual(parse_geo_arg(), [GeoSet("fips", [FIPS[0]])])
+        with self.subTest("covidcast"):
+            for geo_type in "county dma hhs hrr msa nation state".split():
+                with app.test_request_context(f"/?geo={geo_type}:*"):
+                    self.assertEqual(parse_geo_arg(), [GeoSet(geo_type, True)])
         with self.subTest("single list"):
             with app.test_request_context(f"/?geo=fips:{FIPS[0]},{FIPS[1]}"):
                 self.assertEqual(parse_geo_arg(), [GeoSet("fips", [FIPS[0], FIPS[1]])])
