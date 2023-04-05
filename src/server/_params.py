@@ -394,8 +394,9 @@ def parse_date(s: str) -> int:
     # parses a given string in format YYYYMMDD or YYYY-MM-DD to a number in the form YYYYMMDD
     if s == "*":
         return s
+    if not s:
+        raise ValidationFailedException(f"not a valid date: (empty)")
     try:
-        print(f"in parse_date: {s}, type: {type(s)}") # test
         return int(s.replace("-", ""))
     except ValueError:
         raise ValidationFailedException(f"not a valid date: {s}")

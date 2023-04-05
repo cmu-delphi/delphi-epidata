@@ -87,8 +87,20 @@ class CovidcastTests(CovidcastBase):
       CovidcastTestRow.make_default_row(time_value=2000_01_01+i, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03)
       for i in [1, 2, 3]
     ] + [
-      # 
+      # different time_values
       CovidcastTestRow.make_default_row(time_value=2000_01_01+i, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03)
+      for i in [4, 5, 6]
+    ]
+    self._insert_rows(rows)
+    return rows 
+
+  def _insert_placeholder_set_seven(self):
+    rows = [
+      CovidcastTestRow.make_default_row(time_value=2000_01_01, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03+i)
+      for i in [1, 2, 3]
+    ] + [
+      # same time_values, different issues
+      CovidcastTestRow.make_default_row(time_value=2000_01_01, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03+i)
       for i in [4, 5, 6]
     ]
     self._insert_rows(rows)
@@ -276,18 +288,16 @@ class CovidcastTests(CovidcastBase):
     def fetch(time_value):
       # make the request
       response = self.request_based_on_row(rows[0], time_values=time_value)
-      print(time_value)
-
       return response
 
     # test fetch time_value with <
     r = fetch('<20000104')
     self.assertEqual(r['message'], 'success')
-    self.assertEqual(r['epidata'], expected[0:2])
+    self.assertEqual(r['epidata'], expected[:2])
     # test fetch time_value with <=
     r = fetch('<=20000104')
     self.assertEqual(r['message'], 'success')
-    self.assertEqual(r['epidata'], expected[0:3])
+    self.assertEqual(r['epidata'], expected[:3])
     # test fetch time_value with >
     r = fetch('>20000104')
     self.assertEqual(r['message'], 'success')
@@ -334,6 +344,56 @@ class CovidcastTests(CovidcastBase):
       'epidata': expected,
       'message': 'success',
     })
+
+  def test_issues_inequality(self):
+    """Select all time_values with a wildcard query."""
+
+    # insert placeholder data
+    rows = self._insert_placeholder_set_seven()
+    expected = [row.as_api_compatibility_row_dict() for row in rows[:6]]
+
+    def fetch(issue):
+      # make the request
+      response = self.request_based_on_row(rows[0], issues=issue)
+      return response
+
+    # test fetch issues with <
+    r = fetch('<20000106')
+    self.assertEqual(r['message'], 'success')
+    self.assertEqual(r['epidata'], expected[:2])
+    # test fetch issues with <=
+    r = fetch('<=20000106')
+    self.assertEqual(r['message'], 'success')
+    self.assertEqual(r['epidata'], expected[:3])
+    # test fetch issues with >
+    r = fetch('>20000106')
+    self.assertEqual(r['message'], 'success')
+    self.assertEqual(r['epidata'], expected[3:])
+    # test fetch issues with >=
+    r = fetch('>=20000106')
+    self.assertEqual(r['message'], 'success')
+    self.assertEqual(r['epidata'], expected[2:])
+    # test fetch multiple inequalities
+    r = fetch('<20000106,>20000106')
+    self.assertEqual(r['message'], 'success')
+    self.assertEqual(r['epidata'], expected[:2] + expected[3:])
+    # test fetch inequalities that has no results
+    r = fetch('>20000109')
+    self.assertEqual(r['message'], 'no results')
+    # test fetch empty issues
+    r = fetch('')
+    self.assertEqual(r['message'], 'not a valid date: (empty)')
+    # test fetch invalid issues
+    r = fetch('>')
+    self.assertEqual(r['message'], 'missing parameter: date after the inequality operator')
+    # test if extra operators provided
+    r = fetch('<>')
+    self.assertEqual(r['message'], 'not a valid date: >')
+    r = fetch('><20000106')
+    self.assertEqual(r['message'], 'not a valid date: <20000106')
+    # test invalid operator
+    r = fetch('@')
+    self.assertEqual(r['message'], 'not a valid date: @')
 
   def test_signal_wildcard(self):
     """Select all signals with a wildcard query."""
