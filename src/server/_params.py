@@ -58,11 +58,20 @@ class GeoSet:
         if not isinstance(geo_values, bool):
             if geo_values == ['']:
                 raise ValidationFailedException(f"geo_value is empty for the requested geo_type {geo_type}!")
-            geo_type_translated = "state_id" if geo_type=="state" else geo_type
-            allowed_values = delphi_utils.geomap.GeoMapper().get_geo_values(geo_type_translated)
-            invalid_values = set(geo_values) - set(allowed_values)
-            if invalid_values:
-                raise ValidationFailedException(f"Invalid geo_value(s) {', '.join(invalid_values)} for the requested geo_type {geo_type}")
+            geo_type_translator = {
+                "county": "fips",
+                "state": "state_id",
+                "zip": "zip",
+                "hrr": "hrr",
+                "hhs": "hhs",
+                "msa": "msa",
+                "nation": "nation"
+            }
+            if geo_type in geo_type_translator: # else geo_type is unknown to GeoMapper
+                allowed_values = delphi_utils.geomap.GeoMapper().get_geo_values(geo_type_translator[geo_type])
+                invalid_values = set(geo_values) - set(allowed_values)
+                if invalid_values:
+                    raise ValidationFailedException(f"Invalid geo_value(s) {', '.join(invalid_values)} for the requested geo_type {geo_type}")
         self.geo_type = geo_type
         self.geo_values = geo_values
 
