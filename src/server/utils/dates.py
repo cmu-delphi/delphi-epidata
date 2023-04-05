@@ -116,16 +116,18 @@ def weeks_to_ranges(values: TimeValues) -> TimeValues:
 def _to_ranges(values: TimeValues, value_to_date: Callable, date_to_value: Callable, time_unit: Union[int, timedelta]) -> TimeValues:
     try:
         intervals = []
-
         # populate list of intervals based on original date/week values
         for v in values:
             if isinstance(v, int):
                 # 20200101 -> [20200101, 20200101]
                 intervals.append([value_to_date(v), value_to_date(v)])
             else: # tuple
+                if isinstance(v[0], tuple): # inequality operator
+                    intervals.append([value_to_date(v[1])])
+                else:
                 # (20200101, 20200102) -> [20200101, 20200102]
-                intervals.append([value_to_date(v[0]), value_to_date(v[1])])
-
+                    intervals.append([value_to_date(v[0]), value_to_date(v[1])])
+                
         intervals.sort()
 
         # merge overlapping intervals https://leetcode.com/problems/merge-intervals/
@@ -142,10 +144,14 @@ def _to_ranges(values: TimeValues, value_to_date: Callable, date_to_value: Calla
         # convert intervals from dates/weeks back to integers
         ranges = []
         for m in merged:
-            if m[0] == m[1]:
-                ranges.append(date_to_value(m[0]))
-            else:
-                ranges.append((date_to_value(m[0]), date_to_value(m[1])))
+            # if inequality operator, length of m is only 1
+            if len(m) == 1:
+                ranges.append((v[0], date_to_value(m[0])))
+            else: 
+                if m[0] == m[1]:
+                    ranges.append(date_to_value(m[0]))
+                else:
+                    ranges.append((date_to_value(m[0]), date_to_value(m[1])))
 
         get_structured_logger('server_utils').info("Optimized list of date values", original=values, optimized=ranges, original_length=len(values), optimized_length=len(ranges))
 
