@@ -218,7 +218,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     # insert placeholder data: three counties, three MSAs
     N = 3
     rows = [
-      CovidcastTestRow.make_default_row(geo_type="fips", geo_value=FIPS[i], value=i)
+      CovidcastTestRow.make_default_row(geo_type="county", geo_value=FIPS[i], value=i)
       for i in range(N)
     ] + [
       CovidcastTestRow.make_default_row(geo_type="msa", geo_value=MSA[i], value=i*10)
@@ -245,7 +245,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     self.assertEqual(request['epidata'], [counties[0]])
     # test fetch a specific yet not existing region
     request = fetch('55555')
-    self.assertEqual(request['message'], 'Invalid geo_value(s) 55555 for the requested geo_type fips')
+    self.assertEqual(request['message'], 'Invalid geo_value(s) 55555 for the requested geo_type county')
     # test fetch a multiple regions
     request = fetch([FIPS[0], FIPS[1]])
     self.assertEqual(request['message'], 'success')
@@ -256,10 +256,10 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     self.assertEqual(request['epidata'], [counties[0], counties[2]])
     # test fetch a multiple regions but one is not existing
     request = fetch([FIPS[0], '55555'])
-    self.assertEqual(request['message'], 'Invalid geo_value(s) 55555 for the requested geo_type fips')
+    self.assertEqual(request['message'], 'Invalid geo_value(s) 55555 for the requested geo_type county')
     # test fetch a multiple regions but specify no region
     request = fetch([])
-    self.assertEqual(request['message'], 'geo_value is empty for the requested geo_type fips!')
+    self.assertEqual(request['message'], 'geo_value is empty for the requested geo_type county!')
     # test fetch a region with no results
     request = fetch([FIPS[3]])
     self.assertEqual(request['message'], 'no results')
@@ -326,7 +326,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     # insert placeholder data: three counties, three MSAs
     N = 3
     rows = [
-      CovidcastTestRow.make_default_row(geo_type="fips", geo_value=FIPS[i-1], value=i)
+      CovidcastTestRow.make_default_row(geo_type="county", geo_value=FIPS[i-1], value=i)
       for i in range(N)
     ] + [
       CovidcastTestRow.make_default_row(geo_type="msa", geo_value=MSA[i-1], value=i*10)
