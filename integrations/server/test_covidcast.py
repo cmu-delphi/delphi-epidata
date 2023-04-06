@@ -276,7 +276,7 @@ class CovidcastTests(CovidcastBase):
 
     # insert placeholder data
     rows = self._insert_placeholder_set_six()
-    expected = [row.as_api_compatibility_row_dict() for row in rows[:6]]
+    expected = [row.as_api_compatibility_row_dict() for row in rows]
 
     def fetch(time_value):
       # make the request
