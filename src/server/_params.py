@@ -406,7 +406,7 @@ def parse_date(s: str) -> int:
     if s == "*":
         return s
     if not s:
-        raise ValidationFailedException(f"not a valid date: (empty)")
+        raise ValidationFailedException("not a valid date: (empty)")
     try:
         return int(s.replace("-", ""))
     except ValueError:
@@ -433,7 +433,7 @@ def extract_dates(key: Union[str, Sequence[str]]) -> Optional[TimeValues]:
                 inequality_operator = operator
                 part = part[len(operator):]
                 if not part:
-                    raise ValidationFailedException(f"missing parameter: date after the inequality operator")
+                    raise ValidationFailedException("missing parameter: date after the inequality operator")
                 return (inequality_operator,), part
         return None, part
 
