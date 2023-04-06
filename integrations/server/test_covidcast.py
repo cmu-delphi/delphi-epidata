@@ -10,10 +10,40 @@ from delphi.epidata.acquisition.covidcast.test_utils import (
     CovidcastTestRow
 )
 from delphi.epidata.client.delphi_epidata import Epidata
+from delphi.epidata.server.main import app
 from delphi_utils import Nans
+from flask import Response
+from flask.testing import FlaskClient
 
 # use the local instance of the Epidata API
 BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+
+
+class CovidcastUrlTests(unittest.TestCase):
+    """Tests the `covidcast` url."""
+
+    client: FlaskClient
+
+    def setUp(self):
+        app.config["TESTING"] = True
+        app.config["WTF_CSRF_ENABLED"] = False
+        app.config["DEBUG"] = False
+        self.client = app.test_client()
+
+    def test_url(self):
+        rv: Response = self.client.get("/covidcast/", follow_redirects=True)
+        msg = rv.get_json()
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(msg["result"], -1)
+        self.assertRegex(msg["message"], r"missing parameter.*")
+
+    def test_time(self):
+        data = dict(signal="src1:*", time="day:20200101", geo="state:*")
+        rv: Response = self.client.get("/covidcast/", query_string=data)
+        msg = rv.get_json()
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(msg["result"], -2)  # no result
+        self.assertEqual(msg["message"], "no results")
 
 
 class CovidcastTests(CovidcastBase):
@@ -209,7 +239,6 @@ class CovidcastTests(CovidcastBase):
 
         # assert that the right data came back (only valid fields)
         self.assertEqual(response, expected_all)
-
 
         # limit exclude fields: exclude all except time_value and geo_value
         response = self.request_based_on_row(row, fields=(
