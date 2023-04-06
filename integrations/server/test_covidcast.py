@@ -93,11 +93,7 @@ class CovidcastTests(CovidcastBase):
   def _insert_placeholder_set_seven(self):
     rows = [
       CovidcastTestRow.make_default_row(time_value=2000_01_01, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03+i)
-      for i in [1, 2, 3]
-    ] + [
-      # same time_values, different issues
-      CovidcastTestRow.make_default_row(time_value=2000_01_01, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03+i)
-      for i in [4, 5, 6]
+      for i in [1, 2, 3, 4, 5, 6]
     ]
     self._insert_rows(rows)
     return rows 
