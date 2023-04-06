@@ -94,7 +94,7 @@ def get_sql_col_name(col_name):
     return new_col_name.strip()
 
 
-class CovidHospSchemaUpdater:
+class CovidHospSomething:
     PYTHON_TYPE_MAPPING = {
         "int": int,
         "float": float,
@@ -143,7 +143,7 @@ class CovidHospSchemaUpdater:
         self.new_yaml_file = (
             new_yaml_filename
             if new_yaml_filename is not None
-            else f"covid_hosp_schemadefs_{CovidHospSchemaUpdater.TODAY_STR}.yaml"
+            else f"covid_hosp_schemadefs_{CovidHospSomething.TODAY_STR}.yaml"
         )
 
     def write_schemadefs(self):
@@ -161,7 +161,7 @@ class CovidHospSchemaUpdater:
     def add_column(self, ds_name, col_name, dtype, sql_name=None, col_width=None):
         dtype_cplx = f"{dtype}:{col_width}" if col_width else dtype
         sql_name = sql_name if sql_name else col_name
-        if not CovidHospSchemaUpdater.MYSQL_COL_NAME_PATTERN.match(sql_name):
+        if not CovidHospSomething.MYSQL_COL_NAME_PATTERN.match(sql_name):
             raise Exception(f"Invalid name for MySQL column: {sql_name}")
 
         # TODO: check for name collisions here with self.columns(ds_name)['name', 'sql_name']
@@ -192,7 +192,7 @@ class CovidHospSchemaUpdater:
                 "sql_name": sql_name,
                 "dtype": dtype,
                 "col_width": col_width,
-                "marshaller": CovidHospSchemaUpdater.PYTHON_TYPE_MAPPING[dtype],
+                "marshaller": CovidHospSomething.PYTHON_TYPE_MAPPING[dtype],
             }
 
     def get_aggregate_key_cols(self, ds_name):
@@ -218,7 +218,7 @@ class CovidHospSchemaUpdater:
         return TABLE_NAME, KEY_COLS, AGGREGATE_KEY_COLS, ORDERED_CSV_COLUMNS
 
     def get_metadata_info(self, ds_name):
-        metadata_info = requests.get(CovidHospSchemaUpdater.DS_NAME_METADATA_MAPPING[ds_name]).json()
+        metadata_info = requests.get(CovidHospSomething.DS_NAME_METADATA_MAPPING[ds_name]).json()
         return metadata_info
 
     def get_metadata_columns(self, metadata_info):
@@ -261,7 +261,7 @@ class CovidHospSchemaUpdater:
         columns = []
         for column in self.columns(ds_name):
             sql_column_name = column["sql_name"] if column.get("sql_name") else column["name"]
-            sql_column_type = CovidHospSchemaUpdater.SQL_TYPE_MAPPING[column["dtype"]]
+            sql_column_type = CovidHospSomething.SQL_TYPE_MAPPING[column["dtype"]]
             sql_column_width = column.get("column_width")
             if sql_column_width:
                 sql_column_type += f"({sql_column_width})"
@@ -297,7 +297,7 @@ class CovidHospSchemaUpdater:
         columns = []
         for col in cols:
             sql_column_name = col["sql_name"] if col.get("sql_name") else col["name"]
-            sql_column_type = CovidHospSchemaUpdater.SQL_TYPE_MAPPING[col["dtype"]]
+            sql_column_type = CovidHospSomething.SQL_TYPE_MAPPING[col["dtype"]]
             sql_column_width = col.get("sql_column_width")
             if sql_column_width:
                 sql_column_type += f"({sql_column_width})"
@@ -372,7 +372,7 @@ class CovidHospSchemaUpdater:
 
 
 if __name__ == "__main__":
-    chs = CovidHospSchemaUpdater()
+    chs = CovidHospSomething()
     changed = False
     ddl = ""
     migrations = ""
