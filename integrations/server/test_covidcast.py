@@ -294,7 +294,7 @@ class CovidcastTests(CovidcastBase):
     # test fetch time_value with >
     r = fetch('>20000104')
     self.assertEqual(r['message'], 'success')
-    self.assertEqual(r['epidata'], expected[3:6])
+    self.assertEqual(r['epidata'], expected[3])
     # test fetch time_value with >=
     r = fetch('>=20000104')
     self.assertEqual(r['message'], 'success')
