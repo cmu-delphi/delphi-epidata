@@ -302,7 +302,7 @@ class CovidcastTests(CovidcastBase):
     # test fetch multiple inequalities
     r = fetch('<20000104,>20000104')
     self.assertEqual(r['message'], 'success')
-    self.assertEqual(r['epidata'], expected[:2] + expected[3:6])
+    self.assertEqual(r['epidata'], expected[:2] + expected[3:])
     # test overlapped inequalities, pick the more extreme one
     r = fetch('<20000104,<20000105')
     self.assertEqual(r['message'], 'success')
