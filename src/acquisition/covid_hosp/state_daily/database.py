@@ -225,5 +225,4 @@ class Database(BaseDatabase):
         table_name=Database.TABLE_NAME,
         hhs_dataset_id=Network.DATASET_ID,
         columns_and_types=Database.ORDERED_CSV_COLUMNS,
-        key_columns=Database.KEY_COLS,
-        additional_fields=[Columndef('D', 'record_type', None)])
+        key_columns=Database.KEY_COLS)
