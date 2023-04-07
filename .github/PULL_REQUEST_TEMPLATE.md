@@ -1,4 +1,4 @@
-closes|addresses <!--list issues closed or addressed by this PR -->
+closes|addresses <!--list issues closed or partially-addressed by this PR -->
 
 ### Summary:
 
