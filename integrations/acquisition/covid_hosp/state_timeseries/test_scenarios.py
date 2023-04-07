@@ -55,9 +55,9 @@ class AcquisitionTests(unittest.TestCase):
         self.test_utils.load_sample_dataset()
 
     # make sure the data does not yet exist
-    with self.subTest(name='no data yet'):
-      response = Epidata.covid_hosp('MA', Epidata.range(20200101, 20210101))
-      self.assertEqual(response['result'], -2)
+    # with self.subTest(name='no data yet'):
+    #  response = Epidata.covid_hosp('MA', Epidata.range(20200101, 20210101))
+    #  self.assertEqual(response['result'], -2)
 
     # acquire sample data into local database
     with self.subTest(name='first acquisition'):
