@@ -156,14 +156,14 @@ def handle():
     if issues is not None:
         q.where_integers("issue", issues)
         # final query using specific issues
-        query = f"WITH m as {merge_tables}, c as (SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY date, state, issue ORDER BY record_type) `row` FROM m WHERE {q.conditions_clause}) SELECT {q.fields_clause} FROM {q.alias} WHERE `row` = 1 ORDER BY {q.order_clause}"
+        query = f"WITH m as {merge_tables}, c as (SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY date, state, issue ORDER BY record_type) `row` FROM m WHERE {q.conditions_clause.replace('c.', 'm.')}) SELECT {q.fields_clause} FROM {q.alias} WHERE `row` = 1 ORDER BY {q.order_clause}"
     elif as_of is not None:
         sub_condition_asof = "(issue <= :as_of)"
         q.params["as_of"] = as_of
-        query = f"WITH m as {merge_tables}, c as (SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY date, state ORDER BY issue DESC, record_type) `row` FROM m WHERE {q.conditions_clause} AND {sub_condition_asof}) SELECT {q.fields_clause} FROM {q.alias} WHERE `row` = 1 ORDER BY {q.order_clause}"
+        query = f"WITH m as {merge_tables}, c as (SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY date, state ORDER BY issue DESC, record_type) `row` FROM m WHERE {q.conditions_clause.replace('c.', 'm.')} AND {sub_condition_asof}) SELECT {q.fields_clause} FROM {q.alias} WHERE `row` = 1 ORDER BY {q.order_clause}"
     else:
         # final query using most recent issues
-        subquery = f"(SELECT max(`issue`) `max_issue`, `date`, `state` FROM m WHERE {q.conditions_clause} GROUP BY `date`, `state`) x"
+        subquery = f"(SELECT max(`issue`) `max_issue`, `date`, `state` FROM m WHERE {q.conditions_clause.replace('c.', 'm.')} GROUP BY `date`, `state`) x"
         condition = f"x.`max_issue` = {q.alias}.`issue` AND x.`date` = {q.alias}.`date` AND x.`state` = {q.alias}.`state`"
         query = f"WITH m as {merge_tables}, c as (SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY date, state, issue ORDER BY record_type) `row` FROM m JOIN {subquery} ON {condition}) select {q.fields_clause} FROM {q.alias} WHERE `row` = 1 ORDER BY {q.order_clause}"
 
