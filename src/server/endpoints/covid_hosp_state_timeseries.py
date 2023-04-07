@@ -152,7 +152,7 @@ def handle():
     q.where_integers("date", dates)
     q.where_strings("state", states)
 
-    merge_tables = f"(SELECT *, 'D' as record_type FROM `covid_hosp_state_daily` UNION ALL SELECT *, 'T' as record_type FROM `covid_hosp_state_timeseries`) AS `merged`"
+    merge_tables = "(SELECT *, 'D' as record_type FROM `covid_hosp_state_daily` UNION ALL SELECT *, 'T' as record_type FROM `covid_hosp_state_timeseries`) AS `merged`"
     if issues is not None:
         q.where_integers("issue", issues)
         # final query using specific issues

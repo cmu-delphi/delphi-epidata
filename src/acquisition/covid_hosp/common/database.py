@@ -45,7 +45,7 @@ class Database:
     self.connection = connection
     self.table_name = table_name
     self.hhs_dataset_id = hhs_dataset_id
-    self.publication_col_name = "issue" if table_name == 'covid_hosp_state_timeseries' else \
+    self.publication_col_name = "issue" if table_name == 'covid_hosp_state_timeseries' or table_name == "covid_hosp_state_daily" else \
       'publication_date'
     self.columns_and_types = {
       c.csv_name: c

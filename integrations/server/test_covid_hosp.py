@@ -32,10 +32,16 @@ class ServerTests(unittest.TestCase):
         cur.execute('insert into api_user(api_key, email) values ("key", "email")')
 
 
-  def insert_issue(self, cur, issue, value, record_type):
+  def insert_timeseries(self, cur, issue, value):
     so_many_nulls = ', '.join(['null'] * 57)
     cur.execute(f'''insert into covid_hosp_state_timeseries values (
-      0, {issue}, 'PA', 20201118, {value}, {so_many_nulls}, '{record_type}', {so_many_nulls}
+      0, {issue}, 'PA', 20201118, {value}, {so_many_nulls}, {so_many_nulls}
+    )''')
+
+  def insert_daily(self, cur, issue, value):
+    so_many_nulls = ', '.join(['null'] * 57)
+    cur.execute(f'''insert into covid_hosp_state_daily values (
+      0, {issue}, 'PA', 20201118, {value}, {so_many_nulls}, {so_many_nulls}
     )''')
 
   def test_query_by_issue(self):
@@ -45,10 +51,10 @@ class ServerTests(unittest.TestCase):
       with db.new_cursor() as cur:
         # inserting out of order to test server-side order by
         # also inserting two for 20201201 to test tiebreaker.
-        self.insert_issue(cur, 20201201, 123, 'T')
-        self.insert_issue(cur, 20201201, 321, 'D')
-        self.insert_issue(cur, 20201203, 789, 'T')
-        self.insert_issue(cur, 20201202, 456, 'T')
+        self.insert_timeseries(cur, 20201201, 123)
+        self.insert_daily(cur, 20201201, 321)
+        self.insert_timeseries(cur, 20201203, 789)
+        self.insert_timeseries(cur, 20201202, 456)
 
     # request without issue (defaulting to latest issue)
     with self.subTest(name='no issue (latest)'):
@@ -89,11 +95,11 @@ class ServerTests(unittest.TestCase):
   def test_query_by_as_of(self):
     with Database.connect() as db:
       with db.new_cursor() as cur:
-        self.insert_issue(cur, 20201101, 0, 'T')
-        self.insert_issue(cur, 20201102, 1, 'D')
-        self.insert_issue(cur, 20201103, 2, 'D')
-        self.insert_issue(cur, 20201103, 3, 'T')
-        self.insert_issue(cur, 20201104, 4, 'T')
+        self.insert_timeseries(cur, 20201101, 0)
+        self.insert_daily(cur, 20201102, 1)
+        self.insert_daily(cur, 20201103, 2)
+        self.insert_timeseries(cur, 20201103, 3)
+        self.insert_timeseries(cur, 20201104, 4)
 
     with self.subTest(name='as_of with multiple issues'):
       response = Epidata.covid_hosp('PA', 20201118, as_of=20201103)
