@@ -43,6 +43,7 @@ class AcquisitionTests(unittest.TestCase):
     with Database.connect() as db:
       with db.new_cursor() as cur:
         cur.execute('truncate table covid_hosp_state_daily')
+        cur.execute('truncate table covid_hosp_state_timeseries')
         cur.execute('truncate table covid_hosp_meta')
         cur.execute('delete from api_user')
         cur.execute('insert into api_user(api_key, email) values("key", "email")')
@@ -52,9 +53,9 @@ class AcquisitionTests(unittest.TestCase):
     """Acquire a new dataset."""
 
     # make sure the data does not yet exist
-    # with self.subTest(name='no data yet'):
-    #  response = Epidata.covid_hosp('MA', Epidata.range(20200101, 20210101))
-    #  self.assertEqual(response['result'], -2, response)
+    with self.subTest(name='no data yet'):
+      response = Epidata.covid_hosp('MA', Epidata.range(20200101, 20210101))
+      self.assertEqual(response['result'], -2, response)
 
     # acquire sample data into local database
     # mock out network calls to external hosts
