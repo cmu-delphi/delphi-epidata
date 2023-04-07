@@ -7,8 +7,7 @@ from delphi.epidata.acquisition.covid_hosp.state_daily.network import Network
 
 class Database(BaseDatabase):
 
-  # note we share a database with state_timeseries
-  TABLE_NAME = 'covid_hosp_state_timeseries'
+  TABLE_NAME = 'covid_hosp_state_daily'
   KEY_COLS = ['state', 'reporting_cutoff_start']
   # These are 3-tuples of (CSV header name, SQL db column name, data type) for
   # all the columns in the CSV file.
