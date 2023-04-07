@@ -124,12 +124,12 @@ CREATE TABLE `covid_hosp_state_daily` (
   `total_patients_hospitalized_confirmed_influenza_coverage` INT,
   PRIMARY KEY (`id`),
   -- for uniqueness
-  -- for fast lookup of most recent issue for a given state, date, and record type
-  UNIQUE KEY `issue_by_state_and_date` (`state`, `date`, `issue`, `record_type`),
-  -- for fast lookup of a time-series for a given state, issue, and record type
-  KEY `date_by_issue_and_state` (`issue`, `state`, `date`, `record_type`),
-  -- for fast lookup of all states for a given date, issue, and record_type
-  KEY `state_by_issue_and_date` (`issue`, `date`, `state`, `record_type`)
+  -- for fast lookup of most recent issue for a given state and date
+  UNIQUE KEY `issue_by_state_and_date` (`state`, `date`, `issue`),
+  -- for fast lookup of a time-series for a given state and issue
+  KEY `date_by_issue_and_state` (`issue`, `state`, `date`),
+  -- for fast lookup of all states for a given date and issue
+  KEY `state_by_issue_and_date` (`issue`, `date`, `state`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 2. Move data with record_type=D into new table

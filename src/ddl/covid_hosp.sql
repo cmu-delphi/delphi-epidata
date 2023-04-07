@@ -364,14 +364,6 @@ For daily snapshot files, there is a `reporting_cutoff_start` value,
 defined as "Look back date start - The latest reports from each hospital
 is summed for this report starting with this date." We place this value
 into the `date` column.
-
-We also add a column `record_type` that specifies if a row came from a
-time series file or a daily snapshot file. "T" = time series and
-"D" =  daily snapshot. When both a time series and a daily snapshot row
-have the same issue/date/state but different values, we tiebreak by
-taking the daily snapshot value. This is done with a window function that
-sorts by the record_type field, ascending, and so it is important that "D"
-comes before "T".
 */
 
 CREATE TABLE `covid_hosp_state_timeseries` (
@@ -437,7 +429,6 @@ CREATE TABLE `covid_hosp_state_timeseries` (
   `adult_icu_bed_utilization_coverage` INT,
   `adult_icu_bed_utilization_numerator` INT,
   `adult_icu_bed_utilization_denominator` INT,
-  `record_type` CHAR(1) NOT NULL,
   -- new columns added Oct 10
   `geocoded_state` VARCHAR(32),
   `previous_day_admission_adult_covid_confirmed_18_19` INT,
@@ -498,12 +489,12 @@ CREATE TABLE `covid_hosp_state_timeseries` (
   `total_patients_hospitalized_confirmed_influenza_coverage` INT,
   PRIMARY KEY (`id`),
   -- for uniqueness
-  -- for fast lookup of most recent issue for a given state, date, and record type
-  UNIQUE KEY `issue_by_state_and_date` (`state`, `date`, `issue`, `record_type`),
-  -- for fast lookup of a time-series for a given state, issue, and record type
-  KEY `date_by_issue_and_state` (`issue`, `state`, `date`, `record_type`),
-  -- for fast lookup of all states for a given date, issue, and record_type
-  KEY `state_by_issue_and_date` (`issue`, `date`, `state`, `record_type`)
+  -- for fast lookup of most recent issue for a given state and date
+  UNIQUE KEY `issue_by_state_and_date` (`state`, `date`, `issue`),
+  -- for fast lookup of a time-series for a given state and issue
+  KEY `date_by_issue_and_state` (`issue`, `state`, `date`),
+  -- for fast lookup of all states for a given date and issue
+  KEY `state_by_issue_and_date` (`issue`, `date`, `state`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -575,7 +566,6 @@ CREATE TABLE `covid_hosp_state_daily` (
   `adult_icu_bed_utilization_coverage` INT,
   `adult_icu_bed_utilization_numerator` INT,
   `adult_icu_bed_utilization_denominator` INT,
-  `record_type` CHAR(1) NOT NULL,
   -- new columns added Oct 10
   `geocoded_state` VARCHAR(32),
   `previous_day_admission_adult_covid_confirmed_18_19` INT,
@@ -636,12 +626,12 @@ CREATE TABLE `covid_hosp_state_daily` (
   `total_patients_hospitalized_confirmed_influenza_coverage` INT,
   PRIMARY KEY (`id`),
   -- for uniqueness
-  -- for fast lookup of most recent issue for a given state, date, and record type
-  UNIQUE KEY `issue_by_state_and_date` (`state`, `date`, `issue`, `record_type`),
-  -- for fast lookup of a time-series for a given state, issue, and record type
-  KEY `date_by_issue_and_state` (`issue`, `state`, `date`, `record_type`),
-  -- for fast lookup of all states for a given date, issue, and record_type
-  KEY `state_by_issue_and_date` (`issue`, `date`, `state`, `record_type`)
+  -- for fast lookup of most recent issue for a given state and date
+  UNIQUE KEY `issue_by_state_and_date` (`state`, `date`, `issue`),
+  -- for fast lookup of a time-series for a given state and issue
+  KEY `date_by_issue_and_state` (`issue`, `state`, `date`),
+  -- for fast lookup of all states for a given date and issue
+  KEY `state_by_issue_and_date` (`issue`, `date`, `state`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*
