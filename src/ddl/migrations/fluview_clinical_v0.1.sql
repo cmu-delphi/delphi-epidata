@@ -1,0 +1,1 @@
+ALTER TABLE fluview_clinical ADD CONSTRAINT `release_date` UNIQUE(`release_date`, `epiweek`, `region`);
