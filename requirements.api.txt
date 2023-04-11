@@ -1,7 +1,6 @@
 delphi_utils==0.3.6
 epiweeks==2.1.2
 Flask==2.2.2
-itsdangerous<2.1
 jinja2==3.0.3
 more_itertools==8.4.0
 mysqlclient==2.1.1
