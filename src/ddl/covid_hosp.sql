@@ -498,13 +498,13 @@ CREATE TABLE `covid_hosp_state_timeseries` (
 
 
 /*
-`covid_hosp_state_timeseries` stores the versioned "state timeseries" dataset,
+`covid_hosp_state_daily` stores the versioned "state timeseries" dataset,
 which contains data from the daily snapshot files.
 Schema is equivalent to `covid_hosp_state_timeseries`.
 */
 CREATE TABLE `covid_hosp_state_daily` (
-  PRIMARY KEY (`id`),
   -- for uniqueness
+  PRIMARY KEY (`id`),
   -- for fast lookup of most recent issue for a given state and date
   UNIQUE KEY `issue_by_state_and_date` (`state`, `date`, `issue`),
   -- for fast lookup of a time-series for a given state and issue

@@ -22,8 +22,7 @@ class Database:
                table_name=None,
                hhs_dataset_id=None,
                columns_and_types=None,
-               key_columns=None,
-               additional_fields=None):
+               key_columns=None):
     """Create a new Database object.
 
     Parameters
@@ -37,9 +36,6 @@ class Database:
     columns_and_types : tuple[str, str, Callable]
       List of 3-tuples of (CSV header name, SQL column name, data type) for
       all the columns in the CSV file.
-    additional_fields : tuple[str]
-      List of 2-tuples of (value, SQL column name) fordditional fields to include
-      at the end of the row which are not present in the CSV data.
     """
 
     self.connection = connection
@@ -52,7 +48,6 @@ class Database:
       for c in (columns_and_types if columns_and_types is not None else [])
     }
     self.key_columns = key_columns if key_columns is not None else []
-    self.additional_fields = additional_fields if additional_fields is not None else []
 
   @classmethod
   def logger(database_class):
@@ -184,9 +179,9 @@ class Database:
     for csv_name in self.key_columns:
       dataframe.loc[:, csv_name] = dataframe[csv_name].map(self.columns_and_types[csv_name].dtype)
 
-    num_columns = 2 + len(dataframe_columns_and_types) + len(self.additional_fields)
+    num_columns = 2 + len(dataframe_columns_and_types)
     value_placeholders = ', '.join(['%s'] * num_columns)
-    columns = ', '.join(f'`{i.sql_name}`' for i in dataframe_columns_and_types + self.additional_fields)
+    columns = ', '.join(f'`{i.sql_name}`' for i in dataframe_columns_and_types)
     sql = f'INSERT INTO `{self.table_name}` (`id`, `{self.publication_col_name}`, {columns}) ' \
           f'VALUES ({value_placeholders})'
     id_and_publication_date = (0, publication_date)
@@ -200,8 +195,7 @@ class Database:
         for c in dataframe_columns_and_types:
           values.append(nan_safe_dtype(c.dtype, row[c.csv_name]))
         many_values.append(id_and_publication_date +
-          tuple(values) +
-          tuple(i.csv_name for i in self.additional_fields))
+          tuple(values))
         n += 1
         # insert in batches because one at a time is slow and all at once makes
         # the connection drop :(

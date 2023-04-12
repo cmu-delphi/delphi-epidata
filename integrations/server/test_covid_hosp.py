@@ -31,15 +31,15 @@ class ServerTests(unittest.TestCase):
 
 
   def insert_timeseries(self, cur, issue, value):
-    so_many_nulls = ', '.join(['null'] * 57)
+    so_many_nulls = ', '.join(['null'] * 114)
     cur.execute(f'''insert into covid_hosp_state_timeseries values (
-      0, {issue}, 'PA', 20201118, {value}, {so_many_nulls}, {so_many_nulls}
+      0, {issue}, 'PA', 20201118, {value}, {so_many_nulls}
     )''')
 
   def insert_daily(self, cur, issue, value):
-    so_many_nulls = ', '.join(['null'] * 57)
+    so_many_nulls = ', '.join(['null'] * 114)
     cur.execute(f'''insert into covid_hosp_state_daily values (
-      0, {issue}, 'PA', 20201118, {value}, {so_many_nulls}, {so_many_nulls}
+      0, {issue}, 'PA', 20201118, {value}, {so_many_nulls}
     )''')
 
   def test_query_by_issue(self):

@@ -1,8 +1,8 @@
 -- 1. Add new state_daily table mirroring state_timeseries table
 
 CREATE TABLE `covid_hosp_state_daily` (
-  PRIMARY KEY (`id`),
   -- for uniqueness
+  PRIMARY KEY (`id`),
   -- for fast lookup of most recent issue for a given state and date
   UNIQUE KEY `issue_by_state_and_date` (`state`, `date`, `issue`),
   -- for fast lookup of a time-series for a given state and issue
