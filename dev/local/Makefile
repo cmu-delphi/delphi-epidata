@@ -64,6 +64,7 @@ CWD:=$(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 NOW:=$(shell date "+%Y-%m-%d")
 LOG_WEB:=delphi_web_epidata_$(NOW).log
 LOG_DB:=delphi_database_epidata_$(NOW).log
+LOG_REDIS:=delphi_redis_instance_$(NOW).log
 WEB_CONTAINER_ID:=$(shell docker ps -q --filter 'name=delphi_web_epidata')
 DATABASE_CONTAINER_ID:=$(shell docker ps -q --filter 'name=delphi_database_epidata')
 
@@ -98,6 +99,9 @@ web:
 		--env "MODULE_NAME=delphi.epidata.server.main" \
 		--env "SQLALCHEMY_DATABASE_URI=$(sqlalchemy_uri)" \
 		--env "FLASK_SECRET=abc" --env "FLASK_PREFIX=/epidata" --env "LOG_DEBUG" \
+		--env "REDIS_HOST=delphi_redis" \
+		--env "API_KEY_ADMIN_PASSWORD=test_admin_password" \
+		--env "API_KEY_REGISTER_WEBHOOK_TOKEN=abc" \
 		--network delphi-net --name delphi_web_epidata \
 		delphi_web_epidata >$(LOG_WEB) 2>&1 &
 
@@ -136,8 +140,17 @@ py:
 		$(M1) \
 		-f repos/delphi/delphi-epidata/dev/docker/python/Dockerfile .
 
+.PHONY=redis
+redis:
+	@docker build -t delphi_redis \
+		-f repos/delphi/delphi-epidata/dev/docker/redis/Dockerfile .
+
+	@docker run --rm -d -p 127.0.0.1:6379:6379 \
+		--network delphi-net \
+		--name delphi_redis delphi_redis >$(LOG_WEB) 2>&1 &
+
 .PHONY=all
-all: db web py
+all: db web py redis
 
 .PHONY=test
 test:

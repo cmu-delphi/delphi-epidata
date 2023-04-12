@@ -58,15 +58,16 @@ REGISTER_WEBHOOK_TOKEN = os.environ.get('API_KEY_REGISTER_WEBHOOK_TOKEN')
 RECAPTCHA_SITE_KEY = os.environ.get('RECAPTCHA_SITE_KEY')
 RECAPTCHA_SECRET_KEY = os.environ.get('RECAPTCHA_SECRET_KEY')
 
+REDIS_HOST = os.environ.get('REDIS_HOST')
+
 # https://flask-limiter.readthedocs.io/en/stable/#rate-limit-string-notation
 RATE_LIMIT = os.environ.get('RATE_LIMIT', '10/hour')
 # fixed-window, fixed-window-elastic-expiry, or moving-window
 # see also https://flask-limiter.readthedocs.io/en/stable/#rate-limiting-strategies
 RATELIMIT_STRATEGY = os.environ.get('RATELIMIT_STRATEGY', 'fixed-window')
-# see https://flask-limiter.readthedocs.io/en/stable/#configuration
-RATELIMIT_STORAGE_URL = os.environ.get('RATELIMIT_STORAGE_URL', 'memory://')
 
-REDIS_HOST = os.environ.get('REDIS_HOST', "delphi_redis_instance")
+# see https://flask-limiter.readthedocs.io/en/stable/#configuration
+RATELIMIT_STORAGE_URL = f'redis://{REDIS_HOST}:6379' if REDIS_HOST else 'memory://'
 
 
 class UserRole(str, Enum):
