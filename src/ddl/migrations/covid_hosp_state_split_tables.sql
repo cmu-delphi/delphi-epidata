@@ -1,127 +1,6 @@
 -- 1. Add new state_daily table mirroring state_timeseries table
 
 CREATE TABLE `covid_hosp_state_daily` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `issue` INT NOT NULL,
-  `state` CHAR(2) NOT NULL,
-  `date` INT NOT NULL,
-  `critical_staffing_shortage_today_yes` INT,
-  `critical_staffing_shortage_today_no` INT,
-  `critical_staffing_shortage_today_not_reported` INT,
-  `critical_staffing_shortage_anticipated_within_week_yes` INT,
-  `critical_staffing_shortage_anticipated_within_week_no` INT,
-  `critical_staffing_shortage_anticipated_within_week_not_reported` INT,
-  `hospital_onset_covid` INT,
-  `hospital_onset_covid_coverage` INT,
-  `inpatient_beds` INT,
-  `inpatient_beds_coverage` INT,
-  `inpatient_beds_used` INT,
-  `inpatient_beds_used_coverage` INT,
-  `inpatient_beds_used_covid` INT,
-  `inpatient_beds_used_covid_coverage` INT,
-  `previous_day_admission_adult_covid_confirmed` INT,
-  `previous_day_admission_adult_covid_confirmed_coverage` INT,
-  `previous_day_admission_adult_covid_suspected` INT,
-  `previous_day_admission_adult_covid_suspected_coverage` INT,
-  `previous_day_admission_pediatric_covid_confirmed` INT,
-  `previous_day_admission_pediatric_covid_confirmed_coverage` INT,
-  `previous_day_admission_pediatric_covid_suspected` INT,
-  `previous_day_admission_pediatric_covid_suspected_coverage` INT,
-  `staffed_adult_icu_bed_occupancy` INT,
-  `staffed_adult_icu_bed_occupancy_coverage` INT,
-  `staffed_icu_adult_patients_confirmed_suspected_covid` INT,
-  `staffed_icu_adult_patients_confirmed_suspected_covid_coverage` INT,
-  `staffed_icu_adult_patients_confirmed_covid` INT,
-  `staffed_icu_adult_patients_confirmed_covid_coverage` INT,
-  `total_adult_patients_hosp_confirmed_suspected_covid` INT,
-  `total_adult_patients_hosp_confirmed_suspected_covid_coverage` INT,
-  `total_adult_patients_hosp_confirmed_covid` INT,
-  `total_adult_patients_hosp_confirmed_covid_coverage` INT,
-  `total_pediatric_patients_hosp_confirmed_suspected_covid` INT,
-  `total_pediatric_patients_hosp_confirmed_suspected_covid_coverage` INT,
-  `total_pediatric_patients_hosp_confirmed_covid` INT,
-  `total_pediatric_patients_hosp_confirmed_covid_coverage` INT,
-  `total_staffed_adult_icu_beds` INT,
-  `total_staffed_adult_icu_beds_coverage` INT,
-  `inpatient_beds_utilization` DOUBLE,
-  `inpatient_beds_utilization_coverage` INT,
-  `inpatient_beds_utilization_numerator` INT,
-  `inpatient_beds_utilization_denominator` INT,
-  `percent_of_inpatients_with_covid` DOUBLE,
-  `percent_of_inpatients_with_covid_coverage` INT,
-  `percent_of_inpatients_with_covid_numerator` INT,
-  `percent_of_inpatients_with_covid_denominator` INT,
-  `inpatient_bed_covid_utilization` DOUBLE,
-  `inpatient_bed_covid_utilization_coverage` INT,
-  `inpatient_bed_covid_utilization_numerator` INT,
-  `inpatient_bed_covid_utilization_denominator` INT,
-  `adult_icu_bed_covid_utilization` DOUBLE,
-  `adult_icu_bed_covid_utilization_coverage` INT,
-  `adult_icu_bed_covid_utilization_numerator` INT,
-  `adult_icu_bed_covid_utilization_denominator` INT,
-  `adult_icu_bed_utilization` DOUBLE,
-  `adult_icu_bed_utilization_coverage` INT,
-  `adult_icu_bed_utilization_numerator` INT,
-  `adult_icu_bed_utilization_denominator` INT,
-  `record_type` CHAR(1) NOT NULL,
-  -- new columns added Oct 10
-  `geocoded_state` VARCHAR(32),
-  `previous_day_admission_adult_covid_confirmed_18_19` INT,
-  `previous_day_admission_adult_covid_confirmed_18_19_coverage` INT,
-  `previous_day_admission_adult_covid_confirmed_20_29` INT,
-  `previous_day_admission_adult_covid_confirmed_20_29_coverage` INT,
-  `previous_day_admission_adult_covid_confirmed_30_39` INT,
-  `previous_day_admission_adult_covid_confirmed_30_39_coverage` INT,
-  `previous_day_admission_adult_covid_confirmed_40_49` INT,
-  `previous_day_admission_adult_covid_confirmed_40_49_coverage` INT,
-  `previous_day_admission_adult_covid_confirmed_50_59` INT,
-  `previous_day_admission_adult_covid_confirmed_50_59_coverage` INT,
-  `previous_day_admission_adult_covid_confirmed_60_69` INT,
-  `previous_day_admission_adult_covid_confirmed_60_69_coverage` INT,
-  `previous_day_admission_adult_covid_confirmed_70_79` INT,
-  `previous_day_admission_adult_covid_confirmed_70_79_coverage` INT,
-  `previous_day_admission_adult_covid_confirmed_80plus` INT,
-  `previous_day_admission_adult_covid_confirmed_80plus_coverage` INT,
-  `previous_day_admission_adult_covid_confirmed_unknown` INT,
-  `previous_day_admission_adult_covid_confirmed_unknown_coverage` INT,
-  `previous_day_admission_adult_covid_suspected_18_19` INT,
-  `previous_day_admission_adult_covid_suspected_18_19_coverage` INT,
-  `previous_day_admission_adult_covid_suspected_20_29` INT,
-  `previous_day_admission_adult_covid_suspected_20_29_coverage` INT,
-  `previous_day_admission_adult_covid_suspected_30_39` INT,
-  `previous_day_admission_adult_covid_suspected_30_39_coverage` INT,
-  `previous_day_admission_adult_covid_suspected_40_49` INT,
-  `previous_day_admission_adult_covid_suspected_40_49_coverage` INT,
-  `previous_day_admission_adult_covid_suspected_50_59` INT,
-  `previous_day_admission_adult_covid_suspected_50_59_coverage` INT,
-  `previous_day_admission_adult_covid_suspected_60_69` INT,
-  `previous_day_admission_adult_covid_suspected_60_69_coverage` INT,
-  `previous_day_admission_adult_covid_suspected_70_79` INT,
-  `previous_day_admission_adult_covid_suspected_70_79_coverage` INT,
-  `previous_day_admission_adult_covid_suspected_80plus` INT,
-  `previous_day_admission_adult_covid_suspected_80plus_coverage` INT,
-  `previous_day_admission_adult_covid_suspected_unknown` INT,
-  `previous_day_admission_adult_covid_suspected_unknown_coverage` INT,
-  `deaths_covid` INT,
-  `deaths_covid_coverage` INT,
-  `on_hand_supply_therapeutic_a_casirivimab_imdevimab_courses` INT,
-  `on_hand_supply_therapeutic_b_bamlanivimab_courses` INT,
-  `on_hand_supply_therapeutic_c_bamlanivimab_etesevimab_courses` INT,
-  `previous_week_therapeutic_a_casirivimab_imdevimab_courses_used` INT,
-  `previous_week_therapeutic_b_bamlanivimab_courses_used` INT,
-  `previous_week_therapeutic_c_bamlanivimab_etesevimab_courses_used` INT,
-  `icu_patients_confirmed_influenza` INT,
-  `icu_patients_confirmed_influenza_coverage` INT,
-  `previous_day_admission_influenza_confirmed` INT,
-  `previous_day_admission_influenza_confirmed_coverage` INT,
-  `previous_day_deaths_covid_and_influenza` INT,
-  `previous_day_deaths_covid_and_influenza_coverage` INT,
-  `previous_day_deaths_influenza` INT,
-  `previous_day_deaths_influenza_coverage` INT,
-  `total_patients_hospitalized_confirmed_influenza` INT,
-  `total_patients_hospitalized_confirmed_influenza_covid` INT,
-  `total_patients_hospitalized_confirmed_influenza_covid_coverage` INT,
-  `total_patients_hospitalized_confirmed_influenza_coverage` INT,
   PRIMARY KEY (`id`),
   -- for uniqueness
   -- for fast lookup of most recent issue for a given state and date
@@ -130,19 +9,16 @@ CREATE TABLE `covid_hosp_state_daily` (
   KEY `date_by_issue_and_state` (`issue`, `state`, `date`),
   -- for fast lookup of all states for a given date and issue
   KEY `state_by_issue_and_date` (`issue`, `date`, `state`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8
+SELECT * FROM covid_hosp_state_timeseries;
+ALTER TABLE covid_hosp_state_daily MODIFY id INT NOT NULL AUTO_INCREMENT;
 
--- 2. Move data with record_type=D into new table
-
-INSERT INTO `covid_hosp_state_daily`
-SELECT * FROM `covid_hosp_state_timeseries`
-WHERE record_type='D';
-
--- 3. Remove that data from the old table
+-- 2. Remove data with incorrect record_type from both tables (keep D in daily, T in timeseries)
 
 DELETE FROM `covid_hosp_state_timeseries` WHERE record_type='D';
+DELETE FROM `covid_hosp_state_daily` WHERE record_type='T';
 
--- 4. Remove the record_type column from both tables
+-- 3. Remove the record_type column from both tables
 
 ALTER TABLE `covid_hosp_state_daily` DROP COLUMN record_type;
 ALTER TABLE `covid_hosp_state_timeseries` DROP COLUMN record_type;
