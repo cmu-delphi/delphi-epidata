@@ -92,7 +92,7 @@ class CovidcastTests(CovidcastBase):
 
   def _insert_placeholder_set_seven(self):
     rows = [
-      CovidcastTestRow.make_default_row(time_value=2000_01_01, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03+i)
+      CovidcastTestRow.make_default_row(time_value=2000_01_01, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_01+i)
       for i in [1, 2, 3, 4, 5, 6]
     ]
     self._insert_rows(rows)
@@ -271,18 +271,14 @@ class CovidcastTests(CovidcastBase):
       'message': 'success',
     })
 
-  def test_time_values_inequality(self):
-    """Select all time_values with a wildcard query."""
-
-    # insert placeholder data
-    rows = self._insert_placeholder_set_six()
+  def helper_test_inequality(self, rows, field):
     expected = [row.as_api_compatibility_row_dict() for row in rows]
 
-    def fetch(time_value):
-      # make the request
-      response = self.request_based_on_row(rows[0], time_values=time_value)
-      return response
-    self.maxDiff = None
+    def fetch(datecode):
+        # make the request
+        response = self.request_based_on_row(rows[0], **{field: datecode})
+        return response
+  
     # test fetch time_value with <
     r = fetch('<20000104')
     self.assertEqual(r['message'], 'success')
@@ -310,9 +306,12 @@ class CovidcastTests(CovidcastBase):
     # test fetch inequalities that has no results
     r = fetch('>20000107')
     self.assertEqual(r['message'], 'no results')
-    # test fetch empty time_value
+    # test fetch empty value
     r = fetch('')
-    self.assertEqual(r['message'], 'missing parameter: need [time_type, time_values]')
+    if field == 'time_values':
+        self.assertEqual(r['message'], 'missing parameter: need [time_type, time_values]')
+    else:
+        self.assertEqual(r['message'], 'not a valid date: (empty)')
     # test fetch invalid time_value
     r = fetch('>')
     self.assertEqual(r['message'], 'missing parameter: date after the inequality operator')
@@ -324,6 +323,14 @@ class CovidcastTests(CovidcastBase):
     # test invalid operator
     r = fetch('#')
     self.assertEqual(r['message'], 'not a valid date: #')
+
+  def test_time_values_inequality(self):
+    rows = self._insert_placeholder_set_six()
+    self.helper_test_inequality(rows, "time_values")
+
+  def test_issues_inequality(self):
+    rows = self._insert_placeholder_set_seven()
+    self.helper_test_inequality(rows, "issues")
 
   def test_issues_wildcard(self):
     """Select all issues with a wildcard query."""
@@ -341,60 +348,6 @@ class CovidcastTests(CovidcastBase):
       'epidata': expected,
       'message': 'success',
     })
-
-  def test_issues_inequality(self):
-    """Select all time_values with a wildcard query."""
-
-    # insert placeholder data
-    rows = self._insert_placeholder_set_seven()
-    expected = [row.as_api_compatibility_row_dict() for row in rows[:6]]
-
-    def fetch(issue):
-      # make the request
-      response = self.request_based_on_row(rows[0], issues=issue)
-      return response
-
-    # test fetch issues with <
-    r = fetch('<20000106')
-    self.assertEqual(r['message'], 'success')
-    self.assertEqual(r['epidata'], expected[:2])
-    # test fetch issues with <=
-    r = fetch('<=20000106')
-    self.assertEqual(r['message'], 'success')
-    self.assertEqual(r['epidata'], expected[:3])
-    # test fetch issues with >
-    r = fetch('>20000106')
-    self.assertEqual(r['message'], 'success')
-    self.assertEqual(r['epidata'], expected[3:])
-    # test fetch issues with >=
-    r = fetch('>=20000106')
-    self.assertEqual(r['message'], 'success')
-    self.assertEqual(r['epidata'], expected[2:])
-    # test fetch multiple inequalities
-    r = fetch('<20000106,>20000106')
-    self.assertEqual(r['message'], 'success')
-    self.assertEqual(r['epidata'], expected[:2] + expected[3:])
-    # test overlapped inequalities, pick the more extreme one
-    r = fetch('>20000107,>20000106')
-    self.assertEqual(r['message'], 'success')
-    self.assertEqual(r['epidata'], expected[3:])
-    # test fetch inequalities that has no results
-    r = fetch('>20000109')
-    self.assertEqual(r['message'], 'no results')
-    # test fetch empty issues
-    r = fetch('')
-    self.assertEqual(r['message'], 'not a valid date: (empty)')
-    # test fetch invalid issues
-    r = fetch('>')
-    self.assertEqual(r['message'], 'missing parameter: date after the inequality operator')
-    # test if extra operators provided
-    r = fetch('<>')
-    self.assertEqual(r['message'], 'not a valid date: >')
-    r = fetch('><20000106')
-    self.assertEqual(r['message'], 'not a valid date: <20000106')
-    # test invalid operator
-    r = fetch('@')
-    self.assertEqual(r['message'], 'not a valid date: @')
 
   def test_signal_wildcard(self):
     """Select all signals with a wildcard query."""
