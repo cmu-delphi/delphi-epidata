@@ -1,4 +1,4 @@
-import pkgutil
+from pathlib import Path
 import unittest
 
 from delphi.epidata.acquisition.covid_hosp.common.database import Columndef
@@ -11,7 +11,7 @@ __test_target__ = "delphi.epidata.common.covid_hosp.covid_hosp_schema_io"
 
 
 class TestCovidHospSchemaIo(unittest.TestCase):
-    chs = CovidHospSomething(pkgutil.get_data(__name__, "test_covid_hosp_schemadefs.yaml"))
+    chs = CovidHospSomething(str(Path(__file__).parent.absolute()) + "/test_covid_hosp_schemadefs.yaml")
 
     def test_get_ds_info(self):
         TABLE_NAME = self.chs.get_ds_table_name('covid_hosp_facility')

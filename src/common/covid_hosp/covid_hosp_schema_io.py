@@ -1,5 +1,5 @@
 from datetime import datetime
-from importlib.resources import read_text
+from pathlib import Path
 import re
 import sys
 
@@ -54,10 +54,9 @@ class CovidHospSomething:
   MYSQL_COL_NAME_PATTERN = re.compile(r'^[a-zA-Z0-9_]{3,64}$')
 
 
-  def __init__(self, yaml_file=None):
-    if yaml_file is None:
-      yaml_file = read_text("delphi.epidata.common.covid_hosp", "covid_hosp_schemadefs.yaml")
-    self.yaml_content = yaml_load(yaml_file, preserve_quotes=True)
+  def __init__(self, yaml_filename=str(Path(__file__).parent.absolute()) + "/covid_hosp_schemadefs.yaml"):
+    with open(yaml_filename, 'r') as yaml_file:
+      self.yaml_content = yaml_load(yaml_file, preserve_quotes=True)
 
 
   def dataset_names(self):
@@ -107,7 +106,7 @@ class CovidHospSomething:
   def get_ds_table_name(self, ds_name):
     return self.dataset(ds_name)['TABLE_NAME']
 
-  
+
   def get_ds_key_cols(self, ds_name):
     return self.dataset(ds_name)['KEY_COLS']
 
