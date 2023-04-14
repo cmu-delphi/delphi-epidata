@@ -7,15 +7,10 @@ from delphi.epidata.common.covid_hosp.covid_hosp_schema_io import CovidHospSomet
 
 class Database(BaseDatabase):
 
-  # ORDERED_CSV_COLUMNS are 3-tuples of (
-  #   CSV header name,
-  #   SQL db column name,
-  #   data type
-  # ) for all the columns in the CSV file.
-  # Note that the corresponding database column names may be shorter
-  # due to constraints on the length of column names. See
-  # /src/ddl/covid_hosp.sql for more information.
-  TABLE_NAME, KEY_COLS, _, ORDERED_CSV_COLUMNS = CovidHospSomething().get_ds_info('state_timeseries')
+  chs = CovidHospSomething()
+  TABLE_NAME = chs.get_ds_table_name('state_timeseries')
+  KEY_COLS = chs.get_ds_key_cols('state_timeseries')
+  ORDERED_CSV_COLUMNS = chs.get_ds_ordered_csv_cols('state_timeseries')
 
   def __init__(self, *args, **kwargs):
     super().__init__(

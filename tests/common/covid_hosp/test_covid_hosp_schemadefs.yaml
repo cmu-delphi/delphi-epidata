@@ -6,6 +6,7 @@ covid_hosp_facility:
   ORDERED_CSV_COLUMNS:
   - [str:128, hospital_pk, ~]
   - [intdate, collection_week, ~]
+  - [intdate, reporting_cutoff_start, date]
   - [float, all_adult_hospital_beds_7_day_avg, ~]
   - [int, all_adult_hospital_beds_7_day_coverage, ~]
   - [fixedstr:5, fips_code, ~]

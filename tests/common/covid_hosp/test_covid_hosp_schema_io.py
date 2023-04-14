@@ -14,13 +14,18 @@ class TestCovidHospSchemaIo(unittest.TestCase):
     chs = CovidHospSomething(pkgutil.get_data(__name__, "test_covid_hosp_schemadefs.yaml"))
 
     def test_get_ds_info(self):
-        TABLE_NAME, KEY_COLS, AGGREGATE_KEY_COLS, ORDERED_CSV_COLUMNS = self.chs.get_ds_info("covid_hosp_facility")
+        TABLE_NAME = self.chs.get_ds_table_name('covid_hosp_facility')
+        KEY_COLS = self.chs.get_ds_key_cols('covid_hosp_facility')
+        AGGREGATE_KEY_COLS = self.chs.get_ds_aggregate_key_cols('covid_hosp_facility')
+        ORDERED_CSV_COLUMNS = self.chs.get_ds_ordered_csv_cols('covid_hosp_facility')
+
         assert TABLE_NAME == "covid_hosp_facility"
         assert KEY_COLS == ["hospital_pk", "collection_week"]
         assert AGGREGATE_KEY_COLS == ["address", "ccn", "city", "fips_code", "geocoded_hospital_address", "hhs_ids", "hospital_name", "hospital_pk", "hospital_subtype", "is_metro_micro", "state", "zip"]
         assert ORDERED_CSV_COLUMNS == [
             Columndef('hospital_pk', 'hospital_pk', str),
             Columndef('collection_week', 'collection_week', Utils.int_from_date),
+            Columndef('reporting_cutoff_start', 'date', Utils.int_from_date),
             Columndef('all_adult_hospital_beds_7_day_avg', 'all_adult_hospital_beds_7_day_avg', float),
             Columndef('all_adult_hospital_beds_7_day_coverage', 'all_adult_hospital_beds_7_day_coverage', int),
             Columndef('fips_code', 'fips_code', str),

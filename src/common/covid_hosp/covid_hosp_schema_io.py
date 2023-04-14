@@ -1,5 +1,5 @@
 from datetime import datetime
-import pkgutil
+from importlib.resources import read_text
 import re
 import sys
 
@@ -56,15 +56,8 @@ class CovidHospSomething:
 
   def __init__(self, yaml_file=None):
     if yaml_file is None:
-      yaml_file = pkgutil.get_data(__name__, "covid_hosp_schemadefs.yaml")
+      yaml_file = read_text("delphi.epidata.common.covid_hosp", "covid_hosp_schemadefs.yaml")
     self.yaml_content = yaml_load(yaml_file, preserve_quotes=True)
-
-
-  def write_schemadefs(self):
-    with open(self.yaml_filename, 'w') as yaml_file:
-      # NOTE: `width` specification is to prevent dump from splitting long lines
-      # TODO: consider `block_seq_indent=2` to make list under ORDERED_CSV_COLUMNS look a little better
-      yaml_dump(self.yaml_content, yaml_file, width=200)
 
 
   def dataset_names(self):
@@ -111,12 +104,20 @@ class CovidHospSomething:
     self.dataset(ds_name)['ORDERED_CSV_COLUMNS'].append([dtype_cplx, col_name, sql_name])
 
 
-  def get_ds_info(self, ds_name):
-    ds = self.dataset(ds_name)
-    TABLE_NAME = ds['TABLE_NAME']
-    KEY_COLS = ds['KEY_COLS']
-    AGGREGATE_KEY_COLS = ds['AGGREGATE_KEY_COLS'] if 'AGGREGATE_KEY_COLS' in ds else None
-    ORDERED_CSV_COLUMNS = [
+  def get_ds_table_name(self, ds_name):
+    return self.dataset(ds_name)['TABLE_NAME']
+
+  
+  def get_ds_key_cols(self, ds_name):
+    return self.dataset(ds_name)['KEY_COLS']
+
+
+  def get_ds_aggregate_key_cols(self, ds_name):
+    return self.dataset(ds_name).get('AGGREGATE_KEY_COLS', None)
+
+
+  def get_ds_ordered_csv_cols(self, ds_name):
+    return [
       Columndef(
         # Original name for the column
         column['name'],
@@ -127,7 +128,6 @@ class CovidHospSomething:
       )
       for column in self.columns(ds_name)
     ]
-    return TABLE_NAME, KEY_COLS, AGGREGATE_KEY_COLS, ORDERED_CSV_COLUMNS
 
 
   def detect_changes(self, ds_name):
@@ -177,10 +177,9 @@ class CovidHospSomething:
 
 if __name__ == "__main__":
   chs = CovidHospSomething()
-  print(chs.yaml_filename)
   changed = False
 
-  for ds_name in chs.yaml_content:
+  for ds_name in chs.dataset_names():
     ds = chs.dataset(ds_name)
     new_cols = chs.detect_changes(ds_name)
     if new_cols:
