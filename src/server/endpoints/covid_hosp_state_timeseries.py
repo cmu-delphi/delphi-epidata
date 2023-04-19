@@ -152,20 +152,59 @@ def handle():
     q.where_integers("date", dates)
     q.where_strings("state", states)
 
-    merge_tables = "(SELECT *, 'D' as record_type FROM `covid_hosp_state_daily` UNION ALL SELECT *, 'T' as record_type FROM `covid_hosp_state_timeseries`) c"
+    # These queries prioritize the daily value if there is both a time series and daily value for a given issue/date/state.
+    # Further details: https://github.com/cmu-delphi/delphi-epidata/pull/336
     if issues is not None:
+        # Filter for specific issues
         q.where_integers("issue", issues)
-        # final query using specific issues
-        query = f"WITH c as (SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY date, state, issue ORDER BY record_type) `row` FROM {merge_tables} WHERE {q.conditions_clause}) SELECT {q.fields_clause} FROM {q.alias} WHERE `row` = 1 ORDER BY {q.order_clause}"
+        union_subquery = f'''
+        (
+            SELECT *, 'D' as record_type FROM `covid_hosp_state_daily` WHERE {q.conditions_clause}
+            UNION ALL
+            SELECT *, 'T' as record_type FROM `covid_hosp_state_timeseries` WHERE {q.conditions_clause}
+        ) c'''
+        query = f'''
+            WITH c as (
+                SELECT {q.fields_clause}, ROW_NUMBER()
+                OVER (PARTITION BY date, state, issue ORDER BY record_type) `row`
+                FROM {union_subquery}
+            )
+            SELECT {q.fields_clause} FROM {q.alias} WHERE `row` = 1 ORDER BY {q.order_clause}
+        '''
     elif as_of is not None:
+        # Filter for issues before a given as_of
         sub_condition_asof = "(issue <= :as_of)"
         q.params["as_of"] = as_of
-        query = f"WITH c as (SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY date, state ORDER BY issue DESC, record_type) `row` FROM {merge_tables} WHERE {q.conditions_clause} AND {sub_condition_asof}) SELECT {q.fields_clause} FROM {q.alias} WHERE `row` = 1 ORDER BY {q.order_clause}"
+        union_subquery = f'''
+        (
+            SELECT *, 'D' as record_type FROM `covid_hosp_state_daily` WHERE {q.conditions_clause} AND {sub_condition_asof}
+            UNION ALL
+            SELECT *, 'T' as record_type FROM `covid_hosp_state_timeseries` WHERE {q.conditions_clause} AND {sub_condition_asof}
+        ) c'''
+        query = f'''
+            WITH c as (
+                SELECT {q.fields_clause}, ROW_NUMBER()
+                OVER (PARTITION BY date, state ORDER BY issue DESC, record_type) `row`
+                FROM {union_subquery}
+            )
+            SELECT {q.fields_clause} FROM {q.alias} WHERE `row` = 1 ORDER BY {q.order_clause}
+        '''
     else:
-        # final query using most recent issues
-        subquery = f"(SELECT max(`issue`) `max_issue`, `date`, `state` FROM {merge_tables} WHERE {q.conditions_clause} GROUP BY `date`, `state`) x"
-        condition = f"x.`max_issue` = {q.alias}.`issue` AND x.`date` = {q.alias}.`date` AND x.`state` = {q.alias}.`state`"
-        query = f"WITH c as (SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY date, state, issue ORDER BY record_type) `row` FROM {merge_tables} JOIN {subquery} ON {condition}) select {q.fields_clause} FROM {q.alias} WHERE `row` = 1 ORDER BY {q.order_clause}"
+        # Simply use most recent issues
+        union_subquery = f'''
+        (
+            SELECT *, 'D' as record_type FROM `covid_hosp_state_daily` WHERE {q.conditions_clause}
+            UNION ALL
+            SELECT *, 'T' as record_type FROM `covid_hosp_state_timeseries` WHERE {q.conditions_clause}
+        ) c'''
+        query = f'''
+            WITH c as (
+                SELECT {q.fields_clause}, ROW_NUMBER()
+                OVER (PARTITION BY date, state ORDER BY issue DESC, record_type) `row`
+                FROM {union_subquery}
+            )
+            SELECT {q.fields_clause} FROM {q.alias} WHERE `row` = 1 ORDER BY {q.order_clause}
+        '''
 
     # send query
     return execute_query(query, q.params, fields_string, fields_int, fields_float)

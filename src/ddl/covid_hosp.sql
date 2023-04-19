@@ -513,6 +513,7 @@ CREATE TABLE `covid_hosp_state_daily` (
   KEY `state_by_issue_and_date` (`issue`, `date`, `state`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8
 SELECT * FROM covid_hosp_state_timeseries;
+-- Re-add autoincrement capability
 ALTER TABLE covid_hosp_state_daily MODIFY id INT NOT NULL AUTO_INCREMENT;
 
 /*

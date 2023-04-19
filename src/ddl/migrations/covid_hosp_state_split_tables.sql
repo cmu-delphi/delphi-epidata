@@ -10,13 +10,13 @@ CREATE TABLE `covid_hosp_state_daily` (
   -- for fast lookup of all states for a given date and issue
   KEY `state_by_issue_and_date` (`issue`, `date`, `state`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8
-SELECT * FROM covid_hosp_state_timeseries;
+SELECT * FROM covid_hosp_state_timeseries WHERE record_type='D';
+-- Re-add autoincrement capability
 ALTER TABLE covid_hosp_state_daily MODIFY id INT NOT NULL AUTO_INCREMENT;
 
 -- 2. Remove data with incorrect record_type from both tables (keep D in daily, T in timeseries)
 
 DELETE FROM `covid_hosp_state_timeseries` WHERE record_type='D';
-DELETE FROM `covid_hosp_state_daily` WHERE record_type='T';
 
 -- 3. Remove the record_type column from both tables
 
