@@ -26,6 +26,23 @@ Pandemic"](https://www.pnas.org/topic/548) in *PNAS*:
 
 Research publications using the survey data include:
 
+- S. Soorapanth, R. Cheung, X. Zhang, A. H. Mokdad, G. A. Mensah (2023).
+  [Rural–Urban Differences in Vaccination and Hesitancy Rates and Trust: US
+  COVID-19 Trends and Impact Survey on a Social Media Platform, May 2021–April
+  2022](https://doi.org/10.2105/AJPH.2023.307274). *American Journal of Public
+  Health*.
+  - See also the associated editorial: T. Callaghan (2023). [Vaccine Uptake and
+    Hesitancy in Rural America in the Wake of the COVID-19
+    Pandemic](https://doi.org/10.2105/AJPH.2023.307305). *American Journal of
+    Public Health*.
+- M. Rubinstein, A. Haviland, and J. Breslau (2023). [The effect of COVID-19
+  vaccinations on self-reported depression and anxiety during February
+  2021](https://doi.org/10.1080/2330443X.2023.2190008). *Statistics and Public
+  Policy.*
+- Rönn MM, Menzies NA, Salomon JA (2023). [Vaccination and voting patterns in
+  the United States: analysis of COVID-19 and flu surveys from 2010 to
+  2022](https://doi.org/10.1016/j.amepre.2023.03.001). *American Journal of
+  Preventive Medicine.*
 - Taube JC, Susswein Z, Bansal S (2023). [Spatiotemporal Trends in Self-Reported
   Mask-Wearing Behavior in the United States: Analysis of a Large
   Cross-sectional Survey](https://doi.org/10.2196/42128). *JMIR Public Health
@@ -43,6 +60,10 @@ Research publications using the survey data include:
   the impact of the omicron variant on vaccine efficacy against COVID-19
   infection](https://doi.org/10.1038/s41598-023-27951-3). *Scientific Reports*
   13, 900.
+- J. G. Lu (2023). [Two large-scale global studies on COVID-19 vaccine hesitancy
+  over time: Culture, uncertainty avoidance, and vaccine side-effect
+  concerns](https://doi.org/10.1037/pspa0000320). *Journal of Personality and
+  Social Psychology* 124 (4), 683-706.
 - Rader, B., Astley, C.M., Sewalk, K. et al (2022). [Spatial modeling of vaccine
   deserts as barriers to controlling
   SARS-CoV-2](https://doi.org/10.1038/s43856-022-00183-8). *Communications
@@ -57,10 +78,6 @@ Research publications using the survey data include:
   vaccine hesitancy, vaccination, and mask wearing, January 2021-February
   2022](https://doi.org/10.1186/s12889-022-14286-3). *BMC Public Health* 22,
   1911.
-- J. G. Lu (2022). [Two large-scale global studies on COVID-19 vaccine hesitancy
-  over time: Culture, uncertainty avoidance, and vaccine side-effect
-  concerns](https://doi.org/10.1037/pspa0000320). *Journal of Personality and
-  Social Psychology*.
 - J. M. Cox-Ganser, P. K. Henneberger, D. N. Weissman, G. Guthrie, and C. P.
   Groth (2022). [COVID-19 test positivity by occupation using the Delphi US
   COVID-19 Trends and Impact Survey, September–November
