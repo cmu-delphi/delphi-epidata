@@ -159,14 +159,13 @@ def handle():
         q.where_integers("issue", issues)
         union_subquery = f'''
         (
-            SELECT *, 'D' as record_type FROM `covid_hosp_state_daily` WHERE {q.conditions_clause}
+            SELECT *, 'D' as record_type FROM `covid_hosp_state_daily` c WHERE {q.conditions_clause}
             UNION ALL
-            SELECT *, 'T' as record_type FROM `covid_hosp_state_timeseries` WHERE {q.conditions_clause}
+            SELECT *, 'T' as record_type FROM `covid_hosp_state_timeseries` c WHERE {q.conditions_clause}
         ) c'''
         query = f'''
             WITH c as (
-                SELECT {q.fields_clause}, ROW_NUMBER()
-                OVER (PARTITION BY date, state, issue ORDER BY record_type) `row`
+                SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY date, state, issue ORDER BY record_type) `row`
                 FROM {union_subquery}
             )
             SELECT {q.fields_clause} FROM {q.alias} WHERE `row` = 1 ORDER BY {q.order_clause}
@@ -177,14 +176,13 @@ def handle():
         q.params["as_of"] = as_of
         union_subquery = f'''
         (
-            SELECT *, 'D' as record_type FROM `covid_hosp_state_daily` WHERE {q.conditions_clause} AND {sub_condition_asof}
+            SELECT *, 'D' as record_type FROM `covid_hosp_state_daily` c WHERE {q.conditions_clause} AND {sub_condition_asof}
             UNION ALL
-            SELECT *, 'T' as record_type FROM `covid_hosp_state_timeseries` WHERE {q.conditions_clause} AND {sub_condition_asof}
+            SELECT *, 'T' as record_type FROM `covid_hosp_state_timeseries` c WHERE {q.conditions_clause} AND {sub_condition_asof}
         ) c'''
         query = f'''
             WITH c as (
-                SELECT {q.fields_clause}, ROW_NUMBER()
-                OVER (PARTITION BY date, state ORDER BY issue DESC, record_type) `row`
+                SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY date, state ORDER BY issue DESC, record_type) `row`
                 FROM {union_subquery}
             )
             SELECT {q.fields_clause} FROM {q.alias} WHERE `row` = 1 ORDER BY {q.order_clause}
@@ -193,14 +191,13 @@ def handle():
         # Simply use most recent issues
         union_subquery = f'''
         (
-            SELECT *, 'D' as record_type FROM `covid_hosp_state_daily` WHERE {q.conditions_clause}
+            SELECT *, 'D' as record_type FROM `covid_hosp_state_daily` c WHERE {q.conditions_clause}
             UNION ALL
-            SELECT *, 'T' as record_type FROM `covid_hosp_state_timeseries` WHERE {q.conditions_clause}
+            SELECT *, 'T' as record_type FROM `covid_hosp_state_timeseries` c WHERE {q.conditions_clause}
         ) c'''
         query = f'''
             WITH c as (
-                SELECT {q.fields_clause}, ROW_NUMBER()
-                OVER (PARTITION BY date, state ORDER BY issue DESC, record_type) `row`
+                SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY date, state ORDER BY issue DESC, record_type) `row`
                 FROM {union_subquery}
             )
             SELECT {q.fields_clause} FROM {q.alias} WHERE `row` = 1 ORDER BY {q.order_clause}
