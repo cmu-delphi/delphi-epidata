@@ -11,10 +11,11 @@ from werkzeug.local import LocalProxy
 import redis
 
 from ._common import app
-from ._config import (API_KEY_REQUIRED_STARTING_AT, RATELIMIT_STORAGE_URL,
-                      URL_PREFIX, REDIS_HOST)
-from ._exceptions import MissingAPIKeyException, UnAuthenticatedException
+from ._config import API_KEY_REQUIRED_STARTING_AT, RATELIMIT_STORAGE_URL, URL_PREFIX, REDIS_HOST
+from ._params import extract_integers, extract_strings, extract_dates, parse_source_signal_sets, parse_geo_sets
+from ._exceptions import MissingAPIKeyException, UnAuthenticatedException, ValidationFailedException
 from .admin.models import User, UserRole
+
 # from ._logger import get_structured_logger
 
 API_KEY_HARD_WARNING = API_KEY_REQUIRED_STARTING_AT - timedelta(days=14)
@@ -51,7 +52,7 @@ def resolve_auth_token() -> Optional[str]:
     # bearer token authentication
     auth_header = request.headers.get("Authorization")
     if auth_header and auth_header.startswith("Bearer "):
-        return auth_header[len("Bearer "):]
+        return auth_header[len("Bearer ") :]
     return None
 
 
@@ -84,7 +85,7 @@ def _get_current_user():
                 raise MissingAPIKeyException
         if not user.tracking:
             request_path = mask_apikey(request_path)
-        # TODO: add logging 
+        # TODO: add logging
         # log_info(user, "Get path", path=request_path)
         g.user = user
     return g.user
@@ -166,6 +167,88 @@ def deduct_on_success(response: Response) -> bool:
     return True
 
 
+def get_multiples_count(request):
+    multiples = {
+        "locations": extract_strings("locations"),
+        "epiweeks": extract_integers("epiweeks"),
+        "flu_types": extract_strings("flu_types"),
+        "states": extract_strings("states"),
+        "ccn": extract_strings("ccn"),
+        "city": extract_strings("city"),
+        "zip": extract_strings("zip"),
+        "fips_code": extract_strings("fips_code"),
+        "hospital_pks": extract_strings("hospital_pks"),
+        "collection_weeks": extract_integers("collection_weeks"),
+        "publication_dates": extract_strings("publication_dates"),
+        "dates": extract_integers("dates"),
+        "issues": extract_integers("issues"),
+        "time_types": extract_strings("time_types"),
+        "signals": extract_strings("signals"),
+        "signal": extract_strings("signal"),
+        "time_values": extract_dates("time_values"),
+        "sensor_names": extract_strings("sensor_names"),
+        "geo_values": extract_strings("geo_values"),
+        "geo_value": extract_strings("geo_value"),
+        "data_source": parse_source_signal_sets(),
+        "geo_sets": parse_geo_sets(),
+        "names": extract_strings("names"),
+        "regions": extract_strings("regions"),
+        "articles": extract_strings("articles"),
+    }
+    multiple_selection_allowed = 2
+    for k, v in request.args.items():
+        if v == "*":
+            multiple_selection_allowed -= 1
+        try:
+            vals = multiples.get(k)
+            if len(vals) >= 2:
+                multiple_selection_allowed -= 1
+        except ValidationFailedException:
+            continue
+        except TypeError:
+            continue
+    return multiple_selection_allowed
+
+
+def check_signals_allowlist(request):
+    signals_allowlist = [
+        "google-symptoms:s05_smoothed_search",
+        "google-symptoms:s02_smoothed_search",
+        "doctor-visits:smoothed_adj_cli",
+        "chng:smoothed_adj_outpatient_flu",
+        "quidel-covid-ag:covid_ag_smoothed_pct_positive",
+        "jhu-csse:confirmed_7dav_incidence_prop",
+        "hhs:confirmed_admissions_covid_1d_prop_7dav",
+        "hhs:confirmed_admissions_influenza_1d_prop_7dav",
+        "jhu-csse:deaths_7dav_incidence_prop",
+        "fb-survey:smoothed_wcli",
+        "fb-survey:smoothed_whh_cmnty_cli",
+        "fb-survey:smoothed_wwearing_mask_7d",
+        "fb-survey:smoothed_wothers_masked_public",
+        "fb-survey:smoothed_wcovid_vaccinated_appointment_or_accept",
+        "fb-survey:smoothed_winperson_school_fulltime_oldest",
+        "fb-survey:smoothed_wshop_indoors_1d",
+        "fb-survey:smoothed_wpublic_transit_1d",
+        "fb-survey:smoothed_wwork_outside_home_indoors_1d",
+        "fb-survey:smoothed_wspent_time_indoors_1d",
+        "fb-survey:smoothed_wrestaurant_indoors_1d",
+        "fb-survey:smoothed_wlarge_event_indoors_1d",
+        "fb-survey:smoothed_wtravel_outside_state_7d",
+        "fb-survey:smoothed_wanxious_7d",
+        "fb-survey:smoothed_wdepressed_7d",
+        "fb-survey:smoothed_wworried_catch_covid",
+        "fb-survey:smoothed_wworried_finances",
+        "fb-survey:smoothed_wtested_14d",
+        "fb-survey:smoothed_wtested_positive_14d",
+    ]
+    request_signals = []
+    if "signal" in request.args.keys():
+        request_signals += extract_strings("signal")
+    if "signals" in request.args.keys():
+        request.signals += extract_strings("signals")
+    return all([signal in signals_allowlist for signal in request_signals]):
+
+
 limiter = Limiter(app, key_func=_resolve_tracking_key, storage_uri=RATELIMIT_STORAGE_URL)
 
 
@@ -173,8 +256,17 @@ limiter = Limiter(app, key_func=_resolve_tracking_key, storage_uri=RATELIMIT_STO
 def _no_rate_limit() -> bool:
     if TESTING_MODE or _is_public_route():
         return False
-    # no rate limit if user is registered
     user = _get_current_user()
+    if not user.is_authenticated:
+        multiples = get_multiples_count(request)
+        if multiples < 0:
+            raise MissingAPIKeyException
+        if multiples >= 0:
+            if check_signals_allowlist(request):
+                return True
+            else:
+                return False
+    # no rate limit if user is registered
     return user is not None and user.registered  # type: ignore
 
 
@@ -185,6 +277,8 @@ def update_key_last_time_used(response):
     try:
         r = redis.Redis(host=REDIS_HOST)
         api_key = g.user.api_key
+        if api_key == "anonymous":
+            api_key = _resolve_tracking_key()
         r.set(f"LAST_USED/{api_key}", datetime.strftime(datetime.now(), "%Y-%m-%d"))
     except Exception as e:
         print(e)  # TODO: should be handled properly
