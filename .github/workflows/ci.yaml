@@ -65,7 +65,7 @@ jobs:
           docker network create --driver bridge delphi-net
           docker run --rm -d -p 13306:3306 --network delphi-net --name delphi_database_epidata --cap-add=sys_nice delphi_database_epidata
           docker run --rm -p 6379:6379 --network delphi-net --name delphi_redis delphi_redis
-          docker run --rm -d -p 10080:80 --env "MODULE_NAME=delphi.epidata.server.main" --env "SQLALCHEMY_DATABASE_URI=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata" --env "FLASK_SECRET=abc" --env "FLASK_PREFIX=/epidata" --env "REDIS_HOST=delphi_redis_instance" --env "API_KEY_REGISTER_WEBHOOK_TOKEN=abc" --env "API_KEY_ADMIN_PASSWORD=test_admin_password" --network delphi-net --name delphi_web_epidata delphi_web_epidata
+          docker run --rm -d -p 10080:80 --env "MODULE_NAME=delphi.epidata.server.main" --env "SQLALCHEMY_DATABASE_URI=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata" --env "FLASK_SECRET=abc" --env "FLASK_PREFIX=/epidata" --env "REDIS_HOST=delphi_redis" --env "API_KEY_REGISTER_WEBHOOK_TOKEN=abc" --env "API_KEY_ADMIN_PASSWORD=test_admin_password" --network delphi-net --name delphi_web_epidata delphi_web_epidata
           docker ps
 
       - run: |
