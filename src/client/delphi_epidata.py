@@ -388,47 +388,6 @@ class Epidata:
     # Make the API call
     return Epidata._request(params)
 
-  # Fetch AFHSB data
-  @staticmethod
-  def afhsb(auth, locations, epiweeks, flu_types):
-    """Fetch AFHSB data (point data, no min/max)."""
-    # Check parameters
-    if auth is None or locations is None or epiweeks is None or flu_types is None:
-      raise Exception('`auth`, `locations`, `epiweeks` and `flu_types` are all required')
-
-    loc_exception = 'Location parameter  `{}` is invalid. Valid `location` parameters are: '\
-      '`hhs[1-10]`, `cen[1-9]`, 2-letter state code or 3-letter country code.'
-    for location in locations:
-      location = location.lower()
-      if (location.startswith('hhs') or location.startswith('cen')):
-        prefix, postfix = location[:3], location[3:]
-        if (postfix.isnumeric()):
-          region_num = int(postfix)
-          if (region_num < 1 or region_num > 10 or (region_num == 10 and prefix == 'cen')):
-            raise Exception(loc_exception.format(location))
-        else:
-          raise Exception(loc_exception.format(location))
-      elif (len(location) < 2 or len(location) > 3):
-        raise Exception(loc_exception.format(location))
-
-    flu_exception = 'Flu-type parameters `{}` is invalid. Valid flu-type parameters are: '\
-      '`flu1`, `flu2`, `flu3`, `ili`, `flu2-flu1`, `flu3-flu2`, `ili-flu3`.'
-    valid_flu_types = ['flu1', 'flu2', 'flu3', 'ili', 'flu2-flu1', 'flu3-flu2', 'ili-flu3']
-    for flu_type in flu_types:
-      if (not flu_type in valid_flu_types):
-        raise Exception(flu_exception.format(flu_type))
-
-    # Set up request
-    params = {
-      'endpoint': 'afhsb',
-      'auth': auth,
-      'locations': Epidata._list(locations),
-      'epiweeks': Epidata._list(epiweeks),
-      'flu_types': Epidata._list(flu_types)
-    }
-    # Make the API call
-    return Epidata._request(params)
-
   # Fetch AFHSB metadata
   @staticmethod
   def meta_afhsb(auth):

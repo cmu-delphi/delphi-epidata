@@ -31,7 +31,6 @@ AUTH = {
     "sensors": os.environ.get("SECRET_SENSORS"),
     "quidel": os.environ.get("SECRET_QUIDEL"),
     "norostat": os.environ.get("SECRET_NOROSTAT"),
-    "afhsb": os.environ.get("SECRET_AFHSB"),
 }
 
 # begin sensor query authentication configuration

@@ -1,5 +1,4 @@
 from . import (
-    afhsb,
     cdc,
     covid_hosp_facility_lookup,
     covid_hosp_facility,
@@ -36,7 +35,6 @@ from . import (
 )
 
 endpoints = [
-    afhsb,
     cdc,
     covid_hosp_facility_lookup,
     covid_hosp_facility,

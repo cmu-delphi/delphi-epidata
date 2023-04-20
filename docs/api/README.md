@@ -110,7 +110,6 @@ The parameters available for each source are documented in each linked source-sp
 
 | Endpoint | Name | Description | Restricted? |
 | --- | --- | --- | --- |
-| [`afhsb`](ahfsb.md) | AFHSB | ... <!-- TODO --> | yes |
 | [`cdc`](cdc.md) | CDC Page Hits | ... <!-- TODO --> | yes |
 | [`delphi`](delphi.md) | Delphi's Forecast | ... <!-- TODO --> | no |
 | [`ecdc_ili`](ecdc_ili.md) | ECDC ILI | ECDC ILI data from the ECDC website. | no |
