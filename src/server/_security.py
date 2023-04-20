@@ -246,7 +246,7 @@ def check_signals_allowlist(request):
         request_signals += extract_strings("signal")
     if "signals" in request.args.keys():
         request.signals += extract_strings("signals")
-    return all([signal in signals_allowlist for signal in request_signals]):
+    return all([signal in signals_allowlist for signal in request_signals])
 
 
 limiter = Limiter(app, key_func=_resolve_tracking_key, storage_uri=RATELIMIT_STORAGE_URL)
