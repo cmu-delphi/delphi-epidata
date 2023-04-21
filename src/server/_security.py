@@ -169,38 +169,36 @@ def deduct_on_success(response: Response) -> bool:
 
 def get_multiples_count(request):
     multiples = {
-        "locations": extract_strings("locations"),
-        "epiweeks": extract_integers("epiweeks"),
-        "flu_types": extract_strings("flu_types"),
-        "states": extract_strings("states"),
-        "ccn": extract_strings("ccn"),
-        "city": extract_strings("city"),
-        "zip": extract_strings("zip"),
-        "fips_code": extract_strings("fips_code"),
-        "hospital_pks": extract_strings("hospital_pks"),
-        "collection_weeks": extract_integers("collection_weeks"),
-        "publication_dates": extract_strings("publication_dates"),
-        "dates": extract_integers("dates"),
-        "issues": extract_integers("issues"),
-        "time_types": extract_strings("time_types"),
-        "signals": extract_strings("signals"),
-        "signal": extract_strings("signal"),
-        "time_values": extract_dates("time_values"),
-        "sensor_names": extract_strings("sensor_names"),
-        "geo_values": extract_strings("geo_values"),
-        "geo_value": extract_strings("geo_value"),
-        "data_source": parse_source_signal_sets(),
-        "geo_sets": parse_geo_sets(),
-        "names": extract_strings("names"),
-        "regions": extract_strings("regions"),
-        "articles": extract_strings("articles"),
+        "locations": extract_strings,
+        "epiweeks": extract_integers,
+        "flu_types": extract_strings,
+        "states": extract_strings,
+        "ccn": extract_strings,
+        "city": extract_strings,
+        "zip": extract_strings,
+        "fips_code": extract_strings,
+        "hospital_pks": extract_strings,
+        "collection_weeks": extract_integers,
+        "publication_dates": extract_strings,
+        "dates": extract_integers,
+        "issues": extract_integers,
+        "time_types": extract_strings,
+        "signals": extract_strings,
+        "signal": extract_strings,
+        "time_values": extract_dates,
+        "sensor_names": extract_strings,
+        "geo_values": extract_strings,
+        "geo_value": extract_strings,
+        "names": extract_strings,
+        "regions": extract_strings,
+        "articles": extract_strings,
     }
     multiple_selection_allowed = 2
     for k, v in request.args.items():
         if v == "*":
             multiple_selection_allowed -= 1
         try:
-            vals = multiples.get(k)
+            vals = multiples.get(k)(k)
             if len(vals) >= 2:
                 multiple_selection_allowed -= 1
         except ValidationFailedException:
