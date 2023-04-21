@@ -243,7 +243,7 @@ def check_signals_allowlist(request):
     if "signal" in request.args.keys():
         request_signals += extract_strings("signal")
     if "signals" in request.args.keys():
-        request.signals += extract_strings("signals")
+        request_signals += extract_strings("signals")
     return all([signal in signals_allowlist for signal in request_signals])
 
 
