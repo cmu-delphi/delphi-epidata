@@ -93,7 +93,7 @@ jobs:
 
       - name: Clean Up
         run: |
-          docker stop delphi_database_epidata delphi_web_epidata
+          docker stop delphi_database_epidata delphi_web_epidata delphi_redis
           docker network remove delphi-net
 
   build_js_client:
