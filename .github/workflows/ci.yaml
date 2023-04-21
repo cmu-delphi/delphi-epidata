@@ -65,7 +65,7 @@ jobs:
           docker network create --driver bridge delphi-net
           docker run --rm -d -p 13306:3306 --network delphi-net --name delphi_database_epidata --cap-add=sys_nice delphi_database_epidata
           docker run --rm -d -p 6379:6379 --network delphi-net --name delphi_redis delphi_redis
-          docker run -d -p 10080:80 --env "MODULE_NAME=delphi.epidata.server.main" --env "SQLALCHEMY_DATABASE_URI=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata" --env "FLASK_SECRET=abc" --env "FLASK_PREFIX=/epidata" --env "REDIS_HOST=delphi_redis" --env "API_KEY_REGISTER_WEBHOOK_TOKEN=abc" --env "API_KEY_ADMIN_PASSWORD=test_admin_password" --network delphi-net --name delphi_web_epidata delphi_web_epidata
+          docker run --rm -d -p 10080:80 --env "MODULE_NAME=delphi.epidata.server.main" --env "SQLALCHEMY_DATABASE_URI=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata" --env "FLASK_SECRET=abc" --env "FLASK_PREFIX=/epidata" --env "REDIS_HOST=delphi_redis" --env "API_KEY_REGISTER_WEBHOOK_TOKEN=abc" --env "API_KEY_ADMIN_PASSWORD=test_admin_password" --network delphi-net --name delphi_web_epidata delphi_web_epidata
           docker ps
 
       - run: |
@@ -74,22 +74,13 @@ jobs:
           ./wait-for localhost:13306 -- echo 'ready'
           sleep 10s
 
-      - name: Check containers
-        run: |
-          docker ps
-          docker logs delphi_web_epidata
-
-      - name: Check db logs
-        run: |
-          docker logs delphi_database_epidata
-          
       - name: Run Unit Tests
         run: |
           docker run --rm --network delphi-net --env "SQLALCHEMY_DATABASE_URI=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata" --env "FLASK_SECRET=abc" delphi_web_python python -m pytest --import-mode importlib repos/delphi/delphi-epidata/tests
 
-      # - name: Run Integration Tests
-      #   run: |
-      #     docker run --rm --network delphi-net delphi_web_python python -m pytest --import-mode importlib repos/delphi/delphi-epidata/integrations
+      - name: Run Integration Tests
+        run: |
+          docker run --rm --network delphi-net delphi_web_python python -m pytest --import-mode importlib repos/delphi/delphi-epidata/integrations
 
       - name: Clean Up
         run: |
