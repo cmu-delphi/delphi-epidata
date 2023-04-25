@@ -243,7 +243,9 @@ def check_signals_allowlist(request):
     if "signal" in request.args.keys():
         request_signals += extract_strings("signal")
     if "signals" in request.args.keys():
-        request.signals += extract_strings("signals")
+        request_signals += extract_strings("signals")
+    if len(request_signals) == 0:
+        return False
     return all([signal in signals_allowlist for signal in request_signals])
 
 
@@ -260,10 +262,7 @@ def _no_rate_limit() -> bool:
         if multiples < 0:
             raise MissingAPIKeyException
         if multiples >= 0:
-            if check_signals_allowlist(request):
-                return True
-            else:
-                return False
+            check_signals_allowlist(request)
     # no rate limit if user is registered
     return user is not None and user.registered  # type: ignore
 
