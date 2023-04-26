@@ -10,7 +10,7 @@ alias = None
 
 
 def meta_twitter():
-    query = "SELECT x.`date` `latest_update`, x.`table_rows`, count(distinct t.`state`) `num_states` FROM (SELECT max(`date`) `date`, count(1) `table_rows` FROM `twitter`) x JOIN `twitter` t ON t.`date` = x.`date`"
+    query = "SELECT x.`date` `latest_update`, x.`table_rows`, count(distinct t.`state`) `num_states` FROM (SELECT max(`date`) `date`, count(1) `table_rows` FROM `twitter`) x JOIN `twitter` t ON t.`date` = x.`date` GROUP BY x.`date`, x.`table_rows`"
     fields_string = ["latest_update"]
     fields_int = ["num_states", "table_rows"]
     return parse_result(query, {}, fields_string, fields_int, None)

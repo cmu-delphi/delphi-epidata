@@ -12,7 +12,7 @@ import redis
 
 from ._common import app
 from ._config import API_KEY_REQUIRED_STARTING_AT, RATELIMIT_STORAGE_URL, URL_PREFIX, REDIS_HOST
-from ._params import extract_integers, extract_strings, extract_dates, parse_source_signal_sets, parse_geo_sets
+from ._params import extract_integers, extract_strings, extract_dates
 from ._exceptions import MissingAPIKeyException, UnAuthenticatedException, ValidationFailedException
 from .admin.models import User, UserRole
 
