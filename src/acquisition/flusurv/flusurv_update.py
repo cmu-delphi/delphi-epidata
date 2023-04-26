@@ -135,8 +135,7 @@ def update(issue, location_name, test_mode=False):
             if existing_flusurv.first() is not None:
                 existing_flusurv.update(args_update)
             else:
-                args_create = args_meta
-                args_create.update(args_update)
+                args_create = dict(**args_meta, **args_update)
                 session.add(FluSurv(**args_create))
 
         rows2 = get_rows(session)
