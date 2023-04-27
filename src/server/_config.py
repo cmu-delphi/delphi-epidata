@@ -26,6 +26,15 @@ SQLALCHEMY_ENGINE_OPTIONS.update(
 SECRET = os.environ.get("FLASK_SECRET", "secret")
 URL_PREFIX = os.environ.get("FLASK_PREFIX", "/")
 
+# REVERSE_PROXIED is a boolean value that indicates whether or not this server instance
+# is running behind a reverse proxy (like nginx).
+# in dev and testing, it is fine (or even preferable) for this variable to be set to 'TRUE'
+# even if it is not actually the case.  in prod, it is very important that this is set accurately --
+# it should _only_ be set to 'TRUE' if it really is behind a reverse proxy, as remote addresses can be "spoofed"
+# which can carry security/identity implications.  conversely, if this is set to 'FALSE' when in fact
+# running behind a reverse proxy, it can hinder logging accuracy.  it defaults to 'FALSE' for safety.
+REVERSE_PROXIED = (os.environ.get("REVERSE_PROXIED", "FALSE").upper() == 'TRUE')
+
 REGION_TO_STATE = {
     "hhs1": ["VT", "CT", "ME", "MA", "NH", "RI"],
     "hhs2": ["NJ", "NY"],

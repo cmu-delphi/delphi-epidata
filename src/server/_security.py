@@ -6,11 +6,10 @@ from uuid import uuid4
 
 from flask import Response, g, request
 from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
 from werkzeug.local import LocalProxy
 import redis
 
-from ._common import app
+from ._common import app, get_real_ip_addr
 from ._config import API_KEY_REQUIRED_STARTING_AT, RATELIMIT_STORAGE_URL, URL_PREFIX, REDIS_HOST
 from ._params import extract_integers, extract_strings, extract_dates
 from ._exceptions import MissingAPIKeyException, UnAuthenticatedException, ValidationFailedException
@@ -153,7 +152,7 @@ def require_role(required_role: str):
 
 def _resolve_tracking_key() -> str:
     token = resolve_auth_token()
-    return token or get_remote_address()
+    return token or get_real_ip_addr(request)
 
 
 def deduct_on_success(response: Response) -> bool:
