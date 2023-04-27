@@ -10,6 +10,8 @@ from flask_limiter.util import get_remote_address
 from werkzeug.local import LocalProxy
 import redis
 
+from delphi.epidata.server.endpoints.covidcast_utils.dashboard_signals import DashboardSignals
+
 from ._common import app
 from ._config import API_KEY_REQUIRED_STARTING_AT, RATELIMIT_STORAGE_URL, URL_PREFIX, REDIS_HOST
 from ._params import extract_integers, extract_strings, extract_dates
@@ -209,36 +211,7 @@ def get_multiples_count(request):
 
 
 def check_signals_allowlist(request):
-    signals_allowlist = [
-        "google-symptoms:s05_smoothed_search",
-        "google-symptoms:s02_smoothed_search",
-        "doctor-visits:smoothed_adj_cli",
-        "chng:smoothed_adj_outpatient_flu",
-        "quidel-covid-ag:covid_ag_smoothed_pct_positive",
-        "jhu-csse:confirmed_7dav_incidence_prop",
-        "hhs:confirmed_admissions_covid_1d_prop_7dav",
-        "hhs:confirmed_admissions_influenza_1d_prop_7dav",
-        "jhu-csse:deaths_7dav_incidence_prop",
-        "fb-survey:smoothed_wcli",
-        "fb-survey:smoothed_whh_cmnty_cli",
-        "fb-survey:smoothed_wwearing_mask_7d",
-        "fb-survey:smoothed_wothers_masked_public",
-        "fb-survey:smoothed_wcovid_vaccinated_appointment_or_accept",
-        "fb-survey:smoothed_winperson_school_fulltime_oldest",
-        "fb-survey:smoothed_wshop_indoors_1d",
-        "fb-survey:smoothed_wpublic_transit_1d",
-        "fb-survey:smoothed_wwork_outside_home_indoors_1d",
-        "fb-survey:smoothed_wspent_time_indoors_1d",
-        "fb-survey:smoothed_wrestaurant_indoors_1d",
-        "fb-survey:smoothed_wlarge_event_indoors_1d",
-        "fb-survey:smoothed_wtravel_outside_state_7d",
-        "fb-survey:smoothed_wanxious_7d",
-        "fb-survey:smoothed_wdepressed_7d",
-        "fb-survey:smoothed_wworried_catch_covid",
-        "fb-survey:smoothed_wworried_finances",
-        "fb-survey:smoothed_wtested_14d",
-        "fb-survey:smoothed_wtested_positive_14d",
-    ]
+    signals_allowlist = {':'.join(ss_pair) for ss_pair in DashboardSignals().srcsig_list()}
     request_signals = []
     if "signal" in request.args.keys():
         request_signals += extract_strings("signal")
