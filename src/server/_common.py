@@ -57,6 +57,9 @@ def before_request_execute():
     # Log statement
     get_structured_logger('server_api').info("Received API request", method=request.method, url=request.url, form_args=request.form, req_length=request.content_length, remote_addr=request.remote_addr, user_agent=request.user_agent.string)
 
+    hdrs = request.headers
+    get_structured_logger('server_api').info("headers:", hdrs=hdrs, hdrs_items=hdrs.items())
+
     if request.path.startswith('/lib'):
         return
     # try to get the db
