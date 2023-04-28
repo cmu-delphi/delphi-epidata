@@ -10,7 +10,8 @@ from ._common import app, set_compatibility_mode
 from ._exceptions import MissingOrWrongSourceException
 from .endpoints import endpoints
 from .endpoints.admin import bp as admin_bp, enable_admin
-from ._security import limiter, deduct_on_success, register_user_role
+from ._security import register_user_role
+from ._limiter import limiter, host_limit
 from ._config import UserRole
 
 __all__ = ["app"]
@@ -19,7 +20,7 @@ endpoint_map: Dict[str, Callable[[], Response]] = {}
 
 for endpoint in endpoints:
     endpoint_map[endpoint.bp.name] = endpoint.handle
-    limiter.limit(RATE_LIMIT, deduct_when=deduct_on_success)(endpoint.bp)
+    host_limit(endpoint.bp)
     app.register_blueprint(endpoint.bp, url_prefix=f"{URL_PREFIX}/{endpoint.bp.name}")
     alias = getattr(endpoint, "alias", None)
     if alias:
@@ -35,7 +36,7 @@ if enable_admin():
 
 
 @app.route(f"{URL_PREFIX}/api.php", methods=["GET", "POST"])
-@limiter.limit(RATE_LIMIT, deduct_when=deduct_on_success)
+@host_limit
 def handle_generic():
     # mark as compatibility mode
     set_compatibility_mode()
