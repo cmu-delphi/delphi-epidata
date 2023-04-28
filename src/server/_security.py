@@ -10,7 +10,7 @@ from werkzeug.local import LocalProxy
 from werkzeug.exceptions import Unauthorized
 
 from ._common import app, get_real_ip_addr
-from ._config import API_KEY_REQUIRED_STARTING_AT, REDIS_HOST, URL_PREFIX
+from ._config import API_KEY_REQUIRED_STARTING_AT, REDIS_HOST, URL_PREFIX, REDIS_PASSWORD
 from ._exceptions import MissingAPIKeyException, UnAuthenticatedException
 from .admin.models import User, UserRole
 
@@ -118,19 +118,9 @@ def _is_public_route() -> bool:
 def resolve_user():
     if _is_public_route():
         return
-    # try to get the db
-    try:
-        _get_current_user()
-    except MissingAPIKeyException as e:
-        raise e
-    except UnAuthenticatedException as e:
-        raise e
-    except:
-        app.logger.error("user connection error", exc_info=True)
-        if require_api_key():
-            raise Unauthorized
-        else:
-            g.user = User("anonymous")
+    _get_current_user()
+    if require_api_key() and g.user.api_key == "anonymous":
+        raise Unauthorized
 
 
 def require_role(required_role: str):
@@ -153,13 +143,8 @@ def require_role(required_role: str):
 def update_key_last_time_used(response):
     if _is_public_route():
         return response
-    try:
-        r = redis.Redis(host=REDIS_HOST)
-        api_key = g.user.api_key
-        if api_key == "anonymous":
-            api_key = get_real_ip_addr(request)
+    r = redis.Redis(host=REDIS_HOST, password=REDIS_PASSWORD)
+    api_key = g.user.api_key
+    if api_key != "anonymous":
         r.set(f"LAST_USED/{api_key}", datetime.strftime(datetime.now(), "%Y-%m-%d"))
-    except Exception as e:
-        app.logger.error("User connection error. Last usage was not updated.", exc_info=False)
-    finally:
-        return response
+    return response
