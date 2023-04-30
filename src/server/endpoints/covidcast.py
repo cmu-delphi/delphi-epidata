@@ -1,15 +1,17 @@
-from typing import List, Optional, Tuple, Dict, Any
-from itertools import groupby
+from bisect import bisect_right
 from datetime import date, timedelta
+from itertools import groupby
+from typing import Any, Dict, List, Optional, Tuple
+
 from epiweeks import Week
 from flask import Blueprint, request
-from flask.json import loads, jsonify
-from bisect import bisect_right
+from flask.json import jsonify, loads
+from pandas import read_csv
 from sqlalchemy import text
-from pandas import read_csv, to_datetime
 
-from .._common import is_compatibility_mode, db
-from .._exceptions import ValidationFailedException, DatabaseErrorException
+from .._common import db, is_compatibility_mode
+from .._exceptions import DatabaseErrorException, ValidationFailedException
+from .._pandas import print_pandas
 from .._params import (
     GeoSet,
     SourceSignalSet,
@@ -17,24 +19,47 @@ from .._params import (
     extract_date,
     extract_dates,
     extract_integer,
-    parse_geo_arg,
-    parse_source_signal_arg,
     parse_day_or_week_arg,
     parse_day_or_week_range_arg,
+    parse_geo_sets,
+    parse_single_geo_arg,
     parse_single_source_signal_arg,
     parse_single_time_arg,
-    parse_single_geo_arg,
-    parse_geo_sets,
+    parse_source_signal_arg,
     parse_source_signal_sets,
-    parse_time_set,
+    parse_time_set
 )
-from .._query import QueryBuilder, execute_query, run_query, parse_row, filter_fields
-from .._printer import create_printer, CSVPrinter
+from .._printer import CSVPrinter, create_printer
+from .._query import (
+    QueryBuilder,
+    execute_query,
+    filter_fields,
+    parse_row,
+    run_query
+)
 from .._validate import require_all
-from .._pandas import as_pandas, print_pandas
-from .covidcast_utils import compute_trend, compute_trends, compute_trend_value, CovidcastMetaEntry
-from ..utils import shift_day_value, day_to_time_value, time_value_to_iso, time_value_to_day, shift_week_value, time_value_to_week, guess_time_value_is_day, week_to_time_value, TimeValues
-from .covidcast_utils.model import TimeType, count_signal_time_types, data_sources, create_source_signal_alias_mapper
+from ..utils import (
+    day_to_time_value,
+    guess_time_value_is_day,
+    shift_day_value,
+    shift_week_value,
+    time_value_to_day,
+    time_value_to_iso,
+    time_value_to_week,
+    week_to_time_value
+)
+from .covidcast_utils import (
+    CovidcastMetaEntry,
+    compute_trend,
+    compute_trend_value,
+    compute_trends
+)
+from .covidcast_utils.model import (
+    TimeType,
+    count_signal_time_types,
+    create_source_signal_alias_mapper,
+    data_sources
+)
 
 # first argument is the endpoint name
 bp = Blueprint("covidcast", __name__)
@@ -42,6 +67,7 @@ alias = None
 
 latest_table = "epimetric_latest_v"
 history_table = "epimetric_full_v"
+
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():

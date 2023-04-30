@@ -1,13 +1,10 @@
 """Unit tests for granular sensor authentication in api.php."""
 
-# standard library
 import unittest
-import base64
 
-from json import loads
-from flask.testing import FlaskClient
-from flask import Response
 from delphi.epidata.server.main import app
+from flask import Response
+from flask.testing import FlaskClient
 
 # py3tester coverage target
 __test_target__ = "delphi.epidata.server.endpoints.nidss_flu"
@@ -37,7 +34,7 @@ class UnitTests(unittest.TestCase):
             self.assertEqual(rv.status_code, 200)
             self.assertEqual(msg['result'], -1)
             self.assertRegex(msg['message'], r"missing parameter.*")
-    
+
     def test_(self):
         rv: Response = self.client.get('/nidss_flu/', query_string=dict(regions="A", epiweeks="12"))
         msg = rv.get_json()

@@ -1,13 +1,11 @@
 """Unit tests for pandas helper."""
 
-# standard library
 import unittest
-from mock import patch, sentinel, ANY
 
-# first party
-from delphi.epidata.server.main import app
-from delphi.epidata.server._pandas import as_pandas
 from delphi.epidata.server._config import MAX_RESULTS
+from delphi.epidata.server._pandas import as_pandas
+from delphi.epidata.server.main import app
+from mock import ANY, patch, sentinel
 
 # py3tester coverage target
 __test_target__ = "delphi.epidata.server._pandas"
