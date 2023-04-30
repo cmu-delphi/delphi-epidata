@@ -108,7 +108,7 @@ jobs:
   image:
     needs: build
     # only on main and dev branch
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/ds/dev-no-streaming'
 
     runs-on: ubuntu-latest
     steps:
@@ -133,6 +133,9 @@ jobs:
           if [ "$imageTag" = "main" ] ; then
             imageTag="latest"
           fi
+          if [ "$imageTag" = "ds/dev-no-streaming" ] ; then
+            imageTag="dev-no-streaming"
+          fi           
           echo "::set-output name=tag::$imageTag"
           echo "::set-output name=repo::ghcr.io/${{ github.repository }}"
       - name: Push Dev Tag
