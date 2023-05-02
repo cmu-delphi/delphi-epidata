@@ -6,25 +6,10 @@ parent: API Keys
 # Delphi Privacy Statement
 
 Anyone may access the Epidata API anonymously without providing any personal
-data. Anonymous API access is subject to the following restrictions:
+data.
 
-1. public datasets only
-1. rate-limited to $RATE_LIMIT
-1. only two parameters may have multiple selections
-
-For example, a query for three signals on one date across all counties can be
-submitted anonymously, but a query for three signals on a period of four weeks
-across all counties requires an API key. 
-
-An API key is a pseudonymous access token that grants privileged access to the
-Epidata API. You can request an API key by registering with us. Privileges of
-registration may include:
-
-1. restricted-access datasets
-1. no rate limit
-1. no limit on multiple selections
-
-We require an email address for all registrations so that we can contact you to
+Some features of the API are only available by registering for an API key. We
+require an email address for all registrations so that we can contact you to
 resolve problems with excessive or abnormal usage patterns. Any additional
 personal information you provide to us at registration will be much appreciated,
 because it will help us understand what our data is used for and inform our
@@ -65,6 +50,6 @@ used for six months, or upon user request. You can request that your
 email address be removed from our records by filling out a 
 [deletion request](https://forms.gle/GucFmZHTMgEFjH197).
 
-For more information, see Carnegie Mellon’s privacy notice at
-https://www.cmu.edu/legal/privacy-notice.html .  Further questions can be
-directed to delphi-support+privacy@andrew.cmu.edu.
+For more information, see 
+[Carnegie Mellon’s privacy notice](https://www.cmu.edu/legal/privacy-notice.html).
+Further questions can be directed to delphi-support+privacy@andrew.cmu.edu.
