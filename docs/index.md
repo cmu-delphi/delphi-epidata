@@ -14,6 +14,25 @@ group](https://delphi.cmu.edu/). The Epidata API includes:
   quick access to COVID data are available.
 - [Data about other diseases](api/README.md), including influenza, dengue, and
   other diseases tracked by Delphi through various data streams.
+  
+Anyone may access the Epidata API anonymously without providing any personal
+data. Anonymous API access is currently rate-limited and restricted to public
+datasets with a maximum of two of the requested parameters having multiple
+selections (signals, dates, versions, regions, etc).
+
+To request access to restricted datasets, no rate limit, and unlimited multiple
+selections, you can [request a registered API key](https://forms.gle/hkBr5SfQgxguAfEt7).
+
+If you regularly or frequently use our system, please consider using an API key
+even if your usage falls within the anonymous usage limits. API key usage helps
+us understand who and how others are using our Delphi Epidata API, which may in
+turn inform our future research, data partnerships, and funding.
+
+For more information about how we use the data you provide us through your
+registration and API request activity, see our [Privacy
+Statement](api/privacy_statement.md). At any time, you may submit a [Deletion
+Request](https://forms.gle/GucFmZHTMgEFjH197) to have us deactivate your key and destroy all
+information associating that key with your identity.
 
 The Delphi group is extremely grateful to Pedrito Maynard-Zhang for all his
 help with the Epidata API [documentation](api/README.md).
