@@ -7,7 +7,7 @@ from sqlalchemy.engine import Connection, Engine
 from werkzeug.local import LocalProxy
 
 from delphi.epidata.common.logger import get_structured_logger
-from ._config import SECRET, SQLALCHEMY_DATABASE_URI, SQLALCHEMY_ENGINE_OPTIONS
+from ._config import SECRET, SQLALCHEMY_DATABASE_URI, SQLALCHEMY_ENGINE_OPTIONS, REVERSE_PROXIED
 from ._exceptions import DatabaseErrorException, EpiDataException
 
 engine: Engine = create_engine(SQLALCHEMY_DATABASE_URI, **SQLALCHEMY_ENGINE_OPTIONS)
@@ -24,6 +24,16 @@ def _get_db() -> Connection:
         conn = engine.connect()
         g.db = conn
     return g.db
+
+
+def get_real_ip_addr(req): # `req` should be a Flask.request object
+  if REVERSE_PROXIED:
+    # NOTE: ONLY trust these headers if reverse proxied!!!
+    if 'X-Forwarded-For' in req.headers:
+      return req.headers['X-Forwarded-For'].split(',')[0] # take the first (or only) address from the comma-sep list
+    if 'X-Real-Ip' in req.headers:
+      return req.headers['X-Real-Ip']
+  return req.remote_addr
 
 
 """
@@ -55,7 +65,7 @@ def before_request_execute():
     g._request_start_time = time.time()
 
     # Log statement
-    get_structured_logger('server_api').info("Received API request", method=request.method, url=request.url, form_args=request.form, req_length=request.content_length, remote_addr=request.remote_addr, user_agent=request.user_agent.string)
+    get_structured_logger('server_api').info("Received API request", method=request.method, url=request.url, form_args=request.form, req_length=request.content_length, remote_addr=request.remote_addr, real_remote_addr=get_real_ip_addr(request), user_agent=request.user_agent.string)
 
     if request.path.startswith('/lib'):
         return
@@ -72,7 +82,7 @@ def after_request_execute(response):
     total_time = time.time() - g._request_start_time
     # Convert to milliseconds
     total_time *= 1000
-    get_structured_logger('server_api').info('Served API request', method=request.method, url=request.url, form_args=request.form, req_length=request.content_length, remote_addr=request.remote_addr, user_agent=request.user_agent.string,
+    get_structured_logger('server_api').info('Served API request', method=request.method, url=request.url, form_args=request.form, req_length=request.content_length, remote_addr=request.remote_addr, real_remote_addr=get_real_ip_addr(request), user_agent=request.user_agent.string,
                                              values=request.values.to_dict(flat=False), blueprint=request.blueprint, endpoint=request.endpoint,
                                              response_status=response.status, content_length=response.calculate_content_length(), elapsed_time_ms=total_time)
     return response

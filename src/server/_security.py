@@ -1,21 +1,18 @@
 import re
-from datetime import date, timedelta, datetime
+from datetime import date, datetime, timedelta
 from functools import wraps
 from typing import Optional, cast
 from uuid import uuid4
 
-from flask import Response, g, request
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
-from werkzeug.local import LocalProxy
 import redis
+from flask import g, request
+from werkzeug.local import LocalProxy
+from werkzeug.exceptions import Unauthorized
 
-from delphi.epidata.server.endpoints.covidcast_utils.dashboard_signals import DashboardSignals
+from ._common import app, get_real_ip_addr
+from ._config import API_KEY_REQUIRED_STARTING_AT, REDIS_HOST, URL_PREFIX, REDIS_PASSWORD
+from ._exceptions import MissingAPIKeyException, UnAuthenticatedException
 
-from ._common import app
-from ._config import API_KEY_REQUIRED_STARTING_AT, RATELIMIT_STORAGE_URL, URL_PREFIX, REDIS_HOST
-from ._params import extract_integers, extract_strings, extract_dates
-from ._exceptions import MissingAPIKeyException, UnAuthenticatedException, ValidationFailedException
 from .admin.models import User, UserRole
 
 # from ._logger import get_structured_logger
@@ -84,7 +81,7 @@ def _get_current_user():
         request_path = request.full_path
         if not user.is_authenticated:
             if require_api_key():
-                raise MissingAPIKeyException
+                raise Unauthorized
         if not user.tracking:
             request_path = mask_apikey(request_path)
         # TODO: add logging
@@ -122,19 +119,9 @@ def _is_public_route() -> bool:
 def resolve_user():
     if _is_public_route():
         return
-    # try to get the db
-    try:
-        _get_current_user()
-    except MissingAPIKeyException as e:
-        raise e
-    except UnAuthenticatedException as e:
-        raise e
-    except:
-        app.logger.error("user connection error", exc_info=True)
-        if require_api_key():
-            raise MissingAPIKeyException()
-        else:
-            g.user = User("anonymous")
+    _get_current_user()
+    if require_api_key() and g.user.api_key == "anonymous":
+        raise Unauthorized
 
 
 def require_role(required_role: str):
@@ -145,112 +132,19 @@ def require_role(required_role: str):
         @wraps(f)
         def decorated_function(*args, **kwargs):
             if not current_user or not current_user.has_role(required_role):
-                raise UnAuthenticatedException()
+                raise Unauthorized
             return f(*args, **kwargs)
 
         return decorated_function
 
-    return decorator_wrapper
-
-
-def _resolve_tracking_key() -> str:
-    token = resolve_auth_token()
-    return token or get_remote_address()
-
-
-def deduct_on_success(response: Response) -> bool:
-    if response.status_code != 200:
-        return False
-    # check if we have the classic format
-    if not response.is_streamed and response.is_json:
-        out = response.json
-        if out and isinstance(out, dict) and out.get("result") == -1:
-            return False
-    return True
-
-
-def get_multiples_count(request):
-    multiples = {
-        "locations": extract_strings,
-        "epiweeks": extract_integers,
-        "flu_types": extract_strings,
-        "states": extract_strings,
-        "ccn": extract_strings,
-        "city": extract_strings,
-        "zip": extract_strings,
-        "fips_code": extract_strings,
-        "hospital_pks": extract_strings,
-        "collection_weeks": extract_integers,
-        "publication_dates": extract_strings,
-        "dates": extract_integers,
-        "issues": extract_integers,
-        "time_types": extract_strings,
-        "signals": extract_strings,
-        "signal": extract_strings,
-        "time_values": extract_dates,
-        "sensor_names": extract_strings,
-        "geo_values": extract_strings,
-        "geo_value": extract_strings,
-        "names": extract_strings,
-        "regions": extract_strings,
-        "articles": extract_strings,
-    }
-    multiple_selection_allowed = 2
-    for k, v in request.args.items():
-        if v == "*":
-            multiple_selection_allowed -= 1
-        try:
-            vals = multiples.get(k)(k)
-            if len(vals) >= 2:
-                multiple_selection_allowed -= 1
-        except ValidationFailedException:
-            continue
-        except TypeError:
-            continue
-    return multiple_selection_allowed
-
-
-def check_signals_allowlist(request):
-    signals_allowlist = {':'.join(ss_pair) for ss_pair in DashboardSignals().srcsig_list()}
-    request_signals = []
-    if "signal" in request.args.keys():
-        request_signals += extract_strings("signal")
-    if "signals" in request.args.keys():
-        request_signals += extract_strings("signals")
-    if len(request_signals) == 0:
-        return False
-    return all([signal in signals_allowlist for signal in request_signals])
-
-
-limiter = Limiter(app, key_func=_resolve_tracking_key, storage_uri=RATELIMIT_STORAGE_URL)
-
-
-@limiter.request_filter
-def _no_rate_limit() -> bool:
-    if TESTING_MODE or _is_public_route():
-        return False
-    user = _get_current_user()
-    if not user.is_authenticated:
-        multiples = get_multiples_count(request)
-        if multiples < 0:
-            raise MissingAPIKeyException
-        if multiples >= 0:
-            check_signals_allowlist(request)
-    # no rate limit if user is registered
-    return user is not None and user.registered  # type: ignore
-
+    return decorator_wrappe
 
 @app.after_request
 def update_key_last_time_used(response):
     if _is_public_route():
         return response
-    try:
-        r = redis.Redis(host=REDIS_HOST)
-        api_key = g.user.api_key
-        if api_key == "anonymous":
-            api_key = _resolve_tracking_key()
+    r = redis.Redis(host=REDIS_HOST, password=REDIS_PASSWORD)
+    api_key = g.user.api_key
+    if api_key != "anonymous":
         r.set(f"LAST_USED/{api_key}", datetime.strftime(datetime.now(), "%Y-%m-%d"))
-    except Exception as e:
-        print(e)  # TODO: should be handled properly
-    finally:
-        return response
+    return response
