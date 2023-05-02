@@ -9,9 +9,8 @@ from flask import g, request
 from werkzeug.local import LocalProxy
 from werkzeug.exceptions import Unauthorized
 
-from ._common import app, get_real_ip_addr
+from ._common import app
 from ._config import API_KEY_REQUIRED_STARTING_AT, REDIS_HOST, URL_PREFIX, REDIS_PASSWORD
-from ._exceptions import MissingAPIKeyException, UnAuthenticatedException
 
 from .admin.models import User, UserRole
 
@@ -137,7 +136,8 @@ def require_role(required_role: str):
 
         return decorated_function
 
-    return decorator_wrappe
+    return decorator_wrapper
+
 
 @app.after_request
 def update_key_last_time_used(response):
