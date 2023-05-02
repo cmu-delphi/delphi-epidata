@@ -126,6 +126,6 @@ def _no_rate_limit() -> bool:
         if multiples < 0:
             raise Unauthorized
         if multiples >= 0:
-            check_signals_allowlist(request)
+            return check_signals_allowlist(request)
     # no rate limit if user is registered
     return user is not None and user.registered  # type: ignore
