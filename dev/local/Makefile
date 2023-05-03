@@ -121,7 +121,7 @@ web_debug:
 	@# Run the web server
 	@# MODULE_NAME specifies the location of the `app` variable, the actual WSGI application object to run.
 	@# see https://github.com/tiangolo/meinheld-gunicorn-docker#module_name
-	@docker run --rm -p 127.0.0.1:10080:80 -p 127.0.0.1:5678:5678 \
+	@docker run --rm -p 127.0.0.1:5000:5000 -p 127.0.0.1:5678:5678 \
 		$(M1) \
 		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata/devops/start.sh,target=/start.sh,readonly \
 		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata/src/server,target=/app/delphi/epidata/server \
