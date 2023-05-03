@@ -1,4 +1,4 @@
-from flask import Response, request
+from flask import Response, request, g
 from flask_limiter import Limiter
 from werkzeug.exceptions import Unauthorized
 
@@ -93,12 +93,11 @@ host_limit = limiter.shared_limit(RATE_LIMIT, deduct_when=deduct_on_success, sco
 def _no_rate_limit() -> bool:
     if TESTING_MODE or _is_public_route():
         return False
-    user = _get_current_user()
-    if not user.is_authenticated:
+    if not g.user.is_authenticated:
         multiples = get_multiples_count(request)
         if multiples < 0:
             raise Unauthorized
         if multiples >= 0:
             return check_signals_allowlist(request)
     # no rate limit if user is registered
-    return user is not None and user.registered  # type: ignore
+    return g.user.api_key != "anonymous" and g.user.registered  # type: ignore
