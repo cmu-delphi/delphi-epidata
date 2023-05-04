@@ -149,7 +149,7 @@ redis:
 	@docker run --rm -d -p 127.0.0.1:6379:6379 \
 		--network delphi-net \
 		--env "REDIS_PASSWORD=1234" \
-		--name delphi_redis delphi_redis >$(LOG_WEB) 2>&1 &
+		--name delphi_redis delphi_redis >$(LOG_REDIS) 2>&1 &
 
 .PHONY=all
 all: db web py redis
