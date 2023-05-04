@@ -63,9 +63,6 @@ API_KEY_REQUIRED_STARTING_AT = date.fromisoformat(os.environ.get('API_REQUIRED_S
 ADMIN_PASSWORD = os.environ.get('API_KEY_ADMIN_PASSWORD', 'abc')
 # secret for the google form to give to the admin/register endpoint
 REGISTER_WEBHOOK_TOKEN = os.environ.get('API_KEY_REGISTER_WEBHOOK_TOKEN')
-# see recaptcha
-RECAPTCHA_SITE_KEY = os.environ.get('RECAPTCHA_SITE_KEY')
-RECAPTCHA_SECRET_KEY = os.environ.get('RECAPTCHA_SECRET_KEY')
 
 REDIS_HOST = os.environ.get('REDIS_HOST', 'delphi_redis')
 REDIS_PASSWORD = os.environ.get('REDIS_PASSWORD', '1234')
