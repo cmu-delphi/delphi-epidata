@@ -5,7 +5,6 @@ WORKDIR /usr/src/app
 COPY repos repos
 COPY repos/delphi/delphi-epidata/dev/docker/python/setup.sh .
 
-
 RUN ln -s -f /usr/share/zoneinfo/America/New_York /etc/localtime && \
     chmod -R o+r repos/ && \
     bash setup.sh && \
