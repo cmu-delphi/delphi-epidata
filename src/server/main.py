@@ -4,7 +4,7 @@ from typing import Dict, Callable
 
 from flask import request, send_file, Response, send_from_directory, jsonify
 
-from ._config import URL_PREFIX, VERSION, RATE_LIMIT
+from ._config import URL_PREFIX, VERSION
 from ._db import metadata, engine
 from ._common import app, set_compatibility_mode
 from ._exceptions import MissingOrWrongSourceException
