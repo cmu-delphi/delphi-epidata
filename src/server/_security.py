@@ -2,16 +2,15 @@ import re
 from datetime import date, datetime, timedelta
 from functools import wraps
 from typing import Optional, cast
-from uuid import uuid4
 
 import redis
 from flask import g, request
-from werkzeug.local import LocalProxy
 from werkzeug.exceptions import Unauthorized
+from werkzeug.local import LocalProxy
 
 from ._common import app
-from ._config import API_KEY_REQUIRED_STARTING_AT, REDIS_HOST, URL_PREFIX, REDIS_PASSWORD
-
+from ._config import (API_KEY_REQUIRED_STARTING_AT, REDIS_HOST, REDIS_PASSWORD,
+                      URL_PREFIX)
 from .admin.models import User, UserRole
 
 # from ._logger import get_structured_logger
@@ -52,12 +51,6 @@ def resolve_auth_token() -> Optional[str]:
     if auth_header and auth_header.startswith("Bearer "):
         return auth_header[len("Bearer ") :]
     return None
-
-
-def register_new_key() -> str:
-    api_key = str(uuid4())
-    User.create_user(api_key=api_key)
-    return api_key
 
 
 def mask_apikey(path: str) -> str:

@@ -1,13 +1,13 @@
 from pathlib import Path
 from typing import Dict, List, Set
-from flask import Blueprint, render_template_string, request, make_response
-from werkzeug.exceptions import Unauthorized, NotFound, BadRequest
-from werkzeug.utils import redirect
-from requests import post
-from .._security import resolve_auth_token, register_new_key
-from .._config import ADMIN_PASSWORD, RECAPTCHA_SECRET_KEY, RECAPTCHA_SITE_KEY, REGISTER_WEBHOOK_TOKEN
-from ..admin.models import User, UserRole
 
+from flask import Blueprint, make_response, render_template_string, request
+from werkzeug.exceptions import NotFound, Unauthorized
+from werkzeug.utils import redirect
+
+from .._config import ADMIN_PASSWORD, REGISTER_WEBHOOK_TOKEN
+from .._security import resolve_auth_token
+from ..admin.models import User, UserRole
 
 self_dir = Path(__file__).parent
 # first argument is the endpoint name
@@ -74,8 +74,20 @@ def _detail(user_id: int):
             request.values.get("tracking") == "True",
             request.values.get("registered") == "True",
         )
-        flags['banner'] = 'Successfully Saved'
+        flags["banner"] = "Successfully Saved"
     return _render("detail", token, flags, user=user.as_dict)
+
+
+def register_new_key(api_key: str, email: str) -> str:
+    User.create_user(api_key=api_key, email=email)
+    return api_key
+
+
+def user_exists(user_email: str):
+    user = User.find_user(user_email=user_email)
+    if user.api_key == "anonymous":
+        return False
+    return True
 
 
 @bp.route("/register", methods=["POST"])
@@ -85,32 +97,9 @@ def _register():
     if token is None or token != REGISTER_WEBHOOK_TOKEN:
         raise Unauthorized()
 
-    old_api_key = body["user_old_api_key"]
-    user = User.find_user(api_key=old_api_key)
-    if user is None:
-        raise BadRequest("invalid api key")
-    new_api_key = body["user_new_api_key"]
-    tracking = True if body["tracking"] == "Yes" else False
-    user = user.update_user(user, new_api_key, user.roles, tracking, True)
-    return make_response(f'Successfully registered the API key "{new_api_key}" and removed rate limit', 200)
-
-
-def _verify_recaptcha():
-    recaptcha_response = request.values["g-recaptcha-response"]
-    url = "https://www.google.com/recaptcha/api/siteverify"
-    # skip remote ip for now since behind proxy
-    res = post(url, params=dict(secret=RECAPTCHA_SECRET_KEY, response=recaptcha_response)).json()
-    if res["success"] is not True:
-        raise BadRequest("invalid recaptcha key")
-
-
-@bp.route("/create_key", methods=["GET", "POST"])
-def _request_api_key():
-    template = (templates_dir / "request.html").read_text("utf8")
-    if request.method == "GET":
-        return render_template_string(template, mode="request", recaptcha_key=RECAPTCHA_SITE_KEY)
-    if request.method == "POST":
-        if RECAPTCHA_SECRET_KEY:
-            _verify_recaptcha()
-        api_key = register_new_key()
-        return render_template_string(template, mode="result", api_key=api_key)
+    user_api_key = body["user_api_key"]
+    user_email = body["user_email"]
+    if user_exists(user_email):
+        return make_response("User with such email already exists, try to use different email or contact us to resolve this issue", 409)
+    api_key = register_new_key(user_api_key, user_email)
+    return make_response(f"Successfully registered the API key '{api_key}' and removed rate limit", 200)

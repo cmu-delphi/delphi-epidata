@@ -1,4 +1,3 @@
-
 from sqlalchemy import Table, ForeignKey, Column, Integer, String, Boolean, Date, delete, update
 from sqlalchemy.orm import relationship
 from .._db import Base, session
@@ -24,8 +23,9 @@ class User(Base):
     created = Column(Date, default=dtime.strftime(dtime.now(), "%Y-%m-%d"))
     last_time_used = Column(Date, default=dtime.strftime(dtime.now(), "%Y-%m-%d"))
 
-    def __init__(self, api_key: str, tracking: bool = True, registered: bool = False) -> None:
+    def __init__(self, api_key: str, email: str = None, tracking: bool = True, registered: bool = False) -> None:
         self.api_key = api_key
+        self.email = email
         self.tracking = tracking
         self.registered = registered
 
@@ -62,23 +62,41 @@ class User(Base):
             session.commit()
 
     @staticmethod
-    def find_user(user_id: Optional[int] = None, api_key: Optional[str] = None) -> "User":
-        user = session.query(User).filter((User.id == user_id) | (User.api_key == api_key)).first()
+    def find_user(
+        user_id: Optional[int] = None, api_key: Optional[str] = None, user_email: Optional[str] = None
+    ) -> "User":
+        user = (
+            session.query(User)
+            .filter((User.id == user_id) | (User.api_key == api_key) | (User.email == user_email))
+            .first()
+        )
         return user if user else User("anonymous")
 
     @staticmethod
-    def create_user(api_key: str, user_roles: Optional[Set[str]] = None, tracking: bool = True, registered: bool = False) -> "User":
-        new_user = User(api_key=api_key, tracking=tracking, registered=registered)
+    def create_user(
+        api_key: str, email: str, user_roles: Optional[Set[str]] = None, tracking: bool = True, registered: bool = True
+    ) -> "User":
+        new_user = User(api_key=api_key, email=email, tracking=tracking, registered=registered)
         session.add(new_user)
         session.commit()
         User.assign_roles(new_user, user_roles)
         return new_user
 
     @staticmethod
-    def update_user(user: "User", api_key: Optional[str], roles: Optional[Set[str]], tracking: Optional[bool], registered: Optional[bool]) -> "User":
+    def update_user(
+        user: "User",
+        api_key: Optional[str],
+        roles: Optional[Set[str]],
+        tracking: Optional[bool],
+        registered: Optional[bool],
+    ) -> "User":
         user = User.find_user(user_id=user.id)
         if user:
-            update_stmt = update(User).where(User.id == user.id).values(api_key=api_key, tracking=tracking, registered=registered)
+            update_stmt = (
+                update(User)
+                .where(User.id == user.id)
+                .values(api_key=api_key, tracking=tracking, registered=registered)
+            )
             session.execute(update_stmt)
             session.commit()
             User.assign_roles(user, roles)
@@ -97,14 +115,16 @@ class UserRole(Base):
 
     @staticmethod
     def create_role(name: str) -> None:
-        session.execute(f"""
+        session.execute(
+            f"""
         INSERT INTO user_role (name)
         SELECT '{name}'
         WHERE NOT EXISTS
             (SELECT *
             FROM user_role
             WHERE name='{name}')
-        """)
+        """
+        )
         session.commit()
 
     @staticmethod
