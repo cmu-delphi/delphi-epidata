@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, request
 
 from .._config import NATION_REGION, REGION_TO_STATE
 from .._params import extract_strings, extract_integers
@@ -14,7 +14,7 @@ alias = None
 @bp.route("/", methods=("GET", "POST"))
 @require_role("cdc")
 def handle():
-    require_all("locations", "epiweeks")
+    require_all(request, "locations", "epiweeks")
 
     # parse the request
     locations = extract_strings("locations")

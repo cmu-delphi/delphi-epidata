@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, request
 
 from .._params import extract_integers, extract_strings
 from .._query import execute_query, QueryBuilder
@@ -13,7 +13,7 @@ alias = None
 @bp.route("/", methods=("GET", "POST"))
 @require_role("quidel")
 def handle():
-    require_all("locations", "epiweeks")
+    require_all(request, "locations", "epiweeks")
 
     locations = extract_strings("locations")
     epiweeks = extract_integers("epiweeks")

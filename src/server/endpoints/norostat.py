@@ -13,7 +13,7 @@ alias = None
 @bp.route("/", methods=("GET", "POST"))
 @require_role("norostat")
 def handle():
-    require_all("location", "epiweeks")
+    require_all(request, "location", "epiweeks")
 
     location = request.values["location"]
     epiweeks = extract_integers("epiweeks")
