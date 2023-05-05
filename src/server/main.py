@@ -5,8 +5,7 @@ from typing import Dict, Callable
 from flask import request, send_file, Response, send_from_directory, jsonify
 
 from ._config import URL_PREFIX, VERSION
-from ._db import metadata, engine
-from ._common import app, set_compatibility_mode
+from ._common import app, set_compatibility_mode, metadata, engine
 from ._exceptions import MissingOrWrongSourceException
 from .endpoints import endpoints
 from .endpoints.admin import bp as admin_bp, enable_admin
