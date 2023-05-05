@@ -1,6 +1,6 @@
 from sqlalchemy import Table, ForeignKey, Column, Integer, String, Date, delete, update
 from sqlalchemy.orm import relationship
-from .._db import Base, session
+from .._common import Base, session
 from typing import Set, Optional, List
 from datetime import datetime as dtime
 
@@ -31,7 +31,7 @@ class User(Base):
 
     @property
     def as_dict(self):
-        fields_list = ["id", "api_key", "roles"]
+        fields_list = ["id", "api_key", "email", "roles"]
         user_dict = self.__dict__
         user_dict["roles"] = self.get_user_roles
         return {k: v for k, v in user_dict.items() if k in fields_list}
@@ -75,6 +75,7 @@ class User(Base):
     @staticmethod
     def update_user(
         user: "User",
+        email: Optional[str],
         api_key: Optional[str],
         roles: Optional[Set[str]]
     ) -> "User":
@@ -83,7 +84,7 @@ class User(Base):
             update_stmt = (
                 update(User)
                 .where(User.id == user.id)
-                .values(api_key=api_key)
+                .values(api_key=api_key, email=email)
             )
             session.execute(update_stmt)
             session.commit()
