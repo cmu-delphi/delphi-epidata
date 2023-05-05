@@ -67,6 +67,7 @@ LOG_DB:=delphi_database_epidata_$(NOW).log
 LOG_REDIS:=delphi_redis_instance_$(NOW).log
 WEB_CONTAINER_ID:=$(shell docker ps -q --filter 'name=delphi_web_epidata')
 DATABASE_CONTAINER_ID:=$(shell docker ps -q --filter 'name=delphi_database_epidata')
+REDIS_CONTAINER_ID:=$(shell docker ps -q --filter 'name=delphi_redis')
 
 M1=
 ifeq ($(shell uname -smp), Darwin arm64 arm)
@@ -143,10 +144,17 @@ py:
 
 .PHONY=redis
 redis:
+	@# Stop container if running
+	@if [ $(REDIS_CONTAINER_ID) ]; then\
+		docker stop $(REDIS_CONTAINER_ID);\
+	fi
+
 	@docker build -t delphi_redis \
+		$(M1) \
 		-f repos/delphi/delphi-epidata/dev/docker/redis/Dockerfile .
 
 	@docker run --rm -d -p 127.0.0.1:6379:6379 \
+		$(M1) \
 		--network delphi-net \
 		--env "REDIS_PASSWORD=1234" \
 		--name delphi_redis delphi_redis >$(LOG_REDIS) 2>&1 &
