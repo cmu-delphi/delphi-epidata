@@ -44,19 +44,25 @@ res <- call_region_epiweeks("kcdc_ili")
 check(res, -2, "no results", 0)
 res <- call_region_epiweeks("gft")
 check(res, -2, "no results", 0)
+## pre-pandemic auth endpoint; no test credentials plumbing for that yet
 #res <- Epidata$ght("abc", list("nat"), list(201440), "cough")
 #check(res, -2, "no results", 0)
+## pre-pandemic auth endpoint; no test credentials plumbing for that yet
 #res <- Epidata$twitter("abc", list("nat"), epiweeks=list(201440))
 #check(res, -2, "no results", 0)
 cat("wiki\n")
 res <- Epidata$wiki(list("abc"), list(20141201))
 check(res, -2, "no results", 0)
+## pre-pandemic auth endpoint; no test credentials plumbing for that yet
 #res <- Epidata$cdc("abc", list(201440), list("nat"))
 #check(res, -2, "no results", 0
+## pre-pandemic auth endpoint; no test credentials plumbing for that yet
 #res <- Epidata$quidel("abc", list(201440), list("nat"))
 #check(res, -2, "no results", 0)
+## pre-pandemic auth endpoint; no test credentials plumbing for that yet
 #res <- Epidata$norostat("abc", "nat", list(201440))
 #check(res, -2, "no results", 0)
+## pre-pandemic auth endpoint; no test credentials plumbing for that yet
 #res <- Epidata$meta_norostat("abc")
 #out(res)
 res <- call_region_epiweeks("nidss.flu")
@@ -66,18 +72,18 @@ check(res, -2, "no results", 0)
 cat("delphi\n")
 res <- Epidata$delphi("xyz", 201440)
 check(res, -2, "no results", 0)
+## pre-pandemic auth endpoint; no test credentials plumbing for that yet
 #res <- Epidata$sensors("abc", list("def"), list("nat"), list(201440))
 #check(res, -2, "no results", 0)
+## pre-pandemic auth endpoint; no test credentials plumbing for that yet
 #res <- Epidata$dengue_sensors("abc", list("def"), list("nat"), list(201440))
 #check(res, -2, "no results", 0)
 res <- call_region_epiweeks("nowcast")
 check(res, -2, "no results", 0)
-
-# Fails with database error:
+## Fails with database error:
 #res <- call_region_epiweeks("dengue_nowcast")
 #out(res)
 #check(res, -2, "no results", 0)
-
 cat("meta\n")
 res <- Epidata$meta()
 check(res, 1, "success", 1)

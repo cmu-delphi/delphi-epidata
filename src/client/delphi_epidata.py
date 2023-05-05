@@ -25,7 +25,7 @@ except DistributionNotFound:
   _version = "0.script"
 
 _HEADERS = {
-  "user-agent": "delphi_epidata/" + _version + "/Python"
+  "user-agent": "delphi_epidata/" + _version + " (Python)"
 }
 
 # Because the API is stateless, the Epidata class only contains static methods

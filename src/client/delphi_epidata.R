@@ -19,7 +19,7 @@ Epidata <- (function() {
 
   auth <- getOption("epidata.auth", default = NA)
 
-  client_user_agent <- user_agent(paste("delphi_epidata", client_version, "R", sep="/"))
+  client_user_agent <- user_agent(paste("delphi_epidata/", client_version, " (R)", sep=""))
 
   # Helper function to cast values and/or ranges to strings
   .listitem <- function(value) {
