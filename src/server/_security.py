@@ -1,19 +1,17 @@
-import re
 from datetime import date, datetime, timedelta
 from functools import wraps
 from typing import Optional, cast
 
 import redis
+from delphi.epidata.common.logger import get_structured_logger
 from flask import g, request
 from werkzeug.exceptions import Unauthorized
 from werkzeug.local import LocalProxy
 
-from ._common import app
+from ._common import app, get_real_ip_addr
 from ._config import (API_KEY_REQUIRED_STARTING_AT, REDIS_HOST, REDIS_PASSWORD,
                       URL_PREFIX)
 from .admin.models import User, UserRole
-
-# from ._logger import get_structured_logger
 
 API_KEY_HARD_WARNING = API_KEY_REQUIRED_STARTING_AT - timedelta(days=14)
 API_KEY_SOFT_WARNING = API_KEY_HARD_WARNING - timedelta(days=14)
@@ -27,16 +25,7 @@ API_KEY_WARNING_TEXT = (
 TESTING_MODE = app.config.get("TESTING", False)
 
 
-# TODO: should be fixed
-# def log_info(user: User, msg: str, *args, **kwargs) -> None:
-#     logger = get_structured_logger("api_key_logs", filename="api_keys_log.log")
-#     if user.is_authenticated:
-#         if user.tracking:
-#             logger.info(msg, *args, **dict(kwargs, api_key=user.api_key))
-#         else:
-#             logger.info(msg, *args, **dict(kwargs, apikey="*****"))
-#     else:
-#         logger.info(msg, *args, **kwargs)
+logger = get_structured_logger("api_analytics", filename="api_analytics.txt")
 
 
 def resolve_auth_token() -> Optional[str]:
@@ -53,14 +42,6 @@ def resolve_auth_token() -> Optional[str]:
     return None
 
 
-def mask_apikey(path: str) -> str:
-    # Function to mask API key query string from a request path
-    regexp = re.compile(r"[\\?&]api_key=([^&#]*)")
-    if regexp.search(path):
-        path = re.sub(regexp, "&api_key=*****", path)
-    return path
-
-
 def require_api_key() -> bool:
     n = date.today()
     return n >= API_KEY_REQUIRED_STARTING_AT and not TESTING_MODE
@@ -70,15 +51,32 @@ def _get_current_user():
     if "user" not in g:
         api_key = resolve_auth_token()
         user = User.find_user(api_key=api_key)
-        request_path = request.full_path
-        if not user.is_authenticated:
-            if require_api_key():
-                raise Unauthorized
-        if not user.tracking:
-            request_path = mask_apikey(request_path)
-        # TODO: add logging
-        # log_info(user, "Get path", path=request_path)
         g.user = user
+        if user is not None:
+            logger.info(
+                "Received API request with API Key",
+                method=request.method,
+                url=request.url,
+                path=request.full_path,
+                form_args=request.form,
+                req_length=request.content_length,
+                remote_addr=request.remote_addr,
+                real_remote_addr=get_real_ip_addr(request),
+                api_key=user.api_key,
+                user_agent=request.user_agent.string,
+            )
+        else:
+            logger.info(
+                "Received API request witout API Key",
+                method=request.method,
+                url=request.url,
+                path=request.full_path,
+                form_args=request.form,
+                req_length=request.content_length,
+                remote_addr=request.remote_addr,
+                real_remote_addr=get_real_ip_addr(request),
+                user_agent=request.user_agent.string,
+            )
     return g.user
 
 
@@ -87,12 +85,12 @@ current_user: User = cast(User, LocalProxy(_get_current_user))
 
 def show_soft_api_key_warning() -> bool:
     n = date.today()
-    return not current_user.id and not TESTING_MODE and API_KEY_SOFT_WARNING < n < API_KEY_HARD_WARNING
+    return not current_user and not TESTING_MODE and API_KEY_SOFT_WARNING < n < API_KEY_HARD_WARNING
 
 
 def show_hard_api_key_warning() -> bool:
     n = date.today()
-    return not current_user.id and n > API_KEY_HARD_WARNING and not TESTING_MODE
+    return not current_user and n > API_KEY_HARD_WARNING and not TESTING_MODE
 
 
 def register_user_role(role_name: str) -> None:
@@ -112,8 +110,6 @@ def resolve_user():
     if _is_public_route():
         return
     _get_current_user()
-    if require_api_key() and g.user.api_key == "anonymous":
-        raise Unauthorized
 
 
 def require_role(required_role: str):
@@ -134,10 +130,7 @@ def require_role(required_role: str):
 
 @app.after_request
 def update_key_last_time_used(response):
-    if _is_public_route():
-        return response
     r = redis.Redis(host=REDIS_HOST, password=REDIS_PASSWORD)
-    api_key = g.user.api_key
-    if api_key != "anonymous":
-        r.set(f"LAST_USED/{api_key}", datetime.strftime(datetime.now(), "%Y-%m-%d"))
+    if g.user is not None:
+        r.set(f"LAST_USED/{g.user.api_key}", datetime.strftime(datetime.now(), "%Y-%m-%d"))
     return response
