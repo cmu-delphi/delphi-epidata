@@ -130,6 +130,8 @@ def require_role(required_role: str):
 
 @app.after_request
 def update_key_last_time_used(response):
+    if TESTING_MODE or _is_public_route():
+        return response
     r = redis.Redis(host=REDIS_HOST, password=REDIS_PASSWORD)
     if g.user is not None:
         r.set(f"LAST_USED/{g.user.api_key}", datetime.strftime(datetime.now(), "%Y-%m-%d"))
