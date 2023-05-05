@@ -2,7 +2,9 @@ from typing import cast
 import time
 
 from flask import Flask, g, request
-from sqlalchemy import create_engine, event
+from sqlalchemy import create_engine, event, MetaData
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.engine import Connection, Engine
 from werkzeug.local import LocalProxy
 
@@ -11,6 +13,11 @@ from ._config import SECRET, SQLALCHEMY_DATABASE_URI, SQLALCHEMY_ENGINE_OPTIONS,
 from ._exceptions import DatabaseErrorException, EpiDataException
 
 engine: Engine = create_engine(SQLALCHEMY_DATABASE_URI, **SQLALCHEMY_ENGINE_OPTIONS)
+metadata = MetaData(bind=engine)
+Base = declarative_base()
+
+Session = sessionmaker(bind=engine)
+session = Session()
 
 app = Flask("EpiData", static_url_path="")
 # for example if the request goes through one proxy
