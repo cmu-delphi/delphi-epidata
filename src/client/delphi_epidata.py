@@ -737,7 +737,10 @@ class Epidata:
       """Helper function to asynchronously make and aggregate Epidata GET requests."""
       tasks = []
       connector = TCPConnector(limit=batch_size)
-      auth = BasicAuth(login=Epidata.auth[0], password=Epidata.auth[1], encoding='utf-8')
+      if isinstance(Epidata.auth, tuple):
+        auth = BasicAuth(login=Epidata.auth[0], password=Epidata.auth[1], encoding='utf-8')
+      else:
+        auth = Epidata.auth
       async with ClientSession(connector=connector, headers=_HEADERS, auth=auth) as session:
         for param in param_combos:
           task = asyncio.ensure_future(async_get(param, session))
