@@ -128,10 +128,6 @@ web_debug:
 		--env "MODULE_NAME=delphi.epidata.server.main" \
 		--env "SQLALCHEMY_DATABASE_URI=$(sqlalchemy_uri)" \
 		--env "FLASK_SECRET=abc" --env "FLASK_PREFIX=/epidata" --env "LOG_DEBUG" \
-		--env "REDIS_HOST=delphi_redis" \
-		--env "REDIS_PASSWORD=1234" \
-		--env "API_KEY_ADMIN_PASSWORD=test_admin_password" \
-		--env "API_KEY_REGISTER_WEBHOOK_TOKEN=abc" \
 		--network delphi-net --name delphi_web_epidata \
 		delphi_web_epidata >$(LOG_WEB) 2>&1 &
 
@@ -175,7 +171,7 @@ py:
 all: db web py
 
 .PHONY=debug
-debug: db web_debug py redis
+debug: db web_debug py
 
 .PHONY=test
 test:
