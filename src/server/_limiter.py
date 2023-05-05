@@ -7,8 +7,8 @@ from delphi.epidata.server.endpoints.covidcast_utils.dashboard_signals import Da
 from ._common import app, get_real_ip_addr
 from ._config import RATELIMIT_STORAGE_URL, RATE_LIMIT
 from ._exceptions import ValidationFailedException
-from ._params import extract_dates, extract_integers, extract_strings
-from ._security import TESTING_MODE, _get_current_user, _is_public_route, resolve_auth_token
+from ._params import extract_dates, extract_integers, extract_strings, parse_day_or_week_range_arg
+from ._security import TESTING_MODE, _is_public_route, resolve_auth_token, require_api_key
 
 
 def deduct_on_success(response: Response) -> bool:
@@ -47,6 +47,7 @@ def get_multiples_count(request):
         "time_types": extract_strings,
         "time_values": extract_dates,
         "zip": extract_strings,
+        "window": parse_day_or_week_range_arg
     }
     multiple_selection_allowed = 2
     for k, v in request.args.items():
@@ -93,11 +94,13 @@ host_limit = limiter.shared_limit(RATE_LIMIT, deduct_when=deduct_on_success, sco
 def _no_rate_limit() -> bool:
     if TESTING_MODE or _is_public_route():
         return False
-    if not g.user.is_authenticated:
+    if not require_api_key():
+        return True
+    if not g.user:
         multiples = get_multiples_count(request)
         if multiples < 0:
             raise Unauthorized
         if multiples >= 0:
             return check_signals_allowlist(request)
     # no rate limit if user is registered
-    return g.user.api_key != "anonymous" and g.user.registered  # type: ignore
+    return g.user is not None
