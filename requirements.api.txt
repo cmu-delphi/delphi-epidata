@@ -1,5 +1,6 @@
 epiweeks==2.1.2
 Flask==2.2.2
+Flask-Limiter==3.3.0
 itsdangerous<2.1
 jinja2==3.0.3
 more_itertools==8.4.0
@@ -17,4 +18,3 @@ structlog==22.1.0
 tenacity==7.0.0
 typing-extensions
 werkzeug==2.2.2
-Flask-Limiter==3.3.0
