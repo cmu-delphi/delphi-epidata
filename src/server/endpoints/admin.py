@@ -46,9 +46,8 @@ def _index():
         # register a new user
         User.create_user(
             request.values["api_key"],
+            request.values["email"],
             _parse_roles(request.values.getlist("roles")),
-            request.values.get("tracking") == "True",
-            request.values.get("registered") == "True",
         )
 
         flags["banner"] = "Successfully Added"
@@ -68,11 +67,10 @@ def _detail(user_id: int):
     flags = dict()
     if request.method == "PUT" or request.method == "POST":
         user = user.update_user(
-            user,
-            request.values["api_key"],
-            _parse_roles(request.values.getlist("roles")),
-            request.values.get("tracking") == "True",
-            request.values.get("registered") == "True",
+            user=user,
+            api_key=request.values["api_key"],
+            email=request.values["email"],
+            roles=_parse_roles(request.values.getlist("roles"))
         )
         flags["banner"] = "Successfully Saved"
     return _render("detail", token, flags, user=user.as_dict)
@@ -83,11 +81,9 @@ def register_new_key(api_key: str, email: str) -> str:
     return api_key
 
 
-def user_exists(user_email: str):
-    user = User.find_user(user_email=user_email)
-    if user.api_key == "anonymous":
-        return False
-    return True
+def user_exists(user_email: str = None, api_key: str = None):
+    user = User.find_user(user_email=user_email, api_key=api_key)
+    return True if user else False
 
 
 @bp.route("/register", methods=["POST"])
@@ -99,7 +95,7 @@ def _register():
 
     user_api_key = body["user_api_key"]
     user_email = body["user_email"]
-    if user_exists(user_email):
+    if user_exists(user_email=user_email):
         return make_response("User with such email already exists, try to use different email or contact us to resolve this issue", 409)
     api_key = register_new_key(user_api_key, user_email)
     return make_response(f"Successfully registered the API key '{api_key}' and removed rate limit", 200)
