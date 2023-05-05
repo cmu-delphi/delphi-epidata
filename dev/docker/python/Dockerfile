@@ -1,5 +1,7 @@
 FROM python:3.8-buster
 
+RUN apt-get update && apt-get install -y r-base && Rscript -e "install.packages(c('httr','xml2'))"
+
 WORKDIR /usr/src/app
 
 COPY repos repos

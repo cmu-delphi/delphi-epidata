@@ -25,7 +25,7 @@ except DistributionNotFound:
   _version = "0.script"
 
 _HEADERS = {
-  "user-agent": "delphi_epidata/" + _version
+  "user-agent": "delphi_epidata/" + _version + " (Python)"
 }
 
 # Because the API is stateless, the Epidata class only contains static methods
@@ -62,6 +62,8 @@ class Epidata:
     req = requests.get(Epidata.BASE_URL, params, auth=Epidata.auth, headers=_HEADERS)
     if req.status_code == 414:
       req = requests.post(Epidata.BASE_URL, params, auth=Epidata.auth, headers=_HEADERS)
+    # handle 401 and 429
+    req.raise_for_status()
     return req
 
   @staticmethod
@@ -74,12 +76,15 @@ class Epidata:
     """
     try:
       result = Epidata._request_with_retry(params)
-      if params is not None and "format" in params and params["format"]=="csv":
-        return result.text
-      else:
-        return result.json()
     except Exception as e:
       return {'result': 0, 'message': 'error: ' + str(e)}
+    if params is not None and "format" in params and params["format"]=="csv":
+      return result.text
+    else:
+      try:
+        return result.json()
+      except requests.exceptions.JSONDecodeError:
+        return {'result': 0, 'message': 'error decoding json: ' + result.text}
 
   # Raise an Exception on error, otherwise return epidata
   @staticmethod
