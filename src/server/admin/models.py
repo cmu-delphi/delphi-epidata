@@ -1,4 +1,4 @@
-from sqlalchemy import Table, ForeignKey, Column, Integer, String, Boolean, Date, delete, update
+from sqlalchemy import Table, ForeignKey, Column, Integer, String, Date, delete, update
 from sqlalchemy.orm import relationship
 from .._db import Base, session
 from typing import Set, Optional, List
@@ -16,30 +16,22 @@ class User(Base):
     __tablename__ = "api_user"
     id = Column(Integer, primary_key=True, autoincrement=True)
     roles = relationship("UserRole", secondary=association_table)
-    api_key = Column(String(50), unique=True)
-    email = Column(String(50), unique=True, nullable=True)
-    tracking = Column(Boolean, default=True)
-    registered = Column(Boolean, default=False)
+    api_key = Column(String(50), unique=True, nullable=False)
+    email = Column(String(320), unique=True, nullable=False)
     created = Column(Date, default=dtime.strftime(dtime.now(), "%Y-%m-%d"))
     last_time_used = Column(Date, default=dtime.strftime(dtime.now(), "%Y-%m-%d"))
 
-    def __init__(self, api_key: str, email: str = None, tracking: bool = True, registered: bool = False) -> None:
+    def __init__(self, api_key: str, email: str = None) -> None:
         self.api_key = api_key
         self.email = email
-        self.tracking = tracking
-        self.registered = registered
 
     @staticmethod
     def list_users() -> List["User"]:
         return session.query(User).all()
 
     @property
-    def is_authenticated(self):
-        return True if self.api_key != "anonymous" else False
-
-    @property
     def as_dict(self):
-        fields_list = ["id", "api_key", "tracking", "registered", "roles"]
+        fields_list = ["id", "api_key", "roles"]
         user_dict = self.__dict__
         user_dict["roles"] = self.get_user_roles
         return {k: v for k, v in user_dict.items() if k in fields_list}
@@ -70,13 +62,11 @@ class User(Base):
             .filter((User.id == user_id) | (User.api_key == api_key) | (User.email == user_email))
             .first()
         )
-        return user if user else User("anonymous")
+        return user if user else None
 
     @staticmethod
-    def create_user(
-        api_key: str, email: str, user_roles: Optional[Set[str]] = None, tracking: bool = True, registered: bool = True
-    ) -> "User":
-        new_user = User(api_key=api_key, email=email, tracking=tracking, registered=registered)
+    def create_user(api_key: str, email: str, user_roles: Optional[Set[str]] = None) -> "User":
+        new_user = User(api_key=api_key, email=email)
         session.add(new_user)
         session.commit()
         User.assign_roles(new_user, user_roles)
@@ -86,16 +76,14 @@ class User(Base):
     def update_user(
         user: "User",
         api_key: Optional[str],
-        roles: Optional[Set[str]],
-        tracking: Optional[bool],
-        registered: Optional[bool],
+        roles: Optional[Set[str]]
     ) -> "User":
         user = User.find_user(user_id=user.id)
         if user:
             update_stmt = (
                 update(User)
                 .where(User.id == user.id)
-                .values(api_key=api_key, tracking=tracking, registered=registered)
+                .values(api_key=api_key)
             )
             session.execute(update_stmt)
             session.commit()
