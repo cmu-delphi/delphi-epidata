@@ -84,7 +84,7 @@ class Epidata:
       try:
         return result.json()
       except requests.exceptions.JSONDecodeError:
-        return {'result': 0, 'message': 'error: ' + result.text}
+        return {'result': 0, 'message': 'error decoding json: ' + result.text}
 
   # Raise an Exception on error, otherwise return epidata
   @staticmethod
