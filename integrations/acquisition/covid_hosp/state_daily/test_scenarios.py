@@ -45,7 +45,7 @@ class AcquisitionTests(unittest.TestCase):
         cur.execute('truncate table covid_hosp_state_timeseries')
         cur.execute('truncate table covid_hosp_meta')
         cur.execute('delete from api_user')
-        cur.execute('insert into api_user(api_key, tracking, registered) values("key", 1, 1)')
+        cur.execute('insert into api_user(api_key, email) values("key", "email")')
 
   @freeze_time("2021-03-16")
   def test_acquire_dataset(self):
