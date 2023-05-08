@@ -42,9 +42,19 @@ def resolve_auth_token() -> Optional[str]:
     return None
 
 
+def show_soft_api_key_warning() -> bool:
+    n = date.today()
+    return not current_user and not TESTING_MODE and API_KEY_SOFT_WARNING <= n < API_KEY_HARD_WARNING
+
+def show_hard_api_key_warning() -> bool:
+    n = date.today()
+    return not current_user and not TESTING_MODE and API_KEY_HARD_WARNING <= n < API_KEY_REQUIRED_STARTING_AT
+
 def require_api_key() -> bool:
     n = date.today()
-    return n >= API_KEY_REQUIRED_STARTING_AT and not TESTING_MODE
+    return not TESTING_MODE and API_KEY_REQUIRED_STARTING_AT <= n
+
+
 
 
 def _get_current_user():
@@ -83,16 +93,6 @@ def _get_current_user():
 
 
 current_user: User = cast(User, LocalProxy(_get_current_user))
-
-
-def show_soft_api_key_warning() -> bool:
-    n = date.today()
-    return not current_user and not TESTING_MODE and API_KEY_SOFT_WARNING < n < API_KEY_HARD_WARNING
-
-
-def show_hard_api_key_warning() -> bool:
-    n = date.today()
-    return not current_user and n > API_KEY_HARD_WARNING and not TESTING_MODE
 
 
 def register_user_role(role_name: str) -> None:
