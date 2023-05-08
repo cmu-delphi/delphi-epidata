@@ -11,6 +11,7 @@ from werkzeug.local import LocalProxy
 from delphi.epidata.common.logger import get_structured_logger
 from ._config import SECRET, SQLALCHEMY_DATABASE_URI, SQLALCHEMY_ENGINE_OPTIONS, REVERSE_PROXIED
 from ._exceptions import DatabaseErrorException, EpiDataException
+from ._security import _get_current_user, resolve_auth_token, update_key_last_time_used
 
 engine: Engine = create_engine(SQLALCHEMY_DATABASE_URI, **SQLALCHEMY_ENGINE_OPTIONS)
 metadata = MetaData(bind=engine)
@@ -71,10 +72,18 @@ def before_request_execute():
     # Set timer for statement
     g._request_start_time = time.time()
 
+    user = _get_current_user()
+    api_key = resolve_auth_token()
+
     # Log statement
-    get_structured_logger('server_api').info("Received API request", method=request.method, url=request.url, form_args=request.form, req_length=request.content_length, remote_addr=request.remote_addr, real_remote_addr=get_real_ip_addr(request), user_agent=request.user_agent.string)
+    get_structured_logger('server_api').info("Received API request", method=request.method, url=request.url, form_args=request.form, req_length=request.content_length, remote_addr=request.remote_addr, real_remote_addr=get_real_ip_addr(request), user_agent=request.user_agent.string, api_key=api_key)
+
+    if not _is_public_route() and api_key and not user:
+        # if this is a privleged endpoint, and an api key was given but it does not look up to a user, raise exception:
+        raise Unauthorized("Provided API Key does not exist. Please, check your API Key and try again.")
 
     if request.path.startswith('/lib'):
+        # files served from 'lib' directory don't need the database, so we can exit this early...
         return
     # try to get the db
     try:
@@ -89,7 +98,12 @@ def after_request_execute(response):
     total_time = time.time() - g._request_start_time
     # Convert to milliseconds
     total_time *= 1000
-    get_structured_logger('server_api').info('Served API request', method=request.method, url=request.url, form_args=request.form, req_length=request.content_length, remote_addr=request.remote_addr, real_remote_addr=get_real_ip_addr(request), user_agent=request.user_agent.string,
+
+    api_key = resolve_auth_token()
+
+    update_key_last_time_used(g.user)
+
+    get_structured_logger('server_api').info('Served API request', method=request.method, url=request.url, form_args=request.form, req_length=request.content_length, remote_addr=request.remote_addr, real_remote_addr=get_real_ip_addr(request), user_agent=request.user_agent.string, api_key=api_key,
                                              values=request.values.to_dict(flat=False), blueprint=request.blueprint, endpoint=request.endpoint,
                                              response_status=response.status, content_length=response.calculate_content_length(), elapsed_time_ms=total_time)
     return response
