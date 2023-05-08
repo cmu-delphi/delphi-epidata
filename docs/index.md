@@ -29,9 +29,9 @@ us understand who and how others are using our Delphi Epidata API, which may in
 turn inform our future research, data partnerships, and funding.
 
 For more information about how we use the data you provide us through your
-registration and API request activity, see our [Privacy
-Statement](api/privacy_statement.md). At any time, you may submit a [Deletion
-Request](https://forms.gle/GucFmZHTMgEFjH197) to have us deactivate your key and destroy all
+registration and API request activity, see our 
+[Privacy Statement](api/privacy_statement.md). At any time, you may submit a 
+[Deletion Request](https://forms.gle/GucFmZHTMgEFjH197) to have us deactivate your key and destroy all
 information associating that key with your identity.
 
 The Delphi group is extremely grateful to Pedrito Maynard-Zhang for all his

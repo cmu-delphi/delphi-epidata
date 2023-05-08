@@ -10,7 +10,7 @@ Anyone may access the Epidata API anonymously without providing any personal
 data. Anonymous API access is subject to the following restrictions:
 
 1. public datasets only
-1. rate-limited to $RATE_LIMIT
+1. rate-limited to 100 requests per hour
 1. only two parameters may have multiple selections
 
 For example, a query for three signals on one date across all counties can be
