@@ -77,7 +77,7 @@ RATELIMIT_STRATEGY = os.environ.get('RATELIMIT_STRATEGY', 'fixed-window')
 RATELIMIT_STORAGE_URL = f'redis://:{REDIS_PASSWORD}@{REDIS_HOST}:6379'
 
 
-class UserRole(str, Enum):
+class ConfigUserRoles(str, Enum):
     afhsb = "afhsb"
     cdc = "cdc"
     fluview = "fluview"
@@ -98,13 +98,13 @@ class UserRole(str, Enum):
 # A multimap of sensor names to the "granular" auth tokens that can be used to access them;
 # excludes the "global" sensor auth key that works for all sensors:
 GRANULAR_SENSOR_ROLES = {
-    "twtr": UserRole.sensor_twtr,
-    "gft": UserRole.sensor_gft,
-    "ght": UserRole.sensor_ght,
-    "ghtj": UserRole.sensor_ghtj,
-    "cdc": UserRole.sensor_cdc,
-    "quid": UserRole.sensor_quid,
-    "wiki": UserRole.sensor_wiki,
+    "twtr": ConfigUserRoles.sensor_twtr,
+    "gft": ConfigUserRoles.sensor_gft,
+    "ght": ConfigUserRoles.sensor_ght,
+    "ghtj": ConfigUserRoles.sensor_ghtj,
+    "cdc": ConfigUserRoles.sensor_cdc,
+    "quid": ConfigUserRoles.sensor_quid,
+    "wiki": ConfigUserRoles.sensor_wiki,
 }
 
 # A set of sensors that do not require an auth key to access:
