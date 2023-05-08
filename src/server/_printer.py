@@ -7,6 +7,7 @@ from flask.json import dumps
 import orjson
 
 from ._config import MAX_RESULTS, MAX_COMPATIBILITY_RESULTS
+# TODO: remove warnings after once we are past the API_KEY_REQUIRED_STARTING_AT date
 from ._security import show_hard_api_key_warning, show_soft_api_key_warning, API_KEY_WARNING_TEXT
 from ._common import is_compatibility_mode
 from delphi.epidata.common.logger import get_structured_logger
