@@ -17,6 +17,7 @@ templates_dir = Path(__file__).parent.parent / "admin" / "templates"
 
 
 def enable_admin() -> bool:
+    # only enable admin endpoint if we have a password for it, so it is not exposed to the world
     return bool(ADMIN_PASSWORD)
 
 
