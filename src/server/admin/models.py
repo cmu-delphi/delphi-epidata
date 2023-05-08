@@ -1,8 +1,13 @@
 from sqlalchemy import Table, ForeignKey, Column, Integer, String, Date, delete, update
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-from .._common import Base, session
+
+from .._db import session
 from typing import Set, Optional, List
 from datetime import datetime as dtime
+
+
+Base = declarative_base()
 
 association_table = Table(
     "user_role_link",
