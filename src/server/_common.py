@@ -4,6 +4,7 @@ import time
 from flask import Flask, g, request
 from sqlalchemy import event
 from sqlalchemy.engine import Connection, Engine
+from werkzeug.exceptions import Unauthorized
 from werkzeug.local import LocalProxy
 
 from delphi.epidata.common.logger import get_structured_logger
