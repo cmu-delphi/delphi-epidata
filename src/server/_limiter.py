@@ -46,10 +46,11 @@ def get_multiples_count(request):
         "states": extract_strings,
         "time_types": extract_strings,
         "time_values": extract_dates,
-        "zip": extract_strings,
-        "window": parse_day_or_week_range_arg
+        "zip": extract_strings
     }
     multiple_selection_allowed = 2
+    if "window" in request.args.keys():
+        multiple_selection_allowed -= 1
     for k, v in request.args.items():
         if v == "*":
             multiple_selection_allowed -= 1
@@ -81,13 +82,9 @@ def _resolve_tracking_key() -> str:
     return token or get_real_ip_addr(request)
 
 
-def get_host(endpoint_name):
-    return request.host
+limiter = Limiter(_resolve_tracking_key, app=app, storage_uri=RATELIMIT_STORAGE_URL, request_identifier=lambda: "EpidataLimiter")
 
-
-limiter = Limiter(_resolve_tracking_key, app=app, storage_uri=RATELIMIT_STORAGE_URL)
-
-host_limit = limiter.shared_limit(RATE_LIMIT, deduct_when=deduct_on_success, scope=get_host)
+apply_limit = limiter.limit(RATE_LIMIT, deduct_when=deduct_on_success)
 
 
 @limiter.request_filter
