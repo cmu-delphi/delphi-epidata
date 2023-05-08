@@ -3,7 +3,7 @@ import time
 
 from flask import Flask, g, request
 from sqlalchemy import event
-from sqlalchemy.engine import Connection, Engine
+from sqlalchemy.engine import Connection
 from werkzeug.exceptions import Unauthorized
 from werkzeug.local import LocalProxy
 
