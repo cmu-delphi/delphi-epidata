@@ -8,7 +8,7 @@ from ._common import app, get_real_ip_addr
 from ._config import RATELIMIT_STORAGE_URL, RATE_LIMIT
 from ._exceptions import ValidationFailedException
 from ._params import extract_dates, extract_integers, extract_strings, parse_day_or_week_range_arg
-from ._security import TESTING_MODE, _is_public_route, resolve_auth_token, require_api_key
+from ._security import _is_public_route, resolve_auth_token, require_api_key
 
 
 def deduct_on_success(response: Response) -> bool:
@@ -89,7 +89,7 @@ apply_limit = limiter.limit(RATE_LIMIT, deduct_when=deduct_on_success)
 
 @limiter.request_filter
 def _no_rate_limit() -> bool:
-    if TESTING_MODE or _is_public_route():
+    if _is_public_route():
         return False
     if not require_api_key():
         return True

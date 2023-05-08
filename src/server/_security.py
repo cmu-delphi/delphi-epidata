@@ -8,7 +8,6 @@ from flask import g, request
 from werkzeug.exceptions import Unauthorized
 from werkzeug.local import LocalProxy
 
-from ._common import app, get_real_ip_addr
 from ._config import (API_KEY_REQUIRED_STARTING_AT, REDIS_HOST, REDIS_PASSWORD,
                       URL_PREFIX)
 from .admin.models import User, UserRole
@@ -21,9 +20,6 @@ API_KEY_WARNING_TEXT = (
         API_KEY_REQUIRED_STARTING_AT
     )
 )
-
-TESTING_MODE = app.config.get("TESTING", False)
-
 
 logger = get_structured_logger("api_security")
 
@@ -44,15 +40,15 @@ def resolve_auth_token() -> Optional[str]:
 
 def show_soft_api_key_warning() -> bool:
     n = date.today()
-    return not current_user and not TESTING_MODE and API_KEY_SOFT_WARNING <= n < API_KEY_HARD_WARNING
+    return not current_user and API_KEY_SOFT_WARNING <= n < API_KEY_HARD_WARNING
 
 def show_hard_api_key_warning() -> bool:
     n = date.today()
-    return not current_user and not TESTING_MODE and API_KEY_HARD_WARNING <= n < API_KEY_REQUIRED_STARTING_AT
+    return not current_user and API_KEY_HARD_WARNING <= n < API_KEY_REQUIRED_STARTING_AT
 
 def require_api_key() -> bool:
     n = date.today()
-    return not TESTING_MODE and API_KEY_REQUIRED_STARTING_AT <= n
+    return API_KEY_REQUIRED_STARTING_AT <= n
 
 
 
