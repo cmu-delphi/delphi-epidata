@@ -11,7 +11,7 @@ from werkzeug.local import LocalProxy
 from delphi.epidata.common.logger import get_structured_logger
 from ._config import SECRET, SQLALCHEMY_DATABASE_URI, SQLALCHEMY_ENGINE_OPTIONS, REVERSE_PROXIED
 from ._exceptions import DatabaseErrorException, EpiDataException
-from ._security import _get_current_user, resolve_auth_token, update_key_last_time_used
+from ._security import _get_current_user, _is_public_route, resolve_auth_token, update_key_last_time_used
 
 engine: Engine = create_engine(SQLALCHEMY_DATABASE_URI, **SQLALCHEMY_ENGINE_OPTIONS)
 metadata = MetaData(bind=engine)
