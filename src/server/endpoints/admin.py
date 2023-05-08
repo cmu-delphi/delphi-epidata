@@ -28,7 +28,7 @@ def _require_admin():
 
 
 def _parse_roles(roles: List[str]) -> Set[str]:
-    return set(sorted(roles))
+    return set(roles)
 
 
 def _render(mode: str, token: str, flags: Dict, **kwargs):
@@ -95,7 +95,7 @@ def _register():
 
     user_api_key = body["user_api_key"]
     user_email = body["user_email"]
-    if user_exists(user_email=user_email):
-        return make_response("User with such email already exists, try to use different email or contact us to resolve this issue", 409)
+    if user_exists(user_email=user_email, api_key=user_api_key):
+        return make_response("User with such email or API Key already exists, try to use different email or contact us to resolve this issue", 409)
     api_key = register_new_key(user_api_key, user_email)
     return make_response(f"Successfully registered the API key '{api_key}' and removed rate limit", 200)
