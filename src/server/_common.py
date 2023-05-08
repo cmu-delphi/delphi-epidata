@@ -67,8 +67,8 @@ def before_request_execute():
     user = _get_current_user()
     api_key = resolve_auth_token()
 
-    # TODO: remove after testing -- does debug()-level show up in logs (on staging, at least)?  what does `user` look like in logs?  DONT wanna print `user` info to logs in prod!!!
-    get_structured_logger('server_api').debug("DEBUG-LEVEL Message", user=user)
+    # TODO: remove after testing -- what does `user` look like in logs?  dont forget, we DONT wanna print `user` info to logs in prod!!!
+    get_structured_logger('server_api').info("USER INFO", user=user)
 
     # Log statement
     get_structured_logger('server_api').info("Received API request", method=request.method, url=request.url, form_args=request.form, req_length=request.content_length, remote_addr=request.remote_addr, real_remote_addr=get_real_ip_addr(request), user_agent=request.user_agent.string, api_key=api_key)
