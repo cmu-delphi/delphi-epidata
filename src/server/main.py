@@ -4,6 +4,8 @@ from typing import Dict, Callable
 
 from flask import request, send_file, Response, send_from_directory, jsonify
 
+from delphi.epidata.common.logger import get_structured_logger
+
 from ._config import URL_PREFIX, VERSION
 from ._common import app, set_compatibility_mode
 from ._db import metadata, engine
@@ -16,21 +18,28 @@ from ._config import ConfigUserRoles
 
 __all__ = ["app"]
 
+logger = get_structured_logger("webapp_main")
+
 endpoint_map: Dict[str, Callable[[], Response]] = {}
 
 for endpoint in endpoints:
-    endpoint_map[endpoint.bp.name] = endpoint.handle
+    logger.info("registering endpoint", bp_name=endpoint.bp.name)
     apply_limit(endpoint.bp)
     app.register_blueprint(endpoint.bp, url_prefix=f"{URL_PREFIX}/{endpoint.bp.name}")
+
+    endpoint_map[endpoint.bp.name] = endpoint.handle
     alias = getattr(endpoint, "alias", None)
     if alias:
+        logger.info("endpoint has alias", bp_name=endpoint.bp.name, alias=alias)
         endpoint_map[alias] = endpoint.handle
 
 with app.app_context():
     for role in ConfigUserRoles:
+        logger.info("registering user role from config", name=role.name)
         register_user_role(role.name)
 
 if enable_admin():
+    logger.info("admin endpoint enabled")
     limiter.exempt(admin_bp)
     app.register_blueprint(admin_bp, url_prefix=f"{URL_PREFIX}/admin")
 
@@ -51,6 +60,13 @@ def handle_generic():
 @app.route(f"{URL_PREFIX}/index.html")
 def send_index_file():
     return send_file(pathlib.Path(__file__).parent / "index.html")
+
+
+# TODO: remove
+from ._exceptions import DatabaseErrorException
+@app.route(f"{URL_PREFIX}/fake_db_error")
+def cause_fake_db_error():
+    raise DatabaseErrorException("fake_db_error")
 
 
 @app.route(f"{URL_PREFIX}/version")

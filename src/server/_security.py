@@ -21,7 +21,6 @@ API_KEY_WARNING_TEXT = (
     )
 )
 
-logger = get_structured_logger("api_security")
 
 
 def resolve_auth_token() -> Optional[str]:
@@ -59,8 +58,6 @@ def _get_current_user():
         g.user = User.find_user(api_key=api_key)
     return g.user
 
-
-
 current_user: User = cast(User, LocalProxy(_get_current_user))
 
 
@@ -85,6 +82,7 @@ def require_role(required_role: str):
         @wraps(f)
         def decorated_function(*args, **kwargs):
             if not current_user or not current_user.has_role(required_role):
+                get_structured_logger("api_security").info("required role not attached to current user", role=required_role, user=(current_user and current_user.api_key))
                 raise Unauthorized
             return f(*args, **kwargs)
 

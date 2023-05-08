@@ -16,9 +16,6 @@ from ._security import _get_current_user, _is_public_route, resolve_auth_token, 
 
 
 app = Flask("EpiData", static_url_path="")
-# for example if the request goes through one proxy
-# before hitting your application server
-# app.wsgi_app = ProxyFix(app.wsgi_app, num_proxies=1)
 app.config["SECRET"] = SECRET
 
 
@@ -70,11 +67,15 @@ def before_request_execute():
     user = _get_current_user()
     api_key = resolve_auth_token()
 
+    # TODO: remove after testing -- does debug()-level show up in logs (on staging, at least)?  what does `user` look like in logs?  DONT wanna print `user` info to logs in prod!!!
+    get_structured_logger('server_api').debug("DEBUG-LEVEL Message", user=user)
+
     # Log statement
     get_structured_logger('server_api').info("Received API request", method=request.method, url=request.url, form_args=request.form, req_length=request.content_length, remote_addr=request.remote_addr, real_remote_addr=get_real_ip_addr(request), user_agent=request.user_agent.string, api_key=api_key)
 
     if not _is_public_route() and api_key and not user:
         # if this is a privleged endpoint, and an api key was given but it does not look up to a user, raise exception:
+        get_structured_logger('server_api').info("bad api key used", api_key=api_key)
         raise Unauthorized("Provided API Key does not exist. Please, check your API Key and try again.")
 
     if request.path.startswith('/lib'):
