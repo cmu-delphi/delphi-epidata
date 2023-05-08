@@ -25,7 +25,7 @@ API_KEY_WARNING_TEXT = (
 TESTING_MODE = app.config.get("TESTING", False)
 
 
-logger = get_structured_logger("api_analytics", filename="api_analytics.txt")
+logger = get_structured_logger("api_security")
 
 
 def resolve_auth_token() -> Optional[str]:
