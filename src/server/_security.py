@@ -51,6 +51,8 @@ def _get_current_user():
     if "user" not in g:
         api_key = resolve_auth_token()
         user = User.find_user(api_key=api_key)
+        if api_key and user is None:
+            raise Unauthorized("Provided API Key does not exist. Please, check your API Key and try again.")
         g.user = user
         if user is not None:
             logger.info(
