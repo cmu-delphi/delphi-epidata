@@ -55,7 +55,7 @@ def handle_generic():
     return endpoint_map[endpoint]()
 
 
-@app.route(f"{URL_PREFIX}")
+# @app.route(f"{URL_PREFIX}") # TODO: make sure we dont need this line
 @app.route(f"{URL_PREFIX}/")
 @app.route(f"{URL_PREFIX}/index.html")
 def send_index_file():
