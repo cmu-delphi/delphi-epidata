@@ -36,10 +36,9 @@ class User(Base):
 
     @property
     def as_dict(self):
-        fields_list = ["id", "api_key", "email", "roles"]
-        user_dict = self.__dict__
+        user_dict = self.__dict__.copy() # so we dont change the internal representation of self
         user_dict["roles"] = self.get_user_roles
-        return {k: v for k, v in user_dict.items() if k in fields_list}
+        return {k: user_dict[k] for k in ["id", "api_key", "email", "roles", "created", "last_time_used"]}
 
     @property
     def get_user_roles(self) -> Set[str]:
