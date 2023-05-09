@@ -8,8 +8,9 @@ from flask import g, request
 from werkzeug.exceptions import Unauthorized
 from werkzeug.local import LocalProxy
 
-from ._config import (API_KEY_REQUIRED_STARTING_AT, REDIS_HOST, REDIS_PASSWORD,
-                      URL_PREFIX)
+from ._config import API_KEY_REQUIRED_STARTING_AT, REDIS_HOST, REDIS_PASSWORD, URL_PREFIX, AUTH
+
+from ._exceptions import UnAuthenticatedException, ValidationFailedException
 from .admin.models import User, UserRole
 
 API_KEY_HARD_WARNING = API_KEY_REQUIRED_STARTING_AT - timedelta(days=14)
@@ -20,7 +21,6 @@ API_KEY_WARNING_TEXT = (
         API_KEY_REQUIRED_STARTING_AT
     )
 )
-
 
 
 def resolve_auth_token() -> Optional[str]:
@@ -41,15 +41,15 @@ def show_soft_api_key_warning() -> bool:
     n = date.today()
     return not current_user and API_KEY_SOFT_WARNING <= n < API_KEY_HARD_WARNING
 
+
 def show_hard_api_key_warning() -> bool:
     n = date.today()
     return not current_user and API_KEY_HARD_WARNING <= n < API_KEY_REQUIRED_STARTING_AT
 
+
 def require_api_key() -> bool:
     n = date.today()
     return API_KEY_REQUIRED_STARTING_AT <= n
-
-
 
 
 def _get_current_user():
@@ -57,6 +57,7 @@ def _get_current_user():
         api_key = resolve_auth_token()
         g.user = User.find_user(api_key=api_key)
     return g.user
+
 
 current_user: User = cast(User, LocalProxy(_get_current_user))
 
@@ -73,6 +74,20 @@ def _is_public_route() -> bool:
     return False
 
 
+def check_auth_token(token: str, optional=False) -> bool:
+    value = resolve_auth_token()
+
+    if value is None:
+        if optional:
+            return False
+        else:
+            raise ValidationFailedException("missing parameter: auth")
+
+    valid_token = value == token
+    if not valid_token and not optional:
+        raise UnAuthenticatedException()
+    return valid_token
+
 
 def require_role(required_role: str):
     def decorator_wrapper(f):
@@ -82,8 +97,13 @@ def require_role(required_role: str):
         @wraps(f)
         def decorated_function(*args, **kwargs):
             if not current_user or not current_user.has_role(required_role):
-                get_structured_logger("api_security").info("required role not attached to current user", role=required_role, user=(current_user and current_user.api_key))
-                raise Unauthorized
+                get_structured_logger("api_security").info(
+                    "required role not attached to current user",
+                    role=required_role,
+                    user=(current_user and current_user.api_key),
+                )
+                get_structured_logger("api_security").info("checking auth token instead")
+                check_auth_token(AUTH[required_role])
             return f(*args, **kwargs)
 
         return decorated_function
