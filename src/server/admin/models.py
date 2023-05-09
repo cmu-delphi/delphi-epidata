@@ -36,7 +36,8 @@ class User(Base):
 
     @property
     def as_dict(self):
-        user_dict = self.__dict__.copy() # so we dont change the internal representation of self
+        user_dict = self.__dict__  # NOTE: changed from `self.__dict__.copy()` as it caused issues
+        # so we dont change the internal representation of self
         user_dict["roles"] = self.get_user_roles
         return {k: user_dict[k] for k in ["id", "api_key", "email", "roles", "created", "last_time_used"]}
 
