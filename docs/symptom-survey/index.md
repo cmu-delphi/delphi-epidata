@@ -1,7 +1,7 @@
 ---
 title: COVID-19 Trends and Impact Survey
 has_children: true
-nav_order: 5
+nav_order: 6
 ---
 
 # COVID-19 Trends and Impact Survey
