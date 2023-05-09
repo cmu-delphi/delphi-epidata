@@ -73,10 +73,14 @@ def before_request_execute():
     # Log statement
     get_structured_logger('server_api').info("Received API request", method=request.method, url=request.url, form_args=request.form, req_length=request.content_length, remote_addr=request.remote_addr, real_remote_addr=get_real_ip_addr(request), user_agent=request.user_agent.string, api_key=api_key)
 
-    if not _is_public_route() and api_key and not user:
-        # if this is a privleged endpoint, and an api key was given but it does not look up to a user, raise exception:
-        get_structured_logger('server_api').info("bad api key used", api_key=api_key)
-        raise Unauthorized("Provided API Key does not exist. Please, check your API Key and try again.")
+    # NOTE: if we want to use 'old' password based endpoint authentication, we need to remove this
+    #      as endpoint 'password' comes with `auth` param and then we check for user with that api key
+    #      or we need to add one more check if such 'password' exists in _common.AUTH passwords
+    
+    # if not _is_public_route() and api_key and not user:
+    #     # if this is a privleged endpoint, and an api key was given but it does not look up to a user, raise exception:
+    #     get_structured_logger('server_api').info("bad api key used", api_key=api_key)
+    #     raise Unauthorized("Provided API Key does not exist. Please, check your API Key and try again.")
 
     if request.path.startswith('/lib'):
         # files served from 'lib' directory don't need the database, so we can exit this early...
