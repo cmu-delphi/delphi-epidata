@@ -23,7 +23,7 @@ SQLALCHEMY_ENGINE_OPTIONS = {
 SQLALCHEMY_ENGINE_OPTIONS.update(json.loads(os.environ.get("SQLALCHEMY_ENGINE_OPTIONS", "{}")))
 
 SECRET = os.environ.get("FLASK_SECRET", "secret")
-URL_PREFIX = os.environ.get("FLASK_PREFIX", "/")
+URL_PREFIX = os.environ.get("FLASK_PREFIX", "") # if not empty, this value should begin but not end in a slash ('/')
 
 # REVERSE_PROXIED is a boolean value that indicates whether or not this server instance
 # is running behind a reverse proxy (like nginx).
