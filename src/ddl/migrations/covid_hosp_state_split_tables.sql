@@ -14,7 +14,7 @@ SELECT * FROM covid_hosp_state_timeseries WHERE record_type='D';
 -- Re-add autoincrement capability
 ALTER TABLE covid_hosp_state_daily MODIFY id INT NOT NULL AUTO_INCREMENT;
 
--- 2. Remove data with incorrect record_type from both tables (keep D in daily, T in timeseries)
+-- 2. Remove data with incorrect record_type from timeseries table (D records were moved to daily)
 
 DELETE FROM `covid_hosp_state_timeseries` WHERE record_type='D';
 
