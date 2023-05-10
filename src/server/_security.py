@@ -16,10 +16,38 @@ from .admin.models import User, UserRole
 API_KEY_HARD_WARNING = API_KEY_REQUIRED_STARTING_AT - timedelta(days=14)
 API_KEY_SOFT_WARNING = API_KEY_HARD_WARNING - timedelta(days=14)
 
-API_KEY_WARNING_TEXT = (
-    "an api key will be required starting at {}, go to https://delphi.cmu.edu to request one".format(
-        API_KEY_REQUIRED_STARTING_AT
-    )
+#API_KEY_WARNING_TEXT = (
+#    "an api key will be required starting at {}, go to https://delphi.cmu.edu to request one".format(
+#        API_KEY_REQUIRED_STARTING_AT
+#    )
+#)
+
+# rollout warning messages
+# intended usage: in place of API_KEY_WARNING_TEXT
+# phase 1 / soft warning: ROLLOUT_WARNING_RATE_LIMIT or ROLLOUT_WARNING_MULTIPLES
+# phase 2 / hard warning: (ROLLOUT_WARNING_RATE_LIMIT + PHASE_2_STOPGAP) or (ROLLOUT_WARNING_MULTIPLES + PHASE_2_STOPGAP)
+_ROLLOUT_WARNING_AD_FRAGMENT = ( # todo: add registration form URL
+    "To be exempt from this limit, authenticate your requests with an API key, now available at $KEY_REGISTRATION_FORM"
+)
+ROLLOUT_WARNING_RATE_LIMIT = (
+    "This request exceeded the anonymous limit on requests per minute, which will be enforced starting {}. {}"
+).format(API_KEY_REQUIRED_STARTING_AT, _ROLLOUT_WARNING_AD_FRAGMENT)
+ROLLOUT_WARNING_MULTIPLES = (
+    "This request exceeded the anonymous limit on selected multiples, which will be enforced starting {}. {}"
+).format(API_KEY_REQUIRED_STARTING_AT, _ROLLOUT_WARNING_AD_FRAGMENT)
+PHASE_2_STOPGAP = ( # todo: add temporary key
+    ". A temporary public key '$TEMPORARY_KEY' is available for use between now and {} to give you time to register or adapt your requests without this message continuing to break your systems."
+).format(API_KEY_REQUIRED_STARTING_AT)
+
+# steady-state error messages
+ERROR_MSG_RATE_LIMIT = (
+    "Rate limit exceeded for anonymous queries. To remove this limit, register a free API key at $KEY_REGISTRATION_FORM"
+)
+ERROR_MSG_MULTIPLES = (
+    "Requested too many multiples for anonymous queries. To remove this limit, register a free API key at $KEY_REGISTRATION_FORM"
+)
+ERROR_MSG_INVALID_KEY = (
+    "API key does not exist. Register a new key at $KEY_REGISTRATION_FORM or contact $CONTACT_POINT to troubleshoot"
 )
 
 
