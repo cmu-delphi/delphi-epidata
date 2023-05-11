@@ -2,14 +2,15 @@ from csv import DictWriter
 from io import StringIO
 from typing import Any, Dict, Iterable, List, Optional, Union
 
-from flask import Response, jsonify, stream_with_context
+from flask import Response, jsonify, stream_with_context, request
 from flask.json import dumps
 import orjson
 
 from ._config import MAX_RESULTS, MAX_COMPATIBILITY_RESULTS
 # TODO: remove warnings after once we are past the API_KEY_REQUIRED_STARTING_AT date
-from ._security import show_hard_api_key_warning, show_soft_api_key_warning, API_KEY_WARNING_TEXT
+from ._security import show_hard_api_key_warning, show_soft_api_key_warning, API_KEY_WARNING_TEXT, MULTIPLES_WARNING_TEST, TEMPORARY_KEY_TEXT
 from ._common import is_compatibility_mode
+from ._limiter import requests_left, get_multiples_count
 from delphi.epidata.common.logger import get_structured_logger
 
 
@@ -24,7 +25,12 @@ def print_non_standard(format: str, data):
         message = "no results"
         result = -2
     else:
-        message = API_KEY_WARNING_TEXT if show_soft_api_key_warning() else "success"
+        message = "success"
+        if show_hard_api_key_warning() and requests_left() == 0:
+            message = API_KEY_WARNING_TEXT
+            if get_multiples_count(request) < 0:
+                message += f" {MULTIPLES_WARNING_TEST}"
+            message += f" {TEMPORARY_KEY_TEXT}"
         result = 1
     if result == -1 and is_compatibility_mode():
         return jsonify(dict(result=result, message=message))
@@ -117,19 +123,27 @@ class ClassicPrinter(APrinter):
         if is_compatibility_mode() and not show_hard_api_key_warning():
             return "{ "
         r = '{ "epidata": ['
-        if show_hard_api_key_warning():
+        if show_hard_api_key_warning() and requests_left() == 0:
             r = f'{r} "{API_KEY_WARNING_TEXT}" '
+            if get_multiples_count(request) < 0:
+                r += MULTIPLES_WARNING_TEST
+            r += f" {TEMPORARY_KEY_TEXT}"
         return r
 
     def _format_row(self, first: bool, row: Dict):
         if first and is_compatibility_mode() and not show_hard_api_key_warning():
             sep = b'"epidata": ['
         else:
-            sep = b"," if not first or show_hard_api_key_warning() else b""
+            sep = b"," if not first or (show_hard_api_key_warning() and requests_left() == 0) else b""
         return sep + orjson.dumps(row)
 
     def _end(self):
-        message = API_KEY_WARNING_TEXT if show_soft_api_key_warning() else "success"
+        message = "success"
+        if show_soft_api_key_warning() and requests_left() == 0:
+            message = API_KEY_WARNING_TEXT
+            if get_multiples_count(request) < 0:
+                message += f" {MULTIPLES_WARNING_TEST}"
+            message += f" {TEMPORARY_KEY_TEXT}"
         prefix = "], "
         if self.count == 0 and is_compatibility_mode() and not show_hard_api_key_warning():
             # no array to end
@@ -177,7 +191,7 @@ class ClassicTreePrinter(ClassicPrinter):
         self._tree = dict()
         r = super(ClassicTreePrinter, self)._end()
         r = tree + r
-        if show_hard_api_key_warning():
+        if show_hard_api_key_warning() and requests_left() == 0:
             r = b", " + r
         return r
 
@@ -211,8 +225,12 @@ class CSVPrinter(APrinter):
             columns = list(row.keys())
             self._writer = DictWriter(self._stream, columns, lineterminator="\n")
             self._writer.writeheader()
-            if show_hard_api_key_warning() and columns:
-                self._writer.writerow({columns[0]: API_KEY_WARNING_TEXT})
+            if show_hard_api_key_warning() and requests_left() == 0 and columns:
+                value = API_KEY_WARNING_TEXT
+                if get_multiples_count(request) < 0:
+                    value += f" {MULTIPLES_WARNING_TEST}"
+                value += f" {TEMPORARY_KEY_TEXT}"
+                self._writer.writerow({columns[0]: value})
 
         self._writer.writerow(row)
 
@@ -235,12 +253,16 @@ class JSONPrinter(APrinter):
 
     def _begin(self):
         r = b"["
-        if show_hard_api_key_warning():
-            r = b'["' + bytes(API_KEY_WARNING_TEXT, "utf-8") + b'"'
+        if show_hard_api_key_warning() and requests_left() == 0:
+            msg = API_KEY_WARNING_TEXT
+            if get_multiples_count(request) < 0:
+                msg += f" {MULTIPLES_WARNING_TEST}"
+            msg += f" {TEMPORARY_KEY_TEXT}"
+            r = b'["' + bytes(msg, "utf-8") + b'"'
         return r
 
     def _format_row(self, first: bool, row: Dict):
-        sep = b"," if not first or show_hard_api_key_warning() else b""
+        sep = b"," if not first or (show_hard_api_key_warning() and requests_left() == 0) else b""
         return sep + orjson.dumps(row)
 
     def _end(self):
@@ -256,8 +278,12 @@ class JSONLPrinter(APrinter):
         return Response(gen, mimetype=" text/plain; charset=utf8")
 
     def _begin(self):
-        if show_hard_api_key_warning():
-            return bytes(API_KEY_WARNING_TEXT, "utf-8") + b"\n"
+        if show_hard_api_key_warning() and requests_left() == 0:
+            msg = API_KEY_WARNING_TEXT
+            if get_multiples_count(request) < 0:
+                msg += f" {MULTIPLES_WARNING_TEST}"
+            msg += f" {TEMPORARY_KEY_TEXT}"
+            return bytes(msg, "utf-8") + b"\n"
         return None
 
     def _format_row(self, first: bool, row: Dict):
