@@ -14,7 +14,7 @@ alias = None
 
 @bp.route("/", methods=("GET", "POST"))
 def handle():
-    authorized = False if current_user is None else current_user.has_role("fluview")
+    authorized = False if not current_user else current_user.has_role("fluview")
 
     require_all(request, "epiweeks", "regions")
 
