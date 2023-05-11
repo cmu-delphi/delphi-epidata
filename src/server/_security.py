@@ -8,19 +8,29 @@ from flask import g, request
 from werkzeug.exceptions import Unauthorized
 from werkzeug.local import LocalProxy
 
-from ._config import API_KEY_REQUIRED_STARTING_AT, REDIS_HOST, REDIS_PASSWORD, URL_PREFIX, AUTH
-
-from ._exceptions import UnAuthenticatedException, ValidationFailedException
+from ._config import (
+    API_KEY_REQUIRED_STARTING_AT,
+    REDIS_HOST,
+    REDIS_PASSWORD,
+    REGISTRATION_FORM_LINK,
+    TEMPORARY_API_KEY,
+    URL_PREFIX,
+)
 from .admin.models import User, UserRole
 
 API_KEY_HARD_WARNING = API_KEY_REQUIRED_STARTING_AT - timedelta(days=14)
 API_KEY_SOFT_WARNING = API_KEY_HARD_WARNING - timedelta(days=14)
 
-API_KEY_WARNING_TEXT = (
-    "an api key will be required starting at {}, go to https://delphi.cmu.edu to request one".format(
-        API_KEY_REQUIRED_STARTING_AT
-    )
-)
+TEMPORARY_KEY_TEXT = f"A temporary public key `{TEMPORARY_API_KEY}` is available for use between now and {REGISTRATION_FORM_LINK} \
+    to give you time to register or adapt your requests without this message continuing to break your systems."
+
+API_KEY_WARNING_TEXT = f"This request exceeded the anonymous limit on requests per hour,\
+    which will be enforced starting {API_KEY_REQUIRED_STARTING_AT}. \
+    To be exempt from this limit, authenticate your requests with an API key, now available at {REGISTRATION_FORM_LINK}" \
+
+MULTIPLES_WARNING_TEST = f"This request exceeded the anonymous limit on selected multiples, \
+    which will be enforced starting {API_KEY_REQUIRED_STARTING_AT}. \
+    To be exempt from this limit, authenticate your requests with an API key, now available at {REGISTRATION_FORM_LINK}"
 
 
 def resolve_auth_token() -> Optional[str]:
@@ -74,21 +84,6 @@ def _is_public_route() -> bool:
     return False
 
 
-def check_auth_token(token: str, optional=False) -> bool:
-    value = resolve_auth_token()
-
-    if value is None:
-        if optional:
-            return False
-        else:
-            raise ValidationFailedException("missing parameter: auth")
-
-    valid_token = value == token
-    if not valid_token and not optional:
-        raise UnAuthenticatedException()
-    return valid_token
-
-
 def require_role(required_role: str):
     def decorator_wrapper(f):
         if not required_role:
@@ -98,12 +93,11 @@ def require_role(required_role: str):
         def decorated_function(*args, **kwargs):
             if not current_user or not current_user.has_role(required_role):
                 get_structured_logger("api_security").info(
-                    "required role not attached to current user",
+                    "Required role is not attached to current user",
                     role=required_role,
                     user=(current_user and current_user.api_key),
                 )
-                get_structured_logger("api_security").info("checking auth token instead")
-                check_auth_token(AUTH[required_role])
+                raise Unauthorized("Required role is not attached to current user")
             return f(*args, **kwargs)
 
         return decorated_function
