@@ -58,6 +58,7 @@ REGION_TO_STATE = {
 NATION_REGION = "nat"
 
 API_KEY_REQUIRED_STARTING_AT = date.fromisoformat(os.environ.get("API_REQUIRED_STARTING_AT", "3000-01-01"))
+TEMPORARY_API_KEY = os.environ.get("TEMPORARY_API_KEY", "test")
 # password needed for the admin application if not set the admin routes won't be available
 ADMIN_PASSWORD = os.environ.get("API_KEY_ADMIN_PASSWORD", "abc")
 # secret for the google form to give to the admin/register endpoint
@@ -74,6 +75,8 @@ RATELIMIT_STRATEGY = os.environ.get("RATELIMIT_STRATEGY", "fixed-window")
 
 # see https://flask-limiter.readthedocs.io/en/stable/#configuration
 RATELIMIT_STORAGE_URL = f"redis://:{REDIS_PASSWORD}@{REDIS_HOST}:6379"
+
+REGISTRATION_FORM_LINK = "https://docs.google.com/forms/d/e/1FAIpQLSe5i-lgb9hcMVepntMIeEo8LUZUMTUnQD3hbrQI3vSteGsl4w/viewform?usp=sf_link"
 
 
 class ConfigUserRoles(str, Enum):
@@ -113,15 +116,3 @@ OPEN_SENSORS = [
     "epic",
     "arch",
 ]
-
-
-AUTH = {
-    "twitter": os.environ.get("SECRET_TWITTER"),
-    "ght": os.environ.get("SECRET_GHT"),
-    "fluview": os.environ.get("SECRET_FLUVIEW"),
-    "cdc": os.environ.get("SECRET_CDC"),
-    "sensors": os.environ.get("SECRET_SENSORS", "322188asdf"),
-    "quidel": os.environ.get("SECRET_QUIDEL"),
-    "norostat": os.environ.get("SECRET_NOROSTAT"),
-    "afhsb": os.environ.get("SECRET_AFHSB"),
-}
