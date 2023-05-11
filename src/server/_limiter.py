@@ -1,14 +1,14 @@
-from flask import Response, request, g
+from delphi.epidata.server.endpoints.covidcast_utils.dashboard_signals import DashboardSignals
+from flask import Response, g, request
 from flask_limiter import Limiter
+from redis import Redis
 from werkzeug.exceptions import Unauthorized
 
-from delphi.epidata.server.endpoints.covidcast_utils.dashboard_signals import DashboardSignals
-
 from ._common import app, get_real_ip_addr
-from ._config import RATELIMIT_STORAGE_URL, RATE_LIMIT
+from ._config import RATE_LIMIT, RATELIMIT_STORAGE_URL, REDIS_HOST, REDIS_PASSWORD
 from ._exceptions import ValidationFailedException
-from ._params import extract_dates, extract_integers, extract_strings, parse_day_or_week_range_arg
-from ._security import _is_public_route, resolve_auth_token, require_api_key
+from ._params import extract_dates, extract_integers, extract_strings
+from ._security import _is_public_route, require_api_key, resolve_auth_token
 
 
 def deduct_on_success(response: Response) -> bool:
@@ -46,7 +46,7 @@ def get_multiples_count(request):
         "states": extract_strings,
         "time_types": extract_strings,
         "time_values": extract_dates,
-        "zip": extract_strings
+        "zip": extract_strings,
     }
     multiple_selection_allowed = 2
     if "window" in request.args.keys():
@@ -66,7 +66,7 @@ def get_multiples_count(request):
 
 
 def check_signals_allowlist(request):
-    signals_allowlist = {':'.join(ss_pair) for ss_pair in DashboardSignals().srcsig_list()}
+    signals_allowlist = {":".join(ss_pair) for ss_pair in DashboardSignals().srcsig_list()}
     request_signals = []
     if "signal" in request.args.keys():
         request_signals += extract_strings("signal")
@@ -82,16 +82,30 @@ def _resolve_tracking_key() -> str:
     return token or get_real_ip_addr(request)
 
 
-limiter = Limiter(_resolve_tracking_key, app=app, storage_uri=RATELIMIT_STORAGE_URL, request_identifier=lambda: "EpidataLimiter")
+limiter = Limiter(
+    _resolve_tracking_key, app=app, storage_uri=RATELIMIT_STORAGE_URL, request_identifier=lambda: "EpidataLimiter"
+)
 
 apply_limit = limiter.limit(RATE_LIMIT, deduct_when=deduct_on_success)
+
+
+def requests_left():
+    r = Redis(host=REDIS_HOST, password=REDIS_PASSWORD)
+    allowed_count, period = RATE_LIMIT.split("/")
+    try:
+        remaining_count = int(allowed_count) - int(
+            r.get(f"LIMITER/{_resolve_tracking_key()}/EpidataLimiter/{allowed_count}/1/{period}")
+        )
+    except TypeError:
+        return 1
+    return remaining_count
 
 
 @limiter.request_filter
 def _no_rate_limit() -> bool:
     if _is_public_route():
         return False
-    if not require_api_key():
+    if requests_left() == 0 and not require_api_key():
         return True
     if not g.user:
         multiples = get_multiples_count(request)
