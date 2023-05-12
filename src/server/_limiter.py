@@ -1,5 +1,5 @@
 from delphi.epidata.server.endpoints.covidcast_utils.dashboard_signals import DashboardSignals
-from flask import Response, g, request
+from flask import Response, g, request, make_response, jsonify
 from flask_limiter import Limiter, HEADERS
 from redis import Redis
 from werkzeug.exceptions import Unauthorized
@@ -8,7 +8,7 @@ from ._common import app, get_real_ip_addr
 from ._config import RATE_LIMIT, RATELIMIT_STORAGE_URL, REDIS_HOST, REDIS_PASSWORD
 from ._exceptions import ValidationFailedException
 from ._params import extract_dates, extract_integers, extract_strings
-from ._security import _is_public_route, require_api_key, resolve_auth_token
+from ._security import _is_public_route, require_api_key, resolve_auth_token, ERROR_MSG_RATE_LIMIT, ERROR_MSG_MULTIPLES
 
 
 def deduct_on_success(response: Response) -> bool:
@@ -98,6 +98,11 @@ limiter = Limiter(
 apply_limit = limiter.limit(RATE_LIMIT, deduct_when=deduct_on_success)
 
 
+@app.errorhandler(429)
+def ratelimit_handler(e):
+    return make_response(jsonify(error=ERROR_MSG_RATE_LIMIT), 429)
+
+
 def requests_left():
     r = Redis(host=REDIS_HOST, password=REDIS_PASSWORD)
     allowed_count, period = RATE_LIMIT.split("/")
@@ -119,7 +124,7 @@ def _no_rate_limit() -> bool:
     if not g.user:
         multiples = get_multiples_count(request)
         if multiples < 0:
-            raise Unauthorized
+            raise Unauthorized(ERROR_MSG_MULTIPLES)
         if multiples >= 0:
             return check_signals_allowlist(request)
     # no rate limit if user is registered

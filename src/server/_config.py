@@ -68,7 +68,7 @@ REDIS_HOST = os.environ.get("REDIS_HOST", "delphi_redis")
 REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD", "1234")
 
 # https://flask-limiter.readthedocs.io/en/stable/#rate-limit-string-notation
-RATE_LIMIT = os.environ.get("RATE_LIMIT", "100/hour")
+RATE_LIMIT = os.environ.get("RATE_LIMIT", "60/hour")
 # fixed-window, fixed-window-elastic-expiry, or moving-window
 # see also https://flask-limiter.readthedocs.io/en/stable/#rate-limiting-strategies
 RATELIMIT_STRATEGY = os.environ.get("RATELIMIT_STRATEGY", "fixed-window")
@@ -76,7 +76,7 @@ RATELIMIT_STRATEGY = os.environ.get("RATELIMIT_STRATEGY", "fixed-window")
 # see https://flask-limiter.readthedocs.io/en/stable/#configuration
 RATELIMIT_STORAGE_URL = f"redis://:{REDIS_PASSWORD}@{REDIS_HOST}:6379"
 
-REGISTRATION_FORM_LINK = "https://docs.google.com/forms/d/e/1FAIpQLSe5i-lgb9hcMVepntMIeEo8LUZUMTUnQD3hbrQI3vSteGsl4w/viewform?usp=sf_link"
+API_KEY_REGISTRATION_FORM_LINK = "https://docs.google.com/forms/d/e/1FAIpQLSe5i-lgb9hcMVepntMIeEo8LUZUMTUnQD3hbrQI3vSteGsl4w/viewform?usp=sf_link"
 
 
 class ConfigUserRoles(str, Enum):

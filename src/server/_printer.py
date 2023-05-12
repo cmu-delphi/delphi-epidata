@@ -8,7 +8,7 @@ import orjson
 
 from ._config import MAX_RESULTS, MAX_COMPATIBILITY_RESULTS
 # TODO: remove warnings after once we are past the API_KEY_REQUIRED_STARTING_AT date
-from ._security import show_hard_api_key_warning, show_soft_api_key_warning, API_KEY_WARNING_TEXT, MULTIPLES_WARNING_TEST, TEMPORARY_KEY_TEXT
+from ._security import show_hard_api_key_warning, show_soft_api_key_warning, ROLLOUT_WARNING_RATE_LIMIT, ROLLOUT_WARNING_MULTIPLES, _ROLLOUT_WARNING_AD_FRAGMENT, PHASE_1_2_STOPGAP
 from ._common import is_compatibility_mode
 from ._limiter import requests_left, get_multiples_count
 from delphi.epidata.common.logger import get_structured_logger
@@ -27,10 +27,10 @@ def print_non_standard(format: str, data):
     else:
         message = "success"
         if show_hard_api_key_warning() and requests_left() == 0:
-            message = API_KEY_WARNING_TEXT
+            message = ROLLOUT_WARNING_RATE_LIMIT
             if get_multiples_count(request) < 0:
-                message += f" {MULTIPLES_WARNING_TEST}"
-            message += f" {TEMPORARY_KEY_TEXT}"
+                message = f"{message} {ROLLOUT_WARNING_MULTIPLES}"
+            message = f"{message} {_ROLLOUT_WARNING_AD_FRAGMENT} {PHASE_1_2_STOPGAP}"
         result = 1
     if result == -1 and is_compatibility_mode():
         return jsonify(dict(result=result, message=message))
@@ -124,10 +124,11 @@ class ClassicPrinter(APrinter):
             return "{ "
         r = '{ "epidata": ['
         if show_hard_api_key_warning() and requests_left() == 0:
-            r = f'{r} "{API_KEY_WARNING_TEXT}" '
+            warning = ROLLOUT_WARNING_RATE_LIMIT
             if get_multiples_count(request) < 0:
-                r += MULTIPLES_WARNING_TEST
-            r += f" {TEMPORARY_KEY_TEXT}"
+                warning = f"{warning} {ROLLOUT_WARNING_MULTIPLES}"
+            warning = f"{warning} {_ROLLOUT_WARNING_AD_FRAGMENT} {PHASE_1_2_STOPGAP}"
+            r = f'{r} "{warning}"'
         return r
 
     def _format_row(self, first: bool, row: Dict):
@@ -140,10 +141,10 @@ class ClassicPrinter(APrinter):
     def _end(self):
         message = "success"
         if show_soft_api_key_warning() and requests_left() == 0:
-            message = API_KEY_WARNING_TEXT
+            message = ROLLOUT_WARNING_RATE_LIMIT
             if get_multiples_count(request) < 0:
-                message += f" {MULTIPLES_WARNING_TEST}"
-            message += f" {TEMPORARY_KEY_TEXT}"
+                message = f"{message} {ROLLOUT_WARNING_MULTIPLES}"
+            message = f"{message} {_ROLLOUT_WARNING_AD_FRAGMENT} {PHASE_1_2_STOPGAP}"
         prefix = "], "
         if self.count == 0 and is_compatibility_mode() and not show_hard_api_key_warning():
             # no array to end
@@ -226,10 +227,10 @@ class CSVPrinter(APrinter):
             self._writer = DictWriter(self._stream, columns, lineterminator="\n")
             self._writer.writeheader()
             if show_hard_api_key_warning() and requests_left() == 0 and columns:
-                value = API_KEY_WARNING_TEXT
+                value = ROLLOUT_WARNING_RATE_LIMIT
                 if get_multiples_count(request) < 0:
-                    value += f" {MULTIPLES_WARNING_TEST}"
-                value += f" {TEMPORARY_KEY_TEXT}"
+                    value = f"{value} {ROLLOUT_WARNING_MULTIPLES}"
+                value = f"{value} {_ROLLOUT_WARNING_AD_FRAGMENT} {PHASE_1_2_STOPGAP}"
                 self._writer.writerow({columns[0]: value})
 
         self._writer.writerow(row)
@@ -254,10 +255,10 @@ class JSONPrinter(APrinter):
     def _begin(self):
         r = b"["
         if show_hard_api_key_warning() and requests_left() == 0:
-            msg = API_KEY_WARNING_TEXT
+            msg = ROLLOUT_WARNING_RATE_LIMIT
             if get_multiples_count(request) < 0:
-                msg += f" {MULTIPLES_WARNING_TEST}"
-            msg += f" {TEMPORARY_KEY_TEXT}"
+                msg = f"{msg} {ROLLOUT_WARNING_MULTIPLES}"
+            msg = f"{msg} {_ROLLOUT_WARNING_AD_FRAGMENT} {PHASE_1_2_STOPGAP}"
             r = b'["' + bytes(msg, "utf-8") + b'"'
         return r
 
@@ -279,10 +280,10 @@ class JSONLPrinter(APrinter):
 
     def _begin(self):
         if show_hard_api_key_warning() and requests_left() == 0:
-            msg = API_KEY_WARNING_TEXT
+            msg = ROLLOUT_WARNING_RATE_LIMIT
             if get_multiples_count(request) < 0:
-                msg += f" {MULTIPLES_WARNING_TEST}"
-            msg += f" {TEMPORARY_KEY_TEXT}"
+                msg = f"{msg} {ROLLOUT_WARNING_MULTIPLES}"
+            msg = f"{msg} {_ROLLOUT_WARNING_AD_FRAGMENT} {PHASE_1_2_STOPGAP}"
             return bytes(msg, "utf-8") + b"\n"
         return None
 
