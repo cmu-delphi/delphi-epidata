@@ -1,6 +1,6 @@
 from delphi.epidata.server.endpoints.covidcast_utils.dashboard_signals import DashboardSignals
 from flask import Response, g, request
-from flask_limiter import Limiter
+from flask_limiter import Limiter, HEADERS
 from redis import Redis
 from werkzeug.exceptions import Unauthorized
 
@@ -83,7 +83,16 @@ def _resolve_tracking_key() -> str:
 
 
 limiter = Limiter(
-    _resolve_tracking_key, app=app, storage_uri=RATELIMIT_STORAGE_URL, request_identifier=lambda: "EpidataLimiter"
+    _resolve_tracking_key,
+    app=app,
+    storage_uri=RATELIMIT_STORAGE_URL,
+    request_identifier=lambda: "EpidataLimiter",
+    headers_enabled=True,
+    header_name_mapping={
+        HEADERS.LIMIT: "X-My-Limit",
+        HEADERS.RESET: "X-My-Reset",
+        HEADERS.REMAINING: "X-My-Remaining",
+    },
 )
 
 apply_limit = limiter.limit(RATE_LIMIT, deduct_when=deduct_on_success)
