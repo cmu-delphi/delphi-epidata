@@ -60,17 +60,26 @@ def resolve_auth_token() -> Optional[str]:
     return None
 
 
+def show_no_api_key_warning() -> bool:
+    # aka "phase 0"
+    n = date.today()
+    return not current_user and n < API_KEY_SOFT_WARNING
+
+
 def show_soft_api_key_warning() -> bool:
+    # aka "phase 1"
     n = date.today()
     return not current_user and API_KEY_SOFT_WARNING <= n < API_KEY_HARD_WARNING
 
 
 def show_hard_api_key_warning() -> bool:
+    # aka "phase 2"
     n = date.today()
     return not current_user and API_KEY_HARD_WARNING <= n < API_KEY_REQUIRED_STARTING_AT
 
 
 def require_api_key() -> bool:
+    # aka "phase 3"
     n = date.today()
     return API_KEY_REQUIRED_STARTING_AT <= n
 
