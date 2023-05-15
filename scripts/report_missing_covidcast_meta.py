@@ -5,7 +5,7 @@ import pandas as pd
 from pathlib import Path
 
 base_dir = Path(__file__).parent.parent
-base_url = 'https://delphi.cmu.edu/epidata'
+base_url = 'https://api.covidcast.cmu.edu/epidata'
 
 def is_known_missing(source: str, signal: str) -> bool:
     if '7dav_cumulative' in signal:
