@@ -70,7 +70,7 @@ Please note that our `endpoint` parameters were previously referenced as `source
 
 # The API
 
-The base URL is: https://delphi.cmu.edu/epidata/
+The base URL is: https://api.covidcast.cmu.edu/epidata/
 
 ## Specifying Epiweeks, Dates, and Lists
 
@@ -154,7 +154,7 @@ The parameters available for each source are documented in each linked source-sp
 # Example URLs
 
 ### FluView on 2015w01 (national)
-https://delphi.cmu.edu/epidata/fluview/?regions=nat&epiweeks=201501
+https://api.covidcast.cmu.edu/epidata/fluview/?regions=nat&epiweeks=201501
 
 ```json
 {
@@ -184,7 +184,7 @@ https://delphi.cmu.edu/epidata/fluview/?regions=nat&epiweeks=201501
 ```
 
 ### Wikipedia Access article "influenza" on 2020w01
-https://delphi.cmu.edu/epidata/wiki/?language=en&articles=influenza&epiweeks=202001
+https://api.covidcast.cmu.edu/epidata/wiki/?language=en&articles=influenza&epiweeks=202001
 
 ```json
 {

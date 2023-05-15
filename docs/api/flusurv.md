@@ -26,7 +26,7 @@ See also:
 
 # The API
 
-The base URL is: https://delphi.cmu.edu/epidata/flusurv/
+The base URL is: https://api.covidcast.cmu.edu/epidata/flusurv/
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -79,7 +79,7 @@ Notes:
 # Example URLs
 
 ### FluSurv on 2020w01 (CA)
-https://delphi.cmu.edu/epidata/flusurv/?locations=ca&epiweeks=202001
+https://api.covidcast.cmu.edu/epidata/flusurv/?locations=ca&epiweeks=202001
 
 ```json
 {

@@ -19,7 +19,7 @@ General topics not specific to any particular endpoint are discussed in the
 
 # The API
 
-The base URL is: https://delphi.cmu.edu/epidata/meta/
+The base URL is: https://api.covidcast.cmu.edu/epidata/meta/
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -38,7 +38,7 @@ None.
 
 # Example URLs
 
-https://delphi.cmu.edu/epidata/meta/
+https://api.covidcast.cmu.edu/epidata/meta/
 
 ```json
 {
