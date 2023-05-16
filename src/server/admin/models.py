@@ -1,6 +1,7 @@
 from sqlalchemy import Table, ForeignKey, Column, Integer, String, Date, delete, update
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
+from copy import deepcopy
 
 from .._db import session
 from typing import Set, Optional, List
@@ -36,10 +37,20 @@ class User(Base):
 
     @property
     def as_dict(self):
-        user_dict = self.__dict__  # NOTE: changed from `self.__dict__.copy()` as it caused issues
+        user_dict = deepcopy(self.__dict__)  # NOTE: changed from `self.__dict__.copy()` as it caused issues
         # so we dont change the internal representation of self
         user_dict["roles"] = self.get_user_roles
-        return {k: user_dict[k] for k in ["id", "api_key", "email", "roles", "created", "last_time_used"]}
+        try:
+            return {k: user_dict[k] for k in ["id", "api_key", "email", "roles", "created", "last_time_used"]}
+        except KeyError:
+            return {
+                "id": self.id,
+                "api_key": self.api_key,
+                "email": self.email,
+                "roles": self.get_user_roles,
+                "created": self.created,
+                "last_time_used": self.last_time_used
+            }
 
     @property
     def get_user_roles(self) -> Set[str]:

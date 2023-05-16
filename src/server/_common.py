@@ -11,7 +11,7 @@ from delphi.epidata.common.logger import get_structured_logger
 from ._config import SECRET, REVERSE_PROXIED
 from ._db import engine
 from ._exceptions import DatabaseErrorException, EpiDataException
-from ._security import _get_current_user, _is_public_route, resolve_auth_token, update_key_last_time_used, ERROR_MSG_INVALID_KEY
+from ._security import _get_current_user, _is_public_route, resolve_auth_token, show_no_api_key_warning, update_key_last_time_used, ERROR_MSG_INVALID_KEY
 
 
 app = Flask("EpiData", static_url_path="")
@@ -86,11 +86,11 @@ def before_request_execute():
         user_agent=request.user_agent.string,
         api_key=api_key,
     )
-
-    if not _is_public_route() and api_key and not user:
-        # if this is a privleged endpoint, and an api key was given but it does not look up to a user, raise exception:
-        get_structured_logger("server_api").info("bad api key used", api_key=api_key)
-        raise Unauthorized(ERROR_MSG_INVALID_KEY)
+    if not show_no_api_key_warning():
+        if not _is_public_route() and api_key and not user:
+            # if this is a privleged endpoint, and an api key was given but it does not look up to a user, raise exception:
+            get_structured_logger("server_api").info("bad api key used", api_key=api_key)
+            raise Unauthorized(ERROR_MSG_INVALID_KEY)
 
     if request.path.startswith("/lib"):
         # files served from 'lib' directory don't need the database, so we can exit this early...
