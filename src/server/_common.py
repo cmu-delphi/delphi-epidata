@@ -43,6 +43,33 @@ access to the SQL Alchemy connection for this request
 db: Connection = cast(Connection, LocalProxy(_get_db))
 
 
+def log_info_with_request(message, **kwargs):
+    # TODO: make log level an option and check for key conflicts in kwargs
+    get_structured_logger("server_api").info(
+        message,
+        method=request.method,
+        url=request.url,
+        form_args=request.form,
+        req_length=request.content_length,
+        remote_addr=request.remote_addr,
+        real_remote_addr=get_real_ip_addr(request),
+        user_agent=request.user_agent.string,
+        api_key=resolve_auth_token(),
+        **kwargs
+    )
+
+def log_info_with_request_and_response(message, response, **kwargs):
+    # TODO: make log level an option and check for key conflicts in kwargs
+    log_info_with_request(
+        message,
+        values=request.values.to_dict(flat=False),
+        blueprint=request.blueprint,
+        endpoint=request.endpoint,
+        response_status=response.status,
+        content_length=response.calculate_content_length(),
+        **kwargs
+    )
+
 @event.listens_for(engine, "before_cursor_execute")
 def before_cursor_execute(conn, cursor, statement, parameters, context, executemany):
     context._query_start_time = time.time()
@@ -75,6 +102,7 @@ def before_request_execute():
     get_structured_logger("server_api").info("USER INFO", user=(user and user.as_dict))
 
     # Log statement
+    # TODO: replace this next call with: log_info_with_request("Received API request")
     get_structured_logger("server_api").info(
         "Received API request",
         method=request.method,
@@ -113,6 +141,7 @@ def after_request_execute(response):
 
     update_key_last_time_used(g.user)
 
+    # TODO: replace this next call with: log_info_with_request_and_response("Served API request", response, elapsed_time_ms=total_time)
     get_structured_logger("server_api").info(
         "Served API request",
         method=request.method,

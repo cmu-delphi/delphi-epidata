@@ -4,6 +4,8 @@ from sqlalchemy.orm import relationship
 from copy import deepcopy
 
 from .._db import session
+from delphi.epidata.common.logger import get_structured_logger
+
 from typing import Set, Optional, List
 from datetime import datetime as dtime
 
@@ -61,6 +63,7 @@ class User(Base):
 
     @staticmethod
     def assign_roles(user: "User", roles: Optional[Set[str]]) -> None:
+        get_structured_logger("api_user_models").info("setting roles", roles=roles, user_id=user.id, api_key=user.api_key)
         if roles:
             roles_to_assign = session.query(UserRole).filter(UserRole.name.in_(roles)).all()
             user.roles = roles_to_assign
@@ -82,6 +85,7 @@ class User(Base):
 
     @staticmethod
     def create_user(api_key: str, email: str, user_roles: Optional[Set[str]] = None) -> "User":
+        get_structured_logger("api_user_models").info("creating user", api_key=api_key)
         new_user = User(api_key=api_key, email=email)
         session.add(new_user)
         session.commit()
@@ -95,6 +99,7 @@ class User(Base):
         api_key: Optional[str],
         roles: Optional[Set[str]]
     ) -> "User":
+        get_structured_logger("api_user_models").info("updating user", user_id=user.id, new_api_key=api_key)
         user = User.find_user(user_id=user.id)
         if user:
             update_stmt = (
@@ -109,6 +114,7 @@ class User(Base):
 
     @staticmethod
     def delete_user(user_id: int) -> None:
+        get_structured_logger("api_user_models").info("deleting user", user_id=user_id)
         session.execute(delete(User).where(User.id == user_id))
         session.commit()
 
@@ -120,6 +126,7 @@ class UserRole(Base):
 
     @staticmethod
     def create_role(name: str) -> None:
+        get_structured_logger("api_user_models").info("creating user role", role=name)
         session.execute(
             f"""
         INSERT INTO user_role (name)

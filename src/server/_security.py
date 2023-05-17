@@ -117,7 +117,7 @@ def require_role(required_role: str):
                 get_structured_logger("api_security").info(
                     ERROR_MSG_INVALID_ROLE,
                     role=required_role,
-                    user=(current_user and current_user.api_key),
+                    api_key=(current_user and current_user.api_key),
                 )
                 raise Unauthorized(ERROR_MSG_INVALID_ROLE)
             return f(*args, **kwargs)

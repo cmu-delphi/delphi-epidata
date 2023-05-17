@@ -9,7 +9,7 @@ import orjson
 from ._config import MAX_RESULTS, MAX_COMPATIBILITY_RESULTS
 # TODO: remove warnings after once we are past the API_KEY_REQUIRED_STARTING_AT date
 from ._security import show_hard_api_key_warning, show_soft_api_key_warning, ROLLOUT_WARNING_RATE_LIMIT, ROLLOUT_WARNING_MULTIPLES, _ROLLOUT_WARNING_AD_FRAGMENT, PHASE_1_2_STOPGAP
-from ._common import is_compatibility_mode
+from ._common import is_compatibility_mode, log_info_with_request
 from ._limiter import requests_left, get_multiples_count
 from delphi.epidata.common.logger import get_structured_logger
 
@@ -80,6 +80,7 @@ class APrinter:
                     yield r
 
             r = self._end()
+            log_info_with_request("APrinter finished processing rows", count=self.count)
             if r is not None:
                 yield r
 
@@ -101,6 +102,8 @@ class APrinter:
         first = self.count == 0
         if self.count >= self._max_results:
             # hit the limit
+            # TODO: consider making this a WARN-level log event
+            log_info_with_request("Max result limit reached", count=self.count)
             self.result = 2
             return None
         if first:
