@@ -21,7 +21,7 @@
     factory(root, root.fetch, root.jQuery || root.$);
   }
 })(this, function (exports, fetchImpl, jQuery) {
-  const BASE_URL = "https://api.covidcast.cmu.edu/epidata/";
+  const BASE_URL = "https://api.delphi.cmu.edu/epidata/";
   const client_version = "0.4.11";
 
   // Helper function to cast values and/or ranges to strings

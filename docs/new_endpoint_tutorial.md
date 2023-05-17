@@ -325,7 +325,7 @@ actual
 created in this tutorial.
 
 Once it's approved, merge the PR, and contact an admin to schedule a release. Once released, the API will begin serving your new endpoint. Go ahead and give it a
-try: https://api.covidcast.cmu.edu/epidata/fluview_meta/
+try: https://api.delphi.cmu.edu/epidata/fluview_meta/
 
 ```
 {

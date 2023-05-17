@@ -13,7 +13,7 @@ library(httr)
 Epidata <- (function() {
 
   # API base url
-  BASE_URL <- 'https://api.covidcast.cmu.edu/epidata/api.php'
+  BASE_URL <- 'https://api.delphi.cmu.edu/epidata/api.php'
 
   client_version <- '0.4.11'
 

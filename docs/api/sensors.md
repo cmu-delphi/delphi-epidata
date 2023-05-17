@@ -29,7 +29,7 @@ the COVID-19 pandemic.
 
 # The API
 
-The base URL is: https://api.covidcast.cmu.edu/epidata/sensors/
+The base URL is: https://api.delphi.cmu.edu/epidata/sensors/
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -70,7 +70,7 @@ Notes:
 # Example URLs
 
 ### Delphi's Digital Surveillance SAR3 Sensor on 2020w01 (national)
-https://api.covidcast.cmu.edu/epidata/sensors/?names=sar3&locations=nat&epiweeks=202001
+https://api.delphi.cmu.edu/epidata/sensors/?names=sar3&locations=nat&epiweeks=202001
 
 ```json
 {
