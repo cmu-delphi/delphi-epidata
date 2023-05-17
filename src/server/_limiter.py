@@ -72,6 +72,8 @@ def check_signals_allowlist(request):
         request_signals += extract_strings("signal")
     if "signals" in request.args.keys():
         request_signals += extract_strings("signals")
+    if "data_source" in request.args:
+        request_signals = [f"{request.args['data_source']}:{request_signal}" for request_signal in request_signals]
     if len(request_signals) == 0:
         return False
     return all([signal in signals_allowlist for signal in request_signals])
