@@ -31,7 +31,8 @@ def print_non_standard(format: str, data):
                 message = f"{message} {ROLLOUT_WARNING_RATE_LIMIT}"
             if get_multiples_count(request) < 0:
                 message = f"{message} {ROLLOUT_WARNING_MULTIPLES}"
-            message = f"{message} {_ROLLOUT_WARNING_AD_FRAGMENT} {PHASE_1_2_STOPGAP}"
+            if requests_left() == 0 or get_multiples_count(request) < 0:
+                message = f"{message} {_ROLLOUT_WARNING_AD_FRAGMENT} {PHASE_1_2_STOPGAP}"
         else:
             message = "success"
         result = 1
@@ -135,7 +136,8 @@ class ClassicPrinter(APrinter):
                 message = f"{message} {ROLLOUT_WARNING_RATE_LIMIT}"
             if get_multiples_count(request) < 0:
                 message = f"{message} {ROLLOUT_WARNING_MULTIPLES}"
-            message = f"{message} {_ROLLOUT_WARNING_AD_FRAGMENT} {PHASE_1_2_STOPGAP}"
+            if requests_left() == 0 or get_multiples_count(request) < 0:
+                message = f"{message} {_ROLLOUT_WARNING_AD_FRAGMENT} {PHASE_1_2_STOPGAP}"
             return f'{r} "{message}"'
         return r
 
@@ -153,7 +155,8 @@ class ClassicPrinter(APrinter):
                 message = f"{message} {ROLLOUT_WARNING_RATE_LIMIT}"
             if get_multiples_count(request) < 0:
                 message = f"{message} {ROLLOUT_WARNING_MULTIPLES}"
-            message = f"{message} {_ROLLOUT_WARNING_AD_FRAGMENT} {PHASE_1_2_STOPGAP}"
+            if requests_left() == 0 or get_multiples_count(request) < 0:
+                message = f"{message} {_ROLLOUT_WARNING_AD_FRAGMENT} {PHASE_1_2_STOPGAP}"
         else:
             message = "success"
         prefix = "], "
@@ -243,7 +246,8 @@ class CSVPrinter(APrinter):
                     message = f"{message} {ROLLOUT_WARNING_RATE_LIMIT}"
                 if get_multiples_count(request) < 0:
                     message = f"{message} {ROLLOUT_WARNING_MULTIPLES}"
-                message = f"{message} {_ROLLOUT_WARNING_AD_FRAGMENT} {PHASE_1_2_STOPGAP}"
+                if requests_left() == 0 or get_multiples_count(request) < 0:
+                    message = f"{message} {_ROLLOUT_WARNING_AD_FRAGMENT} {PHASE_1_2_STOPGAP}"
                 self._writer.writerow({columns[0]: message})
 
         self._writer.writerow(row)
@@ -273,7 +277,8 @@ class JSONPrinter(APrinter):
                 message = f"{message} {ROLLOUT_WARNING_RATE_LIMIT}"
             if get_multiples_count(request) < 0:
                 message = f"{message} {ROLLOUT_WARNING_MULTIPLES}"
-            message = f"{message} {_ROLLOUT_WARNING_AD_FRAGMENT} {PHASE_1_2_STOPGAP}"
+            if requests_left() == 0 or get_multiples_count(request) < 0:
+                message = f"{message} {_ROLLOUT_WARNING_AD_FRAGMENT} {PHASE_1_2_STOPGAP}"
             r = b'["' + bytes(message, "utf-8") + b'"'
         return r
 
@@ -301,7 +306,8 @@ class JSONLPrinter(APrinter):
                 message = f"{message} {ROLLOUT_WARNING_RATE_LIMIT}"
             if get_multiples_count(request) < 0:
                 message = f"{message} {ROLLOUT_WARNING_MULTIPLES}"
-            message = f"{message} {_ROLLOUT_WARNING_AD_FRAGMENT} {PHASE_1_2_STOPGAP}"
+            if requests_left() == 0 or get_multiples_count(request) < 0:
+                message = f"{message} {_ROLLOUT_WARNING_AD_FRAGMENT} {PHASE_1_2_STOPGAP}"
             return bytes(message, "utf-8") + b"\n"
         return None
 
