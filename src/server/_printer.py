@@ -25,8 +25,8 @@ def print_non_standard(format: str, data):
         message = "no results"
         result = -2
     else:
-        message = ""
         if show_hard_api_key_warning():
+            message = ""
             if requests_left() == 0:
                 message = f"{message} {ROLLOUT_WARNING_RATE_LIMIT}"
             if get_multiples_count(request) < 0:
@@ -126,14 +126,14 @@ class ClassicPrinter(APrinter):
         if is_compatibility_mode() and not show_hard_api_key_warning():
             return "{ "
         r = '{ "epidata": ['
-        message = ""
         if show_hard_api_key_warning():
+            message = ""
             if requests_left() == 0:
                 message = f"{message} {ROLLOUT_WARNING_RATE_LIMIT}"
             if get_multiples_count(request) < 0:
                 message = f"{message} {ROLLOUT_WARNING_MULTIPLES}"
             message = f"{message} {_ROLLOUT_WARNING_AD_FRAGMENT} {PHASE_1_2_STOPGAP}"
-        r = f'{r} "{message}"'
+            return f'{r} "{message}"'
         return r
 
     def _format_row(self, first: bool, row: Dict):
