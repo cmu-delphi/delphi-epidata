@@ -7,10 +7,11 @@ has_children: true
 # Epidata API Keys
 
 Anyone may access the Epidata API anonymously without providing any personal
-data. Anonymous API access is subject to the following restrictions:
+data. Anonymous API access is subject to the following restrictions; they may
+change as we learn more about their impact:
 
 1. public datasets only
-1. rate-limited to 100 requests per hour
+1. rate-limited to 60 requests per hour
 1. only two parameters may have multiple selections
 
 For example, a query for three signals on one date across all counties can be
@@ -22,7 +23,6 @@ Epidata API. You can request an API key by
 [registering with us](https://forms.gle/hkBr5SfQgxguAfEt7).
 Privileges of registration may include:
 
-1. restricted-access datasets
 1. no rate limit
 1. no limit on multiple selections
 
