@@ -20,8 +20,9 @@ data. Anonymous API access is currently rate-limited and restricted to public
 datasets with a maximum of two of the requested parameters having multiple
 selections (signals, dates, versions, regions, etc).
 
-To request access to restricted datasets, no rate limit, and unlimited multiple
+To request access with no rate limit and unlimited multiple
 selections, you can [request a registered API key](https://forms.gle/hkBr5SfQgxguAfEt7).
+For policy and usage details, consult the [Epidata API keys documentation](api/api_keys.md).
 
 If you regularly or frequently use our system, please consider using an API key
 even if your usage falls within the anonymous usage limits. API key usage helps
