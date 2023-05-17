@@ -178,9 +178,13 @@ def handle():
             q.params["as_of"] = as_of
         union_subquery = f'''
         (
-            SELECT *, 'D' as record_type, ROW_NUMBER() OVER (PARTITION BY date, state ORDER BY issue DESC) row_d FROM `covid_hosp_state_daily` c WHERE {cond_clause} AND row_d = 1
+            SELECT * FROM (
+                SELECT *, 'D' as record_type, ROW_NUMBER() OVER (PARTITION BY date, state ORDER BY issue DESC) row_d FROM `covid_hosp_state_daily` c WHERE {cond_clause}
+            ) WHERE row_d = 1
             UNION ALL
-            SELECT *, 'T' as record_type, ROW_NUMBER() OVER (PARTITION BY date, state ORDER BY issue DESC) row_t FROM `covid_hosp_state_timeseries` c WHERE {cond_clause} AND row_t = 1
+            SELECT * FROM (
+                SELECT *, 'T' as record_type, ROW_NUMBER() OVER (PARTITION BY date, state ORDER BY issue DESC) row_t FROM `covid_hosp_state_timeseries` c WHERE {cond_clause}
+            ) WHERE row_t = 1
         ) c'''
         query = f'''
             SELECT {q.fields_clause} FROM (
