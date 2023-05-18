@@ -145,7 +145,7 @@ class ClassicPrinter(APrinter):
         if first and is_compatibility_mode() and not show_hard_api_key_warning():
             sep = b'"epidata": ['
         else:
-            sep = b"," if not first or (show_hard_api_key_warning() and requests_left() == 0) else b""
+            sep = b"," if not first or show_hard_api_key_warning() or requests_left() == 0 or get_multiples_count(request) < 0 else b""
         return sep + orjson.dumps(row)
 
     def _end(self):
@@ -284,7 +284,7 @@ class JSONPrinter(APrinter):
         return r
 
     def _format_row(self, first: bool, row: Dict):
-        sep = b"," if not first or (show_hard_api_key_warning() and (requests_left() == 0 or get_multiples_count(request) < 0)) else b""
+        sep = b"," if not first or (show_hard_api_key_warning() or (requests_left() == 0 or get_multiples_count(request) < 0)) else b""
         return sep + orjson.dumps(row)
 
     def _end(self):
