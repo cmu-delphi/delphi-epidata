@@ -32,7 +32,7 @@ personal information you provide to us at registration will be much appreciated,
 because it will help us understand what our data is used for and inform our
 plans and priorities, but is voluntary. For more information on how we use and
 store the information you provide us at registration time, see our
-[privacy statement](api/privacy_statement.md).
+[privacy statement](privacy_statement.md).
 
 ## Usage
 
