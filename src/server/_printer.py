@@ -138,14 +138,14 @@ class ClassicPrinter(APrinter):
             if requests_left() == 0 or get_multiples_count(request) < 0:
                 warning = f"{warning} {_ROLLOUT_WARNING_AD_FRAGMENT} {PHASE_1_2_STOPGAP}"
             if warning != "":
-                return f'{r} "{warning.strip()}"'
+                return f'{r} "{warning.strip()}",'
         return r
 
     def _format_row(self, first: bool, row: Dict):
         if first and is_compatibility_mode() and not show_hard_api_key_warning():
             sep = b'"epidata": ['
         else:
-            sep = b"," if not first or show_hard_api_key_warning() or requests_left() == 0 or get_multiples_count(request) < 0 else b""
+            sep = b"," if not first else b""
         return sep + orjson.dumps(row)
 
     def _end(self):
@@ -280,11 +280,11 @@ class JSONPrinter(APrinter):
             if requests_left() == 0 or get_multiples_count(request) < 0:
                 warning = f"{warning} {_ROLLOUT_WARNING_AD_FRAGMENT} {PHASE_1_2_STOPGAP}"
             if warning.strip() != "":
-                r = b'["' + bytes(warning, "utf-8") + b'"'
+                r = b'["' + bytes(warning, "utf-8") + b'",'
         return r
 
     def _format_row(self, first: bool, row: Dict):
-        sep = b"," if not first or (show_hard_api_key_warning() or (requests_left() == 0 or get_multiples_count(request) < 0)) else b""
+        sep = b"," if not first else b""
         return sep + orjson.dumps(row)
 
     def _end(self):
