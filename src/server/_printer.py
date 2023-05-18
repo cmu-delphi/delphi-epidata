@@ -25,8 +25,8 @@ def print_non_standard(format: str, data):
         message = "no results"
         result = -2
     else:
+        warning = ""
         if show_hard_api_key_warning():
-            warning = ""
             if requests_left() == 0:
                 warning = f"{ROLLOUT_WARNING_RATE_LIMIT}"
             if get_multiples_count(request) < 0:
@@ -149,8 +149,8 @@ class ClassicPrinter(APrinter):
         return sep + orjson.dumps(row)
 
     def _end(self):
+        warning = ""
         if show_soft_api_key_warning():
-            warning = ""
             if requests_left() == 0:
                 warning = f"{warning} {ROLLOUT_WARNING_RATE_LIMIT}"
             if get_multiples_count(request) < 0:
