@@ -26,15 +26,14 @@ def print_non_standard(format: str, data):
         result = -2
     else:
         if show_hard_api_key_warning():
-            message = ""
+            warning = ""
             if requests_left() == 0:
-                message = f"{message} {ROLLOUT_WARNING_RATE_LIMIT}"
+                warning = f"{ROLLOUT_WARNING_RATE_LIMIT}"
             if get_multiples_count(request) < 0:
-                message = f"{message} {ROLLOUT_WARNING_MULTIPLES}"
+                warning = f"{warning} {ROLLOUT_WARNING_MULTIPLES}"
             if requests_left() == 0 or get_multiples_count(request) < 0:
-                message = f"{message} {_ROLLOUT_WARNING_AD_FRAGMENT} {PHASE_1_2_STOPGAP}"
-        else:
-            message = "success"
+                warning = f"{warning} {_ROLLOUT_WARNING_AD_FRAGMENT} {PHASE_1_2_STOPGAP}"
+        message = warning.strip() or "success"
         result = 1
     if result == -1 and is_compatibility_mode():
         return jsonify(dict(result=result, message=message))
@@ -131,14 +130,15 @@ class ClassicPrinter(APrinter):
             return "{ "
         r = '{ "epidata": ['
         if show_hard_api_key_warning():
-            message = ""
+            warning = ""
             if requests_left() == 0:
-                message = f"{message} {ROLLOUT_WARNING_RATE_LIMIT}"
+                warning = f"{warning} {ROLLOUT_WARNING_RATE_LIMIT}"
             if get_multiples_count(request) < 0:
-                message = f"{message} {ROLLOUT_WARNING_MULTIPLES}"
+                warning = f"{warning} {ROLLOUT_WARNING_MULTIPLES}"
             if requests_left() == 0 or get_multiples_count(request) < 0:
-                message = f"{message} {_ROLLOUT_WARNING_AD_FRAGMENT} {PHASE_1_2_STOPGAP}"
-            return f'{r} "{message}"'
+                warning = f"{warning} {_ROLLOUT_WARNING_AD_FRAGMENT} {PHASE_1_2_STOPGAP}"
+            if warning != "":
+                return f'{r} "{warning.strip()}"'
         return r
 
     def _format_row(self, first: bool, row: Dict):
@@ -149,16 +149,15 @@ class ClassicPrinter(APrinter):
         return sep + orjson.dumps(row)
 
     def _end(self):
-        message = ""
         if show_soft_api_key_warning():
+            warning = ""
             if requests_left() == 0:
-                message = f"{message} {ROLLOUT_WARNING_RATE_LIMIT}"
+                warning = f"{warning} {ROLLOUT_WARNING_RATE_LIMIT}"
             if get_multiples_count(request) < 0:
-                message = f"{message} {ROLLOUT_WARNING_MULTIPLES}"
+                warning = f"{warning} {ROLLOUT_WARNING_MULTIPLES}"
             if requests_left() == 0 or get_multiples_count(request) < 0:
-                message = f"{message} {_ROLLOUT_WARNING_AD_FRAGMENT} {PHASE_1_2_STOPGAP}"
-        else:
-            message = "success"
+                warning = f"{warning} {_ROLLOUT_WARNING_AD_FRAGMENT} {PHASE_1_2_STOPGAP}"
+        message = warning.strip() or "success"
         prefix = "], "
         if self.count == 0 and is_compatibility_mode() and not show_hard_api_key_warning():
             # no array to end
@@ -206,7 +205,7 @@ class ClassicTreePrinter(ClassicPrinter):
         self._tree = dict()
         r = super(ClassicTreePrinter, self)._end()
         r = tree + r
-        if show_hard_api_key_warning() and requests_left() == 0:
+        if show_hard_api_key_warning() and (requests_left() == 0 or get_multiples_count(request) < 0):
             r = b", " + r
         return r
 
@@ -241,14 +240,15 @@ class CSVPrinter(APrinter):
             self._writer = DictWriter(self._stream, columns, lineterminator="\n")
             self._writer.writeheader()
             if show_hard_api_key_warning():
-                message = ""
+                warning = ""
                 if requests_left() == 0:
-                    message = f"{message} {ROLLOUT_WARNING_RATE_LIMIT}"
+                    warning = f"{warning} {ROLLOUT_WARNING_RATE_LIMIT}"
                 if get_multiples_count(request) < 0:
-                    message = f"{message} {ROLLOUT_WARNING_MULTIPLES}"
+                    warning = f"{warning} {ROLLOUT_WARNING_MULTIPLES}"
                 if requests_left() == 0 or get_multiples_count(request) < 0:
-                    message = f"{message} {_ROLLOUT_WARNING_AD_FRAGMENT} {PHASE_1_2_STOPGAP}"
-                self._writer.writerow({columns[0]: message})
+                    warning = f"{warning} {_ROLLOUT_WARNING_AD_FRAGMENT} {PHASE_1_2_STOPGAP}"
+                if warning.strip() != "":
+                    self._writer.writerow({columns[0]: warning})
 
         self._writer.writerow(row)
 
@@ -272,18 +272,19 @@ class JSONPrinter(APrinter):
     def _begin(self):
         r = b"["
         if show_hard_api_key_warning():
-            message = ""
+            warning = ""
             if requests_left() == 0:
-                message = f"{message} {ROLLOUT_WARNING_RATE_LIMIT}"
+                warning = f"{warning} {ROLLOUT_WARNING_RATE_LIMIT}"
             if get_multiples_count(request) < 0:
-                message = f"{message} {ROLLOUT_WARNING_MULTIPLES}"
+                warning = f"{warning} {ROLLOUT_WARNING_MULTIPLES}"
             if requests_left() == 0 or get_multiples_count(request) < 0:
-                message = f"{message} {_ROLLOUT_WARNING_AD_FRAGMENT} {PHASE_1_2_STOPGAP}"
-            r = b'["' + bytes(message, "utf-8") + b'"'
+                warning = f"{warning} {_ROLLOUT_WARNING_AD_FRAGMENT} {PHASE_1_2_STOPGAP}"
+            if warning.strip() != "":
+                r = b'["' + bytes(warning, "utf-8") + b'"'
         return r
 
     def _format_row(self, first: bool, row: Dict):
-        sep = b"," if not first or (show_hard_api_key_warning() and requests_left() == 0) else b""
+        sep = b"," if not first or (show_hard_api_key_warning() and (requests_left() == 0 or get_multiples_count(request) < 0)) else b""
         return sep + orjson.dumps(row)
 
     def _end(self):
@@ -299,16 +300,16 @@ class JSONLPrinter(APrinter):
         return Response(gen, mimetype=" text/plain; charset=utf8")
 
     def _begin(self):
-        message = ""
         if show_hard_api_key_warning():
-            message = ""
+            warning = ""
             if requests_left() == 0:
-                message = f"{message} {ROLLOUT_WARNING_RATE_LIMIT}"
+                warning = f"{warning} {ROLLOUT_WARNING_RATE_LIMIT}"
             if get_multiples_count(request) < 0:
-                message = f"{message} {ROLLOUT_WARNING_MULTIPLES}"
+                warning = f"{warning} {ROLLOUT_WARNING_MULTIPLES}"
             if requests_left() == 0 or get_multiples_count(request) < 0:
-                message = f"{message} {_ROLLOUT_WARNING_AD_FRAGMENT} {PHASE_1_2_STOPGAP}"
-            return bytes(message, "utf-8") + b"\n"
+                warning = f"{warning} {_ROLLOUT_WARNING_AD_FRAGMENT} {PHASE_1_2_STOPGAP}"
+            if warning.strip() != "":
+                return bytes(warning, "utf-8") + b"\n"
         return None
 
     def _format_row(self, first: bool, row: Dict):
