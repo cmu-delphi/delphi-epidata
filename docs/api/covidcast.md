@@ -1,7 +1,7 @@
 ---
 title: COVIDcast Main Endpoint
 has_children: true
-nav_order: 1
+nav_order: 2
 ---
 
 # COVIDcast Epidata API
@@ -92,7 +92,7 @@ sources and signals.
 ## Constructing API Queries
 
 The COVIDcast API is based on HTTP GET queries and returns data in JSON form.
-The base URL is `https://api.covidcast.cmu.edu/epidata/covidcast/`.
+The base URL is `https://api.delphi.cmu.edu/epidata/covidcast/`.
 
 See [this documentation](README.md) for details on specifying epiweeks, dates,
 and lists.
@@ -207,7 +207,7 @@ The `fields` parameter can be used to limit which fields are included in each re
 
 ### Facebook Survey CLI on 2020-04-06 to 2010-04-10 (county 06001)
 
-https://api.covidcast.cmu.edu/epidata/covidcast/?data_source=fb-survey&signal=smoothed_cli&time_type=day&geo_type=county&time_values=20200406-20200410&geo_value=06001
+https://api.delphi.cmu.edu/epidata/covidcast/?data_source=fb-survey&signal=smoothed_cli&time_type=day&geo_type=county&time_values=20200406-20200410&geo_value=06001
 
 ```json
 {
@@ -229,7 +229,7 @@ https://api.covidcast.cmu.edu/epidata/covidcast/?data_source=fb-survey&signal=sm
 
 ### Facebook Survey CLI on 2020-04-06 (all counties)
 
-https://api.covidcast.cmu.edu/epidata/covidcast/?data_source=fb-survey&signal=smoothed_cli&time_type=day&geo_type=county&time_values=20200406&geo_value=*
+https://api.delphi.cmu.edu/epidata/covidcast/?data_source=fb-survey&signal=smoothed_cli&time_type=day&geo_type=county&time_values=20200406&geo_value=*
 
 ```json
 {

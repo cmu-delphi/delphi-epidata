@@ -33,7 +33,7 @@ class Epidata:
   """An interface to DELPHI's Epidata API."""
 
   # API base url
-  BASE_URL = 'https://delphi.cmu.edu/epidata/api.php'
+  BASE_URL = 'https://api.delphi.cmu.edu/epidata/api.php'
 
   client_version = _version
 
