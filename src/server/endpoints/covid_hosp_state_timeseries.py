@@ -165,7 +165,7 @@ def handle():
         ) c'''
         query = f'''
             SELECT {q.fields_clause} FROM (
-                SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY date, state, issue ORDER BY record_type) `row`
+                SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY state, date, issue ORDER BY record_type) `row`
                 FROM {union_subquery}
             ) {q.alias} WHERE `row` = 1 ORDER BY {q.order_clause}
         '''
@@ -179,16 +179,16 @@ def handle():
         union_subquery = f'''
         (
             SELECT * FROM (
-                SELECT *, 'D' as record_type, ROW_NUMBER() OVER (PARTITION BY date, state ORDER BY issue DESC) row_d FROM `covid_hosp_state_daily` c WHERE {cond_clause}
+                SELECT *, 'D' as record_type, ROW_NUMBER() OVER (PARTITION BY state, date ORDER BY issue DESC) row_d FROM `covid_hosp_state_daily` c WHERE {cond_clause}
             ) sub_d WHERE row_d = 1
             UNION ALL
             SELECT * FROM (
-                SELECT *, 'T' as record_type, ROW_NUMBER() OVER (PARTITION BY date, state ORDER BY issue DESC) row_t FROM `covid_hosp_state_timeseries` c WHERE {cond_clause}
+                SELECT *, 'T' as record_type, ROW_NUMBER() OVER (PARTITION BY state, date ORDER BY issue DESC) row_t FROM `covid_hosp_state_timeseries` c WHERE {cond_clause}
             ) sub_t WHERE row_t = 1
         ) c'''
         query = f'''
             SELECT {q.fields_clause} FROM (
-                SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY date, state ORDER BY issue DESC, record_type) `row`
+                SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY state, date ORDER BY issue DESC, record_type) `row`
                 FROM {union_subquery}
             ) {q.alias} WHERE `row` = 1 ORDER BY {q.order_clause}
         '''
