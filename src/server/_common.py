@@ -11,7 +11,7 @@ from delphi.epidata.common.logger import get_structured_logger
 from ._config import SECRET, REVERSE_PROXIED
 from ._db import engine
 from ._exceptions import DatabaseErrorException, EpiDataException
-from ._security import _get_current_user, _is_public_route, resolve_auth_token, show_no_api_key_warning, update_key_last_time_used, ERROR_MSG_INVALID_KEY
+from ._security import current_user, _is_public_route, resolve_auth_token, show_no_api_key_warning, update_key_last_time_used, ERROR_MSG_INVALID_KEY
 
 
 app = Flask("EpiData", static_url_path="")
@@ -24,6 +24,11 @@ def _get_db() -> Connection:
         g.db = conn
     return g.db
 
+"""
+access to the SQL Alchemy connection for this request
+"""
+db: Connection = cast(Connection, LocalProxy(_get_db))
+
 
 def get_real_ip_addr(req):  # `req` should be a Flask.request object
     if REVERSE_PROXIED:
@@ -35,12 +40,6 @@ def get_real_ip_addr(req):  # `req` should be a Flask.request object
         if "X-Real-Ip" in req.headers:
             return req.headers["X-Real-Ip"]
     return req.remote_addr
-
-
-"""
-access to the SQL Alchemy connection for this request
-"""
-db: Connection = cast(Connection, LocalProxy(_get_db))
 
 
 def log_info_with_request(message, **kwargs):
@@ -95,7 +94,7 @@ def before_request_execute():
     # Set timer for statement
     g._request_start_time = time.time()
 
-    user = _get_current_user()
+    user = current_user
     api_key = resolve_auth_token()
 
     # TODO: remove after testing -- what does `user` look like in logs?  dont forget, we DONT wanna print `user` info to logs in prod!!!
@@ -139,7 +138,7 @@ def after_request_execute(response):
 
     api_key = resolve_auth_token()
 
-    update_key_last_time_used(g.user)
+    update_key_last_time_used(current_user)
 
     # TODO: replace this next call with: log_info_with_request_and_response("Served API request", response, elapsed_time_ms=total_time)
     get_structured_logger("server_api").info(

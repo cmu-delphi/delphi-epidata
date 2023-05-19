@@ -1,5 +1,5 @@
 from delphi.epidata.server.endpoints.covidcast_utils.dashboard_signals import DashboardSignals
-from flask import Response, g, request, make_response, jsonify
+from flask import Response, request, make_response, jsonify
 from flask_limiter import Limiter, HEADERS
 from redis import Redis
 from werkzeug.exceptions import Unauthorized
@@ -8,7 +8,7 @@ from ._common import app, get_real_ip_addr
 from ._config import RATE_LIMIT, RATELIMIT_STORAGE_URL, REDIS_HOST, REDIS_PASSWORD
 from ._exceptions import ValidationFailedException
 from ._params import extract_dates, extract_integers, extract_strings
-from ._security import _is_public_route, require_api_key, show_no_api_key_warning, resolve_auth_token, ERROR_MSG_RATE_LIMIT, ERROR_MSG_MULTIPLES
+from ._security import _is_public_route, current_user, require_api_key, show_no_api_key_warning, resolve_auth_token, ERROR_MSG_RATE_LIMIT, ERROR_MSG_MULTIPLES
 
 
 def deduct_on_success(response: Response) -> bool:
@@ -125,7 +125,7 @@ def _no_rate_limit() -> bool:
     if _is_public_route():
         # no rate limit for public routes
         return True
-    if g.user is not None:
+    if current_user:
         # no rate limit if user is registered
         return True
 
