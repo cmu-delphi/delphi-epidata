@@ -176,20 +176,31 @@ def handle():
             # ...Filter for most recent issues before a given as_of
             cond_clause += " AND (issue <= :as_of)"
             q.params["as_of"] = as_of
-
+        union_subquery = f'''
+        (
+            SELECT {q.fields_clause}, 'D' AS record_type FROM `covid_hosp_state_daily` c
+            INNER JOIN (
+                SELECT c.state, c.date, MAX(c.issue) AS max_issue
+                FROM `covid_hosp_state_daily` c
+                WHERE {cond_clause}
+                GROUP BY c.state, c.date
+            ) x
+            ON c.state = x.state AND c.date = x.date AND c.issue = x.max_issue
+            UNION ALL
+            SELECT {q.fields_clause}, 'T' AS record_type FROM `covid_hosp_state_timeseries` c
+            INNER JOIN (
+                SELECT c.state, c.date, MAX(issue) AS max_issue
+                FROM `covid_hosp_state_timeseries` c
+                WHERE {cond_clause}
+                GROUP BY c.state, c.date
+            ) x
+            ON c.state = x.state AND c.date = x.date AND c.issue = x.max_issue
+        ) {q.alias}'''
         query = f'''
-        SELECT {q.fields_clause} FROM (
-            SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY state, date ORDER BY issue DESC, record_type) `row`
-            FROM (
-                SELECT {q.fields_clause}, 'D' as record_type FROM (
-                    SELECT {q.fields_clause}, max(issue) OVER (PARTITION BY state, date) `max_issue` FROM `covid_hosp_state_daily` c WHERE {cond_clause}
-                ) c WHERE issue = max_issue
-                UNION ALL
-                SELECT {q.fields_clause}, 'T' as record_type FROM (
-                    SELECT {q.fields_clause}, max(issue) OVER (PARTITION BY state, date) `max_issue` FROM `covid_hosp_state_timeseries` c WHERE {cond_clause}
-                ) c WHERE issue = max_issue
-            ) c
-        ) c WHERE `row` = 1 ORDER BY {q.order_clause}
+            SELECT {q.fields_clause} FROM (
+                SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY state, date ORDER BY issue DESC, record_type) `row`
+                FROM {union_subquery}
+            ) {q.alias} WHERE `row` = 1 ORDER BY {q.order_clause}
         '''
 
     # send query
