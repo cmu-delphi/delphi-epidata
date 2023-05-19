@@ -187,10 +187,10 @@ def handle():
             ) x
             ON c.state = x.state AND c.date = x.date AND c.issue = x.max_issue
             UNION ALL
-            SELECT *, 'D' AS RECORD_TYPE FROM `covid_hosp_state_timeseries` c
+            SELECT *, 'T' AS RECORD_TYPE FROM `covid_hosp_state_timeseries` c
             INNER JOIN (
                 SELECT state, date, MAX(issue) AS max_issue
-                FROM `covid_hosp_state_daily` c
+                FROM `covid_hosp_state_timeseries` c
                 WHERE {cond_clause}
                 GROUP BY state, date
             ) x
