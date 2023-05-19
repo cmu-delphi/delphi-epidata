@@ -178,23 +178,23 @@ def handle():
             q.params["as_of"] = as_of
         union_subquery = f'''
         (
-            SELECT *, 'D' AS record_type FROM `covid_hosp_state_daily` c
+            SELECT *, 'D' AS record_type FROM `covid_hosp_state_daily` cc
             INNER JOIN (
-                SELECT state, date, MAX(issue) AS max_issue
+                SELECT c.state, c.date, MAX(c.issue) AS max_issue
                 FROM `covid_hosp_state_daily` c
                 WHERE {cond_clause}
-                GROUP BY state, date
+                GROUP BY c.state, c.date
             ) x
-            ON c.state = x.state AND c.date = x.date AND c.issue = x.max_issue
+            ON cc.state = x.state AND cc.date = x.date AND cc.issue = x.max_issue
             UNION ALL
-            SELECT *, 'T' AS record_type FROM `covid_hosp_state_timeseries` c
+            SELECT *, 'T' AS record_type FROM `covid_hosp_state_timeseries` cc
             INNER JOIN (
-                SELECT state, date, MAX(issue) AS max_issue
+                SELECT c.state, c.date, MAX(issue) AS max_issue
                 FROM `covid_hosp_state_timeseries` c
                 WHERE {cond_clause}
-                GROUP BY state, date
+                GROUP BY c.state, c.date
             ) x
-            ON c.state = x.state AND c.date = x.date AND c.issue = x.max_issue
+            ON cc.state = x.state AND cc.date = x.date AND cc.issue = x.max_issue
         ) {q.alias}'''
         query = f'''
             SELECT {q.fields_clause} FROM (
