@@ -188,7 +188,7 @@ def handle():
             ) c WHERE issue = max_issue        
         ) SELECT {q.fields_clause} FROM (
             SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY state, date ORDER BY issue DESC, record_type) `row`
-            FROM (max_daily UNION ALL max_timeseries) c
+            FROM ((SELECT * FROM max_daily) md UNION ALL (SELECT * FROM max_timeseries) mt) c
         ) {q.alias} WHERE `row` = 1 ORDER BY {q.order_clause}
         '''
 
