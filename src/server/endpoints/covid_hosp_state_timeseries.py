@@ -165,7 +165,7 @@ def handle():
         ) c'''
         query = f'''
             SELECT {q.fields_clause} FROM (
-                SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY state, date, issue ORDER BY record_type) `row`
+                SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY issue, date, state ORDER BY record_type) `row`
                 FROM {union_subquery}
             ) {q.alias} WHERE `row` = 1 ORDER BY {q.order_clause}
         '''
