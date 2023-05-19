@@ -178,7 +178,7 @@ def handle():
             q.params["as_of"] = as_of
         union_subquery = f'''
         (
-            SELECT *, 'D' AS RECORD_TYPE FROM `covid_hosp_state_daily` c
+            SELECT *, 'D' AS record_type FROM `covid_hosp_state_daily` c
             INNER JOIN (
                 SELECT state, date, MAX(issue) AS max_issue
                 FROM `covid_hosp_state_daily` c
@@ -187,7 +187,7 @@ def handle():
             ) x
             ON c.state = x.state AND c.date = x.date AND c.issue = x.max_issue
             UNION ALL
-            SELECT *, 'T' AS RECORD_TYPE FROM `covid_hosp_state_timeseries` c
+            SELECT *, 'T' AS record_type FROM `covid_hosp_state_timeseries` c
             INNER JOIN (
                 SELECT state, date, MAX(issue) AS max_issue
                 FROM `covid_hosp_state_timeseries` c
