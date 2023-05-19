@@ -181,17 +181,13 @@ def handle():
         SELECT {q.fields_clause} FROM (
             SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY state, date ORDER BY issue DESC, record_type) `row`
             FROM (
-                (
-                    SELECT {q.fields_clause}, 'D' as record_type FROM (
-                        SELECT {q.fields_clause}, max(issue) OVER (PARTITION BY state, date) `max_issue` FROM `covid_hosp_state_daily` c WHERE {cond_clause}
-                    ) c WHERE issue = max_issue
-                ) md
+                SELECT {q.fields_clause}, 'D' as record_type FROM (
+                    SELECT {q.fields_clause}, max(issue) OVER (PARTITION BY state, date) `max_issue` FROM `covid_hosp_state_daily` c WHERE {cond_clause}
+                ) c WHERE issue = max_issue
                 UNION ALL
-                (
-                    SELECT {q.fields_clause}, 'T' as record_type FROM (
-                        SELECT {q.fields_clause}, max(issue) OVER (PARTITION BY state, date) `max_issue` FROM `covid_hosp_state_timeseries` c WHERE {cond_clause}
-                    ) c WHERE issue = max_issue
-                ) mt
+                SELECT {q.fields_clause}, 'T' as record_type FROM (
+                    SELECT {q.fields_clause}, max(issue) OVER (PARTITION BY state, date) `max_issue` FROM `covid_hosp_state_timeseries` c WHERE {cond_clause}
+                ) c WHERE issue = max_issue
             ) c
         ) c WHERE `row` = 1 ORDER BY {q.order_clause}
         '''
