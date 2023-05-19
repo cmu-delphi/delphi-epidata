@@ -14,7 +14,6 @@ from .endpoints import endpoints
 from .endpoints.admin import bp as admin_bp, enable_admin
 from ._security import register_user_role
 from ._limiter import limiter, apply_limit
-from ._config import ConfigUserRoles
 
 __all__ = ["app"]
 
@@ -32,11 +31,6 @@ for endpoint in endpoints:
     if alias:
         logger.info("endpoint has alias", bp_name=endpoint.bp.name, alias=alias)
         endpoint_map[alias] = endpoint.handle
-
-with app.app_context():
-    for role in ConfigUserRoles:
-        logger.info("registering user role from config", name=role.name)
-        register_user_role(role.name)
 
 if enable_admin():
     logger.info("admin endpoint enabled")

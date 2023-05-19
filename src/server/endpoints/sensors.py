@@ -6,10 +6,28 @@ from .._params import (
     extract_integers,
 )
 from .._security import current_user
-from .._config import GRANULAR_SENSOR_ROLES, OPEN_SENSORS
 from .._query import filter_strings, execute_query, filter_integers
 from .._validate import require_all
 from typing import List
+
+# sensor names that require auth tokens to access them;
+# excludes the global auth key "sensors" that works for all sensors:
+GRANULAR_SENSORS = {
+    "twtr",
+    "gft",
+    "ght",
+    "ghtj",
+    "cdc",
+    "quid",
+    "wiki",
+}
+
+# A set of sensors that do not require an auth key to access:
+OPEN_SENSORS = {
+    "sar3",
+    "epic",
+    "arch",
+}
 
 # first argument is the endpoint name
 bp = Blueprint("sensors", __name__)
@@ -17,36 +35,28 @@ alias = "signals"
 
 
 def _authenticate(names: List[str]):
-    names = extract_strings("names")
-    n_names = len(names)
-
-    # The number of valid granular tokens is related to the number of auth token checks that a single query could perform.  Use the max number of valid granular auth tokens per name in the check below as a way to prevent leakage of sensor names (but revealing the number of sensor names) via this interface.  Treat all sensors as non-open for convenience of calculation.
-    if n_names == 0:
-        # Check whether no names were provided to prevent edge-case issues in error message below, and in case surrounding behavior changes in the future:
+    if len(names) == 0:
         raise EpiDataException("no sensor names provided")
+
+    # whether has access to all sensors:
+    sensor_authenticated_globally = current_user.has_role("sensors")
 
     unauthenticated_or_nonexistent_sensors = []
     for name in names:
-        sensor_is_open = name in OPEN_SENSORS
-        # test whether they provided the "global" auth token that works for all sensors:
-        sensor_authenticated_globally = current_user.has_role("sensors")
-        # test whether they provided a "granular" auth token for one of the
-        # sensor_subsets containing this sensor (if any):
-        sensor_authenticated_granularly = False
-        if name in GRANULAR_SENSOR_ROLES and current_user.has_role(GRANULAR_SENSOR_ROLES[name]):
-            sensor_authenticated_granularly = True
-        # (else: there are no granular tokens for this sensor; can't authenticate granularly)
-
-        if not sensor_is_open and not sensor_authenticated_globally and not sensor_authenticated_granularly:
-            # authentication failed for this sensor; append to list:
+        if name in OPEN_SENSORS:
+            # no auth needed
+            continue
+        if name in GRANULAR_SENSORS and current_user.has_role(name):
+            # user has permissions for this sensor
+            continue
+        if not sensor_authenticated_globally:
+            # non-existant sensor or auth failed; append to list:
             unauthenticated_or_nonexistent_sensors.append(name)
 
     if unauthenticated_or_nonexistent_sensors:
         raise EpiDataException(
             f"unauthenticated/nonexistent sensor(s): {','.join(unauthenticated_or_nonexistent_sensors)}"
         )
-        # # Alternative message that may enable shorter tokens:
-        # $data['message'] = 'some/all sensors requested were unauthenticated/nonexistent';
 
 
 @bp.route("/", methods=("GET", "POST"))
@@ -54,7 +64,7 @@ def handle():
     require_all(request, "names", "locations", "epiweeks")
 
     names = extract_strings("names") or []
-    _authenticate(request, names)
+    _authenticate(names)
 
     # parse the request
     locations = extract_strings("locations")
