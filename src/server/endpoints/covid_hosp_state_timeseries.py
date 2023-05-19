@@ -187,7 +187,7 @@ def handle():
                 SELECT {q.fields_clause}, max(issue) OVER (PARTITION BY state, date) `max_issue` FROM `covid_hosp_state_timeseries` c WHERE {cond_clause}
             ) c WHERE issue = max_issue        
         ) SELECT {q.fields_clause} FROM (
-            SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY issue, date ORDER BY issue DESC, record_type) `row`
+            SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY state, date ORDER BY issue DESC, record_type) `row`
             FROM (max_daily UNION ALL max_timeseries) c
         ) {q.alias} WHERE `row` = 1 ORDER BY {q.order_clause}
         '''
