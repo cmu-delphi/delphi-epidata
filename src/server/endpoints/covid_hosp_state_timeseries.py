@@ -176,21 +176,20 @@ def handle():
             # ...Filter for most recent issues before a given as_of
             cond_clause += " AND (issue <= :as_of)"
             q.params["as_of"] = as_of
-        union_subquery = f'''
-        (
-            SELECT * FROM (
-                SELECT *, 'D' as record_type, ROW_NUMBER() OVER (PARTITION BY state, date ORDER BY issue DESC) row_d FROM `covid_hosp_state_daily` c WHERE {cond_clause}
-            ) sub_d WHERE row_d = 1
-            UNION ALL
-            SELECT * FROM (
-                SELECT *, 'T' as record_type, ROW_NUMBER() OVER (PARTITION BY state, date ORDER BY issue DESC) row_t FROM `covid_hosp_state_timeseries` c WHERE {cond_clause}
-            ) sub_t WHERE row_t = 1
-        ) c'''
+
         query = f'''
-            SELECT {q.fields_clause} FROM (
-                SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY state, date ORDER BY issue DESC, record_type) `row`
-                FROM {union_subquery}
-            ) {q.alias} WHERE `row` = 1 ORDER BY {q.order_clause}
+        WITH max_daily AS (
+            SELECT {q.fields_clause}, 'D' as record_type FROM (
+                SELECT {q.fields_clause}, max(issue) OVER (PARTITION BY state, date) `max_issue` FROM `covid_hosp_state_daily` c WHERE {cond_clause}
+            ) c WHERE issue = max_issue
+        ), max_timeseries AS (
+            SELECT {q.fields_clause}, 'T' as record_type FROM (
+                SELECT {q.fields_clause}, max(issue) OVER (PARTITION BY state, date) `max_issue` FROM `covid_hosp_state_timeseries` c WHERE {cond_clause}
+            ) c WHERE issue = max_issue        
+        ) SELECT {q.fields_clause} FROM (
+            SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY issue, date ORDER BY issue DESC, record_type) `row`
+            FROM (max_daily UNION ALL max_timeseries) c
+        ) {q.alias} WHERE `row` = 1 ORDER BY {q.order_clause}
         '''
 
     # send query
