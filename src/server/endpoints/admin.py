@@ -5,7 +5,7 @@ from flask import Blueprint, make_response, render_template_string, request
 from werkzeug.exceptions import NotFound, Unauthorized
 from werkzeug.utils import redirect
 
-from .._config import ADMIN_PASSWORD, API_KEY_REGISTRATION_FORM_LINK, API_KEY_REMOVAL_REQ_FORM_LINK, REGISTER_WEBHOOK_TOKEN
+from .._config import ADMIN_PASSWORD, API_KEY_REGISTRATION_FORM_LINK, API_KEY_REMOVAL_REQUEST_LINK, REGISTER_WEBHOOK_TOKEN
 from .._security import resolve_auth_token
 from ..admin.models import User, UserRole
 
