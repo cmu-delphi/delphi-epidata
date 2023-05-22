@@ -73,7 +73,7 @@ class User(Base):
             session.commit()
 
     @staticmethod
-    def find_user(
+    def find_user(*, # asterisk forces explicit naming of all arguments when calling this method
         user_id: Optional[int] = None, api_key: Optional[str] = None, user_email: Optional[str] = None
     ) -> "User":
         user = (
