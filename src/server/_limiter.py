@@ -2,7 +2,7 @@ from delphi.epidata.server.endpoints.covidcast_utils.dashboard_signals import Da
 from flask import Response, request, make_response, jsonify
 from flask_limiter import Limiter, HEADERS
 from redis import Redis
-from werkzeug.exceptions import Unauthorized
+from werkzeug.exceptions import Unauthorized, TooManyRequests
 
 from ._common import app, get_real_ip_addr
 from ._config import RATE_LIMIT, RATELIMIT_STORAGE_URL, REDIS_HOST, REDIS_PASSWORD
@@ -105,7 +105,7 @@ apply_limit = limiter.limit(RATE_LIMIT, deduct_when=deduct_on_success)
 
 @app.errorhandler(429)
 def ratelimit_handler(e):
-    return make_response(jsonify(error=ERROR_MSG_RATE_LIMIT), 429)
+    return TooManyRequests(ERROR_MSG_RATE_LIMIT)
 
 
 def requests_left():
