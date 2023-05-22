@@ -97,10 +97,6 @@ def before_request_execute():
     user = current_user
     api_key = resolve_auth_token()
 
-    # TODO: remove after testing -- what does `user` look like in logs?  dont forget, we DONT wanna print `user` info to logs in prod!!!
-    get_structured_logger("server_api").info("USER INFO", user=(user and user.as_dict))
-
-    # Log statement
     # TODO: replace this next call with: log_info_with_request("Received API request")
     get_structured_logger("server_api").info(
         "Received API request",
@@ -113,6 +109,7 @@ def before_request_execute():
         user_agent=request.user_agent.string,
         api_key=api_key,
     )
+
     if not show_no_api_key_warning():
         if not _is_public_route() and api_key and not user:
             # if this is a privleged endpoint, and an api key was given but it does not look up to a user, raise exception:
