@@ -5,7 +5,7 @@ from flask import Blueprint, make_response, render_template_string, request
 from werkzeug.exceptions import NotFound, Unauthorized
 from werkzeug.utils import redirect
 
-from .._config import ADMIN_PASSWORD, REGISTER_WEBHOOK_TOKEN
+from .._config import ADMIN_PASSWORD, API_KEY_REGISTRATION_FORM_LINK, API_KEY_REMOVAL_REQ_FORM_LINK, REGISTER_WEBHOOK_TOKEN
 from .._security import resolve_auth_token
 from ..admin.models import User, UserRole
 
@@ -58,7 +58,7 @@ def _index():
             )
             flags["banner"] = "Successfully Added"
         else:
-            flags["banner"] = "User with such email/api key already exists."
+            flags["banner"] = "User with such email and/or api key already exists."
     users = [user.as_dict for user in User.list_users()]
     return _render("overview", token, flags, users=users, user=dict())
 
@@ -73,12 +73,10 @@ def _detail(user_id: int):
         User.delete_user(user.id)
         return redirect(f"./?auth={token}")
     flags = dict()
-    if request.method == "PUT" or request.method == "POST":
+    if request.method in ["PUT", "POST"]:
         user_check = User.find_user(api_key=request.values["api_key"], user_email=request.values["email"])
         if user_check and user_check.id != user.id:
-            flags[
-                "banner"
-            ] = "Could not update the user because of api_key/email conflict. User with the same api_key/email already exists."
+            flags["banner"] = "Could not update user; same api_key and/or email already exists."
         else:
             user = user.update_user(
                 user=user,
@@ -95,6 +93,16 @@ def register_new_key(api_key: str, email: str) -> str:
     return api_key
 
 
+@bp.route("/registration_form", methods=["GET"])
+def registration_form_redirect():
+    # TODO: replace this with our own hosted registration form instead of external
+    return redirect(API_KEY_REGISTRATION_FORM_LINK, code=302)
+
+@bp.route("/removal_request", methods=["GET"])
+def removal_request_redirect():
+    # TODO: replace this with our own hosted form instead of external
+    return redirect(API_KEY_REMOVAL_REQUEST_LINK, code=302)
+
 @bp.route("/register", methods=["POST"])
 def _register():
     body = request.get_json()
@@ -106,8 +114,8 @@ def _register():
     user_email = body["user_email"]
     if user_exists(user_email=user_email, api_key=user_api_key):
         return make_response(
-            "User with such email or API Key already exists, try to use different email or contact us to resolve this issue",
+            "User with email and/or API Key already exists, use different parameters or contact us for help",
             409,
         )
     api_key = register_new_key(user_api_key, user_email)
-    return make_response(f"Successfully registered the API key '{api_key}' and removed rate limit", 200)
+    return make_response(f"Successfully registered API key '{api_key}'", 200)
