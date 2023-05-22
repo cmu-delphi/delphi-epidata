@@ -22,28 +22,22 @@ API_KEY_HARD_WARNING = API_KEY_REQUIRED_STARTING_AT - timedelta(days=14)
 API_KEY_SOFT_WARNING = API_KEY_HARD_WARNING - timedelta(days=14)
 
 # rollout warning messages
-# intended usage: in place of API_KEY_WARNING_TEXT
-# phase 1 / soft warning: ROLLOUT_WARNING_RATE_LIMIT or ROLLOUT_WARNING_MULTIPLES
-# phase 2 / hard warning: (ROLLOUT_WARNING_RATE_LIMIT + PHASE_2_STOPGAP) or (ROLLOUT_WARNING_MULTIPLES + PHASE_2_STOPGAP)
+ROLLOUT_WARNING_RATE_LIMIT = "This request exceeded the rate limit on anonymous requests, which will be enforced starting {}.".format(API_KEY_REQUIRED_STARTING_AT)
+ROLLOUT_WARNING_MULTIPLES = "This request exceeded the anonymous limit on selected multiples, which will be enforced starting {}.".format(API_KEY_REQUIRED_STARTING_AT)
+_ROLLOUT_WARNING_AD_FRAGMENT = "To be exempt from this limit, authenticate your requests with a free API key, now available at {}.".format(API_KEY_REGISTRATION_FORM_LINK_LOCAL)
 
-ROLLOUT_WARNING_RATE_LIMIT = "This request exceeded the anonymous limit on requests per minute."
-ROLLOUT_WARNING_MULTIPLES = "This request exceeded the anonymous limit on selected multiples."
-_ROLLOUT_WARNING_AD_FRAGMENT = "To be exempt from this limit, authenticate your requests with an API key, which will be enforced starting {}. Registration now available at {}.".format(
-    API_KEY_REQUIRED_STARTING_AT, API_KEY_REGISTRATION_FORM_LINK_LOCAL
-)
-
-PHASE_1_2_STOPGAP = (  # todo: add temporary key
+PHASE_1_2_STOPGAP = (
     "A temporary public key `{}` is available for use between now and {} to give you time to register or adapt your requests without this message continuing to break your systems."
-).format(TEMPORARY_API_KEY, API_KEY_REQUIRED_STARTING_AT)
+).format(TEMPORARY_API_KEY, (API_KEY_REQUIRED_STARTING_AT + timedelta(days=7)))
 
 
 # steady-state error messages
-ERROR_MSG_RATE_LIMIT = "Rate limit exceeded for anonymous queries.\nTo remove this limit, register a free API key at {}".format(API_KEY_REGISTRATION_FORM_LINK_LOCAL)
-ERROR_MSG_MULTIPLES = "Requested too many multiples for anonymous queries.\nTo remove this limit, register a free API key at {}".format(API_KEY_REGISTRATION_FORM_LINK_LOCAL)
+ERROR_MSG_RATE_LIMIT = "Rate limit exceeded for anonymous queries. To remove this limit, register a free API key at {}".format(API_KEY_REGISTRATION_FORM_LINK_LOCAL)
+ERROR_MSG_MULTIPLES = "Requested too many multiples for anonymous queries. To remove this limit, register a free API key at {}".format(API_KEY_REGISTRATION_FORM_LINK_LOCAL)
 ERROR_MSG_INVALID_KEY = (
-    "API key does not exist. Register a new key at {} or contact $CONTACT_POINT to troubleshoot".format(API_KEY_REGISTRATION_FORM_LINK_LOCAL)
+    "API key does not exist. Register a new key at {} or contact delphi-support+privacy@andrew.cmu.edu to troubleshoot".format(API_KEY_REGISTRATION_FORM_LINK_LOCAL)
 )
-ERROR_MSG_INVALID_ROLE = "Provided API key does not have access to this endpoint, please contact $CONTACT_POINT."
+ERROR_MSG_INVALID_ROLE = "Provided API key does not have access to this endpoint. Please contact delphi-support+privacy@andrew.cmu.edu."
 
 
 def resolve_auth_token() -> Optional[str]:
