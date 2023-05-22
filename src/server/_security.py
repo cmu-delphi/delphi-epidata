@@ -22,7 +22,7 @@ API_KEY_HARD_WARNING = API_KEY_REQUIRED_STARTING_AT - timedelta(days=14)
 API_KEY_SOFT_WARNING = API_KEY_HARD_WARNING - timedelta(days=14)
 
 # rollout warning messages
-ROLLOUT_WARNING_RATE_LIMIT = "This request exceeded the anonymous limit on requests per hour, which will be enforced starting {}.".format(API_KEY_REQUIRED_STARTING_AT)
+ROLLOUT_WARNING_RATE_LIMIT = "This request exceeded the rate limit on anonymous requests, which will be enforced starting {}.".format(API_KEY_REQUIRED_STARTING_AT)
 ROLLOUT_WARNING_MULTIPLES = "This request exceeded the anonymous limit on selected multiples, which will be enforced starting {}.".format(API_KEY_REQUIRED_STARTING_AT)
 _ROLLOUT_WARNING_AD_FRAGMENT = "To be exempt from this limit, authenticate your requests with a free API key, now available at {}.".format(API_KEY_REGISTRATION_FORM_LINK_LOCAL)
 
@@ -36,6 +36,7 @@ ERROR_MSG_RATE_LIMIT = "Rate limit exceeded for anonymous queries. To remove thi
 ERROR_MSG_MULTIPLES = "Requested too many multiples for anonymous queries. To remove this limit, register a free API key at {}".format(API_KEY_REGISTRATION_FORM_LINK_LOCAL)
 ERROR_MSG_INVALID_KEY = (
     "API key does not exist. Register a new key at {} or contact delphi-support+privacy@andrew.cmu.edu to troubleshoot".format(API_KEY_REGISTRATION_FORM_LINK_LOCAL)
+)
 ERROR_MSG_INVALID_ROLE = "Provided API key does not have access to this endpoint. Please contact delphi-support+privacy@andrew.cmu.edu."
 
 
