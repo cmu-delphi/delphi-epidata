@@ -25,16 +25,6 @@ class MissingOrWrongSourceException(EpiDataException):
         super(MissingOrWrongSourceException, self).__init__(f"no data source specified, possible values: {','.join(endpoints)}", 400)
 
 
-class UnAuthenticatedException(EpiDataException):
-    def __init__(self):
-        super(UnAuthenticatedException, self).__init__("unauthenticated", 401)
-
-
-class MissingAPIKeyException(EpiDataException):
-    def __init__(self):
-        super(MissingAPIKeyException, self).__init__("missing api key", 401)
-
-
 class ValidationFailedException(EpiDataException):
     def __init__(self, message: str):
         super(ValidationFailedException, self).__init__(message, 400)
