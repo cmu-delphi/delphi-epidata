@@ -12,7 +12,7 @@ from ._config import (
     API_KEY_REQUIRED_STARTING_AT,
     REDIS_HOST,
     REDIS_PASSWORD,
-    API_KEY_REGISTRATION_FORM_LINK,
+    API_KEY_REGISTRATION_FORM_LINK_LOCAL,
     TEMPORARY_API_KEY,
     URL_PREFIX,
 )
@@ -29,7 +29,7 @@ API_KEY_SOFT_WARNING = API_KEY_HARD_WARNING - timedelta(days=14)
 ROLLOUT_WARNING_RATE_LIMIT = "This request exceeded the anonymous limit on requests per minute."
 ROLLOUT_WARNING_MULTIPLES = "This request exceeded the anonymous limit on selected multiples."
 _ROLLOUT_WARNING_AD_FRAGMENT = "To be exempt from this limit, authenticate your requests with an API key, which will be enforced starting {}. Registration now available at {}.".format(
-    API_KEY_REQUIRED_STARTING_AT, API_KEY_REGISTRATION_FORM_LINK
+    API_KEY_REQUIRED_STARTING_AT, API_KEY_REGISTRATION_FORM_LINK_LOCAL
 )
 
 PHASE_1_2_STOPGAP = (  # todo: add temporary key
@@ -38,10 +38,10 @@ PHASE_1_2_STOPGAP = (  # todo: add temporary key
 
 
 # steady-state error messages
-ERROR_MSG_RATE_LIMIT = "Rate limit exceeded for anonymous queries.\nTo remove this limit, register a free API key at {}".format(API_KEY_REGISTRATION_FORM_LINK)
-ERROR_MSG_MULTIPLES = "Requested too many multiples for anonymous queries.\nTo remove this limit, register a free API key at {}".format(API_KEY_REGISTRATION_FORM_LINK)
+ERROR_MSG_RATE_LIMIT = "Rate limit exceeded for anonymous queries.\nTo remove this limit, register a free API key at {}".format(API_KEY_REGISTRATION_FORM_LINK_LOCAL)
+ERROR_MSG_MULTIPLES = "Requested too many multiples for anonymous queries.\nTo remove this limit, register a free API key at {}".format(API_KEY_REGISTRATION_FORM_LINK_LOCAL)
 ERROR_MSG_INVALID_KEY = (
-    "API key does not exist. Register a new key at {} or contact $CONTACT_POINT to troubleshoot".format(API_KEY_REGISTRATION_FORM_LINK)
+    "API key does not exist. Register a new key at {} or contact $CONTACT_POINT to troubleshoot".format(API_KEY_REGISTRATION_FORM_LINK_LOCAL)
 )
 ERROR_MSG_INVALID_ROLE = "Provided API key does not have access to this endpoint, please contact $CONTACT_POINT."
 

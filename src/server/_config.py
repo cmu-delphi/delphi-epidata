@@ -77,7 +77,11 @@ RATELIMIT_STRATEGY = os.environ.get("RATELIMIT_STRATEGY", "fixed-window")
 RATELIMIT_STORAGE_URL = f"redis://:{REDIS_PASSWORD}@{REDIS_HOST}:6379"
 
 API_KEY_REGISTRATION_FORM_LINK = "https://forms.gle/hkBr5SfQgxguAfEt7"
-# shortcut to "https://docs.google.com/forms/d/e/1FAIpQLSe5i-lgb9hcMVepntMIeEo8LUZUMTUnQD3hbrQI3vSteGsl4w/viewform?usp=sf_link"
+# ^ shortcut to "https://docs.google.com/forms/d/e/1FAIpQLSe5i-lgb9hcMVepntMIeEo8LUZUMTUnQD3hbrQI3vSteGsl4w/viewform?usp=sf_link"
+API_KEY_REGISTRATION_FORM_LINK_LOCAL = "https://api.delphi.cmu.edu/epidata/admin/registration_form"
+# ^ redirects to API_KEY_REGISTRATION_FORM_LINK
 
 API_KEY_REMOVAL_REQUEST_LINK = "https://forms.gle/GucFmZHTMgEFjH197"
-# shortcut to "https://docs.google.com/forms/d/e/1FAIpQLSff30tsq4xwPCoUbvaIygLSMs_Mt8eDhHA0rifBoIrjo8J5lw/viewform"
+# ^ shortcut to "https://docs.google.com/forms/d/e/1FAIpQLSff30tsq4xwPCoUbvaIygLSMs_Mt8eDhHA0rifBoIrjo8J5lw/viewform"
+API_KEY_REMOVAL_REQUEST_LINK_LOCAL = "https://api.delphi.cmu.edu/epidata/admin/removal_request"
+# ^ redirects to API_KEY_REMOVAL_REQUEST_LINK
