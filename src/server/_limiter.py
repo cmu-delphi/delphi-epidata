@@ -9,7 +9,6 @@ from ._config import RATE_LIMIT, RATELIMIT_STORAGE_URL, REDIS_HOST, REDIS_PASSWO
 from ._exceptions import ValidationFailedException
 from ._params import extract_dates, extract_integers, extract_strings
 from ._security import _is_public_route, current_user, require_api_key, show_no_api_key_warning, resolve_auth_token, ERROR_MSG_RATE_LIMIT, ERROR_MSG_MULTIPLES
-from .utils import TimeValues
 
 
 def deduct_on_success(response: Response) -> bool:
@@ -59,8 +58,8 @@ def get_multiples_count(request):
             vals = multiples.get(k)(k)
             if len(vals) >= 2:
                 multiple_selection_allowed -= 1
-            elif len(vals) and isinstance(vals, TimeValues) and isinstance(vals[0], tuple):
-                # else we have one TimeValue which is a tuple, representing a range, and thus is a "multiple"
+            elif len(vals) and isinstance(vals, Sequence) and isinstance(vals[0], tuple):
+                # else we have one val which is a tuple, representing a range, and thus is a "multiple"
                 multiple_selection_allowed -= 1
         except ValidationFailedException:
             continue
