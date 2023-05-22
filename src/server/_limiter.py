@@ -58,7 +58,7 @@ def get_multiples_count(request):
             vals = multiples.get(k)(k)
             if len(vals) >= 2:
                 multiple_selection_allowed -= 1
-            elif len(vals) and isinstance(vals, Sequence) and isinstance(vals[0], tuple):
+            elif len(vals) and isinstance(vals, list) and isinstance(vals[0], tuple):
                 # else we have one val which is a tuple, representing a range, and thus is a "multiple"
                 multiple_selection_allowed -= 1
         except ValidationFailedException:
