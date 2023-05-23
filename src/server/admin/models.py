@@ -95,6 +95,7 @@ class User(Base):
             new_user = User(api_key=api_key, email=email)
             # TODO: do we need to populate 'created' field/column here?
             session.add(new_user)
+            session.commit()
             User._assign_roles(new_user, user_roles, session)
             session.commit()
         return new_user
