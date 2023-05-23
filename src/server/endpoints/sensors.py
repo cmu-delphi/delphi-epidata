@@ -39,14 +39,14 @@ def _authenticate(names: List[str]):
         raise EpiDataException("no sensor names provided")
 
     # whether has access to all sensors:
-    sensor_authenticated_globally = current_user.has_role("sensors")
+    sensor_authenticated_globally = (current_user and current_user.has_role("sensors"))
 
     unauthenticated_or_nonexistent_sensors = []
     for name in names:
         if name in OPEN_SENSORS:
             # no auth needed
             continue
-        if name in GRANULAR_SENSORS and current_user.has_role(name):
+        if name in GRANULAR_SENSORS and current_user and current_user.has_role(name):
             # user has permissions for this sensor
             continue
         if not sensor_authenticated_globally:

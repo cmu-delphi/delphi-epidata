@@ -49,18 +49,10 @@ def handle_generic():
     return endpoint_map[endpoint]()
 
 
-# @app.route(f"{URL_PREFIX}") # TODO: make sure we dont need this line
 @app.route(f"{URL_PREFIX}/")
 @app.route(f"{URL_PREFIX}/index.html")
 def send_index_file():
     return send_file(pathlib.Path(__file__).parent / "index.html")
-
-
-# TODO: remove
-from ._exceptions import DatabaseErrorException
-@app.route(f"{URL_PREFIX}/fake_db_error")
-def cause_fake_db_error():
-    raise DatabaseErrorException("fake_db_error")
 
 
 @app.route(f"{URL_PREFIX}/version")
