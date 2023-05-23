@@ -14,6 +14,5 @@ engine: Engine = create_engine(SQLALCHEMY_DATABASE_URI, **SQLALCHEMY_ENGINE_OPTI
 metadata = MetaData(bind=engine)
 
 Session = sessionmaker(bind=engine)
-session = Session()
 
 

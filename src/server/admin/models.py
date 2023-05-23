@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from copy import deepcopy
 
-from .._db import session
+from .._db import Session
 from delphi.epidata.common.logger import get_structured_logger
 
 from typing import Set, Optional, List
@@ -35,61 +35,61 @@ class User(Base):
 
     @staticmethod
     def list_users() -> List["User"]:
-        return session.query(User).all()
+        with Session() as session:
+            return session.query(User).all()
 
     @property
     def as_dict(self):
-        user_dict = deepcopy(self.__dict__)  # NOTE: changed from `self.__dict__.copy()` as it caused issues
-        # so we dont change the internal representation of self
-        user_dict["roles"] = self.get_user_roles
-        try:
-            return {k: user_dict[k] for k in ["id", "api_key", "email", "roles", "created", "last_time_used"]}
-        except KeyError:
-            return {
-                "id": self.id,
-                "api_key": self.api_key,
-                "email": self.email,
-                "roles": self.get_user_roles,
-                "created": self.created,
-                "last_time_used": self.last_time_used
-            }
-
-    @property
-    def get_user_roles(self) -> Set[str]:
-        return set([role.name for role in self.roles])
-
-    def has_role(self, required_role: str) -> bool:
-        return required_role in self.get_user_roles
+        return {
+            "id": self.id,
+            "api_key": self.api_key,
+            "email": self.email,
+            "roles": User.get_user_roles(self.id),
+            "created": self.created,
+            "last_time_used": self.last_time_used
+        }
 
     @staticmethod
-    def assign_roles(user: "User", roles: Optional[Set[str]]) -> None:
+    def get_user_roles(user_id: int) -> Set[str]:
+        with Session() as session:
+            user = session.query(User).filter(User.id == user_id).first()
+            return set([role.name for role in user.roles])
+
+    def has_role(self, required_role: str) -> bool:
+        return required_role in User.get_user_roles(self.id)
+
+    @staticmethod
+    def _assign_roles(user: "User", roles: Optional[Set[str]], session) -> None:
         get_structured_logger("api_user_models").info("setting roles", roles=roles, user_id=user.id, api_key=user.api_key)
         if roles:
+            db_user = session.query(User).filter(User.id == user.id).first() 
             roles_to_assign = session.query(UserRole).filter(UserRole.name.in_(roles)).all()
-            user.roles = roles_to_assign
-            session.commit()
+            db_user.roles = roles_to_assign
         else:
-            user.roles = []
-            session.commit()
+            db_user.roles = []
 
     @staticmethod
     def find_user(*, # asterisk forces explicit naming of all arguments when calling this method
         user_id: Optional[int] = None, api_key: Optional[str] = None, user_email: Optional[str] = None
     ) -> "User":
-        user = (
-            session.query(User)
-            .filter((User.id == user_id) | (User.api_key == api_key) | (User.email == user_email))
-            .first()
-        )
+        # TODO
+        with Session() as session:
+            user = (
+                session.query(User)
+                .filter((User.id == user_id) | (User.api_key == api_key) | (User.email == user_email))
+                .first()
+            )
         return user if user else None
 
     @staticmethod
     def create_user(api_key: str, email: str, user_roles: Optional[Set[str]] = None) -> "User":
+        # TODO
         get_structured_logger("api_user_models").info("creating user", api_key=api_key)
-        new_user = User(api_key=api_key, email=email)
-        session.add(new_user)
-        session.commit()
-        User.assign_roles(new_user, user_roles)
+        with Session() as session:
+            new_user = User(api_key=api_key, email=email)
+            session.add(new_user)
+            User._assign_roles(new_user, user_roles, session)
+            session.commit()
         return new_user
 
     @staticmethod
@@ -100,23 +100,27 @@ class User(Base):
         roles: Optional[Set[str]]
     ) -> "User":
         get_structured_logger("api_user_models").info("updating user", user_id=user.id, new_api_key=api_key)
-        user = User.find_user(user_id=user.id)
-        if user:
-            update_stmt = (
-                update(User)
-                .where(User.id == user.id)
-                .values(api_key=api_key, email=email)
-            )
-            session.execute(update_stmt)
-            session.commit()
-            User.assign_roles(user, roles)
+        # TODO
+        with Session() as session:
+            user = User.find_user(user_id=user.id)
+            if user:
+                update_stmt = (
+                    update(User)
+                    .where(User.id == user.id)
+                    .values(api_key=api_key, email=email)
+                )
+                session.execute(update_stmt)
+                User._assign_roles(user, roles, session)
+                session.commit()
         return user
 
     @staticmethod
     def delete_user(user_id: int) -> None:
         get_structured_logger("api_user_models").info("deleting user", user_id=user_id)
-        session.execute(delete(User).where(User.id == user_id))
-        session.commit()
+        # TODO
+        with Session() as session:
+            session.execute(delete(User).where(User.id == user_id))
+            session.commit()
 
 
 class UserRole(Base):
@@ -127,19 +131,23 @@ class UserRole(Base):
     @staticmethod
     def create_role(name: str) -> None:
         get_structured_logger("api_user_models").info("creating user role", role=name)
-        session.execute(
-            f"""
-        INSERT INTO user_role (name)
-        SELECT '{name}'
-        WHERE NOT EXISTS
-            (SELECT *
-            FROM user_role
-            WHERE name='{name}')
-        """
-        )
-        session.commit()
+        # TODO
+        with Session() as session:
+            session.execute(
+                f"""
+            INSERT INTO user_role (name)
+            SELECT '{name}'
+            WHERE NOT EXISTS
+                (SELECT *
+                FROM user_role
+                WHERE name='{name}')
+            """
+            )
+            session.commit()
 
     @staticmethod
     def list_all_roles():
-        roles = session.query(UserRole).all()
+        # TODO
+        with Session() as session:
+            roles = session.query(UserRole).all()
         return [role.name for role in roles]
