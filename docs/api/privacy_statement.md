@@ -29,7 +29,7 @@ purposes:
 * to identify excessive or abnormal usage patterns which may harm our system
 
 The logs are only available to members of our operations team, and are expunged
-at or before they reach five years in age.  
+at or before they reach five years in age.
 
 If you provide us with your email address, we will only use it to contact you in
 the following scenarios:
@@ -47,9 +47,9 @@ security practices to help us keep your information secure. We only retrieve
 this mapping to resolve cases of excessive or abnormal usage. We automatically
 disassociate an email address from its API key when the API key has not been
 used for six months, or upon user request. You can request that your
-email address be removed from our records by filling out a 
-[deletion request](https://forms.gle/GucFmZHTMgEFjH197).
+email address be removed from our records by filling out a
+[deletion request](https://api.delphi.cmu.edu/epidata/admin/removal_request).
 
-For more information, see 
+For more information, see
 [Carnegie Mellon’s privacy notice](https://www.cmu.edu/legal/privacy-notice.html).
 Further questions can be directed to delphi-support+privacy@andrew.cmu.edu.
