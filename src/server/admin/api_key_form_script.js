@@ -43,7 +43,7 @@ function onSubmit(e) {
 
             Your API key is: ${user_api_key}
 
-            Usage: e.g., http://api.delphi.cmu.edu/epidata/covidcast/meta?token=${user_api_key}
+            For usage information, see the API Keys section of the documentation: https://cmu-delphi.github.io/delphi-epidata/api/api_keys.html
 
             Best,
             Delphi Team`
