@@ -65,7 +65,7 @@ class User(Base):
         get_structured_logger("api_user_models").info("setting roles", roles=roles, user_id=user.id, api_key=user.api_key)
         db_user = session.query(User).filter(User.id == user.id).first()
         get_structured_logger("api_user_models").error("user::", user=user, as_dict=(user and user.as_dict))
-        get_structured_logger("api_user_models").error("db_user::", db_user=db_user, as_dict(db_user and db_user.as_dict))
+        get_structured_logger("api_user_models").error("db_user::", db_user=db_user, as_dict=(db_user and db_user.as_dict))
         # TODO: would it be sufficient to use the passed-in `user` instead of looking up this `db_user`?
         if roles:
             roles_to_assign = session.query(UserRole).filter(UserRole.name.in_(roles)).all()
