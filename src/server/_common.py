@@ -54,6 +54,7 @@ def log_info_with_request(message, **kwargs):
         real_remote_addr=get_real_ip_addr(request),
         user_agent=request.user_agent.string,
         api_key=resolve_auth_token(),
+        user_id=(current_user and current_user.id),
         **kwargs
     )
 
@@ -108,6 +109,7 @@ def before_request_execute():
         real_remote_addr=get_real_ip_addr(request),
         user_agent=request.user_agent.string,
         api_key=api_key,
+        user_id=(user and user.id)
     )
 
     if not show_no_api_key_warning():
