@@ -2,6 +2,7 @@ from math import inf
 import re
 from dataclasses import dataclass
 from typing import List, Optional, Sequence, Tuple, Union
+import delphi_utils    
 
 from flask import request
 
@@ -52,6 +53,28 @@ def _parse_single_arg(key: str) -> Tuple[str, str]:
 class GeoSet:
     geo_type: str
     geo_values: Union[bool, Sequence[str]]
+
+    def __init__(self, geo_type: str, geo_values: Union[bool, Sequence[str]]):
+        if not isinstance(geo_values, bool):
+            if geo_values == ['']:
+                raise ValidationFailedException(f"geo_value is empty for the requested geo_type {geo_type}!")
+            # TODO: keep this translator in sync with CsvImporter.GEOGRAPHIC_RESOLUTIONS in acquisition/covidcast/ and with GeoMapper
+            geo_type_translator = {
+                "county": "fips",
+                "state": "state_id",
+                "zip": "zip",
+                "hrr": "hrr",
+                "hhs": "hhs",
+                "msa": "msa",
+                "nation": "nation"
+            }
+            if geo_type in geo_type_translator: # else geo_type is unknown to GeoMapper
+                allowed_values = delphi_utils.geomap.GeoMapper().get_geo_values(geo_type_translator[geo_type])
+                invalid_values = set(geo_values) - set(allowed_values)
+                if invalid_values:
+                    raise ValidationFailedException(f"Invalid geo_value(s) {', '.join(invalid_values)} for the requested geo_type {geo_type}")
+        self.geo_type = geo_type
+        self.geo_values = geo_values
 
     def matches(self, geo_type: str, geo_value: str) -> bool:
         return self.geo_type == geo_type and (self.geo_values is True or (not isinstance(self.geo_values, bool) and geo_value in self.geo_values))
@@ -460,6 +483,7 @@ def parse_source_signal_sets() -> List[SourceSignalSet]:
 
 def parse_geo_sets() -> List[GeoSet]:
     geo_type = request.values.get("geo_type")
+
     if geo_type:
         # old version
         require_any(request, "geo_value", "geo_values", empty=True)

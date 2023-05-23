@@ -7,10 +7,11 @@ has_children: true
 # Epidata API Keys
 
 Anyone may access the Epidata API anonymously without providing any personal
-data. Anonymous API access is subject to the following restrictions:
+data. Anonymous API access is subject to the following restrictions; they may
+change as we learn more about their impact:
 
 1. public datasets only
-1. rate-limited to 100 requests per hour
+1. rate-limited to 60 requests per hour
 1. only two parameters may have multiple selections
 
 For example, a query for three signals on one date across all counties can be
@@ -22,7 +23,6 @@ Epidata API. You can request an API key by
 [registering with us](https://forms.gle/hkBr5SfQgxguAfEt7).
 Privileges of registration may include:
 
-1. restricted-access datasets
 1. no rate limit
 1. no limit on multiple selections
 
@@ -32,7 +32,7 @@ personal information you provide to us at registration will be much appreciated,
 because it will help us understand what our data is used for and inform our
 plans and priorities, but is voluntary. For more information on how we use and
 store the information you provide us at registration time, see our
-[privacy statement](api/privacy_statement.md).
+[privacy statement](privacy_statement.md).
 
 ## Usage
 
@@ -44,7 +44,7 @@ there are several ways to use your key to authenticate your requests:
 The request parameter “api_key” can be used to pass the API key to the server.
 Example:
 
-    http://delphi.cmu.edu/epidata/covidcast/meta?api_key=your_api_key_here
+    https://api.delphi.cmu.edu/epidata/covidcast/meta?api_key=your_api_key_here
 
 ### Via Basic Authentication
 
@@ -52,7 +52,7 @@ Another method is using the HTTP basic authorization header with the username
 "epidata" and the API key as the password. Example:
 
 ```
-curl -u 'epidata:your_api_key_here' https://delphi.cmu.edu/epidata/covidcast/meta
+curl -u 'epidata:your_api_key_here' https://api.delphi.cmu.edu/epidata/covidcast/meta
 ```
 
 ### Via Bearer Token
@@ -60,5 +60,5 @@ curl -u 'epidata:your_api_key_here' https://delphi.cmu.edu/epidata/covidcast/met
 Another method is providing the key in a bearer token header. Example:
 
 ```
-curl -H 'Authorization: Bearer your_api_key_here' https://delphi.cmu.edu/epidata/covidcast/meta
+curl -H 'Authorization: Bearer your_api_key_here' https://api.delphi.cmu.edu/epidata/covidcast/meta
 ```

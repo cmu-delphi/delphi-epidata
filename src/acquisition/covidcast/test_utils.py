@@ -14,6 +14,11 @@ import delphi.operations.secrets as secrets
 # all the Nans we use here are just one value, so this is a shortcut to it:
 nmv = Nans.NOT_MISSING.value
 
+# TODO replace these real geo_values with fake values, and use patch and mock to mock the return values of 
+# delphi_utils.geomap.GeoMapper().get_geo_values(geo_type) in parse_geo_sets() of _params.py
+
+FIPS = ['04019', '19143', '29063', '36083'] # Example list of valid FIPS codes as strings
+MSA = ['40660', '44180', '48620', '49420'] # Example list of valid MSA codes as strings
 
 class CovidcastTestRow(CovidcastRow):
     @staticmethod
@@ -22,9 +27,9 @@ class CovidcastTestRow(CovidcastRow):
             "source": "src",
             "signal": "sig",
             "time_type": "day",
-            "geo_type": "county",
+            "geo_type": "msa",
             "time_value": 2020_02_02,
-            "geo_value": "01234",
+            "geo_value": MSA[0],
             "value": 10.0,
             "stderr": 10.0,
             "sample_size": 10.0,

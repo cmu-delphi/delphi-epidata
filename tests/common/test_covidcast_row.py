@@ -12,6 +12,7 @@ from delphi.epidata.acquisition.covidcast.test_utils import (
     covidcast_rows_from_args, 
     transpose_dict, 
 )
+from delphi.epidata.acquisition.covidcast.test_utils import MSA
 
 # py3tester coverage target (equivalent to `import *`)
 __test_target__ = 'delphi.epidata.common.covidcast_row'
@@ -22,9 +23,9 @@ class TestCovidcastRows(unittest.TestCase):
         "source": ["src"] * 10,
         "signal": ["sig_base"] * 5 + ["sig_other"] * 5,
         "time_type": ["day"] * 10,
-        "geo_type": ["county"] * 10,
+        "geo_type": ["msa"] * 10,
         "time_value": [2021_05_01 + i for i in range(5)] * 2,
-        "geo_value": ["01234"] * 10,
+        "geo_value": [MSA[0]] * 10,
         "value": range(10),
         "stderr": [10.0] * 10,
         "sample_size": [10.0] * 10,

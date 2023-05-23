@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-VERSION = "0.4.7"
+VERSION = "0.4.12"
 
 MAX_RESULTS = int(10e6)
 MAX_COMPATIBILITY_RESULTS = int(3650)
