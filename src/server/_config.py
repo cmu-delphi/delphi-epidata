@@ -7,12 +7,13 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-VERSION = "4.1.0"
+VERSION = "4.1.1"
 
 MAX_RESULTS = int(10e6)
 MAX_COMPATIBILITY_RESULTS = int(3650)
 
 SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI", "sqlite:///test.db")
+SQLALCHEMY_DATABASE_URI_PRIMARY = os.environ.get("SQLALCHEMY_DATABASE_URI_PRIMARY")
 
 # defaults
 SQLALCHEMY_ENGINE_OPTIONS = {
