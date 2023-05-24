@@ -15,7 +15,7 @@ Epidata <- (function() {
   # API base url
   BASE_URL <- getOption('epidata.url', default = 'https://api.delphi.cmu.edu/epidata/')
 
-  client_version <- '0.4.12'
+  client_version <- '4.1.0'
 
   auth <- getOption("epidata.auth", default = NA)
 
