@@ -6,15 +6,12 @@ import unittest
 
 # third party
 import mysql.connector
-import requests
 
 # first party
 from delphi_utils import Nans
 from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase, CovidcastTestRow, FIPS, MSA
 from delphi.epidata.client.delphi_epidata import Epidata
 
-# use the local instance of the Epidata API
-BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
 
 class CovidcastTests(CovidcastBase):
   """Tests the `covidcast` endpoint."""
@@ -25,7 +22,9 @@ class CovidcastTests(CovidcastBase):
 
   def request_based_on_row(self, row: CovidcastTestRow, **kwargs):
     params = self.params_from_row(row, endpoint='covidcast', **kwargs)
-    Epidata.BASE_URL = BASE_URL
+    # use the local instance of the Epidata API
+    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+    Epidata.auth = ('epidata', 'key')
     response = Epidata.covidcast(**params) 
 
     return response

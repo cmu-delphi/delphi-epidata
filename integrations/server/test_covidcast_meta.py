@@ -14,6 +14,7 @@ import delphi.operations.secrets as secrets
 
 # use the local instance of the Epidata API
 BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+AUTH = ('epidata', 'key')
 
 
 class CovidcastMetaTests(unittest.TestCase):
@@ -135,6 +136,14 @@ class CovidcastMetaTests(unittest.TestCase):
   def _get_id(self):
     self.id_counter += 1
     return self.id_counter
+  
+  @staticmethod
+  def _fetch(**kwargs):
+    params = kwargs.copy()
+    params['endpoint'] = 'covidcast_meta'
+    response = requests.get(BASE_URL, params=params, auth=AUTH)
+    response.raise_for_status()
+    return response.json()
 
   def test_round_trip(self):
     """Make a simple round-trip with some sample data."""
@@ -143,9 +152,7 @@ class CovidcastMetaTests(unittest.TestCase):
     expected = self.insert_placeholder_data()
 
     # make the request
-    response = requests.get(BASE_URL, params={'endpoint': 'covidcast_meta'})
-    response.raise_for_status()
-    response = response.json()
+    response = self._fetch()
 
     # assert that the right data came back
     self.assertEqual(response, {
@@ -160,71 +167,63 @@ class CovidcastMetaTests(unittest.TestCase):
     # insert placeholder data and accumulate expected results (in sort order)
     expected = self.insert_placeholder_data()
 
-    def fetch(**kwargs):
-      # make the request
-      params = kwargs.copy()
-      params['endpoint'] = 'covidcast_meta'
-      response = requests.get(BASE_URL, params=params)
-      response.raise_for_status()
-      return response.json()
-
-    res = fetch()
+    res = self._fetch()
     self.assertEqual(res['result'], 1)
     self.assertEqual(len(res['epidata']), len(expected))
 
     # time types
-    res = fetch(time_types='day')
+    res = self._fetch(time_types='day')
     self.assertEqual(res['result'], 1)
     self.assertEqual(len(res['epidata']), sum([1 for s in expected if s['time_type'] == 'day']))
 
-    res = fetch(time_types='day,week')
+    res = self._fetch(time_types='day,week')
     self.assertEqual(res['result'], 1)
     self.assertTrue(isinstance(res['epidata'], list))
     self.assertEqual(len(res['epidata']), len(expected))
 
-    res = fetch(time_types='sec')
+    res = self._fetch(time_types='sec')
     self.assertEqual(res['result'], -2)
 
     # geo types
-    res = fetch(geo_types='hrr')
+    res = self._fetch(geo_types='hrr')
     self.assertEqual(res['result'], 1)
     self.assertTrue(isinstance(res['epidata'], list))
     self.assertEqual(len(res['epidata']), sum([1 for s in expected if s['geo_type'] == 'hrr']))
 
-    res = fetch(geo_types='hrr,msa')
+    res = self._fetch(geo_types='hrr,msa')
     self.assertEqual(res['result'], 1)
     self.assertTrue(isinstance(res['epidata'], list))
     self.assertEqual(len(res['epidata']), len(expected))
 
-    res = fetch(geo_types='state')
+    res = self._fetch(geo_types='state')
     self.assertEqual(res['result'], -2)
 
     # signals
-    res = fetch(signals='src1:sig1')
+    res = self._fetch(signals='src1:sig1')
     self.assertEqual(res['result'], 1)
     self.assertTrue(isinstance(res['epidata'], list))
     self.assertEqual(len(res['epidata']), sum([1 for s in expected if s['data_source'] == 'src1' and s['signal'] == 'sig1']))
 
-    res = fetch(signals='src1')
+    res = self._fetch(signals='src1')
     self.assertEqual(res['result'], 1)
     self.assertTrue(isinstance(res['epidata'], list))
     self.assertEqual(len(res['epidata']), sum([1 for s in expected if s['data_source'] == 'src1']))
 
-    res = fetch(signals='src1:*')
+    res = self._fetch(signals='src1:*')
     self.assertEqual(res['result'], 1)
     self.assertTrue(isinstance(res['epidata'], list))
     self.assertEqual(len(res['epidata']), sum([1 for s in expected if s['data_source'] == 'src1']))
 
-    res = fetch(signals='src1:src4')
+    res = self._fetch(signals='src1:src4')
     self.assertEqual(res['result'], -2)
 
-    res = fetch(signals='src1:*,src2:*')
+    res = self._fetch(signals='src1:*,src2:*')
     self.assertEqual(res['result'], 1)
     self.assertTrue(isinstance(res['epidata'], list))
     self.assertEqual(len(res['epidata']), len(expected))
 
     # filter fields
-    res = fetch(fields='data_source,min_time')
+    res = self._fetch(fields='data_source,min_time')
     self.assertEqual(res['result'], 1)
     self.assertEqual(len(res['epidata']), len(expected))
     self.assertTrue('data_source' in res['epidata'][0])
@@ -232,7 +231,7 @@ class CovidcastMetaTests(unittest.TestCase):
     self.assertFalse('max_time' in res['epidata'][0])
     self.assertFalse('signal' in res['epidata'][0])
 
-    res = fetch(fields='xx')
+    res = self._fetch(fields='xx')
     self.assertEqual(res['result'], 1)
     self.assertEqual(len(res['epidata']), len(expected))
     self.assertEqual(res['epidata'][0], {})
