@@ -13,9 +13,13 @@ library(httr)
 Epidata <- (function() {
 
   # API base url
-  BASE_URL <- 'https://api.delphi.cmu.edu/epidata/api.php'
+  BASE_URL <- getOption('epidata.url', default = 'https://api.delphi.cmu.edu/epidata/')
 
-  client_version <- '0.4.12'
+  client_version <- '4.1.0'
+
+  auth <- getOption("epidata.auth", default = NA)
+
+  client_user_agent <- user_agent(paste("delphi_epidata/", client_version, " (R)", sep=""))
 
   # Helper function to cast values and/or ranges to strings
   .listitem <- function(value) {
@@ -36,10 +40,31 @@ Epidata <- (function() {
 
   # Helper function to request and parse epidata
   .request <- function(params) {
+    headers <- add_headers(Authorization = ifelse(is.na(auth), "", paste("Bearer", auth)))
+    url <- paste(BASE_URL, params$endpoint, sep="")
+    params <- within(params, rm(endpoint))
     # API call
-    res <- GET(BASE_URL, query=params)
+    res <- GET(url,
+               client_user_agent,
+               headers,
+               query=params)
     if (res$status_code == 414) {
-      res <- POST(BASE_URL, body=params, encode='form')
+      res <- POST(url,
+                  client_user_agent,
+                  headers,
+                  body=params, encode='form')
+    }
+    if (res$status_code != 200) {
+      # 500, 429, 401 are possible
+      msg <- "fetch data from API"
+      if (http_type(res) == "text/html") {
+        # grab the error information out of the returned HTML document
+        msg <- paste(msg, ":", xml2::xml_text(xml2::xml_find_all(
+          xml2::read_html(content(res, 'text')),
+          "//p"
+        )))
+      }
+      stop_for_status(res, task = msg)
     }
     return(content(res, 'parsed'))
   }
@@ -563,7 +588,7 @@ Epidata <- (function() {
     }
     # Set up request
     params <- list(
-      endpoint = 'covid_hosp',
+      endpoint = 'covid_hosp_state_timeseries',
       states = .list(states),
       dates = .list(dates)
     )
@@ -582,7 +607,7 @@ Epidata <- (function() {
     }
     # Set up request
     params <- list(
-      source = 'covid_hosp_facility',
+      endpoint = 'covid_hosp_facility',
       hospital_pks = .list(hospital_pks),
       collection_weeks = .list(collection_weeks)
     )
@@ -596,7 +621,7 @@ Epidata <- (function() {
   # Lookup COVID hospitalization facility identifiers
   covid_hosp_facility_lookup <- function(state, ccn, city, zip, fips_code) {
     # Set up request
-    params <- list(source = 'covid_hosp_facility_lookup')
+    params <- list(endpoint = 'covid_hosp_facility_lookup')
     if(!missing(state)) {
       params$state <- state
     } else if(!missing(ccn)) {
@@ -614,14 +639,21 @@ Epidata <- (function() {
     return(.request(params))
   }
 
+  server_version <- function() {
+    return(.request(list(endpoint = 'version')))
+  }
+
   # Export the public methods
   return(list(
     range = range,
     client_version = client_version,
+    server_version = server_version,
     fluview = fluview,
     fluview_meta = fluview_meta,
     fluview_clinical = fluview_clinical,
     flusurv = flusurv,
+    ecdc_ili = ecdc_ili,
+    kcdc_ili = kcdc_ili,
     gft = gft,
     ght = ght,
     twitter = twitter,

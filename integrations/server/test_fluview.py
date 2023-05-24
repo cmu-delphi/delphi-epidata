@@ -19,6 +19,7 @@ class FluviewTests(unittest.TestCase):
 
     # use the local instance of the Epidata API
     Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+    Epidata.auth = ('epidata', 'key')
 
   def setUp(self):
     """Perform per-test setup."""
@@ -31,6 +32,8 @@ class FluviewTests(unittest.TestCase):
         database='epidata')
     cur = cnx.cursor()
     cur.execute('truncate table fluview')
+    cur.execute('delete from api_user')
+    cur.execute('insert into api_user(api_key, email) values ("key", "email")')
     cnx.commit()
     cur.close()
 

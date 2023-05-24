@@ -1,0 +1,125 @@
+---
+Name: Symptom Searches (Smell and Taste) on Google 
+Id: google-symptoms
+Signal: s05_smoothed_search
+Unit: scaled search volume
+UnitShort: 
+noMaps: true
+ 
+SignalTooltip: Google search volume of COVID-related symptom searches about smell and taste
+ 
+Description: Using Google Symptoms Searches, Delphi obtains the average of Google search volumes for searches related to anosmia (loss of smell), ageusia (loss of taste), and dysgeusia (altered or impaired taste) in each area, since they emerged as unusual symptoms that can be indicative of COVID-19. Note that the average of the three symptom search volumes is not equivalent to the search volume of their union. According to Google, the estimates are not comparable across regions since the values are normalized by population and scaled by region-specific maximum popularity (and for this reason, we omit beehive grids and choropleth maps of this signal on the dashboard).
+---
+Name: Symptom Searches (Common Cold) on Google 
+Id: google-symptoms
+Signal: s02_smoothed_search
+Unit: scaled search volume
+UnitShort: 
+noMaps: true
+ 
+SignalTooltip: Google search volume of COVID-related symptom searches about common cold
+ 
+Description: Using Google Symptoms Searches, Delphi obtains the average of Google search volumes for searches related to nasal congestion, post nasal drip, rhinorrhea, sinusitis, rhinitis, and common cold in each area. These symptoms have shown positive correlation with reported COVID cases, especially since Omicron was declared a variant of concern by the World Health Organization. Note that the average search volume of these symptoms is not equivalent to the search volume of their union. According to Google, the estimates are not comparable across regions since the values are normalized by population and scaled by region-specific maximum popularity (and for this reason, we omit beehive grids and choropleth maps of this signal on the dashboard).
+---
+Name: COVID-Related Doctor Visits
+Id: doctor-visits
+Signal: smoothed_adj_cli
+Unit: per 100 visits
+
+
+SignalTooltip: Percentage of daily doctor visits that are due to COVID-like symptoms
+
+
+Description: Delphi receives aggregated statistics from health system partners on COVID-related outpatient doctor visits, derived from ICD codes found in insurance claims. Using this data, we estimate the percentage of daily doctor’s visits in each area that are due to COVID-like illness. Note that these estimates are based only on visits by patients whose data is accessible to our partners.
+---
+Name: Lab-Confirmed Flu in Doctor Visits
+Id: chng
+Signal: smoothed_adj_outpatient_flu
+Unit: per 100 visits
+
+
+SignalTooltip: Percentage of daily doctor visits that are due to lab-confirmed influenza
+
+
+Description: Delphi receives aggregated statistics from Change Healthcare, Inc. on lab-confirmed influenza outpatient doctor visits, derived from ICD codes found in insurance claims. Using this data, we estimate the percentage of daily doctor’s visits in each area that resulted in a diagnosis of influenza. Note that these estimates are based only on visits by patients whose insurance claims are accessible to Change Healthcare.
+---
+Name: COVID Antigen Test Positivity
+Id: quidel-covid-ag
+Signal: covid_ag_smoothed_pct_positive
+Unit: per 100 tests
+
+
+SignalTooltip: Positivity rate of COVID-19 antigen tests, based on data provided by Quidel, Inc.
+
+
+Description: Delphi receives data from COVID-19 antigen tests conducted by Quidel, a national provider of networked lab testing devices (covering doctors' offices, clinics, and hospitals). Antigen tests can detect parts of the virus that are present during an active infection.We report the percentage of COVID antigen tests that are positive. Note that this signal only includes Quidel’s antigen tests, not those run by other test providers.
+
+
+AgeStratifications:
+ - Name: 0-4
+   Signal: covid_ag_smoothed_pct_positive_age_0_4
+ - Name: 5-17
+   Signal: covid_ag_smoothed_pct_positive_age_5_17
+ - Name: 18-49
+   Signal: covid_ag_smoothed_pct_positive_age_18_49
+ - Name: 50-64
+   Signal: covid_ag_smoothed_pct_positive_age_50_64
+ - Name: 65+
+   Signal: covid_ag_smoothed_pct_positive_age_65plus
+
+
+---
+Name: COVID Cases
+Id: jhu-csse
+Signal: confirmed_7dav_incidence_prop
+Highlight: [default]
+ExtendedColorScale: true
+
+
+SignalTooltip: Newly reported COVID-19 cases per 100,000 people, based on data from Johns Hopkins University
+
+
+Description: This data shows the number of COVID-19 confirmed cases newly reported each day. It reflects only cases reported by state and local health authorities. It is based on case counts compiled and made public by [a team at Johns Hopkins University](https://systems.jhu.edu/research/public-health/ncov/). The signal may not be directly comparable across regions with vastly different testing capacity or reporting criteria. 
+---
+Name: COVID Hospital Admissions
+Id: hhs
+Signal: confirmed_admissions_covid_1d_prop_7dav
+ExtendedColorScale: true
+# override with additional county
+Levels: [nation, state, county]
+Overrides:
+  County:
+    Id: dsew-cpr
+    Signal: confirmed_admissions_covid_1d_prop_7dav
+
+
+
+
+SignalTooltip: Confirmed COVID-19 hospital admissions per 100,000 people
+
+
+Description: This data shows the number of hospital admissions with lab-confirmed COVID-19 each day. At the state level and above, we show data from the Report on Patient Impact and Hospital Capacity published by the US Department of Health & Human Services (HHS). At the county and metro level, we show data from the Community Profile Report published by the Data Strategy Execution Workgroup. 
+---
+Name: Flu Hospital Admissions
+Id: hhs
+Signal: confirmed_admissions_influenza_1d_prop_7dav
+ExtendedColorScale: true
+Levels: [nation, state]
+
+
+
+
+SignalTooltip: Confirmed influenza hospital admissions per 100,000 people
+
+
+Description: This data shows the number of hospital admissions with lab-confirmed influenza each day. We source this data from the Report on Patient Impact and Hospital Capacity published by the US Department of Health & Human Services (HHS). 
+---
+Name: COVID Deaths
+Id: jhu-csse
+Signal: deaths_7dav_incidence_prop
+
+
+SignalTooltip: Newly reported COVID-19 deaths per 100,000 people, based on data from Johns Hopkins University
+
+
+Description: This data shows the number of COVID-19 deaths newly reported each day. The signal is based on COVID-19 death counts compiled and made public by [a team at Johns Hopkins University](https://systems.jhu.edu/research/public-health/ncov/).

@@ -16,11 +16,11 @@ change as we learn more about their impact:
 
 For example, a query for three signals on one date across all counties can be
 submitted anonymously, but a query for three signals on a period of four weeks
-across all counties requires an API key. 
+across all counties requires an API key.
 
 An API key is a pseudonymous access token that grants privileged access to the
-Epidata API. You can request an API key by 
-[registering with us](https://forms.gle/hkBr5SfQgxguAfEt7).
+Epidata API. You can request an API key by
+[registering with us](https://api.delphi.cmu.edu/epidata/admin/registration_form).
 Privileges of registration may include:
 
 1. no rate limit
@@ -36,7 +36,8 @@ store the information you provide us at registration time, see our
 
 ## Usage
 
-If you choose to [register for an API key](https://forms.gle/hkBr5SfQgxguAfEt7), 
+If you choose to
+[register for an API key](https://api.delphi.cmu.edu/epidata/admin/registration_form),
 there are several ways to use your key to authenticate your requests:
 
 ### Via request parameter

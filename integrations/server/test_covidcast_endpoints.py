@@ -15,6 +15,7 @@ from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase, Covid
 # use the local instance of the Epidata API
 BASE_URL = "http://delphi_web_epidata/epidata/covidcast"
 BASE_URL_OLD = "http://delphi_web_epidata/epidata/api.php"
+AUTH = ('epidata', 'key')
 
 
 class CovidcastEndpointTests(CovidcastBase):
@@ -36,7 +37,7 @@ class CovidcastEndpointTests(CovidcastBase):
                 params.setdefault("data_source", params.get("source"))
         else:
             url = f"{BASE_URL}{endpoint}"
-        response = requests.get(url, params=params)
+        response = requests.get(url, params=params, auth=AUTH)
         response.raise_for_status()
         return response.json()
 

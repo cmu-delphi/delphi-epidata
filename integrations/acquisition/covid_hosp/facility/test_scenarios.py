@@ -29,6 +29,7 @@ class AcquisitionTests(unittest.TestCase):
 
     # use the local instance of the Epidata API
     Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+    Epidata.auth = ('epidata', 'key')
 
     # use the local instance of the epidata database
     secrets.db.host = 'delphi_database_epidata'
@@ -40,6 +41,8 @@ class AcquisitionTests(unittest.TestCase):
         cur.execute('truncate table covid_hosp_facility')
         cur.execute('truncate table covid_hosp_facility_key')
         cur.execute('truncate table covid_hosp_meta')
+        cur.execute('delete from api_user')
+        cur.execute('insert into api_user(api_key, email) values ("key", "emai")')
 
   @freeze_time("2021-03-16")
   def test_acquire_dataset(self):
