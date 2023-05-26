@@ -21,6 +21,7 @@ from delphi.epidata.server._params import (
     TimeSet,
     SourceSignalSet,
 )
+from delphi.epidata.acquisition.covidcast.test_utils import FIPS, MSA
 
 # py3tester coverage target
 __test_target__ = "delphi.epidata.server._query"
@@ -145,17 +146,17 @@ class UnitTests(unittest.TestCase):
         with self.subTest("single"):
             params = {}
             self.assertEqual(
-                filter_geo_sets("t", "v", [GeoSet("state", ["KY"])], "p", params),
+                filter_geo_sets("t", "v", [GeoSet("fips", [FIPS[0]])], "p", params),
                 "((t = :p_0t AND (v = :p_0t_0)))",
             )
-            self.assertEqual(params, {"p_0t": "state", "p_0t_0": "KY"})
+            self.assertEqual(params, {"p_0t": "fips", "p_0t_0": FIPS[0]})
         with self.subTest("multi"):
             params = {}
             self.assertEqual(
-                filter_geo_sets("t", "v", [GeoSet("state", ["KY", "AK"])], "p", params),
+                filter_geo_sets("t", "v", [GeoSet("fips", [FIPS[0], FIPS[1]])], "p", params),
                 "((t = :p_0t AND (v = :p_0t_0 OR v = :p_0t_1)))",
             )
-            self.assertEqual(params, {"p_0t": "state", "p_0t_0": "KY", "p_0t_1": "AK"})
+            self.assertEqual(params, {"p_0t": "fips", "p_0t_0": FIPS[0], "p_0t_1": FIPS[1]})
         with self.subTest("multiple pairs"):
             params = {}
             self.assertEqual(
@@ -175,7 +176,7 @@ class UnitTests(unittest.TestCase):
                 filter_geo_sets(
                     "t",
                     "v",
-                    [GeoSet("state", ["AK"]), GeoSet("nation", ["US"])],
+                    [GeoSet("fips", [FIPS[0]]), GeoSet("msa", [MSA[0]])],
                     "p",
                     params,
                 ),
@@ -183,7 +184,7 @@ class UnitTests(unittest.TestCase):
             )
             self.assertEqual(
                 params,
-                {"p_0t": "state", "p_0t_0": "AK", "p_1t": "nation", "p_1t_0": "US"},
+                {"p_0t": "fips", "p_0t_0": FIPS[0], "p_1t": "msa", "p_1t_0": MSA[0]},
             )
 
     def test_filter_source_signal_sets(self):

@@ -1,57 +1,39 @@
 import json
 import os
+from datetime import date
+from enum import Enum
+
 from dotenv import load_dotenv
 
 load_dotenv()
 
-VERSION = "0.4.6"
+VERSION = "4.1.1"
 
 MAX_RESULTS = int(10e6)
 MAX_COMPATIBILITY_RESULTS = int(3650)
 
 SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI", "sqlite:///test.db")
+SQLALCHEMY_DATABASE_URI_PRIMARY = os.environ.get("SQLALCHEMY_DATABASE_URI_PRIMARY")
 
 # defaults
 SQLALCHEMY_ENGINE_OPTIONS = {
-    "pool_pre_ping": True, # enable ping test for validity of recycled pool connections on connect() calls
-    "pool_recycle": 5      # seconds after which a recycled pool connection is considered invalid
+    "pool_pre_ping": True,  # enable ping test for validity of recycled pool connections on connect() calls
+    "pool_recycle": 5,  # seconds after which a recycled pool connection is considered invalid
 }
 # update with overrides of defaults or additions from external configs
-SQLALCHEMY_ENGINE_OPTIONS.update(
-    json.loads(os.environ.get("SQLALCHEMY_ENGINE_OPTIONS", "{}")))
+SQLALCHEMY_ENGINE_OPTIONS.update(json.loads(os.environ.get("SQLALCHEMY_ENGINE_OPTIONS", "{}")))
 
 SECRET = os.environ.get("FLASK_SECRET", "secret")
-URL_PREFIX = os.environ.get("FLASK_PREFIX", "/")
+URL_PREFIX = os.environ.get("FLASK_PREFIX", "") # if not empty, this value should begin but not end in a slash ('/')
 
-AUTH = {
-    "twitter": os.environ.get("SECRET_TWITTER"),
-    "ght": os.environ.get("SECRET_GHT"),
-    "fluview": os.environ.get("SECRET_FLUVIEW"),
-    "cdc": os.environ.get("SECRET_CDC"),
-    "sensors": os.environ.get("SECRET_SENSORS"),
-    "quidel": os.environ.get("SECRET_QUIDEL"),
-    "norostat": os.environ.get("SECRET_NOROSTAT"),
-    "afhsb": os.environ.get("SECRET_AFHSB"),
-}
-
-# begin sensor query authentication configuration
-#   A multimap of sensor names to the "granular" auth tokens that can be used to access them; excludes the "global" sensor auth key that works for all sensors:
-GRANULAR_SENSOR_AUTH_TOKENS = {
-    "twtr": os.environ.get("SECRET_SENSOR_TWTR", "").split(","),
-    "gft": os.environ.get("SECRET_SENSOR_GFT", "").split(","),
-    "ght": os.environ.get("SECRET_SENSOR_GHT", "").split(","),
-    "ghtj": os.environ.get("SECRET_SENSOR_GHTJ", "").split(","),
-    "cdc": os.environ.get("SECRET_SENSOR_CDC", "").split(","),
-    "quid": os.environ.get("SECRET_SENSOR_QUID", "").split(","),
-    "wiki": os.environ.get("SECRET_SENSOR_WIKI", "").split(","),
-}
-
-#   A set of sensors that do not require an auth key to access:
-OPEN_SENSORS = [
-    "sar3",
-    "epic",
-    "arch",
-]
+# REVERSE_PROXIED is a boolean value that indicates whether or not this server instance
+# is running behind a reverse proxy (like nginx).
+# in dev and testing, it is fine (or even preferable) for this variable to be set to 'TRUE'
+# even if it is not actually the case.  in prod, it is very important that this is set accurately --
+# it should _only_ be set to 'TRUE' if it really is behind a reverse proxy, as remote addresses can be "spoofed"
+# which can carry security/identity implications.  conversely, if this is set to 'FALSE' when in fact
+# running behind a reverse proxy, it can hinder logging accuracy.  it defaults to 'FALSE' for safety.
+REVERSE_PROXIED = os.environ.get("REVERSE_PROXIED", "FALSE").upper() == "TRUE"
 
 REGION_TO_STATE = {
     "hhs1": ["VT", "CT", "ME", "MA", "NH", "RI"],
@@ -75,3 +57,32 @@ REGION_TO_STATE = {
     "cen9": ["AK", "CA", "HI", "OR", "WA"],
 }
 NATION_REGION = "nat"
+
+API_KEY_REQUIRED_STARTING_AT = date.fromisoformat(os.environ.get("API_KEY_REQUIRED_STARTING_AT", "2023-06-21"))
+TEMPORARY_API_KEY = os.environ.get("TEMPORARY_API_KEY", "TEMP-API-KEY-EXPIRES-2023-06-28")
+# password needed for the admin application if not set the admin routes won't be available
+ADMIN_PASSWORD = os.environ.get("API_KEY_ADMIN_PASSWORD", "abc")
+# secret for the google form to give to the admin/register endpoint
+REGISTER_WEBHOOK_TOKEN = os.environ.get("API_KEY_REGISTER_WEBHOOK_TOKEN")
+
+REDIS_HOST = os.environ.get("REDIS_HOST", "delphi_redis")
+REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD", "1234")
+
+# https://flask-limiter.readthedocs.io/en/stable/#rate-limit-string-notation
+RATE_LIMIT = os.environ.get("RATE_LIMIT", "60/hour")
+# fixed-window, fixed-window-elastic-expiry, or moving-window
+# see also https://flask-limiter.readthedocs.io/en/stable/#rate-limiting-strategies
+RATELIMIT_STRATEGY = os.environ.get("RATELIMIT_STRATEGY", "fixed-window")
+
+# see https://flask-limiter.readthedocs.io/en/stable/#configuration
+RATELIMIT_STORAGE_URL = f"redis://:{REDIS_PASSWORD}@{REDIS_HOST}:6379"
+
+API_KEY_REGISTRATION_FORM_LINK = "https://forms.gle/hkBr5SfQgxguAfEt7"
+# ^ shortcut to "https://docs.google.com/forms/d/e/1FAIpQLSe5i-lgb9hcMVepntMIeEo8LUZUMTUnQD3hbrQI3vSteGsl4w/viewform?usp=sf_link"
+API_KEY_REGISTRATION_FORM_LINK_LOCAL = "https://api.delphi.cmu.edu/epidata/admin/registration_form"
+# ^ redirects to API_KEY_REGISTRATION_FORM_LINK
+
+API_KEY_REMOVAL_REQUEST_LINK = "https://forms.gle/GucFmZHTMgEFjH197"
+# ^ shortcut to "https://docs.google.com/forms/d/e/1FAIpQLSff30tsq4xwPCoUbvaIygLSMs_Mt8eDhHA0rifBoIrjo8J5lw/viewform"
+API_KEY_REMOVAL_REQUEST_LINK_LOCAL = "https://api.delphi.cmu.edu/epidata/admin/removal_request"
+# ^ redirects to API_KEY_REMOVAL_REQUEST_LINK

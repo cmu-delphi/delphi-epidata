@@ -21,8 +21,8 @@
     factory(root, root.fetch, root.jQuery || root.$);
   }
 })(this, function (exports, fetchImpl, jQuery) {
-  const BASE_URL = "https://delphi.cmu.edu/epidata/";
-  const client_version = "0.4.6";
+  const BASE_URL = "https://api.delphi.cmu.edu/epidata/";
+  const client_version = "4.1.1";
 
   // Helper function to cast values and/or ranges to strings
   function _listitem(value) {

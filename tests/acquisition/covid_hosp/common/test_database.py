@@ -144,9 +144,9 @@ class DatabaseTests(unittest.TestCase):
     result = database.insert_dataset(sentinel.publication_date, dataset)
 
     self.assertIsNone(result)
-    self.assertEqual(mock_cursor.execute.call_count, 6)
+    self.assertEqual(mock_cursor.executemany.call_count, 1)
 
-    actual_sql = mock_cursor.execute.call_args[0][0]
+    actual_sql = mock_cursor.executemany.call_args[0][0]
     self.assertIn(
       'INSERT INTO `test_table` (`id`, `publication_date`, `sql_str_col`, `sql_int_col`, `sql_float_col`)',
       actual_sql)
@@ -162,5 +162,9 @@ class DatabaseTests(unittest.TestCase):
 
     for i, expected in enumerate(expected_values):
       with self.subTest(name=f'row {i + 1}'):
-        actual = mock_cursor.execute.call_args_list[i][0][1]
+        # [0]: the first call() object
+        # [0]: get positional args out of the call() object
+        # [-1]: the last arg of the executemany call
+        # [i]: the ith row inserted in the executemany
+        actual = mock_cursor.executemany.call_args_list[0][0][-1][i]
         self.assertEqual(actual, (0, sentinel.publication_date) + expected)

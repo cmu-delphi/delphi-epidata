@@ -6,6 +6,7 @@ import re
 
 import pandas as pd
 
+
 class CovidHospException(Exception):
   """Exception raised exclusively by `covid_hosp` utilities."""
 
@@ -69,7 +70,26 @@ class Utils:
       return False
     raise CovidHospException(f'cannot convert "{value}" to bool')
 
-  def issues_to_fetch(metadata, newer_than, older_than):
+  def limited_string_fn(length):
+    def limited_string(value):
+      value = str(value)
+      if len(value) > length:
+        raise CovidHospException(f"Value '{value}':{len(value)} longer than max {length}")
+      return value
+    return limited_string
+
+  GEOCODE_LENGTH = 32
+  GEOCODE_PATTERN = re.compile(r'POINT \((-?[0-9.]+) (-?[0-9.]+)\)')
+  def limited_geocode(value):
+    if len(value) < Utils.GEOCODE_LENGTH:
+      return value
+    # otherwise parse and set precision to 6 decimal places
+    m = Utils.GEOCODE_PATTERN.match(value)
+    if not m:
+      raise CovidHospException(f"Couldn't parse geocode '{value}'")
+    return f'POINT ({" ".join(f"{float(x):.6f}" for x in m.groups())})'
+
+  def issues_to_fetch(metadata, newer_than, older_than, logger=False):
     """
     Construct all issue dates and URLs to be ingested based on metadata.
 
@@ -81,6 +101,8 @@ class Utils:
       Lower bound (exclusive) of days to get issues for.
     older_than Date
       Upper bound (exclusive) of days to get issues for
+    logger structlog.Logger [optional; default False]
+      Logger to receive messages
     Returns
     -------
       Dictionary of {issue day: list of (download urls, index)}
@@ -88,6 +110,7 @@ class Utils:
     """
     daily_issues = {}
     n_beyond = 0
+    n_selected = 0
     for index in sorted(set(metadata.index)):
       day = index.date()
       if day > newer_than and day < older_than:
@@ -97,14 +120,17 @@ class Utils:
           daily_issues[day] = urls_list
         else:
           daily_issues[day] += urls_list
+        n_selected += len(urls_list)
       elif day >= older_than:
         n_beyond += 1
-    if n_beyond > 0:
-      print(f"{n_beyond} issues available on {older_than} or newer")
+    if logger:
+      if n_beyond > 0:
+        logger.info("issues available beyond selection", on_or_newer=older_than, count=n_beyond)
+      logger.info("issues selected", newer_than=str(newer_than), older_than=str(older_than), count=n_selected)
     return daily_issues
 
   @staticmethod
-  def merge_by_key_cols(dfs, key_cols):
+  def merge_by_key_cols(dfs, key_cols, logger=False):
     """Merge a list of data frames as a series of updates.
 
     Parameters:
@@ -113,6 +139,8 @@ class Utils:
         Data frames to merge, ordered from earliest to latest.
       key_cols: list(str)
         Columns to use as the index.
+      logger structlog.Logger [optional; default False]
+        Logger to receive messages
 
     Returns a single data frame containing the most recent data for each state+date.
     """
@@ -120,6 +148,11 @@ class Utils:
     dfs = [df.set_index(key_cols) for df in dfs
            if not all(k in df.index.names for k in key_cols)]
     result = dfs[0]
+    if logger and len(dfs) > 7:
+      logger.warning(
+        "expensive operation",
+        msg="concatenating more than 7 files may result in long running times",
+        count=len(dfs))
     for df in dfs[1:]:
       # update values for existing keys
       result.update(df)
@@ -127,7 +160,8 @@ class Utils:
       ## repeated concatenation in pandas is expensive, but (1) we don't expect
       ## batch sizes to be terribly large (7 files max) and (2) this way we can
       ## more easily capture the next iteration's updates to any new keys
-      new_rows = df.loc[[i for i in df.index.to_list() if i not in result.index.to_list()]]
+      result_index_set = set(result.index.to_list())
+      new_rows = df.loc[[i for i in df.index.to_list() if i not in result_index_set]]
       result = pd.concat([result, new_rows])
 
     # convert the index rows back to columns
@@ -153,22 +187,25 @@ class Utils:
     bool
       Whether a new dataset was acquired.
     """
-    metadata = network.fetch_metadata()
+    logger = database.logger()
+    
+    metadata = network.fetch_metadata(logger=logger)
     datasets = []
     with database.connect() as db:
-      max_issue = db.get_max_issue()
+      max_issue = db.get_max_issue(logger=logger)
 
     older_than = datetime.datetime.today().date() if newer_than is None else older_than
     newer_than = max_issue if newer_than is None else newer_than
-    daily_issues = Utils.issues_to_fetch(metadata, newer_than, older_than)
+    daily_issues = Utils.issues_to_fetch(metadata, newer_than, older_than, logger=logger)
     if not daily_issues:
-      print("no new issues, nothing to do")
+      logger.info("no new issues; nothing to do")
       return False
     for issue, revisions in daily_issues.items():
       issue_int = int(issue.strftime("%Y%m%d"))
       # download the dataset and add it to the database
-      dataset = Utils.merge_by_key_cols([network.fetch_dataset(url) for url, _ in revisions],
-                                        db.KEY_COLS)
+      dataset = Utils.merge_by_key_cols([network.fetch_dataset(url, logger=logger) for url, _ in revisions],
+                                        db.KEY_COLS,
+                                        logger=logger)
       # add metadata to the database
       all_metadata = []
       for url, index in revisions:
@@ -180,10 +217,10 @@ class Utils:
       ))
     with database.connect() as db:
       for issue_int, dataset, all_metadata in datasets:
-        db.insert_dataset(issue_int, dataset)
+        db.insert_dataset(issue_int, dataset, logger=logger)
         for url, metadata_json in all_metadata:
-          db.insert_metadata(issue_int, url, metadata_json)
-        print(f'successfully acquired {len(dataset)} rows')
+          db.insert_metadata(issue_int, url, metadata_json, logger=logger)
+        logger.info("acquired rows", count=len(dataset))
 
       # note that the transaction is committed by exiting the `with` block
       return True

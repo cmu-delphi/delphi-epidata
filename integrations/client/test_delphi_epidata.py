@@ -12,10 +12,9 @@ from aiohttp.client_exceptions import ClientResponseError
 # third party
 import delphi.operations.secrets as secrets
 from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import main as update_covidcast_meta_cache
-from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase, CovidcastTestRow
+from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase, CovidcastTestRow, FIPS, MSA
 from delphi.epidata.client.delphi_epidata import Epidata
 from delphi_utils import Nans
-
 
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.client.delphi_epidata'
@@ -41,6 +40,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
 
     # use the local instance of the Epidata API
     Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+    Epidata.auth = ('epidata', 'key')
 
     # use the local instance of the epidata database
     secrets.db.host = 'delphi_database_epidata'
@@ -219,10 +219,10 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     # insert placeholder data: three counties, three MSAs
     N = 3
     rows = [
-      CovidcastTestRow.make_default_row(geo_type="county", geo_value=str(i)*5, value=i)
+      CovidcastTestRow.make_default_row(geo_type="county", geo_value=FIPS[i], value=i)
       for i in range(N)
     ] + [
-      CovidcastTestRow.make_default_row(geo_type="msa", geo_value=str(i)*5, value=i*10)
+      CovidcastTestRow.make_default_row(geo_type="msa", geo_value=MSA[i], value=i*10)
       for i in range(N)
     ]
     self._insert_rows(rows)
@@ -241,26 +241,28 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     self.assertEqual(request['message'], 'success')
     self.assertEqual(request['epidata'], counties)
     # test fetch a specific region
-    request = fetch('11111')
+    request = fetch([FIPS[0]])
     self.assertEqual(request['message'], 'success')
-    self.assertEqual(request['epidata'], [counties[1]])
+    self.assertEqual(request['epidata'], [counties[0]])
     # test fetch a specific yet not existing region
     request = fetch('55555')
-    self.assertEqual(request['message'], 'no results')
+    self.assertEqual(request['message'], 'Invalid geo_value(s) 55555 for the requested geo_type county')
     # test fetch a multiple regions
-    request = fetch(['11111', '22222'])
+    request = fetch([FIPS[0], FIPS[1]])
     self.assertEqual(request['message'], 'success')
-    self.assertEqual(request['epidata'], [counties[1], counties[2]])
+    self.assertEqual(request['epidata'], [counties[0], counties[1]])
     # test fetch a multiple regions in another variant
-    request = fetch(['00000', '22222'])
+    request = fetch([FIPS[0], FIPS[2]])
     self.assertEqual(request['message'], 'success')
     self.assertEqual(request['epidata'], [counties[0], counties[2]])
     # test fetch a multiple regions but one is not existing
-    request = fetch(['11111', '55555'])
-    self.assertEqual(request['message'], 'success')
-    self.assertEqual(request['epidata'], [counties[1]])
+    request = fetch([FIPS[0], '55555'])
+    self.assertEqual(request['message'], 'Invalid geo_value(s) 55555 for the requested geo_type county')
     # test fetch a multiple regions but specify no region
     request = fetch([])
+    self.assertEqual(request['message'], 'geo_value is empty for the requested geo_type county!')
+    # test fetch a region with no results
+    request = fetch([FIPS[3]])
     self.assertEqual(request['message'], 'no results')
 
   def test_covidcast_meta(self):
@@ -325,10 +327,10 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     # insert placeholder data: three counties, three MSAs
     N = 3
     rows = [
-      CovidcastTestRow.make_default_row(geo_type="county", geo_value=str(i)*5, value=i)
+      CovidcastTestRow.make_default_row(geo_type="county", geo_value=FIPS[i-1], value=i)
       for i in range(N)
     ] + [
-      CovidcastTestRow.make_default_row(geo_type="msa", geo_value=str(i)*5, value=i*10)
+      CovidcastTestRow.make_default_row(geo_type="msa", geo_value=MSA[i-1], value=i*10)
       for i in range(N)
     ]
     self._insert_rows(rows)

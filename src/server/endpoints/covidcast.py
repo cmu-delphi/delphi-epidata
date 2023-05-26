@@ -34,8 +34,8 @@ from .._query import QueryBuilder, execute_query, run_query, parse_row, filter_f
 from .._printer import create_printer, CSVPrinter
 from .._validate import require_all
 from .._pandas import as_pandas, print_pandas
-from .covidcast_utils import compute_trend, compute_trends, compute_correlations, compute_trend_value, CovidcastMetaEntry
-from ..utils import shift_day_value, day_to_time_value, time_value_to_iso, time_value_to_day, shift_week_value, time_value_to_week, guess_time_value_is_day, week_to_time_value
+from .covidcast_utils import compute_trend, compute_trends, compute_trend_value, CovidcastMetaEntry
+from ..utils import shift_day_value, day_to_time_value, time_value_to_iso, time_value_to_day, shift_week_value, time_value_to_week, guess_time_value_is_day, week_to_time_value, TimeValues
 from .covidcast_utils.model import TimeType, count_signal_time_types, data_sources, create_source_signal_alias_mapper
 
 # first argument is the endpoint name
@@ -351,79 +351,6 @@ def handle_trendseries():
 
     # now use a generator for sending the rows and execute all the other queries
     return p(filter_fields(gen(r)))
-
-
-@bp.route("/correlation", methods=("GET", "POST"))
-def handle_correlation():
-    require_all(request, "reference", "window", "others", "geo")
-    reference = parse_single_source_signal_arg("reference")
-    other_sets = parse_source_signal_arg("others")
-    daily_signals, weekly_signals = count_signal_time_types(other_sets + [reference])
-    source_signal_sets, alias_mapper = create_source_signal_alias_mapper(other_sets + [reference])
-    geo_sets = parse_geo_arg()
-    time_window = parse_day_or_week_range_arg("window")
-    is_day = time_window.is_day
-    _verify_argument_time_type_matches(is_day, daily_signals, weekly_signals)
-
-    lag = extract_integer("lag")
-    if lag is None:
-        lag = 28
-
-    # `lag` above is used in post-processing, not in the database query, so we can use latest here
-    q = QueryBuilder(latest_table, "t")
-
-    fields_string = ["geo_type", "geo_value", "source", "signal"]
-    fields_int = ["time_value"]
-    fields_float = ["value"]
-    q.set_fields(fields_string, fields_int, fields_float)
-    q.set_sort_order("geo_type", "geo_value", "source", "signal", "time_value")
-
-    q.apply_source_signal_filters(
-        "source",
-        "signal",
-        source_signal_sets,
-    )
-    q.apply_geo_filters("geo_type", "geo_value", geo_sets)
-    q.apply_time_filter("time_type", "time_value", time_window)
-
-    df = as_pandas(str(q), q.params)
-    if is_day:
-        df["time_value"] = to_datetime(df["time_value"], format="%Y%m%d")
-    else:
-        # week but convert to date for simpler shifting
-        df["time_value"] = to_datetime(df["time_value"].apply(lambda v: time_value_to_week(v).startdate()))
-
-    p = create_printer(request.values.get("format"))
-
-    def prepare_data_frame(df):
-        return df[["time_value", "value"]].set_index("time_value")
-
-    def gen():
-        by_geo = df.groupby(["geo_type", "geo_value"])
-        for (geo_type, geo_value), group in by_geo:
-            # group by source, signal
-            by_signal = group.groupby(["source", "signal"])
-
-            # find reference group
-            # dataframe structure: index=time_value, value=value
-            reference_group = next((prepare_data_frame(group) for (source, signal), group in by_signal if source == reference.source and signal == reference.signal[0]), None)
-
-            if reference_group is None or reference_group.empty:
-                continue  # no data for reference
-
-            # dataframe structure: index=time_value, value=value
-            other_groups = [((source, signal), prepare_data_frame(group)) for (source, signal), group in by_signal if not (source == reference.source and signal == reference.signal[0])]
-            if not other_groups:
-                continue  # no other signals
-
-            for (source, signal), other_group in other_groups:
-                if alias_mapper:
-                    source = alias_mapper(source, signal)
-                for cor in compute_correlations(geo_type, geo_value, source, signal, lag, reference_group, other_group, is_day):
-                    yield cor.asdict()
-
-    # now use a generator for sending the rows and execute all the other queries
-    return p(filter_fields(gen()))
 
 
 @bp.route("/csv", methods=("GET", "POST"))

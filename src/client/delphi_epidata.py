@@ -13,7 +13,7 @@ import requests
 import asyncio
 from tenacity import retry, stop_after_attempt
 
-from aiohttp import ClientSession, TCPConnector
+from aiohttp import ClientSession, TCPConnector, BasicAuth
 from pkg_resources import get_distribution, DistributionNotFound
 
 # Obtain package version for the user-agent. Uses the installed version by
@@ -25,7 +25,7 @@ except DistributionNotFound:
   _version = "0.script"
 
 _HEADERS = {
-  "user-agent": "delphi_epidata/" + _version
+  "user-agent": "delphi_epidata/" + _version + " (Python)"
 }
 
 # Because the API is stateless, the Epidata class only contains static methods
@@ -33,7 +33,8 @@ class Epidata:
   """An interface to DELPHI's Epidata API."""
 
   # API base url
-  BASE_URL = 'https://delphi.cmu.edu/epidata/api.php'
+  BASE_URL = 'https://api.delphi.cmu.edu/epidata/api.php'
+  auth = None
 
   client_version = _version
 
@@ -58,9 +59,11 @@ class Epidata:
   @retry(reraise=True, stop=stop_after_attempt(2))
   def _request_with_retry(params):
     """Make request with a retry if an exception is thrown."""
-    req = requests.get(Epidata.BASE_URL, params, headers=_HEADERS)
+    req = requests.get(Epidata.BASE_URL, params, auth=Epidata.auth, headers=_HEADERS)
     if req.status_code == 414:
-      req = requests.post(Epidata.BASE_URL, params, headers=_HEADERS)
+      req = requests.post(Epidata.BASE_URL, params, auth=Epidata.auth, headers=_HEADERS)
+    # handle 401 and 429
+    req.raise_for_status()
     return req
 
   @staticmethod
@@ -73,12 +76,15 @@ class Epidata:
     """
     try:
       result = Epidata._request_with_retry(params)
-      if params is not None and "format" in params and params["format"]=="csv":
-        return result.text
-      else:
-        return result.json()
     except Exception as e:
       return {'result': 0, 'message': 'error: ' + str(e)}
+    if params is not None and "format" in params and params["format"]=="csv":
+      return result.text
+    else:
+      try:
+        return result.json()
+      except requests.exceptions.JSONDecodeError:
+        return {'result': 0, 'message': 'error decoding json: ' + result.text}
 
   # Raise an Exception on error, otherwise return epidata
   @staticmethod
@@ -503,16 +509,17 @@ class Epidata:
   def sensors(auth, names, locations, epiweeks):
     """Fetch Delphi's digital surveillance sensors."""
     # Check parameters
-    if auth is None or names is None or locations is None or epiweeks is None:
-      raise Exception('`auth`, `names`, `locations`, and `epiweeks` are all required')
+    if names is None or locations is None or epiweeks is None:
+      raise Exception('`names`, `locations`, and `epiweeks` are all required')
     # Set up request
     params = {
       'endpoint': 'sensors',
-      'auth': auth,
       'names': Epidata._list(names),
       'locations': Epidata._list(locations),
       'epiweeks': Epidata._list(epiweeks),
     }
+    if auth is not None:
+      params['auth'] = auth
     # Make the API call
     return Epidata._request(params)
 
@@ -735,7 +742,11 @@ class Epidata:
       """Helper function to asynchronously make and aggregate Epidata GET requests."""
       tasks = []
       connector = TCPConnector(limit=batch_size)
-      async with ClientSession(connector=connector, headers=_HEADERS) as session:
+      if isinstance(Epidata.auth, tuple):
+        auth = BasicAuth(login=Epidata.auth[0], password=Epidata.auth[1], encoding='utf-8')
+      else:
+        auth = Epidata.auth
+      async with ClientSession(connector=connector, headers=_HEADERS, auth=auth) as session:
         for param in param_combos:
           task = asyncio.ensure_future(async_get(param, session))
           tasks.append(task)

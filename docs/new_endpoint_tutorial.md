@@ -1,6 +1,6 @@
 ---
 title: New Endpoint Tutorial
-nav_order: 4
+nav_order: 5
 ---
 
 # Tutorial: Adding a new API endpoint
@@ -273,10 +273,8 @@ already built the `delphi_python` image above:
 
 ```bash
 # build web and database images for epidata
-docker build -t delphi_web \
-  -f repos/delphi/operations/dev/docker/web/Dockerfile .
-docker build -t delphi_web_epidata \
-  -f repos/delphi/delphi-epidata/dev/docker/web/epidata/Dockerfile .
+docker build -t delphi_web_epidata\
+			-f ./devops/Dockerfile .;\
 docker build -t delphi_database_epidata \
   -f repos/delphi/delphi-epidata/dev/docker/database/epidata/Dockerfile .
 
@@ -327,7 +325,7 @@ actual
 created in this tutorial.
 
 Once it's approved, merge the PR, and contact an admin to schedule a release. Once released, the API will begin serving your new endpoint. Go ahead and give it a
-try: https://delphi.cmu.edu/epidata/fluview_meta/
+try: https://api.delphi.cmu.edu/epidata/fluview_meta/
 
 ```
 {

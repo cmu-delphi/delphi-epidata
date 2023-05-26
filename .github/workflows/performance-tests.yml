@@ -15,6 +15,14 @@ jobs:
     # Make sure 1. this is a PR, not an issue 2. it contains "/run performance test" anywhere in the body
     if: github.event.issue.pull_request && contains(github.event.comment.body, '/run performance test')
     runs-on: ubuntu-latest
+    outputs:
+      request_count: ${{ steps.output.outputs.request_count }}
+      failure_count: ${{ steps.output.outputs.failure_count }}
+      med_time: ${{ steps.output.outputs.med_time }}
+      avg_time: ${{ steps.output.outputs.avg_time }}
+      min_time: ${{ steps.output.outputs.min_time }}
+      max_time: ${{ steps.output.outputs.max_time }}
+      requests_per_sec: ${{ steps.output.outputs.requests_per_sec }}
     steps:
       - name: Set up WireGuard
         uses: egor-tensin/setup-wireguard@v1.2.0
@@ -52,19 +60,60 @@ jobs:
         run: |
           cd ../driver
           sudo make web sql="${{ secrets.DB_CONN_STRING }}"
+      - name: Check out delphi-admin
+        uses: actions/checkout@v3
+        with:
+          repository: cmu-delphi/delphi-admin
+          token: ${{ secrets.CMU_DELPHI_DEPLOY_MACHINE_PAT }}
+          path: delphi-admin
       - name: Build & run Locust
+        continue-on-error: true # sometimes ~2-5 queries fail, we shouldn't end the run if that's the case
         run: |
-          cd ../driver/repos/delphi/delphi-epidata/tests/performance
+          cd delphi-admin/load-testing/locust
           docker build -t locust .
-          docker run --net=host -v $PWD:/mnt/locust -e CSV=/mnt/locust/v4-requests-smaller.csv locust -f /mnt/locust/v4.py --host http://127.0.0.1:10080/ --users 10 --spawn-rate 1 --headless -t 15m
+          export CSV=v4-requests-as_of.csv
+          touch output_stats.csv && chmod 666 output_stats.csv
+          touch output_stats_history.csv && chmod 666 output_stats_history.csv
+          touch output_failures.csv && chmod 666 output_failures.csv
+          touch output_exceptions.csv && chmod 666 output_exceptions.csv
+          docker run --net=host -v $PWD:/mnt/locust -e CSV="/mnt/locust/${CSV}" locust -f /mnt/locust/v4.py --host http://127.0.0.1:10080/ --users 10 --spawn-rate 1 --headless -i "$(cat ${CSV} | wc -l)" --csv=/mnt/locust/output
+      - name: Produce output for summary
+        id: output
+        uses: jannekem/run-python-script-action@v1
+        with:
+          script: |
+            import os
 
-  comment-output:
+            def write_string(name, value):
+              with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
+                print(f'{name}={value}', file=fh)
+
+            def write_float(name, value):
+              write_string(name, "{:.2f}".format(float(value)))
+
+            with open("delphi-admin/load-testing/locust/output_stats.csv", "r", encoding="utf-8", errors="ignore") as scraped:
+              final_line = scraped.readlines()[-1].split(",")
+              write_string('request_count', final_line[2])
+              write_string('failure_count', final_line[3])
+              write_float('med_time', final_line[4])
+              write_float('avg_time', final_line[5])
+              write_float('min_time', final_line[6])
+              write_float('max_time', final_line[7])
+              write_float('requests_per_sec', final_line[9])
+
+      - name: Archive results as artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: locust-output
+          path: |
+            delphi-admin/load-testing/locust/output_*.csv
+
+  comment-success:
     runs-on: ubuntu-latest
-    if: success() || failure() # but not if skipped
+    if: success()
     needs: run-perftests
     steps:
       - name: Comment run results
-        # URL that links to run results
         env:
           GITHUB_WORKFLOW_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
         uses: actions/github-script@v5
@@ -75,6 +124,33 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '✅ Performance tests complete! Click here to view results: ${{ env.GITHUB_WORKFLOW_URL }}'
+              body: `✅ Performance tests complete! Result summary:
+              - Total requests: **${{ needs.run-perftests.outputs.request_count }}**
+              - Total failures: **${{ needs.run-perftests.outputs.failure_count }}**
+              - Min response time: **${{ needs.run-perftests.outputs.min_time }} ms**
+              - Max response time: **${{ needs.run-perftests.outputs.max_time }} ms**
+              - Average response time: **${{ needs.run-perftests.outputs.avg_time }} ms**
+              - Median response time: **${{ needs.run-perftests.outputs.med_time }} ms**
+              - Requests per second: **${{ needs.run-perftests.outputs.requests_per_sec }}**
+              
+              Click here to view full results: ${{ env.GITHUB_WORKFLOW_URL }}.`
             })
   
+  comment-failure:
+    runs-on: ubuntu-latest
+    if: failure()
+    needs: run-perftests
+    steps:
+      - name: Comment run results
+        env:
+          GITHUB_WORKFLOW_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `❌ Performance tests failed! Click here to view full results: ${{ env.GITHUB_WORKFLOW_URL }}.`
+            })
