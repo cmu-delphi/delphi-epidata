@@ -1,8 +1,9 @@
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.engine import Engine
+import redis
 from sqlalchemy.orm import sessionmaker
 
-from ._config import SQLALCHEMY_DATABASE_URI, SQLALCHEMY_ENGINE_OPTIONS
+from ._config import SQLALCHEMY_DATABASE_URI, SQLALCHEMY_ENGINE_OPTIONS, REDIS_HOST, REDIS_PASSWORD
 
 
 # _db.py exists so that we dont have a circular dependency:
@@ -15,4 +16,5 @@ metadata = MetaData(bind=engine)
 
 Session = sessionmaker(bind=engine)
 
-
+redis_conn_pool = redis.ConnectionPool(host=REDIS_HOST, password=REDIS_PASSWORD)
+redis_conn = redis.Redis(connection_pool=redis_conn_pool)

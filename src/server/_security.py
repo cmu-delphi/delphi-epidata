@@ -2,7 +2,6 @@ from datetime import date, datetime, timedelta
 from functools import wraps
 from typing import Optional, cast
 
-import redis
 from delphi.epidata.common.logger import get_structured_logger
 from flask import g, request
 from werkzeug.exceptions import Unauthorized
@@ -10,13 +9,12 @@ from werkzeug.local import LocalProxy
 
 from ._config import (
     API_KEY_REQUIRED_STARTING_AT,
-    REDIS_HOST,
-    REDIS_PASSWORD,
     API_KEY_REGISTRATION_FORM_LINK_LOCAL,
     TEMPORARY_API_KEY,
     URL_PREFIX,
 )
 from .admin.models import User, UserRole
+from ._db import redis_conn
 
 API_KEY_HARD_WARNING = API_KEY_REQUIRED_STARTING_AT - timedelta(days=14)
 API_KEY_SOFT_WARNING = API_KEY_HARD_WARNING - timedelta(days=14)
@@ -124,5 +122,4 @@ def require_role(required_role: str):
 def update_key_last_time_used(user):
     if user:
         # update last usage for this user's api key to "now()"
-        r = redis.Redis(host=REDIS_HOST, password=REDIS_PASSWORD)
-        r.set(f"LAST_USED/{user.api_key}", datetime.strftime(datetime.now(), "%Y-%m-%d"))
+        redis_conn.set(f"LAST_USED/{user.api_key}", datetime.strftime(datetime.now(), "%Y-%m-%d"))
