@@ -8,11 +8,12 @@ import shutil
 # first party
 from . import afhsb_sql
 
-DEFAULT_DATAPATH = '/home/automation/afhsb_data'
+DEFAULT_DATAPATH = "/home/automation/afhsb_data"
+
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--datapath', action='store', type=str, default=DEFAULT_DATAPATH, help='filepath to directory containing csv files to input into database')
+    parser.add_argument("--datapath", action="store", type=str, default=DEFAULT_DATAPATH, help="filepath to directory containing csv files to input into database")
     args = parser.parse_args()
     # MariaDB appears to refuse to LOAD DATA INFILE except on files under
     # /var/lib/mysql (which seems dedicated to its own files) or /tmp; create a
@@ -35,5 +36,5 @@ def main():
     #   (Temporary parent directory should be deleted automatically.)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
