@@ -81,7 +81,10 @@ def require_api_key() -> bool:
 def _get_current_user():
     if "user" not in g:
         api_key = resolve_auth_token()
-        g.user = User.find_user(api_key=api_key)
+        if api_key:
+            g.user = User.find_user(api_key=api_key)
+        else:
+            g.user = None
     return g.user
 
 
