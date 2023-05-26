@@ -1,4 +1,3 @@
-from signal import signal
 from typing import Callable, List, Optional, Tuple, Dict, Any
 from itertools import groupby
 from datetime import date, timedelta
@@ -36,7 +35,7 @@ from .._printer import create_printer, CSVPrinter
 from .._validate import require_all
 from .._pandas import as_pandas, print_pandas
 from .covidcast_utils import compute_trend, compute_trends, compute_correlations, compute_trend_value, CovidcastMetaEntry
-from ..utils import shift_day_value, day_to_time_value, time_value_to_iso, time_value_to_day, shift_week_value, time_value_to_week, guess_time_value_is_day, week_to_time_value, TimeValues
+from ..utils import shift_day_value, day_to_time_value, time_value_to_iso, time_value_to_day, shift_week_value, time_value_to_week, guess_time_value_is_day, week_to_time_value
 from .covidcast_utils.model import TimeType, count_signal_time_types, data_sources, create_source_signal_alias_mapper
 
 # first argument is the endpoint name
