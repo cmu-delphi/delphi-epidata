@@ -82,8 +82,7 @@ def load_and_prepare_file(filepath: str, attributes: PathDetails) -> pd.DataFram
 
 def _move_after_processing(filepath, success):
     archive_dir = SUCCESS_DIR if success else FAIL_DIR
-    new_dir = os.path.dirname(filepath).replace(
-        "receiving", archive_dir)
+    new_dir = os.path.dirname(filepath).replace("receiving", archive_dir)
     os.makedirs(new_dir, exist_ok=True)
     move(filepath, filepath.replace("receiving", archive_dir))
     print(f"{filepath} moved to {archive_dir}")
@@ -96,10 +95,12 @@ def _create_upsert_method(meta):
             meta,
             # specify lag column explicitly; lag is a reserved word sqlalchemy doesn't know about
             sqlalchemy.Column("lag", sqlalchemy.Integer, quote=True),
-            autoload=True)
+            autoload=True,
+        )
         insert_stmt = sqlalchemy.dialects.mysql.insert(sql_table).values([dict(zip(keys, data)) for data in data_iter])
         upsert_stmt = insert_stmt.on_duplicate_key_update({x.name: x for x in insert_stmt.inserted})
         conn.execute(upsert_stmt)
+
     return method
 
 
