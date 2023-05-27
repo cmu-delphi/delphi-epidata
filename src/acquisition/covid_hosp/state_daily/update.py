@@ -10,18 +10,17 @@ from delphi.epidata.acquisition.covid_hosp.state_daily.network import Network
 
 
 class Update:
+    @staticmethod
+    def run(network=Network):
+        """Acquire the most recent dataset, unless it was previously acquired.
 
-  @staticmethod
-  def run(network=Network):
-    """Acquire the most recent dataset, unless it was previously acquired.
+        Returns
+        -------
+        bool
+          Whether a new dataset was acquired.
+        """
 
-    Returns
-    -------
-    bool
-      Whether a new dataset was acquired.
-    """
-
-    return Utils.update_dataset(Database, network)
+        return Utils.update_dataset(Database, network)
 
 
 # main entry point
