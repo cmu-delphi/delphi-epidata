@@ -45,7 +45,7 @@ def get_paho_data(offset=0, dir="downloads"):
     fp.set_preference("browser.helperApps.neverAsk.saveToDisk", "text/csv")
 
     browser = Firefox(options=opts, firefox_profile=fp)
-    browser.get("http://www.paho.org/data/index.php/en/mnu-topics/indicadores-dengue-en/dengue-nacional-en/252-dengue-pais-ano-en.html?showall=&start=1")
+    browser.get("https://www.paho.org/data/index.php/en/mnu-topics/indicadores-dengue-en/dengue-nacional-en/252-dengue-pais-ano-en.html?showall=&start=1")
     tab1 = browser.window_handles[0]
     browser.execute_script("""window.open("","_blank");""")
     tab2 = browser.window_handles[1]
@@ -84,7 +84,7 @@ def get_paho_data(offset=0, dir="downloads"):
     sessionid = href[startidx:endidx]
 
     dataurl = (
-        "http://phip.paho.org/vizql/w/Casosdedengue_tben/v/ByLastAvailableEpiWeek/viewData/sessions/%s/views/18076444178507886853_9530488980060483892?maxrows=200&viz=%%7B%%22worksheet%%22:%%22W%%20By%%20Last%%20Available%%20EpiWeek%%22,%%22dashboard%%22:%%22By%%20Last%%20Available%%20Epi%%20Week%%22%%7D"
+        "https://phip.paho.org/vizql/w/Casosdedengue_tben/v/ByLastAvailableEpiWeek/viewData/sessions/%s/views/18076444178507886853_9530488980060483892?maxrows=200&viz=%%7B%%22worksheet%%22:%%22W%%20By%%20Last%%20Available%%20EpiWeek%%22,%%22dashboard%%22:%%22By%%20Last%%20Available%%20Epi%%20Week%%22%%7D"
         % sessionid
     )
 

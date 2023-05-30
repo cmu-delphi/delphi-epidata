@@ -4,7 +4,7 @@
 ===============
 
 Scrapes weekly flu data from Taiwan's National Infectious Disease Statistics
-System (NIDSS): http://nidss.cdc.gov.tw/en/
+System (NIDSS): https://nidss.cdc.gov.tw/en/
 
 
 =================
@@ -43,7 +43,7 @@ class NIDSS:
     FLU_URL = "https://nidss.cdc.gov.tw/en/CDCWNH01.aspx?dc=wnh"
 
     # Link to the dengue data
-    DENGUE_URL = "http://nidss.cdc.gov.tw/Download/Weekly_Age_County_Gender_061.csv"
+    DENGUE_URL = "https://nidss.cdc.gov.tw/Download/Weekly_Age_County_Gender_061.csv"
 
     # Translate location names to English
     # https://en.wikipedia.org/wiki/List_of_administrative_divisions_of_Taiwan
@@ -218,7 +218,7 @@ class NIDSS:
             if year < 2008 and year != 2003 and week > 52:
                 week = 52
             # Epiweek system change in 2009
-            # See also: http://research.undefinedx.com/forum/index.php?topic=300.0
+            # See also: https://research.undefinedx.com/forum/index.php?topic=300.0
             if year == 2009:
                 week -= 1
                 if week == 0:

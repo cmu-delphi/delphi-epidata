@@ -94,7 +94,7 @@ def get_rows(cnx, table="kcdc_ili"):
 def get_kcdc_data():
     issue = EpiDate.today().get_ew()
     last_season = issue // 100 + (1 if issue % 100 > 35 else 0)
-    url = "http://www.cdc.go.kr/npt/biz/npp/iss/influenzaListAjax.do"
+    url = "https://www.cdc.go.kr/npt/biz/npp/iss/influenzaListAjax.do"
     params = {"icdNm": "influenza", "startYear": "2004", "endYear": str(last_season)}  # Started in 2004
     response = requests.post(url, params)
     datas = response.json()
