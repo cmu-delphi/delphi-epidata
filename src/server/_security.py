@@ -81,7 +81,10 @@ def require_api_key() -> bool:
 def _get_current_user():
     if "user" not in g:
         api_key = resolve_auth_token()
-        g.user = User.find_user(api_key=api_key)
+        if api_key:
+            g.user = User.find_user(api_key=api_key)
+        else:
+            g.user = None
     return g.user
 
 
@@ -122,6 +125,8 @@ def require_role(required_role: str):
 
 
 def update_key_last_time_used(user):
+    # TODO: reenable this once cc<-->aws latency issues are sorted out, or maybe do this call asynchronously
+    return
     if user:
         # update last usage for this user's api key to "now()"
         r = redis.Redis(host=REDIS_HOST, password=REDIS_PASSWORD)
