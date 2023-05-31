@@ -162,6 +162,10 @@ def after_request_execute(response):
 
 @app.teardown_appcontext
 def teardown_db(exception=None):
+    # drop reference to "user" (if it exists)
+    if "user" in g:
+        g.pop("user")
+
     # close the db connection
     db = g.pop("db", None)
 
