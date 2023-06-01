@@ -4,7 +4,7 @@ from flask_limiter import Limiter, HEADERS
 from werkzeug.exceptions import Unauthorized, TooManyRequests
 
 from ._common import app, get_real_ip_addr
-from ._db import redis_conn
+from ._db import redis_conn, redis_conn_pool
 from ._config import RATE_LIMIT, RATELIMIT_STORAGE_URL
 from ._exceptions import ValidationFailedException
 from ._params import extract_dates, extract_integers, extract_strings
@@ -90,7 +90,8 @@ def _resolve_tracking_key() -> str:
 limiter = Limiter(
     _resolve_tracking_key,
     app=app,
-    storage_uri=RATELIMIT_STORAGE_URL,
+    storage_uri="redis://",
+    storage_options={"connection_pool": redis_conn_pool},
     request_identifier=lambda: "EpidataLimiter",
     headers_enabled=True,
     header_name_mapping={

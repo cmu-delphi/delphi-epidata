@@ -16,5 +16,5 @@ metadata = MetaData(bind=engine)
 
 Session = sessionmaker(bind=engine)
 
-redis_conn_pool = redis.ConnectionPool(host=REDIS_HOST, password=REDIS_PASSWORD)
+redis_conn_pool = redis.ConnectionPool(host=REDIS_HOST, password=REDIS_PASSWORD, max_connections=200)
 redis_conn = redis.Redis(connection_pool=redis_conn_pool)
