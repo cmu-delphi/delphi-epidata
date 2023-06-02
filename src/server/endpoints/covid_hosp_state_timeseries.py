@@ -161,17 +161,17 @@ def handle():
         # Get all issues matching the conditions from daily & timeseries
         union_subquery = f'''
         (
-            SELECT *, 'D' as record_type FROM `covid_hosp_state_daily` {q.alias} WHERE {q.conditions_clause}
+            SELECT *, 'D' AS record_type FROM `covid_hosp_state_daily` AS {q.alias} WHERE {q.conditions_clause}
             UNION ALL
-            SELECT *, 'T' as record_type FROM `covid_hosp_state_timeseries` {q.alias} WHERE {q.conditions_clause}
-        ) c'''
+            SELECT *, 'T' AS record_type FROM `covid_hosp_state_timeseries` AS {q.alias} WHERE {q.conditions_clause}
+        ) AS {q.alias}'''
 
         # Prioritize rows with record_type='D' for each issue/date/state group
         query = f'''
             SELECT {q.fields_clause} FROM (
-                SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY issue, date, state ORDER BY record_type) `row`
+                SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY issue, date, state ORDER BY record_type) AS `row`
                 FROM {union_subquery}
-            ) {q.alias} WHERE `row` = 1 ORDER BY {q.order_clause}
+            ) AS {q.alias} WHERE `row` = 1 ORDER BY {q.order_clause}
         '''
     else:
         # Filter for most recent issues
@@ -180,36 +180,37 @@ def handle():
             # ...Filter for most recent issues before a given as_of
             cond_clause += " AND (issue <= :as_of)"
             q.params["as_of"] = as_of
+
         join_condition = f"{q.alias}.state = x.state AND {q.alias}.date = x.date AND {q.alias}.issue = x.max_issue"
 
         # Get the rows from the daily & timeseries tables with the highest issue value within each state/date group
         join_daily = f'''
-            SELECT {q.fields_clause}, 'D' AS record_type FROM `covid_hosp_state_daily` {q.alias}
-            INNER JOIN (
+            SELECT {q.fields_clause}, 'D' AS record_type FROM `covid_hosp_state_daily` AS {q.alias}
+            JOIN (
                 SELECT {q.alias}.state, {q.alias}.date, MAX({q.alias}.issue) AS max_issue
-                FROM `covid_hosp_state_daily` {q.alias}
+                FROM `covid_hosp_state_daily` AS {q.alias}
                 WHERE {cond_clause}
                 GROUP BY {q.alias}.state, {q.alias}.date
-            ) x
+            ) AS x
             ON {join_condition}
         '''
         join_timeseries = f'''
-            SELECT {q.fields_clause}, 'T' AS record_type FROM `covid_hosp_state_timeseries` {q.alias}
-            INNER JOIN (
+            SELECT {q.fields_clause}, 'T' AS record_type FROM `covid_hosp_state_timeseries` AS {q.alias}
+            JOIN (
                 SELECT {q.alias}.state, {q.alias}.date, MAX(issue) AS max_issue
-                FROM `covid_hosp_state_timeseries` {q.alias}
+                FROM `covid_hosp_state_timeseries` AS {q.alias}
                 WHERE {cond_clause}
                 GROUP BY {q.alias}.state, {q.alias}.date
-            ) x
+            ) AS x
             ON {join_condition}
         '''
 
         # Combine daily & timeseries queries, getting the combined latest issues (and prioritizing rows with record_type='D' in a tie)
         query = f'''
             SELECT {q.fields_clause} FROM (
-                SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY state, date ORDER BY issue DESC, record_type) `row`
-                FROM ({join_daily} UNION ALL {join_timeseries}) {q.alias}
-            ) {q.alias} WHERE `row` = 1 ORDER BY {q.order_clause}
+                SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY state, date ORDER BY issue DESC, record_type) AS `row`
+                FROM ({join_daily} UNION ALL {join_timeseries}) AS {q.alias}
+            ) AS {q.alias} WHERE `row` = 1 ORDER BY {q.order_clause}
         '''
 
     # send query
