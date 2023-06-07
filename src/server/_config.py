@@ -50,7 +50,7 @@ setting it too high (or to -1) will respect more of the entries in the "X-Forwar
  for an "infinite" depth, where any and all proxy hops will be trusted).
 
 setting it too low can hinder logging accuracy -- that can cause an intermediate proxy IP address to be used as the
- "real" client IP address.
+ "real" client IP address, which could cause requests to be rate-limited inappropriately.
 
 setting REVERSE_PROXY_DEPTH to "0" essentially indicates there are no proxies between this server and the outside
  world.  in this case, the "X-Forwarded-For" header is ignored.
