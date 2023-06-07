@@ -26,14 +26,37 @@ SQLALCHEMY_ENGINE_OPTIONS.update(json.loads(os.environ.get("SQLALCHEMY_ENGINE_OP
 SECRET = os.environ.get("FLASK_SECRET", "secret")
 URL_PREFIX = os.environ.get("FLASK_PREFIX", "") # if not empty, this value should begin but not end in a slash ('/')
 
-# REVERSE_PROXIED is a boolean value that indicates whether or not this server instance
-# is running behind a reverse proxy (like nginx).
-# in dev and testing, it is fine (or even preferable) for this variable to be set to 'TRUE'
-# even if it is not actually the case.  in prod, it is very important that this is set accurately --
-# it should _only_ be set to 'TRUE' if it really is behind a reverse proxy, as remote addresses can be "spoofed"
-# which can carry security/identity implications.  conversely, if this is set to 'FALSE' when in fact
-# running behind a reverse proxy, it can hinder logging accuracy.  it defaults to 'FALSE' for safety.
-REVERSE_PROXIED = os.environ.get("REVERSE_PROXIED", "FALSE").upper() == "TRUE"
+
+"""
+REVERSE_PROXY_DEPTH is an integer value that indicates how many "chained" and trusted reverse proxies (like nginx) this
+ server instance is running behind.  "chained" refers to proxies forwarding to other proxies, and then ultimately
+ forwarding to the app server itself.  each of these proxies appends the remote address of the request to the
+ "X-Forwarded-For" header.  in many situations, the most externally facing proxy (the first in the chain, the one that
+ faces the "open internet") can and should be set to write its own "X-Forwarded-For" header, ignoring and replacing
+ (or creating anew, if it didnt exist) such a header from the client request -- thus preserving the chain of trusted
+ proxies under our control.
+
+however, in our typical production environment, the most externally facing "proxy" is the AWS application load balancer,
+ which seemingly cannot be configured to provide this trust boundary without losing the referring client address
+ (see: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/x-forwarded-headers.html ).  accordingly, in
+ our current typical production environment, REVERSE_PROXY_DEPTH should be set to "2": one for the AWS application load
+ balancer, and one for our own nginx/haproxy instance.  thus "2" is our default value.
+
+it is important that REVERSE_PROXY_DEPTH is set accurately for two reasons...
+
+setting it too high (or to -1) will respect more of the entries in the "X-Forwarded-For" header than are appropriate.
+ this can allow remote addresses to be "spoofed" when a client fakes this header, carrying security/identity
+ implications.  in dev and testing, it is not particularly dangerous for this variable to be set to -1 (special case
+ for an "infinite" depth, where any and all proxy hops will be trusted).
+
+setting it too low can hinder logging accuracy -- that can cause an intermediate proxy IP address to be used as the
+ "real" client IP address.
+
+setting REVERSE_PROXY_DEPTH to "0" essentially indicates there are no proxies between this server and the outside
+ world.  in this case, the "X-Forwarded-For" header is ignored.
+"""
+REVERSE_PROXY_DEPTH = int(os.environ.get("PROXY_DEPTH", 2))
+
 
 REGION_TO_STATE = {
     "hhs1": ["VT", "CT", "ME", "MA", "NH", "RI"],

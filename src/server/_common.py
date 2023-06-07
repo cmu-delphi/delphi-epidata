@@ -8,7 +8,7 @@ from werkzeug.exceptions import Unauthorized
 from werkzeug.local import LocalProxy
 
 from delphi.epidata.common.logger import get_structured_logger
-from ._config import SECRET, REVERSE_PROXIED
+from ._config import SECRET, REVERSE_PROXY_DEPTH
 from ._db import engine
 from ._exceptions import DatabaseErrorException, EpiDataException
 from ._security import current_user, _is_public_route, resolve_auth_token, show_no_api_key_warning, update_key_last_time_used, ERROR_MSG_INVALID_KEY
@@ -31,14 +31,29 @@ db: Connection = cast(Connection, LocalProxy(_get_db))
 
 
 def get_real_ip_addr(req):  # `req` should be a Flask.request object
-    if REVERSE_PROXIED:
-        # NOTE: ONLY trust these headers if reverse proxied!!!
+    if REVERSE_PROXY_DEPTH:
+        # we only expect/trust (up to) "REVERSE_PROXY_DEPTH" number of proxies between this server and the outside world.
+        # a REVERSE_PROXY_DEPTH of 0 means not proxied, i.e. server is globally directly reachable.
+        # a negative proxy depth is a special case to trust the whole chain -- not generally recommended unless the
+        # most-external proxy is configured to disregard "X-Forwarded-For" from outside.
+        # really, ONLY trust the following headers if reverse proxied!!!
         if "X-Forwarded-For" in req.headers:
-            return req.headers["X-Forwarded-For"].split(",")[
-                0
-            ]  # take the first (or only) address from the comma-sep list
+            full_proxy_chain = req.headers["X-Forwarded-For"].split(",")
+            # eliminate any extra addresses at the front of this list, as they could be spoofed.
+            if REVERSE_PROXY_DEPTH > 0:
+                depth = REVERSE_PROXY_DEPTH
+            else:
+                # special case for -1/negative: setting `depth` to 0 will not strip any items from the chain
+                depth = 0
+            trusted_proxy_chain = full_proxy_chain[-depth:]
+            # accept the first (or only) address in the remaining trusted part of the chain as the actual remote address
+            return trusted_proxy_chain[0].strip()
+
+        # fall back to "X-Real-Ip" if "X-Forwarded-For" isnt present
         if "X-Real-Ip" in req.headers:
             return req.headers["X-Real-Ip"]
+
+    # if we are not proxied (or we are proxied but the headers werent present and we fell through to here), just use the remote ip addr as the true client address
     return req.remote_addr
 
 
