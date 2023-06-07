@@ -20,7 +20,7 @@ association_table = Table(
 )
 
 def _default_date_now():
-    return dtime.strftime(dtime.now(), "%Y-%m-%d"))
+    return dtime.strftime(dtime.now(), "%Y-%m-%d")
 
 class User(Base):
     __tablename__ = "api_user"
