@@ -54,9 +54,25 @@ class CovidHospSomething:
   MYSQL_COL_NAME_PATTERN = re.compile(r'^[a-zA-Z0-9_]{3,64}$')
 
 
-  def __init__(self, yaml_filename=str(Path(__file__).parent.absolute()) + "/covid_hosp_schemadefs.yaml"):
+  def __init__(self, yaml_filename=None):
+    if not yaml_filename:
+      # the default schema definitions yaml file is a member of the current package
+      # TODO: use `importlib_resources` instead of generic file Path stuff to load this, once we are past python 3.8
+      yaml_filename = str(Path(__file__).parent.absolute()) + "/covid_hosp_schemadefs.yaml"
+    self.yaml_filename = yaml_filename
+
     with open(yaml_filename, 'r') as yaml_file:
       self.yaml_content = yaml_load(yaml_file, preserve_quotes=True)
+
+
+  def write_schemadefs(self, yaml_filename=None):
+    if not yaml_filename:
+      yaml_filename = self.yaml_filename
+
+    with open(yaml_filename, 'w') as yaml_file:
+      # NOTE: `width` specification is to prevent dump from splitting long lines
+      # TODO: consider `block_seq_indent=2` to make list under ORDERED_CSV_COLUMNS look a little better
+      yaml_dump(self.yaml_content, yaml_file, width=200)
 
 
   def dataset_names(self):
@@ -141,20 +157,21 @@ class CovidHospSomething:
 
 
   def write_new_definitions(self):
+
+    # write updated yaml file
+    self.write_schemadefs()
+
+    # then write out the ddl and migration files
+
     today_str = datetime.now().strftime("%Y_%m_%d")
 
-    yaml_file = self.yaml_filename
     ddl_file = 'covid_hosp.sql'
     migration_file = f"covid_hosp_v{today_str}.sql"
 
     # TODO: do these with proper python `pathlib.Path` objects
-    repo_root = './'
-    yaml_file_directory = repo_root + 'src/ddl/'
+    repo_root = './' # TODO: get this from somewhere
     ddl_file_directory = repo_root + 'src/ddl/'
     migration_file_directory = repo_root + 'src/ddl/migrations/'
-
-    # write updated yaml file
-    self.write_schemadefs()
 
     # write newly generated sql definition file
     with open(ddl_file, 'w') as f:
@@ -168,7 +185,6 @@ class CovidHospSomething:
       f.write("\n")
 
     # move files into proper locations
-    # UNCOMMENT: os.system(f"mv -f {yaml_file} {yaml_file_directory}")
     # UNCOMMENT: os.system("mv -f {ddl_file} {ddl_file_directory}")
     # UNCOMMENT: os.system("mv -f {migration_file} {migration_file_directory")
 
