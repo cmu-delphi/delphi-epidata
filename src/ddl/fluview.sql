@@ -269,8 +269,8 @@ CREATE TABLE `fluview_clinical` (
   `percent_a` double DEFAULT NULL,
   `percent_b` double DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `release_date` (`release_date`, `epiweek`, `region`),
-  KEY `issue` (`issue`),
+  UNIQUE KEY `issue` (`issue`, `epiweek`, `region`),
+  KEY `release_date` (`release_date`),
   KEY `epiweek` (`epiweek`),
   KEY `region` (`region`),
   KEY `lag` (`lag`)
