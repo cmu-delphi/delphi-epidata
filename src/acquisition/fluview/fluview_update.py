@@ -446,7 +446,7 @@ def update_from_file(issue, date, filename, test_mode=False):
   VALUES
     (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
   ON DUPLICATE KEY UPDATE
-  `release_date` = least(`release_date`, %s),
+  `issue` = least(`issue`, %s),
   `num_ili` = %s,
   `num_patients` = %s,
   `num_providers` = %s,
