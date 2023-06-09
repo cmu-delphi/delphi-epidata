@@ -40,6 +40,14 @@ If you choose to
 [register for an API key](https://api.delphi.cmu.edu/epidata/admin/registration_form),
 there are several ways to use your key to authenticate your requests:
 
+### Using a client
+
+* covidcast
+  * [R client](https://cmu-delphi.github.io/covidcast/covidcastR/reference/covidcast_signal.html#api-keys-1)
+  * [Python client](https://cmu-delphi.github.io/covidcast/covidcast-py/html/signals.html#covidcast.use_api_key)
+* [epidatr](https://github.com/cmu-delphi/epidatr#api-keys)
+* [delphi-epidata](https://cmu-delphi.github.io/delphi-epidata/api/client_libraries.html)
+
 ### Via request parameter
 
 The request parameter “api_key” can be used to pass the API key to the server.
