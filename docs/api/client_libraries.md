@@ -54,7 +54,7 @@ in the same directory as your Python script.
 # Import
 from delphi_epidata import Epidata
 # [Optional] configure your API key, if desired
-Epidata.auth = ('epidata', <your API key>)
+#Epidata.auth = ('epidata', <your API key>)
 # Fetch data
 res = Epidata.covidcast('fb-survey', 'smoothed_cli', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001')
 print(res['result'], res['message'], len(res['epidata']))
@@ -65,7 +65,7 @@ print(res['result'], res['message'], len(res['epidata']))
 
 ````R
 # [Optional] configure your API key, if desired
-option('epidata.auth', <your API key>)
+#option('epidata.auth', <your API key>)
 # Import
 source('delphi_epidata.R')
 # Fetch data
