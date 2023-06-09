@@ -132,4 +132,5 @@ def diags():
     # (but only when initiated purposefully by us to keep junk out of the logs)
     _require_admin()
     log_info_with_request("diagnostics", headers=request.headers)
-    return make_response(f"request path: {request.headers.get('X-Forwarded-For', 'idk')}", 200)
+    response_text = f"request path: {request.headers.get('X-Forwarded-For', 'idk')}"
+    return make_response(response_text, 200, {'content-type': 'text/plain'})
