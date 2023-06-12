@@ -236,7 +236,6 @@ state_timeseries:
   - [int, previous_week_therapeutic_a_casirivimab_imdevimab_courses_used, ~]
   - [int, previous_week_therapeutic_b_bamlanivimab_courses_used, ~]
   - [int, previous_week_therapeutic_c_bamlanivimab_etesevimab_courses_used, ~]
-  - [fixedstr:1, record_type, ~]
   - [int, staffed_adult_icu_bed_occupancy, ~]
   - [int, staffed_adult_icu_bed_occupancy_coverage, ~]
   - [int, staffed_icu_adult_patients_confirmed_and_suspected_covid, staffed_icu_adult_patients_confirmed_suspected_covid]
@@ -259,7 +258,7 @@ state_timeseries:
   - [int, total_staffed_adult_icu_beds_coverage, ~]
 
 state_daily:
-  TABLE_NAME: covid_hosp_state_daily
+  TABLE_NAME: covid_hosp_state_timeseries
   DATASET_ID: 6xf2-c3ie
   METADATA_ID: 4cnb-m4rz
   KEY_COLS: [state, reporting_cutoff_start]
