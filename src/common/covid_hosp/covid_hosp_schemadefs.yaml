@@ -134,10 +134,10 @@ state_timeseries:
   METADATA_ID: qqte-vkut
   KEY_COLS: [state, date]
   UNIQUE_INDEXES:
-    issue_by_state_and_date: [state, date, issue, record_type]
+    issue_by_state_and_date: [state, date, issue]
   INDEXES:
-    date_by_issue_and_state: [issue, state, date, record_type]
-    state_by_issue_and_date: [issue, date, state, record_type]
+    date_by_issue_and_state: [issue, state, date]
+    state_by_issue_and_date: [issue, date, state]
   ORDERED_CSV_COLUMNS:
   - [fixedstr:2, state, ~]
   - [intdate, date, ~]
@@ -258,15 +258,15 @@ state_timeseries:
   - [int, total_staffed_adult_icu_beds_coverage, ~]
 
 state_daily:
-  TABLE_NAME: covid_hosp_state_timeseries
+  TABLE_NAME: covid_hosp_state_daily
   DATASET_ID: 6xf2-c3ie
   METADATA_ID: 4cnb-m4rz
   KEY_COLS: [state, reporting_cutoff_start]
   UNIQUE_INDEXES:
-    issue_by_state_and_date: [state, date, issue, record_type]
+    issue_by_state_and_date: [state, date, issue]
   INDEXES:
-    date_by_issue_and_state: [issue, state, date, record_type]
-    state_by_issue_and_date: [issue, date, state, record_type]
+    date_by_issue_and_state: [issue, state, date]
+    state_by_issue_and_date: [issue, date, state]
   ORDERED_CSV_COLUMNS:
   - [fixedstr:2, state, ~]
   - [intdate, reporting_cutoff_start, date]       # omgwtfbbq weird rename
