@@ -7,8 +7,6 @@ from delphi.epidata.common.covid_hosp.covid_hosp_schema_io import CovidHospSomet
 
 class Database(BaseDatabase):
 
-  # note we share a database with state_timeseries
-
   chs = CovidHospSomething()
   TABLE_NAME = chs.get_ds_table_name('state_daily')
   KEY_COLS = chs.get_ds_key_cols('state_daily')

@@ -85,7 +85,7 @@ class AcquisitionTests(unittest.TestCase):
       self.assertAlmostEqual(actual, expected)
       self.assertIsNone(row['critical_staffing_shortage_today_no'])
 
-      # expect 61 fields per row (63 database columns, except `id` and `record_type`)
+      # expect 61 fields per row (62 database columns, except `id`) # TODO: ???  this is wrong!
       self.assertEqual(len(row), 118)
 
     with self.subTest(name='all date batches acquired'):
