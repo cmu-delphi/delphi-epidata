@@ -1,0 +1,14 @@
+# comment top
+covid_hosp_facility:
+  TABLE_NAME: covid_hosp_facility
+  KEY_COLS: [hospital_pk, collection_week]
+  AGGREGATE_KEY_COLS: [address, ccn, city, fips_code, geocoded_hospital_address, hhs_ids, hospital_name, hospital_pk, hospital_subtype, is_metro_micro, state, zip]
+  ORDERED_CSV_COLUMNS:
+  - [str:128, hospital_pk, ~]
+  - [intdate, collection_week, ~]
+  - [intdate, reporting_cutoff_start, date]
+  - [float, all_adult_hospital_beds_7_day_avg, ~]
+  - [int, all_adult_hospital_beds_7_day_coverage, ~]
+  - [fixedstr:5, fips_code, ~]
+  - [geocode:32, geocoded_hospital_address, ~]
+  - [bool, is_corrected, ~]
