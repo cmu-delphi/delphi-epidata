@@ -26,15 +26,20 @@ Pandemic"](https://www.pnas.org/topic/548) in *PNAS*:
 
 Research publications using the survey data include:
 
+- GK Charles, SP Braunstein, JL Barker, et al (2023). [How do psychobehavioural
+  variables shed light on heterogeneity in COVID-19 vaccine acceptance? Evidence
+  from United States general population surveys on a probability panel and
+  social media](https://doi.org/10.1136/bmjopen-2022-066897). *BMJ Open*
+  13:e066897.
 - S. Soorapanth, R. Cheung, X. Zhang, A. H. Mokdad, G. A. Mensah (2023).
   [Rural–Urban Differences in Vaccination and Hesitancy Rates and Trust: US
   COVID-19 Trends and Impact Survey on a Social Media Platform, May 2021–April
   2022](https://doi.org/10.2105/AJPH.2023.307274). *American Journal of Public
-  Health*.
+  Health* 113 (6), 680-688.
   - See also the associated editorial: T. Callaghan (2023). [Vaccine Uptake and
     Hesitancy in Rural America in the Wake of the COVID-19
     Pandemic](https://doi.org/10.2105/AJPH.2023.307305). *American Journal of
-    Public Health*.
+    Public Health* 113 (6), 615-617.
 - M. Rubinstein, A. Haviland, and J. Breslau (2023). [The effect of COVID-19
   vaccinations on self-reported depression and anxiety during February
   2021](https://doi.org/10.1080/2330443X.2023.2190008). *Statistics and Public
