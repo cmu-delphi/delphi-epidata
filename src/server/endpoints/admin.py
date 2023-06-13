@@ -29,20 +29,11 @@ def _require_admin():
     return token
 
 
-def _parse_roles(roles: List[str]) -> Set[str]:
-    return set(roles)
-
-
 def _render(mode: str, token: str, flags: Dict, **kwargs):
     template = (templates_dir / "index.html").read_text("utf8")
     return render_template_string(
         template, mode=mode, token=token, flags=flags, roles=UserRole.list_all_roles(), **kwargs
     )
-
-
-def user_exists(user_email: str = None, api_key: str = None):
-    user = User.find_user(user_email=user_email, api_key=api_key)
-    return True if user else False
 
 
 # ~~~~ PUBLIC ROUTES ~~~~
@@ -69,11 +60,11 @@ def _index():
     flags = dict()
     if request.method == "POST":
         # register a new user
-        if not user_exists(user_email=request.values["email"], api_key=request.values["api_key"]):
+        if not User.find_user(user_email=request.values["email"], api_key=request.values["api_key"]):
             User.create_user(
                 request.values["api_key"],
                 request.values["email"],
-                _parse_roles(request.values.getlist("roles")),
+                set(request.values.getlist("roles")),
             )
             flags["banner"] = "Successfully Added"
         else:
@@ -101,7 +92,7 @@ def _detail(user_id: int):
                 user=user,
                 api_key=request.values["api_key"],
                 email=request.values["email"],
-                roles=_parse_roles(request.values.getlist("roles")),
+                roles=set(request.values.getlist("roles")),
             )
             flags["banner"] = "Successfully Saved"
     return _render("detail", token, flags, user=user.as_dict)
@@ -116,7 +107,7 @@ def _register():
 
     user_api_key = body["user_api_key"]
     user_email = body["user_email"]
-    if user_exists(user_email=user_email, api_key=user_api_key):
+    if User.find_user(user_email=user_email, api_key=user_api_key):
         return make_response(
             "User with email and/or API Key already exists, use different parameters or contact us for help",
             409,
