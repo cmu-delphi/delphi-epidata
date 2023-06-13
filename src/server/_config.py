@@ -55,7 +55,11 @@ setting it too low can hinder logging accuracy -- that can cause an intermediate
 setting REVERSE_PROXY_DEPTH to "0" essentially indicates there are no proxies between this server and the outside
  world.  in this case, the "X-Forwarded-For" header is ignored.
 """
-REVERSE_PROXY_DEPTH = int(os.environ.get("PROXY_DEPTH", 2))
+REVERSE_PROXY_DEPTH = int(os.environ.get("PROXY_DEPTH", 4))
+# TODO: ^ this value should be "4" for the prod CC API server processes, and is currently unclear
+#       for prod AWS API server processes (but should be the same or lower)...  when thats properly
+#       determined, set the default to the minimum of the two environments and special case the
+#       other in conf file(s).
 
 
 REGION_TO_STATE = {
