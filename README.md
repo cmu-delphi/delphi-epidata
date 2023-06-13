@@ -1,4 +1,4 @@
-# Status
+# Status!
 
 [![Deploy Status](https://delphi.cmu.edu/~automation/public/github_deploy_repo/badge.php?repo=cmu-delphi/delphi-epidata)](#)
 
