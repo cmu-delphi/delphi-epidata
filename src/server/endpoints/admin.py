@@ -5,6 +5,7 @@ from flask import Blueprint, make_response, render_template_string, request
 from werkzeug.exceptions import NotFound, Unauthorized
 from werkzeug.utils import redirect
 
+from .._common import log_info_with_request
 from .._config import ADMIN_PASSWORD, API_KEY_REGISTRATION_FORM_LINK, API_KEY_REMOVAL_REQUEST_LINK, REGISTER_WEBHOOK_TOKEN
 from .._security import resolve_auth_token
 from ..admin.models import User, UserRole
@@ -42,6 +43,24 @@ def _render(mode: str, token: str, flags: Dict, **kwargs):
 def user_exists(user_email: str = None, api_key: str = None):
     user = User.find_user(user_email=user_email, api_key=api_key)
     return True if user else False
+
+
+# ~~~~ PUBLIC ROUTES ~~~~
+
+
+@bp.route("/registration_form", methods=["GET"])
+def registration_form_redirect():
+    # TODO: replace this with our own hosted registration form instead of external
+    return redirect(API_KEY_REGISTRATION_FORM_LINK, code=302)
+
+
+@bp.route("/removal_request", methods=["GET"])
+def removal_request_redirect():
+    # TODO: replace this with our own hosted form instead of external
+    return redirect(API_KEY_REMOVAL_REQUEST_LINK, code=302)
+
+
+# ~~~~ PRIVLEGED ROUTES ~~~~
 
 
 @bp.route("/", methods=["GET", "POST"])
@@ -88,21 +107,6 @@ def _detail(user_id: int):
     return _render("detail", token, flags, user=user.as_dict)
 
 
-def register_new_key(api_key: str, email: str) -> str:
-    User.create_user(api_key=api_key, email=email)
-    return api_key
-
-
-@bp.route("/registration_form", methods=["GET"])
-def registration_form_redirect():
-    # TODO: replace this with our own hosted registration form instead of external
-    return redirect(API_KEY_REGISTRATION_FORM_LINK, code=302)
-
-@bp.route("/removal_request", methods=["GET"])
-def removal_request_redirect():
-    # TODO: replace this with our own hosted form instead of external
-    return redirect(API_KEY_REMOVAL_REQUEST_LINK, code=302)
-
 @bp.route("/register", methods=["POST"])
 def _register():
     body = request.get_json()
@@ -117,5 +121,16 @@ def _register():
             "User with email and/or API Key already exists, use different parameters or contact us for help",
             409,
         )
-    api_key = register_new_key(user_api_key, user_email)
-    return make_response(f"Successfully registered API key '{api_key}'", 200)
+    User.create_user(api_key=user_api_key, email=user_email)
+    return make_response(f"Successfully registered API key '{user_api_key}'", 200)
+
+
+@bp.route("/diagnostics", methods=["GET", "PUT", "POST", "DELETE"])
+def diags():
+    # allows us to get useful diagnostic information written into server logs,
+    # such as a full current "X-Forwarded-For" path as inserted into headers by intermediate proxies...
+    # (but only when initiated purposefully by us to keep junk out of the logs)
+    _require_admin()
+    log_info_with_request("diagnostics", headers=request.headers)
+    response_text = f"request path: {request.headers.get('X-Forwarded-For', 'idk')}"
+    return make_response(response_text, 200, {'content-type': 'text/plain'})

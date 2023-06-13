@@ -19,6 +19,8 @@ association_table = Table(
     Column("role_id", ForeignKey("user_role.id")),
 )
 
+def _default_date_now():
+    return dtime.strftime(dtime.now(), "%Y-%m-%d")
 
 class User(Base):
     __tablename__ = "api_user"
@@ -26,8 +28,8 @@ class User(Base):
     roles = relationship("UserRole", secondary=association_table)
     api_key = Column(String(50), unique=True, nullable=False)
     email = Column(String(320), unique=True, nullable=False)
-    created = Column(Date, default=dtime.strftime(dtime.now(), "%Y-%m-%d"))
-    last_time_used = Column(Date, default=dtime.strftime(dtime.now(), "%Y-%m-%d"))
+    created = Column(Date, default=_default_date_now)
+    last_time_used = Column(Date, default=_default_date_now)
 
     def __init__(self, api_key: str, email: str = None) -> None:
         self.api_key = api_key
