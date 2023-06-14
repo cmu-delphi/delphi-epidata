@@ -8,11 +8,9 @@ from delphi.epidata.common.logger import get_structured_logger
 
 from ._config import URL_PREFIX, VERSION
 from ._common import app, set_compatibility_mode
-from ._db import metadata, engine
 from ._exceptions import MissingOrWrongSourceException
 from .endpoints import endpoints
 from .endpoints.admin import bp as admin_bp, enable_admin
-from ._security import register_user_role
 from ._limiter import limiter, apply_limit
 
 __all__ = ["app"]
@@ -64,8 +62,6 @@ def send_version():
 def send_lib_file(path: str):
     return send_from_directory(pathlib.Path(__file__).parent / "lib", path)
 
-
-metadata.create_all(engine)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
