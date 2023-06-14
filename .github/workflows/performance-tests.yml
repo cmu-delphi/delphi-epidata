@@ -60,6 +60,7 @@ jobs:
         run: |
           cd ../driver
           sudo make web sql="${{ secrets.DB_CONN_STRING }}"
+          sudo make redis
       - name: Check out delphi-admin
         uses: actions/checkout@v3
         with:
