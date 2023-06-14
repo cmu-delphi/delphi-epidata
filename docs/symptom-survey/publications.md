@@ -26,6 +26,10 @@ Pandemic"](https://www.pnas.org/topic/548) in *PNAS*:
 
 Research publications using the survey data include:
 
+- H Kobayashi, R Saenz-Escarcega, A Fulk, FB Agusto (2023). [Understanding 
+  mental health trends during COVID-19 pandemic in the United States using
+  network analysis](https://doi.org/10.1371/journal.pone.0286857). *PLoS ONE*
+  18(6): e0286857.
 - GK Charles, SP Braunstein, JL Barker, et al (2023). [How do psychobehavioural
   variables shed light on heterogeneity in COVID-19 vaccine acceptance? Evidence
   from United States general population surveys on a probability panel and
