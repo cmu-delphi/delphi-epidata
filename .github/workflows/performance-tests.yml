@@ -71,7 +71,7 @@ jobs:
         run: |
           cd delphi-admin/load-testing/locust
           docker build -t locust .
-          export CSV=v4-requests-as_of.csv
+          export CSV=v4-requests-small.csv
           touch output_stats.csv && chmod 666 output_stats.csv
           touch output_stats_history.csv && chmod 666 output_stats_history.csv
           touch output_failures.csv && chmod 666 output_failures.csv
