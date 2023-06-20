@@ -51,16 +51,17 @@ class User(Base):
 
     @staticmethod
     def _assign_roles(user: "User", roles: Optional[Set[str]], session) -> None:
-        # NOTE: this uses a borrowed/existing `session`, and thus does not do a `session.commit()`...
-        #       that is the responsibility of the caller!
         get_structured_logger("api_user_models").info("setting roles", roles=roles, user_id=user.id, api_key=user.api_key)
         db_user = session.query(User).filter(User.id == user.id).first()
         # TODO: would it be sufficient to use the passed-in `user` instead of looking up this `db_user`?
+        #       or even use this as a bound method instead of a static??
         if roles:
-            roles_to_assign = session.query(UserRole).filter(UserRole.name.in_(roles)).all()
-            db_user.roles = roles_to_assign
+            db_user.roles = session.query(UserRole).filter(UserRole.name.in_(roles)).all()
         else:
             db_user.roles = []
+        session.commit()
+        # retrieve the newly updated User object
+        return session.query(User).filter(User.id == user.id).first()
 
     @staticmethod
     @default_session(Session)
@@ -83,9 +84,7 @@ class User(Base):
         new_user = User(api_key=api_key, email=email)
         session.add(new_user)
         session.commit()
-        User._assign_roles(new_user, user_roles, session)
-        session.commit()
-        return new_user
+        return User._assign_roles(new_user, user_roles, session)
 
     @staticmethod
     @default_session(WriteSession)
@@ -105,10 +104,9 @@ class User(Base):
                 .values(api_key=api_key, email=email)
             )
             session.execute(update_stmt)
-            User._assign_roles(user, roles, session)
-            session.commit()
+            return User._assign_roles(user, roles, session)
         # TODO: else: raise Exception() ??
-        return user
+        return None
 
     @staticmethod
     @default_session(WriteSession)
