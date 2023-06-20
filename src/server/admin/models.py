@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from copy import deepcopy
 
-from .._db import Session, WriteSession
+from .._db import Session, WriteSession, default_session
 from delphi.epidata.common.logger import get_structured_logger
 
 from typing import Set, Optional, List
@@ -25,7 +25,7 @@ def _default_date_now():
 class User(Base):
     __tablename__ = "api_user"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    roles = relationship("UserRole", secondary=association_table)
+    roles = relationship("UserRole", secondary=association_table, lazy="joined") # last arg does an eager load of this property from foreign tables
     api_key = Column(String(50), unique=True, nullable=False)
     email = Column(String(320), unique=True, nullable=False)
     created = Column(Date, default=_default_date_now)
@@ -35,30 +35,19 @@ class User(Base):
         self.api_key = api_key
         self.email = email
 
-    @staticmethod
-    def list_users() -> List["User"]:
-        with Session() as session:
-            return session.query(User).all()
-
     @property
     def as_dict(self):
         return {
             "id": self.id,
             "api_key": self.api_key,
             "email": self.email,
-            "roles": User.get_user_roles(self.id),
+            "roles": set(role.name for role in self.roles),
             "created": self.created,
             "last_time_used": self.last_time_used
         }
 
-    @staticmethod
-    def get_user_roles(user_id: int) -> Set[str]:
-        with Session() as session:
-            user = session.query(User).filter(User.id == user_id).first()
-            return set([role.name for role in user.roles])
-
     def has_role(self, required_role: str) -> bool:
-        return required_role in User.get_user_roles(self.id)
+        return required_role in set(role.name for role in self.roles)
 
     @staticmethod
     def _assign_roles(user: "User", roles: Optional[Set[str]], session) -> None:
@@ -74,58 +63,59 @@ class User(Base):
             db_user.roles = []
 
     @staticmethod
+    @default_session(Session)
     def find_user(*, # asterisk forces explicit naming of all arguments when calling this method
-        user_id: Optional[int] = None, api_key: Optional[str] = None, user_email: Optional[str] = None
+                  session,
+                  user_id: Optional[int] = None, api_key: Optional[str] = None, user_email: Optional[str] = None
     ) -> "User":
         # NOTE: be careful, using multiple arguments could match multiple users, but this will return only one!
-        with Session() as session:
-            user = (
-                session.query(User)
-                .filter((User.id == user_id) | (User.api_key == api_key) | (User.email == user_email))
-                .first()
-            )
+        user = (
+            session.query(User)
+            .filter((User.id == user_id) | (User.api_key == api_key) | (User.email == user_email))
+            .first()
+        )
         return user if user else None
 
     @staticmethod
-    def create_user(api_key: str, email: str, user_roles: Optional[Set[str]] = None) -> "User":
+    @default_session(WriteSession)
+    def create_user(api_key: str, email: str, session, user_roles: Optional[Set[str]] = None) -> "User":
         get_structured_logger("api_user_models").info("creating user", api_key=api_key)
-        with WriteSession() as session:
-            new_user = User(api_key=api_key, email=email)
-            # TODO: we may need to populate 'created' field/column here, if the default
-            #   specified above gets bound to the time of when that line of python was evaluated.
-            session.add(new_user)
-            session.commit()
-            User._assign_roles(new_user, user_roles, session)
-            session.commit()
+        new_user = User(api_key=api_key, email=email)
+        session.add(new_user)
+        session.commit()
+        User._assign_roles(new_user, user_roles, session)
+        session.commit()
         return new_user
 
     @staticmethod
+    @default_session(WriteSession)
     def update_user(
         user: "User",
         email: Optional[str],
         api_key: Optional[str],
-        roles: Optional[Set[str]]
+        roles: Optional[Set[str]],
+        session
     ) -> "User":
         get_structured_logger("api_user_models").info("updating user", user_id=user.id, new_api_key=api_key)
-        with WriteSession() as session:
-            user = User.find_user(user_id=user.id)
-            if user:
-                update_stmt = (
-                    update(User)
-                    .where(User.id == user.id)
-                    .values(api_key=api_key, email=email)
-                )
-                session.execute(update_stmt)
-                User._assign_roles(user, roles, session)
-                session.commit()
+        user = User.find_user(user_id=user.id, session=session)
+        if user:
+            update_stmt = (
+                update(User)
+                .where(User.id == user.id)
+                .values(api_key=api_key, email=email)
+            )
+            session.execute(update_stmt)
+            User._assign_roles(user, roles, session)
+            session.commit()
+        # TODO: else: raise Exception() ??
         return user
 
     @staticmethod
-    def delete_user(user_id: int) -> None:
+    @default_session(WriteSession)
+    def delete_user(user_id: int, session) -> None:
         get_structured_logger("api_user_models").info("deleting user", user_id=user_id)
-        with WriteSession() as session:
-            session.execute(delete(User).where(User.id == user_id))
-            session.commit()
+        session.execute(delete(User).where(User.id == user_id))
+        session.commit()
 
 
 class UserRole(Base):
@@ -134,23 +124,23 @@ class UserRole(Base):
     name = Column(String(50), unique=True)
 
     @staticmethod
-    def create_role(name: str) -> None:
+    @default_session(WriteSession)
+    def create_role(name: str, session) -> None:
         get_structured_logger("api_user_models").info("creating user role", role=name)
-        with WriteSession() as session:
-            session.execute(
-                f"""
+        # TODO: check role doesnt already exist
+        session.execute(f"""
             INSERT INTO user_role (name)
             SELECT '{name}'
             WHERE NOT EXISTS
                 (SELECT *
                 FROM user_role
                 WHERE name='{name}')
-            """
-            )
-            session.commit()
+        """)
+        session.commit()
+        # TODO: look up and return new role
 
     @staticmethod
-    def list_all_roles():
-        with Session() as session:
-            roles = session.query(UserRole).all()
+    @default_session(Session)
+    def list_all_roles(session):
+        roles = session.query(UserRole).all()
         return [role.name for role in roles]
