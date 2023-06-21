@@ -124,19 +124,13 @@ def update(locations, first=None, last=None, force_update=False, load_email=True
 def main():
     # args and usage
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--location",
-        action="store",
-        type=str,
-        default=None,
-        help="location(s) (ex: all; any of hhs1-10)",
-    )
+    # fmt: off
+    parser.add_argument("--location", action="store", type=str, default=None, help="location(s) (ex: all; any of hhs1-10)")
     parser.add_argument("--first", "-f", default=None, type=int, help="first epiweek override")
     parser.add_argument("--last", "-l", default=None, type=int, help="last epiweek override")
     parser.add_argument("--force_update", "-u", action="store_true", help="force update db values")
-    parser.add_argument(
-        "--skip_email", "-s", action="store_true", help="skip email downloading step"
-    )
+    parser.add_argument("--skip_email", "-s", action="store_true", help="skip email downloading step")
+    # fmt: on
     args = parser.parse_args()
 
     # sanity check

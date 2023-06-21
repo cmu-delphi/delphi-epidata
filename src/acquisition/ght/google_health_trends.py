@@ -114,7 +114,10 @@ class GHT:
 def main():
     # args and usage
     parser = argparse.ArgumentParser()
-    parser.add_argument("apikey", action="store", type=str, default=None, help="API key")
+    # fmt: off
+    parser.add_argument(
+        "apikey", action="store", type=str, default=None, help="API key"
+    )
     parser.add_argument(
         "startweek", action="store", type=int, default=None, help="first week (ex: 201440)"
     )
@@ -127,6 +130,7 @@ def main():
     parser.add_argument(
         "term", action="store", type=str, default=None, help="term/query/topic (ex: /m/0cycc)"
     )
+    # fmt: on
     args = parser.parse_args()
 
     # get the data

@@ -351,25 +351,13 @@ def update(locations, terms, first=None, last=None, countries=["US"]):
 def main():
     # args and usage
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "location",
-        action="store",
-        type=str,
-        default=None,
-        help="location(s) (ex: all; US; TX; CA,LA,WY)",
-    )
-    parser.add_argument(
-        "term",
-        action="store",
-        type=str,
-        default=None,
-        help='term/query/topic (ex: all; /m/0cycc; "flu fever")',
-    )
+    # fmt: off
+    parser.add_argument("location", action="store", type=str, default=None, help="location(s) (ex: all; US; TX; CA,LA,WY)")
+    parser.add_argument("term", action="store", type=str, default=None, help='term/query/topic (ex: all; /m/0cycc; "flu fever")')
     parser.add_argument("--first", "-f", default=None, type=int, help="first epiweek override")
     parser.add_argument("--last", "-l", default=None, type=int, help="last epiweek override")
-    parser.add_argument(
-        "--country", "-c", default="US", type=str, help="location country (ex: US; BR)"
-    )
+    parser.add_argument("--country", "-c", default="US", type=str, help="location country (ex: US; BR)")
+    # fmt: on
     args = parser.parse_args()
 
     # sanity check
