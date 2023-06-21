@@ -351,7 +351,7 @@ def update_from_file_clinical(issue, date, filename, test_mode=False):
     rows2 = rows1
   else:
     cnx.commit()
-    rows2 = get_rows(cnx)
+    rows2 = get_rows(cnx, CL_TABLE)
   print('rows after: %d (added %d)' % (rows2, rows2 - rows1))
   cnx.close()
 
@@ -414,7 +414,7 @@ def update_from_file_public(issue, date, filename, test_mode=False):
     rows2 = rows1
   else:
     cnx.commit()
-    rows2 = get_rows(cnx)
+    rows2 = get_rows(cnx, PHL_TABLE)
   print('rows after: %d (added %d)' % (rows2, rows2 - rows1))
   cnx.close()
 
@@ -446,7 +446,7 @@ def update_from_file(issue, date, filename, test_mode=False):
   VALUES
     (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
   ON DUPLICATE KEY UPDATE
-  `issue` = least(`issue`, %s),
+  `release_date` = least(`release_date`, %s),
   `num_ili` = %s,
   `num_patients` = %s,
   `num_providers` = %s,
