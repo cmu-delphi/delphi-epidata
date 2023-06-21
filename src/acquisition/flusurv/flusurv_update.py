@@ -82,108 +82,105 @@ from delphi.utils.epiweek import delta_epiweeks
 
 
 def get_rows(cur):
-  """Return the number of rows in the `flusurv` table."""
+    """Return the number of rows in the `flusurv` table."""
 
-  # count all rows
-  cur.execute('SELECT count(1) `num` FROM `flusurv`')
-  for (num,) in cur:
-    return num
+    # count all rows
+    cur.execute("SELECT count(1) `num` FROM `flusurv`")
+    for (num,) in cur:
+        return num
 
 
 def update(issue, location_name, test_mode=False):
-  """Fetch and store the currently avialble weekly FluSurv dataset."""
+    """Fetch and store the currently avialble weekly FluSurv dataset."""
 
-  # fetch data
-  location_code = flusurv.location_codes[location_name]
-  print('fetching data for', location_name, location_code)
-  data = flusurv.get_data(location_code)
+    # fetch data
+    location_code = flusurv.location_codes[location_name]
+    print("fetching data for", location_name, location_code)
+    data = flusurv.get_data(location_code)
 
-  # metadata
-  epiweeks = sorted(data.keys())
-  location = location_name
-  release_date = str(EpiDate.today())
+    # metadata
+    epiweeks = sorted(data.keys())
+    location = location_name
+    release_date = str(EpiDate.today())
 
-  # connect to the database
-  u, p = secrets.db.epi
-  cnx = mysql.connector.connect(
-      host=secrets.db.host, user=u, password=p, database='epidata')
-  cur = cnx.cursor()
-  rows1 = get_rows(cur)
-  print('rows before: %d' % rows1)
+    # connect to the database
+    u, p = secrets.db.epi
+    cnx = mysql.connector.connect(host=secrets.db.host, user=u, password=p, database="epidata")
+    cur = cnx.cursor()
+    rows1 = get_rows(cur)
+    print("rows before: %d" % rows1)
 
-  # SQL for insert/update
-  sql = '''
-  INSERT INTO `flusurv` (
-    `release_date`, `issue`, `epiweek`, `location`, `lag`, `rate_age_0`,
-    `rate_age_1`, `rate_age_2`, `rate_age_3`, `rate_age_4`, `rate_overall`,
-    `rate_age_5`, `rate_age_6`, `rate_age_7`
-  )
-  VALUES (
-    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
-  )
-  ON DUPLICATE KEY UPDATE
-    `release_date` = least(`release_date`, %s),
-    `rate_age_0` = coalesce(%s, `rate_age_0`),
-    `rate_age_1` = coalesce(%s, `rate_age_1`),
-    `rate_age_2` = coalesce(%s, `rate_age_2`),
-    `rate_age_3` = coalesce(%s, `rate_age_3`),
-    `rate_age_4` = coalesce(%s, `rate_age_4`),
-    `rate_overall` = coalesce(%s, `rate_overall`),
-    `rate_age_5` = coalesce(%s, `rate_age_5`),
-    `rate_age_6` = coalesce(%s, `rate_age_6`),
-    `rate_age_7` = coalesce(%s, `rate_age_7`)
-  '''
+    # SQL for insert/update
+    sql = """
+    INSERT INTO `flusurv` (
+      `release_date`, `issue`, `epiweek`, `location`, `lag`, `rate_age_0`,
+      `rate_age_1`, `rate_age_2`, `rate_age_3`, `rate_age_4`, `rate_overall`,
+      `rate_age_5`, `rate_age_6`, `rate_age_7`
+    )
+    VALUES (
+      %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+    )
+    ON DUPLICATE KEY UPDATE
+      `release_date` = least(`release_date`, %s),
+      `rate_age_0` = coalesce(%s, `rate_age_0`),
+      `rate_age_1` = coalesce(%s, `rate_age_1`),
+      `rate_age_2` = coalesce(%s, `rate_age_2`),
+      `rate_age_3` = coalesce(%s, `rate_age_3`),
+      `rate_age_4` = coalesce(%s, `rate_age_4`),
+      `rate_overall` = coalesce(%s, `rate_overall`),
+      `rate_age_5` = coalesce(%s, `rate_age_5`),
+      `rate_age_6` = coalesce(%s, `rate_age_6`),
+      `rate_age_7` = coalesce(%s, `rate_age_7`)
+    """
 
-  # insert/update each row of data (one per epiweek)
-  for epiweek in epiweeks:
-    lag = delta_epiweeks(epiweek, issue)
-    if lag > 52:
-      # Ignore values older than one year, as (1) they are assumed not to
-      # change, and (2) it would adversely affect database performance if all
-      # values (including duplicates) were stored on each run.
-      continue
-    args_meta = [release_date, issue, epiweek, location, lag]
-    args_insert = data[epiweek]
-    args_update = [release_date] + data[epiweek]
-    cur.execute(sql, tuple(args_meta + args_insert + args_update))
+    # insert/update each row of data (one per epiweek)
+    for epiweek in epiweeks:
+        lag = delta_epiweeks(epiweek, issue)
+        if lag > 52:
+            # Ignore values older than one year, as (1) they are assumed not to
+            # change, and (2) it would adversely affect database performance if all
+            # values (including duplicates) were stored on each run.
+            continue
+        args_meta = [release_date, issue, epiweek, location, lag]
+        args_insert = data[epiweek]
+        args_update = [release_date] + data[epiweek]
+        cur.execute(sql, tuple(args_meta + args_insert + args_update))
 
-  # commit and disconnect
-  rows2 = get_rows(cur)
-  print('rows after: %d (+%d)' % (rows2, rows2 - rows1))
-  cur.close()
-  if test_mode:
-    print('test mode: not committing database changes')
-  else:
-    cnx.commit()
-  cnx.close()
+    # commit and disconnect
+    rows2 = get_rows(cur)
+    print("rows after: %d (+%d)" % (rows2, rows2 - rows1))
+    cur.close()
+    if test_mode:
+        print("test mode: not committing database changes")
+    else:
+        cnx.commit()
+    cnx.close()
 
 
 def main():
-  # args and usage
-  parser = argparse.ArgumentParser()
-  parser.add_argument(
-    'location',
-    help='location for which data should be scraped (e.g. "CA" or "all")'
-  )
-  parser.add_argument(
-    '--test', '-t',
-    default=False, action='store_true', help='do not commit database changes'
-  )
-  args = parser.parse_args()
+    # args and usage
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "location", help='location for which data should be scraped (e.g. "CA" or "all")'
+    )
+    parser.add_argument(
+        "--test", "-t", default=False, action="store_true", help="do not commit database changes"
+    )
+    args = parser.parse_args()
 
-  # scrape current issue from the main page
-  issue = flusurv.get_current_issue()
-  print('current issue: %d' % issue)
+    # scrape current issue from the main page
+    issue = flusurv.get_current_issue()
+    print("current issue: %d" % issue)
 
-  # fetch flusurv data
-  if args.location == 'all':
-    # all locations
-    for location in flusurv.location_codes.keys():
-      update(issue, location, args.test)
-  else:
-    # single location
-    update(issue, args.location, args.test)
+    # fetch flusurv data
+    if args.location == "all":
+        # all locations
+        for location in flusurv.location_codes.keys():
+            update(issue, location, args.test)
+    else:
+        # single location
+        update(issue, args.location, args.test)
 
 
-if __name__ == '__main__':
-  main()
+if __name__ == "__main__":
+    main()
