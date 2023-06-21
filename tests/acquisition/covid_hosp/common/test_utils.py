@@ -120,7 +120,7 @@ class UtilsTests(unittest.TestCase):
     mock_database = MagicMock()
     with mock_database.connect() as mock_connection:
       pass
-    type(mock_connection).KEY_COLS = PropertyMock(return_value=["state", "date"])
+    type(mock_connection).key_columns = PropertyMock(return_value=["state", "date"])
     mock_connection.get_max_issue.return_value = pd.Timestamp("1900/1/1")
     with patch.object(Utils, 'issues_to_fetch') as mock_issues:
       mock_issues.return_value = {pd.Timestamp("2021/3/15"): [("url1", pd.Timestamp("2021-03-15 00:00:00")),
