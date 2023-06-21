@@ -173,22 +173,12 @@ def extract(first_week=None, last_week=None, test_mode=False):
         # update each state
         for state in states:
             try:
-                num1 = get_num_hits(cur, epiweek, state, pages[0])
-                num2 = get_num_hits(cur, epiweek, state, pages[1])
-                num3 = get_num_hits(cur, epiweek, state, pages[2])
-                num4 = get_num_hits(cur, epiweek, state, pages[3])
-                num5 = get_num_hits(cur, epiweek, state, pages[4])
-                num6 = get_num_hits(cur, epiweek, state, pages[5])
-                num7 = get_num_hits(cur, epiweek, state, pages[6])
-                num8 = get_num_hits(cur, epiweek, state, pages[7])
+                nums = []
+                for i in range(8):
+                    nums[i] = get_num_hits(cur, epiweek, state, pages[i])
                 total = get_total_hits(cur, epiweek, state)
-                store_result(
-                    cur, epiweek, state, num1, num2, num3, num4, num5, num6, num7, num8, total
-                )
-                print(
-                    " %d-%s: %d %d %d %d %d %d %d %d (%d)"
-                    % (epiweek, state, num1, num2, num3, num4, num5, num6, num7, num8, total)
-                )
+                store_result(cur, epiweek, state, *nums, total)
+                print(f" {epiweek}-{state}: {' '.join(str(n) for n in nums)} ({total})")
             except Exception as ex:
                 print(" %d-%s: failed" % (epiweek, state), ex)
                 # raise ex
