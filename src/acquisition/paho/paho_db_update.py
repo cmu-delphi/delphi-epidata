@@ -261,32 +261,28 @@ def main():
         max_tries = 5
         while flag < max_tries:
             flag = flag + 1
-            tmp_dir = ''.join(random.choice('0123456789abcdefghijklmnopqrstuvwxyz') for i in range(8))
-            tmp_dir = 'downloads_' + tmp_dir
-            subprocess.call(["mkdir",tmp_dir])
-            # Use temporary directory to avoid data from different time
-            #   downloaded to same folder
-            get_paho_data(dir=tmp_dir)
-            issue = EpiDate.today().get_ew()
-            # Check to make sure we downloaded a file for every week
-            issueset = set()
-            files = glob.glob('%s/*.csv' % tmp_dir)
-            for filename in files:
-                with open(filename,'r') as f:
-                    _ = f.readline()
-                    data = f.readline().split(',')
-                    issueset.add(data[6])
-            db_error = False
-            if len(issueset) >= 53: # Shouldn't be more than 53
+            with tempfile.TemporaryDirectory() as tmp_dir:
+                # Use temporary directory to avoid data from different time
+                #   downloaded to same folder
+                get_paho_data(dir=tmp_dir)
+                issue = EpiDate.today().get_ew()
+                # Check to make sure we downloaded a file for every week
+                issueset = set()
+                files = glob.glob(f"{tmp_dir}/*.csv")
                 for filename in files:
-                    try:
-                        update_from_file(issue, date, filename, test_mode=args.test)
-                        subprocess.call(["rm",filename])
-                    except:
-                        db_error = True
-                subprocess.call(["rm","-r",tmp_dir])
-                if not db_error:
-                    break # Exit loop with success
+                    with open(filename) as f:
+                        _ = f.readline()
+                        data = f.readline().split(",")
+                        issueset.add(data[6])
+                db_error = False
+                if len(issueset) >= 53:  # Shouldn't be more than 53
+                    for filename in files:
+                        try:
+                            update_from_file(issue, date, filename, test_mode=args.test)
+                        except:
+                            db_error = True
+                    if not db_error:
+                        break  # Exit loop with success
             if flag >= max_tries:
                 print("WARNING: Database `paho_dengue` did not update successfully")
 
