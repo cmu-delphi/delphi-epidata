@@ -50,9 +50,8 @@ import argparse
 import csv
 import datetime
 import glob
-import subprocess
-import random
 from io import StringIO
+import tempfile
 
 # third party
 import mysql.connector
@@ -64,12 +63,14 @@ from delphi.epidata.acquisition.paho.paho_download import get_paho_data
 from delphi.utils.epiweek import delta_epiweeks, check_epiweek
 from delphi.utils.epidate import EpiDate
 
+
 def ensure_tables_exist():
-    (u,p) = secrets.db.epi
-    cnx = mysql.connector.connect(user=u,password=p,database='epidata')
+    (u, p) = secrets.db.epi
+    cnx = mysql.connector.connect(user=u, password=p, database="epidata")
     try:
         cursor = cnx.cursor()
-        cursor.execute('''
+        cursor.execute(
+            """
             CREATE TABLE IF NOT EXISTS `paho_dengue` (
                 `id` INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
                 `release_date` DATE NOT NULL,
@@ -85,35 +86,44 @@ def ensure_tables_exist():
                 `num_deaths` INT(11) NOT NULL,
                 UNIQUE KEY (`issue`, `epiweek`, `region`)
             );
-        ''');
+        """
+        )
         cnx.commit()
     finally:
         cnx.close()
 
+
 def safe_float(f):
     try:
-        return float(f.replace(',',''))
+        return float(f.replace(",", ""))
     except:
         return 0
+
 
 def safe_int(i):
     try:
-        return int(i.replace(',',''))
+        return int(i.replace(",", ""))
     except:
         return 0
 
-def get_rows(cnx, table='paho_dengue'):
-  # Count and return the number of rows in the `fluview` table.
-  select = cnx.cursor()
-  select.execute('SELECT count(1) num FROM %s' % table)
-  for (num,) in select:
-    pass
-  select.close()
-  return num
+
+def get_rows(cnx, table="paho_dengue"):
+    # Count and return the number of rows in the `fluview` table.
+    select = cnx.cursor()
+    select.execute("SELECT count(1) num FROM %s" % table)
+    for (num,) in select:
+        pass
+    select.close()
+    return num
+
 
 def get_paho_row(row):
-    if row[0] == "\ufeffIncidence Rate (c)" and row != "\ufeffIncidence Rate (c),(SD/D) x100 (e),CFR (f),ID,Country or Subregion,Deaths,EW,Confirmed,Epidemiological Week (a),Pop (no usar),Serotype,Severe Dengue (d),Total of Dengue Cases (b),Year,Population x 1000".split(","):
-        raise Exception('PAHO header row has changed')
+    if row[
+        0
+    ] == "\ufeffIncidence Rate (c)" and row != "\ufeffIncidence Rate (c),(SD/D) x100 (e),CFR (f),ID,Country or Subregion,Deaths,EW,Confirmed,Epidemiological Week (a),Pop (no usar),Serotype,Severe Dengue (d),Total of Dengue Cases (b),Year,Population x 1000".split(
+        ","
+    ):
+        raise Exception("PAHO header row has changed")
     if len(row) == 1 or row[0] == "Incidence Rate (c)":
         # this is a header row
         return None
@@ -128,22 +138,25 @@ def get_paho_row(row):
             except:
                 return None
     try:
-        check_epiweek(safe_int(row[13])*100 + safe_int(row[8]), safe_int(row[13])*100 + safe_int(row[6]))
+        check_epiweek(
+            safe_int(row[13]) * 100 + safe_int(row[8]), safe_int(row[13]) * 100 + safe_int(row[6])
+        )
     except:
         return None
     return {
-        'issue': safe_int(row[13])*100 + safe_int(row[6]),
-        'epiweek': safe_int(row[13])*100 + safe_int(row[8]),
-        'region': country,
-        'total_pop': safe_int(row[14]),
-        'serotype': row[10],
-        'num_dengue': safe_int(row[12]),
-        'incidence_rate': safe_float(row[0]),
-        'num_severe': safe_int(row[11]),
-        'num_deaths': safe_int(row[5]),
-        'severe_ratio': safe_float(row[1]),
-        'cfr': safe_float(row[2])
+        "issue": safe_int(row[13]) * 100 + safe_int(row[6]),
+        "epiweek": safe_int(row[13]) * 100 + safe_int(row[8]),
+        "region": country,
+        "total_pop": safe_int(row[14]),
+        "serotype": row[10],
+        "num_dengue": safe_int(row[12]),
+        "incidence_rate": safe_float(row[0]),
+        "num_severe": safe_int(row[11]),
+        "num_deaths": safe_int(row[5]),
+        "severe_ratio": safe_float(row[1]),
+        "cfr": safe_float(row[2]),
     }
+
 
 def update_from_file(issue, date, filename, test_mode=False):
     # Read PAHO data from CSV and insert into (or update) the database.
@@ -156,23 +169,23 @@ def update_from_file(issue, date, filename, test_mode=False):
 
     # database connection
     u, p = secrets.db.epi
-    cnx = mysql.connector.connect(user=u, password=p, database='epidata')
-    rows1 = get_rows(cnx, 'paho_dengue')
-    print('rows before: %d' % (rows1))
+    cnx = mysql.connector.connect(user=u, password=p, database="epidata")
+    rows1 = get_rows(cnx, "paho_dengue")
+    print("rows before: %d" % (rows1))
     insert = cnx.cursor()
 
     # load the data, ignoring empty rows
-    print('loading data from %s as issued on %d' % (filename, issue))
-    with open(filename,'r',encoding='utf-8') as f:
+    print("loading data from %s as issued on %d" % (filename, issue))
+    with open(filename, encoding="utf-8") as f:
         c = f.read()
     rows = []
-    for l in csv.reader(StringIO(c), delimiter=','):
+    for l in csv.reader(StringIO(c), delimiter=","):
         rows.append(get_paho_row(l))
-    print(' loaded %d rows' % len(rows))
+    print(" loaded %d rows" % len(rows))
     entries = [obj for obj in rows if obj]
-    print(' found %d entries' % len(entries))
+    print(" found %d entries" % len(entries))
 
-    sql = '''
+    sql = """
     INSERT INTO
         `paho_dengue` (`release_date`, `issue`, `epiweek`, `region`, `lag`,
         `total_pop`, `serotype`, `num_dengue`, `incidence_rate`,
@@ -187,55 +200,56 @@ def update_from_file(issue, date, filename, test_mode=False):
         `incidence_rate` = %s,
         `num_severe` = %s,
         `num_deaths` = %s
-    '''
+    """
 
     for row in entries:
-        if row['issue'] > issue: # Issued in a week that hasn't happened yet
+        if row["issue"] > issue:  # Issued in a week that hasn't happened yet
             continue
-        lag = delta_epiweeks(row['epiweek'], issue)
-        data_args = [row['total_pop'], row['serotype'], row['num_dengue'],
-                     row['incidence_rate'], row['num_severe'], row['num_deaths']]
+        lag = delta_epiweeks(row["epiweek"], issue)
+        data_args = [
+            row["total_pop"],
+            row["serotype"],
+            row["num_dengue"],
+            row["incidence_rate"],
+            row["num_severe"],
+            row["num_deaths"],
+        ]
 
-        insert_args = [date,issue,row['epiweek'],row['region'],lag] + data_args
+        insert_args = [date, issue, row["epiweek"], row["region"], lag] + data_args
         update_args = [date] + data_args
         insert.execute(sql % tuple(insert_args + update_args))
 
     # cleanup
     insert.close()
     if test_mode:
-        print('test mode, not committing')
+        print("test mode, not committing")
         rows2 = rows1
     else:
         cnx.commit()
         rows2 = get_rows(cnx)
-    print('rows after: %d (added %d)' % (rows2,rows2-rows1))
+    print("rows after: %d (added %d)" % (rows2, rows2 - rows1))
     cnx.close()
+
 
 def main():
     # args and usage
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--test',
-        action='store_true',
-        help='do dry run only, do not update the database'
+        "--test", action="store_true", help="do dry run only, do not update the database"
     )
     parser.add_argument(
-        '--file',
-        type=str,
-        help='load an existing zip file (otherwise fetch current data)'
+        "--file", type=str, help="load an existing zip file (otherwise fetch current data)"
     )
     parser.add_argument(
-        '--issue',
-        type=int,
-        help='issue of the file (e.g. 201740); used iff --file is given'
+        "--issue", type=int, help="issue of the file (e.g. 201740); used iff --file is given"
     )
     args = parser.parse_args()
 
     if (args.file is None) != (args.issue is None):
-        raise Exception('--file and --issue must both be present or absent')
+        raise Exception("--file and --issue must both be present or absent")
 
-    date = datetime.datetime.now().strftime('%Y-%m-%d')
-    print('assuming release date is today, %s' % date)
+    date = datetime.datetime.now().strftime("%Y-%m-%d")
+    print("assuming release date is today, %s" % date)
 
     if args.file:
         update_from_file(args.issue, date, args.file, test_mode=args.test)
@@ -274,7 +288,8 @@ def main():
                 if not db_error:
                     break # Exit loop with success
             if flag >= max_tries:
-                print('WARNING: Database `paho_dengue` did not update successfully')
+                print("WARNING: Database `paho_dengue` did not update successfully")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
