@@ -94,6 +94,7 @@ FROM
             s.row_num = 1
     ) tmp
     JOIN (
+        -- JOIN to recover first/least `release_date` because thats what the acquisition process does: https://github.com/cmu-delphi/delphi-epidata/blob/7fd20cd5c34b33c2310be67867b46a91aa840be9/src/acquisition/fluview/fluview_update.py#L326
         SELECT
             MIN(fc.release_date) as min_release_date,
             fc.issue,
