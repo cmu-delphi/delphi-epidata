@@ -1,7 +1,7 @@
 from pathlib import Path
 import unittest
 
-from delphi.epidata.acquisition.covid_hosp.common.database import Columndef
+from delphi.epidata.acquisition.covid_hosp.common.columndef import Columndef
 from delphi.epidata.acquisition.covid_hosp.common.utils import Utils
 from delphi.epidata.common.covid_hosp.covid_hosp_schema_io import CovidHospSomething
 

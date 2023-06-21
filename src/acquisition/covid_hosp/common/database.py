@@ -1,7 +1,6 @@
 """Common database code used by multiple `covid_hosp` scrapers."""
 
 # standard library
-from collections import namedtuple
 from contextlib import contextmanager
 import math
 
@@ -12,17 +11,15 @@ import pandas as pd
 # first party
 import delphi.operations.secrets as secrets
 from delphi.epidata.common.logger import get_structured_logger
-
-Columndef = namedtuple("Columndef", "csv_name sql_name dtype")
+from delphi.epidata.common.covid_hosp.covid_hosp_schema_io import CovidHospSomething
 
 class Database:
 
+  DATASET_NAME = None
+
   def __init__(self,
                connection,
-               table_name=None,
-               hhs_dataset_id=None,
-               columns_and_types=None,
-               key_columns=None):
+               chs = CovidHospSomething()):
     """Create a new Database object.
 
     Parameters
@@ -39,15 +36,19 @@ class Database:
     """
 
     self.connection = connection
-    self.table_name = table_name
-    self.hhs_dataset_id = hhs_dataset_id
-    self.publication_col_name = "issue" if table_name == 'covid_hosp_state_timeseries' or table_name == "covid_hosp_state_daily" else \
-      'publication_date'
-    self.columns_and_types = {
-      c.csv_name: c
-      for c in (columns_and_types if columns_and_types is not None else [])
-    }
-    self.key_columns = key_columns if key_columns is not None else []
+
+    if self.DATASET_NAME is not None: # populate from YAML file
+      self.table_name = chs.get_ds_table_name(self.DATASET_NAME)
+      self.hhs_dataset_id = chs.get_ds_dataset_id(self.DATASET_NAME)
+      self.publication_col_name = "issue" if self.table_name == 'covid_hosp_state_timeseries' or self.table_name == "covid_hosp_state_daily" else \
+        'publication_date'
+      self.columns_and_types = {
+        c.csv_name: c
+        for c in (chs.get_ds_ordered_csv_cols(self.DATASET_NAME) if chs.get_ds_ordered_csv_cols(self.DATASET_NAME) is not None else [])
+      }
+      self.key_columns = chs.get_ds_key_cols(self.DATASET_NAME) if chs.get_ds_key_cols(self.DATASET_NAME) is not None else []
+      self.aggregate_key_columns = chs.get_ds_aggregate_key_cols(self.DATASET_NAME) \
+        if chs.get_ds_aggregate_key_cols(self.DATASET_NAME) is not None else []
 
   @classmethod
   def logger(database_class):
@@ -212,10 +213,10 @@ class Database:
         cursor.executemany(sql, many_values)
 
     # deal with non/seldomly updated columns used like a fk table (if this database needs it)
-    if hasattr(self, 'AGGREGATE_KEY_COLS'):
+    if len(self.aggregate_key_columns) > 0:
       if logger:
         logger.info('updating keys')
-      ak_cols = self.AGGREGATE_KEY_COLS
+      ak_cols = self.aggregate_key_columns
 
       # restrict data to just the key columns and remove duplicate rows
       # sort by key columns to ensure that the last ON DUPLICATE KEY overwrite

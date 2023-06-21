@@ -4,7 +4,7 @@ import re
 import sys
 
 from delphi.epidata.acquisition.covid_hosp.common.utils import Utils
-from delphi.epidata.acquisition.covid_hosp.common.database import Columndef
+from delphi.epidata.acquisition.covid_hosp.common.columndef import Columndef
 
 # ruamel preserves key ordering, comments, and some formatting for a "round trip" of a yaml file import-->export
 from ruamel.yaml.main import (
@@ -129,6 +129,14 @@ class CovidHospSomething:
 
   def get_ds_aggregate_key_cols(self, ds_name):
     return self.dataset(ds_name).get('AGGREGATE_KEY_COLS', None)
+
+
+  def get_ds_dataset_id(self, ds_name):
+    return self.dataset(ds_name)['DATASET_ID']
+
+
+  def get_ds_metadata_id(self, ds_name):
+    return self.dataset(ds_name)['METADATA_ID']
 
 
   def get_ds_ordered_csv_cols(self, ds_name):

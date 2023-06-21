@@ -204,7 +204,7 @@ class Utils:
       issue_int = int(issue.strftime("%Y%m%d"))
       # download the dataset and add it to the database
       dataset = Utils.merge_by_key_cols([network.fetch_dataset(url, logger=logger) for url, _ in revisions],
-                                        db.KEY_COLS,
+                                        db.key_columns,
                                         logger=logger)
       # add metadata to the database
       all_metadata = []
