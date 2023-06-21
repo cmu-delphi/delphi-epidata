@@ -14,7 +14,7 @@ from delphi.epidata.acquisition.covid_hosp.state_daily.database import Database
 from delphi.epidata.acquisition.covid_hosp.common.test_utils import UnitTestUtils
 from delphi.epidata.client.delphi_epidata import Epidata
 from delphi.epidata.acquisition.covid_hosp.state_daily.update import Update
-from delphi.epidata.acquisition.covid_hosp.state_daily.network import Network
+from delphi.epidata.acquisition.covid_hosp.common.network import Network
 from delphi.epidata.acquisition.covid_hosp.common.utils import Utils
 from delphi.epidata.common.covid_hosp.covid_hosp_schema_io import CovidHospSomething
 import delphi.operations.secrets as secrets

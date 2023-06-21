@@ -189,7 +189,7 @@ class Utils:
     """
     logger = database.logger()
     
-    metadata = network.fetch_metadata(logger=logger)
+    metadata = network.fetch_metadata(database.METADATA_ID, logger=logger)
     datasets = []
     with database.connect() as db:
       max_issue = db.get_max_issue(logger=logger)

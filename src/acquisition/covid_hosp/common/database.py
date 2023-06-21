@@ -16,6 +16,8 @@ from delphi.epidata.common.covid_hosp.covid_hosp_schema_io import CovidHospSomet
 class Database:
 
   DATASET_NAME = None
+  # Defined outside the constructor as this does not require a DB connection
+  METADATA_ID = CovidHospSomething().get_metadata_id(DATASET_NAME) if DATASET_NAME is not None else None
 
   def __init__(self,
                connection,

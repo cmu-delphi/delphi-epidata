@@ -7,7 +7,7 @@ healthdata.gov.
 # first party
 from delphi.epidata.acquisition.covid_hosp.common.utils import Utils
 from delphi.epidata.acquisition.covid_hosp.facility.database import Database
-from delphi.epidata.acquisition.covid_hosp.facility.network import Network
+from delphi.epidata.acquisition.covid_hosp.common.network import Network
 
 
 class Update:
