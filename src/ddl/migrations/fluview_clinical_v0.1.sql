@@ -53,6 +53,7 @@ SELECT
     tmp.percent_b
 FROM
     (
+        -- get data associated with the most recent `release_date` for each unique `(epiweek, issue, region)` key
         SELECT
             s.release_date,
             s.issue,
