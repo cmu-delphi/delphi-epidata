@@ -1,5 +1,5 @@
 
 [tool.black]
-line-length = 200
+line-length = 100
 target-version = ['py38']
 include = 'server,tests/server'
