@@ -16,6 +16,7 @@ from delphi.epidata.client.delphi_epidata import Epidata
 from delphi.epidata.acquisition.covid_hosp.state_daily.update import Update
 from delphi.epidata.acquisition.covid_hosp.state_daily.network import Network
 from delphi.epidata.acquisition.covid_hosp.common.utils import Utils
+from delphi.epidata.common.covid_hosp.covid_hosp_schema_io import CovidHospSomething
 import delphi.operations.secrets as secrets
 
 # py3tester coverage target (equivalent to `import *`)
@@ -82,8 +83,8 @@ class AcquisitionTests(unittest.TestCase):
       self.assertAlmostEqual(actual, expected)
       self.assertIsNone(row['critical_staffing_shortage_today_no'])
 
-      # expect 61 fields per row (62 database columns, except `id`) # TODO: ???  this is wrong!
-      self.assertEqual(len(row), 118)
+      # Expect len(row) to equal the amount of dynamic columns + one extra issue column
+      self.assertEqual(len(row), len(list(CovidHospSomething().columns('state_daily'))) + 1)
 
     with self.subTest(name='all date batches acquired'):
       response = Epidata.covid_hosp('WY', Epidata.range(20200101, 20210101), issues=20210313)

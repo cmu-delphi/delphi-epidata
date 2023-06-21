@@ -9,6 +9,7 @@ from delphi.epidata.acquisition.covid_hosp.common.database import Database
 from delphi.epidata.acquisition.covid_hosp.common.test_utils import UnitTestUtils
 from delphi.epidata.client.delphi_epidata import Epidata
 from delphi.epidata.acquisition.covid_hosp.facility.update import Update
+from delphi.epidata.common.covid_hosp.covid_hosp_schema_io import CovidHospSomething
 import delphi.operations.secrets as secrets
 
 # third party
@@ -89,8 +90,8 @@ class AcquisitionTests(unittest.TestCase):
         else:
           self.assertEqual(row[k], v, f"row[{k}] is {row[k]} not {v}")
 
-      # expect 113 fields per row (114 database columns, except `id`)
-      self.assertEqual(len(row), 113)
+      # Expect len(row) to equal the amount of dynamic columns + one extra issue column
+      self.assertEqual(len(row), len(list(CovidHospSomething().columns('covid_hosp_facility'))) + 1)
 
     # re-acquisition of the same dataset should be a no-op
     with self.subTest(name='second acquisition'):

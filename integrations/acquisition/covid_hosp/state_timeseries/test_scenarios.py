@@ -9,6 +9,7 @@ from delphi.epidata.acquisition.covid_hosp.common.database import Database
 from delphi.epidata.acquisition.covid_hosp.common.test_utils import UnitTestUtils
 from delphi.epidata.client.delphi_epidata import Epidata
 from delphi.epidata.acquisition.covid_hosp.state_timeseries.update import Update
+from delphi.epidata.common.covid_hosp.covid_hosp_schema_io import CovidHospSomething
 import delphi.operations.secrets as secrets
 
 # third party
@@ -78,8 +79,8 @@ class AcquisitionTests(unittest.TestCase):
       self.assertAlmostEqual(actual, expected)
       self.assertIsNone(row['critical_staffing_shortage_today_no'])
 
-      # expect 61 fields per row (62 database columns, except `id`) # TODO: ???  this is wrong!
-      self.assertEqual(len(row), 118)
+      # Expect len(row) to equal the amount of dynamic columns + one extra issue column
+      self.assertEqual(len(row), len(list(CovidHospSomething().columns('state_timeseries'))) + 1)
 
     # re-acquisition of the same dataset should be a no-op
     with self.subTest(name='second acquisition'):
