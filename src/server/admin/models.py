@@ -55,6 +55,7 @@ class User(Base):
         db_user = session.query(User).filter(User.id == user.id).first()
         # TODO: would it be sufficient to use the passed-in `user` instead of looking up this `db_user`?
         #       or even use this as a bound method instead of a static??
+        #       same goes for `update_user()` and `delete_user()` below...
         if roles:
             db_user.roles = session.query(UserRole).filter(UserRole.name.in_(roles)).all()
         else:
@@ -97,16 +98,15 @@ class User(Base):
     ) -> "User":
         get_structured_logger("api_user_models").info("updating user", user_id=user.id, new_api_key=api_key)
         user = User.find_user(user_id=user.id, session=session)
-        if user:
-            update_stmt = (
-                update(User)
-                .where(User.id == user.id)
-                .values(api_key=api_key, email=email)
-            )
-            session.execute(update_stmt)
-            return User._assign_roles(user, roles, session)
-        # TODO: else: raise Exception() ??
-        return None
+        if not user:
+            raise Exception('user not found')
+        update_stmt = (
+            update(User)
+            .where(User.id == user.id)
+            .values(api_key=api_key, email=email)
+        )
+        session.execute(update_stmt)
+        return User._assign_roles(user, roles, session)
 
     @staticmethod
     @default_session(WriteSession)
@@ -135,7 +135,7 @@ class UserRole(Base):
                 WHERE name='{name}')
         """)
         session.commit()
-        # TODO: look up and return new role
+        return session.query(UserRole).filter(UserRole.name == name).first()
 
     @staticmethod
     @default_session(Session)

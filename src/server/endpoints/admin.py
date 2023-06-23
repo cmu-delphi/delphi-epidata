@@ -94,7 +94,7 @@ def _detail(user_id: int):
             if user_check and user_check.id != user.id:
                 flags["banner"] = "Could not update user; same api_key and/or email already exists."
             else:
-                user = user.update_user(
+                user = User.update_user(
                     user=user,
                     api_key=request.values["api_key"],
                     email=request.values["email"],
