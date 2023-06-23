@@ -266,7 +266,7 @@ def update(locations, terms, first=None, last=None, countries=["US"]):
         ew0 = 200401 if ew0 is None else flu.add_epiweeks(ew0, -4)
     ew0 = ew0 if first is None else first
     ew1 = ew1 if last is None else last
-    print("Checking epiweeks between %d and %d..." % (ew0, ew1))
+    print(f"Checking epiweeks between {int(ew0)} and {int(ew1)}...")
 
     # keep track of how many rows were added
     rows_before = get_num_rows()
@@ -283,7 +283,7 @@ def update(locations, terms, first=None, last=None, countries=["US"]):
     total_rows = 0
     ght = GHT(API_KEY)
     for term in terms:
-        print(" [%s] using term" % term)
+        print(f" [{term}] using term")
         ll, cl = len(locations), len(countries)
         for i in range(max(ll, cl)):
             location = locations[i] if i < ll else locations[0]
@@ -303,8 +303,7 @@ def update(locations, terms, first=None, last=None, countries=["US"]):
                         else:
                             delay = 2**attempt
                             print(
-                                " [%s|%s] caught exception (will retry in %ds):"
-                                % (term, location, delay),
+                                f" [{term}|{location}] caught exception (will retry in {int(delay)}s):",
                                 ex,
                             )
                             time.sleep(delay)
@@ -332,15 +331,14 @@ def update(locations, terms, first=None, last=None, countries=["US"]):
                     ew = flu.add_epiweeks(ew, 1)
                 if num_missing > 0:
                     print(
-                        " [%s|%s] missing %d/%d value(s)"
-                        % (term, location, num_missing, len(values))
+                        f" [{term}|{location}] missing {int(num_missing)}/{len(values)} value(s)"
                     )
             except Exception as ex:
                 print(f" [{term}|{location}] caught exception (will NOT retry):", ex)
 
     # keep track of how many rows were added
     rows_after = get_num_rows()
-    print("Inserted %d/%d row(s)" % (rows_after - rows_before, total_rows))
+    print(f"Inserted {int(rows_after - rows_before)}/{int(total_rows)} row(s)")
 
     # cleanup
     cur.close()

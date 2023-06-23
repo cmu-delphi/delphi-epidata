@@ -270,13 +270,13 @@ def impute_missing_values(database, test_mode=False):
     # database connection
     database.connect()
     rows1 = database.count_rows()
-    print("rows before: %d" % (rows1))
+    print(f"rows before: {int(rows1)}")
 
     # iterate over missing epiweeks
     missing_rows = database.find_missing_rows()
-    print("missing data for %d epiweeks" % len(missing_rows))
+    print(f"missing data for {len(missing_rows)} epiweeks")
     for issue, epiweek in missing_rows:
-        print("i=%d e=%d" % (issue, epiweek))
+        print(f"i={int(issue)} e={int(epiweek)}")
 
         # get known values from table `fluview`
         known_values = database.get_known_values(issue, epiweek)
@@ -317,7 +317,7 @@ def impute_missing_values(database, test_mode=False):
 
     # database cleanup
     rows2 = database.count_rows()
-    print("rows after: %d (added %d)" % (rows2, rows2 - rows1))
+    print(f"rows after: {int(rows2)} (added {int(rows2 - rows1)})")
     commit = not test_mode
     database.close(commit)
 

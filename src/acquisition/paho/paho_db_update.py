@@ -110,7 +110,7 @@ def safe_int(i):
 def get_rows(cnx, table="paho_dengue"):
     # Count and return the number of rows in the `fluview` table.
     select = cnx.cursor()
-    select.execute("SELECT count(1) num FROM %s" % table)
+    select.execute(f"SELECT count(1) num FROM {table}")
     for (num,) in select:
         pass
     select.close()
@@ -171,19 +171,19 @@ def update_from_file(issue, date, filename, test_mode=False):
     u, p = secrets.db.epi
     cnx = mysql.connector.connect(user=u, password=p, database="epidata")
     rows1 = get_rows(cnx, "paho_dengue")
-    print("rows before: %d" % (rows1))
+    print(f"rows before: {int(rows1)}")
     insert = cnx.cursor()
 
     # load the data, ignoring empty rows
-    print("loading data from %s as issued on %d" % (filename, issue))
+    print(f"loading data from {filename} as issued on {int(issue)}")
     with open(filename, encoding="utf-8") as f:
         c = f.read()
     rows = []
     for l in csv.reader(StringIO(c), delimiter=","):
         rows.append(get_paho_row(l))
-    print(" loaded %d rows" % len(rows))
+    print(f" loaded {len(rows)} rows")
     entries = [obj for obj in rows if obj]
-    print(" found %d entries" % len(entries))
+    print(f" found {len(entries)} entries")
 
     sql = """
     INSERT INTO
@@ -227,7 +227,7 @@ def update_from_file(issue, date, filename, test_mode=False):
     else:
         cnx.commit()
         rows2 = get_rows(cnx)
-    print("rows after: %d (added %d)" % (rows2, rows2 - rows1))
+    print(f"rows after: {int(rows2)} (added {int(rows2 - rows1)})")
     cnx.close()
 
 
@@ -249,7 +249,7 @@ def main():
         raise Exception("--file and --issue must both be present or absent")
 
     date = datetime.datetime.now().strftime("%Y-%m-%d")
-    print("assuming release date is today, %s" % date)
+    print(f"assuming release date is today, {date}")
 
     if args.file:
         update_from_file(args.issue, date, args.file, test_mode=args.test)

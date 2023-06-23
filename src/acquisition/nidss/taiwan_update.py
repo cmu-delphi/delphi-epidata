@@ -107,8 +107,8 @@ def update(test_mode=False):
     u, p = secrets.db.epi
     cnx = mysql.connector.connect(user=u, password=p, database="epidata")
     rows1 = get_rows(cnx)
-    print("rows before (flu): %d" % (rows1[0]))
-    print("rows before (dengue): %d" % (rows1[1]))
+    print(f"rows before (flu): {int(rows1[0])}")
+    print(f"rows before (dengue): {int(rows1[1])}")
     insert = cnx.cursor()
     sql_flu = """
     INSERT INTO
@@ -149,8 +149,8 @@ def update(test_mode=False):
     # Cleanup
     insert.close()
     rows2 = get_rows(cnx)
-    print("rows after (flu): %d (added %d)" % (rows2[0], rows2[0] - rows1[0]))
-    print("rows after (dengue): %d (added %d)" % (rows2[1], rows2[1] - rows1[1]))
+    print(f"rows after (flu): {int(rows2[0])} (added {int(rows2[0] - rows1[0])})")
+    print(f"rows after (dengue): {int(rows2[1])} (added {int(rows2[1] - rows1[1])})")
     if test_mode:
         print("test mode: changes not commited")
     else:

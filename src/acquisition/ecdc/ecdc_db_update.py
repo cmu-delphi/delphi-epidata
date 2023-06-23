@@ -87,7 +87,7 @@ def safe_int(i):
 def get_rows(cnx, table="ecdc_ili"):
     # Count and return the number of rows in the `ecdc_ili` table.
     select = cnx.cursor()
-    select.execute("SELECT count(1) num FROM %s" % table)
+    select.execute(f"SELECT count(1) num FROM {table}")
     for (num,) in select:
         pass
     select.close()
@@ -100,7 +100,7 @@ def update_from_file(issue, date, dir, test_mode=False):
     u, p = secrets.db.epi
     cnx = mysql.connector.connect(user=u, password=p, database="epidata")
     rows1 = get_rows(cnx, "ecdc_ili")
-    print("rows before: %d" % (rows1))
+    print(f"rows before: {int(rows1)}")
     insert = cnx.cursor()
 
     # load the data, ignoring empty rows
@@ -115,9 +115,9 @@ def update_from_file(issue, date, dir, test_mode=False):
                 row["region"] = data[4]
                 row["incidence_rate"] = data[3]
                 rows.append(row)
-    print(" loaded %d rows" % len(rows))
+    print(f" loaded {len(rows)} rows")
     entries = [obj for obj in rows if obj]
-    print(" found %d entries" % len(entries))
+    print(f" found {len(entries)} entries")
 
     sql = """
     INSERT INTO
@@ -149,7 +149,7 @@ def update_from_file(issue, date, dir, test_mode=False):
     else:
         cnx.commit()
         rows2 = get_rows(cnx)
-    print("rows after: %d (added %d)" % (rows2, rows2 - rows1))
+    print(f"rows after: {int(rows2)} (added {int(rows2 - rows1)})")
     cnx.close()
 
 
@@ -171,7 +171,7 @@ def main():
         raise Exception("--file and --issue must both be present or absent")
 
     date = datetime.datetime.now().strftime("%Y-%m-%d")
-    print("assuming release date is today, %s" % date)
+    print(f"assuming release date is today, {date}")
 
     ensure_tables_exist()
     if args.file:

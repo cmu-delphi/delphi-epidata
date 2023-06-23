@@ -91,12 +91,12 @@ def run(job_limit=100):
     jobs = []
     for (id, name, data_str) in cur:
         jobs.append((id, name, json.loads(data_str)))
-    print("Processing data from %d jobs" % (len(jobs)))
+    print(f"Processing data from {len(jobs)} jobs")
 
     # get the counts from the json object and insert into (or update) the database
     # Notice that data_collect contains data with different languages
     for (id, name, data_collect) in jobs:
-        print("processing job [%d|%s]..." % (id, name))
+        print(f"processing job [{int(id)}|{name}]...")
         timestamp = round_timestamp(get_timestamp(name))
         for language in data_collect.keys():
             data = data_collect[language]

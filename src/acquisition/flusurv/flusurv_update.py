@@ -108,7 +108,7 @@ def update(issue, location_name, test_mode=False):
     cnx = mysql.connector.connect(host=secrets.db.host, user=u, password=p, database="epidata")
     cur = cnx.cursor()
     rows1 = get_rows(cur)
-    print("rows before: %d" % rows1)
+    print(f"rows before: {int(rows1)}")
 
     # SQL for insert/update
     sql = """
@@ -148,7 +148,7 @@ def update(issue, location_name, test_mode=False):
 
     # commit and disconnect
     rows2 = get_rows(cur)
-    print("rows after: %d (+%d)" % (rows2, rows2 - rows1))
+    print(f"rows after: {int(rows2)} (+{int(rows2 - rows1)})")
     cur.close()
     if test_mode:
         print("test mode: not committing database changes")
@@ -170,7 +170,7 @@ def main():
 
     # scrape current issue from the main page
     issue = flusurv.get_current_issue()
-    print("current issue: %d" % issue)
+    print(f"current issue: {int(issue)}")
 
     # fetch flusurv data
     if args.location == "all":

@@ -119,10 +119,10 @@ def extract_article_counts_orig(articles, debug_mode):
     counts = {}
     for article in articles:
         if debug_mode:
-            print(" %s" % (article))
+            print(f" {article}")
         out = text(
             subprocess.check_output(
-                'LC_ALL=C grep -a -i "^en %s " raw2 | cat' % (article.lower()), shell=True
+                f'LC_ALL=C grep -a -i "^en {article.lower()} " raw2 | cat', shell=True
             )
         ).strip()
         count = 0
@@ -130,13 +130,13 @@ def extract_article_counts_orig(articles, debug_mode):
             for line in out.split("\n"):
                 fields = line.split()
                 if len(fields) != 4:
-                    print("unexpected article format: [%s]" % (line))
+                    print(f"unexpected article format: [{line}]")
                 else:
                     count += int(fields[2])
         # print ' %4d %s'%(count, article)
         counts[article.lower()] = count
         if debug_mode:
-            print("  %d" % (count))
+            print(f"  {int(count)}")
     print("getting total count...")
     out = text(
         subprocess.check_output(
@@ -154,7 +154,7 @@ def extract_article_counts_orig(articles, debug_mode):
 def run(secret, download_limit=None, job_limit=None, sleep_time=1, job_type=0, debug_mode=False):
 
     worker = text(subprocess.check_output("echo `whoami`@`hostname`", shell=True)).strip()
-    print("this is [%s]" % (worker))
+    print(f"this is [{worker}]")
     if debug_mode:
         print("*** running in debug mode ***")
 
@@ -166,7 +166,7 @@ def run(secret, download_limit=None, job_limit=None, sleep_time=1, job_type=0, d
     ):
         try:
             time_start = datetime.datetime.now()
-            req = urlopen(MASTER_URL + "?get=x&type=%s" % (job_type))
+            req = urlopen(MASTER_URL + f"?get=x&type={job_type}")
             code = req.getcode()
             if code != 200:
                 if code == 201:
@@ -178,7 +178,7 @@ def run(secret, download_limit=None, job_limit=None, sleep_time=1, job_type=0, d
                         print("nothing to do, exiting")
                         return
                 else:
-                    raise Exception("server response code (get) was %d" % (code))
+                    raise Exception(f"server response code (get) was {int(code)}")
             # Make the code compatible with mac os system
             if platform == "darwin":
                 job_content = text(req.readlines()[1])
@@ -193,19 +193,17 @@ def run(secret, download_limit=None, job_limit=None, sleep_time=1, job_type=0, d
                     print("nothing to do, exiting")
                     return
             job = json.loads(job_content)
-            print("received job [%d|%s]" % (job["id"], job["name"]))
+            print(f"received job [{int(job['id'])}|{job['name']}]")
             # updated parsing for pageviews - maybe use a regex in the future
             # year, month = int(job['name'][11:15]), int(job['name'][15:17])
             year, month = int(job["name"][10:14]), int(job["name"][14:16])
             # print 'year=%d | month=%d'%(year, month)
-            url = "https://dumps.wikimedia.org/other/pageviews/%d/%d-%02d/%s" % (
-                year,
-                year,
-                month,
-                job["name"],
+            url = (
+                "https://dumps.wikimedia.org/other/"
+                f"pageviews/{year}/{year}-{month:02d}/{job['name']}"
             )
-            print("downloading file [%s]..." % (url))
-            subprocess.check_call("curl -s %s > raw.gz" % (url), shell=True)
+            print(f"downloading file [{url}]...")
+            subprocess.check_call(f"curl -s {url} > raw.gz", shell=True)
             print("checking file size...")
             # Make the code cross-platfrom, so use python to get the size of the file
             # size = int(text(subprocess.check_output('ls -l raw.gz | cut -d" " -f 5', shell=True)))
@@ -259,16 +257,16 @@ def run(secret, download_limit=None, job_limit=None, sleep_time=1, job_type=0, d
             payload = json.dumps(result)
             hmac_str = get_hmac_sha256(secret, payload)
             if debug_mode:
-                print(" hmac: %s" % hmac_str)
+                print(f" hmac: {hmac_str}")
             post_data = urlencode({"put": payload, "hmac": hmac_str})
             req = urlopen(MASTER_URL, data=data(post_data))
             code = req.getcode()
             if code != 200:
-                raise Exception("server response code (put) was %d" % (code))
-            print("done! (dl=%d)" % (total_download))
+                raise Exception(f"server response code (put) was {int(code)}")
+            print(f"done! (dl={int(total_download)})")
             passed_jobs += 1
         except Exception as ex:
-            print("***** Caught Exception: %s *****" % (str(ex)))
+            print(f"***** Caught Exception: {str(ex)} *****")
             failed_jobs += 1
             time.sleep(30)
         print(
@@ -278,9 +276,9 @@ def run(secret, download_limit=None, job_limit=None, sleep_time=1, job_type=0, d
         time.sleep(sleep_time)
 
     if download_limit is not None and total_download >= download_limit:
-        print("download limit has been reached [%d >= %d]" % (total_download, download_limit))
+        print(f"download limit has been reached [{int(total_download)} >= {int(download_limit)}]")
     if job_limit is not None and (passed_jobs + failed_jobs) >= job_limit:
-        print("job limit has been reached [%d >= %d]" % (passed_jobs + failed_jobs, job_limit))
+        print(f"job limit has been reached [{int(passed_jobs + failed_jobs)} >= {int(job_limit)}]")
 
 
 def main():

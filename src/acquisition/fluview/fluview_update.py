@@ -297,7 +297,7 @@ def get_rows(cnx, table="fluview"):
     Looking at the fluview table by default, but may pass parameter
     to look at public health or clinical lab data instead."""
     select = cnx.cursor()
-    select.execute("SELECT count(1) num FROM %s" % table)
+    select.execute(f"SELECT count(1) num FROM {table}")
     for (num,) in select:
         pass
     select.close()
@@ -313,16 +313,16 @@ def update_from_file_clinical(issue, date, filename, test_mode=False):
     u, p = secrets.db.epi
     cnx = mysql.connector.connect(user=u, password=p, database="epidata")
     rows1 = get_rows(cnx, CL_TABLE)
-    print("rows before: %d" % (rows1))
+    print(f"rows before: {int(rows1)}")
     insert = cnx.cursor()
 
     # load the data, ignoring empty rows
-    print("loading data from %s as issued on %d" % (filename, issue))
+    print(f"loading data from {filename} as issued on {int(issue)}")
     rows = load_zipped_csv(filename, CL_SHEET)
-    print(" loaded %d rows" % len(rows))
+    print(f" loaded {len(rows)} rows")
     data = [get_clinical_data(row) for row in rows]
     entries = [obj for obj in data if obj]
-    print(" found %d entries" % len(entries))
+    print(f" found {len(entries)} entries")
 
     sql = """
     INSERT INTO
@@ -365,7 +365,7 @@ def update_from_file_clinical(issue, date, filename, test_mode=False):
     else:
         cnx.commit()
         rows2 = get_rows(cnx)
-    print("rows after: %d (added %d)" % (rows2, rows2 - rows1))
+    print(f"rows after: {int(rows2)} (added {int(rows2 - rows1)})")
     cnx.close()
 
 
@@ -378,16 +378,16 @@ def update_from_file_public(issue, date, filename, test_mode=False):
     u, p = secrets.db.epi
     cnx = mysql.connector.connect(user=u, password=p, database="epidata")
     rows1 = get_rows(cnx, PHL_TABLE)
-    print("rows before: %d" % (rows1))
+    print(f"rows before: {int(rows1)}")
     insert = cnx.cursor()
 
     # load the data, ignoring empty rows
-    print("loading data from %s as issued on %d" % (filename, issue))
+    print(f"loading data from {filename} as issued on {int(issue)}")
     rows = load_zipped_csv(filename, PHL_SHEET)
-    print(" loaded %d rows" % len(rows))
+    print(f" loaded {len(rows)} rows")
     data = [get_public_data(row) for row in rows]
     entries = [obj for obj in data if obj]
-    print(" found %d entries" % len(entries))
+    print(f" found {len(entries)} entries")
 
     sql = """
     INSERT INTO
@@ -434,7 +434,7 @@ def update_from_file_public(issue, date, filename, test_mode=False):
     else:
         cnx.commit()
         rows2 = get_rows(cnx)
-    print("rows after: %d (added %d)" % (rows2, rows2 - rows1))
+    print(f"rows after: {int(rows2)} (added {int(rows2 - rows1)})")
     cnx.close()
 
 
@@ -447,16 +447,16 @@ def update_from_file(issue, date, filename, test_mode=False):
     u, p = secrets.db.epi
     cnx = mysql.connector.connect(user=u, password=p, database="epidata")
     rows1 = get_rows(cnx)
-    print("rows before: %d" % (rows1))
+    print(f"rows before: {int(rows1)}")
     insert = cnx.cursor()
 
     # load the data, ignoring empty rows
-    print("loading data from %s as issued on %d" % (filename, issue))
+    print(f"loading data from {filename} as issued on {int(issue)}")
     rows = load_zipped_csv(filename)
-    print(" loaded %d rows" % len(rows))
+    print(f" loaded {len(rows)} rows")
     data = [get_ilinet_data(row) for row in rows]
     entries = [obj for obj in data if obj]
-    print(" found %d entries" % len(entries))
+    print(f" found {len(entries)} entries")
 
     sql = """
     INSERT INTO
@@ -509,7 +509,7 @@ def update_from_file(issue, date, filename, test_mode=False):
     else:
         cnx.commit()
         rows2 = get_rows(cnx)
-    print("rows after: %d (added %d)" % (rows2, rows2 - rows1))
+    print(f"rows after: {int(rows2)} (added {int(rows2 - rows1)})")
     cnx.close()
 
 
@@ -531,7 +531,7 @@ def main():
         raise Exception("--file and --issue must both be present or absent")
 
     date = datetime.datetime.now().strftime("%Y-%m-%d")
-    print("assuming release date is today, %s" % date)
+    print(f"assuming release date is today, {date}")
 
     if args.file:
         update_from_file(args.issue, date, args.file, test_mode=args.test)

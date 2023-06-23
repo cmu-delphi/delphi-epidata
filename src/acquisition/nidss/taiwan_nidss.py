@@ -121,7 +121,7 @@ class NIDSS:
             match = release_pattern.match(line)
             if match is not None:
                 year, month, day = int(match.group(1)), int(match.group(2)), int(match.group(3))
-                release = "%04d-%02d-%02d" % (year, month, day)
+                release = f"{int(year):04}-{int(month):02}-{int(day):02}"
         if issue is None or release is None:
             raise Exception("metadata not found")
         return issue, release
@@ -173,7 +173,7 @@ class NIDSS:
         # Fetch the flu page
         response = requests.get(NIDSS.FLU_URL)
         if response.status_code != 200:
-            raise Exception("request failed [%d]" % response.status_code)
+            raise Exception(f"request failed [{int(response.status_code)}]")
         html = response.text
         # Parse metadata
         latest_week, release_date = NIDSS._get_metadata(html)
@@ -199,7 +199,7 @@ class NIDSS:
         # Download CSV
         response = requests.get(NIDSS.DENGUE_URL)
         if response.status_code != 200:
-            raise Exception("export Dengue failed [%d]" % response.status_code)
+            raise Exception(f"export Dengue failed [{int(response.status_code)}]")
         csv = response.content.decode("big5-tw")
         # Parse the data
         lines = [l.strip() for l in csv.split("\n")[1:] if l.strip() != ""]
@@ -231,7 +231,7 @@ class NIDSS:
                 continue
             if epiweek not in data or location not in data[epiweek]:
                 # Not a vaild U.S. epiweek
-                raise Exception("data missing %d-%s" % (epiweek, location))
+                raise Exception(f"data missing {int(epiweek)}-{location}")
             # Add the counts to the location on this epiweek
             data[epiweek][location] += count
         # Return results indexed by week and location
@@ -258,12 +258,12 @@ def main():
     print("*** Flu ***")
     for region in sorted(list(fdata[ew].keys())):
         visits, ili = fdata[ew][region]["visits"], fdata[ew][region]["ili"]
-        print("region=%s | visits=%d | ili=%.3f" % (region, visits, ili))
+        print(f"region={region} | visits={int(visits)} | ili={ili:.3f}")
     print("*** Dengue ***")
     for location in sorted(list(ddata[ew].keys())):
         region = NIDSS.LOCATION_TO_REGION[location]
         count = ddata[ew][location]
-        print("location=%s | region=%s | count=%d" % (location, region, count))
+        print(f"location={location} | region={region} | count={int(count)}")
 
 
 if __name__ == "__main__":

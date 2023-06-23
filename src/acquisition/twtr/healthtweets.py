@@ -104,7 +104,7 @@ class HealthTweets:
         response = self._go("https://www.healthtweets.org/accounts/login")
         token = self._get_token(response.text)
         if self.debug:
-            print("token=%s" % (token))
+            print(f"token={token}")
         data = {
             "csrfmiddlewaretoken": token,
             "username": username,
@@ -145,13 +145,10 @@ class HealthTweets:
         d1, d2 = datetime.strptime(date1, "%Y-%m-%d"), datetime.strptime(date2, "%Y-%m-%d")
         s1, s2 = d1.strftime("%m%%2F%d%%2F%Y"), d2.strftime("%m%%2F%d%%2F%Y")
         count_type = "normalized" if normalized else "raw"
-        url = (
-            "https://www.healthtweets.org/trends/plot?resolution=Day&count_type=%s&dayNum=%d&from=%s&to=%s&plot1_disease=65&location_plot1=%d"
-            % (count_type, (d2 - d1).days, s1, s2, state_code)
-        )
         response = self._go(
-            "https://www.healthtweets.org/trends/plot?resolution=Day&count_type=%s&dayNum=%d&from=%s&to=%s&plot1_disease=65&location_plot1=%d"
-            % (count_type, (d2 - d1).days, s1, s2, state_code)
+            "https://www.healthtweets.org/trends/plot?resolution=Day"
+            f"&count_type={count_type}&dayNum={(d2 - d1).days}&from={s1}"
+            f"&to={s2}&plot1_disease=65&location_plot1={int(state_code)}"
         )
         # print(state, date1, date2, normalized)
         # print(url)
@@ -179,7 +176,9 @@ class HealthTweets:
             raise Exception("invalid state")
         state_code = HealthTweets.STATE_CODES[state]
         response = self._go(
-            "https://www.healthtweets.org/trends/plot?resolution=Day&count_type=normalized&dayNum=7&from=01%%2F01%%2F2015&to=01%%2F07%%2F2015&plot1_disease=65&location_plot1=%d" % (state_code)
+            "https://www.healthtweets.org/trends/plot?resolution=Day"
+            "&count_type=normalized&dayNum=7&from=01%%2F01%%2F2015"
+            f"&to=01%%2F07%%2F2015&plot1_disease=65&location_plot1={int(state_code)}"
         )
         lines = [line.strip() for line in response.text.split("\n")]
         data_line = [line for line in lines if line[:29] == 'var plotNames = ["Influenza (']
@@ -198,7 +197,7 @@ class HealthTweets:
 
     def _go(self, url, method=None, referer=None, data=None):
         if self.debug:
-            print("%s" % (url))
+            print(url)
         if method is None:
             if data is None:
                 method = self.session.get
@@ -208,8 +207,8 @@ class HealthTweets:
         html = response.text
         if self.debug:
             for item in response.history:
-                print(" [%d to %s]" % (item.status_code, item.headers["Location"]))
-            print(" %d (%d bytes)" % (response.status_code, len(html)))
+                print(f" [{int(item.status_code)} to {item.headers['Location']}]")
+            print(f" {int(response.status_code)} ({len(html)} bytes)")
         return response
 
 

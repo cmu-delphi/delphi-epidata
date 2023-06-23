@@ -142,12 +142,12 @@ def main():
     expected_weeks = result["num_weeks"]
     received_weeks = len([v for v in values if v is not None and type(v) == float and v >= 0])
     if expected_weeks != received_weeks:
-        raise Exception("expected %d weeks, received %d" % (expected_weeks, received_weeks))
+        raise Exception(f"expected {int(expected_weeks)} weeks, received {int(received_weeks)}")
 
     # results
     epiweeks = [ew for ew in flu.range_epiweeks(args.startweek, args.endweek, inclusive=True)]
     for (epiweek, value) in zip(epiweeks, values):
-        print("%6d: %.3f" % (epiweek, value))
+        print(f"{int(epiweek):6}: {value:.3f}")
 
 
 if __name__ == "__main__":

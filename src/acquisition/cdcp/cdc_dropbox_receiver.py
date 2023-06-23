@@ -101,7 +101,7 @@ def fetch_data():
             if resp.status_code != 200:
                 raise Exception(["resp.status_code", resp.status_code])
             dropbox_len = meta.size
-            print("  need %d bytes..." % dropbox_len)
+            print(f"  need {int(dropbox_len)} bytes...")
             content_len = int(resp.headers.get("Content-Length", -1))
             if dropbox_len != content_len:
                 info = ["dropbox_len", dropbox_len, "content_len", content_len]

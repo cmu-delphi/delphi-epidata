@@ -102,7 +102,7 @@ def run():
 
     # keep track of how many rows were added
     rows_after = get_num_rows()
-    print("Inserted %d/%d row(s)" % (rows_after - rows_before, total_rows))
+    print(f"Inserted {int(rows_after - rows_before)}/{int(total_rows)} row(s)")
 
     # cleanup
     cur.close()

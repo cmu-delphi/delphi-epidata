@@ -80,7 +80,7 @@ def fetch_json(path, payload, call_count=1, requests_impl=requests):
 
     # it's polite to self-identify this "bot"
     delphi_url = "https://delphi.cmu.edu/index.html"
-    user_agent = "Mozilla/5.0 (compatible; delphibot/1.0; +%s)" % delphi_url
+    user_agent = f"Mozilla/5.0 (compatible; delphibot/1.0; +{delphi_url})"
 
     # the FluSurv AMF server
     flusurv_url = "https://gis.cdc.gov/GRASP/Flu3/" + path
@@ -106,7 +106,7 @@ def fetch_json(path, payload, call_count=1, requests_impl=requests):
     if resp.status_code == 500 and call_count <= 2:
         # the server often fails with this status, so wait and retry
         delay = 10 * call_count
-        print("got status %d, will retry in %d sec..." % (resp.status_code, delay))
+        print(f"got status {int(resp.status_code)}, will retry in {int(delay)} sec...")
         time.sleep(delay)
         return fetch_json(path, payload, call_count=call_count + 1)
     elif resp.status_code != 200:
@@ -180,7 +180,7 @@ def extract_from_object(data_in):
         raise Exception("no data found")
 
     # print the result and return flu data
-    print("found data for %d weeks" % len(data_out))
+    print(f"found data for {len(data_out)} weeks")
     return data_out
 
 

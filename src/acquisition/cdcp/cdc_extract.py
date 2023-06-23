@@ -110,7 +110,7 @@ def get_total_hits(cur, epiweek, state):
     for (total,) in cur:
         pass
     if total is None:
-        raise Exception("missing data for %d-%s" % (epiweek, state))
+        raise Exception(f"missing data for {int(epiweek)}-{state}")
     return total
 
 
@@ -166,7 +166,7 @@ def extract(first_week=None, last_week=None, test_mode=False):
         cur.execute("SELECT max(`epiweek`) FROM `cdc_meta`")
         for (last_week,) in cur:
             pass
-    print("extracting %d--%d" % (first_week, last_week))
+    print(f"extracting {int(first_week)}--{int(last_week)}")
 
     # update each epiweek
     for epiweek in flu.range_epiweeks(first_week, last_week, inclusive=True):
@@ -180,7 +180,7 @@ def extract(first_week=None, last_week=None, test_mode=False):
                 store_result(cur, epiweek, state, *nums, total)
                 print(f" {epiweek}-{state}: {' '.join(str(n) for n in nums)} ({total})")
             except Exception as ex:
-                print(" %d-%s: failed" % (epiweek, state), ex)
+                print(f" {int(epiweek)}-{state}: failed", ex)
                 # raise ex
             sys.stdout.flush()
 

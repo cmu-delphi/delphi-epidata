@@ -84,7 +84,7 @@ def safe_int(i):
 def get_rows(cnx, table="kcdc_ili"):
     # Count and return the number of rows in the `kcdc_ili` table.
     select = cnx.cursor()
-    select.execute("SELECT count(1) num FROM %s" % table)
+    select.execute(f"SELECT count(1) num FROM {table}")
     for (num,) in select:
         pass
     select.close()
@@ -126,7 +126,7 @@ def update_from_data(ews, ilis, date, issue, test_mode=False):
     u, p = secrets.db.epi
     cnx = mysql.connector.connect(user=u, password=p, database="epidata")
     rows1 = get_rows(cnx)
-    print("rows before: %d" % (rows1))
+    print(f"rows before: {int(rows1)}")
     insert = cnx.cursor()
 
     sql = """
@@ -160,7 +160,7 @@ def update_from_data(ews, ilis, date, issue, test_mode=False):
     else:
         cnx.commit()
         rows2 = get_rows(cnx)
-    print("rows after: %d (added %d)" % (rows2, rows2 - rows1))
+    print(f"rows after: {int(rows2)} (added {int(rows2 - rows1)})")
     cnx.close()
 
 
@@ -173,7 +173,7 @@ def main():
     args = parser.parse_args()
 
     date = datetime.datetime.now().strftime("%Y-%m-%d")
-    print("assuming release date is today, %s" % date)
+    print(f"assuming release date is today, {date}")
     issue = EpiDate.today().get_ew()
 
     ensure_tables_exist()

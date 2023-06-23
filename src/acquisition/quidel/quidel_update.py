@@ -79,7 +79,7 @@ def update(locations, first=None, last=None, force_update=False, load_email=True
         ew0 = 200401 if ew0 is None else flu.add_epiweeks(ew0, -4)
     ew0 = ew0 if first is None else first
     ew1 = ew1 if last is None else last
-    print("Checking epiweeks between %d and %d..." % (ew0, ew1))
+    print(f"Checking epiweeks between {int(ew0)} and {int(ew1)}...")
 
     # keep track of how many rows were added
     rows_before = get_num_rows()
@@ -109,11 +109,11 @@ def update(locations, first=None, last=None, force_update=False, load_email=True
             if v == 0:
                 num_missing += 1
         if num_missing > 0:
-            print(" [%s] missing %d/%d value(s)" % (location, num_missing, len(ews)))
+            print(f" [{location}] missing {int(num_missing)}/{len(ews)} value(s)")
 
     # keep track of how many rows were added
     rows_after = get_num_rows()
-    print("Inserted %d/%d row(s)" % (rows_after - rows_before, total_rows))
+    print(f"Inserted {int(rows_after - rows_before)}/{int(total_rows)} row(s)")
 
     # cleanup
     cur.close()

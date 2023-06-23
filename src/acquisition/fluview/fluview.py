@@ -108,7 +108,7 @@ def get_issue_and_locations(data):
     location_ids[Key.TierType.hhs] = sorted(set(location_ids[Key.TierType.hhs]))
     num = len(location_ids[Key.TierType.hhs])
     if num != 10:
-        raise Exception("expected 10 hhs regions, found %d" % num)
+        raise Exception(f"expected 10 hhs regions, found {int(num)}")
 
     # add location ids for census divisions
     for row in data[Key.TierListEntry.cen]:
@@ -116,7 +116,7 @@ def get_issue_and_locations(data):
     location_ids[Key.TierType.cen] = sorted(set(location_ids[Key.TierType.cen]))
     num = len(location_ids[Key.TierType.cen])
     if num != 9:
-        raise Exception("expected 9 census divisions, found %d" % num)
+        raise Exception(f"expected 9 census divisions, found {int(num)}")
 
     # add location ids for states
     for row in data[Key.TierListEntry.sta]:
@@ -124,7 +124,7 @@ def get_issue_and_locations(data):
     location_ids[Key.TierType.sta] = sorted(set(location_ids[Key.TierType.sta]))
     num = len(location_ids[Key.TierType.sta])
     if num != 57:
-        raise Exception("expected 57 states/territories/cities, found %d" % num)
+        raise Exception(f"expected 57 states/territories/cities, found {int(num)}")
 
     # return a useful subset of the metadata
     # (latest epiweek, latest season, tier ids, location ids)
@@ -181,7 +181,7 @@ def save_latest(path=None):
     data = fetch_metadata(sess)
     info = get_issue_and_locations(data)
     issue = info["epiweek"]
-    print("current issue: %d" % issue)
+    print(f"current issue: {int(issue)}")
 
     # establish timing
     dt = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -200,7 +200,7 @@ def save_latest(path=None):
         ("cen", Key.TierType.cen),
         ("sta", Key.TierType.sta),
     ):
-        name = "ilinet_%s_%d_%s.zip" % (delphi_name, issue, dt)
+        name = f"ilinet_{delphi_name}_{int(issue)}_{dt}.zip"
         if path is None:
             filename = name
         else:
@@ -209,12 +209,12 @@ def save_latest(path=None):
         locations = info["location_ids"][cdc_name]
 
         # download and show timing information
-        print("downloading %s" % delphi_name)
+        print(f"downloading {delphi_name}")
         t0 = time.time()
         size = download_data(tier_id, locations, seasons, filename)
         t1 = time.time()
 
-        print(" saved %s (%d bytes in %.1f seconds)" % (filename, size, t1 - t0))
+        print(f" saved {filename} ({int(size)} bytes in {t1 - t0:.1f} seconds)")
         files.append(filename)
 
     # return the current issue and the list of downloaded files

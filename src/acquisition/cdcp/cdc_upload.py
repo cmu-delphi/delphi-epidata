@@ -232,7 +232,7 @@ def upload(test_mode):
                 if handler is not None:
                     with zf.open(name) as temp:
                         count = handler(csv.reader(io.StringIO(str(temp.read(), "utf-8"))))
-                    print(prefix, " %d rows" % count)
+                    print(prefix, f" {int(count)} rows")
             else:
                 print(prefix, " (ignored)")
 

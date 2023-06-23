@@ -23,15 +23,15 @@ def wait_for(browser, css_selector, delay=10):
         WebDriverWait(browser, delay).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, css_selector))
         )
-        print("Success Loading %s" % (css_selector))
+        print(f"Success Loading {css_selector}")
     except TimeoutException:
-        print("Loading %s took too much time!" % (css_selector))
+        print(f"Loading {css_selector} took too much time!")
 
 
 def find_and_click(browser, element):
     element.location_once_scrolled_into_view
     browser.switch_to.default_content()
-    browser.execute_script("window.scrollBy(0,-%d)" % headerheight)
+    browser.execute_script(f"window.scrollBy(0,-{int(headerheight)})")
     browser.switch_to.frame(browser.find_element_by_tag_name("iframe"))
     browser.switch_to.frame(browser.find_element_by_tag_name("iframe"))
     element.click()
@@ -130,9 +130,9 @@ def get_paho_data(offset=0, dir="downloads"):
         # print gp.is_displayed()
         try:
             WebDriverWait(browser, 10).until(EC.staleness_of(gp))
-            print("Loaded next week % d" % (53 - offset))
+            print(f"Loaded next week {int(53 - offset)}")
         except TimeoutException:
-            print("Loading next week %d took too much time!" % (53 - offset))
+            print(f"Loading next week {int(53 - offset)} took too much time!")
         gp = browser.find_element_by_css_selector("div.wcGlassPane")
         # print gp.is_enabled()
         # print gp.is_selected()
@@ -147,7 +147,7 @@ def get_paho_data(offset=0, dir="downloads"):
     for i in range(54 - offset):
         # If something goes wrong for whatever reason, try from the beginning
         try:
-            print("Loading week %d" % (53 - i))
+            print(f"Loading week {int(53 - i)}")
             # (Re-)load URL
             browser.switch_to.window(tab2)
             browser.get(dataurl)
@@ -182,7 +182,7 @@ def get_paho_data(offset=0, dir="downloads"):
             find_and_click(browser, x)
             curr_offset += 1
         except Exception as e:
-            print("Got exception %s\nTrying again from week %d" % (e, 53 - offset))
+            print(f"Got exception {e}\nTrying again from week {int(53 - offset)}")
             browser.quit()
             get_paho_data(offset=curr_offset)
     browser.quit()
