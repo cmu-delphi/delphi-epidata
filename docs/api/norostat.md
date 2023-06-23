@@ -13,6 +13,8 @@ General topics not specific to any particular endpoint are discussed in the
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
 
+**NOTE**: Delphi stopped stopped acquiring data from this data source in November 2020.
+
 ## NoroSTAT Data
 
 ... <!-- TODO -->
