@@ -1,11 +1,12 @@
 from delphi.epidata.server.endpoints.covidcast_utils.dashboard_signals import DashboardSignals
-from flask import Response, request, make_response, jsonify
+from flask import Response, request
 from flask_limiter import Limiter, HEADERS
 from redis import Redis
 from werkzeug.exceptions import Unauthorized, TooManyRequests
 
 from ._common import app, get_real_ip_addr
-from ._config import RATE_LIMIT, RATELIMIT_STORAGE_URL, REDIS_HOST, REDIS_PASSWORD
+from ._db import redis_conn, redis_conn_pool
+from ._config import RATE_LIMIT, RATELIMIT_STORAGE_URL
 from ._exceptions import ValidationFailedException
 from ._params import extract_dates, extract_integers, extract_strings
 from ._security import _is_public_route, current_user, require_api_key, show_no_api_key_warning, resolve_auth_token, ERROR_MSG_RATE_LIMIT, ERROR_MSG_MULTIPLES
@@ -91,6 +92,7 @@ limiter = Limiter(
     _resolve_tracking_key,
     app=app,
     storage_uri=RATELIMIT_STORAGE_URL,
+    storage_options={"connection_pool": redis_conn_pool},
     request_identifier=lambda: "EpidataLimiter",
     headers_enabled=True,
     header_name_mapping={
@@ -113,7 +115,7 @@ def requests_left():
     allowed_count, period = RATE_LIMIT.split("/")
     try:
         remaining_count = int(allowed_count) - int(
-            r.get(f"LIMITER/{_resolve_tracking_key()}/EpidataLimiter/{allowed_count}/1/{period}")
+            redis_conn.get(f"LIMITER/{_resolve_tracking_key()}/EpidataLimiter/{allowed_count}/1/{period}")
         )
     except TypeError:
         return 1
