@@ -138,15 +138,6 @@
       "add-header-comment": true
     },
 
-    "// acquisition - norostat",
-    {
-      "type": "move",
-      "src": "src/acquisition/norostat/",
-      "dst": "[[package]]/acquisition/norostat/",
-      "match": "^.*\\.(py)$",
-      "add-header-comment": true
-    },
-
     "// acquisition - paho",
     {
       "type": "move",
