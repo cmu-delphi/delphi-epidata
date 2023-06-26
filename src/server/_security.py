@@ -16,7 +16,7 @@ from ._config import (
     TEMPORARY_API_KEY,
     URL_PREFIX,
 )
-from .admin.models import User, UserRole
+from .admin.models import User
 
 API_KEY_HARD_WARNING = API_KEY_REQUIRED_STARTING_AT - timedelta(days=14)
 API_KEY_SOFT_WARNING = API_KEY_HARD_WARNING - timedelta(days=14)
@@ -89,10 +89,6 @@ def _get_current_user():
 
 
 current_user: User = cast(User, LocalProxy(_get_current_user))
-
-
-def register_user_role(role_name: str) -> None:
-    UserRole.create_role(role_name)
 
 
 def _is_public_route() -> bool:
