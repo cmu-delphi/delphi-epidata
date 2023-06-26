@@ -130,7 +130,7 @@ class CovidHospSomething:
 
 
   def get_ds_aggregate_key_cols(self, ds_name):
-    return self.dataset(ds_name).get('AGGREGATE_KEY_COLS', None)
+    return self.dataset(ds_name).get('AGGREGATE_KEY_COLS', [])
 
 
   def get_ds_dataset_id(self, ds_name):

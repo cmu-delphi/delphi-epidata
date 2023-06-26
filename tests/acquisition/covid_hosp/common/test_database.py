@@ -24,9 +24,9 @@ class DatabaseTests(unittest.TestCase):
                            table_name=None,
                            dataset_id=None,
                            metadata_id=None,
-                           csv_cols=None,
-                           key_cols=None,
-                           aggregate_cols=None):
+                           csv_cols=[],
+                           key_cols=[],
+                           aggregate_cols=[]):
     chs = CovidHospSomething()
     chs.get_ds_table_name = MagicMock(return_value = table_name)
     chs.get_ds_dataset_id = MagicMock(return_value = dataset_id)
@@ -44,7 +44,7 @@ class DatabaseTests(unittest.TestCase):
     with patch.object(CovidHospSomething, 'get_ds_table_name', return_value=None), \
         patch.object(CovidHospSomething, 'get_ds_dataset_id', return_value=None), \
         patch.object(CovidHospSomething, 'get_ds_metadata_id', return_value=None), \
-        patch.object(CovidHospSomething, 'get_ds_ordered_csv_cols', return_value=None), \
+        patch.object(CovidHospSomething, 'get_ds_ordered_csv_cols', return_value=[]), \
         patch.object(CovidHospSomething, 'get_ds_key_cols', return_value=None), \
         patch.object(CovidHospSomething, 'get_ds_aggregate_key_cols', return_value=None), \
         TestDatabase.connect(mysql_connector_impl=mock_connector) as database:
@@ -63,7 +63,7 @@ class DatabaseTests(unittest.TestCase):
       with patch.object(CovidHospSomething, 'get_ds_table_name', return_value=None), \
         patch.object(CovidHospSomething, 'get_ds_dataset_id', return_value=None), \
         patch.object(CovidHospSomething, 'get_ds_metadata_id', return_value=None), \
-        patch.object(CovidHospSomething, 'get_ds_ordered_csv_cols', return_value=None), \
+        patch.object(CovidHospSomething, 'get_ds_ordered_csv_cols', return_value=[]), \
         patch.object(CovidHospSomething, 'get_ds_key_cols', return_value=None), \
         patch.object(CovidHospSomething, 'get_ds_aggregate_key_cols', return_value=None), \
         TestDatabase.connect(mysql_connector_impl=mock_connector) as database:
