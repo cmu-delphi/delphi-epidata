@@ -3,8 +3,7 @@
 # standard library
 import math
 import unittest
-from unittest.mock import MagicMock
-from unittest.mock import sentinel
+from unittest.mock import MagicMock, patch, sentinel
 
 # third party
 import pandas as pd
@@ -16,21 +15,39 @@ from delphi.epidata.common.covid_hosp.covid_hosp_schema_io import Columndef, Cov
 __test_target__ = 'delphi.epidata.acquisition.covid_hosp.common.database'
 
 class TestDatabase(Database):
-  DATASET_NAME = None
-
-
-class TestDatabaseYAML(Database):
   DATASET_NAME = 'mock_dataset'
 
 
 class DatabaseTests(unittest.TestCase):
+
+  def create_mock_database(self, mock_connection,
+                           table_name=None,
+                           dataset_id=None,
+                           metadata_id=None,
+                           csv_cols=None,
+                           key_cols=None,
+                           aggregate_cols=None):
+    chs = CovidHospSomething()
+    chs.get_ds_table_name = MagicMock(return_value = table_name)
+    chs.get_ds_dataset_id = MagicMock(return_value = dataset_id)
+    chs.get_ds_metadata_id = MagicMock(return_value = metadata_id)
+    chs.get_ds_ordered_csv_cols = MagicMock(return_value = csv_cols)
+    chs.get_ds_key_cols = MagicMock(return_value = key_cols)
+    chs.get_ds_aggregate_key_cols = MagicMock(return_value = aggregate_cols)
+    return TestDatabase(mock_connection, chs=chs)
 
   def test_commit_and_close_on_success(self):
     """Commit and close the connection after success."""
 
     mock_connector = MagicMock()
 
-    with TestDatabase.connect(mysql_connector_impl=mock_connector) as database:
+    with patch.object(CovidHospSomething, 'get_ds_table_name', return_value=None), \
+        patch.object(CovidHospSomething, 'get_ds_dataset_id', return_value=None), \
+        patch.object(CovidHospSomething, 'get_ds_metadata_id', return_value=None), \
+        patch.object(CovidHospSomething, 'get_ds_ordered_csv_cols', return_value=None), \
+        patch.object(CovidHospSomething, 'get_ds_key_cols', return_value=None), \
+        patch.object(CovidHospSomething, 'get_ds_aggregate_key_cols', return_value=None), \
+        TestDatabase.connect(mysql_connector_impl=mock_connector) as database:
       connection = database.connection
 
     mock_connector.connect.assert_called_once()
@@ -43,7 +60,13 @@ class DatabaseTests(unittest.TestCase):
     mock_connector = MagicMock()
 
     try:
-      with TestDatabase.connect(mysql_connector_impl=mock_connector) as database:
+      with patch.object(CovidHospSomething, 'get_ds_table_name', return_value=None), \
+        patch.object(CovidHospSomething, 'get_ds_dataset_id', return_value=None), \
+        patch.object(CovidHospSomething, 'get_ds_metadata_id', return_value=None), \
+        patch.object(CovidHospSomething, 'get_ds_ordered_csv_cols', return_value=None), \
+        patch.object(CovidHospSomething, 'get_ds_key_cols', return_value=None), \
+        patch.object(CovidHospSomething, 'get_ds_aggregate_key_cols', return_value=None), \
+        TestDatabase.connect(mysql_connector_impl=mock_connector) as database:
         connection = database.connection
         raise Exception('intentional test of exception handling')
     except Exception:
@@ -58,7 +81,7 @@ class DatabaseTests(unittest.TestCase):
 
     mock_connection = MagicMock()
     mock_cursor = mock_connection.cursor()
-    database = TestDatabase(mock_connection)
+    database = self.create_mock_database(mock_connection)
 
     try:
       with database.new_cursor() as cursor:
@@ -77,13 +100,7 @@ class DatabaseTests(unittest.TestCase):
     mock_connection = MagicMock()
     mock_cursor = mock_connection.cursor()
 
-    chs = CovidHospSomething()
-    chs.get_ds_table_name = MagicMock(return_value = sentinel.table_name)
-    chs.get_ds_dataset_id = MagicMock(return_value = sentinel.hhs_dataset_id)
-    chs.get_ds_ordered_csv_cols = MagicMock(return_value = None)
-    chs.get_ds_key_cols = MagicMock(return_value = None)
-    chs.get_ds_aggregate_key_cols = MagicMock(return_value = None)
-    database = TestDatabaseYAML(mock_connection, chs=chs)
+    database = self.create_mock_database(mock_connection, table_name = sentinel.table_name, dataset_id=sentinel.hhs_dataset_id)
 
     with self.subTest(name='new revision'):
       mock_cursor.__iter__.return_value = [(0,)]
@@ -114,13 +131,7 @@ class DatabaseTests(unittest.TestCase):
     mock_connection = MagicMock()
     mock_cursor = mock_connection.cursor()
 
-    chs = CovidHospSomething()
-    chs.get_ds_table_name = MagicMock(return_value = sentinel.table_name)
-    chs.get_ds_dataset_id = MagicMock(return_value = sentinel.hhs_dataset_id)
-    chs.get_ds_ordered_csv_cols = MagicMock(return_value = None)
-    chs.get_ds_key_cols = MagicMock(return_value = None)
-    chs.get_ds_aggregate_key_cols = MagicMock(return_value = None)
-    database = TestDatabaseYAML(mock_connection, chs=chs)
+    database = self.create_mock_database(mock_connection, table_name = sentinel.table_name, dataset_id = sentinel.hhs_dataset_id)
 
     result = database.insert_metadata(
         sentinel.publication_date,
@@ -153,13 +164,7 @@ class DatabaseTests(unittest.TestCase):
     mock_connection = MagicMock()
     mock_cursor = mock_connection.cursor()
 
-    chs = CovidHospSomething()
-    chs.get_ds_table_name = MagicMock(return_value = table_name)
-    chs.get_ds_dataset_id = MagicMock(return_value = None)
-    chs.get_ds_ordered_csv_cols = MagicMock(return_value = columns_and_types)
-    chs.get_ds_key_cols = MagicMock(return_value = None)
-    chs.get_ds_aggregate_key_cols = MagicMock(return_value = None)
-    database = TestDatabaseYAML(mock_connection, chs=chs)
+    database = self.create_mock_database(mock_connection, table_name = table_name, csv_cols=columns_and_types)
 
     dataset = pd.DataFrame.from_dict({
       'str_col': ['a', 'b', 'c', math.nan, 'e', 'f'],

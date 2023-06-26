@@ -184,9 +184,9 @@ class Utils:
     """
     logger = database.logger()
     
-    metadata = network.fetch_metadata(database.METADATA_ID, logger=logger)
     datasets = []
     with database.connect() as db:
+      metadata = network.fetch_metadata(db.metadata_id, logger=logger)
       max_issue = db.get_max_issue(logger=logger)
 
     older_than = datetime.datetime.today().date() if newer_than is None else older_than

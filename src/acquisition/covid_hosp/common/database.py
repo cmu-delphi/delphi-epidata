@@ -16,8 +16,6 @@ from delphi.epidata.common.covid_hosp.covid_hosp_schema_io import CovidHospSomet
 class Database:
 
   DATASET_NAME = None
-  # Defined outside the constructor as this does not require a DB connection
-  METADATA_ID = CovidHospSomething().get_metadata_id(DATASET_NAME) if DATASET_NAME is not None else None
 
   def __init__(self,
                connection,
@@ -39,18 +37,21 @@ class Database:
 
     self.connection = connection
 
-    if self.DATASET_NAME is not None: # populate from YAML file
-      self.table_name = chs.get_ds_table_name(self.DATASET_NAME)
-      self.hhs_dataset_id = chs.get_ds_dataset_id(self.DATASET_NAME)
-      self.publication_col_name = "issue" if self.table_name == 'covid_hosp_state_timeseries' or self.table_name == "covid_hosp_state_daily" else \
-        'publication_date'
-      self.columns_and_types = {
-        c.csv_name: c
-        for c in (chs.get_ds_ordered_csv_cols(self.DATASET_NAME) if chs.get_ds_ordered_csv_cols(self.DATASET_NAME) is not None else [])
-      }
-      self.key_columns = chs.get_ds_key_cols(self.DATASET_NAME) if chs.get_ds_key_cols(self.DATASET_NAME) is not None else []
-      self.aggregate_key_columns = chs.get_ds_aggregate_key_cols(self.DATASET_NAME) \
-        if chs.get_ds_aggregate_key_cols(self.DATASET_NAME) is not None else []
+    if self.DATASET_NAME is None:
+      raise NameError('no dataset given!') # Must be defined by subclasses
+
+    self.table_name = chs.get_ds_table_name(self.DATASET_NAME)
+    self.hhs_dataset_id = chs.get_ds_dataset_id(self.DATASET_NAME)
+    self.metadata_id = chs.get_ds_metadata_id(self.DATASET_NAME)
+    self.publication_col_name = "issue" if self.table_name == 'covid_hosp_state_timeseries' or self.table_name == "covid_hosp_state_daily" else \
+      'publication_date'
+    self.columns_and_types = {
+      c.csv_name: c
+      for c in (chs.get_ds_ordered_csv_cols(self.DATASET_NAME) if chs.get_ds_ordered_csv_cols(self.DATASET_NAME) is not None else [])
+    }
+    self.key_columns = chs.get_ds_key_cols(self.DATASET_NAME) if chs.get_ds_key_cols(self.DATASET_NAME) is not None else []
+    self.aggregate_key_columns = chs.get_ds_aggregate_key_cols(self.DATASET_NAME) \
+      if chs.get_ds_aggregate_key_cols(self.DATASET_NAME) is not None else []
 
   @classmethod
   def logger(database_class):
