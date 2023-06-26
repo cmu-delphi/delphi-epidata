@@ -121,9 +121,8 @@ def require_role(required_role: str):
 
 
 def update_key_last_time_used(user):
-    # TODO: reenable this once cc<-->aws latency issues are sorted out, or maybe do this call asynchronously
-    return
     if user:
         # update last usage for this user's api key to "now()"
+        # TODO: consider making this call asynchronously
         r = redis.Redis(host=REDIS_HOST, password=REDIS_PASSWORD)
         r.set(f"LAST_USED/{user.api_key}", datetime.strftime(datetime.now(), "%Y-%m-%d"))
