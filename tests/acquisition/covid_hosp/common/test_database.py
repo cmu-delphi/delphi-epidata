@@ -24,6 +24,7 @@ class DatabaseTests(unittest.TestCase):
                            table_name=None,
                            dataset_id=None,
                            metadata_id=None,
+                           issue_col=None,
                            csv_cols=[],
                            key_cols=[],
                            aggregate_cols=[]):
@@ -31,6 +32,7 @@ class DatabaseTests(unittest.TestCase):
     chs.get_ds_table_name = MagicMock(return_value = table_name)
     chs.get_ds_dataset_id = MagicMock(return_value = dataset_id)
     chs.get_ds_metadata_id = MagicMock(return_value = metadata_id)
+    chs.get_ds_issue_column = MagicMock(return_value = issue_col)
     chs.get_ds_ordered_csv_cols = MagicMock(return_value = csv_cols)
     chs.get_ds_key_cols = MagicMock(return_value = key_cols)
     chs.get_ds_aggregate_key_cols = MagicMock(return_value = aggregate_cols)
@@ -44,6 +46,7 @@ class DatabaseTests(unittest.TestCase):
     with patch.object(CovidHospSomething, 'get_ds_table_name', return_value=None), \
         patch.object(CovidHospSomething, 'get_ds_dataset_id', return_value=None), \
         patch.object(CovidHospSomething, 'get_ds_metadata_id', return_value=None), \
+        patch.object(CovidHospSomething, 'get_ds_issue_column', return_value=None), \
         patch.object(CovidHospSomething, 'get_ds_ordered_csv_cols', return_value=[]), \
         patch.object(CovidHospSomething, 'get_ds_key_cols', return_value=None), \
         patch.object(CovidHospSomething, 'get_ds_aggregate_key_cols', return_value=None), \
@@ -63,6 +66,7 @@ class DatabaseTests(unittest.TestCase):
       with patch.object(CovidHospSomething, 'get_ds_table_name', return_value=None), \
         patch.object(CovidHospSomething, 'get_ds_dataset_id', return_value=None), \
         patch.object(CovidHospSomething, 'get_ds_metadata_id', return_value=None), \
+        patch.object(CovidHospSomething, 'get_ds_issue_column', return_value=None), \
         patch.object(CovidHospSomething, 'get_ds_ordered_csv_cols', return_value=[]), \
         patch.object(CovidHospSomething, 'get_ds_key_cols', return_value=None), \
         patch.object(CovidHospSomething, 'get_ds_aggregate_key_cols', return_value=None), \
@@ -164,7 +168,7 @@ class DatabaseTests(unittest.TestCase):
     mock_connection = MagicMock()
     mock_cursor = mock_connection.cursor()
 
-    database = self.create_mock_database(mock_connection, table_name = table_name, csv_cols=columns_and_types)
+    database = self.create_mock_database(mock_connection, table_name = table_name, csv_cols=columns_and_types, issue_col='issue')
 
     dataset = pd.DataFrame.from_dict({
       'str_col': ['a', 'b', 'c', math.nan, 'e', 'f'],
@@ -179,7 +183,7 @@ class DatabaseTests(unittest.TestCase):
 
     actual_sql = mock_cursor.executemany.call_args[0][0]
     self.assertIn(
-      'INSERT INTO `test_table` (`id`, `publication_date`, `sql_str_col`, `sql_int_col`, `sql_float_col`)',
+      'INSERT INTO `test_table` (`id`, `issue`, `sql_str_col`, `sql_int_col`, `sql_float_col`)',
       actual_sql)
 
     expected_values = [

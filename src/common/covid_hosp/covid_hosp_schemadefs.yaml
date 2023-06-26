@@ -4,6 +4,7 @@ covid_hosp_facility:
   DATASET_ID: anag-cw7u
   METADATA_ID: j4ip-wfsv
   KEY_COLS: [hospital_pk, collection_week]
+  ISSUE_COLUMN: publication_date
   UNIQUE_INDEXES:
     hospital_pk: [hospital_pk, collection_week, publication_date]
   INDEXES:
@@ -133,6 +134,7 @@ state_timeseries:
   DATASET_ID: g62h-syeh
   METADATA_ID: qqte-vkut
   KEY_COLS: [state, date]
+  ISSUE_COLUMN: issue
   UNIQUE_INDEXES:
     issue_by_state_and_date: [state, date, issue]
   INDEXES:
@@ -262,6 +264,7 @@ state_daily:
   DATASET_ID: 6xf2-c3ie
   METADATA_ID: 4cnb-m4rz
   KEY_COLS: [state, reporting_cutoff_start]
+  ISSUE_COLUMN: issue
   UNIQUE_INDEXES:
     issue_by_state_and_date: [state, date, issue]
   INDEXES:

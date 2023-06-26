@@ -43,8 +43,7 @@ class Database:
     self.table_name = chs.get_ds_table_name(self.DATASET_NAME)
     self.hhs_dataset_id = chs.get_ds_dataset_id(self.DATASET_NAME)
     self.metadata_id = chs.get_ds_metadata_id(self.DATASET_NAME)
-    self.publication_col_name = "issue" if self.table_name == 'covid_hosp_state_timeseries' or self.table_name == "covid_hosp_state_daily" else \
-      'publication_date'
+    self.publication_col_name = chs.get_ds_issue_column(self.DATASET_NAME)
     self.columns_and_types = {c.csv_name: c for c in chs.get_ds_ordered_csv_cols(self.DATASET_NAME)}
     self.key_columns = chs.get_ds_key_cols(self.DATASET_NAME)
     self.aggregate_key_columns = chs.get_ds_aggregate_key_cols(self.DATASET_NAME)

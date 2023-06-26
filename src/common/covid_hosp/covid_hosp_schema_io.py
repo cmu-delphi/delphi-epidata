@@ -141,6 +141,10 @@ class CovidHospSomething:
     return self.dataset(ds_name)['METADATA_ID']
 
 
+  def get_ds_issue_column(self, ds_name):
+    return self.dataset(ds_name).get('ISSUE_COLUMN', 'issue')
+
+
   def get_ds_ordered_csv_cols(self, ds_name):
     return [
       Columndef(
