@@ -66,7 +66,7 @@ from delphi.utils.epidate import EpiDate
 
 def ensure_tables_exist():
     (u, p) = secrets.db.epi
-    cnx = mysql.connector.connect(user=u, password=p, database="epidata")
+    cnx = mysql.connector.connect(user=u, password=p, database="epidata", host=secrets.db.host)
     try:
         cursor = cnx.cursor()
         cursor.execute(
@@ -168,8 +168,8 @@ def update_from_file(issue, date, filename, test_mode=False):
     # Current code ignores PAHO-given issue, is based on argument 'issue'
 
     # database connection
-    u, p = secrets.db.epi
-    cnx = mysql.connector.connect(user=u, password=p, database="epidata")
+
+    cnx = mysql.connector.connect(user=u, password=p, database="epidata", host=secrets.db.host)
     rows1 = get_rows(cnx, "paho_dengue")
     print(f"rows before: {int(rows1)}")
     insert = cnx.cursor()
@@ -226,7 +226,7 @@ def update_from_file(issue, date, filename, test_mode=False):
         rows2 = rows1
     else:
         cnx.commit()
-        rows2 = get_rows(cnx)
+        rows2 = get_rows(cnx, "paho_dengue")
     print(f"rows after: {int(rows2)} (added {int(rows2 - rows1)})")
     cnx.close()
 
