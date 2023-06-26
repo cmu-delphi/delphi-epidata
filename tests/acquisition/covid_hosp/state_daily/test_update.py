@@ -11,7 +11,6 @@ import pandas as pd
 # first party
 from delphi.epidata.acquisition.covid_hosp.common.test_utils import UnitTestUtils
 from delphi.epidata.acquisition.covid_hosp.common.utils import Utils
-from delphi.epidata.acquisition.covid_hosp.state_daily.update import Update
 from delphi.epidata.acquisition.covid_hosp.state_daily.database import Database
 
 # py3tester coverage target
@@ -25,18 +24,6 @@ class UpdateTests(unittest.TestCase):
 
     # configure test data
     self.test_utils = UnitTestUtils(__file__)
-
-  def test_run(self):
-    """Acquire a new dataset."""
-
-    with patch.object(Utils, 'update_dataset') as mock_update_dataset:
-      mock_update_dataset.return_value = sentinel.result
-
-      result = Update.run()
-
-      self.assertEqual(result, sentinel.result)
-      mock_update_dataset.assert_called_once()
-
 
   def test_merge(self):
     """Merging the set of updates in each batch is pretty tricky"""

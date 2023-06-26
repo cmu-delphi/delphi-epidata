@@ -24,24 +24,6 @@ class UtilsTests(unittest.TestCase):
     # configure test data
     self.test_utils = UnitTestUtils(__file__)
 
-  def test_launch_if_main_when_main(self):
-    """Launch the main entry point."""
-
-    mock_entry = MagicMock()
-
-    Utils.launch_if_main(mock_entry, '__main__')
-
-    mock_entry.assert_called_once()
-
-  def test_launch_if_main_when_not_main(self):
-    """Don't launch the main entry point."""
-
-    mock_entry = MagicMock()
-
-    Utils.launch_if_main(mock_entry, '__test__')
-
-    mock_entry.assert_not_called()
-
   def test_int_from_date(self):
     """Convert a YYY-MM-DD date to a YYYYMMDD int."""
 

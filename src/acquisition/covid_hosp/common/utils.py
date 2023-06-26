@@ -6,6 +6,7 @@ import re
 
 import pandas as pd
 
+from delphi.epidata.acquisition.covid_hosp.common.network import Network
 
 class CovidHospException(Exception):
   """Exception raised exclusively by `covid_hosp` utilities."""
@@ -16,12 +17,6 @@ class Utils:
   # regex to extract issue date from revision field
   # example revision: "Mon, 11/16/2020 - 00:55"
   REVISION_PATTERN = re.compile(r'^.*\s(\d+)/(\d+)/(\d+)\s.*$')
-
-  def launch_if_main(entrypoint, runtime_name):
-    """Call the given function in the main entry point, otherwise no-op."""
-
-    if runtime_name == '__main__':
-      entrypoint()
 
   def int_from_date(date):
     """Convert a YYYY/MM/DD date from a string to a YYYYMMDD int.
@@ -168,7 +163,7 @@ class Utils:
     return result.reset_index(level=key_cols)
 
   @staticmethod
-  def update_dataset(database, network, newer_than=None, older_than=None):
+  def update_dataset(database, network=Network, newer_than=None, older_than=None):
     """Acquire the most recent dataset, unless it was previously acquired.
 
     Parameters

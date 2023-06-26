@@ -13,7 +13,6 @@ import pandas as pd
 from delphi.epidata.acquisition.covid_hosp.state_daily.database import Database
 from delphi.epidata.acquisition.covid_hosp.common.test_utils import UnitTestUtils
 from delphi.epidata.client.delphi_epidata import Epidata
-from delphi.epidata.acquisition.covid_hosp.state_daily.update import Update
 from delphi.epidata.acquisition.covid_hosp.common.network import Network
 from delphi.epidata.acquisition.covid_hosp.common.utils import Utils
 from delphi.epidata.common.covid_hosp.covid_hosp_schema_io import CovidHospSomething
@@ -63,7 +62,7 @@ class AcquisitionTests(unittest.TestCase):
                                                              self.test_utils.load_sample_dataset("dataset0.csv"), # first dataset for 3/15
                                                              self.test_utils.load_sample_dataset()] # second dataset for 3/15
                       ) as mock_fetch:
-      acquired = Update.run()
+      acquired = Utils.update_dataset(Database)
       self.assertTrue(acquired)
       self.assertEqual(mock_fetch_meta.call_count, 1)
 
@@ -94,7 +93,7 @@ class AcquisitionTests(unittest.TestCase):
     with self.subTest(name='second acquisition'), \
          patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()) as mock_fetch_meta, \
          patch.object(Network, 'fetch_dataset', return_value=self.test_utils.load_sample_dataset()) as mock_fetch:
-      acquired = Update.run()
+      acquired = Utils.update_dataset(Database)
       self.assertFalse(acquired)
 
     # make sure the data still exists
