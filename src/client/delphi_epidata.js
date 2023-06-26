@@ -124,19 +124,6 @@
         return _request('version', {}).then((r) => Object.assign(r, {client_version}));
       },
       /**
-       * Fetch AFHSB data (point data, no min/max)
-       */
-      afhsb: (auth, locations, epiweeks, flu_types) => {
-        requireAll({ auth, locations, epiweeks, flu_types });
-        const params = {
-          auth,
-          locations: _list(locations),
-          epiweeks: _list(epiweeks),
-          flu_types: _list(flu_types),
-        };
-        return _request("afhsb", params);
-      },
-      /**
        * Fetch CDC page hits
        */
       cdc: (auth, epiweeks, locations) => {
@@ -386,16 +373,6 @@
           lag,
         };
         return _request("kcdc_ili", params);
-      },
-      /**
-       * Fetch AFHSB metadata
-       */
-      meta_afhsb: (auth) => {
-        requireAll({ auth });
-        const params = {
-          auth,
-        };
-        return _request("meta_afhsb", params);
       },
       /**
        * Fetch NoroSTAT metadata

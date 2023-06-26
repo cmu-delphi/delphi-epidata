@@ -1,5 +1,4 @@
 from . import (
-    afhsb,
     cdc,
     covid_hosp_facility_lookup,
     covid_hosp_facility,
@@ -19,7 +18,6 @@ from . import (
     ght,
     ilinet,
     kcdc_ili,
-    meta_afhsb,
     meta_norostat,
     meta,
     nidss_dengue,
@@ -36,7 +34,6 @@ from . import (
 )
 
 endpoints = [
-    afhsb,
     cdc,
     covid_hosp_facility_lookup,
     covid_hosp_facility,
@@ -56,7 +53,6 @@ endpoints = [
     ght,
     ilinet,
     kcdc_ili,
-    meta_afhsb,
     meta_norostat,
     meta,
     nidss_dengue,

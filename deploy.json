@@ -165,15 +165,6 @@
       "add-header-comment": true
     },
 
-    "// acquisition - afhsb",
-    {
-      "type": "move",
-      "src": "src/acquisition/afhsb/",
-      "dst": "[[package]]/acquisition/afhsb/",
-      "match": "^.*\\.(py)$",
-      "add-header-comment": true
-    },
-
     "// acquisition - covidcast",
     {
       "type": "move",
