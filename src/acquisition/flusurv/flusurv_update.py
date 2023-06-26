@@ -160,12 +160,19 @@ def update(issue, location_name, test_mode=False):
 def main():
     # args and usage
     parser = argparse.ArgumentParser()
+    # fmt: off
     parser.add_argument(
-        "location", help='location for which data should be scraped (e.g. "CA" or "all")'
+        "location",
+        help='location for which data should be scraped (e.g. "CA" or "all")'
     )
     parser.add_argument(
-        "--test", "-t", default=False, action="store_true", help="do not commit database changes"
+        "--test",
+        "-t",
+        default=False,
+        action="store_true",
+        help="do not commit database changes"
     )
+    # fmt: on
     args = parser.parse_args()
 
     # scrape current issue from the main page

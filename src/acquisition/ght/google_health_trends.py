@@ -116,19 +116,39 @@ def main():
     parser = argparse.ArgumentParser()
     # fmt: off
     parser.add_argument(
-        "apikey", action="store", type=str, default=None, help="API key"
+        "apikey",
+        action="store",
+        type=str,
+        default=None,
+        help="API key"
     )
     parser.add_argument(
-        "startweek", action="store", type=int, default=None, help="first week (ex: 201440)"
+        "startweek",
+        action="store",
+        type=int,
+        default=None,
+        help="first week (ex: 201440)"
     )
     parser.add_argument(
-        "endweek", action="store", type=int, default=None, help="last week (ex: 201520)"
+        "endweek",
+        action="store",
+        type=int,
+        default=None,
+        help="last week (ex: 201520)"
     )
     parser.add_argument(
-        "location", action="store", type=str, default=None, help="location (ex: US)"
+        "location",
+        action="store",
+        type=str,
+        default=None,
+        help="location (ex: US)"
     )
     parser.add_argument(
-        "term", action="store", type=str, default=None, help="term/query/topic (ex: /m/0cycc)"
+        "term",
+        action="store",
+        type=str,
+        default=None,
+        help="term/query/topic (ex: /m/0cycc)"
     )
     # fmt: on
     args = parser.parse_args()

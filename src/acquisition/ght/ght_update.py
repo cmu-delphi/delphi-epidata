@@ -330,9 +330,7 @@ def update(locations, terms, first=None, last=None, countries=["US"]):
                         # print(' [%s|%s|%d] missing value' % (term, location, ew))
                     ew = flu.add_epiweeks(ew, 1)
                 if num_missing > 0:
-                    print(
-                        f" [{term}|{location}] missing {int(num_missing)}/{len(values)} value(s)"
-                    )
+                    print(f" [{term}|{location}] missing {int(num_missing)}/{len(values)} value(s)")
             except Exception as ex:
                 print(f" [{term}|{location}] caught exception (will NOT retry):", ex)
 
@@ -350,11 +348,41 @@ def main():
     # args and usage
     parser = argparse.ArgumentParser()
     # fmt: off
-    parser.add_argument("location", action="store", type=str, default=None, help="location(s) (ex: all; US; TX; CA,LA,WY)")
-    parser.add_argument("term", action="store", type=str, default=None, help='term/query/topic (ex: all; /m/0cycc; "flu fever")')
-    parser.add_argument("--first", "-f", default=None, type=int, help="first epiweek override")
-    parser.add_argument("--last", "-l", default=None, type=int, help="last epiweek override")
-    parser.add_argument("--country", "-c", default="US", type=str, help="location country (ex: US; BR)")
+    parser.add_argument(
+        "location",
+        action="store",
+        type=str,
+        default=None,
+        help="location(s) (ex: all; US; TX; CA,LA,WY)"
+    )
+    parser.add_argument(
+        "term",
+        action="store",
+        type=str,
+        default=None,
+        help='term/query/topic (ex: all; /m/0cycc; "flu fever")'
+    )
+    parser.add_argument(
+        "--first",
+        "-f",
+        default=None,
+        type=int,
+        help="first epiweek override"
+    )
+    parser.add_argument(
+        "--last",
+        "-l",
+        default=None,
+        type=int,
+        help="last epiweek override"
+    )
+    parser.add_argument(
+        "--country",
+        "-c",
+        default="US",
+        type=str,
+        help="location country (ex: US; BR)"
+    )
     # fmt: on
     args = parser.parse_args()
 

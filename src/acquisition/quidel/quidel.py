@@ -140,7 +140,7 @@ class QuidelData:
         m.select("INBOX")  # here you a can choose a mail box like INBOX instead
         # use m.list() to get all the mailboxes
         # you could filter using the IMAP rules here (check https://www.example-code.com/csharp/imap-search-critera.asp)
-        _, items = m.search(None, "ALL")  
+        _, items = m.search(None, "ALL")
         items = items[0].split()  # getting the mails id
 
         # The emailids are ordered from past to now

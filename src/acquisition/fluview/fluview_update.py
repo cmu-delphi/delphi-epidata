@@ -516,15 +516,23 @@ def update_from_file(issue, date, filename, test_mode=False):
 def main():
     # args and usage
     parser = argparse.ArgumentParser()
+    # fmt: off
     parser.add_argument(
-        "--test", action="store_true", help="do dry run only, do not update the database"
+        "--test",
+        action="store_true",
+        help="do dry run only, do not update the database"
     )
     parser.add_argument(
-        "--file", type=str, help="load an existing zip file (otherwise fetch current data)"
+        "--file",
+        type=str,
+        help="load an existing zip file (otherwise fetch current data)"
     )
     parser.add_argument(
-        "--issue", type=int, help="issue of the file (e.g. 201740); used iff --file is given"
+        "--issue",
+        type=int,
+        help="issue of the file (e.g. 201740); used iff --file is given"
     )
+    # fmt: on
     args = parser.parse_args()
 
     if (args.file is None) != (args.issue is None):

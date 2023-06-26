@@ -288,12 +288,51 @@ def main():
     # args and usage
     parser = argparse.ArgumentParser()
     # fmt: off
-    parser.add_argument("secret", type=str, help="hmac secret key")
-    parser.add_argument("-b", "--blimit", action="store", type=int, default=None, help="download limit, in bytes")
-    parser.add_argument("-j", "--jlimit", action="store", type=int, default=None, help="job limit")
-    parser.add_argument("-s", "--sleep", action="store", type=int, default=1, help="seconds to sleep between each job")
-    parser.add_argument("-t", "--type", action="store", type=int, default=0, help="type of job")
-    parser.add_argument("-d", "--debug", action="store_const", const=True, default=False, help="enable debug mode")
+    parser.add_argument(
+        "secret",
+        type=str,
+        help="hmac secret key"
+    )
+    parser.add_argument(
+        "-b",
+        "--blimit",
+        action="store",
+        type=int,
+        default=None,
+        help="download limit, in bytes"
+    )
+    parser.add_argument(
+        "-j",
+        "--jlimit",
+        action="store",
+        type=int,
+        default=None,
+        help="job limit"
+    )
+    parser.add_argument(
+        "-s",
+        "--sleep",
+        action="store",
+        type=int,
+        default=1,
+        help="seconds to sleep between each job"
+    )
+    parser.add_argument(
+        "-t",
+        "--type",
+        action="store",
+        type=int,
+        default=0,
+        help="type of job"
+    )
+    parser.add_argument(
+        "-d",
+        "--debug",
+        action="store_const",
+        const=True,
+        default=False,
+        help="enable debug mode"
+    )
     # fmt: on
     args = parser.parse_args()
 

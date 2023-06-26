@@ -216,12 +216,45 @@ def main():
     # args and usage
     parser = argparse.ArgumentParser()
     # fmt: off
-    parser.add_argument("username", action="store", type=str, help="healthtweets.org username")
-    parser.add_argument("password", action="store", type=str, help="healthtweets.org password")
-    parser.add_argument("state", action="store", type=str, choices=list(HealthTweets.STATE_CODES.keys()), help="U.S. state (ex: TX)")
-    parser.add_argument("date1", action="store", type=str, help="first date, inclusive (ex: 2015-01-01)")
-    parser.add_argument("date2", action="store", type=str, help="last date, inclusive (ex: 2015-01-01)")
-    parser.add_argument("-d", "--debug", action="store_const", const=True, default=False, help="enable debug mode")
+    parser.add_argument(
+        "username",
+        action="store",
+        type=str,
+        help="healthtweets.org username"
+    )
+    parser.add_argument(
+        "password",
+        action="store",
+        type=str,
+        help="healthtweets.org password"
+    )
+    parser.add_argument(
+        "state",
+        action="store",
+        type=str,
+        choices=list(HealthTweets.STATE_CODES.keys()),
+        help="U.S. state (ex: TX)"
+    )
+    parser.add_argument(
+        "date1",
+        action="store",
+        type=str,
+        help="first date, inclusive (ex: 2015-01-01)"
+    )
+    parser.add_argument(
+        "date2",
+        action="store",
+        type=str,
+        help="last date, inclusive (ex: 2015-01-01)"
+    )
+    parser.add_argument(
+        "-d",
+        "--debug", 
+        action="store_const",
+        const=True,
+        default=False,
+        help="enable debug mode"
+    )
     # fmt: on
     args = parser.parse_args()
 
