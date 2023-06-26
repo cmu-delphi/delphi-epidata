@@ -1,9 +1,8 @@
 from pathlib import Path
 import unittest
 
-from delphi.epidata.acquisition.covid_hosp.common.columndef import Columndef
 from delphi.epidata.acquisition.covid_hosp.common.utils import Utils
-from delphi.epidata.common.covid_hosp.covid_hosp_schema_io import CovidHospSomething
+from delphi.epidata.common.covid_hosp.covid_hosp_schema_io import Columndef, CovidHospSomething
 
 
 # py3tester coverage target (equivalent to `import *`)

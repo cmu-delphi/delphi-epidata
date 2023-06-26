@@ -1,10 +1,10 @@
+from collections import namedtuple
 from datetime import datetime
 from pathlib import Path
 import re
 import sys
 
 from delphi.epidata.acquisition.covid_hosp.common.utils import Utils
-from delphi.epidata.acquisition.covid_hosp.common.columndef import Columndef
 
 # ruamel preserves key ordering, comments, and some formatting for a "round trip" of a yaml file import-->export
 from ruamel.yaml.main import (
@@ -18,6 +18,8 @@ RoundTripRepresenter.represent_none = lambda self,_ : self.represent_scalar('tag
 RoundTripRepresenter.add_representer(type(None), RoundTripRepresenter.represent_none)
 # print(yaml_dump(yaml_load('NULL: ~')))  # ==>  "~: ~\n"
 
+
+Columndef = namedtuple("Columndef", "csv_name sql_name dtype")
 
 class CovidHospSomething:
 
