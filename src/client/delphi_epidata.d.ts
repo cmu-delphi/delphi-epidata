@@ -20,7 +20,6 @@ declare module 'delphi_epidata' {
         client_version: string;
         version(): Promise<{version: string, client_version: string}>;
 
-        afhsb(callback: EpiDataCallback, auth: string, locations: StringParam, epiweeks: EpiRangeParam, flu_types: StringParam): Promise<EpiDataResponse>;
         cdc(callback: EpiDataCallback, auth: string, epiweeks: EpiRangeParam, locations: StringParam): Promise<EpiDataResponse>;
         covid_hosp_facility(callback: EpiDataCallback, hospital_pks: StringParam, collection_weeks: EpiRangeParam, publication_dates: EpiRangeParam): Promise<EpiDataResponse>;
         covid_hosp_facility_lookup(callback: EpiDataCallback, state?: string, ccn?: string, city?: string, zip?: string, fips_code?: string): Promise<EpiDataResponse>;
@@ -37,7 +36,6 @@ declare module 'delphi_epidata' {
         gft(callback: EpiDataCallback, locations: StringParam, epiweeks: EpiRangeParam): Promise<EpiDataResponse>;
         ght(callback: EpiDataCallback, auth: string, locations: StringParam, epiweeks: EpiRangeParam, query: string): Promise<EpiDataResponse>;
         kcdc_ili(callback: EpiDataCallback, regions: StringParam, epiweeks: EpiRangeParam, issues?: EpiRangeParam, lag?: number): Promise<EpiDataResponse>;
-        meta_afhsb(callback: EpiDataCallback, auth: string): Promise<EpiDataResponse>;
         meta_norostat(callback: EpiDataCallback, auth: string): Promise<EpiDataResponse>;
         meta(callback: EpiDataCallback): Promise<EpiDataResponse>;
         nidss_dengue(callback: EpiDataCallback, locations: StringParam, epiweeks: EpiRangeParam): Promise<EpiDataResponse>;
@@ -61,7 +59,6 @@ declare module 'delphi_epidata' {
         client_version: string;
         version(): Promise<{ version: string, client_version: string }>;
 
-        afhsb(auth: string, locations: StringParam, epiweeks: EpiRangeParam, flu_types: StringParam): Promise<EpiDataResponse>;
         cdc(auth: string, epiweeks: EpiRangeParam, locations: StringParam): Promise<EpiDataResponse>;
         covid_hosp_facility(hospital_pks: StringParam, collection_weeks: EpiRangeParam, publication_dates: EpiRangeParam): Promise<EpiDataResponse>;
         covid_hosp_facility_lookup(state?: string, ccn?: string, city?: string, zip?: string, fips_code?: string): Promise<EpiDataResponse>;
@@ -78,7 +75,6 @@ declare module 'delphi_epidata' {
         gft(locations: StringParam, epiweeks: EpiRangeParam): Promise<EpiDataResponse>;
         ght(auth: string, locations: StringParam, epiweeks: EpiRangeParam, query: string): Promise<EpiDataResponse>;
         kcdc_ili(regions: StringParam, epiweeks: EpiRangeParam, issues?: EpiRangeParam, lag?: number): Promise<EpiDataResponse>;
-        meta_afhsb(auth: string): Promise<EpiDataResponse>;
         meta_norostat(auth: string): Promise<EpiDataResponse>;
         meta(callback: EpiDataCallback): Promise<EpiDataResponse>;
         nidss_dengue(locations: StringParam, epiweeks: EpiRangeParam): Promise<EpiDataResponse>;
