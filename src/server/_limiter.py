@@ -117,7 +117,6 @@ def _no_rate_limit() -> bool:
         # no rate limit if user is registered
         return True
 
-    # phase 3 (full api-keys behavior)
     multiples = get_multiples_count(request)
     if multiples < 0:
         # too many multiples
