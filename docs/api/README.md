@@ -110,7 +110,6 @@ The parameters available for each source are documented in each linked source-sp
 
 | Endpoint | Name | Description | Restricted? |
 | --- | --- | --- | --- |
-| [`afhsb`](ahfsb.md) | AFHSB | ... <!-- TODO --> | yes |
 | [`cdc`](cdc.md) | CDC Page Hits | ... <!-- TODO --> | yes |
 | [`delphi`](delphi.md) | Delphi's Forecast | ... <!-- TODO --> | no |
 | [`ecdc_ili`](ecdc_ili.md) | ECDC ILI | ECDC ILI data from the ECDC website. | no |
@@ -122,7 +121,6 @@ The parameters available for each source are documented in each linked source-sp
 | [`ght`](ght.md) | Google Health Trends | Estimate of influenza activity based on volume of certain search queries. | yes |
 | [`kcdc_ili`](kcdc_ili.md) | KCDC ILI | KCDC ILI data from KCDC website. | no |
 | [`meta`](meta.md) | API Metadata | Metadata for `fluview`, `twitter`, `wiki`, and `delphi`. | no |
-| [`meta_afhsb`](meta_afhsb.md) | AFHSB Metadata | ... <!-- TODO --> | yes |
 | [`nidss_flu`](nidss_flu.md) | NIDSS Flu | Outpatient ILI from Taiwan's National Infectious Disease Statistics System (NIDSS). | no |
 | [`nowcast`](nowcast.md) | ILI Nearby | A nowcast of U.S. national, regional, and state-level (weighted) percent ILI, available seven days (regionally) or five days (state-level) before the first ILINet report for the corresponding week. | no |
 | [`quidel`](quidel.md) | Quidel | Data provided by Quidel Corp., which contains flu lab test results. | yes |

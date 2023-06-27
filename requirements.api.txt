@@ -12,7 +12,7 @@ pandas==1.2.3
 python-dotenv==0.15.0
 pyyaml
 redis==3.5.3
-requests==2.28.1
+requests==2.31.0
 scipy==1.6.2
 SQLAlchemy==1.4.40
 structlog==22.1.0

@@ -7,6 +7,7 @@ from werkzeug.utils import redirect
 
 from .._common import log_info_with_request
 from .._config import ADMIN_PASSWORD, API_KEY_REGISTRATION_FORM_LINK, API_KEY_REMOVAL_REQUEST_LINK, REGISTER_WEBHOOK_TOKEN
+from .._db import WriteSession
 from .._security import resolve_auth_token
 from ..admin.models import User, UserRole
 
@@ -29,20 +30,11 @@ def _require_admin():
     return token
 
 
-def _parse_roles(roles: List[str]) -> Set[str]:
-    return set(roles)
-
-
-def _render(mode: str, token: str, flags: Dict, **kwargs):
+def _render(mode: str, token: str, flags: Dict, session, **kwargs):
     template = (templates_dir / "index.html").read_text("utf8")
     return render_template_string(
-        template, mode=mode, token=token, flags=flags, roles=UserRole.list_all_roles(), **kwargs
+        template, mode=mode, token=token, flags=flags, roles=UserRole.list_all_roles(session), **kwargs
     )
-
-
-def user_exists(user_email: str = None, api_key: str = None):
-    user = User.find_user(user_email=user_email, api_key=api_key)
-    return True if user else False
 
 
 # ~~~~ PUBLIC ROUTES ~~~~
@@ -67,44 +59,50 @@ def removal_request_redirect():
 def _index():
     token = _require_admin()
     flags = dict()
-    if request.method == "POST":
-        # register a new user
-        if not user_exists(user_email=request.values["email"], api_key=request.values["api_key"]):
-            User.create_user(
-                request.values["api_key"],
-                request.values["email"],
-                _parse_roles(request.values.getlist("roles")),
-            )
-            flags["banner"] = "Successfully Added"
-        else:
-            flags["banner"] = "User with such email and/or api key already exists."
-    users = [user.as_dict for user in User.list_users()]
-    return _render("overview", token, flags, users=users, user=dict())
+    with WriteSession() as session:
+        if request.method == "POST":
+            # register a new user
+            if not User.find_user(
+                    user_email=request.values["email"], api_key=request.values["api_key"],
+                    session=session):
+                User.create_user(
+                    api_key=request.values["api_key"],
+                    email=request.values["email"],
+                    user_roles=set(request.values.getlist("roles")),
+                    session=session
+                )
+                flags["banner"] = "Successfully Added"
+            else:
+                flags["banner"] = "User with such email and/or api key already exists."
+        users = [user.as_dict for user in session.query(User).all()]
+        return _render("overview", token, flags, session=session, users=users, user=dict())
 
 
 @bp.route("/<int:user_id>", methods=["GET", "PUT", "POST", "DELETE"])
 def _detail(user_id: int):
     token = _require_admin()
-    user = User.find_user(user_id=user_id)
-    if not user:
-        raise NotFound()
-    if request.method == "DELETE" or "delete" in request.values:
-        User.delete_user(user.id)
-        return redirect(f"./?auth={token}")
-    flags = dict()
-    if request.method in ["PUT", "POST"]:
-        user_check = User.find_user(api_key=request.values["api_key"], user_email=request.values["email"])
-        if user_check and user_check.id != user.id:
-            flags["banner"] = "Could not update user; same api_key and/or email already exists."
-        else:
-            user = user.update_user(
-                user=user,
-                api_key=request.values["api_key"],
-                email=request.values["email"],
-                roles=_parse_roles(request.values.getlist("roles")),
-            )
-            flags["banner"] = "Successfully Saved"
-    return _render("detail", token, flags, user=user.as_dict)
+    with WriteSession() as session:
+        user = User.find_user(user_id=user_id, session=session)
+        if not user:
+            raise NotFound()
+        if request.method == "DELETE" or "delete" in request.values:
+            User.delete_user(user.id, session=session)
+            return redirect(f"./?auth={token}")
+        flags = dict()
+        if request.method in ["PUT", "POST"]:
+            user_check = User.find_user(api_key=request.values["api_key"], user_email=request.values["email"], session=session)
+            if user_check and user_check.id != user.id:
+                flags["banner"] = "Could not update user; same api_key and/or email already exists."
+            else:
+                user = User.update_user(
+                    user=user,
+                    api_key=request.values["api_key"],
+                    email=request.values["email"],
+                    roles=set(request.values.getlist("roles")),
+                    session=session
+                )
+                flags["banner"] = "Successfully Saved"
+        return _render("detail", token, flags, session=session, user=user.as_dict)
 
 
 @bp.route("/register", methods=["POST"])
@@ -116,12 +114,13 @@ def _register():
 
     user_api_key = body["user_api_key"]
     user_email = body["user_email"]
-    if user_exists(user_email=user_email, api_key=user_api_key):
-        return make_response(
-            "User with email and/or API Key already exists, use different parameters or contact us for help",
-            409,
-        )
-    User.create_user(api_key=user_api_key, email=user_email)
+    with WriteSession() as session:
+        if User.find_user(user_email=user_email, api_key=user_api_key, session=session):
+            return make_response(
+                "User with email and/or API Key already exists, use different parameters or contact us for help",
+                409,
+            )
+        User.create_user(api_key=user_api_key, email=user_email, session=session)
     return make_response(f"Successfully registered API key '{user_api_key}'", 200)
 
 

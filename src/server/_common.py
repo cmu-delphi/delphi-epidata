@@ -3,7 +3,7 @@ import time
 
 from flask import Flask, g, request
 from sqlalchemy import event
-from sqlalchemy.engine import Connection
+from sqlalchemy.engine import Connection, Engine
 from werkzeug.exceptions import Unauthorized
 from werkzeug.local import LocalProxy
 
@@ -85,12 +85,12 @@ def log_info_with_request_and_response(message, response, **kwargs):
         **kwargs
     )
 
-@event.listens_for(engine, "before_cursor_execute")
+@event.listens_for(Engine, "before_cursor_execute")
 def before_cursor_execute(conn, cursor, statement, parameters, context, executemany):
     context._query_start_time = time.time()
 
 
-@event.listens_for(engine, "after_cursor_execute")
+@event.listens_for(Engine, "after_cursor_execute")
 def after_cursor_execute(conn, cursor, statement, parameters, context, executemany):
     # this timing info may be suspect, at least in terms of dbms cpu time...
     # it is likely that it includes that time as well as any overhead that
@@ -101,7 +101,8 @@ def after_cursor_execute(conn, cursor, statement, parameters, context, executema
     # Convert to milliseconds
     total_time *= 1000
     get_structured_logger("server_api").info(
-        "Executed SQL", statement=statement, params=parameters, elapsed_time_ms=total_time
+        "Executed SQL", statement=statement, params=parameters, elapsed_time_ms=total_time,
+        engine_id=conn.get_execution_options().get('engine_id')
     )
 
 

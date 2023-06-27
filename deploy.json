@@ -138,15 +138,6 @@
       "add-header-comment": true
     },
 
-    "// acquisition - norostat",
-    {
-      "type": "move",
-      "src": "src/acquisition/norostat/",
-      "dst": "[[package]]/acquisition/norostat/",
-      "match": "^.*\\.(py)$",
-      "add-header-comment": true
-    },
-
     "// acquisition - paho",
     {
       "type": "move",
@@ -170,15 +161,6 @@
       "type": "move",
       "src": "src/acquisition/kcdc/",
       "dst": "[[package]]/acquisition/kcdc/",
-      "match": "^.*\\.(py)$",
-      "add-header-comment": true
-    },
-
-    "// acquisition - afhsb",
-    {
-      "type": "move",
-      "src": "src/acquisition/afhsb/",
-      "dst": "[[package]]/acquisition/afhsb/",
       "match": "^.*\\.(py)$",
       "add-header-comment": true
     },

@@ -16,7 +16,7 @@ from ._config import (
     TEMPORARY_API_KEY,
     URL_PREFIX,
 )
-from .admin.models import User, UserRole
+from .admin.models import User
 
 API_KEY_HARD_WARNING = API_KEY_REQUIRED_STARTING_AT - timedelta(days=14)
 API_KEY_SOFT_WARNING = API_KEY_HARD_WARNING - timedelta(days=14)
@@ -91,10 +91,6 @@ def _get_current_user():
 current_user: User = cast(User, LocalProxy(_get_current_user))
 
 
-def register_user_role(role_name: str) -> None:
-    UserRole.create_role(role_name)
-
-
 def _is_public_route() -> bool:
     public_routes_list = ["lib", "admin", "version"]
     for route in public_routes_list:
@@ -125,9 +121,8 @@ def require_role(required_role: str):
 
 
 def update_key_last_time_used(user):
-    # TODO: reenable this once cc<-->aws latency issues are sorted out, or maybe do this call asynchronously
-    return
     if user:
         # update last usage for this user's api key to "now()"
+        # TODO: consider making this call asynchronously
         r = redis.Redis(host=REDIS_HOST, password=REDIS_PASSWORD)
         r.set(f"LAST_USED/{user.api_key}", datetime.strftime(datetime.now(), "%Y-%m-%d"))
