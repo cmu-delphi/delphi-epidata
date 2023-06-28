@@ -228,7 +228,7 @@ class CSVPrinter(APrinter):
         if headers is None:
             headers = {}
         if self._filename:
-            headers["Content-Disposition"] = f"attachment; filename={self._filename}.csv"}
+            headers["Content-Disposition"] = f"attachment; filename={self._filename}.csv"
         return Response(gen, mimetype="text/csv; charset=utf8", headers=headers)
 
     def _begin(self):
