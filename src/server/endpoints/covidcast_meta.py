@@ -68,16 +68,16 @@ def handle():
 
     def cache_entry_gen():
         for entry in metadata_list:
-            if time_types and row.get("time_type") not in time_types:
+            if time_types and entry.get("time_type") not in time_types:
                 continue
-            if geo_types and row.get("geo_type") not in geo_types:
+            if geo_types and entry.get("geo_type") not in geo_types:
                 continue
             if not signals:
                 yield entry
             for signal in signals:
                 # match source and (signal or no signal or signal = *)
-                if row.get("data_source") == signal.source and (
-                    signal.signal == "*" or signal.signal == row.get("signal")
+                if entry.get("data_source") == signal.source and (
+                    signal.signal == "*" or signal.signal == entry.get("signal")
                 ):
                     yield entry
 
