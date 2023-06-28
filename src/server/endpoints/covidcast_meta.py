@@ -26,51 +26,10 @@ class SourceSignal:
         return f"{self.source}:{self.signal}"
 
 
-def fetch_data(
-    time_types: Optional[List[str]],
-    geo_types: Optional[List[str]],
-    signals: Optional[List[SourceSignal]],
-):
-    # complain if the cache is more than 75 minutes old
-    max_age = 75 * 60
-
-    row = db.execute(
-        text(
-            "SELECT UNIX_TIMESTAMP(NOW()) - timestamp AS age, epidata FROM covidcast_meta_cache LIMIT 1"
-        )
-    ).fetchone()
-
-    if not row or not row["epidata"]:
-        get_structured_logger('server_api').warning("no data in covidcast_meta cache")
-        return
-
-    age = row["age"]
-    if age > max_age and row["epidata"]:
-        get_structured_logger('server_api').warning("covidcast_meta cache is stale", cache_age=age)
-
-    epidata = loads(row["epidata"])
-
-    if not epidata:
-        return
-
-    def filter_row(row: Dict):
-        if time_types and row.get("time_type") not in time_types:
-            return False
-        if geo_types and row.get("geo_type") not in geo_types:
-            return False
-        if not signals:
-            return True
-        for signal in signals:
-            # match source and (signal or no signal or signal = *)
-            if row.get("data_source") == signal.source and (
-                signal.signal == "*" or signal.signal == row.get("signal")
-            ):
-                return True
-        return False
-
-    for row in epidata:
-        if filter_row(row):
-            yield row
+# empty generator that never yields
+def _nonerator():
+    return
+    yield
 
 
 @bp.route("/", methods=("GET", "POST"))
@@ -79,4 +38,54 @@ def handle():
     signals = [SourceSignal(v) for v in (extract_strings("signals") or [])]
     geo_types = extract_strings("geo_types")
 
-    return create_printer(request.values.get("format"))(filter_fields(fetch_data(time_types, geo_types, signals)))
+    printer = create_printer(request.values.get("format"))
+
+    metadata = db.execute(
+        text(
+            "SELECT UNIX_TIMESTAMP(NOW()) - timestamp AS age, epidata FROM covidcast_meta_cache LIMIT 1"
+        )
+    ).fetchone()
+
+    if not metadata or "epidata" not in metadata:
+        # the db table `covidcast_meta_cache` has no rows
+        get_structured_logger('server_api').warning("no data in covidcast_meta cache")
+        return printer(_nonerator())
+
+    metadata_list = loads(metadata["epidata"])
+
+    if not metadata_list:
+        # the db table has a row, but there is no metadata about any signals in it
+        get_structured_logger('server_api').warning("empty entry in covidcast_meta cache")
+        return printer(_nonerator())
+
+    standard_age = 60 * 60 # expected metadata regeneration interval, in seconds (currently 60 mins)
+    # TODO: get this ^ from a config var?  ideally, it should be set to the time between runs of
+    #       src/acquisition/covidcast/covidcast_meta_cache_updater.py
+    age = metadata["age"]
+    if age > standard_age * 1.25:
+        # complain if the cache is too old (currently, more than 75 mins old)
+        get_structured_logger('server_api').warning("covidcast_meta cache is stale", cache_age=age)
+
+    def cache_entry_gen():
+        for entry in metadata_list:
+            if time_types and row.get("time_type") not in time_types:
+                continue
+            if geo_types and row.get("geo_type") not in geo_types:
+                continue
+            if not signals:
+                yield entry
+            for signal in signals:
+                # match source and (signal or no signal or signal = *)
+                if row.get("data_source") == signal.source and (
+                    signal.signal == "*" or signal.signal == row.get("signal")
+                ):
+                    yield entry
+
+    return printer(
+        filter_fields(cache_entry_gen()),
+        headers={
+            "Cache-Control": f"max-age={standard_age}, public",
+            "Age": f"{age}",
+            # TODO?: "Expires": f"{}", # superseded by Cache-Control: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Expires
+        }
+    )

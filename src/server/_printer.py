@@ -46,13 +46,14 @@ class APrinter:
         self.result: int = -1
         self._max_results: int = MAX_COMPATIBILITY_RESULTS if is_compatibility_mode() else MAX_RESULTS
 
-    def make_response(self, gen):
+    def make_response(self, gen, headers=None):
         return Response(
             gen,
             mimetype="application/json",
+            headers=headers,
         )
 
-    def __call__(self, generator: Iterable[Dict[str, Any]]) -> Response:
+    def __call__(self, generator: Iterable[Dict[str, Any]], headers=None) -> Response:
         def gen():
             self.result = -2  # no result, default response
             began = False
@@ -84,7 +85,7 @@ class APrinter:
             if r is not None:
                 yield r
 
-        return self.make_response(stream_with_context(gen()))
+        return self.make_response(stream_with_context(gen()), headers=headers)
 
     @property
     def remaining_rows(self) -> int:
@@ -223,8 +224,11 @@ class CSVPrinter(APrinter):
         super(CSVPrinter, self).__init__()
         self._filename = filename
 
-    def make_response(self, gen):
-        headers = {"Content-Disposition": f"attachment; filename={self._filename}.csv"} if self._filename else {}
+    def make_response(self, gen, headers=None):
+        if headers is None:
+            headers = {}
+        if self._filename:
+            headers["Content-Disposition"] = f"attachment; filename={self._filename}.csv"}
         return Response(gen, mimetype="text/csv; charset=utf8", headers=headers)
 
     def _begin(self):
@@ -296,8 +300,8 @@ class JSONLPrinter(APrinter):
     a printer class writing in JSONLines format
     """
 
-    def make_response(self, gen):
-        return Response(gen, mimetype=" text/plain; charset=utf8")
+    def make_response(self, gen, headers=None):
+        return Response(gen, mimetype=" text/plain; charset=utf8", headers=headers)
 
     def _begin(self):
         if show_hard_api_key_warning():
