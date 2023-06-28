@@ -25,6 +25,7 @@ PANDAS_DTYPES = {
     "value_updated_timestamp": "Int64",
 }
 
+
 @dataclass
 class CovidcastRow:
     """A container for the values of a single covidcast database row.
@@ -62,7 +63,11 @@ class CovidcastRow:
     # Classvars.
     _db_row_ignore_fields: ClassVar = []
     _api_row_ignore_fields: ClassVar = ["epimetric_id", "value_updated_timestamp"]
-    _api_row_compatibility_ignore_fields: ClassVar = _api_row_ignore_fields + ["source", "time_type", "geo_type"]
+    _api_row_compatibility_ignore_fields: ClassVar = _api_row_ignore_fields + [
+        "source",
+        "time_type",
+        "geo_type",
+    ]
 
     _pandas_dtypes: ClassVar = PANDAS_DTYPES
 
@@ -72,14 +77,16 @@ class CovidcastRow:
             for key in ignore_fields:
                 del d[key]
         return d
-    
+
     def as_api_row_dict(self, ignore_fields: Optional[List[str]] = None) -> dict:
         """Returns a dict view into the row with the fields returned by the API server."""
         return self.as_dict(ignore_fields=self._api_row_ignore_fields + (ignore_fields or []))
 
     def as_api_compatibility_row_dict(self, ignore_fields: Optional[List[str]] = None) -> dict:
         """Returns a dict view into the row with the fields returned by the old API server (the PHP server)."""
-        return self.as_dict(ignore_fields=self._api_row_compatibility_ignore_fields + (ignore_fields or []))
+        return self.as_dict(
+            ignore_fields=self._api_row_compatibility_ignore_fields + (ignore_fields or [])
+        )
 
     def as_db_row_dict(self, ignore_fields: Optional[List[str]] = None) -> dict:
         """Returns a dict view into the row with the fields returned by the database."""
@@ -95,9 +102,13 @@ class CovidcastRow:
         """Returns a dataframe view into the row with the fields returned by the API server."""
         return self.as_dataframe(ignore_fields=self._api_row_ignore_fields + (ignore_fields or []))
 
-    def as_api_compatibility_row_df(self, ignore_fields: Optional[List[str]] = None) -> pd.DataFrame:
+    def as_api_compatibility_row_df(
+        self, ignore_fields: Optional[List[str]] = None
+    ) -> pd.DataFrame:
         """Returns a dataframe view into the row with the fields returned by the old API server (the PHP server)."""
-        return self.as_dataframe(ignore_fields=self._api_row_compatibility_ignore_fields + (ignore_fields or []))
+        return self.as_dataframe(
+            ignore_fields=self._api_row_compatibility_ignore_fields + (ignore_fields or [])
+        )
 
     def as_db_row_df(self, ignore_fields: Optional[List[str]] = None) -> pd.DataFrame:
         """Returns a dataframe view into the row with the fields returned by an all-field database query."""
@@ -111,7 +122,6 @@ class CovidcastRow:
 
     def time_pair(self):
         return f"{self.time_type}:{self.time_value}"
-
 
 
 def check_valid_dtype(dtype):

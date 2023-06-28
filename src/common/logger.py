@@ -4,11 +4,12 @@ import sys
 import threading
 import structlog
 
+
 def handle_exceptions(logger):
     """Handle exceptions using the provided logger."""
+
     def exception_handler(etype, value, traceback):
-        logger.exception("Top-level exception occurred",
-                         exc_info=(etype, value, traceback))
+        logger.exception("Top-level exception occurred", exc_info=(etype, value, traceback))
 
     def multithread_exception_handler(args):
         exception_handler(args.exc_type, args.exc_value, args.exc_traceback)
@@ -17,9 +18,7 @@ def handle_exceptions(logger):
     threading.excepthook = multithread_exception_handler
 
 
-def get_structured_logger(name=__name__,
-                          filename=None,
-                          log_exceptions=True):
+def get_structured_logger(name=__name__, filename=None, log_exceptions=True):
     """Create a new structlog logger.
 
     Use the logger returned from this in indicator code using the standard
@@ -49,11 +48,7 @@ def get_structured_logger(name=__name__,
     else:
         log_level = logging.INFO
 
-    logging.basicConfig(
-        format="%(message)s",
-        level=log_level,
-        handlers=handlers
-        )
+    logging.basicConfig(format="%(message)s", level=log_level, handlers=handlers)
 
     def add_pid(logger, method_name, event_dict):
         """
@@ -85,7 +80,7 @@ def get_structured_logger(name=__name__,
             # Decode unicode characters
             structlog.processors.UnicodeDecoder(),
             # Render as JSON
-            structlog.processors.JSONRenderer()
+            structlog.processors.JSONRenderer(),
         ],
         # Use a dict class for keeping track of data.
         context_class=dict,
