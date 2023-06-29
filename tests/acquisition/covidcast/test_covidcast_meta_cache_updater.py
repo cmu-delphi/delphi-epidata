@@ -8,11 +8,11 @@ from unittest.mock import MagicMock
 # third party
 import pandas
 
-from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import get_argument_parser, \
+from delphi.epidata.maintenance.covidcast_meta_cache_updater import get_argument_parser, \
   main
 # py3tester coverage target
 __test_target__ = (
-  'delphi.epidata.acquisition.covidcast.'
+  'delphi.epidata.maintenance.'
   'covidcast_meta_cache_updater'
 )
 
