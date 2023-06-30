@@ -47,7 +47,7 @@ class AcquisitionTests(unittest.TestCase):
         cur.execute('delete from api_user')
         cur.execute('insert into api_user(api_key, email) values("key", "email")')
 
-  @freeze_time("2021-03-16")
+  @freeze_time("2021-03-15")
   def test_acquire_dataset(self):
     """Acquire a new dataset."""
 
@@ -76,7 +76,7 @@ class AcquisitionTests(unittest.TestCase):
       row = response['epidata'][0]
       self.assertEqual(row['state'], 'WY')
       self.assertEqual(row['date'], 20201209)
-      self.assertEqual(row['issue'], 20210315)
+      self.assertEqual(row['issue'], 20210315) # include today's data by default
       self.assertEqual(row['critical_staffing_shortage_today_yes'], 8)
       self.assertEqual(row['total_patients_hospitalized_confirmed_influenza_covid_coverage'], 56)
       actual = row['inpatient_bed_covid_utilization']
