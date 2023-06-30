@@ -118,11 +118,10 @@ class AcquisitionTests(unittest.TestCase):
       pre_max_issue = db.get_max_issue()
     self.assertEqual(pre_max_issue, pd.Timestamp('1900-01-01 00:00:00'))
     with self.subTest(name='first acquisition'), \
-         patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()) as mock_fetch_meta, \
+         patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()), \
          patch.object(Network, 'fetch_dataset', side_effect=[self.test_utils.load_sample_dataset("dataset0.csv")]
                       ) as mock_fetch:
       acquired = Utils.update_dataset(Database,
-                                      Network,
                                       date(2021, 3, 12),
                                       date(2021, 3, 14))
       with Database.connect() as db:

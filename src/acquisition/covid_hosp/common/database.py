@@ -18,21 +18,13 @@ class Database:
   DATASET_NAME = None
 
   def __init__(self,
-               connection,
-               chs = CovidHospSomething()):
+               connection):
     """Create a new Database object.
 
     Parameters
     ----------
     connection
       An open connection to a database.
-    table_name : str
-      The name of the table which holds the dataset.
-    hhs_dataset_id : str
-      The 9-character healthdata.gov identifier for this dataset.
-    columns_and_types : tuple[str, str, Callable]
-      List of 3-tuples of (CSV header name, SQL column name, data type) for
-      all the columns in the CSV file.
     """
 
     self.connection = connection
@@ -40,10 +32,14 @@ class Database:
     if self.DATASET_NAME is None:
       raise NameError('no dataset given!') # Must be defined by subclasses
 
+    chs = CovidHospSomething()
+    # The name of the table which holds the dataset.
     self.table_name = chs.get_ds_table_name(self.DATASET_NAME)
+    # The 9-character healthdata.gov identifier for this dataset.
     self.hhs_dataset_id = chs.get_ds_dataset_id(self.DATASET_NAME)
     self.metadata_id = chs.get_ds_metadata_id(self.DATASET_NAME)
-    self.publication_col_name = chs.get_ds_issue_column(self.DATASET_NAME)
+    self.issue_column = chs.get_ds_issue_column(self.DATASET_NAME)
+    # List of 3-tuples of (CSV header name, SQL column name, data type) for all the columns in the CSV file.
     self.columns_and_types = {c.csv_name: c for c in chs.get_ds_ordered_csv_cols(self.DATASET_NAME)}
     self.key_columns = chs.get_ds_key_cols(self.DATASET_NAME)
     self.aggregate_key_columns = chs.get_ds_aggregate_key_cols(self.DATASET_NAME)
@@ -181,7 +177,7 @@ class Database:
     num_columns = 2 + len(dataframe_columns_and_types)
     value_placeholders = ', '.join(['%s'] * num_columns)
     columns = ', '.join(f'`{i.sql_name}`' for i in dataframe_columns_and_types)
-    sql = f'INSERT INTO `{self.table_name}` (`id`, `{self.publication_col_name}`, {columns}) ' \
+    sql = f'INSERT INTO `{self.table_name}` (`id`, `{self.issue_column}`, {columns}) ' \
           f'VALUES ({value_placeholders})'
     id_and_publication_date = (0, publication_date)
     if logger:

@@ -163,15 +163,13 @@ class Utils:
     return result.reset_index(level=key_cols)
 
   @staticmethod
-  def update_dataset(database, network=Network, newer_than=None, older_than=None):
+  def update_dataset(database, newer_than=None, older_than=None):
     """Acquire the most recent dataset, unless it was previously acquired.
 
     Parameters
     ----------
     database : delphi.epidata.acquisition.covid_hosp.common.database.Database
       A `Database` subclass for a particular dataset.
-    network : delphi.epidata.acquisition.covid_hosp.common.network.Network
-      A `Network` subclass for a particular dataset.
     newer_than : date
       Lower bound (exclusive) of days to get issues for.
     older_than : date
@@ -184,9 +182,8 @@ class Utils:
     """
     logger = database.logger()
     
-    datasets = []
     with database.connect() as db:
-      metadata = network.fetch_metadata(db.metadata_id, logger=logger)
+      metadata = Network.fetch_metadata(db.metadata_id, logger=logger)
       max_issue = db.get_max_issue(logger=logger)
 
     older_than = datetime.datetime.today().date() if newer_than is None else older_than
@@ -195,10 +192,11 @@ class Utils:
     if not daily_issues:
       logger.info("no new issues; nothing to do")
       return False
+    datasets = []
     for issue, revisions in daily_issues.items():
       issue_int = int(issue.strftime("%Y%m%d"))
       # download the dataset and add it to the database
-      dataset = Utils.merge_by_key_cols([network.fetch_dataset(url, logger=logger) for url, _ in revisions],
+      dataset = Utils.merge_by_key_cols([Network.fetch_dataset(url, logger=logger) for url, _ in revisions],
                                         db.key_columns,
                                         logger=logger)
       # add metadata to the database

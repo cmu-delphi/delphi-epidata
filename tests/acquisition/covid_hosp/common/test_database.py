@@ -28,15 +28,14 @@ class DatabaseTests(unittest.TestCase):
                            csv_cols=[],
                            key_cols=[],
                            aggregate_cols=[]):
-    chs = CovidHospSomething()
-    chs.get_ds_table_name = MagicMock(return_value = table_name)
-    chs.get_ds_dataset_id = MagicMock(return_value = dataset_id)
-    chs.get_ds_metadata_id = MagicMock(return_value = metadata_id)
-    chs.get_ds_issue_column = MagicMock(return_value = issue_col)
-    chs.get_ds_ordered_csv_cols = MagicMock(return_value = csv_cols)
-    chs.get_ds_key_cols = MagicMock(return_value = key_cols)
-    chs.get_ds_aggregate_key_cols = MagicMock(return_value = aggregate_cols)
-    return TestDatabase(mock_connection, chs=chs)
+    with patch.object(CovidHospSomething, 'get_ds_table_name', return_value=table_name), \
+        patch.object(CovidHospSomething, 'get_ds_dataset_id', return_value=dataset_id), \
+        patch.object(CovidHospSomething, 'get_ds_metadata_id', return_value=metadata_id), \
+        patch.object(CovidHospSomething, 'get_ds_issue_column', return_value=issue_col), \
+        patch.object(CovidHospSomething, 'get_ds_ordered_csv_cols', return_value=csv_cols), \
+        patch.object(CovidHospSomething, 'get_ds_key_cols', return_value=key_cols), \
+        patch.object(CovidHospSomething, 'get_ds_aggregate_key_cols', return_value=aggregate_cols):
+      return TestDatabase(mock_connection)
 
   def test_commit_and_close_on_success(self):
     """Commit and close the connection after success."""

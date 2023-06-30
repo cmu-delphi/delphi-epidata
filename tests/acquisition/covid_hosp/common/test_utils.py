@@ -6,6 +6,7 @@ import unittest
 from unittest.mock import MagicMock, PropertyMock, patch
 
 # first party
+from delphi.epidata.acquisition.covid_hosp.common.network import Network
 from delphi.epidata.acquisition.covid_hosp.common.test_utils import UnitTestUtils
 from delphi.epidata.acquisition.covid_hosp.common.utils import Utils, CovidHospException
 
@@ -76,18 +77,17 @@ class UtilsTests(unittest.TestCase):
   def test_run_skip_old_dataset(self):
     """Don't re-acquire an old dataset."""
 
-    mock_network = MagicMock()
-    mock_network.fetch_metadata.return_value = \
-        self.test_utils.load_sample_metadata()
     mock_database = MagicMock()
     with mock_database.connect() as mock_connection:
       pass
     mock_connection.get_max_issue.return_value = pd.Timestamp("2200/1/1")
 
-    result = Utils.update_dataset(database=mock_database, network=mock_network)
+    with patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()), \
+         patch.object(Network, 'fetch_dataset', return_value=None) as fetch_dataset:
+      result = Utils.update_dataset(database=mock_database)
 
     self.assertFalse(result)
-    mock_network.fetch_dataset.assert_not_called()
+    fetch_dataset.assert_not_called()
     mock_connection.insert_metadata.assert_not_called()
     mock_connection.insert_dataset.assert_not_called()
 
@@ -107,7 +107,9 @@ class UtilsTests(unittest.TestCase):
     with patch.object(Utils, 'issues_to_fetch') as mock_issues:
       mock_issues.return_value = {pd.Timestamp("2021/3/15"): [("url1", pd.Timestamp("2021-03-15 00:00:00")),
                                                               ("url2", pd.Timestamp("2021-03-15 00:00:00"))]}
-      result = Utils.update_dataset(database=mock_database, network=mock_network)
+      with patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()), \
+          patch.object(Network, 'fetch_dataset', return_value=fake_dataset):
+        result = Utils.update_dataset(database=mock_database)
 
     self.assertTrue(result)
 
