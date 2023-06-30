@@ -194,7 +194,7 @@ class Utils:
     with database.connect() as db:
       max_issue = db.get_max_issue(logger=logger)
 
-    older_than = datetime.datetime.today().date() if newer_than is None else older_than
+    older_than = (datetime.datetime.today().date() + datetime.timedelta(days=1)) if newer_than is None else older_than
     newer_than = max_issue if newer_than is None else newer_than
     daily_issues = Utils.issues_to_fetch(metadata, newer_than, older_than, logger=logger)
     if not daily_issues:
