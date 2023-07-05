@@ -181,13 +181,14 @@ class Utils:
       Whether a new dataset was acquired.
     """
     logger = database.logger()
+    db_instance = database()
     
-    with database.connect() as db:
-      metadata = Network.fetch_metadata(db.metadata_id, logger=logger)
+    with db_instance.connect() as db:
       max_issue = db.get_max_issue(logger=logger)
 
     older_than = datetime.datetime.today().date() if newer_than is None else older_than
     newer_than = max_issue if newer_than is None else newer_than
+    metadata = Network.fetch_metadata(db_instance.metadata_id, logger=logger)
     daily_issues = Utils.issues_to_fetch(metadata, newer_than, older_than, logger=logger)
     if not daily_issues:
       logger.info("no new issues; nothing to do")
@@ -197,7 +198,7 @@ class Utils:
       issue_int = int(issue.strftime("%Y%m%d"))
       # download the dataset and add it to the database
       dataset = Utils.merge_by_key_cols([Network.fetch_dataset(url, logger=logger) for url, _ in revisions],
-                                        db.key_columns,
+                                        db_instance.key_columns,
                                         logger=logger)
       # add metadata to the database
       all_metadata = []
@@ -208,7 +209,7 @@ class Utils:
         dataset,
         all_metadata
       ))
-    with database.connect() as db:
+    with db_instance.connect() as db:
       for issue_int, dataset, all_metadata in datasets:
         db.insert_dataset(issue_int, dataset, logger=logger)
         for url, metadata_json in all_metadata:

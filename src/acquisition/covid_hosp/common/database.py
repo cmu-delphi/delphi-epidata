@@ -17,17 +17,12 @@ class Database:
 
   DATASET_NAME = None
 
-  def __init__(self,
-               connection):
-    """Create a new Database object.
-
-    Parameters
-    ----------
-    connection
-      An open connection to a database.
+  def __init__(self):
     """
-
-    self.connection = connection
+    Create a new Database object.
+    """
+    # Make sure connection is reset - set this in connect()
+    self.connection = None
 
     if self.DATASET_NAME is None:
       raise NameError('no dataset given!') # Must be defined by subclasses
@@ -48,9 +43,8 @@ class Database:
   def logger(database_class):
     return get_structured_logger(f"{database_class.__module__}")
 
-  @classmethod
   @contextmanager
-  def connect(database_class, mysql_connector_impl=mysql.connector):
+  def connect(self, mysql_connector_impl=mysql.connector):
     """Connect to a database and provide the connection as a context manager.
 
     As long as the context manager exits normally, the connection's transaction
@@ -63,7 +57,7 @@ class Database:
 
     # connect to the database
     user, password = secrets.db.epi
-    connection = mysql_connector_impl.connect(
+    self.connection = mysql_connector_impl.connect(
         host=secrets.db.host,
         user=user,
         password=password,
@@ -71,14 +65,15 @@ class Database:
 
     try:
       # provide the connection to the context manager
-      yield database_class(connection)
+      yield self
 
       # rollback by default; the following commit will only take place if no
       # exception was raised in calling code
-      connection.commit()
+      self.connection.commit()
     finally:
-      # close the connection in any case
-      connection.close()
+      # close the connection in any case and make sure self.connection is reset
+      self.connection.close()
+      self.connection = None
 
   @contextmanager
   def new_cursor(self):
