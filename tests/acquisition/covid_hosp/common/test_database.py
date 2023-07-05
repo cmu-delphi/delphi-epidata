@@ -1,12 +1,14 @@
 """Unit tests for database.py."""
 
 # standard library
+from contextlib import contextmanager
 import math
 import unittest
 from unittest.mock import MagicMock, patch, sentinel
 
 # third party
 import pandas as pd
+import mysql.connector
 
 from delphi.epidata.acquisition.covid_hosp.common.database import Database
 from delphi.epidata.common.covid_hosp.covid_hosp_schema_io import Columndef, CovidHospSomething
@@ -20,7 +22,7 @@ class TestDatabase(Database):
 
 class DatabaseTests(unittest.TestCase):
 
-  def create_mock_database(self, mock_connection,
+  def create_mock_database(self,
                            table_name=None,
                            dataset_id=None,
                            metadata_id=None,
@@ -35,7 +37,7 @@ class DatabaseTests(unittest.TestCase):
         patch.object(CovidHospSomething, 'get_ds_ordered_csv_cols', return_value=csv_cols), \
         patch.object(CovidHospSomething, 'get_ds_key_cols', return_value=key_cols), \
         patch.object(CovidHospSomething, 'get_ds_aggregate_key_cols', return_value=aggregate_cols):
-      return TestDatabase(mock_connection)
+      return TestDatabase()
 
   def test_commit_and_close_on_success(self):
     """Commit and close the connection after success."""
@@ -49,7 +51,7 @@ class DatabaseTests(unittest.TestCase):
         patch.object(CovidHospSomething, 'get_ds_ordered_csv_cols', return_value=[]), \
         patch.object(CovidHospSomething, 'get_ds_key_cols', return_value=None), \
         patch.object(CovidHospSomething, 'get_ds_aggregate_key_cols', return_value=None), \
-        TestDatabase.connect(mysql_connector_impl=mock_connector) as database:
+        TestDatabase().connect(mysql_connector_impl=mock_connector) as database:
       connection = database.connection
 
     mock_connector.connect.assert_called_once()
@@ -69,7 +71,7 @@ class DatabaseTests(unittest.TestCase):
         patch.object(CovidHospSomething, 'get_ds_ordered_csv_cols', return_value=[]), \
         patch.object(CovidHospSomething, 'get_ds_key_cols', return_value=None), \
         patch.object(CovidHospSomething, 'get_ds_aggregate_key_cols', return_value=None), \
-        TestDatabase.connect(mysql_connector_impl=mock_connector) as database:
+        TestDatabase().connect(mysql_connector_impl=mock_connector) as database:
         connection = database.connection
         raise Exception('intentional test of exception handling')
     except Exception:
@@ -84,11 +86,13 @@ class DatabaseTests(unittest.TestCase):
 
     mock_connection = MagicMock()
     mock_cursor = mock_connection.cursor()
-    database = self.create_mock_database(mock_connection)
+    mock_database = self.create_mock_database(mock_connection)
 
     try:
-      with database.new_cursor() as cursor:
-        raise Exception('intentional test of exception handling')
+      with patch.object(mysql.connector, 'connect', return_value=mock_connection), \
+        mock_database.connect() as database:
+        with database.new_cursor() as cursor:
+          raise Exception('intentional test of exception handling')
     except Exception:
       pass
 
@@ -102,28 +106,29 @@ class DatabaseTests(unittest.TestCase):
 
     mock_connection = MagicMock()
     mock_cursor = mock_connection.cursor()
+    mock_database = self.create_mock_database(table_name = sentinel.table_name, dataset_id=sentinel.hhs_dataset_id)
 
-    database = self.create_mock_database(mock_connection, table_name = sentinel.table_name, dataset_id=sentinel.hhs_dataset_id)
+    with patch.object(mysql.connector, 'connect', return_value=mock_connection), \
+      mock_database.connect() as database:
+        with self.subTest(name='new revision'):
+          mock_cursor.__iter__.return_value = [(0,)]
 
-    with self.subTest(name='new revision'):
-      mock_cursor.__iter__.return_value = [(0,)]
+          result = database.contains_revision(sentinel.revision)
 
-      result = database.contains_revision(sentinel.revision)
+        # compare with boolean literal to test the type cast
+        self.assertIs(result, False)
+        query_values = mock_cursor.execute.call_args[0][-1]
+        self.assertEqual(query_values, (sentinel.hhs_dataset_id, sentinel.revision))
 
-      # compare with boolean literal to test the type cast
-      self.assertIs(result, False)
-      query_values = mock_cursor.execute.call_args[0][-1]
-      self.assertEqual(query_values, (sentinel.hhs_dataset_id, sentinel.revision))
+        with self.subTest(name='old revision'):
+          mock_cursor.__iter__.return_value = [(1,)]
 
-    with self.subTest(name='old revision'):
-      mock_cursor.__iter__.return_value = [(1,)]
+          result = database.contains_revision(sentinel.revision)
 
-      result = database.contains_revision(sentinel.revision)
-
-      # compare with boolean literal to test the type cast
-      self.assertIs(result, True)
-      query_values = mock_cursor.execute.call_args[0][-1]
-      self.assertEqual(query_values, (sentinel.hhs_dataset_id, sentinel.revision))
+          # compare with boolean literal to test the type cast
+          self.assertIs(result, True)
+          query_values = mock_cursor.execute.call_args[0][-1]
+          self.assertEqual(query_values, (sentinel.hhs_dataset_id, sentinel.revision))
 
   def test_insert_metadata(self):
     """Add new metadata to the database."""
@@ -134,12 +139,14 @@ class DatabaseTests(unittest.TestCase):
     mock_connection = MagicMock()
     mock_cursor = mock_connection.cursor()
 
-    database = self.create_mock_database(mock_connection, table_name = sentinel.table_name, dataset_id = sentinel.hhs_dataset_id)
+    mock_database = self.create_mock_database(table_name = sentinel.table_name, dataset_id = sentinel.hhs_dataset_id)
 
-    result = database.insert_metadata(
-        sentinel.publication_date,
-        sentinel.revision,
-        sentinel.meta_json)
+    with patch.object(mysql.connector, 'connect', return_value=mock_connection), \
+      mock_database.connect() as database:
+      result = database.insert_metadata(
+          sentinel.publication_date,
+          sentinel.revision,
+          sentinel.meta_json)
 
     self.assertIsNone(result)
     actual_values = mock_cursor.execute.call_args[0][-1]
@@ -167,7 +174,7 @@ class DatabaseTests(unittest.TestCase):
     mock_connection = MagicMock()
     mock_cursor = mock_connection.cursor()
 
-    database = self.create_mock_database(mock_connection, table_name = table_name, csv_cols=columns_and_types, issue_col='issue')
+    mock_database = self.create_mock_database(table_name = table_name, csv_cols=columns_and_types, issue_col='issue')
 
     dataset = pd.DataFrame.from_dict({
       'str_col': ['a', 'b', 'c', math.nan, 'e', 'f'],
@@ -175,7 +182,9 @@ class DatabaseTests(unittest.TestCase):
       'float_col': ['0.1', '0.2', '0.3', '0.4', '0.5', math.nan],
     })
 
-    result = database.insert_dataset(sentinel.publication_date, dataset)
+    with patch.object(mysql.connector, 'connect', return_value=mock_connection), \
+      mock_database.connect() as database:
+      result = database.insert_dataset(sentinel.publication_date, dataset)
 
     self.assertIsNone(result)
     self.assertEqual(mock_cursor.executemany.call_count, 1)

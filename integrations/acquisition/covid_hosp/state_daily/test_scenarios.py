@@ -39,7 +39,7 @@ class AcquisitionTests(unittest.TestCase):
     secrets.db.epi = ('user', 'pass')
 
     # clear relevant tables
-    with Database.connect() as db:
+    with Database().connect() as db:
       with db.new_cursor() as cur:
         cur.execute('truncate table covid_hosp_state_daily')
         cur.execute('truncate table covid_hosp_state_timeseries')
@@ -114,7 +114,7 @@ class AcquisitionTests(unittest.TestCase):
 
     # acquire sample data into local database
     # mock out network calls to external hosts
-    with Database.connect() as db:
+    with Database().connect() as db:
       pre_max_issue = db.get_max_issue()
     self.assertEqual(pre_max_issue, pd.Timestamp('1900-01-01 00:00:00'))
     with self.subTest(name='first acquisition'), \
@@ -124,7 +124,7 @@ class AcquisitionTests(unittest.TestCase):
       acquired = Utils.update_dataset(Database,
                                       date(2021, 3, 12),
                                       date(2021, 3, 14))
-      with Database.connect() as db:
+      with Database().connect() as db:
         post_max_issue = db.get_max_issue()
       self.assertEqual(post_max_issue, pd.Timestamp('2021-03-13 00:00:00'))
       self.assertTrue(acquired)

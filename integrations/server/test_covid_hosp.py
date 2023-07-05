@@ -23,7 +23,7 @@ class ServerTests(unittest.TestCase):
     secrets.db.epi = ('user', 'pass')
 
     # clear relevant tables
-    with Database.connect() as db:
+    with Database().connect() as db:
       with db.new_cursor() as cur:
         cur.execute('truncate table covid_hosp_state_daily')
         cur.execute('truncate table covid_hosp_state_timeseries')
@@ -45,7 +45,7 @@ class ServerTests(unittest.TestCase):
   def test_query_by_issue(self):
     """Query with and without specifying an issue."""
 
-    with Database.connect() as db:
+    with Database().connect() as db:
       with db.new_cursor() as cur:
         # inserting out of order to test server-side order by
         # also inserting two for 20201201 to test tiebreaker.
@@ -91,7 +91,7 @@ class ServerTests(unittest.TestCase):
 
 
   def test_query_by_as_of(self):
-    with Database.connect() as db:
+    with Database().connect() as db:
       with db.new_cursor() as cur:
         self.insert_timeseries(cur, 20201101, 0)
         self.insert_daily(cur, 20201102, 1)

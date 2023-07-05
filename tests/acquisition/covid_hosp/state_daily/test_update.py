@@ -28,7 +28,7 @@ class UpdateTests(unittest.TestCase):
   def test_merge(self):
     """Merging the set of updates in each batch is pretty tricky"""
     # Generate a set of synthetic updates with overlapping keys
-    db = Database(None)
+    db = Database()
     keys = list(db.columns_and_types.keys())
     N = 10
     dfs = []

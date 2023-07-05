@@ -37,7 +37,7 @@ class AcquisitionTests(unittest.TestCase):
     secrets.db.epi = ('user', 'pass')
 
     # clear relevant tables
-    with Database.connect() as db:
+    with Database().connect() as db:
       with db.new_cursor() as cur:
         cur.execute('truncate table covid_hosp_facility')
         cur.execute('truncate table covid_hosp_facility_key')
