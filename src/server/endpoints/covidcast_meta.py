@@ -58,13 +58,19 @@ def handle():
         get_structured_logger('server_api').warning("empty entry in covidcast_meta cache")
         return printer(_nonerator())
 
-    standard_age = 60 * 60 # expected metadata regeneration interval, in seconds (currently 60 mins)
-    # TODO: get this ^ from a config var?  ideally, it should be set to the time between runs of
-    #       src/acquisition/covidcast/covidcast_meta_cache_updater.py
+    # the expected metadata regeneration interval in seconds, aka time between runs of
+    # src/acquisition/covidcast/covidcast_meta_cache_updater.py (currently 2h)
+    standard_age = 2 * 60 * 60
+    # a short period when a client can continue to use this metadata even if its slightly stale,
+    # which also gives some padding if the md generation is running slow,
+    # and which also acts as a minimum cacheable time (currently 10 mins)
+    age_margin = 10 * 60
+    # these should be updated if a stale cache will have undue impact on user activities, such as
+    # if we start updating the metadata table much more frequently and having up-to-the-minute
+    # metadata accuracy becomes important to users once more.
+    # TODO: get the above two values ^ from config vars?
     age = metadata["age"]
-    if age > standard_age * 1.25:
-        # complain if the cache is too old (currently, more than 75 mins old)
-        get_structured_logger('server_api').warning("covidcast_meta cache is stale", cache_age=age)
+    reported_age = max(0, min(age, standard_age) - age_margin)
 
     def cache_entry_gen():
         for entry in metadata_list:
@@ -85,7 +91,7 @@ def handle():
         filter_fields(cache_entry_gen()),
         headers={
             "Cache-Control": f"max-age={standard_age}, public",
-            "Age": f"{age}",
+            "Age": f"{reported_age}",
             # TODO?: "Expires": f"{}", # superseded by Cache-Control: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Expires
         }
     )
