@@ -172,7 +172,7 @@ class DatabaseTests(unittest.TestCase):
       "Archive Link": ["a", "b", "d", "c", "e"]
     }).set_index("date")
 
-    issues = TestDatabase.issues_to_fetch(test_metadata, pd.Timestamp("2021-3-13"), pd.Timestamp("2021-3-16"))
+    issues = TestDatabase.create_mock_database().issues_to_fetch(test_metadata, pd.Timestamp("2021-3-13"), pd.Timestamp("2021-3-16"))
     self.assertEqual(issues,
                      {date(2021, 3, 14): [("b", pd.Timestamp("2021-03-14 00:00:00"))],
                       date(2021, 3, 15): [("c", pd.Timestamp("2021-03-15 00:00:00")),

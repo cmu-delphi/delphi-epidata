@@ -23,6 +23,7 @@ class Database:
     """
     Create a new Database object.
     """
+    self.logger = self.logger()
     # Make sure connection is reset - set this in connect()
     self.connection = None
 
@@ -104,26 +105,23 @@ class Database:
     -------
     bool
       Whether a new dataset was acquired.
-    """
-    logger = self.logger()
-    
+    """    
     with self.connect() as db:
-      max_issue = db.get_max_issue(logger=logger)
+      max_issue = db.get_max_issue()
 
     older_than = datetime.datetime.today().date() if newer_than is None else older_than
     newer_than = max_issue if newer_than is None else newer_than
-    metadata = Network.fetch_metadata(self.metadata_id, logger=logger)
-    daily_issues = self.issues_to_fetch(metadata, newer_than, older_than, logger=logger)
+    metadata = Network.fetch_metadata(self.metadata_id, logger=self.logger)
+    daily_issues = self.issues_to_fetch(metadata, newer_than, older_than)
     if not daily_issues:
-      logger.info("no new issues; nothing to do")
+      self.logger.info("no new issues; nothing to do")
       return False
     datasets = []
     for issue, revisions in daily_issues.items():
       issue_int = int(issue.strftime("%Y%m%d"))
       # download the dataset and add it to the database
-      dataset = self.merge_by_key_cols([Network.fetch_dataset(url, logger=logger) for url, _ in revisions],
-                                        self.key_columns,
-                                        logger=logger)
+      dataset = self.merge_by_key_cols([Network.fetch_dataset(url, logger=self.logger) for url, _ in revisions],
+                                        self.key_columns)
       # add metadata to the database
       all_metadata = []
       for url, index in revisions:
@@ -135,15 +133,15 @@ class Database:
       ))
     with self.connect() as db:
       for issue_int, dataset, all_metadata in datasets:
-        db.insert_dataset(issue_int, dataset, logger=logger)
+        db.insert_dataset(issue_int, dataset)
         for url, metadata_json in all_metadata:
-          db.insert_metadata(issue_int, url, metadata_json, logger=logger)
-        logger.info("acquired rows", count=len(dataset))
+          db.insert_metadata(issue_int, url, metadata_json)
+        self.logger.info("acquired rows", count=len(dataset))
 
       # note that the transaction is committed by exiting the `with` block
       return True
 
-  def insert_metadata(self, publication_date, revision, meta_json, logger=False):
+  def insert_metadata(self, publication_date, revision, meta_json):
     """Add revision metadata to the database.
 
     Parameters
@@ -154,8 +152,6 @@ class Database:
       Unique revision string.
     meta_json : str
       Metadata serialized as a JSON string.
-    logger structlog.Logger [optional; default False]
-      Logger to receive messages
     """
 
     with self.new_cursor() as cursor:
@@ -173,7 +169,7 @@ class Database:
           (%s, %s, %s, %s, %s, NOW())
       ''', (self.table_name, self.hhs_dataset_id, publication_date, revision, meta_json))
 
-  def insert_dataset(self, publication_date, dataframe, logger=False):
+  def insert_dataset(self, publication_date, dataframe):
     """Add a dataset to the database.
 
     Parameters
@@ -182,8 +178,6 @@ class Database:
       Date when the dataset was published in YYYYMMDD format.
     dataframe : pandas.DataFrame
       The dataset.
-    logger structlog.Logger [optional; default False]
-      Logger to receive messages.
     """
     dataframe_columns_and_types = [
       x for x in self.columns_and_types.values() if x.csv_name in dataframe.columns
@@ -204,8 +198,7 @@ class Database:
     sql = f'INSERT INTO `{self.table_name}` (`id`, `{self.issue_column}`, {columns}) ' \
           f'VALUES ({value_placeholders})'
     id_and_publication_date = (0, publication_date)
-    if logger:
-      logger.info('updating values', count=len(dataframe.index))
+    self.logger.info('updating values', count=len(dataframe.index))
     n = 0
     many_values = []
     with self.new_cursor() as cursor:
@@ -223,8 +216,7 @@ class Database:
             cursor.executemany(sql, many_values)
             many_values = []
           except Exception as e:
-            if logger:
-              logger.error('error on insert', publ_date=publication_date, in_lines=(n-5_000, n), index=index, values=values, exception=e)
+            self.logger.error('error on insert', publ_date=publication_date, in_lines=(n-5_000, n), index=index, values=values, exception=e)
             raise e
       # insert final batch
       if many_values:
@@ -232,8 +224,7 @@ class Database:
 
     # deal with non/seldomly updated columns used like a fk table (if this database needs it)
     if len(self.aggregate_key_columns) > 0:
-      if logger:
-        logger.info('updating keys')
+      self.logger.info('updating keys')
       ak_cols = self.aggregate_key_columns
 
       # restrict data to just the key columns and remove duplicate rows
@@ -260,15 +251,14 @@ class Database:
       ak_table = self.table_name + '_key'
       # assemble full SQL statement
       ak_insert_sql = f'INSERT INTO `{ak_table}` ({ak_cols_str}) VALUES ({values_str}) AS v ON DUPLICATE KEY UPDATE {ak_updates_str}'
-      if logger:
-        logger.info("database query", sql=ak_insert_sql)
+      self.logger.info("database query", sql=ak_insert_sql)
 
       # commit the data
       with self.new_cursor() as cur:
         cur.executemany(ak_insert_sql, ak_data)
 
 
-  def get_max_issue(self, logger=False):
+  def get_max_issue(self):
     """Fetch the most recent issue.
 
     This is used to bookend what updates we pull in from the HHS metadata.
@@ -285,12 +275,10 @@ class Database:
       for (result,) in cursor:
         if result is not None:
           return pd.Timestamp(str(result))
-      if logger:
-        logger.warn("get_max_issue", msg="no matching results in meta table; returning 1900/1/1 epoch")
+      self.logger.warn("get_max_issue", msg="no matching results in meta table; returning 1900/1/1 epoch")
       return pd.Timestamp("1900/1/1")
 
-  @staticmethod
-  def issues_to_fetch(metadata, newer_than, older_than, logger=False):
+  def issues_to_fetch(self, metadata, newer_than, older_than):
     """
     Construct all issue dates and URLs to be ingested based on metadata.
 
@@ -324,14 +312,12 @@ class Database:
         n_selected += len(urls_list)
       elif day >= older_than:
         n_beyond += 1
-    if logger:
-      if n_beyond > 0:
-        logger.info("issues available beyond selection", on_or_newer=older_than, count=n_beyond)
-      logger.info("issues selected", newer_than=str(newer_than), older_than=str(older_than), count=n_selected)
+    if n_beyond > 0:
+      self.logger.info("issues available beyond selection", on_or_newer=older_than, count=n_beyond)
+    self.logger.info("issues selected", newer_than=str(newer_than), older_than=str(older_than), count=n_selected)
     return daily_issues
 
-  @staticmethod
-  def merge_by_key_cols(dfs, key_cols, logger=False):
+  def merge_by_key_cols(self, dfs, key_cols):
     """Merge a list of data frames as a series of updates.
 
     Parameters:
@@ -340,8 +326,6 @@ class Database:
         Data frames to merge, ordered from earliest to latest.
       key_cols: list(str)
         Columns to use as the index.
-      logger structlog.Logger [optional; default False]
-        Logger to receive messages
 
     Returns a single data frame containing the most recent data for each state+date.
     """
@@ -349,8 +333,8 @@ class Database:
     dfs = [df.set_index(key_cols) for df in dfs
            if not all(k in df.index.names for k in key_cols)]
     result = dfs[0]
-    if logger and len(dfs) > 7:
-      logger.warning(
+    if len(dfs) > 7:
+      self.logger.warning(
         "expensive operation",
         msg="concatenating more than 7 files may result in long running times",
         count=len(dfs))
