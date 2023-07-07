@@ -8,4 +8,4 @@ from delphi.epidata.acquisition.covid_hosp.state_daily.database import Database
 
 
 if __name__ == '__main__':
-  Utils.update_dataset(Database)
+  Database().update_dataset()

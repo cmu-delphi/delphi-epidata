@@ -61,8 +61,8 @@ class AcquisitionTests(unittest.TestCase):
          patch.object(Network, 'fetch_dataset', side_effect=[self.test_utils.load_sample_dataset("dataset0.csv"), # dataset for 3/13
                                                              self.test_utils.load_sample_dataset("dataset0.csv"), # first dataset for 3/15
                                                              self.test_utils.load_sample_dataset()] # second dataset for 3/15
-                      ) as mock_fetch:
-      acquired = Utils.update_dataset(Database)
+                      ):
+      acquired = Database().update_dataset()
       self.assertTrue(acquired)
       self.assertEqual(mock_fetch_meta.call_count, 1)
 
@@ -91,9 +91,9 @@ class AcquisitionTests(unittest.TestCase):
 
     # re-acquisition of the same dataset should be a no-op
     with self.subTest(name='second acquisition'), \
-         patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()) as mock_fetch_meta, \
-         patch.object(Network, 'fetch_dataset', return_value=self.test_utils.load_sample_dataset()) as mock_fetch:
-      acquired = Utils.update_dataset(Database)
+         patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()), \
+         patch.object(Network, 'fetch_dataset', return_value=self.test_utils.load_sample_dataset()):
+      acquired = Database().update_dataset()
       self.assertFalse(acquired)
 
     # make sure the data still exists
@@ -119,11 +119,8 @@ class AcquisitionTests(unittest.TestCase):
     self.assertEqual(pre_max_issue, pd.Timestamp('1900-01-01 00:00:00'))
     with self.subTest(name='first acquisition'), \
          patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()), \
-         patch.object(Network, 'fetch_dataset', side_effect=[self.test_utils.load_sample_dataset("dataset0.csv")]
-                      ) as mock_fetch:
-      acquired = Utils.update_dataset(Database,
-                                      date(2021, 3, 12),
-                                      date(2021, 3, 14))
+         patch.object(Network, 'fetch_dataset', side_effect=[self.test_utils.load_sample_dataset("dataset0.csv")]):
+      acquired = Database().update_dataset(date(2021, 3, 12), date(2021, 3, 14))
       with Database().connect() as db:
         post_max_issue = db.get_max_issue()
       self.assertEqual(post_max_issue, pd.Timestamp('2021-03-13 00:00:00'))

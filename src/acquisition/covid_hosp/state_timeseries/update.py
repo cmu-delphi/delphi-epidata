@@ -8,4 +8,4 @@ from delphi.epidata.acquisition.covid_hosp.state_timeseries.database import Data
 
 
 if __name__ == '__main__':
-  Utils.update_dataset(Database)
+  Database().update_dataset()

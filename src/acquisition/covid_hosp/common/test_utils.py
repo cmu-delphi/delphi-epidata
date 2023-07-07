@@ -10,10 +10,33 @@ dir, hence the existence of this file.
 
 # standard library
 from pathlib import Path
+from unittest.mock import patch
 
 # third party
 import pandas
 
+from delphi.epidata.acquisition.covid_hosp.common.database import Database
+from delphi.epidata.common.covid_hosp.covid_hosp_schema_io import CovidHospSomething
+
+class TestDatabase(Database):
+  DATASET_NAME = 'mock_dataset'
+
+  @staticmethod
+  def create_mock_database(table_name=None,
+                           dataset_id=None,
+                           metadata_id=None,
+                           issue_col=None,
+                           csv_cols=[],
+                           key_cols=[],
+                           aggregate_cols=[]):
+    with patch.object(CovidHospSomething, 'get_ds_table_name', return_value=table_name), \
+        patch.object(CovidHospSomething, 'get_ds_dataset_id', return_value=dataset_id), \
+        patch.object(CovidHospSomething, 'get_ds_metadata_id', return_value=metadata_id), \
+        patch.object(CovidHospSomething, 'get_ds_issue_column', return_value=issue_col), \
+        patch.object(CovidHospSomething, 'get_ds_ordered_csv_cols', return_value=csv_cols), \
+        patch.object(CovidHospSomething, 'get_ds_key_cols', return_value=key_cols), \
+        patch.object(CovidHospSomething, 'get_ds_aggregate_key_cols', return_value=aggregate_cols):
+      return TestDatabase()
 
 class UnitTestUtils:
 

@@ -4,6 +4,8 @@
 import unittest
 
 # first party
+from delphi.epidata.common.covid_hosp.covid_hosp_schema_io import CovidHospSomething
+# use state_timeseries DB to get access to a SQL cursor
 from delphi.epidata.acquisition.covid_hosp.state_timeseries.database import Database
 from delphi.epidata.client.delphi_epidata import Epidata
 import delphi.operations.secrets as secrets
@@ -31,13 +33,17 @@ class ServerTests(unittest.TestCase):
 
 
   def insert_timeseries(self, cur, issue, value):
-    so_many_nulls = ', '.join(['null'] * 114)
+    # number of dynamic columns + one extra issue column - four columns already in the query
+    col_count = len(list(CovidHospSomething().columns('state_timeseries'))) - 3
+    so_many_nulls = ', '.join(['null'] * col_count)
     cur.execute(f'''insert into covid_hosp_state_timeseries values (
       0, {issue}, 'PA', 20201118, {value}, {so_many_nulls}
     )''')
 
   def insert_daily(self, cur, issue, value):
-    so_many_nulls = ', '.join(['null'] * 114)
+    # number of dynamic columns + one extra issue column - four columns already in the query
+    col_count = len(list(CovidHospSomething().columns('state_daily'))) - 3
+    so_many_nulls = ', '.join(['null'] * col_count)
     cur.execute(f'''insert into covid_hosp_state_daily values (
       0, {issue}, 'PA', 20201118, {value}, {so_many_nulls}
     )''')

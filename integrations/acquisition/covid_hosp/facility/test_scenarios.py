@@ -57,7 +57,7 @@ class AcquisitionTests(unittest.TestCase):
     with self.subTest(name='first acquisition'), \
          patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()), \
          patch.object(Network, 'fetch_dataset', return_value=self.test_utils.load_sample_dataset()):
-      acquired = Utils.update_dataset(Database)
+      acquired = Database().update_dataset()
       self.assertTrue(acquired)
 
     # make sure the data now exists
@@ -93,7 +93,7 @@ class AcquisitionTests(unittest.TestCase):
     with self.subTest(name='second acquisition'), \
          patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()), \
          patch.object(Network, 'fetch_dataset', return_value=self.test_utils.load_sample_dataset()):
-      acquired = Utils.update_dataset(Database)
+      acquired = Database().update_dataset()
       self.assertFalse(acquired)
 
     # make sure the data still exists
@@ -111,7 +111,7 @@ class AcquisitionTests(unittest.TestCase):
     with self.subTest(name='first acquisition'), \
          patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()), \
          patch.object(Network, 'fetch_dataset', return_value=self.test_utils.load_sample_dataset()):
-      acquired = Utils.update_dataset(Database)
+      acquired = Database().update_dataset()
       self.assertTrue(acquired)
 
     # texas ground truth, sorted by `hospital_pk`
@@ -179,7 +179,7 @@ class AcquisitionTests(unittest.TestCase):
     with self.subTest(name='second acquisition'), \
          patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata('metadata_update_facility.csv')), \
          patch.object(Network, 'fetch_dataset', return_value=self.test_utils.load_sample_dataset('dataset_update_facility.csv')):
-      acquired = Utils.update_dataset(Database)
+      acquired = Database().update_dataset()
       self.assertTrue(acquired)
 
     texas_hospitals[1]['zip'] = '88888'
