@@ -85,8 +85,6 @@ REGION_TO_STATE = {
 }
 NATION_REGION = "nat"
 
-API_KEY_REQUIRED_STARTING_AT = date.fromisoformat(os.environ.get("API_KEY_REQUIRED_STARTING_AT", "2023-06-21"))
-TEMPORARY_API_KEY = os.environ.get("TEMPORARY_API_KEY", "TEMP-API-KEY-EXPIRES-2023-06-28")
 # password needed for the admin application if not set the admin routes won't be available
 ADMIN_PASSWORD = os.environ.get("API_KEY_ADMIN_PASSWORD", "abc")
 # secret for the google form to give to the admin/register endpoint

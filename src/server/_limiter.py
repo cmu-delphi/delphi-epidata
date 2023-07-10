@@ -1,5 +1,5 @@
 from delphi.epidata.server.endpoints.covidcast_utils.dashboard_signals import DashboardSignals
-from flask import Response, request, make_response, jsonify
+from flask import Response, request
 from flask_limiter import Limiter, HEADERS
 from redis import Redis
 from werkzeug.exceptions import Unauthorized, TooManyRequests
@@ -8,7 +8,7 @@ from ._common import app, get_real_ip_addr
 from ._config import RATE_LIMIT, RATELIMIT_STORAGE_URL, REDIS_HOST, REDIS_PASSWORD
 from ._exceptions import ValidationFailedException
 from ._params import extract_dates, extract_integers, extract_strings
-from ._security import _is_public_route, current_user, require_api_key, show_no_api_key_warning, resolve_auth_token, ERROR_MSG_RATE_LIMIT, ERROR_MSG_MULTIPLES
+from ._security import _is_public_route, current_user, resolve_auth_token, ERROR_MSG_RATE_LIMIT, ERROR_MSG_MULTIPLES
 
 
 def deduct_on_success(response: Response) -> bool:
@@ -108,23 +108,8 @@ def ratelimit_handler(e):
     return TooManyRequests(ERROR_MSG_RATE_LIMIT)
 
 
-def requests_left():
-    r = Redis(host=REDIS_HOST, password=REDIS_PASSWORD)
-    allowed_count, period = RATE_LIMIT.split("/")
-    try:
-        remaining_count = int(allowed_count) - int(
-            r.get(f"LIMITER/{_resolve_tracking_key()}/EpidataLimiter/{allowed_count}/1/{period}")
-        )
-    except TypeError:
-        return 1
-    return remaining_count
-
-
 @limiter.request_filter
 def _no_rate_limit() -> bool:
-    if show_no_api_key_warning():
-        # no rate limit in phase 0
-        return True
     if _is_public_route():
         # no rate limit for public routes
         return True
@@ -132,15 +117,6 @@ def _no_rate_limit() -> bool:
         # no rate limit if user is registered
         return True
 
-    if not require_api_key():
-        #  we are in phase 1 or 2
-        if requests_left() > 0:
-            # ...and user is below rate limit, we still want to record this query for the rate computation...
-            return False
-        # ...otherwise, they have exceeded the limit, but we still want to allow them through
-        return True
-
-    # phase 3 (full api-keys behavior)
     multiples = get_multiples_count(request)
     if multiples < 0:
         # too many multiples
