@@ -7,7 +7,7 @@ from werkzeug.exceptions import Unauthorized, TooManyRequests
 from ._common import app, get_real_ip_addr
 from ._config import RATE_LIMIT, RATELIMIT_STORAGE_URL, REDIS_HOST, REDIS_PASSWORD
 from ._exceptions import ValidationFailedException
-from ._params import extract_dates, extract_integers, extract_strings
+from ._params import extract_dates, extract_integers, extract_strings, parse_source_signal_sets
 from ._security import _is_public_route, current_user, require_api_key, show_no_api_key_warning, resolve_auth_token, ERROR_MSG_RATE_LIMIT, ERROR_MSG_MULTIPLES
 
 
@@ -71,12 +71,13 @@ def get_multiples_count(request):
 def check_signals_allowlist(request):
     signals_allowlist = {":".join(ss_pair) for ss_pair in DashboardSignals().srcsig_list()}
     request_signals = []
-    if "signal" in request.args.keys():
-        request_signals += extract_strings("signal")
-    if "signals" in request.args.keys():
-        request_signals += extract_strings("signals")
-    if "data_source" in request.args:
-        request_signals = [f"{request.args['data_source']}:{request_signal}" for request_signal in request_signals]
+    request_args = request.args.keys()
+    if "signal" in request_args or "signals" in request_args:
+        source_signal_sets = parse_source_signal_sets()
+        for source_signal in source_signal_sets:
+            if isinstance(source_signal.signal, list):
+                for signal in source_signal.signal:
+                    request_signals.append(f"{source_signal.source}:{signal}")
     if len(request_signals) == 0:
         return False
     return all([signal in signals_allowlist for signal in request_signals])
