@@ -1,0 +1,17 @@
+name: Dependabot auto-assign reviewer
+on: pull_request
+
+permissions:
+  pull-requests: write
+
+jobs:
+  dependabot:
+    runs-on: ubuntu-latest
+    env: 
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    if: ${{ github.actor == 'dependabot[bot]' }}
+    steps:
+      - name: Assign team to PR
+        run: gh pr edit "$PR_URL" --add-reviewer "cmu-delphi/code-reviewers"
+        env:
+          PR_URL: ${{github.event.pull_request.html_url}}
