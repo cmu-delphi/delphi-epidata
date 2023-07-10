@@ -43,11 +43,17 @@ class TestCovidcastRows(unittest.TestCase):
     )
 
     def test_transpose_dict(self):
-        assert transpose_dict({"a": [2, 4, 6], "b": [3, 5, 7], "c": [10, 20, 30]}) == [
+        # fmt: off
+        assert transpose_dict({
+            "a": [2, 4, 6],
+            "b": [3, 5, 7],
+            "c": [10, 20, 30]
+        }) == [
             {"a": 2, "b": 3, "c": 10},
             {"a": 4, "b": 5, "c": 20},
             {"a": 6, "b": 7, "c": 30},
         ]
+        # fmt: on
 
     def test_CovidcastRow(self):
         df = CovidcastTestRow.make_default_row(
