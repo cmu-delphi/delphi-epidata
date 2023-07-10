@@ -28,8 +28,7 @@ class SourceSignal:
 
 # empty generator that never yields
 def _nonerator():
-    return
-    yield
+    return (x for x in [])
 
 
 @bp.route("/", methods=("GET", "POST"))
