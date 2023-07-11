@@ -95,7 +95,7 @@ def check_signals_allowlist(request):
         return False
     if len(request_signals) == 0:
         return False
-    return set(request_signals).issubset(signals_allowlist)
+    return request_signals.issubset(signals_allowlist)
 
 
 def _resolve_tracking_key() -> str:
