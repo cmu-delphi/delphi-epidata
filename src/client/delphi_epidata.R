@@ -18,6 +18,7 @@ Epidata <- (function() {
   client_version <- '4.1.5'
 
   auth <- getOption("epidata.auth", default = NA)
+  auth <- if (is.null(auth)) Sys.getenv("DELPHI_EPIDATA_KEY") else NA
 
   client_user_agent <- user_agent(paste("delphi_epidata/", client_version, " (R)", sep=""))
 
