@@ -11,6 +11,7 @@ Notes:
 # External modules
 import requests
 import asyncio
+import os
 from tenacity import retry, stop_after_attempt
 
 from aiohttp import ClientSession, TCPConnector, BasicAuth
@@ -45,7 +46,7 @@ class Epidata:
 
     # API base url
     BASE_URL = "https://api.delphi.cmu.edu/epidata/api.php"
-    auth = None
+    auth = os.environ.get("DELPHI_EPIDATA_KEY")
 
     client_version = _version
 
