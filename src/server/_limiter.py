@@ -75,17 +75,17 @@ def check_signals_allowlist(request):
     request_signals = set()
     try:
         source_signal_sets = parse_source_signal_sets()
-        for source_signal in source_signal_sets:
-            # source_signal.signal is expected to be eiter list or bool:
-            # in case of bool, we have wildcard signal -> return False as there are no chances that
-            # all signals from given source will be whitelisted
-            # in case of list, we have list of signals
-            if isinstance(source_signal.signal, bool):
-                return False
-            for signal in source_signal.signal:
-                request_signals.add(f"{source_signal.source}:{signal}")
     except ValidationFailedException:
         return False
+    for source_signal in source_signal_sets:
+        # source_signal.signal is expected to be eiter list or bool:
+        # in case of bool, we have wildcard signal -> return False as there are no chances that
+        # all signals from given source will be whitelisted
+        # in case of list, we have list of signals
+        if isinstance(source_signal.signal, bool):
+            return False
+        for signal in source_signal.signal:
+            request_signals.add(f"{source_signal.source}:{signal}")
     if len(request_signals) == 0:
         return False
     return request_signals.issubset(signals_allowlist)
