@@ -85,16 +85,26 @@ REGION_TO_STATE = {
 }
 NATION_REGION = "nat"
 
+
 # password needed for the admin application if not set the admin routes won't be available
 ADMIN_PASSWORD = os.environ.get("API_KEY_ADMIN_PASSWORD", "abc")
 # secret for the google form to give to the admin/register endpoint
 REGISTER_WEBHOOK_TOKEN = os.environ.get("API_KEY_REGISTER_WEBHOOK_TOKEN")
-
+# delphi redis host
 REDIS_HOST = os.environ.get("REDIS_HOST", "delphi_redis")
+# delphi redis password
 REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD", "1234")
+
+# testing mode to lower rate-limit in order to reduce number of required requests to hit the rate limit while runnig tests
+# by default is set to False when is not provided
+TESTING_MODE = os.environ.get("TESTING_MODE", False)
 
 # https://flask-limiter.readthedocs.io/en/stable/#rate-limit-string-notation
 RATE_LIMIT = os.environ.get("RATE_LIMIT", "60/hour")
+
+if TESTING_MODE is not False:
+    RATE_LIMIT = "5/hour"
+
 # fixed-window, fixed-window-elastic-expiry, or moving-window
 # see also https://flask-limiter.readthedocs.io/en/stable/#rate-limiting-strategies
 RATELIMIT_STRATEGY = os.environ.get("RATELIMIT_STRATEGY", "fixed-window")
