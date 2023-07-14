@@ -207,7 +207,7 @@ class Utils:
       all_metadata = []
       for url, index in revisions:
         with database.connect() as db:
-          already_in_db = db.contains_revision(url):
+          already_in_db = db.contains_revision(url)
         if already_in_db:
           logger.info(f"already collected revision: {url}")
         else:
