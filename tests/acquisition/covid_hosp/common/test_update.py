@@ -16,7 +16,7 @@ from delphi.epidata.acquisition.covid_hosp.state_daily.database import Database
 
 # py3tester coverage target
 __test_target__ = \
-    'delphi.epidata.acquisition.covid_hosp.state_daily.update'
+    'delphi.epidata.acquisition.covid_hosp.common.database'
 
 
 class UpdateTests(unittest.TestCase):
@@ -64,7 +64,7 @@ class UpdateTests(unittest.TestCase):
         **{spec[0]: value_from for spec in keys[2:]}
     )).astype({spec[0]: 'float64' for spec in keys[2:]}
     )
-    result = Database().merge_by_key_cols(dfs, db.key_columns)
+    result = db.merge_by_key_cols(dfs)
     try:
       pd.testing.assert_frame_equal(result, expected)
     except:

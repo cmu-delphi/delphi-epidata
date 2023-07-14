@@ -16,7 +16,9 @@ from unittest.mock import patch
 import pandas
 
 from delphi.epidata.acquisition.covid_hosp.common.database import Database
+from delphi.epidata.client.delphi_epidata import Epidata
 from delphi.epidata.common.covid_hosp.covid_hosp_schema_io import CovidHospSomething
+import delphi.operations.secrets as secrets
 
 class TestDatabase(Database):
   DATASET_NAME = 'mock_dataset'
@@ -80,3 +82,17 @@ class UnitTestUtils:
 
   def load_sample_dataset(self, dataset_name='dataset.csv'):
     return pandas.read_csv(self.data_dir / dataset_name, dtype=str)
+
+  def truncate_tables(self, database, tables):
+    # use the local instance of the Epidata API
+    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+
+    # use the local instance of the epidata database
+    secrets.db.host = 'delphi_database_epidata'
+    secrets.db.epi = ('user', 'pass')
+
+    # clear relevant tables
+    with database.connect() as db:
+      with db.new_cursor() as cur:
+        for table in tables:
+          cur.execute(f'truncate table {table}')

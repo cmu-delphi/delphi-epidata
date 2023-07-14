@@ -14,9 +14,7 @@ from delphi.epidata.acquisition.covid_hosp.state_daily.database import Database
 from delphi.epidata.acquisition.covid_hosp.common.test_utils import UnitTestUtils
 from delphi.epidata.client.delphi_epidata import Epidata
 from delphi.epidata.acquisition.covid_hosp.common.network import Network
-from delphi.epidata.acquisition.covid_hosp.common.utils import Utils
 from delphi.epidata.common.covid_hosp.covid_hosp_schema_io import CovidHospSomething
-import delphi.operations.secrets as secrets
 
 # py3tester coverage target (equivalent to `import *`)
 __test_target__ = \
@@ -31,19 +29,12 @@ class AcquisitionTests(unittest.TestCase):
     # configure test data
     self.test_utils = UnitTestUtils(__file__)
 
-    # use the local instance of the Epidata API
-    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
-
-    # use the local instance of the epidata database
-    secrets.db.host = 'delphi_database_epidata'
-    secrets.db.epi = ('user', 'pass')
-
     # clear relevant tables
-    with Database().connect() as db:
-      with db.new_cursor() as cur:
-        cur.execute('truncate table covid_hosp_state_daily')
-        cur.execute('truncate table covid_hosp_state_timeseries')
-        cur.execute('truncate table covid_hosp_meta')
+    self.test_utils.truncate_tables(Database(), [
+      'covid_hosp_state_daily',
+      'covid_hosp_state_timeseries',
+      'covid_hosp_meta'
+    ])
 
   @freeze_time("2021-03-16")
   def test_acquire_dataset(self):

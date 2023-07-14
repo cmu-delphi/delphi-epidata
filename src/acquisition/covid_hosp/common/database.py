@@ -23,7 +23,7 @@ class Database:
     """
     Create a new Database object.
     """
-    self.logger = self.logger()
+    self.logger = get_structured_logger(f"{self.__module__}")
     # Make sure connection is reset - set this in connect()
     self.connection = None
 
@@ -41,10 +41,6 @@ class Database:
     self.columns_and_types = {c.csv_name: c for c in chs.get_ds_ordered_csv_cols(self.DATASET_NAME)}
     self.key_columns = chs.get_ds_key_cols(self.DATASET_NAME)
     self.aggregate_key_columns = chs.get_ds_aggregate_key_cols(self.DATASET_NAME)
-
-  @classmethod
-  def logger(database_class):
-    return get_structured_logger(f"{database_class.__module__}")
 
   @contextmanager
   def connect(self, mysql_connector_impl=mysql.connector):
@@ -105,23 +101,23 @@ class Database:
     -------
     bool
       Whether a new dataset was acquired.
-    """    
+    """
+    logger = self.logger
     with self.connect() as db:
       max_issue = db.get_max_issue()
 
     older_than = datetime.datetime.today().date() if newer_than is None else older_than
     newer_than = max_issue if newer_than is None else newer_than
-    metadata = Network.fetch_metadata(self.metadata_id, logger=self.logger)
+    metadata = Network.fetch_metadata(self.metadata_id, logger=logger)
     daily_issues = self.issues_to_fetch(metadata, newer_than, older_than)
     if not daily_issues:
-      self.logger.info("no new issues; nothing to do")
+      logger.info("no new issues; nothing to do")
       return False
     datasets = []
     for issue, revisions in daily_issues.items():
       issue_int = int(issue.strftime("%Y%m%d"))
       # download the dataset and add it to the database
-      dataset = self.merge_by_key_cols([Network.fetch_dataset(url, logger=self.logger) for url, _ in revisions],
-                                        self.key_columns)
+      dataset = self.merge_by_key_cols([Network.fetch_dataset(url, logger=logger) for url, _ in revisions])
       # add metadata to the database
       all_metadata = []
       for url, index in revisions:
@@ -136,7 +132,7 @@ class Database:
         db.insert_dataset(issue_int, dataset)
         for url, metadata_json in all_metadata:
           db.insert_metadata(issue_int, url, metadata_json)
-        self.logger.info("acquired rows", count=len(dataset))
+        logger.info("acquired rows", count=len(dataset))
 
       # note that the transaction is committed by exiting the `with` block
       return True
@@ -179,6 +175,7 @@ class Database:
     dataframe : pandas.DataFrame
       The dataset.
     """
+    logger = self.logger
     dataframe_columns_and_types = [
       x for x in self.columns_and_types.values() if x.csv_name in dataframe.columns
     ]
@@ -198,7 +195,7 @@ class Database:
     sql = f'INSERT INTO `{self.table_name}` (`id`, `{self.issue_column}`, {columns}) ' \
           f'VALUES ({value_placeholders})'
     id_and_publication_date = (0, publication_date)
-    self.logger.info('updating values', count=len(dataframe.index))
+    logger.info('updating values', count=len(dataframe.index))
     n = 0
     many_values = []
     with self.new_cursor() as cursor:
@@ -216,7 +213,7 @@ class Database:
             cursor.executemany(sql, many_values)
             many_values = []
           except Exception as e:
-            self.logger.error('error on insert', publ_date=publication_date, in_lines=(n-5_000, n), index=index, values=values, exception=e)
+            logger.error('error on insert', publ_date=publication_date, in_lines=(n-5_000, n), index=index, values=values, exception=e)
             raise e
       # insert final batch
       if many_values:
@@ -224,7 +221,7 @@ class Database:
 
     # deal with non/seldomly updated columns used like a fk table (if this database needs it)
     if len(self.aggregate_key_columns) > 0:
-      self.logger.info('updating keys')
+      logger.info('updating keys')
       ak_cols = self.aggregate_key_columns
 
       # restrict data to just the key columns and remove duplicate rows
@@ -251,7 +248,7 @@ class Database:
       ak_table = self.table_name + '_key'
       # assemble full SQL statement
       ak_insert_sql = f'INSERT INTO `{ak_table}` ({ak_cols_str}) VALUES ({values_str}) AS v ON DUPLICATE KEY UPDATE {ak_updates_str}'
-      self.logger.info("database query", sql=ak_insert_sql)
+      logger.info("database query", sql=ak_insert_sql)
 
       # commit the data
       with self.new_cursor() as cur:
@@ -317,7 +314,7 @@ class Database:
     self.logger.info("issues selected", newer_than=str(newer_than), older_than=str(older_than), count=n_selected)
     return daily_issues
 
-  def merge_by_key_cols(self, dfs, key_cols):
+  def merge_by_key_cols(self, dfs):
     """Merge a list of data frames as a series of updates.
 
     Parameters:
@@ -330,8 +327,8 @@ class Database:
     Returns a single data frame containing the most recent data for each state+date.
     """
 
-    dfs = [df.set_index(key_cols) for df in dfs
-           if not all(k in df.index.names for k in key_cols)]
+    dfs = [df.set_index(self.key_columns) for df in dfs
+           if not all(k in df.index.names for k in self.key_columns)]
     result = dfs[0]
     if len(dfs) > 7:
       self.logger.warning(
@@ -350,4 +347,4 @@ class Database:
       result = pd.concat([result, new_rows])
 
     # convert the index rows back to columns
-    return result.reset_index(level=key_cols)
+    return result.reset_index(level=self.key_columns)

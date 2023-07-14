@@ -60,18 +60,11 @@ class UtilsTests(unittest.TestCase):
     mock_connection = MagicMock()
     with patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()), \
          patch.object(Network, 'fetch_dataset', return_value=None) as fetch_dataset, \
-         patch.object(CovidHospSomething, 'get_ds_table_name', return_value=None), \
-         patch.object(CovidHospSomething, 'get_ds_dataset_id', return_value=None), \
-         patch.object(CovidHospSomething, 'get_ds_metadata_id', return_value=None), \
-         patch.object(CovidHospSomething, 'get_ds_issue_column', return_value=None), \
-         patch.object(CovidHospSomething, 'get_ds_ordered_csv_cols', return_value=[]), \
-         patch.object(CovidHospSomething, 'get_ds_key_cols', return_value=None), \
-         patch.object(CovidHospSomething, 'get_ds_aggregate_key_cols', return_value=None), \
          patch.object(mysql.connector, 'connect', return_value=mock_connection), \
          patch.object(TestDatabase, 'get_max_issue', return_value=pd.Timestamp("2200/1/1")), \
          patch.object(TestDatabase, 'insert_metadata', return_value=None) as insert_metadata, \
          patch.object(TestDatabase, 'insert_dataset', return_value=None) as insert_dataset:
-      result = TestDatabase().update_dataset()
+      result = TestDatabase.create_mock_database().update_dataset()
 
     self.assertFalse(result)
     fetch_dataset.assert_not_called()

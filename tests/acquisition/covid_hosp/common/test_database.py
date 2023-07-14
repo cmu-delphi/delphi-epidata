@@ -25,14 +25,7 @@ class DatabaseTests(unittest.TestCase):
 
     mock_connector = MagicMock()
 
-    with patch.object(CovidHospSomething, 'get_ds_table_name', return_value=None), \
-        patch.object(CovidHospSomething, 'get_ds_dataset_id', return_value=None), \
-        patch.object(CovidHospSomething, 'get_ds_metadata_id', return_value=None), \
-        patch.object(CovidHospSomething, 'get_ds_issue_column', return_value=None), \
-        patch.object(CovidHospSomething, 'get_ds_ordered_csv_cols', return_value=[]), \
-        patch.object(CovidHospSomething, 'get_ds_key_cols', return_value=None), \
-        patch.object(CovidHospSomething, 'get_ds_aggregate_key_cols', return_value=None), \
-        TestDatabase().connect(mysql_connector_impl=mock_connector) as database:
+    with TestDatabase.create_mock_database().connect(mysql_connector_impl=mock_connector) as database:
       connection = database.connection
 
     mock_connector.connect.assert_called_once()
@@ -45,14 +38,7 @@ class DatabaseTests(unittest.TestCase):
     mock_connector = MagicMock()
 
     try:
-      with patch.object(CovidHospSomething, 'get_ds_table_name', return_value=None), \
-        patch.object(CovidHospSomething, 'get_ds_dataset_id', return_value=None), \
-        patch.object(CovidHospSomething, 'get_ds_metadata_id', return_value=None), \
-        patch.object(CovidHospSomething, 'get_ds_issue_column', return_value=None), \
-        patch.object(CovidHospSomething, 'get_ds_ordered_csv_cols', return_value=[]), \
-        patch.object(CovidHospSomething, 'get_ds_key_cols', return_value=None), \
-        patch.object(CovidHospSomething, 'get_ds_aggregate_key_cols', return_value=None), \
-        TestDatabase().connect(mysql_connector_impl=mock_connector) as database:
+      with TestDatabase.create_mock_database().connect(mysql_connector_impl=mock_connector) as database:
         connection = database.connection
         raise Exception('intentional test of exception handling')
     except Exception:
