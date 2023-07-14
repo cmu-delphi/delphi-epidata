@@ -87,6 +87,33 @@ class Database:
     finally:
       cursor.close()
 
+  def contains_revision(self, revision):
+    """Return whether the given revision already exists in the database.
+
+    Parameters
+    ----------
+    revision : str
+      Unique revision string.
+
+    Returns
+    -------
+    bool
+      True iff the revision already exists.
+    """
+
+    with self.new_cursor() as cursor:
+      cursor.execute('''
+        SELECT
+          count(1) > 0
+        FROM
+          `covid_hosp_meta`
+        WHERE
+          `hhs_dataset_id` = %s AND `revision_timestamp` = %s
+      ''', (self.hhs_dataset_id, revision))
+      for (result,) in cursor:
+        return bool(result)
+
+  # TODO: this may need further changes once https://github.com/cmu-delphi/delphi-epidata/pull/1224 is merged
   def update_dataset(self, newer_than=None, older_than=None):
     """Acquire the most recent dataset, unless it was previously acquired.
 

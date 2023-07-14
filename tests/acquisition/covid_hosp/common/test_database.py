@@ -65,6 +65,41 @@ class DatabaseTests(unittest.TestCase):
 
     mock_cursor.close.assert_called_once()
 
+  def test_contains_revision(self):
+    """Check whether a revision is already in the database."""
+
+    # Note that query logic is tested separately by integration tests. This
+    # test just checks that the function maps inputs to outputs as expected.
+
+    mock_connection = MagicMock()
+    mock_cursor = mock_connection.cursor()
+
+    mock_database = TestDatabase.create_mock_database(table_name = sentinel.table_name, dataset_id = sentinel.hhs_dataset_id)
+
+    with self.subTest(name='new revision'):
+      mock_cursor.__iter__.return_value = [(0,)]
+
+      with patch.object(mysql.connector, 'connect', return_value=mock_connection), \
+        mock_database.connect() as database:
+        result = database.contains_revision(sentinel.revision)
+
+      # compare with boolean literal to test the type cast
+      self.assertIs(result, False)
+      query_values = mock_cursor.execute.call_args[0][-1]
+      self.assertEqual(query_values, (sentinel.hhs_dataset_id, sentinel.revision))
+
+    with self.subTest(name='old revision'):
+      mock_cursor.__iter__.return_value = [(1,)]
+
+      with patch.object(mysql.connector, 'connect', return_value=mock_connection), \
+        mock_database.connect() as database:
+        result = database.contains_revision(sentinel.revision)
+
+      # compare with boolean literal to test the type cast
+      self.assertIs(result, True)
+      query_values = mock_cursor.execute.call_args[0][-1]
+      self.assertEqual(query_values, (sentinel.hhs_dataset_id, sentinel.revision))
+
   def test_insert_metadata(self):
     """Add new metadata to the database."""
 

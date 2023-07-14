@@ -8,7 +8,7 @@ from unittest.mock import patch
 # first party
 from delphi.epidata.acquisition.covid_hosp.state_timeseries.database import Database
 from delphi.epidata.acquisition.covid_hosp.common.network import Network
-from delphi.epidata.acquisition.covid_hosp.common.test_utils import UnitTestUtils
+from delphi.epidata.acquisition.covid_hosp.common.test_utils import CovidHospTestCase, UnitTestUtils
 from delphi.epidata.client.delphi_epidata import Epidata
 from delphi.epidata.common.covid_hosp.covid_hosp_schema_io import CovidHospSomething
 
@@ -20,7 +20,7 @@ __test_target__ = \
     'delphi.epidata.acquisition.covid_hosp.state_timeseries.update'
 
 
-class AcquisitionTests(unittest.TestCase):
+class AcquisitionTests(CovidHospTestCase):
 
   def setUp(self):
     """Perform per-test setup."""
@@ -29,8 +29,9 @@ class AcquisitionTests(unittest.TestCase):
     self.test_utils = UnitTestUtils(__file__)
 
     # clear relevant tables
-    self.test_utils.truncate_tables(Database(), [
-      'covid_hosp_state_daily',
+    # TODO: get these names dynamically from the YAML file once all are available
+    super().setUp(Database(), [
+      'covid_hosp_state_daily', # TODO: no need to truncate this after covid_hosp split https://github.com/cmu-delphi/delphi-epidata/pull/1226
       'covid_hosp_state_timeseries',
       'covid_hosp_meta'
     ])

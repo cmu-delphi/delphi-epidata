@@ -81,19 +81,12 @@ class UtilsTests(unittest.TestCase):
 
     with patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()), \
          patch.object(Network, 'fetch_dataset', return_value=fake_dataset), \
-         patch.object(CovidHospSomething, 'get_ds_table_name', return_value=None), \
-         patch.object(CovidHospSomething, 'get_ds_dataset_id', return_value=None), \
-         patch.object(CovidHospSomething, 'get_ds_metadata_id', return_value=None), \
-         patch.object(CovidHospSomething, 'get_ds_issue_column', return_value=None), \
-         patch.object(CovidHospSomething, 'get_ds_ordered_csv_cols', return_value=[]), \
-         patch.object(CovidHospSomething, 'get_ds_key_cols', return_value=["state", "date"]), \
-         patch.object(CovidHospSomething, 'get_ds_aggregate_key_cols', return_value=None), \
          patch.object(mysql.connector, 'connect', return_value=mock_connection), \
          patch.object(TestDatabase, 'get_max_issue', return_value=pd.Timestamp("1900/1/1")), \
          patch.object(TestDatabase, 'issues_to_fetch', return_value=fake_issues), \
          patch.object(TestDatabase, 'insert_metadata', return_value=None) as insert_metadata, \
          patch.object(TestDatabase, 'insert_dataset', return_value=None) as insert_dataset:
-        result = TestDatabase().update_dataset()
+        result = TestDatabase.create_mock_database(key_cols=["state", "date"]).update_dataset()
 
     self.assertTrue(result)
 

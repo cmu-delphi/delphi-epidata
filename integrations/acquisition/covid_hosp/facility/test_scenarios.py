@@ -7,7 +7,7 @@ from unittest.mock import patch
 # first party
 from delphi.epidata.acquisition.covid_hosp.facility.database import Database
 from delphi.epidata.acquisition.covid_hosp.common.network import Network
-from delphi.epidata.acquisition.covid_hosp.common.test_utils import UnitTestUtils
+from delphi.epidata.acquisition.covid_hosp.common.test_utils import CovidHospTestCase, UnitTestUtils
 from delphi.epidata.client.delphi_epidata import Epidata
 from delphi.epidata.common.covid_hosp.covid_hosp_schema_io import CovidHospSomething
 
@@ -19,7 +19,7 @@ __test_target__ = 'delphi.epidata.acquisition.covid_hosp.facility.update'
 
 NEWLINE="\n"
 
-class AcquisitionTests(unittest.TestCase):
+class AcquisitionTests(CovidHospTestCase):
 
   def setUp(self):
     """Perform per-test setup."""
@@ -28,7 +28,8 @@ class AcquisitionTests(unittest.TestCase):
     self.test_utils = UnitTestUtils(__file__)
 
     # clear relevant tables
-    self.test_utils.truncate_tables(Database(), [
+    # TODO: get these names dynamically from the YAML file once all are available
+    super().setUp(Database(), [
       'covid_hosp_facility',
       'covid_hosp_facility_key',
       'covid_hosp_meta'
