@@ -195,26 +195,38 @@ class Utils:
       max_issue = db.get_max_issue(logger=logger)
 
     older_than = (datetime.datetime.today().date() + datetime.timedelta(days=1)) if newer_than is None else older_than
-    newer_than = max_issue if newer_than is None else newer_than
+    newer_than = (max_issue - datetime.timedelta(days=1)) if newer_than is None else newer_than
     daily_issues = Utils.issues_to_fetch(metadata, newer_than, older_than, logger=logger)
     if not daily_issues:
       logger.info("no new issues; nothing to do")
       return False
     for issue, revisions in daily_issues.items():
       issue_int = int(issue.strftime("%Y%m%d"))
-      # download the dataset and add it to the database
-      dataset = Utils.merge_by_key_cols([network.fetch_dataset(url, logger=logger) for url, _ in revisions],
-                                        db.KEY_COLS,
-                                        logger=logger)
-      # add metadata to the database
+      # download new dataset(s) and save associated metadata
+      dataset_list = []
       all_metadata = []
       for url, index in revisions:
-        all_metadata.append((url, metadata.loc[index].reset_index().to_json()))
+        with database.connect() as db:
+          already_in_db = db.contains_revision(url):
+        if already_in_db:
+          logger.info(f"already collected revision: {url}")
+        else:
+          dataset_list.append( network.fetch_dataset(url, logger=logger) )
+          all_metadata.append((url, metadata.loc[index].reset_index().to_json()))
+      if not dataset_list:
+        # we already had all of this issue's revisions in our db, so move on to the next issue
+        continue
+      dataset = Utils.merge_by_key_cols(dataset_list,
+                                        db.KEY_COLS,
+                                        logger=logger)
       datasets.append((
         issue_int,
         dataset,
         all_metadata
       ))
+    if not datasets:
+      logger.info("all issues already collected; nothing to do")
+      return False
     with database.connect() as db:
       for issue_int, dataset, all_metadata in datasets:
         db.insert_dataset(issue_int, dataset, logger=logger)
