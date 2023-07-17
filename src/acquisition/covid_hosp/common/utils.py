@@ -191,33 +191,39 @@ class Utils:
     
     metadata = network.fetch_metadata(logger=logger)
     datasets = []
-    with database.connect() as db:
-      max_issue = db.get_max_issue(logger=logger)
-
-    older_than = (datetime.datetime.today().date() + datetime.timedelta(days=1)) if newer_than is None else older_than
-    newer_than = (max_issue - datetime.timedelta(days=1)) if newer_than is None else newer_than
+    # daily runs specify no bounds; patching runs specify at least one bound
+    patching = any(bound is not None for bound in (newer_than, older_than))
+    if older_than is None:
+      older_than = (datetime.datetime.today().date() + datetime.timedelta(days=1))
+    if newer_than is None:
+      with database.connect() as db:
+        max_issue = db.get_max_issue(logger=logger)
+      newer_than = (max_issue - datetime.timedelta(days=1))
     daily_issues = Utils.issues_to_fetch(metadata, newer_than, older_than, logger=logger)
     if not daily_issues:
       logger.info("no new issues; nothing to do")
       return False
     for issue, revisions in daily_issues.items():
       issue_int = int(issue.strftime("%Y%m%d"))
-      # download new dataset(s) and save associated metadata
+      # download dataset(s) and save associated metadata
       dataset_list = []
       all_metadata = []
       for url, index in revisions:
-        with database.connect() as db:
-          already_in_db = db.contains_revision(url)
-        if already_in_db:
-          logger.info(f"already collected revision: {url}")
-        else:
-          dataset_list.append( network.fetch_dataset(url, logger=logger) )
+        if not patching:
+          # for daily runs, we only want new datasets
+          with database.connect() as db:
+            already_in_db = db.contains_revision(url)
+          if already_in_db:
+            logger.info(f"already collected revision: {url}")
+        if patching or not already_in_db:
+          dataset_list.append(network.fetch_dataset(url, logger=logger))
           all_metadata.append((url, metadata.loc[index].reset_index().to_json()))
       if not dataset_list:
-        # we already had all of this issue's revisions in our db, so move on to the next issue
+        # we already had everything for this issue or the issue was empty:
+        # move on to the next issue
         continue
       dataset = Utils.merge_by_key_cols(dataset_list,
-                                        db.KEY_COLS,
+                                        database.KEY_COLS,
                                         logger=logger)
       datasets.append((
         issue_int,
@@ -225,7 +231,7 @@ class Utils:
         all_metadata
       ))
     if not datasets:
-      logger.info("all issues already collected; nothing to do")
+      logger.info(f"{len(daily_issues)} issues checked containing {sum(len(revisions) for revisions in daily_issues.values())} revisions; nothing to do")
       return False
     with database.connect() as db:
       for issue_int, dataset, all_metadata in datasets:

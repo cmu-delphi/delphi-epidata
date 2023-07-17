@@ -47,62 +47,95 @@ class AcquisitionTests(unittest.TestCase):
         cur.execute('delete from api_user')
         cur.execute('insert into api_user(api_key, email) values("key", "email")')
 
-  @freeze_time("2021-03-15")
   def test_acquire_dataset(self):
     """Acquire a new dataset."""
 
-    # make sure the data does not yet exist
-    with self.subTest(name='no data yet'):
-      response = Epidata.covid_hosp('MA', Epidata.range(20200101, 20210101))
-      self.assertEqual(response['result'], -2, response)
+    with freeze_time("2021-03-15"):
+      # make sure the data does not yet exist
+      with self.subTest(name='no data yet'):
+        response = Epidata.covid_hosp('MA', Epidata.range(20200101, 20210101))
+        self.assertEqual(response['result'], -2, response)
 
-    # acquire sample data into local database
-    # mock out network calls to external hosts
-    with self.subTest(name='first acquisition'), \
-         patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()) as mock_fetch_meta, \
-         patch.object(Network, 'fetch_dataset', side_effect=[self.test_utils.load_sample_dataset("dataset0.csv"), # dataset for 3/13
-                                                             self.test_utils.load_sample_dataset("dataset0.csv"), # first dataset for 3/15
-                                                             self.test_utils.load_sample_dataset()] # second dataset for 3/15
-                      ) as mock_fetch:
-      acquired = Update.run()
-      self.assertTrue(acquired)
-      self.assertEqual(mock_fetch_meta.call_count, 1)
+      # acquire sample data into local database
+      # mock out network calls to external hosts
+      with self.subTest(name='first acquisition'), \
+           patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()) as mock_fetch_meta, \
+           patch.object(Network, 'fetch_dataset', side_effect=[self.test_utils.load_sample_dataset("dataset0.csv"), # dataset for 3/13
+                                                               self.test_utils.load_sample_dataset("dataset0.csv")] # dataset for 3/15
+                        ) as mock_fetch:
+        acquired = Update.run()
+        self.assertTrue(acquired)
+        self.assertEqual(mock_fetch_meta.call_count, 1)
 
-    # make sure the data now exists
-    with self.subTest(name='initial data checks'):
-      response = Epidata.covid_hosp('WY', Epidata.range(20200101, 20210101))
-      self.assertEqual(response['result'], 1)
-      self.assertEqual(len(response['epidata']), 1)
-      row = response['epidata'][0]
-      self.assertEqual(row['state'], 'WY')
-      self.assertEqual(row['date'], 20201209)
-      self.assertEqual(row['issue'], 20210315) # include today's data by default
-      self.assertEqual(row['critical_staffing_shortage_today_yes'], 8)
-      self.assertEqual(row['total_patients_hospitalized_confirmed_influenza_covid_coverage'], 56)
-      actual = row['inpatient_bed_covid_utilization']
-      expected = 0.11729857819905214
-      self.assertAlmostEqual(actual, expected)
-      self.assertIsNone(row['critical_staffing_shortage_today_no'])
+      # make sure the data now exists
+      with self.subTest(name='initial data checks'):
+        response = Epidata.covid_hosp('WY', Epidata.range(20200101, 20210101))
+        self.assertEqual(response['result'], 1)
+        self.assertEqual(len(response['epidata']), 1)
+        row = response['epidata'][0]
+        self.assertEqual(row['state'], 'WY')
+        self.assertEqual(row['date'], 20201209)
+        self.assertEqual(row['issue'], 20210315) # include today's data by default
+        self.assertEqual(row['critical_staffing_shortage_today_yes'], 5)
+        self.assertEqual(row['total_patients_hospitalized_confirmed_influenza_covid_coverage'], 56)
+        self.assertIsNone(row['critical_staffing_shortage_today_no'])
 
-      # expect 61 fields per row (63 database columns, except `id` and `record_type`)
-      self.assertEqual(len(row), 118)
+        # expect 61 fields per row (63 database columns, except `id` and `record_type`)
+        self.assertEqual(len(row), 118)
 
-    with self.subTest(name='all date batches acquired'):
-      response = Epidata.covid_hosp('WY', Epidata.range(20200101, 20210101), issues=20210313)
-      self.assertEqual(response['result'], 1)
+      with self.subTest(name='all date batches acquired'):
+        response = Epidata.covid_hosp('WY', Epidata.range(20200101, 20210101), issues=20210313)
+        self.assertEqual(response['result'], 1)
 
-    # re-acquisition of the same dataset should be a no-op
-    with self.subTest(name='second acquisition'), \
-         patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()) as mock_fetch_meta, \
-         patch.object(Network, 'fetch_dataset', return_value=self.test_utils.load_sample_dataset()) as mock_fetch:
-      acquired = Update.run()
-      self.assertFalse(acquired)
+      # re-acquisition of the same dataset should be a no-op
+      with self.subTest(name='second acquisition'), \
+           patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()) as mock_fetch_meta, \
+           patch.object(Network, 'fetch_dataset', side_effect=[self.test_utils.load_sample_dataset(), # late posted dataset for 3/15
+                                                               self.test_utils.load_sample_dataset("dataset1.csv")] # dataset for 3/16
+                       ) as mock_fetch:
+        acquired = Update.run()
+        self.assertFalse(acquired)
 
-    # make sure the data still exists
-    with self.subTest(name='final data checks'):
-      response = Epidata.covid_hosp('WY', Epidata.range(20200101, 20210101))
-      self.assertEqual(response['result'], 1)
-      self.assertEqual(len(response['epidata']), 1)
+        # make sure the data still exists
+        response = Epidata.covid_hosp('WY', Epidata.range(20200101, 20210101))
+        self.assertEqual(response['result'], 1)
+        self.assertEqual(len(response['epidata']), 1)
+
+    with freeze_time("2021-03-16"):
+      # simulate issue posted after yesterday's run
+      with self.subTest(name='late issue posted'), \
+           patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata("metadata2.csv")) as mock_fetch_meta, \
+           patch.object(Network, 'fetch_dataset', return_value=self.test_utils.load_sample_dataset()) as mock_fetch:
+        acquired = Update.run()
+        self.assertTrue(acquired)
+        self.assertEqual(mock_fetch_meta.call_count, 1)
+
+      # make sure everything was filed correctly
+      with self.subTest(name='late issue data checks'):
+        response = Epidata.covid_hosp('WY', Epidata.range(20200101, 20210101))
+        self.assertEqual(response['result'], 2)
+        self.assertEqual(len(response['epidata']), 1)
+        row = response['epidata'][0] # data from 03-15, dataset.csv
+        self.assertEqual(row['state'], 'WY')
+        self.assertEqual(row['date'], 20201209)
+        self.assertEqual(row['issue'], 20210315) # include today's data by default
+        self.assertEqual(row['critical_staffing_shortage_today_yes'], 8)
+        self.assertEqual(row['total_patients_hospitalized_confirmed_influenza_covid_coverage'], 56)
+        self.assertIsNone(row['critical_staffing_shortage_today_no'])
+        row = response['epidata'][1] # data from 03-16, dataset1.csv
+        self.assertEqual(row['state'], 'WY')
+        self.assertEqual(row['date'], 20201210)
+        self.assertEqual(row['issue'], 20210315) # include today's data by default
+        self.assertEqual(row['critical_staffing_shortage_today_yes'], 8)
+        self.assertEqual(row['total_patients_hospitalized_confirmed_influenza_covid_coverage'], 56)
+        self.assertIsNone(row['critical_staffing_shortage_today_no'])
+
+        # expect 61 fields per row (63 database columns, except `id` and `record_type`)
+        self.assertEqual(len(row), 118)
+
+      with self.subTest(name='all date batches acquired'):
+        response = Epidata.covid_hosp('WY', Epidata.range(20200101, 20210101), issues=20210316)
+        self.assertEqual(response['result'], 1)
 
 
   @freeze_time("2021-03-16")

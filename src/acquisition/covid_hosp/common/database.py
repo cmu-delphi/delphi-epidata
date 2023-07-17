@@ -188,7 +188,7 @@ class Database:
     value_placeholders = ', '.join(['%s'] * num_columns)
     columns = ', '.join(f'`{i.sql_name}`' for i in dataframe_columns_and_types + self.additional_fields)
     sql = f'INSERT INTO `{self.table_name}` (`id`, `{self.publication_col_name}`, {columns}) ' \
-          f'VALUES ({value_placeholders})'
+          f'VALUES ({value_placeholders})' # TODO: add ON DUPLICATE KEY UPDATE here for when we need to backfill yesterday's issue
     id_and_publication_date = (0, publication_date)
     if logger:
       logger.info('updating values', count=len(dataframe.index))
