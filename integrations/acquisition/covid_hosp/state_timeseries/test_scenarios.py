@@ -22,19 +22,11 @@ __test_target__ = \
 
 class AcquisitionTests(CovidHospTestCase):
 
-  def setUp(self):
-    """Perform per-test setup."""
-
-    # configure test data
-    self.test_utils = UnitTestUtils(__file__)
-
-    # clear relevant tables
-    # TODO: get these names dynamically from the YAML file once all are available
-    super().setUp(Database(), [
-      'covid_hosp_state_daily', # TODO: no need to truncate this after covid_hosp split https://github.com/cmu-delphi/delphi-epidata/pull/1226
-      'covid_hosp_state_timeseries',
-      'covid_hosp_meta'
-    ])
+  db_class = Database
+  test_util_context = __file__
+  # TODO: no need for the following after covid_hosp table split is merged
+  # (in https://github.com/cmu-delphi/delphi-epidata/pull/1126)
+  extra_tables_used = ['covid_hosp_state_daily']
 
   @freeze_time("2021-03-17")
   def test_acquire_dataset(self):

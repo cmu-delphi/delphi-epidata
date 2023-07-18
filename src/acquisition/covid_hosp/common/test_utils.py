@@ -42,19 +42,36 @@ class TestDatabase(Database):
       return TestDatabase()
 
 class CovidHospTestCase(unittest.TestCase):
-
-  def setUp(self, database, tables):
+  # assign these in subclasses:
+  db_class = None
+  test_util_context = None
+  
+  # optionally extend or recreate this in subclasses:
+  extra_tables_used = []
+  
+  def setUp(self):
     # use the local instance of the Epidata API
     Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
-
+    
     # use the local instance of the epidata database
     secrets.db.host = 'delphi_database_epidata'
     secrets.db.epi = ('user', 'pass')
-
-    # clear relevant tables
-    with database.connect() as db:
+    
+    # configure test data
+    self.test_utils = UnitTestUtils(self.test_util_context)
+    chs = CovidHospSomething()
+    ds_name = self.db_class.DATASET_NAME
+    
+    # create list of relevant tables
+    tables_used = ['covid_hosp_meta', chs.get_ds_table_name(ds_name)]
+    if chs.get_ds_aggregate_key_cols(ds_name):
+      tables_used.append(chs.get_ds_table_name(ds_name)+'_key')
+    
+    # clear all relevant tables
+    tables_used += self.extra_tables_used
+    with self.db_class().connect() as db:
       with db.new_cursor() as cur:
-        for table in tables:
+        for table in tables_used:
           cur.execute(f'truncate table {table}')
 
 class UnitTestUtils:

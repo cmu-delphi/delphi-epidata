@@ -23,18 +23,8 @@ __test_target__ = \
 
 class AcquisitionTests(CovidHospTestCase):
 
-  def setUp(self):
-    """Perform per-test setup."""
-
-    # configure test data
-    self.test_utils = UnitTestUtils(__file__)
-
-    # clear relevant tables
-    # TODO: get these names dynamically from the YAML file once all are available
-    super().setUp(Database(), [
-      'covid_hosp_state_daily',
-      'covid_hosp_meta'
-    ])
+  db_class = Database
+  test_util_context = __file__
 
   @freeze_time("2021-03-16")
   def test_acquire_dataset(self):
