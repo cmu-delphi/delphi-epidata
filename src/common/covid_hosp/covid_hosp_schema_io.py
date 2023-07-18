@@ -28,9 +28,9 @@ class CovidHospSomething:
     'float': float,
     'str': str,
     'fixedstr': str,
-    'bool': Utils.parse_bool,
-    'intdate': Utils.int_from_date,
-    'geocode': Utils.limited_geocode,
+    'bool': TypeUtils.parse_bool,
+    'intdate': TypeUtils.int_from_date,
+    'geocode': TypeUtils.limited_geocode,
   }
 
   SQL_TYPE_MAPPING = {

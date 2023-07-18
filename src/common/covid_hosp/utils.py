@@ -72,10 +72,10 @@ class TypeUtils:
   GEOCODE_LENGTH = 32
   GEOCODE_PATTERN = re.compile(r'POINT \((-?[0-9.]+) (-?[0-9.]+)\)')
   def limited_geocode(value):
-    if len(value) < Utils.GEOCODE_LENGTH:
+    if len(value) < TypeUtils.GEOCODE_LENGTH:
       return value
     # otherwise parse and set precision to 6 decimal places
-    m = Utils.GEOCODE_PATTERN.match(value)
+    m = TypeUtils.GEOCODE_PATTERN.match(value)
     if not m:
       raise CovidHospException(f"Couldn't parse geocode '{value}'")
     return f'POINT ({" ".join(f"{float(x):.6f}" for x in m.groups())})'
