@@ -12,11 +12,7 @@ class CovidHospException(Exception):
   """Exception raised exclusively by `covid_hosp` utilities."""
 
 
-class Utils:
-
-  # regex to extract issue date from revision field
-  # example revision: "Mon, 11/16/2020 - 00:55"
-  REVISION_PATTERN = re.compile(r'^.*\s(\d+)/(\d+)/(\d+)\s.*$')
+class TypeUtils:
 
   def int_from_date(date):
     """Convert a YYYY/MM/DD date from a string to a YYYYMMDD int.
