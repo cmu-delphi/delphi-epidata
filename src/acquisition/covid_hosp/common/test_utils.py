@@ -59,16 +59,16 @@ class CovidHospTestCase(unittest.TestCase):
     
     # configure test data
     self.test_utils = UnitTestUtils(self.test_util_context)
+
+    # create list of relevant tables
     chs = CovidHospSomething()
     ds_name = self.db_class.DATASET_NAME
-    
-    # create list of relevant tables
     tables_used = ['covid_hosp_meta', chs.get_ds_table_name(ds_name)]
     if chs.get_ds_aggregate_key_cols(ds_name):
-      tables_used.append(chs.get_ds_table_name(ds_name)+'_key')
-    
-    # clear all relevant tables
+      tables_used.append(chs.get_ds_table_name(ds_name)+'_key')    
     tables_used += self.extra_tables_used
+
+    # clear all relevant tables
     with self.db_class().connect() as db:
       with db.new_cursor() as cur:
         for table in tables_used:
