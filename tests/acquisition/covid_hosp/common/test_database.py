@@ -11,14 +11,21 @@ import pandas as pd
 import mysql.connector
 
 # first party
-from delphi.epidata.acquisition.covid_hosp.common.test_utils import TestDatabase
-from delphi.epidata.common.covid_hosp.covid_hosp_schema_io import Columndef, CovidHospSomething
+from delphi.epidata.acquisition.covid_hosp.common.network import Network
+from delphi.epidata.acquisition.covid_hosp.common.test_utils import TestDatabase, UnitTestUtils
+from delphi.epidata.common.covid_hosp.covid_hosp_schema_io import Columndef
 
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.acquisition.covid_hosp.common.database'
 
 
 class DatabaseTests(unittest.TestCase):
+
+  def setUp(self):
+    """Perform per-test setup."""
+
+    # configure test data
+    self.test_utils = UnitTestUtils(__file__)
 
   def test_commit_and_close_on_success(self):
     """Commit and close the connection after success."""
@@ -200,3 +207,69 @@ class DatabaseTests(unittest.TestCase):
                                           ("d", pd.Timestamp("2021-03-15 00:00:01"))]
                       }
                      )
+
+  def test_max_issue(self):
+    """Get the most recent issue added to the database"""
+
+    # Note that query logic is tested separately by integration tests. This
+    # test just checks that the function maps inputs to outputs as expected.
+
+    mock_connection = MagicMock()
+    mock_cursor = mock_connection.cursor()
+    
+    mock_database = TestDatabase.create_mock_database()
+
+    with patch.object(mysql.connector, 'connect', return_value=mock_connection), \
+      mock_database.connect() as database:
+      result = database.get_max_issue()
+
+      self.assertEqual(mock_cursor.execute.call_count, 1)
+      self.assertEqual(result, pd.Timestamp("1900/1/1"), "max issue when db is empty")
+
+  def test_run_skip_old_dataset(self):
+    """Don't re-acquire an old dataset."""
+
+    mock_connection = MagicMock()
+    with patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()), \
+         patch.object(Network, 'fetch_dataset', return_value=None) as fetch_dataset, \
+         patch.object(mysql.connector, 'connect', return_value=mock_connection), \
+         patch.object(TestDatabase, 'get_max_issue', return_value=pd.Timestamp("2200/1/1")), \
+         patch.object(TestDatabase, 'insert_metadata', return_value=None) as insert_metadata, \
+         patch.object(TestDatabase, 'insert_dataset', return_value=None) as insert_dataset:
+      result = TestDatabase.create_mock_database().update_dataset()
+
+    self.assertFalse(result)
+    fetch_dataset.assert_not_called()
+    insert_metadata.assert_not_called()
+    insert_dataset.assert_not_called()
+
+  def test_run_acquire_new_dataset(self):
+    """Acquire a new dataset."""
+
+    mock_connection = MagicMock()
+    fake_dataset = pd.DataFrame({"date": [pd.Timestamp("2020/1/1")], "state": ["ca"]})
+    fake_issues = {pd.Timestamp("2021/3/15"): [("url1", pd.Timestamp("2021-03-15 00:00:00")),
+                                              ("url2", pd.Timestamp("2021-03-15 00:00:00"))]}
+
+    with patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()), \
+         patch.object(Network, 'fetch_dataset', return_value=fake_dataset), \
+         patch.object(mysql.connector, 'connect', return_value=mock_connection), \
+         patch.object(TestDatabase, 'get_max_issue', return_value=pd.Timestamp("1900/1/1")), \
+         patch.object(TestDatabase, 'issues_to_fetch', return_value=fake_issues), \
+         patch.object(TestDatabase, 'insert_metadata', return_value=None) as insert_metadata, \
+         patch.object(TestDatabase, 'insert_dataset', return_value=None) as insert_dataset:
+        result = TestDatabase.create_mock_database(key_cols=["state", "date"]).update_dataset()
+
+    self.assertTrue(result)
+
+    # should have been called twice
+    insert_metadata.assert_called()
+    assert insert_metadata.call_count == 2
+    # most recent call should be for the final revision at url2
+    args = insert_metadata.call_args[0]
+    self.assertEqual(args[:2], (20210315, "url2"))
+    pd.testing.assert_frame_equal(
+      insert_dataset.call_args[0][1],
+      pd.DataFrame({"state": ["ca"], "date": [pd.Timestamp("2020/1/1")]})
+    )
+    self.assertEqual(insert_dataset.call_args[0][0], 20210315)

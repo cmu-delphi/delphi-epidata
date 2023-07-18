@@ -62,18 +62,3 @@ class DatabaseTests(unittest.TestCase):
           self.assertAlmostEqual(actual, expected)
         else:
           self.assertEqual(actual, expected)
-
-  def test_max_issue(self):
-    """Get the most recent issue added to the database"""
-
-    # Note that query logic is tested separately by integration tests. This
-    # test just checks that the function maps inputs to outputs as expected.
-
-    mock_connection = MagicMock()
-    mock_cursor = mock_connection.cursor()
-    with patch.object(mysql.connector, 'connect', return_value=mock_connection), \
-      Database().connect() as database:
-      result = database.get_max_issue()
-
-      self.assertEqual(mock_cursor.execute.call_count, 1)
-      self.assertEqual(result, pd.Timestamp("1900/1/1"), "max issue when db is empty")

@@ -4,7 +4,7 @@ from pathlib import Path
 import re
 import sys
 
-from delphi.epidata.acquisition.covid_hosp.common.utils import Utils
+from delphi.epidata.common.covid_hosp.utils import Utils
 
 # ruamel preserves key ordering, comments, and some formatting for a "round trip" of a yaml file import-->export
 from ruamel.yaml.main import (
