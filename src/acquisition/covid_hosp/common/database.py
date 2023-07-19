@@ -186,9 +186,13 @@ class Database:
 
     num_columns = 2 + len(dataframe_columns_and_types) + len(self.additional_fields)
     value_placeholders = ', '.join(['%s'] * num_columns)
-    columns = ', '.join(f'`{i.sql_name}`' for i in dataframe_columns_and_types + self.additional_fields)
+    col_names = [f'`{i.sql_name}`' for i in dataframe_columns_and_types + self.additional_fields]
+    columns = ', '.join(col_names)
+    updates = ', '.join(f'{c}=new_values.{c}' for c in col_names)
+    # NOTE: list in `updates` presumes `publication_col_name` is part of the unique key and thus not needed in UPDATE
     sql = f'INSERT INTO `{self.table_name}` (`id`, `{self.publication_col_name}`, {columns}) ' \
-          f'VALUES ({value_placeholders})' # TODO: add ON DUPLICATE KEY UPDATE here for when we need to backfill yesterday's issue
+          f'VALUES ({value_placeholders}) AS new_values ' \
+          f'ON DUPLICATE KEY UPDATE {updates}'
     id_and_publication_date = (0, publication_date)
     if logger:
       logger.info('updating values', count=len(dataframe.index))
