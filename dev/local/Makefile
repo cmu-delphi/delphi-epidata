@@ -102,6 +102,7 @@ web:
 		--env "FLASK_SECRET=abc" --env "FLASK_PREFIX=/epidata" --env "LOG_DEBUG" \
 		--env "REDIS_HOST=delphi_redis" \
 		--env "REDIS_PASSWORD=1234" \
+		--env "TESTING_MODE=True" \
 		--env "API_KEY_ADMIN_PASSWORD=test_admin_password" \
 		--env "API_KEY_REGISTER_WEBHOOK_TOKEN=abc" \
 		--network delphi-net --name delphi_web_epidata \
