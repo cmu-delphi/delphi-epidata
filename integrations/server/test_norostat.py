@@ -1,33 +1,14 @@
-# standard library
-import unittest
-
-# third party
-import mysql.connector
-
 # first party
-from delphi.epidata.client.delphi_epidata import Epidata
-from delphi.epidata.server._limiter import limiter
+from delphi.epidata.common.integration_test_base_class import BasicIntegrationTest
 
 
-class NorostatTest(unittest.TestCase):
+class NorostatTest(BasicIntegrationTest):
     """Basic integration tests for norostat endpint."""
-
-    @classmethod
-    def setUpClass(cls) -> None:
-        """Perform one-time setup."""
-
-        # use local instance of the Epidata API
-        Epidata.BASE_URL = "http://delphi_web_epidata/epidata/api.php"
 
     def setUp(self) -> None:
         """Perform per-test setup."""
 
-        # connect to the `epidata` database
-        cnx = mysql.connector.connect(user="user", password="pass", host="delphi_database_epidata", database="epidata")
-        cur = cnx.cursor()
-
-        cur.execute(
-            """
+        create_norostat_point_diffs = """
             CREATE TABLE IF NOT EXISTS `norostat_point_diffs` (
             `release_date` date NOT NULL,
             `parse_time` datetime NOT NULL,
@@ -40,48 +21,33 @@ class NorostatTest(unittest.TestCase):
             CONSTRAINT `norostat_point_diffs_ibfk_2` FOREIGN KEY (`location_id`) REFERENCES `norostat_raw_datatable_location_pool` (`location_id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
             """
-        )
 
-        cur.execute("DELETE FROM api_user")
-        cur.execute("TRUNCATE TABLE user_role")
-        cur.execute("TRUNCATE TABLE user_role_link")
-
-        cur.execute("DELETE FROM norostat_point_diffs")
-        cur.execute("DELETE FROM norostat_point_version_list")
-        cur.execute("DELETE FROM norostat_raw_datatable_location_pool")
-        cur.execute("DELETE FROM norostat_raw_datatable_version_list")
-        
-
-        cur.execute('INSERT INTO api_user(api_key, email) VALUES("norostat_key", "norostat_email")')
-        cur.execute('INSERT INTO user_role(name) VALUES("norostat") ON DUPLICATE KEY UPDATE name="norostat"')
-        cur.execute(
-            'INSERT INTO user_role_link(user_id, role_id) SELECT api_user.id, 1 FROM api_user WHERE api_key="norostat_key"'
-        )
-
-        cnx.commit()
-        cur.close()
-
-        self.cnx = cnx
-        self.cur = cnx.cursor()
-
-    @staticmethod
-    def _clear_limits():
-        limiter.storage.reset()
-
-    def tearDown(self) -> None:
-        """Perform per-test teardown."""
-        self.cur.close()
-        self.cnx.close()
-        self._clear_limits()
+        self.create_tables_list = [create_norostat_point_diffs]
+        self.delete_from_tables_list = [
+            "norostat_point_diffs",
+            "norostat_point_version_list",
+            "norostat_raw_datatable_location_pool",
+            "norostat_raw_datatable_version_list",
+        ]
+        self.role_name = "norostat"
+        super().setUp()
 
     def test_norostat(self):
         """Basic integration test for norostat endpoint"""
-        self.cur.execute('INSERT INTO norostat_raw_datatable_version_list(release_date, parse_time) VALUES ("2023-07-19", "2023-07-10 15:24:51")')
-        self.cur.execute('INSERT INTO norostat_raw_datatable_location_pool(location_id, location) VALUES("1", "SomeTestLocation")')
-        self.cur.execute('INSERT INTO norostat_point_version_list(`release_date`, `parse_time`) VALUES("2023-07-19", "2023-07-10 15:24:51")')
-        self.cur.execute('INSERT INTO norostat_point_diffs(release_date, parse_time, location_id, epiweek, new_value) VALUES("2023-07-19", "2023-07-10 15:24:51", "1", "202329", 10)')
+        self.cur.execute(
+            'INSERT INTO `norostat_raw_datatable_version_list`(`release_date`, `parse_time`) VALUES ("2023-07-19", "2023-07-10 15:24:51")'
+        )
+        self.cur.execute(
+            'INSERT INTO `norostat_raw_datatable_location_pool`(`location_id`, `location`) VALUES("1", "SomeTestLocation")'
+        )
+        self.cur.execute(
+            'INSERT INTO `norostat_point_version_list`(`release_date`, `parse_time`) VALUES("2023-07-19", "2023-07-10 15:24:51")'
+        )
+        self.cur.execute(
+            'INSERT INTO `norostat_point_diffs`(`release_date`, `parse_time`, `location_id`, `epiweek`, `new_value`) VALUES("2023-07-19", "2023-07-10 15:24:51", "1", "202329", 10)'
+        )
         self.cnx.commit()
-        response = Epidata.norostat(auth="norostat_key", location="SomeTestLocation", epiweeks="202329")
+        response = self.epidata.norostat(auth="norostat_key", location="SomeTestLocation", epiweeks="202329")
         self.assertEqual(
             response,
             {
