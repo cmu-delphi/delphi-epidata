@@ -4,6 +4,8 @@
 import unittest
 
 # first party
+from delphi.epidata.common.covid_hosp.covid_hosp_schema_io import CovidHospSomething
+# use state_timeseries DB to get access to a SQL cursor
 from delphi.epidata.acquisition.covid_hosp.state_timeseries.database import Database
 from delphi.epidata.client.delphi_epidata import Epidata
 import delphi.operations.secrets as secrets
@@ -23,7 +25,7 @@ class ServerTests(unittest.TestCase):
     secrets.db.epi = ('user', 'pass')
 
     # clear relevant tables
-    with Database.connect() as db:
+    with Database().connect() as db:
       with db.new_cursor() as cur:
         cur.execute('truncate table covid_hosp_state_daily')
         cur.execute('truncate table covid_hosp_state_timeseries')
@@ -31,13 +33,17 @@ class ServerTests(unittest.TestCase):
 
 
   def insert_timeseries(self, cur, issue, value):
-    so_many_nulls = ', '.join(['null'] * 114)
+    # number of dynamic columns + one extra issue column - four columns already in the query
+    col_count = len(list(CovidHospSomething().columns('state_timeseries'))) - 3
+    so_many_nulls = ', '.join(['null'] * col_count)
     cur.execute(f'''insert into covid_hosp_state_timeseries values (
       0, {issue}, 'PA', 20201118, {value}, {so_many_nulls}
     )''')
 
   def insert_daily(self, cur, issue, value):
-    so_many_nulls = ', '.join(['null'] * 114)
+    # number of dynamic columns + one extra issue column - four columns already in the query
+    col_count = len(list(CovidHospSomething().columns('state_daily'))) - 3
+    so_many_nulls = ', '.join(['null'] * col_count)
     cur.execute(f'''insert into covid_hosp_state_daily values (
       0, {issue}, 'PA', 20201118, {value}, {so_many_nulls}
     )''')
@@ -45,7 +51,7 @@ class ServerTests(unittest.TestCase):
   def test_query_by_issue(self):
     """Query with and without specifying an issue."""
 
-    with Database.connect() as db:
+    with Database().connect() as db:
       with db.new_cursor() as cur:
         # inserting out of order to test server-side order by
         # also inserting two for 20201201 to test tiebreaker.
@@ -91,7 +97,7 @@ class ServerTests(unittest.TestCase):
 
 
   def test_query_by_as_of(self):
-    with Database.connect() as db:
+    with Database().connect() as db:
       with db.new_cursor() as cur:
         self.insert_timeseries(cur, 20201101, 0)
         self.insert_daily(cur, 20201102, 1)

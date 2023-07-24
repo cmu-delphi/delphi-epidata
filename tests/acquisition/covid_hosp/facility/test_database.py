@@ -3,7 +3,10 @@
 # standard library
 import unittest
 from unittest.mock import MagicMock
-from unittest.mock import sentinel
+from unittest.mock import patch, sentinel
+
+# third party
+import mysql.connector
 
 # first party
 from delphi.epidata.acquisition.covid_hosp.common.test_utils import UnitTestUtils
@@ -29,34 +32,35 @@ class DatabaseTests(unittest.TestCase):
 
     mock_connection = MagicMock()
     mock_cursor = mock_connection.cursor()
-    database = Database(mock_connection)
-    dataset = self.test_utils.load_sample_dataset()
+    with patch.object(mysql.connector, 'connect', return_value=mock_connection), \
+      Database().connect() as database:
+      dataset = self.test_utils.load_sample_dataset()
 
-    result = database.insert_dataset(sentinel.publication_date, dataset)
+      result = database.insert_dataset(sentinel.publication_date, dataset)
 
-    self.assertIsNone(result)
-    # once for the values, once for the keys
-    self.assertEqual(mock_cursor.executemany.call_count, 2)
+      self.assertIsNone(result)
+      # once for the values, once for the keys
+      self.assertEqual(mock_cursor.executemany.call_count, 2)
 
-    # [0]: the first call() object
-    # [0]: get the positional args out of the call() object
-    # [-1]: the last arg of the executemany call
-    # [-1]: the last row inserted in the executemany
-    last_query_values = mock_cursor.executemany.call_args_list[0][0][-1][-1]
-    expected_query_values = (
-        0, sentinel.publication_date, '450822', 20201130,
-        '6800 N MACARTHUR BLVD', 61.1, 7, 428, 60.9, 7, 426, 61.1, 7, 428,
-        '450822', 'IRVING', '48113', '15', '6', 'MEDICAL CITY LAS COLINAS',
-        'Short Term', 14.0, 7, 98, -999999.0, 7, -999999, 69.3, 7, 485, 69.0,
-        7, 483, True, True, -999999, -999999, -999999, -999999, -999999,
-        -999999, -999999, 7, 11, -999999, -999999, -999999, -999999, -999999,
-        -999999, -999999, -999999, -999999, 16, -999999, -999999, -999999,
-        -999999, 2, -999999, 11, -999999, 58, 536, 3, 8, 5, 17, 13, 10, 5.9,
-        7, 41, -999999.0, 7, 16, -999999.0, 7, 14, 'TX', 6.9, 7, 48, 6.1, 7,
-        43, 69.3, 7, 485, 14.3, 7, 100, -999999.0, 7, -999999, -999999.0, 7,
-        -999999, -999999.0, 7, -999999, -999999.0, 7, -999999, 9, 18, 14, 0,
-        1, 4, 6.1, 7, 43, '77777')
-    self.assertEqual(len(last_query_values), len(expected_query_values))
+      # [0]: the first call() object
+      # [0]: get the positional args out of the call() object
+      # [-1]: the last arg of the executemany call
+      # [-1]: the last row inserted in the executemany
+      last_query_values = mock_cursor.executemany.call_args_list[0][0][-1][-1]
+      expected_query_values = (
+          0, sentinel.publication_date, '450822', 20201130,
+          '6800 N MACARTHUR BLVD', 61.1, 7, 428, 60.9, 7, 426, 61.1, 7, 428,
+          '450822', 'IRVING', '48113', '15', '6', 'MEDICAL CITY LAS COLINAS',
+          'Short Term', 14.0, 7, 98, -999999.0, 7, -999999, 69.3, 7, 485, 69.0,
+          7, 483, True, True, -999999, -999999, -999999, -999999, -999999,
+          -999999, -999999, 7, 11, -999999, -999999, -999999, -999999, -999999,
+          -999999, -999999, -999999, -999999, 16, -999999, -999999, -999999,
+          -999999, 2, -999999, 11, -999999, 58, 536, 3, 8, 5, 17, 13, 10, 5.9,
+          7, 41, -999999.0, 7, 16, -999999.0, 7, 14, 'TX', 6.9, 7, 48, 6.1, 7,
+          43, 69.3, 7, 485, 14.3, 7, 100, -999999.0, 7, -999999, -999999.0, 7,
+          -999999, -999999.0, 7, -999999, -999999.0, 7, -999999, 9, 18, 14, 0,
+          1, 4, 6.1, 7, 43, '77777')
+      self.assertEqual(len(last_query_values), len(expected_query_values))
 
-    for actual, expected in zip(last_query_values, expected_query_values):
-      self.assertAlmostEqual(actual, expected)
+      for actual, expected in zip(last_query_values, expected_query_values):
+        self.assertAlmostEqual(actual, expected)

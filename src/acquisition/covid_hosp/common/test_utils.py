@@ -9,11 +9,70 @@ dir, hence the existence of this file.
 """
 
 # standard library
+import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 # third party
 import pandas
 
+from delphi.epidata.acquisition.covid_hosp.common.database import Database
+from delphi.epidata.client.delphi_epidata import Epidata
+from delphi.epidata.common.covid_hosp.covid_hosp_schema_io import CovidHospSomething
+import delphi.operations.secrets as secrets
+
+class TestDatabase(Database):
+  DATASET_NAME = 'mock_dataset'
+
+  @staticmethod
+  def create_mock_database(table_name=None,
+                           dataset_id=None,
+                           metadata_id=None,
+                           issue_col=None,
+                           csv_cols=[],
+                           key_cols=[],
+                           aggregate_cols=[]):
+    with patch.object(CovidHospSomething, 'get_ds_table_name', return_value=table_name), \
+        patch.object(CovidHospSomething, 'get_ds_dataset_id', return_value=dataset_id), \
+        patch.object(CovidHospSomething, 'get_ds_metadata_id', return_value=metadata_id), \
+        patch.object(CovidHospSomething, 'get_ds_issue_column', return_value=issue_col), \
+        patch.object(CovidHospSomething, 'get_ds_ordered_csv_cols', return_value=csv_cols), \
+        patch.object(CovidHospSomething, 'get_ds_key_cols', return_value=key_cols), \
+        patch.object(CovidHospSomething, 'get_ds_aggregate_key_cols', return_value=aggregate_cols):
+      return TestDatabase()
+
+class CovidHospTestCase(unittest.TestCase):
+  # assign these in subclasses:
+  db_class = None
+  test_util_context = None
+  
+  # optionally extend or recreate this in subclasses:
+  extra_tables_used = []
+  
+  def setUp(self):
+    # use the local instance of the Epidata API
+    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+    
+    # use the local instance of the epidata database
+    secrets.db.host = 'delphi_database_epidata'
+    secrets.db.epi = ('user', 'pass')
+    
+    # configure test data
+    self.test_utils = UnitTestUtils(self.test_util_context)
+
+    # create list of relevant tables
+    chs = CovidHospSomething()
+    ds_name = self.db_class.DATASET_NAME
+    tables_used = ['covid_hosp_meta', chs.get_ds_table_name(ds_name)]
+    if chs.get_ds_aggregate_key_cols(ds_name):
+      tables_used.append(chs.get_ds_table_name(ds_name)+'_key')    
+    tables_used += self.extra_tables_used
+
+    # clear all relevant tables
+    with self.db_class().connect() as db:
+      with db.new_cursor() as cur:
+        for table in tables_used:
+          cur.execute(f'truncate table {table}')
 
 class UnitTestUtils:
 

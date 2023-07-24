@@ -11,39 +11,20 @@ import pandas as pd
 
 # first party
 from delphi.epidata.acquisition.covid_hosp.state_daily.database import Database
-from delphi.epidata.acquisition.covid_hosp.common.test_utils import UnitTestUtils
+from delphi.epidata.acquisition.covid_hosp.common.test_utils import CovidHospTestCase, UnitTestUtils
 from delphi.epidata.client.delphi_epidata import Epidata
-from delphi.epidata.acquisition.covid_hosp.state_daily.update import Update
-from delphi.epidata.acquisition.covid_hosp.state_daily.network import Network
-from delphi.epidata.acquisition.covid_hosp.common.utils import Utils
-import delphi.operations.secrets as secrets
+from delphi.epidata.acquisition.covid_hosp.common.network import Network
+from delphi.epidata.common.covid_hosp.covid_hosp_schema_io import CovidHospSomething
 
 # py3tester coverage target (equivalent to `import *`)
 __test_target__ = \
     'delphi.epidata.acquisition.covid_hosp.state_daily.update'
 
 
-class AcquisitionTests(unittest.TestCase):
+class AcquisitionTests(CovidHospTestCase):
 
-  def setUp(self):
-    """Perform per-test setup."""
-
-    # configure test data
-    self.test_utils = UnitTestUtils(__file__)
-
-    # use the local instance of the Epidata API
-    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
-
-    # use the local instance of the epidata database
-    secrets.db.host = 'delphi_database_epidata'
-    secrets.db.epi = ('user', 'pass')
-
-    # clear relevant tables
-    with Database.connect() as db:
-      with db.new_cursor() as cur:
-        cur.execute('truncate table covid_hosp_state_daily')
-        cur.execute('truncate table covid_hosp_state_timeseries')
-        cur.execute('truncate table covid_hosp_meta')
+  db_class = Database
+  test_util_context = __file__
 
   @freeze_time("2021-03-16")
   def test_acquire_dataset(self):
@@ -61,8 +42,8 @@ class AcquisitionTests(unittest.TestCase):
          patch.object(Network, 'fetch_dataset', side_effect=[self.test_utils.load_sample_dataset("dataset0.csv"), # dataset for 3/13
                                                              self.test_utils.load_sample_dataset("dataset0.csv"), # first dataset for 3/15
                                                              self.test_utils.load_sample_dataset()] # second dataset for 3/15
-                      ) as mock_fetch:
-      acquired = Update.run()
+                      ):
+      acquired = Database().update_dataset()
       self.assertTrue(acquired)
       self.assertEqual(mock_fetch_meta.call_count, 1)
 
@@ -82,8 +63,8 @@ class AcquisitionTests(unittest.TestCase):
       self.assertAlmostEqual(actual, expected)
       self.assertIsNone(row['critical_staffing_shortage_today_no'])
 
-      # expect 61 fields per row (62 database columns, except `id`) # TODO: ???  this is wrong!
-      self.assertEqual(len(row), 118)
+      # Expect len(row) to equal the amount of dynamic columns + one extra issue column
+      self.assertEqual(len(row), len(list(CovidHospSomething().columns('state_daily'))) + 1)
 
     with self.subTest(name='all date batches acquired'):
       response = Epidata.covid_hosp('WY', Epidata.range(20200101, 20210101), issues=20210313)
@@ -91,9 +72,9 @@ class AcquisitionTests(unittest.TestCase):
 
     # re-acquisition of the same dataset should be a no-op
     with self.subTest(name='second acquisition'), \
-         patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()) as mock_fetch_meta, \
-         patch.object(Network, 'fetch_dataset', return_value=self.test_utils.load_sample_dataset()) as mock_fetch:
-      acquired = Update.run()
+         patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()), \
+         patch.object(Network, 'fetch_dataset', return_value=self.test_utils.load_sample_dataset()):
+      acquired = Database().update_dataset()
       self.assertFalse(acquired)
 
     # make sure the data still exists
@@ -114,18 +95,14 @@ class AcquisitionTests(unittest.TestCase):
 
     # acquire sample data into local database
     # mock out network calls to external hosts
-    with Database.connect() as db:
+    with Database().connect() as db:
       pre_max_issue = db.get_max_issue()
     self.assertEqual(pre_max_issue, pd.Timestamp('1900-01-01 00:00:00'))
     with self.subTest(name='first acquisition'), \
-         patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()) as mock_fetch_meta, \
-         patch.object(Network, 'fetch_dataset', side_effect=[self.test_utils.load_sample_dataset("dataset0.csv")]
-                      ) as mock_fetch:
-      acquired = Utils.update_dataset(Database,
-                                      Network,
-                                      date(2021, 3, 12),
-                                      date(2021, 3, 14))
-      with Database.connect() as db:
+         patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()), \
+         patch.object(Network, 'fetch_dataset', side_effect=[self.test_utils.load_sample_dataset("dataset0.csv")]):
+      acquired = Database().update_dataset(date(2021, 3, 12), date(2021, 3, 14))
+      with Database().connect() as db:
         post_max_issue = db.get_max_issue()
       self.assertEqual(post_max_issue, pd.Timestamp('2021-03-13 00:00:00'))
       self.assertTrue(acquired)

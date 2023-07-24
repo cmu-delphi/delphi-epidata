@@ -14,7 +14,7 @@ __test_target__ = 'delphi.epidata.acquisition.covid_hosp.common.network'
 
 class NetworkTests(unittest.TestCase):
 
-  def test_fetch_metadata_for_dataset(self):
+  def test_fetch_metadata(self):
     """Fetch metadata as JSON."""
 
     with patch.object(pd, "read_csv") as func:
@@ -22,7 +22,7 @@ class NetworkTests(unittest.TestCase):
         {"Archive Link": ["test2", "test1", "test3"],
          "Update Date": ["2020/1/2", "2020/1/1", "2020/1/3"]}
       )
-      result = Network.fetch_metadata_for_dataset("test")
+      result = Network.fetch_metadata("test")
       pd.testing.assert_frame_equal(
         result,
         pd.DataFrame(

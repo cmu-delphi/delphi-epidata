@@ -2,14 +2,14 @@
 
 # standard library
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import patch
 
 # first party
-from delphi.epidata.acquisition.covid_hosp.common.database import Database
-from delphi.epidata.acquisition.covid_hosp.common.test_utils import UnitTestUtils
+from delphi.epidata.acquisition.covid_hosp.facility.database import Database
+from delphi.epidata.acquisition.covid_hosp.common.network import Network
+from delphi.epidata.acquisition.covid_hosp.common.test_utils import CovidHospTestCase, UnitTestUtils
 from delphi.epidata.client.delphi_epidata import Epidata
-from delphi.epidata.acquisition.covid_hosp.facility.update import Update
-import delphi.operations.secrets as secrets
+from delphi.epidata.common.covid_hosp.covid_hosp_schema_io import CovidHospSomething
 
 # third party
 from freezegun import freeze_time
@@ -19,38 +19,14 @@ __test_target__ = 'delphi.epidata.acquisition.covid_hosp.facility.update'
 
 NEWLINE="\n"
 
-class AcquisitionTests(unittest.TestCase):
+class AcquisitionTests(CovidHospTestCase):
 
-  def setUp(self):
-    """Perform per-test setup."""
-
-    # configure test data
-    self.test_utils = UnitTestUtils(__file__)
-
-    # use the local instance of the Epidata API
-    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
-
-    # use the local instance of the epidata database
-    secrets.db.host = 'delphi_database_epidata'
-    secrets.db.epi = ('user', 'pass')
-
-    # clear relevant tables
-    with Database.connect() as db:
-      with db.new_cursor() as cur:
-        cur.execute('truncate table covid_hosp_facility')
-        cur.execute('truncate table covid_hosp_facility_key')
-        cur.execute('truncate table covid_hosp_meta')
+  db_class = Database
+  test_util_context = __file__
 
   @freeze_time("2021-03-16")
   def test_acquire_dataset(self):
     """Acquire a new dataset."""
-
-    # only mock out network calls to external hosts
-    mock_network = MagicMock()
-    mock_network.fetch_metadata.return_value = \
-        self.test_utils.load_sample_metadata()
-    mock_network.fetch_dataset.return_value = \
-        self.test_utils.load_sample_dataset()
 
     # make sure the data does not yet exist
     with self.subTest(name='no data yet'):
@@ -59,8 +35,10 @@ class AcquisitionTests(unittest.TestCase):
       self.assertEqual(response['result'], -2, response)
 
     # acquire sample data into local database
-    with self.subTest(name='first acquisition'):
-      acquired = Update.run(network=mock_network)
+    with self.subTest(name='first acquisition'), \
+         patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()), \
+         patch.object(Network, 'fetch_dataset', return_value=self.test_utils.load_sample_dataset()):
+      acquired = Database().update_dataset()
       self.assertTrue(acquired)
 
     # make sure the data now exists
@@ -89,12 +67,14 @@ class AcquisitionTests(unittest.TestCase):
         else:
           self.assertEqual(row[k], v, f"row[{k}] is {row[k]} not {v}")
 
-      # expect 113 fields per row (114 database columns, except `id`)
-      self.assertEqual(len(row), 113)
+      # Expect len(row) to equal the amount of dynamic columns + one extra issue column
+      self.assertEqual(len(row), len(list(CovidHospSomething().columns('covid_hosp_facility'))) + 1)
 
     # re-acquisition of the same dataset should be a no-op
-    with self.subTest(name='second acquisition'):
-      acquired = Update.run(network=mock_network)
+    with self.subTest(name='second acquisition'), \
+         patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()), \
+         patch.object(Network, 'fetch_dataset', return_value=self.test_utils.load_sample_dataset()):
+      acquired = Database().update_dataset()
       self.assertFalse(acquired)
 
     # make sure the data still exists
@@ -108,16 +88,11 @@ class AcquisitionTests(unittest.TestCase):
   def test_facility_lookup(self):
     """Lookup facilities using various filters."""
 
-    # only mock out network calls to external hosts
-    mock_network = MagicMock()
-    mock_network.fetch_metadata.return_value = \
-        self.test_utils.load_sample_metadata()
-    mock_network.fetch_dataset.return_value = \
-        self.test_utils.load_sample_dataset()
-
     # acquire sample data into local database
-    with self.subTest(name='first acquisition'):
-      acquired = Update.run(network=mock_network)
+    with self.subTest(name='first acquisition'), \
+         patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()), \
+         patch.object(Network, 'fetch_dataset', return_value=self.test_utils.load_sample_dataset()):
+      acquired = Database().update_dataset()
       self.assertTrue(acquired)
 
     # texas ground truth, sorted by `hospital_pk`
@@ -181,16 +156,11 @@ class AcquisitionTests(unittest.TestCase):
       response = Epidata.covid_hosp_facility_lookup(state='not a state')
       self.assertEqual(response['result'], -2)
 
-    # update facility info
-    mock_network = MagicMock()
-    mock_network.fetch_metadata.return_value = \
-        self.test_utils.load_sample_metadata('metadata_update_facility.csv')
-    mock_network.fetch_dataset.return_value = \
-        self.test_utils.load_sample_dataset('dataset_update_facility.csv')
-
-    # acquire sample data into local database
-    with self.subTest(name='second acquisition'):
-      acquired = Update.run(network=mock_network)
+    # acquire sample data into local database with updated facility info
+    with self.subTest(name='second acquisition'), \
+         patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata('metadata_update_facility.csv')), \
+         patch.object(Network, 'fetch_dataset', return_value=self.test_utils.load_sample_dataset('dataset_update_facility.csv')):
+      acquired = Database().update_dataset()
       self.assertTrue(acquired)
 
     texas_hospitals[1]['zip'] = '88888'

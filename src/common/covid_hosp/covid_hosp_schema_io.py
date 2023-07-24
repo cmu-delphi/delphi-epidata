@@ -1,10 +1,10 @@
+from collections import namedtuple
 from datetime import datetime
 from pathlib import Path
 import re
 import sys
 
-from delphi.epidata.acquisition.covid_hosp.common.utils import Utils
-from delphi.epidata.acquisition.covid_hosp.common.database import Columndef
+from delphi.epidata.common.covid_hosp.utils import TypeUtils
 
 # ruamel preserves key ordering, comments, and some formatting for a "round trip" of a yaml file import-->export
 from ruamel.yaml.main import (
@@ -19,6 +19,8 @@ RoundTripRepresenter.add_representer(type(None), RoundTripRepresenter.represent_
 # print(yaml_dump(yaml_load('NULL: ~')))  # ==>  "~: ~\n"
 
 
+Columndef = namedtuple("Columndef", "csv_name sql_name dtype")
+
 class CovidHospSomething:
 
   PYTHON_TYPE_MAPPING = {
@@ -26,9 +28,9 @@ class CovidHospSomething:
     'float': float,
     'str': str,
     'fixedstr': str,
-    'bool': Utils.parse_bool,
-    'intdate': Utils.int_from_date,
-    'geocode': Utils.limited_geocode,
+    'bool': TypeUtils.parse_bool,
+    'intdate': TypeUtils.int_from_date,
+    'geocode': TypeUtils.limited_geocode,
   }
 
   SQL_TYPE_MAPPING = {
@@ -128,7 +130,19 @@ class CovidHospSomething:
 
 
   def get_ds_aggregate_key_cols(self, ds_name):
-    return self.dataset(ds_name).get('AGGREGATE_KEY_COLS', None)
+    return self.dataset(ds_name).get('AGGREGATE_KEY_COLS', [])
+
+
+  def get_ds_dataset_id(self, ds_name):
+    return self.dataset(ds_name)['DATASET_ID']
+
+
+  def get_ds_metadata_id(self, ds_name):
+    return self.dataset(ds_name)['METADATA_ID']
+
+
+  def get_ds_issue_column(self, ds_name):
+    return self.dataset(ds_name).get('ISSUE_COLUMN', 'issue')
 
 
   def get_ds_ordered_csv_cols(self, ds_name):

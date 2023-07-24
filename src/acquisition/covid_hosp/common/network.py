@@ -6,7 +6,7 @@ class Network:
   METADATA_URL_TEMPLATE = \
       'https://healthdata.gov/api/views/%s/rows.csv'
 
-  def fetch_metadata_for_dataset(dataset_id, logger=False):
+  def fetch_metadata(dataset_id, logger=False):
     """Download and return metadata.
 
     Parameters
