@@ -23,7 +23,8 @@
       "src": "src/common/",
       "dst": "[[package]]/common/",
       "match": "^.*\\.(py)$",
-      "add-header-comment": true
+      "add-header-comment": true,
+	"recursive": true
     },
 
     "// server",
