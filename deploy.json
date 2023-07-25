@@ -24,7 +24,7 @@
       "dst": "[[package]]/common/",
       "match": "^.*\\.(py)$",
       "add-header-comment": true,
-	"recursive": true
+      "recursive": true
     },
 
     "// server",
