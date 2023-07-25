@@ -10,13 +10,10 @@ class Database(BaseDatabase):
   TABLE_NAME = 'covid_hosp_state_timeseries'
   KEY_COLS = ['state', 'date']
   # These are 3-tuples of (CSV header name, SQL db column name, data type) for
-  # all the columns in the CSV file.
-  # Note that the corresponding database column names may be shorter
-  # due to constraints on the length of column names. See
-  # /src/ddl/covid_hosp.sql for more information.
-  # Additionally, all column names below are shared with state_daily,
-  # except for reporting_cutoff_start (there) and date (here). If you need
-  # to update a column name, do it in both places.
+  # all the columns in the CSV file. Note that the corresponding database column
+  # names may be shorter due to constraints on the length of column names. See
+  # /src/ddl/covid_hosp.sql for more information. If you need to update a column
+  # name, do it in both places.
   ORDERED_CSV_COLUMNS = [
       Columndef('state', 'state', str),
       Columndef('date', 'date', Utils.int_from_date),
