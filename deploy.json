@@ -22,7 +22,7 @@
       "type": "move",
       "src": "src/common/",
       "dst": "[[package]]/common/",
-      "match": "^.*\\.(py)$",
+      "match": "^.*\\.(py|yaml)$",
       "add-header-comment": true,
       "recursive": true
     },
