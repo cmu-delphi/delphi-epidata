@@ -59,10 +59,11 @@ class AcquisitionTests(unittest.TestCase):
       # acquire sample data into local database
       # mock out network calls to external hosts
       with self.subTest(name='first acquisition'), \
-           patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()) as mock_fetch_meta, \
-           patch.object(Network, 'fetch_dataset', side_effect=[self.test_utils.load_sample_dataset("dataset0.csv"), # dataset for 3/13
-                                                               self.test_utils.load_sample_dataset("dataset0.csv")] # dataset for 3/15
-                        ) as mock_fetch:
+          patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()) as mock_fetch_meta, \
+          patch.object(Network, 'fetch_dataset', side_effect=[
+            self.test_utils.load_sample_dataset("dataset0.csv"), # dataset for 3/13
+            self.test_utils.load_sample_dataset("dataset0.csv")  # dataset for 3/15
+          ]) as mock_fetch:
         acquired = Update.run()
         self.assertTrue(acquired)
         self.assertEqual(mock_fetch_meta.call_count, 1)
@@ -89,10 +90,11 @@ class AcquisitionTests(unittest.TestCase):
 
       # re-acquisition of the same dataset should be a no-op
       with self.subTest(name='second acquisition'), \
-           patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()) as mock_fetch_meta, \
-           patch.object(Network, 'fetch_dataset', side_effect=[self.test_utils.load_sample_dataset(), # late posted dataset for 3/15
-                                                               self.test_utils.load_sample_dataset("dataset1.csv")] # dataset for 3/16
-                       ) as mock_fetch:
+          patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()) as mock_fetch_meta, \
+          patch.object(Network, 'fetch_dataset', side_effect=[
+            self.test_utils.load_sample_dataset("dataset0.csv"),
+            self.test_utils.load_sample_dataset("dataset0.csv")
+          ]) as mock_fetch:
         acquired = Update.run()
         self.assertFalse(acquired)
 
@@ -105,7 +107,7 @@ class AcquisitionTests(unittest.TestCase):
       # simulate issue posted after yesterday's run
       with self.subTest(name='late issue posted'), \
            patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata("metadata2.csv")) as mock_fetch_meta, \
-           patch.object(Network, 'fetch_dataset', return_value=self.test_utils.load_sample_dataset()) as mock_fetch:
+           patch.object(Network, 'fetch_dataset', return_value=self.test_utils.load_sample_dataset("dataset1.csv")) as mock_fetch:
         acquired = Update.run()
         self.assertTrue(acquired)
         self.assertEqual(mock_fetch_meta.call_count, 1)
@@ -113,19 +115,21 @@ class AcquisitionTests(unittest.TestCase):
       # make sure everything was filed correctly
       with self.subTest(name='late issue data checks'):
         response = Epidata.covid_hosp('WY', Epidata.range(20200101, 20210101))
-        self.assertEqual(response['result'], 2)
-        self.assertEqual(len(response['epidata']), 1)
-        row = response['epidata'][0] # data from 03-15, dataset.csv
+        self.assertEqual(response['result'], 1)
+        self.assertEqual(len(response['epidata']), 2)
+
+        row = response['epidata'][0] # data from 03-15, dataset0.csv
         self.assertEqual(row['state'], 'WY')
         self.assertEqual(row['date'], 20201209)
         self.assertEqual(row['issue'], 20210315) # include today's data by default
         self.assertEqual(row['critical_staffing_shortage_today_yes'], 8)
         self.assertEqual(row['total_patients_hospitalized_confirmed_influenza_covid_coverage'], 56)
         self.assertIsNone(row['critical_staffing_shortage_today_no'])
+
         row = response['epidata'][1] # data from 03-16, dataset1.csv
         self.assertEqual(row['state'], 'WY')
         self.assertEqual(row['date'], 20201210)
-        self.assertEqual(row['issue'], 20210315) # include today's data by default
+        self.assertEqual(row['issue'], 20210316) # include today's data by default
         self.assertEqual(row['critical_staffing_shortage_today_yes'], 8)
         self.assertEqual(row['total_patients_hospitalized_confirmed_influenza_covid_coverage'], 56)
         self.assertIsNone(row['critical_staffing_shortage_today_no'])
