@@ -5,9 +5,6 @@ import argparse
 import unittest
 from unittest.mock import MagicMock
 
-# third party
-import pandas
-
 from delphi.epidata.maintenance.covidcast_meta_cache_updater import get_argument_parser, \
   main
 # py3tester coverage target
