@@ -10,21 +10,19 @@ REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD", "1234")
 LAST_USED_KEY_PATTERN = "*LAST_USED*"
 
 
-def redis_get_last_time_used(redis_cli):
-    keys = redis_cli.keys(pattern=LAST_USED_KEY_PATTERN)
-    key_val_pairs = {
-        str(key).split("/")[1]: dtime.strptime(str(redis_cli.get(key)), "%Y-%m-%d").date() for key in keys
-    }
-    return key_val_pairs
-
-
 def main():
     redis_cli = redis.Redis(host=REDIS_HOST, password=REDIS_PASSWORD, decode_responses=True)
-    key_val_pairs = redis_get_last_time_used(redis_cli, LAST_USED_KEY_PATTERN)
     u, p = secrets.db.epi
     cnx = mysql.connector.connect(database="epidata", user=u, password=p, host=secrets.db.host)
     cur = cnx.cursor()
-    for api_key, last_time_used in key_val_pairs.items():
+
+    redis_keys = redis_cli.keys(pattern=LAST_USED_KEY_PATTERN)
+    today_date = dtime.today().date()
+    for key in redis_keys:
+        api_key, last_time_used = str(key).split("/")[1], dtime.strptime(str(redis_cli.get(key)), "%Y-%m-%d").date()
+        if last_time_used < today_date:
+            redis_cli.delete(key)
+            continue
         cur.execute(
             f"""
             UPDATE
