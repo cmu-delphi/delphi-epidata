@@ -26,6 +26,10 @@ Pandemic"](https://www.pnas.org/topic/548) in *PNAS*:
 
 Research publications using the survey data include:
 
+- Kobayashi H, Saenz-Escarcega R, Fulk A, Agusto FB (2023). [Understanding
+  mental health trends during COVID-19 pandemic in the United States using
+  network analysis](https://doi.org/10.1371/journal.pone.0286857). *PLoS
+  ONE* 18(6): e0286857. 
 - GK Charles, SP Braunstein, JL Barker, et al (2023). [How do psychobehavioural
   variables shed light on heterogeneity in COVID-19 vaccine acceptance? Evidence
   from United States general population surveys on a probability panel and
@@ -43,7 +47,7 @@ Research publications using the survey data include:
 - M. Rubinstein, A. Haviland, and J. Breslau (2023). [The effect of COVID-19
   vaccinations on self-reported depression and anxiety during February
   2021](https://doi.org/10.1080/2330443X.2023.2190008). *Statistics and Public
-  Policy.*
+  Policy* 10 (1), 2190008.
 - Rönn MM, Menzies NA, Salomon JA (2023). [Vaccination and voting patterns in
   the United States: analysis of COVID-19 and flu surveys from 2010 to
   2022](https://doi.org/10.1016/j.amepre.2023.03.001). *American Journal of
@@ -69,15 +73,15 @@ Research publications using the survey data include:
   over time: Culture, uncertainty avoidance, and vaccine side-effect
   concerns](https://doi.org/10.1037/pspa0000320). *Journal of Personality and
   Social Psychology* 124 (4), 683-706.
+- C. Lupton-Smith, E. Badillo Goicoechea, M. Collins, J. Lessler, M. K.
+  Grabowski & E. A. Stuart (2023). [Consistency between Household and County
+  Measures of Onsite Schooling during the COVID-19
+  Pandemic](https://doi.org/10.1080/19345747.2022.2131660). *Journal of Research
+  on Educational Effectiveness* 16 (3), 419-441.
 - Rader, B., Astley, C.M., Sewalk, K. et al (2022). [Spatial modeling of vaccine
   deserts as barriers to controlling
   SARS-CoV-2](https://doi.org/10.1038/s43856-022-00183-8). *Communications
   Medicine* 2, 141.
-- C. Lupton-Smith, E. Badillo Goicoechea, M. Collins, J. Lessler, M. K.
-  Grabowski & E. A. Stuart (2022). [Consistency between Household and County
-  Measures of Onsite Schooling during the COVID-19
-  Pandemic](https://doi.org/10.1080/19345747.2022.2131660). *Journal of Research
-  on Educational Effectiveness*.
 - Nguyen, Q.C., Yardi, I., Gutierrez, F.X.M. et al. (2022). [Leveraging 13
   million responses to the U.S. COVID-19 Trends and Impact Survey to examine
   vaccine hesitancy, vaccination, and mask wearing, January 2021-February
