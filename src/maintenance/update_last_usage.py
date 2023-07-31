@@ -20,9 +20,6 @@ def main():
     today_date = dtime.today().date()
     for key in redis_keys:
         api_key, last_time_used = str(key).split("/")[1], dtime.strptime(str(redis_cli.get(key)), "%Y-%m-%d").date()
-        if last_time_used < today_date:
-            redis_cli.delete(key)
-            continue
         cur.execute(
             f"""
             UPDATE
@@ -31,6 +28,7 @@ def main():
             WHERE api_key = "{api_key}" AND (last_time_used < "{last_time_used}" OR last_time_used IS NULL)
         """
         )
+        redis_cli.delete(key)
     cur.close()
     cnx.commit()
     cnx.close()
