@@ -12,8 +12,7 @@ from datetime import date
 import pandas as pd
 
 # first party
-from delphi.epidata.acquisition.covidcast import signal_dash_data_generator
-from delphi.epidata.acquisition.covidcast.signal_dash_data_generator import (
+from delphi.epidata.maintenance.signal_dash_data_generator import (
   get_argument_parser,
   Database,
   DashboardSignalStatus,

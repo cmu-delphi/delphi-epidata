@@ -11,7 +11,7 @@ from aiohttp.client_exceptions import ClientResponseError
 
 # third party
 import delphi.operations.secrets as secrets
-from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import main as update_covidcast_meta_cache
+from delphi.epidata.maintenance.covidcast_meta_cache_updater import main as update_covidcast_meta_cache
 from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase, CovidcastTestRow, FIPS, MSA
 from delphi.epidata.client.delphi_epidata import Epidata
 from delphi_utils import Nans

@@ -9,7 +9,7 @@ import requests
 
 #first party
 from delphi_utils import Nans
-from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import main as update_cache
+from delphi.epidata.maintenance.covidcast_meta_cache_updater import main as update_cache
 import delphi.operations.secrets as secrets
 
 # use the local instance of the Epidata API

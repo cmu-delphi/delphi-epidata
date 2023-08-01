@@ -9,7 +9,7 @@ from more_itertools import windowed
 import requests
 import pandas as pd
 
-from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import main as update_cache
+from delphi.epidata.maintenance.covidcast_meta_cache_updater import main as update_cache
 from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase, CovidcastTestRow
 
 # use the local instance of the Epidata API
