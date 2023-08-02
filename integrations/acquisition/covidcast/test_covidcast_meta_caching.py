@@ -13,7 +13,7 @@ from delphi_utils import Nans
 from delphi.epidata.client.delphi_epidata import Epidata
 import delphi.operations.secrets as secrets
 import delphi.epidata.acquisition.covidcast.database as live
-from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import main
+from delphi.epidata.maintenance.covidcast_meta_cache_updater import main
 
 # py3tester coverage target (equivalent to `import *`)
 __test_target__ = (

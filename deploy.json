@@ -217,6 +217,16 @@
       "add-header-comment": true
     },
 
+    "// maintenance",
+    {
+      "type": "move",
+      "src": "src/maintenance/",
+      "dst": "[[package]]/maintenance/",
+      "match": "^.*\\.(py)$",
+      "recursive": true,
+      "add-header-comment": true
+    },
+
     "// move flask tests out of the way",
     {
       "type": "move",
