@@ -6,7 +6,7 @@
 
 This is the home of [Delphi](https://delphi.cmu.edu/)'s epidemiological data
 API. See our [API documentation](https://cmu-delphi.github.io/delphi-epidata/)
-for details on the available data sets, APIs, and clients
+for details on the available data sets, APIs, and clients.
 
 ## Development Quickstart
 
