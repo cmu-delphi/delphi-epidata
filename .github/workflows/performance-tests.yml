@@ -2,8 +2,8 @@ name: Performance testing
 
 # Run when a PR comment is created (issues and PRs are considered the same entity in the GitHub API)
 on:
-  schedule:
-    - cron: '*/20 * * * *' # every 20 minutes
+  issue_comment:
+    types: [created]
 
 # Add some extra perms to comment on a PR
 permissions:
