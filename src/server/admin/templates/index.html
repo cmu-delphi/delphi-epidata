@@ -6,6 +6,7 @@
     <title>API Keys</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 </head>
 <body>
     <div class="container">
@@ -13,10 +14,11 @@
             API Key Admin Interface
         </h1>
         {% if flags.banner %}
-        <div class="alert alert-primary" role="alert">
-        {{ flags.banner }}
-        </div>
+            <div class="alert alert-primary" role="alert">
+                {{ flags.banner }}
+            </div>
         {% endif %}
+        
         {% if mode == 'overview' %}
             <h2 class="mt-5 mb-3">Registered Users</h2>
             <table class="table table-striped">

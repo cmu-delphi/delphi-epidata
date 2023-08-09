@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Key removal request page</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/all.css">
+</head>
+<style>
+    .divider-text {
+        position: relative;
+        text-align: center;
+        margin-top: 15px;
+        margin-bottom: 15px;
+    }
+
+    .divider-text span {
+        padding: 7px;
+        font-size: 12px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .divider-text:after {
+        content: "";
+        position: absolute;
+        width: 100%;
+        border-bottom: 1px solid #ddd;
+        top: 55%;
+        left: 0;
+        z-index: 1;
+    }
+
+    .btn-facebook {
+        background-color: #405D9D;
+        color: #fff;
+    }
+
+    .btn-twitter {
+        background-color: #42AEEC;
+        color: #fff;
+    }
+
+    .text-description {
+        padding: 3%;
+    }
+
+    .card-body {
+        width: 100%;
+    }
+</style>
+
+<body>
+    <div class="container">
+        <br>
+        <div class="card bg-light">
+            <h4 class="card-title mt-3 text-center">Delphi: API Key removal request</h4>
+            {% if flags.banner %}
+            <div class="alert alert-primary" role="alert">
+                {{ flags.banner }}
+            </div>
+            {% endif %}
+            <p class="text-description">
+                Submit this form if you would like Delphi to disable your API key and destroy all information
+                associating that key with your identity. We will confirm the request by emailing the address you used at
+                registration time. Since this is a destructive operation, we handle these requests manually; you should
+                expect a response within 1-2 business days.
+            </p>
+            <article class="card-body mx-auto">
+                <form method="POST">
+                    <div>
+                        <label for="api_key" class="form-label">API Key</label>
+                        <input type="text" class="form-control" id="api_key" name="api_key"
+                            value="{{ request.form['api_key'] }}" required>
+                        <br>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="confirm" id="confirm" required>
+                        <label class="form-check-label" for="confirm">
+                            I understand that future API requests submitted with this key will be rejected.
+                        </label>
+                        <br>
+                        <br>
+                        <br>
+                    </div>
+                    <div>
+                        <label for="comment" class="form-label">Comment</label>
+                        <textarea type="text" class="form-control" id="comment" name="comment"
+                            value="{{ request.form['comment'] }}"></textarea>
+                        <br>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-block"> Submit </button>
+                    </div>
+                </form>
+            </article>
+        </div>
+    </div>
+</body>
+
+</html>

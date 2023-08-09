@@ -1,12 +1,11 @@
 from sqlalchemy import Table, ForeignKey, Column, Integer, String, Date, delete, update
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-from copy import deepcopy
 
 from .._db import Session, WriteSession, default_session
 from delphi.epidata.common.logger import get_structured_logger
 
-from typing import Set, Optional, List
+from typing import Set, Optional
 from datetime import datetime as dtime
 
 
@@ -142,3 +141,41 @@ class UserRole(Base):
     def list_all_roles(session):
         roles = session.query(UserRole).all()
         return [role.name for role in roles]
+
+
+class RegistrationResponse(Base):
+    __tablename__ = "registration_responses"
+
+    email = Column(String(320), unique=True, nullable=False, primary_key=True)
+    organization = Column(String(120), unique=False, nullable=True)
+    purpose = Column(String(320), unique=False, nullable=True)
+
+    def __init__(self, email: str, organization: str = None, purpose: str = None) -> None:
+        self.email = email
+        self.organization = organization
+        self.purpose = purpose
+
+    @staticmethod
+    @default_session(WriteSession)
+    def add_response(email: str, organization: str, purpose: str, session):
+        new_response = RegistrationResponse(email, organization, purpose)
+        session.add(new_response)
+        session.commit()
+
+
+class RemovalRequest(Base):
+    __tablename__ = "removal_requests"
+
+    api_key = Column(String(50), unique=True, nullable=False, primary_key=True)
+    comment = Column(String(320), unique=False, nullable=True)
+
+    def __init__(self, api_key: str, comment: str = None) -> None:
+        self.api_key = api_key
+        self.comment = comment
+
+    @staticmethod
+    @default_session(WriteSession)
+    def add_request(api_key: str, comment: str, session):
+        new_request = RemovalRequest(api_key, comment)
+        session.add(new_request)
+        session.commit()

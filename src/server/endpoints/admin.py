@@ -1,15 +1,39 @@
 from pathlib import Path
-from typing import Dict, List, Set
+from typing import Dict
 
 from flask import Blueprint, make_response, render_template_string, request
 from werkzeug.exceptions import NotFound, Unauthorized
 from werkzeug.utils import redirect
+import random
+import string
 
-from .._common import log_info_with_request
-from .._config import ADMIN_PASSWORD, API_KEY_REGISTRATION_FORM_LINK, API_KEY_REMOVAL_REQUEST_LINK, REGISTER_WEBHOOK_TOKEN
+from .._common import log_info_with_request, send_email
+from .._config import (
+    ADMIN_PASSWORD,
+    REGISTER_WEBHOOK_TOKEN,
+)
 from .._db import WriteSession
 from .._security import resolve_auth_token
-from ..admin.models import User, UserRole
+from ..admin.models import User, UserRole, RegistrationResponse, RemovalRequest
+
+NEW_KEY_MESSAGE = """
+Thank you for registering with the Delphi Epidata API.
+
+Your API key is: {}
+
+For usage information, see the API Keys section of the documentation: https://cmu-delphi.github.io/delphi-epidata/api/api_keys.html
+
+Best,
+Delphi Team
+"""
+
+REMOVAL_REQUEST_MESSAGE = """
+Your API Key: {} removal request will be processed soon.
+To verify, we will send you an email message after processing your request.
+
+Best,
+Delphi Team
+"""
 
 self_dir = Path(__file__).parent
 # first argument is the endpoint name
@@ -30,26 +54,53 @@ def _require_admin():
     return token
 
 
-def _render(mode: str, token: str, flags: Dict, session, **kwargs):
-    template = (templates_dir / "index.html").read_text("utf8")
-    return render_template_string(
-        template, mode=mode, token=token, flags=flags, roles=UserRole.list_all_roles(session), **kwargs
-    )
+def _render(template_name: str, mode: str, token: str, flags: Dict, **kwargs):
+    template = (templates_dir / template_name).read_text("utf8")
+    return render_template_string(template, mode=mode, token=token, flags=flags, **kwargs)
 
 
 # ~~~~ PUBLIC ROUTES ~~~~
 
 
-@bp.route("/registration_form", methods=["GET"])
-def registration_form_redirect():
-    # TODO: replace this with our own hosted registration form instead of external
-    return redirect(API_KEY_REGISTRATION_FORM_LINK, code=302)
+@bp.route("/registration_form", methods=["GET", "POST"])
+def registration_form():
+    flags = dict()
+    with WriteSession() as session:
+        if request.method == "POST":
+            email = request.values["email"]
+            if not User.find_user(user_email=email):
+                # Use a separate table for email, purpose and organization
+                api_key = "".join(random.choices(string.ascii_letters + string.digits, k=13))
+                User.create_user(
+                    api_key=api_key,
+                    email=email,
+                    session=session,
+                )
+                RegistrationResponse.add_response(
+                    email, request.values["organization"], request.values["purpose"], session
+                )
+                send_email(email, "Delphi Epidata API Registration", NEW_KEY_MESSAGE.format(api_key))
+                flags["banner"] = "Successfully Added"
+            else:
+                flags[
+                    "error"
+                ] = "User with email and/or API Key already exists, use different parameters or contact us for help"
+    return _render("registration.html", "registration", None, flags=flags)
 
 
-@bp.route("/removal_request", methods=["GET"])
-def removal_request_redirect():
-    # TODO: replace this with our own hosted form instead of external
-    return redirect(API_KEY_REMOVAL_REQUEST_LINK, code=302)
+@bp.route("/removal_request", methods=["GET", "POST"])
+def removal_request():
+    flags = dict()
+    with WriteSession() as session:
+        if request.method == "POST":
+            api_key = request.values["api_key"]
+            comment = request.values.get("comment")
+            user = User.find_user(api_key=api_key)
+            # User.delete_user(user.id, session)
+            RemovalRequest.add_request(api_key, comment, session)
+            flags["banner"] = "Your request has been successfully recorded."
+            send_email(user.email, "API Key removal request", REMOVAL_REQUEST_MESSAGE.format(api_key))
+    return _render("removal_request.html", "removal_request", None, flags=flags)
 
 
 # ~~~~ PRIVLEGED ROUTES ~~~~
@@ -63,19 +114,21 @@ def _index():
         if request.method == "POST":
             # register a new user
             if not User.find_user(
-                    user_email=request.values["email"], api_key=request.values["api_key"],
-                    session=session):
+                user_email=request.values["email"], api_key=request.values["api_key"], session=session
+            ):
                 User.create_user(
                     api_key=request.values["api_key"],
                     email=request.values["email"],
                     user_roles=set(request.values.getlist("roles")),
-                    session=session
+                    session=session,
                 )
                 flags["banner"] = "Successfully Added"
             else:
                 flags["banner"] = "User with such email and/or api key already exists."
         users = [user.as_dict for user in session.query(User).all()]
-        return _render("overview", token, flags, session=session, users=users, user=dict())
+        return _render(
+            "index.html", "overview", token, flags, users=users, user=dict(), roles=UserRole.list_all_roles(session)
+        )
 
 
 @bp.route("/<int:user_id>", methods=["GET", "PUT", "POST", "DELETE"])
@@ -90,7 +143,9 @@ def _detail(user_id: int):
             return redirect(f"./?auth={token}")
         flags = dict()
         if request.method in ["PUT", "POST"]:
-            user_check = User.find_user(api_key=request.values["api_key"], user_email=request.values["email"], session=session)
+            user_check = User.find_user(
+                api_key=request.values["api_key"], user_email=request.values["email"], session=session
+            )
             if user_check and user_check.id != user.id:
                 flags["banner"] = "Could not update user; same api_key and/or email already exists."
             else:
@@ -99,10 +154,10 @@ def _detail(user_id: int):
                     api_key=request.values["api_key"],
                     email=request.values["email"],
                     roles=set(request.values.getlist("roles")),
-                    session=session
+                    session=session,
                 )
                 flags["banner"] = "Successfully Saved"
-        return _render("detail", token, flags, session=session, user=user.as_dict)
+        return _render("index.html", "detail", token, flags, user=user.as_dict, roles=UserRole.list_all_roles(session))
 
 
 @bp.route("/register", methods=["POST"])
@@ -132,4 +187,4 @@ def diags():
     _require_admin()
     log_info_with_request("diagnostics", headers=request.headers)
     response_text = f"request path: {request.headers.get('X-Forwarded-For', 'idk')}"
-    return make_response(response_text, 200, {'content-type': 'text/plain'})
+    return make_response(response_text, 200, {"content-type": "text/plain"})

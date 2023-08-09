@@ -6,9 +6,10 @@ from sqlalchemy import event
 from sqlalchemy.engine import Connection, Engine
 from werkzeug.exceptions import Unauthorized
 from werkzeug.local import LocalProxy
+from smtplib import SMTP
 
 from delphi.epidata.common.logger import get_structured_logger
-from ._config import SECRET, REVERSE_PROXY_DEPTH
+from ._config import SECRET, REVERSE_PROXY_DEPTH, SMTP_HOST, SMTP_PORT, EMAIL_FROM
 from ._db import engine
 from ._exceptions import DatabaseErrorException, EpiDataException
 from ._security import current_user, _is_public_route, resolve_auth_token, update_key_last_time_used, ERROR_MSG_INVALID_KEY
@@ -210,3 +211,17 @@ def set_compatibility_mode():
     sets the compatibility mode for this request
     """
     g.compatibility = True
+
+
+def send_email(to_addr: str, subject: str, message: str):
+    """Send email messages
+
+    Args:
+        to_addr (str): Reciever email address
+        subject (str): Email subject
+        message (str): Email message
+    """
+    smtp_server = SMTP(host=SMTP_HOST, port=SMTP_PORT)
+    smtp_server.starttls()
+    body = "\r\n".join((f"FROM: {EMAIL_FROM}", f"TO: {to_addr}", f"Subject: {subject}", "", message))
+    smtp_server.sendmail(EMAIL_FROM, to_addr, body)

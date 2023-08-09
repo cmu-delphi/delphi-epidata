@@ -29,3 +29,19 @@ CREATE TABLE IF NOT EXISTS `user_role_link` (
   `role_id` int(11) UNSIGNED NOT NULL,
   PRIMARY KEY (`user_id`, `role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+-- `registration_responses` table
+
+CREATE TABLE IF NOT EXISTS `registration_responses` (
+    `email` varchar(320) UNIQUE NOT NULL,
+    `organization` varchar(120),
+    `purpose` varchar(320)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- `removal_requests` table
+
+CREATE TABLE IF NOT EXISTS `removal_requests` (
+    `api_key` varchar(50) UNIQUE NOT NULL,
+    `comment` varchar(320)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

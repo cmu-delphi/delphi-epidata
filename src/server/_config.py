@@ -111,3 +111,8 @@ API_KEY_REMOVAL_REQUEST_LINK = "https://forms.gle/GucFmZHTMgEFjH197"
 # ^ shortcut to "https://docs.google.com/forms/d/e/1FAIpQLSff30tsq4xwPCoUbvaIygLSMs_Mt8eDhHA0rifBoIrjo8J5lw/viewform"
 API_KEY_REMOVAL_REQUEST_LINK_LOCAL = "https://api.delphi.cmu.edu/epidata/admin/removal_request"
 # ^ redirects to API_KEY_REMOVAL_REQUEST_LINK
+
+# STMP credentials
+SMTP_HOST = "relay.andrew.cmu.edu"
+SMTP_PORT = 25
+EMAIL_FROM = "noreply@andrew.cmu.edu"
