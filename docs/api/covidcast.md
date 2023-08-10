@@ -113,6 +113,16 @@ and lists.
 The current set of signals available for each data source is returned by the
 [`covidcast_meta`](covidcast_meta.md) endpoint.
 
+#### Alternate Required Params
+
+The following params help specify multiple source-signal, timetype-timevalue or geotype-geovalue pairs. Use them in replacement of the usual required params.
+
+| Parameter | Replacing | Format | Description | Example |
+| --- | --- | --- | --- | --- |
+| `signal` | `data_source`, `signal` | `signal={source}:{signal1},{signal2}` | Specify multiple source-signal pairs, grouped by source | `signal=src1:sig1`, `signal=src1:sig1,sig2`, `signal=src1:*`, `signal=src1:sig1;src2:sig3` |
+| `time` | `time_type`, `time_values` | `time={timetype}:{timevalue1},{timevalue2}` | Specify multiple timetype-timevalue pairs, grouped by timetype | `time=day:*`, `time=day:20201201`, `time=day:20201201,20201202`, `time=day:20201201-20201204` |
+| `geo` | `geo_type`, `geo_value` | `geo={geotype}:{geovalue1},{geovalue2}` | Specify multiple geotype-geovalue pairs, grouped by geotype | `geo=fips:*`, `geo=fips:04019`, `geo=fips:04019,19143`, `geo=fips:04019;msa:40660`, `geo=fips:*;msa:*` |
+
 #### Optional
 
 Estimates for a specific `time_value` and `geo_value` are sometimes updated
@@ -153,15 +163,6 @@ You should specify only one of these three parameters in any given query.
 remain the same as a previous issue. If you have a research problem that would
 require knowing when we last confirmed an unchanged value, please get in touch.
 
-#### Useful Syntax Features
-
-The following params help specify multiple source-signal, timetype-timevalue or geotype-geovalue pairs. Use them in replacement of the usual required params.
-
-| Parameter | Format | Description | Example |
-| --- | --- | --- | --- |
-| `signal` | `signal={source}:{signal1},{signal2}` | Specify multiple source-signal pairs, grouped by source | `signal=src1:sig1`, `signal=src1:sig1,sig2`, `signal=src1:*`, `signal=src1:sig1;src2:sig3` |
-| `time` | `time={timetype}:{timevalue1},{timevalue2}` | Specify multiple timetype-timevalue pairs, grouped by timetype | `time=day:*`, `time=day:20201201`, `time=day:20201201,20201202`, `time=day:20201201-20201204` |
-| `geo` | `geo={geotype}:{geovalue1},{geovalue2}` | Specify multiple geotype-geovalue pairs, grouped by geotype | `geo=fips:*`, `geo=fips:04019`, `geo=fips:04019,19143`, `geo=fips:04019;msa:40660`, `geo=fips:*;msa:*` |
 ### Response
 
 | Field | Description | Type |
@@ -217,6 +218,12 @@ The `fields` parameter can be used to limit which fields are included in each re
 ### Facebook Survey CLI on 2020-04-06 to 2010-04-10 (county 06001)
 
 https://api.delphi.cmu.edu/epidata/covidcast/?data_source=fb-survey&signal=smoothed_cli&time_type=day&geo_type=county&time_values=20200406-20200410&geo_value=06001
+
+or
+
+https://api.delphi.cmu.edu/epidata/covidcast/?signal=fb-survey:smoothed_cli&time=day:20200406-20200410&geo=county:06001
+
+Both these URLs syntax can be used to get the following result:
 
 ```json
 {
