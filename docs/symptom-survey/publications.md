@@ -26,6 +26,9 @@ Pandemic"](https://www.pnas.org/topic/548) in *PNAS*:
 
 Research publications using the survey data include:
 
+- Uyheng, J., Robertson, D.C. & Carley, K.M. (2023). [Bridging online and offline
+  dynamics of the face mask infodemic](https://doi.org/10.1186/s44247-023-00026-z).
+  *BMC Digital Health* 1, 27. 
 - Kobayashi H, Saenz-Escarcega R, Fulk A, Agusto FB (2023). [Understanding
   mental health trends during COVID-19 pandemic in the United States using
   network analysis](https://doi.org/10.1371/journal.pone.0286857). *PLoS
