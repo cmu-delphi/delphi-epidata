@@ -26,6 +26,10 @@ Pandemic"](https://www.pnas.org/topic/548) in *PNAS*:
 
 Research publications using the survey data include:
 
+- M. Rubinstein, Z. Branson, and E.H. Kennedy (2023). [Heterogeneous
+  interventional effects with multiple mediators: Semiparametric and
+  nonparametric approaches](https://doi.org/10.1515/jci-2022-0070). *Journal of
+  Causal Inference* 11 (1), 20220070. 
 - Uyheng, J., Robertson, D.C. & Carley, K.M. (2023). [Bridging online and offline
   dynamics of the face mask infodemic](https://doi.org/10.1186/s44247-023-00026-z).
   *BMC Digital Health* 1, 27. 
