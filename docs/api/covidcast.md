@@ -160,7 +160,7 @@ The following params help specify multiple source-signal, timetype-timevalue or 
 | Parameter | Format | Description | Example |
 | --- | --- | --- | --- |
 | `signal` | `signal={source}:{signal1},{signal2}` | Specify multiple source-signal pairs, grouped by source | `signal=src1:sig1`, `signal=src1:sig1,sig2`, `signal=src1:*`, `signal=src1:sig1;src2:sig3` |
-| `time` | `time={timetype}:{timevalue1},{timevalue2}` | Specify multiple timetype-timevalue pairs, grouped by timetype | `time=day:*`, `time=day:20201201`, `time=day:20201201,20201202`, `time=day:20201201-20201204`, `time=day:*;day:20201201` |
+| `time` | `time={timetype}:{timevalue1},{timevalue2}` | Specify multiple timetype-timevalue pairs, grouped by timetype | `time=day:*`, `time=day:20201201`, `time=day:20201201,20201202`, `time=day:20201201-20201204` |
 | `geo` | `geo={geotype}:{geovalue1},{geovalue2}` | Specify multiple geotype-geovalue pairs, grouped by geotype | `geo=fips:*`, `geo=fips:04019`, `geo=fips:04019,19143`, `geo=fips:04019;msa:40660`, `geo=fips:*;msa:*` |
 ### Response
 
