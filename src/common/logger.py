@@ -128,10 +128,10 @@ def get_structured_logger(name=__name__,
     return logger
 
 
-
-
 class LoggerThread():
     """
+    A construct to use a logger from multiprocessing workers/jobs.
+
     the bare structlog loggers are thread-safe but not multiprocessing-safe.
     a `LoggerThread` will spawn a thread that listens to a mp.Queue
     and logs messages from it with the provided logger,
@@ -143,15 +143,16 @@ class LoggerThread():
     but isnt recommended for general use
     because of overhead from threading and multiprocessing,
     and because it might introduce lag to log messages.
+
+    somewhat inspired by:
+    docs.python.org/3/howto/logging-cookbook.html#logging-to-a-single-file-from-multiple-processes
     """
 
     class SubLogger():
-        """
-        Multiprocessing-safe logger-like interface
-        to convey log messages to a listening LoggerThread.
-        """
+        """MP-safe logger-like interface to convey log messages to a listening LoggerThread."""
 
         def __init__(self, queue):
+            """Create SubLogger with a bound queue."""
             self.queue = queue
 
         def _log(self, level, *args, **kwargs):
@@ -159,20 +160,35 @@ class LoggerThread():
             kwargs_plus.update(kwargs)
             self.queue.put([level, args, kwargs_plus])
 
+        def debug(self, *args, **kwargs):
+            """Log a DEBUG level message."""
+            self._log(logging.DEBUG, *args, **kwargs)
+
         def info(self, *args, **kwargs):
             """Log an INFO level message."""
             self._log(logging.INFO, *args, **kwargs)
 
-        def warn(self, *args, **kwargs):
-            """Log a WARN level message."""
-            self._log(logging.WARN, *args, **kwargs)
+        def warning(self, *args, **kwargs):
+            """Log a WARNING level message."""
+            self._log(logging.WARNING, *args, **kwargs)
+
+        def error(self, *args, **kwargs):
+            """Log an ERROR level message."""
+            self._log(logging.ERROR, *args, **kwargs)
+
+        def critical(self, *args, **kwargs):
+            """Log a CRITICAL level message."""
+            self._log(logging.CRITICAL, *args, **kwargs)
+
+
 
 
     def get_sublogger(self):
-        """Accessor method to retrieve a SubLogger for this LoggerThread."""
+        """Retrieve SubLogger for this LoggerThread."""
         return self.sublogger
 
     def __init__(self, logger, q=None):
+        """Create and start LoggerThread with supplied logger, creating a queue if not provided."""
         self.logger = logger
         if q:
             self.msg_queue = q
@@ -187,12 +203,12 @@ class LoggerThread():
                     logger.debug('received stop signal')
                     break
                 level, args, kwargs = msg
-                if level == logging.INFO:
-                    logger.info(*args, **kwargs)
-                if level == logging.WARN:
-                    logger.warn(*args, **kwargs)
+                if level in [logging.DEBUG, logging.INFO, logging.WARNING,
+                             logging.ERROR, logging.CRITICAL]:
+                    logger.log(level, *args, **kwargs)
                 else:
-                    logger.error('received unknown logging level!  exiting...')
+                    logger.error('received unknown logging level!  exiting...',
+                                 level=level, args_kwargs=(args, kwargs))
                     break
             logger.debug('stopping thread')
 
@@ -207,7 +223,7 @@ class LoggerThread():
     def stop(self):
         """Terminate this LoggerThread."""
         if not self.running:
-            self.logger.warn('thread already stopped')
+            self.logger.warning('thread already stopped')
             return
         self.logger.debug('sending stop signal')
         self.msg_queue.put('STOP')
@@ -216,12 +232,16 @@ class LoggerThread():
         self.logger.info('thread stopped')
 
 
-
 @contextlib.contextmanager
 def pool_and_threadedlogger(logger, *poolargs):
     """
+    Provide (to a context) a multiprocessing Pool and a proxy to the supplied logger.
+
     Emulates the multiprocessing.Pool() context manager,
-    but also provides a logger that can be used by pool workers.
+    but also provides (via a LoggerThread) a SubLogger proxy to logger
+    that can be safely used by pool workers.
+    Also "cleans up" the pool by waiting for workers to complete
+    as it exits the context.
     """
     with multiprocessing.Manager() as manager:
         logger_thread = LoggerThread(logger, manager.Queue())
