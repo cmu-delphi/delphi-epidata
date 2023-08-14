@@ -223,7 +223,7 @@ or
 
 https://api.delphi.cmu.edu/epidata/covidcast/?signal=fb-survey:smoothed_cli&time=day:20200406-20200410&geo=county:06001
 
-Both these URLs syntax can be used to get the following result:
+Both of these URLs are equivalent and can be used to get the following result:
 
 ```json
 {
