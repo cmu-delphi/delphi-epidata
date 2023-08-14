@@ -113,11 +113,11 @@ and lists.
 The current set of signals available for each data source is returned by the
 [`covidcast_meta`](covidcast_meta.md) endpoint.
 
-#### Alternate Required Params
+#### Alternate Required Parameters
 
-The following params help specify multiple source-signal, timetype-timevalue or geotype-geovalue pairs. Use them in replacement of the usual required params.
+The following parameters help specify multiple source-signal, timetype-timevalue or geotype-geovalue pairs. Use them instead of the usual required parameters.
 
-| Parameter | Replacing | Format | Description | Example |
+| Parameter | Replaces | Format | Description | Example |
 | --- | --- | --- | --- | --- |
 | `signal` | `data_source`, `signal` | `signal={source}:{signal1},{signal2}` | Specify multiple source-signal pairs, grouped by source | `signal=src1:sig1`, `signal=src1:sig1,sig2`, `signal=src1:*`, `signal=src1:sig1;src2:sig3` |
 | `time` | `time_type`, `time_values` | `time={timetype}:{timevalue1},{timevalue2}` | Specify multiple timetype-timevalue pairs, grouped by timetype | `time=day:*`, `time=day:20201201`, `time=day:20201201,20201202`, `time=day:20201201-20201204` |
