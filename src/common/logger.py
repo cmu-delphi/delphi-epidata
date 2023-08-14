@@ -181,8 +181,6 @@ class LoggerThread():
             self._log(logging.CRITICAL, *args, **kwargs)
 
 
-
-
     def get_sublogger(self):
         """Retrieve SubLogger for this LoggerThread."""
         return self.sublogger
@@ -240,6 +238,8 @@ def pool_and_threadedlogger(logger, *poolargs):
     Emulates the multiprocessing.Pool() context manager,
     but also provides (via a LoggerThread) a SubLogger proxy to logger
     that can be safely used by pool workers.
+    The SubLogger proxy interface supports these methods: debug, info, warning, error,
+    and critical.
     Also "cleans up" the pool by waiting for workers to complete
     as it exits the context.
     """
