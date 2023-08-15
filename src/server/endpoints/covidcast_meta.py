@@ -83,7 +83,7 @@ def handle():
             entry_source = entry.get("data_source")
             if entry_source in sources_protected_by_roles:
                 role = sources_protected_by_roles[entry_source]
-                if not (user and user.has_role()):
+                if not (user and user.has_role(role)):
                     # if this is a protected source
                     # and the user doesnt have the allowed role
                     # (or if we have no user)
