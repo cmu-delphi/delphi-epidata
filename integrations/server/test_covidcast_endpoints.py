@@ -8,6 +8,7 @@ from typing import Sequence
 from more_itertools import windowed
 import requests
 import pandas as pd
+import mysql.connector
 
 from delphi.epidata.maintenance.covidcast_meta_cache_updater import main as update_cache
 from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase, CovidcastTestRow
@@ -26,7 +27,25 @@ class CovidcastEndpointTests(CovidcastBase):
         # reset the `covidcast_meta_cache` table (it should always have one row)
         self._db._cursor.execute('update covidcast_meta_cache set timestamp = 0, epidata = "[]"')
 
-    def _fetch(self, endpoint="/", is_compatibility=False, **params):
+        cnx = mysql.connector.connect(
+            user='user',
+            password='pass',
+            host='delphi_database_epidata',
+            database='epidata')
+        cur = cnx.cursor()
+        cur.execute('delete from api_user')
+        cur.execute("TRUNCATE TABLE `user_role`")
+        cur.execute("TRUNCATE TABLE `user_role_link`")
+        cur.execute(f'INSERT INTO `api_user`(`api_key`, `email`) VALUES("quidel_key", "quidel_email")')
+        cur.execute(f'INSERT INTO `user_role`(`name`) VALUES("quidel")')
+        cur.execute(
+            f'INSERT INTO `user_role_link`(`user_id`, `role_id`) SELECT `api_user`.`id`, 1 FROM `api_user` WHERE `api_key`="quidel_key"'
+        )
+        cur.execute('insert into api_user(api_key, email) values("key", "email")')
+        cnx.commit()
+        cur.close()
+
+    def _fetch(self, endpoint="/", is_compatibility=False, auth=AUTH, **params):
         # make the request
         if is_compatibility:
             url = BASE_URL_OLD
@@ -37,7 +56,7 @@ class CovidcastEndpointTests(CovidcastBase):
                 params.setdefault("data_source", params.get("source"))
         else:
             url = f"{BASE_URL}{endpoint}"
-        response = requests.get(url, params=params, auth=AUTH)
+        response = requests.get(url, params=params, auth=auth)
         response.raise_for_status()
         return response.json()
 
@@ -65,6 +84,28 @@ class CovidcastEndpointTests(CovidcastBase):
 
         with self.subTest("simple"):
             out = self._fetch("/", signal=first.signal_pair(), geo=first.geo_pair(), time="day:*")
+            self.assertEqual(len(out["epidata"]), len(rows))
+
+    def test_basic_restricted_source(self):
+        """Request a signal from the / endpoint."""
+        rows = [CovidcastTestRow.make_default_row(time_value=2020_04_01 + i, value=i, source="quidel") for i in range(10)]
+        first = rows[0]
+        self._insert_rows(rows)
+
+        with self.subTest("validation"):
+            out = self._fetch("/")
+            self.assertEqual(out["result"], -1)
+
+        with self.subTest("no_roles"):
+            out = self._fetch("/", signal=first.signal_pair(), geo=first.geo_pair(), time="day:*")
+            self.assertEqual(len(out["epidata"]), 0)
+
+        with self.subTest("no_api_key"):
+            out = self._fetch("/", auth=None, signal=first.signal_pair(), geo=first.geo_pair(), time="day:*")
+            self.assertEqual(len(out["epidata"]), 0)
+
+        with self.subTest("quidel_role"):
+            out = self._fetch("/", auth=("epidata", "quidel_key"), signal=first.signal_pair(), geo=first.geo_pair(), time="day:*")
             self.assertEqual(len(out["epidata"]), len(rows))
 
     def test_compatibility(self):
