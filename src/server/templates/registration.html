@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Keys registration page</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/all.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='static/css/style.css') }}">
+</head>
+
+
+<body>
+    <div class="container">
+        <br>
+        <div class="card bg-light">
+            <h4 class="card-title mt-3 text-center">Delphi: Register API Key</h4>
+            {% if flags.banner %}
+            <div class="alert alert-primary" role="alert">
+                {{ flags.banner }}
+            </div>
+            {% endif %}
+            {% if flags.error %}
+            <div class="alert alert-danger" role="alert">
+                {{ flags.error }}
+            </div>
+            {% endif %}
+            <p class="text-description">This form allows you to register your API usage in order to lift the
+                restrictions
+                applied to anonymous access. If you regularly or frequently use our system, please consider using an
+                API key even if your usage falls within the anonymous usage limits. API key usage helps us
+                understand who and how others are using our Delphi Epidata API, which may in turn inform our future
+                research, data partnerships, and funding.
+                <br>
+                It is important for us to be able to contact our high-traffic users in case of excessive or abnormal
+                activity that may adversely affect our systems.
+                <br>
+                The questions about your organization and use case are optional, but we hope you will answer in
+                detail to help us better understand who and how others are using our API.
+            </p>
+            <article class="card-body mx-auto">
+                <form method="POST">
+                    <div>
+                        <label for="email" class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="email" name="email"
+                            value="{{ request.form['email'] }}">
+                        <br>
+                    </div>
+                    <div>
+                        <label for="organization" class="form-label">On behalf of which organization are you seeking
+                            authenticated access to our data?</label>
+                        <input type="text" class="form-control" id="organization" name="organization"
+                            value="{{ request.form['organization'] }}">
+                        <br>
+                    </div>
+                    <div>
+                        <label for="purpose" class="form-label">For which purpose are you / your organization going to
+                            use the data?</label>
+                        <textarea type="text" class="form-control" id="purpose" name="purpose"
+                            value="{{ request.form['purpose'] }}"></textarea>
+                        <br>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-block"> Submit </button>
+                    </div>
+                </form>
+            </article>
+        </div>
+    </div>
+</body>
+
+</html>

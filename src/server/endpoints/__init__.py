@@ -31,6 +31,8 @@ from . import (
     wiki,
     signal_dashboard_status,
     signal_dashboard_coverage,
+    registration,
+    api_key_removal_request
 )
 
 endpoints = [
@@ -66,6 +68,8 @@ endpoints = [
     wiki,
     signal_dashboard_status,
     signal_dashboard_coverage,
+    registration,
+    api_key_removal_request
 ]
 
 __all__ = ["endpoints"]
