@@ -8,7 +8,6 @@ from typing import Sequence
 from more_itertools import windowed
 import requests
 import pandas as pd
-import mysql.connector
 
 from delphi.epidata.maintenance.covidcast_meta_cache_updater import main as update_cache
 from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase, CovidcastTestRow
@@ -27,23 +26,17 @@ class CovidcastEndpointTests(CovidcastBase):
         # reset the `covidcast_meta_cache` table (it should always have one row)
         self._db._cursor.execute('update covidcast_meta_cache set timestamp = 0, epidata = "[]"')
 
-        cnx = mysql.connector.connect(
-            user='user',
-            password='pass',
-            host='delphi_database_epidata',
-            database='epidata')
-        cur = cnx.cursor()
-        cur.execute('delete from api_user')
-        cur.execute("TRUNCATE TABLE `user_role`")
-        cur.execute("TRUNCATE TABLE `user_role_link`")
-        cur.execute(f'INSERT INTO `api_user`(`api_key`, `email`) VALUES("quidel_key", "quidel_email")')
-        cur.execute(f'INSERT INTO `user_role`(`name`) VALUES("quidel")')
+        cur = self._db._cursor
+        # NOTE: we must specify the db schema "epidata" here because the cursor/connection are bound to schema "covid"
+        cur.execute("TRUNCATE TABLE epidata.api_user")
+        cur.execute("TRUNCATE TABLE epidata.user_role")
+        cur.execute("TRUNCATE TABLE epidata.user_role_link")
+        cur.execute("INSERT INTO epidata.api_user (api_key, email) VALUES ('quidel_key', 'quidel_email')")
+        cur.execute("INSERT INTO epidata.user_role (name) VALUES ('quidel')")
         cur.execute(
-            f'INSERT INTO `user_role_link`(`user_id`, `role_id`) SELECT `api_user`.`id`, 1 FROM `api_user` WHERE `api_key`="quidel_key"'
+            "INSERT INTO epidata.user_role_link (user_id, role_id) SELECT api_user.id, user_role.id FROM epidata.api_user JOIN epidata.user_role WHERE api_key='quidel_key' and user_role.name='quidel'"
         )
-        cur.execute('insert into api_user(api_key, email) values("key", "email")')
-        cnx.commit()
-        cur.close()
+        cur.execute("INSERT INTO epidata.api_user (api_key, email) VALUES ('key', 'email')")
 
     def _fetch(self, endpoint="/", is_compatibility=False, auth=AUTH, **params):
         # make the request
@@ -311,6 +304,35 @@ class CovidcastEndpointTests(CovidcastBase):
             self.assertEqual(stats["source"], first.source)
             out = self._fetch("/meta", signal=f"{first.source}:X")
             self.assertEqual(len(out), 0)
+
+    def test_meta_restricted(self):
+        """Request 'restricted' signals from the /meta endpoint."""
+        # NOTE: this method is nearly identical to ./test_covidcast_meta.py:test_restricted_sources()
+        #       ...except the self._fetch() methods are different, as is the format of those methods' outputs
+        #       (the other covidcast_meta endpoint uses APrinter, this one returns its own unadulterated json).
+        #       additionally, the sample data used here must match entries (that is, named sources and signals)
+        #       from covidcast_utils.model.data_sources (the `data_sources` variable from file
+        #       src/server/endpoints/covidcast_utils/model.py, which is created by the _load_data_sources() method
+        #       and fed by src/server/endpoints/covidcast_utils/db_sources.csv, but also surreptitiously augmened
+        #       by _load_data_signals() which attaches a list of signals to each source,
+        #       in turn fed by src/server/endpoints/covidcast_utils/db_signals.csv)
+
+        # insert data from two different sources, one restricted/protected (quidel), one not
+        self._insert_rows([
+            CovidcastTestRow.make_default_row(source="quidel", signal="raw_pct_negative"),
+            CovidcastTestRow.make_default_row(source="hhs", signal="confirmed_admissions_covid_1d")
+        ])
+
+        # update metadata cache
+        update_cache(args=None)
+
+        # verify unauthenticated (no api key) or unauthorized (user w/o privilege) only see metadata for one source
+        self.assertEqual(len(self._fetch("/meta", auth=None)), 1)
+        self.assertEqual(len(self._fetch("/meta", auth=AUTH)), 1)
+
+        # verify authorized user sees metadata for both sources
+        qauth = ('epidata', 'quidel_key')
+        self.assertEqual(len(self._fetch("/meta", auth=qauth)), 2)
 
     def test_coverage(self):
         """Request a signal from the /coverage endpoint."""

@@ -59,7 +59,7 @@ def restrict_by_roles(source_signal_sets):
                 allowed_source_signal_sets.append(src_sig_set)
             else:
                 # protected src and user does not have permission => leave it out of the srcsig sets
-                get_structured_logger("covcast_endpt").warning("user requested restricted 'source'", api_key=(user and user.api_key), src=src)
+                get_structured_logger("covcast_endpt").warning("non-authZd request for restricted 'source'", api_key=(user and user.api_key), src=src)
         else:
             allowed_source_signal_sets.append(src_sig_set)
     return allowed_source_signal_sets
@@ -433,7 +433,7 @@ def handle_meta():
     user = current_user
     sources: List[Dict[str, Any]] = []
     for source in data_sources:
-        src = source.db_source # TODO: might wanna check source.source in addition to .db_source
+        src = source.db_source
         if src in sources_protected_by_roles:
             role = sources_protected_by_roles[src]
             if not (user and user.has_role(role)):

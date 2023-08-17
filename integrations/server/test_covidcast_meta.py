@@ -69,6 +69,7 @@ class CovidcastMetaTests(CovidcastBase):
     # reset the `covidcast_meta_cache` table (it should always have one row)
     cur.execute('update covidcast_meta_cache set timestamp = 0, epidata = "[]"')
 
+    # NOTE: we must specify the db schema "epidata" here because the cursor/connection are bound to schema "covid"
     cur.execute("TRUNCATE TABLE epidata.api_user")
     cur.execute("TRUNCATE TABLE epidata.user_role")
     cur.execute("TRUNCATE TABLE epidata.user_role_link")
@@ -77,7 +78,7 @@ class CovidcastMetaTests(CovidcastBase):
     cur.execute(
       "INSERT INTO epidata.user_role_link (user_id, role_id) SELECT api_user.id, user_role.id FROM epidata.api_user JOIN epidata.user_role WHERE api_key='quidel_key' and user_role.name='quidel'"
     )
-    cur.execute("insert into epidata.api_user (api_key, email) values ('key', 'email')")
+    cur.execute("INSERT INTO epidata.api_user (api_key, email) VALUES ('key', 'email')")
 
     # populate dimension tables
     for (src,sig) in self.src_sig_lookups:
@@ -173,6 +174,8 @@ class CovidcastMetaTests(CovidcastBase):
     })
 
   def test_restricted_sources(self):
+    # NOTE: this method is nearly identical to ./test_covidcast_endpoints.py:test_meta_restricted()
+
     # insert data from two different sources, one restricted/protected (quidel), one not
     self._insert_rows([
       CovidcastTestRow.make_default_row(source="quidel"),
