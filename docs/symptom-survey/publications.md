@@ -26,6 +26,17 @@ Pandemic"](https://www.pnas.org/topic/548) in *PNAS*:
 
 Research publications using the survey data include:
 
+- C.K. Ettman, E. Badillo Goicoechea, and E.A. Stuart (2023). [Evolution of
+  depression and anxiety over the COVID-19 pandemic and across demographic
+  groups in a large sample of U.S. adults](https://doi.org/10.1016/j.focus.2023.100140).
+  *AJPM Focus*.
+- M. Rubinstein, Z. Branson, and E.H. Kennedy (2023). [Heterogeneous
+  interventional effects with multiple mediators: Semiparametric and
+  nonparametric approaches](https://doi.org/10.1515/jci-2022-0070). *Journal of
+  Causal Inference* 11 (1), 20220070. 
+- Uyheng, J., Robertson, D.C. & Carley, K.M. (2023). [Bridging online and offline
+  dynamics of the face mask infodemic](https://doi.org/10.1186/s44247-023-00026-z).
+  *BMC Digital Health* 1, 27. 
 - Kobayashi H, Saenz-Escarcega R, Fulk A, Agusto FB (2023). [Understanding
   mental health trends during COVID-19 pandemic in the United States using
   network analysis](https://doi.org/10.1371/journal.pone.0286857). *PLoS
