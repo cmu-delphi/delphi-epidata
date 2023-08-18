@@ -58,7 +58,6 @@ def update(locations, first=None, last=None, force_update=False, load_email=True
     if not qd.need_update and not force_update:
         print("Data not updated, nothing needs change.")
         return
-    
     qd_data = qd.load_csv()
     qd_measurements = qd.prepare_measurements(qd_data, start_weekday=4)
     qd_ts = quidel.measurement_to_ts(qd_measurements, 7, startweek=first, endweek=last)
