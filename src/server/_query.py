@@ -41,6 +41,11 @@ def to_condition(
     formatter=lambda x: x,
 ) -> str:
     if isinstance(value, (list, tuple)):
+        # Check if the first element is a tuple with an inequality operator
+        if isinstance(value[0], tuple):
+            inequality_operator, date_value = value[0][0], value[1]
+            params[param_key] = formatter(date_value)
+            return f"{field} {inequality_operator} :{param_key}" 
         params[param_key] = formatter(value[0])
         params[f"{param_key}_2"] = formatter(value[1])
         return f"{field} BETWEEN :{param_key} AND :{param_key}_2"
@@ -476,10 +481,8 @@ class QueryBuilder:
 
     def apply_issues_filter(self, history_table: str, issues: Optional[TimeValues]) -> "QueryBuilder":
         if issues:
-            if issues == ["*"]:
-                self.retable(history_table)
-            else:
-                self.retable(history_table)
+            self.retable(history_table)
+            if issues != ["*"]:
                 self.where_integers("issue", issues)
         return self
 

@@ -403,11 +403,12 @@ def extract_integers(key: Union[str, Sequence[str]]) -> Optional[List[IntRange]]
 
 def parse_date(s: str) -> int:
     # parses a given string in format YYYYMMDD or YYYY-MM-DD to a number in the form YYYYMMDD
+    if s == "*":
+        return s
+    if not s:
+        raise ValidationFailedException("not a valid date: (empty)")
     try:
-        if s == "*":
-            return s
-        else:
-            return int(s.replace("-", ""))
+        return int(s.replace("-", ""))
     except ValueError:
         raise ValidationFailedException(f"not a valid date: {s}")
 
@@ -425,6 +426,17 @@ def extract_dates(key: Union[str, Sequence[str]]) -> Optional[TimeValues]:
         return None
     values: TimeValues = []
 
+    def handle_inequality(part: str):
+        inequality_operator = None
+        for operator in ['<=', '>=', '<', '>']:
+            if part.startswith(operator):
+                inequality_operator = operator
+                part = part[len(operator):]
+                if not part:
+                    raise ValidationFailedException("missing parameter: date after the inequality operator")
+                return (inequality_operator,), part
+        return None, part
+
     def push_range(first: str, last: str):
         first_d = parse_date(first)
         last_d = parse_date(last)
@@ -438,6 +450,12 @@ def extract_dates(key: Union[str, Sequence[str]]) -> Optional[TimeValues]:
         raise ValidationFailedException(f"{key}: the given range is inverted")
 
     for part in parts:
+        # Handle inequality operators
+        inequality_operator, part = handle_inequality(part)
+        # >/</>=/<= YYYYMMDD/YYYY-MM-DD
+        if inequality_operator is not None:
+            values.append((inequality_operator, parse_date(part)))
+            continue
         if "-" not in part and ":" not in part:
             # YYYYMMDD
             values.append(parse_date(part))

@@ -80,6 +80,22 @@ class CovidcastTests(CovidcastBase):
     ]
     self._insert_rows(rows)
     return rows 
+  
+  def _insert_placeholder_set_six(self):
+    rows = [
+      CovidcastTestRow.make_default_row(time_value=2000_01_01+i, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_03)
+      for i in [1, 2, 3, 4, 5, 6]
+    ]
+    self._insert_rows(rows)
+    return rows 
+
+  def _insert_placeholder_set_seven(self):
+    rows = [
+      CovidcastTestRow.make_default_row(time_value=2000_01_01, value=i*1., stderr=i*10., sample_size=i*100., issue=2000_01_01+i)
+      for i in [1, 2, 3, 4, 5, 6]
+    ]
+    self._insert_rows(rows)
+    return rows 
 
   def test_round_trip(self):
     """Make a simple round-trip with some sample data."""
@@ -166,7 +182,7 @@ class CovidcastTests(CovidcastBase):
          .assign(direction = None)
          .to_csv(columns=column_order, index=False)
     )
-
+    
     # assert that the right data came back
     self.assertEqual(response, expected)
 
@@ -230,7 +246,6 @@ class CovidcastTests(CovidcastBase):
     # make the request
     response = self.request_based_on_row(rows[0], geo_value="*")
 
-    self.maxDiff = None
     # assert that the right data came back
     self.assertEqual(response, {
       'result': 1,
@@ -248,13 +263,73 @@ class CovidcastTests(CovidcastBase):
     # make the request
     response = self.request_based_on_row(rows[0], time_values="*")
 
-    self.maxDiff = None
     # assert that the right data came back
     self.assertEqual(response, {
       'result': 1,
       'epidata': expected,
       'message': 'success',
     })
+
+  def helper_test_inequality(self, rows, field):
+    expected = [row.as_api_compatibility_row_dict() for row in rows]
+
+    def fetch(datecode):
+        # make the request
+        response = self.request_based_on_row(rows[0], **{field: datecode})
+        return response
+  
+    # test fetch time_value with <
+    r = fetch('<20000104')
+    self.assertEqual(r['message'], 'success')
+    self.assertEqual(r['epidata'], expected[:2])
+    # test fetch time_value with <=
+    r = fetch('<=20000104')
+    self.assertEqual(r['message'], 'success')
+    self.assertEqual(r['epidata'], expected[:3])
+    # test fetch time_value with >
+    r = fetch('>20000104')
+    self.assertEqual(r['message'], 'success')
+    self.assertEqual(r['epidata'], expected[3:])
+    # test fetch time_value with >=
+    r = fetch('>=20000104')
+    self.assertEqual(r['message'], 'success')
+    self.assertEqual(r['epidata'], expected[2:])
+    # test fetch multiple inequalities
+    r = fetch('<20000104,>20000104')
+    self.assertEqual(r['message'], 'success')
+    self.assertEqual(r['epidata'], expected[:2] + expected[3:])
+    # test overlapped inequalities, pick the more extreme one
+    r = fetch('<20000104,<20000105')
+    self.assertEqual(r['message'], 'success')
+    self.assertEqual(r['epidata'], expected[:3])
+    # test fetch inequalities that has no results
+    r = fetch('>20000107')
+    self.assertEqual(r['message'], 'no results')
+    # test fetch empty value
+    r = fetch('')
+    if field == 'time_values':
+        self.assertEqual(r['message'], 'missing parameter: need [time_type, time_values]')
+    else:
+        self.assertEqual(r['message'], 'not a valid date: (empty)')
+    # test fetch invalid time_value
+    r = fetch('>')
+    self.assertEqual(r['message'], 'missing parameter: date after the inequality operator')
+    # test if extra operators provided
+    r = fetch('>>')
+    self.assertEqual(r['message'], 'not a valid date: >')
+    r = fetch('>>20000103')
+    self.assertEqual(r['message'], 'not a valid date: >20000103')
+    # test invalid operator
+    r = fetch('#')
+    self.assertEqual(r['message'], 'not a valid date: #')
+
+  def test_time_values_inequality(self):
+    rows = self._insert_placeholder_set_six()
+    self.helper_test_inequality(rows, "time_values")
+
+  def test_issues_inequality(self):
+    rows = self._insert_placeholder_set_seven()
+    self.helper_test_inequality(rows, "issues")
 
   def test_issues_wildcard(self):
     """Select all issues with a wildcard query."""
@@ -266,7 +341,6 @@ class CovidcastTests(CovidcastBase):
     # make the request
     response = self.request_based_on_row(rows[0], issues="*")
 
-    self.maxDiff = None
     # assert that the right data came back
     self.assertEqual(response, {
       'result': 1,
@@ -284,7 +358,6 @@ class CovidcastTests(CovidcastBase):
     # make the request
     response = self.request_based_on_row(rows[0], signals="*")
 
-    self.maxDiff = None
     # assert that the right data came back
     self.assertEqual(response, {
       'result': 1,
