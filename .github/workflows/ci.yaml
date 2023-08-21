@@ -7,12 +7,12 @@ jobs:
     steps:
       - run: mkdir -p repos/undefx
       - name: Checkout undefx/py3tester
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
         with:
           repository: undefx/py3tester
           path: repos/undefx/py3tester
       - name: Checkout undefx/undef-analysis
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
         with:
           repository: undefx/undef-analysis
           path: repos/undefx/undef-analysis
@@ -20,31 +20,31 @@ jobs:
       - run: mkdir -p repos/delphi
 
       - name: Checkoutcmu-delphi/operations
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
         with:
           repository: cmu-delphi/operations
           path: repos/delphi/operations
       - name: Checkout cmu-delphi/utils
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
         with:
           repository: cmu-delphi/utils
           path: repos/delphi/utils
       - name: Checkout cmu-delphi/github-deploy-repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
         with:
           repository: cmu-delphi/github-deploy-repo
           path: repos/delphi/github-deploy-repo
       - name: Checkout THIS REPO
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
         with:
           path: repos/delphi/delphi-epidata
       - name: Checkout cmu-delphi/flu-contest
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
         with:
           repository: cmu-delphi/flu-contest
           path: repos/delphi/flu-contest
       - name: Checkout cmu-delphi/nowcast
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
         with:
           repository: cmu-delphi/nowcast
           path: repos/delphi/nowcast
@@ -98,7 +98,7 @@ jobs:
         working-directory: src/client/packaging/npm
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
           node-version: '14.x'
@@ -121,7 +121,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
         with:
@@ -141,8 +141,8 @@ jobs:
           if [ "$imageTag" = "main" ] ; then
             imageTag="latest"
           fi
-          echo "tag=$imageTag" >> "$GITHUB_OUTPUT"
-          echo "repo=ghcr.io/${{ github.repository }}" >> "$GITHUB_OUTPUT"
+          echo "::set-output name=tag::$imageTag"
+          echo "::set-output name=repo::ghcr.io/${{ github.repository }}"
       - name: Push Dev Tag
         run: |
           docker tag repo ${{ steps.tagname.outputs.repo }}:${{ steps.tagname.outputs.tag }}
