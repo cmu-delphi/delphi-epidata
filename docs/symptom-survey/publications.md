@@ -26,6 +26,10 @@ Pandemic"](https://www.pnas.org/topic/548) in *PNAS*:
 
 Research publications using the survey data include:
 
+- C.K. Ettman, E. Badillo Goicoechea, and E.A. Stuart (2023). [Evolution of
+  depression and anxiety over the COVID-19 pandemic and across demographic
+  groups in a large sample of U.S. adults](https://doi.org/10.1016/j.focus.2023.100140).
+  *AJPM Focus*.
 - M. Rubinstein, Z. Branson, and E.H. Kennedy (2023). [Heterogeneous
   interventional effects with multiple mediators: Semiparametric and
   nonparametric approaches](https://doi.org/10.1515/jci-2022-0070). *Journal of

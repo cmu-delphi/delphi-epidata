@@ -9,6 +9,7 @@ import requests
 
 #first party
 from delphi_utils import Nans
+from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase, CovidcastTestRow
 from delphi.epidata.maintenance.covidcast_meta_cache_updater import main as update_cache
 import delphi.operations.secrets as secrets
 
@@ -17,7 +18,7 @@ BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
 AUTH = ('epidata', 'key')
 
 
-class CovidcastMetaTests(unittest.TestCase):
+class CovidcastMetaTests(CovidcastBase):
   """Tests the `covidcast_meta` endpoint."""
 
   src_sig_lookups = {
@@ -48,7 +49,7 @@ class CovidcastMetaTests(unittest.TestCase):
          %d, %d)
   '''
 
-  def setUp(self):
+  def localSetUp(self):
     """Perform per-test setup."""
 
     # connect to the `epidata` database and clear the `covidcast` table
@@ -67,6 +68,17 @@ class CovidcastMetaTests(unittest.TestCase):
     cur.execute("truncate table signal_dim")
     # reset the `covidcast_meta_cache` table (it should always have one row)
     cur.execute('update covidcast_meta_cache set timestamp = 0, epidata = "[]"')
+
+    # NOTE: we must specify the db schema "epidata" here because the cursor/connection are bound to schema "covid"
+    cur.execute("TRUNCATE TABLE epidata.api_user")
+    cur.execute("TRUNCATE TABLE epidata.user_role")
+    cur.execute("TRUNCATE TABLE epidata.user_role_link")
+    cur.execute("INSERT INTO epidata.api_user (api_key, email) VALUES ('quidel_key', 'quidel_email')")
+    cur.execute("INSERT INTO epidata.user_role (name) VALUES ('quidel')")
+    cur.execute(
+      "INSERT INTO epidata.user_role_link (user_id, role_id) SELECT api_user.id, user_role.id FROM epidata.api_user JOIN epidata.user_role WHERE api_key='quidel_key' and user_role.name='quidel'"
+    )
+    cur.execute("INSERT INTO epidata.api_user (api_key, email) VALUES ('key', 'email')")
 
     # populate dimension tables
     for (src,sig) in self.src_sig_lookups:
@@ -93,7 +105,7 @@ class CovidcastMetaTests(unittest.TestCase):
     secrets.db.epi = ('user', 'pass')
 
 
-  def tearDown(self):
+  def localTearDown(self):
     """Perform per-test teardown."""
     self.cur.close()
     self.cnx.close()
@@ -138,10 +150,10 @@ class CovidcastMetaTests(unittest.TestCase):
     return self.id_counter
   
   @staticmethod
-  def _fetch(**kwargs):
+  def _fetch(auth=AUTH, **kwargs):
     params = kwargs.copy()
     params['endpoint'] = 'covidcast_meta'
-    response = requests.get(BASE_URL, params=params, auth=AUTH)
+    response = requests.get(BASE_URL, params=params, auth=auth)
     response.raise_for_status()
     return response.json()
 
@@ -160,6 +172,26 @@ class CovidcastMetaTests(unittest.TestCase):
       'epidata': expected,
       'message': 'success',
     })
+
+  def test_restricted_sources(self):
+    # NOTE: this method is nearly identical to ./test_covidcast_endpoints.py:test_meta_restricted()
+
+    # insert data from two different sources, one restricted/protected (quidel), one not
+    self._insert_rows([
+      CovidcastTestRow.make_default_row(source="quidel"),
+      CovidcastTestRow.make_default_row(source="not-quidel")
+    ])
+
+    # generate metadata cache
+    update_cache(args=None)
+
+    # verify unauthenticated (no api key) or unauthorized (user w/o privilege) only see metadata for one source
+    self.assertEqual(len(self._fetch(auth=None)['epidata']), 1)
+    self.assertEqual(len(self._fetch(auth=AUTH)['epidata']), 1)
+
+    # verify authorized user sees metadata for both sources
+    qauth = ('epidata', 'quidel_key')
+    self.assertEqual(len(self._fetch(auth=qauth)['epidata']), 2)
 
   def test_filter(self):
     """Test filtering options some sample data."""
