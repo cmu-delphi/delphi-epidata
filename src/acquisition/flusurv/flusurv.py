@@ -123,11 +123,15 @@ def fetch_json(path, payload, call_count=1, requests_impl=requests):
 def fetch_flusurv_object(location_code):
     """Return decoded FluSurv JSON object for the given location."""
     return fetch_json(
-        "PostPhase03GetData",
+        "PostPhase03DataTool",
         {
             "appversion": "Public",
-            "networkid": location_code[0],
-            "cacthmentid": location_code[1],
+            "key": "getdata",
+            "injson": [{
+                "networkid": location_code[0],
+                "cacthmentid": location_code[1],
+                "seasonid": seasonid
+            }],
         },
     )
 
@@ -210,7 +214,10 @@ def get_current_issue():
     """Scrape the current issue from the FluSurv main page."""
 
     # fetch
-    data = fetch_json("GetPhase03InitApp?appVersion=Public", None)
+    data = fetch_json(
+        "PostPhase03DataTool",
+        {"appversion": "Public", "key": "", "injson": []}
+    )
 
     # extract
     date = datetime.strptime(data["loaddatetime"], "%b %d, %Y")
