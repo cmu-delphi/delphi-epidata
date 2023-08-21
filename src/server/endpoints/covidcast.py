@@ -235,6 +235,7 @@ def handle_trendseries():
 def handle_export():
     source, signal = request.values.get("signal", "jhu-csse:confirmed_incidence_num").split(":")
     source_signal_sets = [SourceSignalSet(source, [signal])]
+    source_signal_sets = restrict_by_roles(source_signal_sets)
     daily_signals, weekly_signals = count_signal_time_types(source_signal_sets)
     source_signal_sets, alias_mapper = create_source_signal_alias_mapper(source_signal_sets)
     start_time_set = parse_day_or_week_arg("start_day", 202001 if weekly_signals > 0 else 20200401)
@@ -317,9 +318,10 @@ def handle_backfill():
     example query: http://localhost:5000/covidcast/backfill?signal=fb-survey:smoothed_cli&time=day:20200101-20220101&geo=state:ny&anchor_lag=60
     """
     require_all(request, "geo", "time", "signal")
-    source_signal_set = parse_single_source_signal_arg("signal")
-    daily_signals, weekly_signals = count_signal_time_types([source_signal_set])
-    source_signal_sets, _ = create_source_signal_alias_mapper([source_signal_set])
+    source_signal_sets = [parse_single_source_signal_arg("signal")]
+    source_signal_sets = restrict_by_roles(source_signal_sets)
+    daily_signals, weekly_signals = count_signal_time_types(source_signal_sets)
+    source_signal_sets, _ = create_source_signal_alias_mapper(source_signal_sets)
     # don't need the alias mapper since we don't return the source
 
     time_set = parse_single_time_arg("time")
