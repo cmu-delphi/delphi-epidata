@@ -29,7 +29,7 @@ jobs:
         id: extract_version
         run: |
           python -m pip install bump2version
-          echo -n $version >> $GITHUB_OUTPUT
+          echo -n "version={version}" >> $GITHUB_OUTPUT
           bump2version --dry-run --list patch | grep ^current_version | sed -r s,"^.*=",,
       - name: Create Release
         id: create_release
