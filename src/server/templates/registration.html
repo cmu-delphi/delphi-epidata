@@ -7,6 +7,7 @@
     <title>API Keys registration page</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/all.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='static/css/style.css') }}">
 </head>
@@ -41,7 +42,7 @@
                 detail to help us better understand who and how others are using our API.
             </p>
             <article class="card-body mx-auto">
-                <form method="POST">
+                <form method="POST" id="registrationForm">
                     <div>
                         <label for="email" class="form-label">Email address</label>
                         <input type="email" class="form-control" id="email" name="email"
@@ -62,8 +63,11 @@
                             value="{{ request.form['purpose'] }}"></textarea>
                         <br>
                     </div>
+                    <div class="g-recaptcha" data-sitekey="{{ recaptcha_key }}"></div>
+                    <br>
                     <div class="form-group">
-                        <button type="submit" class="btn btn-primary btn-block"> Submit </button>
+                        <button type="submit" class="btn btn-primary btn-block"> Submit
+                        </button>
                     </div>
                 </form>
             </article>

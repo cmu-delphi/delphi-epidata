@@ -8,7 +8,7 @@ from delphi.epidata.common.logger import get_structured_logger
 
 from ._config import URL_PREFIX, VERSION
 from ._common import app, set_compatibility_mode, log_info_with_request
-from .endpoints.admin import require_admin
+from .endpoints.admin import _require_admin
 from ._exceptions import MissingOrWrongSourceException
 from .endpoints import endpoints
 from .endpoints.admin import *
@@ -67,7 +67,7 @@ def diags():
     # allows us to get useful diagnostic information written into server logs,
     # such as a full current "X-Forwarded-For" path as inserted into headers by intermediate proxies...
     # (but only when initiated purposefully by us to keep junk out of the logs)
-    require_admin()
+    _require_admin()
     log_info_with_request("diagnostics", headers=request.headers)
     response_text = f"request path: {request.headers.get('X-Forwarded-For', 'idk')}"
     return make_response(response_text, 200, {"content-type": "text/plain"})

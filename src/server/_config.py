@@ -116,3 +116,5 @@ API_KEY_REMOVAL_REQUEST_LINK_LOCAL = "https://api.delphi.cmu.edu/epidata/admin/r
 SMTP_HOST = "relay.andrew.cmu.edu"
 SMTP_PORT = 25
 EMAIL_FROM = "noreply@andrew.cmu.edu"
+
+RECAPTCHA_SITE_KEY = os.environ.get("RECAPTCHA_SITE_KEY")

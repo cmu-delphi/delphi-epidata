@@ -6,6 +6,7 @@ from flask import Blueprint, render_template, request
 from .._common import send_email
 from .._db import WriteSession
 from ..admin.models import RegistrationResponse, User
+from .._config import RECAPTCHA_SITE_KEY
 
 # first argument is the endpoint name
 bp = Blueprint("registration_form", __name__, template_folder="/app/delphi/epidata/server/templates", static_url_path="")
@@ -42,4 +43,4 @@ def handle():
                 flags["banner"] = "Successfully sent"
             else:
                 flags["error"] = "User with such email already exists. Please try another email address or contact us."
-    return render_template("registration.html", flags=flags)
+    return render_template("registration.html", flags=flags, recaptcha_key=RECAPTCHA_SITE_KEY)
