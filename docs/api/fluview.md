@@ -18,7 +18,7 @@ General topics not specific to any particular endpoint are discussed in the
 Influenza-like illness (ILI) from U.S. Outpatient Influenza-like Illness Surveillance Network (ILINet).
  - Data source: [United States Centers for Disease Control and Prevention](http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html) (CDC)
  - Temporal Resolution: Weekly* from 1997w40
- - Spatial Resolution: National, [HHS regions](http://www.hhs.gov/iea/regional/), [Census divisions](http://www.census.gov/econ/census/help/geography/regions_and_divisions.html), most States and Territories, and some Cities (full list [here](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/acquisition/fluview/fluview_locations.py))
+ - Spatial Resolution: National, [HHS regions](https://www.hhs.gov/about/whiaanhpi/regional-network/index.html), [Census divisions](https://www2.census.gov/geo/pdfs/maps-data/maps/reference/us_regdiv.pdf), most States and Territories, and some Cities (full list [here](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/acquisition/fluview/fluview_locations.py))
  - Open access
 
 \* Data is usually released on Friday
