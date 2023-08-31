@@ -120,7 +120,7 @@ def fetch_json(path, payload, call_count=1, requests_impl=requests):
     return resp.json()
 
 
-def fetch_flusurv_object(location_code):
+def fetch_flusurv_location(location_code):
     """Return decoded FluSurv JSON object for the given location."""
     return fetch_json(
         "PostPhase03DataTool",
@@ -133,6 +133,13 @@ def fetch_flusurv_object(location_code):
                 "seasonid": seasonid
             }],
         },
+    )
+
+def fetch_flusurv_object():
+    """Return raw FluSurv JSON object for all locations."""
+    return fetch_json(
+        "PostPhase03DataTool",
+        {"appversion": "Public", "key": "", "injson": []}
     )
 
 
@@ -199,7 +206,7 @@ def get_data(location_code):
 
     # fetch
     print("[fetching flusurv data...]")
-    data_in = fetch_flusurv_object(location_code)
+    data_in = fetch_flusurv_location(location_code)
 
     # extract
     print("[extracting values...]")
