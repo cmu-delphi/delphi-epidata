@@ -217,15 +217,12 @@ def get_data(location_code):
     return data_out
 
 
-def get_current_issue():
-    """Scrape the current issue from the FluSurv main page."""
+def get_current_issue(data):
+    """
+    Extract the current issue from the FluSurv API result.
 
-    # fetch
-    data = fetch_json(
-        "PostPhase03DataTool",
-        {"appversion": "Public", "key": "", "injson": []}
-    )
-
+    data: dictionary representing a JSON response from the FluSurv API
+    """
     # extract
     date = datetime.strptime(data["loaddatetime"], "%b %d, %Y")
 

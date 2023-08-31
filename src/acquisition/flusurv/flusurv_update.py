@@ -175,8 +175,10 @@ def main():
     # fmt: on
     args = parser.parse_args()
 
+    data = fetch_flusurv_object()
+
     # scrape current issue from the main page
-    issue = flusurv.get_current_issue()
+    issue = flusurv.get_current_issue(data)
     print(f"current issue: {int(issue)}")
 
     # fetch flusurv data
