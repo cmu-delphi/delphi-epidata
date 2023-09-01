@@ -90,17 +90,16 @@ def get_rows(cur):
         return num
 
 
-def update(issue, location_name, test_mode=False):
+def update(issue, location, test_mode=False):
     """Fetch and store the currently avialble weekly FluSurv dataset."""
 
     # fetch data
-    location_code = flusurv.location_codes[location_name]
-    print("fetching data for", location_name, location_code)
+    location_code = flusurv.location_to_code[location]
+    print("fetching data for", location, location_code)
     data = flusurv.get_data(location_code)
 
     # metadata
     epiweeks = sorted(data.keys())
-    location = location_name
     release_date = str(EpiDate.today())
 
     # connect to the database
@@ -142,8 +141,9 @@ def update(issue, location_name, test_mode=False):
             # values (including duplicates) were stored on each run.
             continue
         args_meta = [release_date, issue, epiweek, location, lag]
+        # List of values in order of columns specified in sql statement above
         args_insert = data[epiweek]
-        args_update = [release_date] + data[epiweek]
+        args_update = [release_date] + args_insert
         cur.execute(sql, tuple(args_meta + args_insert + args_update))
 
     # commit and disconnect
@@ -184,7 +184,7 @@ def main():
     # fetch flusurv data
     if args.location == "all":
         # all locations
-        for location in flusurv.location_codes.keys():
+        for location in flusurv.location_to_code.keys():
             update(issue, location, args.test)
     else:
         # single location

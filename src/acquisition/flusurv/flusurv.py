@@ -3,7 +3,7 @@
 === Purpose ===
 ===============
 
-Fetches FluSurv-NET data (flu hospitaliation rates) from CDC. Unlike the other
+Fetches FluSurv-NET data (flu hospitalization rates) from CDC. Unlike the other
 CDC-hosted datasets (e.g. FluView), FluSurv is not available as a direct
 download. This program emulates web browser requests for the web app and
 extracts data of interest from the JSON response.
@@ -49,7 +49,7 @@ from delphi.utils.epidate import EpiDate
 
 # all currently available FluSurv locations and their associated codes
 # the number pair represents NetworkID and CatchmentID
-location_codes = {
+location_to_code = {
     "CA": (2, 1),
     "CO": (2, 2),
     "CT": (2, 3),
@@ -155,7 +155,7 @@ def mmwrid_to_epiweek(mmwrid):
 
 def extract_from_object(data_in):
     """
-    Given a FluSurv data object, return hospitaliation rates.
+    Given a FluSurv data object, return hospitalization rates.
 
     The returned object is indexed first by epiweek, then by zero-indexed age
     group.
@@ -171,11 +171,16 @@ def extract_from_object(data_in):
             #   capture as-of-yet undefined age groups 10, 11, and 12
             continue
         age_index = obj["age"] - 1
-        # iterage over weeks
+        # iterate over weeks
         for mmwrid, _, _, rate in obj["data"]:
             epiweek = mmwrid_to_epiweek(mmwrid)
             if epiweek not in data_out:
                 # weekly rate of each age group
+                # TODO what is this magic constant? Maybe total # of age
+                #  groups?? Appears to be assuming that age groups are
+                #  numbered sequentially. Better to store data_out in a
+                #  dictionary of dictionaries, given new age group ids
+                #  (e.g. 99, 21, etc)
                 data_out[epiweek] = [None] * 9
             prev_rate = data_out[epiweek][age_index]
             if prev_rate is None:
@@ -201,7 +206,7 @@ def get_data(location_code):
 
     This method performs the following operations:
       - fetches FluSurv data from CDC
-      - extracts and returns hospitaliation rates
+      - extracts and returns hospitalization rates
     """
 
     # fetch
