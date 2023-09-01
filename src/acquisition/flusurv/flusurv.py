@@ -36,6 +36,7 @@ See also:
 """
 
 # standard library
+from collections import defaultdict
 from datetime import datetime
 import json
 import time
@@ -161,38 +162,38 @@ def extract_from_object(data_in):
     group.
     """
 
-    # an object to hold the result
-    data_out = {}
+    # Create output object
+    # First layer of keys is epiweeks. Second layer of keys is age groups
+    # (by id, not age).
+    #
+    # If a top-level key doesn't already exist, create a new empty dict.
+    # If a secondary key doesn't already exist, create a new dict. Default
+    #  value is None if not provided.
+    data_out = defaultdict(lambda: defaultdict(lambda: None))
 
     # iterate over all seasons and age groups
     for obj in data_in["busdata"]["dataseries"]:
-        if obj["age"] in (10, 11, 12):
+        age_group = obj["age"]
+        if age_group in (10, 11, 12):
             # TODO(https://github.com/cmu-delphi/delphi-epidata/issues/242):
             #   capture as-of-yet undefined age groups 10, 11, and 12
             continue
-        age_index = obj["age"] - 1
         # iterate over weeks
         for mmwrid, _, _, rate in obj["data"]:
             epiweek = mmwrid_to_epiweek(mmwrid)
-            if epiweek not in data_out:
-                # weekly rate of each age group
-                # TODO what is this magic constant? Maybe total # of age
-                #  groups?? Appears to be assuming that age groups are
-                #  numbered sequentially. Better to store data_out in a
-                #  dictionary of dictionaries, given new age group ids
-                #  (e.g. 99, 21, etc)
-                data_out[epiweek] = [None] * 9
-            prev_rate = data_out[epiweek][age_index]
+            prev_rate = data_out[epiweek][age_group]
             if prev_rate is None:
-                # this is the first time to see a rate for this epiweek/age
-                data_out[epiweek][age_index] = rate
+                # this is the first time to see a rate for this epiweek-age
+                #  group combo
+                data_out[epiweek][age_group] = rate
             elif prev_rate != rate:
-                # a different rate was already found for this epiweek/age
-                format_args = (epiweek, obj["age"], prev_rate, rate)
+                # a different rate was already found for this epiweek-age
+                #  group combo
+                format_args = (epiweek, age_group, prev_rate, rate)
                 print("warning: %d %d %f != %f" % format_args)
 
-    # sanity check the result
-    if len(data_out) == 0:
+    # Sanity check the result. We expect to have seen some epiweeks
+    if len(data_out.keys()) == 0:
         raise Exception("no data found")
 
     # print the result and return flu data

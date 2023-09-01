@@ -142,7 +142,7 @@ def update(issue, location, test_mode=False):
             continue
         args_meta = [release_date, issue, epiweek, location, lag]
         # List of values in order of columns specified in sql statement above
-        args_insert = data[epiweek]
+        args_insert = [week_rate_tuple[1] for week_rate_tuple in sorted(data[epiweek].items())]
         args_update = [release_date] + args_insert
         cur.execute(sql, tuple(args_meta + args_insert + args_update))
 
