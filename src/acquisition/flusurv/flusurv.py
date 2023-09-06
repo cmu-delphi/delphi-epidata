@@ -159,16 +159,8 @@ def reformat_to_nested(data):
     """
     Convert the default data object into a dictionary grouped by location and epiweek
 
-    Arg data is a list of dictionaries of the format
-        [
-            {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 1, 'rate': 4.3, 'weeklyrate': 1.7, 'mmwrid': 2493},
-            {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 1, 'rate': 20.3, 'weeklyrate': 0.1, 'mmwrid': 2513},
-            {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 1, 'rate': 20.6, 'weeklyrate': 0.1, 'mmwrid': 2516},
-            ...
-        ]
-
-    This object is stored as the value associated with the 'default_data' key in the
-    GRASP API response object, as fetched with 'fetch_flusurv_object()'
+    Args:
+        A GRASP API response object, as fetched with 'fetch_flusurv_object()'
 
     Returns a dictionary of the format
         {
@@ -188,6 +180,8 @@ def reformat_to_nested(data):
     if len(data["default_data"]) == 0:
         raise Exception("no data found")
 
+    id_label_map = make_id_label_map(data)
+
     # Create output object
     # First layer of keys is locations. Second layer of keys is epiweeks.
     #  Third layer of keys is groups (by id, not age in years, sex abbr, etc).
@@ -198,20 +192,30 @@ def reformat_to_nested(data):
     #  default value of None if not provided.
     data_out = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: None)))
 
+    # data["default_data"] is a list of dictionaries, with the format
+    #     [
+    #         {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 1, 'rate': 4.3, 'weeklyrate': 1.7, 'mmwrid': 2493},
+    #         {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 1, 'rate': 20.3, 'weeklyrate': 0.1, 'mmwrid': 2513},
+    #         {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 1, 'rate': 20.6, 'weeklyrate': 0.1, 'mmwrid': 2516},
+    #         ...
+    #     ]
     for obs in data["default_data"]:
         epiweek = mmwrid_to_epiweek(obs["mmwrid"])
         location = code_to_location[(obs["networkid"], obs["catchmentid"])]
-        groupname = groupids_to_name((obs["ageid"], obs["sexid"], obs["raceid"]))
+        groupname = groupids_to_name(
+            ageid = obs["ageid"], sexid = obs["sexid"], raceid = obs["raceid"],
+            id_label_map = id_label_map
+        )
 
+        rate = obs["weeklyrate"]
         prev_rate = data_out[location][epiweek][groupname]
         if prev_rate is None:
-            # this is the first time to see a rate for this location-epiweek-
+            # This is the first time to see a rate for this location-epiweek-
             #  group combo
             data_out[location][epiweek][groupname] = rate
         elif prev_rate != rate:
-            # Skip and warn
-            # a different rate was already found for this location-epiweek-
-            #  group combo
+            # Skip and warn; a different rate was already found for this
+            # location-epiweek-group combo
             warn((f"warning: Multiple rates seen for {location} {epiweek} "
                    f"{groupname}, but previous value {prev_rate} does not "
                    f"equal new value {rate}. Using the first value."))
@@ -221,6 +225,8 @@ def reformat_to_nested(data):
         raise Exception("no data loaded")
 
     print(f"found data for {len(data_out.keys())} locations")
+    # Just check one location to avoid iterating through the entire
+    #  dictionary.
     print(f"found data for {len(data_out[location].keys())} epiweeks for {location}")
 
     return data_out
@@ -259,3 +265,69 @@ def get_current_issue(data):
 
     # convert and return
     return EpiDate(date.year, date.month, date.day).get_ew()
+
+
+def make_id_label_map(data):
+    """Create a map from valueid to group description"""
+    id_to_label = defaultdict(lambda: defaultdict(lambda: None))
+    for group in data["master_lookup"]:
+        # Skip "overall" group
+        if group["Variable"] is None:
+            continue
+        id_to_label[group["Variable"]][group["valueid"]] = group["Label"].replace(
+            " ", ""
+        ).replace(
+            "/", ""
+        ).replace(
+            "-", "t"
+        ).replace(
+            "yr", ""
+        ).lower()
+
+    return id_to_label
+
+
+def groupids_to_name(ageid, sexid, raceid, id_label_map):
+    # Expect at least 2 of three ids to be 0
+    assert (ageid, sexid, raceid).count(0) >= 2, \
+        "At most one groupid can be non-zero"
+    if (ageid, sexid, raceid).count(0) == 3:
+        group = "overall"
+    elif ageid != 0:
+        # The column names used in the DB for the original age groups
+        #  are ordinal, such that:
+        #     "rate_age_0" corresponds to age group 1, 0-4 yr
+        #     "rate_age_1" corresponds to age group 2, 5-17 yr
+        #     "rate_age_2" corresponds to age group 3, 18-49 yr
+        #     "rate_age_3" corresponds to age group 4, 50-64 yr
+        #     "rate_age_4" corresponds to age group 5, 65+ yr
+        #     "rate_age_5" corresponds to age group 7, 65-74 yr
+        #     "rate_age_6" corresponds to age group 8, 75-84 yr
+        #     "rate_age_7" corresponds to age group 9, 85+ yr
+        #
+        #  Group 6 was the "overall" category and not included in the
+        #  ordinal naming scheme. Because of that, groups 1-5 have column
+        #  ids equal to the ageid - 1; groups 7-9 have column ids equal
+        #  to ageid - 2.
+        #
+        #  Automatically map from ageids 1-9 to column ids to match
+        #  the historical convention.
+        if ageid <= 5:
+            age_group = str(ageid - 1)
+        elif ageid == 6:
+            # Ageid of 6 used to be used for the "overall" category.
+            #  Now "overall" is represented by a valueid of 0, and ageid of 6
+            #  is not used for any group. If we see an ageid of 6, something
+            #  has gone wrong.
+            raise ValueError("Ageid cannot be 6; please check for changes in the API")
+        elif ageid <= 9:
+            age_group = str(ageid - 2)
+        else:
+            age_group = id_label_map["Age"][ageid]
+        group = "age_" + age_group
+    elif sexid != 0:
+        group = "sex_" + id_label_map["Sex"][sexid]
+    elif raceid != 0:
+        group = "race_" + id_label_map["Race"][raceid]
+
+    return "rate_" + group
