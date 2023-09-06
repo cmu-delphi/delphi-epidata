@@ -40,6 +40,7 @@ from collections import defaultdict
 from datetime import datetime
 import json
 import time
+from warnings import warn
 
 # third party
 import requests
@@ -154,50 +155,74 @@ def mmwrid_to_epiweek(mmwrid):
     return epiweek_200340.add_weeks(mmwrid - mmwrid_200340).get_ew()
 
 
-def extract_from_object(data_in):
+def reformat_to_nested(data):
     """
-    Given a FluSurv data object, return hospitalization rates.
+    Convert the default data object into a dictionary grouped by location and epiweek
 
-    The returned object is indexed first by epiweek, then by zero-indexed age
-    group.
+    Arg data is a list of dictionaries of the format
+        [
+            {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 1, 'rate': 4.3, 'weeklyrate': 1.7, 'mmwrid': 2493},
+            {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 1, 'rate': 20.3, 'weeklyrate': 0.1, 'mmwrid': 2513},
+            {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 1, 'rate': 20.6, 'weeklyrate': 0.1, 'mmwrid': 2516},
+            ...
+        ]
+
+    This object is stored as the value associated with the 'default_data' key in the
+    GRASP API response object, as fetched with 'fetch_flusurv_object()'
+
+    Returns a dictionary of the format
+        {
+            <location>: {
+                <epiweek>: {
+                    <ageid1>: <value>,
+                    ...
+                    <raceid2>: <value>,
+                    ...
+                }
+                ...
+            }
+            ...
+        }
     """
-
-    # Create output object
-    # First layer of keys is epiweeks. Second layer of keys is age groups
-    # (by id, not age).
-    #
-    # If a top-level key doesn't already exist, create a new empty dict.
-    # If a secondary key doesn't already exist, create a new dict. Default
-    #  value is None if not provided.
-    data_out = defaultdict(lambda: defaultdict(lambda: None))
-
-    # iterate over all seasons and age groups
-    for obj in data_in["busdata"]["dataseries"]:
-        age_group = obj["age"]
-        if age_group in (10, 11, 12):
-            # TODO(https://github.com/cmu-delphi/delphi-epidata/issues/242):
-            #   capture as-of-yet undefined age groups 10, 11, and 12
-            continue
-        # iterate over weeks
-        for mmwrid, _, _, rate in obj["data"]:
-            epiweek = mmwrid_to_epiweek(mmwrid)
-            prev_rate = data_out[epiweek][age_group]
-            if prev_rate is None:
-                # this is the first time to see a rate for this epiweek-age
-                #  group combo
-                data_out[epiweek][age_group] = rate
-            elif prev_rate != rate:
-                # a different rate was already found for this epiweek-age
-                #  group combo
-                format_args = (epiweek, age_group, prev_rate, rate)
-                print("warning: %d %d %f != %f" % format_args)
-
-    # Sanity check the result. We expect to have seen some epiweeks
-    if len(data_out.keys()) == 0:
+    # Sanity check the input. We expect to see some epiweeks
+    if len(data["default_data"]) == 0:
         raise Exception("no data found")
 
-    # print the result and return flu data
-    print(f"found data for {len(data_out)} weeks")
+    # Create output object
+    # First layer of keys is locations. Second layer of keys is epiweeks.
+    #  Third layer of keys is groups (by id, not age in years, sex abbr, etc).
+    #
+    # If a top-level key doesn't already exist, create a new empty dict.
+    # If a secondary key doesn't already exist, create a new empty dict.
+    # If a tertiary key doesn't already exist, create a new key with a
+    #  default value of None if not provided.
+    data_out = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: None)))
+
+    for obs in data["default_data"]:
+        epiweek = mmwrid_to_epiweek(obs["mmwrid"])
+        location = code_to_location[(obs["networkid"], obs["catchmentid"])]
+        groupname = groupids_to_name((obs["ageid"], obs["sexid"], obs["raceid"]))
+
+        prev_rate = data_out[location][epiweek][groupname]
+        if prev_rate is None:
+            # this is the first time to see a rate for this location-epiweek-
+            #  group combo
+            data_out[location][epiweek][groupname] = rate
+        elif prev_rate != rate:
+            # Skip and warn
+            # a different rate was already found for this location-epiweek-
+            #  group combo
+            warn((f"warning: Multiple rates seen for {location} {epiweek} "
+                   f"{groupname}, but previous value {prev_rate} does not "
+                   f"equal new value {rate}. Using the first value."))
+
+    # Sanity check the input. We expect to have populated our dictionary
+    if len(data_out.keys()) == 0:
+        raise Exception("no data loaded")
+
+    print(f"found data for {len(data_out.keys())} locations")
+    print(f"found data for {len(data_out[location].keys())} epiweeks for {location}")
+
     return data_out
 
 
@@ -216,7 +241,7 @@ def get_data(location_code):
 
     # extract
     print("[extracting values...]")
-    data_out = extract_from_object(data_in)
+    data_out = reformat_to_nested(data_in)
 
     # return
     print("[scraped successfully]")
