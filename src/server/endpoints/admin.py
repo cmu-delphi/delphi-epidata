@@ -6,7 +6,7 @@ from flask_admin import Admin, AdminIndexView, expose, BaseView
 from flask_admin.contrib.sqla import ModelView
 from werkzeug.exceptions import Unauthorized
 
-from .._common import app
+from .._common import app, db
 from .._config import ADMIN_PASSWORD
 from .._db import WriteSession
 from .._security import resolve_auth_token
@@ -80,7 +80,21 @@ class AuthAdminIndexView(AdminIndexView):
     @expose("/")
     @flask_login.login_required
     def index(self):
-        return super().index()
+        users_info_query = """
+            SELECT
+                au.email,
+                au.api_key,
+                rr.organization,
+                rr.purpose,
+                au.created,
+                au.last_time_used
+            FROM api_user au
+            JOIN registration_responses rr
+            ON au.email = rr.email
+        """
+        users_info = db.execute(users_info_query)
+        user_data = users_info.fetchall()
+        return self.render("admin/index.html", user_data=user_data)
 
 
 class UserView(AuthModelView):

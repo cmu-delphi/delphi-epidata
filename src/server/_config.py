@@ -118,3 +118,6 @@ SMTP_PORT = 25
 EMAIL_FROM = "noreply@andrew.cmu.edu"
 
 RECAPTCHA_SITE_KEY = os.environ.get("RECAPTCHA_SITE_KEY")
+RECAPTCHA_SECRET_KEY = os.environ.get("RECAPTCHA_SECRET_KEY")
+
+SLACK_WEBHOOK_URL = os.environ.get("SLACK_WEBHOOK_URL")
