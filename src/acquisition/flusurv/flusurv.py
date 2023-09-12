@@ -253,8 +253,8 @@ def get_data(location, seasonids):
     Fetch and parse flu data for the given location.
 
     This method performs the following operations:
-      - filters location-specific FluSurv data from CDC API response object
-      - extracts and returns hospitalization rates
+      - fetch location-specific FluSurv data from CDC API
+      - extracts and returns hospitalization rates for each epiweek
     """
     # fetch
     print("[fetching flusurv data...]")
