@@ -122,23 +122,41 @@ def fetch_json(path, payload, call_count=1, requests_impl=requests):
     return resp.json()
 
 
-def fetch_flusurv_location(location_code):
-    """Return decoded FluSurv JSON object for the given location."""
-    return fetch_json(
+def fetch_flusurv_location(location, seasonids):
+    """Return FluSurv JSON object for the given location."""
+    location_code = location_to_code[location]
+
+    result = fetch_json(
         "PostPhase03DataTool",
         {
             "appversion": "Public",
             "key": "getdata",
-            "injson": [{
-                "networkid": location_code[0],
-                "cacthmentid": location_code[1],
-                "seasonid": seasonid
-            }],
+            "injson": [
+                {
+                    "networkid": location_code[0],
+                    "catchmentid": location_code[1],
+                    "seasonid": elem,
+                } for elem in seasonids],
         },
     )
 
-def fetch_flusurv_object():
-    """Return raw FluSurv JSON object for all locations."""
+    # If no data is returned (a given seasonid is not reported,
+    # location codes are invalid, etc), the API returns a JSON like:
+    #    {
+    #        'default_data': {
+    #            'response': 'No Data'
+    #            }
+    #    }
+    #
+    # If data is returned, then data["default_data"] is a list
+    #  and data["default_data"]["response"] doesn't exist.
+    assert isinstance(result["default_data"], list) and len(result["default_data"]) > 0, \
+        f"Data was not correctly returned from the API for {location}"
+    return result
+
+
+def fetch_flusurv_metadata():
+    """Return FluSurv JSON metadata object."""
     return fetch_json(
         "PostPhase03DataTool",
         {"appversion": "Public", "key": "", "injson": []}
@@ -155,12 +173,13 @@ def mmwrid_to_epiweek(mmwrid):
     return epiweek_200340.add_weeks(mmwrid - mmwrid_200340).get_ew()
 
 
-def reformat_to_nested(data):
+def group_by_epiweek(data):
     """
-    Convert the default data object into a dictionary grouped by location and epiweek
+    Convert default data for a single location into an epiweek-grouped dictionary
 
     Args:
-        A GRASP API response object, as fetched with 'fetch_flusurv_object()'
+        data: The "default_data" element of a GRASP API response object,
+        as fetched with 'fetch_flusurv_location' or `fetch_flusurv_metadata`
 
     Returns a dictionary of the format
         {
@@ -176,21 +195,22 @@ def reformat_to_nested(data):
             ...
         }
     """
+    data = data["default_data"]
+
     # Sanity check the input. We expect to see some epiweeks
-    if len(data["default_data"]) == 0:
+    if len(data) == 0:
         raise Exception("no data found")
 
-    id_label_map = make_id_label_map(data)
+    id_label_map = make_id_label_map()
 
     # Create output object
-    # First layer of keys is locations. Second layer of keys is epiweeks.
-    #  Third layer of keys is groups (by id, not age in years, sex abbr, etc).
+    # First layer of keys is epiweeks. Second layer of keys is groups
+    #  (by id, not age in years, sex abbr, etc).
     #
     # If a top-level key doesn't already exist, create a new empty dict.
-    # If a secondary key doesn't already exist, create a new empty dict.
-    # If a tertiary key doesn't already exist, create a new key with a
+    # If a secondary key doesn't already exist, create a new key with a
     #  default value of None if not provided.
-    data_out = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: None)))
+    data_out = defaultdict(lambda: defaultdict(lambda: None))
 
     # data["default_data"] is a list of dictionaries, with the format
     #     [
@@ -199,24 +219,23 @@ def reformat_to_nested(data):
     #         {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 1, 'rate': 20.6, 'weeklyrate': 0.1, 'mmwrid': 2516},
     #         ...
     #     ]
-    for obs in data["default_data"]:
+    for obs in data:
         epiweek = mmwrid_to_epiweek(obs["mmwrid"])
-        location = code_to_location[(obs["networkid"], obs["catchmentid"])]
         groupname = groupids_to_name(
             ageid = obs["ageid"], sexid = obs["sexid"], raceid = obs["raceid"],
             id_label_map = id_label_map
         )
 
         rate = obs["weeklyrate"]
-        prev_rate = data_out[location][epiweek][groupname]
+        prev_rate = data_out[epiweek][groupname]
         if prev_rate is None:
-            # This is the first time to see a rate for this location-epiweek-
-            #  group combo
-            data_out[location][epiweek][groupname] = rate
+            # This is the first time to see a rate for this epiweek-group
+            #  combo
+            data_out[epiweek][groupname] = rate
         elif prev_rate != rate:
             # Skip and warn; a different rate was already found for this
-            # location-epiweek-group combo
-            warn((f"warning: Multiple rates seen for {location} {epiweek} "
+            # epiweek-group combo
+            warn((f"warning: Multiple rates seen for {epiweek} "
                    f"{groupname}, but previous value {prev_rate} does not "
                    f"equal new value {rate}. Using the first value."))
 
@@ -224,33 +243,29 @@ def reformat_to_nested(data):
     if len(data_out.keys()) == 0:
         raise Exception("no data loaded")
 
-    print(f"found data for {len(data_out.keys())} locations")
-    # Just check one location to avoid iterating through the entire
-    #  dictionary.
-    print(f"found data for {len(data_out[location].keys())} epiweeks for {location}")
+    print(f"found data for {len(data_out.keys())} epiweeks")
 
     return data_out
 
 
-def get_data(location_code):
+def get_data(location, seasonids):
     """
     Fetch and parse flu data for the given location.
 
     This method performs the following operations:
-      - fetches FluSurv data from CDC
+      - filters location-specific FluSurv data from CDC API response object
       - extracts and returns hospitalization rates
     """
-
     # fetch
     print("[fetching flusurv data...]")
-    data_in = fetch_flusurv_location(location_code)
+    data_in = fetch_flusurv_location(location, seasonids)
 
     # extract
-    print("[extracting values...]")
-    data_out = reformat_to_nested(data_in)
+    print("[reformatting flusurv result...]")
+    data_out = group_by_epiweek(data_in)
 
     # return
-    print("[scraped successfully]")
+    print(f"[successfully fetched data for {location}]")
     return data_out
 
 
@@ -258,7 +273,8 @@ def get_current_issue(data):
     """
     Extract the current issue from the FluSurv API result.
 
-    data: dictionary representing a JSON response from the FluSurv API
+    Args:
+        data: dictionary representing a JSON response from the FluSurv API
     """
     # extract
     date = datetime.strptime(data["loaddatetime"], "%b %d, %Y")
@@ -267,8 +283,10 @@ def get_current_issue(data):
     return EpiDate(date.year, date.month, date.day).get_ew()
 
 
-def make_id_label_map(data):
+def make_id_label_map():
     """Create a map from valueid to group description"""
+    data = fetch_flusurv_metadata()
+
     id_to_label = defaultdict(lambda: defaultdict(lambda: None))
     for group in data["master_lookup"]:
         # Skip "overall" group

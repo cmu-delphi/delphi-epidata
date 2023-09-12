@@ -70,6 +70,7 @@ rate_age_7: hospitalization rate for ages 85+
 
 # standard library
 import argparse
+from warnings import warn
 
 # third party
 import mysql.connector
@@ -81,6 +82,8 @@ from delphi.utils.epidate import EpiDate
 from delphi.utils.epiweek import delta_epiweeks
 
 
+max_age_to_consider_weeks = 52
+
 def get_rows(cur):
     """Return the number of rows in the `flusurv` table."""
 
@@ -90,13 +93,10 @@ def get_rows(cur):
         return num
 
 
-def update(issue, location, test_mode=False):
-    """Fetch and store the currently avialble weekly FluSurv dataset."""
-
-    # fetch data
-    location_code = flusurv.location_to_code[location]
-    print("fetching data for", location, location_code)
-    data = flusurv.get_data(location_code)
+def update(issue, location, seasonids, test_mode=False):
+    """Fetch and store the currently available weekly FluSurv dataset."""
+    # Fetch location-specific data
+    data = flusurv.get_data(location, seasonids)
 
     # metadata
     epiweeks = sorted(data.keys())
@@ -214,10 +214,16 @@ def update(issue, location, test_mode=False):
 
     # insert/update each row of data (one per epiweek)
     for epiweek in epiweeks:
-        # As of Sept 2023, we expect to see these 24 groups, as described in
-        #  the top-level "master_lookup" element of the new GRASP API
-        #  (https://gis.cdc.gov/GRASP/Flu3/PostPhase03DataTool) response
-        #  object:
+        lag = delta_epiweeks(epiweek, issue)
+        if lag > max_age_to_consider_weeks:
+            # Ignore values older than one year, as (1) they are assumed not to
+            # change, and (2) it would adversely affect database performance if all
+            # values (including duplicates) were stored on each run.
+            continue
+
+        # As of Sept 2023, for new data we expect to see these 23 groups, as
+        #  described in the top-level "master_lookup" element of the new GRASP API
+        #  (https://gis.cdc.gov/GRASP/Flu3/PostPhase03DataTool) response object:
         # 'master_lookup' = [
         #     {'Variable': 'Age', 'valueid': 1, 'parentid': 97, 'Label': '0-4 yr', 'Color_HexValue': '#d19833', 'Enabled': True},
         #     {'Variable': 'Age', 'valueid': 2, 'parentid': 97, 'Label': '5-17 yr', 'Color_HexValue': '#707070', 'Enabled': True},
@@ -247,9 +253,11 @@ def update(issue, location, test_mode=False):
         #     {'Variable': None, 'valueid': 0, 'parentid': 0, 'Label': 'Overall', 'Color_HexValue': '#000000', 'Enabled': True},
         # ]
         #
+        # All 23 strata are available starting with epiweek 200935.
+        #
         # The previous version of the GRASP API
         #  (https://gis.cdc.gov/GRASP/Flu3/GetPhase03InitApp)
-        #  used a different age group-id mapping, as described in the
+        #  used the following age groupid mapping, as described in the
         #  top-level "ages" element:
         #    'ages' = [
         #        {'label': '0-4 yr', 'ageid': 1, 'color_hexvalue': '#1B9E77'},
@@ -263,18 +271,15 @@ def update(issue, location, test_mode=False):
         #        {'label': '85+', 'ageid': 9, 'color_hexvalue': '#1f78b4'}
         #    ]
         #
-        # In addition to the new age, race, and sex breakdowns, the
-        # group id for overall reporting has changed from 6 to 0.
-        n_max_expected_groups = 24
-        assert len(epiweek.keys()) == n_max_expected_groups, \
-            f"{location} {epiweek} data does not contain the expected {n_max_expected_groups} groups"
+        #  In addition to the new age, race, and sex breakdowns, the group
+        #  id for overall reporting has changed from 6 to 0. Ageids 1-5
+        #  and 7-9 retain the same the same meanings.
+        n_expected_groups = 23
+        if len(data[epiweek].keys()) != n_expected_groups:
+            warnings.warn(
+                f"{location} {epiweek} data does not contain the expected {n_expected_groups} groups"
+            )
 
-        lag = delta_epiweeks(epiweek, issue)
-        if lag > 52:
-            # Ignore values older than one year, as (1) they are assumed not to
-            # change, and (2) it would adversely affect database performance if all
-            # values (including duplicates) were stored on each run.
-            continue
         args_meta = {
             "release_date": release_date,
             "issue": issue,
@@ -313,20 +318,28 @@ def main():
     # fmt: on
     args = parser.parse_args()
 
-    data = fetch_flusurv_object()
+    data = flusurv.fetch_flusurv_metadata()
 
     # scrape current issue from the main page
     issue = flusurv.get_current_issue(data)
     print(f"current issue: {int(issue)}")
 
+    # Ignore seasons with all dates older than one year
+    seasonids = {
+        season_blob["seasonid"] for season_blob in data["seasons"]
+        if delta_epiweeks(flusurv.mmwrid_to_epiweek(season_blob["endweek"]), issue) < max_age_to_consider_weeks
+    }
+
     # fetch flusurv data
     if args.location == "all":
         # all locations
         for location in flusurv.location_to_code.keys():
-            update(issue, location, args.test)
+            update(issue, location, seasonids, args.test)
     else:
         # single location
-        update(issue, args.location, args.test)
+        assert args.location in flusurv.location_to_code.keys(), \
+            f"Requested location {args.location} not available"
+        update(issue, args.location, seasonids, args.test)
 
 
 if __name__ == "__main__":
