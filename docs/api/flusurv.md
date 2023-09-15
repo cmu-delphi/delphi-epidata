@@ -52,22 +52,40 @@ If neither is specified, the current issues are used.
 
 ## Response
 
-| Field                    | Description                                                     | Type             |
-|--------------------------|-----------------------------------------------------------------|------------------|
-| `result`                 | result code: 1 = success, 2 = too many results, -2 = no results | integer          |
-| `epidata`                | list of results                                                 | array of objects |
-| `epidata[].release_date` |                                                                 | string           |
-| `epidata[].location`     |                                                                 | string           |
-| `epidata[].issue`        |                                                                 | integer          |
-| `epidata[].epiweek`      |                                                                 | integer          |
-| `epidata[].lag`          |                                                                 | integer          |
-| `epidata[].rate_age_0`   |                                                                 | float            |
-| `epidata[].rate_age_1`   |                                                                 | float            |
-| `epidata[].rate_age_2`   |                                                                 | float            |
-| `epidata[].rate_age_3`   |                                                                 | float            |
-| `epidata[].rate_age_4`   |                                                                 | float            |
-| `epidata[].rate_overall` |                                                                 | float            |
-| `message`                | `success` or error message                                      | string           |
+| Field                         | Description                                                     | Type             |
+|-------------------------------|-----------------------------------------------------------------|------------------|
+| `result`                      | result code: 1 = success, 2 = too many results, -2 = no results | integer          |
+| `epidata`                     | list of results                                                 | array of objects |
+| `epidata[].release_date`      |                                                                 | string           |
+| `epidata[].location`          |                                                                 | string           |
+| `epidata[].issue`             |                                                                 | integer          |
+| `epidata[].epiweek`           |                                                                 | integer          |
+| `epidata[].lag`               |                                                                 | integer          |
+| `epidata[].season`            |                                                                 | string           |
+| `epidata[].rate_age_0`        |                                                                 | float            |
+| `epidata[].rate_age_1`        |                                                                 | float            |
+| `epidata[].rate_age_2`        |                                                                 | float            |
+| `epidata[].rate_age_3`        |                                                                 | float            |
+| `epidata[].rate_age_4`        |                                                                 | float            |
+| `epidata[].rate_overall`      |                                                                 | float            |
+| `epidata[].rate_age_5`        |                                                                 | float            |
+| `epidata[].rate_age_6`        |                                                                 | float            |
+| `epidata[].rate_age_7`        |                                                                 | float            |
+| `epidata[].rate_age_18t29`    |                                                                 | float            |
+| `epidata[].rate_age_30t39`    |                                                                 | float            |
+| `epidata[].rate_age_40t49`    |                                                                 | float            |
+| `epidata[].rate_age_5t11`     |                                                                 | float            |
+| `epidata[].rate_age_12t17`    |                                                                 | float            |
+| `epidata[].rate_age_lt18`     |                                                                 | float            |
+| `epidata[].rate_age_gte18`    |                                                                 | float            |
+| `epidata[].rate_race_white`   |                                                                 | float            |
+| `epidata[].rate_race_black`   |                                                                 | float            |
+| `epidata[].rate_race_hisp`    |                                                                 | float            |
+| `epidata[].rate_race_asian`   |                                                                 | float            |
+| `epidata[].rate_race_natamer` |                                                                 | float            |
+| `epidata[].rate_sex_male`     |                                                                 | float            |
+| `epidata[].rate_sex_female`   |                                                                 | float            |
+| `message`                     | `success` or error message                                      | string           |
 
 Notes:
 * The `flusurv` age groups are, in general, not the same as the ILINet
