@@ -93,10 +93,10 @@ def get_rows(cur):
         return num
 
 
-def update(issue, location, seasonids, test_mode=False):
+def update(issue, location, seasonids, metadata, test_mode=False):
     """Fetch and store the currently available weekly FluSurv dataset."""
     # Fetch location-specific data
-    data = flusurv.get_data(location, seasonids)
+    data = flusurv.get_data(location, seasonids, metadata)
 
     # metadata
     epiweeks = sorted(data.keys())
@@ -318,15 +318,15 @@ def main():
     # fmt: on
     args = parser.parse_args()
 
-    data = flusurv.fetch_flusurv_metadata()
+    metadata = flusurv.fetch_flusurv_metadata()
 
     # scrape current issue from the main page
-    issue = flusurv.get_current_issue(data)
+    issue = flusurv.get_current_issue(metadata)
     print(f"current issue: {int(issue)}")
 
     # Ignore seasons with all dates older than one year
     seasonids = {
-        season_blob["seasonid"] for season_blob in data["seasons"]
+        season_blob["seasonid"] for season_blob in metadata["seasons"]
         if delta_epiweeks(flusurv.mmwrid_to_epiweek(season_blob["endweek"]), issue) < max_age_to_consider_weeks
     }
 
@@ -334,12 +334,12 @@ def main():
     if args.location == "all":
         # all locations
         for location in flusurv.location_to_code.keys():
-            update(issue, location, seasonids, args.test)
+            update(issue, location, seasonids, metadata, args.test)
     else:
         # single location
         assert args.location in flusurv.location_to_code.keys(), \
             f"Requested location {args.location} not available"
-        update(issue, args.location, seasonids, args.test)
+        update(issue, args.location, seasonids, metadata, args.test)
 
 
 if __name__ == "__main__":

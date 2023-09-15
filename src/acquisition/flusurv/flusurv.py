@@ -173,7 +173,7 @@ def mmwrid_to_epiweek(mmwrid):
     return epiweek_200340.add_weeks(mmwrid - mmwrid_200340).get_ew()
 
 
-def group_by_epiweek(data):
+def group_by_epiweek(data, metadata):
     """
     Convert default data for a single location into an epiweek-grouped dictionary
 
@@ -201,7 +201,7 @@ def group_by_epiweek(data):
     if len(data) == 0:
         raise Exception("no data found")
 
-    id_label_map = make_id_label_map()
+    id_label_map = make_id_label_map(metadata)
 
     # Create output object
     # First layer of keys is epiweeks. Second layer of keys is groups
@@ -248,7 +248,7 @@ def group_by_epiweek(data):
     return data_out
 
 
-def get_data(location, seasonids):
+def get_data(location, seasonids, metadata):
     """
     Fetch and parse flu data for the given location.
 
@@ -262,7 +262,7 @@ def get_data(location, seasonids):
 
     # extract
     print("[reformatting flusurv result...]")
-    data_out = group_by_epiweek(data_in)
+    data_out = group_by_epiweek(data_in, metadata)
 
     # return
     print(f"[successfully fetched data for {location}]")
@@ -283,12 +283,10 @@ def get_current_issue(data):
     return EpiDate(date.year, date.month, date.day).get_ew()
 
 
-def make_id_label_map():
+def make_id_label_map(metadata):
     """Create a map from valueid to group description"""
-    data = fetch_flusurv_metadata()
-
     id_to_label = defaultdict(lambda: defaultdict(lambda: None))
-    for group in data["master_lookup"]:
+    for group in metadata["master_lookup"]:
         # Skip "overall" group
         if group["Variable"] is None:
             continue
