@@ -329,7 +329,7 @@ CREATE TABLE `fluview_public` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*
-`flusurv` stores FluSurv-NET data (flu hospitaliation rates) as published by
+`flusurv` stores FluSurv-NET data (flu hospitalization rates) as published by
 CDC.
 
 Data is public.
@@ -345,25 +345,40 @@ Note that the flusurv age groups are, in general, not the same as the ILINet
 particular "catchment" (e.g. 'network_all', 'CA', 'NY_albany') rather than by
 regions and states in general.
 
-+--------------+-------------+------+-----+---------+----------------+
-| Field        | Type        | Null | Key | Default | Extra          |
-+--------------+-------------+------+-----+---------+----------------+
-| id           | int(11)     | NO   | PRI | NULL    | auto_increment |
-| release_date | date        | NO   | MUL | NULL    |                |
-| issue        | int(11)     | NO   | MUL | NULL    |                |
-| epiweek      | int(11)     | NO   | MUL | NULL    |                |
-| location     | varchar(32) | NO   | MUL | NULL    |                |
-| lag          | int(11)     | NO   | MUL | NULL    |                |
-| rate_age_0   | double      | YES  |     | NULL    |                |
-| rate_age_1   | double      | YES  |     | NULL    |                |
-| rate_age_2   | double      | YES  |     | NULL    |                |
-| rate_age_3   | double      | YES  |     | NULL    |                |
-| rate_age_4   | double      | YES  |     | NULL    |                |
-| rate_overall | double      | YES  |     | NULL    |                |
-| rate_age_5   | double      | YES  |     | NULL    |                |
-| rate_age_6   | double      | YES  |     | NULL    |                |
-| rate_age_7   | double      | YES  |     | NULL    |                |
-+--------------+-------------+------+-----+---------+----------------+
++-------------------+-------------+------+-----+---------+----------------+
+| Field             | Type        | Null | Key | Default | Extra          |
++-------------------+-------------+------+-----+---------+----------------+
+| id                | int(11)     | NO   | PRI | NULL    | auto_increment |
+| release_date      | date        | NO   | MUL | NULL    |                |
+| issue             | int(11)     | NO   | MUL | NULL    |                |
+| epiweek           | int(11)     | NO   | MUL | NULL    |                |
+| location          | varchar(32) | NO   | MUL | NULL    |                |
+| lag               | int(11)     | NO   | MUL | NULL    |                |
+| season            | char(7)     | YES  |     | NULL    |                |
+| rate_age_0        | double      | YES  |     | NULL    |                |
+| rate_age_1        | double      | YES  |     | NULL    |                |
+| rate_age_2        | double      | YES  |     | NULL    |                |
+| rate_age_3        | double      | YES  |     | NULL    |                |
+| rate_age_4        | double      | YES  |     | NULL    |                |
+| rate_overall      | double      | YES  |     | NULL    |                |
+| rate_age_5        | double      | YES  |     | NULL    |                |
+| rate_age_6        | double      | YES  |     | NULL    |                |
+| rate_age_7        | double      | YES  |     | NULL    |                |
+| rate_age_18t29    | double      | YES  |     | NULL    |                |
+| rate_age_30t39    | double      | YES  |     | NULL    |                |
+| rate_age_40t49    | double      | YES  |     | NULL    |                |
+| rate_age_5t11     | double      | YES  |     | NULL    |                |
+| rate_age_12t17    | double      | YES  |     | NULL    |                |
+| rate_age_lt18     | double      | YES  |     | NULL    |                |
+| rate_age_gte18    | double      | YES  |     | NULL    |                |
+| rate_race_white   | double      | YES  |     | NULL    |                |
+| rate_race_black   | double      | YES  |     | NULL    |                |
+| rate_race_hisp    | double      | YES  |     | NULL    |                |
+| rate_race_asian   | double      | YES  |     | NULL    |                |
+| rate_race_natamer | double      | YES  |     | NULL    |                |
+| rate_sex_male     | double      | YES  |     | NULL    |                |
+| rate_sex_female   | double      | YES  |     | NULL    |                |
++-------------------+-------------+------+-----+---------+----------------+
 */
 
 CREATE TABLE `flusurv` (
@@ -373,6 +388,7 @@ CREATE TABLE `flusurv` (
   `epiweek` int(11) NOT NULL,
   `location` varchar(32) NOT NULL,
   `lag` int(11) NOT NULL,
+  `season` char(7) DEFAULT NULL,
   `rate_age_0` double DEFAULT NULL,
   `rate_age_1` double DEFAULT NULL,
   `rate_age_2` double DEFAULT NULL,
@@ -382,6 +398,20 @@ CREATE TABLE `flusurv` (
   `rate_age_5` double DEFAULT NULL,
   `rate_age_6` double DEFAULT NULL,
   `rate_age_7` double DEFAULT NULL,
+  `rate_age_18t29` double DEFAULT NULL,
+  `rate_age_30t39` double DEFAULT NULL,
+  `rate_age_40t49` double DEFAULT NULL,
+  `rate_age_5t11` double DEFAULT NULL,
+  `rate_age_12t17` double DEFAULT NULL,
+  `rate_age_lt18` double DEFAULT NULL,
+  `rate_age_gte18` double DEFAULT NULL,
+  `rate_race_white` double DEFAULT NULL,
+  `rate_race_black` double DEFAULT NULL,
+  `rate_race_hisp` double DEFAULT NULL,
+  `rate_race_asian` double DEFAULT NULL,
+  `rate_race_natamer` double DEFAULT NULL,
+  `rate_sex_male` double DEFAULT NULL,
+  `rate_sex_female` double DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `issue` (`issue`,`epiweek`,`location`),
   KEY `release_date` (`release_date`),
