@@ -202,6 +202,7 @@ def group_by_epiweek(data, metadata):
         raise Exception("no data found")
 
     id_label_map = make_id_label_map(metadata)
+    id_season_map = make_id_season_map(metadata)
 
     # Create output object
     # First layer of keys is epiweeks. Second layer of keys is groups
@@ -221,10 +222,15 @@ def group_by_epiweek(data, metadata):
     #     ]
     for obs in data:
         epiweek = mmwrid_to_epiweek(obs["mmwrid"])
+        season = id_season_map[obs["seasonid"]]
         groupname = groupids_to_name(
             ageid = obs["ageid"], sexid = obs["sexid"], raceid = obs["raceid"],
             id_label_map = id_label_map
         )
+
+        # Set season description. This will be overwritten every iteration,
+        #  but should always have the same value per epiweek group.
+        data_out[epiweek]["season"] = season
 
         rate = obs["weeklyrate"]
         prev_rate = data_out[epiweek][groupname]
@@ -299,6 +305,15 @@ def make_id_label_map(metadata):
         ).replace(
             "yr", ""
         ).lower()
+
+    return id_to_label
+
+
+def make_id_season_map(metadata):
+    """Create a map from seasonid to season description, in the format "YYYY-YY" """
+    id_to_label = defaultdict(lambda: defaultdict(lambda: None))
+    for season in metadata["seasons"]:
+        id_to_label[season["seasonid"]] = season["label"]
 
     return id_to_label
 

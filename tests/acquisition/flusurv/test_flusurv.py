@@ -31,9 +31,10 @@ network_all_example_data = {
     ]
 }
 
-# Example metadata response containing "master_lookup" element only, used
-#  for mapping between valueids and strata descriptions
-master_lookup_metadata = {
+# Example metadata response containing "master_lookup" element, used
+#  for mapping between valueids and strata descriptions, and "seasons"
+#  element, used for mapping between seasonids and season year spans.
+metadata = {
     'master_lookup': [
         {'Variable': 'Age', 'valueid': 1, 'parentid': 97, 'Label': '0-4 yr', 'Color_HexValue': '#d19833', 'Enabled': True},
         {'Variable': 'Age', 'valueid': 2, 'parentid': 97, 'Label': '5-17 yr', 'Color_HexValue': '#707070', 'Enabled': True},
@@ -61,6 +62,13 @@ master_lookup_metadata = {
         {'Variable': 'Sex', 'valueid': 2, 'parentid': None, 'Label': 'Female', 'Color_HexValue': '#F2775F', 'Enabled': True},
 
         {'Variable': None, 'valueid': 0, 'parentid': 0, 'Label': 'Overall', 'Color_HexValue': '#000000', 'Enabled': True},
+    ],
+    'seasons': [
+        {'description': 'Season 2006-07', 'enabled': True, 'endweek': 2387, 'label': '2006-07', 'seasonid': 46, 'startweek': 2336, 'IncludeWeeklyRatesAndStrata': True},
+        {'description': 'Season 2003-04', 'enabled': True, 'endweek': 2231, 'label': '2003-04', 'seasonid': 43, 'startweek': 2179, 'IncludeWeeklyRatesAndStrata': True},
+        {'description': 'Season 2009-10', 'enabled': True, 'endweek': 2544, 'label': '2009-10', 'seasonid': 49, 'startweek': 2488, 'IncludeWeeklyRatesAndStrata': True},
+        {'description': 'Season 2012-13', 'enabled': True, 'endweek': 2700, 'label': '2012-13', 'seasonid': 52, 'startweek': 2649, 'IncludeWeeklyRatesAndStrata': True},
+        {'description': 'Season 2015-16', 'enabled': True, 'endweek': 2857, 'label': '2015-16', 'seasonid': 55, 'startweek': 2806, 'IncludeWeeklyRatesAndStrata': True},
     ],
 }
 
@@ -131,21 +139,21 @@ class FunctionTests(unittest.TestCase):
     def test_get_data(self, MockFlusurvLocation):
         MockFlusurvLocation.return_value = network_all_example_data
 
-        self.assertEqual(flusurv.get_data("network_all", [30, 49], master_lookup_metadata), {
-                201014: {"rate_race_white": 0.0, "rate_race_black": 0.1, "rate_age_0": 0.5},
-                200940: {"rate_race_white": 1.7, "rate_race_black": 3.6, "rate_race_hispaniclatino": 4.8},
-                201011: {"rate_race_white": 0.1, "rate_race_black": 0.5},
-                201008: {"rate_race_white": 0.1, "rate_race_black": 0.3, "rate_race_hispaniclatino": 0.1},
+        self.assertEqual(flusurv.get_data("network_all", [30, 49], metadata), {
+                201014: {"rate_race_white": 0.0, "rate_race_black": 0.1, "rate_age_0": 0.5, "season": "2009-10"},
+                200940: {"rate_race_white": 1.7, "rate_race_black": 3.6, "rate_race_hispaniclatino": 4.8, "season": "2009-10"},
+                201011: {"rate_race_white": 0.1, "rate_race_black": 0.5, "season": "2009-10"},
+                201008: {"rate_race_white": 0.1, "rate_race_black": 0.3, "rate_race_hispaniclatino": 0.1, "season": "2009-10"},
             }
         )
 
     def test_group_by_epiweek(self):
         input_data = network_all_example_data
-        self.assertEqual(flusurv.group_by_epiweek(input_data, master_lookup_metadata), {
-                201014: {"rate_race_white": 0.0, "rate_race_black": 0.1, "rate_age_0": 0.5},
-                200940: {"rate_race_white": 1.7, "rate_race_black": 3.6, "rate_race_hispaniclatino": 4.8},
-                201011: {"rate_race_white": 0.1, "rate_race_black": 0.5},
-                201008: {"rate_race_white": 0.1, "rate_race_black": 0.3, "rate_race_hispaniclatino": 0.1},
+        self.assertEqual(flusurv.group_by_epiweek(input_data, metadata), {
+                201014: {"rate_race_white": 0.0, "rate_race_black": 0.1, "rate_age_0": 0.5, "season": "2009-10"},
+                200940: {"rate_race_white": 1.7, "rate_race_black": 3.6, "rate_race_hispaniclatino": 4.8, "season": "2009-10"},
+                201011: {"rate_race_white": 0.1, "rate_race_black": 0.5, "season": "2009-10"},
+                201008: {"rate_race_white": 0.1, "rate_race_black": 0.3, "rate_race_hispaniclatino": 0.1, "season": "2009-10"},
             }
         )
 
@@ -157,15 +165,15 @@ class FunctionTests(unittest.TestCase):
         }
 
         with self.assertWarnsRegex(Warning, "warning: Multiple rates seen for 201014"):
-            flusurv.group_by_epiweek(duplicate_input_data, master_lookup_metadata)
+            flusurv.group_by_epiweek(duplicate_input_data, metadata)
 
         with self.assertRaisesRegex(Exception, "no data found"):
-            flusurv.group_by_epiweek({"default_data": []}, master_lookup_metadata)
+            flusurv.group_by_epiweek({"default_data": []}, metadata)
 
     @patch('builtins.print')
     def test_group_by_epiweek_print_msgs(self, mock_print):
         input_data = network_all_example_data
-        flusurv.group_by_epiweek(input_data, master_lookup_metadata)
+        flusurv.group_by_epiweek(input_data, metadata)
         mock_print.assert_called_with("found data for 4 epiweeks")
 
     def test_get_current_issue(self):
@@ -175,7 +183,16 @@ class FunctionTests(unittest.TestCase):
         self.assertEqual(flusurv.get_current_issue(input_data), 202337)
 
     def test_make_id_label_map(self):
-        self.assertEqual(flusurv.make_id_label_map(master_lookup_metadata), id_label_map)
+        self.assertEqual(flusurv.make_id_label_map(metadata), id_label_map)
+
+    def test_make_id_season_map(self):
+        self.assertEqual(flusurv.make_id_season_map(metadata), {
+            46: '2006-07',
+            43: '2003-04',
+            49: '2009-10',
+            52: '2012-13',
+            55: '2015-16',
+        })
 
     def test_groupids_to_name(self):
         ids = (

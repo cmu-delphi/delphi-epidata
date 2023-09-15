@@ -117,6 +117,7 @@ def update(issue, location, seasonids, metadata, test_mode=False):
       `epiweek`,
       `location`,
       `lag`,
+      `season`,
 
       `rate_overall`,
 
@@ -152,6 +153,7 @@ def update(issue, location, seasonids, metadata, test_mode=False):
       %(epiweek)s,
       %(location)s,
       %(lag)s,
+      %(season)s,
 
       %(rate_overall)s,
 
@@ -275,7 +277,8 @@ def update(issue, location, seasonids, metadata, test_mode=False):
         #  id for overall reporting has changed from 6 to 0. Ageids 1-5
         #  and 7-9 retain the same the same meanings.
         n_expected_groups = 23
-        if len(data[epiweek].keys()) != n_expected_groups:
+        # Subtract one since we also store the season description in each epiweek value
+        if len(data[epiweek].keys() - 1) != n_expected_groups:
             warnings.warn(
                 f"{location} {epiweek} data does not contain the expected {n_expected_groups} groups"
             )
