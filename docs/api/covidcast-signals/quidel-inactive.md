@@ -15,6 +15,7 @@ grand_parent: COVIDcast Main Endpoint
 1. TOC
 {:toc}
 
+## Accessibility: Delphi-internal only
 
 ## COVID-19 Tests
 These signals are still active. Documentation is available on the [Quidel page](quidel.md).
