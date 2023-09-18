@@ -354,7 +354,6 @@ regions and states in general.
 | epiweek           | int(11)     | NO   | MUL | NULL    |                |
 | location          | varchar(32) | NO   | MUL | NULL    |                |
 | lag               | int(11)     | NO   | MUL | NULL    |                |
-| season            | char(7)     | YES  |     | NULL    |                |
 | rate_age_0        | double      | YES  |     | NULL    |                |
 | rate_age_1        | double      | YES  |     | NULL    |                |
 | rate_age_2        | double      | YES  |     | NULL    |                |
@@ -378,6 +377,7 @@ regions and states in general.
 | rate_race_natamer | double      | YES  |     | NULL    |                |
 | rate_sex_male     | double      | YES  |     | NULL    |                |
 | rate_sex_female   | double      | YES  |     | NULL    |                |
+| season            | char(7)     | YES  |     | NULL    |                |
 +-------------------+-------------+------+-----+---------+----------------+
 */
 
@@ -388,7 +388,6 @@ CREATE TABLE `flusurv` (
   `epiweek` int(11) NOT NULL,
   `location` varchar(32) NOT NULL,
   `lag` int(11) NOT NULL,
-  `season` char(7) DEFAULT NULL,
   `rate_age_0` double DEFAULT NULL,
   `rate_age_1` double DEFAULT NULL,
   `rate_age_2` double DEFAULT NULL,
@@ -412,6 +411,7 @@ CREATE TABLE `flusurv` (
   `rate_race_natamer` double DEFAULT NULL,
   `rate_sex_male` double DEFAULT NULL,
   `rate_sex_female` double DEFAULT NULL,
+  `season` char(7) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `issue` (`issue`,`epiweek`,`location`),
   KEY `release_date` (`release_date`),

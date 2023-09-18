@@ -61,7 +61,6 @@ If neither is specified, the current issues are used.
 | `epidata[].issue`             |                                                                 | integer          |
 | `epidata[].epiweek`           |                                                                 | integer          |
 | `epidata[].lag`               |                                                                 | integer          |
-| `epidata[].season`            |                                                                 | string           |
 | `epidata[].rate_age_0`        |                                                                 | float            |
 | `epidata[].rate_age_1`        |                                                                 | float            |
 | `epidata[].rate_age_2`        |                                                                 | float            |
@@ -85,6 +84,7 @@ If neither is specified, the current issues are used.
 | `epidata[].rate_race_natamer` |                                                                 | float            |
 | `epidata[].rate_sex_male`     |                                                                 | float            |
 | `epidata[].rate_sex_female`   |                                                                 | float            |
+| `epidata[].season`            |                                                                 | string           |
 | `message`                     | `success` or error message                                      | string           |
 
 Notes:

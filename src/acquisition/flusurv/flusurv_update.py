@@ -29,7 +29,6 @@ See also:
 | epiweek           | int(11)     | NO   | MUL | NULL    |                |
 | location          | varchar(32) | NO   | MUL | NULL    |                |
 | lag               | int(11)     | NO   | MUL | NULL    |                |
-| season            | char(7)     | YES  |     | NULL    |                |
 | rate_age_0        | double      | YES  |     | NULL    |                |
 | rate_age_1        | double      | YES  |     | NULL    |                |
 | rate_age_2        | double      | YES  |     | NULL    |                |
@@ -53,6 +52,7 @@ See also:
 | rate_race_natamer | double      | YES  |     | NULL    |                |
 | rate_sex_male     | double      | YES  |     | NULL    |                |
 | rate_sex_female   | double      | YES  |     | NULL    |                |
+| season            | char(7)     | YES  |     | NULL    |                |
 +-------------------+-------------+------+-----+---------+----------------+
 id: unique identifier for each record
 release_date: the date when this record was first published by the CDC
@@ -61,9 +61,6 @@ issue: the epiweek of publication (e.g. issue 201453 includes epiweeks up to
 epiweek: the epiweek during which the data was collected
 location: the name of the catchment (e.g. 'network_all', 'CA', 'NY_albany')
 lag: number of weeks between `epiweek` and `issue`
-season: indicates the start and end years of the winter flu season in the
-  format YYYY-YY (e.g. 2022-23 indicates the flu season running late 2022
-  through early 2023)
 rate_age_0: hospitalization rate for ages 0-4
 rate_age_1: hospitalization rate for ages 5-17
 rate_age_2: hospitalization rate for ages 18-49
@@ -87,6 +84,9 @@ rate_race_asian: hospitalization rate for Asian people
 rate_race_natamer: hospitalization rate for American Indian/Alaskan Native people
 rate_sex_male: hospitalization rate for males
 rate_sex_female: hospitalization rate for females
+season: indicates the start and end years of the winter flu season in the
+  format YYYY-YY (e.g. 2022-23 indicates the flu season running late 2022
+  through early 2023)
 
 =================
 === Changelog ===
