@@ -426,18 +426,17 @@ def extract_dates(key: Union[str, Sequence[str]]) -> Optional[TimeValues]:
     values: TimeValues = []
 
     for part in parts:
-        if "*" in part:
-            values.append(part)
-            continue
+        if part == "*":
+            return ["*"]
         if ":" in part:
             # YYYY-MM-DD:YYYY-MM-DD
-            range_part = part.split(":", 2)
+            range_part = part.split(":", 1)
             r = _verify_range(parse_date(range_part[0]), parse_date(range_part[1]))
             if r is None:
                 return None
             values.append(r)
             continue
-        # parse another date formats
+        # parse other date formats
         r = parse_day_value(part)
         values.append(r)
     return values
