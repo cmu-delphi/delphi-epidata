@@ -9,7 +9,7 @@ import requests
 
 
 # use the local instance of the Epidata API
-BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+BASE_URL = 'http://delphi_web_epidata/epidata'
 AUTH = ('epidata', 'key')
 
 
@@ -43,7 +43,7 @@ class CovidcastTests(unittest.TestCase):
 
   @staticmethod
   def _make_request(params: dict):
-    response = requests.get(BASE_URL, params=params, auth=AUTH)
+    response = requests.get(f"{BASE_URL}/covidcast_nowcast", params=params, auth=AUTH)
     response.raise_for_status()
     return response.json()
 
@@ -59,7 +59,6 @@ class CovidcastTests(unittest.TestCase):
     self.cnx.commit()
     # make the request with specified issue date
     params={
-      'source': 'covidcast_nowcast',
       'data_source': 'src',
       'signals': 'sig',
       'sensor_names': 'sensor',

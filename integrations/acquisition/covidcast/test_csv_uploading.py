@@ -56,7 +56,7 @@ class CsvUploadingTests(unittest.TestCase):
     secrets.db.epi = ('user', 'pass')
 
     # use the local instance of the Epidata API
-    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata'
     Epidata.auth = ('epidata', 'key')
 
   def tearDown(self):
@@ -119,7 +119,7 @@ select value_updated_timestamp from epimetric_latest''')
       main(args)
       response = Epidata.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
 
-      expected_values = pd.concat([values, pd.DataFrame({ "time_value": [20200419] * 3, "signal": [signal_name] * 3, "direction": [None] * 3})], axis=1).rename(columns=uploader_column_rename).to_dict(orient="records")
+      expected_values = pd.concat([values, pd.DataFrame({ "geo_type": "state", "source": "src-name", "time_type": "day", "time_value": [20200419] * 3, "signal": [signal_name] * 3, "direction": [None] * 3})], axis=1).rename(columns=uploader_column_rename).to_dict(orient="records")
       expected_response = {'result': 1, 'epidata': self.apply_lag(expected_values), 'message': 'success'}
 
       self.assertEqual(response, expected_response)
@@ -148,6 +148,9 @@ select value_updated_timestamp from epimetric_latest''')
       response = Epidata.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
 
       expected_values = pd.concat([values, pd.DataFrame({
+        "geo_type": "state",
+        "source": "src-name",
+        "time_type": "day",
         "time_value": [20200419] * 3,
         "signal": [signal_name] * 3,
         "direction": [None] * 3,
@@ -181,7 +184,7 @@ select value_updated_timestamp from epimetric_latest''')
       main(args)
       response = Epidata.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
 
-      expected_response = {'result': -2, 'message': 'no results'}
+      expected_response = {'epidata': [], 'result': -2, 'message': 'no results'}
 
       self.assertEqual(response, expected_response)
       self.verify_timestamps_and_defaults()
@@ -207,6 +210,9 @@ select value_updated_timestamp from epimetric_latest''')
       response = Epidata.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
 
       expected_values_df = pd.concat([values, pd.DataFrame({
+        "geo_type": "state",
+        "source": "src-name",
+        "time_type": "day", 
         "time_value": [20200419],
         "signal": [signal_name],
         "direction": [None]})], axis=1).rename(columns=uploader_column_rename)
@@ -240,6 +246,9 @@ select value_updated_timestamp from epimetric_latest''')
       response = Epidata.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
 
       expected_values = pd.concat([values, pd.DataFrame({
+        "geo_type": "state",
+        "source": "src-name",
+        "time_type": "day", 
         "time_value": [20200419],
         "signal": [signal_name],
         "direction": [None]
@@ -270,7 +279,7 @@ select value_updated_timestamp from epimetric_latest''')
       main(args)
       response = Epidata.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
 
-      expected_response = {'result': -2, 'message': 'no results'}
+      expected_response = {'epidata': [], 'result': -2, 'message': 'no results'}
 
       self.assertEqual(response, expected_response)
       self.verify_timestamps_and_defaults()

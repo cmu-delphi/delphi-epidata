@@ -18,7 +18,7 @@ class FluviewMetaTests(unittest.TestCase):
     """Perform one-time setup."""
 
     # use the local instance of the Epidata API
-    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata'
     Epidata.auth = ('epidata', 'key')
 
   def setUp(self):
