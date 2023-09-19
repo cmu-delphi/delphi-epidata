@@ -93,8 +93,8 @@ REGISTER_WEBHOOK_TOKEN = os.environ.get("API_KEY_REGISTER_WEBHOOK_TOKEN")
 REDIS_HOST = os.environ.get("REDIS_HOST", "delphi_redis")
 REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD", "1234")
 
-# testing mode to lower rate-limit in order to reduce number of required requests to hit the rate limit while runnig tests
-# by default is set to False when is not provided
+# mode to reduce number of required requests to hit rate limit while running tests,
+# by default is set to False
 TESTING_MODE = os.environ.get("TESTING_MODE", False)
 
 # https://flask-limiter.readthedocs.io/en/stable/#rate-limit-string-notation
