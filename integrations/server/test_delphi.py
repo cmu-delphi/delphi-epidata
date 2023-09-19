@@ -1,7 +1,3 @@
-# standard library
-import unittest
-
-# third party
 import json
 
 # first party
