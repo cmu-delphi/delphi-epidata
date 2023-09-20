@@ -10,7 +10,6 @@ class MetaTest(BasicIntegrationTest):
         super().setUp()
 
     def test_meta(self):
-        
         """Basic integration test for meta endpoint"""
         response = self.epidata.meta()
         self.assertEqual(
