@@ -19,8 +19,39 @@ class NorostatTest(DelphiTestBase):
             CONSTRAINT `norostat_point_diffs_ibfk_2` FOREIGN KEY (`location_id`) REFERENCES `norostat_raw_datatable_location_pool` (`location_id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
             """
+        create_raw_datatable_version_list = """
+            CREATE TABLE IF NOT EXISTS `norostat_raw_datatable_version_list` (
+            `release_date` date NOT NULL,
+            `parse_time` datetime NOT NULL,
+            PRIMARY KEY (`release_date`,`parse_time`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+            """
 
-        self.create_tables_list = [create_norostat_point_diffs]
+        create_norostat_version_list = """
+            CREATE TABLE IF NOT EXISTS `norostat_point_version_list` (
+            `release_date` date NOT NULL,
+            `parse_time` datetime NOT NULL,
+            PRIMARY KEY (`release_date`,`parse_time`),
+            CONSTRAINT `norostat_point_version_list_ibfk_1` FOREIGN KEY (`release_date`, `parse_time`) REFERENCES `norostat_raw_datatable_version_list` (`release_date`, `parse_time`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+            """
+
+        create_norostat_datatable_location_pool = """
+            CREATE TABLE IF NOT EXISTS `norostat_raw_datatable_location_pool` (
+            `location_id` int NOT NULL AUTO_INCREMENT,
+            `location` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+            PRIMARY KEY (`location_id`),
+            UNIQUE KEY `location` (`location`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+            """
+
+        self.create_tables_list = [
+            create_raw_datatable_version_list,
+            create_norostat_version_list,
+            create_norostat_datatable_location_pool,
+            create_norostat_point_diffs,
+        ]
+
         self.delete_from_tables_list = [
             "norostat_point_diffs",
             "norostat_point_version_list",
@@ -54,3 +85,27 @@ class NorostatTest(DelphiTestBase):
             },
         )
         return True
+
+    def test_meta_norostat(self):
+        """Basic integration test for meta_norostat endpoint"""
+
+        self.cur.execute(
+            "INSERT INTO `norostat_raw_datatable_version_list`(`release_date`, `parse_time`) VALUES (%s, %s)",
+            ("2014-10-22", "2048-12-08 15:22:51"),
+        )
+        self.cur.execute(
+            'INSERT INTO `norostat_raw_datatable_location_pool`(`location`) VALUES ("Minnesota, Ohio, Oregon, Tennessee, and Wisconsin")'
+        )
+        self.cnx.commit()
+        response = self.epidata_client.meta_norostat(auth="norostat_key")
+        self.assertEqual(
+            response,
+            {
+                "epidata": {
+                    "locations": [{"location": "Minnesota, Ohio, Oregon, Tennessee, and Wisconsin"}],
+                    "releases": [{"release_date": "2014-10-22"}],
+                },
+                "message": "success",
+                "result": 1,
+            },
+        )
