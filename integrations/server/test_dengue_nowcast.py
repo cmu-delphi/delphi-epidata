@@ -1,13 +1,11 @@
 # first party
-from delphi.epidata.common.integration_test_base_class import BasicIntegrationTest
+from delphi.epidata.common.integration_test_base_class import DelphiTestBase
 
 
-class DengueNowcastTest(BasicIntegrationTest):
+class DengueNowcastTest(DelphiTestBase):
     """Basic integration tests for dengue_nowcast endpint."""
 
-    def setUp(self) -> None:
-        """Perform per-test setup."""
-
+    def localSetUp(self):
         create_dengue_nowcasts = """
             CREATE TABLE IF NOT EXISTS `dengue_nowcasts` (
             `id` int NOT NULL AUTO_INCREMENT,
@@ -25,7 +23,6 @@ class DengueNowcastTest(BasicIntegrationTest):
         """
         self.create_tables_list = [create_dengue_nowcasts]
         self.truncate_tables_list = ["dengue_nowcasts"]
-        super().setUp()
 
     def test_dengue_nowcasts(self):
         """Basic integration test for dengue_nowcasts endpoint"""
@@ -34,7 +31,7 @@ class DengueNowcastTest(BasicIntegrationTest):
             ("num_dengue", "201409", "ar", "85263", "351456"),
         )
         self.cnx.commit()
-        response = self.epidata.dengue_nowcast(locations="ar", epiweeks=201409)
+        response = self.epidata_client.dengue_nowcast(locations="ar", epiweeks=201409)
         self.assertEqual(
             response,
             {

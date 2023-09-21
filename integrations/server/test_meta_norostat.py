@@ -1,13 +1,11 @@
 # first party
-from delphi.epidata.common.integration_test_base_class import BasicIntegrationTest
+from delphi.epidata.common.integration_test_base_class import DelphiTestBase
 
 
-class MetaNorostatTest(BasicIntegrationTest):
+class MetaNorostatTest(DelphiTestBase):
     """Basic integration tests for meta_norostat endpint."""
 
-    def setUp(self) -> None:
-        """Perform per-test setup."""
-
+    def localSetUp(self):
         create_raw_datatable_version_list = """
             CREATE TABLE IF NOT EXISTS `norostat_raw_datatable_version_list` (
             `release_date` date NOT NULL,
@@ -64,8 +62,6 @@ class MetaNorostatTest(BasicIntegrationTest):
 
         self.role_name = "norostat"
 
-        super().setUp()
-
     def test_meta_norostat(self):
         """Basic integration test for meta_norostat endpoint"""
 
@@ -77,7 +73,7 @@ class MetaNorostatTest(BasicIntegrationTest):
             'INSERT INTO `norostat_raw_datatable_location_pool`(`location`) VALUES ("Minnesota, Ohio, Oregon, Tennessee, and Wisconsin")'
         )
         self.cnx.commit()
-        response = self.epidata.meta_norostat(auth="norostat_key")
+        response = self.epidata_client.meta_norostat(auth="norostat_key")
         self.assertEqual(
             response,
             {

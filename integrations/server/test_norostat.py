@@ -1,13 +1,11 @@
 # first party
-from delphi.epidata.common.integration_test_base_class import BasicIntegrationTest
+from delphi.epidata.common.integration_test_base_class import DelphiTestBase
 
 
-class NorostatTest(BasicIntegrationTest):
+class NorostatTest(DelphiTestBase):
     """Basic integration tests for norostat endpint."""
 
-    def setUp(self) -> None:
-        """Perform per-test setup."""
-
+    def localSetUp(self):
         create_norostat_point_diffs = """
             CREATE TABLE IF NOT EXISTS `norostat_point_diffs` (
             `release_date` date NOT NULL,
@@ -30,7 +28,6 @@ class NorostatTest(BasicIntegrationTest):
             "norostat_raw_datatable_version_list",
         ]
         self.role_name = "norostat"
-        super().setUp()
 
     def test_norostat(self):
         """Basic integration test for norostat endpoint"""
@@ -47,7 +44,7 @@ class NorostatTest(BasicIntegrationTest):
             'INSERT INTO `norostat_point_diffs`(`release_date`, `parse_time`, `location_id`, `epiweek`, `new_value`) VALUES("2023-07-19", "2023-07-10 15:24:51", "1", "202329", 10)'
         )
         self.cnx.commit()
-        response = self.epidata.norostat(auth="norostat_key", location="SomeTestLocation", epiweeks="202329")
+        response = self.epidata_client.norostat(auth="norostat_key", location="SomeTestLocation", epiweeks="202329")
         self.assertEqual(
             response,
             {

@@ -1,15 +1,12 @@
 # first party
-from delphi.epidata.common.integration_test_base_class import BasicIntegrationTest
+from delphi.epidata.common.integration_test_base_class import DelphiTestBase
 
 
-class FluviewClinicalTest(BasicIntegrationTest):
+class FluviewClinicalTest(DelphiTestBase):
     """Basic integration tests for fluview_clinical endpint."""
 
-    def setUp(self) -> None:
-        """Perform per-test setup."""
-
+    def localSetUp(self):
         self.truncate_tables_list = ["fluview_clinical"]
-        super().setUp()
 
     def test_fluview_clinical(self):
         """Basic integration test for fluview_clinical endpoint"""
@@ -18,7 +15,7 @@ class FluviewClinicalTest(BasicIntegrationTest):
             ("2018-10-10", "201839", "201640", "al", "103", "406", "4", "1", "1.32", "0.99", "0.25"),
         )
         self.cnx.commit()
-        response = self.epidata.fluview_clinical(epiweeks=201640, regions="al")
+        response = self.epidata_client.fluview_clinical(epiweeks=201640, regions="al")
         self.assertEqual(
             response,
             {

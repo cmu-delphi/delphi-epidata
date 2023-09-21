@@ -1,15 +1,12 @@
 # first party
-from delphi.epidata.common.integration_test_base_class import BasicIntegrationTest
+from delphi.epidata.common.integration_test_base_class import DelphiTestBase
 
 
-class PahoDengueTest(BasicIntegrationTest):
+class PahoDengueTest(DelphiTestBase):
     """Basic integration tests for paho_dengue endpint."""
 
-    def setUp(self) -> None:
-        """Perform per-test setup."""
-
+    def localSetUp(self):
         self.truncate_tables_list = ["paho_dengue"]
-        super().setUp()
 
     def test_paho_dengue(self):
         """Basic integration test for paho_dengue endpoint"""
@@ -18,7 +15,7 @@ class PahoDengueTest(BasicIntegrationTest):
             ("2018-12-01", "201848", "201454", "204", "AG", "91", "DEN 1,4", "37", "40.66", "0", "0"),
         )
         self.cnx.commit()
-        response = self.epidata.paho_dengue(regions="AG", epiweeks="201454")
+        response = self.epidata_client.paho_dengue(regions="AG", epiweeks="201454")
         self.assertEqual(
             response,
             {

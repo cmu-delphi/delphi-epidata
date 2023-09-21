@@ -9,7 +9,7 @@ from delphi.epidata.client.delphi_epidata import Epidata
 from delphi.epidata.server._limiter import limiter
 
 
-class BasicIntegrationTest(unittest.TestCase):
+class DelphiTestBase(unittest.TestCase):
     """Basic integration test class"""
 
     def __init__(self, methodName: str = "runTest") -> None:
@@ -18,26 +18,15 @@ class BasicIntegrationTest(unittest.TestCase):
         self.truncate_tables_list = []
         self.create_tables_list = []
         self.role_name = None
-        self.epidata = Epidata
-        self.epidata.BASE_URL = "http://delphi_web_epidata/epidata/api.php"
-        self.epidata.auth = ("epidata", "key")
-
-    def delete_from_table(self, cur, table_name: str) -> None:
-        cur.execute(f"DELETE FROM `{table_name}`")
-
-    def truncate_table(self, cur, table_name: str) -> None:
-        cur.execute(f"TRUNCATE TABLE `{table_name}`")
-
-    def create_table(self, cur, create_table_stmt: str):
-        cur.execute(create_table_stmt)
+        self.epidata_client = Epidata
+        self.epidata_client.BASE_URL = "http://delphi_web_epidata/epidata/api.php"
+        self.epidata_client.auth = ("epidata", "key")
 
     def create_key_with_role(self, cur, role_name: str):
-        cur.execute("TRUNCATE TABLE `user_role`")
-        cur.execute("TRUNCATE TABLE `user_role_link`")
         cur.execute(f'INSERT INTO `api_user`(`api_key`, `email`) VALUES("{role_name}_key", "{role_name}_email")')
         cur.execute(f'INSERT INTO `user_role`(`name`) VALUES("{role_name}")')
         cur.execute(
-            f'INSERT INTO `user_role_link`(`user_id`, `role_id`) SELECT `api_user`.`id`, 1 FROM `api_user` WHERE `api_key`="{role_name}_key"'
+            f'INSERT INTO `user_role_link`(`user_id`, `role_id`) SELECT `api_user`.`id`, `user_role`.`id` FROM `api_user` JOIN `user_role` WHERE `api_user`.`api_key`="{role_name}_key" AND `user_role`.`name`="{role_name}"'
         )
 
     def setUp(self) -> None:
@@ -48,16 +37,20 @@ class BasicIntegrationTest(unittest.TestCase):
         cur = cnx.cursor()
 
         cur.execute("DELETE FROM `api_user`")
+        cur.execute("TRUNCATE TABLE `user_role`")
+        cur.execute("TRUNCATE TABLE `user_role_link`")
         cur.execute('INSERT INTO `api_user`(`api_key`, `email`) VALUES ("key", "email")')
 
+        self.localSetUp()
+
         for stmt in self.create_tables_list:
-            self.create_table(cur, stmt)
+            cur.execute(stmt)
 
         for table_name in self.delete_from_tables_list:
-            self.delete_from_table(cur, table_name)
+            cur.execute(f"DELETE FROM `{table_name}`")
 
         for table_name in self.truncate_tables_list:
-            self.truncate_table(cur, table_name)
+            cur.execute(f"TRUNCATE TABLE `{table_name}`")
 
         if self.role_name:
             self.create_key_with_role(cur, self.role_name)
@@ -67,6 +60,11 @@ class BasicIntegrationTest(unittest.TestCase):
 
         self.cnx = cnx
         self.cur = cnx.cursor()
+
+    def localSetUp(self):
+        # stub; override in subclasses to perform custom setup.
+        # runs after tables have been truncated but before database changes have been committed
+        pass
 
     @staticmethod
     def _clear_limits() -> None:
