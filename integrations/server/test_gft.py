@@ -1,15 +1,12 @@
 # first party
-from delphi.epidata.common.integration_test_base_class import BasicIntegrationTest
+from delphi.epidata.common.integration_test_base_class import DelphiTestBase
 
 
-class GftTest(BasicIntegrationTest):
+class GftTest(DelphiTestBase):
     """Basic integration tests for gft endpint."""
 
-    def setUp(self) -> None:
-        """Perform per-test setup."""
-
+    def localSetUp(self):
         self.truncate_tables_list = ["gft"]
-        super().setUp()
 
     def test_gft(self):
         """Basic integration test for gft endpoint"""
@@ -18,7 +15,7 @@ class GftTest(BasicIntegrationTest):
             ("200340", "nat", "902"),
         )
         self.cnx.commit()
-        response = self.epidata.gft(locations="nat", epiweeks="200340")
+        response = self.epidata_client.gft(locations="nat", epiweeks="200340")
         self.assertEqual(
             response,
             {"epidata": [{"location": "nat", "epiweek": 200340, "num": 902}], "result": 1, "message": "success"},

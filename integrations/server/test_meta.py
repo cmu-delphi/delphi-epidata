@@ -1,17 +1,16 @@
 # first party
-from delphi.epidata.common.integration_test_base_class import BasicIntegrationTest
+from delphi.epidata.common.integration_test_base_class import DelphiTestBase
 
 
-class MetaTest(BasicIntegrationTest):
+class MetaTest(DelphiTestBase):
     """Basic integration tests for meta endpint."""
 
-    def setUp(self) -> None:
+    def localSetUp(self):
         self.truncate_tables_list = ["forecasts", "fluview", "wiki", "wiki_meta", "twitter"]
-        super().setUp()
 
     def test_meta(self):
         """Basic integration test for meta endpoint"""
-        response = self.epidata.meta()
+        response = self.epidata_client.meta()
         self.assertEqual(
             response,
             {

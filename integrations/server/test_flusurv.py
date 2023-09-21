@@ -1,15 +1,12 @@
 # first party
-from delphi.epidata.common.integration_test_base_class import BasicIntegrationTest
+from delphi.epidata.common.integration_test_base_class import DelphiTestBase
 
 
-class FlusurvTest(BasicIntegrationTest):
+class FlusurvTest(DelphiTestBase):
     """Basic integration tests for flusurv endpint."""
 
-    def setUp(self) -> None:
-        """Perform per-test setup."""
-
+    def localSetUp(self):
         self.truncate_tables_list = ["flusurv"]
-        super().setUp()
 
     def test_flusurv(self):
         """Basic integration test for flusurv endpoint"""
@@ -18,7 +15,7 @@ class FlusurvTest(BasicIntegrationTest):
             ("2012-11-02", "201243", "201143", "CA", "52", "0", "0", "0", "0.151", "0", "0.029", "0", "0", "0"),
         )
         self.cnx.commit()
-        response = self.epidata.flusurv(epiweeks=201143, locations="CA")
+        response = self.epidata_client.flusurv(epiweeks=201143, locations="CA")
         self.assertEqual(
             response,
             {

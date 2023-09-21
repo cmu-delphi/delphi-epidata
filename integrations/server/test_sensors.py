@@ -1,16 +1,13 @@
 # first party
-from delphi.epidata.common.integration_test_base_class import BasicIntegrationTest
+from delphi.epidata.common.integration_test_base_class import DelphiTestBase
 
 
-class SensorsTest(BasicIntegrationTest):
+class SensorsTest(DelphiTestBase):
     """Basic integration tests for sensors endpint."""
 
-    def setUp(self) -> None:
-        """Perform per-test setup."""
-
+    def localSetUp(self):
         self.truncate_tables_list = ["sensors"]
         self.role_name = "sensors"
-        super().setUp()
 
     def test_sensors(self):
         """Basic integration test for sensors endpoint"""
@@ -19,7 +16,7 @@ class SensorsTest(BasicIntegrationTest):
             ("sens1", "201111", "loc1", "222"),
         )
         self.cnx.commit()
-        response = self.epidata.sensors(names="sens1", locations="loc1", epiweeks="201111", auth="sensors_key")
+        response = self.epidata_client.sensors(names="sens1", locations="loc1", epiweeks="201111", auth="sensors_key")
         self.assertEqual(
             response,
             {

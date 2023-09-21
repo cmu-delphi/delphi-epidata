@@ -1,14 +1,13 @@
 # first party
-from delphi.epidata.common.integration_test_base_class import BasicIntegrationTest
+from delphi.epidata.common.integration_test_base_class import DelphiTestBase
 
 
-class CdcTest(BasicIntegrationTest):
+class CdcTest(DelphiTestBase):
     """Basic integration tests for cdc endpint."""
 
-    def setUp(self) -> None:
+    def localSetUp(self) -> None:
         self.truncate_tables_list = ["cdc_extract"]
         self.role_name = "cdc"
-        super().setUp()
 
     def test_cdc(self):
         """Basic integration test for cdc endpoint"""
@@ -17,7 +16,7 @@ class CdcTest(BasicIntegrationTest):
             ("201102", "AK", "16", "35", "51", "96", "30", "748", "243", "433", "65"),
         )
         self.cnx.commit()
-        response = self.epidata.cdc(auth="cdc_key", epiweeks=201102, locations="cen9")
+        response = self.epidata_client.cdc(auth="cdc_key", epiweeks=201102, locations="cen9")
         self.assertEqual(
             response,
             {

@@ -1,15 +1,12 @@
 # first party
-from delphi.epidata.common.integration_test_base_class import BasicIntegrationTest
+from delphi.epidata.common.integration_test_base_class import DelphiTestBase
 
 
-class EcdcIliTest(BasicIntegrationTest):
+class EcdcIliTest(DelphiTestBase):
     """Basic integration tests for edcd_ili endpint."""
 
-    def setUp(self) -> None:
-        """Perform per-test setup."""
-
+    def localSetUp(self):
         self.truncate_tables_list = ["ecdc_ili"]
-        super().setUp()
 
     def test_ecdc_ili(self):
         """Basic integration test for ecdc_ili endpoint"""
@@ -18,7 +15,7 @@ class EcdcIliTest(BasicIntegrationTest):
             ("2020-03-26", "202012", "201840", "76", "Armenia", "0"),
         )
         self.cnx.commit()
-        response = self.epidata.ecdc_ili(regions="Armenia", epiweeks="201840")
+        response = self.epidata_client.ecdc_ili(regions="Armenia", epiweeks="201840")
         self.assertEqual(
             response,
             {

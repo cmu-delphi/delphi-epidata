@@ -2,32 +2,28 @@
 import requests
 
 # first party
-from delphi.epidata.common.integration_test_base_class import BasicIntegrationTest
+from delphi.epidata.common.integration_test_base_class import DelphiTestBase
 
 
-class APIKeysTets(BasicIntegrationTest):
+class APIKeysTets(DelphiTestBase):
     """Tests the API Keys behaviour"""
 
-    def setUp(self):
-        """Perform per-test setup."""
-
+    def localSetUp(self):
         self.role_name = "cdc"
-        super().setUp()
 
     def _make_request(self, url: str = None, params: dict = {}, auth: tuple = None):
         if not url:
-            url = self.epidata.BASE_URL
+            url = self.epidata_client.BASE_URL
         response = requests.get(url, params=params, auth=auth)
         return response
- 
+
     def test_public_route(self):
         """Test public route"""
         public_route = "http://delphi_web_epidata/epidata/version"
         status_codes = set()
         for _ in range(10):
             status_codes.add(self._make_request(public_route).status_code)
-        self.assertEqual(len(status_codes), 1)
-        self.assertEqual(next(iter(status_codes)), 200)
+        self.assertEqual(status_codes, {200})
 
     def test_no_multiples_data_source(self):
         """Test requests with no multiples and with provided `data_source` and `signal` as a separate query params."""
@@ -43,8 +39,7 @@ class APIKeysTets(BasicIntegrationTest):
         status_codes = set()
         for _ in range(10):
             status_codes.add(self._make_request(params=params).status_code)
-        self.assertEqual(len(status_codes), 1)
-        self.assertEqual(next(iter(status_codes)), 200)
+        self.assertEqual(status_codes, {200})
 
     def test_no_multiples_source_signal(self):
         """Test requests with colon-delimited source-signal param presentation."""
@@ -59,10 +54,9 @@ class APIKeysTets(BasicIntegrationTest):
         status_codes = set()
         for _ in range(10):
             status_codes.add(self._make_request(params=params).status_code)
-        self.assertEqual(len(status_codes), 1)
-        self.assertEqual(next(iter(status_codes)), 200)
+        self.assertEqual(status_codes, {200})
 
-    def test_multiples_allowed_signal(self):
+    def test_multiples_allowed_signal_two_multiples(self):
         """Test requests with 2 multiples and allowed dashboard signal"""
         params = {
             "source": "covidcast",
@@ -75,8 +69,7 @@ class APIKeysTets(BasicIntegrationTest):
         status_codes = set()
         for _ in range(10):
             status_codes.add(self._make_request(params=params).status_code)
-        self.assertEqual(len(status_codes), 1)
-        self.assertEqual(next(iter(status_codes)), 200)
+        self.assertEqual(status_codes, {200})
 
     def test_multiples_non_allowed_signal(self):
         """Test requests with 2 multiples and non-allowed dashboard signal"""
@@ -91,10 +84,9 @@ class APIKeysTets(BasicIntegrationTest):
         status_codes = set()
         for _ in range(10):
             status_codes.add(self._make_request(params=params).status_code)
-        self.assertEqual(len(status_codes), 2)
         self.assertEqual(status_codes, {200, 429})
 
-    def test_multiples_mixed_allowed_signal(self):
+    def test_multiples_mixed_allowed_signal_two_multiples(self):
         """Test requests with 2 multiples and mixed-allowed dashboard signal"""
         params = {
             "source": "covidcast",
@@ -107,10 +99,9 @@ class APIKeysTets(BasicIntegrationTest):
         status_codes = set()
         for _ in range(10):
             status_codes.add(self._make_request(params=params).status_code)
-        self.assertEqual(len(status_codes), 2)
         self.assertEqual(status_codes, {200, 429})
 
-    def test_multiples_allowed_signal(self):
+    def test_multiples_allowed_signal_three_multiples(self):
         """Test requests with 3 multiples and allowed dashboard signal"""
         params = {
             "source": "covidcast",
@@ -123,10 +114,9 @@ class APIKeysTets(BasicIntegrationTest):
         status_codes = set()
         for _ in range(10):
             status_codes.add(self._make_request(params=params).status_code)
-        self.assertEqual(len(status_codes), 1)
-        self.assertEqual(next(iter(status_codes)), 401)
+        self.assertEqual(status_codes, {401})
 
-    def test_multiples_mixed_allowed_signal(self):
+    def test_multiples_mixed_allowed_signal_three_multiples(self):
         """Test requests with 3 multiples and mixed-allowed dashboard signal"""
         params = {
             "source": "covidcast",
@@ -139,8 +129,7 @@ class APIKeysTets(BasicIntegrationTest):
         status_codes = set()
         for _ in range(10):
             status_codes.add(self._make_request(params=params).status_code)
-        self.assertEqual(len(status_codes), 1)
-        self.assertEqual(next(iter(status_codes)), 401)
+        self.assertEqual(status_codes, {401})
 
     def test_multiples_mixed_allowed_signal_api_key(self):
         """Test requests with 3 multiples and mixed-allowed dashboard signal + valid API Key"""
@@ -154,9 +143,11 @@ class APIKeysTets(BasicIntegrationTest):
         }
         status_codes = set()
         for _ in range(10):
-            status_codes.add(self._make_request(params=params, auth=self.epidata.auth).status_code)
+            status_codes.add(
+                self._make_request(params=params, auth=self.epidata_client.auth).status_code
+            )
         self.assertEqual(len(status_codes), 1)
-        self.assertEqual(next(iter(status_codes)), 200)
+        self.assertEqual(status_codes, {200})
 
     def test_multiples_allowed_signal_api_key(self):
         """Test requests with 3 multiples and allowed dashboard signal + valid API Key"""
@@ -170,9 +161,10 @@ class APIKeysTets(BasicIntegrationTest):
         }
         status_codes = set()
         for _ in range(10):
-            status_codes.add(self._make_request(params=params, auth=self.epidata.auth).status_code)
-        self.assertEqual(len(status_codes), 1)
-        self.assertEqual(next(iter(status_codes)), 200)
+            status_codes.add(
+                self._make_request(params=params, auth=self.epidata_client.auth).status_code
+            )
+        self.assertEqual(status_codes, {200})
 
     def test_no_multiples_allowed_signal_api_key(self):
         """Test requests with no multiples and allowed dashboard signal + valid API Key"""
@@ -186,9 +178,10 @@ class APIKeysTets(BasicIntegrationTest):
         }
         status_codes = set()
         for _ in range(10):
-            status_codes.add(self._make_request(params=params, auth=self.epidata.auth).status_code)
-        self.assertEqual(len(status_codes), 1)
-        self.assertEqual(next(iter(status_codes)), 200)
+            status_codes.add(
+                self._make_request(params=params, auth=self.epidata_client.auth).status_code
+            )
+        self.assertEqual(status_codes, {200})
 
     def test_no_multiples_allowed_signal_bad_api_key(self):
         """Test requests with no multiples and allowed dashboard signal + bad API Key"""
@@ -202,9 +195,12 @@ class APIKeysTets(BasicIntegrationTest):
         }
         status_codes = set()
         for _ in range(10):
-            status_codes.add(self._make_request(params=params, auth=("bad_key", "bad_email")).status_code)
-        self.assertEqual(len(status_codes), 1)
-        self.assertEqual(next(iter(status_codes)), 200)
+            status_codes.add(
+                self._make_request(
+                    params=params, auth=("bad_key", "bad_email")
+                ).status_code
+            )
+        self.assertEqual(status_codes, {200})
 
     def test_restricted_endpoint_no_key(self):
         """Test restricted endpoint with no auth key"""
@@ -212,32 +208,43 @@ class APIKeysTets(BasicIntegrationTest):
         status_codes = set()
         for _ in range(10):
             status_codes.add(self._make_request(params=params).status_code)
-        self.assertEqual(len(status_codes), 1)
-        self.assertEqual(next(iter(status_codes)), 401)
+        self.assertEqual(status_codes, {401})
 
     def test_restricted_endpoint_invalid_key(self):
         """Test restricted endpoint with invalid auth key"""
-        params = {"source": "cdc", "regions": "1as", "epiweeks": "202020", "auth": "invalid_key"}
+        params = {
+            "source": "cdc",
+            "regions": "1as",
+            "epiweeks": "202020",
+            "auth": "invalid_key",
+        }
         status_codes = set()
         for _ in range(10):
             status_codes.add(self._make_request(params=params).status_code)
-        self.assertEqual(len(status_codes), 1)
-        self.assertEqual(next(iter(status_codes)), 401)
+        self.assertEqual(status_codes, {401})
 
     def test_restricted_endpoint_no_roles_key(self):
         """Test restricted endpoint with no roles key"""
-        params = {"source": "cdc", "regions": "1as", "epiweeks": "202020", "auth": "key"}
+        params = {
+            "source": "cdc",
+            "regions": "1as",
+            "epiweeks": "202020",
+            "auth": "key",
+        }
         status_codes = set()
         for _ in range(10):
             status_codes.add(self._make_request(params=params).status_code)
-        self.assertEqual(len(status_codes), 1)
-        self.assertEqual(next(iter(status_codes)), 401)
+        self.assertEqual(status_codes, {401})
 
     def test_restricted_endpoint_valid_roles_key(self):
         """Test restricted endpoint with valid auth key with required role"""
-        params = {"source": "cdc", "regions": "1as", "epiweeks": "202020", "auth": "cdc_key"}
+        params = {
+            "source": "cdc",
+            "regions": "1as",
+            "epiweeks": "202020",
+            "auth": "cdc_key",
+        }
         status_codes = set()
         for _ in range(10):
             status_codes.add(self._make_request(params=params).status_code)
-        self.assertEqual(len(status_codes), 1)
-        self.assertEqual(next(iter(status_codes)), 200)
+        self.assertEqual(status_codes, {200})

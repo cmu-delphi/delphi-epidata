@@ -1,15 +1,12 @@
 # first party
-from delphi.epidata.common.integration_test_base_class import BasicIntegrationTest
+from delphi.epidata.common.integration_test_base_class import DelphiTestBase
 
 
-class NiddsFluTest(BasicIntegrationTest):
+class NiddsFluTest(DelphiTestBase):
     """Basic integration tests for nids_flu endpint."""
 
-    def setUp(self) -> None:
-        """Perform per-test setup."""
-
+    def localSetUp(self):
         self.truncate_tables_list = ["nidss_flu"]
-        super().setUp()
 
     def test_nidss_flu(self):
         """Basic integration test for nidds_flu endpoint"""
@@ -18,7 +15,7 @@ class NiddsFluTest(BasicIntegrationTest):
             ("2015-09-05", "201530", "200111", "SomeRegion", "222", "333", "444"),
         )
         self.cnx.commit()
-        response = self.epidata.nidss_flu(regions="SomeRegion", epiweeks="200111")
+        response = self.epidata_client.nidss_flu(regions="SomeRegion", epiweeks="200111")
         self.assertEqual(
             response,
             {

@@ -1,15 +1,14 @@
 import json
 
 # first party
-from delphi.epidata.common.integration_test_base_class import BasicIntegrationTest
+from delphi.epidata.common.integration_test_base_class import DelphiTestBase
 
 
-class DelphiTest(BasicIntegrationTest):
+class DelphiTest(DelphiTestBase):
     """Basic integration tests for delphi endpint."""
 
-    def setUp(self) -> None:
+    def localSetUp(self):
         self.truncate_tables_list = ["forecasts"]
-        super().setUp()
 
     def test_delphi(self):
         """Basic integration test for delphi endpoint"""
@@ -33,7 +32,7 @@ class DelphiTest(BasicIntegrationTest):
             ),
         )
         self.cnx.commit()
-        response = self.epidata.delphi(system="eb", epiweek=201441)
+        response = self.epidata_client.delphi(system="eb", epiweek=201441)
         self.assertEqual(
             response,
             {

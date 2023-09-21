@@ -1,8 +1,8 @@
 # first party
-from delphi.epidata.common.integration_test_base_class import BasicIntegrationTest
+from delphi.epidata.common.integration_test_base_class import DelphiTestBase
 
 
-class SignalDashboardTest(BasicIntegrationTest):
+class SignalDashboardTest(DelphiTestBase):
     """Basic integration tests for signal_dashboard_coverage and signal_dashboard_status endpints."""
 
     def setUp(self) -> None:
@@ -28,7 +28,7 @@ class SignalDashboardTest(BasicIntegrationTest):
         params = {
             "endpoint": "signal_dashboard_coverage",
         }
-        response = self.epidata._request(params=params)
+        response = self.epidata_client._request(params=params)
         self.assertEqual(
             response,
             {
@@ -44,7 +44,7 @@ class SignalDashboardTest(BasicIntegrationTest):
         params = {
             "endpoint": "signal_dashboard_status",
         }
-        response = self.epidata._request(params=params)
+        response = self.epidata_client._request(params=params)
         self.assertEqual(
             response,
             {

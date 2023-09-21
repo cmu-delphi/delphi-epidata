@@ -1,15 +1,12 @@
 # first party
-from delphi.epidata.common.integration_test_base_class import BasicIntegrationTest
+from delphi.epidata.common.integration_test_base_class import DelphiTestBase
 
 
-class WikiTest(BasicIntegrationTest):
+class WikiTest(DelphiTestBase):
     """Basic integration tests for wiki endpint."""
 
-    def setUp(self) -> None:
-        """Perform per-test setup."""
-
+    def localSetUp(self):
         self.truncate_tables_list = ["wiki", "wiki_meta"]
-        super().setUp()
 
     def test_wiki(self):
         """Basic integration test for wiki endpoint"""
@@ -21,7 +18,7 @@ class WikiTest(BasicIntegrationTest):
             'INSERT INTO `wiki_meta`(`datetime`, `date`, `epiweek`, `total`, `language`) VALUES ("2007-12-09 18:00:00", "2007-12-09", "200750", "969214", "en"), ("2008-12-09 18:00:00", "2008-12-09", "200750", "123321", "en")'
         )
         self.cnx.commit()
-        response = self.epidata.wiki(articles="test", epiweeks="200701-200801")
+        response = self.epidata_client.wiki(articles="test", epiweeks="200701-200801")
         self.assertEqual(
             response,
             {

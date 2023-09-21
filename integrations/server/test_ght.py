@@ -1,16 +1,13 @@
 # first party
-from delphi.epidata.common.integration_test_base_class import BasicIntegrationTest
+from delphi.epidata.common.integration_test_base_class import DelphiTestBase
 
 
-class GhtTest(BasicIntegrationTest):
+class GhtTest(DelphiTestBase):
     """Basic integration tests for ght endpint."""
 
-    def setUp(self) -> None:
-        """Perform per-test setup."""
-
+    def localSetUp(self):
         self.truncate_tables_list = ["ght"]
         self.role_name = "ght"
-        super().setUp()
 
     def test_ght(self):
         """Basic integration test for ght endpoint"""
@@ -19,7 +16,7 @@ class GhtTest(BasicIntegrationTest):
             ("/n/query", "US", "200101", "12345"),
         )
         self.cnx.commit()
-        response = self.epidata.ght(locations="US", epiweeks="200101", query="/n/query", auth="ght_key")
+        response = self.epidata_client.ght(locations="US", epiweeks="200101", query="/n/query", auth="ght_key")
         self.assertEqual(
             response,
             {"epidata": [{"location": "US", "epiweek": 200101, "value": 12345.0}], "result": 1, "message": "success"},
