@@ -63,7 +63,7 @@ class DelphiTestBase(unittest.TestCase):
 
     def localSetUp(self):
         # stub; override in subclasses to perform custom setup.
-        # runs after tables have been truncated but before database changes have been committed
+        # runs after user/api_key tables have been truncated, but before test-specific tables are created/deleted/truncated and before database changes have been committed
         pass
 
     @staticmethod
