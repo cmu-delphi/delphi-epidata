@@ -59,6 +59,7 @@ class NorostatTest(DelphiTestBase):
             "norostat_raw_datatable_location_pool",
             "norostat_raw_datatable_version_list",
         ]
+
         self.role_name = "norostat"
 
     def test_norostat(self):
