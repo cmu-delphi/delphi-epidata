@@ -58,6 +58,19 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     secrets.db.host = 'delphi_database_epidata'
     secrets.db.epi = ('user', 'pass')
 
+    epidata_cnx = mysql.connector.connect(
+        user='user',
+        password='pass',
+        host='delphi_database_epidata',
+        database='epidata')
+    epidata_cur = epidata_cnx.cursor()
+
+    epidata_cur.execute("DELETE FROM `api_user`")
+    epidata_cur.execute('INSERT INTO `api_user`(`api_key`, `email`) VALUES("key", "email")')
+    epidata_cnx.commit()
+    epidata_cur.close()
+    epidata_cnx.close()
+
     # use the local instance of the Epidata API
     Epidata.BASE_URL = BASE_URL
     Epidata.auth = ('epidata', 'key')
