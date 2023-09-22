@@ -146,7 +146,6 @@ class APIKeysTets(DelphiTestBase):
             status_codes.add(
                 self._make_request(params=params, auth=self.epidata_client.auth).status_code
             )
-        self.assertEqual(len(status_codes), 1)
         self.assertEqual(status_codes, {200})
 
     def test_multiples_allowed_signal_api_key(self):
