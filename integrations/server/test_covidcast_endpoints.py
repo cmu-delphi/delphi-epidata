@@ -113,7 +113,25 @@ class CovidcastEndpointTests(CovidcastBase):
 
         with self.subTest("simple"):
             out = self._fetch("/", signal=first.signal_pair(), geo=first.geo_pair(), time="day:*", is_compatibility=True)
-            self.assertEqual(len(out["epidata"]), len(rows))
+            self.assertEqual(out["epidata"], [row.as_api_compatibility_row_dict() for row in rows])
+
+    def test_compatibility_restricted_source(self):
+        """Restricted request at the /api.php endpoint."""
+        rows = [CovidcastTestRow.make_default_row(time_value=2020_04_01 + i, value=i, source="quidel") for i in range(10)]
+        first = rows[0]
+        self._insert_rows(rows)
+
+        with self.subTest("no_roles"):
+            out = self._fetch("/", signal=first.signal_pair(), geo=first.geo_pair(), time="day:*", is_compatibility=True)
+            self.assertTrue("epidata" not in out)
+
+        with self.subTest("no_api_key"):
+            out = self._fetch("/", auth=None, signal=first.signal_pair(), geo=first.geo_pair(), time="day:*", is_compatibility=True)
+            self.assertTrue("epidata" not in out)
+
+        with self.subTest("quidel_role"):
+            out = self._fetch("/", auth=("epidata", "quidel_key"), signal=first.signal_pair(), geo=first.geo_pair(), time="day:*", is_compatibility=True)
+            self.assertEqual(out["epidata"], [row.as_api_compatibility_row_dict() for row in rows])
 
     def test_trend(self):
         """Request a signal from the /trend endpoint."""
