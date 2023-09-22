@@ -19,6 +19,7 @@ class NorostatTest(DelphiTestBase):
             CONSTRAINT `norostat_point_diffs_ibfk_2` FOREIGN KEY (`location_id`) REFERENCES `norostat_raw_datatable_location_pool` (`location_id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
             """
+
         create_raw_datatable_version_list = """
             CREATE TABLE IF NOT EXISTS `norostat_raw_datatable_version_list` (
             `release_date` date NOT NULL,
