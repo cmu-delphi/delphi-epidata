@@ -156,7 +156,8 @@ class CovidcastTests(CovidcastBase):
       **{'format':'csv'}
     )
 
-    # This is a hardcoded mess because of api.php.
+    # This is a hardcoded mess because of the field ordering constructed here:
+    # https://github.com/cmu-delphi/delphi-epidata/blob/f7da6598a810be8df5374e3a71512c631c3a14f1/src/server/endpoints/covidcast.py#L83-L93
     column_order = [
       "geo_value", "signal", "source", "geo_type", "time_type",
       "time_value", "direction", "issue", "lag", "missing_value",
@@ -207,7 +208,7 @@ class CovidcastTests(CovidcastBase):
     self.assertEqual(response, expected_all)
 
     # limit using invalid fields
-    response = self.request_based_on_row(row, fields='time_value,geo_value,,geo_type,source,time_type,doesnt_exist')
+    response = self.request_based_on_row(row, fields='time_value,geo_value,geo_type,source,time_type,doesnt_exist')
 
     # assert that the right data came back (only valid fields)
     self.assertEqual(response, expected_all)

@@ -196,7 +196,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
       mock_response = MagicMock()
       mock_response.status_code = 200
       get.side_effect = [JSONDecodeError('Expecting value', "",  0), mock_response]
-      response = Epidata._request(None, "")
+      response = Epidata._request("")
       self.assertEqual(get.call_count, 2)
       self.assertEqual(response, mock_response.json())
 
@@ -207,7 +207,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
       get.side_effect = [JSONDecodeError('Expecting value', "",  0),
                          JSONDecodeError('Expecting value', "",  0),
                          mock_response]
-      response = Epidata._request(None, "")
+      response = Epidata._request("")
       self.assertEqual(get.call_count, 2)  # 2 from previous test + 2 from this one
       self.assertEqual(response,
                        {'result': 0, 'message': 'error: Expecting value: line 1 column 1 (char 0)'}
@@ -335,10 +335,10 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     ]
     self._insert_rows(rows)
 
-    test_output = Epidata.async_epidata([
+    test_output = Epidata.async_epidata('covidcast', [
       self.params_from_row(rows[0]),
       self.params_from_row(rows[1])
-    ]*12, 'covidcast', batch_size=10)
+    ]*12, batch_size=10)
     responses = [i[0] for i in test_output]
     # check response is same as standard covidcast call, using 24 calls to test batch sizing
     self.assertEqual(
@@ -352,7 +352,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
   @fake_epidata_endpoint
   def test_async_epidata_fail(self):
     with pytest.raises(ClientResponseError, match="404, message='NOT FOUND'"):
-      Epidata.async_epidata([
+      Epidata.async_epidata('covidcast', [
         {
           'data_source': 'src',
           'signals': 'sig',
@@ -361,4 +361,4 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
           'geo_value': '11111',
           'time_values': '20200414'
         }
-      ], 'covidcast')
+      ])

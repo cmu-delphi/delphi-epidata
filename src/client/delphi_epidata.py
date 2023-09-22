@@ -68,7 +68,7 @@ class Epidata:
 
     @staticmethod
     @retry(reraise=True, stop=stop_after_attempt(2))
-    def _request_with_retry(params, endpoint):
+    def _request_with_retry(endpoint, params={}):
         """Make request with a retry if an exception is thrown."""
         request_url = f"{Epidata.BASE_URL}/{endpoint}"
         req = requests.get(request_url, params, auth=Epidata.auth, headers=_HEADERS)
@@ -79,7 +79,7 @@ class Epidata:
         return req
 
     @staticmethod
-    def _request(params, endpoint):
+    def _request(endpoint, params={}):
         """Request and parse epidata.
 
         We default to GET since it has better caching and logging
@@ -87,7 +87,7 @@ class Epidata:
         long and returns a 414.
         """
         try:
-            result = Epidata._request_with_retry(params, endpoint)
+            result = Epidata._request_with_retry(endpoint, params)
         except Exception as e:
             return {"result": 0, "message": "error: " + str(e)}
         if params is not None and "format" in params and params["format"] == "csv":
@@ -136,13 +136,13 @@ class Epidata:
         if auth is not None:
             params["auth"] = auth
         # Make the API call
-        return Epidata._request(params, "fluview")
+        return Epidata._request("fluview", params)
 
     # Fetch FluView metadata
     @staticmethod
     def fluview_meta():
         """Fetch FluView metadata."""
-        return Epidata._request({}, "fluview_meta")
+        return Epidata._request("fluview_meta")
 
     # Fetch FluView clinical data
     @staticmethod
@@ -163,7 +163,7 @@ class Epidata:
         if lag is not None:
             params["lag"] = lag
         # Make the API call
-        return Epidata._request(params, "fluview_clinical")
+        return Epidata._request("fluview_clinical", params)
 
     # Fetch FluSurv data
     @staticmethod
@@ -184,7 +184,7 @@ class Epidata:
         if lag is not None:
             params["lag"] = lag
         # Make the API call
-        return Epidata._request(params, "flusurv")
+        return Epidata._request("flusurv", params)
 
     # Fetch PAHO Dengue data
     @staticmethod
@@ -205,7 +205,7 @@ class Epidata:
         if lag is not None:
             params["lag"] = lag
         # Make the API call
-        return Epidata._request(params, "paho_dengue")
+        return Epidata._request("paho_dengue", params)
 
     # Fetch ECDC ILI data
     @staticmethod
@@ -226,7 +226,7 @@ class Epidata:
         if lag is not None:
             params["lag"] = lag
         # Make the API call
-        return Epidata._request(params, "ecdc_ili")
+        return Epidata._request("ecdc_ili", params)
 
     # Fetch KCDC ILI data
     @staticmethod
@@ -247,7 +247,7 @@ class Epidata:
         if lag is not None:
             params["lag"] = lag
         # Make the API call
-        return Epidata._request(params, "kcdc_ili")
+        return Epidata._request("kcdc_ili", params)
 
     # Fetch Google Flu Trends data
     @staticmethod
@@ -262,7 +262,7 @@ class Epidata:
             "epiweeks": Epidata._list(epiweeks),
         }
         # Make the API call
-        return Epidata._request(params, "gft")
+        return Epidata._request("gft", params)
 
     # Fetch Google Health Trends data
     @staticmethod
@@ -281,7 +281,7 @@ class Epidata:
             "query": query,
         }
         # Make the API call
-        return Epidata._request(params, "ght")
+        return Epidata._request("ght", params)
 
     # Fetch HealthTweets data
     @staticmethod
@@ -302,7 +302,7 @@ class Epidata:
         if epiweeks is not None:
             params["epiweeks"] = Epidata._list(epiweeks)
         # Make the API call
-        return Epidata._request(params, "twitter")
+        return Epidata._request("twitter", params)
 
     # Fetch Wikipedia access data
     @staticmethod
@@ -325,7 +325,7 @@ class Epidata:
         if hours is not None:
             params["hours"] = Epidata._list(hours)
         # Make the API call
-        return Epidata._request(params, "wiki")
+        return Epidata._request("wiki", params)
 
     # Fetch CDC page hits
     @staticmethod
@@ -341,7 +341,7 @@ class Epidata:
             "locations": Epidata._list(locations),
         }
         # Make the API call
-        return Epidata._request(params, "cdc")
+        return Epidata._request("cdc", params)
 
     # Fetch Quidel data
     @staticmethod
@@ -357,7 +357,7 @@ class Epidata:
             "locations": Epidata._list(locations),
         }
         # Make the API call
-        return Epidata._request(params, "quidel")
+        return Epidata._request("quidel", params)
 
     # Fetch NoroSTAT data (point data, no min/max)
     @staticmethod
@@ -373,7 +373,7 @@ class Epidata:
             "epiweeks": Epidata._list(epiweeks),
         }
         # Make the API call
-        return Epidata._request(params, "norostat")
+        return Epidata._request("norostat", params)
 
     # Fetch NoroSTAT metadata
     @staticmethod
@@ -387,7 +387,7 @@ class Epidata:
             "auth": auth,
         }
         # Make the API call
-        return Epidata._request(params, "meta_norostat")
+        return Epidata._request("meta_norostat", params)
 
     # Fetch NIDSS flu data
     @staticmethod
@@ -408,7 +408,7 @@ class Epidata:
         if lag is not None:
             params["lag"] = lag
         # Make the API call
-        return Epidata._request(params, "nidss_flu")
+        return Epidata._request("nidss_flu", params)
 
     # Fetch NIDSS dengue data
     @staticmethod
@@ -423,7 +423,7 @@ class Epidata:
             "epiweeks": Epidata._list(epiweeks),
         }
         # Make the API call
-        return Epidata._request(params, "nidss_dengue")
+        return Epidata._request("nidss_dengue", params)
 
     # Fetch Delphi's forecast
     @staticmethod
@@ -438,7 +438,7 @@ class Epidata:
             "epiweek": epiweek,
         }
         # Make the API call
-        return Epidata._request(params, "delphi")
+        return Epidata._request("delphi", params)
 
     # Fetch Delphi's digital surveillance sensors
     @staticmethod
@@ -458,7 +458,7 @@ class Epidata:
         if auth is not None:
             params["auth"] = auth
         # Make the API call
-        return Epidata._request(params, "sensors")
+        return Epidata._request("sensors", params)
 
     # Fetch Delphi's dengue digital surveillance sensors
     @staticmethod
@@ -477,7 +477,7 @@ class Epidata:
             "epiweeks": Epidata._list(epiweeks),
         }
         # Make the API call
-        return Epidata._request(params, "dengue_sensors")
+        return Epidata._request("dengue_sensors", params)
 
     # Fetch Delphi's wILI nowcast
     @staticmethod
@@ -492,7 +492,7 @@ class Epidata:
             "epiweeks": Epidata._list(epiweeks),
         }
         # Make the API call
-        return Epidata._request(params, "nowcast")
+        return Epidata._request("nowcast", params)
 
     # Fetch Delphi's dengue nowcast
     @staticmethod
@@ -507,13 +507,13 @@ class Epidata:
             "epiweeks": Epidata._list(epiweeks),
         }
         # Make the API call
-        return Epidata._request(params, "dengue_nowcast")
+        return Epidata._request("dengue_nowcast", params)
 
     # Fetch API metadata
     @staticmethod
     def meta():
         """Fetch API metadata."""
-        return Epidata._request({}, "meta")
+        return Epidata._request("meta")
 
     # Fetch Delphi's COVID-19 Surveillance Streams
     @staticmethod
@@ -568,13 +568,13 @@ class Epidata:
             params["fields"] = kwargs["fields"]
 
         # Make the API call
-        return Epidata._request(params, "covidcast")
+        return Epidata._request("covidcast", params)
 
     # Fetch Delphi's COVID-19 Surveillance Streams metadata
     @staticmethod
     def covidcast_meta():
         """Fetch Delphi's COVID-19 Surveillance Streams metadata"""
-        return Epidata._request({}, "covidcast_meta")
+        return Epidata._request("covidcast_meta")
 
     # Fetch COVID hospitalization data
     @staticmethod
@@ -593,7 +593,7 @@ class Epidata:
         if as_of is not None:
             params["as_of"] = as_of
         # Make the API call
-        return Epidata._request(params, "covid_hosp_state_timeseries")
+        return Epidata._request("covid_hosp_state_timeseries", params)
 
     # Fetch COVID hospitalization data for specific facilities
     @staticmethod
@@ -612,7 +612,7 @@ class Epidata:
         if publication_dates is not None:
             params["publication_dates"] = Epidata._list(publication_dates)
         # Make the API call
-        return Epidata._request(params, "covid_hosp_facility")
+        return Epidata._request("covid_hosp_facility", params)
 
     # Lookup COVID hospitalization facility identifiers
     @staticmethod
@@ -635,7 +635,7 @@ class Epidata:
                 "one of `state`, `ccn`, `city`, `zip`, or `fips_code` is required"
             )
         # Make the API call
-        return Epidata._request(params, "covid_hosp_facility_lookup")
+        return Epidata._request("covid_hosp_facility_lookup", params)
 
     # Fetch Delphi's COVID-19 Nowcast sensors
     @staticmethod
@@ -688,10 +688,10 @@ class Epidata:
             params["format"] = kwargs["format"]
 
         # Make the API call
-        return Epidata._request(params, "covidcast_nowcast")
+        return Epidata._request("covidcast_nowcast", params)
 
     @staticmethod
-    def async_epidata(param_list, endpoint, batch_size=50):
+    def async_epidata(endpoint, param_list, batch_size=50):
         """Make asynchronous Epidata calls for a list of parameters."""
 
         request_url = f"{Epidata.BASE_URL}/{endpoint}"
