@@ -10,10 +10,8 @@ import pytest
 from aiohttp.client_exceptions import ClientResponseError
 
 # third party
-import delphi.operations.secrets as secrets
 from delphi.epidata.maintenance.covidcast_meta_cache_updater import main as update_covidcast_meta_cache
-from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase, CovidcastTestRow, FIPS, MSA
-from delphi.epidata.client.delphi_epidata import Epidata
+from delphi.epidata.common.covidcast_test_base import CovidcastTestBase, CovidcastTestRow, FIPS, MSA
 from delphi_utils import Nans
 
 # py3tester coverage target
@@ -21,31 +19,10 @@ __test_target__ = 'delphi.epidata.client.delphi_epidata'
 # all the Nans we use here are just one value, so this is a shortcut to it:
 nmv = Nans.NOT_MISSING.value
 
-def fake_epidata_endpoint(func):
-  """This can be used as a decorator to enable a bogus Epidata endpoint to return 404 responses."""
-  def wrapper(*args):
-    Epidata.BASE_URL = 'http://delphi_web_epidata/fake_epidata'
-    func(*args)
-    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata'
-  return wrapper
 
-class DelphiEpidataPythonClientTests(CovidcastBase):
+
+class DelphiEpidataPythonClientTests(CovidcastTestBase):
   """Tests the Python client."""
-
-  def localSetUp(self):
-    """Perform per-test setup."""
-
-    # reset the `covidcast_meta_cache` table (it should always have one row)
-    self._db._cursor.execute('update covidcast_meta_cache set timestamp = 0, epidata = "[]"')
-
-    # use the local instance of the Epidata API
-    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata'
-    Epidata.auth = ('epidata', 'key')
-
-    # use the local instance of the epidata database
-    secrets.db.host = 'delphi_database_epidata'
-    secrets.db.epi = ('user', 'pass')
-
   def test_covidcast(self):
     """Test that the covidcast endpoint returns expected data."""
 
@@ -60,7 +37,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
 
     with self.subTest(name='request two signals'):
       # fetch data
-      response = Epidata.covidcast(
+      response = self.epidata_client.covidcast(
         **self.params_from_row(rows[0], signals=[rows[0].signal, rows[-1].signal])
       )
 
@@ -79,7 +56,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
 
     with self.subTest(name='request two signals with tree format'):
       # fetch data
-      response = Epidata.covidcast(
+      response = self.epidata_client.covidcast(
         **self.params_from_row(rows[0], signals=[rows[0].signal, rows[-1].signal], format='tree')
       )
 
@@ -101,7 +78,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
 
     with self.subTest(name='request most recent'):
       # fetch data, without specifying issue or lag
-      response_1 = Epidata.covidcast(
+      response_1 = self.epidata_client.covidcast(
         **self.params_from_row(rows[0])
       )
 
@@ -116,7 +93,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
 
     with self.subTest(name='request as-of a date'):
       # fetch data, specifying as_of
-      response_1a = Epidata.covidcast(
+      response_1a = self.epidata_client.covidcast(
         **self.params_from_row(rows[0], as_of=rows[1].issue)
       )
 
@@ -132,8 +109,8 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
 
     with self.subTest(name='request a range of issues'):
       # fetch data, specifying issue range, not lag
-      response_2 = Epidata.covidcast(
-        **self.params_from_row(rows[0], issues=Epidata.range(rows[0].issue, rows[1].issue))
+      response_2 = self.epidata_client.covidcast(
+        **self.params_from_row(rows[0], issues=self.epidata_client.range(rows[0].issue, rows[1].issue))
       )
 
       expected = [
@@ -150,7 +127,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
 
     with self.subTest(name='request at a given lag'):
       # fetch data, specifying lag, not issue range
-      response_3 = Epidata.covidcast(
+      response_3 = self.epidata_client.covidcast(
         **self.params_from_row(rows[0], lag=2)
       )
 
@@ -165,7 +142,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     with self.subTest(name='long request'):
       # fetch data, without specifying issue or lag
       # TODO should also trigger a post but doesn't due to the 414 issue
-      response_1 = Epidata.covidcast(
+      response_1 = self.epidata_client.covidcast(
         **self.params_from_row(rows[0], signals='sig'*1000)
       )
 
@@ -177,7 +154,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
   def test_request_method(self, get, post):
     """Test that a GET request is default and POST is used if a 414 is returned."""
     with self.subTest(name='get request'):
-      Epidata.covidcast('src', 'sig', 'day', 'county', 20200414, '01234')
+      self.epidata_client.covidcast('src', 'sig', 'day', 'county', 20200414, '01234')
       get.assert_called_once()
       post.assert_not_called()
     with self.subTest(name='post request'):
@@ -185,7 +162,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
       mock_response = MagicMock()
       mock_response.status_code = 414
       get.return_value = mock_response
-      Epidata.covidcast('src', 'sig', 'day', 'county', 20200414, '01234')
+      self.epidata_client.covidcast('src', 'sig', 'day', 'county', 20200414, '01234')
       get.assert_called_once()
       post.assert_called_once()
 
@@ -196,7 +173,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
       mock_response = MagicMock()
       mock_response.status_code = 200
       get.side_effect = [JSONDecodeError('Expecting value', "",  0), mock_response]
-      response = Epidata._request("")
+      response = self.epidata_client._request("")
       self.assertEqual(get.call_count, 2)
       self.assertEqual(response, mock_response.json())
 
@@ -207,7 +184,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
       get.side_effect = [JSONDecodeError('Expecting value', "",  0),
                          JSONDecodeError('Expecting value', "",  0),
                          mock_response]
-      response = Epidata._request("")
+      response = self.epidata_client._request("")
       self.assertEqual(get.call_count, 2)  # 2 from previous test + 2 from this one
       self.assertEqual(response,
                        {'result': 0, 'message': 'error: Expecting value: line 1 column 1 (char 0)'}
@@ -232,7 +209,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     ]
 
     def fetch(geo):
-      return Epidata.covidcast(
+      return self.epidata_client.covidcast(
         **self.params_from_row(rows[0], geo_value=geo)
       )
 
@@ -289,7 +266,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     update_covidcast_meta_cache(args=None)
 
     # fetch data
-    response = Epidata.covidcast_meta()
+    response = self.epidata_client.covidcast_meta()
 
     # make sure "last updated" time is recent:
     updated_time = response['epidata'][0]['last_update']
@@ -335,7 +312,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     ]
     self._insert_rows(rows)
 
-    test_output = Epidata.async_epidata('covidcast', [
+    test_output = self.epidata_client.async_epidata('covidcast', [
       self.params_from_row(rows[0]),
       self.params_from_row(rows[1])
     ]*12, batch_size=10)
@@ -344,15 +321,15 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     self.assertEqual(
       responses,
       [
-        Epidata.covidcast(**self.params_from_row(rows[0])),
-        Epidata.covidcast(**self.params_from_row(rows[1])),
+        self.epidata_client.covidcast(**self.params_from_row(rows[0])),
+        self.epidata_client.covidcast(**self.params_from_row(rows[1])),
       ]*12
     )
 
-  @fake_epidata_endpoint
   def test_async_epidata_fail(self):
+    self.epidata_client.BASE_URL = "http://delphi_web_epidata/fake_epidata"
     with pytest.raises(ClientResponseError, match="404, message='NOT FOUND'"):
-      Epidata.async_epidata('covidcast', [
+      self.epidata_client.async_epidata('covidcast', [
         {
           'data_source': 'src',
           'signals': 'sig',
@@ -362,3 +339,4 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
           'time_values': '20200414'
         }
       ])
+    self.epidata_client.BASE_URL = "http://delphi_web_epidata/epidata"
