@@ -1,15 +1,12 @@
 """Integration tests for the `covidcast_meta` endpoint."""
 
-# standard library
-import unittest
-
 # third party
 import mysql.connector
 import requests
 
 #first party
 from delphi_utils import Nans
-from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase, CovidcastTestRow
+from delphi.epidata.common.covidcast_test_base import CovidcastTestBase, CovidcastTestRow
 from delphi.epidata.maintenance.covidcast_meta_cache_updater import main as update_cache
 import delphi.operations.secrets as secrets
 
@@ -18,7 +15,7 @@ BASE_URL = 'http://delphi_web_epidata/epidata'
 AUTH = ('epidata', 'key')
 
 
-class CovidcastMetaTests(CovidcastBase):
+class CovidcastMetaTests(CovidcastTestBase):
   """Tests the `covidcast_meta` endpoint."""
 
   src_sig_lookups = {
@@ -52,63 +49,23 @@ class CovidcastMetaTests(CovidcastBase):
   def localSetUp(self):
     """Perform per-test setup."""
 
-    # connect to the `epidata` database and clear the `covidcast` table
-    cnx = mysql.connector.connect(
-        user='user',
-        password='pass',
-        host='delphi_database_epidata',
-        database='covid')
-    cur = cnx.cursor()
-
-    # clear all tables
-    cur.execute("truncate table epimetric_load")
-    cur.execute("truncate table epimetric_full")
-    cur.execute("truncate table epimetric_latest")
-    cur.execute("truncate table geo_dim")
-    cur.execute("truncate table signal_dim")
-    # reset the `covidcast_meta_cache` table (it should always have one row)
-    cur.execute('update covidcast_meta_cache set timestamp = 0, epidata = "[]"')
-
-    # NOTE: we must specify the db schema "epidata" here because the cursor/connection are bound to schema "covid"
-    cur.execute("TRUNCATE TABLE epidata.api_user")
-    cur.execute("TRUNCATE TABLE epidata.user_role")
-    cur.execute("TRUNCATE TABLE epidata.user_role_link")
-    cur.execute("INSERT INTO epidata.api_user (api_key, email) VALUES ('quidel_key', 'quidel_email')")
-    cur.execute("INSERT INTO epidata.user_role (name) VALUES ('quidel')")
-    cur.execute(
-      "INSERT INTO epidata.user_role_link (user_id, role_id) SELECT api_user.id, user_role.id FROM epidata.api_user JOIN epidata.user_role WHERE api_key='quidel_key' and user_role.name='quidel'"
-    )
-    cur.execute("INSERT INTO epidata.api_user (api_key, email) VALUES ('key', 'email')")
+    self.role_name = "quidel"
 
     # populate dimension tables
     for (src,sig) in self.src_sig_lookups:
-        cur.execute('''
+        self._db._cursor.execute('''
             INSERT INTO `signal_dim` (`signal_key_id`, `source`, `signal`)
             VALUES (%d, '%s', '%s'); ''' % ( self.src_sig_lookups[(src,sig)], src, sig ))
     for (gt,gv) in self.geo_lookups:
-        cur.execute('''
+        self._db._cursor.execute('''
             INSERT INTO `geo_dim` (`geo_key_id`, `geo_type`, `geo_value`)
             VALUES (%d, '%s', '%s'); ''' % ( self.geo_lookups[(gt,gv)], gt, gv ))
 
-    cnx.commit()
-    cur.close()
+    self._db._connection.commit()
 
     # initialize counter for tables without non-autoincrement id
     self.id_counter = 666
 
-    # make connection and cursor available to test cases
-    self.cnx = cnx
-    self.cur = cnx.cursor()
-
-    # use the local instance of the epidata database
-    secrets.db.host = 'delphi_database_epidata'
-    secrets.db.epi = ('user', 'pass')
-
-
-  def localTearDown(self):
-    """Perform per-test teardown."""
-    self.cur.close()
-    self.cnx.close()
 
   def insert_placeholder_data(self):
     expected = []
@@ -135,13 +92,13 @@ class CovidcastMetaTests(CovidcastBase):
             })
             for tv in (1, 2):
               for gv, v in zip(('geo1', 'geo2'), (10, 20)):
-                self.cur.execute(self.template % (
+                self._db._cursor.execute(self.template % (
                   self._get_id(),
                   self.src_sig_lookups[(src,sig)], self.geo_lookups[(gt,gv)],
                   tt, tv, v, tv, # re-use time value for issue
                   Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.NOT_MISSING
                 ))
-    self.cnx.commit()
+    self._db._connection.commit()
     update_cache(args=None)
     return expected
 
