@@ -1,31 +1,20 @@
 """Integration tests for the `covidcast` endpoint."""
 
-# standard library
-from typing import Callable
 import unittest
-
-# third party
-import mysql.connector
 
 # first party
 from delphi_utils import Nans
-from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase, CovidcastTestRow, FIPS, MSA
-from delphi.epidata.client.delphi_epidata import Epidata
+from delphi.epidata.common.covidcast_test_base import CovidcastTestBase, CovidcastTestRow, FIPS, MSA
 
 
-class CovidcastTests(CovidcastBase):
+class CovidcastTests(CovidcastTestBase):
   """Tests the `covidcast` endpoint."""
-
-  def localSetUp(self):
-    """Perform per-test setup."""
-    self._db._cursor.execute('update covidcast_meta_cache set timestamp = 0, epidata = "[]"')
 
   def request_based_on_row(self, row: CovidcastTestRow, **kwargs):
     params = self.params_from_row(row, endpoint='covidcast', **kwargs)
     # use the local instance of the Epidata API
-    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata'
-    Epidata.auth = ('epidata', 'key')
-    response = Epidata.covidcast(**params) 
+    self.epidata_client.auth = ('epidata', 'key')
+    response = self.epidata_client.covidcast(**params) 
 
     return response
 
