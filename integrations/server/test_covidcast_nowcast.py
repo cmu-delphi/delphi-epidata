@@ -1,45 +1,19 @@
 """Integration tests for the `covidcast_nowcast` endpoint."""
-
-# standard library
-import unittest
-
-# third party
-import mysql.connector
 import requests
 
+from delphi.epidata.common.covidcast_test_base import CovidcastTestBase
 
 # use the local instance of the Epidata API
 BASE_URL = 'http://delphi_web_epidata/epidata'
 AUTH = ('epidata', 'key')
 
 
-class CovidcastTests(unittest.TestCase):
+class CovidcastTests(CovidcastTestBase):
   """Tests the `covidcast` endpoint."""
 
-  def setUp(self):
+  def localSetUp(self):
     """Perform per-test setup."""
-
-    # connect to the `epidata` database and clear the `covidcast` table
-    cnx = mysql.connector.connect(
-      user='user',
-      password='pass',
-      host='delphi_database_epidata',
-      database='epidata')
-    cur = cnx.cursor()
-    cur.execute('truncate table covidcast_nowcast')
-    cur.execute('delete from api_user')
-    cur.execute('insert into api_user(api_key, email) values("key", "email")')
-    cnx.commit()
-    cur.close()
-
-    # make connection and cursor available to test cases
-    self.cnx = cnx
-    self.cur = cnx.cursor()
-
-  def tearDown(self):
-    """Perform per-test teardown."""
-    self.cur.close()
-    self.cnx.close()
+    self.truncate_tables_list = ["covidcast_nowcast"]
 
   @staticmethod
   def _make_request(params: dict):
