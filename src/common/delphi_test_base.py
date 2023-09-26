@@ -66,12 +66,18 @@ class DelphiTestBase(unittest.TestCase):
         # runs after user/api_key tables have been truncated, but before test-specific tables are created/deleted/truncated and before database changes have been committed
         pass
 
+    def localTearDown(self):
+        # stub; override in subclasses to perform custom teardown.
+        # runs after database changes have been committed
+        pass
+
     @staticmethod
     def _clear_limits() -> None:
         limiter.storage.reset()
 
     def tearDown(self) -> None:
         """Perform per-test teardown."""
+        self.localTearDown()
         self.cur.close()
         self.cnx.close()
         self._clear_limits()
