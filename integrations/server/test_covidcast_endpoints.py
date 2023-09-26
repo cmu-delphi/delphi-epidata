@@ -10,7 +10,7 @@ import requests
 import pandas as pd
 
 from delphi.epidata.maintenance.covidcast_meta_cache_updater import main as update_cache
-from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase, CovidcastTestRow
+from delphi.epidata.common.covidcast_test_base import CovidcastTestBase, CovidcastTestRow
 
 # use the local instance of the Epidata API
 BASE_URL = "http://delphi_web_epidata/epidata/covidcast"
@@ -18,25 +18,12 @@ BASE_URL_OLD = "http://delphi_web_epidata/epidata/api.php"
 AUTH = ('epidata', 'key')
 
 
-class CovidcastEndpointTests(CovidcastBase):
+class CovidcastEndpointTests(CovidcastTestBase):
     """Tests the `covidcast/*` endpoint."""
 
     def localSetUp(self):
         """Perform per-test setup."""
-        # reset the `covidcast_meta_cache` table (it should always have one row)
-        self._db._cursor.execute('update covidcast_meta_cache set timestamp = 0, epidata = "[]"')
-
-        cur = self._db._cursor
-        # NOTE: we must specify the db schema "epidata" here because the cursor/connection are bound to schema "covid"
-        cur.execute("TRUNCATE TABLE epidata.api_user")
-        cur.execute("TRUNCATE TABLE epidata.user_role")
-        cur.execute("TRUNCATE TABLE epidata.user_role_link")
-        cur.execute("INSERT INTO epidata.api_user (api_key, email) VALUES ('quidel_key', 'quidel_email')")
-        cur.execute("INSERT INTO epidata.user_role (name) VALUES ('quidel')")
-        cur.execute(
-            "INSERT INTO epidata.user_role_link (user_id, role_id) SELECT api_user.id, user_role.id FROM epidata.api_user JOIN epidata.user_role WHERE api_key='quidel_key' and user_role.name='quidel'"
-        )
-        cur.execute("INSERT INTO epidata.api_user (api_key, email) VALUES ('key', 'email')")
+        self.role_name = "quidel"
 
     def _fetch(self, endpoint="/", is_compatibility=False, auth=AUTH, **params):
         # make the request
@@ -145,7 +132,6 @@ class CovidcastEndpointTests(CovidcastBase):
 
         out = self._fetch("/trend", signal=first.signal_pair(), geo=first.geo_pair(), date=last.time_value, window="20200401-20201212", basis=ref.time_value)
 
-
         self.assertEqual(out["result"], 1)
         self.assertEqual(len(out["epidata"]), 1)
         trend = out["epidata"][0]
@@ -167,7 +153,6 @@ class CovidcastEndpointTests(CovidcastBase):
         self.assertEqual(trend["max_date"], last.time_value)
         self.assertEqual(trend["max_value"], last.value)
         self.assertEqual(trend["max_trend"], "steady")
-
 
     def test_trendseries(self):
         """Request a signal from the /trendseries endpoint."""
@@ -235,7 +220,6 @@ class CovidcastEndpointTests(CovidcastBase):
             self.assertEqual(trend["max_value"], first.value)
             self.assertEqual(trend["max_trend"], "decreasing")
 
-
     def test_csv(self):
         """Request a signal from the /csv endpoint."""
 
@@ -252,7 +236,6 @@ class CovidcastEndpointTests(CovidcastBase):
         df = pd.read_csv(StringIO(out), index_col=0)
         self.assertEqual(df.shape, (len(rows), 10))
         self.assertEqual(list(df.columns), ["geo_value", "signal", "time_value", "issue", "lag", "value", "stderr", "sample_size", "geo_type", "data_source"])
-
 
     def test_backfill(self):
         """Request a signal from the /backfill endpoint."""
