@@ -92,7 +92,6 @@ class CovidcastTestRow(CovidcastRow):
 class CovidcastTestBase(DelphiTestBase):
     def setUp(self):
         # use the local test instance of the database
-        super().setUp()
         secrets.db.host = 'delphi_database_epidata'
         secrets.db.epi = ('user', 'pass')
 
@@ -110,6 +109,7 @@ class CovidcastTestBase(DelphiTestBase):
             'update covidcast_meta_cache set timestamp = 0, epidata = "[]"'
         )
         self._db._connection.commit()
+        super().setUp()
 
     def localTearDown(self):
         self._db.disconnect(False)
