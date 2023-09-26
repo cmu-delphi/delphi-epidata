@@ -12,8 +12,6 @@ class CovidcastTests(CovidcastTestBase):
 
   def request_based_on_row(self, row: CovidcastTestRow, **kwargs):
     params = self.params_from_row(row, endpoint='covidcast', **kwargs)
-    # use the local instance of the Epidata API
-    self.epidata_client.auth = ('epidata', 'key')
     response = self.epidata_client.covidcast(**params) 
 
     return response
