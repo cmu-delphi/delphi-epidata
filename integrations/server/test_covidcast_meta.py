@@ -8,7 +8,6 @@ import requests
 from delphi_utils import Nans
 from delphi.epidata.common.covidcast_test_base import CovidcastTestBase, CovidcastTestRow
 from delphi.epidata.maintenance.covidcast_meta_cache_updater import main as update_cache
-import delphi.operations.secrets as secrets
 
 # use the local instance of the Epidata API
 BASE_URL = 'http://delphi_web_epidata/epidata'
@@ -223,4 +222,3 @@ class CovidcastMetaTests(CovidcastTestBase):
     self.assertEqual(res['result'], 1)
     self.assertEqual(len(res['epidata']), len(expected))
     self.assertEqual(res['epidata'][0], {})
-
