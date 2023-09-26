@@ -104,6 +104,7 @@ web:
 		--env "REDIS_PASSWORD=1234" \
 		--env "API_KEY_ADMIN_PASSWORD=test_admin_password" \
 		--env "API_KEY_REGISTER_WEBHOOK_TOKEN=abc" \
+		--env "TESTING_MODE=True" \
 		--network delphi-net --name delphi_web_epidata \
 		delphi_web_epidata >$(LOG_WEB) 2>&1 &
 
