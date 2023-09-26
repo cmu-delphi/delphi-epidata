@@ -1,13 +1,13 @@
 from delphi_utils import Nans
 
 from delphi.epidata.acquisition.covidcast.database import DBLoadStateException
-from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase, CovidcastTestRow
+from delphi.epidata.common.covidcast_test_base import CovidcastTestBase, CovidcastTestRow
 
 
 # all the Nans we use here are just one value, so this is a shortcut to it:
 nmv = Nans.NOT_MISSING.value
 
-class TestTest(CovidcastBase):
+class TestDatabase(CovidcastTestBase):
 
     def _find_matches_for_row(self, row):
         # finds (if existing) row from both history and latest views that matches long-key of provided CovidcastTestRow
