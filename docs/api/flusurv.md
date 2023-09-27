@@ -52,40 +52,40 @@ If neither is specified, the current issues are used.
 
 ## Response
 
-| Field                         | Description                                                     | Type             |
-|-------------------------------|-----------------------------------------------------------------|------------------|
-| `result`                      | result code: 1 = success, 2 = too many results, -2 = no results | integer          |
-| `epidata`                     | list of results                                                 | array of objects |
-| `epidata[].release_date`      |                                                                 | string           |
-| `epidata[].location`          |                                                                 | string           |
-| `epidata[].issue`             |                                                                 | integer          |
-| `epidata[].epiweek`           |                                                                 | integer          |
-| `epidata[].lag`               |                                                                 | integer          |
-| `epidata[].rate_age_0`        |                                                                 | float            |
-| `epidata[].rate_age_1`        |                                                                 | float            |
-| `epidata[].rate_age_2`        |                                                                 | float            |
-| `epidata[].rate_age_3`        |                                                                 | float            |
-| `epidata[].rate_age_4`        |                                                                 | float            |
-| `epidata[].rate_overall`      |                                                                 | float            |
-| `epidata[].rate_age_5`        |                                                                 | float            |
-| `epidata[].rate_age_6`        |                                                                 | float            |
-| `epidata[].rate_age_7`        |                                                                 | float            |
-| `epidata[].rate_age_18t29`    |                                                                 | float            |
-| `epidata[].rate_age_30t39`    |                                                                 | float            |
-| `epidata[].rate_age_40t49`    |                                                                 | float            |
-| `epidata[].rate_age_5t11`     |                                                                 | float            |
-| `epidata[].rate_age_12t17`    |                                                                 | float            |
-| `epidata[].rate_age_lt18`     |                                                                 | float            |
-| `epidata[].rate_age_gte18`    |                                                                 | float            |
-| `epidata[].rate_race_white`   |                                                                 | float            |
-| `epidata[].rate_race_black`   |                                                                 | float            |
-| `epidata[].rate_race_hisp`    |                                                                 | float            |
-| `epidata[].rate_race_asian`   |                                                                 | float            |
-| `epidata[].rate_race_natamer` |                                                                 | float            |
-| `epidata[].rate_sex_male`     |                                                                 | float            |
-| `epidata[].rate_sex_female`   |                                                                 | float            |
-| `epidata[].season`            |                                                                 | string           |
-| `message`                     | `success` or error message                                      | string           |
+| Field | Description | Type |
+|---|---|---|
+| `result` | result code: 1 = success, 2 = too many results, -2 = no results | integer |
+| `epidata` | list of results | array of objects |
+| `epidata[].release_date` | the date when this record was first published by the CDC | string |
+| `epidata[].location` | the name of the catchment (e.g. 'network_all', 'CA', 'NY_albany' | string |
+| `epidata[].issue` | the epiweek of publication (e.g. issue 201453 includes epiweeks up to and including 2014w53, but not 2015w01 or following) | integer |
+| `epidata[].epiweek` | the epiweek during which the data was collected | integer |
+| `epidata[].lag` | number of weeks between `epiweek` and `issue` | integer |
+| `epidata[].rate_age_0` | hospitalization rate for ages 0-4 | float |
+| `epidata[].rate_age_1` | hospitalization rate for ages 5-17 | float |
+| `epidata[].rate_age_2` | hospitalization rate for ages 18-49 | float |
+| `epidata[].rate_age_3` | hospitalization rate for ages 50-64 | float |
+| `epidata[].rate_age_4` | hospitalization rate for ages 65+ | float |
+| `epidata[].rate_overall` | overall hospitalization rate | float |
+| `epidata[].rate_age_5` | hospitalization rate for ages 65-74 | float |
+| `epidata[].rate_age_6` | hospitalization rate for ages 75-84 | float |
+| `epidata[].rate_age_7` | hospitalization rate for ages 85+ | float |
+| `epidata[].rate_age_18t29` | hospitalization rate for ages 18 to 29 | float |
+| `epidata[].rate_age_30t39` | hospitalization rate for ages 30 to 39 | float |
+| `epidata[].rate_age_40t49` | hospitalization rate for ages 40 to 49 | float |
+| `epidata[].rate_age_5t11` | hospitalization rate for ages 5 to 11 | float |
+| `epidata[].rate_age_12t17` | hospitalization rate for ages 12 to 17 | float |
+| `epidata[].rate_age_lt18` | hospitalization rate for ages <18 | float |
+| `epidata[].rate_age_gte18` | hospitalization rate for ages >=18 | float |
+| `epidata[].rate_race_white` | hospitalization rate for white people | float |
+| `epidata[].rate_race_black` | hospitalization rate for black people | float |
+| `epidata[].rate_race_hisp` | hospitalization rate for Hispanic/Latino people | float |
+| `epidata[].rate_race_asian` | hospitalization rate for Asian people | float |
+| `epidata[].rate_race_natamer` | hospitalization rate for American Indian/Alaskan Native people | float |
+| `epidata[].rate_sex_male` | hospitalization rate for males | float |
+| `epidata[].rate_sex_female` | hospitalization rate for females | float |
+| `epidata[].season` | indicates the start and end years of the winter flu season in the format YYYY-YY (e.g. 2022-23 indicates the flu season running late 2022 through early 2023) | string |
+| `message` | `success` or error message | string |
 
 Notes:
 * The `flusurv` age groups are, in general, not the same as the ILINet
