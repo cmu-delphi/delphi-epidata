@@ -118,8 +118,11 @@ class CovidcastEndpointTests(CovidcastBase):
         with self.subTest("same contents sans excluded columns"):
             compat = self._fetch("/", signal=first.signal_pair(), geo=first.geo_pair(), time="day:*", is_compatibility=True)
             regular = self._fetch("/", signal=first.signal_pair(), geo=first.geo_pair(), time="day:*")
-            regular_sans_excluded = [{k: v for k, v in row.items() if k not in ["source", "geo_type", "time_type"]} for row in regular["epidata"]]
-            self.assertEqual(compat["epidata"], regular_sans_excluded)
+            # Remove keys from the regular row which are excluded in the compat rows
+            for row in regular['epidata']:
+                for key in ['source', 'geo_type', 'time_type']:
+                    del row[key]
+            self.assertEqual(compat, regular)
 
     def test_compatibility_restricted_source(self):
         """Restricted request at the /api.php endpoint."""
