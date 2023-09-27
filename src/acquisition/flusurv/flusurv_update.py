@@ -19,74 +19,9 @@ See also:
 === Data Dictionary ===
 =======================
 
-`flusurv` is the table where US flu hospitalization rates are stored.
-+-------------------+-------------+------+-----+---------+----------------+
-| Field             | Type        | Null | Key | Default | Extra          |
-+-------------------+-------------+------+-----+---------+----------------+
-| id                | int(11)     | NO   | PRI | NULL    | auto_increment |
-| release_date      | date        | NO   | MUL | NULL    |                |
-| issue             | int(11)     | NO   | MUL | NULL    |                |
-| epiweek           | int(11)     | NO   | MUL | NULL    |                |
-| location          | varchar(32) | NO   | MUL | NULL    |                |
-| lag               | int(11)     | NO   | MUL | NULL    |                |
-| rate_age_0        | double      | YES  |     | NULL    |                |
-| rate_age_1        | double      | YES  |     | NULL    |                |
-| rate_age_2        | double      | YES  |     | NULL    |                |
-| rate_age_3        | double      | YES  |     | NULL    |                |
-| rate_age_4        | double      | YES  |     | NULL    |                |
-| rate_overall      | double      | YES  |     | NULL    |                |
-| rate_age_5        | double      | YES  |     | NULL    |                |
-| rate_age_6        | double      | YES  |     | NULL    |                |
-| rate_age_7        | double      | YES  |     | NULL    |                |
-| rate_age_18t29    | double      | YES  |     | NULL    |                |
-| rate_age_30t39    | double      | YES  |     | NULL    |                |
-| rate_age_40t49    | double      | YES  |     | NULL    |                |
-| rate_age_5t11     | double      | YES  |     | NULL    |                |
-| rate_age_12t17    | double      | YES  |     | NULL    |                |
-| rate_age_lt18     | double      | YES  |     | NULL    |                |
-| rate_age_gte18    | double      | YES  |     | NULL    |                |
-| rate_race_white   | double      | YES  |     | NULL    |                |
-| rate_race_black   | double      | YES  |     | NULL    |                |
-| rate_race_hisp    | double      | YES  |     | NULL    |                |
-| rate_race_asian   | double      | YES  |     | NULL    |                |
-| rate_race_natamer | double      | YES  |     | NULL    |                |
-| rate_sex_male     | double      | YES  |     | NULL    |                |
-| rate_sex_female   | double      | YES  |     | NULL    |                |
-| season            | char(7)     | YES  |     | NULL    |                |
-+-------------------+-------------+------+-----+---------+----------------+
-id: unique identifier for each record
-release_date: the date when this record was first published by the CDC
-issue: the epiweek of publication (e.g. issue 201453 includes epiweeks up to
-  and including 2014w53, but not 2015w01 or following)
-epiweek: the epiweek during which the data was collected
-location: the name of the catchment (e.g. 'network_all', 'CA', 'NY_albany')
-lag: number of weeks between `epiweek` and `issue`
-rate_age_0: hospitalization rate for ages 0-4
-rate_age_1: hospitalization rate for ages 5-17
-rate_age_2: hospitalization rate for ages 18-49
-rate_age_3: hospitalization rate for ages 50-64
-rate_age_4: hospitalization rate for ages 65+
-rate_overall: overall hospitalization rate
-rate_age_5: hospitalization rate for ages 65-74
-rate_age_6: hospitalization rate for ages 75-84
-rate_age_7: hospitalization rate for ages 85+
-rate_age_18t29: hospitalization rate for ages 18 to 29
-rate_age_30t39: hospitalization rate for ages 30 to 39
-rate_age_40t49: hospitalization rate for ages 40 to 49
-rate_age_5t11: hospitalization rate for ages 5 to 11
-rate_age_12t17: hospitalization rate for ages 12 to 17
-rate_age_lt18: hospitalization rate for ages <18
-rate_age_gte18: hospitalization rate for ages >=18
-rate_race_white: hospitalization rate for white people
-rate_race_black: hospitalization rate for black people
-rate_race_hisp: hospitalization rate for Hispanic/Latino people
-rate_race_asian: hospitalization rate for Asian people
-rate_race_natamer: hospitalization rate for American Indian/Alaskan Native people
-rate_sex_male: hospitalization rate for males
-rate_sex_female: hospitalization rate for females
-season: indicates the start and end years of the winter flu season in the
-  format YYYY-YY (e.g. 2022-23 indicates the flu season running late 2022
-  through early 2023)
+`flusurv` is the table where US flu hospitalization rates are stored. See
+`strc/ddl/fluview.sql` for the `flusurv` schema. See `docs/api/flusurv.md` for
+field descriptions.
 
 =================
 === Changelog ===
