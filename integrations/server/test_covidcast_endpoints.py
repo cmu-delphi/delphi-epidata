@@ -115,6 +115,12 @@ class CovidcastEndpointTests(CovidcastBase):
             out = self._fetch("/", signal=first.signal_pair(), geo=first.geo_pair(), time="day:*", is_compatibility=True)
             self.assertEqual(out["epidata"], [row.as_api_compatibility_row_dict() for row in rows])
 
+        with self.subTest("same contents sans excluded columns"):
+            compat = self._fetch("/", signal=first.signal_pair(), geo=first.geo_pair(), time="day:*", is_compatibility=True)
+            regular = self._fetch("/", signal=first.signal_pair(), geo=first.geo_pair(), time="day:*")
+            regular_sans_excluded = [{k: v for k, v in row.items() if k not in ["source", "geo_type", "time_type"]} for row in regular["epidata"]]
+            self.assertEqual(compat["epidata"], regular_sans_excluded)
+
     def test_compatibility_restricted_source(self):
         """Restricted request at the /api.php endpoint."""
         rows = [CovidcastTestRow.make_default_row(time_value=2020_04_01 + i, value=i, source="quidel") for i in range(10)]
