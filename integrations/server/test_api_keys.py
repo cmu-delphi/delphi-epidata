@@ -2,7 +2,7 @@
 import requests
 
 # first party
-from delphi.epidata.common.integration_test_base_class import DelphiTestBase
+from delphi.epidata.common.delphi_test_base import DelphiTestBase
 
 
 class APIKeysTets(DelphiTestBase):

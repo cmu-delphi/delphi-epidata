@@ -6,38 +6,15 @@ import unittest
 from os import path
 
 # first party
-import delphi.operations.secrets as secrets
-from delphi.epidata.acquisition.covidcast.database import Database
-from delphi.epidata.acquisition.covidcast.test_utils import covidcast_rows_from_args
+from delphi.epidata.common.covidcast_test_base import covidcast_rows_from_args, CovidcastTestBase
 
 # py3tester coverage target (equivalent to `import *`)
 __test_target__ = 'delphi.epidata.acquisition.covidcast.database'
 
 Example = namedtuple("example", "given expected")
 
-class DeleteBatch(unittest.TestCase):
+class DeleteBatch(CovidcastTestBase):
     """Tests batch deletions"""
-
-
-    def setUp(self):
-        """Perform per-test setup."""
-
-        # use the local instance of the epidata database
-        secrets.db.host = 'delphi_database_epidata'
-        secrets.db.epi = ('user', 'pass')
-
-        # will use secrets as set above
-        self._db = Database()
-        self._db.connect()
-
-        for table in "epimetric_load  epimetric_latest  epimetric_full  geo_dim  signal_dim".split():
-            self._db._cursor.execute(f"TRUNCATE TABLE {table}")
-
-
-    def tearDown(self):
-        """Perform per-test teardown."""
-        self._db.disconnect(False)
-        del self._db
 
     @unittest.skip("Database user would require FILE privileges")
     def test_delete_from_file(self):

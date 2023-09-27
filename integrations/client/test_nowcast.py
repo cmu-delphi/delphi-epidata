@@ -1,55 +1,17 @@
 """Integration tests for delphi_epidata.py."""
 
-# standard library
-import unittest
-
-# third party
-import mysql.connector
-
 # first party
-from delphi.epidata.client.delphi_epidata import Epidata
-import delphi.operations.secrets as secrets
+from delphi.epidata.common.delphi_test_base import DelphiTestBase
 
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.client.delphi_epidata'
 
-class DelphiEpidataPythonClientNowcastTests(unittest.TestCase):
+class DelphiEpidataPythonClientNowcastTests(DelphiTestBase):
   """Tests the Python client."""
 
-  def setUp(self):
+  def localSetUp(self):
     """Perform per-test setup."""
-
-    # connect to the `epidata` database and clear relevant tables
-    cnx = mysql.connector.connect(
-        user='user',
-        password='pass',
-        host='delphi_database_epidata',
-        database='epidata')
-    cur = cnx.cursor()
-
-    cur.execute('truncate table covidcast_nowcast')
-    cur.execute('delete from api_user')
-    cur.execute('insert into api_user(api_key, email) values ("key", "email")')
-
-    cnx.commit()
-    cur.close()
-
-    # make connection and cursor available to test cases
-    self.cnx = cnx
-    self.cur = cnx.cursor()
-
-    # use the local instance of the Epidata API
-    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata'
-    Epidata.auth = ('epidata', 'key')
-
-    # use the local instance of the epidata database
-    secrets.db.host = 'delphi_database_epidata'
-    secrets.db.epi = ('user', 'pass')
-
-  def tearDown(self):
-    """Perform per-test teardown."""
-    self.cur.close()
-    self.cnx.close()
+    self.truncate_tables_list = ["covidcast_nowcast"]
 
   def test_covidcast_nowcast(self):
     """Test that the covidcast_nowcast endpoint returns expected data."""
@@ -62,7 +24,7 @@ class DelphiEpidataPythonClientNowcastTests(unittest.TestCase):
     self.cnx.commit()
 
     # fetch data
-    response = Epidata.covidcast_nowcast(
+    response = self.epidata_client.covidcast_nowcast(
       'src', ['sig1', 'sig2'], 'sensor', 'day', 'county', 20200101, '01001')
 
     # request two signals
@@ -87,9 +49,9 @@ class DelphiEpidataPythonClientNowcastTests(unittest.TestCase):
     })
 
     # request range of issues
-    response = Epidata.covidcast_nowcast(
+    response = self.epidata_client.covidcast_nowcast(
       'src', 'sig1', 'sensor', 'day', 'county', 20200101, '01001',
-      issues=Epidata.range(20200101, 20200102))
+      issues=self.epidata_client.range(20200101, 20200102))
 
     self.assertEqual(response, {
       'result': 1,
@@ -112,7 +74,7 @@ class DelphiEpidataPythonClientNowcastTests(unittest.TestCase):
     })
 
     # request as_of
-    response = Epidata.covidcast_nowcast(
+    response = self.epidata_client.covidcast_nowcast(
       'src', 'sig1', 'sensor', 'day', 'county', 20200101, '01001',
       as_of=20200101)
 
@@ -130,7 +92,7 @@ class DelphiEpidataPythonClientNowcastTests(unittest.TestCase):
     })
 
     # request unavailable data
-    response = Epidata.covidcast_nowcast(
+    response = self.epidata_client.covidcast_nowcast(
       'src', 'sig1', 'sensor', 'day', 'county', 22222222, '01001')
 
     self.assertEqual(response, {'epidata': [], 'result': -2, 'message': 'no results'})

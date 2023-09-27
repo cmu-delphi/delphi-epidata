@@ -3,79 +3,22 @@
 # standard library
 from datetime import date
 import os
-import unittest
-import argparse
 
 # third party
-import mysql.connector
 import pandas as pd
 import numpy as np
 
 # first party
 from delphi_utils import Nans
-from delphi.epidata.client.delphi_epidata import Epidata
 from delphi.epidata.acquisition.covidcast.csv_to_database import main, get_argument_parser
-import delphi.operations.secrets as secrets
+from delphi.epidata.common.covidcast_test_base import CovidcastTestBase
 
 # py3tester coverage target (equivalent to `import *`)
 __test_target__ = 'delphi.epidata.acquisition.covidcast.csv_to_database'
 
 
-class CsvUploadingTests(unittest.TestCase):
+class CsvUploadingTests(CovidcastTestBase):
   """Tests covidcast CSV uploading."""
-
-  def setUp(self):
-    """Perform per-test setup."""
-
-    # connect to the `epidata` database and clear the `covidcast` table
-    cnx = mysql.connector.connect(
-        user='user',
-        password='pass',
-        host='delphi_database_epidata',
-        database='covid')
-    cur = cnx.cursor()
-
-    # clear all tables
-    cur.execute("truncate table epimetric_load")
-    cur.execute("truncate table epimetric_full")
-    cur.execute("truncate table epimetric_latest")
-    cur.execute("truncate table geo_dim")
-    cur.execute("truncate table signal_dim")
-    # reset the `covidcast_meta_cache` table (it should always have one row)
-    cur.execute('update covidcast_meta_cache set timestamp = 0, epidata = "[]"')
-
-    cnx.commit()
-    cur.close()
-
-    # make connection and cursor available to test cases
-    self.cnx = cnx
-    self.cur = cnx.cursor()
-
-    # use the local instance of the epidata database
-    secrets.db.host = 'delphi_database_epidata'
-    secrets.db.epi = ('user', 'pass')
-
-    epidata_cnx = mysql.connector.connect(
-        user='user',
-        password='pass',
-        host='delphi_database_epidata',
-        database='epidata')
-    epidata_cur = epidata_cnx.cursor()
-
-    epidata_cur.execute("DELETE FROM `api_user`")
-    epidata_cur.execute('INSERT INTO `api_user`(`api_key`, `email`) VALUES("key", "email")')
-    epidata_cnx.commit()
-    epidata_cur.close()
-    epidata_cnx.close()
-
-    # use the local instance of the Epidata API
-    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata'
-    Epidata.auth = ('epidata', 'key')
-
-  def tearDown(self):
-    """Perform per-test teardown."""
-    self.cur.close()
-    self.cnx.close()
 
   @staticmethod
   def apply_lag(expected_epidata):
@@ -91,11 +34,11 @@ class CsvUploadingTests(unittest.TestCase):
     return expected_epidata
 
   def verify_timestamps_and_defaults(self):
-    self.cur.execute('''
+    self._db._cursor.execute('''
 select value_updated_timestamp from epimetric_full
 UNION ALL
 select value_updated_timestamp from epimetric_latest''')
-    for (value_updated_timestamp,) in self.cur:
+    for (value_updated_timestamp,) in self._db._cursor:
       self.assertGreater(value_updated_timestamp, 0)
 
   def test_uploading(self):
@@ -130,7 +73,7 @@ select value_updated_timestamp from epimetric_latest''')
 
       # upload CSVs
       main(args)
-      response = Epidata.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
+      response = self.epidata_client.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
 
       expected_values = pd.concat([values, pd.DataFrame({ "geo_type": "state", "source": "src-name", "time_type": "day", "time_value": [20200419] * 3, "signal": [signal_name] * 3, "direction": [None] * 3})], axis=1).rename(columns=uploader_column_rename).to_dict(orient="records")
       expected_response = {'result': 1, 'epidata': self.apply_lag(expected_values), 'message': 'success'}
@@ -158,7 +101,7 @@ select value_updated_timestamp from epimetric_latest''')
 
       # upload CSVs
       main(args)
-      response = Epidata.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
+      response = self.epidata_client.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
 
       expected_values = pd.concat([values, pd.DataFrame({
         "geo_type": "state",
@@ -195,7 +138,7 @@ select value_updated_timestamp from epimetric_latest''')
 
       # upload CSVs
       main(args)
-      response = Epidata.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
+      response = self.epidata_client.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
 
       expected_response = {'epidata': [], 'result': -2, 'message': 'no results'}
 
@@ -220,7 +163,7 @@ select value_updated_timestamp from epimetric_latest''')
 
       # upload CSVs
       main(args)
-      response = Epidata.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
+      response = self.epidata_client.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
 
       expected_values_df = pd.concat([values, pd.DataFrame({
         "geo_type": "state",
@@ -256,7 +199,7 @@ select value_updated_timestamp from epimetric_latest''')
 
       # upload CSVs
       main(args)
-      response = Epidata.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
+      response = self.epidata_client.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
 
       expected_values = pd.concat([values, pd.DataFrame({
         "geo_type": "state",
@@ -290,7 +233,7 @@ select value_updated_timestamp from epimetric_latest''')
 
       # upload CSVs
       main(args)
-      response = Epidata.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
+      response = self.epidata_client.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
 
       expected_response = {'epidata': [], 'result': -2, 'message': 'no results'}
 
