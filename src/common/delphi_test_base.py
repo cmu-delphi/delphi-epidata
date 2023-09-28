@@ -3,6 +3,7 @@ import unittest
 
 # third party
 import mysql.connector
+import requests
 
 # first party
 from delphi.epidata.client.delphi_epidata import Epidata
@@ -23,23 +24,49 @@ class DelphiTestBase(unittest.TestCase):
         self.epidata_client.auth = ("epidata", "key")
 
     def create_key_with_role(self, cur, role_name: str):
-        cur.execute(f'INSERT INTO `api_user`(`api_key`, `email`) VALUES("{role_name}_key", "{role_name}_email")')
+        cur.execute(
+            f'INSERT INTO `api_user`(`api_key`, `email`) VALUES("{role_name}_key", "{role_name}_email")'
+        )
         cur.execute(f'INSERT INTO `user_role`(`name`) VALUES("{role_name}")')
         cur.execute(
             f'INSERT INTO `user_role_link`(`user_id`, `role_id`) SELECT `api_user`.`id`, `user_role`.`id` FROM `api_user` JOIN `user_role` WHERE `api_user`.`api_key`="{role_name}_key" AND `user_role`.`name`="{role_name}"'
         )
 
+    def _make_request(
+        self,
+        endpoint: str = "covidcast",
+        auth: tuple = None,
+        json: bool = False,
+        raise_for_status: bool = False,
+        params: dict = None,
+    ):
+        response = requests.get(
+            f"{self.epidata_client.BASE_URL}/{endpoint}", params=params, auth=auth
+        )
+        if raise_for_status:
+            response.raise_for_status()
+        if json:
+            return response.json()
+        return response
+
     def setUp(self) -> None:
         """Perform per-test setup."""
 
         # connect to the `epidata` database
-        cnx = mysql.connector.connect(user="user", password="pass", host="delphi_database_epidata", database="epidata")
+        cnx = mysql.connector.connect(
+            user="user",
+            password="pass",
+            host="delphi_database_epidata",
+            database="epidata",
+        )
         cur = cnx.cursor()
 
         cur.execute("DELETE FROM `api_user`")
         cur.execute("TRUNCATE TABLE `user_role`")
         cur.execute("TRUNCATE TABLE `user_role_link`")
-        cur.execute('INSERT INTO `api_user`(`api_key`, `email`) VALUES ("key", "email")')
+        cur.execute(
+            'INSERT INTO `api_user`(`api_key`, `email`) VALUES ("key", "email")'
+        )
 
         self.localSetUp()
 

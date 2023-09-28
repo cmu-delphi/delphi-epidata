@@ -1,11 +1,5 @@
 """Integration tests for the `fluview` endpoint."""
 
-# standard library
-import unittest
-
-# third party
-import mysql.connector
-
 # first party
 from delphi.epidata.common.delphi_test_base import DelphiTestBase
 

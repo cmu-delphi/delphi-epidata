@@ -1,11 +1,6 @@
 """Integration tests for the `covidcast_nowcast` endpoint."""
-import requests
 
 from delphi.epidata.common.covidcast_test_base import CovidcastTestBase
-
-# use the local instance of the Epidata API
-BASE_URL = 'http://delphi_web_epidata/epidata'
-AUTH = ('epidata', 'key')
 
 
 class CovidcastTests(CovidcastTestBase):
@@ -14,12 +9,6 @@ class CovidcastTests(CovidcastTestBase):
   def localSetUp(self):
     """Perform per-test setup."""
     self.truncate_tables_list = ["covidcast_nowcast"]
-
-  @staticmethod
-  def _make_request(params: dict):
-    response = requests.get(f"{BASE_URL}/covidcast_nowcast", params=params, auth=AUTH)
-    response.raise_for_status()
-    return response.json()
 
   def test_query(self):
     """Query nowcasts using default and specified issue."""
@@ -42,7 +31,7 @@ class CovidcastTests(CovidcastTestBase):
       'geo_value': '01001',
       'issues': 20200101
     }
-    response = self._make_request(params=params)
+    response = self._make_request(endpoint="covidcast_nowcast", auth=self.epidata_client.auth, json=True, raise_for_status=True, params=params)
     self.assertEqual(response, {
       'result': 1,
       'epidata': [{
@@ -58,7 +47,6 @@ class CovidcastTests(CovidcastTestBase):
 
     # make request without specific issue date
     params={
-      'source': 'covidcast_nowcast',
       'data_source': 'src',
       'signals': 'sig',
       'sensor_names': 'sensor',
@@ -67,7 +55,7 @@ class CovidcastTests(CovidcastTestBase):
       'time_values': 20200101,
       'geo_value': '01001',
     }
-    response = self._make_request(params=params)
+    response = self._make_request(endpoint="covidcast_nowcast", auth=self.epidata_client.auth, json=True, raise_for_status=True, params=params)
 
     self.assertEqual(response, {
       'result': 1,
@@ -83,7 +71,6 @@ class CovidcastTests(CovidcastTestBase):
     })
 
     params={
-      'source': 'covidcast_nowcast',
       'data_source': 'src',
       'signals': 'sig',
       'sensor_names': 'sensor',
@@ -93,7 +80,7 @@ class CovidcastTests(CovidcastTestBase):
       'geo_value': '01001',
       'as_of': 20200101
     }
-    response = self._make_request(params=params)
+    response = self._make_request(endpoint="covidcast_nowcast", auth=self.epidata_client.auth, json=True, raise_for_status=True, params=params)
 
     self.assertEqual(response, {
       'result': 1,

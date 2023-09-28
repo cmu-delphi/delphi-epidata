@@ -3,9 +3,6 @@
 # standard library
 import json
 
-# third party
-import requests
-
 # first party
 from delphi_utils import Nans
 from delphi.epidata.common.covidcast_test_base import CovidcastTestBase
@@ -17,20 +14,9 @@ __test_target__ = (
   'covidcast_meta_cache_updater'
 )
 
-# use the local instance of the Epidata API
-BASE_URL = 'http://delphi_web_epidata/epidata'
-AUTH = ("epidata", "key")
-
 
 class CovidcastMetaCacheTests(CovidcastTestBase):
   """Tests covidcast metadata caching."""
-
-  @staticmethod
-  def _make_request():
-    params = {'cached': 'true'}
-    response = requests.get(f"{BASE_URL}/covidcast_meta", params=params, auth=AUTH)
-    response.raise_for_status()
-    return response.json()
 
   def test_caching(self):
     """Populate, query, cache, query, and verify the cache."""
@@ -110,7 +96,7 @@ class CovidcastMetaCacheTests(CovidcastTestBase):
     self._db._connection.commit()
 
     # fetch the cached version (manually)
-    epidata4 = self._make_request()
+    epidata4 = self._make_request(endpoint="covidcast_meta", json=True, params={'cached': 'true'}, auth=self.epidata_client.auth, raise_for_status=True)
 
     # make sure the cache was actually served
     self.assertEqual(epidata4, {
@@ -130,7 +116,7 @@ class CovidcastMetaCacheTests(CovidcastTestBase):
     self._db._connection.commit()
 
     # fetch the cached version (manually)
-    epidata5 = self._make_request()
+    epidata5 = self._make_request(endpoint="covidcast_meta", json=True, params={'cached': 'true'}, auth=self.epidata_client.auth, raise_for_status=True)
 
     # make sure the cache was returned anyhow
     self.assertEqual(epidata4, epidata5)

@@ -5,6 +5,8 @@ from delphi.epidata.common.delphi_test_base import DelphiTestBase
 class SignalDashboardTest(DelphiTestBase):
     """Basic integration tests for signal_dashboard_coverage and signal_dashboard_status endpints."""
 
+    # NOTE: In all other tests localSetUp() method was used. But it is not applicable for this test
+    # due to order of commands, so thats why method reload + calling super was required.
     def setUp(self) -> None:
         """Perform per-test setup."""
 
