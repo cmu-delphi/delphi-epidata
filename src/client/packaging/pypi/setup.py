@@ -12,6 +12,9 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/cmu-delphi/delphi-epidata",
+    project_urls={
+        "Changelog": "https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/packaging/pypi/CHANGELOG.md",
+    },
     packages=setuptools.find_packages(),
     install_requires=["aiohttp", "requests>=2.7.0", "tenacity"],
     classifiers=[
