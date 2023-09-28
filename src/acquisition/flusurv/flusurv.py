@@ -179,7 +179,9 @@ def group_by_epiweek(data, metadata):
 
     Args:
         data: The "default_data" element of a GRASP API response object,
-        as fetched with 'fetch_flusurv_location' or `fetch_flusurv_metadata`
+          as fetched with 'fetch_flusurv_location' or `fetch_flusurv_metadata`
+        metadata: The JSON result returned from `fetch_flusurv_metadata()`
+          containing mappings from strata IDs and season IDs to descriptions.
 
     Returns a dictionary of the format
         {
@@ -222,7 +224,6 @@ def group_by_epiweek(data, metadata):
     #     ]
     for obs in data:
         epiweek = mmwrid_to_epiweek(obs["mmwrid"])
-        season = id_season_map[obs["seasonid"]]
         groupname = groupids_to_name(
             ageid = obs["ageid"], sexid = obs["sexid"], raceid = obs["raceid"],
             id_label_map = id_label_map
@@ -230,7 +231,7 @@ def group_by_epiweek(data, metadata):
 
         # Set season description. This will be overwritten every iteration,
         #  but should always have the same value per epiweek group.
-        data_out[epiweek]["season"] = season
+        data_out[epiweek]["season"] = id_season_map[obs["seasonid"]]
 
         rate = obs["weeklyrate"]
         prev_rate = data_out[epiweek][groupname]
@@ -275,15 +276,15 @@ def get_data(location, seasonids, metadata):
     return data_out
 
 
-def get_current_issue(data):
+def get_current_issue(metadata):
     """
     Extract the current issue from the FluSurv API result.
 
     Args:
-        data: dictionary representing a JSON response from the FluSurv API
+        metadata: dictionary representing a JSON response from the FluSurv API
     """
     # extract
-    date = datetime.strptime(data["loaddatetime"], "%b %d, %Y")
+    date = datetime.strptime(metadata["loaddatetime"], "%b %d, %Y")
 
     # convert and return
     return EpiDate(date.year, date.month, date.day).get_ew()
