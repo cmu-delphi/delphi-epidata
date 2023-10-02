@@ -16,7 +16,7 @@ class GhtTest(DelphiTestBase):
             ("/n/query", "US", "200101", "12345"),
         )
         self.cnx.commit()
-        ghtauth = ("epidata", "ght_key")
+        ghtauth = "ght_key"
         response = self.epidata_client.ght(locations="US", epiweeks="200101", query="/n/query", auth=ghtauth)
         self.assertEqual(
             response,
