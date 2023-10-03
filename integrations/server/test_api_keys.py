@@ -21,7 +21,7 @@ class APIKeysTets(DelphiTestBase):
         public_route = "http://delphi_web_epidata/epidata/version"
         status_codes = set()
         for _ in range(10):
-            status_codes.add(self._make_request("version", public_route).status_code)
+            status_codes.add(self._make_request("version").status_code)
         self.assertEqual(status_codes, {200})
 
     def test_no_multiples_data_source(self):
