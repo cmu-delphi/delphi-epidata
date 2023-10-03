@@ -339,13 +339,15 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
       self.params_from_row(rows[0], source='covidcast'),
       self.params_from_row(rows[1], source='covidcast')
     ]*12, batch_size=10)
-    responses = [i[0] for i in test_output]
-    # check response is same as standard covidcast call, using 24 calls to test batch sizing
+    responses = [i[0]["epidata"] for i in test_output]
+    # check response is same as standard covidcast call (minus fields omitted by the api.php endpoint),
+    # using 24 calls to test batch sizing
+    ignore_fields = ["source", "time_type", "geo_type"]
     self.assertEqual(
       responses,
       [
-        Epidata.covidcast(**self.params_from_row(rows[0])),
-        Epidata.covidcast(**self.params_from_row(rows[1])),
+        [{k: v for k, v in row.items() if k not in ignore_fields} for row in Epidata.covidcast(**self.params_from_row(rows[0]))["epidata"]],
+        [{k: v for k, v in row.items() if k not in ignore_fields} for row in Epidata.covidcast(**self.params_from_row(rows[1]))["epidata"]],
       ]*12
     )
 
