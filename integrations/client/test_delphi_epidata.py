@@ -335,25 +335,28 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     ]
     self._insert_rows(rows)
 
-    test_output = Epidata.async_epidata('covidcast', [
-      self.params_from_row(rows[0]),
-      self.params_from_row(rows[1])
+    test_output = Epidata.async_epidata([
+      self.params_from_row(rows[0], source='covidcast'),
+      self.params_from_row(rows[1], source='covidcast')
     ]*12, batch_size=10)
-    responses = [i[0] for i in test_output]
-    # check response is same as standard covidcast call, using 24 calls to test batch sizing
+    responses = [i[0]["epidata"] for i in test_output]
+    # check response is same as standard covidcast call (minus fields omitted by the api.php endpoint),
+    # using 24 calls to test batch sizing
+    ignore_fields = CovidcastTestRow._api_row_compatibility_ignore_fields
     self.assertEqual(
       responses,
       [
-        Epidata.covidcast(**self.params_from_row(rows[0])),
-        Epidata.covidcast(**self.params_from_row(rows[1])),
+        [{k: row[k] for k in row.keys() - ignore_fields} for row in Epidata.covidcast(**self.params_from_row(rows[0]))["epidata"]],
+        [{k: row[k] for k in row.keys() - ignore_fields} for row in Epidata.covidcast(**self.params_from_row(rows[1]))["epidata"]],
       ]*12
     )
 
   @fake_epidata_endpoint
   def test_async_epidata_fail(self):
     with pytest.raises(ClientResponseError, match="404, message='NOT FOUND'"):
-      Epidata.async_epidata('covidcast', [
+      Epidata.async_epidata([
         {
+          'source': 'covidcast',
           'data_source': 'src',
           'signals': 'sig',
           'time_type': 'day',

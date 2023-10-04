@@ -691,14 +691,17 @@ class Epidata:
         return Epidata._request("covidcast_nowcast", params)
 
     @staticmethod
-    def async_epidata(endpoint, param_list, batch_size=50):
-        """Make asynchronous Epidata calls for a list of parameters."""
+    def async_epidata(param_list, batch_size=50):
+        """[DEPRECATED] Make asynchronous Epidata calls for a list of parameters."""
 
-        request_url = f"{Epidata.BASE_URL}/{endpoint}"
+        import warnings
+        warnings.filterwarnings("once", category=DeprecationWarning, module="delphi_epidata")
+        warnings.warn("Method `Epidata.async_epidata()` is deprecated and will be removed in a future version.",
+                      category=DeprecationWarning)
 
         async def async_get(params, session):
             """Helper function to make Epidata GET requests."""
-            async with session.get(request_url, params=params) as response:
+            async with session.get(f"{Epidata.BASE_URL}/api.php", params=params) as response:
                 response.raise_for_status()
                 return await response.json(), params
 
