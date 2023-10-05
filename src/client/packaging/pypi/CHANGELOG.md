@@ -5,7 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [4.1.11] - 2023-10-12
 
-https://github.com/cmu-delphi/delphi-epidata/pull/1288
+### Includes
+- https://github.com/cmu-delphi/delphi-epidata/pull/1288
 
 ### Changed
 - Internally uses newer endpoint-specific URLs instead of an older compatibility alias URL.
