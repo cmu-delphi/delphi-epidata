@@ -57,6 +57,7 @@ import mysql.connector
 # first party
 from .healthtweets import HealthTweets
 import delphi.operations.secrets as secrets
+from delphi.epidata.common.logger import get_structured_logger
 
 
 def run():
@@ -77,7 +78,7 @@ def run():
     )
     for (date1, date2) in cur:
         date1, date2 = date1.strftime("%Y-%m-%d"), date2.strftime("%Y-%m-%d")
-    print(f"Checking dates between {date1} and {date2}...")
+    get_structured_logger("twitter_update").info(f"Checking dates between {date1} and {date2}...")
 
     # keep track of how many rows were added
     rows_before = get_num_rows()
@@ -102,7 +103,7 @@ def run():
 
     # keep track of how many rows were added
     rows_after = get_num_rows()
-    print(f"Inserted {int(rows_after - rows_before)}/{int(total_rows)} row(s)")
+    get_structured_logger("twitter_update").info(f"Inserted {int(rows_after - rows_before)}/{int(total_rows)} row(s)")
 
     # cleanup
     cur.close()

@@ -14,7 +14,7 @@ Stores versioned KCDC ILI data from KCDC website.
 | Field        | Type        | Null | Key | Default | Extra          |
 +--------------+-------------+------+-----+---------+----------------+
 | id           | int(11)     | NO   | PRI | NULL    | auto_increment |
-| release_date | date        | NO   | MUL | NULL    |                | 
+| release_date | date        | NO   | MUL | NULL    |                |
 | issue        | int(11)     | NO   | MUL | NULL    |                |
 | epiweek      | int(11)     | NO   | MUL | NULL    |                |
 | region       | varchar(12) | NO   | MUL | NULL    |                |
@@ -41,6 +41,9 @@ import mysql.connector
 import delphi.operations.secrets as secrets
 from delphi.utils.epiweek import delta_epiweeks, range_epiweeks, add_epiweeks
 from delphi.utils.epidate import EpiDate
+from delphi.epidata.common.logger import get_structured_logger
+
+logger = get_structured_logger("kcdc_update")
 
 
 def ensure_tables_exist():
@@ -126,7 +129,7 @@ def update_from_data(ews, ilis, date, issue, test_mode=False):
     u, p = secrets.db.epi
     cnx = mysql.connector.connect(user=u, password=p, database="epidata")
     rows1 = get_rows(cnx)
-    print(f"rows before: {int(rows1)}")
+    logger.info(f"rows before: {int(rows1)}")
     insert = cnx.cursor()
 
     sql = """
@@ -155,12 +158,12 @@ def update_from_data(ews, ilis, date, issue, test_mode=False):
     # cleanup
     insert.close()
     if test_mode:
-        print("test mode, not committing")
+        logger.info("test mode, not committing")
         rows2 = rows1
     else:
         cnx.commit()
         rows2 = get_rows(cnx)
-    print(f"rows after: {int(rows2)} (added {int(rows2 - rows1)})")
+    logger.info(f"rows after: {int(rows2)} (added {int(rows2 - rows1)})")
     cnx.close()
 
 
@@ -173,7 +176,7 @@ def main():
     args = parser.parse_args()
 
     date = datetime.datetime.now().strftime("%Y-%m-%d")
-    print(f"assuming release date is today, {date}")
+    logger.info(f"assuming release date is today, {date}")
     issue = EpiDate.today().get_ew()
 
     ensure_tables_exist()

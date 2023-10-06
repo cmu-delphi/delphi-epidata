@@ -7,6 +7,8 @@ import sqlalchemy
 
 import delphi.operations.secrets as secrets
 from delphi.epidata.acquisition.covidcast.csv_importer import CsvImporter, PathDetails
+from delphi.epidata.common.logger import get_structured_logger
+
 
 SENSOR_CSV_PATH = "/common/covidcast_nowcast/receiving/"
 SUCCESS_DIR = "archive/successful"
@@ -85,7 +87,7 @@ def _move_after_processing(filepath, success):
     new_dir = os.path.dirname(filepath).replace("receiving", archive_dir)
     os.makedirs(new_dir, exist_ok=True)
     move(filepath, filepath.replace("receiving", archive_dir))
-    print(f"{filepath} moved to {archive_dir}")
+    get_structured_logger("covidcast_nowcast_load_sensors").info(f"{filepath} moved to {archive_dir}")
 
 
 def _create_upsert_method(meta):

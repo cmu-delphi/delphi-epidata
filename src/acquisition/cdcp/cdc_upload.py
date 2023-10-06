@@ -84,6 +84,10 @@ import mysql.connector
 
 # first party
 import delphi.operations.secrets as secrets
+from delphi.epidata.common.logger import get_structured_logger
+
+
+logger = get_structured_logger("cdc_upload")
 
 
 STATES = {
@@ -216,7 +220,7 @@ def upload(test_mode):
     def parse_zip(zf, level=1):
         for name in zf.namelist():
             prefix = " " * level
-            print(prefix, name)
+            logger.info(f"{prefix}, {name}")
             if name[-4:] == ".zip":
                 with zf.open(name) as temp:
                     with ZipFile(io.BytesIO(temp.read())) as zf2:
@@ -228,30 +232,29 @@ def upload(test_mode):
                 elif "Regions for all CDC" in name:
                     handler = parse_csv(True)
                 else:
-                    print(prefix, " (skipped)")
+                    logger.info(f"{prefix}, (skipped)")
                 if handler is not None:
                     with zf.open(name) as temp:
                         count = handler(csv.reader(io.StringIO(str(temp.read(), "utf-8"))))
-                    print(prefix, f" {int(count)} rows")
+                    logger.info(f"{prefix}, {int(count)} rows")
             else:
-                print(prefix, " (ignored)")
+                logger.info(f"{prefix} (ignored)")
 
     # find, parse, and move zip files
     zip_files = glob.glob("/common/cdc_stage/*.zip")
-    print("searching...")
+    logger.info("searching...")
     for f in zip_files:
-        print(" ", f)
-    print("parsing...")
+        logger.info(f"{f}")
     for f in zip_files:
         with ZipFile(f) as zf:
             parse_zip(zf)
-    print("moving...")
+    logger.info("moving...")
     for f in zip_files:
         src = f
         dst = os.path.join("/home/automation/cdc_page_stats/", os.path.basename(src))
-        print(" ", src, "->", dst)
+        logger.info(" ", src, "->", dst)
         if test_mode:
-            print("  (test mode enabled - not moved)")
+            logger.info("  (test mode enabled - not moved)")
         else:
             shutil.move(src, dst)
             if not os.path.isfile(dst):

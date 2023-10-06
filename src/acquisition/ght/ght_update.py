@@ -71,13 +71,16 @@ import time
 
 # third party
 import mysql.connector
-from apiclient.discovery import build
 
 # first party
 from .google_health_trends import GHT
 from .google_health_trends import NO_LOCATION_STR
 import delphi.operations.secrets as secrets
 import delphi.utils.epiweek as flu
+from delphi.epidata.common.logger import get_structured_logger
+
+
+logger = get_structured_logger("ght_update")
 
 
 # secret key for accessing Google's health trends APIs
@@ -266,7 +269,7 @@ def update(locations, terms, first=None, last=None, countries=["US"]):
         ew0 = 200401 if ew0 is None else flu.add_epiweeks(ew0, -4)
     ew0 = ew0 if first is None else first
     ew1 = ew1 if last is None else last
-    print(f"Checking epiweeks between {int(ew0)} and {int(ew1)}...")
+    logger.info(f"Checking epiweeks between {int(ew0)} and {int(ew1)}...")
 
     # keep track of how many rows were added
     rows_before = get_num_rows()
@@ -283,7 +286,7 @@ def update(locations, terms, first=None, last=None, countries=["US"]):
     total_rows = 0
     ght = GHT(API_KEY)
     for term in terms:
-        print(f" [{term}] using term")
+        logger.info(f" [{term}] using term")
         ll, cl = len(locations), len(countries)
         for i in range(max(ll, cl)):
             location = locations[i] if i < ll else locations[0]
@@ -302,9 +305,9 @@ def update(locations, terms, first=None, last=None, countries=["US"]):
                             raise ex
                         else:
                             delay = 2**attempt
-                            print(
+                            logger.error(
                                 f" [{term}|{location}] caught exception (will retry in {int(delay)}s):",
-                                ex,
+                                exception=ex,
                             )
                             time.sleep(delay)
                 values = [p["value"] for p in result["data"]["lines"][0]["points"]]
@@ -330,13 +333,13 @@ def update(locations, terms, first=None, last=None, countries=["US"]):
                         # print(' [%s|%s|%d] missing value' % (term, location, ew))
                     ew = flu.add_epiweeks(ew, 1)
                 if num_missing > 0:
-                    print(f" [{term}|{location}] missing {int(num_missing)}/{len(values)} value(s)")
+                    logger.info(f" [{term}|{location}] missing {int(num_missing)}/{len(values)} value(s)")
             except Exception as ex:
-                print(f" [{term}|{location}] caught exception (will NOT retry):", ex)
+                logger.error(f" [{term}|{location}] caught exception (will NOT retry):", critical=ex)
 
     # keep track of how many rows were added
     rows_after = get_num_rows()
-    print(f"Inserted {int(rows_after - rows_before)}/{int(total_rows)} row(s)")
+    logger.info(f"Inserted {int(rows_after - rows_before)}/{int(total_rows)} row(s)")
 
     # cleanup
     cur.close()

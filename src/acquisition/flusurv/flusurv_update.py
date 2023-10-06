@@ -79,6 +79,10 @@ from delphi.epidata.acquisition.flusurv import flusurv
 import delphi.operations.secrets as secrets
 from delphi.utils.epidate import EpiDate
 from delphi.utils.epiweek import delta_epiweeks
+from delphi.epidata.common.logger import get_structured_logger
+
+logger = get_structured_logger("flusurv_update")
+
 
 
 def get_rows(cur):
@@ -95,7 +99,7 @@ def update(issue, location_name, test_mode=False):
 
     # fetch data
     location_code = flusurv.location_codes[location_name]
-    print("fetching data for", location_name, location_code)
+    logger.info("fetching data for", location_name, location_code)
     data = flusurv.get_data(location_code)
 
     # metadata
@@ -108,7 +112,7 @@ def update(issue, location_name, test_mode=False):
     cnx = mysql.connector.connect(host=secrets.db.host, user=u, password=p, database="epidata")
     cur = cnx.cursor()
     rows1 = get_rows(cur)
-    print(f"rows before: {int(rows1)}")
+    logger.info(f"rows before: {int(rows1)}")
 
     # SQL for insert/update
     sql = """
@@ -148,10 +152,10 @@ def update(issue, location_name, test_mode=False):
 
     # commit and disconnect
     rows2 = get_rows(cur)
-    print(f"rows after: {int(rows2)} (+{int(rows2 - rows1)})")
+    logger.info(f"rows after: {int(rows2)} (+{int(rows2 - rows1)})")
     cur.close()
     if test_mode:
-        print("test mode: not committing database changes")
+        logger.info("test mode: not committing database changes")
     else:
         cnx.commit()
     cnx.close()
@@ -177,7 +181,7 @@ def main():
 
     # scrape current issue from the main page
     issue = flusurv.get_current_issue()
-    print(f"current issue: {int(issue)}")
+    logger.info(f"current issue: {int(issue)}")
 
     # fetch flusurv data
     if args.location == "all":

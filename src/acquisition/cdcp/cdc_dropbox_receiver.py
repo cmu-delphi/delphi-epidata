@@ -26,11 +26,15 @@ import mysql.connector
 
 # first party
 import delphi.operations.secrets as secrets
+from delphi.epidata.common.logger import get_structured_logger
 
 
 # location constants
 DROPBOX_BASE_DIR = "/cdc_page_stats"
 DELPHI_BASE_DIR = "/common/cdc_stage"
+
+
+logger = get_structured_logger("cdc_dropbox_receiver")
 
 
 def get_timestamp_string():
@@ -69,30 +73,30 @@ def fetch_data():
     dbx = dropbox.Dropbox(secrets.cdcp.dropbox_token)
 
     # look for new CDC data files
-    print(f"checking dropbox: {DROPBOX_BASE_DIR}")
+    logger.info(f"checking dropbox: {DROPBOX_BASE_DIR}")
     save_list = []
     for entry in dbx.files_list_folder(DROPBOX_BASE_DIR).entries:
         name = entry.name
         if name.endswith(".csv") or name.endswith(".zip"):
-            print(f" download: {name}")
+            logger.info(f" download: {name}")
             save_list.append(name)
         else:
-            print(f" skip: {name}")
+            logger.info(f" skip: {name}")
 
     # determine if there's anything to be done
     if len(save_list) == 0:
-        print("did not find any new data files")
+        logger.info("did not find any new data files")
         return
 
     # download new files, saving them inside of a new zip file
     timestamp = get_timestamp_string()
     zip_path = f"{DELPHI_BASE_DIR}/dropbox_{timestamp}.zip"
-    print(f"downloading into delphi:{zip_path}")
+    logger.info(f"downloading into delphi:{zip_path}")
     with ZipFile(zip_path, "w", ZIP_DEFLATED) as zf:
         for name in save_list:
             # location of the file on dropbox
             dropbox_path = f"{DROPBOX_BASE_DIR}/{name}"
-            print(f" {dropbox_path}")
+            logger.info(f" {dropbox_path}")
 
             # start the download
             meta, resp = dbx.files_download(dropbox_path)
@@ -101,7 +105,7 @@ def fetch_data():
             if resp.status_code != 200:
                 raise Exception(["resp.status_code", resp.status_code])
             dropbox_len = meta.size
-            print(f"  need {int(dropbox_len)} bytes...")
+            logger.info(f"  need {int(dropbox_len)} bytes...")
             content_len = int(resp.headers.get("Content-Length", -1))
             if dropbox_len != content_len:
                 info = ["dropbox_len", dropbox_len, "content_len", content_len]
@@ -112,27 +116,27 @@ def fetch_data():
 
             # check the length again
             payload_len = len(filedata)
-            print("  downloaded")
+            logger.info("  downloaded")
             if dropbox_len != payload_len:
                 info = ["dropbox_len", dropbox_len, "payload_len", payload_len]
                 raise Exception(info)
 
             # add the downloaded file to the zip file
             zf.writestr(name, filedata)
-            print("  added")
+            logger.info("  added")
 
     # At this point, all the data is stored and awaiting further processing on
     # the delphi server.
-    print(f"saved all new data in {zip_path}")
+    logger.info(f"saved all new data in {zip_path}")
 
     # on dropbox, archive downloaded files so they won't be downloaded again
     archive_dir = f"archived_reports/processed_{timestamp}"
-    print("archiving files...")
+    logger.info("archiving files...")
     for name in save_list:
         # source and destination
         dropbox_src = f"{DROPBOX_BASE_DIR}/{name}"
         dropbox_dst = f"{DROPBOX_BASE_DIR}/{archive_dir}/{name}"
-        print(f" {dropbox_src} -> {dropbox_dst}")
+        logger.info(f" {dropbox_src} -> {dropbox_dst}")
 
         # move the file
         meta = dbx.files_move(dropbox_src, dropbox_dst)
@@ -142,9 +146,9 @@ def fetch_data():
             raise Exception(f"failed to move {name}")
 
     # finally, trigger the usual processing flow
-    print("triggering processing flow")
+    logger.info("triggering processing flow")
     trigger_further_processing()
-    print("done")
+    logger.info("done")
 
 
 def main():

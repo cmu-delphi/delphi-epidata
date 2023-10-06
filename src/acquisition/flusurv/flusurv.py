@@ -45,6 +45,11 @@ import requests
 
 # first party
 from delphi.utils.epidate import EpiDate
+from delphi.epidata.common.logger import get_structured_logger
+
+
+logger = get_structured_logger("flusurv")
+
 
 
 # all currently available FluSurv locations and their associated codes
@@ -106,7 +111,7 @@ def fetch_json(path, payload, call_count=1, requests_impl=requests):
     if resp.status_code == 500 and call_count <= 2:
         # the server often fails with this status, so wait and retry
         delay = 10 * call_count
-        print(f"got status {int(resp.status_code)}, will retry in {int(delay)} sec...")
+        logger.info(f"got status {int(resp.status_code)}, will retry in {int(delay)} sec...")
         time.sleep(delay)
         return fetch_json(path, payload, call_count=call_count + 1)
     elif resp.status_code != 200:
@@ -173,14 +178,14 @@ def extract_from_object(data_in):
             elif prev_rate != rate:
                 # a different rate was already found for this epiweek/age
                 format_args = (epiweek, obj["age"], prev_rate, rate)
-                print("warning: %d %d %f != %f" % format_args)
+                logger.warning("warning: %d %d %f != %f" % format_args)
 
     # sanity check the result
     if len(data_out) == 0:
         raise Exception("no data found")
 
     # print the result and return flu data
-    print(f"found data for {len(data_out)} weeks")
+    logger.info(f"found data for {len(data_out)} weeks")
     return data_out
 
 
@@ -194,15 +199,15 @@ def get_data(location_code):
     """
 
     # fetch
-    print("[fetching flusurv data...]")
+    logger.info("[fetching flusurv data...]")
     data_in = fetch_flusurv_object(location_code)
 
     # extract
-    print("[extracting values...]")
+    logger.info("[extracting values...]")
     data_out = extract_from_object(data_in)
 
     # return
-    print("[scraped successfully]")
+    logger.info("[scraped successfully]")
     return data_out
 
 

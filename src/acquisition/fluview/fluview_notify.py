@@ -29,6 +29,11 @@ import mysql.connector
 
 # first party
 import delphi.operations.secrets as secrets
+from delphi.epidata.common.logger import get_structured_logger
+
+
+logger = get_structured_logger("fluview_notify")
+
 
 
 if __name__ == "__main__":
@@ -55,17 +60,17 @@ if __name__ == "__main__":
     )
     for (issue1,) in cur:
         issue1 = int(issue1)
-    print("last known issue:", issue1)
+    logger.info("last known issue: {issue1}")
     # get the most recent issue from the epidata table `fluview`
     cur.execute("SELECT max(`issue`) FROM `fluview`")
     for (issue2,) in cur:
         issue2 = int(issue2)
-    print("most recent issue:", issue2)
+    logger.info("most recent issue: {issue2}")
 
     if issue2 > issue1:
-        print("new data is available!")
+        logger.info("new data is available!")
         if args.test:
-            print("test mode - not making any changes")
+            logger.info("test mode - not making any changes")
         else:
             # update the variable
             cur.execute(

@@ -4,11 +4,11 @@
 ===============
 
 Fetches ILINet data (surveillance of outpatient influenza-like illness) from
-CDC. 
+CDC.
 
-This script provides functions for first fetching metadata from Fluview which 
-are then used to build a request that will get all data for the different tier 
-types (national, hhs regions, census divisions and states). This data is 
+This script provides functions for first fetching metadata from Fluview which
+are then used to build a request that will get all data for the different tier
+types (national, hhs regions, census divisions and states). This data is
 downloaded as one zip file per tier type (locally).
 
 This file replaces scrape_flu_data.sh, which performed a similar function for
@@ -21,7 +21,7 @@ See also:
 
 Changes:
   - 10/03/18: added field for 'WHO_NREVSS' data to download data from clinical
-    labs as well as public health labs. 
+    labs as well as public health labs.
 """
 
 # standard library
@@ -31,6 +31,12 @@ import time
 
 # third party
 import requests
+
+# first party
+from delphi.epidata.common.logger import get_structured_logger
+
+
+logger = get_structured_logger("fluview")
 
 
 class Key:
@@ -177,11 +183,11 @@ def save_latest(path=None):
     )
 
     # get metatdata
-    print("looking up ilinet metadata")
+    logger.info("looking up ilinet metadata")
     data = fetch_metadata(sess)
     info = get_issue_and_locations(data)
     issue = info["epiweek"]
-    print(f"current issue: {int(issue)}")
+    logger.info(f"current issue: {int(issue)}")
 
     # establish timing
     dt = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -209,12 +215,12 @@ def save_latest(path=None):
         locations = info["location_ids"][cdc_name]
 
         # download and show timing information
-        print(f"downloading {delphi_name}")
+        logger.info(f"downloading {delphi_name}")
         t0 = time.time()
         size = download_data(tier_id, locations, seasons, filename)
         t1 = time.time()
 
-        print(f" saved {filename} ({int(size)} bytes in {t1 - t0:.1f} seconds)")
+        logger.info(f" saved {filename} ({int(size)} bytes in {t1 - t0:.1f} seconds)")
         files.append(filename)
 
     # return the current issue and the list of downloaded files

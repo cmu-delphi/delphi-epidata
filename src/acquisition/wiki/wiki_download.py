@@ -51,6 +51,12 @@ from sys import platform
 
 from . import wiki_util
 
+# first party
+from delphi.epidata.common.logger import get_structured_logger
+
+
+logger = get_structured_logger("wiki_download")
+
 
 VERSION = 10
 MASTER_URL = "https://delphi.cmu.edu/~automation/public/wiki/master.php"
@@ -89,7 +95,7 @@ def extract_article_counts(filename, language, articles, debug_mode):
         for line in f:
             content = line.strip().split()
             if len(content) != 4:
-                print(f"unexpected article format: {line}")
+                logger.info(f"unexpected article format: {line}")
                 continue
             article_title = content[1].lower()
             article_count = int(content[2])
@@ -97,10 +103,10 @@ def extract_article_counts(filename, language, articles, debug_mode):
                 total += article_count
             if content[0] == language and article_title in articles_set:
                 if debug_mode:
-                    print(f"Find article {article_title}: {line}")
+                    logger.info(f"Find article {article_title}: {line}")
                 counts[article_title] = article_count
     if debug_mode:
-        print(f"Total number of counts for language {language} is {total}")
+        logger.debug(f"Total number of counts for language {language} is {total}")
     counts["total"] = total
     return counts
 
@@ -119,7 +125,7 @@ def extract_article_counts_orig(articles, debug_mode):
     counts = {}
     for article in articles:
         if debug_mode:
-            print(f" {article}")
+            logger.debug(f" {article}")
         out = text(
             subprocess.check_output(
                 f'LC_ALL=C grep -a -i "^en {article.lower()} " raw2 | cat', shell=True
@@ -130,14 +136,14 @@ def extract_article_counts_orig(articles, debug_mode):
             for line in out.split("\n"):
                 fields = line.split()
                 if len(fields) != 4:
-                    print(f"unexpected article format: [{line}]")
+                    logger.info(f"unexpected article format: [{line}]")
                 else:
                     count += int(fields[2])
         # print ' %4d %s'%(count, article)
         counts[article.lower()] = count
         if debug_mode:
-            print(f"  {int(count)}")
-    print("getting total count...")
+            logger.debug(f"  {int(count)}")
+    logger.info("getting total count...")
     out = text(
         subprocess.check_output(
             'cat raw2 | LC_ALL=C grep -a -i "^en " | cut -d" " -f 3 | awk \'{s+=$1} END {printf "%.0f", s}\'',
@@ -146,7 +152,7 @@ def extract_article_counts_orig(articles, debug_mode):
     )
     total = int(out)
     if debug_mode:
-        print(total)
+        logger.debug(total)
     counts["total"] = total
     return counts
 
@@ -154,9 +160,9 @@ def extract_article_counts_orig(articles, debug_mode):
 def run(secret, download_limit=None, job_limit=None, sleep_time=1, job_type=0, debug_mode=False):
 
     worker = text(subprocess.check_output("echo `whoami`@`hostname`", shell=True)).strip()
-    print(f"this is [{worker}]")
+    logger.info(f"this is [{worker}]")
     if debug_mode:
-        print("*** running in debug mode ***")
+        logger.debug("*** running in debug mode ***")
 
     total_download = 0
     passed_jobs = 0
@@ -170,12 +176,12 @@ def run(secret, download_limit=None, job_limit=None, sleep_time=1, job_type=0, d
             code = req.getcode()
             if code != 200:
                 if code == 201:
-                    print("no jobs available")
+                    logger.info("no jobs available")
                     if download_limit is None and job_limit is None:
                         time.sleep(60)
                         continue
                     else:
-                        print("nothing to do, exiting")
+                        logger.info("nothing to do, exiting")
                         return
                 else:
                     raise Exception(f"server response code (get) was {int(code)}")
@@ -185,15 +191,15 @@ def run(secret, download_limit=None, job_limit=None, sleep_time=1, job_type=0, d
             else:
                 job_content = text(req.readlines()[0])
             if job_content == "no jobs":
-                print("no jobs available")
+                logger.info("no jobs available")
                 if download_limit is None and job_limit is None:
                     time.sleep(60)
                     continue
                 else:
-                    print("nothing to do, exiting")
+                    logger.info("nothing to do, exiting")
                     return
             job = json.loads(job_content)
-            print(f"received job [{int(job['id'])}|{job['name']}]")
+            logger.info(f"received job [{int(job['id'])}|{job['name']}]")
             # updated parsing for pageviews - maybe use a regex in the future
             # year, month = int(job['name'][11:15]), int(job['name'][15:17])
             year, month = int(job["name"][10:14]), int(job["name"][14:16])
@@ -202,30 +208,30 @@ def run(secret, download_limit=None, job_limit=None, sleep_time=1, job_type=0, d
                 "https://dumps.wikimedia.org/other/"
                 f"pageviews/{year}/{year}-{month:02d}/{job['name']}"
             )
-            print(f"downloading file [{url}]...")
+            logger.info(f"downloading file [{url}]...")
             subprocess.check_call(f"curl -s {url} > raw.gz", shell=True)
-            print("checking file size...")
+            logger.info("checking file size...")
             # Make the code cross-platfrom, so use python to get the size of the file
             # size = int(text(subprocess.check_output('ls -l raw.gz | cut -d" " -f 5', shell=True)))
             size = os.stat("raw.gz").st_size
             if debug_mode:
-                print(size)
+                logger.debug(f"size: {size}")
             total_download += size
             if job["hash"] != "00000000000000000000000000000000":
-                print("checking hash...")
+                logger.info("checking hash...")
                 out = text(subprocess.check_output("md5sum raw.gz", shell=True))
                 result = out[0:32]
                 if result != job["hash"]:
                     raise Exception(f"wrong hash [expected {job['hash']}, got {result}]")
                 if debug_mode:
-                    print(result)
-            print("decompressing...")
+                    logger.debug(f"result: {result}")
+            logger.info("decompressing...")
             subprocess.check_call("gunzip -f raw.gz", shell=True)
             # print 'converting case...'
             # subprocess.check_call('cat raw | tr "[:upper:]" "[:lower:]" > raw2', shell=True)
             # subprocess.check_call('rm raw', shell=True)
             subprocess.check_call("mv raw raw2", shell=True)
-            print("extracting article counts...")
+            logger.info("extracting article counts...")
 
             # Use python to read the file and extract counts, if you want to use the original shell method, please use
             counts = {}
@@ -238,14 +244,14 @@ def run(secret, download_limit=None, job_limit=None, sleep_time=1, job_type=0, d
                 articles = lang2articles[language]
                 articles = sorted(articles)
                 if debug_mode:
-                    print(f"Language is {language} and target articles are {articles}")
+                    logger.debug(f"Language is {language} and target articles are {articles}")
                 temp_counts = extract_article_counts("raw2", language, articles, debug_mode)
                 counts[language] = temp_counts
 
             if not debug_mode:
-                print("deleting files...")
+                logger.info("deleting files...")
                 subprocess.check_call("rm raw2", shell=True)
-            print("saving results...")
+            logger.info("saving results...")
             time_stop = datetime.datetime.now()
             result = {
                 "id": job["id"],
@@ -257,33 +263,33 @@ def run(secret, download_limit=None, job_limit=None, sleep_time=1, job_type=0, d
             payload = json.dumps(result)
             hmac_str = get_hmac_sha256(secret, payload)
             if debug_mode:
-                print(f" hmac: {hmac_str}")
+                logger.debug(f" hmac: {hmac_str}")
             post_data = urlencode({"put": payload, "hmac": hmac_str})
             req = urlopen(MASTER_URL, data=data(post_data))
             code = req.getcode()
             if code != 200:
                 raise Exception(f"server response code (put) was {int(code)}")
-            print(f"done! (dl={int(total_download)})")
+            logger.info(f"done! (dl={int(total_download)})")
             passed_jobs += 1
         except Exception as ex:
-            print(f"***** Caught Exception: {str(ex)} *****")
+            logger.error(f"***** Caught Exception: {str(ex)} *****", exception=ex)
             failed_jobs += 1
             time.sleep(30)
-        print(
+        logger.info(
             "passed=%d | failed=%d | total=%d"
             % (passed_jobs, failed_jobs, passed_jobs + failed_jobs)
         )
         time.sleep(sleep_time)
 
     if download_limit is not None and total_download >= download_limit:
-        print(f"download limit has been reached [{int(total_download)} >= {int(download_limit)}]")
+        logger.info(f"download limit has been reached [{int(total_download)} >= {int(download_limit)}]")
     if job_limit is not None and (passed_jobs + failed_jobs) >= job_limit:
-        print(f"job limit has been reached [{int(passed_jobs + failed_jobs)} >= {int(job_limit)}]")
+        logger.info(f"job limit has been reached [{int(passed_jobs + failed_jobs)} >= {int(job_limit)}]")
 
 
 def main():
     # version info
-    print("version", VERSION)
+    logger.info("version", VERSION)
 
     # args and usage
     parser = argparse.ArgumentParser()
