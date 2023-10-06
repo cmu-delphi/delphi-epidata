@@ -2,7 +2,7 @@ from math import inf
 import re
 from dataclasses import dataclass
 from typing import List, Optional, Sequence, Tuple, Union
-import delphi_utils    
+import delphi_utils
 
 from flask import request
 
@@ -407,6 +407,8 @@ def parse_date(s: str) -> int:
         if s == "*":
             return s
         else:
+            if len(s) > 10:  # max len of date is 10 (YYYY-MM-DD format)
+                raise ValueError
             return int(s.replace("-", ""))
     except ValueError:
         raise ValidationFailedException(f"not a valid date: {s}")
