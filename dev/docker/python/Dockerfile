@@ -13,4 +13,4 @@ COPY repos/delphi/utils/src delphi/utils
 COPY repos/delphi/delphi-epidata/src delphi/epidata
 
 COPY repos/delphi/delphi-epidata/requirements.*.txt .
-RUN install --no-cache-dir -r requirements.api.txt -r requirements.dev.txt
+RUN pip install --no-cache-dir -r requirements.api.txt -r requirements.dev.txt
