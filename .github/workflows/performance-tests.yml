@@ -48,8 +48,6 @@ jobs:
           cd driver/repos/delphi
           git clone https://github.com/cmu-delphi/operations
           git clone https://github.com/cmu-delphi/utils
-          git clone https://github.com/cmu-delphi/flu-contest
-          git clone https://github.com/cmu-delphi/nowcast
           cd ../../
 
           cd ..

@@ -5,18 +5,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - run: mkdir -p repos/undefx
-      - name: Checkout undefx/py3tester
-        uses: actions/checkout@v2
-        with:
-          repository: undefx/py3tester
-          path: repos/undefx/py3tester
-      - name: Checkout undefx/undef-analysis
-        uses: actions/checkout@v2
-        with:
-          repository: undefx/undef-analysis
-          path: repos/undefx/undef-analysis
-
       - run: mkdir -p repos/delphi
 
       - name: Checkoutcmu-delphi/operations
@@ -29,25 +17,10 @@ jobs:
         with:
           repository: cmu-delphi/utils
           path: repos/delphi/utils
-      - name: Checkout cmu-delphi/github-deploy-repo
-        uses: actions/checkout@v2
-        with:
-          repository: cmu-delphi/github-deploy-repo
-          path: repos/delphi/github-deploy-repo
       - name: Checkout THIS REPO
         uses: actions/checkout@v2
         with:
           path: repos/delphi/delphi-epidata
-      - name: Checkout cmu-delphi/flu-contest
-        uses: actions/checkout@v2
-        with:
-          repository: cmu-delphi/flu-contest
-          path: repos/delphi/flu-contest
-      - name: Checkout cmu-delphi/nowcast
-        uses: actions/checkout@v2
-        with:
-          repository: cmu-delphi/nowcast
-          path: repos/delphi/nowcast
 
       - name: Build docker images
         run: |

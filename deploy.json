@@ -241,10 +241,7 @@
       "dst": "[[stasis]]/integrations/",
       "match": "^.*\\.(py)$",
       "recursive": true
-    },
-
-    "// run unit and coverage tests",
-    {"type": "py3test"}
+    }
 
   ]
 }

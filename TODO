@@ -1,0 +1,15 @@
+- grep for:
+undef
+py3test
+test_target
+github.deploy.repo
+flu.contest
+nowcast      (hard to filter on)
+
+
+- still need to remove from:
+docs/
+README.md
+tests/
+integrations/
+???
