@@ -138,15 +138,6 @@
       "add-header-comment": true
     },
 
-    "// acquisition - norostat",
-    {
-      "type": "move",
-      "src": "src/acquisition/norostat/",
-      "dst": "[[package]]/acquisition/norostat/",
-      "match": "^.*\\.(py)$",
-      "add-header-comment": true
-    },
-
     "// acquisition - paho",
     {
       "type": "move",
@@ -170,15 +161,6 @@
       "type": "move",
       "src": "src/acquisition/kcdc/",
       "dst": "[[package]]/acquisition/kcdc/",
-      "match": "^.*\\.(py)$",
-      "add-header-comment": true
-    },
-
-    "// acquisition - afhsb",
-    {
-      "type": "move",
-      "src": "src/acquisition/afhsb/",
-      "dst": "[[package]]/acquisition/afhsb/",
       "match": "^.*\\.(py)$",
       "add-header-comment": true
     },
@@ -232,6 +214,16 @@
       "src": "src/acquisition/covidcast_nowcast/",
       "dst": "[[package]]/acquisition/covidcast_nowcast/",
       "match": "^.*\\.(py)$",
+      "add-header-comment": true
+    },
+
+    "// maintenance",
+    {
+      "type": "move",
+      "src": "src/maintenance/",
+      "dst": "[[package]]/maintenance/",
+      "match": "^.*\\.(py)$",
+      "recursive": true,
       "add-header-comment": true
     },
 

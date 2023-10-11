@@ -53,24 +53,31 @@ jobs:
         run: |
           docker build -t delphi_database_epidata -f ./repos/delphi/delphi-epidata/dev/docker/database/epidata/Dockerfile .
           docker build -t delphi_web_python -f repos/delphi/delphi-epidata/dev/docker/python/Dockerfile .
+          sudo docker build -t delphi_redis -f repos/delphi/delphi-epidata/dev/docker/redis/Dockerfile .
           cd ./repos/delphi/delphi-epidata
           docker build -t delphi_web_epidata -f ./devops/Dockerfile .
           cd ../../../
 
       # MODULE_NAME specifies the location of the `app` variable, the actual WSGI application object to run.
       # see https://github.com/tiangolo/meinheld-gunicorn-docker#module_name
-      - name: Start services
+      - name: Start database and Redis services
         run: |
           docker network create --driver bridge delphi-net
           docker run --rm -d -p 13306:3306 --network delphi-net --name delphi_database_epidata --cap-add=sys_nice delphi_database_epidata
-          docker run --rm -d -p 10080:80 --env "MODULE_NAME=delphi.epidata.server.main" --env "SQLALCHEMY_DATABASE_URI=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata" --env "FLASK_SECRET=abc" --env "FLASK_PREFIX=/epidata" --network delphi-net --name delphi_web_epidata delphi_web_epidata
-          docker ps
+          docker run --rm -d -p 6379:6379 --network delphi-net --env "REDIS_PASSWORD=1234" --name delphi_redis delphi_redis
+          
 
       - run: |
           wget https://raw.githubusercontent.com/eficode/wait-for/master/wait-for
           chmod +x wait-for
           ./wait-for localhost:13306 -- echo 'ready'
           sleep 10s
+
+      - name: Start delphi_web_epidata
+        run: |
+          docker run --rm -d -p 10080:80 --env "MODULE_NAME=delphi.epidata.server.main" --env "SQLALCHEMY_DATABASE_URI=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata" --env "FLASK_SECRET=abc" --env "FLASK_PREFIX=/epidata" --env "REDIS_HOST=delphi_redis" --env "REDIS_PASSWORD=1234" --env "API_KEY_REGISTER_WEBHOOK_TOKEN=abc" --env "API_KEY_ADMIN_PASSWORD=test_admin_password" --env "TESTING_MODE=True" --network delphi-net --name delphi_web_epidata delphi_web_epidata
+          docker ps
+
       - name: Run Unit Tests
         run: |
           docker run --rm --network delphi-net --env "SQLALCHEMY_DATABASE_URI=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata" --env "FLASK_SECRET=abc" delphi_web_python python -m pytest --import-mode importlib repos/delphi/delphi-epidata/tests
@@ -81,7 +88,7 @@ jobs:
 
       - name: Clean Up
         run: |
-          docker stop delphi_database_epidata delphi_web_epidata
+          docker stop delphi_database_epidata delphi_web_epidata delphi_redis
           docker network remove delphi-net
 
   build_js_client:
@@ -94,7 +101,7 @@ jobs:
         uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: '14.x'
+          node-version: '16.x'
       - name: Cache Node.js modules
         uses: actions/cache@v2
         with:
@@ -108,7 +115,8 @@ jobs:
   image:
     needs: build
     # only on main and dev branch
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
+    # TODO: #1112 Remove `|| github.ref == 'refs/heads/api-keys'` after transition to production status.
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/api-keys'
 
     runs-on: ubuntu-latest
     steps:

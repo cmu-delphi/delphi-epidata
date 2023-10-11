@@ -7,7 +7,7 @@ from flask.json import dumps
 import orjson
 
 from ._config import MAX_RESULTS, MAX_COMPATIBILITY_RESULTS
-from ._common import is_compatibility_mode
+from ._common import is_compatibility_mode, log_info_with_request
 from delphi.epidata.common.logger import get_structured_logger
 
 
@@ -35,13 +35,14 @@ class APrinter:
         self.result: int = -1
         self._max_results: int = MAX_COMPATIBILITY_RESULTS if is_compatibility_mode() else MAX_RESULTS
 
-    def make_response(self, gen):
+    def make_response(self, gen, headers=None):
         return Response(
             gen,
             mimetype="application/json",
+            headers=headers,
         )
 
-    def __call__(self, generator: Iterable[Dict[str, Any]]) -> Response:
+    def __call__(self, generator: Iterable[Dict[str, Any]], headers=None) -> Response:
         def gen():
             self.result = -2  # no result, default response
             began = False
@@ -69,10 +70,11 @@ class APrinter:
                     yield r
 
             r = self._end()
+            log_info_with_request("APrinter finished processing rows", count=self.count)
             if r is not None:
                 yield r
 
-        return self.make_response(stream_with_context(gen()))
+        return self.make_response(stream_with_context(gen()), headers=headers)
 
     @property
     def remaining_rows(self) -> int:
@@ -90,6 +92,8 @@ class APrinter:
         first = self.count == 0
         if self.count >= self._max_results:
             # hit the limit
+            # TODO: consider making this a WARN-level log event
+            log_info_with_request("Max result limit reached", count=self.count)
             self.result = 2
             return None
         if first:
@@ -187,8 +191,11 @@ class CSVPrinter(APrinter):
         super(CSVPrinter, self).__init__()
         self._filename = filename
 
-    def make_response(self, gen):
-        headers = {"Content-Disposition": f"attachment; filename={self._filename}.csv"} if self._filename else {}
+    def make_response(self, gen, headers=None):
+        if headers is None:
+            headers = {}
+        if self._filename:
+            headers["Content-Disposition"] = f"attachment; filename={self._filename}.csv"
         return Response(gen, mimetype="text/csv; charset=utf8", headers=headers)
 
     def _begin(self):
@@ -200,7 +207,8 @@ class CSVPrinter(APrinter):
 
     def _format_row(self, first: bool, row: Dict):
         if first:
-            self._writer = DictWriter(self._stream, list(row.keys()), lineterminator="\n")
+            columns = list(row.keys())
+            self._writer = DictWriter(self._stream, columns, lineterminator="\n")
             self._writer.writeheader()
         self._writer.writerow(row)
 
@@ -237,8 +245,8 @@ class JSONLPrinter(APrinter):
     a printer class writing in JSONLines format
     """
 
-    def make_response(self, gen):
-        return Response(gen, mimetype=" text/plain; charset=utf8")
+    def make_response(self, gen, headers=None):
+        return Response(gen, mimetype=" text/plain; charset=utf8", headers=headers)
 
     def _format_row(self, first: bool, row: Dict):
         # each line is a JSON file with a new line to separate them

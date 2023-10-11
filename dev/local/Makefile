@@ -64,8 +64,10 @@ CWD:=$(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 NOW:=$(shell date "+%Y-%m-%d")
 LOG_WEB:=delphi_web_epidata_$(NOW).log
 LOG_DB:=delphi_database_epidata_$(NOW).log
+LOG_REDIS:=delphi_redis_instance_$(NOW).log
 WEB_CONTAINER_ID:=$(shell docker ps -q --filter 'name=delphi_web_epidata')
 DATABASE_CONTAINER_ID:=$(shell docker ps -q --filter 'name=delphi_database_epidata')
+REDIS_CONTAINER_ID:=$(shell docker ps -q --filter 'name=delphi_redis')
 
 M1=
 ifeq ($(shell uname -smp), Darwin arm64 arm)
@@ -98,6 +100,11 @@ web:
 		--env "MODULE_NAME=delphi.epidata.server.main" \
 		--env "SQLALCHEMY_DATABASE_URI=$(sqlalchemy_uri)" \
 		--env "FLASK_SECRET=abc" --env "FLASK_PREFIX=/epidata" --env "LOG_DEBUG" \
+		--env "REDIS_HOST=delphi_redis" \
+		--env "REDIS_PASSWORD=1234" \
+		--env "API_KEY_ADMIN_PASSWORD=test_admin_password" \
+		--env "API_KEY_REGISTER_WEBHOOK_TOKEN=abc" \
+		--env "TESTING_MODE=True" \
 		--network delphi-net --name delphi_web_epidata \
 		delphi_web_epidata >$(LOG_WEB) 2>&1 &
 
@@ -136,8 +143,25 @@ py:
 		$(M1) \
 		-f repos/delphi/delphi-epidata/dev/docker/python/Dockerfile .
 
+.PHONY=redis
+redis:
+	@# Stop container if running
+	@if [ $(REDIS_CONTAINER_ID) ]; then\
+		docker stop $(REDIS_CONTAINER_ID);\
+	fi
+
+	@docker build -t delphi_redis \
+		$(M1) \
+		-f repos/delphi/delphi-epidata/dev/docker/redis/Dockerfile .
+
+	@docker run --rm -d -p 127.0.0.1:6379:6379 \
+		$(M1) \
+		--network delphi-net \
+		--env "REDIS_PASSWORD=1234" \
+		--name delphi_redis delphi_redis >$(LOG_REDIS) 2>&1 &
+
 .PHONY=all
-all: db web py
+all: db web py redis
 
 .PHONY=test
 test:
@@ -148,6 +172,17 @@ test:
 		--env "SQLALCHEMY_DATABASE_URI=$(sqlalchemy_uri)" \
 		--env "FLASK_SECRET=abc" \
 		delphi_web_python python -m pytest --import-mode importlib $(pdb) $(test) | tee test_output_$(NOW).log
+
+.PHONY=r-test
+r-test:
+	@docker run -i --rm --network delphi-net \
+		$(M1) \
+		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata,target=/usr/src/app/repos/delphi/delphi-epidata,readonly \
+		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata/src,target=/usr/src/app/delphi/epidata,readonly \
+		--env "SQLALCHEMY_DATABASE_URI=$(sqlalchemy_uri)" \
+		--env "FLASK_SECRET=abc" \
+		delphi_web_python Rscript repos/delphi/delphi-epidata/integrations/client/test_delphi_epidata.R | tee r-test_output_$(NOW).log
+
 
 .PHONY=bash
 bash:

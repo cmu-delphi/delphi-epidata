@@ -10,6 +10,7 @@ import requests
 
 # use the local instance of the Epidata API
 BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+AUTH = ('epidata', 'key')
 
 
 class CovidcastTests(unittest.TestCase):
@@ -26,6 +27,8 @@ class CovidcastTests(unittest.TestCase):
       database='epidata')
     cur = cnx.cursor()
     cur.execute('truncate table covidcast_nowcast')
+    cur.execute('delete from api_user')
+    cur.execute('insert into api_user(api_key, email) values("key", "email")')
     cnx.commit()
     cur.close()
 
@@ -38,6 +41,12 @@ class CovidcastTests(unittest.TestCase):
     self.cur.close()
     self.cnx.close()
 
+  @staticmethod
+  def _make_request(params: dict):
+    response = requests.get(BASE_URL, params=params, auth=AUTH)
+    response.raise_for_status()
+    return response.json()
+
   def test_query(self):
     """Query nowcasts using default and specified issue."""
 
@@ -49,7 +58,7 @@ class CovidcastTests(unittest.TestCase):
 
     self.cnx.commit()
     # make the request with specified issue date
-    response = requests.get(BASE_URL, params={
+    params={
       'source': 'covidcast_nowcast',
       'data_source': 'src',
       'signals': 'sig',
@@ -59,9 +68,8 @@ class CovidcastTests(unittest.TestCase):
       'time_values': 20200101,
       'geo_value': '01001',
       'issues': 20200101
-    })
-    response.raise_for_status()
-    response = response.json()
+    }
+    response = self._make_request(params=params)
     self.assertEqual(response, {
       'result': 1,
       'epidata': [{
@@ -76,7 +84,7 @@ class CovidcastTests(unittest.TestCase):
     })
 
     # make request without specific issue date
-    response = requests.get(BASE_URL, params={
+    params={
       'source': 'covidcast_nowcast',
       'data_source': 'src',
       'signals': 'sig',
@@ -85,9 +93,8 @@ class CovidcastTests(unittest.TestCase):
       'geo_type': 'county',
       'time_values': 20200101,
       'geo_value': '01001',
-    })
-    response.raise_for_status()
-    response = response.json()
+    }
+    response = self._make_request(params=params)
 
     self.assertEqual(response, {
       'result': 1,
@@ -102,7 +109,7 @@ class CovidcastTests(unittest.TestCase):
       'message': 'success',
     })
 
-    response = requests.get(BASE_URL, params={
+    params={
       'source': 'covidcast_nowcast',
       'data_source': 'src',
       'signals': 'sig',
@@ -112,9 +119,8 @@ class CovidcastTests(unittest.TestCase):
       'time_values': 20200101,
       'geo_value': '01001',
       'as_of': 20200101
-    })
-    response.raise_for_status()
-    response = response.json()
+    }
+    response = self._make_request(params=params)
 
     self.assertEqual(response, {
       'result': 1,

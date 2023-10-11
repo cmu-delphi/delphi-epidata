@@ -11,7 +11,7 @@ from aiohttp.client_exceptions import ClientResponseError
 
 # third party
 import delphi.operations.secrets as secrets
-from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import main as update_covidcast_meta_cache
+from delphi.epidata.maintenance.covidcast_meta_cache_updater import main as update_covidcast_meta_cache
 from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase, CovidcastTestRow, FIPS, MSA
 from delphi.epidata.client.delphi_epidata import Epidata
 from delphi_utils import Nans
@@ -40,6 +40,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
 
     # use the local instance of the Epidata API
     Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+    Epidata.auth = ('epidata', 'key')
 
     # use the local instance of the epidata database
     secrets.db.host = 'delphi_database_epidata'
@@ -128,6 +129,14 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
         'epidata': expected,
         'message': 'success',
       })
+
+    with self.subTest(name='bad as-of date'):
+      # fetch data, specifying as_of
+      as_of_response = Epidata.covidcast(
+        **self.params_from_row(rows[0], as_of="20230101-20230102")
+      )
+      self.assertEqual(as_of_response, {"epidata": [], "message": "not a valid date: 20230101-20230102", "result": -1})
+
 
     with self.subTest(name='request a range of issues'):
       # fetch data, specifying issue range, not lag

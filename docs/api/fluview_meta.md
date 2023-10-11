@@ -20,7 +20,7 @@ Returns information about the [`fluview` endpoint](fluview.md).
 
 # The API
 
-The base URL is: https://delphi.cmu.edu/epidata/fluview_meta/
+The base URL is: https://api.delphi.cmu.edu/epidata/fluview_meta/
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -42,7 +42,7 @@ There are no parameters for this endpoint.
 # Example URLs
 
 ### FluView Metadata
-https://delphi.cmu.edu/epidata/fluview_meta/
+https://api.delphi.cmu.edu/epidata/fluview_meta/
 
 ```json
 {

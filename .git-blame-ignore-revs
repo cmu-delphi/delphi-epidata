@@ -1,0 +1,24 @@
+# style(black): format cdc acquisition
+980b0b7e80c7923b79e14fee620645e680785703
+# style(black): format covidcast_nowcast acquisition
+9e6ff16f599e8feec34a08dd1bddbc5eae347b55
+# style(black): format ecdc acquisition
+d1141d904da4e62992b97c92d5caebd8fadffd42
+# style(black): format flusurv acquisition
+08af0f6b7bff85bbc2b193b63b5abf6a16ba03e4
+# style(black): format fluview acquisition
+0133ef2042c4df8867e91595eb1f64873edb4632
+# style(black): format ght acquisition
+b8900a0bc846888885310911efd6e26459effa99
+# style(black): format kcdc acquisition
+a849384c884934b3b7c3c67b68aa6240277d6b6d
+# style(black): format nidss acquisition
+d04af3c02fda7708a16bec0952b1aa7475acaec7
+# style(black): format paho acquisition
+7f60fbba572c1b6e5153a9ef216895bdc2f7f5b3
+# style(black): format quidel acquisition
+b9ceb400d9248c8271e8342275664ac5524e335d
+# style(black): format twitter acquisition
+07ed83e5768f717ab0f9a62a9209e4e2cffa058d
+# style(black): format wiki acquisition
+923852eafa86b8f8b182d499489249ba8f815843
