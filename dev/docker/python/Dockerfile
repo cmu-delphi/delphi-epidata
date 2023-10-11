@@ -4,10 +4,13 @@ RUN apt-get update && apt-get install -y r-base && Rscript -e "install.packages(
 
 WORKDIR /usr/src/app
 
-COPY repos repos
-COPY repos/delphi/delphi-epidata/dev/docker/python/setup.sh .
-
 RUN ln -s -f /usr/share/zoneinfo/America/New_York /etc/localtime && \
-    chmod -R o+r repos/ && \
-    bash setup.sh && \
-    pip install --no-cache-dir -r repos/delphi/delphi-epidata/requirements.api.txt -r repos/delphi/delphi-epidata/requirements.dev.txt
+    mkdir delphi && \
+    chmod -R o+r delphi/
+
+COPY repos/delphi/operations/src delphi/operations
+COPY repos/delphi/utils/src delphi/utils
+COPY repos/delphi/delphi-epidata/src delphi/epidata
+
+COPY repos/delphi/delphi-epidata/requirements.*.txt .
+RUN install --no-cache-dir -r requirements.api.txt -r requirements.dev.txt
