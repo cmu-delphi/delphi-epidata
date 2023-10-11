@@ -3,21 +3,18 @@
 # standard library
 from datetime import date
 import os
-import unittest
 from unittest.mock import patch
 from functools import partialmethod
 from datetime import date
 
 # third party
-import mysql.connector
 import epiweeks as epi
 
 
 # first party
-from delphi.epidata.client.delphi_epidata import Epidata
 from delphi.epidata.acquisition.covidcast_nowcast.load_sensors import main
 from delphi.epidata.acquisition.covidcast.csv_importer import CsvImporter
-import delphi.operations.secrets as secrets
+from delphi.epidata.common.covidcast_test_base import CovidcastTestBase
 
 # py3tester coverage target (equivalent to `import *`)
 __test_target__ = 'delphi.epidata.acquisition.covidcast_nowcast.load_sensors'
@@ -27,41 +24,12 @@ FIXED_ISSUE_IMPORTER = partialmethod(CsvImporter.find_csv_files,
                                      )
 
 
-class CsvUploadingTests(unittest.TestCase):
+class CsvUploadingTests(CovidcastTestBase):
   """Tests covidcast nowcast CSV uploading."""
 
-  def setUp(self):
+  def localSetUp(self):
     """Perform per-test setup."""
-
-    # connect to the `epidata` database and clear the `covidcast` table
-    cnx = mysql.connector.connect(
-        user='user',
-        password='pass',
-        host='delphi_database_epidata',
-        database='epidata')
-    cur = cnx.cursor()
-    cur.execute('truncate table covidcast_nowcast')
-    cur.execute('delete from api_user')
-    cur.execute('insert into api_user(api_key, email) values ("key", "email")')
-    cnx.commit()
-    cur.close()
-
-    # make connection and cursor available to test cases
-    self.cnx = cnx
-    self.cur = cnx.cursor()
-
-    # use the local instance of the epidata database
-    secrets.db.host = 'delphi_database_epidata'
-    secrets.db.epi = ('user', 'pass')
-
-    # use the local instance of the Epidata API
-    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata'
-    Epidata.auth = ('epidata', 'key')
-
-  def tearDown(self):
-    """Perform per-test teardown."""
-    self.cur.close()
-    self.cnx.close()
+    self.truncate_tables_list = ["covidcast_nowcast"]
 
   @patch('delphi.epidata.acquisition.covidcast_nowcast.load_sensors.CsvImporter.find_csv_files',
          new=FIXED_ISSUE_IMPORTER)
@@ -105,7 +73,7 @@ class CsvUploadingTests(unittest.TestCase):
     )
 
     # check data uploaded
-    response = Epidata.covidcast_nowcast(
+    response = self.epidata_client.covidcast_nowcast(
       'src', 'sig', 'testsensor', 'day', 'state', 20200419, 'ca')
     self.assertEqual(response, {
       'result': 1,
@@ -141,7 +109,7 @@ class CsvUploadingTests(unittest.TestCase):
     main()
 
     # most most recent value is the one stored
-    response = Epidata.covidcast_nowcast(
+    response = self.epidata_client.covidcast_nowcast(
       'src', 'sig', 'testsensor', 'day', 'state', 20200419, 'ca')
     self.assertEqual(response, {
       'result': 1,

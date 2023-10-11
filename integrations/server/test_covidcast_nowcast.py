@@ -1,51 +1,14 @@
 """Integration tests for the `covidcast_nowcast` endpoint."""
 
-# standard library
-import unittest
-
-# third party
-import mysql.connector
-import requests
+from delphi.epidata.common.covidcast_test_base import CovidcastTestBase
 
 
-# use the local instance of the Epidata API
-BASE_URL = 'http://delphi_web_epidata/epidata'
-AUTH = ('epidata', 'key')
-
-
-class CovidcastTests(unittest.TestCase):
+class CovidcastTests(CovidcastTestBase):
   """Tests the `covidcast` endpoint."""
 
-  def setUp(self):
+  def localSetUp(self):
     """Perform per-test setup."""
-
-    # connect to the `epidata` database and clear the `covidcast` table
-    cnx = mysql.connector.connect(
-      user='user',
-      password='pass',
-      host='delphi_database_epidata',
-      database='epidata')
-    cur = cnx.cursor()
-    cur.execute('truncate table covidcast_nowcast')
-    cur.execute('delete from api_user')
-    cur.execute('insert into api_user(api_key, email) values("key", "email")')
-    cnx.commit()
-    cur.close()
-
-    # make connection and cursor available to test cases
-    self.cnx = cnx
-    self.cur = cnx.cursor()
-
-  def tearDown(self):
-    """Perform per-test teardown."""
-    self.cur.close()
-    self.cnx.close()
-
-  @staticmethod
-  def _make_request(params: dict):
-    response = requests.get(f"{BASE_URL}/covidcast_nowcast", params=params, auth=AUTH)
-    response.raise_for_status()
-    return response.json()
+    self.truncate_tables_list = ["covidcast_nowcast"]
 
   def test_query(self):
     """Query nowcasts using default and specified issue."""
@@ -68,7 +31,7 @@ class CovidcastTests(unittest.TestCase):
       'geo_value': '01001',
       'issues': 20200101
     }
-    response = self._make_request(params=params)
+    response = self._make_request(endpoint="covidcast_nowcast", auth=self.epidata_client.auth, json=True, raise_for_status=True, params=params)
     self.assertEqual(response, {
       'result': 1,
       'epidata': [{
@@ -84,7 +47,6 @@ class CovidcastTests(unittest.TestCase):
 
     # make request without specific issue date
     params={
-      'source': 'covidcast_nowcast',
       'data_source': 'src',
       'signals': 'sig',
       'sensor_names': 'sensor',
@@ -93,7 +55,7 @@ class CovidcastTests(unittest.TestCase):
       'time_values': 20200101,
       'geo_value': '01001',
     }
-    response = self._make_request(params=params)
+    response = self._make_request(endpoint="covidcast_nowcast", auth=self.epidata_client.auth, json=True, raise_for_status=True, params=params)
 
     self.assertEqual(response, {
       'result': 1,
@@ -109,7 +71,6 @@ class CovidcastTests(unittest.TestCase):
     })
 
     params={
-      'source': 'covidcast_nowcast',
       'data_source': 'src',
       'signals': 'sig',
       'sensor_names': 'sensor',
@@ -119,7 +80,7 @@ class CovidcastTests(unittest.TestCase):
       'geo_value': '01001',
       'as_of': 20200101
     }
-    response = self._make_request(params=params)
+    response = self._make_request(endpoint="covidcast_nowcast", auth=self.epidata_client.auth, json=True, raise_for_status=True, params=params)
 
     self.assertEqual(response, {
       'result': 1,

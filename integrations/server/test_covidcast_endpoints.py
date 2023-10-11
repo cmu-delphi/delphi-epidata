@@ -6,52 +6,18 @@ from typing import Sequence
 
 # third party
 from more_itertools import windowed
-import requests
 import pandas as pd
 
 from delphi.epidata.maintenance.covidcast_meta_cache_updater import main as update_cache
-from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase, CovidcastTestRow
-
-# use the local instance of the Epidata API
-BASE_URL = "http://delphi_web_epidata/epidata/covidcast"
-BASE_URL_OLD = "http://delphi_web_epidata/epidata/api.php"
-AUTH = ('epidata', 'key')
+from delphi.epidata.common.covidcast_test_base import CovidcastTestBase, CovidcastTestRow
 
 
-class CovidcastEndpointTests(CovidcastBase):
+class CovidcastEndpointTests(CovidcastTestBase):
     """Tests the `covidcast/*` endpoint."""
 
     def localSetUp(self):
         """Perform per-test setup."""
-        # reset the `covidcast_meta_cache` table (it should always have one row)
-        self._db._cursor.execute('update covidcast_meta_cache set timestamp = 0, epidata = "[]"')
-
-        cur = self._db._cursor
-        # NOTE: we must specify the db schema "epidata" here because the cursor/connection are bound to schema "covid"
-        cur.execute("TRUNCATE TABLE epidata.api_user")
-        cur.execute("TRUNCATE TABLE epidata.user_role")
-        cur.execute("TRUNCATE TABLE epidata.user_role_link")
-        cur.execute("INSERT INTO epidata.api_user (api_key, email) VALUES ('quidel_key', 'quidel_email')")
-        cur.execute("INSERT INTO epidata.user_role (name) VALUES ('quidel')")
-        cur.execute(
-            "INSERT INTO epidata.user_role_link (user_id, role_id) SELECT api_user.id, user_role.id FROM epidata.api_user JOIN epidata.user_role WHERE api_key='quidel_key' and user_role.name='quidel'"
-        )
-        cur.execute("INSERT INTO epidata.api_user (api_key, email) VALUES ('key', 'email')")
-
-    def _fetch(self, endpoint="/", is_compatibility=False, auth=AUTH, **params):
-        # make the request
-        if is_compatibility:
-            url = BASE_URL_OLD
-            # only set endpoint if it's not already set
-            # only set endpoint if it's not already set
-            params.setdefault("endpoint", "covidcast")
-            if params.get("source"):
-                params.setdefault("data_source", params.get("source"))
-        else:
-            url = f"{BASE_URL}{endpoint}"
-        response = requests.get(url, params=params, auth=auth)
-        response.raise_for_status()
-        return response.json()
+        self.role_name = "quidel"
 
     def _diff_rows(self, rows: Sequence[float]):
         return [
@@ -61,7 +27,7 @@ class CovidcastEndpointTests(CovidcastBase):
 
     def _smooth_rows(self, rows: Sequence[float]):
         return [
-            sum(e)/len(e) if None not in e else None 
+            sum(e)/len(e) if None not in e else None
             for e in windowed(rows, 7)
         ]
 
@@ -72,11 +38,16 @@ class CovidcastEndpointTests(CovidcastBase):
         self._insert_rows(rows)
 
         with self.subTest("validation"):
-            out = self._fetch("/")
+            out = self._make_request(auth=self.epidata_client.auth, json=True, raise_for_status=True)
             self.assertEqual(out["result"], -1)
 
         with self.subTest("simple"):
-            out = self._fetch("/", signal=first.signal_pair(), geo=first.geo_pair(), time="day:*")
+            params = {
+                "signal": first.signal_pair(),
+                "geo": first.geo_pair(),
+                "time": "day:*"
+            }
+            out = self._make_request(auth=self.epidata_client.auth, json=True, raise_for_status=True, params=params)
             self.assertEqual(len(out["epidata"]), len(rows))
 
     def test_basic_restricted_source(self):
@@ -86,38 +57,61 @@ class CovidcastEndpointTests(CovidcastBase):
         self._insert_rows(rows)
 
         with self.subTest("validation"):
-            out = self._fetch("/")
+            out = self._make_request(auth=self.epidata_client.auth, json=True, raise_for_status=True)
             self.assertEqual(out["result"], -1)
 
         with self.subTest("no_roles"):
-            out = self._fetch("/", signal=first.signal_pair(), geo=first.geo_pair(), time="day:*")
+            params = {
+                "signal": first.signal_pair(),
+                "geo": first.geo_pair(),
+                "time": "day:*"
+            }
+            out = self._make_request(auth=self.epidata_client.auth, json=True, raise_for_status=True, params=params)
             self.assertEqual(len(out["epidata"]), 0)
 
         with self.subTest("no_api_key"):
-            out = self._fetch("/", auth=None, signal=first.signal_pair(), geo=first.geo_pair(), time="day:*")
+            params = {
+                "signal": first.signal_pair(),
+                "geo": first.geo_pair(),
+                "time": "day:*"
+            }
+            out = self._make_request(json=True, raise_for_status=True, params=params)
             self.assertEqual(len(out["epidata"]), 0)
 
         with self.subTest("quidel_role"):
-            out = self._fetch("/", auth=("epidata", "quidel_key"), signal=first.signal_pair(), geo=first.geo_pair(), time="day:*")
+            params = {
+                "signal": first.signal_pair(),
+                "geo": first.geo_pair(),
+                "time": "day:*",
+                "auth": "quidel_key"
+            }
+            out = self._make_request(json=True, raise_for_status=True, params=params)
             self.assertEqual(len(out["epidata"]), len(rows))
 
+    # Commented out this section as we want go get rid of legacy .php code
+    # -----------------------------------------
     def test_compatibility(self):
         """Request at the /api.php endpoint."""
         rows = [CovidcastTestRow.make_default_row(source="src", signal="sig", time_value=2020_04_01 + i, value=i) for i in range(10)]
         first = rows[0]
         self._insert_rows(rows)
+        params = {
+            "signal": first.signal_pair(),
+            "geo": first.geo_pair(),
+            "time": "day:*",
+        }
 
         with self.subTest("validation"):
-            out = self._fetch("/", is_compatibility=True)
+            out = self._make_request(json=True, raise_for_status=True, is_compatibility=True)
             self.assertEqual(out["result"], -1)
 
         with self.subTest("simple"):
-            out = self._fetch("/", signal=first.signal_pair(), geo=first.geo_pair(), time="day:*", is_compatibility=True)
+            out = self._make_request(params=params, json=True, raise_for_status=True, is_compatibility=True)
             self.assertEqual(out["epidata"], [row.as_api_compatibility_row_dict() for row in rows])
 
         with self.subTest("same contents sans excluded columns"):
-            compat = self._fetch("/", signal=first.signal_pair(), geo=first.geo_pair(), time="day:*", is_compatibility=True)
-            regular = self._fetch("/", signal=first.signal_pair(), geo=first.geo_pair(), time="day:*")
+            compat = self._make_request(params=params, json=True, raise_for_status=True, is_compatibility=True)
+            regular = self._make_request(params=params, json=True, raise_for_status=True)
             # Remove keys from the regular row which are excluded in the compat rows
             for row in regular['epidata']:
                 for key in ['source', 'geo_type', 'time_type']:
@@ -129,17 +123,22 @@ class CovidcastEndpointTests(CovidcastBase):
         rows = [CovidcastTestRow.make_default_row(time_value=2020_04_01 + i, value=i, source="quidel") for i in range(10)]
         first = rows[0]
         self._insert_rows(rows)
+        params = {
+            "signal": first.signal_pair(),
+            "geo": first.geo_pair(),
+            "time": "day:*",
+        }
 
         with self.subTest("no_roles"):
-            out = self._fetch("/", signal=first.signal_pair(), geo=first.geo_pair(), time="day:*", is_compatibility=True)
+            out = self._make_request(params=params, json=True, raise_for_status=True, is_compatibility=True)
             self.assertTrue("epidata" not in out)
 
         with self.subTest("no_api_key"):
-            out = self._fetch("/", auth=None, signal=first.signal_pair(), geo=first.geo_pair(), time="day:*", is_compatibility=True)
+            out = self._make_request(params=params, json=True, raise_for_status=True, is_compatibility=True)
             self.assertTrue("epidata" not in out)
 
         with self.subTest("quidel_role"):
-            out = self._fetch("/", auth=("epidata", "quidel_key"), signal=first.signal_pair(), geo=first.geo_pair(), time="day:*", is_compatibility=True)
+            out = self._make_request(params=params, auth=("epidata", "quidel_key"), json=True, raise_for_status=True, is_compatibility=True)
             self.assertEqual(out["epidata"], [row.as_api_compatibility_row_dict() for row in rows])
 
     def test_trend(self):
@@ -152,8 +151,14 @@ class CovidcastEndpointTests(CovidcastBase):
         ref = rows[num_rows // 2]
         self._insert_rows(rows)
 
-        out = self._fetch("/trend", signal=first.signal_pair(), geo=first.geo_pair(), date=last.time_value, window="20200401-20201212", basis=ref.time_value)
-
+        params = {
+            "signal": first.signal_pair(),
+            "geo": first.geo_pair(),
+            "date": last.time_value,
+            "window": "20200401-20201212",
+            "basis": ref.time_value
+        }
+        out = self._make_request(endpoint="covidcast/trend", auth=self.epidata_client.auth, json=True, raise_for_status=True, params=params)
 
         self.assertEqual(out["result"], 1)
         self.assertEqual(len(out["epidata"]), 1)
@@ -177,7 +182,6 @@ class CovidcastEndpointTests(CovidcastBase):
         self.assertEqual(trend["max_value"], last.value)
         self.assertEqual(trend["max_trend"], "steady")
 
-
     def test_trendseries(self):
         """Request a signal from the /trendseries endpoint."""
 
@@ -187,7 +191,14 @@ class CovidcastEndpointTests(CovidcastBase):
         last = rows[-1]
         self._insert_rows(rows)
 
-        out = self._fetch("/trendseries", signal=first.signal_pair(), geo=first.geo_pair(), date=last.time_value, window="20200401-20200410", basis=1)
+        params = {
+            "signal": first.signal_pair(),
+            "geo": first.geo_pair(),
+            "date": last.time_value,
+            "window": "20200401-20200410",
+            "basis": 1
+        }
+        out = self._make_request(endpoint="covidcast/trendseries", auth=self.epidata_client.auth, json=True, raise_for_status=True, params=params)
 
         self.assertEqual(out["result"], 1)
         self.assertEqual(len(out["epidata"]), 3)
@@ -244,7 +255,6 @@ class CovidcastEndpointTests(CovidcastBase):
             self.assertEqual(trend["max_value"], first.value)
             self.assertEqual(trend["max_trend"], "decreasing")
 
-
     def test_csv(self):
         """Request a signal from the /csv endpoint."""
 
@@ -252,16 +262,17 @@ class CovidcastEndpointTests(CovidcastBase):
         first = rows[0]
         self._insert_rows(rows)
 
-        response = requests.get(
-            f"{BASE_URL}/csv",
-            params=dict(signal=first.signal_pair(), start_day="2020-04-01", end_day="2020-12-12", geo_type=first.geo_type),
-        )
-        response.raise_for_status()
+        params = {
+            "signal": first.signal_pair(),
+            "start_day": "2020-04-01",
+            "end_day": "2020-12-12",
+            "geo_type": first.geo_type
+        }
+        response = self._make_request(endpoint="covidcast/csv", raise_for_status=True, params=params)
         out = response.text
         df = pd.read_csv(StringIO(out), index_col=0)
         self.assertEqual(df.shape, (len(rows), 10))
         self.assertEqual(list(df.columns), ["geo_value", "signal", "time_value", "issue", "lag", "value", "stderr", "sample_size", "geo_type", "data_source"])
-
 
     def test_backfill(self):
         """Request a signal from the /backfill endpoint."""
@@ -274,7 +285,13 @@ class CovidcastEndpointTests(CovidcastBase):
         self._insert_rows([*issue_0, *issue_1, *last_issue])
         first = issue_0[0]
 
-        out = self._fetch("/backfill", signal=first.signal_pair(), geo=first.geo_pair(), time="day:20200401-20201212", anchor_lag=3)
+        params = {
+            "signal": first.signal_pair(),
+            "geo": first.geo_pair(),
+            "time": "day:20200401-20201212",
+            "anchor_lag": 3
+        }
+        out = self._make_request(endpoint="covidcast/backfill", auth=self.epidata_client.auth, json=True, raise_for_status=True, params=params)
         self.assertEqual(out["result"], 1)
         df = pd.DataFrame(out["epidata"])
         self.assertEqual(len(df), 3 * num_rows)  # num issues
@@ -304,7 +321,7 @@ class CovidcastEndpointTests(CovidcastBase):
         update_cache(args=None)
 
         with self.subTest("plain"):
-            out = self._fetch("/meta")
+            out = self._make_request(endpoint="covidcast/meta", auth=self.epidata_client.auth, json=True, raise_for_status=True)
             self.assertEqual(len(out), 1)
             data_source = out[0]
             self.assertEqual(data_source["source"], first.source)
@@ -322,20 +339,26 @@ class CovidcastEndpointTests(CovidcastBase):
             self.assertEqual(stats_g["mean"], sum(r.value for r in rows) / len(rows))
 
         with self.subTest("filtered"):
-            out = self._fetch("/meta", signal=f"{first.source}:*")
+            params = {
+                "signal": f"{first.source}:*"
+            }
+            out = self._make_request(endpoint="covidcast/meta", auth=self.epidata_client.auth, json=True, raise_for_status=True, params=params)
             self.assertEqual(len(out), 1)
             data_source = out[0]
             self.assertEqual(data_source["source"], first.source)
             self.assertEqual(len(data_source["signals"]), 1)
             stats = data_source["signals"][0]
             self.assertEqual(stats["source"], first.source)
-            out = self._fetch("/meta", signal=f"{first.source}:X")
+            params = {
+                "signal": f"{first.source}:X"
+            }
+            out = self._make_request(endpoint="covidcast/meta", auth=self.epidata_client.auth, json=True, raise_for_status=True, params=params)
             self.assertEqual(len(out), 0)
 
     def test_meta_restricted(self):
         """Request 'restricted' signals from the /meta endpoint."""
         # NOTE: this method is nearly identical to ./test_covidcast_meta.py:test_restricted_sources()
-        #       ...except the self._fetch() methods are different, as is the format of those methods' outputs
+        #       ...except the self._make_request() methods are different, as is the format of those methods' outputs
         #       (the other covidcast_meta endpoint uses APrinter, this one returns its own unadulterated json).
         #       additionally, the sample data used here must match entries (that is, named sources and signals)
         #       from covidcast_utils.model.data_sources (the `data_sources` variable from file
@@ -354,12 +377,15 @@ class CovidcastEndpointTests(CovidcastBase):
         update_cache(args=None)
 
         # verify unauthenticated (no api key) or unauthorized (user w/o privilege) only see metadata for one source
-        self.assertEqual(len(self._fetch("/meta", auth=None)), 1)
-        self.assertEqual(len(self._fetch("/meta", auth=AUTH)), 1)
+        unauthenticated_request = self._make_request(endpoint="covidcast/meta", json=True, raise_for_status=True)
+        unauthorized_request = self._make_request(endpoint="covidcast/meta", auth=self.epidata_client.auth, json=True, raise_for_status=True)
+        self.assertEqual(len(unauthenticated_request), 1)
+        self.assertEqual(len(unauthorized_request), 1)
 
         # verify authorized user sees metadata for both sources
         qauth = ('epidata', 'quidel_key')
-        self.assertEqual(len(self._fetch("/meta", auth=qauth)), 2)
+        authorized_request = self._make_request(endpoint="covidcast/meta", auth=qauth, json=True, raise_for_status=True)
+        self.assertEqual(len(authorized_request), 2)
 
     def test_coverage(self):
         """Request a signal from the /coverage endpoint."""
@@ -371,17 +397,34 @@ class CovidcastEndpointTests(CovidcastBase):
         first = rows[0]
 
         with self.subTest("default"):
-            out = self._fetch("/coverage", signal=first.signal_pair(), geo_type=first.geo_type, latest=dates[-1], format="json")
+            params = {
+                "signal": first.signal_pair(),
+                "geo_type": first.geo_type,
+                "latest": dates[-1],
+                "format": "json"
+            }
+            out = self._make_request(endpoint="covidcast/coverage", auth=self.epidata_client.auth, json=True, raise_for_status=True, params=params)
             self.assertEqual(len(out), len(num_geos_per_date))
             self.assertEqual([o["time_value"] for o in out], dates)
             self.assertEqual([o["count"] for o in out], num_geos_per_date)
 
         with self.subTest("specify window"):
-            out = self._fetch("/coverage", signal=first.signal_pair(), geo_type=first.geo_type, window=f"{dates[0]}-{dates[1]}", format="json")
+            params = {
+                "signal": first.signal_pair(),
+                "geo_type": first.geo_type,
+                "window": f"{dates[0]}-{dates[1]}",
+                "format": "json"
+            }
+            out = self._make_request("covidcast/coverage", auth=self.epidata_client.auth, json=True, raise_for_status=True, params=params)
             self.assertEqual(len(out), 2)
             self.assertEqual([o["time_value"] for o in out], dates[:2])
             self.assertEqual([o["count"] for o in out], num_geos_per_date[:2])
 
         with self.subTest("invalid geo_type"):
-            out = self._fetch("/coverage", signal=first.signal_pair(), geo_type="doesnt_exist", format="json")
+            params = {
+                "signal": first.signal_pair(),
+                "geo_type": "doesnt_exist",
+                "format": "json"
+            }
+            out = self._make_request(endpoint="covidcast/coverage", auth=self.epidata_client.auth, json=True, raise_for_status=True, params=params)
             self.assertEqual(len(out), 0)

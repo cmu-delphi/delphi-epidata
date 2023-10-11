@@ -19,7 +19,7 @@ from delphi.epidata.server._params import (
     TimeSet,
     SourceSignalSet,
 )
-from delphi.epidata.acquisition.covidcast.test_utils import FIPS, MSA
+from delphi.epidata.common.covidcast_test_base import FIPS, MSA
 
 # py3tester coverage target
 __test_target__ = "delphi.epidata.server._query"

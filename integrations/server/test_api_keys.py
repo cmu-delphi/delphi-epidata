@@ -1,8 +1,6 @@
 """Integration tests for the API Keys"""
-import requests
-
 # first party
-from delphi.epidata.common.integration_test_base_class import DelphiTestBase
+from delphi.epidata.common.delphi_test_base import DelphiTestBase
 
 
 class APIKeysTets(DelphiTestBase):
@@ -11,16 +9,11 @@ class APIKeysTets(DelphiTestBase):
     def localSetUp(self):
         self.role_name = "cdc"
 
-    def _make_request(self, endpoint: str, params: dict = {}, auth: tuple = None):
-        url = f"{self.epidata_client.BASE_URL}/{endpoint}"
-        response = requests.get(url, params=params, auth=auth)
-        return response
-
     def test_public_route(self):
         """Test public route"""
         status_codes = set()
         for _ in range(10):
-            status_codes.add(self._make_request("version").status_code)
+            status_codes.add(self._make_request(endpoint="version").status_code)
         self.assertEqual(status_codes, {200})
 
     def test_no_multiples_data_source(self):
@@ -35,7 +28,7 @@ class APIKeysTets(DelphiTestBase):
         }
         status_codes = set()
         for _ in range(10):
-            status_codes.add(self._make_request("covidcast", params=params).status_code)
+            status_codes.add(self._make_request(params=params).status_code)
         self.assertEqual(status_codes, {200})
 
     def test_no_multiples_source_signal(self):
@@ -49,7 +42,7 @@ class APIKeysTets(DelphiTestBase):
         }
         status_codes = set()
         for _ in range(10):
-            status_codes.add(self._make_request("covidcast", params=params).status_code)
+            status_codes.add(self._make_request(params=params).status_code)
         self.assertEqual(status_codes, {200})
 
     def test_multiples_allowed_signal_two_multiples(self):
@@ -63,7 +56,7 @@ class APIKeysTets(DelphiTestBase):
         }
         status_codes = set()
         for _ in range(10):
-            status_codes.add(self._make_request("covidcast", params=params).status_code)
+            status_codes.add(self._make_request(params=params).status_code)
         self.assertEqual(status_codes, {200})
 
     def test_multiples_non_allowed_signal(self):
@@ -77,7 +70,7 @@ class APIKeysTets(DelphiTestBase):
         }
         status_codes = set()
         for _ in range(10):
-            status_codes.add(self._make_request("covidcast", params=params).status_code)
+            status_codes.add(self._make_request(params=params).status_code)
         self.assertEqual(status_codes, {200, 429})
 
     def test_multiples_mixed_allowed_signal_two_multiples(self):
@@ -91,7 +84,7 @@ class APIKeysTets(DelphiTestBase):
         }
         status_codes = set()
         for _ in range(10):
-            status_codes.add(self._make_request("covidcast", params=params).status_code)
+            status_codes.add(self._make_request(params=params).status_code)
         self.assertEqual(status_codes, {200, 429})
 
     def test_multiples_allowed_signal_three_multiples(self):
@@ -105,7 +98,7 @@ class APIKeysTets(DelphiTestBase):
         }
         status_codes = set()
         for _ in range(10):
-            status_codes.add(self._make_request("covidcast", params=params).status_code)
+           status_codes.add(self._make_request(params=params).status_code)
         self.assertEqual(status_codes, {401})
 
     def test_multiples_mixed_allowed_signal_three_multiples(self):
@@ -119,7 +112,7 @@ class APIKeysTets(DelphiTestBase):
         }
         status_codes = set()
         for _ in range(10):
-            status_codes.add(self._make_request("covidcast", params=params).status_code)
+           status_codes.add(self._make_request(params=params).status_code)
         self.assertEqual(status_codes, {401})
 
     def test_multiples_mixed_allowed_signal_api_key(self):
@@ -134,7 +127,7 @@ class APIKeysTets(DelphiTestBase):
         status_codes = set()
         for _ in range(10):
             status_codes.add(
-                self._make_request("covidcast", params=params, auth=self.epidata_client.auth).status_code
+               self._make_request(params=params, auth=self.epidata_client.auth).status_code
             )
         self.assertEqual(status_codes, {200})
 
@@ -150,7 +143,7 @@ class APIKeysTets(DelphiTestBase):
         status_codes = set()
         for _ in range(10):
             status_codes.add(
-                self._make_request("covidcast", params=params, auth=self.epidata_client.auth).status_code
+               self._make_request(params=params, auth=self.epidata_client.auth).status_code
             )
         self.assertEqual(status_codes, {200})
 
@@ -166,7 +159,7 @@ class APIKeysTets(DelphiTestBase):
         status_codes = set()
         for _ in range(10):
             status_codes.add(
-                self._make_request("covidcast", params=params, auth=self.epidata_client.auth).status_code
+               self._make_request(params=params, auth=self.epidata_client.auth).status_code
             )
         self.assertEqual(status_codes, {200})
 
@@ -183,7 +176,7 @@ class APIKeysTets(DelphiTestBase):
         for _ in range(10):
             status_codes.add(
                 self._make_request(
-                    "covidcast", params=params, auth=("bad_key", "bad_email")
+                   params=params, auth=("bad_key", "bad_email")
                 ).status_code
             )
         self.assertEqual(status_codes, {200})
@@ -193,7 +186,7 @@ class APIKeysTets(DelphiTestBase):
         params = {"regions": "1as", "epiweeks": "202020"}
         status_codes = set()
         for _ in range(10):
-            status_codes.add(self._make_request("cdc", params=params).status_code)
+           status_codes.add(self._make_request(params=params, endpoint="cdc").status_code)
         self.assertEqual(status_codes, {401})
 
     def test_restricted_endpoint_invalid_key(self):
@@ -205,7 +198,7 @@ class APIKeysTets(DelphiTestBase):
         }
         status_codes = set()
         for _ in range(10):
-            status_codes.add(self._make_request("cdc", params=params).status_code)
+           status_codes.add(self._make_request(params=params, endpoint="cdc").status_code)
         self.assertEqual(status_codes, {401})
 
     def test_restricted_endpoint_no_roles_key(self):
@@ -217,7 +210,7 @@ class APIKeysTets(DelphiTestBase):
         }
         status_codes = set()
         for _ in range(10):
-            status_codes.add(self._make_request("cdc", params=params).status_code)
+           status_codes.add(self._make_request(params=params, endpoint="cdc").status_code)
         self.assertEqual(status_codes, {401})
 
     def test_restricted_endpoint_valid_roles_key(self):
@@ -229,5 +222,5 @@ class APIKeysTets(DelphiTestBase):
         }
         status_codes = set()
         for _ in range(10):
-            status_codes.add(self._make_request("cdc", params=params).status_code)
+           status_codes.add(self._make_request(params=params, endpoint="cdc").status_code)
         self.assertEqual(status_codes, {200})

@@ -171,7 +171,7 @@ test:
 		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata/src,target=/usr/src/app/delphi/epidata,readonly \
 		--env "SQLALCHEMY_DATABASE_URI=$(sqlalchemy_uri)" \
 		--env "FLASK_SECRET=abc" \
-		delphi_web_python python -m pytest --import-mode importlib $(pdb) $(test) | tee test_output_$(NOW).log
+		delphi_web_python python -m pytest -vvl --import-mode importlib $(pdb) $(test) | tee test_output_$(NOW).log
 
 .PHONY=r-test
 r-test:
