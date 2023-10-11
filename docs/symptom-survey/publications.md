@@ -26,6 +26,14 @@ Pandemic"](https://www.pnas.org/topic/548) in *PNAS*:
 
 Research publications using the survey data include:
 
+- Ma, M.Z., Chen, S.X. (2023). [Beyond the surface: accounting for confounders
+  in understanding the link between collectivism and COVID-19 pandemic in the
+  United States](https://doi.org/10.1186/s12889-023-16384-2). *BMC Public
+  Health* 23, 1513.
+- C.K. Ettman, E. Badillo Goicoechea, and E.A. Stuart (2023). [Evolution of
+  depression and anxiety over the COVID-19 pandemic and across demographic
+  groups in a large sample of U.S. adults](https://doi.org/10.1016/j.focus.2023.100140).
+  *AJPM Focus*.
 - M. Rubinstein, Z. Branson, and E.H. Kennedy (2023). [Heterogeneous
   interventional effects with multiple mediators: Semiparametric and
   nonparametric approaches](https://doi.org/10.1515/jci-2022-0070). *Journal of
@@ -58,7 +66,7 @@ Research publications using the survey data include:
 - Rönn MM, Menzies NA, Salomon JA (2023). [Vaccination and voting patterns in
   the United States: analysis of COVID-19 and flu surveys from 2010 to
   2022](https://doi.org/10.1016/j.amepre.2023.03.001). *American Journal of
-  Preventive Medicine.*
+  Preventive Medicine* 65 (3), 458-466.
 - Taube JC, Susswein Z, Bansal S (2023). [Spatiotemporal Trends in Self-Reported
   Mask-Wearing Behavior in the United States: Analysis of a Large
   Cross-sectional Survey](https://doi.org/10.2196/42128). *JMIR Public Health

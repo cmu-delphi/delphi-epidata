@@ -477,6 +477,12 @@ class UnitTests(unittest.TestCase):
         with self.subTest("multiple param mixed iso"):
             with app.test_request_context("/?s=2020-01-01&s=2020-01-02,2020-01-03"):
                 self.assertEqual(extract_dates("s"), [20200101, 20200102, 20200103])
+        with self.subTest("iso range"):
+            with app.test_request_context("/?s=2020-01-01--2020-01-30"):
+                self.assertEqual(extract_dates("s"), [(20200101, 20200130)])
+        with self.subTest("wildcard"):
+            with app.test_request_context("/?s=*"):
+                self.assertEqual(extract_dates("s"), ["*"])
 
         with self.subTest("not a date"):
             with app.test_request_context("/?s=a"):

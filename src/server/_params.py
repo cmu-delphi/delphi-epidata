@@ -2,7 +2,7 @@ from math import inf
 import re
 from dataclasses import dataclass
 from typing import List, Optional, Sequence, Tuple, Union
-import delphi_utils    
+import delphi_utils
 
 from flask import request
 
@@ -407,6 +407,8 @@ def parse_date(s: str) -> int:
         if s == "*":
             return s
         else:
+            if len(s) > 10:  # max len of date is 10 (YYYY-MM-DD format)
+                raise ValueError
             return int(s.replace("-", ""))
     except ValueError:
         raise ValidationFailedException(f"not a valid date: {s}")
@@ -425,44 +427,20 @@ def extract_dates(key: Union[str, Sequence[str]]) -> Optional[TimeValues]:
         return None
     values: TimeValues = []
 
-    def push_range(first: str, last: str):
-        first_d = parse_date(first)
-        last_d = parse_date(last)
-        if first_d == last_d:
-            # the first and last numbers are the same, just treat it as a singe value
-            return first_d
-        if last_d > first_d:
-            # add the range as an array
-            return (first_d, last_d)
-        # the range is inverted, this is an error
-        raise ValidationFailedException(f"{key}: the given range is inverted")
-
     for part in parts:
-        if "-" not in part and ":" not in part:
-            # YYYYMMDD
-            values.append(parse_date(part))
-            continue
+        if part == "*":
+            return ["*"]
         if ":" in part:
             # YYYY-MM-DD:YYYY-MM-DD
-            range_part = part.split(":", 2)
-            r = push_range(range_part[0], range_part[1])
+            range_part = part.split(":", 1)
+            r = _verify_range(parse_date(range_part[0]), parse_date(range_part[1]))
             if r is None:
                 return None
             values.append(r)
             continue
-        # YYYY-MM-DD or YYYYMMDD-YYYYMMDD
-        # split on the dash
-        range_part = part.split("-")
-        if len(range_part) == 2:
-            # YYYYMMDD-YYYYMMDD
-            r = push_range(range_part[0], range_part[1])
-            if r is None:
-                return None
-            values.append(r)
-            continue
-        # YYYY-MM-DD
-        values.append(parse_date(part))
-    # success, return the list
+        # parse other date formats
+        r = parse_day_value(part)
+        values.append(r)
     return values
 
 def parse_source_signal_sets() -> List[SourceSignalSet]:

@@ -26,7 +26,19 @@ class CovidcastEndpointTests(CovidcastBase):
         # reset the `covidcast_meta_cache` table (it should always have one row)
         self._db._cursor.execute('update covidcast_meta_cache set timestamp = 0, epidata = "[]"')
 
-    def _fetch(self, endpoint="/", is_compatibility=False, **params):
+        cur = self._db._cursor
+        # NOTE: we must specify the db schema "epidata" here because the cursor/connection are bound to schema "covid"
+        cur.execute("TRUNCATE TABLE epidata.api_user")
+        cur.execute("TRUNCATE TABLE epidata.user_role")
+        cur.execute("TRUNCATE TABLE epidata.user_role_link")
+        cur.execute("INSERT INTO epidata.api_user (api_key, email) VALUES ('quidel_key', 'quidel_email')")
+        cur.execute("INSERT INTO epidata.user_role (name) VALUES ('quidel')")
+        cur.execute(
+            "INSERT INTO epidata.user_role_link (user_id, role_id) SELECT api_user.id, user_role.id FROM epidata.api_user JOIN epidata.user_role WHERE api_key='quidel_key' and user_role.name='quidel'"
+        )
+        cur.execute("INSERT INTO epidata.api_user (api_key, email) VALUES ('key', 'email')")
+
+    def _fetch(self, endpoint="/", is_compatibility=False, auth=AUTH, **params):
         # make the request
         if is_compatibility:
             url = BASE_URL_OLD
@@ -37,7 +49,7 @@ class CovidcastEndpointTests(CovidcastBase):
                 params.setdefault("data_source", params.get("source"))
         else:
             url = f"{BASE_URL}{endpoint}"
-        response = requests.get(url, params=params, auth=AUTH)
+        response = requests.get(url, params=params, auth=auth)
         response.raise_for_status()
         return response.json()
 
@@ -65,6 +77,28 @@ class CovidcastEndpointTests(CovidcastBase):
 
         with self.subTest("simple"):
             out = self._fetch("/", signal=first.signal_pair(), geo=first.geo_pair(), time="day:*")
+            self.assertEqual(len(out["epidata"]), len(rows))
+
+    def test_basic_restricted_source(self):
+        """Request a signal from the / endpoint."""
+        rows = [CovidcastTestRow.make_default_row(time_value=2020_04_01 + i, value=i, source="quidel") for i in range(10)]
+        first = rows[0]
+        self._insert_rows(rows)
+
+        with self.subTest("validation"):
+            out = self._fetch("/")
+            self.assertEqual(out["result"], -1)
+
+        with self.subTest("no_roles"):
+            out = self._fetch("/", signal=first.signal_pair(), geo=first.geo_pair(), time="day:*")
+            self.assertEqual(len(out["epidata"]), 0)
+
+        with self.subTest("no_api_key"):
+            out = self._fetch("/", auth=None, signal=first.signal_pair(), geo=first.geo_pair(), time="day:*")
+            self.assertEqual(len(out["epidata"]), 0)
+
+        with self.subTest("quidel_role"):
+            out = self._fetch("/", auth=("epidata", "quidel_key"), signal=first.signal_pair(), geo=first.geo_pair(), time="day:*")
             self.assertEqual(len(out["epidata"]), len(rows))
 
     def test_compatibility(self):
@@ -270,6 +304,35 @@ class CovidcastEndpointTests(CovidcastBase):
             self.assertEqual(stats["source"], first.source)
             out = self._fetch("/meta", signal=f"{first.source}:X")
             self.assertEqual(len(out), 0)
+
+    def test_meta_restricted(self):
+        """Request 'restricted' signals from the /meta endpoint."""
+        # NOTE: this method is nearly identical to ./test_covidcast_meta.py:test_restricted_sources()
+        #       ...except the self._fetch() methods are different, as is the format of those methods' outputs
+        #       (the other covidcast_meta endpoint uses APrinter, this one returns its own unadulterated json).
+        #       additionally, the sample data used here must match entries (that is, named sources and signals)
+        #       from covidcast_utils.model.data_sources (the `data_sources` variable from file
+        #       src/server/endpoints/covidcast_utils/model.py, which is created by the _load_data_sources() method
+        #       and fed by src/server/endpoints/covidcast_utils/db_sources.csv, but also surreptitiously augmened
+        #       by _load_data_signals() which attaches a list of signals to each source,
+        #       in turn fed by src/server/endpoints/covidcast_utils/db_signals.csv)
+
+        # insert data from two different sources, one restricted/protected (quidel), one not
+        self._insert_rows([
+            CovidcastTestRow.make_default_row(source="quidel", signal="raw_pct_negative"),
+            CovidcastTestRow.make_default_row(source="hhs", signal="confirmed_admissions_covid_1d")
+        ])
+
+        # update metadata cache
+        update_cache(args=None)
+
+        # verify unauthenticated (no api key) or unauthorized (user w/o privilege) only see metadata for one source
+        self.assertEqual(len(self._fetch("/meta", auth=None)), 1)
+        self.assertEqual(len(self._fetch("/meta", auth=AUTH)), 1)
+
+        # verify authorized user sees metadata for both sources
+        qauth = ('epidata', 'quidel_key')
+        self.assertEqual(len(self._fetch("/meta", auth=qauth)), 2)
 
     def test_coverage(self):
         """Request a signal from the /coverage endpoint."""
