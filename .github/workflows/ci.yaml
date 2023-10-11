@@ -54,16 +54,16 @@ jobs:
       - name: Run Unit Tests
         run: |
           docker run --rm --network delphi-net \
-	        --mount type=bind,source=$(CWD)repos/delphi/delphi-epidata,target=/usr/src/app/repos/delphi/delphi-epidata,readonly \
-		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata/src,target=/usr/src/app/delphi/epidata,readonly \
-		--env "SQLALCHEMY_DATABASE_URI=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata" --env "FLASK_SECRET=abc" delphi_web_python python -m pytest --import-mode importlib repos/delphi/delphi-epidata/tests
+                --mount type=bind,source=./repos/delphi/delphi-epidata,target=/usr/src/app/repos/delphi/delphi-epidata,readonly \
+                --mount type=bind,source=./repos/delphi/delphi-epidata/src,target=/usr/src/app/delphi/epidata,readonly \
+                --env "SQLALCHEMY_DATABASE_URI=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata" --env "FLASK_SECRET=abc" delphi_web_python python -m pytest --import-mode importlib repos/delphi/delphi-epidata/tests
 
       - name: Run Integration Tests
         run: |
           docker run --rm --network delphi-net \
-                --mount type=bind,source=$(CWD)repos/delphi/delphi-epidata,target=/usr/src/app/repos/delphi/delphi-epidata,readonly \
-		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata/src,target=/usr/src/app/delphi/epidata,readonly \
-	        delphi_web_python python -m pytest --import-mode importlib repos/delphi/delphi-epidata/integrations
+                --mount type=bind,source=./repos/delphi/delphi-epidata,target=/usr/src/app/repos/delphi/delphi-epidata,readonly \
+                --mount type=bind,source=./repos/delphi/delphi-epidata/src,target=/usr/src/app/delphi/epidata,readonly \
+                delphi_web_python python -m pytest --import-mode importlib repos/delphi/delphi-epidata/integrations
 
       - name: Clean Up
         run: |
