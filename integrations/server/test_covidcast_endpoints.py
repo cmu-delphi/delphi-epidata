@@ -55,37 +55,26 @@ class CovidcastEndpointTests(CovidcastTestBase):
         rows = [CovidcastTestRow.make_default_row(time_value=2020_04_01 + i, value=i, source="quidel") for i in range(10)]
         first = rows[0]
         self._insert_rows(rows)
+        params = {
+            "signal": first.signal_pair(),
+            "geo": first.geo_pair(),
+            "time": "day:*"
+        }
 
         with self.subTest("validation"):
             out = self._make_request(auth=self.epidata_client.auth, json=True, raise_for_status=True)
             self.assertEqual(out["result"], -1)
 
         with self.subTest("no_roles"):
-            params = {
-                "signal": first.signal_pair(),
-                "geo": first.geo_pair(),
-                "time": "day:*"
-            }
             out = self._make_request(auth=self.epidata_client.auth, json=True, raise_for_status=True, params=params)
             self.assertEqual(len(out["epidata"]), 0)
 
         with self.subTest("no_api_key"):
-            params = {
-                "signal": first.signal_pair(),
-                "geo": first.geo_pair(),
-                "time": "day:*"
-            }
             out = self._make_request(json=True, raise_for_status=True, params=params)
             self.assertEqual(len(out["epidata"]), 0)
 
         with self.subTest("quidel_role"):
-            params = {
-                "signal": first.signal_pair(),
-                "geo": first.geo_pair(),
-                "time": "day:*",
-                "auth": "quidel_key"
-            }
-            out = self._make_request(json=True, raise_for_status=True, params=params)
+            out = self._make_request(json=True, raise_for_status=True, params=params, auth=("epidata", "quidel_key"))
             self.assertEqual(len(out["epidata"]), len(rows))
 
     def test_compatibility(self):
