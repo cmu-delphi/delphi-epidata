@@ -26,6 +26,7 @@ class SignalDashboardTest(DelphiTestBase):
 
     def test_signal_dashboard_coverage(self):
         """Basic integration test for signal_dashboard_coverage endpoint"""
+        
         response = self.epidata_client._request("signal_dashboard_coverage")
         self.assertEqual(
             response,

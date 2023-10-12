@@ -28,7 +28,7 @@ class APIKeysTets(DelphiTestBase):
         }
         status_codes = set()
         for _ in range(10):
-            status_codes.add(self._make_request(params=params).status_code)
+            status_codes.add(self._make_request("covidcast", params=params).status_code)
         self.assertEqual(status_codes, {200})
 
     def test_no_multiples_source_signal(self):
@@ -42,7 +42,7 @@ class APIKeysTets(DelphiTestBase):
         }
         status_codes = set()
         for _ in range(10):
-            status_codes.add(self._make_request(params=params).status_code)
+            status_codes.add(self._make_request("covidcast", params=params).status_code)
         self.assertEqual(status_codes, {200})
 
     def test_multiples_allowed_signal_two_multiples(self):
@@ -56,7 +56,7 @@ class APIKeysTets(DelphiTestBase):
         }
         status_codes = set()
         for _ in range(10):
-            status_codes.add(self._make_request(params=params).status_code)
+            status_codes.add(self._make_request("covidcast", params=params).status_code)
         self.assertEqual(status_codes, {200})
 
     def test_multiples_non_allowed_signal(self):
@@ -70,7 +70,7 @@ class APIKeysTets(DelphiTestBase):
         }
         status_codes = set()
         for _ in range(10):
-            status_codes.add(self._make_request(params=params).status_code)
+            status_codes.add(self._make_request("covidcast", params=params).status_code)
         self.assertEqual(status_codes, {200, 429})
 
     def test_multiples_mixed_allowed_signal_two_multiples(self):
@@ -84,7 +84,7 @@ class APIKeysTets(DelphiTestBase):
         }
         status_codes = set()
         for _ in range(10):
-            status_codes.add(self._make_request(params=params).status_code)
+            status_codes.add(self._make_request("covidcast", params=params).status_code)
         self.assertEqual(status_codes, {200, 429})
 
     def test_multiples_allowed_signal_three_multiples(self):

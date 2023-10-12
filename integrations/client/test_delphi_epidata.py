@@ -107,6 +107,14 @@ class DelphiEpidataPythonClientTests(CovidcastTestBase):
         'message': 'success',
       })
 
+    with self.subTest(name='bad as-of date'):
+      # fetch data, specifying as_of
+      as_of_response = Epidata.covidcast(
+        **self.params_from_row(rows[0], as_of="20230101-20230102")
+      )
+      self.assertEqual(as_of_response, {"epidata": [], "message": "not a valid date: 20230101-20230102", "result": -1})
+
+
     with self.subTest(name='request a range of issues'):
       # fetch data, specifying issue range, not lag
       response_2 = self.epidata_client.covidcast(
