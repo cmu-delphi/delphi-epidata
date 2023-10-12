@@ -22,20 +22,17 @@ $ curl "https://raw.githubusercontent.com/cmu-delphi/delphi-epidata/dev/dev/loca
 You should now have the following directory structure:
 
 ```sh
-├── driver
-│   ├── .dockerignore -> repos/delphi/delphi-epidata/dev/local/.dockerignore
-│   ├── Makefile -> repos/delphi/delphi-epidata/dev/local/Makefile
-│   ├── repos
-│   │   ├── pyproject.toml -> delphi/delphi-epidata/dev/local/pyproject.toml
-│   │   ├── setup.cfg -> delphi/delphi-epidata/dev/local/setup.cfg
-│   │   └── delphi
-│   │       ├── delphi-epidata
-│   │       ├── flu-contest
-│   │       ├── github-deploy-repo
-│   │       ├── nowcast
-│   │       ├── operations
-│   │       └── utils
-```
+└── driver
+    ├── .dockerignore -> repos/delphi/delphi-epidata/dev/local/.dockerignore
+    ├── Makefile -> repos/delphi/delphi-epidata/dev/local/Makefile
+    └── repos
+        ├── pyproject.toml -> delphi/delphi-epidata/dev/local/pyproject.toml
+        ├── setup.cfg -> delphi/delphi-epidata/dev/local/setup.cfg
+        └── delphi
+            ├── delphi-epidata
+            ├── operations
+            └── utils
+ ```
 
 and you should now be in the `driver` directory.
 You can now execute make commands

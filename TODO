@@ -1,15 +1,7 @@
-- grep for:
-undef
-py3test
-test_target
-github.deploy.repo
-flu.contest
-nowcast      (hard to filter on)
-
-
-- still need to remove from:
-docs/
-README.md
-tests/
-integrations/
-???
+- for #1129 :
+  - grep for:
+    - py3test
+    - test_target
+  - and remove from:
+    - tests/*
+    - integrations/*
