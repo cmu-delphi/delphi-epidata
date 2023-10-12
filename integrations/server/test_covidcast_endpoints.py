@@ -88,8 +88,6 @@ class CovidcastEndpointTests(CovidcastTestBase):
             out = self._make_request(json=True, raise_for_status=True, params=params)
             self.assertEqual(len(out["epidata"]), len(rows))
 
-    # Commented out this section as we want go get rid of legacy .php code
-    # -----------------------------------------
     def test_compatibility(self):
         """Request at the /api.php endpoint."""
         rows = [CovidcastTestRow.make_default_row(source="src", signal="sig", time_value=2020_04_01 + i, value=i) for i in range(10)]
