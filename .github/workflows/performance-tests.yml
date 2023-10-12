@@ -46,6 +46,7 @@ jobs:
       - name: Set up repository # mimics install.sh in the README except that delphi is cloned from the PR rather than main
         run: |
           cd ..
+          rm -rf driver
           mkdir -p driver/repos/delphi
           cd driver/repos/delphi
           git clone https://github.com/cmu-delphi/operations
