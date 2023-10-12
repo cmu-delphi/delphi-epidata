@@ -22,7 +22,7 @@ __test_target__ = (
 )
 
 # use the local instance of the Epidata API
-BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+BASE_URL = 'http://delphi_web_epidata/epidata'
 
 
 class CovidcastMetaCacheTests(unittest.TestCase):
@@ -82,8 +82,8 @@ class CovidcastMetaCacheTests(unittest.TestCase):
 
   @staticmethod
   def _make_request():
-    params = {'endpoint': 'covidcast_meta', 'cached': 'true'}
-    response = requests.get(Epidata.BASE_URL, params=params, auth=Epidata.auth)
+    params = {'cached': 'true'}
+    response = requests.get(f"{Epidata.BASE_URL}/covidcast_meta", params=params, auth=Epidata.auth)
     response.raise_for_status()
     return response.json()
 

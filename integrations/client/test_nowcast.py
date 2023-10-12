@@ -39,7 +39,7 @@ class DelphiEpidataPythonClientNowcastTests(unittest.TestCase):
     self.cur = cnx.cursor()
 
     # use the local instance of the Epidata API
-    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata'
     Epidata.auth = ('epidata', 'key')
 
     # use the local instance of the epidata database
@@ -133,4 +133,4 @@ class DelphiEpidataPythonClientNowcastTests(unittest.TestCase):
     response = Epidata.covidcast_nowcast(
       'src', 'sig1', 'sensor', 'day', 'county', 22222222, '01001')
 
-    self.assertEqual(response, {'result': -2, 'message': 'no results'})
+    self.assertEqual(response, {'epidata': [], 'result': -2, 'message': 'no results'})

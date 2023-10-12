@@ -44,7 +44,7 @@ class Epidata:
     """An interface to DELPHI's Epidata API."""
 
     # API base url
-    BASE_URL = "https://api.delphi.cmu.edu/epidata/api.php"
+    BASE_URL = "https://api.delphi.cmu.edu/epidata"
     auth = None
 
     client_version = _version
@@ -68,17 +68,18 @@ class Epidata:
 
     @staticmethod
     @retry(reraise=True, stop=stop_after_attempt(2))
-    def _request_with_retry(params):
+    def _request_with_retry(endpoint, params={}):
         """Make request with a retry if an exception is thrown."""
-        req = requests.get(Epidata.BASE_URL, params, auth=Epidata.auth, headers=_HEADERS)
+        request_url = f"{Epidata.BASE_URL}/{endpoint}"
+        req = requests.get(request_url, params, auth=Epidata.auth, headers=_HEADERS)
         if req.status_code == 414:
-            req = requests.post(Epidata.BASE_URL, params, auth=Epidata.auth, headers=_HEADERS)
+            req = requests.post(request_url, params, auth=Epidata.auth, headers=_HEADERS)
         # handle 401 and 429
         req.raise_for_status()
         return req
 
     @staticmethod
-    def _request(params):
+    def _request(endpoint, params={}):
         """Request and parse epidata.
 
         We default to GET since it has better caching and logging
@@ -86,7 +87,7 @@ class Epidata:
         long and returns a 414.
         """
         try:
-            result = Epidata._request_with_retry(params)
+            result = Epidata._request_with_retry(endpoint, params)
         except Exception as e:
             return {"result": 0, "message": "error: " + str(e)}
         if params is not None and "format" in params and params["format"] == "csv":
@@ -125,7 +126,6 @@ class Epidata:
             raise EpidataBadRequestException(ISSUES_LAG_EXCLUSIVE)
         # Set up request
         params = {
-            "endpoint": "fluview",
             "regions": Epidata._list(regions),
             "epiweeks": Epidata._list(epiweeks),
         }
@@ -136,18 +136,13 @@ class Epidata:
         if auth is not None:
             params["auth"] = auth
         # Make the API call
-        return Epidata._request(params)
+        return Epidata._request("fluview", params)
 
     # Fetch FluView metadata
     @staticmethod
     def fluview_meta():
         """Fetch FluView metadata."""
-        # Set up request
-        params = {
-            "endpoint": "fluview_meta",
-        }
-        # Make the API call
-        return Epidata._request(params)
+        return Epidata._request("fluview_meta")
 
     # Fetch FluView clinical data
     @staticmethod
@@ -160,7 +155,6 @@ class Epidata:
             raise EpidataBadRequestException(REGIONS_EPIWEEKS_REQUIRED)
         # Set up request
         params = {
-            "endpoint": "fluview_clinical",
             "regions": Epidata._list(regions),
             "epiweeks": Epidata._list(epiweeks),
         }
@@ -169,7 +163,7 @@ class Epidata:
         if lag is not None:
             params["lag"] = lag
         # Make the API call
-        return Epidata._request(params)
+        return Epidata._request("fluview_clinical", params)
 
     # Fetch FluSurv data
     @staticmethod
@@ -182,7 +176,6 @@ class Epidata:
             raise EpidataBadRequestException(REGIONS_EPIWEEKS_REQUIRED)
         # Set up request
         params = {
-            "endpoint": "flusurv",
             "locations": Epidata._list(locations),
             "epiweeks": Epidata._list(epiweeks),
         }
@@ -191,7 +184,7 @@ class Epidata:
         if lag is not None:
             params["lag"] = lag
         # Make the API call
-        return Epidata._request(params)
+        return Epidata._request("flusurv", params)
 
     # Fetch PAHO Dengue data
     @staticmethod
@@ -204,7 +197,6 @@ class Epidata:
             raise EpidataBadRequestException(REGIONS_EPIWEEKS_REQUIRED)
         # Set up request
         params = {
-            "endpoint": "paho_dengue",
             "regions": Epidata._list(regions),
             "epiweeks": Epidata._list(epiweeks),
         }
@@ -213,7 +205,7 @@ class Epidata:
         if lag is not None:
             params["lag"] = lag
         # Make the API call
-        return Epidata._request(params)
+        return Epidata._request("paho_dengue", params)
 
     # Fetch ECDC ILI data
     @staticmethod
@@ -226,7 +218,6 @@ class Epidata:
             raise EpidataBadRequestException(REGIONS_EPIWEEKS_REQUIRED)
         # Set up request
         params = {
-            "endpoint": "ecdc_ili",
             "regions": Epidata._list(regions),
             "epiweeks": Epidata._list(epiweeks),
         }
@@ -235,7 +226,7 @@ class Epidata:
         if lag is not None:
             params["lag"] = lag
         # Make the API call
-        return Epidata._request(params)
+        return Epidata._request("ecdc_ili", params)
 
     # Fetch KCDC ILI data
     @staticmethod
@@ -248,7 +239,6 @@ class Epidata:
             raise EpidataBadRequestException(REGIONS_EPIWEEKS_REQUIRED)
         # Set up request
         params = {
-            "endpoint": "kcdc_ili",
             "regions": Epidata._list(regions),
             "epiweeks": Epidata._list(epiweeks),
         }
@@ -257,7 +247,7 @@ class Epidata:
         if lag is not None:
             params["lag"] = lag
         # Make the API call
-        return Epidata._request(params)
+        return Epidata._request("kcdc_ili", params)
 
     # Fetch Google Flu Trends data
     @staticmethod
@@ -268,12 +258,11 @@ class Epidata:
             raise EpidataBadRequestException(LOCATIONS_EPIWEEKS_REQUIRED)
         # Set up request
         params = {
-            "endpoint": "gft",
             "locations": Epidata._list(locations),
             "epiweeks": Epidata._list(epiweeks),
         }
         # Make the API call
-        return Epidata._request(params)
+        return Epidata._request("gft", params)
 
     # Fetch Google Health Trends data
     @staticmethod
@@ -286,14 +275,13 @@ class Epidata:
             )
         # Set up request
         params = {
-            "endpoint": "ght",
             "auth": auth,
             "locations": Epidata._list(locations),
             "epiweeks": Epidata._list(epiweeks),
             "query": query,
         }
         # Make the API call
-        return Epidata._request(params)
+        return Epidata._request("ght", params)
 
     # Fetch HealthTweets data
     @staticmethod
@@ -306,7 +294,6 @@ class Epidata:
             raise EpidataBadRequestException("exactly one of `dates` and `epiweeks` is required")
         # Set up request
         params = {
-            "endpoint": "twitter",
             "auth": auth,
             "locations": Epidata._list(locations),
         }
@@ -315,7 +302,7 @@ class Epidata:
         if epiweeks is not None:
             params["epiweeks"] = Epidata._list(epiweeks)
         # Make the API call
-        return Epidata._request(params)
+        return Epidata._request("twitter", params)
 
     # Fetch Wikipedia access data
     @staticmethod
@@ -328,7 +315,6 @@ class Epidata:
             raise EpidataBadRequestException("exactly one of `dates` and `epiweeks` is required")
         # Set up request
         params = {
-            "endpoint": "wiki",
             "articles": Epidata._list(articles),
             "language": language,
         }
@@ -339,7 +325,7 @@ class Epidata:
         if hours is not None:
             params["hours"] = Epidata._list(hours)
         # Make the API call
-        return Epidata._request(params)
+        return Epidata._request("wiki", params)
 
     # Fetch CDC page hits
     @staticmethod
@@ -350,13 +336,12 @@ class Epidata:
             raise EpidataBadRequestException("`auth`, `epiweeks`, and `locations` are all required")
         # Set up request
         params = {
-            "endpoint": "cdc",
             "auth": auth,
             "epiweeks": Epidata._list(epiweeks),
             "locations": Epidata._list(locations),
         }
         # Make the API call
-        return Epidata._request(params)
+        return Epidata._request("cdc", params)
 
     # Fetch Quidel data
     @staticmethod
@@ -367,13 +352,12 @@ class Epidata:
             raise EpidataBadRequestException("`auth`, `epiweeks`, and `locations` are all required")
         # Set up request
         params = {
-            "endpoint": "quidel",
             "auth": auth,
             "epiweeks": Epidata._list(epiweeks),
             "locations": Epidata._list(locations),
         }
         # Make the API call
-        return Epidata._request(params)
+        return Epidata._request("quidel", params)
 
     # Fetch NoroSTAT data (point data, no min/max)
     @staticmethod
@@ -384,13 +368,12 @@ class Epidata:
             raise EpidataBadRequestException("`auth`, `location`, and `epiweeks` are all required")
         # Set up request
         params = {
-            "endpoint": "norostat",
             "auth": auth,
             "location": location,
             "epiweeks": Epidata._list(epiweeks),
         }
         # Make the API call
-        return Epidata._request(params)
+        return Epidata._request("norostat", params)
 
     # Fetch NoroSTAT metadata
     @staticmethod
@@ -401,11 +384,10 @@ class Epidata:
             raise EpidataBadRequestException("`auth` is required")
         # Set up request
         params = {
-            "endpoint": "meta_norostat",
             "auth": auth,
         }
         # Make the API call
-        return Epidata._request(params)
+        return Epidata._request("meta_norostat", params)
 
     # Fetch NIDSS flu data
     @staticmethod
@@ -418,7 +400,6 @@ class Epidata:
             raise EpidataBadRequestException(REGIONS_EPIWEEKS_REQUIRED)
         # Set up request
         params = {
-            "endpoint": "nidss_flu",
             "regions": Epidata._list(regions),
             "epiweeks": Epidata._list(epiweeks),
         }
@@ -427,7 +408,7 @@ class Epidata:
         if lag is not None:
             params["lag"] = lag
         # Make the API call
-        return Epidata._request(params)
+        return Epidata._request("nidss_flu", params)
 
     # Fetch NIDSS dengue data
     @staticmethod
@@ -438,12 +419,11 @@ class Epidata:
             raise EpidataBadRequestException(REGIONS_EPIWEEKS_REQUIRED)
         # Set up request
         params = {
-            "endpoint": "nidss_dengue",
             "locations": Epidata._list(locations),
             "epiweeks": Epidata._list(epiweeks),
         }
         # Make the API call
-        return Epidata._request(params)
+        return Epidata._request("nidss_dengue", params)
 
     # Fetch Delphi's forecast
     @staticmethod
@@ -454,12 +434,11 @@ class Epidata:
             raise EpidataBadRequestException("`system` and `epiweek` are both required")
         # Set up request
         params = {
-            "endpoint": "delphi",
             "system": system,
             "epiweek": epiweek,
         }
         # Make the API call
-        return Epidata._request(params)
+        return Epidata._request("delphi", params)
 
     # Fetch Delphi's digital surveillance sensors
     @staticmethod
@@ -472,7 +451,6 @@ class Epidata:
             )
         # Set up request
         params = {
-            "endpoint": "sensors",
             "names": Epidata._list(names),
             "locations": Epidata._list(locations),
             "epiweeks": Epidata._list(epiweeks),
@@ -480,7 +458,7 @@ class Epidata:
         if auth is not None:
             params["auth"] = auth
         # Make the API call
-        return Epidata._request(params)
+        return Epidata._request("sensors", params)
 
     # Fetch Delphi's dengue digital surveillance sensors
     @staticmethod
@@ -493,14 +471,13 @@ class Epidata:
             )
         # Set up request
         params = {
-            "endpoint": "dengue_sensors",
             "auth": auth,
             "names": Epidata._list(names),
             "locations": Epidata._list(locations),
             "epiweeks": Epidata._list(epiweeks),
         }
         # Make the API call
-        return Epidata._request(params)
+        return Epidata._request("dengue_sensors", params)
 
     # Fetch Delphi's wILI nowcast
     @staticmethod
@@ -511,12 +488,11 @@ class Epidata:
             raise EpidataBadRequestException(REGIONS_EPIWEEKS_REQUIRED)
         # Set up request
         params = {
-            "endpoint": "nowcast",
             "locations": Epidata._list(locations),
             "epiweeks": Epidata._list(epiweeks),
         }
         # Make the API call
-        return Epidata._request(params)
+        return Epidata._request("nowcast", params)
 
     # Fetch Delphi's dengue nowcast
     @staticmethod
@@ -527,18 +503,17 @@ class Epidata:
             raise EpidataBadRequestException(REGIONS_EPIWEEKS_REQUIRED)
         # Set up request
         params = {
-            "endpoint": "dengue_nowcast",
             "locations": Epidata._list(locations),
             "epiweeks": Epidata._list(epiweeks),
         }
         # Make the API call
-        return Epidata._request(params)
+        return Epidata._request("dengue_nowcast", params)
 
     # Fetch API metadata
     @staticmethod
     def meta():
         """Fetch API metadata."""
-        return Epidata._request({"endpoint": "meta"})
+        return Epidata._request("meta")
 
     # Fetch Delphi's COVID-19 Surveillance Streams
     @staticmethod
@@ -568,7 +543,6 @@ class Epidata:
             raise EpidataBadRequestException(REGIONS_EPIWEEKS_REQUIRED)
         # Set up request
         params = {
-            "endpoint": "covidcast",
             "data_source": data_source,
             "signals": Epidata._list(signals),
             "time_type": time_type,
@@ -594,13 +568,13 @@ class Epidata:
             params["fields"] = kwargs["fields"]
 
         # Make the API call
-        return Epidata._request(params)
+        return Epidata._request("covidcast", params)
 
     # Fetch Delphi's COVID-19 Surveillance Streams metadata
     @staticmethod
     def covidcast_meta():
         """Fetch Delphi's COVID-19 Surveillance Streams metadata"""
-        return Epidata._request({"endpoint": "covidcast_meta"})
+        return Epidata._request("covidcast_meta")
 
     # Fetch COVID hospitalization data
     @staticmethod
@@ -611,7 +585,6 @@ class Epidata:
             raise EpidataBadRequestException("`states` and `dates` are both required")
         # Set up request
         params = {
-            "endpoint": "covid_hosp",
             "states": Epidata._list(states),
             "dates": Epidata._list(dates),
         }
@@ -620,7 +593,7 @@ class Epidata:
         if as_of is not None:
             params["as_of"] = as_of
         # Make the API call
-        return Epidata._request(params)
+        return Epidata._request("covid_hosp_state_timeseries", params)
 
     # Fetch COVID hospitalization data for specific facilities
     @staticmethod
@@ -633,21 +606,20 @@ class Epidata:
             )
         # Set up request
         params = {
-            "source": "covid_hosp_facility",
             "hospital_pks": Epidata._list(hospital_pks),
             "collection_weeks": Epidata._list(collection_weeks),
         }
         if publication_dates is not None:
             params["publication_dates"] = Epidata._list(publication_dates)
         # Make the API call
-        return Epidata._request(params)
+        return Epidata._request("covid_hosp_facility", params)
 
     # Lookup COVID hospitalization facility identifiers
     @staticmethod
     def covid_hosp_facility_lookup(state=None, ccn=None, city=None, zip=None, fips_code=None):
         """Lookup COVID hospitalization facility identifiers."""
         # Set up request
-        params = {"source": "covid_hosp_facility_lookup"}
+        params = {}
         if state is not None:
             params["state"] = state
         elif ccn is not None:
@@ -663,7 +635,7 @@ class Epidata:
                 "one of `state`, `ccn`, `city`, `zip`, or `fips_code` is required"
             )
         # Make the API call
-        return Epidata._request(params)
+        return Epidata._request("covid_hosp_facility_lookup", params)
 
     # Fetch Delphi's COVID-19 Nowcast sensors
     @staticmethod
@@ -693,7 +665,6 @@ class Epidata:
             raise EpidataBadRequestException(REGIONS_EPIWEEKS_REQUIRED)
         # Set up request
         params = {
-            "source": "covidcast_nowcast",
             "data_source": data_source,
             "signals": Epidata._list(signals),
             "sensor_names": Epidata._list(sensor_names),
@@ -717,15 +688,20 @@ class Epidata:
             params["format"] = kwargs["format"]
 
         # Make the API call
-        return Epidata._request(params)
+        return Epidata._request("covidcast_nowcast", params)
 
     @staticmethod
     def async_epidata(param_list, batch_size=50):
-        """Make asynchronous Epidata calls for a list of parameters."""
+        """[DEPRECATED] Make asynchronous Epidata calls for a list of parameters."""
+
+        import warnings
+        warnings.filterwarnings("once", category=DeprecationWarning, module="delphi_epidata")
+        warnings.warn("Method `Epidata.async_epidata()` is deprecated and will be removed in a future version.",
+                      category=DeprecationWarning)
 
         async def async_get(params, session):
             """Helper function to make Epidata GET requests."""
-            async with session.get(Epidata.BASE_URL, params=params) as response:
+            async with session.get(f"{Epidata.BASE_URL}/api.php", params=params) as response:
                 response.raise_for_status()
                 return await response.json(), params
 
