@@ -55,7 +55,7 @@ class CsvUploadingTests(unittest.TestCase):
     secrets.db.epi = ('user', 'pass')
 
     # use the local instance of the Epidata API
-    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata'
     Epidata.auth = ('epidata', 'key')
 
   def tearDown(self):

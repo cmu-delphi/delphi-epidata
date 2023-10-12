@@ -25,10 +25,7 @@ class SignalDashboardTest(DelphiTestBase):
     def test_signal_dashboard_coverage(self):
         """Basic integration test for signal_dashboard_coverage endpoint"""
 
-        params = {
-            "endpoint": "signal_dashboard_coverage",
-        }
-        response = self.epidata_client._request(params=params)
+        response = self.epidata_client._request("signal_dashboard_coverage")
         self.assertEqual(
             response,
             {
@@ -41,10 +38,7 @@ class SignalDashboardTest(DelphiTestBase):
     def test_signal_dashboard_status(self):
         """Basic integration test for signal_dashboard_status endpoint"""
 
-        params = {
-            "endpoint": "signal_dashboard_status",
-        }
-        response = self.epidata_client._request(params=params)
+        response = self.epidata_client._request("signal_dashboard_status")
         self.assertEqual(
             response,
             {
