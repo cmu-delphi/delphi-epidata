@@ -1,7 +1,7 @@
 #!/bin/bash
 # Bootstrap delphi-epidata development
 #
-# Downloads the repos needed for local delphi-epidata development into current dir 
+# Downloads the repos needed for local delphi-epidata development into current dir
 # and provides a Makefile with Docker control commands
 # as well as pyproject/setup.cfg files for IDE mappings.
 #
@@ -44,9 +44,8 @@ git clone https://github.com/undefx/py3tester
 git clone https://github.com/undefx/undef-analysis
 cd ../../
 
+ln -s repos/delphi/delphi-epidata/dev/local/docker-compose.yaml
 ln -s repos/delphi/delphi-epidata/dev/local/Makefile
 ln -s repos/delphi/delphi-epidata/dev/local/.dockerignore
-cd repos
-ln -s delphi/delphi-epidata/dev/local/pyproject.toml
-ln -s delphi/delphi-epidata/dev/local/setup.cfg
-cd -
+ln -s repos/delphi/delphi-epidata/dev/local/pyproject.toml repos/
+ln -s repos/delphi/delphi-epidata/dev/local/setup.cfg repos/

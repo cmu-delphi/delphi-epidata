@@ -1,0 +1,90 @@
+networks:
+  delphi-net:
+    driver: bridge
+
+services:
+  delphi_database_epidata:
+    container_name: delphi_database_epidata
+    build:
+      context: .
+      dockerfile: repos/delphi/delphi-epidata/dev/docker/database/epidata/Dockerfile
+    cap_add:
+      - SYS_NICE
+    ports:
+      - "127.0.0.1:13306:3306"
+    networks:
+      - delphi-net
+    healthcheck:
+      test: "mysql --user=user --password=pass --execute \"SHOW DATABASES;\""
+      start_period: 5s
+      timeout: 10s
+      retries: 5
+
+  delphi_web_epidata:
+    container_name: delphi_web_epidata
+    build:
+      context: repos/delphi/delphi-epidata
+      dockerfile: ./devops/Dockerfile
+    environment:
+      MODULE_NAME: delphi.epidata.server.main
+      SQLALCHEMY_DATABASE_URI: ${SQLALCHEMY_DATABASE_URI:-mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata}
+      FLASK_SECRET: abc
+      FLASK_PREFIX: /epidata
+      LOG_DEBUG: "1"
+      REDIS_HOST: delphi_redis
+      REDIS_PASSWORD: 1234
+      API_KEY_ADMIN_PASSWORD: test_admin_password
+      API_KEY_REGISTER_WEBHOOK_TOKEN: abc
+      TESTING_MODE: True
+    ports:
+      - "127.0.0.1:10080:80"
+    networks:
+      - delphi-net
+    healthcheck:
+      test: "curl -f http://localhost/epidata/covidcast || exit 1"
+      timeout: 10s
+      retries: 5
+
+  delphi_redis:
+    container_name: delphi_redis
+    build:
+      context: .
+      dockerfile: repos/delphi/delphi-epidata/dev/docker/redis/Dockerfile
+    environment:
+      REDIS_PASSWORD: 1234
+    ports:
+      - "127.0.0.1:6379:6379"
+    networks:
+      - delphi-net
+    depends_on:
+      delphi_database_epidata:
+        condition: service_healthy
+      delphi_web_epidata:
+        condition: service_healthy
+
+  delphi_web_python:
+    container_name: delphi_web_python
+    build:
+      context: .
+      dockerfile: repos/delphi/delphi-epidata/dev/docker/python/Dockerfile
+    environment:
+      SQLALCHEMY_DATABASE_URI: ${SQLALCHEMY_DATABASE_URI:-mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata}
+      FLASK_SECRET: abc
+    volumes:
+      - type: bind
+        source: repos/delphi/delphi-epidata
+        target: /usr/src/app/delphi/epidata
+        read_only: true
+      - type: bind
+        source: repos/delphi/delphi-epidata/src
+        target: /usr/src/app/delphi/epidata
+        read_only: true
+    networks:
+      - delphi-net
+    depends_on:
+      delphi_database_epidata:
+        condition: service_healthy
+      delphi_web_epidata:
+        condition: service_healthy
+      delphi_redis:
+        condition: service_started
