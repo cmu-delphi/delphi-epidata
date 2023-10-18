@@ -439,7 +439,16 @@ def extract_dates(key: Union[str, Sequence[str]]) -> Optional[TimeValues]:
             values.append(r)
             continue
         # parse other date formats
-        r = parse_day_value(part)
+        dashless_part = part.replace("-", "")
+        if len(dashless_part) in (6, 12):
+            # if there are 6 or 12 (hopefully) integers in this, it
+            # should be a week or week range (YYYYWW or YYYYWWYYYYWW)
+            r = parse_week_value(part)
+        else:
+            # else its (presumably) 8 or 16, which should mean day or
+            # day range (YYYYMMDD or YYYYMMDDYYYYMMDD)...
+            # other time types tbd lol
+            r = parse_day_value(part)
         values.append(r)
     return values
 
