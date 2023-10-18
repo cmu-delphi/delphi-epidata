@@ -101,8 +101,11 @@ web:
 		--network delphi-net --name delphi_web_epidata \
 		delphi_web_epidata >$(LOG_WEB) 2>&1 &
 
-.PHONY=web_debug
-web_debug:
+.PHONY=web_vscodedebug
+web_vscodedebug:
+	@# Full giude can be found by the link below:
+	@# https://docs.google.com/presentation/d/1RMxsPO3uYqjAqBNzhDJTtLM0Xglm7kAijFi2W2tzd6U/edit?usp=sharing
+
 	@# Stop container if running
 	@if [ $(WEB_CONTAINER_ID) ]; then\
 		docker stop $(WEB_CONTAINER_ID);\
@@ -121,9 +124,11 @@ web_debug:
 	@# Run the web server
 	@# MODULE_NAME specifies the location of the `app` variable, the actual WSGI application object to run.
 	@# see https://github.com/tiangolo/meinheld-gunicorn-docker#module_name
+
+	@# mount the debuging start script (start_vscodedebug.sh) into the container so the webserver uses it
 	@docker run --rm -p 127.0.0.1:5000:5000 -p 127.0.0.1:5678:5678 \
 		$(M1) \
-		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata/devops/start.sh,target=/start.sh,readonly \
+		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata/devops/start_vscodedebug.sh,target=/start_vscodedebug.sh,readonly \
 		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata/src/server,target=/app/delphi/epidata/server \
 		--env "MODULE_NAME=delphi.epidata.server.main" \
 		--env "SQLALCHEMY_DATABASE_URI=$(sqlalchemy_uri)" \
@@ -171,7 +176,7 @@ py:
 all: db web py
 
 .PHONY=debug
-debug: db web_debug py
+debug: db web_vscodedebug py
 
 .PHONY=test
 test:
