@@ -81,6 +81,18 @@ class CovidcastTests(CovidcastBase):
     self._insert_rows(rows)
     return rows 
 
+  def _insert_placeholder_set_with_weeks(self):
+    rows = [
+      CovidcastTestRow.make_default_row(
+        time_value=2021_05+i, time_type="week",
+        source="nchs-mortality", signal="deaths_covid_incidence_num",
+        geo_type="state", geo_value="il",
+        value=i*i)
+      for i in [0, 1, 2]
+    ]
+    self._insert_rows(rows)
+    return rows
+
   def test_round_trip(self):
     """Make a simple round-trip with some sample data."""
 
@@ -445,3 +457,22 @@ class CovidcastTests(CovidcastBase):
 
     # assert that the right data came back
     self.assertEqual(len(response['epidata']), 2 * 3)
+
+
+  def test_week_formats(self):
+    """Test different ways to specify week ranges are accepted."""
+
+    rows = self._insert_placeholder_set_with_weeks()
+    expected = {
+      'result': 1,
+      'epidata': [r.as_api_row_dict() for r in rows],
+      'message': 'success',
+    }
+
+    colond = self.request_based_on_row(rows[0], time_values="202105:202107")
+    dashed = self.request_based_on_row(rows[0], time_values="202105-202107")
+    enumed = self.request_based_on_row(rows[0], time_values="202105,202106,202107")
+
+    self.assertEqual(expected, colond)
+    self.assertEqual(expected, dashed)
+    self.assertEqual(expected, enumed)

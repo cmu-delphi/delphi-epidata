@@ -33,6 +33,8 @@ jobs:
           ips: '${{ secrets.WG_PERF_IPS }}'
           allowed_ips: '${{ secrets.WG_PERF_ALLOWED_IPS }}'
           private_key: '${{ secrets.WG_PERF_PRIVATE_KEY }}'
+      - name: Clean files from previous runs
+        uses: AutoModality/action-clean@v1
       - name: Check out repository
         uses: actions/checkout@v3
       # Previous step checks out default branch, so we check out the pull request's branch
@@ -44,6 +46,7 @@ jobs:
       - name: Set up repository # mimics install.sh in the README except that delphi is cloned from the PR rather than main
         run: |
           cd ..
+          rm -rf driver
           mkdir -p driver/repos/delphi
           cd driver/repos/delphi
           git clone https://github.com/cmu-delphi/operations
