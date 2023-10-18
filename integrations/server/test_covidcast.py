@@ -84,7 +84,7 @@ class CovidcastTests(CovidcastBase):
   def _insert_placeholder_set_with_weeks(self):
     rows = [
       CovidcastTestRow.make_default_row(
-        time_value=2021_05, time_type="week",
+        time_value=2021_05+i, time_type="week",
         source="nchs-mortality", signal="deaths_covid_incidence_num",
         geo_type="state", geo_value="il",
         value=i*i)
