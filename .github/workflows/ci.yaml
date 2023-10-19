@@ -5,6 +5,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # This imitates the dev/docker/local/install.sh script.
       - run: mkdir -p repos/undefx
       - name: Checkout undefx/py3tester
         uses: actions/checkout@v2
@@ -18,7 +19,6 @@ jobs:
           path: repos/undefx/undef-analysis
 
       - run: mkdir -p repos/delphi
-
       - name: Checkoutcmu-delphi/operations
         uses: actions/checkout@v2
         with:
@@ -49,47 +49,20 @@ jobs:
           repository: cmu-delphi/nowcast
           path: repos/delphi/nowcast
 
-      - name: Build docker images
-        run: |
-          docker build -t delphi_database_epidata -f ./repos/delphi/delphi-epidata/dev/docker/database/epidata/Dockerfile .
-          docker build -t delphi_web_python -f repos/delphi/delphi-epidata/dev/docker/python/Dockerfile .
-          sudo docker build -t delphi_redis -f repos/delphi/delphi-epidata/dev/docker/redis/Dockerfile .
-          cd ./repos/delphi/delphi-epidata
-          docker build -t delphi_web_epidata -f ./devops/Dockerfile .
-          cd ../../../
-
-      # MODULE_NAME specifies the location of the `app` variable, the actual WSGI application object to run.
-      # see https://github.com/tiangolo/meinheld-gunicorn-docker#module_name
-      - name: Start database and Redis services
-        run: |
-          docker network create --driver bridge delphi-net
-          docker run --rm -d -p 13306:3306 --network delphi-net --name delphi_database_epidata --cap-add=sys_nice delphi_database_epidata
-          docker run --rm -d -p 6379:6379 --network delphi-net --env "REDIS_PASSWORD=1234" --name delphi_redis delphi_redis
-          
-
       - run: |
-          wget https://raw.githubusercontent.com/eficode/wait-for/master/wait-for
-          chmod +x wait-for
-          ./wait-for localhost:13306 -- echo 'ready'
-          sleep 10s
+          ln -s repos/delphi/delphi-epidata/dev/local/Makefile
+          ln -s repos/delphi/delphi-epidata/dev/local/docker-compose.yaml
+          ln -s repos/delphi/delphi-epidata/dev/local/.dockerignore
+          ln -s repos/delphi/delphi-epidata/dev/local/pyproject.toml repos/
+          ln -s repos/delphi/delphi-epidata/dev/local/setup.cfg repos/
 
-      - name: Start delphi_web_epidata
+      - name: Run tests
         run: |
-          docker run --rm -d -p 10080:80 --env "MODULE_NAME=delphi.epidata.server.main" --env "SQLALCHEMY_DATABASE_URI=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata" --env "FLASK_SECRET=abc" --env "FLASK_PREFIX=/epidata" --env "REDIS_HOST=delphi_redis" --env "REDIS_PASSWORD=1234" --env "API_KEY_REGISTER_WEBHOOK_TOKEN=abc" --env "API_KEY_ADMIN_PASSWORD=test_admin_password" --env "TESTING_MODE=True" --network delphi-net --name delphi_web_epidata delphi_web_epidata
-          docker ps
-
-      - name: Run Unit Tests
-        run: |
-          docker run --rm --network delphi-net --env "SQLALCHEMY_DATABASE_URI=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata" --env "FLASK_SECRET=abc" delphi_web_python python -m pytest --import-mode importlib repos/delphi/delphi-epidata/tests
-
-      - name: Run Integration Tests
-        run: |
-          docker run --rm --network delphi-net delphi_web_python python -m pytest --import-mode importlib repos/delphi/delphi-epidata/integrations
+          make test
 
       - name: Clean Up
         run: |
-          docker stop delphi_database_epidata delphi_web_epidata delphi_redis
-          docker network remove delphi-net
+          docker compose down
 
   build_js_client:
     runs-on: ubuntu-latest

@@ -25,7 +25,7 @@
 #
 #   all:     Runs the commands 'web' 'db' and 'python'.
 #
-#   test:    Runs test and integrations in delphi-epidata. If test 
+#   test:    Runs test and integrations in delphi-epidata. If test
 #            optional arg is provided, then only the tests in that subdir
 #            are run.
 #
@@ -65,9 +65,6 @@ NOW:=$(shell date "+%Y-%m-%d")
 LOG_WEB:=delphi_web_epidata_$(NOW).log
 LOG_DB:=delphi_database_epidata_$(NOW).log
 LOG_REDIS:=delphi_redis_instance_$(NOW).log
-WEB_CONTAINER_ID:=$(shell docker ps -q --filter 'name=delphi_web_epidata')
-DATABASE_CONTAINER_ID:=$(shell docker ps -q --filter 'name=delphi_database_epidata')
-REDIS_CONTAINER_ID:=$(shell docker ps -q --filter 'name=delphi_redis')
 
 M1=
 ifeq ($(shell uname -smp), Darwin arm64 arm)
@@ -75,129 +72,48 @@ $(info M1 system detected, changing docker platform to linux/amd64.)
 	override M1 =--platform linux/amd64
 endif
 
-.PHONY=web
-web:
-	@# Stop container if running
-	@if [ $(WEB_CONTAINER_ID) ]; then\
-		docker stop $(WEB_CONTAINER_ID);\
-	fi
-
-	@# Setup virtual network if it doesn't exist
-	@docker network ls | grep delphi-net || docker network create --driver bridge delphi-net
-
-	@# Build the web_epidata image
-	@cd repos/delphi/delphi-epidata;\
-		docker build -t delphi_web_epidata\
-			$(M1) \
-			-f ./devops/Dockerfile .;\
-		cd -
-
-	@# Run the web server
-	@# MODULE_NAME specifies the location of the `app` variable, the actual WSGI application object to run.
-	@# see https://github.com/tiangolo/meinheld-gunicorn-docker#module_name
-	@docker run --rm -p 127.0.0.1:10080:80 \
-		$(M1) \
-		--env "MODULE_NAME=delphi.epidata.server.main" \
-		--env "SQLALCHEMY_DATABASE_URI=$(sqlalchemy_uri)" \
-		--env "FLASK_SECRET=abc" --env "FLASK_PREFIX=/epidata" --env "LOG_DEBUG" \
-		--env "REDIS_HOST=delphi_redis" \
-		--env "REDIS_PASSWORD=1234" \
-		--env "API_KEY_ADMIN_PASSWORD=test_admin_password" \
-		--env "API_KEY_REGISTER_WEBHOOK_TOKEN=abc" \
-		--env "TESTING_MODE=True" \
-		--network delphi-net --name delphi_web_epidata \
-		delphi_web_epidata >$(LOG_WEB) 2>&1 &
-
 .PHONY=db
 db:
-	@# Stop container if running
-	@if [ $(DATABASE_CONTAINER_ID) ]; then\
-		docker stop $(DATABASE_CONTAINER_ID);\
-	fi
+	@docker compose up delphi_database_epidata $(M1) --detach
+	@docker logs -f delphi_database_epidata >$(LOG_DB) 2>&1 &
 
-	@# Setup virtual network if it doesn't exist
-	@docker network ls | grep delphi-net || docker network create --driver bridge delphi-net
-
-	@# Build the database_epidata image
-	@docker build -t delphi_database_epidata \
-		$(M1) \
-		-f repos/delphi/delphi-epidata/dev/docker/database/epidata/Dockerfile .
-
-	@# Run the database
-	@docker run --rm -p 127.0.0.1:13306:3306 \
-		$(M1) \
-		--network delphi-net --name delphi_database_epidata \
-                --cap-add=sys_nice \
-		delphi_database_epidata >$(LOG_DB) 2>&1 &
-
-	@# Block until DB is ready
-	@while true; do \
-		sed -n '/mysqld: ready for connections/p' $(LOG_DB) | grep "ready for connections" && break; \
-		tail -1 $(LOG_DB); \
-		sleep 1; \
-	done
-
-.PHONY=py
-py:
-	@docker build -t delphi_web_python \
-		$(M1) \
-		-f repos/delphi/delphi-epidata/dev/docker/python/Dockerfile .
+.PHONY=web
+web:
+	@SQLALCHEMY_DATABASE_URI=$(sqlalchemy_uri) docker compose up delphi_web_epidata $(M1) --detach
+	@docker logs -f delphi_web_epidata >$(LOG_WEB) 2>&1 &
 
 .PHONY=redis
 redis:
-	@# Stop container if running
-	@if [ $(REDIS_CONTAINER_ID) ]; then\
-		docker stop $(REDIS_CONTAINER_ID);\
-	fi
-
-	@docker build -t delphi_redis \
-		$(M1) \
-		-f repos/delphi/delphi-epidata/dev/docker/redis/Dockerfile .
-
-	@docker run --rm -d -p 127.0.0.1:6379:6379 \
-		$(M1) \
-		--network delphi-net \
-		--env "REDIS_PASSWORD=1234" \
-		--name delphi_redis delphi_redis >$(LOG_REDIS) 2>&1 &
-
-.PHONY=all
-all: db web py redis
+	@docker compose up delphi_redis $(M1) --detach
+	@docker logs -f delphi_redis >$(LOG_REDIS) 2>&1 &
 
 .PHONY=test
 test:
-	@docker run -i --rm --network delphi-net \
-		$(M1) \
-		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata,target=/usr/src/app/repos/delphi/delphi-epidata,readonly \
-		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata/src,target=/usr/src/app/delphi/epidata,readonly \
-		--env "SQLALCHEMY_DATABASE_URI=$(sqlalchemy_uri)" \
-		--env "FLASK_SECRET=abc" \
-		delphi_web_python python -m pytest --import-mode importlib $(pdb) $(test) | tee test_output_$(NOW).log
+	@SQLALCHEMY_DATABASE_URI=$(sqlalchemy_uri) docker compose run delphi_web_python $(M1) \
+		python -m pytest --import-mode importlib $(pdb) $(test) | tee test_output_$(NOW).log
 
 .PHONY=r-test
 r-test:
-	@docker run -i --rm --network delphi-net \
-		$(M1) \
-		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata,target=/usr/src/app/repos/delphi/delphi-epidata,readonly \
-		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata/src,target=/usr/src/app/delphi/epidata,readonly \
-		--env "SQLALCHEMY_DATABASE_URI=$(sqlalchemy_uri)" \
-		--env "FLASK_SECRET=abc" \
-		delphi_web_python Rscript repos/delphi/delphi-epidata/integrations/client/test_delphi_epidata.R | tee r-test_output_$(NOW).log
-
+	@SQLALCHEMY_DATABASE_URI=$(sqlalchemy_uri) docker compose run delphi_web_python $(M1) \
+		Rscript repos/delphi/delphi-epidata/integrations/client/test_delphi_epidata.R | tee r-test_output_$(NOW).log
 
 .PHONY=bash
 bash:
-	@docker run -it --rm --network delphi-net \
-		$(M1) \
-		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata,target=/usr/src/app/repos/delphi/delphi-epidata,readonly \
-		--mount type=bind,source=$(CWD)repos/delphi/delphi-epidata/src,target=/usr/src/app/delphi/epidata,readonly \
-		--env "SQLALCHEMY_DATABASE_URI=$(sqlalchemy_uri)" \
-		--env "FLASK_SECRET=abc" \
-		delphi_web_python bash
+	@SQLALCHEMY_DATABASE_URI=$(sqlalchemy_uri) docker compose run delphi_web_python $(M1) bash
 
 .PHONY=sql
 sql:
 	@docker run --rm -it --network delphi-net --cap-add=sys_nice \
 		percona mysql --user=user --password=pass --port 3306 --host delphi_database_epidata epidata
+
+.PHONY=down
+down:
+	@docker compose down
+
+.PHONY=down-force-rebuild
+down-force-rebuild:
+	@docker compose down --rmi all --volumes
+	@docker compose up --build --force-recreate --detach
 
 .PHONY=clean
 clean:
