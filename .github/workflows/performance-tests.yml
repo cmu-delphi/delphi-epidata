@@ -63,7 +63,7 @@ jobs:
       - name: Build & run epidata
         run: |
           cd ../driver
-          sudo make web sql="${{ secrets.DB_CONN_STRING }}"
+          sudo make web sql="${{ secrets.DB_CONN_STRING }}" rate_limit="999999/second"
           sudo make redis
       - name: Check out delphi-admin
         uses: actions/checkout@v3
