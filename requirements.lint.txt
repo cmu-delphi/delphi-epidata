@@ -1,3 +1,4 @@
+# Keep versions in sync with cmu-delphi/covidcast-indicators
 darker[flynt]~=1.7.2
 invoke>=1.4.1
 isort==5.12.0
