@@ -31,7 +31,7 @@ def update_gdoc(
 
 
 @task
-def lint(c, incremental=True, format=True, revision="origin/dev", diff=False):
+def lint(c, incremental=True, format=True, revision="origin/dev", diff=False):  # pylint: disable=redefined-builtin
     """Lint and format.
 
     Additional linter settings can be found in `pyproject.toml` (this invocation
