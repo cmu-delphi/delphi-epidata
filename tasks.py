@@ -48,11 +48,6 @@ def lint(c, incremental=True, format=True, revision="origin/dev...", diff=False)
     diff : bool
         Only show formatting changes, do not apply.
     """
-    if not incremental:
-        reponse = input("This will format all files in this repo, continue? [y/N]")
-        if reponse.lower() not in ("y", "yes"):
-            return
-
     diff = "--diff" if diff else ""
     if incremental:
         if format:
@@ -63,6 +58,9 @@ def lint(c, incremental=True, format=True, revision="origin/dev...", diff=False)
             sys.exit(1)
     else:
         if format:
+            reponse = input("This will format all files in this repo, continue? [y/N]")
+            if reponse.lower() not in ("y", "yes"):
+                return
             c.run(f"black {diff} .")
             c.run(f"isort {diff} .")
         c.run("pylint src/ tests/ integrations/")
