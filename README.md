@@ -64,6 +64,20 @@ $ cd repos
 $ pip install -e . --config-settings editable_mode=strict
 ```
 
+## Linting and Formatting
+
+We use [darker](https://github.com/akaihola/darker) and
+[lint-diffs](https://github.com/AtakamaLLC/lint-diffs/) to incrementally bring
+this repo up to PEP8 compliance. There is CI to ensure that all new code is
+compliant. To run the linter locally:
+
+```sh
+# Install lint dependencies
+pip install -r requirements.lint.txt
+# Run lint
+inv lint
+```
+
 # COVIDcast
 
 At the present, our primary focus is developing and expanding the

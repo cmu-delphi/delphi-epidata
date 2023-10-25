@@ -1,3 +1,8 @@
+"""Repo tasks."""
+import pathlib
+import sys
+
+import requests
 from invoke import task
 
 
@@ -12,9 +17,6 @@ def update_gdoc(
     sources_url="https://docs.google.com/spreadsheets/d/e/2PACX-1vRfXo-qePhrYGAoZqewVnS1kt9tfnUTLgtkV7a-1q7yg4FoZk0NNGuB1H6k10ah1Xz5B8l1S1RB17N6/pub?gid=0&single=true&output=csv",
     signal_url="https://docs.google.com/spreadsheets/d/e/2PACX-1vRfXo-qePhrYGAoZqewVnS1kt9tfnUTLgtkV7a-1q7yg4FoZk0NNGuB1H6k10ah1Xz5B8l1S1RB17N6/pub?gid=329338228&single=true&output=csv",
 ):
-    import requests
-    import pathlib
-
     base_dir = pathlib.Path("./src/server/endpoints/covidcast_utils/")
 
     def _migrate_file(url: str, filename: str):
@@ -26,3 +28,41 @@ def update_gdoc(
 
     _migrate_file(sources_url, "db_sources.csv")
     _migrate_file(signal_url, "db_signals.csv")
+
+
+@task
+def lint(c, incremental=True, format=True, revision="origin/dev", diff=False): # pylint: disable=redefined-builtin
+    """Lint and format.
+
+    Additional linter settings can be found in `pyproject.toml` (this invocation
+    will use those settings as well).
+
+    Parameters
+    ----------
+    incremental : bool
+        Only lint changed files.
+    format : bool
+        Apply formatting changes.
+    revision : str
+        Revision to compare against.
+    diff : bool
+        Only show formatting changes, do not apply.
+    """
+    if not incremental:
+        reponse = input("This will format all files in this repo, continue? [y/N]")
+        if reponse.lower() not in ("y", "yes"):
+            return
+
+    diff = "--diff" if diff else ""
+    if incremental:
+        if format:
+            c.run(f"darker --revision {revision}... {diff} --flynt --isort --color --check .")
+        out = c.run(f"git diff -U0 {revision} | lint-diffs")
+        if out.stdout.strip() != "=== pylint: mine=0, always=0":
+            print(out.stdout)
+            sys.exit(1)
+    else:
+        if format:
+            c.run(f"black {diff} .")
+            c.run(f"isort {diff} .")
+        c.run("pylint src/ tests/ integrations/")

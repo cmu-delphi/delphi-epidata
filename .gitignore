@@ -11,3 +11,5 @@ __pycache__/
 /node_modules
 .mypy_cache
 /missing_db_signals.csv
+venv
+env

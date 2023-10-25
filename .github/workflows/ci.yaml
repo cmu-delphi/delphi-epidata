@@ -65,7 +65,7 @@ jobs:
           docker network create --driver bridge delphi-net
           docker run --rm -d -p 13306:3306 --network delphi-net --name delphi_database_epidata --cap-add=sys_nice delphi_database_epidata
           docker run --rm -d -p 6379:6379 --network delphi-net --env "REDIS_PASSWORD=1234" --name delphi_redis delphi_redis
-          
+
 
       - run: |
           wget https://raw.githubusercontent.com/eficode/wait-for/master/wait-for

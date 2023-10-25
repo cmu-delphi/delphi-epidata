@@ -1,11 +1,16 @@
 [tool.black]
-line-length = 100
+line-length = 120
 target-version = ['py38']
-include = 'server,tests/server'
+
+[tool.isort]
+profile = "black"
+known_third_party = ["pytest"]
 
 [tool.pylint]
+    # Settings copied from
+    # cmu-delphi/covidcast-indicators/_delphi_utils_python/.pylintrc
     [tool.pylint.'MESSAGES CONTROL']
-    max-line-length = 100
+    max-line-length = 120
     disable = [
         'logging-format-interpolation',
         # Allow pytest functions to be part of a class
