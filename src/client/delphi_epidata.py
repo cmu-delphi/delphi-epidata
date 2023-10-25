@@ -637,19 +637,6 @@ class Epidata:
         # Make the API call
         return Epidata._request("covid_hosp_facility_lookup", params)
 
-    # Fetch Delphi's COVID-19 Nowcast sensors
-    @staticmethod
-    def covidcast_nowcast():
-        """[DEPRECATED] Fetch Delphi's COVID-19 Nowcast sensors"""
-
-        import warnings
-        warnings.filterwarnings("once", category=DeprecationWarning, module="delphi_epidata")
-        warnings.warn("Method `Epidata.covidcast_nowcast()` is deprecated.",
-                      category=DeprecationWarning)
-
-        # Make the API call
-        return Epidata._request("covidcast_nowcast")
-
     @staticmethod
     def async_epidata(param_list, batch_size=50):
         """[DEPRECATED] Make asynchronous Epidata calls for a list of parameters."""
