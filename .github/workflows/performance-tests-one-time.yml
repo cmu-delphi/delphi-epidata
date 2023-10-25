@@ -1,9 +1,9 @@
-name: One-time performance testing - 25th October 2023
+name: One-time performance testing - 26th October 2023
 
-# Run "At every 30th minute on day-of-month 25 in October"
+# Run "At every 30th minute on day-of-month 26 in October"
 on:
   schedule:
-    - cron: '*/30 * 25 10 *'
+    - cron: '*/30 * 26 10 *'
 
 # Add some extra perms to comment on a PR
 permissions:
@@ -35,12 +35,6 @@ jobs:
         uses: AutoModality/action-clean@v1
       - name: Check out repository
         uses: actions/checkout@v3
-      # Previous step checks out default branch, so we check out the pull request's branch
-      - name: Switch to PR branch
-        run: |
-          hub pr checkout ${{ github.event.issue.number }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Set up repository # mimics install.sh in the README except that delphi is cloned from the PR rather than main
         run: |
           cd ..
