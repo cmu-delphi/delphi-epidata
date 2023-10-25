@@ -1,26 +1,37 @@
 [tool.black]
-line-length = 100
+line-length = 120
 target-version = ['py38']
-include = 'server,tests/server'
+
+[tool.darker]
+revision = 'origin/dev...'
+color = true
+isort = true
+
+[tool.isort]
+profile = "black"
+known_third_party = ["pytest"]
 
 [tool.pylint]
-    [tool.pylint.'MESSAGES CONTROL']
-    max-line-length = 100
-    disable = [
-        'logging-format-interpolation',
-        # Allow pytest functions to be part of a class
-        'no-self-use',
-        'too-many-locals',
-        'too-many-arguments',
-        # Allow pytest classes to have one test
-        'too-few-public-methods',
-    ]
+[tool.pylint.main]
+max-line-length = 120
+disable = [
+    'logging-format-interpolation',
+    # Allow pytest functions to be part of a class
+    'no-self-use',
+    'too-many-locals',
+    'too-many-arguments',
+    'too-many-branches',
+    'too-many-statements',
+    # Allow pytest classes to have one test
+    'too-few-public-methods',
+]
+enable = 'useless-suppression'
 
-    [tool.pylint.'BASIC']
-    # Allow arbitrarily short-named variables.
-    variable-rgx = ['[a-z_][a-z0-9_]*']
-    argument-rgx = [ '[a-z_][a-z0-9_]*' ]
-    attr-rgx = ['[a-z_][a-z0-9_]*']
+[tool.pylint.basic]
+# Allow arbitrarily short-named variables.
+variable-rgx = '[A-Za-z_][a-z0-9_]*'
+argument-rgx = '[A-Za-z_][a-z0-9_]*'
+attr-rgx = '[A-Za-z_][a-z0-9_]*'
 
-    [tool.pylint.'DESIGN']
-    ignored-argument-names = ['(_.*|run_as_module)']
+[tool.pylint.design]
+ignored-argument-names = ['(_.*|run_as_module)']
