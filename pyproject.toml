@@ -2,6 +2,13 @@
 line-length = 120
 target-version = ['py38']
 
+[tool.darker]
+revision = 'origin/dev'
+color = true
+isort = true
+flynt = true
+check = true
+
 [tool.isort]
 profile = "black"
 known_third_party = ["pytest"]

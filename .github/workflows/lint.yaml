@@ -6,19 +6,7 @@ on:
       - dev
 
 jobs:
-    darker:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v3
-              with:
-                fetch-depth: 0
-            - uses: actions/setup-python@v4
-            - uses: akaihola/darker@1.7.2
-              with:
-                options: "--check --diff --isort --color"
-                version: "~=1.7.2"
-
-    lint-diffs:
+    lint:
         runs-on: ubuntu-latest
         steps:
             - name: Commit Range
@@ -37,4 +25,4 @@ jobs:
                 pip install -r requirements.lint.txt
             - name: Lint
               run: |
-                inv lint --diff --no-format --revision=${{ steps.commit-range.outputs.commit-range }}
+                inv lint --diff --revision=${{ steps.commit-range.outputs.commit-range }}

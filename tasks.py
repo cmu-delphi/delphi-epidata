@@ -56,7 +56,7 @@ def lint(c, incremental=True, format=True, revision="origin/dev", diff=False):  
     diff = "--diff" if diff else ""
     if incremental:
         if format:
-            c.run(f"darker --revision {revision}... {diff} --flynt --isort --color --check .")
+            c.run(f"darker --revision {revision}... {diff} .")
         out = c.run(f"git diff -U0 {revision} | lint-diffs")
         if out.stdout.strip() != "=== pylint: mine=0, always=0":
             print(out.stdout)
