@@ -25,4 +25,4 @@ jobs:
                 pip install -r requirements.lint.txt
             - name: Lint
               run: |
-                inv lint --diff --revision=${{ steps.commit-range.outputs.commit-range }}
+                inv lint --diff --check --revision=${{ steps.commit-range.outputs.commit-range }}

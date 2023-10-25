@@ -6,8 +6,6 @@ target-version = ['py38']
 revision = 'origin/dev...'
 color = true
 isort = true
-flynt = true
-check = true
 
 [tool.isort]
 profile = "black"
@@ -30,9 +28,9 @@ enable = 'useless-suppression'
 
 [tool.pylint.basic]
 # Allow arbitrarily short-named variables.
-variable-rgx = '[a-z_][a-z0-9_]*'
-argument-rgx = '[a-z_][a-z0-9_]*'
-attr-rgx = '[a-z_][a-z0-9_]*'
+variable-rgx = '[A-Za-z_][a-z0-9_]*'
+argument-rgx = '[A-Za-z_][a-z0-9_]*'
+attr-rgx = '[A-Za-z_][a-z0-9_]*'
 
 [tool.pylint.design]
 ignored-argument-names = ['(_.*|run_as_module)']
