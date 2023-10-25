@@ -31,7 +31,7 @@ def update_gdoc(
 
 
 @task
-def lint(c, incremental=True, format=True, revision="origin/dev", diff=False):  # pylint: disable=redefined-builtin
+def lint(c, incremental=True, format=True, revision="origin/dev...", diff=False):  # pylint: disable=redefined-builtin
     """Lint and format.
 
     Additional linter settings can be found in `pyproject.toml` (this invocation
@@ -56,7 +56,7 @@ def lint(c, incremental=True, format=True, revision="origin/dev", diff=False):  
     diff = "--diff" if diff else ""
     if incremental:
         if format:
-            c.run(f"darker --revision {revision}... {diff} .")
+            c.run(f"darker --revision {revision} {diff} .")
         out = c.run(f"git diff -U0 {revision} | lint-diffs")
         if out.stdout.strip() != "=== pylint: mine=0, always=0":
             print(out.stdout)

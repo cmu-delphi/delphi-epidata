@@ -3,7 +3,7 @@ line-length = 120
 target-version = ['py38']
 
 [tool.darker]
-revision = 'origin/dev'
+revision = 'origin/dev...'
 color = true
 isort = true
 flynt = true
