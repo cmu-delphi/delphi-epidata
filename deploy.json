@@ -208,15 +208,6 @@
       "add-header-comment": true
     },
 
-    "// acquisition - covidcast_nowcast",
-    {
-      "type": "move",
-      "src": "src/acquisition/covidcast_nowcast/",
-      "dst": "[[package]]/acquisition/covidcast_nowcast/",
-      "match": "^.*\\.(py)$",
-      "add-header-comment": true
-    },
-
     "// maintenance",
     {
       "type": "move",

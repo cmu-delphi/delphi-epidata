@@ -637,59 +637,6 @@ class Epidata:
         # Make the API call
         return Epidata._request("covid_hosp_facility_lookup", params)
 
-    # Fetch Delphi's COVID-19 Nowcast sensors
-    @staticmethod
-    def covidcast_nowcast(
-        data_source,
-        signals,
-        sensor_names,
-        time_type,
-        geo_type,
-        time_values,
-        geo_value,
-        as_of=None,
-        issues=None,
-        lag=None,
-        **kwargs,
-    ):
-        """Fetch Delphi's COVID-19 Nowcast sensors"""
-        # Check parameters
-        # fmt: off
-        if None in (data_source, signals, time_type, geo_type, time_values, geo_value, sensor_names):
-            # fmt: on
-            raise EpidataBadRequestException(
-                "`data_source`, `signals`, `sensor_names`, `time_type`, `geo_type`, "
-                "`time_values`, and `geo_value` are all required"
-            )
-        if issues is not None and lag is not None:
-            raise EpidataBadRequestException(REGIONS_EPIWEEKS_REQUIRED)
-        # Set up request
-        params = {
-            "data_source": data_source,
-            "signals": Epidata._list(signals),
-            "sensor_names": Epidata._list(sensor_names),
-            "time_type": time_type,
-            "geo_type": geo_type,
-            "time_values": Epidata._list(time_values),
-        }
-
-        if isinstance(geo_value, (list, tuple)):
-            params["geo_values"] = ",".join(geo_value)
-        else:
-            params["geo_value"] = geo_value
-        if as_of is not None:
-            params["as_of"] = as_of
-        if issues is not None:
-            params["issues"] = Epidata._list(issues)
-        if lag is not None:
-            params["lag"] = lag
-
-        if "format" in kwargs:
-            params["format"] = kwargs["format"]
-
-        # Make the API call
-        return Epidata._request("covidcast_nowcast", params)
-
     @staticmethod
     def async_epidata(param_list, batch_size=50):
         """[DEPRECATED] Make asynchronous Epidata calls for a list of parameters."""
