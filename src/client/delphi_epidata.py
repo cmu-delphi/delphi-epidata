@@ -70,7 +70,7 @@ class Epidata:
     @retry(reraise=True, stop=stop_after_attempt(2))
     def _request_with_retry(endpoint, params={}):
         """Make request with a retry if an exception is thrown."""
-        request_url = f"{Epidata.BASE_URL}/{endpoint}"
+        request_url = f"{Epidata.BASE_URL}/{endpoint}/"
         req = requests.get(request_url, params, auth=Epidata.auth, headers=_HEADERS)
         if req.status_code == 414:
             req = requests.post(request_url, params, auth=Epidata.auth, headers=_HEADERS)
