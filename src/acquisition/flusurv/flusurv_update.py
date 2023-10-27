@@ -278,7 +278,7 @@ def update(issue, location, seasonids, metadata, test_mode=False):
         #  and 7-9 retain the same the same meanings.
         n_expected_groups = 23
         # Subtract one since we also store the season description in each epiweek value
-        if len(data[epiweek].keys() - 1) != n_expected_groups:
+        if len(data[epiweek].keys()) - 1 != n_expected_groups:
             warnings.warn(
                 f"{location} {epiweek} data does not contain the expected {n_expected_groups} groups"
             )
