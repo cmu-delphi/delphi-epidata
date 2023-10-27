@@ -320,9 +320,8 @@ def make_id_season_map(metadata):
 
 
 def groupids_to_name(ageid, sexid, raceid, id_label_map):
-    # Expect at least 2 of three ids to be 0
-    assert (ageid, sexid, raceid).count(0) >= 2, \
-        "At most one groupid can be non-zero"
+    if ((ageid, sexid, raceid).count(0) < 2):
+        raise ValueError("Expect at least two of three group ids to be 0")
     if (ageid, sexid, raceid).count(0) == 3:
         group = "overall"
     elif ageid != 0:

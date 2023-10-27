@@ -343,8 +343,8 @@ def main():
             update(issue, location, seasonids, metadata, args.test)
     else:
         # single location
-        assert args.location in flusurv.location_to_code.keys(), \
-            f"Requested location {args.location} not available"
+        if (args.location not in flusurv.location_to_code.keys()):
+            raise KeyError("Requested location {args.location} not available")
         update(issue, args.location, seasonids, metadata, args.test)
 
 
