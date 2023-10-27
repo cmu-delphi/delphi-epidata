@@ -82,7 +82,7 @@ from delphi.utils.epidate import EpiDate
 from delphi.utils.epiweek import delta_epiweeks
 
 
-max_age_to_consider_weeks = 52
+MAX_AGE_TO_CONSIDER_WEEKS = 52
 
 def get_rows(cur):
     """Return the number of rows in the `flusurv` table."""
@@ -217,7 +217,7 @@ def update(issue, location, seasonids, metadata, test_mode=False):
     # insert/update each row of data (one per epiweek)
     for epiweek in epiweeks:
         lag = delta_epiweeks(epiweek, issue)
-        if lag > max_age_to_consider_weeks:
+        if lag > MAX_AGE_TO_CONSIDER_WEEKS:
             # Ignore values older than one year, as (1) they are assumed not to
             # change, and (2) it would adversely affect database performance if all
             # values (including duplicates) were stored on each run.
@@ -330,7 +330,7 @@ def main():
     # Ignore seasons with all dates older than one year
     seasonids = {
         season_blob["seasonid"] for season_blob in metadata["seasons"]
-        if delta_epiweeks(flusurv.mmwrid_to_epiweek(season_blob["endweek"]), issue) < max_age_to_consider_weeks
+        if delta_epiweeks(flusurv.mmwrid_to_epiweek(season_blob["endweek"]), issue) < MAX_AGE_TO_CONSIDER_WEEKS
     }
 
     # fetch flusurv data
