@@ -1,4 +1,4 @@
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, fields
 from typing import Callable, Optional, Dict, List, Set, Tuple
 from enum import Enum
 from pathlib import Path
@@ -210,8 +210,8 @@ def _load_data_signals(sources: List[DataSource]):
     data_signals_df: pd.DataFrame = pd.read_csv(_base_dir / "db_signals.csv")
     data_signals_df = data_signals_df.replace({np.nan: None})
     data_signals_df.columns = map(_clean_column, data_signals_df.columns)
-    ignore_columns = {"base_is_other"}
-    data_signals: List[DataSignal] = [DataSignal(**{k: v for k, v in d.items() if k not in ignore_columns}) for d in data_signals_df.to_dict(orient="records")]
+    datasignal_fields = {f.name for f in fields(DataSignal)}
+    data_signals: List[DataSignal] = [DataSignal(**{k: v for k, v in d.items() if k in datasignal_fields}) for d in data_signals_df.to_dict(orient="records")]
     data_signals_df.set_index(["source", "signal"])
 
     by_source_id = {d.key: d for d in data_signals}

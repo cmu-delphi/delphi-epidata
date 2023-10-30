@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-VERSION = "4.1.3"
+VERSION = "4.1.12"
 
 MAX_RESULTS = int(10e6)
 MAX_COMPATIBILITY_RESULTS = int(3650)
@@ -85,8 +85,6 @@ REGION_TO_STATE = {
 }
 NATION_REGION = "nat"
 
-API_KEY_REQUIRED_STARTING_AT = date.fromisoformat(os.environ.get("API_KEY_REQUIRED_STARTING_AT", "2023-06-21"))
-TEMPORARY_API_KEY = os.environ.get("TEMPORARY_API_KEY", "TEMP-API-KEY-EXPIRES-2023-06-28")
 # password needed for the admin application if not set the admin routes won't be available
 ADMIN_PASSWORD = os.environ.get("API_KEY_ADMIN_PASSWORD", "abc")
 # secret for the google form to give to the admin/register endpoint
@@ -95,8 +93,16 @@ REGISTER_WEBHOOK_TOKEN = os.environ.get("API_KEY_REGISTER_WEBHOOK_TOKEN")
 REDIS_HOST = os.environ.get("REDIS_HOST", "delphi_redis")
 REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD", "1234")
 
+# mode to reduce number of required requests to hit rate limit while running tests,
+# by default is set to False
+TESTING_MODE = os.environ.get("TESTING_MODE", False)
+
 # https://flask-limiter.readthedocs.io/en/stable/#rate-limit-string-notation
 RATE_LIMIT = os.environ.get("RATE_LIMIT", "60/hour")
+
+if TESTING_MODE is not False:
+    RATE_LIMIT = "5/hour"
+
 # fixed-window, fixed-window-elastic-expiry, or moving-window
 # see also https://flask-limiter.readthedocs.io/en/stable/#rate-limiting-strategies
 RATELIMIT_STRATEGY = os.environ.get("RATELIMIT_STRATEGY", "fixed-window")

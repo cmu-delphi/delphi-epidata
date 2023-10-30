@@ -208,12 +208,13 @@
       "add-header-comment": true
     },
 
-    "// acquisition - covidcast_nowcast",
+    "// maintenance",
     {
       "type": "move",
-      "src": "src/acquisition/covidcast_nowcast/",
-      "dst": "[[package]]/acquisition/covidcast_nowcast/",
+      "src": "src/maintenance/",
+      "dst": "[[package]]/maintenance/",
       "match": "^.*\\.(py)$",
+      "recursive": true,
       "add-header-comment": true
     },
 

@@ -46,7 +46,7 @@ if __name__ == "__main__":
 
     # connect
     u, p = secrets.db.epi
-    cnx = mysql.connector.connect(user=u, password=p, database="epidata")
+    cnx = mysql.connector.connect(user=u, password=p, database="epidata", host=secrets.db.host)
     cur = cnx.cursor()
 
     # get the last known issue from the automation table `variables`

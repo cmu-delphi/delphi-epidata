@@ -9,26 +9,12 @@ from werkzeug.exceptions import Unauthorized
 from werkzeug.local import LocalProxy
 
 from ._config import (
-    API_KEY_REQUIRED_STARTING_AT,
     REDIS_HOST,
     REDIS_PASSWORD,
     API_KEY_REGISTRATION_FORM_LINK_LOCAL,
-    TEMPORARY_API_KEY,
     URL_PREFIX,
 )
 from .admin.models import User
-
-API_KEY_HARD_WARNING = API_KEY_REQUIRED_STARTING_AT - timedelta(days=14)
-API_KEY_SOFT_WARNING = API_KEY_HARD_WARNING - timedelta(days=14)
-
-# rollout warning messages
-ROLLOUT_WARNING_RATE_LIMIT = "This request exceeded the rate limit on anonymous requests, which will be enforced starting {}.".format(API_KEY_REQUIRED_STARTING_AT)
-ROLLOUT_WARNING_MULTIPLES = "This request exceeded the anonymous limit on selected multiples, which will be enforced starting {}.".format(API_KEY_REQUIRED_STARTING_AT)
-_ROLLOUT_WARNING_AD_FRAGMENT = "To be exempt from this limit, authenticate your requests with a free API key, now available at {}.".format(API_KEY_REGISTRATION_FORM_LINK_LOCAL)
-
-PHASE_1_2_STOPGAP = (
-    "A temporary public key `{}` is available for use between now and {} to give you time to register or adapt your requests without this message continuing to break your systems."
-).format(TEMPORARY_API_KEY, (API_KEY_REQUIRED_STARTING_AT + timedelta(days=7)))
 
 
 # steady-state error messages
@@ -52,30 +38,6 @@ def resolve_auth_token() -> Optional[str]:
     if auth_header and auth_header.startswith("Bearer "):
         return auth_header[len("Bearer ") :]
     return None
-
-
-def show_no_api_key_warning() -> bool:
-    # aka "phase 0"
-    n = date.today()
-    return not current_user and n < API_KEY_SOFT_WARNING
-
-
-def show_soft_api_key_warning() -> bool:
-    # aka "phase 1"
-    n = date.today()
-    return not current_user and API_KEY_SOFT_WARNING <= n < API_KEY_HARD_WARNING
-
-
-def show_hard_api_key_warning() -> bool:
-    # aka "phase 2"
-    n = date.today()
-    return not current_user and API_KEY_HARD_WARNING <= n < API_KEY_REQUIRED_STARTING_AT
-
-
-def require_api_key() -> bool:
-    # aka "phase 3"
-    n = date.today()
-    return API_KEY_REQUIRED_STARTING_AT <= n
 
 
 def _get_current_user():
@@ -120,10 +82,25 @@ def require_role(required_role: str):
     return decorator_wrapper
 
 
+# key is data "source" name, value is role name required to access that source
+sources_protected_by_roles = {
+    'quidel': 'quidel',
+    # the following two entries are needed because
+    # the covidcast endpoint uses this method
+    # to allow using various different "source" name aliases:
+    #     delphi.epidata.server.endpoints.covidcast_utils.model.create_source_signal_alias_mapper()
+    # which, for reference, is populated by the file:
+    #     src/server/endpoints/covidcast_utils/db_sources.csv
+    'quidel-covid-ag': 'quidel',
+    'quidel-flu': 'quidel',
+}
+# TODO(<insert gh issue link here>): source this info from a better place than a hardcoded dict:
+#     maybe somewhere in the db?  maybe in src/server/endpoints/covidcast_utils/db_sources.csv ?
+
+
 def update_key_last_time_used(user):
-    # TODO: reenable this once cc<-->aws latency issues are sorted out, or maybe do this call asynchronously
-    return
     if user:
         # update last usage for this user's api key to "now()"
+        # TODO: consider making this call asynchronously
         r = redis.Redis(host=REDIS_HOST, password=REDIS_PASSWORD)
         r.set(f"LAST_USED/{user.api_key}", datetime.strftime(datetime.now(), "%Y-%m-%d"))
