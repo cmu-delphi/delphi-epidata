@@ -1,5 +1,7 @@
+import os
 import pathlib
 import logging
+import sentry_sdk
 from typing import Dict, Callable
 
 from flask import request, send_file, Response, send_from_directory, jsonify
@@ -12,6 +14,18 @@ from ._exceptions import MissingOrWrongSourceException
 from .endpoints import endpoints
 from .endpoints.admin import bp as admin_bp, enable_admin
 from ._limiter import limiter, apply_limit
+
+SENTRY_DSN = os.environ.get('SENTRY_DSN')
+if SENTRY_DSN:
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        traces_sample_rate=float(os.environ.get('SENTRY_TRACES_SAMPLE_RATE', 1.0)),
+        profiles_sample_rate=float(os.environ.get('SENTRY_PROFILES_SAMPLE_RATE', 1.0)),
+        environment=str(os.environ.get('SENTRY_ENVIRONMENT', 'development')),
+        debug=str(os.environ.get('SENTRY_DEBUG', 'True')),
+        attach_stacktrace=str(os.environ.get('SENTRY_ATTACH_STACKTRACE', 'True'))
+    )
+
 
 __all__ = ["app"]
 
