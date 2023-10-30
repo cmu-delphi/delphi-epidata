@@ -13,7 +13,7 @@ from delphi_utils import Nans
 from delphi.epidata.client.delphi_epidata import Epidata
 import delphi.operations.secrets as secrets
 import delphi.epidata.acquisition.covidcast.database as live
-from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import main
+from delphi.epidata.maintenance.covidcast_meta_cache_updater import main
 
 # py3tester coverage target (equivalent to `import *`)
 __test_target__ = (
@@ -22,7 +22,7 @@ __test_target__ = (
 )
 
 # use the local instance of the Epidata API
-BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+BASE_URL = 'http://delphi_web_epidata/epidata'
 
 
 class CovidcastMetaCacheTests(unittest.TestCase):
@@ -58,13 +58,34 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     secrets.db.host = 'delphi_database_epidata'
     secrets.db.epi = ('user', 'pass')
 
+    epidata_cnx = mysql.connector.connect(
+        user='user',
+        password='pass',
+        host='delphi_database_epidata',
+        database='epidata')
+    epidata_cur = epidata_cnx.cursor()
+
+    epidata_cur.execute("DELETE FROM `api_user`")
+    epidata_cur.execute('INSERT INTO `api_user`(`api_key`, `email`) VALUES("key", "email")')
+    epidata_cnx.commit()
+    epidata_cur.close()
+    epidata_cnx.close()
+
     # use the local instance of the Epidata API
     Epidata.BASE_URL = BASE_URL
+    Epidata.auth = ('epidata', 'key')
 
   def tearDown(self):
     """Perform per-test teardown."""
     self.cur.close()
     self.cnx.close()
+
+  @staticmethod
+  def _make_request():
+    params = {'cached': 'true'}
+    response = requests.get(f"{Epidata.BASE_URL}/covidcast_meta", params=params, auth=Epidata.auth)
+    response.raise_for_status()
+    return response.json()
 
   def test_caching(self):
     """Populate, query, cache, query, and verify the cache."""
@@ -147,10 +168,7 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     self.cnx.commit()
 
     # fetch the cached version (manually)
-    params = {'endpoint': 'covidcast_meta', 'cached': 'true'}
-    response = requests.get(BASE_URL, params=params)
-    response.raise_for_status()
-    epidata4 = response.json()
+    epidata4 = self._make_request()
 
     # make sure the cache was actually served
     self.assertEqual(epidata4, {
@@ -170,10 +188,7 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     self.cnx.commit()
 
     # fetch the cached version (manually)
-    params = {'endpoint': 'covidcast_meta', 'cached': 'true'}
-    response = requests.get(BASE_URL, params=params)
-    response.raise_for_status()
-    epidata5 = response.json()
+    epidata5 = self._make_request()
 
     # make sure the cache was returned anyhow
     self.assertEqual(epidata4, epidata5)

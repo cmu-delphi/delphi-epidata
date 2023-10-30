@@ -95,7 +95,7 @@ jobs:
         uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: '14.x'
+          node-version: '16.x'
       - name: Cache Node.js modules
         uses: actions/cache@v2
         with:
@@ -147,7 +147,7 @@ jobs:
           base: dev
           title: "chore: sync main->dev"
           labels: chore
-          reviewers: krivard
-          assignees: krivard
+          reviewers: melange396
+          assignees: melange396
           body: |
             Syncing Main->Dev.

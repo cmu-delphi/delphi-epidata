@@ -6,15 +6,12 @@ import unittest
 
 # third party
 import mysql.connector
-import requests
 
 # first party
 from delphi_utils import Nans
 from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase, CovidcastTestRow, FIPS, MSA
 from delphi.epidata.client.delphi_epidata import Epidata
 
-# use the local instance of the Epidata API
-BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
 
 class CovidcastTests(CovidcastBase):
   """Tests the `covidcast` endpoint."""
@@ -25,7 +22,9 @@ class CovidcastTests(CovidcastBase):
 
   def request_based_on_row(self, row: CovidcastTestRow, **kwargs):
     params = self.params_from_row(row, endpoint='covidcast', **kwargs)
-    Epidata.BASE_URL = BASE_URL
+    # use the local instance of the Epidata API
+    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata'
+    Epidata.auth = ('epidata', 'key')
     response = Epidata.covidcast(**params) 
 
     return response
@@ -82,6 +81,18 @@ class CovidcastTests(CovidcastBase):
     self._insert_rows(rows)
     return rows 
 
+  def _insert_placeholder_set_with_weeks(self):
+    rows = [
+      CovidcastTestRow.make_default_row(
+        time_value=2021_05+i, time_type="week",
+        source="nchs-mortality", signal="deaths_covid_incidence_num",
+        geo_type="state", geo_value="il",
+        value=i*i)
+      for i in [0, 1, 2]
+    ]
+    self._insert_rows(rows)
+    return rows
+
   def test_round_trip(self):
     """Make a simple round-trip with some sample data."""
 
@@ -91,7 +102,7 @@ class CovidcastTests(CovidcastBase):
     # make the request
     response = self.request_based_on_row(row)
 
-    expected = [row.as_api_compatibility_row_dict()]
+    expected = [row.as_api_row_dict()]
 
     self.assertEqual(response, {
       'result': 1,
@@ -157,13 +168,15 @@ class CovidcastTests(CovidcastBase):
       **{'format':'csv'}
     )
 
-    # This is a hardcoded mess because of api.php.
+    # This is a hardcoded mess because of the field ordering constructed here:
+    # https://github.com/cmu-delphi/delphi-epidata/blob/f7da6598a810be8df5374e3a71512c631c3a14f1/src/server/endpoints/covidcast.py#L83-L93
     column_order = [
-      "geo_value", "signal", "time_value", "direction", "issue", "lag", "missing_value",
+      "geo_value", "signal", "source", "geo_type", "time_type",
+      "time_value", "direction", "issue", "lag", "missing_value",
       "missing_stderr", "missing_sample_size", "value", "stderr", "sample_size"
     ]
     expected = (
-      row.as_api_compatibility_row_df()
+      row.as_api_row_df()
          .assign(direction = None)
          .to_csv(columns=column_order, index=False)
     )
@@ -180,7 +193,7 @@ class CovidcastTests(CovidcastBase):
     # make the request
     response = self.request_based_on_row(row, **{'format':'json'})
 
-    expected = [row.as_api_compatibility_row_dict()]
+    expected = [row.as_api_row_dict()]
 
     # assert that the right data came back
     self.assertEqual(response, expected)
@@ -192,13 +205,13 @@ class CovidcastTests(CovidcastBase):
     row = self._insert_placeholder_set_one()
 
     # limit fields
-    response = self.request_based_on_row(row, **{"fields":"time_value,geo_value"})
+    response = self.request_based_on_row(row, **{"fields":"time_value,geo_value,geo_type,source,time_type"})
 
-    expected = row.as_api_compatibility_row_dict()
+    expected = row.as_api_row_dict()
     expected_all = {
       'result': 1,
       'epidata': [{
-        k: expected[k] for k in ['time_value', 'geo_value']
+        k: expected[k] for k in ['time_value', 'geo_value', 'geo_type', 'source', 'time_type']
        }],
       'message': 'success',
     }
@@ -207,7 +220,7 @@ class CovidcastTests(CovidcastBase):
     self.assertEqual(response, expected_all)
 
     # limit using invalid fields
-    response = self.request_based_on_row(row, fields='time_value,geo_value,doesnt_exist')
+    response = self.request_based_on_row(row, fields='time_value,geo_value,geo_type,source,time_type,doesnt_exist')
 
     # assert that the right data came back (only valid fields)
     self.assertEqual(response, expected_all)
@@ -227,7 +240,7 @@ class CovidcastTests(CovidcastBase):
 
     # insert placeholder data
     rows = self._insert_placeholder_set_two()
-    expected = [row.as_api_compatibility_row_dict() for row in rows[:3]]
+    expected = [row.as_api_row_dict() for row in rows[:3]]
     # make the request
     response = self.request_based_on_row(rows[0], geo_value="*")
 
@@ -244,7 +257,7 @@ class CovidcastTests(CovidcastBase):
 
     # insert placeholder data
     rows = self._insert_placeholder_set_three()
-    expected = [row.as_api_compatibility_row_dict() for row in rows[:3]]
+    expected = [row.as_api_row_dict() for row in rows[:3]]
 
     # make the request
     response = self.request_based_on_row(rows[0], time_values="*")
@@ -262,7 +275,7 @@ class CovidcastTests(CovidcastBase):
 
     # insert placeholder data
     rows = self._insert_placeholder_set_five()
-    expected = [row.as_api_compatibility_row_dict() for row in rows[:3]]
+    expected = [row.as_api_row_dict() for row in rows[:3]]
 
     # make the request
     response = self.request_based_on_row(rows[0], issues="*")
@@ -280,7 +293,7 @@ class CovidcastTests(CovidcastBase):
 
     # insert placeholder data
     rows = self._insert_placeholder_set_four()
-    expected_signals = [row.as_api_compatibility_row_dict() for row in rows[:3]]
+    expected_signals = [row.as_api_row_dict() for row in rows[:3]]
 
     # make the request
     response = self.request_based_on_row(rows[0], signals="*")
@@ -298,7 +311,7 @@ class CovidcastTests(CovidcastBase):
 
     # insert placeholder data
     rows = self._insert_placeholder_set_two()
-    expected = [row.as_api_compatibility_row_dict() for row in rows[:3]]
+    expected = [row.as_api_row_dict() for row in rows[:3]]
 
     def fetch(geo_value):
       # make the request
@@ -336,7 +349,7 @@ class CovidcastTests(CovidcastBase):
 
     # insert placeholder data
     rows = self._insert_placeholder_set_three()
-    expected_timeseries = [row.as_api_compatibility_row_dict() for row in rows[:3]]
+    expected_timeseries = [row.as_api_row_dict() for row in rows[:3]]
 
     # make the request
     response = self.request_based_on_row(rows[0], time_values='20000101-20000105')
@@ -373,7 +386,7 @@ class CovidcastTests(CovidcastBase):
 
     # make the request
     response = self.request_based_on_row(row)
-    expected = row.as_api_compatibility_row_dict()
+    expected = row.as_api_row_dict()
 
     # assert that the right data came back
     self.assertEqual(response, {
@@ -394,7 +407,7 @@ class CovidcastTests(CovidcastBase):
 
     # make the request
     response = self.request_based_on_row(rows[1], time_values="*")
-    expected = [rows[1].as_api_compatibility_row_dict()]
+    expected = [rows[1].as_api_row_dict()]
 
     # assert that the right data came back
     self.assertEqual(response, {
@@ -444,3 +457,22 @@ class CovidcastTests(CovidcastBase):
 
     # assert that the right data came back
     self.assertEqual(len(response['epidata']), 2 * 3)
+
+
+  def test_week_formats(self):
+    """Test different ways to specify week ranges are accepted."""
+
+    rows = self._insert_placeholder_set_with_weeks()
+    expected = {
+      'result': 1,
+      'epidata': [r.as_api_row_dict() for r in rows],
+      'message': 'success',
+    }
+
+    colond = self.request_based_on_row(rows[0], time_values="202105:202107")
+    dashed = self.request_based_on_row(rows[0], time_values="202105-202107")
+    enumed = self.request_based_on_row(rows[0], time_values="202105,202106,202107")
+
+    self.assertEqual(expected, colond)
+    self.assertEqual(expected, dashed)
+    self.assertEqual(expected, enumed)

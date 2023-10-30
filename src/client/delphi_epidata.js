@@ -21,8 +21,8 @@
     factory(root, root.fetch, root.jQuery || root.$);
   }
 })(this, function (exports, fetchImpl, jQuery) {
-  const BASE_URL = "https://delphi.cmu.edu/epidata/";
-  const client_version = "0.4.11";
+  const BASE_URL = "https://api.delphi.cmu.edu/epidata/";
+  const client_version = "4.1.12";
 
   // Helper function to cast values and/or ranges to strings
   function _listitem(value) {
@@ -124,19 +124,6 @@
         return _request('version', {}).then((r) => Object.assign(r, {client_version}));
       },
       /**
-       * Fetch AFHSB data (point data, no min/max)
-       */
-      afhsb: (auth, locations, epiweeks, flu_types) => {
-        requireAll({ auth, locations, epiweeks, flu_types });
-        const params = {
-          auth,
-          locations: _list(locations),
-          epiweeks: _list(epiweeks),
-          flu_types: _list(flu_types),
-        };
-        return _request("afhsb", params);
-      },
-      /**
        * Fetch CDC page hits
        */
       cdc: (auth, epiweeks, locations) => {
@@ -216,48 +203,6 @@
        */
       covidcast_meta: () => {
         return _request("covidcast_meta", {});
-      },
-      /**
-       * Fetch Delphi's COVID-19 Surveillance Streams
-       */
-      covidcast_nowcast: (
-        data_source,
-        signals,
-        time_type,
-        geo_type,
-        time_values,
-        geo_value,
-        as_of,
-        issues,
-        lag,
-        format
-      ) => {
-        requireAll({
-          data_source,
-          signals,
-          time_type,
-          geo_type,
-          time_values,
-          geo_value,
-        });
-        issuesOrLag(issues, lag);
-
-        const params = {
-          data_source,
-          signals,
-          time_type,
-          geo_type,
-          time_values: _list(time_values),
-          as_of,
-          issues: _list(issues),
-          format,
-        };
-        if (Array.isArray(geo_value)) {
-          params.geo_values = geo_value.join(",");
-        } else {
-          params.geo_value = geo_value;
-        }
-        return _request("covidcast_nowcast", params);
       },
       /**
        * Fetch Delphi's COVID-19 Surveillance Streams
@@ -386,16 +331,6 @@
           lag,
         };
         return _request("kcdc_ili", params);
-      },
-      /**
-       * Fetch AFHSB metadata
-       */
-      meta_afhsb: (auth) => {
-        requireAll({ auth });
-        const params = {
-          auth,
-        };
-        return _request("meta_afhsb", params);
       },
       /**
        * Fetch NoroSTAT metadata

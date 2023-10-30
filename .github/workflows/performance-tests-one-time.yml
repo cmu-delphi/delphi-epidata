@@ -1,0 +1,106 @@
+name: One-time performance testing - 26th October 2023
+
+# Run "At every 30th minute on day-of-month 26 in October"
+on:
+  schedule:
+    - cron: '*/30 * 26 10 *'
+
+# Add some extra perms to comment on a PR
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  run-perftests:
+    # Run this on Delphi's self-hosted runner
+    runs-on: self-hosted
+    outputs:
+      request_count: ${{ steps.output.outputs.request_count }}
+      failure_count: ${{ steps.output.outputs.failure_count }}
+      med_time: ${{ steps.output.outputs.med_time }}
+      avg_time: ${{ steps.output.outputs.avg_time }}
+      min_time: ${{ steps.output.outputs.min_time }}
+      max_time: ${{ steps.output.outputs.max_time }}
+      requests_per_sec: ${{ steps.output.outputs.requests_per_sec }}
+    steps:
+      - name: Set up WireGuard
+        uses: egor-tensin/setup-wireguard@v1.2.0
+        with:
+          endpoint: '${{ secrets.WG_PERF_ENDPOINT }}'
+          endpoint_public_key: '${{ secrets.WG_PERF_ENDPOINT_PUBLIC_KEY }}'
+          ips: '${{ secrets.WG_PERF_IPS }}'
+          allowed_ips: '${{ secrets.WG_PERF_ALLOWED_IPS }}'
+          private_key: '${{ secrets.WG_PERF_PRIVATE_KEY }}'
+      - name: Clean files from previous runs
+        uses: AutoModality/action-clean@v1
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - name: Set up repository # mimics install.sh in the README except that delphi is cloned from the PR rather than main
+        run: |
+          cd ..
+          rm -rf driver
+          mkdir -p driver/repos/delphi
+          cd driver/repos/delphi
+          git clone https://github.com/cmu-delphi/operations
+          git clone https://github.com/cmu-delphi/utils
+          git clone https://github.com/cmu-delphi/flu-contest
+          git clone https://github.com/cmu-delphi/nowcast
+          cd ../../
+
+          cd ..
+          cp -R delphi-epidata driver/repos/delphi/delphi-epidata
+          cd -
+
+          ln -s repos/delphi/delphi-epidata/dev/local/Makefile
+      - name: Build & run epidata
+        run: |
+          cd ../driver
+          sudo make web sql="${{ secrets.DB_CONN_STRING }}" rate_limit="999999/second"
+          sudo make redis
+      - name: Check out delphi-admin
+        uses: actions/checkout@v3
+        with:
+          repository: cmu-delphi/delphi-admin
+          token: ${{ secrets.CMU_DELPHI_DEPLOY_MACHINE_PAT }}
+          path: delphi-admin
+      - name: Build & run Locust
+        continue-on-error: true # sometimes ~2-5 queries fail, we shouldn't end the run if that's the case
+        run: |
+          cd delphi-admin/load-testing/locust
+          docker build -t locust .
+          export CSV=v4-requests-small.csv
+          touch output_stats.csv && chmod 666 output_stats.csv
+          touch output_stats_history.csv && chmod 666 output_stats_history.csv
+          touch output_failures.csv && chmod 666 output_failures.csv
+          touch output_exceptions.csv && chmod 666 output_exceptions.csv
+          docker run --net=host -v $PWD:/mnt/locust -e CSV="/mnt/locust/${CSV}" locust -f /mnt/locust/v4.py --host http://127.0.0.1:10080/ --users 10 --spawn-rate 1 --headless -i "$(cat ${CSV} | wc -l)" --csv=/mnt/locust/output
+      - name: Produce output for summary
+        id: output
+        uses: jannekem/run-python-script-action@v1
+        with:
+          script: |
+            import os
+
+            def write_string(name, value):
+              with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
+                print(f'{name}={value}', file=fh)
+
+            def write_float(name, value):
+              write_string(name, "{:.2f}".format(float(value)))
+
+            with open("delphi-admin/load-testing/locust/output_stats.csv", "r", encoding="utf-8", errors="ignore") as scraped:
+              final_line = scraped.readlines()[-1].split(",")
+              write_string('request_count', final_line[2])
+              write_string('failure_count', final_line[3])
+              write_float('med_time', final_line[4])
+              write_float('avg_time', final_line[5])
+              write_float('min_time', final_line[6])
+              write_float('max_time', final_line[7])
+              write_float('requests_per_sec', final_line[9])
+
+      - name: Archive results as artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: locust-output
+          path: |
+            delphi-admin/load-testing/locust/output_*.csv

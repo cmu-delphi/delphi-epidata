@@ -26,23 +26,47 @@ Pandemic"](https://www.pnas.org/topic/548) in *PNAS*:
 
 Research publications using the survey data include:
 
+- Ma, M.Z., Chen, S.X. (2023). [Beyond the surface: accounting for confounders
+  in understanding the link between collectivism and COVID-19 pandemic in the
+  United States](https://doi.org/10.1186/s12889-023-16384-2). *BMC Public
+  Health* 23, 1513.
+- C.K. Ettman, E. Badillo Goicoechea, and E.A. Stuart (2023). [Evolution of
+  depression and anxiety over the COVID-19 pandemic and across demographic
+  groups in a large sample of U.S. adults](https://doi.org/10.1016/j.focus.2023.100140).
+  *AJPM Focus*.
+- M. Rubinstein, Z. Branson, and E.H. Kennedy (2023). [Heterogeneous
+  interventional effects with multiple mediators: Semiparametric and
+  nonparametric approaches](https://doi.org/10.1515/jci-2022-0070). *Journal of
+  Causal Inference* 11 (1), 20220070. 
+- Uyheng, J., Robertson, D.C. & Carley, K.M. (2023). [Bridging online and offline
+  dynamics of the face mask infodemic](https://doi.org/10.1186/s44247-023-00026-z).
+  *BMC Digital Health* 1, 27. 
+- Kobayashi H, Saenz-Escarcega R, Fulk A, Agusto FB (2023). [Understanding
+  mental health trends during COVID-19 pandemic in the United States using
+  network analysis](https://doi.org/10.1371/journal.pone.0286857). *PLoS
+  ONE* 18(6): e0286857. 
+- GK Charles, SP Braunstein, JL Barker, et al (2023). [How do psychobehavioural
+  variables shed light on heterogeneity in COVID-19 vaccine acceptance? Evidence
+  from United States general population surveys on a probability panel and
+  social media](https://doi.org/10.1136/bmjopen-2022-066897). *BMJ Open*
+  13:e066897.
 - S. Soorapanth, R. Cheung, X. Zhang, A. H. Mokdad, G. A. Mensah (2023).
   [Rural–Urban Differences in Vaccination and Hesitancy Rates and Trust: US
   COVID-19 Trends and Impact Survey on a Social Media Platform, May 2021–April
   2022](https://doi.org/10.2105/AJPH.2023.307274). *American Journal of Public
-  Health*.
+  Health* 113 (6), 680-688.
   - See also the associated editorial: T. Callaghan (2023). [Vaccine Uptake and
     Hesitancy in Rural America in the Wake of the COVID-19
     Pandemic](https://doi.org/10.2105/AJPH.2023.307305). *American Journal of
-    Public Health*.
+    Public Health* 113 (6), 615-617.
 - M. Rubinstein, A. Haviland, and J. Breslau (2023). [The effect of COVID-19
   vaccinations on self-reported depression and anxiety during February
   2021](https://doi.org/10.1080/2330443X.2023.2190008). *Statistics and Public
-  Policy.*
+  Policy* 10 (1), 2190008.
 - Rönn MM, Menzies NA, Salomon JA (2023). [Vaccination and voting patterns in
   the United States: analysis of COVID-19 and flu surveys from 2010 to
   2022](https://doi.org/10.1016/j.amepre.2023.03.001). *American Journal of
-  Preventive Medicine.*
+  Preventive Medicine* 65 (3), 458-466.
 - Taube JC, Susswein Z, Bansal S (2023). [Spatiotemporal Trends in Self-Reported
   Mask-Wearing Behavior in the United States: Analysis of a Large
   Cross-sectional Survey](https://doi.org/10.2196/42128). *JMIR Public Health
@@ -64,15 +88,15 @@ Research publications using the survey data include:
   over time: Culture, uncertainty avoidance, and vaccine side-effect
   concerns](https://doi.org/10.1037/pspa0000320). *Journal of Personality and
   Social Psychology* 124 (4), 683-706.
+- C. Lupton-Smith, E. Badillo Goicoechea, M. Collins, J. Lessler, M. K.
+  Grabowski & E. A. Stuart (2023). [Consistency between Household and County
+  Measures of Onsite Schooling during the COVID-19
+  Pandemic](https://doi.org/10.1080/19345747.2022.2131660). *Journal of Research
+  on Educational Effectiveness* 16 (3), 419-441.
 - Rader, B., Astley, C.M., Sewalk, K. et al (2022). [Spatial modeling of vaccine
   deserts as barriers to controlling
   SARS-CoV-2](https://doi.org/10.1038/s43856-022-00183-8). *Communications
   Medicine* 2, 141.
-- C. Lupton-Smith, E. Badillo Goicoechea, M. Collins, J. Lessler, M. K.
-  Grabowski & E. A. Stuart (2022). [Consistency between Household and County
-  Measures of Onsite Schooling during the COVID-19
-  Pandemic](https://doi.org/10.1080/19345747.2022.2131660). *Journal of Research
-  on Educational Effectiveness*.
 - Nguyen, Q.C., Yardi, I., Gutierrez, F.X.M. et al. (2022). [Leveraging 13
   million responses to the U.S. COVID-19 Trends and Impact Survey to examine
   vaccine hesitancy, vaccination, and mask wearing, January 2021-February
