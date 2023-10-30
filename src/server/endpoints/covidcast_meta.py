@@ -8,6 +8,7 @@ from .._common import db
 from .._params import extract_strings
 from .._printer import create_printer
 from .._query import filter_fields
+from .._security import current_user, sources_protected_by_roles
 from delphi.epidata.common.logger import get_structured_logger
 
 bp = Blueprint("covidcast_meta", __name__)
@@ -71,17 +72,28 @@ def handle():
     age = metadata["age"]
     reported_age = max(0, min(age, standard_age) - age_margin)
 
+    user = current_user
+
     def cache_entry_gen():
         for entry in metadata_list:
             if time_types and entry.get("time_type") not in time_types:
                 continue
             if geo_types and entry.get("geo_type") not in geo_types:
                 continue
+            entry_source = entry.get("data_source")
+            if entry_source in sources_protected_by_roles:
+                role = sources_protected_by_roles[entry_source]
+                if not (user and user.has_role(role)):
+                    # if this is a protected source
+                    # and the user doesnt have the allowed role
+                    # (or if we have no user)
+                    # then skip this source
+                    continue
             if not signals:
                 yield entry
             for signal in signals:
                 # match source and (signal or no signal or signal = *)
-                if entry.get("data_source") == signal.source and (
+                if entry_source == signal.source and (
                     signal.signal == "*" or signal.signal == entry.get("signal")
                 ):
                     yield entry

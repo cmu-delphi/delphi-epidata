@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-VERSION = "4.1.7"
+VERSION = "4.1.12"
 
 MAX_RESULTS = int(10e6)
 MAX_COMPATIBILITY_RESULTS = int(3650)
@@ -93,8 +93,16 @@ REGISTER_WEBHOOK_TOKEN = os.environ.get("API_KEY_REGISTER_WEBHOOK_TOKEN")
 REDIS_HOST = os.environ.get("REDIS_HOST", "delphi_redis")
 REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD", "1234")
 
+# mode to reduce number of required requests to hit rate limit while running tests,
+# by default is set to False
+TESTING_MODE = os.environ.get("TESTING_MODE", False)
+
 # https://flask-limiter.readthedocs.io/en/stable/#rate-limit-string-notation
 RATE_LIMIT = os.environ.get("RATE_LIMIT", "60/hour")
+
+if TESTING_MODE is not False:
+    RATE_LIMIT = "5/hour"
+
 # fixed-window, fixed-window-elastic-expiry, or moving-window
 # see also https://flask-limiter.readthedocs.io/en/stable/#rate-limiting-strategies
 RATELIMIT_STRATEGY = os.environ.get("RATELIMIT_STRATEGY", "fixed-window")

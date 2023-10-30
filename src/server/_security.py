@@ -84,6 +84,22 @@ def require_role(required_role: str):
     return decorator_wrapper
 
 
+# key is data "source" name, value is role name required to access that source
+sources_protected_by_roles = {
+    'quidel': 'quidel',
+    # the following two entries are needed because
+    # the covidcast endpoint uses this method
+    # to allow using various different "source" name aliases:
+    #     delphi.epidata.server.endpoints.covidcast_utils.model.create_source_signal_alias_mapper()
+    # which, for reference, is populated by the file:
+    #     src/server/endpoints/covidcast_utils/db_sources.csv
+    'quidel-covid-ag': 'quidel',
+    'quidel-flu': 'quidel',
+}
+# TODO(<insert gh issue link here>): source this info from a better place than a hardcoded dict:
+#     maybe somewhere in the db?  maybe in src/server/endpoints/covidcast_utils/db_sources.csv ?
+
+
 def update_key_last_time_used(user):
     if user:
         # update last usage for this user's api key to "now()"

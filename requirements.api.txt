@@ -1,10 +1,9 @@
 delphi_utils==0.3.15
 epiweeks==2.1.2
-Flask==2.2.2
+Flask==2.2.5
 Flask-Admin==1.6.1
 Flask-Login==0.6.2
 Flask-Limiter==3.3.0
-itsdangerous<2.1
 jinja2==3.0.3
 more_itertools==8.4.0
 mysqlclient==2.1.1

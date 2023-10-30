@@ -37,6 +37,7 @@
 #   test=         Only runs tests in the directories provided here, e.g.
 #                 repos/delphi/delphi-epidata/tests/acquisition/covidcast
 #   sql=          Overrides the default SQL connection string.
+#   rate_limit=   Overrides the default rate limit for API requests.
 
 
 # Set optional argument defaults
@@ -54,6 +55,14 @@ ifdef sql
 	sqlalchemy_uri:=$(sql)
 else
 	sqlalchemy_uri:=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata
+endif
+
+ifdef rate_limit
+# Notation found here: https://flask-limiter.readthedocs.io/en/stable/#rate-limit-string-notation
+	rate_limit_settings:=--env "RATE_LIMIT=$(rate_limit)"
+else
+# Default behavior is to set the rate limit to "5/hour" for API key tests via this environment variable
+	rate_limit_settings:=--env "TESTING_MODE=True"
 endif
 
 SHELL:=/bin/sh

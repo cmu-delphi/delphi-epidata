@@ -27,7 +27,6 @@ declare module 'delphi_epidata' {
         covid_hosp(callback: EpiDataCallback, states: StringParam, dates: EpiRangeParam, issues: EpiRangeParam): Promise<EpiDataResponse>;
         covid_hosp_state_timeseries(callback: EpiDataCallback, states: StringParam, dates: EpiRangeParam, issues: EpiRangeParam): Promise<EpiDataResponse>;
         covidcast_meta(callback: EpiDataCallback): Promise<EpiDataResponse>;
-        covidcast_nowcast(callback: EpiDataCallback, data_source: string, signals: string, time_type: 'day' | 'week', geo_type: string, time_values: EpiRangeParam, as_of?: number, issues?: EpiRangeParam, format?: 'json' | 'tree' | 'classic' | 'csv'): Promise<EpiDataResponse>;
         covidcast(callback: EpiDataCallback, data_source: string, signals: string, time_type: 'day' | 'week', geo_type: string, time_values: EpiRangeParam, as_of?: number, issues?: EpiRangeParam, format?: 'json' | 'tree' | 'classic' | 'csv'): Promise<EpiDataResponse>;
         fluview(callback: EpiDataCallback, regions: StringParam, epiweeks: EpiRangeParam, issues?: EpiRangeParam, lag?: number, auth?: string): Promise<EpiDataResponse>;
         fluview_clinical(callback: EpiDataCallback, regions: StringParam, epiweeks: EpiRangeParam, issues?: EpiRangeParam, lag?: number): Promise<EpiDataResponse>;
@@ -66,7 +65,6 @@ declare module 'delphi_epidata' {
         covid_hosp(states: StringParam, dates: EpiRangeParam, issues: EpiRangeParam): Promise<EpiDataResponse>;
         covid_hosp_state_timeseries(states: StringParam, dates: EpiRangeParam, issues: EpiRangeParam): Promise<EpiDataResponse>;
         covidcast_meta(callback: EpiDataCallback): Promise<EpiDataResponse>;
-        covidcast_nowcast(data_source: string, signals: string, time_type: 'day' | 'week', geo_type: string, time_values: EpiRangeParam, as_of?: number, issues?: EpiRangeParam, format?: 'json' | 'tree' | 'classic' | 'csv'): Promise<EpiDataResponse>;
         covidcast(data_source: string, signals: string, time_type: 'day' | 'week', geo_type: string, time_values: EpiRangeParam, as_of?: number, issues?: EpiRangeParam, format?: 'json' | 'tree' | 'classic' | 'csv'): Promise<EpiDataResponse>;
         fluview(regions: StringParam, epiweeks: EpiRangeParam, issues?: EpiRangeParam, lag?: number, auth?: string): Promise<EpiDataResponse>;
         fluview_clinical(regions: StringParam, epiweeks: EpiRangeParam, issues?: EpiRangeParam, lag?: number): Promise<EpiDataResponse>;

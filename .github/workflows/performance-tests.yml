@@ -14,7 +14,8 @@ jobs:
   run-perftests:
     # Make sure 1. this is a PR, not an issue 2. it contains "/run performance test" anywhere in the body
     if: github.event.issue.pull_request && contains(github.event.comment.body, '/run performance test')
-    runs-on: ubuntu-latest
+    # Run this on Delphi's self-hosted runner
+    runs-on: self-hosted
     outputs:
       request_count: ${{ steps.output.outputs.request_count }}
       failure_count: ${{ steps.output.outputs.failure_count }}
@@ -32,6 +33,8 @@ jobs:
           ips: '${{ secrets.WG_PERF_IPS }}'
           allowed_ips: '${{ secrets.WG_PERF_ALLOWED_IPS }}'
           private_key: '${{ secrets.WG_PERF_PRIVATE_KEY }}'
+      - name: Clean files from previous runs
+        uses: AutoModality/action-clean@v1
       - name: Check out repository
         uses: actions/checkout@v3
       # Previous step checks out default branch, so we check out the pull request's branch
@@ -43,6 +46,7 @@ jobs:
       - name: Set up repository # mimics install.sh in the README except that delphi is cloned from the PR rather than main
         run: |
           cd ..
+          rm -rf driver
           mkdir -p driver/repos/delphi
           cd driver/repos/delphi
           git clone https://github.com/cmu-delphi/operations
@@ -59,7 +63,7 @@ jobs:
       - name: Build & run epidata
         run: |
           cd ../driver
-          sudo make web sql="${{ secrets.DB_CONN_STRING }}"
+          sudo make web sql="${{ secrets.DB_CONN_STRING }}" rate_limit="999999/second"
           sudo make redis
       - name: Check out delphi-admin
         uses: actions/checkout@v3
