@@ -138,7 +138,35 @@ In addition to the new age, race, and sex breakdowns, the group id for overall
 reporting has changed from 6 to 0. Age ids 1-5 and 7-9 retain the same the
 same meanings; age id 6 is not reported.
 """
-N_EXPECTED_GROUPS = 23
+EXPECTED_GROUPS = (
+    "rate_overall",
+
+    "rate_age_0",
+    "rate_age_1",
+    "rate_age_2",
+    "rate_age_3",
+    "rate_age_4",
+    "rate_age_5",
+    "rate_age_6",
+    "rate_age_7",
+
+    "rate_age_18t29",
+    "rate_age_30t39",
+    "rate_age_40t49",
+    "rate_age_5t11",
+    "rate_age_12t17",
+    "rate_age_lt18",
+    "rate_age_gte18",
+
+    "rate_race_white",
+    "rate_race_black",
+    "rate_race_hisp",
+    "rate_race_asian",
+    "rate_race_natamer",
+
+    "rate_sex_male",
+    "rate_sex_female"
+)
 MAX_AGE_TO_CONSIDER_WEEKS = 52
 
 def get_rows(cur):
@@ -280,10 +308,16 @@ def update(issue, location, seasonids, metadata, test_mode=False):
             # values (including duplicates) were stored on each run.
             continue
 
-        # Subtract one since we also store the season description in each epiweek value
-        if len(data[epiweek].keys()) - 1 != N_EXPECTED_GROUPS:
-            warnings.warn(
-                f"{location} {epiweek} data does not contain the expected {N_EXPECTED_GROUPS} groups"
+        missing_expected_groups = EXPECTED_GROUPS - data[epiweek].keys()
+        # Remove the season description since we also store it in each epiweek obj
+        unexpected_groups = data[epiweek].keys() - EXPECTED_GROUPS - {"season"}
+        if len(missing_expected_groups) != 0:
+            raise Exception(
+                f"{location} {epiweek} data is missing group(s) {missing_expected_groups}"
+            )
+        if len(unexpected_groups) != 0:
+            raise Exception(
+                f"{location} {epiweek} data includes new group(s) {unexpected_groups}"
             )
 
         args_meta = {
