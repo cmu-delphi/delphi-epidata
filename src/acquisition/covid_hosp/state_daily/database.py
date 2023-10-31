@@ -9,18 +9,17 @@ class Database(BaseDatabase):
 
   # note we share a database with state_timeseries
   TABLE_NAME = 'covid_hosp_state_timeseries'
-  KEY_COLS = ['state', 'reporting_cutoff_start']
+  KEY_COLS = ['state', 'date']
   # These are 3-tuples of (CSV header name, SQL db column name, data type) for
-  # all the columns in the CSV file.
-  # Note that the corresponding database column names may be shorter
-  # due to constraints on the length of column names. See
-  # /src/ddl/covid_hosp.sql for more information.
-  # Additionally, all column names below are shared with state_timeseries,
-  # except for reporting_cutoff_start (here) and date (there). If you need
-  # to update a column name, do it in both places.
+  # all the columns in the CSV file. Note that the corresponding database column
+  # names may be shorter due to constraints on the length of column names. See
+  # /src/ddl/covid_hosp.sql for more information. All column names below are
+  # shared with state_timeseries (previous to ~June 17th 2023, date was called
+  # reporting_cutoff_start in this file only). If you need to update a column
+  # name, do it in both places.
   ORDERED_CSV_COLUMNS = [
       Columndef('state', 'state', str),
-      Columndef('reporting_cutoff_start', 'date', Utils.int_from_date),
+      Columndef('date', 'date', Utils.int_from_date),
       Columndef('adult_icu_bed_covid_utilization', 'adult_icu_bed_covid_utilization', float),
       Columndef('adult_icu_bed_covid_utilization_coverage', 'adult_icu_bed_covid_utilization_coverage', int),
       Columndef('adult_icu_bed_covid_utilization_denominator', 'adult_icu_bed_covid_utilization_denominator',

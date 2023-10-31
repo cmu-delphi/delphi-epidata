@@ -49,13 +49,13 @@ class UpdateTests(unittest.TestCase):
         # knock out every 2nd key, then every 3rd, then every 4th, etc
         dfs.append(pd.DataFrame(dict(
             state=range(1, N, i+1),
-            reporting_cutoff_start=range(N+1, 2*N, i+1),
+            date=range(N+1, 2*N, i+1),
             **{spec[0]: i+1 for spec in Database.ORDERED_CSV_COLUMNS[2:]}
         )))
     # add a data frame with unseen keys
     dfs.append(pd.DataFrame(dict(
       state=[-1],
-      reporting_cutoff_start=[-1],
+      date=[-1],
       **{spec[0]: -1 for spec in Database.ORDERED_CSV_COLUMNS[2:]}
     )))
 
@@ -72,7 +72,7 @@ class UpdateTests(unittest.TestCase):
 
     expected = pd.DataFrame(dict(
         state=states,
-        reporting_cutoff_start=dates,
+        date=dates,
         **{spec[0]: value_from for spec in Database.ORDERED_CSV_COLUMNS[2:]}
     )).astype({spec[0]: 'float64' for spec in Database.ORDERED_CSV_COLUMNS[2:]}
     )
