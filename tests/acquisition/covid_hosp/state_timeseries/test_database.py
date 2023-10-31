@@ -48,7 +48,7 @@ class DatabaseTests(unittest.TestCase):
         24, 25, 13, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
         41, 26, 42, 43, 44, 45, 0, 21, 0, 22, 46, 47, 48, 49, 50, 51, 52, 49,
         28, 10, 26, 7, 28, 17, 26, 14, 28, 53, 54, 55, 56, 0, 26, 0, 26,
-        114, 28, 'T')
+        114, 28)
     self.assertEqual(len(last_query_values), len(expected_query_values))
 
     for actual, expected in zip(last_query_values, expected_query_values):

@@ -38,6 +38,7 @@ class AcquisitionTests(unittest.TestCase):
     # clear relevant tables
     with Database.connect() as db:
       with db.new_cursor() as cur:
+        cur.execute('truncate table covid_hosp_state_daily')
         cur.execute('truncate table covid_hosp_state_timeseries')
         cur.execute('truncate table covid_hosp_meta')
         cur.execute('delete from api_user')

@@ -152,19 +152,66 @@ def handle():
     q.where_integers("date", dates)
     q.where_strings("state", states)
 
+    # These queries prioritize the daily value if there is both a time series and daily value for a given issue/date/state.
+    # Further details: https://github.com/cmu-delphi/delphi-epidata/pull/336/files#diff-097d4969fdc9ac1f722809e85f3dc59ad371b66011861a50d15fcc605839c63dR364-R368
     if issues is not None:
+        # Filter for all matching issues
         q.where_integers("issue", issues)
-        # final query using specific issues
-        query = f"WITH c as (SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY date, state, issue ORDER BY record_type) `row` FROM {q.table} WHERE {q.conditions_clause}) SELECT {q.fields_clause} FROM {q.alias} WHERE `row` = 1 ORDER BY {q.order_clause}"
-    elif as_of is not None:
-        sub_condition_asof = "(issue <= :as_of)"
-        q.params["as_of"] = as_of
-        query = f"WITH c as (SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY date, state ORDER BY issue DESC, record_type) `row` FROM {q.table} WHERE {q.conditions_clause} AND {sub_condition_asof}) SELECT {q.fields_clause} FROM {q.alias} WHERE `row` = 1 ORDER BY {q.order_clause}"
+
+        # Get all issues matching the conditions from daily & timeseries
+        union_subquery = f'''
+        (
+            SELECT *, 'D' AS record_type FROM `covid_hosp_state_daily` AS {q.alias} WHERE {q.conditions_clause}
+            UNION ALL
+            SELECT *, 'T' AS record_type FROM `covid_hosp_state_timeseries` AS {q.alias} WHERE {q.conditions_clause}
+        ) AS {q.alias}'''
+
+        # Prioritize rows with record_type='D' for each issue/date/state group
+        query = f'''
+            SELECT {q.fields_clause} FROM (
+                SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY issue, date, state ORDER BY record_type) AS `row`
+                FROM {union_subquery}
+            ) AS {q.alias} WHERE `row` = 1 ORDER BY {q.order_clause}
+        '''
     else:
-        # final query using most recent issues
-        subquery = f"(SELECT max(`issue`) `max_issue`, `date`, `state` FROM {q.table} WHERE {q.conditions_clause} GROUP BY `date`, `state`) x"
-        condition = f"x.`max_issue` = {q.alias}.`issue` AND x.`date` = {q.alias}.`date` AND x.`state` = {q.alias}.`state`"
-        query = f"WITH c as (SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY date, state, issue ORDER BY record_type) `row` FROM {q.table} JOIN {subquery} ON {condition}) select {q.fields_clause} FROM {q.alias} WHERE `row` = 1 ORDER BY {q.order_clause}"
+        # Filter for most recent issues
+        cond_clause = q.conditions_clause
+        if as_of is not None:
+            # ...Filter for most recent issues before a given as_of
+            cond_clause += " AND (issue <= :as_of)"
+            q.params["as_of"] = as_of
+
+        join_condition = f"{q.alias}.state = x.state AND {q.alias}.date = x.date AND {q.alias}.issue = x.max_issue"
+
+        # Get the rows from the daily & timeseries tables with the highest issue value within each state/date group
+        join_daily = f'''
+            SELECT {q.fields_clause}, 'D' AS record_type FROM `covid_hosp_state_daily` AS {q.alias}
+            JOIN (
+                SELECT {q.alias}.state, {q.alias}.date, MAX({q.alias}.issue) AS max_issue
+                FROM `covid_hosp_state_daily` AS {q.alias}
+                WHERE {cond_clause}
+                GROUP BY {q.alias}.state, {q.alias}.date
+            ) AS x
+            ON {join_condition}
+        '''
+        join_timeseries = f'''
+            SELECT {q.fields_clause}, 'T' AS record_type FROM `covid_hosp_state_timeseries` AS {q.alias}
+            JOIN (
+                SELECT {q.alias}.state, {q.alias}.date, MAX(issue) AS max_issue
+                FROM `covid_hosp_state_timeseries` AS {q.alias}
+                WHERE {cond_clause}
+                GROUP BY {q.alias}.state, {q.alias}.date
+            ) AS x
+            ON {join_condition}
+        '''
+
+        # Combine daily & timeseries queries, getting the combined latest issues (and prioritizing rows with record_type='D' in a tie)
+        query = f'''
+            SELECT {q.fields_clause} FROM (
+                SELECT {q.fields_clause}, ROW_NUMBER() OVER (PARTITION BY state, date ORDER BY issue DESC, record_type) AS `row`
+                FROM ({join_daily} UNION ALL {join_timeseries}) AS {q.alias}
+            ) AS {q.alias} WHERE `row` = 1 ORDER BY {q.order_clause}
+        '''
 
     # send query
     return execute_query(query, q.params, fields_string, fields_int, fields_float)
