@@ -76,7 +76,7 @@ from warnings import warn
 import mysql.connector
 
 # first party
-from delphi.epidata.acquisition.flusurv import flusurv
+from delphi.epidata.acquisition.flusurv.flusurv import FlusurvLocationFetcher
 import delphi.operations.secrets as secrets
 from delphi.utils.epidate import EpiDate
 from delphi.utils.epiweek import delta_epiweeks
@@ -178,10 +178,10 @@ def get_rows(cur):
         return num
 
 
-def update(issue, location, seasonids, metadata, test_mode=False):
+def update(fetcher, location, test_mode=False):
     """Fetch and store the currently available weekly FluSurv dataset."""
     # Fetch location-specific data
-    data = flusurv.get_data(location, seasonids, metadata)
+    data = fetcher.get_data(location)
 
     # metadata
     epiweeks = sorted(data.keys())
@@ -301,7 +301,7 @@ def update(issue, location, seasonids, metadata, test_mode=False):
 
     # insert/update each row of data (one per epiweek)
     for epiweek in epiweeks:
-        lag = delta_epiweeks(epiweek, issue)
+        lag = delta_epiweeks(epiweek, fetcher.metadata.issue)
         if lag > MAX_AGE_TO_CONSIDER_WEEKS:
             # Ignore values older than one year, as (1) they are assumed not to
             # change, and (2) it would adversely affect database performance if all
@@ -322,7 +322,7 @@ def update(issue, location, seasonids, metadata, test_mode=False):
 
         args_meta = {
             "release_date": release_date,
-            "issue": issue,
+            "issue": fetcher.metadata.issue,
             "epiweek": epiweek,
             "location": location,
             "lag": lag
@@ -358,28 +358,19 @@ def main():
     # fmt: on
     args = parser.parse_args()
 
-    metadata = flusurv.fetch_flusurv_metadata()
-
-    # scrape current issue from the main page
-    issue = flusurv.get_current_issue(metadata)
-    print(f"current issue: {int(issue)}")
-
-    # Ignore seasons with all dates older than one year
-    seasonids = {
-        season_blob["seasonid"] for season_blob in metadata["seasons"]
-        if delta_epiweeks(flusurv.mmwrid_to_epiweek(season_blob["endweek"]), issue) < MAX_AGE_TO_CONSIDER_WEEKS
-    }
+    fetcher = FlusurvLocationFetcher(MAX_AGE_TO_CONSIDER_WEEKS)
+    print(f"current issue: {int(fetcher.metadata.issue)}")
 
     # fetch flusurv data
     if args.location == "all":
         # all locations
-        for location in flusurv.location_to_code.keys():
-            update(issue, location, seasonids, metadata, args.test)
+        for location in fetcher.metadata.locations:
+            update(fetcher, location, args.test)
     else:
         # single location
-        if (args.location not in flusurv.location_to_code.keys()):
+        if (args.location not in fetcher.metadata.locations):
             raise KeyError("Requested location {args.location} not available")
-        update(issue, args.location, seasonids, metadata, args.test)
+        update(fetcher, args.location, args.test)
 
 
 if __name__ == "__main__":
