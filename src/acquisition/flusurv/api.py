@@ -48,6 +48,7 @@ import requests
 # first party
 from delphi.utils.epidate import EpiDate
 from delphi.utils.epiweek import delta_epiweeks
+from constants import (MAP_REGION_NAMES_TO_ABBR, MAP_ENTIRE_NETWORK_NAMES)
 
 
 def fetch_json(path, payload, call_count=1, requests_impl=requests):
@@ -98,8 +99,8 @@ def fetch_json(path, payload, call_count=1, requests_impl=requests):
 def mmwrid_to_epiweek(mmwrid):
     """Convert a CDC week index into an epiweek."""
 
-    # Add the difference in IDs, which are sequential, to a reference epiweek,
-    # which is 2003w40 in this case.
+    # Add the difference in IDs, which are sequential, to a reference
+    # epiweek, which is 2003w40 in this case.
     epiweek_200340 = EpiDate(2003, 9, 28)
     mmwrid_200340 = 2179
     return epiweek_200340.add_weeks(mmwrid - mmwrid_200340).get_ew()
@@ -126,33 +127,38 @@ class FlusurvMetadata:
             {"appversion": "Public", "key": "", "injson": []}
         )
 
+    def _location_name_to_abbr(self, geo, network):
+        """Find short geo name corresponding to a geo and network"""
+        if geo == "Entire Network":
+            return MAP_ENTIRE_NETWORK_NAMES[network]
+        else:
+            return MAP_REGION_NAMES_TO_ABBR[geo]
+
     def _make_location_to_code_map(self):
-        # all currently available FluSurv locations and their associated codes
-        # the number pair represents NetworkID and CatchmentID
-        location_to_code = {
-            "CA": (2, 1),
-            "CO": (2, 2),
-            "CT": (2, 3),
-            "GA": (2, 4),
-            "IA": (3, 5),
-            "ID": (3, 6),
-            "MD": (2, 7),
-            "MI": (3, 8),
-            "MN": (2, 9),
-            "NM": (2, 11),
-            "NY_albany": (2, 13),
-            "NY_rochester": (2, 14),
-            "OH": (3, 15),
-            "OK": (3, 16),
-            "OR": (2, 17),
-            "RI": (3, 18),
-            "SD": (3, 19),
-            "TN": (2, 20),
-            "UT": (3, 21),
-            "network_all": (1, 22),
-            "network_eip": (2, 22),
-            "network_ihsp": (3, 22),
-        }
+        """Create a map for all currently available FluSurv locations from names to codes"""
+        location_to_code = dict()
+        for location in self.metadata["catchments"]:
+            # "area" is the long-form region (California, etc), and "name" is
+            # the network/data source type (IHSP, EIP, etc)
+            location_name = self._location_name_to_abbr(location["area"], location["name"])
+            if location["endseasonid"] in self.seasonids:
+                if location_name in location_to_code.keys():
+                    raise Exception(
+                        f"catchment {location_name} already seen, but " + \
+                        "we expect catchments to be unique"
+                    )
+
+                location_to_code[location_name] = (
+                    location["networkid"], location["catchmentid"]
+                )
+            else:
+                unseen_locations.append(location_name)
+
+        print(
+            f"location(s) {unseen_locations} not included in this issue " + \
+            "because they don't include sufficiently recent data"
+        )
+
         return location_to_code
 
     def fetch_location_to_code_map(self):
