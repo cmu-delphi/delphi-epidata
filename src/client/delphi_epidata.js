@@ -22,7 +22,7 @@
   }
 })(this, function (exports, fetchImpl, jQuery) {
   const BASE_URL = "https://api.delphi.cmu.edu/epidata/";
-  const client_version = "4.1.9";
+  const client_version = "4.1.12";
 
   // Helper function to cast values and/or ranges to strings
   function _listitem(value) {
@@ -203,48 +203,6 @@
        */
       covidcast_meta: () => {
         return _request("covidcast_meta", {});
-      },
-      /**
-       * Fetch Delphi's COVID-19 Surveillance Streams
-       */
-      covidcast_nowcast: (
-        data_source,
-        signals,
-        time_type,
-        geo_type,
-        time_values,
-        geo_value,
-        as_of,
-        issues,
-        lag,
-        format
-      ) => {
-        requireAll({
-          data_source,
-          signals,
-          time_type,
-          geo_type,
-          time_values,
-          geo_value,
-        });
-        issuesOrLag(issues, lag);
-
-        const params = {
-          data_source,
-          signals,
-          time_type,
-          geo_type,
-          time_values: _list(time_values),
-          as_of,
-          issues: _list(issues),
-          format,
-        };
-        if (Array.isArray(geo_value)) {
-          params.geo_values = geo_value.join(",");
-        } else {
-          params.geo_value = geo_value;
-        }
-        return _request("covidcast_nowcast", params);
       },
       /**
        * Fetch Delphi's COVID-19 Surveillance Streams

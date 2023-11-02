@@ -19,7 +19,7 @@ class DelphiTestBase(unittest.TestCase):
         self.create_tables_list = []
         self.role_name = None
         self.epidata_client = Epidata
-        self.epidata_client.BASE_URL = "http://delphi_web_epidata/epidata/api.php"
+        self.epidata_client.BASE_URL = "http://delphi_web_epidata/epidata"
         self.epidata_client.auth = ("epidata", "key")
 
     def create_key_with_role(self, cur, role_name: str):
