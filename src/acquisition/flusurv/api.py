@@ -144,7 +144,7 @@ class FlusurvMetadata:
             if location["endseasonid"] in self.seasonids:
                 if location_name in location_to_code.keys():
                     raise Exception(
-                        f"catchment {location_name} already seen, but " + \
+                        f"catchment {location_name} already seen, but " +
                         "we expect catchments to be unique"
                     )
 
@@ -155,7 +155,7 @@ class FlusurvMetadata:
                 unseen_locations.append(location_name)
 
         print(
-            f"location(s) {unseen_locations} not included in this issue " + \
+            f"location(s) {unseen_locations} not included in this issue " +
             "because they don't include sufficiently recent data"
         )
 
@@ -259,16 +259,22 @@ class FlusurvLocationFetcher:
 
         # If no data is returned (a given seasonid is not reported,
         # location codes are invalid, etc), the API returns a JSON like:
-        #    {
+        #     {
         #        'default_data': {
         #            'response': 'No Data'
         #            }
-        #    }
+        #     }
         #
         # If data is returned, then data["default_data"] is a list
         #  and data["default_data"]["response"] doesn't exist.
-        assert isinstance(result["default_data"], list) and len(result["default_data"]) > 0, \
-            f"Data was not correctly returned from the API for {location}"
+        if (not isinstance(result["default_data"], list) or
+            len(result["default_data"]) == 0 or
+            (
+                "response" in result["default_data"].keys() and
+                result["default_data"]["response"] == "No Data"
+            )):
+            raise Exception(f"No data was returned from the API for {location}" +
+                "but we expect it to be available for some recent dates")
         return result
 
     def _group_by_epiweek(self, data):
