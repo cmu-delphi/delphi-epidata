@@ -63,8 +63,8 @@ ExtendedColorScale: true
 Levels: [nation, state, county]
 Overrides:
   County:
-    Id: dsew-cpr
-    Signal: confirmed_admissions_covid_1d_prop_7dav
+    Id: hospital-admissions
+    Signal: smoothed_adj_covid19_from_claims
 
 
 
@@ -97,3 +97,13 @@ SignalTooltip: Newly reported COVID-19 deaths per 100,000 people, based on data 
 
 
 Description: This data shows the number of COVID-19 deaths newly reported each day. The signal is based on COVID-19 death counts compiled and made public by [a team at Johns Hopkins University](https://systems.jhu.edu/research/public-health/ncov/).
+---
+Name: COVID Deaths (NCHS)
+Id: nchs-mortality
+Signal: deaths_covid_incidence_prop
+
+
+SignalTooltip: Newly reported COVID-19 deaths per 100,000 people, based on NCHS mortality data.
+
+
+Description: This data shows the number of COVID-19 deaths newly reported each week. The signal is based on COVID-19 death counts compiled and made public by [the National Center for Health Statistics](https://www.cdc.gov/nchs/nvss/vsrr/COVID19/index.htm).
