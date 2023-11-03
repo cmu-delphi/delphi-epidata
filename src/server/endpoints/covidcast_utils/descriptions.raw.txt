@@ -43,18 +43,6 @@ SignalTooltip: Percentage of daily doctor visits that are due to lab-confirmed i
 
 Description: Delphi receives aggregated statistics from Change Healthcare, Inc. on lab-confirmed influenza outpatient doctor visits, derived from ICD codes found in insurance claims. Using this data, we estimate the percentage of daily doctor’s visits in each area that resulted in a diagnosis of influenza. Note that these estimates are based only on visits by patients whose insurance claims are accessible to Change Healthcare.
 ---
-Name: COVID Cases
-Id: jhu-csse
-Signal: confirmed_7dav_incidence_prop
-Highlight: [default]
-ExtendedColorScale: true
-
-
-SignalTooltip: Newly reported COVID-19 cases per 100,000 people, based on data from Johns Hopkins University
-
-
-Description: This data shows the number of COVID-19 confirmed cases newly reported each day. It reflects only cases reported by state and local health authorities. It is based on case counts compiled and made public by [a team at Johns Hopkins University](https://systems.jhu.edu/research/public-health/ncov/). The signal may not be directly comparable across regions with vastly different testing capacity or reporting criteria. 
----
 Name: COVID Hospital Admissions
 Id: hhs
 Signal: confirmed_admissions_covid_1d_prop_7dav
@@ -63,8 +51,8 @@ ExtendedColorScale: true
 Levels: [nation, state, county]
 Overrides:
   County:
-    Id: dsew-cpr
-    Signal: confirmed_admissions_covid_1d_prop_7dav
+    Id: hospital-admissions
+    Signal: smoothed_adj_covid19_from_claims
 
 
 
@@ -89,11 +77,11 @@ SignalTooltip: Confirmed influenza hospital admissions per 100,000 people
 Description: This data shows the number of hospital admissions with lab-confirmed influenza each day. We source this data from the Report on Patient Impact and Hospital Capacity published by the US Department of Health & Human Services (HHS). 
 ---
 Name: COVID Deaths
-Id: jhu-csse
-Signal: deaths_7dav_incidence_prop
+Id: nchs-mortality
+Signal: deaths_covid_incidence_prop
 
 
-SignalTooltip: Newly reported COVID-19 deaths per 100,000 people, based on data from Johns Hopkins University
+SignalTooltip: Newly reported COVID-19 deaths per 100,000 people, based on NCHS mortality data.
 
 
-Description: This data shows the number of COVID-19 deaths newly reported each day. The signal is based on COVID-19 death counts compiled and made public by [a team at Johns Hopkins University](https://systems.jhu.edu/research/public-health/ncov/).
+Description: This data shows the number of COVID-19 deaths newly reported each week. The signal is based on COVID-19 death counts compiled and made public by [the National Center for Health Statistics](https://www.cdc.gov/nchs/nvss/vsrr/COVID19/index.htm).

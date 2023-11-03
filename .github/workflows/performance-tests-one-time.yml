@@ -1,9 +1,9 @@
-name: Performance testing
+name: One-time performance testing - 26th October 2023
 
-# Run when a PR comment is created (issues and PRs are considered the same entity in the GitHub API)
+# Run "At every 30th minute on day-of-month 26 in October"
 on:
-  issue_comment:
-    types: [created]
+  schedule:
+    - cron: '*/30 * 26 10 *'
 
 # Add some extra perms to comment on a PR
 permissions:
@@ -12,8 +12,6 @@ permissions:
 
 jobs:
   run-perftests:
-    # Make sure 1. this is a PR, not an issue 2. it contains "/run performance test" anywhere in the body
-    if: github.event.issue.pull_request && contains(github.event.comment.body, '/run performance test')
     # Run this on Delphi's self-hosted runner
     runs-on: self-hosted
     outputs:
@@ -37,12 +35,6 @@ jobs:
         uses: AutoModality/action-clean@v1
       - name: Check out repository
         uses: actions/checkout@v3
-      # Previous step checks out default branch, so we check out the pull request's branch
-      - name: Switch to PR branch
-        run: |
-          hub pr checkout ${{ github.event.issue.number }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Set up repository # mimics install.sh in the README except that delphi is cloned from the PR rather than main
         run: |
           cd ..
@@ -112,50 +104,3 @@ jobs:
           name: locust-output
           path: |
             delphi-admin/load-testing/locust/output_*.csv
-
-  comment-success:
-    runs-on: ubuntu-latest
-    if: success()
-    needs: run-perftests
-    steps:
-      - name: Comment run results
-        env:
-          GITHUB_WORKFLOW_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        uses: actions/github-script@v5
-        with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `✅ Performance tests complete! Result summary:
-              - Total requests: **${{ needs.run-perftests.outputs.request_count }}**
-              - Total failures: **${{ needs.run-perftests.outputs.failure_count }}**
-              - Min response time: **${{ needs.run-perftests.outputs.min_time }} ms**
-              - Max response time: **${{ needs.run-perftests.outputs.max_time }} ms**
-              - Average response time: **${{ needs.run-perftests.outputs.avg_time }} ms**
-              - Median response time: **${{ needs.run-perftests.outputs.med_time }} ms**
-              - Requests per second: **${{ needs.run-perftests.outputs.requests_per_sec }}**
-              
-              Click here to view full results: ${{ env.GITHUB_WORKFLOW_URL }}.`
-            })
-  
-  comment-failure:
-    runs-on: ubuntu-latest
-    if: failure()
-    needs: run-perftests
-    steps:
-      - name: Comment run results
-        env:
-          GITHUB_WORKFLOW_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        uses: actions/github-script@v5
-        with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `❌ Performance tests failed! Click here to view full results: ${{ env.GITHUB_WORKFLOW_URL }}.`
-            })
