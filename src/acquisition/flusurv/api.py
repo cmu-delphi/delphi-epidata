@@ -48,7 +48,7 @@ import requests
 # first party
 from delphi.utils.epidate import EpiDate
 from delphi.utils.epiweek import delta_epiweeks
-from constants import (MAP_REGION_NAMES_TO_ABBR, MAP_ENTIRE_NETWORK_NAMES)
+from .constants import (MAP_REGION_NAMES_TO_ABBR, MAP_ENTIRE_NETWORK_NAMES)
 
 
 def fetch_json(path, payload, call_count=1, requests_impl=requests):
@@ -110,15 +110,15 @@ class FlusurvMetadata:
     def __init__(self, max_age_weeks):
         self.metadata = self._fetch_flusurv_metadata()
 
+        self.issue = self._get_current_issue()
+        self.max_age_weeks = max_age_weeks
+        self.seasonids = self._get_recent_seasonids()
+
         self.location_to_code = self._make_location_to_code_map()
         self.locations = self.location_to_code.keys()
 
         self.id_to_group = self._make_id_group_map()
         self.id_to_season = self._make_id_season_map()
-
-        self.issue = self._get_current_issue()
-        self.max_age_weeks = max_age_weeks
-        self.seasonids = self._get_recent_seasonids()
 
     def _fetch_flusurv_metadata(self):
         """Return FluSurv JSON metadata object."""
@@ -137,6 +137,8 @@ class FlusurvMetadata:
     def _make_location_to_code_map(self):
         """Create a map for all currently available FluSurv locations from names to codes"""
         location_to_code = dict()
+        unseen_locations = []
+
         for location in self.metadata["catchments"]:
             # "area" is the long-form region (California, etc), and "name" is
             # the network/data source type (IHSP, EIP, etc)
@@ -181,7 +183,7 @@ class FlusurvMetadata:
         # Ignore seasons with all dates older than one year
         seasonids = {
             season_blob["seasonid"] for season_blob in self.metadata["seasons"]
-            if delta_epiweeks(mmwrid_to_epiweek(season_blob["endweek"]), issue) < self.max_age_weeks
+            if delta_epiweeks(mmwrid_to_epiweek(season_blob["endweek"]), self.issue) < self.max_age_weeks
         }
 
         return seasonids
@@ -229,7 +231,7 @@ class FlusurvLocationFetcher:
         """
         # fetch
         print("[fetching flusurv data...]")
-        data_in = self._fetch_flusurv_location(location, self.metadata.seasonids)
+        data_in = self._fetch_flusurv_location(location)
 
         # extract
         print("[reformatting flusurv result...]")
@@ -239,7 +241,7 @@ class FlusurvLocationFetcher:
         print(f"[successfully fetched data for {location}]")
         return data_out
 
-    def _fetch_flusurv_location(self):
+    def _fetch_flusurv_location(self, location):
         """Return FluSurv JSON object for a given location."""
         location_code = self.metadata.location_to_code[location]
 
@@ -267,9 +269,9 @@ class FlusurvLocationFetcher:
         #
         # If data is returned, then data["default_data"] is a list
         #  and data["default_data"]["response"] doesn't exist.
-        if (not isinstance(result["default_data"], list) or
-            len(result["default_data"]) == 0 or
+        if (len(result["default_data"]) == 0 or
             (
+                isinstance(result["default_data"], dict) and
                 "response" in result["default_data"].keys() and
                 result["default_data"]["response"] == "No Data"
             )):
@@ -331,7 +333,7 @@ class FlusurvLocationFetcher:
 
             # Set season description. This will be overwritten every iteration,
             #  but should always have the same value per epiweek group.
-            data_out[epiweek]["season"] = self.metadata.id_season_map[obs["seasonid"]]
+            data_out[epiweek]["season"] = self.metadata.id_to_season[obs["seasonid"]]
 
             rate = obs["weeklyrate"]
             prev_rate = data_out[epiweek][groupname]
@@ -389,11 +391,11 @@ class FlusurvLocationFetcher:
             elif ageid <= 9:
                 age_group = str(ageid - 2)
             else:
-                age_group = self.metadata.id_group_map["Age"][ageid]
+                age_group = self.metadata.id_to_group["Age"][ageid]
             group = "age_" + age_group
         elif sexid != 0:
-            group = "sex_" + self.metadata.id_group_map["Sex"][sexid]
+            group = "sex_" + self.metadata.id_to_group["Sex"][sexid]
         elif raceid != 0:
-            group = "race_" + self.metadata.id_group_map["Race"][raceid]
+            group = "race_" + self.metadata.id_to_group["Race"][raceid]
 
         return "rate_" + group

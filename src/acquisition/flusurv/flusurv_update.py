@@ -76,11 +76,11 @@ from warnings import warn
 import mysql.connector
 
 # first party
-from delphi.epidata.acquisition.flusurv.flusurv import FlusurvLocationFetcher
 import delphi.operations.secrets as secrets
 from delphi.utils.epidate import EpiDate
 from delphi.utils.epiweek import delta_epiweeks
-from constants import (MAX_AGE_TO_CONSIDER_WEEKS, EXPECTED_GROUPS)
+from .flusurv import FlusurvLocationFetcher
+from .constants import (MAX_AGE_TO_CONSIDER_WEEKS, EXPECTED_GROUPS)
 
 
 def get_rows(cur):

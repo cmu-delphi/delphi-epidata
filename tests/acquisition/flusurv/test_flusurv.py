@@ -4,16 +4,13 @@
 import unittest
 from unittest.mock import (MagicMock, sentinel, patch)
 
-import delphi.epidata.acquisition.flusurv.flusurv as flusurv
+import delphi.epidata.acquisition.flusurv.api as flusurv
 
 # py3tester coverage target
-__test_target__ = "delphi.epidata.acquisition.flusurv.flusurv"
+__test_target__ = "delphi.epidata.acquisition.flusurv.api"
 
 
-# Example location-specific return JSON from CDC GRASP API. Contains
-#  partial data for "network_all" location and season 49.
-network_all_example_data = {
-    'default_data': [
+network_all_example_data = [
         {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 1, 'rate': 20.7, 'weeklyrate': 0.0, 'mmwrid': 2519},
         {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 2, 'rate': 41.3, 'weeklyrate': 0.1, 'mmwrid': 2519},
         {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 1, 'sexid': 0, 'raceid': 0, 'rate': 42, 'weeklyrate': 0.5, 'mmwrid': 2519},
@@ -29,12 +26,46 @@ network_all_example_data = {
         {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 2, 'rate': 39.6, 'weeklyrate': 0.3, 'mmwrid': 2513},
         {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 3, 'rate': 36.0, 'weeklyrate': 0.1, 'mmwrid': 2513},
     ]
-}
 
-# Example metadata response containing "master_lookup" element, used
-#  for mapping between valueids and strata descriptions, and "seasons"
-#  element, used for mapping between seasonids and season year spans.
-metadata = {
+metadata_result = {
+    # Last data update date
+    'loaddatetime': 'Sep 12, 2023',
+    # IDs (network ID + catchment ID) specifying geos and data sources available
+    'catchments': [
+        {'networkid': 1, 'name': 'FluSurv-NET', 'area': 'Entire Network', 'catchmentid': '22', 'beginseasonid': 49, 'endseasonid': 51},
+
+        {'networkid': 2, 'name': 'EIP', 'area': 'California', 'catchmentid': '1', 'beginseasonid': 43, 'endseasonid': 51},
+        {'networkid': 2, 'name': 'EIP', 'area': 'Colorado', 'catchmentid': '2', 'beginseasonid': 43, 'endseasonid': 51},
+        {'networkid': 2, 'name': 'EIP', 'area': 'Connecticut', 'catchmentid': '3', 'beginseasonid': 43, 'endseasonid': 51},
+        {'networkid': 2, 'name': 'EIP', 'area': 'Entire Network', 'catchmentid': '22', 'beginseasonid': 49, 'endseasonid': 51},
+        {'networkid': 2, 'name': 'EIP', 'area': 'Georgia', 'catchmentid': '4', 'beginseasonid': 43, 'endseasonid': 51},
+        {'networkid': 2, 'name': 'EIP', 'area': 'Maryland', 'catchmentid': '7', 'beginseasonid': 43, 'endseasonid': 51},
+        {'networkid': 2, 'name': 'EIP', 'area': 'Minnesota', 'catchmentid': '9', 'beginseasonid': 43, 'endseasonid': 51},
+        {'networkid': 2, 'name': 'EIP', 'area': 'New Mexico', 'catchmentid': '11', 'beginseasonid': 43, 'endseasonid': 51},
+        {'networkid': 2, 'name': 'EIP', 'area': 'New York - Albany', 'catchmentid': '13', 'beginseasonid': 43, 'endseasonid': 51},
+        {'networkid': 2, 'name': 'EIP', 'area': 'New York - Rochester', 'catchmentid': '14', 'beginseasonid': 43, 'endseasonid': 51},
+        {'networkid': 2, 'name': 'EIP', 'area': 'Oregon', 'catchmentid': '17', 'beginseasonid': 43, 'endseasonid': 51},
+        {'networkid': 2, 'name': 'EIP', 'area': 'Tennessee', 'catchmentid': '20', 'beginseasonid': 43, 'endseasonid': 51},
+
+        {'networkid': 3, 'name': 'IHSP', 'area': 'Entire Network', 'catchmentid': '22', 'beginseasonid': 49, 'endseasonid': 51},
+        {'networkid': 3, 'name': 'IHSP', 'area': 'Idaho', 'catchmentid': '6', 'beginseasonid': 49, 'endseasonid': 51},
+        {'networkid': 3, 'name': 'IHSP', 'area': 'Iowa', 'catchmentid': '5', 'beginseasonid': 49, 'endseasonid': 51},
+        {'networkid': 3, 'name': 'IHSP', 'area': 'Michigan', 'catchmentid': '8', 'beginseasonid': 49, 'endseasonid': 51},
+        {'networkid': 3, 'name': 'IHSP', 'area': 'Ohio', 'catchmentid': '15', 'beginseasonid': 50, 'endseasonid': 51},
+        {'networkid': 3, 'name': 'IHSP', 'area': 'Oklahoma', 'catchmentid': '16', 'beginseasonid': 49, 'endseasonid': 50},
+        {'networkid': 3, 'name': 'IHSP', 'area': 'Rhode Island', 'catchmentid': '18', 'beginseasonid': 50, 'endseasonid': 51},
+        {'networkid': 3, 'name': 'IHSP', 'area': 'South Dakota', 'catchmentid': '19', 'beginseasonid': 49, 'endseasonid': 49},
+        {'networkid': 3, 'name': 'IHSP', 'area': 'Utah', 'catchmentid': '21', 'beginseasonid': 50, 'endseasonid': 51}
+    ],
+    # "seasons" element, used for mapping between seasonids and season year spans.
+    'seasons': [
+        {'description': 'Season 2006-07', 'enabled': True, 'endweek': 2387, 'label': '2006-07', 'seasonid': 46, 'startweek': 2336, 'IncludeWeeklyRatesAndStrata': True},
+        {'description': 'Season 2003-04', 'enabled': True, 'endweek': 2231, 'label': '2003-04', 'seasonid': 43, 'startweek': 2179, 'IncludeWeeklyRatesAndStrata': True},
+        {'description': 'Season 2009-10', 'enabled': True, 'endweek': 2544, 'label': '2009-10', 'seasonid': 49, 'startweek': 2488, 'IncludeWeeklyRatesAndStrata': True},
+        {'description': 'Season 2012-13', 'enabled': True, 'endweek': 2700, 'label': '2012-13', 'seasonid': 52, 'startweek': 2649, 'IncludeWeeklyRatesAndStrata': True},
+        {'description': 'Season 2015-16', 'enabled': True, 'endweek': 2857, 'label': '2015-16', 'seasonid': 55, 'startweek': 2806, 'IncludeWeeklyRatesAndStrata': True},
+    ],
+    # "master_lookup" element, used for mapping between valueids and strata descriptions
     'master_lookup': [
         {'Variable': 'Age', 'valueid': 1, 'parentid': 97, 'Label': '0-4 yr', 'Color_HexValue': '#d19833', 'Enabled': True},
         {'Variable': 'Age', 'valueid': 2, 'parentid': 97, 'Label': '5-17 yr', 'Color_HexValue': '#707070', 'Enabled': True},
@@ -63,16 +94,28 @@ metadata = {
 
         {'Variable': None, 'valueid': 0, 'parentid': 0, 'Label': 'Overall', 'Color_HexValue': '#000000', 'Enabled': True},
     ],
-    'seasons': [
-        {'description': 'Season 2006-07', 'enabled': True, 'endweek': 2387, 'label': '2006-07', 'seasonid': 46, 'startweek': 2336, 'IncludeWeeklyRatesAndStrata': True},
-        {'description': 'Season 2003-04', 'enabled': True, 'endweek': 2231, 'label': '2003-04', 'seasonid': 43, 'startweek': 2179, 'IncludeWeeklyRatesAndStrata': True},
-        {'description': 'Season 2009-10', 'enabled': True, 'endweek': 2544, 'label': '2009-10', 'seasonid': 49, 'startweek': 2488, 'IncludeWeeklyRatesAndStrata': True},
-        {'description': 'Season 2012-13', 'enabled': True, 'endweek': 2700, 'label': '2012-13', 'seasonid': 52, 'startweek': 2649, 'IncludeWeeklyRatesAndStrata': True},
-        {'description': 'Season 2015-16', 'enabled': True, 'endweek': 2857, 'label': '2015-16', 'seasonid': 55, 'startweek': 2806, 'IncludeWeeklyRatesAndStrata': True},
-    ],
+    'default_data': network_all_example_data,
+    # Mapping each mmwrid to a week number, season, and date. Could use this instead of our current epoch-based function.
+    'mmwr': [
+        {'mmwrid': 2828, 'weekend': '2016-03-12', 'weeknumber': 10, 'weekstart': '2016-03-06', 'year': 2016, 'yearweek': 201610, 'seasonid': 55, 'label': 'Mar-12-2016', 'weekendlabel': 'Mar 12, 2016', 'weekendlabel2': 'Mar-12-2016'},
+        {'mmwrid': 2885, 'weekend': '2017-04-15', 'weeknumber': 15, 'weekstart': '2017-04-09', 'year': 2017, 'yearweek': 201715, 'seasonid': 56, 'label': 'Apr-15-2017', 'weekendlabel': 'Apr 15, 2017', 'weekendlabel2': 'Apr-15-2017'},
+        {'mmwrid': 2911, 'weekend': '2017-10-14', 'weeknumber': 41, 'weekstart': '2017-10-08', 'year': 2017, 'yearweek': 201741, 'seasonid': 57, 'label': 'Oct-14-2017', 'weekendlabel': 'Oct 14, 2017', 'weekendlabel2': 'Oct-14-2017'},
+        {'mmwrid': 2928, 'weekend': '2018-02-10', 'weeknumber': 6, 'weekstart': '2018-02-04', 'year': 2018, 'yearweek': 201806, 'seasonid': 57, 'label': 'Feb-10-2018', 'weekendlabel': 'Feb 10, 2018', 'weekendlabel2': 'Feb-10-2018'},
+        {'mmwrid': 2974, 'weekend': '2018-12-29', 'weeknumber': 52, 'weekstart': '2018-12-23', 'year': 2018, 'yearweek': 201852, 'seasonid': 58, 'label': 'Dec-29-2018', 'weekendlabel': 'Dec 29, 2018', 'weekendlabel2': 'Dec-29-2018'},
+        {'mmwrid': 3031, 'weekend': '2020-02-01', 'weeknumber': 5, 'weekstart': '2020-01-26', 'year': 2020, 'yearweek': 202005, 'seasonid': 59, 'label': 'Feb-01-2020', 'weekendlabel': 'Feb 01, 2020', 'weekendlabel2': 'Feb-01-2020'},
+        {'mmwrid': 3037, 'weekend': '2020-03-14', 'weeknumber': 11, 'weekstart': '2020-03-08', 'year': 2020, 'yearweek': 202011, 'seasonid': 59, 'label': 'Mar-14-2020', 'weekendlabel': 'Mar 14, 2020', 'weekendlabel2': 'Mar-14-2020'},
+        {'mmwrid': 3077, 'weekend': '2020-12-19', 'weeknumber': 51, 'weekstart': '2020-12-13', 'year': 2020, 'yearweek': 202051, 'seasonid': 60, 'label': 'Dec-19-2020', 'weekendlabel': 'Dec 19, 2020', 'weekendlabel2': 'Dec-19-2020'},
+        {'mmwrid': 3140, 'weekend': '2022-03-05', 'weeknumber': 9, 'weekstart': '2022-02-27', 'year': 2022, 'yearweek': 202209, 'seasonid': 61, 'label': 'Mar-05-2022', 'weekendlabel': 'Mar 05, 2022', 'weekendlabel2': 'Mar-05-2022'},
+        {'mmwrid': 3183, 'weekend': '2022-12-31', 'weeknumber': 52, 'weekstart': '2022-12-25', 'year': 2022, 'yearweek': 202252, 'seasonid': 62, 'label': 'Dec-31-2022', 'weekendlabel': 'Dec 31, 2022', 'weekendlabel2': 'Dec-31-2022'},
+    ]
 }
 
-# Map derived from "master_lookup" dictionary above mapping between valueids
+# Example location-specific return JSON from CDC GRASP API. Contains
+#  partial data for "network_all" location and season 49.
+location_api_result = {'default_data': network_all_example_data}
+
+
+# Map derived from "master_lookup" dictionary above, mapping between valueids
 #  by type and cleaned-up descriptions (no spaces or capital letters, etc)
 id_label_map = {
     "Age": {
@@ -106,6 +149,12 @@ id_label_map = {
 }
 
 
+with patch(__test_target__ + ".fetch_json",
+    return_value = metadata_result) as MockFlusurvMetadata:
+    metadata_fetcher = flusurv.FlusurvMetadata(52)
+    api_fetcher = flusurv.FlusurvLocationFetcher(52)
+
+
 class FunctionTests(unittest.TestCase):
     """Tests each function individually."""
 
@@ -131,15 +180,18 @@ class FunctionTests(unittest.TestCase):
         # Test epoch
         self.assertEqual(flusurv.mmwrid_to_epiweek(2179), 200340)
 
-        metadata = flusurv.fetch_flusurv_metadata()
-        for mmwr in metadata["mmwr"]:
+        for mmwr in metadata_result["mmwr"]:
             self.assertEqual(flusurv.mmwrid_to_epiweek(mmwr["mmwrid"]), mmwr["yearweek"])
 
-    @patch(__test_target__ + ".fetch_flusurv_location")
+    @patch(__test_target__ + ".fetch_json")
     def test_get_data(self, MockFlusurvLocation):
-        MockFlusurvLocation.return_value = network_all_example_data
+        MockFlusurvLocation.return_value = location_api_result
 
-        self.assertEqual(flusurv.get_data("network_all", [30, 49], metadata), {
+        season_api_fetcher = api_fetcher
+        season_api_fetcher.metadata.seasonids = [30, 49]
+        season_api_fetcher.metadata.location_to_code = {"network_all": (1, 22)}
+
+        self.assertEqual(season_api_fetcher.get_data("network_all"), {
                 201014: {"rate_race_white": 0.0, "rate_race_black": 0.1, "rate_age_0": 0.5, "season": "2009-10"},
                 200940: {"rate_race_white": 1.7, "rate_race_black": 3.6, "rate_race_hispaniclatino": 4.8, "season": "2009-10"},
                 201011: {"rate_race_white": 0.1, "rate_race_black": 0.5, "season": "2009-10"},
@@ -148,8 +200,8 @@ class FunctionTests(unittest.TestCase):
         )
 
     def test_group_by_epiweek(self):
-        input_data = network_all_example_data
-        self.assertEqual(flusurv.group_by_epiweek(input_data, metadata), {
+        input_data = metadata_result
+        self.assertEqual(api_fetcher._group_by_epiweek(input_data), {
                 201014: {"rate_race_white": 0.0, "rate_race_black": 0.1, "rate_age_0": 0.5, "season": "2009-10"},
                 200940: {"rate_race_white": 1.7, "rate_race_black": 3.6, "rate_race_hispaniclatino": 4.8, "season": "2009-10"},
                 201011: {"rate_race_white": 0.1, "rate_race_black": 0.5, "season": "2009-10"},
@@ -165,35 +217,31 @@ class FunctionTests(unittest.TestCase):
         }
 
         with self.assertWarnsRegex(Warning, "warning: Multiple rates seen for 201014"):
-            flusurv.group_by_epiweek(duplicate_input_data, metadata)
+            api_fetcher._group_by_epiweek(duplicate_input_data)
 
         with self.assertRaisesRegex(Exception, "no data found"):
-            flusurv.group_by_epiweek({"default_data": []}, metadata)
+            api_fetcher._group_by_epiweek({"default_data": []})
 
     @patch('builtins.print')
     def test_group_by_epiweek_print_msgs(self, mock_print):
-        input_data = network_all_example_data
-        flusurv.group_by_epiweek(input_data, metadata)
+        input_data = metadata_result
+        api_fetcher._group_by_epiweek(input_data)
         mock_print.assert_called_with("found data for 4 epiweeks")
 
     def test_get_current_issue(self):
-        input_data = {
-            'loaddatetime': 'Sep 12, 2023'
-        }
-        self.assertEqual(flusurv.get_current_issue(input_data), 202337)
+        self.assertEqual(metadata_fetcher._get_current_issue(), 202337)
 
     def test_make_id_label_map(self):
-        self.assertEqual(flusurv.make_id_label_map(metadata), id_label_map)
+        self.assertEqual(metadata_fetcher._make_id_group_map(), id_label_map)
 
     def test_make_id_season_map(self):
-        self.assertEqual(flusurv.make_id_season_map(metadata), {
+        self.assertEqual(metadata_fetcher._make_id_season_map(), {
             46: '2006-07',
             43: '2003-04',
             49: '2009-10',
             52: '2012-13',
             55: '2015-16',
         })
-
     def test_groupids_to_name(self):
         ids = (
             (1, 0, 0),
@@ -213,11 +261,11 @@ class FunctionTests(unittest.TestCase):
         ]
 
         for (ageid, sexid, raceid), expected in zip(ids, expected_list):
-            self.assertEqual(flusurv.groupids_to_name(ageid, sexid, raceid, id_label_map), expected)
+            self.assertEqual(api_fetcher._groupid_to_name(ageid, sexid, raceid), expected)
 
         with self.assertRaisesRegex(ValueError, "Ageid cannot be 6"):
-            flusurv.groupids_to_name(6, 0, 0, id_label_map)
-        with self.assertRaisesRegex(AssertionError, "At most one groupid can be non-zero"):
-            flusurv.groupids_to_name(1, 1, 0, id_label_map)
-            flusurv.groupids_to_name(0, 1, 1, id_label_map)
-            flusurv.groupids_to_name(1, 1, 1, id_label_map)
+            api_fetcher._groupid_to_name(6, 0, 0)
+        with self.assertRaisesRegex(ValueError, "Expect at least two of three group ids to be 0"):
+            api_fetcher._groupid_to_name(1, 1, 0)
+            api_fetcher._groupid_to_name(0, 1, 1)
+            api_fetcher._groupid_to_name(1, 1, 1)

@@ -100,7 +100,7 @@ map_nonstandard_names = {"New York - Albany": "NY_albany", "New York - Rochester
 MAP_REGION_NAMES_TO_ABBR = {**map_state_names, **map_nonstandard_names}
 
 MAP_ENTIRE_NETWORK_NAMES = {
-	"FluSurv-Net": "network_all",
+	"FluSurv-NET": "network_all",
 	"EIP": "network_eip",
 	"IHSP": "network_ihsp"
 }
