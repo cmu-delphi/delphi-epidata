@@ -137,30 +137,19 @@ class FlusurvMetadata:
     def _make_location_to_code_map(self):
         """Create a map for all currently available FluSurv locations from names to codes"""
         location_to_code = dict()
-        unseen_locations = []
-
         for location in self.metadata["catchments"]:
             # "area" is the long-form region (California, etc), and "name" is
             # the network/data source type (IHSP, EIP, etc)
             location_name = self._location_name_to_abbr(location["area"], location["name"])
-            if location["endseasonid"] in self.seasonids:
-                if location_name in location_to_code.keys():
-                    raise Exception(
-                        f"catchment {location_name} already seen, but " +
-                        "we expect catchments to be unique"
-                    )
-
-                location_to_code[location_name] = (
-                    location["networkid"], location["catchmentid"]
+            if location_name in location_to_code.keys():
+                raise Exception(
+                    f"catchment {location_name} already seen, but " +
+                    "we expect catchments to be unique"
                 )
-            else:
-                unseen_locations.append(location_name)
 
-        print(
-            f"location(s) {unseen_locations} not included in this issue " +
-            "because they don't include sufficiently recent data"
-        )
-
+            location_to_code[location_name] = (
+                location["networkid"], location["catchmentid"]
+            )
         return location_to_code
 
     def fetch_location_to_code_map(self):
@@ -333,7 +322,7 @@ class FlusurvLocationFetcher:
 
             # Set season description. This will be overwritten every iteration,
             #  but should always have the same value per epiweek group.
-            data_out[epiweek]["season"] = self.metadata.id_to_season[obs["seasonid"]]
+            data_out[epiweek]["season"] = self.metadata.id_to_season[obs["seasonid"].strip()]
 
             rate = obs["weeklyrate"]
             prev_rate = data_out[epiweek][groupname]
