@@ -59,11 +59,13 @@ metadata_result = {
     ],
     # "seasons" element, used for mapping between seasonids and season year spans.
     'seasons': [
-        {'description': 'Season 2006-07', 'enabled': True, 'endweek': 2387, 'label': '2006-07', 'seasonid': 46, 'startweek': 2336, 'IncludeWeeklyRatesAndStrata': True},
         {'description': 'Season 2003-04', 'enabled': True, 'endweek': 2231, 'label': '2003-04', 'seasonid': 43, 'startweek': 2179, 'IncludeWeeklyRatesAndStrata': True},
+        {'description': 'Season 2006-07', 'enabled': True, 'endweek': 2387, 'label': '2006-07', 'seasonid': 46, 'startweek': 2336, 'IncludeWeeklyRatesAndStrata': True},
         {'description': 'Season 2009-10', 'enabled': True, 'endweek': 2544, 'label': '2009-10', 'seasonid': 49, 'startweek': 2488, 'IncludeWeeklyRatesAndStrata': True},
-        {'description': 'Season 2012-13', 'enabled': True, 'endweek': 2700, 'label': '2012-13', 'seasonid': 52, 'startweek': 2649, 'IncludeWeeklyRatesAndStrata': True},
-        {'description': 'Season 2015-16', 'enabled': True, 'endweek': 2857, 'label': '2015-16', 'seasonid': 55, 'startweek': 2806, 'IncludeWeeklyRatesAndStrata': True},
+        {'description': 'Season 2021-22', 'enabled': True, 'endweek': 3170, 'label': '2021-22', 'seasonid': 61, 'startweek': 3119, 'IncludeWeeklyRatesAndStrata': False},
+        {'description': 'Season 2022-23', 'enabled': True, 'endweek': 3222, 'label': '2022-23', 'seasonid': 62, 'startweek': 3171, 'IncludeWeeklyRatesAndStrata': False},
+        # sic
+        {'description': 'Season 2023-24 ', 'enabled': True, 'endweek': 3274, 'label': '2023-24', 'seasonid': 63, 'startweek': 3223, 'IncludeWeeklyRatesAndStrata': False},
     ],
     # "master_lookup" element, used for mapping between valueids and strata descriptions
     'master_lookup': [
@@ -117,7 +119,7 @@ location_api_result = {'default_data': network_all_example_data}
 
 # Map derived from "master_lookup" dictionary above, mapping between valueids
 #  by type and cleaned-up descriptions (no spaces or capital letters, etc)
-id_label_map = {
+id_group_map = {
     "Age": {
         1: "0t4",
         2: "5t17",
@@ -148,6 +150,30 @@ id_label_map = {
     },
 }
 
+catchment_name_map = {
+    "CA": (2, 1),
+    "CO": (2, 2),
+    "CT": (2, 3),
+    "GA": (2, 4),
+    "IA": (3, 5),
+    "ID": (3, 6),
+    "MD": (2, 7),
+    "MI": (3, 8),
+    "MN": (2, 9),
+    "NM": (2, 11),
+    "NY_albany": (2, 13),
+    "NY_rochester": (2, 14),
+    "OH": (3, 15),
+    "OK": (3, 16),
+    "OR": (2, 17),
+    "RI": (3, 18),
+    "SD": (3, 19),
+    "TN": (2, 20),
+    "UT": (3, 21),
+    "network_all": (1, 22),
+    "network_eip": (2, 22),
+    "network_ihsp": (3, 22),
+}
 
 with patch(__test_target__ + ".fetch_json",
     return_value = metadata_result) as MockFlusurvMetadata:
@@ -183,13 +209,31 @@ class FunctionTests(unittest.TestCase):
         for mmwr in metadata_result["mmwr"]:
             self.assertEqual(flusurv.mmwrid_to_epiweek(mmwr["mmwrid"]), mmwr["yearweek"])
 
+    def test_metadata_attributes(self):
+        self.assertEqual(metadata_fetcher.metadata, metadata_result)
+        self.assertEqual(metadata_fetcher.issue, 202337)
+        self.assertEqual(metadata_fetcher.max_age_weeks, 52)
+        self.assertEqual(metadata_fetcher.seasonids, {61, 62, 63})
+
+        self.assertEqual(metadata_fetcher.location_to_code, catchment_name_map)
+        self.assertEqual(metadata_fetcher.locations, catchment_name_map.keys())
+
+        self.assertEqual(metadata_fetcher.id_to_group, id_group_map)
+        self.assertEqual(metadata_fetcher.id_to_season, {
+            43: '2003-04',
+            46: '2006-07',
+            49: '2009-10',
+            61: '2021-22',
+            62: '2022-23',
+            63: '2023-24',
+        })
+
     @patch(__test_target__ + ".fetch_json")
     def test_get_data(self, MockFlusurvLocation):
         MockFlusurvLocation.return_value = location_api_result
 
         season_api_fetcher = api_fetcher
         season_api_fetcher.metadata.seasonids = [30, 49]
-        season_api_fetcher.metadata.location_to_code = {"network_all": (1, 22)}
 
         self.assertEqual(season_api_fetcher.get_data("network_all"), {
                 201014: {"rate_race_white": 0.0, "rate_race_black": 0.1, "rate_age_0": 0.5, "season": "2009-10"},
@@ -228,20 +272,6 @@ class FunctionTests(unittest.TestCase):
         api_fetcher._group_by_epiweek(input_data)
         mock_print.assert_called_with("found data for 4 epiweeks")
 
-    def test_get_current_issue(self):
-        self.assertEqual(metadata_fetcher._get_current_issue(), 202337)
-
-    def test_make_id_label_map(self):
-        self.assertEqual(metadata_fetcher._make_id_group_map(), id_label_map)
-
-    def test_make_id_season_map(self):
-        self.assertEqual(metadata_fetcher._make_id_season_map(), {
-            46: '2006-07',
-            43: '2003-04',
-            49: '2009-10',
-            52: '2012-13',
-            55: '2015-16',
-        })
     def test_groupids_to_name(self):
         ids = (
             (1, 0, 0),

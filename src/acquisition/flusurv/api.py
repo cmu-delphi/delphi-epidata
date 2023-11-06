@@ -148,7 +148,7 @@ class FlusurvMetadata:
                 )
 
             location_to_code[location_name] = (
-                location["networkid"], location["catchmentid"]
+                int(location["networkid"]), int(location["catchmentid"])
             )
         return location_to_code
 
@@ -198,7 +198,7 @@ class FlusurvMetadata:
         """Create a map from seasonid to season description, in the format "YYYY-YY" """
         id_to_label = defaultdict(lambda: defaultdict(lambda: None))
         for season in self.metadata["seasons"]:
-            id_to_label[season["seasonid"]] = season["label"]
+            id_to_label[season["seasonid"]] = season["label"].strip()
 
         return id_to_label
 
@@ -318,7 +318,7 @@ class FlusurvLocationFetcher:
 
             # Set season description. This will be overwritten every iteration,
             #  but should always have the same value per epiweek group.
-            data_out[epiweek]["season"] = self.metadata.id_to_season[obs["seasonid"].strip()]
+            data_out[epiweek]["season"] = self.metadata.id_to_season[obs["seasonid"]]
 
             rate = obs["weeklyrate"]
             prev_rate = data_out[epiweek][groupname]
