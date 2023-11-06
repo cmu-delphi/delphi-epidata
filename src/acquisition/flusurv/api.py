@@ -152,9 +152,6 @@ class FlusurvMetadata:
             )
         return location_to_code
 
-    def fetch_location_to_code_map(self):
-        return self.location_to_code
-
     def _get_current_issue(self):
         """
         Extract the current issue from the FluSurv metadata result.
@@ -264,8 +261,7 @@ class FlusurvLocationFetcher:
                 "response" in result["default_data"].keys() and
                 result["default_data"]["response"] == "No Data"
             )):
-            raise Exception(f"No data was returned from the API for {location}" +
-                "but we expect it to be available for some recent dates")
+            warn(f"No data was returned from the API for {location}")
         return result
 
     def _group_by_epiweek(self, data):
