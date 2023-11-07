@@ -2,6 +2,7 @@
 
 # standard library
 import unittest
+from collections import defaultdict
 from unittest.mock import (MagicMock, sentinel, patch)
 
 import delphi.epidata.acquisition.flusurv.api as flusurv
@@ -228,6 +229,37 @@ class FunctionTests(unittest.TestCase):
             63: '2023-24',
         })
 
+    def test_geo_name_conversion(self):
+        geos = (
+            "California",
+            "Utah",
+            "Entire Network",
+            "Entire Network",
+            "Entire Network",
+            "New York - Albany",
+            "New York - Rochester",
+        )
+        networks = (
+            "FluSurv-NET",
+            "FluSurv-NET",
+            "FluSurv-NET",
+            "IHSP",
+            "EIP",
+            "FluSurv-NET",
+        )
+        expected_list = [
+            "CA",
+            "UT",
+            "network_all",
+            "network_ihsp",
+            "network_eip",
+            "NY_albany",
+            "NY_rochester",
+        ]
+
+        for (geo, network), expected in zip(zip(geos, networks), expected_list):
+            self.assertEqual(metadata_fetcher._location_name_to_abbr(geo, network), expected)
+
     @patch(__test_target__ + ".fetch_json")
     def test_get_data(self, MockFlusurvLocation):
         MockFlusurvLocation.return_value = location_api_result
@@ -237,19 +269,38 @@ class FunctionTests(unittest.TestCase):
 
         self.assertEqual(season_api_fetcher.get_data("network_all"), {
                 201014: {"rate_race_white": 0.0, "rate_race_black": 0.1, "rate_age_0": 0.5, "season": "2009-10"},
-                200940: {"rate_race_white": 1.7, "rate_race_black": 3.6, "rate_race_hispaniclatino": 4.8, "season": "2009-10"},
+                200940: {"rate_race_white": 1.7, "rate_race_black": 3.6, "rate_race_hisp": 4.8, "season": "2009-10"},
                 201011: {"rate_race_white": 0.1, "rate_race_black": 0.5, "season": "2009-10"},
-                201008: {"rate_race_white": 0.1, "rate_race_black": 0.3, "rate_race_hispaniclatino": 0.1, "season": "2009-10"},
+                201008: {"rate_race_white": 0.1, "rate_race_black": 0.3, "rate_race_hisp": 0.1, "season": "2009-10"},
             }
         )
+
+    @patch(__test_target__ + ".fetch_json")
+    def test_fetch_flusurv_location(self, MockFlusurvLocation):
+        # API returns normal result
+        MockFlusurvLocation.return_value = location_api_result
+        self.assertEqual(api_fetcher._fetch_flusurv_location("network_all"), location_api_result)
+
+        # API returns empty result formatted normally
+        empty_expected_result = {"default_data": []}
+        MockFlusurvLocation.return_value = empty_expected_result
+        with self.assertWarnsRegex(Warning, "No data was returned from the API for network_all"):
+            empty_data_result = api_fetcher._fetch_flusurv_location("network_all")
+        self.assertEqual(empty_data_result, empty_expected_result)
+
+        # API returns "no data" result
+        MockFlusurvLocation.return_value = {"default_data": {"response": "No Data"}}
+        with self.assertWarnsRegex(Warning, "No data was returned from the API for network_all"):
+            no_data_result = api_fetcher._fetch_flusurv_location("network_all")
+        self.assertEqual(no_data_result, empty_expected_result)
 
     def test_group_by_epiweek(self):
         input_data = metadata_result
         self.assertEqual(api_fetcher._group_by_epiweek(input_data), {
                 201014: {"rate_race_white": 0.0, "rate_race_black": 0.1, "rate_age_0": 0.5, "season": "2009-10"},
-                200940: {"rate_race_white": 1.7, "rate_race_black": 3.6, "rate_race_hispaniclatino": 4.8, "season": "2009-10"},
+                200940: {"rate_race_white": 1.7, "rate_race_black": 3.6, "rate_race_hisp": 4.8, "season": "2009-10"},
                 201011: {"rate_race_white": 0.1, "rate_race_black": 0.5, "season": "2009-10"},
-                201008: {"rate_race_white": 0.1, "rate_race_black": 0.3, "rate_race_hispaniclatino": 0.1, "season": "2009-10"},
+                201008: {"rate_race_white": 0.1, "rate_race_black": 0.3, "rate_race_hisp": 0.1, "season": "2009-10"},
             }
         )
 
@@ -263,8 +314,10 @@ class FunctionTests(unittest.TestCase):
         with self.assertWarnsRegex(Warning, "warning: Multiple rates seen for 201014"):
             api_fetcher._group_by_epiweek(duplicate_input_data)
 
-        with self.assertRaisesRegex(Exception, "no data found"):
-            api_fetcher._group_by_epiweek({"default_data": []})
+        self.assertEqual(
+            api_fetcher._group_by_epiweek({"default_data": []}),
+            defaultdict(lambda: defaultdict(lambda: None))
+        )
 
     @patch('builtins.print')
     def test_group_by_epiweek_print_msgs(self, mock_print):
@@ -285,8 +338,8 @@ class FunctionTests(unittest.TestCase):
             "rate_age_0",
             "rate_age_7",
             "rate_sex_female",
-            "rate_race_hispaniclatino",
-            "rate_race_americanindianalaskanative",
+            "rate_race_hisp",
+            "rate_race_natamer",
             "rate_overall",
         ]
 
