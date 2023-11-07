@@ -79,7 +79,7 @@ import mysql.connector
 import delphi.operations.secrets as secrets
 from delphi.utils.epidate import EpiDate
 from delphi.utils.epiweek import delta_epiweeks
-from .flusurv import FlusurvLocationFetcher
+from .api import FlusurvLocationFetcher
 from .constants import (MAX_AGE_TO_CONSIDER_WEEKS, EXPECTED_GROUPS)
 
 
