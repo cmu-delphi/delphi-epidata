@@ -48,7 +48,8 @@ import requests
 # first party
 from delphi.utils.epidate import EpiDate
 from delphi.utils.epiweek import delta_epiweeks
-from .constants import (MAP_REGION_NAMES_TO_ABBR, MAP_ENTIRE_NETWORK_NAMES)
+from .constants import (MAP_REGION_NAMES_TO_ABBR, MAP_ENTIRE_NETWORK_NAMES,
+    SEX_GROUPS)
 
 
 def fetch_json(path, payload, call_count=1, requests_impl=requests):
@@ -233,7 +234,9 @@ class FlusurvLocationFetcher:
 
         # extract
         print("[reformatting flusurv result...]")
-        data_out = self._group_by_epiweek(data_in)
+        data_out = self._add_sex_breakdowns_ut(
+            self._group_by_epiweek(data_in), location
+        )
 
         # return
         print(f"[successfully fetched data for {location}]")
@@ -391,3 +394,13 @@ class FlusurvLocationFetcher:
             group = "race_" + self.metadata.id_to_group["Race"][raceid]
 
         return "rate_" + group
+
+    def _add_sex_breakdowns_ut(self, data, location):
+        # UT doesn't have sex breakdowns available at least for 2022-23. Fill
+        # in to avoid downstream errors.
+        if location == "UT":
+            for epiweek in data.keys():
+                for group in SEX_GROUPS:
+                    if group not in data[epiweek].keys():
+                        data[epiweek][group] = None
+        return(data)

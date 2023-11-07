@@ -295,8 +295,7 @@ class FunctionTests(unittest.TestCase):
         self.assertEqual(no_data_result, empty_expected_result)
 
     def test_group_by_epiweek(self):
-        input_data = metadata_result
-        self.assertEqual(api_fetcher._group_by_epiweek(input_data), {
+        self.assertEqual(api_fetcher._group_by_epiweek(metadata_result), {
                 201014: {"rate_race_white": 0.0, "rate_race_black": 0.1, "rate_age_0": 0.5, "season": "2009-10"},
                 200940: {"rate_race_white": 1.7, "rate_race_black": 3.6, "rate_race_hisp": 4.8, "season": "2009-10"},
                 201011: {"rate_race_white": 0.1, "rate_race_black": 0.5, "season": "2009-10"},
@@ -321,8 +320,7 @@ class FunctionTests(unittest.TestCase):
 
     @patch('builtins.print')
     def test_group_by_epiweek_print_msgs(self, mock_print):
-        input_data = metadata_result
-        api_fetcher._group_by_epiweek(input_data)
+        api_fetcher._group_by_epiweek(metadata_result)
         mock_print.assert_called_with("found data for 4 epiweeks")
 
     def test_groupids_to_name(self):
@@ -352,3 +350,20 @@ class FunctionTests(unittest.TestCase):
             api_fetcher._groupid_to_name(1, 1, 0)
             api_fetcher._groupid_to_name(0, 1, 1)
             api_fetcher._groupid_to_name(1, 1, 1)
+
+    def test_groupids_to_name(self):
+        input_data = api_fetcher._group_by_epiweek(metadata_result)
+        self.assertEqual(api_fetcher._add_sex_breakdowns_ut(input_data, "network_all"), {
+                201014: {"rate_race_white": 0.0, "rate_race_black": 0.1, "rate_age_0": 0.5, "season": "2009-10"},
+                200940: {"rate_race_white": 1.7, "rate_race_black": 3.6, "rate_race_hisp": 4.8, "season": "2009-10"},
+                201011: {"rate_race_white": 0.1, "rate_race_black": 0.5, "season": "2009-10"},
+                201008: {"rate_race_white": 0.1, "rate_race_black": 0.3, "rate_race_hisp": 0.1, "season": "2009-10"},
+            }
+        )
+        self.assertEqual(api_fetcher._add_sex_breakdowns_ut(input_data, "UT"), {
+                201014: {"rate_race_white": 0.0, "rate_race_black": 0.1, "rate_age_0": 0.5, "season": "2009-10", "rate_sex_female": None, "rate_sex_male": None},
+                200940: {"rate_race_white": 1.7, "rate_race_black": 3.6, "rate_race_hisp": 4.8, "season": "2009-10", "rate_sex_female": None, "rate_sex_male": None},
+                201011: {"rate_race_white": 0.1, "rate_race_black": 0.5, "season": "2009-10", "rate_sex_female": None, "rate_sex_male": None},
+                201008: {"rate_race_white": 0.1, "rate_race_black": 0.3, "rate_race_hisp": 0.1, "season": "2009-10", "rate_sex_female": None, "rate_sex_male": None},
+            }
+        )

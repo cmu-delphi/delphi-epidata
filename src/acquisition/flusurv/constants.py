@@ -56,7 +56,7 @@ In addition to the new age, race, and sex breakdowns, the group id for overall
 reporting has changed from 6 to 0. Age ids 1-5 and 7-9 retain the same the
 same meanings; age id 6 is not reported.
 """
-EXPECTED_GROUPS = (
+HISTORICAL_GROUPS = (
     "rate_overall",
 
     "rate_age_0",
@@ -67,7 +67,8 @@ EXPECTED_GROUPS = (
     "rate_age_5",
     "rate_age_6",
     "rate_age_7",
-
+)
+NEW_AGE_GROUPS = (
     "rate_age_18t29",
     "rate_age_30t39",
     "rate_age_40t49",
@@ -75,16 +76,19 @@ EXPECTED_GROUPS = (
     "rate_age_12t17",
     "rate_age_lt18",
     "rate_age_gte18",
-
+)
+RACE_GROUPS = (
     "rate_race_white",
     "rate_race_black",
     "rate_race_hisp",
     "rate_race_asian",
     "rate_race_natamer",
-
+)
+SEX_GROUPS = (
     "rate_sex_male",
     "rate_sex_female"
 )
+EXPECTED_GROUPS = HISTORICAL_GROUPS + NEW_AGE_GROUPS + RACE_GROUPS + SEX_GROUPS
 
 
 MAX_AGE_TO_CONSIDER_WEEKS = 52
