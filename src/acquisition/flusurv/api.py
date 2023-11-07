@@ -273,7 +273,7 @@ class FlusurvLocationFetcher:
                 "response" in result["default_data"].keys() and
                 result["default_data"]["response"] == "No Data"
             )):
-            warn(f"No data was returned from the API for {location}")
+            warn(f"warning: No data was returned from the API for {location}")
             # Return empty obs with right format to avoid downstream errors
             return {"default_data": []}
 
