@@ -148,9 +148,13 @@ def update(fetcher, location, test_mode=False):
         # Remove the season description since we also store it in each epiweek obj
         unexpected_groups = data[epiweek].keys() - EXPECTED_GROUPS - {"season"}
         if len(missing_expected_groups) != 0:
-            raise Exception(
+            # Not all groups are available for all geos, e.g. UT in 2022-23 doesn't have
+            # sex breakdowns.
+            warn(
                 f"{location} {epiweek} data is missing group(s) {missing_expected_groups}"
             )
+            for group in missing_expected_groups:
+                data[epiweek][group] = None
         if len(unexpected_groups) != 0:
             raise Exception(
                 f"{location} {epiweek} data includes new group(s) {unexpected_groups}"
