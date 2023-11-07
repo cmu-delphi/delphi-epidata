@@ -181,7 +181,7 @@ class FlusurvMetadata:
             # Skip "overall" group
             if group["Variable"] is None:
                 continue
-            id_to_label[group["Variable"]][group["valueid"]] = group["Label"].replace(
+            clean_group_label = group["Label"].replace(
                 " ", ""
             ).replace(
                 "/", ""
@@ -189,10 +189,22 @@ class FlusurvMetadata:
                 "-", "t"
             ).replace(
                 "yr", ""
+            ).replace(
+                "<", "lt" # less than
+            ).replace(
+                ">=", "gte" # greater or equal to
             ).lower()
 
-        return id_to_label
+            if clean_group_label == "hispaniclatino":
+                clean_group_label = "hisp"
+            elif clean_group_label == "asianpacificislander":
+                clean_group_label = "asian"
+            elif clean_group_label == "americanindianalaskanative":
+                clean_group_label = "natamer"
 
+            id_to_label[group["Variable"]][group["valueid"]] = clean_group_label
+
+        return id_to_label
 
     def _make_id_season_map(self):
         """Create a map from seasonid to season description, in the format "YYYY-YY" """
