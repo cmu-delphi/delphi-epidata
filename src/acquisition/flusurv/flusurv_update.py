@@ -109,108 +109,30 @@ def update(fetcher, location, test_mode=False):
     print(f"rows before: {int(rows1)}")
 
     # SQL for insert/update
-    sql = """
+    nonrelease_fields = ("issue", "epiweek", "location", "lag", "season") + EXPECTED_GROUPS
+    other_field_names = ", ".join(
+        f"`{name}`" for name in nonrelease_fields
+    )
+    other_field_values = ", ".join(
+        f"%({name})s" for name in nonrelease_fields
+    )
+    # Updates on duplicate key only for release date + signal fields, not metadata.
+    other_field_coalesce = ", ".join(
+        f"`{name}` = coalesce(%({name})s, `{name}`)" for name in EXPECTED_GROUPS
+    )
+
+    sql = f"""
     INSERT INTO `flusurv` (
       `release_date`,
-      `issue`,
-      `epiweek`,
-      `location`,
-      `lag`,
-      `season`,
-
-      `rate_overall`,
-
-      `rate_age_0`,
-      `rate_age_1`,
-      `rate_age_2`,
-      `rate_age_3`,
-      `rate_age_4`,
-      `rate_age_5`,
-      `rate_age_6`,
-      `rate_age_7`,
-
-      `rate_age_18t29`,
-      `rate_age_30t39`,
-      `rate_age_40t49`,
-      `rate_age_5t11`,
-      `rate_age_12t17`,
-      `rate_age_lt18`,
-      `rate_age_gte18`,
-
-      `rate_race_white`,
-      `rate_race_black`,
-      `rate_race_hisp`,
-      `rate_race_asian`,
-      `rate_race_natamer`,
-
-      `rate_sex_male`,
-      `rate_sex_female`
+      {other_field_names}
     )
     VALUES (
       %(release_date)s,
-      %(issue)s,
-      %(epiweek)s,
-      %(location)s,
-      %(lag)s,
-      %(season)s,
-
-      %(rate_overall)s,
-
-      %(rate_age_0)s,
-      %(rate_age_1)s,
-      %(rate_age_2)s,
-      %(rate_age_3)s,
-      %(rate_age_4)s,
-      %(rate_age_5)s,
-      %(rate_age_6)s,
-      %(rate_age_7)s,
-
-      %(rate_age_18t29)s,
-      %(rate_age_30t39)s,
-      %(rate_age_40t49)s,
-      %(rate_age_5t11)s,
-      %(rate_age_12t17)s,
-      %(rate_age_<18)s,
-      %(rate_age_>=18)s,
-
-      %(rate_race_white)s,
-      %(rate_race_black)s,
-      %(rate_race_hispaniclatino)s,
-      %(rate_race_asianpacificislander)s,
-      %(rate_race_americanindianalaskanative)s,
-
-      %(rate_sex_male)s,
-      %(rate_sex_female)s
+      {other_field_values}
     )
     ON DUPLICATE KEY UPDATE
       `release_date` = least(`release_date`, %(release_date)s),
-      `rate_overall` = coalesce(%(rate_overall)s, `rate_overall`),
-
-      `rate_age_0` = coalesce(%(rate_age_0)s, `rate_age_0`),
-      `rate_age_1` = coalesce(%(rate_age_1)s, `rate_age_1`),
-      `rate_age_2` = coalesce(%(rate_age_2)s, `rate_age_2`),
-      `rate_age_3` = coalesce(%(rate_age_3)s, `rate_age_3`),
-      `rate_age_4` = coalesce(%(rate_age_4)s, `rate_age_4`),
-      `rate_age_5` = coalesce(%(rate_age_5)s, `rate_age_5`),
-      `rate_age_6` = coalesce(%(rate_age_6)s, `rate_age_6`),
-      `rate_age_7` = coalesce(%(rate_age_7)s, `rate_age_7`),
-
-      `rate_age_18t29` = coalesce(%(rate_age_18t29)s, `rate_age_18t29`),
-      `rate_age_30t39` = coalesce(%(rate_age_30t39)s, `rate_age_30t39`),
-      `rate_age_40t49` = coalesce(%(rate_age_40t49)s, `rate_age_40t49`),
-      `rate_age_5t11` = coalesce(%(rate_age_5t11)s, `rate_age_5t11`),
-      `rate_age_12t17` = coalesce(%(rate_age_12t17)s, `rate_age_12t17`),
-      `rate_age_lt18` = coalesce(%(rate_age_<18)s, `rate_age_lt18`),
-      `rate_age_gte18` = coalesce(%(rate_age_>=18)s, `rate_age_gte18`),
-
-      `rate_race_white` = coalesce(%(rate_race_white)s, `rate_race_white`),
-      `rate_race_black` = coalesce(%(rate_race_black)s, `rate_race_black`),
-      `rate_race_hisp` = coalesce(%(rate_race_hispaniclatino)s, `rate_race_hisp`),
-      `rate_race_asian` = coalesce(%(rate_race_asianpacificislander)s, `rate_race_asian`),
-      `rate_race_natamer` = coalesce(%(rate_race_americanindianalaskanative)s, `rate_race_natamer`),
-
-      `rate_sex_male` = coalesce(%(rate_sex_male)s, `rate_sex_male`),
-      `rate_sex_female` = coalesce(%(rate_sex_female)s, `rate_sex_female`)
+      {other_field_coalesce}
     """
 
     # insert/update each row of data (one per epiweek)
