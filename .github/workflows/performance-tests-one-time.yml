@@ -1,9 +1,9 @@
-name: One-time performance testing - 26th October 2023
+name: One-time performance testing - 8th November 2023
 
-# Run "At every 30th minute on day-of-month 26 in October"
+# Run "At every 30th minute on day-of-month 8 in November"
 on:
   schedule:
-    - cron: '*/30 * 26 10 *'
+    - cron: '*/30 * 8 11 *'
 
 # Add some extra perms to comment on a PR
 permissions:
@@ -65,6 +65,8 @@ jobs:
           path: delphi-admin
       - name: Build & run Locust
         continue-on-error: true # sometimes ~2-5 queries fail, we shouldn't end the run if that's the case
+        env:
+          PERFTEST_API_KEY: ${{secrets.PERFTEST_API_KEY}}
         run: |
           cd delphi-admin/load-testing/locust
           docker build -t locust .
