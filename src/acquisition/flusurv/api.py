@@ -274,6 +274,9 @@ class FlusurvLocationFetcher:
                 result["default_data"]["response"] == "No Data"
             )):
             warn(f"No data was returned from the API for {location}")
+            # Return empty obs with right format to avoid downstream errors
+            return {"default_data": []}
+
         return result
 
     def _group_by_epiweek(self, data):
@@ -301,10 +304,6 @@ class FlusurvLocationFetcher:
             }
         """
         data = data["default_data"]
-
-        # Sanity check the input. We expect to see some epiweeks
-        if len(data) == 0:
-            raise Exception("no data found")
 
         # Create output object
         # First layer of keys is epiweeks. Second layer of keys is groups
@@ -344,10 +343,6 @@ class FlusurvLocationFetcher:
                 warn((f"warning: Multiple rates seen for {epiweek} "
                        f"{groupname}, but previous value {prev_rate} does not "
                        f"equal new value {rate}. Using the first value."))
-
-        # Sanity check the input. We expect to have populated our dictionary
-        if len(data_out.keys()) == 0:
-            raise Exception("no data loaded")
 
         print(f"found data for {len(data_out.keys())} epiweeks")
 
