@@ -26,6 +26,9 @@ Pandemic"](https://www.pnas.org/topic/548) in *PNAS*:
 
 Research publications using the survey data include:
 
+- W. Dempsey (2023). [Addressing selection bias and measurement error in
+  COVID-19 case count data using auxiliary information](https://doi.org/10.1214/23-AOAS1744).
+  *Annals of Applied Statistics* 17 (4), 2903-2923.
 - Ma, M.Z., Chen, S.X. (2023). [Beyond the surface: accounting for confounders
   in understanding the link between collectivism and COVID-19 pandemic in the
   United States](https://doi.org/10.1186/s12889-023-16384-2). *BMC Public
@@ -33,7 +36,7 @@ Research publications using the survey data include:
 - C.K. Ettman, E. Badillo Goicoechea, and E.A. Stuart (2023). [Evolution of
   depression and anxiety over the COVID-19 pandemic and across demographic
   groups in a large sample of U.S. adults](https://doi.org/10.1016/j.focus.2023.100140).
-  *AJPM Focus*.
+  *AJPM Focus* 2 (4), 100140.
 - M. Rubinstein, Z. Branson, and E.H. Kennedy (2023). [Heterogeneous
   interventional effects with multiple mediators: Semiparametric and
   nonparametric approaches](https://doi.org/10.1515/jci-2022-0070). *Journal of
