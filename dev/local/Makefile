@@ -77,6 +77,7 @@ LOG_REDIS:=delphi_redis_instance_$(NOW).log
 WEB_CONTAINER_ID:=$(shell docker ps -q --filter 'name=delphi_web_epidata')
 DATABASE_CONTAINER_ID:=$(shell docker ps -q --filter 'name=delphi_database_epidata')
 REDIS_CONTAINER_ID:=$(shell docker ps -q --filter 'name=delphi_redis')
+ENV_FILE:=repos/delphi/delphi-epidata/.env
 
 M1=
 ifeq ($(shell uname -smp), Darwin arm64 arm)
@@ -106,6 +107,7 @@ web:
 	@# see https://github.com/tiangolo/meinheld-gunicorn-docker#module_name
 	@docker run --rm -p 127.0.0.1:10080:80 \
 		$(M1) \
+		--env-file $(ENV_FILE) \
 		--env "MODULE_NAME=delphi.epidata.server.main" \
 		--env "SQLALCHEMY_DATABASE_URI=$(sqlalchemy_uri)" \
 		--env "FLASK_SECRET=abc" --env "FLASK_PREFIX=/epidata" --env "LOG_DEBUG" \
@@ -170,7 +172,7 @@ redis:
 		--name delphi_redis delphi_redis >$(LOG_REDIS) 2>&1 &
 
 .PHONY=all
-all: db web py redis
+all: env db web py redis
 
 .PHONY=test
 test:
@@ -211,3 +213,7 @@ sql:
 .PHONY=clean
 clean:
 	@docker images -f "dangling=true" -q | xargs docker rmi >/dev/null 2>&1
+
+.PHONY=env
+env:
+	@touch $(ENV_FILE)
