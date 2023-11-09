@@ -116,7 +116,7 @@ jobs:
     needs: build
     # only on main and dev branch
     # TODO: #1112 Remove `|| github.ref == 'refs/heads/api-keys'` after transition to production status.
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/api-keys'
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/ds/dev-no-aprinter'
 
     runs-on: ubuntu-latest
     steps:
