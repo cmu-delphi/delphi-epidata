@@ -388,3 +388,13 @@ The command above maps two local directories into the container:
 - `/repos/delphi/delphi-epidata/src`: Just the source code, which forms the
   container's `delphi.epidata` python package.
 
+## instrumentation with Sentry
+
+Delphi uses [Sentry](https://sentry.io/welcome/) in production for debugging, APM, and other observability purposes. You can instrument your local environment if you want to take advantage of Sentry's features during the development process. In most cases this option is available to internal Delphi team members only.
+
+The bare minimum to set up instrumentation is to supply the DSN for the [epidata-api](https://cmu-delphi.sentry.io/projects/epidata-api/?project=4506123377442816) Sentry project to the application environment.
+
+- You can get the DSN from the Sentry [project's keys config](https://cmu-delphi.sentry.io/settings/projects/epidata-api/keys/), or by asking someone in the prodsys, DevOps, or sysadmin space.
+- Once you have the DSN, add it to your local `.env` file and rebuild your containers to start sending telemetry to Sentry.
+
+Additional internal documentation for Sentry can be found [here](https://bookstack.delphi.cmu.edu/books/systems-handbook/page/sentry).
