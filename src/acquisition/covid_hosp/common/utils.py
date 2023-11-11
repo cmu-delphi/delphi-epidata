@@ -188,7 +188,7 @@ class Utils:
       Whether a new dataset was acquired.
     """
     logger = database.logger()
-    
+
     metadata = network.fetch_metadata(logger=logger)
     datasets = []
     # daily runs specify no bounds; patching runs specify at least one bound
