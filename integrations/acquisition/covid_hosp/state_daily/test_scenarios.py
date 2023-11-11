@@ -59,7 +59,8 @@ class AcquisitionTests(unittest.TestCase):
       # acquire sample data into local database
       # mock out network calls to external hosts
       with self.subTest(name='first acquisition'), \
-          patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()) as mock_fetch_meta, \
+          patch.object(Network, 'fetch_metadata',
+                       return_value=self.test_utils.load_sample_metadata("metadata.csv")) as mock_fetch_meta, \
           patch.object(Network, 'fetch_dataset', side_effect=[
             self.test_utils.load_sample_dataset("dataset0.csv"), # dataset for 3/13
             self.test_utils.load_sample_dataset("dataset0.csv")  # dataset for 3/15
@@ -90,7 +91,8 @@ class AcquisitionTests(unittest.TestCase):
 
       # re-acquisition of the same dataset should be a no-op
       with self.subTest(name='second acquisition'), \
-          patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()) as mock_fetch_meta, \
+          patch.object(Network, 'fetch_metadata',
+                       return_value=self.test_utils.load_sample_metadata("metadata.csv")) as mock_fetch_meta, \
           patch.object(Network, 'fetch_dataset', side_effect=[
             self.test_utils.load_sample_dataset("dataset0.csv"),
             self.test_utils.load_sample_dataset("dataset0.csv")
