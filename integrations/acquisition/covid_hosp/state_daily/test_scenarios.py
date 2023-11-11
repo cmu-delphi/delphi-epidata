@@ -148,7 +148,7 @@ class AcquisitionTests(unittest.TestCase):
         self.assertEqual(row['total_patients_hospitalized_confirmed_influenza_covid_coverage'], 56)
         self.assertIsNone(row['critical_staffing_shortage_today_no'])
 
-        # should have data from 03-16 00:00:01AM, dataset4.csv
+        # should have data from 03-16 00:00:01AM
         row = response['epidata'][1]
         self.assertEqual(row['state'], 'WY')
         self.assertEqual(row['date'], 20201210)
