@@ -18,12 +18,12 @@ from ._limiter import limiter, apply_limit
 SENTRY_DSN = os.environ.get('SENTRY_DSN')
 if SENTRY_DSN:
     sentry_sdk.init(
-        dsn=SENTRY_DSN,
-        traces_sample_rate=float(os.environ.get('SENTRY_TRACES_SAMPLE_RATE', 1.0)),
-        profiles_sample_rate=float(os.environ.get('SENTRY_PROFILES_SAMPLE_RATE', 1.0)),
-        environment=str(os.environ.get('SENTRY_ENVIRONMENT', 'development')),
-        debug=str(os.environ.get('SENTRY_DEBUG', 'True')),
-        attach_stacktrace=str(os.environ.get('SENTRY_ATTACH_STACKTRACE', 'True'))
+        dsn = SENTRY_DSN,
+        environment = os.environ.get('SENTRY_ENVIRONMENT', 'development'),
+        profiles_sample_rate = float(os.environ.get('SENTRY_PROFILES_SAMPLE_RATE', 1.0)),
+        traces_sample_rate = float(os.environ.get('SENTRY_TRACES_SAMPLE_RATE', 1.0)),
+        attach_stacktrace = os.environ.get('SENTRY_ATTACH_STACKTRACE', 'False').lower() in ('true', '1', 't'),
+        debug = os.environ.get('SENTRY_DEBUG', 'False').lower() in ('true', '1', 't')
     )
 
 
