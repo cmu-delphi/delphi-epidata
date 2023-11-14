@@ -123,11 +123,9 @@ Here's what we add to each client:
     def fluview_meta():
       """Fetch FluView metadata."""
       # Set up request
-      params = {
-        'endpoint': 'fluview_meta',
-      }
+      params = {}
       # Make the API call
-      return Epidata._request(params)
+      return Epidata._request("fluview_meta", params)
     ```
 
 - [`delphi_epidata.R`](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R)

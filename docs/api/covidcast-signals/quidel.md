@@ -15,6 +15,8 @@ grand_parent: COVIDcast Main Endpoint
 1. TOC
 {:toc}
 
+## Accessibility: Delphi-internal only
+
 ## COVID-19 Tests
 
 * **Earliest issue available:** July 29, 2020 

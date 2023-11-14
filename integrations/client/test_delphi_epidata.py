@@ -11,7 +11,7 @@ from aiohttp.client_exceptions import ClientResponseError
 
 # third party
 import delphi.operations.secrets as secrets
-from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import main as update_covidcast_meta_cache
+from delphi.epidata.maintenance.covidcast_meta_cache_updater import main as update_covidcast_meta_cache
 from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase, CovidcastTestRow, FIPS, MSA
 from delphi.epidata.client.delphi_epidata import Epidata
 from delphi_utils import Nans
@@ -24,9 +24,9 @@ nmv = Nans.NOT_MISSING.value
 def fake_epidata_endpoint(func):
   """This can be used as a decorator to enable a bogus Epidata endpoint to return 404 responses."""
   def wrapper(*args):
-    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/fake_api.php'
+    Epidata.BASE_URL = 'http://delphi_web_epidata/fake_epidata'
     func(*args)
-    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata'
   return wrapper
 
 class DelphiEpidataPythonClientTests(CovidcastBase):
@@ -39,7 +39,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     self._db._cursor.execute('update covidcast_meta_cache set timestamp = 0, epidata = "[]"')
 
     # use the local instance of the Epidata API
-    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata'
     Epidata.auth = ('epidata', 'key')
 
     # use the local instance of the epidata database
@@ -65,8 +65,8 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
       )
 
       expected = [
-        row_latest_issue.as_api_compatibility_row_dict(),
-        rows[-1].as_api_compatibility_row_dict()
+        row_latest_issue.as_api_row_dict(),
+        rows[-1].as_api_row_dict()
       ]
 
       self.assertEqual(response['epidata'], expected)
@@ -85,10 +85,10 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
 
       expected = [{
         rows[0].signal: [
-          row_latest_issue.as_api_compatibility_row_dict(ignore_fields=['signal']),
+          row_latest_issue.as_api_row_dict(ignore_fields=['signal']),
         ],
         rows[-1].signal: [
-          rows[-1].as_api_compatibility_row_dict(ignore_fields=['signal']),
+          rows[-1].as_api_row_dict(ignore_fields=['signal']),
         ],
       }]
 
@@ -105,7 +105,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
         **self.params_from_row(rows[0])
       )
 
-      expected = [row_latest_issue.as_api_compatibility_row_dict()]
+      expected = [row_latest_issue.as_api_row_dict()]
 
       # check result
       self.assertEqual(response_1, {
@@ -120,7 +120,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
         **self.params_from_row(rows[0], as_of=rows[1].issue)
       )
 
-      expected = [rows[1].as_api_compatibility_row_dict()]
+      expected = [rows[1].as_api_row_dict()]
 
       # check result
       self.maxDiff=None
@@ -130,6 +130,14 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
         'message': 'success',
       })
 
+    with self.subTest(name='bad as-of date'):
+      # fetch data, specifying as_of
+      as_of_response = Epidata.covidcast(
+        **self.params_from_row(rows[0], as_of="20230101-20230102")
+      )
+      self.assertEqual(as_of_response, {"epidata": [], "message": "not a valid date: 20230101-20230102", "result": -1})
+
+
     with self.subTest(name='request a range of issues'):
       # fetch data, specifying issue range, not lag
       response_2 = Epidata.covidcast(
@@ -137,8 +145,8 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
       )
 
       expected = [
-        rows[0].as_api_compatibility_row_dict(),
-        rows[1].as_api_compatibility_row_dict()
+        rows[0].as_api_row_dict(),
+        rows[1].as_api_row_dict()
       ]
 
       # check result
@@ -154,7 +162,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
         **self.params_from_row(rows[0], lag=2)
       )
 
-      expected = [row_latest_issue.as_api_compatibility_row_dict()]
+      expected = [row_latest_issue.as_api_row_dict()]
 
       # check result
       self.assertDictEqual(response_3, {
@@ -170,7 +178,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
       )
 
       # check result
-      self.assertEqual(response_1, {'message': 'no results', 'result': -2})
+      self.assertEqual(response_1, {'epidata': [], 'message': 'no results', 'result': -2})
 
   @patch('requests.post')
   @patch('requests.get')
@@ -196,7 +204,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
       mock_response = MagicMock()
       mock_response.status_code = 200
       get.side_effect = [JSONDecodeError('Expecting value', "",  0), mock_response]
-      response = Epidata._request(None)
+      response = Epidata._request("")
       self.assertEqual(get.call_count, 2)
       self.assertEqual(response, mock_response.json())
 
@@ -207,7 +215,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
       get.side_effect = [JSONDecodeError('Expecting value', "",  0),
                          JSONDecodeError('Expecting value', "",  0),
                          mock_response]
-      response = Epidata._request(None)
+      response = Epidata._request("")
       self.assertEqual(get.call_count, 2)  # 2 from previous test + 2 from this one
       self.assertEqual(response,
                        {'result': 0, 'message': 'error: Expecting value: line 1 column 1 (char 0)'}
@@ -228,7 +236,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     self._insert_rows(rows)
 
     counties = [
-      rows[i].as_api_compatibility_row_dict() for i in range(N)
+      rows[i].as_api_row_dict() for i in range(N)
     ]
 
     def fetch(geo):
@@ -339,13 +347,15 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
       self.params_from_row(rows[0], source='covidcast'),
       self.params_from_row(rows[1], source='covidcast')
     ]*12, batch_size=10)
-    responses = [i[0] for i in test_output]
-    # check response is same as standard covidcast call, using 24 calls to test batch sizing
+    responses = [i[0]["epidata"] for i in test_output]
+    # check response is same as standard covidcast call (minus fields omitted by the api.php endpoint),
+    # using 24 calls to test batch sizing
+    ignore_fields = CovidcastTestRow._api_row_compatibility_ignore_fields
     self.assertEqual(
       responses,
       [
-        Epidata.covidcast(**self.params_from_row(rows[0])),
-        Epidata.covidcast(**self.params_from_row(rows[1])),
+        [{k: row[k] for k in row.keys() - ignore_fields} for row in Epidata.covidcast(**self.params_from_row(rows[0]))["epidata"]],
+        [{k: row[k] for k in row.keys() - ignore_fields} for row in Epidata.covidcast(**self.params_from_row(rows[1]))["epidata"]],
       ]*12
     )
 
