@@ -139,7 +139,7 @@ def diags():
         serving_host = e
 
     try:
-        db_host = db.execute(text('SELECT @@hostname AS hn')).fetchone()['hn']
+        db_host = db.execute('SELECT @@hostname AS hn').fetchone()['hn']
     except e:
         db_host = e
 
