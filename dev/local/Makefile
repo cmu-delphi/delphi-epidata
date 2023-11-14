@@ -105,6 +105,7 @@ web:
 	@# Run the web server
 	@# MODULE_NAME specifies the location of the `app` variable, the actual WSGI application object to run.
 	@# see https://github.com/tiangolo/meinheld-gunicorn-docker#module_name
+	@touch $(ENV_FILE)
 	@docker run --rm -p 127.0.0.1:10080:80 \
 		$(M1) \
 		--env-file $(ENV_FILE) \
@@ -172,7 +173,7 @@ redis:
 		--name delphi_redis delphi_redis >$(LOG_REDIS) 2>&1 &
 
 .PHONY=all
-all: env db web py redis
+all: db web py redis
 
 .PHONY=test
 test:
@@ -213,7 +214,3 @@ sql:
 .PHONY=clean
 clean:
 	@docker images -f "dangling=true" -q | xargs docker rmi >/dev/null 2>&1
-
-.PHONY=env
-env:
-	@touch $(ENV_FILE)
