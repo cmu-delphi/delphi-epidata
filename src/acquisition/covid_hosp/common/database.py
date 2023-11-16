@@ -159,6 +159,26 @@ class Database:
           (%s, %s, %s, %s, %s, NOW())
       ''', (self.table_name, self.hhs_dataset_id, publication_date, revision, meta_json))
 
+  def remove_issues(self, issue_date):
+    # TODO: this is *VERY* incomplete!  SQL statements are never even evaluated!
+    # delete from metadata table where issue date matches
+    a = f"DELETE FROM `covid_hosp_meta` WHERE dataset_name='{self.table_name}' AND publication_date='{issue_date}'"
+    if self.aggregate_key_cols:
+      # TODO: restrict this to just UNIQUE columns from aggregate keys table?
+      # create (empty) `some_temp_table` like `{self.table_name}_key`
+      b = f"CREATE TABLE some_temp_table AS SELECT {self.aggregate_key_cols} FROM `{self.table_name}_key` WHERE FALSE"
+      # save aggregate keys from what we are about to delete
+      c = f"SELECT {self.aggregate_key_cols} INTO some_temp_table FROM `{self.table_name}` WHERE `{self.publication_col_name}`={issue_date} GROUP BY {self.aggregate_key_cols}"
+      # TODO: combine two SQL queries above into one?
+    # delete from main data table where issue matches
+    d = f"DELETE FROM `{self.table_name}` WHERE `{self.publication_col_name}`={issue_date}"
+    if self.aggregate_key_cols:
+      # delete from saved aggregate keys where the key still exists
+      e = f"DELETE FROM some_temp_table JOIN `{self.table_name}` USING ({self.aggregate_key_cols})"
+      # delete from aggregate key table anything left in saved keys (which should be aggregate keys that only existed in the issue we deleted)
+      f = f"DELETE FROM `{self.table_name}_key` JOIN some_temp_table USING ({self.aggregate_key_cols})"
+      g = "DROP TABLE some_temp_table"
+
   def insert_dataset(self, publication_date, dataframe, logger=False):
     """Add a dataset to the database.
 
@@ -193,10 +213,12 @@ class Database:
     sql = f'INSERT INTO `{self.table_name}` (`id`, `{self.publication_col_name}`, {columns}) ' \
           f'VALUES ({value_placeholders}) AS new_values ' \
           f'ON DUPLICATE KEY UPDATE {updates}'
+    sql = f'REPLACE INTO `{self.table_name}` (`id`, `{self.publication_col_name}`, {columns}) VALUES ({value_placeholders})'
     id_and_publication_date = (0, publication_date)
     if logger:
       logger.info('updating values', count=len(dataframe.index))
     n = 0
+    rows_affected = 0
     many_values = []
     with self.new_cursor() as cursor:
       for index, row in dataframe.iterrows():
@@ -212,6 +234,7 @@ class Database:
         if n % 5_000 == 0:
           try:
             cursor.executemany(sql, many_values)
+            rows_affected += cursor.rowcount
             many_values = []
           except Exception as e:
             if logger:
@@ -220,6 +243,8 @@ class Database:
       # insert final batch
       if many_values:
         cursor.executemany(sql, many_values)
+        rows_affected += cursor.rowcount
+      logger.info('rows affected', count=rows_affected)
 
     # deal with non/seldomly updated columns used like a fk table (if this database needs it)
     if hasattr(self, 'AGGREGATE_KEY_COLS'):
