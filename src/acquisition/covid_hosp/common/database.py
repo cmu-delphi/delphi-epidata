@@ -244,7 +244,8 @@ class Database:
       if many_values:
         cursor.executemany(sql, many_values)
         rows_affected += cursor.rowcount
-      logger.info('rows affected', count=rows_affected)
+      if logger:
+        logger.info('rows affected', count=rows_affected)
 
     # deal with non/seldomly updated columns used like a fk table (if this database needs it)
     if hasattr(self, 'AGGREGATE_KEY_COLS'):
