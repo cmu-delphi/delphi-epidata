@@ -1,0 +1,120 @@
+name: "Sync GitHub issue to Jira"
+description: 'This GitHub action creates Jira issue from GitHub issue when GitHub issue is labeled with "jira" label.'
+inputs:
+  webhook-url:
+    description: >
+      Jira integration webhook URL.
+      Store it as a secret as anyone who has access to it will be able to post to your Jira board.
+    required: true
+  label:
+    description: "Label which will trigger a Jira import."
+    required: true
+    default: "jira"
+
+runs:
+  using: "composite"
+  steps:
+    - name: restrict action to labelled issues
+      run: |
+        set -eux
+
+        echo "NeedsJiraUpdate=false" >> $GITHUB_ENV
+
+        if [ ${{ github.event_name }} != "issues" ]; then
+          echo "This action only work on issue events. Please use on: issues to use this action."
+          exit 1
+        fi
+
+        if [ ${{ github.event.issue.pull_request }} ]; then
+          echo "This action only work on issues, not pull requests."
+          exit 0
+        fi
+
+        # Issue creation with label will trigger 2 events and run twice: one create, one labelled.
+        # let just focus on labelling then for creating issues Jira-side.
+        if [ ${{ github.event_name }} == "issues" ] && [ ${{ github.event.action }} == "opened" ]; then
+          echo "Ignoring creation of issues as a label will trigger a second event."
+          exit 0
+        fi
+
+        # We only operate on labelled issues or issues that are just unlabeled with our desired label
+        ## check if one label of labels is our jira label
+        toconsider=${{ contains(github.event.issue.labels.*.name, inputs.label) }}
+        ## second chance, this has just been unlabeled and needs to be deleted on Jira
+        if [ ${{ github.event.action }} == "unlabeled" ] && [ ${{ github.event.label.name }} == ${{ inputs.label }} ]; then
+          toconsider=true
+        fi
+        if [ "${toconsider}" == false ]; then
+          echo "Our desired label not found on issue or not unlabeled, skipping"
+          exit 0
+        fi
+
+        # And finally, for the "labeled" event, we are only interested if the new added label is our desired one.
+        if [ ${{ github.event.action }} == "labeled" ] && [ ${{ github.event.label.name }} != ${{ inputs.label }} ]; then
+          echo "Not interested in this action, skipping"
+          exit 0
+        fi
+
+        # last one wins
+        echo "NeedsJiraUpdate=true" >> $GITHUB_ENV
+      shell: bash
+
+    - name: "Update jira"
+      if: ${{ env.NeedsJiraUpdate == 'true' }}
+      env:
+        # ID is the html url to keep a link between systems as there is no way to force an ID on Jira side.
+        id: ${{ github.event.issue.html_url }}
+        title: ${{ github.event.issue.title }}
+        body: ${{ github.event.issue.body }}
+        author: ${{ github.event.issue.user.login }}
+      run: |
+        set -eux
+
+        # Convert markdown to JIRA using mistletoe package which is available starting with impish.
+        # Since GH runners only have LTS versions it's safe to only check for focal which doesn't have the package.
+        if [ $(lsb_release -c -s) == "focal" ]; then
+          echo "Converting Markdown to JIRA is only possible starting with Ubuntu 22.04 (jammy). Pushing verbatim content to JIRA..."
+        else
+          TMPDIR=$(mktemp -d)
+          trap 'rm -rf -- "$TMPDIR"' EXIT
+
+          sudo apt install -y python3-mistletoe
+          echo ${body} > $TMPDIR/body.md
+          body=$(PYTHONPATH=/usr/share/doc/python3-mistletoe mistletoe -r examples.jira_renderer.JIRARenderer $TMPDIR/body.md)
+        fi
+
+        description="${body}
+
+
+        GitHub URL: ${id}.
+
+        Opened by ${author}."
+
+        # Choose Jira action based on event type and action.
+        action=""
+        if [ ${{ github.event_name }} == "issues" ]; then
+          action=Update
+          if [ ${{ github.event.action }} == "labeled" ]; then
+            action=Create
+          elif [ ${{ github.event.action }} == "reopened" ]; then
+            action=Reopen
+          elif [ ${{ github.event.action }} == "deleted" ] || [ ${{ github.event.action }} == "unlabeled" ]; then
+            # Note: deleting issue from GH is not supported ATM as there is no more label attached. unlabeled is supported.
+            action=Delete
+          elif [ ${{ github.event.action }} == "closed" ]; then
+            action=Close
+          fi
+        fi
+
+        echo "PUSHING: $id $action $title $description"
+
+        # Push to Jira as a json data format.
+        data=$(jq -n \
+                  --arg id "$id" \
+                  --arg action "$action" \
+                  --arg title "$title" \
+                  --arg description "$description" \
+                  '{data: {id: $id, action: $action, title: $title, description: $description}}')
+        curl -X POST -H 'Content-type: application/json' --data "${data}" '${{ inputs.webhook-url }}'
+
+      shell: bash
