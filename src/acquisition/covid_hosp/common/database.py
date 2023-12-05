@@ -205,7 +205,7 @@ class Database:
       dataframe.loc[:, csv_name] = dataframe[csv_name].map(self.columns_and_types[csv_name].dtype)
 
     col_names = [f'`{i.sql_name}`' for i in dataframe_columns_and_types + self.additional_fields]
-    value_placeholders = ', '.join(['%s'] * (2 + len(columns))) # extra 2 for `id` and `self.publication_col_name` cols
+    value_placeholders = ', '.join(['%s'] * (2 + len(col_names))) # extra 2 for `id` and `self.publication_col_name` cols
     columnstring = ', '.join(col_names)
     sql = f'REPLACE INTO `{self.table_name}` (`id`, `{self.publication_col_name}`, {columnstring}) VALUES ({value_placeholders})'
     id_and_publication_date = (0, publication_date)
