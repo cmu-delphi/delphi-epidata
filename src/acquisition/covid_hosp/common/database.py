@@ -184,15 +184,16 @@ class Database:
     for csv_name in self.key_columns:
       dataframe.loc[:, csv_name] = dataframe[csv_name].map(self.columns_and_types[csv_name].dtype)
 
-    num_columns = 2 + len(dataframe_columns_and_types) + len(self.additional_fields)
-    value_placeholders = ', '.join(['%s'] * num_columns)
-    columns = ', '.join(f'`{i.sql_name}`' for i in dataframe_columns_and_types + self.additional_fields)
-    sql = f'INSERT INTO `{self.table_name}` (`id`, `{self.publication_col_name}`, {columns}) ' \
-          f'VALUES ({value_placeholders})'
+    col_names = [f'`{i.sql_name}`' for i in dataframe_columns_and_types + self.additional_fields]
+    value_placeholders = ', '.join(['%s'] * (2 + len(col_names))) # extra 2 for `id` and `self.publication_col_name` cols
+    columnstring = ', '.join(col_names)
+    sql = f'REPLACE INTO `{self.table_name}` (`id`, `{self.publication_col_name}`, {columnstring}) VALUES ({value_placeholders})'
     id_and_publication_date = (0, publication_date)
+    num_values = len(dataframe.index)
     if logger:
-      logger.info('updating values', count=len(dataframe.index))
+      logger.info('updating values', count=num_values)
     n = 0
+    rows_affected = 0
     many_values = []
     with self.new_cursor() as cursor:
       for index, row in dataframe.iterrows():
@@ -208,6 +209,7 @@ class Database:
         if n % 5_000 == 0:
           try:
             cursor.executemany(sql, many_values)
+            rows_affected += cursor.rowcount
             many_values = []
           except Exception as e:
             if logger:
@@ -216,6 +218,11 @@ class Database:
       # insert final batch
       if many_values:
         cursor.executemany(sql, many_values)
+        rows_affected += cursor.rowcount
+      if logger:
+        # NOTE: REPLACE INTO marks 2 rows affected for a "replace" (one for a delete and one for a re-insert)
+        # which allows us to count rows which were updated
+        logger.info('rows affected', total=rows_affected, updated=rows_affected-num_values)
 
     # deal with non/seldomly updated columns used like a fk table (if this database needs it)
     if hasattr(self, 'AGGREGATE_KEY_COLS'):

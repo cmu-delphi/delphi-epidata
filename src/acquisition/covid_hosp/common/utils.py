@@ -188,33 +188,61 @@ class Utils:
       Whether a new dataset was acquired.
     """
     logger = database.logger()
-    
+
     metadata = network.fetch_metadata(logger=logger)
     datasets = []
-    with database.connect() as db:
-      max_issue = db.get_max_issue(logger=logger)
-
-    older_than = datetime.datetime.today().date() if newer_than is None else older_than
-    newer_than = max_issue if newer_than is None else newer_than
+    # daily runs specify no bounds; patching runs specify at least one bound
+    is_patch_run = any(bound is not None for bound in (newer_than, older_than))
+    if is_patch_run:
+      logger.warn('runing update_dataset() as a "patch" with some specific date bound[s] specified;'
+                  ' this will include and overwrite any revisions that were already collected.',
+                  newer_than=newer_than, older_than=older_than)
+    if older_than is None:
+      # by default, include days "older than tomorrow" which thus includes "today"
+      older_than = (datetime.datetime.today().date() + datetime.timedelta(days=1))
+    if newer_than is None:
+      # by default, include days "newer than the day before the last update"
+      # which thus includes the day of the last update (in case there are new updates
+      # that day which were published after the one we already ingested)
+      with database.connect() as db:
+        max_issue = db.get_max_issue(logger=logger)
+      newer_than = (max_issue - datetime.timedelta(days=1))
+    logger.info("looking up issues in date range", newer_than=newer_than, older_than=older_than)
     daily_issues = Utils.issues_to_fetch(metadata, newer_than, older_than, logger=logger)
     if not daily_issues:
-      logger.info("no new issues; nothing to do")
+      logger.info("no issues found in date range; nothing to do")
       return False
     for issue, revisions in daily_issues.items():
       issue_int = int(issue.strftime("%Y%m%d"))
-      # download the dataset and add it to the database
-      dataset = Utils.merge_by_key_cols([network.fetch_dataset(url, logger=logger) for url, _ in revisions],
-                                        db.KEY_COLS,
-                                        logger=logger)
-      # add metadata to the database
+      # download dataset(s) and save associated metadata
+      dataset_list = []
       all_metadata = []
       for url, index in revisions:
-        all_metadata.append((url, metadata.loc[index].reset_index().to_json()))
+        with database.connect() as db:
+          already_in_db = db.contains_revision(url)
+        if already_in_db:
+          logger.info(f"already collected revision: {url}")
+        if is_patch_run or not already_in_db:
+          logger.info(f"including dataset revision: {url}")
+          dataset_list.append(network.fetch_dataset(url, logger=logger))
+          all_metadata.append((url, metadata.loc[index].reset_index().to_json()))
+      if not dataset_list:
+        # we already had everything for this issue or the issue was empty:
+        # move on to the next issue
+        continue
+      dataset = Utils.merge_by_key_cols(dataset_list,
+                                        database.KEY_COLS,
+                                        logger=logger)
       datasets.append((
         issue_int,
         dataset,
         all_metadata
       ))
+    tot_revs = sum(len(revisions) for revisions in daily_issues.values())
+    logger.info(f"{len(daily_issues)} issues checked w/ {tot_revs} revisions, resulting in {len(datasets)} datasets.")
+    if not datasets:
+      logger.info("nothing to do, exiting")
+      return False
     with database.connect() as db:
       for issue_int, dataset, all_metadata in datasets:
         db.insert_dataset(issue_int, dataset, logger=logger)
