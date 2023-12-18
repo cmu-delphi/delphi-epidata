@@ -26,6 +26,9 @@ Pandemic"](https://www.pnas.org/topic/548) in *PNAS*:
 
 Research publications using the survey data include:
 
+- de Vries, M., Kim, J.Y. & Han, H. (2023). [The unequal landscape of civic
+  opportunity in America](https://doi.org/10.1038/s41562-023-01743-1). *Nature
+  Human Behavior*. 
 - E. Tuzhilina, T. J. Hastie, D. J. McDonald, J. K. Tay & R. Tibshirani (2023).
   [Smooth multi-period forecasting with application to prediction of COVID-19
   cases](https://doi.org/10.1080/10618600.2023.2285337). *Journal of Computational
