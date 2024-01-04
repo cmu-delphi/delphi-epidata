@@ -4,7 +4,7 @@ Flask==2.2.5
 Flask-Limiter==3.3.0
 jinja2==3.0.3
 more_itertools==8.4.0
-mysqlclient==2.1.1
+mysqlclient==2.2.1
 orjson==3.4.7
 pandas==1.2.3
 python-dotenv==0.15.0
