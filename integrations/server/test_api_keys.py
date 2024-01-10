@@ -69,7 +69,7 @@ class APIKeysTets(DelphiTestBase):
     def test_multiples_non_allowed_signal(self):
         """Test requests with 2 multiples and non-allowed dashboard signal"""
         params = {
-            "signal": "hospital-admissions:smoothed_adj_covid19_from_claims",
+            "signal": "hospital-admissions:smoothed_covid19",
             "time_type": "day",
             "geo_type": "state",
             "geo_value": "pa,ny",
@@ -83,7 +83,7 @@ class APIKeysTets(DelphiTestBase):
     def test_multiples_mixed_allowed_signal_two_multiples(self):
         """Test requests with 2 multiples and mixed-allowed dashboard signal"""
         params = {
-            "signal": "fb-survey:smoothed_wcli,hospital-admissions:smoothed_adj_covid19_from_claims",
+            "signal": "fb-survey:smoothed_wcli,hospital-admissions:smoothed_covid19",
             "time_type": "day",
             "geo_type": "state",
             "geo_value": "pa",
