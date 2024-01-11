@@ -16,7 +16,7 @@ class ServerTests(unittest.TestCase):
     """Perform per-test setup."""
 
     # use the local instance of the Epidata API
-    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata'
     Epidata.auth = ('epidata', 'key')
 
     # use the local instance of the epidata database

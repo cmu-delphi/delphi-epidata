@@ -14,7 +14,7 @@ from delphi.epidata.maintenance.covidcast_meta_cache_updater import main as upda
 import delphi.operations.secrets as secrets
 
 # use the local instance of the Epidata API
-BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+BASE_URL = 'http://delphi_web_epidata/epidata'
 AUTH = ('epidata', 'key')
 
 
@@ -152,8 +152,7 @@ class CovidcastMetaTests(CovidcastBase):
   @staticmethod
   def _fetch(auth=AUTH, **kwargs):
     params = kwargs.copy()
-    params['endpoint'] = 'covidcast_meta'
-    response = requests.get(BASE_URL, params=params, auth=auth)
+    response = requests.get(f"{BASE_URL}/covidcast_meta", params=params, auth=auth)
     response.raise_for_status()
     return response.json()
 

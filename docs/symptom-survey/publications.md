@@ -26,10 +26,24 @@ Pandemic"](https://www.pnas.org/topic/548) in *PNAS*:
 
 Research publications using the survey data include:
 
+- de Vries, M., Kim, J.Y. & Han, H. (2023). [The unequal landscape of civic
+  opportunity in America](https://doi.org/10.1038/s41562-023-01743-1). *Nature
+  Human Behavior*. 
+- E. Tuzhilina, T. J. Hastie, D. J. McDonald, J. K. Tay & R. Tibshirani (2023).
+  [Smooth multi-period forecasting with application to prediction of COVID-19
+  cases](https://doi.org/10.1080/10618600.2023.2285337). *Journal of Computational
+  and Graphical Statistics*.
+- W. Dempsey (2023). [Addressing selection bias and measurement error in
+  COVID-19 case count data using auxiliary information](https://doi.org/10.1214/23-AOAS1744).
+  *Annals of Applied Statistics* 17 (4), 2903-2923.
+- Ma, M.Z., Chen, S.X. (2023). [Beyond the surface: accounting for confounders
+  in understanding the link between collectivism and COVID-19 pandemic in the
+  United States](https://doi.org/10.1186/s12889-023-16384-2). *BMC Public
+  Health* 23, 1513.
 - C.K. Ettman, E. Badillo Goicoechea, and E.A. Stuart (2023). [Evolution of
   depression and anxiety over the COVID-19 pandemic and across demographic
   groups in a large sample of U.S. adults](https://doi.org/10.1016/j.focus.2023.100140).
-  *AJPM Focus*.
+  *AJPM Focus* 2 (4), 100140.
 - M. Rubinstein, Z. Branson, and E.H. Kennedy (2023). [Heterogeneous
   interventional effects with multiple mediators: Semiparametric and
   nonparametric approaches](https://doi.org/10.1515/jci-2022-0070). *Journal of
@@ -62,7 +76,7 @@ Research publications using the survey data include:
 - Rönn MM, Menzies NA, Salomon JA (2023). [Vaccination and voting patterns in
   the United States: analysis of COVID-19 and flu surveys from 2010 to
   2022](https://doi.org/10.1016/j.amepre.2023.03.001). *American Journal of
-  Preventive Medicine.*
+  Preventive Medicine* 65 (3), 458-466.
 - Taube JC, Susswein Z, Bansal S (2023). [Spatiotemporal Trends in Self-Reported
   Mask-Wearing Behavior in the United States: Analysis of a Large
   Cross-sectional Survey](https://doi.org/10.2196/42128). *JMIR Public Health

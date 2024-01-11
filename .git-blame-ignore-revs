@@ -1,7 +1,5 @@
 # style(black): format cdc acquisition
 980b0b7e80c7923b79e14fee620645e680785703
-# style(black): format covidcast_nowcast acquisition
-9e6ff16f599e8feec34a08dd1bddbc5eae347b55
 # style(black): format ecdc acquisition
 d1141d904da4e62992b97c92d5caebd8fadffd42
 # style(black): format flusurv acquisition

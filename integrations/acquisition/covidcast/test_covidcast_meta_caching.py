@@ -22,7 +22,7 @@ __test_target__ = (
 )
 
 # use the local instance of the Epidata API
-BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+BASE_URL = 'http://delphi_web_epidata/epidata'
 
 
 class CovidcastMetaCacheTests(unittest.TestCase):
@@ -58,6 +58,19 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     secrets.db.host = 'delphi_database_epidata'
     secrets.db.epi = ('user', 'pass')
 
+    epidata_cnx = mysql.connector.connect(
+        user='user',
+        password='pass',
+        host='delphi_database_epidata',
+        database='epidata')
+    epidata_cur = epidata_cnx.cursor()
+
+    epidata_cur.execute("DELETE FROM `api_user`")
+    epidata_cur.execute('INSERT INTO `api_user`(`api_key`, `email`) VALUES("key", "email")')
+    epidata_cnx.commit()
+    epidata_cur.close()
+    epidata_cnx.close()
+
     # use the local instance of the Epidata API
     Epidata.BASE_URL = BASE_URL
     Epidata.auth = ('epidata', 'key')
@@ -69,8 +82,8 @@ class CovidcastMetaCacheTests(unittest.TestCase):
 
   @staticmethod
   def _make_request():
-    params = {'endpoint': 'covidcast_meta', 'cached': 'true'}
-    response = requests.get(Epidata.BASE_URL, params=params, auth=Epidata.auth)
+    params = {'cached': 'true'}
+    response = requests.get(f"{Epidata.BASE_URL}/covidcast_meta", params=params, auth=Epidata.auth)
     response.raise_for_status()
     return response.json()
 

@@ -1,11 +1,13 @@
+import json
 from pathlib import Path
+import socket
 from typing import Dict, List, Set
 
 from flask import Blueprint, make_response, render_template_string, request
 from werkzeug.exceptions import NotFound, Unauthorized
 from werkzeug.utils import redirect
 
-from .._common import log_info_with_request
+from .._common import db, log_info_with_request
 from .._config import ADMIN_PASSWORD, API_KEY_REGISTRATION_FORM_LINK, API_KEY_REMOVAL_REQUEST_LINK, REGISTER_WEBHOOK_TOKEN
 from .._db import WriteSession
 from .._security import resolve_auth_token
@@ -130,6 +132,22 @@ def diags():
     # such as a full current "X-Forwarded-For" path as inserted into headers by intermediate proxies...
     # (but only when initiated purposefully by us to keep junk out of the logs)
     _require_admin()
-    log_info_with_request("diagnostics", headers=request.headers)
-    response_text = f"request path: {request.headers.get('X-Forwarded-For', 'idk')}"
-    return make_response(response_text, 200, {'content-type': 'text/plain'})
+
+    try:
+        serving_host = socket.gethostbyname_ex(socket.gethostname())
+    except e:
+        serving_host = e
+
+    try:
+        db_host = db.execute('SELECT @@hostname AS hn').fetchone()['hn']
+    except e:
+        db_host = e
+
+    log_info_with_request("diagnostics", headers=request.headers, serving_host=serving_host, database_host=db_host)
+
+    response_data = {
+        'request_path': request.headers.get('X-Forwarded-For', 'idfk'),
+        'serving_host': serving_host,
+        'database_host': db_host,
+    }
+    return make_response(json.dumps(response_data), 200, {'content-type': 'text/plain'})

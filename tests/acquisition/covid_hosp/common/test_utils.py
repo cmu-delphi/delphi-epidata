@@ -109,34 +109,54 @@ class UtilsTests(unittest.TestCase):
     mock_connection.insert_metadata.assert_not_called()
     mock_connection.insert_dataset.assert_not_called()
 
-  def test_run_acquire_new_dataset(self):
-    """Acquire a new dataset."""
-
+  def _create_update_mocks(self, contains_revisions):
     mock_network = MagicMock()
     mock_network.fetch_metadata.return_value = \
         self.test_utils.load_sample_metadata()
     fake_dataset = pd.DataFrame({"date": [pd.Timestamp("2020/1/1")], "state": ["ca"]})
     mock_network.fetch_dataset.return_value = fake_dataset
     mock_database = MagicMock()
+    mock_logger = MagicMock()
+    mock_database.logger.return_value = mock_logger
     with mock_database.connect() as mock_connection:
       pass
-    type(mock_connection).KEY_COLS = PropertyMock(return_value=["state", "date"])
+    mock_database.KEY_COLS = ["state", "date"]
     mock_connection.get_max_issue.return_value = pd.Timestamp("1900/1/1")
+    mock_connection.contains_revision.return_value = contains_revisions
+
     with patch.object(Utils, 'issues_to_fetch') as mock_issues:
       mock_issues.return_value = {pd.Timestamp("2021/3/15"): [("url1", pd.Timestamp("2021-03-15 00:00:00")),
                                                               ("url2", pd.Timestamp("2021-03-15 00:00:00"))]}
       result = Utils.update_dataset(database=mock_database, network=mock_network)
 
-    self.assertTrue(result)
+    return (result, mock_connection, mock_logger)
 
-    # should have been called twice
-    mock_connection.insert_metadata.assert_called()
-    assert mock_connection.insert_metadata.call_count == 2
-    # most recent call should be for the final revision at url2
-    args = mock_connection.insert_metadata.call_args[0]
-    self.assertEqual(args[:2], (20210315, "url2"))
-    pd.testing.assert_frame_equal(
-      mock_connection.insert_dataset.call_args[0][1],
-      pd.DataFrame({"state": ["ca"], "date": [pd.Timestamp("2020/1/1")]})
-    )
-    self.assertEqual(mock_connection.insert_dataset.call_args[0][0], 20210315)
+  def test_run_acquire_new_dataset(self):
+    """Acquire a new dataset."""
+
+    with self.subTest(name="new data"):
+      (result, mock_connection, mock_logger) = self._create_update_mocks(False)
+    
+      # for debugging:
+      print(mock_logger.info.call_args_list)
+
+      self.assertTrue(result)
+
+      # should have been called twice
+      mock_connection.insert_metadata.assert_called()
+      assert mock_connection.insert_metadata.call_count == 2
+      # most recent call should be for the final revision at url2
+      args = mock_connection.insert_metadata.call_args[0]
+      self.assertEqual(args[:2], (20210315, "url2"))
+      pd.testing.assert_frame_equal(
+        mock_connection.insert_dataset.call_args[0][1],
+        pd.DataFrame({"state": ["ca"], "date": [pd.Timestamp("2020/1/1")]})
+      )
+      self.assertEqual(mock_connection.insert_dataset.call_args[0][0], 20210315)
+
+    with self.subTest(name="old data"):
+      (result, mock_connection, mock_logger) = self._create_update_mocks(True)
+
+      print(mock_logger.info.call_args_list)
+
+      self.assertFalse(result)

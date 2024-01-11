@@ -37,6 +37,7 @@
 #   test=         Only runs tests in the directories provided here, e.g.
 #                 repos/delphi/delphi-epidata/tests/acquisition/covidcast
 #   sql=          Overrides the default SQL connection string.
+#   rate_limit=   Overrides the default rate limit for API requests.
 
 
 # Set optional argument defaults
@@ -56,6 +57,14 @@ else
 	sqlalchemy_uri:=mysql+mysqldb://user:pass@delphi_database_epidata:3306/epidata
 endif
 
+ifdef rate_limit
+# Notation found here: https://flask-limiter.readthedocs.io/en/stable/#rate-limit-string-notation
+	rate_limit_settings:=--env "RATE_LIMIT=$(rate_limit)"
+else
+# Default behavior is to set the rate limit to "5/hour" for API key tests via this environment variable
+	rate_limit_settings:=--env "TESTING_MODE=True"
+endif
+
 SHELL:=/bin/sh
 
 # Get the Makefile's absolute path: https://stackoverflow.com/a/324782/4784655
@@ -68,6 +77,7 @@ LOG_REDIS:=delphi_redis_instance_$(NOW).log
 WEB_CONTAINER_ID:=$(shell docker ps -q --filter 'name=delphi_web_epidata')
 DATABASE_CONTAINER_ID:=$(shell docker ps -q --filter 'name=delphi_database_epidata')
 REDIS_CONTAINER_ID:=$(shell docker ps -q --filter 'name=delphi_redis')
+ENV_FILE:=repos/delphi/delphi-epidata/.env
 
 M1=
 ifeq ($(shell uname -smp), Darwin arm64 arm)
@@ -95,8 +105,10 @@ web:
 	@# Run the web server
 	@# MODULE_NAME specifies the location of the `app` variable, the actual WSGI application object to run.
 	@# see https://github.com/tiangolo/meinheld-gunicorn-docker#module_name
+	@touch $(ENV_FILE)
 	@docker run --rm -p 127.0.0.1:10080:80 \
 		$(M1) \
+		--env-file $(ENV_FILE) \
 		--env "MODULE_NAME=delphi.epidata.server.main" \
 		--env "SQLALCHEMY_DATABASE_URI=$(sqlalchemy_uri)" \
 		--env "FLASK_SECRET=abc" --env "FLASK_PREFIX=/epidata" --env "LOG_DEBUG" \
@@ -104,6 +116,7 @@ web:
 		--env "REDIS_PASSWORD=1234" \
 		--env "API_KEY_ADMIN_PASSWORD=test_admin_password" \
 		--env "API_KEY_REGISTER_WEBHOOK_TOKEN=abc" \
+		$(rate_limit_settings) \
 		--network delphi-net --name delphi_web_epidata \
 		delphi_web_epidata >$(LOG_WEB) 2>&1 &
 
