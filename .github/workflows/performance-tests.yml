@@ -73,6 +73,8 @@ jobs:
           path: delphi-admin
       - name: Build & run Locust
         continue-on-error: true # sometimes ~2-5 queries fail, we shouldn't end the run if that's the case
+        env:
+          PERFTEST_API_KEY: ${{secrets.PERFTEST_API_KEY}}
         run: |
           cd delphi-admin/load-testing/locust
           docker build -t locust .
