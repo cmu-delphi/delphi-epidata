@@ -4,10 +4,9 @@ Flask==2.2.5
 Flask-Admin==1.6.1
 Flask-Login==0.6.2
 Flask-Limiter==3.3.0
-jinja2==3.0.3
+jinja2==3.1.3
 more_itertools==8.4.0
 mysqlclient==2.1.1
-newrelic
 orjson==3.4.7
 pandas==1.2.3
 python-dotenv==0.15.0
@@ -15,8 +14,9 @@ pyyaml
 redis==3.5.3
 requests==2.31.0
 scipy==1.10.0
+sentry-sdk[flask]
 SQLAlchemy==1.4.40
 structlog==22.1.0
 tenacity==7.0.0
 typing-extensions
-werkzeug==2.2.3
+werkzeug==2.3.8

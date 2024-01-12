@@ -148,7 +148,7 @@ class DatabaseTests(unittest.TestCase):
 
     actual_sql = mock_cursor.executemany.call_args[0][0]
     self.assertIn(
-      'INSERT INTO `test_table` (`id`, `publication_date`, `sql_str_col`, `sql_int_col`, `sql_float_col`)',
+      'REPLACE INTO `test_table` (`id`, `publication_date`, `sql_str_col`, `sql_int_col`, `sql_float_col`)',
       actual_sql)
 
     expected_values = [

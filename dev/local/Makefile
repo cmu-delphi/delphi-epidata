@@ -77,6 +77,7 @@ LOG_REDIS:=delphi_redis_instance_$(NOW).log
 WEB_CONTAINER_ID:=$(shell docker ps -q --filter 'name=delphi_web_epidata')
 DATABASE_CONTAINER_ID:=$(shell docker ps -q --filter 'name=delphi_database_epidata')
 REDIS_CONTAINER_ID:=$(shell docker ps -q --filter 'name=delphi_redis')
+ENV_FILE:=repos/delphi/delphi-epidata/.env
 
 M1=
 ifeq ($(shell uname -smp), Darwin arm64 arm)
@@ -105,8 +106,10 @@ web:
 	@# MODULE_NAME specifies the location of the `app` variable, the actual WSGI application object to run.
 	@# see https://github.com/tiangolo/meinheld-gunicorn-docker#module_name
 	@# To receive Slack notification, please add SLACK_WEBHOOK_URL with proper webhook link to the list of env variables.
+	@touch $(ENV_FILE)
 	@docker run --rm -p 127.0.0.1:10080:80 \
 		$(M1) \
+		--env-file $(ENV_FILE) \
 		--env "MODULE_NAME=delphi.epidata.server.main" \
 		--env "SQLALCHEMY_DATABASE_URI=$(sqlalchemy_uri)" \
 		--env "FLASK_SECRET=abc" --env "FLASK_PREFIX=/epidata" --env "LOG_DEBUG" \

@@ -1,5 +1,9 @@
+import os
 import pathlib
 import logging
+import sentry_sdk
+import socket
+import json
 from typing import Dict, Callable
 
 from flask import request, send_file, Response, send_from_directory, jsonify, make_response
@@ -7,12 +11,24 @@ from flask import request, send_file, Response, send_from_directory, jsonify, ma
 from delphi.epidata.common.logger import get_structured_logger
 
 from ._config import URL_PREFIX, VERSION
-from ._common import app, set_compatibility_mode, log_info_with_request
+from ._common import app, db, set_compatibility_mode, log_info_with_request
 from .endpoints.admin import _require_admin
 from ._exceptions import MissingOrWrongSourceException
 from .endpoints import endpoints
 from .endpoints.admin import *
 from ._limiter import apply_limit
+
+SENTRY_DSN = os.environ.get('SENTRY_DSN')
+if SENTRY_DSN:
+    sentry_sdk.init(
+        dsn = SENTRY_DSN,
+        environment = os.environ.get('SENTRY_ENVIRONMENT', 'development'),
+        profiles_sample_rate = float(os.environ.get('SENTRY_PROFILES_SAMPLE_RATE', 1.0)),
+        traces_sample_rate = float(os.environ.get('SENTRY_TRACES_SAMPLE_RATE', 1.0)),
+        attach_stacktrace = os.environ.get('SENTRY_ATTACH_STACKTRACE', 'False').lower() in ('true', '1', 't'),
+        debug = os.environ.get('SENTRY_DEBUG', 'False').lower() in ('true', '1', 't')
+    )
+
 
 __all__ = ["app"]
 
@@ -62,15 +78,32 @@ def send_lib_file(path: str):
 def send_static(path):
     return send_from_directory("/app/delphi/epidata/server/static", path)
 
-@app.route(f"{URL_PREFIX}/diagnostics", methods=["GET", "PUT", "POST", "DELETE"])
+
+@app.route("/diagnostics", methods=["GET", "PUT", "POST", "DELETE"])
 def diags():
     # allows us to get useful diagnostic information written into server logs,
     # such as a full current "X-Forwarded-For" path as inserted into headers by intermediate proxies...
     # (but only when initiated purposefully by us to keep junk out of the logs)
     _require_admin()
-    log_info_with_request("diagnostics", headers=request.headers)
-    response_text = f"request path: {request.headers.get('X-Forwarded-For', 'idk')}"
-    return make_response(response_text, 200, {"content-type": "text/plain"})
+
+    try:
+        serving_host = socket.gethostbyname_ex(socket.gethostname())
+    except Exception as e:
+        serving_host = e
+
+    try:
+        db_host = db.execute('SELECT @@hostname AS hn').fetchone()['hn']
+    except Exception as e:
+        db_host = e
+
+    log_info_with_request("diagnostics", headers=request.headers, serving_host=serving_host, database_host=db_host)
+
+    response_data = {
+        'request_path': request.headers.get('X-Forwarded-For', 'idfk'),
+        'serving_host': serving_host,
+        'database_host': db_host,
+    }
+    return make_response(json.dumps(response_data), 200, {'content-type': 'text/plain'})
 
 
 if __name__ == "__main__":

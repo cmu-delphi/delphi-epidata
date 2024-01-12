@@ -30,6 +30,10 @@ class DashboardSignals:
       with open(module_dir / 'descriptions.raw.txt', 'r') as f:
         for desc in yaml.safe_load_all(f):
           srcsigs.append( (desc['Id'], desc['Signal']) )
+          if 'Overrides' in desc:
+            for sub_geo in desc['Overrides']:
+              sub_signal = desc['Overrides'][sub_geo]
+              srcsigs.append( (sub_signal['Id'], sub_signal['Signal']) )
 
       source_id = None
       with open(module_dir / 'questions.raw.txt', 'r') as f:
