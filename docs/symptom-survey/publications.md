@@ -26,6 +26,9 @@ Pandemic"](https://www.pnas.org/topic/548) in *PNAS*:
 
 Research publications using the survey data include:
 
+- H. Bui, S. Ekşioğlu, R. Proano, and S. N. Pinkley (2024). [An Analysis of
+  COVID-19 Vaccine Hesitancy in the U.S.](https://doi.org/10.1080/24725854.2024.2301966).
+  *IISE Transactions*.
 - de Vries, M., Kim, J.Y. & Han, H. (2023). [The unequal landscape of civic
   opportunity in America](https://doi.org/10.1038/s41562-023-01743-1). *Nature
   Human Behavior*. 
