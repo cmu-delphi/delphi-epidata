@@ -74,10 +74,10 @@ class Database:
     # connect to the database
     user, password = secrets.db.epi
     connection = mysql_connector_impl.connect(
-      host=secrets.db.host,
-      user=user,
-      password=password,
-      database='epidata')
+        host=secrets.db.host,
+        user=user,
+        password=password,
+        database='epidata')
 
     try:
       # provide the connection to the context manager

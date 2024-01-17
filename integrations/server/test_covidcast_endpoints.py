@@ -294,6 +294,7 @@ class CovidcastEndpointTests(CovidcastBase):
 
     def test_meta(self):
         """Request a signal from the /meta endpoint."""
+
         num_rows = 10
         rows = [CovidcastTestRow.make_default_row(time_value=2020_04_01 + i, value=i, source="fb-survey", signal="smoothed_cli") for i in range(num_rows)]
         self._insert_rows(rows)
@@ -343,6 +344,7 @@ class CovidcastEndpointTests(CovidcastBase):
         #       by _load_data_signals() which attaches a list of signals to each source,
         #       in turn fed by src/server/endpoints/covidcast_utils/db_signals.csv)
         # insert data from two different sources, one restricted/protected (quidel), one not
+
         self._insert_rows([
             CovidcastTestRow.make_default_row(source="quidel", signal="raw_pct_negative"),
             CovidcastTestRow.make_default_row(source="hhs", signal="confirmed_admissions_covid_1d")
