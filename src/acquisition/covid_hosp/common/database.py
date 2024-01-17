@@ -6,7 +6,7 @@ from contextlib import contextmanager
 import math
 
 # third party
-import mysql.connector
+import MySQLdb
 import pandas as pd
 
 # first party
@@ -60,7 +60,7 @@ class Database:
 
   @classmethod
   @contextmanager
-  def connect(database_class, mysql_connector_impl=mysql.connector):
+  def connect(database_class, mysql_connector_impl=None):
     """Connect to a database and provide the connection as a context manager.
 
     As long as the context manager exits normally, the connection's transaction
@@ -73,7 +73,14 @@ class Database:
 
     # connect to the database
     user, password = secrets.db.epi
-    connection = mysql_connector_impl.connect(
+    if mysql_connector_impl is not None:
+      connection = mysql_connector_impl.connect(
+        host=secrets.db.host,
+        user=user,
+        password=password,
+        database='epidata')
+    else:
+      connection = MySQLdb.connect(
         host=secrets.db.host,
         user=user,
         password=password,
