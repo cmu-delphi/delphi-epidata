@@ -70,7 +70,7 @@ import argparse
 import time
 
 # third party
-import mysql.connector
+import MySQLdb
 from apiclient.discovery import build
 
 # first party
@@ -251,7 +251,7 @@ LOCATIONS = [
 def update(locations, terms, first=None, last=None, countries=["US"]):
     # connect to the database
     u, p = secrets.db.epi
-    cnx = mysql.connector.connect(user=u, password=p, database="epidata")
+    cnx = MySQLdb.connect(user=u, password=p, database="epidata")
     cur = cnx.cursor()
 
     def get_num_rows():

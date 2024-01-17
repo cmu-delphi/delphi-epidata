@@ -25,7 +25,7 @@ the automation flow 'New FluView Available'. This will cause, at least:
 import argparse
 
 # third party
-import mysql.connector
+import MySQLdb
 
 # first party
 import delphi.operations.secrets as secrets
@@ -46,7 +46,7 @@ if __name__ == "__main__":
 
     # connect
     u, p = secrets.db.epi
-    cnx = mysql.connector.connect(user=u, password=p, database="epidata", host=secrets.db.host)
+    cnx = MySQLdb.connect(user=u, password=p, database="epidata", host=secrets.db.host)
     cur = cnx.cursor()
 
     # get the last known issue from the automation table `variables`
