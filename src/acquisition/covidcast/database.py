@@ -38,23 +38,16 @@ class Database:
   # TODO: also consider that for composite key tuples, like short_comp_key and long_comp_key as used in delete_batch()
 
 
-  def connect(self, connector_impl=None):
+  def connect(self, connector_impl=MySQLdb):
     """Establish a connection to the database."""
 
     u, p = secrets.db.epi
     self._connector_impl = connector_impl
-    if connector_impl is None:
-      self._connection = MySQLdb.connect(
-          host=secrets.db.host,
-          user=u,
-          password=p,
-          database=Database.DATABASE_NAME)
-    else:
-      self._connection = self._connector_impl.connect(
-          host=secrets.db.host,
-          user=u,
-          password=p,
-          database=Database.DATABASE_NAME)
+    self._connection = self._connector_impl.connect(
+        host=secrets.db.host,
+        user=u,
+        password=p,
+        database=Database.DATABASE_NAME)
     self._cursor = self._connection.cursor()
 
   def commit(self):

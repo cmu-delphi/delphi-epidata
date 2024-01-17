@@ -62,22 +62,15 @@ class Database:
     STATUS_TABLE_NAME = 'dashboard_signal_status'
     COVERAGE_TABLE_NAME = 'dashboard_signal_coverage'
 
-    def __init__(self, connector_impl=None):
+    def __init__(self, connector_impl=MySQLdb):
         """Establish a connection to the database."""
 
         u, p = secrets.db.epi
-        if connector_impl is None:
-            self._connection = MySQLdb.connect(
-                host=secrets.db.host,
-                user=u,
-                password=p,
-                database=Database.DATABASE_NAME)
-        else:
-            self._connection = connector_impl.connect(
-                host=secrets.db.host,
-                user=u,
-                password=p,
-                database=Database.DATABASE_NAME)
+        self._connection = connector_impl.connect(
+            host=secrets.db.host,
+            user=u,
+            password=p,
+            database=Database.DATABASE_NAME)
         self._cursor = self._connection.cursor()
 
     def rowcount(self) -> int:

@@ -60,7 +60,7 @@ class Database:
 
   @classmethod
   @contextmanager
-  def connect(database_class, mysql_connector_impl=None):
+  def connect(database_class, mysql_connector_impl=MySQLdb):
     """Connect to a database and provide the connection as a context manager.
 
     As long as the context manager exits normally, the connection's transaction
@@ -73,18 +73,11 @@ class Database:
 
     # connect to the database
     user, password = secrets.db.epi
-    if mysql_connector_impl is not None:
-      connection = mysql_connector_impl.connect(
-        host=secrets.db.host,
-        user=user,
-        password=password,
-        database='epidata')
-    else:
-      connection = MySQLdb.connect(
-        host=secrets.db.host,
-        user=user,
-        password=password,
-        database='epidata')
+    connection = mysql_connector_impl.connect(
+      host=secrets.db.host,
+      user=user,
+      password=password,
+      database='epidata')
 
     try:
       # provide the connection to the context manager
