@@ -72,7 +72,7 @@ rate_age_7: hospitalization rate for ages 85+
 import argparse
 
 # third party
-import MySQLdb
+import mysql.connector
 
 # first party
 from delphi.epidata.acquisition.flusurv import flusurv
@@ -105,7 +105,7 @@ def update(issue, location_name, test_mode=False):
 
     # connect to the database
     u, p = secrets.db.epi
-    cnx = MySQLdb.connect(host=secrets.db.host, user=u, password=p, database="epidata")
+    cnx = mysql.connector.connect(host=secrets.db.host, user=u, password=p, database="epidata")
     cur = cnx.cursor()
     rows1 = get_rows(cur)
     print(f"rows before: {int(rows1)}")

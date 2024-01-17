@@ -77,7 +77,7 @@ count: the number of dengue cases
 import argparse
 
 # third party
-import MySQLdb
+import mysql.connector
 
 # first party
 from .taiwan_nidss import NIDSS
@@ -105,7 +105,7 @@ def update(test_mode=False):
 
     # Database connection
     u, p = secrets.db.epi
-    cnx = MySQLdb.connect(user=u, password=p, database="epidata")
+    cnx = mysql.connector.connect(user=u, password=p, database="epidata")
     rows1 = get_rows(cnx)
     print(f"rows before (flu): {int(rows1[0])}")
     print(f"rows before (dengue): {int(rows1[1])}")

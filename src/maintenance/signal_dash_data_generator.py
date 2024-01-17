@@ -5,7 +5,7 @@ import argparse
 import sys
 import time
 import datetime
-import MySQLdb
+import mysql.connector
 import pandas as pd
 
 from dataclasses import dataclass
@@ -62,7 +62,7 @@ class Database:
     STATUS_TABLE_NAME = 'dashboard_signal_status'
     COVERAGE_TABLE_NAME = 'dashboard_signal_coverage'
 
-    def __init__(self, connector_impl=MySQLdb):
+    def __init__(self, connector_impl=mysql.connector):
         """Establish a connection to the database."""
 
         u, p = secrets.db.epi
@@ -264,13 +264,13 @@ def main(args):
     try:
         database.write_status(signal_status_list)
         logger.info("Wrote status.", rowcount=database.rowcount())
-    except MySQLdb.MySQLError as exception:
+    except mysql.connector.Error as exception:
         logger.exception(exception)
 
     try:
         database.write_coverage(coverage_list)
         logger.info("Wrote coverage.", rowcount=database.rowcount())
-    except MySQLdb.MySQLError as exception:
+    except mysql.connector.Error as exception:
         logger.exception(exception)
 
     logger.info(

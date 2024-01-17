@@ -2,7 +2,7 @@
 import unittest
 
 # third party
-import MySQLdb
+import mysql.connector
 
 # first party
 from delphi.epidata.client.delphi_epidata import Epidata
@@ -33,7 +33,7 @@ class DelphiTestBase(unittest.TestCase):
         """Perform per-test setup."""
 
         # connect to the `epidata` database
-        cnx = MySQLdb.connect(user="user", password="pass", host="delphi_database_epidata", database="epidata")
+        cnx = mysql.connector.connect(user="user", password="pass", host="delphi_database_epidata", database="epidata")
         cur = cnx.cursor()
 
         cur.execute("DELETE FROM `api_user`")

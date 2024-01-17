@@ -5,7 +5,7 @@ from typing import Callable
 import unittest
 
 # third party
-import MySQLdb
+import mysql.connector
 
 # first party
 from delphi_utils import Nans
@@ -369,7 +369,7 @@ class CovidcastTests(CovidcastBase):
     row = self._insert_placeholder_set_one()
 
     # fail to insert different placeholder data under the same key
-    with self.assertRaises(MySQLdb._exceptions.IntegrityError):
+    with self.assertRaises(mysql.connector.errors.IntegrityError):
       self._insert_placeholder_set_one()
 
     # succeed to insert different placeholder data under a different time_type

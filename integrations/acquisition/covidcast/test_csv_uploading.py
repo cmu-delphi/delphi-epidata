@@ -7,7 +7,7 @@ import unittest
 import argparse
 
 # third party
-import MySQLdb
+import mysql.connector
 import pandas as pd
 import numpy as np
 
@@ -28,7 +28,7 @@ class CsvUploadingTests(unittest.TestCase):
     """Perform per-test setup."""
 
     # connect to the `epidata` database and clear the `covidcast` table
-    cnx = MySQLdb.connect(
+    cnx = mysql.connector.connect(
         user='user',
         password='pass',
         host='delphi_database_epidata',
@@ -55,7 +55,7 @@ class CsvUploadingTests(unittest.TestCase):
     secrets.db.host = 'delphi_database_epidata'
     secrets.db.epi = ('user', 'pass')
 
-    epidata_cnx = MySQLdb.connect(
+    epidata_cnx = mysql.connector.connect(
         user='user',
         password='pass',
         host='delphi_database_epidata',

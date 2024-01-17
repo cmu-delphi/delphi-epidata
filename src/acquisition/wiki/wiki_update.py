@@ -24,7 +24,7 @@ See also: wiki.py
 from datetime import datetime, timedelta
 
 # third party
-import MySQLdb
+import mysql.connector
 import requests
 
 # first party
@@ -90,7 +90,7 @@ def get_manifest(year, month, optional=False):
 def run():
     # connect to the database
     u, p = secrets.db.epi
-    cnx = MySQLdb.connect(user=u, password=p, database="epidata")
+    cnx = mysql.connector.connect(user=u, password=p, database="epidata")
     cur = cnx.cursor()
 
     # get the most recent job in wiki_raw

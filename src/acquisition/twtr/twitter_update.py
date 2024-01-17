@@ -52,7 +52,7 @@ total: the total number of tweets (denominator)
 """
 
 # third party
-import MySQLdb
+import mysql.connector
 
 # first party
 from .healthtweets import HealthTweets
@@ -62,7 +62,7 @@ import delphi.operations.secrets as secrets
 def run():
     # connect to the database
     u, p = secrets.db.epi
-    cnx = MySQLdb.connect(user=u, password=p, database="epidata")
+    cnx = mysql.connector.connect(user=u, password=p, database="epidata")
     cur = cnx.cursor()
 
     def get_num_rows():

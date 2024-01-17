@@ -10,7 +10,7 @@ from typing import List
 
 # third party
 import json
-import MySQLdb
+import mysql.connector
 
 # first party
 import delphi.operations.secrets as secrets
@@ -38,7 +38,7 @@ class Database:
   # TODO: also consider that for composite key tuples, like short_comp_key and long_comp_key as used in delete_batch()
 
 
-  def connect(self, connector_impl=MySQLdb):
+  def connect(self, connector_impl=mysql.connector):
     """Establish a connection to the database."""
 
     u, p = secrets.db.epi

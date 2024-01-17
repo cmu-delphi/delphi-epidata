@@ -4,7 +4,7 @@
 import unittest
 
 # third party
-import MySQLdb
+import mysql.connector
 import requests
 
 #first party
@@ -53,7 +53,7 @@ class CovidcastMetaTests(CovidcastBase):
     """Perform per-test setup."""
 
     # connect to the `epidata` database and clear the `covidcast` table
-    cnx = MySQLdb.connect(
+    cnx = mysql.connector.connect(
         user='user',
         password='pass',
         host='delphi_database_epidata',

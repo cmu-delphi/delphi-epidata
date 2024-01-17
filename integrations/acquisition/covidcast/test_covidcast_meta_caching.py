@@ -5,7 +5,7 @@ import json
 import unittest
 
 # third party
-import MySQLdb
+import mysql.connector
 import requests
 
 # first party
@@ -32,11 +32,11 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     """Perform per-test setup."""
 
     # connect to the `epidata` database
-    cnx = MySQLdb.connect(
+    cnx = mysql.connector.connect(
         user='user',
         password='pass',
         host='delphi_database_epidata',
-        db='covid')
+        database='covid')
     cur = cnx.cursor()
 
     # clear all tables
@@ -58,7 +58,7 @@ class CovidcastMetaCacheTests(unittest.TestCase):
     secrets.db.host = 'delphi_database_epidata'
     secrets.db.epi = ('user', 'pass')
 
-    epidata_cnx = MySQLdb.connect(
+    epidata_cnx = mysql.connector.connect(
         user='user',
         password='pass',
         host='delphi_database_epidata',

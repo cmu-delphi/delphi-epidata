@@ -2,7 +2,7 @@ import os
 from datetime import datetime as dtime
 
 import delphi.operations.secrets as secrets
-import MySQLdb
+import mysql.connector
 import redis
 
 REDIS_HOST = os.environ.get("REDIS_HOST", "delphi_redis")
@@ -13,7 +13,7 @@ LAST_USED_KEY_PATTERN = "*LAST_USED*"
 def main():
     redis_cli = redis.Redis(host=REDIS_HOST, password=REDIS_PASSWORD, decode_responses=True)
     u, p = secrets.db.epi
-    cnx = MySQLdb.connect(database="epidata", user=u, password=p, host=secrets.db.host)
+    cnx = mysql.connector.connect(database="epidata", user=u, password=p, host=secrets.db.host)
     cur = cnx.cursor()
 
     redis_keys = redis_cli.keys(pattern=LAST_USED_KEY_PATTERN)
