@@ -4,7 +4,7 @@
 import unittest
 
 # third party
-import mysql.connector
+import MySQLdb
 
 # first party
 from delphi.epidata.client.delphi_epidata import Epidata
@@ -25,7 +25,7 @@ class FluviewTests(unittest.TestCase):
     """Perform per-test setup."""
 
     # connect to the `epidata` database and clear the `fluview` table
-    cnx = mysql.connector.connect(
+    cnx = MySQLdb.connect(
         user='user',
         password='pass',
         host='delphi_database_epidata',
