@@ -2,7 +2,7 @@ from collections import namedtuple
 from smtplib import SMTP
 
 import delphi.operations.secrets as secrets
-import mysql.connector
+import MySQLdb
 from delphi.epidata.server._config import API_KEY_REGISTRATION_FORM_LINK_LOCAL
 
 ApiUserRecord = namedtuple("APIUserRecord", ("api_key", "email", "date_diff"))
@@ -51,7 +51,7 @@ def send_notification(to_addr, alert=True):
 
 def main():
     u, p = secrets.db.epi
-    cnx = mysql.connector.connect(database="epidata", user=u, password=p, host=secrets.db.host)
+    cnx = MySQLdb.connect(database="epidata", user=u, password=p, host=secrets.db.host)
     cur = cnx.cursor()
     outdated_keys_list = get_old_keys(cur)
     for item in outdated_keys_list:

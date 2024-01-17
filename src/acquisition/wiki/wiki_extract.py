@@ -28,7 +28,7 @@ from datetime import datetime, timedelta
 import json
 
 # third party
-import mysql.connector
+import MySQLdb
 
 # first party
 import delphi.operations.secrets as secrets
@@ -67,7 +67,7 @@ def get_timestamp(name):
 def run(job_limit=100):
     # connect to the database
     u, p = secrets.db.epi
-    cnx = mysql.connector.connect(user=u, password=p, database="epidata")
+    cnx = MySQLdb.connect(user=u, password=p, database="epidata")
     cur = cnx.cursor()
 
     # # Some preparation for utf-8, and it is a temporary trick solution. The real solution should change those char set and collation encoding to utf8 permanently

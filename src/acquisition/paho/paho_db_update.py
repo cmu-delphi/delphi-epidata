@@ -54,7 +54,7 @@ from io import StringIO
 import tempfile
 
 # third party
-import mysql.connector
+import MySQLdb
 import pycountry
 
 # first party
@@ -66,7 +66,7 @@ from delphi.utils.epidate import EpiDate
 
 def ensure_tables_exist():
     (u, p) = secrets.db.epi
-    cnx = mysql.connector.connect(user=u, password=p, database="epidata")
+    cnx = MySQLdb.connect(user=u, password=p, database="epidata")
     try:
         cursor = cnx.cursor()
         cursor.execute(
@@ -169,7 +169,7 @@ def update_from_file(issue, date, filename, test_mode=False):
 
     # database connection
     u, p = secrets.db.epi
-    cnx = mysql.connector.connect(user=u, password=p, database="epidata")
+    cnx = MySQLdb.connect(user=u, password=p, database="epidata")
     rows1 = get_rows(cnx, "paho_dengue")
     print(f"rows before: {int(rows1)}")
     insert = cnx.cursor()

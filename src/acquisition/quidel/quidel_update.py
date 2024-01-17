@@ -39,7 +39,7 @@ value: number of total test records per facility, within each epiweek
 import argparse
 
 # third party
-import mysql.connector
+import MySQLdb
 
 # first party
 from delphi.epidata.acquisition.quidel import quidel
@@ -64,7 +64,7 @@ def update(locations, first=None, last=None, force_update=False, load_email=True
     qd_ts = quidel.measurement_to_ts(qd_measurements, 7, startweek=first, endweek=last)
     # connect to the database
     u, p = secrets.db.epi
-    cnx = mysql.connector.connect(user=u, password=p, database="epidata")
+    cnx = MySQLdb.connect(user=u, password=p, database="epidata")
     cur = cnx.cursor()
 
     def get_num_rows():

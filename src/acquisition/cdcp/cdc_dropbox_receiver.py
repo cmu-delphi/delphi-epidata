@@ -22,7 +22,7 @@ from zipfile import ZIP_DEFLATED, ZipFile
 
 # third party
 import dropbox
-import mysql.connector
+import MySQLdb
 
 # first party
 import delphi.operations.secrets as secrets
@@ -47,7 +47,7 @@ def trigger_further_processing():
 
     # connect
     u, p = secrets.db.auto
-    cnx = mysql.connector.connect(user=u, password=p, database="automation")
+    cnx = MySQLdb.connect(user=u, password=p, database="automation")
     cur = cnx.cursor()
 
     # add step "Process CDCP Data" to queue
