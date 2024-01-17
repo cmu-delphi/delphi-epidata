@@ -10,7 +10,7 @@ from typing import List
 
 # third party
 import json
-import mysql.connector
+import MySQLdb
 
 # first party
 import delphi.operations.secrets as secrets
@@ -38,16 +38,23 @@ class Database:
   # TODO: also consider that for composite key tuples, like short_comp_key and long_comp_key as used in delete_batch()
 
 
-  def connect(self, connector_impl=mysql.connector):
+  def connect(self, connector_impl=None):
     """Establish a connection to the database."""
 
     u, p = secrets.db.epi
     self._connector_impl = connector_impl
-    self._connection = self._connector_impl.connect(
-        host=secrets.db.host,
-        user=u,
-        password=p,
-        database=Database.DATABASE_NAME)
+    if connector_impl is None:
+      self._connection = MySQLdb.connect(
+          host=secrets.db.host,
+          user=u,
+          password=p,
+          database=Database.DATABASE_NAME)
+    else:
+      self._connection = self._connector_impl.connect(
+          host=secrets.db.host,
+          user=u,
+          password=p,
+          database=Database.DATABASE_NAME)
     self._cursor = self._connection.cursor()
 
   def commit(self):
@@ -71,8 +78,7 @@ class Database:
 
   def count_all_load_rows(self):
     self._cursor.execute(f'SELECT count(1) FROM `{self.load_table}`')
-    for (num,) in self._cursor:
-      return num
+    return self._cursor.fetchone()[0]
 
   def _reset_load_table_ai_counter(self):
     """Corrects the AUTO_INCREMENT counter in the load table.
@@ -101,7 +107,7 @@ class Database:
       f'''ANALYZE TABLE
           signal_dim, geo_dim,
           {self.load_table}, {self.history_table}, {self.latest_table}''')
-    output = [self._cursor.column_names] + self._cursor.fetchall()
+    output = [desc[0] for desc in self._cursor.description] + list(self._cursor.fetchall())
     get_structured_logger('do_analyze').info("ANALYZE results", results=str(output))
 
   def insert_or_update_bulk(self, cc_rows):
@@ -456,8 +462,8 @@ FROM {self.history_view} h JOIN (
     srcsigs = Queue() # multi-consumer threadsafe!
     sql = f'SELECT `source`, `signal` FROM `{table_name}` GROUP BY `source`, `signal` ORDER BY `source` ASC, `signal` ASC;'
     self._cursor.execute(sql)
-    for source, signal in self._cursor:
-      srcsigs.put((source, signal))
+    for res in self._cursor.fetchall():
+      srcsigs.put((res[0], res[1])) # source, signal
 
     inner_sql = f'''
       SELECT
@@ -505,8 +511,9 @@ FROM {self.history_view} h JOIN (
           logger.info("starting pair", thread=name, pair=f"({source}, {signal})")
           w_cursor.execute(inner_sql, (source, signal))
           with meta_lock:
+            # Create a dictionary of column names (from cursor.description) & values
             meta.extend(list(
-              dict(zip(w_cursor.column_names, x)) for x in w_cursor
+              dict(zip([desc[0] for desc in w_cursor.description], x)) for x in w_cursor
             ))
           srcsigs.task_done()
       except Empty:
