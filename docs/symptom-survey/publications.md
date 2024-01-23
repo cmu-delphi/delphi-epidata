@@ -26,6 +26,16 @@ Pandemic"](https://www.pnas.org/topic/548) in *PNAS*:
 
 Research publications using the survey data include:
 
+- H. Bui, S. Ekşioğlu, R. Proano, and S. N. Pinkley (2024). [An Analysis of
+  COVID-19 Vaccine Hesitancy in the U.S.](https://doi.org/10.1080/24725854.2024.2301966).
+  *IISE Transactions*.
+- de Vries, M., Kim, J.Y. & Han, H. (2023). [The unequal landscape of civic
+  opportunity in America](https://doi.org/10.1038/s41562-023-01743-1). *Nature
+  Human Behavior*. 
+- E. Tuzhilina, T. J. Hastie, D. J. McDonald, J. K. Tay & R. Tibshirani (2023).
+  [Smooth multi-period forecasting with application to prediction of COVID-19
+  cases](https://doi.org/10.1080/10618600.2023.2285337). *Journal of Computational
+  and Graphical Statistics*.
 - W. Dempsey (2023). [Addressing selection bias and measurement error in
   COVID-19 case count data using auxiliary information](https://doi.org/10.1214/23-AOAS1744).
   *Annals of Applied Statistics* 17 (4), 2903-2923.
