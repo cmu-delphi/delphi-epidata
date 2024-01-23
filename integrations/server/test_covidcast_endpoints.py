@@ -343,8 +343,8 @@ class CovidcastEndpointTests(CovidcastBase):
         #       and fed by src/server/endpoints/covidcast_utils/db_sources.csv, but also surreptitiously augmened
         #       by _load_data_signals() which attaches a list of signals to each source,
         #       in turn fed by src/server/endpoints/covidcast_utils/db_signals.csv)
-        # insert data from two different sources, one restricted/protected (quidel), one not
 
+        # insert data from two different sources, one restricted/protected (quidel), one not
         self._insert_rows([
             CovidcastTestRow.make_default_row(source="quidel", signal="raw_pct_negative"),
             CovidcastTestRow.make_default_row(source="hhs", signal="confirmed_admissions_covid_1d")

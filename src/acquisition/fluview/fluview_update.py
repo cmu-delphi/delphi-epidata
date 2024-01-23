@@ -376,7 +376,7 @@ def update_from_file_public(issue, date, filename, test_mode=False):
 
     # database connection
     u, p = secrets.db.epi
-    cnx = MySQLdb(user=u, password=p, database="epidata", host=secrets.db.host)
+    cnx = MySQLdb.connect(user=u, password=p, database="epidata", host=secrets.db.host)
     rows1 = get_rows(cnx, PHL_TABLE)
     print(f"rows before: {int(rows1)}")
     insert = cnx.cursor()
