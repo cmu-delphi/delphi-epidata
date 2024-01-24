@@ -14,14 +14,14 @@ import asyncio
 from tenacity import retry, stop_after_attempt
 
 from aiohttp import ClientSession, TCPConnector, BasicAuth
-from pkg_resources import get_distribution, DistributionNotFound
+from importlib.metadata import version, PackageNotFoundError
 
 # Obtain package version for the user-agent. Uses the installed version by
 # preference, even if you've installed it and then use this script independently
 # by accident.
 try:
-    _version = get_distribution("delphi-epidata").version
-except DistributionNotFound:
+    _version = version("delphi-epidata")
+except PackageNotFoundError:
     _version = "0.script"
 
 _HEADERS = {"user-agent": "delphi_epidata/" + _version + " (Python)"}
