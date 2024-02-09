@@ -26,6 +26,9 @@ Pandemic"](https://www.pnas.org/topic/548) in *PNAS*:
 
 Research publications using the survey data include:
 
+- R.R. Andridge (2024). [Using proxy pattern-mixture models to explain bias in
+  estimates of COVID-19 vaccine uptake from two large surveys](https://doi.org/10.1093/jrsssa/qnae005).
+  *Journal of the Royal Statistical Society Series A: Statistics in Society*.
 - H. Bui, S. Ekşioğlu, R. Proano, and S. N. Pinkley (2024). [An Analysis of
   COVID-19 Vaccine Hesitancy in the U.S.](https://doi.org/10.1080/24725854.2024.2301966).
   *IISE Transactions*.
