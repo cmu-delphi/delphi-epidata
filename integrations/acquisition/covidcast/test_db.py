@@ -23,7 +23,8 @@ class TestTest(CovidcastBase):
             cur.execute(q)
             res = cur.fetchone()
             if res:
-                results[table] = dict(zip(cur.column_names, res))
+                # Create a dictionary of column names (from cursor.description) & values
+                results[table] = dict(zip([desc[0] for desc in cur.description], res))
             else:
                 results[table] = None
         return results

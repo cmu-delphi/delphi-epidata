@@ -121,7 +121,7 @@ import io
 import zipfile
 
 # third party
-import mysql.connector
+import MySQLdb
 
 # first party
 import delphi.operations.secrets as secrets
@@ -311,7 +311,7 @@ def update_from_file_clinical(issue, date, filename, test_mode=False):
 
     # database connection
     u, p = secrets.db.epi
-    cnx = mysql.connector.connect(user=u, password=p, database="epidata", host=secrets.db.host)
+    cnx = MySQLdb.connect(user=u, password=p, database="epidata", host=secrets.db.host)
     rows1 = get_rows(cnx, CL_TABLE)
     print(f"rows before: {int(rows1)}")
     insert = cnx.cursor()
@@ -376,7 +376,7 @@ def update_from_file_public(issue, date, filename, test_mode=False):
 
     # database connection
     u, p = secrets.db.epi
-    cnx = mysql.connector.connect(user=u, password=p, database="epidata", host=secrets.db.host)
+    cnx = MySQLdb.connect(user=u, password=p, database="epidata", host=secrets.db.host)
     rows1 = get_rows(cnx, PHL_TABLE)
     print(f"rows before: {int(rows1)}")
     insert = cnx.cursor()
@@ -445,7 +445,7 @@ def update_from_file(issue, date, filename, test_mode=False):
 
     # database connection
     u, p = secrets.db.epi
-    cnx = mysql.connector.connect(user=u, password=p, database="epidata", host=secrets.db.host)
+    cnx = MySQLdb.connect(user=u, password=p, database="epidata", host=secrets.db.host)
     rows1 = get_rows(cnx)
     print(f"rows before: {int(rows1)}")
     insert = cnx.cursor()

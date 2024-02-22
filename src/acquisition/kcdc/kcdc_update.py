@@ -35,7 +35,7 @@ import datetime
 import requests
 
 # third party
-import mysql.connector
+import MySQLdb
 
 # first party
 import delphi.operations.secrets as secrets
@@ -45,7 +45,7 @@ from delphi.utils.epidate import EpiDate
 
 def ensure_tables_exist():
     (u, p) = secrets.db.epi
-    cnx = mysql.connector.connect(user=u, password=p, database="epidata")
+    cnx = MySQLdb.connect(user=u, password=p, database="epidata")
     try:
         cursor = cnx.cursor()
         cursor.execute(
@@ -124,7 +124,7 @@ def get_kcdc_data():
 
 def update_from_data(ews, ilis, date, issue, test_mode=False):
     u, p = secrets.db.epi
-    cnx = mysql.connector.connect(user=u, password=p, database="epidata")
+    cnx = MySQLdb.connect(user=u, password=p, database="epidata")
     rows1 = get_rows(cnx)
     print(f"rows before: {int(rows1)}")
     insert = cnx.cursor()

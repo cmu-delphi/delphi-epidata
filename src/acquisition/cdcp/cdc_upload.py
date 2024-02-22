@@ -80,7 +80,7 @@ import shutil
 from zipfile import ZipFile
 
 # third party
-import mysql.connector
+import MySQLdb
 
 # first party
 import delphi.operations.secrets as secrets
@@ -165,7 +165,7 @@ sql_cdc_meta = """
 def upload(test_mode):
     # connect
     u, p = secrets.db.epi
-    cnx = mysql.connector.connect(user=u, password=p, database="epidata")
+    cnx = MySQLdb.connect(user=u, password=p, database="epidata")
     cur = cnx.cursor()
 
     # insert (or update) table `cdc`
