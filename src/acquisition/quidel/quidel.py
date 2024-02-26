@@ -201,6 +201,7 @@ class QuidelData:
                 print("End date not found in file name:" + f)
                 end_date = None
 
+            # NOTE: this pd.read_excel() method requires installation of the `xlrd` library:
             df_dict = pd.read_excel(join(self.excel_uptodate_path, f + ".xlsx"), sheet_name=None)
             for (_, df) in df_dict.items():
                 df = df.dropna(axis=0, how="all")
