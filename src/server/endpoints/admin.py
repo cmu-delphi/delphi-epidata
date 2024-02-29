@@ -1,28 +1,25 @@
-import json
-from pathlib import Path
-import socket
-from typing import Dict, List, Set
+from datetime import timedelta
 
-from flask import Blueprint, make_response, render_template_string, request
-from werkzeug.exceptions import NotFound, Unauthorized
-from werkzeug.utils import redirect
+from flask import session, request, redirect, url_for, render_template
+import flask_login
+from flask_admin import Admin, AdminIndexView, expose, BaseView
+from flask_admin.contrib.sqla import ModelView
+from werkzeug.exceptions import Unauthorized
 
-from .._common import db, log_info_with_request
-from .._config import ADMIN_PASSWORD, API_KEY_REGISTRATION_FORM_LINK, API_KEY_REMOVAL_REQUEST_LINK, REGISTER_WEBHOOK_TOKEN
+from .._common import app, db
+from .._config import ADMIN_PASSWORD
 from .._db import WriteSession
 from .._security import resolve_auth_token
 from ..admin.models import User, UserRole
 
-self_dir = Path(__file__).parent
-# first argument is the endpoint name
-bp = Blueprint("admin", __name__)
+# set optional bootswatch theme
+app.config["FLASK_ADMIN_SWATCH"] = "cerulean"
+# set app secret key to enable session
+app.secret_key = "SOME_RANDOM_SECRET_KEY"
 
-templates_dir = Path(__file__).parent.parent / "admin" / "templates"
-
-
-def enable_admin() -> bool:
-    # only enable admin endpoint if we have a password for it, so it is not exposed to the world
-    return bool(ADMIN_PASSWORD)
+login_manager = flask_login.LoginManager()
+login_manager.login_view = "login"
+login_manager.init_app(app)
 
 
 def _require_admin():
@@ -32,122 +29,125 @@ def _require_admin():
     return token
 
 
-def _render(mode: str, token: str, flags: Dict, session, **kwargs):
-    template = (templates_dir / "index.html").read_text("utf8")
-    return render_template_string(
-        template, mode=mode, token=token, flags=flags, roles=UserRole.list_all_roles(session), **kwargs
-    )
+class AdminUser(flask_login.UserMixin):
+    pass
 
 
-# ~~~~ PUBLIC ROUTES ~~~~
+@login_manager.user_loader
+def user_loader(admin_token):
+    if admin_token != ADMIN_PASSWORD:
+        return
+
+    user = AdminUser()
+    user.id = admin_token
+    return user
 
 
-@bp.route("/registration_form", methods=["GET"])
-def registration_form_redirect():
-    # TODO: replace this with our own hosted registration form instead of external
-    return redirect(API_KEY_REGISTRATION_FORM_LINK, code=302)
+@login_manager.unauthorized_handler
+def unauthorized_handler():
+    return "Unauthorized", 401
 
 
-@bp.route("/removal_request", methods=["GET"])
-def removal_request_redirect():
-    # TODO: replace this with our own hosted form instead of external
-    return redirect(API_KEY_REMOVAL_REQUEST_LINK, code=302)
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        admin_token = request.form["admin_token"]
+        if admin_token == ADMIN_PASSWORD:
+            user = AdminUser()
+            user.id = admin_token
+            flask_login.login_user(user)
+            return redirect(url_for("admin.index"))
+    return render_template("login.html")
 
 
-# ~~~~ PRIVLEGED ROUTES ~~~~
+class AuthModelView(ModelView):
+    @flask_login.login_required
+    def is_accessible(self):
+        return True
 
 
-@bp.route("/", methods=["GET", "POST"])
-def _index():
-    token = _require_admin()
-    flags = dict()
-    with WriteSession() as session:
-        if request.method == "POST":
-            # register a new user
-            if not User.find_user(
-                    user_email=request.values["email"], api_key=request.values["api_key"],
-                    session=session):
-                User.create_user(
-                    api_key=request.values["api_key"],
-                    email=request.values["email"],
-                    user_roles=set(request.values.getlist("roles")),
-                    session=session
-                )
-                flags["banner"] = "Successfully Added"
-            else:
-                flags["banner"] = "User with such email and/or api key already exists."
-        users = [user.as_dict for user in session.query(User).all()]
-        return _render("overview", token, flags, session=session, users=users, user=dict())
+@app.before_first_request  # runs before FIRST request (only once)
+def make_session_permanent():
+    session.permanent = True
+    app.permanent_session_lifetime = timedelta(minutes=30)
 
 
-@bp.route("/<int:user_id>", methods=["GET", "PUT", "POST", "DELETE"])
-def _detail(user_id: int):
-    token = _require_admin()
-    with WriteSession() as session:
-        user = User.find_user(user_id=user_id, session=session)
-        if not user:
-            raise NotFound()
-        if request.method == "DELETE" or "delete" in request.values:
-            User.delete_user(user.id, session=session)
-            return redirect(f"./?auth={token}")
-        flags = dict()
-        if request.method in ["PUT", "POST"]:
-            user_check = User.find_user(api_key=request.values["api_key"], user_email=request.values["email"], session=session)
-            if user_check and user_check.id != user.id:
-                flags["banner"] = "Could not update user; same api_key and/or email already exists."
-            else:
-                user = User.update_user(
-                    user=user,
-                    api_key=request.values["api_key"],
-                    email=request.values["email"],
-                    roles=set(request.values.getlist("roles")),
-                    session=session
-                )
-                flags["banner"] = "Successfully Saved"
-        return _render("detail", token, flags, session=session, user=user.as_dict)
+class AuthAdminIndexView(AdminIndexView):
+    """
+    Admin view main page
+    """
+
+    @expose("/")
+    @flask_login.login_required
+    def index(self):
+        users_info_query = """
+            SELECT
+                au.email,
+                au.api_key,
+                rr.organization,
+                rr.purpose,
+                au.created,
+                au.last_time_used
+            FROM api_user au
+            JOIN registration_responses rr
+            ON au.email = rr.email
+        """
+        users_info = db.execute(users_info_query)
+        user_data = users_info.fetchall()
+        return self.render("admin/index.html", user_data=user_data)
 
 
-@bp.route("/register", methods=["POST"])
-def _register():
-    body = request.get_json()
-    token = body.get("token")
-    if token is None or token != REGISTER_WEBHOOK_TOKEN:
-        raise Unauthorized()
+class UserView(AuthModelView):
+    """
+    User model view:
+        -   form_columns: list of columns that will be available in CRUD forms
+        -   column_list: list of columns that are displayed on user model view page
+        -   column_filters: list of available filters
+        -   page_size: number of items on page
+    """
 
-    user_api_key = body["user_api_key"]
-    user_email = body["user_email"]
-    with WriteSession() as session:
-        if User.find_user(user_email=user_email, api_key=user_api_key, session=session):
-            return make_response(
-                "User with email and/or API Key already exists, use different parameters or contact us for help",
-                409,
-            )
-        User.create_user(api_key=user_api_key, email=user_email, session=session)
-    return make_response(f"Successfully registered API key '{user_api_key}'", 200)
+    form_columns = ["api_key", "email", "roles"]
+    column_list = ("api_key", "email", "created", "last_time_used", "roles")
+    column_filters = ("api_key", "email")
+
+    page_size = 10
 
 
-@bp.route("/diagnostics", methods=["GET", "PUT", "POST", "DELETE"])
-def diags():
-    # allows us to get useful diagnostic information written into server logs,
-    # such as a full current "X-Forwarded-For" path as inserted into headers by intermediate proxies...
-    # (but only when initiated purposefully by us to keep junk out of the logs)
-    _require_admin()
+class UserRoleView(AuthModelView):
+    """
+    User role view:
+        -   colums_filters: list of available filters
+        -   page_size: number of items on page
+    """
 
-    try:
-        serving_host = socket.gethostbyname_ex(socket.gethostname())
-    except e:
-        serving_host = e
+    column_filters = ["name"]
 
-    try:
-        db_host = db.execute('SELECT @@hostname AS hn').fetchone()['hn']
-    except e:
-        db_host = e
+    page_size = 10
 
-    log_info_with_request("diagnostics", headers=request.headers, serving_host=serving_host, database_host=db_host)
 
-    response_data = {
-        'request_path': request.headers.get('X-Forwarded-For', 'idfk'),
-        'serving_host': serving_host,
-        'database_host': db_host,
-    }
-    return make_response(json.dumps(response_data), 200, {'content-type': 'text/plain'})
+class LogoutView(BaseView):
+    @expose("/")
+    @flask_login.login_required
+    def logout(self):
+        flask_login.logout_user()
+        return redirect(url_for("login"))
+
+
+# init admin view, default endpoint is /admin
+admin = Admin(app, name="EpiData admin", template_mode="bootstrap4", index_view=AuthAdminIndexView())
+# database session
+admin_session = WriteSession()
+
+# add views
+admin.add_view(UserView(User, admin_session))
+admin.add_view(UserRoleView(UserRole, admin_session))
+admin.add_view(LogoutView(name="Logout", endpoint="logout"))
+
+
+@app.teardown_request
+def teardown_request(*args, **kwargs):
+    """
+    Remove the session after each request.
+    That is used to protect from dirty read.
+    """
+    admin_session.close()

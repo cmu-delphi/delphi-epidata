@@ -105,6 +105,7 @@ web:
 	@# Run the web server
 	@# MODULE_NAME specifies the location of the `app` variable, the actual WSGI application object to run.
 	@# see https://github.com/tiangolo/meinheld-gunicorn-docker#module_name
+	@# To receive Slack notification, please add SLACK_WEBHOOK_URL with proper webhook link to the list of env variables.
 	@touch $(ENV_FILE)
 	@docker run --rm -p 127.0.0.1:10080:80 \
 		$(M1) \
@@ -116,7 +117,8 @@ web:
 		--env "REDIS_PASSWORD=1234" \
 		--env "API_KEY_ADMIN_PASSWORD=test_admin_password" \
 		--env "API_KEY_REGISTER_WEBHOOK_TOKEN=abc" \
-		$(rate_limit_settings) \
+		--env "RECAPTCHA_SITE_KEY=6Le3wcMnAAAAAL0phFNTaWIHWDDb78I8aSzA34f2" \
+		--env "RECAPTCHA_SECRET_KEY=6Le3wcMnAAAAANlmnp_oApGewLwOmiNFjxlTe2Zo" \
 		--network delphi-net --name delphi_web_epidata \
 		delphi_web_epidata >$(LOG_WEB) 2>&1 &
 
