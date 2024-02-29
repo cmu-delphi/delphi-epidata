@@ -12,6 +12,8 @@ from delphi.epidata.acquisition.covidcast.database import Database
 from delphi.epidata.server._config import REDIS_HOST, REDIS_PASSWORD
 from delphi.epidata.server.utils.dates import day_to_time_value, time_value_to_day
 import delphi.operations.secrets as secrets
+from delphi.epidata.common.logger import get_structured_logger
+
 
 # all the Nans we use here are just one value, so this is a shortcut to it:
 nmv = Nans.NOT_MISSING.value
@@ -193,7 +195,7 @@ class CovidcastBase(unittest.TestCase):
     def _insert_rows(self, rows: Sequence[CovidcastTestRow]):
         # inserts rows into the database using the full acquisition process, including 'dbjobs' load into history & latest tables
         n = self._db.insert_or_update_bulk(rows)
-        print(f"{n} rows added to load table & dispatched to v4 schema")
+        get_structured_logger("covidcast_test_utils").info(f"{n} rows added to load table & dispatched to v4 schema")
         self._db._connection.commit() # NOTE: this isnt expressly needed for our test cases, but would be if using external access (like through client lib) to ensure changes are visible outside of this db session
 
     def params_from_row(self, row: CovidcastTestRow, **kwargs):
