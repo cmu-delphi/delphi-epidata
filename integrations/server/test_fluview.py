@@ -1,50 +1,16 @@
 """Integration tests for the `fluview` endpoint."""
 
-# standard library
-import unittest
-
-# third party
-import mysql.connector
-
 # first party
-from delphi.epidata.client.delphi_epidata import Epidata
+from delphi.epidata.common.delphi_test_base import DelphiTestBase
 
 
-class FluviewTests(unittest.TestCase):
+class FluviewTests(DelphiTestBase):
   """Tests the `fluview` endpoint."""
 
-  @classmethod
-  def setUpClass(cls):
-    """Perform one-time setup."""
-
-    # use the local instance of the Epidata API
-    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata'
-    Epidata.auth = ('epidata', 'key')
-
-  def setUp(self):
+  def localSetUp(self):
     """Perform per-test setup."""
 
-    # connect to the `epidata` database and clear the `fluview` table
-    cnx = mysql.connector.connect(
-        user='user',
-        password='pass',
-        host='delphi_database_epidata',
-        database='epidata')
-    cur = cnx.cursor()
-    cur.execute('truncate table fluview')
-    cur.execute('delete from api_user')
-    cur.execute('insert into api_user(api_key, email) values ("key", "email")')
-    cnx.commit()
-    cur.close()
-
-    # make connection and cursor available to test cases
-    self.cnx = cnx
-    self.cur = cnx.cursor()
-
-  def tearDown(self):
-    """Perform per-test teardown."""
-    self.cur.close()
-    self.cnx.close()
+    self.truncate_tables_list = ["fluview"]
 
   def test_round_trip(self):
     """Make a simple round-trip with some sample data."""
@@ -62,7 +28,7 @@ class FluviewTests(unittest.TestCase):
     self.cnx.commit()
 
     # make the request
-    response = Epidata.fluview('nat', 202020)
+    response = self.epidata_client.fluview('nat', 202020)
 
     # assert that the right data came back
     self.assertEqual(response, {

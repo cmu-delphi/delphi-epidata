@@ -1,24 +1,12 @@
 """Integration tests for the `covidcast_meta` endpoint."""
 
-# standard library
-import unittest
-
-# third party
-import mysql.connector
-import requests
-
 #first party
 from delphi_utils import Nans
-from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase, CovidcastTestRow
+from delphi.epidata.common.covidcast_test_base import CovidcastTestBase, CovidcastTestRow
 from delphi.epidata.maintenance.covidcast_meta_cache_updater import main as update_cache
-import delphi.operations.secrets as secrets
-
-# use the local instance of the Epidata API
-BASE_URL = 'http://delphi_web_epidata/epidata'
-AUTH = ('epidata', 'key')
 
 
-class CovidcastMetaTests(CovidcastBase):
+class CovidcastMetaTests(CovidcastTestBase):
   """Tests the `covidcast_meta` endpoint."""
 
   src_sig_lookups = {
@@ -52,63 +40,23 @@ class CovidcastMetaTests(CovidcastBase):
   def localSetUp(self):
     """Perform per-test setup."""
 
-    # connect to the `epidata` database and clear the `covidcast` table
-    cnx = mysql.connector.connect(
-        user='user',
-        password='pass',
-        host='delphi_database_epidata',
-        database='covid')
-    cur = cnx.cursor()
-
-    # clear all tables
-    cur.execute("truncate table epimetric_load")
-    cur.execute("truncate table epimetric_full")
-    cur.execute("truncate table epimetric_latest")
-    cur.execute("truncate table geo_dim")
-    cur.execute("truncate table signal_dim")
-    # reset the `covidcast_meta_cache` table (it should always have one row)
-    cur.execute('update covidcast_meta_cache set timestamp = 0, epidata = "[]"')
-
-    # NOTE: we must specify the db schema "epidata" here because the cursor/connection are bound to schema "covid"
-    cur.execute("TRUNCATE TABLE epidata.api_user")
-    cur.execute("TRUNCATE TABLE epidata.user_role")
-    cur.execute("TRUNCATE TABLE epidata.user_role_link")
-    cur.execute("INSERT INTO epidata.api_user (api_key, email) VALUES ('quidel_key', 'quidel_email')")
-    cur.execute("INSERT INTO epidata.user_role (name) VALUES ('quidel')")
-    cur.execute(
-      "INSERT INTO epidata.user_role_link (user_id, role_id) SELECT api_user.id, user_role.id FROM epidata.api_user JOIN epidata.user_role WHERE api_key='quidel_key' and user_role.name='quidel'"
-    )
-    cur.execute("INSERT INTO epidata.api_user (api_key, email) VALUES ('key', 'email')")
+    self.role_name = "quidel"
 
     # populate dimension tables
     for (src,sig) in self.src_sig_lookups:
-        cur.execute('''
+        self._db._cursor.execute('''
             INSERT INTO `signal_dim` (`signal_key_id`, `source`, `signal`)
             VALUES (%d, '%s', '%s'); ''' % ( self.src_sig_lookups[(src,sig)], src, sig ))
     for (gt,gv) in self.geo_lookups:
-        cur.execute('''
+        self._db._cursor.execute('''
             INSERT INTO `geo_dim` (`geo_key_id`, `geo_type`, `geo_value`)
             VALUES (%d, '%s', '%s'); ''' % ( self.geo_lookups[(gt,gv)], gt, gv ))
 
-    cnx.commit()
-    cur.close()
+    self._db._connection.commit()
 
     # initialize counter for tables without non-autoincrement id
     self.id_counter = 666
 
-    # make connection and cursor available to test cases
-    self.cnx = cnx
-    self.cur = cnx.cursor()
-
-    # use the local instance of the epidata database
-    secrets.db.host = 'delphi_database_epidata'
-    secrets.db.epi = ('user', 'pass')
-
-
-  def localTearDown(self):
-    """Perform per-test teardown."""
-    self.cur.close()
-    self.cnx.close()
 
   def insert_placeholder_data(self):
     expected = []
@@ -135,26 +83,19 @@ class CovidcastMetaTests(CovidcastBase):
             })
             for tv in (1, 2):
               for gv, v in zip(('geo1', 'geo2'), (10, 20)):
-                self.cur.execute(self.template % (
+                self._db._cursor.execute(self.template % (
                   self._get_id(),
                   self.src_sig_lookups[(src,sig)], self.geo_lookups[(gt,gv)],
                   tt, tv, v, tv, # re-use time value for issue
                   Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.NOT_MISSING
                 ))
-    self.cnx.commit()
+    self._db._connection.commit()
     update_cache(args=None)
     return expected
 
   def _get_id(self):
     self.id_counter += 1
     return self.id_counter
-  
-  @staticmethod
-  def _fetch(auth=AUTH, **kwargs):
-    params = kwargs.copy()
-    response = requests.get(f"{BASE_URL}/covidcast_meta", params=params, auth=auth)
-    response.raise_for_status()
-    return response.json()
 
   def test_round_trip(self):
     """Make a simple round-trip with some sample data."""
@@ -163,7 +104,7 @@ class CovidcastMetaTests(CovidcastBase):
     expected = self.insert_placeholder_data()
 
     # make the request
-    response = self._fetch()
+    response = self._make_request(endpoint="covidcast_meta", auth=self.epidata_client.auth, json=True, raise_for_status=True)
 
     # assert that the right data came back
     self.assertEqual(response, {
@@ -185,12 +126,15 @@ class CovidcastMetaTests(CovidcastBase):
     update_cache(args=None)
 
     # verify unauthenticated (no api key) or unauthorized (user w/o privilege) only see metadata for one source
-    self.assertEqual(len(self._fetch(auth=None)['epidata']), 1)
-    self.assertEqual(len(self._fetch(auth=AUTH)['epidata']), 1)
+    unauthenticated_request = self._make_request(endpoint="covidcast_meta", json=True, raise_for_status=True)
+    self.assertEqual(len(unauthenticated_request['epidata']), 1)
+    unauthorized_request = self._make_request(endpoint="covidcast_meta", auth=self.epidata_client.auth, json=True, raise_for_status=True)
+    self.assertEqual(len(unauthorized_request['epidata']), 1)
 
     # verify authorized user sees metadata for both sources
     qauth = ('epidata', 'quidel_key')
-    self.assertEqual(len(self._fetch(auth=qauth)['epidata']), 2)
+    authorized_request = self._make_request(endpoint="covidcast_meta", auth=qauth, json=True, raise_for_status=True)
+    self.assertEqual(len(authorized_request['epidata']), 2)
 
   def test_filter(self):
     """Test filtering options some sample data."""
@@ -198,63 +142,99 @@ class CovidcastMetaTests(CovidcastBase):
     # insert placeholder data and accumulate expected results (in sort order)
     expected = self.insert_placeholder_data()
 
-    res = self._fetch()
+    res = self._make_request(endpoint="covidcast_meta", auth=self.epidata_client.auth, json=True, raise_for_status=True)
     self.assertEqual(res['result'], 1)
     self.assertEqual(len(res['epidata']), len(expected))
 
     # time types
-    res = self._fetch(time_types='day')
+    params = {
+      "time_types": "day"
+    }
+    res = self._make_request(endpoint="covidcast_meta", auth=self.epidata_client.auth, json=True, raise_for_status=True, params=params)
     self.assertEqual(res['result'], 1)
     self.assertEqual(len(res['epidata']), sum([1 for s in expected if s['time_type'] == 'day']))
 
-    res = self._fetch(time_types='day,week')
+    params = {
+      "time_types": "day,week"
+    }
+    res = self._make_request(endpoint="covidcast_meta", auth=self.epidata_client.auth, json=True, raise_for_status=True, params=params)
     self.assertEqual(res['result'], 1)
     self.assertTrue(isinstance(res['epidata'], list))
     self.assertEqual(len(res['epidata']), len(expected))
 
-    res = self._fetch(time_types='sec')
+    params = {
+      "time_types": "sec"
+    }
+    res = self._make_request(endpoint="covidcast_meta", auth=self.epidata_client.auth, json=True, raise_for_status=True, params=params)
     self.assertEqual(res['result'], -2)
 
     # geo types
-    res = self._fetch(geo_types='hrr')
+    params = {
+      "geo_types": "hrr"
+    }
+    res = self._make_request(endpoint="covidcast_meta", auth=self.epidata_client.auth, json=True, raise_for_status=True, params=params)
     self.assertEqual(res['result'], 1)
     self.assertTrue(isinstance(res['epidata'], list))
     self.assertEqual(len(res['epidata']), sum([1 for s in expected if s['geo_type'] == 'hrr']))
 
-    res = self._fetch(geo_types='hrr,msa')
+    params = {
+      "geo_types": "hrr,msa"
+    }
+    res = self._make_request(endpoint="covidcast_meta", auth=self.epidata_client.auth, json=True, raise_for_status=True, params=params)
     self.assertEqual(res['result'], 1)
     self.assertTrue(isinstance(res['epidata'], list))
     self.assertEqual(len(res['epidata']), len(expected))
 
-    res = self._fetch(geo_types='state')
+    params = {
+      "geo_types": "state"
+    }
+    res = self._make_request(endpoint="covidcast_meta", auth=self.epidata_client.auth, json=True, raise_for_status=True, params=params)
     self.assertEqual(res['result'], -2)
 
     # signals
-    res = self._fetch(signals='src1:sig1')
+    params = {
+      "signals": "src1:sig1"
+    }
+    res = self._make_request(endpoint="covidcast_meta", auth=self.epidata_client.auth, json=True, raise_for_status=True, params=params)
     self.assertEqual(res['result'], 1)
     self.assertTrue(isinstance(res['epidata'], list))
     self.assertEqual(len(res['epidata']), sum([1 for s in expected if s['data_source'] == 'src1' and s['signal'] == 'sig1']))
 
-    res = self._fetch(signals='src1')
+    params = {
+      "signals": "src1"
+    }
+    res = self._make_request(endpoint="covidcast_meta", auth=self.epidata_client.auth, json=True, raise_for_status=True, params=params)
     self.assertEqual(res['result'], 1)
     self.assertTrue(isinstance(res['epidata'], list))
     self.assertEqual(len(res['epidata']), sum([1 for s in expected if s['data_source'] == 'src1']))
 
-    res = self._fetch(signals='src1:*')
+    params = {
+      "signals": "src1:*"
+    }
+    res = self._make_request(endpoint="covidcast_meta", auth=self.epidata_client.auth, json=True, raise_for_status=True, params=params)
     self.assertEqual(res['result'], 1)
     self.assertTrue(isinstance(res['epidata'], list))
     self.assertEqual(len(res['epidata']), sum([1 for s in expected if s['data_source'] == 'src1']))
 
-    res = self._fetch(signals='src1:src4')
+    params = {
+      "signals": "src1:src4"
+    }
+    res = self._make_request(endpoint="covidcast_meta", auth=self.epidata_client.auth, json=True, raise_for_status=True, params=params)
     self.assertEqual(res['result'], -2)
 
-    res = self._fetch(signals='src1:*,src2:*')
+    params = {
+      "signals": "src1:*,src2:*"
+    }
+    res = self._make_request(endpoint="covidcast_meta", auth=self.epidata_client.auth, json=True, raise_for_status=True, params=params)
     self.assertEqual(res['result'], 1)
     self.assertTrue(isinstance(res['epidata'], list))
     self.assertEqual(len(res['epidata']), len(expected))
 
     # filter fields
-    res = self._fetch(fields='data_source,min_time')
+    params = {
+      "fields": "data_source,min_time"
+    }
+    res = self._make_request(endpoint="covidcast_meta", auth=self.epidata_client.auth, json=True, raise_for_status=True, params=params)
     self.assertEqual(res['result'], 1)
     self.assertEqual(len(res['epidata']), len(expected))
     self.assertTrue('data_source' in res['epidata'][0])
@@ -262,8 +242,10 @@ class CovidcastMetaTests(CovidcastBase):
     self.assertFalse('max_time' in res['epidata'][0])
     self.assertFalse('signal' in res['epidata'][0])
 
-    res = self._fetch(fields='xx')
+    params = {
+      "fields": "xx"
+    }
+    res = self._make_request(endpoint="covidcast_meta", auth=self.epidata_client.auth, json=True, raise_for_status=True, params=params)
     self.assertEqual(res['result'], 1)
     self.assertEqual(len(res['epidata']), len(expected))
     self.assertEqual(res['epidata'][0], {})
-
