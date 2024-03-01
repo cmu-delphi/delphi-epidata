@@ -19,17 +19,14 @@ $ curl "https://raw.githubusercontent.com/cmu-delphi/delphi-epidata/dev/dev/loca
 You should now have the following directory structure:
 
 ```sh
-├── driver
-│   ├── .dockerignore -> repos/delphi/delphi-epidata/dev/local/.dockerignore
-│   ├── Makefile -> repos/delphi/delphi-epidata/dev/local/Makefile
-│   ├── repos
-│   │   └── delphi
-│   │       ├── delphi-epidata
-│   │       ├── flu-contest
-│   │       ├── github-deploy-repo
-│   │       ├── nowcast
-│   │       ├── operations
-│   │       └── utils
+└── driver
+    ├── .dockerignore -> repos/delphi/delphi-epidata/dev/local/.dockerignore
+    ├── Makefile -> repos/delphi/delphi-epidata/dev/local/Makefile
+    └── repos
+        └── delphi
+            ├── delphi-epidata
+            ├── operations
+            └── utils
 ```
 
 and you should now be in the `driver` directory.
@@ -173,7 +170,7 @@ Then run the tests in a container based on that image:
 
 ```bash
 docker run --rm delphi_python \
-  python3 -m undefx.py3tester.py3tester --color \
+  python3 -m pytest \
     repos/delphi/delphi-epidata/tests
 ```
 
@@ -315,7 +312,7 @@ More concretely, you can run Epidata API integration tests like this:
 
   ```bash
   docker run --rm --network delphi-net delphi_python \
-  python3 -m undefx.py3tester.py3tester --color \
+  python3 -m pytest \
     repos/delphi/delphi-epidata/integrations
   ```
 
@@ -377,7 +374,7 @@ docker run --rm --network delphi-net \
   --mount type=bind,source="$(pwd)"/repos/delphi/delphi-epidata,target=/usr/src/app/repos/delphi/delphi-epidata,readonly \
   --mount type=bind,source="$(pwd)"/repos/delphi/delphi-epidata/src,target=/usr/src/app/delphi/epidata,readonly \
   delphi_python \
-python3 -m undefx.py3tester.py3tester --color \
+python3 -m pytest \
   repos/delphi/delphi-epidata/integrations
 ```
 

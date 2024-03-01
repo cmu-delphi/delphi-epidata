@@ -33,16 +33,10 @@ tree -L 3 .
 ```
 .
 └── repos
-    ├── delphi
-    │   ├── delphi-epidata
-    │   ├── flu-contest
-    │   ├── github-deploy-repo
-    │   ├── nowcast
-    │   ├── operations
-    │   └── utils
-    └── undefx
-        ├── py3tester
-        └── undef-analysis
+    └── delphi
+        ├── delphi-epidata
+        ├── operations
+        └── utils
 ```
 
 # the data
