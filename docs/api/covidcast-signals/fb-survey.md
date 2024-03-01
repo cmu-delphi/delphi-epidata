@@ -1,4 +1,4 @@
-n---
+---
 title: COVID-19 Trends and Impact Survey
 parent: Inactive Signals
 grand_parent: COVIDcast Main Endpoint
