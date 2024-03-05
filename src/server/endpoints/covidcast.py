@@ -242,6 +242,15 @@ def handle_export():
     start_day, is_day = start_time_set.time_values[0], start_time_set.is_day
     end_time_set = parse_day_or_week_arg("end_day", 202020 if weekly_signals > 0 else 20200901)
     end_day, is_end_day = end_time_set.time_values[0], end_time_set.is_day
+
+    format_date = time_value_to_iso if is_day else lambda x: time_value_to_week(x).cdcformat()
+
+    try:
+        formatted_start_day = format_date(start_day)
+        formatted_end_day = format_date(end_day)
+    except ValueError as e:
+        raise ValidationFailedException("Invalid date format: " + str(e))
+
     if is_day != is_end_day:
         raise ValidationFailedException("mixing weeks with day arguments")
     _verify_argument_time_type_matches(is_day, daily_signals, weekly_signals)
@@ -268,10 +277,9 @@ def handle_export():
 
     q.apply_as_of_filter(history_table, as_of)
 
-    format_date = time_value_to_iso if is_day else lambda x: time_value_to_week(x).cdcformat()
     # tag as_of in filename, if it was specified
     as_of_str = "-asof-{as_of}".format(as_of=format_date(as_of)) if as_of is not None else ""
-    filename = "covidcast-{source}-{signal}-{start_day}-to-{end_day}{as_of}".format(source=source, signal=signal, start_day=format_date(start_day), end_day=format_date(end_day), as_of=as_of_str)
+    filename = "covidcast-{source}-{signal}-{start_day}-to-{end_day}{as_of}".format(source=source, signal=signal, start_day=formatted_start_day, end_day=formatted_end_day, as_of=as_of_str)
     p = CSVPrinter(filename)
 
     def parse_row(i, row):
