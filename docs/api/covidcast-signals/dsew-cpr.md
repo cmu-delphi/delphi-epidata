@@ -80,8 +80,6 @@ The report is currently updated daily, excluding weekends. However, this is subj
 
 The CPR is prepared with an internal lag of 1-2 days for most signals. The file is usually posted to healthdata.gov the day after the date listed in the filename, excluding weekends and federal holidays. This results in an effective lag in COVIDcast of 2-4 days, or 5 days when Monday is a holiday.
 
-See our [blog post](https://delphi.cmu.edu/blog/2020/11/05/a-syndromic-covid-19-indicator-based-on-insurance-claims-of-outpatient-visits/#backfill) for more information on backfill.
-
 ## Source and Licensing
 
 This indicator mirrors and lightly aggregates data originally published by the Data Strategy and Execution Workgroup via [HealthData.gov](https://healthdata.gov/). As a work of the US government, the original data is in the [public domain](https://www.usa.gov/government-works).
