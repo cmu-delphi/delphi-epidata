@@ -60,6 +60,8 @@ in later data revisions (having a median delta of 10% or more). Estimates for
 dates more than 57 days in the past are expected to remain fairly static (having
 a median delta of 1% or less), as most major revisions have already occurred.
 
+See our [blog post](https://delphi.cmu.edu/blog/2020/11/05/a-syndromic-covid-19-indicator-based-on-insurance-claims-of-outpatient-visits/#backfill) for more information on backfill.
+
 ## Limitations
 
 This data source is based on electronic medical records and claims data provided
