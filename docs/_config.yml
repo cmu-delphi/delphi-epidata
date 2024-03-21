@@ -45,7 +45,7 @@ footer_content: "Copyright &copy; 2020, <a href='https://delphi.cmu.edu'>Delphi 
 
 heading_anchors: true
 
-
+favicon_ico: "favicon.ico"
 # Exclude from processing.
 # The following items will not be processed, by default. Create a custom list
 # to override the default setting.
