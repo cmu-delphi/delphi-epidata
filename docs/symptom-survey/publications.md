@@ -26,6 +26,15 @@ Pandemic"](https://www.pnas.org/topic/548) in *PNAS*:
 
 Research publications using the survey data include:
 
+- P. Porebski, S. Venkatramanan, A. Adiga, B. Klahn, B. Hurt, M. L. Wilson,
+  J. Chen, A. Vullikanti, M. Marathe & B. Lewis (2024). [Data-driven
+  mechanistic framework with stratified immunity and effective transmissibility
+  for COVID-19 scenario projections](https://doi.org/10.1016/j.epidem.2024.100761).
+  *Epidemics* 100761.
+- V. Nelson, B. Bashyal, P.-N. Tan & Y. A. Argyris (2024). [Vaccine rhetoric
+  on social media and COVID-19 vaccine uptake rates: A triangulation using
+  self-reported vaccine acceptance](https://doi.org/10.1016/j.socscimed.2024.116775).
+  *Social Science & Medicine* 116775.
 - R.R. Andridge (2024). [Using proxy pattern-mixture models to explain bias in
   estimates of COVID-19 vaccine uptake from two large surveys](https://doi.org/10.1093/jrsssa/qnae005).
   *Journal of the Royal Statistical Society Series A: Statistics in Society*.
@@ -34,7 +43,7 @@ Research publications using the survey data include:
   *IISE Transactions*.
 - de Vries, M., Kim, J.Y. & Han, H. (2023). [The unequal landscape of civic
   opportunity in America](https://doi.org/10.1038/s41562-023-01743-1). *Nature
-  Human Behavior*. 
+  Human Behavior* 8, 256-263. 
 - E. Tuzhilina, T. J. Hastie, D. J. McDonald, J. K. Tay & R. Tibshirani (2023).
   [Smooth multi-period forecasting with application to prediction of COVID-19
   cases](https://doi.org/10.1080/10618600.2023.2285337). *Journal of Computational
