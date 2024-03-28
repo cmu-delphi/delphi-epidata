@@ -38,6 +38,7 @@ None required.
 | `epidata[].max_value`     | maximum value                                                       | float            |
 | `epidata[].mean_value`    | mean of value                                                       | float            |
 | `epidata[].stdev_value`   | standard deviation of value                                         | float            |
+| `epidata[].min_issue`     | oldest date data was issued (e.g., 20200710)                        | integer          |
 | `epidata[].max_issue`     | most recent date data was issued (e.g., 20200710)                   | integer          |
 | `epidata[].min_lag`       | smallest lag from observation to issue, in `time_type` units        | integer          |
 | `epidata[].max_lag`       | largest lag from observation to issue, in `time_type` units         | integer          |
@@ -51,19 +52,22 @@ https://api.delphi.cmu.edu/epidata/covidcast_meta/
 {
   "result": 1,
   "epidata": [
-  {
+    {
       "data_source": "doctor-visits",
       "signal": "smoothed_adj_cli",
-      "last_update": 1592707979,
-      "stdev_value": 2.6647410028331,
-      "num_locations": 2500,
       "time_type": "day",
-      "max_value": 87.190476,
-      "mean_value": 1.4439366759191,
       "geo_type": "county",
-      "min_value": 0,
-      "max_time": 20200617,
-      "min_time": 20200201
+      "min_time": 20200201,
+      "max_time": 20240321,
+      "num_locations": 2586,
+      "min_value": 0.0,
+      "max_value": 87.670832,
+      "mean_value": 2.4972178,
+      "stdev_value": 3.6433783,
+      "last_update": 1711412545,
+      "max_issue": 20240325,
+      "min_lag": 2,
+      "max_lag": 129
     },
     ...
   ],
