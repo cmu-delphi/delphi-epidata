@@ -26,6 +26,10 @@ Pandemic"](https://www.pnas.org/topic/548) in *PNAS*:
 
 Research publications using the survey data include:
 
+- A. Srivastava, J. M. Ramirez, S. Díaz-Aranda, J. Aguilar, A. F. Anta, A. Ortega,
+  and R. E. Lillo (2024). [Nowcasting temporal trends using indirect surveys](https://doi.org/10.1609/aaai.v38i20.30242).
+  In *Proceedings of the 38th AAAI Conference on Artificial Intelligence* 38,
+  22359–22367.
 - P. Porebski, S. Venkatramanan, A. Adiga, B. Klahn, B. Hurt, M. L. Wilson,
   J. Chen, A. Vullikanti, M. Marathe & B. Lewis (2024). [Data-driven
   mechanistic framework with stratified immunity and effective transmissibility
