@@ -183,6 +183,8 @@ a median delta of 1% or less), as most major revisions have already occurred.
 
 We are currently working on adjustments to correct for this.
 
+See our [blog post](https://delphi.cmu.edu/blog/2020/11/05/a-syndromic-covid-19-indicator-based-on-insurance-claims-of-outpatient-visits/#backfill) for more information on backfill.
+
 ## Limitations
 
 This data source is based on data provided to us by Change Healthcare. Change
