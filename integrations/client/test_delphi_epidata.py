@@ -268,6 +268,8 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
       self.assertIn("Sending POST request to URL: http://delphi_web_epidata/epidata/test_endpoint3/", output[2])
       self.assertIn("params: {'key3': 'value3'}", output[2])
       self.assertIn("Received 200 response (16 bytes)", output[3])
+    
+    Epidata.debug = False
 
   @patch('requests.post')
   @patch('requests.get')
@@ -282,6 +284,8 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     self.assertIn("Sending GET request to URL: http://delphi_web_epidata/epidata/covidcast/", output[0])
     get.assert_not_called()
     post.assert_not_called()
+    Epidata.debug = False
+    Epidata.sandbox = False
 
   def test_geo_value(self):
     """test different variants of geo types: single, *, multi."""
