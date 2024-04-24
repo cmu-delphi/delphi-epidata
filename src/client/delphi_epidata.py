@@ -79,18 +79,24 @@ class Epidata:
         """Make request with a retry if an exception is thrown."""
         request_url = f"{Epidata.BASE_URL}/{endpoint}/"
         if Epidata.debug:
-            Epidata.logger.info(f"Sending GET request to URL: {request_url} | params: {params} | headers: {_HEADERS}")
+            Epidata.logger.info("Sending GET request", url=request_url, params=params, headers=_HEADERS)
         if Epidata.sandbox:
-            return
+            resp = requests.Response()
+            resp._content = b'true'
+            return resp
         start_time = time.time()
         req = requests.get(request_url, params, auth=Epidata.auth, headers=_HEADERS)
         if req.status_code == 414:
             if Epidata.debug:
-                Epidata.logger.info(f"Received {req.status_code} response ({len(req.content)} bytes) in {(time.time() - start_time):.3f} seconds")
-                Epidata.logger.info(f"Sending POST request to URL: {request_url} | params: {params} | headers: {_HEADERS}")
+                Epidata.logger.info("Received 414 response, retrying as POST request", url=request_url, params=params, headers=_HEADERS)
             req = requests.post(request_url, params, auth=Epidata.auth, headers=_HEADERS)
         if Epidata.debug:
-            Epidata.logger.info(f"Received {req.status_code} response ({len(req.content)} bytes) in {(time.time() - start_time):.3f} seconds")
+            Epidata.logger.info(
+                "Received response",
+                status_code=req.status_code,
+                len=len(req.content),
+                time=round(time.time() - start_time, 4)
+            )
         # handle 401 and 429
         req.raise_for_status()
         return req
@@ -105,8 +111,6 @@ class Epidata:
         """
         try:
             result = Epidata._request_with_retry(endpoint, params)
-            if Epidata.sandbox:
-                return
         except Exception as e:
             return {"result": 0, "message": "error: " + str(e)}
         if params is not None and "format" in params and params["format"] == "csv":
