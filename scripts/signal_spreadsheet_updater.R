@@ -623,17 +623,14 @@ col <- "Severity Pyramid Rungs"
 
 
 col <- "Data Censoring"
-# Has any of the data been censored (e.g. small counts)?
-#
-# TODO: If so how, and how much impact does it have (e.g. approximate fraction of
-# counts affected).
-#
+# Has any of the data been censored (e.g. small counts)? If so how, and how
+# much impact does it have (e.g. approximate fraction of counts affected).
 # This is an unstructured text field.
 data_censoring <- c(
   "chng" = "Discarded if over a given 7-day period an estimate is computed with 100 or fewer observations",
-  "covid-act-now" = "Discarded if sample size (total tests performed) is 0. It is unknown what, if any, censoring the data source performs",
+  "covid-act-now" = "Discarded if sample size (total tests performed) is 0",
   "doctor-visits" = "Discarded if over a given 7-day period an estimate is computed with 500 or fewer observations",
-  "dsew-cpr" = "It is unknown what, if any, censoring the data source performs",
+  "dsew-cpr" = "None",
   "fb-survey" = "Discarded if an estimate is based on fewer than 100 survey responses. For signals reported using a 7-day average (those beginning with 'smoothed_'), this means a geographic area must have at least 100 responses in 7 days to be reported.
 
   This affects some items more than others. For instance, some survey items are only asked of a subset of survey respondents. It also affects some geographic areas more than others, particularly rural areas with low population densities. When doing analysis of county-level data, one should be aware that missing counties are typically more rural and less populous than those present in the data, which may introduce bias into the analysis.",
@@ -653,7 +650,7 @@ data_censoring <- c(
 signal_specific_censoring <- tibble::tribble(
   ~data_source, ~signal, ~note,
   "dsew-cpr", "covid_naat_pct_positive_7dav", "Discarded when the 7dav NAAT test volume provided in the same originating
-    spreadsheet, corresponding to a period ~4 days earlier, is 5 or fewer. This removes 10-20% of counties (https://github.com/cmu-delphi/covidcast-indicators/issues/1513). It is unknown what, if any, censoring the data source performs",
+    spreadsheet, corresponding to a period ~4 days earlier, is 5 or fewer. This removes 10-20% of counties (https://github.com/cmu-delphi/covidcast-indicators/issues/1513)",
 
 )
 source_updated[, col] <- data_censoring[source_updated$data_source]
