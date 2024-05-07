@@ -10,6 +10,8 @@ suppressPackageStartupMessages({
 options(warn = 1)
 
 
+# TODO all info for youtube-survey
+
 # COVIDcast metadata
 # Metadata documentation: https://cmu-delphi.github.io/delphi-epidata/api/covidcast_meta.html
 
@@ -617,9 +619,9 @@ source_updated[source_update$`Source Subdivision` == "quidel-flu", col] <- "None
 col <- "Severity Pyramid Rungs"
 # One or more rungs to which this signal best relates:
 # https://docs.google.com/presentation/d/1K458kZsncwwjNMOnlkaqHA_0Vm7PEz6g43fYy4GII10/edit#slide=id.g10e023ed748_0_163
+# Added manually to signal spreadsheet.
 
 
-# TODO
 col <- "Data Censoring"
 # Has any of the data been censored (e.g. small counts)?
 #
@@ -635,17 +637,17 @@ data_censoring <- c(
   "fb-survey" = "Discarded if an estimate is based on fewer than 100 survey responses. For signals reported using a 7-day average (those beginning with 'smoothed_'), this means a geographic area must have at least 100 responses in 7 days to be reported.
 
   This affects some items more than others. For instance, some survey items are only asked of a subset of survey respondents. It also affects some geographic areas more than others, particularly rural areas with low population densities. When doing analysis of county-level data, one should be aware that missing counties are typically more rural and less populous than those present in the data, which may introduce bias into the analysis.",
-  "ght" = NA_character_,
-  "google-survey" = NA_character_,
-  "google-symptoms" = "Unavailable when daily volume in a region does not meet quality or privacy thresholds, as set by Google. Google also uses differential privacy, which adds artificial noise to the raw datasets",
-  "hhs" = NA_character_, # TODO
+  "ght" = "Reported as 0 query when search volume is below a certain threshold, as set by Google. Areas with low query volume hence exhibit jumps and zero-inflation, as small variations in the signal can cause it to be sometimes truncated to 0 and sometimes reported at its actual level",
+  "google-survey" = "Discarded when an estimate is based on fewer than 100 survey responses",
+  "google-symptoms" = "Unavailable when daily volume in a region does not meet quality or privacy thresholds, as set by Google. Google also uses differential privacy, which adds artificial noise to the incoming data",
+  "hhs" = "None",
   "hospital-admissions" = "Discarded if over a given 7-day period an estimate is computed with 500 or fewer observations",
-  "indicator-combination" = NA_character_,
-  "jhu-csse" = NA_character_, # TODO
+  "indicator-combination" = "None. However underlying signals may perform their own censoring",
+  "jhu-csse" = "None",
   "nchs-mortality" = "Unavailable by NCHS when counts are between 1 and 9, and for weeks where the counts are less than 50% of the expected number, since these provisional counts are highly incomplete and potentially misleading",
   "quidel" = "Discarded when an estimate is based on fewer than 50 tests. For smoothed signals at the county, MSA, and HRR levels with between 25 and 50 tests, the estimate is computed with the original N tests and 50-N synthetic tests that have the same test positivity rate as the parent state (state with the largest proportion of the population in this region); estimates are entirely discarded when based on fewer than 25 tests",
-  "safegraph" = NA_character_,
-  "usa-facts" = NA_character_,
+  "safegraph" = "None. However, Safegraph uses differential privacy, which adds artificial noise to the incoming data. See https://docs.safegraph.com/docs/social-distancing-metrics for details",
+  "usa-facts" = "None",
   "youtube-survey" = NA_character_
 )
 signal_specific_censoring <- tibble::tribble(
