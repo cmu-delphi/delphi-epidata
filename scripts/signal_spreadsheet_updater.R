@@ -203,7 +203,7 @@ inactive_signals <- tibble::tribble(
 
   "hospital-admissions", "smoothed_covid19",
   "hospital-admissions", "smoothed_adj_covid19",
-
+ 
   "google-symptoms", "anosmia_raw_search",
   "google-symptoms", "anosmia_smoothed_search",
   "google-symptoms", "ageusia_raw_search",
@@ -307,7 +307,8 @@ geo_scope <- c(
   "nchs-mortality" = "USA",
   "quidel" = "USA",
   "safegraph" = "USA",
-  "usa-facts" = "USA"
+  "usa-facts" = "USA",
+  "youtube-survey" = NA_character_
 )
 source_updated[, col] <- geo_scope[source_updated$data_source]
 
@@ -367,7 +368,10 @@ avail_geos <- c(
   "indicator-combination" = glue("county{delphi_agg_text}, hrr{delphi_agg_text}, msa{delphi_agg_text}, state{delphi_agg_text}, hhs{delphi_agg_text}, nation{delphi_agg_text}"),
   "jhu-csse" = glue("county, hrr{delphi_agg_text}, msa{delphi_agg_text}, state{delphi_agg_text}, hhs{delphi_agg_text}, nation{delphi_agg_text}"),
   "nchs-mortality" = glue("state, nation"),
-  # TODO check against actual data. Or maybe there's an internal/private version of metadata that includes Quidel stats?
+ 
+   # TODO check against actual data. Or maybe there's an internal/private version of metadata that includes Quidel stats?
+  # this is quidel non-flu signals, other is flu
+
   "quidel" = glue("county{delphi_agg_text}, hrr{delphi_agg_text}, msa{delphi_agg_text}, state{delphi_agg_text}, hhs{delphi_agg_text}, nation{delphi_agg_text}"),
   "safegraph" = glue("county{delphi_agg_text}, hrr{delphi_agg_text}, msa{delphi_agg_text}, state{delphi_agg_text}, hhs{delphi_agg_text}, nation{delphi_agg_text}"),
   "usa-facts" = glue("county, hrr{delphi_agg_text}, msa{delphi_agg_text}, state{delphi_agg_text}, hhs{delphi_agg_text}, nation{delphi_agg_text}"),
@@ -427,7 +431,10 @@ leftover_signal_geos_manual <- tibble::tribble(
   "indicator-combination", "nmf_day_doc_fbs_ght", combo_geos,
   
   # Quidel flu signals
-  # TODO check against actual data. Or maybe there's an internal/private version of metadata that includes Quidel stats?
+
+  # TODO check against actual data. Or maybe there's an internal/private version of metadata that includes Quidel stats? Nat was only looking at metadata
+  #for each of these quidel signals, make request to API for each possible geotype (county, hrr, etc) to see if data comes back
+
   "quidel", "raw_pct_negative", quidel_geos,        
   "quidel", "smoothed_pct_negative", quidel_geos,        
   "quidel", "raw_tests_per_device", quidel_geos,        
@@ -470,10 +477,12 @@ avail_geos <- c(
   "nchs-mortality" = "weekly",
   "quidel" = "daily",
   "safegraph" = "weekly",
-  "usa-facts" = "weekly"
+  "usa-facts" = "weekly",
+  "youtube-survey" = NA_character_
 )
 
-# TOOD to be renamed to "Typical Reporting Lag" @Carlyn
+# TODO to be renamed to "Typical Reporting Lag" @Carlyn
+
 col <- "Typical Reporting Lag"
 # The number of days as an unstructured field, e.g. "3-5 days", from the last
 # day of a reported period until the first reported value for that period is
@@ -510,15 +519,17 @@ reporting_lag <- c(
   "nchs-mortality" = "11-17 days",
   "quidel" = "5-6 days",
   "safegraph" = "3-11 days",
-  "usa-facts" = "2-8 days"
+  "usa-facts" = "2-8 days",
+  "youtube-survey" = NA_character_
 )
+
 # Index (using `[]`) into the map using the data_source (or source division)
 # column and save to the relevant field.
 # Using the data_source to index into the map puts the output into the same
 # order as the dataframe.
 source_updated[, col] <- reporting_lag[source_updated$data_source]
 
-# TOOD to be renamed to "Typical Revision Cadence" @Carlyn
+# TODO to be renamed to "Typical Revision Cadence" @Carlyn
 col <- "Typical Revision Cadence"
 # How frequently are revised values (AKA backfill) usually made available as
 # an unstructured field, e.g. "Weekly (usually Fridays)", "daily", etc. If
@@ -542,7 +553,8 @@ revision_cadence <- c(
   "nchs-mortality" = "Weekly. All-cause mortality takes ~6 weeks on average to achieve 99% of its final value (https://link.springer.com/article/10.1057/s41271-021-00309-7)",
   "quidel" = NA_character_, # Happens, up to 6+ weeks after the report date. # TODO
   "safegraph" = "None",
-  "usa-facts" = "None. The raw data reports cumulative cases and deaths, which Delphi diffs to compute incidence. Raw cumulative figures are sometimes corrected by adjusting the reported value for a single day, but revisions do not affect past report dates."
+  "usa-facts" = "None. The raw data reports cumulative cases and deaths, which Delphi diffs to compute incidence. Raw cumulative figures are sometimes corrected by adjusting the reported value for a single day, but revisions do not affect past report dates.",
+  "youtube-survey" = NA_character_
 )
 source_updated[, col] <- revision_cadence[source_updated$data_source]
 
@@ -567,7 +579,8 @@ demo_scope <- c(
   "nchs-mortality" = "All",
   "quidel" = "Nationwide Quidel testing equipment network",
   "safegraph" = "Safegraph panel members who use mobile devices",
-  "usa-facts" = "All"
+  "usa-facts" = "All",
+  "youtube-survey" = NA_character_
 )
 source_updated[, col] <- demo_scope[source_updated$data_source]
 
@@ -598,7 +611,8 @@ demo_breakdowns <- c(
   "nchs-mortality" = "None",
   "quidel" = "age (0-17, 0-4, 5-17, 18-49, 50-64, 65+)",
   "safegraph" = "None",
-  "usa-facts" = "None"
+  "usa-facts" = "None",
+  "youtube-survey" = NA_character_
 )
 source_updated[, col] <- demo_breakdowns[source_updated$data_source]
 # Quidel covid has age bands, but quidel flu doesn't.
@@ -636,12 +650,14 @@ data_censoring <- c(
   "nchs-mortality" = "Unavailable by NCHS when counts are between 1 and 9, and for weeks where the counts are less than 50% of the expected number, since these provisional counts are highly incomplete and potentially misleading",
   "quidel" = "Discarded when an estimate is based on fewer than 50 tests. For smoothed signals at the county, MSA, and HRR levels with between 25 and 50 tests, the estimate is computed with the original N tests and 50-N synthetic tests that have the same test positivity rate as the parent state (state with the largest proportion of the population in this region); estimates are entirely discarded when based on fewer than 25 tests",
   "safegraph" = NA_character_,
-  "usa-facts" = NA_character_
+  "usa-facts" = NA_character_,
+  "youtube-survey" = NA_character_
 )
 signal_specific_censoring <- tibble::tribble(
   ~data_source, ~signal, ~note,
   "dsew-cpr", "covid_naat_pct_positive_7dav", "Discarded when the 7dav NAAT test volume provided in the same originating
     spreadsheet, corresponding to a period ~4 days earlier, is 5 or fewer. This removes 10-20% of counties (https://github.com/cmu-delphi/covidcast-indicators/issues/1513). It is unknown what, if any, censoring the data source performs",
+
 )
 source_updated[, col] <- data_censoring[source_updated$data_source]
 
@@ -674,7 +690,8 @@ missingness <- c(
   "nchs-mortality" = NA_character_,
   "quidel" = NA_character_,
   "safegraph" = NA_character_,
-  "usa-facts" = NA_character_
+  "usa-facts" = NA_character_,
+  "youtube-survey" = NA_character_
 )
 source_updated[, col] <- missingness[source_updated$data_source]
 
@@ -700,7 +717,8 @@ orgs_allowed_access <- c(
   "nchs-mortality" = "public",
   "quidel" = "Delphi",
   "safegraph" = "public",
-  "usa-facts" = "public"
+  "usa-facts" = "public",
+  "youtube-survey" = NA_character_
 )
 source_updated[, col] <- orgs_allowed_access[source_updated$data_source]
 
@@ -722,7 +740,8 @@ orgs_allowed_know <- c(
   "nchs-mortality" = "public",
   "quidel" = "public",
   "safegraph" = "public",
-  "usa-facts" = "public"
+  "usa-facts" = "public",
+  "youtube-survey" = NA_character_
 )
 source_updated[, col] <- orgs_allowed_know[source_updated$data_source]
 
@@ -745,7 +764,8 @@ license <- c(
   "nchs-mortality" = "NCHS Data Use Agreement (https://www.cdc.gov/nchs/data_access/restrictions.htm)",
   "quidel" = "CC BY",
   "safegraph" = "CC BY",
-  "usa-facts" = "CC BY"
+  "usa-facts" = "CC BY",
+  "youtube-survey" = NA_character_
 )
 source_updated[, col] <- license[source_updated$data_source]
 
@@ -753,45 +773,56 @@ source_updated[, col] <- license[source_updated$data_source]
 col <- "Use Restrictions"
 # Any important DUA restrictions on use, publication, sharing, linkage, etc.?
 use_restrictions <- c(
-  "chng" = NA_character_,
-  "covid-act-now" = NA_character_,
-  "doctor-visits" = NA_character_,
-  "dsew-cpr" = NA_character_,
-  "fb-survey" = NA_character_,
+  "chng" = NA_character_, #change DUA in confidential Google drive, generic contract terms
+  "covid-act-now" = NA_character_, #public
+  "doctor-visits" = NA_character_, #optum DUA in confidential Google drive, generic contract terms
+  "dsew-cpr" = NA_character_, #public
+  "fb-survey" = NA_character_, #
   "ght" = NA_character_,
   "google-survey" = NA_character_,
   "google-symptoms" = NA_character_,
   "hhs" = NA_character_,
-  "hospital-admissions" = NA_character_,
+  "hospital-admissions" = NA_character_, #optum DUA in confidential Google drive, generic contract terms
   "indicator-combination" = NA_character_,
   "jhu-csse" = NA_character_,
   "nchs-mortality" = NA_character_,
-  "quidel" = NA_character_,
+  "quidel" = "Quidel provides Delphi data solely for internal research use and non-commercial research and analytics purposes for developing models for forecasting influenza-like epidemics and pandemics.", #Quidel DUA in confidential Google drive,
   "safegraph" = NA_character_,
-  "usa-facts" = NA_character_
+  "usa-facts" = NA_character_,
+  "youtube-survey" = NA_character_
 )
 source_updated[, col] <- use_restrictions[source_updated$data_source]
 
 # TODO
+
+#aa <- epidatr::covidcast_epidata()
+#aa$sources$`jhu-csse`$dua
+
+#purrr::map(aa$sources, ~ .x$license)
+
+#bb <- aa$sources$`fb-survey`$signals %>% tibble::as_tibble()
+#bb
+
+
 col <- "Link to DUA"
 dua_link <- c(
-  "chng" = "https://cmu.box.com/s/cto4to822zecr3oyq1kkk9xmzhtq9tl2",
-  "covid-act-now" = NA_character_, # contract?
-  "doctor-visits" = "https://cmu.box.com/s/l2tz6kmiws6jyty2azwb43poiepz0565",
-  "dsew-cpr" = NA_character_,
-  "fb-survey" = "https://cmu.box.com/s/qfxplcdrcn9retfzx4zniyugbd9h3bos",
-  "ght" = NA_character_,
-  "google-survey" = NA_character_, # contract?
-  "google-symptoms" = NA_character_,
-  "hhs" = NA_character_,
-  "hospital-admissions" = "https://cmu.box.com/s/l2tz6kmiws6jyty2azwb43poiepz0565",
-  "indicator-combination" = NA_character_,
-  "jhu-csse" = NA_character_,
-  "nchs-mortality" = NA_character_,
-  "quidel" = NA_character_,
-  "safegraph" = "https://cmu.box.com/s/m0p1wpet4vuvey7od83n70h0e97ky2kg",
-  "usa-facts" = NA_character_,
-  "youtube-survey" = NA_character_  # contract?
+  "chng" = "https://drive.google.com/drive/u/1/folders/1GKYSFb6C_8jSHTg-65eVzSOT433oIDrf", #"https://cmu.box.com/s/cto4to822zecr3oyq1kkk9xmzhtq9tl2"
+  "covid-act-now" = NA_character_, #public, maybe contract for other specific project #@Carlyn
+  "doctor-visits" = "https://drive.google.com/drive/u/1/folders/11kvTzVR5Yd3lVszxmPHxFZcAYjIpoLcf", #"https://cmu.box.com/s/l2tz6kmiws6jyty2azwb43poiepz0565",
+  "dsew-cpr" = NA_character_, #public
+  "fb-survey" = "https://cmu.box.com/s/qfxplcdrcn9retfzx4zniyugbd9h3bos",#@Alex R.
+  "ght" = NA_character_, #public, has an API doesn't require password
+  "google-survey" = NA_character_, #@Carlyn has requested DUA from Roni
+  "google-symptoms" = NA_character_, #public
+  "hhs" = NA_character_, #public gov't
+  "hospital-admissions" = "https://drive.google.com/drive/u/1/folders/11kvTzVR5Yd3lVszxmPHxFZcAYjIpoLcf", #"https://cmu.box.com/s/l2tz6kmiws6jyty2azwb43poiepz0565",
+  "indicator-combination" = "see Doctor Visits, Facebook Survey, and Google Health Trends",
+  "jhu-csse" = NA_character_, #public
+  "nchs-mortality" = "https://www.cdc.gov/nchs/data_access/restrictions.htm",
+  "quidel" = "https://drive.google.com/drive/u/1/folders/1HhOEbXlZXN9YpHBWOfrY7Wo2USVVfJVS",
+  "safegraph" = "https://drive.google.com/drive/u/1/folders/1qkcUpdkJOkbSBBszrSCA4n1vSQKSlv3x",
+  "usa-facts" = NA_character_, #public
+  "youtube-survey" = NA_character_, #contract expected 
 )
 source_updated[, col] <- dua_link[source_updated$data_source]
 
