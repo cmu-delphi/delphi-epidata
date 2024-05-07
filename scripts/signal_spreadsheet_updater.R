@@ -480,6 +480,81 @@ avail_geos <- c(
   "youtube-survey" = NA_character_
 )
 
+# # Tool: Investigate reporting lag and revision cadence
+# source <- "indicator-combination-nmf"
+# signal <- "nmf_day_doc_fbc_fbs_ght"
+# # Not available for all indicators. Try nation. Avoid smaller geos because
+# # processing later will take a while.
+# geo_type <- "state"
+
+# # Consider a range of issues. About 2 weeks is probably fine. Not all indicators
+# # are available in this time range, so you may need to make another range of
+# # dates that is years or months different.
+# about_2weeks_issues <- c(
+#   "2021-02-01",
+#   "2021-02-02",
+#   "2021-02-04",
+#   "2021-02-05",
+#   "2021-02-06",
+#   "2021-02-07",
+#   "2021-02-08",
+#   "2021-02-09",
+#   "2021-02-10",
+#   "2021-02-11",
+#   "2021-02-12",
+#   "2021-02-13",
+#   "2021-02-14",
+#   "2021-02-15",
+#   "2021-02-16"
+# )
+
+
+# epidata <- pub_covidcast(
+#   source,
+#   signal,
+#   geo_type = geo_type,
+#   geo_values = "*",
+#   time_type = "day",
+#   issues = about_2weeks_issues
+# )
+
+
+# # Make sure data is looking reasonable
+# # Number of reference dates reported in each issue
+# count(epidata, issue)
+
+# # Number of locations reported for each issue and reference date
+# count(epidata, issue, time_value)
+
+
+# ## Revision cadence
+# # For each location and reference date, are all reported values the same across
+# # all lags we're checking?
+# revision_comparison <- epidata %>%
+#   group_by(time_value, geo_value) %>%
+#   summarize(
+#     no_backfill = case_when(
+#       length(unique(value)) == 1 ~ "TRUE",
+#       # If only two different values, are they approximately the same?
+#       length(unique(value)) == 2 ~ all.equal(unique(value)[1], unique(value)[2]) %>% as.character(),
+#       # If three different values, list them
+#       length(unique(value)) > 2 ~ paste(unique(value), collapse = ", "),
+#     )
+#   )
+# # Are all reference dates without any lag?
+# all(revision_comparison$no_backfill == "TRUE")
+# View(revision_comparison)
+
+
+# ## Reporting lag
+# # Find how lagged the newest reported value is for each issue.
+# epidata_slice <- epidata %>% group_by(issue) %>% slice_min(lag)
+# # Find the most common min lag. We expect a relatively narrow range of lags. At
+# # most, a data source should be updated weekly such that it has a range of lags
+# # of 7 days (e.g. 5-12 days). For data updated daily, we expect a range of lags
+# # of only a few days (e.g. 2-4 days or even 2-3 days).
+# table(epidata_slice$lag)
+
 
 col <- "Typical Reporting Lag"
 # The number of days as an unstructured field, e.g. "3-5 days", from the last
