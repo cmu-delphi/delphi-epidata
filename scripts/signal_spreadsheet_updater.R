@@ -20,8 +20,8 @@ metadata <- pub_covidcast_meta()
 metadata$last_update <- as.Date(as.POSIXct(metadata$last_update, origin = "1970-01-01"))
 
 
-#Patch NCHS-mortality max_time data into metadata, and min_time
-source_name = "nchs-mortality"  #optional to use this variable
+# Patch NCHS-mortality max_time data into metadata, and min_time
+source_name = "nchs-mortality"
 nchs_row_nums = which(metadata$data_source == source_name)
 
 metadata$min_time <- as.character(metadata$min_time)
@@ -38,7 +38,7 @@ for (index in nchs_row_nums) {
     geo_values = "*",
     time_values = epirange(199001, 203001)
   )
-  column = epidata$time_value   #col variable is optional, helps minimize typing
+  column = epidata$time_value
   metadata[index, "min_time"] = epidatr:::date_to_epiweek(min(column)) %>% 
     as.character() %>>%
     { paste0(substr(., 1, 4), "-", substr(., 5, 6)) }
@@ -371,7 +371,6 @@ avail_geos <- c(
  
    # TODO check against actual data. Or maybe there's an internal/private version of metadata that includes Quidel stats?
   # this is quidel non-flu signals, other is flu
-
   "quidel" = glue("county{delphi_agg_text}, hrr{delphi_agg_text}, msa{delphi_agg_text}, state{delphi_agg_text}, hhs{delphi_agg_text}, nation{delphi_agg_text}"),
   "safegraph" = glue("county{delphi_agg_text}, hrr{delphi_agg_text}, msa{delphi_agg_text}, state{delphi_agg_text}, hhs{delphi_agg_text}, nation{delphi_agg_text}"),
   "usa-facts" = glue("county, hrr{delphi_agg_text}, msa{delphi_agg_text}, state{delphi_agg_text}, hhs{delphi_agg_text}, nation{delphi_agg_text}"),
@@ -431,10 +430,8 @@ leftover_signal_geos_manual <- tibble::tribble(
   "indicator-combination", "nmf_day_doc_fbs_ght", combo_geos,
   
   # Quidel flu signals
-
   # TODO check against actual data. Or maybe there's an internal/private version of metadata that includes Quidel stats? Nat was only looking at metadata
   #for each of these quidel signals, make request to API for each possible geotype (county, hrr, etc) to see if data comes back
-
   "quidel", "raw_pct_negative", quidel_geos,        
   "quidel", "smoothed_pct_negative", quidel_geos,        
   "quidel", "raw_tests_per_device", quidel_geos,        
@@ -481,7 +478,6 @@ avail_geos <- c(
   "youtube-survey" = NA_character_
 )
 
-# TODO to be renamed to "Typical Reporting Lag" @Carlyn
 
 col <- "Typical Reporting Lag"
 # The number of days as an unstructured field, e.g. "3-5 days", from the last
@@ -529,7 +525,6 @@ reporting_lag <- c(
 # order as the dataframe.
 source_updated[, col] <- reporting_lag[source_updated$data_source]
 
-# TODO to be renamed to "Typical Revision Cadence" @Carlyn
 col <- "Typical Revision Cadence"
 # How frequently are revised values (AKA backfill) usually made available as
 # an unstructured field, e.g. "Weekly (usually Fridays)", "daily", etc. If
@@ -584,7 +579,7 @@ demo_scope <- c(
 )
 source_updated[, col] <- demo_scope[source_updated$data_source]
 
-# TODO rename to "Demographic Breakdowns" @Carlyn
+
 col <- "Demographic Breakdowns"
 # What demographic breakdowns are available, e.g. "by age groups 0-17,
 # 18-64, 65+", "by race/ethnicity", "by gender".
@@ -618,7 +613,7 @@ source_updated[, col] <- demo_breakdowns[source_updated$data_source]
 # Quidel covid has age bands, but quidel flu doesn't.
 source_updated[source_update$`Source Subdivision` == "quidel-flu", col] <- "None"
 
-# TODO name in spreadsheet ends with a space -- remove @Carlyn
+
 col <- "Severity Pyramid Rungs"
 # One or more rungs to which this signal best relates:
 # https://docs.google.com/presentation/d/1K458kZsncwwjNMOnlkaqHA_0Vm7PEz6g43fYy4GII10/edit#slide=id.g10e023ed748_0_163
@@ -696,8 +691,6 @@ missingness <- c(
 source_updated[, col] <- missingness[source_updated$data_source]
 
 
-# TODO best guess, should check
-# TODO fix capitalization in name @Carlyn
 col <- "Who may access this signal?"
 # Who has the right to access this signal?  E.g. "Delphi, CDC" or "Delphi,
 # ACHD, PADOH", or "public". Separate different orgs by comma.
@@ -722,7 +715,7 @@ orgs_allowed_access <- c(
 )
 source_updated[, col] <- orgs_allowed_access[source_updated$data_source]
 
-# TODO best guess, should check
+
 col <- "Who may be told about this signal?"
 orgs_allowed_know <- c(
   "chng" = "public",
@@ -746,7 +739,6 @@ orgs_allowed_know <- c(
 source_updated[, col] <- orgs_allowed_know[source_updated$data_source]
 
 
-# TODO add column to spreadsheet @Carlyn
 col <- "License"
 license <- c(
   "chng" = "CC BY-NC",
@@ -768,6 +760,7 @@ license <- c(
   "youtube-survey" = NA_character_
 )
 source_updated[, col] <- license[source_updated$data_source]
+
 
 # TODO
 col <- "Use Restrictions"
@@ -793,7 +786,6 @@ use_restrictions <- c(
 )
 source_updated[, col] <- use_restrictions[source_updated$data_source]
 
-# TODO
 
 #aa <- epidatr::covidcast_epidata()
 #aa$sources$`jhu-csse`$dua
@@ -803,7 +795,7 @@ source_updated[, col] <- use_restrictions[source_updated$data_source]
 #bb <- aa$sources$`fb-survey`$signals %>% tibble::as_tibble()
 #bb
 
-
+# TODO
 col <- "Link to DUA"
 dua_link <- c(
   "chng" = "https://drive.google.com/drive/u/1/folders/1GKYSFb6C_8jSHTg-65eVzSOT433oIDrf", #"https://cmu.box.com/s/cto4to822zecr3oyq1kkk9xmzhtq9tl2"
@@ -828,6 +820,7 @@ source_updated[, col] <- dua_link[source_updated$data_source]
 
 
 source_updated
+
 
 # TODO: save updated signals table to CSV [readr::read_csv]
 
