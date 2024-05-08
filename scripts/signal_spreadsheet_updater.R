@@ -486,7 +486,7 @@ avail_geos <- c(
 # # Not available for all indicators. Try nation. Avoid smaller geos because
 # # processing later will take a while.
 # geo_type <- "state"
-
+#
 # # Consider a range of issues. About 2 weeks is probably fine. Not all indicators
 # # are available in this time range, so you may need to make another range of
 # # dates that is years or months different.
@@ -507,8 +507,8 @@ avail_geos <- c(
 #   "2021-02-15",
 #   "2021-02-16"
 # )
-
-
+#
+#
 # epidata <- pub_covidcast(
 #   source,
 #   signal,
@@ -517,16 +517,16 @@ avail_geos <- c(
 #   time_type = "day",
 #   issues = about_2weeks_issues
 # )
-
-
+#
+#
 # # Make sure data is looking reasonable
 # # Number of reference dates reported in each issue
 # count(epidata, issue)
-
+#
 # # Number of locations reported for each issue and reference date
 # count(epidata, issue, time_value)
-
-
+#
+#
 # ## Revision cadence
 # # For each location and reference date, are all reported values the same across
 # # all lags we're checking?
@@ -544,8 +544,8 @@ avail_geos <- c(
 # # Are all reference dates without any lag?
 # all(revision_comparison$no_backfill == "TRUE")
 # View(revision_comparison)
-
-
+#
+#
 # ## Reporting lag
 # # Find how lagged the newest reported value is for each issue.
 # epidata_slice <- epidata %>% group_by(issue) %>% slice_min(lag)
@@ -730,7 +730,66 @@ signal_specific_censoring <- tibble::tribble(
 )
 source_updated[, col] <- data_censoring[source_updated$data_source]
 
-# TODO
+# Add signal_specific_censoring info
+source_updated <- left_join(
+  source_updated, signal_specific_censoring,
+  by = c("Signal" = "signal", "data_source")
+) %>%
+  mutate(`Data Censoring` = coalesce(note, `Data Censoring`)) %>%
+  select(-note)
+
+
+# # Tool: Investigate state and county coverage
+# suppressPackageStartupMessages({
+#   library(epidatr) # Access Delphi API
+#   library(dplyr) # Data handling
+#   library(ggplot2)
+# })
+#
+#
+# # COVIDcast metadata
+# # Metadata documentation: https://cmu-delphi.github.io/delphi-epidata/api/covidcast_meta.html
+# metadata <- pub_covidcast_meta()
+# # Convert `last_update` into a datetime.
+# # metadata$last_update <- as.POSIXct(metadata$last_update, origin = "1970-01-01")
+# ## If don't want the hours, etc, truncate with `as.Date`
+# metadata$last_update <- as.Date(as.POSIXct(metadata$last_update, origin = "1970-01-01"))
+#
+# one_sig_per_source <- metadata %>%
+#   arrange(desc(signal)) %>%
+#   group_by(data_source) %>%
+#   slice_head(n = 1)
+#
+# state_filtered <- metadata %>%
+#   filter(geo_type == "state") %>%
+#   select(data_source, signal, geo_type, num_locations) %>%
+#   mutate(pct_locations = num_locations / 51 * 100)
+# first_sig_per_source_state <- state_filtered %>%
+#   group_by(data_source) %>%
+#   slice_head(n = 1)
+# first_sig_per_source_state
+#
+# ggplot(
+#   data = state_filtered,
+#   aes(x = data_source, y = pct_locations)
+# ) + geom_boxplot()
+#
+#
+# county_filtered <- metadata %>%
+#   filter(geo_type == "county") %>%
+#   select(data_source, signal, geo_type, num_locations) %>%
+#   mutate(pct_locations = num_locations / 3143 * 100)
+# first_sig_per_source_county <- county_filtered %>%
+#   group_by(data_source) %>%
+#   slice_head(n = 1)
+# first_sig_per_source_county
+#
+# ggplot(
+#   data = county_filtered,
+#   aes(x = data_source, y = pct_locations)
+# ) + geom_boxplot()
+
+
 col <- "Missingness"
 # How much missingness is there, and for what reasons? Is it possible to
 # distinguish a missing value from a true zero? This is an unstructured text
@@ -743,26 +802,87 @@ col <- "Missingness"
 # not sure what to do. Maybe just summarize the current state, e.g. "85%
 # counties available in mid 2020, then gradually declined to 8% of counties
 # by April 2024", and leave it at that. We could occasionally update it.
+
+all_counties_terr <- "Data is available for all counties and some territorial county equivalents."
+all_states <- "Data is available for all states."
+all_states_terr <- "Data is available for all states and some territories."
 missingness <- c(
-  "chng" = NA_character_,
-  "covid-act-now" = "A few counties, most notably in California, are not covered by this data source",
-  "doctor-visits" = NA_character_,
-  "dsew-cpr" = NA_character_,
-  "fb-survey" = "A missing value indicates no valid data OR, for test positivity, that the value was censored due to small sample size (<= 5)",
-  "ght" = NA_character_,
-  "google-survey" = NA_character_,
-  "google-symptoms" = NA_character_,
-  "hhs" = NA_character_,
-  "hospital-admissions" = NA_character_,
-  "indicator-combination" = NA_character_,
-  "jhu-csse" = NA_character_,
-  "nchs-mortality" = NA_character_,
-  "quidel" = NA_character_,
-  "safegraph" = NA_character_,
-  "usa-facts" = NA_character_,
-  "youtube-survey" = NA_character_
+  "chng" = paste("Data is available for nearly all (99%) of counties.", all_states_terr),
+  "covid-act-now" = paste("Data is available for nearly all (99%) of counties. A few counties, most notably in California, are not covered by this data source", all_states),
+  "doctor-visits" = paste("Data is available for about 80% of counties", all_states_terr),
+  "dsew-cpr" = paste(all_counties_terr, all_states_terr),
+  "fb-survey" = "Geographic coverage varies widely by signal, with anywhere from 0.4% to 25% of counties available and 15% to 100% of states. A handful of signals are available for 40-50% of counties, and all states and some territories. Signals based on questions that were asked to a subset of survey respondents are available for fewer locations. Availability declines over time as survey response rate decreases. A missing value indicates no valid data OR, for test positivity, that the value was censored due to small sample size (<= 5)",
+  "ght" = all_states,
+  "google-survey" = paste("Data is available for about 20% of counties", all_states),
+  "google-symptoms" = NA_character_, # below
+  "hhs" = all_states_terr,
+  "hospital-admissions" = paste("Data is available for about 35% of counties", all_states),
+  "indicator-combination" = paste(all_counties_terr, all_states_terr),
+  "jhu-csse" = paste(all_counties_terr, all_states_terr),
+  "nchs-mortality" = paste(all_states_terr),
+  "quidel" = "Geographic coverage for some age groups (e.g. age 0-4 and age 65+) are extremely limited at HRR and MSA level, and can even be limited at state level on weekends.", # TODO
+  "safegraph" = paste(all_counties_terr, all_states_terr),
+  "usa-facts" = paste(all_counties_terr, all_states),
+  "youtube-survey" = NA_character_  # below
 )
 source_updated[, col] <- missingness[source_updated$data_source]
+
+google_symptoms_note <- "Signals associated with rarer symptoms (e.g. ageusia) will tend to have fewer locations available, due to upstream privacy censoring. Locations with lower populations will tend to be less available for the same reason"
+signal_specific_missingness <- tibble::tribble(
+  ~data_source, ~signal, ~note,
+  "indicator-combination", "nmf_day_doc_fbc_fbs_ght", paste("Data is available for about 80% of counties", all_states_terr),
+  "indicator-combination", "nmf_day_doc_fbs_ght", paste("Data is available for about 70% of counties", all_states_terr),
+
+  "safegraph", "bars_visit_num", "Data is available for about 10% of counties. Data is available for about 90% of states",
+  "safegraph", "bars_visit_prop", "Data is available for about 10% of counties. Data is available for about 90% of states",
+  "safegraph", "restaurants_visit_num", paste("Data is available for about 80% of counties", all_states_terr),
+  "safegraph", "restaurants_visit_prop", paste("Data is available for about 80% of counties", all_states_terr),
+
+  "fb-survey", "smoothed_cli", paste("Data is available for about 50% of counties.", all_states_terr, "Availability declines over time as survey response rate decreases"),
+  "fb-survey", "smoothed_ili", paste("Data is available for about 50% of counties.", all_states_terr, "Availability declines over time as survey response rate decreases"),
+  "fb-survey", "smoothed_wcli", paste("Data is available for about 50% of counties.", all_states_terr, "Availability declines over time as survey response rate decreases"),
+  "fb-survey", "smoothed_wili", paste("Data is available for about 50% of counties.", all_states_terr, "Availability declines over time as survey response rate decreases"),
+  "fb-survey", "smoothed_travel_outside_state_5d", paste("Data is available for about 45% of counties.", all_states_terr, "Availability declines over time as survey response rate decreases"),
+  "fb-survey", "smoothed_wtravel_outside_state_5d", paste("Data is available for about 45% of counties.", all_states_terr, "Availability declines over time as survey response rate decreases"),
+  "fb-survey", "smoothed_nohh_cmnty_cli", paste("Data is available for about 40% of counties.", all_states_terr, "Availability declines over time as survey response rate decreases"),
+  "fb-survey", "smoothed_hh_cmnty_cli", paste("Data is available for about 40% of counties.", all_states_terr, "Availability declines over time as survey response rate decreases"),
+  "fb-survey", "smoothed_whh_cmnty_cli", paste("Data is available for about 35% of counties.", all_states_terr, "Availability declines over time as survey response rate decreases"),
+  "fb-survey", "smoothed_wnohh_cmnty_cli", paste("Data is available for about 35% of counties.", all_states_terr, "Availability declines over time as survey response rate decreases"),
+
+  "youtube-survey", "raw_cli", "Data is available for about 40% of states",
+  "youtube-survey", "raw_ili", "Data is available for about 40% of states",
+  "youtube-survey", "smoothed_cli", "Data is available for about 80% of states",
+  "youtube-survey", "smoothed_ili", "Data is available for about 80% of states",
+
+  "google-symptoms", "ageusia_raw_search", paste("Data is available for about 3-4% of counties. Data is available for about 85% of states.", google_symptoms_note),
+  "google-symptoms", "ageusia_smoothed_search", paste("Data is available for about 3-4% of counties. Data is available for about 85% of states.", google_symptoms_note),
+  "google-symptoms", "anosmia_raw_search", paste("Data is available for about 3-4% of counties. Data is available for about 85% of states.", google_symptoms_note),
+  "google-symptoms", "anosmia_smoothed_search", paste("Data is available for about 3-4% of counties. Data is available for about 85% of states.", google_symptoms_note),
+  "google-symptoms", "s01_raw_search", paste("Data is available for about 50% of counties.", all_states, google_symptoms_note),
+  "google-symptoms", "s01_smoothed_search", paste("Data is available for about 50% of counties.", all_states, google_symptoms_note),
+  "google-symptoms", "s02_raw_search", paste("Data is available for about 65% of counties.", all_states, google_symptoms_note),
+  "google-symptoms", "s02_smoothed_search", paste("Data is available for about 65% of counties.", all_states, google_symptoms_note),
+  "google-symptoms", "s03_raw_search", paste("Data is available for about 50% of counties.", all_states, google_symptoms_note),
+  "google-symptoms", "s03_smoothed_search", paste("Data is available for about 50% of counties.", all_states, google_symptoms_note),
+  "google-symptoms", "s04_raw_search", paste("Data is available for about 30% of counties.", all_states, google_symptoms_note),
+  "google-symptoms", "s04_smoothed_search", paste("Data is available for about 30% of counties.", all_states, google_symptoms_note),
+  "google-symptoms", "s05_raw_search", paste("Data is available for about 3-4% of counties. Data is available for about 90% of states.", google_symptoms_note),
+  "google-symptoms", "s05_smoothed_search", paste("Data is available for about 3-4% of counties. Data is available for about 90% of states.", google_symptoms_note),
+  "google-symptoms", "s06_raw_search", paste("Data is available for about 30% of counties.", all_states, google_symptoms_note),
+  "google-symptoms", "s06_smoothed_search", paste("Data is available for about 30% of counties.", all_states, google_symptoms_note),
+  "google-symptoms", "scontrol_raw_search", paste("Data is available for about 45% of counties.", all_states, google_symptoms_note),
+  "google-symptoms", "scontrol_smoothed_search", paste("Data is available for about 45% of counties.", all_states, google_symptoms_note),
+  "google-symptoms", "sum_anosmia_ageusia_raw_search", paste("Data is available for about 3-4% of counties. Data is available for about 85% of states.", google_symptoms_note),
+  "google-symptoms", "sum_anosmia_ageusia_smoothed_search", paste("Data is available for about 3-4% of counties. Data is available for about 85% of states.", google_symptoms_note),
+)
+
+# Add signal-specific missingness
+source_updated <- left_join(
+  source_updated, signal_specific_missingness,
+  by = c("Signal" = "signal", "data_source")
+) %>%
+  mutate(`Missingness` = coalesce(note, `Missingness`)) %>%
+  select(-note)
 
 
 col <- "Who may access this signal?"
