@@ -110,14 +110,14 @@ new_fields <- c(
   "Temporal Scope Start",
   "Temporal Scope End",
   "Reporting Cadence",
-  "Reporting Lag",
-  "Revision Cadence",
+  "Typical Reporting Lag",
+  "Typical Revision Cadence",
   "Demographic Scope",
-  "Demographic Disaggregation", ###Change to "Demographic Breakdowns" when granted sheet access
+  "Demographic Breakdowns",
   "Severity Pyramid Rungs",
   "Data Censoring",
   "Missingness",
-  "Who may Access this signal?",
+  "Who may access this signal?",
   "Who may be told about this signal?",
   "Use Restrictions",
   "Link to DUA"
@@ -132,7 +132,7 @@ new_fields_with_missings <- names(new_fields_with_missings[unlist(new_fields_wit
 
 message(
   paste(new_fields_with_missings, collapse = ", "),
-  " columns contain missing values and need to be filled in programmatically"
+  " columns contain missing values and need to be filled in"
 )
 
 
@@ -688,7 +688,7 @@ demo_breakdowns <- c(
 )
 source_updated[, col] <- demo_breakdowns[source_updated$data_source]
 # Quidel covid has age bands, but quidel flu doesn't.
-source_updated[source_update$`Source Subdivision` == "quidel-flu", col] <- "None"
+source_updated[source_updated$`Source Subdivision` == "quidel-flu", col] <- "None"
 
 
 col <- "Severity Pyramid Rungs"
@@ -1008,9 +1008,21 @@ dua_link <- c(
   "quidel" = "https://drive.google.com/drive/u/1/folders/1HhOEbXlZXN9YpHBWOfrY7Wo2USVVfJVS",
   "safegraph" = "https://drive.google.com/drive/u/1/folders/1qkcUpdkJOkbSBBszrSCA4n1vSQKSlv3x",
   "usa-facts" = NA_character_, #public
-  "youtube-survey" = NA_character_, #contract expected 
+  "youtube-survey" = NA_character_ #contract expected 
 )
 source_updated[, col] <- dua_link[source_updated$data_source]
+
+
+
+new_fields_with_missings <- lapply(new_fields, function(col) {
+  any(is.na(source_updated[, col]))
+})
+new_fields_with_missings <- names(new_fields_with_missings[unlist(new_fields_with_missings)])
+
+message(
+  paste(new_fields_with_missings, collapse = ", "),
+  " columns still contain missing values and need to be filled in"
+)
 
 
 
