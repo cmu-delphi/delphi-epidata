@@ -19,7 +19,7 @@ def handle():
     # basic query info
     q = QueryBuilder("flusurv", "fs")
 
-    fields_string = ["release_date", "location"]
+    fields_string = ["release_date", "location", "season"]
     fields_int = ["issue", "epiweek", "lag"]
     fields_float = [
         "rate_age_0",
@@ -28,6 +28,27 @@ def handle():
         "rate_age_3",
         "rate_age_4",
         "rate_overall",
+
+        "rate_age_5",
+        "rate_age_6",
+        "rate_age_7",
+
+        "rate_age_18t29",
+        "rate_age_30t39",
+        "rate_age_40t49",
+        "rate_age_5t11",
+        "rate_age_12t17",
+        "rate_age_lt18",
+        "rate_age_gte18",
+
+        "rate_race_white",
+        "rate_race_black",
+        "rate_race_hisp",
+        "rate_race_asian",
+        "rate_race_natamer",
+
+        "rate_sex_male",
+        "rate_sex_female",
     ]
     q.set_fields(fields_string, fields_int, fields_float)
     q.set_sort_order("epiweek", "location", "issue")
