@@ -19,9 +19,42 @@ See also:
 === Data Dictionary ===
 =======================
 
-`flusurv` is the table where US flu hospitalization rates are stored. See
-`strc/ddl/fluview.sql` for the `flusurv` schema. See `docs/api/flusurv.md` for
-field descriptions.
+`flusurv` is the table where US flu hospitalization rates are stored.
++--------------+-------------+------+-----+---------+----------------+
+| Field        | Type        | Null | Key | Default | Extra          |
++--------------+-------------+------+-----+---------+----------------+
+| id           | int(11)     | NO   | PRI | NULL    | auto_increment |
+| release_date | date        | NO   | MUL | NULL    |                |
+| issue        | int(11)     | NO   | MUL | NULL    |                |
+| epiweek      | int(11)     | NO   | MUL | NULL    |                |
+| location     | varchar(32) | NO   | MUL | NULL    |                |
+| lag          | int(11)     | NO   | MUL | NULL    |                |
+| rate_age_0   | double      | YES  |     | NULL    |                |
+| rate_age_1   | double      | YES  |     | NULL    |                |
+| rate_age_2   | double      | YES  |     | NULL    |                |
+| rate_age_3   | double      | YES  |     | NULL    |                |
+| rate_age_4   | double      | YES  |     | NULL    |                |
+| rate_overall | double      | YES  |     | NULL    |                |
+| rate_age_5   | double      | YES  |     | NULL    |                |
+| rate_age_6   | double      | YES  |     | NULL    |                |
+| rate_age_7   | double      | YES  |     | NULL    |                |
++--------------+-------------+------+-----+---------+----------------+
+id: unique identifier for each record
+release_date: the date when this record was first published by the CDC
+issue: the epiweek of publication (e.g. issue 201453 includes epiweeks up to
+  and including 2014w53, but not 2015w01 or following)
+epiweek: the epiweek during which the data was collected
+location: the name of the catchment (e.g. 'network_all', 'CA', 'NY_albany')
+lag: number of weeks between `epiweek` and `issue`
+rate_age_0: hospitalization rate for ages 0-4
+rate_age_1: hospitalization rate for ages 5-17
+rate_age_2: hospitalization rate for ages 18-49
+rate_age_3: hospitalization rate for ages 50-64
+rate_age_4: hospitalization rate for ages 65+
+rate_overall: overall hospitalization rate
+rate_age_5: hospitalization rate for ages 65-74
+rate_age_6: hospitalization rate for ages 75-84
+rate_age_7: hospitalization rate for ages 85+
 
 =================
 === Changelog ===
