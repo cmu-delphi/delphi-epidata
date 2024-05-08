@@ -1013,10 +1013,9 @@ dua_link <- c(
 source_updated[, col] <- dua_link[source_updated$data_source]
 
 
-source_updated
 
-
-# TODO: save updated signals table to CSV [readr::read_csv]
+# Save updated signals table to CSV [readr::write_csv]
+write_csv(source_updated, file = "updated_signal_spreadsheet.csv")
 
 
 # Final manual steps:
