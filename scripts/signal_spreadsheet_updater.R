@@ -10,7 +10,7 @@ suppressPackageStartupMessages({
 options(warn = 1)
 
 
-# TODO all info for youtube-survey
+# TODO all info for youtube-survey. Information is hard to find. Filled out some fields based on https://github.com/cmu-delphi/covid-19/tree/main/youtube
 
 # COVIDcast metadata
 # Metadata documentation: https://cmu-delphi.github.io/delphi-epidata/api/covidcast_meta.html
@@ -110,14 +110,14 @@ new_fields <- c(
   "Temporal Scope Start",
   "Temporal Scope End",
   "Reporting Cadence",
-  "Reporting Lag",
-  "Revision Cadence",
+  "Typical Reporting Lag", #originally Reporting Lag
+  "Typical Revision Cadence", #originally Revision Cadence
   "Demographic Scope",
-  "Demographic Disaggregation", ###Change to "Demographic Breakdowns" when granted sheet access
+  "Demographic Breakdowns",
   "Severity Pyramid Rungs",
   "Data Censoring",
   "Missingness",
-  "Who may Access this signal?",
+  "Who may access this signal?",
   "Who may be told about this signal?",
   "Use Restrictions",
   "Link to DUA"
@@ -190,7 +190,7 @@ source5 <- source4 %>%
 # Inactive data_sources list
 inactive_sources <- c(
   "jhu-csse", "dsew-cpr", "fb-survey", "covid-act-now", "ght", "google-survey",
-  "indicator-combination", "safegraph", "usa-facts"
+  "indicator-combination", "safegraph", "usa-facts", "youtube-survey"
 )
 
 # Inactive signals list, where some signals for a given data source are active
@@ -310,7 +310,7 @@ geo_scope <- c(
   "quidel" = "USA",
   "safegraph" = "USA",
   "usa-facts" = "USA",
-  "youtube-survey" = NA_character_
+  "youtube-survey" = "USA"
 )
 source_updated[, col] <- geo_scope[source_updated$data_source]
 
@@ -370,9 +370,7 @@ avail_geos <- c(
   "indicator-combination" = glue("county{delphi_agg_text}, hrr{delphi_agg_text}, msa{delphi_agg_text}, state{delphi_agg_text}, hhs{delphi_agg_text}, nation{delphi_agg_text}"),
   "jhu-csse" = glue("county, hrr{delphi_agg_text}, msa{delphi_agg_text}, state{delphi_agg_text}, hhs{delphi_agg_text}, nation{delphi_agg_text}"),
   "nchs-mortality" = glue("state, nation"),
-
-   # TODO check against actual data. Or maybe there's an internal/private version of metadata that includes Quidel stats?
-  # this is quidel non-flu signals, other is flu
+  # Quidel non-flu signals
   "quidel" = glue("county{delphi_agg_text}, hrr{delphi_agg_text}, msa{delphi_agg_text}, state{delphi_agg_text}, hhs{delphi_agg_text}, nation{delphi_agg_text}"),
   "safegraph" = glue("county{delphi_agg_text}, hrr{delphi_agg_text}, msa{delphi_agg_text}, state{delphi_agg_text}, hhs{delphi_agg_text}, nation{delphi_agg_text}"),
   "usa-facts" = glue("county, hrr{delphi_agg_text}, msa{delphi_agg_text}, state{delphi_agg_text}, hhs{delphi_agg_text}, nation{delphi_agg_text}"),
@@ -432,8 +430,6 @@ leftover_signal_geos_manual <- tibble::tribble(
   "indicator-combination", "nmf_day_doc_fbs_ght", combo_geos,
   
   # Quidel flu signals
-  # TODO check against actual data. Or maybe there's an internal/private version of metadata that includes Quidel stats? Nat was only looking at metadata
-  #for each of these quidel signals, make request to API for each possible geotype (county, hrr, etc) to see if data comes back
   "quidel", "raw_pct_negative", quidel_geos,
   "quidel", "smoothed_pct_negative", quidel_geos,
   "quidel", "raw_tests_per_device", quidel_geos,
@@ -477,7 +473,7 @@ avail_geos <- c(
   "quidel" = "daily",
   "safegraph" = "weekly",
   "usa-facts" = "weekly",
-  "youtube-survey" = NA_character_
+  "youtube-survey" = NA_character_ # See https://github.com/cmu-delphi/covid-19/tree/main/youtube
 )
 
 # # Tool: Investigate reporting lag and revision cadence
@@ -593,7 +589,7 @@ reporting_lag <- c(
   "quidel" = "5-6 days",
   "safegraph" = "3-11 days",
   "usa-facts" = "2-8 days",
-  "youtube-survey" = NA_character_
+  "youtube-survey" = NA_character_ # See https://github.com/cmu-delphi/covid-19/tree/main/youtube
 )
 
 # Index (using `[]`) into the map using the data_source (or source division)
@@ -623,10 +619,10 @@ revision_cadence <- c(
      corrected by adjusting the reported value for a single day, but revisions
      do not affect past report dates.",
   "nchs-mortality" = "Weekly. All-cause mortality takes ~6 weeks on average to achieve 99% of its final value (https://link.springer.com/article/10.1057/s41271-021-00309-7)",
-  "quidel" = NA_character_, # Happens, up to 6+ weeks after the report date. # TODO
+  "quidel" = "Weekly. Happens, up to 6+ weeks after the report date.",
   "safegraph" = "None",
   "usa-facts" = "None. The raw data reports cumulative cases and deaths, which Delphi diffs to compute incidence. Raw cumulative figures are sometimes corrected by adjusting the reported value for a single day, but revisions do not affect past report dates.",
-  "youtube-survey" = NA_character_
+  "youtube-survey" = NA_character_ # See https://github.com/cmu-delphi/covid-19/tree/main/youtube
 )
 source_updated[, col] <- revision_cadence[source_updated$data_source]
 
@@ -652,7 +648,7 @@ demo_scope <- c(
   "quidel" = "Nationwide Quidel testing equipment network",
   "safegraph" = "Safegraph panel members who use mobile devices",
   "usa-facts" = "All",
-  "youtube-survey" = NA_character_
+  "youtube-survey" = NA_character_ # See https://github.com/cmu-delphi/covid-19/tree/main/youtube
 )
 source_updated[, col] <- demo_scope[source_updated$data_source]
 
@@ -684,11 +680,11 @@ demo_breakdowns <- c(
   "quidel" = "age (0-17, 0-4, 5-17, 18-49, 50-64, 65+)",
   "safegraph" = "None",
   "usa-facts" = "None",
-  "youtube-survey" = NA_character_
+  "youtube-survey" = NA_character_ # See https://github.com/cmu-delphi/covid-19/tree/main/youtube
 )
 source_updated[, col] <- demo_breakdowns[source_updated$data_source]
 # Quidel covid has age bands, but quidel flu doesn't.
-source_updated[source_update$`Source Subdivision` == "quidel-flu", col] <- "None"
+source_updated[source_updated$`Source Subdivision` == "quidel-flu", col] <- "None"
 
 
 col <- "Severity Pyramid Rungs"
@@ -720,7 +716,7 @@ data_censoring <- c(
   "quidel" = "Discarded when an estimate is based on fewer than 50 tests. For smoothed signals at the county, MSA, and HRR levels with between 25 and 50 tests, the estimate is computed with the original N tests and 50-N synthetic tests that have the same test positivity rate as the parent state (state with the largest proportion of the population in this region); estimates are entirely discarded when based on fewer than 25 tests",
   "safegraph" = "None. However, Safegraph uses differential privacy, which adds artificial noise to the incoming data. See https://docs.safegraph.com/docs/social-distancing-metrics for details",
   "usa-facts" = "None",
-  "youtube-survey" = NA_character_
+  "youtube-survey" = NA_character_ # See https://github.com/cmu-delphi/covid-19/tree/main/youtube
 )
 signal_specific_censoring <- tibble::tribble(
   ~data_source, ~signal, ~note,
@@ -820,10 +816,10 @@ missingness <- c(
   "indicator-combination" = paste(all_counties_terr, all_states_terr),
   "jhu-csse" = paste(all_counties_terr, all_states_terr),
   "nchs-mortality" = paste(all_states_terr),
-  "quidel" = "Geographic coverage for some age groups (e.g. age 0-4 and age 65+) are extremely limited at HRR and MSA level, and can even be limited at state level on weekends.", # TODO
+  "quidel" = "Geographic coverage for some age groups (e.g. age 0-4 and age 65+) are extremely limited at HRR and MSA level, and can even be limited at state level on weekends.",
   "safegraph" = paste(all_counties_terr, all_states_terr),
   "usa-facts" = paste(all_counties_terr, all_states),
-  "youtube-survey" = NA_character_  # below
+  "youtube-survey" = NA_character_ # See https://github.com/cmu-delphi/covid-19/tree/main/youtube  # below
 )
 source_updated[, col] <- missingness[source_updated$data_source]
 
@@ -905,7 +901,7 @@ orgs_allowed_access <- c(
   "quidel" = "Delphi",
   "safegraph" = "public",
   "usa-facts" = "public",
-  "youtube-survey" = NA_character_
+  "youtube-survey" = NA_character_ # See https://github.com/cmu-delphi/covid-19/tree/main/youtube
 )
 source_updated[, col] <- orgs_allowed_access[source_updated$data_source]
 
@@ -928,7 +924,7 @@ orgs_allowed_know <- c(
   "quidel" = "public",
   "safegraph" = "public",
   "usa-facts" = "public",
-  "youtube-survey" = NA_character_
+  "youtube-survey" = NA_character_ # See https://github.com/cmu-delphi/covid-19/tree/main/youtube
 )
 source_updated[, col] <- orgs_allowed_know[source_updated$data_source]
 
@@ -951,64 +947,54 @@ license <- c(
   "quidel" = "CC BY",
   "safegraph" = "CC BY",
   "usa-facts" = "CC BY",
-  "youtube-survey" = NA_character_
+  "youtube-survey" = NA_character_ # See https://github.com/cmu-delphi/covid-19/tree/main/youtube
 )
 source_updated[, col] <- license[source_updated$data_source]
 
 
-# TODO
 col <- "Use Restrictions"
 # Any important DUA restrictions on use, publication, sharing, linkage, etc.?
 use_restrictions <- c(
-  "chng" = NA_character_, #change DUA in confidential Google drive, generic contract terms
-  "covid-act-now" = NA_character_, #public
-  "doctor-visits" = NA_character_, #optum DUA in confidential Google drive, generic contract terms
-  "dsew-cpr" = NA_character_, #public
-  "fb-survey" = NA_character_, #
-  "ght" = NA_character_,
+  "chng" = "See license. DUA uses generic contract terms.", #DUA in confidential Google drive, generic contract terms
+  "covid-act-now" = "See license", #public
+  "doctor-visits" = "See license. DUA uses generic contract terms.", #optum DUA in confidential Google drive, generic contract terms
+  "dsew-cpr" = "See license", #public
+  "fb-survey" = "Delphi aggregated data has no use restrictions. Raw data users must sign DUA with Delphi, and the proposed research purpose must be consistent with the consent language used in Wave 1, regardless of which survey wave the data they're using comes from. Part- or full-time Facebook employees are not eligible to receive data access.", # @AlexR
+  "ght" = "See license", #public, no Delphi documentation, <https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4215636/>
   "google-survey" = NA_character_,
-  "google-symptoms" = NA_character_,
-  "hhs" = NA_character_,
-  "hospital-admissions" = NA_character_, #optum DUA in confidential Google drive, generic contract terms
+  "google-symptoms" = "See license",
+  "hhs" = "See license",
+  "hospital-admissions" = "See license. DUA uses generic contract terms.", #optum DUA in confidential Google drive, generic contract terms
   "indicator-combination" = NA_character_,
-  "jhu-csse" = NA_character_,
-  "nchs-mortality" = NA_character_,
-  "quidel" = "Quidel provides Delphi data solely for internal research use and non-commercial research and analytics purposes for developing models for forecasting influenza-like epidemics and pandemics.", #Quidel DUA in confidential Google drive,
+  "jhu-csse" = "See license",
+  "nchs-mortality" = "See license",
+  "quidel" = "Quidel provides Delphi data solely for internal research use and non-commercial research and analytics purposes for developing models for forecasting influenza-like epidemics and pandemics (CC BY).", #Quidel DUA in confidential Google drive,
   "safegraph" = NA_character_,
-  "usa-facts" = NA_character_,
-  "youtube-survey" = NA_character_
+  "usa-facts" = "See license",
+  "youtube-survey" = NA_character_ #https://github.com/cmu-delphi/covid-19/tree/main/youtube
 )
 source_updated[, col] <- use_restrictions[source_updated$data_source]
 
 
-#aa <- epidatr::covidcast_epidata()
-#aa$sources$`jhu-csse`$dua
-
-#purrr::map(aa$sources, ~ .x$license)
-
-#bb <- aa$sources$`fb-survey`$signals %>% tibble::as_tibble()
-#bb
-
-# TODO
 col <- "Link to DUA"
 dua_link <- c(
   "chng" = "https://drive.google.com/drive/u/1/folders/1GKYSFb6C_8jSHTg-65eVzSOT433oIDrf", #"https://cmu.box.com/s/cto4to822zecr3oyq1kkk9xmzhtq9tl2"
   "covid-act-now" = NA_character_, #public, maybe contract for other specific project #@Carlyn
-  "doctor-visits" = "https://drive.google.com/drive/u/1/folders/11kvTzVR5Yd3lVszxmPHxFZcAYjIpoLcf", #"https://cmu.box.com/s/l2tz6kmiws6jyty2azwb43poiepz0565",
+  "doctor-visits" = "https://drive.google.com/drive/u/1/folders/11kvTzVR5Yd3lVszxmPHxFZcAYjIpoLcf", #"https://cmu.box.com/s/l2tz6kmiws6jyty2azwb43poiepz0565"
   "dsew-cpr" = NA_character_, #public
-  "fb-survey" = "https://cmu.box.com/s/qfxplcdrcn9retfzx4zniyugbd9h3bos",#@Alex R.
-  "ght" = NA_character_, #public, has an API doesn't require password
+  "fb-survey" = "https://cmu.box.com/s/qfxplcdrcn9retfzx4zniyugbd9h3bos",
+  "ght" = NA_character_, #public, has an API doesn't require password. No Delphi documentation. See <https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4215636/>
   "google-survey" = NA_character_, #@Carlyn has requested DUA from Roni
   "google-symptoms" = NA_character_, #public
   "hhs" = NA_character_, #public gov't
-  "hospital-admissions" = "https://drive.google.com/drive/u/1/folders/11kvTzVR5Yd3lVszxmPHxFZcAYjIpoLcf", #"https://cmu.box.com/s/l2tz6kmiws6jyty2azwb43poiepz0565",
+  "hospital-admissions" = "https://drive.google.com/drive/u/1/folders/11kvTzVR5Yd3lVszxmPHxFZcAYjIpoLcf", #"https://cmu.box.com/s/l2tz6kmiws6jyty2azwb43poiepz0565"
   "indicator-combination" = "see Doctor Visits, Facebook Survey, and Google Health Trends",
   "jhu-csse" = NA_character_, #public
   "nchs-mortality" = "https://www.cdc.gov/nchs/data_access/restrictions.htm",
   "quidel" = "https://drive.google.com/drive/u/1/folders/1HhOEbXlZXN9YpHBWOfrY7Wo2USVVfJVS",
   "safegraph" = "https://drive.google.com/drive/u/1/folders/1qkcUpdkJOkbSBBszrSCA4n1vSQKSlv3x",
   "usa-facts" = NA_character_, #public
-  "youtube-survey" = NA_character_ #looking for contract, https://github.com/cmu-delphi/covid-19/tree/main/youtube
+  "youtube-survey" = NA_character_ # contract expected, but not found
 )
 source_updated[, col] <- dua_link[source_updated$data_source]
 
