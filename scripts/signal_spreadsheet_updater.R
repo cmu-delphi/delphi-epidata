@@ -989,7 +989,8 @@ use_restrictions <- c(
   "jhu-csse" = "See license",
   "nchs-mortality" = "See license",
   "quidel" = "Quidel provides Delphi data solely for internal research use and non-commercial research and analytics purposes for developing models for forecasting influenza-like epidemics and pandemics (CC BY).", #Quidel DUA in confidential Google drive,
-  "safegraph" = NA_character_,
+  "safegraph" = "Delphi is free to publish and otherwise disclose the results of its Research (including but not limited to reports and papers and other activities conducted under the Research), including analyses and/or aggregated reporting of the Data. However, the underlying raw Data may not be published
+without Licensor’s consent.",
   "usa-facts" = "See license",
   "youtube-survey" = NA_character_ #https://github.com/cmu-delphi/covid-19/tree/main/youtube
 )
