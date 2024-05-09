@@ -1,6 +1,6 @@
 ---
 title: JHU Cases and Deaths
-parent: Data Sources and Signals
+parent: Inactive Signals
 grand_parent: COVIDcast Main Endpoint
 ---
 
