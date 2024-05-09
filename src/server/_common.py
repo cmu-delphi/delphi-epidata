@@ -125,7 +125,9 @@ def before_request_execute():
         real_remote_addr=get_real_ip_addr(request),
         user_agent=request.user_agent.string,
         api_key=api_key,
-        user_id=(user and user.id)
+        user_id=(user and user.id),
+        req_referrer=request.referrer,
+        req_origin=request.environ.get('HTTP_ORIGIN', '')
     )
 
     if not _is_public_route() and api_key and not user:
@@ -171,6 +173,8 @@ def after_request_execute(response):
         response_status=response.status,
         content_length=response.calculate_content_length(),
         elapsed_time_ms=total_time,
+        req_referrer=request.referrer,
+        req_origin=request.environ.get('HTTP_ORIGIN', '')
     )
     return response
 
