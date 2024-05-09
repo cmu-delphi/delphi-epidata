@@ -283,15 +283,14 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     # 1st issue: 0 10 20
     # 2nd issue: 1 11 21
     # 3rd issue: 2 12 22
-    rows = [
-      CovidcastTestRow.make_default_row(
-        time_value=DEFAULT_TIME_VALUE + t,
-        issue=DEFAULT_ISSUE + i,
-        value=t*10 + i
-      )
-      for i in range(3) for t in range(3)
-    ]
-    self._insert_rows(rows)
+    for i in range(3):
+      for t in range(3):
+        row = CovidcastTestRow.make_default_row(
+          time_value=DEFAULT_TIME_VALUE + t,
+          issue=DEFAULT_ISSUE + i,
+          value=t*10 + i
+        )
+        self._insert_rows(row)
 
     # cache it
     update_covidcast_meta_cache(args=None)
