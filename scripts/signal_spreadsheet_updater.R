@@ -166,6 +166,8 @@ source3 <- left_join(
 # also convert min_time col to character (easier to move times over to google spreadsheet without corrupting)
 # *only in dplyr can you use col names without quotations, as.character is base function
 # *min_time, we can just use the earliest date available and not specify each geo's different dates
+
+# TODO: fill in Temporal Scope Start/End for quidel signals. Can't get them from metadata.
 source4 <- mutate(
   source3,
   `Temporal Scope Start Note` = min_time_notes,
@@ -340,9 +342,8 @@ auto_geo_list_by_signal <- arrange(
 
 # Tool: Are there any data sources where geos_list is different for different signal?
 different_geos_by_signal <- count(auto_geo_list_by_signal, data_source, geos_list, name = "n_signals")
-different_geos_by_signal
+# different_geos_by_signal
 # which(duplicated(select(different_geos_by_signal, data_source)))
-# # [1]  2  6  8  9 15 17
 
 # Keep most common geos_list for each data source.
 most_common_geos_list <- group_by(different_geos_by_signal, data_source) %>% 
@@ -456,7 +457,7 @@ source_updated <- left_join(
 
 col <- "Reporting Cadence"
 # E.g. daily, weekly, etc. Might not be the same as Temporal Granularity
-avail_geos <- c(
+cadence_map <- c(
   "chng" = "daily",
   "covid-act-now" = "daily",
   "doctor-visits" = "daily",
@@ -475,6 +476,7 @@ avail_geos <- c(
   "usa-facts" = "weekly",
   "youtube-survey" = NA_character_ # See https://github.com/cmu-delphi/covid-19/tree/main/youtube
 )
+source_updated[, col] <- cadence_map[source_updated$data_source]
 
 # # Tool: Investigate reporting lag and revision cadence
 # source <- "indicator-combination-nmf"
