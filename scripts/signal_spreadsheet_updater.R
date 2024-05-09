@@ -959,7 +959,7 @@ use_restrictions <- c(
   "covid-act-now" = "See license", #public
   "doctor-visits" = "See license. DUA uses generic contract terms.", #optum DUA in confidential Google drive, generic contract terms
   "dsew-cpr" = "See license", #public
-  "fb-survey" = "Delphi aggregated data has no use restrictions. Raw data users must sign DUA with Delphi, and the proposed research purpose must be consistent with the consent language used in Wave 1, regardless of which survey wave the data they're using comes from. Part- or full-time Facebook employees are not eligible to receive data access.", # @AlexR
+  "fb-survey" = "Aggregationed signals must be based on 100 or more survey responses. Delphi aggregated data has no use restrictions. Raw data users must sign DUA with Delphi, and the proposed research purpose must be consistent with the consent language used in Wave 1, regardless of which survey wave the data they're using comes from. Part- or full-time Facebook employees are not eligible to receive data access.", # @AlexR
   "ght" = "See license", #public, no Delphi documentation, <https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4215636/>
   "google-survey" = NA_character_,
   "google-symptoms" = "See license",
@@ -988,7 +988,7 @@ dua_link <- c(
   "google-symptoms" = NA_character_, #public
   "hhs" = NA_character_, #public gov't
   "hospital-admissions" = "https://drive.google.com/drive/u/1/folders/11kvTzVR5Yd3lVszxmPHxFZcAYjIpoLcf", #"https://cmu.box.com/s/l2tz6kmiws6jyty2azwb43poiepz0565"
-  "indicator-combination" = "see Doctor Visits, Facebook Survey, and Google Health Trends",
+  "indicator-combination" = "See Doctor Visits, Facebook Survey, and Google Health Trends",
   "jhu-csse" = NA_character_, #public
   "nchs-mortality" = "https://www.cdc.gov/nchs/data_access/restrictions.htm",
   "quidel" = "https://drive.google.com/drive/u/1/folders/1HhOEbXlZXN9YpHBWOfrY7Wo2USVVfJVS",
