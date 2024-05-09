@@ -307,10 +307,10 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     del response['epidata'][0]['last_update']
 
     expected = dict(
-      data_source=rows[0].source,
-      signal=rows[0].signal,
-      time_type=rows[0].time_type,
-      geo_type=rows[0].geo_type,
+      data_source=row.source,
+      signal=row.signal,
+      time_type=row.time_type,
+      geo_type=row.geo_type,
       min_time=DEFAULT_TIME_VALUE,
       max_time=DEFAULT_TIME_VALUE + 2,
       num_locations=1,
