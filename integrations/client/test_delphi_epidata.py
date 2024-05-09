@@ -290,7 +290,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
           issue=DEFAULT_ISSUE + i,
           value=t*10 + i
         )
-        self._insert_rows(row)
+        self._insert_rows([row])
 
     # cache it
     update_covidcast_meta_cache(args=None)
