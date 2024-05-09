@@ -1,3 +1,21 @@
+# This is a helper script for updating the signal spreadsheet "Signals" tab
+# (https://docs.google.com/spreadsheets/d/1zb7ItJzY5oq1n-2xtvnPBiJu2L3AqmCKubrLkKJZVHs/edit#gid=329338228)
+# semi-programmatically.
+#
+# To run this, you need to have the Signals tab and the Sources tab saved
+# locally as CSVs. The script loads and modifies the data from the Signals tab.
+#
+# To update a given field, we define a map between data source names and a set
+# of values, use the data source column to index into the map, and save the
+# result to the spreadsheet. There is some additional logic, depending on the
+# field to be updated, to handle certain signals and cases (active/inactive
+# signals) separately.
+#
+# The updated spreadsheet is saved to disk as a CSV. Any updated columns must be
+# manually pasted into the online spreadsheet. This script checks that the
+# original sort order is the same as that of the updated spreadsheet.
+
+
 # Load packages
 suppressPackageStartupMessages({
   library(epidatr) # Access Delphi API
