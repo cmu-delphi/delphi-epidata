@@ -291,7 +291,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
           value=t*10 + i
         )
         self._insert_rows([row])
-    self._insert_rows([CovidCastTestRow.make_default_row(
+    self._insert_rows([CovidcastTestRow.make_default_row(
       time_value=DEFAULT_TIME_VALUE-1,
       issue=DEFAULT_ISSUE,
       value=12
@@ -316,7 +316,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
       signal=row.signal,
       time_type=row.time_type,
       geo_type=row.geo_type,
-      min_time=DEFAULT_TIME_VALUE,
+      min_time=DEFAULT_TIME_VALUE - 1,
       max_time=DEFAULT_TIME_VALUE + 2,
       num_locations=1,
       min_value=2.,
