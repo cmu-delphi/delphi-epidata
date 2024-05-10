@@ -186,7 +186,7 @@ source3 <- left_join(
 # *only in dplyr can you use col names without quotations, as.character is base function
 # *min_time, we can just use the earliest date available and not specify each geo's different dates
 
-# TODO: fill in Temporal Scope Start/End for quidel signals. Can't get them from metadata.
+# TODO: fill in Temporal Scope Start/End for quidel signals by coalescing the existing column with the new data; quidel dates have already been filled in manually in the spreadsheet.
 source4 <- mutate(
   source3,
   `Temporal Scope Start Note` = min_time_notes,
