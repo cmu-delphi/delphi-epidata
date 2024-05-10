@@ -10,11 +10,14 @@ Notes:
 
 # External modules
 import requests
+import time
 import asyncio
 from tenacity import retry, stop_after_attempt
 
 from aiohttp import ClientSession, TCPConnector, BasicAuth
 from importlib.metadata import version, PackageNotFoundError
+
+from delphi.epidata.common.logger import get_structured_logger
 
 # Obtain package version for the user-agent. Uses the installed version by
 # preference, even if you've installed it and then use this script independently
@@ -49,6 +52,10 @@ class Epidata:
 
     client_version = _version
 
+    logger = get_structured_logger('delphi_epidata_client')
+    debug = False # if True, prints extra logging statements
+    sandbox = False # if True, will not execute any queries
+
     # Helper function to cast values and/or ranges to strings
     @staticmethod
     def _listitem(value):
@@ -71,9 +78,25 @@ class Epidata:
     def _request_with_retry(endpoint, params={}):
         """Make request with a retry if an exception is thrown."""
         request_url = f"{Epidata.BASE_URL}/{endpoint}/"
+        if Epidata.debug:
+            Epidata.logger.info("Sending GET request", url=request_url, params=params, headers=_HEADERS, auth=Epidata.auth)
+        if Epidata.sandbox:
+            resp = requests.Response()
+            resp._content = b'true'
+            return resp
+        start_time = time.time()
         req = requests.get(request_url, params, auth=Epidata.auth, headers=_HEADERS)
         if req.status_code == 414:
+            if Epidata.debug:
+                Epidata.logger.info("Received 414 response, retrying as POST request", url=request_url, params=params, headers=_HEADERS)
             req = requests.post(request_url, params, auth=Epidata.auth, headers=_HEADERS)
+        if Epidata.debug:
+            Epidata.logger.info(
+                "Received response",
+                status_code=req.status_code,
+                len=len(req.content),
+                time=round(time.time() - start_time, 4)
+            )
         # handle 401 and 429
         req.raise_for_status()
         return req
