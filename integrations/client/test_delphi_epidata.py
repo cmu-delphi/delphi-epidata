@@ -322,7 +322,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
       min_value=2.,
       mean_value=12.,
       max_value=22.,
-      stdev_value=8.1649658, # population stdev, not sample, which is 10.
+      stdev_value=7.0710678, # population stdev, not sample, which is 10.
       min_issue=DEFAULT_ISSUE,
       max_issue=DEFAULT_ISSUE + 2,
       min_lag=0,
