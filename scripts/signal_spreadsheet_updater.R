@@ -29,6 +29,7 @@ options(warn = 1)
 
 
 # TODO all info for youtube-survey. Information is hard to find. Filled out some fields based on https://github.com/cmu-delphi/covid-19/tree/main/youtube
+# TODO some info for quidel.
 
 # COVIDcast metadata
 # Metadata documentation: https://cmu-delphi.github.io/delphi-epidata/api/covidcast_meta.html
