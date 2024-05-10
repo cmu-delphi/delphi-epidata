@@ -502,7 +502,7 @@ source_updated[, col] <- cadence_map[source_updated$data_source]
 # # Not available for all indicators. Try nation. Avoid smaller geos because
 # # processing later will take a while.
 # geo_type <- "state"
-#
+# 
 # # Consider a range of issues. About 2 weeks is probably fine. Not all indicators
 # # are available in this time range, so you may need to make another range of
 # # dates that is years or months different.
@@ -523,8 +523,8 @@ source_updated[, col] <- cadence_map[source_updated$data_source]
 #   "2021-02-15",
 #   "2021-02-16"
 # )
-#
-#
+# 
+# 
 # epidata <- pub_covidcast(
 #   source,
 #   signal,
@@ -533,16 +533,16 @@ source_updated[, col] <- cadence_map[source_updated$data_source]
 #   time_type = "day",
 #   issues = about_2weeks_issues
 # )
-#
-#
+# 
+# 
 # # Make sure data is looking reasonable
 # # Number of reference dates reported in each issue
 # count(epidata, issue)
-#
+# 
 # # Number of locations reported for each issue and reference date
 # count(epidata, issue, time_value)
-#
-#
+# 
+# 
 # ## Revision cadence
 # # For each location and reference date, are all reported values the same across
 # # all lags we're checking?
@@ -559,17 +559,19 @@ source_updated[, col] <- cadence_map[source_updated$data_source]
 #   )
 # # Are all reference dates without any lag?
 # all(revision_comparison$no_backfill == "TRUE")
+# #all(revision_comparison[revision_comparison$no_backfill != "TRUE", ])
+# revision_comparison[revision_comparison$no_backfill != "TRUE", ]
 # View(revision_comparison)
-#
-#
-# ## Reporting lag
-# # Find how lagged the newest reported value is for each issue.
-# epidata_slice <- epidata %>% group_by(issue) %>% slice_min(lag)
-# # Find the most common min lag. We expect a relatively narrow range of lags. At
-# # most, a data source should be updated weekly such that it has a range of lags
-# # of 7 days (e.g. 5-12 days). For data updated daily, we expect a range of lags
-# # of only a few days (e.g. 2-4 days or even 2-3 days).
-# table(epidata_slice$lag)
+
+
+## Reporting lag
+# Find how lagged the newest reported value is for each issue.
+epidata_slice <- epidata %>% group_by(issue) %>% slice_min(lag)
+# Find the most common min lag. We expect a relatively narrow range of lags. At
+# most, a data source should be updated weekly such that it has a range of lags
+# of 7 days (e.g. 5-12 days). For data updated daily, we expect a range of lags
+# of only a few days (e.g. 2-4 days or even 2-3 days).
+table(epidata_slice$lag)
 
 
 col <- "Typical Reporting Lag"
@@ -1003,9 +1005,9 @@ dua_link <- c(
   "covid-act-now" = NA_character_, #public, maybe contract for other specific project #@Carlyn
   "doctor-visits" = "https://drive.google.com/drive/u/1/folders/11kvTzVR5Yd3lVszxmPHxFZcAYjIpoLcf", #"https://cmu.box.com/s/l2tz6kmiws6jyty2azwb43poiepz0565"
   "dsew-cpr" = NA_character_, #public
-  "fb-survey" = "https://cmu.box.com/s/qfxplcdrcn9retfzx4zniyugbd9h3bos",
+  "fb-survey" = NA_character_, #@AlexR public aggregated by Delphi, but raw data requires DUA "https://cmu.box.com/s/qfxplcdrcn9retfzx4zniyugbd9h3bos",
   "ght" = NA_character_, #public, has an API doesn't require password. No Delphi documentation. See <https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4215636/>
-  "google-survey" = NA_character_, #@Carlyn has requested DUA from Roni
+  "google-survey" = NA_character_, #@Carlyn has requested DUA from Roni, waiting.
   "google-symptoms" = NA_character_, #public
   "hhs" = NA_character_, #public gov't
   "hospital-admissions" = "https://drive.google.com/drive/u/1/folders/11kvTzVR5Yd3lVszxmPHxFZcAYjIpoLcf", #"https://cmu.box.com/s/l2tz6kmiws6jyty2azwb43poiepz0565"
