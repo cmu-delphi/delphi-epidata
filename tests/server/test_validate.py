@@ -63,7 +63,29 @@ class UnitTests(unittest.TestCase):
                 self.assertTrue(require_any(request, "abc", empty=True))
 
     def test_origin_headers(self):
-        with self.subTest("referer and origin"):
+        with self.subTest("referer only"):
+            with self.assertLogs("server_api", level='INFO') as logs:
+                self.client.get("/signal_dashboard_status", headers={
+                    "Referer": "https://test.com/test"
+                })
+            output = logs.output
+            self.assertEqual(len(output), 2) # [before_request, after_request]
+            self.assertIn("Received API request", output[0])
+            self.assertIn("\"req_referrer\": \"https://test.com/test\"", output[0])
+            self.assertIn("Served API request", output[1])
+            self.assertIn("\"req_referrer\": \"https://test.com/test\"", output[1])
+        with self.subTest("origin only"):
+            with self.assertLogs("server_api", level='INFO') as logs:
+                self.client.get("/signal_dashboard_status", headers={
+                    "Origin": "https://test.com"
+                })
+            output = logs.output
+            self.assertEqual(len(output), 2) # [before_request, after_request]
+            self.assertIn("Received API request", output[0])
+            self.assertIn("\"req_referrer\": \"https://test.com\"", output[0])
+            self.assertIn("Served API request", output[1])
+            self.assertIn("\"req_referrer\": \"https://test.com\"", output[1])
+        with self.subTest("referer overrides origin"):
             with self.assertLogs("server_api", level='INFO') as logs:
                 self.client.get("/signal_dashboard_status", headers={
                     "Referer": "https://test.com/test",
@@ -73,7 +95,5 @@ class UnitTests(unittest.TestCase):
             self.assertEqual(len(output), 2) # [before_request, after_request]
             self.assertIn("Received API request", output[0])
             self.assertIn("\"req_referrer\": \"https://test.com/test\"", output[0])
-            self.assertIn("\"req_origin\": \"https://test.com\"", output[0])
             self.assertIn("Served API request", output[1])
             self.assertIn("\"req_referrer\": \"https://test.com/test\"", output[1])
-            self.assertIn("\"req_origin\": \"https://test.com\"", output[1])
