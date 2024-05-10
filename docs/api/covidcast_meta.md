@@ -65,6 +65,7 @@ https://api.delphi.cmu.edu/epidata/covidcast_meta/
       "mean_value": 2.4972178,
       "stdev_value": 3.6433783,
       "last_update": 1711412545,
+      "min_issue": 20200507,
       "max_issue": 20240325,
       "min_lag": 2,
       "max_lag": 129
