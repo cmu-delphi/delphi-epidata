@@ -838,7 +838,7 @@ missingness <- c(
   "indicator-combination" = paste(all_counties_terr, all_states_terr),
   "jhu-csse" = paste(all_counties_terr, all_states_terr),
   "nchs-mortality" = paste(all_states_terr),
-  "quidel" = "Geographic coverage for some age groups (e.g. age 0-4 and age 65+) are extremely limited at HRR and MSA level, and can even be limited at state level on weekends.",
+  "quidel" = NA_character_, # below
   "safegraph" = paste(all_counties_terr, all_states_terr),
   "usa-facts" = paste(all_counties_terr, all_states),
   "youtube-survey" = NA_character_ # See https://github.com/cmu-delphi/covid-19/tree/main/youtube  # below
@@ -846,6 +846,13 @@ missingness <- c(
 source_updated[, col] <- missingness[source_updated$data_source]
 
 google_symptoms_note <- "Signals associated with rarer symptoms (e.g. ageusia) will tend to have fewer locations available, due to upstream privacy censoring. Locations with lower populations will tend to be less available for the same reason"
+
+# Quidel
+smoothed_nonage_groups <- "Data is available for about 50% of counties, and all or nearly all states."
+raw_nonage_groups <- "Data is available for about 7% of counties, half that on weekends. Data is available for about 90% of states, about 70% on weekends"
+smoothed_age_groups <- "Data is available for about 5-15% of counties. 65-95% of states."
+raw_age_groups <- "Data is available for about 0.7-2% of counties, half that on weekends. Data is available for about 30-45% of states, half that on weekends. Geographic coverage for smaller age groups (age 0-4 and age 65+) are also extremely limited at the HRR and MSA levels"
+
 signal_specific_missingness <- tibble::tribble(
   ~data_source, ~signal, ~note,
   "indicator-combination", "nmf_day_doc_fbc_fbs_ght", paste("Data is available for about 80% of counties", all_states_terr),
@@ -892,6 +899,28 @@ signal_specific_missingness <- tibble::tribble(
   "google-symptoms", "scontrol_smoothed_search", paste("Data is available for about 45% of counties.", all_states, google_symptoms_note),
   "google-symptoms", "sum_anosmia_ageusia_raw_search", paste("Data is available for about 3-4% of counties. Data is available for about 85% of states.", google_symptoms_note),
   "google-symptoms", "sum_anosmia_ageusia_smoothed_search", paste("Data is available for about 3-4% of counties. Data is available for about 85% of states.", google_symptoms_note),
+  
+  # covid
+  "quidel", "covid_ag_raw_pct_positive", raw_nonage_groups,
+  "quidel", "covid_ag_smoothed_pct_positive", smoothed_nonage_groups,
+  "quidel", "covid_ag_raw_pct_positive_age_0_17", raw_age_groups,
+  "quidel", "covid_ag_smoothed_pct_positive_age_0_17", smoothed_age_groups,
+  "quidel", "covid_ag_raw_pct_positive_age_0_4", raw_age_groups,
+  "quidel", "covid_ag_smoothed_pct_positive_age_0_4", smoothed_age_groups,
+  "quidel", "covid_ag_raw_pct_positive_age_18_49", raw_age_groups,
+  "quidel", "covid_ag_smoothed_pct_positive_age_18_49", smoothed_age_groups,
+  "quidel", "covid_ag_raw_pct_positive_age_5_17", raw_age_groups,
+  "quidel", "covid_ag_smoothed_pct_positive_age_5_17", smoothed_age_groups,
+  "quidel", "covid_ag_raw_pct_positive_age_50_64", raw_age_groups,
+  "quidel", "covid_ag_smoothed_pct_positive_age_50_64", smoothed_age_groups,
+  "quidel", "covid_ag_raw_pct_positive_age_65plus", raw_age_groups,
+  "quidel", "covid_ag_smoothed_pct_positive_age_65plus", smoothed_age_groups,
+  
+  # flu
+  "quidel", "raw_pct_negative", raw_nonage_groups,
+  "quidel", "smoothed_pct_negative", smoothed_nonage_groups,
+  "quidel", "raw_tests_per_device", raw_nonage_groups,
+  "quidel", "smoothed_tests_per_device", smoothed_nonage_groups,
 )
 
 # Add signal-specific missingness
