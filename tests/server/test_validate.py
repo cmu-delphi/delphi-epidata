@@ -26,6 +26,7 @@ class UnitTests(unittest.TestCase):
         app.config["TESTING"] = True
         app.config["WTF_CSRF_ENABLED"] = False
         app.config["DEBUG"] = False
+        self.client = app.test_client()
 
     def test_require_all(self):
         with self.subTest("all given"):
@@ -60,3 +61,39 @@ class UnitTests(unittest.TestCase):
         with self.subTest("one options given with is empty but ok"):
             with app.test_request_context("/?abc="):
                 self.assertTrue(require_any(request, "abc", empty=True))
+
+    def test_origin_headers(self):
+        with self.subTest("referer only"):
+            with self.assertLogs("server_api", level='INFO') as logs:
+                self.client.get("/signal_dashboard_status", headers={
+                    "Referer": "https://test.com/test"
+                })
+            output = logs.output
+            self.assertEqual(len(output), 2) # [before_request, after_request]
+            self.assertIn("Received API request", output[0])
+            self.assertIn("\"referrer\": \"https://test.com/test\"", output[0])
+            self.assertIn("Served API request", output[1])
+            self.assertIn("\"referrer\": \"https://test.com/test\"", output[1])
+        with self.subTest("origin only"):
+            with self.assertLogs("server_api", level='INFO') as logs:
+                self.client.get("/signal_dashboard_status", headers={
+                    "Origin": "https://test.com"
+                })
+            output = logs.output
+            self.assertEqual(len(output), 2) # [before_request, after_request]
+            self.assertIn("Received API request", output[0])
+            self.assertIn("\"referrer\": \"https://test.com\"", output[0])
+            self.assertIn("Served API request", output[1])
+            self.assertIn("\"referrer\": \"https://test.com\"", output[1])
+        with self.subTest("referer overrides origin"):
+            with self.assertLogs("server_api", level='INFO') as logs:
+                self.client.get("/signal_dashboard_status", headers={
+                    "Referer": "https://test.com/test",
+                    "Origin": "https://test.com"
+                })
+            output = logs.output
+            self.assertEqual(len(output), 2) # [before_request, after_request]
+            self.assertIn("Received API request", output[0])
+            self.assertIn("\"referrer\": \"https://test.com/test\"", output[0])
+            self.assertIn("Served API request", output[1])
+            self.assertIn("\"referrer\": \"https://test.com/test\"", output[1])
