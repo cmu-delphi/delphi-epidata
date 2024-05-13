@@ -68,7 +68,7 @@ def log_info_with_request(message, **kwargs):
         remote_addr=request.remote_addr,
         real_remote_addr=get_real_ip_addr(request),
         user_agent=request.user_agent.string,
-        req_referrer=request.referrer or request.origin,
+        referrer=request.referrer or request.origin,
         api_key=resolve_auth_token(),
         user_id=(current_user and current_user.id),
         **kwargs
@@ -115,7 +115,6 @@ def before_request_execute():
     user = current_user
     api_key = resolve_auth_token()
 
-    # TODO: replace this next call with: log_info_with_request("Received API request")
     log_info_with_request("Received API request")
 
     if not _is_public_route() and api_key and not user:
