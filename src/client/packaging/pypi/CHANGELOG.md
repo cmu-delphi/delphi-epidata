@@ -3,15 +3,20 @@
 All notable future changes to the `delphi_epidata` python client will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
-## [4.1.17] - 2024-01-30
+## [4.1.21] - TBD
 
 ### Includes
-- https://github.com/cmu-delphi/delphi-epidata/pull/1363
+- https://github.com/cmu-delphi/delphi-epidata/pull/1418
 
 ### Added
 - Adds two debug flags:
   - `debug` logs info about HTTP requests and responses
   - `sandbox` prevents any HTTP requests from actually executing, allowing for tests that do not incur server load.
+
+## [4.1.17] - 2024-01-30
+
+### Includes
+- https://github.com/cmu-delphi/delphi-epidata/pull/1363
 
 ### Changed
 - Replaced use of deprecated setuptools' `pkg_resources` library with the native `importlib.metadata` library.
