@@ -34,16 +34,14 @@ To generate either the state or national level signals from the sample-site leve
 The signals vary across the underlying data provider, the normalization method, and the post-processing method.
 ### Providers
 As a coordinating body, the NWSS receives wastewater data through a number of providers, which have changed as the project has evolved.
-Most recently, in the fall of 2023, there was a major shift in the primary direct commercial provider for the NWSS from Biobot to Verily.
-Presently, the Biobot data is not present at either socrata endpoint; we are providing a fixed snapshot that was present in November 2023.
+Most recently, in the fall of 2023, there was a major shift in the primary direct commercial provider for the NWSS from [Biobot](https://biobot.io/) to Verily.
 The available column below indicates the first date that any location had data from that source.
 
-| Provider     | Available             | Description                                                                                                                                                                                                  |
-|--------------|-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `cdc_verily` | 2023/10/30-Today      | Data analyzed by [Verily](https://verily.com/solutions/public-health/wastewater) on behalf of the CDC directly.                                                                                              |
+| Provider     | Available             | Description                                                                                                                                                                                                         |
+|--------------|-----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `cdc_verily` | 2023/10/30-Today      | Data analyzed by [Verily](https://verily.com/solutions/public-health/wastewater) on behalf of the CDC directly.                                                                                                     |
 | `nwss`       | 2020/06/21-Today      | Data reported by the respective State, Territorial and Local Public Health Agencies; the actual processing may be done by a private lab such as Verily or Biobot, or the agency itself, or a partnering university. |
-| `wws`        | 2021/12/26-Today      | Data analyzed by [Wastewater Scan](https://www.wastewaterscan.org/en), a Stanford/Emory nonprofit, and then shared with the NWSS.                                                                            |
-| `cdc_biobot` | 2020/06/21-2023/10/30 | Data analyzed by [Biobot](https://biobot.io/) on behalf of the CDC.                                                                                                                                          |
+| `wws`        | 2021/12/26-Today      | Data analyzed by [Wastewater Scan](https://www.wastewaterscan.org/en), a Stanford/Emory nonprofit, and then shared with the NWSS.                                                                                   |
 
 ### Normalization methods
 Direct viral concentration is not a clear indicator of the number and severity of cases in the sewershed.
@@ -90,7 +88,7 @@ Not every triple of post processing method, provider, and normalization actually
 | `percentile_cdc_nwss_microbial`                | 2021-12-05           | 3,104,972                     |
 | `percentile_cdc_wws_microbial`                 | 2022-01-09           | 42,185,773                    |
 
-What is missing? `wws` only normalizes using `microbial` measures, so the 5 different post-processing methods are not present for `*_wws_flow_population`. TODO need to work out which Biobot's we've got
+What is missing? `wws` only normalizes using `microbial` measures, so the 5 different post-processing methods are not present for `*_wws_flow_population`.
 ## Estimation
 ### Aggregation
 For any given day and signal, we do a population weighted sum of the target signal, with the weight depending only on non-missing and non-zero sample sites for that day in particular. For example, say $$p_i$$ is the population at sample site $$i$$; if there are 3 sample sites in Washington on a particular day, then the weight at site $$i$$ is $$\frac{p_i}{p_1+p_2+p_3}$$. If the next day there are only 2 sample locations, the weight at site $$i$$ becomes $$\frac{p_i}{p_1+p_2}$$.
@@ -141,7 +139,7 @@ The `percentile` data is subject to potentially more extensive revision if the s
 
 This indicator aggregates data originating from the [NWSS](https://www.cdc.gov/nwss/index.html).
 The site-level data is provided un-versioned via the socrata api as the [metric data](https://data.cdc.gov/Public-Health-Surveillance/NWSS-Public-SARS-CoV-2-Wastewater-Metric-Data/2ew6-ywp6/about_data) and [concentration data](https://data.cdc.gov/Public-Health-Surveillance/NWSS-Public-SARS-CoV-2-Concentration-in-Wastewater/g653-rqe2/about_data).
-As described in the [Provider section](#providers), the NWSS is aggregating data from [Verily](https://verily.com/solutions/public-health/wastewater), State Territorial and Local public health agencies, [Wastewater Scan](https://www.wastewaterscan.org/en), and [Biobot](https://biobot.io/).
+As described in the [Provider section](#providers), the NWSS is aggregating data from [Verily](https://verily.com/solutions/public-health/wastewater), State Territorial and Local public health agencies, [Wastewater Scan](https://www.wastewaterscan.org/en).
 
 
 [^1]: These are not realistic values; they are merely chosen to make the example simple to explain.
