@@ -18,9 +18,9 @@ from aiohttp import ClientSession, TCPConnector, BasicAuth
 
 from delphi.epidata.common.logger import get_structured_logger
 
-_version = "4.1.20"
+_version_ = "4.1.20"
 
-_HEADERS = {"user-agent": "delphi_epidata/" + _version + " (Python)"}
+_HEADERS = {"user-agent": "delphi_epidata/" + _version_ + " (Python)"}
 
 
 class EpidataException(Exception):
@@ -43,7 +43,7 @@ class Epidata:
     BASE_URL = "https://api.delphi.cmu.edu/epidata"
     auth = None
 
-    client_version = _version
+    client_version = _version_
 
     logger = get_structured_logger('delphi_epidata_client')
     debug = False # if True, prints extra logging statements
