@@ -15,19 +15,12 @@ import asyncio
 from tenacity import retry, stop_after_attempt
 
 from aiohttp import ClientSession, TCPConnector, BasicAuth
-from importlib.metadata import version, PackageNotFoundError
 
 from delphi.epidata.common.logger import get_structured_logger
 
-# Obtain package version for the user-agent. Uses the installed version by
-# preference, even if you've installed it and then use this script independently
-# by accident.
-try:
-    _version = version("delphi-epidata")
-except PackageNotFoundError:
-    _version = "0.script"
+__version__ = "4.1.20"
 
-_HEADERS = {"user-agent": "delphi_epidata/" + _version + " (Python)"}
+_HEADERS = {"user-agent": "delphi_epidata/" + __version__ + " (Python)"}
 
 
 class EpidataException(Exception):
@@ -50,7 +43,7 @@ class Epidata:
     BASE_URL = "https://api.delphi.cmu.edu/epidata"
     auth = None
 
-    client_version = _version
+    client_version = __version__
 
     logger = get_structured_logger('delphi_epidata_client')
     debug = False # if True, prints extra logging statements

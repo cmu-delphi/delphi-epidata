@@ -7,11 +7,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Includes
 - https://github.com/cmu-delphi/delphi-epidata/pull/1418
+- https://github.com/cmu-delphi/delphi-epidata/pull/1436
 
 ### Added
 - Adds two debug flags:
   - `debug` logs info about HTTP requests and responses
   - `sandbox` prevents any HTTP requests from actually executing, allowing for tests that do not incur server load.
+- Fixes the `user-agent` version so that it is correctly set to match the current client release.
 
 ## [4.1.17] - 2024-01-30
 
