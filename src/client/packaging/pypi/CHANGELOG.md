@@ -3,6 +3,38 @@
 All notable future changes to the `delphi_epidata` python client will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [4.1.21] - 2024-05-20
+
+### Includes
+- https://github.com/cmu-delphi/delphi-epidata/pull/1418
+- https://github.com/cmu-delphi/delphi-epidata/pull/1436
+
+### Added
+- Adds two debug flags:
+  - `debug` logs info about HTTP requests and responses
+  - `sandbox` prevents any HTTP requests from actually executing, allowing for tests that do not incur server load.
+- Fixes the `user-agent` version so that it is correctly set to match the current client release.
+
+## [4.1.17] - 2024-01-30
+
+### Includes
+- https://github.com/cmu-delphi/delphi-epidata/pull/1363
+
+### Changed
+- Replaced use of deprecated setuptools' `pkg_resources` library with the native `importlib.metadata` library.
+
+## [4.1.13] - 2023-11-04
+
+### Includes
+- https://github.com/cmu-delphi/delphi-epidata/pull/1323
+- https://github.com/cmu-delphi/delphi-epidata/pull/1330
+
+### Changed
+- Appends a trailing slash to URLs requested by the Python client, which should prevent an automatic redirect and an extra request to the server.
+
+### Removed
+- Removed the `covidcast_nowcast()` method, as the associated API endpoint is no longer available.
+
 ## [4.1.11] - 2023-10-12
 
 ### Includes

@@ -10,21 +10,17 @@ Notes:
 
 # External modules
 import requests
+import time
 import asyncio
 from tenacity import retry, stop_after_attempt
 
 from aiohttp import ClientSession, TCPConnector, BasicAuth
-from importlib.metadata import version, PackageNotFoundError
 
-# Obtain package version for the user-agent. Uses the installed version by
-# preference, even if you've installed it and then use this script independently
-# by accident.
-try:
-    _version = version("delphi-epidata")
-except PackageNotFoundError:
-    _version = "0.script"
+from delphi.epidata.common.logger import get_structured_logger
 
-_HEADERS = {"user-agent": "delphi_epidata/" + _version + " (Python)"}
+__version__ = "4.1.21"
+
+_HEADERS = {"user-agent": "delphi_epidata/" + __version__ + " (Python)"}
 
 
 class EpidataException(Exception):
@@ -47,7 +43,11 @@ class Epidata:
     BASE_URL = "https://api.delphi.cmu.edu/epidata"
     auth = None
 
-    client_version = _version
+    client_version = __version__
+
+    logger = get_structured_logger('delphi_epidata_client')
+    debug = False # if True, prints extra logging statements
+    sandbox = False # if True, will not execute any queries
 
     # Helper function to cast values and/or ranges to strings
     @staticmethod
@@ -71,9 +71,25 @@ class Epidata:
     def _request_with_retry(endpoint, params={}):
         """Make request with a retry if an exception is thrown."""
         request_url = f"{Epidata.BASE_URL}/{endpoint}/"
+        if Epidata.debug:
+            Epidata.logger.info("Sending GET request", url=request_url, params=params, headers=_HEADERS, auth=Epidata.auth)
+        if Epidata.sandbox:
+            resp = requests.Response()
+            resp._content = b'true'
+            return resp
+        start_time = time.time()
         req = requests.get(request_url, params, auth=Epidata.auth, headers=_HEADERS)
         if req.status_code == 414:
+            if Epidata.debug:
+                Epidata.logger.info("Received 414 response, retrying as POST request", url=request_url, params=params, headers=_HEADERS)
             req = requests.post(request_url, params, auth=Epidata.auth, headers=_HEADERS)
+        if Epidata.debug:
+            Epidata.logger.info(
+                "Received response",
+                status_code=req.status_code,
+                len=len(req.content),
+                time=round(time.time() - start_time, 4)
+            )
         # handle 401 and 429
         req.raise_for_status()
         return req
