@@ -180,13 +180,21 @@ source3 <- left_join(
   by = c("Signal" = "signal", "data_source")
 )
 
-# select: source subdivision, signal, scope start, scope end, min_time, max_time
+# Fill in Temporal Scope Start/End for quidel signals by coalescing the existing
+# column with the new data; quidel dates have already been filled in manually in
+# the spreadsheet.
+source3$min_time <- case_when(
+  source3$data_source == "quidel" ~ coalesce(source3$min_time, source3$`Temporal Scope Start`)
+)
+source3$max_time <- case_when(
+  source3$data_source == "quidel" ~ coalesce(source3$max_time, source3$`Temporal Scope Start`)
+)
+
+# Select relevant columns
 # first reformat max_time col to character for compatibility
 # also convert min_time col to character (easier to move times over to google spreadsheet without corrupting)
 # *only in dplyr can you use col names without quotations, as.character is base function
 # *min_time, we can just use the earliest date available and not specify each geo's different dates
-
-# TODO: fill in Temporal Scope Start/End for quidel signals by coalescing the existing column with the new data; quidel dates have already been filled in manually in the spreadsheet.
 source4 <- mutate(
   source3,
   `Temporal Scope Start Note` = min_time_notes,
