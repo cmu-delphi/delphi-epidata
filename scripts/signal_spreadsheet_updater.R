@@ -859,7 +859,7 @@ google_symptoms_note <- "Signals associated with rarer symptoms (e.g. ageusia) w
 # Quidel
 smoothed_nonage_groups <- "Data is available for about 50% of counties, and all or nearly all states."
 raw_nonage_groups <- "Data is available for about 7% of counties, half that on weekends. Data is available for about 90% of states, about 70% on weekends"
-smoothed_age_groups <- "Data is available for about 5-15% of counties. 65-95% of states."
+smoothed_age_groups <- "Data is available for about 5-15% of counties. Data is available for about 65-95% of states."
 raw_age_groups <- "Data is available for about 0.7-2% of counties, half that on weekends. Data is available for about 30-45% of states, half that on weekends. Geographic coverage for smaller age groups (age 0-4 and age 65+) are also extremely limited at the HRR and MSA levels"
 
 signal_specific_missingness <- tibble::tribble(
