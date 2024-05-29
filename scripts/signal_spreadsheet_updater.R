@@ -181,15 +181,10 @@ source3 <- left_join(
   by = c("Signal" = "signal", "data_source")
 )
 
-# Fill in Temporal Scope Start/End for quidel signals by coalescing the existing
-# column with the new data; quidel dates have already been filled in manually in
-# the spreadsheet.
-source3$min_time <- case_when(
-  source3$data_source == "quidel" ~ coalesce(source3$min_time, source3$`Temporal Scope Start`)
-)
-source3$max_time <- case_when(
-  source3$data_source == "quidel" ~ coalesce(source3$max_time, source3$`Temporal Scope Start`)
-)
+# Assume new values for Temporal Scope Start/End are correct, but use previous
+# (manual) values as backup.
+source3$min_time <- coalesce(source3$min_time, source3$`Temporal Scope Start`)
+source3$max_time <- coalesce(source3$max_time, source3$`Temporal Scope End`)
 
 # Select relevant columns
 # first reformat max_time col to character for compatibility
@@ -566,7 +561,7 @@ source_updated <- left_join(
   source_updated, leftover_signal_geos_manual,
   by = c("Signal" = "signal", "data_source")
 ) %>%
-  mutate(`Delphi-Aggregated Geography` = coalesce(geos_list, `Delphi-Aggregated Geography`)) %>%
+  mutate(`Delphi-Aggregated Geography` = geos_list) %>%
   select(-geos_list)
 
 
