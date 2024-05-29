@@ -29,7 +29,6 @@ options(warn = 1)
 
 
 # TODO all info for youtube-survey. Information is hard to find. Filled out some fields based on https://github.com/cmu-delphi/covid-19/tree/main/youtube
-# TODO some info for quidel.
 
 # COVIDcast metadata
 # Metadata documentation: https://cmu-delphi.github.io/delphi-epidata/api/covidcast_meta.html
@@ -742,7 +741,7 @@ revision_cadence <- c(
      corrected by adjusting the reported value for a single day, but revisions
      do not affect past report dates.",
   "nchs-mortality" = "Weekly. All-cause mortality takes ~6 weeks on average to achieve 99% of its final value (https://link.springer.com/article/10.1057/s41271-021-00309-7)",
-  "quidel" = "Weekly. Happens, up to 6+ weeks after the report date.",
+  "quidel" = "Daily. Happens up to 6+ weeks after the report date. Revised values vary -3.5 to 1.8% around the final value for a given date and location.",
   "safegraph" = "None",
   "usa-facts" = "None. The raw data reports cumulative cases and deaths, which Delphi diffs to compute incidence. Raw cumulative figures are sometimes corrected by adjusting the reported value for a single day, but revisions do not affect past report dates.",
   "youtube-survey" = NA_character_ # See https://github.com/cmu-delphi/covid-19/tree/main/youtube
