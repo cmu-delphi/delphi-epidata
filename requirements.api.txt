@@ -10,7 +10,7 @@ pandas==1.2.3
 python-dotenv==0.15.0
 pyyaml
 redis==3.5.3
-requests==2.31.0
+requests==2.32.0
 scipy==1.10.0
 sentry-sdk[flask]
 SQLAlchemy==1.4.40

@@ -26,6 +26,10 @@ Pandemic"](https://www.pnas.org/topic/548) in *PNAS*:
 
 Research publications using the survey data include:
 
+- Perofsky, A.C., Hansen, C.L., Burstein, R. et al (2024). [Impacts of human
+  mobility on the citywide transmission dynamics of 18 respiratory viruses
+  in pre- and post-COVID-19 pandemic years](https://doi.org/10.1038/s41467-024-48528-2).
+  *Nature Communications* 15, 4164.
 - Z. Yang, R. Krishnan, and B. Li (2024). [The interplay between individual
   mobility, health risk, and economic choice: A holistic model for COVID-19
   policy intervention](https://doi.org/10.1287/ijds.2023.0013). *INFORMS
