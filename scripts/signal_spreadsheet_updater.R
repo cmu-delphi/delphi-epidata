@@ -126,6 +126,7 @@ signal_sheet <- suppressMessages(read_csv("delphi-eng-covidcast-data-sources-sig
 # Fields we want to add.
 new_fields <- c(
   "Geographic Scope",
+  "Delphi-Aggregated Geography",
   "Temporal Scope Start",
   "Temporal Scope End",
   "Reporting Cadence",
@@ -344,74 +345,72 @@ geo_scope <- c(
 source_updated[, col] <- geo_scope[source_updated$data_source]
 
 
+
+
 col <- "Available Geography"
-# List all available geo-levels. If a geo-level was created by Delphi
-# aggregation (as opposed to being ingested directly from the data source),
-# indicate this as per this example:  county, state (by Delphi), National
-# (by Delphi).
+# List all available geo-levels, e.g:  county,state,nation
 
-# Tool: Create lists of geos for each data source-signal combo based on what is reported in metadata (does not include quidel, at least with).
-metadata_factorgeo <- metadata
-metadata_factorgeo$geo_type <- factor(metadata_factorgeo$geo_type, levels = c("county", "hrr", "msa", "dma", "state", "hhs", "nation"))
-auto_geo_list_by_signal <- arrange(
-  metadata_factorgeo,
-  geo_type
-) %>% 
-  group_by(
-    data_source,
-    signal
-  ) %>%
-  summarize(
-    geos_list = paste(geo_type, collapse = ", "),
-    .groups = "keep"
-  ) %>%
-  ungroup()
+# # Tool: Create lists of geos for each data source-signal combo based on what is
+# # reported in metadata (does not include quidel).
+# metadata_factorgeo <- metadata
+# metadata_factorgeo$geo_type <- factor(metadata_factorgeo$geo_type, levels = c("county", "hrr", "msa", "dma", "state", "hhs", "nation"))
+# auto_geo_list_by_signal <- arrange(
+#   metadata_factorgeo,
+#   geo_type
+# ) %>% 
+#   group_by(
+#     data_source,
+#     signal
+#   ) %>%
+#   summarize(
+#     geos_list = paste(geo_type, collapse = ", "),
+#     .groups = "keep"
+#   ) %>%
+#   ungroup()
 
-# Tool: Are there any data sources where geos_list is different for different signal?
-different_geos_by_signal <- count(auto_geo_list_by_signal, data_source, geos_list, name = "n_signals")
-# different_geos_by_signal
-# which(duplicated(select(different_geos_by_signal, data_source)))
+# # Tool: Are there any data sources where geos_list is different for different signal?
+# different_geos_by_signal <- count(auto_geo_list_by_signal, data_source, geos_list, name = "n_signals")
+# # different_geos_by_signal
+# # which(duplicated(select(different_geos_by_signal, data_source)))
 
-# Keep most common geos_list for each data source.
-most_common_geos_list <- group_by(different_geos_by_signal, data_source) %>% 
-  slice_max(n_signals, with_ties = FALSE)
-# most_common_geos_list
-leftover_datasource_geos <- anti_join(different_geos_by_signal, most_common_geos_list)
-# leftover_datasource_geos
-leftover_signal_geos <- semi_join(auto_geo_list_by_signal, leftover_datasource_geos)
-# leftover_signal_geos
-
-delphi_agg_text <- " (by Delphi)"
+# # Keep most common geos_list for each data source.
+# most_common_geos_list <- group_by(different_geos_by_signal, data_source) %>% 
+#   slice_max(n_signals, with_ties = FALSE)
+# # most_common_geos_list
+# leftover_datasource_geos <- anti_join(different_geos_by_signal, most_common_geos_list)
+# # leftover_datasource_geos
+# leftover_signal_geos <- semi_join(auto_geo_list_by_signal, leftover_datasource_geos)
+# # leftover_signal_geos
 
 # These values are applied first. They are the default (most common) geos for each data source.
 avail_geos <- c(
-  "chng" = glue("county, hrr{delphi_agg_text}, msa{delphi_agg_text}, state{delphi_agg_text}, hhs{delphi_agg_text}, nation{delphi_agg_text}"),
-  "covid-act-now" = glue("county, hrr{delphi_agg_text}, msa{delphi_agg_text}, state{delphi_agg_text}, hhs{delphi_agg_text}, nation{delphi_agg_text}"),
-  "doctor-visits" = glue("county, hrr{delphi_agg_text}, msa{delphi_agg_text}, state{delphi_agg_text}, hhs{delphi_agg_text}, nation{delphi_agg_text}"),
-  "dsew-cpr" = glue("county, msa, state, hhs, nation{delphi_agg_text}"),
-  "fb-survey" = glue("county{delphi_agg_text}, hrr{delphi_agg_text}, msa{delphi_agg_text}, state{delphi_agg_text}, nation{delphi_agg_text}"),
-  "ght" = glue("hrr{delphi_agg_text}, msa{delphi_agg_text}, dma, state"),
-  "google-survey" = glue("county{delphi_agg_text}, hrr{delphi_agg_text}, msa{delphi_agg_text}, state{delphi_agg_text}"),
-  "google-symptoms" = glue("county, hrr{delphi_agg_text}, msa{delphi_agg_text}, state, hhs{delphi_agg_text}, nation{delphi_agg_text}"),
-  "hhs" = glue("state, hhs{delphi_agg_text}, nation{delphi_agg_text}"),
-  "hospital-admissions" = glue("county{delphi_agg_text}, hrr{delphi_agg_text}, msa{delphi_agg_text}, state{delphi_agg_text}, hhs{delphi_agg_text}, nation{delphi_agg_text}"),
-  "indicator-combination" = glue("county{delphi_agg_text}, hrr{delphi_agg_text}, msa{delphi_agg_text}, state{delphi_agg_text}, hhs{delphi_agg_text}, nation{delphi_agg_text}"),
-  "jhu-csse" = glue("county, hrr{delphi_agg_text}, msa{delphi_agg_text}, state{delphi_agg_text}, hhs{delphi_agg_text}, nation{delphi_agg_text}"),
-  "nchs-mortality" = glue("state, nation"),
+  "chng" = glue("county,hrr,msa,state,hhs,nation"),
+  "covid-act-now" = glue("county,hrr,msa,state,hhs,nation"),
+  "doctor-visits" = glue("county,hrr,msa,state,hhs,nation"),
+  "dsew-cpr" = glue("county,msa,state,hhs,nation"),
+  "fb-survey" = glue("county,hrr,msa,state,nation"),
+  "ght" = glue("hrr,msa,dma,state"),
+  "google-survey" = glue("county,hrr,msa,state"),
+  "google-symptoms" = glue("county,hrr,msa,state,hhs,nation"),
+  "hhs" = glue("state,hhs,nation"),
+  "hospital-admissions" = glue("county,hrr,msa,state,hhs,nation"),
+  "indicator-combination" = glue("county,hrr,msa,state,hhs,nation"),
+  "jhu-csse" = glue("county,hrr,msa,state,hhs,nation"),
+  "nchs-mortality" = glue("state,nation"),
   # Quidel non-flu signals
-  "quidel" = glue("county{delphi_agg_text}, hrr{delphi_agg_text}, msa{delphi_agg_text}, state{delphi_agg_text}, hhs{delphi_agg_text}, nation{delphi_agg_text}"),
-  "safegraph" = glue("county{delphi_agg_text}, hrr{delphi_agg_text}, msa{delphi_agg_text}, state{delphi_agg_text}, hhs{delphi_agg_text}, nation{delphi_agg_text}"),
-  "usa-facts" = glue("county, hrr{delphi_agg_text}, msa{delphi_agg_text}, state{delphi_agg_text}, hhs{delphi_agg_text}, nation{delphi_agg_text}"),
-  "youtube-survey" = "state{delphi_agg_text}"
+  "quidel" = glue("county,hrr,msa,state,hhs,nation"),
+  "safegraph" = glue("county,hrr,msa,state,hhs,nation"),
+  "usa-facts" = glue("county,hrr,msa,state,hhs,nation"),
+  "youtube-survey" = "state"
 )
 
 # These are signal-specific geo lists. These are less common and are applied as a patch.
-dsew_geos <- glue("state, hhs, nation{delphi_agg_text}")
-fb_geos1 <- glue("county{delphi_agg_text}, state{delphi_agg_text}, nation{delphi_agg_text}")
-fb_geos2 <- glue("county{delphi_agg_text}, msa{delphi_agg_text}, state{delphi_agg_text}, nation{delphi_agg_text}")
-hosp_geos <- glue("county{delphi_agg_text}, hrr{delphi_agg_text}, msa{delphi_agg_text}, state{delphi_agg_text}")
-combo_geos <- glue("county{delphi_agg_text}, msa{delphi_agg_text}, state{delphi_agg_text}")
-quidel_geos <- glue("msa{delphi_agg_text}, state{delphi_agg_text}")
+dsew_geos <- glue("state,hhs,nation")
+fb_geos1 <- glue("county,state,nation")
+fb_geos2 <- glue("county,msa,state,nation")
+hosp_geos <- glue("county,hrr,msa,state")
+combo_geos <- glue("county,msa,state")
+quidel_geos <- glue("msa,state")
 leftover_signal_geos_manual <- tibble::tribble(
   ~data_source, ~signal, ~geos_list,
   "chng", "7dav_inpatient_covid", "state",
@@ -472,6 +471,104 @@ source_updated <- left_join(
 ) %>%
   mutate(`Available Geography` = coalesce(geos_list, `Available Geography`)) %>%
   select(-geos_list)
+
+
+col <- "Delphi-Aggregated Geography"
+# List available geo-levels that were created by Delphi (as opposed to being
+# ingested directly from the data source), e.g. if available at the county,
+# state, and nation levels but state and nation were aggregated by us from
+# provided county data:  state,nation
+
+# These values are applied first. They are the default (most common) geos for each data source.
+avail_geos <- c(
+  "chng" = glue("hrr,msa,state,hhs,nation"),
+  "covid-act-now" = glue("hrr,msa,state,hhs,nation"),
+  "doctor-visits" = glue("hrr,msa,state,hhs,nation"),
+  "dsew-cpr" = glue("nation"),
+  "fb-survey" = glue("county,hrr,msa,state,nation"),
+  "ght" = glue("hrr,msa"),
+  "google-survey" = glue("county,hrr,msa,state"),
+  "google-symptoms" = glue("hrr,msa,hhs,nation"),
+  "hhs" = glue("hhs,nation"),
+  "hospital-admissions" = glue("county,hrr,msa,state,hhs,nation"),
+  "indicator-combination" = glue("county,hrr,msa,state,hhs,nation"),
+  "jhu-csse" = glue("hrr,msa,state,hhs,nation"),
+  "nchs-mortality" = NA_character_,
+  # Quidel non-flu signals
+  "quidel" = glue("county,hrr,msa,state,hhs,nation"),
+  "safegraph" = glue("county,hrr,msa,state,hhs,nation"),
+  "usa-facts" = glue("hrr,msa,state,hhs,nation"),
+  "youtube-survey" = "state"
+)
+
+# These are signal-specific geo lists. These are less common and are applied as a patch.
+dsew_geos <- glue("nation")
+fb_geos1 <- glue("county,state,nation")
+fb_geos2 <- glue("county,msa,state,nation")
+hosp_geos <- glue("county,hrr,msa,state")
+combo_geos <- glue("county,msa,state")
+quidel_geos <- glue("msa,state")
+leftover_signal_geos_manual <- tibble::tribble(
+  ~data_source, ~signal, ~geos_list,
+  "chng", "7dav_inpatient_covid", "state",
+  "chng", "7dav_outpatient_covid", "state",
+  
+  "dsew-cpr", "booster_doses_admin_7dav", dsew_geos,
+  "dsew-cpr", "doses_admin_7dav", dsew_geos,
+  "dsew-cpr", "people_booster_doses", dsew_geos,
+  
+  "fb-survey", "smoothed_vaccine_barrier_appointment_location_tried", fb_geos1,
+  "fb-survey", "smoothed_vaccine_barrier_other_tried", fb_geos1,
+  "fb-survey", "smoothed_wvaccine_barrier_appointment_location_tried", fb_geos1,
+  "fb-survey", "smoothed_wvaccine_barrier_other_tried", fb_geos1,
+  
+  "fb-survey", "smoothed_vaccine_barrier_appointment_time_tried", fb_geos2,
+  "fb-survey", "smoothed_vaccine_barrier_childcare_tried", fb_geos2,
+  "fb-survey", "smoothed_vaccine_barrier_document_tried", fb_geos2,
+  "fb-survey", "smoothed_vaccine_barrier_eligible_tried", fb_geos2,
+  "fb-survey", "smoothed_vaccine_barrier_language_tried", fb_geos2,
+  "fb-survey", "smoothed_vaccine_barrier_no_appointments_tried", fb_geos2,
+  "fb-survey", "smoothed_vaccine_barrier_none_tried", fb_geos2,
+  "fb-survey", "smoothed_vaccine_barrier_technical_difficulties_tried", fb_geos2,
+  "fb-survey", "smoothed_vaccine_barrier_technology_access_tried", fb_geos2,
+  "fb-survey", "smoothed_vaccine_barrier_time_tried", fb_geos2,
+  "fb-survey", "smoothed_vaccine_barrier_travel_tried", fb_geos2,
+  "fb-survey", "smoothed_vaccine_barrier_type_tried", fb_geos2,
+  "fb-survey", "smoothed_wvaccine_barrier_appointment_time_tried", fb_geos2,
+  "fb-survey", "smoothed_wvaccine_barrier_childcare_tried", fb_geos2,
+  "fb-survey", "smoothed_wvaccine_barrier_document_tried", fb_geos2,
+  "fb-survey", "smoothed_wvaccine_barrier_eligible_tried", fb_geos2,
+  "fb-survey", "smoothed_wvaccine_barrier_language_tried", fb_geos2,
+  "fb-survey", "smoothed_wvaccine_barrier_no_appointments_tried", fb_geos2,
+  "fb-survey", "smoothed_wvaccine_barrier_none_tried", fb_geos2,
+  "fb-survey", "smoothed_wvaccine_barrier_technical_difficulties_tried", fb_geos2,
+  "fb-survey", "smoothed_wvaccine_barrier_technology_access_tried", fb_geos2,
+  "fb-survey", "smoothed_wvaccine_barrier_time_tried", fb_geos2,
+  "fb-survey", "smoothed_wvaccine_barrier_travel_tried", fb_geos2,
+  "fb-survey", "smoothed_wvaccine_barrier_type_tried", fb_geos2,
+  
+  "hospital-admissions", "smoothed_adj_covid19", hosp_geos,
+  "hospital-admissions", "smoothed_covid19", hosp_geos,
+  
+  "indicator-combination", "nmf_day_doc_fbc_fbs_ght", combo_geos,
+  "indicator-combination", "nmf_day_doc_fbs_ght", combo_geos,
+  
+  # Quidel flu signals
+  "quidel", "raw_pct_negative", quidel_geos,
+  "quidel", "smoothed_pct_negative", quidel_geos,
+  "quidel", "raw_tests_per_device", quidel_geos,
+  "quidel", "smoothed_tests_per_device", quidel_geos
+)
+
+source_updated[, col] <- coalesce(avail_geos[source_updated$data_source], source_updated[[col]])
+
+source_updated <- left_join(
+  source_updated, leftover_signal_geos_manual,
+  by = c("Signal" = "signal", "data_source")
+) %>%
+  mutate(`Delphi-Aggregated Geography` = coalesce(geos_list, `Delphi-Aggregated Geography`)) %>%
+  select(-geos_list)
+
 
 
 # Temporal Scope Start
