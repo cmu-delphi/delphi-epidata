@@ -17,10 +17,10 @@ for release yet, but you can track our development progress and help us test it 
 [epidatpy](https://github.com/cmu-delphi/epidatpy).
 
 In the meantime, minimalist Epidata clients remain available for
-[JavaScript](https://github.com/cmu-delphi/delphi-epidata/blob/master/src/client/delphi_epidata.js),
 [Python](https://github.com/cmu-delphi/delphi-epidata/blob/master/src/client/delphi_epidata.py),
+[JavaScript](https://github.com/cmu-delphi/delphi-epidata/blob/master/src/client/delphi_epidata.js),
 and
-[R](https://github.com/cmu-delphi/delphi-epidata/blob/master/src/client/delphi_epidata.R).
+[R (legacy)](https://github.com/cmu-delphi/delphi-epidata/blob/master/src/client/delphi_epidata.R).
 The following samples show how to import the library and fetch Delphi's COVID-19
 Surveillance Streams from Facebook Survey CLI for county 06001, and days
 `20200401` and `20200405-20200414` (11 days total).
@@ -37,21 +37,6 @@ library(epidatr)
 res <- pub_covidcast('fb-survey', 'smoothed_cli', 'county', 'day', geo_values = '06001',
                      time_values = c(20200401, 20200405:20200414))
 cat(res)
-````
-
-### JavaScript (in a web browser)
-
-The minimalist JavaScript client does not currently support API keys. If you need API key support in JavaScript, contact delphi-support+privacy@andrew.cmu.edu.
-
-````html
-<!-- Imports -->
-<script src="delphi_epidata.js"></script>
-<!-- Fetch data -->
-<script>
-  EpidataAsync.covidcast('fb-survey', 'smoothed_cli', 'day', 'county', [20200401, EpidataAsync.range(20200405, 20200414)], '06001').then((res) => {
-    console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
-  });
-</script>
 ````
 
 ### Python
@@ -73,6 +58,21 @@ from delphi_epidata import Epidata
 # Fetch data
 res = Epidata.covidcast('fb-survey', 'smoothed_cli', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001')
 print(res['result'], res['message'], len(res['epidata']))
+````
+
+### JavaScript (in a web browser)
+
+The minimalist JavaScript client does not currently support API keys. If you need API key support in JavaScript, contact delphi-support+privacy@andrew.cmu.edu.
+
+````html
+<!-- Imports -->
+<script src="delphi_epidata.js"></script>
+<!-- Fetch data -->
+<script>
+  EpidataAsync.covidcast('fb-survey', 'smoothed_cli', 'day', 'county', [20200401, EpidataAsync.range(20200405, 20200414)], '06001').then((res) => {
+    console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
+  });
+</script>
 ````
 
 ### R (legacy)
