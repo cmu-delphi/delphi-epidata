@@ -16,7 +16,7 @@ setuptools.setup(
         "Changelog": "https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/packaging/pypi/CHANGELOG.md",
     },
     packages=setuptools.find_packages(),
-    install_requires=["aiohttp", "requests>=2.7.0", "tenacity"],
+    install_requires=["aiohttp", "delphi-utils", "requests>=2.7.0", "tenacity"],
     classifiers=[
         "Programming Language :: Python",
         "License :: OSI Approved :: MIT License",
