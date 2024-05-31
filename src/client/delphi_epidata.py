@@ -16,9 +16,9 @@ from tenacity import retry, stop_after_attempt
 
 from aiohttp import ClientSession, TCPConnector, BasicAuth
 
-from delphi.epidata.common.logger import get_structured_logger
+from delphi_utils.logger import get_structured_logger
 
-__version__ = "4.1.22"
+__version__ = "4.1.23"
 
 _HEADERS = {"user-agent": "delphi_epidata/" + __version__ + " (Python)"}
 
