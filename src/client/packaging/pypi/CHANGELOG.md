@@ -3,6 +3,14 @@
 All notable future changes to the `delphi_epidata` python client will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [4.2.22] - 2024-05-31
+
+### Includes
+- https://github.com/cmu-delphi/delphi-epidata/pull/1460
+
+### Fixed
+- Replaced bad internal logger package import with one from `delphi_utils` package instead.
+
 ## [4.1.21] - 2024-05-20
 
 ### Includes
