@@ -3,7 +3,7 @@
 All notable future changes to the `delphi_epidata` python client will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
-## [4.2.23] - 2024-05-31
+## [4.1.23] - 2024-05-31
 
 ### Includes
 - https://github.com/cmu-delphi/delphi-epidata/pull/1460
