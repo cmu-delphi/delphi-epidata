@@ -31,6 +31,22 @@ jobs:
           python -m pip install bump2version
           echo -n "::set-output name=next_tag::"
           bump2version --list ${{ github.event.inputs.versionName }} | grep new_version | sed -r s,"^.*=",,
+      - name: Get main branch SHA
+        id: base-sha
+        run: echo "sha=$(git rev-parse origin/main)" >> $GITHUB_OUTPUT
+      - name: Get Python client file changes
+        id: changed-py
+        uses: tj-actions/changed-files@v44
+        with:
+            base_sha: "${{ steps.base-sha.outputs.sha }}"
+            files: |
+              src/client/delphi_epidata.py
+              src/client/packaging/pypi/**
+      - name: Bump Python versions if client files changed
+        if: steps.changed-py.outputs.any_changed == 'true'
+        run: |
+          cd src/client/packaging/pypi
+          bump2version --allow-dirty --new-version ${{ steps.version.outputs.next_tag }} ignore_part
       - name: Create pull request into prod
         uses: peter-evans/create-pull-request@v3
         with:

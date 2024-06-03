@@ -13,6 +13,24 @@ jobs:
         if: github.repository_owner != 'cmu-delphi'
         run: exit 1
 
+  client_changed:
+    needs: correct_repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+      - name: Get Python client file changes
+        id: changed-py
+        uses: tj-actions/changed-files@v44
+        with:
+            files: |
+              src/client/delphi_epidata.py
+              src/client/packaging/pypi/**
+    outputs:
+      any_changed: ${{ steps.changed-py.outputs.any_changed }}
+
   create_release:
     needs: correct_repository
     runs-on: ubuntu-latest
@@ -45,7 +63,8 @@ jobs:
       tag_name: ${{ steps.create_release.outputs.tag_name }}
 
   release_python_client:
-    needs: create_release
+    needs: [client_changed, create_release]
+    if: needs.client_changed.outputs.any_changed == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
