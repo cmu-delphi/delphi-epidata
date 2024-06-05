@@ -1,4 +1,5 @@
 delphi_utils
+delphi_logger @ git+https://github.com/cmu-delphi/delphi-logger
 epiweeks==2.1.2
 Flask==2.2.5
 Flask-Limiter==3.3.0

@@ -16,7 +16,7 @@ from tenacity import retry, stop_after_attempt
 
 from aiohttp import ClientSession, TCPConnector, BasicAuth
 
-from delphi_utils.logger import get_structured_logger
+from delphi_logger import get_structured_logger
 
 __version__ = "4.1.23"
 

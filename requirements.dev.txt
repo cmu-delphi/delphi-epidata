@@ -3,6 +3,7 @@ black>=20.8b1
 bump2version==1.0.1
 covidcast==0.1.5
 delphi_utils
+delphi_logger @ git+https://github.com/cmu-delphi/delphi-logger
 docker==6.0.1
 dropbox==11.36.0
 freezegun==1.2.2
