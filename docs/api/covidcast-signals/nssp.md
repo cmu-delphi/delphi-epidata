@@ -55,23 +55,6 @@ State reporting process is separate from the county reporting process. As such, 
 Smoothed signals are calculated using a simple 3 week moving average of the relevant weekly signals. Note that since the unsmoothed `pct_visits_*` signals report weekly data, each smoothed signal value is computed from 3 points rather than 21, as would be used if the unsmoothed data were reported daily.
 
 
-## Limitations
-
-There is substantial missingness at the county level. This tends to impact more rural and lower population locations. See the [missingness section below](#missingness) for more information.
-
-NSSP notes that not every patient entering an ED is tested for the conditions of interest, so the data may undercount total cases and as a result percent visits may be biased downward.
-
-Our [geographic weighting approach](#geographic-weighting) assumes that the number of ED visits is proportional to the overall population of a county. However, in reality, there are various factors that could affect the accuracy of this assumption.
-
-For example, we might expect denser, more urban counties to have 1) more and larger EDs and 2) easier access to EDs. The first factor may mean that residents of rural counties are more likely to go to EDs in urban counties. The second factor may increase the total number of ED visits that someone living in an urban county will make, that is, the average urban resident may make more ED visits than the average rural resident over a given period of time.
-
-As a result, total ED visits per capita in rural counties may be lower than total ED visits per capita in urban counties. Since our weighting approach uses population as the weights, rural counties would tend to be overrepresented in estimated values.
-
-Some low population counties occasionally report outliers, e.g. 33.33%, 50%, 100% of ER visits being covid-related. As of May 2024, an analysis shows around 10 unusually high values across the full history of all signals, so they are rare. We expect that these high rates are by chance, due to a small total number of ED visits in a given week.
-
-Not all counties contain reporting EDs, including in states where NSSP reports state-level data.
-
-
 ## Missingness
 
 As of May 2024, NSSP received data from 78% of US EDs.
@@ -94,6 +77,23 @@ For example, on Friday, 2024-04-19, the source added new data from the week endi
 This data source has frequent backfill, primarily arising from newly included EDs. When a new facility joins the reporting network, its historical data is added to the dataset, resulting in changes to historical values for every geographic level that ED is part of (county through nation). Because of this, the broadest geographic levels are more likely to be revised.
 
 In previous revisions, we have noted changes to values dating back about 2 years.
+
+
+## Limitations
+
+There is substantial missingness at the county level. This tends to impact more rural and lower population locations. See the [missingness section](#missingness) for more information.
+
+Not all counties contain reporting EDs, including in states where NSSP reports state-level data.
+
+NSSP notes that not every patient entering an ED is tested for the conditions of interest, so the data may undercount total cases and as a result percent visits may be biased downward.
+
+Our [geographic weighting approach](#geographic-weighting) assumes that the number of ED visits is proportional to the overall population of a county. However, in reality, there are various factors that could affect the accuracy of this assumption.
+
+For example, we might expect denser, more urban counties to have 1) more and larger EDs and 2) easier access to EDs. The first factor may mean that residents of rural counties are more likely to go to EDs in urban counties. The second factor may increase the total number of ED visits that someone living in an urban county will make, that is, the average urban resident may make more ED visits than the average rural resident over a given period of time.
+
+As a result, total ED visits per capita in rural counties may be lower than total ED visits per capita in urban counties. Since our weighting approach uses population as the weights, rural counties would tend to be overrepresented in estimated values.
+
+Some low population counties occasionally report outliers, e.g. 33.33%, 50%, 100% of ER visits being covid-related. As of May 2024, an analysis shows around 10 unusually high values across the full history of all signals, so they are rare. We expect that these high rates are by chance, due to a small total number of ED visits in a given week.
 
 
 ## Source and Licensing
