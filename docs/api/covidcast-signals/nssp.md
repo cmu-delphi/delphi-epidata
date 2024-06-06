@@ -53,39 +53,47 @@ State-level data is reported separately, and is **not** simply an average of the
 
 Smoothed signals are calculated using a simple 3 week moving average of the relevant weekly signals. Note that since the unsmoothed `pct_visits_*` signals report weekly data, each smoothed signal value is computed from 3 points rather than 21, as would be used if the unsmoothed data were reported daily.
 
+
 ## Limitations
 
-As of May 2024, NSSP received data from 78% of US EDs.
-The most noticeable gaps in [geographic coverage](https://www.cdc.gov/nssp/media/images/2024/04/Participation-with-date.png) are in California, Colorado, Missouri, Oklahoma, and Virginia, though most states have some counties that are absent.
+There is substantial missingness at the county level. This tends to impact more rural and lower population locations. See the [missingness section below](#missingness) for more information.
 
 NSSP notes that not every patient entering an ED is tested for the conditions of interest, so the data may undercount total cases and as a result underreport percent visits.
 
-Our [geographic weighting approach](#geographic-weighting) assumes that the number of ED visits is proportional to the overall population of a county. However, in reality we expect denser, more urban counties to have 1) more and larger EDs and 2) easier access to EDs. The first factor may mean that residents of rural counties are more likely to go to EDs in urban counties. The second factor may increase the total number of ED visits that someone living in an urban county will make, that is, the average urban resident may make more ED visits than the average rural resident.
+Our [geographic weighting approach](#geographic-weighting) assumes that the number of ED visits is proportional to the overall population of a county. However, in reality, there are various factors that could affect the accuracy of this assumption.
+
+For example, we might expect denser, more urban counties to have 1) more and larger EDs and 2) easier access to EDs. The first factor may mean that residents of rural counties are more likely to go to EDs in urban counties. The second factor may increase the total number of ED visits that someone living in an urban county will make, that is, the average urban resident may make more ED visits than the average rural resident.
 
 As a result, total ED visits per capita in rural counties may be lower than total ED visits per capita in urban counties. Since our weighting approach uses population as the weighting factor, rural counties would tend to be overrepresented in estimated values.
+
+Some low population counties occasionally report outliers, e.g. 33.33%, 50%, 100% of ER visits being covid-related. As of May 2024, an analysis shows around 10 unusually high values across the full history of all signals, so they are rare. We expect that these high rates are by chance, due to a small total number of ED visits in a given week.
 
 
 ## Missingness
 
+As of May 2024, NSSP received data from 78% of US EDs.
+The most noticeable gaps in [county coverage](https://www.cdc.gov/nssp/media/images/2024/04/Participation-with-date.png) are in California, Colorado, Missouri, Oklahoma, and Virginia, though most states have some counties that are absent.
+
+The following states have no country-level data at all: CA, WA, AK, AZ, AL, CO, SD, ND, MO, AR, FL, OH, NH, CT, NJ.
 Counties which do not have data are listed, but with an `NA` value.
 
+At the state level, South Dakota, Missouri, and territories are not reported.
+
+
 ## Lag and Backfill
+
+The weekly signal is reported on Friday mornings, adding data from the prior week.
+For example, on Friday, 2024-04-19, the source added new data from the week ending 2024-04-13.
 
 There is significant backfill in this signal, primarily arising when a new facility joins the network and its data is included in a region.
 This has the strongest effects at the highest levels of aggregation.
 
 
-The weekly signal is reported on Friday mornings.
-
 ## Source and Licensing
 
-This source is processed from this [data.cdc.gov site](https://data.cdc.gov/Public-Health-Surveillance/2023-Respiratory-Virus-Response-NSSP-Emergency-Dep/rdmq-nq56/about_data).
-There is another version of the state-only data available [here](https://data.cdc.gov/Public-Health-Surveillance/2023-Respiratory-Virus-Response-NSSP-Emergency-Dep/7mra-9cq9/about_data).
+This source is derived from the CDC's [Respiratory Virus Response NSSP Emergency Department Visit Trajectories dataset](https://data.cdc.gov/Public-Health-Surveillance/2023-Respiratory-Virus-Response-NSSP-Emergency-Dep/rdmq-nq56/about_data).
+There is another version of the dataset that includes [state data only](https://data.cdc.gov/Public-Health-Surveillance/2023-Respiratory-Virus-Response-NSSP-Emergency-Dep/7mra-9cq9/about_data).
 
 This data was originally published by the National Center for Health Statistics, and is made available here as a convenience to the forecasting community under the terms of the original license, which is [U.S. Government Public Domain](https://www.usa.gov/government-copyright).
-
-If the signal has specific licensing or sourcing that should be acknowledged,
-describe it here. Also, include links to source websites for data that is
-scraped or received from another source.
 
 [^1]: (TODO should probably confirm this in some way)
