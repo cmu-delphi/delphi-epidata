@@ -15,45 +15,10 @@ build-backend = "setuptools.build_meta" # If not defined, then legacy behavior c
 
 
 [project]
-# This is the name of your project. The first time you publish this
-# package, this name will be registered for you. It will determine how
-# users can install this project, e.g.:
-#
-# $ pip install sampleproject
-#
-# And where it will live on PyPI: https://pypi.org/project/sampleproject/
-#
-# There are some restrictions on what makes a valid project name
-# specification here:
-# https://packaging.python.org/specifications/core-metadata/#name
 name = "delphi_epidata" # REQUIRED, is the only field that cannot be marked as dynamic.
-
-# Versions should comply with PEP 440:
-# https://www.python.org/dev/peps/pep-0440/
-#
-# For a discussion on single-sourcing the version, see
-# https://packaging.python.org/guides/single-sourcing-package-version/
 version = "4.1.23"
-
-# This is a one-line description or tagline of what your project does. This
-# corresponds to the "Summary" metadata field:
-# https://packaging.python.org/specifications/core-metadata/#summary
 description = "A programmatic interface to Delphi's Epidata API."
-
-# This is an optional longer description of your project that represents
-# the body of text which users will see when they visit PyPI.
-#
-# Often, this is the same as your README, so you can just read it in from
-# that file directly.
-#
-# This field corresponds to the "Description" metadata field:
-# https://packaging.python.org/specifications/core-metadata/#description-optional
 readme = "README.md"
-
-# Specify which Python versions you support. In contrast to the
-# 'Programming Language' classifiers in this file, 'pip install' will check this
-# and refuse to install the project if the version does not match. See
-# https://packaging.python.org/guides/distributing-packages-using-setuptools/#python-requires
 requires-python = ">=3.8"
 
 license = { file = "LICENSE" }
