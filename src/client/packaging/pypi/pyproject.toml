@@ -9,7 +9,7 @@
 # https://packaging.python.org/en/latest/tutorials/packaging-projects/#choosing-a-build-backend
 [build-system]
 # A list of packages that are needed to build your package:
-requires = ["setuptools>=61.0.0"] # REQUIRED if [build-system] table is used
+requires = ["setuptools"] # REQUIRED if [build-system] table is used
 # The name of the Python object that frontends will use to perform the build:
 build-backend = "setuptools.build_meta" # If not defined, then legacy behavior can happen.
 
@@ -19,7 +19,6 @@ name = "delphi_epidata" # REQUIRED, is the only field that cannot be marked as d
 version = "4.1.23"
 description = "A programmatic interface to Delphi's Epidata API."
 readme = "README.md"
-requires-python = ">=3.8"
 
 license = { file = "LICENSE" }
 
