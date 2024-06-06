@@ -23,9 +23,6 @@ requires-python = ">=3.8"
 
 license = { file = "LICENSE" }
 
-# This should be your name or the name of the organization who originally
-# authored the project, and a valid email address corresponding to the name
-# listed.
 authors = [{ name = "David Farrow", email = "dfarrow0@gmail.com" }]
 
 # This should be your name or the names of the organization who currently
