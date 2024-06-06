@@ -50,25 +50,8 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Bio-Informatics",
 ]
 
-# This field lists other packages that your project depends on to run.
-# Any package you put here will be installed by pip when your project is
-# installed, so they must be valid existing projects.
-#
-# For an analysis of this field vs pip's requirements files see:
-# https://packaging.python.org/discussions/install-requires-vs-requirements/
 dependencies = ["aiohttp", "delphi-utils", "requests>=2.7.0", "tenacity"]
 
-
-# List URLs that are relevant to your project
-#
-# This field corresponds to the "Project-URL" and "Home-Page" metadata fields:
-# https://packaging.python.org/specifications/core-metadata/#project-url-multiple-use
-# https://packaging.python.org/specifications/core-metadata/#home-page-optional
-#
-# Examples listed include a pattern for specifying where the package tracks
-# issues, where the source is hosted, where to say thanks to the package
-# maintainers, and where to support the project financially. The key is
-# what's used to render the link text on PyPI.
 [project.urls]
 "Homepage" = "https://github.com/cmu-delphi/delphi-epidata"
 "Changelog" = "https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/packaging/pypi/CHANGELOG.md"
