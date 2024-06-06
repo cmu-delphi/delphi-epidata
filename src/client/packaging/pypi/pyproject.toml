@@ -25,12 +25,9 @@ license = { file = "LICENSE" }
 
 authors = [{ name = "David Farrow", email = "dfarrow0@gmail.com" }]
 
-# This should be your name or the names of the organization who currently
-# maintains the project, and a valid email address corresponding to the name
-# listed.
-# maintainers = [
-#     { name = "A. Great Maintainer", email = "maintainer@example.com" },
-# ]
+maintainers = [
+    { name = "Delphi Support", email = "delphi-support+pypi@andrew.cmu.edu" },
+]
 
 # Classifiers help users find your project by categorizing it.
 #
