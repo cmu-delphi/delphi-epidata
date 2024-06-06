@@ -30,7 +30,6 @@ maintainers = [
 
 # For a list of valid classifiers, see https://pypi.org/classifiers/
 classifiers = [
-    "Development Status :: 4 - Beta",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
