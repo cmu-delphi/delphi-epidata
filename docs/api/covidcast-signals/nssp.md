@@ -85,8 +85,9 @@ At the state level, South Dakota, Missouri, and territories are not reported.
 The weekly signal is reported on Friday mornings, adding data from the prior week.
 For example, on Friday, 2024-04-19, the source added new data from the week ending 2024-04-13.
 
-There is significant backfill in this signal, primarily arising when a new facility joins the network and its data is included in a region.
-This has the strongest effects at the highest levels of aggregation.
+This data source has frequent backfill, primarily arising from newly included EDs. When a new facility joins the reporting network, its historical data is added to the dataset, resulting in changes to historical values for every geographic level that ED is part of (county through nation). Because of this, the broadest geographic levels are more likely to be revised.
+
+In previous revisions, we have noted changes to values dating back about 2 years.
 
 
 ## Source and Licensing
