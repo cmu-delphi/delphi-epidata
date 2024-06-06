@@ -21,16 +21,16 @@ This dataset in particular tracks emergency department (ED) visits arising from 
 It is derived from the CDC's [Respiratory Virus Response NSSP Emergency Department Visit Trajectories dataset](https://data.cdc.gov/Public-Health-Surveillance/2023-Respiratory-Virus-Response-NSSP-Emergency-Dep/rdmq-nq56/about_data), which started reporting data in late 2022.
 As of May 2024, NSSP received data from 78% of US EDs.
 
-| Signal                          | Description                                                             |
-|---------------------------------|-------------------------------------------------------------------------|
-| `pct_visits_covid`              | Percent of ED visits that had a discharge diagnosis code of covid              |
-| `pct_visits_influenza`          | Percent of ED visits that had a discharge diagnosis code of influenza          |
-| `pct_visits_rsv`                | Percent of ED visits that had a discharge diagnosis code of rsv                |
-| `pct_visits_combined`           | Percent of ED visits that had a discharge diagnosis code of covid, influenza, or rsv |
-| `smoothed_pct_visits_covid`     | 3 week moving average of `pct_visits_covid`                        |
-| `smoothed_pct_visits_influenza` | 3 week moving average of `pct_visits_influenza`                    |
-| `smoothed_pct_visits_rsv`       | 3 week moving average of `pct_visits_rsv`                          |
-| `smoothed_pct_visits_combined`  | 3 week moving average of `pct_visits_combined`                     |
+| Signal                          | Description                                                                                                                          |
+|---------------------------------|--------------------------------------------------------------------------------------------------------------------------------------|
+| `pct_visits_covid`              | Percent of ED visits that had a discharge diagnosis code of covid <br/> **Earliest date available:** 2022-10-01                      |
+| `pct_visits_influenza`          | Percent of ED visits that had a discharge diagnosis code of influenza  <br/> **Earliest date available:** 2022-10-01                 |
+| `pct_visits_rsv`                | Percent of ED visits that had a discharge diagnosis code of rsv  <br/> **Earliest date available:** 2022-10-01                       |
+| `pct_visits_combined`           | Percent of ED visits that had a discharge diagnosis code of covid, influenza, or rsv   <br/> **Earliest date available:** 2022-10-01 |
+| `smoothed_pct_visits_covid`     | 3 week moving average of `pct_visits_covid`  <br/> **Earliest date available:** 2022-10-01                                           |
+| `smoothed_pct_visits_influenza` | 3 week moving average of `pct_visits_influenza`   <br/> **Earliest date available:** 2022-10-01                                      |
+| `smoothed_pct_visits_rsv`       | 3 week moving average of `pct_visits_rsv`   <br/> **Earliest date available:** 2022-10-01                                            |
+| `smoothed_pct_visits_combined`  | 3 week moving average of `pct_visits_combined`   <br/> **Earliest date available:** 2022-10-01                                       |
 
 ## Table of contents
 {: .no_toc .text-delta}
@@ -48,7 +48,7 @@ As the original data is a percentage and raw case counts are not available, `hrr
 
 This weighting approach assumes that the number of ED visits is proportional to the overall population of a county, i.e. the per-capita ED visit rate is the same for all counties, which may not be the case (for example, denser counties may have easier access to EDs and thus higher rates of ED visits per capita).
 
-State reporting process is separate from the county reporting process. As such, state-level data is **not** simply an average of the county-level data, but may contain facilities omitted at the regional level. For example, state-level values are available for California, even though no California county data is reported.
+State reporting process is separate from the county reporting process. As such, state-level data is **not** simply an average of the county-level data, but may contain facilities omitted at the regional level. For example, state-level values are available for California, even though no California county data is reported; see the [missingness section below](#missingness) for a list of such states.
 
 ### Smoothing
 
@@ -77,6 +77,8 @@ For example, on Friday, 2024-04-19, the source added new data from the week endi
 This data source has frequent backfill, primarily arising from newly included EDs. When a new facility joins the reporting network, its historical data is added to the dataset, resulting in changes to historical values for every geographic level that ED is part of (county through nation). Because of this, the broadest geographic levels are more likely to be revised.
 
 In previous revisions, we have noted changes to values dating back about 2 years.
+The following states have no county-level data at all: AK, AL, AR, AZ, CA, FL, MO, ND, NH, NJ, OH, SD, WA.
+Counties with `NA` values are as originally reported in the dataset from which this source is derived; this is not a complete list of counties, and reflects missing data as collected by the NSSP.
 
 
 ## Limitations
@@ -84,14 +86,14 @@ In previous revisions, we have noted changes to values dating back about 2 years
 There is substantial missingness at the county level. This tends to impact more rural and lower population locations. See the [missingness section](#missingness) for more information.
 
 Not all counties contain reporting EDs, including in states where NSSP reports state-level data.
+A minority of these (as of June 2024) are counties without EDs, while others are only covered by the ~22% of EDs that don't yet report to the NSSP.
 
 NSSP notes that not every patient entering an ED is tested for the conditions of interest, so the data may undercount total cases and as a result percent visits may be biased downward.
 
 Our [geographic weighting approach](#geographic-weighting) assumes that the number of ED visits is proportional to the overall population of a county. However, in reality, there are various factors that could affect the accuracy of this assumption.
 
-For example, we might expect denser, more urban counties to have 1) more and larger EDs and 2) easier access to EDs. The first factor may mean that residents of rural counties are more likely to go to EDs in urban counties. The second factor may increase the total number of ED visits that someone living in an urban county will make, that is, the average urban resident may make more ED visits than the average rural resident over a given period of time.
-
-As a result, total ED visits per capita in rural counties may be lower than total ED visits per capita in urban counties. Since our weighting approach uses population as the weights, rural counties would tend to be overrepresented in estimated values.
+For example, we might expect denser, more urban counties to have 1) more and larger EDs and 2) easier access to EDs. The first factor may mean that residents of rural counties are more likely to go to EDs in urban counties. The second factor may increase the total number of ED visits that the typical urban resident will make relative to the typical rural resident.
+As a result, total ED visits per capita in rural counties may be lower than total ED visits per capita in urban counties. If this is a strong dynamic, since our weighting approach uses population as the weights, rural counties would tend to be overrepresented in estimated values.
 
 Some low population counties occasionally report outliers, e.g. 33.33%, 50%, 100% of ER visits being covid-related. As of May 2024, an analysis shows around 10 unusually high values across the full history of all signals, so they are rare. We expect that these high rates are by chance, due to a small total number of ED visits in a given week.
 
