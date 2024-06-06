@@ -10,7 +10,7 @@ grand_parent: COVIDcast Main Endpoint
 * **Earliest issue available:** (TODO ask Minh)
 * **Number of data revisions since 19 May 2020:** 0
 * **Date of last change:** Never
-* **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
+* **Available for:** county, hrr, msa, state, nation (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** week (see [date format docs](../covidcast_times.md))
 * **License:** [Public Domain US Government](https://www.usa.gov/government-works)
 
