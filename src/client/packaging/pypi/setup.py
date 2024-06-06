@@ -5,7 +5,7 @@ with open("README.md", "r") as f:
 
 setuptools.setup(
     name="delphi_epidata",
-    version="4.1.20",
+    version="4.1.23",
     author="David Farrow",
     author_email="dfarrow0@gmail.com",
     description="A programmatic interface to Delphi's Epidata API.",
@@ -16,7 +16,7 @@ setuptools.setup(
         "Changelog": "https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/packaging/pypi/CHANGELOG.md",
     },
     packages=setuptools.find_packages(),
-    install_requires=["aiohttp", "requests>=2.7.0", "tenacity"],
+    install_requires=["aiohttp", "delphi-utils", "requests>=2.7.0", "tenacity"],
     classifiers=[
         "Programming Language :: Python",
         "License :: OSI Approved :: MIT License",
