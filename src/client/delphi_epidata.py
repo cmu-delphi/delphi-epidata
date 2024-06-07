@@ -72,7 +72,7 @@ class Epidata:
         """Make request with a retry if an exception is thrown."""
         request_url = f"{Epidata.BASE_URL}/{endpoint}/"
         if Epidata.debug:
-            Epidata.logger.info("Sending GET request", url=request_url, params=params, headers=_HEADERS, auth=Epidata.auth)
+            Epidata.logger.info("Sending GET request", url=request_url, params=params, headers=_HEADERS, auth=Epidata.auth) # introduce a very long line comment
         if Epidata.sandbox:
             resp = requests.Response()
             resp._content = b'true'
