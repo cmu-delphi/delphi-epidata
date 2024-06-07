@@ -3,6 +3,14 @@
 All notable future changes to the `delphi_epidata` python client will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [4.1.24] - 2024-06-06
+
+### Includes
+- https://github.com/cmu-delphi/delphi-epidata/pull/1470
+
+### Changed
+- Replaced `setup.py` with `pyproject.toml` for package metadata and build configuration.
+
 ## [4.1.23] - 2024-05-31
 
 ### Includes
