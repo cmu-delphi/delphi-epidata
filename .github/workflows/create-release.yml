@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       versionName:
-        description: 'Semantic Version Number (i.e., 5.5.0 or patch, minor, major, prepatch, preminor, premajor, prerelease)'
+        description: 'Semantic Version Number (i.e., 5.5.0 or patch, minor, major)'
         required: true
         default: patch
 
@@ -27,10 +27,23 @@ jobs:
           python-version: 3.8
       - name: Change version number
         id: version
+        # See this issue for explanation and testing:
+        # https://github.com/cmu-delphi/delphi-epidata/pull/1473
         run: |
-          python -m pip install bump2version
-          echo -n "::set-output name=next_tag::"
-          bump2version --list ${{ github.event.inputs.versionName }} | grep new_version | sed -r s,"^.*=",,
+          python -m pip install bump-my-version
+          echo -n "next_tag=" >> $GITHUB_OUTPUT
+          allowed_pattern="^(major|minor|patch|[0-9]+\.[0-9]+\.[0-9]+)$"
+
+          if [[ ! ${{ github.event.inputs.versionName }} =~ $allowed_pattern ]]; then
+            echo "\nInvalid version name: ${{ github.event.inputs.versionName }}"
+            exit 1
+          fi
+
+          if [[ ${{ github.event.inputs.versionName }} =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "${{ github.event.inputs.versionName }}"
+          else
+            echo $(bump-my-version show-bump | grep ${{ github.event.inputs.versionName }} | sed -r s,"^.*─ ",,)
+          fi
       - name: Get main branch SHA
         id: base-sha
         run: echo "sha=$(git rev-parse origin/main)" >> $GITHUB_OUTPUT
@@ -46,7 +59,7 @@ jobs:
         if: steps.changed-py.outputs.any_changed == 'true'
         run: |
           cd src/client/packaging/pypi
-          bump2version --allow-dirty --new-version ${{ steps.version.outputs.next_tag }} ignore_part
+          bump-my-version --allow-dirty --new-version ${{ steps.version.outputs.next_tag }}
       - name: Create pull request into prod
         uses: peter-evans/create-pull-request@v3
         with:
