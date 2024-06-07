@@ -25,9 +25,9 @@ jobs:
         id: changed-py
         uses: tj-actions/changed-files@v44
         with:
-            files: |
-              src/client/delphi_epidata.py
-              src/client/packaging/pypi/**
+          files: |
+            src/client/delphi_epidata.py
+            src/client/packaging/pypi/**
     outputs:
       any_changed: ${{ steps.changed-py.outputs.any_changed }}
 
@@ -47,8 +47,8 @@ jobs:
         id: extract_version
         run: |
           python -m pip install bump2version
-          echo -n "::set-output name=version::"
-          bump2version --dry-run --list patch | grep ^current_version | sed -r s,"^.*=",,
+          VERSION=$(bump2version --dry-run --list patch | grep ^current_version | sed -r s,"^.*=",,)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
       - name: Create Release
         id: create_release
         uses: release-drafter/release-drafter@v5
@@ -114,7 +114,7 @@ jobs:
         uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: '16.x'
+          node-version: "16.x"
       - name: Cache Node.js modules
         uses: actions/cache@v2
         with:
