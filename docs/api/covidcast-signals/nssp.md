@@ -7,7 +7,7 @@ grand_parent: COVIDcast Main Endpoint
 {: .no_toc}
 
 * **Source name:** `nssp`
-* **Earliest issue available:** (TODO ask Minh)
+* **Earliest issue available:** April 17, 2024
 * **Number of data revisions since 19 May 2020:** 0
 * **Date of last change:** Never
 * **Available for:** county, hrr, msa, state, nation (see [geography coding docs](../covidcast_geography.md))
