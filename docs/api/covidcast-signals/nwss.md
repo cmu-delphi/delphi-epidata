@@ -8,22 +8,21 @@ grand_parent: COVIDcast Main Endpoint
 {: .no_toc}
 
 * **Source name:** `nwss-wastewater`
-* **Earliest issue available:** DATE RELEASED TO API
+* **Earliest issue available:** TODO: DATE RELEASED TO API
 * **Number of data revisions since 19 May 2020:** 0
 * **Date of last change:** Never
 * **Available for:** state, nation (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
-* **License:** [LICENSE NAME](../covidcast_licensing.md#APPLICABLE-SECTION)
+* **License:** [Public Domain US Government](https://www.usa.gov/government-works)
 
-The National Wastewater Surveillance System (nwss) is a CDC led effort to track the presence of SARS-CoV-2 in wastewater throughout the United States.
-For more, see their [official page](https://www.cdc.gov/nwss/index.html).
-The project was launched in September 2020 and is ongoing. The original data for this source is provided un-versioned via the socrata api as the [metric data](https://data.cdc.gov/Public-Health-Surveillance/NWSS-Public-SARS-CoV-2-Wastewater-Metric-Data/2ew6-ywp6/about_data) and [concentration data](https://data.cdc.gov/Public-Health-Surveillance/NWSS-Public-SARS-CoV-2-Concentration-in-Wastewater/g653-rqe2/about_data).
-This source modifies the original data in two ways: first, it splits the data based on provider, normalization, and post-processing method, and then it aggregates across `geo_values` so that the signals are available at the state and national level.
+The [National Wastewater Surveillance System (NWSS)](https://www.cdc.gov/nwss/index.html) is a CDC-led effort to track the presence of SARS-CoV-2 in wastewater throughout the United States.
+The project was launched in September 2020 and is ongoing. The source data for this source is provided un-versioned via the Socrata API as the [NWSS Public SARS-CoV-2 Concentration in Wastewater Data](https://data.cdc.gov/Public-Health-Surveillance/NWSS-Public-SARS-CoV-2-Concentration-in-Wastewater/g653-rqe2/about_data) and the [NWSS Public SARS-CoV-2 Wastewater Metric Data](https://data.cdc.gov/Public-Health-Surveillance/NWSS-Public-SARS-CoV-2-Wastewater-Metric-Data/2ew6-ywp6/about_data) containing signals derived from the concentration data.
+Delphi modifies the source data in two ways: we split the data into separate signals based on provider, normalization, and post-processing method, and then aggregate it to higher geographic levels.
 
+The source data is reported per [sampling site](https://www.cdc.gov/nwss/sampling.html), either at or upstream from a regional wastewater treatment plants (these are roughly at the county-level, but are not coterminous with counties). Presently we do not provide the site-level or county-aggregated data, but will do so within the coming months.
 
-The original source is measured at the level of [sample-site](https://www.cdc.gov/nwss/sampling.html), either at or upstream from a regional wastewater treatment plants (these are roughly at the county-level, but are not coterminous with counties); presently we do not provide the site-level or county-aggregated data, but will do so within the coming months.
+State and national level signals are calculated as weighted means of the site data. The weight assigned to a given input value is the population served by the corresponding wastewater treatment plant. Sites with missing values are implicitly treated as having a weight of 0 or a value equal to the group mean.
 
-To generate either the state or national level signals from the sample-site level signals, we aggregate using population-served weighted sums, where the total population for a given `geo_value` is the total population served at sites with non-missing values. 
 ## Table of contents
 {: .no_toc .text-delta}
 
@@ -140,6 +139,8 @@ The `percentile` data is subject to potentially more extensive revision if the s
 This indicator aggregates data originating from the [NWSS](https://www.cdc.gov/nwss/index.html).
 The site-level data is provided un-versioned via the socrata api as the [metric data](https://data.cdc.gov/Public-Health-Surveillance/NWSS-Public-SARS-CoV-2-Wastewater-Metric-Data/2ew6-ywp6/about_data) and [concentration data](https://data.cdc.gov/Public-Health-Surveillance/NWSS-Public-SARS-CoV-2-Concentration-in-Wastewater/g653-rqe2/about_data).
 As described in the [Provider section](#providers), the NWSS is aggregating data from [Verily](https://verily.com/solutions/public-health/wastewater), State Territorial and Local public health agencies, [Wastewater Scan](https://www.wastewaterscan.org/en).
+
+This data was originally published by the CDC, and is made available here as a convenience to the forecasting community under the terms of the original license, which is [U.S. Government Public Domain](https://www.usa.gov/government-copyright).
 
 
 [^1]: These are not realistic values; they are merely chosen to make the example simple to explain.
