@@ -31,16 +31,18 @@ State and national level signals are calculated as weighted means of the site da
 
 ## Signal features
 The signals vary across the underlying data provider, the normalization method, and the post-processing method.
-### Providers
-As a coordinating body, the NWSS receives wastewater data through a number of providers, which have changed as the project has evolved.
-Most recently, in the fall of 2023, there was a major shift in the primary direct commercial provider for the NWSS from [Biobot](https://biobot.io/) to Verily.
-The available column below indicates the first date that any location had data from that source.
 
-| Provider     | Available             | Description                                                                                                                                                                                                         |
-|--------------|-----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `cdc_verily` | 2023/10/30-Today      | Data analyzed by [Verily](https://verily.com/solutions/public-health/wastewater) on behalf of the CDC directly.                                                                                                     |
-| `nwss`       | 2020/06/21-Today      | Data reported by the respective State, Territorial and Local Public Health Agencies; the actual processing may be done by a private lab such as Verily or Biobot, or the agency itself, or a partnering university. |
-| `wws`        | 2021/12/26-Today      | Data analyzed by [Wastewater Scan](https://www.wastewaterscan.org/en), a Stanford/Emory nonprofit, and then shared with the NWSS.                                                                                   |
+### Providers
+The NWSS acts as a coordinating body, receiving wastewater data through a number of providers. Data providers can change as the project has evolved.
+Most recently, in autumn 2023, the primary direct commercial provider for the NWSS changed from [Biobot](https://biobot.io/) to [Verily](https://publichealth.verily.com/).
+The following table shows the history of data providers:
+
+| Provider | Available | Description |
+|-|-|-|
+| `cdc_verily` | 2023/10/30-Today | Data analyzed by [Verily](https://verily.com/solutions/public-health/wastewater) on behalf of the CDC directly. |
+| `nwss` | 2020/06/21-Today | Data reported by the respective state, territorial, and local public health agencies; the actual processing may be done by a private lab such as Verily or Biobot, or the agency itself, or a partnering university. |
+| `wws` | 2021/12/26-Today | Data analyzed by [Wastewater Scan](https://www.wastewaterscan.org/en), a Stanford/Emory nonprofit, and then shared with the NWSS. |
+| `biobot` | ??-?? | Data analyzed by [Biobot](https://biobot.io/) and then shared with the NWSS. |
 
 ### Normalization methods
 Direct viral concentration is not a clear indicator of the number and severity of cases in the sewershed.
