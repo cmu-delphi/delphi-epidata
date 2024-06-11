@@ -56,19 +56,20 @@ The two approaches used in the NWSS datasets to normalize viral concentration ar
 | `microbial` | This divides a measurement by the concentration of one of several potential fecal biomarkers. These are molecular indicators of either viruses or bacteria commonly found throughout the population. The most common viral indicator comes from the pepper mild mottle virus (PMMoV), a virus that infects plants and is commonly found in pepper products. The most common bacterial indicators come from Bacteroides HF183 and Lachnospiraceae Lachno3, both common gut bacteria. This normalization method is applied to sludge samples (labeled `post_grit_removal` in the Socrata dataset's `key_plot_id` field), which have been concentrated in preparation for treatment. The resulting value is unitless, and tracks the proportion of individuals who's shedding behavior has changed. |
 
 ### Post Processing methods
-Regardless of normalization method, the daily wastewater data is noisy; to make the indicators more useful, the NWSS has provided different methods of post-processing the data:
+Regardless of normalization method, the daily wastewater data is noisy; to make the indicators more useful, the NWSS has provided versions of the data that are post-processed in different ways.
 
-| Post-processing method | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-|------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `pcr_conc_smoothed`    | PCR measurements (the exact method depends on the data provider), initially provided in virus concentrations per volume of input (type depends on the [normalization method](#normalization-methods)). This is then [smoothed](#smoothing) using a cubic spline, then [aggregated](#aggregation) to the given `geo_type` with a population-weighted sum.                                                                                                                                                                                                               |
-| `detect_prop_15d`      | The proportion of tests with SARS-CoV-2 detected, meaning a cycle threshold (Ct) value <40 for RT-qPCR or at least 3 positive droplets/partitions for RT-ddPCR, by sewershed over the prior 15-day period. The detection proportion is the 15-day rolling sum of SARS-CoV-2 detections divided by the 15-day rolling sum of the number of tests for each sample site and multiplying by 100, aggregated with a population weighted sum. The result is a percentage.                                                                                  |
-| `ptc_15d`               | The percent change in SARS-CoV-2 RNA levels over the 15 days preceding `timestamp`. It is the coefficient of the linear regression of the log-transformed unsmoothed PCR concentration, expressed as a percentage change. Note that for county and higher level `geo_type`s, this is an average of the percentage change at each site, weighted by population, rather than the percentage change for the entire region. We recommend caution in the use of these signals at aggregated `geo_type`s.                                                  |
-| `percentile`           | This metric shows whether SARS-CoV-2 virus levels at a site are currently higher or lower than past historical levels at the same site. 20% means that 80% of observed values are higher than this value, while 20% are lower. 0% means levels are the lowest they have been at the site, while 100% means they are the highest. Note that at county or higher level `geo_type`s, this is not the percentile for overall state levels, but the *average percentile across sites*, weighted by population, which makes it difficult to meaningfully interpret. We do not recommended its use outside of the site level. |
+| Post-processing method | Description |
+|-|-|
+| `pcr_conc_smoothed` | PCR measurements (the exact method depends on the data provider), initially provided in virus concentrations per volume of input (type depends on the [normalization method](#normalization-methods)). This is then [smoothed](#smoothing) using a cubic spline, then [aggregated](#aggregation) to the given `geo_type` with a population-weighted sum. |
+| `detect_prop_15d` | The proportion of tests with SARS-CoV-2 detected, meaning a cycle threshold (Ct) value <40 for RT-qPCR or at least 3 positive droplets/partitions for RT-ddPCR, by sewershed over the prior 15-day period. The detection proportion is the 15-day rolling sum of SARS-CoV-2 detections divided by the 15-day rolling sum of the number of tests for each sample site and multiplying by 100, aggregated with a population weighted sum. The result is a percentage. |
+| `ptc_15d` | The percent change in SARS-CoV-2 RNA levels over the 15 days preceding `timestamp`. It is the coefficient of the linear regression of the log-transformed unsmoothed PCR concentration, expressed as a percentage change. Note that for county and higher level `geo_type`s, this is an average of the percentage change at each site, weighted by population, rather than the percentage change for the entire region. We recommend caution in the use of these signals at aggregated `geo_type`s. |
+| `percentile` | This metric shows whether SARS-CoV-2 virus levels at a site are currently higher or lower than past historical levels at the same site. 20% means that 80% of observed values are higher than this value, while 20% are lower. 0% means levels are the lowest they have been at the site, while 100% means they are the highest. Note that at county or higher level `geo_type`s, this is not the percentile for overall state levels, but the *average percentile across sites*, weighted by population, which makes it difficult to meaningfully interpret. We do not recommended its use outside of the site level. |
 
 ### Full signal list
 Not every triple of post processing method, provider, and normalization actually contains data. Here is a complete list of the actual signals, with the total population at all sites which report that signal, as of March 28, 2024:
 
 | Signal                                         | First Date available | Population served on 03-28-24 |
+|-|-|-|
 | `prc_conc_smoothed_cdc_verily_flow_population` | 2023-11-13           | 3,321,873                     |
 | `prc_conc_smoothed_cdc_verily_microbial`       | 2023-11-09           | 430,000                       |
 | `prc_conc_smoothed_cdc_nwss_flow_population`   | 2020-07-05           | 800,704                       |
@@ -91,7 +92,9 @@ Not every triple of post processing method, provider, and normalization actually
 | `percentile_cdc_wws_microbial`                 | 2022-01-09           | 42,185,773                    |
 
 What is missing? `wws` only normalizes using `microbial` measures, so the 5 different post-processing methods are not present for `*_wws_flow_population`.
+
 ## Estimation
+
 ### Aggregation
 For any given day and signal, we do a population weighted sum of the target signal, with the weight depending only on non-missing and non-zero sample sites for that day in particular. For example, say $$p_i$$ is the population at sample site $$i$$; if there are 3 sample sites in Washington on a particular day, then the weight at site $$i$$ is $$\frac{p_i}{p_1+p_2+p_3}$$. If the next day there are only 2 sample locations, the weight at site $$i$$ becomes $$\frac{p_i}{p_1+p_2}$$.
 
@@ -102,11 +105,9 @@ Contrast this with the average level, which goes from 55 to 65, for an 18% perce
 
 `percentile` has a similar difficulty, although it is a more involved calculation that uses all other values in the time series, rather than just a 15 day window.
 
-
-
 ### Smoothing
 
-The `pcr_conc_smoothed` based signals all use smoothed splines to generate the averaged value at each location. Specifically, the smoothing uses [`smooth.spline`](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/smooth.spline) from R, with `spar=0.5`, a smoothing parameter. If the value at time $$t_i$$ is given by $$y_i$$, for a function $$f$$ represented by splines this minimizes 
+The `pcr_conc_smoothed` based signals all use smoothed splines to generate an average value at each location. Specifically, the smoothing uses [`smooth.spline`](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/smooth.spline) from R, with `spar=0.5`, a smoothing parameter. If the value at time $$t_i$$ is given by $$y_i$$, for a function $$f$$ represented by splines this minimizes 
 
 $$ \sum_i (y_i - f(t_i))^2 + 16 \frac{\mathrm{tr}(X'X)}{\mathrm{tr}(\Sigma)} \int \big|f^{''}(z)\big|^2~\mathrm{d}z$$
 
@@ -116,7 +117,6 @@ It is important to note that this means that the value at any point in time *dep
 This is only true for `pcr_conc_smoothed`; all other smoothing is done via simple 15 day trailing rolling sums.
 
 ## Limitations
-
 
 The NWSS is still expanding to get coverage nationwide, so it is currently an uneven sample; the largest signals above cover ~42 million people as of March 2024. Around 80% of the US is served by municipal wastewater collection systems, or around 272 million. 
 
