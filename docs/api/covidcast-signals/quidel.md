@@ -159,5 +159,5 @@ not enough samples can be filled in from the parent state for smoothed signals s
 no data is reported for that area on that day; an API query for all reported geographic areas on
 that day will not include it.
 
-## Flu Tests (inactive)
-These signals were updated until May 19, 2020. Documentation is still available on the [inactive Quidel page](quidel-inactive.md).
+## Flu Tests
+These signals are inactive. They were updated until May 19, 2020. Documentation is still available on the [inactive Quidel page](quidel-inactive.md).
