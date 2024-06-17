@@ -32,9 +32,11 @@ State and national level signals are calculated as weighted means of the site da
 ## Signal features
 The signals vary across the underlying data provider, the normalization method, and the post-processing method.
 
+PCR used to measure viral concentrations
+
 ### Providers
 The NWSS acts as a coordinating body, receiving wastewater data through a number of providers. Data providers can change as the project has evolved.
-Most recently, in autumn 2023, the primary direct commercial provider for the NWSS changed from [Biobot](https://biobot.io/) to [Verily](https://publichealth.verily.com/).
+Most recently, in autumn 2023, the primary direct commercial provider for the NWSS changed from [Biobot](https://biobot.io/) to [Verily](https://publichealth.verily.com/). Measurement method and thus meaning varies by provider. Data from different providers varies widely in magnitude for the same nominal reporting units.
 The following table shows the history of data providers:
 
 | Provider | Available | Description |
@@ -60,10 +62,12 @@ Regardless of normalization method, the daily wastewater data is noisy; to make 
 
 | Post-processing method | Description |
 |-|-|
-| `pcr_conc_smoothed` | PCR measurements (the exact method depends on the data provider), initially provided in virus concentrations per volume of input (type depends on the [normalization method](#normalization-methods)). This is then [smoothed](#smoothing) using a cubic spline, then [aggregated](#aggregation) to the given `geo_type` with a population-weighted sum. |
+| `pcr_conc_smoothed` | PCR measurements (the exact method depends on the data provider), initially provided in virus concentrations per volume of input (type depends on the [normalization method](#normalization-methods)). This is then [smoothed](#smoothing) using a cubic spline over 14 days, then [aggregated](#aggregation) to the given `geo_type` with a population-weighted sum. |
 | `detect_prop_15d` | The proportion of tests with SARS-CoV-2 detected, meaning a cycle threshold (Ct) value <40 for RT-qPCR or at least 3 positive droplets/partitions for RT-ddPCR, by sewershed over the prior 15-day period. The detection proportion is the 15-day rolling sum of SARS-CoV-2 detections divided by the 15-day rolling sum of the number of tests for each sample site and multiplying by 100, aggregated with a population weighted sum. The result is a percentage. |
-| `ptc_15d` | The percent change in SARS-CoV-2 RNA levels over the 15 days preceding `timestamp`. It is the coefficient of the linear regression of the log-transformed unsmoothed PCR concentration, expressed as a percentage change. Note that for county and higher level `geo_type`s, this is an average of the percentage change at each site, weighted by population, rather than the percentage change for the entire region. We recommend caution in the use of these signals at aggregated `geo_type`s. |
+| `ptc_15d` | The percent change in SARS-CoV-2 RNA levels over the 15 days preceding `timestamp`. It is the coefficient of the linear regression of the log-transformed unsmoothed PCR concentration versus time, expressed as a percentage change. Note that for county and higher level `geo_type`s, this is an average of the percentage change at each site, weighted by population, rather than the percentage change for the entire region. We recommend caution in the use of these signals at aggregated `geo_type`s. |
 | `percentile` | This metric shows whether SARS-CoV-2 virus levels at a site are currently higher or lower than past historical levels at the same site. 20% means that 80% of observed values are higher than this value, while 20% are lower. 0% means levels are the lowest they have been at the site, while 100% means they are the highest. Note that at county or higher level `geo_type`s, this is not the percentile for overall state levels, but the *average percentile across sites*, weighted by population, which makes it difficult to meaningfully interpret. We do not recommended its use outside of the site level. |
+
+TODO: don't aggregate percentile
 
 ### Full signal list
 Not every triple of post processing method, provider, and normalization actually contains data. Here is a complete list of the actual signals, with the total population at all sites which report that signal, as of March 28, 2024:
@@ -103,6 +107,8 @@ For example, say we have two sample sites, with initial levels at 10 and 100, an
 Their respective percentage increases are 10% and 100%, so the average percent increase is 55%.
 Contrast this with the average level, which goes from 55 to 65, for an 18% percent increase in the average[^2].
 
+TODO
+
 `percentile` has a similar difficulty, although it is a more involved calculation that uses all other values in the time series, rather than just a 15 day window.
 
 ### Smoothing
@@ -121,6 +127,8 @@ This is only true for `pcr_conc_smoothed`; all other smoothing is done via simpl
 The NWSS is still expanding to get coverage nationwide, so it is currently an uneven sample; the largest signals above cover ~42 million people as of March 2024. Around 80% of the US is served by municipal wastewater collection systems, or around 272 million. 
 
 Standard errors and sample sizes are not applicable to these signals.
+
+TODO: cubic spline method may change over time
 
 ## Missingness
 
