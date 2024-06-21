@@ -49,6 +49,8 @@ $ [sudo] make test pdb=1
 $ [sudo] make test test=repos/delphi/delphi-epidata/integrations/acquisition
 ```
 
+You can read the commands executed by the Makefile [here](dev/local/Makefile).
+
 ## Rapid Iteration and Bind Mounts
 
 To reduce friction, we
@@ -83,43 +85,40 @@ You can test your changes manually by:
 2. querying the API using your client of choice (`curl` is handy for sanity
    checks)
 
-Here's a full example based on the `fluview` endpoint:
+What follows is a worked demonstration based on the `fluview` endpoint. Before
+starting, make sure that you have the `delphi_database_epidata`,
+`delphi_web_epidata`, and `delphi_redis` containers running; if you don't, see
+the Makefile instructions above.
 
-1. Populate the database (particularly the `fluview` table) with some fake
-   data. For example:
+First, let's insert some fake data into the `fluview` table:
 
 ```bash
+# If you have the mysql client installed locally:
 echo 'insert into fluview values \
   (0, "2020-04-07", 202021, 202020, "nat", 1, 2, 3, 4, 3.14159, 1.41421, \
   10, 11, 12, 13, 14, 15)' | \
-mysql --user=user --password=pass \
+  mysql --user=user --password=pass \
   --port 13306 --host 127.0.0.1 epidata
-```
 
-Note that the host and port given above are "external" values, which are
-locally visible. You'll need the `mysql` client installed locally to run the
-above command.
-
-In case you don't have the `mysql` client installed on your machine and
-don't want to install it, you can simply use the binary that's bundled with
-the `mariadb` docker image, which you should already have from building the
-`delphi_database` image. In that case, use the "internal" values, which are
-visible to containers on the same virtual network. For example:
-
-```bash
+# If you do not have mysql locally, you can use a Docker image that has it:
 echo 'insert into fluview values \
-  (0, "2020-04-07", 202021, 202020, "nat", 1, 2, 3, 4, 3.14159, 1.41421, \
-  10, 11, 12, 13, 14, 15)' | \
-docker run --rm -i --network delphi-net mariadb \
-mysql --user=user --password=pass \
-  --port 3306 --host delphi_database_epidata epidata
+    (0, "2020-04-07", 202021, 202020, "nat", 1, 2, 3, 4, 3.14159, 1.41421, \
+    10, 11, 12, 13, 14, 15)' | \
+    docker run --rm -i --network delphi-net percona:ps-8 \
+    mysql --user=user --password=pass \
+    --port 3306 --host delphi_database_epidata epidata
 ```
 
-Note that for these inserts, absence of command-line output is a sign of
-success. On the other hand, output after the insertion likely indicates
-failure (like, for example, attempting to insert a duplicate unique key).
+(The host and port given in the first command are "external" values, which are
+locally visible. In the second command, we use the Docker "internal" values,
+which are visible to containers on the same virtual network. Port 3306 on the
+outside of the container is mapped to 13360, which can be seen in the Makefile.)
 
-2. Query the API directly:
+For the inserts above, absence of command-line output is a sign of success. On
+the other hand, output after the insertion likely indicates failure (like, for
+example, attempting to insert a duplicate unique key).
+
+Next, you can query the API directly (and parse with Python's JSON tool):
 
 ```bash
 curl -s \
@@ -127,12 +126,11 @@ curl -s \
 python3 -m json.tool
 ```
 
-The pipe to python's built-in JSON formatter is optional, but handy. You
-should expect to see the following response from the server:
+You should expect to see the following response from the server, which is the
+data you inserted earlier:
 
 ```json
 {
-  "result": 1,
   "epidata": [
     {
       "release_date": "2020-04-07",
@@ -153,6 +151,7 @@ should expect to see the following response from the server:
       "ili": 1.41421
     }
   ],
+  "result": 1,
   "message": "success"
 }
 ```
@@ -161,8 +160,12 @@ Alternatively, you could query the API using one of the available client
 libraries. However, this would require you to modify the base URL within the
 client's code, and there is some additional amount of boilerplate involved in
 calling the client and displaying the result. For these reasons, client
-libraries are better candidates for automated integration tests (and unit
-tests, in the case of the python client) than one-off manual tests.
+libraries are better candidates for automated integration tests (and unit tests,
+in the case of the python client) than one-off manual tests.
+
+Our API integration tests use this same Docker image and network setup, but
+truncate the database tables before running tests, so any manual changes to the
+database will be lost after running integration tests.
 
 ## Instrumentation with Sentry
 
