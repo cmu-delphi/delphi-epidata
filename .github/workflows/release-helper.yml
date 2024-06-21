@@ -23,13 +23,14 @@ jobs:
           fetch-depth: 2
       - name: Get Python client file changes
         id: changed-py
-        uses: tj-actions/changed-files@v44
+        uses: dorny/paths-filter@v3
         with:
-          files: |
-            src/client/delphi_epidata.py
-            src/client/packaging/pypi/**
+          filters: |
+            python_client_changed:
+            - src/client/delphi_epidata.py
+            - src/client/packaging/pypi/**
     outputs:
-      any_changed: ${{ steps.changed-py.outputs.any_changed }}
+      python_client_changed: ${{ steps.changed-py.outputs.python_client_changed }}
 
   create_release:
     needs: correct_repository
@@ -64,7 +65,7 @@ jobs:
 
   release_python_client:
     needs: [client_changed, create_release]
-    if: needs.client_changed.outputs.any_changed == 'true'
+    if: needs.client_changed.outputs.python_client_changed == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
