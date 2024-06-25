@@ -1,9 +1,9 @@
 ---
-title: NSSP emergency department visits
+title: NSSP ED Visits
 parent: Data Sources and Signals
 grand_parent: COVIDcast Main Endpoint
 ---
-# National Syndromic Surveillance Program (NSSP) Emerency Department (ED) visits
+# National Syndromic Surveillance Program Emergency Department Visits
 {: .no_toc}
 
 * **Source name:** `nssp`
@@ -23,10 +23,10 @@ As of May 2024, NSSP received data from 78% of US EDs.
 
 | Signal                          | Description                                                                                                                          |
 |---------------------------------|--------------------------------------------------------------------------------------------------------------------------------------|
-| `pct_ed_visits_covid`              | Percent of ED visits that had a discharge diagnosis code of covid <br/> **Earliest date available:** 2022-10-01                      |
+| `pct_ed_visits_covid`              | Percent of ED visits that had a discharge diagnosis code of COVID-19 <br/> **Earliest date available:** 2022-10-01                      |
 | `pct_ed_visits_influenza`          | Percent of ED visits that had a discharge diagnosis code of influenza  <br/> **Earliest date available:** 2022-10-01                 |
 | `pct_ed_visits_rsv`                | Percent of ED visits that had a discharge diagnosis code of rsv  <br/> **Earliest date available:** 2022-10-01                       |
-| `pct_ed_visits_combined`           | Percent of ED visits that had a discharge diagnosis code of covid, influenza, or rsv   <br/> **Earliest date available:** 2022-10-01 |
+| `pct_ed_visits_combined`           | Percent of ED visits that had a discharge diagnosis code of COVID-19, influenza, or rsv   <br/> **Earliest date available:** 2022-10-01 |
 | `smoothed_pct_ed_visits_covid`     | 3 week moving average of `pct_ed_visits_covid`  <br/> **Earliest date available:** 2022-10-01                                           |
 | `smoothed_pct_ed_visits_influenza` | 3 week moving average of `pct_ed_visits_influenza`   <br/> **Earliest date available:** 2022-10-01                                      |
 | `smoothed_pct_ed_visits_rsv`       | 3 week moving average of `pct_ed_visits_rsv`   <br/> **Earliest date available:** 2022-10-01                                            |
@@ -60,7 +60,7 @@ Smoothed signals are calculated using a simple 3 week moving average of the rele
 As of May 2024, NSSP received data from 78% of US EDs.
 
 [The NSSP site participation map](https://www.cdc.gov/nssp/media/images/2024/04/Participation-with-date.png) shows counties containing at least one reporting ED between January 2023 and April 2024.
-California, Colorado, Missouri, Oklahoma, and Virginia have the most noticeable gaps in coverage, with many component counties having either no eligible EDs or having no recently reported data in NSSP. However, most states have some counties that are absent.
+California, Colorado, Missouri, Oklahoma, and Virginia have the most noticeable gaps in coverage, with many counties in those states having either no eligible EDs or having no recently reported data in NSSP. However, most states have some counties that do not contain any reporting EDs.
 
 NSSP does not report county-level data for all counties with reporting EDs; some reporting EDs are only included in state-level values.
 
@@ -95,7 +95,7 @@ Our [geographic weighting approach](#geographic-weighting) assumes that the numb
 For example, we might expect denser, more urban counties to have 1) more and larger EDs and 2) easier access to EDs. The first factor may mean that residents of rural counties are more likely to go to EDs in urban counties. The second factor may increase the total number of ED visits that the typical urban resident will make relative to the typical rural resident.
 As a result, total ED visits per capita in rural counties may be lower than total ED visits per capita in urban counties. If this is a strong dynamic, since our weighting approach uses population as the weights, rural counties would tend to be overrepresented in estimated values.
 
-Some low population counties occasionally report outliers, e.g. 33.33%, 50%, 100% of ER visits being covid-related. As of May 2024, an analysis shows around 10 unusually high values across the full history of all signals, so they are rare. We expect that these high rates are by chance, due to a small total number of ED visits in a given week.
+Some low population counties occasionally report outliers, e.g. 33.33%, 50%, 100% of ER visits being COVID-19-related. We expect that these high rates are by chance, due to a small total number of ED visits in a given week. As of May 2024, an analysis shows around 10 unusually high values across the full history of all signals, so they are rare.
 
 
 ## Source and Licensing
