@@ -23,16 +23,16 @@ As of May 2024, NSSP received data from 78% of US EDs.
 
 | Signal                          | Description                                                                                                                          |
 |---------------------------------|--------------------------------------------------------------------------------------------------------------------------------------|
-| `pct_visits_covid`              | Percent of ED visits that had a discharge diagnosis code of covid <br/> **Earliest date available:** 2022-10-01                      |
-| `pct_visits_influenza`          | Percent of ED visits that had a discharge diagnosis code of influenza  <br/> **Earliest date available:** 2022-10-01                 |
-| `pct_visits_rsv`                | Percent of ED visits that had a discharge diagnosis code of rsv  <br/> **Earliest date available:** 2022-10-01                       |
-| `pct_visits_combined`           | Percent of ED visits that had a discharge diagnosis code of covid, influenza, or rsv   <br/> **Earliest date available:** 2022-10-01 |
-| `smoothed_pct_visits_covid`     | 3 week moving average of `pct_visits_covid`  <br/> **Earliest date available:** 2022-10-01                                           |
-| `smoothed_pct_visits_influenza` | 3 week moving average of `pct_visits_influenza`   <br/> **Earliest date available:** 2022-10-01                                      |
-| `smoothed_pct_visits_rsv`       | 3 week moving average of `pct_visits_rsv`   <br/> **Earliest date available:** 2022-10-01                                            |
-| `smoothed_pct_visits_combined`  | 3 week moving average of `pct_visits_combined`   <br/> **Earliest date available:** 2022-10-01                                       |
+| `pct_ed_visits_covid`              | Percent of ED visits that had a discharge diagnosis code of covid <br/> **Earliest date available:** 2022-10-01                      |
+| `pct_ed_visits_influenza`          | Percent of ED visits that had a discharge diagnosis code of influenza  <br/> **Earliest date available:** 2022-10-01                 |
+| `pct_ed_visits_rsv`                | Percent of ED visits that had a discharge diagnosis code of rsv  <br/> **Earliest date available:** 2022-10-01                       |
+| `pct_ed_visits_combined`           | Percent of ED visits that had a discharge diagnosis code of covid, influenza, or rsv   <br/> **Earliest date available:** 2022-10-01 |
+| `smoothed_pct_ed_visits_covid`     | 3 week moving average of `pct_ed_visits_covid`  <br/> **Earliest date available:** 2022-10-01                                           |
+| `smoothed_pct_ed_visits_influenza` | 3 week moving average of `pct_ed_visits_influenza`   <br/> **Earliest date available:** 2022-10-01                                      |
+| `smoothed_pct_ed_visits_rsv`       | 3 week moving average of `pct_ed_visits_rsv`   <br/> **Earliest date available:** 2022-10-01                                            |
+| `smoothed_pct_ed_visits_combined`  | 3 week moving average of `pct_ed_visits_combined`   <br/> **Earliest date available:** 2022-10-01                                       |
 
-## Table of contents
+## Table of Contents
 {: .no_toc .text-delta}
 
 1. TOC
@@ -52,7 +52,7 @@ State reporting process is separate from the county reporting process. As such, 
 
 ### Smoothing
 
-Smoothed signals are calculated using a simple 3 week moving average of the relevant weekly signals. Note that since the unsmoothed `pct_visits_*` signals report weekly data, each smoothed signal value is computed from 3 points rather than 21, as would be used if the unsmoothed data were reported daily.
+Smoothed signals are calculated using a simple 3 week moving average of the relevant weekly signals. Note that since the unsmoothed `pct_ed_visits_*` signals report weekly data, each smoothed signal value is computed from 3 points rather than 21, as would be used if the unsmoothed data were reported daily.
 
 
 ## Missingness
@@ -103,4 +103,4 @@ Some low population counties occasionally report outliers, e.g. 33.33%, 50%, 100
 This source is derived from the CDC's [Respiratory Virus Response NSSP Emergency Department Visit Trajectories dataset](https://data.cdc.gov/Public-Health-Surveillance/2023-Respiratory-Virus-Response-NSSP-Emergency-Dep/rdmq-nq56/about_data).
 There is another version of the dataset that includes [state data only](https://data.cdc.gov/Public-Health-Surveillance/2023-Respiratory-Virus-Response-NSSP-Emergency-Dep/7mra-9cq9/about_data).
 
-This data was originally published by the National Center for Health Statistics, and is made available here as a convenience to the forecasting community under the terms of the original license, which is [U.S. Government Public Domain](https://www.usa.gov/government-copyright).
+This data was originally published by the CDC, and is made available here as a convenience to the forecasting community under the terms of the original license, which is [U.S. Government Public Domain](https://www.usa.gov/government-copyright).
