@@ -31,44 +31,39 @@ jobs:
         # https://github.com/cmu-delphi/delphi-epidata/pull/1473
         run: |
           python -m pip install bump2version
-          allowed_pattern="^(major|minor|patch|[0-9]+\.[0-9]+\.[0-9]+)$"
-
-          if [[ ! ${{ github.event.inputs.versionName }} =~ $allowed_pattern ]]; then
-            echo "\nInvalid version name: ${{ github.event.inputs.versionName }}"
-            exit 1
-          fi
-
           if [[ ${{ github.event.inputs.versionName }} =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             # use given version number
             NEXT_TAG="${{ github.event.inputs.versionName }}"
-          else
+          elif [[ ${{ github.event.inputs.versionName }} =~ ^(major|minor|patch)$ ]]; then
             # calculate new version number based on given tag
             NEXT_TAG=$(bump2version --dry-run --list ${{ github.event.inputs.versionName }} | grep ^new_version | sed -r s,"^.*=",,)
+          else
+            echo "\nInvalid version name: ${{ github.event.inputs.versionName }}"
+            exit 1
           fi
           # apply given or calculated version number
           bump2version --new-version $NEXT_TAG _ignored_arg_
           # save version number for later
           echo "next_tag=$NEXT_TAG" >> $GITHUB_OUTPUT
-      - name: Get main branch SHA
-        id: base-sha
-        run: echo "sha=$(git rev-parse origin/main)" >> $GITHUB_OUTPUT
       - name: Get Python client file changes
         id: changed-py
         uses: dorny/paths-filter@v3
         with:
-            base: "${{ steps.base-sha.outputs.sha }}"
+            base: "main"
+            ref: "dev"
             filters: |
               python_client_changed:
-              - src/client/delphi_epidata.py
-              - src/client/packaging/pypi/**
+                - src/client/delphi_epidata.py
+                - src/client/packaging/pypi/**
       - name: Bump Python versions if client files changed
         if: steps.changed-py.outputs.python_client_changed == 'true'
         # _ignored_arg_ below is required because of tool quirk
         # https://github.com/c4urself/bump2version/issues/22
         run: |
           cd src/client/packaging/pypi
+          # this is using the new literal version number (steps.version.outputs.next_tag) output from the bump2version step above, not the workflow input (github.event.inputs.versionName) which can be relative
           bump2version --allow-dirty --new-version ${{ steps.version.outputs.next_tag }} _ignored_arg_
-      - name: Create pull request into prod
+      - name: Create pull request into main
         uses: peter-evans/create-pull-request@v3
         with:
           branch: release/delphi-epidata-${{ steps.version.outputs.next_tag }}

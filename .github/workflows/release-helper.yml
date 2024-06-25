@@ -25,10 +25,14 @@ jobs:
         id: changed-py
         uses: dorny/paths-filter@v3
         with:
+          # when base and ref are the same, changes are detected against the most recent commit before the push.
+          # see https://github.com/dorny/paths-filter#usage for details.
+          base: 'main'
+          ref: 'main'
           filters: |
             python_client_changed:
-            - src/client/delphi_epidata.py
-            - src/client/packaging/pypi/**
+              - src/client/delphi_epidata.py
+              - src/client/packaging/pypi/**
     outputs:
       python_client_changed: ${{ steps.changed-py.outputs.python_client_changed }}
 
