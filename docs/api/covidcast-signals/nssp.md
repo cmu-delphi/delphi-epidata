@@ -17,7 +17,7 @@ grand_parent: COVIDcast Main Endpoint
 ## Overview
 
 [The National Syndromic Surveillance Program (NSSP)](https://www.cdc.gov/nssp/php/about/index.html) is an effort to track epidemiologically relevant conditions.
-This dataset in particular tracks emergency department (ED) visits arising from a subset of influenza-like illnesses, specifically influenza, COVID-19, and RSV.
+This dataset in particular tracks emergency department (ED) visits arising from a subset of influenza-like illnesses, specifically influenza, COVID-19, and respiratory syncytial virus (RSV).
 It is derived from the CDC's [Respiratory Virus Response NSSP Emergency Department Visit Trajectories dataset](https://data.cdc.gov/Public-Health-Surveillance/2023-Respiratory-Virus-Response-NSSP-Emergency-Dep/rdmq-nq56/about_data), which started reporting data in late 2022.
 As of May 2024, NSSP received data from 78% of US EDs.
 
