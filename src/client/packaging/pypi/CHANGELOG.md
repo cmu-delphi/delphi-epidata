@@ -3,6 +3,23 @@
 All notable future changes to the `delphi_epidata` python client will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [4.1.24] - 2024-06-06
+
+### Includes
+- https://github.com/cmu-delphi/delphi-epidata/pull/1470
+
+### Changed
+- Replaced `setup.py` with `pyproject.toml` for package metadata and build configuration.
+
+## [4.1.23] - 2024-05-31
+
+### Includes
+- https://github.com/cmu-delphi/delphi-epidata/pull/1460
+
+### Fixed
+- Replaced bad internal logger package import with one from `delphi_utils` package instead.
+  - This bug affected releases 4.1.21 and 4.1.22
+
 ## [4.1.21] - 2024-05-20
 
 ### Includes

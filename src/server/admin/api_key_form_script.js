@@ -45,6 +45,8 @@ function onSubmit(e) {
 
             For usage information, see the API Keys section of the documentation: https://cmu-delphi.github.io/delphi-epidata/api/api_keys.html
 
+            We strongly suggest you subscribe to our API mailing list to make sure you are informed on important topics, like announcements of API changes, details of updates to data, and unexpected downtime or other problems: https://lists.andrew.cmu.edu/mailman/listinfo/delphi-covidcast-api
+
             Best,
             Delphi Team`
         });
