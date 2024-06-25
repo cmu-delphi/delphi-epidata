@@ -1,0 +1,7 @@
+- for #1129 :
+  - grep for:
+    - py3test
+    - test_target
+  - and remove from:
+    - tests/*
+    - integrations/*
