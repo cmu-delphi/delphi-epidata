@@ -26,6 +26,10 @@ Pandemic"](https://www.pnas.org/topic/548) in *PNAS*:
 
 Research publications using the survey data include:
 
+- K. Sasse, R. Mahabir, O. Gkountouna, A. Crooks, A. Croitoru (2024).
+  [Understanding the determinants of vaccine hesitancy in the United
+  States: A comparison of social surveys and social media](https://doi.org/10.1371/journal.pone.0301488).
+  *PLoS ONE* 19(6), e0301488. 
 - Y. Yang, W. Dempsey, P. Han, Y. Deshmukh, S. Richardson, B. Tom, and B. Mukherjee
   (2024). [Exploring the Big Data Paradox for various estimands using vaccination
   data from the global COVID-19 Trends and Impact Survey (CTIS)](https://doi.org/10.1126/sciadv.adj0266).
