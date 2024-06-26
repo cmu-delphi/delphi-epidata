@@ -1,20 +1,24 @@
 from typing import cast
 import time
+from datetime import datetime
+import requests
+import json
 
 from flask import Flask, g, request
 from sqlalchemy import event
 from sqlalchemy.engine import Connection, Engine
 from werkzeug.exceptions import Unauthorized
 from werkzeug.local import LocalProxy
+from smtplib import SMTP
 
 from delphi.epidata.common.logger import get_structured_logger
-from ._config import SECRET, REVERSE_PROXY_DEPTH
+from ._config import SECRET, REVERSE_PROXY_DEPTH, SMTP_HOST, SMTP_PORT, EMAIL_FROM, SLACK_WEBHOOK_URL, RECAPTCHA_SECRET_KEY
 from ._db import engine
 from ._exceptions import DatabaseErrorException, EpiDataException
 from ._security import current_user, _is_public_route, resolve_auth_token, update_key_last_time_used, ERROR_MSG_INVALID_KEY
 
 
-app = Flask("EpiData", static_url_path="")
+app = Flask("EpiData", static_url_path="", template_folder="/app/delphi/epidata/server/templates")
 app.config["SECRET"] = SECRET
 
 
@@ -181,3 +185,33 @@ def set_compatibility_mode():
     sets the compatibility mode for this request
     """
     g.compatibility = True
+
+
+def send_email(to_addr: str, subject: str, message: str):
+    """Send email messages
+    Args:
+        to_addr (str): Reciever email address
+        subject (str): Email subject
+        message (str): Email message
+    """
+    smtp_server = SMTP(host=SMTP_HOST, port=SMTP_PORT)
+    smtp_server.starttls()
+    body = "\r\n".join((f"FROM: {EMAIL_FROM}", f"TO: {to_addr}", f"Subject: {subject}", "", message))
+    smtp_server.sendmail(EMAIL_FROM, to_addr, body)
+
+
+def send_slack_notification(payload: dict):
+    headers = {"Accept": "application/json", "Content-Type": "application/json"}
+    response = requests.post(
+        SLACK_WEBHOOK_URL,
+        headers=headers,
+        data=json.dumps(payload)
+    )
+    return response
+
+
+def verify_recaptcha_response(response_token: str):
+    verification_url = "https://www.google.com/recaptcha/api/siteverify"
+    payload = {"secret": RECAPTCHA_SECRET_KEY, "response": response_token}
+    response = requests.post(verification_url, data=payload)
+    return response.json()["success"]
