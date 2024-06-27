@@ -317,7 +317,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
         Epidata.covidcast('src', 'sig', 'day', 'county', 20200414, '01234')
       output = logs.output
       self.assertEqual(len(output), 1)
-      self.assertIn("Client version does not match server version", output[0])
+      self.assertIn("Client version not up to date", output[0])
       self.assertIn("\"server_version\": \"0.0.1\"", output[0])
     finally: # make sure this global is always reset
       Epidata.debug = False
