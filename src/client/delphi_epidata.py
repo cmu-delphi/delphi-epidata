@@ -106,15 +106,15 @@ class Epidata:
         # One-time check to verify the client version is up to date.
         if Epidata.debug and not Epidata.sandbox and not Epidata.version_check:
             try:
-                server_version = requests.get('https://pypi.org/pypi/delphi-epidata/json').json()['info']['version']
-                if server_version != Epidata.client_version:
+                latest_version = requests.get('https://pypi.org/pypi/delphi-epidata/json').json()['info']['version']
+                if latest_version != Epidata.client_version:
                     Epidata.logger.warn(
-                        "Client version does not match server version",
+                        "Client version not up to date",
                         client_version=Epidata.client_version,
-                        server_version=server_version
+                        latest_version=latest_version
                     )
             except Exception as e:
-                Epidata.logger.warn("Could not get current server version", exception=str(e))
+                Epidata.logger.warn("Error getting latest client version", exception=str(e))
             finally:
                 Epidata.version_check = True
         try:
