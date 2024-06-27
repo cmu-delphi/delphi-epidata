@@ -2,8 +2,8 @@
 
 # standard library
 import time
+import json
 from json import JSONDecodeError
-from requests.models import Response
 from unittest.mock import MagicMock, patch
 
 # first party
@@ -299,6 +299,28 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     finally: # make sure these globals are always reset
       Epidata.debug = False
       Epidata.sandbox = False
+
+  @patch('requests.get')
+  def test_version_check(self, get):
+    """Test that in debug + sandbox mode request params are correctly logged, but no queries are sent."""
+    class MockJson:
+      def __init__(self, content, status_code):
+          self.content = content
+          self.status_code = status_code
+      def raise_for_status(self): pass
+      def json(self): return json.loads(self.content)
+    Epidata.debug = True
+    try:
+      get.reset_mock()
+      get.return_value = MockJson(b'{"info": {"version": "0.0.1"}}', 200)
+      with self.assertLogs('delphi_epidata_client', level='WARN') as logs:
+        Epidata.covidcast('src', 'sig', 'day', 'county', 20200414, '01234')
+      output = logs.output
+      self.assertEqual(len(output), 1)
+      self.assertIn("Client version not up to date", output[0])
+      self.assertIn("\"latest_version\": \"0.0.1\"", output[0])
+    finally: # make sure this global is always reset
+      Epidata.debug = False
 
   def test_geo_value(self):
     """test different variants of geo types: single, *, multi."""

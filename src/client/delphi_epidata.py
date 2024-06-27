@@ -44,6 +44,7 @@ class Epidata:
     auth = None
 
     client_version = __version__
+    version_check = False
 
     logger = get_structured_logger('delphi_epidata_client')
     debug = False # if True, prints extra logging statements
@@ -102,6 +103,20 @@ class Epidata:
         capabilities, but fall back to POST if the request is too
         long and returns a 414.
         """
+        # One-time check to verify the client version is up to date.
+        if Epidata.debug and not Epidata.sandbox and not Epidata.version_check:
+            try:
+                latest_version = requests.get('https://pypi.org/pypi/delphi-epidata/json').json()['info']['version']
+                if latest_version != Epidata.client_version:
+                    Epidata.logger.warn(
+                        "Client version not up to date",
+                        client_version=Epidata.client_version,
+                        latest_version=latest_version
+                    )
+            except Exception as e:
+                Epidata.logger.warn("Error getting latest client version", exception=str(e))
+            finally:
+                Epidata.version_check = True
         try:
             result = Epidata._request_with_retry(endpoint, params)
         except Exception as e:
