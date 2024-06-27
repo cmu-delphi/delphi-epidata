@@ -300,8 +300,8 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
       Epidata.debug = False
       Epidata.sandbox = False
 
-  @patch("delphi.epidata.client.delphi_epidata.Epidata._request_with_retry")
-  def test_version_check(self, mock_request_retry):
+  @patch('requests.get')
+  def test_version_check(self, get):
     """Test that in debug + sandbox mode request params are correctly logged, but no queries are sent."""
     class MockJson:
       def __init__(self, content, status_code):
@@ -311,7 +311,8 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
       def json(self): return json.loads(self.content)
     Epidata.debug = True
     try:
-      mock_request_retry.return_value = MockJson(b'{"version": "0.0.1"}', 200)
+      get.reset_mock()
+      get.return_value = MockJson(b'{"info": {"version": "0.0.1"}}', 200)
       with self.assertLogs('delphi_epidata_client', level='WARN') as logs:
         Epidata.covidcast('src', 'sig', 'day', 'county', 20200414, '01234')
       output = logs.output
