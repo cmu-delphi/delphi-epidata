@@ -37,7 +37,7 @@ classifiers = [
     "Natural Language :: English",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
 ]
-dependencies = ["aiohttp", "delphi-utils", "requests>=2.7.0", "tenacity"]
+dependencies = ["aiohttp", "requests>=2.7.0", "tenacity"]
 
 [project.urls]
 "Homepage" = "https://github.com/cmu-delphi/delphi-epidata"
