@@ -2,6 +2,7 @@ from math import inf
 import re
 from dataclasses import dataclass
 from typing import List, Optional, Sequence, Tuple, Union
+import delphi_utils
 
 from flask import request
 
@@ -52,6 +53,28 @@ def _parse_single_arg(key: str) -> Tuple[str, str]:
 class GeoSet:
     geo_type: str
     geo_values: Union[bool, Sequence[str]]
+
+    def __init__(self, geo_type: str, geo_values: Union[bool, Sequence[str]]):
+        if not isinstance(geo_values, bool):
+            if geo_values == ['']:
+                raise ValidationFailedException(f"geo_value is empty for the requested geo_type {geo_type}!")
+            # TODO: keep this translator in sync with CsvImporter.GEOGRAPHIC_RESOLUTIONS in acquisition/covidcast/ and with GeoMapper
+            geo_type_translator = {
+                "county": "fips",
+                "state": "state_id",
+                "zip": "zip",
+                "hrr": "hrr",
+                "hhs": "hhs",
+                "msa": "msa",
+                "nation": "nation"
+            }
+            if geo_type in geo_type_translator: # else geo_type is unknown to GeoMapper
+                allowed_values = delphi_utils.geomap.GeoMapper().get_geo_values(geo_type_translator[geo_type])
+                invalid_values = set(geo_values) - set(allowed_values)
+                if invalid_values:
+                    raise ValidationFailedException(f"Invalid geo_value(s) {', '.join(invalid_values)} for the requested geo_type {geo_type}")
+        self.geo_type = geo_type
+        self.geo_values = geo_values
 
     def matches(self, geo_type: str, geo_value: str) -> bool:
         return self.geo_type == geo_type and (self.geo_values is True or (not isinstance(self.geo_values, bool) and geo_value in self.geo_values))
@@ -384,6 +407,8 @@ def parse_date(s: str) -> int:
         if s == "*":
             return s
         else:
+            if len(s) > 10:  # max len of date is 10 (YYYY-MM-DD format)
+                raise ValueError
             return int(s.replace("-", ""))
     except ValueError:
         raise ValidationFailedException(f"not a valid date: {s}")
@@ -402,44 +427,31 @@ def extract_dates(key: Union[str, Sequence[str]]) -> Optional[TimeValues]:
         return None
     values: TimeValues = []
 
-    def push_range(first: str, last: str):
-        first_d = parse_date(first)
-        last_d = parse_date(last)
-        if first_d == last_d:
-            # the first and last numbers are the same, just treat it as a singe value
-            return first_d
-        if last_d > first_d:
-            # add the range as an array
-            return (first_d, last_d)
-        # the range is inverted, this is an error
-        raise ValidationFailedException(f"{key}: the given range is inverted")
-
     for part in parts:
-        if "-" not in part and ":" not in part:
-            # YYYYMMDD
-            values.append(parse_date(part))
-            continue
+        if part == "*":
+            return ["*"]
         if ":" in part:
             # YYYY-MM-DD:YYYY-MM-DD
-            range_part = part.split(":", 2)
-            r = push_range(range_part[0], range_part[1])
+            range_part = part.split(":", 1)
+            r = _verify_range(parse_date(range_part[0]), parse_date(range_part[1]))
             if r is None:
                 return None
             values.append(r)
             continue
-        # YYYY-MM-DD or YYYYMMDD-YYYYMMDD
-        # split on the dash
-        range_part = part.split("-")
-        if len(range_part) == 2:
-            # YYYYMMDD-YYYYMMDD
-            r = push_range(range_part[0], range_part[1])
-            if r is None:
-                return None
-            values.append(r)
-            continue
-        # YYYY-MM-DD
-        values.append(parse_date(part))
-    # success, return the list
+        # parse other date formats
+        dashless_part = part.replace("-", "")
+        if len(dashless_part) in (6, 12):
+            # if there are 6 or 12 (hopefully integer) chars in this, it
+            # should be a week or week range (YYYYWW or YYYYWWYYYYWW)
+            r = parse_week_value(part)
+        elif len(dashless_part) in (8, 16):
+            # if its 8 or 16, it should be a day or
+            # day range (YYYYMMDD or YYYYMMDDYYYYMMDD)
+            r = parse_day_value(part)
+        else:
+            # other time types tbd lol
+            raise ValidationFailedException(f"unrecognized date format: {part}")
+        values.append(r)
     return values
 
 def parse_source_signal_sets() -> List[SourceSignalSet]:
@@ -460,6 +472,7 @@ def parse_source_signal_sets() -> List[SourceSignalSet]:
 
 def parse_geo_sets() -> List[GeoSet]:
     geo_type = request.values.get("geo_type")
+
     if geo_type:
         # old version
         require_any(request, "geo_value", "geo_values", empty=True)

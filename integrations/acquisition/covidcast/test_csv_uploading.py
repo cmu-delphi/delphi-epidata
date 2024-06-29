@@ -4,7 +4,7 @@
 from datetime import date
 import os
 import unittest
-from unittest.mock import MagicMock
+import argparse
 
 # third party
 import mysql.connector
@@ -14,7 +14,7 @@ import numpy as np
 # first party
 from delphi_utils import Nans
 from delphi.epidata.client.delphi_epidata import Epidata
-from delphi.epidata.acquisition.covidcast.csv_to_database import main
+from delphi.epidata.acquisition.covidcast.csv_to_database import main, get_argument_parser
 import delphi.operations.secrets as secrets
 
 # py3tester coverage target (equivalent to `import *`)
@@ -55,8 +55,22 @@ class CsvUploadingTests(unittest.TestCase):
     secrets.db.host = 'delphi_database_epidata'
     secrets.db.epi = ('user', 'pass')
 
+    epidata_cnx = mysql.connector.connect(
+        user='user',
+        password='pass',
+        host='delphi_database_epidata',
+        database='epidata')
+    epidata_cur = epidata_cnx.cursor()
+
+    epidata_cur.execute("DELETE FROM `api_user`")
+    epidata_cur.execute('INSERT INTO `api_user`(`api_key`, `email`) VALUES("key", "email")')
+    epidata_cnx.commit()
+    epidata_cur.close()
+    epidata_cnx.close()
+
     # use the local instance of the Epidata API
-    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata'
+    Epidata.auth = ('epidata', 'key')
 
   def tearDown(self):
     """Perform per-test teardown."""
@@ -92,16 +106,12 @@ select value_updated_timestamp from epimetric_latest''')
 
     # make some fake data files
     data_dir = 'covid/data'
-    source_receiving_dir = data_dir + '/receiving/src-name'
+    indicator_dir = 'src-name'
+    source_receiving_dir = data_dir + '/receiving/' + indicator_dir
     log_file_directory = "/var/log/"
     os.makedirs(source_receiving_dir, exist_ok=True)
     os.makedirs(log_file_directory, exist_ok=True)
-    # TODO: use an actual argparse object for the args instead of a MagicMock
-    args = MagicMock(
-          log_file=log_file_directory +
-          "output.log",
-          data_dir=data_dir,
-          specific_issue_date=False)
+    args = get_argument_parser().parse_args(["--log_file", log_file_directory + "output.log", "--data_dir", data_dir, "--indicator_name", indicator_dir])
     uploader_column_rename = {"geo_id": "geo_value", "val": "value", "se": "stderr", "missing_val": "missing_value", "missing_se": "missing_stderr"}
 
 
@@ -122,7 +132,7 @@ select value_updated_timestamp from epimetric_latest''')
       main(args)
       response = Epidata.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
 
-      expected_values = pd.concat([values, pd.DataFrame({ "time_value": [20200419] * 3, "signal": [signal_name] * 3, "direction": [None] * 3})], axis=1).rename(columns=uploader_column_rename).to_dict(orient="records")
+      expected_values = pd.concat([values, pd.DataFrame({ "geo_type": "state", "source": "src-name", "time_type": "day", "time_value": [20200419] * 3, "signal": [signal_name] * 3, "direction": [None] * 3})], axis=1).rename(columns=uploader_column_rename).to_dict(orient="records")
       expected_response = {'result': 1, 'epidata': self.apply_lag(expected_values), 'message': 'success'}
 
       self.assertEqual(response, expected_response)
@@ -151,6 +161,9 @@ select value_updated_timestamp from epimetric_latest''')
       response = Epidata.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
 
       expected_values = pd.concat([values, pd.DataFrame({
+        "geo_type": "state",
+        "source": "src-name",
+        "time_type": "day",
         "time_value": [20200419] * 3,
         "signal": [signal_name] * 3,
         "direction": [None] * 3,
@@ -184,7 +197,7 @@ select value_updated_timestamp from epimetric_latest''')
       main(args)
       response = Epidata.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
 
-      expected_response = {'result': -2, 'message': 'no results'}
+      expected_response = {'epidata': [], 'result': -2, 'message': 'no results'}
 
       self.assertEqual(response, expected_response)
       self.verify_timestamps_and_defaults()
@@ -210,6 +223,9 @@ select value_updated_timestamp from epimetric_latest''')
       response = Epidata.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
 
       expected_values_df = pd.concat([values, pd.DataFrame({
+        "geo_type": "state",
+        "source": "src-name",
+        "time_type": "day", 
         "time_value": [20200419],
         "signal": [signal_name],
         "direction": [None]})], axis=1).rename(columns=uploader_column_rename)
@@ -243,6 +259,9 @@ select value_updated_timestamp from epimetric_latest''')
       response = Epidata.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
 
       expected_values = pd.concat([values, pd.DataFrame({
+        "geo_type": "state",
+        "source": "src-name",
+        "time_type": "day", 
         "time_value": [20200419],
         "signal": [signal_name],
         "direction": [None]
@@ -273,7 +292,7 @@ select value_updated_timestamp from epimetric_latest''')
       main(args)
       response = Epidata.covidcast('src-name', signal_name, 'day', 'state', 20200419, '*')
 
-      expected_response = {'result': -2, 'message': 'no results'}
+      expected_response = {'epidata': [], 'result': -2, 'message': 'no results'}
 
       self.assertEqual(response, expected_response)
       self.verify_timestamps_and_defaults()

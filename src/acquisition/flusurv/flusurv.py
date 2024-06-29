@@ -50,167 +50,170 @@ from delphi.utils.epidate import EpiDate
 # all currently available FluSurv locations and their associated codes
 # the number pair represents NetworkID and CatchmentID
 location_codes = {
-  'CA': (2, 1),
-  'CO': (2, 2),
-  'CT': (2, 3),
-  'GA': (2, 4),
-  'IA': (3, 5),
-  'ID': (3, 6),
-  'MD': (2, 7),
-  'MI': (3, 8),
-  'MN': (2, 9),
-  'NM': (2, 11),
-  'NY_albany': (2, 13),
-  'NY_rochester': (2, 14),
-  'OH': (3, 15),
-  'OK': (3, 16),
-  'OR': (2, 17),
-  'RI': (3, 18),
-  'SD': (3, 19),
-  'TN': (2, 20),
-  'UT': (3, 21),
-  'network_all': (1, 22),
-  'network_eip': (2, 22),
-  'network_ihsp': (3, 22),
+    "CA": (2, 1),
+    "CO": (2, 2),
+    "CT": (2, 3),
+    "GA": (2, 4),
+    "IA": (3, 5),
+    "ID": (3, 6),
+    "MD": (2, 7),
+    "MI": (3, 8),
+    "MN": (2, 9),
+    "NM": (2, 11),
+    "NY_albany": (2, 13),
+    "NY_rochester": (2, 14),
+    "OH": (3, 15),
+    "OK": (3, 16),
+    "OR": (2, 17),
+    "RI": (3, 18),
+    "SD": (3, 19),
+    "TN": (2, 20),
+    "UT": (3, 21),
+    "network_all": (1, 22),
+    "network_eip": (2, 22),
+    "network_ihsp": (3, 22),
 }
 
 
 def fetch_json(path, payload, call_count=1, requests_impl=requests):
-  """Send a request to the server and return the parsed JSON response."""
+    """Send a request to the server and return the parsed JSON response."""
 
-  # it's polite to self-identify this "bot"
-  delphi_url = 'https://delphi.cmu.edu/index.html'
-  user_agent = 'Mozilla/5.0 (compatible; delphibot/1.0; +%s)' % delphi_url
+    # it's polite to self-identify this "bot"
+    delphi_url = "https://delphi.cmu.edu/index.html"
+    user_agent = f"Mozilla/5.0 (compatible; delphibot/1.0; +{delphi_url})"
 
-  # the FluSurv AMF server
-  flusurv_url = 'https://gis.cdc.gov/GRASP/Flu3/' + path
+    # the FluSurv AMF server
+    flusurv_url = "https://gis.cdc.gov/GRASP/Flu3/" + path
 
-  # request headers
-  headers = {
-    'Accept-Encoding': 'gzip',
-    'User-Agent': user_agent,
-  }
-  if payload is not None:
-    headers['Content-Type'] = 'application/json;charset=UTF-8'
+    # request headers
+    headers = {
+        "Accept-Encoding": "gzip",
+        "User-Agent": user_agent,
+    }
+    if payload is not None:
+        headers["Content-Type"] = "application/json;charset=UTF-8"
 
-  # send the request and read the response
-  if payload is None:
-    method = requests_impl.get
-    data = None
-  else:
-    method = requests_impl.post
-    data = json.dumps(payload)
-  resp = method(flusurv_url, headers=headers, data=data)
+    # send the request and read the response
+    if payload is None:
+        method = requests_impl.get
+        data = None
+    else:
+        method = requests_impl.post
+        data = json.dumps(payload)
+    resp = method(flusurv_url, headers=headers, data=data)
 
-  # check the HTTP status code
-  if resp.status_code == 500 and call_count <= 2:
-    # the server often fails with this status, so wait and retry
-    delay = 10 * call_count
-    print('got status %d, will retry in %d sec...' % (resp.status_code, delay))
-    time.sleep(delay)
-    return fetch_json(path, payload, call_count=call_count + 1)
-  elif resp.status_code != 200:
-    raise Exception(['status code != 200', resp.status_code])
+    # check the HTTP status code
+    if resp.status_code == 500 and call_count <= 2:
+        # the server often fails with this status, so wait and retry
+        delay = 10 * call_count
+        print(f"got status {int(resp.status_code)}, will retry in {int(delay)} sec...")
+        time.sleep(delay)
+        return fetch_json(path, payload, call_count=call_count + 1)
+    elif resp.status_code != 200:
+        raise Exception(["status code != 200", resp.status_code])
 
-  # check response mime type
-  if 'application/json' not in resp.headers.get('Content-Type', ''):
-    raise Exception('response is not json')
+    # check response mime type
+    if "application/json" not in resp.headers.get("Content-Type", ""):
+        raise Exception("response is not json")
 
-  # return the decoded json object
-  return resp.json()
+    # return the decoded json object
+    return resp.json()
 
 
 def fetch_flusurv_object(location_code):
-  """Return decoded FluSurv JSON object for the given location."""
-  return fetch_json('PostPhase03GetData', {
-    'appversion': 'Public',
-    'networkid': location_code[0],
-    'cacthmentid': location_code[1],
-  })
+    """Return decoded FluSurv JSON object for the given location."""
+    return fetch_json(
+        "PostPhase03GetData",
+        {
+            "appversion": "Public",
+            "networkid": location_code[0],
+            "cacthmentid": location_code[1],
+        },
+    )
 
 
 def mmwrid_to_epiweek(mmwrid):
-  """Convert a CDC week index into an epiweek."""
+    """Convert a CDC week index into an epiweek."""
 
-  # Add the difference in IDs, which are sequential, to a reference epiweek,
-  # which is 2003w40 in this case.
-  epiweek_200340 = EpiDate(2003, 9, 28)
-  mmwrid_200340 = 2179
-  return epiweek_200340.add_weeks(mmwrid - mmwrid_200340).get_ew()
+    # Add the difference in IDs, which are sequential, to a reference epiweek,
+    # which is 2003w40 in this case.
+    epiweek_200340 = EpiDate(2003, 9, 28)
+    mmwrid_200340 = 2179
+    return epiweek_200340.add_weeks(mmwrid - mmwrid_200340).get_ew()
 
 
 def extract_from_object(data_in):
-  """
-  Given a FluSurv data object, return hospitaliation rates.
+    """
+    Given a FluSurv data object, return hospitaliation rates.
 
-  The returned object is indexed first by epiweek, then by zero-indexed age
-  group.
-  """
+    The returned object is indexed first by epiweek, then by zero-indexed age
+    group.
+    """
 
-  # an object to hold the result
-  data_out = {}
+    # an object to hold the result
+    data_out = {}
 
-  # iterate over all seasons and age groups
-  for obj in data_in['busdata']['dataseries']:
-    if obj['age'] in (10, 11, 12):
-      # TODO(https://github.com/cmu-delphi/delphi-epidata/issues/242):
-      #   capture as-of-yet undefined age groups 10, 11, and 12
-      continue
-    age_index = obj['age'] - 1
-    # iterage over weeks
-    for mmwrid, _, _, rate in obj['data']:
-      epiweek = mmwrid_to_epiweek(mmwrid)
-      if epiweek not in data_out:
-        # weekly rate of each age group
-        data_out[epiweek] = [None] * 9
-      prev_rate = data_out[epiweek][age_index]
-      if prev_rate is None:
-        # this is the first time to see a rate for this epiweek/age
-        data_out[epiweek][age_index] = rate
-      elif prev_rate != rate:
-        # a different rate was already found for this epiweek/age
-        format_args = (epiweek, obj['age'], prev_rate, rate)
-        print('warning: %d %d %f != %f' % format_args)
+    # iterate over all seasons and age groups
+    for obj in data_in["busdata"]["dataseries"]:
+        if obj["age"] in (10, 11, 12):
+            # TODO(https://github.com/cmu-delphi/delphi-epidata/issues/242):
+            #   capture as-of-yet undefined age groups 10, 11, and 12
+            continue
+        age_index = obj["age"] - 1
+        # iterage over weeks
+        for mmwrid, _, _, rate in obj["data"]:
+            epiweek = mmwrid_to_epiweek(mmwrid)
+            if epiweek not in data_out:
+                # weekly rate of each age group
+                data_out[epiweek] = [None] * 9
+            prev_rate = data_out[epiweek][age_index]
+            if prev_rate is None:
+                # this is the first time to see a rate for this epiweek/age
+                data_out[epiweek][age_index] = rate
+            elif prev_rate != rate:
+                # a different rate was already found for this epiweek/age
+                format_args = (epiweek, obj["age"], prev_rate, rate)
+                print("warning: %d %d %f != %f" % format_args)
 
-  # sanity check the result
-  if len(data_out) == 0:
-    raise Exception('no data found')
+    # sanity check the result
+    if len(data_out) == 0:
+        raise Exception("no data found")
 
-  # print the result and return flu data
-  print('found data for %d weeks' % len(data_out))
-  return data_out
+    # print the result and return flu data
+    print(f"found data for {len(data_out)} weeks")
+    return data_out
 
 
 def get_data(location_code):
-  """
-  Fetch and parse flu data for the given location.
+    """
+    Fetch and parse flu data for the given location.
 
-  This method performs the following operations:
-    - fetches FluSurv data from CDC
-    - extracts and returns hospitaliation rates
-  """
+    This method performs the following operations:
+      - fetches FluSurv data from CDC
+      - extracts and returns hospitaliation rates
+    """
 
-  # fetch
-  print('[fetching flusurv data...]')
-  data_in = fetch_flusurv_object(location_code)
+    # fetch
+    print("[fetching flusurv data...]")
+    data_in = fetch_flusurv_object(location_code)
 
-  # extract
-  print('[extracting values...]')
-  data_out = extract_from_object(data_in)
+    # extract
+    print("[extracting values...]")
+    data_out = extract_from_object(data_in)
 
-  # return
-  print('[scraped successfully]')
-  return data_out
+    # return
+    print("[scraped successfully]")
+    return data_out
 
 
 def get_current_issue():
-  """Scrape the current issue from the FluSurv main page."""
+    """Scrape the current issue from the FluSurv main page."""
 
-  # fetch
-  data = fetch_json('GetPhase03InitApp?appVersion=Public', None)
+    # fetch
+    data = fetch_json("GetPhase03InitApp?appVersion=Public", None)
 
-  # extract
-  date = datetime.strptime(data['loaddatetime'], '%b %d, %Y')
+    # extract
+    date = datetime.strptime(data["loaddatetime"], "%b %d, %Y")
 
-  # convert and return
-  return EpiDate(date.year, date.month, date.day).get_ew()
+    # convert and return
+    return EpiDate(date.year, date.month, date.day).get_ew()

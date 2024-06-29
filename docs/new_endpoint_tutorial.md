@@ -1,6 +1,6 @@
 ---
 title: New Endpoint Tutorial
-nav_order: 4
+nav_order: 5
 ---
 
 # Tutorial: Adding a new API endpoint
@@ -123,11 +123,9 @@ Here's what we add to each client:
     def fluview_meta():
       """Fetch FluView metadata."""
       # Set up request
-      params = {
-        'endpoint': 'fluview_meta',
-      }
+      params = {}
       # Make the API call
-      return Epidata._request(params)
+      return Epidata._request("fluview_meta", params)
     ```
 
 - [`delphi_epidata.R`](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R)
@@ -325,7 +323,7 @@ actual
 created in this tutorial.
 
 Once it's approved, merge the PR, and contact an admin to schedule a release. Once released, the API will begin serving your new endpoint. Go ahead and give it a
-try: https://delphi.cmu.edu/epidata/fluview_meta/
+try: https://api.delphi.cmu.edu/epidata/fluview_meta/
 
 ```
 {

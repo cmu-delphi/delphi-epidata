@@ -20,7 +20,7 @@ General topics not specific to any particular endpoint are discussed in the
 
 # The API
 
-The base URL is: https://delphi.cmu.edu/epidata/dengue_sensors/
+The base URL is: https://api.delphi.cmu.edu/epidata/dengue_sensors/
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 

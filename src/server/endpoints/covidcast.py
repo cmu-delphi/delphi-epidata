@@ -30,11 +30,13 @@ from .._params import (
 )
 from .._query import QueryBuilder, execute_query, run_query, parse_row, filter_fields
 from .._printer import create_printer, CSVPrinter
+from .._security import current_user, sources_protected_by_roles
 from .._validate import require_all
 from .._pandas import as_pandas, print_pandas
-from .covidcast_utils import compute_trend, compute_trends, compute_correlations, compute_trend_value, CovidcastMetaEntry
+from .covidcast_utils import compute_trend, compute_trends, compute_trend_value, CovidcastMetaEntry
 from ..utils import shift_day_value, day_to_time_value, time_value_to_iso, time_value_to_day, shift_week_value, time_value_to_week, guess_time_value_is_day, week_to_time_value, TimeValues
 from .covidcast_utils.model import TimeType, count_signal_time_types, data_sources, create_source_signal_alias_mapper
+from delphi.epidata.common.logger import get_structured_logger
 
 # first argument is the endpoint name
 bp = Blueprint("covidcast", __name__)
@@ -43,9 +45,30 @@ alias = None
 latest_table = "epimetric_latest_v"
 history_table = "epimetric_full_v"
 
+def restrict_by_roles(source_signal_sets):
+    # takes a list of SourceSignalSet objects
+    # and returns only those from the list
+    # that the current user is permitted to access.
+    user = current_user
+    allowed_source_signal_sets = []
+    for src_sig_set in source_signal_sets:
+        src = src_sig_set.source
+        if src in sources_protected_by_roles:
+            role = sources_protected_by_roles[src]
+            if user and user.has_role(role):
+                allowed_source_signal_sets.append(src_sig_set)
+            else:
+                # protected src and user does not have permission => leave it out of the srcsig sets
+                get_structured_logger("covcast_endpt").warning("non-authZd request for restricted 'source'", api_key=(user and user.api_key), src=src)
+        else:
+            allowed_source_signal_sets.append(src_sig_set)
+    return allowed_source_signal_sets
+
+
 @bp.route("/", methods=("GET", "POST"))
 def handle():
     source_signal_sets = parse_source_signal_sets()
+    source_signal_sets = restrict_by_roles(source_signal_sets)
     source_signal_sets, alias_mapper = create_source_signal_alias_mapper(source_signal_sets)
     time_set = parse_time_set()
     geo_sets = parse_geo_sets()
@@ -102,6 +125,7 @@ def _verify_argument_time_type_matches(is_day_argument: bool, count_daily_signal
 def handle_trend():
     require_all(request, "window", "date")
     source_signal_sets = parse_source_signal_sets()
+    source_signal_sets = restrict_by_roles(source_signal_sets)
     daily_signals, weekly_signals = count_signal_time_types(source_signal_sets)
     source_signal_sets, alias_mapper = create_source_signal_alias_mapper(source_signal_sets)
     geo_sets = parse_geo_sets()
@@ -157,6 +181,7 @@ def handle_trend():
 def handle_trendseries():
     require_all(request, "window")
     source_signal_sets = parse_source_signal_sets()
+    source_signal_sets = restrict_by_roles(source_signal_sets)
     daily_signals, weekly_signals = count_signal_time_types(source_signal_sets)
     source_signal_sets, alias_mapper = create_source_signal_alias_mapper(source_signal_sets)
     geo_sets = parse_geo_sets()
@@ -206,83 +231,11 @@ def handle_trendseries():
     return p(filter_fields(gen(r)))
 
 
-@bp.route("/correlation", methods=("GET", "POST"))
-def handle_correlation():
-    require_all(request, "reference", "window", "others", "geo")
-    reference = parse_single_source_signal_arg("reference")
-    other_sets = parse_source_signal_arg("others")
-    daily_signals, weekly_signals = count_signal_time_types(other_sets + [reference])
-    source_signal_sets, alias_mapper = create_source_signal_alias_mapper(other_sets + [reference])
-    geo_sets = parse_geo_arg()
-    time_window = parse_day_or_week_range_arg("window")
-    is_day = time_window.is_day
-    _verify_argument_time_type_matches(is_day, daily_signals, weekly_signals)
-
-    lag = extract_integer("lag")
-    if lag is None:
-        lag = 28
-
-    # `lag` above is used in post-processing, not in the database query, so we can use latest here
-    q = QueryBuilder(latest_table, "t")
-
-    fields_string = ["geo_type", "geo_value", "source", "signal"]
-    fields_int = ["time_value"]
-    fields_float = ["value"]
-    q.set_fields(fields_string, fields_int, fields_float)
-    q.set_sort_order("geo_type", "geo_value", "source", "signal", "time_value")
-
-    q.apply_source_signal_filters(
-        "source",
-        "signal",
-        source_signal_sets,
-    )
-    q.apply_geo_filters("geo_type", "geo_value", geo_sets)
-    q.apply_time_filter("time_type", "time_value", time_window)
-
-    df = as_pandas(str(q), q.params)
-    if is_day:
-        df["time_value"] = to_datetime(df["time_value"], format="%Y%m%d")
-    else:
-        # week but convert to date for simpler shifting
-        df["time_value"] = to_datetime(df["time_value"].apply(lambda v: time_value_to_week(v).startdate()))
-
-    p = create_printer(request.values.get("format"))
-
-    def prepare_data_frame(df):
-        return df[["time_value", "value"]].set_index("time_value")
-
-    def gen():
-        by_geo = df.groupby(["geo_type", "geo_value"])
-        for (geo_type, geo_value), group in by_geo:
-            # group by source, signal
-            by_signal = group.groupby(["source", "signal"])
-
-            # find reference group
-            # dataframe structure: index=time_value, value=value
-            reference_group = next((prepare_data_frame(group) for (source, signal), group in by_signal if source == reference.source and signal == reference.signal[0]), None)
-
-            if reference_group is None or reference_group.empty:
-                continue  # no data for reference
-
-            # dataframe structure: index=time_value, value=value
-            other_groups = [((source, signal), prepare_data_frame(group)) for (source, signal), group in by_signal if not (source == reference.source and signal == reference.signal[0])]
-            if not other_groups:
-                continue  # no other signals
-
-            for (source, signal), other_group in other_groups:
-                if alias_mapper:
-                    source = alias_mapper(source, signal)
-                for cor in compute_correlations(geo_type, geo_value, source, signal, lag, reference_group, other_group, is_day):
-                    yield cor.asdict()
-
-    # now use a generator for sending the rows and execute all the other queries
-    return p(filter_fields(gen()))
-
-
 @bp.route("/csv", methods=("GET", "POST"))
 def handle_export():
     source, signal = request.values.get("signal", "jhu-csse:confirmed_incidence_num").split(":")
     source_signal_sets = [SourceSignalSet(source, [signal])]
+    source_signal_sets = restrict_by_roles(source_signal_sets)
     daily_signals, weekly_signals = count_signal_time_types(source_signal_sets)
     source_signal_sets, alias_mapper = create_source_signal_alias_mapper(source_signal_sets)
     start_time_set = parse_day_or_week_arg("start_day", 202001 if weekly_signals > 0 else 20200401)
@@ -365,9 +318,10 @@ def handle_backfill():
     example query: http://localhost:5000/covidcast/backfill?signal=fb-survey:smoothed_cli&time=day:20200101-20220101&geo=state:ny&anchor_lag=60
     """
     require_all(request, "geo", "time", "signal")
-    source_signal_set = parse_single_source_signal_arg("signal")
-    daily_signals, weekly_signals = count_signal_time_types([source_signal_set])
-    source_signal_sets, _ = create_source_signal_alias_mapper([source_signal_set])
+    source_signal_sets = [parse_single_source_signal_arg("signal")]
+    source_signal_sets = restrict_by_roles(source_signal_sets)
+    daily_signals, weekly_signals = count_signal_time_types(source_signal_sets)
+    source_signal_sets, _ = create_source_signal_alias_mapper(source_signal_sets)
     # don't need the alias mapper since we don't return the source
 
     time_set = parse_single_time_arg("time")
@@ -478,8 +432,19 @@ def handle_meta():
         entry = by_signal.setdefault((row["data_source"], row["signal"]), [])
         entry.append(row)
 
+    user = current_user
     sources: List[Dict[str, Any]] = []
     for source in data_sources:
+        src = source.db_source
+        if src in sources_protected_by_roles:
+            role = sources_protected_by_roles[src]
+            if not (user and user.has_role(role)):
+                # if this is a protected source
+                # and the user doesnt have the allowed role
+                # (or if we have no user)
+                # then skip this source
+                continue
+
         meta_signals: List[Dict[str, Any]] = []
 
         for signal in source.signals:
@@ -521,6 +486,7 @@ def handle_coverage():
     """
 
     source_signal_sets = parse_source_signal_sets()
+    source_signal_sets = restrict_by_roles(source_signal_sets)
     daily_signals, weekly_signals = count_signal_time_types(source_signal_sets)
     source_signal_sets, alias_mapper = create_source_signal_alias_mapper(source_signal_sets)
 

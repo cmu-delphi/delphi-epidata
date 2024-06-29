@@ -32,7 +32,8 @@ class AcquisitionTests(unittest.TestCase):
     self.test_utils = UnitTestUtils(__file__)
 
     # use the local instance of the Epidata API
-    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata'
+    Epidata.auth = ('epidata', 'key')
 
     # use the local instance of the epidata database
     secrets.db.host = 'delphi_database_epidata'
@@ -43,63 +44,125 @@ class AcquisitionTests(unittest.TestCase):
       with db.new_cursor() as cur:
         cur.execute('truncate table covid_hosp_state_timeseries')
         cur.execute('truncate table covid_hosp_meta')
+        cur.execute('delete from api_user')
+        cur.execute('insert into api_user(api_key, email) values("key", "email")')
 
-  @freeze_time("2021-03-16")
+  def get_modified_dataset(self, critical_staffing_shortage_today_yes, reporting_cutoff_start):
+    """Get a simplified version of a test dataset.
+
+    Only WY data is modified. The issue date is specified in the metadata file.
+    """
+    df = self.test_utils.load_sample_dataset()
+    df_new = pd.DataFrame(df[df["state"] == "WY"], columns=df.columns).reset_index(drop=True)
+    df_new["critical_staffing_shortage_today_yes"] = critical_staffing_shortage_today_yes
+    df_new["reporting_cutoff_start"] = reporting_cutoff_start
+    return df_new
+
   def test_acquire_dataset(self):
     """Acquire a new dataset."""
 
-    # make sure the data does not yet exist
-    with self.subTest(name='no data yet'):
-      response = Epidata.covid_hosp('MA', Epidata.range(20200101, 20210101))
-      self.assertEqual(response['result'], -2, response)
+    with freeze_time("2021-03-15"):
+      # make sure the data does not yet exist
+      with self.subTest(name='no data yet'):
+        response = Epidata.covid_hosp('MA', Epidata.range(20200101, 20210101))
+        self.assertEqual(response['result'], -2, response)
 
-    # acquire sample data into local database
-    # mock out network calls to external hosts
-    with self.subTest(name='first acquisition'), \
-         patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()) as mock_fetch_meta, \
-         patch.object(Network, 'fetch_dataset', side_effect=[self.test_utils.load_sample_dataset("dataset0.csv"), # dataset for 3/13
-                                                             self.test_utils.load_sample_dataset("dataset0.csv"), # first dataset for 3/15
-                                                             self.test_utils.load_sample_dataset()] # second dataset for 3/15
-                      ) as mock_fetch:
-      acquired = Update.run()
-      self.assertTrue(acquired)
-      self.assertEqual(mock_fetch_meta.call_count, 1)
+      # acquire sample data into local database
+      # mock out network calls to external hosts
+      # issues: 3/13, 3/15
+      with self.subTest(name='first acquisition'), \
+          patch.object(Network, 'fetch_metadata',
+                       return_value=self.test_utils.load_sample_metadata("metadata.csv")) as mock_fetch_meta, \
+          patch.object(Network, 'fetch_dataset', side_effect=[
+            self.test_utils.load_sample_dataset(),
+            self.test_utils.load_sample_dataset()
+          ]) as mock_fetch:
+        acquired = Update.run()
+        self.assertTrue(acquired)
+        self.assertEqual(mock_fetch_meta.call_count, 1)
 
-    # make sure the data now exists
-    with self.subTest(name='initial data checks'):
-      response = Epidata.covid_hosp('WY', Epidata.range(20200101, 20210101))
-      self.assertEqual(response['result'], 1)
-      self.assertEqual(len(response['epidata']), 1)
-      row = response['epidata'][0]
-      self.assertEqual(row['state'], 'WY')
-      self.assertEqual(row['date'], 20201209)
-      self.assertEqual(row['issue'], 20210315)
-      self.assertEqual(row['critical_staffing_shortage_today_yes'], 8)
-      self.assertEqual(row['total_patients_hospitalized_confirmed_influenza_covid_coverage'], 56)
-      actual = row['inpatient_bed_covid_utilization']
-      expected = 0.11729857819905214
-      self.assertAlmostEqual(actual, expected)
-      self.assertIsNone(row['critical_staffing_shortage_today_no'])
+      # make sure the data now exists
+      with self.subTest(name='initial data checks'):
+        response = Epidata.covid_hosp('WY', Epidata.range(20200101, 20210101))
+        self.assertEqual(response['result'], 1)
+        self.assertEqual(len(response['epidata']), 1)
+        row = response['epidata'][0]
+        self.assertEqual(row['state'], 'WY')
+        self.assertEqual(row['date'], 20201209)
+        self.assertEqual(row['issue'], 20210315) # include today's data by default
+        self.assertEqual(row['critical_staffing_shortage_today_yes'], 8)
+        self.assertEqual(row['total_patients_hospitalized_confirmed_influenza_covid_coverage'], 56)
+        self.assertIsNone(row['critical_staffing_shortage_today_no'])
 
-      # expect 61 fields per row (63 database columns, except `id` and `record_type`)
-      self.assertEqual(len(row), 118)
+        # expect 61 fields per row (63 database columns, except `id` and `record_type`)
+        self.assertEqual(len(row), 118)
 
-    with self.subTest(name='all date batches acquired'):
-      response = Epidata.covid_hosp('WY', Epidata.range(20200101, 20210101), issues=20210313)
-      self.assertEqual(response['result'], 1)
+      with self.subTest(name='all date batches acquired'):
+        response = Epidata.covid_hosp('WY', Epidata.range(20200101, 20210101), issues=20210313)
+        self.assertEqual(response['result'], 1)
 
-    # re-acquisition of the same dataset should be a no-op
-    with self.subTest(name='second acquisition'), \
-         patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()) as mock_fetch_meta, \
-         patch.object(Network, 'fetch_dataset', return_value=self.test_utils.load_sample_dataset()) as mock_fetch:
-      acquired = Update.run()
-      self.assertFalse(acquired)
+      # re-acquisition of the same dataset should be a no-op
+      # issues: 3/13, 3/15
+      with self.subTest(name='second acquisition'), \
+          patch.object(Network, 'fetch_metadata',
+                       return_value=self.test_utils.load_sample_metadata("metadata.csv")) as mock_fetch_meta, \
+          patch.object(Network, 'fetch_dataset', side_effect=[
+            self.test_utils.load_sample_dataset(),
+            self.test_utils.load_sample_dataset()
+          ]) as mock_fetch:
+        acquired = Update.run()
+        self.assertFalse(acquired)
 
-    # make sure the data still exists
-    with self.subTest(name='final data checks'):
-      response = Epidata.covid_hosp('WY', Epidata.range(20200101, 20210101))
-      self.assertEqual(response['result'], 1)
-      self.assertEqual(len(response['epidata']), 1)
+        # make sure the data still exists
+        response = Epidata.covid_hosp('WY', Epidata.range(20200101, 20210101))
+        self.assertEqual(response['result'], 1)
+        self.assertEqual(len(response['epidata']), 1)
+
+    with freeze_time("2021-03-16"):
+      # simulate issue posted after yesterday's run
+      with self.subTest(name='late issue posted'), \
+          patch.object(Network, 'fetch_metadata',
+                      return_value=self.test_utils.load_sample_metadata("metadata2.csv")) as mock_fetch_meta, \
+          patch.object(Network, 'fetch_dataset', side_effect=[
+            self.get_modified_dataset(critical_staffing_shortage_today_yes = 9, reporting_cutoff_start="2020-12-09"),
+            self.get_modified_dataset(critical_staffing_shortage_today_yes = 10, reporting_cutoff_start="2020-12-09"),
+            self.get_modified_dataset(critical_staffing_shortage_today_yes = 11, reporting_cutoff_start="2020-12-10"),
+            self.get_modified_dataset(critical_staffing_shortage_today_yes = 12, reporting_cutoff_start="2020-12-10"),
+          ]) as mock_fetch:
+        acquired = Update.run()
+        self.assertTrue(acquired)
+        self.assertEqual(mock_fetch_meta.call_count, 1)
+
+      # make sure everything was filed correctly
+      with self.subTest(name='late issue data checks'):
+        response = Epidata.covid_hosp('WY', Epidata.range(20200101, 20210101))
+        self.assertEqual(response['result'], 1)
+        self.assertEqual(len(response['epidata']), 2)
+
+        # should have data from 03-15 00:00:01AM
+        row = response['epidata'][0]
+        self.assertEqual(row['state'], 'WY')
+        self.assertEqual(row['date'], 20201209)
+        self.assertEqual(row['issue'], 20210315) # include today's data by default
+        self.assertEqual(row['critical_staffing_shortage_today_yes'], 10)
+        self.assertEqual(row['total_patients_hospitalized_confirmed_influenza_covid_coverage'], 56)
+        self.assertIsNone(row['critical_staffing_shortage_today_no'])
+
+        # should have data from 03-16 00:00:01AM
+        row = response['epidata'][1]
+        self.assertEqual(row['state'], 'WY')
+        self.assertEqual(row['date'], 20201210)
+        self.assertEqual(row['issue'], 20210316) # include today's data by default
+        self.assertEqual(row['critical_staffing_shortage_today_yes'], 12)
+        self.assertEqual(row['total_patients_hospitalized_confirmed_influenza_covid_coverage'], 56)
+        self.assertIsNone(row['critical_staffing_shortage_today_no'])
+
+        # expect 61 fields per row (63 database columns, except `id` and `record_type`)
+        self.assertEqual(len(row), 118)
+
+      with self.subTest(name='all date batches acquired'):
+        response = Epidata.covid_hosp('WY', Epidata.range(20200101, 20210101), issues=20210316)
+        self.assertEqual(response['result'], 1)
 
 
   @freeze_time("2021-03-16")
@@ -118,7 +181,7 @@ class AcquisitionTests(unittest.TestCase):
     self.assertEqual(pre_max_issue, pd.Timestamp('1900-01-01 00:00:00'))
     with self.subTest(name='first acquisition'), \
          patch.object(Network, 'fetch_metadata', return_value=self.test_utils.load_sample_metadata()) as mock_fetch_meta, \
-         patch.object(Network, 'fetch_dataset', side_effect=[self.test_utils.load_sample_dataset("dataset0.csv")]
+         patch.object(Network, 'fetch_dataset', side_effect=[self.test_utils.load_sample_dataset()]
                       ) as mock_fetch:
       acquired = Utils.update_dataset(Database,
                                       Network,

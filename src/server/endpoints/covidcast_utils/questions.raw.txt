@@ -1,0 +1,248 @@
+---
+Overview: |
+  In collaboration with Facebook Data for Good, along with a consortium of universities and public health officials, the Delphi Group at Carnegie Mellon University conducts the COVID-19 Trends and Impact Survey to monitor the spread and impact of the COVID-19 pandemic in the United States. This survey is advertised through Facebook. It has run continuously since early April 2020. [More about the survey...](https://delphi.cmu.edu/covidcast/surveys)
+
+
+  This dashboard provides summary results from selected survey questions. **Note:** The question text below is simplified for this dashboard.
+FullSurveyLink: https://cmu-delphi.github.io/delphi-epidata/symptom-survey/coding.html
+DataAccessLink: https://cmu-delphi.github.io/delphi-epidata/symptom-survey/data-access.html
+ReferenceRawNationSignal: raw_cli
+Waves: [2020-04-06, 2020-04-15, 2020-05-21, 2020-09-08, 2020-11-24, 2020-12-19, 2021-01-12, 2021-02-08, 2021-03-02, 2021-03-02, 2021-05-20, 2022-01-30]
+Levels: [county, msa, state]  # levels which the survey should be pickable
+
+
+# common properties for all questions
+Id: fb-survey
+Unit: per 100 people
+
+
+EndOfSurveyWarning: |
+  The US COVID-19 Trends and Impact Survey will stop inviting new respondents to complete the survey on June 25, 2022. All survey data will remain available for research. For more information, see our [end-of-survey notice](https://cmu-delphi.github.io/delphi-epidata/symptom-survey/end-of-survey.html).
+EndOfSurveyNotice: |
+  The US COVID-19 Trends and Impact Survey stopped inviting new respondents to complete the survey on June 25, 2022. All survey data remains available for research. For more information, see our [end-of-survey notice](https://cmu-delphi.github.io/delphi-epidata/symptom-survey/end-of-survey.html).
+
+
+---
+Name: COVID-Like Symptoms
+Category: Symptoms
+Question: |
+  In the past 24 hours, have you or anyone in your household experienced a fever, along with cough, shortness of breath, or difficulty breathing?
+Signal: smoothed_wcli
+AddedInWave: 1
+---
+
+
+Name: COVID-Like Symptoms in Community
+Category: Symptoms
+Question: |
+  Do you personally know someone in your local community who has COVID-like symptoms?
+Signal: smoothed_whh_cmnty_cli
+AddedInWave: 2
+
+
+---
+Name: Self-Reported Mask Use
+Category: Mask Use
+Question: |
+  In the past 7 days, did you wear a mask **most or all of the time** in public?
+Signal: smoothed_wwearing_mask_7d
+AddedInWave: 8
+OldRevisions:
+ - Change: This version asked about the past 5 days instead of 7. This was changed in Wave 8 to match other questions in this survey.
+   Signal: smoothed_wwearing_mask
+   AddedInWave: 4
+ 
+---
+Name: Other People Wearing Masks
+Category: Mask Use
+Question: |
+  In the past 7 days, when you were out in public, did **most or all other people** wear masks?
+Signal: smoothed_wothers_masked_public
+AddedInWave: 11
+OldRevisions:
+ - Change: This version asked about mask-wearing in public places where social distancing is not possible. This wording was changed in Wave 11.
+   Signal: smoothed_wothers_masked
+   AddedInWave: 5
+
+
+---
+
+
+Name: COVID Vaccine Acceptance
+Category: Vaccines
+Question: |
+  Have you already received a COVID vaccine, do you have an appointment to receive a COVID vaccine, or if a vaccine were offered to you today, would you **definitely** or **probably** choose to get vaccinated?
+Signal: smoothed_wcovid_vaccinated_appointment_or_accept
+AddedInWave: 11
+OldRevisions:
+ - Change: This version asked whether respondents received a vaccine or would definitely or probably choose to get vaccinated. Appointments were not included in the calculation because only vaccine-accepting respondents were asked whether they have an appointment to get vaccinated. This was changed in Wave 11 to ask all non-vaccinated respondents whether they have an appointment to get vaccinated.
+   Signal: smoothed_wcovid_vaccinated_or_accept
+   AddedInWave: 6
+
+
+---
+Name: In-Person Schooling
+Category: Social Distancing
+Question: |
+  Does the oldest child in your household (pre-K–grade 12) go to in-person classes full-time?
+Signal: smoothed_winperson_school_fulltime_oldest
+AddedInWave: 12
+Unit: per 100 people with school-age children
+OldRevisions:
+ - Change: This version asked if any children in the household attended in-person classes. Wave 12 changed this item to ask only about the oldest child.
+   Signal: smoothed_winperson_school_fulltime
+   AddedInWave: 5
+---
+Name: Went to Essential Store
+Category: Social Distancing
+Question: |
+  In the past 24 hours, did you go to an indoor market, grocery store, or pharmacy?
+Signal: smoothed_wshop_indoors_1d
+AddedInWave: 10
+OldRevisions:
+ -  Change: This version did not include “indoor” in the prompt. Wave 10 changed this item to focus on indoor activities.
+    Signal: smoothed_wshop_1d
+    AddedInWave: 4
+
+
+---
+Name: Used Public Transit
+Category: Social Distancing
+Question: |
+  In the past 24 hours, did you use public transit?
+Signal: smoothed_wpublic_transit_1d
+AddedInWave: 4
+
+
+---
+Name: Went to Work or School
+Category: Social Distancing
+Question: |
+  In the past 24 hours, did you work or go to school indoors outside the place where you are currently staying?
+Signal: smoothed_wwork_outside_home_indoors_1d
+AddedInWave: 10
+OldRevisions:
+ - Change: This version did not include “indoors” in the prompt. Wave 10 changed this item to focus on indoor work and school.
+   Signal: smoothed_wwork_outside_home_1d
+   AddedInWave: 4
+
+---
+Name: Spent Time with Others
+Category: Social Distancing
+Question: |
+  In the past 24 hours, did you spend time indoors with someone who isn’t currently staying with you?
+Signal: smoothed_wspent_time_indoors_1d
+AddedInWave: 10
+OldRevisions:
+ - Change: This version did not include “indoors” in the prompt. Wave 10 changed this item to focus on indoor activities.
+   Signal: smoothed_wspent_time_1d
+   AddedInWave: 4
+  
+
+
+---
+Name: Visited Restaurant, Bar, or Cafe
+Category: Social Distancing
+Question: |
+  In the past 24 hours, did you have a meal or drink indoors at a bar, restaurant, or cafe?
+Signal: smoothed_wrestaurant_indoors_1d
+AddedInWave: 10
+OldRevisions:
+ - Change: This version did not include “indoors” in the prompt. Wave 10 changed this item to focus on drinking and dining indoors, rather than take-out or outdoor dining.
+   AddedInWave: 4
+   Signal: smoothed_wrestaurant_1d
+
+---
+
+
+Name: Attended Large Event
+Category: Social Distancing
+Question: |
+  In the past 24 hours, did you attend an indoor event with more than 10 people?
+Signal: smoothed_wlarge_event_indoors_1d
+AddedInWave: 10
+OldRevisions:
+ - Change: This version did not include “indoors” in the prompt. Wave 10 changed this item to focus on indoor events.
+   AddedInWave: 4
+   Signal: smoothed_wlarge_event_1d
+
+
+
+---
+Name: Traveled Out of State
+Category: Social Distancing
+Question: |
+  In the past 7 days, have you traveled outside of your state?
+Signal: smoothed_wtravel_outside_state_7d
+AddedInWave: 10
+OldRevisions:
+ - Change: This version asked about the past 5 days, rather than 7. This was changed in Wave 10 to be consistent with other items on the survey.
+   Signal: smoothed_wtravel_outside_state_5d
+   AddedInWave: 1
+ 
+
+
+
+
+---
+Name: Felt Anxious
+Category: Mental Health
+Question: |
+  In the past 7 days, did you feel anxious **most or all of the time**?
+Signal: smoothed_wanxious_7d
+AddedInWave: 10
+OldRevisions:
+ - Change: This version asked about the past 5 days, rather than 7. This was changed in Wave 10 to be consistent with other items on the survey.
+   Signal: smoothed_wanxious_5d
+   AddedInWave: 4
+---
+Name: Felt Depressed
+Category: Mental Health
+Question: |
+  In the past 7 days, did you feel depressed **most or all of the time**?
+Signal: smoothed_wdepressed_7d
+AddedInWave: 10
+OldRevisions:
+ - Change: This version asked about the past 5 days, rather than 7. This was changed in Wave 10 to be consistent with other items on the survey.
+   Signal: smoothed_wdepressed_5d
+   AddedInWave: 4
+
+
+---
+Name: Worried About Getting COVID
+Category: Mental Health
+Question: |
+   Do you worry a great deal or a moderate amount about catching COVID-19?
+Signal: smoothed_wworried_catch_covid
+AddedInWave: 11
+
+
+---
+Name: Worried About Finances
+Category: Mental Health
+Question: |
+  Do you feel **very or somewhat worried** about your household’s finances for the next month?
+Signal: smoothed_wworried_finances
+AddedInWave: 4
+
+
+---
+
+
+Name: Tested in the Last 14 Days
+Category: Testing
+Question: |
+  In the past 14 days, did you get tested for COVID-19?
+Signal: smoothed_wtested_14d
+AddedInWave: 4
+
+
+---
+
+
+Name: Test Positivity Rate
+Category: Testing
+Question: |
+  If you were tested for COVID-19 in the past 14 days, was the test positive?
+Signal: smoothed_wtested_positive_14d
+AddedInWave: 4

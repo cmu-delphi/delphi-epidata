@@ -30,7 +30,7 @@ This data source provides metadata about healthcare facilities in the US.
 
 # The API
 
-The base URL is: https://delphi.cmu.edu/epidata/covid_hosp_facility_lookup/
+The base URL is: https://api.delphi.cmu.edu/epidata/covid_hosp_facility_lookup/
 
 See [this documentation](README.md) for details on specifying locations and dates.
 
@@ -72,7 +72,7 @@ Use the `hospital_pk` value when querying
 # Example URLs
 
 ### Lookup facilities in the city of Southlake (TX)
-https://delphi.cmu.edu/epidata/covid_hosp_facility_lookup/?city=southlake
+https://api.delphi.cmu.edu/epidata/covid_hosp_facility_lookup/?city=southlake
 
 ```json
 {

@@ -1,10 +1,8 @@
 from . import (
-    afhsb,
     cdc,
     covid_hosp_facility_lookup,
     covid_hosp_facility,
     covid_hosp_state_timeseries,
-    covidcast_nowcast,
     covidcast_meta,
     covidcast,
     delphi,
@@ -19,7 +17,6 @@ from . import (
     ght,
     ilinet,
     kcdc_ili,
-    meta_afhsb,
     meta_norostat,
     meta,
     nidss_dengue,
@@ -36,12 +33,10 @@ from . import (
 )
 
 endpoints = [
-    afhsb,
     cdc,
     covid_hosp_facility_lookup,
     covid_hosp_facility,
     covid_hosp_state_timeseries,
-    covidcast_nowcast,
     covidcast_meta,
     covidcast,
     delphi,
@@ -56,7 +51,6 @@ endpoints = [
     ght,
     ilinet,
     kcdc_ili,
-    meta_afhsb,
     meta_norostat,
     meta,
     nidss_dengue,

@@ -4,16 +4,23 @@ from typing import Any, Dict, Iterable, List, Optional, Sequence
 import unittest
 
 import pandas as pd
+from redis import Redis
 
 from delphi_utils import Nans
-from delphi.epidata.acquisition.covidcast.covidcast_row import CovidcastRow
+from delphi.epidata.common.covidcast_row import CovidcastRow
 from delphi.epidata.acquisition.covidcast.database import Database
+from delphi.epidata.server._config import REDIS_HOST, REDIS_PASSWORD
 from delphi.epidata.server.utils.dates import day_to_time_value, time_value_to_day
 import delphi.operations.secrets as secrets
 
 # all the Nans we use here are just one value, so this is a shortcut to it:
 nmv = Nans.NOT_MISSING.value
 
+# TODO replace these real geo_values with fake values, and use patch and mock to mock the return values of
+# delphi_utils.geomap.GeoMapper().get_geo_values(geo_type) in parse_geo_sets() of _params.py
+
+FIPS = ['04019', '19143', '29063', '36083'] # Example list of valid FIPS codes as strings
+MSA = ['40660', '44180', '48620', '49420'] # Example list of valid MSA codes as strings
 
 class CovidcastTestRow(CovidcastRow):
     @staticmethod
@@ -22,9 +29,9 @@ class CovidcastTestRow(CovidcastRow):
             "source": "src",
             "signal": "sig",
             "time_type": "day",
-            "geo_type": "county",
+            "geo_type": "msa",
             "time_value": 2020_02_02,
-            "geo_value": "01234",
+            "geo_value": MSA[0],
             "value": 10.0,
             "stderr": 10.0,
             "sample_size": 10.0,
@@ -161,6 +168,12 @@ class CovidcastBase(unittest.TestCase):
         self.localSetUp()
         self._db._connection.commit()
 
+        # clear all rate-limiting info from redis
+        r = Redis(host=REDIS_HOST, password=REDIS_PASSWORD)
+        for k in r.keys("LIMITER/*"):
+            r.delete(k)
+
+
     def tearDown(self):
         # close and destroy conenction to the database
         self.localTearDown()
@@ -168,12 +181,12 @@ class CovidcastBase(unittest.TestCase):
         del self._db
 
     def localSetUp(self):
-        # stub; override in subclasses to perform custom setup. 
+        # stub; override in subclasses to perform custom setup.
         # runs after tables have been truncated but before database changes have been committed
         pass
 
     def localTearDown(self):
-        # stub; override in subclasses to perform custom teardown. 
+        # stub; override in subclasses to perform custom teardown.
         # runs after database changes have been committed
         pass
 

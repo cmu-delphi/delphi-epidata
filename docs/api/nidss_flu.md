@@ -25,7 +25,7 @@ Outpatient ILI from Taiwan's National Infectious Disease Statistics System (NIDS
 
 # The API
 
-The base URL is: https://delphi.cmu.edu/epidata/nidss_flu/
+The base URL is: https://api.delphi.cmu.edu/epidata/nidss_flu/
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -67,7 +67,7 @@ If neither is specified, the current issues are used.
 # Example URLs
 
 ### NIDSS Flu on 2015w01 (nationwide)
-https://delphi.cmu.edu/epidata/nidss_flu/?regions=nationwide&epiweeks=201501
+https://api.delphi.cmu.edu/epidata/nidss_flu/?regions=nationwide&epiweeks=201501
 
 ```json
 {

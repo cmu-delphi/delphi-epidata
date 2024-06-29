@@ -1,22 +1,16 @@
-"""Unit tests for granular sensor authentication in api.php."""
-
 # standard library
 import unittest
-import base64
 
 from flask import request
 
 # from flask.testing import FlaskClient
 from delphi.epidata.server._common import app
 from delphi.epidata.server._validate import (
-    resolve_auth_token,
-    check_auth_token,
     require_all,
     require_any,
 )
 from delphi.epidata.server._exceptions import (
     ValidationFailedException,
-    UnAuthenticatedException,
 )
 
 # py3tester coverage target
@@ -32,47 +26,7 @@ class UnitTests(unittest.TestCase):
         app.config["TESTING"] = True
         app.config["WTF_CSRF_ENABLED"] = False
         app.config["DEBUG"] = False
-
-    def test_resolve_auth_token(self):
-        with self.subTest("no auth"):
-            with app.test_request_context("/"):
-                self.assertIsNone(resolve_auth_token(request))
-
-        with self.subTest("param"):
-            with app.test_request_context("/?auth=abc"):
-                self.assertEqual(resolve_auth_token(request), "abc")
-
-        with self.subTest("bearer token"):
-            with app.test_request_context("/", headers={"Authorization": "Bearer abc"}):
-                self.assertEqual(resolve_auth_token(request), "abc")
-
-        with self.subTest("basic token"):
-            userpass = base64.b64encode(b"epidata:abc").decode("utf-8")
-            with app.test_request_context(
-                "/", headers={"Authorization": f"Basic {userpass}"}
-            ):
-                self.assertEqual(resolve_auth_token(request), "abc")
-
-    def test_check_auth_token(self):
-        with self.subTest("no auth but optional"):
-            with app.test_request_context("/"):
-                self.assertFalse(check_auth_token(request, "abc", True))
-        with self.subTest("no auth but required"):
-            with app.test_request_context("/"):
-                self.assertRaises(
-                    ValidationFailedException, lambda: check_auth_token(request, "abc")
-                )
-        with self.subTest("auth and required"):
-            with app.test_request_context("/?auth=abc"):
-                self.assertTrue(check_auth_token(request, "abc"))
-        with self.subTest("auth and required but wrong"):
-            with app.test_request_context("/?auth=abc"):
-                self.assertRaises(
-                    UnAuthenticatedException, lambda: check_auth_token(request, "def")
-                )
-        with self.subTest("auth and required but wrong but optional"):
-            with app.test_request_context("/?auth=abc"):
-                self.assertFalse(check_auth_token(request, "def", True))
+        self.client = app.test_client()
 
     def test_require_all(self):
         with self.subTest("all given"):
@@ -107,3 +61,39 @@ class UnitTests(unittest.TestCase):
         with self.subTest("one options given with is empty but ok"):
             with app.test_request_context("/?abc="):
                 self.assertTrue(require_any(request, "abc", empty=True))
+
+    def test_origin_headers(self):
+        with self.subTest("referer only"):
+            with self.assertLogs("server_api", level='INFO') as logs:
+                self.client.get("/signal_dashboard_status", headers={
+                    "Referer": "https://test.com/test"
+                })
+            output = logs.output
+            self.assertEqual(len(output), 2) # [before_request, after_request]
+            self.assertIn("Received API request", output[0])
+            self.assertIn("\"referrer\": \"https://test.com/test\"", output[0])
+            self.assertIn("Served API request", output[1])
+            self.assertIn("\"referrer\": \"https://test.com/test\"", output[1])
+        with self.subTest("origin only"):
+            with self.assertLogs("server_api", level='INFO') as logs:
+                self.client.get("/signal_dashboard_status", headers={
+                    "Origin": "https://test.com"
+                })
+            output = logs.output
+            self.assertEqual(len(output), 2) # [before_request, after_request]
+            self.assertIn("Received API request", output[0])
+            self.assertIn("\"referrer\": \"https://test.com\"", output[0])
+            self.assertIn("Served API request", output[1])
+            self.assertIn("\"referrer\": \"https://test.com\"", output[1])
+        with self.subTest("referer overrides origin"):
+            with self.assertLogs("server_api", level='INFO') as logs:
+                self.client.get("/signal_dashboard_status", headers={
+                    "Referer": "https://test.com/test",
+                    "Origin": "https://test.com"
+                })
+            output = logs.output
+            self.assertEqual(len(output), 2) # [before_request, after_request]
+            self.assertIn("Received API request", output[0])
+            self.assertIn("\"referrer\": \"https://test.com/test\"", output[0])
+            self.assertIn("Served API request", output[1])
+            self.assertIn("\"referrer\": \"https://test.com/test\"", output[1])

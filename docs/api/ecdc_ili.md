@@ -19,7 +19,7 @@ ECDC ILI data from ECDC website. ... <!-- TODO -->
 
 # The API
 
-The base URL is: https://delphi.cmu.edu/epidata/ecdc_ili/
+The base URL is: https://api.delphi.cmu.edu/epidata/ecdc_ili/
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 

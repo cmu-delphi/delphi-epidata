@@ -26,10 +26,100 @@ Pandemic"](https://www.pnas.org/topic/548) in *PNAS*:
 
 Research publications using the survey data include:
 
+- K. Sasse, R. Mahabir, O. Gkountouna, A. Crooks, A. Croitoru (2024).
+  [Understanding the determinants of vaccine hesitancy in the United
+  States: A comparison of social surveys and social media](https://doi.org/10.1371/journal.pone.0301488).
+  *PLoS ONE* 19(6), e0301488. 
+- Y. Yang, W. Dempsey, P. Han, Y. Deshmukh, S. Richardson, B. Tom, and B. Mukherjee
+  (2024). [Exploring the Big Data Paradox for various estimands using vaccination
+  data from the global COVID-19 Trends and Impact Survey (CTIS)](https://doi.org/10.1126/sciadv.adj0266).
+  *Science Advances* 10 (22).
+- Perofsky, A.C., Hansen, C.L., Burstein, R. et al (2024). [Impacts of human
+  mobility on the citywide transmission dynamics of 18 respiratory viruses
+  in pre- and post-COVID-19 pandemic years](https://doi.org/10.1038/s41467-024-48528-2).
+  *Nature Communications* 15, 4164.
+- Z. Yang, R. Krishnan, and B. Li (2024). [The interplay between individual
+  mobility, health risk, and economic choice: A holistic model for COVID-19
+  policy intervention](https://doi.org/10.1287/ijds.2023.0013). *INFORMS
+  Journal on Data Science*.
+- A. Srivastava, J. M. Ramirez, S. Díaz-Aranda, J. Aguilar, A. F. Anta, A. Ortega,
+  and R. E. Lillo (2024). [Nowcasting temporal trends using indirect surveys](https://doi.org/10.1609/aaai.v38i20.30242).
+  In *Proceedings of the 38th AAAI Conference on Artificial Intelligence* 38,
+  22359–22367.
+- P. Porebski, S. Venkatramanan, A. Adiga, B. Klahn, B. Hurt, M. L. Wilson,
+  J. Chen, A. Vullikanti, M. Marathe & B. Lewis (2024). [Data-driven
+  mechanistic framework with stratified immunity and effective transmissibility
+  for COVID-19 scenario projections](https://doi.org/10.1016/j.epidem.2024.100761).
+  *Epidemics* 100761.
+- V. Nelson, B. Bashyal, P.-N. Tan & Y. A. Argyris (2024). [Vaccine rhetoric
+  on social media and COVID-19 vaccine uptake rates: A triangulation using
+  self-reported vaccine acceptance](https://doi.org/10.1016/j.socscimed.2024.116775).
+  *Social Science & Medicine* 116775.
+- R.R. Andridge (2024). [Using proxy pattern-mixture models to explain bias in
+  estimates of COVID-19 vaccine uptake from two large surveys](https://doi.org/10.1093/jrsssa/qnae005).
+  *Journal of the Royal Statistical Society Series A: Statistics in Society*.
+- H. Bui, S. Ekşioğlu, R. Proano, and S. N. Pinkley (2024). [An Analysis of
+  COVID-19 Vaccine Hesitancy in the U.S.](https://doi.org/10.1080/24725854.2024.2301966).
+  *IISE Transactions*.
+- de Vries, M., Kim, J.Y. & Han, H. (2023). [The unequal landscape of civic
+  opportunity in America](https://doi.org/10.1038/s41562-023-01743-1). *Nature
+  Human Behavior* 8, 256-263. 
+- E. Tuzhilina, T. J. Hastie, D. J. McDonald, J. K. Tay & R. Tibshirani (2023).
+  [Smooth multi-period forecasting with application to prediction of COVID-19
+  cases](https://doi.org/10.1080/10618600.2023.2285337). *Journal of Computational
+  and Graphical Statistics*.
+- W. Dempsey (2023). [Addressing selection bias and measurement error in
+  COVID-19 case count data using auxiliary information](https://doi.org/10.1214/23-AOAS1744).
+  *Annals of Applied Statistics* 17 (4), 2903-2923.
+- Ma, M.Z., Chen, S.X. (2023). [Beyond the surface: accounting for confounders
+  in understanding the link between collectivism and COVID-19 pandemic in the
+  United States](https://doi.org/10.1186/s12889-023-16384-2). *BMC Public
+  Health* 23, 1513.
+- C.K. Ettman, E. Badillo Goicoechea, and E.A. Stuart (2023). [Evolution of
+  depression and anxiety over the COVID-19 pandemic and across demographic
+  groups in a large sample of U.S. adults](https://doi.org/10.1016/j.focus.2023.100140).
+  *AJPM Focus* 2 (4), 100140.
+- M. Rubinstein, Z. Branson, and E.H. Kennedy (2023). [Heterogeneous
+  interventional effects with multiple mediators: Semiparametric and
+  nonparametric approaches](https://doi.org/10.1515/jci-2022-0070). *Journal of
+  Causal Inference* 11 (1), 20220070. 
+- Uyheng, J., Robertson, D.C. & Carley, K.M. (2023). [Bridging online and offline
+  dynamics of the face mask infodemic](https://doi.org/10.1186/s44247-023-00026-z).
+  *BMC Digital Health* 1, 27. 
+- Kobayashi H, Saenz-Escarcega R, Fulk A, Agusto FB (2023). [Understanding
+  mental health trends during COVID-19 pandemic in the United States using
+  network analysis](https://doi.org/10.1371/journal.pone.0286857). *PLoS
+  ONE* 18(6): e0286857. 
+- GK Charles, SP Braunstein, JL Barker, et al (2023). [How do psychobehavioural
+  variables shed light on heterogeneity in COVID-19 vaccine acceptance? Evidence
+  from United States general population surveys on a probability panel and
+  social media](https://doi.org/10.1136/bmjopen-2022-066897). *BMJ Open*
+  13:e066897.
+- S. Soorapanth, R. Cheung, X. Zhang, A. H. Mokdad, G. A. Mensah (2023).
+  [Rural–Urban Differences in Vaccination and Hesitancy Rates and Trust: US
+  COVID-19 Trends and Impact Survey on a Social Media Platform, May 2021–April
+  2022](https://doi.org/10.2105/AJPH.2023.307274). *American Journal of Public
+  Health* 113 (6), 680-688.
+  - See also the associated editorial: T. Callaghan (2023). [Vaccine Uptake and
+    Hesitancy in Rural America in the Wake of the COVID-19
+    Pandemic](https://doi.org/10.2105/AJPH.2023.307305). *American Journal of
+    Public Health* 113 (6), 615-617.
+- M. Rubinstein, A. Haviland, and J. Breslau (2023). [The effect of COVID-19
+  vaccinations on self-reported depression and anxiety during February
+  2021](https://doi.org/10.1080/2330443X.2023.2190008). *Statistics and Public
+  Policy* 10 (1), 2190008.
+- Rönn MM, Menzies NA, Salomon JA (2023). [Vaccination and voting patterns in
+  the United States: analysis of COVID-19 and flu surveys from 2010 to
+  2022](https://doi.org/10.1016/j.amepre.2023.03.001). *American Journal of
+  Preventive Medicine* 65 (3), 458-466.
+- Taube JC, Susswein Z, Bansal S (2023). [Spatiotemporal Trends in Self-Reported
+  Mask-Wearing Behavior in the United States: Analysis of a Large
+  Cross-sectional Survey](https://doi.org/10.2196/42128). *JMIR Public Health
+  and Surveillance* 9:e42128.
 - Rebecca L. Weintraub et al (2023). [Identifying COVID-19 Vaccine Deserts and
   Ways to Reduce Them: A Digital Tool to Support Public Health
   Decision-Making](https://doi.org/10.2105/AJPH.2022.307198). *American Journal
-  of Public Health*.
+  of Public Health* 113 (4), 363-367.
 - Anzalone AJ, Sun J, Vinson AJ, Beasley WH, Hillegass WB, Murray K, et al.
   (2023). [Community risks for SARS-CoV-2 infection among fully vaccinated US
   adults by rurality: A retrospective cohort study from the National COVID
@@ -38,25 +128,25 @@ Research publications using the survey data include:
 - Rufino, J., Baquero, C., Frey, D. et al (2023). [Using survey data to estimate
   the impact of the omicron variant on vaccine efficacy against COVID-19
   infection](https://doi.org/10.1038/s41598-023-27951-3). *Scientific Reports*
-  13, 900 (2023).
+  13, 900.
+- J. G. Lu (2023). [Two large-scale global studies on COVID-19 vaccine hesitancy
+  over time: Culture, uncertainty avoidance, and vaccine side-effect
+  concerns](https://doi.org/10.1037/pspa0000320). *Journal of Personality and
+  Social Psychology* 124 (4), 683-706.
+- C. Lupton-Smith, E. Badillo Goicoechea, M. Collins, J. Lessler, M. K.
+  Grabowski & E. A. Stuart (2023). [Consistency between Household and County
+  Measures of Onsite Schooling during the COVID-19
+  Pandemic](https://doi.org/10.1080/19345747.2022.2131660). *Journal of Research
+  on Educational Effectiveness* 16 (3), 419-441.
 - Rader, B., Astley, C.M., Sewalk, K. et al (2022). [Spatial modeling of vaccine
   deserts as barriers to controlling
   SARS-CoV-2](https://doi.org/10.1038/s43856-022-00183-8). *Communications
   Medicine* 2, 141.
-- C. Lupton-Smith, E. Badillo Goicoechea, M. Collins, J. Lessler, M. K.
-  Grabowski & E. A. Stuart (2022). [Consistency between Household and County
-  Measures of Onsite Schooling during the COVID-19
-  Pandemic](https://doi.org/10.1080/19345747.2022.2131660). *Journal of Research
-  on Educational Effectiveness*.
 - Nguyen, Q.C., Yardi, I., Gutierrez, F.X.M. et al. (2022). [Leveraging 13
   million responses to the U.S. COVID-19 Trends and Impact Survey to examine
   vaccine hesitancy, vaccination, and mask wearing, January 2021-February
   2022](https://doi.org/10.1186/s12889-022-14286-3). *BMC Public Health* 22,
   1911.
-- J. G. Lu (2022). [Two large-scale global studies on COVID-19 vaccine hesitancy
-  over time: Culture, uncertainty avoidance, and vaccine side-effect
-  concerns](https://doi.org/10.1037/pspa0000320). *Journal of Personality and
-  Social Psychology*.
 - J. M. Cox-Ganser, P. K. Henneberger, D. N. Weissman, G. Guthrie, and C. P.
   Groth (2022). [COVID-19 test positivity by occupation using the Delphi US
   COVID-19 Trends and Impact Survey, September–November

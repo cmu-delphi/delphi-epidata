@@ -3,6 +3,7 @@
 # standard library
 import time
 from json import JSONDecodeError
+from requests.models import Response
 from unittest.mock import MagicMock, patch
 
 # first party
@@ -11,11 +12,10 @@ from aiohttp.client_exceptions import ClientResponseError
 
 # third party
 import delphi.operations.secrets as secrets
-from delphi.epidata.acquisition.covidcast.covidcast_meta_cache_updater import main as update_covidcast_meta_cache
-from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase, CovidcastTestRow
+from delphi.epidata.maintenance.covidcast_meta_cache_updater import main as update_covidcast_meta_cache
+from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase, CovidcastTestRow, FIPS, MSA
 from delphi.epidata.client.delphi_epidata import Epidata
 from delphi_utils import Nans
-
 
 # py3tester coverage target
 __test_target__ = 'delphi.epidata.client.delphi_epidata'
@@ -25,9 +25,9 @@ nmv = Nans.NOT_MISSING.value
 def fake_epidata_endpoint(func):
   """This can be used as a decorator to enable a bogus Epidata endpoint to return 404 responses."""
   def wrapper(*args):
-    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/fake_api.php'
+    Epidata.BASE_URL = 'http://delphi_web_epidata/fake_epidata'
     func(*args)
-    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata'
   return wrapper
 
 class DelphiEpidataPythonClientTests(CovidcastBase):
@@ -40,7 +40,10 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     self._db._cursor.execute('update covidcast_meta_cache set timestamp = 0, epidata = "[]"')
 
     # use the local instance of the Epidata API
-    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata/api.php'
+    Epidata.BASE_URL = 'http://delphi_web_epidata/epidata'
+    Epidata.auth = ('epidata', 'key')
+    Epidata.debug = False
+    Epidata.sandbox = False
 
     # use the local instance of the epidata database
     secrets.db.host = 'delphi_database_epidata'
@@ -65,8 +68,8 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
       )
 
       expected = [
-        row_latest_issue.as_api_compatibility_row_dict(),
-        rows[-1].as_api_compatibility_row_dict()
+        row_latest_issue.as_api_row_dict(),
+        rows[-1].as_api_row_dict()
       ]
 
       self.assertEqual(response['epidata'], expected)
@@ -85,10 +88,10 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
 
       expected = [{
         rows[0].signal: [
-          row_latest_issue.as_api_compatibility_row_dict(ignore_fields=['signal']),
+          row_latest_issue.as_api_row_dict(ignore_fields=['signal']),
         ],
         rows[-1].signal: [
-          rows[-1].as_api_compatibility_row_dict(ignore_fields=['signal']),
+          rows[-1].as_api_row_dict(ignore_fields=['signal']),
         ],
       }]
 
@@ -105,7 +108,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
         **self.params_from_row(rows[0])
       )
 
-      expected = [row_latest_issue.as_api_compatibility_row_dict()]
+      expected = [row_latest_issue.as_api_row_dict()]
 
       # check result
       self.assertEqual(response_1, {
@@ -120,7 +123,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
         **self.params_from_row(rows[0], as_of=rows[1].issue)
       )
 
-      expected = [rows[1].as_api_compatibility_row_dict()]
+      expected = [rows[1].as_api_row_dict()]
 
       # check result
       self.maxDiff=None
@@ -130,6 +133,14 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
         'message': 'success',
       })
 
+    with self.subTest(name='bad as-of date'):
+      # fetch data, specifying as_of
+      as_of_response = Epidata.covidcast(
+        **self.params_from_row(rows[0], as_of="20230101-20230102")
+      )
+      self.assertEqual(as_of_response, {"epidata": [], "message": "not a valid date: 20230101-20230102", "result": -1})
+
+
     with self.subTest(name='request a range of issues'):
       # fetch data, specifying issue range, not lag
       response_2 = Epidata.covidcast(
@@ -137,8 +148,8 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
       )
 
       expected = [
-        rows[0].as_api_compatibility_row_dict(),
-        rows[1].as_api_compatibility_row_dict()
+        rows[0].as_api_row_dict(),
+        rows[1].as_api_row_dict()
       ]
 
       # check result
@@ -154,7 +165,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
         **self.params_from_row(rows[0], lag=2)
       )
 
-      expected = [row_latest_issue.as_api_compatibility_row_dict()]
+      expected = [row_latest_issue.as_api_row_dict()]
 
       # check result
       self.assertDictEqual(response_3, {
@@ -170,7 +181,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
       )
 
       # check result
-      self.assertEqual(response_1, {'message': 'no results', 'result': -2})
+      self.assertEqual(response_1, {'epidata': [], 'message': 'no results', 'result': -2})
 
   @patch('requests.post')
   @patch('requests.get')
@@ -196,7 +207,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
       mock_response = MagicMock()
       mock_response.status_code = 200
       get.side_effect = [JSONDecodeError('Expecting value', "",  0), mock_response]
-      response = Epidata._request(None)
+      response = Epidata._request("")
       self.assertEqual(get.call_count, 2)
       self.assertEqual(response, mock_response.json())
 
@@ -207,11 +218,87 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
       get.side_effect = [JSONDecodeError('Expecting value', "",  0),
                          JSONDecodeError('Expecting value', "",  0),
                          mock_response]
-      response = Epidata._request(None)
+      response = Epidata._request("")
       self.assertEqual(get.call_count, 2)  # 2 from previous test + 2 from this one
       self.assertEqual(response,
                        {'result': 0, 'message': 'error: Expecting value: line 1 column 1 (char 0)'}
                        )
+
+  @patch('requests.post')
+  @patch('requests.get')
+  def test_debug(self, get, post):
+    """Test that in debug mode request params are correctly logged."""
+    class MockResponse:
+      def __init__(self, content, status_code):
+          self.content = content
+          self.status_code = status_code
+      def raise_for_status(self): pass
+
+    Epidata.debug = True
+
+    try:
+      with self.subTest(name='test multiple GET'):
+        with self.assertLogs('delphi_epidata_client', level='INFO') as logs:
+          get.reset_mock()
+          get.return_value = MockResponse(b'{"key": "value"}', 200)
+          Epidata._request_with_retry("test_endpoint1", params={"key1": "value1"})
+          Epidata._request_with_retry("test_endpoint2", params={"key2": "value2"})
+
+        output = logs.output
+        self.assertEqual(len(output), 4) # [request, response, request, response]
+        self.assertIn("Sending GET request", output[0])
+        self.assertIn("\"url\": \"http://delphi_web_epidata/epidata/test_endpoint1/\"", output[0])
+        self.assertIn("\"params\": {\"key1\": \"value1\"}", output[0])
+        self.assertIn("Received response", output[1])
+        self.assertIn("\"status_code\": 200", output[1])
+        self.assertIn("\"len\": 16", output[1])
+        self.assertIn("Sending GET request", output[2])
+        self.assertIn("\"url\": \"http://delphi_web_epidata/epidata/test_endpoint2/\"", output[2])
+        self.assertIn("\"params\": {\"key2\": \"value2\"}", output[2])
+        self.assertIn("Received response", output[3])
+        self.assertIn("\"status_code\": 200", output[3])
+        self.assertIn("\"len\": 16", output[3])
+
+      with self.subTest(name='test GET and POST'):
+        with self.assertLogs('delphi_epidata_client', level='INFO') as logs:
+          get.reset_mock()
+          get.return_value = MockResponse(b'{"key": "value"}', 414)
+          post.reset_mock()
+          post.return_value = MockResponse(b'{"key": "value"}', 200)
+          Epidata._request_with_retry("test_endpoint3", params={"key3": "value3"})
+
+        output = logs.output
+        self.assertEqual(len(output), 3) # [request, response, request, response]
+        self.assertIn("Sending GET request", output[0])
+        self.assertIn("\"url\": \"http://delphi_web_epidata/epidata/test_endpoint3/\"", output[0])
+        self.assertIn("\"params\": {\"key3\": \"value3\"}", output[0])
+        self.assertIn("Received 414 response, retrying as POST request", output[1])
+        self.assertIn("\"url\": \"http://delphi_web_epidata/epidata/test_endpoint3/\"", output[1])
+        self.assertIn("\"params\": {\"key3\": \"value3\"}", output[1])
+        self.assertIn("Received response", output[2])
+        self.assertIn("\"status_code\": 200", output[2])
+        self.assertIn("\"len\": 16", output[2])
+    finally: # make sure this global is always reset
+      Epidata.debug = False
+
+  @patch('requests.post')
+  @patch('requests.get')
+  def test_sandbox(self, get, post):
+    """Test that in debug + sandbox mode request params are correctly logged, but no queries are sent."""
+    Epidata.debug = True
+    Epidata.sandbox = True
+    try:
+      with self.assertLogs('delphi_epidata_client', level='INFO') as logs:
+        Epidata.covidcast('src', 'sig', 'day', 'county', 20200414, '01234')
+      output = logs.output
+      self.assertEqual(len(output), 1)
+      self.assertIn("Sending GET request", output[0])
+      self.assertIn("\"url\": \"http://delphi_web_epidata/epidata/covidcast/\"", output[0])
+      get.assert_not_called()
+      post.assert_not_called()
+    finally: # make sure these globals are always reset
+      Epidata.debug = False
+      Epidata.sandbox = False
 
   def test_geo_value(self):
     """test different variants of geo types: single, *, multi."""
@@ -219,16 +306,16 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     # insert placeholder data: three counties, three MSAs
     N = 3
     rows = [
-      CovidcastTestRow.make_default_row(geo_type="county", geo_value=str(i)*5, value=i)
+      CovidcastTestRow.make_default_row(geo_type="county", geo_value=FIPS[i], value=i)
       for i in range(N)
     ] + [
-      CovidcastTestRow.make_default_row(geo_type="msa", geo_value=str(i)*5, value=i*10)
+      CovidcastTestRow.make_default_row(geo_type="msa", geo_value=MSA[i], value=i*10)
       for i in range(N)
     ]
     self._insert_rows(rows)
 
     counties = [
-      rows[i].as_api_compatibility_row_dict() for i in range(N)
+      rows[i].as_api_row_dict() for i in range(N)
     ]
 
     def fetch(geo):
@@ -241,26 +328,28 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     self.assertEqual(request['message'], 'success')
     self.assertEqual(request['epidata'], counties)
     # test fetch a specific region
-    request = fetch('11111')
+    request = fetch([FIPS[0]])
     self.assertEqual(request['message'], 'success')
-    self.assertEqual(request['epidata'], [counties[1]])
+    self.assertEqual(request['epidata'], [counties[0]])
     # test fetch a specific yet not existing region
     request = fetch('55555')
-    self.assertEqual(request['message'], 'no results')
+    self.assertEqual(request['message'], 'Invalid geo_value(s) 55555 for the requested geo_type county')
     # test fetch a multiple regions
-    request = fetch(['11111', '22222'])
+    request = fetch([FIPS[0], FIPS[1]])
     self.assertEqual(request['message'], 'success')
-    self.assertEqual(request['epidata'], [counties[1], counties[2]])
+    self.assertEqual(request['epidata'], [counties[0], counties[1]])
     # test fetch a multiple regions in another variant
-    request = fetch(['00000', '22222'])
+    request = fetch([FIPS[0], FIPS[2]])
     self.assertEqual(request['message'], 'success')
     self.assertEqual(request['epidata'], [counties[0], counties[2]])
     # test fetch a multiple regions but one is not existing
-    request = fetch(['11111', '55555'])
-    self.assertEqual(request['message'], 'success')
-    self.assertEqual(request['epidata'], [counties[1]])
+    request = fetch([FIPS[0], '55555'])
+    self.assertEqual(request['message'], 'Invalid geo_value(s) 55555 for the requested geo_type county')
     # test fetch a multiple regions but specify no region
     request = fetch([])
+    self.assertEqual(request['message'], 'geo_value is empty for the requested geo_type county!')
+    # test fetch a region with no results
+    request = fetch([FIPS[3]])
     self.assertEqual(request['message'], 'no results')
 
   def test_covidcast_meta(self):
@@ -325,10 +414,10 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     # insert placeholder data: three counties, three MSAs
     N = 3
     rows = [
-      CovidcastTestRow.make_default_row(geo_type="county", geo_value=str(i)*5, value=i)
+      CovidcastTestRow.make_default_row(geo_type="county", geo_value=FIPS[i-1], value=i)
       for i in range(N)
     ] + [
-      CovidcastTestRow.make_default_row(geo_type="msa", geo_value=str(i)*5, value=i*10)
+      CovidcastTestRow.make_default_row(geo_type="msa", geo_value=MSA[i-1], value=i*10)
       for i in range(N)
     ]
     self._insert_rows(rows)
@@ -337,13 +426,15 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
       self.params_from_row(rows[0], source='covidcast'),
       self.params_from_row(rows[1], source='covidcast')
     ]*12, batch_size=10)
-    responses = [i[0] for i in test_output]
-    # check response is same as standard covidcast call, using 24 calls to test batch sizing
+    responses = [i[0]["epidata"] for i in test_output]
+    # check response is same as standard covidcast call (minus fields omitted by the api.php endpoint),
+    # using 24 calls to test batch sizing
+    ignore_fields = CovidcastTestRow._api_row_compatibility_ignore_fields
     self.assertEqual(
       responses,
       [
-        Epidata.covidcast(**self.params_from_row(rows[0])),
-        Epidata.covidcast(**self.params_from_row(rows[1])),
+        [{k: row[k] for k in row.keys() - ignore_fields} for row in Epidata.covidcast(**self.params_from_row(rows[0]))["epidata"]],
+        [{k: row[k] for k in row.keys() - ignore_fields} for row in Epidata.covidcast(**self.params_from_row(rows[1]))["epidata"]],
       ]*12
     )
 

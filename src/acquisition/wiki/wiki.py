@@ -115,31 +115,27 @@ import delphi.operations.secrets as secrets
 
 
 def main():
-  # step 1: find new access logs (aka "jobs")
-  print('looking for new jobs...')
-  try:
-    wiki_update.run()
-  except:
-    print('wiki_update failed')
+    # step 1: find new access logs (aka "jobs")
+    print("looking for new jobs...")
+    try:
+        wiki_update.run()
+    except:
+        print("wiki_update failed")
 
-  # step 2: run a few jobs
-  print('running jobs...')
-  try:
-    wiki_download.run(
-      secrets.wiki.hmac,
-      download_limit=1024 * 1024 * 1024,
-      job_limit=12
-    )
-  except:
-    print('wiki_download failed')
+    # step 2: run a few jobs
+    print("running jobs...")
+    try:
+        wiki_download.run(secrets.wiki.hmac, download_limit=1024 * 1024 * 1024, job_limit=12)
+    except:
+        print("wiki_download failed")
 
-  # step 3: extract counts from the staging data
-  print('extracting counts...')
-  try:
-    wiki_extract.run(job_limit=100)
-  except:
-    print('wiki_extract failed')
+    # step 3: extract counts from the staging data
+    print("extracting counts...")
+    try:
+        wiki_extract.run(job_limit=100)
+    except:
+        print("wiki_extract failed")
 
 
-if __name__ == '__main__':
-  main()
+if __name__ == "__main__":
+    main()

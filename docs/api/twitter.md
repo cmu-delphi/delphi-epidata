@@ -23,7 +23,7 @@ Estimate of influenza activity based on analysis of language used in tweets.
 
 # The API
 
-The base URL is: https://delphi.cmu.edu/epidata/twitter/
+The base URL is: https://api.delphi.cmu.edu/epidata/twitter/
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -53,7 +53,7 @@ Note:
 # Example URLs
 
 ### Twitter on 2015w01 (national)
-https://delphi.cmu.edu/epidata/twitter/?auth=...&locations=nat&epiweeks=201501
+https://api.delphi.cmu.edu/epidata/twitter/?auth=...&locations=nat&epiweeks=201501
 
 ```json
 {

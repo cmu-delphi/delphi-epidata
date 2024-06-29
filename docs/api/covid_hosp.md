@@ -46,7 +46,7 @@ dataset was published by HHS.
 
 # The API
 
-The base URL is: https://delphi.cmu.edu/epidata/covid_hosp_state_timeseries/
+The base URL is: https://api.delphi.cmu.edu/epidata/covid_hosp_state_timeseries/
 
 See [this documentation](README.md) for details on specifying locations and dates.
 
@@ -82,7 +82,7 @@ If `issues` is not specified, then the most recent issue is used by default.
 # Example URLs
 
 ### MA on 2020-05-10 (per most recent issue)
-https://delphi.cmu.edu/epidata/covid_hosp_state_timeseries/?states=MA&dates=20200510
+https://api.delphi.cmu.edu/epidata/covid_hosp_state_timeseries/?states=MA&dates=20200510
 
 ```json
 {

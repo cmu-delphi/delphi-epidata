@@ -14,8 +14,8 @@ import mysql.connector
 
 # first party
 import delphi.operations.secrets as secrets
-from delphi.epidata.acquisition.common.logger import get_structured_logger
-from delphi.epidata.acquisition.covidcast.covidcast_row import CovidcastRow
+from delphi.epidata.common.logger import get_structured_logger
+from delphi.epidata.common.covidcast_row import CovidcastRow
 
 
 class DBLoadStateException(Exception):
@@ -526,13 +526,7 @@ FROM {self.history_view} h JOIN (
       t.join()
     logger.info("all threads terminated")
 
-    # sort the metadata because threaded workers dgaf
-    sorting_fields = "data_source signal time_type geo_type".split()
-    sortable_fields_fn = lambda x: [(field, x[field]) for field in sorting_fields]
-    prepended_sortables_fn = lambda x: sortable_fields_fn(x) + list(x.items())
-    tuple_representation = list(map(prepended_sortables_fn, meta))
-    tuple_representation.sort()
-    meta = list(map(dict, tuple_representation)) # back to dict form
+    meta = sorted(meta, key=lambda x: (x['data_source'], x['signal'], x['time_type'], x['geo_type']))
 
     return meta
 

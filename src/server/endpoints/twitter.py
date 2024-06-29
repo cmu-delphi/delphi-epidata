@@ -1,16 +1,16 @@
 from flask import Blueprint, request
 
-from .._config import AUTH, NATION_REGION, REGION_TO_STATE
+from .._config import NATION_REGION, REGION_TO_STATE
 from .._params import (
     extract_integers,
     extract_strings,
 )
 from .._query import execute_queries, filter_dates, filter_integers, filter_strings
 from .._validate import (
-    check_auth_token,
     require_all,
     require_any,
 )
+from .._security import require_role
 
 # first argument is the endpoint name
 bp = Blueprint("twitter", __name__)
@@ -18,8 +18,8 @@ alias = None
 
 
 @bp.route("/", methods=("GET", "POST"))
+@require_role("twitter")
 def handle():
-    check_auth_token(request, AUTH["twitter"])
     require_all(request, "locations")
     require_any(request, "dates", "epiweeks")
 

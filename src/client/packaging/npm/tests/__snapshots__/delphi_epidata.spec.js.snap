@@ -36,7 +36,7 @@ exports[`fluview basic async 1`] = `
 [MockFunction] {
   "calls": Array [
     Array [
-      "https://delphi.cmu.edu/epidata/fluview/?regions=a&epiweeks=4",
+      "https://api.delphi.cmu.edu/epidata/fluview/?regions=a&epiweeks=4",
     ],
   ],
   "results": Array [
@@ -52,7 +52,7 @@ exports[`fluview basic sync 1`] = `
 [MockFunction] {
   "calls": Array [
     Array [
-      "https://delphi.cmu.edu/epidata/fluview/?regions=a&epiweeks=4",
+      "https://api.delphi.cmu.edu/epidata/fluview/?regions=a&epiweeks=4",
     ],
   ],
   "results": Array [

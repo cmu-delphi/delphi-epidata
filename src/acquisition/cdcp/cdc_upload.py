@@ -87,191 +87,192 @@ import delphi.operations.secrets as secrets
 
 
 STATES = {
-  'Alabama': 'AL',
-  'Alaska': 'AK',
-  'Arizona': 'AZ',
-  'Arkansas': 'AR',
-  'California': 'CA',
-  'Colorado': 'CO',
-  'Connecticut': 'CT',
-  'Delaware': 'DE',
-  'District of Columbia': 'DC',
-  'Florida': 'FL',
-  'Georgia': 'GA',
-  'Hawaii': 'HI',
-  'Idaho': 'ID',
-  'Illinois': 'IL',
-  'Indiana': 'IN',
-  'Iowa': 'IA',
-  'Kansas': 'KS',
-  'Kentucky': 'KY',
-  'Louisiana': 'LA',
-  'Maine': 'ME',
-  'Maryland': 'MD',
-  'Massachusetts': 'MA',
-  'Michigan': 'MI',
-  'Minnesota': 'MN',
-  'Mississippi': 'MS',
-  'Missouri': 'MO',
-  'Montana': 'MT',
-  'Nebraska': 'NE',
-  'Nevada': 'NV',
-  'New Hampshire': 'NH',
-  'New Jersey': 'NJ',
-  'New Mexico': 'NM',
-  'New York': 'NY',
-  'North Carolina': 'NC',
-  'North Dakota': 'ND',
-  'Ohio': 'OH',
-  'Oklahoma': 'OK',
-  'Oregon': 'OR',
-  'Pennsylvania': 'PA',
-  'Rhode Island': 'RI',
-  'South Carolina': 'SC',
-  'South Dakota': 'SD',
-  'Tennessee': 'TN',
-  'Texas': 'TX',
-  'Utah': 'UT',
-  'Vermont': 'VT',
-  'Virginia': 'VA',
-  'Washington': 'WA',
-  'West Virginia': 'WV',
-  'Wisconsin': 'WI',
-  'Wyoming': 'WY',
-  #'Puerto Rico': 'PR',
-  #'Virgin Islands': 'VI',
-  #'Guam': 'GU',
+    "Alabama": "AL",
+    "Alaska": "AK",
+    "Arizona": "AZ",
+    "Arkansas": "AR",
+    "California": "CA",
+    "Colorado": "CO",
+    "Connecticut": "CT",
+    "Delaware": "DE",
+    "District of Columbia": "DC",
+    "Florida": "FL",
+    "Georgia": "GA",
+    "Hawaii": "HI",
+    "Idaho": "ID",
+    "Illinois": "IL",
+    "Indiana": "IN",
+    "Iowa": "IA",
+    "Kansas": "KS",
+    "Kentucky": "KY",
+    "Louisiana": "LA",
+    "Maine": "ME",
+    "Maryland": "MD",
+    "Massachusetts": "MA",
+    "Michigan": "MI",
+    "Minnesota": "MN",
+    "Mississippi": "MS",
+    "Missouri": "MO",
+    "Montana": "MT",
+    "Nebraska": "NE",
+    "Nevada": "NV",
+    "New Hampshire": "NH",
+    "New Jersey": "NJ",
+    "New Mexico": "NM",
+    "New York": "NY",
+    "North Carolina": "NC",
+    "North Dakota": "ND",
+    "Ohio": "OH",
+    "Oklahoma": "OK",
+    "Oregon": "OR",
+    "Pennsylvania": "PA",
+    "Rhode Island": "RI",
+    "South Carolina": "SC",
+    "South Dakota": "SD",
+    "Tennessee": "TN",
+    "Texas": "TX",
+    "Utah": "UT",
+    "Vermont": "VT",
+    "Virginia": "VA",
+    "Washington": "WA",
+    "West Virginia": "WV",
+    "Wisconsin": "WI",
+    "Wyoming": "WY",
+    #'Puerto Rico': 'PR',
+    #'Virgin Islands': 'VI',
+    #'Guam': 'GU',
 }
 
-sql_cdc = '''
+sql_cdc = """
   INSERT INTO
     `cdc` (`date`, `page`, `state`, `num`)
   VALUES
     (%s, %s, %s, %s)
   ON DUPLICATE KEY UPDATE
     `num` = %s
-'''
+"""
 
-sql_cdc_meta = '''
+sql_cdc_meta = """
   INSERT INTO
     `cdc_meta` (`date`, `epiweek`, `state`, `total`)
   VALUES
     (%s, yearweek(%s, 6), %s, %s)
   ON DUPLICATE KEY UPDATE
     `total` = %s
-'''
+"""
 
 
 def upload(test_mode):
-  # connect
-  u, p = secrets.db.epi
-  cnx = mysql.connector.connect(user=u, password=p, database='epidata')
-  cur = cnx.cursor()
+    # connect
+    u, p = secrets.db.epi
+    cnx = mysql.connector.connect(user=u, password=p, database="epidata")
+    cur = cnx.cursor()
 
-  # insert (or update) table `cdc`
-  def insert_cdc(date, page, state, num):
-    cur.execute(sql_cdc, (date, page, state, num, num))
+    # insert (or update) table `cdc`
+    def insert_cdc(date, page, state, num):
+        cur.execute(sql_cdc, (date, page, state, num, num))
 
-  # insert (or update) table `cdc_meta`
-  def insert_cdc_meta(date, state, total):
-    cur.execute(sql_cdc_meta, (date, date, state, total, total))
+    # insert (or update) table `cdc_meta`
+    def insert_cdc_meta(date, state, total):
+        cur.execute(sql_cdc_meta, (date, date, state, total, total))
 
-  # loop over rows until the header row is found
-  def find_header(reader):
-    for row in reader:
-      if len(row) > 0 and row[0] == 'Date':
-        return True
-    return False
+    # loop over rows until the header row is found
+    def find_header(reader):
+        for row in reader:
+            if len(row) > 0 and row[0] == "Date":
+                return True
+        return False
 
-  # parse csv files for `cdc` and `cdc_meta`
-  def parse_csv(meta):
-    def handler(reader):
-      if not find_header(reader):
-        raise Exception('header not found')
-      count = 0
-      cols = 3 if meta else 4
-      for row in reader:
-        if len(row) != cols:
-          continue
-        if meta:
-          (a, c, d) = row
+    # parse csv files for `cdc` and `cdc_meta`
+    def parse_csv(meta):
+        def handler(reader):
+            if not find_header(reader):
+                raise Exception("header not found")
+            count = 0
+            cols = 3 if meta else 4
+            for row in reader:
+                if len(row) != cols:
+                    continue
+                if meta:
+                    (a, c, d) = row
+                else:
+                    (a, b, c, d) = row
+                c = c[:-16]
+                if c not in STATES:
+                    continue
+                a = datetime.strptime(a, "%b %d, %Y").strftime("%Y-%m-%d")
+                c = STATES[c]
+                d = int(d)
+                if meta:
+                    insert_cdc_meta(a, c, d)
+                else:
+                    insert_cdc(a, b, c, d)
+                count += 1
+            return count
+
+        return handler
+
+    # recursively open zip files
+    def parse_zip(zf, level=1):
+        for name in zf.namelist():
+            prefix = " " * level
+            print(prefix, name)
+            if name[-4:] == ".zip":
+                with zf.open(name) as temp:
+                    with ZipFile(io.BytesIO(temp.read())) as zf2:
+                        parse_zip(zf2, level + 1)
+            elif name[-4:] == ".csv":
+                handler = None
+                if "Flu Pages by Region" in name:
+                    handler = parse_csv(False)
+                elif "Regions for all CDC" in name:
+                    handler = parse_csv(True)
+                else:
+                    print(prefix, " (skipped)")
+                if handler is not None:
+                    with zf.open(name) as temp:
+                        count = handler(csv.reader(io.StringIO(str(temp.read(), "utf-8"))))
+                    print(prefix, f" {int(count)} rows")
+            else:
+                print(prefix, " (ignored)")
+
+    # find, parse, and move zip files
+    zip_files = glob.glob("/common/cdc_stage/*.zip")
+    print("searching...")
+    for f in zip_files:
+        print(" ", f)
+    print("parsing...")
+    for f in zip_files:
+        with ZipFile(f) as zf:
+            parse_zip(zf)
+    print("moving...")
+    for f in zip_files:
+        src = f
+        dst = os.path.join("/home/automation/cdc_page_stats/", os.path.basename(src))
+        print(" ", src, "->", dst)
+        if test_mode:
+            print("  (test mode enabled - not moved)")
         else:
-          (a, b, c, d) = row
-        c = c[:-16]
-        if c not in STATES:
-          continue
-        a = datetime.strptime(a, '%b %d, %Y').strftime('%Y-%m-%d')
-        c = STATES[c]
-        d = int(d)
-        if meta:
-          insert_cdc_meta(a, c, d)
-        else:
-          insert_cdc(a, b, c, d)
-        count += 1
-      return count
-    return handler
+            shutil.move(src, dst)
+            if not os.path.isfile(dst):
+                raise Exception("unable to move file")
 
-  # recursively open zip files
-  def parse_zip(zf, level=1):
-    for name in zf.namelist():
-      prefix = ' ' * level
-      print(prefix, name)
-      if name[-4:] == '.zip':
-        with zf.open(name) as temp:
-          with ZipFile(io.BytesIO(temp.read())) as zf2:
-            parse_zip(zf2, level + 1)
-      elif name[-4:] == '.csv':
-        handler = None
-        if 'Flu Pages by Region' in name:
-          handler = parse_csv(False)
-        elif 'Regions for all CDC' in name:
-          handler = parse_csv(True)
-        else:
-          print(prefix, ' (skipped)')
-        if handler is not None:
-          with zf.open(name) as temp:
-            count = handler(csv.reader(io.StringIO(str(temp.read(), 'utf-8'))))
-          print(prefix, ' %d rows' % count)
-      else:
-        print(prefix, ' (ignored)')
-
-  # find, parse, and move zip files
-  zip_files = glob.glob('/common/cdc_stage/*.zip')
-  print('searching...')
-  for f in zip_files:
-    print(' ', f)
-  print('parsing...')
-  for f in zip_files:
-    with ZipFile(f) as zf:
-      parse_zip(zf)
-  print('moving...')
-  for f in zip_files:
-    src = f
-    dst = os.path.join('/home/automation/cdc_page_stats/', os.path.basename(src))
-    print(' ', src, '->', dst)
-    if test_mode:
-      print('  (test mode enabled - not moved)')
-    else:
-      shutil.move(src, dst)
-      if not os.path.isfile(dst):
-        raise Exception('unable to move file')
-
-  # disconnect
-  cur.close()
-  if not test_mode:
-    cnx.commit()
-  cnx.close()
+    # disconnect
+    cur.close()
+    if not test_mode:
+        cnx.commit()
+    cnx.close()
 
 
 def main():
-  # args and usage
-  parser = argparse.ArgumentParser()
-  parser.add_argument('--test', '-t', default=False, action='store_true', help='dry run only')
-  args = parser.parse_args()
+    # args and usage
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--test", "-t", default=False, action="store_true", help="dry run only")
+    args = parser.parse_args()
 
-  # make it happen
-  upload(args.test)
+    # make it happen
+    upload(args.test)
 
 
-if __name__ == '__main__':
-  main()
+if __name__ == "__main__":
+    main()
