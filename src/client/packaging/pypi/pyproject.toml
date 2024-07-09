@@ -1,0 +1,44 @@
+# This file was derived from the PyPA Sample Project
+# https://github.com/pypa/sampleproject
+
+# Guide (user-friendly):
+# https://packaging.python.org/en/latest/guides/writing-pyproject-toml/
+
+# Specification (technical, formal):
+# https://packaging.python.org/en/latest/specifications/pyproject-toml/
+
+
+# Choosing a build backend:
+# https://packaging.python.org/en/latest/tutorials/packaging-projects/#choosing-a-build-backend
+[build-system]
+# A list of packages that are needed to build your package:
+requires = ["setuptools"] # REQUIRED if [build-system] table is used
+# The name of the Python object that frontends will use to perform the build:
+build-backend = "setuptools.build_meta" # If not defined, then legacy behavior can happen.
+
+[project]
+name = "delphi_epidata" # REQUIRED, is the only field that cannot be marked as dynamic.
+version = "4.1.24"
+description = "A programmatic interface to Delphi's Epidata API."
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [{ name = "David Farrow", email = "dfarrow0@gmail.com" }]
+maintainers = [
+    { name = "Delphi Support", email = "delphi-support+pypi@andrew.cmu.edu" },
+]
+# For a list of valid classifiers, see https://pypi.org/classifiers/
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 2",
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Science/Research",
+    "Natural Language :: English",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+dependencies = ["aiohttp", "requests>=2.7.0", "tenacity"]
+
+[project.urls]
+"Homepage" = "https://github.com/cmu-delphi/delphi-epidata"
+"Changelog" = "https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/packaging/pypi/CHANGELOG.md"
