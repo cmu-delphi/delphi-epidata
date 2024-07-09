@@ -87,8 +87,8 @@ You can test your changes manually by:
 
 What follows is a worked demonstration based on the `fluview` endpoint. Before
 starting, make sure that you have the `delphi_database_epidata`,
-`delphi_web_epidata`, and `delphi_redis` containers running; if you don't, see
-the Makefile instructions above.
+`delphi_web_epidata`, and `delphi_redis` containers running (with `docker ps`);
+if you don't, see the Makefile instructions above.
 
 First, let's insert some fake data into the `fluview` table:
 
