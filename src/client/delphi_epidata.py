@@ -18,7 +18,7 @@ from tenacity import retry, stop_after_attempt
 
 from aiohttp import ClientSession, TCPConnector, BasicAuth
 
-__version__ = "4.1.23"
+__version__ = "4.1.24"
 
 _HEADERS = {"user-agent": "delphi_epidata/" + __version__ + " (Python)"}
 
