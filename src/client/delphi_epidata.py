@@ -113,13 +113,13 @@ class Epidata:
             try:
                 latest_version = requests.get('https://pypi.org/pypi/delphi-epidata/json').json()['info']['version']
                 if latest_version != Epidata.client_version:
-                    Epidata.log.warn(
+                    Epidata.log(
                         "Client version not up to date",
                         client_version=Epidata.client_version,
                         latest_version=latest_version
                     )
             except Exception as e:
-                Epidata.log.warn("Error getting latest client version", exception=str(e))
+                Epidata.log("Error getting latest client version", exception=str(e))
             finally:
                 Epidata.version_check = True
         try:
