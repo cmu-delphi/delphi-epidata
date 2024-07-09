@@ -119,7 +119,7 @@ class Epidata:
                         latest_version=latest_version
                     )
             except Exception as e:
-                Epidata.logger.warn("Error getting latest client version", exception=str(e))
+                Epidata.log.warn("Error getting latest client version", exception=str(e))
             finally:
                 Epidata.version_check = True
         try:
