@@ -49,7 +49,7 @@ $ [sudo] make test pdb=1
 $ [sudo] make test test=repos/delphi/delphi-epidata/integrations/acquisition
 ```
 
-You can read the commands executed by the Makefile [here](../dev/local/Makefile).
+You can read the commands executed by the Makefile [here](https://github.com/cmu-delphi/delphi-epidata/blob/dev/dev/local/Makefile).
 
 ## Rapid Iteration and Bind Mounts
 
