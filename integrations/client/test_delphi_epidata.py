@@ -315,18 +315,14 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
           self.status_code = status_code
       def raise_for_status(self): pass
       def json(self): return json.loads(self.content)
-    Epidata.debug = True
-    try:
-      get.reset_mock()
-      get.return_value = MockJson(b'{"info": {"version": "0.0.1"}}', 200)
-      with self.assertLogs('delphi_epidata_client', level='WARN') as logs:
-        Epidata.covidcast('src', 'sig', 'day', 'county', 20200414, '01234')
-      output = logs.output
-      self.assertEqual(len(output), 1)
-      self.assertIn("Client version not up to date", output[0])
-      self.assertIn("\"latest_version\": \"0.0.1\"", output[0])
-    finally: # make sure this global is always reset
-      Epidata.debug = False
+    get.reset_mock()
+    get.return_value = MockJson(b'{"info": {"version": "0.0.1"}}', 200)
+    Epidata._version_check()
+    captured = self.capsys.readouterr()
+    output = captured.err.splitlines()
+    self.assertEqual(len(output), 1)
+    self.assertIn("Client version not up to date", output[0])
+    self.assertIn("\'latest_version\': \'0.0.1\'", output[0])
 
   def test_geo_value(self):
     """test different variants of geo types: single, *, multi."""

@@ -43,9 +43,6 @@ class Epidata:
     BASE_URL = "https://api.delphi.cmu.edu/epidata"
     auth = None
 
-    client_version = __version__
-    version_check = False
-
     debug = False # if True, prints extra logging statements
     sandbox = False # if True, will not execute any queries
 
@@ -54,6 +51,21 @@ class Epidata:
         kwargs['event'] = evt
         kwargs['timestamp'] = time.strftime("%Y-%m-%d %H:%M:%S %z")
         return sys.stderr.write(str(kwargs) + "\n")
+
+    # One-time check to verify the client version is up to date.
+    @staticmethod
+    def _version_check():
+        try:
+            latest_version = requests.get('https://pypi.org/pypi/delphi-epidata/json').json()['info']['version']
+            if latest_version != __version__:
+                Epidata.log(
+                    "Client version not up to date",
+                    client_version=__version__,
+                    latest_version=latest_version
+                )
+        except Exception as e:
+            Epidata.log("Error getting latest client version", exception=str(e))
+    _version_check.__func__() # run this once on module load
 
     # Helper function to cast values and/or ranges to strings
     @staticmethod
@@ -108,20 +120,6 @@ class Epidata:
         capabilities, but fall back to POST if the request is too
         long and returns a 414.
         """
-        # One-time check to verify the client version is up to date.
-        if Epidata.debug and not Epidata.sandbox and not Epidata.version_check:
-            try:
-                latest_version = requests.get('https://pypi.org/pypi/delphi-epidata/json').json()['info']['version']
-                if latest_version != Epidata.client_version:
-                    Epidata.log(
-                        "Client version not up to date",
-                        client_version=Epidata.client_version,
-                        latest_version=latest_version
-                    )
-            except Exception as e:
-                Epidata.log("Error getting latest client version", exception=str(e))
-            finally:
-                Epidata.version_check = True
         try:
             result = Epidata._request_with_retry(endpoint, params)
         except Exception as e:
