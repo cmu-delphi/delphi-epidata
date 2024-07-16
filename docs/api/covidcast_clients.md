@@ -1,5 +1,5 @@
 ---
-title: API Clients
+title: COVIDcast API Clients
 parent: COVIDcast Main Endpoint
 nav_order: 1
 ---

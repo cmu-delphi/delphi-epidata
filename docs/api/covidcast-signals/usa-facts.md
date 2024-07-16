@@ -1,6 +1,6 @@
 ---
-title: USAFacts Cases and Deaths
-parent: Inactive Signals
+title: USAFacts Cases and Deaths (inactive)
+parent: Data Sources and Signals
 grand_parent: COVIDcast Main Endpoint
 ---
 

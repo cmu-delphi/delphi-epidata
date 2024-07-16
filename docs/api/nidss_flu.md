@@ -1,6 +1,6 @@
 ---
 title: NIDSS Flu
-parent: Other Endpoints (COVID-19 and Other Diseases)
+parent: Other Endpoints
 ---
 
 # NIDSS Flu

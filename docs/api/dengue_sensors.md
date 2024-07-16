@@ -1,6 +1,6 @@
 ---
 title: Dengue Digital Surveillance
-parent: Other Endpoints (COVID-19 and Other Diseases)
+parent: Other Endpoints
 ---
 
 # Dengue Digital Surveillance Sensors

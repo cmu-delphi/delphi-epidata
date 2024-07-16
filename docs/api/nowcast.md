@@ -1,6 +1,6 @@
 ---
 title: ILI Nearby Nowcast
-parent: Other Endpoints (COVID-19 and Other Diseases)
+parent: Other Endpoints
 ---
 
 # ILI Nearby Nowcast

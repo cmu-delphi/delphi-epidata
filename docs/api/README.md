@@ -1,10 +1,10 @@
 ---
-title: Other Endpoints (COVID-19 and Other Diseases)
-nav_order: 3
+title: Other Endpoints
 has_children: true
+nav_order: 3
 ---
 
-# Epidata API (Other Diseases)
+# Other Endpoints
 
 This is the home of [Delphi](https://delphi.cmu.edu/)'s epidemiological data
 API for tracking epidemics such as influenza, dengue, and norovirus. Note that

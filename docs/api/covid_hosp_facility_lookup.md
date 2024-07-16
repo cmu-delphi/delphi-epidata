@@ -1,6 +1,6 @@
 ---
 title: COVID-19 Reported Patient Impact and Hospital Capacity - Facility lookup
-parent: Other Endpoints (COVID-19 and Other Diseases)
+parent: Other Endpoints
 ---
 
 # COVID-19 Hospitalization: Facility Lookup

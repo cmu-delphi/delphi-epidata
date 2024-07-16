@@ -1,6 +1,6 @@
 ---
-title: Data Strategy and Execution Workgroup Community Profile Report
-parent: Inactive Signals
+title: Data Strategy and Execution Workgroup Community Profile Report (inactive)
+parent: Data Sources and Signals
 grand_parent: COVIDcast Main Endpoint
 ---
 

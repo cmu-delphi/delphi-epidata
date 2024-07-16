@@ -1,6 +1,6 @@
 ---
 title: NoroSTAT Metadata
-parent: Other Endpoints (COVID-19 and Other Diseases)
+parent: Other Endpoints
 ---
 
 # NoroSTAT Metadata

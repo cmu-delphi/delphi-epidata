@@ -1,6 +1,6 @@
 ---
-title: COVID-19 Trends and Impact Survey
-parent: Inactive Signals
+title: COVID-19 Trends and Impact Survey (inactive)
+parent: Data Sources and Signals
 grand_parent: COVIDcast Main Endpoint
 ---
 

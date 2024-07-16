@@ -1,6 +1,6 @@
 ---
-title: COVID Act Now
-parent: Inactive Signals
+title: COVID Act Now (inactive)
+parent: Data Sources and Signals
 grand_parent: COVIDcast Main Endpoint
 ---
 
