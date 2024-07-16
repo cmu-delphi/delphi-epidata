@@ -1,6 +1,6 @@
 ---
 title: Digital Surveillance Sensors
-parent: Other Endpoints (COVID-19 and Other Diseases)
+parent: Other Endpoints
 ---
 
 # Digital Surveillance Sensors

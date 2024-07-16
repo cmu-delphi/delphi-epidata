@@ -1,6 +1,6 @@
 ---
 title: Google Health Trends
-parent: Other Endpoints (COVID-19 and Other Diseases)
+parent: Other Endpoints
 ---
 
 # Google Health Trends

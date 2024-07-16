@@ -1,7 +1,7 @@
 ---
 title: Epidata API Client Libraries
-parent: Other Endpoints (COVID-19 and Other Diseases)
-nav_order: 1
+parent: Epidata API Intro
+nav_order: 2
 ---
 
 # Epidata API Client Libraries

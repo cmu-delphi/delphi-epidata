@@ -1,6 +1,6 @@
 ---
-title: SafeGraph
-parent: Inactive Signals
+title: SafeGraph (inactive)
+parent: Data Sources and Signals
 grand_parent: COVIDcast Main Endpoint
 ---
 

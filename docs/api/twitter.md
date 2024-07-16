@@ -1,6 +1,6 @@
 ---
 title: Twitter Stream
-parent: Other Endpoints (COVID-19 and Other Diseases)
+parent: Other Endpoints
 ---
 
 # Twitter Stream

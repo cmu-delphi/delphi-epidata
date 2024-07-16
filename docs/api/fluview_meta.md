@@ -1,6 +1,6 @@
 ---
 title: FluView metadata
-parent: Other Endpoints (COVID-19 and Other Diseases)
+parent: Other Endpoints
 ---
 
 # FluView metadata
