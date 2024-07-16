@@ -1,0 +1,31 @@
+{% extends 'admin/master.html' %}
+
+{% block body %}
+<table class="table">
+    <caption>List of users</caption>
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Email</th>
+            <th scope="col">API Key</th>
+            <th scope="col">Organization</th>
+            <th scope="col">Purpose</th>
+            <th scope="col">Created</th>
+            <th scope="col">Last time used</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for i in range(user_data | length ) %}
+            <tr>
+                <th scope="row">{{ i }}</th>
+                <td>{{ user_data[i].email }}</td>
+                <td>{{ user_data[i].api_key }}</td>
+                <td>{{ user_data[i].organization }}</td>
+                <td>{{ user_data[i].purpose }}</td>
+                <td>{{ user_data[i].created }}</td>
+                <td>{{ user_data[i].last_time_used }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

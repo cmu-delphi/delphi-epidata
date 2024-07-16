@@ -54,9 +54,11 @@ current_user: User = cast(User, LocalProxy(_get_current_user))
 
 
 def _is_public_route() -> bool:
-    public_routes_list = ["lib", "admin", "version"]
+    public_routes_list = ["lib", "version", "diagnostics"]
     for route in public_routes_list:
         if request.path.startswith(f"{URL_PREFIX}/{route}"):
+            return True
+        if "admin" in request.path:
             return True
     return False
 
