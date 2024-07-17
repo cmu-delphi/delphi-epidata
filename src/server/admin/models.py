@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 from copy import deepcopy
 
 from .._db import Session, WriteSession, default_session
-from delphi.epidata.common.logger import get_structured_logger
+from delphi_utils import get_structured_logger
 
 from typing import Set, Optional, List
 from datetime import datetime as dtime

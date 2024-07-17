@@ -15,7 +15,7 @@ from typing import List
 # first party
 import covidcast
 import delphi.operations.secrets as secrets
-from delphi.epidata.common.logger import get_structured_logger
+from delphi_utils import get_structured_logger
 
 
 LOOKBACK_DAYS_FOR_COVERAGE = 56
