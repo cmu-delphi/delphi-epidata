@@ -2,8 +2,8 @@
 
 # standard library
 import time
+import json
 from json import JSONDecodeError
-from requests.models import Response
 from unittest.mock import MagicMock, patch
 
 # first party
@@ -305,6 +305,30 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     finally: # make sure these globals are always reset
       Epidata.debug = False
       Epidata.sandbox = False
+
+  @patch('requests.get')
+  def test_version_check(self, get):
+    """Test that the _version_check() function correctly logs a version discrepancy."""
+    class MockJson:
+      def __init__(self, content, status_code):
+          self.content = content
+          self.status_code = status_code
+      def raise_for_status(self): pass
+      def json(self): return json.loads(self.content)
+    get.reset_mock()
+    get.return_value = MockJson(b'{"info": {"version": "0.0.1"}}', 200)
+    Epidata._version_check()
+    captured = self.capsys.readouterr()
+    output = captured.err.splitlines()
+    self.assertEqual(len(output), 1)
+    self.assertIn("Client version not up to date", output[0])
+    self.assertIn("\'latest_version\': \'0.0.1\'", output[0])
+
+  @patch('delphi.epidata.client.delphi_epidata.Epidata._version_check')
+  def test_version_check_once(self, version_check):
+    """Test that the _version_check() function is only called once on initial module import."""
+    from delphi.epidata.client.delphi_epidata import Epidata
+    version_check.assert_not_called()
 
   def test_geo_value(self):
     """test different variants of geo types: single, *, multi."""

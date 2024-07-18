@@ -43,8 +43,6 @@ class Epidata:
     BASE_URL = "https://api.delphi.cmu.edu/epidata"
     auth = None
 
-    client_version = __version__
-
     debug = False # if True, prints extra logging statements
     sandbox = False # if True, will not execute any queries
 
@@ -53,6 +51,24 @@ class Epidata:
         kwargs['event'] = evt
         kwargs['timestamp'] = time.strftime("%Y-%m-%d %H:%M:%S %z")
         return sys.stderr.write(str(kwargs) + "\n")
+
+    # Check that this client's version matches the most recent available, runs just once per program execution (on initial module load).
+    @staticmethod
+    def _version_check():
+        try:
+            latest_version = requests.get('https://pypi.org/pypi/delphi-epidata/json').json()['info']['version']
+            if latest_version != __version__:
+                Epidata.log(
+                    "Client version not up to date",
+                    client_version=__version__,
+                    latest_version=latest_version
+                )
+        except Exception as e:
+            Epidata.log("Error getting latest client version", exception=str(e))
+
+    # Run this once on module load. Use dunder method for Python <= 3.9 compatibility 
+    # https://stackoverflow.com/a/12718272
+    _version_check.__func__()
 
     # Helper function to cast values and/or ranges to strings
     @staticmethod
