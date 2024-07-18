@@ -66,7 +66,9 @@ class Epidata:
         except Exception as e:
             Epidata.log("Error getting latest client version", exception=str(e))
 
-    _version_check.__func__() # run this once on module load
+    # Run this once on module load. Use dunder method for Python <= 3.9 compatibility 
+    # https://stackoverflow.com/a/12718272
+    _version_check.__func__()
 
     # Helper function to cast values and/or ranges to strings
     @staticmethod
