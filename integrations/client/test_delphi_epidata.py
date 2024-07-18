@@ -308,7 +308,7 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
 
   @patch('requests.get')
   def test_version_check(self, get):
-    """Test that in debug + sandbox mode request params are correctly logged, but no queries are sent."""
+    """Test that the _version_check() function correctly logs a version discrepancy."""
     class MockJson:
       def __init__(self, content, status_code):
           self.content = content
@@ -323,6 +323,12 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     self.assertEqual(len(output), 1)
     self.assertIn("Client version not up to date", output[0])
     self.assertIn("\'latest_version\': \'0.0.1\'", output[0])
+
+  @patch('delphi.epidata.client.delphi_epidata.Epidata._version_check')
+  def test_version_check_once(self, version_check):
+    """Test that the _version_check() function is only called once on initial module import."""
+    from delphi.epidata.client.delphi_epidata import Epidata
+    version_check.assert_not_called()
 
   def test_geo_value(self):
     """test different variants of geo types: single, *, multi."""

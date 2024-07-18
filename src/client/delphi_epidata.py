@@ -52,7 +52,7 @@ class Epidata:
         kwargs['timestamp'] = time.strftime("%Y-%m-%d %H:%M:%S %z")
         return sys.stderr.write(str(kwargs) + "\n")
 
-    # One-time check to verify the client version is up to date.
+    # Check that this client's version matches the most recent available, runs just once per program execution (on initial module load).
     @staticmethod
     def _version_check():
         try:
@@ -65,6 +65,7 @@ class Epidata:
                 )
         except Exception as e:
             Epidata.log("Error getting latest client version", exception=str(e))
+
     _version_check.__func__() # run this once on module load
 
     # Helper function to cast values and/or ranges to strings
