@@ -3,7 +3,7 @@ from functools import wraps
 from typing import Optional, cast
 
 import redis
-from delphi.epidata.common.logger import get_structured_logger
+from delphi_utils import get_structured_logger
 from flask import g, request
 from werkzeug.exceptions import Unauthorized
 from werkzeug.local import LocalProxy

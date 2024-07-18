@@ -11,7 +11,7 @@ from typing import Callable, Iterable, Optional, Tuple
 from delphi.epidata.acquisition.covidcast.csv_importer import CsvImporter, PathDetails
 from delphi.epidata.acquisition.covidcast.database import Database, DBLoadStateException
 from delphi.epidata.acquisition.covidcast.file_archiver import FileArchiver
-from delphi.epidata.common.logger import get_structured_logger
+from delphi_utils import get_structured_logger
 
 
 def get_argument_parser():

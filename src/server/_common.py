@@ -7,7 +7,7 @@ from sqlalchemy.engine import Connection, Engine
 from werkzeug.exceptions import Unauthorized
 from werkzeug.local import LocalProxy
 
-from delphi.epidata.common.logger import get_structured_logger
+from delphi_utils import get_structured_logger
 from ._config import SECRET, REVERSE_PROXY_DEPTH
 from ._db import engine
 from ._exceptions import DatabaseErrorException, EpiDataException
