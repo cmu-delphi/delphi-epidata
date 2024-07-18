@@ -46,6 +46,8 @@ class Epidata:
     debug = False # if True, prints extra logging statements
     sandbox = False # if True, will not execute any queries
 
+    _version_checked=False
+
     @staticmethod
     def log(evt, **kwargs):
         kwargs['event'] = evt
@@ -55,8 +57,10 @@ class Epidata:
     # Check that this client's version matches the most recent available, runs just once per program execution (on initial module load).
     @staticmethod
     def _version_check():
+        _version_checked = True
         try:
-            latest_version = requests.get('https://pypi.org/pypi/delphi-epidata/json').json()['info']['version']
+            request = requests.get('https://pypi.org/pypi/delphi-epidata/json', timeout=5)
+            latest_version = request.json()['info']['version']
             if latest_version != __version__:
                 Epidata.log(
                     "Client version not up to date",
@@ -708,3 +712,6 @@ class Epidata:
         future = asyncio.ensure_future(async_make_calls(param_list))
         responses = loop.run_until_complete(future)
         return responses
+
+if Epidata._version_checked == False:
+    Epidata._version_check()
