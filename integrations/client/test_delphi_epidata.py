@@ -317,7 +317,16 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
       def json(self): return json.loads(self.content)
     get.reset_mock()
     get.return_value = MockJson(b'{"info": {"version": "0.0.1"}}', 200)
+
+    # "back up" the value of this private class var and replace w/ default
+    # so the ._version_check() method runs unencumbered:
+    e_vdc__save = Epidata._version_checked
+    Epidata._version_checked = False
+    # run version check:
     Epidata._version_check()
+    # "restore" class var:
+    Epidata._version_checked = e_vdc__save
+
     captured = self.capsys.readouterr()
     output = captured.err.splitlines()
     self.assertEqual(len(output), 1)
