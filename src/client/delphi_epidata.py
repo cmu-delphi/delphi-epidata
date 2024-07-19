@@ -46,7 +46,7 @@ class Epidata:
     debug = False # if True, prints extra logging statements
     sandbox = False # if True, will not execute any queries
 
-    _version_checked=False
+    _version_checked = False
 
     @staticmethod
     def log(evt, **kwargs):
@@ -54,25 +54,30 @@ class Epidata:
         kwargs['timestamp'] = time.strftime("%Y-%m-%d %H:%M:%S %z")
         return sys.stderr.write(str(kwargs) + "\n")
 
-    # Check that this client's version matches the most recent available, runs just once per program execution (on initial module load).
+    # Check that this client's version matches the most recent available.
+    # This is intended to run just once per program execution, on initial module load.
+    # See the bottom of this file for the ultimate call to this method.
     @staticmethod
     def _version_check():
-        _version_checked = True
+        if Epidata._version_checked:
+            # already done; nothing to do!
+            return
+
+        Epidata._version_checked = True
+
         try:
             request = requests.get('https://pypi.org/pypi/delphi-epidata/json', timeout=5)
             latest_version = request.json()['info']['version']
-            if latest_version != __version__:
-                Epidata.log(
-                    "Client version not up to date",
-                    client_version=__version__,
-                    latest_version=latest_version
-                )
         except Exception as e:
             Epidata.log("Error getting latest client version", exception=str(e))
+            return
 
-    # Run this once on module load. Use dunder method for Python <= 3.9 compatibility 
-    # https://stackoverflow.com/a/12718272
-    _version_check.__func__()
+        if latest_version != __version__:
+            Epidata.log(
+                "Client version not up to date",
+                client_version=__version__,
+                latest_version=latest_version
+            )
 
     # Helper function to cast values and/or ranges to strings
     @staticmethod
@@ -713,5 +718,6 @@ class Epidata:
         responses = loop.run_until_complete(future)
         return responses
 
-if Epidata._version_checked == False:
-    Epidata._version_check()
+
+
+Epidata._version_check()
