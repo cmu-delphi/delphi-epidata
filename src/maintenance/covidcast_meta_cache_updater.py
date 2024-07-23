@@ -7,7 +7,7 @@ import time
 
 # first party
 from delphi.epidata.acquisition.covidcast.database import Database
-from delphi.epidata.common.logger import get_structured_logger
+from delphi_utils import get_structured_logger
 from delphi.epidata.client.delphi_epidata import Epidata
 
 def get_argument_parser():

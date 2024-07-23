@@ -8,6 +8,8 @@ Notes:
  - Compatible with Python 2 and 3.
 """
 
+import sys
+
 # External modules
 import requests
 import time
@@ -16,9 +18,7 @@ from tenacity import retry, stop_after_attempt
 
 from aiohttp import ClientSession, TCPConnector, BasicAuth
 
-from delphi_utils.logger import get_structured_logger
-
-__version__ = "4.1.23"
+__version__ = "4.1.24"
 
 _HEADERS = {"user-agent": "delphi_epidata/" + __version__ + " (Python)"}
 
@@ -43,11 +43,32 @@ class Epidata:
     BASE_URL = "https://api.delphi.cmu.edu/epidata"
     auth = None
 
-    client_version = __version__
-
-    logger = get_structured_logger('delphi_epidata_client')
     debug = False # if True, prints extra logging statements
     sandbox = False # if True, will not execute any queries
+
+    @staticmethod
+    def log(evt, **kwargs):
+        kwargs['event'] = evt
+        kwargs['timestamp'] = time.strftime("%Y-%m-%d %H:%M:%S %z")
+        return sys.stderr.write(str(kwargs) + "\n")
+
+    # Check that this client's version matches the most recent available, runs just once per program execution (on initial module load).
+    @staticmethod
+    def _version_check():
+        try:
+            latest_version = requests.get('https://pypi.org/pypi/delphi-epidata/json').json()['info']['version']
+            if latest_version != __version__:
+                Epidata.log(
+                    "Client version not up to date",
+                    client_version=__version__,
+                    latest_version=latest_version
+                )
+        except Exception as e:
+            Epidata.log("Error getting latest client version", exception=str(e))
+
+    # Run this once on module load. Use dunder method for Python <= 3.9 compatibility 
+    # https://stackoverflow.com/a/12718272
+    _version_check.__func__()
 
     # Helper function to cast values and/or ranges to strings
     @staticmethod
@@ -72,7 +93,7 @@ class Epidata:
         """Make request with a retry if an exception is thrown."""
         request_url = f"{Epidata.BASE_URL}/{endpoint}/"
         if Epidata.debug:
-            Epidata.logger.info("Sending GET request", url=request_url, params=params, headers=_HEADERS, auth=Epidata.auth)
+            Epidata.log("Sending GET request", url=request_url, params=params, headers=_HEADERS, auth=Epidata.auth)
         if Epidata.sandbox:
             resp = requests.Response()
             resp._content = b'true'
@@ -81,10 +102,10 @@ class Epidata:
         req = requests.get(request_url, params, auth=Epidata.auth, headers=_HEADERS)
         if req.status_code == 414:
             if Epidata.debug:
-                Epidata.logger.info("Received 414 response, retrying as POST request", url=request_url, params=params, headers=_HEADERS)
+                Epidata.log("Received 414 response, retrying as POST request", url=request_url, params=params, headers=_HEADERS)
             req = requests.post(request_url, params, auth=Epidata.auth, headers=_HEADERS)
         if Epidata.debug:
-            Epidata.logger.info(
+            Epidata.log(
                 "Received response",
                 status_code=req.status_code,
                 len=len(req.content),

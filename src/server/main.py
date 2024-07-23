@@ -6,7 +6,7 @@ from typing import Dict, Callable
 
 from flask import request, send_file, Response, send_from_directory, jsonify
 
-from delphi.epidata.common.logger import get_structured_logger
+from delphi_utils import get_structured_logger
 
 from ._config import URL_PREFIX, VERSION
 from ._common import app, set_compatibility_mode

@@ -10,7 +10,7 @@ from typing import (
 from epiweeks import Week, Year
 from typing_extensions import TypeAlias
 
-from delphi.epidata.common.logger import get_structured_logger
+from delphi_utils import get_structured_logger
 
 # Alias for a sequence of date ranges (int, int) or date integers
 IntRange: TypeAlias = Union[Tuple[int, int], int]

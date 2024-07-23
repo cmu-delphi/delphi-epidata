@@ -1,6 +1,6 @@
 ---
-title: Department of Health & Human Services (inactive)
-parent: Data Sources and Signals
+title: Department of Health & Human Services
+parent: Inactive Signals
 grand_parent: COVIDcast Main Endpoint
 ---
 

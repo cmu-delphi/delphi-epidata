@@ -8,7 +8,7 @@ import orjson
 
 from ._config import MAX_RESULTS, MAX_COMPATIBILITY_RESULTS
 from ._common import is_compatibility_mode, log_info_with_request
-from delphi.epidata.common.logger import get_structured_logger
+from delphi_utils import get_structured_logger
 
 
 def print_non_standard(format: str, data):

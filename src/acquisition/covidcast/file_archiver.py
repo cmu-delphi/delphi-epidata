@@ -6,7 +6,7 @@ import os
 import shutil
 
 # first party
-from delphi.epidata.common.logger import get_structured_logger
+from delphi_utils import get_structured_logger
 
 class FileArchiver:
   """Archives files by moving and compressing."""

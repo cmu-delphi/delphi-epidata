@@ -15,7 +15,7 @@ from typing import List
 # first party
 import covidcast
 import delphi.operations.secrets as secrets
-from delphi.epidata.common.logger import get_structured_logger
+from delphi_utils import get_structured_logger
 
 
 LOOKBACK_DAYS_FOR_COVERAGE = 56
@@ -150,11 +150,11 @@ class Database:
 
     def get_enabled_signals(self) -> List[DashboardSignal]:
         """Retrieve all enabled signals from the database"""
-        select_statement = f'''SELECT `id`, 
+        select_statement = f'''SELECT `id`,
             `name`,
             `source`,
             `covidcast_signal`,
-            `latest_coverage_update`, 
+            `latest_coverage_update`,
             `latest_status_update`
             FROM `{Database.SIGNAL_TABLE_NAME}`
             WHERE `enabled`
@@ -208,7 +208,7 @@ def get_coverage(dashboard_signal: DashboardSignal) -> List[DashboardSignalCover
             lambda x: pd.to_datetime(Week(x // 100, x % 100).startdate()))
 
     signal_coverage_list = []
-    
+
     for _, row in count_by_geo_type_df.iterrows():
         signal_coverage = DashboardSignalCoverage(
             signal_id=dashboard_signal.db_id,
