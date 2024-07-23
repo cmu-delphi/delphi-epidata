@@ -1,6 +1,7 @@
 ---
 title: Digital Surveillance Sensors
 parent: Other Endpoints
+nav_order: 1
 ---
 
 # Digital Surveillance Sensors

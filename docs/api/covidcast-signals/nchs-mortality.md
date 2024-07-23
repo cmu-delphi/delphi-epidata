@@ -2,6 +2,7 @@
 title: NCHS Mortality Data
 parent: Data Sources and Signals
 grand_parent: COVIDcast Main Endpoint
+nav_order: 1
 ---
 
 # NCHS Mortality Data

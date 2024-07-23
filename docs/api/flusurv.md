@@ -1,6 +1,7 @@
 ---
 title: Flusurv
 parent: Other Endpoints
+nav_order: 1
 ---
 
 # FluSurv

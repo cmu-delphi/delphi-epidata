@@ -1,6 +1,7 @@
 ---
 title: Google Health Trends
 parent: Inactive Signals
+nav_order: 2
 grand_parent: COVIDcast Main Endpoint
 ---
 

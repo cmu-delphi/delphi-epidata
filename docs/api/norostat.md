@@ -1,6 +1,7 @@
 ---
 title: NoroSTAT
 parent: Other Endpoints
+nav_order: 1
 ---
 
 # NoroSTAT

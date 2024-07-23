@@ -1,6 +1,7 @@
 ---
 title: FluView Clinical
 parent: Other Endpoints
+nav_order: 1
 ---
 
 # FluView Clinical

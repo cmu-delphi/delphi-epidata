@@ -1,6 +1,7 @@
 ---
 title: Dengue Nowcast
 parent: Other Endpoints
+nav_order: 1
 ---
 
 # Delphi's Dengue Nowcast

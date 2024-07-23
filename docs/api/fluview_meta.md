@@ -1,6 +1,7 @@
 ---
 title: FluView metadata
 parent: Other Endpoints
+nav_order: 1
 ---
 
 # FluView metadata
