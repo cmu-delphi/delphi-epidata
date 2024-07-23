@@ -26,6 +26,10 @@ Pandemic"](https://www.pnas.org/topic/548) in *PNAS*:
 
 Research publications using the survey data include:
 
+- C.K. Ettman, E. Badillo-Goicoechea, E.A. Stuart (2024). [Financial
+  strain, schooling modality and mental health of US adults living
+  with children during the COVID-19 pandemic](https://doi.org/10.1136/jech-2023-221672).
+  *Journal of Epidemiology & Community Health*.
 - K. Sasse, R. Mahabir, O. Gkountouna, A. Crooks, A. Croitoru (2024).
   [Understanding the determinants of vaccine hesitancy in the United
   States: A comparison of social surveys and social media](https://doi.org/10.1371/journal.pone.0301488).
@@ -41,7 +45,7 @@ Research publications using the survey data include:
 - Z. Yang, R. Krishnan, and B. Li (2024). [The interplay between individual
   mobility, health risk, and economic choice: A holistic model for COVID-19
   policy intervention](https://doi.org/10.1287/ijds.2023.0013). *INFORMS
-  Journal on Data Science*.
+  Journal on Data Science* 3 (1), 6-27.
 - A. Srivastava, J. M. Ramirez, S. Díaz-Aranda, J. Aguilar, A. F. Anta, A. Ortega,
   and R. E. Lillo (2024). [Nowcasting temporal trends using indirect surveys](https://doi.org/10.1609/aaai.v38i20.30242).
   In *Proceedings of the 38th AAAI Conference on Artificial Intelligence* 38,
