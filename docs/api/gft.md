@@ -1,6 +1,7 @@
 ---
 title: Google Flu Trends
 parent: Other Endpoints
+nav_order: 1
 ---
 
 # Google Flu Trends

@@ -1,6 +1,7 @@
 ---
 title: ECDC ILI
 parent: Other Endpoints
+nav_order: 1
 ---
 
 # ECDC ILI

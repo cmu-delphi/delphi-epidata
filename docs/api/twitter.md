@@ -1,6 +1,7 @@
 ---
 title: Twitter Stream
 parent: Other Endpoints
+nav_order: 1
 ---
 
 # Twitter Stream

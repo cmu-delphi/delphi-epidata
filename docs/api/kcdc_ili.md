@@ -1,6 +1,7 @@
 ---
 title: KCDC ILI
 parent: Other Endpoints
+nav_order: 1
 ---
 
 # KCDC ILI

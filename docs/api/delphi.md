@@ -1,6 +1,7 @@
 ---
 title: Delphi Forecasts
 parent: Other Endpoints
+nav_order: 1
 ---
 
 # Delphi Forecasts

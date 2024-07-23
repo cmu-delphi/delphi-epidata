@@ -1,6 +1,7 @@
 ---
 title: Dengue Digital Surveillance
 parent: Other Endpoints
+nav_order: 1
 ---
 
 # Dengue Digital Surveillance Sensors

@@ -1,6 +1,7 @@
 ---
 title: Metadata
 parent: Other Endpoints
+nav_order: 1
 ---
 
 # API Metadata

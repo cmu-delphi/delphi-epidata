@@ -2,6 +2,7 @@
 title: Quidel
 parent: Data Sources and Signals
 grand_parent: COVIDcast Main Endpoint
+nav_order: 1
 ---
 
 # Quidel

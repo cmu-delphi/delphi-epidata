@@ -1,6 +1,7 @@
 ---
 title: ILI Nearby Nowcast
 parent: Other Endpoints
+nav_order: 1
 ---
 
 # ILI Nearby Nowcast

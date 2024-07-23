@@ -1,6 +1,7 @@
 ---
 title: COVID-19 Reported Patient Impact and Hospital Capacity by Facility
 parent: Other Endpoints
+nav_order: 1
 ---
 
 # COVID-19 Hospitalization by Facility

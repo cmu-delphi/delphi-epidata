@@ -1,6 +1,7 @@
 ---
 title: NIDSS Flu
 parent: Other Endpoints
+nav_order: 1
 ---
 
 # NIDSS Flu

@@ -1,6 +1,7 @@
 ---
 title: Google Health Trends
 parent: Other Endpoints
+nav_order: 1
 ---
 
 # Google Health Trends

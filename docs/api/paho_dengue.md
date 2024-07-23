@@ -1,6 +1,7 @@
 ---
 title: PAHO Dengue
 parent: Other Endpoints
+nav_order: 1
 ---
 
 # PAHO Dengue

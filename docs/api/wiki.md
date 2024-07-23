@@ -1,6 +1,7 @@
 ---
 title: Wikipedia Access
 parent: Other Endpoints
+nav_order: 1
 ---
 
 # Wikipedia Access
