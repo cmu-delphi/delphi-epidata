@@ -1,6 +1,7 @@
 ---
 title: COVID-19 Reported Patient Impact and Hospital Capacity by State Timeseries
-parent: Other Endpoints (COVID-19 and Other Diseases)
+parent: Other Endpoints
+nav_order: 1
 ---
 
 # COVID-19 Hospitalization by State

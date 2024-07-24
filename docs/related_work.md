@@ -1,4 +1,10 @@
-# Related work
+---
+title: Motivating Works
+parent: Epidata API Intro
+nav_order: 4
+---
+
+# Motivating Works
 
 The works listed below, along with numerous others, were an early inspiration
 for the Epidata API:

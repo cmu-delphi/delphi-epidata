@@ -2,6 +2,7 @@
 title: Hospital Admissions
 parent: Data Sources and Signals
 grand_parent: COVIDcast Main Endpoint
+nav_order: 1
 ---
 
 # Hospital Admissions
