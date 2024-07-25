@@ -196,7 +196,8 @@ def _load_data_sources():
     data_sources_df: pd.DataFrame = pd.read_csv(_base_dir / "db_sources.csv")
     data_sources_df = data_sources_df.replace({np.nan: None})
     data_sources_df.columns = map(_clean_column, data_sources_df.columns)
-    data_sources: List[DataSource] = [DataSource(**d) for d in data_sources_df.to_dict(orient="records")]
+    datasource_fields = {f.name for f in fields(DataSource)}}
+    data_sources: List[DataSource] = [DataSource(**{k: v for k, v in d.items() if k in datasource_fields}) for d in data_sources_df.to_dict(orient="records")]
     data_sources_df.set_index("source")
     return data_sources, data_sources_df
 
