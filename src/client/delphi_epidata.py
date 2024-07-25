@@ -52,10 +52,9 @@ class Epidata:
         kwargs['timestamp'] = time.strftime("%Y-%m-%d %H:%M:%S %z")
         return sys.stderr.write(str(kwargs) + "\n")
 
-    # Check that this client's version matches the most recent available. This
-    # is run just once per program execution, on initial module load (see the
-    # bottom of the file). This is a function of how Python's module system
-    # works: https://docs.python.org/3/reference/import.html#the-module-cache
+    # Check that this client's version matches the most recent available.  This
+    # is indended to run just once per program execution, on initial module load.
+    # See the bottom of this file for the ultimate call to this method.
     @staticmethod
     def _version_check():
         try:
@@ -713,4 +712,7 @@ class Epidata:
 
 
 
+# This should only run once per program execution, on initial module load,
+# as a result of how Python's module system works:
+# https://docs.python.org/3/reference/import.html#the-module-cache
 Epidata._version_check()
