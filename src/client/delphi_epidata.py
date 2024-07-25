@@ -53,7 +53,7 @@ class Epidata:
         return sys.stderr.write(str(kwargs) + "\n")
 
     # Check that this client's version matches the most recent available.  This
-    # is indended to run just once per program execution, on initial module load.
+    # is intended to run just once per program execution, on initial module load.
     # See the bottom of this file for the ultimate call to this method.
     @staticmethod
     def _version_check():
