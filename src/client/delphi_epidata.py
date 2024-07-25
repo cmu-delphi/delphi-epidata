@@ -52,23 +52,24 @@ class Epidata:
         kwargs['timestamp'] = time.strftime("%Y-%m-%d %H:%M:%S %z")
         return sys.stderr.write(str(kwargs) + "\n")
 
-    # Check that this client's version matches the most recent available, runs just once per program execution (on initial module load).
+    # Check that this client's version matches the most recent available.  This
+    # is intended to run just once per program execution, on initial module load.
+    # See the bottom of this file for the ultimate call to this method.
     @staticmethod
     def _version_check():
         try:
-            latest_version = requests.get('https://pypi.org/pypi/delphi-epidata/json').json()['info']['version']
-            if latest_version != __version__:
-                Epidata.log(
-                    "Client version not up to date",
-                    client_version=__version__,
-                    latest_version=latest_version
-                )
+            request = requests.get('https://pypi.org/pypi/delphi-epidata/json', timeout=5)
+            latest_version = request.json()['info']['version']
         except Exception as e:
             Epidata.log("Error getting latest client version", exception=str(e))
+            return
 
-    # Run this once on module load. Use dunder method for Python <= 3.9 compatibility 
-    # https://stackoverflow.com/a/12718272
-    _version_check.__func__()
+        if latest_version != __version__:
+            Epidata.log(
+                "Client version not up to date",
+                client_version=__version__,
+                latest_version=latest_version
+            )
 
     # Helper function to cast values and/or ranges to strings
     @staticmethod
@@ -708,3 +709,10 @@ class Epidata:
         future = asyncio.ensure_future(async_make_calls(param_list))
         responses = loop.run_until_complete(future)
         return responses
+
+
+
+# This should only run once per program execution, on initial module load,
+# as a result of how Python's module system works:
+# https://docs.python.org/3/reference/import.html#the-module-cache
+Epidata._version_check()
