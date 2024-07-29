@@ -3,10 +3,11 @@
 All notable future changes to the `delphi_epidata` python client will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
-## [4.1.25] - 2024-07-18
+## [4.1.25] - 2024-07-29
 
 ### Includes
 - https://github.com/cmu-delphi/delphi-epidata/pull/1456
+- https://github.com/cmu-delphi/delphi-epidata/pull/1497
 
 ### Changed
 - Added a one-time check which logs a warning when the newest client version does not match the client version in use.
