@@ -9,7 +9,7 @@ from .._params import extract_strings
 from .._printer import create_printer
 from .._query import filter_fields
 from .._security import current_user, sources_protected_by_roles
-from delphi.epidata.common.logger import get_structured_logger
+from delphi_utils import get_structured_logger
 
 bp = Blueprint("covidcast_meta", __name__)
 

@@ -18,7 +18,7 @@ from tenacity import retry, stop_after_attempt
 
 from aiohttp import ClientSession, TCPConnector, BasicAuth
 
-__version__ = "4.1.24"
+__version__ = "4.1.25"
 
 _HEADERS = {"user-agent": "delphi_epidata/" + __version__ + " (Python)"}
 
@@ -43,8 +43,6 @@ class Epidata:
     BASE_URL = "https://api.delphi.cmu.edu/epidata"
     auth = None
 
-    client_version = __version__
-
     debug = False # if True, prints extra logging statements
     sandbox = False # if True, will not execute any queries
 
@@ -53,6 +51,25 @@ class Epidata:
         kwargs['event'] = evt
         kwargs['timestamp'] = time.strftime("%Y-%m-%d %H:%M:%S %z")
         return sys.stderr.write(str(kwargs) + "\n")
+
+    # Check that this client's version matches the most recent available.  This
+    # is intended to run just once per program execution, on initial module load.
+    # See the bottom of this file for the ultimate call to this method.
+    @staticmethod
+    def _version_check():
+        try:
+            request = requests.get('https://pypi.org/pypi/delphi-epidata/json', timeout=5)
+            latest_version = request.json()['info']['version']
+        except Exception as e:
+            Epidata.log("Error getting latest client version", exception=str(e))
+            return
+
+        if latest_version != __version__:
+            Epidata.log(
+                "Client version not up to date",
+                client_version=__version__,
+                latest_version=latest_version
+            )
 
     # Helper function to cast values and/or ranges to strings
     @staticmethod
@@ -692,3 +709,10 @@ class Epidata:
         future = asyncio.ensure_future(async_make_calls(param_list))
         responses = loop.run_until_complete(future)
         return responses
+
+
+
+# This should only run once per program execution, on initial module load,
+# as a result of how Python's module system works:
+# https://docs.python.org/3/reference/import.html#the-module-cache
+Epidata._version_check()
