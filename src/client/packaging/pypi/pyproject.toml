@@ -18,7 +18,7 @@ build-backend = "setuptools.build_meta" # If not defined, then legacy behavior c
 
 [project]
 name = "delphi_epidata" # REQUIRED, is the only field that cannot be marked as dynamic.
-version = "4.1.24"
+version = "4.1.25"
 description = "A programmatic interface to Delphi's Epidata API."
 readme = "README.md"
 license = { file = "LICENSE" }
