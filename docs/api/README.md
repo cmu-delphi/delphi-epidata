@@ -8,7 +8,7 @@ has_children: true
 
 This is the home of [Delphi](https://delphi.cmu.edu/)'s epidemiological data
 API for tracking epidemics such as influenza, dengue, and norovirus. Note that
-additional data, especially related to COVID-19, is available in the
+additional data, including most COVID-19 signals, is available in the
 [main Epidata API (formerly known as COVIDcast)](covidcast.md).
 
 ## Table of Contents
