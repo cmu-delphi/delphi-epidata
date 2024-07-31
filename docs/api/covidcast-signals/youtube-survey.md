@@ -17,42 +17,24 @@ grand_parent: COVIDcast Main Endpoint
 
 ## Overview
 
-The Youtube-survey is a voluntary COVID-like illness 4-question survey that was part of a research study led by the Delphi group at Carnegie Mellon University. The survey consisted of the following introduction and questions:
+This data source is based on a short survey about COVID-19-like illness
+run by the Delphi group at Carnegie Mellon.
+Youtube directed a random sample of its users to these surveys, which were
+voluntary. Users age 18 or older were eligible to complete the surveys, and
+their survey responses are held by CMU. No individual survey responses are
+shared back to Youtube.
 
-This voluntary survey is part of a research study led by the Delphi group at Carnegie Mellon University. Even if you are healthy, your responses may contribute to a better public health understanding of where the coronavirus pandemic is moving, to improve our local and national responses. The data captured does not include any personally identifiable information about you and your answers to all questions will remain confidential. Published results will be in aggregate and will not identify individual participants or their responses. This study is not conducted by YouTube and no individual responses will be shared back to YouTube. There are no foreseeable risks in participating and no compensation is offered. If you have any questions, contact: delphi-admin-survey-yt@lists.andrew.cmu.edu.
+This survey was an early version of the [COVID-19 Trends and Impact Survey (CTIS)](../../symptom-survey/), collecting data only about COVID-19 symptoms. CTIS is much longer-running and more detailed, also collecting belief and behavior data, and is recommended in most usecases. See our [surveys
+page](https://delphi.cmu.edu/covid19/ctis/) for more detail about how CTIS works.
 
-Qualifying Questions
-You must be 18 years or older to take this survey. Are you 18 years or older?
-What is the ZIP Code of the city or town where you slept last night? [We mean the place where you are currently staying. This may be different from your usual residence.]
-What is your current ZIP code?
+[TODO note that indicators differ between the two surveys for unknown reasons]
 
-List of Symptoms
-Fever (100°F or higher)
-Sore throat
-Cough
-Shortness of breath
-Difficulty breathing
+As of late April 2020, the number of Youtube survey responses we
+received each day was 4-7 thousand. This was sparse at finer geographic levels, so this indicator only reports at the state level. The survey ran from April 21, 2020 to June
+17, 2020, collecting about 159 thousand responses in the United States in that
+time.
 
-Survey Question 1
-"How many additional people in your local community that you know personally are sick (fever, along with at least one other symptom from the above list)?
-
-Survey Question 2
-"How many people in your household (including yourself) are sick (fever, along with at least one other symptom from the above list)?"
-
-Survey Question 3
-"How many people in your household (including yourself) are experiencing at least one symptom from above?"
-
-Survey Question 4
-"In the past 24 hours, have you or anyone in your household experienced any of the following:"
-
-| Signal | Description |
-| --- | --- |
-| `smoothed_outpatient_covid` | Estimated percentage of outpatient doctor visits with confirmed COVID-19, based on Change Healthcare claims data that has been de-identified in accordance with HIPAA privacy regulations, smoothed in time using a Gaussian linear smoother <br/> **Earliest date available:** 2020-02-01 |
-| `smoothed_adj_outpatient_covid` | Same, but with systematic day-of-week effects removed; see [details below](#day-of-week-adjustment) <br/> **Earliest date available:** 2020-02-01 |
-| `smoothed_outpatient_cli` | Estimated percentage of outpatient doctor visits primarily about COVID-related symptoms, based on Change Healthcare claims data that has been de-identified in accordance with HIPAA privacy regulations, smoothed in time using a Gaussian linear smoother <br/> **Earliest date available:** 2020-02-01 |
-| `smoothed_adj_outpatient_cli` | Same, but with systematic day-of-week effects removed; see [details below](#day-of-week-adjustment) <br/> **Earliest date available:** 2020-02-01 |
-| `smoothed_outpatient_flu` | Estimated percentage of outpatient doctor visits with confirmed influenza, based on Change Healthcare claims data that has been de-identified in accordance with HIPAA privacy regulations, smoothed in time using a Gaussian linear smoother <br/> **Earliest issue available:** 2021-12-06 <br/> **Earliest date available:** 2020-02-01 |
-| `smoothed_adj_outpatient_flu` | Same, but with systematic day-of-week effects removed; see [details below](#day-of-week-adjustment) <br/> **Earliest issue available:** 2021-12-06 <br/> **Earliest date available:** 2020-02-01 |
+We produce [influenza-like and COVID-like illness indicators](#ili-and-cli-indicators) based on the survey data.
 
 ## Table of Contents
 {: .no_toc .text-delta}
@@ -62,44 +44,135 @@ Survey Question 4
 
 ## Survey Text and Questions
 
-The survey starts with the following 5 questions:
+The survey contains the following 5 questions:
 
-1. In the past 24 hours, have you or anyone in your household had any of the
-   following (yes/no for each):
+1. In the past 24 hours, have you or anyone in your household experienced any of the following:
    - (a) Fever (100 °F or higher)
    - (b) Sore throat
    - (c) Cough
    - (d) Shortness of breath
    - (e) Difficulty breathing
-2. How many people in your household (including yourself) are sick (fever, along
-   with at least one other symptom from the above list)?
-3. How many people are there in your household in total (including yourself)?
-   *[Beginning in wave 4, this question asks respondents to break the number
-   down into three age categories.]*
+2. How many people in your household (including yourself) are sick (fever, along with at least one other symptom from the above list)?
+3. How many people are there in your household (including yourself)?
 4. What is your current ZIP code?
-5. How many additional people in your local community that you know personally
-   are sick (fever, along with at least one other symptom from the above list)?
-
-Beyond these 5 questions, there are also many other questions that follow in the
-survey, which go into more detail on symptoms, contacts, risk factors, and
-demographics. These are used for many of our behavior and testing indicators
-below. The full text of the survey (including all deployed versions) can be
-found on our [questions and coding page](../../symptom-survey/coding.md).
-
-### Day-of-Week Adjustment
+5. How many additional people in your local community that you know personally are sick (fever, along with at least one other symptom from the above list)?
 
 
+## ILI and CLI Indicators
 
-### Backwards Padding
+We define COVID-like illness (fever, along with cough, or shortness of breath,
+or difficulty breathing) or influenza-like illness (fever, along with cough or
+sore throat) for use in forecasting and modeling. Using this survey data, we
+estimate the percentage of people (age 18 or older) who have a COVID-like
+illness, or influenza-like illness, in a given location, on a given day.
 
+| Signals | Description |
+| --- | --- |
+| `raw_cli` and `smoothed_cli` | Estimated percentage of people with COVID-like illness <br/> **Earliest date available:** 2020-04-21 |
+| `raw_ili` and `smoothed_ili` | Estimated percentage of people with influenza-like illness <br/> **Earliest date available:** 2020-04-21 |
+
+Influenza-like illness or ILI is a standard indicator, and is defined by the CDC
+as: fever along with sore throat or cough. From the list of symptoms from Q1 on
+our survey, this means a and (b or c).
+
+COVID-like illness or CLI is not a standard indicator. Through our discussions
+with the CDC, we chose to define it as: fever along with cough or shortness of
+breath or difficulty breathing. From the list of symptoms from Q1 on
+our survey, this means a and (c or d or e).
+
+Symptoms alone are not sufficient to diagnose influenza or coronavirus
+infections, and so these ILI and CLI indicators are *not* expected to be
+unbiased estimates of the true rate of influenza or coronavirus infections.
+These symptoms can be caused by many other conditions, and many true infections
+can be asymptomatic. Instead, we expect these indicators to be useful for
+comparison across the United States and across time, to determine where symptoms
+appear to be increasing.
+
+**Smoothing.** The signals beginning with `smoothed` estimate the same quantities as their
+`raw` partners, but are smoothed in time to reduce day-to-day sampling noise;
+see [details below](#smoothing). Crucially, because the smoothed signals combine
+information across multiple days, they have larger sample sizes and hence are
+available for more locations than the raw signals.
+
+
+### Defining Household ILI and CLI
+
+[TODO check]
+
+For a single survey, we are interested in the quantities:
+
+- $$X =$$ the number of people in the household with ILI;
+- $$Y =$$ the number of people in the household with CLI;
+- $$N =$$ the number of people in the household.
+
+Note that $$N$$ comes directly from the answer to Q3, but neither $$X$$ nor
+$$Y$$ can be computed directly (because Q2 does not give an answer to the
+precise symptomatic profile of all individuals in the household, it only asks
+how many individuals have fever and at least one other symptom from the list).
+
+We hence estimate $$X$$ and $$Y$$ with the following simple strategy. Consider
+ILI, without a loss of generality (we apply the same strategy to CLI). Let $$Z$$
+be the answer to Q2.
+
+- If the answer to Q1 does not meet the ILI definition, then we report $$X=0$$.
+- If the answer to Q1 does meet the ILI definition, then we report $$X = Z$$.
+
+This can only "over count" (result in too large estimates of) the true $$X$$ and
+$$Y$$. For example, this happens when some members of the household experience
+ILI that does not also qualify as CLI, while others experience CLI that does not
+also qualify as ILI. In this case, for both $$X$$ and $$Y$$, our simple strategy
+would return the sum of both types of cases. However, given the extreme degree
+of overlap between the definitions of ILI and CLI, it is reasonable to believe
+that, if symptoms across all household members qualified as both ILI and CLI,
+each individual would have both, or neither---with neither being more common.
+Therefore we do not consider this "over counting" phenomenon practically
+problematic.
+
+
+### Estimating Percent ILI and CLI
+
+[TODO check]
+
+Let $$x$$ and $$y$$ be the number of people with ILI and CLI, respectively, over
+a given time period, and in a given location (for example, the time period being
+a particular day, and a location being a particular state). Let $$n$$ be the
+total number of people in this location. We are interested in estimating the
+true ILI and CLI percentages, which we denote by $$p$$ and $$q$$, respectively:
+
+$$
+p = 100 \cdot \frac{x}{n}
+\quad\text{and}\quad
+q = 100 \cdot \frac{y}{n}.
+$$
+
+In a given aggregation unit (for example, daily-state), let $$X_i$$ and $$Y_i$$
+denote number of ILI and CLI cases in the household, respectively (computed
+according to the simple strategy [described
+above](#defining-household-ili-and-cli)), and let $$N_i$$ denote the total
+number of people in the household, in survey $$i$$, out of $$m$$ surveys we
+collected. Then our unweighted estimates of $$p$$ and $$q$$ are:
+
+$$
+\hat{p} = 100 \cdot \frac{1}{m}\sum_{i=1}^m \frac{X_i}{N_i}
+\quad\text{and}\quad
+\hat{q} = 100 \cdot \frac{1}{m}\sum_{i=1}^m \frac{Y_i}{N_i}.
+$$
 
 
 ### Smoothing
 
+The smoothed versions of all `youtube-survey` signals (with `smoothed` prefix) are
+calculated using seven day pooling. For example, the estimate reported for June
+7 in a specific geographical area is formed by
+collecting all surveys completed between June 1 and 7 (inclusive) and using that
+data in the estimation procedures described above.
 
 
 ## Lag and Backfill
 
+Lag is 1 day. Backfill continues for a couple days.
+
+[TODO more detail]
 
 
 ## Limitations
@@ -111,16 +184,11 @@ limitations of this survey data.
   they are age 18 or older, they are currently located in the USA, and they are
   an active user of Youtube. The survey data does not report on children under
   age 18, and the Youtube adult user population may differ from the United
-  States population generally in important ways. We use our [survey
-  weighting](#survey-weighting-and-estimation) to adjust the estimates to match
-  age and gender demographics by state, but this process doesn't adjust for
-  other demographic biases we may not be aware of.
+  States population generally in important ways. We don't adjust for any
+  demographic biases.
 * **Non-response bias.** The survey is voluntary, and people who accept the
   invitation when it is presented to them on Youtube may be different from
-  those who do not. The [survey weights provided by
-  Youtube](#survey-weighting-and-estimation) attempt to model the probability
-  of response for each user and hence adjust for this, but it is difficult to
-  tell if these weights account for all possible non-response bias.
+  those who do not.
 * **Social desirability.** Previous survey research has shown that people's
   responses to surveys are often biased by what responses they believe are
   socially desirable or acceptable. For example, if it there is widespread
@@ -129,13 +197,13 @@ limitations of this survey data.
   expect the social desirability effect to be smaller, but it may still be
   present.
 * **False responses.** As with anything on the Internet, a small percentage of
-  users give deliberately incorrect responses. We discard a small number of
+  users give deliberately incorrect responses. [TODO check if true] We discard a small number of
   responses that are obviously false, but do **not** perform extensive
-  filtering. However, the large size of the study, and our procedure for
+  filtering. However, the large size of the study, and [TODO check if true] our procedure for
   ensuring that each respondent can only be counted once when they are invited
   to take the survey, prevents individual respondents from having a large effect
   on results.
-* **Repeat invitations.** Individual respondents can be invited by Youtube to
+* **Repeat invitations.** [TODO check] Individual respondents can be invited by Youtube to
   take the survey several times. Usually Youtube only re-invites a respondent
   after one month. Hence estimates of values on a single day are calculated
   using independent survey responses from unique respondents (or, at least,
@@ -151,16 +219,12 @@ even if point estimates are biased.
 
 ### Privacy Restrictions
 
-To protect respondent privacy, we discard any estimate (whether at a county,
-MSA, HRR, or state level) that is based on fewer than 100 survey responses. For
+To protect respondent privacy, we discard any estimate that is based on fewer than 100 survey responses. For
 signals reported using a 7-day average (those beginning with `smoothed_`), this
 means a geographic area must have at least 100 responses in 7 days to be
 reported.
 
-This affects some items more than others. For instance, items about vaccine
-hesitancy reasons are only asked of respondents who are unvaccinated and
-hesitant, not to all survey respondents. It also affects some geographic areas
-more than others, particularly rural areas with low population densities. When
-doing analysis of county-level data, one should be aware that missing counties
-are typically more rural and less populous than those present in the data, which
-may introduce bias into the analysis.
+This affects some items more than others. It affects some geographic areas
+more than others, particularly areas with smaller populations. This affect is
+less pronounced with smoothed signals, since responses are pooled across a
+longer time period.
