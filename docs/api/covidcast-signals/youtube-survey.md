@@ -8,7 +8,7 @@ grand_parent: COVIDcast Main Endpoint
 {: .no_toc}
 
 * **Source name:** `youtube-survey`
-* **Earliest issue available:** April, 04, 2020
+* **Earliest issue available:** May 01, 2020
 * **Number of data revisions since May 19, 2020:** 0
 * **Date of last change:** Never
 * **Available for:** state (see [geography coding docs](../covidcast_geography.md))
@@ -19,22 +19,31 @@ grand_parent: COVIDcast Main Endpoint
 
 This data source is based on a short survey about COVID-19-like illness
 run by the Delphi group at Carnegie Mellon.
-Youtube directed a random sample of its users to these surveys, which were
+[Youtube directed](https://9to5google.com/2020/04/29/google-covid-19-cmu-research-survey/)
+a random sample of its users to these surveys, which were
 voluntary. Users age 18 or older were eligible to complete the surveys, and
 their survey responses are held by CMU. No individual survey responses are
 shared back to Youtube.
 
-This survey was an early version of the [COVID-19 Trends and Impact Survey (CTIS)](../../symptom-survey/), collecting data only about COVID-19 symptoms. CTIS is much longer-running and more detailed, also collecting belief and behavior data, and is recommended in most usecases. See our [surveys
-page](https://delphi.cmu.edu/covid19/ctis/) for more detail about how CTIS works.
+This survey was a pared-down version of the
+[COVID-19 Trends and Impact Survey (CTIS)](../../symptom-survey/),
+collecting data only about COVID-19 symptoms. CTIS is much longer-running
+and more detailed, also collecting belief and behavior data. See our
+[surveys page](https://delphi.cmu.edu/covid19/ctis/) for more detail
+about how CTIS works.
 
-[TODO note that indicators differ between the two surveys for unknown reasons]
+The two surveys report some of the same metrics. While nominally the same,
+note that values from the same dates differ between the two surveys for
+[unknown reasons](#limitations).
 
-As of late April 2020, the number of Youtube survey responses we
-received each day was 4-7 thousand. This was sparse at finer geographic levels, so this indicator only reports at the state level. The survey ran from April 21, 2020 to June
-17, 2020, collecting about 159 thousand responses in the United States in that
-time.
+As of late April 2020, the number of Youtube survey responses we received each
+day was 4-7 thousand. This was not enough coverage to report at finer
+geographic levels, so this indicator only reports at the state level. The
+survey ran from April 21, 2020 to June 17, 2020, collecting about 159
+thousand responses in the United States in that time.
 
-We produce [influenza-like and COVID-like illness indicators](#ili-and-cli-indicators) based on the survey data.
+We produce [influenza-like and COVID-like illness indicators](#ili-and-cli-indicators)
+based on the survey data.
 
 ## Table of Contents
 {: .no_toc .text-delta}
