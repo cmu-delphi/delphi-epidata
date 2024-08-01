@@ -4,6 +4,8 @@ parent: Inactive Signals
 grand_parent: COVIDcast Main Endpoint
 ---
 
+[//]: # (code at https://github.com/cmu-delphi/covid-19/tree/deeb4dc1e9a30622b415361ef6b99198e77d2a94/youtube)
+
 # Youtube Survey
 {: .no_toc}
 
@@ -28,7 +30,8 @@ shared back to Youtube.
 This survey was a pared-down version of the
 [COVID-19 Trends and Impact Survey (CTIS)](../../symptom-survey/),
 collecting data only about COVID-19 symptoms. CTIS is much longer-running
-and more detailed, also collecting belief and behavior data. See our
+and more detailed, also collecting belief and behavior data. CTIS also reports
+demographic-corrected versions of some metrics. See our
 [surveys page](https://delphi.cmu.edu/covid19/ctis/) for more detail
 about how CTIS works.
 
@@ -97,76 +100,14 @@ can be asymptomatic. Instead, we expect these indicators to be useful for
 comparison across the United States and across time, to determine where symptoms
 appear to be increasing.
 
-**Smoothing.** The signals beginning with `smoothed` estimate the same quantities as their
-`raw` partners, but are smoothed in time to reduce day-to-day sampling noise;
-see [details below](#smoothing). Crucially, because the smoothed signals combine
-information across multiple days, they have larger sample sizes and hence are
-available for more locations than the raw signals.
 
-
-### Defining Household ILI and CLI
-
-[TODO check]
-
-For a single survey, we are interested in the quantities:
-
-- $$X =$$ the number of people in the household with ILI;
-- $$Y =$$ the number of people in the household with CLI;
-- $$N =$$ the number of people in the household.
-
-Note that $$N$$ comes directly from the answer to Q3, but neither $$X$$ nor
-$$Y$$ can be computed directly (because Q2 does not give an answer to the
-precise symptomatic profile of all individuals in the household, it only asks
-how many individuals have fever and at least one other symptom from the list).
-
-We hence estimate $$X$$ and $$Y$$ with the following simple strategy. Consider
-ILI, without a loss of generality (we apply the same strategy to CLI). Let $$Z$$
-be the answer to Q2.
-
-- If the answer to Q1 does not meet the ILI definition, then we report $$X=0$$.
-- If the answer to Q1 does meet the ILI definition, then we report $$X = Z$$.
-
-This can only "over count" (result in too large estimates of) the true $$X$$ and
-$$Y$$. For example, this happens when some members of the household experience
-ILI that does not also qualify as CLI, while others experience CLI that does not
-also qualify as ILI. In this case, for both $$X$$ and $$Y$$, our simple strategy
-would return the sum of both types of cases. However, given the extreme degree
-of overlap between the definitions of ILI and CLI, it is reasonable to believe
-that, if symptoms across all household members qualified as both ILI and CLI,
-each individual would have both, or neither---with neither being more common.
-Therefore we do not consider this "over counting" phenomenon practically
-problematic.
-
+## Estimation
 
 ### Estimating Percent ILI and CLI
 
-[TODO check]
-
-Let $$x$$ and $$y$$ be the number of people with ILI and CLI, respectively, over
-a given time period, and in a given location (for example, the time period being
-a particular day, and a location being a particular state). Let $$n$$ be the
-total number of people in this location. We are interested in estimating the
-true ILI and CLI percentages, which we denote by $$p$$ and $$q$$, respectively:
-
-$$
-p = 100 \cdot \frac{x}{n}
-\quad\text{and}\quad
-q = 100 \cdot \frac{y}{n}.
-$$
-
-In a given aggregation unit (for example, daily-state), let $$X_i$$ and $$Y_i$$
-denote number of ILI and CLI cases in the household, respectively (computed
-according to the simple strategy [described
-above](#defining-household-ili-and-cli)), and let $$N_i$$ denote the total
-number of people in the household, in survey $$i$$, out of $$m$$ surveys we
-collected. Then our unweighted estimates of $$p$$ and $$q$$ are:
-
-$$
-\hat{p} = 100 \cdot \frac{1}{m}\sum_{i=1}^m \frac{X_i}{N_i}
-\quad\text{and}\quad
-\hat{q} = 100 \cdot \frac{1}{m}\sum_{i=1}^m \frac{Y_i}{N_i}.
-$$
-
+Estimates are calculated using the
+[same method as CTIS](./fb-survey#estimating-percent-ili-and-cli).
+However, the Youtube survey does not do weighting.
 
 ### Smoothing
 
@@ -174,14 +115,16 @@ The smoothed versions of all `youtube-survey` signals (with `smoothed` prefix) a
 calculated using seven day pooling. For example, the estimate reported for June
 7 in a specific geographical area is formed by
 collecting all surveys completed between June 1 and 7 (inclusive) and using that
-data in the estimation procedures described above.
-
+data in the estimation procedures described above. Because the smoothed signals combine
+information across multiple days, they have larger sample sizes and hence are
+available for more locations than the raw signals.
 
 ## Lag and Backfill
 
-Lag is 1 day. Backfill continues for a couple days.
-
-[TODO more detail]
+This indicator has a lag of 2 days. Reported values can be revised for one
+day (corresponding to a lag of 3 days), due to how we receive survey
+responses. However, these tend to be associated with minimal changes in
+value.
 
 
 ## Limitations
@@ -205,19 +148,6 @@ limitations of this survey data.
   to answer that they *do*. This survey is anonymous and online, meaning we
   expect the social desirability effect to be smaller, but it may still be
   present.
-* **False responses.** As with anything on the Internet, a small percentage of
-  users give deliberately incorrect responses. [TODO check if true] We discard a small number of
-  responses that are obviously false, but do **not** perform extensive
-  filtering. However, the large size of the study, and [TODO check if true] our procedure for
-  ensuring that each respondent can only be counted once when they are invited
-  to take the survey, prevents individual respondents from having a large effect
-  on results.
-* **Repeat invitations.** [TODO check] Individual respondents can be invited by Youtube to
-  take the survey several times. Usually Youtube only re-invites a respondent
-  after one month. Hence estimates of values on a single day are calculated
-  using independent survey responses from unique respondents (or, at least,
-  unique Youtube accounts), whereas estimates from different months may involve
-  the same respondents.
 
 Whenever possible, you should compare this data to other independent sources. We
 believe that while these biases may affect point estimates -- that is, they may
@@ -237,3 +167,9 @@ This affects some items more than others. It affects some geographic areas
 more than others, particularly areas with smaller populations. This affect is
 less pronounced with smoothed signals, since responses are pooled across a
 longer time period.
+
+
+## Source and Licensing
+
+This indicator aggregates responses from a Delphi-run survey that is hosted on the Youtube platform.
+The data is licensed as [CC BY-NC](../covidcast_licensing.md#creative-commons-attribution-noncommercial).
