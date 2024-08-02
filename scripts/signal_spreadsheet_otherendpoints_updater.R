@@ -517,10 +517,20 @@ vaccine_filter <- grepl("vaccin", output$Signal, ignore.case = TRUE) |
   grepl("vaccin", output$Description, ignore.case = TRUE)
 output[, col] <- case_when(
   !is.na(output[, col, drop = TRUE]) ~ output[, col, drop = TRUE],
-  map_lgl(output$Signal, ~ any(.x == c("location", "state", "epiweek", "date"))) ~ NA_character_,
-  hosp_filter & !test_filter & !vaccine_filter ~ "Hospitalizations",
-  !hosp_filter & test_filter & !vaccine_filter ~ "Testing",
-  !hosp_filter & !test_filter & vaccine_filter ~ "Vaccines"
+  hosp_filter ~ "Hospitalizations",
+  test_filter ~ "Testing",
+  vaccine_filter ~ "Vaccines"
+)
+
+col <- "Severity Pyramid Rungs"
+icu_filter <- grepl("icu", output$Signal, ignore.case = TRUE) |
+  grepl("icu", output$Description, ignore.case = TRUE)
+output[, col] <- case_when(
+  !is.na(output[, col, drop = TRUE]) ~ output[, col, drop = TRUE],
+  hosp_filter ~ "hospitalized",
+  test_filter ~ "ascertained (case)",
+  vaccine_filter ~ "population",
+  icu_filter ~ "icu"
 )
 
 
