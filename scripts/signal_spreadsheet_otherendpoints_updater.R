@@ -24,6 +24,7 @@ suppressPackageStartupMessages({
   library(readr) # Import csv sheet
   library(pipeR) # special pipe %>>%
   library(glue) # f-string formatting
+  library(purrr)
 })
 
 options(warn = 1)
@@ -453,6 +454,74 @@ output[, col] <- values[output$`Source Subdivision`]
 
 
 
+col <- "Pathogen/\r\nDisease Area"
+# covid,flu,rsv,pneumonia,dengue,norovirus
+values <- c(
+  "cdc" = NA_character_,
+  "covid_hosp_facility_lookup" = NA_character_,
+  "covid_hosp_facility" = NA_character_,
+  "covid_hosp_state_timeseries" = NA_character_,
+  "delphi" = NA_character_,
+  "dengue_nowcast" = "dengue",
+  "dengue_sensors" = "dengue",
+  "ecdc_ili" = "flu",
+  "flusurv" = "flu",
+  "fluview_clinical" = "flu",
+  "fluview_meta" = "flu",
+  "fluview" = "flu",
+  "gft" = NA_character_,
+  "ght" = NA_character_,
+  "kcdc_ili" = "flu",
+  "meta_norostat" = "norovirus",
+  "meta" = NA_character_,
+  "nidss_dengue" = "dengue",
+  "nidss_flu" = "flu",
+  "norostat" = "norovirus",
+  "nowcast" = NA_character_,
+  "paho_dengue" = "dengue",
+  "quidel" = NA_character_,
+  "sensors" = NA_character_,
+  "twitter" = NA_character_,
+  "wiki" = NA_character_
+)
+output[, col] <- values[output$`Source Subdivision`]
+
+flu_filter <- grepl("flu", output$Signal, ignore.case = TRUE) |
+  grepl("flu", output$Description, ignore.case = TRUE)
+covid_filter <- grepl("covid", output$Signal, ignore.case = TRUE) |
+  grepl("covid", output$Description, ignore.case = TRUE)
+dengue_filter <- grepl("dengue", output$Signal, ignore.case = TRUE) |
+  grepl("dengue", output$Description, ignore.case = TRUE)
+norovirus_filter <- grepl("noro", output$Signal, ignore.case = TRUE) |
+  grepl("noro", output$Description, ignore.case = TRUE)
+rsv_filter <- grepl("rsv", output$Signal, ignore.case = TRUE) |
+  grepl("rsv", output$Description, ignore.case = TRUE)
+output[, col] <- case_when(
+  !is.na(output[, col, drop = TRUE]) ~ output[, col, drop = TRUE],
+  map_lgl(output$Signal, ~ any(.x == c("location", "state", "epiweek", "date"))) ~ NA_character_,
+  flu_filter & !covid_filter & !dengue_filter & !rsv_filter ~ "flu",
+  !flu_filter & covid_filter & !dengue_filter & !rsv_filter ~ "covid",
+  !flu_filter & !covid_filter & dengue_filter & !rsv_filter ~ "dengue",
+  !flu_filter & !covid_filter & !dengue_filter & rsv_filter ~ "rsv"
+)
+
+
+col <- "Signal Type"
+hosp_filter <- grepl("hospitalized", output$Signal, ignore.case = TRUE) |
+  grepl("hospitalized", output$Description, ignore.case = TRUE) |
+  grepl("admission", output$Signal, ignore.case = TRUE) |
+  grepl("admission", output$Description, ignore.case = TRUE)
+test_filter <- grepl("test", output$Signal, ignore.case = TRUE) |
+  grepl("test", output$Description, ignore.case = TRUE)
+vaccine_filter <- grepl("vaccin", output$Signal, ignore.case = TRUE) |
+  grepl("vaccin", output$Description, ignore.case = TRUE)
+output[, col] <- case_when(
+  !is.na(output[, col, drop = TRUE]) ~ output[, col, drop = TRUE],
+  map_lgl(output$Signal, ~ any(.x == c("location", "state", "epiweek", "date"))) ~ NA_character_,
+  hosp_filter & !test_filter & !vaccine_filter ~ "Hospitalizations",
+  !hosp_filter & test_filter & !vaccine_filter ~ "Testing",
+  !hosp_filter & !test_filter & vaccine_filter ~ "Vaccines"
+)
 
 
 # Save updated signals table to CSV [readr::write_csv]
