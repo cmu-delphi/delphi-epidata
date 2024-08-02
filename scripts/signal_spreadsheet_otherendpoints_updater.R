@@ -60,6 +60,19 @@ output <- left_join(
 signals <- tibble::tribble(
   ~data_source, ~signal, ~description, ~include_in_signal_discovery_app,
   
+  "cdc", "location", "Two character state/territory code where the data was collected (51 states, including DC)", FALSE,
+  "cdc", "epiweek", "The epiweek (YYYY-MM-DD) during which the data was collected", FALSE,
+  "cdc", "num1", "Hits for pages like '%What You Should Know for the % Influenza Season%'", TRUE,
+  "cdc", "num2", "Hits for pages like '%What To Do If You Get Sick%'", TRUE,
+  "cdc", "num3", "Hits for pages like '%Flu Symptoms & Severity%'", TRUE,
+  "cdc", "num4", "Hits for pages like '%How Flu Spreads%'", TRUE,
+  "cdc", "num5", "Hits for pages like '%What You Should Know About Flu Antiviral Drugs%'", TRUE,
+  "cdc", "num6", "Hits for pages like '%Weekly US Map%'", TRUE,
+  "cdc", "num7", "Hits for pages like '%Basics%'", TRUE,
+  "cdc", "num8", "Hits for pages like '%Flu Activity & Surveillance%'", TRUE,
+  "cdc", "total", "Total number of hits for all CDC pages", TRUE,
+  "cdc", "value", "", FALSE,
+  
   "covid_hosp_state_timeseries", "issue", "the day (YYYYMMDD) that the dataset was published", FALSE,
   "covid_hosp_state_timeseries", "state", "The two character state code", FALSE,
   "covid_hosp_state_timeseries", "date", "the day (YYYYMMDD) to which the data applies. For data taken from daily snapshot files, the `date` field is filled from the provided `reporting_cutoff_start` value, defined as 'Look back date start - The latest reports from each hospital is summed for this report starting with this date.'", FALSE,
@@ -183,7 +196,7 @@ signals <- tibble::tribble(
   "covid_hosp_facility", "publication_date", "the day (YYYYMMDD) that the dataset was published. equivalent to `issue` in the state timeseries and metadata tables, but renamed here for clarity.", FALSE,
   "covid_hosp_facility", "hospital_pk", "This unique key for the given hospital that will match the ccn column if it exists, otherwise, it is a derived unique key.", FALSE,
   "covid_hosp_facility", "collection_week", "The first day (YYYYMMDD) of the week to which the data applies. This is a weekly rollup of daily data from Friday to Thursday. as a result, we can't use Sunday-to-Saturday epiweeks (YYYYMM) to identify the week, so we instead use the date of Friday, as is done in the upstream data source.", FALSE,
-  "covid_hosp_facility", "state", "The two digit state/territory code for the hospital.", FALSE,
+  "covid_hosp_facility", "state", "The two character state/territory code for the hospital.", FALSE,
   "covid_hosp_facility", "ccn", "CMS Certification Number (CCN) of the given facility ", FALSE,
   "covid_hosp_facility", "hospital_name", "The name of the facility reporting.", FALSE,
   "covid_hosp_facility", "address", "The address of the facility reporting.", FALSE,
@@ -287,6 +300,22 @@ signals <- tibble::tribble(
   "covid_hosp_facility_lookup", "is_metro_micro", "This is based on whether the facility serves a Metropolitan or Micropolitan area. True if yes, and false if no.", FALSE,
   "covid_hosp_facility_lookup", "state", "The two digit state/territory code for the hospital.", FALSE,
   "covid_hosp_facility_lookup", "zip", "The 5-digit zip code of the facility reporting.", FALSE,
+  
+  "delphi", "epiweek", "", FALSE,
+  "delphi", "system", "", FALSE,
+  "delphi", "forecast", "Forecast output as dataframe", FALSE,
+  
+  "dengue_nowcast", "location", "Two character state/territory code", FALSE,
+  "dengue_nowcast", "epiweek", "The epiweek (YYYY-MM-DD) associated with the data", FALSE,
+  "dengue_nowcast", "value", "Dengue fever nowcast", FALSE,
+  "dengue_nowcast", "std", "Standard deviation associated with the nowcast", FALSE,
+  
+  "nowcast", "location", "Two character state/territory code", FALSE,
+  "nowcast", "epiweek", "The epiweek (YYYY-MM-DD) associated with the data", FALSE,
+  "nowcast", "value", "Nowcast", FALSE,
+  "nowcast", "std", "Standard deviation associated with the nowcast", FALSE,
+  
+  
 )
 
 
