@@ -30,6 +30,7 @@ from . import (
     wiki,
     signal_dashboard_status,
     signal_dashboard_coverage,
+    differentiated_access
 )
 
 endpoints = [
@@ -64,6 +65,7 @@ endpoints = [
     wiki,
     signal_dashboard_status,
     signal_dashboard_coverage,
+    differentiated_access
 ]
 
 __all__ = ["endpoints"]
