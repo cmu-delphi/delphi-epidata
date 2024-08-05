@@ -44,12 +44,10 @@ def get_timestamp_string():
 
 def trigger_further_processing():
     """Add CDCP processing scripts to the Automation run queue."""
-
     # connect
     u, p = secrets.db.auto
-    cnx = mysql.connector.connect(user=u, password=p, database="automation")
+    cnx = mysql.connector.connect(user=u, password=p, database="automation", host=secrets.db.host)
     cur = cnx.cursor()
-
     # add step "Process CDCP Data" to queue
     cur.execute("CALL automation.RunStep(46)")
 
