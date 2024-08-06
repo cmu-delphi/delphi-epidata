@@ -422,7 +422,20 @@ signal_sheet <- bind_rows(
     "nowcast", "value", "Nowcast", TRUE,
     "nowcast", "std", "Standard deviation associated with the nowcast", FALSE,
     
-
+    "paho_dengue", "issue", "The epiweek of publication (e.g. issue 201453 includes epiweeks up to and including 2014w53, but not 2015w01 or following)", FALSE,
+    "paho_dengue", "epiweek", "The epiweek during which the data was collected", FALSE,
+    "paho_dengue", "region", "The name of the location (3 letter country code, ISO 3166-1 alpha3)", FALSE,
+    "paho_dengue", "lag", "Number of weeks between `epiweek` and `issue`", FALSE,
+    "paho_dengue", "total_pop", "Population of country in thousands", TRUE,
+    "paho_dengue", "serotype", "Identified dengue serotype", TRUE,
+    "paho_dengue", "num_dengue", "Cumulative cases of dengue in calendar year", TRUE,
+    "paho_dengue", "incidence_rate", "Cases of dengue per 100k population", TRUE,
+    "paho_dengue", "num_severe", "Cumulative cases of severe dengue in calendar year", TRUE,
+    "paho_dengue", "num_deaths", "Cumulative deaths in calendar year", TRUE,
+    
+    "quidel", "location", "HHS1-10", FALSE,
+    "quidel", "epiweek", "The epiweek during which the queries were executed", FALSE,
+    "quidel", "value", "Percent of positive influenza tests per facility, within each epiweek", FALSE,
     
     "sensors", "name", "Abbreviation of sensor name. Some correspond to other data sources Delphi publishes. No auth token required to access: `sar3`, `epic`, `arch`. Auth token required to access: `twtr`, `gft`, `ght`, `ghtj`, `cdc`, `quid`, `wiki`.", FALSE,
     "sensors", "location", "Two character state abbreviation", FALSE,
