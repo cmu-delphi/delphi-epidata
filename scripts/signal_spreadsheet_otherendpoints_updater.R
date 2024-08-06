@@ -442,6 +442,18 @@ signal_sheet <- bind_rows(
     "sensors", "epiweek", "The epiweek (YYYY-MM-DD) associated with the data", FALSE,
     "sensors", "value", "Sensorized value", TRUE,    
     
+    "twitter", "date", "The date a tweet was made", FALSE,
+    "twitter", "state", "Two-letter U.S. state abbreviation", FALSE,
+    "twitter", "num", "The number of flu-related tweets", FALSE,
+    "twitter", "total", "The total number of tweets", FALSE,
+    "twitter", "percent", "The percent of tweets made that were related to flu", FALSE,
+    
+    "wiki", "article", "Name of the article (e.g. 'avian_influenza')", FALSE,
+    "wiki", "epiweek", "The date of article access", FALSE,
+    "wiki", "count", "Number of visits to the named article in a given epiweek", TRUE,
+    "wiki", "total", "Total number of English-language article visits in a given epiweek", TRUE,
+    "wiki", "value", "The percent of the English-language article visits in a given epiweek that were made to the named article, multipled by 1 million.", TRUE,
+    "wiki", "hour", "Ignore. Should be removed, this seems to be a remnant of our data processing", FALSE,
     
   )
 )
@@ -632,7 +644,8 @@ output[, col] <- case_when(
   !flu_filter & covid_filter & !dengue_filter & !rsv_filter ~ "covid",
   !flu_filter & !covid_filter & dengue_filter & !rsv_filter ~ "dengue",
   !flu_filter & !covid_filter & !dengue_filter & rsv_filter ~ "rsv",
-  output$`Source Subdivision` == "gft" ~ "flu"
+  output$`Source Subdivision` == "gft" ~ "flu",
+  output$`Include in signal discovery app` == FALSE ~ NA_character_
 )
 
 
@@ -661,6 +674,21 @@ output[, col] <- case_when(
   test_filter ~ "ascertained (case)",
   vaccine_filter ~ "population",
   icu_filter ~ "icu"
+)
+
+
+col <- "Use Resrictions"
+public_filter <- grepl("public", output$License, ignore.case = TRUE) |
+  output$`Who may access this signal?` == "public"
+output[, col] <- case_when(
+  public_filter ~ NA_character_,
+  output$`Source Subdivision` == "quidel" ~ "Quidel provides Delphi data solely for internal research use and non-commercial research and analytics purposes for developing models for forecasting influenza-like epidemics and pandemics (CC BY).",
+)
+
+
+col <- "Link to DUA"
+output[, col] <- case_when(
+  output$`Source Subdivision` == "quidel" ~ "https://drive.google.com/drive/u/1/folders/1HhOEbXlZXN9YpHBWOfrY7Wo2USVVfJVS",
 )
 
 
