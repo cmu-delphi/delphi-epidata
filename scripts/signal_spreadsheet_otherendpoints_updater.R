@@ -385,8 +385,37 @@ signal_sheet <- bind_rows(
     "kcdc_ili", "region", "The name of the location (e.g. 'rok')", FALSE,
     "kcdc_ili", "ili", "Unweighted percent ILI", TRUE,
     
+    "meta", "fluview:latest_update", "Date of latest update to `fluview` data. This is the same information as contained in the `fluview_meta` endpoint", FALSE,
+    "meta", "fluview:latest_issue", "Latest issue date saved to `fluview` data. This is the same information as contained in the `fluview_meta` endpoint", FALSE,
+    "meta", "fluview:table_rows", "Number of database rows in `fluview` data. This is the same information as contained in the `fluview_meta` endpoint", FALSE,
+    "meta", "twitter:latest_update", "Date of latest update to `twitter` data", FALSE,
+    "meta", "twitter:num_states", "Number of unique states included in `twitter` data", FALSE,
+    "meta", "twitter:table_rows", "Number of database rows in `twitter` data", FALSE,
+    "meta", "wiki:latest_update", "Date of latest update to `wiki` data", FALSE,
+    "meta", "wiki:table_rows", "Number of database rows in `wiki` data", FALSE,
+    "meta", "delphi:first_week", "Date of first time value included in the `delphi` data", FALSE,
+    "meta", "delphi:last_week", "Date of last time value included in the `delphi` data", FALSE,
+    "meta", "delphi:num_weeks", "Number of unique time values included in the `delphi` data", FALSE,
+    "meta", "delphi:system", "Unique system setting included in the `delphi` data", FALSE,
     
+    "norostat", "release_date", "The date when this record was first published by the Korean CDC", FALSE,
+    "norostat", "epiweek", "The epiweek during which the data was collected", FALSE,
+    "norostat", "value", "Number of suspected and confirmed norovirus outbreaks reported by state health departments to the CDC", TRUE,
     
+    "meta_norostat", "location", "Locations that we have data reported for in `norostat`", FALSE,
+    "meta_norostat", "release_date", "Dates that we have data reported for in `norostat`", FALSE,
+    
+    "nidss_flu", "release_date", "The date when this record was first published by the NIDSS", FALSE,
+    "nidss_flu", "region", "The name of the location (e.g. region like 'Taipei', 'Southern', 'Nationwide')", FALSE,
+    "nidss_flu", "issue", "The epiweek of publication (e.g. issue 201453 includes epiweeks up to and including 2014w53, but not 2015w01 or following)", FALSE,
+    "nidss_flu", "epiweek", "The epiweek during which the data was collected", FALSE,
+    "nidss_flu", "lag", "Number of weeks between `epiweek` and `issue`", FALSE,
+    "nidss_flu", "visits", "The total number of patients with ILI", TRUE,
+    "nidss_flu", "ili", "The percent of patients with ILI, on a 0-100 scale", TRUE,
+    
+    "nidss_dengue", "location", "The name of the location (e.g. region like 'Taipei', 'Southern', 'Nationwide', or county like 'Yunlin_County')", FALSE,
+    "nidss_dengue", "epiweek", "The epiweek during which the data was collected", FALSE,
+    "nidss_dengue", "count", "The number of dengue cases", FALSE,
     
     "nowcast", "location", "Two character state/territory code", FALSE,
     "nowcast", "epiweek", "The epiweek (YYYY-MM-DD) associated with the data", FALSE,
@@ -395,7 +424,10 @@ signal_sheet <- bind_rows(
     
 
     
-    
+    "sensors", "name", "Abbreviation of sensor name. Some correspond to other data sources Delphi publishes. No auth token required to access: `sar3`, `epic`, `arch`. Auth token required to access: `twtr`, `gft`, `ght`, `ghtj`, `cdc`, `quid`, `wiki`.", FALSE,
+    "sensors", "location", "Two character state abbreviation", FALSE,
+    "sensors", "epiweek", "The epiweek (YYYY-MM-DD) associated with the data", FALSE,
+    "sensors", "value", "Sensorized value", TRUE,    
     
     
   )
