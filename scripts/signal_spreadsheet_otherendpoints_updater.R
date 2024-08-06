@@ -378,6 +378,14 @@ signal_sheet <- bind_rows(
     "ght", "epiweek", "The epiweek during which the queries were executed", FALSE,
     "ght", "value", "Relative search volume; the exact definition is still unclear", TRUE,
     
+    "kcdc_ili", "release_date", "The date when this record was first published by the Korean CDC", FALSE,
+    "kcdc_ili", "issue", "The epiweek of publication (e.g. issue 201453 includes epiweeks up to and including 2014w53, but not 2015w01 or following)", FALSE,
+    "kcdc_ili", "epiweek", "The epiweek during which the data was collected", FALSE,
+    "kcdc_ili", "lag", "Number of weeks between `epiweek` and `issue`", FALSE,
+    "kcdc_ili", "region", "The name of the location (e.g. 'rok')", FALSE,
+    "kcdc_ili", "ili", "Unweighted percent ILI", TRUE,
+    
+    
     
     
     "nowcast", "location", "Two character state/territory code", FALSE,
