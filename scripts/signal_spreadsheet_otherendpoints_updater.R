@@ -310,7 +310,7 @@ signal_sheet <- bind_rows(
     "dengue_nowcast", "std", "Standard deviation associated with the nowcast", FALSE,
     
     "dengue_sensors", "name", "Abbreviation of sensor name. Some correspond to other data sources Delphi publishes. No auth token required to access: `sar3`, `epic`, `arch`. Auth token required to access: `twtr`, `gft`, `ght`, `ghtj`, `cdc`, `quid`, `wiki`.", FALSE,
-    "dengue_sensors", "location", "Abbreviation of location name. Format and accepted locations vary by sensor name", FALSE,
+    "dengue_sensors", "location", "Two character ISO 3166-1 alpha2 country code", FALSE,
     "dengue_sensors", "epiweek", "The epiweek (YYYY-MM-DD) associated with the data", FALSE,
     "dengue_sensors", "value", "Sensorized value", TRUE,
     
@@ -369,6 +369,14 @@ signal_sheet <- bind_rows(
     "fluview_meta", "latest_issue", "Latest issue date saved to `fluview` data", FALSE,
     "fluview_meta", "table_rows", "Number of database rows in `fluview` data", FALSE,
     
+    "gft", "location", "The name of the location", FALSE,
+    "gft", "epiweek", "The epiweek (YYYY-MM-DD) associated with the data", FALSE,
+    "gft", "num", "Flu search activity based on aggregated Google Search query data, standardized to make data more comparable across regions. The 'baseline' level for each region (shown as 0) is its average flu search activity, measured over many seasons. Activity levels for each region represent how much flu search activity differs from that region’s 'baseline' level.", TRUE,
+    
+    "ght", "query", "A search string or topic ID (see https://www.freebase.com/)", FALSE,
+    "ght", "location", "Two-letter U.S. state abbreviation, or 'US' for entire US", FALSE,
+    "ght", "epiweek", "The epiweek during which the queries were executed", FALSE,
+    "ght", "value", "Relative search volume; the exact definition is still unclear", TRUE,
     
     
     
@@ -570,7 +578,8 @@ output[, col] <- case_when(
   flu_filter & !covid_filter & !dengue_filter & !rsv_filter ~ "flu",
   !flu_filter & covid_filter & !dengue_filter & !rsv_filter ~ "covid",
   !flu_filter & !covid_filter & dengue_filter & !rsv_filter ~ "dengue",
-  !flu_filter & !covid_filter & !dengue_filter & rsv_filter ~ "rsv"
+  !flu_filter & !covid_filter & !dengue_filter & rsv_filter ~ "rsv",
+  output$`Source Subdivision` == "gft" ~ "flu"
 )
 
 
