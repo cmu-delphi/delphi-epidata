@@ -306,13 +306,80 @@ signal_sheet <- bind_rows(
     
     "dengue_nowcast", "location", "Two character state/territory code", FALSE,
     "dengue_nowcast", "epiweek", "The epiweek (YYYY-MM-DD) associated with the data", FALSE,
-    "dengue_nowcast", "value", "Dengue fever nowcast", FALSE,
+    "dengue_nowcast", "value", "Dengue fever nowcast", TRUE,
     "dengue_nowcast", "std", "Standard deviation associated with the nowcast", FALSE,
+    
+    "dengue_sensors", "name", "Abbreviation of sensor name. Some correspond to other data sources Delphi publishes. No auth token required to access: `sar3`, `epic`, `arch`. Auth token required to access: `twtr`, `gft`, `ght`, `ghtj`, `cdc`, `quid`, `wiki`.", FALSE,
+    "dengue_sensors", "location", "Abbreviation of location name. Format and accepted locations vary by sensor name", FALSE,
+    "dengue_sensors", "epiweek", "The epiweek (YYYY-MM-DD) associated with the data", FALSE,
+    "dengue_sensors", "value", "Sensorized value", TRUE,
+    
+    "ecdc_ili", "release_date", "The date when this record was first published by the European CDC", FALSE,
+    "ecdc_ili", "region", "Full English name of the European country", FALSE,
+    "ecdc_ili", "issue", "The epiweek of publication (e.g. issue 201453 includes epiweeks up to and including 2014w53, but not 2015w01 or following)", FALSE,
+    "ecdc_ili", "epiweek", "The epiweek during which the data was collected", FALSE,
+    "ecdc_ili", "lag", "Number of weeks between `epiweek` and `issue`", FALSE,
+    "ecdc_ili", "incidence_rate", "Number of ILI per 100k population", TRUE,
+    
+    "flusurv", "release_date", "The date when this record was first published by the CDC", FALSE,
+    "flusurv", "issue", "The epiweek of publication (e.g. issue 201453 includes epiweeks up to and including 2014w53, but not 2015w01 or following)", FALSE,
+    "flusurv", "epiweek", "The epiweek during which the data was collected", FALSE,
+    "flusurv", "location", "The name of the catchment area (e.g. 'network_all', 'CA', 'NY_albany')", FALSE,
+    "flusurv", "lag", "Number of weeks between `epiweek` and `issue`", FALSE,
+    "flusurv", "rate_age_0", "Percent of hospitalizations that are associated with influenza for ages 0-4", TRUE,
+    "flusurv", "rate_age_1", "Percent of hospitalizations that are associated with influenza for ages 5-17", TRUE,
+    "flusurv", "rate_age_2", "Percent of hospitalizations that are associated with influenza for ages 18-49", TRUE,
+    "flusurv", "rate_age_3", "Percent of hospitalizations that are associated with influenza for ages 50-64", TRUE,
+    "flusurv", "rate_age_4", "Percent of hospitalizations that are associated with influenza for ages 65+", TRUE,
+    "flusurv", "rate_age_5", "Percent of hospitalizations that are associated with influenza for ages 65-74", TRUE,
+    "flusurv", "rate_age_6", "Percent of hospitalizations that are associated with influenza for ages 75-84", TRUE,
+    "flusurv", "rate_age_7", "Percent of hospitalizations that are associated with influenza for ages 85+", TRUE,
+    "flusurv", "rate_overall", "Percent of hospitalizations that are associated with influenza for all age groups", TRUE,
+    
+    "fluview", "release_date", "The date when this record was first published by the CDC", FALSE,
+    "fluview", "issue", "The epiweek of publication (e.g. issue 201453 includes epiweeks up to and including 2014w53, but not 2015w01 or following)", FALSE,
+    "fluview", "epiweek", "The epiweek during which the data was collected", FALSE,
+    "fluview", "region", "The name of the location (e.g. 'nat', 'hhs1', 'cen9', 'pa', 'jfk')", FALSE,
+    "fluview", "lag", "Number of weeks between `epiweek` and `issue`", FALSE,
+    "fluview", "num_ili", "The number of ILI cases", TRUE,
+    "fluview", "num_patients", "The total number of patients", TRUE,
+    "fluview", "num_providers", "The number of reporting healthcare providers", TRUE,
+    "fluview", "wili", "Weighted percent ILI", TRUE,
+    "fluview", "ili", "Unweighted percent ILI", TRUE,
+    "fluview", "num_age_0", "Number of influenza cases in ages 0-4", TRUE,
+    "fluview", "num_age_1", "Number of influenza cases in ages 5-24", TRUE,
+    "fluview", "num_age_2", "Number of influenza cases in ages 25-64", TRUE,
+    "fluview", "num_age_3", "Number of influenza cases in ages 25-49", TRUE,
+    "fluview", "num_age_4", "Number of influenza cases in ages 50-64", TRUE,
+    "fluview", "num_age_5", "Number of influenza cases in ages 65+", TRUE,
+    
+    "fluview_clinical", "release_date", "The date when this record was first published by the CDC", FALSE,
+    "fluview_clinical", "issue", "The epiweek of publication (e.g. issue 201453 includes epiweeks up to and including 2014w53, but not 2015w01 or following)", FALSE,
+    "fluview_clinical", "epiweek", "The epiweek during which the data was collected", FALSE,
+    "fluview_clinical", "region", "The name of the location (e.g. 'nat', 'hhs1', 'cen9', 'pa', 'jfk')", FALSE,
+    "fluview_clinical", "lag", "Number of weeks between `epiweek` and `issue`", FALSE,
+    "fluview_clinical", "total_specimens", NA_character_, TRUE,
+    "fluview_clinical", "total_a", NA_character_, TRUE,
+    "fluview_clinical", "total_b", NA_character_, TRUE,
+    "fluview_clinical", "percent_positive", NA_character_, TRUE,
+    "fluview_clinical", "percent_a", NA_character_, TRUE,
+    "fluview_clinical", "percent_b", NA_character_, TRUE,
+    
+    "fluview_meta", "latest_update", "Date of latest update to `fluview` data", FALSE,
+    "fluview_meta", "latest_issue", "Latest issue date saved to `fluview` data", FALSE,
+    "fluview_meta", "table_rows", "Number of database rows in `fluview` data", FALSE,
+    
+    
+    
     
     "nowcast", "location", "Two character state/territory code", FALSE,
     "nowcast", "epiweek", "The epiweek (YYYY-MM-DD) associated with the data", FALSE,
-    "nowcast", "value", "Nowcast", FALSE,
+    "nowcast", "value", "Nowcast", TRUE,
     "nowcast", "std", "Standard deviation associated with the nowcast", FALSE,
+    
+
+    
+    
     
     
   )
@@ -341,7 +408,8 @@ output$`Delphi-Aggregated Geography` <- NA_character_
 
 
 output$`Temporal Scope End` <- case_when(
-  startsWith(output$`Source Subdivision`, "covid_hosp_") ~ "Ongoing"
+  startsWith(output$`Source Subdivision`, "covid_hosp_") ~ "Ongoing",
+  startsWith(output$`Source Subdivision`, "fluview") ~ "Ongoing"
 )
 
 
