@@ -578,33 +578,16 @@ output[, col] <- values[output$`Source Subdivision`]
 
 
 col <- "Time Type"
+weekly_sources <- filter(output, Signal == "epiweek") %>% pull(`Source Subdivision`)
+weekly_sources <- setNames(rep("week", length(weekly_sources)), weekly_sources)
 values <- c(
-  "cdc" = "week",
+  weekly_sources,
   "covid_hosp_facility_lookup" = NA_character_,
   "covid_hosp_facility" = "week",
   "covid_hosp_state_timeseries" = "day",
-  "delphi" = "week",
-  "dengue_nowcast" = "week",
-  "dengue_sensors" = NA_character_,
-  "ecdc_ili" = NA_character_,
-  "flusurv" = NA_character_,
-  "fluview_clinical" = NA_character_,
   "fluview_meta" = NA_character_,
-  "fluview" = NA_character_,
-  "gft" = NA_character_,
-  "ght" = NA_character_,
-  "kcdc_ili" = NA_character_,
   "meta_norostat" = NA_character_,
   "meta" = NA_character_,
-  "nidss_dengue" = NA_character_,
-  "nidss_flu" = NA_character_,
-  "norostat" = NA_character_,
-  "nowcast" = "week",
-  "paho_dengue" = NA_character_,
-  "quidel" = NA_character_,
-  "sensors" = NA_character_,
-  "twitter" = NA_character_,
-  "wiki" = NA_character_
 )
 
 output[, col] <- values[output$`Source Subdivision`]
@@ -674,22 +657,29 @@ test_filter <- grepl("test", output$Signal, ignore.case = TRUE) |
   grepl("test", output$Description, ignore.case = TRUE)
 vaccine_filter <- grepl("vaccin", output$Signal, ignore.case = TRUE) |
   grepl("vaccin", output$Description, ignore.case = TRUE)
+deaths_filter <- grepl("death", output$Signal, ignore.case = TRUE) |
+  grepl("death", output$Description, ignore.case = TRUE)
 output[, col] <- case_when(
   !is.na(output[, col, drop = TRUE]) ~ output[, col, drop = TRUE],
   hosp_filter ~ "Hospitalizations",
   test_filter ~ "Testing",
-  vaccine_filter ~ "Vaccines"
+  vaccine_filter ~ "Vaccines",
+  deaths_filter ~ "Deaths",
 )
 
 col <- "Severity Pyramid Rungs"
 icu_filter <- grepl("icu", output$Signal, ignore.case = TRUE) |
   grepl("icu", output$Description, ignore.case = TRUE)
+inpatient_filter <- grepl("inpatient", output$Signal, ignore.case = TRUE) |
+  grepl("inpatient", output$Description, ignore.case = TRUE)
 output[, col] <- case_when(
   !is.na(output[, col, drop = TRUE]) ~ output[, col, drop = TRUE],
   hosp_filter ~ "hospitalized",
+  inpatient_filter ~ "hospitalized",
   test_filter ~ "ascertained (case)",
   vaccine_filter ~ "population",
-  icu_filter ~ "icu"
+  icu_filter ~ "icu",
+  deaths_filter ~ "dead",
 )
 
 
