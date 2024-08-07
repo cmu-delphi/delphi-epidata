@@ -734,6 +734,18 @@ values <- c(
 )
 output[, col] <- values[output$`Source Subdivision`]
 
+col <- "Is Smoothed"
+smoothed_filter <- grepl("7dav", output$Signal, ignore.case = TRUE) |
+  grepl("smooth", output$Signal, ignore.case = TRUE) |
+  grepl("7d_avg", output$Signal, ignore.case = TRUE) |
+  grepl("7_day_av", output$Signal, ignore.case = TRUE) |
+  grepl("7d_sum", output$Signal, ignore.case = TRUE) |
+  grepl("7_day_sum", output$Signal, ignore.case = TRUE)
+output[, col] <- case_when(
+  smoothed_filter ~ TRUE,
+  TRUE ~ FALSE
+)
+
 
 
 
