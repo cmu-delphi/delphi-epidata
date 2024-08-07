@@ -28,6 +28,7 @@ from . import (
     sensors,
     twitter,
     wiki,
+    wastewater,
     signal_dashboard_status,
     signal_dashboard_coverage,
 )
@@ -62,6 +63,7 @@ endpoints = [
     sensors,
     twitter,
     wiki,
+    wastewater,
     signal_dashboard_status,
     signal_dashboard_coverage,
 ]

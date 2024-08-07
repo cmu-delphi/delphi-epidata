@@ -35,6 +35,7 @@ REGIONS_EPIWEEKS_REQUIRED = "`regions` and `epiweeks` are both required"
 ISSUES_LAG_EXCLUSIVE = "`issues` and `lag` are mutually exclusive"
 LOCATIONS_EPIWEEKS_REQUIRED = "`locations` and `epiweeks` are both required"
 
+
 # Because the API is stateless, the Epidata class only contains static methods
 class Epidata:
     """An interface to DELPHI's Epidata API."""
@@ -341,6 +342,14 @@ class Epidata:
             params["epiweeks"] = Epidata._list(epiweeks)
         # Make the API call
         return Epidata._request("twitter", params)
+
+    # Fetch wastewater data
+    @staticmethod
+    def wastewater(locations, location_type, epiweeks, issues=None, lag=None):
+        locations + 3
+        location_type
+        sites
+        return 3
 
     # Fetch Wikipedia access data
     @staticmethod
