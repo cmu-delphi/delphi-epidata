@@ -587,7 +587,7 @@ values <- c(
   "covid_hosp_state_timeseries" = "day",
   "fluview_meta" = NA_character_,
   "meta_norostat" = NA_character_,
-  "meta" = NA_character_,
+  "meta" = NA_character_
 )
 
 output[, col] <- values[output$`Source Subdivision`]
@@ -681,6 +681,40 @@ output[, col] <- case_when(
   icu_filter ~ "icu",
   deaths_filter ~ "dead",
 )
+
+
+col <- "Demographic Scope"
+values <- c(
+  "cdc" = "CDC website visitors",
+  "covid_hosp_facility_lookup" = "All",
+  "covid_hosp_facility" = "All",
+  "covid_hosp_state_timeseries" = "All",
+  "delphi" = NA_character_,
+  "dengue_nowcast" = NA_character_,
+  "dengue_sensors" = NA_character_,
+  "ecdc_ili" = NA_character_,
+  "flusurv" = NA_character_,
+  "fluview_clinical" = NA_character_,
+  "fluview_meta" = NA_character_,
+  "fluview" = NA_character_,
+  "gft" = "Google search users",
+  "ght" = "Google search users",
+  "kcdc_ili" = NA_character_,
+  "meta_norostat" = NA_character_,
+  "meta" = NA_character_,
+  "nidss_dengue" = NA_character_,
+  "nidss_flu" = NA_character_,
+  "norostat" = NA_character_,
+  "nowcast" = NA_character_,
+  "paho_dengue" = NA_character_,
+  "quidel" = NA_character_,
+  "sensors" = NA_character_,
+  "twitter" = "Twitter posters",
+  "wiki" = "Wikipedia website visitors"
+)
+output[, col] <- values[output$`Source Subdivision`]
+
+
 
 
 col <- "Use Resrictions"
