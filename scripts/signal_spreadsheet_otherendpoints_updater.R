@@ -652,19 +652,34 @@ col <- "Signal Type"
 hosp_filter <- grepl("hospitalized", output$Signal, ignore.case = TRUE) |
   grepl("hospitalized", output$Description, ignore.case = TRUE) |
   grepl("admission", output$Signal, ignore.case = TRUE) |
-  grepl("admission", output$Description, ignore.case = TRUE)
+  grepl("admission", output$Description, ignore.case = TRUE) |
+  grepl("patients_hosp", output$Signal, ignore.case = TRUE) |
+  grepl("patients_hosp", output$Description, ignore.case = TRUE)
 test_filter <- grepl("test", output$Signal, ignore.case = TRUE) |
   grepl("test", output$Description, ignore.case = TRUE)
-vaccine_filter <- grepl("vaccin", output$Signal, ignore.case = TRUE) |
-  grepl("vaccin", output$Description, ignore.case = TRUE)
+vaccine_filter <- grepl("vacc", output$Signal, ignore.case = TRUE) |
+  grepl("vacc", output$Description, ignore.case = TRUE) |
+  grepl("vax", output$Signal, ignore.case = TRUE) |
+  grepl("vax", output$Description, ignore.case = TRUE)
 deaths_filter <- grepl("death", output$Signal, ignore.case = TRUE) |
   grepl("death", output$Description, ignore.case = TRUE)
+icu_filter <- grepl("icu", output$Signal, ignore.case = TRUE) |
+  grepl("icu", output$Description, ignore.case = TRUE)
+bed_filter <- grepl("beds", output$Signal, ignore.case = TRUE) |
+  grepl("beds", output$Description, ignore.case = TRUE)
 output[, col] <- case_when(
   !is.na(output[, col, drop = TRUE]) ~ output[, col, drop = TRUE],
   hosp_filter ~ "Hospitalizations",
+  icu_filter ~ "Hospitalizations",
+  bed_filter ~ "Hospitalizations",
   test_filter ~ "Testing",
   vaccine_filter ~ "Vaccines",
   deaths_filter ~ "Deaths",
+  output$`Source Subdivision` == "gft" ~ "Search volume",
+  output$`Source Subdivision` == "ght" ~ "Search volume",
+  output$`Source Subdivision` == "cdc" ~ "Site visits",
+  output$`Source Subdivision` == "wiki" ~ "Site visits",
+  output$Signal %in% c("lag", "epiweek", "hour", "location", "region", "address", "std", "table_rows", "last_week", "release_date", "zip", "hospital_pk", "hhs_ids", "state", "ccn", "collection_week", "issue", "release_date", "geocoded_address", "geocoded_state", "hospital_name", "city", "fips_code", "is_metro_micro", "hospital_subtype", "system", "article") ~ NA_character_,
 )
 
 col <- "Severity Pyramid Rungs"
@@ -680,6 +695,11 @@ output[, col] <- case_when(
   vaccine_filter ~ "population",
   icu_filter ~ "icu",
   deaths_filter ~ "dead",
+  bed_filter ~ "hospitalized",
+  output$`Source Subdivision` == "gft" ~ "population",
+  output$`Source Subdivision` == "ght" ~ "population",
+  output$`Source Subdivision` == "cdc" ~ "population",
+  output$`Source Subdivision` == "wiki" ~ "population",
 )
 
 
