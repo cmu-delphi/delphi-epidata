@@ -62,6 +62,22 @@ the following:
 - latest "issue", which is the publication epiweek
 - total size of the table
 
+## Acquire data
+If, unlike `fluview` you need to acquire add new data in addition to a new endpoint, you will need to add an appropriate data ingestion method.
+These live in src/acquisition/<endpoint_name>, and needs one file with a `main` function, typically with a name `<endpoint_name>_update.py` or `<endpoint_name>_to_database.py`.
+It is recommended to partition the functions based on use, for example
+1. a file to download and format the data 
+2. a file to save backups
+3. a file to update the database (this is typically including main)
+<!-- TODO ongoing update -->
+
+Since we're using the `fluview` table, we're piggybacking off of [src/acquisition/fluview](https://github.com/cmu-delphi/delphi-epidata/tree/dev/src/acquisition/fluview). 
+To run ingestion, cronicle runs [fluview_update.py](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/acquisition/fluview/fluview_update.py), while the other scripts provide methods for that.
+
+### Secrets
+If you are pulling from an API or other source which needs authentication, you will need to add your secret into the backend. How to go about this for new endpoints is TODO.
+## Adding new packages
+If for whatever reason you need to add a new dependency TODO
 # update the server
 
 1. create a new file in `/src/server/endpoints/` e.g., `fluview_meta.py`, or copy an existing one.

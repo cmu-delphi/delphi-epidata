@@ -11,14 +11,15 @@ CREATE TABLE agg_geo_dim (
 CREATE TABLE sample_site_dim (
     `site_key_id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `plant_id` INT(10) UNSIGNED NOT NULL,
-    `sample_loc_specify` VARCHAR(12),
+    `sample_loc_specify` INT(10) UNSIGNED, -- definitely can be null
+    `sampling_method` VARCHAR(20),
 
     UNIQUE INDEX `sample_site_dim_index` (`plant_id`, `sample_loc_specify`)
 ) ENGINE=InnoDB;
 
 CREATE TABLE plant_dim (
     `plant_id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `wwtp_jurisdiction` VARCHAR(12) UNSIGNED NOT NULL, -- may only need CHAR(2), it's a state id
+    `wwtp_jurisdiction` CHAR(3) UNSIGNED NOT NULL, -- may only need CHAR(3), it's a state id + NYC
     `wwtp_id` INT(10) UNSIGNED NOT NULL
 
     UNIQUE INDEX `plant_index` (`wwtp_jurisdiction`, `wwtp_id`)
