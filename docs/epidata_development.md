@@ -50,7 +50,7 @@ $ [sudo] make test pdb=1
 $ [sudo] make test test=repos/delphi/delphi-epidata/integrations/acquisition
 ```
 
-You can read the commands executed by the Makefile [here](../dev/local/Makefile).
+You can read the commands executed by the Makefile [here](https://github.com/cmu-delphi/delphi-epidata/blob/dev/dev/local/Makefile).
 
 ## Rapid Iteration and Bind Mounts
 
@@ -88,8 +88,8 @@ You can test your changes manually by:
 
 What follows is a worked demonstration based on the `fluview` endpoint. Before
 starting, make sure that you have the `delphi_database_epidata`,
-`delphi_web_epidata`, and `delphi_redis` containers running; if you don't, see
-the Makefile instructions above.
+`delphi_web_epidata`, and `delphi_redis` containers running (with `docker ps`);
+if you don't, see the Makefile instructions above.
 
 First, let's insert some fake data into the `fluview` table:
 

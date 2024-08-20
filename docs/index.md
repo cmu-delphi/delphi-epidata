@@ -4,14 +4,13 @@ has_children: true
 nav_order: 1
 ---
 
-# Delphi's Epidata API
+# The Epidata API
 
 Delphi's Epidata API provides real-time access to epidemiological surveillance data.
 It is built and maintained by the Carnegie Mellon University [Delphi research
 group](https://delphi.cmu.edu/). The Epidata API includes:
 
-* [main endpoint (COVIDcast)](api/covidcast.md), providing daily updates about current COVID-19 and influenza activity across the United States.
-* Data about other diseases including influenza, dengue and more tracked by Delphi through various data streams.
+* The [main endpoint (COVIDcast)](api/covidcast.md), providing daily updates about current COVID-19 and influenza activity across the United States.
 * A [variety of other endpoints](api/README.md), providing primarily historical data about various diseases including COVID-19, influenza, dengue fever, and norovirus in several countries.
 
 A [full-featured R client](api/client_libraries.md) is available for quick access to all data. While we continue developing a full-featured Python client, the [legacy Python client](api/client_libraries.md#python) remains available. The main endpoint can also be accessed with a [dedicated COVIDcast client](api/covidcast_clients.md).

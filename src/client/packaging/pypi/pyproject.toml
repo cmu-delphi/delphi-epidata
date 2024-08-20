@@ -18,7 +18,7 @@ build-backend = "setuptools.build_meta" # If not defined, then legacy behavior c
 
 [project]
 name = "delphi_epidata" # REQUIRED, is the only field that cannot be marked as dynamic.
-version = "4.1.23"
+version = "4.1.25"
 description = "A programmatic interface to Delphi's Epidata API."
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -37,7 +37,7 @@ classifiers = [
     "Natural Language :: English",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
 ]
-dependencies = ["aiohttp", "delphi-utils", "requests>=2.7.0", "tenacity"]
+dependencies = ["aiohttp", "requests>=2.7.0", "tenacity"]
 
 [project.urls]
 "Homepage" = "https://github.com/cmu-delphi/delphi-epidata"

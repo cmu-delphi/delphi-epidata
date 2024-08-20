@@ -2,8 +2,8 @@
 
 # standard library
 import time
+import json
 from json import JSONDecodeError
-from requests.models import Response
 from unittest.mock import MagicMock, patch
 
 # first party
@@ -48,6 +48,12 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     # use the local instance of the epidata database
     secrets.db.host = 'delphi_database_epidata'
     secrets.db.epi = ('user', 'pass')
+
+  @pytest.fixture(autouse=True)
+  def capsys(self, capsys):
+    """Hook capsys (stdout and stderr) into this test class."""
+
+    self.capsys = capsys
 
   def test_covidcast(self):
     """Test that the covidcast endpoint returns expected data."""
@@ -238,46 +244,46 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
 
     try:
       with self.subTest(name='test multiple GET'):
-        with self.assertLogs('delphi_epidata_client', level='INFO') as logs:
-          get.reset_mock()
-          get.return_value = MockResponse(b'{"key": "value"}', 200)
-          Epidata._request_with_retry("test_endpoint1", params={"key1": "value1"})
-          Epidata._request_with_retry("test_endpoint2", params={"key2": "value2"})
+        get.reset_mock()
+        get.return_value = MockResponse(b'{"key": "value"}', 200)
+        Epidata._request_with_retry("test_endpoint1", params={"key1": "value1"})
+        Epidata._request_with_retry("test_endpoint2", params={"key2": "value2"})
 
-        output = logs.output
+        captured = self.capsys.readouterr()
+        output = captured.err.splitlines()
         self.assertEqual(len(output), 4) # [request, response, request, response]
         self.assertIn("Sending GET request", output[0])
-        self.assertIn("\"url\": \"http://delphi_web_epidata/epidata/test_endpoint1/\"", output[0])
-        self.assertIn("\"params\": {\"key1\": \"value1\"}", output[0])
+        self.assertIn("\'url\': \'http://delphi_web_epidata/epidata/test_endpoint1/\'", output[0])
+        self.assertIn("\'params\': {\'key1\': \'value1\'}", output[0])
         self.assertIn("Received response", output[1])
-        self.assertIn("\"status_code\": 200", output[1])
-        self.assertIn("\"len\": 16", output[1])
+        self.assertIn("\'status_code\': 200", output[1])
+        self.assertIn("\'len\': 16", output[1])
         self.assertIn("Sending GET request", output[2])
-        self.assertIn("\"url\": \"http://delphi_web_epidata/epidata/test_endpoint2/\"", output[2])
-        self.assertIn("\"params\": {\"key2\": \"value2\"}", output[2])
+        self.assertIn("\'url\': \'http://delphi_web_epidata/epidata/test_endpoint2/\'", output[2])
+        self.assertIn("\'params\': {\'key2\': \'value2\'}", output[2])
         self.assertIn("Received response", output[3])
-        self.assertIn("\"status_code\": 200", output[3])
-        self.assertIn("\"len\": 16", output[3])
+        self.assertIn("\'status_code\': 200", output[3])
+        self.assertIn("\'len\': 16", output[3])
 
       with self.subTest(name='test GET and POST'):
-        with self.assertLogs('delphi_epidata_client', level='INFO') as logs:
-          get.reset_mock()
-          get.return_value = MockResponse(b'{"key": "value"}', 414)
-          post.reset_mock()
-          post.return_value = MockResponse(b'{"key": "value"}', 200)
-          Epidata._request_with_retry("test_endpoint3", params={"key3": "value3"})
+        get.reset_mock()
+        get.return_value = MockResponse(b'{"key": "value"}', 414)
+        post.reset_mock()
+        post.return_value = MockResponse(b'{"key": "value"}', 200)
+        Epidata._request_with_retry("test_endpoint3", params={"key3": "value3"})
 
-        output = logs.output
-        self.assertEqual(len(output), 3) # [request, response, request, response]
+        captured = self.capsys.readouterr()
+        output = captured.err.splitlines()
+        self.assertEqual(len(output), 3) # [request, retry, response]
         self.assertIn("Sending GET request", output[0])
-        self.assertIn("\"url\": \"http://delphi_web_epidata/epidata/test_endpoint3/\"", output[0])
-        self.assertIn("\"params\": {\"key3\": \"value3\"}", output[0])
+        self.assertIn("\'url\': \'http://delphi_web_epidata/epidata/test_endpoint3/\'", output[0])
+        self.assertIn("\'params\': {\'key3\': \'value3\'}", output[0])
         self.assertIn("Received 414 response, retrying as POST request", output[1])
-        self.assertIn("\"url\": \"http://delphi_web_epidata/epidata/test_endpoint3/\"", output[1])
-        self.assertIn("\"params\": {\"key3\": \"value3\"}", output[1])
+        self.assertIn("\'url\': \'http://delphi_web_epidata/epidata/test_endpoint3/\'", output[1])
+        self.assertIn("\'params\': {\'key3\': \'value3\'}", output[1])
         self.assertIn("Received response", output[2])
-        self.assertIn("\"status_code\": 200", output[2])
-        self.assertIn("\"len\": 16", output[2])
+        self.assertIn("\'status_code\': 200", output[2])
+        self.assertIn("\'len\': 16", output[2])
     finally: # make sure this global is always reset
       Epidata.debug = False
 
@@ -288,17 +294,37 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     Epidata.debug = True
     Epidata.sandbox = True
     try:
-      with self.assertLogs('delphi_epidata_client', level='INFO') as logs:
-        Epidata.covidcast('src', 'sig', 'day', 'county', 20200414, '01234')
-      output = logs.output
+      Epidata.covidcast('src', 'sig', 'day', 'county', 20200414, '01234')
+      captured = self.capsys.readouterr()
+      output = captured.err.splitlines()
       self.assertEqual(len(output), 1)
       self.assertIn("Sending GET request", output[0])
-      self.assertIn("\"url\": \"http://delphi_web_epidata/epidata/covidcast/\"", output[0])
+      self.assertIn("\'url\': \'http://delphi_web_epidata/epidata/covidcast/\'", output[0])
       get.assert_not_called()
       post.assert_not_called()
     finally: # make sure these globals are always reset
       Epidata.debug = False
       Epidata.sandbox = False
+
+  @patch('requests.get')
+  def test_version_check(self, get):
+    """Test that the _version_check() function correctly logs a version discrepancy."""
+    class MockJson:
+      def __init__(self, content, status_code):
+          self.content = content
+          self.status_code = status_code
+      def raise_for_status(self): pass
+      def json(self): return json.loads(self.content)
+    get.reset_mock()
+    get.return_value = MockJson(b'{"info": {"version": "0.0.1"}}', 200)
+
+    Epidata._version_check()
+
+    captured = self.capsys.readouterr()
+    output = captured.err.splitlines()
+    self.assertEqual(len(output), 1)
+    self.assertIn("Client version not up to date", output[0])
+    self.assertIn("\'latest_version\': \'0.0.1\'", output[0])
 
   def test_geo_value(self):
     """test different variants of geo types: single, *, multi."""

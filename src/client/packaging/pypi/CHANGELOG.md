@@ -3,13 +3,30 @@
 All notable future changes to the `delphi_epidata` python client will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
-## [4.1.24] - 2024-06-06
+## [4.1.25] - 2024-07-29
+
+### Includes
+- https://github.com/cmu-delphi/delphi-epidata/pull/1456
+- https://github.com/cmu-delphi/delphi-epidata/pull/1497
+
+### Changed
+- Added a one-time check which logs a warning when the newest client version does not match the client version in use.
+
+## [4.1.24] - 2024-07-09
 
 ### Includes
 - https://github.com/cmu-delphi/delphi-epidata/pull/1470
+- https://github.com/cmu-delphi/delphi-epidata/pull/1486
+- https://github.com/cmu-delphi/delphi-epidata/pull/1463
+- https://github.com/cmu-delphi/delphi-epidata/pull/1465
 
 ### Changed
 - Replaced `setup.py` with `pyproject.toml` for package metadata and build configuration.
+- Removed heavy `delphi_utils` dependency by changing debug output from structured logger to direct stderr printing.
+
+### Fixed
+- Resolved previous version number typo in CHANGELOG.
+- Client version will now only incremented and released when there are structural/functional changes. 
 
 ## [4.1.23] - 2024-05-31
 
