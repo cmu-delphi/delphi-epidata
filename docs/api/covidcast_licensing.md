@@ -51,6 +51,7 @@ Attribution-NonCommercial
 license](https://creativecommons.org/licenses/by-nc/4.0/):
 
 * [Change Healthcare](covidcast-signals/chng.md)
+* [Youtube Survey](covidcast-signals/youtube-survey.md)
 
 You may not use this data for commercial purposes, but all other uses are
 permitted, provided you attribute us as the original source.
@@ -61,12 +62,16 @@ These data streams are essentially mirrors of their respective sources, and are
 published here subject to the original license provided by the source:
 
 * [Google Health Trends](covidcast-signals/ght.md)
-* [Indicator Combination](covidcast-signals/indicator-combination.md): cases and
-  deaths signals
-* [JHU Cases and Deaths](covidcast-signals/jhu-csse.md)
+* [Google Search Trends](covidcast-signals/google-symptoms.md)
+* [Indicator Combination Cases and Deaths](covidcast-signals/indicator-combination.md)
+* [JHU CSSE Cases and Deaths](covidcast-signals/jhu-csse.md)
 * [SafeGraph Mobility](covidcast-signals/safegraph.md)
 * [USAFacts Cases and Deaths](covidcast-signals/usafacts.md)
-* [Department of Health & Human Services](covidcast-signals/hhs.md)
+* [Department of Health & Human Services Hospitalizations](covidcast-signals/hhs.md)
+* [NCHS Mortality](covidcast-signals/nchs-mortality.md)
+* [NSSP ED Visits](covidcast-signals/nssp.md)
+* [COVID Act Now](covidcast-signals/covid-act-now..md)
+* [Data Strategy and Execution Workgroup Community Profile Report](covidcast-signals/dsew-cpr..md)
 
 More information on the license for each source is available on their respective
 documentation pages.
