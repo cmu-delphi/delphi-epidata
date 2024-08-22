@@ -66,8 +66,8 @@ signal_sheet <- bind_rows(
     "cdc", "num3", "Hits for pages like '%Flu Symptoms & Severity%'", TRUE,
     "cdc", "num4", "Hits for pages like '%How Flu Spreads%'", TRUE,
     "cdc", "num5", "Hits for pages like '%What You Should Know About Flu Antiviral Drugs%'", TRUE,
-    "cdc", "num6", "Hits for pages like '%Weekly US Map%'", TRUE,
-    "cdc", "num7", "Hits for pages like '%Basics%'", TRUE,
+    "cdc", "num6", "Hits for pages like '%Weekly US Map%' within the CDC flu subsite", TRUE,
+    "cdc", "num7", "Hits for pages like '%Basics%' within the CDC flu subsite", TRUE,
     "cdc", "num8", "Hits for pages like '%Flu Activity & Surveillance%'", TRUE,
     "cdc", "total", "Total number of hits for all CDC pages", TRUE,
     "cdc", "value", "", FALSE,
@@ -677,8 +677,8 @@ output[, col] <- case_when(
   deaths_filter ~ "Deaths",
   output$`Source Subdivision` == "gft" ~ "Search volume",
   output$`Source Subdivision` == "ght" ~ "Search volume",
-  output$`Source Subdivision` == "cdc" ~ "Site visits",
-  output$`Source Subdivision` == "wiki" ~ "Site visits",
+  output$`Source Subdivision` == "cdc" ~ "Website visits",
+  output$`Source Subdivision` == "wiki" ~ "Website visits",
   output$Signal %in% c("lag", "epiweek", "hour", "location", "region", "address", "std", "table_rows", "last_week", "release_date", "zip", "hospital_pk", "hhs_ids", "state", "ccn", "collection_week", "issue", "release_date", "geocoded_address", "geocoded_state", "hospital_name", "city", "fips_code", "is_metro_micro", "hospital_subtype", "system", "article") ~ NA_character_,
 )
 
