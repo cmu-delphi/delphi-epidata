@@ -26,6 +26,13 @@ Pandemic"](https://www.pnas.org/topic/548) in *PNAS*:
 
 Research publications using the survey data include:
 
+- K.M. Geffel, H.P. Dyer, A.D. Casas, S.N. Christian-Afflu, D.D. Méndez, and
+  T.L. Gary-Webb (2024). [COVID-19 vaccine uptake and intention of Black adults:
+  A county-wide analysis of an online survey](https://doi.org/10.1016/j.jnma.2024.07.007).
+  *Journal of the National Medical Association*.
+- C.K. Ettman, E. Badillo-Goicoechea, E.A. Stuart, and L.T. Dean (2024).
+  [Area-level credit scores and symptoms of depression and anxiety in adults](https://doi.org/10.1093/aje/kwae275).
+  *American Journal of Epidemiology* kwae275.
 - C.K. Ettman, E. Badillo-Goicoechea, E.A. Stuart (2024). [Financial
   strain, schooling modality and mental health of US adults living
   with children during the COVID-19 pandemic](https://doi.org/10.1136/jech-2023-221672).
@@ -54,11 +61,11 @@ Research publications using the survey data include:
   J. Chen, A. Vullikanti, M. Marathe & B. Lewis (2024). [Data-driven
   mechanistic framework with stratified immunity and effective transmissibility
   for COVID-19 scenario projections](https://doi.org/10.1016/j.epidem.2024.100761).
-  *Epidemics* 100761.
+  *Epidemics* 47, 100761.
 - V. Nelson, B. Bashyal, P.-N. Tan & Y. A. Argyris (2024). [Vaccine rhetoric
   on social media and COVID-19 vaccine uptake rates: A triangulation using
   self-reported vaccine acceptance](https://doi.org/10.1016/j.socscimed.2024.116775).
-  *Social Science & Medicine* 116775.
+  *Social Science & Medicine* 348, 116775.
 - R.R. Andridge (2024). [Using proxy pattern-mixture models to explain bias in
   estimates of COVID-19 vaccine uptake from two large surveys](https://doi.org/10.1093/jrsssa/qnae005).
   *Journal of the Royal Statistical Society Series A: Statistics in Society*.
@@ -71,7 +78,7 @@ Research publications using the survey data include:
 - E. Tuzhilina, T. J. Hastie, D. J. McDonald, J. K. Tay & R. Tibshirani (2023).
   [Smooth multi-period forecasting with application to prediction of COVID-19
   cases](https://doi.org/10.1080/10618600.2023.2285337). *Journal of Computational
-  and Graphical Statistics*.
+  and Graphical Statistics* 33 (3), 955-967.
 - W. Dempsey (2023). [Addressing selection bias and measurement error in
   COVID-19 case count data using auxiliary information](https://doi.org/10.1214/23-AOAS1744).
   *Annals of Applied Statistics* 17 (4), 2903-2923.
