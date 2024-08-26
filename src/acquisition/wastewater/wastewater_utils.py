@@ -1,3 +1,6 @@
+import numpy as np
+
+
 # general utilities (that should maybe migrate elsewhere)
 def sig_digit_round(value, n_digits):
     """Truncate value to only n_digits.

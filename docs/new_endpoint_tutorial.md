@@ -11,12 +11,15 @@ nav_order: 5
 In this tutorial we'll create a brand new endpoint for the Epidata API:
 `fluview_meta`. At a high level, we'll do the following steps:
 
-1. understand the data that we want to surface
-2. add the new endpoint to the API server
-3. add the new endpoint to the various client libraries
-4. write an integration test for the new endpoint
-5. update API documentation for the new endpoint
-6. run all unit and integration tests
+0. understand the data that we want to surface
+1. add the new endpoint to the API server
+  - get (transformed) data into a database
+  - add internal server maintenance code
+  - add frontend code
+2. write an integration test for the new endpoint
+3. update API documentation for the new endpoint
+4. run all unit and integration tests
+5. add the new endpoint to the various client libraries
 
 # setup
 
@@ -44,7 +47,93 @@ tree -L 3 .
         ├── py3tester
         └── undef-analysis
 ```
+# Adding data to a database
+Before we could possibly serve data in an API, we need to retrieve it, clean it,
+and store it locally.  This is known as
+[ETL](https://en.wikipedia.org/wiki/Extract,_transform,_load), and for any of
+the endpoints the code to do this lives in the [acquisition
+folder](https://github.com/cmu-delphi/delphi-epidata/tree/dev/src/acquisition).
+Retrieving is the least structured of these and depends heavily on the source of
+the data. Transforming can be anything from simply cleaning to fit the format of
+our database/api, aggregating to higher geographic or temporal levels, to
+correcting for knowable anomalies in the data. 
+## SQL table design
+The first step is determining the format of the tables, which is written in a
+[ddl](https://stackoverflow.com/questions/2578194/what-are-ddl-and-dml) and
+stored [here](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/ddl/),
+for example
+[epimetrics](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/ddl/v4_schema.sql)).
+Consider prototyping with something like
+[dbdiagram](https://dbdiagram.io/d/wastewater_db-6691809a9939893daecc5d57).
+Ideally, any redundant values or metadata should be stored in separate related
+tables so as to [normalize the
+tables](https://en.wikipedia.org/wiki/Database_normalization) and improve
+performance. A rule of thumb for these is if you can think of it as a
+categorical, it should have a table to record the possible categories.
 
+In addition to the primary table and it's relational tables, it can be useful to
+include a loading table to ease addition of new data to the database, a latest
+table to speed up access for getting only the latest data, and several views for
+TODO reasons.
+
+Another design consideration is the addition of indexes based on likely queries.
+### Data format
+In many endpoints, dates are represented using integers as `yyyymmdd` for actual
+dates and `yyyyww` for epiweeks.
+### Versioning
+If there's  a possibility you are inserting versions older than latest, it is best practice to include a boolean column in the load table indicating. This column will also be useful for generating a view of the full table
+## ETL
+After you know the target format, you should start writing methods to perform
+each step of the ETL process. Eventually, they should be called within a
+`__main__` function in src/acquisition/<endpoint\_name> (ideally
+<endpoint\_name>\_main.py). You should partition your code into separate files
+for each step in ETL, especially if the transform steps are more than
+simply data cleaning.
+
+## Extract
+There is not terribly much to be said for extraction; depending on how you get
+your data see (TODO list of endpoints based on how they extract data) for an
+example, but there is no guarantee that these actually have achieved the optimal
+method for that particular method of acquiring data.
+
+One less obvious aspect of the extraction step is validation. Make sure to add
+validation checks to the extraction module, with any violations getting recorded
+to a logger object.
+
+Another less obvious extraction step is to make sure to record approximately raw
+data, stored in a compressed format. This makes recovery from validation or
+other errors much easier.
+## Transform
+If you will be doing significant transformations, consider writing an external
+package for that.
+
+One of the more common transformation steps is the removal of redundant
+versions. Epimetrics handles this by first exporting the transformed data to
+CSVs (for every source, as handled in covidcast-indicators), then comparing with
+the previously saved copy of the CSV for differences and only keeping the newer
+values. Wastewater handles this entirely within sql by comparing the latest
+table with the load table.
+<!-- TODO ongoing update -->
+## Load
+In general, we use [Core
+sqlalchemy](https://docs.sqlalchemy.org/en/20/tutorial/index.html) to manage
+database connections. The process for loading should roughly be
+### Move the data into the load table
+The current
+recommendation is to use [pandas'
+`to_sql`](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_sql.html)
+with the method set to `multi` for the initial insertion into the `load` table as an initial method, for ease of writing.
+If this proves too slow, [see
+epimetrics](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/acquisition/covidcast/database.py)
+for an alternative using approximately raw sql, or write a [custom insert method](https://pandas.pydata.org/docs/user_guide/io.html#io-sql-method) that e.g. uses temporary csv's.
+### Move categorical data
+After inserting into the load table, any new values for the related tables, such as signal or geo\_type, need to be included.
+### Insert load data into the full and latest tables
+Fairly straightforward. Note that the keys for the related tables need to be added either during or before inserting into either table.
+
+Note that wastewater removes duplicated values with different versions just after adding the key values from the related tables.
+### Remove the inserted data from the load table
+Since the id of the load table is used to set the id of the full and latest tables, it is important not to drop or truncate when deleting these rows, since this would reset the index.
 # the data
 
 Here's the requirement: we need to quickly surface the most recent "issue"
@@ -64,29 +153,24 @@ the following:
 
 ## Acquire data
 If, unlike `fluview` you need to acquire add new data in addition to a new endpoint, you will need to add an appropriate data ingestion method.
-These live in src/acquisition/<endpoint_name>, and needs one file with a `main` function, typically with a name `<endpoint_name>_update.py` or `<endpoint_name>_to_database.py`.
-It is recommended to partition the functions based on use, for example
-1. a file to download and format the data 
-2. a file to save backups
-3. a file to update the database (this is typically including main)
-<!-- TODO ongoing update -->
 
 Since we're using the `fluview` table, we're piggybacking off of [src/acquisition/fluview](https://github.com/cmu-delphi/delphi-epidata/tree/dev/src/acquisition/fluview). 
 To run ingestion, cronicle runs [fluview_update.py](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/acquisition/fluview/fluview_update.py), while the other scripts provide methods for that.
-
 ### Secrets
 If you are pulling from an API or other source which needs authentication, you will need to add your secret into the backend. How to go about this for new endpoints is TODO.
+## Tests
+It is recommended to use a dummy database as a part of unit testing; for an example see TODO
 ## Adding new packages
 If for whatever reason you need to add a new dependency TODO
-# update the server
+# update the server API
 
-1. create a new file in `/src/server/endpoints/` e.g., `fluview_meta.py`, or copy an existing one.
+1. create a new file in `/src/server/endpoints/`, e.g. `fluview_meta.py`, or copy an existing one.
 2. edit the created file `Blueprint("fluview_meta", __name__)` such that the first argument matches the target endpoint name
 3. edit the existing `/src/server/endpoints/__init__.py` to add the newly-created file to the imports (top) and to the list of endpoints (below).
 
 
 # update the client libraries
-
+<!-- TODO this section is very much out of date-->
 There are currently four client libraries. They all need to be updated to make
 the new `fluview_meta` endpoint available to callers. The pattern is very
 similar for all endpoints so that copy-paste will get you 90% of the way there.

@@ -8,6 +8,7 @@ from delphi_utils import get_structured_logger
 
 # first party tools
 from .wastewater_utils import sig_digit_round, convert_df_type
+from .nwss_database import Database
 from delphi_utils import GeoMapper
 import delphi_utils
 
@@ -57,6 +58,10 @@ def key_plot_id_parse(key_plot_ids: pd.Series) -> pd.DataFrame:
     processed_names.sample_location_specify = pd.to_numeric(
         processed_names.sample_location_specify, errors="coerce"
     ).astype("Int32")
+    # representing NULL as -1 so that equality matching actually works well
+    processed_names.loc[
+        processed_names.sample_location_specify.isna(), "sample_location_specify"
+    ] = -1
     processed_names["key_plot_id"] = key_plot_ids
     processed_names = processed_names.set_index("key_plot_id")
     processed_names = processed_names.astype(KEY_PLOT_TYPES)
@@ -178,6 +183,7 @@ def format_nwss_data(
     na_columns = df_concentration[df_concentration["normalization"].isna()]
     if na_columns.size != 0:
         logger.info("There are columns without normalization.", na_columns=na_columns)
+
     conc_keys = key_plot_id_parse(pd.Series(df_concentration.key_plot_id.unique()))
     # get the keys+normalizations where there's an unambiguous choice of normalization
     key_plot_norms = df_concentration.loc[
@@ -193,8 +199,12 @@ def format_nwss_data(
         .drop(columns="n_norms")
         .set_index("key_plot_id")
     )
-    # add the unambiguous normalizations, others get an NA
-    conc_keys = conc_keys.join(key_plot_norms, how="left")
+    # add the unambiguous normalizations
+    conc_keys = conc_keys.join(
+        key_plot_norms,
+        how="left",
+    )
+    conc_keys.loc[conc_keys.normalization.isna(), "normalization"] = "unknown"
     metric_keys = key_plot_id_parse(pd.Series(df_metric.key_plot_id.unique()))
     validate_metric_key_plot_ids(df_metric, metric_keys, logger)
     # form the joint table of keys found in both, along with a column
@@ -202,6 +212,8 @@ def format_nwss_data(
     joint_keys = conc_keys.reset_index().merge(
         metric_keys.reset_index(), indicator=True, how="outer"
     )
+    # set any NA normalizations to "unknown" for reasons of db comparison
+    joint_keys.loc[joint_keys.normalization.isna(), "normalization"] = "unknown"
     joint_keys = joint_keys.astype(KEY_PLOT_TYPES)
     only_in_one = joint_keys[joint_keys._merge != "both"]
     if only_in_one.size > 0:
@@ -322,8 +334,134 @@ def pull_nwss_data(token: str, logger: Logger) -> tuple[pd.DataFrame, pd.DataFra
         Dataframe as described above.
     """
     # TODO temp, remove
+    import os
+
+    token = os.environ.get("SODAPY_APPTOKEN")
     logger = get_structured_logger("csv_ingestion", filename="writingErrorLog")
-    # TODO reinstate this, similar for metric
-    # df_concentration = df_concentration.rename(columns={"date": "reference_date"})
+    # end temp
     df_concentration, df_metric = download_raw_data(token, logger)
     df, auxiliary_info = format_nwss_data(df_concentration, df_metric)
+    df = df.rename(
+        columns={
+            "date": "reference_date",
+            "sample_location_specify": "sample_loc_specify",
+        }
+    )
+    #  sample location is a boolean indictating whether sample_loc_specify is NA
+    df = df.drop(columns=["key_plot_id", "sample_location"])
+    df["lag"] = pd.Timestamp.today().normalize() - df.reference_date
+    df["lag"] = df["lag"].dt.days
+    df["source"] = "NWSS"
+    # TODO missing value code
+    df["missing_value"] = 0
+    df["version"] = pd.Timestamp("today").normalize()
+    df["pathogen"] = "COVID"
+    df["value_updated_timestamp"] = pd.Timestamp("now")
+    return df, auxiliary_info
+
+
+from sqlalchemy import create_engine
+from sqlalchemy import text
+
+
+for table_name in inspector.get_table_names():
+    for column in inspector.get_columns(table_name):
+        print("Column: %s" % column["name"])
+
+with database.engine.connect() as conn:
+    res = conn.execute(text("show tables;"))
+    print(pd.DataFrame(res.all()))
+
+# accident
+with database.engine.begin() as conn:
+    conn.execute(text("DROP TABLE wastewater_granular"))
+
+with database.engine.connect() as conn:
+    result = conn.execute(text("SELECT * FROM wastewater_granular_load"))
+    for row in result:
+        print(row)
+
+with database.engine.connect() as conn:
+    result = conn.execute(text("SELECT * FROM `signal_dim`"))
+    print(result.keys())
+    for row in result:
+        print(row)
+
+with database.engine.connect() as conn:
+    result = conn.execute(text("SELECT * FROM `plant_dim`"))
+    print(result.keys())
+    print(pd.DataFrame(result))
+stmt = """
+SELECT ld.source, ld.signal, ld.pathogen, ld.provider, ld.normalization, td.source, td.signal, td.pathogen, td.provider, td.normalization
+FROM `wastewater_granular_load` AS ld
+LEFT JOIN `signal_dim` AS td
+    USING (`source`, `signal`, `pathogen`, `provider`, `normalization`)
+"""
+# WHERE td.`source` IS NULL
+print(stmt)
+with database.engine.connect() as conn:
+    result = conn.execute(text(stmt))
+    print(result.keys())
+    for row in result:
+        print(row)
+
+with database.engine.connect() as conn:
+    result = conn.execute(text("SELECT * FROM `sample_site_dim`"))
+    print(result.keys())
+    for row in result:
+        print(row)
+toClaa = """
+INSERT INTO plant_dim (`wwtp_jurisdiction`, `wwtp_id`)
+    SELECT DISTINCT ld.wwtp_jurisdiction, ld.wwtp_id
+    FROM `wastewater_granular_load` AS ld
+    LEFT JOIN `plant_dim` AS td
+        USING (`wwtp_jurisdiction`, `wwtp_id`)
+    WHERE td.`wwtp_id` IS NULL
+"""
+with database.engine.connect() as conn:
+    result = conn.execute(text(toClaa))
+with database.engine.connect() as conn:
+    result = conn.execute(text("SELECT * FROM `plant_dim`"))
+    print(result.keys())
+    for row in result:
+        print(row)
+
+toCall = f"""
+            SELECT DISTINCT ld.sample_loc_specify, ld.sample_method, ft.plant_id
+            FROM `wastewater_granular_load` AS ld
+            LEFT JOIN `sample_site_dim` AS td
+                USING (`sample_loc_specify`, `sample_method`)
+            LEFT JOIN `plant_dim` AS ft
+                USING (`wwtp_jurisdiction`, `wwtp_id`)
+                        WHERE td.`sample_method` IS NULL
+"""
+print(toCall)
+with database.engine.connect() as conn:
+    result = conn.execute(text(toCall))
+    print(result.cursor.description)
+    print(result.keys())
+    for row in result:
+        print(row)
+
+df_tiny = df.sample(n=20, random_state=1)
+df_tiny2 = df.sample(n=20, random_state=2)
+df_tiny
+df_tiny.to_sql(
+    name=["wastewater_granular_full", "plant_dim"],
+    con=engine,
+    if_exists="append",
+    method="multi",
+    index=False,
+)
+
+
+# roughly what needs to happen (unsure which language/where):
+# 1. SELECT * FROM latest
+# 2. compare and drop if it's redundant
+# 3. assign the various id's (I think this may be handled by the load datatable)
+# 4. split into seprate tables
+# 5. INSERT the new rows
+# 6? aggregate to state level (maybe from load,)
+# 7. delete load
+# Ok but actually, I will also be writing a separate aux table, that shouldn't need a separate load table and will happen separately
+# Also, I am going to need to dedupe, which I guess can happen during the join
