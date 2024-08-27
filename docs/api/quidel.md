@@ -1,10 +1,10 @@
 ---
-title: Quidel Endpoint Access
+title: Quidel
 parent: Other Endpoints
 nav_order: 2
 ---
 
-# Quidel Endpoint Access
+# Quidel
 
 This is the documentation of the API for accessing the Quidel (`quidel`) endpoint of the Delphi’s epidemiological data.
 

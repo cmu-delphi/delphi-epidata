@@ -1,6 +1,7 @@
 ---
-title: API Client
+title: API Clients
 parent: Other Endpoints (COVID-19 and Other Diseases)
+nav_order: 1
 ---
 
 # Epidata API Clients
