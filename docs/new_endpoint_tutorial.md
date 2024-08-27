@@ -1,10 +1,10 @@
 ---
-title: "Tutorial: Adding New API Endpoint"
+title: "Adding a New API Endpoint"
 parent: Developer Support
 nav_order: 2
 ---
 
-# Tutorial: Adding a new API endpoint
+# Adding a new API endpoint
 
 **Prerequisite:** this guide assumes that you have read the
 [epidata development guide](epidata_development.md).
@@ -19,7 +19,7 @@ In this tutorial we'll create a brand new endpoint for the Epidata API:
 5. update API documentation for the new endpoint
 6. run all unit and integration tests
 
-# setup
+## Setup
 
 Follow
 [the backend guide](https://github.com/cmu-delphi/operations/blob/main/docs/backend_development.md)
@@ -46,7 +46,7 @@ tree -L 3 .
         └── undef-analysis
 ```
 
-# the data
+## The data
 
 Here's the requirement: we need to quickly surface the most recent "issue"
 (epiweek of publication) for the existing [`fluview` endpoint](api/fluview.md).
@@ -63,14 +63,14 @@ the following:
 - latest "issue", which is the publication epiweek
 - total size of the table
 
-# update the server
+## Update the server
 
 1. create a new file in `/src/server/endpoints/` e.g., `fluview_meta.py`, or copy an existing one.
 2. edit the created file `Blueprint("fluview_meta", __name__)` such that the first argument matches the target endpoint name
 3. edit the existing `/src/server/endpoints/__init__.py` to add the newly-created file to the imports (top) and to the list of endpoints (below).
 
 
-# update the client libraries
+## Update the client libraries
 
 There are currently four client libraries. They all need to be updated to make
 the new `fluview_meta` endpoint available to callers. The pattern is very
@@ -152,7 +152,7 @@ Here's what we add to each client:
     fluview_meta = fluview_meta,
     ```
 
-# add an integration test
+## Add an integration test
 
 Now that we've changed several files, we need to make sure that the changes
 work as intended _before_ submitting code for review or committing code to the
@@ -205,7 +205,7 @@ def test_round_trip(self):
   })
 ```
 
-# write documentation
+## Write documentation
 
 This consists of two steps: add a new document for the `fluview_meta` endpoint,
 and add a new entry to the existing table of endpoints.
@@ -222,9 +222,9 @@ the following row in the appropriate place (i.e., next to the row for
 | [`fluview_meta`](fluview_meta.md) | FluView Metadata | Summary data about [`fluview`](fluview.md). | no |
 ```
 
-# run tests
+## Run tests
 
-## unit
+### Unit
 
 Finally, we just need to run all new and existing tests. It is recommended to
 start with the unit tests because they are faster to build, run, and either
@@ -260,7 +260,7 @@ and with pdb enabled like this:
 docker run -it --rm delphi_python pytest repos/delphi/delphi-epidata/tests/ --pdb
 ```
 
-## integration
+### Integration
 
 Integration tests require more effort and take longer to set up and run.
 However, they allow us to test that various pieces are working together
@@ -315,7 +315,7 @@ and with pdb enabled like this:
 docker run --network delphi-net -it --rm delphi_python pytest repos/delphi/delphi-epidata/integrations/ --pdb
 ```
 
-# code review and submission
+## Code review and submission
 
 All tests pass, and the changes are working as intended. Now submit the code
 for review, (e.g., by opening a pull request on GitHub). For an example, see the
