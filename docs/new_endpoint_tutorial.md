@@ -1,5 +1,5 @@
 ---
-title: Add A New Endpoint
+title: "Tutorial: Adding New API Endpoint"
 parent: Developer Support
 nav_order: 2
 ---

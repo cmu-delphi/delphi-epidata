@@ -19,7 +19,7 @@ nav_order: 1
 ## Quidel COVID-19 Tests
 
 * **Source name:** `quidel`
-* **Earliest issue available:** July 29, 2020 
+* **Earliest issue available:** July 29, 2020
 * **Number of data revisions since May 19, 2020:** 1
 * **Date of last change:** October 22, 2020
 * **Available for:** county, hrr, msa, state, HHS, nation (see [geography coding docs](../covidcast_geography.md))
@@ -165,7 +165,7 @@ that day will not include it.
 
 These signals are inactive. They were updated until May 19, 2020.
 
-* **Source name: `quidel`
+* **Source name:** `quidel`
 * **Earliest issue available:** April 29, 2020
 * **Last issued:** May 19, 2020
 * **Number of data revisions since May 19, 2020:** 0
@@ -196,23 +196,4 @@ small.
 | `raw_pct_negative` | The percentage of flu tests that are negative, suggesting the patient's illness has another cause, possibly COVID-19 <br/> **Earliest date available:** 2020-01-31 |
 | `smoothed_pct_negative` | Same as above, but smoothed in time <br/> **Earliest date available:** 2020-01-31 |
 | `raw_tests_per_device` | The average number of flu tests conducted by each testing device; measures volume of testing <br/> **Earliest date available:** 2020-01-31 |
-| `smoothed_tests_per_device` | Same as above, but smoothed in time <br/> **Earliest date available:** 2020-01-31 | 
-
-### Parameters
-
-#### Required
-
-| Parameter | Description | Type |
-| --- | --- | --- |
-| `auth` | password | string |
-| `epiweeks` | epiweeks | `list` of epiweeks |
-| `locations` | locations | `list` of `hhs<#>` [region](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/regions.txt) labels |
-
-### Response
-
-| Field     | Description                                                     | Type             |
-|-----------|-----------------------------------------------------------------|------------------|
-| `result`  | result code: 1 = success, 2 = too many results, -2 = no results | integer          |
-| `epidata` | list of results                                                 | array of objects |
-| ...       | ...                                                             | ...              | <!-- TODO -->
-| `message` | `success` or error message                                      | string           |
+| `smoothed_tests_per_device` | Same as above, but smoothed in time <br/> **Earliest date available:** 2020-01-31 |

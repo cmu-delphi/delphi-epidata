@@ -1,5 +1,5 @@
 ---
-title: API Development Guide
+title: Development Guide
 parent: Developer Support
 nav_order: 1
 ---
