@@ -1,9 +1,9 @@
 ---
-title: COVID-19 Trends and Impact Survey 2020-2022 (inactive)
+title: COVID-19 Trends and Impact Survey (inactive)
 nav_order: 4
 ---
 
-# COVID-19 Trends and Impact Survey 2020-2022 (Facebook Survey)
+# COVID-19 Trends and Impact Survey (CTIS)
 
 Since April 2020, Delphi has conducted a voluntary survey about COVID-19,
 distributed daily to users in the United States via a partnership with Facebook.
@@ -14,6 +14,8 @@ posted [on the COVIDcast website](https://delphi.cmu.edu/covid19/ctis/), and an
 international version is [conducted by the University of
 Maryland](https://covidmap.umd.edu/). Data collection [ceased on June 25,
 2022](end-of-survey.md).
+
+This survey was also known unoffixially as the Facebook Survey.
 
 More survey details are also available [on the COVID-19 Trends and Impact Survey 2020-2022 (inactive) page](https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/fb-survey.html) under the COVIDcast Main Endpoint's Data Source and Signals section of this API documentation site. 
 

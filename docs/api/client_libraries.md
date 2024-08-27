@@ -1,10 +1,9 @@
 ---
-title: Epidata API Client Libraries
-parent: Epidata API Intro
-nav_order: 2
+title: API Client
+parent: Other Endpoints (COVID-19 and Other Diseases)
 ---
 
-# Epidata API Client Libraries
+# Epidata API Clients
 
 To access Delphi Epidata programmatically, we recommend our client libraries:
 

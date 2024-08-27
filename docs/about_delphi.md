@@ -1,6 +1,6 @@
 ---
-title: The Delphi Research Group
-nav_order: 6
+title: About Delphi
+nav_order: 60
 has_children: false
 ---
 
