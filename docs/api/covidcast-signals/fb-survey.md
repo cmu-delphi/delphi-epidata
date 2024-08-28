@@ -1,5 +1,5 @@
 ---
-title: COVID-19 Trends and Impact Survey (inactive)
+title: (inactive) COVID-19 Trends and Impact Survey
 parent: Data Sources and Signals
 grand_parent: Main Endpoint (COVIDcast)
 nav_order: 2
