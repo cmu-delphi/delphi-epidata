@@ -1,12 +1,12 @@
 ---
-title: COVIDcast Data Licensing
+title: Data Licensing
 parent: Main Endpoint (COVIDcast)
 nav_order: 2
 ---
 
-# Licensing for Delphi's COVID-19 Data Streams
+# Licensing for the Main Endpoint
 
-When you use data from Delphi's COVIDcast Epidata API, we ask that you attribute
+When you use data from Delphi's Epidata API, we ask that you attribute
 the source and follow the terms of the data's licensing agreement. The API
 contains some data streams produced internally by Delphi, which should be
 attributed to Delphi, and some republished from other sources, which should be
