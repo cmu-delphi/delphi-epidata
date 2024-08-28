@@ -2,7 +2,7 @@
 title: Data Strategy and Execution Workgroup Community Profile Report (inactive)
 parent: Data Sources and Signals
 nav_order: 2
-grand_parent: COVIDcast Main Endpoint
+grand_parent: Main Endpoint (COVIDcast)
 ---
 
 # Data Strategy and Execution Workgroup Community Profile Report (CPR)

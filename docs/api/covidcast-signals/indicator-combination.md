@@ -1,7 +1,7 @@
 ---
 title: Indicator Combination (inactive)
 parent: Data Sources and Signals
-grand_parent: COVIDcast Main Endpoint
+grand_parent: Main Endpoint (COVIDcast)
 nav_order: 1
 ---
 

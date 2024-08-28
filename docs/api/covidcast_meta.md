@@ -1,6 +1,6 @@
 ---
 title: Metadata
-parent: COVIDcast Main Endpoint
+parent: Main Endpoint (COVIDcast)
 nav_order: 4
 ---
 

@@ -1,6 +1,6 @@
 ---
 title: NaN Missing Codes
-parent: COVIDcast Main Endpoint
+parent: Main Endpoint (COVIDcast)
 nav_order: 7
 ---
 

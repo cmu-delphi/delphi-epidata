@@ -1,6 +1,6 @@
 ---
 title: Signal Changelog
-parent: COVIDcast Main Endpoint
+parent: Main Endpoint (COVIDcast)
 nav_order: 8
 ---
 
