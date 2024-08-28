@@ -1,5 +1,5 @@
 ---
-title: COVID-19 Trends and Impact Survey (inactive)
+title: <i>inactive</i> COVID-19 Trends and Impact Survey
 nav_order: 4
 ---
 
