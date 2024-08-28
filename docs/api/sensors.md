@@ -1,6 +1,7 @@
 ---
 title: Digital Surveillance Sensors
-parent: Other Endpoints
+parent: Data Sources and Signals
+grand_parent: Other Endpoints (COVID-19 and Other Diseases)
 nav_order: 1
 ---
 
