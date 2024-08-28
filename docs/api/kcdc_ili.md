@@ -1,5 +1,5 @@
 ---
-title: <em>inactive</em> KCDC ILI
+title: <i>inactive</i> KCDC ILI
 parent: Data Sources and Signals
 grand_parent: Other Endpoints (COVID-19 and Other Diseases)
 nav_order: 2

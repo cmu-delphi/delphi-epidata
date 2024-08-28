@@ -1,5 +1,5 @@
 ---
-title: <em>inactive</em> NIDSS Dengue
+title: <i>inactive</i> NIDSS Dengue
 parent: Data Sources and Signals
 grand_parent: Other Endpoints (COVID-19 and Other Diseases)
 nav_order: 2

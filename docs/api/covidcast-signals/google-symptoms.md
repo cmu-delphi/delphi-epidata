@@ -1,5 +1,5 @@
 ---
-title: <em>inactive</em> Google Search Trends Symptoms
+title: <i>inactive</i> Google Search Trends Symptoms
 parent: Data Sources and Signals
 nav_order: 2
 grand_parent: Main Endpoint (COVIDcast)

@@ -10,10 +10,10 @@ distributed daily to users in the United States via a partnership with Facebook.
 This survey asks respondents about COVID-like symptoms, their behavior (such as
 social distancing), mental health, and economic and health impacts they have
 experienced as a result of the pandemic. A high-level overview of the survey is
-posted [on the COVIDcast website](https://delphi.cmu.edu/covid19/ctis/), and an
-international version is [conducted by the University of
-Maryland](https://covidmap.umd.edu/). Data collection [ceased on June 25,
-2022](end-of-survey.md).
+posted [on the Delphi website](https://delphi.cmu.edu/covid19/ctis/),
+and an international version is
+[conducted by the University of Maryland](https://covidmap.umd.edu/).
+Data collection [ceased on June 25, 2022](end-of-survey.md).
 
 This survey was also known unoffixially as the Facebook Survey.
 

@@ -1,5 +1,5 @@
 ---
-title: <em>inactive</em> Google Flu Trends
+title: <i>inactive</i> Google Flu Trends
 parent: Data Sources and Signals
 grand_parent: Other Endpoints (COVID-19 and Other Diseases)
 nav_order: 2

@@ -208,4 +208,4 @@ To access our Epidata API, visit our [Epidata API Client Libraries)](client_libr
 
 # Related Work
 
-Please visit our [related works](related_work.md) page for more information.
+Please visit our [related works](../related_work.md) page for more information.

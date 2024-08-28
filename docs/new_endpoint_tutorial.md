@@ -266,9 +266,8 @@ Integration tests require more effort and take longer to set up and run.
 However, they allow us to test that various pieces are working together
 correctly. Many of these pieces we can't test individually with unit tests
 (e.g., database, and the API server), so integration tests are the only way we
-can be confident that our changes won't break the API. Follow the [epidata
-development guide](epidata_development.md#test). In summary, assuming you have
-already built the `delphi_python` image above:
+can be confident that our changes won't break the API. In summary,
+assuming you have already built the `delphi_python` image above:
 
 ```bash
 # build web and database images for epidata

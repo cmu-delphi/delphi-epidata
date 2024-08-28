@@ -1,5 +1,5 @@
 ---
-title: <em>inactive</em> Department of Health & Human Services
+title: <i>inactive</i> Department of Health & Human Services
 parent: Data Sources and Signals
 nav_order: 2
 grand_parent: Main Endpoint (COVIDcast)

@@ -1,5 +1,5 @@
 ---
-title: <em>inactive</em> Indicator Combination
+title: <i>inactive</i> Indicator Combination
 parent: Data Sources and Signals
 grand_parent: Main Endpoint (COVIDcast)
 nav_order: 2

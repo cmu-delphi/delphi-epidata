@@ -1,5 +1,5 @@
 ---
-title: <em>inactive</em> Flusurv
+title: <i>inactive</i> Flusurv
 parent: Data Sources and Signals
 grand_parent: Other Endpoints (COVID-19 and Other Diseases)
 nav_order: 2
