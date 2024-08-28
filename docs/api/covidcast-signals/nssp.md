@@ -11,7 +11,7 @@ nav_order: 1
 * **Earliest issue available:** April 17, 2024
 * **Number of data revisions since 19 May 2020:** 0
 * **Date of last change:** Never
-* **Available for:** county, hrr, msa, state, nation (see [geography coding docs](../covidcast_geography.md))
+* **Available for:** county, hrr, msa, state, hhs, nation (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** week (see [date format docs](../covidcast_times.md))
 * **License:** [Public Domain US Government](https://www.usa.gov/government-works)
 
@@ -45,7 +45,7 @@ The percent visits signals are calculated as a fraction of visits at facilities 
 County and state level data is reported as-is from NSSP, without modification, while `hrr` and `msa` are estimated by Delphi.
 
 ### Geographic weighting
-As the original data is a percentage and raw case counts are not available, `hrr` and `msa` values are computed from county-level data using a weighted mean. Each county is assigned a weight equal to its population in the last census (2020). Unreported counties are implicitly treated as having a weight of 0 or a value equal to the group mean.
+As the original data is a percentage and raw case counts are not available, `hrr`,`msa`, and `hhs` values are computed from county-level data using a weighted mean. Each county is assigned a weight equal to its population in the last census (2020). Unreported counties are implicitly treated as having a weight of 0 or a value equal to the group mean.
 
 This weighting approach assumes that the number of ED visits is proportional to the overall population of a county, i.e. the per-capita ED visit rate is the same for all counties, which may not be the case (for example, denser counties may have easier access to EDs and thus higher rates of ED visits per capita).
 
