@@ -1,5 +1,5 @@
 ---
-title: (inactive) CDC
+title: <em>inactive</em> CDC
 parent: Data Sources and Signals
 grand_parent: Other Endpoints (COVID-19 and Other Diseases)
 nav_order: 2

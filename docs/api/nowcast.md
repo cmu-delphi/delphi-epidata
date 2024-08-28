@@ -1,5 +1,5 @@
 ---
-title: (inactive) ILI Nearby Nowcast
+title: <em>inactive</em> ILI Nearby Nowcast
 parent: Data Sources and Signals
 grand_parent: Other Endpoints (COVID-19 and Other Diseases)
 nav_order: 2

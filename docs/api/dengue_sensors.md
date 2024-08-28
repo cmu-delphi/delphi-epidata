@@ -1,5 +1,5 @@
 ---
-title: (inactive) Dengue Digital Surveillance
+title: <em>inactive</em> Dengue Digital Surveillance
 parent: Data Sources and Signals
 grand_parent: Other Endpoints (COVID-19 and Other Diseases)
 nav_order: 2

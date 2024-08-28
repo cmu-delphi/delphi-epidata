@@ -1,5 +1,5 @@
 ---
-title: (inactive) COVID Act Now
+title: <em>inactive</em> COVID Act Now
 parent: Data Sources and Signals
 nav_order: 2
 grand_parent: Main Endpoint (COVIDcast)

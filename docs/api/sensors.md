@@ -1,5 +1,5 @@
 ---
-title: (inactive) Digital Surveillance Sensors
+title: <em>inactive</em> Digital Surveillance Sensors
 parent: Data Sources and Signals
 grand_parent: Other Endpoints (COVID-19 and Other Diseases)
 nav_order: 2

@@ -1,5 +1,5 @@
 ---
-title: (inactive) Youtube Survey
+title: <em>inactive</em> Youtube Survey
 parent: Data Sources and Signals
 nav_order: 2
 grand_parent: Main Endpoint (COVIDcast)

@@ -1,5 +1,5 @@
 ---
-title: (inactive) COVID-19 Reported Patient Impact and Hospital Capacity by State Timeseries
+title: <em>inactive</em> COVID-19 Reported Patient Impact and Hospital Capacity by State Timeseries
 parent: Data Sources and Signals
 grand_parent: Other Endpoints (COVID-19 and Other Diseases)
 nav_order: 2

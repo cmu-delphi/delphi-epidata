@@ -1,5 +1,5 @@
 ---
-title: (inactive) Google Symptom Surveys
+title: <em>inactive</em> Google Symptom Surveys
 parent: Data Sources and Signals
 grand_parent: Main Endpoint (COVIDcast)
 nav_order: 2

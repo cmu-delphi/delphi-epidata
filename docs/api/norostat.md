@@ -1,5 +1,5 @@
 ---
-title: (inactive) NoroSTAT
+title: <em>inactive</em> NoroSTAT
 parent: Data Sources and Signals
 grand_parent: Other Endpoints (COVID-19 and Other Diseases)
 nav_order: 2
