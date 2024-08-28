@@ -87,10 +87,13 @@ You can test your changes manually by:
 
 What follows is a worked demonstration based on the `fluview` endpoint. Before
 starting, make sure that you have the `delphi_database_epidata`,
-`delphi_web_epidata`, and `delphi_redis` containers running (with `docker ps`);
-if you don't, see the Makefile instructions above.
-
+`delphi_web_epidata`, and `delphi_redis` containers running: to start them, from the `driver` directory, run
+1. `make db` for `delphi_database_epidata`
+2. `make web` for `dephi_web_epidata`
+3. `make redis` to run `delphi_redis`.
+You can check that they are running via `docker ps`. 
 First, let's insert some fake data into the `fluview` table:
+
 
 ```bash
 # If you have the mysql client installed locally:
@@ -117,6 +120,20 @@ outside of the container is mapped to 13360, which can be seen in the Makefile.)
 For the inserts above, absence of command-line output is a sign of success. On
 the other hand, output after the insertion likely indicates failure (like, for
 example, attempting to insert a duplicate unique key).
+
+Or if you would prefer to interact with the server via python (for example to
+prototype functions and database commands)
+
+```python 
+from sqlalchemy import create_engine
+
+engine = create_engine(
+    "mysql+pymysql://user:pass@127.0.0.1:13306/epidata",
+    echo=True,
+)
+engine.connect()
+```
+
 
 Next, you can query the API directly (and parse with Python's JSON tool):
 
