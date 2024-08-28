@@ -1,8 +1,8 @@
 ---
-title: NIDSS Flu
+title: (inactive) NIDSS Flu
 parent: Data Sources and Signals
 grand_parent: Other Endpoints (COVID-19 and Other Diseases)
-nav_order: 1
+nav_order: 2
 ---
 
 # NIDSS Flu
