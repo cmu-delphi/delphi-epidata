@@ -15,7 +15,7 @@ and an international version is
 [conducted by the University of Maryland](https://covidmap.umd.edu/).
 Data collection [ceased on June 25, 2022](end-of-survey.md).
 
-This survey was also known unoffixially as the Facebook Survey.
+This survey was also known unofficially as the Facebook Survey.
 
 More survey details are also available [on the COVID-19 Trends and Impact Survey 2020-2022 (inactive) page](https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/fb-survey.html) under the COVIDcast Main Endpoint's Data Source and Signals section of this API documentation site. 
 

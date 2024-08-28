@@ -1,6 +1,6 @@
 ---
 title: Contingency Tables
-parent: COVID-19 Trends and Impact Survey
+parent: <i>inactive</i> COVID-19 Trends and Impact Survey
 nav_order: 4
 ---
 
