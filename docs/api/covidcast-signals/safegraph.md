@@ -1,8 +1,8 @@
 ---
 title: <i>inactive</i> SafeGraph
 parent: Data Sources and Signals
-nav_order: 2
 grand_parent: Main Endpoint (COVIDcast)
+nav_order: 2
 ---
 
 # SafeGraph

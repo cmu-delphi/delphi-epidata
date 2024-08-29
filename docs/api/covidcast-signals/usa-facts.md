@@ -1,8 +1,8 @@
 ---
 title: <i>inactive</i> USAFacts Cases and Deaths
 parent: Data Sources and Signals
-nav_order: 2
 grand_parent: Main Endpoint (COVIDcast)
+nav_order: 2
 ---
 
 # USAFacts Cases and Deaths

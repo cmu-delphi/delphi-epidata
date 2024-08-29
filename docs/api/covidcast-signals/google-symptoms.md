@@ -1,8 +1,8 @@
 ---
-title: Google Search Trends Symptoms
+title: Google Symptom Search Trends
 parent: Data Sources and Signals
-nav_order: 1
 grand_parent: Main Endpoint (COVIDcast)
+nav_order: 1
 ---
 
 # Google Symptoms
