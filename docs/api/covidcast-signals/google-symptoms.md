@@ -16,7 +16,7 @@ grand_parent: Main Endpoint (COVIDcast)
 * **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** To download or use the data, you must agree to the Google [Terms of Service](https://policies.google.com/terms)
 
-<div style="background-color:#ff00001c; padding: 10px 30px;"><strong>Data issue:</strong> Between May 13 2024 and August 6 2024, signals values were 25%-50% lower compared to previous time periods. This affects _all_ signals and symptom sets. Currently there is no explanation for the decrease in search volume, and the issue is under investigation by our data source partners.</div>
+<div style="background-color:#ff00001c; padding: 10px 30px;"><strong>Data issue:</strong> Between May 13 2024 and August 6 2024, signals values were 25%-50% lower compared to previous time periods. This affects <i>all</i> signals and symptom sets. Currently there is no explanation for the decrease in search volume, and the issue is under investigation by our data source partners.</div>
 
 ## Overview
 
