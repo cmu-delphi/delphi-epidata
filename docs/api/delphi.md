@@ -1,6 +1,8 @@
 ---
-title: Delphi Forecasts
-parent: Other Endpoints (COVID-19 and Other Diseases)
+title: <i>inactive</i> Delphi Forecasts
+parent: Data Sources and Signals
+grand_parent: Other Endpoints (COVID-19 and Other Diseases)
+nav_order: 2
 ---
 
 # Delphi Forecasts

@@ -1,7 +1,7 @@
 ---
 title: Geographic Coding
-parent: COVIDcast Main Endpoint
-nav_order: 4
+parent: Main Endpoint (COVIDcast)
+nav_order: 5
 ---
 
 # COVIDcast Geographic Coding

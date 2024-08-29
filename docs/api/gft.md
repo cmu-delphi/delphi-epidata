@@ -1,6 +1,8 @@
 ---
-title: Google Flu Trends
-parent: Other Endpoints (COVID-19 and Other Diseases)
+title: <i>inactive</i> Google Flu Trends
+parent: Data Sources and Signals
+grand_parent: Other Endpoints (COVID-19 and Other Diseases)
+nav_order: 2
 ---
 
 # Google Flu Trends

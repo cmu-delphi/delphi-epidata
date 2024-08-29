@@ -1,6 +1,8 @@
 ---
-title: Google Health Trends
-parent: Other Endpoints (COVID-19 and Other Diseases)
+title: <i>inactive</i> Google Health Trends
+parent: Data Sources and Signals
+grand_parent: Other Endpoints (COVID-19 and Other Diseases)
+nav_order: 2
 ---
 
 # Google Health Trends

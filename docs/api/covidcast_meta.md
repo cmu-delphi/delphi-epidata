@@ -1,7 +1,8 @@
 ---
 title: Metadata
-parent: COVIDcast Main Endpoint
-nav_order: 6
+parent: Data Sources and Signals
+grand_parent: Main Endpoint (COVIDcast)
+nav_order: 0
 ---
 
 # COVIDcast Metadata

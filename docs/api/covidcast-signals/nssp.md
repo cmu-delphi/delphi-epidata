@@ -1,7 +1,8 @@
 ---
 title: NSSP ED Visits
 parent: Data Sources and Signals
-grand_parent: COVIDcast Main Endpoint
+grand_parent: Main Endpoint (COVIDcast)
+nav_order: 1
 ---
 # National Syndromic Surveillance Program Emergency Department Visits
 {: .no_toc}

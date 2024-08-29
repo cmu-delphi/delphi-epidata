@@ -1,10 +1,10 @@
 ---
-title: Epidata API Client Libraries
+title: API Clients
 parent: Other Endpoints (COVID-19 and Other Diseases)
 nav_order: 1
 ---
 
-# Epidata API Client Libraries
+# Epidata API Clients
 
 To access Delphi Epidata programmatically, we recommend our client libraries:
 
@@ -12,7 +12,7 @@ To access Delphi Epidata programmatically, we recommend our client libraries:
 - Python: [delphi-epidata](https://pypi.org/project/delphi-epidata/) (soon to be replaced with [epidatpy](https://github.com/cmu-delphi/epidatpy)),
 - Javascript: [delphi-epidata](https://github.com/cmu-delphi/delphi-epidata/blob/master/src/client/delphi_epidata.js).
 
-For anyone looking for COVIDCast data, please visit our [COVIDCast Libraries](covidcast_clients.md).
+For anyone looking for COVIDCast data, please visit our [COVIDCast API Client Libraries](covidcast_clients.md).
 
 The following samples show how to import the library and fetch Delphi's
 COVID-19 Surveillance Streams from Facebook Survey CLI for county 06001 and days

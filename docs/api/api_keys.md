@@ -1,7 +1,7 @@
 ---
 title: API Keys
+parent: Epidata API Intro
 nav_order: 1
-has_children: true
 ---
 
 # Epidata API Keys

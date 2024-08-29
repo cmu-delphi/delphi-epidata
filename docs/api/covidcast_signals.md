@@ -1,10 +1,10 @@
 ---
 title: Data Sources and Signals
-parent: COVIDcast Main Endpoint
-nav_order: 2
+parent: Main Endpoint (COVIDcast)
+nav_order: 3
 has_children: true
----
 
+---
 # Delphi's COVID-19 Data Sources and Signals
 
 Delphi's COVID-19 Surveillance Streams data includes the following data sources.

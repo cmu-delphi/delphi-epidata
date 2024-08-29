@@ -1,7 +1,8 @@
 ---
-title: Google Search Trends symptoms dataset
+title: <i>inactive</i> Google Search Trends Symptoms
 parent: Data Sources and Signals
-grand_parent: COVIDcast Main Endpoint
+nav_order: 2
+grand_parent: Main Endpoint (COVIDcast)
 ---
 
 # Google Symptoms
