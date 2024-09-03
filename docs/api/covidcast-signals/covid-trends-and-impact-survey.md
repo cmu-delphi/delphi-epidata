@@ -3,6 +3,7 @@ title: <i>inactive</i> COVID-19 Trends and Impact Survey
 parent: Data Sources and Signals
 grand_parent: Main Endpoint (COVIDcast)
 nav_order: 2
+permalink: api/covidcast-signals/fb-survey.html
 ---
 
 # COVID-19 Trends and Impact Survey (CTIS)
