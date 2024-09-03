@@ -1,11 +1,11 @@
 ---
-title: FluView metadata
+title: FluView Metadata
 parent: Data Sources and Signals
 grand_parent: Other Endpoints (COVID-19 and Other Diseases)
 nav_order: 1
 ---
 
-# FluView metadata
+# FluView Metadata
 
 This is the API documentation for accessing the FluView metadata
 (`fluview_meta`) endpoint of [Delphi](https://delphi.cmu.edu/)'s epidemiological
