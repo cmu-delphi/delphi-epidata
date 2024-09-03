@@ -27,7 +27,7 @@ from .nwss_constants import (
 )
 
 
-def key_plot_id_parse(key_plot_ids: pd.Series) -> pd.DataFrame:
+def key_plot_id_parse(key_plot_ids: pd.Series, logger: Logger) -> pd.DataFrame:
     """Given a list of key plot id's, extract the various sub-values.
 
     The Dataframe returned has the following columns
@@ -46,11 +46,11 @@ def key_plot_id_parse(key_plot_ids: pd.Series) -> pd.DataFrame:
     # every variable is separated by `_`, though some may also contain them
     processed_names = key_plot_ids.str.extract(
         (
-            r"(?P<provider>.+)_"  # provider, anything before the next one "NWSS"
+            r"(?P<provider>.+)_"  # provider, glues together everything before the next 4
             r"(?P<wwtp_jurisdiction>[a-z]{2})_"  # state, exactly two letters "mi"
-            r"(?P<wwtp_id>[0-9]+)_"  # an id, at least one digits "1040"
+            r"(?P<wwtp_id>[-,0-9]+)_"  # an id, at least one digits "1040"
             r"(?P<sample_location>[^_]+)_"  # either "Before treatment plant" or "Treatment plant"
-            r"(?P<sample_location_specify>[0-9]*)_*"  # a number, may be missing (thus _*)
+            r"(?P<sample_location_specify>[-,0-9]*)_*"  # a number, may be missing (thus _*)
             r"(?P<sample_method>.*)"  # one of 4 values:
             # 'post grit removal', 'primary effluent', 'primary sludge', 'raw wastewater'
         )
@@ -66,7 +66,88 @@ def key_plot_id_parse(key_plot_ids: pd.Series) -> pd.DataFrame:
     processed_names = processed_names.set_index("key_plot_id")
     processed_names = processed_names.astype(KEY_PLOT_TYPES)
     # TODO warnings/errors when things don't parse
+    validate_key_plot_id_assumptions(processed_names, logger)
     return processed_names
+
+
+def validate_key_plot_id_assumptions(
+    processed_names: pd.DataFrame, logger: Logger
+) -> None:
+    """Check that the values in the key_plot_id fit our assuptions."""
+    # wwtp_jurisdiction is validated alongside the metric keys
+
+    # wwtp_id
+    processed_names = processed_names.reset_index()
+
+    if any(processed_names.wwtp_id < 0):
+        negative_key_plot_ids = processed_names.loc[
+            processed_names.wwtp_id < 0, "key_plot_id"
+        ]
+        logger.error(
+            "the wwtp_id's have negative values", key_plot_ids=negative_key_plot_ids
+        )
+    if any(processed_names.wwtp_id.isna()):
+        wwtp_is_na = processed_names.loc[processed_names.wwtp_id.isna(), "key_plot_id"]
+        logger.error("the wwtp_id's have NA values", key_plot_ids=wwtp_is_na)
+    if any(processed_names.wwtp_id > 10_000):
+        wwtp_is_too_big = processed_names.loc[
+            processed_names.wwtp_id > 10_000, "key_plot_id"
+        ]
+        logger.warn("wwtp_id values are over 10,000", key_plot_ids=wwtp_is_too_big)
+
+    # sample_location is actually a boolean
+    sample_categories = processed_names.sample_location.cat.categories
+    if len(sample_categories) > 2 or not all(
+        processed_names.sample_location.cat.categories.isin(
+            np.array(["Before treatment plant", "Treatment plant"])
+        )
+    ):
+        logger.error(
+            "There is a new value for sample location",
+            sample_locations=sample_categories,
+        )
+
+    # sample location not defined for treatment plants
+    treatment_plants_mismatched = processed_names.query(
+        "sample_location=='Treatment plant' and sample_location_specify > 0",
+        engine="python",
+    )
+    if treatment_plants_mismatched.size > 0:
+        logger.error(
+            "There are samples at treatment plants which have the sample location specified",
+            key_plot_ids=treatment_plants_mismatched.key_plot_id,
+        )
+
+    # sample location is defined for before treatment plants
+    before_treatment_plants_unnumbered = processed_names.query(
+        "sample_location=='Before treatment plant' and sample_location_specify < 0",
+        engine="python",
+    )
+    if before_treatment_plants_unnumbered.size > 0:
+        logger.error(
+            "There are samples before treatment plants which don't have the sample location specified",
+            key_plot_ids=before_treatment_plants_unnumbered.key_plot_id,
+        )
+
+    # sample location is never smaller than -1
+    if any(processed_names.sample_location_specify < -1):
+        too_negative = processed_names.loc[
+            processed_names.sample_location_specify < -1, "key_plot_id"
+        ]
+        logger.error(
+            "sample_location_specify has an unexpected value",
+            key_plot_ids=too_negative,
+        )
+
+    # sample location is never larger than 10,000
+    if any(processed_names.sample_location_specify > 10_000):
+        too_big = processed_names.loc[
+            processed_names.sample_location_specify > 10_000, "key_plot_id"
+        ]
+        logger.warn(
+            "sample_location_specify values are over 10,000",
+            key_plot_ids=too_big,
+        )
 
 
 def validate_metric_key_plot_ids(
@@ -145,8 +226,24 @@ def download_raw_data(token: str, logger: Logger) -> tuple[pd.DataFrame, pd.Data
     return df_concentration, df_metric
 
 
+def pull_from_file(
+    file_path_conc, file_path_metric, logger: Logger
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Pull from local files instead.
+
+    The files are assumed to be a pandas dataframe, saved using the `to_parquet`
+    method like `df_metric.to_parquet(file_name_metric, compression="gzip")`.
+    """
+    df_concentration = pd.read_parquet(file_path_conc)
+    df_metric = pd.read_parquet(file_path_metric)
+    df_concentration = convert_df_type(df_concentration, TYPE_DICT_CONC, logger)
+    df_metric = convert_df_type(df_metric, TYPE_DICT_METRIC, logger)
+    df_metric = df_metric.rename(columns={"date_end": "date"})
+    return df_concentration, df_metric
+
+
 def format_nwss_data(
-    df_concentration: pd.DataFrame, df_metric: pd.DataFrame
+    df_concentration: pd.DataFrame, df_metric: pd.DataFrame, logger: Logger
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Helper to pull_nwss_data, mainly separated to ease debugging without pulling."""
     # pull out the auxiliary_info first so we can drop it
@@ -184,7 +281,9 @@ def format_nwss_data(
     if na_columns.size != 0:
         logger.info("There are columns without normalization.", na_columns=na_columns)
 
-    conc_keys = key_plot_id_parse(pd.Series(df_concentration.key_plot_id.unique()))
+    conc_keys = key_plot_id_parse(
+        pd.Series(df_concentration.key_plot_id.unique()), logger
+    )
     # get the keys+normalizations where there's an unambiguous choice of normalization
     key_plot_norms = df_concentration.loc[
         :, ["key_plot_id", "normalization"]
@@ -205,7 +304,7 @@ def format_nwss_data(
         how="left",
     )
     conc_keys.loc[conc_keys.normalization.isna(), "normalization"] = "unknown"
-    metric_keys = key_plot_id_parse(pd.Series(df_metric.key_plot_id.unique()))
+    metric_keys = key_plot_id_parse(pd.Series(df_metric.key_plot_id.unique()), logger)
     validate_metric_key_plot_ids(df_metric, metric_keys, logger)
     # form the joint table of keys found in both, along with a column
     # identifying which direction there is missingness
@@ -358,110 +457,3 @@ def pull_nwss_data(token: str, logger: Logger) -> tuple[pd.DataFrame, pd.DataFra
     df["pathogen"] = "COVID"
     df["value_updated_timestamp"] = pd.Timestamp("now")
     return df, auxiliary_info
-
-
-from sqlalchemy import create_engine
-from sqlalchemy import text
-
-
-for table_name in inspector.get_table_names():
-    for column in inspector.get_columns(table_name):
-        print("Column: %s" % column["name"])
-
-with database.engine.connect() as conn:
-    res = conn.execute(text("show tables;"))
-    print(pd.DataFrame(res.all()))
-
-# accident
-with database.engine.begin() as conn:
-    conn.execute(text("DROP TABLE wastewater_granular"))
-
-with database.engine.connect() as conn:
-    result = conn.execute(text("SELECT * FROM wastewater_granular_load"))
-    for row in result:
-        print(row)
-
-with database.engine.connect() as conn:
-    result = conn.execute(text("SELECT * FROM `signal_dim`"))
-    print(result.keys())
-    for row in result:
-        print(row)
-
-with database.engine.connect() as conn:
-    result = conn.execute(text("SELECT * FROM `plant_dim`"))
-    print(result.keys())
-    print(pd.DataFrame(result))
-stmt = """
-SELECT ld.source, ld.signal, ld.pathogen, ld.provider, ld.normalization, td.source, td.signal, td.pathogen, td.provider, td.normalization
-FROM `wastewater_granular_load` AS ld
-LEFT JOIN `signal_dim` AS td
-    USING (`source`, `signal`, `pathogen`, `provider`, `normalization`)
-"""
-# WHERE td.`source` IS NULL
-print(stmt)
-with database.engine.connect() as conn:
-    result = conn.execute(text(stmt))
-    print(result.keys())
-    for row in result:
-        print(row)
-
-with database.engine.connect() as conn:
-    result = conn.execute(text("SELECT * FROM `sample_site_dim`"))
-    print(result.keys())
-    for row in result:
-        print(row)
-toClaa = """
-INSERT INTO plant_dim (`wwtp_jurisdiction`, `wwtp_id`)
-    SELECT DISTINCT ld.wwtp_jurisdiction, ld.wwtp_id
-    FROM `wastewater_granular_load` AS ld
-    LEFT JOIN `plant_dim` AS td
-        USING (`wwtp_jurisdiction`, `wwtp_id`)
-    WHERE td.`wwtp_id` IS NULL
-"""
-with database.engine.connect() as conn:
-    result = conn.execute(text(toClaa))
-with database.engine.connect() as conn:
-    result = conn.execute(text("SELECT * FROM `plant_dim`"))
-    print(result.keys())
-    for row in result:
-        print(row)
-
-toCall = f"""
-            SELECT DISTINCT ld.sample_loc_specify, ld.sample_method, ft.plant_id
-            FROM `wastewater_granular_load` AS ld
-            LEFT JOIN `sample_site_dim` AS td
-                USING (`sample_loc_specify`, `sample_method`)
-            LEFT JOIN `plant_dim` AS ft
-                USING (`wwtp_jurisdiction`, `wwtp_id`)
-                        WHERE td.`sample_method` IS NULL
-"""
-print(toCall)
-with database.engine.connect() as conn:
-    result = conn.execute(text(toCall))
-    print(result.cursor.description)
-    print(result.keys())
-    for row in result:
-        print(row)
-
-df_tiny = df.sample(n=20, random_state=1)
-df_tiny2 = df.sample(n=20, random_state=2)
-df_tiny
-df_tiny.to_sql(
-    name=["wastewater_granular_full", "plant_dim"],
-    con=engine,
-    if_exists="append",
-    method="multi",
-    index=False,
-)
-
-
-# roughly what needs to happen (unsure which language/where):
-# 1. SELECT * FROM latest
-# 2. compare and drop if it's redundant
-# 3. assign the various id's (I think this may be handled by the load datatable)
-# 4. split into seprate tables
-# 5. INSERT the new rows
-# 6? aggregate to state level (maybe from load,)
-# 7. delete load
-# Ok but actually, I will also be writing a separate aux table, that shouldn't need a separate load table and will happen separately
-# Also, I am going to need to dedupe, which I guess can happen during the join

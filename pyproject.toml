@@ -24,3 +24,7 @@ include = 'server,tests/server'
 
     [tool.pylint.'DESIGN']
     ignored-argument-names = ['(_.*|run_as_module)']
+[tool.pytest.ini_options]
+pythonpath = [
+     ".", "src"
+]

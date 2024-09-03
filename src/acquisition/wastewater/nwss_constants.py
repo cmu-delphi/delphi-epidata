@@ -1,5 +1,9 @@
 import pandas as pd
 
+from os import path
+
+WASTEWATER_DDL = path.join(path.dirname(__file__), "../../ddl/wastewater.sql")
+
 CONCENTRATION_SIGNALS = ["pcr_conc_lin"]
 METRIC_SIGNALS = ["detect_prop_15d", "percentile", "ptc_15d", "population_served"]
 

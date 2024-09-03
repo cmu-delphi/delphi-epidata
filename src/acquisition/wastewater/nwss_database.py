@@ -1,3 +1,4 @@
+from os import path
 import pandas as pd
 
 from sqlalchemy import Date, create_engine
@@ -7,7 +8,10 @@ from sqlalchemy import text
 from sqlalchemy import MetaData
 from logging import Logger
 import sqlalchemy
-from .nwss_constants import SIG_DIGITS
+from .nwss_constants import WASTEWATER_DDL, SIG_DIGITS
+
+# TODO temp
+# WASTEWATER_DDL = "/home/dsweber/allHail/delphi/epidataLocalBuild/driver/repos/delphi/delphi-epidata/src/ddl/wastewater.sql"
 
 
 # TODO add a bunch of try catches and logger stuff
@@ -26,6 +30,14 @@ def subtract_backticks(string_array: list[str]):
     return string_array
 
 
+def subtract_backticks_single(string):
+    if string.endswith("`"):
+        string = string[:-1]
+    if string.startswith("`"):
+        string = string[1:]
+    return string
+
+
 def add_backticks_single(string):
     if not string.endswith("`"):
         string = string + "`"
@@ -37,7 +49,7 @@ def add_backticks_single(string):
 def sql_rel_equal(x, y, tol):
     """Are x and y are within tol of one another?
 
-    `x` and `y` are expected to already have backticks.
+    `x` and `y` are expected to already have backticks, and tol is a positive base 10 exponent.
     """
     within_tolerance = (
         f"(ABS({x} - {y}) / GREATEST(ABS({x}), ABS({y}))  < {10**(-tol)}) "
@@ -125,6 +137,7 @@ class Database:
         self.delete_load()
 
     def delete_redundant(self, execute=None):
+        """Deletes entries which are within tolerance of the corresponding version in latest."""
         # filtering out cases where:
         # 2. both values are null
         # 3. the values are approximately equal
@@ -144,6 +157,11 @@ class Database:
             with self.engine.begin() as conn:
                 conn.execute(text(delete_irrelevant_version_sql))
         return delete_irrelevant_version_sql
+
+    def delete_redundant_backfill(self, execute=None):
+        """Remove redundant versions, comparing against everything and not just latest."""
+        self.logger.error("not yet implemented!")
+        pass
 
     def set_latest_flag(self, execute=None):
         """Drop repeated values,and set the `is_latest_version` bit for insertion into latest."""
@@ -259,17 +277,13 @@ class Database:
                     conn.execute(text(add_load_ids))
         return add_new_target, add_load_ids
 
-    def read_table(self, table_name, max_entries: int | None = None):
-        table_name = add_backticks_single(table_name)
+    def read_table(self, table_name, max_entries: int | None = None, **kwargs):
         if max_entries is None:
-            statement = f"SELECT * FROM {table_name}"
+            statement = subtract_backticks_single(table_name)
         else:
+            table_name = add_backticks_single(table_name)
             statement = f"SELECT top {max_entries} FROM `{table_name}`"
-        res = None
-        with self.engine.connect() as conn:
-            res = conn.execute(text(statement))
-            res = pd.DataFrame(res)
-        return res
+        return pd.read_sql(sql=statement, con=self.engine, **kwargs)
 
     def add_full_latest(self, target_table, execute: bool | None = None):
         if execute is None:
@@ -315,3 +329,13 @@ class Database:
             with self.engine.begin() as conn:
                 res = conn.execute(text(statement))
         return statement
+
+    def build_database(self, target_ddl=WASTEWATER_DDL):
+        """Strictly for testing purposes."""
+
+        with self.engine.begin() as conn:
+            with open(target_ddl) as file:
+                ddl = file.read()
+                ddl = ddl.split("\n", maxsplit=1)[1]
+                res = conn.execute(text(ddl))
+                return res
