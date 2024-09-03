@@ -1,11 +1,11 @@
 ---
-title: <i>inactive</i> Department of Health & Human Services
+title: <i>inactive</i> HHS Hospitalizations
 parent: Data Sources and Signals
 grand_parent: Main Endpoint (COVIDcast)
 nav_order: 2
 ---
 
-# Department of Health & Human Services
+# Department of Health & Human Services Hospitalizations
 {: .no_toc}
 
 * **Source name:** `hhs`
@@ -17,7 +17,8 @@ nav_order: 2
 * **License:** [Public Domain US Government](https://www.usa.gov/government-works)
 
 The U.S. Department of Health & Human Services (HHS) publishes several
-datasets on patient impact and hospital capacity. One of these
+datasets on patient impact and hospital capacity. The data is made available
+to HHS through the CDC’s National Healthcare Safety Network (NHSN). One of these
 datasets is mirrored in Epidata at the following endpoint:
 
 * [COVID-19 Hospitalization: States](../covid_hosp.md) - daily resolution, state aggregates
