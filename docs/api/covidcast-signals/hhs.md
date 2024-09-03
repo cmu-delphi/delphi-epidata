@@ -1,5 +1,5 @@
 ---
-title: <i>inactive</i> HHS Hospitalizations
+title: <i>inactive</i> HHS/NHSN Hospitalizations
 parent: Data Sources and Signals
 grand_parent: Main Endpoint (COVIDcast)
 nav_order: 2
