@@ -1,11 +1,12 @@
 ---
-title: <i>inactive</i> Metadata
+title: <i>inactive</i> Epidata Metadata
 parent: Data Sources and Signals
 grand_parent: Other Endpoints (COVID-19 and Other Diseases)
 nav_order: 2
+permalink: api/meta.html
 ---
 
-# API Metadata
+# Epidata Metadata
 
 This is the documentation of the API for accessing the API Metadata (`meta`) for `fluview`, `twitter`, `wiki`,
 and `delphi` endpoints of the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
