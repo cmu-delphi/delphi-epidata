@@ -1,8 +1,8 @@
 ---
 title: <i>inactive</i> COVID Act Now
 parent: Data Sources and Signals
-nav_order: 2
 grand_parent: Main Endpoint (COVIDcast)
+nav_order: 2
 ---
 
 # COVID Act Now (CAN)
