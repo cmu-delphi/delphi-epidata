@@ -109,7 +109,7 @@ jobs:
               write_float('requests_per_sec', final_line[9])
 
       - name: Archive results as artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: locust-output
           path: |
