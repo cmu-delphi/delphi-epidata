@@ -14,6 +14,7 @@ from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+from delphi.epidata.common.logger import get_structured_logger
 
 
 def download_ecdc_data(download_dir="downloads"):
@@ -77,7 +78,7 @@ def download_ecdc_data(download_dir="downloads"):
             except:
                 driver.get(url)
     except:
-        print("WARNING: ECDC Scraper may not have downloaded all of the available data.")
+        get_structured_logger("ecdc_ili").warning("WARNING: ECDC Scraper may not have downloaded all of the available data.")
     # cleanup
     os.system("""pkill "firefox" """)
     os.system('''pkill "(firefox-bin)"''')
