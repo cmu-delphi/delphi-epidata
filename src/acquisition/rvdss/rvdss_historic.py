@@ -64,8 +64,6 @@ def get_report_date(week,start_year,epi=False):
         report_date =  str(epi_week)
         
     return(report_date)
-
-
        
 
 def get_table_captions(soup):
@@ -257,6 +255,17 @@ def create_percent_positive_detection_table(table,modified_date,start_year, flu=
     geo_types = [create_geo_types(g,"lab") for g in table['geo_value']]
     table.insert(3,"geo_type",geo_types)
     
+    # Calculate number of positive tests based on pct_positive and total tests
+    if flu:
+        table["flu_a_positive_tests"] = (table["flu_a_pct_positive"]/100)*table["flu_tests"]
+        table["flu_b_positive_tests"] = (table["flu_b_pct_positive"]/100)*table["flu_tests"]
+        
+        table["flu_positive_tests"] =  table["flu_a_positive_tests"] +  table["flu_b_positive_tests"]
+        table["flu_pct_positive"] =   (table["flu_positive_tests"]/table["flu_tests"])*100
+    else:
+        table[virus+"_positive_tests"] = (table[virus+"_pct_positive"]/100) *table[virus+"_tests"]
+    
+    
     table = table.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
 
     return(table)
@@ -309,12 +318,15 @@ def get_season_reports(url):
                 if "Positive Adenovirus" in caption.text:
                     tab.select_one('td').decompose()
             
-            # Replace commas with periods
-            tab2 = re.sub(",",r".",str(tab))
-            
+            if not "number" in caption.text.lower():
+                # Replace commas with periods
+                tab = re.sub(",",r".",str(tab))
+            else:
+                tab = re.sub(",",r"",str(tab))
+                
             # Read table
             na_values = ['N.A.','N.A', 'N.C.','N.R.','Not Available','Not Tested',"N.D.","-"]
-            table =  pd.read_html(tab2,na_values=na_values)[0].dropna(how="all")
+            table =  pd.read_html(tab,na_values=na_values)[0].dropna(how="all")
             
             # Check for multiline headers
             if isinstance(table.columns, pd.MultiIndex):
@@ -405,12 +417,12 @@ def get_season_reports(url):
                 all_number_tables=pd.concat([all_number_tables,number_detections_table])
 
     # write files to csvs
-    all_respiratory_detection_table.to_csv(path+"/"+path+"_respiratory_detections.csv", index=True) 
-    all_positive_tables.to_csv(path+"/"+path+"_positive_tests.csv", index=True)
+    all_respiratory_detection_table.to_csv(path+"/respiratory_detections.csv", index=True) 
+    all_positive_tables.to_csv(path+"/positive_tests.csv", index=True)
     
     # Write the number of detections table to csv if it exists (i.e has rows)
     if len(all_number_tables) != 0:
-        all_number_tables.to_csv(path+"/"+path+"_number_of_detections.csv", index=True) 
+        all_number_tables.to_csv(path+"/number_of_detections.csv", index=True) 
 
  #%% Scrape each season
 

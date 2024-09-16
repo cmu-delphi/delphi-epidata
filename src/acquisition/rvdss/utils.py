@@ -6,83 +6,27 @@ from epiweeks import Week
 from datetime import datetime
 import math
 
+from constants import VIRUSES, GEOS, REGIONS, NATION, LAST_WEEK_OF_YEAR 
+
 def abbreviate_virus(full_name):
     lowercase=full_name.lower()
-    
-    if any(name in lowercase for name in ["parainfluenza","para","piv"]):
-        if "hpiv" not in lowercase:
-            abbrev = re.sub("parainfluenza|para|piv","hpiv",lowercase)
-        else:
-            abbrev = lowercase
-    elif any(name in lowercase for name in ["adenovirus","adeno"]):
-        abbrev =  re.sub("adenovirus|adeno","adv",lowercase)
-    elif "human metapneumovirus" in lowercase:
-        abbrev =  re.sub("human metapneumovirus","hmpv",lowercase)
-    elif any(name in lowercase for name in ["enterovirus/rhinovirus","rhinovirus","rhv","entero/rhino","rhino","ev/rv","evrv"]):
-        abbrev = re.sub("enterovirus/rhinovirus|rhinovirus|rhv|entero/rhino|rhino|ev/rv|evrv","ev_rv",lowercase)
-    elif any(name in lowercase for name in ["coronavirus","coron","coro"]):
-        abbrev = re.sub("coronavirus|coron|coro","hcov",lowercase)
-    elif "respiratory syncytial virus" in lowercase:
-        abbrev = re.sub("respiratory syncytial virus","rsv",lowercase)
-    elif "influenza" in lowercase:
-        abbrev = re.sub("influenza","flu",lowercase)       
-    elif "sarscov2" in lowercase:
-        abbrev = re.sub("sarscov2","sars-cov-2",lowercase) 
-    else:
-        abbrev=lowercase
-    return(abbrev)
+    keys = (re.escape(k) for k in VIRUSES.keys())
+    pattern = re.compile(r'\b(' + '|'.join(keys) + r')\b')
+    result = pattern.sub(lambda x: VIRUSES[x.group()], lowercase)
+    return(result)
 
 def abbreviate_geo(full_name):
     lowercase=full_name.lower()
-    
-    if "newfoundland" in lowercase:
-        abbrev =  "nl"
-    elif "prince edward island" in lowercase:
-        abbrev =  "pe"
-    elif "nova scotia" in lowercase:
-        abbrev =  "ns"
-    elif "new brunswick" in lowercase:
-        abbrev =  "nb"
-    elif "nova scotia" in lowercase:
-        abbrev =  "ns"     
-    elif re.match('|'.join(("^québec$", "province of québec","quebec")),lowercase):
-        abbrev = "qc"  
-    elif re.match('|'.join(("^ontario$", "province of ontario")),lowercase):
-        abbrev =  "on"
-    elif "manitoba" in lowercase:
-        abbrev =  "mb"
-    elif "saskatchewan" in lowercase:
-        abbrev =  "sk"
-    elif "alberta" in lowercase:
-        abbrev =  "ab"
-    elif "british columbia" in lowercase:
-        abbrev =  "bc"
-    elif "yukon" in lowercase:
-        abbrev =  "yk"
-    elif "northwest territories" in lowercase:
-        abbrev =  "nt"
-    elif "nunavut" in lowercase:
-        abbrev =  "nu"
-    elif re.match("canada|can",lowercase):
-        abbrev = "ca" 
-    elif re.match(r"^at\b",lowercase):
-        abbrev = "atlantic" 
-    elif "pr" in lowercase:
-        abbrev = "prairies" 
-    elif "terr" in lowercase:
-        abbrev = "territories" 
-    else:
-        abbrev=lowercase
-    return(abbrev)
+    keys = (re.escape(k) for k in GEOS.keys())
+    pattern = re.compile(r'\b(' + '|'.join(keys) + r')\b')
+
+    result = pattern.sub(lambda x: GEOS[x.group()], lowercase)
+    return(result)
 
 def create_geo_types(geo,default_geo):
-    regions = ['atlantic','atl','province of québec','québec','qc','province of ontario','ontario','on',
-               'prairies', 'pr', "british columbia", 'bc',"territories",'terr']
-    nation = ["canada","can",'ca']
-                    
-    if geo in nation:
+    if geo in NATION:
         geo_type="nation"
-    elif geo in regions:
+    elif geo in REGIONS:
         geo_type="region"
     else:
         geo_type = default_geo
@@ -163,7 +107,7 @@ def get_weekly_data(base_url,start_year):
     week_string = week_df.iloc[0]['Text'].lower()
     current_week = int(re.search("week (.+?) ", week_string).group(1))
 
-    if current_week < 34:
+    if current_week < LAST_WEEK_OF_YEAR:
         current_year = start_year+1
     else:
         current_year = start_year
