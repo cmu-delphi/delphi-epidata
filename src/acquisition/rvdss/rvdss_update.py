@@ -7,8 +7,8 @@ base_url = "https://health-infobase.canada.ca/src/data/respiratory-virus-detecti
 weekly_data = utils.get_weekly_data(base_url,2024).set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
 positive_data = utils.get_revised_data(base_url)
 
-path1 = './season_2024_2025_respiratory_detections.csv'
-path2 = './season_2024_2025_positive_tests.csv'
+path1 = './respiratory_detections.csv'
+path2 = './positive_tests.csv'
 
 if os.path.exists(path1)==False:
     weekly_data.to_csv(path1,index=True)
