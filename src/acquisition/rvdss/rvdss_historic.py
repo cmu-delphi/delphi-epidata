@@ -6,6 +6,7 @@ from epiweeks import Week
 from datetime import datetime,timedelta
 import math
 
+from constants import BASHBOARD_BASE_URLS_2023, HISTORIC_SEASON_URL, ALTENRATIVE_SEASON_BASE_URL, SEASON_BASE_URL, LAST_WEEK_OF_YEAR 
 from utils import abbreviate_virus,abbreviate_geo,create_geo_types,check_date_format,get_revised_data,get_weekly_data 
  #%% Functions
  
@@ -27,7 +28,7 @@ def append_urls(urls):
   
         http_present = re.search("http:",temp_url)
         if not http_present:
-            urls[i]="https://www.canada.ca"+temp_url
+            urls[i]=SEASON_BASE_URL+temp_url
         else:
             urls[i]=re.sub("http:","https:",temp_url)
     return(urls)
@@ -36,7 +37,7 @@ def report_urls(soup):
     # Get links for individual weeks
     year= "-".join(get_report_season(soup))
     links=soup.find_all('a')
-    alternative_url = "www.phac-aspc.gc.ca/bid-bmi/dsd-dsm/rvdi-divr/"+year
+    alternative_url = ALTENRATIVE_SEASON_BASE_URL+year
     
     urls = [link.get("href") for link in links if "ending" in str(link) or 
             alternative_url in str(link)]
@@ -51,7 +52,7 @@ def report_weeks(soup):
     return(weeks)
 
 def get_report_date(week,start_year,epi=False):
-    if week < 35: 
+    if week < LAST_WEEK_OF_YEAR: 
         year=int(start_year)+1
     else:
         year=int(start_year)
@@ -79,14 +80,16 @@ def get_table_captions(soup):
         caption = captions[i]
         
         matches = ["period","abbreviation","cumulative", "compared"] #skip historic comparisons and cumulative tables
-        if any(x in caption.text.lower() for x in matches): 
+        if any(x in caption.text.lower() for x in matches) or caption.has_attr('class') or all(name not in caption.text.lower() for name in table_identifiers): 
             remove_list.append(caption)
         
+        '''
         elif caption.has_attr('class'):
             remove_list.append(caption)
             
         elif all(name not in caption.text.lower() for name in table_identifiers):
             remove_list.append(caption)
+        '''
     
     new_captions = [cap for cap in captions if cap not in remove_list]
     new_captions = list(set(new_captions))
@@ -255,17 +258,6 @@ def create_percent_positive_detection_table(table,modified_date,start_year, flu=
     geo_types = [create_geo_types(g,"lab") for g in table['geo_value']]
     table.insert(3,"geo_type",geo_types)
     
-    # Calculate number of positive tests based on pct_positive and total tests
-    if flu:
-        table["flu_a_positive_tests"] = (table["flu_a_pct_positive"]/100)*table["flu_tests"]
-        table["flu_b_positive_tests"] = (table["flu_b_pct_positive"]/100)*table["flu_tests"]
-        
-        table["flu_positive_tests"] =  table["flu_a_positive_tests"] +  table["flu_b_positive_tests"]
-        table["flu_pct_positive"] =   (table["flu_positive_tests"]/table["flu_tests"])*100
-    else:
-        table[virus+"_positive_tests"] = (table[virus+"_pct_positive"]/100) *table[virus+"_tests"]
-    
-    
     table = table.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
 
     return(table)
@@ -291,11 +283,9 @@ def get_season_reports(url):
         
         # Skip empty pages
         if season[0] == '2019':
-            if current_week == 5:
+            if current_week == 5 or current_week == 47:
                 continue
-            elif current_week == 47:
-                continue
-        
+
         # Get page for the current week
         temp_url=urls[week_num]
         temp_page=requests.get(temp_url)
@@ -318,15 +308,12 @@ def get_season_reports(url):
                 if "Positive Adenovirus" in caption.text:
                     tab.select_one('td').decompose()
             
-            if not "number" in caption.text.lower():
-                # Replace commas with periods
-                tab = re.sub(",",r".",str(tab))
-            else:
-                tab = re.sub(",",r"",str(tab))
-                
+            # Replace commas with periods
+            tab2 = re.sub(",",r".",str(tab))
+            
             # Read table
             na_values = ['N.A.','N.A', 'N.C.','N.R.','Not Available','Not Tested',"N.D.","-"]
-            table =  pd.read_html(tab,na_values=na_values)[0].dropna(how="all")
+            table =  pd.read_html(tab2,na_values=na_values)[0].dropna(how="all")
             
             # Check for multiline headers
             if isinstance(table.columns, pd.MultiIndex):
@@ -425,41 +412,15 @@ def get_season_reports(url):
         all_number_tables.to_csv(path+"/number_of_detections.csv", index=True) 
 
  #%% Scrape each season
-
-urls = ["https://www.canada.ca/en/public-health/services/surveillance/respiratory-virus-detections-canada/2013-2014.html",
-"https://www.canada.ca/en/public-health/services/surveillance/respiratory-virus-detections-canada/2014-2015.html",
-"https://www.canada.ca/en/public-health/services/surveillance/respiratory-virus-detections-canada/2015-2016.html",
-"https://www.canada.ca/en/public-health/services/surveillance/respiratory-virus-detections-canada/2016-2017.html",
-"https://www.canada.ca/en/public-health/services/surveillance/respiratory-virus-detections-canada/2017-2018.html",
-"https://www.canada.ca/en/public-health/services/surveillance/respiratory-virus-detections-canada/2018-2019.html",
-"https://www.canada.ca/en/public-health/services/surveillance/respiratory-virus-detections-canada/2019-2020.html",
-"https://www.canada.ca/en/public-health/services/surveillance/respiratory-virus-detections-canada/2020-2021.html",
-"https://www.canada.ca/en/public-health/services/surveillance/respiratory-virus-detections-canada/2021-2022.html",
-"https://www.canada.ca/en/public-health/services/surveillance/respiratory-virus-detections-canada/2022-2023.html",
-"https://www.canada.ca/en/public-health/services/surveillance/respiratory-virus-detections-canada/2023-2024.html"]
-
-[get_season_reports(url) for url in urls]
-
+[get_season_reports(url) for url in HISTORIC_SEASON_URL]
 
  #%% Update the end of the 2023-2024 season with the dashboard data
- 
-base_urls=["https://health-infobase.canada.ca/src/data/respiratory-virus-detections/archive/2024-06-20/",
-"https://health-infobase.canada.ca/src/data/respiratory-virus-detections/archive/2024-06-27/",
-"https://health-infobase.canada.ca/src/data/respiratory-virus-detections/archive/2024-07-04/",
-"https://health-infobase.canada.ca/src/data/respiratory-virus-detections/archive/2024-07-11/",
-"https://health-infobase.canada.ca/src/data/respiratory-virus-detections/archive/2024-07-18/",
-"https://health-infobase.canada.ca/src/data/respiratory-virus-detections/archive/2024-08-01/",
-"https://health-infobase.canada.ca/src/data/respiratory-virus-detections/archive/2024-08-08/",
-"https://health-infobase.canada.ca/src/data/respiratory-virus-detections/archive/2024-08-15/",
-"https://health-infobase.canada.ca/src/data/respiratory-virus-detections/archive/2024-08-22/",
-"https://health-infobase.canada.ca/src/data/respiratory-virus-detections/archive/2024-08-29/",
-"https://health-infobase.canada.ca/src/data/respiratory-virus-detections/archive/2024-09-05/"]
 
 # Load old csvs
-old_detection_data = pd.read_csv('season_2023_2024/season_2023_2024_respiratory_detections.csv').set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
-old_positive_data = pd.read_csv('season_2023_2024/season_2023_2024_positive_tests.csv').set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
+old_detection_data = pd.read_csv('season_2023_2024/respiratory_detections.csv').set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
+old_positive_data = pd.read_csv('season_2023_2024/positive_tests.csv').set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
 
-for base_url in base_urls:
+for base_url in BASHBOARD_BASE_URLS_2023:
     # Get weekly dashboard data
     weekly_data = get_weekly_data(base_url,2023).set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
     positive_data = get_revised_data(base_url)
@@ -473,6 +434,6 @@ for base_url in base_urls:
         old_positive_data= pd.concat([old_positive_data,positive_data],axis=0)
     
 # Overwrite/update csvs
-old_detection_data.to_csv('season_2023_2024/season_2023_2024_respiratory_detections.csv',index=True)
-old_positive_data.to_csv('season_2023_2024/season_2023_2024_positive_tests.csv',index=True)
+old_detection_data.to_csv('season_2023_2024/respiratory_detections.csv',index=True)
+old_positive_data.to_csv('season_2023_2024/positive_tests.csv',index=True)
 
