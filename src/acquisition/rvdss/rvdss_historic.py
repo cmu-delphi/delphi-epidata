@@ -6,7 +6,7 @@ from epiweeks import Week
 from datetime import datetime,timedelta
 import math
 
-from constants import BASHBOARD_BASE_URLS_2023, HISTORIC_SEASON_URL, ALTENRATIVE_SEASON_BASE_URL, SEASON_BASE_URL, LAST_WEEK_OF_YEAR 
+from constants import DASHBOARD_BASE_URLS_2023, HISTORIC_SEASON_URL, ALTENRATIVE_SEASON_BASE_URL, SEASON_BASE_URL, LAST_WEEK_OF_YEAR 
 from utils import abbreviate_virus,abbreviate_geo,create_geo_types,check_date_format,get_revised_data,get_weekly_data 
  #%% Functions
  
@@ -420,7 +420,7 @@ def get_season_reports(url):
 old_detection_data = pd.read_csv('season_2023_2024/respiratory_detections.csv').set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
 old_positive_data = pd.read_csv('season_2023_2024/positive_tests.csv').set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
 
-for base_url in BASHBOARD_BASE_URLS_2023:
+for base_url in DASHBOARD_BASE_URLS_2023:
     # Get weekly dashboard data
     weekly_data = get_weekly_data(base_url,2023).set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
     positive_data = get_revised_data(base_url)

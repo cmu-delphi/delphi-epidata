@@ -40,15 +40,16 @@ GEOS = {
     "canada":"ca",
     "can":"ca" ,
     "at":"atlantic",
+    "atl":"atlantic",
     "pr" :"prairies" ,
     "terr" :"territories"
  }
 
-REGIONS = ['atlantic','atl','province of québec','québec','qc','province of ontario','ontario','on',
+REGIONS = ['atlantic','atl','at','province of québec','québec','qc','province of ontario','ontario','on',
             'prairies', 'pr', "british columbia", 'bc',"territories",'terr']
 NATION = ["canada","can",'ca']
 
-BASHBOARD_BASE_URLS_2023=["https://health-infobase.canada.ca/src/data/respiratory-virus-detections/archive/2024-06-20/",
+DASHBOARD_BASE_URLS_2023=["https://health-infobase.canada.ca/src/data/respiratory-virus-detections/archive/2024-06-20/",
 "https://health-infobase.canada.ca/src/data/respiratory-virus-detections/archive/2024-06-27/",
 "https://health-infobase.canada.ca/src/data/respiratory-virus-detections/archive/2024-07-04/",
 "https://health-infobase.canada.ca/src/data/respiratory-virus-detections/archive/2024-07-11/",
