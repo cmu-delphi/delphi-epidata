@@ -73,7 +73,7 @@ HISTORIC_SEASON_URL = ["https://www.canada.ca/en/public-health/services/surveill
 "https://www.canada.ca/en/public-health/services/surveillance/respiratory-virus-detections-canada/2022-2023.html",
 "https://www.canada.ca/en/public-health/services/surveillance/respiratory-virus-detections-canada/2023-2024.html"]
 
-ALTENRATIVE_SEASON_BASE_URL = "www.phac-aspc.gc.ca/bid-bmi/dsd-dsm/rvdi-divr/"
+ALTERNATIVE_SEASON_BASE_URL = "www.phac-aspc.gc.ca/bid-bmi/dsd-dsm/rvdi-divr/"
 
 SEASON_BASE_URL = "https://www.canada.ca"
 

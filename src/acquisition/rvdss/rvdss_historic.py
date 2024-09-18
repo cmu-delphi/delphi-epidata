@@ -6,7 +6,7 @@ from epiweeks import Week
 from datetime import datetime,timedelta
 import math
 
-from constants import DASHBOARD_BASE_URLS_2023, HISTORIC_SEASON_URL, ALTENRATIVE_SEASON_BASE_URL, SEASON_BASE_URL, LAST_WEEK_OF_YEAR 
+from constants import DASHBOARD_BASE_URLS_2023, HISTORIC_SEASON_URL, ALTERNATIVE_SEASON_BASE_URL, SEASON_BASE_URL, LAST_WEEK_OF_YEAR 
 from utils import abbreviate_virus,abbreviate_geo,create_geo_types,check_date_format,get_revised_data,get_weekly_data 
  #%% Functions
  
@@ -37,7 +37,7 @@ def report_urls(soup):
     # Get links for individual weeks
     year= "-".join(get_report_season(soup))
     links=soup.find_all('a')
-    alternative_url = ALTENRATIVE_SEASON_BASE_URL+year
+    alternative_url = ALTERNATIVE_SEASON_BASE_URL+year
     
     urls = [link.get("href") for link in links if "ending" in str(link) or 
             alternative_url in str(link)]
