@@ -22,6 +22,7 @@ VIRUSES = {
 
 GEOS = {
     "newfoundland": "nl",
+    "newfoundland and labrador": "nl",
     "prince edward island":"pe",
     "nova scotia":"ns",
     "new brunswick":"nb",
