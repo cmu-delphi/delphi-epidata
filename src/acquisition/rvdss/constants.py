@@ -5,23 +5,23 @@ VIRUSES = {
     "adenovirus": "adv",
     "adeno": "adv",
     "human metapneumovirus": "hmpv",
-    "enterovirus/rhinovirus": "ev_rv",
-    "rhinovirus": "ev_rv",
-    "rhv": "ev_rv",
-    "entero/rhino": "ev_rv",
-    "rhino":"ev_rv",
-    "ev/rv":"ev_rv",
-    "evrv":"ev_rv",
+    "enterovirus/rhinovirus": "evrv",
+    "rhinovirus": "evrv",
+    "rhv": "evrv",
+    "entero/rhino": "evrv",
+    "rhino":"evrv",
+    "ev/rv":"evrv",
     "coronavirus":"hcov",
     "coron":"hcov",
     "coro":"hcov",
     "respiratory syncytial virus":"rsv",
     "influenza":"flu",
-    "sarscov2":"sars-cov-2"
+    "sars-cov-2":"sarscov2"
 }
 
 GEOS = {
     "newfoundland": "nl",
+    "newfoundland and labrador": "nl",
     "prince edward island":"pe",
     "nova scotia":"ns",
     "new brunswick":"nb",

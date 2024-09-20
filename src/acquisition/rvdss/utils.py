@@ -18,7 +18,7 @@ def abbreviate_virus(full_name):
 def abbreviate_geo(full_name):
     lowercase=full_name.lower()
     keys = (re.escape(k) for k in GEOS.keys())
-    pattern = re.compile(r'\b(' + '|'.join(keys) + r')\b')
+    pattern = re.compile(r'^\b(' + '|'.join(keys) + r')\b$')
 
     result = pattern.sub(lambda x: GEOS[x.group()], lowercase)
     return(result)

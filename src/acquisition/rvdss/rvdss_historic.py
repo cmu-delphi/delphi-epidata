@@ -137,7 +137,6 @@ def check_duplicate_rows(table):
     return(new_table)
 
 
-    
 def create_detections_table(table,modified_date,week_number,week_end_date,start_year):
     lab_columns =[col for col in table.columns if 'reporting' in col][0]
     table=table.rename(columns={lab_columns:"geo_value"})
@@ -159,7 +158,7 @@ def create_detections_table(table,modified_date,week_number,week_end_date,start_
     
     table.columns=[re.sub(combined_pat, "positive_tests",col) for col in table.columns] #making naming consistent
     table.columns=[re.sub(combined_pat2, "tests",col) for col in table.columns]
-    table.columns=[re.sub(combined_pat3, r"flu_\g<0>",col) for col in table.columns] # add flu as a prefix 
+    table.columns=[re.sub(combined_pat3, r"flu\g<0>",col) for col in table.columns] # add flu as a prefix 
     table.columns=[re.sub("total ", "",col) for col in table.columns]
     matches=['test','geo_value']
     new_names = []
@@ -170,7 +169,13 @@ def create_detections_table(table,modified_date,week_number,week_end_date,start_
             new_names.append(table.columns[i])
     
     table.columns=new_names
-    table.columns=[re.sub("other hpiv", "hpiv other",col) for col in table.columns]
+    
+    # remove any underscores or spaces from virus names
+    table.columns=[re.sub(" positive","_positive",t) for t in table.columns]
+    table.columns=[re.sub(" tests","_tests",t) for t in table.columns]
+    table.columns=[re.sub(" ","",t) for t in table.columns]
+    
+    
     table['geo_value'] = [re.sub("^québec$","province of québec",name) for name in table['geo_value']]
     table['geo_value'] = [re.sub("^ontario$","province of ontario",name) for name in table['geo_value']]
     
@@ -219,10 +224,10 @@ def create_percent_positive_detection_table(table,modified_date,start_year, flu=
     # get the name of the virus for the table to append to column names
     virus_prefix=[]
     if flu:
-        virus_prefix=['flu_a_pct_positive','flu_b_pct_positive']
+        virus_prefix=['flua_pct_positive','flub_pct_positive']
         virus="flu"
-        table.columns=[re.sub("a_pct","flu_a_pct",c) for c in table.columns]
-        table.columns=[re.sub("b_pct","flu_b_pct",c) for c in table.columns]
+        table.columns=[re.sub("a_pct","flua_pct",c) for c in table.columns]
+        table.columns=[re.sub("b_pct","flub_pct",c) for c in table.columns]
     else:
         names=[]
         for j in range(len(table.columns)):
@@ -309,11 +314,14 @@ def get_season_reports(url):
                     tab.select_one('td').decompose()
             
             # Replace commas with periods
-            tab2 = re.sub(",",r".",str(tab))
+            if "number" not in caption.text.lower():
+                tab = re.sub(",",r".",str(tab))
+            else:
+                tab = re.sub(",","",str(tab))
             
             # Read table
             na_values = ['N.A.','N.A', 'N.C.','N.R.','Not Available','Not Tested',"N.D.","-"]
-            table =  pd.read_html(tab2,na_values=na_values)[0].dropna(how="all")
+            table =  pd.read_html(tab,na_values=na_values)[0].dropna(how="all")
             
             # Check for multiline headers
             if isinstance(table.columns, pd.MultiIndex):
@@ -356,6 +364,10 @@ def get_season_reports(url):
             table.columns = [re.sub(r'/', '_', col) for col in table.columns] # replace / with _
             table.columns = [re.sub(r"^at\b","atl ",t) for t in table.columns]
             
+            table.columns = [re.sub(r"flu a","flua",t) for t in table.columns]
+            table.columns = [re.sub(r"flu b","flub",t) for t in table.columns]
+            table.columns = [re.sub(r"other hpiv","hpivother",t) for t in table.columns]
+ 
             if "reporting laboratory" in str(table.columns):
                respiratory_detection_table = create_detections_table(table,modified_date,current_week,current_week_end,season[0]) 
                respiratory_detection_table = respiratory_detection_table.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
