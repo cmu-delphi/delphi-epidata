@@ -73,8 +73,13 @@ SEASON_BASE_URL = "https://www.canada.ca"
 ALTERNATIVE_SEASON_BASE_URL = "www.phac-aspc.gc.ca/bid-bmi/dsd-dsm/rvdi-divr/"
 HISTORIC_SEASON_REPORTS_URL + "/en/public-health/services/surveillance/respiratory-virus-detections-canada/{year_range}.html"
 
-# Each URL created here points to a list of all data reports made during that season, e.g.
+# Each URL created here points to a list of all data reports made during that
+# season, e.g.
 # https://www.canada.ca/en/public-health/services/surveillance/respiratory-virus-detections-canada/2014-2015.html.
+# The Public Health Agency of Canada site switched in 2024 to reporting
+# disease data in a dashboard with a static URL. Therefore, this collection
+# of URLs does _NOT_ need to be updated. It is used for fetching historical
+# data (for dates on or before June 8, 2024) only.
 HISTORIC_SEASON_URL = (HISTORIC_SEASON_REPORTS_URL.format(year_range = year_range) for year_range in
     (
         "2013-2014",
