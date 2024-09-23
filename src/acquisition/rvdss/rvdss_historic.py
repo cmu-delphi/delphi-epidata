@@ -429,29 +429,32 @@ def get_season_reports(url):
     if len(all_number_tables) != 0:
         all_number_tables.to_csv(path+"/number_of_detections.csv", index=True) 
 
- #%% Scrape each season
-[get_season_reports(url) for url in HISTORIC_SEASON_URL]
+def main():
+     #%% Scrape each season
+    [get_season_reports(url) for url in HISTORIC_SEASON_URL]
 
- #%% Update the end of the 2023-2024 season with the dashboard data
+     #%% Update the end of the 2023-2024 season with the dashboard data
 
-# Load old csvs
-old_detection_data = pd.read_csv('season_2023_2024/respiratory_detections.csv').set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
-old_positive_data = pd.read_csv('season_2023_2024/positive_tests.csv').set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
+    # Load old csvs
+    old_detection_data = pd.read_csv('season_2023_2024/respiratory_detections.csv').set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
+    old_positive_data = pd.read_csv('season_2023_2024/positive_tests.csv').set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
 
-for base_url in DASHBOARD_BASE_URLS_2023:
-    # Get weekly dashboard data
-    weekly_data = get_weekly_data(base_url,2023).set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
-    positive_data = get_revised_data(base_url)
-    
-    # Check if indices are already present in the old data
-    # If not, add the new data
-    if weekly_data.index.isin(old_detection_data.index).any() == False:
-        old_detection_data= pd.concat([old_detection_data,weekly_data],axis=0)
-    
-    if positive_data.index.isin(old_positive_data.index).any() == False:
-        old_positive_data= pd.concat([old_positive_data,positive_data],axis=0)
-    
-# Overwrite/update csvs
-old_detection_data.to_csv('season_2023_2024/respiratory_detections.csv',index=True)
-old_positive_data.to_csv('season_2023_2024/positive_tests.csv',index=True)
+    for base_url in DASHBOARD_BASE_URLS_2023:
+        # Get weekly dashboard data
+        weekly_data = get_weekly_data(base_url,2023).set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
+        positive_data = get_revised_data(base_url)
 
+        # Check if indices are already present in the old data
+        # If not, add the new data
+        if weekly_data.index.isin(old_detection_data.index).any() == False:
+            old_detection_data= pd.concat([old_detection_data,weekly_data],axis=0)
+
+        if positive_data.index.isin(old_positive_data.index).any() == False:
+            old_positive_data= pd.concat([old_positive_data,positive_data],axis=0)
+
+    # Overwrite/update csvs
+    old_detection_data.to_csv('season_2023_2024/respiratory_detections.csv',index=True)
+    old_positive_data.to_csv('season_2023_2024/positive_tests.csv',index=True)
+
+if __name__ == '__main__':
+    main()
