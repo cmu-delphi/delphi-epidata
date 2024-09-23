@@ -97,4 +97,7 @@ HISTORIC_SEASON_URL = (HISTORIC_SEASON_REPORTS_URL.format(year_range = year_rang
     )
 )
 
+DASHBOARD_UPDATE_DATE_FILE = "RVD_UpdateDate.csv"
+DASHBOARD_DATA_FILE = "RVD_WeeklyData.csv"
+
 LAST_WEEK_OF_YEAR = 35

@@ -7,7 +7,8 @@ from datetime import datetime
 import math
 
 from delphi.epidata.acquisition.rvdss.constants import (
-        VIRUSES, GEOS, REGIONS, NATION, LAST_WEEK_OF_YEAR
+        VIRUSES, GEOS, REGIONS, NATION, LAST_WEEK_OF_YEAR,
+        DASHBOARD_UPDATE_DATE_FILE, DASHBOARD_DATA_FILE
     )
 
 def abbreviate_virus(full_name):
@@ -56,12 +57,12 @@ def get_revised_data(base_url):
     }
     
     # Get update date
-    update_date_url =  base_url + "RVD_UpdateDate.csv"
+    update_date_url =  base_url + DASHBOARD_UPDATE_DATE_FILE
     update_date_url_response = requests.get(update_date_url, headers=headers)
     update_date = datetime.strptime(update_date_url_response.text,"%m/%d/%Y %H:%M:%S").strftime("%Y-%m-%d")
     
     # Get update data
-    url = base_url+"RVD_WeeklyData.csv"
+    url = base_url+DASHBOARD_DATA_FILE
 
     url_response = requests.get(url, headers=headers)
     df = pd.read_csv(io.StringIO(url_response.text))
