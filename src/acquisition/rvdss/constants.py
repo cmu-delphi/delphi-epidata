@@ -1,3 +1,5 @@
+# The dataset calls the same viruses, provinces, regions (province groups),
+# and country by multiple names. Map each of those to a common abbreviation.
 VIRUSES = {
     "parainfluenza": "hpiv",
     "piv": "hpiv",
@@ -16,7 +18,7 @@ VIRUSES = {
     "coro":"hcov",
     "respiratory syncytial virus":"rsv",
     "influenza":"flu",
-    "sars-cov-2":"sarscov2"
+    "sars-cov-2":"sarscov2",
 }
 
 GEOS = {
@@ -40,13 +42,15 @@ GEOS = {
     "at":"atlantic",
     "atl":"atlantic",
     "pr" :"prairies" ,
-    "terr" :"territories"
+    "terr" :"territories",
  }
 
+# Regions are groups of provinces that are geographically close together. Some single provinces are reported as their own region (e.g. Québec, Ontario).
 REGIONS = ['atlantic','atl','at','province of québec','québec','qc','province of ontario','ontario','on',
-            'prairies', 'pr', "british columbia",'bc',"territories",'terr']
-NATION = ["canada","can",'ca']
+            'prairies', 'pr', "british columbia",'bc',"territories",'terr',]
+NATION = ["canada","can",'ca',]
 
+# Construct dashboard and data report URLS.
 DASHBOARD_BASE_URL_2023 = "https://health-infobase.canada.ca/src/data/respiratory-virus-detections/archive/{date}/"
 DASHBOARD_BASE_URLS_2023 = (
     DASHBOARD_BASE_URL_2023.format(date = date) for date in
@@ -69,6 +73,8 @@ SEASON_BASE_URL = "https://www.canada.ca"
 ALTERNATIVE_SEASON_BASE_URL = "www.phac-aspc.gc.ca/bid-bmi/dsd-dsm/rvdi-divr/"
 HISTORIC_SEASON_REPORTS_URL + "/en/public-health/services/surveillance/respiratory-virus-detections-canada/{year_range}.html"
 
+# Each URL created here points to a list of all data reports made during that season, e.g.
+# https://www.canada.ca/en/public-health/services/surveillance/respiratory-virus-detections-canada/2014-2015.html.
 HISTORIC_SEASON_URL = (HISTORIC_SEASON_REPORTS_URL.format(year_range = year_range) for year_range in
     (
         "2013-2014",
