@@ -51,9 +51,10 @@ REGIONS = ['atlantic','atl','at','province of québec','québec','qc','province 
 NATION = ["canada","can",'ca',]
 
 # Construct dashboard and data report URLS.
-DASHBOARD_BASE_URL_2023 = "https://health-infobase.canada.ca/src/data/respiratory-virus-detections/archive/{date}/"
+DASHBOARD_BASE_URL = "https://health-infobase.canada.ca/src/data/respiratory-virus-detections/"
+DASHBOARD_W_DATE_URL = DASHBOARD_BASE_URL + "archive/{date}/"
 DASHBOARD_BASE_URLS_2023 = (
-    DASHBOARD_BASE_URL_2023.format(date = date) for date in
+    DASHBOARD_W_DATE_URL.format(date = date) for date in
     (
         "2024-06-20",
         "2024-06-27",

@@ -6,7 +6,9 @@ from epiweeks import Week
 from datetime import datetime
 import math
 
-from constants import VIRUSES, GEOS, REGIONS, NATION, LAST_WEEK_OF_YEAR 
+from delphi.epidata.acquisition.rvdss.constants import (
+        VIRUSES, GEOS, REGIONS, NATION, LAST_WEEK_OF_YEAR
+    )
 
 def abbreviate_virus(full_name):
     lowercase=full_name.lower()

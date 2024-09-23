@@ -3,11 +3,17 @@ import requests
 import regex as re
 import pandas as pd
 from epiweeks import Week
-from datetime import datetime,timedelta
+from datetime import datetime, timedelta
 import math
 
-from constants import DASHBOARD_BASE_URLS_2023, HISTORIC_SEASON_URL, ALTERNATIVE_SEASON_BASE_URL, SEASON_BASE_URL, LAST_WEEK_OF_YEAR 
-from utils import abbreviate_virus,abbreviate_geo,create_geo_types,check_date_format,get_revised_data,get_weekly_data 
+from delphi.epidata.acquisition.rvdss.constants import (
+        DASHBOARD_BASE_URLS_2023, HISTORIC_SEASON_URL,
+        ALTERNATIVE_SEASON_BASE_URL, SEASON_BASE_URL, LAST_WEEK_OF_YEAR
+    )
+from delphi.epidata.acquisition.rvdss.utils import (
+        abbreviate_virus, abbreviate_geo, create_geo_types, check_date_format,
+        get_revised_data, get_weekly_data
+    )
  #%% Functions
  
  # Report Functions

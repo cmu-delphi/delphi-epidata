@@ -1,11 +1,12 @@
 import pandas as pd
 import os
-import utils
 
-base_url = "https://health-infobase.canada.ca/src/data/respiratory-virus-detections/"
+from delphi.epidata.acquisition.rvdss.utils import get_weekly_data, get_revised_data
+from delphi.epidata.acquisition.rvdss.constants import DASHBOARD_BASE_URL
 
-weekly_data = utils.get_weekly_data(base_url,2024).set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
-positive_data = utils.get_revised_data(base_url)
+
+weekly_data = get_weekly_data(DASHBOARD_BASE_URL,2024).set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
+positive_data = get_revised_data(DASHBOARD_BASE_URL)
 
 path1 = './respiratory_detections.csv'
 path2 = './positive_tests.csv'
