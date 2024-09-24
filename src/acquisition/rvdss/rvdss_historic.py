@@ -1,6 +1,6 @@
 """
 Script to fetch historical data, before data reporting moved to the dashboard
-format. This covers dates from the 2014-2015 season to tne 2023-2024 season.
+format. This covers dates from the 2014-2015 season to the 2023-2024 season.
 
 This script should not be run in production; it will not fetch newly-posted
 data.
@@ -16,7 +16,8 @@ import math
 
 from delphi.epidata.acquisition.rvdss.constants import (
         DASHBOARD_BASE_URLS_2023, HISTORIC_SEASON_URL,
-        ALTERNATIVE_SEASON_BASE_URL, SEASON_BASE_URL, LAST_WEEK_OF_YEAR
+        ALTERNATIVE_SEASON_BASE_URL, SEASON_BASE_URL, LAST_WEEK_OF_YEAR,
+        RESP_COUNTS_OUTPUT_FILE, POSITIVE_TESTS_OUTPUT_FILE
     )
 from delphi.epidata.acquisition.rvdss.utils import (
         abbreviate_virus, abbreviate_geo, create_geo_types, check_date_format,
@@ -454,8 +455,8 @@ def get_season_reports(url):
                 all_number_tables=pd.concat([all_number_tables,number_detections_table])
 
     # write files to csvs
-    all_respiratory_detection_table.to_csv(path+"/respiratory_detections.csv", index=True) 
-    all_positive_tables.to_csv(path+"/positive_tests.csv", index=True)
+    all_respiratory_detection_table.to_csv(path+"/" + RESP_COUNTS_OUTPUT_FILE, index=True)
+    all_positive_tables.to_csv(path+"/" + POSITIVE_TESTS_OUTPUT_FILE, index=True)
     
     # Write the number of detections table to csv if it exists (i.e has rows)
     if len(all_number_tables) != 0:
@@ -468,8 +469,8 @@ def main():
     # Update the end of the 2023-2024 season with the dashboard data
 
     # Load old csvs
-    old_detection_data = pd.read_csv('season_2023_2024/respiratory_detections.csv').set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
-    old_positive_data = pd.read_csv('season_2023_2024/positive_tests.csv').set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
+    old_detection_data = pd.read_csv('season_2023_2024/' + RESP_COUNTS_OUTPUT_FILE).set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
+    old_positive_data = pd.read_csv('season_2023_2024/' + POSITIVE_TESTS_OUTPUT_FILE).set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
 
     for base_url in DASHBOARD_BASE_URLS_2023:
         # Get weekly dashboard data
@@ -485,8 +486,8 @@ def main():
             old_positive_data= pd.concat([old_positive_data,positive_data],axis=0)
 
     # Overwrite/update csvs
-    old_detection_data.to_csv('season_2023_2024/respiratory_detections.csv',index=True)
-    old_positive_data.to_csv('season_2023_2024/positive_tests.csv',index=True)
+    old_detection_data.to_csv('season_2023_2024/' + RESP_COUNTS_OUTPUT_FILE,index=True)
+    old_positive_data.to_csv('season_2023_2024/' + POSITIVE_TESTS_OUTPUT_FILE,index=True)
 
 if __name__ == '__main__':
     main()

@@ -1,16 +1,21 @@
+"""
+Script to fetch new data, after data reporting moved to the dashboard
+format. This covers dates following the 2023-2024 season (exclusive).
+"""
+
 import pandas as pd
 import os
 
 from delphi.epidata.acquisition.rvdss.utils import get_weekly_data, get_revised_data
-from delphi.epidata.acquisition.rvdss.constants import DASHBOARD_BASE_URL
+from delphi.epidata.acquisition.rvdss.constants import DASHBOARD_BASE_URL, RESP_COUNTS_OUTPUT_FILE, POSITIVE_TESTS_OUTPUT_FILE
 
 
 def main():
     weekly_data = get_weekly_data(DASHBOARD_BASE_URL,2024).set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
     positive_data = get_revised_data(DASHBOARD_BASE_URL)
 
-    path1 = './respiratory_detections.csv'
-    path2 = './positive_tests.csv'
+    path1 = './' + RESP_COUNTS_OUTPUT_FILE
+    path2 = './' + POSITIVE_TESTS_OUTPUT_FILE
 
     if os.path.exists(path1)==False:
         weekly_data.to_csv(path1,index=True)
