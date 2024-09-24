@@ -1,3 +1,11 @@
+"""
+Script to fetch historical data, before data reporting moved to the dashboard
+format. This covers dates from the 2014-2015 season to tne 2023-2024 season.
+
+This script should not be run in production; it will not fetch newly-posted
+data.
+"""
+
 from bs4 import BeautifulSoup
 import requests
 import regex as re
@@ -17,9 +25,10 @@ from delphi.epidata.acquisition.rvdss.utils import (
  #%% Functions
  
  # Report Functions
-def get_report_season(soup):
-    # Find the url in the page html and get the season
+def get_report_season_years(soup):
+    # Find the url in the page html and get the years included in the season
     canonical_url = str(soup.find_all('link',rel="canonical"))
+    # The season range is in YYYY-YYYY format
     matches = re.search("20[0-9]{2}-20[0-9]{2}",canonical_url)
 
     if matches:
@@ -27,7 +36,7 @@ def get_report_season(soup):
     years=season.split("-")
     return(years)
 
-def append_urls(urls):
+def add_https_prefix(urls):
     # Add https to the urls
     for i in range(len(urls)):
         temp_url = urls[i]
@@ -39,16 +48,16 @@ def append_urls(urls):
             urls[i]=re.sub("http:","https:",temp_url)
     return(urls)
 
-def report_urls(soup):
+def construct_weekly_report_urls(soup):
     # Get links for individual weeks
-    year= "-".join(get_report_season(soup))
+    year= "-".join(get_report_season_years(soup))
     links=soup.find_all('a')
     alternative_url = ALTERNATIVE_SEASON_BASE_URL+year
     
     urls = [link.get("href") for link in links if "ending" in str(link) or 
             alternative_url in str(link)]
     
-    report_links = append_urls(urls)
+    report_links = add_https_prefix(urls)
     return(report_links)
 
 def report_weeks(soup):
@@ -88,14 +97,6 @@ def get_table_captions(soup):
         matches = ["period","abbreviation","cumulative", "compared"] #skip historic comparisons and cumulative tables
         if any(x in caption.text.lower() for x in matches) or caption.has_attr('class') or all(name not in caption.text.lower() for name in table_identifiers): 
             remove_list.append(caption)
-        
-        '''
-        elif caption.has_attr('class'):
-            remove_list.append(caption)
-            
-        elif all(name not in caption.text.lower() for name in table_identifiers):
-            remove_list.append(caption)
-        '''
     
     new_captions = [cap for cap in captions if cap not in remove_list]
     new_captions = list(set(new_captions))
@@ -103,7 +104,15 @@ def get_table_captions(soup):
     return(new_captions)
 
 def get_modified_dates(soup,week_end_date):
-    # get the date the report page was modfified
+    """
+    Get the date the report page was modfified
+
+    Reports include both posted dates and modified dates. Fairly often on
+    historical data reports, posted date falls before the end of the week
+    being reported on. Then the page is modified later, presumably with
+    updated full-week data. Therefore, we use the modified date as the issue
+    date for a given report.
+    """
     meta_tags=soup.find_all("meta",title="W3CDTF")
     for tag in meta_tags:
         if tag.get("name", None) == "dcterms.modified" or tag.get("property", None) == "dcterms.modified":
@@ -114,7 +123,14 @@ def get_modified_dates(soup,week_end_date):
     
     diff_days = (mod_date-week_date).days
     
-    # manually create a new modified date if the existing one is too long after the week
+    # Manually create a new modified date if the existing one is too long after the week.
+    # Historically, we commonly see data reports being modified ~5 days after
+    # the end of the week being reported on. In some cases, though, the
+    # modified date falls a long time (up to a year) after the end of the
+    # week being reported on. We expect that any changes made to the report
+    # at that point were primarily wording, and not data, changes. So if the
+    # modified date is NOT within 0-14 days after the end of the week, set
+    # the issue date to be 5 days after the end of the week.
     if diff_days > 0 and diff_days < 14:
         new_modified_date = mod_date
     else:
@@ -126,7 +142,7 @@ def get_modified_dates(soup,week_end_date):
     return(new_modified_date_string)
 
 
-def check_duplicate_rows(table):
+def deduplicate_rows(table):
     if table['week'].duplicated().any():
        table.columns = [re.sub("canada","can",t) for t in table.columns]
        duplicated_rows = table[table.duplicated('week',keep=False)]
@@ -165,11 +181,14 @@ def create_detections_table(table,modified_date,week_number,week_end_date,start_
     pat8= r"^ah1n1pdm09"
     combined_pat3 = '|'.join((pat5, pat6,pat7,pat8))
     
-    table.columns=[re.sub(combined_pat, "positive_tests",col) for col in table.columns] #making naming consistent
+    # make naming consistent
+    table.columns=[re.sub(combined_pat, "positive_tests",col) for col in table.columns]
     table.columns=[re.sub(combined_pat2, "tests",col) for col in table.columns]
-    table.columns=[re.sub(combined_pat3, r"flu\g<0>",col) for col in table.columns] # add flu as a prefix 
+    # add flu as a prefix
+    table.columns=[re.sub(combined_pat3, r"flu\g<0>",col) for col in table.columns]
     table.columns=[re.sub("total ", "",col) for col in table.columns]
     matches=['test','geo_value']
+
     new_names = []
     for i in range(len(table.columns)):
         if not any(x in table.columns[i] for x in matches):
@@ -223,7 +242,7 @@ def create_number_detections_table(table,modified_date,start_year):
     return(table)
 
 def create_percent_positive_detection_table(table,modified_date,start_year, flu=False,overwrite_weeks=False):
-    table = check_duplicate_rows(table)
+    table = deduplicate_rows(table)
     table.columns=[re.sub(" *%", "_pct_positive",col) for col in table.columns]
     table.columns = [re.sub(' +', ' ',col) for col in table.columns]
     table.insert(2,"issue",modified_date)
@@ -291,8 +310,8 @@ def get_season_reports(url):
     soup=BeautifulSoup(page.text,'html.parser') 
 
     # get season, weeks, urls and week ends
-    season = get_report_season(soup)
-    urls=report_urls(soup)
+    season = get_report_season_years(soup)
+    urls=construct_weekly_report_urls(soup)
     weeks= report_weeks(soup)
     end_dates = [get_report_date(week, season[0]) for week in weeks]
     
@@ -443,10 +462,10 @@ def get_season_reports(url):
         all_number_tables.to_csv(path+"/number_of_detections.csv", index=True) 
 
 def main():
-     #%% Scrape each season
+    # Scrape each season. Saves data to CSVs as a side effect.
     [get_season_reports(url) for url in HISTORIC_SEASON_URL]
 
-     #%% Update the end of the 2023-2024 season with the dashboard data
+    # Update the end of the 2023-2024 season with the dashboard data
 
     # Load old csvs
     old_detection_data = pd.read_csv('season_2023_2024/respiratory_detections.csv').set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
