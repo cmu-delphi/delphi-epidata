@@ -269,6 +269,16 @@ def create_percent_positive_detection_table(table,modified_date,start_year, flu=
     geo_types = [create_geo_types(g,"lab") for g in table['geo_value']]
     table.insert(3,"geo_type",geo_types)
     
+    # Calculate number of positive tests based on pct_positive and total tests
+    if flu:
+        table["flua_positive_tests"] = (table["flua_pct_positive"]/100)*table["flu_tests"]
+        table["flub_positive_tests"] = (table["flub_pct_positive"]/100)*table["flu_tests"]
+
+        table["flu_positive_tests"] =  table["flua_positive_tests"] +  table["flub_positive_tests"]
+        table["flu_pct_positive"] =   (table["flu_positive_tests"]/table["flu_tests"])*100
+    else:
+        table[virus+"_positive_tests"] = (table[virus+"_pct_positive"]/100) *table[virus+"_tests"]
+    
     table = table.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
 
     return(table)
