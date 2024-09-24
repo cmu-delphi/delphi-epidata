@@ -75,7 +75,7 @@ def get_report_date(week,start_year,epi=False):
     
     epi_week =  Week(year, week)
     
-    if epi==False:
+    if not epi:
         report_date = str(epi_week.enddate())
     else:
         report_date =  str(epi_week)
@@ -272,7 +272,7 @@ def create_percent_positive_detection_table(table,modified_date,start_year, flu=
         table.columns=names
     
     # Remake the weeks column from dates
-    if overwrite_weeks==True:
+    if overwrite_weeks:
         week_ends = [datetime.strptime(date_string, "%Y-%m-%d") for date_string in table['time_value']]
         table["week"] = [Week.fromdate(d).week for d in week_ends]
         
@@ -444,14 +444,14 @@ def get_season_reports(url):
     
         # Check if the indices are already in the season table
         # If not, add the weeks tables into the season table
-        if respiratory_detection_table.index.isin(all_respiratory_detection_table.index).any() == False:
+        if not respiratory_detection_table.index.isin(all_respiratory_detection_table.index).any():
             all_respiratory_detection_table= pd.concat([all_respiratory_detection_table,respiratory_detection_table])
             
-        if combined_positive_tables.index.isin(all_positive_tables.index).any() == False:
+        if not combined_positive_tables.index.isin(all_positive_tables.index).any():
             all_positive_tables=pd.concat([all_positive_tables,combined_positive_tables])
     
-        if number_table_exists == True:
-            if number_detections_table.index.isin(all_number_tables.index).any() == False:
+        if number_table_exists:
+            if not number_detections_table.index.isin(all_number_tables.index).any():
                 all_number_tables=pd.concat([all_number_tables,number_detections_table])
 
     # write files to csvs
@@ -479,10 +479,10 @@ def main():
 
         # Check if indices are already present in the old data
         # If not, add the new data
-        if weekly_data.index.isin(old_detection_data.index).any() == False:
+        if not weekly_data.index.isin(old_detection_data.index).any():
             old_detection_data= pd.concat([old_detection_data,weekly_data],axis=0)
 
-        if positive_data.index.isin(old_positive_data.index).any() == False:
+        if not positive_data.index.isin(old_positive_data.index).any():
             old_positive_data= pd.concat([old_positive_data,positive_data],axis=0)
 
     # Overwrite/update csvs
