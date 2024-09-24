@@ -148,6 +148,9 @@ def create_detections_table(table,modified_date,week_number,week_end_date,start_
     table=table.rename(columns={lab_columns:"geo_value"})
     table['geo_value']=table['geo_value'].str.lower()
     
+    if start_year==2016 and week_number==3:
+        table["geo_value"]=[re.sub("^province of$","alberta",c) for c in table["geo_value"]]
+    
     pat1 = "positive"
     pat2 = 'pos'
     combined_pat = '|'.join((pat1, pat2))
