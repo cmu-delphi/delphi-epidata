@@ -21,9 +21,9 @@ def abbreviate_virus(full_name):
 def abbreviate_geo(full_name):
     lowercase=full_name.lower()
     lowercase = re.sub("province of ","",lowercase)
-    lowercase=[re.sub("\.|\*","",l) for l in lowercase]
-    lowercase=[re.sub("/territoires","",l) for l in lowercase]
-    lowercase=[re.sub("cana","can",l) for l in lowercase]
+    lowercase=re.sub("\.|\*","",lowercase)
+    lowercase=re.sub("/territoires","",lowercase) 
+    lowercase=re.sub("^cana$","can",lowercase)
     
     keys = (re.escape(k) for k in GEOS.keys())
     pattern = re.compile(r'^\b(' + '|'.join(keys) + r')\b$')

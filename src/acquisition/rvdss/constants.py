@@ -72,7 +72,7 @@ DASHBOARD_BASE_URLS_2023 = (
 
 SEASON_BASE_URL = "https://www.canada.ca"
 ALTERNATIVE_SEASON_BASE_URL = "www.phac-aspc.gc.ca/bid-bmi/dsd-dsm/rvdi-divr/"
-HISTORIC_SEASON_REPORTS_URL + "/en/public-health/services/surveillance/respiratory-virus-detections-canada/{year_range}.html"
+HISTORIC_SEASON_REPORTS_URL = "/en/public-health/services/surveillance/respiratory-virus-detections-canada/{year_range}.html"
 
 # Each URL created here points to a list of all data reports made during that
 # season, e.g.

@@ -27,6 +27,7 @@ from delphi.epidata.acquisition.rvdss.utils import (
  
  # Report Functions
 def get_report_season_years(soup):
+    """Get the start year of the season and the year the season ends """
     # Find the url in the page html and get the years included in the season
     canonical_url = str(soup.find_all('link',rel="canonical"))
     # The season range is in YYYY-YYYY format
@@ -38,7 +39,7 @@ def get_report_season_years(soup):
     return(years)
 
 def add_https_prefix(urls):
-    # Add https to the urls
+    """ Add https to urls, and changes any http to https"""
     for i in range(len(urls)):
         temp_url = urls[i]
   
@@ -50,7 +51,7 @@ def add_https_prefix(urls):
     return(urls)
 
 def construct_weekly_report_urls(soup):
-    # Get links for individual weeks
+    """ Construct links for each week in a season"""
     year= "-".join(get_report_season_years(soup))
     links=soup.find_all('a')
     alternative_url = ALTERNATIVE_SEASON_BASE_URL+year
@@ -62,12 +63,21 @@ def construct_weekly_report_urls(soup):
     return(report_links)
 
 def report_weeks(soup):
+    """ Get a list of all the weeks in a season"""
     links=soup.find_all('a')
     full_weeks = [link.text for link in links if "Week" in str(link)]
     weeks= [int(re.search('Week (.+?) ', week).group(1)) for week in full_weeks]
     return(weeks)
 
 def get_report_date(week,start_year,epi=False):
+    """
+    Get the end date of the current reporting/epiweek
+    
+    week - the epidemiological week number
+    start_year - the year the season starts in
+    epi - if True, return the date in cdc format (yearweek)
+    
+    """
     if week < LAST_WEEK_OF_YEAR: 
         year=int(start_year)+1
     else:
@@ -83,19 +93,30 @@ def get_report_date(week,start_year,epi=False):
     return(report_date)
        
 
-def get_table_captions(soup):
+def parse_table_captions(soup):
+    """
+    finds all the table captions for the current week so tables can be identified 
+    
+    The captions from the 'summary' tag require less parsing, but sometimes they
+    are missing. In that case, use the figure captions
+    """
     captions = soup.findAll('summary')
     
     table_identifiers = ["respiratory","number","positive","abbreviation"]
+    
+    # For every caption, check if all of the table identifiers are missing. If they are,
+    # this means the caption is noninformative (i.e just says Figure 1). If any of the captions are 
+    # noninformative, use the figure captions as captions
     if sum([all(name not in cap.text.lower() for name in table_identifiers) for cap in captions]) != 0:
         figcaptions = soup.findAll('figcaption')     
         captions = captions + figcaptions
-             
+        
     remove_list=[]
     for i in range(len(captions)):
         caption = captions[i]
         
         matches = ["period","abbreviation","cumulative", "compared"] #skip historic comparisons and cumulative tables
+        # remove any captions with a class or that are uninformative 
         if any(x in caption.text.lower() for x in matches) or caption.has_attr('class') or all(name not in caption.text.lower() for name in table_identifiers): 
             remove_list.append(caption)
     
@@ -144,8 +165,12 @@ def get_modified_dates(soup,week_end_date):
 
 
 def deduplicate_rows(table):
+    """
+    Sometimes tables have more than one row for the same week
+    In that case, keep the row that has the highest canada tests
+    (i.e drop the rows with the lower counts)
+    """
     if table['week'].duplicated().any():
-       table.columns = [re.sub("canada","can",t) for t in table.columns]
        duplicated_rows = table[table.duplicated('week',keep=False)]
        grouped = duplicated_rows.groupby("week")
        duplicates_drop = []
@@ -159,14 +184,23 @@ def deduplicate_rows(table):
         new_table=table
     return(new_table)
 
-
-def create_detections_table(table,modified_date,week_number,week_end_date,start_year):
-    lab_columns =[col for col in table.columns if 'reporting' in col][0]
-    table=table.rename(columns={lab_columns:"geo_value"})
-    table['geo_value']=table['geo_value'].str.lower()
+def add_flu_prefix(flu_subtype):
+    """ Add the prefix `flu` when only the subtype is reported """
     
-    if start_year==2016 and week_number==3:
-        table["geo_value"]=[re.sub("^province of$","alberta",c) for c in table["geo_value"]]
+    pat1 =r"^ah3"
+    pat2= r"^auns" 
+    pat3= r"^ah1pdm09"
+    pat4= r"^ah1n1pdm09"
+    combined_pat = '|'.join((pat1, pat2,pat3,pat4))
+    
+    full_fluname = re.sub(combined_pat, r"flu\g<0>",flu_subtype)
+    return(full_fluname)
+
+def make_signal_type_spelling_consistent(signal):
+    """
+    Make the signal type (i.e. percent positive, number tests, total tests) have consistent spelling
+    Also remove total from signal names
+    """
     
     pat1 = "positive"
     pat2 = 'pos'
@@ -176,18 +210,50 @@ def create_detections_table(table,modified_date,week_number,week_end_date,start_
     pat4 = 'tested'
     combined_pat2 = '|'.join((pat3, pat4))
     
-    pat5 =r"^ah3"
-    pat6= r"^auns" 
-    pat7= r"^ah1pdm09"
-    pat8= r"^ah1n1pdm09"
-    combined_pat3 = '|'.join((pat5, pat6,pat7,pat8))
+    new_signal = re.sub(combined_pat, "positive_tests",signal)
+    new_signal = re.sub(combined_pat2, "positive_tests",signal)
+    new_signal = re.sub("total ", "",signal)
+    return(new_signal)
+
+def preprocess_table_columns(table):
+    """ 
+    Remove characters like . or * from columns
+    Abbreviate the viruses in columns
+    Change some naming of signals in columns (i.e order of hpiv and other)
+    Change some naming of locations in columns (i.e at instead of atl)
+    """
+    table.columns = [re.sub("\xa0"," ", col) for col in table.columns] # \xa0 to space
+    table.columns = [re.sub("(.*?)(\.\d+)", "\\1", c) for c in table.columns] # remove .# for duplicated columns
+    table.columns =[re.sub("\.", "", s)for s in table.columns] #remove periods
+    table.columns =[re.sub(r"\((all)\)", "", s)for s in table.columns] # remove (all) 
+    table.columns =[re.sub(r"\s*\(|\)", "", s)for s in table.columns]
+    table.columns = [re.sub(' +', ' ', col) for col in table.columns] # Make any muliple spaces into one space
+    table.columns = [re.sub(r'\(|\)', '', col) for col in table.columns] # replace () for _
+    table.columns = [re.sub(r'/', '_', col) for col in table.columns] # replace / with _
+    
+    table.columns = [re.sub(r"^at\b","atl ",t) for t in table.columns]
+    table.columns = [re.sub("canada","can",t) for t in table.columns]
+    
+    table.columns =[re.sub(r"h1n1 2009 |h1n12009", "ah1n1pdm09", s)for s in table.columns]
+    table.columns =[abbreviate_virus(col) for col in table.columns] # abbreviate viruses
+    table.columns = [re.sub(r"flu a","flua",t) for t in table.columns]
+    table.columns = [re.sub(r"flu b","flub",t) for t in table.columns]
+    table.columns = [re.sub("flutest","flu test", col) for col in table.columns]
+    table.columns = [re.sub(r"other hpiv","hpivother",t) for t in table.columns]
+    
+    return(table)
+
+def create_detections_table(table,modified_date,week_number,week_end_date,start_year):
+    lab_columns =[col for col in table.columns if 'reporting' in col][0]
+    table=table.rename(columns={lab_columns:"geo_value"})
+    table['geo_value']=table['geo_value'].str.lower()
+    
+    if start_year==2016 and week_number==3:
+        table["geo_value"]=[re.sub("^province of$","alberta",c) for c in table["geo_value"]]  
     
     # make naming consistent
-    table.columns=[re.sub(combined_pat, "positive_tests",col) for col in table.columns]
-    table.columns=[re.sub(combined_pat2, "tests",col) for col in table.columns]
-    # add flu as a prefix
-    table.columns=[re.sub(combined_pat3, r"flu\g<0>",col) for col in table.columns]
-    table.columns=[re.sub("total ", "",col) for col in table.columns]
+    table.columns=[make_signal_type_spelling_consistent(col) for col in table.columns]
+    table.columns=[add_flu_prefix(col) for col in table.columns]
     matches=['test','geo_value']
 
     new_names = []
@@ -203,10 +269,6 @@ def create_detections_table(table,modified_date,week_number,week_end_date,start_
     table.columns=[re.sub(" positive","_positive",t) for t in table.columns]
     table.columns=[re.sub(" tests","_tests",t) for t in table.columns]
     table.columns=[re.sub(" ","",t) for t in table.columns]
-    
-    
-    table['geo_value'] = [re.sub("^québec$","province of québec",name) for name in table['geo_value']]
-    table['geo_value'] = [re.sub("^ontario$","province of ontario",name) for name in table['geo_value']]
     
     table['geo_value'] = [abbreviate_geo(g) for g in table['geo_value']]
     geo_types = [create_geo_types(g,"lab") for g in table['geo_value']]
@@ -310,7 +372,7 @@ def get_season_reports(url):
     page=requests.get(url)
     soup=BeautifulSoup(page.text,'html.parser') 
 
-    # get season, weeks, urls and week ends
+    # get season, week numbers, urls and week ends
     season = get_report_season_years(soup)
     urls=construct_weekly_report_urls(soup)
     weeks= report_weeks(soup)
@@ -334,7 +396,7 @@ def get_season_reports(url):
         temp_url=urls[week_num]
         temp_page=requests.get(temp_url)
         new_soup = BeautifulSoup(temp_page.text, 'html.parser')
-        captions = get_table_captions(new_soup)
+        captions = parse_table_captions(new_soup)
         modified_date = get_modified_dates(new_soup,current_week_end) 
 
         positive_tables=[]
@@ -390,22 +452,7 @@ def get_season_reports(url):
                  table.loc[table['week'] == 35, 'week end'] = "2022-09-03"
             
             # Rename columns
-            table.columns = [re.sub("\xa0"," ", col) for col in table.columns] # \xa0 to space
-            table.columns = [re.sub("flutest","flu test", col) for col in table.columns]
-            table.columns = [re.sub("(.*?)(\.\d+)", "\\1", c) for c in table.columns] # remove .# for duplicated columns
-            table.columns =[re.sub("\.", "", s)for s in table.columns] #remove periods
-            table.columns =[re.sub(r"\((all)\)", "", s)for s in table.columns] # remove (all) 
-            table.columns =[re.sub(r"\s*\(|\)", "", s)for s in table.columns] # remove (all) 
-            table.columns =[re.sub(r"h1n1 2009 |h1n12009", "ah1n1pdm09", s)for s in table.columns] # remove (all) 
-            table.columns =[abbreviate_virus(col) for col in table.columns] # abbreviate viruses
-            table.columns = [re.sub(' +', ' ', col) for col in table.columns] # Make any muliple spaces into one space
-            table.columns = [re.sub(r'\(|\)', '', col) for col in table.columns] # replace () for _
-            table.columns = [re.sub(r'/', '_', col) for col in table.columns] # replace / with _
-            table.columns = [re.sub(r"^at\b","atl ",t) for t in table.columns]
-            
-            table.columns = [re.sub(r"flu a","flua",t) for t in table.columns]
-            table.columns = [re.sub(r"flu b","flub",t) for t in table.columns]
-            table.columns = [re.sub(r"other hpiv","hpivother",t) for t in table.columns]
+            table= preprocess_table_columns(table)
  
             if "reporting laboratory" in str(table.columns):
                respiratory_detection_table = create_detections_table(table,modified_date,current_week,current_week_end,season[0]) 
