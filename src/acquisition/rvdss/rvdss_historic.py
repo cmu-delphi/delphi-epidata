@@ -15,7 +15,7 @@ from datetime import datetime, timedelta
 import math
 
 from delphi.epidata.acquisition.rvdss.constants import (
-        DASHBOARD_BASE_URLS_2023, HISTORIC_SEASON_URL,
+        DASHBOARD_BASE_URLS_2023_2024_SEASON, HISTORIC_SEASON_URL,
         ALTERNATIVE_SEASON_BASE_URL, SEASON_BASE_URL, LAST_WEEK_OF_YEAR,
         RESP_COUNTS_OUTPUT_FILE, POSITIVE_TESTS_OUTPUT_FILE
     )
@@ -91,9 +91,8 @@ def get_report_date(week,start_year,epi=False):
         report_date =  str(epi_week)
         
     return(report_date)
-       
 
-def parse_table_captions(soup):
+def extract_captions_of_interest(soup):
     """
     finds all the table captions for the current week so tables can be identified 
     
@@ -369,6 +368,8 @@ def create_percent_positive_detection_table(table,modified_date,start_year, flu=
     return(table)
 
 def get_season_reports(url):
+    # From the url, go to the main landing page for a season
+    # which contains all the links to each week in the season
     page=requests.get(url)
     soup=BeautifulSoup(page.text,'html.parser') 
 
@@ -387,7 +388,9 @@ def get_season_reports(url):
         current_week = weeks[week_num]
         current_week_end = end_dates[week_num]
         
-        # Skip empty pages
+        # In the 2019=2020 season, the webpages for weeks 5 and 47 only have
+        # the abbreviations table and the headers for the respiratory detections 
+        # table, so they are effectively empty, and skipped
         if season[0] == '2019':
             if current_week == 5 or current_week == 47:
                 continue
@@ -396,7 +399,7 @@ def get_season_reports(url):
         temp_url=urls[week_num]
         temp_page=requests.get(temp_url)
         new_soup = BeautifulSoup(temp_page.text, 'html.parser')
-        captions = parse_table_captions(new_soup)
+        captions = extract_captions_of_interest(new_soup)
         modified_date = get_modified_dates(new_soup,current_week_end) 
 
         positive_tables=[]
@@ -405,55 +408,87 @@ def get_season_reports(url):
             caption=captions[i]
             tab = caption.find_next('table')
             
-            # Remove footers from tables
+            # Remove footers from tables so the text isn't read in as a table row
             if tab.find('tfoot'):
                 tab.tfoot.decompose()
             
-            # Delete duplicate entry from week 35 of the 2019-2020 season
+            # In the positive adenovirus table in week 35 of the 2019-2020 season
+            # The week number has been duplicated, which makes all the entries in the table 
+            # are one column to the right of where they should be. To fix this the
+            # entry in the table (which is the first "td" element in the html) is deleted
             if season[0] == '2019' and current_week == 35:
                 if "Positive Adenovirus" in caption.text:
                     tab.select_one('td').decompose()
             
             # Replace commas with periods
+            # Some "number of detections" tables have number with commas (i.e 1,000)
+            # In this case the commas must be deleted, otherwise turn into periods
+            # because some tables have commas instead of decimal points
             if "number" not in caption.text.lower():
                 tab = re.sub(",",r".",str(tab))
             else:
                 tab = re.sub(",","",str(tab))
             
-            # Read table
+            # Read table, coding all the abbreviations for missing data into NA
+            # Also use dropna because removing footers causes the html to have an empty row
             na_values = ['N.A.','N.A', 'N.C.','N.R.','Not Available','Not Tested',"N.D.","-"]
             table =  pd.read_html(tab,na_values=na_values)[0].dropna(how="all")
             
             # Check for multiline headers
+            # If there are any, combine them into a single line header
             if isinstance(table.columns, pd.MultiIndex):
                 table.columns = [c[0] + " " + c[1] if c[0] != c[1] else c[0] for c in table.columns]
             
             # Make column names lowercase
             table.columns=table.columns.str.lower()
             
+            # One-off edge cases where tables need to be manually adjusted because
+            # they will cause errors otherwise
             if season[0] == '2017':
                 if current_week == 35 and "entero" in caption.text.lower():
-                    # Remove french from headers in week 35 for the entero table
+                    # The positive enterovirus table in week 35 of the 2017-2018 season has french
+                    # in the headers,so the french needs to be removed
                     table.columns = ['week', 'week end', 'canada tests', 'entero/rhino%', 'at tests',
                        'entero/rhino%.1', 'qc tests', 'entero/rhino%.2', 'on tests',
                        'entero/rhino%.3', 'pr tests', 'entero/rhino%.4', 'bc tests',
                        'entero/rhino%.5']
                 elif current_week == 35 and "adeno" in caption.text.lower():
-                    # Remove > from column name
+                    # In week 35 of the 2017-2018, the positive adenovirus table has ">week end"
+                    # instead of "week end", so remove > from the column
                     table = table.rename(columns={'>week end':"week end"})
                 elif current_week == 47 and "rsv" in caption.text.lower():
-                    # fix date written as 201-11-25
+                    #  In week 47 of the 2017-2018 season, a date is written as 201-11-25, 
+                    #  instead of 2017-11-25
                     table.loc[table['week'] == 47, 'week end'] = "2017-11-25"
             elif season[0] == '2015' and current_week == 41:
-                # Fix date written m-d-y not d-m-y
+                # In week 41 of the 2015-2016 season, a date written in m-d-y format not d-m-y
                 table=table.replace("10-17-2015","17-10-2015",regex=True)
             elif season[0] == '2022' and current_week == 11 and "hmpv" in caption.text.lower():
-                # fix date written as 022-09-03
+                #  In week 11 of the 2022-2023 season, in the positive hmpv table,
+                # a date is written as 022-09-03, instead of 2022-09-03
                  table.loc[table['week'] == 35, 'week end'] = "2022-09-03"
             
             # Rename columns
             table= preprocess_table_columns(table)
  
+            # If "reporting laboratory" is one of the columns of the table, the table must be
+            # the "Respiratory virus detections " table for a given week
+            # this is the lab level table that has weekly positive tests for each virus, with no revisions
+            # and each row represents a lab
+            
+            # If "number" is in the table caption, the table must be the
+            # "Number of positive respiratory detections" table, for a given week
+            # this is a national level table, reporting the number of detections for each virus,
+            # this table has revisions, so each row is a week in the season, with weeks going from the
+            # start of the season up to and including the current week
+            
+            # If "positive" is in the table caption, the table must be one of the
+            # "Positive [virus] Tests (%)" table, for a given week
+            # This is a region level table, reporting the total tests and percent positive tests  for each virus,
+            # this table has revisions, so each row is a week in the season, with weeks going from the
+            # start of the season up to and including the current week
+            # The columns have the region information (i.e Pr tests, meaning this columns has the tests for the prairies)
+            
             if "reporting laboratory" in str(table.columns):
                respiratory_detection_table = create_detections_table(table,modified_date,current_week,current_week_end,season[0]) 
                respiratory_detection_table = respiratory_detection_table.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
@@ -465,9 +500,13 @@ def get_season_reports(url):
                flu = " influenza" in caption.text.lower()
                
                # tables are missing week 53
-               if season[0]=="2014" and current_week==2:
-                   overwrite_weeks=True
-               elif season[0]=="2014" and current_week==3: 
+               # In the 2014-2015 season the year ends at week 53 before starting at week 1 again.
+               # weeks 53,2 and 3 skip week 53 in the positive detection tables, going from 52 to 1,
+               # this means the week numbers following 52 are 1 larger then they should be
+               # fix this by overwriting the week number columns 
+             
+               missing_week_53 = [53,2,3]
+               if season[0]=="2014" and current_week in missing_week_53: 
                    overwrite_weeks=True
                else:
                    overwrite_weeks=False  
@@ -491,6 +530,8 @@ def get_season_reports(url):
     
         # Check if the indices are already in the season table
         # If not, add the weeks tables into the season table
+        
+        # check for deduplication pandas
         if not respiratory_detection_table.index.isin(all_respiratory_detection_table.index).any():
             all_respiratory_detection_table= pd.concat([all_respiratory_detection_table,respiratory_detection_table])
             
@@ -519,7 +560,7 @@ def main():
     old_detection_data = pd.read_csv('season_2023_2024/' + RESP_COUNTS_OUTPUT_FILE).set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
     old_positive_data = pd.read_csv('season_2023_2024/' + POSITIVE_TESTS_OUTPUT_FILE).set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
 
-    for base_url in DASHBOARD_BASE_URLS_2023:
+    for base_url in DASHBOARD_BASE_URLS_2023_2024_SEASON:
         # Get weekly dashboard data
         weekly_data = get_weekly_data(base_url,2023).set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
         positive_data = get_revised_data(base_url)

@@ -53,7 +53,7 @@ NATION = ["canada","can",'ca',]
 # Construct dashboard and data report URLS.
 DASHBOARD_BASE_URL = "https://health-infobase.canada.ca/src/data/respiratory-virus-detections/"
 DASHBOARD_W_DATE_URL = DASHBOARD_BASE_URL + "archive/{date}/"
-DASHBOARD_BASE_URLS_2023 = (
+DASHBOARD_BASE_URLS_2023_2024_SEASON = (
     DASHBOARD_W_DATE_URL.format(date = date) for date in
     (
         "2024-06-20",
@@ -72,7 +72,7 @@ DASHBOARD_BASE_URLS_2023 = (
 
 SEASON_BASE_URL = "https://www.canada.ca"
 ALTERNATIVE_SEASON_BASE_URL = "www.phac-aspc.gc.ca/bid-bmi/dsd-dsm/rvdi-divr/"
-HISTORIC_SEASON_REPORTS_URL = "/en/public-health/services/surveillance/respiratory-virus-detections-canada/{year_range}.html"
+HISTORIC_SEASON_REPORTS_URL = SEASON_BASE_URL+"/en/public-health/services/surveillance/respiratory-virus-detections-canada/{year_range}.html"
 
 # Each URL created here points to a list of all data reports made during that
 # season, e.g.
