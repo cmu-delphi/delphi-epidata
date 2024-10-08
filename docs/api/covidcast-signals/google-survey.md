@@ -18,7 +18,7 @@ nav_order: 2
 
 ## Overview
 
-Data source based on Google-run symptom surveys, through publisher websites,
+Data source based on [Google-run symptom surveys](https://9to5google.com/2020/03/23/google-coronavirus-survey/), through publisher websites,
 their Opinions Reward app, and similar applications. Respondents can opt to skip
 the survey and complete a different one if they prefer not to answer. The survey
 is just one question long, and asks "Do you know someone in your community who

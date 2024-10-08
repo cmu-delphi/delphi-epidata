@@ -7,7 +7,7 @@ nav_order: 2
 
 # Google Health Trends
 
-This is the API documentation for accessing the Google Health Trends (`ght`)
+This is the API documentation for accessing the [Google Health Trends](https://trends.google.com/trends/fullscreen/m/IN)  (`ght`)
 endpoint of [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 
 General topics not specific to any particular endpoint are discussed in the
@@ -17,7 +17,10 @@ General topics not specific to any particular endpoint are discussed in the
 
 ## Google Health Trends Data
 
-Estimate of influenza activity based on volume of certain search queries. ... <!-- TODO -->
+Estimate of influenza activity based on volume of certain search queries.
+
+See also:
+  - 
 
 # The API
 

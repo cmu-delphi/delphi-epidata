@@ -36,7 +36,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `epiweeks` | epiweeks | `list` of epiweeks |
-| `locations` | locations | `list` of [region](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/nidss_regions.txt) and/or [location](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/nidss_locations.txt) labels |
+| `locations` | **regions** (nationwide, central, eastern, Kaoping, northern, southern, Taipei) and **counties or cities** (Changhua County, Chiayi City, Chiayi County, Hsinchu City, Hsinchu County, Hualien County, Kaohsiung City, Keelung City, Kinmen County, Lienchiang County, Miaoli County, Nantou County, New Taipei City, Penghu County, Pingtung County, Taichung City, Tainan City, Taipei City, Taitung County, Taoyuan City, Yilan County, Yunlin County) | `list` of [region](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/nidss_regions.txt) and/or [location](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/nidss_locations.txt) labels |
 
 ## Response
 

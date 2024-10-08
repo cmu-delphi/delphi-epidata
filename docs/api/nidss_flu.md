@@ -38,7 +38,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `epiweeks` | epiweeks | `list` of epiweeks |
-| `regions` | regions | `list` of [region](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/nidss_regions.txt) labels |
+| `regions` | **regions** (nationwide, central, eastern, Kaoping, northern, southern, Taipei) | `list` of [region](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/nidss_regions.txt) labels |
 
 ### Optional
 
