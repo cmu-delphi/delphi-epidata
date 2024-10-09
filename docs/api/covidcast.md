@@ -56,20 +56,27 @@ COVIDcast data. Once you install the appropriate client for your programming
 language, accessing data is as easy as, in [R](https://www.r-project.org/):
 
 ```r
-library(covidcast)
+library(epidatr)
 
-data <- covidcast_signal("fb-survey", "smoothed_cli", start_day = "2020-05-01",
-                         end_day = "2020-05-07")
+data <- pub_covidcast('fb-survey', 'smoothed_cli', 'county', 'day', geo_values = '06001',
+                     time_values = c(20200401, 20200405:20200414))
 ```
 
 or, in [Python](https://www.python.org):
 
 ```python
-import covidcast
-from datetime import date
+from epidatpy import EpiDataContext, EpiRange
 
-data = covidcast.signal("fb-survey", "smoothed_cli", date(2020, 5, 1), date(2020, 5, 7),
-                        "county")
+epidata = EpiDataContext()
+apicall = epidata.pub_covidcast(
+    data_source="fb-survey",
+    signals="smoothed_cli",
+    geo_type="county",
+    time_type="day",
+    geo_values="*",
+    time_values=EpiRange(20200501, 20200507),
+)
+data = apicall.df()
 ```
 
 [The API clients](covidcast_clients.md) have extensive documentation providing
