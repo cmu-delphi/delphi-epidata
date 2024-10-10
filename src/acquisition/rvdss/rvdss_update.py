@@ -6,13 +6,18 @@ format. This covers dates following the 2023-2024 season (exclusive).
 import pandas as pd
 import os
 
-from delphi.epidata.acquisition.rvdss.utils import get_weekly_data, get_revised_data
+from delphi.epidata.acquisition.rvdss.utils import get_weekly_data, get_revised_data, get_dashboard_update_date
 from delphi.epidata.acquisition.rvdss.constants import DASHBOARD_BASE_URL, RESP_COUNTS_OUTPUT_FILE, POSITIVE_TESTS_OUTPUT_FILE
 
 
 def main():
-    weekly_data = get_weekly_data(DASHBOARD_BASE_URL,2024).set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
-    positive_data = get_revised_data(DASHBOARD_BASE_URL)
+    headers = {
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'
+    }
+    
+    update_date = get_dashboard_update_date(DASHBOARD_BASE_URL,headers)
+    weekly_data = get_weekly_data(DASHBOARD_BASE_URL,2024,headers,update_date).set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
+    positive_data = get_revised_data(DASHBOARD_BASE_URL,headers,update_date)
 
     path1 = './' + RESP_COUNTS_OUTPUT_FILE
     path2 = './' + POSITIVE_TESTS_OUTPUT_FILE

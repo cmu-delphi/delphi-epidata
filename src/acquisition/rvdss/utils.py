@@ -54,16 +54,14 @@ def check_date_format(date_string):
 
     return(new_date)
 
-def get_revised_data(base_url):
-    headers = {
-    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'
-    }
-    
+def get_dashboard_update_date(base_url,headers):
     # Get update date
     update_date_url =  base_url + DASHBOARD_UPDATE_DATE_FILE
     update_date_url_response = requests.get(update_date_url, headers=headers)
     update_date = datetime.strptime(update_date_url_response.text,"%m/%d/%Y %H:%M:%S").strftime("%Y-%m-%d")
+    return(update_date)
     
+def get_revised_data(base_url,headers,update_date):
     # Get update data
     url = base_url+DASHBOARD_DATA_FILE
 
@@ -80,7 +78,7 @@ def get_revised_data(base_url):
     df['geo_type'] = [create_geo_types(g,"province") for g in df['geo_value']]
     df.insert(1,"issue",update_date)
     
-    df=df.drop(["weekorder","region","year","week"],axis=1)
+    #df=df.drop(["weekorder","region","year","week"],axis=1)
     
     df = df.pivot(index=['epiweek','time_value','issue','geo_type','geo_value'],
                   columns="virus",values=['tests','percentpositive','positivetests'])
@@ -96,16 +94,7 @@ def get_revised_data(base_url):
     
     return(df)
     
-def get_weekly_data(base_url,start_year):
-    headers = {
-    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'
-    }
-    
-    # Get update date
-    update_date_url =  base_url + "RVD_UpdateDate.csv"
-    update_date_url_response = requests.get(update_date_url, headers=headers)
-    update_date = datetime.strptime(update_date_url_response.text,"%m/%d/%Y %H:%M:%S").strftime("%Y-%m-%d")
-
+def get_weekly_data(base_url,start_year,headers,update_date):
     # Get current week and year
     summary_url =  base_url + "RVD_SummaryText.csv"
     summary_url_response = requests.get(summary_url, headers=headers)
@@ -145,7 +134,7 @@ def get_weekly_data(base_url,start_year):
     df_weekly['geo_value'] = [abbreviate_geo(g) for g in df_weekly['geo_value']]
     df_weekly['geo_type'] = [create_geo_types(g,"lab") for g in df_weekly['geo_value']]
     
-    if df_weekly.columns.isin(["weekorder","date","week"]).all():
-        df_weekly=df_weekly.drop(["weekorder","date","week"],axis=1)
+   # if df_weekly.columns.isin(["weekorder","date","week"]).all():
+    #    df_weekly=df_weekly.drop(["weekorder","date","week"],axis=1)
 
     return(df_weekly)
