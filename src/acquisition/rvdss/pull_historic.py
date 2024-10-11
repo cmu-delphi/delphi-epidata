@@ -15,7 +15,7 @@ from datetime import datetime, timedelta
 import math
 
 from delphi.epidata.acquisition.rvdss.constants import (
-        DASHBOARD_BASE_URLS_2023_2024_SEASON, HISTORIC_SEASON_URL,
+        DASHBOARD_BASE_URLS_2023_2024_SEASON, HISTORIC_SEASON_URLS,
         ALTERNATIVE_SEASON_BASE_URL, SEASON_BASE_URL, LAST_WEEK_OF_YEAR,
         RESP_COUNTS_OUTPUT_FILE, POSITIVE_TESTS_OUTPUT_FILE
     )
@@ -367,7 +367,7 @@ def create_percent_positive_detection_table(table,modified_date,start_year, flu=
 
     return(table)
 
-def get_season_reports(url):
+def fetch_one_season_from_report(url):
     # From the url, go to the main landing page for a season
     # which contains all the links to each week in the season
     page=requests.get(url)
@@ -382,13 +382,13 @@ def get_season_reports(url):
     # create tables to hold all the data for the season
     all_positive_tables=pd.DataFrame()
     all_number_tables=pd.DataFrame()
-    all_respiratory_detection_table=pd.DataFrame()
+    all_respiratory_detection_tables=pd.DataFrame()
     
     for week_num in range(len(urls)):
         current_week = weeks[week_num]
         current_week_end = end_dates[week_num]
         
-        # In the 2019=2020 season, the webpages for weeks 5 and 47 only have
+        # In the 2019-2020 season, the webpages for weeks 5 and 47 only have
         # the abbreviations table and the headers for the respiratory detections 
         # table, so they are effectively empty, and skipped
         if season[0] == '2019':
@@ -532,8 +532,8 @@ def get_season_reports(url):
         # If not, add the weeks tables into the season table
         
         # check for deduplication pandas
-        if not respiratory_detection_table.index.isin(all_respiratory_detection_table.index).any():
-            all_respiratory_detection_table= pd.concat([all_respiratory_detection_table,respiratory_detection_table])
+        if not respiratory_detection_table.index.isin(all_respiratory_detection_tables.index).any():
+            all_respiratory_detection_tables= pd.concat([all_respiratory_detection_tables,respiratory_detection_table])
             
         if not combined_positive_tables.index.isin(all_positive_tables.index).any():
             all_positive_tables=pd.concat([all_positive_tables,combined_positive_tables])
@@ -542,40 +542,28 @@ def get_season_reports(url):
             if not number_detections_table.index.isin(all_number_tables.index).any():
                 all_number_tables=pd.concat([all_number_tables,number_detections_table])
 
-    # write files to csvs
-    all_respiratory_detection_table.to_csv(path+"/" + RESP_COUNTS_OUTPUT_FILE, index=True)
-    all_positive_tables.to_csv(path+"/" + POSITIVE_TESTS_OUTPUT_FILE, index=True)
-    
-    # Write the number of detections table to csv if it exists (i.e has rows)
-    if len(all_number_tables) != 0:
-        all_number_tables.to_csv(path+"/number_of_detections.csv", index=True) 
+    return {
+        "respiratory_detection": all_respiratory_detection_tables,
+        "positive": all_positive_tables,
+        "count": all_number_tables,
+    }
 
-def main():
-    # Scrape each season. Saves data to CSVs as a side effect.
-    [get_season_reports(url) for url in HISTORIC_SEASON_URL]
+def fetch_report_data():
+    # Scrape each season.
+    dict_list = [fetch_one_season_from_report(url) for url in HISTORIC_SEASON_URLS]
 
+    return dict_list
+
+def fetch_historical_dashboard_data():
     # Update the end of the 2023-2024 season with the dashboard data
+    included_urls = fetch_archived_dashboard_urls()
+    dict_list = [{} for url in included_urls]
 
-    # Load old csvs
-    old_detection_data = pd.read_csv('season_2023_2024/' + RESP_COUNTS_OUTPUT_FILE).set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
-    old_positive_data = pd.read_csv('season_2023_2024/' + POSITIVE_TESTS_OUTPUT_FILE).set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
-
-    for base_url in DASHBOARD_BASE_URLS_2023_2024_SEASON:
+    for i, base_url in enumerate(included_urls):
         # Get weekly dashboard data
-        weekly_data = get_weekly_data(base_url,2023).set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
-        positive_data = get_revised_data(base_url)
+        ## TODO: what to do with this "2023"? Need to parse the start year of the season from the URL
+        ## TODO: how to "weekly" and "positive" correspond to the dict keys from historical reports?
+        dict_list[i]["weekly"] = get_weekly_data(base_url,2023).set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
+        dict_list[i]["positive"] = get_revised_data(base_url)
 
-        # Check if indices are already present in the old data
-        # If not, add the new data
-        if not weekly_data.index.isin(old_detection_data.index).any():
-            old_detection_data= pd.concat([old_detection_data,weekly_data],axis=0)
-
-        if not positive_data.index.isin(old_positive_data.index).any():
-            old_positive_data= pd.concat([old_positive_data,positive_data],axis=0)
-
-    # Overwrite/update csvs
-    old_detection_data.to_csv('season_2023_2024/' + RESP_COUNTS_OUTPUT_FILE,index=True)
-    old_positive_data.to_csv('season_2023_2024/' + POSITIVE_TESTS_OUTPUT_FILE,index=True)
-
-if __name__ == '__main__':
-    main()
+    return dict_list
