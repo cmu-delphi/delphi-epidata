@@ -1,3 +1,5 @@
+from datetime import datetime
+
 # The dataset calls the same viruses, provinces, regions (province groups),
 # and country by multiple names. Map each of those to a common abbreviation.
 VIRUSES = {
@@ -104,3 +106,5 @@ RESP_COUNTS_OUTPUT_FILE = "respiratory_detections.csv"
 POSITIVE_TESTS_OUTPUT_FILE = "positive_tests.csv"
 
 LAST_WEEK_OF_YEAR = 35
+
+NOW = datetime.datetime.now()
