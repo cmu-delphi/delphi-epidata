@@ -5,6 +5,8 @@ import regex as re
 from epiweeks import Week
 from datetime import datetime
 import math
+from unidecode import unidecode
+import string
 
 from delphi.epidata.acquisition.rvdss.constants import (
         VIRUSES, GEOS, REGIONS, NATION, LAST_WEEK_OF_YEAR,
@@ -24,11 +26,19 @@ def abbreviate_geo(full_name):
     lowercase=re.sub("\.|\*","",lowercase)
     lowercase=re.sub("/territoires","",lowercase) 
     lowercase=re.sub("^cana$","can",lowercase)
+    lowercase =lowercase.translate(str.maketrans(string.punctuation, ' '*len(string.punctuation),'.'+"'"))
+    lowercase=re.sub(' +', ' ', lowercase)
+    
+    new_name=unidecode(lowercase) 
+    new_name=re.sub(' +', ' ', new_name)
     
     keys = (re.escape(k) for k in GEOS.keys())
     pattern = re.compile(r'^\b(' + '|'.join(keys) + r')\b$')
 
-    result = pattern.sub(lambda x: GEOS[x.group()], lowercase)
+    result = pattern.sub(lambda x: GEOS[x.group()], new_name)
+    
+    if result == new_name:
+        result = lowercase
     return(result)
 
 def create_geo_types(geo,default_geo):

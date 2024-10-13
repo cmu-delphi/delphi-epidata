@@ -43,6 +43,7 @@ GEOS = {
     "atl":"atlantic",
     "pr" :"prairies" ,
     "terr" :"territories",
+    "uhn sinai hospital":"uhn mount sinai hospital"
  }
 
 # Regions are groups of provinces that are geographically close together. Some single provinces are reported as their own region (e.g. Québec, Ontario).
