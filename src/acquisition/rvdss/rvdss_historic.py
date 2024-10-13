@@ -210,8 +210,9 @@ def make_signal_type_spelling_consistent(signal):
     combined_pat2 = '|'.join((pat3, pat4))
     
     new_signal = re.sub(combined_pat, "positive_tests",signal)
-    new_signal = re.sub(combined_pat2, "positive_tests",signal)
-    new_signal = re.sub("total ", "",signal)
+    new_signal = re.sub(combined_pat2, "tests",new_signal)
+    new_signal =re.sub(" *%", "_pct_positive",new_signal)
+    new_signal = re.sub("total ", "",new_signal)
     return(new_signal)
 
 def preprocess_table_columns(table):
@@ -240,6 +241,7 @@ def preprocess_table_columns(table):
     table.columns = [re.sub("flutest","flu test", col) for col in table.columns]
     table.columns = [re.sub(r"other hpiv","hpivother",t) for t in table.columns]
     
+    table.columns=[make_signal_type_spelling_consistent(col) for col in table.columns]
     return(table)
 
 def create_detections_table(table,modified_date,week_number,week_end_date,start_year):
@@ -251,9 +253,8 @@ def create_detections_table(table,modified_date,week_number,week_end_date,start_
         table["geo_value"]=[re.sub("^province of$","alberta",c) for c in table["geo_value"]]  
     
     # make naming consistent
-    table.columns=[make_signal_type_spelling_consistent(col) for col in table.columns]
     table.columns=[add_flu_prefix(col) for col in table.columns]
-    matches=['test','geo_value']
+    matches=['test','geo_value','positive']
 
     new_names = []
     for i in range(len(table.columns)):
@@ -305,7 +306,6 @@ def create_number_detections_table(table,modified_date,start_year):
 
 def create_percent_positive_detection_table(table,modified_date,start_year, flu=False,overwrite_weeks=False):
     table = deduplicate_rows(table)
-    table.columns=[re.sub(" *%", "_pct_positive",col) for col in table.columns]
     table.columns = [re.sub(' +', ' ',col) for col in table.columns]
     table.insert(2,"issue",modified_date)
     table=table.rename(columns={'week end':"time_value"})
