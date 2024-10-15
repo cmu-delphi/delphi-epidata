@@ -9,12 +9,12 @@ VIRUSES = {
     "adenovirus": "adv",
     "adeno": "adv",
     "human metapneumovirus": "hmpv",
-    "enterovirus/rhinovirus": "evrv",
+    "enterovirus_rhinovirus": "evrv",
     "rhinovirus": "evrv",
     "rhv": "evrv",
-    "entero/rhino": "evrv",
+    "entero_rhino": "evrv",
     "rhino":"evrv",
-    "ev/rv":"evrv",
+    "ev_rv":"evrv",
     "coronavirus":"hcov",
     "coron":"hcov",
     "coro":"hcov",
@@ -45,6 +45,7 @@ GEOS = {
     "atl":"atlantic",
     "pr" :"prairies" ,
     "terr" :"territories",
+    "uhn sinai hospital":"uhn mount sinai hospital"
  }
 
 # Regions are groups of provinces that are geographically close together. Some single provinces are reported as their own region (e.g. Québec, Ontario).
