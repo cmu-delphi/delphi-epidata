@@ -17,7 +17,7 @@ import math
 from delphi.epidata.acquisition.rvdss.constants import (
         DASHBOARD_BASE_URLS_2023_2024_SEASON, HISTORIC_SEASON_URLS,
         ALTERNATIVE_SEASON_BASE_URL, SEASON_BASE_URL, LAST_WEEK_OF_YEAR,
-        RESP_COUNTS_OUTPUT_FILE, POSITIVE_TESTS_OUTPUT_FILE
+        RESP_DETECTIONS_OUTPUT_FILE, POSITIVE_TESTS_OUTPUT_FILE
     )
 from delphi.epidata.acquisition.rvdss.utils import (
         abbreviate_virus, abbreviate_geo, create_geo_types, check_date_format,
@@ -548,6 +548,10 @@ def fetch_one_season_from_report(url):
         "count": all_number_tables,
     }
 
+def fetch_archived_dashboard_urls():
+    ## TODO: paste in Christine's code for scraping this list https://health-infobase.canada.ca/respiratory-virus-detections/archive.html
+    pass
+
 def fetch_report_data():
     # Scrape each season.
     dict_list = [fetch_one_season_from_report(url) for url in HISTORIC_SEASON_URLS]
@@ -560,10 +564,6 @@ def fetch_historical_dashboard_data():
     dict_list = [{} for url in included_urls]
 
     for i, base_url in enumerate(included_urls):
-        # Get weekly dashboard data
-        ## TODO: what to do with this "2023"? Need to parse the start year of the season from the URL
-        ## TODO: how to "weekly" and "positive" correspond to the dict keys from historical reports?
-        dict_list[i]["weekly"] = get_weekly_data(base_url,2023).set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
-        dict_list[i]["positive"] = get_revised_data(base_url)
+        dict_list[i]["weekly"] = fetch_dashboard_data(url, 2023)
 
     return dict_list

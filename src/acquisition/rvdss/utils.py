@@ -94,6 +94,7 @@ def get_revised_data(base_url,headers,update_date):
     
     return(df)
     
+## TODO: the `start_year` arg is making calling this complicated. If we know that LAST_WEEK_OF_YEAR (really, of the season) is always 35, then we should be able to derive `start_year` from `update_date`.
 def get_weekly_data(base_url,start_year,headers,update_date):
     # Get current week and year
     summary_url =  base_url + "RVD_SummaryText.csv"
@@ -137,4 +138,22 @@ def get_weekly_data(base_url,start_year,headers,update_date):
    # if df_weekly.columns.isin(["weekorder","date","week"]).all():
     #    df_weekly=df_weekly.drop(["weekorder","date","week"],axis=1)
 
-    return(df_weekly)
+    return(df_weekly.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value']))
+
+def fetch_dashboard_data(url, start_year):
+    """Get data from current or archived dashboard"""
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'
+    }
+
+    update_date = get_dashboard_update_date(url, headers)
+
+    weekly_data = get_weekly_data(url,start_year,headers,update_date)
+    positive_data = get_revised_data(url,headers,update_date)
+
+    ## TODO: how to "weekly" and "positive" correspond to the dict keys ("respiratory_detection", "positive", "count") from historical reports? Need to make sure keys used here are from the same set.
+    return {
+        "respiratory_detection": weekly_data, ## TODO: ?
+        "positive": positive_data,
+        # "count": None, # Dashboards don't contain this data.
+    }

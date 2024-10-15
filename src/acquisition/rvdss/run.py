@@ -1,45 +1,72 @@
+"""
+Defines command line interface for the rvdss indicator. Current data (covering the most recent epiweek) and historical data (covering all data before the most recent epiweek) can be generated together or separately.
+
+Defines top-level functions to fetch data and save to disk or DB.
+"""
+
 import pandas as pd
+import os
+
+from delphi.epidata.acquisition.rvdss.utils import get_weekly_data, get_revised_data, get_dashboard_update_date
+from delphi.epidata.acquisition.rvdss.constants import DASHBOARD_BASE_URL, RESP_DETECTIONS_OUTPUT_FILE, POSITIVE_TESTS_OUTPUT_FILE, COUNTS_OUTPUT_FILE
 
 
-def fetch_archived_dashboard_urls():
-    ## TODO: paste in Christine's code for scraping this list https://health-infobase.canada.ca/respiratory-virus-detections/archive.html
+def update_current_data():
+    ## TODO: what is the base path for these files?
+    base_path = "."
 
-def fetch_dashboard_data(url = None):
-    """Get data from current or archived dashboard"""
-    pass
+    data_dict = fetch_dashboard_data(DASHBOARD_BASE_URL, 2024)
 
+    table_types = {
+        "respiratory_detection": RESP_DETECTIONS_OUTPUT_FILE,
+        "positive": POSITIVE_TESTS_OUTPUT_FILE,
+        # "count": COUNTS_OUTPUT_FILE, # Dashboards don't contain this data.
+    }
+    for tt in table_types.keys():
+        data = data_dict[table_types]
 
-def fetch_current_dashboard_data():
-    return fetch_dashboard_data(DEFAULT_DASHBOARD_URL)
+        # Write the tables to separate csvs
+        path = base_path + "/" + table_types[tt]
 
-def update_current_data(start_date, end_date):
-    data = fetch_current_dashboard_data()
-    update_database(data)
+        # Since this function generates new data weekly, we need to combine it with the existing data, if it exists.
+        if not os.path.exists(path):
+            data.to_csv(path,index=True)
+        else:
+            old_data = pd.read_csv(path).set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
+
+            # If index already exists in the data on disk, don't add the new data -- we may have already run the weekly data fetch.
+            ## TODO: The check on index maybe should be stricter? Although we do deduplication upstream, so this probably won't find true duplicates
+            if not data.index.isin(old_data.index).any():
+                old_data= pd.concat([old_data,data],axis=0)
+                old_data.to_csv(path,index=True)
+
+        # ## TODO
+        # update_database(data)
+
 
 def update_historical_data():
+    ## TODO: what is the base path for these files?
+    base_path = "."
+
     report_dict_list = fetch_report_data()
     dashboard_dict_list = fetch_historical_dashboard_data()
 
-    table_types = (
-        "respiratory_detection",
-        "positive",
-        "count",
-    )
-    for tt in table_types:
-        ## TODO: need to merge tables together from dashboards and reports. Expect 3 tables out.
-        pass
-        # ??
+    table_types = {
+        "respiratory_detection": RESP_DETECTIONS_OUTPUT_FILE,
+        "positive": POSITIVE_TESTS_OUTPUT_FILE,
+        "count": COUNTS_OUTPUT_FILE,
+    }
+    for tt in table_types.keys():
+        # Merge tables together from dashboards and reports for each table type.
+        dashboard_data = [elem.get(tt, None) for elem in dashboard_dict_list]
+        report_data = [elem.get(tt, None) for elem in report_dict_list]
         data = [report_data, dashboard_data].concat()
 
-    # Write the three tables to separate csvs
-    all_respiratory_detection_tables.to_csv(path+"/" + RESP_COUNTS_OUTPUT_FILE, index=True)
-    all_positive_tables.to_csv(path+"/" + POSITIVE_TESTS_OUTPUT_FILE, index=True)
+        # Write the tables to separate csvs
+        data.to_csv(base_path +"/" + table_types[tt], index=True)
 
-    # Write the number of detections table to csv if it exists (i.e has rows)
-    if len(all_number_tables) != 0:
-        all_number_tables.to_csv(path+"/number_of_detections.csv", index=True)
-
-    update_database(data)
+        # ## TODO
+        # update_database(data)
 
 
 def main():
