@@ -1,3 +1,5 @@
+from datetime import datetime
+
 # The dataset calls the same viruses, provinces, regions (province groups),
 # and country by multiple names. Map each of those to a common abbreviation.
 VIRUSES = {
@@ -82,7 +84,7 @@ HISTORIC_SEASON_REPORTS_URL = SEASON_BASE_URL+"/en/public-health/services/survei
 # disease data in a dashboard with a static URL. Therefore, this collection
 # of URLs does _NOT_ need to be updated. It is used for fetching historical
 # data (for dates on or before June 8, 2024) only.
-HISTORIC_SEASON_URL = (HISTORIC_SEASON_REPORTS_URL.format(year_range = year_range) for year_range in
+HISTORIC_SEASON_URLS = (HISTORIC_SEASON_REPORTS_URL.format(year_range = year_range) for year_range in
     (
         "2013-2014",
         "2014-2015",
@@ -101,7 +103,10 @@ HISTORIC_SEASON_URL = (HISTORIC_SEASON_REPORTS_URL.format(year_range = year_rang
 DASHBOARD_UPDATE_DATE_FILE = "RVD_UpdateDate.csv"
 DASHBOARD_DATA_FILE = "RVD_WeeklyData.csv"
 
-RESP_COUNTS_OUTPUT_FILE = "respiratory_detections.csv"
+RESP_DETECTIONS_OUTPUT_FILE = "respiratory_detections.csv"
 POSITIVE_TESTS_OUTPUT_FILE = "positive_tests.csv"
+COUNTS_OUTPUT_FILE = "number_of_detections.csv"
 
 LAST_WEEK_OF_YEAR = 35
+
+NOW = datetime.datetime.now()
