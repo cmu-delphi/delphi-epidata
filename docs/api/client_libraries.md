@@ -9,7 +9,7 @@ nav_order: 1
 To access Delphi Epidata programmatically, we recommend our client libraries:
 
 - R: [epidatr](https://cmu-delphi.github.io/epidatr/),
-- Python: [epidatpy](https://github.com/cmu-delphi/epidatpy) and [delphi-epidata](https://pypi.org/project/delphi-epidata/),
+- Python: [epidatpy](https://cmu-delphi.github.io/epidatpy/) (recommended) and [delphi-epidata](https://pypi.org/project/delphi-epidata/),
 - Javascript: [delphi-epidata](https://github.com/cmu-delphi/delphi-epidata/blob/master/src/client/delphi_epidata.js).
 
 For anyone looking for COVIDCast data, please visit our [COVIDCast API Client Libraries](covidcast_clients.md).
