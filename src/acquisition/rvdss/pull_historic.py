@@ -561,9 +561,6 @@ def fetch_report_data():
 def fetch_historical_dashboard_data():
     # Update the end of the 2023-2024 season with the dashboard data
     included_urls = fetch_archived_dashboard_urls()
-    dict_list = [{} for url in included_urls]
-
-    for i, base_url in enumerate(included_urls):
-        dict_list[i]["weekly"] = fetch_dashboard_data(url, 2023)
+    dict_list = [fetch_dashboard_data(url, 2023) for url in included_urls]
 
     return dict_list
