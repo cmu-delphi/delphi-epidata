@@ -7,7 +7,7 @@ nav_order: 2
 
 # NIDSS Flu
 
-This is the documentation of the API for accessing the NIDSS Flu (`nidss_flu`) endpoint of
+This is the documentation of the API for accessing the Taiwan National Infectious Disease Statistics System Flu (`nidss_flu`) endpoint of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 
 General topics not specific to any particular endpoint are discussed in the
@@ -134,3 +134,7 @@ source('delphi_epidata.R')
 res <- Epidata$nidss_flu(list('nationwide'), list(201440, Epidata$range(201501, 201510)))
 cat(paste(res$result, res$message, length(res$epidata), "\n"))
 ````
+
+# Source and Licensing
+
+The full text of the NIDSS Flu license information is available on the Taiwan Digital Development Department's [website](https://data.gov.tw/license).
