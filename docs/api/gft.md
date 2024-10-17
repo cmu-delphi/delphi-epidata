@@ -18,9 +18,10 @@ General topics not specific to any particular endpoint are discussed in the
 ## Google Flu Trends Data
 
 Estimate of influenza activity based on volume of certain search queries. Google has discontinued Flu Trends, and this is now a static endpoint.
- - Source: [Google](https://www.google.org/flutrends/)
+ - Data Source: [Google Flu Trends Estimates](https://www.google.com/publicdata/explore?ds=z3bsqef7ki44ac_)
  - Temporal Resolution: Weekly from 2003w40 until 2015w32
  - Spatial Resolution: National, [HHS regions](http://www.hhs.gov/iea/regional/) ([1+10](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/regions.txt)); by state/territory ([50+1](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/states.txt)); and by city ([97](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/cities.txt))
+ - Wikipedia Article: <https://en.wikipedia.org/wiki/Google_Flu_Trends>
  - Open access
 
 # The API
