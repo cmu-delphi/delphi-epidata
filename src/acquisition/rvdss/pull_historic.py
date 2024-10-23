@@ -13,15 +13,16 @@ import pandas as pd
 from epiweeks import Week
 from datetime import datetime, timedelta
 import math
+from pandas.io.json import json_normalize
 
 from delphi.epidata.acquisition.rvdss.constants import (
         DASHBOARD_BASE_URLS_2023_2024_SEASON, HISTORIC_SEASON_URLS,
-        ALTERNATIVE_SEASON_BASE_URL, SEASON_BASE_URL, LAST_WEEK_OF_YEAR,
-        RESP_DETECTIONS_OUTPUT_FILE, POSITIVE_TESTS_OUTPUT_FILE
+        ALTERNATIVE_SEASON_BASE_URL, SEASON_BASE_URL, FIRST_WEEK_OF_YEAR,
+        RESP_DETECTIONS_OUTPUT_FILE, POSITIVE_TESTS_OUTPUT_FILE,DASHBOARD_ARCHIVED_DATES_URL
     )
 from delphi.epidata.acquisition.rvdss.utils import (
         abbreviate_virus, abbreviate_geo, create_geo_types, check_date_format,
-        get_revised_data, get_weekly_data
+        get_revised_data, get_weekly_data, fetch_dashboard_data
     )
  #%% Functions
  
@@ -78,7 +79,7 @@ def get_report_date(week,start_year,epi=False):
     epi - if True, return the date in cdc format (yearweek)
     
     """
-    if week < LAST_WEEK_OF_YEAR: 
+    if week < FIRST_WEEK_OF_YEAR: 
         year=int(start_year)+1
     else:
         year=int(start_year)
@@ -523,7 +524,7 @@ def fetch_one_season_from_report(url):
                positive_tables.append(pos_table)
 
         # create path to save files
-        path = "season_" + season[0]+"_"+season[1]
+        #path = "season_" + season[0]+"_"+season[1]
        
         # combine all the positive tables
         combined_positive_tables=pd.concat(positive_tables,axis=1)
@@ -548,9 +549,13 @@ def fetch_one_season_from_report(url):
         "count": all_number_tables,
     }
 
-def fetch_archived_dashboard_urls():
-    ## TODO: paste in Christine's code for scraping this list https://health-infobase.canada.ca/respiratory-virus-detections/archive.html
-    pass
+def fetch_archived_dashboard_urls(archive_url):
+    r=requests.get(archive_url)
+    values=r.json()
+    data=json_normalize(values)
+    archived_dates = data[data["lang"]=="en"]
+    return(archived_dates)
+
 
 def fetch_report_data():
     # Scrape each season.
@@ -560,7 +565,7 @@ def fetch_report_data():
 
 def fetch_historical_dashboard_data():
     # Update the end of the 2023-2024 season with the dashboard data
-    included_urls = fetch_archived_dashboard_urls()
-    dict_list = [fetch_dashboard_data(url, 2023) for url in included_urls]
+    included_urls = fetch_archived_dashboard_urls(DASHBOARD_ARCHIVED_DATES_URL)
+    dict_list = [fetch_dashboard_data(url) for url in included_urls]
 
     return dict_list

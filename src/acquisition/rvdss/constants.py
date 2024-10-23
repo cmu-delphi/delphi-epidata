@@ -76,6 +76,7 @@ DASHBOARD_BASE_URLS_2023_2024_SEASON = (
 SEASON_BASE_URL = "https://www.canada.ca"
 ALTERNATIVE_SEASON_BASE_URL = "www.phac-aspc.gc.ca/bid-bmi/dsd-dsm/rvdi-divr/"
 HISTORIC_SEASON_REPORTS_URL = SEASON_BASE_URL+"/en/public-health/services/surveillance/respiratory-virus-detections-canada/{year_range}.html"
+DASHBOARD_ARCHIVED_DATES_URL= "https://health-infobase.canada.ca/src/js/respiratory-virus-detections/ArchiveData.json"
 
 # Each URL created here points to a list of all data reports made during that
 # season, e.g.
@@ -103,10 +104,11 @@ HISTORIC_SEASON_URLS = (HISTORIC_SEASON_REPORTS_URL.format(year_range = year_ran
 DASHBOARD_UPDATE_DATE_FILE = "RVD_UpdateDate.csv"
 DASHBOARD_DATA_FILE = "RVD_WeeklyData.csv"
 
+
 RESP_DETECTIONS_OUTPUT_FILE = "respiratory_detections.csv"
 POSITIVE_TESTS_OUTPUT_FILE = "positive_tests.csv"
 COUNTS_OUTPUT_FILE = "number_of_detections.csv"
 
-LAST_WEEK_OF_YEAR = 35
+FIRST_WEEK_OF_YEAR = 35
 
 NOW = datetime.datetime.now()
