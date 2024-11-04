@@ -31,8 +31,7 @@ surface signals from two such datasets.
 
 **This dataset is no longer updated after April 19th, 2021.**
 
-Data source based on [Social Distancing
-Metrics](https://docs.safegraph.com/docs/social-distancing-metrics).  SafeGraph
+Data source based on the [Social Distancing Metrics](https://docs.safegraph.com/docs/social-distancing-metrics) data product.  SafeGraph
 provided this data for individual census block groups, using differential
 privacy to protect individual people's data privacy. 
 
@@ -131,7 +130,10 @@ COVIDcast API.
 
 ## Limitations
 
-SafeGraph's [Social Distancing Metrics](https://docs.safegraph.com/docs/social-distancing-metrics) and [Weekly Patterns](https://docs.safegraph.com/docs/weekly-patterns) are based on mobile devices that are members of SafeGraph panels, which is not necessarily the same thing as measuring the general public. These counts do not represent absolute counts, and only count visits by members of the panel in that region. This can result in several biases:
+SafeGraph's [Social Distancing Metrics](https://docs.safegraph.com/docs/social-distancing-metrics) 
+and [Weekly Patterns](https://docs.safegraph.com/docs/weekly-patterns) data products
+are based on mobile devices that are members of SafeGraph panels, which is not necessarily the same thing as measuring the general public. 
+These counts do not represent absolute counts, and only count visits by members of the panel in that region. This can result in several biases:
 
 * **Geographic bias.** If some regions have a greater density of SafeGraph panel members as a percentage of the population than other regions, comparisons of metrics between regions may be biased. Regions with more SafeGraph panel members will appear to have more visits counted, even if the rate of visits in the general population is the same.
 * **Demographic bias.** SafeGraph panels may not be representative of the local population as a whole. For example, [some research suggests](https://doi.org/10.1145/3442188.3445881) that "older and non-white voters are less likely to be captured by mobility data", so this data will not accurately reflect behavior in those populations. Since population demographics vary across the United States, this can also contribute to geographic biases.
