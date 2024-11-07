@@ -1,0 +1,34 @@
+### New location-specific API response from https://gis.cdc.gov/GRASP/Flu3/PostPhase03DataTool?appVersion=Public
+# with payload
+#     {"appversion": "Public", "key": "getdata", "injson": [
+#         {"networkid": 1, "catchmentid": 22, "seasonid": 30 },
+#         {"networkid": 1, "catchmentid": 22, "seasonid": 49}
+#     ]}
+# The "seasonid" parameter is required. To fetch all historical data,
+#  each season must be listed separately. Seasonids that don't exist don't
+#  cause errors, they are simply ignored.
+#
+# However, if no listed seasonids exist for the specified location, then
+#  the returned JSON is:
+#    {
+#        'default_data': {
+#            'response': 'No Data'
+#            }
+#    }
+{
+    # Data!! Format is list of dicts. Each obs' fields are
+    #  labelled, so we could easily convert this to dataframe.
+    'default_data': [
+        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 1, 'rate': 4.3, 'weeklyrate': 1.7, 'mmwrid': 2493}, 
+        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 1, 'rate': 20.3, 'weeklyrate': 0.1, 'mmwrid': 2513}, 
+        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 1, 'rate': 20.6, 'weeklyrate': 0.1, 'mmwrid': 2516}, 
+        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 1, 'rate': 20.7, 'weeklyrate': 0.0, 'mmwrid': 2519}, 
+        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 2, 'rate': 11.6, 'weeklyrate': 3.6, 'mmwrid': 2493}, 
+        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 2, 'rate': 39.6, 'weeklyrate': 0.3, 'mmwrid': 2513}, 
+        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 2, 'rate': 40.7, 'weeklyrate': 0.5, 'mmwrid': 2516}, 
+        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 2, 'rate': 41.3, 'weeklyrate': 0.1, 'mmwrid': 2519}, 
+        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 3, 'rate': 12.8, 'weeklyrate': 4.8, 'mmwrid': 2493}, 
+        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 3, 'rate': 36.0, 'weeklyrate': 0.1, 'mmwrid': 2513}, 
+        ...
+    ]
+}
