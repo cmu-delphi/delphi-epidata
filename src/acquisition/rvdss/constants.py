@@ -36,7 +36,7 @@ GEOS = {
     "saskatchewan":"sk",
     "alberta": "ab",
     "british columbia" :"bc",
-    "yukon" : "yk",
+    "yukon" : "yt",
     "northwest territories" : "nt",
     "nunavut" : "nu",
     "canada":"ca",
@@ -56,6 +56,8 @@ NATION = ["canada","can",'ca',]
 # Construct dashboard and data report URLS.
 DASHBOARD_BASE_URL = "https://health-infobase.canada.ca/src/data/respiratory-virus-detections/"
 DASHBOARD_W_DATE_URL = DASHBOARD_BASE_URL + "archive/{date}/"
+
+# May not need this since we write a function for this in pull_historic
 DASHBOARD_BASE_URLS_2023_2024_SEASON = (
     DASHBOARD_W_DATE_URL.format(date = date) for date in
     (
@@ -111,4 +113,5 @@ COUNTS_OUTPUT_FILE = "number_of_detections.csv"
 
 FIRST_WEEK_OF_YEAR = 35
 
-NOW = datetime.datetime.now()
+UPDATE_DATES_FILE = "update_dates.txt"
+NOW = datetime.now()
