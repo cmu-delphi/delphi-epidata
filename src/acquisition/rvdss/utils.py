@@ -98,7 +98,7 @@ def preprocess_table_columns(table):
     
     table.columns = [re.sub(r"^at\b","atl ",t) for t in table.columns]
     table.columns = [re.sub("canada","can",t) for t in table.columns]
-    table.columns = [re.sub("^cb$","bc",t) for t in table.columns]
+    table.columns = [re.sub(r"\bcb\b","bc",t) for t in table.columns]
     
     table.columns =[re.sub(r"h1n1 2009 |h1n12009|a_h1|ah1\b", "ah1n1pdm09", s)for s in table.columns]
     table.columns =[re.sub(r"a_uns", "auns", s)for s in table.columns]
