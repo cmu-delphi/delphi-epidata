@@ -1,3 +1,5 @@
+from datetime import datetime
+
 # The dataset calls the same viruses, provinces, regions (province groups),
 # and country by multiple names. Map each of those to a common abbreviation.
 VIRUSES = {
@@ -34,7 +36,7 @@ GEOS = {
     "saskatchewan":"sk",
     "alberta": "ab",
     "british columbia" :"bc",
-    "yukon" : "yk",
+    "yukon" : "yt",
     "northwest territories" : "nt",
     "nunavut" : "nu",
     "canada":"ca",
@@ -54,6 +56,8 @@ NATION = ["canada","can",'ca',]
 # Construct dashboard and data report URLS.
 DASHBOARD_BASE_URL = "https://health-infobase.canada.ca/src/data/respiratory-virus-detections/"
 DASHBOARD_W_DATE_URL = DASHBOARD_BASE_URL + "archive/{date}/"
+
+# May not need this since we write a function for this in pull_historic
 DASHBOARD_BASE_URLS_2023_2024_SEASON = (
     DASHBOARD_W_DATE_URL.format(date = date) for date in
     (
@@ -74,6 +78,7 @@ DASHBOARD_BASE_URLS_2023_2024_SEASON = (
 SEASON_BASE_URL = "https://www.canada.ca"
 ALTERNATIVE_SEASON_BASE_URL = "www.phac-aspc.gc.ca/bid-bmi/dsd-dsm/rvdi-divr/"
 HISTORIC_SEASON_REPORTS_URL = SEASON_BASE_URL+"/en/public-health/services/surveillance/respiratory-virus-detections-canada/{year_range}.html"
+DASHBOARD_ARCHIVED_DATES_URL= "https://health-infobase.canada.ca/src/js/respiratory-virus-detections/ArchiveData.json"
 
 # Each URL created here points to a list of all data reports made during that
 # season, e.g.
@@ -82,7 +87,7 @@ HISTORIC_SEASON_REPORTS_URL = SEASON_BASE_URL+"/en/public-health/services/survei
 # disease data in a dashboard with a static URL. Therefore, this collection
 # of URLs does _NOT_ need to be updated. It is used for fetching historical
 # data (for dates on or before June 8, 2024) only.
-HISTORIC_SEASON_URL = (HISTORIC_SEASON_REPORTS_URL.format(year_range = year_range) for year_range in
+HISTORIC_SEASON_URLS = (HISTORIC_SEASON_REPORTS_URL.format(year_range = year_range) for year_range in
     (
         "2013-2014",
         "2014-2015",
@@ -101,7 +106,12 @@ HISTORIC_SEASON_URL = (HISTORIC_SEASON_REPORTS_URL.format(year_range = year_rang
 DASHBOARD_UPDATE_DATE_FILE = "RVD_UpdateDate.csv"
 DASHBOARD_DATA_FILE = "RVD_WeeklyData.csv"
 
-RESP_COUNTS_OUTPUT_FILE = "respiratory_detections.csv"
-POSITIVE_TESTS_OUTPUT_FILE = "positive_tests.csv"
 
-LAST_WEEK_OF_YEAR = 35
+RESP_DETECTIONS_OUTPUT_FILE = "respiratory_detections.csv"
+POSITIVE_TESTS_OUTPUT_FILE = "positive_tests.csv"
+COUNTS_OUTPUT_FILE = "number_of_detections.csv"
+
+FIRST_WEEK_OF_YEAR = 35
+
+UPDATE_DATES_FILE = "update_dates.txt"
+NOW = datetime.now()

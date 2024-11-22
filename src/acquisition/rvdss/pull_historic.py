@@ -14,14 +14,15 @@ from epiweeks import Week
 from datetime import datetime, timedelta
 import math
 
-from delphi.epidata.acquisition.rvdss.constants import (
-        DASHBOARD_BASE_URLS_2023_2024_SEASON, HISTORIC_SEASON_URL,
-        ALTERNATIVE_SEASON_BASE_URL, SEASON_BASE_URL, LAST_WEEK_OF_YEAR,
-        RESP_COUNTS_OUTPUT_FILE, POSITIVE_TESTS_OUTPUT_FILE
+from constants import (
+        HISTORIC_SEASON_URLS,
+        ALTERNATIVE_SEASON_BASE_URL, SEASON_BASE_URL, FIRST_WEEK_OF_YEAR,
+        DASHBOARD_ARCHIVED_DATES_URL,
+        DASHBOARD_BASE_URL
     )
-from delphi.epidata.acquisition.rvdss.utils import (
+from utils import (
         abbreviate_virus, abbreviate_geo, create_geo_types, check_date_format,
-        get_revised_data, get_weekly_data
+        fetch_dashboard_data,preprocess_table_columns, add_flu_prefix
     )
  #%% Functions
  
@@ -78,7 +79,7 @@ def get_report_date(week,start_year,epi=False):
     epi - if True, return the date in cdc format (yearweek)
     
     """
-    if week < LAST_WEEK_OF_YEAR: 
+    if week < FIRST_WEEK_OF_YEAR: 
         year=int(start_year)+1
     else:
         year=int(start_year)
@@ -137,9 +138,9 @@ def get_modified_dates(soup,week_end_date):
     meta_tags=soup.find_all("meta",title="W3CDTF")
     for tag in meta_tags:
         if tag.get("name", None) == "dcterms.modified" or tag.get("property", None) == "dcterms.modified":
-            modified_date = tag.get("content", None)
+            date_modified = tag.get("content", None)
 
-    mod_date = datetime.strptime(modified_date, "%Y-%m-%d")
+    mod_date = datetime.strptime(date_modified, "%Y-%m-%d")
     week_date = datetime.strptime(week_end_date, "%Y-%m-%d")
     
     diff_days = (mod_date-week_date).days
@@ -183,65 +184,13 @@ def deduplicate_rows(table):
         new_table=table
     return(new_table)
 
-def add_flu_prefix(flu_subtype):
-    """ Add the prefix `flu` when only the subtype is reported """
+def drop_ah1_columns(table):
+    h1n1_column_exists = any([re.search("h1n1",c) for c in table.columns])
+    ah1_column_exists = any([re.search(r"ah1\b",c) for c in table.columns])
     
-    pat1 =r"^ah3"
-    pat2= r"^auns" 
-    pat3= r"^ah1pdm09"
-    pat4= r"^ah1n1pdm09"
-    combined_pat = '|'.join((pat1, pat2,pat3,pat4))
-    
-    full_fluname = re.sub(combined_pat, r"flu\g<0>",flu_subtype)
-    return(full_fluname)
-
-def make_signal_type_spelling_consistent(signal):
-    """
-    Make the signal type (i.e. percent positive, number tests, total tests) have consistent spelling
-    Also remove total from signal names
-    """
-    
-    pat1 = "positive"
-    pat2 = 'pos'
-    combined_pat = '|'.join((pat1, pat2))
-    
-    pat3 = r"test\b"
-    pat4 = 'tested'
-    combined_pat2 = '|'.join((pat3, pat4))
-    
-    new_signal = re.sub(combined_pat, "positive_tests",signal)
-    new_signal = re.sub(combined_pat2, "tests",new_signal)
-    new_signal =re.sub(" *%", "_pct_positive",new_signal)
-    new_signal = re.sub("total ", "",new_signal)
-    return(new_signal)
-
-def preprocess_table_columns(table):
-    """ 
-    Remove characters like . or * from columns
-    Abbreviate the viruses in columns
-    Change some naming of signals in columns (i.e order of hpiv and other)
-    Change some naming of locations in columns (i.e at instead of atl)
-    """
-    table.columns = [re.sub("\xa0"," ", col) for col in table.columns] # \xa0 to space
-    table.columns = [re.sub("(.*?)(\.\d+)", "\\1", c) for c in table.columns] # remove .# for duplicated columns
-    table.columns =[re.sub("\.", "", s)for s in table.columns] #remove periods
-    table.columns =[re.sub(r"\((all)\)", "", s)for s in table.columns] # remove (all) 
-    table.columns =[re.sub(r"\s*\(|\)", "", s)for s in table.columns]
-    table.columns = [re.sub(' +', ' ', col) for col in table.columns] # Make any muliple spaces into one space
-    table.columns = [re.sub(r'\(|\)', '', col) for col in table.columns] # replace () for _
-    table.columns = [re.sub(r'/', '_', col) for col in table.columns] # replace / with _
-    
-    table.columns = [re.sub(r"^at\b","atl ",t) for t in table.columns]
-    table.columns = [re.sub("canada","can",t) for t in table.columns]
-    
-    table.columns =[re.sub(r"h1n1 2009 |h1n12009", "ah1n1pdm09", s)for s in table.columns]
-    table.columns =[abbreviate_virus(col) for col in table.columns] # abbreviate viruses
-    table.columns = [re.sub(r"flu a","flua",t) for t in table.columns]
-    table.columns = [re.sub(r"flu b","flub",t) for t in table.columns]
-    table.columns = [re.sub("flutest","flu test", col) for col in table.columns]
-    table.columns = [re.sub(r"other hpiv","hpivother",t) for t in table.columns]
-    
-    table.columns=[make_signal_type_spelling_consistent(col) for col in table.columns]
+    if ah1_column_exists and h1n1_column_exists:
+        column_name_to_drop = list(table.filter(regex=r'ah1\b'))
+        table.drop(columns = column_name_to_drop,inplace=True)
     return(table)
 
 def create_detections_table(table,modified_date,week_number,week_end_date,start_year):
@@ -367,7 +316,7 @@ def create_percent_positive_detection_table(table,modified_date,start_year, flu=
 
     return(table)
 
-def get_season_reports(url):
+def fetch_one_season_from_report(url):
     # From the url, go to the main landing page for a season
     # which contains all the links to each week in the season
     page=requests.get(url)
@@ -382,13 +331,13 @@ def get_season_reports(url):
     # create tables to hold all the data for the season
     all_positive_tables=pd.DataFrame()
     all_number_tables=pd.DataFrame()
-    all_respiratory_detection_table=pd.DataFrame()
+    all_respiratory_detection_tables=pd.DataFrame()
     
     for week_num in range(len(urls)):
         current_week = weeks[week_num]
         current_week_end = end_dates[week_num]
         
-        # In the 2019=2020 season, the webpages for weeks 5 and 47 only have
+        # In the 2019-2020 season, the webpages for weeks 5 and 47 only have
         # the abbreviations table and the headers for the respiratory detections 
         # table, so they are effectively empty, and skipped
         if season[0] == '2019':
@@ -399,6 +348,7 @@ def get_season_reports(url):
         temp_url=urls[week_num]
         temp_page=requests.get(temp_url)
         new_soup = BeautifulSoup(temp_page.text, 'html.parser')
+        
         captions = extract_captions_of_interest(new_soup)
         modified_date = get_modified_dates(new_soup,current_week_end) 
 
@@ -431,7 +381,7 @@ def get_season_reports(url):
             
             # Read table, coding all the abbreviations for missing data into NA
             # Also use dropna because removing footers causes the html to have an empty row
-            na_values = ['N.A.','N.A', 'N.C.','N.R.','Not Available','Not Tested',"N.D.","-"]
+            na_values = ['N.A.','N.A', 'N.C.','N.R.','Not Available','Not Tested',"not available","not tested","N.D.","-"]
             table =  pd.read_html(tab,na_values=na_values)[0].dropna(how="all")
             
             # Check for multiline headers
@@ -467,6 +417,9 @@ def get_season_reports(url):
                 #  In week 11 of the 2022-2023 season, in the positive hmpv table,
                 # a date is written as 022-09-03, instead of 2022-09-03
                  table.loc[table['week'] == 35, 'week end'] = "2022-09-03"
+            
+            # check if both ah1 and h1n1 are given. If so drop one since they are the same virus and ah1 is always empty
+            table = drop_ah1_columns(table) 
             
             # Rename columns
             table= preprocess_table_columns(table)
@@ -523,17 +476,17 @@ def get_season_reports(url):
                positive_tables.append(pos_table)
 
         # create path to save files
-        path = "season_" + season[0]+"_"+season[1]
+        #path = "season_" + season[0]+"_"+season[1]
        
         # combine all the positive tables
-        combined_positive_tables=pd.concat(positive_tables,axis=1)
+        combined_positive_tables =pd.concat(positive_tables,axis=1)
     
         # Check if the indices are already in the season table
         # If not, add the weeks tables into the season table
         
         # check for deduplication pandas
-        if not respiratory_detection_table.index.isin(all_respiratory_detection_table.index).any():
-            all_respiratory_detection_table= pd.concat([all_respiratory_detection_table,respiratory_detection_table])
+        if not respiratory_detection_table.index.isin(all_respiratory_detection_tables.index).any():
+            all_respiratory_detection_tables= pd.concat([all_respiratory_detection_tables,respiratory_detection_table])
             
         if not combined_positive_tables.index.isin(all_positive_tables.index).any():
             all_positive_tables=pd.concat([all_positive_tables,combined_positive_tables])
@@ -542,40 +495,33 @@ def get_season_reports(url):
             if not number_detections_table.index.isin(all_number_tables.index).any():
                 all_number_tables=pd.concat([all_number_tables,number_detections_table])
 
-    # write files to csvs
-    all_respiratory_detection_table.to_csv(path+"/" + RESP_COUNTS_OUTPUT_FILE, index=True)
-    all_positive_tables.to_csv(path+"/" + POSITIVE_TESTS_OUTPUT_FILE, index=True)
+    return {
+        "respiratory_detection": all_respiratory_detection_tables,
+        "positive": all_positive_tables,
+        "count": all_number_tables,
+    }
+
+def fetch_archived_dashboard_dates(archive_url):
+    r=requests.get(archive_url)
+    values=r.json()
+    data=pd.json_normalize(values)
+    english_data = data[data["lang"]=="en"]
     
-    # Write the number of detections table to csv if it exists (i.e has rows)
-    if len(all_number_tables) != 0:
-        all_number_tables.to_csv(path+"/number_of_detections.csv", index=True) 
+    archived_dates=english_data['date'].to_list()
+    return(archived_dates)
 
-def main():
-    # Scrape each season. Saves data to CSVs as a side effect.
-    [get_season_reports(url) for url in HISTORIC_SEASON_URL]
 
+def fetch_report_data():
+    # Scrape each season.
+    dict_list = [fetch_one_season_from_report(url) for url in HISTORIC_SEASON_URLS]
+
+    return dict_list
+
+def fetch_historical_dashboard_data():
     # Update the end of the 2023-2024 season with the dashboard data
+    archived_dates = fetch_archived_dashboard_dates(DASHBOARD_ARCHIVED_DATES_URL)
+    
+    archived_urls= [DASHBOARD_BASE_URL + "archive/"+ date+"/" for date in archived_dates]
+    dict_list = [fetch_dashboard_data(url) for url in archived_urls]
 
-    # Load old csvs
-    old_detection_data = pd.read_csv('season_2023_2024/' + RESP_COUNTS_OUTPUT_FILE).set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
-    old_positive_data = pd.read_csv('season_2023_2024/' + POSITIVE_TESTS_OUTPUT_FILE).set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
-
-    for base_url in DASHBOARD_BASE_URLS_2023_2024_SEASON:
-        # Get weekly dashboard data
-        weekly_data = get_weekly_data(base_url,2023).set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
-        positive_data = get_revised_data(base_url)
-
-        # Check if indices are already present in the old data
-        # If not, add the new data
-        if not weekly_data.index.isin(old_detection_data.index).any():
-            old_detection_data= pd.concat([old_detection_data,weekly_data],axis=0)
-
-        if not positive_data.index.isin(old_positive_data.index).any():
-            old_positive_data= pd.concat([old_positive_data,positive_data],axis=0)
-
-    # Overwrite/update csvs
-    old_detection_data.to_csv('season_2023_2024/' + RESP_COUNTS_OUTPUT_FILE,index=True)
-    old_positive_data.to_csv('season_2023_2024/' + POSITIVE_TESTS_OUTPUT_FILE,index=True)
-
-if __name__ == '__main__':
-    main()
+    return dict_list
