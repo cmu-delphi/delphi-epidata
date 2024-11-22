@@ -10,6 +10,7 @@ pandas==1.2.3
 python-dotenv==0.15.0
 pyyaml
 redis==3.5.3
+regex
 requests==2.32.0
 scipy==1.10.0
 sentry-sdk[flask]
