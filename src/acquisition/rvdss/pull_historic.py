@@ -17,13 +17,12 @@ import math
 from constants import (
         HISTORIC_SEASON_URLS,
         ALTERNATIVE_SEASON_BASE_URL, SEASON_BASE_URL, FIRST_WEEK_OF_YEAR,
-        RESP_DETECTIONS_OUTPUT_FILE, POSITIVE_TESTS_OUTPUT_FILE,DASHBOARD_ARCHIVED_DATES_URL,
+        DASHBOARD_ARCHIVED_DATES_URL,
         DASHBOARD_BASE_URL
     )
 from utils import (
         abbreviate_virus, abbreviate_geo, create_geo_types, check_date_format,
-        get_positive_data, get_detections_data, fetch_dashboard_data,preprocess_table_columns,
-        make_signal_type_spelling_consistent,add_flu_prefix
+        fetch_dashboard_data,preprocess_table_columns, add_flu_prefix
     )
  #%% Functions
  
@@ -480,7 +479,7 @@ def fetch_one_season_from_report(url):
         #path = "season_" + season[0]+"_"+season[1]
        
         # combine all the positive tables
-        combined_positive_tables=pd.concat(positive_tables,axis=1)
+        combined_positive_tables =pd.concat(positive_tables,axis=1)
     
         # Check if the indices are already in the season table
         # If not, add the weeks tables into the season table
