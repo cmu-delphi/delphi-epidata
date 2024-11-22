@@ -18,4 +18,5 @@ SQLAlchemy==1.4.40
 structlog==22.1.0
 tenacity==7.0.0
 typing-extensions
+unidecode
 werkzeug==2.3.8
