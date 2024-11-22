@@ -1,14 +1,12 @@
 """Unit tests for rvdss/database.py."""
 
-# standard library
-import unittest
+import pytest
 
 # py3tester coverage target
 __test_target__ = "delphi.epidata.acquisition.rvdss.database"
 
 
-class FunctionTests(unittest.TestCase):
-    """Tests each function individually."""
+class TestDatabase():
 
     def test_syntax(self):
         """This no-op test ensures that syntax is valid."""
