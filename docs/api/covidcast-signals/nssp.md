@@ -21,9 +21,7 @@ nav_order: 1
 This dataset in particular tracks emergency department (ED) visits arising from a subset of influenza-like illnesses, specifically influenza, COVID-19, and respiratory syncytial virus (RSV).
 Each signal below is derived from one of two following datasets:
 - Primary: [NSSP Emergency Department Visit Trajectories by State and Sub State Regions- COVID-19, Flu, RSV, Combined dataset](https://data.cdc.gov/Public-Health-Surveillance/2023-Respiratory-Virus-Response-NSSP-Emergency-Dep/rdmq-nq56/about_data)
-- Secondary: [2023 Respiratory Virus Response - NSSP Emergency Department Visit Trajectories by State- COVID-19, Flu, RSV, Combined](https://data.cdc.gov/Public-Health-Surveillance/2023-Respiratory-Virus-Response-NSSP-Emergency-Dep/7mra-9cq9/data_preview) (`_2023RVR`)
-
-Signals derived from the secondary dataset have suffix `_2023RVR` in their signal names, while signals derived from the primary dataset do not. 
+- Secondary: [2023 Respiratory Virus Response - NSSP Emergency Department Visit Trajectories by State- COVID-19, Flu, RSV, Combined](https://data.cdc.gov/Public-Health-Surveillance/2023-Respiratory-Virus-Response-NSSP-Emergency-Dep/7mra-9cq9/data_preview). Signals derived from the secondary dataset have suffix `_2023RVR` in their signal names.
 
 Both datasets started reporting data in late 2022. As of May 2024, NSSP received data from 78% of US EDs.
 
