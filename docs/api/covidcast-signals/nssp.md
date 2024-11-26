@@ -19,8 +19,11 @@ nav_order: 1
 
 [The National Syndromic Surveillance Program (NSSP)](https://www.cdc.gov/nssp/php/about/index.html) is an effort to track epidemiologically relevant conditions.
 This dataset in particular tracks emergency department (ED) visits arising from a subset of influenza-like illnesses, specifically influenza, COVID-19, and respiratory syncytial virus (RSV).
-It is derived from the CDC's [Respiratory Virus Response NSSP Emergency Department Visit Trajectories dataset](https://data.cdc.gov/Public-Health-Surveillance/2023-Respiratory-Virus-Response-NSSP-Emergency-Dep/rdmq-nq56/about_data), which started reporting data in late 2022.
-As of May 2024, NSSP received data from 78% of US EDs.
+Each signal below is derived from one of two following datasets:
+- Primary: [NSSP Emergency Department Visit Trajectories by State and Sub State Regions- COVID-19, Flu, RSV, Combined dataset](https://data.cdc.gov/Public-Health-Surveillance/2023-Respiratory-Virus-Response-NSSP-Emergency-Dep/rdmq-nq56/about_data)
+- Secondary: [2023 Respiratory Virus Response - NSSP Emergency Department Visit Trajectories by State- COVID-19, Flu, RSV, Combined](https://data.cdc.gov/Public-Health-Surveillance/2023-Respiratory-Virus-Response-NSSP-Emergency-Dep/7mra-9cq9/data_preview). Signals derived from the secondary dataset have suffix `_2023RVR` in their signal names.
+
+Both datasets started reporting data in late 2022. As of May 2024, NSSP received data from 78% of US EDs.
 
 | Signal                          | Description                                                                                                                          |
 |---------------------------------|--------------------------------------------------------------------------------------------------------------------------------------|
@@ -32,6 +35,10 @@ As of May 2024, NSSP received data from 78% of US EDs.
 | `smoothed_pct_ed_visits_influenza` | 3 week moving average of `pct_ed_visits_influenza`   <br/> **Earliest date available:** 2022-10-01                                      |
 | `smoothed_pct_ed_visits_rsv`       | 3 week moving average of `pct_ed_visits_rsv`   <br/> **Earliest date available:** 2022-10-01                                            |
 | `smoothed_pct_ed_visits_combined`  | 3 week moving average of `pct_ed_visits_combined`   <br/> **Earliest date available:** 2022-10-01                                       |
+| `pct_ed_visits_covid_2023RVR`              | Percent of ED visits that had a discharge diagnosis code of COVID-19 <br/> **Earliest date available:** 2022-10-01                      |
+| `pct_ed_visits_influenza_2023RVR`          | Percent of ED visits that had a discharge diagnosis code of influenza  <br/> **Earliest date available:** 2022-10-01                 |
+| `pct_ed_visits_rsv_2023RVR`                | Percent of ED visits that had a discharge diagnosis code of rsv  <br/> **Earliest date available:** 2022-10-01                       |
+| `pct_ed_visits_combined_2023RVR`           | Percent of ED visits that had a discharge diagnosis code of COVID-19, influenza, or rsv   <br/> **Earliest date available:** 2022-10-01 |
 
 ## Table of Contents
 {: .no_toc .text-delta}
@@ -42,7 +49,8 @@ As of May 2024, NSSP received data from 78% of US EDs.
 ## Estimation
 
 The percent visits signals are calculated as a fraction of visits at facilities reporting to NSSP, rather than all facilities in the area.
-County and state level data is reported as-is from NSSP, without modification, while `hrr` and `msa` are estimated by Delphi.
+For primary signals, `county`, `state` and `nation` level data is reported as-is from NSSP, without modification, while `hhs`, `hrr` and `msa` are estimated by Delphi.
+For secondary signals, `state`, `hhs` and `nation` level data is reported as-is from NSSP, without modification.
 
 ### Geographic weighting
 As the original data is a percentage and raw case counts are not available, `hrr`,`msa`, and `hhs` values are computed from county-level data using a weighted mean. Each county is assigned a weight equal to its population in the last census (2020). Unreported counties are implicitly treated as having a weight of 0 or a value equal to the group mean.
