@@ -51,7 +51,7 @@ GEOS = {
 # Regions are groups of provinces that are geographically close together. Some single provinces are reported as their own region (e.g. Québec, Ontario).
 REGIONS = ['atlantic','atl','at','province of québec','québec','qc','province of ontario','ontario','on',
             'prairies', 'pr', "british columbia",'bc',"territories",'terr',]
-NATION = ["canada","can",'ca',]
+NATION = ["canada","can",'ca']
 
 # Construct dashboard and data report URLS.
 DASHBOARD_BASE_URL = "https://health-infobase.canada.ca/src/data/respiratory-virus-detections/"

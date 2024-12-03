@@ -100,7 +100,7 @@ def preprocess_table_columns(table):
     table.columns = [re.sub("canada","can",t) for t in table.columns]
     table.columns = [re.sub(r"\bcb\b","bc",t) for t in table.columns]
     
-    table.columns =[re.sub(r"h1n1 2009 |h1n12009|a_h1|ah1\b", "ah1n1pdm09", s)for s in table.columns]
+    table.columns =[re.sub(r"h1n1 2009 |h1n12009|a_h1|ah1\b|ah1pdm09", "ah1n1pdm09", s)for s in table.columns]
     table.columns =[re.sub(r"a_uns", "auns", s)for s in table.columns]
     table.columns =[re.sub(r"a_h3", "ah3", s)for s in table.columns]
     
@@ -108,7 +108,7 @@ def preprocess_table_columns(table):
     table.columns = [re.sub(r"flu a","flua",t) for t in table.columns]
     table.columns = [re.sub(r"flu b","flub",t) for t in table.columns]
     table.columns = [re.sub(r"flutest\b","flu test", col) for col in table.columns]
-    table.columns = [re.sub(r"other hpiv|other_hpiv","hpivother",t) for t in table.columns]
+    table.columns = [re.sub(r"other hpiv|other_hpiv|hpiv other|hpiv_other","hpivother",t) for t in table.columns]
     
     table.columns=[re.sub(r'bpositive','b_positive',c) for c in table.columns]
     table.columns=[re.sub(r'apositive','a_positive',c) for c in table.columns]
