@@ -9,7 +9,7 @@ nav_order: 2
 {: .no_toc}
 
 * **Source name:** `google-survey`
-* **Earliest issue available:** April 29, 2020
+* **Earliest issue available:** May 01, 2020
 * **Number of data revisions since May 19, 2020:** 0
 * **Date of last change:** Never
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))

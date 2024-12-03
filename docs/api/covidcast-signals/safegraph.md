@@ -107,16 +107,16 @@ Patterns documentation](https://docs.safegraph.com/docs/weekly-patterns).
 
 SafeGraph delivered the number of daily visits to U.S. POIs, the details of which
 are described in the [Places
-Manual](https://readme.safegraph.com/docs/places-manual#section-placekey)
+Manual](https://docs.safegraph.com/docs/places-base-attributes#placekey)
 dataset.  Delphi aggregates the number of visits to certain types of places,
 such as bars (places with [NAICS code =
-722410](https://www.census.gov/cgi-bin/sssd/naics/naicsrch?input=722410&search=2017+NAICS+Search&search=2017))
+722410](https://www.census.gov/naics/?008967))
 and restaurants (places with [NAICS code =
-722511](https://www.census.gov/cgi-bin/sssd/naics/naicsrch)). For example,
+722511](https://www.census.gov/naics/?008967)). For example,
 Adagio Teas is coded as a bar because it serves alcohol, while Napkin Burger is
 considered to be a full-service restaurant.  More information on NAICS codes is
 available from the [US Census Bureau: North American Industry Classification
-System](https://www.census.gov/eos/www/naics/index.html).
+System](https://www.census.gov/naics/reference_files_tools/2022_NAICS_Manual.pdf).
 
 The number of POIs coded as bars is much smaller than the number of POIs coded as restaurants.
 SafeGraph's Weekly Patterns data consistently lacks data on bar visits for Alaska, Delaware, Maine, North Dakota, New Hampshire, South Dakota, Vermont, West Virginia, and Wyoming.
