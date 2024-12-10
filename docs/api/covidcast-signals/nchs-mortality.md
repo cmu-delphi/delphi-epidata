@@ -1,7 +1,8 @@
 ---
 title: NCHS Mortality Data
 parent: Data Sources and Signals
-grand_parent: COVIDcast Main Endpoint
+grand_parent: Main Endpoint (COVIDcast)
+nav_order: 1
 ---
 
 # NCHS Mortality Data
@@ -29,8 +30,8 @@ as additional death certificates from recent weeks are received and tabulated.
 | `deaths_covid_incidence_prop` | Number of weekly new deaths with confirmed or presumed COVID-19, per 100,000 population <br/> **Earliest date available:** Epiweek 05 2020 |
 | `deaths_allcause_incidence_num` | Number of weekly new deaths from all causes <br/> **Earliest date available:** Epiweek 05 2020 |
 | `deaths_allcause_incidence_prop` | Number of weekly new deaths from all causes, per 100,000 population <br/> **Earliest date available:** Epiweek 05 2020 |
-| `deaths_flu_incidence_num` | Number of weekly new deaths involving Influenza and at least one of (Pneumonia, COVID-19) <br/> **Earliest date available:** Epiweek 05 2020 |
-| `deaths_flu_incidence_prop` | Number of weekly new deaths involving Influenza and at least one of (Pneumonia, COVID-19), per 100,000 population <br/> **Earliest date available:** Epiweek 05 2020 |
+| `deaths_flu_incidence_num` | Number of weekly new deaths involving influenza, including those with COVID-19 or pneumonia also listed as a cause of death <br/> **Earliest date available:** Epiweek 05 2020 |
+| `deaths_flu_incidence_prop` | Number of weekly new deaths involving influenza, including those with COVID-19 or pneumonia also listed as a cause of death, per 100,000 population <br/> **Earliest date available:** Epiweek 05 2020 |
 | `deaths_pneumonia_notflu_incidence_num` | Number of weekly new deaths involving Pneumonia, excluding Influenza deaths <br/> **Earliest date available:** Epiweek 05 2020 |
 | `deaths_pneumonia_notflu_incidence_prop` | Number of weekly new deaths involving Pneumonia, excluding Influenza deaths, per 100,000 population <br/> **Earliest date available:** Epiweek 05 2020 |
 | `deaths_covid_and_pneumonia_notflu_incidence_num`| Number of weekly new deaths involving COVID-19 and Pneumonia, excluding Influenza <br/> **Earliest date available:** Epiweek 05 2020 |

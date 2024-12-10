@@ -1,7 +1,8 @@
 ---
-title: JHU Cases and Deaths
-parent: Inactive Signals
-grand_parent: COVIDcast Main Endpoint
+title: <i>inactive</i> JHU Cases and Deaths
+parent: Data Sources and Signals
+grand_parent: Main Endpoint (COVIDcast)
+nav_order: 2
 ---
 
 # JHU Cases and Deaths

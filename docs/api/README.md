@@ -1,7 +1,7 @@
 ---
 title: Other Endpoints (COVID-19 and Other Diseases)
-nav_order: 3
 has_children: true
+nav_order: 3
 ---
 
 # Other Endpoints (COVID-19 and Other Diseases)
@@ -208,4 +208,4 @@ To access our Epidata API, visit our [Epidata API Client Libraries)](client_libr
 
 # Related Work
 
-Please visit our [related works](related_work.md) page for more information.
+Please visit our [related works](../related_work.md) page for more information.

@@ -1,6 +1,7 @@
 ---
-title: Epidata API Home
-nav_order: 0
+title: Epidata API Intro
+has_children: true
+nav_order: 1
 ---
 
 # The Epidata API

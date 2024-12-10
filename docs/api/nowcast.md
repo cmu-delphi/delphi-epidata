@@ -1,6 +1,8 @@
 ---
-title: ILI Nearby Nowcast
-parent: Other Endpoints (COVID-19 and Other Diseases)
+title: <i>inactive</i> ILI Nearby Nowcast
+parent: Data Sources and Signals
+grand_parent: Other Endpoints (COVID-19 and Other Diseases)
+nav_order: 2
 ---
 
 # ILI Nearby Nowcast

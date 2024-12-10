@@ -1,10 +1,11 @@
 ---
-title: COVID-19 Trends and Impact Survey
-parent: Inactive Signals
-grand_parent: COVIDcast Main Endpoint
+title: <i>inactive</i> COVID-19 Trends and Impact Survey
+parent: Data Sources and Signals
+grand_parent: Main Endpoint (COVIDcast)
+nav_order: 2
 ---
 
-# COVID-19 Trends and Impact Survey
+# COVID-19 Trends and Impact Survey 2020-2022 (Facebook Survey)
 {: .no_toc}
 
 * **Source name:** `fb-survey`

@@ -1,6 +1,8 @@
 ---
-title: NoroSTAT Metadata
-parent: Other Endpoints (COVID-19 and Other Diseases)
+title: <i>inactive</i> NoroSTAT Metadata
+parent: Data Sources and Signals
+grand_parent: Other Endpoints (COVID-19 and Other Diseases)
+nav_order: 2
 ---
 
 # NoroSTAT Metadata

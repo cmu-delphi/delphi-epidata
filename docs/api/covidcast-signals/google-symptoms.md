@@ -1,7 +1,8 @@
 ---
-title: Google Search Trends symptoms dataset
+title: Google Symptom Search Trends
 parent: Data Sources and Signals
-grand_parent: COVIDcast Main Endpoint
+grand_parent: Main Endpoint (COVIDcast)
+nav_order: 1
 ---
 
 # Google Symptoms
@@ -15,10 +16,12 @@ grand_parent: COVIDcast Main Endpoint
 * **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** To download or use the data, you must agree to the Google [Terms of Service](https://policies.google.com/terms)
 
+<div style="background-color:#ff00001c; padding: 10px 30px;"><strong>Data issue:</strong> Between May 13 2024 and August 6 2024, signals values were 25%-50% lower compared to previous time periods. This affects <i>all</i> signals and symptom sets. Currently there is no explanation for the decrease in search volume, and the issue is under investigation by our data source partners.</div>
+
 ## Overview
 
 This data source is based on the [COVID-19 Search Trends symptoms
-dataset](http://goo.gle/covid19symptomdataset). Using
+dataset](https://console.cloud.google.com/marketplace/product/bigquery-public-datasets/covid19-search-trends?hl=en-GB). Using
 this search data, we estimate the volume of searches mapped to symptom sets related
 to COVID-19. The resulting daily dataset for each region shows the average relative frequency of searches for each symptom set. The signals are measured in arbitrary units that are normalized for overall search users in the region and scaled by the maximum value of the normalized popularity within a geographic region across a specific time range. **Values are comparable across signals in the same location but NOT across geographic regions**. For example, within a state, we can compare `s01_smoothed_search` and `s02_smoothed_search`. However, we cannot compare `s01_smoothed_search` between states. Larger numbers represent increased relative popularity of symptom-related searches.
 

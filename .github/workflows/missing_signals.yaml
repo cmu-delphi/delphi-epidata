@@ -21,7 +21,7 @@ jobs:
         run: python scripts/report_missing_covidcast_meta.py
       - name: Upload Missing Artifact
         if: failure()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: missing_db_signals.csv
           path:  missing_db_signals.csv

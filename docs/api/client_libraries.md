@@ -1,18 +1,18 @@
 ---
-title: Epidata API Client Libraries
+title: API Clients
 parent: Other Endpoints (COVID-19 and Other Diseases)
 nav_order: 1
 ---
 
-# Epidata API Client Libraries
+# Epidata API Clients
 
 To access Delphi Epidata programmatically, we recommend our client libraries:
 
 - R: [epidatr](https://cmu-delphi.github.io/epidatr/),
-- Python: [delphi-epidata](https://pypi.org/project/delphi-epidata/) (soon to be replaced with [epidatpy](https://github.com/cmu-delphi/epidatpy)),
+- Python: [epidatpy](https://cmu-delphi.github.io/epidatpy/) (recommended) and [delphi-epidata](https://pypi.org/project/delphi-epidata/),
 - Javascript: [delphi-epidata](https://github.com/cmu-delphi/delphi-epidata/blob/master/src/client/delphi_epidata.js).
 
-For anyone looking for COVIDCast data, please visit our [COVIDCast Libraries](covidcast_clients.md).
+For anyone looking for COVIDCast data, please visit our [COVIDCast API Client Libraries](covidcast_clients.md).
 
 The following samples show how to import the library and fetch Delphi's
 COVID-19 Surveillance Streams from Facebook Survey CLI for county 06001 and days
@@ -23,17 +23,40 @@ COVID-19 Surveillance Streams from Facebook Survey CLI for county 06001 and days
 Install [`epidatr` from CRAN](https://cran.r-project.org/package=epidatr)
 with `install.packages("epidatr")`.
 
-```R
+```r
 # Configure API key interactively, if needed. See
 # https://cmu-delphi.github.io/epidatr/articles/epidatr.html#api-keys for details.
 #save_api_key()
 library(epidatr)
-res <- pub_covidcast('fb-survey', 'smoothed_cli', 'county', 'day', geo_values = '06001',
+data <- pub_covidcast('fb-survey', 'smoothed_cli', 'county', 'day', geo_values = '06001',
                      time_values = c(20200401, 20200405:20200414))
-cat(res)
+cat(data)
 ```
 
 ### Python
+
+The `epidatpy` package will soon be [available on PyPI as `epidatpy`](https://pypi.org/project/epidatpy/).
+Meanwhile, it can be [installed from GitHub](https://github.com/cmu-delphi/epidatpy/) with
+`pip install "git+https://github.com/cmu-delphi/epidatpy.git#egg=epidatpy"`.
+
+```python
+# Configure API key, if needed.
+# https://github.com/cmu-delphi/epidatpy/blob/dev/docs/index.rst#api-keys
+
+from epidatpy import EpiDataContext, EpiRange
+
+# Create the client object.
+epidata = EpiDataContext()
+apicall = epidata.pub_covidcast(
+    data_source="jhu-csse",
+    signals="confirmed_cumulative_num",
+    geo_type="nation",
+    time_type="day",
+    geo_values="us",
+    time_values=EpiRange(20210405, 20210410),
+)
+print(apicall.df())
+```
 
 Install [`delphi-epidata` from PyPI](https://pypi.org/project/delphi-epidata/) with
 `pip install delphi-epidata`.

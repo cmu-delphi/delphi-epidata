@@ -1,7 +1,8 @@
 ---
 title: Change Healthcare
 parent: Data Sources and Signals
-grand_parent: COVIDcast Main Endpoint
+grand_parent: Main Endpoint (COVIDcast)
+nav_order: 1
 ---
 
 # Change Healthcare
@@ -29,6 +30,8 @@ commercial purposes.
 
 | Signal | Description |
 | --- | --- |
+| `7dav_inpatient_covid` | Ratio of inpatient hospitalizations associated with COVID-19, based on Change Healthcare claims data that has been de-identified in accordance with HIPAA privacy regulations, smoothed in time with a trailing 7 day average. This historical signal is no longer updated. <br/> **Earliest date available:** 2020-01-01 |
+| `7dav_outpatient_covid` | Ratio of outpatient doctor visits with confirmed COVID-19, based on Change Healthcare claims data that has been de-identified in accordance with HIPAA privacy regulations, smoothed in time with a trailing 7 day average. This historical signal is no longer updated. <br/> **Earliest date available:** 2020-01-01 |
 | `smoothed_outpatient_covid` | Estimated percentage of outpatient doctor visits with confirmed COVID-19, based on Change Healthcare claims data that has been de-identified in accordance with HIPAA privacy regulations, smoothed in time using a Gaussian linear smoother <br/> **Earliest date available:** 2020-02-01 |
 | `smoothed_adj_outpatient_covid` | Same, but with systematic day-of-week effects removed; see [details below](#day-of-week-adjustment) <br/> **Earliest date available:** 2020-02-01 |
 | `smoothed_outpatient_cli` | Estimated percentage of outpatient doctor visits primarily about COVID-related symptoms, based on Change Healthcare claims data that has been de-identified in accordance with HIPAA privacy regulations, smoothed in time using a Gaussian linear smoother <br/> **Earliest date available:** 2020-02-01 |

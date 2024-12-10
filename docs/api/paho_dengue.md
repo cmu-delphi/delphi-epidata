@@ -1,6 +1,8 @@
 ---
-title: PAHO Dengue
-parent: Other Endpoints (COVID-19 and Other Diseases)
+title: <i>inactive</i> PAHO Dengue
+parent: Data Sources and Signals
+grand_parent: Other Endpoints (COVID-19 and Other Diseases)
+nav_order: 2
 ---
 
 # PAHO Dengue

@@ -1,6 +1,7 @@
 ---
-title: Epidata API Development Guide
-nav_order: 4
+title: Development Guide
+parent: Developer Support
+nav_order: 1
 ---
 
 # Epidata API Development Guide
@@ -177,3 +178,9 @@ The bare minimum to set up instrumentation is to supply the DSN for the [epidata
 - Once you have the DSN, add it to your local `.env` file and rebuild your containers to start sending telemetry to Sentry.
 
 Additional internal documentation for Sentry can be found [here](https://bookstack.delphi.cmu.edu/books/systems-handbook/page/sentry).
+
+## COVIDcast Development Guide
+
+For information on accessing Delphi's COVID-19 indicators via the `covidcast` endpoint of [Delphi](https://delphi.cmu.edu/)'s
+epidemiological data API, please see [COVIDcast Epidata API](https://cmu-delphi.github.io/delphi-epidata/api/covidcast.html). This API provides data on the spread and impact of the COVID-19 pandemic across the United States, most of which is available at the
+county level and updated daily.

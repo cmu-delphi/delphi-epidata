@@ -1,7 +1,8 @@
 ---
-title: Google Symptom Surveys
-parent: Inactive Signals
-grand_parent: COVIDcast Main Endpoint
+title: <i>inactive</i> Google Symptom Surveys
+parent: Data Sources and Signals
+grand_parent: Main Endpoint (COVIDcast)
+nav_order: 2
 ---
 
 # Google Symptom Surveys
@@ -17,7 +18,7 @@ grand_parent: COVIDcast Main Endpoint
 
 ## Overview
 
-Data source based on Google-run symptom surveys, through publisher websites,
+Data source based on [Google-run symptom surveys](https://9to5google.com/2020/03/23/google-coronavirus-survey/), through publisher websites,
 their Opinions Reward app, and similar applications. Respondents can opt to skip
 the survey and complete a different one if they prefer not to answer. The survey
 is just one question long, and asks "Do you know someone in your community who
@@ -25,7 +26,7 @@ is sick (fever, along with cough, or shortness of breath, or difficulty
 breathing) right now?" Using this survey data, we estimate the percentage of
 people in a given location, on a given day, that *know somebody who has a
 COVID-like illness*. This estimates a similar quantity to the `*_cmnty_cli`
-signals from the [Symptom Surveys](fb-survey.md) (`fb-survey`) source, but using
+signals from the [COVID-19 Trends and Impact Survey](fb-survey.md) (`fb-survey`) source, but using
 a different survey population and recruitment method.
 
 The survey sampled from all counties with greater than 100,000 population, along
@@ -263,12 +264,12 @@ probabilities and contribute variance.
 
 ### Smoothing
 
-Additionally, as with the Facebook surveys, we consider estimates formed by
+Additionally, as with the COVID-19 Trends and Impact Survey, we consider estimates formed by
 pooling data over time.  That is, daily, for each location, we first pool all
 data available in that location over the last 5 days, and compute the estimates
 given above using all five days of data.
 
-In contrast to the Facebook surveys, this pooling does not significantly change
+In contrast to the COVID-19 Trends and Impact Survey, this pooling does not significantly change
 the availability of estimates, because of our stratified sampling procedure
 (essentially always) delivers sufficient data at the county level---at least 100
 survey responses---to warrant their own estimates. However, the pooling
