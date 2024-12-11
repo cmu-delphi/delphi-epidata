@@ -116,7 +116,7 @@ jobs:
     needs: build
     # only on main and dev branch
     # TODO: #1112 Remove `|| github.ref == 'refs/heads/api-keys'` after transition to production status.
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/api-keys'
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/api-keys' || github.ref == 'refs/heads/ds/dev-no-aprinter'
 
     runs-on: ubuntu-latest
     steps:
@@ -140,6 +140,9 @@ jobs:
           imageTag="${baseRef#*/}"
           if [ "$imageTag" = "main" ] ; then
             imageTag="latest"
+          fi
+          if [ "$imageTag" = "ds/dev-no-aprinter" ] ; then
+            imageTag="dev-no-aprinter"
           fi
           echo "::set-output name=tag::$imageTag"
           echo "::set-output name=repo::ghcr.io/${{ github.repository }}"
