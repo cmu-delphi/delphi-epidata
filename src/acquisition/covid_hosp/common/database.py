@@ -192,37 +192,14 @@ class Database:
     num_values = len(dataframe.index)
     if logger:
       logger.info('updating values', count=num_values)
-    n = 0
-    rows_affected = 0
-    many_values = []
-    with self.new_cursor() as cursor:
-      for index, row in dataframe.iterrows():
-        values = []
-        for c in dataframe_columns_and_types:
-          values.append(nan_safe_dtype(c.dtype, row[c.csv_name]))
-        many_values.append(id_and_publication_date +
-          tuple(values) +
-          tuple(i.csv_name for i in self.additional_fields))
-        n += 1
-        # insert in batches because one at a time is slow and all at once makes
-        # the connection drop :(
-        if n % 5_000 == 0:
-          try:
-            cursor.executemany(sql, many_values)
-            rows_affected += cursor.rowcount
-            many_values = []
-          except Exception as e:
-            if logger:
-              logger.error('error on insert', publ_date=publication_date, in_lines=(n-5_000, n), index=index, values=values, exception=e)
-            raise e
-      # insert final batch
-      if many_values:
-        cursor.executemany(sql, many_values)
-        rows_affected += cursor.rowcount
-      if logger:
-        # NOTE: REPLACE INTO marks 2 rows affected for a "replace" (one for a delete and one for a re-insert)
-        # which allows us to count rows which were updated
-        logger.info('rows affected', total=rows_affected, updated=rows_affected-num_values)
+    self._process_rows(publication_date
+                       , dataframe
+                       , logger
+                       , dataframe_columns_and_types
+                       , nan_safe_dtype
+                       , sql
+                       , id_and_publication_date
+                       , num_values)
 
     # deal with non/seldomly updated columns used like a fk table (if this database needs it)
     if hasattr(self, 'AGGREGATE_KEY_COLS'):
@@ -260,6 +237,40 @@ class Database:
       # commit the data
       with self.new_cursor() as cur:
         cur.executemany(ak_insert_sql, ak_data)
+
+  def _process_rows(self, publication_date, dataframe, logger, dataframe_columns_and_types, nan_safe_dtype, sql
+                    , id_and_publication_date, num_values):
+      n = 0
+      rows_affected = 0
+      many_values = []
+      with self.new_cursor() as cursor:
+        for index, row in dataframe.iterrows():
+          values = []
+          for c in dataframe_columns_and_types:
+            values.append(nan_safe_dtype(c.dtype, row[c.csv_name]))
+          many_values.append(id_and_publication_date +
+          tuple(values) +
+          tuple(i.csv_name for i in self.additional_fields))
+          n += 1
+        # insert in batches because one at a time is slow and all at once makes
+        # the connection drop :(
+          if n % 5_000 == 0:
+            try:
+              cursor.executemany(sql, many_values)
+              rows_affected += cursor.rowcount
+              many_values = []
+            except Exception as e:
+              if logger:
+                logger.error('error on insert', publ_date=publication_date, in_lines=(n-5_000, n), index=index, values=values, exception=e)
+              raise e
+      # insert final batch
+        if many_values:
+          cursor.executemany(sql, many_values)
+          rows_affected += cursor.rowcount
+        if logger:
+        # NOTE: REPLACE INTO marks 2 rows affected for a "replace" (one for a delete and one for a re-insert)
+        # which allows us to count rows which were updated
+          logger.info('rows affected', total=rows_affected, updated=rows_affected-num_values)
 
 
   def get_max_issue(self, logger=False):
