@@ -49,6 +49,69 @@ class CsvRowValue:
   missing_sample_size: int
 
 
+
+def _validate_geo_id(row, geo_type):
+    # use consistent capitalization (e.g. for states)
+  try:
+    geo_id = row.geo_id.lower()
+  except AttributeError:
+    # geo_id was `None`
+    return (None, 'geo_id')
+
+  if geo_type in ('hrr', 'msa', 'dma', 'hhs'):
+    # these particular ids are prone to be written as ints -- and floats
+    try:
+      geo_id = str(CsvImporter.floaty_int(geo_id))
+    except ValueError:
+      # expected a number, but got a string
+      return (None, 'geo_id')
+    
+  return geo_id
+
+
+def _validate_geo_type(geo_type, geo_id):
+
+  result = None
+
+  # sanity check geo_id with respect to geo_type
+  if geo_type == 'county':
+    if len(geo_id) != 5 or not '01000' <= geo_id <= '80000':
+      result = (None, 'geo_id')
+
+  elif geo_type == 'hrr':
+    if not 1 <= int(geo_id) <= 500:
+      result = (None, 'geo_id')
+
+  elif geo_type == 'msa':
+    if len(geo_id) != 5 or not '10000' <= geo_id <= '99999':
+      result = (None, 'geo_id')
+
+  elif geo_type == 'dma':
+    if not 450 <= int(geo_id) <= 950:
+      result = (None, 'geo_id')
+
+  elif geo_type == 'state':
+    # note that geo_id is lowercase
+    if len(geo_id) != 2 or not 'aa' <= geo_id <= 'zz':
+      result = (None, 'geo_id')
+
+  elif geo_type == 'hhs':
+    if not 1 <= int(geo_id) <= 10:
+      result = (None, 'geo_id')
+
+  elif geo_type == 'nation':
+    # geo_id is lowercase
+    if len(geo_id) != 2 or not 'aa' <= geo_id <= 'zz':
+      result = (None, 'geo_id')
+
+  else:
+    result = (None, 'geo_type')
+
+  return result
+
+
+
+
 class CsvImporter:
   """Finds and parses covidcast CSV files."""
 
@@ -283,6 +346,7 @@ class CsvImporter:
     return missing_entry
 
 
+
   @staticmethod
   def extract_and_check_row(row: DataFrameRow, geo_type: str, filepath: Optional[str] = None) -> Tuple[Optional[CsvRowValue], Optional[str]]:
     """Extract and return `CsvRowValue` from a CSV row, with sanity checks.
@@ -293,55 +357,15 @@ class CsvImporter:
     geo_type: the geographic resolution of the file
     """
 
-    # use consistent capitalization (e.g. for states)
-    try:
-      geo_id = row.geo_id.lower()
-    except AttributeError:
-      # geo_id was `None`
-      return (None, 'geo_id')
-
-    if geo_type in ('hrr', 'msa', 'dma', 'hhs'):
-      # these particular ids are prone to be written as ints -- and floats
-      try:
-        geo_id = str(CsvImporter.floaty_int(geo_id))
-      except ValueError:
-        # expected a number, but got a string
-        return (None, 'geo_id')
-
+    geo_id = _validate_geo_id(row, geo_type)
+    if geo_id == (None, 'geo_id'):
+      return geo_id
+    
     # sanity check geo_id with respect to geo_type
-    if geo_type == 'county':
-      if len(geo_id) != 5 or not '01000' <= geo_id <= '80000':
-        return (None, 'geo_id')
-
-    elif geo_type == 'hrr':
-      if not 1 <= int(geo_id) <= 500:
-        return (None, 'geo_id')
-
-    elif geo_type == 'msa':
-      if len(geo_id) != 5 or not '10000' <= geo_id <= '99999':
-        return (None, 'geo_id')
-
-    elif geo_type == 'dma':
-      if not 450 <= int(geo_id) <= 950:
-        return (None, 'geo_id')
-
-    elif geo_type == 'state':
-      # note that geo_id is lowercase
-      if len(geo_id) != 2 or not 'aa' <= geo_id <= 'zz':
-        return (None, 'geo_id')
-
-    elif geo_type == 'hhs':
-      if not 1 <= int(geo_id) <= 10:
-        return (None, 'geo_id')
-
-    elif geo_type == 'nation':
-      # geo_id is lowercase
-      if len(geo_id) != 2 or not 'aa' <= geo_id <= 'zz':
-        return (None, 'geo_id')
-
-    else:
-      return (None, 'geo_type')
-
+    invalid = _validate_geo_type(geo_type, geo_id)
+    if invalid:
+      return invalid
+    
     # Validate row values
     value = CsvImporter.validate_quantity(row, "value")
     # value was a string or another dtype
@@ -363,7 +387,6 @@ class CsvImporter:
 
     # return extracted and validated row values
     return (CsvRowValue(geo_id, value, stderr, sample_size, missing_value, missing_stderr, missing_sample_size), None)
-
 
   @staticmethod
   def load_csv(filepath: str, details: PathDetails) -> Iterator[Optional[CovidcastRow]]:
@@ -414,3 +437,4 @@ class CsvImporter:
         details.issue,
         details.lag,
       )
+
