@@ -72,6 +72,10 @@ def get_hmac_sha256(key, msg):
     return hmac.new(key_bytes, msg_bytes, hashlib.sha256).hexdigest()
 
 
+def debug_log(message, debug_mode=False):
+    if debug_mode:
+        print(message)
+
 def extract_article_counts(filename, language, articles, debug_mode):
     """
     Support multiple languages ('en' | 'es' | 'pt')
@@ -150,13 +154,11 @@ def extract_article_counts_orig(articles, debug_mode):
     counts["total"] = total
     return counts
 
-
 def run(secret, download_limit=None, job_limit=None, sleep_time=1, job_type=0, debug_mode=False):
 
     worker = text(subprocess.check_output("echo `whoami`@`hostname`", shell=True)).strip()
     print(f"this is [{worker}]")
-    if debug_mode:
-        print("*** running in debug mode ***")
+    debug_log("*** running in debug mode ***", debug_mode)
 
     total_download = 0
     passed_jobs = 0
@@ -180,10 +182,7 @@ def run(secret, download_limit=None, job_limit=None, sleep_time=1, job_type=0, d
                 else:
                     raise Exception(f"server response code (get) was {int(code)}")
             # Make the code compatible with mac os system
-            if platform == "darwin":
-                job_content = text(req.readlines()[1])
-            else:
-                job_content = text(req.readlines()[0])
+            job_content = _get_job_content(req)
             if job_content == "no jobs":
                 print("no jobs available")
                 if download_limit is None and job_limit is None:
@@ -208,17 +207,10 @@ def run(secret, download_limit=None, job_limit=None, sleep_time=1, job_type=0, d
             # Make the code cross-platfrom, so use python to get the size of the file
             # size = int(text(subprocess.check_output('ls -l raw.gz | cut -d" " -f 5', shell=True)))
             size = os.stat("raw.gz").st_size
-            if debug_mode:
-                print(size)
+            debug_log(size, debug_mode)
             total_download += size
-            if job["hash"] != "00000000000000000000000000000000":
-                print("checking hash...")
-                out = text(subprocess.check_output("md5sum raw.gz", shell=True))
-                result = out[0:32]
-                if result != job["hash"]:
-                    raise Exception(f"wrong hash [expected {job['hash']}, got {result}]")
-                if debug_mode:
-                    print(result)
+            _validate_hash(debug_mode, job)
+
             print("decompressing...")
             subprocess.check_call("gunzip -f raw.gz", shell=True)
             # print 'converting case...'
@@ -237,14 +229,11 @@ def run(secret, download_limit=None, job_limit=None, sleep_time=1, job_type=0, d
                 }
                 articles = lang2articles[language]
                 articles = sorted(articles)
-                if debug_mode:
-                    print(f"Language is {language} and target articles are {articles}")
+                debug_log(f"Language is {language} and target articles are {articles}", debug_mode)
                 temp_counts = extract_article_counts("raw2", language, articles, debug_mode)
                 counts[language] = temp_counts
 
-            if not debug_mode:
-                print("deleting files...")
-                subprocess.check_call("rm raw2", shell=True)
+            _remove_raw_files(debug_mode)
             print("saving results...")
             time_stop = datetime.datetime.now()
             result = {
@@ -256,8 +245,10 @@ def run(secret, download_limit=None, job_limit=None, sleep_time=1, job_type=0, d
             }
             payload = json.dumps(result)
             hmac_str = get_hmac_sha256(secret, payload)
-            if debug_mode:
-                print(f" hmac: {hmac_str}")
+
+            debug_log(f" hmac: {hmac_str}"
+                      , debug_mode)
+
             post_data = urlencode({"put": payload, "hmac": hmac_str})
             req = urlopen(MASTER_URL, data=data(post_data))
             code = req.getcode()
@@ -275,6 +266,30 @@ def run(secret, download_limit=None, job_limit=None, sleep_time=1, job_type=0, d
         )
         time.sleep(sleep_time)
 
+    _alert_on_limit_reach(download_limit, job_limit, total_download, passed_jobs, failed_jobs)
+
+def _get_job_content(req):
+    if platform == "darwin":
+        job_content = text(req.readlines()[1])
+    else:
+        job_content = text(req.readlines()[0])
+    return job_content
+
+def _remove_raw_files(debug_mode):
+    if not debug_mode:
+        print("deleting files...")
+        subprocess.check_call("rm raw2", shell=True)
+
+def _validate_hash(debug_mode, job):
+    if job["hash"] != "00000000000000000000000000000000":
+        print("checking hash...")
+        out = text(subprocess.check_output("md5sum raw.gz", shell=True))
+        result = out[0:32]
+        if result != job["hash"]:
+            raise Exception(f"wrong hash [expected {job['hash']}, got {result}]")
+        debug_log(result, debug_mode)
+
+def _alert_on_limit_reach(download_limit, job_limit, total_download, passed_jobs, failed_jobs):
     if download_limit is not None and total_download >= download_limit:
         print(f"download limit has been reached [{int(total_download)} >= {int(download_limit)}]")
     if job_limit is not None and (passed_jobs + failed_jobs) >= job_limit:

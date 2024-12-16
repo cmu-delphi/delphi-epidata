@@ -126,7 +126,10 @@ class Utils:
     if logger:
       if n_beyond > 0:
         logger.info("issues available beyond selection", on_or_newer=older_than, count=n_beyond)
-      logger.info("issues selected", newer_than=str(newer_than), older_than=str(older_than), count=n_selected)
+      logger.info("issues selected"
+                  , newer_than=str(newer_than)
+                  , older_than=str(older_than)
+                  , count=n_selected)
     return daily_issues
 
   @staticmethod
@@ -239,7 +242,8 @@ class Utils:
         all_metadata
       ))
     tot_revs = sum(len(revisions) for revisions in daily_issues.values())
-    logger.info(f"{len(daily_issues)} issues checked w/ {tot_revs} revisions, resulting in {len(datasets)} datasets.")
+    logger.info(f"{len(daily_issues)} issues checked w/ {tot_revs} revisions"
+                + f", resulting in {len(datasets)} datasets.")
     if not datasets:
       logger.info("nothing to do, exiting")
       return False

@@ -161,6 +161,74 @@ sql_cdc_meta = """
     `total` = %s
 """
 
+# insert (or update) table `cdc`
+def insert_cdc(cur, date, page, state, num):
+    cur.execute(sql_cdc, (date, page, state, num, num))
+
+# insert (or update) table `cdc_meta`
+def insert_cdc_meta(cur, date, state, total):
+    cur.execute(sql_cdc_meta, (date, date, state, total, total))
+
+# loop over rows until the header row is found
+def find_header(reader):
+    for row in reader:
+        if len(row) > 0 and row[0] == "Date":
+            return True
+    return False
+
+# parse csv files for `cdc` and `cdc_meta`
+def parse_csv(cur, meta):
+    def handler(cur, reader):
+        if not find_header(reader):
+            raise Exception("header not found")
+        count = 0
+        cols = 3 if meta else 4
+        for row in reader:
+            if len(row) != cols:
+                continue
+            if meta:
+                (a, c, d) = row
+            else:
+                (a, b, c, d) = row
+            c = c[:-16]
+            if c not in STATES:
+                continue
+            a = datetime.strptime(a, "%b %d, %Y").strftime("%Y-%m-%d")
+            c = STATES[c]
+            d = int(d)
+            if meta:
+                insert_cdc_meta(cur, a, c, d)
+            else:
+                insert_cdc(cur, a, b, c, d)
+            count += 1
+        return count
+
+    return handler
+
+
+# recursively open zip files
+def parse_zip(cur, zf, level=1):
+    for name in zf.namelist():
+        prefix = " " * level
+        print(prefix, name)
+        if name[-4:] == ".zip":
+            with zf.open(name) as temp:
+                with ZipFile(io.BytesIO(temp.read())) as zf2:
+                    parse_zip(cur, zf2, level + 1)
+        elif name[-4:] == ".csv":
+            handler = None
+            if "Flu Pages by Region" in name:
+                handler = parse_csv(cur, False)
+            elif "Regions for all CDC" in name:
+                handler = parse_csv(cur, True)
+            else:
+                print(prefix, " (skipped)")
+            if handler is not None:
+                with zf.open(name) as temp:
+                    count = handler(csv.reader(io.StringIO(str(temp.read(), "utf-8"))))
+                print(prefix, f" {int(count)} rows")
+        else:
+            print(prefix, " (ignored)")
 
 def upload(test_mode):
     # connect
@@ -168,73 +236,6 @@ def upload(test_mode):
     cnx = mysql.connector.connect(user=u, password=p, database="epidata")
     cur = cnx.cursor()
 
-    # insert (or update) table `cdc`
-    def insert_cdc(date, page, state, num):
-        cur.execute(sql_cdc, (date, page, state, num, num))
-
-    # insert (or update) table `cdc_meta`
-    def insert_cdc_meta(date, state, total):
-        cur.execute(sql_cdc_meta, (date, date, state, total, total))
-
-    # loop over rows until the header row is found
-    def find_header(reader):
-        for row in reader:
-            if len(row) > 0 and row[0] == "Date":
-                return True
-        return False
-
-    # parse csv files for `cdc` and `cdc_meta`
-    def parse_csv(meta):
-        def handler(reader):
-            if not find_header(reader):
-                raise Exception("header not found")
-            count = 0
-            cols = 3 if meta else 4
-            for row in reader:
-                if len(row) != cols:
-                    continue
-                if meta:
-                    (a, c, d) = row
-                else:
-                    (a, b, c, d) = row
-                c = c[:-16]
-                if c not in STATES:
-                    continue
-                a = datetime.strptime(a, "%b %d, %Y").strftime("%Y-%m-%d")
-                c = STATES[c]
-                d = int(d)
-                if meta:
-                    insert_cdc_meta(a, c, d)
-                else:
-                    insert_cdc(a, b, c, d)
-                count += 1
-            return count
-
-        return handler
-
-    # recursively open zip files
-    def parse_zip(zf, level=1):
-        for name in zf.namelist():
-            prefix = " " * level
-            print(prefix, name)
-            if name[-4:] == ".zip":
-                with zf.open(name) as temp:
-                    with ZipFile(io.BytesIO(temp.read())) as zf2:
-                        parse_zip(zf2, level + 1)
-            elif name[-4:] == ".csv":
-                handler = None
-                if "Flu Pages by Region" in name:
-                    handler = parse_csv(False)
-                elif "Regions for all CDC" in name:
-                    handler = parse_csv(True)
-                else:
-                    print(prefix, " (skipped)")
-                if handler is not None:
-                    with zf.open(name) as temp:
-                        count = handler(csv.reader(io.StringIO(str(temp.read(), "utf-8"))))
-                    print(prefix, f" {int(count)} rows")
-            else:
-                print(prefix, " (ignored)")
 
     # find, parse, and move zip files
     zip_files = glob.glob("/common/cdc_stage/*.zip")
@@ -244,7 +245,7 @@ def upload(test_mode):
     print("parsing...")
     for f in zip_files:
         with ZipFile(f) as zf:
-            parse_zip(zf)
+            parse_zip(cur, zf)
     print("moving...")
     for f in zip_files:
         src = f
