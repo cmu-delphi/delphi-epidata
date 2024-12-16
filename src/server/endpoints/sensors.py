@@ -55,7 +55,8 @@ def _authenticate(names: List[str]):
 
     if unauthenticated_or_nonexistent_sensors:
         raise EpiDataException(
-            f"unauthenticated/nonexistent sensor(s): {','.join(unauthenticated_or_nonexistent_sensors)}"
+           ( f"unauthenticated/nonexistent sensor(s): " 
+                + f"{','.join(unauthenticated_or_nonexistent_sensors)}")
         )
 
 
@@ -83,7 +84,10 @@ def handle():
     # build the epiweek filter
     condition_epiweek = filter_integers("s.`epiweek`", epiweeks, "epiweek", params)
     # the query
-    query = f"SELECT {fields} FROM {table} WHERE ({condition_name}) AND ({condition_location}) AND ({condition_epiweek}) ORDER BY {order}"
+    query = (f"SELECT {fields} " 
+             + f"FROM {table} " 
+             + f"WHERE ({condition_name}) AND ({condition_location}) AND ({condition_epiweek})" 
+             + f" ORDER BY {order}")
 
     fields_string = ["name", "location"]
     fields_int = ["epiweek"]
