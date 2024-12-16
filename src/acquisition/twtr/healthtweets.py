@@ -95,11 +95,9 @@ class HealthTweets:
         self.debug = debug
         self.session = requests.Session()
         # spoof a web browser
-        self.session.headers.update(
-            {
-                "User-Agent": "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36",
-            }
-        )
+        self.session.headers.update({"User-Agent": 
+            "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36",
+            })
         # get the login token
         response = self._go("https://www.healthtweets.org/accounts/login")
         token = self._get_token(response.text)
@@ -123,7 +121,8 @@ class HealthTweets:
         date2: the last date in the range, inclusive (format: YYYY-MM-DD)
         returns a dictionary (by date) of number of flu tweets (num) and total tweets (total)
         """
-        # get raw values (number of flu tweets) and normalized values (flu tweets as a percent of total tweets)
+        # get raw values (number of flu tweets) and 
+        # normalized values (flu tweets as a percent of total tweets)
         raw_values = self._get_values(state, date1, date2, False)
         normalized_values = self._get_values(state, date1, date2, True)
         values = {}
