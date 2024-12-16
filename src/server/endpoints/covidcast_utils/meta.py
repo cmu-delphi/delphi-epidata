@@ -26,7 +26,10 @@ class CovidcastMetaEntry:
             self.max_time = row["max_time"]
         if row["max_issue"] > self.max_issue:
             self.max_issue = row["max_issue"]
-        self.geo_types[row["geo_type"]] = CovidcastMetaStats(row["min_value"], row["mean_value"], row["stdev_value"], row["max_value"])
+        self.geo_types[row["geo_type"]] = CovidcastMetaStats(row["min_value"]
+                                                             , row["mean_value"]
+                                                             , row["stdev_value"]
+                                                             , row["max_value"])
 
     def asdict(self):
         r = asdict(self)
