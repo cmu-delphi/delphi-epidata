@@ -19,11 +19,16 @@ nav_order: 1
 
 [The National Healthcare Safety Network (NHSN)](https://www.cdc.gov/nhsn/index.html) is the nation’s most widely used healthcare-associated infection tracking system.
 This dataset represents preliminary weekly hospital respiratory data and metrics aggregated to national and state/territory levels reported to CDC’s National Health Safety Network (NHSN) beginning August 2020.
+
 Each signal below is derived from one of two following datasets:
+
 - Main: [Weekly Hospital Respiratory Data (HRD) Metrics by Jurisdiction, National Healthcare Safety Network (NHSN)](https://data.cdc.gov/Public-Health-Surveillance/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/ua7e-t2fy/about_data)
 - Preliminary: [Weekly Hospital Respiratory Data (HRD) Metrics by Jurisdiction, National Healthcare Safety Network (NHSN) (Preliminary)](https://data.cdc.gov/Public-Health-Surveillance/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/mpgq-jmmr/about_data). Signals derived from the preliminary dataset have suffix `_prelim` in their signal names.
 
 Both datasets started reporting data in late 2022. As of May 2024, NHSN received data from 78% of US EDs.
+
+State and nation-level values are pulled directly from the source; HHS-level values are aggregated up from the state level.
+
 
 | Signal                          | Description                                                                                                                                                                         |
 |---------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -39,26 +44,43 @@ Both datasets started reporting data in late 2022. As of May 2024, NHSN received
 {:toc}
 
 ## Estimation
-Between the reference dates of 2024-05-01 and 2024-10-31, the total number of hospitalized patients on a subsection
-of hospitals and may not be fully represenetative. See the [missingness section](#missingness) section below for more context.
+
+All data is weekly such that each reported value represents a total from Sunday to Saturday of the reference week. The `output_signal_name` signal mirrors the `input signal name` field for all geographic resolutions except HHS.
 
 ### Geographic weighting
-HHS values are computed from state-level data.
+
+State and nation-level values are pulled directly from the source; HHS-level values are aggregated up from the state level by summing the values of member states.
 
 
 ## Missingness
-Data for reporting dates through April 30, 2024 represent data reported during a previous mandated reporting period as specified by the HHS Secretary.
-Data for reporting dates May 1, 2024 – October 31, 2024 represent voluntarily reported data in the absence of a mandate. 
-Data for reporting dates beginning November 1, 2024 represent data reported during a current mandated reporting period.
+
+Data for reference dates through April 30, 2024 were reported during a federally-mandated reporting period as specified by the Secretary of the Department of Health and Human Services.
+Data for reference dates May 1, 2024 – October 31, 2024 were voluntarily reported in the absence of a mandate.
+As a result, during this period the total number of hospitalized patients on a subsection of hospitals and may not be fully representative.
+Data for reference dates beginning November 1, 2024 were reported during the current mandated reporting period.
+
 All data and metrics capturing information on respiratory syncytial virus (RSV) were voluntarily reported until November 1, 2024.
+
+
+## Limitations
+
+Between reference dates 2024-05-01 and 2024-10-31, the total number of hospitalized patients on a subsection
+of hospitals and may not be fully representative, since reporting was voluntary.
+See the [missingness section](#missingness) for more context.
+
+Standard errors and sample sizes are not applicable to these metrics.
+
+
+### Differences with HHS reports
+
+?
 
 
 ## Lag and Backfill
 
-The weekly signal is primarily reported on Friday, adding data from the prior week.
-For example, on Friday, 2024-04-19, the source added new data from the week ending 2024-04-13.
-
-## Limitations
+The signals are currently updated weekly, generally on Friday. Each report adds data for the week prior.
+For example, on Friday, 2024-04-19, the source added new data representing hospitalizations from the week ending 2024-04-13.
+This results in a reporting lag of 6 days from the end of the reference week.
 
 
 ## Source and Licensing
