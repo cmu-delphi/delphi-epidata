@@ -45,12 +45,6 @@ The confirmed signal `confirmed_admissions_flu_ew` is the value of the `totalcon
 
 
 ### Geographic weighting
-As the original data is a percentage and raw case counts are not available, `hrr`,`msa`, and `hhs` values are computed from county-level data using a weighted mean. Each county is assigned a weight equal to its population in the last census (2020). Unreported counties are implicitly treated as having a weight of 0 or a value equal to the group mean.
-
-This weighting approach assumes that the number of ED visits is proportional to the overall population of a county, i.e. the per-capita ED visit rate is the same for all counties, which may not be the case (for example, denser counties may have easier access to EDs and thus higher rates of ED visits per capita).
-
-state-level data is **not** simply an average of the county-level data, but may contain facilities omitted at the regional level. For example, state-level values are available for California, even though no California county data is reported; see the [missingness section below](#missingness) for a list of such states.
-
 
 ## Missingness
 
