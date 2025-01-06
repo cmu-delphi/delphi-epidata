@@ -25,7 +25,8 @@ Each signal below is derived from one of two following datasets:
 - Main: [Weekly Hospital Respiratory Data (HRD) Metrics by Jurisdiction, National Healthcare Safety Network (NHSN)](https://data.cdc.gov/Public-Health-Surveillance/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/ua7e-t2fy/about_data)
 - Preliminary: [Weekly Hospital Respiratory Data (HRD) Metrics by Jurisdiction, National Healthcare Safety Network (NHSN) (Preliminary)](https://data.cdc.gov/Public-Health-Surveillance/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/mpgq-jmmr/about_data). Signals derived from the preliminary dataset have suffix `_prelim` in their signal names.
 
-Both datasets started reporting data in late 2022. As of May 2024, NHSN received data from 78% of US EDs.
+Both datasets started reporting data in late 2022.
+As of May 2024, NHSN received data from 78% of US EDs.
 
 State and nation-level values are pulled directly from the source; HHS-level values are aggregated up from the state level.
 
@@ -45,7 +46,8 @@ State and nation-level values are pulled directly from the source; HHS-level val
 
 ## Estimation
 
-All data is weekly such that each reported value represents a total from Sunday to Saturday of the reference week. The `output_signal_name` signal mirrors the `input signal name` field for all geographic resolutions except HHS.
+All data is weekly such that each reported value represents a total from Sunday to Saturday of the reference week.
+The `output_signal_name` signal mirrors the `input signal name` field for all geographic resolutions except HHS.
 
 ### Geographic weighting
 
@@ -78,7 +80,8 @@ Standard errors and sample sizes are not applicable to these metrics.
 
 ## Lag and Backfill
 
-The signals are currently updated weekly, generally on Friday. Each report adds data for the week prior.
+The signals are currently updated weekly, generally on Friday.
+Each report adds data for the week prior.
 For example, on Friday, 2024-04-19, the source added new data representing hospitalizations from the week ending 2024-04-13.
 This results in a reporting lag of 6 days from the end of the reference week.
 
