@@ -17,7 +17,7 @@ nav_order: 1
 
 ## Overview
 
-[The National Healthcare Safety Network (NHSN)](https://www.cdc.gov/nhsn/index.html) is an effort to track epidemiologically relevant conditions.
+[The National Healthcare Safety Network (NHSN)](https://www.cdc.gov/nhsn/index.html) is the nation’s most widely used healthcare-associated infection tracking system.
 This dataset represents preliminary weekly hospital respiratory data and metrics aggregated to national and state/territory levels reported to CDC’s National Health Safety Network (NHSN) beginning August 2020.
 Each signal below is derived from one of two following datasets:
 - Main: [Weekly Hospital Respiratory Data (HRD) Metrics by Jurisdiction, National Healthcare Safety Network (NHSN)](https://data.cdc.gov/Public-Health-Surveillance/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/ua7e-t2fy/about_data)
@@ -39,15 +39,14 @@ Both datasets started reporting data in late 2022. As of May 2024, NHSN received
 {:toc}
 
 ## Estimation
-
-The confirmed signal `confirmed_admissions_covid_ew` is the value of the `totalconfc19newadm`
-The confirmed signal `confirmed_admissions_flu_ew` is the value of the `totalconfflunewadm`
-
+Between the reference dates of 2024-05-01 and 2024-10-31, the total number of hospitalized patients on a subsection
+of hospitals and may not be fully represenetative. See the [missingness section](#missingness) section below for more context.
 
 ### Geographic weighting
+HHS values are computed from state-level data.
+
 
 ## Missingness
-
 Data for reporting dates through April 30, 2024 represent data reported during a previous mandated reporting period as specified by the HHS Secretary.
 Data for reporting dates May 1, 2024 – October 31, 2024 represent voluntarily reported data in the absence of a mandate. 
 Data for reporting dates beginning November 1, 2024 represent data reported during a current mandated reporting period.
