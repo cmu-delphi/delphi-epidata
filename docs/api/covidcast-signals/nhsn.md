@@ -8,7 +8,7 @@ nav_order: 1
 {: .no_toc}
 
 * **Source name:** `nhsn`
-* **Earliest issue available:** August 08, 2020
+* **Earliest issue available:** November 19, 2024
 * **Number of data revisions since 18 Nov 2024:** 0
 * **Date of last change:** Never
 * **Available for:** state, hhs, nation (see [geography coding docs](../covidcast_geography.md))
@@ -18,7 +18,7 @@ nav_order: 1
 ## Overview
 
 [The National Healthcare Safety Network (NHSN)](https://www.cdc.gov/nhsn/index.html) is the nation’s most widely used healthcare-associated infection tracking system.
-This dataset represents preliminary weekly hospital respiratory data and metrics aggregated to national and state/territory levels reported to CDC’s National Health Safety Network (NHSN) beginning August 2020.
+This dataset represents preliminary weekly hospital respiratory data and metrics aggregated to national and state/territory levels reported to CDC’s National Health Safety Network (NHSN) reference date beginning August 2020.
 
 Each signal below is derived from one of two following datasets:
 
