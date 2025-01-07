@@ -33,10 +33,10 @@ State and nation-level values are pulled directly from the source; HHS-level val
 
 | Signal                          | Description                                                                                                                                                                         |
 |---------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `confirmed_admissions_covid_ew`              | Total number of patients hospitalized with confirmed COVID-19 captured for the Wednesday of the reporting week **Earliest date available:** 2020-08-08                                                                                                     |
-| `confirmed_admissions_covid_ew_prelim`          | Total number of patients hospitalized with confirmed COVID-19 captured for the Wednesday of the reporting week preliminary data reported to NHSN for the previous reporting week (Sunday – Saturday). <br/> **Earliest date available:** 2020-08-08  |
-| `confirmed_admissions_flu_ew`           | Total number of patients hospitalized with confirmed influenza captured for the Wednesday of the reporting week  <br/> **Earliest date available:** 2020-08-08                                                                                       |
-| `confirmed_admissions_flu_ew_prelim`     | Total number of patients hospitalized with confirmed influenza captured for the Wednesday of the reporting week  preliminary data reported to NHSN for the previous reporting week (Sunday – Saturday).<br/> **Earliest date available:** 2020-08-08 |
+| `confirmed_admissions_covid_ew`              | Total number of patients hospitalized with confirmed COVID-19 over the entire week (Sunday-Saturday). Only includes hospitalizations whose report was received before the Friday or Saturday of the following week. **Earliest date available:** 2020-08-08                                                                                                     |
+| `confirmed_admissions_covid_ew_prelim`          | Total number of patients hospitalized with confirmed COVID-19 over the entire week (Sunday-Saturday). Only includes hospitalizations whose report was received before the Wednesday of the following week. <br/> **Earliest date available:** 2020-08-08  |
+| `confirmed_admissions_flu_ew`           | Total number of patients hospitalized with confirmed influenza over the entire week (Sunday-Saturday). Only includes hospitalizations whose report was received before the Friday or Saturday of the following week.  <br/> **Earliest date available:** 2020-08-08                                                                                       |
+| `confirmed_admissions_flu_ew_prelim`     | Total number of patients hospitalized with confirmed influenza over the entire week (Sunday-Saturday). Only includes hospitalizations whose report was received before the Wednesday of the following week. <br/> **Earliest date available:** 2020-08-08 |
 
 ## Table of Contents
 {: .no_toc .text-delta}
@@ -48,6 +48,13 @@ State and nation-level values are pulled directly from the source; HHS-level val
 
 All data is weekly such that each reported value represents a total from Sunday to Saturday of the reference week.
 The `output_signal_name` signal mirrors the `input signal name` field for all geographic resolutions except HHS.
+
+We report both preliminary (`*_prelim`) and finalized signals.
+Preliminary data is available on the Wednesday following the end of the week being reported on. For example, the data for the week Dec 1-7, 2024 would first be available on 2024-12-11, the Wednesday of the following week.
+Finalized data is available on the Friday or Saturday following the end of the week being reported on.
+
+Preliminary data is available 2 days earlier than finalized data. However, preliminary data will tend to underreport the true value since it is made available closer to the end of the week being reported on, allowing less time for hospitalization reports to be received.
+
 
 ### Geographic weighting
 
@@ -64,7 +71,7 @@ data for reference dates prior to this may be anomalous or invalid.
 Data for reference dates through April 30, 2024 were reported during a federally-mandated reporting period
 as specified by the Secretary of the Department of Health and Human Services.
 
-Data for reference dates May 1, 2024 – October 31, 2024 were voluntarily reported in the absence of a mandate.
+Data for reference dates May 1, 2024-October 31, 2024 were voluntarily reported in the absence of a mandate.
 As a result, during this period reported hospitalizations may not be fully representative.
 
 Data for reference dates beginning November 1, 2024 were reported during the [current mandated reporting period](https://www.cms.gov/medicare/health-safety-standards/quality-safety-oversight-general-information/policy-memos-states-and-cms-locations/updates-condition-participation-cop-requirements-hospitals-and-critical-access-hospitals-cahs-report).
@@ -72,18 +79,15 @@ More information regarding the mandate beginning November 1, 2024, is available 
 
 ## Limitations
 
-### General Limitation
 HHS collects data from state and territorial health departments about many, but not all, hospitals in the U.S.
 Notably excluded from this dataset are psychiatric and rehabilitation facilities,and religious non-medical facilities.
 Number of reporting hospitals is determined based on the NHSN unique hospital identifier and not aggregated to the CMS certification number (CCN).
 Only hospitals indicated as active reporters in NHSN are included.
 
-Standard errors and sample sizes are not applicable to these metrics.
-
-
-### Limitations between time periods
 Between reference dates 2024-05-01 and 2024-10-31, reported hospitalizations may not be fully representative, since reporting was voluntary.
 See the [missingness section](#missingness) for more information about voluntary and mandatory reporting periods.
+
+Standard errors and sample sizes are not applicable to these metrics.
 
 
 ### Differences with HHS reports
@@ -96,10 +100,12 @@ There may be other mismatches between the datasets, so exercise caution when com
 
 ## Lag and Backfill
 
-The signals are currently updated weekly, generally on Friday.
+Finalized signals are currently updated weekly, generally on Friday or Saturday.
+Preliminary signals are currently updated weekly, on Wednesday.
 Each report adds data for the week prior.
 For example, on Friday, 2024-04-19, the source added new data representing hospitalizations from the week ending 2024-04-13.
-This results in a reporting lag of 6 days from the end of the reference week.
+For finalized signals, this results in a reporting lag of 6-7 days from the end of the reference week.
+For preliminary signals, this results in a reporting lag of 4 days from the end of the reference week.
 
 As a result of continuous data quality checks and revisions to data for prior reference dates (also known as "backfill"), data may fluctuate or change week-over-week after initial posting.
 
