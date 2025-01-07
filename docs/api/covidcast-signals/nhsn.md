@@ -18,9 +18,9 @@ nav_order: 1
 ## Overview
 
 [The National Healthcare Safety Network (NHSN)](https://www.cdc.gov/nhsn/index.html) is the nation’s most widely used healthcare-associated infection tracking system.
-This dataset represents preliminary weekly hospital respiratory data and metrics aggregated to national and state/territory levels reported to CDC’s National Health Safety Network (NHSN) reference date beginning August 2020.
+This dataset reports preliminary and finalized weekly hospital respiratory data and metrics aggregated to national and state/territory levels reported to the CDC’s National Health Safety Network (NHSN). Values are available for reference dates beginning August 2020.
 
-Each signal below is derived from one of two following datasets:
+Each signal below is derived from one of the two following datasets:
 
 - Main: [Weekly Hospital Respiratory Data (HRD) Metrics by Jurisdiction, National Healthcare Safety Network (NHSN)](https://data.cdc.gov/Public-Health-Surveillance/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/ua7e-t2fy/about_data)
 - Preliminary: [Weekly Hospital Respiratory Data (HRD) Metrics by Jurisdiction, National Healthcare Safety Network (NHSN) (Preliminary)](https://data.cdc.gov/Public-Health-Surveillance/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/mpgq-jmmr/about_data). Signals derived from the preliminary dataset have suffix `_prelim` in their signal names.
@@ -56,43 +56,42 @@ State and nation-level values are pulled directly from the source; HHS-level val
 
 ## Missingness
 
-Data prior to August 1, 2020, are unavailable. As a result of data quality implementation and submission of any backfilled data, data and metrics might fluctuate or change week-over-week after initial posting.
-Data reported as of December 1, 2020 are subject to thorough, routine data quality review procedures, including identifying and excluding invalid values from metric calculations and application of error correction methodology; 
-data prior to this date may have anomalies that are not yet resolved. 
+Data is available for reference dates August 1, 2020 and later.
 
-Data for reference dates through April 30, 2024 were reported during a federally-mandated reporting period 
+Data reported for reference dates December 1, 2020 or later are subject to thorough, routine data quality review procedures, including identifying and excluding invalid values and application of error correction methodology;
+data for reference dates prior to this may be anomalous or invalid.
+
+Data for reference dates through April 30, 2024 were reported during a federally-mandated reporting period
 as specified by the Secretary of the Department of Health and Human Services.
 
 Data for reference dates May 1, 2024 – October 31, 2024 were voluntarily reported in the absence of a mandate.
-As a result, during this period the total number of hospitalized patients on a subsection of hospitals and may not be fully representative.
+As a result, during this period reported hospitalizations may not be fully representative.
 
 Data for reference dates beginning November 1, 2024 were reported during the [current mandated reporting period](https://www.cms.gov/medicare/health-safety-standards/quality-safety-oversight-general-information/policy-memos-states-and-cms-locations/updates-condition-participation-cop-requirements-hospitals-and-critical-access-hospitals-cahs-report).
-More information regarding the mandate beginning November 1, 2024, is available [here](https://www.cdc.gov/nhsn/psc/hospital-respiratory-reporting.html)
+More information regarding the mandate beginning November 1, 2024, is available [from the CDC](https://www.cdc.gov/nhsn/psc/hospital-respiratory-reporting.html)
 
 ## Limitations
+
 ### General Limitation
-HHS collects data from state and territorial health departments about many, but not all, hospitals in the U.S. 
+HHS collects data from state and territorial health departments about many, but not all, hospitals in the U.S.
 Notably excluded from this dataset are psychiatric and rehabilitation facilities,and religious non-medical facilities.
-Number of reporting hospitals is determined based on the NHSN unique hospital identifier and not aggregated to the CMS certification number (CCN). 
+Number of reporting hospitals is determined based on the NHSN unique hospital identifier and not aggregated to the CMS certification number (CCN).
 Only hospitals indicated as active reporters in NHSN are included.
 
 Standard errors and sample sizes are not applicable to these metrics.
 
 
-### Limitations between time periods 
-Between reference dates 2024-05-01 and 2024-10-31, the total number of hospitalized patients on a subsection
-of hospitals and may not be fully representative, since reporting was voluntary.
-See the [missingness section](#missingness) for more context.
+### Limitations between time periods
+Between reference dates 2024-05-01 and 2024-10-31, reported hospitalizations may not be fully representative, since reporting was voluntary.
+See the [missingness section](#missingness) for more information about voluntary and mandatory reporting periods.
 
 
 ### Differences with HHS reports
-An analysis comparing the [HHS dataset](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/g62h-syeh/about_data) and NHSN dataset covers the equivalent data of hospital admission for covid and flu
-suggests that the overall trend is comparable with each other. However, there are differences between some of the states, notably for GA (untill 2023), LA, NV, PR (late 2020-early 2021), TN all have HHS substantially lower, HHS is substantially lower than NHSN.
+An analysis comparing flu and COVID-19 data from the [HHS](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/g62h-syeh/about_data) and NHSN datasets, for reference dates appearing in both sources, suggests that the data are largely equivalent. However, there are notable differences in a handful of states; GA (untill 2023), LA, NV, PR (late 2020-early 2021), and TN all have substantially lower values in HHS data than in NHSN.
 
-Some states have this spike in NHSN or hhs where the other source doesn't have a spike and spikes don't happen at the same reporting dates across states.
+Occasionally, data for a single geographic region will have a spike in NHSN or HHS that does not appear in the other source or in other geographic regions.
 
-Exercise caution when comparing work based on the NHSN with work based on HHS reports.
-
+There may be other mismatches between the datasets, so exercise caution when comparing work based on NHSN data with work based on HHS data.
 
 
 ## Lag and Backfill
@@ -101,6 +100,8 @@ The signals are currently updated weekly, generally on Friday.
 Each report adds data for the week prior.
 For example, on Friday, 2024-04-19, the source added new data representing hospitalizations from the week ending 2024-04-13.
 This results in a reporting lag of 6 days from the end of the reference week.
+
+As a result of continuous data quality checks and revisions to data for prior reference dates (also known as "backfill"), data may fluctuate or change week-over-week after initial posting.
 
 
 ## Source and Licensing
