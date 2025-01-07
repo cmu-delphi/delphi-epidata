@@ -56,13 +56,18 @@ State and nation-level values are pulled directly from the source; HHS-level val
 
 ## Missingness
 
-Data for reference dates through April 30, 2024 were reported during a federally-mandated reporting period as specified by the Secretary of the Department of Health and Human Services.
+Data prior to August 1, 2020, are unavailable. As a result of data quality implementation and submission of any backfilled data, data and metrics might fluctuate or change week-over-week after initial posting.
+Data reported as of December 1, 2020 are subject to thorough, routine data quality review procedures, including identifying and excluding invalid values from metric calculations and application of error correction methodology; 
+data prior to this date may have anomalies that are not yet resolved. 
+
+Data for reference dates through April 30, 2024 were reported during a federally-mandated reporting period 
+as specified by the Secretary of the Department of Health and Human Services.
+
 Data for reference dates May 1, 2024 – October 31, 2024 were voluntarily reported in the absence of a mandate.
 As a result, during this period the total number of hospitalized patients on a subsection of hospitals and may not be fully representative.
-Data for reference dates beginning November 1, 2024 were reported during the current mandated reporting period.
 
-All data and metrics capturing information on respiratory syncytial virus (RSV) were voluntarily reported until November 1, 2024.
-
+Data for reference dates beginning November 1, 2024 were reported during the [current mandated reporting period](https://www.cms.gov/medicare/health-safety-standards/quality-safety-oversight-general-information/policy-memos-states-and-cms-locations/updates-condition-participation-cop-requirements-hospitals-and-critical-access-hospitals-cahs-report).
+More information regarding the mandate beginning November 1, 2024, is available [here](https://www.cdc.gov/nhsn/psc/hospital-respiratory-reporting.html)
 
 ## Limitations
 
