@@ -70,17 +70,29 @@ Data for reference dates beginning November 1, 2024 were reported during the [cu
 More information regarding the mandate beginning November 1, 2024, is available [here](https://www.cdc.gov/nhsn/psc/hospital-respiratory-reporting.html)
 
 ## Limitations
-
-Between reference dates 2024-05-01 and 2024-10-31, the total number of hospitalized patients on a subsection
-of hospitals and may not be fully representative, since reporting was voluntary.
-See the [missingness section](#missingness) for more context.
+### General Limitation
+HHS collects data from state and territorial health departments about many, but not all, hospitals in the U.S. 
+Notably excluded from this dataset are psychiatric and rehabilitation facilities,and religious non-medical facilities.
+Number of reporting hospitals is determined based on the NHSN unique hospital identifier and not aggregated to the CMS certification number (CCN). 
+Only hospitals indicated as active reporters in NHSN are included.
 
 Standard errors and sample sizes are not applicable to these metrics.
 
 
-### Differences with HHS reports
+### Limitations between time periods 
+Between reference dates 2024-05-01 and 2024-10-31, the total number of hospitalized patients on a subsection
+of hospitals and may not be fully representative, since reporting was voluntary.
+See the [missingness section](#missingness) for more context.
 
-?
+
+### Differences with HHS reports
+An analysis comparing the [HHS dataset](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/g62h-syeh/about_data) and NHSN dataset covers the equivalent data of hospital admission for covid and flu
+suggests that the overall trend is comparable with each other. However, there are differences between some of the states, notably for GA (untill 2023), LA, NV, PR (late 2020-early 2021), TN all have HHS substantially lower, HHS is substantially lower than NHSN.
+
+Some states have this spike in NHSN or hhs where the other source doesn't have a spike and spikes don't happen at the same reporting dates across states.
+
+Exercise caution when comparing work based on the NHSN with work based on HHS reports.
+
 
 
 ## Lag and Backfill
