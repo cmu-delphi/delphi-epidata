@@ -50,11 +50,14 @@ All data is weekly such that each reported value represents a total from Sunday 
 The `output_signal_name` signal mirrors the `input signal name` field for all geographic resolutions except HHS.
 
 We report both preliminary (`*_prelim`) and finalized signals.
-Preliminary data is available on the Wednesday following the end of the week being reported on. For example, the data for the week Dec 1-7, 2024 would first be available on 2024-12-11, the Wednesday of the following week.
-Finalized data is available on the Friday or Saturday following the end of the week being reported on.
+Preliminary data is made available on the Wednesday following the end of the week being reported on. For example, the data for the week Dec 1-7, 2024 would first be available on 2024-12-11, the Wednesday of the following week.
+Finalized data is made available on the Friday or Saturday following the end of the week being reported on.
 
 Preliminary data is available 2 days earlier than finalized data. However, preliminary data will tend to underreport the true value since it is made available closer to the end of the week being reported on, allowing less time for hospitalization reports to be received.
 
+Data reported for reference dates December 1, 2020 or later are subject to thorough, routine data quality review procedures by NHSN.
+Review procedures include identifying and excluding invalid values and application of error correction methodology;
+data for reference dates prior to this may be anomalous or invalid.
 
 ### Geographic weighting
 
@@ -63,19 +66,12 @@ State and nation-level values are pulled directly from the source; HHS-level val
 
 ## Missingness
 
-Data is available for reference dates August 1, 2020 and later.
+Data is not available for reference dates before August 2, 2020.
 
-Data reported for reference dates December 1, 2020 or later are subject to thorough, routine data quality review procedures, including identifying and excluding invalid values and application of error correction methodology;
-data for reference dates prior to this may be anomalous or invalid.
+Some entries are excluded by [NHSN's quality review procedures](#estimation).
 
-Data for reference dates through April 30, 2024 were reported during a federally-mandated reporting period
-as specified by the Secretary of the Department of Health and Human Services.
+Hospitalizations may be undercounted for [early reference dates and during periods of voluntary reporting](#mandates).
 
-Data for reference dates May 1, 2024-October 31, 2024 were voluntarily reported in the absence of a mandate.
-As a result, during this period reported hospitalizations may not be fully representative.
-
-Data for reference dates beginning November 1, 2024 were reported during the [current mandated reporting period](https://www.cms.gov/medicare/health-safety-standards/quality-safety-oversight-general-information/policy-memos-states-and-cms-locations/updates-condition-participation-cop-requirements-hospitals-and-critical-access-hospitals-cahs-report).
-More information regarding the mandate beginning November 1, 2024, is available [from the CDC](https://www.cdc.gov/nhsn/psc/hospital-respiratory-reporting.html)
 
 ## Limitations
 
@@ -84,10 +80,21 @@ Notably excluded from this dataset are psychiatric and rehabilitation facilities
 Number of reporting hospitals is determined based on the NHSN unique hospital identifier and not aggregated to the CMS certification number (CCN).
 Only hospitals indicated as active reporters in NHSN are included.
 
-Between reference dates 2024-05-01 and 2024-10-31, reported hospitalizations may not be fully representative, since reporting was voluntary.
-See the [missingness section](#missingness) for more information about voluntary and mandatory reporting periods.
-
 Standard errors and sample sizes are not applicable to these metrics.
+
+### Mandates
+
+Data for reference dates through April 30, 2024 were reported during a [federally-mandated reporting period](https://www.cms.gov/medicareprovider-enrollment-and-certificationsurveycertificationgeninfopolicy-and-memos-states-and/interim-final-rule-ifc-cms-3401-ifc-requirements-and-enforcement-process-reporting-covid-19-data)
+as specified by the Secretary of the Department of Health and Human Services.
+This applies only to COVID-19-related hospitalizations.
+However, [compliance was poor early in the mandate](https://www.npr.org/sections/health-shots/2020/10/07/920975793/hospitals-failing-to-meet-new-covid-19-data-reporting-mandate-to-get-warning-let), with "just 24% of hospitals report[ing] all the required elements every day" for the week of September 14.
+
+Data for reference dates May 1, 2024-October 31, 2024 were voluntarily reported in the absence of a mandate.
+As a result, during this period reported hospitalizations may undercounted.
+
+Data for reference dates beginning November 1, 2024 were reported during the [current mandated reporting period](https://www.cms.gov/medicare/health-safety-standards/quality-safety-oversight-general-information/policy-memos-states-and-cms-locations/updates-condition-participation-cop-requirements-hospitals-and-critical-access-hospitals-cahs-report).
+This applies to influenza and COVID-19-related hospitalizations.
+More information regarding the mandate beginning November 1, 2024, is available [from the CDC](https://www.cdc.gov/nhsn/psc/hospital-respiratory-reporting.html).
 
 
 ### Differences with HHS reports
