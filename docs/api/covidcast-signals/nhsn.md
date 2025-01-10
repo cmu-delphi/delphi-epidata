@@ -25,8 +25,8 @@ Each signal below is derived from one of the two following datasets:
 - Main: [Weekly Hospital Respiratory Data (HRD) Metrics by Jurisdiction, National Healthcare Safety Network (NHSN)](https://data.cdc.gov/Public-Health-Surveillance/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/ua7e-t2fy/about_data)
 - Preliminary: [Weekly Hospital Respiratory Data (HRD) Metrics by Jurisdiction, National Healthcare Safety Network (NHSN) (Preliminary)](https://data.cdc.gov/Public-Health-Surveillance/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/mpgq-jmmr/about_data). Signals derived from the preliminary dataset have suffix `_prelim` in their signal names.
 
-Both datasets started reporting data in late 2022.
-As of May 2024, NHSN received data from 78% of US EDs.
+Both datasets started reporting data in late 2024.
+For reference dates in May 2024, NHSN received data from 78% of US EDs.
 
 State and nation-level values are pulled directly from the source; HHS-level values are aggregated up from the state level.
 
