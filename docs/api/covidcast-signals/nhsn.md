@@ -110,6 +110,14 @@ For preliminary signals, this results in a reporting lag of 4 days from the end 
 
 As a result of continuous data quality checks and revisions to data for prior reference dates (also known as "backfill"), data may fluctuate or change week-over-week after initial posting.
 
+In practice, revisions tend to happen within 2 months of the initial release; older data is unlikely to be revised.
+Of values reported recently (reference date 2 months or less before the issue date), 20% were revisions.
+Values that are revised tend to be revised a small number of times (once or twice). Revisions tend to increase values. Revisions tend to be small, with a median 2% (mean 5.4%) difference between highest and lowest values seen for a given reference date.
+
+A handful of values have large revisions, for example, being revised from 10 to 100, but these are rare.
+
+Texas has many more revisions than other states (7 times more than California during the analysis period). However Texas has the lowest median percent difference (0.08%) between high and low values seen for a given reference date. Idaho, New Hampshire, Hawaii, and North Dakota have some of the highest median percent differences.
+
 
 ## Source and Licensing
 
