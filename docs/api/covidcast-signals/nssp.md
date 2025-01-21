@@ -19,11 +19,8 @@ nav_order: 1
 
 [The National Syndromic Surveillance Program (NSSP)](https://www.cdc.gov/nssp/php/about/index.html) is an effort to track epidemiologically relevant conditions.
 This dataset in particular tracks emergency department (ED) visits arising from a subset of influenza-like illnesses, specifically influenza, COVID-19, and respiratory syncytial virus (RSV).
-Each signal below is derived from one of two following datasets:
-- Primary: [NSSP Emergency Department Visit Trajectories by State and Sub State Regions- COVID-19, Flu, RSV, Combined dataset](https://data.cdc.gov/Public-Health-Surveillance/2023-Respiratory-Virus-Response-NSSP-Emergency-Dep/rdmq-nq56/about_data)
-- Secondary: [2023 Respiratory Virus Response - NSSP Emergency Department Visit Trajectories by State- COVID-19, Flu, RSV, Combined](https://data.cdc.gov/Public-Health-Surveillance/2023-Respiratory-Virus-Response-NSSP-Emergency-Dep/7mra-9cq9/data_preview). Signals derived from the secondary dataset have suffix `_2023RVR` in their signal names.
-
-Both datasets started reporting data in late 2022. As of May 2024, NSSP received data from 78% of US EDs.
+It is derived from the CDC's [Respiratory Virus Response NSSP Emergency Department Visit Trajectories dataset](https://data.cdc.gov/Public-Health-Surveillance/2023-Respiratory-Virus-Response-NSSP-Emergency-Dep/rdmq-nq56/about_data), which started reporting data in late 2022.
+As of May 2024, NSSP received data from 78% of US EDs.
 
 | Signal                          | Description                                                                                                                          |
 |---------------------------------|--------------------------------------------------------------------------------------------------------------------------------------|
@@ -35,10 +32,6 @@ Both datasets started reporting data in late 2022. As of May 2024, NSSP received
 | `smoothed_pct_ed_visits_influenza` | 3 week moving average of `pct_ed_visits_influenza`   <br/> **Earliest date available:** 2022-10-01                                      |
 | `smoothed_pct_ed_visits_rsv`       | 3 week moving average of `pct_ed_visits_rsv`   <br/> **Earliest date available:** 2022-10-01                                            |
 | `smoothed_pct_ed_visits_combined`  | 3 week moving average of `pct_ed_visits_combined`   <br/> **Earliest date available:** 2022-10-01                                       |
-| `pct_ed_visits_covid_2023RVR`              | Percent of ED visits that had a discharge diagnosis code of COVID-19 <br/> **Earliest date available:** 2022-10-01                      |
-| `pct_ed_visits_influenza_2023RVR`          | Percent of ED visits that had a discharge diagnosis code of influenza  <br/> **Earliest date available:** 2022-10-01                 |
-| `pct_ed_visits_rsv_2023RVR`                | Percent of ED visits that had a discharge diagnosis code of rsv  <br/> **Earliest date available:** 2022-10-01                       |
-| `pct_ed_visits_combined_2023RVR`           | Percent of ED visits that had a discharge diagnosis code of COVID-19, influenza, or rsv   <br/> **Earliest date available:** 2022-10-01 |
 
 ## Table of Contents
 {: .no_toc .text-delta}
@@ -49,8 +42,7 @@ Both datasets started reporting data in late 2022. As of May 2024, NSSP received
 ## Estimation
 
 The percent visits signals are calculated as a fraction of visits at facilities reporting to NSSP, rather than all facilities in the area.
-For primary signals, `county`, `state` and `nation` level data is reported as-is from NSSP, without modification, while `hhs`, `hrr` and `msa` are estimated by Delphi.
-For secondary signals, `state`, `hhs` and `nation` level data is reported as-is from NSSP, without modification.
+`county`, `state` and `nation` level data is reported as-is from NSSP, without modification, while `hhs`, `hrr` and `msa` are estimated by Delphi.
 
 ### Geographic weighting
 As the original data is a percentage and raw case counts are not available, `hrr`,`msa`, and `hhs` values are computed from county-level data using a weighted mean. Each county is assigned a weight equal to its population in the last census (2020). Unreported counties are implicitly treated as having a weight of 0 or a value equal to the group mean.
@@ -96,20 +88,3 @@ There is substantial missingness at the county level. This tends to impact more 
 
 Not all counties contain reporting EDs, including in states where NSSP reports state-level data.
 A minority of these (as of June 2024) are counties without EDs, while others are only covered by the ~22% of EDs that don't yet report to the NSSP.
-
-NSSP notes that not every patient entering an ED is tested for the conditions of interest, so the data may undercount total cases and as a result percent visits may be biased downward.
-
-Our [geographic weighting approach](#geographic-weighting) assumes that the number of ED visits is proportional to the overall population of a county. However, in reality, there are various factors that could affect the accuracy of this assumption.
-
-For example, we might expect denser, more urban counties to have 1) more and larger EDs and 2) easier access to EDs. The first factor may mean that residents of rural counties are more likely to go to EDs in urban counties. The second factor may increase the total number of ED visits that the typical urban resident will make relative to the typical rural resident.
-As a result, total ED visits per capita in rural counties may be lower than total ED visits per capita in urban counties. If this is a strong dynamic, since our weighting approach uses population as the weights, rural counties would tend to be overrepresented in estimated values.
-
-Some low population counties occasionally report outliers, e.g. 33.33%, 50%, 100% of ER visits being COVID-19-related. We expect that these high rates are by chance, due to a small total number of ED visits in a given week. As of May 2024, an analysis shows around 10 unusually high values across the full history of all signals, so they are rare.
-
-
-## Source and Licensing
-
-This source is derived from the CDC's [Respiratory Virus Response NSSP Emergency Department Visit Trajectories dataset](https://data.cdc.gov/Public-Health-Surveillance/2023-Respiratory-Virus-Response-NSSP-Emergency-Dep/rdmq-nq56/about_data).
-There is another version of the dataset that includes [state data only](https://data.cdc.gov/Public-Health-Surveillance/2023-Respiratory-Virus-Response-NSSP-Emergency-Dep/7mra-9cq9/about_data).
-
-This data was originally published by the CDC, and is made available here as a convenience to the forecasting community under the terms of the original license, which is [U.S. Government Public Domain](https://www.usa.gov/government-copyright).
