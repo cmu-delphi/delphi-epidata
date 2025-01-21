@@ -88,3 +88,20 @@ There is substantial missingness at the county level. This tends to impact more 
 
 Not all counties contain reporting EDs, including in states where NSSP reports state-level data.
 A minority of these (as of June 2024) are counties without EDs, while others are only covered by the ~22% of EDs that don't yet report to the NSSP.
+
+NSSP notes that not every patient entering an ED is tested for the conditions of interest, so the data may undercount total cases and as a result percent visits may be biased downward.
+
+Our [geographic weighting approach](#geographic-weighting) assumes that the number of ED visits is proportional to the overall population of a county. However, in reality, there are various factors that could affect the accuracy of this assumption.
+
+For example, we might expect denser, more urban counties to have 1) more and larger EDs and 2) easier access to EDs. The first factor may mean that residents of rural counties are more likely to go to EDs in urban counties. The second factor may increase the total number of ED visits that the typical urban resident will make relative to the typical rural resident.
+As a result, total ED visits per capita in rural counties may be lower than total ED visits per capita in urban counties. If this is a strong dynamic, since our weighting approach uses population as the weights, rural counties would tend to be overrepresented in estimated values.
+
+Some low population counties occasionally report outliers, e.g. 33.33%, 50%, 100% of ER visits being COVID-19-related. We expect that these high rates are by chance, due to a small total number of ED visits in a given week. As of May 2024, an analysis shows around 10 unusually high values across the full history of all signals, so they are rare.
+
+
+## Source and Licensing
+
+This source is derived from the CDC's [Respiratory Virus Response NSSP Emergency Department Visit Trajectories dataset](https://data.cdc.gov/Public-Health-Surveillance/2023-Respiratory-Virus-Response-NSSP-Emergency-Dep/rdmq-nq56/about_data).
+There is another version of the dataset that includes [state data only](https://data.cdc.gov/Public-Health-Surveillance/2023-Respiratory-Virus-Response-NSSP-Emergency-Dep/7mra-9cq9/about_data).
+
+This data was originally published by the CDC, and is made available here as a convenience to the forecasting community under the terms of the original license, which is [U.S. Government Public Domain](https://www.usa.gov/government-copyright).
