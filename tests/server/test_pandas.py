@@ -2,7 +2,7 @@
 
 # standard library
 import unittest
-from mock import patch, sentinel, ANY
+from unittest.mock import patch, sentinel, ANY
 
 # first party
 from delphi.epidata.server.main import app
