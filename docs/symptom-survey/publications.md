@@ -26,17 +26,24 @@ Pandemic"](https://www.pnas.org/topic/548) in *PNAS*:
 
 Research publications using the survey data include:
 
+- S. Santos, M. Humbard, A. Lambrou et al. (2025). [The SARS-CoV-2 test
+  scale-up in the USA: an analysis of the number of tests produced and used
+  over time and their modelled impact on the COVID-19 pandemic](https://doi.org/10.1016/S2468-2667(24)00279-2).
+  *The Lancet Public Health* 10 (1), e47-e57.
+- H. Bui, S. Ekşioğlu, R. Proano, and S. N. Pinkley (2025). [An Analysis of
+  COVID-19 Vaccine Hesitancy in the U.S.](https://doi.org/10.1080/24725854.2024.2301966).
+  *IISE Transactions* 57 (3), 246-260.
 - K.M. Geffel, H.P. Dyer, A.D. Casas, S.N. Christian-Afflu, D.D. Méndez, and
   T.L. Gary-Webb (2024). [COVID-19 vaccine uptake and intention of Black adults:
   A county-wide analysis of an online survey](https://doi.org/10.1016/j.jnma.2024.07.007).
-  *Journal of the National Medical Association*.
+  *Journal of the National Medical Association* 116 (5), 526-538.
 - C.K. Ettman, E. Badillo-Goicoechea, E.A. Stuart, and L.T. Dean (2024).
   [Area-level credit scores and symptoms of depression and anxiety in adults](https://doi.org/10.1093/aje/kwae275).
   *American Journal of Epidemiology* kwae275.
 - C.K. Ettman, E. Badillo-Goicoechea, E.A. Stuart (2024). [Financial
   strain, schooling modality and mental health of US adults living
   with children during the COVID-19 pandemic](https://doi.org/10.1136/jech-2023-221672).
-  *Journal of Epidemiology & Community Health*.
+  *Journal of Epidemiology & Community Health* 78 (10), 662-668.
 - K. Sasse, R. Mahabir, O. Gkountouna, A. Crooks, A. Croitoru (2024).
   [Understanding the determinants of vaccine hesitancy in the United
   States: A comparison of social surveys and social media](https://doi.org/10.1371/journal.pone.0301488).
@@ -68,10 +75,8 @@ Research publications using the survey data include:
   *Social Science & Medicine* 348, 116775.
 - R.R. Andridge (2024). [Using proxy pattern-mixture models to explain bias in
   estimates of COVID-19 vaccine uptake from two large surveys](https://doi.org/10.1093/jrsssa/qnae005).
-  *Journal of the Royal Statistical Society Series A: Statistics in Society*.
-- H. Bui, S. Ekşioğlu, R. Proano, and S. N. Pinkley (2024). [An Analysis of
-  COVID-19 Vaccine Hesitancy in the U.S.](https://doi.org/10.1080/24725854.2024.2301966).
-  *IISE Transactions*.
+  *Journal of the Royal Statistical Society Series A: Statistics in Society*
+  187 (3), 831-843.
 - de Vries, M., Kim, J.Y. & Han, H. (2023). [The unequal landscape of civic
   opportunity in America](https://doi.org/10.1038/s41562-023-01743-1). *Nature
   Human Behavior* 8, 256-263. 

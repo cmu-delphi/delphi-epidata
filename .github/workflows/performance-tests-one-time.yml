@@ -23,14 +23,6 @@ jobs:
       max_time: ${{ steps.output.outputs.max_time }}
       requests_per_sec: ${{ steps.output.outputs.requests_per_sec }}
     steps:
-      - name: Set up WireGuard
-        uses: egor-tensin/setup-wireguard@v1.2.0
-        with:
-          endpoint: '${{ secrets.WG_PERF_ENDPOINT }}'
-          endpoint_public_key: '${{ secrets.WG_PERF_ENDPOINT_PUBLIC_KEY }}'
-          ips: '${{ secrets.WG_PERF_IPS }}'
-          allowed_ips: '${{ secrets.WG_PERF_ALLOWED_IPS }}'
-          private_key: '${{ secrets.WG_PERF_PRIVATE_KEY }}'
       - name: Clean files from previous runs
         uses: AutoModality/action-clean@v1
       - name: Check out repository
