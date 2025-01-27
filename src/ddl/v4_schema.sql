@@ -165,6 +165,15 @@ CREATE TABLE `covidcast_meta_cache` (
 ) ENGINE=InnoDB;
 INSERT INTO covidcast_meta_cache VALUES (0, '[]');
 
+CREATE TABLE `coverage_crossref_load` (
+    `signal_key_id` bigint NOT NULL,
+    `geo_key_id` bigint NOT NULL,
+    `min_time_value` int NOT NULL,
+    `max_time_value` int NOT NULL,
+    UNIQUE INDEX coverage_crossref_signal_key_id ON coverage_crossref (signal_key_id),
+    UNIQUE INDEX coverage_crossref_geo_key_id ON coverage_crossref (geo_key_id)
+) ENGINE=InnoDB;
+
 CREATE TABLE `coverage_crossref` (
     `signal_key_id` bigint NOT NULL,
     `geo_key_id` bigint NOT NULL,
