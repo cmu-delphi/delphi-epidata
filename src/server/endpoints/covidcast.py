@@ -542,6 +542,23 @@ def handle_coverage():
 
     return execute_query(q.query, q.params, fields_string, fields_int, [], transform=transform_row)
 
+@bp.route("/geo_coverage", methods=("GET", "POST"))
+def handle_geo_coverage():
+    """
+    For a specific geo returns the signal coverage (number of signals for a given geo_type)
+    """
+
+    geo_type, geo_value = request.values.get("geo").split(":", 1)
+
+    q = QueryBuilder("covid.coverage_crossref_v", "c")
+    fields_string = ["source", "signal"]
+
+    q.set_fields(fields_string)
+
+    q.where(geo_type=geo_type, geo_value=geo_value)
+    q.set_sort_order("source", "signal")
+
+    return execute_query(q.query, q.params, fields_string, [], [])
 
 @bp.route("/anomalies", methods=("GET", "POST"))
 def handle_anomalies():
