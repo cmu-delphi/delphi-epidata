@@ -548,14 +548,14 @@ def handle_geo_coverage():
     For a specific geo returns the signal coverage (number of signals for a given geo_type)
     """
 
-    geo_type, geo_value = request.values.get("geo").split(":", 1)
+    geo_sets = parse_geo_sets()
 
-    q = QueryBuilder("covid.coverage_crossref_v", "c")
+    q = QueryBuilder("coverage_crossref_v", "c")
     fields_string = ["source", "signal"]
 
     q.set_fields(fields_string)
 
-    q.where(geo_type=geo_type, geo_value=geo_value)
+    q.apply_geo_filters("geo_type", "geo_value", geo_sets)
     q.set_sort_order("source", "signal")
 
     return execute_query(q.query, q.params, fields_string, [], [])
