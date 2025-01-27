@@ -561,3 +561,45 @@ FROM {self.history_view} h JOIN (
     for entry in cache:
       cache_hash[(entry['data_source'], entry['signal'], entry['time_type'], entry['geo_type'])] = entry
     return cache_hash
+
+  def compute_coverage_crossref(self):
+    """Compute coverage_crossref table."""
+    logger = get_structured_logger("compute_coverage_crossref")
+
+    coverage_crossref_load_delete_sql = f'''
+      DELETE FROM coverage_crossref_load WHERE 1;
+      '''
+
+    coverage_crossref_compute_sql = f'''
+      INSERT INTO coverage_crossref_load
+      SELECT
+          el.signal_key_id,
+          el.geo_key_id,
+          MIN(el.time_value) as min_time_value,
+          MAX(el.time_value) as max_time_value
+      FROM epimetric_latest el
+      GROUP BY el.signal_key_id, el.geo_key_id;
+      '''
+    
+    coverage_crossref_delete_sql = f'''
+      DELETE FROM coverage_crossref WHERE 1;
+    '''
+
+    coverage_crossref_update_sql = f'''
+      INSERT INTO coverage_crossref
+      SELECT * FROM coverage_crossref_load;
+    '''
+
+    self._cursor.execute(coverage_crossref_load_delete_sql)
+    logger.info(f"coverage_crossref_load_delete_sql:{self._cursor.rowcount}")
+
+    self._cursor.execute(coverage_crossref_compute_sql)
+    logger.info(f"coverage_crossref_compute_sql:{self._cursor.rowcount}")
+
+    self._cursor.execute(coverage_crossref_delete_sql)
+    logger.info(f"coverage_crossref_delete_sql:{self._cursor.rowcount}")
+
+    self._cursor.execute(coverage_crossref_update_sql)
+    logger.info(f"coverage_crossref_update_sql:{self._cursor.rowcount}")
+
+    return self._cursor.rowcount
