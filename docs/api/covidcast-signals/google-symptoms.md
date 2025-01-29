@@ -108,7 +108,7 @@ updates every day and provide the most up-to-date data.
 ## Limitations
 
 Between May 13 2024 and August 6 2024, signal values were 25%-50% lower compared to previous time periods.
-This affected _all_ signals and symptom sets.
+This affected _all_ `google-symptoms` signals and symptom sets.
 The drop does not reflect actual search term popularity during the affected period.
 The apparent decrease in search volume was caused by an outage in the data pipeline on the source side.
 The data was unfortunately not recoverable and the dip can not be repaired, but data outside the listed time period is unaffected.
