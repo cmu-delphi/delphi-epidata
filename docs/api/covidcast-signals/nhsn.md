@@ -1,5 +1,5 @@
 ---
-title: NHSN ED Visits
+title: NHSN Respiratory Hospitalizations
 parent: Data Sources and Signals
 grand_parent: Main Endpoint (COVIDcast)
 nav_order: 1
