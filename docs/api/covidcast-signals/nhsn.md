@@ -1,10 +1,10 @@
 ---
-title: NHSN ED Visits
+title: NHSN Respiratory Hospitalizations
 parent: Data Sources and Signals
 grand_parent: Main Endpoint (COVIDcast)
 nav_order: 1
 ---
-# National Syndromic Surveillance Program Emergency Department Visits
+# National Healthcare Safety Network Respiratory Hospitalizations
 {: .no_toc}
 
 * **Source name:** `nhsn`
