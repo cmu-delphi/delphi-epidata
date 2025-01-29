@@ -68,7 +68,7 @@ class CsvImporter:
   REQUIRED_COLUMNS = {'geo_id', 'val', 'se', 'sample_size'}
 
   # reasonable time bounds for sanity checking time values
-  MIN_YEAR = 2019
+  MIN_YEAR = 2017 # `google-symptoms` has 2017 data
   MAX_YEAR = 2030
 
   # The datatypes expected by pandas.read_csv. Int64 is like float in that it can handle both numbers and nans.
