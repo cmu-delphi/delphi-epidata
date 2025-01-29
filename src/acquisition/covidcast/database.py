@@ -567,7 +567,7 @@ FROM {self.history_view} h JOIN (
     logger = get_structured_logger("compute_coverage_crossref")
 
     coverage_crossref_load_delete_sql = f'''
-      DELETE FROM coverage_crossref_load WHERE 1;
+      TRUNCATE coverage_crossref_load;
       '''
 
     coverage_crossref_compute_sql = f'''
@@ -582,7 +582,23 @@ FROM {self.history_view} h JOIN (
       '''
     
     coverage_crossref_delete_sql = f'''
-      DELETE FROM coverage_crossref WHERE 1;
+      TRUNCATE coverage_crossref;
+    '''
+
+    coverage_crossref_drop_signal_index = f'''
+     DROP INDEX coverage_crossref_signal_key_id on coverage_crossref;
+    '''
+    
+    coverage_crossref_drop_geo_index = f'''
+     DROP INDEX coverage_crossref_geo_key_id on coverage_crossref;
+    '''
+
+    coverage_crossref_create_signal_index = f'''
+      CREATE INDEX coverage_crossref_signal_key_id ON coverage_crossref (signal_key_id);
+    '''
+
+    coverage_crossref_create_geo_index = f'''
+      CREATE INDEX coverage_crossref_geo_key_id ON coverage_crossref (geo_key_id);
     '''
 
     coverage_crossref_update_sql = f'''
@@ -599,7 +615,21 @@ FROM {self.history_view} h JOIN (
     self._cursor.execute(coverage_crossref_delete_sql)
     logger.info(f"coverage_crossref_delete_sql:{self._cursor.rowcount}")
 
+    self._cursor.execute(coverage_crossref_drop_signal_index)
+    logger.info(f"coverage_crossref_drop_signal_index:{self._cursor.rowcount}")
+
+    self._cursor.execute(coverage_crossref_drop_geo_index)
+    logger.info(f"coverage_crossref_drop_geo_index:{self._cursor.rowcount}")
+
     self._cursor.execute(coverage_crossref_update_sql)
     logger.info(f"coverage_crossref_update_sql:{self._cursor.rowcount}")
+    main_rowcount = self._cursor.rowcount
 
-    return self._cursor.rowcount
+    self._cursor.execute(coverage_crossref_create_signal_index)
+    logger.info(f"coverage_crossref_create_signal_index:{self._cursor.rowcount}")
+
+    self._cursor.execute(coverage_crossref_create_geo_index)
+    logger.info(f"coverage_crossref_create_geo_index:{self._cursor.rowcount}")
+    self.commit()
+
+    return main_rowcount
