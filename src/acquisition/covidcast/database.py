@@ -566,11 +566,11 @@ FROM {self.history_view} h JOIN (
     """Compute coverage_crossref table."""
     logger = get_structured_logger("compute_coverage_crossref")
 
-    coverage_crossref_load_delete_sql = f'''
+    coverage_crossref_load_delete_sql = '''
       TRUNCATE coverage_crossref_load;
       '''
 
-    coverage_crossref_compute_sql = f'''
+    coverage_crossref_compute_sql = '''
       INSERT INTO coverage_crossref_load
       SELECT
           el.signal_key_id,
@@ -581,27 +581,27 @@ FROM {self.history_view} h JOIN (
       GROUP BY el.signal_key_id, el.geo_key_id;
       '''
     
-    coverage_crossref_delete_sql = f'''
+    coverage_crossref_delete_sql = '''
       TRUNCATE coverage_crossref;
     '''
 
-    coverage_crossref_drop_signal_index = f'''
+    coverage_crossref_drop_signal_index = '''
      DROP INDEX coverage_crossref_signal_key_id on coverage_crossref;
     '''
     
-    coverage_crossref_drop_geo_index = f'''
+    coverage_crossref_drop_geo_index = '''
      DROP INDEX coverage_crossref_geo_key_id on coverage_crossref;
     '''
 
-    coverage_crossref_create_signal_index = f'''
+    coverage_crossref_create_signal_index = '''
       CREATE INDEX coverage_crossref_signal_key_id ON coverage_crossref (signal_key_id);
     '''
 
-    coverage_crossref_create_geo_index = f'''
+    coverage_crossref_create_geo_index = '''
       CREATE INDEX coverage_crossref_geo_key_id ON coverage_crossref (geo_key_id);
     '''
 
-    coverage_crossref_update_sql = f'''
+    coverage_crossref_update_sql = '''
       INSERT INTO coverage_crossref
       SELECT * FROM coverage_crossref_load;
     '''
@@ -615,11 +615,18 @@ FROM {self.history_view} h JOIN (
     self._cursor.execute(coverage_crossref_delete_sql)
     logger.info(f"coverage_crossref_delete_sql:{self._cursor.rowcount}")
 
-    self._cursor.execute(coverage_crossref_drop_signal_index)
-    logger.info(f"coverage_crossref_drop_signal_index:{self._cursor.rowcount}")
+    # These will fail if the index does not exist, which is fine
+    try:
+      self._cursor.execute(coverage_crossref_drop_signal_index)
+      logger.info(f"coverage_crossref_drop_signal_index:{self._cursor.rowcount}")
+    except Exception as e:
+      logger.info(f"coverage_crossref_drop_signal_index:{e}")
 
-    self._cursor.execute(coverage_crossref_drop_geo_index)
-    logger.info(f"coverage_crossref_drop_geo_index:{self._cursor.rowcount}")
+    try:
+      self._cursor.execute(coverage_crossref_drop_geo_index)
+      logger.info(f"coverage_crossref_drop_geo_index:{self._cursor.rowcount}")
+    except Exception as e:
+      logger.info(f"coverage_crossref_drop_geo_index:{e}")
 
     self._cursor.execute(coverage_crossref_update_sql)
     logger.info(f"coverage_crossref_update_sql:{self._cursor.rowcount}")

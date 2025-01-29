@@ -18,7 +18,7 @@ def get_argument_parser():
   return parser
 
 
-def main(args, epidata_impl=Epidata, database_impl=Database):
+def main(args, database_impl=Database):
   """Updates the table for the `coverage_crossref`.
 
   `args`: parsed command-line arguments
@@ -40,11 +40,11 @@ def main(args, epidata_impl=Epidata, database_impl=Database):
     database.disconnect(True)
     raise
 
-  args = ("success",1)
+  result = ("success",1)
   if coverage==0:
-    args = ("no results",-2)
+    result = ("no results",-2)
 
-  logger.info('coverage_crossref result: %s (code %d)' % args)
+  logger.info('coverage_crossref result: %s (code %d)' % result)
 
 
   logger.info(
