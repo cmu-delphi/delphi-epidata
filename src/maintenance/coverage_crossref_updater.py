@@ -10,24 +10,11 @@ from delphi.epidata.acquisition.covidcast.database import Database
 from delphi_utils import get_structured_logger
 from delphi.epidata.client.delphi_epidata import Epidata
 
-def get_argument_parser():
-  """Define command line arguments."""
 
-  parser = argparse.ArgumentParser()
-  parser.add_argument("--log_file", help="filename for log output")
-  return parser
+def main(database_impl=Database):
+  """Updates the table for the `coverage_crossref`."""
 
-
-def main(args, database_impl=Database):
-  """Updates the table for the `coverage_crossref`.
-
-  `args`: parsed command-line arguments
-  """
-  log_file = None
-
-  logger = get_structured_logger(
-      "coverage_crossref_updater",
-      filename=log_file)
+  logger = get_structured_logger("coverage_crossref_updater")
   start_time = time.time()
   database = database_impl()
   database.connect()
@@ -54,5 +41,4 @@ def main(args, database_impl=Database):
 
 
 if __name__ == '__main__':
-  if not main(get_argument_parser().parse_args()):
-    sys.exit(1)
+  main()

@@ -91,12 +91,12 @@ class CoverageCrossrefTests(unittest.TestCase):
     """Populate, query, cache, query, and verify the cache."""
 
     # insert dummy data
-    self.cur.execute(f'''
+    self.cur.execute('''
       INSERT INTO `signal_dim` (`signal_key_id`, `source`, `signal`)
       VALUES
         (42, 'src', 'sig');
     ''')
-    self.cur.execute(f'''
+    self.cur.execute('''
       INSERT INTO `geo_dim` (`geo_key_id`, `geo_type`, `geo_value`)
       VALUES
         (96, 'state', 'pa'), 
@@ -126,9 +126,8 @@ class CoverageCrossrefTests(unittest.TestCase):
       'message': 'no results',
     })
 
-    # update the cache
-    args = []
-    main(args)
+    # update the coverage crossref table
+    main()
 
     results = self._make_request()
 
