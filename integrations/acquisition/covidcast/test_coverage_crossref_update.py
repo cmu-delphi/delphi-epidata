@@ -22,7 +22,7 @@ __test_target__ = (
 )
 
 # use the local instance of the Epidata API
-BASE_URL = 'http://delphi_web_epidata/epidata'
+BASE_URL = 'http://delphi_web_epidata/epidata' # NOSONAR
 
 
 class CoverageCrossrefTests(unittest.TestCase):
@@ -99,7 +99,7 @@ class CoverageCrossrefTests(unittest.TestCase):
     self.cur.execute('''
       INSERT INTO `geo_dim` (`geo_key_id`, `geo_type`, `geo_value`)
       VALUES
-        (96, 'state', 'pa'), 
+        (96, 'state', 'pa'),
         (97, 'state', 'wa');
     ''')
     self.cur.execute(f'''
@@ -118,7 +118,7 @@ class CoverageCrossrefTests(unittest.TestCase):
     self.cnx.commit()
 
     results = self._make_request()
-    
+
     # make sure the tables are empty
     self.assertEqual(results, {
       'result': -2,
