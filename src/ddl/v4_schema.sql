@@ -177,8 +177,8 @@ CREATE TABLE `coverage_crossref` (
     `geo_key_id` bigint NOT NULL,
     `min_time_value` int NOT NULL,
     `max_time_value` int NOT NULL,
-    UNIQUE INDEX coverage_crossref_signal_key_id (`signal_key_id`),
-    UNIQUE INDEX coverage_crossref_geo_key_id (`geo_key_id`)
+    UNIQUE INDEX coverage_crossref_geo_sig (`geo_key_id`, `signal_key_id`),
+    INDEX coverage_crossref_sig_geo (`signal_key_id`, `geo_key_id`)
 ) ENGINE=InnoDB;
 
 CREATE OR REPLACE VIEW `coverage_crossref_v` AS
