@@ -46,7 +46,6 @@ class CoverageCrossrefTests(unittest.TestCase):
     cur.execute("truncate table geo_dim")
     cur.execute("truncate table signal_dim")
     cur.execute("truncate table coverage_crossref")
-    cur.execute("truncate table coverage_crossref_load")
     cnx.commit()
     cur.close()
 

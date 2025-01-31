@@ -566,45 +566,27 @@ FROM {self.history_view} h JOIN (
     """Compute coverage_crossref table."""
     logger = get_structured_logger("compute_coverage_crossref")
 
-    coverage_crossref_load_delete_sql = '''
-      TRUNCATE coverage_crossref_load;
-      '''
+    coverage_crossref_delete_sql = '''
+      DELETE FROM coverage_crossref;
+    '''
 
-    coverage_crossref_compute_sql = '''
-      INSERT INTO coverage_crossref_load
+    coverage_crossref_update_sql = '''
+      INSERT INTO coverage_crossref (signal_key_id, geo_key_id, min_time_value, max_time_value)
       SELECT
           el.signal_key_id,
           el.geo_key_id,
           MIN(el.time_value) as min_time_value,
           MAX(el.time_value) as max_time_value
-      FROM epimetric_latest el
+      FROM covid.epimetric_latest el
       GROUP BY el.signal_key_id, el.geo_key_id;
-      '''
-    
-    coverage_crossref_delete_sql = '''
-      TRUNCATE coverage_crossref;
     '''
 
-    coverage_crossref_update_sql = '''
-      INSERT INTO coverage_crossref
-      SELECT * FROM coverage_crossref_load;
-    '''
-
-    self._cursor.execute(coverage_crossref_load_delete_sql)
-    logger.info(f"coverage_crossref_load_delete_sql:{self._cursor.rowcount}")
-
-    self._cursor.execute(coverage_crossref_compute_sql)
-    logger.info(f"coverage_crossref_compute_sql:{self._cursor.rowcount}")
-
+    self._connection.start_transaction()
     self._cursor.execute(coverage_crossref_delete_sql)
     logger.info(f"coverage_crossref_delete_sql:{self._cursor.rowcount}")
 
     self._cursor.execute(coverage_crossref_update_sql)
     logger.info(f"coverage_crossref_update_sql:{self._cursor.rowcount}")
-    main_rowcount = self._cursor.rowcount
-
-    self._cursor.execute(coverage_crossref_load_delete_sql)
-    logger.info(f"coverage_crossref_load_delete_sql:{self._cursor.rowcount}")
     self.commit()
 
-    return main_rowcount
+    return self._cursor.rowcount
