@@ -14,70 +14,18 @@ from delphi.epidata.client.delphi_epidata import Epidata
 import delphi.operations.secrets as secrets
 import delphi.epidata.acquisition.covidcast.database as live
 from delphi.epidata.maintenance.coverage_crossref_updater import main
-
-# py3tester coverage target (equivalent to `import *`)
-__test_target__ = (
-  'delphi.epidata.acquisition.covidcast.'
-  'coverage_crossref_updater'
-)
+from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase
 
 # use the local instance of the Epidata API
 BASE_URL = 'http://delphi_web_epidata/epidata' # NOSONAR
 
 
-class CoverageCrossrefTests(unittest.TestCase):
+class CoverageCrossrefTests(CovidcastBase):
   """Tests coverage crossref updater."""
 
-  def setUp(self):
+  def localSetUp(self):
     """Perform per-test setup."""
-
-    # connect to the `epidata` database
-    cnx = mysql.connector.connect(
-        user='user',
-        password='pass',
-        host='delphi_database_epidata',
-        database='covid')
-    cur = cnx.cursor()
-
-    # clear all tables
-    cur.execute("truncate table epimetric_load")
-    cur.execute("truncate table epimetric_full")
-    cur.execute("truncate table epimetric_latest")
-    cur.execute("truncate table geo_dim")
-    cur.execute("truncate table signal_dim")
-    cur.execute("truncate table coverage_crossref")
-    cnx.commit()
-    cur.close()
-
-    # make connection and cursor available to test cases
-    self.cnx = cnx
-    self.cur = cnx.cursor()
-
-    # use the local instance of the epidata database
-    secrets.db.host = 'delphi_database_epidata'
-    secrets.db.epi = ('user', 'pass')
-
-    epidata_cnx = mysql.connector.connect(
-        user='user',
-        password='pass',
-        host='delphi_database_epidata',
-        database='epidata')
-    epidata_cur = epidata_cnx.cursor()
-
-    epidata_cur.execute("DELETE FROM `api_user`")
-    epidata_cur.execute('INSERT INTO `api_user`(`api_key`, `email`) VALUES("key", "email")')
-    epidata_cnx.commit()
-    epidata_cur.close()
-    epidata_cnx.close()
-
-    # use the local instance of the Epidata API
-    Epidata.BASE_URL = BASE_URL
-    Epidata.auth = ('epidata', 'key')
-
-  def tearDown(self):
-    """Perform per-test teardown."""
-    self.cur.close()
-    self.cnx.close()
+    self._db._cursor.execute('TRUNCATE TABLE `coverage_crossref`')
 
   @staticmethod
   def _make_request():
@@ -90,18 +38,18 @@ class CoverageCrossrefTests(unittest.TestCase):
     """Populate, query, cache, query, and verify the cache."""
 
     # insert dummy data
-    self.cur.execute('''
+    self._db._cursor.execute('''
       INSERT INTO `signal_dim` (`signal_key_id`, `source`, `signal`)
       VALUES
         (42, 'src', 'sig');
     ''')
-    self.cur.execute('''
+    self._db._cursor.execute('''
       INSERT INTO `geo_dim` (`geo_key_id`, `geo_type`, `geo_value`)
       VALUES
         (96, 'state', 'pa'),
         (97, 'state', 'wa');
     ''')
-    self.cur.execute(f'''
+    self._db._cursor.execute(f'''
       INSERT INTO
         `epimetric_latest` (`epimetric_id`, `signal_key_id`, `geo_key_id`, `time_type`,
 	      `time_value`, `value_updated_timestamp`,
@@ -114,7 +62,7 @@ class CoverageCrossrefTests(unittest.TestCase):
         (16, 42, 97, 'day', 20200422,
           789, 1, 2, 3, 20200423, 1, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
     ''')
-    self.cnx.commit()
+    self._db.commit()
 
     results = self._make_request()
 
