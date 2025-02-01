@@ -563,7 +563,8 @@ FROM {self.history_view} h JOIN (
     return cache_hash
 
   def compute_coverage_crossref(self):
-    """Compute coverage_crossref table."""
+    """Compute coverage_crossref table, for looking up available signals per geo or vice versa."""
+
     logger = get_structured_logger("compute_coverage_crossref")
 
     coverage_crossref_delete_sql = '''
