@@ -573,12 +573,12 @@ FROM {self.history_view} h JOIN (
     coverage_crossref_update_sql = '''
       INSERT INTO coverage_crossref (signal_key_id, geo_key_id, min_time_value, max_time_value)
       SELECT
-          el.signal_key_id,
-          el.geo_key_id,
-          MIN(el.time_value) as min_time_value,
-          MAX(el.time_value) as max_time_value
-      FROM covid.epimetric_latest el
-      GROUP BY el.signal_key_id, el.geo_key_id;
+          signal_key_id,
+          geo_key_id,
+          MIN(time_value) AS min_time_value,
+          MAX(time_value) AS max_time_value
+      FROM covid.epimetric_latest
+      GROUP BY signal_key_id, geo_key_id;
     '''
 
     self._connection.start_transaction()
