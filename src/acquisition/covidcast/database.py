@@ -583,11 +583,14 @@ FROM {self.history_view} h JOIN (
     '''
 
     self._connection.start_transaction()
+
     self._cursor.execute(coverage_crossref_delete_sql)
-    logger.info(f"coverage_crossref_delete_sql:{self._cursor.rowcount}")
+    logger.info("coverage_crossref_delete", rows=self._cursor.rowcount)
 
     self._cursor.execute(coverage_crossref_update_sql)
-    logger.info(f"coverage_crossref_update_sql:{self._cursor.rowcount}")
+    logger.info("coverage_crossref_update", rows=self._cursor.rowcount)
+
     self.commit()
+    logger.info("coverage_crossref committed")
 
     return self._cursor.rowcount
