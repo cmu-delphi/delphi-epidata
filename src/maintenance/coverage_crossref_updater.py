@@ -35,7 +35,7 @@ def main(database_impl=Database):
 
 
   logger.info(
-      "Generated and updated covidcast metadata",
+      "Generated and updated covidcast geo/signal coverage",
       total_runtime_in_seconds=round(time.time() - start_time, 2))
   return True
 
