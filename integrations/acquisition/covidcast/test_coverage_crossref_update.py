@@ -1,4 +1,4 @@
-"""Integration tests for covidcast's metadata caching."""
+"""Integration tests for the covidcast `geo_coverage` endpoint."""
 
 # standard library
 import json
