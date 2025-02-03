@@ -27,12 +27,7 @@ def main():
     database.disconnect(True)
     raise
 
-  result = ("success",1)
-  if coverage==0:
-    result = ("no results",-2)
-
-  logger.info('coverage_crossref result: %s (code %d)' % result)
-
+  logger.info(f"coverage_crossref returned: {coverage}")
 
   logger.info(
       "Generated and updated covidcast geo/signal coverage",
