@@ -1,14 +1,9 @@
 """Updates the table for the `coverage_crossref` endpoint."""
 
-# standard library
-import argparse
-import sys
 import time
 
-# first party
 from delphi.epidata.acquisition.covidcast.database import Database
 from delphi_utils import get_structured_logger
-from delphi.epidata.client.delphi_epidata import Epidata
 
 
 def main():
