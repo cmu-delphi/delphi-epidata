@@ -39,31 +39,11 @@ class CoverageCrossrefTests(CovidcastBase):
     """Populate, query, cache, query, and verify the cache."""
 
     # insert dummy data
-    self._db._cursor.execute('''
-      INSERT INTO `signal_dim` (`signal_key_id`, `source`, `signal`)
-      VALUES
-        (42, 'src', 'sig');
-    ''')
-    self._db._cursor.execute('''
-      INSERT INTO `geo_dim` (`geo_key_id`, `geo_type`, `geo_value`)
-      VALUES
-        (96, 'state', 'pa'),
-        (97, 'state', 'wa');
-    ''')
-    self._db._cursor.execute(f'''
-      INSERT INTO
-        `epimetric_latest` (`epimetric_id`, `signal_key_id`, `geo_key_id`, `time_type`,
-	      `time_value`, `value_updated_timestamp`,
-        `value`, `stderr`, `sample_size`,
-        `issue`, `lag`, `missing_value`,
-        `missing_stderr`,`missing_sample_size`)
-      VALUES
-        (15, 42, 96, 'day', 20200422,
-          123, 1, 2, 3, 20200422, 0, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}),
-        (16, 42, 97, 'day', 20200422,
-          789, 1, 2, 3, 20200423, 1, {Nans.NOT_MISSING}, {Nans.NOT_MISSING}, {Nans.NOT_MISSING})
-    ''')
-    self._db.commit()
+    self._insert_rows([
+        CovidcastTestRow.make_default_row(geo_type="state", geo_value="pa"),
+        CovidcastTestRow.make_default_row(geo_type="state", geo_value="ny"),
+        CovidcastTestRow.make_default_row(geo_type="state", geo_value="ny", signal="sig2"),
+    ])
 
     results = self._make_request()
 
