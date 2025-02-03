@@ -11,12 +11,12 @@ from delphi_utils import get_structured_logger
 from delphi.epidata.client.delphi_epidata import Epidata
 
 
-def main(database_impl=Database):
+def main():
   """Updates the table for the `coverage_crossref`."""
 
   logger = get_structured_logger("coverage_crossref_updater")
   start_time = time.time()
-  database = database_impl()
+  database = Database()
   database.connect()
 
   # compute and update coverage_crossref
@@ -35,7 +35,7 @@ def main(database_impl=Database):
 
 
   logger.info(
-      "Generated and updated covidcast metadata",
+      "Generated and updated covidcast geo/signal coverage",
       total_runtime_in_seconds=round(time.time() - start_time, 2))
   return True
 

@@ -1,4 +1,4 @@
-"""Integration tests for covidcast's metadata caching."""
+"""Integration tests for the covidcast `geo_coverage` endpoint."""
 
 # standard library
 import json
@@ -81,7 +81,6 @@ class CoverageCrossrefTests(CovidcastBase):
     # make sure the cache was actually served
     self.assertEqual(results, {
       'result': 1,
-      'epidata': [{'signal': 'sig', 'source': 'src'},
-                  {'signal': 'sig', 'source': 'src'}],
+      'epidata': [{'signal': 'sig', 'source': 'src'}],
       'message': 'success',
     })
