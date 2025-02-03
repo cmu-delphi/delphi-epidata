@@ -78,6 +78,22 @@ class UnitTests(unittest.TestCase):
     self.assertIn('timestamp', sql)
     self.assertIn('epidata', sql)
 
+  def test_compute_coverage_crossref_query(self):
+    """Query to update the compute crossref looks sensible.
+
+    NOTE: Actual behavior is tested by integration test.
+    """
+
+    mock_connector = MagicMock()
+    database = Database()
+    database.connect(connector_impl=mock_connector)
+
+    database.compute_coverage_crossref()
+
+    connection = mock_connector.connect()
+    cursor = connection.cursor()
+    self.assertTrue(cursor.execute.called)
+
   def test_insert_or_update_batch_exception_reraised(self):
     """Test that an exception is reraised"""
     mock_connector = MagicMock()
