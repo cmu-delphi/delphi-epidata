@@ -22,10 +22,9 @@ def main():
   # compute and update coverage_crossref
   try:
     coverage = database.compute_coverage_crossref()
-  except:
-    # clean up before failing
+  finally:
+    # clean up in success and in failure
     database.disconnect(True)
-    raise
 
   logger.info(f"coverage_crossref returned: {coverage}")
 
