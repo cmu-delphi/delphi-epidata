@@ -1,14 +1,9 @@
 """Updates the table for the `coverage_crossref` endpoint."""
 
-# standard library
-import argparse
-import sys
 import time
 
-# first party
 from delphi.epidata.acquisition.covidcast.database import Database
 from delphi_utils import get_structured_logger
-from delphi.epidata.client.delphi_epidata import Epidata
 
 
 def main():
@@ -22,17 +17,11 @@ def main():
   # compute and update coverage_crossref
   try:
     coverage = database.compute_coverage_crossref()
-  except:
-    # clean up before failing
+  finally:
+    # clean up in success and in failure
     database.disconnect(True)
-    raise
 
-  result = ("success",1)
-  if coverage==0:
-    result = ("no results",-2)
-
-  logger.info('coverage_crossref result: %s (code %d)' % result)
-
+  logger.info(f"coverage_crossref returned: {coverage}")
 
   logger.info(
       "Generated and updated covidcast geo/signal coverage",
