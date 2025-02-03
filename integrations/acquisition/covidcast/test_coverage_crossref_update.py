@@ -28,8 +28,9 @@ class CoverageCrossrefTests(CovidcastBase):
     self._db._cursor.execute('TRUNCATE TABLE `coverage_crossref`')
 
   @staticmethod
-  def _make_request():
-    params = {'geo': 'state:*'}
+  def _make_request(params=None):
+    if params is None:
+        params = {'geo': 'state:*'}
     response = requests.get(f"{Epidata.BASE_URL}/covidcast/geo_coverage", params=params, auth=Epidata.auth)
     response.raise_for_status()
     return response.json()
@@ -78,7 +79,25 @@ class CoverageCrossrefTests(CovidcastBase):
 
     results = self._make_request()
 
-    # make sure the cache was actually served
+    # make sure the data was actually served
+    self.assertEqual(results, {
+      'result': 1,
+      'epidata': [{'signal': 'sig', 'source': 'src'}],
+      'message': 'success',
+    })
+
+    results = self._make_request(params = {'geo': 'hrr:*'})
+
+    # make sure the tables are empty
+    self.assertEqual(results, {
+      'result': -2,
+      'epidata': [],
+      'message': 'no results',
+    })
+
+    results = self._make_request(params = {'geo': 'state:pa'})
+
+    # make sure the data was actually served
     self.assertEqual(results, {
       'result': 1,
       'epidata': [{'signal': 'sig', 'source': 'src'}],
