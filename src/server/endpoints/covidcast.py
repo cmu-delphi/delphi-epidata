@@ -557,6 +557,7 @@ def handle_geo_coverage():
 
     q.apply_geo_filters("geo_type", "geo_value", geo_sets)
     q.set_sort_order("source", "signal")
+    q.group_by = fields_string # this condenses duplicate results, similar to `SELECT DISTINCT`
 
     return execute_query(q.query, q.params, fields_string, [], [])
 
