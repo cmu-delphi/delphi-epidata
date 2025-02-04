@@ -561,3 +561,36 @@ FROM {self.history_view} h JOIN (
     for entry in cache:
       cache_hash[(entry['data_source'], entry['signal'], entry['time_type'], entry['geo_type'])] = entry
     return cache_hash
+
+  def compute_coverage_crossref(self):
+    """Compute coverage_crossref table, for looking up available signals per geo or vice versa."""
+
+    logger = get_structured_logger("compute_coverage_crossref")
+
+    coverage_crossref_delete_sql = '''
+      DELETE FROM coverage_crossref;
+    '''
+
+    coverage_crossref_update_sql = '''
+      INSERT INTO coverage_crossref (signal_key_id, geo_key_id, min_time_value, max_time_value)
+      SELECT
+          signal_key_id,
+          geo_key_id,
+          MIN(time_value) AS min_time_value,
+          MAX(time_value) AS max_time_value
+      FROM covid.epimetric_latest
+      GROUP BY signal_key_id, geo_key_id;
+    '''
+
+    self._connection.start_transaction()
+
+    self._cursor.execute(coverage_crossref_delete_sql)
+    logger.info("coverage_crossref_delete", rows=self._cursor.rowcount)
+
+    self._cursor.execute(coverage_crossref_update_sql)
+    logger.info("coverage_crossref_update", rows=self._cursor.rowcount)
+
+    self.commit()
+    logger.info("coverage_crossref committed")
+
+    return self._cursor.rowcount
