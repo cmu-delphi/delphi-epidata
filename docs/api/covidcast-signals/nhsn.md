@@ -4,7 +4,7 @@ parent: Data Sources and Signals
 grand_parent: Main Endpoint (COVIDcast)
 nav_order: 1
 ---
-# National Healthcare Safety Network Respiratory Hospitalizations
+# National Healthcare Safety Network Respiratory Hospitalizations (Continuation of [HHS]((see [date format docs](../hhs.md)))
 {: .no_toc}
 
 * **Source name:** `nhsn`
