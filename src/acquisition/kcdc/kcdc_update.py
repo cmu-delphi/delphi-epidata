@@ -149,7 +149,7 @@ def update_from_data(ews, ilis, date, issue, test_mode=False):
         update_args = [date, ili]
         try:
             insert.execute(sql % tuple(insert_args + update_args))
-        except Exception:
+        except mysql.connector.Error:
             pass
 
     # cleanup

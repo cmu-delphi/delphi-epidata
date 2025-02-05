@@ -82,8 +82,7 @@ import mysql.connector
 # first party
 from .taiwan_nidss import NIDSS
 import delphi.operations.secrets as secrets
-from delphi.utils.epiweek import *
-
+from  delphi.utils.epiweek import delta_epiweeks, add_epiweeks
 
 # Get a row count just to know how many new rows are inserted
 def get_rows(cnx):

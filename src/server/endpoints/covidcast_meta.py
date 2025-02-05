@@ -42,7 +42,10 @@ def handle():
 
     metadata = db.execute(
         text(
-            "SELECT UNIX_TIMESTAMP(NOW()) - timestamp AS age, epidata FROM covidcast_meta_cache LIMIT 1"
+            "SELECT UNIX_TIMESTAMP(NOW()) - timestamp AS age"
+            + ", epidata "
+            + "FROM covidcast_meta_cache "
+            + " LIMIT 1"
         )
     ).fetchone()
 
@@ -103,6 +106,7 @@ def handle():
         headers={
             "Cache-Control": f"max-age={standard_age}, public",
             "Age": f"{reported_age}",
-            # TODO?: "Expires": f"{}", # superseded by Cache-Control: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Expires
+            # TODO?: "Expires": f"{}", # superseded by Cache-Control: 
+            # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Expires
         }
     )

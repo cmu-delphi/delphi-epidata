@@ -20,7 +20,8 @@ def handle():
     # build query
     q = QueryBuilder("covid_hosp_facility_key", "c")
     q.fields = ", ".join(
-        [ # NOTE: fields `geocoded_hospital_address` and `hhs_ids` are available but not being provided by this endpoint.
+        [ # NOTE: fields `geocoded_hospital_address` and `hhs_ids` 
+          #  are available but not being provided by this endpoint.
             f"{q.alias}.hospital_pk",
             f"{q.alias}.state",
             f"{q.alias}.ccn",
