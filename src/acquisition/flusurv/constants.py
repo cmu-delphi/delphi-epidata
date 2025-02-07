@@ -53,7 +53,7 @@ mapping, as described in the top-level "ages" element, below. See
     ]
 
 In addition to the new age, race, and sex breakdowns, the group id for overall
-reporting has changed from 6 to 0. Age ids 1-5 and 7-9 retain the same the
+reporting has changed from 6 to 0. Age ids 1-5 and 7-9 retain the
 same meanings; age id 6 is not reported.
 """
 HISTORICAL_GROUPS = (
@@ -76,6 +76,9 @@ NEW_AGE_GROUPS = (
     "rate_age_12t17",
     "rate_age_lt18",
     "rate_age_gte18",
+    "rate_age_1t4",
+    "rate_age_gte75",
+    "rate_age_0tlt1",
 )
 RACE_GROUPS = (
     "rate_race_white",
