@@ -36,7 +36,7 @@ from .._pandas import as_pandas, print_pandas
 from .covidcast_utils import compute_trend, compute_trends, compute_trend_value, CovidcastMetaEntry
 from ..utils import shift_day_value, day_to_time_value, time_value_to_iso, time_value_to_day, shift_week_value, time_value_to_week, guess_time_value_is_day, week_to_time_value, TimeValues
 from .covidcast_utils.model import TimeType, count_signal_time_types, data_sources, create_source_signal_alias_mapper
-from delphi.epidata.common.logger import get_structured_logger
+from delphi_utils import get_structured_logger
 
 # first argument is the endpoint name
 bp = Blueprint("covidcast", __name__)
@@ -542,6 +542,24 @@ def handle_coverage():
 
     return execute_query(q.query, q.params, fields_string, fields_int, [], transform=transform_row)
 
+@bp.route("/geo_coverage", methods=("GET", "POST"))
+def handle_geo_coverage():
+    """
+    For a specific geo returns the signal coverage (number of signals for a given geo_type)
+    """
+
+    geo_sets = parse_geo_sets()
+
+    q = QueryBuilder("coverage_crossref_v", "c")
+    fields_string = ["source", "signal"]
+
+    q.set_fields(fields_string)
+
+    q.apply_geo_filters("geo_type", "geo_value", geo_sets)
+    q.set_sort_order("source", "signal")
+    q.group_by = ["c." + field for field in fields_string] # this condenses duplicate results, similar to `SELECT DISTINCT`
+
+    return execute_query(q.query, q.params, fields_string, [], [])
 
 @bp.route("/anomalies", methods=("GET", "POST"))
 def handle_anomalies():

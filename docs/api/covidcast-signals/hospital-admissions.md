@@ -1,7 +1,8 @@
 ---
 title: Hospital Admissions
 parent: Data Sources and Signals
-grand_parent: COVIDcast Main Endpoint
+grand_parent: Main Endpoint (COVIDcast)
+nav_order: 1
 ---
 
 # Hospital Admissions
@@ -59,6 +60,8 @@ expect estimates available for the most recent 7-13 days to change substantially
 in later data revisions (having a median delta of 10% or more). Estimates for
 dates more than 57 days in the past are expected to remain fairly static (having
 a median delta of 1% or less), as most major revisions have already occurred.
+
+See our [blog post](https://delphi.cmu.edu/blog/2020/11/05/a-syndromic-covid-19-indicator-based-on-insurance-claims-of-outpatient-visits/#backfill) for more information on backfill.
 
 ## Limitations
 

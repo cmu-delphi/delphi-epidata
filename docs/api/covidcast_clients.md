@@ -1,20 +1,20 @@
 ---
 title: API Clients
-parent: COVIDcast Main Endpoint
+parent: Main Endpoint (COVIDcast)
 nav_order: 1
 ---
 
-# COVIDcast Libraries
+# Main Endpoint API Clients
 
-Dedicated COVIDcast access and analysis libraries are available for several languages:
+To access COVIDcast data, we recommend using the following client libraries:
 
-* R: [covidcast](https://cmu-delphi.github.io/covidcast/covidcastR/)
-* Python: [covidcast](https://cmu-delphi.github.io/covidcast/covidcast-py/html/)
+- R: [epidatr](https://cmu-delphi.github.io/epidatr/)
+- Python: [epidatpy](https://cmu-delphi.github.io/epidatpy/) (recommended) and [delphi-epidata](https://pypi.org/project/delphi-epidata/),
 
 These packages provide a convenient way to obtain COVIDcast data as a data frame
-ready to be used in further analyses and provide convenient mapping and
-analysis functions. For installation instructions and examples, consult their
-respective webpages.
+ready to be used in further analyses and provide convenient mapping and analysis
+functions. For installation instructions and examples, consult their respective
+webpages.
 
-
-To access Epidata datasets on other diseases, visit our [Epidata API Client Libraries)](client_libraries.md) documentation.
+To access Epidata datasets on other diseases, visit our
+[Epidata API Client Libraries](client_libraries.md) documentation.

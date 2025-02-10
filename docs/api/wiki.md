@@ -1,6 +1,8 @@
 ---
-title: Wikipedia Access
-parent: Other Endpoints (COVID-19 and Other Diseases)
+title: <i>inactive</i> Wikipedia Access
+parent: Data Sources and Signals
+grand_parent: Other Endpoints (COVID-19 and Other Diseases)
+nav_order: 2
 ---
 
 # Wikipedia Access

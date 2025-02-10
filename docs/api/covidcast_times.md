@@ -1,7 +1,7 @@
 ---
 title: Date Coding and Revisions
-parent: COVIDcast Main Endpoint
-nav_order: 5
+parent: Main Endpoint (COVIDcast)
+nav_order: 6
 ---
 
 # Date Coding and Revisions

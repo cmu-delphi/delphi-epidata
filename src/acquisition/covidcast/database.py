@@ -14,7 +14,7 @@ import mysql.connector
 
 # first party
 import delphi.operations.secrets as secrets
-from delphi.epidata.common.logger import get_structured_logger
+from delphi_utils import get_structured_logger
 from delphi.epidata.common.covidcast_row import CovidcastRow
 
 
@@ -117,16 +117,16 @@ class Database:
       get_structured_logger("insert_or_update_batch").fatal(err_msg)
       raise DBLoadStateException(err_msg)
 
-    # NOTE: `value_update_timestamp` is hardcoded to "NOW" (which is appropriate) and 
+    # NOTE: `value_update_timestamp` is hardcoded to "NOW" (which is appropriate) and
     #       `is_latest_issue` is hardcoded to 1 (which is temporary and addressed later in this method)
     insert_into_loader_sql = f'''
       INSERT INTO `{self.load_table}`
         (`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`,
-        `value_updated_timestamp`, `value`, `stderr`, `sample_size`, `issue`, `lag`, 
+        `value_updated_timestamp`, `value`, `stderr`, `sample_size`, `issue`, `lag`,
         `is_latest_issue`, `missing_value`, `missing_stderr`, `missing_sample_size`)
       VALUES
-        (%s, %s, %s, %s, %s, %s, 
-        UNIX_TIMESTAMP(NOW()), %s, %s, %s, %s, %s, 
+        (%s, %s, %s, %s, %s, %s,
+        UNIX_TIMESTAMP(NOW()), %s, %s, %s, %s, %s,
         1, %s, %s, %s)
     '''
 
@@ -134,11 +134,11 @@ class Database:
     # if an entry in the load table is NOT in the latest table, it is clearly now the latest value for that key (so we do nothing (thanks to INNER join)).
     # if an entry *IS* in both load and latest tables, but latest table issue is newer, unmark is_latest_issue in load.
     fix_is_latest_issue_sql = f'''
-        UPDATE 
-            `{self.load_table}` JOIN `{self.latest_view}` 
-                USING (`source`, `signal`, `geo_type`, `geo_value`, `time_type`, `time_value`) 
-            SET `{self.load_table}`.`is_latest_issue`=0 
-            WHERE `{self.load_table}`.`issue` < `{self.latest_view}`.`issue` 
+        UPDATE
+            `{self.load_table}` JOIN `{self.latest_view}`
+                USING (`source`, `signal`, `geo_type`, `geo_value`, `time_type`, `time_value`)
+            SET `{self.load_table}`.`is_latest_issue`=0
+            WHERE `{self.load_table}`.`issue` < `{self.latest_view}`.`issue`
     '''
 
     # TODO: consider handling cc_rows as a generator instead of a list
@@ -561,3 +561,36 @@ FROM {self.history_view} h JOIN (
     for entry in cache:
       cache_hash[(entry['data_source'], entry['signal'], entry['time_type'], entry['geo_type'])] = entry
     return cache_hash
+
+  def compute_coverage_crossref(self):
+    """Compute coverage_crossref table, for looking up available signals per geo or vice versa."""
+
+    logger = get_structured_logger("compute_coverage_crossref")
+
+    coverage_crossref_delete_sql = '''
+      DELETE FROM coverage_crossref;
+    '''
+
+    coverage_crossref_update_sql = '''
+      INSERT INTO coverage_crossref (signal_key_id, geo_key_id, min_time_value, max_time_value)
+      SELECT
+          signal_key_id,
+          geo_key_id,
+          MIN(time_value) AS min_time_value,
+          MAX(time_value) AS max_time_value
+      FROM covid.epimetric_latest
+      GROUP BY signal_key_id, geo_key_id;
+    '''
+
+    self._connection.start_transaction()
+
+    self._cursor.execute(coverage_crossref_delete_sql)
+    logger.info("coverage_crossref_delete", rows=self._cursor.rowcount)
+
+    self._cursor.execute(coverage_crossref_update_sql)
+    logger.info("coverage_crossref_update", rows=self._cursor.rowcount)
+
+    self.commit()
+    logger.info("coverage_crossref committed")
+
+    return self._cursor.rowcount

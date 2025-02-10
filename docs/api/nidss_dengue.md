@@ -1,11 +1,13 @@
 ---
-title: NIDSS Dengue
-parent: Other Endpoints (COVID-19 and Other Diseases)
+title: <i>inactive</i> NIDSS Dengue
+parent: Data Sources and Signals
+grand_parent: Other Endpoints (COVID-19 and Other Diseases)
+nav_order: 2
 ---
 
 # NIDSS Dengue
 
-This is the documentation of the API for accessing the NIDSS Dengue (`nidss_dengue`) endpoint of
+This is the documentation of the API for accessing the Taiwan National Infectious Disease Statistics System Dengue (`nidss_dengue`) endpoint of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 
 General topics not specific to any particular endpoint are discussed in the
@@ -15,7 +17,7 @@ General topics not specific to any particular endpoint are discussed in the
 
 ## NIDSS Dengue Data
 
-Counts of confirmed dengue cases from Taiwan's NIDSS.
+Counts of confirmed dengue cases from Taiwan's National Infectious Disease Statistics System (NIDSS).
  - Data source: [Taiwan CDC](http://nidss.cdc.gov.tw/en/SingleDisease.aspx?dc=1&dt=4&disease=061&position=1)
  - Temporal Resolution: Weekly from 2003w01
  - Spatial Resolution: By [hexchotomy region](https://en.wikipedia.org/wiki/Regions_of_Taiwan#Hexchotomy) ([6+1](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/nidss_regions.txt)) and by [city/county](https://en.wikipedia.org/wiki/List_of_administrative_divisions_of_Taiwan) ([22](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/nidss_locations.txt))
@@ -111,3 +113,7 @@ source('delphi_epidata.R')
 res <- Epidata$nidss_dengue(list('nationwide'), list(201440, Epidata$range(201501, 201510)))
 cat(paste(res$result, res$message, length(res$epidata), "\n"))
 ````
+
+# Source and Licensing
+
+The full text of the NIDSS Dengue license information is available on the Taiwan Digital Development Department's [website](https://data.gov.tw/license).

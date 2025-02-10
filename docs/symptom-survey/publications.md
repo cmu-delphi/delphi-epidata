@@ -1,6 +1,6 @@
 ---
 title: Publications
-parent: COVID-19 Trends and Impact Survey
+parent: <i>inactive</i> COVID-19 Trends and Impact Survey
 nav_order: 10
 ---
 
@@ -26,10 +26,64 @@ Pandemic"](https://www.pnas.org/topic/548) in *PNAS*:
 
 Research publications using the survey data include:
 
+- S. Santos, M. Humbard, A. Lambrou et al. (2025). [The SARS-CoV-2 test
+  scale-up in the USA: an analysis of the number of tests produced and used
+  over time and their modelled impact on the COVID-19 pandemic](https://doi.org/10.1016/S2468-2667(24)00279-2).
+  *The Lancet Public Health* 10 (1), e47-e57.
+- H. Bui, S. Ekşioğlu, R. Proano, and S. N. Pinkley (2025). [An Analysis of
+  COVID-19 Vaccine Hesitancy in the U.S.](https://doi.org/10.1080/24725854.2024.2301966).
+  *IISE Transactions* 57 (3), 246-260.
+- K.M. Geffel, H.P. Dyer, A.D. Casas, S.N. Christian-Afflu, D.D. Méndez, and
+  T.L. Gary-Webb (2024). [COVID-19 vaccine uptake and intention of Black adults:
+  A county-wide analysis of an online survey](https://doi.org/10.1016/j.jnma.2024.07.007).
+  *Journal of the National Medical Association* 116 (5), 526-538.
+- C.K. Ettman, E. Badillo-Goicoechea, E.A. Stuart, and L.T. Dean (2024).
+  [Area-level credit scores and symptoms of depression and anxiety in adults](https://doi.org/10.1093/aje/kwae275).
+  *American Journal of Epidemiology* kwae275.
+- C.K. Ettman, E. Badillo-Goicoechea, E.A. Stuart (2024). [Financial
+  strain, schooling modality and mental health of US adults living
+  with children during the COVID-19 pandemic](https://doi.org/10.1136/jech-2023-221672).
+  *Journal of Epidemiology & Community Health* 78 (10), 662-668.
+- K. Sasse, R. Mahabir, O. Gkountouna, A. Crooks, A. Croitoru (2024).
+  [Understanding the determinants of vaccine hesitancy in the United
+  States: A comparison of social surveys and social media](https://doi.org/10.1371/journal.pone.0301488).
+  *PLoS ONE* 19(6), e0301488. 
+- Y. Yang, W. Dempsey, P. Han, Y. Deshmukh, S. Richardson, B. Tom, and B. Mukherjee
+  (2024). [Exploring the Big Data Paradox for various estimands using vaccination
+  data from the global COVID-19 Trends and Impact Survey (CTIS)](https://doi.org/10.1126/sciadv.adj0266).
+  *Science Advances* 10 (22).
+- Perofsky, A.C., Hansen, C.L., Burstein, R. et al (2024). [Impacts of human
+  mobility on the citywide transmission dynamics of 18 respiratory viruses
+  in pre- and post-COVID-19 pandemic years](https://doi.org/10.1038/s41467-024-48528-2).
+  *Nature Communications* 15, 4164.
+- Z. Yang, R. Krishnan, and B. Li (2024). [The interplay between individual
+  mobility, health risk, and economic choice: A holistic model for COVID-19
+  policy intervention](https://doi.org/10.1287/ijds.2023.0013). *INFORMS
+  Journal on Data Science* 3 (1), 6-27.
+- A. Srivastava, J. M. Ramirez, S. Díaz-Aranda, J. Aguilar, A. F. Anta, A. Ortega,
+  and R. E. Lillo (2024). [Nowcasting temporal trends using indirect surveys](https://doi.org/10.1609/aaai.v38i20.30242).
+  In *Proceedings of the 38th AAAI Conference on Artificial Intelligence* 38,
+  22359–22367.
+- P. Porebski, S. Venkatramanan, A. Adiga, B. Klahn, B. Hurt, M. L. Wilson,
+  J. Chen, A. Vullikanti, M. Marathe & B. Lewis (2024). [Data-driven
+  mechanistic framework with stratified immunity and effective transmissibility
+  for COVID-19 scenario projections](https://doi.org/10.1016/j.epidem.2024.100761).
+  *Epidemics* 47, 100761.
+- V. Nelson, B. Bashyal, P.-N. Tan & Y. A. Argyris (2024). [Vaccine rhetoric
+  on social media and COVID-19 vaccine uptake rates: A triangulation using
+  self-reported vaccine acceptance](https://doi.org/10.1016/j.socscimed.2024.116775).
+  *Social Science & Medicine* 348, 116775.
+- R.R. Andridge (2024). [Using proxy pattern-mixture models to explain bias in
+  estimates of COVID-19 vaccine uptake from two large surveys](https://doi.org/10.1093/jrsssa/qnae005).
+  *Journal of the Royal Statistical Society Series A: Statistics in Society*
+  187 (3), 831-843.
+- de Vries, M., Kim, J.Y. & Han, H. (2023). [The unequal landscape of civic
+  opportunity in America](https://doi.org/10.1038/s41562-023-01743-1). *Nature
+  Human Behavior* 8, 256-263. 
 - E. Tuzhilina, T. J. Hastie, D. J. McDonald, J. K. Tay & R. Tibshirani (2023).
   [Smooth multi-period forecasting with application to prediction of COVID-19
   cases](https://doi.org/10.1080/10618600.2023.2285337). *Journal of Computational
-  and Graphical Statistics*.
+  and Graphical Statistics* 33 (3), 955-967.
 - W. Dempsey (2023). [Addressing selection bias and measurement error in
   COVID-19 case count data using auxiliary information](https://doi.org/10.1214/23-AOAS1744).
   *Annals of Applied Statistics* 17 (4), 2903-2923.

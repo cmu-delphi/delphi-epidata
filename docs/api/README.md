@@ -1,14 +1,15 @@
 ---
 title: Other Endpoints (COVID-19 and Other Diseases)
-nav_order: 3
 has_children: true
+nav_order: 3
 ---
 
-# Epidata API (Other Diseases)
+# Other Endpoints (COVID-19 and Other Diseases)
 
 This is the home of [Delphi](https://delphi.cmu.edu/)'s epidemiological data
 API for tracking epidemics such as influenza, dengue, and norovirus. Note that
-our work on COVID-19 is described in the [COVIDcast Epidata API documentation](covidcast.md).
+additional data, including most COVID-19 signals, is available in the
+[main Epidata API (formerly known as COVIDcast)](covidcast.md).
 
 ## Table of Contents
 {: .no_toc .text-delta}
@@ -207,4 +208,4 @@ To access our Epidata API, visit our [Epidata API Client Libraries)](client_libr
 
 # Related Work
 
-Please visit our [related works](related_work.md) page for more information.
+Please visit our [related works](../related_work.md) page for more information.

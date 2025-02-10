@@ -1,6 +1,8 @@
 ---
-title: Flusurv
-parent: Other Endpoints (COVID-19 and Other Diseases)
+title: <i>inactive</i> Flusurv
+parent: Data Sources and Signals
+grand_parent: Other Endpoints (COVID-19 and Other Diseases)
+nav_order: 2
 ---
 
 # FluSurv
@@ -18,15 +20,15 @@ General topics not specific to any particular endpoint are discussed in the
 FluSurv-NET data (flu hospitaliation rates) from CDC.
 
 See also:
-  - https://gis.cdc.gov/GRASP/Fluview/FluHospRates.html
-  - https://wwwnc.cdc.gov/eid/article/21/9/14-1912_article
+  - <https://gis.cdc.gov/GRASP/Fluview/FluHospRates.html>
+  - <https://wwwnc.cdc.gov/eid/article/21/9/14-1912_article>
   - Chaves, S., Lynfield, R., Lindegren, M., Bresee, J., & Finelli, L. (2015).
     The US Influenza Hospitalization Surveillance Network. Emerging Infectious
-    Diseases, 21(9), 1543-1550. https://dx.doi.org/10.3201/eid2109.141912.
+    Diseases, 21(9), 1543-1550. <https://dx.doi.org/10.3201/eid2109.141912>.
 
 # The API
 
-The base URL is: https://api.delphi.cmu.edu/epidata/flusurv/
+The base URL is: <https://api.delphi.cmu.edu/epidata/flusurv/>
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -79,7 +81,7 @@ Notes:
 # Example URLs
 
 ### FluSurv on 2020w01 (CA)
-https://api.delphi.cmu.edu/epidata/flusurv/?locations=ca&epiweeks=202001
+<https://api.delphi.cmu.edu/epidata/flusurv/?locations=ca&epiweeks=202001>
 
 ```json
 {

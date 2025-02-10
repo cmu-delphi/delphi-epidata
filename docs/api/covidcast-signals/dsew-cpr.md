@@ -1,7 +1,8 @@
 ---
-title: Data Strategy and Execution Workgroup Community Profile Report
+title: <i>inactive</i> Data Strategy and Execution Workgroup Community Profile Report
 parent: Data Sources and Signals
-grand_parent: COVIDcast Main Endpoint
+grand_parent: Main Endpoint (COVIDcast)
+nav_order: 2
 ---
 
 # Data Strategy and Execution Workgroup Community Profile Report (CPR)
@@ -27,9 +28,10 @@ County, MSA, state, and HHS-level values are pulled directly from CPR when avail
 | --- | --- |
 | `confirmed_admissions_covid_1d_7dav` | Number of adult and pediatric confirmed COVID-19 hospital admissions occurring each day. Smoothed using a 7-day average.  <br/> **Earliest date available:** 2019-12-16 for state, HHS, and nation; 2021-01-06 for MSA and county |
 | `confirmed_admissions_covid_1d_prop_7dav` | Number of adult and pediatric confirmed COVID-19 hospital admissions occurring each day, per 100,000 population. Smoothed using a 7-day average. <br/> **Earliest date available:** 2019-12-16 for state, HHS, and nation; 2021-01-06 for MSA and county |
+| `covid_naat_pct_positive_7dav` | "NAAT positivity rate is the number of positive [SARS-CoV-2 Nucleic Acid Amplification Test (NAAT)] tests divided by the number of [NAAT] tests performed and resulted. See the CDC's [coronavirus resources page](https://web.archive.org/web/20210602062946/https://www.cdc.gov/coronavirus/2019-ncov/lab/resources/calculating-percent-positivity.html) for more information on this method. In rare cases, negative test numbers may be reported on a given day to correct previous numbers, and this sometimes results in a calculated test positivity of greater than 100%. In these cases, test positivity is capped at 100%.” - from the CPR data dictionary. <br/> **Earliest date available:** 2020-12-07
 | `people_full_vaccinated` | "People fully vaccinated includes those who have received two doses of the Pfizer-BioNTech or Moderna vaccine and those who have received one dose of the J&J/Janssen vaccine" - from the CPR data dictionary.  <br/> **Earliest date available:** 2021-01-15 at any geo level except MSA and 2021-04-01 at the MSA level.|
 | `people_booster_doses` |"The count of people who received a booster dose includes anyone who is fully vaccinated and has received another dose of COVID-19 vaccine since 2021-08-13. This includes people who received booster doses and people who received additional doses." - from the CPR data dictionary. <br/> **Earliest date available:** 2021-11-01 for state, HHS, and nation. Not available below state level. |
-| `doses_admin_7dav` | "Doses administered shown by date of report, not date of administration. ... [S]ubmitting entities will have the ability to update or delete previously submitted records using new functionality available in CDC’s Data Clearinghouse. Use of this new functionality may result in fluctuations across metrics as historical data are updated or deleted" - from the CPR data dictionary.  Smoothed using a 7-day average. <br/> **Earliest date available:** 2021-04-29 for state, HHS, and nation. Not available below state level. |
+| `doses_admin_7dav` | "Doses administered shown by date of report, not date of administration. ... [S]ubmitting entities will have the ability to update or delete previously submitted records using new functionality available in CDC’s Data Clearinghouse. Use of this new functionality may result in fluctuations across metrics as historical data are updated or deleted" - from the CPR data dictionary.  Smoothed using a 7-day average. <br/> **Earliest date available:** 2021-05-02 for state, HHS, and nation. Not available below state level. |
 | `booster_doses_admin_7dav` | "Doses administered shown by date of report, not date of administration. ... [S]ubmitting entities will have the ability to update or delete previously submitted records using new functionality available in CDC’s Data Clearinghouse. Use of this new functionality may result in fluctuations across metrics as historical data are updated or deleted" - from the CPR data dictionary. "[A] booster dose includes anyone who is fully vaccinated and has received another dose of COVID-19 vaccine since August 13, 2021. This includes people who received booster doses and people who received additional doses." - from the CPR data dictionary. Smoothed using a 7-day average.<br/> **Earliest date available:** 2021-11-01 for state, HHS, and nation. Not available below state level. |
 
 ## Table of contents

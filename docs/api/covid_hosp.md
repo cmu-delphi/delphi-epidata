@@ -1,6 +1,8 @@
 ---
-title: COVID-19 Reported Patient Impact and Hospital Capacity by State Timeseries
-parent: Other Endpoints (COVID-19 and Other Diseases)
+title: <i>inactive</i> COVID-19 Reported Patient Impact and Hospital Capacity by State Timeseries
+parent: Data Sources and Signals
+grand_parent: Other Endpoints (COVID-19 and Other Diseases)
+nav_order: 2
 ---
 
 # COVID-19 Hospitalization by State
@@ -86,12 +88,19 @@ https://api.delphi.cmu.edu/epidata/covid_hosp_state_timeseries/?states=MA&dates=
 
 ```json
 {
-    "result": 1,
-    "epidata": [
+    "epidata":
+    [
         {
             "state": "MA",
-            "issue": 20201116,
+            "geocoded_state": null,
+            "issue": 20240503,
             "date": 20200510,
+            "critical_staffing_shortage_today_yes": 0,
+            "critical_staffing_shortage_today_no": 0,
+            "critical_staffing_shortage_today_not_reported": 84,
+            "critical_staffing_shortage_anticipated_within_week_yes": 0,
+            "critical_staffing_shortage_anticipated_within_week_no": 0,
+            "critical_staffing_shortage_anticipated_within_week_not_reported": 84,
             "hospital_onset_covid": 53,
             "hospital_onset_covid_coverage": 84,
             "inpatient_beds": 15691,
@@ -139,17 +148,73 @@ https://api.delphi.cmu.edu/epidata/covid_hosp_state_timeseries/?states=MA&dates=
             "adult_icu_bed_utilization_coverage": null,
             "adult_icu_bed_utilization_numerator": null,
             "adult_icu_bed_utilization_denominator": null,
-            "inpatient_beds_utilization": 0.6978504972730191,
-            "percent_of_inpatients_with_covid": 0.2902550897239881,
-            "inpatient_bed_covid_utilization": 0.21056656682174496,
+            "deaths_covid": 48,
+            "deaths_covid_coverage": 73,
+            "icu_patients_confirmed_influenza": null,
+            "icu_patients_confirmed_influenza_coverage": 0,
+            "on_hand_supply_therapeutic_a_casirivimab_imdevimab_courses": null,
+            "on_hand_supply_therapeutic_b_bamlanivimab_courses": null,
+            "on_hand_supply_therapeutic_c_bamlanivimab_etesevimab_courses": null,
+            "previous_day_admission_adult_covid_confirmed_18_19": null,
+            "previous_day_admission_adult_covid_confirmed_18_19_coverage": 0,
+            "previous_day_admission_adult_covid_confirmed_20_29": null,
+            "previous_day_admission_adult_covid_confirmed_20_29_coverage": 0,
+            "previous_day_admission_adult_covid_confirmed_30_39": null,
+            "previous_day_admission_adult_covid_confirmed_30_39_coverage": 0,
+            "previous_day_admission_adult_covid_confirmed_40_49": null,
+            "previous_day_admission_adult_covid_confirmed_40_49_coverage": 0,
+            "previous_day_admission_adult_covid_confirmed_50_59": null,
+            "previous_day_admission_adult_covid_confirmed_50_59_coverage": 0,
+            "previous_day_admission_adult_covid_confirmed_60_69": null,
+            "previous_day_admission_adult_covid_confirmed_60_69_coverage": 0,
+            "previous_day_admission_adult_covid_confirmed_70_79": null,
+            "previous_day_admission_adult_covid_confirmed_70_79_coverage": 0,
+            "previous_day_admission_adult_covid_confirmed_80plus": null,
+            "previous_day_admission_adult_covid_confirmed_80plus_coverage": 0,
+            "previous_day_admission_adult_covid_confirmed_unknown": null,
+            "previous_day_admission_adult_covid_confirmed_unknown_coverage": 0,
+            "previous_day_admission_adult_covid_suspected_18_19": null,
+            "previous_day_admission_adult_covid_suspected_18_19_coverage": 0,
+            "previous_day_admission_adult_covid_suspected_20_29": null,
+            "previous_day_admission_adult_covid_suspected_20_29_coverage": 0,
+            "previous_day_admission_adult_covid_suspected_30_39": null,
+            "previous_day_admission_adult_covid_suspected_30_39_coverage": 0,
+            "previous_day_admission_adult_covid_suspected_40_49": null,
+            "previous_day_admission_adult_covid_suspected_40_49_coverage": 0,
+            "previous_day_admission_adult_covid_suspected_50_59": null,
+            "previous_day_admission_adult_covid_suspected_50_59_coverage": 0,
+            "previous_day_admission_adult_covid_suspected_60_69": null,
+            "previous_day_admission_adult_covid_suspected_60_69_coverage": 0,
+            "previous_day_admission_adult_covid_suspected_70_79": null,
+            "previous_day_admission_adult_covid_suspected_70_79_coverage": 0,
+            "previous_day_admission_adult_covid_suspected_80plus": null,
+            "previous_day_admission_adult_covid_suspected_80plus_coverage": 0,
+            "previous_day_admission_adult_covid_suspected_unknown": null,
+            "previous_day_admission_adult_covid_suspected_unknown_coverage": 0,
+            "previous_day_admission_influenza_confirmed": null,
+            "previous_day_admission_influenza_confirmed_coverage": 0,
+            "previous_day_deaths_covid_and_influenza": null,
+            "previous_day_deaths_covid_and_influenza_coverage": 0,
+            "previous_day_deaths_influenza": null,
+            "previous_day_deaths_influenza_coverage": 0,
+            "previous_week_therapeutic_a_casirivimab_imdevimab_courses_used": null,
+            "previous_week_therapeutic_b_bamlanivimab_courses_used": null,
+            "previous_week_therapeutic_c_bamlanivimab_etesevimab_courses_used": null,
+            "total_patients_hospitalized_confirmed_influenza": null,
+            "total_patients_hospitalized_confirmed_influenza_coverage": 0,
+            "total_patients_hospitalized_confirmed_influenza_covid": null,
+            "total_patients_hospitalized_confirmed_influenza_covid_coverage": null,
+            "inpatient_beds_utilization": 0.697850497273019,
+            "percent_of_inpatients_with_covid": 0.290255089723988,
+            "inpatient_bed_covid_utilization": 0.210566566821745,
             "adult_icu_bed_covid_utilization": null,
             "adult_icu_bed_utilization": null
         }
     ],
+    "result": 1,
     "message": "success"
 }
 ```
-
 
 # Code Samples
 

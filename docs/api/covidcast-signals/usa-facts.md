@@ -1,7 +1,8 @@
 ---
-title: USAFacts Cases and Deaths
-parent: Inactive Signals
-grand_parent: COVIDcast Main Endpoint
+title: <i>inactive</i> USAFacts Cases and Deaths
+parent: Data Sources and Signals
+grand_parent: Main Endpoint (COVIDcast)
+nav_order: 2
 ---
 
 # USAFacts Cases and Deaths
@@ -20,12 +21,12 @@ available by [USAFacts](https://usafacts.org/).
 
 | Signal and 7-day average signal | Description |
 |---|---|
-| `confirmed_cumulative_num` | Cumulative number of confirmed COVID-19 cases <br/> **Earliest date available:** 2020-01-25 & 2020-02-01 |
-| `confirmed_cumulative_prop` | Cumulative number of confirmed COVID-19 cases per 100,000 population <br/> **Earliest date available:** 2020-01-25 & 2020-02-01 |
+| `confirmed_cumulative_num` and `confirmed_7dav_cumulative_num`| Cumulative number of confirmed COVID-19 cases <br/> **Earliest date available:** 2020-01-25 & 2020-02-01 |
+| `confirmed_cumulative_prop` and `confirmed_7dav_cumulative_prop`| Cumulative number of confirmed COVID-19 cases per 100,000 population <br/> **Earliest date available:** 2020-01-25 & 2020-02-01 |
 | `confirmed_incidence_num` and `confirmed_7dav_incidence_num` | Number of new confirmed COVID-19 cases, daily <br/> **Earliest date available:** 2020-01-25 & 2020-02-01 |
 | `confirmed_incidence_prop` and `confirmed_7dav_incidence_prop` | Number of new confirmed COVID-19 cases per 100,000 population, daily <br/> **Earliest date available:** 2020-01-25 & 2020-02-01 |
-| `deaths_cumulative_num` | Cumulative number of confirmed deaths due to COVID-19 <br/> **Earliest date available:** 2020-01-25 & 2020-02-01 |
-| `deaths_cumulative_prop` | Cumulative number of confirmed due to COVID-19, per 100,000 population <br/> **Earliest date available:** 2020-01-25 & 2020-02-01 |
+| `deaths_cumulative_num` and `deaths_7dav_cumulative_num`| Cumulative number of confirmed deaths due to COVID-19 <br/> **Earliest date available:** 2020-01-25 & 2020-02-01 |
+| `deaths_cumulative_prop` and `deaths_7dav_cumulative_prop`| Cumulative number of confirmed due to COVID-19, per 100,000 population <br/> **Earliest date available:** 2020-01-25 & 2020-02-01 |
 | `deaths_incidence_num` and `deaths_7dav_incidence_num` | Number of new confirmed deaths due to COVID-19, daily <br/> **Earliest date available:** 2020-01-25 & 2020-02-01 |
 | `deaths_incidence_prop` and `deaths_7dav_incidence_prop` | Number of new confirmed deaths due to COVID-19 per 100,000 population, daily <br/> **Earliest date available:** 2020-01-25 & 2020-02-01 |
 

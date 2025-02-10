@@ -1,12 +1,12 @@
 ---
 title: Privacy Statement
-parent: API Keys
+parent: Epidata API Intro
+nav_order: 3
 ---
 
-# Delphi Privacy Statement
+# Privacy Statement
 
-Anyone may access the Epidata API anonymously without providing any personal
-data.
+Anyone may access the Epidata API anonymously without providing any personal data. For anyone looking for COVIDCast data licensing, please visit our [COVIDCast Data Licensing](covidcast_licensing.md).
 
 Some features of the API are only available by registering for an API key. We
 require an email address for all registrations so that we can contact you to

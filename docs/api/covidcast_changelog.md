@@ -1,7 +1,7 @@
 ---
 title: Signal Changelog
-parent: COVIDcast Main Endpoint
-nav_order: 3
+parent: Main Endpoint (COVIDcast)
+nav_order: 8
 ---
 
 # COVIDcast Signal Changelog
@@ -16,6 +16,8 @@ list](https://lists.andrew.cmu.edu/mailman/listinfo/delphi-covidcast-api), and
 we **strongly recommend** that anyone using the API to download data regularly
 should subscribe to this list. We will only use the list to announce API
 changes, data corrections, and other information relevant to API users.
+
+For current information on how up-to-date our public health and behavior data is, how much of the country is covered by our public health and behavior data, and the data versioning effects present in our public health and behavior data, please see Delphi's [Indicator Status Overview page](https://delphi.cmu.edu/covidcast/indicator-status/).
 
 ## Table of contents
 {: .no_toc .text-delta}

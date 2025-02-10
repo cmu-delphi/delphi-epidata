@@ -8,23 +8,19 @@ Notes:
  - Compatible with Python 2 and 3.
 """
 
+import sys
+
 # External modules
 import requests
+import time
 import asyncio
 from tenacity import retry, stop_after_attempt
 
 from aiohttp import ClientSession, TCPConnector, BasicAuth
-from pkg_resources import get_distribution, DistributionNotFound
 
-# Obtain package version for the user-agent. Uses the installed version by
-# preference, even if you've installed it and then use this script independently
-# by accident.
-try:
-    _version = get_distribution("delphi-epidata").version
-except DistributionNotFound:
-    _version = "0.script"
+__version__ = "4.1.25"
 
-_HEADERS = {"user-agent": "delphi_epidata/" + _version + " (Python)"}
+_HEADERS = {"user-agent": "delphi_epidata/" + __version__ + " (Python)"}
 
 
 class EpidataException(Exception):
@@ -47,7 +43,33 @@ class Epidata:
     BASE_URL = "https://api.delphi.cmu.edu/epidata"
     auth = None
 
-    client_version = _version
+    debug = False # if True, prints extra logging statements
+    sandbox = False # if True, will not execute any queries
+
+    @staticmethod
+    def log(evt, **kwargs):
+        kwargs['event'] = evt
+        kwargs['timestamp'] = time.strftime("%Y-%m-%d %H:%M:%S %z")
+        return sys.stderr.write(str(kwargs) + "\n")
+
+    # Check that this client's version matches the most recent available.  This
+    # is intended to run just once per program execution, on initial module load.
+    # See the bottom of this file for the ultimate call to this method.
+    @staticmethod
+    def _version_check():
+        try:
+            request = requests.get('https://pypi.org/pypi/delphi-epidata/json', timeout=5)
+            latest_version = request.json()['info']['version']
+        except Exception as e:
+            Epidata.log("Error getting latest client version", exception=str(e))
+            return
+
+        if latest_version != __version__:
+            Epidata.log(
+                "Client version not up to date",
+                client_version=__version__,
+                latest_version=latest_version
+            )
 
     # Helper function to cast values and/or ranges to strings
     @staticmethod
@@ -71,9 +93,25 @@ class Epidata:
     def _request_with_retry(endpoint, params={}):
         """Make request with a retry if an exception is thrown."""
         request_url = f"{Epidata.BASE_URL}/{endpoint}/"
+        if Epidata.debug:
+            Epidata.log("Sending GET request", url=request_url, params=params, headers=_HEADERS, auth=Epidata.auth)
+        if Epidata.sandbox:
+            resp = requests.Response()
+            resp._content = b'true'
+            return resp
+        start_time = time.time()
         req = requests.get(request_url, params, auth=Epidata.auth, headers=_HEADERS)
         if req.status_code == 414:
+            if Epidata.debug:
+                Epidata.log("Received 414 response, retrying as POST request", url=request_url, params=params, headers=_HEADERS)
             req = requests.post(request_url, params, auth=Epidata.auth, headers=_HEADERS)
+        if Epidata.debug:
+            Epidata.log(
+                "Received response",
+                status_code=req.status_code,
+                len=len(req.content),
+                time=round(time.time() - start_time, 4)
+            )
         # handle 401 and 429
         req.raise_for_status()
         return req
@@ -671,3 +709,10 @@ class Epidata:
         future = asyncio.ensure_future(async_make_calls(param_list))
         responses = loop.run_until_complete(future)
         return responses
+
+
+
+# This should only run once per program execution, on initial module load,
+# as a result of how Python's module system works:
+# https://docs.python.org/3/reference/import.html#the-module-cache
+Epidata._version_check()

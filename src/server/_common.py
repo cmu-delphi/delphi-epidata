@@ -7,7 +7,7 @@ from sqlalchemy.engine import Connection, Engine
 from werkzeug.exceptions import Unauthorized
 from werkzeug.local import LocalProxy
 
-from delphi.epidata.common.logger import get_structured_logger
+from delphi_utils import get_structured_logger
 from ._config import SECRET, REVERSE_PROXY_DEPTH
 from ._db import engine
 from ._exceptions import DatabaseErrorException, EpiDataException
@@ -68,6 +68,7 @@ def log_info_with_request(message, **kwargs):
         remote_addr=request.remote_addr,
         real_remote_addr=get_real_ip_addr(request),
         user_agent=request.user_agent.string,
+        referrer=request.referrer or request.origin,
         api_key=resolve_auth_token(),
         user_id=(current_user and current_user.id),
         **kwargs
@@ -114,19 +115,7 @@ def before_request_execute():
     user = current_user
     api_key = resolve_auth_token()
 
-    # TODO: replace this next call with: log_info_with_request("Received API request")
-    get_structured_logger("server_api").info(
-        "Received API request",
-        method=request.method,
-        url=request.url,
-        form_args=request.form,
-        req_length=request.content_length,
-        remote_addr=request.remote_addr,
-        real_remote_addr=get_real_ip_addr(request),
-        user_agent=request.user_agent.string,
-        api_key=api_key,
-        user_id=(user and user.id)
-    )
+    log_info_with_request("Received API request")
 
     if not _is_public_route() and api_key and not user:
         # if this is a privleged endpoint, and an api key was given but it does not look up to a user, raise exception:
@@ -150,28 +139,10 @@ def after_request_execute(response):
     # Convert to milliseconds
     total_time *= 1000
 
-    api_key = resolve_auth_token()
-
     update_key_last_time_used(current_user)
 
-    # TODO: replace this next call with: log_info_with_request_and_response("Served API request", response, elapsed_time_ms=total_time)
-    get_structured_logger("server_api").info(
-        "Served API request",
-        method=request.method,
-        url=request.url,
-        form_args=request.form,
-        req_length=request.content_length,
-        remote_addr=request.remote_addr,
-        real_remote_addr=get_real_ip_addr(request),
-        user_agent=request.user_agent.string,
-        api_key=api_key,
-        values=request.values.to_dict(flat=False),
-        blueprint=request.blueprint,
-        endpoint=request.endpoint,
-        response_status=response.status,
-        content_length=response.calculate_content_length(),
-        elapsed_time_ms=total_time,
-    )
+    log_info_with_request_and_response("Served API request", response, elapsed_time_ms=total_time)
+
     return response
 
 

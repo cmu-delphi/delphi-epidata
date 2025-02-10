@@ -13,10 +13,9 @@ import epiweeks as epi
 import pandas as pd
 
 # first party
-from delphi_utils import Nans
+from delphi_utils import get_structured_logger, Nans
 from delphi.utils.epiweek import delta_epiweeks
 from delphi.epidata.common.covidcast_row import CovidcastRow
-from delphi.epidata.common.logger import get_structured_logger
 
 DataFrameRow = NamedTuple('DFRow', [
   ('geo_id', str),
@@ -69,7 +68,7 @@ class CsvImporter:
   REQUIRED_COLUMNS = {'geo_id', 'val', 'se', 'sample_size'}
 
   # reasonable time bounds for sanity checking time values
-  MIN_YEAR = 2019
+  MIN_YEAR = 2017 # `google-symptoms` has 2017 data
   MAX_YEAR = 2030
 
   # The datatypes expected by pandas.read_csv. Int64 is like float in that it can handle both numbers and nans.

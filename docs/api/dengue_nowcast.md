@@ -1,6 +1,8 @@
 ---
-title: Dengue Nowcast
-parent: Other Endpoints (COVID-19 and Other Diseases)
+title: <i>inactive</i> Dengue Nowcast
+parent: Data Sources and Signals
+grand_parent: Other Endpoints (COVID-19 and Other Diseases)
+nav_order: 2
 ---
 
 # Delphi's Dengue Nowcast

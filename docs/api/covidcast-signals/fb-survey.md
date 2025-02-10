@@ -1,10 +1,11 @@
 ---
-title: COVID-19 Trends and Impact Survey
+title: <i>inactive</i> COVID-19 Trends and Impact Survey
 parent: Data Sources and Signals
-grand_parent: COVIDcast Main Endpoint
+grand_parent: Main Endpoint (COVIDcast)
+nav_order: 2
 ---
 
-# COVID-19 Trends and Impact Survey
+# COVID-19 Trends and Impact Survey 2020-2022 (Facebook Survey)
 {: .no_toc}
 
 * **Source name:** `fb-survey`
@@ -126,7 +127,8 @@ our survey, this means a and (b or c).
 
 COVID-like illness or CLI is not a standard indicator. Through our discussions
 with the CDC, we chose to define it as: fever along with cough or shortness of
-breath or difficulty breathing.
+breath or difficulty breathing. From the list of symptoms from Q1 on
+our survey, this means a and (c or d or e).
 
 Symptoms alone are not sufficient to diagnose influenza or coronavirus
 infections, and so these ILI and CLI indicators are *not* expected to be

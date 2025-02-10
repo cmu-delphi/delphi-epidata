@@ -1,12 +1,12 @@
 ---
-title: COVIDcast Data Licensing
-parent: COVIDcast Main Endpoint
+title: Data Licensing
+parent: Main Endpoint (COVIDcast)
 nav_order: 2
 ---
 
-# Licensing for Delphi's COVID-19 Data Streams
+# Licensing for the Main Endpoint
 
-When you use data from Delphi's COVIDcast Epidata API, we ask that you attribute
+When you use data from Delphi's Epidata API, we ask that you attribute
 the source and follow the terms of the data's licensing agreement. The API
 contains some data streams produced internally by Delphi, which should be
 attributed to Delphi, and some republished from other sources, which should be
@@ -34,12 +34,11 @@ Academic publications may cite our paper:
 These data sources are provided under the terms of the [Creative Commons
 Attribution license](https://creativecommons.org/licenses/by/4.0/):
 
+* [COVID-19 Trends and Impact Survey](covidcast-signals/fb-survey.md)
 * [Doctor Visits](covidcast-signals/doctor-visits.md)
 * [Hospital Admissions](covidcast-signals/hospital-admissions.md)
-* [Indicator Combination](covidcast-signals/indicator-combination-inactive.md): signals
-  with names beginning `nmf_*`
+* [Indicator Combination](covidcast-signals/indicator-combination.md) (signals with names beginning `nmf_*`)
 * [Quidel](covidcast-signals/quidel.md)
-* [COVID-19 Trends and Impact Survey](covidcast-signals/fb-survey.md)
 
 You may use this data for any purpose, provided you attribute us as the original
 source, as shown above.
@@ -51,6 +50,7 @@ Attribution-NonCommercial
 license](https://creativecommons.org/licenses/by-nc/4.0/):
 
 * [Change Healthcare](covidcast-signals/chng.md)
+* [Youtube Survey](covidcast-signals/youtube-survey.md)
 
 You may not use this data for commercial purposes, but all other uses are
 permitted, provided you attribute us as the original source.
@@ -60,13 +60,17 @@ permitted, provided you attribute us as the original source.
 These data streams are essentially mirrors of their respective sources, and are
 published here subject to the original license provided by the source:
 
+* [COVID Act Now](covidcast-signals/covid-act-now.md)
+* [DSEW Community Profile Report](covidcast-signals/dsew-cpr.md)
 * [Google Health Trends](covidcast-signals/ght.md)
-* [Indicator Combination](covidcast-signals/indicator-combination-inactive.md): cases and
-  deaths signals
-* [JHU Cases and Deaths](covidcast-signals/jhu-csse.md)
+* [Google Search Trends](covidcast-signals/google-symptoms.md)
+* [HHS/NSHN Hospitalizations](covidcast-signals/hhs.md)
+* [Indicator Combination](covidcast-signals/indicator-combination.md) (cases and deaths signals)
+* [JHU CSSE Cases and Deaths](covidcast-signals/jhu-csse.md)
+* [NCHS Mortality](covidcast-signals/nchs-mortality.md)
+* [NSSP ED Visits](covidcast-signals/nssp.md)
 * [SafeGraph Mobility](covidcast-signals/safegraph.md)
-* [USAFacts Cases and Deaths](covidcast-signals/usafacts.md)
-* [Department of Health & Human Services](covidcast-signals/hhs.md)
+* [USAFacts Cases and Deaths](covidcast-signals/usa-facts.md)
 
 More information on the license for each source is available on their respective
 documentation pages.
