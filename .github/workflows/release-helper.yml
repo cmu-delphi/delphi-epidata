@@ -89,7 +89,7 @@ jobs:
         working-directory: src/client/packaging/pypi
         run: |
           python -m build --sdist --wheel
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           name: delphi_epidata_py
           path: src/client/packaging/pypi/dist/*.tar.gz
@@ -132,7 +132,7 @@ jobs:
       - run: npm pack
       - name: Rename to a different name
         run: for f in *.tgz; do mv "$f" "$(echo "$f" | sed s/delphi_epidata-/delphi_epidata_js-/)"; done
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           name: delphi_epidata_js
           path: src/client/packaging/npm/*.tgz

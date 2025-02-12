@@ -42,7 +42,7 @@ As of May 2024, NSSP received data from 78% of US EDs.
 ## Estimation
 
 The percent visits signals are calculated as a fraction of visits at facilities reporting to NSSP, rather than all facilities in the area.
-County and state level data is reported as-is from NSSP, without modification, while `hrr` and `msa` are estimated by Delphi.
+`county`, `state` and `nation` level data is reported as-is from NSSP, without modification, while `hhs`, `hrr` and `msa` are estimated by Delphi.
 
 ### Geographic weighting
 As the original data is a percentage and raw case counts are not available, `hrr`,`msa`, and `hhs` values are computed from county-level data using a weighted mean. Each county is assigned a weight equal to its population in the last census (2020). Unreported counties are implicitly treated as having a weight of 0 or a value equal to the group mean.

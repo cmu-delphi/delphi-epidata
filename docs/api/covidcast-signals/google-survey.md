@@ -9,7 +9,7 @@ nav_order: 2
 {: .no_toc}
 
 * **Source name:** `google-survey`
-* **Earliest issue available:** April 29, 2020
+* **Earliest issue available:** May 01, 2020
 * **Number of data revisions since May 19, 2020:** 0
 * **Date of last change:** Never
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
@@ -18,7 +18,7 @@ nav_order: 2
 
 ## Overview
 
-Data source based on Google-run symptom surveys, through publisher websites,
+Data source based on [Google-run symptom surveys](https://9to5google.com/2020/03/23/google-coronavirus-survey/), through publisher websites,
 their Opinions Reward app, and similar applications. Respondents can opt to skip
 the survey and complete a different one if they prefer not to answer. The survey
 is just one question long, and asks "Do you know someone in your community who
