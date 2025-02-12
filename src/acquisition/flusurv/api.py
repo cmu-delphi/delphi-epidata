@@ -49,7 +49,7 @@ import requests
 from delphi.utils.epidate import EpiDate
 from delphi.utils.epiweek import delta_epiweeks
 from .constants import (MAP_REGION_NAMES_TO_ABBR, MAP_ENTIRE_NETWORK_NAMES,
-    SEX_GROUPS)
+    SEX_GROUPS, FLUSURV_BASE_URL)
 
 
 def fetch_json(path, payload, call_count=1, requests_impl=requests):
@@ -60,7 +60,7 @@ def fetch_json(path, payload, call_count=1, requests_impl=requests):
     USER_AGENT = f"Mozilla/5.0 (compatible; delphibot/1.0; +{DELPHI_URL})"
 
     # the FluSurv AMF server
-    flusurv_url = "https://gis.cdc.gov/GRASP/Flu3/" + path
+    flusurv_url = FLUSURV_BASE_URL + path
 
     # request headers
     headers = {

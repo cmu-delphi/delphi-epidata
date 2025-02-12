@@ -111,3 +111,6 @@ MAP_ENTIRE_NETWORK_NAMES = {
 	"EIP": "network_eip",
 	"IHSP": "network_ihsp"
 }
+
+
+FLUSURV_BASE_URL = "https://gis.cdc.gov/GRASP/Flu3/"
