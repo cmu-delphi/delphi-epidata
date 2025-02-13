@@ -1,5 +1,5 @@
 ---
-title: <i>inactive</i> HHS/NHSN Hospitalizations
+title: <i>inactive</i> HHS Hospitalizations from NHSN
 parent: Data Sources and Signals
 grand_parent: Main Endpoint (COVIDcast)
 nav_order: 2
@@ -29,7 +29,7 @@ resource usage in different ways.
 This indicator makes available several commonly-used columns and combinations of
 columns, aggregated geographically. In particular, we include the sum of all
 adult and pediatric COVID-19 hospital admissions. This sum is used as the
-"ground truth" for hospitalizations by the 
+"ground truth" for hospitalizations by the
 [COVID-19 Forecast Hub](https://github.com/reichlab/covid19-forecast-hub/blob/master/data-processed/README.md#hospitalizations).
 We also include influenza hospital admissions.
 
@@ -117,6 +117,6 @@ is first published.
 ## Source and Licensing
 
 This indicator mirrors and lightly aggregates data originally
-published by the U.S. Department of Health & Human Services. 
-As a work of the US government, the original data is in the 
+published by the U.S. Department of Health & Human Services.
+As a work of the US government, the original data is in the
 [public domain](https://www.usa.gov/government-works).
