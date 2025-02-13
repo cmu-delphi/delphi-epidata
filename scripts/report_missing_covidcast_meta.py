@@ -38,7 +38,12 @@ def compute_missing_signals() -> List[Tuple[Tuple[str, str], Dict]]:
 
 
 def gen_row(source: str, signal: str, info: Dict) -> Dict:
-    is_weighted = signal.startswith('smoothed_w') and not (signal.startswith('smoothed_wa') or signal.startswith('smoothed_we') or signal.startswith('smoothed_wi') or signal.startswith('smoothed_wo') or signal.startswith('smoothed_wu'))
+    is_weighted = (signal.startswith('smoothed_w') 
+                    and not (signal.startswith('smoothed_wa') 
+                             or signal.startswith('smoothed_we') 
+                             or signal.startswith('smoothed_wi') 
+                             or signal.startswith('smoothed_wo') 
+                             or signal.startswith('smoothed_wu')))
     base_name = signal.replace('smoothed_w', 'smoothed_') if is_weighted else signal
     bool_str = lambda x: 'TRUE' if x else 'FALSE'
 
