@@ -49,7 +49,7 @@ import requests
 from delphi.utils.epidate import EpiDate
 from delphi.utils.epiweek import delta_epiweeks
 from .constants import (MAP_REGION_NAMES_TO_ABBR, MAP_ENTIRE_NETWORK_NAMES,
-    SEX_GROUPS, FLUSURV_BASE_URL)
+    SEX_GROUPS, FLUSURV_BASE_URL, ID_TO_LABEL_MAP)
 
 
 def fetch_json(path, payload, call_count=1, requests_impl=requests):
@@ -118,7 +118,7 @@ class FlusurvMetadata:
         self.location_to_code = self._make_location_to_code_map()
         self.locations = self.location_to_code.keys()
 
-        self.id_to_group = self._make_id_group_map()
+        self.id_to_group = ID_TO_LABEL_MAP
         self.id_to_season = self._make_id_season_map()
 
     def _fetch_flusurv_metadata(self):
@@ -174,38 +174,6 @@ class FlusurvMetadata:
         }
 
         return seasonids
-
-    def _make_id_group_map(self):
-        """Create a map from valueid to strata description"""
-        id_to_label = defaultdict(lambda: defaultdict(lambda: None))
-        for group in self.metadata["master_lookup"]:
-            # Skip "overall" group
-            if group["Variable"] is None:
-                continue
-            clean_group_label = group["Label"].replace(
-                " ", ""
-            ).replace(
-                "/", ""
-            ).replace(
-                "-", "t"
-            ).replace(
-                "yr", ""
-            ).replace(
-                "<", "lt" # less than
-            ).replace(
-                ">=", "gte" # greater or equal to
-            ).lower()
-
-            if clean_group_label == "hispaniclatino":
-                clean_group_label = "hisp"
-            elif clean_group_label == "asianpacificislander":
-                clean_group_label = "asian"
-            elif clean_group_label == "americanindianalaskanative":
-                clean_group_label = "natamer"
-
-            id_to_label[group["Variable"]][group["valueid"]] = clean_group_label
-
-        return id_to_label
 
     def _make_id_season_map(self):
         """Create a map from seasonid to season description, in the format "YYYY-YY" """
@@ -327,7 +295,8 @@ class FlusurvLocationFetcher:
         for obs in data:
             epiweek = mmwrid_to_epiweek(obs["mmwrid"])
             groupname = self._groupid_to_name(
-                ageid = obs["ageid"], sexid = obs["sexid"], raceid = obs["raceid"]
+                ageid = obs["ageid"], sexid = obs["sexid"],
+                raceid = obs["raceid"], fluid = obs["flutype"]
             )
 
             # Set season description. This will be overwritten every iteration,
@@ -351,10 +320,10 @@ class FlusurvLocationFetcher:
 
         return data_out
 
-    def _groupid_to_name(self, ageid, sexid, raceid):
-        if ((ageid, sexid, raceid).count(0) < 2):
-            raise ValueError("Expect at least two of three group ids to be 0")
-        if (ageid, sexid, raceid).count(0) == 3:
+    def _groupid_to_name(self, ageid, sexid, raceid, fluid):
+        if ((ageid, sexid, raceid, fluid).count(0) < 3):
+            raise ValueError("Expect at least three of four group ids to be 0")
+        if (ageid, sexid, raceid, fluid).count(0) == 4:
             group = "overall"
         elif ageid != 0:
             # The column names used in the DB for the original age groups
@@ -392,6 +361,8 @@ class FlusurvLocationFetcher:
             group = "sex_" + self.metadata.id_to_group["Sex"][sexid]
         elif raceid != 0:
             group = "race_" + self.metadata.id_to_group["Race"][raceid]
+        elif fluid != 0:
+            group = "flu_" + self.metadata.id_to_group["Flutype"][fluid]
 
         return "rate_" + group
 

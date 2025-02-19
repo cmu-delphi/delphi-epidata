@@ -12,21 +12,37 @@ __test_target__ = "delphi.epidata.acquisition.flusurv.api"
 
 
 network_all_example_data = [
-        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 1, 'rate': 20.7, 'weeklyrate': 0.0, 'mmwrid': 2519},
-        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 2, 'rate': 41.3, 'weeklyrate': 0.1, 'mmwrid': 2519},
-        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 1, 'sexid': 0, 'raceid': 0, 'rate': 42, 'weeklyrate': 0.5, 'mmwrid': 2519},
+        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 1, 'flutype': 0, 'rate': 20.7, 'weeklyrate': 0.0, 'mmwrid': 2519},
+        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 2, 'flutype': 0, 'rate': 41.3, 'weeklyrate': 0.1, 'mmwrid': 2519},
+        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 1, 'sexid': 0, 'raceid': 0, 'flutype': 0, 'rate': 42, 'weeklyrate': 0.5, 'mmwrid': 2519},
 
-        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 1, 'rate': 4.3, 'weeklyrate': 1.7, 'mmwrid': 2493},
-        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 2, 'rate': 11.6, 'weeklyrate': 3.6, 'mmwrid': 2493},
-        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 3, 'rate': 12.8, 'weeklyrate': 4.8, 'mmwrid': 2493},
+        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 2, 'raceid': 0, 'flutype': 0, 'rate': 1, 'weeklyrate': 0.1, 'mmwrid': 2519},
+        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 14, 'sexid': 0, 'raceid': 0, 'flutype': 0, 'rate': 2, 'weeklyrate': 0.2, 'mmwrid': 2519},
+        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 8, 'sexid': 0, 'raceid': 0, 'flutype': 0, 'rate': 3, 'weeklyrate': 0.3, 'mmwrid': 2519},
+        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 22, 'sexid': 0, 'raceid': 0, 'flutype': 0, 'rate': 4, 'weeklyrate': 0.4, 'mmwrid': 2519},
+        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 0, 'flutype': 1, 'rate': 5, 'weeklyrate': 0.5, 'mmwrid': 2519},
+        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 0, 'flutype': 2, 'rate': 6, 'weeklyrate': 0.6, 'mmwrid': 2519},
 
-        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 1, 'rate': 20.6, 'weeklyrate': 0.1, 'mmwrid': 2516},
-        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 2, 'rate': 40.7, 'weeklyrate': 0.5, 'mmwrid': 2516},
+        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 1, 'flutype': 0, 'rate': 4.3, 'weeklyrate': 1.7, 'mmwrid': 2493},
+        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 2, 'flutype': 0, 'rate': 11.6, 'weeklyrate': 3.6, 'mmwrid': 2493},
+        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 3, 'flutype': 0, 'rate': 12.8, 'weeklyrate': 4.8, 'mmwrid': 2493},
 
-        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 1, 'rate': 20.3, 'weeklyrate': 0.1, 'mmwrid': 2513},
-        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 2, 'rate': 39.6, 'weeklyrate': 0.3, 'mmwrid': 2513},
-        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 3, 'rate': 36.0, 'weeklyrate': 0.1, 'mmwrid': 2513},
+        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 1, 'flutype': 0, 'rate': 20.6, 'weeklyrate': 0.1, 'mmwrid': 2516},
+        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 2, 'flutype': 0, 'rate': 40.7, 'weeklyrate': 0.5, 'mmwrid': 2516},
+
+        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 1, 'flutype': 0, 'rate': 20.3, 'weeklyrate': 0.1, 'mmwrid': 2513},
+        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 2, 'flutype': 0, 'rate': 39.6, 'weeklyrate': 0.3, 'mmwrid': 2513},
+        {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 3, 'flutype': 0, 'rate': 36.0, 'weeklyrate': 0.1, 'mmwrid': 2513},
     ]
+
+by_epiweek_example_data = {
+    201014: {"rate_race_white": 0.0, "rate_race_black": 0.1, "rate_age_0": 0.5, "rate_sex_female": 0.1,
+        "rate_age_1t4": 0.2, "rate_age_6": 0.3, "rate_age_12t17": 0.4, "rate_flu_a": 0.5, "rate_flu_b": 0.6,
+        "season": "2009-10"},
+    200940: {"rate_race_white": 1.7, "rate_race_black": 3.6, "rate_race_hisp": 4.8, "season": "2009-10"},
+    201011: {"rate_race_white": 0.1, "rate_race_black": 0.5, "season": "2009-10"},
+    201008: {"rate_race_white": 0.1, "rate_race_black": 0.3, "rate_race_hisp": 0.1, "season": "2009-10"},
+}
 
 metadata_result = {
     # Last data update date
@@ -74,13 +90,16 @@ metadata_result = {
         {'Variable': 'Age', 'valueid': 2, 'parentid': 97, 'Label': '5-17 yr', 'Color_HexValue': '#707070', 'Enabled': True},
         {'Variable': 'Age', 'valueid': 3, 'parentid': 98, 'Label': '18-49 yr', 'Color_HexValue': '#44b3c6', 'Enabled': True},
         {'Variable': 'Age', 'valueid': 4, 'parentid': 98, 'Label': '50-64 yr', 'Color_HexValue': '#516889', 'Enabled': True},
-        {'Variable': 'Age', 'valueid': 5, 'parentid': 98, 'Label': '65+ yr', 'Color_HexValue': '#cc5e56', 'Enabled': True},
+        {'Variable': 'Age', 'valueid': 5, 'parentid': 98, 'Label': '>= 65 yr', 'Color_HexValue': '#cc5e56', 'Enabled': True},
         {'Variable': 'Age', 'valueid': 7, 'parentid': 5, 'Label': '65-74 yr', 'Color_HexValue': '#cc5e56', 'Enabled': True},
-        {'Variable': 'Age', 'valueid': 8, 'parentid': 5, 'Label': '75-84 yr', 'Color_HexValue': '#cc5e56', 'Enabled': True},
-        {'Variable': 'Age', 'valueid': 9, 'parentid': 5, 'Label': '85+', 'Color_HexValue': '#cc5e56', 'Enabled': True},
+        {'Variable': 'Age', 'valueid': 8, 'parentid': 15, 'Label': '75-84 yr', 'Color_HexValue': '#b2df8a', 'Enabled': True},
+        {'Variable': 'Age', 'valueid': 9, 'parentid': 15, 'Label': '>= 85', 'Color_HexValue': '#b2df8a', 'Enabled': True},
         {'Variable': 'Age', 'valueid': 10, 'parentid': 3, 'Label': '18-29 yr', 'Color_HexValue': '#44b3c6', 'Enabled': True},
         {'Variable': 'Age', 'valueid': 11, 'parentid': 3, 'Label': '30-39 yr', 'Color_HexValue': '#44b3c6', 'Enabled': True},
         {'Variable': 'Age', 'valueid': 12, 'parentid': 3, 'Label': '40-49 yr', 'Color_HexValue': '#44b3c6', 'Enabled': True},
+        {'Variable': 'Age', 'valueid': 13, 'parentid': 1, 'Label': '0-< 1 yr', 'Color_HexValue': '#d19833', 'Enabled': True},
+        {'Variable': 'Age', 'valueid': 14, 'parentid': 1, 'Label': '1-4 yr', 'Color_HexValue': '#d19833', 'Enabled': True},
+        {'Variable': 'Age', 'valueid': 15, 'parentid': 5, 'Label': '>= 75', 'Color_HexValue': '#b2df8a', 'Enabled': True},
         {'Variable': 'Age', 'valueid': 21, 'parentid': 2, 'Label': '5-11  yr', 'Color_HexValue': '#707070', 'Enabled': True},
         {'Variable': 'Age', 'valueid': 22, 'parentid': 2, 'Label': '12-17 yr', 'Color_HexValue': '#707070', 'Enabled': True},
         {'Variable': 'Age', 'valueid': 97, 'parentid': 0, 'Label': '< 18', 'Color_HexValue': '#000000', 'Enabled': True},
@@ -94,6 +113,9 @@ metadata_result = {
 
         {'Variable': 'Sex', 'valueid': 1, 'parentid': None, 'Label': 'Male', 'Color_HexValue': '#44b3c6', 'Enabled': True},
         {'Variable': 'Sex', 'valueid': 2, 'parentid': None, 'Label': 'Female', 'Color_HexValue': '#F2775F', 'Enabled': True},
+
+        {'Variable': 'Flutype', 'valueid': 1, 'parentid': None, 'Label': 'Influenza A', 'Color_HexValue': '#FF0000', 'Enabled': True},
+        {'Variable': 'Flutype', 'valueid': 2, 'parentid': None, 'Label': 'Influenza B', 'Color_HexValue': '#0000FF', 'Enabled': True},
 
         {'Variable': None, 'valueid': 0, 'parentid': 0, 'Label': 'Overall', 'Color_HexValue': '#000000', 'Enabled': True},
     ],
@@ -133,6 +155,9 @@ id_group_map = {
         10: "18t29",
         11: "30t39",
         12: "40t49",
+        13: "0tlt1",
+        14: "1t4",
+        15: "gte75",
         21: "5t11",
         22: "12t17",
         97: "lt18",
@@ -148,6 +173,14 @@ id_group_map = {
     "Sex": {
         1: "male",
         2: "female",
+    },
+    "Flutype": {
+        1: "a",
+        2: "b",
+    },
+    # Unused. Leaving here for documentation's sake.
+    "Overall": {
+        0: "overall",
     },
 }
 
@@ -267,12 +300,7 @@ class FunctionTests(unittest.TestCase):
         season_api_fetcher = api_fetcher
         season_api_fetcher.metadata.seasonids = [30, 49]
 
-        self.assertEqual(season_api_fetcher.get_data("network_all"), {
-                201014: {"rate_race_white": 0.0, "rate_race_black": 0.1, "rate_age_0": 0.5, "season": "2009-10"},
-                200940: {"rate_race_white": 1.7, "rate_race_black": 3.6, "rate_race_hisp": 4.8, "season": "2009-10"},
-                201011: {"rate_race_white": 0.1, "rate_race_black": 0.5, "season": "2009-10"},
-                201008: {"rate_race_white": 0.1, "rate_race_black": 0.3, "rate_race_hisp": 0.1, "season": "2009-10"},
-            }
+        self.assertEqual(season_api_fetcher.get_data("network_all"), by_epiweek_example_data
         )
 
     @patch(__test_target__ + ".fetch_json")
@@ -295,13 +323,7 @@ class FunctionTests(unittest.TestCase):
         self.assertEqual(no_data_result, empty_expected_result)
 
     def test_group_by_epiweek(self):
-        self.assertEqual(api_fetcher._group_by_epiweek(metadata_result), {
-                201014: {"rate_race_white": 0.0, "rate_race_black": 0.1, "rate_age_0": 0.5, "season": "2009-10"},
-                200940: {"rate_race_white": 1.7, "rate_race_black": 3.6, "rate_race_hisp": 4.8, "season": "2009-10"},
-                201011: {"rate_race_white": 0.1, "rate_race_black": 0.5, "season": "2009-10"},
-                201008: {"rate_race_white": 0.1, "rate_race_black": 0.3, "rate_race_hisp": 0.1, "season": "2009-10"},
-            }
-        )
+        self.assertEqual(api_fetcher._group_by_epiweek(metadata_result), by_epiweek_example_data)
 
         duplicate_input_data = {
             'default_data': [
@@ -325,12 +347,16 @@ class FunctionTests(unittest.TestCase):
 
     def test_groupids_to_name(self):
         ids = (
-            (1, 0, 0),
-            (9, 0, 0),
-            (0, 2, 0),
-            (0, 0, 3),
-            (0, 0, 5),
-            (0, 0, 0),
+            (1, 0, 0, 0),
+            (9, 0, 0, 0),
+            (0, 2, 0, 0),
+            (0, 0, 3, 0),
+            (0, 0, 5, 0),
+            (0, 0, 0, 0),
+            (0, 0, 0, 2),
+            (0, 0, 0, 1),
+            (13, 0, 0, 0),
+            (97, 0, 0, 0),
         )
         expected_list = [
             "rate_age_0",
@@ -339,31 +365,33 @@ class FunctionTests(unittest.TestCase):
             "rate_race_hisp",
             "rate_race_natamer",
             "rate_overall",
+            "rate_flu_b",
+            "rate_flu_a",
+            "rate_age_0tlt1",
+            "rate_age_97",
         ]
 
-        for (ageid, sexid, raceid), expected in zip(ids, expected_list):
-            self.assertEqual(api_fetcher._groupid_to_name(ageid, sexid, raceid), expected)
+        for (ageid, sexid, raceid, fluid), expected in zip(ids, expected_list):
+            self.assertEqual(api_fetcher._groupid_to_name(ageid, sexid, raceid, fluid), expected)
 
         with self.assertRaisesRegex(ValueError, "Ageid cannot be 6"):
             api_fetcher._groupid_to_name(6, 0, 0)
-        with self.assertRaisesRegex(ValueError, "Expect at least two of three group ids to be 0"):
-            api_fetcher._groupid_to_name(1, 1, 0)
-            api_fetcher._groupid_to_name(0, 1, 1)
-            api_fetcher._groupid_to_name(1, 1, 1)
+        with self.assertRaisesRegex(ValueError, "Expect at least three of four group ids to be 0"):
+            api_fetcher._groupid_to_name(1, 1, 0, 0)
+            api_fetcher._groupid_to_name(0, 1, 1, 0)
+            api_fetcher._groupid_to_name(1, 1, 1, 1)
 
     def test_groupids_to_name(self):
         input_data = api_fetcher._group_by_epiweek(metadata_result)
-        self.assertEqual(api_fetcher._add_sex_breakdowns_ut(input_data, "network_all"), {
-                201014: {"rate_race_white": 0.0, "rate_race_black": 0.1, "rate_age_0": 0.5, "season": "2009-10"},
-                200940: {"rate_race_white": 1.7, "rate_race_black": 3.6, "rate_race_hisp": 4.8, "season": "2009-10"},
-                201011: {"rate_race_white": 0.1, "rate_race_black": 0.5, "season": "2009-10"},
-                201008: {"rate_race_white": 0.1, "rate_race_black": 0.3, "rate_race_hisp": 0.1, "season": "2009-10"},
-            }
-        )
-        self.assertEqual(api_fetcher._add_sex_breakdowns_ut(input_data, "UT"), {
-                201014: {"rate_race_white": 0.0, "rate_race_black": 0.1, "rate_age_0": 0.5, "season": "2009-10", "rate_sex_female": None, "rate_sex_male": None},
-                200940: {"rate_race_white": 1.7, "rate_race_black": 3.6, "rate_race_hisp": 4.8, "season": "2009-10", "rate_sex_female": None, "rate_sex_male": None},
-                201011: {"rate_race_white": 0.1, "rate_race_black": 0.5, "season": "2009-10", "rate_sex_female": None, "rate_sex_male": None},
-                201008: {"rate_race_white": 0.1, "rate_race_black": 0.3, "rate_race_hisp": 0.1, "season": "2009-10", "rate_sex_female": None, "rate_sex_male": None},
-            }
-        )
+        self.assertEqual(api_fetcher._add_sex_breakdowns_ut(input_data, "network_all"), by_epiweek_example_data)
+
+        ut_expected = by_epiweek_example_data.copy()
+        ut_expected[201014]["rate_sex_male"] = None
+        ut_expected[200940]["rate_sex_female"] = None
+        ut_expected[200940]["rate_sex_male"] = None
+        ut_expected[201011]["rate_sex_female"] = None
+        ut_expected[201011]["rate_sex_male"] = None
+        ut_expected[201008]["rate_sex_female"] = None
+        ut_expected[201008]["rate_sex_male"] = None
+
+        self.assertEqual(api_fetcher._add_sex_breakdowns_ut(input_data, "UT"), ut_expected)

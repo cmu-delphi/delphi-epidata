@@ -91,7 +91,56 @@ SEX_GROUPS = (
     "rate_sex_male",
     "rate_sex_female"
 )
-EXPECTED_GROUPS = HISTORICAL_GROUPS + NEW_AGE_GROUPS + RACE_GROUPS + SEX_GROUPS
+FLU_GROUPS = (
+    "rate_flu_a",
+    "rate_flu_b"
+)
+EXPECTED_GROUPS = HISTORICAL_GROUPS + NEW_AGE_GROUPS + RACE_GROUPS + SEX_GROUPS + FLU_GROUPS
+
+
+# dict(Variable: dict(valueid: output_col_suffix))
+ID_TO_LABEL_MAP = {
+    "Age": {
+        1: "0", # 'Label': '0-4 yr'
+        2: "1", # 'Label': '5-17 yr'
+        3: "2", # 'Label': '18-49 yr'
+        4: "3", # 'Label': '50-64 yr'
+        5: "4", # 'Label': '65+ yr'
+        7: "5", # 'Label': '65-74 yr'
+        8: "6", # 'Label': '75-84 yr'
+        9: "7", # 'Label': '85+'
+        10: "18t29", # 'Label': '18-29 yr'
+        11: "30t39", # 'Label': '30-39 yr'
+        12: "40t49", # 'Label': '40-49 yr'
+        13: "0tlt1", # 'Label': '0-< 1 yr'
+        14: "1t4", # 'Label': '1-4 yr',
+        15: "gte75", # 'Label': '>= 75',
+        21: "5t11", # 'Label': '5-11  yr'
+        22: "12t17", # 'Label': '12-17 yr'
+        97: "lt18", # 'Label': '< 18'
+        98: "gte18", # 'Label': '>= 18'
+    },
+    "Race": {
+        1: "white", # 'Label': 'White'
+        2: "black", # 'Label': 'Black'
+        3: "hisp", # 'Label': 'Hispanic/Latino'
+        4: "asian", # 'Label': 'Asian/Pacific Islander'
+        5: "natamer", # 'Label': 'American Indian/Alaska Native'
+    },
+    "Sex": {
+        1: "male", # 'Label': 'Male'
+        2: "female", # 'Label': 'Female'
+    },
+    "Flutype": {
+        1: "a", # 'Label': 'Influenza A'
+        2: "b", # 'Label': 'Influenza B'
+    },
+    # Unused. Leaving here for documentation's sake.
+    "Overall": {
+        0: "overall", # 'Label': 'Overall'
+    },
+}
+
 
 
 MAX_AGE_TO_CONSIDER_WEEKS = 52
