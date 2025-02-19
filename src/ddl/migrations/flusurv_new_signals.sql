@@ -17,5 +17,7 @@ ALTER TABLE flusurv ADD (
     `rate_race_asian` double DEFAULT NULL,
     `rate_race_natamer` double DEFAULT NULL,
     `rate_sex_male` double DEFAULT NULL,
-    `rate_sex_female` double DEFAULT NULL
+    `rate_sex_female` double DEFAULT NULL,
+    `rate_flu_a` double DEFAULT NULL,
+    `rate_flu_b` double DEFAULT NULL
 );
