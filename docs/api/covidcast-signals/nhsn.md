@@ -96,7 +96,8 @@ Only hospitals indicated as active reporters in NHSN are included.
 
 Between reference dates 2024-05-01 and 2024-10-31, reported hospitalizations may not be fully representative, since reporting was voluntary.
 See the [missingness section](#missingness) for more information about voluntary and mandatory reporting periods.
-Specifically for RSV data, all RSV data through October 31, 2024 represents data and numbers prior to the 2024 season are not useful.  
+
+Data for RSV from the pre-October 31, 2024 voluntary reporting period is particularly low quality. Only a tiny fraction of hospitals reported RSV-associated admissions such that they are undercounted by a factor of perhaps 100. For historical RSV-associated admissions, see the [CDC's RSV-NET](https://www.cdc.gov/rsv/php/surveillance/rsv-net.html) (not currently mirrored by Delphi).
 
 Standard errors and sample sizes are not applicable to these metrics.
 
