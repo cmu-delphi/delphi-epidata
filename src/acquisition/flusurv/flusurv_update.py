@@ -148,11 +148,11 @@ def update(fetcher, location, test_mode=False):
         # Remove the season description since we also store it in each epiweek obj
         unexpected_groups = data[epiweek].keys() - EXPECTED_GROUPS - {"season"}
         if len(missing_expected_groups) != 0:
-            raise Exception(
+            raise ValueError(
                 f"{location} {epiweek} data is missing group(s) {missing_expected_groups}"
             )
         if len(unexpected_groups) != 0:
-            raise Exception(
+            raise ValueError(
                 f"{location} {epiweek} data includes new group(s) {unexpected_groups}"
             )
 

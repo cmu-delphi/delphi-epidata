@@ -287,9 +287,9 @@ class FlusurvLocationFetcher:
 
         # data["default_data"] is a list of dictionaries, with the format
         #     [
-        #         {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 1, 'rate': 4.3, 'weeklyrate': 1.7, 'mmwrid': 2493},
-        #         {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 1, 'rate': 20.3, 'weeklyrate': 0.1, 'mmwrid': 2513},
-        #         {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 1, 'rate': 20.6, 'weeklyrate': 0.1, 'mmwrid': 2516},
+        #         {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 1, 'flutype': 0, 'rate': 4.3, 'weeklyrate': 1.7, 'mmwrid': 2493},
+        #         {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 1, 'flutype': 0, 'rate': 20.3, 'weeklyrate': 0.1, 'mmwrid': 2513},
+        #         {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 0, 'sexid': 0, 'raceid': 1, 'flutype': 0, 'rate': 20.6, 'weeklyrate': 0.1, 'mmwrid': 2516},
         #         ...
         #     ]
         for obs in data:
