@@ -326,34 +326,12 @@ class FlusurvLocationFetcher:
         if (ageid, sexid, raceid, fluid).count(0) == 4:
             group = "overall"
         elif ageid != 0:
-            # The column names used in the DB for the original age groups
-            #  are ordinal, such that:
-            #     "rate_age_0" corresponds to age group 1, 0-4 yr
-            #     "rate_age_1" corresponds to age group 2, 5-17 yr
-            #     "rate_age_2" corresponds to age group 3, 18-49 yr
-            #     "rate_age_3" corresponds to age group 4, 50-64 yr
-            #     "rate_age_4" corresponds to age group 5, 65+ yr
-            #     "rate_age_5" corresponds to age group 7, 65-74 yr
-            #     "rate_age_6" corresponds to age group 8, 75-84 yr
-            #     "rate_age_7" corresponds to age group 9, 85+ yr
-            #
-            #  Group 6 was the "overall" category and not included in the
-            #  ordinal naming scheme. Because of that, groups 1-5 have column
-            #  ids equal to the ageid - 1; groups 7-9 have column ids equal
-            #  to ageid - 2.
-            #
-            #  Automatically map from ageids 1-9 to column ids to match
-            #  the historical convention.
-            if ageid <= 5:
-                age_group = str(ageid - 1)
-            elif ageid == 6:
+            if ageid == 6:
                 # Ageid of 6 used to be used for the "overall" category.
                 #  Now "overall" is represented by a valueid of 0, and ageid of 6
                 #  is not used for any group. If we see an ageid of 6, something
                 #  has gone wrong.
                 raise ValueError("Ageid cannot be 6; please check for changes in the API")
-            elif ageid <= 9:
-                age_group = str(ageid - 2)
             else:
                 age_group = self.metadata.id_to_group["Age"][ageid]
             group = "age_" + age_group

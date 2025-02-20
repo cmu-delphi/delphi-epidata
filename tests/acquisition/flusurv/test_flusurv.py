@@ -144,14 +144,14 @@ location_api_result = {'default_data': network_all_example_data}
 #  by type and cleaned-up descriptions (no spaces or capital letters, etc)
 id_group_map = {
     "Age": {
-        1: "0t4",
-        2: "5t17",
-        3: "18t49",
-        4: "50t64",
-        5: "65+",
-        7: "65t74",
-        8: "75t84",
-        9: "85+",
+        1: "0",
+        2: "1",
+        3: "2",
+        4: "3",
+        5: "4",
+        7: "5",
+        8: "6",
+        9: "7",
         10: "18t29",
         11: "30t39",
         12: "40t49",
@@ -327,8 +327,8 @@ class FunctionTests(unittest.TestCase):
 
         duplicate_input_data = {
             'default_data': [
-                {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 1, 'sexid': 0, 'raceid': 0, 'rate': 42, 'weeklyrate': 0.5, 'mmwrid': 2519},
-                {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 1, 'sexid': 0, 'raceid': 0, 'rate': 42, 'weeklyrate': 54, 'mmwrid': 2519},
+                {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 1, 'sexid': 0, 'raceid': 0, 'flutype': 0, 'rate': 42, 'weeklyrate': 0.5, 'mmwrid': 2519},
+                {'networkid': 1, 'catchmentid': 22, 'seasonid': 49, 'ageid': 1, 'sexid': 0, 'raceid': 0, 'flutype': 0, 'rate': 42, 'weeklyrate': 54, 'mmwrid': 2519},
             ]
         }
 

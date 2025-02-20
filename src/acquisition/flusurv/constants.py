@@ -101,6 +101,26 @@ EXPECTED_GROUPS = HISTORICAL_GROUPS + NEW_AGE_GROUPS + RACE_GROUPS + SEX_GROUPS 
 # dict(Variable: dict(valueid: output_col_suffix))
 ID_TO_LABEL_MAP = {
     "Age": {
+        # The column names used in the DB for the original age groups
+        # are ordinal, such that:
+        #    "rate_age_0" corresponds to age group 1, 0-4 yr
+        #    "rate_age_1" corresponds to age group 2, 5-17 yr
+        #    "rate_age_2" corresponds to age group 3, 18-49 yr
+        #    "rate_age_3" corresponds to age group 4, 50-64 yr
+        #    "rate_age_4" corresponds to age group 5, 65+ yr
+        #    "rate_age_5" corresponds to age group 7, 65-74 yr
+        #    "rate_age_6" corresponds to age group 8, 75-84 yr
+        #    "rate_age_7" corresponds to age group 9, 85+ yr
+        #
+        # Group 6 was the "overall" category and not included in the
+        # ordinal naming scheme. Because of that, groups 1-5 have column
+        # ids equal to the ageid - 1; groups 7-9 have column ids equal
+        # to ageid - 2.
+        #
+        # Ageid of 6 used to be used for the "overall" category.
+        # Now "overall" is represented by a valueid of 0, and ageid of 6
+        # is not used for any group. If we see an ageid of 6, something
+        # has gone wrong.
         1: "0", # 'Label': '0-4 yr'
         2: "1", # 'Label': '5-17 yr'
         3: "2", # 'Label': '18-49 yr'
