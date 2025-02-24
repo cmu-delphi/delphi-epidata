@@ -34,7 +34,7 @@ class FlusurvTest(DelphiTestBase):
                 `rate_sex_male`,
                 `rate_sex_female`,
                 `rate_flu_a`,
-                `rate_flu_b`,
+                `rate_flu_b`
             ) VALUES(
                 %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
                 %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
