@@ -83,5 +83,5 @@ The CPR is prepared with an internal lag of 1-2 days for most signals. The file 
 
 ## Source and Licensing
 
-This indicator mirrors and lightly aggregates data originally published by the Data Strategy and Execution Workgroup via [HealthData.gov](https://healthdata.gov/). As a work of the US government, the original data is in the [public domain](https://www.usa.gov/government-works).
+These indicators mirror and lightly aggregate data originally published by the Data Strategy and Execution Workgroup via [HealthData.gov](https://healthdata.gov/). As a work of the US government, the original data is in the [public domain](https://www.usa.gov/government-works).
 
