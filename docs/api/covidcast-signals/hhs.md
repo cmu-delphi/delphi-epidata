@@ -26,7 +26,7 @@ datasets is mirrored in Epidata at the following endpoint:
 That dataset contains dozens of columns that break down hospital
 resource usage in different ways.
 
-This indicator makes available several commonly-used columns and combinations of
+These indicators make available several commonly-used columns and combinations of
 columns, aggregated geographically. In particular, we include the sum of all
 adult and pediatric COVID-19 hospital admissions. This sum is used as the
 "ground truth" for hospitalizations by the
@@ -116,7 +116,7 @@ is first published.
 
 ## Source and Licensing
 
-This indicator mirrors and lightly aggregates data originally
+These indicators mirror and lightly aggregate data originally
 published by the U.S. Department of Health & Human Services.
 As a work of the US government, the original data is in the
 [public domain](https://www.usa.gov/government-works).
