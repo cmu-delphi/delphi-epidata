@@ -148,13 +148,22 @@ def update(fetcher, location, test_mode=False):
         # Remove the season description since we also store it in each epiweek obj
         unexpected_groups = data[epiweek].keys() - EXPECTED_GROUPS - {"season"}
         if len(missing_expected_groups) != 0:
-            raise ValueError(
+            warn(
                 f"{location} {epiweek} data is missing group(s) {missing_expected_groups}"
             )
+            # Fill in expected values with `None` so SQL query injection below
+            # doesn't fail with a key error.
+            for key in missing_expected_groups:
+                data[epiweek][key] = None
         if len(unexpected_groups) != 0:
-            raise ValueError(
+            warn(
                 f"{location} {epiweek} data includes new group(s) {unexpected_groups}"
             )
+            # Remove unexpected values from the data. Construction of the SQL
+            # query below fetches values by key, so these would be ignored even
+            # if we left them.
+            for key in unexpected_groups:
+                del data[epiweek][key]
 
         args_meta = {
             "release_date": release_date,
