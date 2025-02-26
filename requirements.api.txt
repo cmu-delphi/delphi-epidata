@@ -2,7 +2,6 @@ delphi_utils
 epiweeks==2.1.2
 Flask==2.2.5
 Flask-Limiter==3.3.0
-jinja2==3.1.4
 more_itertools==8.4.0
 mysqlclient==2.1.1
 orjson==3.9.15
