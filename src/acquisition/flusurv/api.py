@@ -333,13 +333,13 @@ class FlusurvLocationFetcher:
                 #  has gone wrong.
                 raise ValueError("Ageid cannot be 6; please check for changes in the API")
             else:
-                age_group = self.metadata.id_to_group["Age"].get(ageid, ageid)
+                age_group = self.metadata.id_to_group["Age"].get(ageid, str(ageid))
             group = "age_" + age_group
         elif sexid != 0:
-            group = "sex_" + self.metadata.id_to_group["Sex"].get(sexid, ageid)
+            group = "sex_" + self.metadata.id_to_group["Sex"].get(sexid, str(sexid))
         elif raceid != 0:
-            group = "race_" + self.metadata.id_to_group["Race"].get(raceid, ageid)
+            group = "race_" + self.metadata.id_to_group["Race"].get(raceid, str(raceid))
         elif fluid != 0:
-            group = "flu_" + self.metadata.id_to_group["Flutype"].get(fluid, ageid)
+            group = "flu_" + self.metadata.id_to_group["Flutype"].get(fluid, str(fluid))
 
         return "rate_" + group
