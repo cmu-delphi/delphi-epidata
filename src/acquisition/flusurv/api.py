@@ -202,9 +202,7 @@ class FlusurvLocationFetcher:
 
         # extract
         print("[reformatting flusurv result...]")
-        data_out = self._add_sex_breakdowns_ut(
-            self._group_by_epiweek(data_in), location
-        )
+        data_out = self._group_by_epiweek(data_in), location
 
         # return
         print(f"[successfully fetched data for {location}]")
@@ -325,6 +323,8 @@ class FlusurvLocationFetcher:
             raise ValueError("Expect at least three of four group ids to be 0")
         if (ageid, sexid, raceid, fluid).count(0) == 4:
             group = "overall"
+        # In all cases, if id is not available as a key in the dict, use the
+        # raw id as the name suffix
         elif ageid != 0:
             if ageid == 6:
                 # Ageid of 6 used to be used for the "overall" category.
@@ -333,23 +333,13 @@ class FlusurvLocationFetcher:
                 #  has gone wrong.
                 raise ValueError("Ageid cannot be 6; please check for changes in the API")
             else:
-                age_group = self.metadata.id_to_group["Age"][ageid]
+                age_group = self.metadata.id_to_group["Age"].get(ageid, ageid)
             group = "age_" + age_group
         elif sexid != 0:
-            group = "sex_" + self.metadata.id_to_group["Sex"][sexid]
+            group = "sex_" + self.metadata.id_to_group["Sex"].get(sexid, ageid)
         elif raceid != 0:
-            group = "race_" + self.metadata.id_to_group["Race"][raceid]
+            group = "race_" + self.metadata.id_to_group["Race"].get(raceid, ageid)
         elif fluid != 0:
-            group = "flu_" + self.metadata.id_to_group["Flutype"][fluid]
+            group = "flu_" + self.metadata.id_to_group["Flutype"].get(fluid, ageid)
 
         return "rate_" + group
-
-    def _add_sex_breakdowns_ut(self, data, location):
-        # UT doesn't have sex breakdowns available at least for 2022-23. Fill
-        # in to avoid downstream errors.
-        if location == "UT":
-            for epiweek in data.keys():
-                for group in SEX_GROUPS:
-                    if group not in data[epiweek].keys():
-                        data[epiweek][group] = None
-        return(data)

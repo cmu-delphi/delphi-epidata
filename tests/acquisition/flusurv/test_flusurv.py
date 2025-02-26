@@ -357,6 +357,8 @@ class FunctionTests(unittest.TestCase):
             (0, 0, 0, 1),
             (13, 0, 0, 0),
             (97, 0, 0, 0),
+            (999, 0, 0, 0),
+            (0, 0, 111, 0),
         )
         expected_list = [
             "rate_age_0",
@@ -368,30 +370,17 @@ class FunctionTests(unittest.TestCase):
             "rate_flu_b",
             "rate_flu_a",
             "rate_age_0tlt1",
-            "rate_age_97",
+            "rate_age_lt18",
+            "rate_age_999",
+            "rate_race_111",
         ]
 
         for (ageid, sexid, raceid, fluid), expected in zip(ids, expected_list):
             self.assertEqual(api_fetcher._groupid_to_name(ageid, sexid, raceid, fluid), expected)
 
         with self.assertRaisesRegex(ValueError, "Ageid cannot be 6"):
-            api_fetcher._groupid_to_name(6, 0, 0)
+            api_fetcher._groupid_to_name(6, 0, 0, 0)
         with self.assertRaisesRegex(ValueError, "Expect at least three of four group ids to be 0"):
             api_fetcher._groupid_to_name(1, 1, 0, 0)
             api_fetcher._groupid_to_name(0, 1, 1, 0)
             api_fetcher._groupid_to_name(1, 1, 1, 1)
-
-    def test_groupids_to_name(self):
-        input_data = api_fetcher._group_by_epiweek(metadata_result)
-        self.assertEqual(api_fetcher._add_sex_breakdowns_ut(input_data, "network_all"), by_epiweek_example_data)
-
-        ut_expected = by_epiweek_example_data.copy()
-        ut_expected[201014]["rate_sex_male"] = None
-        ut_expected[200940]["rate_sex_female"] = None
-        ut_expected[200940]["rate_sex_male"] = None
-        ut_expected[201011]["rate_sex_female"] = None
-        ut_expected[201011]["rate_sex_male"] = None
-        ut_expected[201008]["rate_sex_female"] = None
-        ut_expected[201008]["rate_sex_male"] = None
-
-        self.assertEqual(api_fetcher._add_sex_breakdowns_ut(input_data, "UT"), ut_expected)

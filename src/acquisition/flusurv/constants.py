@@ -89,11 +89,11 @@ RACE_GROUPS = (
 )
 SEX_GROUPS = (
     "rate_sex_male",
-    "rate_sex_female"
+    "rate_sex_female",
 )
 FLU_GROUPS = (
     "rate_flu_a",
-    "rate_flu_b"
+    "rate_flu_b",
 )
 EXPECTED_GROUPS = HISTORICAL_GROUPS + NEW_AGE_GROUPS + RACE_GROUPS + SEX_GROUPS + FLU_GROUPS
 
