@@ -300,8 +300,7 @@ class FunctionTests(unittest.TestCase):
         season_api_fetcher = api_fetcher
         season_api_fetcher.metadata.seasonids = [30, 49]
 
-        self.assertEqual(season_api_fetcher.get_data("network_all"), by_epiweek_example_data
-        )
+        self.assertEqual(season_api_fetcher.get_data("network_all"), by_epiweek_example_data)
 
     @patch(__test_target__ + ".fetch_json")
     def test_fetch_flusurv_location(self, MockFlusurvLocation):

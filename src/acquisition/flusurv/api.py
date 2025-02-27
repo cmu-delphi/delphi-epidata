@@ -202,7 +202,7 @@ class FlusurvLocationFetcher:
 
         # extract
         print("[reformatting flusurv result...]")
-        data_out = self._group_by_epiweek(data_in), location
+        data_out = self._group_by_epiweek(data_in)
 
         # return
         print(f"[successfully fetched data for {location}]")
