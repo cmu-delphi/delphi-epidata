@@ -9,9 +9,9 @@ nav_order: 1
 {: .no_toc}
 
 * **Source name:** `google-symptoms`
-* **Earliest issue available:** November 30, 2020
+* **Earliest issue available:** Aug 20, 2017
 * **Number of data revisions since May 19, 2020:** 1
-* **Date of last change:** January 20, 2022
+* **Date of last change:** February 28, 2025
 * **Available for:** county, MSA, HRR, state, HHS, nation (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** To download or use the data, you must agree to the Google [Terms of Service](https://policies.google.com/terms)
@@ -44,9 +44,11 @@ Between May 13 2024 and August 6 2024, [signal values were much lower](#limitati
 * _s07_: Conjunctivitis, Red eye, Epiphora, Eye pain, Rheum
 * _scontrol_: Type 2 diabetes, Urinary tract infection, Hair loss, Candidiasis, Weight gain
 
-The symptoms were combined in sets _s01_-_s06_ that showed positive correlation with COVID-19 cases, especially after Omicron was declared a variant of concern by the WHO.
+Symptoms sets _s01_-_s06_ are designed track a variety of COVID-19 systems.
+They are positively correlated with COVID-19 cases, especially in the period when the Omicron variant was dominant.
 Symptom set _s07_ is designed to track novel eye-related symptoms of H5N1.
-Note that symptoms in _scontrol_ are not COVID-19 or H5N1 related, and this symptom set can be used as a negative control.
+Note that symptoms in _scontrol_ are not COVID-19 or H5N1 related.
+This symptom set can be used as a negative control.
 
 Until January 20, 2022, we had separate signals for symptoms Anosmia, Ageusia, and their sum.
 
@@ -89,7 +91,6 @@ Each signal is the average of the
  data. Users should be careful when considering such signals.
 
  For each symptom set: when search trends for all symptoms are missing, the signal is reported as missing. When search trends are available for at least one of the symptoms, we fill the missing trends for other symptoms with 0 and compute the average. We use this approach because the missing observations in the Google Symptoms search trends dataset do not occur randomly; they represent low popularity and are censored for quality and/or privacy reasons. The same approach is used for smoothed signals. A 7 day moving average is used, and missing raw signals are filled with 0 as long as there is at least one day available within the 7 day window.
-
 
 
 ## Geographical Aggregation
