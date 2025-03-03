@@ -2,9 +2,14 @@
 title: Collaboration and Survey Revision
 parent: <i>inactive</i> COVID-19 Trends and Impact Survey
 nav_order: 1
+nav_exclude: true
 ---
 
 # Collaboration and Survey Revision
+
+<div style="background-color:#f5f6fa; padding: 10px
+30px;"><strong>Update:</strong> CTIS data collection has ended. We are no longer
+revising the survey or hosting collaboration meetings.</div>
 
 Delphi continues to revise the COVID-19 Trends and Impact Survey (CTIS)
 instruments in order to prioritize items that have the greatest utility for the

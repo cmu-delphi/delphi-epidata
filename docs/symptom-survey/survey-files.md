@@ -2,10 +2,18 @@
 title: Response Files
 parent: <i>inactive</i> COVID-19 Trends and Impact Survey
 nav_order: 3
+nav_exclude: true
 ---
 
 # Response Files
 {: .no_toc}
+
+<div style="background-color:#f5f6fa; padding: 10px
+30px;"><strong>Note:</strong> This page is obsolete. Users who obtain the survey
+data <a href="https://www.icpsr.umich.edu/web/ICPSR/studies/39207">via ICPSR</a>
+should consult the Microdata User Guide provided in the study-level data
+package. This guide documents the format of the data and includes example code
+for common use cases.</div>
 
 Users with access to the [COVID-19 Trends and Impact Survey (CTIS)](./index.md)
 individual response data should have received SFTP credentials for a private
