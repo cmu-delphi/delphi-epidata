@@ -57,11 +57,7 @@ continue to [request access](./data-access.md) to non-public, non-aggregated
 survey data for their research, and current approved data users will be able to
 continue accessing the non-aggregated data until their current data use
 agreements (DUA) expire. Researchers currently holding a fully executed DUA will
-have the option to extend their DUA after it expires. Though no new data will be
-collected after June 25, 2022, [Meta’s CTIS
-visualizations](https://dataforgood.facebook.com/covid-survey/) will continue to
-be available, and until the end of 2022, [JH CCP’s COVID Behaviors
-dashboard](https://covidbehaviors.org/) will as well.
+have the option to extend their DUA after it expires.
 
 
 ## CTIS Impact
