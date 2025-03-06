@@ -30,8 +30,7 @@ The archive includes complete documentation, including a Methodology Report on
 survey design, a survey weighting guide, guides to the aggregate and microdata,
 and example code. Aggregate contingency tables are available for public download
 and restricted microdata can be obtained upon request. If you are a researcher
-and would like to get access to the data, see our page on getting [data
-access](data-access.md).
+and would like to get access to the data, see our page on getting [data access](data-access.md).
 
 If you have questions about the survey or getting access to data, contact us at
 <delphi-survey-info@lists.andrew.cmu.edu>.
