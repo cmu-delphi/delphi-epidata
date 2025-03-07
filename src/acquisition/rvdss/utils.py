@@ -14,6 +14,8 @@ from delphi.epidata.acquisition.rvdss.constants import (
     )
 
 def abbreviate_virus(full_name):
+    """Abbreviate viruses and make them lowercase """
+    
     lowercase=full_name.lower()
     keys = (re.escape(k) for k in VIRUSES.keys())
     pattern = re.compile(r'\b(' + '|'.join(keys) + r')\b')
@@ -21,9 +23,10 @@ def abbreviate_virus(full_name):
     return(result)
 
 def abbreviate_geo(full_name):
+    """Abbreviate provincial geo_values and make spelling consistent (i.e. removing extra spaces)"""
     lowercase=full_name.lower()
     lowercase = re.sub("province of ","",lowercase)
-    lowercase=re.sub("\.|\*","",lowercase)
+    lowercase=re.sub(r"\.|\*","",lowercase)
     lowercase=re.sub("/territoires","",lowercase)
     lowercase=re.sub("^cana$","can",lowercase)
     lowercase =lowercase.translate(str.maketrans(string.punctuation, ' '*len(string.punctuation),'.'+"'"))
@@ -43,7 +46,8 @@ def abbreviate_geo(full_name):
     return(result)
 
 def create_geo_types(geo,default_geo):
-    if geo in NATION:
+    lowercase_geo = geo.lower()
+    if lowercase_geo in NATION:
         geo_type="nation"
     elif geo in REGIONS:
         geo_type="region"
@@ -88,15 +92,15 @@ def preprocess_table_columns(table):
     Change some naming of locations in columns (i.e at instead of atl)
     """
     table.columns = [re.sub("\xa0"," ", col) for col in table.columns] # \xa0 to space
-    table.columns = [re.sub("(.*?)(\.\d+)", "\\1", c) for c in table.columns] # remove .# for duplicated columns
-    table.columns =[re.sub("\.", "", s)for s in table.columns] #remove periods
+    table.columns = [re.sub(r"(.*?)(\.\d+)", "\\1", c) for c in table.columns] # remove .# for duplicated columns
+    table.columns =[re.sub(r"\.", "", s)for s in table.columns] #remove periods
     table.columns =[re.sub(r"\((all)\)", "", s)for s in table.columns] # remove (all)
-    table.columns =[re.sub(r"\s*\(|\)", "", s)for s in table.columns]
+    table.columns =[re.sub(r"\s*\(|\)", "", s)for s in table.columns] # remove ( )
     table.columns = [re.sub(' +', ' ', col) for col in table.columns] # Make any muliple spaces into one space
-    table.columns = [re.sub(r'\(|\)', '', col) for col in table.columns] # replace () for _
+    table.columns = [re.sub(r'\(|\)', '', col) for col in table.columns]
     table.columns = [re.sub(r'/', '_', col) for col in table.columns] # replace / with _
 
-    table.columns = [re.sub(r"^at\b","atl ",t) for t in table.columns]
+    table.columns = [re.sub(r"^at\b","atl",t) for t in table.columns]
     table.columns = [re.sub("canada","can",t) for t in table.columns]
     table.columns = [re.sub(r"\bcb\b","bc",t) for t in table.columns]
 
@@ -146,7 +150,8 @@ def make_signal_type_spelling_consistent(signal):
     pat4 = 'tested'
     combined_pat2 = '|'.join((pat3, pat4))
 
-    new_signal = re.sub(combined_pat, "positive_tests",signal)
+    new_signal = re.sub("positive tests", "positive_tests",signal)
+    new_signal = re.sub(combined_pat, "positive_tests",new_signal)
     new_signal = re.sub(combined_pat2, "tests",new_signal)
     new_signal =re.sub(" *%", "_pct_positive",new_signal)
     new_signal = re.sub("total ", "",new_signal)
@@ -198,7 +203,7 @@ def get_detections_data(base_url,headers,update_date):
     week_df = summary_df[(summary_df['Section'] == "summary") & (summary_df['Type']=="title")]
     week_string = week_df.iloc[0]['Text'].lower()
     current_week = int(re.search("week (.+?) ", week_string).group(1))
-    current_year= int(re.search("20\d{2}", week_string).group(0))
+    current_year= int(re.search(r"20\d{2}", week_string).group(0))
 
     current_epiweek= Week(current_year,current_week)
 
