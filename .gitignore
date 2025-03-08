@@ -43,3 +43,5 @@ __pycache__/
 rsconnect/
 
 *.Rproj
+venv
+env
