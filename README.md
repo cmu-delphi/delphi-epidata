@@ -64,6 +64,45 @@ $ cd repos
 $ pip install -e . --config-settings editable_mode=strict
 ```
 
+## Linting and Formatting
+
+The command `inv lint` will lint your changes (using
+[lint-diffs](https://github.com/AtakamaLLC/lint-diffs/)) and `inv format` will
+format your changes (using [darker](https://github.com/akaihola/darker)). This
+will allow us to incrementally bring this repo up to PEP8 compliance. There is
+[a CI action](.github/workflows/lint.yaml) to ensure that all new code is
+compliant.
+
+To setup the linter commands locally, run the following commands in the root of
+the repository:
+
+```sh
+# Create a virtual environment
+python -m venv venv
+source venv/bin/activate
+# Install lint dependencies
+pip install -r requirements.lint.txt
+# Run lint
+inv lint
+# Run formatter (will tell you which files it modified)
+inv format
+```
+
+If you get the error `ERROR:darker.git:fatal: Not a valid commit name <hash>`,
+then it's likely because your local main branch is not up to date; either you
+need to rebase or merge. Note that `darker` reads from `pyproject.toml` for
+default settings.
+
+If the lines you change are in a file that uses 2 space indentation, `darker`
+will indent the lines around your changes and not the rest, which will likely
+break the code; in that case, you should probably just pass the whole file
+through black. You can do that with the following command (using the same
+virtual environment as above):
+
+```sh
+env/bin/black <file>
+```
+
 # COVIDcast
 
 At the present, our primary focus is developing and expanding the
