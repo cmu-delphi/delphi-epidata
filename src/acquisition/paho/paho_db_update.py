@@ -15,7 +15,7 @@ Stores versioned PAHO Dengue data from PAHO website.
 | Field          | Type        | Null | Key | Default | Extra          |
 +----------------+-------------+------+-----+---------+----------------+
 | id             | int(11)     | NO   | PRI | NULL    | auto_increment |
-| release_date   | date        | NO   | MUL | NULL    |                | 
+| release_date   | date        | NO   | MUL | NULL    |                |
 | issue          | int(11)     | NO   | MUL | NULL    |                |
 | epiweek        | int(11)     | NO   | MUL | NULL    |                |
 | region         | varchar(12) | NO   | MUL | NULL    |                |
@@ -62,6 +62,9 @@ import delphi.operations.secrets as secrets
 from delphi.epidata.acquisition.paho.paho_download import get_paho_data
 from delphi.utils.epiweek import delta_epiweeks, check_epiweek
 from delphi.utils.epidate import EpiDate
+from delphi.epidata.common.logger import get_structured_logger
+
+logger = get_structured_logger("paho_db_update")
 
 
 def ensure_tables_exist():
@@ -171,19 +174,19 @@ def update_from_file(issue, date, filename, test_mode=False):
     u, p = secrets.db.epi
     cnx = mysql.connector.connect(user=u, password=p, database="epidata")
     rows1 = get_rows(cnx, "paho_dengue")
-    print(f"rows before: {int(rows1)}")
+    logger.info(f"rows before: {int(rows1)}")
     insert = cnx.cursor()
 
     # load the data, ignoring empty rows
-    print(f"loading data from {filename} as issued on {int(issue)}")
+    logger.info(f"loading data from {filename} as issued on {int(issue)}")
     with open(filename, encoding="utf-8") as f:
         c = f.read()
     rows = []
     for l in csv.reader(StringIO(c), delimiter=","):
         rows.append(get_paho_row(l))
-    print(f" loaded {len(rows)} rows")
+    logger.info(f" loaded {len(rows)} rows")
     entries = [obj for obj in rows if obj]
-    print(f" found {len(entries)} entries")
+    logger.info(f" found {len(entries)} entries")
 
     sql = """
     INSERT INTO
@@ -222,12 +225,12 @@ def update_from_file(issue, date, filename, test_mode=False):
     # cleanup
     insert.close()
     if test_mode:
-        print("test mode, not committing")
+        logger.info("test mode, not committing")
         rows2 = rows1
     else:
         cnx.commit()
         rows2 = get_rows(cnx)
-    print(f"rows after: {int(rows2)} (added {int(rows2 - rows1)})")
+    logger.info(f"rows after: {int(rows2)} (added {int(rows2 - rows1)})")
     cnx.close()
 
 
@@ -257,7 +260,7 @@ def main():
         raise Exception("--file and --issue must both be present or absent")
 
     date = datetime.datetime.now().strftime("%Y-%m-%d")
-    print(f"assuming release date is today, {date}")
+    logger.info(f"assuming release date is today, {date}")
 
     if args.file:
         update_from_file(args.issue, date, args.file, test_mode=args.test)
@@ -292,7 +295,7 @@ def main():
                     if not db_error:
                         break  # Exit loop with success
             if flag >= max_tries:
-                print("WARNING: Database `paho_dengue` did not update successfully")
+                logger.warning("Database `paho_dengue` did not update successfully")
 
 
 if __name__ == "__main__":

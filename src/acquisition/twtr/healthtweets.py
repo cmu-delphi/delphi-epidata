@@ -24,7 +24,7 @@ Scrapes daily state values from healthtweets.org
 
 # standard library
 import argparse
-from datetime import datetime, timedelta
+from datetime import datetime
 import json
 
 # third party`
@@ -32,6 +32,10 @@ import requests
 
 # first party
 from .pageparser import PageParser
+from delphi.epidata.common.logger import get_structured_logger
+
+
+logger = get_structured_logger("healthtweets")
 
 
 class HealthTweets:
@@ -104,7 +108,7 @@ class HealthTweets:
         response = self._go("https://www.healthtweets.org/accounts/login")
         token = self._get_token(response.text)
         if self.debug:
-            print(f"token={token}")
+            logger.info(f"token={token}")
         data = {
             "csrfmiddlewaretoken": token,
             "username": username,
@@ -135,7 +139,7 @@ class HealthTweets:
                 "num": round(raw_values[date]),
                 "total": round(100 * raw_values[date] / normalized_values[date]),
             }
-            print(date, raw_values[date], normalized_values[date])
+            logger.debug(f"get_values -> date: {date}, raw_values: {raw_values[date]}, normalized_values: {normalized_values[date]}")
         return values
 
     def _get_values(self, state, date1, date2, normalized):
@@ -197,7 +201,7 @@ class HealthTweets:
 
     def _go(self, url, method=None, referer=None, data=None):
         if self.debug:
-            print(url)
+            logger.debug(f"url: {url}")
         if method is None:
             if data is None:
                 method = self.session.get
@@ -207,8 +211,8 @@ class HealthTweets:
         html = response.text
         if self.debug:
             for item in response.history:
-                print(f" [{int(item.status_code)} to {item.headers['Location']}]")
-            print(f" {int(response.status_code)} ({len(html)} bytes)")
+                logger.debug(f" [{int(item.status_code)} to {item.headers['Location']}]")
+            logger.debug(f" {int(response.status_code)} ({len(html)} bytes)")
         return response
 
 
@@ -249,7 +253,7 @@ def main():
     )
     parser.add_argument(
         "-d",
-        "--debug", 
+        "--debug",
         action="store_const",
         const=True,
         default=False,
@@ -260,9 +264,9 @@ def main():
 
     ht = HealthTweets(args.username, args.password, debug=args.debug)
     values = ht.get_values(args.state, args.date1, args.date2)
-    print(f"Daily counts in {ht.check_state(args.state)} from {args.date1} to {args.date2}:")
+    logger.info(f"Daily counts in {ht.check_state(args.state)} from {args.date1} to {args.date2}:")
     for date in sorted(list(values.keys())):
-        print(
+        logger.info(
             "%s: num=%-4d total=%-5d (%.3f%%)"
             % (
                 date,

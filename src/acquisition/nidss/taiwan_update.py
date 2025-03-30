@@ -83,6 +83,10 @@ import mysql.connector
 from .taiwan_nidss import NIDSS
 import delphi.operations.secrets as secrets
 from delphi.utils.epiweek import *
+from delphi.epidata.common.logger import get_structured_logger
+
+
+logger = get_structured_logger("taiwan_update")
 
 
 # Get a row count just to know how many new rows are inserted
@@ -101,14 +105,14 @@ def get_rows(cnx):
 def update(test_mode=False):
     # test mode
     if test_mode:
-        print("test mode enabled: changes will not be saved")
+        logger.info("test mode enabled: changes will not be saved")
 
     # Database connection
     u, p = secrets.db.epi
     cnx = mysql.connector.connect(user=u, password=p, database="epidata")
     rows1 = get_rows(cnx)
-    print(f"rows before (flu): {int(rows1[0])}")
-    print(f"rows before (dengue): {int(rows1[1])}")
+    logger.info(f"rows before (flu): {int(rows1[0])}")
+    logger.info(f"rows before (dengue): {int(rows1[1])}")
     insert = cnx.cursor()
     sql_flu = """
     INSERT INTO
@@ -149,10 +153,10 @@ def update(test_mode=False):
     # Cleanup
     insert.close()
     rows2 = get_rows(cnx)
-    print(f"rows after (flu): {int(rows2[0])} (added {int(rows2[0] - rows1[0])})")
-    print(f"rows after (dengue): {int(rows2[1])} (added {int(rows2[1] - rows1[1])})")
+    logger.info(f"rows after (flu): {int(rows2[0])} (added {int(rows2[0] - rows1[0])})")
+    logger.info(f"rows after (dengue): {int(rows2[1])} (added {int(rows2[1] - rows1[1])})")
     if test_mode:
-        print("test mode: changes not commited")
+        logger.info("test mode: changes not commited")
     else:
         cnx.commit()
     cnx.close()
