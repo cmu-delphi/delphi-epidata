@@ -473,6 +473,7 @@ FROM {self.history_view} h JOIN (
         ROUND(AVG(`value`),7) AS `mean_value`,
         ROUND(STD(`value`),7) AS `stdev_value`,
         MAX(`value_updated_timestamp`) AS `last_update`,
+        MIN(`issue`) as `min_issue`,
         MAX(`issue`) as `max_issue`,
         MIN(`lag`) as `min_lag`,
         MAX(`lag`) as `max_lag`
