@@ -43,6 +43,7 @@ As of May 2024, NSSP received data from 78% of US EDs.
 
 The percent visits signals are calculated as a fraction of visits at facilities reporting to NSSP, rather than all facilities in the area.
 `county`, `state` and `nation` level data is reported as-is from NSSP, without modification, while `hhs`, `hrr` and `msa` are estimated by Delphi.
+State and HSA-level values are calculated and published by NSSP; County level values are not published individually, but are approximations copied from the HSA the county is in (every county in an HSA will have identical values).
 
 ### Geographic weighting
 As the original data is a percentage and raw case counts are not available, `hrr`,`msa`, and `hhs` values are computed from county-level data using a weighted mean. Each county is assigned a weight equal to its population in the last census (2020). Unreported counties are implicitly treated as having a weight of 0 or a value equal to the group mean.
@@ -69,6 +70,8 @@ The following states report no data through NSSP at the county level: CA, WA, AK
 
 South Dakota, Missouri, and territories report no data through NSSP at the state level.
 
+The only completely non-reporting state is Missouri.
+
 
 ## Lag and Backfill
 
@@ -83,6 +86,9 @@ Counties with `NA` values are as originally reported in the dataset from which t
 
 
 ## Limitations
+
+As noted above, only state and HSA-level values are calculated and published by NSSP; County level values are not published individually, but are approximations copied from the HSA the county is in (every county in an HSA will have identical values).
+The HSA (Health Service Area) definitions used are known as ["NCI Modified"](https://seer.cancer.gov/seerstat/variables/countyattribs/hsa.html).
 
 There is substantial missingness at the county level. This tends to impact more rural and lower population locations. See the [missingness section](#missingness) for more information.
 
