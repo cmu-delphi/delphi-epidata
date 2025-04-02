@@ -112,7 +112,7 @@ def preprocess_table_columns(table):
     table.columns = [re.sub(r"flu a","flua",t) for t in table.columns]
     table.columns = [re.sub(r"flu b","flub",t) for t in table.columns]
     table.columns = [re.sub(r"flutest\b","flu test", col) for col in table.columns]
-    table.columns = [re.sub(r"other hpiv|other_hpiv","hpivother",t) for t in table.columns]
+    table.columns = [re.sub(r"other hpiv|other_hpiv|hpiv_other","hpivother",t) for t in table.columns]
 
     table.columns=[re.sub(r'bpositive','b_positive',c) for c in table.columns]
     table.columns=[re.sub(r'apositive','a_positive',c) for c in table.columns]
@@ -173,7 +173,8 @@ def get_positive_data(base_url,headers,update_date):
     df['time_value'] = [check_date_format(d) for d in df['time_value']]
     df['geo_type'] = [create_geo_types(g,"province") for g in df['geo_value']]
     df.insert(1,"issue",update_date)
-
+    df['region'] = [abbreviate_geo(g) for g in df['region']]
+    
     #df=df.drop(["weekorder","region","year","week"],axis=1)
 
     df = df.pivot(index=['epiweek','time_value','issue','geo_type','geo_value','region','week','weekorder','year'],
@@ -194,37 +195,74 @@ def get_positive_data(base_url,headers,update_date):
 
     return(df)
 
+# def get_detections_data(base_url,headers,update_date):
+#     # Get current week and year
+#     summary_url =  base_url + "RVD_SummaryText.csv"
+#     summary_url_response = requests.get(summary_url, headers=headers)
+#     summary_df = pd.read_csv(io.StringIO(summary_url_response.text))
+
+#     week_df = summary_df[(summary_df['Section'] == "summary") & (summary_df['Type']=="title")]
+#     week_string = week_df.iloc[0]['Text'].lower()
+#     current_week = int(re.search("week (.+?) ", week_string).group(1))
+#     current_year= int(re.search(r"20\d{2}", week_string).group(0))
+
+#     current_epiweek= Week(current_year,current_week)
+
+#     # Get weekly data
+#     detections_url = base_url + "RVD_CurrentWeekTable.csv"
+#     detections_url_response = requests.get(detections_url, headers=headers)
+#     detections_url_response.encoding='UTF-8'
+#     df_detections = pd.read_csv(io.StringIO(detections_url_response.text))
+
+#     # swap order of names from a_b to b_a
+#     df_detections = df_detections.rename(columns=lambda x: '_'.join(x.split('_')[1:]+x.split('_')[:1]))
+#     df_detections.insert(0,"epiweek",int(str(current_epiweek)))
+#     df_detections.insert(1,"time_value",str(current_epiweek.enddate()))
+#     df_detections.insert(2,"issue",update_date)
+#     df_detections=preprocess_table_columns(df_detections)
+
+#     df_detections.columns=[re.sub(r' ','_',c) for c in df_detections.columns]
+#     df_detections=df_detections.rename(columns={'reportinglaboratory':"geo_value"})
+#     df_detections['geo_value'] = [abbreviate_geo(g) for g in df_detections['geo_value']]
+#     df_detections['geo_type'] = [create_geo_types(g,"lab") for g in df_detections['geo_value']]
+
+#     return(df_detections.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value']))
+
+
 def get_detections_data(base_url,headers,update_date):
     # Get current week and year
-    summary_url =  base_url + "RVD_SummaryText.csv"
-    summary_url_response = requests.get(summary_url, headers=headers)
-    summary_df = pd.read_csv(io.StringIO(summary_url_response.text))
-
-    week_df = summary_df[(summary_df['Section'] == "summary") & (summary_df['Type']=="title")]
-    week_string = week_df.iloc[0]['Text'].lower()
-    current_week = int(re.search("week (.+?) ", week_string).group(1))
-    current_year= int(re.search(r"20\d{2}", week_string).group(0))
-
-    current_epiweek= Week(current_year,current_week)
+    # summary_url =  base_url + "RVD_SummaryText.csv"
+    # summary_url_response = requests.get(summary_url, headers=headers)
+    # summary_df = pd.read_csv(io.StringIO(summary_url_response.text))
+    # week_df = summary_df[(summary_df['Section'] == "summary") & (summary_df['Type']=="title")]
+    # week_string = week_df.iloc[0]['Text'].lower()
+    # current_week = int(re.search("week (.+?) ", week_string).group(1))
+    # current_year= int(re.search(r"20\d{2}", week_string).group(0))
+    # current_epiweek= Week(current_year,current_week)
 
     # Get weekly data
     detections_url = base_url + "RVD_CurrentWeekTable.csv"
     detections_url_response = requests.get(detections_url, headers=headers)
     detections_url_response.encoding='UTF-8'
     df_detections = pd.read_csv(io.StringIO(detections_url_response.text))
+    
+    df_detections["year"] = [int(re.search(r"20\d{2}", w).group(0)) for w in  df_detections["date"]] 
+    ew = df_detections.apply(lambda x: Week(x['year'],x['week']),axis=1)
 
+    # swap order of names from a_b to b_a
     df_detections = df_detections.rename(columns=lambda x: '_'.join(x.split('_')[1:]+x.split('_')[:1]))
-    df_detections.insert(0,"epiweek",int(str(current_epiweek)))
-    df_detections.insert(1,"time_value",str(current_epiweek.enddate()))
+    df_detections.insert(0,"epiweek",[int(str(w)) for w in ew])
+    df_detections['epiweek'] = [int(str(w)) for w in df_detections['epiweek']]
     df_detections.insert(2,"issue",update_date)
+    
     df_detections=preprocess_table_columns(df_detections)
-
     df_detections.columns=[re.sub(r' ','_',c) for c in df_detections.columns]
-    df_detections=df_detections.rename(columns={'reportinglaboratory':"geo_value"})
+    df_detections=df_detections.rename(columns={'reportinglaboratory':"geo_value",'date':"time_value"})
     df_detections['geo_value'] = [abbreviate_geo(g) for g in df_detections['geo_value']]
     df_detections['geo_type'] = [create_geo_types(g,"lab") for g in df_detections['geo_value']]
 
     return(df_detections.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value']))
+
 
 def fetch_dashboard_data(url):
     headers = {
