@@ -44,11 +44,16 @@ def add_https_prefix(urls):
     for i in range(len(urls)):
         temp_url = urls[i]
 
+        https_present = re.search("https:",temp_url)
         http_present = re.search("http:",temp_url)
-        if not http_present:
-            urls[i]=SEASON_BASE_URL+temp_url
+        
+        if not https_present: 
+            if not http_present:
+                urls[i]=SEASON_BASE_URL+temp_url
+            else:
+                urls[i]=re.sub("http:","https:",temp_url)
         else:
-            urls[i]=re.sub("http:","https:",temp_url)
+            urls[i]=temp_url
     return(urls)
 
 def construct_weekly_report_urls(soup):

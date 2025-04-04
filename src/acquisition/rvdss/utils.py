@@ -13,6 +13,7 @@ from delphi.epidata.acquisition.rvdss.constants import (
         DASHBOARD_UPDATE_DATE_FILE, DASHBOARD_DATA_FILE
     )
 
+ #%% Functions
 def abbreviate_virus(full_name):
     """Abbreviate viruses and make them lowercase """
     
