@@ -48,7 +48,7 @@ from delphi.utils.epidate import EpiDate
 
 def ensure_tables_exist():
     (u, p) = secrets.db.epi
-    cnx = mysql.connector.connect(user=u, password=p, database="epidata")
+    cnx = mysql.connector.connect(user=u, password=p, database="epidata", host=secrets.db.host)
     try:
         cursor = cnx.cursor()
         cursor.execute(
@@ -98,7 +98,7 @@ def update_from_file(issue, date, dir, test_mode=False):
     # Read ECDC data from CSVs and insert into (or update) the database.
     # database connection
     u, p = secrets.db.epi
-    cnx = mysql.connector.connect(user=u, password=p, database="epidata")
+    cnx = mysql.connector.connect(user=u, password=p, database="epidata", host=secrets.db.host)
     rows1 = get_rows(cnx, "ecdc_ili")
     print(f"rows before: {int(rows1)}")
     insert = cnx.cursor()
