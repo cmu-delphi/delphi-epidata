@@ -60,7 +60,12 @@ class Epidata:
         try:
             request = requests.get('https://pypi.org/pypi/delphi-epidata/json', timeout=5)
             latest_version = request.json()['info']['version']
-        except Exception as e:
+        except (requests.exceptions.JSONDecodeError
+                    , requests.exceptions.HTTPError
+                    , requests.exceptions.Timeout
+                    , requests.exceptions.TooManyRedirects
+                    , requests.exceptions.RequestException
+                    , AttributeError) as e:
             Epidata.log("Error getting latest client version", exception=str(e))
             return
 
@@ -126,7 +131,11 @@ class Epidata:
         """
         try:
             result = Epidata._request_with_retry(endpoint, params)
-        except Exception as e:
+        except (requests.exceptions.JSONDecodeError
+                    , requests.exceptions.HTTPError
+                    , requests.exceptions.Timeout
+                    , requests.exceptions.TooManyRedirects
+                    , requests.exceptions.RequestException) as e:
             return {"result": 0, "message": "error: " + str(e)}
         if params is not None and "format" in params and params["format"] == "csv":
             return result.text

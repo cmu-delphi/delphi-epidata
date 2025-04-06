@@ -26,7 +26,7 @@ def main(args, epidata_impl=Epidata, database_impl=Database):
   """
   log_file = None
   num_threads = None
-  if (args):
+  if args:
     log_file = args.log_file
     num_threads = args.num_threads
 

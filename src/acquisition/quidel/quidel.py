@@ -242,7 +242,7 @@ class QuidelData:
     # hardcoded aggregation function
     # output: [#unique_device,fluA,fluB,fluAll,total]
     def prepare_measurements(self, data_dict, use_hhs=True, start_weekday=6):
-        buffer_dict = {}
+ 
         if use_hhs:
             region_list = Locations.hhs_list
         else:
@@ -266,6 +266,29 @@ class QuidelData:
         # count the latest week in only if Thurs data is included
         end_epiweek = date_to_epiweek(end_date, shift=-4)
         # first pass: prepare device_id set
+        device_dict = self._prepare_device_id(data_dict
+                                              , end_epiweek
+                                              , region_list
+                                              , time_map
+                                              , region_map)
+        
+        buffer_dict = self._prepare_all_measurments(data_dict
+                                                    , device_dict
+                                                    , end_epiweek
+                                                    , time_map
+                                                    , region_list
+                                                    , region_map)
+        # switch two dims of dict
+        result_dict = {}
+        for r in region_list:
+            result_dict[r] = {}
+            for (k, v) in buffer_dict.items():
+                result_dict[r][k] = v[r]
+
+        return result_dict
+    
+    def _prepare_device_id(self, data_dict, end_epiweek, region_list, time_map, region_map):
+        # first pass: prepare device_id set
         device_dict = {}
         for (date, daily_dict) in data_dict.items():
             if not date:
@@ -286,6 +309,10 @@ class QuidelData:
                     fac = rec[0]
                     device_dict[ew][region].add(fac)
 
+        return device_dict
+
+    def _prepare_all_measurments(self, data_dict, device_dict, end_epiweek, time_map, region_list, region_map):
+        buffer_dict = {}      
         # second pass: prepare all measurements
         for (date, daily_dict) in data_dict.items():
             ew = time_map(date)
@@ -316,11 +343,5 @@ class QuidelData:
                             1.0 / fac_num,
                         ],
                     ).tolist()
-        # switch two dims of dict
-        result_dict = {}
-        for r in region_list:
-            result_dict[r] = {}
-            for (k, v) in buffer_dict.items():
-                result_dict[r][k] = v[r]
 
-        return result_dict
+        return buffer_dict

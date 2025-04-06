@@ -22,7 +22,9 @@ class EpiDataException(HTTPException):
 
 class MissingOrWrongSourceException(EpiDataException):
     def __init__(self, endpoints: Iterable[str]):
-        super(MissingOrWrongSourceException, self).__init__(f"no data source specified, possible values: {','.join(endpoints)}", 400)
+        super(MissingOrWrongSourceException, self).__init__(
+            f"no data source specified, possible values: {','.join(endpoints)}"
+            , 400)
 
 
 class ValidationFailedException(EpiDataException):
