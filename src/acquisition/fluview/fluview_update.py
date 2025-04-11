@@ -131,8 +131,8 @@ from . import fluview_locations
 
 # sheet names
 ILINET_SHEET = "ILINet.csv"
-PHL_SHEET = "WHO_NREVSS_Public_Health_Labs.csv"
-CL_SHEET = "WHO_NREVSS_Clinical_Labs.csv"
+PHL_SHEET = "ICL_NREVSS_Public_Health_Labs.csv"
+CL_SHEET = "ICL_NREVSS_Clinical_Labs.csv"
 # table names
 CL_TABLE = "fluview_clinical"
 PHL_TABLE = "fluview_public"
