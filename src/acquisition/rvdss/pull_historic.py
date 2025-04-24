@@ -105,7 +105,7 @@ def extract_captions_of_interest(soup):
     The captions from the 'summary' tag require less parsing, but sometimes they
     are missing. In that case, use the figure captions
     """
-    captions = soup.findAll('summary')
+    captions = soup.find_all('summary')
 
     table_identifiers = ["respiratory","number","positive","abbreviation"]
 
@@ -321,6 +321,34 @@ def create_percent_positive_detection_table(table,modified_date,start_year, flu=
 
     return(table)
 
+def fix_edge_cases(table,season,caption,current_week):
+    # One-off edge cases where tables need to be manually adjusted because
+    # they will cause errors otherwise
+    if season[0] == '2017':
+        if current_week == 35 and "entero" in caption.text.lower():
+            # The positive enterovirus table in week 35 of the 2017-2018 season has french
+            # in the headers,so the french needs to be removed
+            table.columns = ['week', 'week end', 'canada tests', 'entero/rhino%', 'at tests',
+               'entero/rhino%.1', 'qc tests', 'entero/rhino%.2', 'on tests',
+               'entero/rhino%.3', 'pr tests', 'entero/rhino%.4', 'bc tests',
+               'entero/rhino%.5']
+        elif current_week == 35 and "adeno" in caption.text.lower():
+            # In week 35 of the 2017-2018, the positive adenovirus table has ">week end"
+            # instead of "week end", so remove > from the column
+            table = table.rename(columns={'>week end':"week end"})
+        elif current_week == 47 and "rsv" in caption.text.lower():
+            #  In week 47 of the 2017-2018 season, a date is written as 201-11-25,
+            #  instead of 2017-11-25
+            table.loc[table['week'] == 47, 'week end'] = "2017-11-25"
+    elif season[0] == '2015' and current_week == 41:
+        # In week 41 of the 2015-2016 season, a date written in m-d-y format not d-m-y
+        table=table.replace("10-17-2015","17-10-2015",regex=True)
+    elif season[0] == '2022' and current_week == 11 and "hmpv" in caption.text.lower():
+        #  In week 11 of the 2022-2023 season, in the positive hmpv table,
+        # a date is written as 022-09-03, instead of 2022-09-03
+         table.loc[table['week'] == 35, 'week end'] = "2022-09-03"
+    return(table)
+
 def fetch_one_season_from_report(url):
     # From the url, go to the main landing page for a season
     # which contains all the links to each week in the season
@@ -397,33 +425,35 @@ def fetch_one_season_from_report(url):
             # Make column names lowercase
             table.columns=table.columns.str.lower()
 
-            # One-off edge cases where tables need to be manually adjusted because
-            # they will cause errors otherwise
-            if season[0] == '2017':
-                if current_week == 35 and "entero" in caption.text.lower():
-                    # The positive enterovirus table in week 35 of the 2017-2018 season has french
-                    # in the headers,so the french needs to be removed
-                    table.columns = ['week', 'week end', 'canada tests', 'entero/rhino%', 'at tests',
-                       'entero/rhino%.1', 'qc tests', 'entero/rhino%.2', 'on tests',
-                       'entero/rhino%.3', 'pr tests', 'entero/rhino%.4', 'bc tests',
-                       'entero/rhino%.5']
-                elif current_week == 35 and "adeno" in caption.text.lower():
-                    # In week 35 of the 2017-2018, the positive adenovirus table has ">week end"
-                    # instead of "week end", so remove > from the column
-                    table = table.rename(columns={'>week end':"week end"})
-                elif current_week == 47 and "rsv" in caption.text.lower():
-                    #  In week 47 of the 2017-2018 season, a date is written as 201-11-25,
-                    #  instead of 2017-11-25
-                    table.loc[table['week'] == 47, 'week end'] = "2017-11-25"
-            elif season[0] == '2015' and current_week == 41:
-                # In week 41 of the 2015-2016 season, a date written in m-d-y format not d-m-y
-                table=table.replace("10-17-2015","17-10-2015",regex=True)
-            elif season[0] == '2022' and current_week == 11 and "hmpv" in caption.text.lower():
-                #  In week 11 of the 2022-2023 season, in the positive hmpv table,
-                # a date is written as 022-09-03, instead of 2022-09-03
-                 table.loc[table['week'] == 35, 'week end'] = "2022-09-03"
+            # # One-off edge cases where tables need to be manually adjusted because
+            # # they will cause errors otherwise
+            # if season[0] == '2017':
+            #     if current_week == 35 and "entero" in caption.text.lower():
+            #         # The positive enterovirus table in week 35 of the 2017-2018 season has french
+            #         # in the headers,so the french needs to be removed
+            #         table.columns = ['week', 'week end', 'canada tests', 'entero/rhino%', 'at tests',
+            #            'entero/rhino%.1', 'qc tests', 'entero/rhino%.2', 'on tests',
+            #            'entero/rhino%.3', 'pr tests', 'entero/rhino%.4', 'bc tests',
+            #            'entero/rhino%.5']
+            #     elif current_week == 35 and "adeno" in caption.text.lower():
+            #         # In week 35 of the 2017-2018, the positive adenovirus table has ">week end"
+            #         # instead of "week end", so remove > from the column
+            #         table = table.rename(columns={'>week end':"week end"})
+            #     elif current_week == 47 and "rsv" in caption.text.lower():
+            #         #  In week 47 of the 2017-2018 season, a date is written as 201-11-25,
+            #         #  instead of 2017-11-25
+            #         table.loc[table['week'] == 47, 'week end'] = "2017-11-25"
+            # elif season[0] == '2015' and current_week == 41:
+            #     # In week 41 of the 2015-2016 season, a date written in m-d-y format not d-m-y
+            #     table=table.replace("10-17-2015","17-10-2015",regex=True)
+            # elif season[0] == '2022' and current_week == 11 and "hmpv" in caption.text.lower():
+            #     #  In week 11 of the 2022-2023 season, in the positive hmpv table,
+            #     # a date is written as 022-09-03, instead of 2022-09-03
+            #      table.loc[table['week'] == 35, 'week end'] = "2022-09-03"
 
-            # check if both ah1 and h1n1 are given. If so drop one since they are the same virus and ah1 is always empty
+            table = fix_edge_cases(table, season[0], caption, current_week)    
+
+# check if both ah1 and h1n1 are given. If so drop one since they are the same virus and ah1 is always empty
             table = drop_ah1_columns(table)
 
             # Rename columns
@@ -490,15 +520,20 @@ def fetch_one_season_from_report(url):
         # If not, add the weeks tables into the season table
 
         # check for deduplication pandas
-        if not respiratory_detection_table.index.isin(all_respiratory_detection_tables.index).any():
-            all_respiratory_detection_tables= pd.concat([all_respiratory_detection_tables,respiratory_detection_table])
+        all_respiratory_detection_tables= pd.concat([all_respiratory_detection_tables,respiratory_detection_table])
+        all_positive_tables=pd.concat([all_positive_tables,combined_positive_tables])
+        if not number_detections_table.index.isin(all_number_tables.index).any():
+            all_number_tables=pd.concat([all_number_tables,number_detections_table])
+        
+        # if not respiratory_detection_table.index.isin(all_respiratory_detection_tables.index).any():
+        #     all_respiratory_detection_tables= pd.concat([all_respiratory_detection_tables,respiratory_detection_table])
 
-        if not combined_positive_tables.index.isin(all_positive_tables.index).any():
-            all_positive_tables=pd.concat([all_positive_tables,combined_positive_tables])
+        # if not combined_positive_tables.index.isin(all_positive_tables.index).any():
+        #     all_positive_tables=pd.concat([all_positive_tables,combined_positive_tables])
 
-        if number_table_exists:
-            if not number_detections_table.index.isin(all_number_tables.index).any():
-                all_number_tables=pd.concat([all_number_tables,number_detections_table])
+        # if number_table_exists:
+        #     if not number_detections_table.index.isin(all_number_tables.index).any():
+        #         all_number_tables=pd.concat([all_number_tables,number_detections_table])
 
     return {
         "respiratory_detection": all_respiratory_detection_tables,
