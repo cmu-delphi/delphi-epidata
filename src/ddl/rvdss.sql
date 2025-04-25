@@ -40,7 +40,7 @@ CREATE TABLE `rvdss_repiratory_detections` (
   `year` int(4) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `date` (`epiweek`, `time_value`,`issue`, `geo_type`,`geo_value`),
-  KEY `state` (`state`),
+  KEY `geo_value` (`geo_value`),
   KEY `epiweek` (`epiweek`),
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -86,7 +86,7 @@ CREATE TABLE `rvdss_pct_positive` (
   `year` int(4) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `date` (`epiweek`, `time_value`,`issue`, `geo_type`,`geo_value`),
-  KEY `state` (`state`),
+  KEY `geo_value` (`geo_value`),
   KEY `epiweek` (`epiweek`),
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -106,6 +106,6 @@ CREATE TABLE `rvdss_detections_counts` (
   `flu_positive_tests` int(10) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `date` (`epiweek`, `time_value`,`issue`, `geo_type`,`geo_value`),
-  KEY `state` (`state`),
+  KEY `geo_value` (`geo_value`),
   KEY `epiweek` (`epiweek`),
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
