@@ -414,7 +414,8 @@ def fetch_one_season_from_report(url):
 
             # Read table, coding all the abbreviations for missing data into NA
             # Also use dropna because removing footers causes the html to have an empty row
-            na_values = ['N.A.','N.A', 'N.C.','N.R.','Not Available','Not Tested',"not available","not tested","N.D.","-"]
+            na_values = ['N.A.','N.A', 'N.C.','N.R.','Not Available','Not Tested',"not available",
+                         "not tested","N.D.","-",'Not tested','non testé']
             table =  pd.read_html(tab,na_values=na_values)[0].dropna(how="all")
 
             # Check for multiline headers
