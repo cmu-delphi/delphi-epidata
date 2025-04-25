@@ -237,6 +237,7 @@ def create_detections_table(table,modified_date,week_number,week_end_date,start_
 
 def create_number_detections_table(table,modified_date,start_year):
     week_columns = table.columns.get_indexer(table.columns[~table.columns.str.contains('week')])
+    table = table.apply(lambda x: x.replace(r'\s', '', regex=True).astype('int'))
 
     for index in week_columns:
         new_name = abbreviate_virus(table.columns[index]) + " positive_tests"

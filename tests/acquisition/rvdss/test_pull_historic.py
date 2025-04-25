@@ -226,7 +226,8 @@ class TestPullHistoric():
         tab.tfoot.decompose()
         tab = re.sub(",",r".",str(tab))
             
-        na_values = ['N.A.','N.A', 'N.C.','N.R.','Not Available','Not Tested',"not available","not tested","N.D.","-"]
+        na_values = ['N.A.','N.A', 'N.C.','N.R.','Not Available','Not Tested',"not available",
+                     "not tested","N.D.","-",'Not tested','non testé']
         table =  pd.read_html(tab,na_values=na_values)[0].dropna(how="all")
         table.columns=table.columns.str.lower()
         table = drop_ah1_columns(table)
@@ -260,7 +261,8 @@ class TestPullHistoric():
         tab = caption.find_next('table')
         tab = re.sub(",","",str(tab))
                 
-        na_values = ['N.A.','N.A', 'N.C.','N.R.','Not Available','Not Tested',"not available","not tested","N.D.","-"]
+        na_values = ['N.A.','N.A', 'N.C.','N.R.','Not Available','Not Tested',"not available",
+                     "not tested","N.D.","-",'Not tested','non testé']
         table =  pd.read_html(tab,na_values=na_values)[0].dropna(how="all")
         table.columns=table.columns.str.lower()
         table = drop_ah1_columns(table)
@@ -295,8 +297,8 @@ class TestPullHistoric():
         expected_rsvdata = expected_rsvdata.sort_values(by=['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
         
         # get tables from raw html and process before testing the function
-        na_values = ['N.A.','N.A', 'N.C.','N.R.','Not Available','Not Tested',"not available","not tested","N.D.","-"]
-        
+        na_values = ['N.A.','N.A', 'N.C.','N.R.','Not Available','Not Tested',"not available",
+                     "not tested","N.D.","-",'Not tested','non testé']
         flu_caption=[t for t in captions if "Influenza" in t.text][0]
         flu_tab = flu_caption.find_next('table')
         flu_tab = re.sub(",","",str(flu_tab))
