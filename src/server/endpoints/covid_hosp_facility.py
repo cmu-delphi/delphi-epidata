@@ -151,8 +151,14 @@ def handle():
         q.where_integers("publication_date", publication_dates)
     else:
         # final query using most recent issues
-        condition = f"x.max_publication_date = {q.alias}.publication_date AND x.collection_week = {q.alias}.collection_week AND x.hospital_pk = {q.alias}.hospital_pk"
-        q.subquery = f"JOIN (SELECT max(publication_date) max_publication_date, collection_week, hospital_pk FROM {q.table} WHERE {q.conditions_clause} GROUP BY collection_week, hospital_pk) x ON {condition}"
+        condition = (f"x.max_publication_date = {q.alias}.publication_date " 
+                     + f"AND x.collection_week = {q.alias}.collection_week "
+                     + f"AND x.hospital_pk = {q.alias}.hospital_pk")
+        q.subquery = (f"JOIN (SELECT max(publication_date) max_publication_date" 
+                      + f", collection_week, hospital_pk " 
+                      + f" FROM {q.table} " 
+                      + f"WHERE {q.conditions_clause} " 
+                      + f"GROUP BY collection_week, hospital_pk) x ON {condition}")
         q.condition = []  # since used for join
 
     # send query

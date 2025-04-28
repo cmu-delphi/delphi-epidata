@@ -109,7 +109,8 @@ class CovidcastRow:
         return self.as_dataframe(ignore_fields=self._api_row_ignore_fields + (ignore_fields or []))
 
     # fmt: off
-    def as_api_compatibility_row_df(self, ignore_fields: Optional[List[str]] = None) -> pd.DataFrame:
+    def as_api_compatibility_row_df(self
+                                    , ignore_fields: Optional[List[str]] = None) -> pd.DataFrame:
         """Returns a dataframe view into the row with the fields returned by the
         old API server (the PHP server)."""
         # fmt: on
