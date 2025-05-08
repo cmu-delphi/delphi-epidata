@@ -80,7 +80,7 @@ CREATE TABLE `rvdss_pct_positive` (
   `sarscov2_pct_positive` int(10) NOT NULL,
   `sarscov2_tests` int(10) NOT NULL,
   `sarscov2_positive_tests` int(10) NOT NULL,
-  `region` char(20)
+  `region` char(20) NOT NULL,
   `week` int(2) NOT NULL,
   `weekorder` int(2) NOT NULL,
   `year` int(4) NOT NULL,
