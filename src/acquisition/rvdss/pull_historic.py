@@ -342,6 +342,9 @@ def fix_edge_cases(table,season,caption,current_week):
             #  In week 47 of the 2017-2018 season, a date is written as 201-11-25,
             #  instead of 2017-11-25
             table.loc[table['week'] == 47, 'week end'] = "2017-11-25"
+        elif current_week == 26 and "number" in caption.text.lower():
+            #  anomolous row with decimal counts that differs a lot from the next week.
+            table = table[table.week != 26]
     elif season[0] == '2015' and current_week == 41:
         # In week 41 of the 2015-2016 season, a date written in m-d-y format not d-m-y
         table=table.replace("10-17-2015","17-10-2015",regex=True)
@@ -349,6 +352,10 @@ def fix_edge_cases(table,season,caption,current_week):
         #  In week 11 of the 2022-2023 season, in the positive hmpv table,
         # a date is written as 022-09-03, instead of 2022-09-03
          table.loc[table['week'] == 35, 'week end'] = "2022-09-03"
+    elif season[0] == '2016' and current_week == 32 and "influenza" in caption.text.lower():
+        #  In week 11 of the 2022-2023 season, in the positive hmpv table,
+        # a date is written as 022-09-03, instead of 2022-09-03
+         table.loc[table['week'] == 32, 'week end'] = "2017-08-12"
     return(table)
 
 def fetch_one_season_from_report(url):
@@ -389,6 +396,8 @@ def fetch_one_season_from_report(url):
 
         positive_tables=[]
         number_table_exists = False
+        respiratory_detection_table_exists = False
+        positive_table_exists = False
         for i in range(len(captions)):
             caption=captions[i]
             tab = caption.find_next('table')
@@ -456,7 +465,8 @@ def fetch_one_season_from_report(url):
 
             table = fix_edge_cases(table, season[0], caption, current_week)    
 
-# check if both ah1 and h1n1 are given. If so drop one since they are the same virus and ah1 is always empty
+            # check if both ah1 and h1n1 are given. If so drop one since they are the same virus and ah1 is 
+            # always empty
             table = drop_ah1_columns(table)
 
             # Rename columns
@@ -523,20 +533,18 @@ def fetch_one_season_from_report(url):
         # If not, add the weeks tables into the season table
 
         # check for deduplication pandas
-        all_respiratory_detection_tables= pd.concat([all_respiratory_detection_tables,respiratory_detection_table])
-        all_positive_tables=pd.concat([all_positive_tables,combined_positive_tables])
         if not number_detections_table.index.isin(all_number_tables.index).any():
             all_number_tables=pd.concat([all_number_tables,number_detections_table])
         
-        # if not respiratory_detection_table.index.isin(all_respiratory_detection_tables.index).any():
-        #     all_respiratory_detection_tables= pd.concat([all_respiratory_detection_tables,respiratory_detection_table])
+        if not respiratory_detection_table.index.isin(all_respiratory_detection_tables.index).any():
+              all_respiratory_detection_tables= pd.concat([all_respiratory_detection_tables,respiratory_detection_table])
 
-        # if not combined_positive_tables.index.isin(all_positive_tables.index).any():
-        #     all_positive_tables=pd.concat([all_positive_tables,combined_positive_tables])
+        if not combined_positive_tables.index.isin(all_positive_tables.index).any():
+            all_positive_tables=pd.concat([all_positive_tables,combined_positive_tables])
 
-        # if number_table_exists:
-        #     if not number_detections_table.index.isin(all_number_tables.index).any():
-        #         all_number_tables=pd.concat([all_number_tables,number_detections_table])
+        if number_table_exists:
+            if not number_detections_table.index.isin(all_number_tables.index).any():
+                all_number_tables=pd.concat([all_number_tables,number_detections_table])
 
     return {
         "respiratory_detection": all_respiratory_detection_tables,
