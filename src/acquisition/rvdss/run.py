@@ -14,7 +14,6 @@ from delphi.epidata.acquisition.rvdss.pull_historic import fetch_report_data,fet
 from delphi.epidata.acquisition.rvdss.database import respiratory_detections_cols, pct_positive_cols, detections_counts_cols, expected_table_names, expected_columns, get_num_rows, update
 
 def update_current_data():
-
     ## Check if data for current update date has already been fetched
     headers = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'
@@ -27,9 +26,8 @@ def update_current_data():
         with open(UPDATE_DATES_FILE, 'a') as testfile:
             testfile.write(update_date+ "\n")
 
-
         data_dict = fetch_dashboard_data(DASHBOARD_BASE_URL)
-        ## TODO
+        # update database
         update(data_dict)
     else:
         print("Data is already up to date")
@@ -64,7 +62,6 @@ def update_historical_data():
     #update database
     update(hist_dict_list)
     
-
 
 def main():
     # args and usage

@@ -491,6 +491,7 @@ def fetch_one_season_from_report(url):
             # The columns have the region information (i.e Pr tests, meaning this columns has the tests for the prairies)
 
             if "reporting laboratory" in str(table.columns):
+               respiratory_detection_table_exists = True
                respiratory_detection_table = create_detections_table(table,modified_date,current_week,current_week_end,season[0])
                respiratory_detection_table = respiratory_detection_table.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
             elif "number" in caption.text.lower():
@@ -498,6 +499,7 @@ def fetch_one_season_from_report(url):
                number_detections_table = create_number_detections_table(table,modified_date,season[0])
                number_detections_table = number_detections_table.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
             elif "positive" in caption.text.lower():
+               positive_table_exists = True
                flu = " influenza" in caption.text.lower()
 
                # tables are missing week 53
@@ -531,20 +533,21 @@ def fetch_one_season_from_report(url):
 
         # Check if the indices are already in the season table
         # If not, add the weeks tables into the season table
-
+                
         # check for deduplication pandas
-        if not number_detections_table.index.isin(all_number_tables.index).any():
-            all_number_tables=pd.concat([all_number_tables,number_detections_table])
-        
-        if not respiratory_detection_table.index.isin(all_respiratory_detection_tables.index).any():
-              all_respiratory_detection_tables= pd.concat([all_respiratory_detection_tables,respiratory_detection_table])
-
-        if not combined_positive_tables.index.isin(all_positive_tables.index).any():
-            all_positive_tables=pd.concat([all_positive_tables,combined_positive_tables])
-
+        if respiratory_detection_table_exists:
+            if not respiratory_detection_table.index.isin(all_respiratory_detection_tables.index).any():
+                  all_respiratory_detection_tables= pd.concat([all_respiratory_detection_tables,respiratory_detection_table])
+            del respiratory_detection_table
+        if positive_table_exists:
+            if not combined_positive_tables.index.isin(all_positive_tables.index).any():
+                all_positive_tables=pd.concat([all_positive_tables,combined_positive_tables])
+            del combined_positive_tables
+            del pos_table
         if number_table_exists:
             if not number_detections_table.index.isin(all_number_tables.index).any():
                 all_number_tables=pd.concat([all_number_tables,number_detections_table])
+            del number_detections_table
 
     return {
         "respiratory_detection": all_respiratory_detection_tables,
