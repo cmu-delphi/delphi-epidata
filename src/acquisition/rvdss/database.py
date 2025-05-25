@@ -27,6 +27,9 @@ import delphi.operations.secrets as secrets
 from delphi.utils.epidate import EpiDate
 import delphi.utils.epiweek as flu
 from delphi.utils.geo.locations import Locations
+from delphi_utils import get_structured_logger
+from delphi.epidata.acquisition.rvdss.constants import LOGGER_FILENAME
+
 
 
 respiratory_detections_cols= (
@@ -139,12 +142,19 @@ def get_num_rows(cursor, table_name):
         pass
     return num
 
-def update(data_dict):
+def update(data_dict,logger):
     # connect to the database
     u, p = secrets.db.epi
     cnx = mysql.connector.connect(user=u, password=p, database="epidata")
     cur = cnx.cursor()
-
+    
+    # add filename for logger and exceptions
+    
+    logger = get_structured_logger(
+            __name__,
+            filename= LOGGER_FILENAME,
+            log_exceptions=True,
+        )
 
     for tt in data_dict.keys():
         data = data_dict[tt]
@@ -153,18 +163,16 @@ def update(data_dict):
         table_name = expected_table_names[tt]
         cols =  expected_columns[tt]
         place_holders= ', '.join(["?" for _ in cols])
-        # field_names = ", ".join(
-        #         f"`{name}`" for name in cols)
+        field_names = ", ".join(
+                f"`{name}`" for name in cols)
         
-        # check rvdss for new and/or revised data
-        # sql = f"""
-        # INSERT INTO {table_name} ({field_names})
-        # VALUES ({place_holders})
-        # """
+        field_values = ", ".join(
+                f"%({name})s" for name in cols)
         
+        #check rvdss for new and/or revised data
         sql = f"""
-        INSERT INTO {table_name} 
-        VALUES ({place_holders})
+        INSERT INTO {table_name} ({field_names})
+        VALUES ({field_values})
         """
         
         # keep track of how many rows were added
@@ -176,8 +184,7 @@ def update(data_dict):
         
         # keep track of how many rows were added
         rows_after = get_num_rows(cur,table_name)
-        print(f"Inserted {int(rows_after - rows_before)}/{int(total_rows)} row(s)")
-    
+        logger.info(f"Inserted {int(rows_after - rows_before)}/{int(total_rows)} row(s) into table {table_name}")
 
     # cleanup
     cur.close()

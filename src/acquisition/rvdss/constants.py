@@ -115,3 +115,5 @@ FIRST_WEEK_OF_YEAR = 35
 
 UPDATE_DATES_FILE = "update_dates.txt"
 NOW = datetime.now()
+
+LOGGER_FILENAME = "rvdss.log"
