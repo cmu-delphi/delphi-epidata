@@ -82,6 +82,7 @@ pct_positive_cols = (
     "hpiv_positive_tests",
     "adv_pct_positive",
     "adv_tests",
+    "adv_positive_tests",
     "hcov_pct_positive",
     "hcov_tests",
     "hcov_positive_tests",

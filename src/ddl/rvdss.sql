@@ -59,6 +59,7 @@ CREATE TABLE `rvdss_pct_positive` (
   `hpiv_positive_tests` int(10) NOT NULL,
   `adv_pct_positive` int(10) NOT NULL,
   `adv_tests` int(10) NOT NULL,
+  `adv_positive_tests` int(10) NOT NULL,
   `hcov_pct_positive` int(10) NOT NULL,
   `hcov_tests` int(10) NOT NULL,
   `hcov_positive_tests` int(10) NOT NULL,
