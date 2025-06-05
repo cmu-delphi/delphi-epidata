@@ -42,8 +42,10 @@ As of May 2024, NSSP received data from 78% of US EDs.
 ## Estimation
 
 The percent visits signals are calculated as a fraction of visits at facilities reporting to NSSP, rather than all facilities in the area.
-`county`, `state` and `nation` level data is reported as-is from NSSP, without modification, while `hhs`, `hrr` and `msa` are estimated by Delphi.
-State and HSA-level values are calculated and published by NSSP; County level values are not published individually, but are approximations copied from the HSA the county is in (every county in an HSA will have identical values).
+NSSP publishes this data based on reporting facilities aggregated to the level of Health Service Areas (`HSA`s, which are clusters of adjacent counties).
+NSSP also publishes these percentages aggregated to `state` and `nation` levels.
+While NSSP also publishes what appears like `county`-level data, these values are actually inherited from the parent HSA, such that all counties in an HSA have identical values.
+Delphi publishes NSSP's reported values for all these geo-levels, and also calculates and publishes values for `HRR`s and `MSA`s (based on the approximated `county` values), as well as for `HHS` regions."
 
 ### Geographic weighting
 As the original data is a percentage and raw case counts are not available, `hrr`,`msa`, and `hhs` values are computed from county-level data using a weighted mean. Each county is assigned a weight equal to its population in the last census (2020). Unreported counties are implicitly treated as having a weight of 0 or a value equal to the group mean.
