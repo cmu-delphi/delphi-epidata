@@ -34,6 +34,9 @@ import requests
 
 # first party
 from delphi.utils.epiweek import range_epiweeks, add_epiweeks, check_epiweek
+from delphi.epidata.common.logger import get_structured_logger
+
+logger = get_structured_logger("taiwan_nidss")
 
 
 class NIDSS:
@@ -251,19 +254,19 @@ def main():
     latest_week, release_date, fdata = NIDSS.get_flu_data()
     ddata = NIDSS.get_dengue_data(ew, ew)
 
-    # Print the results
-    print("*** Meta ***")
-    print("latest_week:", latest_week)
-    print("release_date:", release_date)
-    print("*** Flu ***")
+    # Log the results
+    logger.info("*** Meta ***")
+    logger.info("latest_week:", latest_week)
+    logger.info("release_date:", release_date)
+    logger.info("*** Flu ***")
     for region in sorted(list(fdata[ew].keys())):
         visits, ili = fdata[ew][region]["visits"], fdata[ew][region]["ili"]
-        print(f"region={region} | visits={int(visits)} | ili={ili:.3f}")
-    print("*** Dengue ***")
+        logger.info(f"region={region} | visits={int(visits)} | ili={ili:.3f}")
+    logger.info("*** Dengue ***")
     for location in sorted(list(ddata[ew].keys())):
         region = NIDSS.LOCATION_TO_REGION[location]
         count = ddata[ew][location]
-        print(f"location={location} | region={region} | count={int(count)}")
+        logger.info(f"location={location} | region={region} | count={int(count)}")
 
 
 if __name__ == "__main__":
