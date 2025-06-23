@@ -10,7 +10,7 @@ nav_order: 2
 
 * **Source name:** `ght`
 * **Earliest issue available:** April 29, 2020
-* **Number of data revisions since 19 May, 2020:** 0 (see [data revision docs](../covidcast_changelog.md#ght))
+* **Number of data revisions since May 19, 2020:** 0 (see [data revision docs](../covidcast_changelog.md#ght))
 * **Date of last data revision:** Never (see [data revision docs](../covidcast_changelog.md#ght))
 * **Available for:** dma, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
