@@ -11,7 +11,7 @@ permalink: api/covidcast-signals/fb-survey.html
 
 * **Source name:** `fb-survey`
 * **Earliest issue available:** April 29, 2020
-* **Number of data revisions since 19 May, 2020:** 1 (see [data revision docs](../covidcast_changelog.md#fb-survey))
+* **Number of data revisions since May 19, 2020:** 1 (see [data revision docs](../covidcast_changelog.md#fb-survey))
 * **Date of last data revision:** June 3, 2020 (see [data revision docs](../covidcast_changelog.md#fb-survey))
 * **Available for:** county, hrr, msa, state, nation (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
