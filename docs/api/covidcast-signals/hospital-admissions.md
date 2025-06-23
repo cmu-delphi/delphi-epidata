@@ -10,7 +10,7 @@ nav_order: 1
 
 * **Source name:** `hospital-admissions`
 * **Earliest issue available:** June 21, 2020
-* **Number of data revisions since 19 May, 2020:** 1 (see [data revision docs](../covidcast_changelog.md#hospital-admissions))
+* **Number of data revisions:** 1 (see [data revision docs](../covidcast_changelog.md#hospital-admissions))
 * **Date of last data revision:** October 20, 2020 (see [data revision docs](../covidcast_changelog.md#hospital-admissions))
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
