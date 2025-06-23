@@ -77,7 +77,7 @@ additional day for SafeGraph's data to be ingested into the COVIDcast API.
 ## SafeGraph Weekly Patterns
 
 * **Earliest issue available:** November 30, 2020
-* **Number of data revisions since 19 May, 2020:** 0 (see [data revision docs](../covidcast_changelog.md#safegraph))
+* **Number of data revisions:** 0 (see [data revision docs](../covidcast_changelog.md#safegraph))
 * **Date of last data revision:** Never (see [data revision docs](../covidcast_changelog.md#safegraph))
 
 **This dataset is no longer updated after July 15th, 2022.**
