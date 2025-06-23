@@ -10,7 +10,7 @@ nav_order: 2
 
 * **Source name:** `dsew-cpr`
 * **Earliest issue available:** January 28, 2022
-* **Number of data revisions since 19 May, 2020:** 0 (see [data revision docs](../covidcast_changelog.md#dsew-cpr))
+* **Number of data revisions:** 0 (see [data revision docs](../covidcast_changelog.md#dsew-cpr))
 * **Date of last data revision:** Never (see [data revision docs](../covidcast_changelog.md#dsew-cpr))
 * **Available for:** county, msa, state, hhs, nation (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
