@@ -10,7 +10,7 @@ nav_order: 1
 
 * **Source name:** `nchs-mortality`
 * **Earliest issue available:** Epiweek 50 2020 (6-12 December 2020)
-* **Number of data revisions since 19 May, 2020:** 0 (see [data revision docs](../covidcast_changelog.md#nchs-mortality))
+* **Number of data revisions:** 0 (see [data revision docs](../covidcast_changelog.md#nchs-mortality))
 * **Date of last data revision:** Never (see [data revision docs](../covidcast_changelog.md#nchs-mortality))
 * **Available for:** state (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** week (see [date format docs](../covidcast_times.md))
