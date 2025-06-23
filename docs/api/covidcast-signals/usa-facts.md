@@ -10,7 +10,7 @@ nav_order: 2
 
 * **Source name:** `usa-facts`
 * **Earliest issue available:** June 24, 2020
-* **Number of data revisions since 19 May, 2020:** 2 (see [data revision docs](../covidcast_changelog.md#usa-facts))
+* **Number of data revisions:** 2 (see [data revision docs](../covidcast_changelog.md#usa-facts))
 * **Date of last data revision:** November 3, 2020 (see [data revision docs](../covidcast_changelog.md#usa-facts))
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
