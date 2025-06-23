@@ -12,7 +12,7 @@ nav_order: 2
 
 * **Source name:** `youtube-survey`
 * **Earliest issue available:** May 01, 2020
-* **Number of data revisions since May 19, 2020:** 0 (see [data revision docs](../covidcast_changelog.md#youtube-survey))
+* **Number of data revisions:** 0 (see [data revision docs](../covidcast_changelog.md#youtube-survey))
 * **Date of last data revision:** Never (see [data revision docs](../covidcast_changelog.md#youtube-survey))
 * **Available for:** state (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))

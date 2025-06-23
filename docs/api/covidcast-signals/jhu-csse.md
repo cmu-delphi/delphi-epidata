@@ -10,7 +10,7 @@ nav_order: 2
 
 * **Source name:** `jhu-csse`
 * **Earliest issue available:** May 7, 2020
-* **Number of data revisions since May 19, 2020:** 1 (see [data revision docs](../covidcast_changelog.md#jhu-csse))
+* **Number of data revisions:** 1 (see [data revision docs](../covidcast_changelog.md#jhu-csse))
 * **Date of last data revision:** October 7, 2020 (see [data revision docs](../covidcast_changelog.md#jhu-csse))
 * **Available for:** county, hrr, msa, state, hhs, nation (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
