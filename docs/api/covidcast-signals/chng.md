@@ -10,7 +10,7 @@ nav_order: 1
 
 * **Source name:** `chng`
 * **Earliest issue available:** November 4, 2020
-* **Number of data revisions since 19 May, 2020:** 0 (see [data revision docs](../covidcast_changelog.md#chng))
+* **Number of data revisions:** 0 (see [data revision docs](../covidcast_changelog.md#chng))
 * **Date of last data revision:** Never (see [data revision docs](../covidcast_changelog.md#chng))
 * **Available for:** county, hrr, msa, state, hhs, nation (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
