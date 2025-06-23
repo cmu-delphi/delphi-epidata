@@ -9,8 +9,8 @@ nav_order: 1
 
 * **Source name:** `nssp`
 * **Earliest issue available:** April 17, 2024
-* **Number of data revisions since 19 May 2020:** 0
-* **Date of last change:** Never
+* **Number of data revisions since 19 May, 2020:** 0 (see [data revision docs](../covidcast_changelog.md#nssp))
+* **Date of last data revision:** Never (see [data revision docs](../covidcast_changelog.md#nssp))
 * **Available for:** county, hrr, msa, state, hhs, nation (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** week (see [date format docs](../covidcast_times.md))
 * **License:** [Public Domain US Government](https://www.usa.gov/government-works)

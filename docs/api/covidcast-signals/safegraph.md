@@ -26,8 +26,8 @@ surface signals from two such datasets.
 ## SafeGraph Social Distancing Metrics
 
 * **Earliest issue available:** June 20, 2020
-* **Number of data revisions since June 23, 2020:** 1
-* **Date of last change:** November 3, 2020
+* **Number of data revisions since 23 June, 2020:** 1 (see [data revision docs](../covidcast_changelog.md#safegraph))
+* **Date of last data revision:** November 3, 2020 (see [data revision docs](../covidcast_changelog.md#safegraph))
 
 **This dataset is no longer updated after April 19th, 2021.**
 
@@ -77,8 +77,8 @@ additional day for SafeGraph's data to be ingested into the COVIDcast API.
 ## SafeGraph Weekly Patterns
 
 * **Earliest issue available:** November 30, 2020
-* **Number of data revisions since June 23, 2020:** 0
-* **Date of last change:** never
+* **Number of data revisions since 19 May, 2020:** 0 (see [data revision docs](../covidcast_changelog.md#safegraph))
+* **Date of last data revision:** Never (see [data revision docs](../covidcast_changelog.md#safegraph))
 
 **This dataset is no longer updated after July 15th, 2022.**
 

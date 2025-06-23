@@ -9,8 +9,8 @@ grand_parent: Main Endpoint (COVIDcast)
 
 * **Source name:** `SOURCE-API-NAME`
 * **Earliest issue available:** DATE RELEASED TO API
-* **Number of data revisions since 19 May 2020:** 0
-* **Date of last change:** Never
+* **Number of data revisions since 19 May, 2020:** 0 (see [data revision docs](../covidcast_changelog.md))
+* **Date of last data revision:** Never (see [data revision docs](../covidcast_changelog.md))
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** [LICENSE NAME](../covidcast_licensing.md#APPLICABLE-SECTION)

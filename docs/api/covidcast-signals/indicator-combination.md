@@ -22,8 +22,8 @@ calculated or composed by Delphi. It is not a primary data source.
 ## Statistical Combination Signals
 
 * **Earliest issue available:** May 20, 2020
-* **Number of data revisions since May 19, 2020:** 1
-* **Date of last change:** [June 3, 2020](../covidcast_changelog.md#indicator-combination)
+* **Number of data revisions since 19 May, 2020:** 1 (see [data revision docs](../covidcast_changelog.md#indicator-combination))
+* **Date of last data revision:** June 3, 2020 (see [data revision docs](../covidcast_changelog.md#indicator-combination))
 * **Available for:** county, msa, state (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
@@ -191,9 +191,9 @@ The resampling method for each input source is as follows:
 
 ## Compositional Signals: Confirmed Cases and Deaths
 
-* **Earliest issue available:** 7 July 2020
-* **Number of data revisions since 19 May 2020:** 1
-* **Date of last change:** [12 October 2020](../covidcast_changelog.md#indicator-combination)
+* **Earliest issue available:** 7 July, 2020
+* **Number of data revisions since 19 May 2020:** 1 (see [data revision docs](../covidcast_changelog.md#indicator-combination))
+* **Date of last data revision:** 12 October, 2020 (see [data revision docs](../covidcast_changelog.md#indicator-combination))
 * **Available for:** county, msa, hrr, state (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
 
