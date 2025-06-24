@@ -10,11 +10,21 @@ nav_order: 2
 
 * **Source name:** `google-survey`
 * **Earliest issue available:** May 01, 2020
-* **Number of data revisions since May 19, 2020:** 0
-* **Date of last change:** Never
+* **Date of last data revision:** Never (see [data revision docs](#changelog))
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
+
+## Changelog
+
+<details>
+<summary>Click to expand</summary>
+
+See [COVIDcast Signal Changes](../covidcast_changelog.md) for general information about how we track changes to signals.
+
+No changes so far.
+
+</details>
 
 ## Overview
 
