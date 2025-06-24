@@ -15,6 +15,19 @@ nav_order: 1
 * **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** To download or use the data, you must agree to the Google [Terms of Service](https://policies.google.com/terms)
 
+## Changelog
+
+<details>
+<summary>Click to expand</summary>
+
+### March 14, 2025
+Google added earlier dates starting from 2017-08-15 and also fixed a gap of county-level data from November 14 2022 through February 20, 2023.
+
+### February 14, 2025
+We added a new signal s07_raw_search and s07_smoothed_search.
+
+</details>
+
 ## Overview
 
 This data source is based on the [COVID-19 Search Trends symptoms
