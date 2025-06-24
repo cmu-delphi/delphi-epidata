@@ -26,10 +26,28 @@ surface signals from two such datasets.
 ## SafeGraph Social Distancing Metrics
 
 * **Earliest issue available:** June 20, 2020
-* **Number of data revisions since June 23, 2020:** 1 (see [data revision docs](../covidcast_changelog.md#safegraph))
-* **Date of last data revision:** November 3, 2020 (see [data revision docs](../covidcast_changelog.md#safegraph))
+* **Date of last data revision:** November 3, 2020 (see [data revision docs](#changelog-social-distancing-metrics))
 
 **This dataset is no longer updated after April 19th, 2021.**
+
+## Changelog (Social Distancing Metrics)
+
+<details>
+<summary>Click to expand</summary>
+
+See [COVIDcast Signal Changes](../covidcast_changelog.md) for general information about how we track changes to signals.
+
+### April 19, 2021
+
+The Safegraph social distancing metrics are no longer being updated. Weekly patterns are still available.
+
+### November 3, 2020
+
+We went from a custom geo mapping file (for aggregating from county->state) to a central geo file based on rigorously sourced US census data.
+
+</details>
+
+## Overview
 
 Data source based on the [Social Distancing Metrics](https://docs.safegraph.com/docs/social-distancing-metrics) data product.  SafeGraph
 provided this data for individual census block groups, using differential
@@ -77,10 +95,27 @@ additional day for SafeGraph's data to be ingested into the COVIDcast API.
 ## SafeGraph Weekly Patterns
 
 * **Earliest issue available:** November 30, 2020
-* **Number of data revisions:** 0 (see [data revision docs](../covidcast_changelog.md#safegraph))
-* **Date of last data revision:** Never (see [data revision docs](../covidcast_changelog.md#safegraph))
+* **Date of last data revision:** Never (see [data revision docs](#changelog-weekly-patterns))
 
 **This dataset is no longer updated after July 15th, 2022.**
+
+## Changelog (Weekly Patterns)
+
+<details>
+<summary>Click to expand</summary>
+
+See [COVIDcast Signal Changes](../covidcast_changelog.md) for general information about how we track changes to signals.
+
+### July 15, 2022
+The Safegraph Weekly Patterns dataset is no longer updated.
+
+### November 3, 2020
+
+We went from a custom geo mapping file (for aggregating from county->state) to a central geo file based on rigorously sourced US census data.
+
+</details>
+
+## Overview
 
 Data source based on [Weekly
 Patterns](https://docs.safegraph.com/docs/weekly-patterns) dataset. SafeGraph

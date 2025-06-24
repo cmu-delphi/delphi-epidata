@@ -12,11 +12,22 @@ nav_order: 2
 
 * **Source name:** `youtube-survey`
 * **Earliest issue available:** May 01, 2020
-* **Number of data revisions:** 0 (see [data revision docs](../covidcast_changelog.md#youtube-survey))
-* **Date of last data revision:** Never (see [data revision docs](../covidcast_changelog.md#youtube-survey))
+* **Date of last data revision:** Never (see [data revision docs](#changelog))
 * **Available for:** state (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** [CC BY-NC](../covidcast_licensing.md#creative-commons-attribution-noncommercial)
+
+
+## Changelog
+
+<details>
+<summary>Click to expand</summary>
+
+See [COVIDcast Signal Changes](../covidcast_changelog.md) for general information about how we track changes to signals.
+
+No changes have been made to this signal.
+
+</details>
 
 ## Overview
 

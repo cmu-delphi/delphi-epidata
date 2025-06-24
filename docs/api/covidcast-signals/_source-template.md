@@ -9,8 +9,7 @@ grand_parent: Main Endpoint (COVIDcast)
 
 * **Source name:** `SOURCE-API-NAME`
 * **Earliest issue available:** DATE RELEASED TO API
-* **Number of data revisions:** 0 (see [data revision docs](../covidcast_changelog.md#template))
-* **Date of last data revision:** Never (see [data revision docs](../covidcast_changelog.md#template))
+* **Date of last data revision:** Never (see [data revision docs](#changelog))
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** [LICENSE NAME](../covidcast_licensing.md#APPLICABLE-SECTION)
@@ -20,6 +19,15 @@ A brief description of what this source measures.
 | Signal        | Description                                                                                              |
 |---------------|----------------------------------------------------------------------------------------------------------|
 | `signal_name` | Brief description of the signal, including the units it is measured in and any smoothing that is applied |
+
+## Changelog
+
+<details>
+<summary>Click to expand</summary>
+
+Your collapsible content goes here. You can still use **Markdown** inside.
+
+</details>
 
 ## Table of contents
 {: .no_toc .text-delta}

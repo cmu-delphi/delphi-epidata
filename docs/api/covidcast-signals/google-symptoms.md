@@ -10,8 +10,7 @@ nav_order: 1
 
 * **Source name:** `google-symptoms`
 * **Earliest issue available:** Aug 20, 2017
-* **Number of data revisions:** 1 (see [data revision docs](../covidcast_changelog.md#google-symptoms))
-* **Date of last data revision:** February 28, 2025 (see [data revision docs](../covidcast_changelog.md#google-symptoms))
+* **Date of last data revision:** March 14, 2025 (see [data revision docs](#changelog))
 * **Available for:** county, MSA, HRR, state, HHS, nation (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** To download or use the data, you must agree to the Google [Terms of Service](https://policies.google.com/terms)

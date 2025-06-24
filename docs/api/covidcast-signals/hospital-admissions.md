@@ -10,11 +10,22 @@ nav_order: 1
 
 * **Source name:** `hospital-admissions`
 * **Earliest issue available:** June 21, 2020
-* **Number of data revisions:** 1 (see [data revision docs](../covidcast_changelog.md#hospital-admissions))
-* **Date of last data revision:** October 20, 2020 (see [data revision docs](../covidcast_changelog.md#hospital-admissions))
+* **Date of last data revision:** October 20, 2020 (see [data revision docs](#changelog))
 * **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
+
+## Changelog
+
+<details>
+<summary>Click to expand</summary>
+
+See [COVIDcast Signal Changes](../covidcast_changelog.md) for general information about how we track changes to signals.
+
+### October 20, 2020
+We went from a custom geo mapping file (for aggregating from zip->(county, msa, hrr, state)) to a central geo file based on rigorously sourced US census data.
+
+</details>
 
 ## Overview
 

@@ -10,11 +10,23 @@ nav_order: 2
 
 * **Source name:** `dsew-cpr`
 * **Earliest issue available:** January 28, 2022
-* **Number of data revisions:** 0 (see [data revision docs](../covidcast_changelog.md#dsew-cpr))
-* **Date of last data revision:** Never (see [data revision docs](../covidcast_changelog.md#dsew-cpr))
+* **Date of last data revision:** Never (see [data revision docs](#changelog))
 * **Available for:** county, msa, state, hhs, nation (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** [Public Domain US Government](https://www.usa.gov/government-works)
+
+## Changelog
+
+<details>
+<summary>Click to expand</summary>
+
+See [COVIDcast Signal Changes](../covidcast_changelog.md) for general information about how we track changes to signals.
+
+No changes so far.
+
+</details>
+
+## Overview
 
 The Community Profile Report (CPR) is published by the Data Strategy and Execution Workgroup (DSEW) of the White House COVID-19 Team. For more information, see the [official description at healthdata.gov](https://healthdata.gov/Health/COVID-19-Community-Profile-Report/gqxm-d9w9) for "COVID-19 Community Profile Report". Each issue of the CPR is made available as an attachment on that page. You can view all attachments by scrolling to the bottom of the "About this dataset" panel and clicking "Show more".
 

@@ -11,11 +11,40 @@ permalink: api/covidcast-signals/fb-survey.html
 
 * **Source name:** `fb-survey`
 * **Earliest issue available:** April 29, 2020
-* **Number of data revisions:** 1 (see [data revision docs](../covidcast_changelog.md#fb-survey))
 * **Date of last data revision:** June 3, 2020 (see [data revision docs](../covidcast_changelog.md#fb-survey))
 * **Available for:** county, hrr, msa, state, nation (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
+
+## Changelog
+
+<details>
+<summary>Click to expand</summary>
+
+See [COVIDcast Signal Changes](../covidcast_changelog.md) for general information about how we track changes to signals.
+
+### June 3, 2020
+
+Duplicate survey weights had corrupted historical figures for the following signals and dates. The correct data has been restored to the API.
+* `raw_wcli`
+  * `county`: 20200406, 20200408, 20200410, 20200430
+  * `hrr`: 20200406, 20200408-20200410, 20200430
+  * `msa`: 20200408, 20200410, 20200430
+  * `state`: 20200408-20200410, 20200430
+* `smoothed_wcli`
+  * `county`: 20200406, 20200408-20200414, 20200430-20200506
+  * `hrr`: 20200406-20200415, 20200430-20200506
+  * `msa`: 20200408-20200414, 20200430-20200506
+  * `state`: 20200408-20200416, 20200430-20200506
+
+### November 20, 2020
+
+Due to a bug in our data processing system, estimates of the percentage of people reporting that they have been tested for COVID-19 calculated before October 8th were incorrect.
+We incorrectly treated an answer of “no” as a missing response, which affected the `smoothed_tested_14d` and `smoothed_wtested_14d` signals from the `fb-survey` source.
+
+As of Nov. 20th, the error has been corrected and all affected data reissued.
+
+</details>
 
 ## Overview
 

@@ -10,11 +10,23 @@ nav_order: 2
 
 * **Source name:** `covid-act-now`
 * **Earliest issue available:** March 25, 2021
-* **Number of data revisions:** 0 (see [data revision docs](../covidcast_changelog.md#covid-act-now))
-* **Date of last data revision:** Never (see [data revision docs](../covidcast_changelog.md#covid-act-now))
+* **Date of last data revision:** Never (see [data revision docs](#changelog))
 * **Available for:** county, hrr, msa, state, hhs, nation (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** [CC BY-NC](../covidcast_licensing.md#creative-commons-attribution-noncommercial)
+
+## Changelog
+
+<details>
+<summary>Click to expand</summary>
+
+See [COVIDcast Signal Changes](../covidcast_changelog.md) for general information about how we track changes to signals.
+
+No changes so far.
+
+</details>
+
+## Overview
 
 The [COVID Act Now (CAN)](https://covidactnow.org/) data source provides COVID-19 testing statistics, such as positivity rates and total tests performed.
 The county-level positivity rates and test totals are pulled directly from CAN using [their API](https://covidactnow.org/data-api).

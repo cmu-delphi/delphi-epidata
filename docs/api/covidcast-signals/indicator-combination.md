@@ -22,11 +22,29 @@ calculated or composed by Delphi. It is not a primary data source.
 ## Statistical Combination Signals
 
 * **Earliest issue available:** May 20, 2020
-* **Number of data revisions:** 1 (see [data revision docs](../covidcast_changelog.md#indicator-combination))
-* **Date of last data revision:** June 3, 2020 (see [data revision docs](../covidcast_changelog.md#indicator-combination))
+* **Date of last data revision:** June 3, 2020 (see [data revision docs](#changelog))
 * **Available for:** county, msa, state (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
 * **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
+
+## Changelog
+
+<details>
+<summary>Click to expand</summary>
+
+See [COVIDcast Signal Changes](../covidcast_changelog.md) for general information about how we track changes to signals.
+
+### June 3, 2020
+
+Standard errors are now included in the `nmf_day_doc_fbc_fbs_ght` signal for all geo levels and dates, representing the estimated uncertainty in this signal. This uncertainty comes because the signal is a combination of other signals based on survey estimates or other estimates with margins of error.
+
+* `nmf_day_doc_fbc_fbs_ght`
+  * all geo levels
+    * all dates
+
+</details>
+
+## Overview
 
 These signals combine Delphi's indicators---*not* including cases and deaths,
 but including other signals expected to be related to the underlying rate of
@@ -192,10 +210,25 @@ The resampling method for each input source is as follows:
 ## Compositional Signals: Confirmed Cases and Deaths
 
 * **Earliest issue available:** July 7, 2020
-* **Number of data revisions:** 1 (see [data revision docs](../covidcast_changelog.md#indicator-combination))
-* **Date of last data revision:** October 12, 2020 (see [data revision docs](../covidcast_changelog.md#indicator-combination))
+* **Date of last data revision:** October 12, 2020 (see [data revision docs](#changelog-deaths))
 * **Available for:** county, msa, hrr, state (see [geography coding docs](../covidcast_geography.md))
 * **Time type:** day (see [date format docs](../covidcast_times.md))
+
+## Changelog Deaths
+
+<details>
+<summary>Click to expand</summary>
+
+See [COVIDcast Signal Changes](../covidcast_changelog.md) for general information about how we track changes to signals.
+
+### October 12, 2020
+
+The 10 October 2020 issue of all `indicator-combination` deaths signals has been removed from the API. These signals are primarily constructed of USAFacts data, whose 10 October 2020 issue was discovered to be corrupt on 11 October and repaired on 12 October. Subsequent issues have adequate coverage of all regions and dates included in the 10 October issue, so this change only affects forecasters who intend to pull training data with an `as_of` or `issues` parameter set to 20201010.
+
+</details>
+
+
+## Overview
 
 These signals combine the cases and deaths data from JHU and USA Facts. This is
 a straight composition: the signals below use the [JHU signal data](jhu-csse.md)
