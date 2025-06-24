@@ -26,6 +26,15 @@ For current information on how up-to-date our public health and behavior data is
 {:toc}
 
 ## Sources and Signals
+### `google-symptoms`
+#### 14 Mar 2025
+Google added earlier dates starting from 2017-08-15 and also fixed a gap of county-level data from Novemeber 14 2022 through
+February 20, 2023
+
+### `google-symptoms`
+#### 14 Feb 2025
+We added a new signal s07_raw_search and s07_smoothed_search
+
 ### `doctor-visits`
 #### 9 November 2020
 We went from a custom geo-mapping file (for aggregating from county->(msa, hrr, state)) to a central geo file based on rigorously sourced US census data.
