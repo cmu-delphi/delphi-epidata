@@ -11,6 +11,8 @@ import pandas as pd
 
 from delphi.epidata.maintenance.covidcast_meta_cache_updater import main as update_cache
 from delphi.epidata.acquisition.covidcast.test_utils import CovidcastBase, CovidcastTestRow
+from delphi.epidata.maintenance.coverage_crossref_updater import main as update_crossref
+
 
 # use the local instance of the Epidata API
 BASE_URL = "http://delphi_web_epidata/epidata/covidcast"
@@ -385,3 +387,25 @@ class CovidcastEndpointTests(CovidcastBase):
         with self.subTest("invalid geo_type"):
             out = self._fetch("/coverage", signal=first.signal_pair(), geo_type="doesnt_exist", format="json")
             self.assertEqual(len(out), 0)
+
+    def test_indicator_geo_coverage(self):
+        """Request a geo_type:geo_value from the /indicator_geo_coverage endpoint."""
+
+        self._insert_rows([
+            CovidcastTestRow.make_default_row(geo_type="state", geo_value="pa"),
+            CovidcastTestRow.make_default_row(geo_type="state", geo_value="ny"),
+            CovidcastTestRow.make_default_row(geo_type="state", geo_value="ny", signal="sig2"),
+        ])
+
+        update_crossref()
+
+        response = requests.get(
+            f"{BASE_URL}/indicator_geo_coverage",
+            params=dict(data_source="src", signals="sig"),
+        )
+        response.raise_for_status()
+        out = response.json()
+
+        self.assertEqual(len(out["epidata"]), 2)
+        self.assertEqual(out["epidata"], ['state:ny', 'state:pa'])
+
