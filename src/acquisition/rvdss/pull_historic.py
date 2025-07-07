@@ -13,6 +13,7 @@ import pandas as pd
 from epiweeks import Week
 from datetime import datetime, timedelta
 import math
+from io import StringIO
 
 from delphi.epidata.acquisition.rvdss.constants import (
         HISTORIC_SEASON_URLS,
@@ -22,7 +23,7 @@ from delphi.epidata.acquisition.rvdss.constants import (
     )
 from delphi.epidata.acquisition.rvdss.utils import (
         abbreviate_virus, abbreviate_geo, create_geo_types, check_date_format,
-        fetch_dashboard_data,preprocess_table_columns, add_flu_prefix
+        fetch_archived_dashboard_data, preprocess_table_columns, add_flu_prefix
     )
  #%% Functions
 
@@ -356,6 +357,10 @@ def fix_edge_cases(table,season,caption,current_week):
         #  In week 11 of the 2022-2023 season, in the positive hmpv table,
         # a date is written as 022-09-03, instead of 2022-09-03
          table.loc[table['week'] == 32, 'week end'] = "2017-08-12"
+    elif season[0] == '2021' and "parainfluenza" in caption.text.lower():
+        #  In multiple weeks of the 2021-2022 season, in the positive hpiv table,
+        # the date for week 12 is 2022-03-19, instead of 2022-03-26
+         table.loc[table['week'] == 12, 'week end'] = "2022-03-26"
     return(table)
 
 def fetch_one_season_from_report(url):
@@ -427,7 +432,7 @@ def fetch_one_season_from_report(url):
             # Also use dropna because removing footers causes the html to have an empty row
             na_values = ['N.A.','N.A', 'N.C.','N.R.','Not Available','Not Tested',"not available",
                          "not tested","N.D.","-",'Not tested','non testé']
-            table =  pd.read_html(tab,na_values=na_values)[0].dropna(how="all")
+            table =  pd.read_html(StringIO(str(tab)),na_values=na_values)[0].dropna(how="all")
 
             # Check for multiline headers
             # If there are any, combine them into a single line header
@@ -564,7 +569,6 @@ def fetch_archived_dashboard_dates(archive_url):
     archived_dates=english_data['date'].to_list()
     return(archived_dates)
 
-
 def fetch_report_data():
     # Scrape each season.
     dict_list = [fetch_one_season_from_report(url) for url in HISTORIC_SEASON_URLS]
@@ -576,6 +580,6 @@ def fetch_historical_dashboard_data():
     archived_dates = fetch_archived_dashboard_dates(DASHBOARD_ARCHIVED_DATES_URL)
 
     archived_urls= [DASHBOARD_BASE_URL + "archive/"+ date+"/" for date in archived_dates]
-    dict_list = [fetch_dashboard_data(url) for url in archived_urls]
+    dict_list = [fetch_archived_dashboard_data(url) for url in archived_urls]
 
     return dict_list

@@ -9,7 +9,7 @@ from unidecode import unidecode
 import string
 
 from delphi.epidata.acquisition.rvdss.constants import (
-        VIRUSES, GEOS, REGIONS, NATION,
+        VIRUSES, GEOS, REGIONS, NATION,PROVINCES,
         DASHBOARD_UPDATE_DATE_FILE, DASHBOARD_DATA_FILE
     )
 
@@ -72,9 +72,17 @@ def check_date_format(date_string):
 
 def get_dashboard_update_date(base_url,headers):
     # Get update date
-    update_date_url =  base_url + DASHBOARD_UPDATE_DATE_FILE
+    update_date_url =  base_url + "RVD_UpdateDate.csv"
     update_date_url_response = requests.get(update_date_url, headers=headers)
-    update_date = datetime.strptime(update_date_url_response.text,"%m/%d/%Y %H:%M:%S").strftime("%Y-%m-%d")
+    
+    pattern1= re.compile("[0-9]{4}-[0-9]{2}-[0-9]{2}")
+    pattern2= re.compile("[0-9]{2}/[0-9]{2}/[0-9]{4}")
+    
+    if pattern1.match(update_date_url_response.text):
+        update_date = datetime.strptime(update_date_url_response.text,"%Y-%m-%d %H:%M:%S").strftime("%Y-%m-%d")
+    elif pattern2.match(update_date_url_response.text):
+        update_date = datetime.strptime(update_date_url_response.text,"%m/%d/%Y %H:%M:%S").strftime("%Y-%m-%d")
+    
     return(update_date)
 
 def check_most_recent_update_date(date,date_file):
@@ -196,40 +204,6 @@ def get_positive_data(base_url,headers,update_date):
 
     return(df)
 
-# def get_detections_data(base_url,headers,update_date):
-#     # Get current week and year
-#     summary_url =  base_url + "RVD_SummaryText.csv"
-#     summary_url_response = requests.get(summary_url, headers=headers)
-#     summary_df = pd.read_csv(io.StringIO(summary_url_response.text))
-
-#     week_df = summary_df[(summary_df['Section'] == "summary") & (summary_df['Type']=="title")]
-#     week_string = week_df.iloc[0]['Text'].lower()
-#     current_week = int(re.search("week (.+?) ", week_string).group(1))
-#     current_year= int(re.search(r"20\d{2}", week_string).group(0))
-
-#     current_epiweek= Week(current_year,current_week)
-
-#     # Get weekly data
-#     detections_url = base_url + "RVD_CurrentWeekTable.csv"
-#     detections_url_response = requests.get(detections_url, headers=headers)
-#     detections_url_response.encoding='UTF-8'
-#     df_detections = pd.read_csv(io.StringIO(detections_url_response.text))
-
-#     # swap order of names from a_b to b_a
-#     df_detections = df_detections.rename(columns=lambda x: '_'.join(x.split('_')[1:]+x.split('_')[:1]))
-#     df_detections.insert(0,"epiweek",int(str(current_epiweek)))
-#     df_detections.insert(1,"time_value",str(current_epiweek.enddate()))
-#     df_detections.insert(2,"issue",update_date)
-#     df_detections=preprocess_table_columns(df_detections)
-
-#     df_detections.columns=[re.sub(r' ','_',c) for c in df_detections.columns]
-#     df_detections=df_detections.rename(columns={'reportinglaboratory':"geo_value"})
-#     df_detections['geo_value'] = [abbreviate_geo(g) for g in df_detections['geo_value']]
-#     df_detections['geo_type'] = [create_geo_types(g,"lab") for g in df_detections['geo_value']]
-
-#     return(df_detections.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value']))
-
-
 def get_detections_data(base_url,headers,update_date):
     # Get weekly data
     detections_url = base_url + "RVD_CurrentWeekTable.csv"
@@ -268,8 +242,72 @@ def get_detections_data(base_url,headers,update_date):
 
     return(df_detections.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value']))
 
+def expand_detections_columns(new_data):
+    # add extra columns - percent positivities
+    new_data["adv_pct_positive"] =  new_data["adv_positive_tests"]/new_data["adv_tests"]*100
+    new_data["evrv_pct_positive"] =  new_data["evrv_positive_tests"]/new_data["evrv_tests"]*100
+    
+    if "flu_positive_tests" in new_data.columns:
+        new_data["flu_pct_positive"] =  new_data["flu_positive_tests"]/new_data["flu_tests"]*100
+        
+    if "sarscov2_positive_tests" in new_data.columns:
+        new_data["sarscov2_pct_positive"] =  new_data["sarscov2_positive_tests"]/new_data["sarscov2_tests"]*100
+    
+    new_data["flua_tests"] =  new_data["flu_tests"]
+    new_data["flub_tests"] =  new_data["flu_tests"]
+    new_data["flua_pct_positive"] =  new_data["flua_positive_tests"]/new_data["flu_tests"]*100
+    new_data["flub_pct_positive"] =  new_data["flub_positive_tests"]/new_data["flu_tests"]*100
+    
+    new_data["hcov_pct_positive"] =  new_data["hcov_positive_tests"]/new_data["hcov_tests"]*100
+    new_data["hmpv_pct_positive"] =  new_data["hmpv_positive_tests"]/new_data["hmpv_tests"]*100
+    new_data["rsv_pct_positive"] =  new_data["rsv_positive_tests"]/new_data["rsv_tests"]*100
+    
+    new_data["hpiv_positive_tests"] =  new_data["hpiv1_positive_tests"] + new_data["hpiv2_positive_tests"]+ new_data["hpiv3_positive_tests"]+new_data["hpiv4_positive_tests"]+new_data["hpivother_positive_tests"]
+    new_data["hpiv_pct_positive"] =  new_data["hpiv_positive_tests"]/new_data["hpiv_tests"]*100
+    
+    return(new_data.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value']))
 
-def fetch_dashboard_data(url):
+def duplicate_provincial_detections(data):
+    dat = data.reset_index()
+    
+    # provincial data
+    provincial_detections = dat[dat['geo_value'].isin(PROVINCES)]
+    provincial_detections['geo_type']="province"
+    
+    new_data = pd.concat([data,provincial_detections])  
+    return(new_data.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value']))
+
+def combine_tables(data_dict):
+    num_tables = len(data_dict)
+    if(num_tables==3):
+        count=data_dict["count"]
+        positive=data_dict["positive"]
+        detections=data_dict["respiratory_detection"]
+
+        detections = expand_detections_columns(detections)
+        dat = detections.combine_first(positive)
+        dat = dat.combine_first(count)
+        dat = duplicate_provincial_detections(dat)
+    elif(num_tables==2):
+        positive=data_dict["positive"]
+        detections=data_dict["respiratory_detection"]
+
+        positive = positive.drop(['geo_type'], axis=1)
+        positive['geo_type'] = [create_geo_types(g,'lab') for g in positive['geo_value']]
+        positive=positive.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
+        dat = detections.combine_first(positive)
+    else:
+        raise ValueError("Unexpected number of tables")
+        
+    dat_copy = dat.reset_index()
+    provincial_detections = dat_copy[dat_copy['geo_value'].isin(PROVINCES)]
+    provincial_detections['geo_type']="province"
+        
+    provincial_detections=provincial_detections.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
+    combined_table = pd.concat([dat,provincial_detections])  
+    return(combined_table)
+        
+def fetch_archived_dashboard_data(url):
     headers = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'
     }
@@ -284,3 +322,17 @@ def fetch_dashboard_data(url):
         "positive": positive_data,
         # "count": None, # Dashboards don't contain this data.
     }
+
+def fetch_current_dashboard_data(url):
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'
+    }
+
+    update_date = get_dashboard_update_date(url, headers)
+    detections_data = get_detections_data(url,headers,update_date)
+    
+    # current dashboard only needs one table
+    new_detections_data = expand_detections_columns(detections_data)
+    new_detections_data = duplicate_provincial_detections(new_detections_data)
+
+    return(new_detections_data)

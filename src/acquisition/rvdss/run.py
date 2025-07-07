@@ -8,7 +8,7 @@ import pandas as pd
 import os
 import argparse
 
-from delphi.epidata.acquisition.rvdss.utils import fetch_dashboard_data, check_most_recent_update_date,get_dashboard_update_date
+from delphi.epidata.acquisition.rvdss.utils import fetch_dashboard_data, check_most_recent_update_date,get_dashboard_update_date, combine_tables, duplicate_provincial_detections,expand_detections_columns
 from delphi.epidata.acquisition.rvdss.constants import DASHBOARD_BASE_URL, RESP_DETECTIONS_OUTPUT_FILE, POSITIVE_TESTS_OUTPUT_FILE, COUNTS_OUTPUT_FILE,UPDATE_DATES_FILE
 from delphi.epidata.acquisition.rvdss.pull_historic import fetch_report_data,fetch_historical_dashboard_data
 from delphi.epidata.acquisition.rvdss.database import respiratory_detections_cols, pct_positive_cols, detections_counts_cols, expected_table_names, expected_columns, get_num_rows, update
@@ -26,9 +26,9 @@ def update_current_data():
         with open(UPDATE_DATES_FILE, 'a') as testfile:
             testfile.write(update_date+ "\n")
 
-        data_dict = fetch_dashboard_data(DASHBOARD_BASE_URL)
+        data = fetch_current_dashboard_data(DASHBOARD_BASE_URL)
         # update database
-        update(data_dict)
+        update(data)
     else:
         print("Data is already up to date")
 
@@ -38,6 +38,7 @@ def update_historical_data():
     # a dict with an entry for every week that has an archival dashboard, and each entry has 2/3 tables
     dashboard_dict_list = fetch_historical_dashboard_data()
     
+
     table_types = {
     "respiratory_detection": RESP_DETECTIONS_OUTPUT_FILE,
     "positive": POSITIVE_TESTS_OUTPUT_FILE,
@@ -59,8 +60,11 @@ def update_historical_data():
 
         hist_dict_list[tt] = pd.concat([all_report_tables, all_dashboard_tables])
 
+    # TODO: Combine all dicts into a single table
+    data = combine_tables(hist_dict_list)
+    
     #update database
-    update(hist_dict_list)
+    update(data)
     
 
 def main():
@@ -79,14 +83,21 @@ def main():
         action="store_true",
         help="fetch historical data, that is, data for all available time periods other than the latest epiweek"
     )
+    parser.add_argument(
+        "--patch",
+        "-pat",
+        action="store_true",
+        help="path in the 2024-2025 season, which is unarchived and must be obtained through a csv"
+    )
     # fmt: on
     args = parser.parse_args()
 
-    current_flag, historical_flag = (
+    current_flag, historical_flag, patch_flag = (
         args.current,
         args.historical,
+        args.patch
     )
-    if not current_flag and not historical_flag:
+    if not current_flag and not historical_flag and not patch_flag:
         raise Exception("no data was requested")
 
     # Decide what to update
@@ -94,6 +105,8 @@ def main():
         update_current_data()
     if historical_flag:
         update_historical_data()
+    if patch_flag:
+        # TODO: update from csv the 2024-2025 season
 
 
 if __name__ == "__main__":
