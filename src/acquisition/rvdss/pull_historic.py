@@ -107,7 +107,6 @@ def extract_captions_of_interest(soup):
     are missing. In that case, use the figure captions
     """
     captions = soup.find_all('summary')
-
     table_identifiers = ["respiratory","number","positive","abbreviation"]
 
     # For every caption, check if all of the table identifiers are missing. If they are,
@@ -121,7 +120,7 @@ def extract_captions_of_interest(soup):
     for i in range(len(captions)):
         caption = captions[i]
 
-        matches = ["period","abbreviation","cumulative", "compared"] #skip historic comparisons and cumulative tables
+        matches = ["period","abbreviation","cumulative", "compared","number"] #skip historic comparisons and cumulative tables
         # remove any captions with a class or that are uninformative
         if any(x in caption.text.lower() for x in matches) or caption.has_attr('class') or all(name not in caption.text.lower() for name in table_identifiers):
             remove_list.append(caption)
@@ -236,30 +235,30 @@ def create_detections_table(table,modified_date,week_number,week_end_date,start_
     table.columns =[re.sub(" ","_",col) for col in table.columns]
     return(table)
 
-def create_number_detections_table(table,modified_date,start_year):
-    week_columns = table.columns.get_indexer(table.columns[~table.columns.str.contains('week')])
+# def create_number_detections_table(table,modified_date,start_year):
+#     week_columns = table.columns.get_indexer(table.columns[~table.columns.str.contains('week')])
 
-    for index in week_columns:
-        new_name = abbreviate_virus(table.columns[index]) + " positive_tests"
-        table.rename(columns={table.columns[index]: new_name}, inplace=True)
-        table[table.columns[index]] = table[table.columns[index]].replace(r'\s', '', regex=True).astype('int')
+#     for index in week_columns:
+#         new_name = abbreviate_virus(table.columns[index]) + " positive_tests"
+#         table.rename(columns={table.columns[index]: new_name}, inplace=True)
+#         table[table.columns[index]] = table[table.columns[index]].replace(r'\s', '', regex=True).astype('int')
         
 
-    if "week end" not in table.columns:
-        week_ends = [get_report_date(week,start_year) for week in table["week"]]
-        table.insert(1,"week end",week_ends)
+#     if "week end" not in table.columns:
+#         week_ends = [get_report_date(week,start_year) for week in table["week"]]
+#         table.insert(1,"week end",week_ends)
 
-    table = table.assign(**{'issue': modified_date,
-                    'geo_type': "nation",
-                    'geo_value': "ca"})
+#     table = table.assign(**{'issue': modified_date,
+#                     'geo_type': "nation",
+#                     'geo_value': "ca"})
 
-    table=table.rename(columns={'week end':"time_value"})
-    table.columns =[re.sub(" ","_",col) for col in table.columns]
-    table['time_value'] = [check_date_format(d) for d in table['time_value']]
+#     table=table.rename(columns={'week end':"time_value"})
+#     table.columns =[re.sub(" ","_",col) for col in table.columns]
+#     table['time_value'] = [check_date_format(d) for d in table['time_value']]
 
-    table=table.rename(columns={'week':"epiweek"})
-    table['epiweek'] = [get_report_date(week, start_year,epi=True) for week in table['epiweek']]
-    return(table)
+#     table=table.rename(columns={'week':"epiweek"})
+#     table['epiweek'] = [get_report_date(week, start_year,epi=True) for week in table['epiweek']]
+#     return(table)
 
 def create_percent_positive_detection_table(table,modified_date,start_year, flu=False,overwrite_weeks=False):
     table = deduplicate_rows(table)
@@ -499,10 +498,10 @@ def fetch_one_season_from_report(url):
                respiratory_detection_table_exists = True
                respiratory_detection_table = create_detections_table(table,modified_date,current_week,current_week_end,season[0])
                respiratory_detection_table = respiratory_detection_table.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
-            elif "number" in caption.text.lower():
-               number_table_exists = True
-               number_detections_table = create_number_detections_table(table,modified_date,season[0])
-               number_detections_table = number_detections_table.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
+            # elif "number" in caption.text.lower():
+            #    number_table_exists = True
+            #    number_detections_table = create_number_detections_table(table,modified_date,season[0])
+            #    number_detections_table = number_detections_table.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
             elif "positive" in caption.text.lower():
                positive_table_exists = True
                flu = " influenza" in caption.text.lower()
@@ -549,15 +548,15 @@ def fetch_one_season_from_report(url):
                 all_positive_tables=pd.concat([all_positive_tables,combined_positive_tables])
             del combined_positive_tables
             del pos_table
-        if number_table_exists:
-            if not number_detections_table.index.isin(all_number_tables.index).any():
-                all_number_tables=pd.concat([all_number_tables,number_detections_table])
-            del number_detections_table
+        # if number_table_exists:
+        #     if not number_detections_table.index.isin(all_number_tables.index).any():
+        #         all_number_tables=pd.concat([all_number_tables,number_detections_table])
+        #     del number_detections_table
 
     return {
         "respiratory_detection": all_respiratory_detection_tables,
-        "positive": all_positive_tables,
-        "count": all_number_tables,
+        "positive": all_positive_tables
+        #"count": all_number_tables,
     }
 
 def fetch_archived_dashboard_dates(archive_url):

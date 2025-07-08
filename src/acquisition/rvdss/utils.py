@@ -279,16 +279,7 @@ def duplicate_provincial_detections(data):
 
 def combine_tables(data_dict):
     num_tables = len(data_dict)
-    if(num_tables==3):
-        count=data_dict["count"]
-        positive=data_dict["positive"]
-        detections=data_dict["respiratory_detection"]
-
-        detections = expand_detections_columns(detections)
-        dat = detections.combine_first(positive)
-        dat = dat.combine_first(count)
-        dat = duplicate_provincial_detections(dat)
-    elif(num_tables==2):
+    if(num_tables==2):
         positive=data_dict["positive"]
         detections=data_dict["respiratory_detection"]
 
