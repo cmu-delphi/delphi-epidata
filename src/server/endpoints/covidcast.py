@@ -565,7 +565,7 @@ def handle_geo_coverage():
 def handle_indicator_geo_coverage():
     source_signal_sets = parse_source_signal_sets()
     source_signal_sets = restrict_by_roles(source_signal_sets)
-    source_signal_sets, alias_mapper = create_source_signal_alias_mapper(source_signal_sets)
+    source_signal_sets, _ = create_source_signal_alias_mapper(source_signal_sets)
 
     q = QueryBuilder("coverage_crossref_v", "c")
     fields_string = ["geo_type", "geo_value"]
