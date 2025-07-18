@@ -53,6 +53,8 @@ REGIONS = ['atlantic','atl','at','province of québec','québec','qc','province 
             'prairies', 'pr', "british columbia",'bc',"territories",'terr',]
 NATION = ["canada","can",'ca',]
 
+PROVINCES = ['nl','pe','ns','nb','qc','on','mb','sk','ab','bc','yt','nt','nu']
+
 # Construct dashboard and data report URLS.
 DASHBOARD_BASE_URL = "https://health-infobase.canada.ca/src/data/respiratory-virus-detections/"
 DASHBOARD_W_DATE_URL = DASHBOARD_BASE_URL + "archive/{date}/"
@@ -115,3 +117,5 @@ FIRST_WEEK_OF_YEAR = 35
 
 UPDATE_DATES_FILE = "update_dates.txt"
 NOW = datetime.now()
+
+LOGGER_FILENAME = "rvdss.log"
