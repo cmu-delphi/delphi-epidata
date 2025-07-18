@@ -1,4 +1,4 @@
-FROM python:3.8-buster
+FROM python:3.8-bookworm
 
 RUN apt-get update && apt-get install -y r-base && Rscript -e "install.packages(c('httr','xml2'))"
 
