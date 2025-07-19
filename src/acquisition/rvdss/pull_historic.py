@@ -22,7 +22,7 @@ from delphi.epidata.acquisition.rvdss.constants import (
         DASHBOARD_BASE_URL
     )
 from delphi.epidata.acquisition.rvdss.utils import (
-        abbreviate_virus, abbreviate_geo, create_geo_types, check_date_format,
+        abbreviate_geo, create_geo_types, check_date_format,
         fetch_archived_dashboard_data, preprocess_table_columns, add_flu_prefix
     )
  #%% Functions
@@ -317,9 +317,6 @@ def fix_edge_cases(table,season,caption,current_week):
             #  In week 47 of the 2017-2018 season, a date is written as 201-11-25,
             #  instead of 2017-11-25
             table.loc[table['week'] == 47, 'week end'] = "2017-11-25"
-        elif current_week == 26 and "number" in caption.text.lower():
-            #  anomolous row with decimal counts that differs a lot from the next week.
-            table = table[table.week != 26]
     elif season[0] == '2015' and current_week == 41:
         # In week 41 of the 2015-2016 season, a date written in m-d-y format not d-m-y
         table=table.replace("10-17-2015","17-10-2015",regex=True)
@@ -374,7 +371,6 @@ def fetch_one_season_from_report(url):
         modified_date = get_modified_dates(new_soup,current_week_end)
 
         positive_tables=[]
-        number_table_exists = False
         respiratory_detection_table_exists = False
         positive_table_exists = False
         for i in range(len(captions)):

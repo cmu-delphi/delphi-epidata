@@ -1,5 +1,4 @@
 <summary>Table 1 - Respiratory Virus Detections/Isolations for the Week 03 ending January 21, 2017</summary>
-<summary>Number of positive laboratory tests for other respiratory viruses by report week, Canada, 2016-17 - Text Equivalent</summary>
 <summary>Positive Influenza Tests (%) in Canada by Region by Week of Report - Text Equivalent</summary>
 <summary>Positive RSV Tests (%) in Canada by Region by Week of Report - Text Equivalent</summary>
 <summary>Positive Parainfluenza Tests (%) in Canada by Region by Week of Report - Text Equivalent</summary>
