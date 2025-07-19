@@ -47,7 +47,8 @@ example_edge_case_tables=[
        'hmpv%.5':1}]),
     pd.DataFrame(columns=["week end","pos_tests","percent_pos"]),
     pd.DataFrame([{"week":32,"week end":"2017-08-17"}]),
-    pd.DataFrame({"week":[25,26],"week end":["2017-08-12","2017-08-19"]})]
+    pd.DataFrame({"week":[25,26],"week end":["2017-08-12","2017-08-19"]}),
+    pd.DataFrame([{"week":12,"week end":"2022-03-19"}])]
 
 expected_edge_case_tables=[
     pd.DataFrame(columns=['week', 'week end', 'canada tests', 'entero/rhino%', 'at tests',
@@ -69,7 +70,8 @@ expected_edge_case_tables=[
        'hmpv%.5':1}]),
     pd.DataFrame(columns=["week end","pos_tests","percent_pos"]),
     pd.DataFrame([{"week":32,"week end":"2017-08-12"}]),
-    pd.DataFrame([{"week":25,"week end":"2017-08-12"}])]
+    pd.DataFrame([{"week":25,"week end":"2017-08-12"}]),
+    pd.DataFrame([{"week":12,"week end":"2022-03-26"}])]
 
 example_edge_case_captions=[
     [t for t in captions if "Entero" in t.text][0],
@@ -79,13 +81,14 @@ example_edge_case_captions=[
     [t for t in captions if "hMPV" in t.text][0],
     [t for t in captions if "hMPV" in t.text][0],
     [t for t in captions if "Influenza" in t.text][0],
-    [t for t in captions if "Number" in t.text][0]]
+    [t for t in captions if "Number" in t.text][0],
+    [t for t in captions if "Para" in t.text][0]]
 
 example_edge_case_seasons=[["2017","2018"],["2017","2018"],["2017","2018"],
                            ["2015","2016"],["2022","2023"],["2021","2022"],
-                           ["2016","2017"],["2017","2018"]]
+                           ["2016","2017"],["2017","2018"],["2021","2022"]]
 
-example_edge_case_weeks=[35,35,47,41,11,10,32,26]
+example_edge_case_weeks=[35,35,47,41,11,10,32,26,14]
 
 class TestPullHistoric():
 
