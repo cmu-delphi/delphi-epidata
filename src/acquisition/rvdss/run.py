@@ -60,7 +60,7 @@ def update_historical_data():
 
         hist_dict_list[tt] = pd.concat([all_report_tables, all_dashboard_tables])
 
-    # TODO: Combine all dicts into a single table
+    # Combine all rables into a single table
     data = combine_tables(hist_dict_list)
     
     #update database

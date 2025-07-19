@@ -7,6 +7,7 @@ from datetime import datetime
 import math
 from unidecode import unidecode
 import string
+import numpy as np
 
 from delphi.epidata.acquisition.rvdss.constants import (
         VIRUSES, GEOS, REGIONS, NATION,PROVINCES,
@@ -202,7 +203,8 @@ def get_positive_data(base_url,headers,update_date):
         if "pct_positive" in df.columns[k]:
             assert all([0 <= val <= 100 or math.isnan(val) for val in  df[df.columns[k]]]), "Percentage not from 0-100"
 
-    return(df)
+    df = df.reset_index()
+    return(df.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'],verify_integrity=True))
 
 def get_detections_data(base_url,headers,update_date):
     # Get weekly data
@@ -240,7 +242,7 @@ def get_detections_data(base_url,headers,update_date):
     df_detections['geo_value'] = [abbreviate_geo(g) for g in df_detections['geo_value']]
     df_detections['geo_type'] = [create_geo_types(g,"lab") for g in df_detections['geo_value']]
 
-    return(df_detections.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value']))
+    return(df_detections.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'],verify_integrity=True))
 
 def expand_detections_columns(new_data):
     # add extra columns - percent positivities
@@ -282,20 +284,27 @@ def combine_tables(data_dict):
     if(num_tables==2):
         positive=data_dict["positive"]
         detections=data_dict["respiratory_detection"]
+        detections = expand_detections_columns(detections)
 
         positive = positive.drop(['geo_type'], axis=1)
         positive['geo_type'] = [create_geo_types(g,'lab') for g in positive['geo_value']]
         positive=positive.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
-        dat = detections.combine_first(positive)
+        
+        t = detections.merge(positive, how='outer', left_index=True,right_index=True)
+        cols = set(positive.columns.to_list()+detections.columns.to_list())
+
+        for col in cols:
+            colx = col + "_x"
+            coly = col + "_y"
+            
+            if colx in t.columns and coly in t.columns:
+                t[col] = np.where(t[colx].isnull(), t[coly], t[colx])
+                t = t.drop([colx, coly],axis=1)
     else:
         raise ValueError("Unexpected number of tables")
         
-    dat_copy = dat.reset_index()
-    provincial_detections = dat_copy[dat_copy['geo_value'].isin(PROVINCES)]
-    provincial_detections['geo_type']="province"
-        
-    provincial_detections=provincial_detections.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
-    combined_table = pd.concat([dat,provincial_detections])  
+    provincial_detections = duplicate_provincial_detections(t)
+    combined_table = pd.concat([t,provincial_detections]) 
     return(combined_table)
         
 def fetch_archived_dashboard_data(url):

@@ -235,30 +235,6 @@ def create_detections_table(table,modified_date,week_number,week_end_date,start_
     table.columns =[re.sub(" ","_",col) for col in table.columns]
     return(table)
 
-# def create_number_detections_table(table,modified_date,start_year):
-#     week_columns = table.columns.get_indexer(table.columns[~table.columns.str.contains('week')])
-
-#     for index in week_columns:
-#         new_name = abbreviate_virus(table.columns[index]) + " positive_tests"
-#         table.rename(columns={table.columns[index]: new_name}, inplace=True)
-#         table[table.columns[index]] = table[table.columns[index]].replace(r'\s', '', regex=True).astype('int')
-        
-
-#     if "week end" not in table.columns:
-#         week_ends = [get_report_date(week,start_year) for week in table["week"]]
-#         table.insert(1,"week end",week_ends)
-
-#     table = table.assign(**{'issue': modified_date,
-#                     'geo_type': "nation",
-#                     'geo_value': "ca"})
-
-#     table=table.rename(columns={'week end':"time_value"})
-#     table.columns =[re.sub(" ","_",col) for col in table.columns]
-#     table['time_value'] = [check_date_format(d) for d in table['time_value']]
-
-#     table=table.rename(columns={'week':"epiweek"})
-#     table['epiweek'] = [get_report_date(week, start_year,epi=True) for week in table['epiweek']]
-#     return(table)
 
 def create_percent_positive_detection_table(table,modified_date,start_year, flu=False,overwrite_weeks=False):
     table = deduplicate_rows(table)
@@ -319,8 +295,7 @@ def create_percent_positive_detection_table(table,modified_date,start_year, flu=
     else:
         table[virus+"_positive_tests"] = (table[virus+"_pct_positive"]/100) *table[virus+"_tests"]
 
-    table = table.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
-
+    table = table.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'],verify_integrity=True)
     return(table)
 
 def fix_edge_cases(table,season,caption,current_week):
@@ -443,30 +418,6 @@ def fetch_one_season_from_report(url):
 
             # # One-off edge cases where tables need to be manually adjusted because
             # # they will cause errors otherwise
-            # if season[0] == '2017':
-            #     if current_week == 35 and "entero" in caption.text.lower():
-            #         # The positive enterovirus table in week 35 of the 2017-2018 season has french
-            #         # in the headers,so the french needs to be removed
-            #         table.columns = ['week', 'week end', 'canada tests', 'entero/rhino%', 'at tests',
-            #            'entero/rhino%.1', 'qc tests', 'entero/rhino%.2', 'on tests',
-            #            'entero/rhino%.3', 'pr tests', 'entero/rhino%.4', 'bc tests',
-            #            'entero/rhino%.5']
-            #     elif current_week == 35 and "adeno" in caption.text.lower():
-            #         # In week 35 of the 2017-2018, the positive adenovirus table has ">week end"
-            #         # instead of "week end", so remove > from the column
-            #         table = table.rename(columns={'>week end':"week end"})
-            #     elif current_week == 47 and "rsv" in caption.text.lower():
-            #         #  In week 47 of the 2017-2018 season, a date is written as 201-11-25,
-            #         #  instead of 2017-11-25
-            #         table.loc[table['week'] == 47, 'week end'] = "2017-11-25"
-            # elif season[0] == '2015' and current_week == 41:
-            #     # In week 41 of the 2015-2016 season, a date written in m-d-y format not d-m-y
-            #     table=table.replace("10-17-2015","17-10-2015",regex=True)
-            # elif season[0] == '2022' and current_week == 11 and "hmpv" in caption.text.lower():
-            #     #  In week 11 of the 2022-2023 season, in the positive hmpv table,
-            #     # a date is written as 022-09-03, instead of 2022-09-03
-            #      table.loc[table['week'] == 35, 'week end'] = "2022-09-03"
-
             table = fix_edge_cases(table, season[0], caption, current_week)    
 
             # check if both ah1 and h1n1 are given. If so drop one since they are the same virus and ah1 is 
@@ -481,12 +432,6 @@ def fetch_one_season_from_report(url):
             # this is the lab level table that has weekly positive tests for each virus, with no revisions
             # and each row represents a lab
 
-            # If "number" is in the table caption, the table must be the
-            # "Number of positive respiratory detections" table, for a given week
-            # this is a national level table, reporting the number of detections for each virus,
-            # this table has revisions, so each row is a week in the season, with weeks going from the
-            # start of the season up to and including the current week
-
             # If "positive" is in the table caption, the table must be one of the
             # "Positive [virus] Tests (%)" table, for a given week
             # This is a region level table, reporting the total tests and percent positive tests  for each virus,
@@ -497,11 +442,7 @@ def fetch_one_season_from_report(url):
             if "reporting laboratory" in str(table.columns):
                respiratory_detection_table_exists = True
                respiratory_detection_table = create_detections_table(table,modified_date,current_week,current_week_end,season[0])
-               respiratory_detection_table = respiratory_detection_table.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
-            # elif "number" in caption.text.lower():
-            #    number_table_exists = True
-            #    number_detections_table = create_number_detections_table(table,modified_date,season[0])
-            #    number_detections_table = number_detections_table.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
+               respiratory_detection_table = respiratory_detection_table.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'],verify_integrity=True)
             elif "positive" in caption.text.lower():
                positive_table_exists = True
                flu = " influenza" in caption.text.lower()
@@ -529,9 +470,6 @@ def fetch_one_season_from_report(url):
 
                positive_tables.append(pos_table)
 
-        # create path to save files
-        #path = "season_" + season[0]+"_"+season[1]
-
         # combine all the positive tables
         combined_positive_tables = pd.concat(positive_tables,axis=1)
 
@@ -548,15 +486,10 @@ def fetch_one_season_from_report(url):
                 all_positive_tables=pd.concat([all_positive_tables,combined_positive_tables])
             del combined_positive_tables
             del pos_table
-        # if number_table_exists:
-        #     if not number_detections_table.index.isin(all_number_tables.index).any():
-        #         all_number_tables=pd.concat([all_number_tables,number_detections_table])
-        #     del number_detections_table
 
     return {
         "respiratory_detection": all_respiratory_detection_tables,
         "positive": all_positive_tables
-        #"count": all_number_tables,
     }
 
 def fetch_archived_dashboard_dates(archive_url):
