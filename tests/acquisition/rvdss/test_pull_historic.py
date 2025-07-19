@@ -14,7 +14,7 @@ import requests
 
 from delphi.epidata.acquisition.rvdss.pull_historic import (get_report_season_years, add_https_prefix, 
 construct_weekly_report_urls, report_weeks, get_report_date, extract_captions_of_interest, get_modified_dates,
-deduplicate_rows, drop_ah1_columns,preprocess_table_columns, create_detections_table, create_number_detections_table, 
+deduplicate_rows, drop_ah1_columns,preprocess_table_columns, create_detections_table, 
 create_percent_positive_detection_table, fetch_one_season_from_report, fetch_archived_dashboard_dates, 
 fetch_report_data, fetch_historical_dashboard_data,fix_edge_cases)
 
@@ -47,7 +47,6 @@ example_edge_case_tables=[
        'hmpv%.5':1}]),
     pd.DataFrame(columns=["week end","pos_tests","percent_pos"]),
     pd.DataFrame([{"week":32,"week end":"2017-08-17"}]),
-    pd.DataFrame({"week":[25,26],"week end":["2017-08-12","2017-08-19"]}),
     pd.DataFrame([{"week":12,"week end":"2022-03-19"}])]
 
 expected_edge_case_tables=[
@@ -70,7 +69,6 @@ expected_edge_case_tables=[
        'hmpv%.5':1}]),
     pd.DataFrame(columns=["week end","pos_tests","percent_pos"]),
     pd.DataFrame([{"week":32,"week end":"2017-08-12"}]),
-    pd.DataFrame([{"week":25,"week end":"2017-08-12"}]),
     pd.DataFrame([{"week":12,"week end":"2022-03-26"}])]
 
 example_edge_case_captions=[
@@ -81,14 +79,13 @@ example_edge_case_captions=[
     [t for t in captions if "hMPV" in t.text][0],
     [t for t in captions if "hMPV" in t.text][0],
     [t for t in captions if "Influenza" in t.text][0],
-    [t for t in captions if "Number" in t.text][0],
     [t for t in captions if "Para" in t.text][0]]
 
 example_edge_case_seasons=[["2017","2018"],["2017","2018"],["2017","2018"],
                            ["2015","2016"],["2022","2023"],["2021","2022"],
-                           ["2016","2017"],["2017","2018"],["2021","2022"]]
+                           ["2016","2017"],["2021","2022"]]
 
-example_edge_case_weeks=[35,35,47,41,11,10,32,26,14]
+example_edge_case_weeks=[35,35,47,41,11,10,32,14]
 
 class TestPullHistoric():
 
@@ -253,45 +250,6 @@ class TestPullHistoric():
         detection_table = detection_table.sort_values(by=['epiweek','time_value','issue','geo_type','geo_value'])
         
         assert expected_data.equals(detection_table)
-
-    def test_create_number_detections_table(self):
-        TEST_DIR = Path(__file__).parent.parent.parent.parent
-
-        expected_data = pd.read_csv(str(TEST_DIR) + "/testdata/acquisition/rvdss/formatted_number_detections.csv")
-        expected_data['epiweek'] = expected_data['epiweek'].astype(str)
-        expected_data = expected_data.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
-        expected_data = expected_data.sort_values(by=['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
-
-        # url = str(TEST_DIR) + "/testdata/acquisition/rvdss/week3_20162017.html"
-        # with open(url) as page:
-        #     soup = BeautifulSoup(page.read(),'html.parser')
-        #     new_soup = BeautifulSoup(soup.text, 'html.parser')
-        #     captions = extract_captions_of_interest(new_soup)
-        caption=[t for t in captions if "Number" in t.text][0]
-        tab = caption.find_next('table')
-        tab = re.sub(",","",str(tab))
-                
-        na_values = ['N.A.','N.A', 'N.C.','N.R.','Not Available','Not Tested',"not available",
-                     "not tested","N.D.","-",'Not tested','non testé']
-        table =  pd.read_html(tab,na_values=na_values)[0].dropna(how="all")
-        table.columns=table.columns.str.lower()
-        table = drop_ah1_columns(table)
-        table= preprocess_table_columns(table)
-        table_no_weekend = table.drop(columns=['week end'])
-            
-        modified_date = "2017-01-25"
-        start_year = 2016
-            
-        number_table = create_number_detections_table(table,modified_date,start_year)
-        number_table = number_table.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
-        number_table = number_table.sort_values(by=['epiweek','time_value','issue','geo_type','geo_value'])
-            
-        number_table_no_weekend =  create_number_detections_table(table_no_weekend,modified_date,start_year)
-        number_table_no_weekend = number_table_no_weekend.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
-        number_table_no_weekend = number_table_no_weekend.sort_values(by=['epiweek','time_value','issue','geo_type','geo_value'])
-            
-        assert number_table.equals(expected_data)
-        assert number_table_no_weekend.equals(expected_data)
 
     def test_create_percent_positive_detection_table(self):
         # set up expected output

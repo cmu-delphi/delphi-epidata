@@ -9,7 +9,8 @@ import pandas as pd
 
 from delphi.epidata.acquisition.rvdss.utils import (abbreviate_virus, abbreviate_geo, create_geo_types, check_date_format,
 get_dashboard_update_date, check_most_recent_update_date, preprocess_table_columns, add_flu_prefix, 
-make_signal_type_spelling_consistent, get_positive_data, get_detections_data, fetch_dashboard_data) 
+make_signal_type_spelling_consistent, get_positive_data, get_detections_data, fetch_archived_dashboard_data,
+fetch_current_dashboard_data) 
 
 # py3tester coverage target
 __test_target__ = "delphi.epidata.acquisition.rvdss.utils"
@@ -191,12 +192,12 @@ class TestUtils:
         resp = s.get('file://'+ str(TEST_DIR) + "/testdata/acquisition/rvdss/RVD_WeeklyData.csv") 
         
         expected_positive_data = pd.read_csv(str(TEST_DIR) + "/testdata/acquisition/rvdss/RVD_WeeklyData_Formatted.csv")
-        expected_positive_data = expected_positive_data.set_index(['epiweek','time_value','issue','geo_type','geo_value','region','week','weekorder','year'])
-        expected_positive_data = expected_positive_data.sort_values(by=['epiweek','time_value','issue','geo_type','geo_value','region'])
+        expected_positive_data = expected_positive_data.set_index(['epiweek','time_value','issue','geo_type','geo_value'])
+        expected_positive_data = expected_positive_data.sort_values(by=['epiweek','time_value','issue','geo_type','geo_value'])
         
         mock_requests.return_value = resp
         d = get_positive_data(url,headers,update_date)
-        d = d.sort_values(by=['epiweek','time_value','issue','geo_type','geo_value','region'])
+        d = d.sort_values(by=['epiweek','time_value','issue','geo_type','geo_value'])
         assert d.compare(expected_positive_data).empty == True
     
     @mock.patch("requests.get")    
@@ -220,7 +221,7 @@ class TestUtils:
         assert get_detections_data(url,headers,update_date).equals(expected_detection_data)
         
     @mock.patch("requests.get")    
-    def test_fetch_dashboard_data(self,mock_requests):
+    def test_fetch_archived_dashboard_data(self,mock_requests):
         url = "testurl.ca"
         
         s = requests.Session()
@@ -234,8 +235,8 @@ class TestUtils:
         expected_detection_data = expected_detection_data.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
         # positive data
         expected_positive_data = pd.read_csv(str(TEST_DIR) + "/testdata/acquisition/rvdss/RVD_WeeklyData_Formatted.csv")
-        expected_positive_data = expected_positive_data.set_index(['epiweek','time_value','issue','geo_type','geo_value','region','week','weekorder','year'])
-        expected_positive_data = expected_positive_data.sort_values(by=['epiweek','time_value','issue','geo_type','geo_value','region'])
+        expected_positive_data = expected_positive_data.set_index(['epiweek','time_value','issue','geo_type','geo_value'])
+        expected_positive_data = expected_positive_data.sort_values(by=['epiweek','time_value','issue','geo_type','geo_value'])
         
         # mock requests
         update_date_resp = s.get('file://'+ str(TEST_DIR) + "/testdata/acquisition/rvdss/RVD_UpdateDate.csv") 
@@ -243,10 +244,33 @@ class TestUtils:
         positive_resp = s.get('file://'+ str(TEST_DIR) + "/testdata/acquisition/rvdss/RVD_WeeklyData.csv") 
         
         mock_requests.side_effect=update_date_resp, detections_resp,positive_resp
-        dict_mocked = fetch_dashboard_data(url)
+        dict_mocked = fetch_archived_dashboard_data(url)
 
         assert dict_mocked["respiratory_detection"].equals(expected_detection_data)
         assert dict_mocked["positive"].compare(expected_positive_data).empty == True
         assert set(dict_mocked.keys()) ==  {"positive","respiratory_detection"}
+
+    @mock.patch("requests.get")    
+    def test_fetch_current_dashboard_data(self,mock_requests):
+        url = "testurl.ca"
+        
+        s = requests.Session()
+        s.mount('file://', FileAdapter())
+
+        TEST_DIR = Path(__file__).parent.parent.parent.parent
+     
+        # set up expected data
+        # detection data
+        expected_detection_data = pd.read_csv(str(TEST_DIR) + "/testdata/acquisition/rvdss/RVD_CurrentWeekTable_Formatted.csv")
+        expected_detection_data = expected_detection_data.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
+    
+        # mock requests
+        update_date_resp = s.get('file://'+ str(TEST_DIR) + "/testdata/acquisition/rvdss/RVD_UpdateDate.csv") 
+        detections_resp = s.get('file://'+ str(TEST_DIR) + "/testdata/acquisition/rvdss/RVD_CurrentWeekTable.csv") 
+        
+        mock_requests.side_effect=update_date_resp, detections_resp
+        dat_mocked = fetch_current_dashboard_data(url)
+
+        assert dat_mocked.equals(expected_detection_data)
         
     

@@ -77,7 +77,7 @@ def get_dashboard_update_date(base_url,headers):
     update_date_url_response = requests.get(update_date_url, headers=headers)
     
     pattern1= re.compile("[0-9]{4}-[0-9]{2}-[0-9]{2}")
-    pattern2= re.compile("[0-9]{2}/[0-9]{2}/[0-9]{4}")
+    pattern2= re.compile("[0-9]{1,2}/[0-9]{1,2}/[0-9]{4}")
     
     if pattern1.match(update_date_url_response.text):
         update_date = datetime.strptime(update_date_url_response.text,"%Y-%m-%d %H:%M:%S").strftime("%Y-%m-%d")
@@ -300,11 +300,13 @@ def combine_tables(data_dict):
             if colx in t.columns and coly in t.columns:
                 t[col] = np.where(t[colx].isnull(), t[coly], t[colx])
                 t = t.drop([colx, coly],axis=1)
+                
+        provincial_detections = duplicate_provincial_detections(t)
+        combined_table = pd.concat([t,provincial_detections]) 
+         
     else:
         raise ValueError("Unexpected number of tables")
         
-    provincial_detections = duplicate_provincial_detections(t)
-    combined_table = pd.concat([t,provincial_detections]) 
     return(combined_table)
         
 def fetch_archived_dashboard_data(url):
@@ -330,9 +332,4 @@ def fetch_current_dashboard_data(url):
 
     update_date = get_dashboard_update_date(url, headers)
     detections_data = get_detections_data(url,headers,update_date)
-    
-    # current dashboard only needs one table
-    new_detections_data = expand_detections_columns(detections_data)
-    new_detections_data = duplicate_provincial_detections(new_detections_data)
-
-    return(new_detections_data)
+    return(detections_data)

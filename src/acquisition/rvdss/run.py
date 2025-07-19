@@ -27,6 +27,11 @@ def update_current_data():
             testfile.write(update_date+ "\n")
 
         data = fetch_current_dashboard_data(DASHBOARD_BASE_URL)
+        
+        # current dashboard only needs one table
+        new_data = expand_detections_columns(data)
+        new_data = duplicate_provincial_detections(new_data)
+        
         # update database
         update(data)
     else:
