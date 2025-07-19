@@ -11,7 +11,7 @@ import numpy as np
 
 from delphi.epidata.acquisition.rvdss.constants import (
         VIRUSES, GEOS, REGIONS, NATION,PROVINCES,
-        DASHBOARD_UPDATE_DATE_FILE, DASHBOARD_DATA_FILE
+        DASHBOARD_DATA_FILE
     )
 
  #%% Functions
