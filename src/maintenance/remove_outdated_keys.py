@@ -14,8 +14,9 @@ EMAIL_SUBJECT = "Your API Key was deleted."
 EMAIL_FROM = "noreply@andrew.cmu.edu"
 ALERT_EMAIL_MESSAGE = f"""Hi! \n Your API Key is going to be removed due to inactivity.
 To renew it, pelase use it within one month from now."""
-DELETED_EMAIL_MESSAGE = f"""Hi! \n Your API Key was removed due to inactivity.
-To get new one, please use registration form ({API_KEY_REGISTRATION_FORM_LINK_LOCAL}) or contact us."""
+DELETED_EMAIL_MESSAGE = (f"""Hi! \n Your API Key was removed due to inactivity.
+To get new one, please use registration form ({API_KEY_REGISTRATION_FORM_LINK_LOCAL})"""
++ """ or contact us.""")
 
 
 def get_old_keys(cur):
@@ -43,7 +44,10 @@ def remove_outdated_key(cur, api_key):
 
 def send_notification(to_addr, alert=True):
     message = ALERT_EMAIL_MESSAGE if alert else DELETED_EMAIL_MESSAGE
-    BODY = "\r\n".join((f"FROM: {EMAIL_FROM}", f"TO: {to_addr}", f"Subject: {EMAIL_SUBJECT}", "", message))
+    BODY = "\r\n".join((f"FROM: {EMAIL_FROM}"
+                        , f"TO: {to_addr}"
+                        , f"Subject: {EMAIL_SUBJECT}"
+                        , "", message))
     smtp_server = SMTP(host=SMTP_HOST, port=SMTP_PORT)
     smtp_server.starttls()
     smtp_server.sendmail(EMAIL_FROM, to_addr, BODY)

@@ -447,27 +447,7 @@ def handle_meta():
 
         meta_signals: List[Dict[str, Any]] = []
 
-        for signal in source.signals:
-            if filter_active is not None and signal.active != filter_active:
-                continue
-            if filter_signal and all((not s.matches(signal.source, signal.signal) for s in filter_signal)):
-                continue
-            if filter_smoothed is not None and signal.is_smoothed != filter_smoothed:
-                continue
-            if filter_weighted is not None and signal.is_weighted != filter_weighted:
-                continue
-            if filter_cumulative is not None and signal.is_cumulative != filter_cumulative:
-                continue
-            if filter_time_type is not None and signal.time_type != filter_time_type:
-                continue
-            meta_data = by_signal.get((source.db_source, signal.signal))
-            if not meta_data:
-                continue
-            row = meta_data[0]
-            entry = CovidcastMetaEntry(signal, row["min_time"], row["max_time"], row["max_issue"])
-            for row in meta_data:
-                entry.intergrate(row)
-            meta_signals.append(entry.asdict())
+        _process_signals(filter_signal, filter_smoothed, filter_weighted, filter_cumulative, filter_active, filter_time_type, by_signal, source, meta_signals)
 
         if not meta_signals:  # none found or no signals
             continue
@@ -477,6 +457,30 @@ def handle_meta():
         sources.append(s)
 
     return jsonify(sources)
+
+def _process_signals(filter_signal, filter_smoothed, filter_weighted, filter_cumulative, filter_active
+                     , filter_time_type, by_signal, source, meta_signals):
+    for signal in source.signals:
+        if filter_active is not None and signal.active != filter_active:
+            continue
+        if filter_signal and all((not s.matches(signal.source, signal.signal) for s in filter_signal)):
+            continue
+        if filter_smoothed is not None and signal.is_smoothed != filter_smoothed:
+            continue
+        if filter_weighted is not None and signal.is_weighted != filter_weighted:
+            continue
+        if filter_cumulative is not None and signal.is_cumulative != filter_cumulative:
+            continue
+        if filter_time_type is not None and signal.time_type != filter_time_type:
+            continue
+        meta_data = by_signal.get((source.db_source, signal.signal))
+        if not meta_data:
+            continue
+        row = meta_data[0]
+        entry = CovidcastMetaEntry(signal, row["min_time"], row["max_time"], row["max_issue"])
+        for row in meta_data:
+            entry.intergrate(row)
+        meta_signals.append(entry.asdict())
 
 
 @bp.route("/coverage", methods=("GET", "POST"))

@@ -310,25 +310,7 @@ def update(locations, terms, first=None, last=None, countries=["US"]):
                 values = [p["value"] for p in result["data"]["lines"][0]["points"]]
                 ew = result["start_week"]
                 num_missing = 0
-                for v in values:
-                    # Default SQL location value for US country for backwards compatibility
-                    # i.e. California's location is still stored as 'CA',
-                    # and having location == 'US' is still stored as 'US'
-                    sql_location = location if location != NO_LOCATION_STR else country
-
-                    # Change SQL location for non-US countries
-                    if country != "US":
-                        # Underscore added to distinguish countries from 2-letter US states
-                        sql_location = country + "_"
-                        if location != NO_LOCATION_STR:
-                            sql_location = sql_location + location
-                    sql_data = (term, sql_location, ew, v, v)
-                    cur.execute(sql, sql_data)
-                    total_rows += 1
-                    if v == 0:
-                        num_missing += 1
-                        # print(' [%s|%s|%d] missing value' % (term, location, ew))
-                    ew = flu.add_epiweeks(ew, 1)
+                _process_values(cur, sql, total_rows, term, location, country, values, ew, num_missing)
                 if num_missing > 0:
                     print(f" [{term}|{location}] missing {int(num_missing)}/{len(values)} value(s)")
             except Exception as ex:
@@ -342,6 +324,27 @@ def update(locations, terms, first=None, last=None, countries=["US"]):
     cur.close()
     cnx.commit()
     cnx.close()
+
+def _process_values(cur, sql, total_rows, term, location, country, values, ew, num_missing):
+    for v in values:
+                    # Default SQL location value for US country for backwards compatibility
+                    # i.e. California's location is still stored as 'CA',
+                    # and having location == 'US' is still stored as 'US'
+        sql_location = location if location != NO_LOCATION_STR else country
+
+                    # Change SQL location for non-US countries
+        if country != "US":
+                        # Underscore added to distinguish countries from 2-letter US states
+            sql_location = country + "_"
+            if location != NO_LOCATION_STR:
+                sql_location = sql_location + location
+        sql_data = (term, sql_location, ew, v, v)
+        cur.execute(sql, sql_data)
+        total_rows += 1
+        if v == 0:
+            num_missing += 1
+                        # print(' [%s|%s|%d] missing value' % (term, location, ew))
+        ew = flu.add_epiweeks(ew, 1)
 
 
 def main():
