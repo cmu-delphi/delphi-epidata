@@ -399,13 +399,7 @@ class CovidcastEndpointTests(CovidcastBase):
 
         update_crossref()
 
-        response = requests.get(
-            f"{BASE_URL}/geo_indicator_coverage",
-            params=dict(data_source="src", signals="sig"),
-        )
-        response.raise_for_status()
-        out = response.json()
-
+        out = self._fetch("/geo_indicator_coverage", data_source="src", signals="sig")
         self.assertEqual(len(out["epidata"]), 2)
         self.assertEqual(out["epidata"], ['state:ny', 'state:pa'])
 
