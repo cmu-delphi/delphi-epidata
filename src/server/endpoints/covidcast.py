@@ -561,8 +561,8 @@ def handle_geo_coverage():
 
     return execute_query(q.query, q.params, fields_string, [], [])
 
-@bp.route("/indicator_geo_coverage", methods=("GET", "POST"))
-def handle_indicator_geo_coverage():
+@bp.route("/geo_indicator_coverage", methods=("GET", "POST"))
+def handle_geo_indicator_coverage():
     source_signal_sets = parse_source_signal_sets()
     source_signal_sets = restrict_by_roles(source_signal_sets)
     source_signal_sets, _ = create_source_signal_alias_mapper(source_signal_sets)

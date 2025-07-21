@@ -388,8 +388,8 @@ class CovidcastEndpointTests(CovidcastBase):
             out = self._fetch("/coverage", signal=first.signal_pair(), geo_type="doesnt_exist", format="json")
             self.assertEqual(len(out), 0)
 
-    def test_indicator_geo_coverage(self):
-        """Request a geo_type:geo_value from the /indicator_geo_coverage endpoint."""
+    def test_geo_indicator_coverage(self):
+        """Request a geo_type:geo_value from the /geo_indicator_coverage endpoint."""
 
         self._insert_rows([
             CovidcastTestRow.make_default_row(geo_type="state", geo_value="pa"),
@@ -400,7 +400,7 @@ class CovidcastEndpointTests(CovidcastBase):
         update_crossref()
 
         response = requests.get(
-            f"{BASE_URL}/indicator_geo_coverage",
+            f"{BASE_URL}/geo_indicator_coverage",
             params=dict(data_source="src", signals="sig"),
         )
         response.raise_for_status()
