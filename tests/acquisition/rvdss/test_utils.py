@@ -6,15 +6,17 @@ import requests
 from requests_file import FileAdapter
 from pathlib import Path
 import pandas as pd
+import numpy as np
 
 from delphi.epidata.acquisition.rvdss.utils import (abbreviate_virus, abbreviate_geo, create_geo_types, check_date_format,
 get_dashboard_update_date, check_most_recent_update_date, preprocess_table_columns, add_flu_prefix, 
 make_signal_type_spelling_consistent, get_positive_data, get_detections_data, fetch_archived_dashboard_data,
-fetch_current_dashboard_data) 
+fetch_current_dashboard_data,combine_tables,expand_detections_columns,duplicate_provincial_detections) 
 
 # py3tester coverage target
 __test_target__ = "delphi.epidata.acquisition.rvdss.utils"
 
+# edge case tables
 example_unprocessed_data = [
     pd.DataFrame({'Reporting\xa0Laboratories':1},index=[0]),
     pd.DataFrame({'lab':1,'lab.2':2},index=[0]),
@@ -101,6 +103,215 @@ expected_processed_data = [
     pd.DataFrame({"virus_pct_positive a":7,"virus_pct_positive b":7},index=[0]),
     pd.DataFrame({"counts":7},index=[0])
 ]
+
+# tables to test combining
+test_table_cases = {
+    "detection_table_no_missing" : 
+        {"respiratory_detection" :  pd.DataFrame({'epiweek': [1,2,3,4,5], 
+                                                  'time_value': [2,3,4,5,6],
+                                                  'issue': [3,4,5,6,7],
+                                                  'geo_type':["lab","lab","lab","lab","lab"],
+                                                  'geo_value':["f","g","h","i","j"],
+                                                  'count': [4,5,6,7,8]}),
+         "positive": pd.DataFrame({'epiweek': [1,2,3,4,5], 
+                                   'time_value': [2,3,4,5,6],
+                                   'issue': [3,4,5,6,7],
+                                   'geo_type':["lab","lab","lab","lab","lab"],
+                                   'geo_value':["f","g","h","i","j"],
+                                   'count': [41,51,61,71,81]}),
+         "expected_table" :pd.DataFrame({'epiweek': [1,2,3,4,5], 
+                                         'time_value': [2,3,4,5,6],
+                                         'issue': [3,4,5,6,7],
+                                         'geo_type':["lab","lab","lab","lab","lab"],
+                                         'geo_value':["f","g","h","i","j"],
+                                         'count': [4,5,6,7,8]}).set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])},
+    "detection_table_all_missing":
+        {"respiratory_detection" :  pd.DataFrame({'epiweek': [1,2,3,4,5], 
+                                                  'time_value': [2,3,4,5,6],
+                                                  'issue': [3,4,5,6,7],
+                                                  'geo_type':["lab","lab","lab","lab","lab"],
+                                                  'geo_value':["f","g","h","i","j"],
+                                                  'count': [np.NaN,np.NaN,np.NaN,np.NaN,np.NaN]}),
+         "positive": pd.DataFrame({'epiweek': [1,2,3,4,5], 
+                                   'time_value': [2,3,4,5,6],
+                                   'issue': [3,4,5,6,7],
+                                   'geo_type':["lab","lab","lab","lab","lab"],
+                                   'geo_value':["f","g","h","i","j"],
+                                   'count': [4,5,6,7,8]}),
+         "expected_table" :pd.DataFrame({'epiweek': [1,2,3,4,5], 
+                                         'time_value': [2,3,4,5,6],
+                                         'issue': [3,4,5,6,7],
+                                         'geo_type':["lab","lab","lab","lab","lab"],
+                                         'geo_value':["f","g","h","i","j"],
+                                         'count': [4,5,6,7,8]}).set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])},
+    "both_tables_all_missing":
+        {"respiratory_detection" :  pd.DataFrame({'epiweek': [1,2,3,4,5], 
+                                                  'time_value': [2,3,4,5,6],
+                                                  'issue': [3,4,5,6,7],
+                                                  'geo_type':["lab","lab","lab","lab","lab"],
+                                                  'geo_value':["f","g","h","i","j"],
+                                                  'count': [np.NaN,np.NaN,np.NaN,np.NaN,np.NaN]}),
+         "positive": pd.DataFrame({'epiweek': [1,2,3,4,5], 
+                                   'time_value': [2,3,4,5,6],
+                                   'issue': [3,4,5,6,7],
+                                   'geo_type':["lab","lab","lab","lab","lab"],
+                                   'geo_value':["f","g","h","i","j"],
+                                   'count': [np.NaN,np.NaN,np.NaN,np.NaN,np.NaN]}),
+         "expected_table" :pd.DataFrame({'epiweek': [1,2,3,4,5], 
+                                         'time_value': [2,3,4,5,6],
+                                         'issue': [3,4,5,6,7],
+                                         'geo_type':["lab","lab","lab","lab","lab"],
+                                         'geo_value':["f","g","h","i","j"],
+                                         'count': [np.NaN,np.NaN,np.NaN,np.NaN,np.NaN]}).set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])},
+    "new_indexes" : 
+        {"respiratory_detection" :  pd.DataFrame({'epiweek': [1,2,3,4,5], 
+                                                  'time_value': [2,3,4,5,6],
+                                                  'issue': [3,4,5,6,7],
+                                                  'geo_type':["lab","lab","lab","lab","lab"],
+                                                  'geo_value':["f","g","h","i","j"],
+                                                  'count': [4,5,6,7,8]}),
+         "positive": pd.DataFrame({'epiweek': [1,2,3,4,5], 
+                                   'time_value': [2,3,4,5,6],
+                                   'issue': [3,4,5,6,7],
+                                   'geo_type':["lab","lab","lab","lab","lab"],
+                                   'geo_value':["f","g","h","k","l"],
+                                   'count': [41,51,61,71,81]}),
+         "expected_table" :pd.DataFrame({'epiweek': [1,2,3,4,5,4,5], 
+                                         'time_value': [2,3,4,5,6,5,6],
+                                         'issue': [3,4,5,6,7,6,7],
+                                         'geo_type':["lab","lab","lab","lab","lab","lab","lab"],
+                                         'geo_value':["f","g","h","i","j","k","l"],
+                                         'count': [4,5,6,7,8,71,81]}).set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])}
+}
+        
+example_unexpanded_tables = [
+    pd.DataFrame({'epiweek': [1,2,3], 
+                  'time_value': [2,3,4],
+                  'issue': [3,4,5],
+                  'geo_type':["lab","lab","lab"],
+                  'geo_value':["f","g","h"],
+                  'adv_positive_tests': [1,2,3],
+                  'adv_tests': [2,8,24],
+                  'evrv_positive_tests': [2,3,4],
+                  'evrv_tests': [4,3,5],
+                  'flu_positive_tests': [3,4,5],
+                  'flu_tests': [6,10,16],
+                  'sarscov2_positive_tests': [4,5,6],
+                  'sarscov2_tests': [4,10,16],
+                  'flua_positive_tests': [0,2,2],
+                  'flub_positive_tests': [3,2,3],
+                  'hcov_positive_tests': [4,0,3],
+                  'hcov_tests': [10,11,12],
+                  'hmpv_positive_tests': [1,2,3],
+                  'hmpv_tests': [10,20,30],
+                  'rsv_positive_tests': [5,6,7],
+                  'rsv_tests': [25,30,14],
+                  'hpiv1_positive_tests':[0,1,0],
+                  'hpiv2_positive_tests':[1,2,3],
+                  'hpiv3_positive_tests':[3,4,5],
+                  'hpiv4_positive_tests':[2,2,1],
+                  'hpivother_positive_tests':[0,2,1],
+                  'hpiv_tests': [24,22,25]
+                  }),
+    pd.DataFrame({'epiweek': [1,2,3], 
+                  'time_value': [2,3,4],
+                  'issue': [3,4,5],
+                  'geo_type':["lab","lab","lab"],
+                  'geo_value':["f","g","h"],
+                  'count': [1,2,3],
+                  })
+    ]
+
+expected_expanded_tables = [
+    pd.DataFrame({'epiweek': [1,2,3], 
+                  'time_value': [2,3,4],
+                  'issue': [3,4,5],
+                  'geo_type':["lab","lab","lab"],
+                  'geo_value':["f","g","h"],
+                  'adv_positive_tests': [1,2,3],
+                  'adv_tests': [2,8,24],
+                  'adv_pct_positive': [50,25,12.5],
+                  'evrv_positive_tests': [2,3,4],
+                  'evrv_tests': [4,3,5],
+                  'evrv_pct_positive': [50.0,100.0,80.0],
+                  'flu_positive_tests': [3,4,5],
+                  'flu_tests': [6,10,16],
+                  'flu_pct_positive': [50,40,31.25],
+                  'sarscov2_positive_tests': [4,5,6],
+                  'sarscov2_tests': [4,10,16],
+                  'sarscov2_pct_positive': [100,50,37.5],
+                  'flua_positive_tests': [0,2,2],
+                  'flub_positive_tests': [3,2,3],
+                  'flua_tests': [6,10,16],
+                  'flub_tests': [6,10,16],
+                  'flua_pct_positive': [0,20,12.5],
+                  'flub_pct_positive': [50,20,18.75],
+                  'hcov_positive_tests': [4,0,3],
+                  'hcov_tests': [10,11,12],
+                  'hcov_pct_positive': [40,0,25],
+                  'hmpv_positive_tests': [1,2,3],
+                  'hmpv_tests': [10,20,30],
+                  'hmpv_pct_positive': [10,10,10],
+                  'rsv_positive_tests': [5,6,7],
+                  'rsv_tests': [25,30,14],
+                  'rsv_pct_positive': [20,20,50],
+                  'hpiv1_positive_tests':[0,1,0],
+                  'hpiv2_positive_tests':[1,2,3],
+                  'hpiv3_positive_tests':[3,4,5],
+                  'hpiv4_positive_tests':[2,2,1],
+                  'hpivother_positive_tests':[0,2,1],
+                  'hpiv_positive_tests':[6,11,10],
+                  'hpiv_tests': [24,22,25],     
+                  'hpiv_pct_positive':[25,50,40]
+                  }).set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value']),
+    pd.DataFrame({'epiweek': [1,2,3], 
+                  'time_value': [2,3,4],
+                  'issue': [3,4,5],
+                  'geo_type':["lab","lab","lab"],
+                  'geo_value':["f","g","h"],
+                  'count': [1,2,3],
+                  }).set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
+    ]
+
+example_unduplicated_tables = [
+    pd.DataFrame({'epiweek': [1,1,1,1,1,1,1,1,1,1,1,1,1,9,9,9], 
+                  'time_value': [1,1,1,1,1,1,1,1,1,1,1,1,1,9,9,9],
+                  'issue': [1,1,1,1,1,1,1,1,1,1,1,1,1,9,9,9],
+                  'geo_type':["lab","lab","lab","lab","lab","lab","lab","lab","lab","lab","lab",
+                              "lab","lab","lab","lab","lab"],
+                  'geo_value':['nl','pe','ns','nb','qc','on','mb','sk','ab','bc','yt','nt','nu','ca','phol-toronto',
+                               'atlantic'],
+                  'adv_positive_tests': [1,1,1,1,1,1,1,1,1,1,1,1,1,9,9,9],
+                  }).set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value']),
+    pd.DataFrame({'epiweek': [1,2,3], 
+                  'time_value': [2,3,4],
+                  'issue': [3,4,5],
+                  'geo_type':["lab","lab","lab"],
+                  'geo_value':["f","g","h"],
+                  'count': [1,2,3],
+                  }).set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
+    ]
+
+expected_duplicated_tables = [
+    pd.DataFrame({'epiweek': [1,1,1,1,1,1,1,1,1,1,1,1,1,9,9,9,1,1,1,1,1,1,1,1,1,1,1,1,1], 
+                  'time_value': [1,1,1,1,1,1,1,1,1,1,1,1,1,9,9,9,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                  'issue': [1,1,1,1,1,1,1,1,1,1,1,1,1,9,9,9,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                  'geo_type':["lab","lab","lab","lab","lab","lab","lab","lab","lab","lab","lab",
+                              "lab","lab","lab","lab","lab","province","province","province","province",
+                              "province","province","province","province","province","province","province",
+                              "province","province"],
+                  'geo_value':['nl','pe','ns','nb','qc','on','mb','sk','ab','bc','yt','nt','nu','ca','phol-toronto',
+                               'atlantic','nl','pe','ns','nb','qc','on','mb','sk','ab','bc','yt','nt','nu'],
+                  'adv_positive_tests': [1,1,1,1,1,1,1,1,1,1,1,1,1,9,9,9,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                  }).set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value']),
+    pd.DataFrame({'epiweek': [1,2,3], 
+                  'time_value': [2,3,4],
+                  'issue': [3,4,5],
+                  'geo_type':["lab","lab","lab"],
+                  'geo_value':["f","g","h"],
+                  'count': [1,2,3],
+                  }).set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
+    ]
 
 class TestUtils:
     def test_syntax(self):
@@ -219,7 +430,29 @@ class TestUtils:
         # Mocks
         mock_requests.return_value = resp
         assert get_detections_data(url,headers,update_date).equals(expected_detection_data)
-        
+    
+    
+    def test_expand_detections_columns(self):
+        for example, expected in zip(example_unexpanded_tables, expected_expanded_tables):
+            pd.testing.assert_frame_equal(expand_detections_columns(example), expected, 
+                                          check_like=True, check_dtype=False)
+    
+    def test_duplicate_provincial_detections(self):
+        for example, expected in zip(example_unduplicated_tables, expected_duplicated_tables):
+            pd.testing.assert_frame_equal(duplicate_provincial_detections(example), expected, 
+                                          check_like=True, check_dtype=False)
+    
+    def test_combine_tables(self):
+        for t in test_table_cases.keys():
+            tt = test_table_cases[t]
+            expected = tt["expected_table"]
+            data_dict = {"respiratory_detection":tt["respiratory_detection"],
+                         "positive":tt["positive"]}
+            
+            combined_table = combine_tables(data_dict).sort_values(by=['epiweek','time_value','issue','geo_type','geo_value'])
+            expected_table = expected.sort_values(by=['epiweek','time_value','issue','geo_type','geo_value'])
+            assert combined_table.compare(expected_table).empty == True
+    
     @mock.patch("requests.get")    
     def test_fetch_archived_dashboard_data(self,mock_requests):
         url = "testurl.ca"

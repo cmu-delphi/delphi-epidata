@@ -60,7 +60,7 @@ DASHBOARD_BASE_URL = "https://health-infobase.canada.ca/src/data/respiratory-vir
 DASHBOARD_W_DATE_URL = DASHBOARD_BASE_URL + "archive/{date}/"
 
 # May not need this since we write a function for this in pull_historic
-DASHBOARD_BASE_URLS_2023_2024_SEASON = (
+DASHBOARD_BASE_URLS_2023_2024_SEASON = [
     DASHBOARD_W_DATE_URL.format(date = date) for date in
     (
         "2024-06-20",
@@ -75,7 +75,7 @@ DASHBOARD_BASE_URLS_2023_2024_SEASON = (
         "2024-08-29",
         "2024-09-05"
     )
-)
+]
 
 SEASON_BASE_URL = "https://www.canada.ca"
 ALTERNATIVE_SEASON_BASE_URL = "www.phac-aspc.gc.ca/bid-bmi/dsd-dsm/rvdi-divr/"

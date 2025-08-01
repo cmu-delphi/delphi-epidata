@@ -18,7 +18,7 @@ from io import StringIO
 from delphi.epidata.acquisition.rvdss.constants import (
         HISTORIC_SEASON_URLS,
         ALTERNATIVE_SEASON_BASE_URL, SEASON_BASE_URL, FIRST_WEEK_OF_YEAR,
-        DASHBOARD_ARCHIVED_DATES_URL,
+        DASHBOARD_ARCHIVED_DATES_URL,DASHBOARD_BASE_URLS_2023_2024_SEASON,
         DASHBOARD_BASE_URL
     )
 from delphi.epidata.acquisition.rvdss.utils import (
@@ -488,14 +488,6 @@ def fetch_one_season_from_report(url):
         "positive": all_positive_tables
     }
 
-def fetch_archived_dashboard_dates(archive_url):
-    r=requests.get(archive_url)
-    values=r.json()
-    data=pd.json_normalize(values)
-    english_data = data[data["lang"]=="en"]
-
-    archived_dates=english_data['date'].to_list()
-    return(archived_dates)
 
 def fetch_report_data():
     # Scrape each season.
@@ -505,9 +497,7 @@ def fetch_report_data():
 
 def fetch_historical_dashboard_data():
     # Update the end of the 2023-2024 season with the dashboard data
-    archived_dates = fetch_archived_dashboard_dates(DASHBOARD_ARCHIVED_DATES_URL)
 
-    archived_urls= [DASHBOARD_BASE_URL + "archive/"+ date+"/" for date in archived_dates]
-    dict_list = [fetch_archived_dashboard_data(url) for url in archived_urls]
+    dict_list = [fetch_archived_dashboard_data(url) for url in DASHBOARD_BASE_URLS_2023_2024_SEASON]
 
     return dict_list

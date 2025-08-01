@@ -46,8 +46,7 @@ def update_historical_data():
 
     table_types = {
     "respiratory_detection": RESP_DETECTIONS_OUTPUT_FILE,
-    "positive": POSITIVE_TESTS_OUTPUT_FILE,
-    "count": COUNTS_OUTPUT_FILE
+    "positive": POSITIVE_TESTS_OUTPUT_FILE
     }
     
     hist_dict_list = {}

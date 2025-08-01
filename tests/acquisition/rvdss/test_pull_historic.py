@@ -15,7 +15,7 @@ import requests
 from delphi.epidata.acquisition.rvdss.pull_historic import (get_report_season_years, add_https_prefix, 
 construct_weekly_report_urls, report_weeks, get_report_date, extract_captions_of_interest, get_modified_dates,
 deduplicate_rows, drop_ah1_columns,preprocess_table_columns, create_detections_table, 
-create_percent_positive_detection_table, fetch_one_season_from_report, fetch_archived_dashboard_dates, 
+create_percent_positive_detection_table, fetch_one_season_from_report, 
 fetch_report_data, fetch_historical_dashboard_data,fix_edge_cases)
 
 # py3tester coverage target
@@ -313,25 +313,6 @@ class TestPullHistoric():
 
     def test_fetch_one_season_from_report(self):
         pass
-        
-    @mock.patch("requests.get")
-    def test_fetch_archived_dashboard_dates(self,mock_requests):
-        TEST_DIR = Path(__file__).parent.parent.parent.parent
-        expected_url = str(TEST_DIR) + "/testdata/acquisition/rvdss/ArchivedDates.txt"
-        
-        with open(expected_url) as f:
-            expected_dates = [line.rstrip('\n') for line in f]
-                
-        s = requests.Session()
-        s.mount('file://', FileAdapter())
-        
-        resp = s.get('file://'+ str(TEST_DIR) + "/testdata/acquisition/rvdss/ArchiveDates.json")
-                     
-        # Mocks
-        mock_requests.return_value = resp
-        
-        url={}
-        assert set(fetch_archived_dashboard_dates(url))==set(expected_dates)
         
     def test_fetch_report_data(self):
         pass
