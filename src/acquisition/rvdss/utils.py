@@ -246,38 +246,55 @@ def get_detections_data(base_url,headers,update_date):
 
 def expand_detections_columns(new_data):
     # add extra columns - percent positivities
-    new_data["adv_pct_positive"] =  new_data["adv_positive_tests"]/new_data["adv_tests"]*100
-    new_data["evrv_pct_positive"] =  new_data["evrv_positive_tests"]/new_data["evrv_tests"]*100
+    if "adv_positive_tests" in new_data.columns and "adv_tests" in new_data.columns:
+        new_data["adv_pct_positive"] =  new_data["adv_positive_tests"]/new_data["adv_tests"]*100
+        
+    if "evrv_positive_tests" in new_data.columns and "evrv_tests" in new_data.columns:
+        new_data["evrv_pct_positive"] =  new_data["evrv_positive_tests"]/new_data["evrv_tests"]*100
     
-    if "flu_positive_tests" in new_data.columns:
+    if "flu_positive_tests" in new_data.columns and "flu_tests" in new_data.columns:
         new_data["flu_pct_positive"] =  new_data["flu_positive_tests"]/new_data["flu_tests"]*100
         
-    if "sarscov2_positive_tests" in new_data.columns:
+    if "sarscov2_positive_tests" in new_data.columns and "sarscov2_tests" in new_data.columns:
         new_data["sarscov2_pct_positive"] =  new_data["sarscov2_positive_tests"]/new_data["sarscov2_tests"]*100
     
-    new_data["flua_tests"] =  new_data["flu_tests"]
-    new_data["flub_tests"] =  new_data["flu_tests"]
-    new_data["flua_pct_positive"] =  new_data["flua_positive_tests"]/new_data["flu_tests"]*100
-    new_data["flub_pct_positive"] =  new_data["flub_positive_tests"]/new_data["flu_tests"]*100
+    if "flua_positive_tests" in new_data.columns and "flub_positive_tests" in new_data.columns:
+        new_data["flua_tests"] =  new_data["flu_tests"]
+        new_data["flub_tests"] =  new_data["flu_tests"]
+        new_data["flua_pct_positive"] =  new_data["flua_positive_tests"]/new_data["flu_tests"]*100
+        new_data["flub_pct_positive"] =  new_data["flub_positive_tests"]/new_data["flu_tests"]*100
+        
+    if "hcov_positive_tests" in new_data.columns and "hcov_tests" in new_data.columns:
+        new_data["hcov_pct_positive"] =  new_data["hcov_positive_tests"]/new_data["hcov_tests"]*100
+   
+    if "hmpv_positive_tests" in new_data.columns and "hmpv_tests" in new_data.columns: 
+       new_data["hmpv_pct_positive"] =  new_data["hmpv_positive_tests"]/new_data["hmpv_tests"]*100
+   
+    if "rsv_positive_tests" in new_data.columns and "rsv_tests" in new_data.columns:
+        new_data["rsv_pct_positive"] =  new_data["rsv_positive_tests"]/new_data["rsv_tests"]*100
     
-    new_data["hcov_pct_positive"] =  new_data["hcov_positive_tests"]/new_data["hcov_tests"]*100
-    new_data["hmpv_pct_positive"] =  new_data["hmpv_positive_tests"]/new_data["hmpv_tests"]*100
-    new_data["rsv_pct_positive"] =  new_data["rsv_positive_tests"]/new_data["rsv_tests"]*100
-    
-    new_data["hpiv_positive_tests"] =  new_data["hpiv1_positive_tests"] + new_data["hpiv2_positive_tests"]+ new_data["hpiv3_positive_tests"]+new_data["hpiv4_positive_tests"]+new_data["hpivother_positive_tests"]
-    new_data["hpiv_pct_positive"] =  new_data["hpiv_positive_tests"]/new_data["hpiv_tests"]*100
+    if "hpiv1_positive_tests" in new_data.columns and "hpiv_tests" in new_data.columns:
+        new_data["hpiv_positive_tests"] =  new_data["hpiv1_positive_tests"] + new_data["hpiv2_positive_tests"]+ new_data["hpiv3_positive_tests"]+new_data["hpiv4_positive_tests"]+new_data["hpivother_positive_tests"]
+        new_data["hpiv_pct_positive"] =  new_data["hpiv_positive_tests"]/new_data["hpiv_tests"]*100
     
     return(new_data.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value']))
 
 def duplicate_provincial_detections(data):
-    dat = data.reset_index()
+    dat = data.copy(deep=True)
+    dat = dat.reset_index()
     
     # provincial data
-    provincial_detections = dat[dat['geo_value'].isin(PROVINCES)]
-    provincial_detections['geo_type']="province"
+    provincial_detections = dat.loc[dat['geo_value'].isin(PROVINCES)] 
     
-    new_data = pd.concat([data,provincial_detections])  
-    return(new_data.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value']))
+    if not provincial_detections.empty:
+        provincial_detections['geo_type']="province"
+        
+        provincial_detections = provincial_detections.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
+        new_data = pd.concat([data,provincial_detections])  
+    else:
+        new_data = dat.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
+    
+    return(new_data)
 
 def combine_tables(data_dict):
     num_tables = len(data_dict)
@@ -301,13 +318,12 @@ def combine_tables(data_dict):
                 t[col] = np.where(t[colx].isnull(), t[coly], t[colx])
                 t = t.drop([colx, coly],axis=1)
                 
-        provincial_detections = duplicate_provincial_detections(t)
-        combined_table = pd.concat([t,provincial_detections]) 
+        table = duplicate_provincial_detections(t)
          
     else:
         raise ValueError("Unexpected number of tables")
         
-    return(combined_table)
+    return(table)
         
 def fetch_archived_dashboard_data(url):
     headers = {
@@ -315,7 +331,6 @@ def fetch_archived_dashboard_data(url):
     }
 
     update_date = get_dashboard_update_date(url, headers)
-
     detections_data = get_detections_data(url,headers,update_date)
     positive_data = get_positive_data(url,headers,update_date)
 
