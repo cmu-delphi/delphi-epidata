@@ -230,39 +230,39 @@ expected_expanded_tables = [
                   'geo_value':["f","g","h"],
                   'adv_positive_tests': [1,2,3],
                   'adv_tests': [2,8,24],
-                  'adv_pct_positive': [50,25,12.5],
                   'evrv_positive_tests': [2,3,4],
                   'evrv_tests': [4,3,5],
-                  'evrv_pct_positive': [50.0,100.0,80.0],
                   'flu_positive_tests': [3,4,5],
                   'flu_tests': [6,10,16],
-                  'flu_pct_positive': [50,40,31.25],
                   'sarscov2_positive_tests': [4,5,6],
                   'sarscov2_tests': [4,10,16],
-                  'sarscov2_pct_positive': [100,50,37.5],
                   'flua_positive_tests': [0,2,2],
                   'flub_positive_tests': [3,2,3],
-                  'flua_tests': [6,10,16],
-                  'flub_tests': [6,10,16],
-                  'flua_pct_positive': [0,20,12.5],
-                  'flub_pct_positive': [50,20,18.75],
                   'hcov_positive_tests': [4,0,3],
                   'hcov_tests': [10,11,12],
-                  'hcov_pct_positive': [40,0,25],
                   'hmpv_positive_tests': [1,2,3],
                   'hmpv_tests': [10,20,30],
-                  'hmpv_pct_positive': [10,10,10],
                   'rsv_positive_tests': [5,6,7],
                   'rsv_tests': [25,30,14],
-                  'rsv_pct_positive': [20,20,50],
                   'hpiv1_positive_tests':[0,1,0],
                   'hpiv2_positive_tests':[1,2,3],
                   'hpiv3_positive_tests':[3,4,5],
                   'hpiv4_positive_tests':[2,2,1],
                   'hpivother_positive_tests':[0,2,1],
+                  'hpiv_tests': [24,22,25],
+                  'adv_pct_positive': [50,25,12.5],
+                  'evrv_pct_positive': [50.0,100.0,80.0],
+                  'flu_pct_positive': [50,40,31.25],
+                  'sarscov2_pct_positive': [100,50,37.5],
+                  'flua_tests': [6,10,16],
+                  'flub_tests': [6,10,16],
+                  'flua_pct_positive': [0,20,12.5],
+                  'flub_pct_positive': [50,20,18.75],
+                  'hcov_pct_positive': [40.0,0,25],
+                  'hmpv_pct_positive': [10.0,10,10],
+                  'rsv_pct_positive': [20.0,20,50],
                   'hpiv_positive_tests':[6,11,10],
-                  'hpiv_tests': [24,22,25],     
-                  'hpiv_pct_positive':[25,50,40]
+                  'hpiv_pct_positive':[25.0,50,40]
                   }).set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value']),
     pd.DataFrame({'epiweek': [1,2,3], 
                   'time_value': [2,3,4],
@@ -434,13 +434,11 @@ class TestUtils:
     
     def test_expand_detections_columns(self):
         for example, expected in zip(example_unexpanded_tables, expected_expanded_tables):
-            pd.testing.assert_frame_equal(expand_detections_columns(example), expected, 
-                                          check_like=True, check_dtype=False)
+            pd.testing.assert_frame_equal(expand_detections_columns(example), expected)
     
     def test_duplicate_provincial_detections(self):
         for example, expected in zip(example_unduplicated_tables, expected_duplicated_tables):
-            pd.testing.assert_frame_equal(duplicate_provincial_detections(example), expected, 
-                                          check_like=True, check_dtype=False)
+            pd.testing.assert_frame_equal(duplicate_provincial_detections(example), expected)
     
     def test_combine_tables(self):
         for t in test_table_cases.keys():

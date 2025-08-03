@@ -284,10 +284,11 @@ def duplicate_provincial_detections(data):
     dat = dat.reset_index()
     
     # provincial data
-    provincial_detections = dat.loc[dat['geo_value'].isin(PROVINCES)] 
+    dat.loc[dat['geo_value'].isin(PROVINCES),'geo_type'] = "province" 
+    provincial_detections = dat.loc[dat['geo_value'].isin(PROVINCES)]
     
     if not provincial_detections.empty:
-        provincial_detections['geo_type']="province"
+        #provincial_detections['geo_type']="province"
         
         provincial_detections = provincial_detections.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
         new_data = pd.concat([data,provincial_detections])  
