@@ -348,7 +348,6 @@ def fetch_one_season_from_report(url):
 
     # create tables to hold all the data for the season
     all_positive_tables=pd.DataFrame()
-    all_number_tables=pd.DataFrame()
     all_respiratory_detection_tables=pd.DataFrame()
 
     for week_num in range(len(urls)):
@@ -414,7 +413,7 @@ def fetch_one_season_from_report(url):
 
             # # One-off edge cases where tables need to be manually adjusted because
             # # they will cause errors otherwise
-            table = fix_edge_cases(table, season[0], caption, current_week)    
+            table = fix_edge_cases(table, season, caption, current_week)    
 
             # check if both ah1 and h1n1 are given. If so drop one since they are the same virus and ah1 is 
             # always empty
