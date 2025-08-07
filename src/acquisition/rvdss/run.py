@@ -53,16 +53,15 @@ def update_historical_data():
     for tt in table_types.keys():
         # Merge tables together from dashboards and reports for each table type.
         dashboard_data = [elem.get(tt, pd.DataFrame()) for elem in dashboard_dict_list] # a list of all the dashboard tables
-        report_data = [elem.get(tt, None) for elem in report_dict_list] # a list of the report table
+        report_data = report_dict_list.get(tt, None) # a list of the report table
 
-        all_report_tables = pd.concat(report_data)
         all_dashboard_tables = pd.concat(dashboard_data)
        
-        if all_dashboard_tables.empty == False and all_report_tables.empty == False:
+        if all_dashboard_tables.empty == False and report_data.empty == False:
             all_dashboard_tables=all_dashboard_tables.reset_index()
             all_dashboard_tables=all_dashboard_tables.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
 
-        hist_dict_list[tt] = pd.concat([all_report_tables, all_dashboard_tables])
+        hist_dict_list[tt] = pd.concat([report_data, all_dashboard_tables])
 
     # Combine all rables into a single table
     data = combine_tables(hist_dict_list)
@@ -91,7 +90,7 @@ def main():
         "--patch",
         "-pat",
         action="store_true",
-        help="path in the 2024-2025 season, which is unarchived and must be obtained through a csv"
+        help="patch in the 2024-2025 season, which is unarchived and must be obtained through a csv"
     )
     # fmt: on
     args = parser.parse_args()
