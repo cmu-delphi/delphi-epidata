@@ -14,9 +14,7 @@ See: rvdss.py
 `rvdss` is the table where rvdss data is stored.
 """
 
-# standard library
-import argparse
-import numpy as np
+# standard libraries
 
 # third party
 import mysql.connector
@@ -24,11 +22,7 @@ import mysql.connector
 # first party
 from delphi.epidata.acquisition.rvdss import rvdss
 import delphi.operations.secrets as secrets
-from delphi.utils.epidate import EpiDate
-import delphi.utils.epiweek as flu
-from delphi.utils.geo.locations import Locations
-from delphi_utils import get_structured_logger
-from delphi.epidata.acquisition.rvdss.constants import LOGGER_FILENAME
+
 
 rvdss_cols= (
   "epiweek",
@@ -92,13 +86,6 @@ def update(data,logger):
     cnx = mysql.connector.connect(user=u, password=p, database="epidata")
     cur = cnx.cursor()
     
-    # add filename for logger and exceptions
-    
-    logger = get_structured_logger(
-            __name__,
-            filename= LOGGER_FILENAME,
-            log_exceptions=True,
-        )
 
     data_tuples = list(data.itertuples(index=False,name=None))
     field_names = ", ".join(f"`{name}`" for name in rvdss_cols)

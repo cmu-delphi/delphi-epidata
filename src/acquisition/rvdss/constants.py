@@ -111,11 +111,8 @@ DASHBOARD_DATA_FILE = "RVD_WeeklyData.csv"
 
 RESP_DETECTIONS_OUTPUT_FILE = "respiratory_detections.csv"
 POSITIVE_TESTS_OUTPUT_FILE = "positive_tests.csv"
-COUNTS_OUTPUT_FILE = "number_of_detections.csv"
 
 FIRST_WEEK_OF_YEAR = 35
 
 UPDATE_DATES_FILE = "update_dates.txt"
 NOW = datetime.now()
-
-LOGGER_FILENAME = "rvdss.log"

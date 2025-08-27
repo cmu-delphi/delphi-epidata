@@ -5,15 +5,17 @@ Defines top-level functions to fetch data and save to disk or DB.
 """
 
 import pandas as pd
-import os
 import argparse
+from datetime import datetime
 
-from delphi.epidata.acquisition.rvdss.utils import fetch_dashboard_data, check_most_recent_update_date,get_dashboard_update_date, combine_tables, duplicate_provincial_detections,expand_detections_columns
-from delphi.epidata.acquisition.rvdss.constants import DASHBOARD_BASE_URL, RESP_DETECTIONS_OUTPUT_FILE, POSITIVE_TESTS_OUTPUT_FILE, COUNTS_OUTPUT_FILE,UPDATE_DATES_FILE
+from delphi.epidata.acquisition.rvdss.utils import fetch_current_dashboard_data, check_most_recent_update_date,get_dashboard_update_date, combine_tables, duplicate_provincial_detections,expand_detections_columns
+from delphi.epidata.acquisition.rvdss.constants import DASHBOARD_BASE_URL, RESP_DETECTIONS_OUTPUT_FILE, POSITIVE_TESTS_OUTPUT_FILE,UPDATE_DATES_FILE
 from delphi.epidata.acquisition.rvdss.pull_historic import fetch_report_data,fetch_historical_dashboard_data
-from delphi.epidata.acquisition.rvdss.database import respiratory_detections_cols, pct_positive_cols, detections_counts_cols, expected_table_names, expected_columns, get_num_rows, update
+from delphi.epidata.acquisition.rvdss.database import update
+from delphi_utils import get_structured_logger
 
-def update_current_data():
+def update_current_data(logger):
+    logger.info("Updating current data")
     ## Check if data for current update date has already been fetched
     headers = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'
@@ -33,11 +35,15 @@ def update_current_data():
         new_data = duplicate_provincial_detections(new_data)
         
         # update database
-        update(data)
+        update(data,logger)
+        logger.info("Finished updating current data")
     else:
-        print("Data is already up to date")
+        logger.info("Data is already up to date")
+        
 
-def update_historical_data():
+def update_historical_data(logger):
+    logger.info("Updating historical data")
+    
     report_dict_list = fetch_report_data() # a dict for every season, and every seasonal dict has 2/3 tables inside
 
     # a dict with an entry for every week that has an archival dashboard, and each entry has 2/3 tables
@@ -67,8 +73,22 @@ def update_historical_data():
     data = combine_tables(hist_dict_list)
     
     #update database
-    update(data)
+    update(data,logger)
+    logger.info("Finished updating historic data")
     
+def patch_20242025_season(logger):
+    logger.info("Patching in data from the 2024-2025 season")
+    
+    # TODO: Add csv to directory
+    data = pd.read_csv("respiratory_detections.csv")
+    
+    # current dashboard only needs one table
+    new_data = expand_detections_columns(data)
+    new_data = duplicate_provincial_detections(new_data)
+    
+    #update database
+    update(new_data,logger)
+    logger.info("Finished patching in 2024-2025 season")
 
 def main():
     # args and usage
@@ -91,6 +111,7 @@ def main():
         "-pat",
         action="store_true",
         help="patch in the 2024-2025 season, which is unarchived and must be obtained through a csv"
+        # TODO: Look into passing a file name
     )
     # fmt: on
     args = parser.parse_args()
@@ -100,17 +121,28 @@ def main():
         args.historical,
         args.patch
     )
+    
+    # Create logger name, 'rvdss' + the current date
+    logger_filename = "rvdss_"+datetime.today().strftime('%Y_%m_%d')+".log"
+    
+    logger = get_structured_logger(
+            __name__,
+            filename= logger_filename,
+            log_exceptions=True,
+        )
+    
     if not current_flag and not historical_flag and not patch_flag:
+        logger.error("no data was requested")
         raise Exception("no data was requested")
 
     # Decide what to update
     if current_flag:
-        update_current_data()
+        update_current_data(logger)
     if historical_flag:
-        update_historical_data()
+        update_historical_data(logger)
     if patch_flag:
-        # TODO: update from csv the 2024-2025 season
-
+        patch_20242025_season(logger)
+        
 
 if __name__ == "__main__":
     main()

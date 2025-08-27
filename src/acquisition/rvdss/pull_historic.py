@@ -17,9 +17,7 @@ from io import StringIO
 
 from delphi.epidata.acquisition.rvdss.constants import (
         HISTORIC_SEASON_URLS,
-        ALTERNATIVE_SEASON_BASE_URL, SEASON_BASE_URL, FIRST_WEEK_OF_YEAR,
-        DASHBOARD_ARCHIVED_DATES_URL,DASHBOARD_BASE_URLS_2023_2024_SEASON,
-        DASHBOARD_BASE_URL
+        ALTERNATIVE_SEASON_BASE_URL, SEASON_BASE_URL, FIRST_WEEK_OF_YEAR, DASHBOARD_BASE_URLS_2023_2024_SEASON
     )
 from delphi.epidata.acquisition.rvdss.utils import (
         abbreviate_geo, create_geo_types, check_date_format,
