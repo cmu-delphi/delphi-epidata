@@ -1,4 +1,4 @@
-aiohttp==3.9.4
+aiohttp==3.10.11
 black>=20.8b1
 covidcast==0.1.5
 delphi_utils

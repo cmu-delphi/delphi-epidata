@@ -64,6 +64,11 @@ https://api.delphi.cmu.edu/epidata/twitter/?auth=...&locations=nat&epiweeks=2015
   "message":"success"
 }
 ```
+# Citing the Survey
+Researchers who use the Twitter Stream data for research are asked to credit and cite the survey in publications based on the data. Specifically, we ask that you cite our paper describing the survey:
+
+  > Mark Dredze, Renyuan Cheng, Michael J Paul, David A Broniatowski. HealthTweets.org: A Platform for Public Health Surveillance using Twitter. AAAI Workshop on the World Wide Web and Public Health 
+  > Intelligence, 2014.
 
 <!-- TODO: fix -->
 

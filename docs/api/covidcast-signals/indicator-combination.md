@@ -38,23 +38,10 @@ sensors.
 
 These signals were updated daily until March 17, 2021.
 
-* `nmf_day_doc_fbc_fbs_ght`: This signal uses a rank-1 approximation, from a
-  nonnegative matrix factorization approach, to identify an underlying signal
-  that best reconstructs the Doctor Visits (`smoothed_adj_cli`), Facebook
-  Symptoms surveys (`smoothed_cli`), Facebook Symptoms in Community surveys
-  (`smoothed_hh_cmnty_cli`), and Search Trends (`smoothed_search`) indicators.
-  It does not include official reports (cases and deaths from the `jhu-csse`
-  source). Higher values of the combined signal correspond to higher values of
-  the other indicators, but the scale (units) of the combination is arbitrary.
-  Note that the Search Trends source is not available at the county level, so
-  county values of this signal do not use it. This signal is deprecated and is
-  no longer updated as of March 17, 2021.
-* `nmf_day_doc_fbs_ght`: This signal is calculated in the same way as
-  `nmf_day_doc_fbc_fbs_ght`, but does *not* include the Symptoms in Community
-  survey signal, which was not available at the time this signal was introduced.
-  It also uses `smoothed_cli` from the `doctor-visits` source instead of
-  `smoothed_adj_cli`. This signal is deprecated and is no longer updated as of
-  May 28, 2020.
+| Signal | Description |
+| --- | --- |
+| `nmf_day_doc_fbc_fbs_ght` | This signal uses a rank-1 approximation, from a nonnegative matrix factorization approach, to identify an underlying signal that best reconstructs the Doctor Visits (`smoothed_adj_cli`), Facebook Symptoms surveys (`smoothed_cli`), Facebook Symptoms in Community surveys (`smoothed_hh_cmnty_cli`), and Search Trends (`smoothed_search`) indicators. It does not include official reports (cases and deaths from the `jhu-csse` source). Higher values of the combined signal correspond to higher values of the other indicators, but the scale (units) of the combination is arbitrary. Note that the Search Trends source is not available at the county level, so county values of this signal do not use it. This signal is deprecated and is no longer updated as of March 17, 2021. <br/> **Earliest date available:** 2020-04-15 |
+| `nmf_day_doc_fbs_ght` | This signal is calculated in the same way as `nmf_day_doc_fbc_fbs_ght`, but does *not* include the Symptoms in Community survey signal, which was not available at the time this signal was introduced. It also uses `smoothed_cli` from the `doctor-visits` source instead of `smoothed_adj_cli`. This signal is deprecated and is no longer updated as of May 27, 2020. <br/> **Earliest date available:** 2020-04-06 |
 
 ### Estimation
 
@@ -220,11 +207,11 @@ These signals were updated daily until November 18, 2021.
 
 | Signal | 7-day average signal | Description |
 | --- | --- | --- |
-| `confirmed_cumulative_num` |  | Cumulative number of confirmed COVID-19 cases <br/> **Earliest date available:** 2020-02-20 |
-| `confirmed_cumulative_prop` |  | Cumulative number of confirmed COVID-19 cases per 100,000 population <br/> **Earliest date available:** 2020-02-20 |
+| `confirmed_cumulative_num` | `confirmed_7dav_cumulative_num` | Cumulative number of confirmed COVID-19 cases <br/> **Earliest date available:** 2020-02-20 |
+| `confirmed_cumulative_prop` | `confirmed_7dav_cumulative_prop`| Cumulative number of confirmed COVID-19 cases per 100,000 population <br/> **Earliest date available:** 2020-02-20 |
 | `confirmed_incidence_num` | `confirmed_7dav_incidence_num` | Number of new confirmed COVID-19 cases, daily <br/> **Earliest date available:** 2020-02-20 |
 | `confirmed_incidence_prop` | `confirmed_7dav_incidence_prop` | Number of new confirmed COVID-19 cases per 100,000 population, daily <br/> **Earliest date available:** 2020-02-20 |
-| `deaths_cumulative_num` |  | Cumulative number of confirmed deaths due to COVID-19 <br/> **Earliest date available:** 2020-02-20 |
-| `deaths_cumulative_prop` |  | Cumulative number of confirmed due to COVID-19, per 100,000 population <br/> **Earliest date available:** 2020-02-20 |
+| `deaths_cumulative_num` | `deaths_7dav_cumulative_num` | Cumulative number of confirmed deaths due to COVID-19 <br/> **Earliest date available:** 2020-02-20 |
+| `deaths_cumulative_prop` | `deaths_7dav_cumulative_prop` | Cumulative number of confirmed due to COVID-19, per 100,000 population <br/> **Earliest date available:** 2020-02-20 |
 | `deaths_incidence_num` | `deaths_7dav_incidence_num` | Number of new confirmed deaths due to COVID-19, daily <br/> **Earliest date available:** 2020-02-20 |
 | `deaths_incidence_prop` | `deaths_7dav_incidence_prop` | Number of new confirmed deaths due to COVID-19 per 100,000 population, daily <br/> **Earliest date available:** 2020-02-20 |

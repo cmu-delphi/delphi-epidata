@@ -7,7 +7,7 @@ nav_order: 2
 
 # Google Health Trends
 
-This is the API documentation for accessing the Google Health Trends (`ght`)
+This is the API documentation for accessing the [Google Health Trends](https://trends.google.com/trends/fullscreen/m/IN)  (`ght`)
 endpoint of [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 
 General topics not specific to any particular endpoint are discussed in the
@@ -17,7 +17,13 @@ General topics not specific to any particular endpoint are discussed in the
 
 ## Google Health Trends Data
 
-Estimate of influenza activity based on volume of certain search queries. ... <!-- TODO -->
+Estimate of influenza activity based on volume of certain search queries.
+This data may be useful for real-time monitoring of diseases, as in:
+
+- Herman Anthony Carneiro, Eleftherios Mylonakis. [Google Trends: A Web-Based Tool for Real-Time Surveillance of Disease Outbreaks](https://doi.org/10.1086/630200). Clinical Infectious Diseases, Volume 49, Issue 10, 15 November 2009, Pages 1557–1564. 
+- Abel Brodeur, Andrew E. Clark, Sarah Fleche, Nattavudh Powdthavee.
+[COVID-19, lockdowns and well-being: Evidence from Google Trends](https://doi.org/10.1016/j.jpubeco.2020.104346). Journal of Public Economics, Volume 193, 2021, 104346.
+- Sudhakar V. Nuti, Brian Wayda, Isuru Ranasinghe, Sisi Wang, Rachel P. Dreyer, Serene I. Chen, Karthik Murugiah. [The Use of Google Trends in Health Care Research: A Systematic Review](https://doi.org/10.1371/journal.pone.0109583), October 2014.
 
 # The API
 

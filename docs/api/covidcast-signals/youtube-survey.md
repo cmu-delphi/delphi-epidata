@@ -42,7 +42,7 @@ note that values from the same dates differ between the two surveys for
 
 As of late April 2020, the number of Youtube survey responses we received each
 day was 4-7 thousand. This was not enough coverage to report at finer
-geographic levels, so this indicator only reports at the state level. The
+geographic levels, so these indicators only report at the state level. The
 survey ran from April 21, 2020 to June 17, 2020, collecting about 159
 thousand responses in the United States in that time.
 
@@ -122,7 +122,7 @@ available for more locations than the raw signals.
 
 ## Lag and Backfill
 
-This indicator has a lag of 2 days. Reported values can be revised for one
+These indicators have a lag of 2 days. Reported values can be revised for one
 day (corresponding to a lag of 3 days), due to how we receive survey
 responses. However, these tend to be associated with minimal changes in
 value.
@@ -172,5 +172,5 @@ longer time period.
 
 ## Source and Licensing
 
-This indicator aggregates responses from a Delphi-run survey that is hosted on the Youtube platform.
+These indicators aggregate responses from a Delphi-run survey that is hosted on the Youtube platform.
 The data is licensed as [CC BY-NC](../covidcast_licensing.md#creative-commons-attribution-noncommercial).

@@ -20,13 +20,20 @@ characteristics are available for download.
 ## Getting Microdata Access
 
 De-identified individual survey responses can be made available to researchers
-associated with universities or non-profit organizations who sign a Data Use
-Agreement (DUA). To request access to the data please submit the information
-requested in [Facebook's page on obtaining data access](https://dataforgood.facebook.com/dfg/docs/covid-19-trends-and-impact-survey-request-for-data-access),
-which sets out the basic conditions and provides a form to request access. An
-[international version of CTIS](https://covidmap.umd.edu/) is conducted by the
-University of Maryland (UMD) and access can be requested through the same
-form.
+associated with universities or non-profit organizations who agree to a Data Use
+Agreement (DUA). The microdata is archived by the Inter-university Consortium
+for Political and Social Research (ICPSR) at the University of Michigan:
+
+* Reinhart, Alex, Mejia, Robin, and Tibshirani, Ryan J. COVID-19 Trends and
+  Impact Survey (CTIS), United States, 2020-2022. Inter-university Consortium
+  for Political and Social Research [distributor], 2025-02-28.
+  <https://doi.org/10.3886/ICPSR39207.v1>
+
+Follow the link to view the data description and documentation, and to request
+access to the restricted microdata. The survey documentation, including full
+codebooks and user guides, is available for public download. Microdata access is
+no longer available through direct agreements with Carnegie Mellon University,
+so all access must be requested through ICPSR.
 
 The United States survey protocol has been reviewed by the Carnegie Mellon
 University Institutional Review Board with IRB ID STUDY2020_00000162.
@@ -44,26 +51,9 @@ Some important notes about obtaining access to the individual survey responses:
 * Part- or full-time employees of Facebook are **not** eligible to receive data
   access, since Delphi's agreement with Facebook to protect the privacy of
   respondents prohibits Facebook employees from receiving any microdata.
-* Because this survey is large and many groups have access, the Data Use
-  Agreements are not negotiable.
-
-After you complete the request form, staff from Facebook and CMU will be in
-contact to guide you through the rest of the process. They will provide data use
-agreements for your institution to sign, and will also request a copy of your
-Institutional Review Board approval to verify you have ethical approval to
-conduct the research.
-
-After the DUAs are executed, we will ask you to fill out [this
-form](http://cmu.ca1.qualtrics.com/jfe/form/SV_89aVsYl29Oay4qq) to set up your
-microdata access. This form can be used for new research projects or adding new
-researchers to existing projects.
-
-After completing these forms, credentials for SFTP will be emailed to each
-individual on the team. Please **do not share your credentials** with other
-users. Only one person per research team needs to fill out this survey. You can
-list all relevant team members in one submission. For teams with more than 5
-members, please fill out an additional form(s) to cover your whole team.
 
 If you have questions about the process, or your IRB needs information
 about the survey for their review, contact us at
-<delphi-survey-info@lists.andrew.cmu.edu>.
+<delphi-survey-info@lists.andrew.cmu.edu>. For all questions about ICPSR's
+restricted data access process, contact ICPSR through the forms or email
+addresses on their website.

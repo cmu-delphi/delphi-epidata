@@ -2,9 +2,16 @@
 title: SFTP Server Access
 parent: <i>inactive</i> COVID-19 Trends and Impact Survey
 nav_order: 2
+nav_exclude: true
 ---
 
 # SFTP Server Access
+
+<div style="background-color:#f5f6fa; padding: 10px
+30px;"><strong>Note:</strong> This page describes access for data users who have
+an agreement directly with CMU. Those who request access <a
+href="https://www.icpsr.umich.edu/web/ICPSR/studies/39207">via ICPSR</a> should
+follow their instructions and procedures.</div>
 
 Researchers with data use agreements to access the raw data from the COVID-19
 Trends and Impact Survey (CTIS) can access the data over SFTP. (If you do not
