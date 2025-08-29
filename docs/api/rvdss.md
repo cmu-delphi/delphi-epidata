@@ -10,8 +10,7 @@ nav_order: 1
 {: .no_toc}
 
 -   **Source name:** `rvdss`
--   **Earliest issue available:** Epiweek 35 2013 (2013-08-31) #change
-    to first reconstructed issue
+-   **Earliest issue available:** Epiweek 36 2013 (2013-09-07) 
 -   **Date of last change:** Never
 -   **Available for:** province, lab, region, nation (see
     [Geography](#geography))
