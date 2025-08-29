@@ -330,6 +330,14 @@ def fix_edge_cases(table,season,caption,current_week):
         #  In multiple weeks of the 2021-2022 season, in the positive hpiv table,
         # the date for week 12 is 2022-03-19, instead of 2022-03-26
          table.loc[table['week'] == 12, 'week end'] = "2022-03-26"
+    elif season[0] == '2013' and "detections" not in caption.text.lower():
+        #  In the first 2 weeks of the 2013-2014 season, in various tables,
+        # the date for week 35/36 has 2012 instead of 2013
+        if current_week == 36:
+            table.loc[table['week'] == 35, 'week end'] = "2013-08-31"
+            table.loc[table['week'] == 36, 'week end'] = "2013-09-07"
+        elif current_week == 35:
+            table.loc[table['week'] == 35, 'week end'] = "2013-08-31"
     return(table)
 
 def fetch_one_season_from_report(url):
