@@ -247,36 +247,60 @@ def get_detections_data(base_url,headers,update_date):
 def expand_detections_columns(new_data):
     # add extra columns - percent positivities
     if "adv_positive_tests" in new_data.columns and "adv_tests" in new_data.columns:
-        new_data["adv_pct_positive"] =  new_data["adv_positive_tests"]/new_data["adv_tests"]*100
+        new_data["adv_pct_positive"] =  np.divide(new_data["adv_positive_tests"], new_data["adv_tests"], 
+                      out=np.zeros_like(new_data["adv_positive_tests"],dtype=float), 
+                      where=new_data["adv_tests"]!=0)*100
         
     if "evrv_positive_tests" in new_data.columns and "evrv_tests" in new_data.columns:
-        new_data["evrv_pct_positive"] =  new_data["evrv_positive_tests"]/new_data["evrv_tests"]*100
+        new_data["evrv_pct_positive"] =  np.divide(new_data["evrv_positive_tests"], new_data["evrv_tests"], 
+                      out=np.zeros_like(new_data["evrv_positive_tests"],dtype=float), 
+                      where=new_data["evrv_tests"]!=0)*100
     
     if "flu_positive_tests" in new_data.columns and "flu_tests" in new_data.columns:
-        new_data["flu_pct_positive"] =  new_data["flu_positive_tests"]/new_data["flu_tests"]*100
+        new_data["flu_pct_positive"] =  np.divide(new_data["flu_positive_tests"], new_data["flu_tests"], 
+                      out=np.zeros_like(new_data["flu_positive_tests"],dtype=float), 
+                      where=new_data["flu_tests"]!=0)*100
         
     if "sarscov2_positive_tests" in new_data.columns and "sarscov2_tests" in new_data.columns:
-        new_data["sarscov2_pct_positive"] =  new_data["sarscov2_positive_tests"]/new_data["sarscov2_tests"]*100
+        new_data["sarscov2_pct_positive"] =  np.divide(new_data["sarscov2_positive_tests"], new_data["sarscov2_tests"], 
+                      out=np.zeros_like(new_data["sarscov2_positive_tests"],dtype=float), 
+                      where=new_data["sarscov2_tests"]!=0)*100
     
     if "flua_positive_tests" in new_data.columns and "flub_positive_tests" in new_data.columns:
         new_data["flua_tests"] =  new_data["flu_tests"]
         new_data["flub_tests"] =  new_data["flu_tests"]
-        new_data["flua_pct_positive"] =  new_data["flua_positive_tests"]/new_data["flu_tests"]*100
+        
+        new_data["flua_pct_positive"] =  np.divide(new_data["flua_positive_tests"], new_data["flu_tests"], 
+                      out=np.zeros_like(new_data["flua_positive_tests"],dtype=float), 
+                      where=new_data["flu_tests"]!=0)*100
+        
         new_data["flub_pct_positive"] =  new_data["flub_positive_tests"]/new_data["flu_tests"]*100
+        new_data["flub_pct_positive"] =  np.divide(new_data["flub_positive_tests"], new_data["flu_tests"], 
+                      out=np.zeros_like(new_data["flub_positive_tests"],dtype=float), 
+                      where=new_data["flu_tests"]!=0)*100
         
     if "hcov_positive_tests" in new_data.columns and "hcov_tests" in new_data.columns:
-        new_data["hcov_pct_positive"] =  new_data["hcov_positive_tests"]/new_data["hcov_tests"]*100
+        new_data["hcov_pct_positive"] =  np.divide(new_data["hcov_positive_tests"], new_data["hcov_tests"], 
+                      out=np.zeros_like(new_data["hcov_positive_tests"],dtype=float), 
+                      where=new_data["hcov_tests"]!=0)*100
    
     if "hmpv_positive_tests" in new_data.columns and "hmpv_tests" in new_data.columns: 
-       new_data["hmpv_pct_positive"] =  new_data["hmpv_positive_tests"]/new_data["hmpv_tests"]*100
+       new_data["hmpv_pct_positive"] =  np.divide(new_data["hmpv_positive_tests"], new_data["hmpv_tests"], 
+                     out=np.zeros_like(new_data["hmpv_positive_tests"],dtype=float), 
+                     where=new_data["hmpv_tests"]!=0)*100
    
     if "rsv_positive_tests" in new_data.columns and "rsv_tests" in new_data.columns:
-        new_data["rsv_pct_positive"] =  new_data["rsv_positive_tests"]/new_data["rsv_tests"]*100
+        new_data["rsv_pct_positive"] =  np.divide(new_data["rsv_positive_tests"], new_data["rsv_tests"], 
+                      out=np.zeros_like(new_data["rsv_positive_tests"],dtype=float), 
+                      where=new_data["rsv_tests"]!=0)*100
     
     if "hpiv1_positive_tests" in new_data.columns and "hpiv_tests" in new_data.columns:
         new_data["hpiv_positive_tests"] =  new_data["hpiv1_positive_tests"] + new_data["hpiv2_positive_tests"]+ new_data["hpiv3_positive_tests"]+new_data["hpiv4_positive_tests"]+new_data["hpivother_positive_tests"]
-        new_data["hpiv_pct_positive"] =  new_data["hpiv_positive_tests"]/new_data["hpiv_tests"]*100
     
+        new_data["hpiv_pct_positive"] =  np.divide(new_data["hpiv_positive_tests"], new_data["hpiv_tests"], 
+                      out=np.zeros_like(new_data["hpiv_positive_tests"],dtype=float), 
+                      where=new_data["hpiv_tests"]!=0)*100
+        
     return(new_data.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value']))
 
 def duplicate_provincial_detections(data):
@@ -301,9 +325,12 @@ def combine_tables(data_dict):
     num_tables = len(data_dict)
     if(num_tables==2):
         positive=data_dict["positive"]
+        positive=positive.reset_index()
+        
         detections=data_dict["respiratory_detection"]
+        detections=detections.reset_index()
+        
         detections = expand_detections_columns(detections)
-
         positive = positive.drop(['geo_type'], axis=1)
         positive['geo_type'] = [create_geo_types(g,'lab') for g in positive['geo_value']]
         positive=positive.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
