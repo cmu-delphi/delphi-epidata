@@ -76,19 +76,33 @@ def update_historical_data(logger):
     update(data,logger)
     logger.info("Finished updating historic data")
     
-def patch_20242025_season(logger):
-    logger.info("Patching in data from the 2024-2025 season")
+def patch_seasons(season_start_years,logger):
+    season_end_years = [y+1 for y in season_start_years]
+    logger.info("Starting to Patch in Seasons")
+    for start, end in zip(season_start_years, season_end_years):
+        logger.info(f"Patching in data from the {start}-{end} season")
     
-    # TODO: Add csv to directory
-    data = pd.read_csv("respiratory_detections.csv")
-    
-    # current dashboard only needs one table
-    new_data = expand_detections_columns(data)
-    new_data = duplicate_provincial_detections(new_data)
-    
-    #update database
-    update(new_data,logger)
-    logger.info("Finished patching in 2024-2025 season")
+        if start >=2024:
+            data = pd.read_csv(f"{start}_{end}_respiratory_detections.csv")
+            
+            # current dashboard only needs one table
+            new_data = expand_detections_columns(data)
+            new_data = duplicate_provincial_detections(new_data)
+            
+            #update database
+            update(new_data,logger)
+        else:
+            resp_data = pd.read_csv(f"{start}_{end}_respiratory_detections.csv")
+            pos_data = pd.read_csv(f"{start}_{end}_positive_tests.csv")
+            data_dict={"positive":pos_data,"respiratory_detection":resp_data} 
+            
+            # Combine all rables into a single table
+            data = combine_tables(data_dict)
+            
+            #update database
+            update(data,logger)
+        logger.info("Finished patching in {season[0]}-{season[1]} season")
+    logger.info("Finished Patching in Seasons")
 
 def main():
     # args and usage
@@ -110,7 +124,7 @@ def main():
         "--patch",
         "-pat",
         action="store_true",
-        help="patch in the 2024-2025 season, which is unarchived and must be obtained through a csv"
+        help="patch in missings seasons, which are unarchived and must be obtained through csvs"
         # TODO: Look into passing a file name
     )
     # fmt: on
@@ -141,7 +155,7 @@ def main():
     if historical_flag:
         update_historical_data(logger)
     if patch_flag:
-        patch_20242025_season(logger)
+        patch_seasons(season_start_years=[2013,2014,2024], logger=logger)
         
 
 if __name__ == "__main__":
