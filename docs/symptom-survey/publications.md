@@ -26,6 +26,10 @@ Pandemic"](https://www.pnas.org/topic/548) in *PNAS*:
 
 Research publications using the survey data include:
 
+- J. C. Taube, Z. Susswein, V. Colizza, and S. Bansal (2025). [Characterising
+  non-household contact patterns relevant to respiratory transmission in the
+  USA: analysis of a cross-sectional survey](https://doi.org/10.1016/j.landig.2025.100888).
+  *The Lancet Digital Health*, 7 (8): 100888.
 - S. Santos, M. Humbard, A. Lambrou et al. (2025). [The SARS-CoV-2 test
   scale-up in the USA: an analysis of the number of tests produced and used
   over time and their modelled impact on the COVID-19 pandemic](https://doi.org/10.1016/S2468-2667(24)00279-2).
