@@ -483,7 +483,14 @@ class QueryBuilder:
                 self.where_integers("issue", issues)
         return self
 
-    def apply_as_of_filter(self, history_table: str, as_of: Optional[int], use_source_signal: Optional[bool] = TRUE) -> "QueryBuilder":
+    # Note: This function was originally only used by covidcast, so it assumed
+    # that `source` and `signal` columns are always available. To make this usable
+    # for rvdss, too, which doesn't have the `source` or `signal` columns, add the
+    # `use_source_signal` flag to toggle inclusion of `source` and `signal` columns.
+    #
+    # `use_source_signal` defaults to True so if not passed, the function
+    # retains the historical behavior.
+    def apply_as_of_filter(self, history_table: str, as_of: Optional[int], use_source_signal: Optional[bool] = True) -> "QueryBuilder":
         if as_of is not None:
             self.retable(history_table)
             sub_condition_asof = "(issue <= :as_of)"
@@ -491,9 +498,10 @@ class QueryBuilder:
 
             alias = self.alias
             source_signal_plain = source_signal_alias = ""
+            # If `use_source_signal` toggled on, append `source` and `signal` columns to group-by list and join list.
             if use_source_signal:
                 source_signal_plain = ", `source`, `signal`"
-                source_signal_alias = f"AND x.source = {alias}.source AND x.signal = {alias}.signal"
+                source_signal_alias = f" AND x.source = {alias}.source AND x.signal = {alias}.signal"
 
             sub_fields = f"max(issue) max_issue, time_type, time_value{source_signal_plain}, geo_type, geo_value"
             sub_group = f"time_type, time_value{source_signal_plain}, geo_type, geo_value"

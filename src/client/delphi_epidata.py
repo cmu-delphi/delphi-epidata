@@ -688,30 +688,25 @@ class Epidata:
         # Check parameters
         if None in (geo_type, time_values, geo_value):
             raise EpidataBadRequestException(
-                "`geo_type`, `time_values`, and `geo_value` are all required"
+                "`geo_type`, `geo_value`, and `time_values` are all required"
             )
 
         # Set up request
         params = {
-            "data_source": data_source,
-            "signals": Epidata._list(signals),
-            "time_type": time_type,
-            "geo_type": geo_type,
-            "time_values": Epidata._list(time_values),
             # Fake a time type param so that we can use some helper functions later.
             "time_type": "week",
+            "geo_type": geo_type,
+            "time_values": Epidata._list(time_values),
         }
 
         if isinstance(geo_value, (list, tuple)):
             params["geo_values"] = ",".join(geo_value)
         else:
-            params["geo_value"] = geo_value
+            params["geo_values"] = geo_value
         if as_of is not None:
             params["as_of"] = as_of
         if issues is not None:
             params["issues"] = Epidata._list(issues)
-        # if lag is not None:
-        #     params["lag"] = lag
 
         # Make the API call
         return Epidata._request("rvdss", params)
