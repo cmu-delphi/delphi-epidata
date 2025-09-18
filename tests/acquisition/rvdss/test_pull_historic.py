@@ -49,7 +49,9 @@ example_edge_case_tables=[
     pd.DataFrame([{"week":32,"week end":"2017-08-17"}]),
     pd.DataFrame([{"week":12,"week end":"2022-03-19"}]),
     pd.DataFrame([{"week":35,"week end":"2012-08-31"}]),
-    pd.DataFrame({"week":[35,36],"week end":["2012-08-31","2012-09-07"]})]
+    pd.DataFrame({"week":[35,36],"week end":["2012-08-31","2012-09-07"]}),
+    pd.DataFrame([{"week":40,"week end":"2016-10-09"}]),
+    pd.DataFrame([{"week":38,"week end":"2013-09-22"}])]
 
 expected_edge_case_tables=[
     pd.DataFrame(columns=['week', 'week end', 'canada tests', 'entero/rhino%', 'at tests',
@@ -73,7 +75,9 @@ expected_edge_case_tables=[
     pd.DataFrame([{"week":32,"week end":"2017-08-12"}]),
     pd.DataFrame([{"week":12,"week end":"2022-03-26"}]),
     pd.DataFrame([{"week":35,"week end":"2013-08-31"}]),
-    pd.DataFrame({"week":[35,36],"week end":["2013-08-31","2013-09-07"]})]
+    pd.DataFrame({"week":[35,36],"week end":["2013-08-31","2013-09-07"]}),
+    pd.DataFrame([{"week":40,"week end":"2016-10-08"}]),
+    pd.DataFrame([{"week":38,"week end":"2013-09-21"}])]
 
 example_edge_case_captions=[
     [t for t in captions if "Entero" in t.text][0],
@@ -85,14 +89,16 @@ example_edge_case_captions=[
     [t for t in captions if "Influenza" in t.text][0],
     [t for t in captions if "Para" in t.text][0],
     [t for t in captions if "RSV" in t.text][0],
+    [t for t in captions if "Influenza" in t.text][0],
+    [t for t in captions if "Influenza" in t.text][0],
     [t for t in captions if "Influenza" in t.text][0]]
 
 example_edge_case_seasons=[["2017","2018"],["2017","2018"],["2017","2018"],
                            ["2015","2016"],["2022","2023"],["2021","2022"],
                            ["2016","2017"],["2021","2022"], ["2013","2014"],
-                           ["2013","2014"]]
+                           ["2013","2014"],["2016","2017"],["2013","2014"]]
 
-example_edge_case_weeks=[35,35,47,41,11,10,32,14,35,36]
+example_edge_case_weeks=[35,35,47,41,11,10,32,14,35,36,10,38]
 
 class TestPullHistoric():
 
