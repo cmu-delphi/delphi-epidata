@@ -322,18 +322,25 @@ def duplicate_provincial_detections(data):
     return(new_data)
 
 def combine_tables(data_dict):
-    num_tables = len(data_dict)
-    if(num_tables==2):
-        positive=data_dict["positive"]
-        positive=positive.reset_index()
-        
+    if(set(data_dict.keys()) == set({"positive","respiratory_detection"})):
+        positive=data_dict["positive"] 
         detections=data_dict["respiratory_detection"]
-        detections=detections.reset_index()
         
+        positive["epiweek"] = pd.to_numeric(positive["epiweek"],downcast="integer")
+        positive["time_value"] = pd.to_datetime(positive["time_value"])
+        positive["issue"] = pd.to_datetime(positive["issue"])
+
+        detections["epiweek"] = pd.to_numeric(detections["epiweek"],downcast="integer")
+        detections["time_value"] = pd.to_datetime(detections["time_value"])
+        detections["issue"] = pd.to_datetime(detections["issue"])
+
         detections = expand_detections_columns(detections)
         positive = positive.drop(['geo_type'], axis=1)
         positive['geo_type'] = [create_geo_types(g,'lab') for g in positive['geo_value']]
         positive=positive.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
+        
+        positive = positive.fillna(np.nan)
+        detections = detections.fillna(np.nan)
         
         t = detections.merge(positive, how='outer', left_index=True,right_index=True)
         cols = set(positive.columns.to_list()+detections.columns.to_list())
@@ -343,13 +350,12 @@ def combine_tables(data_dict):
             coly = col + "_y"
             
             if colx in t.columns and coly in t.columns:
-                t[col] = np.where(t[colx].isnull(), t[coly], t[colx])
+                t[col] = np.where(np.isnan(t[colx]), t[coly], t[colx])
                 t = t.drop([colx, coly],axis=1)
                 
         table = duplicate_provincial_detections(t)
-         
     else:
-        raise ValueError("Unexpected number of tables")
+        raise ValueError("Unexpected dictonary keys")
         
     return(table)
         
