@@ -44,9 +44,13 @@ import mysql.connector
 # first party
 from delphi.epidata.acquisition.quidel import quidel
 import delphi.operations.secrets as secrets
-from delphi.utils.epidate import EpiDate
 import delphi.utils.epiweek as flu
 from delphi.utils.geo.locations import Locations
+from delphi.epidata.common.logger import get_structured_logger
+
+
+logger = get_structured_logger("quidel_update")
+
 
 LOCATIONS = Locations.hhs_list
 DATAPATH = "/home/automation/quidel_data"
@@ -56,7 +60,7 @@ def update(locations, first=None, last=None, force_update=False, load_email=True
     # download and prepare data first
     qd = quidel.QuidelData(DATAPATH, load_email)
     if not qd.need_update and not force_update:
-        print("Data not updated, nothing needs change.")
+        logger.info("Data not updated, nothing needs change.")
         return
 
     qd_data = qd.load_csv()
@@ -79,7 +83,7 @@ def update(locations, first=None, last=None, force_update=False, load_email=True
         ew0 = 200401 if ew0 is None else flu.add_epiweeks(ew0, -4)
     ew0 = ew0 if first is None else first
     ew1 = ew1 if last is None else last
-    print(f"Checking epiweeks between {int(ew0)} and {int(ew1)}...")
+    logger.info(f"Checking epiweeks between {int(ew0)} and {int(ew1)}...")
 
     # keep track of how many rows were added
     rows_before = get_num_rows()
@@ -109,11 +113,11 @@ def update(locations, first=None, last=None, force_update=False, load_email=True
             if v == 0:
                 num_missing += 1
         if num_missing > 0:
-            print(f" [{location}] missing {int(num_missing)}/{len(ews)} value(s)")
+            logger.info(f" [{location}] missing {int(num_missing)}/{len(ews)} value(s)")
 
     # keep track of how many rows were added
     rows_after = get_num_rows()
-    print(f"Inserted {int(rows_after - rows_before)}/{int(total_rows)} row(s)")
+    logger.info(f"Inserted {int(rows_after - rows_before)}/{int(total_rows)} row(s)")
 
     # cleanup
     cur.close()

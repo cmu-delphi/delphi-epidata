@@ -323,6 +323,7 @@ class Database:
     - time_type
     """
 
+    logger = get_structured_logger("delete_batch")
     tmp_table_name = "tmp_delete_table"
     # composite keys:
     short_comp_key = "`source`, `signal`, `time_type`, `geo_type`, `time_value`, `geo_value`"
@@ -412,21 +413,21 @@ FROM {self.history_view} h JOIN (
             yield lst[i:(i+n)]
         for deletions_batch in split_list(cc_deletions, 100000):
           self._cursor.executemany(load_tmp_table_insert_sql, deletions_batch)
-          print(f"load_tmp_table_insert_sql:{self._cursor.rowcount}")
+          logger.debug(f"load_tmp_table_insert_sql:{self._cursor.rowcount}")
       else:
         raise Exception(f"Bad deletions argument: need a filename or a list of tuples; got a {type(cc_deletions)}")
       self._cursor.execute(add_history_id_sql)
-      print(f"add_history_id_sql:{self._cursor.rowcount}")
+      logger.debug(f"add_history_id_sql:{self._cursor.rowcount}")
       self._cursor.execute(mark_for_update_latest_sql)
-      print(f"mark_for_update_latest_sql:{self._cursor.rowcount}")
+      logger.debug(f"mark_for_update_latest_sql:{self._cursor.rowcount}")
       self._cursor.execute(delete_history_sql)
-      print(f"delete_history_sql:{self._cursor.rowcount}")
+      logger.debug(f"delete_history_sql:{self._cursor.rowcount}")
       total = self._cursor.rowcount
       # TODO: consider reporting rows removed and/or replaced in latest table as well
       self._cursor.execute(delete_latest_sql)
-      print(f"delete_latest_sql:{self._cursor.rowcount}")
+      logger.debug(f"delete_latest_sql:{self._cursor.rowcount}")
       self._cursor.execute(update_latest_sql)
-      print(f"update_latest_sql:{self._cursor.rowcount}")
+      logger.debug(f"update_latest_sql:{self._cursor.rowcount}")
       self._connection.commit()
 
       if total == -1:

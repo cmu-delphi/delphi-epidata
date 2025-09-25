@@ -56,6 +56,10 @@ import numpy as np
 import delphi.operations.secrets as secrets
 from delphi.utils.epiweek import delta_epiweeks
 from delphi.utils.geo.locations import Locations
+from delphi.epidata.common.logger import get_structured_logger
+
+
+logger = get_structured_logger("fluview_impute_missing_values")
 
 
 class Database:
@@ -147,7 +151,7 @@ class Database:
         if commit:
             self.cnx.commit()
         else:
-            print("test mode, not committing")
+            logger.info("test mode, not committing")
         self.cnx.close()
 
     def count_rows(self):
@@ -270,13 +274,13 @@ def impute_missing_values(database, test_mode=False):
     # database connection
     database.connect()
     rows1 = database.count_rows()
-    print(f"rows before: {int(rows1)}")
+    logger.info(f"rows before: {int(rows1)}")
 
     # iterate over missing epiweeks
     missing_rows = database.find_missing_rows()
-    print(f"missing data for {len(missing_rows)} epiweeks")
+    logger.info(f"missing data for {len(missing_rows)} epiweeks")
     for issue, epiweek in missing_rows:
-        print(f"i={int(issue)} e={int(epiweek)}")
+        logger.info(f"i={int(issue)} e={int(epiweek)}")
 
         # get known values from table `fluview`
         known_values = database.get_known_values(issue, epiweek)
@@ -310,14 +314,14 @@ def impute_missing_values(database, test_mode=False):
             n_ili, n_pat, n_prov = map(int, np.rint(values))
             lag, ili = get_lag_and_ili(issue, epiweek, n_ili, n_pat)
             imputed_values[loc] = (lag, n_ili, n_pat, n_prov, ili)
-            print(f" {loc}: {str(imputed_values[loc])}")
+            logger.info(f" {loc}: {str(imputed_values[loc])}")
 
         # save all imputed values in table `fluview_imputed`
         database.add_imputed_values(issue, epiweek, imputed_values)
 
     # database cleanup
     rows2 = database.count_rows()
-    print(f"rows after: {int(rows2)} (added {int(rows2 - rows1)})")
+    logger.info(f"rows after: {int(rows2)} (added {int(rows2 - rows1)})")
     commit = not test_mode
     database.close(commit)
 

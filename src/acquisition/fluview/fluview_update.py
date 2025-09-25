@@ -128,6 +128,11 @@ import delphi.operations.secrets as secrets
 from delphi.utils.epiweek import delta_epiweeks, join_epiweek
 from . import fluview
 from . import fluview_locations
+from delphi.epidata.common.logger import get_structured_logger
+
+
+logger = get_structured_logger("fluview_update")
+
 
 # sheet names
 ILINET_SHEET = "ILINet.csv"
@@ -313,21 +318,21 @@ def update_from_file_clinical(issue, date, filename, test_mode=False):
     u, p = secrets.db.epi
     cnx = mysql.connector.connect(user=u, password=p, database="epidata", host=secrets.db.host)
     rows1 = get_rows(cnx, CL_TABLE)
-    print(f"rows before: {int(rows1)}")
+    logger.info(f"rows before: {int(rows1)}")
     insert = cnx.cursor()
 
     # load the data, ignoring empty rows
-    print(f"loading data from {filename} as issued on {int(issue)}")
+    logger.info(f"loading data from {filename} as issued on {int(issue)}")
     rows = load_zipped_csv(filename, CL_SHEET)
-    print(f" loaded {len(rows)} rows")
+    logger.info(f" loaded {len(rows)} rows")
     data = [get_clinical_data(row) for row in rows]
     entries = [obj for obj in data if obj]
-    print(f" found {len(entries)} entries")
+    logger.info(f" found {len(entries)} entries")
 
     sql = """
     INSERT INTO
-        `fluview_clinical` (`release_date`, `issue`, `epiweek`, `region`, `lag`, 
-        `total_specimens`, `total_a`, `total_b`, `percent_positive`, `percent_a`, 
+        `fluview_clinical` (`release_date`, `issue`, `epiweek`, `region`, `lag`,
+        `total_specimens`, `total_a`, `total_b`, `percent_positive`, `percent_a`,
         `percent_b`)
     VALUES
         (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
@@ -360,12 +365,12 @@ def update_from_file_clinical(issue, date, filename, test_mode=False):
     # cleanup
     insert.close()
     if test_mode:
-        print("test mode, not committing")
+        logger.info("test mode, not committing")
         rows2 = rows1
     else:
         cnx.commit()
         rows2 = get_rows(cnx, CL_TABLE)
-    print(f"rows after: {int(rows2)} (added {int(rows2 - rows1)})")
+    logger.info(f"rows after: {int(rows2)} (added {int(rows2 - rows1)})")
     cnx.close()
 
 
@@ -378,16 +383,16 @@ def update_from_file_public(issue, date, filename, test_mode=False):
     u, p = secrets.db.epi
     cnx = mysql.connector.connect(user=u, password=p, database="epidata", host=secrets.db.host)
     rows1 = get_rows(cnx, PHL_TABLE)
-    print(f"rows before: {int(rows1)}")
+    logger.info(f"rows before: {int(rows1)}")
     insert = cnx.cursor()
 
     # load the data, ignoring empty rows
-    print(f"loading data from {filename} as issued on {int(issue)}")
+    logger.info(f"loading data from {filename} as issued on {int(issue)}")
     rows = load_zipped_csv(filename, PHL_SHEET)
-    print(f" loaded {len(rows)} rows")
+    logger.info(f" loaded {len(rows)} rows")
     data = [get_public_data(row) for row in rows]
     entries = [obj for obj in data if obj]
-    print(f" found {len(entries)} entries")
+    logger.info(f" found {len(entries)} entries")
 
     sql = """
     INSERT INTO
@@ -429,12 +434,12 @@ def update_from_file_public(issue, date, filename, test_mode=False):
     # cleanup
     insert.close()
     if test_mode:
-        print("test mode, not committing")
+        logger.info("test mode, not committing")
         rows2 = rows1
     else:
         cnx.commit()
         rows2 = get_rows(cnx, PHL_TABLE)
-    print(f"rows after: {int(rows2)} (added {int(rows2 - rows1)})")
+    logger.info(f"rows after: {int(rows2)} (added {int(rows2 - rows1)})")
     cnx.close()
 
 
@@ -447,16 +452,16 @@ def update_from_file(issue, date, filename, test_mode=False):
     u, p = secrets.db.epi
     cnx = mysql.connector.connect(user=u, password=p, database="epidata", host=secrets.db.host)
     rows1 = get_rows(cnx)
-    print(f"rows before: {int(rows1)}")
+    logger.info(f"rows before: {int(rows1)}")
     insert = cnx.cursor()
 
     # load the data, ignoring empty rows
-    print(f"loading data from {filename} as issued on {int(issue)}")
+    logger.info(f"loading data from {filename} as issued on {int(issue)}")
     rows = load_zipped_csv(filename)
-    print(f" loaded {len(rows)} rows")
+    logger.info(f" loaded {len(rows)} rows")
     data = [get_ilinet_data(row) for row in rows]
     entries = [obj for obj in data if obj]
-    print(f" found {len(entries)} entries")
+    logger.info(f" found {len(entries)} entries")
 
     sql = """
     INSERT INTO
@@ -504,12 +509,12 @@ def update_from_file(issue, date, filename, test_mode=False):
     # cleanup
     insert.close()
     if test_mode:
-        print("test mode, not committing")
+        logger.info("test mode, not committing")
         rows2 = rows1
     else:
         cnx.commit()
         rows2 = get_rows(cnx)
-    print(f"rows after: {int(rows2)} (added {int(rows2 - rows1)})")
+    logger.info(f"rows after: {int(rows2)} (added {int(rows2 - rows1)})")
     cnx.close()
 
 
@@ -539,7 +544,7 @@ def main():
         raise Exception("--file and --issue must both be present or absent")
 
     date = datetime.datetime.now().strftime("%Y-%m-%d")
-    print(f"assuming release date is today, {date}")
+    logger.info(f"assuming release date is today, {date}")
 
     if args.file:
         update_from_file(args.issue, date, args.file, test_mode=args.test)

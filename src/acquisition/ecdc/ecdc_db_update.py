@@ -14,7 +14,7 @@ Stores versioned ECDC ILI data from ECDC website.
 | Field          | Type        | Null | Key | Default | Extra          |
 +----------------+-------------+------+-----+---------+----------------+
 | id             | int(11)     | NO   | PRI | NULL    | auto_increment |
-| release_date   | date        | NO   | MUL | NULL    |                | 
+| release_date   | date        | NO   | MUL | NULL    |                |
 | issue          | int(11)     | NO   | MUL | NULL    |                |
 | epiweek        | int(11)     | NO   | MUL | NULL    |                |
 | region         | varchar(12) | NO   | MUL | NULL    |                |
@@ -44,6 +44,10 @@ import delphi.operations.secrets as secrets
 from delphi.epidata.acquisition.ecdc.ecdc_ili import download_ecdc_data
 from delphi.utils.epiweek import delta_epiweeks
 from delphi.utils.epidate import EpiDate
+from delphi.epidata.common.logger import get_structured_logger
+
+
+logger = get_structured_logger("dcdc_db_update")
 
 
 def ensure_tables_exist():
@@ -100,7 +104,7 @@ def update_from_file(issue, date, dir, test_mode=False):
     u, p = secrets.db.epi
     cnx = mysql.connector.connect(user=u, password=p, database="epidata")
     rows1 = get_rows(cnx, "ecdc_ili")
-    print(f"rows before: {int(rows1)}")
+    logger.info(f"rows before: {int(rows1)}")
     insert = cnx.cursor()
 
     # load the data, ignoring empty rows
@@ -115,9 +119,9 @@ def update_from_file(issue, date, dir, test_mode=False):
                 row["region"] = data[4]
                 row["incidence_rate"] = data[3]
                 rows.append(row)
-    print(f" loaded {len(rows)} rows")
+    logger.info(f" loaded {len(rows)} rows")
     entries = [obj for obj in rows if obj]
-    print(f" found {len(entries)} entries")
+    logger.info(f" found {len(entries)} entries")
 
     sql = """
     INSERT INTO
@@ -144,12 +148,12 @@ def update_from_file(issue, date, dir, test_mode=False):
     # cleanup
     insert.close()
     if test_mode:
-        print("test mode, not committing")
+        logger.info("test mode, not committing")
         rows2 = rows1
     else:
         cnx.commit()
         rows2 = get_rows(cnx)
-    print(f"rows after: {int(rows2)} (added {int(rows2 - rows1)})")
+    logger.info(f"rows after: {int(rows2)} (added {int(rows2 - rows1)})")
     cnx.close()
 
 
@@ -179,7 +183,7 @@ def main():
         raise Exception("--file and --issue must both be present or absent")
 
     date = datetime.datetime.now().strftime("%Y-%m-%d")
-    print(f"assuming release date is today, {date}")
+    logger.info(f"assuming release date is today, {date}")
 
     ensure_tables_exist()
     if args.file:
@@ -209,7 +213,7 @@ def main():
                 if not db_error:
                     break  # Exit loop with success
         if flag >= max_tries:
-            print("WARNING: Database `ecdc_ili` did not update successfully")
+            logger.warning("Database `ecdc_ili` did not update successfully")
 
 
 if __name__ == "__main__":

@@ -34,6 +34,7 @@ import pandas as pd
 import delphi.operations.secrets as secrets
 import delphi.utils.epidate as ED
 from delphi.utils.geo.locations import Locations
+from delphi.epidata.common.logger import get_structured_logger
 
 
 def word_map(row, terms):
@@ -198,7 +199,7 @@ class QuidelData:
             if date_items:
                 end_date = "-".join(date_items[-1].split("-")[x] for x in [2, 0, 1])
             else:
-                print("End date not found in file name:" + f)
+                get_structured_logger("quidel").info("End date not found in file name:" + f)
                 end_date = None
 
             df_dict = pd.read_excel(join(self.excel_uptodate_path, f + ".xlsx"), sheet_name=None)

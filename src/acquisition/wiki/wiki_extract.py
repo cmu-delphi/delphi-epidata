@@ -32,6 +32,7 @@ import mysql.connector
 
 # first party
 import delphi.operations.secrets as secrets
+from delphi.epidata.common.logger import get_structured_logger
 
 
 def floor_timestamp(timestamp):
@@ -91,12 +92,12 @@ def run(job_limit=100):
     jobs = []
     for (id, name, data_str) in cur:
         jobs.append((id, name, json.loads(data_str)))
-    print(f"Processing data from {len(jobs)} jobs")
+    get_structured_logger("wiki_extract").info(f"Processing data from {len(jobs)} jobs")
 
     # get the counts from the json object and insert into (or update) the database
     # Notice that data_collect contains data with different languages
     for (id, name, data_collect) in jobs:
-        print(f"processing job [{int(id)}|{name}]...")
+        get_structured_logger("wiki_extract").info(f"processing job [{int(id)}|{name}]...")
         timestamp = round_timestamp(get_timestamp(name))
         for language in data_collect.keys():
             data = data_collect[language]

@@ -29,6 +29,10 @@ import requests
 
 # first party
 import delphi.operations.secrets as secrets
+from delphi.epidata.common.logger import get_structured_logger
+
+
+logger = get_structured_logger("wiki_update")
 
 
 def floor_timestamp(timestamp):
@@ -69,7 +73,7 @@ def get_manifest(year, month, optional=False):
     # unlike pagecounts-raw, pageviews doesn't provide hashes
     # url = 'https://dumps.wikimedia.org/other/pagecounts-raw/%d/%d-%02d/md5sums.txt'%(year, year, month)
     url = f"https://dumps.wikimedia.org/other/pageviews/{int(year)}/{int(year)}-{int(month):02}/"
-    print(f"Checking manifest at {url}...")
+    logger.info(f"Checking manifest at {url}...")
     response = requests.get(url)
     if response.status_code == 200:
         # manifest = [line.strip().split() for line in response.text.split('\n') if 'pagecounts' in line]
@@ -83,7 +87,7 @@ def get_manifest(year, month, optional=False):
             manifest = []
         else:
             raise Exception(f"expected 200 status code, but got {int(response.status_code)}")
-    print(f"Found {len(manifest)} access log(s)")
+    logger.info(f"Found {len(manifest)} access log(s)")
     return manifest
 
 
@@ -98,7 +102,7 @@ def run():
     cur.execute("SELECT max(`name`) FROM `wiki_raw`")
     for (max_name,) in cur:
         pass
-    print(f"Last known file: {max_name}")
+    logger.info(f"Last known file: {max_name}")
     timestamp = get_timestamp(max_name)
 
     # crawl dumps.wikimedia.org to find more recent access logs
@@ -112,8 +116,8 @@ def run():
     for (hash, name) in manifest:
         if max_name is None or name > max_name:
             new_logs[name] = hash
-            print(f" New job: {name} [{hash}]")
-    print(f"Found {len(new_logs)} new job(s)")
+            logger.info(f" New job: {name} [{hash}]")
+    logger.info(f"Found {len(new_logs)} new job(s)")
 
     # store metadata for new jobs
     for name in sorted(new_logs.keys()):

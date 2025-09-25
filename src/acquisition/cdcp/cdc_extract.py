@@ -72,6 +72,10 @@ import mysql.connector
 import delphi.operations.secrets as secrets
 import delphi.utils.epiweek as flu
 from . import cdc_upload
+from delphi.epidata.common.logger import get_structured_logger
+
+
+logger = get_structured_logger("cdc_extract")
 
 
 def get_num_hits(cur, epiweek, state, page):
@@ -166,7 +170,7 @@ def extract(first_week=None, last_week=None, test_mode=False):
         cur.execute("SELECT max(`epiweek`) FROM `cdc_meta`")
         for (last_week,) in cur:
             pass
-    print(f"extracting {int(first_week)}--{int(last_week)}")
+    logger.info(f"extracting {int(first_week)}--{int(last_week)}")
 
     # update each epiweek
     for epiweek in flu.range_epiweeks(first_week, last_week, inclusive=True):
@@ -178,9 +182,9 @@ def extract(first_week=None, last_week=None, test_mode=False):
                     nums[i] = get_num_hits(cur, epiweek, state, pages[i])
                 total = get_total_hits(cur, epiweek, state)
                 store_result(cur, epiweek, state, *nums, total)
-                print(f" {epiweek}-{state}: {' '.join(str(n) for n in nums)} ({total})")
+                logger.info(f" {epiweek}-{state}: {' '.join(str(n) for n in nums)} ({total})")
             except Exception as ex:
-                print(f" {int(epiweek)}-{state}: failed", ex)
+                logger.error(f" {int(epiweek)}-{state}: failed", exception=ex)
                 # raise ex
             sys.stdout.flush()
 
