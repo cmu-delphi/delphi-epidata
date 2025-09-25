@@ -33,9 +33,10 @@ def update_current_data(logger):
         # current dashboard only needs one table
         new_data = expand_detections_columns(data)
         new_data = duplicate_provincial_detections(new_data)
+        new_data['time_type'] = "week"
         
         # update database
-        update(data,logger)
+        update(new_data,logger)
         logger.info("Finished updating current data")
     else:
         logger.info("Data is already up to date")
@@ -66,12 +67,14 @@ def update_historical_data(logger):
         
         if all_dashboard_tables.empty == False and all_report_data.empty == False:
             all_dashboard_tables=all_dashboard_tables.reset_index()
-            all_dashboard_tables=all_dashboard_tables.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
+            all_report_data=all_report_data.reset_index()
+            #all_dashboard_tables=all_dashboard_tables.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
 
         hist_dict_list[tt] = pd.concat([all_report_data, all_dashboard_tables])
         
     # Combine all rables into a single table
     data = combine_tables(hist_dict_list)
+    data['time_type'] = "week"
     
     #update database
     update(data,logger)
@@ -89,6 +92,7 @@ def patch_seasons(season_start_years,logger):
             # current dashboard only needs one table
             new_data = expand_detections_columns(data)
             new_data = duplicate_provincial_detections(new_data)
+            new_data['time_type'] = "week"
             
             #update database
             update(new_data,logger)
@@ -99,6 +103,7 @@ def patch_seasons(season_start_years,logger):
             
             # Combine all rables into a single table
             data = combine_tables(data_dict)
+            data['time_type'] = "week"
             
             #update database
             update(data,logger)
