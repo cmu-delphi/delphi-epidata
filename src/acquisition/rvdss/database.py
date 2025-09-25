@@ -68,8 +68,6 @@ rvdss_cols= (
   "hcov_tests",
   "hcov_positive_tests",
   "hcov_pct_positive",
-  "week",
-  "weekorder",
   "year",
   "region"
 )
@@ -88,8 +86,10 @@ def update(data,logger):
     
 
     data_tuples = list(data.itertuples(index=False,name=None))
-    field_names = ", ".join(f"`{name}`" for name in rvdss_cols)
-    field_values = ", ".join(f"%({name})s" for name in rvdss_cols)
+    
+    rvdss_cols_subset = [col for col in rvdss_cols if col in data.columns]
+    field_names = ", ".join(f"`{name}`" for name in rvdss_cols_subset)
+    field_values = ", ".join(f"%({name})s" for name in rvdss_cols_subset)
         
     #check rvdss for new and/or revised data
     sql = f"""
