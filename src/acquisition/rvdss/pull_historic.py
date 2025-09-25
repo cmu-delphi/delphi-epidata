@@ -332,6 +332,9 @@ def fix_edge_cases(table,season,caption,current_week):
             table.loc[table['week'] == 32, 'week end'] = "2017-08-12"
         if "detections" not in caption.text.lower():
             table.loc[table['week'] == 40, 'week end'] = "2016-10-08"
+        if current_week == 3 and "detections" in caption.text.lower():
+            # lab name supposed to be alberta
+            table.loc[table['reporting laboratory'] == 'Province of', 'reporting laboratory'] = "Alberta"
     elif season[0] == '2021' and "parainfluenza" in caption.text.lower():
         #  In multiple weeks of the 2021-2022 season, in the positive hpiv table,
         # the date for week 12 is 2022-03-19, instead of 2022-03-26
