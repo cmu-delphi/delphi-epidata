@@ -21,7 +21,7 @@ This data source of respiratory virus detections in Canada is collected by the [
 NOTE: Pandemic COVID-19 is not reported in this data source.
 
 | Signal                         | Description                                                                                                                                 |
-|-------------------|-----------------------------------------------------|
+|---------------------|---------------------------------------------------|
 | `sarscov2_tests`               | Number of SARS-CoV-2 laboratory tests <br/> **Earliest Date Available:** 2022-09-03                                                         |
 | `sarscov2_positive_tests`      | Number of Positive SARS-CoV-2 laboratory tests <br/> **Earliest Date Available:** 2022-09-03                                                |
 | `sarscov2_pct_positive`        | Percentage of SARS-CoV-2 laboratory tests that are positive <br/> **Earliest Date Available:** 2022-09-03                                   |
@@ -103,7 +103,15 @@ Unlike most other sources in the Delphi Epidata API, this data source is Canadia
 
 -   `nu`: Nunavut
 
-**`lab`:** The laboratories reporting lab tests. As a note, only Ontario, Quebec and occasionaly Saskatchewan have counts from dis-aggregated labs.
+**`lab`:** The laboratories reporting lab tests. As a note, only Ontario, Quebec and occasionally Saskatchewan have counts from dis-aggregated labs.
+
+-   **NOTE**: Over time, some laboratories were expanded and renamed:
+
+    -   CHEO -\> EORLA
+
+    -   Sunnybrook Women’s College HSC -\> Shared Hospital Laboratory
+
+    -   Toronto Medical Laboratory -\> University Health Network/Mount Sinai Hospital
 
 **`region`:** The provinces and territories are also sometimes aggregated into six geographic regions:
 
