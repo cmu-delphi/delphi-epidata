@@ -45,7 +45,24 @@ GEOS = {
     "atl":"atlantic",
     "pr" :"prairies" ,
     "terr" :"territories",
-    "uhn sinai hospital":"uhn mount sinai hospital"
+    "uhn sinai hospital":"uhn mount sinai hospital",
+    "cheo hee0 ottawa": "cheo ottawa",
+    "phol hamilton": "hamilton phl",
+    "kingston":"kingston phl", 
+    "phol kingston":"kingston phl",
+    "phol london": "london phl",
+    "phol orillia":"orillia phl",
+    "phol ottawa":"ottawa phl",
+    "phol peterborough":"peterborough phl",
+    "sault ste marie": "sault ste marie phl", 
+    "phol sault ste marie": "sault ste marie phl",
+    "st josephs healthcare hamilton":"st josephs hamilton",
+    "phol sudbury":"sudbury phl",
+    "thunder bay":"thunder bay phl",
+    "phol thunder bay":"thunder bay phl",
+    "timmins":"timmins phl",
+    "phol timmins":"timmins phl",
+    "phol toronto": "cphl toronto"
  }
 
 # Regions are groups of provinces that are geographically close together. Some single provinces are reported as their own region (e.g. Québec, Ontario).
