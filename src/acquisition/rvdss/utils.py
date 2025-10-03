@@ -51,6 +51,8 @@ def create_geo_types(geo,default_geo):
     lowercase_geo = geo.lower()
     if lowercase_geo in NATION:
         geo_type="nation"
+    elif geo in PROVINCES:
+        geo_type="province"
     elif geo in REGIONS:
         geo_type="region"
     else:
@@ -181,7 +183,7 @@ def get_positive_data(base_url,headers,update_date):
     df['province'] = [abbreviate_geo(g) for g in df['province']]
     df=df.rename(columns={'province':"geo_value",'date':'time_value',"detections":"positivetests"})
     df['time_value'] = [check_date_format(d) for d in df['time_value']]
-    df['geo_type'] = [create_geo_types(g,"province") for g in df['geo_value']]
+    df['geo_type'] = [create_geo_types(g,"lab") for g in df['geo_value']]
     df.insert(1,"issue",update_date)
     df['region'] = [abbreviate_geo(g) for g in df['region']]
     
@@ -304,12 +306,19 @@ def expand_detections_columns(new_data):
     return(new_data.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value']))
 
 def duplicate_provincial_detections(data):
+    '''
+    The data has geo_type = lab for all labs, geo_type = province for all province and territories
+    and geo_type region for prairies, territories and atlantic, but ontario, quebec and bc are
+    both regions and provinces, so duplicate the data for those three geos with the geo_type = region
+    for completeness
+    '''
     dat = data.copy(deep=True)
     dat = dat.reset_index()
     
     # provincial data
-    dat.loc[dat['geo_value'].isin(PROVINCES),'geo_type'] = "province" 
-    provincial_detections = dat.loc[dat['geo_value'].isin(PROVINCES)]
+    provincial_regions = ['bc','on','qc']
+    dat.loc[dat['geo_value'].isin(provincial_regions),'geo_type'] = "region" 
+    provincial_detections = dat.loc[dat['geo_value'].isin(provincial_regions)]
     
     if not provincial_detections.empty:
         #provincial_detections['geo_type']="province"
@@ -329,14 +338,14 @@ def combine_tables(data_dict):
         positive["epiweek"] = pd.to_numeric(positive["epiweek"],downcast="integer")
         positive["time_value"] = pd.to_datetime(positive["time_value"])
         positive["issue"] = pd.to_datetime(positive["issue"])
+        positive['geo_type'] = [create_geo_types(g,'lab') for g in positive['geo_value']]
 
         detections["epiweek"] = pd.to_numeric(detections["epiweek"],downcast="integer")
         detections["time_value"] = pd.to_datetime(detections["time_value"])
         detections["issue"] = pd.to_datetime(detections["issue"])
+        detections['geo_type'] = [create_geo_types(g,'lab') for g in detections['geo_value']]
 
         detections = expand_detections_columns(detections)
-        positive = positive.drop(['geo_type'], axis=1)
-        positive['geo_type'] = [create_geo_types(g,'lab') for g in positive['geo_value']]
         positive=positive.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'])
         
         positive = positive.fillna(np.nan)

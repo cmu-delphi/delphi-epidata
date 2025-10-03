@@ -8,7 +8,7 @@ import pandas as pd
 import argparse
 from datetime import datetime
 
-from delphi.epidata.acquisition.rvdss.utils import fetch_current_dashboard_data, check_most_recent_update_date,get_dashboard_update_date, combine_tables, duplicate_provincial_detections,expand_detections_columns
+from delphi.epidata.acquisition.rvdss.utils import create_geo_types, abbreviate_geo, fetch_current_dashboard_data, check_most_recent_update_date,get_dashboard_update_date, combine_tables, duplicate_provincial_detections,expand_detections_columns
 from delphi.epidata.acquisition.rvdss.constants import DASHBOARD_BASE_URL, RESP_DETECTIONS_OUTPUT_FILE, POSITIVE_TESTS_OUTPUT_FILE,UPDATE_DATES_FILE
 from delphi.epidata.acquisition.rvdss.pull_historic import fetch_report_data,fetch_historical_dashboard_data
 from delphi.epidata.acquisition.rvdss.database import update
@@ -88,6 +88,8 @@ def patch_seasons(season_start_years,logger):
     
         if start >=2024:
             data = pd.read_csv(f"{start}_{end}_respiratory_detections.csv")
+            data['geo_value'] = [abbreviate_geo(g) for g in data['geo_value']]
+            data["geo_type"] = [create_geo_types(g,"lab") for g in data["geo_value"]]
             
             # current dashboard only needs one table
             new_data = expand_detections_columns(data)
@@ -98,7 +100,10 @@ def patch_seasons(season_start_years,logger):
             update(new_data,logger)
         else:
             resp_data = pd.read_csv(f"{start}_{end}_respiratory_detections.csv")
+            resp_data['geo_value'] = [abbreviate_geo(g) for g in resp_data['geo_value']]
+            
             pos_data = pd.read_csv(f"{start}_{end}_positive_tests.csv")
+        
             data_dict={"positive":pos_data,"respiratory_detection":resp_data} 
             
             # Combine all rables into a single table

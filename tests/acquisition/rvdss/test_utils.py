@@ -281,8 +281,9 @@ example_unduplicated_tables = [
                   'issue': list(np.repeat(np.array([pd.to_datetime("2012-09-10"),
                                                          pd.to_datetime("2012-09-11")]), 
                                                [13, 3], axis=0)),
-                  'geo_type':["lab","lab","lab","lab","lab","lab","lab","lab","lab","lab","lab",
-                              "lab","lab","lab","lab","lab"],
+                  'geo_type':["province","province","province","province","province","province","province",
+                              "province","province","province","province","province","province","nation",
+                              "lab","region"],
                   'geo_value':['nl','pe','ns','nb','qc','on','mb','sk','ab','bc','yt','nt','nu','ca','phol-toronto',
                                'atlantic'],
                   'adv_positive_tests': [1,1,1,1,1,1,1,1,1,1,1,1,1,9,9,9],
@@ -306,12 +307,11 @@ expected_duplicated_tables = [
                                                          pd.to_datetime("2012-09-11"),
                                                          pd.to_datetime("2012-09-10")]), 
                                                [13, 3,13], axis=0)),
-                  'geo_type':["lab","lab","lab","lab","lab","lab","lab","lab","lab","lab","lab",
-                              "lab","lab","lab","lab","lab","province","province","province","province",
-                              "province","province","province","province","province","province","province",
-                              "province","province"],
+                  'geo_type':["province","province","province","province","province","province","province",
+                              "province","province","province","province","province","province","nation",
+                              "lab","region",'region','region','region'],
                   'geo_value':['nl','pe','ns','nb','qc','on','mb','sk','ab','bc','yt','nt','nu','ca','phol-toronto',
-                               'atlantic','nl','pe','ns','nb','qc','on','mb','sk','ab','bc','yt','nt','nu'],
+                               'atlantic','qc','on','bc'],
                   'adv_positive_tests': [1,1,1,1,1,1,1,1,1,1,1,1,1,9,9,9,1,1,1,1,1,1,1,1,1,1,1,1,1],
                   }).set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value']),
     pd.DataFrame({'epiweek': [1,2,3], 
@@ -338,14 +338,15 @@ class TestUtils:
         assert abbreviate_geo("british columbia") == "bc"
         assert abbreviate_geo("québec") == "qc" # recognise accents in provinces
         assert abbreviate_geo("Région Nord-Est") == "région nord est" # remove dashes, make lowercase
-        assert abbreviate_geo("P.H.O.L. - Sault Ste. Marie") == "phol sault ste marie"
+        assert abbreviate_geo("P.H.O.L. - Sault Ste. Marie") == "sault ste marie phl"
         assert abbreviate_geo("random lab") == "random lab" #unknown geos remain unchanged     
         # only province names on their own should be abbreviated, not as part of a larger name
         assert abbreviate_geo("british columbia lab") == "british columbia lab"
         
     def test_create_geo_types(self):
         assert create_geo_types("canada","lab") == "nation"
-        assert create_geo_types("bc","lab") == "region"
+        assert create_geo_types("bc","lab") == "province"
+        assert create_geo_types("prairies","lab") == "region"
         assert create_geo_types("random lab","lab") == "lab"
         assert create_geo_types("Canada","province") == "nation"
         
