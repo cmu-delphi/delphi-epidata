@@ -5,12 +5,7 @@ import mock
 from pathlib import Path
 from bs4 import BeautifulSoup
 import pandas as pd
-from epiweeks import Week
-from datetime import datetime, timedelta
-import math
 import regex as re
-from requests_file import FileAdapter
-import requests
 
 from delphi.epidata.acquisition.rvdss.pull_historic import (get_report_season_years, add_https_prefix, 
 construct_weekly_report_urls, report_weeks, get_report_date, extract_captions_of_interest, get_modified_dates,

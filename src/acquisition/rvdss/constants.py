@@ -67,8 +67,8 @@ GEOS = {
 
 # Regions are groups of provinces that are geographically close together. Some single provinces are reported as their own region (e.g. Québec, Ontario).
 REGIONS = ['atlantic','atl','at','province of québec','québec','qc','province of ontario','ontario','on',
-            'prairies', 'pr', "british columbia",'bc',"territories",'terr',]
-NATION = ["canada","can",'ca',]
+            'prairies', 'pr', "british columbia",'bc',"territories",'terr']
+NATION = ["canada","can",'ca']
 
 PROVINCES = ['nl','pe','ns','nb','qc','on','mb','sk','ab','bc','yt','nt','nu']
 
