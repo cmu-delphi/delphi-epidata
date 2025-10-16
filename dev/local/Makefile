@@ -19,13 +19,13 @@
 #            Runs image in the background and pipes stdout to a log file.
 #            Blocks until database is ready to receive connections.
 #
-#   python:  Rebuilds delphi_web_python image. You shouldn't need to do this
+#   py:  Rebuilds delphi_web_python image. You shouldn't need to do this
 #            often; only if you are installing a new environment, or have
 #            made changes to delphi-epidata/dev/docker/python/Dockerfile.
 #
-#   all:     Runs the commands 'web' 'db' and 'python'.
+#   all:     Runs the commands 'web' 'db' and 'py'.
 #
-#   test:    Runs test and integrations in delphi-epidata. If test 
+#   test:    Runs test and integrations in delphi-epidata. If test
 #            optional arg is provided, then only the tests in that subdir
 #            are run.
 #
