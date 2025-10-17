@@ -20,13 +20,12 @@ See: rvdss.py
 import mysql.connector
 
 # first party
-from delphi.epidata.acquisition.rvdss import rvdss
 import delphi.operations.secrets as secrets
-
 
 rvdss_cols= (
   "epiweek",
   "time_value",
+  "time_type",
   "issue",
   "geo_type",
   "geo_value",
@@ -68,8 +67,7 @@ rvdss_cols= (
   "hcov_tests",
   "hcov_positive_tests",
   "hcov_pct_positive",
-  "year",
-  "region"
+  "year"
 )
 
 def get_num_rows(cursor):
@@ -84,7 +82,6 @@ def update(data,logger):
     cnx = mysql.connector.connect(user=u, password=p, database="epidata")
     cur = cnx.cursor()
     
-
     data_tuples = list(data.itertuples(index=False,name=None))
     
     rvdss_cols_subset = [col for col in rvdss_cols if col in data.columns]

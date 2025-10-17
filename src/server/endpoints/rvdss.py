@@ -29,15 +29,12 @@ def handle():
     fields_string = [
         "geo_type",
         "geo_value",
-        "region",
         "time_type",
     ]
     fields_int = [
         "epiweek",
         "time_value",
         "issue",
-        "week",
-        "weekorder",
         "year",
     ]
     fields_float = [
