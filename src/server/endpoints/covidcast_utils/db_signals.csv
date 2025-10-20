@@ -1728,3 +1728,115 @@ NSSP does not report county-level data for all counties with reporting EDs; some
 The following states report no data through NSSP at the county level: CA, WA, AK, AZ, AL, CO, SD, ND, MO, AR, FL, OH, NH, CT, NJ.
 
 South Dakota, Missouri, and territories report no data through NSSP at the state level.",Percentage,percent,other,bad,TRUE,FALSE,FALSE,FALSE,FALSE,,,,,,
+beta_nssp,pct_ed_visits_covid,FALSE,pct_ed_visits_covid_fa,FALSE,COVID Emergency Department Visits (Percent of total ED visits),pct_ed_visits_covid_fa,"""",Percent of ED visits that had a discharge diagnosis code of COVID-19,TRUE,TRUE,Percent of ED visits that had a discharge diagnosis code of COVID-19,Percent of ED visits that had a discharge diagnosis code of COVID-19,covid,Hospitalizations,United States,"county,state,hrr,msa","hrr,msa",2022-10-01,,ongoing,,BETA NSSP COVID-19 Emergency Department Visits,week,Week,weekly,,,All,None,hospitalized,,"Data is available for 78% of US emergency departments. California, Colorado, Missouri, Oklahoma, and Virginia have the most noticeable gaps in coverage, with many counties in those states having either no eligible EDs or having no recently reported data in NSSP. However, most states have some counties that do not contain any reporting EDs.
+
+NSSP does not report county-level data for all counties with reporting EDs; some reporting EDs are only included in state-level values.
+
+The following states report no data through NSSP at the county level: CA, WA, AK, AZ, AL, CO, SD, ND, MO, AR, FL, OH, NH, CT, NJ.
+
+South Dakota, Missouri, and territories report no data through NSSP at the state level.",Percentage,percent,other,bad,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,
+beta_nssp,pct_ed_visits_influenza,FALSE,pct_ed_visits_influenza_fa,FALSE,Influenza Emergency Department Visits (Percent of total ED visits),pct_ed_visits_influenza_fa,"""",Percent of ED visits that had a discharge diagnosis code of influenza,TRUE,TRUE,Percent of ED visits that had a discharge diagnosis code of influenza,Percent of ED visits that had a discharge diagnosis code of influenza,flu,Hospitalizations,United States,"county,state,hrr,msa","hrr,msa",2022-10-01,,ongoing,,BETA NSSP Influenza Emergency Department Visits,week,Week,weekly,,,All,None,hospitalized,,"Data is available for 78% of US emergency departments. California, Colorado, Missouri, Oklahoma, and Virginia have the most noticeable gaps in coverage, with many counties in those states having either no eligible EDs or having no recently reported data in NSSP. However, most states have some counties that do not contain any reporting EDs.
+
+NSSP does not report county-level data for all counties with reporting EDs; some reporting EDs are only included in state-level values.
+
+The following states report no data through NSSP at the county level: CA, WA, AK, AZ, AL, CO, SD, ND, MO, AR, FL, OH, NH, CT, NJ.
+
+South Dakota, Missouri, and territories report no data through NSSP at the state level.",Percentage,percent,other,bad,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,
+beta_nssp,pct_ed_visits_rsv,FALSE,pct_ed_visits_rsv_fa,FALSE,RSV Emergency Department Visits (Percent of total ED visits),pct_ed_visits_rsv_fa,"""",Percent of ED visits that had a discharge diagnosis code of RSV,TRUE,TRUE,Percent of ED visits that had a discharge diagnosis code of RSV,Percent of ED visits that had a discharge diagnosis code of rsv,rsv,Hospitalizations,United States,"county,state,hrr,msa","hrr,msa",2022-10-01,,ongoing,,BETA NSSP RSV Emergency Department Visits,week,Week,weekly,,,All,None,hospitalized,,"Data is available for 78% of US emergency departments. California, Colorado, Missouri, Oklahoma, and Virginia have the most noticeable gaps in coverage, with many counties in those states having either no eligible EDs or having no recently reported data in NSSP. However, most states have some counties that do not contain any reporting EDs.
+
+NSSP does not report county-level data for all counties with reporting EDs; some reporting EDs are only included in state-level values.
+
+The following states report no data through NSSP at the county level: CA, WA, AK, AZ, AL, CO, SD, ND, MO, AR, FL, OH, NH, CT, NJ.
+
+South Dakota, Missouri, and territories report no data through NSSP at the state level.",Percentage,percent,other,bad,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,
+beta_nssp,pct_ed_visits_combined,FALSE,pct_ed_visits_combined_fa,FALSE,"Emergency Department Visits for COVID, Influenza, and RSV Combined (Percent of total ED visits)",pct_ed_visits_combined_fa,"""","Percent of ED visits that had a discharge diagnosis code of COVID-19, influenza, or RSV",TRUE,FALSE,"Percent of ED visits that had a discharge diagnosis code of COVID-19, influenza, or RSV","Percent of ED visits that had a discharge diagnosis code of COVID-19, influenza, or rsv","covid, flu, rsv",Hospitalizations,United States,"county,state,hrr,msa","hrr,msa",2022-10-01,,ongoing,,"BETA NSSP Emergency Department Visits for COVID-19, Influenza, and RSV Combined",week,Week,weekly,,,All,None,hospitalized,,"Data is available for 78% of US emergency departments. California, Colorado, Missouri, Oklahoma, and Virginia have the most noticeable gaps in coverage, with many counties in those states having either no eligible EDs or having no recently reported data in NSSP. However, most states have some counties that do not contain any reporting EDs.
+
+NSSP does not report county-level data for all counties with reporting EDs; some reporting EDs are only included in state-level values.
+
+The following states report no data through NSSP at the county level: CA, WA, AK, AZ, AL, CO, SD, ND, MO, AR, FL, OH, NH, CT, NJ.
+
+South Dakota, Missouri, and territories report no data through NSSP at the state level.",Percentage,percent,other,bad,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,
+beta_nssp,pct_ed_visits_covid,TRUE,smoothed_pct_ed_visits_covid_fa,FALSE,"COVID Emergency Department Visits (Percent of total ED visits, 3-week average)",smoothed_pct_ed_visits_covid_fa,3wav,3-week moving average of percent of ED visits that had a discharge diagnosis code of COVID-19,TRUE,TRUE,3-week moving average of percent of ED visits that had a discharge diagnosis code of COVID-19,3-week moving average of percent of ED visits that had a discharge diagnosis code of COVID-19,covid,Hospitalizations,United States,"county,state,hrr,msa","hrr,msa",2022-10-01,,ongoing,,BETA NSSP COVID-19 Emergency Department Visits,week,Week,weekly,,,All,None,hospitalized,,"Data is available for 78% of US emergency departments. California, Colorado, Missouri, Oklahoma, and Virginia have the most noticeable gaps in coverage, with many counties in those states having either no eligible EDs or having no recently reported data in NSSP. However, most states have some counties that do not contain any reporting EDs.
+
+NSSP does not report county-level data for all counties with reporting EDs; some reporting EDs are only included in state-level values.
+
+The following states report no data through NSSP at the county level: CA, WA, AK, AZ, AL, CO, SD, ND, MO, AR, FL, OH, NH, CT, NJ.
+
+South Dakota, Missouri, and territories report no data through NSSP at the state level.",Percentage,percent,other,bad,TRUE,FALSE,FALSE,FALSE,FALSE,,,,,,
+beta_nssp,pct_ed_visits_influenza,TRUE,smoothed_pct_ed_visits_influenza_fa,FALSE,"Influenza Emergency Department Visits (Percent of total ED visits, 3-week average)",smoothed_pct_ed_visits_influenza_fa,3wav,3-week moving average of percent of ED visits that had a discharge diagnosis code of influenza,TRUE,TRUE,3-week moving average of percent of ED visits that had a discharge diagnosis code of influenza,3-week moving average of percent of ED visits that had a discharge diagnosis code of influenza,flu,Hospitalizations,United States,"county,state,hrr,msa","hrr,msa",2022-10-01,,ongoing,,BETA NSSP Influenza Emergency Department Visits,week,Week,weekly,,,All,None,hospitalized,,"Data is available for 78% of US emergency departments. California, Colorado, Missouri, Oklahoma, and Virginia have the most noticeable gaps in coverage, with many counties in those states having either no eligible EDs or having no recently reported data in NSSP. However, most states have some counties that do not contain any reporting EDs.
+
+NSSP does not report county-level data for all counties with reporting EDs; some reporting EDs are only included in state-level values.
+
+The following states report no data through NSSP at the county level: CA, WA, AK, AZ, AL, CO, SD, ND, MO, AR, FL, OH, NH, CT, NJ.
+
+South Dakota, Missouri, and territories report no data through NSSP at the state level.",Percentage,percent,other,bad,TRUE,FALSE,FALSE,FALSE,FALSE,,,,,,
+beta_nssp,pct_ed_visits_rsv,TRUE,smoothed_pct_ed_visits_rsv_fa,FALSE,"RSV Emergency Department Visits (Percent of total ED visits, 3-week average)",smoothed_pct_ed_visits_rsv_fa,3wav,3-week moving average of percent of ED visits that had a discharge diagnosis code of RSV,TRUE,TRUE,3-week moving average of percent of ED visits that had a discharge diagnosis code of RSV,3-week moving average of percent of ED visits that had a discharge diagnosis code of rsv,rsv,Hospitalizations,United States,"county,state,hrr,msa","hrr,msa",2022-10-01,,ongoing,,BETA NSSP RSV Emergency Department Visits,week,Week,weekly,,,All,None,hospitalized,,"Data is available for 78% of US emergency departments. California, Colorado, Missouri, Oklahoma, and Virginia have the most noticeable gaps in coverage, with many counties in those states having either no eligible EDs or having no recently reported data in NSSP. However, most states have some counties that do not contain any reporting EDs.
+
+NSSP does not report county-level data for all counties with reporting EDs; some reporting EDs are only included in state-level values.
+
+The following states report no data through NSSP at the county level: CA, WA, AK, AZ, AL, CO, SD, ND, MO, AR, FL, OH, NH, CT, NJ.
+
+South Dakota, Missouri, and territories report no data through NSSP at the state level.",Percentage,percent,other,bad,TRUE,FALSE,FALSE,FALSE,FALSE,,,,,,
+beta_nssp,pct_ed_visits_combined,TRUE,smoothed_pct_ed_visits_combined_fa,FALSE,"Emergency Department Visits for COVID, Influenza, and RSV Combined (Percent of total ED visits, 3 week average)",smoothed_pct_ed_visits_combined_fa,3wav,"3-week moving average of percent of ED visits that had a discharge diagnosis code of COVID-19, influenza, or RSV",TRUE,FALSE,"3-week moving average of percent of ED visits that had a discharge diagnosis code of COVID-19, influenza, or RSV","3-week moving average of percent of ED visits that had a discharge diagnosis code of COVID-19, influenza, or rsv","covid, flu, rsv",Hospitalizations,United States,"county,state,hrr,msa","hrr,msa",2022-10-01,,ongoing,,"BETA NSSP Emergency Department Visits for COVID-19, Influenza, and RSV Combined",week,Week,weekly,,,All,None,hospitalized,,"Data is available for 78% of US emergency departments. California, Colorado, Missouri, Oklahoma, and Virginia have the most noticeable gaps in coverage, with many counties in those states having either no eligible EDs or having no recently reported data in NSSP. However, most states have some counties that do not contain any reporting EDs.
+
+NSSP does not report county-level data for all counties with reporting EDs; some reporting EDs are only included in state-level values.
+
+The following states report no data through NSSP at the county level: CA, WA, AK, AZ, AL, CO, SD, ND, MO, AR, FL, OH, NH, CT, NJ.
+
+South Dakota, Missouri, and territories report no data through NSSP at the state level.",Percentage,percent,other,bad,TRUE,FALSE,FALSE,FALSE,FALSE,,,,,,
+beta_nssp,pct_ed_visits_covid,FALSE,pct_ed_visits_covid_fz,FALSE,COVID Emergency Department Visits (Percent of total ED visits),pct_ed_visits_covid_fz,"""",Percent of ED visits that had a discharge diagnosis code of COVID-19,TRUE,TRUE,Percent of ED visits that had a discharge diagnosis code of COVID-19,Percent of ED visits that had a discharge diagnosis code of COVID-19,covid,Hospitalizations,United States,"county,state,hrr,msa","hrr,msa",2022-10-01,,ongoing,,BETA NSSP COVID-19 Emergency Department Visits,week,Week,weekly,,,All,None,hospitalized,,"Data is available for 78% of US emergency departments. California, Colorado, Missouri, Oklahoma, and Virginia have the most noticeable gaps in coverage, with many counties in those states having either no eligible EDs or having no recently reported data in NSSP. However, most states have some counties that do not contain any reporting EDs.
+
+NSSP does not report county-level data for all counties with reporting EDs; some reporting EDs are only included in state-level values.
+
+The following states report no data through NSSP at the county level: CA, WA, AK, AZ, AL, CO, SD, ND, MO, AR, FL, OH, NH, CT, NJ.
+
+South Dakota, Missouri, and territories report no data through NSSP at the state level.",Percentage,percent,other,bad,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,
+beta_nssp,pct_ed_visits_influenza,FALSE,pct_ed_visits_influenza_fz,FALSE,Influenza Emergency Department Visits (Percent of total ED visits),pct_ed_visits_influenza_fz,"""",Percent of ED visits that had a discharge diagnosis code of influenza,TRUE,TRUE,Percent of ED visits that had a discharge diagnosis code of influenza,Percent of ED visits that had a discharge diagnosis code of influenza,flu,Hospitalizations,United States,"county,state,hrr,msa","hrr,msa",2022-10-01,,ongoing,,BETA NSSP Influenza Emergency Department Visits,week,Week,weekly,,,All,None,hospitalized,,"Data is available for 78% of US emergency departments. California, Colorado, Missouri, Oklahoma, and Virginia have the most noticeable gaps in coverage, with many counties in those states having either no eligible EDs or having no recently reported data in NSSP. However, most states have some counties that do not contain any reporting EDs.
+
+NSSP does not report county-level data for all counties with reporting EDs; some reporting EDs are only included in state-level values.
+
+The following states report no data through NSSP at the county level: CA, WA, AK, AZ, AL, CO, SD, ND, MO, AR, FL, OH, NH, CT, NJ.
+
+South Dakota, Missouri, and territories report no data through NSSP at the state level.",Percentage,percent,other,bad,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,
+beta_nssp,pct_ed_visits_rsv,FALSE,pct_ed_visits_rsv_fz,FALSE,RSV Emergency Department Visits (Percent of total ED visits),pct_ed_visits_rsv_fz,"""",Percent of ED visits that had a discharge diagnosis code of RSV,TRUE,TRUE,Percent of ED visits that had a discharge diagnosis code of RSV,Percent of ED visits that had a discharge diagnosis code of rsv,rsv,Hospitalizations,United States,"county,state,hrr,msa","hrr,msa",2022-10-01,,ongoing,,BETA NSSP RSV Emergency Department Visits,week,Week,weekly,,,All,None,hospitalized,,"Data is available for 78% of US emergency departments. California, Colorado, Missouri, Oklahoma, and Virginia have the most noticeable gaps in coverage, with many counties in those states having either no eligible EDs or having no recently reported data in NSSP. However, most states have some counties that do not contain any reporting EDs.
+
+NSSP does not report county-level data for all counties with reporting EDs; some reporting EDs are only included in state-level values.
+
+The following states report no data through NSSP at the county level: CA, WA, AK, AZ, AL, CO, SD, ND, MO, AR, FL, OH, NH, CT, NJ.
+
+South Dakota, Missouri, and territories report no data through NSSP at the state level.",Percentage,percent,other,bad,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,
+beta_nssp,pct_ed_visits_combined,FALSE,pct_ed_visits_combined_fz,FALSE,"Emergency Department Visits for COVID, Influenza, and RSV Combined (Percent of total ED visits)",pct_ed_visits_combined_fz,"""","Percent of ED visits that had a discharge diagnosis code of COVID-19, influenza, or RSV",TRUE,FALSE,"Percent of ED visits that had a discharge diagnosis code of COVID-19, influenza, or RSV","Percent of ED visits that had a discharge diagnosis code of COVID-19, influenza, or rsv","covid, flu, rsv",Hospitalizations,United States,"county,state,hrr,msa","hrr,msa",2022-10-01,,ongoing,,"BETA NSSP Emergency Department Visits for COVID-19, Influenza, and RSV Combined",week,Week,weekly,,,All,None,hospitalized,,"Data is available for 78% of US emergency departments. California, Colorado, Missouri, Oklahoma, and Virginia have the most noticeable gaps in coverage, with many counties in those states having either no eligible EDs or having no recently reported data in NSSP. However, most states have some counties that do not contain any reporting EDs.
+
+NSSP does not report county-level data for all counties with reporting EDs; some reporting EDs are only included in state-level values.
+
+The following states report no data through NSSP at the county level: CA, WA, AK, AZ, AL, CO, SD, ND, MO, AR, FL, OH, NH, CT, NJ.
+
+South Dakota, Missouri, and territories report no data through NSSP at the state level.",Percentage,percent,other,bad,FALSE,FALSE,FALSE,FALSE,FALSE,,,,,,
+beta_nssp,pct_ed_visits_covid,TRUE,smoothed_pct_ed_visits_covid_fz,FALSE,"COVID Emergency Department Visits (Percent of total ED visits, 3-week average)",smoothed_pct_ed_visits_covid_fz,3wav,3-week moving average of percent of ED visits that had a discharge diagnosis code of COVID-19,TRUE,TRUE,3-week moving average of percent of ED visits that had a discharge diagnosis code of COVID-19,3-week moving average of percent of ED visits that had a discharge diagnosis code of COVID-19,covid,Hospitalizations,United States,"county,state,hrr,msa","hrr,msa",2022-10-01,,ongoing,,BETA NSSP COVID-19 Emergency Department Visits,week,Week,weekly,,,All,None,hospitalized,,"Data is available for 78% of US emergency departments. California, Colorado, Missouri, Oklahoma, and Virginia have the most noticeable gaps in coverage, with many counties in those states having either no eligible EDs or having no recently reported data in NSSP. However, most states have some counties that do not contain any reporting EDs.
+
+NSSP does not report county-level data for all counties with reporting EDs; some reporting EDs are only included in state-level values.
+
+The following states report no data through NSSP at the county level: CA, WA, AK, AZ, AL, CO, SD, ND, MO, AR, FL, OH, NH, CT, NJ.
+
+South Dakota, Missouri, and territories report no data through NSSP at the state level.",Percentage,percent,other,bad,TRUE,FALSE,FALSE,FALSE,FALSE,,,,,,
+beta_nssp,pct_ed_visits_influenza,TRUE,smoothed_pct_ed_visits_influenza_fz,FALSE,"Influenza Emergency Department Visits (Percent of total ED visits, 3-week average)",smoothed_pct_ed_visits_influenza_fz,3wav,3-week moving average of percent of ED visits that had a discharge diagnosis code of influenza,TRUE,TRUE,3-week moving average of percent of ED visits that had a discharge diagnosis code of influenza,3-week moving average of percent of ED visits that had a discharge diagnosis code of influenza,flu,Hospitalizations,United States,"county,state,hrr,msa","hrr,msa",2022-10-01,,ongoing,,BETA NSSP Influenza Emergency Department Visits,week,Week,weekly,,,All,None,hospitalized,,"Data is available for 78% of US emergency departments. California, Colorado, Missouri, Oklahoma, and Virginia have the most noticeable gaps in coverage, with many counties in those states having either no eligible EDs or having no recently reported data in NSSP. However, most states have some counties that do not contain any reporting EDs.
+
+NSSP does not report county-level data for all counties with reporting EDs; some reporting EDs are only included in state-level values.
+
+The following states report no data through NSSP at the county level: CA, WA, AK, AZ, AL, CO, SD, ND, MO, AR, FL, OH, NH, CT, NJ.
+
+South Dakota, Missouri, and territories report no data through NSSP at the state level.",Percentage,percent,other,bad,TRUE,FALSE,FALSE,FALSE,FALSE,,,,,,
+beta_nssp,pct_ed_visits_rsv,TRUE,smoothed_pct_ed_visits_rsv_fz,FALSE,"RSV Emergency Department Visits (Percent of total ED visits, 3-week average)",smoothed_pct_ed_visits_rsv_fz,3wav,3-week moving average of percent of ED visits that had a discharge diagnosis code of RSV,TRUE,TRUE,3-week moving average of percent of ED visits that had a discharge diagnosis code of RSV,3-week moving average of percent of ED visits that had a discharge diagnosis code of rsv,rsv,Hospitalizations,United States,"county,state,hrr,msa","hrr,msa",2022-10-01,,ongoing,,BETA NSSP RSV Emergency Department Visits,week,Week,weekly,,,All,None,hospitalized,,"Data is available for 78% of US emergency departments. California, Colorado, Missouri, Oklahoma, and Virginia have the most noticeable gaps in coverage, with many counties in those states having either no eligible EDs or having no recently reported data in NSSP. However, most states have some counties that do not contain any reporting EDs.
+
+NSSP does not report county-level data for all counties with reporting EDs; some reporting EDs are only included in state-level values.
+
+The following states report no data through NSSP at the county level: CA, WA, AK, AZ, AL, CO, SD, ND, MO, AR, FL, OH, NH, CT, NJ.
+
+South Dakota, Missouri, and territories report no data through NSSP at the state level.",Percentage,percent,other,bad,TRUE,FALSE,FALSE,FALSE,FALSE,,,,,,
+beta_nssp,pct_ed_visits_combined,TRUE,smoothed_pct_ed_visits_combined_fz,FALSE,"Emergency Department Visits for COVID, Influenza, and RSV Combined (Percent of total ED visits, 3 week average)",smoothed_pct_ed_visits_combined_fz,3wav,"3-week moving average of percent of ED visits that had a discharge diagnosis code of COVID-19, influenza, or RSV",TRUE,FALSE,"3-week moving average of percent of ED visits that had a discharge diagnosis code of COVID-19, influenza, or RSV","3-week moving average of percent of ED visits that had a discharge diagnosis code of COVID-19, influenza, or rsv","covid, flu, rsv",Hospitalizations,United States,"county,state,hrr,msa","hrr,msa",2022-10-01,,ongoing,,"BETA NSSP Emergency Department Visits for COVID-19, Influenza, and RSV Combined",week,Week,weekly,,,All,None,hospitalized,,"Data is available for 78% of US emergency departments. California, Colorado, Missouri, Oklahoma, and Virginia have the most noticeable gaps in coverage, with many counties in those states having either no eligible EDs or having no recently reported data in NSSP. However, most states have some counties that do not contain any reporting EDs.
+
+NSSP does not report county-level data for all counties with reporting EDs; some reporting EDs are only included in state-level values.
+
+The following states report no data through NSSP at the county level: CA, WA, AK, AZ, AL, CO, SD, ND, MO, AR, FL, OH, NH, CT, NJ.
+
+South Dakota, Missouri, and territories report no data through NSSP at the state level.",Percentage,percent,other,bad,TRUE,FALSE,FALSE,FALSE,FALSE,,,,,,
