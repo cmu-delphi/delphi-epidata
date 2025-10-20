@@ -26,6 +26,18 @@ Pandemic"](https://www.pnas.org/topic/548) in *PNAS*:
 
 Research publications using the survey data include:
 
+- K.B. Smith, S. Shen, and B.T. Denton (2025). [Can past variants of SARS-CoV-2
+  predict the impact of future variants? Machine learning for early warning
+  of US counties at risk](https://doi.org/10.1007/s10729-025-09728-4).
+  *Health Care Management Science*.
+- E.M. Fahle, T.J. Kane, T. Patterson, S.F. Reardon, D.O. Staiger, and E.A. Stuart
+  (2025). [School District and Community Factors Associated with Test Score
+  Declines During the COVID-19 Pandemic](https://doi.org/10.1177/01614681251369937).
+  *Teachers College Record* 127 (6-7), 87-123.
+- J. C. Taube, Z. Susswein, V. Colizza, and S. Bansal (2025). [Characterising
+  non-household contact patterns relevant to respiratory transmission in the
+  USA: analysis of a cross-sectional survey](https://doi.org/10.1016/j.landig.2025.100888).
+  *The Lancet Digital Health*, 7 (8): 100888.
 - S. Santos, M. Humbard, A. Lambrou et al. (2025). [The SARS-CoV-2 test
   scale-up in the USA: an analysis of the number of tests produced and used
   over time and their modelled impact on the COVID-19 pandemic](https://doi.org/10.1016/S2468-2667(24)00279-2).
@@ -39,7 +51,7 @@ Research publications using the survey data include:
   *Journal of the National Medical Association* 116 (5), 526-538.
 - C.K. Ettman, E. Badillo-Goicoechea, E.A. Stuart, and L.T. Dean (2024).
   [Area-level credit scores and symptoms of depression and anxiety in adults](https://doi.org/10.1093/aje/kwae275).
-  *American Journal of Epidemiology* kwae275.
+  *American Journal of Epidemiology* 194 (5), 1208-1220.
 - C.K. Ettman, E. Badillo-Goicoechea, E.A. Stuart (2024). [Financial
   strain, schooling modality and mental health of US adults living
   with children during the COVID-19 pandemic](https://doi.org/10.1136/jech-2023-221672).
