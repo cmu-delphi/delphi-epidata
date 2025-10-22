@@ -87,9 +87,9 @@ def handle():
     if not (len(geo_values) == 1 and geo_values[0] == "*"):
         q.where_strings("geo_value", geo_values)
 
-    q.apply_time_filter("time_type", "time_value", time_set)
+    q.apply_time_filter("time_type", "epiweek", time_set)
     q.apply_issues_filter(db_table_name, issues)
-    q.apply_as_of_filter(db_table_name, as_of, use_source_signal = False)
+    q.apply_as_of_filter(db_table_name, as_of, time_value_field = "epiweek", use_source_signal = False)
 
     # send query
     return execute_query(str(q), q.params, fields_string, fields_int, fields_float)
