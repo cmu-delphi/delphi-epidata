@@ -10,6 +10,7 @@ from .._query import execute_query, QueryBuilder
 from .._validate import require_all
 
 bp = Blueprint("rvdss", __name__)
+alias = "rv"
 
 db_table_name = "rvdss"
 
@@ -24,7 +25,7 @@ def handle():
     as_of = extract_date("as_of")
 
     # basic query info
-    q = QueryBuilder(db_table_name, "rv")
+    q = QueryBuilder(db_table_name, alias)
 
     fields_string = [
         "geo_type",
