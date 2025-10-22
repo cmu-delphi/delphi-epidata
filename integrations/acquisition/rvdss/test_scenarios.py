@@ -12,7 +12,6 @@ import delphi.operations.secrets as secrets
 import mysql.connector
 import pandas as pd
 from pathlib import Path
-import pdb 
 
 # py3tester coverage target (equivalent to `import *`)
 # __test_target__ = 'delphi.epidata.acquisition.covid_hosp.facility.update'
@@ -43,26 +42,26 @@ class AcquisitionTests(unittest.TestCase):
         host='delphi_database_epidata',
         database='epidata')
     epidata_cur = epidata_cnx.cursor()
-    
+
     epidata_cur.execute('truncate table rvdss')
     epidata_cur.execute('DELETE from api_user')
-    epidata_cur.execute('INSERT INTO api_user(api_key, email) VALUES ("key", "emai")')
+    epidata_cur.execute('INSERT INTO api_user(api_key, email) VALUES ("key", "email")')
     epidata_cnx.commit()
     epidata_cur.close()
     epidata_cnx.close()
-    
+
   def test_rvdss_repiratory_detections(self):
     #TEST_DIR = Path(__file__).parent.parent.parent
-    #detection_data = pd.read_csv(str(TEST_DIR) + "/testdata/acquisition/rvdss/RVD_CurrentWeekTable_Formatted.csv")  
-    #detection_subset = detection_data[(detection_data['geo_value'].isin(['nl', 'nb'])) & (detection_data['time_value'].isin(['2024-08-31', '2024-09-07'])) ]  
-      
+    #detection_data = pd.read_csv(str(TEST_DIR) + "/testdata/acquisition/rvdss/RVD_CurrentWeekTable_Formatted.csv")
+    #detection_subset = detection_data[(detection_data['geo_value'].isin(['nl', 'nb'])) & (detection_data['time_value'].isin(['2024-08-31', '2024-09-07'])) ]
+
     # make sure the data does not yet exist
     with self.subTest(name='no data yet'):
       response = Epidata.rvdss(geo_type='province',
                                time_values= ['2024-08-31', '2024-09-07'],
                                geo_value = ['nl','nb'])
       self.assertEqual(response['result'], -2, response)
-      
+
 
     # # acquire sample data into local database
     # # TODO: Define example data
@@ -112,4 +111,3 @@ class AcquisitionTests(unittest.TestCase):
     #   self.assertEqual(len(response['epidata']), 2)
     pass
 
- 
