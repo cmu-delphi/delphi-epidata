@@ -561,6 +561,26 @@ def handle_geo_coverage():
 
     return execute_query(q.query, q.params, fields_string, [], [])
 
+@bp.route("/geo_indicator_coverage", methods=("GET", "POST"))
+def handle_geo_indicator_coverage():
+    source_signal_sets = parse_source_signal_sets()
+    source_signal_sets = restrict_by_roles(source_signal_sets)
+    source_signal_sets, _ = create_source_signal_alias_mapper(source_signal_sets)
+
+    q = QueryBuilder("coverage_crossref_v", "c")
+    fields_string = ["geo_type", "geo_value"]
+
+    q.set_fields(fields_string)
+
+    q.apply_source_signal_filters("source", "signal", source_signal_sets)
+    q.set_sort_order("geo_type", "geo_value")
+    q.group_by = ["c." + field for field in fields_string] # this condenses duplicate results, similar to `SELECT DISTINCT`
+
+    def transform_row(row, proxy):
+        return f"{row['geo_type']}:{row['geo_value']}"
+
+    return execute_query(q.query, q.params, fields_string, [], [], transform=transform_row)
+
 @bp.route("/anomalies", methods=("GET", "POST"))
 def handle_anomalies():
     """
