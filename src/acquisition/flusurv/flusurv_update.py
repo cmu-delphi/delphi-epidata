@@ -191,11 +191,13 @@ def main():
     # fmt: off
     parser.add_argument(
         "location",
+        type=str,
         help='location for which data should be scraped (e.g. "CA" or "all")'
     )
     parser.add_argument(
         "--max-age",
         default=MAX_AGE_TO_CONSIDER_WEEKS,
+        type=int,
         help="age in weeks of data to ingest"
     )
     parser.add_argument(
