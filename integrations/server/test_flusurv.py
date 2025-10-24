@@ -10,6 +10,8 @@ class FlusurvTest(DelphiTestBase):
 
     def test_flusurv(self):
         """Basic integration test for flusurv endpoint"""
+        # TODO: Should test out the whole pipeline, where we mock the source
+        # API by pulling more realistic data from a local JSON.
         self.cur.execute(
             """
             INSERT INTO `flusurv`(

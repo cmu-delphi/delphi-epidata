@@ -67,14 +67,13 @@ def fetch_json(path, payload, call_count=1, requests_impl=requests):
         "Accept-Encoding": "gzip",
         "User-Agent": USER_AGENT,
     }
-    if payload is not None:
-        headers["Content-Type"] = "application/json;charset=UTF-8"
 
     # send the request and read the response
     if payload is None:
         method = requests_impl.get
         data = None
     else:
+        headers["Content-Type"] = "application/json;charset=UTF-8"
         method = requests_impl.post
         data = json.dumps(payload)
     resp = method(flusurv_url, headers=headers, data=data)
@@ -100,8 +99,10 @@ def fetch_json(path, payload, call_count=1, requests_impl=requests):
 def mmwrid_to_epiweek(mmwrid):
     """Convert a CDC week index into an epiweek."""
 
-    # Add the difference in IDs, which are sequential, to a reference
-    # epiweek, which is 2003w40 in this case.
+    # Add the difference in IDs, which are sequential, to a reference epiweek,
+    # which is 2003w40 in this case. This is the earliest date we see in the
+    # returned data. The index-1 week on this scale is the first week of
+    # 1962.
     epiweek_200340 = EpiDate(2003, 9, 28)
     mmwrid_200340 = 2179
     return epiweek_200340.add_weeks(mmwrid - mmwrid_200340).get_ew()
@@ -109,21 +110,19 @@ def mmwrid_to_epiweek(mmwrid):
 
 class FlusurvMetadata:
     def __init__(self, max_age_weeks):
-        self.metadata = self._fetch_flusurv_metadata()
-
-        self.issue = self._get_current_issue()
         self.max_age_weeks = max_age_weeks
-        self.seasonids = self._get_recent_seasonids()
-
-        self.location_to_code = self._make_location_to_code_map()
-        self.locations = self.location_to_code.keys()
-
         self.id_to_group = ID_TO_LABEL_MAP
-        self.id_to_season = self._make_id_season_map()
+
+        self._fetch_flusurv_metadata()
+
+        self._get_current_issue()
+        self._get_recent_seasonids()
+        self._make_location_to_code_map()
+        self._make_id_season_map()
 
     def _fetch_flusurv_metadata(self):
         """Return FluSurv JSON metadata object."""
-        return fetch_json(
+        self.metadata = fetch_json(
             "PostPhase03DataTool",
             {"appversion": "Public", "key": "", "injson": []}
         )
@@ -151,7 +150,8 @@ class FlusurvMetadata:
             location_to_code[location_name] = (
                 int(location["networkid"]), int(location["catchmentid"])
             )
-        return location_to_code
+        self.location_to_code = location_to_code
+        self.locations = self.location_to_code.keys()
 
     def _get_current_issue(self):
         """
@@ -163,17 +163,16 @@ class FlusurvMetadata:
         # extract
         date = datetime.strptime(self.metadata["loaddatetime"], "%b %d, %Y")
 
-        # convert and return
-        return EpiDate(date.year, date.month, date.day).get_ew()
+        # convert
+        self.issue = EpiDate(date.year, date.month, date.day).get_ew()
 
     def _get_recent_seasonids(self):
-        # Ignore seasons with all dates older than one year
-        seasonids = {
+        # Ignore seasons with all dates older than `self.max_age_weeks` (from
+        # user command line argument `max_age`)
+        self.seasonids = {
             season_blob["seasonid"] for season_blob in self.metadata["seasons"]
             if delta_epiweeks(mmwrid_to_epiweek(season_blob["endweek"]), self.issue) < self.max_age_weeks
         }
-
-        return seasonids
 
     def _make_id_season_map(self):
         """Create a map from seasonid to season description, in the format "YYYY-YY" """
@@ -181,7 +180,7 @@ class FlusurvMetadata:
         for season in self.metadata["seasons"]:
             id_to_label[season["seasonid"]] = season["label"].strip()
 
-        return id_to_label
+        self.id_to_season = id_to_label
 
 
 class FlusurvLocationFetcher:
