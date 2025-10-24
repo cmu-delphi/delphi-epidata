@@ -21,7 +21,7 @@ This data source of respiratory virus detections in Canada is collected by the [
 NOTE: Pandemic COVID-19 is not reported in this data source.
 
 | Signal                         | Description                                                                                                                                 |
-|---------------------|---------------------------------------------------|
+|----------------------|-------------------------------------------------|
 | `sarscov2_tests`               | Number of SARS-CoV-2 laboratory tests <br/> **Earliest Date Available:** 2022-09-03                                                         |
 | `sarscov2_positive_tests`      | Number of Positive SARS-CoV-2 laboratory tests <br/> **Earliest Date Available:** 2022-09-03                                                |
 | `sarscov2_pct_positive`        | Percentage of SARS-CoV-2 laboratory tests that are positive <br/> **Earliest Date Available:** 2022-09-03                                   |
@@ -180,7 +180,17 @@ For epiweeks 5 and 47 of the 2019-2020 season, the reports are empty, so data fr
 
 Data is reported around \~5 days after the end of an epiweek, up to and including the epiweek, so there is usually a lag of around 5 days. For June-August 2025, the dashboard containing the data was updated biweekly, so there was additional lag.
 
-The data experiences backfill as counts are finalized in subsequent weeks.
+The data experiences backfill as counts are finalized in subsequent weeks:
+
+-   Across all indicators, the top 10% observations with the largest relative spread have had values revised by 25-33% or more.
+
+-   `flu_pct_positive`, `flua_pct_positive`, `fluah1n1pdm09_positive_tests` and related indicators have larger spread between updates (\~70-90% of obs have more than 10% relative spread vs 20-30% in other signals).
+
+-   `hpiv1_`,`hpiv2_`,`hpiv3_` and `hpiv4_` indicators rarely have revisions, and across all indicators, most observations have less than 3 revisions (99% of observations).
+
+-   Across all indicators, 90% of observations with revisions are revised to within 20% of their final value (and stay within that 20% range) 1-3 weeks after the time_value the obs is being reported for.
+
+-   95% of observations with revisions are finalized within 3-4 weeks of the time_value.`sarscov2_*` and `flub_*` indicators are finalized fairly fast (95% finalized after 12 days). `fluah3_positive_tests` and `adv_*` indicators are finalized fairly slowly (95% finalized after 30-40 days).
 
 ## Source and Licensing
 
