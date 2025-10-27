@@ -40,8 +40,8 @@ See also:
 | rate_age_7   | double      | YES  |     | NULL    |                |
 +--------------+-------------+------+-----+---------+----------------+
 id: unique identifier for each record
-release_date: the date when this record was first published by the CDC
-issue: the epiweek of publication (e.g. issue 201453 includes epiweeks up to
+release_date: the date when this record was first received by Delphi
+issue: the epiweek of receipt by Delphi (e.g. issue 201453 includes epiweeks up to
   and including 2014w53, but not 2015w01 or following)
 epiweek: the epiweek during which the data was collected
 location: the name of the catchment (e.g. 'network_all', 'CA', 'NY_albany')
@@ -138,10 +138,12 @@ def update(fetcher, location, test_mode=False):
     # insert/update each row of data (one per epiweek)
     for epiweek in epiweeks:
         lag = delta_epiweeks(epiweek, fetcher.metadata.issue)
-        if lag > MAX_AGE_TO_CONSIDER_WEEKS:
-            # Ignore values older than one year, as (1) they are assumed not to
-            # change, and (2) it would adversely affect database performance if all
-            # values (including duplicates) were stored on each run.
+        if lag > fetcher.metadata.max_age_weeks:
+            # Ignore obs older than `max_age_weeks` from user command line
+            # argument `max_age`. We restricted our FluSurv API call to only
+            # seasons older than `max_age_weeks` (in order to reduce the
+            # amount of data being pulled), but the season by the cutoff date
+            # may still have some weeks older than we'd like to include.
             continue
 
         missing_expected_groups = EXPECTED_GROUPS - data[epiweek].keys()
