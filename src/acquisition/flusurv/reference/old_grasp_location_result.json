@@ -1,4 +1,8 @@
+### The JSON format is invalid as-is. To be able to read these reference files
+### into python, first remove the comments.
+#
 ### Old location-specific API response from https://gis.cdc.gov/GRASP/Flu3/PostPhase03GetData?appVersion=Public
+#
 # with payload
 #    {
 #        "appversion": "Public",
@@ -15,27 +19,27 @@
             ]
         },
     'seasons': [
-            {'description': 'Season 2003-04', 'endweek': 2231, 'label': '2003-04', 'seasonid': 43, 'startweek': 2179, 'color': 'Dark Purple', 'color_hexvalue': '#4A298B'}, 
-            {'description': 'Season 2004-05', 'endweek': 2283, 'label': '2004-05', 'seasonid': 44, 'startweek': 2232, 'color': 'Brown', 'color_hexvalue': '#76522E'}, 
-            {'description': 'Season 2005-06', 'endweek': 2335, 'label': '2005-06', 'seasonid': 45, 'startweek': 2284, 'color': 'Salmon', 'color_hexvalue': '#C76751'}, 
-            {'description': 'Season 2006-07', 'endweek': 2387, 'label': '2006-07', 'seasonid': 46, 'startweek': 2336, 'color': 'Purple', 'color_hexvalue': '#B92CC6'}, 
-            {'description': 'Season 2007-08', 'endweek': 2439, 'label': '2007-08', 'seasonid': 47, 'startweek': 2388, 'color': 'Blue', 'color_hexvalue': '#2A44C8'}, 
-            {'description': 'Season 2008-09', 'endweek': 2487, 'label': '2008-09', 'seasonid': 48, 'startweek': 2440, 'color': 'Green', 'color_hexvalue': '#299A42'}, 
-            {'description': 'Season 2009-10', 'endweek': 2544, 'label': '2009-10', 'seasonid': 49, 'startweek': 2488, 'color': 'Red', 'color_hexvalue': '#A12732'}, 
-            {'description': 'Season 2010-11', 'endweek': 2596, 'label': '2010-11', 'seasonid': 50, 'startweek': 2545, 'color': 'Mustard', 'color_hexvalue': '#BDAA2A'}, 
-            {'description': 'Season 2011-12', 'endweek': 2648, 'label': '2011-12', 'seasonid': 51, 'startweek': 2597, 'color': 'Light Blue', 'color_hexvalue': '#3289A4'}, 
-            {'description': 'Season 2012-13', 'endweek': 2700, 'label': '2012-13', 'seasonid': 52, 'startweek': 2649, 'color': 'Grey', 'color_hexvalue': '#5E5E5E'}, 
-            {'description': 'Season 2013-14', 'endweek': 2752, 'label': '2013-14', 'seasonid': 53, 'startweek': 2701, 'color': 'Light Blue', 'color_hexvalue': '#42B5C8'}, 
-            {'description': 'Season 2014-15', 'endweek': 2805, 'label': '2014-15', 'seasonid': 54, 'startweek': 2753, 'color': 'Mint', 'color_hexvalue': '#4EC87B'}, 
-            {'description': 'Season 2015-16', 'endweek': 2857, 'label': '2015-16', 'seasonid': 55, 'startweek': 2806, 'color': 'Orange', 'color_hexvalue': '#C7852E'}, 
-            {'description': 'Season 2016-17', 'endweek': 2909, 'label': '2016-17', 'seasonid': 56, 'startweek': 2858, 'color': 'Purple', 'color_hexvalue': '#7F42A9'}, 
-            {'description': 'Season 2017-18', 'endweek': 2961, 'label': '2017-18', 'seasonid': 57, 'startweek': 2910, 'color': 'Lime', 'color_hexvalue': '#8AC73C'}, 
-            {'description': 'Season 2018-19', 'endweek': 3013, 'label': '2018-19', 'seasonid': 58, 'startweek': 2962, 'color': 'Brown', 'color_hexvalue': '#A06C3A'}, 
+            {'description': 'Season 2003-04', 'endweek': 2231, 'label': '2003-04', 'seasonid': 43, 'startweek': 2179, 'color': 'Dark Purple', 'color_hexvalue': '#4A298B'},
+            {'description': 'Season 2004-05', 'endweek': 2283, 'label': '2004-05', 'seasonid': 44, 'startweek': 2232, 'color': 'Brown', 'color_hexvalue': '#76522E'},
+            {'description': 'Season 2005-06', 'endweek': 2335, 'label': '2005-06', 'seasonid': 45, 'startweek': 2284, 'color': 'Salmon', 'color_hexvalue': '#C76751'},
+            {'description': 'Season 2006-07', 'endweek': 2387, 'label': '2006-07', 'seasonid': 46, 'startweek': 2336, 'color': 'Purple', 'color_hexvalue': '#B92CC6'},
+            {'description': 'Season 2007-08', 'endweek': 2439, 'label': '2007-08', 'seasonid': 47, 'startweek': 2388, 'color': 'Blue', 'color_hexvalue': '#2A44C8'},
+            {'description': 'Season 2008-09', 'endweek': 2487, 'label': '2008-09', 'seasonid': 48, 'startweek': 2440, 'color': 'Green', 'color_hexvalue': '#299A42'},
+            {'description': 'Season 2009-10', 'endweek': 2544, 'label': '2009-10', 'seasonid': 49, 'startweek': 2488, 'color': 'Red', 'color_hexvalue': '#A12732'},
+            {'description': 'Season 2010-11', 'endweek': 2596, 'label': '2010-11', 'seasonid': 50, 'startweek': 2545, 'color': 'Mustard', 'color_hexvalue': '#BDAA2A'},
+            {'description': 'Season 2011-12', 'endweek': 2648, 'label': '2011-12', 'seasonid': 51, 'startweek': 2597, 'color': 'Light Blue', 'color_hexvalue': '#3289A4'},
+            {'description': 'Season 2012-13', 'endweek': 2700, 'label': '2012-13', 'seasonid': 52, 'startweek': 2649, 'color': 'Grey', 'color_hexvalue': '#5E5E5E'},
+            {'description': 'Season 2013-14', 'endweek': 2752, 'label': '2013-14', 'seasonid': 53, 'startweek': 2701, 'color': 'Light Blue', 'color_hexvalue': '#42B5C8'},
+            {'description': 'Season 2014-15', 'endweek': 2805, 'label': '2014-15', 'seasonid': 54, 'startweek': 2753, 'color': 'Mint', 'color_hexvalue': '#4EC87B'},
+            {'description': 'Season 2015-16', 'endweek': 2857, 'label': '2015-16', 'seasonid': 55, 'startweek': 2806, 'color': 'Orange', 'color_hexvalue': '#C7852E'},
+            {'description': 'Season 2016-17', 'endweek': 2909, 'label': '2016-17', 'seasonid': 56, 'startweek': 2858, 'color': 'Purple', 'color_hexvalue': '#7F42A9'},
+            {'description': 'Season 2017-18', 'endweek': 2961, 'label': '2017-18', 'seasonid': 57, 'startweek': 2910, 'color': 'Lime', 'color_hexvalue': '#8AC73C'},
+            {'description': 'Season 2018-19', 'endweek': 3013, 'label': '2018-19', 'seasonid': 58, 'startweek': 2962, 'color': 'Brown', 'color_hexvalue': '#A06C3A'},
             {'description': 'Season 2019-20', 'endweek': 3065, 'label': '2019-20', 'seasonid': 59, 'startweek': 3014, 'color': 'Light Orange', 'color_hexvalue': '#FFCF48'}
         ],
     'mmwr': [
-        {'mmwrid': 2179, 'weekend': '2003-10-04', 'weeknumber': 40, 'weekstart': '2003-09-28', 'year': 2003, 'yearweek': 200340, 'seasonid': 43, 'label': '40', 'weekendlabel': 'Oct 04, 2003', 'weekendlabel2': 'Oct-04-2003'}, 
-        {'mmwrid': 2180, 'weekend': '2003-10-11', 'weeknumber': 41, 'weekstart': '2003-10-05', 'year': 2003, 'yearweek': 200341, 'seasonid': 43, 'label': '', 'weekendlabel': 'Oct 11, 2003', 'weekendlabel2': 'Oct-11-2003'}, 
+        {'mmwrid': 2179, 'weekend': '2003-10-04', 'weeknumber': 40, 'weekstart': '2003-09-28', 'year': 2003, 'yearweek': 200340, 'seasonid': 43, 'label': '40', 'weekendlabel': 'Oct 04, 2003', 'weekendlabel2': 'Oct-04-2003'},
+        {'mmwrid': 2180, 'weekend': '2003-10-11', 'weeknumber': 41, 'weekstart': '2003-10-05', 'year': 2003, 'yearweek': 200341, 'seasonid': 43, 'label': '', 'weekendlabel': 'Oct 11, 2003', 'weekendlabel2': 'Oct-11-2003'},
         {'mmwrid': 2181, 'weekend': '2003-10-18', 'weeknumber': 42, 'weekstart': '2003-10-12', 'year': 2003, 'yearweek': 200342, 'seasonid': 43, 'label': '', 'weekendlabel': 'Oct 18, 2003', 'weekendlabel2': 'Oct-18-2003'},
         ...
     ]

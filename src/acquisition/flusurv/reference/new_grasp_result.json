@@ -1,4 +1,8 @@
+### The JSON format is invalid as-is. To be able to read these reference files
+### into python, first remove the comments.
+#
 ### New API response from https://gis.cdc.gov/GRASP/Flu3/PostPhase03DataTool?appVersion=Public
+#
 # with payload
 #     {"appversion": "Public", "key": "", "injson": []}
 {

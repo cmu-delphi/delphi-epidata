@@ -115,8 +115,8 @@ class FlusurvMetadata:
 
         self._fetch_flusurv_metadata()
 
-        self._get_current_issue()
-        self._get_recent_seasonids()
+        self._determine_issue()
+        self._set_recent_seasonids()
         self._make_location_to_code_map()
         self._make_id_season_map()
 
@@ -153,9 +153,13 @@ class FlusurvMetadata:
         self.location_to_code = location_to_code
         self.locations = self.location_to_code.keys()
 
-    def _get_current_issue(self):
+    def _determine_issue(self):
         """
         Extract the current issue from the FluSurv metadata result.
+
+        Note: For each FluSurv API pull, only one issue date is listed. For
+        time values and locations we've seen before, we can't differentiate
+        which values were updated and which are the same.
 
         Args:
             metadata: dictionary representing a JSON response from the FluSurv API
@@ -166,7 +170,7 @@ class FlusurvMetadata:
         # convert
         self.issue = EpiDate(date.year, date.month, date.day).get_ew()
 
-    def _get_recent_seasonids(self):
+    def _set_recent_seasonids(self):
         # Ignore seasons with all dates older than `self.max_age_weeks` (from
         # user command line argument `max_age`)
         self.seasonids = {
