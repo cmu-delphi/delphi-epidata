@@ -40,13 +40,13 @@ You should now have the following directory structure:
 ```
 
 and you should be in the `driver` directory.
-You can now execute `make` commands.
+You can now execute `make` commands (but only from the `driver` directory).
 
 ```sh
 # Create all docker containers: db, web, redis, and python
 $ [sudo] make all
 
-# Run tests
+# Run python tests
 $ [sudo] make test
 
 # To drop into debugger on error
@@ -57,7 +57,7 @@ $ [sudo] make test pdb=1
 $ [sudo] make test test=repos/delphi/delphi-epidata/integrations/acquisition
 $ [sudo] make test test=repos/delphi/delphi-epidata/integrations/acquisition/covid_hosp/facility/test_scenarios.py
 
-# To run R tests
+# Run R tests
 $ [sudo] make r-test
 ```
 
@@ -78,6 +78,7 @@ From the `driver` directory, run
 ```sh
 # If containers are not already started
 $ [sudo] make all
+
 # Starts a bash session inside the `delphi_web_python` container
 $ [sudo] make bash
 ```
@@ -97,13 +98,35 @@ $ python -m delphi.epidata.acquisition.flusurv.flusurv_update all
 
 You may need to add '$(M1)' flag to subcommands if using a new M\* chip Mac. The '$(M1)' flag is added to commands within the [Makefile](https://github.com/cmu-delphi/delphi-epidata/blob/cae43f8/dev/local/Makefile), so take a look there for guidance.
 
-## Other useful commands and information
+## Running local epidata API
+
+From the `driver` directory, run
 
 ```sh
 # Starts a MySQL prompt that can be used to query the local database.
 # This connection can be kept open while adding data to the database.
 $ [sudo] make sql
-# Cleans up the docker environment
+```
+
+If the container was successfully started, you should see a prompt that looks like `root@containerhash:/usr/src/app#`.
+
+From the container, open a Python session with `python` and then run
+
+```python
+from delphi.epidata.client.delphi_epidata import Epidata
+
+# use the local instance of the Epidata API
+Epidata.BASE_URL = 'http://delphi_web_epidata/epidata'
+
+# Run API calls as normal, e.g.
+Epidata.fluview(regions = "ny", epiweeks = Epidata.range(202340, 202342))
+```
+
+
+## Other useful commands and information
+
+```sh
+# Removes dangling docker images (old images after you've created a new build of the image)
 $ [sudo] make clean
 ```
 
