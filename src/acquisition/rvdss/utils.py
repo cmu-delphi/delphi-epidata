@@ -73,6 +73,13 @@ def check_date_format(date_string):
 
     return(new_date)
 
+def convert_date_to_int(date_string):
+    if re.search("[0-9]{4}-[0-9]{2}-[0-9]{2}",str(date_string)):
+        new_date = int(re.sub("-","",str(date_string)))
+    else:
+        new_date=date_string
+    return(new_date)
+
 def get_dashboard_update_date(base_url,headers):
     # Get update date
     update_date_url =  base_url + "RVD_UpdateDate.csv"
@@ -206,6 +213,11 @@ def get_positive_data(base_url,headers,update_date):
             assert all([0 <= val <= 100 or math.isnan(val) for val in  df[df.columns[k]]]), "Percentage not from 0-100"
 
     df = df.reset_index()
+    
+    # convert dates to integers
+    df['time_value'] = [convert_date_to_int(t) for t in df['time_value']]
+    df['issue'] = [convert_date_to_int(t) for t in df['issue']]
+
     return(df.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'],verify_integrity=True))
 
 def get_detections_data(base_url,headers,update_date):
@@ -243,6 +255,10 @@ def get_detections_data(base_url,headers,update_date):
     df_detections=df_detections.rename(columns={'reportinglaboratory':"geo_value",'date':"time_value"})
     df_detections['geo_value'] = [abbreviate_geo(g) for g in df_detections['geo_value']]
     df_detections['geo_type'] = [create_geo_types(g,"lab") for g in df_detections['geo_value']]
+    
+    # convert dates to integers
+    df_detections['time_value'] = [convert_date_to_int(t) for t in df_detections['time_value']]
+    df_detections['issue'] = [convert_date_to_int(t) for t in df_detections['issue']]
 
     return(df_detections.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'],verify_integrity=True))
 
@@ -336,13 +352,13 @@ def combine_tables(data_dict):
         detections=data_dict["respiratory_detection"]
         
         positive["epiweek"] = pd.to_numeric(positive["epiweek"],downcast="integer")
-        positive["time_value"] = pd.to_datetime(positive["time_value"])
-        positive["issue"] = pd.to_datetime(positive["issue"])
+        #positive["time_value"] = pd.to_datetime(positive["time_value"])
+        #positive["issue"] = pd.to_datetime(positive["issue"])
         positive['geo_type'] = [create_geo_types(g,'lab') for g in positive['geo_value']]
 
         detections["epiweek"] = pd.to_numeric(detections["epiweek"],downcast="integer")
-        detections["time_value"] = pd.to_datetime(detections["time_value"])
-        detections["issue"] = pd.to_datetime(detections["issue"])
+        #detections["time_value"] = pd.to_datetime(detections["time_value"])
+        #detections["issue"] = pd.to_datetime(detections["issue"])
         detections['geo_type'] = [create_geo_types(g,'lab') for g in detections['geo_value']]
 
         detections = expand_detections_columns(detections)
