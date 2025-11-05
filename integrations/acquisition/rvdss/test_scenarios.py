@@ -1,17 +1,22 @@
 """Integration tests for acquisition of rvdss data."""
 # standard library
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
+import mock
+from copy import copy
 
 # first party
 from delphi.epidata.client.delphi_epidata import Epidata
-from delphi.epidata.acquisition.rvdss.database import update
+from delphi.epidata.acquisition.rvdss.database import update, rvdss_cols, get_num_rows
 import delphi.operations.secrets as secrets
+from delphi_utils import get_structured_logger
+
 
 # third party
 import mysql.connector
 import pandas as pd
 from pathlib import Path
+import pdb
 
 # py3tester coverage target (equivalent to `import *`)
 # __test_target__ = 'delphi.epidata.acquisition.covid_hosp.facility.update'
@@ -19,7 +24,8 @@ from pathlib import Path
 NEWLINE="\n"
 
 class AcquisitionTests(unittest.TestCase):
-
+  logger = get_structured_logger()
+  
   def setUp(self):
     """Perform per-test setup."""
 
@@ -35,7 +41,6 @@ class AcquisitionTests(unittest.TestCase):
     secrets.db.epi = ('user', 'pass')
 
     # clear relevant tables
-
     epidata_cnx = mysql.connector.connect(
         user='user',
         password='pass',
@@ -48,26 +53,76 @@ class AcquisitionTests(unittest.TestCase):
     epidata_cur.execute('INSERT INTO api_user(api_key, email) VALUES ("key", "email")')
     epidata_cnx.commit()
     epidata_cur.close()
-    epidata_cnx.close()
+    #epidata_cnx.close()
+    
+    # make connection and cursor available to test cases
+    self.cnx = epidata_cnx
+    #self.cur = epidata_cnx.cursor()
+    
+  def tearDown(self):
+    """Perform per-test teardown."""
+    #self.cur.close()
+    self.cnx.close()
 
-  def test_rvdss_repiratory_detections(self):
-    #TEST_DIR = Path(__file__).parent.parent.parent
-    #detection_data = pd.read_csv(str(TEST_DIR) + "/testdata/acquisition/rvdss/RVD_CurrentWeekTable_Formatted.csv")
-    #detection_subset = detection_data[(detection_data['geo_value'].isin(['nl', 'nb'])) & (detection_data['time_value'].isin(['2024-08-31', '2024-09-07'])) ]
+  @mock.patch("mysql.connector.connect")
+  def test_rvdss_repiratory_detections(self,mock_sql):
+    TEST_DIR = Path(__file__).parent.parent.parent.parent
+    detection_data = pd.read_csv(str(TEST_DIR) + "/testdata/acquisition/rvdss/RVD_CurrentWeekTable_Formatted.csv")    
+    detection_data['time_type'] = "week"
+    detection_subset = detection_data[(detection_data['geo_value'].isin(['nl', 'nb'])) & (detection_data['time_value'].isin([202408-31, 20240907])) ]
 
+    connection_mock = MagicMock()
     # make sure the data does not yet exist
     with self.subTest(name='no data yet'):
       response = Epidata.rvdss(geo_type='province',
-                               time_values= ['2024-08-31', '2024-09-07'],
+                               time_values= [202435, 202436],
                                geo_value = ['nl','nb'])
       self.assertEqual(response['result'], -2, response)
 
 
-    # # acquire sample data into local database
-    # # TODO: Define example data
-    # with self.subTest(name='first acquisition'):
-    #   acquired = Update.run(network=mock_network)
-    #   #self.assertTrue(acquired)
+    # acquire sample data into local database
+    with self.subTest(name='first acquisition'):        
+        #mock_sql.cursor.return_value = self.cnx.cursor()
+        connection_mock.cursor.return_value = self.cnx.cursor()
+        mock_sql.return_value = connection_mock
+        
+        rvdss_cols_subset = [col for col in detection_subset.columns if col in rvdss_cols]
+        pdb.set_trace()
+        update(detection_subset,self.logger)
+        
+        response = Epidata.rvdss(geo_type='province',
+                                 time_values= [202435, 202436],
+                                 geo_value = ['nl','nb'])
+        
+        self.assertEqual(response['result'], 1)
+        
+    with self.subTest(name='first acquisition2'):       
+        #mock_sql.cursor.return_value = self.cnx.cursor()
+        connection_mock.cursor.return_value = self.cnx.cursor()
+        mock_sql.return_value = connection_mock
+        
+        rvdss_cols_subset = [col for col in detection_subset.columns if col in rvdss_cols]
+        update(detection_subset,self.logger)
+        
+        response = Epidata.rvdss(geo_type='province',
+                                 time_values= [202435, 202436],
+                                 geo_value = ['nl','nb'])
+        
+        self.assertEqual(response['result'], 1)
+        
+    with self.subTest(name='first acquisition3'):
+        #mock_sql.cursor.return_value = self.cnx.cursor()
+        connection_mock.cursor.return_value = self.cnx.cursor()
+        mock_sql.return_value = connection_mock
+        
+        rvdss_cols_subset = [col for col in detection_subset.columns if col in rvdss_cols]
+        update(detection_subset,self.logger)
+        
+        response = Epidata.rvdss(geo_type='province',
+                                 time_values= [202435, 202436],
+                                 geo_value = ['nl','nb'])
+        
+        self.assertEqual(response['result'], 1)
 
     # # make sure the data now exists
     # with self.subTest(name='initial data checks'):

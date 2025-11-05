@@ -81,10 +81,10 @@ def update(data,logger):
     u, p = secrets.db.epi
     cnx = mysql.connector.connect(user=u, password=p, database="epidata")
     cur = cnx.cursor()
+
+    rvdss_cols_subset = [col for col in data.columns if col in rvdss_cols]
+    data = data.to_dict(orient = "records")
     
-    data_tuples = list(data.itertuples(index=False,name=None))
-    
-    rvdss_cols_subset = [col for col in rvdss_cols if col in data.columns]
     field_names = ", ".join(f"`{name}`" for name in rvdss_cols_subset)
     field_values = ", ".join(f"%({name})s" for name in rvdss_cols_subset)
         
@@ -99,7 +99,8 @@ def update(data,logger):
     total_rows = 0
         
     #insert data 
-    cur.executemany(sql, data_tuples)
+    cur.executemany(sql, data)
+    cnx.commit()
         
     # keep track of how many rows were added
     rows_after = get_num_rows(cur)
@@ -107,5 +108,4 @@ def update(data,logger):
     
     # cleanup
     cur.close()
-    cnx.commit()
     cnx.close()
