@@ -59,8 +59,6 @@ from delphi.utils.epiweek import delta_epiweeks
 from delphi.utils.geo.locations import Locations
 
 
-UNDERDETERMINED_MSG = "system is underdetermined"
-
 class Database:
     """Database wrapper and abstraction layer."""
 
@@ -243,7 +241,7 @@ def get_fusion_parameters(known_locations):
     H = graph[is_known, :]
     W = graph[is_unknown, :]
     if np.linalg.matrix_rank(H) != len(atoms):
-        raise StatespaceException(UNDERDETERMINED_MSG)
+        raise StatespaceException("system is underdetermined")
 
     HtH = np.dot(H.T, H)
     HtH_inv = np.linalg.inv(HtH)
@@ -299,11 +297,7 @@ def impute_missing_values(database, test_mode=False):
         try:
             F, known, unknown = get_fusion_parameters(known_values.keys())
         except StatespaceException as e:
-            message = str(e)
-            if message == UNDERDETERMINED_MSG:
-                warn(message)
-            else:
-                print(message)
+            print(e)
             continue
 
         # finally, impute the missing values

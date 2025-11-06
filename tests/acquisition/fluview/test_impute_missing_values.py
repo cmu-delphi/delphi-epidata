@@ -2,8 +2,10 @@
 
 # standard library
 import argparse
+import sys
 import unittest
 from unittest.mock import MagicMock
+from io import StringIO
 
 # first party
 from delphi.utils.geo.locations import Locations
@@ -86,8 +88,12 @@ class FunctionTests(unittest.TestCase):
         db.get_known_values.return_value = known_data
 
         db.find_missing_rows.return_value = [(201340, 201340)]
-        with self.assertWarns(Warning):
-            impute_missing_values(db, test_mode=True)
+
+        capturedOutput = StringIO()
+        sys.stdout = capturedOutput
+        impute_missing_values(db, test_mode=True)
+        sys.stdout = sys.__stdout__
+        self.assertTrue("system is underdetermined" in capturedOutput.getvalue().split("\n"))
 
         db.find_missing_rows.return_value = [(201339, 201339)]
         impute_missing_values(db, test_mode=True)
@@ -130,5 +136,8 @@ class FunctionTests(unittest.TestCase):
         db.find_missing_rows.return_value = [(201740, 201740)]
         db.get_known_values.return_value = known_data
 
-        with self.assertWarns(Warning):
-            impute_missing_values(db, test_mode=True)
+        capturedOutput = StringIO()
+        sys.stdout = capturedOutput
+        impute_missing_values(db, test_mode=True)
+        sys.stdout = sys.__stdout__
+        self.assertTrue("system is underdetermined" in capturedOutput.getvalue().split("\n"))
