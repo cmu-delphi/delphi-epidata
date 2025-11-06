@@ -293,7 +293,11 @@ def impute_missing_values(database, test_mode=False):
             known_values["pr"] = (0, 0, 0)
 
         # get the imputation matrix and lists of known and unknown locations
-        F, known, unknown = get_fusion_parameters(known_values.keys())
+        try:
+            F, known, unknown = get_fusion_parameters(known_values.keys())
+        except StatespaceException as e:
+            print(e)
+            continue
 
         # finally, impute the missing values
         z = np.array([known_values[k] for k in known])
