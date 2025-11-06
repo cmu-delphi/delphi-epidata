@@ -51,12 +51,15 @@ import argparse
 # third party
 import mysql.connector
 import numpy as np
+from warnings import warn
 
 # first party
 import delphi.operations.secrets as secrets
 from delphi.utils.epiweek import delta_epiweeks
 from delphi.utils.geo.locations import Locations
 
+
+UNDERDETERMINED_MSG = "system is underdetermined"
 
 class Database:
     """Database wrapper and abstraction layer."""
@@ -240,7 +243,7 @@ def get_fusion_parameters(known_locations):
     H = graph[is_known, :]
     W = graph[is_unknown, :]
     if np.linalg.matrix_rank(H) != len(atoms):
-        raise StatespaceException("system is underdetermined")
+        raise StatespaceException(UNDERDETERMINED_MSG)
 
     HtH = np.dot(H.T, H)
     HtH_inv = np.linalg.inv(HtH)
@@ -293,7 +296,15 @@ def impute_missing_values(database, test_mode=False):
             known_values["pr"] = (0, 0, 0)
 
         # get the imputation matrix and lists of known and unknown locations
-        F, known, unknown = get_fusion_parameters(known_values.keys())
+        try:
+            F, known, unknown = get_fusion_parameters(known_values.keys())
+        except StatespaceException as e:
+            message = str(e)
+            if message == UNDERDETERMINED_MSG:
+                warn(message)
+            else:
+                print(message)
+            continue
 
         # finally, impute the missing values
         z = np.array([known_values[k] for k in known])
