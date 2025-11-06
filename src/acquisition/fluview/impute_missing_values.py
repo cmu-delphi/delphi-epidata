@@ -51,7 +51,6 @@ import argparse
 # third party
 import mysql.connector
 import numpy as np
-from warnings import warn
 
 # first party
 import delphi.operations.secrets as secrets
