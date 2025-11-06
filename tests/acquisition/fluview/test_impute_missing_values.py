@@ -11,7 +11,6 @@ from delphi.epidata.acquisition.fluview.impute_missing_values import (
     get_argument_parser,
     get_lag_and_ili,
     impute_missing_values,
-    StatespaceException,
 )
 
 # py3tester coverage target
@@ -87,7 +86,7 @@ class FunctionTests(unittest.TestCase):
         db.get_known_values.return_value = known_data
 
         db.find_missing_rows.return_value = [(201340, 201340)]
-        with self.assertRaises(Exception):
+        with self.assertWarns(Warning):
             impute_missing_values(db, test_mode=True)
 
         db.find_missing_rows.return_value = [(201339, 201339)]
@@ -131,5 +130,5 @@ class FunctionTests(unittest.TestCase):
         db.find_missing_rows.return_value = [(201740, 201740)]
         db.get_known_values.return_value = known_data
 
-        with self.assertRaises(StatespaceException):
+        with self.assertWarns(Warning):
             impute_missing_values(db, test_mode=True)
