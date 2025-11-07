@@ -21,7 +21,7 @@ This data source of respiratory virus detections in Canada is collected by the [
 NOTE: Pandemic COVID-19 is not reported in this data source.
 
 | Signal                         | Description                                                                                                                                 |
-|----------------------|-------------------------------------------------|
+|--------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
 | `sarscov2_tests`               | Number of SARS-CoV-2 laboratory tests <br/> **Earliest Date Available:** 2022-09-03                                                         |
 | `sarscov2_positive_tests`      | Number of Positive SARS-CoV-2 laboratory tests <br/> **Earliest Date Available:** 2022-09-03                                                |
 | `sarscov2_pct_positive`        | Percentage of SARS-CoV-2 laboratory tests that are positive <br/> **Earliest Date Available:** 2022-09-03                                   |
@@ -60,10 +60,7 @@ NOTE: Pandemic COVID-19 is not reported in this data source.
 | `hcov_tests`                   | Number of Human Coronavirus (HCoV) laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                           |
 | `hcov_positive_tests`          | Number of positive HCoV laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                                      |
 | `hcov_pct_positive`            | Percentage of HCoV laboratory tests that are positive <br/> **Earliest Date Available:** 2013-08-31                                         |
-| `week`                         | Current epidemiological week number <br/> **Earliest Date Available:** 2023-09-02                                                           |
-| `weekorder`                    | Week number in the current season <br/> **Earliest Date Available:** 2023-09-02                                                             |
 | `year`                         | Current year <br/> **Earliest Date Available:** 2023-09-02                                                                                  |
-| `region`                       | Region the `geo_value` (see [Geography](#geography))<br/> **Earliest Date Available:** 2023-09-02                                           |
 
 ## Table of contents
 
