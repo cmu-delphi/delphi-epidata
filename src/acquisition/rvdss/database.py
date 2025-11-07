@@ -76,7 +76,7 @@ def get_num_rows(cursor):
         pass
     return num
 
-def update(data,logger):
+def update(data, logger):
     # connect to the database
     u, p = secrets.db.epi
     cnx = mysql.connector.connect(user=u, password=p, database="epidata")
@@ -84,28 +84,28 @@ def update(data,logger):
 
     rvdss_cols_subset = [col for col in data.columns if col in rvdss_cols]
     data = data.to_dict(orient = "records")
-    
+
     field_names = ", ".join(f"`{name}`" for name in rvdss_cols_subset)
     field_values = ", ".join(f"%({name})s" for name in rvdss_cols_subset)
-        
+
     #check rvdss for new and/or revised data
     sql = f"""
     INSERT INTO rvdss ({field_names})
     VALUES ({field_values})
     """
-        
+
     # keep track of how many rows were added
     rows_before = get_num_rows(cur)
     total_rows = 0
-        
-    #insert data 
+
+    #insert data
     cur.executemany(sql, data)
-    cnx.commit()
-        
+
     # keep track of how many rows were added
     rows_after = get_num_rows(cur)
     logger.info(f"Inserted {int(rows_after - rows_before)}/{int(total_rows)} row(s) into table rvdss")
-    
+
     # cleanup
+    cnx.commit()
     cur.close()
     cnx.close()
