@@ -52,17 +52,20 @@ class CsvRowValue:
 class CsvImporter:
   """Finds and parses covidcast CSV files."""
 
+  # set of allowed resolutions (aka "geo_type")
+  GEOGRAPHIC_RESOLUTIONS = {'county', 'hrr', 'msa', 'dma', 'state', 'hhs', 'nation', "hsa", "hsa_nci"}
+
+  # regex pattern for matching geo types, note: sort longer string first to avoid wrong substring matches
+  geo_types_pattern = "|".join(sorted(GEOGRAPHIC_RESOLUTIONS, key=len, reverse=True))
+
   # .../source/yyyymmdd_geo_signal.csv
-  PATTERN_DAILY = re.compile(r'^.*/([^/]*)/(\d{8})_(\w+?)_(\w+)\.csv$')
+  PATTERN_DAILY = re.compile(rf'^.*/([^/]*)/(\d{{8}})_({geo_types_pattern})_(\w+)\.csv$')
 
   # .../source/weekly_yyyyww_geo_signal.csv
-  PATTERN_WEEKLY = re.compile(r'^.*/([^/]*)/weekly_(\d{6})_(\w+?)_(\w+)\.csv$')
+  PATTERN_WEEKLY = re.compile(rf'^.*/([^/]*)/weekly_(\d{{6}})_({geo_types_pattern})_(\w+)\.csv$')
 
   # .../issue_yyyymmdd
   PATTERN_ISSUE_DIR = re.compile(r'^.*/([^/]*)/issue_(\d{8})$')
-
-  # set of allowed resolutions (aka "geo_type")
-  GEOGRAPHIC_RESOLUTIONS = {'county', 'hrr', 'msa', 'dma', 'state', 'hhs', 'nation'}
 
   # set of required CSV columns
   REQUIRED_COLUMNS = {'geo_id', 'val', 'se', 'sample_size'}
