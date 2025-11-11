@@ -25,7 +25,8 @@ COVIDCAST_INSERT_START = "INSERT INTO `covidcast` VALUES "
 
 # Column names
 INDEX_COLS = ["source", "signal", "time_type", "geo_type", "time_value", "geo_value"]
-VALUE_COLS = ["value_updated_timestamp", "value", "stderr", "sample_size", "direction_updated_timestamp", "direction"]
+VALUE_COLS = ["value_updated_timestamp", "value", "stderr", "sample_size"
+              , "direction_updated_timestamp", "direction"]
 ALL_COLS = INDEX_COLS + VALUE_COLS
 ALL_COLS_WITH_PK = ["id"] + ALL_COLS
 
@@ -469,7 +470,8 @@ def generate_issues(
 
     row_fmt = "(" \
         "{id},{source},{signal},{time_type},{geo_type},{time_value},{geo_value}," \
-        "{row.value_updated_timestamp},{row.value},{row.stderr},{row.sample_size},{row.direction_updated_timestamp},{row.direction}," \
+        "{row.value_updated_timestamp},{row.value},{row.stderr},{row.sample_size}" \
+        ",{row.direction_updated_timestamp},{row.direction}," \
         "{issue},{row.lag})"
 
     try:

@@ -135,7 +135,10 @@ class Database:
     def connect(self):
         """Connect to the database."""
         u, p = secrets.db.epi
-        self.cnx = mysql.connector.connect(user=u, password=p, database="epidata", host=secrets.db.host)
+        self.cnx = mysql.connector.connect(user=u
+                                           , password=p
+                                           , database="epidata"
+                                           , host=secrets.db.host)
         self.cur = self.cnx.cursor()
 
     def close(self, commit):

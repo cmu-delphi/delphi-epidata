@@ -17,7 +17,10 @@ def handle():
     epiweek = int(request.values["epiweek"])
 
     # build query
-    query = "SELECT `system`, `epiweek`, `json` FROM `forecasts` WHERE `system` = :system AND `epiweek` = :epiweek LIMIT 1"
+    query = ("SELECT `system`, `epiweek`, `json` "
+             +"FROM `forecasts` "
+             +"WHERE `system` = :system AND `epiweek` = :epiweek "
+             +"LIMIT 1")
     params = dict(system=system, epiweek=epiweek)
 
     fields_string = ["system", "json"]

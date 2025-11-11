@@ -1,6 +1,7 @@
 class Articles:
 
-    # Notice that all languages must be two chars, because that `language` column in table `wiki` is CHAR(2)
+    # Notice that all languages must be two chars,
+    #  because that `language` column in table `wiki` is CHAR(2)
     available_languages = ["en", "es", "pt"]
 
     en_articles_flu = [

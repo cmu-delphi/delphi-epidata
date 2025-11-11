@@ -22,7 +22,8 @@ if SENTRY_DSN:
         environment = os.environ.get('SENTRY_ENVIRONMENT', 'development'),
         profiles_sample_rate = float(os.environ.get('SENTRY_PROFILES_SAMPLE_RATE', 1.0)),
         traces_sample_rate = float(os.environ.get('SENTRY_TRACES_SAMPLE_RATE', 1.0)),
-        attach_stacktrace = os.environ.get('SENTRY_ATTACH_STACKTRACE', 'False').lower() in ('true', '1', 't'),
+        attach_stacktrace = (os.environ.get('SENTRY_ATTACH_STACKTRACE', 'False').lower() 
+                                in ('true', '1', 't')),
         debug = os.environ.get('SENTRY_DEBUG', 'False').lower() in ('true', '1', 't')
     )
 

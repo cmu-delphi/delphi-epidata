@@ -257,17 +257,18 @@ class JSONLPrinter(APrinter):
 
 
 def create_printer(format: str) -> APrinter:
+
+    format_dict = {"tree": ClassicTreePrinter("signal")
+                   , "json": JSONPrinter()
+                   , "csv": CSVPrinter()
+                   , "jsonl": JSONLPrinter()}
+    
     if format is None:
-        return ClassicPrinter()
-    if format == "tree":
-        return ClassicTreePrinter("signal")
-    if format.startswith("tree-"):
+        printer = ClassicPrinter()
+    elif format.startswith("tree-"):
         # support tree format by any property following the dash
-        return ClassicTreePrinter(format[len("tree-") :])
-    if format == "json":
-        return JSONPrinter()
-    if format == "csv":
-        return CSVPrinter()
-    if format == "jsonl":
-        return JSONLPrinter()
-    return ClassicPrinter()
+        printer = ClassicTreePrinter(format[len("tree-") :])
+    else:
+        printer = format_dict.get(format, ClassicPrinter())
+
+    return printer

@@ -118,11 +118,13 @@ def get_rows(cnx, table="paho_dengue"):
 
 
 def get_paho_row(row):
-    if row[
+    if (row[
         0
-    ] == "\ufeffIncidence Rate (c)" and row != "\ufeffIncidence Rate (c),(SD/D) x100 (e),CFR (f),ID,Country or Subregion,Deaths,EW,Confirmed,Epidemiological Week (a),Pop (no usar),Serotype,Severe Dengue (d),Total of Dengue Cases (b),Year,Population x 1000".split(
-        ","
-    ):
+    ] == "\ufeffIncidence Rate (c)" 
+    and row != ("\ufeffIncidence Rate (c),(SD/D) x100 (e),CFR (f)," 
+                + "ID,Country or Subregion,Deaths,EW,Confirmed," 
+                + "Epidemiological Week (a),Pop (no usar),Serotype,Severe Dengue (d)," 
+                + "Total of Dengue Cases (b),Year,Population x 1000").split(",")):
         raise Exception("PAHO header row has changed")
     if len(row) == 1 or row[0] == "Incidence Rate (c)":
         # this is a header row

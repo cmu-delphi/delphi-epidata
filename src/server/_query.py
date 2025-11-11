@@ -280,7 +280,7 @@ def execute_queries(
     query_list = list(queries)
 
     def dummy_gen():
-        if 3 > 4:
+        if False:
             yield {}
 
     if not query_list or p.remaining_rows <= 0:

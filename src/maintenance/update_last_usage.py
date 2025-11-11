@@ -19,13 +19,16 @@ def main():
     redis_keys = redis_cli.keys(pattern=LAST_USED_KEY_PATTERN)
     today_date = dtime.today().date()
     for key in redis_keys:
-        api_key, last_time_used = str(key).split("/")[1], dtime.strptime(str(redis_cli.get(key)), "%Y-%m-%d").date()
+        api_key = str(key).split("/")[1]
+        last_time_used = dtime.strptime(str(redis_cli.get(key)), "%Y-%m-%d").date()
         cur.execute(
             f"""
             UPDATE
                 api_user
             SET last_time_used = "{last_time_used}"
-            WHERE api_key = "{api_key}" AND (last_time_used < "{last_time_used}" OR last_time_used IS NULL)
+            WHERE api_key = "{api_key}" 
+            AND (last_time_used < "{last_time_used}" 
+            OR last_time_used IS NULL)
         """
         )
         redis_cli.delete(key)
