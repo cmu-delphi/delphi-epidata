@@ -95,7 +95,7 @@ including confirmed cases, symptom-related search queries, hospitalizations,
 outpatient doctor's visits, and other sources. Many of these are publicly
 available *only* through the COVIDcast API.
 
-Delphi's COVID-19 Surveillance Streams data includes the following data sources.
+Delphi's COVID-19 indicators data includes the following data sources.
 Data from most of these sources is typically updated daily. You can use the
 [`covidcast_meta`](covidcast_meta.md) endpoint to get summary information
 about the ranges of the different attributes for the different data sources.
