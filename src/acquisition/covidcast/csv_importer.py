@@ -59,10 +59,10 @@ class CsvImporter:
   geo_types_pattern = "|".join(sorted(GEOGRAPHIC_RESOLUTIONS, key=len, reverse=True))
 
   # .../source/yyyymmdd_geo_signal.csv
-  PATTERN_DAILY = re.compile(rf'^.*/([^/]*)/(\d{{8}})_({geo_types_pattern})_(\w+)\.csv$')
+  PATTERN_DAILY = re.compile(rf'^.*/([^/]*)/(\d{{8}})_({geo_types_pattern})_(.+)\.csv$')
 
   # .../source/weekly_yyyyww_geo_signal.csv
-  PATTERN_WEEKLY = re.compile(rf'^.*/([^/]*)/weekly_(\d{{6}})_({geo_types_pattern})_(\w+)\.csv$')
+  PATTERN_WEEKLY = re.compile(rf'^.*/([^/]*)/weekly_(\d{{6}})_({geo_types_pattern})_(.+)\.csv$')
 
   # .../issue_yyyymmdd
   PATTERN_ISSUE_DIR = re.compile(r'^.*/([^/]*)/issue_(\d{8})$')
@@ -161,7 +161,7 @@ class CsvImporter:
       daily_match = CsvImporter.PATTERN_DAILY.match(path.lower())
       weekly_match = CsvImporter.PATTERN_WEEKLY.match(path.lower())
       if not daily_match and not weekly_match:
-        logger.warning(event='invalid csv path/filename', detail=path, file=path)
+        logger.warning(event='invalid csv path/filename or geo_type', detail=path, file=path)
         yield (path, None)
         continue
 
@@ -191,10 +191,6 @@ class CsvImporter:
 
       # # extract and validate geographic resolution
       geo_type = match.group(3).lower()
-      if geo_type not in CsvImporter.GEOGRAPHIC_RESOLUTIONS:
-        logger.warning(event='invalid geo_type', detail=geo_type, file=path)
-        yield (path, None)
-        continue
 
       # extract additional values, lowercased for consistency
       source = match.group(1).lower()
