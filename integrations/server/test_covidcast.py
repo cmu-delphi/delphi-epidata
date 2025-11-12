@@ -476,3 +476,14 @@ class CovidcastTests(CovidcastBase):
     self.assertEqual(expected, colond)
     self.assertEqual(expected, dashed)
     self.assertEqual(expected, enumed)
+
+  def test_hsa_nci(self):
+    row = CovidcastTestRow.make_default_row(geo_type='hsa_nci', geo_value='99')
+    self._insert_rows([row])
+    response = self.request_based_on_row(row)
+    expected = [row.as_api_row_dict()]
+    self.assertEqual(response, {
+      'result': 1,
+      'epidata': expected,
+      'message': 'success',
+    })
