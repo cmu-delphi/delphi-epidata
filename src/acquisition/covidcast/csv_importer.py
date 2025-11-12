@@ -59,10 +59,10 @@ class CsvImporter:
   geo_types_pattern = "|".join(sorted(GEOGRAPHIC_RESOLUTIONS, key=len, reverse=True))
 
   # .../source/yyyymmdd_geo_signal.csv
-  PATTERN_DAILY = re.compile(rf'^.*/([^/]*)/(\d{{8}})_({geo_types_pattern})_(.+)\.csv$')
+  PATTERN_DAILY = re.compile(r'^.*/([^/]*)/(\d{8})_(' + geo_types_pattern + r')_(.+)\.csv$')
 
   # .../source/weekly_yyyyww_geo_signal.csv
-  PATTERN_WEEKLY = re.compile(rf'^.*/([^/]*)/weekly_(\d{{6}})_({geo_types_pattern})_(.+)\.csv$')
+  PATTERN_WEEKLY = re.compile(r'^.*/([^/]*)/weekly_(\d{6})_(' + geo_types_pattern + r')_(.+)\.csv$')
 
   # .../issue_yyyymmdd
   PATTERN_ISSUE_DIR = re.compile(r'^.*/([^/]*)/issue_(\d{8})$')
