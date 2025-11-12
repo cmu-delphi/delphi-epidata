@@ -94,14 +94,10 @@ class UnitTests(unittest.TestCase):
       path_prefix + 'invalid/weekly_222222_b_c.csv',
       # invalid geography
       path_prefix + 'invalid/20200418_province_c.csv',
-      # valid hsa day
-      path_prefix + 'valid/20200408_hsa_sig.csv',
       # valid hsa_nci day
       path_prefix + 'valid/20200408_hsa_nci_sig.csv',
       # valid hsa_nci week
       path_prefix + 'valid/weekly_202015_hsa_nci_sig.csv',
-      # valid hsa week
-      path_prefix + 'valid/weekly_202015_hsa_sig.csv',
       # ignored
       path_prefix + 'ignored/README.md',
     ]
@@ -121,10 +117,8 @@ class UnitTests(unittest.TestCase):
       (glob_paths[5], None),
       (glob_paths[6], None),
       (glob_paths[7], None),
-      (glob_paths[8], PathDetails(expected_issue_day, (date.today() - date(year=time_value_day // 10000, month=(time_value_day // 100) % 100, day=time_value_day % 100)).days, 'valid', 'sig', 'day', time_value_day, 'hsa')),
-      (glob_paths[9], PathDetails(expected_issue_day, (date.today() - date(year=time_value_day // 10000, month=(time_value_day // 100) % 100, day=time_value_day % 100)).days, 'valid', 'sig', 'day', time_value_day, 'hsa_nci')),
-      (glob_paths[10], PathDetails(expected_issue_week, delta_epiweeks(202015, expected_issue_week), 'valid', 'sig', 'week', 202015, 'hsa_nci')),
-      (glob_paths[11], PathDetails(expected_issue_week, delta_epiweeks(202015, expected_issue_week), 'valid', 'sig', 'week', 202015, 'hsa')),
+      (glob_paths[8], PathDetails(expected_issue_day, (date.today() - date(year=time_value_day // 10000, month=(time_value_day // 100) % 100, day=time_value_day % 100)).days, 'valid', 'sig', 'day', time_value_day, 'hsa_nci')),
+      (glob_paths[9], PathDetails(expected_issue_week, delta_epiweeks(202015, expected_issue_week), 'valid', 'sig', 'week', 202015, 'hsa_nci')),
     ])
     self.assertEqual(found, expected)
 
