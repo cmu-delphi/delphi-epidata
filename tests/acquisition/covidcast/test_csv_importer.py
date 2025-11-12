@@ -194,6 +194,7 @@ class UnitTests(unittest.TestCase):
 
     # cases to test each failure mode
     failure_cases = [
+      (make_row(geo_type='hsa_nci', geo_id='1111'), 'geo_id'),
       (make_row(geo_type='county', geo_id='1234'), 'geo_id'),
       (make_row(geo_type='county', geo_id='00000'), 'geo_id'),
       (make_row(geo_type='hrr', geo_id='600'), 'geo_id'),
@@ -227,6 +228,8 @@ class UnitTests(unittest.TestCase):
       (make_row(value=None, stderr=np.nan, sample_size='', missing_value=str(float(Nans.DELETED)), missing_stderr=str(float(Nans.DELETED)), missing_sample_size=str(float(Nans.DELETED))), CsvRowValue('vi', None, None, None, Nans.DELETED, Nans.DELETED, Nans.DELETED)),
       (make_row(stderr='', sample_size='NA', missing_stderr=str(float(Nans.OTHER)), missing_sample_size=str(float(Nans.OTHER))), CsvRowValue('vi', 1.23, None, None, Nans.NOT_MISSING, Nans.OTHER, Nans.OTHER)),
       (make_row(sample_size=None, missing_value='missing_value', missing_stderr=str(float(Nans.OTHER)), missing_sample_size=str(float(Nans.NOT_MISSING))), CsvRowValue('vi', 1.23, 4.56, None, Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.OTHER)),
+      (make_row(geo_type='hsa_nci', geo_id='1022'), CsvRowValue('1022', 1.23, 4.56, 100.5, Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.NOT_MISSING)),
+      (make_row(geo_type='hsa_nci', geo_id='012'), CsvRowValue('12', 1.23, 4.56, 100.5, Nans.NOT_MISSING, Nans.NOT_MISSING, Nans.NOT_MISSING)),
     ]
 
     for ((geo_type, row), field) in success_cases:

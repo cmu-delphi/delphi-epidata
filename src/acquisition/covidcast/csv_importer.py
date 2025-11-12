@@ -299,7 +299,7 @@ class CsvImporter:
       # geo_id was `None`
       return (None, 'geo_id')
 
-    if geo_type in ('hrr', 'msa', 'dma', 'hhs'):
+    if geo_type in ('hrr', 'msa', 'dma', 'hhs', 'hsa_nci'):
       # these particular ids are prone to be written as ints -- and floats
       try:
         geo_id = str(CsvImporter.floaty_int(geo_id))
@@ -336,6 +336,12 @@ class CsvImporter:
     elif geo_type == 'nation':
       # geo_id is lowercase
       if len(geo_id) != 2 or not 'aa' <= geo_id <= 'zz':
+        return (None, 'geo_id')
+
+    elif geo_type == 'hsa_nci':
+      # valid codes should be 1-3 digit numbers, or the special code of "1022" for blank
+      # https://seer.cancer.gov/seerstat/variables/countyattribs/hsa.html
+      if not re.match(r'^(1022|\d{1,3})$', geo_id):
         return (None, 'geo_id')
 
     else:
