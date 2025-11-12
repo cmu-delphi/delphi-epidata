@@ -59,6 +59,7 @@ class GeoSet:
             if geo_values == ['']:
                 raise ValidationFailedException(f"geo_value is empty for the requested geo_type {geo_type}!")
             # TODO: keep this translator in sync with CsvImporter.GEOGRAPHIC_RESOLUTIONS in acquisition/covidcast/ and with GeoMapper
+            # We are not updating hsa_nci here as this was done with the older geomapper code which does not support the same hsa definition.
             geo_type_translator = {
                 "county": "fips",
                 "state": "state_id",
