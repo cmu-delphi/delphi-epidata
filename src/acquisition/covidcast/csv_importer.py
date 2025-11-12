@@ -189,7 +189,7 @@ class CsvImporter:
         issue_value=issue_epiweek_value
         lag_value=delta_epiweeks(time_value_week, issue_epiweek_value)
 
-      # # extract and validate geographic resolution
+      # extract geographic resolution
       geo_type = match.group(3).lower()
 
       # extract additional values, lowercased for consistency
