@@ -53,7 +53,7 @@ class CsvImporter:
   """Finds and parses covidcast CSV files."""
 
   # set of allowed resolutions (aka "geo_type")
-  GEOGRAPHIC_RESOLUTIONS = {'county', 'hrr', 'msa', 'dma', 'state', 'hhs', 'nation', "hsa", "hsa_nci"}
+  GEOGRAPHIC_RESOLUTIONS = {'county', 'hrr', 'msa', 'dma', 'state', 'hhs', 'nation', 'hsa_nci'}
 
   # regex pattern for matching geo types, note: sort longer string first to avoid wrong substring matches
   geo_types_pattern = "|".join(sorted(GEOGRAPHIC_RESOLUTIONS, key=len, reverse=True))
