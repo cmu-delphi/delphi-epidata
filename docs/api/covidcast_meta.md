@@ -24,25 +24,26 @@ None required.
 
 ### Response
 
-| Field                     | Description                                                         | Type             |
-|---------------------------|---------------------------------------------------------------------|------------------|
-| `result`                  | result code: 1 = success, 2 = too many results, -2 = no results     | integer          |
-| `epidata`                 | list of results, one per name/geo_type pair                         | array of objects |
-| `epidata[].data_source`   | data source                                                         | string           |
-| `epidata[].signal`        | signal name                                                         | string           |
-| `epidata[].time_type`     | temporal resolution of the signal (e.g., `day`, `week`)             | string           |
-| `epidata[].geo_type`      | geographic resolution (e.g. `county`, `hrr`, `msa`, `dma`, `state`) | string           |
-| `epidata[].min_time`      | minimum observation time (e.g., 20200406)                           | integer          |
-| `epidata[].max_time`      | maximum observation time (e.g., 20200413)                           | integer          |
-| `epidata[].num_locations` | number of distinct geographic locations with data                   | integer          |
-| `epidata[].min_value`     | minimum value                                                       | float            |
-| `epidata[].max_value`     | maximum value                                                       | float            |
-| `epidata[].mean_value`    | mean of value                                                       | float            |
-| `epidata[].stdev_value`   | standard deviation of value                                         | float            |
-| `epidata[].max_issue`     | most recent date data was issued (e.g., 20200710)                   | integer          |
-| `epidata[].min_lag`       | smallest lag from observation to issue, in `time_type` units        | integer          |
-| `epidata[].max_lag`       | largest lag from observation to issue, in `time_type` units         | integer          |
-| `message`                 | `success` or error message                                          | string           |
+| Field                     | Description                                                         | Type              |
+|---------------------------|---------------------------------------------------------------------|-------------------|
+| `result`                  | result code: 1 = success, 2 = too many results, -2 = no results     | integer           |
+| `epidata`                 | list of results, one per name/geo_type pair                         | array of objects  |
+| `epidata[].data_source`   | data source                                                         | string            |
+| `epidata[].signal`        | signal name                                                         | string            |
+| `epidata[].time_type`     | temporal resolution of the signal (e.g., `day`, `week`)             | string            |
+| `epidata[].geo_type`      | geographic resolution (e.g. `county`, `hrr`, `msa`, `dma`, `state`) | string            |
+| `epidata[].min_time`      | minimum observation time                                            | integer (YYYYMMDD)|
+| `epidata[].max_time`      | maximum observation time                                            | integer (YYYYMMDD)|
+| `epidata[].num_locations` | number of distinct geographic locations with data                   | integer           |
+| `epidata[].min_value`     | minimum value                                                       | float             |
+| `epidata[].max_value`     | maximum value                                                       | float             |
+| `epidata[].mean_value`    | mean of value                                                       | float             |
+| `epidata[].stdev_value`   | standard deviation of value                                         | float             |
+| `epidata[].last_update`   | most recent date when data was updated                              | integer (YYYYMMDD)|
+| `epidata[].max_issue`     | most recent date data was issued                                    | integer (YYYYMMDD)|
+| `epidata[].min_lag`       | smallest lag from observation to issue, in `time_type` units        | integer           |
+| `epidata[].max_lag`       | largest lag from observation to issue, in `time_type` units         | integer           |
+| `message`                 | `success` or error message                                          | string            |
 
 ## Example URLs
 
@@ -74,7 +75,9 @@ https://api.delphi.cmu.edu/epidata/covidcast_meta/
 
 ## Code Samples
 
-Libraries are available for [JavaScript](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js), [Python](https://pypi.org/project/delphi-epidata/), and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
+Python and R users are advised to use the dedicated API client, which provides support to return metadata as a data frame. The Python client includes a `metadata()` method for this purpose, while the R client offers a `covidcast_meta()` function to achieve the same.
+
+Alternatively, libraries are available for [JavaScript](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js), [Python](https://pypi.org/project/delphi-epidata/), and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
 The following samples show how to import the library and fetch Delphi's COVID-19 Surveillance Streams metadata.
 
 ### JavaScript (in a web browser)
@@ -92,10 +95,6 @@ The following samples show how to import the library and fetch Delphi's COVID-19
 
 ### Python
 
-Python users seeking to use the COVIDcast API to fetch data should instead
-consider using the [dedicated API client](covidcast_clients.md), which provides
-a `metadata()` method to return metadata as a data frame.
-
 Optionally install the package using pip(env):
 ````bash
 pip install delphi-epidata
@@ -112,10 +111,6 @@ print(res['result'], res['message'], len(res['epidata']))
 ````
 
 ### R
-
-R users seeking to use the COVIDcast API to fetch data should instead consider
-using the [dedicated API client](covidcast_clients.md), which provides a
-`covidcast_meta()` function to return metadata as a data frame.
 
 ````R
 # Import
