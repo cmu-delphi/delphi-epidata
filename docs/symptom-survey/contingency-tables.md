@@ -30,7 +30,7 @@ territories worldwide, also [through
 ICPSR](https://www.icpsr.umich.edu/web/ICPSR/studies/39206).
 
 These tables are more detailed than the [coarse aggregates reported in the
-COVIDcast Epidata API](../api/covidcast-signals/fb-survey.md), which are grouped
+COVIDcast Epidata API](../api/covidcast-signals/covid-trends-and-impact-survey.md), which are grouped
 only by geographic region. [Individual response data](survey-files.md) for the
 survey is available, but only to researchers who request restricted data access
 via ICPSR, whereas these contingency tables are available to the general public.

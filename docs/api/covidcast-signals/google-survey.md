@@ -26,7 +26,7 @@ is sick (fever, along with cough, or shortness of breath, or difficulty
 breathing) right now?" Using this survey data, we estimate the percentage of
 people in a given location, on a given day, that *know somebody who has a
 COVID-like illness*. This estimates a similar quantity to the `*_cmnty_cli`
-signals from the [COVID-19 Trends and Impact Survey](fb-survey.md) (`fb-survey`) source, but using
+signals from the [COVID-19 Trends and Impact Survey](covid-trends-and-impact-survey.md) (`fb-survey`) source, but using
 a different survey population and recruitment method.
 
 The survey sampled from all counties with greater than 100,000 population, along
