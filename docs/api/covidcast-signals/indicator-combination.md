@@ -22,7 +22,6 @@ calculated or composed by Delphi. It is not a primary data source.
 ## Statistical Combination Signals
 
 * **Earliest issue available:** May 20, 2020
-(../covidcast_changelog.md#indicator-combination)
 * **Geography type available:** county, msa, state (see [geography coding docs](../covidcast_geography.md))
 * **Time type available:** day (see [date format docs](../covidcast_times.md))
 * **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
