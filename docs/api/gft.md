@@ -6,22 +6,31 @@ nav_order: 2
 ---
 
 # Google Flu Trends
+{: .no_toc}
 
-This is the API documentation for accessing the Google Flu Trends (`gft`)
-endpoint of [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
+* **Source name:** `gft`
+* **Data Source:** [Google Flu Trends Estimates](https://www.google.com/publicdata/explore?ds=z3bsqef7ki44ac_) ([context](https://en.wikipedia.org/wiki/Google_Flu_Trends))
+* **Earliest issue available:** 2003w40
+* **Available for:** US states, census regions, and select cities ([regions](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/regions.txt), [states](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/states.txt), [cities](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/cities.txt))
+* **Temporal Resolution:** Weekly
+* **Spatial Resolution:** National, [HHS regions](http://www.hhs.gov/iea/regional/) ([1+10](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/regions.txt)); by state/territory ([50+1](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/states.txt)); and by city ([97](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/cities.txt))
+* **License:** Open access
+
+
+## Overview
+{: .no_toc}
+
+This data source provides influenza activity estimates from Google Flu Trends, which used search query data to track ILI activity.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
 
-## Google Flu Trends Data
+## Table of contents
+{: .no_toc .text-delta}
 
-Estimate of influenza activity based on volume of certain search queries. Google has discontinued Flu Trends, and this is now a static endpoint.
- - Data Source: [Google Flu Trends Estimates](https://www.google.com/publicdata/explore?ds=z3bsqef7ki44ac_) ([context](https://en.wikipedia.org/wiki/Google_Flu_Trends))
- - Temporal Resolution: Weekly from 2003w40 until 2015w32
- - Spatial Resolution: National, [HHS regions](http://www.hhs.gov/iea/regional/) ([1+10](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/regions.txt)); by state/territory ([50+1](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/states.txt)); and by city ([97](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/cities.txt))
- - Open access
+1. TOC
 
 # The API
 
@@ -33,10 +42,14 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 ### Required
 
+## Parameters
+
+### Required
+
 | Parameter | Description | Type |
 | --- | --- | --- |
-| `epiweeks` | epiweeks | `list` of epiweeks |
-| `locations` | locations | `list` of [region](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/regions.txt)/[state](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/states.txt)/[city](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/cities.txt) labels |
+| `locations` | Locations to fetch. | `list` of strings |
+| `epiweeks` | Epiweeks to fetch. Supports [`epirange()`] and defaults to all ("*") dates. | `list` of epiweeks |
 
 ## Response
 
@@ -71,45 +84,78 @@ https://api.delphi.cmu.edu/epidata/gft/?locations=nat&epiweeks=201501
 
 # Code Samples
 
-Libraries are available for [JavaScript](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js), [Python](https://pypi.org/project/delphi-epidata/), and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
-The following samples show how to import the library and fetch Google Flu Trends data for epiweeks `201440` and `201501-201510` (11 weeks total).
+Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
+The following samples show how to import the library and fetch Google Flu Trends data for epiweeks `201501-201510`.
+
+### R
+
+```R
+library(epidatr)
+# Fetch data
+res <- pub_gft(locations = 'nat', epiweeks = epirange(201501, 201510))
+print(res)
+```
+
+### Python
+
+Install the package using pip:
+```bash
+pip install -e "git+https://github.com/cmu-delphi/epidatpy.git#egg=epidatpy"
+```
+
+```python
+# Import
+from epidatpy import CovidcastEpidata, EpiDataContext, EpiRange
+# Fetch data
+epidata = EpiDataContext()
+res = epidata.pub_gft(locations='nat', epiweeks=EpiRange(201501, 201510))
+print(res)
+```
 
 ### JavaScript (in a web browser)
 
-````html
+The JavaScript client is available [here](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js).
+
+```html
 <!-- Imports -->
 <script src="delphi_epidata.js"></script>
 <!-- Fetch data -->
 <script>
-  EpidataAsync.gft('nat', [201440, EpidataAsync.range(201501, 201510)]).then((res) => {
+  EpidataAsync.gft('nat', EpidataAsync.range(201501, 201510)).then((res) => {
     console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
   });
 </script>
-````
+```
 
-### Python
+### Legacy Clients
+
+We recommend using our modern client libraries: [epidatr](https://cmu-delphi.github.io/epidatr/) for R and [epidatpy](https://cmu-delphi.github.io/epidatpy/) for Python. Legacy clients are also available for [Python](https://pypi.org/project/delphi-epidata/) and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
+
+#### R (Legacy)
+
+Place `delphi_epidata.R` from this repo next to your R script.
+
+```R
+source("delphi_epidata.R")
+# Fetch data
+res <- Epidata$gft(locations = list("nat"), epiweeks = Epidata$range(201501, 201510))
+print(res$message)
+print(length(res$epidata))
+```
+
+#### Python (Legacy)
 
 Optionally install the package using pip(env):
-````bash
+```bash
 pip install delphi-epidata
-````
+```
 
 Otherwise, place `delphi_epidata.py` from this repo next to your python script.
 
-````python
+```python
 # Import
 from delphi_epidata import Epidata
 # Fetch data
-res = Epidata.gft(['nat'], [201440, Epidata.range(201501, 201510)])
+res = Epidata.gft(['nat'], Epidata.range(201501, 201510))
 print(res['result'], res['message'], len(res['epidata']))
-````
-
-### R
-
-````R
-# Import
-source('delphi_epidata.R')
-# Fetch data
-res <- Epidata$gft(list('nat'), list(201440, Epidata$range(201501, 201510)))
-cat(paste(res$result, res$message, length(res$epidata), "\n"))
-````
+```

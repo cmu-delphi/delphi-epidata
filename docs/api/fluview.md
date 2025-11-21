@@ -5,25 +5,23 @@ grand_parent: Other Endpoints (COVID-19 and Other Diseases)
 nav_order: 1
 ---
 
-# FluView
+# FluView (ILINet)
+{: .no_toc}
 
-This is the API documentation for accessing the FluView (`fluview`) endpoint of
-[Delphi](https://delphi.cmu.edu/)'s epidemiological data.
+* **Source name:** `fluview`
+* **Data source:** [United States Centers for Disease Control and Prevention](http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html) (CDC)
+* **Earliest issue available:** 1997w40
+* **Date of last change:** [Weekly (typically Fridays)]
+* **Available for:** nat, hhs1-hhs10, and cen1-cen9 ([full list of regions](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/regions.txt))
+* **Time type available:** epiweek
+ * **License:** Open Access / [CDC](http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html) 
+
+Influenza-like illness (ILI) from U.S. Outpatient Influenza-like Illness Surveillance Network (ILINet).
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
-
-## FluView Data
-
-Influenza-like illness (ILI) from U.S. Outpatient Influenza-like Illness Surveillance Network (ILINet).
- - Data source: [United States Centers for Disease Control and Prevention](http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html) (CDC)
- - Temporal Resolution: Weekly* from 1997w40
- - Spatial Resolution: National, [HHS regions](https://www.hhs.gov/about/agencies/iea/regional-offices/index.html), [Census divisions](https://www2.census.gov/geo/pdfs/maps-data/maps/reference/us_regdiv.pdf), most States and Territories, and some Cities (full list [here](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/acquisition/fluview/fluview_locations.py))
- - Open access
-
-\* Data is usually released on Friday
 
 # The API
 
@@ -55,23 +53,23 @@ If neither is specified, the current issues are used.
 ## Response
 
 | Field                     | Description                                                     | Type             |
-|---------------------------|-----------------------------------------------------------------|------------------|
+|---------------------------|-----------------------------------------------------------------|---------------------|
 | `result`                  | result code: 1 = success, 2 = too many results, -2 = no results | integer          |
 | `epidata`                 | list of results                                                 | array of objects |
-| `epidata[].release_date`  |                                                                 | string or null   |
-| `epidata[].region`        |                                                                 | string           |
-| `epidata[].issue`         |                                                                 | integer          |
-| `epidata[].epiweek`       |                                                                 | integer          |
-| `epidata[].lag`           |                                                                 | integer          |
-| `epidata[].num_ili`       |                                                                 | integer          |
-| `epidata[].num_patients`  |                                                                 | integer          |
-| `epidata[].num_providers` |                                                                 | integer          |
-| `epidata[].num_age_0`     |                                                                 | integer or null  |
-| `epidata[].num_age_1`     |                                                                 | integer or null  |
-| `epidata[].num_age_2`     |                                                                 | integer or null  |
-| `epidata[].num_age_3`     |                                                                 | integer or null  |
-| `epidata[].num_age_4`     |                                                                 | integer or null  |
-| `epidata[].num_age_5`     |                                                                 | integer or null  |
+| `epidata[].release_date`  | date when data was released                                     | string or null   |
+| `epidata[].region`        | region identifier                                               | string           |
+| `epidata[].issue`         | epiweek of publication                                          | integer          |
+| `epidata[].epiweek`       | epiweek for which data is valid                                 | integer          |
+| `epidata[].lag`           | number of weeks between epiweek and issue                       | integer          |
+| `epidata[].num_ili`       | number of ILI cases                                             | integer          |
+| `epidata[].num_patients`  | total number of patients                                        | integer          |
+| `epidata[].num_providers` | number of reporting providers                                   | integer          |
+| `epidata[].num_age_0`     | number of ILI cases for ages 0-4                                | integer or null  |
+| `epidata[].num_age_1`     | number of ILI cases for ages 5-24                               | integer or null  |
+| `epidata[].num_age_2`     | number of ILI cases for ages 25-49                              | integer or null  |
+| `epidata[].num_age_3`     | number of ILI cases for ages 50-64                              | integer or null  |
+| `epidata[].num_age_4`     | number of ILI cases for ages 65+                                | integer or null  |
+| `epidata[].num_age_5`     | number of ILI cases with unknown age                            | integer or null  |
 | `epidata[].wili`          | weighted percent influenza-like illness                         | float            |
 | `epidata[].ili`           | percent influenza-like illness                                  | float            |
 | `message`                 | `success` or error message                                      | string           |
@@ -122,46 +120,79 @@ https://api.delphi.cmu.edu/epidata/fluview/?regions=nat&epiweeks=201453&issues=2
 
 # Code Samples
 
-Libraries are available for [JavaScript](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js), [Python](https://pypi.org/project/delphi-epidata/), and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
-The following samples show how to import the library and fetch national FluView data for epiweeks `201440` and `201501-201510` (11 weeks total).
+Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
+The following samples show how to import the library and fetch national FluView data for epiweeks `201501-201510`.
 
+
+### R
+
+```R
+library(epidatr)
+# Fetch data
+res <- pub_fluview(regions = "nat", epiweeks = epirange(201501, 201510))
+print(res)
+```
+
+### Python
+
+Install the package using pip:
+```bash
+pip install -e "git+https://github.com/cmu-delphi/epidatpy.git#egg=epidatpy"
+```
+
+```python
+# Import
+from epidatpy import CovidcastEpidata, EpiDataContext, EpiRange
+# Fetch data
+epidata = EpiDataContext()
+res = epidata.pub_fluview(regions="nat", epiweeks=EpiRange(201501, 201510))
+print(res)
+```
 
 ### JavaScript (in a web browser)
 
-````html
+The JavaScript client is available [here](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js).
+
+```html
 <!-- Imports -->
 <script src="delphi_epidata.js"></script>
 <!-- Fetch data -->
 <script>
-  EpidataAsync.fluview('nat', [201440, EpidataAsync.range(201501, 201510)]).then((res) => {
+  EpidataAsync.fluview('nat', [EpidataAsync.range(201501, 201510)]).then((res) => {
     console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
   });
 </script>
-````
+```
 
-### Python
+### Legacy Clients
+
+We recommend using our modern client libraries: [epidatr](https://cmu-delphi.github.io/epidatr/) for R and [epidatpy](https://cmu-delphi.github.io/epidatpy/) for Python. Legacy clients are also available for [Python](https://pypi.org/project/delphi-epidata/) and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
+
+#### R (Legacy)
+
+Place `delphi_epidata.R` from this repo next to your R script.
+
+```R
+source("delphi_epidata.R")
+# Fetch data
+res <- Epidata$fluview(regions = list("nat"), epiweeks = list(Epidata$range(201501, 201510)))
+print(res$message)
+print(length(res$epidata))
+```
+
+#### Python (Legacy)
 
 Optionally install the package using pip(env):
-````bash
+```bash
 pip install delphi-epidata
-````
+```
 
 Otherwise, place `delphi_epidata.py` from this repo next to your python script.
 
-````python
+```python
 # Import
 from delphi_epidata import Epidata
 # Fetch data
-res = Epidata.fluview(['nat'], [201440, Epidata.range(201501, 201510)])
+res = Epidata.fluview(['nat'], [Epidata.range(201501, 201510)])
 print(res['result'], res['message'], len(res['epidata']))
-````
-
-### R
-
-````R
-# Import
-source('delphi_epidata.R')
-# Fetch data
-res <- Epidata$fluview(list('nat'), list(201440, Epidata$range(201501, 201510)))
-cat(paste(res$result, res$message, length(res$epidata), "\n"))
-````
+```

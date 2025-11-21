@@ -16,10 +16,6 @@ General topics not specific to any particular endpoint are discussed in the
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
 
-## Delphi's Digital Surveillance Sensors Data
-
-... <!-- TODO -->
-
 **Note:** this repository was built to support modeling and forecasting efforts
 surrounding seasonal influenza (and dengue).  In the current COVID-19 pandemic,
 syndromic surveillance data, like ILI data (influenza-like illness) through
@@ -73,7 +69,7 @@ Notes:
 # Example URLs
 
 ### Delphi's Digital Surveillance SAR3 Sensor on 2020w01 (national)
-https://api.delphi.cmu.edu/epidata/sensors/?names=sar3&locations=nat&epiweeks=202001
+https://api.delphi.cmu.edu/epidata/sensors/?auth=...&names=sar3&locations=nat&epiweeks=202001
 
 ```json
 {
@@ -93,45 +89,82 @@ https://api.delphi.cmu.edu/epidata/sensors/?names=sar3&locations=nat&epiweeks=20
 
 # Code Samples
 
-Libraries are available for [JavaScript](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js), [Python](https://pypi.org/project/delphi-epidata/), and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
-The following samples show how to import the library and fetch national Delphi's Digital Surveillance SAR3 Sensor data for epiweeks `201940` and `202001-202010` (11 weeks total).
+Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
+The following samples show how to import the library and fetch national Delphi's Digital Surveillance SAR3 Sensor data for epiweeks `201501-202001`.
+
+
+### R
+
+```R
+library(epidatr)
+# Fetch data
+res <- pvt_sensors(auth = 'SECRET_API_AUTH_SENSORS', locations = 'nat', 
+names = 'sar3', epiweeks = epirange(201501, 202001))
+print(res)
+```
+
+### Python
+
+Install the package using pip:
+
+```bash
+pip install -e "git+https://github.com/cmu-delphi/epidatpy.git#egg=epidatpy"
+```
+
+```python
+# Import
+from epidatpy import CovidcastEpidata, EpiDataContext, EpiRange
+# Fetch data
+epidata = EpiDataContext()
+res = epidata.sensors(['nat'], ['sar3'], EpiRange(201501, 202001))
+print(res['result'], res['message'], len(res['epidata']))
+```
 
 ### JavaScript (in a web browser)
 
-````html
+The JavaScript client is available [here](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js).
+
+```html
 <!-- Imports -->
 <script src="delphi_epidata.js"></script>
 <!-- Fetch data -->
 <script>
-  EpidataAsync.sensors('nat', 'sar3', [201940, EpidataAsync.range(202001, 202010)]).then((res) => {
+  EpidataAsync.sensors('nat', 'sar3', EpidataAsync.range(201501, 202001)).then((res) => {
     console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
   });
 </script>
-````
+```
 
-### Python
+### Legacy Clients
+
+We recommend using our modern client libraries: [epidatr](https://cmu-delphi.github.io/epidatr/) for R and [epidatpy](https://cmu-delphi.github.io/epidatpy/) for Python. Legacy clients are also available for [Python](https://pypi.org/project/delphi-epidata/) and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
+
+#### R (Legacy)
+
+Place `delphi_epidata.R` from this repo next to your R script.
+
+```R
+source("delphi_epidata.R")
+# Fetch data
+res <- Epidata$sensors(locations = list("nat"), sensors = list("sar3"), epiweeks = Epidata$range(201501, 202001))
+print(res$message)
+print(length(res$epidata))
+```
+
+#### Python (Legacy)
 
 Optionally install the package using pip(env):
-````bash
+
+```bash
 pip install delphi-epidata
-````
+```
 
 Otherwise, place `delphi_epidata.py` from this repo next to your python script.
 
-````python
+```python
 # Import
 from delphi_epidata import Epidata
 # Fetch data
-res = Epidata.sensors(['nat'], ['sar3'], [201940, Epidata.range(202001, 202010)])
+res = Epidata.sensors(['nat'], ['sar3'], Epidata.range(201501, 202001))
 print(res['result'], res['message'], len(res['epidata']))
-````
-
-### R
-
-````R
-# Import
-source('delphi_epidata.R')
-# Fetch data
-res <- Epidata$sensors(list('nat'), list('sar3') list(201940, Epidata$range(202001, 202010)))
-cat(paste(res$result, res$message, length(res$epidata), "\n"))
-````
+```

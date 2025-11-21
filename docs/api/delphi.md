@@ -6,18 +6,28 @@ nav_order: 2
 ---
 
 # Delphi Forecasts
+{: .no_toc}
 
-This is the documentation of the API for accessing the Delphi Forecast (`delphi`) endpoint of
-the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
+* **Source name:** `delphi`
+* **Earliest issue available:** 2010w01  
+* **Time type available:** epiweek
+* **License:** [CC BY](https://creativecommons.org/licenses/by/4.0/)
+
+## Overview
+{: .no_toc}
+
+This data source provides access to experimental and retrospective Delphi forecasting systems and nowcasting outputs.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
 
-## Delphi Forecast Data
+## Table of contents
+{: .no_toc .text-delta}
 
-... <!-- TODO -->
+1. TOC
+{:toc}
 
 # The API
 
@@ -59,8 +69,8 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 # Example URLs
 
-### Delphi on 2020w01 (EC)
-https://api.delphi.cmu.edu/epidata/delphi/?system=ec&epiweek=202001
+### Delphi on 2015w01 (EC)
+https://api.delphi.cmu.edu/epidata/delphi/?system=ec&epiweek=201501
 
 ```json
 {
@@ -142,4 +152,77 @@ https://api.delphi.cmu.edu/epidata/delphi/?system=ec&epiweek=202001
 
 # Code Samples
 
-<!-- TODO: fix -->
+Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
+The following samples show how to import the library and fetch Delphi Forecast data for system `ec` on epiweek `201501`.
+
+### R
+
+```R
+library(epidatr)
+# Fetch data
+res <- pub_delphi(system = 'ec', epiweek = 201501)
+print(res)
+```
+
+### Python
+
+Install the package using pip:
+```bash
+pip install -e "git+https://github.com/cmu-delphi/epidatpy.git#egg=epidatpy"
+```
+
+```python
+# Import
+from epidatpy import CovidcastEpidata, EpiDataContext, EpiRange
+# Fetch data
+epidata = EpiDataContext()
+res = epidata.delphi('ec', 201501)
+print(res['result'], res['message'], len(res['epidata']))
+```
+
+### JavaScript (in a web browser)
+
+The JavaScript client is available [here](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js).
+
+```html
+<!-- Imports -->
+<script src="delphi_epidata.js"></script>
+<!-- Fetch data -->
+<script>
+  EpidataAsync.delphi('ec', 201501).then((res) => {
+    console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
+  });
+</script>
+```
+
+### Legacy Clients
+
+We recommend using our modern client libraries: [epidatr](https://cmu-delphi.github.io/epidatr/) for R and [epidatpy](https://cmu-delphi.github.io/epidatpy/) for Python. Legacy clients are also available for [Python](https://pypi.org/project/delphi-epidata/) and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
+
+#### R (Legacy)
+
+Place `delphi_epidata.R` from this repo next to your R script.
+
+```R
+source("delphi_epidata.R")
+# Fetch data
+res <- Epidata$delphi(system = 'ec', epiweek = 201501)
+print(res$message)
+print(length(res$epidata))
+```
+
+#### Python (Legacy)
+
+Optionally install the package using pip(env):
+```bash
+pip install delphi-epidata
+```
+Place `delphi_epidata.py` from this repo next to your python script.
+
+```python
+# Import
+from delphi_epidata import Epidata
+# Fetch data
+res = Epidata.delphi('ec', 201501)
+print(res['result'], res['message'], len(res['epidata']))
+```

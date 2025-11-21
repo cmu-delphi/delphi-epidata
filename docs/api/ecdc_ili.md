@@ -6,18 +6,32 @@ nav_order: 2
 ---
 
 # ECDC ILI
+{: .no_toc}
 
-This is the API documentation for accessing the ECDC ILI (`ecdc_ili`) endpoint
-of [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
+* **Source name:** `ecdc_ili`
+* **Earliest issue available:** 2003w40
+* **Regions available:** European countries ([full list](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/ecdc_regions.txt))
+* **Time type available:** epiweek
+* **License:** Open access
+
+
+## Overview
+{: .no_toc}
+
+This data source provides weekly influenza-like illness (ILI) data for European countries, as reported by the European Centre for Disease Prevention and Control (ECDC).
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
 
-## ECDC ILI Data
+## Table of contents
+{: .no_toc .text-delta}
 
-ECDC ILI data from ECDC website. ... <!-- TODO -->
+1. TOC
+{:toc}
+
+
 
 # The API
 
@@ -29,17 +43,21 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 ### Required
 
-| Parameter  | Description | Type                                                                                                        |
-|------------|-------------|-------------------------------------------------------------------------------------------------------------|
-| `epiweeks` | epiweeks    | `list` of epiweeks                                                                                          |
-| `regions`  | regions     | `list` of [location](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/ecdc_regions.txt) labels |
+## Parameters
+
+### Required
+
+| Parameter | Description | Type |
+| --- | --- | --- |
+| `epiweeks` | epiweeks | `list` of epiweeks |
+| `regions` | regions | `list` of [region](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/ecdc_regions.txt) labels |
 
 ### Optional
 
-| Parameter | Description                                | Type               |
-|-----------|--------------------------------------------|--------------------|
-| `issues`  | issues                                     | `list` of epiweeks |
-| `lag`     | # weeks between each epiweek and its issue | integer            |
+| Parameter | Description | Type |
+| --- | --- | --- |
+| `issues` | issues | `list` of epiweeks |
+| `lag` | # weeks between each epiweek and its issue | integer |
 
 Notes:
 - If both `issues` and `lag` are specified, only `issues` is used.
@@ -47,17 +65,118 @@ If neither is specified, the current issues are used.
 
 ## Response
 
-| Field     | Description                                                     | Type             |
-|-----------|-----------------------------------------------------------------|------------------|
-| `result`  | result code: 1 = success, 2 = too many results, -2 = no results | integer          |
-| `epidata` | list of results                                                 | array of objects |
-| ...       | ...                                                             | ...              | <!-- TODO -->
-| `message` | `success` or error message                                      | string           |
+| Field                     | Description                                                     | Type             |
+|---------------------------|-----------------------------------------------------------------|------------------|
+| `result`                  | result code: 1 = success, 2 = too many results, -2 = no results | integer          |
+| `epidata`                 | list of results                                                 | array of objects |
+| `epidata[].release_date`  | date of release                                                 | string           |
+| `epidata[].region`        | region name                                                     | string           |
+| `epidata[].issue`         | epiweek of issue                                                | integer          |
+| `epidata[].epiweek`       | epiweek of data                                                 | integer          |
+| `epidata[].lag`           | lag in weeks                                                    | integer          |
+| `epidata[].count`         | number of ILI cases                                             | integer          |
+| `epidata[].rate`          | ILI rate                                                        | float            |
+| `message`                 | `success` or error message                                      | string           |
 
 # Example URLs
 
-<!-- TODO: fix -->
+### ECDC ILI in Austria on 2020w01
+https://api.delphi.cmu.edu/epidata/ecdc_ili/?regions=austria&epiweeks=202001
+
+```json
+{
+  "result": 1,
+  "epidata": [
+    {
+      "release_date": "2020-01-10",
+      "region": "Austria",
+      "issue": 202001,
+      "epiweek": 202001,
+      "lag": 0,
+      "count": 123,
+      "rate": 12.34
+    }
+  ],
+  "message": "success"
+}
+```
 
 # Code Samples
 
-<!-- TODO: fix -->
+Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
+The following samples show how to import the library and fetch ECDC ILI data for Austria for epiweeks `202001` and `202002`.
+
+### R
+
+```R
+library(epidatr)
+# Fetch data
+res <- pub_ecdc_ili(regions = 'austria', epiweeks = c(202001, 202002))
+print(res)
+```
+
+### Python
+
+Install the package using pip:
+
+```bash
+pip install -e "git+https://github.com/cmu-delphi/epidatpy.git#egg=epidatpy"
+```
+
+```python
+# Import
+from epidatpy import CovidcastEpidata, EpiDataContext, EpiRange
+# Fetch data
+epidata = EpiDataContext()
+res = epidata.ecdc_ili(['austria'], [202001, 202002])
+print(res['result'], res['message'], len(res['epidata']))
+```
+
+### JavaScript (in a web browser)
+
+The JavaScript client is available [here](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js).
+
+```html
+<!-- Imports -->
+<script src="delphi_epidata.js"></script>
+<!-- Fetch data -->
+<script>
+  EpidataAsync.ecdc_ili('austria', [202001, 202002]).then((res) => {
+    console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
+  });
+</script>
+```
+
+### Legacy Clients
+
+We recommend using our modern client libraries: [epidatr](https://cmu-delphi.github.io/epidatr/) for R and [epidatpy](https://cmu-delphi.github.io/epidatpy/) for Python. Legacy clients are also available for [Python](https://pypi.org/project/delphi-epidata/) and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
+
+#### R (Legacy)
+
+Place `delphi_epidata.R` from this repo next to your R script.
+
+```R
+source("delphi_epidata.R")
+# Fetch data
+res <- Epidata$ecdc_ili(regions = list("austria"), epiweeks = list(202001, 202002))
+print(res$message)
+print(length(res$epidata))
+```
+
+#### Python (Legacy)
+
+Optionally install the package using pip(env):
+
+```bash
+pip install delphi-epidata
+```
+
+Otherwise, place `delphi_epidata.py` from this repo next to your python script.
+
+```python
+# Import
+from delphi_epidata import Epidata
+# Fetch data
+res = Epidata.ecdc_ili(['austria'], [202001, 202002])
+print(res['result'], res['message'], len(res['epidata']))
+```

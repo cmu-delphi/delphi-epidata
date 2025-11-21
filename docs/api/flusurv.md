@@ -6,18 +6,32 @@ nav_order: 2
 ---
 
 # FluSurv
+{: .no_toc}
 
-This is the API documentation for accessing the FluSurv (`flusurv`) endpoint of
-[Delphi](https://delphi.cmu.edu/)'s epidemiological data.
+* **Source name:** `flusurv`
+* **Earliest issue available:** 2009w40
+* **Data source:** [Laboratory-Confirmed Influenza Hospitalizations](https://gis.cdc.gov/GRASP/Fluview/FluHospRates.html)
+* **Location available:** CA, CO, CT, GA, IA, ID, MD, MI, MN, NM, NY_albany, NY_rochester, OH, OK, OR, RI, SD, TN, UT, network_all, network_eip, network_ihsp ([full list of locations](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/flusurv_locations.txt))
+* **Time type available:** epiweek
+<!-- * **License:** Open access -->
+
+
+
+## Overview
+{: .no_toc}
+
+This data source provides laboratory-confirmed influenza hospitalization rates from the FluSurv-NET surveillance system. The data includes age-stratified hospitalization rates and rates by race, sex, and flu type, when available.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
 
-## FluSurv Data
+## Table of contents
+{: .no_toc .text-delta}
 
-FluSurv-NET data (flu hospitaliation rates) from CDC.
+1. TOC
+{:toc}
 
 See also:
   - <https://gis.cdc.gov/GRASP/Fluview/FluHospRates.html>
@@ -130,45 +144,79 @@ Notes:
 
 # Code Samples
 
-Libraries are available for [JavaScript](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js), [Python](https://pypi.org/project/delphi-epidata/), and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
+Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
 The following samples show how to import the library and fetch CA FluView Clinical data for epiweeks `201940` and `202001-202010` (11 weeks total).
+
+### R
+
+```R
+library(epidatr)
+# Fetch data
+res <- pub_flusurv(locations = "CA", epiweeks = epirange(201701, 201801))
+print(res)
+```
+
+### Python
+
+Install the package using pip:
+```bash
+pip install -e "git+https://github.com/cmu-delphi/epidatpy.git#egg=epidatpy"
+```
+
+```python
+# Import
+from epidatpy import CovidcastEpidata, EpiDataContext, EpiRange
+# Fetch data
+epidata = EpiDataContext()
+res = epidata.pub_flusurv(locations="CA", epiweeks=EpiRange(201701, 201801))
+print(res)
+```
 
 ### JavaScript (in a web browser)
 
-````html
+The JavaScript client is available [here](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js).
+
+```html
 <!-- Imports -->
 <script src="delphi_epidata.js"></script>
 <!-- Fetch data -->
 <script>
-  EpidataAsync.flusurv('ca', [201940, Epidata.range(202001, 202010)]).then((res) => {
+  EpidataAsync.flusurv('CA', [EpidataAsync.range(201701, 201801)]).then((res) => {
     console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
   });
 </script>
-````
+```
 
-### Python
+### Legacy Clients
+
+We recommend using our modern client libraries: [epidatr](https://cmu-delphi.github.io/epidatr/) for R and [epidatpy](https://cmu-delphi.github.io/epidatpy/) for Python. Legacy clients are also available for [Python](https://pypi.org/project/delphi-epidata/) and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
+
+#### R (Legacy)
+
+Place `delphi_epidata.R` from this repo next to your R script.
+
+```R
+source("delphi_epidata.R")
+# Fetch data
+res <- Epidata$flusurv(locations = list("CA"), epiweeks = list(Epidata$range(201701, 201801)))
+print(res$message)
+print(length(res$epidata))
+```
+
+#### Python (Legacy)
 
 Optionally install the package using pip(env):
-````bash
+```bash
 pip install delphi-epidata
-````
+```
 
 Otherwise, place `delphi_epidata.py` from this repo next to your python script.
 
-````python
+```python
 # Import
 from delphi_epidata import Epidata
 # Fetch data
-res = Epidata.flusurv(['ca'], [201940, Epidata.range(202001, 202010)])
+res = Epidata.flusurv(['CA'], [Epidata.range(201701, 201801)])
 print(res['result'], res['message'], len(res['epidata']))
-````
-
-### R
-
-````R
-# Import
-source('delphi_epidata.R')
-# Fetch data
-res <- Epidata$flusurv(list('ca'), list(201940, Epidata$range(202001, 202010)))
-cat(paste(res$result, res$message, length(res$epidata), "\n"))
-````
+```
+```

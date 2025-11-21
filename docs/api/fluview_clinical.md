@@ -6,19 +6,32 @@ nav_order: 1
 ---
 
 # FluView Clinical
+{: .no_toc}
 
-This is the API documentation for accessing the FluView Clinical
-(`fluview_clinical`) endpoint of [Delphi](https://delphi.cmu.edu/)'s
-epidemiological data.
+* **Source name:** `fluview_clinical`
+* **Earliest issue available:** 2010w40
+* **Available for:** nat, hhs1-hhs10, and cen1-cen9 ([full list of regions](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/regions.txt))
+* **Time type available:** epiweek
+* **License:** Open Access
+
+
+## Overview
+{: .no_toc}
+
+This data source provides age-stratified clinical data on laboratory-confirmed influenza from the US Flu View system.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
 
-## FluView Clinical Data
+## Table of contents
+{: .no_toc .text-delta}
 
-... <!-- TODO -->
+1. TOC
+{:toc}
+
+
 
 # The API
 
@@ -52,17 +65,17 @@ If neither is specified, the current issues are used.
 |------------------------------|-----------------------------------------------------------------|------------------|
 | `result`                     | result code: 1 = success, 2 = too many results, -2 = no results | integer          |
 | `epidata`                    | list of results                                                 | array of objects |
-| `epidata[].release_date`     |                                                                 | string           |
-| `epidata[].region`           |                                                                 | string           |
-| `epidata[].issue`            |                                                                 | integer          |
-| `epidata[].epiweek`          |                                                                 | integer          |
-| `epidata[].lag`              |                                                                 | integer          |
-| `epidata[].total_specimens`  |                                                                 | integer          |
-| `epidata[].total_a`          |                                                                 | integer          |
-| `epidata[].total_b`          |                                                                 | integer          |
-| `epidata[].percent_positive` |                                                                 | float            |
-| `epidata[].percent_a`        |                                                                 | float            |
-| `epidata[].percent_b`        |                                                                 | float            |
+| `epidata[].release_date`     | date when data was released                                     | string           |
+| `epidata[].region`           | region identifier                                               | string           |
+| `epidata[].issue`            | epiweek of publication                                          | integer          |
+| `epidata[].epiweek`          | epiweek for which data is valid                                 | integer          |
+| `epidata[].lag`              | number of weeks between epiweek and issue                       | integer          |
+| `epidata[].total_specimens`  | total number of specimens tested                                | integer          |
+| `epidata[].total_a`          | total specimens positive for influenza A                        | integer          |
+| `epidata[].total_b`          | total specimens positive for influenza B                        | integer          |
+| `epidata[].percent_positive` | percentage of specimens testing positive for influenza          | float            |
+| `epidata[].percent_a`        | percentage of specimens testing positive for influenza A        | float            |
+| `epidata[].percent_b`        | percentage of specimens testing positive for influenza B        | float            |
 | `message`                    | `success` or error message                                      | string           |
 
 # Example URLs
@@ -75,7 +88,7 @@ https://api.delphi.cmu.edu/epidata/fluview_clinical/?regions=nat&epiweeks=202001
   "result": 1,
   "epidata": [
     {
-      "release_date": "2020-04-10",
+      "release_date": "2021-10-08",
       "region": "nat",
       "issue": 202014,
       "epiweek": 202001,
@@ -93,48 +106,79 @@ https://api.delphi.cmu.edu/epidata/fluview_clinical/?regions=nat&epiweeks=202001
 }
 ```
 
-
 # Code Samples
 
-Libraries are available for [JavaScript](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js), [Python](https://pypi.org/project/delphi-epidata/), and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
-The following samples show how to import the library and fetch national FluView Clinical data for epiweeks `201940` and `202001-202010` (11 weeks total).
+Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
+The following samples show how to import the library and fetch national FluView Clinical data for epiweeks `201601-201701`.
+
+### R
+
+```R
+library(epidatr)
+# Fetch data
+res <- pub_fluview_clinical(regions = "nat", epiweeks =  epirange(201601, 201701))
+print(res)
+```
+
+### Python
+
+Install the package using pip:
+```bash
+pip install -e "git+https://github.com/cmu-delphi/epidatpy.git#egg=epidatpy"
+```
+
+```python
+# Import
+from epidatpy import CovidcastEpidata, EpiDataContext, EpiRange
+# Fetch data
+res = Epidata.fluview_clinical(['nat'], [Epidata.range(201601, 201701)])
+print(res['result'], res['message'], len(res['epidata']))
+```
 
 ### JavaScript (in a web browser)
 
-````html
+The JavaScript client is available [here](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js).
+
+```html
 <!-- Imports -->
 <script src="delphi_epidata.js"></script>
 <!-- Fetch data -->
 <script>
-  EpidataAsync.fluview_clinical('nat', [201940, EpidataAsync.range(202001, 202010)]).then((res) => {
+  EpidataAsync.fluview_clinical('nat', [EpidataAsync.range(201601, 201701)]).then((res) => {
     console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
   });
 </script>
-````
+```
 
-### Python
+### Legacy Clients
+
+We recommend using our modern client libraries: [epidatr](https://cmu-delphi.github.io/epidatr/) for R and [epidatpy](https://cmu-delphi.github.io/epidatpy/) for Python. Legacy clients are also available for [Python](https://pypi.org/project/delphi-epidata/) and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
+
+#### R (Legacy)
+
+Place `delphi_epidata.R` from this repo next to your R script.
+
+```R
+source("delphi_epidata.R")
+# Fetch data
+res <- Epidata$fluview_clinical(regions = list("nat"), epiweeks = list(Epidata$range(201601, 201701)))
+print(res$message)
+print(length(res$epidata))
+```
+
+#### Python (Legacy)
 
 Optionally install the package using pip(env):
-````bash
+```bash
 pip install delphi-epidata
-````
+```
 
-Otherwise, place `delphi_epidata.py` from this repo next to your python script.
+Place `delphi_epidata.py` from this repo next to your python script.
 
-````python
+```python
 # Import
 from delphi_epidata import Epidata
 # Fetch data
-res = Epidata.fluview_clinical(['nat'], [201940, Epidata.range(202001, 202010)])
+res = Epidata.fluview_clinical(['nat'], [Epidata.range(201601, 201701)])
 print(res['result'], res['message'], len(res['epidata']))
-````
-
-### R
-
-````R
-# Import
-source('delphi_epidata.R')
-# Fetch data
-res <- Epidata$fluview_clinical(list('nat'), list(201940, Epidata$range(202001, 202010)))
-cat(paste(res$result, res$message, length(res$epidata), "\n"))
-````
+```

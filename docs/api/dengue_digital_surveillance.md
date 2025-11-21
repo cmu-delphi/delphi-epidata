@@ -7,19 +7,30 @@ permalink: api/dengue_sensors.html
 ---
 
 # Dengue Digital Surveillance Sensors
+{: .no_toc}
 
-This is the API documentation for accessing the Dengue Digital Surveillance
-Sensors (`dengue_sensors`) endpoint of [Delphi](https://delphi.cmu.edu/)'s
-epidemiological data.
+* **Source name:** `dengue_sensors`
+* **Earliest issue available:** 2003w01
+<!-- TODO: * **Available for:** pr, vi (Puerto Rico, US Virgin Islands)...? -->
+* **Time type available:** epiweek
+* **License:** [CC BY](https://creativecommons.org/licenses/by/4.0/)
+
+
+## Overview
+{: .no_toc}
+
+This endpoint provides digital surveillance sensor estimates for dengue activity, derived from various data streams.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
 
-## Delphi's Dengue Digital Surveillance Sensors Data
+## Table of contents
+{: .no_toc .text-delta}
 
-... <!-- TODO -->
+1. TOC
+{:toc}
 
 # The API
 
@@ -31,21 +42,118 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 ### Required
 
-<!-- TODO -->
+| Parameter | Description | Type |
+| --- | --- | --- |
+| `auth` | password | string |
+| `epiweeks` | epiweeks | `list` of epiweeks |
+| `locations` | locations | `list` of location labels |
+
+<!-- TODO: | `name` | name | `list` of names | -->
 
 ## Response
 
-| Field     | Description                                                     | Type             |
-|-----------|-----------------------------------------------------------------|------------------|
-| `result`  | result code: 1 = success, 2 = too many results, -2 = no results | integer          |
-| `epidata` | list of results                                                 | array of objects |
-| ...       | ...                                                             | ...              | <!-- TODO -->
-| `message` | `success` or error message                                      | string           |
+| Field                 | Description                                                     | Type             |
+|-----------------------|-----------------------------------------------------------------|------------------|
+| `result`              | result code: 1 = success, 2 = too many results, -2 = no results | integer          |
+| `epidata`             | list of results                                                 | array of objects |
+| `epidata[].location`  | location label                                                  | string           |
+| `epidata[].epiweek`   | epiweek                                                         | integer          |
+| `epidata[].name`    | name                                                     | string           |
+| `epidata[].value`     | value                                                    | float            |
+| `message`             | `success` or error message                                      | string           |
 
 # Example URLs
 
-<!-- TODO: fix -->
+### Dengue Sensors on 2015w01 (Puerto Rico)
+https://api.delphi.cmu.edu/epidata/dengue_sensors/?auth=...&locations=pr&epiweeks=201501&names=ght
+
+```json
+{
+  "result": 1,
+  "epidata": [
+    {
+      "location": "pr",
+      "epiweek": 201501,
+      "name": "ght",
+      "value": 103.676
+    }
+  ],
+  "message": "success"
+}
+```
 
 # Code Samples
 
-<!-- TODO: fix -->
+Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
+The following samples show how to import the library and fetch Dengue Sensors data for Puerto Rico for epiweek `201501`.
+
+### R
+
+```R
+library(epidatr)
+# Fetch data
+res <- pvt_dengue_sensors(auth = 'auth_token', names = 'ght', locations = 'pr', epiweeks = 201501)
+print(res)
+```
+
+### Python
+
+Install the package using pip:
+
+```bash
+pip install -e "git+https://github.com/cmu-delphi/epidatpy.git#egg=epidatpy"
+```
+
+```python
+# Import
+from epidatpy import CovidcastEpidata, EpiDataContext, EpiRange
+# Fetch data
+epidata = EpiDataContext()
+res = epidata.dengue_sensors('auth_token', ['ght'], ['pr'], [201501])
+print(res['result'], res['message'], len(res['epidata']))
+```
+
+### JavaScript (in a web browser)
+
+The JavaScript client is available [here](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js).
+
+```html
+<!-- Imports -->
+<script src="delphi_epidata.js"></script>
+<!-- Fetch data -->
+<script>
+  EpidataAsync.dengue_sensors('auth_token', ['ght'], 'pr', [201501]).then((res) => {
+    console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
+  });
+</script>
+```
+
+### Legacy Clients
+
+We recommend using our client libraries: [epidatr](https://cmu-delphi.github.io/epidatr/) for R and [epidatpy](https://cmu-delphi.github.io/epidatpy/) for Python. Legacy clients are also available for [Python](https://pypi.org/project/delphi-epidata/) and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
+
+#### R (Legacy)
+
+Place `delphi_epidata.R` from this repo next to your R script.
+
+```R
+source("delphi_epidata.R")
+# Fetch data
+res <- Epidata$dengue_sensors(auth = "auth_token", sensors = list("gft"), locations = list("pr"), epiweeks = list(201501))
+print(res$message)
+print(length(res$epidata))
+```
+
+#### Python (Legacy)
+Optionally install the package using pip(env):
+```bash
+pip install delphi-epidata
+```
+
+```python
+# Import
+from delphi_epidata import Epidata
+# Fetch data
+res = Epidata.dengue_sensors('auth_token', ['gft'], ['pr'], [201501])
+print(res['result'], res['message'], len(res['epidata']))
+```

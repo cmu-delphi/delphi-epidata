@@ -1,7 +1,6 @@
 ---
 title: API Clients
-parent: Other Endpoints (COVID-19 and Other Diseases)
-nav_order: 1
+nav_order: 6
 ---
 
 # Epidata API Clients
@@ -30,7 +29,7 @@ with `install.packages("epidatr")`.
 library(epidatr)
 data <- pub_covidcast('fb-survey', 'smoothed_cli', 'county', 'day', geo_values = '06001',
                      time_values = c(20200401, 20200405:20200414))
-cat(data)
+print(data)
 ```
 
 ### Python

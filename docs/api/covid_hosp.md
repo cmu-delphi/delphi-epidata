@@ -6,12 +6,19 @@ nav_order: 2
 ---
 
 # COVID-19 Hospitalization by State
+{: .no_toc}
 
-This data source is a mirror of the "COVID-19 Reported Patient Impact and
-Hospital Capacity by State Timeseries" and "COVID-19 Reported Patient Impact and
-Hospital Capacity by State" datasets provided by the US Department of
-Health & Human Services via healthdata.gov. The latter provides more frequent updates,
-so it is combined with the former to create a single dataset which is as recent as possible.
+* **Source name:** `covid_hosp_state_timeseries`
+* **Data source:** [US Department of Health & Human Services](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/g62h-syeh) 
+* **Earliest issue available:** 2020-01-01
+* **Temporal Resolution:** Daily
+* **Spatial Resolution:** US States plus DC, PR, and VI
+* **License:** [Public Domain US Government](https://www.usa.gov/government-works)
+
+## Overview
+{: .no_toc}
+
+This data source provides various measures of COVID-19 burden on patients and healthcare facilities in the US. It is a mirror of the "COVID-19 Reported Patient Impact and Hospital Capacity by State Timeseries" and "COVID-19 Reported Patient Impact and Hospital Capacity by State" datasets provided by HHS via healthdata.gov. The latter provides more frequent updates, so it is combined with the former to create a single dataset which is as recent as possible.
 
 HHS performs up to four days of forward-fill for missing values in the
 [facility-level data](covid_hosp_facility.md) which are aggregated to make this
@@ -34,17 +41,11 @@ General topics not specific to any particular data source are discussed in the
 [API overview](README.md). Such topics include:
 [contributing](README.md#contributing) and [citing](README.md#citing).
 
-## Metadata
+## Table of contents
+{: .no_toc .text-delta}
 
-This data source provides various measures of COVID-19 burden on patients and healthcare in the US.
-- Data source: US Department of Health & Human Services (HHS) [COVID-19 Reported Patient Impact and
-Hospital Capacity by State Timeseries](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/g62h-syeh) (published weekly)
-  and [COVID-19 Reported Patient Impact and Hospital Capacity by State](https://healthdata.gov/dataset/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/6xf2-c3ie) (published on an irregular schedule, every 1-6 days)
-- Temporal Resolution: Daily, starting 2020-01-01
-- Spatial Resolution: US States plus DC, PR, and VI
-- Open Access: [Public Domain US Government](https://www.usa.gov/government-works)
-- Versioned by Delphi according to "issue" date, which is the date that the
-dataset was published by HHS.
+1. TOC
+{:toc}
 
 # The API
 
@@ -218,11 +219,52 @@ https://api.delphi.cmu.edu/epidata/covid_hosp_state_timeseries/?states=MA&dates=
 
 # Code Samples
 
-Libraries are available for [JavaScript](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js), [Python](https://pypi.org/project/delphi-epidata/), and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
+Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
 The following sample shows how to import the library and fetch MA on 2020-05-10
 (per most recent issue).
 
+### R
+
+```R
+library(epidatr)
+# Fetch data
+res <- pub_covid_hosp_state_timeseries(states = "MA", dates = 20200510)
+print(res)
+```
+
 ### Python
+
+Install the package using pip:
+```bash
+pip install -e "git+https://github.com/cmu-delphi/epidatpy.git#egg=epidatpy"
+```
+
+```python
+# Import
+from epidatpy import CovidcastEpidata, EpiDataContext, EpiRange
+# Fetch data
+epidata = EpiDataContext()
+res = epidata.pub_covid_hosp(states="MA", dates=20200510)
+print(res)
+```
+
+### Legacy Clients
+
+We recommend using our modern client libraries: [epidatr](https://cmu-delphi.github.io/epidatr/) for R and [epidatpy](https://cmu-delphi.github.io/epidatpy/) for Python. Legacy clients are also available for [Python](https://pypi.org/project/delphi-epidata/) and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
+
+#### R (Legacy)
+
+Place `delphi_epidata.R` from this repo next to your R script.
+
+```R
+source("delphi_epidata.R")
+# Fetch data
+res <- Epidata$covid_hosp(states = list("MA"), dates = list(20200510))
+print(res$message)
+print(length(res$epidata))
+```
+
+#### Python (Legacy)
 
 Optionally install the package using pip(env):
 ```bash
