@@ -20,10 +20,8 @@ nav_order: 1
 
 * **Source name:** `quidel`
 * **Earliest issue available:** July 29, 2020
-* **Number of data revisions since May 19, 2020:** 1
-* **Date of last change:** October 22, 2020
-* **Available for:** county, hrr, msa, state, HHS, nation (see [geography coding docs](../covidcast_geography.md))
-* **Time type:** day (see [date format docs](../covidcast_times.md))
+* **Geography type available:** county, hrr, msa, state, HHS, nation (see [geography coding docs](../covidcast_geography.md))
+* **Time type available:** day (see [date format docs](../covidcast_times.md))
 * **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
 
 ### Overview
@@ -170,8 +168,8 @@ These signals are inactive. They were updated until May 19, 2020.
 * **Last issued:** May 19, 2020
 * **Number of data revisions since May 19, 2020:** 0
 * **Date of last change:** Never
-* **Available for:** msa, state (see [geography coding docs](../covidcast_geography.md))
-* **Time type:** day (see [date format docs](../covidcast_times.md))
+* **Geography type available:** msa, state (see [geography coding docs](../covidcast_geography.md))
+* **Time type available:** day (see [date format docs](../covidcast_times.md))
 
 ### Overview
 

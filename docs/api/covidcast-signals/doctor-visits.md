@@ -10,14 +10,13 @@ nav_order: 1
 
 * **Source name:** `doctor-visits`
 * **Earliest issue available:** April 29, 2020
-* **Number of data revisions since May 19, 2020:** 1
-* **Date of last change:** November 9, 2020
-* **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
-* **Time type:** day (see [date format docs](../covidcast_times.md))
+* **Geography type available:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
+* **Time type available:** day (see [date format docs](../covidcast_times.md))
 * **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
 
 
 ## Overview
+{: .no_toc}
 
 This data source is based on information about outpatient visits, provided to us
 by health system partners. Using this outpatient data, we estimate the
@@ -50,14 +49,11 @@ $$
 	Y_{it}^{\text{Flu}}\right)}{N_{it}}
 $$
 
-The estimated standard error is:
+**Note on Uncertainty:** The standard error formula below represents the theoretical error of the binomial proportion. However, due to the smoothing and day-of-week adjustments applied later in the pipeline, the actual standard error in the final signal will differ.
 
 $$
 \widehat{\text{se}}(\hat{p}_{it}) =  100 \sqrt{\frac{\frac{\hat{p}_{it}}{100}(1-\frac{\hat{p}_{it}}{100})}{N_{it}}}.
 $$
-
-Note the quantity above is not going to be correct for multiple reasons: smoothing/day of
-week adjustments/etc.
 
 ### Day-of-Week Adjustment
 

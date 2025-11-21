@@ -9,13 +9,12 @@ nav_order: 1
 
 * **Source name:** `nhsn`
 * **Earliest issue available:** November 19, 2024
-* **Number of data revisions since 18 Nov 2024:** 0
-* **Date of last change:** Never
-* **Available for:** state, hhs, nation (see [geography coding docs](../covidcast_geography.md))
-* **Time type:** week (see [date format docs](../covidcast_times.md))
+* **Geography type available:** state, hhs, nation (see [geography coding docs](../covidcast_geography.md))
+* **Time type available:** week (see [date format docs](../covidcast_times.md))
 * **License:** [Public Domain US Government](https://www.usa.gov/government-works)
 
 ## Overview
+{: .no_toc}
 
 [The National Healthcare Safety Network (NHSN)](https://www.cdc.gov/nhsn/index.html) is the nation’s most widely used healthcare-associated infection tracking system.
 This dataset reports preliminary and finalized weekly hospital respiratory data and metrics aggregated to national and state/territory levels reported to the CDC’s National Health Safety Network (NHSN). Values are available for reference dates beginning August 2020.
@@ -30,21 +29,29 @@ For reference dates in May 2024, NHSN received data from 78% of US EDs.
 
 State and nation-level values are pulled directly from the source; HHS-level values are aggregated up from the state level.
 
+### Available Signals
+{: .no_toc}
 
-| Signal                                         | Description                                                                                                                                                                                                                                                                          |
-|------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `confirmed_admissions_covid_ew`                | Total number of patients hospitalized with confirmed COVID-19 over the entire week (Sunday-Saturday). Only includes hospitalizations whose report was received before the Friday or Saturday of the following week. <br/> **Earliest date available:** 2020-08-08                    |
-| `hosprep_confirmed_admissions_covid_ew`        | Total number of number of hospitals reporting new admissions with confirmed COVID-19 over the entire week (Sunday-Saturday). Only includes hospitalizations whose report was received before the Friday or Saturday of the following week.<br/> **Earliest date available:** 2020-08-08                                                                                                           |
-| `confirmed_admissions_covid_ew_prelim`         | Total number of patients hospitalized with confirmed COVID-19 over the entire week (Sunday-Saturday). Only includes hospitalizations whose report was received before the Wednesday of the following week. <br/> **Earliest date available:** 2020-08-08                                   |
-| `hosprep_confirmed_admissions_covid_ew_prelim` | Total number of number of hospitals reporting new admissions with confirmed COVID-19 over the entire week (Sunday-Saturday). Only includes hospitalizations whose report was received before the Wednesday of the following week. <br/> **Earliest date available:** 2020-08-08            |
-| `confirmed_admissions_flu_ew`                  | Total number of patients hospitalized with confirmed influenza over the entire week (Sunday-Saturday). Only includes hospitalizations whose report was received before the Friday or Saturday of the following week.  <br/> **Earliest date available:** 2020-08-08                  |
-| `hosprep_confirmed_admissions_flu_ew`          | Total number of hospitals reporting new admissions with confirmed influenza over the entire week (Sunday-Saturday). Only includes hospitalizations whose report was received before the Friday or Saturday of the following week.  <br/> **Earliest date available:** 2020-08-08     |
-| `confirmed_admissions_flu_ew_prelim`           | Total number of patients hospitalized with confirmed influenza over the entire week (Sunday-Saturday). Only includes hospitalizations whose report was received before the Wednesday of the following week. <br/> **Earliest date available:** 2020-08-08                            |
-| `hosprep_confirmed_admissions_flu_ew_prelim`   | Total number of number of hospitals reporting new admissions with confirmed influenza over the entire week (Sunday-Saturday). Only includes hospitalizations whose report was received before the Wednesday of the following week. <br/> **Earliest date available:** 2020-08-08     |
-| `confirmed_admissions_rsv_ew`                  | Total number of patients hospitalized with confirmed RSV over the entire week (Sunday-Saturday). Only includes hospitalizations whose report was received before the Friday or Saturday of the following week.  <br/> **Earliest date available:** 2020-08-08                        |
-| `hosprep_confirmed_admissions_rsv_ew`          | Total number of number of hospitals reporting new admissions with confirmed RSV over the entire week (Sunday-Saturday). Only includes hospitalizations whose report was received before the Friday or Saturday of the following week.  <br/> **Earliest date available:** 2020-08-08 |
-| `confirmed_admissions_rsv_ew_prelim`           | Total number of patients hospitalized with confirmed RSV over the entire week (Sunday-Saturday). Only includes hospitalizations whose report was received before the Wednesday of the following week. <br/> **Earliest date available:** 2020-08-08                                  |
-| `hosprep_confirmed_admissions_rsv_ew_prelim`   | Total number of number of hospitals reporting new admissions with confirmed RSV over the entire week (Sunday-Saturday). Only includes hospitalizations whose report was received before the Wednesday of the following week.  <br/> **Earliest date available:** 2020-08-08          |
+* **Earliest date available:** August 8, 2020
+* **Time:** Week (Sunday to Saturday)
+* **Reporting Cutoffs:**
+  * **Finalized Signals:** Data received by Friday/Saturday of the following week (~6-7 day lag).
+  * **Preliminary (`_prelim`) Signals:** Data received by Wednesday of the following week (~4 day lag).
+
+| Signal Name | Pathogen | Metric Description | Version |
+| :--- | :--- | :--- | :--- |
+| `confirmed_admissions_covid_ew` | COVID-19 | **Patient Count:** Total hospitalized patients. | Finalized |
+| `confirmed_admissions_covid_ew_prelim` | COVID-19 | **Patient Count:** Total hospitalized patients. | Preliminary |
+| `hosprep_confirmed_admissions_covid_ew` | COVID-19 | **Facility Count:** Number of hospitals reporting admissions. | Finalized |
+| `hosprep_confirmed_admissions_covid_ew_prelim` | COVID-19 | **Facility Count:** Number of hospitals reporting admissions. | Preliminary |
+| `confirmed_admissions_flu_ew` | Influenza | **Patient Count:** Total hospitalized patients. | Finalized |
+| `confirmed_admissions_flu_ew_prelim` | Influenza | **Patient Count:** Total hospitalized patients. | Preliminary |
+| `hosprep_confirmed_admissions_flu_ew` | Influenza | **Facility Count:** Number of hospitals reporting admissions. | Finalized |
+| `hosprep_confirmed_admissions_flu_ew_prelim` | Influenza | **Facility Count:** Number of hospitals reporting admissions. | Preliminary |
+| `confirmed_admissions_rsv_ew` | RSV | **Patient Count:** Total hospitalized patients. | Finalized |
+| `confirmed_admissions_rsv_ew_prelim` | RSV | **Patient Count:** Total hospitalized patients. | Preliminary |
+| `hosprep_confirmed_admissions_rsv_ew` | RSV | **Facility Count:** Number of hospitals reporting admissions. | Finalized |
+| `hosprep_confirmed_admissions_rsv_ew_prelim` | RSV | **Facility Count:** Number of hospitals reporting admissions. | Preliminary |
 
 
 ## Table of Contents

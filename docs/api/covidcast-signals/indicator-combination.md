@@ -22,10 +22,9 @@ calculated or composed by Delphi. It is not a primary data source.
 ## Statistical Combination Signals
 
 * **Earliest issue available:** May 20, 2020
-* **Number of data revisions since May 19, 2020:** 1
-* **Date of last change:** [June 3, 2020](../covidcast_changelog.md#indicator-combination)
-* **Available for:** county, msa, state (see [geography coding docs](../covidcast_geography.md))
-* **Time type:** day (see [date format docs](../covidcast_times.md))
+(../covidcast_changelog.md#indicator-combination)
+* **Geography type available:** county, msa, state (see [geography coding docs](../covidcast_geography.md))
+* **Time type available:** day (see [date format docs](../covidcast_times.md))
 * **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
 
 These signals combine Delphi's indicators---*not* including cases and deaths,
@@ -194,8 +193,8 @@ The resampling method for each input source is as follows:
 * **Earliest issue available:** 7 July 2020
 * **Number of data revisions since 19 May 2020:** 1
 * **Date of last change:** [12 October 2020](../covidcast_changelog.md#indicator-combination)
-* **Available for:** county, msa, hrr, state (see [geography coding docs](../covidcast_geography.md))
-* **Time type:** day (see [date format docs](../covidcast_times.md))
+* **Geography type available:** county, msa, hrr, state (see [geography coding docs](../covidcast_geography.md))
+* **Time type available:** day (see [date format docs](../covidcast_times.md))
 
 These signals combine the cases and deaths data from JHU and USA Facts. This is
 a straight composition: the signals below use the [JHU signal data](jhu-csse.md)

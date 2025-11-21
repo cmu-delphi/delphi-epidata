@@ -10,13 +10,12 @@ nav_order: 1
 
 * **Source name:** `google-symptoms`
 * **Earliest issue available:** Aug 20, 2017
-* **Number of data revisions since May 19, 2020:** 1
-* **Date of last change:** February 28, 2025
-* **Available for:** county, MSA, HRR, state, HHS, nation (see [geography coding docs](../covidcast_geography.md))
-* **Time type:** day (see [date format docs](../covidcast_times.md))
+* **Geography type available:** county, MSA, HRR, state, HHS, nation (see [geography coding docs](../covidcast_geography.md))
+* **Time type available:** day (see [date format docs](../covidcast_times.md))
 * **License:** To download or use the data, you must agree to the Google [Terms of Service](https://policies.google.com/terms)
 
 ## Overview
+{: .no_toc}
 
 This data source is based on the [COVID-19 Search Trends symptoms
 dataset](https://console.cloud.google.com/marketplace/product/bigquery-public-datasets/covid19-search-trends?hl=en-GB).

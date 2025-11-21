@@ -10,13 +10,12 @@ nav_order: 1
 
 * **Source name:** `chng`
 * **Earliest issue available:** November 4, 2020
-* **Number of data revisions since May 19, 2020:** 0
-* **Date of last change:** Never
-* **Available for:** county, hrr, msa, state, hhs, nation (see [geography coding docs](../covidcast_geography.md))
-* **Time type:** day (see [date format docs](../covidcast_times.md))
+* **Geography type available:** county, hrr, msa, state, hhs, nation (see [geography coding docs](../covidcast_geography.md))
+* **Time type available:** day (see [date format docs](../covidcast_times.md))
 * **License:** [CC BY-NC](../covidcast_licensing.md#creative-commons-attribution-noncommercial)
 
 ## Overview
+{: .no_toc}
 
 **Notice: This data source was inactive between 2021-10-04 and 2021-12-02 to allow us resolve some problems with the data pipeline. We have resumed daily updates and are working on a data patch to fill the gap. [Additional details on this inactive period are available below](#pipeline-pause).**
 

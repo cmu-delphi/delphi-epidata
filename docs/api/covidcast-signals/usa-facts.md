@@ -10,10 +10,8 @@ nav_order: 2
 
 * **Source name:** `usa-facts`
 * **Earliest issue available:** June 24, 2020
-* **Number of data revisions since May 19, 2020:** 2
-* **Date of last change:** [November 3, 2020](../covidcast_changelog.md#usa-facts)
-* **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
-* **Time type:** day (see [date format docs](../covidcast_times.md))
+* **Geography type available:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
+* **Time type available:** day (see [date format docs](../covidcast_times.md))
 * **License:** [CC BY](#source-and-licensing)
 
 This data source of confirmed COVID-19 cases and deaths is based on reports made

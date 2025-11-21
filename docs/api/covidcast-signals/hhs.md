@@ -10,10 +10,8 @@ nav_order: 2
 
 * **Source name:** `hhs`
 * **Earliest issue available:** November 16, 2020
-* **Number of data revisions since 19 May 2020:** 0
-* **Date of last change:** Never
-* **Available for:** state, hhs, nation (see [geography coding docs](../covidcast_geography.md))
-* **Time type:** day (see [date format docs](../covidcast_times.md))
+* **Geography type available:** state, hhs, nation (see [geography coding docs](../covidcast_geography.md))
+* **Time type available:** day (see [date format docs](../covidcast_times.md))
 * **License:** [Public Domain US Government](https://www.usa.gov/government-works)
 
 The U.S. Department of Health & Human Services (HHS) publishes several

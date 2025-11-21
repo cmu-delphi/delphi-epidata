@@ -8,8 +8,8 @@ nav_order: 2
 # SafeGraph
 {: .no_toc}
 * **Source name:** `safegraph`
-* **Available for:** county, MSA, HRR, state (see [geography coding docs](../covidcast_geography.md))
-* **Time type:** day (see [date format docs](../covidcast_times.md))
+* **Geography type available:** county, MSA, HRR, state (see [geography coding docs](../covidcast_geography.md))
+* **Time type available:** day (see [date format docs](../covidcast_times.md))
 * **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
 
 This data source uses data reported by [SafeGraph](https://www.safegraph.com/)

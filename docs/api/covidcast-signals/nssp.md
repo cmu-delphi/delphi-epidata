@@ -9,29 +9,32 @@ nav_order: 1
 
 * **Source name:** `nssp`
 * **Earliest issue available:** April 17, 2024
-* **Number of data revisions since 19 May 2020:** 0
-* **Date of last change:** Never
-* **Available for:** county, hrr, msa, state, hhs, nation (see [geography coding docs](../covidcast_geography.md))
-* **Time type:** week (see [date format docs](../covidcast_times.md))
+* **Geography type available:** county, hrr, msa, state, hhs, nation (see [geography coding docs](../covidcast_geography.md))
+* **Time type available:** week (see [date format docs](../covidcast_times.md))
 * **License:** [Public Domain US Government](https://www.usa.gov/government-works)
 
 ## Overview
+{: .no_toc}
 
 [The National Syndromic Surveillance Program (NSSP)](https://www.cdc.gov/nssp/php/about/index.html) is an effort to track epidemiologically relevant conditions.
 This dataset in particular tracks emergency department (ED) visits arising from a subset of influenza-like illnesses, specifically influenza, COVID-19, and respiratory syncytial virus (RSV).
 It is derived from the CDC's [Respiratory Virus Response NSSP Emergency Department Visit Trajectories dataset](https://data.cdc.gov/Public-Health-Surveillance/2023-Respiratory-Virus-Response-NSSP-Emergency-Dep/rdmq-nq56/about_data), which started reporting data in late 2022.
 As of May 2024, NSSP received data from 78% of US EDs.
 
-| Signal                          | Description                                                                                                                          |
-|---------------------------------|--------------------------------------------------------------------------------------------------------------------------------------|
-| `pct_ed_visits_covid`              | Percent of ED visits that had a discharge diagnosis code of COVID-19 <br/> **Earliest date available:** 2022-10-01                      |
-| `pct_ed_visits_influenza`          | Percent of ED visits that had a discharge diagnosis code of influenza  <br/> **Earliest date available:** 2022-10-01                 |
-| `pct_ed_visits_rsv`                | Percent of ED visits that had a discharge diagnosis code of rsv  <br/> **Earliest date available:** 2022-10-01                       |
-| `pct_ed_visits_combined`           | Percent of ED visits that had a discharge diagnosis code of COVID-19, influenza, or rsv   <br/> **Earliest date available:** 2022-10-01 |
-| `smoothed_pct_ed_visits_covid`     | 3 week moving average of `pct_ed_visits_covid`  <br/> **Earliest date available:** 2022-10-01                                           |
-| `smoothed_pct_ed_visits_influenza` | 3 week moving average of `pct_ed_visits_influenza`   <br/> **Earliest date available:** 2022-10-01                                      |
-| `smoothed_pct_ed_visits_rsv`       | 3 week moving average of `pct_ed_visits_rsv`   <br/> **Earliest date available:** 2022-10-01                                            |
-| `smoothed_pct_ed_visits_combined`  | 3 week moving average of `pct_ed_visits_combined`   <br/> **Earliest date available:** 2022-10-01                                       |
+
+### Available Signals
+{: .no_toc}
+
+* **Earliest date available:** August 8, 2020
+* **Raw Signals** (`pct_ed_visits_...`) represent the weekly percentage of ED visits for the specific pathogen.
+* **Smoothed Signals** (`smoothed_pct_ed_visits_...`) represent a **3-week moving average** of the raw signal.
+
+| Signal Pair (Raw / Smoothed) | Pathogen | Description |
+| :--- | :--- | :--- |
+| `pct_ed_visits_covid`<br>`smoothed_pct_ed_visits_covid` | **COVID-19** | Percentage of ED visits with a discharge diagnosis of COVID-19. | 
+| `pct_ed_visits_influenza`<br>`smoothed_pct_ed_visits_influenza` | **Influenza** | Percentage of ED visits with a discharge diagnosis of Influenza. | 
+| `pct_ed_visits_rsv`<br>`smoothed_pct_ed_visits_rsv` | **RSV** | Percentage of ED visits with a discharge diagnosis of RSV. | 
+| `pct_ed_visits_combined`<br>`smoothed_pct_ed_visits_combined` | **Combined** | Percentage of ED visits with a diagnosis of **any** of the above (COVID, Flu, or RSV). |                                 |
 
 ## Table of Contents
 {: .no_toc .text-delta}
