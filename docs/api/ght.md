@@ -8,11 +8,17 @@ nav_order: 2
 # Google Health Trends
 {: .no_toc}
 
-* **Source name:** `ght`
-* **Earliest issue available:** 2003w40
-* **Available for:** [US States](geographic_codes.html#us-states-and-territories) and national level (US)
-* **Time type available:** epiweek
-* **License:** Restricted (requires auth)
+
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `ght` |
+| **Data Source** | Google Health Trends |
+| **Geographic Coverage** | [US States](geographic_codes.html#us-states-and-territories) and national level (US) |
+| **Temporal Resolution** | Weekly (Epiweek) |
+| **Update Frequency** | Inactive - No longer updated |
+
+<!--| **Earliest Date** |  |
+| **License** |  | -->
 
 This is the API documentation for accessing the Google Health Trends  (`ght`)
 endpoint of [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
@@ -50,7 +56,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | `auth` | password | string |
 | `epiweeks` | epiweeks | `list` of epiweeks |
 | `locations` | locations | `list` of state codes (see [Geographic Codes](geographic_codes.html#us-states-and-territories)) and/or `US` |
-| `query` | search query or topic ID (see https://www.freebase.com/) | string |
+| `query` | search query or topic ID <!--This link is not working (see https://www.freebase.com/)--> | string |
 
 ## Response
 

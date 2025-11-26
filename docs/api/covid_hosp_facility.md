@@ -8,12 +8,16 @@ nav_order: 2
 # COVID-19 Hospitalization by Facility
 {: .no_toc}
 
-* **Source name:** `covid_hosp_facility`
-* **Data source:** [US Department of Health & Human Services](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/anag-cw7u)
-* **Earliest issue available:** 2020-07-31
-* **Geographic resolution:** healthcare facility (address, city, zip, fips)
-* **Temporal resolution:** weekly (Friday -- Thursday)
-* **License:** [Public Domain US Government](https://www.usa.gov/government-works)
+
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `covid_hosp_facility` |
+| **Data Source** | [US Department of Health & Human Services](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/anag-cw7u) |
+| **Geographic Coverage** | Healthcare facility |
+| **Temporal Resolution** | Weekly (Friday -- Thursday) |
+| **Update Frequency** | Inactive - No longer updated |
+| **Earliest Date** | 2020-07-31 |
+| **License** | [Public Domain US Government](https://www.usa.gov/government-works) |
 
 ## Overview
 {: .no_toc}
@@ -56,14 +60,14 @@ See [this documentation](README.md) for details on specifying locations and date
 | `hospital_pks`     | facility unique identifiers | `list` of identifiers          |
 | `collection_weeks` | dates                       | `list` of dates or date ranges |
 
-NOTE: The companion
-[`covid_hosp_facility_lookup` endpoint](covid_hosp_facility_lookup.md) can be
-used to lookup facility identifiers in a variety of ways.
 
-NOTE: A collection week spans Friday -- Thursday, and weeks are identified by
-the date corresponding to the Friday at the start of the week. Therefore, the
-`collection_weeks` parameter is formatted as a `YYYYMMDD` date (or list of
-dates) rather than an "epiweek" as in other endpoints.
+{: .note}
+> **NOTEs:** 
+> - [`covid_hosp_facility_lookup` endpoint](covid_hosp_facility_lookup.md) can > be used to lookup facility identifiers in a variety of ways.
+> - A collection week spans Friday -- Thursday, and weeks are identified by
+>  the date corresponding to the Friday at the start of the week. Therefore, the
+> `collection_weeks` parameter is formatted as a `YYYYMMDD` date (or list of
+>  dates) rather than an "epiweek" as in other endpoints.
 
 ### Optional
 

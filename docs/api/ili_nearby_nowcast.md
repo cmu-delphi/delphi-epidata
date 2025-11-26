@@ -13,13 +13,13 @@ permalink: api/nowcast.html
 | Attribute | Details |
 | :--- | :--- |
 | **Source Name** | `nowcast` |
-| **Data Source:** | [Delphi's ILI Nearby system](https://delphi.cmu.edu/nowcast/)
+| **Data Source** | [Delphi's ILI Nearby system](https://delphi.cmu.edu/nowcast/) |
 | **Dataset Type** | Predictive (Leading Indicator) |
 | **Geographic Coverage** | National, HHS regions, Census divisions, and US states (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
 | **Temporal Resolution** | Weekly (Epiweek) |
 | **Update Frequency** | Released Friday; updated Sunday & Monday |
 | **Earliest Date** | 2010w30 |
-| **License** | Open Access |
+| **License** | [CC BY](https://creativecommons.org/licenses/by/4.0/) |
 
 ## Overview
 {: .no_toc}

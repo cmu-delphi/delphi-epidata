@@ -8,11 +8,16 @@ nav_order: 1
 # FluView Clinical
 {: .no_toc}
 
-* **Source name:** `fluview_clinical`
-* **Earliest issue available:** 2010w40
-* **Available for:** nat, hhs1-hhs10, and cen1-cen9 (see [Geographic Codes](geographic_codes.html#us-regions-and-states))
-* **Time type available:** epiweek
-* **License:** Open Access
+
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `fluview_clinical` |
+| **Data Source** | [United States Centers for Disease Control and Prevention (CDC)](http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html) |
+| **Geographic Coverage** | National, HHS regions, states, and Census divisions (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
+| **Temporal Resolution** | Weekly (Epiweek) |
+| **Update Frequency** | Weekly (typically Fridays) |
+| **Earliest Date** | 2016w40 |
+| **License** | Open Access |
 
 
 ## Overview
@@ -32,7 +37,6 @@ General topics not specific to any particular endpoint are discussed in the
 {:toc}
 
 
-
 # The API
 
 The base URL is: https://api.delphi.cmu.edu/epidata/fluview_clinical/
@@ -46,7 +50,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `epiweeks` | epiweeks | `list` of epiweeks |
-| `regions` | regions | `list` of region labels: `nat`, `hhs1`-`hhs10`, `cen1`-`cen9` (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
+| `regions` | regions | `list` of region labels: `nat`, states, `hhs1`-`hhs10`, `cen1`-`cen9` (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
 
 ### Optional
 
@@ -55,9 +59,10 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | `issues`  | issues                                     | `list` of epiweeks |
 | `lag`     | # weeks between each epiweek and its issue | integer            |
 
-Notes:
-- If both `issues` and `lag` are specified, only `issues` is used.
-If neither is specified, the current issues are used.
+{: .note}
+> **Notes:**
+> - If both `issues` and `lag` are specified, only `issues` is used.
+> - If neither is specified, the current issues are used.
 
 ## Response
 
@@ -90,17 +95,16 @@ https://api.delphi.cmu.edu/epidata/fluview_clinical/?regions=nat&epiweeks=202001
     {
       "release_date": "2021-10-08",
       "region": "nat",
-      "issue": 202014,
+      "issue": 202139,
       "epiweek": 202001,
-      "lag": 13,
-      "total_specimens": 64980,
-      "total_a": 5651,
-      "total_b": 9647,
-      "percent_positive": 23.5426,
-      "percent_a": 8.69652,
-      "percent_b": 14.8461
-    },
-    ...
+      "lag": 91,
+      "total_specimens": 65177,
+      "total_a": 5645,
+      "total_b": 9664,
+      "percent_positive": 23.4883,
+      "percent_a": 8.66103,
+      "percent_b": 14.8273
+    }
   ],
   "message": "success"
 }

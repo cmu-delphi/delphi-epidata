@@ -8,10 +8,17 @@ nav_order: 2
 # COVID-19 Hospitalization: Facility Lookup
 {: .no_toc}
 
-* **Source name:** `covid_hosp_facility_lookup`
-* **Data source:** [US Department of Health & Human Services](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/anag-cw7u)
-* **Total facilities:** 4922
-* **License:** [Public Domain US Government](https://www.usa.gov/government-works)
+
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `covid_hosp_facility_lookup` |
+| **Data Source** | [US Department of Health & Human Services](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/anag-cw7u) |
+| **Geographic Coverage** | Healthcare facility ([state](geographic_codes.html#us-states-and-territories), ccn city, zip, fips) |
+| **Update Frequency** | Inactive - No longer updated |
+| **License** | [Public Domain US Government](https://www.usa.gov/government-works) |
+
+<!-- | **Earliest Date** | N/A |
+| **Temporal Resolution** | N/A -->
 
 ## Overview
 {: .no_toc}
@@ -42,6 +49,8 @@ See [this documentation](README.md) for details on specifying locations and date
 
 ## Parameters
 
+### Required
+
 | Parameter   | Description                       | Type   |
 |-------------|-----------------------------------|--------|
 | `state`     | two-letter state abbreviation (see [Geographic Codes](geographic_codes.html#us-states-and-territories)) | string |
@@ -50,9 +59,10 @@ See [this documentation](README.md) for details on specifying locations and date
 | `zip`       | 5-digit ZIP code                  | string |
 | `fips_code` | 5-digit FIPS county code          | string |
 
-NOTE: Exactly one of the above parameters must be present in requests.
-Combinations of parameters (e.g. specifying both `city` and `state`) are not
-supported.
+{: .note}
+> **NOTE:** Exactly one of the above parameters must be present in requests.
+> Combinations of parameters (e.g. specifying both `city` and `state`) are not
+> supported.
 
 ## Response
 

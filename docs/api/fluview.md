@@ -8,13 +8,16 @@ nav_order: 1
 # FluView (ILINet)
 {: .no_toc}
 
-* **Source name:** `fluview`
-* **Data source:** [United States Centers for Disease Control and Prevention](http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html) (CDC)
-* **Earliest issue available:** 1997w40
-* **Date of last change:** [Weekly (typically Fridays)]
-* **Available for:** nat, hhs1-hhs10, and cen1-cen9 (see [Geographic Codes](geographic_codes.html#us-regions-and-states))
-* **Time type available:** epiweek
- * **License:** Open Access / [CDC](http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html) 
+
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `fluview` |
+| **Data Source** | [United States Centers for Disease Control and Prevention (CDC)](http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html) |
+| **Geographic Coverage** | National, states, HHS regions, and Census divisions (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
+| **Temporal Resolution** | Weekly (Epiweek) |
+| **Update Frequency** | Weekly (typically Fridays) |
+| **Earliest Date** | 1997w40 |
+| **License** | Open Access / [CDC](http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html) | 
 
 Influenza-like illness (ILI) from U.S. Outpatient Influenza-like Illness Surveillance Network (ILINet).
 
@@ -36,7 +39,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `epiweeks` | epiweeks | `list` of epiweeks |
-| `regions` | regions | `list` of region labels: `nat`, `hhs1`-`hhs10`, `cen1`-`cen9` (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
+| `regions` | regions | `list` of region labels: `nat`, states, `hhs1`-`hhs10`, `cen1`-`cen9` (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
 
 ### Optional
 
@@ -46,6 +49,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | `lag`     | # weeks between each epiweek and its issue | integer            |
 | `auth`    | password for private imputed data          | string             |
 
+{: .note}
 > **Notes:**
 > - If both `issues` and `lag` are specified, only `issues` is used.
 > - If neither is specified, the current issues are used.
@@ -74,8 +78,9 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | `epidata[].ili`           | percent influenza-like illness                                  | float            |
 | `message`                 | `success` or error message                                      | string           |
 
-Notes:
-- If authorized via `auth`, private data is not included.
+{: .note}
+> **Notes:**
+> - If authorized via `auth`, private data is not included.
 
 # Example URLs
 

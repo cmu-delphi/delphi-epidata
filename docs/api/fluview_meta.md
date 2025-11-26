@@ -7,6 +7,14 @@ nav_order: 1
 
 # FluView Metadata
 
+
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `fluview_meta` |
+| **Data Source** | [United States Centers for Disease Control and Prevention (CDC)](http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html) |
+| **Update Frequency** | Weekly (typically Fridays) |
+| **License** | Open Access |
+
 This is the API documentation for accessing the FluView metadata
 (`fluview_meta`) endpoint of [Delphi](https://delphi.cmu.edu/)'s epidemiological
 data.
@@ -58,4 +66,29 @@ https://api.delphi.cmu.edu/epidata/fluview_meta/
   ],
   "message": "success"
 }
+```
+
+# Code Samples
+
+Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
+The following samples show how to import the library and fetch FluView metadata.
+
+### R
+
+```R
+library(epidatr)
+# Fetch data
+res <- pub_fluview_meta()
+print(res)
+```
+
+### Python
+
+```python
+# Import
+from epidatpy import EpiDataContext
+# Fetch data
+epidata = EpiDataContext()
+res = epidata.pub_fluview_meta()
+print(res)
 ```

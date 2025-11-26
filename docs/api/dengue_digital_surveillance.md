@@ -9,11 +9,16 @@ permalink: api/dengue_sensors.html
 # Dengue Digital Surveillance Sensors
 {: .no_toc}
 
-* **Source name:** `dengue_sensors`
-* **Earliest issue available:** 2003w01
-<!-- TODO: * **Available for:** pr, vi (Puerto Rico, US Virgin Islands)...? -->
-* **Time type available:** epiweek
-* **License:** [CC BY](https://creativecommons.org/licenses/by/4.0/)
+
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `dengue_sensors` |
+| **Data Source** | Various digital data streams |
+| **Geographic Coverage** | Countries and territories in the Americas (see [Geographic Codes](geographic_codes.html#countries-and-territories-in-the-americas)) <br> *Note: Data availability varies by country.* |
+| **Temporal Resolution** | Weekly (Epiweek) |
+| **Update Frequency** | Inactive - No longer updated |
+| **Earliest Date** | 2003w01 |
+| **License** | [CC BY](https://creativecommons.org/licenses/by/4.0/) |
 
 
 ## Overview
@@ -46,9 +51,9 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | --- | --- | --- |
 | `auth` | password | string |
 | `epiweeks` | epiweeks | `list` of epiweeks |
-| `locations` | locations | `list` of location labels |
+| `name` | name | `list` of names (`ght`)<!--- TODO: (`ght`, ....)---> | 
+| `locations` | locations | `list` of location labels (see [Geographic Codes](geographic_codes.html#countries-and-territories-in-the-americas)) |
 
-<!-- TODO: | `name` | name | `list` of names | -->
 
 ## Response
 

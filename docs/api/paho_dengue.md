@@ -13,12 +13,12 @@ nav_order: 2
 | :--- | :--- |
 | **Source Name** | `paho_dengue` |
 | **Data Source** | [Pan American Health Organization (PAHO) Dengue surveillance](https://www.paho.org/en/arbo-portal/dengue-data-and-analysis) |
-| **Geographic Coverage** | Countries and territories in the Americas (see [Geographic Codes](geographic_codes.html#paho-dengue)) |
+| **Geographic Coverage** | Countries and territories in the Americas (see [Geographic Codes](geographic_codes.html#countries-and-territories-in-the-americas)) <br> *Note: Data availability varies by country.* |
 | **Temporal Resolution** | Weekly (Epiweek) |
 | **Update Frequency** | Inactive - No longer updated |
 
-<!-- | **Earliest Date** | 2003w01 |
-| **License** | Open Access | -->
+<!-- | **Earliest Date** |  | -->
+<!-- | **License** |  | -->
 
 ## Overview
 {: .no_toc}

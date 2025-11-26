@@ -8,11 +8,16 @@ nav_order: 2
 # ECDC ILI
 {: .no_toc}
 
-* **Source name:** `ecdc_ili`
-* **Earliest issue available:** 2003w40
-* **Regions available:** European countries (see [Geographic Codes](geographic_codes.html#european-countries))
-* **Time type available:** epiweek
-* **License:** Open access
+
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `ecdc_ili` |
+| **Data Source** | [European Centre for Disease Prevention and Control (ECDC)](https://www.ecdc.europa.eu/en/home)  |
+| **Geographic Coverage** | European countries (see [Geographic Codes](geographic_codes.html#european-countries)) |
+| **Temporal Resolution** | Weekly (Epiweek) |
+| **Update Frequency** | Weekly |
+| **Earliest Date** | 2018w40 |
+| **License** | Open Access |
 
 
 ## Overview
@@ -43,10 +48,6 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 ### Required
 
-## Parameters
-
-### Required
-
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `epiweeks` | epiweeks | `list` of epiweeks |
@@ -59,9 +60,10 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | `issues` | issues | `list` of epiweeks |
 | `lag` | # weeks between each epiweek and its issue | integer |
 
-Notes:
-- If both `issues` and `lag` are specified, only `issues` is used.
-If neither is specified, the current issues are used.
+{: .note}
+> **Notes:**
+> - If both `issues` and `lag` are specified, only `issues` is used.
+> - If neither is specified, the current issues are used.
 
 ## Response
 

@@ -15,11 +15,14 @@ This page documents the valid geographic codes accepted by various API endpoints
 1. TOC
 {:toc}
 
-## PAHO Dengue
+## Countries and Territories in the Americas
 
-The [PAHO Dengue](paho_dengue.html) endpoint accepts ISO 3166-1 alpha-2 country codes for countries and territories in the Americas.
+Multiple endpoints accept ISO 3166-1 alpha-2 country codes for countries and territories in the Americas.
 
-### Supported Region Codes
+{: .note}
+> **Note:** While the API accepts codes for all countries listed below, data may not be available for every country or territory.
+
+### Supported Codes
 
 | Code | Name |
 |---|---|
@@ -71,9 +74,15 @@ The [PAHO Dengue](paho_dengue.html) endpoint accepts ISO 3166-1 alpha-2 country 
 | US | United States of America |
 | UY | Uruguay |
 | VC | Saint Vincent and the Grenadines |
+| VE | Venezuela |
 | VG | Virgin Islands (UK) |
 | VI | Virgin Islands (US) |
 
+<!--- Countries with no responses
+| FK | Falkland Islands |
+| GL | Greenland |
+| GS | South Georgia and the South Sandwich Islands |
+| PM | Saint Pierre and Miquelon --->
 
 ## US Regions and States
 
@@ -121,6 +130,8 @@ The US Census Bureau divides the country into 9 divisions.
 ### US States and Territories
 
 Full list of 51 US states and territories used by multiple endpoints:
+
+#### US States
 
 | Code | Name |
 |---|---|
@@ -175,6 +186,19 @@ Full list of 51 US states and territories used by multiple endpoints:
 | WI | Wisconsin |
 | WV | West Virginia |
 | WY | Wyoming |
+
+#### US Territories
+
+| Code | Name |
+|---|---|
+| PR | Puerto Rico |
+| VI | Virgin Islands |
+| GU | Guam |
+| AS | American Samoa |
+| MP | Northern Mariana Islands |
+| FM | Federated States of Micronesia |
+| MH | Marshall Islands |
+| PW | Palau |
 
 ## Selected US cities
 

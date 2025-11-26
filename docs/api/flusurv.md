@@ -8,12 +8,17 @@ nav_order: 2
 # FluSurv
 {: .no_toc}
 
-* **Source name:** `flusurv`
-* **Earliest issue available:** 2009w40
-* **Data source:** [Laboratory-Confirmed Influenza Hospitalizations](https://gis.cdc.gov/GRASP/Fluview/FluHospRates.html)
-* **Location available:** See [Geographic Codes](geographic_codes.html#flusurv-locations) for full list
-* **Time type available:** epiweek
-<!-- * **License:** Open access -->
+
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `flusurv` |
+| **Data Source** | [Laboratory-Confirmed Influenza Hospitalizations](https://gis.cdc.gov/GRASP/Fluview/FluHospRates.html) |
+| **Geographic Coverage** | See [Geographic Codes](geographic_codes.html#flusurv-locations) for full list |
+| **Temporal Resolution** | Weekly (Epiweek) |
+| **Update Frequency** | Weekly |
+| **Earliest Date** | 2003w40 |
+
+<!--| **License** | Open Access | -->
 
 
 
@@ -62,9 +67,10 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | `issues`  | issues                                     | `list` of epiweeks |
 | `lag`     | # weeks between each epiweek and its issue | integer            |
 
-Notes:
-- If both `issues` and `lag` are specified, only `issues` is used.
-If neither is specified, the current issues are used.
+{: .note}
+> **Notes:**
+> - If both `issues` and `lag` are specified, only `issues` is used.
+> - If neither is specified, the current issues are used.
 
 ## Response
 
@@ -108,12 +114,13 @@ If neither is specified, the current issues are used.
 | `epidata[].season` | indicates the start and end years of the winter flu season in the format YYYY-YY (e.g. 2022-23 indicates the flu season running late 2022 through early 2023) | string |
 | `message` | `success` or error message | string |
 
-Notes:
-* The `flusurv` age groups are, in general, not the same as the ILINet
+{: .note}
+> **Note:**
+> * The `flusurv` age groups are, in general, not the same as the ILINet
 (`fluview`) age groups. However, the following groups are equivalent:
-  - flusurv age_0 == fluview age_0  (0-4 years)
-  - flusurv age_3 == fluview age_4  (50-64 years)
-  - flusurv age_4 == fluview age_5  (65+ years)
+>   - flusurv age_0 == fluview age_0  (0-4 years)
+>   - flusurv age_3 == fluview age_4  (50-64 years)
+>   - flusurv age_4 == fluview age_5  (65+ years)
 
 # Example URLs
 
@@ -145,7 +152,7 @@ Notes:
 # Code Samples
 
 Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
-The following samples show how to import the library and fetch CA FluView Clinical data for epiweeks `201940` and `202001-202010` (11 weeks total).
+The following samples show how to import the library and fetch CA FluView Clinical data for epiweeks `201701-201801`.
 
 ### R
 

@@ -8,10 +8,17 @@ nav_order: 2
 # Delphi Forecasts
 {: .no_toc}
 
-* **Source name:** `delphi`
-* **Earliest issue available:** 2010w01  
-* **Time type available:** epiweek
-* **License:** [CC BY](https://creativecommons.org/licenses/by/4.0/)
+
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `delphi` |
+| **Data Source** | [Delphi](https://delphi.cmu.edu/) |
+| **Temporal Resolution** | Weekly (Epiweek) |
+| **Systems available** | `af`, `eb`, `ec`, `sp`, `st` |
+| **Update Frequency** | Inactive - No longer updated |
+| **License** | [CC BY](https://creativecommons.org/licenses/by/4.0/) |
+
+<!--- | **Earliest Date** | 2014w41 | -->
 
 ## Overview
 {: .no_toc}
@@ -41,7 +48,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 | Parameter | Description | Type                                 |
 |-----------|-------------|--------------------------------------|
-| `system`  | system      | system name from (...) <!-- TODO --> |
+| `system`  | system      | system name (`af`, `eb`, `ec`, `sp`, `st`) |
 | `epiweek` | epiweek     | epiweek when forecast was made       |
 
 ## Response
@@ -53,18 +60,22 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | `epidata[].system` | system | string |
 | `epidata[].epiweek` | epiweek | integer |
 | `epidata[].forecast` | forecast structure | object |
-| `epidata[].forecast.season` | year (yyyy) | integer |
-| `epidata[].forecast.ili_bins` | | integer |
+| `epidata[].forecast._version` | forecast version | integer |
+| `epidata[].forecast.baselines` | baseline values for each region | object |
+| `epidata[].forecast.baselines.<region>` | baseline value for \<region\> | float |
 | `epidata[].forecast.data` | forecast data for each region | object |
 | `epidata[].forecast.data.<region>` | forecast data for \<region\> | object |
 | `epidata[].forecast.data.<region>.<distrib>` | distribution for \<distrib\> (`peak`, `peakweek`, `onset`, `x1`, `x2`, `x3`, `x4`) | object |
-| ... | ... | ... | <!-- TODO -->
-| `epidata[].forecast.name` | name = "delphi-epicast" | string |
-| `epidata[].forecast.year_weeks` | number of weeks in year | integer |
-| `epidata[].forecast.ili_bin_size` | float |
-| `epidata[].forecast.season_weeks` | number of weeks in season | integer |
-| `epidata[].forecast._version` | forecast version | integer |
+| `epidata[].forecast.data.<region>.<distrib>.dist` | probability distribution | array of float |
+| `epidata[].forecast.data.<region>.<distrib>.point` | point estimate | float |
+| `epidata[].forecast.data.<region>.<distrib>.none` | probability of "none" (if applicable) | float |
 | `epidata[].forecast.epiweek` | forecast epiweek | integer |
+| `epidata[].forecast.ili_bin_size` | size of ILI bins | float |
+| `epidata[].forecast.ili_bins` | number of ILI bins | integer |
+| `epidata[].forecast.name` | system name | string |
+| `epidata[].forecast.season` | season year (yyyy) | integer |
+| `epidata[].forecast.season_weeks` | number of weeks in season | integer |
+| `epidata[].forecast.year_weeks` | number of weeks in year | integer |
 | `message` | `success` or error message | string |
 
 # Example URLs

@@ -8,11 +8,16 @@ nav_order: 2
 # Delphi's Dengue Nowcast
 {: .no_toc}
 
-* **Source name:** `dengue_nowcast`
-* **Earliest issue available:** 2014w01
-<!-- TODO: * **Available for:** pr, vi (Puerto Rico, US Virgin Islands)...? -->
-* **Time type available:** epiweek
-* **License:** Open access
+
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `dengue_nowcast` |
+| **Data Source** | [Delphi](https://delphi.cmu.edu/) |
+| **Geographic Coverage** | Countries and territories in the Americas (see [Geographic Codes](geographic_codes.html#countries-and-territories-in-the-americas)) <br> *Note: Data availability varies by country.* |
+| **Temporal Resolution** | Weekly (Epiweek) |
+| **Update Frequency** | Inactive - No longer updated |
+| **Earliest Date** | 2014w09 |
+| **License** | [CC BY](https://creativecommons.org/licenses/by/4.0/ |
 
 
 ## Overview
@@ -44,7 +49,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `epiweeks` | epiweeks | `list` of epiweeks |
-| `locations` | locations | `list` of location labels |
+| `locations` | locations | `list` of location labels (see [Geographic Codes](geographic_codes.html#countries-and-territories-in-the-americas)) |
 
 ## Response
 

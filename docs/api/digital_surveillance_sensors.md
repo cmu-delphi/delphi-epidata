@@ -8,6 +8,18 @@ permalink: api/sensors.html
 
 # Digital Surveillance Sensors
 
+
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `sensors` |
+| **Data Source** | Various digital data streams |
+| **Geographic Coverage** | National, HHS regions, Census divisions, and US states (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
+| **Temporal Resolution** | Weekly (Epiweek) |
+| **Update Frequency** | Inactive - No longer updated |
+| **License** | [CC BY](https://creativecommons.org/licenses/by/4.0/) |
+
+<!-- | **Earliest Date** | Variable | -->
+
 This is the documentation of the API for accessing the Digital Surveillance Sensors (`sensors`) endpoint of
 the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 
@@ -18,12 +30,12 @@ General topics not specific to any particular endpoint are discussed in the
 
 {: .note}
 > **Note:** this repository was built to support modelling and forecasting efforts
-surrounding seasonal influenza (and dengue).  In the current COVID-19 pandemic,
-syndromic surveillance data, like ILI data (influenza-like illness) through
-FluView, will likely prove very useful.  However, **we urge caution to users
-examining the digital surveillance sensors**, like ILI Nearby, Google Flu
-Trends, etc., during the COVID-19 pandemic, because these were designed to track
-ILI as driven by seasonal influenza, and were NOT designed to track ILI during
+> surrounding seasonal influenza (and dengue).  In the current COVID-19 pandemic,
+> syndromic surveillance data, like ILI data (influenza-like illness) through
+> FluView, will likely prove very useful.  However, **we urge caution to users
+> examining the digital surveillance sensors**, like ILI Nearby, Google Flu
+> Trends, etc., during the COVID-19 pandemic, because these were designed to track
+> ILI as driven by seasonal influenza, and were NOT designed to track ILI during
 the COVID-19 pandemic.
 
 
@@ -55,8 +67,6 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | `auth`    | sensor authentication tokens (currently restricted to 1); can be global or granular | `list` of string |
 
 ## Response
-
-<!-- TODO: fix -->
 
 | Field                | Description                                                     | Type             |
 |----------------------|-----------------------------------------------------------------|------------------|

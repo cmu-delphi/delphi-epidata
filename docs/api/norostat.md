@@ -19,7 +19,7 @@ nav_order: 2
 | **Update Frequency** | Inactive - Delphi stopped stopped acquiring data from this data source in November 2020. |
 | **Earliest Date** | 2012w31 |
 
-<!-- | **License** | Restricted (requires auth) | -->
+<!-- | **License** |  | -->
 
 ## Overview
 {: .no_toc}

@@ -8,13 +8,16 @@ nav_order: 2
 # Google Flu Trends
 {: .no_toc}
 
-* **Source name:** `gft`
-* **Data Source:** [Google Flu Trends Estimates](https://www.google.com/publicdata/explore?ds=z3bsqef7ki44ac_) ([context](https://en.wikipedia.org/wiki/Google_Flu_Trends))
-* **Earliest issue available:** 2003w40
-* **Available for:** US states, census regions, and select cities ([regions](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/regions.txt), [states](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/states.txt), [cities](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/cities.txt))
-* **Temporal Resolution:** Weekly
-* **Spatial Resolution:** National, HHS regions, US states (see [US Regions and States](geographic_codes.html#us-regions-and-states)), and select cities (see [Selected US Cities](geographic_codes.html#selected-us-cities))
-* **License:** Open access
+
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `gft` |
+| **Data Source** | [Google Flu Trends Estimates](https://www.google.com/publicdata/explore?ds=z3bsqef7ki44ac_) ([context](https://en.wikipedia.org/wiki/Google_Flu_Trends)) |
+| **Geographic Coverage** | National, HHS regions, US states (see [US Regions and States](geographic_codes.html#us-regions-and-states)), and select cities (see [Selected US Cities](geographic_codes.html#selected-us-cities)) |
+| **Temporal Resolution** | Weekly (Epiweek) |
+| **Update Frequency** | Inactive - No longer updated |
+| **Earliest Date** | 2003w40 |
+| **License** | Open Access |
 
 
 ## Overview
@@ -42,10 +45,6 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 ### Required
 
-## Parameters
-
-### Required
-
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `locations` | Locations to fetch. National, HHS regions, US states (see [US Regions and States](geographic_codes.html#us-regions-and-states)), and select cities (see [Selected US Cities](geographic_codes.html#selected-us-cities)). | `list` of strings |
@@ -58,8 +57,8 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | `result`             | result code: 1 = success, 2 = too many results, -2 = no results | integer          |
 | `epidata`            | list of results                                                 | array of objects |
 | `epidata[].location` | location                                                        | string           |
-| `epidata[].epiweek`  | epiweek                                                         | epiweek          |
-| `epidata[].num`      | number                                                          | integer          |
+| `epidata[].epiweek`  | epiweek                                                         | integer          |
+| `epidata[].num`      | GFT estimate                                                    | integer          |
 | `message`            | `success` or error message                                      | string           |
 
 # Example URLs
