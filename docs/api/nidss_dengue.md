@@ -164,4 +164,3 @@ print(res['result'], res['message'], len(res['epidata']))
 # Source and Licensing
 
 The full text of the NIDSS Dengue license information is available on the Taiwan Digital Development Department's [website](https://data.gov.tw/license).
-The full text of the NIDSS Dengue license information is available on the Taiwan Digital Development Department's [website](https://data.gov.tw/license).
