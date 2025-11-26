@@ -44,7 +44,7 @@ See [this documentation](README.md) for details on specifying locations and date
 
 | Parameter   | Description                       | Type   |
 |-------------|-----------------------------------|--------|
-| `state`     | two-letter state abbreviation     | string |
+| `state`     | two-letter state abbreviation (see [Geographic Codes](geographic_codes.html#us-states-and-territories)) | string |
 | `ccn`       | facility CMS Certification Number | string |
 | `city`      | city name                         | string |
 | `zip`       | 5-digit ZIP code                  | string |

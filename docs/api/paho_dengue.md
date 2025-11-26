@@ -13,7 +13,7 @@ nav_order: 2
 | :--- | :--- |
 | **Source Name** | `paho_dengue` |
 | **Data Source** | [Pan American Health Organization (PAHO) Dengue surveillance](https://www.paho.org/en/arbo-portal/dengue-data-and-analysis) |
-| **Geographic Coverage** | Countries and territories in the Americas |
+| **Geographic Coverage** | Countries and territories in the Americas (see [Geographic Codes](geographic_codes.html#paho-dengue)) |
 | **Temporal Resolution** | Weekly (Epiweek) |
 | **Update Frequency** | Inactive - No longer updated |
 
@@ -51,7 +51,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `epiweeks` | epiweeks | `list` of epiweeks |
-| `regions` | regions | `list` of region labels |
+| `regions` | regions | `list` of region labels (see [Geographic Codes](geographic_codes.html#paho-dengue)) |
 
 ## Response
 

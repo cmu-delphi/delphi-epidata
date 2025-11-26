@@ -15,7 +15,7 @@ permalink: api/nowcast.html
 | **Source Name** | `nowcast` |
 | **Data Source:** | [Delphi's ILI Nearby system](https://delphi.cmu.edu/nowcast/)
 | **Dataset Type** | Predictive (Leading Indicator) |
-| **Geographic Coverage** | National, [HHS regions](http://www.hhs.gov/iea/regional/), [Census divisions](http://www.census.gov/econ/census/help/geography/regions_and_divisions.html) ([1+10+9](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/regions.txt)), and by state/territory ([51](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/states.txt) |
+| **Geographic Coverage** | National, HHS regions, Census divisions, and US states (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
 | **Temporal Resolution** | Weekly (Epiweek) |
 | **Update Frequency** | Released Friday; updated Sunday & Monday |
 | **Earliest Date** | 2010w30 |
@@ -55,7 +55,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `epiweeks` | epiweeks | `list` of epiweeks |
-| `locations` | locations | `list` of [region](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/regions.txt)/[state](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/states.txt) labels |
+| `locations` | locations | `list` of location codes: `nat`, HHS regions, Census divisions, or state codes (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
 
 ## Response
 

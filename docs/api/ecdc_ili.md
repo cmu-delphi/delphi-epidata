@@ -10,7 +10,7 @@ nav_order: 2
 
 * **Source name:** `ecdc_ili`
 * **Earliest issue available:** 2003w40
-* **Regions available:** European countries ([full list](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/ecdc_regions.txt))
+* **Regions available:** European countries (see [Geographic Codes](geographic_codes.html#european-countries))
 * **Time type available:** epiweek
 * **License:** Open access
 
@@ -50,7 +50,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `epiweeks` | epiweeks | `list` of epiweeks |
-| `regions` | regions | `list` of [region](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/ecdc_regions.txt) labels |
+| `regions` | regions | `list` of European country labels (see [Geographic Codes](geographic_codes.html#european-countries)) |
 
 ### Optional
 

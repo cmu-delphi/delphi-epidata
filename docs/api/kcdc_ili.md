@@ -12,8 +12,8 @@ nav_order: 2
 | Attribute | Details |
 | :--- | :--- |
 | **Source Name** | `kcdc_ili` |
-| **Data Source:**  | [KCDC](https://www.kdca.go.kr/) (Korea Disease Control and Prevention Agency) ILI surveillance |
-| **Geographic Coverage** | ROK (Republic of Korea) |
+| **Data Source:**  | [Korea Disease Control and Prevention Agency (KCDC) ILI surveillance](https://www.kdca.go.kr/) |
+| **Geographic Coverage** | ROK (Republic of Korea) (see [Geographic Codes](geographic_codes.md#republic-of-korea)) |
 | **Temporal Resolution** | Weekly (Epiweek) |
 | **Update Frequency** | Inactive - No longer updated |
 | **Earliest Date** | 2004w36 |
@@ -39,7 +39,6 @@ General topics not specific to any particular endpoint are discussed in the
 {:toc}
 
 
-
 # The API
 
 The base URL is: https://api.delphi.cmu.edu/epidata/kcdc_ili/
@@ -50,13 +49,9 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 ### Required
 
-## Parameters
-
-### Required
-
 | Parameter | Description | Type |
 | --- | --- | --- |
-| `regions` | Regions to fetch. | `list` of strings |
+| `regions` | Regions to fetch. See [Geographic Codes](geographic_codes.html#republic-of-korea). | `list` of strings |
 | `epiweeks` | Epiweeks to fetch. Supports [`epirange()`] and defaults to all ("*") dates. | `list` of epiweeks |
 
 ### Optional
@@ -66,9 +61,10 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | `issues` | Optionally, the issue(s) of the data to fetch. See the "Data Versioning" section for details. | `list` of epiweeks |
 | `lag` | Optionally, the lag of the issues to fetch. See the "Data Versioning" section for details. | integer |
 
-Notes:
-- If both `issues` and `lag` are specified, only `issues` is used.
-If neither is specified, the current issues are used.
+{: .note}
+> **Notes:**
+> - If both `issues` and `lag` are specified, only `issues` is used.
+> - If neither is specified, the current issues are used.
 
 ## Response
 

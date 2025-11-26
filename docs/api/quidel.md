@@ -13,7 +13,7 @@ nav_order: 2
 | :--- | :--- |
 | **Source Name** | `quidel` |
 | **Data Source** | Quidel influenza testing data |
-| **Geographic Coverage** | HHS regions ([10 regions](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/regions.txt)) |
+| **Geographic Coverage** | HHS regions (see [Geographic Codes](geographic_codes.html#hhs-regions)) |
 | **Temporal Resolution** | Weekly (Epiweek) |
 | **Update Frequency** | Inactive - No longer updated |
 | **Earliest Date** | 2015w35 (2015-08-30) |
@@ -47,7 +47,7 @@ See this [documentation](https://cmu-delphi.github.io/delphi-epidata/api/README.
 | --- | --- | --- |
 | `auth` | password | string |
 | `epiweeks` | epiweeks | `list` of epiweeks |
-| `locations` | locations | `list` of `hhs<#>` [region](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/regions.txt) labels |
+| `locations` | locations | `list` of `hhs<#>` region labels (see [Geographic Codes](geographic_codes.html#hhs-regions)) |
 
 ## Response
 

@@ -12,7 +12,7 @@ nav_order: 1
 * **Data source:** [United States Centers for Disease Control and Prevention](http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html) (CDC)
 * **Earliest issue available:** 1997w40
 * **Date of last change:** [Weekly (typically Fridays)]
-* **Available for:** nat, hhs1-hhs10, and cen1-cen9 ([full list of regions](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/regions.txt))
+* **Available for:** nat, hhs1-hhs10, and cen1-cen9 (see [Geographic Codes](geographic_codes.html#us-regions-and-states))
 * **Time type available:** epiweek
  * **License:** Open Access / [CDC](http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html) 
 
@@ -36,7 +36,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `epiweeks` | epiweeks | `list` of epiweeks |
-| `regions` | regions | `list` of [region](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/regions.txt) labels |
+| `regions` | regions | `list` of region labels: `nat`, `hhs1`-`hhs10`, `cen1`-`cen9` (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
 
 ### Optional
 
@@ -46,9 +46,9 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | `lag`     | # weeks between each epiweek and its issue | integer            |
 | `auth`    | password for private imputed data          | string             |
 
-Notes:
-- If both `issues` and `lag` are specified, only `issues` is used.
-If neither is specified, the current issues are used.
+> **Notes:**
+> - If both `issues` and `lag` are specified, only `issues` is used.
+> - If neither is specified, the current issues are used.
 
 ## Response
 

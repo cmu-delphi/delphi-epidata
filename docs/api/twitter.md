@@ -13,7 +13,7 @@ nav_order: 2
 | :--- | :--- |
 | **Source Name** | `twitter` |
 | **Data Source** | [HealthTweets](http://www.healthtweets.org/) |
-| **Geographic Coverage** | National, [HHS regions](http://www.hhs.gov/iea/regional/), [Census divisions](http://www.census.gov/econ/census/help/geography/regions_and_divisions.html) ([1+10+9](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/regions.txt)), and by state/territory ([51](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/states.txt)) |
+| **Geographic Coverage** | National, HHS regions, Census divisions, and US states (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
 | **Temporal Resolution** | Daily and Weekly (Epiweek) |
 | **Update Frequency** | Inactive - No longer updated |
 | **Earliest Date** | 2011w48 (2011-11-27) |
@@ -52,7 +52,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `auth` | password | string |
-| `locations` | locations | `list` of [region](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/regions.txt)/[state](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/states.txt) labels |
+| `locations` | locations | `list` of location codes: `nat`, HHS regions, Census divisions, or state codes (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
 | `dates` | dates | `list` of dates |
 | `epiweeks` | epiweeks | `list` of epiweeks |
 

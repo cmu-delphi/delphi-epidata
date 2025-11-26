@@ -10,7 +10,7 @@ nav_order: 1
 
 * **Source name:** `fluview_clinical`
 * **Earliest issue available:** 2010w40
-* **Available for:** nat, hhs1-hhs10, and cen1-cen9 ([full list of regions](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/regions.txt))
+* **Available for:** nat, hhs1-hhs10, and cen1-cen9 (see [Geographic Codes](geographic_codes.html#us-regions-and-states))
 * **Time type available:** epiweek
 * **License:** Open Access
 
@@ -46,7 +46,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `epiweeks` | epiweeks | `list` of epiweeks |
-| `regions` | regions | `list` of [region](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/regions.txt) labels |
+| `regions` | regions | `list` of region labels: `nat`, `hhs1`-`hhs10`, `cen1`-`cen9` (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
 
 ### Optional
 

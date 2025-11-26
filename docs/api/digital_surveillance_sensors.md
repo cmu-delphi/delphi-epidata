@@ -16,7 +16,8 @@ General topics not specific to any particular endpoint are discussed in the
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
 
-**Note:** this repository was built to support modeling and forecasting efforts
+{: .note}
+> **Note:** this repository was built to support modelling and forecasting efforts
 surrounding seasonal influenza (and dengue).  In the current COVID-19 pandemic,
 syndromic surveillance data, like ILI data (influenza-like illness) through
 FluView, will likely prove very useful.  However, **we urge caution to users
@@ -39,12 +40,13 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `epiweeks` | epiweeks | `list` of epiweeks |
-| `locations` | locations | `list` of [region](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/regions.txt)/[state](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/states.txt) labels <!-- TODO: check --> |
+| `locations` | locations | `list` of location codes: `nat`, HHS regions, Census divisions, or state codes (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
 | `names` | sensor names | `list` of string |
 
-Notes:
-* Names of open sensors (no `auth` token required): `sar3`, `epic`, `arch`
-* Names of sensors requiring `auth` token: `twtr`, `gft`, `ght`, `ghtj`, `cdc`, `quid`, `wiki`
+{: .note}
+> **Notes:**
+> * Names of open sensors (no `auth` token required): `sar3`, `epic`, `arch`
+> * Names of sensors requiring `auth` token: `twtr`, `gft`, `ght`, `ghtj`, `cdc`, `quid`, `wiki`
 
 ### Optional
 

@@ -13,7 +13,7 @@ nav_order: 2
 | :--- | :--- |
 | **Source Name** | `cdc` |
 | **Data Source** | CDC influenza surveillance data |
-| **Geographic Coverage** | National, HHS regions, Census divisions, and US states |
+| **Geographic Coverage** | National, HHS regions, Census divisions, and US states (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
 | **Temporal Resolution** | Weekly (Epiweek) |
 | **Update Frequency** | Inactive - No longer updated |
 | **Earliest Date** | 2013w02 (2013-01-06) |

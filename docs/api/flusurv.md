@@ -11,7 +11,7 @@ nav_order: 2
 * **Source name:** `flusurv`
 * **Earliest issue available:** 2009w40
 * **Data source:** [Laboratory-Confirmed Influenza Hospitalizations](https://gis.cdc.gov/GRASP/Fluview/FluHospRates.html)
-* **Location available:** CA, CO, CT, GA, IA, ID, MD, MI, MN, NM, NY_albany, NY_rochester, OH, OK, OR, RI, SD, TN, UT, network_all, network_eip, network_ihsp ([full list of locations](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/flusurv_locations.txt))
+* **Location available:** See [Geographic Codes](geographic_codes.html#flusurv-locations) for full list
 * **Time type available:** epiweek
 <!-- * **License:** Open access -->
 
@@ -53,7 +53,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `epiweeks` | epiweeks | `list` of epiweeks |
-| `locations` | locations | `list` of [location](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/flusurv_locations.txt) labels |
+| `locations` | locations | `list` of location labels (see [Geographic Codes](geographic_codes.html#flusurv-locations)) |
 
 ### Optional
 

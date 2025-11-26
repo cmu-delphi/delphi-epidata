@@ -12,7 +12,7 @@ nav_order: 2
 * **Data source:** [US Department of Health & Human Services](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/g62h-syeh) 
 * **Earliest issue available:** 2020-01-01
 * **Temporal Resolution:** Daily
-* **Spatial Resolution:** US States plus DC, PR, and VI
+* **Spatial Resolution:** US States plus DC, PR, and VI (see [Geographic Codes](geographic_codes.html#us-states-and-territories))
 * **License:** [Public Domain US Government](https://www.usa.gov/government-works)
 
 ## Overview

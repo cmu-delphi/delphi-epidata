@@ -13,7 +13,7 @@ nav_order: 2
 | :--- | :--- |
 | **Source Name** | `nidss_dengue` |
 | **Data Source** | [Taiwan CDC](http://nidss.cdc.gov.tw/en/SingleDisease.aspx?dc=1&dt=4&disease=061&position=1)|
-| **Geographic Coverage** | [hexchotomy region](https://en.wikipedia.org/wiki/Regions_of_Taiwan#Hexchotomy) ([6+1](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/nidss_regions.txt)) and [city/county](https://en.wikipedia.org/wiki/List_of_administrative_divisions_of_Taiwan) ([22](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/nidss_locations.txt)) |
+| **Geographic Coverage** | Taiwan regions and cities/counties (see [Geographic Codes](geographic_codes.html#nidss)) |
 | **Temporal Resolution** | Weekly (Epiweek) |
 | **Update Frequency** | Inactive - No longer updated |
 | **Earliest Date** | 2003w01 |
@@ -50,7 +50,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `epiweeks` | epiweeks | `list` of epiweeks |
-| `locations` | locations | `list` of [region](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/nidss_regions.txt) and/or [location](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/nidss_locations.txt) labels |
+| `locations` | locations | `list` of Taiwan region and/or location labels (see [Geographic Codes](geographic_codes.html#nidss)) |
 
 ## Response
 
@@ -163,4 +163,5 @@ print(res['result'], res['message'], len(res['epidata']))
 
 # Source and Licensing
 
+The full text of the NIDSS Dengue license information is available on the Taiwan Digital Development Department's [website](https://data.gov.tw/license).
 The full text of the NIDSS Dengue license information is available on the Taiwan Digital Development Department's [website](https://data.gov.tw/license).

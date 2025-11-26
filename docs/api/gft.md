@@ -13,7 +13,7 @@ nav_order: 2
 * **Earliest issue available:** 2003w40
 * **Available for:** US states, census regions, and select cities ([regions](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/regions.txt), [states](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/states.txt), [cities](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/cities.txt))
 * **Temporal Resolution:** Weekly
-* **Spatial Resolution:** National, [HHS regions](http://www.hhs.gov/iea/regional/) ([1+10](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/regions.txt)); by state/territory ([50+1](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/states.txt)); and by city ([97](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/cities.txt))
+* **Spatial Resolution:** National, HHS regions, US states (see [US Regions and States](geographic_codes.html#us-regions-and-states)), and select cities (see [Selected US Cities](geographic_codes.html#selected-us-cities))
 * **License:** Open access
 
 
@@ -48,7 +48,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 | Parameter | Description | Type |
 | --- | --- | --- |
-| `locations` | Locations to fetch. | `list` of strings |
+| `locations` | Locations to fetch. National, HHS regions, US states (see [US Regions and States](geographic_codes.html#us-regions-and-states)), and select cities (see [Selected US Cities](geographic_codes.html#selected-us-cities)). | `list` of strings |
 | `epiweeks` | Epiweeks to fetch. Supports [`epirange()`] and defaults to all ("*") dates. | `list` of epiweeks |
 
 ## Response
