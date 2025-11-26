@@ -117,7 +117,7 @@ The parameters available for each source are documented in each linked source-sp
 | [`flusurv`](flusurv.md) | FluSurv | FluSurv-NET data (flu hospitaliation rates) from CDC. | no |
 | [`fluview`](fluview.md) | FluView | Influenza-like illness (ILI) from U.S. Outpatient Influenza-like Illness Surveillance Network (ILINet). | no |
 | [`fluview_meta`](fluview_meta.md) | FluView Metadata | Summary data about [`fluview`](fluview.md). | no |
-| [`fluview_clinical`](fluview_clinical.md) | FluView Clinical | ... <!-- TODO --> | no |
+| [`fluview_clinical`](fluview_clinical.md) | FluView Clinical | Clinical flu data. | no |
 | [`gft`](gft.md) | Google Flu Trends | Estimate of influenza activity based on volume of certain search queries. Google has discontinued Flu Trends, and this is now a static endpoint. | no |
 | [`ght`](ght.md) | Google Health Trends | Estimate of influenza activity based on volume of certain search queries. | yes |
 | [`kcdc_ili`](kcdc_ili.md) | KCDC ILI | KCDC ILI data from KCDC website. | no |
@@ -125,7 +125,7 @@ The parameters available for each source are documented in each linked source-sp
 | [`nidss_flu`](nidss_flu.md) | NIDSS Flu | Outpatient ILI from Taiwan's National Infectious Disease Statistics System (NIDSS). | no |
 | [`nowcast`](nowcast.md) | ILI Nearby | A nowcast of U.S. national, regional, and state-level (weighted) percent ILI, available seven days (regionally) or five days (state-level) before the first ILINet report for the corresponding week. | no |
 | [`quidel`](quidel.md) | Quidel | Data provided by Quidel Corp., which contains flu lab test results. | yes |
-| [`sensors`](sensors.md) | Delphi's Digital Surveillance Sensors | ... <!-- TODO --> | no |
+| [`sensors`](sensors.md) | Delphi's Digital Surveillance Sensors | Digital surveillance signals for influenza. | no |
 | [`twitter`](twitter.md) | Twitter Stream | Estimate of influenza activity based on analysis of language used in tweets from [HealthTweets](http://HealthTweets.org/). | yes |
 | [`wiki`](wiki.md) | Wikipedia Access Logs | Number of page visits for selected English, Influenza-related wikipedia articles. | no |
 
@@ -133,16 +133,16 @@ The parameters available for each source are documented in each linked source-sp
 
 | Endpoint | Name | Description | Restricted? |
 | --- | --- | --- | --- |
-| [`dengue_nowcast`](dengue_nowcast.md) | Delphi's Dengue Nowcast | ... <!-- TODO --> | ... <!-- TODO --> |
-| [`dengue_sensors`](dengue_sensors.md) | Delphi's Dengue Digital Surveillance Sensors | ... <!-- TODO --> | ... <!-- TODO --> |
+| [`dengue_nowcast`](dengue_nowcast.md) | Delphi's Dengue Nowcast | Nowcast of dengue in Puerto Rico and other regions. |... <!-- TODO --> |
+| [`dengue_sensors`](dengue_sensors.md) | Delphi's Dengue Digital Surveillance Sensors | Digital surveillance signals for dengue. | ... <!-- TODO --> |
 | [`nidss_dengue`](nidss_dengue.md) | NIDSS Dengue | Counts of confirmed dengue cases from Taiwan's NIDSS. | no |
-| [`paho_dengue`](paho_dengue.md) | PAHO Dengue | ... <!-- TODO --> | ... <!-- TODO --> |
+| [`paho_dengue`](paho_dengue.md) | PAHO Dengue | Dengue cases reported by PAHO. | ... <!-- TODO --> |
 
 ### Norovirus Data
 
 | Endpoint | Name | Description | Restricted? |
 | --- | --- | --- | --- |
-| [`meta_norostat`](meta_norostat.md) | NoroSTAT Metadata | ... <!-- TODO --> | ... <!-- TODO --> |
+| [`meta_norostat`](meta_norostat.md) | NoroSTAT Metadata | Metadata for NoroSTAT data. | ... <!-- TODO --> |
 | [`norostat`](norostat.md) | NoroSTAT | Suspected and confirmed norovirus outbreaks reported by state health departments to the CDC. | ... <!-- TODO --> |
 
 ### Deprecated

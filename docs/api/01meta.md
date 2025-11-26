@@ -108,4 +108,78 @@ https://api.delphi.cmu.edu/epidata/meta/
 
 # Code Samples
 
-<!-- TODO: fix -->
+Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
+The following samples show how to import the library and fetch API metadata.
+
+### R
+
+```R
+library(epidatr)
+# Fetch data
+res <- pub_meta()
+print(res)
+```
+
+### Python
+
+Install the package using pip:
+```bash
+pip install -e "git+https://github.com/cmu-delphi/epidatpy.git#egg=epidatpy"
+```
+
+```python
+# Import
+from epidatpy import CovidcastEpidata, EpiDataContext, EpiRange
+# Fetch data
+epidata = EpiDataContext()
+res = epidata.pub_meta()
+print(res)
+```
+
+### JavaScript (in a web browser)
+
+The JavaScript client is available [here](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js).
+
+```html
+<!-- Imports -->
+<script src="delphi_epidata.js"></script>
+<!-- Fetch data -->
+<script>
+  EpidataAsync.meta().then((res) => {
+    console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
+  });
+</script>
+```
+
+### Legacy Clients
+
+We recommend using our modern client libraries: [epidatr](https://cmu-delphi.github.io/epidatr/) for R and [epidatpy](https://cmu-delphi.github.io/epidatpy/) for Python. Legacy clients are also available for [Python](https://pypi.org/project/delphi-epidata/) and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
+
+#### R (Legacy)
+
+Place `delphi_epidata.R` from this repo next to your R script.
+
+```R
+source("delphi_epidata.R")
+# Fetch data
+res <- Epidata$meta()
+print(res$message)
+print(length(res$epidata))
+```
+
+#### Python (Legacy)
+
+Optionally install the package using pip(env):
+```bash
+pip install delphi-epidata
+```
+
+Otherwise, place `delphi_epidata.py` from this repo next to your python script.
+
+```python
+# Import
+from delphi_epidata import Epidata
+# Fetch data
+res = Epidata.meta()
+print(res['result'], res['message'], len(res['epidata']))
+```
