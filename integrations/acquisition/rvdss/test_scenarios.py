@@ -11,9 +11,12 @@ import delphi.operations.secrets as secrets
 from delphi_utils import get_structured_logger
 
 # third party
-import mysql.connector
+import mysql.connector 
+from mysql.connector.errors import IntegrityError
 import pandas as pd
+import numpy as np
 from pathlib import Path
+import pdb
 
 # py3tester coverage target (equivalent to `import *`)
 # __test_target__ = 'delphi.epidata.acquisition.covid_hosp.facility.update'
@@ -68,8 +71,47 @@ class AcquisitionTests(unittest.TestCase):
     TEST_DIR = Path(__file__).parent.parent.parent.parent
     detection_data = pd.read_csv(str(TEST_DIR) + "/testdata/acquisition/rvdss/RVD_CurrentWeekTable_Formatted.csv")
     detection_data['time_type'] = "week"
-    detection_subset = detection_data[(detection_data['geo_value'].isin(['nl', 'nb'])) & (detection_data['time_value'].isin([20240831, 20240907])) ]
+    detection_data=detection_data.replace({np.nan: None})
+    #detection_data=detection_data.replace({float('nan'): None})
 
+    pdb.set_trace()
+    # take a small subset just for testing insertion
+    detection_subset = detection_data[(detection_data['geo_value'].isin(['nl', 'nb'])) & (detection_data['time_value'].isin([20240831, 20240907])) ]
+    
+    # get the expected response when calling the API
+    # the dataframe needs to add the missing columns and replace nan with None
+    # since that is what is returned from the API
+    df = detection_subset.reindex(rvdss_cols,axis=1)
+    df = df.replace({np.nan: None}).sort_values(by=["epiweek","geo_value"])
+    df = df.to_dict(orient = "records")
+    
+    expected_response = {"epidata": df,
+        "result": 1,
+        "message": "success",
+    }
+    
+    # get the rest of the data not in the subset to test more calling options
+    detection_subset2 = detection_data[(detection_data['geo_value'].isin(['nu', 'nt'])) & (detection_data['time_value'].isin([20240831, 20240907])) ]
+    
+    df2 = detection_subset2.reindex(rvdss_cols,axis=1)
+    df2 = df2.replace({np.nan: None}).sort_values(by=["epiweek","geo_value"])
+    df2 = df2.to_dict(orient = "records")
+    
+    expected_response2 = {"epidata": df2,
+        "result": 1,
+        "message": "success",
+    }
+    
+    # after two aquisitions
+    df_full = pd.concat([detection_subset, detection_subset2], ignore_index=True).reindex(rvdss_cols,axis=1)
+    df_full = df_full.replace({np.nan: None}).sort_values(by=["epiweek","geo_value"])
+    df_full = df_full.to_dict(orient = "records")
+    
+    expected_response_full = {"epidata": df_full,
+        "result": 1,
+        "message": "success",
+    }
+    
     # make sure the data does not yet exist
     with self.subTest(name='no data yet'):
       response = Epidata.rvdss(geo_type='province',
@@ -92,47 +134,54 @@ class AcquisitionTests(unittest.TestCase):
         response = Epidata.rvdss(geo_type='province',
                                  time_values= [202435, 202436],
                                  geo_value = ['nl','nb'])
+        
+        self.assertEqual(response,expected_response)
+        
+    with self.subTest(name='duplicate aquisition'):
+        # The main run function checks if the update has already been fetched/updated
+        # so it should never run twice, and duplocate aquisitions should never 
+        # occur. Running the update twice will result in an error
+        
+        # When the MagicMock connection's `cursor()` method is called, return
+        # a real cursor made from the current open connection `cnx`.
+        connection_mock.cursor.return_value = self.cnx.cursor()
+        # Commit via the current open connection `cnx`, from which the cursor
+        # is derived
+        connection_mock.commit = self.cnx.commit
+        mock_sql.return_value = connection_mock
 
-        self.assertEqual(response['result'], 1)
+        with self.assertRaises(mysql.connector.errors.IntegrityError):
+            update(detection_subset, self.logger)
 
+    # TODO: test with exact column order
+    with self.subTest(name='exact column order'):
+        rvdss_cols_subset = [col for col in detection_subset2.columns if col in rvdss_cols]
+        ordered_cols = [col for col in rvdss_cols if col in rvdss_cols_subset] 
+        ordered_df = detection_subset2[ordered_cols]
+        
+        connection_mock.cursor.return_value = self.cnx.cursor()
+        connection_mock.commit = self.cnx.commit
+        mock_sql.return_value = connection_mock
+        
+        pdb.set_trace()
+        update(ordered_df, self.logger)
+        pdb.set_trace()
+        
+        response = Epidata.rvdss(geo_type='province',
+                                 time_values= [202435, 202436],
+                                 geo_value = ['nt','nu'])
+                
+        self.assertEqual(response,expected_response2)
+        
+        
+    # TODO: check requesting by issue
+    # with self.subTest(name='issue request'):
+    #     response = Epidata.rvdss(geo_type='province',
+    #                              time_values= [202435, 202436],
+    #                              geo_value = ['nl','nb'],
+    #                              issues = [])
+                            
+        
+    # # TODO: check requesting individual lists
+    # with self.subTest(name='duplicate aquisition'):
 
-    # # make sure the data now exists
-    # with self.subTest(name='initial data checks'):
-    #   expected_spotchecks = {
-    #     "hospital_pk": "450822",
-    #     "collection_week": 20201030,
-    #     "publication_date": 20210315,
-    #     "previous_day_total_ed_visits_7_day_sum": 536,
-    #     "total_personnel_covid_vaccinated_doses_all_7_day_sum": 18,
-    #     "total_beds_7_day_avg": 69.3,
-    #     "previous_day_admission_influenza_confirmed_7_day_sum": -999999
-    #   }
-    #   response = Epidata.covid_hosp_facility(
-    #       '450822', Epidata.range(20200101, 20210101))
-    #   self.assertEqual(response['result'], 1)
-    #   self.assertEqual(len(response['epidata']), 2)
-    #   row = response['epidata'][0]
-    #   for k,v in expected_spotchecks.items():
-    #     self.assertTrue(
-    #       k in row,
-    #       f"no '{k}' in row:\n{NEWLINE.join(sorted(row.keys()))}"
-    #     )
-    #     if isinstance(v, float):
-    #       self.assertAlmostEqual(row[k], v, f"row[{k}] is {row[k]} not {v}")
-    #     else:
-    #       self.assertEqual(row[k], v, f"row[{k}] is {row[k]} not {v}")
-
-    #   # expect 113 fields per row (114 database columns, except `id`)
-    #   self.assertEqual(len(row), 113)
-
-    # # re-acquisition of the same dataset should be a no-op
-    # with self.subTest(name='second acquisition'):
-    #   acquired = Update.run(network=mock_network)
-    #   self.assertFalse(acquired)
-
-    # # make sure the data still exists
-    # with self.subTest(name='final data checks'):
-    #   response = Epidata.covid_hosp_facility(
-    #       '450822', Epidata.range(20200101, 20210101))
-    #   self.assertEqual(response['result'], 1)
-    #   self.assertEqual(len(response['epidata']), 2)

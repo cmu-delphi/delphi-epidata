@@ -18,58 +18,60 @@ See: rvdss.py
 
 # third party
 import mysql.connector
+import pdb
 
 # first party
 import delphi.operations.secrets as secrets
 
 rvdss_cols= (
+  "geo_type",
+  'geo_value',
+  "time_type",
   "epiweek",
   "time_value",
-  "time_type",
   "issue",
-  "geo_type",
-  "geo_value",
-  "sarscov2_tests",
-  "sarscov2_positive_tests",
-  "sarscov2_pct_positive",
-  "flu_tests",
-  "flu_positive_tests",
+  "year",
+  "adv_pct_positive",
+  "adv_positive_tests",
+  "adv_tests",
+  "evrv_pct_positive",
+  "evrv_positive_tests",
+  "evrv_tests",
   "flu_pct_positive",
+  "flu_positive_tests",
+  "flu_tests",
+  "flua_pct_positive",
+  "flua_positive_tests",
+  "flua_tests",
   "fluah1n1pdm09_positive_tests",
   "fluah3_positive_tests",
   "fluauns_positive_tests",
-  "flua_positive_tests",
-  "flua_tests",
-  "flua_pct_positive",
+  "flub_pct_positive",
   "flub_positive_tests",
   "flub_tests",
-  "flub_pct_positive",
-  "rsv_tests",
-  "rsv_positive_tests",
-  "rsv_pct_positive",
-  "hpiv_tests",
+  "hcov_pct_positive",
+  "hcov_positive_tests",
+  "hcov_tests",
+  "hmpv_pct_positive",
+  "hmpv_positive_tests",
+  "hmpv_tests",
   "hpiv1_positive_tests",
   "hpiv2_positive_tests",
   "hpiv3_positive_tests",
   "hpiv4_positive_tests",
-  "hpivother_positive_tests",
-  "hpiv_positive_tests",
   "hpiv_pct_positive",
-  "adv_tests",
-  "adv_positive_tests",
-  "adv_pct_positive",
-  "hmpv_tests",
-  "hmpv_positive_tests",
-  "hmpv_pct_positive",
-  "evrv_tests",
-  "evrv_positive_tests",
-  "evrv_pct_positive",
-  "hcov_tests",
-  "hcov_positive_tests",
-  "hcov_pct_positive",
-  "year"
+  "hpiv_positive_tests",
+  "hpiv_tests",
+  "hpivother_positive_tests",
+  "rsv_pct_positive",
+  "rsv_positive_tests",
+  "rsv_tests",
+  "sarscov2_pct_positive",
+  "sarscov2_positive_tests",
+  "sarscov2_tests"
 )
 
+  
 def get_num_rows(cursor):
     cursor.execute("SELECT count(1) `num` FROM `rvdss`")
     for (num,) in cursor:
@@ -79,8 +81,13 @@ def get_num_rows(cursor):
 def update(data, logger):
     # connect to the database
     u, p = secrets.db.epi
-    cnx = mysql.connector.connect(user=u, password=p, database="epidata")
+    cnx = mysql.connector.connect(user=u, 
+                                  password=p, 
+                                  host = secrets.db.host,
+                                  database="epidata")
     cur = cnx.cursor()
+    
+    pdb.set_trace()
 
     rvdss_cols_subset = [col for col in data.columns if col in rvdss_cols]
     data = data.to_dict(orient = "records")

@@ -66,7 +66,6 @@ class rvdssTest(DelphiTestBase):
                       "sarscov2_pct_positive":10.0,
                       "sarscov2_positive_tests":1.0,
                       "sarscov2_tests":10.0
-
                     }
                 ],
                 "result": 1,

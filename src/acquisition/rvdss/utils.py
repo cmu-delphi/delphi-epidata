@@ -262,7 +262,10 @@ def get_detections_data(base_url,headers,update_date):
 
     return(df_detections.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'],verify_integrity=True))
 
-def expand_detections_columns(new_data):
+def expand_detections_columns(data):
+    new_data = data.copy(deep=True)
+    new_data = new_data.reset_index()
+    
     # add extra columns - percent positivities
     if "adv_positive_tests" in new_data.columns and "adv_tests" in new_data.columns:
         new_data["adv_pct_positive"] =  np.divide(new_data["adv_positive_tests"], new_data["adv_tests"], 
