@@ -1,8 +1,8 @@
 ---
-title: Change Healthcare
+title: <i>inactive</i> Change Healthcare
 parent: Data Sources and Signals
 grand_parent: Main Endpoint (COVIDcast)
-nav_order: 1
+nav_order: 2
 ---
 
 # Change Healthcare
@@ -16,8 +16,6 @@ nav_order: 1
 
 ## Overview
 {: .no_toc}
-
-**Notice: This data source was inactive between 2021-10-04 and 2021-12-02 to allow us resolve some problems with the data pipeline. We have resumed daily updates and are working on a data patch to fill the gap. [Additional details on this inactive period are available below](#pipeline-pause).**
 
 This data source is based on Change Healthcare claims data that has been
 de-identified in accordance with HIPAA privacy regulations. Change Healthcare is
