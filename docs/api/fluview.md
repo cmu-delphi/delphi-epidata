@@ -19,12 +19,21 @@ nav_order: 1
 | **Earliest Date** | 1997w40 |
 | **License** | Open Access / [CDC](http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html) | 
 
+## Overview
+{: .no_toc}
+
 Influenza-like illness (ILI) from U.S. Outpatient Influenza-like Illness Surveillance Network (ILINet).
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
+
+## Table of contents
+{: .no_toc .text-delta}
+
+1. TOC
+{:toc}
 
 # The API
 

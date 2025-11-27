@@ -15,6 +15,9 @@ nav_order: 1
 | **Update Frequency** | Weekly (typically Fridays) |
 | **License** | Open Access |
 
+## Overview
+{: .no_toc}
+
 This is the API documentation for accessing the FluView metadata
 (`fluview_meta`) endpoint of [Delphi](https://delphi.cmu.edu/)'s epidemiological
 data.
@@ -23,6 +26,12 @@ General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
+
+## Table of contents
+{: .no_toc .text-delta}
+
+1. TOC
+{:toc}
 
 ## FluView Metadata
 

@@ -8,11 +8,9 @@ body {
 .site-header {
     transition: all 0.3s ease;
     border-bottom: none !important;
-    /* Removed hard blue line */
     background-color: var(--body-background) !important;
     font-family: 'Source Serif Pro', serif !important;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-    /* Better, softer shadow */
 }
 
 .site-title {
@@ -44,7 +42,6 @@ h7 {
 aside {
     padding-top: 1.5rem;
     border-left: none;
-    /* Removed blue line on the left */
 
     h2 {
         margin-top: 1.2rem;
@@ -69,7 +66,6 @@ aside {
 
         &:hover {
             background-color: rgba(0, 38, 118, 0.05);
-            /* Very subtle blue blend */
             color: #C41230;
             text-decoration: none;
         }
@@ -78,7 +74,6 @@ aside {
             font-weight: 600;
             color: #C41230;
             background-color: rgba(196, 18, 48, 0.03);
-            /* Subtle red blend for active */
         }
     }
 
@@ -111,7 +106,6 @@ aside {
 
 footer {
     border-top: 1px solid rgba(0, 0, 0, 0.05);
-    /* Subtle blend instead of hard line */
     margin: 0 0 1rem 0;
     font-size: 0.8rem;
     color: var(--body-text);
@@ -131,7 +125,6 @@ table {
     td {
         padding: 0.75rem;
         border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-        /* Softer borders */
     }
 
     th {
@@ -139,13 +132,11 @@ table {
         font-weight: 600;
         color: #002676;
         border-bottom: 2px solid rgba(0, 38, 118, 0.2);
-        /* Softer header underline */
     }
 }
 
 code {
     background-color: rgba(0, 0, 0, 0.04);
-    /* Blended background */
     padding: 0.2em 0.4em;
     border-radius: 3px;
     font-size: 85%;
@@ -156,7 +147,6 @@ pre code {
     padding: 0;
 }
 
-/* Callouts - softer blend */
 .note,
 .warning,
 .important,
@@ -167,7 +157,6 @@ pre code {
     border-left: 4px solid;
     border-radius: 4px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
-    /* Subtle lift */
 
     >p {
         margin: 0;
@@ -182,10 +171,18 @@ pre code {
     }
 }
 
-.note,
+.note {
+    background-color: rgba(0, 123, 192, 0.05);
+    border-left-color: #007BC0;
+    color: #007BC0;
+
+    >p:first-child strong:first-child {
+        color: #007BC0;
+    }
+}
+
 .important {
-    background-color: rgba(0, 38, 118, 0.03);
-    /* Blended Blue */
+    background-color: rgba(0, 38, 118, 0.05);
     border-left-color: #002676;
     color: #002676;
 
@@ -197,7 +194,6 @@ pre code {
 .warning,
 .caution {
     background-color: rgba(196, 18, 48, 0.03);
-    /* Blended Red */
     border-left-color: #C41230;
     color: #941120;
 
@@ -208,7 +204,6 @@ pre code {
 
 .tip {
     background-color: rgba(54, 143, 51, 0.05);
-    /* Blended Green */
     border-left-color: #368f33;
     color: #1b5e20;
 

@@ -18,15 +18,8 @@ selected geographical areas---counties, states, metropolitan statistical areas,
 and other divisions.
 
 
-<div style="background-color:#FCC; padding: 10px 30px;"><strong>Get
-updates:</strong> Delphi operates a <a
-href="https://lists.andrew.cmu.edu/mailman/listinfo/delphi-covidcast-api">mailing
-list</a> for users of the COVIDcast API. We will use the list to announce API
-changes, corrections to data, and new features; API users may also use the
-mailing list to ask general questions about its use. If you use the API, we
-strongly encourage you to <a
-href="https://lists.andrew.cmu.edu/mailman/listinfo/delphi-covidcast-api">subscribe</a>.
-</div>
+> **Get updates:** Delphi operates a [mailing list](https://lists.andrew.cmu.edu/mailman/listinfo/delphi-covidcast-api) for users of the COVIDcast API. We will use the list to announce API changes, corrections to data, and new features; API users may also use the mailing list to ask general questions about its use. If you use the API, we strongly encourage you to [subscribe](https://lists.andrew.cmu.edu/mailman/listinfo/delphi-covidcast-api).
+{: .important }
 
 ## Table of contents
 {: .no_toc .text-delta}

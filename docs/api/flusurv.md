@@ -1,5 +1,5 @@
 ---
-title: <i>inactive</i> Flusurv
+title: Flusurv
 parent: Data Sources and Signals
 grand_parent: Other Endpoints (COVID-19 and Other Diseases)
 nav_order: 2
@@ -15,10 +15,10 @@ nav_order: 2
 | **Data Source** | [Laboratory-Confirmed Influenza Hospitalizations](https://gis.cdc.gov/GRASP/Fluview/FluHospRates.html) |
 | **Geographic Coverage** | See [Geographic Codes](geographic_codes.html#flusurv-locations) for full list |
 | **Temporal Resolution** | Weekly (Epiweek) |
-| **Update Frequency** | Weekly |
 | **Earliest Date** | 2003w40 |
 
-<!--| **License** | Open Access | -->
+<!--| **Update Frequency** | Weekly |
+| **License** | Open Access | -->
 
 
 
