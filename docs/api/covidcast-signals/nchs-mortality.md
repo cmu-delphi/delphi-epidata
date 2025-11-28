@@ -69,7 +69,7 @@ We report the NCHS Mortality data in a weekly format (`time_type=week` &
 `time_value={YYYYWW}`, where `YYYYWW` refers to an epiweek). The CDC defines
 the [epiweek](https://web.archive.org/web/20210623224758/https://wwwn.cdc.gov/nndss/document/MMWR_Week_overview.pdf) as
 seven days, from Sunday to Saturday. We check the week-ending dates provided in
-the NCHS morality data and use Python package
+the NCHS mortality data and use Python package
 [epiweeks](https://pypi.org/project/epiweeks/) to convert them into epiweek
 format.
 

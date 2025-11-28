@@ -40,7 +40,7 @@ General topics not specific to any particular endpoint are discussed in the
 
 # The API
 
-The base URL is: https://api.delphi.cmu.edu/epidata/wiki/
+The base URL is: <https://api.delphi.cmu.edu/epidata/wiki/>
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -86,7 +86,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 # Example URLs
 
 ### Wikipedia Access article "influenza" on 2020w01
-https://api.delphi.cmu.edu/epidata/wiki/?language=en&articles=influenza&epiweeks=202001
+<https://api.delphi.cmu.edu/epidata/wiki/?language=en&articles=influenza&epiweeks=202001>
 
 ```json
 {
@@ -106,7 +106,7 @@ https://api.delphi.cmu.edu/epidata/wiki/?language=en&articles=influenza&epiweeks
 ```
 
 ### Wikipedia Access article "influenza" on date 2020-01-01
-https://api.delphi.cmu.edu/epidata/wiki/?language=en&articles=influenza&dates=20200101
+<https://api.delphi.cmu.edu/epidata/wiki/?language=en&articles=influenza&dates=20200101>
 
 ```json
 {

@@ -37,7 +37,7 @@ General topics not specific to any particular endpoint are discussed in the
 
 # The API
 
-The base URL is: https://api.delphi.cmu.edu/epidata/fluview/
+The base URL is: <https://api.delphi.cmu.edu/epidata/fluview/>
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -94,7 +94,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 # Example URLs
 
 ### FluView on 2015w01 (national)
-https://api.delphi.cmu.edu/epidata/fluview/?regions=nat&epiweeks=201501
+<https://api.delphi.cmu.edu/epidata/fluview/?regions=nat&epiweeks=201501>
 
 ```json
 {
@@ -125,11 +125,11 @@ https://api.delphi.cmu.edu/epidata/fluview/?regions=nat&epiweeks=201501
 
 ### FluView in HHS Regions 4 and 6 for the 2014/2015 flu season
 
-https://api.delphi.cmu.edu/epidata/fluview/?regions=hhs4,hhs6&epiweeks=201440-201520
+<https://api.delphi.cmu.edu/epidata/fluview/?regions=hhs4,hhs6&epiweeks=201440-201520>
 
 ### Updates to FluView on 2014w53, reported from 2015w01 through 2015w10 (national)
 
-https://api.delphi.cmu.edu/epidata/fluview/?regions=nat&epiweeks=201453&issues=201501-201510
+<https://api.delphi.cmu.edu/epidata/fluview/?regions=nat&epiweeks=201453&issues=201501-201510>
 
 
 # Code Samples

@@ -43,7 +43,7 @@ This data may be useful for real-time monitoring of diseases, as in:
 
 # The API
 
-The base URL is: https://api.delphi.cmu.edu/epidata/ght/
+The base URL is: <https://api.delphi.cmu.edu/epidata/ght/>
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -56,7 +56,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | `auth` | password | string |
 | `epiweeks` | epiweeks | `list` of epiweeks |
 | `locations` | locations | `list` of state codes (see [Geographic Codes](geographic_codes.html#us-states-and-territories)) and/or `US` |
-| `query` | search query or topic ID <!--This link is not working (see https://www.freebase.com/)--> | string |
+| `query` | search query or topic ID <!--This link is not working (see <https://www.freebase.com/>)--> | string |
 
 ## Response
 
@@ -73,7 +73,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 # Example URLs
 
 ### Google Health Trends for "how to get over the flu" on 2015w01 (US)
-https://api.delphi.cmu.edu/epidata/ght/?auth=...&locations=US&epiweeks=201501&query=how%20to%20get%20over%20the%20flu
+<https://api.delphi.cmu.edu/epidata/ght/?auth=...&locations=US&epiweeks=201501&query=how%20to%20get%20over%20the%20flu>
 
 ```json
 {

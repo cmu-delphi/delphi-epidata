@@ -44,7 +44,7 @@ General topics not specific to any particular endpoint are discussed in the
 
 # The API
 
-The base URL is: https://api.delphi.cmu.edu/epidata/nowcast/
+The base URL is: <https://api.delphi.cmu.edu/epidata/nowcast/>
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -72,7 +72,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 # Example URLs
 
 ### ILI Nearby on 2020w01 (national)
-https://api.delphi.cmu.edu/epidata/nowcast/?locations=nat&epiweeks=202001
+<https://api.delphi.cmu.edu/epidata/nowcast/?locations=nat&epiweeks=202001>
 
 ```json
 {

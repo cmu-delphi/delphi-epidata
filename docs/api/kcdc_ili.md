@@ -41,7 +41,7 @@ General topics not specific to any particular endpoint are discussed in the
 
 # The API
 
-The base URL is: https://api.delphi.cmu.edu/epidata/kcdc_ili/
+The base URL is: <https://api.delphi.cmu.edu/epidata/kcdc_ili/>
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -84,7 +84,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 # Example URLs
 
 ### KCDC ILI in ROK on 2020w01
-https://api.delphi.cmu.edu/epidata/kcdc_ili/?regions=ROK&epiweeks=202001
+<https://api.delphi.cmu.edu/epidata/kcdc_ili/?regions=ROK&epiweeks=202001>
 
 ```json
 {

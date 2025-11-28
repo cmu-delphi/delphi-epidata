@@ -34,7 +34,7 @@ General topics not specific to any particular endpoint are discussed in the
 
 # The API
 
-The base URL is: https://api.delphi.cmu.edu/epidata/meta_norostat/
+The base URL is: <https://api.delphi.cmu.edu/epidata/meta_norostat/>
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -61,7 +61,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 # Example URLs
 
 ### NoroSTAT Metadata
-https://api.delphi.cmu.edu/epidata/meta_norostat/?auth=...
+<https://api.delphi.cmu.edu/epidata/meta_norostat/?auth=...>
 
 ```json
 {

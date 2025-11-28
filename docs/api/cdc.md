@@ -40,7 +40,7 @@ General topics not specific to any particular endpoint are discussed in the
 
 # The API
 
-The base URL is: https://api.delphi.cmu.edu/epidata/cdc/
+The base URL is: <https://api.delphi.cmu.edu/epidata/cdc/>
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -77,7 +77,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 # Example URLs
 
 ### CDC Page Hits on 2015w01 (national)
-https://api.delphi.cmu.edu/epidata/cdc/?auth=...&locations=nat&epiweeks=201501
+<https://api.delphi.cmu.edu/epidata/cdc/?auth=...&locations=nat&epiweeks=201501>
 
 ```json
 {

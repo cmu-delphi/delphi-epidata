@@ -35,7 +35,7 @@ General topics not specific to any particular endpoint are discussed in the [API
 
 ## The API
 
-The base URL is: https://api.delphi.cmu.edu/epidata/quidel/
+The base URL is: <https://api.delphi.cmu.edu/epidata/quidel/>
 
 See this [documentation](https://cmu-delphi.github.io/delphi-epidata/api/README.html) for details on specifying epiweeks, dates, and lists.
 
@@ -63,7 +63,7 @@ See this [documentation](https://cmu-delphi.github.io/delphi-epidata/api/README.
 # Example URLs
 
 ### Quidel on 2015w35-2020w01 (HHS Region 1)
-https://api.delphi.cmu.edu/epidata/quidel/?auth=...&locations=hhs1&epiweeks=201535-202001
+<https://api.delphi.cmu.edu/epidata/quidel/?auth=...&locations=hhs1&epiweeks=201535-202001>
 
 ```json
 {

@@ -39,7 +39,7 @@ General topics not specific to any particular endpoint are discussed in the
 
 # The API
 
-The base URL is: https://api.delphi.cmu.edu/epidata/fluview_clinical/
+The base URL is: <https://api.delphi.cmu.edu/epidata/fluview_clinical/>
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -86,7 +86,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 # Example URLs
 
 ### FluView Clinical on 2020w01 (national)
-https://api.delphi.cmu.edu/epidata/fluview_clinical/?regions=nat&epiweeks=202001
+<https://api.delphi.cmu.edu/epidata/fluview_clinical/?regions=nat&epiweeks=202001>
 
 ```json
 {

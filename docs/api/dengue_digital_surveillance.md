@@ -39,7 +39,7 @@ General topics not specific to any particular endpoint are discussed in the
 
 # The API
 
-The base URL is: https://api.delphi.cmu.edu/epidata/dengue_sensors/
+The base URL is: <https://api.delphi.cmu.edu/epidata/dengue_sensors/>
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -70,7 +70,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 # Example URLs
 
 ### Dengue Sensors on 2015w01 (Puerto Rico)
-https://api.delphi.cmu.edu/epidata/dengue_sensors/?auth=...&locations=pr&epiweeks=201501&names=ght
+<https://api.delphi.cmu.edu/epidata/dengue_sensors/?auth=...&locations=pr&epiweeks=201501&names=ght>
 
 ```json
 {

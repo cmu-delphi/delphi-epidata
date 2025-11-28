@@ -22,7 +22,7 @@ General topics not specific to any particular endpoint are discussed in the
 
 # The API
 
-The base URL is: https://api.delphi.cmu.edu/epidata/meta/
+The base URL is: <https://api.delphi.cmu.edu/epidata/meta/>
 
 See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
@@ -41,7 +41,7 @@ None.
 
 # Example URLs
 
-https://api.delphi.cmu.edu/epidata/meta/
+<https://api.delphi.cmu.edu/epidata/meta/>
 
 ```json
 {
