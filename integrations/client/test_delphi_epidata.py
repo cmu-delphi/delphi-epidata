@@ -388,15 +388,19 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     # 1st issue: 0 10 20
     # 2nd issue: 1 11 21
     # 3rd issue: 2 12 22
-    rows = [
-      CovidcastTestRow.make_default_row(
-        time_value=DEFAULT_TIME_VALUE + t,
-        issue=DEFAULT_ISSUE + i,
-        value=t*10 + i
-      )
-      for i in range(3) for t in range(3)
-    ]
-    self._insert_rows(rows)
+    for i in range(3):
+      for t in range(3):
+        row = CovidcastTestRow.make_default_row(
+          time_value=DEFAULT_TIME_VALUE + t,
+          issue=DEFAULT_ISSUE + i,
+          value=t*10 + i
+        )
+        self._insert_rows([row])
+    self._insert_rows([CovidcastTestRow.make_default_row(
+      time_value=DEFAULT_TIME_VALUE-1,
+      issue=DEFAULT_ISSUE,
+      value=12
+    )])
 
     # cache it
     update_covidcast_meta_cache(args=None)
@@ -413,17 +417,18 @@ class DelphiEpidataPythonClientTests(CovidcastBase):
     del response['epidata'][0]['last_update']
 
     expected = dict(
-      data_source=rows[0].source,
-      signal=rows[0].signal,
-      time_type=rows[0].time_type,
-      geo_type=rows[0].geo_type,
-      min_time=DEFAULT_TIME_VALUE,
+      data_source=row.source,
+      signal=row.signal,
+      time_type=row.time_type,
+      geo_type=row.geo_type,
+      min_time=DEFAULT_TIME_VALUE - 1,
       max_time=DEFAULT_TIME_VALUE + 2,
       num_locations=1,
       min_value=2.,
       mean_value=12.,
       max_value=22.,
-      stdev_value=8.1649658, # population stdev, not sample, which is 10.
+      stdev_value=7.0710678, # population stdev, not sample, which is 10.
+      min_issue=DEFAULT_ISSUE,
       max_issue=DEFAULT_ISSUE + 2,
       min_lag=0,
       max_lag=0, # we didn't set lag when inputting data
