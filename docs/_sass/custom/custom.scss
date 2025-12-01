@@ -1,5 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Source+Serif+Pro:wght@400;600;700&family=Source+Sans+Pro:wght@400;600&display=swap');
 
+// Import Custom Tabs Styles
+@import "custom/tabs";
+
 body {
     font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
     color: var(--body-text);
