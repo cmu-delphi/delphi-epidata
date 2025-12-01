@@ -147,7 +147,7 @@ print(res)
 
 ### Legacy Clients
 
-We recommend using the modern client libraries mentioned above. Legacy clients are also available for [Python](https://pypi.org/project/delphi-epidata/) and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
+We recommend using the modern client libraries mentioned above. Legacy clients are also available for [Python](https://pypi.org/project/delphi-epidata/), [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R), and [JavaScript](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.js).
 
 <div class="code-tabs">
   <div class="tab-header">
@@ -190,7 +190,7 @@ print(length(res$epidata))
 
   <div class="tab-content" data-tab="js" markdown="1">
 
-The JavaScript client is available [here](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js).
+
 
 ```html
 <!-- Imports -->
