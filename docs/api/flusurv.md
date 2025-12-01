@@ -154,16 +154,13 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
 The following samples show how to import the library and fetch CA FluView Clinical data for epiweeks `201701-201801`.
 
-### R
+<div class="code-tabs">
+  <div class="tab-header">
+    <button class="active" data-tab="python">Python</button>
+    <button data-tab="r">R</button>
+  </div>
 
-```R
-library(epidatr)
-# Fetch data
-res <- pub_flusurv(locations = "CA", epiweeks = epirange(201701, 201801))
-print(res)
-```
-
-### Python
+  <div class="tab-content active" data-tab="python" markdown="1">
 
 Install the package using pip:
 ```bash
@@ -178,8 +175,19 @@ epidata = EpiDataContext()
 res = epidata.pub_flusurv(locations="CA", epiweeks=EpiRange(201701, 201801))
 print(res)
 ```
+  </div>
 
-### JavaScript (in a web browser)
+  <div class="tab-content" data-tab="r" markdown="1">
+
+```R
+library(epidatr)
+# Fetch data
+res <- pub_flusurv(locations = "CA", epiweeks = epirange(201701, 201801))
+print(res)
+```
+  </div>
+
+  <div class="tab-content" data-tab="js" markdown="1">
 
 The JavaScript client is available [here](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js).
 
@@ -193,24 +201,22 @@ The JavaScript client is available [here](https://github.com/cmu-delphi/delphi-e
   });
 </script>
 ```
+  </div>
+
+</div>
 
 ### Legacy Clients
 
 We recommend using the modern client libraries mentioned above. Legacy clients are also available for [Python](https://pypi.org/project/delphi-epidata/) and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
 
-#### R (Legacy)
+<div class="code-tabs">
+  <div class="tab-header">
+    <button class="active" data-tab="python">Python</button>
+    <button data-tab="r">R</button>
+    <button data-tab="js">JavaScript</button>
+  </div>
 
-Place `delphi_epidata.R` from this repo next to your R script.
-
-```R
-source("delphi_epidata.R")
-# Fetch data
-res <- Epidata$flusurv(locations = list("CA"), epiweeks = list(Epidata$range(201701, 201801)))
-print(res$message)
-print(length(res$epidata))
-```
-
-#### Python (Legacy)
+  <div class="tab-content active" data-tab="python" markdown="1">
 
 Optionally install the package using pip(env):
 ```bash
@@ -226,4 +232,35 @@ from delphi_epidata import Epidata
 res = Epidata.flusurv(['CA'], [Epidata.range(201701, 201801)])
 print(res['result'], res['message'], len(res['epidata']))
 ```
+  </div>
+
+  <div class="tab-content" data-tab="r" markdown="1">
+
+Place `delphi_epidata.R` from this repo next to your R script.
+
+```R
+source("delphi_epidata.R")
+# Fetch data
+res <- Epidata$flusurv(locations = list("CA"), epiweeks = list(Epidata$range(201701, 201801)))
+print(res$message)
+print(length(res$epidata))
 ```
+  </div>
+
+  <div class="tab-content" data-tab="js" markdown="1">
+
+The JavaScript client is available [here](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js).
+
+```html
+<!-- Imports -->
+<script src="delphi_epidata.js"></script>
+<!-- Fetch data -->
+<script>
+  EpidataAsync.flusurv('CA', [EpidataAsync.range(201701, 201801)]).then((res) => {
+    console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
+  });
+</script>
+```
+  </div>
+
+</div>

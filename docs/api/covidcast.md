@@ -46,16 +46,15 @@ CSV file.
 Several [API clients are available](covidcast_clients.md) for common programming
 languages, so you do not need to construct API calls yourself to obtain
 COVIDcast data. Once you install the appropriate client for your programming
-language, accessing data is as easy as, in [R](https://www.r-project.org/):
+language, accessing data is as easy as:
 
-```r
-library(epidatr)
+<div class="code-tabs">
+  <div class="tab-header">
+    <button class="active" data-tab="python">Python</button>
+    <button data-tab="r">R</button>
+  </div>
 
-data <- pub_covidcast('fb-survey', 'smoothed_cli', 'county', 'day', geo_values = '06001',
-                     time_values = c(20200401, 20200405:20200414))
-```
-
-or, in [Python](https://www.python.org):
+  <div class="tab-content active" data-tab="python" markdown="1">
 
 ```python
 from epidatpy import EpiDataContext, EpiRange
@@ -71,6 +70,18 @@ apicall = epidata.pub_covidcast(
 )
 data = apicall.df()
 ```
+  </div>
+
+  <div class="tab-content" data-tab="r" markdown="1">
+
+```r
+library(epidatr)
+
+data <- pub_covidcast('fb-survey', 'smoothed_cli', 'county', 'day', geo_values = '06001',
+                     time_values = c(20200401, 20200405:20200414))
+```
+  </div>
+</div>
 
 [The API clients](covidcast_clients.md) have extensive documentation providing
 further examples.

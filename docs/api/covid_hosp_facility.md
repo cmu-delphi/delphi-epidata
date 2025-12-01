@@ -212,16 +212,13 @@ The following sample shows how to import the library and fetch Moses Taylor
 Hospital (Scranton, PA) on the first collection week of December 2020 (per most
 recent issue).
 
-### R
+<div class="code-tabs">
+  <div class="tab-header">
+    <button class="active" data-tab="python">Python</button>
+    <button data-tab="r">R</button>
+  </div>
 
-```R
-library(epidatr)
-# Fetch data
-res <- pub_covid_hosp_facility(hospital_pks = "390119", collection_weeks = epirange(20201201, 20201207))
-print(res)
-```
-
-### Python
+  <div class="tab-content active" data-tab="python" markdown="1">
 
 Install the package using pip:
 ```bash
@@ -236,24 +233,31 @@ epidata = EpiDataContext()
 res = epidata.pub_covid_hosp_facility(hospital_pks="390119", collection_weeks=EpiRange(20201201, 20201207))
 print(res)
 ```
+  </div>
+
+  <div class="tab-content" data-tab="r" markdown="1">
+
+```R
+library(epidatr)
+# Fetch data
+res <- pub_covid_hosp_facility(hospital_pks = "390119", collection_weeks = epirange(20201201, 20201207))
+print(res)
+```
+  </div>
+
+</div>
 
 ### Legacy Clients
 
 We recommend using the modern client libraries mentioned above. Legacy clients are also available for [Python](https://pypi.org/project/delphi-epidata/) and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
 
-#### R (Legacy)
+<div class="code-tabs">
+  <div class="tab-header">
+    <button class="active" data-tab="python">Python</button>
+    <button data-tab="r">R</button>
+  </div>
 
-Place `delphi_epidata.R` from this repo next to your R script.
-
-```R
-source("delphi_epidata.R")
-# Fetch data
-res <- Epidata$covid_hosp_facility(hospital_pks = list("390119"), collection_weeks = list(Epidata$range(20201201, 20201207)))
-print(res$message)
-print(length(res$epidata))
-```
-
-#### Python (Legacy)
+  <div class="tab-content active" data-tab="python" markdown="1">
 
 Optionally install the package using pip(env):
 ```bash
@@ -269,3 +273,19 @@ from delphi_epidata import Epidata
 res = Epidata.covid_hosp_facility('390119', Epidata.range(20201201, 20201207))
 print(res['result'], res['message'], len(res['epidata']))
 ```
+  </div>
+
+  <div class="tab-content" data-tab="r" markdown="1">
+
+Place `delphi_epidata.R` from this repo next to your R script.
+
+```R
+source("delphi_epidata.R")
+# Fetch data
+res <- Epidata$covid_hosp_facility(hospital_pks = list("390119"), collection_weeks = list(Epidata$range(20201201, 20201207)))
+print(res$message)
+print(length(res$epidata))
+```
+  </div>
+
+</div>

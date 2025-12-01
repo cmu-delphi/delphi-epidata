@@ -130,16 +130,13 @@ Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Pyth
 The following sample shows how to import the library and fetch facilities in
 the city of Southlake (TX).
 
-### R
+<div class="code-tabs">
+  <div class="tab-header">
+    <button class="active" data-tab="python">Python</button>
+    <button data-tab="r">R</button>
+  </div>
 
-```R
-library(epidatr)
-# Fetch data
-res <- pub_covid_hosp_facility_lookup(city = "southlake")
-print(res)
-```
-
-### Python
+  <div class="tab-content active" data-tab="python" markdown="1">
 
 Install the package using pip:
 ```bash
@@ -154,24 +151,31 @@ epidata = EpiDataContext()
 res = epidata.pub_covid_hosp_facility_lookup(city="southlake")
 print(res)
 ```
+  </div>
+
+  <div class="tab-content" data-tab="r" markdown="1">
+
+```R
+library(epidatr)
+# Fetch data
+res <- pub_covid_hosp_facility_lookup(city = "southlake")
+print(res)
+```
+  </div>
+
+</div>
 
 ### Legacy Clients
 
 We recommend using the modern client libraries mentioned above. Legacy clients are also available for [Python](https://pypi.org/project/delphi-epidata/) and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
 
-#### R (Legacy)
+<div class="code-tabs">
+  <div class="tab-header">
+    <button class="active" data-tab="python">Python</button>
+    <button data-tab="r">R</button>
+  </div>
 
-Place `delphi_epidata.R` from this repo next to your R script.
-
-```R
-source("delphi_epidata.R")
-# Fetch data
-res <- Epidata$covid_hosp_facility_lookup(city = "southlake")
-print(res$message)
-print(length(res$epidata))
-```
-
-#### Python (Legacy)
+  <div class="tab-content active" data-tab="python" markdown="1">
 
 Optionally install the package using pip(env):
 ```bash
@@ -187,3 +191,19 @@ from delphi_epidata import Epidata
 res = Epidata.covid_hosp_facility_lookup(city='southlake')
 print(res['result'], res['message'], len(res['epidata']))
 ```
+  </div>
+
+  <div class="tab-content" data-tab="r" markdown="1">
+
+Place `delphi_epidata.R` from this repo next to your R script.
+
+```R
+source("delphi_epidata.R")
+# Fetch data
+res <- Epidata$covid_hosp_facility_lookup(city = "southlake")
+print(res$message)
+print(length(res$epidata))
+```
+  </div>
+
+</div>

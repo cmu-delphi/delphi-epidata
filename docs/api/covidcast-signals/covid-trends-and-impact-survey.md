@@ -788,12 +788,11 @@ of zero, and in simulations improves the quality of the standard error
 estimates. See the [Appendix](#appendix) for further motivation for these
 estimators.
 
-<div style="background-color:#FCC; padding: 10px 30px;"><strong>Note:</strong>
-Currently the standard errors are calculated as though all survey weights are
-equal, that is \(w^\text{part}_i = 1\) for all respondents. The result is that
-reported standard errors are artificially narrow for weighted estimates. This
-will be corrected in a future update to the API.
-</div>
+> **Note:** Currently the standard errors are calculated as though all survey weights are
+> equal, that is $$w^\text{part}_i = 1$$ for all respondents. The result is that
+> reported standard errors are artificially narrow for weighted estimates. This
+> will be corrected in a future update to the API.
+{: .note }
 
 The pseudo-observation is not used in $$\hat{p}$$ and $$\hat{q}$$ themselves, to
 avoid potentially large amounts of estimation bias, as $$p$$ and $$q$$ are

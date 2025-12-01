@@ -17,22 +17,14 @@ The following samples show how to import the library and fetch Delphi's
 COVID-19 Surveillance Streams from Facebook Survey CLI for county 06001 and days
 `20200401` and `20200405-20200414` (11 days total).
 
-### R
+<div class="code-tabs">
+  <div class="tab-header">
+    <button class="active" data-tab="python">Python</button>
+    <button data-tab="r">R</button>
 
-Install [`epidatr` from CRAN](https://cran.r-project.org/package=epidatr)
-with `install.packages("epidatr")`.
+  </div>
 
-```r
-# Configure API key interactively, if needed. See
-# https://cmu-delphi.github.io/epidatr/articles/epidatr.html#api-keys for details.
-#save_api_key()
-library(epidatr)
-data <- pub_covidcast('fb-survey', 'smoothed_cli', 'county', 'day', geo_values = '06001',
-                     time_values = c(20200401, 20200405:20200414))
-print(data)
-```
-
-### Python
+  <div class="tab-content active" data-tab="python" markdown="1">
 
 The `epidatpy` package will soon be [available on PyPI as `epidatpy`](https://pypi.org/project/epidatpy/).
 Meanwhile, it can be [installed from GitHub](https://github.com/cmu-delphi/epidatpy/) with
@@ -56,19 +48,25 @@ apicall = epidata.pub_covidcast(
 )
 print(apicall.df())
 ```
+  </div>
 
-Install [`delphi-epidata` from PyPI](https://pypi.org/project/delphi-epidata/) with
-`pip install delphi-epidata`.
+  <div class="tab-content" data-tab="r" markdown="1">
 
-```python
-from delphi_epidata import Epidata
-# Configure API key, if needed.
-#Epidata.auth = ('epidata', <your API key>)
-res = Epidata.covidcast('fb-survey', 'smoothed_cli', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001')
-print(res['result'], res['message'], len(res['epidata']))
+Install [`epidatr` from CRAN](https://cran.r-project.org/package=epidatr)
+with `install.packages("epidatr")`.
+
+```r
+# Configure API key interactively, if needed. See
+# https://cmu-delphi.github.io/epidatr/articles/epidatr.html#api-keys for details.
+#save_api_key()
+library(epidatr)
+data <- pub_covidcast('fb-survey', 'smoothed_cli', 'county', 'day', geo_values = '06001',
+                     time_values = c(20200401, 20200405:20200414))
+print(data)
 ```
+  </div>
 
-### JavaScript (in a web browser)
+  <div class="tab-content" data-tab="js" markdown="1">
 
 The minimalist JavaScript client does not currently support API keys.
 If you need API key support in JavaScript, contact delphi-support+privacy@andrew.cmu.edu.
@@ -92,8 +90,33 @@ If you need API key support in JavaScript, contact delphi-support+privacy@andrew
   });
 </script>
 ```
+  </div>
+</div>
 
-### R (legacy)
+### Legacy Clients
+
+<div class="code-tabs">
+  <div class="tab-header">
+    <button class="active" data-tab="python">Python</button>
+    <button data-tab="r">R</button>
+    <button data-tab="js">JavaScript</button>
+  </div>
+
+  <div class="tab-content active" data-tab="python" markdown="1">
+
+Install [`delphi-epidata` from PyPI](https://pypi.org/project/delphi-epidata/) with
+`pip install delphi-epidata`.
+
+```python
+from delphi_epidata import Epidata
+# Configure API key, if needed.
+#Epidata.auth = ('epidata', <your API key>)
+res = Epidata.covidcast('fb-survey', 'smoothed_cli', 'day', 'county', [20200401, Epidata.range(20200405, 20200414)], '06001')
+print(res['result'], res['message'], len(res['epidata']))
+```
+  </div>
+
+  <div class="tab-content" data-tab="r" markdown="1">
 
 The old Delphi Epidata R client is available
 [here](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R),
@@ -106,3 +129,33 @@ source('delphi_epidata.R')
 res <- Epidata$covidcast('fb-survey', 'smoothed_cli', 'day', 'county', list(20200401, Epidata$range(20200405, 20200414)), '06001')
 cat(paste(res$result, res$message, length(res$epidata), "\n"))
 ```
+  </div>
+
+  <div class="tab-content" data-tab="js" markdown="1">
+
+    The minimalist JavaScript client does not currently support API keys.
+    If you need API key support in JavaScript, contact delphi-support+privacy@andrew.cmu.edu.
+
+    ```html
+    <script src="delphi_epidata.js"></script>
+    <script>
+      EpidataAsync.covidcast(
+        "fb-survey",
+        "smoothed_cli",
+        "day",
+        "county",
+        [20200401, EpidataAsync.range(20200405, 20200414)],
+        "06001"
+      ).then((res) => {
+        console.log(
+          res.result,
+          res.message,
+          res.epidata != null ? res.epidata.length : 0
+        );
+      });
+    </script>
+    ``` 
+  </div>
+
+</div>
+

@@ -204,7 +204,7 @@ The parameters available for each source are documented in each linked source-sp
 
 # Code Samples
 
-To access our Epidata API, visit our [Epidata API Client Libraries)](client_libraries.md). For anyone looking for COVIDCast data in particular, please visit our purpose-built [COVIDCast Libraries](covidcast_clients.md) instead.
+To access our Epidata API, visit our [Epidata API Client Libraries](client_libraries.md). For anyone looking for COVIDCast data in particular, please visit our purpose-built [COVIDCast Libraries](covidcast_clients.md) instead.
 
 # Related Work
 

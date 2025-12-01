@@ -104,16 +104,14 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
 The following samples show how to import the library and fetch PAHO Dengue data for Canada for epiweek `201501`.
 
-### R
+<div class="code-tabs">
+  <div class="tab-header">
+    <button class="active" data-tab="python">Python</button>
+    <button data-tab="r">R</button>
 
-```R
-library(epidatr)
-# Fetch data
-res <- pub_paho_dengue(regions = 'ca', epiweeks = 201501)
-print(res)
-```
+  </div>
 
-### Python
+  <div class="tab-content active" data-tab="python" markdown="1">
 
 Install the package using pip:
 ```bash
@@ -128,8 +126,58 @@ epidata = EpiDataContext()
 res = epidata.pub_paho_dengue(regions=['ca'], epiweeks=[201501])
 print(res)
 ```
+  </div>
 
-### JavaScript (in a web browser)
+  <div class="tab-content" data-tab="r" markdown="1">
+
+```R
+library(epidatr)
+# Fetch data
+res <- pub_paho_dengue(regions = 'ca', epiweeks = 201501)
+print(res)
+```
+  </div>
+
+</div>
+
+### Legacy Clients
+
+We recommend using the modern client libraries mentioned above. Legacy clients are also available for [Python](https://pypi.org/project/delphi-epidata/) and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
+
+<div class="code-tabs">
+  <div class="tab-header">
+    <button class="active" data-tab="python">Python</button>
+    <button data-tab="r">R</button>
+    <button data-tab="js">JavaScript</button>
+  </div>
+
+  <div class="tab-content active" data-tab="python" markdown="1">
+
+Place `delphi_epidata.py` from this repo next to your python script.
+
+```python
+# Import
+from delphi_epidata import Epidata
+# Fetch data
+res = Epidata.paho_dengue(['ca'], [201501])
+print(res['result'], res['message'], len(res['epidata']))
+```
+  </div>
+
+  <div class="tab-content" data-tab="r" markdown="1">
+
+Place `delphi_epidata.R` from this repo next to your R script.
+
+```R
+source("delphi_epidata.R")
+# Fetch data
+res <- Epidata$paho_dengue(regions = list("ca"), epiweeks = list(201501))
+print(res$message)
+print(length(res$epidata))
+```
+  </div>
+
+  <div class="tab-content" data-tab="js" markdown="1">
 
 The JavaScript client is available [here](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js).
 
@@ -143,31 +191,6 @@ The JavaScript client is available [here](https://github.com/cmu-delphi/delphi-e
   });
 </script>
 ```
+  </div>
 
-### Legacy Clients
-
-We recommend using the modern client libraries mentioned above. Legacy clients are also available for [Python](https://pypi.org/project/delphi-epidata/) and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
-
-#### R (Legacy)
-
-Place `delphi_epidata.R` from this repo next to your R script.
-
-```R
-source("delphi_epidata.R")
-# Fetch data
-res <- Epidata$paho_dengue(regions = list("ca"), epiweeks = list(201501))
-print(res$message)
-print(length(res$epidata))
-```
-
-#### Python (Legacy)
-
-Place `delphi_epidata.py` from this repo next to your python script.
-
-```python
-# Import
-from delphi_epidata import Epidata
-# Fetch data
-res = Epidata.paho_dengue(['ca'], [201501])
-print(res['result'], res['message'], len(res['epidata']))
-```
+</div>

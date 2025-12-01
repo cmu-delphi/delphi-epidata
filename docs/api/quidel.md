@@ -90,16 +90,14 @@ See this [documentation](https://cmu-delphi.github.io/delphi-epidata/api/README.
 Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
 The following samples show how to import the library and fetch Quidel data for HHS Region 1 for epiweeks `201535-202001`.
 
-### R
+<div class="code-tabs">
+  <div class="tab-header">
+    <button class="active" data-tab="python">Python</button>
+    <button data-tab="r">R</button>
 
-```R
-library(epidatr)
-# Fetch data
-res <- pvt_quidel(auth = 'auth_token', locations = 'hhs1', epiweeks = epirange(201535, 202001))
-print(res)
-```
+  </div>
 
-### Python
+  <div class="tab-content active" data-tab="python" markdown="1">
 
 Install the package using pip:
 ```bash
@@ -114,39 +112,32 @@ epidata = EpiDataContext()
 res = epidata.pvt_quidel(auth='auth_token', locations=['hhs1'], epiweeks=EpiRange(201535, 202001))
 print(res)
 ```
+  </div>
 
-### JavaScript (in a web browser)
+  <div class="tab-content" data-tab="r" markdown="1">
 
-The JavaScript client is available [here](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js).
-
-```html
-<!-- Imports -->
-<script src="delphi_epidata.js"></script>
-<!-- Fetch data -->
-<script>
-  EpidataAsync.quidel('auth_token', ['hhs1'], Epidata.range(201535, 202001)).then((res) => {
-    console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
-  });
-</script>
+```R
+library(epidatr)
+# Fetch data
+res <- pvt_quidel(auth = 'auth_token', locations = 'hhs1', epiweeks = epirange(201535, 202001))
+print(res)
 ```
+  </div>
+
+</div>
 
 ### Legacy Clients
 
 We recommend using the modern client libraries mentioned above. Legacy clients are also available for [Python](https://pypi.org/project/delphi-epidata/) and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
 
-#### R (Legacy)
+<div class="code-tabs">
+  <div class="tab-header">
+    <button class="active" data-tab="python">Python</button>
+    <button data-tab="r">R</button>
+    <button data-tab="js">JavaScript</button>
+  </div>
 
-Place `delphi_epidata.R` from this repo next to your R script.
-
-```R
-source("delphi_epidata.R")
-# Fetch data
-res <- Epidata$quidel(auth = "auth_token", locations = list("hhs1"), epiweeks = Epidata$range(201535, 202001))
-print(res$message)
-print(length(res$epidata))
-```
-
-#### Python (Legacy)
+  <div class="tab-content active" data-tab="python" markdown="1">
 
 Optionally install the package using pip(env):
 ```bash
@@ -162,3 +153,35 @@ from delphi_epidata import Epidata
 res = Epidata.quidel('auth_token', ['hhs1'], Epidata.range(201535, 202001))
 print(res['result'], res['message'], len(res['epidata']))
 ```
+  </div>
+
+  <div class="tab-content" data-tab="r" markdown="1">
+
+Place `delphi_epidata.R` from this repo next to your R script.
+
+```R
+source("delphi_epidata.R")
+# Fetch data
+res <- Epidata$quidel(auth = "auth_token", locations = list("hhs1"), epiweeks = Epidata$range(201535, 202001))
+print(res$message)
+print(length(res$epidata))
+```
+  </div>
+
+  <div class="tab-content" data-tab="js" markdown="1">
+
+The JavaScript client is available [here](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js).
+
+```html
+<!-- Imports -->
+<script src="delphi_epidata.js"></script>
+<!-- Fetch data -->
+<script>
+  EpidataAsync.quidel('auth_token', ['hhs1'], Epidata.range(201535, 202001)).then((res) => {
+    console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
+  });
+</script>
+```
+  </div>
+
+</div>

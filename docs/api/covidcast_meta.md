@@ -80,20 +80,14 @@ Python and R users are advised to use the dedicated API client, which provides s
 Alternatively, libraries are available for [JavaScript](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js), [Python](https://pypi.org/project/delphi-epidata/), and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
 The following samples show how to import the library and fetch Delphi's COVID-19 Surveillance Streams metadata.
 
-### JavaScript (in a web browser)
+<div class="code-tabs">
+  <div class="tab-header">
+    <button class="active" data-tab="python">Python</button>
+    <button data-tab="r">R</button>
+    <button data-tab="js">JavaScript</button>
+  </div>
 
-````html
-<!-- Imports -->
-<script src="delphi_epidata.js"></script>
-<!-- Fetch data -->
-<script>
-  EpidataAsync.covidcast_meta().then((res) => {
-    console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
-  });
-</script>
-````
-
-### Python
+  <div class="tab-content active" data-tab="python" markdown="1">
 
 Optionally install the package using pip(env):
 ````bash
@@ -109,8 +103,9 @@ from delphi_epidata import Epidata
 res = Epidata.covidcast_meta()
 print(res['result'], res['message'], len(res['epidata']))
 ````
+  </div>
 
-### R
+  <div class="tab-content" data-tab="r" markdown="1">
 
 ````R
 # Import
@@ -119,3 +114,20 @@ source('delphi_epidata.R')
 res <- Epidata$covidcast_meta()
 cat(paste(res$result, res$message, length(res$epidata), "\n"))
 ````
+  </div>
+
+  <div class="tab-content" data-tab="js" markdown="1">
+
+````html
+<!-- Imports -->
+<script src="delphi_epidata.js"></script>
+<!-- Fetch data -->
+<script>
+  EpidataAsync.covidcast_meta().then((res) => {
+    console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
+  });
+</script>
+````
+  </div>
+
+</div>

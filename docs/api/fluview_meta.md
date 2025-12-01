@@ -82,16 +82,13 @@ There are no parameters for this endpoint.
 Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
 The following samples show how to import the library and fetch FluView metadata.
 
-### R
+<div class="code-tabs">
+  <div class="tab-header">
+    <button class="active" data-tab="python">Python</button>
+    <button data-tab="r">R</button>
+  </div>
 
-```R
-library(epidatr)
-# Fetch data
-res <- pub_fluview_meta()
-print(res)
-```
-
-### Python
+  <div class="tab-content active" data-tab="python" markdown="1">
 
 ```python
 # Import
@@ -101,3 +98,16 @@ epidata = EpiDataContext()
 res = epidata.pub_fluview_meta()
 print(res)
 ```
+  </div>
+
+  <div class="tab-content" data-tab="r" markdown="1">
+
+```R
+library(epidatr)
+# Fetch data
+res <- pub_fluview_meta()
+print(res)
+```
+  </div>
+
+</div>
