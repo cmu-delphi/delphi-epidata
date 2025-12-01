@@ -8,11 +8,16 @@ nav_order: 2
 # Google Symptoms
 {: .no_toc}
 
-* **Source name:** `google-symptoms`
-* **Earliest issue available:** Aug 20, 2017
-* **Geography type available:** county, MSA, HRR, state, HHS, nation (see [geography coding docs](../covidcast_geography.md))
-* **Time type available:** day (see [date format docs](../covidcast_times.md))
-* **License:** To download or use the data, you must agree to the Google [Terms of Service](https://policies.google.com/terms)
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `google-symptoms` |
+| **Data Source** | Google |
+| **Geographic Coverage** | National, U.S. HHS Region, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Resolution** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Earliest Date** | 2020-02-13, with some variation depending on geographic area|
+| **License** | [Google Terms of Service](https://policies.google.com/terms) |
+
+<!--| **Update Frequency** | TODO: verify information since epiportal shows it is Ongoing | -->
 
 ## Overview
 {: .no_toc}

@@ -9,11 +9,15 @@ permalink: api/covidcast-signals/fb-survey.html
 # COVID-19 Trends and Impact Survey (CTIS)
 {: .no_toc}
 
-* **Source name:** `fb-survey`
-* **Earliest issue available:** April 29, 2020
-* **Geography type available:** county, hrr, msa, state, nation (see [geography coding docs](../covidcast_geography.md))
-* **Time type available:** day (see [date format docs](../covidcast_times.md))
-* **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `fb-survey` |
+| **Data Source** | [COVID-19 Trends and Impact Survey (CTIS)](../../symptom-survey/) |
+| **Geographic Coverage** | National, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Resolution** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Update Frequency** | Inactive - No longer updated since 2022-06-25 |
+| **Earliest Date** | Varies by indicator - 2020-2021 |
+| **License** | [CC BY](../covidcast_licensing.md#creative-commons-attribution) |
 
 ## Overview
 

@@ -7,11 +7,15 @@ nav_order: 1
 # National Syndromic Surveillance Program Emergency Department Visits
 {: .no_toc}
 
-* **Source name:** `nssp`
-* **Earliest issue available:** April 17, 2024
-* **Geography type available:** county, hrr, msa, state, hhs, nation (see [geography coding docs](../covidcast_geography.md))
-* **Time type available:** week (see [date format docs](../covidcast_times.md))
-* **License:** [Public Domain US Government](https://www.usa.gov/government-works)
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `nssp` |
+| **Data Source** | [The National Syndromic Surveillance Program (NSSP)](https://www.cdc.gov/nssp/php/about/index.html) |
+| **Geographic Coverage** | National, U.S. HHS Region, State (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Resolution** | Weekly (see [date format docs](../covidcast_times.md)) |
+| **Update Frequency** | Weekly |
+| **Earliest Date** | 2022-10-01 |
+| **License** | [Public Domain US Government](https://www.usa.gov/government-works) |
 
 ## Overview
 {: .no_toc}
@@ -25,7 +29,6 @@ As of May 2024, NSSP received data from 78% of US EDs.
 ### Available Signals
 {: .no_toc}
 
-* **Earliest date available:** August 8, 2020
 * **Raw Signals** (`pct_ed_visits_...`) represent the weekly percentage of ED visits for the specific pathogen.
 * **Smoothed Signals** (`smoothed_pct_ed_visits_...`) represent a **3-week moving average** of the raw signal.
 

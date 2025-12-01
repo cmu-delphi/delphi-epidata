@@ -8,11 +8,15 @@ nav_order: 2
 # Department of Health & Human Services Hospitalizations
 {: .no_toc}
 
-* **Source name:** `hhs`
-* **Earliest issue available:** November 16, 2020
-* **Geography type available:** state, hhs, nation (see [geography coding docs](../covidcast_geography.md))
-* **Time type available:** day (see [date format docs](../covidcast_times.md))
-* **License:** [Public Domain US Government](https://www.usa.gov/government-works)
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `hhs` |
+| **Data Source** | U.S. Department of Health & Human Services |
+| **Geographic Coverage** | National, U.S. HHS Region, State (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Resolution** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Update Frequency** | Inactive - no longer updated since 2024-04-30 |
+| **Earliest Date** | 2019-12-31 |
+| **License** | [Public Domain US Government](https://www.usa.gov/government-works) |
 
 The U.S. Department of Health & Human Services (HHS) publishes several
 datasets on patient impact and hospital capacity. The data is made available

@@ -8,11 +8,15 @@ nav_order: 2
 # USAFacts Cases and Deaths
 {: .no_toc}
 
-* **Source name:** `usa-facts`
-* **Earliest issue available:** June 24, 2020
-* **Geography type available:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
-* **Time type available:** day (see [date format docs](../covidcast_times.md))
-* **License:** [CC BY](#source-and-licensing)
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `usa-facts` |
+| **Data Source** | [USAFacts](https://usafacts.org/)	 |
+| **Geographic Coverage** | National, U.S. HHS Region, State/ADM 1, County/ADM 2, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Resolution** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Update Frequency** | Inactive - No longer updated since 2023-01-02 |
+| **Earliest Date** | 2020-01-25 |
+| **License** | [CC BY](#source-and-licensing) |
 
 This data source of confirmed COVID-19 cases and deaths is based on reports made
 available by [USAFacts](https://usafacts.org/).

@@ -7,11 +7,15 @@ nav_order: 1
 # National Healthcare Safety Network Respiratory Hospitalizations
 {: .no_toc}
 
-* **Source name:** `nhsn`
-* **Earliest issue available:** November 19, 2024
-* **Geography type available:** state, hhs, nation (see [geography coding docs](../covidcast_geography.md))
-* **Time type available:** week (see [date format docs](../covidcast_times.md))
-* **License:** [Public Domain US Government](https://www.usa.gov/government-works)
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `nhsn` |
+| **Data Source** | [The National Healthcare Safety Network (NHSN)](https://www.cdc.gov/nhsn/index.html) |
+| **Geographic Coverage** | National, U.S. HHS Region, State (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Resolution** | Weekly (Sunday to Saturday) (see [date format docs](../covidcast_times.md)) |
+| **Update Frequency** | Weekly |
+| **Earliest Date** | 2020-08-08 |
+| **License** | [Public Domain US Government](https://www.usa.gov/government-works) |
 
 ## Overview
 {: .no_toc}
@@ -32,8 +36,6 @@ State and nation-level values are pulled directly from the source; HHS-level val
 ### Available Signals
 {: .no_toc}
 
-* **Earliest date available:** August 8, 2020
-* **Time:** Week (Sunday to Saturday)
 * **Reporting Cutoffs:**
   * **Finalized Signals:** Data received by Friday/Saturday of the following week (~6-7 day lag).
   * **Preliminary (`_prelim`) Signals:** Data received by Wednesday of the following week (~4 day lag).

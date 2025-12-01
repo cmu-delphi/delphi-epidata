@@ -8,11 +8,15 @@ nav_order: 2
 # JHU Cases and Deaths
 {: .no_toc}
 
-* **Source name:** `jhu-csse`
-* **Earliest issue available:** May 7, 2020
-* **Geography type available:** county, hrr, msa, state, hhs, nation (see [geography coding docs](../covidcast_geography.md))
-* **Time type available:** day (see [date format docs](../covidcast_times.md))
-* **License:** [CC BY](#source-and-licensing)
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `jhu-csse` |
+| **Data Source** | JHU CSSE |
+| **Geographic Coverage** | National, U.S. HHS Region, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Resolution** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Update Frequency** | Inactive - No longer updated since 2023-03-09 |
+| **Earliest Date** | 2020-01-22, with some variation by geographic area |
+| **License** | [CC BY](#source-and-licensing) |
 
 ## Overview
 

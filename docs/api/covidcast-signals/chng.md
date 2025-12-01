@@ -8,11 +8,15 @@ nav_order: 2
 # Change Healthcare
 {: .no_toc}
 
-* **Source name:** `chng`
-* **Earliest issue available:** November 4, 2020
-* **Geography type available:** county, hrr, msa, state, hhs, nation (see [geography coding docs](../covidcast_geography.md))
-* **Time type available:** day (see [date format docs](../covidcast_times.md))
-* **License:** [CC BY-NC](../covidcast_licensing.md#creative-commons-attribution-noncommercial)
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `chng` |
+| **Data Source** | Change Healthcare |
+| **Geographic Coverage** | National, U.S. HHS Region, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Resolution** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Update Frequency** | Inactive - No longer updated since 2024-02-19 |
+| **Earliest Date** | 2020-02-01 |
+| **License** | [CC BY-NC](../covidcast_licensing.md#creative-commons-attribution-noncommercial) |
 
 ## Overview
 {: .no_toc}

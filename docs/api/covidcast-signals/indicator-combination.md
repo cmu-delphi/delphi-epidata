@@ -8,23 +8,18 @@ nav_order: 2
 # Indicator Combination
 {: .no_toc}
 
-* **Source name:** `indicator-combination`
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `indicator-combination` |
+| **Data Source** | Delphi |
+| **Geographic Coverage** | State, County, Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Resolution** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Update Frequency** | Inactive - no longer updated since 2021-03-16 |
+| **Earliest Date** | 2020-04-06 |
+| **License** | [CC BY](../covidcast_licensing.md#creative-commons-attribution) |
 
-This source provides signals which are combinations of the other sources,
-calculated or composed by Delphi. It is not a primary data source.
-
-## Table of contents
-{: .no_toc .text-delta}
-
-1. TOC
-{:toc}
-
-## Statistical Combination Signals
-
-* **Earliest issue available:** May 20, 2020
-* **Geography type available:** county, msa, state (see [geography coding docs](../covidcast_geography.md))
-* **Time type available:** day (see [date format docs](../covidcast_times.md))
-* **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
+## Overview
+{: .no_toc}
 
 These signals combine Delphi's indicators---*not* including cases and deaths,
 but including other signals expected to be related to the underlying rate of
@@ -40,6 +35,13 @@ These signals were updated daily until March 17, 2021.
 | --- | --- |
 | `nmf_day_doc_fbc_fbs_ght` | This signal uses a rank-1 approximation, from a nonnegative matrix factorization approach, to identify an underlying signal that best reconstructs the Doctor Visits (`smoothed_adj_cli`), Facebook Symptoms surveys (`smoothed_cli`), Facebook Symptoms in Community surveys (`smoothed_hh_cmnty_cli`), and Search Trends (`smoothed_search`) indicators. It does not include official reports (cases and deaths from the `jhu-csse` source). Higher values of the combined signal correspond to higher values of the other indicators, but the scale (units) of the combination is arbitrary. Note that the Search Trends source is not available at the county level, so county values of this signal do not use it. This signal is deprecated and is no longer updated as of March 17, 2021. <br/> **Earliest date available:** 2020-04-15 |
 | `nmf_day_doc_fbs_ght` | This signal is calculated in the same way as `nmf_day_doc_fbc_fbs_ght`, but does *not* include the Symptoms in Community survey signal, which was not available at the time this signal was introduced. It also uses `smoothed_cli` from the `doctor-visits` source instead of `smoothed_adj_cli`. This signal is deprecated and is no longer updated as of May 27, 2020. <br/> **Earliest date available:** 2020-04-06 |
+
+## Table of contents
+{: .no_toc .text-delta}
+
+1. TOC
+{:toc}
+
 
 ### Estimation
 

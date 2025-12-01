@@ -8,11 +8,16 @@ nav_order: 1
 # NCHS Mortality Data
 {: .no_toc}
 
-* **Source name:** `nchs-mortality`
-* **Earliest issue available:** Epiweek 50 2020 (6-12 December 2020)
-* **Geography type available:** state (see [geography coding docs](../covidcast_geography.md))
-* **Time type available:** week (see [date format docs](../covidcast_times.md))
-* **License:** [NCHS Data Use Agreement](https://www.cdc.gov/nchs/data_access/restrictions.htm)
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `nchs-mortality` |
+| **Data Source** | [National Center for Health Statistics
+(NCHS)](https://www.cdc.gov/nchs/nvss/vsrr/COVID19/index.htm) |
+| **Geographic Coverage** | State (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Resolution** | Weekly (see [date format docs](../covidcast_times.md))|
+| **Update Frequency** | Weekly |
+| **Earliest Date** | 2020w05 with some variation by geography |
+| **License** | [NCHS Data Use Agreement](https://www.cdc.gov/nchs/data_access/restrictions.htm) |
 
 This data source of national provisional death counts is based on death
 certificate data received and coded by the National Center for Health Statistics

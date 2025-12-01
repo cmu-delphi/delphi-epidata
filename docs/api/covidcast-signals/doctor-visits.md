@@ -8,11 +8,15 @@ nav_order: 1
 # Doctor Visits
 {: .no_toc}
 
-* **Source name:** `doctor-visits`
-* **Earliest issue available:** April 29, 2020
-* **Geography type available:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
-* **Time type available:** day (see [date format docs](../covidcast_times.md))
-* **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `doctor-visits` |
+| **Data Source** | Health system partners |
+| **Geographic Coverage** | State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Resolution** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Update Frequency** | Daily |
+| **Earliest Date** | 2020-02-01 |
+| **License** | [CC BY](../covidcast_licensing.md#creative-commons-attribution) |
 
 
 ## Overview

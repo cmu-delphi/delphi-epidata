@@ -7,10 +7,16 @@ nav_order: 2
 
 # SafeGraph
 {: .no_toc}
-* **Source name:** `safegraph`
-* **Geography type available:** county, MSA, HRR, state (see [geography coding docs](../covidcast_geography.md))
-* **Time type available:** day (see [date format docs](../covidcast_times.md))
-* **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
+
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `safegraph` |
+| **Data Source** | SafeGraph |
+| **Geographic Coverage** | State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md))|
+| **Temporal Resolution** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Update Frequency** | Inactive - No longer updated since 2021-04-19 |
+| **Earliest Date** | 2019-01-01 |
+| **License** | [CC BY](../covidcast_licensing.md#creative-commons-attribution) |
 
 This data source uses data reported by [SafeGraph](https://www.safegraph.com/)
 using anonymized location data from mobile phones. From June 2020-July 2022,
@@ -24,12 +30,6 @@ surface signals from two such datasets.
 {:toc}
 
 ## SafeGraph Social Distancing Metrics
-
-* **Earliest issue available:** June 20, 2020
-* **Number of data revisions since June 23, 2020:** 1
-* **Date of last change:** November 3, 2020
-
-**This dataset is no longer updated after April 19th, 2021.**
 
 Data source based on the [Social Distancing Metrics](https://docs.safegraph.com/docs/social-distancing-metrics) data product.  SafeGraph
 provided this data for individual census block groups, using differential

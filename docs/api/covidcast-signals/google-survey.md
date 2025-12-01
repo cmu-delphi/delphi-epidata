@@ -8,11 +8,15 @@ nav_order: 2
 # Google Symptom Surveys
 {: .no_toc}
 
-* **Source name:** `google-survey`
-* **Earliest issue available:** May 01, 2020
-* **Geography type available:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
-* **Time type available:** day (see [date format docs](../covidcast_times.md))
-* **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `google-survey` |
+| **Data Source** | [Google-run symptom surveys](https://9to5google.com/2020/03/23/google-coronavirus-survey/)/Delphi |
+| **Geographic Coverage** | National, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Resolution** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Update Frequency** | Inactive - No longer updated since 2020-05-14 |
+| **Earliest Date** | 2020-04-11 |
+| **License** | [CC BY](../covidcast_licensing.md#creative-commons-attribution) |
 
 ## Overview
 

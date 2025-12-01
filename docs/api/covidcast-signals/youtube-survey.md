@@ -10,11 +10,16 @@ nav_order: 2
 # Youtube Survey
 {: .no_toc}
 
-* **Source name:** `youtube-survey`
-* **Earliest issue available:** May 01, 2020
-* **Geography type available:** state (see [geography coding docs](../covidcast_geography.md))
-* **Time type available:** day (see [date format docs](../covidcast_times.md))
-* **License:** [CC BY-NC](../covidcast_licensing.md#creative-commons-attribution-noncommercial)
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `youtube-survey` |
+| **Data Source** | Google/Delphi |
+| **Geographic Coverage** | State (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Resolution** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Update Frequency** | Inactive - No longer updated | <!-- TODO: Last date not available on epiportal. -->
+| **License** | [CC BY-NC](../covidcast_licensing.md#creative-commons-attribution-noncommercial) |
+
+<!-- TODO: | **Earliest Date** | 2020-04-21 | -->
 
 ## Overview
 

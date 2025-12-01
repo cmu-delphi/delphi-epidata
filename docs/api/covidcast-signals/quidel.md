@@ -8,6 +8,16 @@ nav_order: 1
 # Quidel
 {: .no_toc}
 
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `quidel` |
+| **Data Source** | QuidelOrtho Corp. |
+| **Geographic Coverage** | National, U.S. HHS Region, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Resolution** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Update Frequency** | Daily |
+| **Earliest Date** | 2020-05-26 |
+| **License** | [CC BY](../covidcast_licensing.md#creative-commons-attribution) |
+
 ## Table of Contents
 {: .no_toc .text-delta}
 
@@ -15,16 +25,13 @@ nav_order: 1
 {:toc}
 
 ## Accessibility: Delphi-internal only
+{: .no_toc}
 
 ## Quidel COVID-19 Tests
-
-* **Source name:** `quidel`
-* **Earliest issue available:** July 29, 2020
-* **Geography type available:** county, hrr, msa, state, HHS, nation (see [geography coding docs](../covidcast_geography.md))
-* **Time type available:** day (see [date format docs](../covidcast_times.md))
-* **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
+{: .no_toc}
 
 ### Overview
+{: .no_toc}
 
 Data source based on COVID-19 Antigen tests, provided to us by Quidel, Inc. When
 a patient (whether at a doctor’s office, clinic, or hospital) has COVID-like
