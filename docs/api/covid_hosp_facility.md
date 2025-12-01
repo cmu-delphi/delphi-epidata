@@ -15,7 +15,7 @@ nav_order: 2
 | **Data Source** | [US Department of Health & Human Services](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/anag-cw7u) |
 | **Geographic Coverage** | Healthcare facility |
 | **Temporal Resolution** | Weekly (Friday -- Thursday) |
-| **Update Frequency** | Inactive - No longer updated |
+| **Update Frequency** | Inactive - No longer updated since 2024w08 |
 | **Earliest Date** | 2020-07-31 |
 | **License** | [Public Domain US Government](https://www.usa.gov/government-works) |
 
@@ -62,7 +62,7 @@ See [this documentation](README.md) for details on specifying locations and date
 
 
 {: .note}
-> **NOTEs:** 
+> **NOTES:** 
 > - [`covid_hosp_facility_lookup` endpoint](covid_hosp_facility_lookup.md) can > be used to lookup facility identifiers in a variety of ways.
 > - A collection week spans Friday -- Thursday, and weeks are identified by
 >  the date corresponding to the Friday at the start of the week. Therefore, the

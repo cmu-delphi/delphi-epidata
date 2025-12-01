@@ -15,7 +15,7 @@ nav_order: 2
 | **Data Source** | [US Department of Health & Human Services](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/g62h-syeh) |
 | **Geographic Coverage** | US States plus DC, PR, and VI (see [Geographic Codes](geographic_codes.html#us-states-and-territories)) |
 | **Temporal Resolution** | Daily |
-| **Update Frequency** | Inactive - No longer updated |
+| **Update Frequency** | Inactive - No longer updated since 2024-04-27 |
 | **Earliest Date** | 2020-01-01 |
 | **License** | [Public Domain US Government](https://www.usa.gov/government-works) |
 

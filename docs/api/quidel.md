@@ -12,13 +12,13 @@ nav_order: 2
 | Attribute | Details |
 | :--- | :--- |
 | **Source Name** | `quidel` |
-| **Data Source** | Quidel influenza testing data |
+| **Data Source** | QuidelOrtho Corp. influenza testing data |
 | **Geographic Coverage** | HHS regions (see [Geographic Codes](geographic_codes.html#hhs-regions)) |
 | **Temporal Resolution** | Weekly (Epiweek) |
-| **Update Frequency** | Inactive - No longer updated |
-| **Earliest Date** | 2015w35 (2015-08-30) |
+| **Update Frequency** | Inactive - No longer updated since 2020w15|
+| **Earliest Date** | 2015w35 |
 
-<!-- | **License** | Restricted (requires auth) | -->
+<!-- | **License** | Permission by QuidelOrtho | -->
 
 ## Overview
 {: .no_toc}

@@ -17,8 +17,8 @@ permalink: api/nowcast.html
 | **Dataset Type** | Predictive (Leading Indicator) |
 | **Geographic Coverage** | National, HHS regions, Census divisions, and US states (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
 | **Temporal Resolution** | Weekly (Epiweek) |
-| **Update Frequency** | Released Friday; updated Sunday & Monday |
-| **Earliest Date** | 2010w30 |
+| **Update Frequency** | Inactive - No longer updated since 2022w36 |
+| **Earliest Date** | 2010w45 |
 | **License** | [CC BY](https://creativecommons.org/licenses/by/4.0/) |
 
 ## Overview

@@ -14,11 +14,10 @@ nav_order: 2
 | **Source Name** | `ght` |
 | **Data Source** | Google Health Trends |
 | **Geographic Coverage** | [US States](geographic_codes.html#us-states-and-territories) and national level (US) |
-| **Temporal Resolution** | Weekly (Epiweek) |
-| **Update Frequency** | Inactive - No longer updated |
-
-<!--| **Earliest Date** |  |
-| **License** |  | -->
+| **Temporal Resolution** | Weekly (Epiweek) | 
+| **Update Frequency** | Inactive - No longer updated since 2022w36 |
+| **Earliest Date** | 1993w01 |
+| **License** | [Google Terms of Service](https://policies.google.com/terms) |
 
 This is the API documentation for accessing the Google Health Trends  (`ght`)
 endpoint of [Delphi](https://delphi.cmu.edu/)'s epidemiological data.

@@ -15,9 +15,9 @@ nav_order: 2
 | **Data Source** | [Delphi](https://delphi.cmu.edu/) |
 | **Geographic Coverage** | Countries and territories in the Americas (see [Geographic Codes](geographic_codes.html#countries-and-territories-in-the-americas)) <br> *Note: Data availability varies by country.* |
 | **Temporal Resolution** | Weekly (Epiweek) |
-| **Update Frequency** | Inactive - No longer updated |
+| **Update Frequency** | Inactive - No longer updated since 2020w32 |
 | **Earliest Date** | 2014w09 |
-| **License** | [CC BY](https://creativecommons.org/licenses/by/4.0/ |
+| **License** | [CC BY](https://creativecommons.org/licenses/by/4.0/) |
 
 
 ## Overview

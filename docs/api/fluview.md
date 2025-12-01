@@ -17,7 +17,7 @@ nav_order: 1
 | **Temporal Resolution** | Weekly (Epiweek) |
 | **Update Frequency** | Weekly (typically Fridays) |
 | **Earliest Date** | 1997w40 |
-| **License** | Open Access / [CDC](http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html) | 
+| **License** | [Publicly Accessible US Government](https://www.usa.gov/government-works) | 
 
 ## Overview
 {: .no_toc}

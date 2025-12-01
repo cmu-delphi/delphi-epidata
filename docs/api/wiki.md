@@ -13,14 +13,13 @@ nav_order: 2
 | :--- | :--- |
 | **Source Name** | `wiki` |
 | **Data Source** | [Wikimedia pageviews](https://dumps.wikimedia.org/other/pagecounts-raw/) for health-related Wikipedia articles |
-| **Dataset Type** | Surveillance (Inactive) |
 | **Geographic Coverage** | Not applicable (article-based) |
 | **Temporal Resolution** | Hourly, Daily, and Weekly (Epiweek) |
-| **Available Articles** | [54 health-related articles](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/articles.txt) |
-| **Update Frequency** | Inactive - No longer updated |
-| **License** | Open Access |
+| **Available Articles** | [54 health-related articles](wiki_articles.html) |
+| **Update Frequency** | Inactive - No longer updated since 2021w11|
+| **Earliest Date** | 2007w50 (2007-12-09) |
+| **License** | [CC BY-SA](https://creativecommons.org/licenses/by-sa/4.0/) |
 
-<!----| **Earliest Date** | 2007w50 (2007-12-09) |---->
 
 ## Overview
 {: .no_toc}

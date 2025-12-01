@@ -12,8 +12,8 @@ nav_order: 1
 | :--- | :--- |
 | **Source Name** | `fluview_meta` |
 | **Data Source** | [United States Centers for Disease Control and Prevention (CDC)](http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html) |
-| **Update Frequency** | Weekly (typically Fridays) |
-| **License** | Open Access |
+| **Update Frequency** | Weekly (typically Fridays) | <!-- TODO: Assuming it has the same update frequency as FluView. -->
+| **License** | [Publicly Accessible US Government](https://www.usa.gov/government-works) |
 
 ## Overview
 {: .no_toc}

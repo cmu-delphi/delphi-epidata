@@ -15,10 +15,9 @@ nav_order: 2
 | **Data Source** | [Korea Disease Control and Prevention Agency (KCDC) ILI surveillance](https://www.kdca.go.kr/) |
 | **Geographic Coverage** | ROK (Republic of Korea) (see [Geographic Codes](geographic_codes.md#republic-of-korea)) |
 | **Temporal Resolution** | Weekly (Epiweek) |
-| **Update Frequency** | Inactive - No longer updated |
+| **Update Frequency** | Inactive - No longer updated since 2020w44 |
 | **Earliest Date** | 2004w36 |
-
-<!-- | **License** | Open Access |  -->
+| **License** | This was scraped from a publicly-accessible government website, but no explicit license terms were found. |
 
 ## Overview
 {: .no_toc}

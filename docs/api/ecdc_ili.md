@@ -15,9 +15,9 @@ nav_order: 2
 | **Data Source** | [European Centre for Disease Prevention and Control (ECDC)](https://www.ecdc.europa.eu/en/home)  |
 | **Geographic Coverage** | European countries (see [Geographic Codes](geographic_codes.html#european-countries)) |
 | **Temporal Resolution** | Weekly (Epiweek) |
-| **Update Frequency** | Weekly |
+| **Update Frequency** | Inactive - No longer updated since 2020w12 |
 | **Earliest Date** | 2018w40 |
-| **License** | Open Access |
+| **License** | This was scraped from a publicly-accessible website, but no explicit license terms were found. |
 
 
 ## Overview

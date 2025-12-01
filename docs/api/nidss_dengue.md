@@ -15,7 +15,7 @@ nav_order: 2
 | **Data Source** | [Taiwan CDC](http://nidss.cdc.gov.tw/en/SingleDisease.aspx?dc=1&dt=4&disease=061&position=1)|
 | **Geographic Coverage** | Taiwan regions and cities/counties (see [Geographic Codes](geographic_codes.html#nidss)) |
 | **Temporal Resolution** | Weekly (Epiweek) |
-| **Update Frequency** | Inactive - No longer updated |
+| **Update Frequency** | Inactive - No longer updated since 2018w10 |
 | **Earliest Date** | 2003w01 |
 | **License** | [Open Access](https://data.gov.tw/license) |
 

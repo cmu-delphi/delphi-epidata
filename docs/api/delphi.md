@@ -15,10 +15,9 @@ nav_order: 2
 | **Data Source** | [Delphi](https://delphi.cmu.edu/) |
 | **Temporal Resolution** | Weekly (Epiweek) |
 | **Systems available** | `af`, `eb`, `ec`, `sp`, `st` |
-| **Update Frequency** | Inactive - No longer updated |
+| **Update Frequency** | Inactive - No longer updated since 2020w19 |
+| **Earliest Date** | 2014w41 |
 | **License** | [CC BY](https://creativecommons.org/licenses/by/4.0/) |
-
-<!--- | **Earliest Date** | 2014w41 | -->
 
 ## Overview
 {: .no_toc}

@@ -16,9 +16,9 @@ nav_order: 1
 | **Geographic Coverage** | See [Geographic Codes](geographic_codes.html#flusurv-locations) for full list |
 | **Temporal Resolution** | Weekly (Epiweek) |
 | **Earliest Date** | 2003w40 |
+| **Update Frequency** | Weekly |
+| **License** | [Publicly Accessible US Government](https://www.usa.gov/government-works) |
 
-<!--| **Update Frequency** | Weekly |
-| **License** | Open Access | -->
 
 
 

@@ -15,7 +15,7 @@ nav_order: 2
 | **Data Source** | [HealthTweets](http://www.healthtweets.org/) |
 | **Geographic Coverage** | National, HHS regions, Census divisions, and US states (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
 | **Temporal Resolution** | Daily and Weekly (Epiweek) |
-| **Update Frequency** | Inactive - No longer updated |
+| **Update Frequency** | Inactive - No longer updated since 2020w31 (2020-12-07)|
 | **Earliest Date** | 2011w48 (2011-11-27) |
 
 <!-- | **License** |  | -->

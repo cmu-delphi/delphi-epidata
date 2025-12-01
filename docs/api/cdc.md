@@ -15,10 +15,10 @@ nav_order: 2
 | **Data Source** | CDC influenza surveillance data |
 | **Geographic Coverage** | National, HHS regions, Census divisions, and US states (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
 | **Temporal Resolution** | Weekly (Epiweek) |
-| **Update Frequency** | Inactive - No longer updated |
+| **Update Frequency** | Inactive - No longer updated since 2020w03 (2020-01-12) |
 | **Earliest Date** | 2013w02 (2013-01-06) |
 
-<!-- | **License** | | -->
+<!-- | **License** | Permission by CDC flu division | -->
 
 ## Overview
 {: .no_toc}
@@ -35,7 +35,6 @@ General topics not specific to any particular endpoint are discussed in the
 
 1. TOC
 {:toc}
-
 
 
 # The API

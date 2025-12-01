@@ -15,7 +15,7 @@ nav_order: 2
 | **Source** | [Taiwan CDC](http://nidss.cdc.gov.tw/en/CDCWNH01.aspx?dc=wnh) |
 | **Geographic Coverage** | Taiwan regions (see [Geographic Codes](geographic_codes.html#taiwan-regions)) |
 | **Temporal Resolution** | Weekly (Epiweek) |
-| **Update Frequency** | Inactive - No longer updated |
+| **Update Frequency** | Inactive - No longer updated since 2018w10 |
 | **Earliest Date** | 2008w14 |
 | **License** | [Open Access](https://data.gov.tw/license) |
 

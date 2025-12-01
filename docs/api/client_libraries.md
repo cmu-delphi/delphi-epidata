@@ -133,28 +133,28 @@ cat(paste(res$result, res$message, length(res$epidata), "\n"))
 
   <div class="tab-content" data-tab="js" markdown="1">
 
-    The minimalist JavaScript client does not currently support API keys.
-    If you need API key support in JavaScript, contact delphi-support+privacy@andrew.cmu.edu.
+The minimalist JavaScript client does not currently support API keys.
+If you need API key support in JavaScript, contact delphi-support+privacy@andrew.cmu.edu.
 
-    ```html
-    <script src="delphi_epidata.js"></script>
-    <script>
-      EpidataAsync.covidcast(
-        "fb-survey",
-        "smoothed_cli",
-        "day",
-        "county",
-        [20200401, EpidataAsync.range(20200405, 20200414)],
-        "06001"
-      ).then((res) => {
-        console.log(
-          res.result,
-          res.message,
-          res.epidata != null ? res.epidata.length : 0
-        );
-      });
-    </script>
-    ``` 
+```html
+<script src="delphi_epidata.js"></script>
+<script>
+EpidataAsync.covidcast(
+  "fb-survey",
+  "smoothed_cli",
+  "day",
+  "county",
+  [20200401, EpidataAsync.range(20200405, 20200414)],
+  "06001"
+).then((res) => {
+  console.log(
+    res.result,
+    res.message,
+    res.epidata != null ? res.epidata.length : 0
+  );
+});
+</script>
+``` 
   </div>
 
 </div>

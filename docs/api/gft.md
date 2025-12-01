@@ -15,9 +15,9 @@ nav_order: 2
 | **Data Source** | [Google Flu Trends Estimates](https://www.google.com/publicdata/explore?ds=z3bsqef7ki44ac_) ([context](https://en.wikipedia.org/wiki/Google_Flu_Trends)) |
 | **Geographic Coverage** | National, HHS regions, US states (see [US Regions and States](geographic_codes.html#us-regions-and-states)), and select cities (see [Selected US Cities](geographic_codes.html#selected-us-cities)) |
 | **Temporal Resolution** | Weekly (Epiweek) |
-| **Update Frequency** | Inactive - No longer updated |
+| **Update Frequency** | Inactive - No longer updated since 2015w32 |
 | **Earliest Date** | 2003w40 |
-| **License** | Open Access |
+| **License** | [Google Terms of Service](https://policies.google.com/terms) |
 
 
 ## Overview
@@ -34,6 +34,7 @@ General topics not specific to any particular endpoint are discussed in the
 {: .no_toc .text-delta}
 
 1. TOC
+{:toc}
 
 # The API
 

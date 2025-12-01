@@ -16,8 +16,8 @@ permalink: api/dengue_sensors.html
 | **Data Source** | Various digital data streams |
 | **Geographic Coverage** | Countries and territories in the Americas (see [Geographic Codes](geographic_codes.html#countries-and-territories-in-the-americas)) <br> *Note: Data availability varies by country.* |
 | **Temporal Resolution** | Weekly (Epiweek) |
-| **Update Frequency** | Inactive - No longer updated |
-| **Earliest Date** | 2003w01 |
+| **Update Frequency** | Inactive - No longer updated since 2020w32|
+| **Earliest Date** | 2014w04 |
 | **License** | [CC BY](https://creativecommons.org/licenses/by/4.0/) |
 
 

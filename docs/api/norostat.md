@@ -16,10 +16,9 @@ nav_order: 2
 | **Dataset Type** | Surveillance (Inactive) |
 | **Geographic Coverage** | Only a specific list of full state names are permitted. See the `locations` output of the [meta_norostat](meta_norostat.html#norostat-metadata-1) endpoint for the allowed values. |
 | **Temporal Resolution** | Weekly (Epiweek) |
-| **Update Frequency** | Inactive - Delphi stopped stopped acquiring data from this data source in November 2020. |
+| **Update Frequency** | Inactive - No longer updated since 2020w30. |
 | **Earliest Date** | 2012w31 |
-
-<!-- | **License** |  | -->
+| **License** | [Publicly Accessible US Government](https://www.usa.gov/government-works) |
 
 ## Overview
 {: .no_toc}
