@@ -11,8 +11,7 @@ nav_order: 1
 | Attribute | Details |
 | :--- | :--- |
 | **Source Name** | `nchs-mortality` |
-| **Data Source** | [National Center for Health Statistics
-(NCHS)](https://www.cdc.gov/nchs/nvss/vsrr/COVID19/index.htm) |
+| **Data Source** | [National Center for Health Statistics (NCHS)](https://www.cdc.gov/nchs/nvss/vsrr/COVID19/index.htm) |
 | **Geographic Coverage** | State (see [geography coding docs](../covidcast_geography.md)) |
 | **Temporal Resolution** | Weekly (see [date format docs](../covidcast_times.md))|
 | **Update Frequency** | Weekly |
