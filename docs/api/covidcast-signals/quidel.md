@@ -8,16 +8,6 @@ nav_order: 1
 # Quidel
 {: .no_toc}
 
-| Attribute | Details |
-| :--- | :--- |
-| **Source Name** | `quidel` |
-| **Data Source** | QuidelOrtho Corp. |
-| **Geographic Coverage** | National, U.S. HHS Region, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
-| **Temporal Resolution** | Daily (see [date format docs](../covidcast_times.md)) |
-| **Update Frequency** | Daily |
-| **Earliest Date** | 2020-05-26 |
-| **License** | [CC BY](../covidcast_licensing.md#creative-commons-attribution) |
-
 ## Table of Contents
 {: .no_toc .text-delta}
 
@@ -29,6 +19,16 @@ nav_order: 1
 
 ## Quidel COVID-19 Tests
 {: .no_toc}
+
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `quidel` |
+| **Data Source** | QuidelOrtho Corp. |
+| **Geographic Coverage** | National, U.S. HHS Region, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Resolution** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Update Frequency** | Daily |
+| **Earliest Date** | 2020-05-26 |
+| **License** | [CC BY](../covidcast_licensing.md#creative-commons-attribution) |
 
 ### Overview
 {: .no_toc}
@@ -170,13 +170,16 @@ that day will not include it.
 
 These signals are inactive. They were updated until May 19, 2020.
 
-* **Source name:** `quidel`
-* **Earliest issue available:** April 29, 2020
-* **Last issued:** May 19, 2020
-* **Number of data revisions since May 19, 2020:** 0
-* **Date of last change:** Never
-* **Geography type available:** msa, state (see [geography coding docs](../covidcast_geography.md))
-* **Time type available:** day (see [date format docs](../covidcast_times.md))
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `quidel` |
+| **Data Source** | QuidelOrtho Corp. |
+| **Geographic Coverage** | State, Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Resolution** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Update Frequency** | Inactive - No longer updated since 2020-05-01 |
+| **Earliest Date** | 2020-01-31 |
+| **License** | [CC BY](../covidcast_licensing.md#creative-commons-attribution) |
+
 
 ### Overview
 

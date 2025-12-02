@@ -14,7 +14,7 @@ nav_order: 2
 | **Data Source** | SafeGraph |
 | **Geographic Coverage** | State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md))|
 | **Temporal Resolution** | Daily (see [date format docs](../covidcast_times.md)) |
-| **Update Frequency** | Inactive - No longer updated since 2021-04-19 |
+| **Update Frequency** | Inactive |
 | **Earliest Date** | 2019-01-01 |
 | **License** | [CC BY](../covidcast_licensing.md#creative-commons-attribution) |
 
@@ -30,6 +30,8 @@ surface signals from two such datasets.
 {:toc}
 
 ## SafeGraph Social Distancing Metrics
+
+<!-- TODO: check right date **This dataset is no longer updated after July 15th, 2022.** -->
 
 Data source based on the [Social Distancing Metrics](https://docs.safegraph.com/docs/social-distancing-metrics) data product.  SafeGraph
 provided this data for individual census block groups, using differential
@@ -76,11 +78,7 @@ additional day for SafeGraph's data to be ingested into the COVIDcast API.
 
 ## SafeGraph Weekly Patterns
 
-* **Earliest issue available:** November 30, 2020
-* **Number of data revisions since June 23, 2020:** 0
-* **Date of last change:** never
-
-**This dataset is no longer updated after July 15th, 2022.**
+<!-- TODO: check right date **This dataset is no longer updated after July 15th, 2022.** -->
 
 Data source based on [Weekly
 Patterns](https://docs.safegraph.com/docs/weekly-patterns) dataset. SafeGraph
