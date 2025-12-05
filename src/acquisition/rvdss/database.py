@@ -18,7 +18,7 @@ See: rvdss.py
 
 # third party
 import mysql.connector
-import pdb
+import numpy as np
 
 # first party
 import delphi.operations.secrets as secrets
@@ -71,7 +71,7 @@ rvdss_cols= (
   "sarscov2_tests"
 )
 
-  
+
 def get_num_rows(cursor):
     cursor.execute("SELECT count(1) `num` FROM `rvdss`")
     for (num,) in cursor:
@@ -81,16 +81,16 @@ def get_num_rows(cursor):
 def update(data, logger):
     # connect to the database
     u, p = secrets.db.epi
-    cnx = mysql.connector.connect(user=u, 
-                                  password=p, 
+    cnx = mysql.connector.connect(user=u,
+                                  password=p,
                                   host = secrets.db.host,
                                   database="epidata")
     cur = cnx.cursor()
-    
-    pdb.set_trace()
 
+    data = data.reset_index(
+      ).replace({np.nan: None})
     rvdss_cols_subset = [col for col in data.columns if col in rvdss_cols]
-    data = data.to_dict(orient = "records")
+    data_dict = data.to_dict(orient = "records")
 
     field_names = ", ".join(f"`{name}`" for name in rvdss_cols_subset)
     field_values = ", ".join(f"%({name})s" for name in rvdss_cols_subset)
@@ -105,8 +105,8 @@ def update(data, logger):
     rows_before = get_num_rows(cur)
     total_rows = 0
 
-    #insert data
-    cur.executemany(sql, data)
+    # insert data
+    cur.executemany(sql, data_dict)
 
     # keep track of how many rows were added
     rows_after = get_num_rows(cur)
